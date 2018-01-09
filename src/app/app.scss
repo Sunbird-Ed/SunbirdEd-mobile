@@ -14,3 +14,156 @@
 // To declare rules for a specific mode, create a child rule
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
+
+.tool-icon {
+  width: 25px;
+  height: 25px;
+  margin: 10px;
+  float: right;
+}
+
+.header-title {
+  font-size: 20px;
+  height: 100%;
+  vertical-align: text-bottom;
+}
+
+
+.tabbar, .tabs-ios, .tabs-md , .tabs-wp{
+    .tab-button-icon {
+        background-repeat:no-repeat;
+        background-position:center;
+        height:20px;
+        width:20px;
+        background-size:contain;
+        -webkit-background-size: contain;
+        -moz-background-size: contain;
+        -o-background-size: contain;
+        &:before {
+            display:none;
+        }
+    }
+}
+
+.tabs-ios {
+  a[aria-selected=false]{
+     .tab-button-icon[ng-reflect-name=courses], .tab-button-icon[aria-label=courses] {
+      background-image: url(../assets/imgs/ic_courses.png);
+    }
+    .tab-button-icon[ng-reflect-name=home], .tab-button-icon[aria-label=home] {
+      background-image: url(../assets/imgs/ic_home.png);
+    }
+    .tab-button-icon[ng-reflect-name=resources], .tab-button-icon[aria-label=resources] {
+      background-image: url(../assets/imgs/ic_notebook.png);
+    }
+    .tab-button-icon[ng-reflect-name=groups], .tab-button-icon[aria-label=groups] {
+        background-image: url(../assets/imgs/ic_chat.png);
+    }
+    .tab-button-icon[ng-reflect-name=profile], .tab-button-icon[aria-label=profile] {
+        background-image: url(../assets/imgs/ic_profile.png);
+    }
+  }
+ a[aria-selected=true] {
+   //führ eventuellen text
+   //span {
+      //color: #f00; //whatever colour you want to use for the text
+    //}
+    .tab-button-icon[ng-reflect-name=courses], .tab-button-icon[aria-label=courses] {
+        background-image: url(../assets/imgs/ic_courses_blue.png);
+      }
+      .tab-button-icon[ng-reflect-name=home], .tab-button-icon[aria-label=home] {
+        background-image: url(../assets/imgs/ic_home_blue.png);
+      }
+      .tab-button-icon[ng-reflect-name=resources], .tab-button-icon[aria-label=resources] {
+        background-image: url(../assets/imgs/ic_notebook_blue.png);
+      }
+      .tab-button-icon[ng-reflect-name=groups], .tab-button-icon[aria-label=groups] {
+          background-image: url(../assets/imgs/ic_chat_blue.png);
+      }
+      .tab-button-icon[ng-reflect-name=profile], .tab-button-icon[aria-label=profile] {
+          background-image: url(../assets/imgs/ic_profile_blue.png);
+      }
+  }
+}
+
+.tabs-md {
+    a[aria-selected=false]{
+        .tab-button-icon[ng-reflect-name=courses], .tab-button-icon[aria-label=courses] {
+         background-image: url(../assets/imgs/ic_courses.png);
+       }
+       .tab-button-icon[ng-reflect-name=home], .tab-button-icon[aria-label=home] {
+         background-image: url(../assets/imgs/ic_home.png);
+       }
+       .tab-button-icon[ng-reflect-name=resources], .tab-button-icon[aria-label=resources] {
+         background-image: url(../assets/imgs/ic_notebook.png);
+       }
+       .tab-button-icon[ng-reflect-name=groups], .tab-button-icon[aria-label=groups] {
+           background-image: url(../assets/imgs/ic_chat.png);
+       }
+       .tab-button-icon[ng-reflect-name=profile], .tab-button-icon[aria-label=profile] {
+           background-image: url(../assets/imgs/ic_profile.png);
+       }
+     }
+    a[aria-selected=true] {
+      //führ eventuellen text
+      //span {
+         //color: #f00; //whatever colour you want to use for the text
+       //}
+       .tab-button-icon[ng-reflect-name=courses], .tab-button-icon[aria-label=courses] {
+           background-image: url(../assets/imgs/ic_courses_blue.png);
+         }
+         .tab-button-icon[ng-reflect-name=home], .tab-button-icon[aria-label=home] {
+           background-image: url(../assets/imgs/ic_home_blue.png);
+         }
+         .tab-button-icon[ng-reflect-name=resources], .tab-button-icon[aria-label=resources] {
+           background-image: url(../assets/imgs/ic_notebook_blue.png);
+         }
+         .tab-button-icon[ng-reflect-name=groups], .tab-button-icon[aria-label=groups] {
+             background-image: url(../assets/imgs/ic_chat_blue.png);
+         }
+         .tab-button-icon[ng-reflect-name=profile], .tab-button-icon[aria-label=profile] {
+             background-image: url(../assets/imgs/ic_profile_blue.png);
+         }
+     }
+}
+
+.tabs-wp {
+    a[aria-selected=false]{
+        .tab-button-icon[ng-reflect-name=courses], .tab-button-icon[aria-label=courses] {
+         background-image: url(../assets/imgs/ic_courses.png);
+       }
+       .tab-button-icon[ng-reflect-name=home], .tab-button-icon[aria-label=home] {
+         background-image: url(../assets/imgs/ic_home.png);
+       }
+       .tab-button-icon[ng-reflect-name=resources], .tab-button-icon[aria-label=resources] {
+         background-image: url(../assets/imgs/ic_notebook.png);
+       }
+       .tab-button-icon[ng-reflect-name=groups], .tab-button-icon[aria-label=groups] {
+           background-image: url(../assets/imgs/ic_chat.png);
+       }
+       .tab-button-icon[ng-reflect-name=profile], .tab-button-icon[aria-label=profile] {
+           background-image: url(../assets/imgs/ic_profile.png);
+       }
+     }
+    a[aria-selected=true] {
+      //führ eventuellen text
+      //span {
+         //color: #f00; //whatever colour you want to use for the text
+       //}
+       .tab-button-icon[ng-reflect-name=courses], .tab-button-icon[aria-label=courses] {
+           background-image: url(../assets/imgs/ic_courses_blue.png);
+         }
+         .tab-button-icon[ng-reflect-name=home], .tab-button-icon[aria-label=home] {
+           background-image: url(../assets/imgs/ic_home_blue.png);
+         }
+         .tab-button-icon[ng-reflect-name=resources], .tab-button-icon[aria-label=resources] {
+           background-image: url(../assets/imgs/ic_notebook_blue.png);
+         }
+         .tab-button-icon[ng-reflect-name=groups], .tab-button-icon[aria-label=groups] {
+             background-image: url(../assets/imgs/ic_chat_blue.png);
+         }
+         .tab-button-icon[ng-reflect-name=profile], .tab-button-icon[aria-label=profile] {
+             background-image: url(../assets/imgs/ic_profile_blue.png);
+         }
+     }
+}

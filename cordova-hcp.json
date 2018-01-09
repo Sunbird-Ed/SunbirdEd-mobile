@@ -1,0 +1,7 @@
+{
+  "name": "Sunbird-Mobile",
+  "ios_identifier": "",
+  "android_identifier": "",
+  "update": "start",
+  "content_url": "http://172.17.23.46:3000/updates"
+}

@@ -1,14 +1,14 @@
 <ion-header>
   <ion-navbar>
-    <ion-title>
-      Ionic Blank
-    </ion-title>
+    <img src="assets/imgs/ic_logo.png" class="logo"/>
+    <img src="assets/imgs/ic_action_search.png" class="search"/>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-  The world is your oyster.
-  <p>
-    If you get lost, the <a href="http://ionicframework.com/docs/v2">docs</a> will be your guide.
-  </p>
+
+    <ion-fab right bottom>
+        <button ion-fab (click)="onSyncClick()"><ion-icon name="sync"></ion-icon></button>
+      </ion-fab>
+  
 </ion-content>
