@@ -23,16 +23,7 @@ node_modules/
 tmp/
 temp/
 hooks/
-platforms/android/*.iml
-platforms/android/.gradle
-platforms/android/local.properties
-platforms/android/.idea
-platforms/android/build
-platforms/android/platform_www
-platforms/android/captures
-platforms/android/.externalNativeBuild
-platforms/android/CordovaLib/build
-platforms/android/CordovaLib/*.iml
+platforms/
 plugins/
 plugins/android.json
 plugins/ios.json
