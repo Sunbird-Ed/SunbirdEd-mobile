@@ -29,7 +29,6 @@ platforms/android/local.properties
 platforms/android/.idea
 platforms/android/build
 platforms/android/platform_www
-platforms/android/app/src/main/assets
 platforms/android/captures
 platforms/android/.externalNativeBuild
 platforms/android/CordovaLib/build
