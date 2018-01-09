@@ -31,7 +31,6 @@ platforms/android/build
 platforms/android/platform_www
 platforms/android/app/src/main/assets
 platforms/android/captures
-platforms/android/cordova
 platforms/android/.externalNativeBuild
 platforms/android/CordovaLib/build
 platforms/android/CordovaLib/*.iml
