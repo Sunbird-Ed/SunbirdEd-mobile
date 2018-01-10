@@ -1,0 +1,52 @@
+ext {
+    apply from: 'CordovaLib/cordova.gradle'
+    cdvCompileSdkVersion=23
+    cdvVersionCode=1
+    cdvMinSdkVersion=16
+    cdvBuildMultipleApks=false
+    cdvBuildToolsVersion='26.0.2'
+}
+
+
+allprojects {
+    repositories {
+        jcenter()
+        maven {
+            url "https://maven.google.com"
+        }
+        maven {
+            url "https://platform.ekstep.in/downloads/content/repositories/releases"
+        }
+    }
+}
+
+android {
+
+    packagingOptions {
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/LICENSE.txt'
+    }
+
+    defaultConfig {
+        versionName System.getenv("BUILD_NUMBER") ?: "local"
+        setProperty("archivesBaseName", "sunbird-$versionName")
+    }
+
+    signingConfigs {
+        release {
+            
+        }
+    }
+
+    buildTypes {
+        release {
+            // signingConfig signingConfigs.release
+        }
+    }
+}
+
+dependencies {
+    compile "org.ekstep.genieservices:genie-providers:1.0.519"
+    compile "org.ekstep.genieservices:genie-integration:1.0.519"
+}
+
