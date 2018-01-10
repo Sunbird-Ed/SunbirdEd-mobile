@@ -43,6 +43,30 @@ android {
             // signingConfig signingConfigs.release
         }
     }
+
+    productFlavors {
+        qa {
+            applicationId "org.sunbird.app"
+            buildConfigField 'String', 'TELEMETRY_BASE_URL', '"https://qa.ekstep.in/api/data/v3"'
+            buildConfigField 'String', 'LANGUAGE_PLATFORM_BASE_URL', '"https://qa.ekstep.in/api/language/v3"'
+            buildConfigField 'String', 'TERMS_BASE_URL', '"https://qa.ekstep.in/api/domain/v3"'
+            buildConfigField 'String', 'CONFIG_BASE_URL', '"https://qa.ekstep.in/api/meta/v3"'
+            buildConfigField 'String', 'SEARCH_BASE_URL', '"https://qa.ekstep.in/api/composite/v3"'
+            buildConfigField 'String', 'CONTENT_LISTING_BASE_URL', '"https://qa.ekstep.in/api/data/v3"'
+            buildConfigField 'String', 'CONTENT_BASE_URL', '"https://qa.ekstep.in/api/content/v3"'
+            buildConfigField 'String', 'APIGATEWAY_BASE_URL', '"https://qa.ekstep.in/api/api-manager/v1"'
+            buildConfigField 'String', 'PRODUCER_ID', '"sunbird-ionic"'
+            buildConfigField 'String', 'CHANNEL_ID', '"in.ekstep"'
+            buildConfigField 'String', 'LOG_LEVEL', '"INFO"'
+            buildConfigField 'String', 'PROFILE_CONFIG', '"org.ekstep.genie.base.ProfileConfig"'
+            buildConfigField 'String', 'PLAYER_CONFIG', '"org.ekstep.genie.util.geniesdk.PlayerConfig"'
+            buildConfigField 'int', 'MAX_COMPATIBILITY_LEVEL', "3"
+            buildConfigField 'String', 'MOBILE_APP_CONSUMER', '"mobile_device"'
+            buildConfigField 'String', 'MOBILE_APP_KEY', '"genie-6.4"'
+            buildConfigField 'String', 'MOBILE_APP_SECRET', '"2de97457fad846d5a60f7ac20773b6f4"'
+            buildConfigField 'String', 'ENVIRONMENT', '"Genie"'
+        }
+    }
 }
 
 dependencies {
