@@ -14,20 +14,25 @@ import { GroupPage } from '../pages/group/group';
 import { ProfilePage } from '../pages/profile/profile';
 import { TelemetryService } from '../service/TelemetryService';
 import { SamplePageModule } from '../pages/sample/sample.module';
+import { ComponentLoaderService } from '../service/ComponentLoaderService';
+import { mainComponents } from './components';
+
+let componentsToLoad = ComponentLoaderService.getComponents(mainComponents);
 
 @NgModule({
-  declarations: [MyApp, TabsPage, HomePage, GroupPage, ResourcesPage, CoursesPage, ProfilePage],
+  declarations: [mainComponents],
   imports: [
     BrowserModule,
     SamplePageModule,
     IonicModule.forRoot(MyApp)
   ],
   bootstrap: [IonicApp],
-  entryComponents: [MyApp, TabsPage, HomePage, GroupPage, ResourcesPage, CoursesPage, ProfilePage],
+  entryComponents: [mainComponents],
   providers: [
     StatusBar,
     SplashScreen,
     TelemetryService,
+    ComponentLoaderService,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })
