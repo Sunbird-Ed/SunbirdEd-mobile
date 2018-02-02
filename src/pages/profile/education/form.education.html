@@ -1,0 +1,82 @@
+<ion-header>
+    <ion-navbar>
+      <ion-title>Education</ion-title>
+    </ion-navbar>
+  </ion-header>
+  
+  <ion-content padding class="form-content">
+    <!-- <form class="form" [formGroup]="validations_form" (ngSubmit)="onSubmit(validations_form.value)"> -->
+    <form class="form">
+      <ion-item>
+        <ion-label stacked>DEGREE
+          <span class="star" style="color: red">&nbsp;*</span>
+        </ion-label>
+        <ion-input type="text" placeholder="Degree" class="form-controll" required></ion-input>
+      </ion-item>
+  
+      <div class="form-top-margin"></div>
+  
+      <ion-item>
+        <ion-label stacked>INSTITUTE NAME
+          <span class="star" style="color: red">&nbsp;*</span>
+        </ion-label>
+        <ion-input type="text" placeholder="Institute Name" class="form-controll" required></ion-input>
+      </ion-item>
+  
+      <div class="form-top-margin"></div>
+  
+      <ion-item>
+        <ion-label stacked>PASS YEAR</ion-label>
+        <ion-input type="number" placeholder="Optional"></ion-input>
+      </ion-item>
+  
+      <div class="form-top-margin"></div>
+  
+      <ion-item>
+        <ion-label stacked>PERCENTAGE</ion-label>
+        <ion-input type="number" placeholder="Optional"></ion-input>
+      </ion-item>
+  
+      <div class="form-top-margin"></div>
+  
+      <ion-item>
+        <ion-label stacked>GRADE</ion-label>
+        <ion-input type="text" value="mnp" placeholder="Optional"></ion-input>
+      </ion-item>
+  
+      <div class="form-top-margin"></div>
+  
+      <ion-item>
+        <ion-label stacked>BOARD/UNIVERSITY</ion-label>
+        <ion-input type="text" placeholder="Optional"></ion-input>
+      </ion-item>
+  
+      <div class="form-top-margin"></div>
+  
+      <!-- <ion-footer> -->
+      <ion-row>
+        <ion-col padding>
+          <button class="action-button" ion-button outline icon-start>
+            Delete
+          </button>
+          <!-- <button no-margin ion-button full large color="primary">Update</button> -->
+        </ion-col>
+        <ion-col padding>
+          <button  class="action-button" ion-button icon-start [disabled]="true" item-end>
+            Save
+          </button>
+          <!-- <button no-margin ion-button full large color="danger">Cancel</button> -->
+        </ion-col>
+      </ion-row>
+  
+      <!-- <div class="validation-errors">
+        <ng-container *ngFor="let validation of validation_messages.terms">
+          <div class="error-message" *ngIf="validations_form.get('terms').hasError(validation.type) && (validations_form.get('terms').dirty || validations_form.get('terms').touched)">
+            {{ validation.message }}
+          </div>
+        </ng-container>
+      </div> -->
+  
+      <!-- <button ion-button full type="submit" [disabled]="!validations_form.valid">Submit</button> -->
+    </form>
+  </ion-content>
