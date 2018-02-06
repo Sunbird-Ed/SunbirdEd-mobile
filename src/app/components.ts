@@ -6,6 +6,7 @@ import { ResourcesPage } from '../pages/resources/resources';
 import { GroupPage } from '../pages/group/group';
 import { ProfilePage } from '../pages/profile/profile';
 import { FormEducation } from '../pages/profile/education/form.education';
+import { FormAddress } from '../pages/profile/address/form.address';
 
 
 export const mainComponents = [
@@ -16,5 +17,6 @@ export const mainComponents = [
     ResourcesPage,
     GroupPage,
     ProfilePage,
-    FormEducation
+    FormEducation,
+    FormAddress
 ];

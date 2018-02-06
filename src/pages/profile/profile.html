@@ -7,9 +7,20 @@
 </ion-header>
 <ion-content>
   <!-- Real floating action button, fixed. It will not scroll with the content -->
-  <ion-fab top right edge>
+  <!-- <ion-fab top right edge>
     <button ion-fab mini (click)="editEduDetails()"><ion-icon name="add"></ion-icon></button>
-   </ion-fab>
+   </ion-fab> -->
+
+   <ion-col padding>
+      <button class="action-button" ion-button outline icon-start (click)="editEduDetails()">
+        education
+      </button>
+
+      <button class="action-button" ion-button outline icon-start (click)="editAddress()">
+          address
+        </button>
+      <!-- <button no-margin ion-button full large color="primary">Update</button> -->
+    </ion-col>
 </ion-content>
 
 

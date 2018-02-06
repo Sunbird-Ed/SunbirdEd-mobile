@@ -3,11 +3,11 @@ import { Validators, FormBuilder, FormGroup, FormControl } from '@angular/forms'
 import { NavController } from 'ionic-angular';
 
 @Component({
-  selector: 'page-education',
-  templateUrl: 'form.education.html'
+  selector: 'page-address',
+  templateUrl: 'form.address.html'
 })
 
-export class FormEducation {
+export class FormAddress {
   constructor(public navCtrl: NavController, public formBuilder: FormBuilder) { }
 
 
