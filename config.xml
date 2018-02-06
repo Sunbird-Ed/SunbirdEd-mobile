@@ -95,4 +95,5 @@
     <plugin name="cordova-hot-code-push-plugin" spec="^1.5.3" />
     <plugin name="cordova-plugin-genie-sdk" spec="cordova-plugin-genie-sdk" />
     <engine name="android" spec="~6.3.0" />
+    <plugin name="cordova-plugin-camera" spec="^4.0.2" />
 </widget>

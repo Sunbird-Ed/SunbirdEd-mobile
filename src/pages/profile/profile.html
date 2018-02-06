@@ -11,20 +11,20 @@
     <button ion-fab mini (click)="editEduDetails()"><ion-icon name="add"></ion-icon></button>
    </ion-fab> -->
 
-   <ion-col padding>
-      <button class="action-button" ion-button outline icon-start (click)="editEduDetails()">
-        education
-      </button>
+  <!-- <ion-col padding>
+    <button class="action-button" ion-button outline icon-start (click)="editEduDetails()">
+      education
+    </button>
 
-      <button class="action-button" ion-button outline icon-start (click)="editAddress()">
-          address
-        </button>
-      <!-- <button no-margin ion-button full large color="primary">Update</button> -->
-    </ion-col>
+    <button class="action-button" ion-button outline icon-start (click)="editAddress()">
+      address
+    </button>
+    <button no-margin ion-button full large color="primary">Update</button> 
+  </ion-col> -->
 
   <ion-list>
     <div ion-item text-center>
-      <img class="item-profile-img" src="assets/imgs/logo.png" />
+      <img class="item-profile-img" [src]="imageUri" (click)="editPicture()" />
       <p class="profile-name">VinayagaSundar</p>
       <p>
         <span class="grey-bg">UserName-vinayagasundar</span>
@@ -62,12 +62,10 @@
           <span>SXC</span>
         </ion-col>
         <ion-col col-1>
-          <ion-icon name="md-create" class="edit-icon"></ion-icon>
+          <ion-icon name="md-create" class="edit-icon" (click)="editEduDetails()"></ion-icon>
         </ion-col>
       </ion-row>
     </ion-item>
-
-
 
     <ion-item>
       <ion-row justify-content-start>
@@ -82,12 +80,10 @@
           <span>SXC</span>
         </ion-col>
         <ion-col col-1>
-          <ion-icon name="md-create" class="edit-icon"></ion-icon>
+          <ion-icon name="md-create" class="edit-icon" (click)="editEduDetails()"></ion-icon>
         </ion-col>
       </ion-row>
     </ion-item>
-
-
 
     <ion-list-header class="list-header">
       Experience
@@ -116,8 +112,7 @@
 
     <ion-list-header class="list-header">
       Address
-
-      <span float-right>Add</span>
+      <span float-right (click)="editAddress()">Add</span>
     </ion-list-header>
 
     <ion-item>
@@ -131,12 +126,10 @@
           <span>Bangalure, Karanataka</span>
         </ion-col>
         <ion-col col-1>
-          <ion-icon name="md-create" class="edit-icon"></ion-icon>
+          <ion-icon name="md-create" class="edit-icon" (click)="editAddress()"></ion-icon>
         </ion-col>
       </ion-row>
     </ion-item>
-
-
 
     <ion-list-header class="list-header">
       Skill Tags

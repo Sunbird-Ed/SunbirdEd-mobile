@@ -2,6 +2,7 @@ import { NgModule, ErrorHandler } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
+import {Camera} from '@ionic-native/camera';
 
 import { CoursesPage } from '../pages/courses/courses';
 import { HomePage } from '../pages/home/home';
@@ -33,6 +34,7 @@ let componentsToLoad = ComponentLoaderService.getComponents(mainComponents);
     SplashScreen,
     TelemetryService,
     ComponentLoaderService,
+    Camera,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })
