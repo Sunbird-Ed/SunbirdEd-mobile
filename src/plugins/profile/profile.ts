@@ -1,24 +1,53 @@
 import { Component } from '@angular/core';
-import { NavController, IonicPage } from 'ionic-angular';
+import { NavController } from 'ionic-angular';
+import { Camera, CameraOptions } from '@ionic-native/camera';
+
+import { FormEducation } from './education/form.education';
+import { FormAddress } from './address/form.address';
 import { ContainerService } from '../../core/container/container.services';
 import { CoreModule } from '../../core/core.module';
 import { PluginService } from '../../core/plugin/plugin.service';
 import { BasePlugin } from '../../core/plugin/plugin.service';
 
-@IonicPage()
+
 @Component({
   selector: 'page-profile',
   templateUrl: 'profile.html'
 })
-export class ProfilePage implements BasePlugin {
+export class ProfilePage implements BasePlugin  {
+  imageUri: string = "assets/imgs/logo.png";
 
-  constructor(public navCtrl: NavController,
-    private container: ContainerService) {
+  constructor(public navCtrl: NavController, private camera: Camera) {
 
   }
 
-  init(container: ContainerService) {
-    container.addTab({root: ProfilePage, label: "PROFILE", icon: "profile"});
+  init(containerService: ContainerService) {
+    containerService.addTab({root: ProfilePage, label: "PROFILE", icon: "profile"})
+  }
+
+  editEduDetails() {
+    this.navCtrl.push(FormEducation);
+  }
+
+  editAddress() {
+    this.navCtrl.push(FormAddress);
+  }
+
+  editPicture() {
+    const options: CameraOptions = {
+      quality: 100,
+      destinationType: this.camera.DestinationType.FILE_URI,
+      encodingType: this.camera.EncodingType.JPEG,
+      mediaType: this.camera.MediaType.PICTURE
+    }
+
+    this.camera.getPicture(options).then((imageData) => {
+      this.imageUri = imageData;
+      // imageData is either a base64 encoded string or a file URI
+      // If it's base64:
+    }, (err) => {
+      // Handle error
+    });
   }
 
 }

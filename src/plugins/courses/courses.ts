@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
-import { PluginDef } from '../../app/plugin/PluginDef';
 import { IonicPage } from 'ionic-angular';
 import { ContainerService } from '../../core/container/container.services';
 import { CoreModule } from '../../core/core.module';

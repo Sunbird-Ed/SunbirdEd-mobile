@@ -5,6 +5,8 @@ import { CoreModule } from '../../core/core.module';
 import { PluginService } from '../../core/plugin/plugin.service';
 import { BasePlugin } from '../../core/plugin/plugin.service';
 import { ContainerService } from '../../core/container/container.services';
+import { Camera } from '@ionic-native/camera';
+
 
 @NgModule({
   declarations: [
@@ -17,7 +19,8 @@ import { ContainerService } from '../../core/container/container.services';
     ProfilePage
   ],
   providers: [
-    ContainerService
+    ContainerService,
+    Camera
   ]
 })
 export class ProfilePageModule {}
