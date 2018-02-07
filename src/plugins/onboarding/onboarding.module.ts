@@ -4,7 +4,7 @@ import { OnboardingPage } from './onboarding';
 import { CoreModule } from '../../core/core.module';
 import { PluginService } from '../../core/plugin/plugin.service';
 import { BasePlugin } from '../../core/plugin/plugin.service';
-import { SliderPage } from './onboarding/slider';
+import { SliderPage } from './slider/slider';
 
 
 @NgModule({
