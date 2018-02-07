@@ -16,6 +16,7 @@ import { FormAddress } from './address/form.address';
     FormEducation,
     FormAddress
   ],
+  entryComponents: [FormEducation, FormAddress],
   imports: [
     IonicPageModule.forChild(ProfilePage),
   ],
@@ -29,4 +30,4 @@ import { FormAddress } from './address/form.address';
     Camera
   ]
 })
-export class ProfilePageModule {}
+export class ProfilePageModule { }
