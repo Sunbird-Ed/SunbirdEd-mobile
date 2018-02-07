@@ -2,12 +2,14 @@ import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { Camera, CameraOptions } from '@ionic-native/camera';
 
-import { FormEducation } from './education/form.education';
-import { FormAddress } from './address/form.address';
+// import { FormEducation } from '../../plugins/profile/education/form.education';
+// import { FormAddress } from '../../plugins/profile/address/form.address';
 import { ContainerService } from '../../core/container/container.services';
 import { CoreModule } from '../../core/core.module';
 import { PluginService } from '../../core/plugin/plugin.service';
 import { BasePlugin } from '../../core/plugin/plugin.service';
+import { FormEducation } from './education/form.education';
+import { FormAddress } from './address/form.address';
 
 
 @Component({

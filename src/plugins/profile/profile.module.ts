@@ -6,17 +6,23 @@ import { PluginService } from '../../core/plugin/plugin.service';
 import { BasePlugin } from '../../core/plugin/plugin.service';
 import { ContainerService } from '../../core/container/container.services';
 import { Camera } from '@ionic-native/camera';
+import { FormEducation } from './education/form.education';
+import { FormAddress } from './address/form.address';
 
 
 @NgModule({
   declarations: [
     ProfilePage,
+    FormEducation,
+    FormAddress
   ],
   imports: [
     IonicPageModule.forChild(ProfilePage),
   ],
   exports: [
-    ProfilePage
+    ProfilePage,
+    FormAddress,
+    FormEducation
   ],
   providers: [
     ContainerService,
