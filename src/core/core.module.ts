@@ -7,7 +7,7 @@ import { ProfilePageModule } from "../plugins/profile/profile.module";
 import { OnboardingPageModule } from "../plugins/onboarding/onboarding.module";
 import { ContainerService } from "./container/container.services";
 import { PluginService } from "./plugin/plugin.service";
-
+import { Camera } from '@ionic-native/camera';
 
 @NgModule({
     imports: [
@@ -20,7 +20,8 @@ import { PluginService } from "./plugin/plugin.service";
     ],
     providers: [
         PluginService,
-        ContainerService
+        ContainerService,
+        Camera
     ]
 })
 export class CoreModule {
