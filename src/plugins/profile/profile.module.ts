@@ -8,15 +8,17 @@ import { CameraService } from '../../core/services/camera.service';
 import { ContainerService } from '../../core/container/container.services';
 import { FormEducation } from './education/form.education';
 import { FormAddress } from './address/form.address';
+import { FormExperience } from './experience/form.experience';
 
 
 @NgModule({
   declarations: [
     ProfilePage,
     FormEducation,
-    FormAddress
+    FormAddress,
+    FormExperience
   ],
-  entryComponents: [FormEducation, FormAddress],
+  entryComponents: [FormEducation, FormAddress, FormExperience],
   imports: [
     IonicPageModule.forChild(ProfilePage),
   ],
