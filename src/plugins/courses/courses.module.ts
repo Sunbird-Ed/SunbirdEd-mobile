@@ -5,6 +5,7 @@ import { CoreModule } from '../../core/core.module';
 import { PluginService } from '../../core/plugin/plugin.service';
 import { BasePlugin } from '../../core/plugin/plugin.service';
 import { ContainerService } from '../../core/container/container.services';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   declarations: [
@@ -12,6 +13,7 @@ import { ContainerService } from '../../core/container/container.services';
   ],
   imports: [
     IonicPageModule.forChild(CoursesPage),
+    TranslateModule.forChild()
   ],
   exports: [
     CoursesPage
