@@ -13,25 +13,33 @@
 </ion-header>
 
 <ion-content padding center>
-  <ion-slides pager="true">
-    <ion-slide>
-      <h1>Slide 1</h1>
-    </ion-slide>
-    <ion-slide>
-      <h1>Slide 2</h1>
-    </ion-slide>
-    <ion-slide>
-      <h1>Slide 3</h1>
+  <ion-slides pager="true" class="ion-slides" padding>
+    <ion-slide *ngFor="let slide of slides">
+      <ion-row>
+        <ion-col>
+          {{slide.title}}
+        </ion-col>
+      </ion-row>
+      <ion-row padding>
+        <ion-col>
+          <img class="item-img" [src]="slide.imageUri" />
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          {{slide.desc}}
+        </ion-col>
+      </ion-row>
     </ion-slide>
   </ion-slides>
 
-  <ion-row>
-    <button class="action-button" ion-button outline icon-start (click)="singin()">
+  <ion-row padding-horizontal>
+    <button class="action-button" ion-button (click)="singin()">
       Sign In
     </button>
   </ion-row>
-  <ion-row>
-    <button class="action-button" ion-button outline icon-start (click)="browseAsGuest()">
+  <ion-row padding-horizontal padding-bottom style="padding-top:8px;">
+    <button class="action-button" ion-button outline (click)="browseAsGuest()">
       Brouse As Guest
     </button>
   </ion-row>

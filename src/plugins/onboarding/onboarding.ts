@@ -14,17 +14,44 @@ import { IonicPage, NavController, NavParams, Slides } from 'ionic-angular';
 })
 export class OnboardingPage {
 
-  @ViewChild(Slides) slides: Slides;
+  slides:any[];
 
   constructor(public navCtrl: NavController, public navParams: NavParams) {
+    this.slides = [
+      {
+        'title'    : 'Get Content On-the-Go',
+        'imageUri' : 'assets/imgs/logo.png',
+        'desc'     : 'Browse and consume content from our growing collection of free courses and resources.',
+        'viewable' : true
+      },
+      {
+        'title'    : 'Get Content On-the-Go',
+        'imageUri' : 'assets/imgs/logo.png',
+        'desc'     : 'Browse and consume content from our growing collection of free courses and resources.',
+        'viewable' : false
+      },
+      {
+        'title'    : 'Scan QR Codes for Quick Access',
+        'imageUri' : 'assets/imgs/logo.png',
+        'desc'     : 'Scan QR Codes using the Sunbird app to quickly get access to related content and resources.',
+        'viewable' : true
+      },
+      {
+        'title'    : 'Content with Peers and Experts',
+        'imageUri' : 'assets/imgs/logo.png',
+        'desc'     : 'Join communities and speak to peers and experts. Learn and sahre your knowledge',
+        'viewable' : true
+      },
+    ]
   }
+
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad OnboardingPage');
   }
 
   goToSlide() {
-    this.slides.slideNext();
+    // this.slides.slideNext(); 
   }
 
 }

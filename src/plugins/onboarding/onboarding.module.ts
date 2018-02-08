@@ -4,21 +4,17 @@ import { OnboardingPage } from './onboarding';
 import { CoreModule } from '../../core/core.module';
 import { PluginService } from '../../core/plugin/plugin.service';
 import { BasePlugin } from '../../core/plugin/plugin.service';
-import { SliderPage } from './slider/slider';
 
 
 @NgModule({
   declarations: [
-    OnboardingPage,
-    SliderPage
+    OnboardingPage
   ],
-  entryComponents: [SliderPage],
   imports: [
     IonicPageModule.forChild(OnboardingPage),
   ],
   exports: [
-    OnboardingPage,
-    SliderPage
+    OnboardingPage
   ]
 })
 export class OnboardingPageModule {}
