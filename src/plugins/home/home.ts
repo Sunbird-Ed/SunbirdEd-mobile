@@ -1,10 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { TelemetryService } from '../../service/TelemetryService';
-import { ContainerService } from '../../core/container/container.services';
-import { CoreModule } from '../../core/core.module';
-import { PluginService } from '../../core/plugin/plugin.service';
-import { BasePlugin } from '../../core/plugin/plugin.service';
+import { BasePlugin, ContainerService } from '../../core';
 
 
 @Component({
@@ -15,13 +12,10 @@ import { BasePlugin } from '../../core/plugin/plugin.service';
 })
 export class HomePage implements BasePlugin {
 
-  constructor(public navCtrl: NavController,
-    private container: ContainerService) {
-
+  constructor(public navCtrl: NavController) {
   }
 
   init(container: ContainerService) {
-    console.log("Hello");
 
     container.addTab({root: HomePage, label: "HOME", icon:"home"});
   }

@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, Slides } from 'ionic-angular';
-import { TabsPage } from '../../core/container/tabs/tabs';
+import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { TabsPage } from '../../core';
 
 /**
  * Generated class for the OnboardingPage page.
@@ -17,7 +17,7 @@ export class OnboardingPage {
 
   slides: any[];
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  constructor(public navCtrl: NavController) {
     this.slides = [
       {
         'title': 'Get Content On-the-Go',
