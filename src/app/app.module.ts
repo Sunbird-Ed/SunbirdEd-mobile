@@ -5,7 +5,6 @@ import { MyApp } from './app.component';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { TelemetryService } from '../service/TelemetryService';
-import { TabsPage } from '../core/container/tabs/tabs';
 import { ContainerService } from '../core/container/container.services';
 import { CoreModule } from '../core/core.module';
 import { PluginService } from '../core/plugin/plugin.service';
@@ -13,6 +12,8 @@ import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-transla
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpModule, Http } from '@angular/http';
 import { HttpClientModule, HttpClient } from "@angular/common/http";
+import { OnboardingPage } from '../plugins/onboarding/onboarding';
+import { TabsPage } from '../core/container/tabs/tabs';
 
 
 
@@ -37,6 +38,7 @@ import { HttpClientModule, HttpClient } from "@angular/common/http";
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
+    OnboardingPage,
     TabsPage
   ],
   providers: [
@@ -52,7 +54,7 @@ export class AppModule {
 
   constructor(translate: TranslateService) {
     translate.setDefaultLang('en');
-  } 
+  }
 }
 
 

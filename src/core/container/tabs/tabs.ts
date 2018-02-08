@@ -1,6 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { ContainerService } from '../container.services';
 import { Tabs } from 'ionic-angular';
+import { NavParams } from 'ionic-angular/navigation/nav-params';
 
 @Component({
   selector: 'page-tabs',
@@ -14,14 +15,18 @@ export class TabsPage {
   tabs = [];
 
 
-  constructor(private container: ContainerService) {
+  constructor(private container: ContainerService, private navParams: NavParams) {
   }
 
   ionViewWillEnter() {
     this.tabs = this.container.getAllTabs();
 
     setTimeout(() => {
-      this.tabRef.select(0);
+      let tabIndex = 0;
+      if (this.navParams.get('loginMode') == 'guest') {
+        tabIndex = 2;
+      }
+      this.tabRef.select(tabIndex);
     }, 300);
 
 

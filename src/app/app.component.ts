@@ -7,6 +7,7 @@ import { TabsPage } from '../core/container/tabs/tabs';
 import { ContainerService } from '../core/container/container.services';
 import { CoreModule } from '../core/core.module';
 import { PluginService } from '../core/plugin/plugin.service';
+import { OnboardingPage } from '../plugins/onboarding/onboarding';
 
 declare var chcp: any;
 
@@ -15,7 +16,7 @@ declare var chcp: any;
   templateUrl: 'app.html'
 })
 export class MyApp {
-  rootPage:any = TabsPage;
+  rootPage:any = OnboardingPage;
 
   constructor(platform: Platform, statusBar: StatusBar,
     splashScreen: SplashScreen,
