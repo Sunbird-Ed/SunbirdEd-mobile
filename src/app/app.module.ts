@@ -42,9 +42,6 @@ import { OnboardingPage } from '../plugins/onboarding/onboarding';
     StatusBar,
     SplashScreen,
     TelemetryService,
-    ContainerService,
-    PluginService,
-    CameraService,
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })
@@ -57,5 +54,5 @@ export class AppModule {
 
 
 export function createTranslateLoader(httpClient: HttpClient) {
-  return new TranslateHttpLoader(httpClient, '../assets/i18n/', '.json');
+  return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
 }
