@@ -6,14 +6,12 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { TelemetryService } from '../core/services/telemetry.service';
 import { ContainerService } from '../core/container/container.services';
-import { CoreModule } from '../core/core.module';
 import { PluginService } from '../core/plugin/plugin.service';
+import { CoreModule, TabsPage } from "../core";
 import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { HttpModule, Http } from '@angular/http';
 import { HttpClientModule, HttpClient } from "@angular/common/http";
 import { OnboardingPage } from '../plugins/onboarding/onboarding';
-import { TabsPage } from '../core/container/tabs/tabs';
 
 
 
@@ -45,8 +43,6 @@ import { TabsPage } from '../core/container/tabs/tabs';
     StatusBar,
     SplashScreen,
     TelemetryService,
-    ContainerService,
-    PluginService,
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })
@@ -59,5 +55,5 @@ export class AppModule {
 
 
 export function createTranslateLoader(httpClient: HttpClient) {
-  return new TranslateHttpLoader(httpClient, '../assets/i18n/', '.json');
+  return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
 }

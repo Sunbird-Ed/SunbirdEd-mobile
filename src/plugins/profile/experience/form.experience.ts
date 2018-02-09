@@ -3,11 +3,11 @@ import { FormBuilder } from '@angular/forms';
 import { NavController } from 'ionic-angular';
 
 @Component({
-  selector: 'page-address',
-  templateUrl: 'form.address.html'
+  selector: 'page-experience',
+  templateUrl: 'form.experience.html'
 })
 
-export class FormAddress {
+export class FormExperience {
   constructor(public navCtrl: NavController, public formBuilder: FormBuilder) { }
 
 

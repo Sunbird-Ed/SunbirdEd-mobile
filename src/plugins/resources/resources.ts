@@ -1,9 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
-import { ContainerService } from '../../core/container/container.services';
-import { CoreModule } from '../../core/core.module';
-import { PluginService } from '../../core/plugin/plugin.service';
-import { BasePlugin } from '../../core/plugin/plugin.service';
+import { ContainerService, BasePlugin } from '../../core';
 
 @Component({
   selector: 'page-resources',
@@ -11,8 +8,7 @@ import { BasePlugin } from '../../core/plugin/plugin.service';
 })
 export class ResourcesPage implements BasePlugin {
 
-  constructor(public navCtrl: NavController,
-    private container: ContainerService) {
+  constructor(public navCtrl: NavController) {
 
   }
 

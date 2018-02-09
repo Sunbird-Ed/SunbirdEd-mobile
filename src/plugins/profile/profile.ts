@@ -1,12 +1,9 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
-import { ContainerService } from '../../core/container/container.services';
-import { CoreModule } from '../../core/core.module';
-import { PluginService } from '../../core/plugin/plugin.service';
-import { BasePlugin } from '../../core/plugin/plugin.service';
+import { BasePlugin, ContainerService, CameraService } from '../../core';
 import { FormEducation } from './education/form.education';
 import { FormAddress } from './address/form.address';
-import { CameraService } from '../../core/services/camera.service';
+import { FormExperience } from './experience/form.experience';
 
 @Component({
   selector: 'page-profile',
@@ -37,6 +34,10 @@ export class ProfilePage implements BasePlugin {
     }, (err) => {
       // Handle error
     });
-   }
+  }
+
+  editExperience() {
+    this.navCtrl.push(FormExperience);
+  }
 
 }

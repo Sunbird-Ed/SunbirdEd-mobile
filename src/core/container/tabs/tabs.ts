@@ -1,7 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { ContainerService } from '../container.services';
 import { Tabs } from 'ionic-angular';
-import { NavParams } from 'ionic-angular/navigation/nav-params';
+import { NavParams } from 'ionic-angular';
 
 @Component({
   selector: 'page-tabs',

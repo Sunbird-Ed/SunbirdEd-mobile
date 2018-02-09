@@ -3,10 +3,7 @@ import { Platform, ModalController, AlertController } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
-import { TabsPage } from '../core/container/tabs/tabs';
-import { ContainerService } from '../core/container/container.services';
-import { CoreModule } from '../core/core.module';
-import { PluginService } from '../core/plugin/plugin.service';
+import { PluginService } from '../core';
 import { OnboardingPage } from '../plugins/onboarding/onboarding';
 
 declare var chcp: any;
