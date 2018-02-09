@@ -11,6 +11,9 @@
     <js-module src="www/plugin.js" name="plugin">
         <clobbers target="GenieSDK" />
     </js-module>
+    <js-module src="www/telemetry.js" name="telemetry">
+        <clobbers target="telemetry" />
+    </js-module>
     <!-- android -->
     <platform name="android">
       
@@ -22,6 +25,7 @@
       </config-file>
 
       <source-file src="src/android/org/genie/GenieSDK.java" target-dir="src/org/genie/" />
+      <source-file src="src/android/org/genie/TelemetryHandler.java" target-dir="src/org/genie/" />
     </platform>
 
     <!-- ios -->

@@ -4,7 +4,7 @@ import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
-import { TelemetryService } from '../service/TelemetryService';
+import { TelemetryService } from '../core/services/telemetry.service';
 import { ContainerService } from '../core/container/container.services';
 import { CoreModule } from '../core/core.module';
 import { PluginService } from '../core/plugin/plugin.service';

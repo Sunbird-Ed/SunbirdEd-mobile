@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="org.sunbird.app" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Sunbird-Mobile</name>
-    <description>An awesome Ionic/Cordova app.</description>
-    <author email="hi@ionicframework" href="http://ionicframework.com/">Ionic Framework Team</author>
+    <name>Sunbird</name>
+    <description>Sunbird mobile app</description>
+    <author email="joel@ekstep.org" href="http://ekstep.org">EkStep Team</author>
     <content src="index.html" />
     <chcp>
         <config-file url="http://172.17.23.46:3000/updates/chcp.json" />
@@ -25,6 +25,9 @@
     <preference name="SplashScreen" value="screen" />
     <preference name="SplashScreenDelay" value="3000" />
     <platform name="android">
+        <preference name="android-manifest/@xmlns:tools" value="http://schemas.android.com/tools" />
+        <preference name="android-manifest/application/@tools:replace" value="android:allowBackup" />
+        <preference name="android-manifest/application/@android:allowBackup" value="false" />
         <allow-intent href="market:*" />
         <hook src="scripts/androidBuild.js" type="before_build" />
         <hook src="scripts/androidBuild.js" type="before_run" />
@@ -93,7 +96,8 @@
     <plugin name="cordova-plugin-splashscreen" spec="^4.1.0" />
     <plugin name="cordova-plugin-ionic-webview" spec="^1.1.16" />
     <plugin name="cordova-hot-code-push-plugin" spec="^1.5.3" />
-    <plugin name="cordova-plugin-genie-sdk" spec="cordova-plugin-genie-sdk" />
-    <engine name="android" spec="~6.3.0" />
     <plugin name="cordova-plugin-camera" spec="^4.0.2" />
+    <plugin name="cordova-plugin-genie-sdk" spec="file:cordova-plugin-genie-sdk" />
+    <plugin name="cordova-custom-config" spec="^5.0.2" />
+    <engine name="android" spec="~6.3.0" />
 </widget>

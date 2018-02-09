@@ -1,0 +1,5 @@
+{
+    "id":"plugin.courses",
+    "module":"courses.module#CoursesPageModule",
+    "root":"courses#CoursesPage"
+}

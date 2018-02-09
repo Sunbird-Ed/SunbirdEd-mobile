@@ -56,7 +56,7 @@ android {
             buildConfigField 'String', 'CONTENT_BASE_URL', '"https://qa.ekstep.in/api/content/v3"'
             buildConfigField 'String', 'APIGATEWAY_BASE_URL', '"https://qa.ekstep.in/api/api-manager/v1"'
             buildConfigField 'String', 'PRODUCER_ID', '"sunbird-ionic"'
-            buildConfigField 'String', 'CHANNEL_ID', '"in.ekstep"'
+            buildConfigField 'String', 'CHANNEL_ID', '"org.sunbird"'
             buildConfigField 'String', 'LOG_LEVEL', '"INFO"'
             buildConfigField 'String', 'PROFILE_CONFIG', '"org.ekstep.genie.base.ProfileConfig"'
             buildConfigField 'String', 'PLAYER_CONFIG', '"org.ekstep.genie.util.geniesdk.PlayerConfig"'

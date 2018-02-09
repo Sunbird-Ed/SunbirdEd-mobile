@@ -1,5 +1,5 @@
 {
-  "name": "Sunbird-Mobile",
+  "name": "Sunbird",
   "version": "0.0.2",
   "author": "Ionic Framework",
   "homepage": "http://ionicframework.com/",
@@ -34,7 +34,7 @@
     "@ionic/storage": "2.1.3",
     "@ngx-translate/core": "^9.1.1",
     "@ngx-translate/http-loader": "^2.0.1",
-    "cordova-android": "7.0.0",
+    "cordova-custom-config": "^5.0.2",
     "cordova-hot-code-push-plugin": "^1.5.3",
     "cordova-plugin-camera": "^4.0.2",
     "cordova-plugin-device": "^1.1.7",
@@ -48,7 +48,8 @@
     "node-sass": "^4.7.2",
     "rxjs": "5.5.2",
     "sw-toolbox": "3.6.0",
-    "zone.js": "0.8.18"
+    "zone.js": "0.8.18",
+    "cordova-android": "~6.3.0"
   },
   "devDependencies": {
     "@ionic/app-scripts": "3.1.6",
@@ -63,8 +64,9 @@
       "cordova-plugin-splashscreen": {},
       "cordova-plugin-ionic-webview": {},
       "cordova-hot-code-push-plugin": {},
+      "cordova-plugin-camera": {},
       "cordova-plugin-genie-sdk": {},
-      "cordova-plugin-camera": {}
+      "cordova-custom-config": {}
     },
     "platforms": [
       "android"

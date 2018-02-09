@@ -1,15 +1,10 @@
 
-var exec = require('cordova/exec');
-
-var PLUGIN_NAME = 'GenieSDK';
+var telemetry = require("./telemetry");
 
 var GenieSDK = {
-  saveImpresseionTelemetry: function(type, subType, pageId, cb) {
-    exec(cb, null, PLUGIN_NAME, 'saveImpresseionTelemetry', [type, subType, pageId]);
-  },
-  syncTelemetry: function(cb) {
-    exec(cb, null, PLUGIN_NAME, 'syncTelemetry', []);
-  }
+
+  telemetry: telemetry,
+  
 };
 
 module.exports = GenieSDK;

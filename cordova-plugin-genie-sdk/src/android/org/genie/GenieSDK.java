@@ -26,38 +26,8 @@ public class GenieSDK extends CordovaPlugin {
 
     @Override
     public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {
-        if(action.equals("saveImpresseionTelemetry")) {
-            //String type, String subType, String pageId, List<CorrelationData> cdata
-            String type = args.getString(0);
-            String subType = args.getString(1);
-            String pageId = args.getString(2);
-//            JSONArray cdataarray = args.getJSONArray(3);
-
-            Impression impression = new Impression.Builder().type(type).pageId(pageId).build();
-            GenieService.getAsyncService().getTelemetryService().saveTelemetry(impression, new IResponseHandler<Void>() {
-                @Override
-                public void onSuccess(GenieResponse<Void> genieResponse) {
-                    //ignore
-                }
-
-                @Override
-                public void onError(GenieResponse<Void> genieResponse) {
-                    //ignore
-                }
-            });
-
-        } else if (action.equals("syncTelemetry")) {
-            GenieService.getAsyncService().getSyncService().sync(new IResponseHandler<SyncStat>() {
-                @Override
-                public void onSuccess(GenieResponse<SyncStat> genieResponse) {
-                    //ignore
-                }
-
-                @Override
-                public void onError(GenieResponse<SyncStat> genieResponse) {
-                    //ignore
-                }
-            });
+        if (action.equals("telemetry")) {
+            TelemetryHandler.handle(args);
         }
         return true;
     }
