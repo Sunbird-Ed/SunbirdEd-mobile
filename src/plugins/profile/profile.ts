@@ -4,6 +4,8 @@ import { BasePlugin, ContainerService, CameraService } from '../../core';
 import { FormEducation } from './education/form.education';
 import { FormAddress } from './address/form.address';
 import { FormExperience } from './experience/form.experience';
+import { OverflowMenuComponent } from './overflowmenu/menu.overflow.component';
+import { PopoverController } from 'ionic-angular/components/popover/popover-controller';
 
 @Component({
   selector: 'page-profile',
@@ -11,9 +13,9 @@ import { FormExperience } from './experience/form.experience';
 })
 export class ProfilePage implements BasePlugin {
   imageUri: string = "assets/imgs/logo.png";
+  list:Array<String>=['Change Language','User & Classes'];
 
-  constructor(public navCtrl: NavController, private cameraService: CameraService) {
-
+  constructor(public navCtrl: NavController, private cameraService: CameraService,public popoverCtrl: PopoverController) {
   }
 
   init(containerService: ContainerService) {
@@ -39,5 +41,14 @@ export class ProfilePage implements BasePlugin {
   editExperience() {
     this.navCtrl.push(FormExperience);
   }
+
+   showOverflowMenu(event) {
+    let popover = this.popoverCtrl.create(OverflowMenuComponent,{
+        list:this.list
+    });
+    popover.present({
+      ev: event
+    });
+  } 
 
 }
