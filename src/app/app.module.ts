@@ -5,10 +5,9 @@ import { MyApp } from './app.component';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { TelemetryService } from '../service/TelemetryService';
-import { CoreModule, PluginService, ContainerService, TabsPage, CameraService } from "../core";
+import { CoreModule, TabsPage } from "../core";
 import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { HttpModule, Http } from '@angular/http';
 import { HttpClientModule, HttpClient } from "@angular/common/http";
 import { OnboardingPage } from '../plugins/onboarding/onboarding';
 
