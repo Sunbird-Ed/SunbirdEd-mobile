@@ -28,6 +28,10 @@ public class GenieSDK extends CordovaPlugin {
     public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {
         if (action.equals("telemetry")) {
             TelemetryHandler.handle(args);
+        } else if (action.equals("content")) {
+            ContentHandler.handle(args, callbackContext);
+        } else if (action.equals("auth")) {
+            AuthHandler.handle(callbackContext);
         }
         return true;
     }

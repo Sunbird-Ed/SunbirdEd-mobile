@@ -14,6 +14,12 @@
     <js-module src="www/telemetry.js" name="telemetry">
         <clobbers target="telemetry" />
     </js-module>
+    <js-module src="www/content.js" name="content">
+        <clobbers target="content" />
+    </js-module>
+    <js-module src="www/auth.js" name="auth">
+        <clobbers target="auth" />
+    </js-module>
     <!-- android -->
     <platform name="android">
       
@@ -26,6 +32,8 @@
 
       <source-file src="src/android/org/genie/GenieSDK.java" target-dir="src/org/genie/" />
       <source-file src="src/android/org/genie/TelemetryHandler.java" target-dir="src/org/genie/" />
+      <source-file src="src/android/org/genie/ContentHandler.java" target-dir="src/org/genie/" />
+      <source-file src="src/android/org/genie/AuthHandler.java" target-dir="src/org/genie/" />
     </platform>
 
     <!-- ios -->
