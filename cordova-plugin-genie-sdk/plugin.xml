@@ -7,7 +7,8 @@
     <description></description>
     <license>MIT</license>
     <keywords></keywords>
-    
+    <framework src="build-extras.gradle" custom="true" type="gradleReference"/>
+
     <js-module src="www/plugin.js" name="plugin">
         <clobbers target="GenieSDK" />
     </js-module>
@@ -22,7 +23,7 @@
     </js-module>
     <!-- android -->
     <platform name="android">
-      
+
       <config-file target="res/xml/config.xml" parent="/*">
         <feature name="GenieSDK">
           <param name="android-package" value="org.genie.GenieSDK" />
