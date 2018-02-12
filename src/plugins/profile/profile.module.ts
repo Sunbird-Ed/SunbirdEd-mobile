@@ -4,6 +4,14 @@ import { ProfilePage } from './profile';
 import { FormEducation } from './education/form.education';
 import { FormAddress } from './address/form.address';
 import { FormExperience } from './experience/form.experience';
+import { UsersnClassesComponent } from './usersnclasses/usersnclass.component';
+import { UsersComponent } from './usersnclasses/users/users.component';
+import { ClassesComponent } from './usersnclasses/classes/classes.component';
+import { SuperTabsModule } from 'ionic2-super-tabs';
+
+import { OverflowMenuComponent } from './overflowmenu/menu.overflow.component';
+import { ContainerService, CameraService } from '../../core/index';
+import { Camera } from '@ionic-native/camera';
 
 
 @NgModule({
@@ -11,16 +19,34 @@ import { FormExperience } from './experience/form.experience';
     ProfilePage,
     FormEducation,
     FormAddress,
-    FormExperience
+    FormExperience,
+    OverflowMenuComponent,
+    UsersnClassesComponent,
+    UsersComponent,
+    ClassesComponent
   ],
-  entryComponents: [ProfilePage, FormEducation, FormAddress, FormExperience],
+  entryComponents: [ProfilePage, FormEducation, FormAddress, FormExperience,
+    OverflowMenuComponent,
+    UsersnClassesComponent,
+    UsersComponent,
+    ClassesComponent],
+
   imports: [
     IonicPageModule.forChild(ProfilePage),
+    SuperTabsModule.forRoot()
   ],
   exports: [
     ProfilePage,
     FormAddress,
-    FormEducation
+    FormEducation,
+    UsersnClassesComponent,
+    UsersComponent,
+    ClassesComponent
+  ],
+  providers: [
+    ContainerService,
+    Camera,
+    CameraService
   ]
 })
 export class ProfilePageModule { }

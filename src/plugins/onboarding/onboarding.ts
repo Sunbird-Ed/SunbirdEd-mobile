@@ -1,6 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { TabsPage } from '../../core';
+import { IonicPage, NavController, NavParams, Slides } from 'ionic-angular';
+import { TabsPage } from '../../core/container/tabs/tabs';
+import { ViewController } from 'ionic-angular/navigation/view-controller';
 
 /**
  * Generated class for the OnboardingPage page.
@@ -17,7 +18,7 @@ export class OnboardingPage {
 
   slides: any[];
 
-  constructor(public navCtrl: NavController) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, private viewCtrl: ViewController) {
     this.slides = [
       {
         'title': 'Get Content On-the-Go',
@@ -51,11 +52,23 @@ export class OnboardingPage {
   }
 
   singin() {
-    this.navCtrl.push(TabsPage, { loginMode: 'signin' });
+    this.navCtrl.push(TabsPage, { loginMode: 'signin' })
+      .then(() => {
+        // first we find the index of the current view controller:
+        const index = this.viewCtrl.index;
+        // then we remove it from the navigation stack
+        this.navCtrl.remove(index);
+      });
   }
 
   browseAsGuest() {
-    this.navCtrl.push(TabsPage, { loginMode: 'guest' });
+    this.navCtrl.push(TabsPage, { loginMode: 'guest' })
+      .then(() => {
+        // first we find the index of the current view controller:
+        const index = this.viewCtrl.index;
+        // then we remove it from the navigation stack
+        this.navCtrl.remove(index);
+      });
   }
 
 }

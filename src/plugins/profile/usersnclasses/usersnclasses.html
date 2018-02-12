@@ -1,0 +1,40 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Users and Classes</ion-title>
+    <ion-buttons left>
+      <button ion-button icon-only (click)="viewCtrl.dismiss()">
+          <ion-icon name="arrow-back"></ion-icon>
+      </button>
+  </ion-buttons>
+    
+   <ion-buttons start>
+    <button ion-button icon-only (click)="openModal()">
+      <ion-icon name="download"></ion-icon>
+    </button>
+
+    <button ion-button icon-only (click)="openModal()">
+      <ion-icon name="share"></ion-icon>
+    </button>
+  </ion-buttons>
+   
+  <ion-buttons end>
+    <button ion-button icon-only (click)="openModal()">
+      <ion-icon name="search"></ion-icon>
+    </button>
+
+    
+  </ion-buttons>
+  
+    
+
+  </ion-toolbar>
+
+</ion-header>
+
+<ion-content no-bounce>
+    <super-tabs id="mainTabs" toolbarColor ="primary" indicatorColor='primary'>
+      <super-tab [root]="page1" [title]="'Users'" id="page1"></super-tab>
+      <super-tab [root]="page2"  [title]="'Classes'"  id="page2"></super-tab>
+    </super-tabs>
+    
+  </ion-content>
