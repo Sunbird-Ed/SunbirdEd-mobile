@@ -39,7 +39,7 @@ export class MyApp {
 
   fetchUpdate() {
     const options = {
-      'config-file': 'http://172.17.20.246:3000/updates/chcp.json'
+      'config-file': 'http://172.16.0.23:3000/updates/chcp.json'
     };
     chcp.fetchUpdate(this.updateCallback, options);
   }
