@@ -4,7 +4,6 @@ import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
-import { TelemetryService } from '../core/services/telemetry.service';
 import { ContainerService } from '../core/container/container.services';
 import { PluginService } from '../core/plugin/plugin.service';
 import { CoreModule, TabsPage } from "../core";
@@ -42,7 +41,6 @@ import { OnboardingPage } from '../plugins/onboarding/onboarding';
   providers: [
     StatusBar,
     SplashScreen,
-    TelemetryService,
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })

@@ -1,4 +1,3 @@
-import { BrowserTab } from "@ionic-native/browser-tab";
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Slides } from 'ionic-angular';
 import { TabsPage } from '../../core/container/tabs/tabs';

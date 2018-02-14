@@ -9,6 +9,8 @@ import { ContainerService } from "./container/container.services";
 import { PluginService } from "./plugin/plugin.service";
 import { CameraService } from "./services/camera.service";
 import { Camera } from '@ionic-native/camera';
+import { IonicStorageModule } from "@ionic/storage";
+import { TelemetryService } from "./services/telemetry/telemetry.service";
 
 @NgModule({
     imports: [
@@ -17,13 +19,15 @@ import { Camera } from '@ionic-native/camera';
         GroupPageModule,
         ResourcesPageModule,
         ProfilePageModule,
-        OnboardingPageModule
+        OnboardingPageModule,
+        IonicStorageModule.forRoot()
     ],
     providers: [
         PluginService,
         ContainerService,
         CameraService,
-        Camera
+        Camera,
+        TelemetryService
     ]
 })
 export class CoreModule {

@@ -5,7 +5,7 @@ import { ContentDetailRequest } from "./bean";
 @Injectable()
 export class ContentService {
 
-    getContentDetail(request: ContentDetailRequest, 
+    getContentDetail(request: {ContentDetailRequest}, 
         successCallback: (response: string) => void, 
         errorCallback: (error: string) => void) {
         try {
