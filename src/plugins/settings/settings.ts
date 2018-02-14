@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController } from "ionic-angular";
+import { DatasyncPage } from './datasync/datasync';
 
 @Component({
   selector: 'settings',
@@ -16,6 +17,10 @@ export class SettingsPage {
 
   goBack() {
     this.navCtrl.pop();
+  }
+
+  dataSync(){
+    this.navCtrl.push(DatasyncPage)
   }
 
 }

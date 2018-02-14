@@ -1,0 +1,48 @@
+<!--
+  Generated template for the DatasyncPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Data Sync</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+
+  <ion-list-header>
+    AUTOMATIC DATA SYNC
+  </ion-list-header>
+
+  <ion-list radio-group no-lines>
+    <ion-item>
+      <ion-radio checked="true" value="off" item-left></ion-radio>
+      <ion-label>Off</ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-radio value="over_wifi" item-left></ion-radio>
+      <ion-label>Over WiFi</ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-radio value="always_on" item-left></ion-radio>
+      <ion-label>Always On</ion-label>
+    </ion-item>
+  </ion-list>
+
+  <ion-label style="font-size:15px ; color:#cccccc ; margin-left: 20px ">Last synced on 02/01/2018, 02:20PM</ion-label>
+
+  <button ion-button block style="margin: 0 20px">Sync Now</button>
+
+  <ion-item style="padding-left: 20px ;  padding-right: 20px; border-style: solid">
+  </ion-item>
+
+  <button ion-button clear>Share Telemetry</button>
+
+</ion-content>
