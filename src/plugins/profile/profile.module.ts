@@ -12,6 +12,7 @@ import { SuperTabsModule } from 'ionic2-super-tabs';
 import { OverflowMenuComponent } from './overflowmenu/menu.overflow.component';
 import { ContainerService, CameraService } from '../../core/index';
 import { Camera } from '@ionic-native/camera';
+import { SettingsPageModule } from '../settings/settings.module';
 
 
 @NgModule({
@@ -33,7 +34,8 @@ import { Camera } from '@ionic-native/camera';
 
   imports: [
     IonicPageModule.forChild(ProfilePage),
-    SuperTabsModule.forRoot()
+    SuperTabsModule.forRoot(),
+    SettingsPageModule
   ],
   exports: [
     ProfilePage,
