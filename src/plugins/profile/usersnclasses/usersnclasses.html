@@ -2,24 +2,24 @@
   <ion-toolbar>
     <ion-title>Users and Classes</ion-title>
     <ion-buttons left>
-      <button ion-button icon-only (click)="viewCtrl.dismiss()">
+      <button ion-button icon-only (click)="goBack()">
           <ion-icon name="arrow-back"></ion-icon>
       </button>
   </ion-buttons>
     
    <ion-buttons start>
-    <button ion-button icon-only (click)="openModal()">
-      <ion-icon name="download"></ion-icon>
+    <button ion-button icon-only (click)="addUser()">
+      <ion-icon name="add"></ion-icon>
     </button>
 
-    <button ion-button icon-only (click)="openModal()">
-      <ion-icon name="share"></ion-icon>
+    <button ion-button icon-only (click)="importUser()">
+      <ion-icon name="download"></ion-icon>
     </button>
   </ion-buttons>
    
   <ion-buttons end>
-    <button ion-button icon-only (click)="openModal()">
-      <ion-icon name="search"></ion-icon>
+    <button ion-button icon-only (click)="shareUser()">
+      <ion-icon name="share"></ion-icon>
     </button>
 
     
