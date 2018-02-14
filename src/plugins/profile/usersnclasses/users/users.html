@@ -1,5 +1,20 @@
 <ion-content padding>
-    <h1>
-        This is the Users  page
-    </h1>
+    <ion-list>
+        <ion-card padding *ngFor="let user of users" >
+            <ion-row justify-content-start>
+                <ion-col col-2>
+                    <ion-avatar>
+                        <img src="assets/imgs/logo.png">
+                    </ion-avatar>
+                </ion-col>
+                <ion-col col-9>
+                    <h2 class="list-item-title">{{user.handle}}</h2>
+                    <h3>{{user.type}}</h3>
+                </ion-col>
+                <ion-col col-1 text-right>
+                    <ion-icon name="more" (click)="showMenu(user)"></ion-icon>
+                </ion-col>
+            </ion-row>
+        </ion-card>
+    </ion-list>
 </ion-content>

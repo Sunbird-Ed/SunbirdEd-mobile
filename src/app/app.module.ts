@@ -4,6 +4,8 @@ import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+import { ContainerService } from '../core/container/container.services';
+import { PluginService } from './plugins.service';
 import { TelemetryService } from '../core/services/telemetry/telemetry.service';
 import { CoreModule, TabsPage } from "../core";
 import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
@@ -12,7 +14,7 @@ import { HttpClientModule, HttpClient } from "@angular/common/http";
 import { OnboardingPage } from '../plugins/onboarding/onboarding';
 import { EventService } from '../core/services/event/event.service';
 
-
+const pluginModules = PluginService.getAllPluginModules();
 
 @NgModule({
   declarations: [
@@ -30,7 +32,8 @@ import { EventService } from '../core/services/event/event.service';
         deps: [HttpClient]
       }
     }),
-    IonicModule.forRoot(MyApp)
+    IonicModule.forRoot(MyApp),
+    ...pluginModules
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -41,7 +44,7 @@ import { EventService } from '../core/services/event/event.service';
   providers: [
     StatusBar,
     SplashScreen,
-    TelemetryService,
+    PluginService,
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })

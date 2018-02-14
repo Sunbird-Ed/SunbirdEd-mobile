@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { TelemetryService } from '../../core/services/telemetry/telemetry.service';
-import { Impression } from '../../core/services/telemetry/bean';
+import { Impression } from "../../core/services/telemetry/bean";
 import { CoreModule } from '../../core/core.module';
-import { PluginService } from '../../core/plugin/plugin.service';
 import { BasePlugin, ContainerService } from '../../core';
 import { ContentImport, ContentImportRequest } from '../../core/services/content/bean';
 import { ContentService } from '../../core/services/content/content.service';
