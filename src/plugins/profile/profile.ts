@@ -12,7 +12,7 @@ import { PopoverController } from 'ionic-angular/components/popover/popover-cont
   templateUrl: 'profile.html'
 })
 export class ProfilePage implements BasePlugin {
-  imageUri: string = "assets/imgs/logo.png";
+  imageUri: string = "assets/imgs/ic_profile_default.png";
   list:Array<String>=['Change Language','User & Classes'];
 
   constructor(public navCtrl: NavController, private cameraService: CameraService,public popoverCtrl: PopoverController) {

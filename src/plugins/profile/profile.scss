@@ -1,13 +1,24 @@
 page-profile {
-    .profile-name {
-        font-size: 24pt;
+    .profile-last-login-text{
+        color: rgb(104, 103, 101);
+        text-align: center;
+        margin-bottom: 0px;
+        font-size: small; 
+        padding: 5px;   
+    }
+
+    .profile-name{
         color: black;
-        font-weight: bold;
+        text-align: center;
+        margin-bottom: 0px;
+        font-size: x-large; 
+        padding: 5px;
+        font-weight: bold;   
     }
 
     .grey-bg {
         background: rgba(99, 99, 99, 0.158);
-        font-size: 14pt;
+        font-size: 14px;
         border-radius: 20%;
         padding: 10px;
     }
@@ -19,8 +30,8 @@ page-profile {
     }
     
    .custom-avatar {
-       height: 30vw;
-       width: 30vw;
+       height: 25vw;
+       width: 25vw;
        border: 1px solid #fff;
        border-radius: 50%;
        display: inline-block;
@@ -30,13 +41,6 @@ page-profile {
 
     p {
         padding: 5px;
-        margin-top: 8px !important;
-    }
-
-    .profile-name {
-        font-size: 32pt;
-        color: black;
-        font-weight: bold;
     }
 
     .list-header {

@@ -44,9 +44,55 @@
     <div class="form-top-margin"></div>
 
     <ion-item no-lines>
-      <ion-label stacked>Is this your current</ion-label>
-      <ion-input type="text" value="mnp" placeholder="Optional"></ion-input>
+      <ion-label stacked>Is this your current job</ion-label>
+      <!-- <ion-radio checked="true" value="go"></ion-radio> -->
+      <!-- <ion-input type="text" value="mnp" placeholder="Optional"></ion-input> -->
     </ion-item>
+
+
+
+    <ion-row class="row ng-pristine ng-valid ng-touched" name="job-details" radio-group="" 
+    role="radiogroup" ng-reflect-name="job-details">
+        <ion-col class="col" no-lines="">
+          <ion-item no-lines="" class="item item-block item-md item-radio"><div class="item-inner">
+            <div class="input-wrapper"><ion-label class="label label-md" id="lbl-17">Yes</ion-label><!--bindings={
+  "ng-reflect-ng-if": "false"
+}--></div><ion-radio value="yes" class="radio radio-md" ng-reflect-value="yes"><div class="radio-icon"> <div class="radio-inner"></div> </div> <button class="item-cover disable-hover item-cover-md item-cover-default item-cover-default-md" ion-button="item-cover" role="radio" type="button" id="rb-17-0" aria-checked="false" aria-labelledby="lbl-17" aria-disabled="false"><span class="button-inner"> </span><div class="button-effect"></div></button></ion-radio><!--bindings={
+  "ng-reflect-ng-if": "false"
+}--></div><div class="button-effect"></div></ion-item>
+        </ion-col>
+        <ion-col class="col" no-lines="">
+          <ion-item class="item item-block item-md item-radio"><div class="item-inner"><div class="input-wrapper"><ion-label class="label label-md" id="lbl-18">No</ion-label><!--bindings={
+  "ng-reflect-ng-if": "false"
+}--></div><ion-radio value="no" class="radio radio-md" ng-reflect-value="no"><div class="radio-icon"> <div class="radio-inner"></div> </div> <button class="item-cover disable-hover item-cover-md item-cover-default item-cover-default-md" ion-button="item-cover" role="radio" type="button" id="rb-18-0" aria-checked="false" aria-labelledby="lbl-18" aria-disabled="false"><span class="button-inner"> </span><div class="button-effect"></div></button></ion-radio><!--bindings={
+  "ng-reflect-ng-if": "false"
+}--></div><div class="button-effect"></div></ion-item>
+        </ion-col>
+      </ion-row>
+
+
+    <!-- <ion-item no-lines> -->
+    <!-- <ion-row  radio-group [(ngModel)]="sexe" name="job-details">
+        <ion-col no-lines>
+          <ion-item >
+            <ion-label>Yes</ion-label>
+            <ion-radio value="yes"></ion-radio>
+          </ion-item>
+        </ion-col>
+        <ion-col no-lines>
+          <ion-item>
+           <ion-label>No</ion-label>
+            <ion-radio value="no"></ion-radio>
+          </ion-item>
+        </ion-col>
+      </ion-row> -->
+    <!-- </ion-item> -->
+
+    <ion-item no-lines>
+        <ion-label >yes</ion-label>
+        <ion-radio value="yes"></ion-radio>
+        <!-- <ion-input type="text" value="mnp" placeholder="Optional"></ion-input> -->
+      </ion-item>
 
     <div class="form-top-margin"></div>
 

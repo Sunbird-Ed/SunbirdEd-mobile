@@ -15,4 +15,11 @@ export class FormExperience {
     // this.navCtrl.push(UserPage);
   }
 
+//   loadData() {
+//   this.yourService.getData().subscribe((data) => {
+//     console.log("what is in the data ", data);
+//     this.myjsondata = data;
+//   });
+// }
+
 }
