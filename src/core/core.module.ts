@@ -9,6 +9,8 @@ import { ContainerService } from "./container/container.services";
 import { PluginService } from "./plugin/plugin.service";
 import { CameraService } from "./services/camera.service";
 import { Camera } from '@ionic-native/camera';
+import { ContentService } from "./services/content/content.service";
+import { EventService } from "./services/event/event.service";
 
 @NgModule({
     imports: [
@@ -23,7 +25,9 @@ import { Camera } from '@ionic-native/camera';
         PluginService,
         ContainerService,
         CameraService,
-        Camera
+        Camera,
+        ContentService,
+        EventService
     ]
 })
 export class CoreModule {

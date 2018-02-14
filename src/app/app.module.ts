@@ -10,6 +10,7 @@ import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-transla
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClientModule, HttpClient } from "@angular/common/http";
 import { OnboardingPage } from '../plugins/onboarding/onboarding';
+import { EventService } from '../core/services/event/event.service';
 
 
 
@@ -46,8 +47,19 @@ import { OnboardingPage } from '../plugins/onboarding/onboarding';
 })
 export class AppModule {
 
-  constructor(translate: TranslateService) {
+  constructor(translate: TranslateService, private eventService: EventService) {
     translate.setDefaultLang('en');
+
+    this.registerForEvent();
+  }
+
+
+  registerForEvent() {
+    this.eventService.register((response) => {
+      console.log("Event : " + response);
+    }, (error) => {
+      console.log("Event : " + error);
+    });
   }
 }
 

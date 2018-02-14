@@ -5,6 +5,8 @@ import { Impression } from '../../core/services/telemetry/bean';
 import { CoreModule } from '../../core/core.module';
 import { PluginService } from '../../core/plugin/plugin.service';
 import { BasePlugin, ContainerService } from '../../core';
+import { ContentImport, ContentImportRequest } from '../../core/services/content/bean';
+import { ContentService } from '../../core/services/content/content.service';
 
 
 @Component({
@@ -17,7 +19,7 @@ export class HomePage implements BasePlugin {
 
   constructor(public navCtrl: NavController,
     private container: ContainerService,
-    private telemetryService: TelemetryService) {
+    private telemetryService: TelemetryService, private contentService: ContentService) {
 
   }
 
@@ -35,7 +37,31 @@ export class HomePage implements BasePlugin {
 
   onSyncClick() {
     this.telemetryService.sync();
+
+    this.downloadContent();
   }
 
+  downloadContent() {
+    let contentImport = new ContentImport();
+
+    contentImport.contentId = "do_2124373991497728001677"
+    contentImport.destinationFolder = "/storage/emulated/0/Android/data/org.sunbird.app/files";
+
+    let contentImportRequest = new ContentImportRequest();
+
+    contentImportRequest.contentImportMap = {
+      "do_2124373991497728001677": contentImport
+    }
+
+    console.log("Hello " + JSON.stringify(contentImportRequest));
+
+    this.contentService.importContent(contentImportRequest, (response) => {
+      console.log("Home : " + response);
+    }, (error) => {
+      console.log("Home : " + error);
+    });
+
+
+  }
 
 }

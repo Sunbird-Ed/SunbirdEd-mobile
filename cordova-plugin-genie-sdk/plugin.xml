@@ -21,6 +21,9 @@
     <js-module src="www/auth.js" name="auth">
         <clobbers target="auth" />
     </js-module>
+    <js-module src="www/event.js" name="event">
+        <clobbers target="event" />
+    </js-module>
     <!-- android -->
     <platform name="android">
 
@@ -35,6 +38,9 @@
       <source-file src="src/android/org/genie/TelemetryHandler.java" target-dir="src/org/genie/" />
       <source-file src="src/android/org/genie/ContentHandler.java" target-dir="src/org/genie/" />
       <source-file src="src/android/org/genie/AuthHandler.java" target-dir="src/org/genie/" />
+      <source-file src="src/android/org/genie/GenieEventHandler.java" target-dir="src/org/genie/" />
+      <source-file src="src/android/org/genie/GenieSdkEventListener.java" target-dir="src/org/genie/" />
+
     </platform>
 
     <!-- ios -->
