@@ -7,6 +7,7 @@ import { ProfilePageModule } from "../plugins/profile/profile.module";
 import { OnboardingPageModule } from "../plugins/onboarding/onboarding.module";
 import { ContainerService } from "./container/container.services";
 import { PluginService } from "./plugin/plugin.service";
+import { HttpProviderService } from "./services/http-provider.service";
 import { CameraService } from "./services/camera.service";
 import { Camera } from '@ionic-native/camera';
 import { IonicStorageModule } from "@ionic/storage";
@@ -25,6 +26,7 @@ import { TelemetryService } from "./services/telemetry/telemetry.service";
     providers: [
         PluginService,
         ContainerService,
+        HttpProviderService,
         CameraService,
         Camera,
         TelemetryService
