@@ -13,6 +13,8 @@ import { OverflowMenuComponent } from './overflowmenu/menu.overflow.component';
 import { ContainerService, CameraService } from '../../core/index';
 import { Camera } from '@ionic-native/camera';
 import { SettingsPageModule } from '../settings/settings.module';
+import { ActionMenuComponent } from './actionmenu/menu.action.component';
+import { AddUserComponent } from './usersnclasses/users/adduser.component';
 
 
 @NgModule({
@@ -24,13 +26,17 @@ import { SettingsPageModule } from '../settings/settings.module';
     OverflowMenuComponent,
     UsersnClassesComponent,
     UsersComponent,
-    ClassesComponent
+    ClassesComponent,
+    ActionMenuComponent,
+    AddUserComponent
   ],
   entryComponents: [ProfilePage, FormEducation, FormAddress, FormExperience,
     OverflowMenuComponent,
     UsersnClassesComponent,
     UsersComponent,
-    ClassesComponent],
+    ClassesComponent,
+    ActionMenuComponent,
+    AddUserComponent],
 
   imports: [
     IonicPageModule.forChild(ProfilePage),

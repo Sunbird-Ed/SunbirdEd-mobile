@@ -6,6 +6,7 @@ import { NavParams } from "ionic-angular/navigation/nav-params";
 import { UsersComponent } from "./users/users.component";
 import { ClassesComponent } from "./classes/classes.component";
 import { ToastController } from "ionic-angular";
+import { AddUserComponent } from "./users/adduser.component";
 @Component({
   selector: 'page-usernclass',
   templateUrl: 'usersnclasses.html'
@@ -54,12 +55,7 @@ export class UsersnClassesComponent {
   }
 
   addUser() {
-    let toast = this.toastCtrl.create({
-      message: 'Add user functionality is under progress',
-      duration: 3000,
-      position: 'bottom'
-    });
-    toast.present();
+   this.navCtrl.push(AddUserComponent);
   }
 
 }
