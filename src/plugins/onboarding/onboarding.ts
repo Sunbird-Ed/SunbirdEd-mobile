@@ -1,5 +1,5 @@
-import { Component, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, Slides } from 'ionic-angular';
+import { Component } from '@angular/core';
+import { NavController, NavParams } from 'ionic-angular';
 import { TabsPage } from '../../core/container/tabs/tabs';
 import { ViewController } from 'ionic-angular/navigation/view-controller';
 
@@ -19,30 +19,22 @@ export class OnboardingPage {
   slides: any[];
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private viewCtrl: ViewController) {
+
     this.slides = [
       {
-        'title': 'Get Content On-the-Go',
+        'title': 'ONBOARD_SLIDE_TITLE_1',
         'imageUri': 'assets/imgs/logo.png',
-        'desc': 'Browse and consume content from our growing collection of free courses and resources.',
-        'viewable': true
+        'desc': 'ONBOARD_SLIDE_DESC_1'
       },
       {
-        'title': 'Get Content On-the-Go',
+        'title': 'ONBOARD_SLIDE_TITLE_2',
         'imageUri': 'assets/imgs/logo.png',
-        'desc': 'Browse and consume content from our growing collection of free courses and resources.',
-        'viewable': false
+        'desc': 'ONBOARD_SLIDE_DESC_2'
       },
       {
-        'title': 'Scan QR Codes for Quick Access',
+        'title': 'ONBOARD_SLIDE_TITLE_3',
         'imageUri': 'assets/imgs/logo.png',
-        'desc': 'Scan QR Codes using the Sunbird app to quickly get access to related content and resources.',
-        'viewable': true
-      },
-      {
-        'title': 'Content with Peers and Experts',
-        'imageUri': 'assets/imgs/logo.png',
-        'desc': 'Join communities and speak to peers and experts. Learn and sahre your knowledge',
-        'viewable': true
+        'desc': 'ONBOARD_SLIDE_DESC_3'
       },
     ]
   }
