@@ -13,11 +13,11 @@
 </ion-header>
 
 
-<ion-content>
+<ion-content padding>
 
-  <ion-list-header>
+  <div>
     AUTOMATIC DATA SYNC
-  </ion-list-header>
+  </div>
 
   <ion-list radio-group no-lines>
     <ion-item>
@@ -36,11 +36,10 @@
     </ion-item>
   </ion-list>
 
-  <ion-label style="font-size:15px ; color:#cccccc ; margin-left: 20px ">Last synced on 02/01/2018, 02:20PM</ion-label>
+  <ion-label class="last-datasync-style">Last synced on 02/01/2018, 02:20PM</ion-label>
 
-  <button ion-button block style="margin: 0 20px">Sync Now</button>
-
-  <ion-item style="padding-left: 20px ;  padding-right: 20px; border-style: solid">
+  <ion-item>
+    <button ion-button block class="sync-now-button-style">Sync Now</button>
   </ion-item>
 
   <button ion-button clear>Share Telemetry</button>
