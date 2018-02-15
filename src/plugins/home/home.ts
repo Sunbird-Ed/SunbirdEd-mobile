@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, Events } from 'ionic-angular';
 import { TelemetryService } from '../../core/services/telemetry/telemetry.service';
 import { Impression } from "../../core/services/telemetry/bean";
 import { CoreModule } from '../../core/core.module';
@@ -18,7 +18,11 @@ export class HomePage implements BasePlugin {
 
   constructor(public navCtrl: NavController,
     private container: ContainerService,
-    private telemetryService: TelemetryService, private contentService: ContentService) {
+    private telemetryService: TelemetryService, private contentService: ContentService, private events: Events) {
+
+    this.events.subscribe('genie.event', (response) => {
+      console.log("Result " + response);
+    });
 
   }
 
@@ -43,13 +47,13 @@ export class HomePage implements BasePlugin {
   downloadContent() {
     let contentImport = new ContentImport();
 
-    contentImport.contentId = "do_2124373991497728001677"
+    contentImport.contentId = "do_2123823398249594881455"
     contentImport.destinationFolder = "/storage/emulated/0/Android/data/org.sunbird.app/files";
 
     let contentImportRequest = new ContentImportRequest();
 
     contentImportRequest.contentImportMap = {
-      "do_2124373991497728001677": contentImport
+      "do_2123823398249594881455": contentImport
     }
 
     console.log("Hello " + JSON.stringify(contentImportRequest));
