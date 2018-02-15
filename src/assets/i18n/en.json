@@ -288,5 +288,30 @@
     "INVALID_PINCODE": "Inavlid pincode",
     "AVATAR": "Avatar",
     "ALL_ANNOUNCEMENTS": "All Announcements",
-    "NO_CHANGE": "No changes have been made"
+	"NO_CHANGE": "No changes have been made",
+	
+	"SETTINGS_SCREEN" : {
+        "SETTINGS" : "Settings",
+		"LANGUAGE_SETTINGS" : "Language Settings",
+		"DATA_SYNC" : "Data Sync",
+		"DEVICE_TAG" : "Device Tags",
+		"SUPPORT" : "Support",
+		"SHARE_APP" : "Share the Genie App",
+		"ABOUT_APP" : "About App",
+		"CURRENT_LANGUAGE_CHOSEN" : "Current Language: English",
+		"BACK_UP_DATA_AND_TELEMETRY" : "Backup your data, Trasnfer Telemetry",
+		"ADD_REMOVE_DEVICE_TAGS" : "Add/Remove Device Tags",
+		"FACING_PROBLEM_SEND_MESSAGE" : "Facing a problem? Send us a message"
+    },
+    
+    "DATA_SYNC_SCREEN" : {
+        "DATA_SYNC" : "Data Sync", 
+        "AUTO_DATA_SYNC" : " AUTOMATIC DATA SYNC",
+        "OFF" :  "Off",
+        "OVER_WIFI" : "Over WiFi",
+        "ALWAYS_ON" : "Always On",
+        "LAST_SYNCED_TIME" : "Last synced on 02/01/2018, 02:20PM",
+        "SYNC_NOW" : "Sync Now",
+        "SHARE_TELEMETRY" : "Share Telemetry"
+    }
 }
