@@ -7,7 +7,7 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>Data Sync</ion-title>
+    <ion-title>{{ 'DATA_SYNC_SCREEN.DATA_SYNC' | translate }}</ion-title>
   </ion-navbar>
 
 </ion-header>
@@ -16,32 +16,32 @@
 <ion-content padding>
 
   <div>
-    AUTOMATIC DATA SYNC
+      {{ 'DATA_SYNC_SCREEN.AUTO_DATA_SYNC' | translate }}
   </div>
 
   <ion-list radio-group no-lines>
     <ion-item>
       <ion-radio checked="true" value="off" item-left></ion-radio>
-      <ion-label>Off</ion-label>
+      <ion-label>{{ 'DATA_SYNC_SCREEN.OFF' | translate }}</ion-label>
     </ion-item>
 
     <ion-item>
       <ion-radio value="over_wifi" item-left></ion-radio>
-      <ion-label>Over WiFi</ion-label>
+      <ion-label>{{ 'DATA_SYNC_SCREEN.OVER_WIFI' | translate }}</ion-label>
     </ion-item>
 
     <ion-item>
       <ion-radio value="always_on" item-left></ion-radio>
-      <ion-label>Always On</ion-label>
+      <ion-label>{{ 'DATA_SYNC_SCREEN.ALWAYS_ON' | translate }}</ion-label>
     </ion-item>
   </ion-list>
 
-  <ion-label class="last-datasync-style">Last synced on 02/01/2018, 02:20PM</ion-label>
+  <ion-label class="last-datasync-style">{{ 'DATA_SYNC_SCREEN.LAST_SYNCED_TIME' | translate }}</ion-label>
 
   <ion-item>
-    <button ion-button block class="sync-now-button-style">Sync Now</button>
+    <button ion-button block class="sync-now-button-style">{{ 'DATA_SYNC_SCREEN.SYNC_NOW' | translate }}</button>
   </ion-item>
 
-  <button ion-button clear>Share Telemetry</button>
+  <button ion-button clear>{{ 'DATA_SYNC_SCREEN.SHARE_TELEMETRY' | translate }}</button>
 
 </ion-content>
