@@ -6,11 +6,11 @@
 -->
 
 <ion-content padding center>
-  <ion-slides pager="true" class="ion-slides" padding>
+  <ion-slides pager=true centeredSlides=true speed=50 class="ion-slides" padding>
     <ion-slide *ngFor="let slide of slides">
       <ion-row>
         <ion-col>
-          {{slide.title}}
+          {{ slide.title | translate }}
         </ion-col>
       </ion-row>
       <ion-row padding>
@@ -20,7 +20,7 @@
       </ion-row>
       <ion-row>
         <ion-col>
-          {{slide.desc}}
+            {{ slide.desc | translate }}
         </ion-col>
       </ion-row>
     </ion-slide>
@@ -28,12 +28,12 @@
 
   <ion-row padding-horizontal>
     <button class="action-button" ion-button (click)="singin()">
-      Sign In
+      {{ 'SIGN_IN' | translate }}
     </button>
   </ion-row>
   <ion-row padding-horizontal padding-bottom style="padding-top:8px;">
     <button class="action-button" ion-button outline (click)="browseAsGuest()">
-      Brouse As Guest
+      {{ 'BROWSE_AS_GUEST' | translate }}
     </button>
   </ion-row>
 </ion-content>

@@ -1,12 +1,17 @@
 import { Injectable } from "@angular/core";
 import { Impression, Start, Audit, End, ExData, Feedback, Interact, Interrupt, Log, Search, Share } from './bean';
+import { TelemetryServiceFactory } from "./factory";
 
 @Injectable()
 export class TelemetryService {
 
+  constructor(private factory: TelemetryServiceFactory) {
+
+  }
+
   audit(audit: Audit) {
     try {
-      (<any>window).GenieSDK.telemetry.audit(JSON.stringify(audit));
+      this.factory.getService().audit(JSON.stringify(audit));
     } catch (error) {
       console.log(error);
     }
@@ -14,7 +19,7 @@ export class TelemetryService {
 
   start(start: Start) {
     try {
-      (<any>window).GenieSDK.telemetry.start(JSON.stringify(start));
+      this.factory.getService().start(JSON.stringify(start));
     } catch (error) {
       console.log(error);
     }
@@ -22,7 +27,7 @@ export class TelemetryService {
 
   end(end: End) {
     try {
-      (<any>window).GenieSDK.telemetry.end(JSON.stringify(end));
+      this.factory.getService().end(JSON.stringify(end));
     } catch (error) {
       console.log(error);
     }
@@ -30,7 +35,7 @@ export class TelemetryService {
 
   error(error: Error) {
     try {
-      (<any>window).GenieSDK.telemetry.error(JSON.stringify(error));
+      this.factory.getService().error(JSON.stringify(error));
     } catch (error) {
       console.log(error);
     }
@@ -38,7 +43,7 @@ export class TelemetryService {
 
   exdata(exdata: ExData) {
     try {
-      (<any>window).GenieSDK.telemetry.exdata(JSON.stringify(exdata));
+      this.factory.getService().exdata(JSON.stringify(exdata));
     } catch (error) {
       console.log(error);
     }
@@ -47,7 +52,7 @@ export class TelemetryService {
 
   feedback(feedback: Feedback) {
     try {
-      (<any>window).GenieSDK.telemetry.feedback(JSON.stringify(feedback));
+      this.factory.getService().feedback(JSON.stringify(feedback));
     } catch (error) {
       console.log(error);
     }
@@ -55,7 +60,7 @@ export class TelemetryService {
 
   impression(impression: Impression) {
     try {
-      (<any>window).GenieSDK.telemetry.impression(JSON.stringify(impression));
+      this.factory.getService().impression(JSON.stringify(impression));
     } catch (error) {
       console.log(error);
     }
@@ -64,7 +69,7 @@ export class TelemetryService {
 
   interact(interact: Interact) {
     try {
-      (<any>window).GenieSDK.telemetry.interact(JSON.stringify(interact));
+      this.factory.getService().interact(JSON.stringify(interact));
     } catch (error) {
       console.log(error);
     }
@@ -73,7 +78,7 @@ export class TelemetryService {
 
   interrupt(interrupt: Interrupt) {
     try {
-      (<any>window).GenieSDK.telemetry.interrupt(JSON.stringify(interrupt));
+      this.factory.getService().interrupt(JSON.stringify(interrupt));
     } catch (error) {
       console.log(error);
     }
@@ -82,7 +87,7 @@ export class TelemetryService {
 
   log(log: Log) {
     try {
-      (<any>window).GenieSDK.telemetry.log(JSON.stringify(log));
+      this.factory.getService().log(JSON.stringify(log));
     } catch (error) {
       console.log(error);
     }
@@ -90,7 +95,7 @@ export class TelemetryService {
 
   search(search: Search) {
     try {
-      (<any>window).GenieSDK.telemetry.search(JSON.stringify(search));
+      this.factory.getService().search(JSON.stringify(search));
     } catch (error) {
       console.log(error);
     }
@@ -98,7 +103,7 @@ export class TelemetryService {
 
   share(share: Share) {
     try {
-      (<any>window).GenieSDK.telemetry.share(JSON.stringify(share));
+      this.factory.getService().share(JSON.stringify(share));
     } catch (error) {
       console.log(error);
     }
@@ -106,7 +111,7 @@ export class TelemetryService {
 
   sync() {
     try {
-      (<any>window).GenieSDK.telemetry.sync();
+      this.factory.getService().sync();
     } catch (error) {
       console.log(error);
     }

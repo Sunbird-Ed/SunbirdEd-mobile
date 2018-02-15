@@ -7,6 +7,8 @@ import { ContentService } from "./services/content/content.service";
 import { EventService } from "./services/event/event.service";
 import { IonicStorageModule } from "@ionic/storage";
 import { TelemetryService } from "./services/telemetry/telemetry.service";
+import { TelemetryServiceFactory } from "./services/telemetry/factory";
+import { GenieSDKServiceFactory } from "./services/telemetry/geniesdk.service";
 
 @NgModule({
     imports: [
@@ -19,6 +21,7 @@ import { TelemetryService } from "./services/telemetry/telemetry.service";
         Camera,
         ContentService,
         EventService,
+        {provide: TelemetryServiceFactory, useClass: GenieSDKServiceFactory},
         TelemetryService
     ]
 })
