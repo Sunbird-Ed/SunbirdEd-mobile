@@ -9,6 +9,8 @@ import { IonicStorageModule } from "@ionic/storage";
 import { TelemetryService } from "./services/telemetry/telemetry.service";
 import { TelemetryServiceFactory } from "./services/telemetry/factory";
 import { GenieSDKServiceFactory } from "./services/telemetry/geniesdk.service";
+import { Session } from "./services/auth/session";
+import { OAuthService } from "./services/auth/oauth.service";
 
 @NgModule({
     imports: [
@@ -21,6 +23,8 @@ import { GenieSDKServiceFactory } from "./services/telemetry/geniesdk.service";
         Camera,
         ContentService,
         EventService,
+        Session,
+        OAuthService,
         {provide: TelemetryServiceFactory, useClass: GenieSDKServiceFactory},
         TelemetryService
     ]

@@ -13,6 +13,8 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClientModule, HttpClient } from "@angular/common/http";
 import { OnboardingPage } from '../plugins/onboarding/onboarding';
 import { EventService } from '../core/services/event/event.service';
+import { IonicStorageModule } from "@ionic/storage";
+import { HTTP } from "@ionic-native/http";
 
 const pluginModules = PluginService.getAllPluginModules();
 
@@ -25,6 +27,9 @@ const pluginModules = PluginService.getAllPluginModules();
     HttpClientModule,
     BrowserModule,
     CoreModule,
+    IonicStorageModule.forRoot({
+      name: "org.sunbird.framework.storage"
+    }),
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -45,6 +50,7 @@ const pluginModules = PluginService.getAllPluginModules();
     StatusBar,
     SplashScreen,
     PluginService,
+    HTTP,
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })
