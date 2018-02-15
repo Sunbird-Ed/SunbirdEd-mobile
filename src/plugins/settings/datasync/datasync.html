@@ -39,7 +39,7 @@
   <ion-label class="last-datasync-style">{{ 'DATA_SYNC_SCREEN.LAST_SYNCED_TIME' | translate }}</ion-label>
 
   <ion-item>
-    <button ion-button block class="sync-now-button-style">{{ 'DATA_SYNC_SCREEN.SYNC_NOW' | translate }}</button>
+    <button ion-button block class="sync-now-button-style" (click)="onSyncClick()">{{ 'DATA_SYNC_SCREEN.SYNC_NOW' | translate }}</button>
   </ion-item>
 
   <button ion-button clear>{{ 'DATA_SYNC_SCREEN.SHARE_TELEMETRY' | translate }}</button>
