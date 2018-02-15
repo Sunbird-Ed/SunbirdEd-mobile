@@ -1,6 +1,6 @@
 import { NgModule, ErrorHandler } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
+import { IonicApp, IonicModule, IonicErrorHandler, Events } from 'ionic-angular';
 import { MyApp } from './app.component';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -50,7 +50,7 @@ const pluginModules = PluginService.getAllPluginModules();
 })
 export class AppModule {
 
-  constructor(translate: TranslateService, private eventService: EventService) {
+  constructor(translate: TranslateService, private eventService: EventService, private events: Events) {
     translate.setDefaultLang('en');
 
     this.registerForEvent();
@@ -60,6 +60,7 @@ export class AppModule {
   registerForEvent() {
     this.eventService.register((response) => {
       console.log("Event : " + response);
+      this.events.publish('genie.event', response);
     }, (error) => {
       console.log("Event : " + error);
     });

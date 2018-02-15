@@ -1,4 +1,11 @@
 {
-	"HELLO": "hello world world",
-	"TEMP": "Temporary value"
+	"HELLO": "hello",
+	"ONBOARD_SLIDE_TITLE_1" : "Get Content On-the-Go",
+	"ONBOARD_SLIDE_DESC_1" : "Browse and consume content from our growing collection of free courses and resources.",
+	"ONBOARD_SLIDE_TITLE_2" : "Scan QR Codes for Quick Access",
+	"ONBOARD_SLIDE_DESC_2" : "Scan QR Codes using the Sunbird app to quickly get access to related content and resources.",
+	"ONBOARD_SLIDE_TITLE_3" : "Content with Peers and Experts",
+	"ONBOARD_SLIDE_DESC_3" : "Join communities and speak to peers and experts. Learn and sahre your knowledge",
+	"SIGN_IN" : "Sign In",
+	"BROWSE_AS_GUEST" : "Browse As Guest"
 }
