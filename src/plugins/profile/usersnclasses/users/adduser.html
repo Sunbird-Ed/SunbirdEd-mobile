@@ -1,6 +1,6 @@
 <ion-header>
     <ion-toolbar>
-        <ion-title>Add User</ion-title>
+        <ion-title>{{'ADD_USER' | translate}}</ion-title>
         <ion-buttons left>
             <button ion-button icon-only (click)="goBack()">
                 <ion-icon name="arrow-back"></ion-icon>
@@ -9,29 +9,25 @@
     </ion-toolbar>
 </ion-header>
 <ion-content padding>
-    <!-- <div style="float: left;"></div>
-                <ion-radio value="cord"></ion-radio>
-                <ion-label>Cord</ion-label>
-        </div> -->
 
     <ion-content>
         <ion-label class="add-user-title">USER TYPE</ion-label>
         <ion-row text-center>
             <ion-col>
                 <ion-item no-lines>
-                    <ion-label>User</ion-label>
+                    <ion-label>{{'USER' | translate}}</ion-label>
                     <ion-radio item-left value="1"></ion-radio>
                 </ion-item>
             </ion-col>
             <ion-col>
                 <ion-item no-lines>
-                    <ion-label>Teacher</ion-label>
+                    <ion-label>{{'TEACHER' | translate}}</ion-label>
                     <ion-radio item-left value="1"></ion-radio>
                 </ion-item>
             </ion-col>
         </ion-row>
         <ion-item>
-            <ion-label stacked class="add-user-title">USER NAME</ion-label>
+            <ion-label stacked class="add-user-title">{{'USER_NAME' | translate}}</ion-label>
             <ion-input type="text" class="form-controll" required></ion-input>
         </ion-item>
     </ion-content>
@@ -40,7 +36,7 @@
 <ion-footer padding>
     <ion-row padding-horizontal>
         <button class="action-button" ion-button full (click)="singin()">
-            Create User
+            {{'CREATE_USER' | translate}}
         </button>
     </ion-row>
 </ion-footer>

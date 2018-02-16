@@ -9,20 +9,20 @@ import { ActionMenuComponent } from "../../actionmenu/menu.action.component";
 })
 export class UsersComponent {
   users: any;
-  list:Array<String>=['Edit','Delete'];
+  list: Array<String> = ['EDIT', 'DELETE'];
 
-  constructor(public navCtrl: NavController,public popoverCtrl: PopoverController) {
+  constructor(public navCtrl: NavController, public popoverCtrl: PopoverController) {
     this.users = [
       { handle: 'Swayangjit', type: 'Student', avatar: 'avatar1' }, { handle: 'Swayangjit1', type: 'Student', avatar: 'avatar2' }
     ];
 
   }
-  showMenu(event,user: User) {
-    let popover = this.popoverCtrl.create(ActionMenuComponent,{
-      list:this.list
-  });
-  popover.present({
-    ev: event
-  });
+  showMenu(event, user: User) {
+    let popover = this.popoverCtrl.create(ActionMenuComponent, {
+      list: this.list
+    });
+    popover.present({
+      ev: event
+    });
   }
 }
