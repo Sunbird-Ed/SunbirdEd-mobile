@@ -12,6 +12,8 @@ import {
 } from '../../test-config/mocks-ionic';
 import { PluginService } from './plugins.service';
 import { ContainerService } from '../core';
+import { Session } from '../core/services/auth/session';
+import { IonicStorageModule } from '@ionic/storage';
 
 describe('MyApp Component', () => {
   let fixture;
@@ -21,10 +23,12 @@ describe('MyApp Component', () => {
     TestBed.configureTestingModule({
       declarations: [MyApp],
       imports: [
-        IonicModule.forRoot(MyApp)
+        IonicModule.forRoot(MyApp),IonicStorageModule.forRoot({
+          name: "org.sunbird.framework.storage"
+        }),
       ],
       providers: [
-        PluginService,ContainerService,
+        PluginService,ContainerService, Session,
         { provide: StatusBar, useClass: StatusBarMock },
         { provide: SplashScreen, useClass: SplashScreenMock },
         { provide: Platform, useClass: PlatformMock }
