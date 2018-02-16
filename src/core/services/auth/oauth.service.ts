@@ -25,7 +25,7 @@ export class OAuthService {
                 if ((event.url).indexOf(that.redirect_url) === 0) {
                     browserRef.removeEventListener("exit", (event) => {});
                     browserRef.close();
-                    let responseParameters = ((event.url).split("?")[1]);
+                    let responseParameters = (((event.url).split("?")[1]).split("="))[1];
                     if (responseParameters !== undefined) {
                         resolve(responseParameters);
                     } else {
@@ -44,24 +44,28 @@ export class OAuthService {
         let that = this;
 
         return new Promise(function(resolve, reject) {
-            let body = "redirect_uri=https%3A%2F%2F" + 
-            "https://staging.open-sunbird.org" + "%2Foauth2callback&code=" + token + 
-            "&grant_type=authorization_code&client_id=android";
+            let body = {
+                redirect_uri: "https://dev.open-sunbird.org/oauth2callback",
+                grant_type: "authorization_code", 
+                client_id: "android", 
+                code: token
+            };
             let contentType = "application/x-www-form-urlencoded";
-            let url = "https://staging.open-sunbird.org/auth/realms/sunbird/protocol/openid-connect/token";
+            let url = "https://dev.open-sunbird.org/auth/realms/sunbird/protocol/openid-connect/token";
 
             that.http.post(
                 url, 
                 body, 
-                { headers: { 'Content-Type': contentType }}
+                { headers:  'Content-Type: application/x-www-form-urlencoded' }
             )
             .then(data => {
                 try {
-                    let refreshToken = data["refresh_token"];
+                    let dataJson = JSON.parse(data.data);
+                    let refreshToken = dataJson["refresh_token"];
                 
-                    let accessToken: string = data["access_token"];
+                    let accessToken: string = dataJson["access_token"];
 
-                    let value = accessToken.substring(accessToken.indexOf('.'), accessToken.lastIndexOf('.'));
+                    let value = accessToken.substring(accessToken.indexOf('.') + 1, accessToken.lastIndexOf('.'));
                     value = atob(value);
                     let json = JSON.parse(value);
                     let userToken = json["sub"];

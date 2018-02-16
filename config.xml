@@ -97,10 +97,10 @@
     <plugin name="cordova-hot-code-push-plugin" spec="^1.5.3" />
     <plugin name="cordova-plugin-camera" spec="^4.0.2" />
     <plugin name="cordova-custom-config" spec="^5.0.2" />
-    <plugin name="cordova-plugin-inappbrowser" spec="^2.0.2" />
+    <plugin name="cordova-plugin-genie-sdk" spec="file:cordova-plugin-genie-sdk" />
     <plugin name="cordova-sqlite-storage" spec="^2.2.0" />
-    <plugin name="cordova-plugin-browsertab" spec="^0.2.0" />
-    <plugin name="cordova-plugin-genie-sdk" spec="cordova-plugin-genie-sdk" />
+    <plugin name="cordova-plugin-inappbrowser" spec="^2.0.2" />
     <plugin name="cordova-plugin-advanced-http" spec="^1.10.0" />
+    <plugin name="cordova-plugin-browsertab" spec="^0.2.0" />
     <engine name="android" spec="~6.3.0" />
 </widget>
