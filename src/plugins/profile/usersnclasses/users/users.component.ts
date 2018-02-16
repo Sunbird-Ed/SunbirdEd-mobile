@@ -18,11 +18,6 @@ export class UsersComponent {
 
   }
   showMenu(event,user: User) {
-    let popover = this.popoverCtrl.create(ActionMenuComponent,{
-      list:this.list
-  });
-  popover.present({
-    ev: event
-  });
+  this.popoverCtrl.create(ActionMenuComponent).present({ev: event});
   }
 }
