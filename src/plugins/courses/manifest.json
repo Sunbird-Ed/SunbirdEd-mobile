@@ -1,5 +1,7 @@
 {
-    "id":"plugin.courses",
-    "module":"courses.module#CoursesPageModule",
-    "root":"courses#CoursesPage"
+    "id": "sunnird.plugin.group",
+    "version": "0.0.1",
+    "module": "CoursesPageModule",
+    "main": "CoursesPage",
+    "children": []
 }
