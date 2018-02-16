@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Users and Classes</ion-title>
+    <ion-title>{{ 'USERS_CLASSES' | translate }}</ion-title>
     <ion-buttons left>
       <button ion-button icon-only (click)="goBack()">
           <ion-icon name="arrow-back"></ion-icon>
@@ -31,8 +31,8 @@
 
 <ion-content no-bounce>
     <super-tabs id="mainTabs" toolbarColor ="primary" indicatorColor='primary'>
-      <super-tab [root]="page1" [title]="'Users'" id="page1"></super-tab>
-      <super-tab [root]="page2"  [title]="'Classes'"  id="page2"></super-tab>
+      <super-tab [root]="page1" title="{{'USERS' | translate}}" id="page1"></super-tab>
+      <super-tab [root]="page2"  title="{{'CLASSES' | translate}}"  id="page2"></super-tab>
     </super-tabs>
     
   </ion-content>

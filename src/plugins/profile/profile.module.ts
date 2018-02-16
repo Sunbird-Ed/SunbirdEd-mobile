@@ -15,6 +15,7 @@ import { Camera } from '@ionic-native/camera';
 import { SettingsPageModule } from '../settings/settings.module';
 import { ActionMenuComponent } from './actionmenu/menu.action.component';
 import { AddUserComponent } from './usersnclasses/users/adduser.component';
+import { TranslateModule } from '@ngx-translate/core';
 
 
 @NgModule({
@@ -41,7 +42,8 @@ import { AddUserComponent } from './usersnclasses/users/adduser.component';
   imports: [
     IonicPageModule.forChild(ProfilePage),
     SuperTabsModule.forRoot(),
-    SettingsPageModule
+    SettingsPageModule, 
+    TranslateModule.forChild()
   ],
   exports: [
     ProfilePage,

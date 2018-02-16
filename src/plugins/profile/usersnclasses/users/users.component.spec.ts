@@ -9,6 +9,7 @@ import { PlatformMock, StatusBarMock, SplashScreenMock }
 import { UsersComponent } from './users.component';
 import {MockPopoverController, MockPopover } from "../../../../mocks";
 import { ActionMenuComponent } from '../../actionmenu/menu.action.component';
+import { TranslateModule } from '@ngx-translate/core';
 
 describe('Page1', () => {
     let de: DebugElement;
@@ -19,7 +20,8 @@ describe('Page1', () => {
         TestBed.configureTestingModule({
             declarations: [UsersComponent,ActionMenuComponent],
             imports: [
-                IonicModule.forRoot(UsersComponent)
+                IonicModule.forRoot(UsersComponent),
+                TranslateModule.forChild()
             ],
             providers: [
                 NavController,

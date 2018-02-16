@@ -16,6 +16,8 @@ export class UsersnClassesComponent {
   page1: any = UsersComponent;
   page2: any = ClassesComponent;
 
+  titleOne = "{{'CLASSES' | translate}}";
+
   showIcons: boolean = true;
   showTitles: boolean = true;
   pageTitle: string = 'Full Height';
