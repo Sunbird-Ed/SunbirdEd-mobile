@@ -20,8 +20,7 @@ export class UsersnClassesComponent {
   showTitles: boolean = true;
   pageTitle: string = 'Full Height';
 
-  constructor(public navCtrl: NavController, private navParams: NavParams, private superTabsCtrl: SuperTabsController, private toastCtrl: ToastController) {
-    const type = navParams.get('type');
+  constructor(public navCtrl: NavController, private superTabsCtrl: SuperTabsController, private toastCtrl: ToastController) {
 
   }
 
@@ -29,7 +28,6 @@ export class UsersnClassesComponent {
   }
 
   onTabSelect(tab: { index: number; id: string; }) {
-    console.log(`Selected tab: `, tab);
   }
 
   goBack() {
