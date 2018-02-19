@@ -14,7 +14,7 @@
 
   <ion-list>
 
-    <p class="profile-last-login-text" text-center>Last login time:Feb 13,2018,3:20:05 PM</p>
+    <p class="profile-last-login-text">Last login time:Feb 13,2018,3:20:05 PM</p>
 
     <div ion-item text-center>
       <img class="custom-avatar" [src]="imageUri" (click)="editPicture()" />
@@ -22,17 +22,26 @@
       <p>
         <span class="grey-bg">User Name-vinayagasundar</span>
       </p>
-      <p>iopu
+      <p>
         <span class="grey-bg">Sunbird
           <ion-icon name="mail"></ion-icon>
         </span>
       </p>
 
-      <pb-horizontal [progress]="20"></pb-horizontal>
- 
+      <ion-row class="profile-completed-ion-row">
+        <ion-col class="profile-completed-ion-col">
+          <p class="profile-completed-text">Your profile is 82% completed</p>
+        </ion-col>
+        <ion-col class="profile-completed-ion-col">
+          <p class="profile-add-exp-text">+ Add Experience</p>
+        </ion-col>
+      </ion-row>
+
+      <pb-horizontal [progress]="82"></pb-horizontal>
+
     </div>
 
- 
+
     <ion-list-header class="list-header">
       Description
     </ion-list-header>
