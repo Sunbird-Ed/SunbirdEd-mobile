@@ -7,6 +7,33 @@ page-profile {
         padding: 5px;   
     }
 
+    .profile-completed-text{
+        color: rgb(104, 103, 101);
+        text-align: left;
+        margin-bottom: 8px;
+        font-size: small; 
+        padding: 0;
+    }
+
+    .profile-add-exp-text{
+        color: map-get($colors, primary);
+        text-align: right;
+        margin-bottom: 8px;
+        font-size: small; 
+        padding: 0;
+        font-weight: bold;
+    }
+
+    .profile-completed-ion-row{
+        padding-bottom: 2.5%; 
+        padding-top: 4%;
+    }
+
+    .profile-completed-ion-col{
+        padding: 0%;
+    }
+
+
     .profile-name{
         color: black;
         text-align: center;
