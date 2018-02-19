@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
+
 import { ProfilePage } from './profile';
 import { FormEducation } from './education/form.education';
 import { FormAddress } from './address/form.address';
@@ -12,7 +13,7 @@ import { SuperTabsModule } from 'ionic2-super-tabs';
 import { OverflowMenuComponent } from './overflowmenu/menu.overflow.component';
 import { ContainerService, CameraService } from '../../core/index';
 import { Camera } from '@ionic-native/camera';
-
+import {PBHorizontal} from "../../core/component/pbhorizontal/pb-horizontal";
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { Camera } from '@ionic-native/camera';
     OverflowMenuComponent,
     UsersnClassesComponent,
     UsersComponent,
-    ClassesComponent
+    ClassesComponent,
+    PBHorizontal
   ],
   entryComponents: [ProfilePage, FormEducation, FormAddress, FormExperience,
     OverflowMenuComponent,
