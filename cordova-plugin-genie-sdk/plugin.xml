@@ -40,6 +40,7 @@
       <source-file src="src/android/org/genie/AuthHandler.java" target-dir="src/org/genie/" />
       <source-file src="src/android/org/genie/GenieEventHandler.java" target-dir="src/org/genie/" />
       <source-file src="src/android/org/genie/GenieSdkEventListener.java" target-dir="src/org/genie/" />
+      <source-file src="src/android/org/genie/DownloadService.java" target-dir="src/org/genie/" />
 
     </platform>
 

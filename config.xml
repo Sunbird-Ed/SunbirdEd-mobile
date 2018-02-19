@@ -101,4 +101,5 @@
     <plugin name="cordova-plugin-browsertab" spec="^0.2.0" />
     <engine name="android" spec="~7.0.0" />
     <plugin name="cordova-plugin-genie-sdk" spec="cordova-plugin-genie-sdk" />
+    <allow-navigation href="http://172.16.0.75:8100" />
 </widget>
