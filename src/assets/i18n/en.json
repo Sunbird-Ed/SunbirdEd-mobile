@@ -289,7 +289,8 @@
     "AVATAR": "Avatar",
     "ALL_ANNOUNCEMENTS": "All Announcements",
 	"NO_CHANGE": "No changes have been made",
-	
+    "CHOOSE_PREFERRED_LANGUAGE" : "Choose Your Preferred Language",
+    
 	"SETTINGS_SCREEN" : {
         "SETTINGS" : "Settings",
 		"LANGUAGE_SETTINGS" : "Language Settings",

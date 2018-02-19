@@ -13,7 +13,7 @@
 
 <ion-content>
   <ion-list>
-    <ion-item>
+    <ion-item (click)="languageSetting()">
       <h2>{{ 'SETTINGS_SCREEN.LANGUAGE_SETTINGS' | translate }}</h2>
       <p class="settings-item-style">{{ 'SETTINGS_SCREEN.CURRENT_LANGUAGE_CHOSEN' | translate }}</p>
       <ion-icon name="ios-arrow-forward" item-end></ion-icon>

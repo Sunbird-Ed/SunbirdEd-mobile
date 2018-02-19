@@ -1,0 +1,27 @@
+<!--
+  Generated template for the LanguageSettingPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>{{ 'SETTINGS_SCREEN.LANGUAGE_SETTINGS' | translate }}</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+  <ion-label class="ion-label" text-center padding>{{ 'CHOOSE_PREFERRED_LANGUAGE' | translate }}</ion-label>
+
+  <ion-list radio-group>
+    <ion-item *ngFor="let language of languages"  class="grey-bg">
+        <ion-label>{{ language.label | translate }}</ion-label>
+        <ion-radio mode="ios" value="{{language.code}}" checked="{{language.isApplied}}"></ion-radio>
+    </ion-item>
+  </ion-list>
+
+</ion-content>
