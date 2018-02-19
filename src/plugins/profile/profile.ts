@@ -13,7 +13,7 @@ import { PopoverController } from 'ionic-angular/components/popover/popover-cont
 })
 export class ProfilePage implements BasePlugin {
   imageUri: string = "assets/imgs/ic_profile_default.png";
-  list:Array<String>=['Switch Accounts','Downloads Manager','Settings','Sign Out'];
+  list:Array<String>=['SWITCH_ACCOUNT','DOWNLOAD_MANAGER','SETTINGS','SIGN_OUT'];
 
   constructor(public navCtrl: NavController, private cameraService: CameraService,public popoverCtrl: PopoverController) {
   }

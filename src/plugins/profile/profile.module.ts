@@ -14,6 +14,11 @@ import { OverflowMenuComponent } from './overflowmenu/menu.overflow.component';
 import { ContainerService, CameraService } from '../../core/index';
 import { Camera } from '@ionic-native/camera';
 import {PBHorizontal} from "../../core/component/pbhorizontal/pb-horizontal";
+import { SettingsPageModule } from '../settings/settings.module';
+import { ActionMenuComponent } from './actionmenu/menu.action.component';
+import { AddUserComponent } from './usersnclasses/users/adduser.component';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @NgModule({
   declarations: [
@@ -25,17 +30,23 @@ import {PBHorizontal} from "../../core/component/pbhorizontal/pb-horizontal";
     UsersnClassesComponent,
     UsersComponent,
     ClassesComponent,
-    PBHorizontal
+    PBHorizontal,
+    ActionMenuComponent,
+    AddUserComponent
   ],
   entryComponents: [ProfilePage, FormEducation, FormAddress, FormExperience,
     OverflowMenuComponent,
     UsersnClassesComponent,
     UsersComponent,
-    ClassesComponent],
+    ClassesComponent,
+    ActionMenuComponent,
+    AddUserComponent],
 
   imports: [
     IonicPageModule.forChild(ProfilePage),
-    SuperTabsModule.forRoot()
+    SuperTabsModule.forRoot(),
+    SettingsPageModule, 
+    TranslateModule.forChild()
   ],
   exports: [
     ProfilePage,

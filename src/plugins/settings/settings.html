@@ -1,0 +1,50 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ 'SETTINGS_SCREEN.SETTINGS' | translate }}</ion-title>
+    <ion-buttons left>
+      <button ion-button icon-only (click)="goBack()">
+        <ion-icon name="arrow-back"></ion-icon>
+      </button>
+    </ion-buttons>
+
+  </ion-toolbar>
+
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item>
+      <h2>{{ 'SETTINGS_SCREEN.LANGUAGE_SETTINGS' | translate }}</h2>
+      <p class="settings-item-style">{{ 'SETTINGS_SCREEN.CURRENT_LANGUAGE_CHOSEN' | translate }}</p>
+      <ion-icon name="ios-arrow-forward" item-end></ion-icon>
+    </ion-item>
+
+    <ion-item (click)="dataSync()">
+      <h2>{{ 'SETTINGS_SCREEN.DATA_SYNC' | translate }}</h2>
+      <p class="settings-item-style">{{ 'SETTINGS_SCREEN.BACK_UP_DATA_AND_TELEMETRY' | translate }}</p>
+      <ion-icon name="ios-arrow-forward" item-end></ion-icon>
+    </ion-item>
+
+    <ion-item>
+      <h2>{{ 'SETTINGS_SCREEN.DEVICE_TAG' | translate }}</h2>
+      <p class="settings-item-style">{{ 'SETTINGS_SCREEN.ADD_REMOVE_DEVICE_TAGS' | translate }}</p>
+      <ion-icon name="ios-arrow-forward" item-end></ion-icon>
+    </ion-item>
+
+    <ion-item>
+      <h2>{{ 'SETTINGS_SCREEN.SUPPORT' | translate }}</h2>
+      <p class="settings-item-style">{{ 'SETTINGS_SCREEN.FACING_PROBLEM_SEND_MESSAGE' | translate }}</p>
+      <ion-icon name="ios-arrow-forward" item-end></ion-icon>
+    </ion-item>
+
+    <ion-item>
+      <h2>{{ 'SETTINGS_SCREEN.SHARE_APP' | translate }}</h2>
+    </ion-item>
+
+    <ion-item>
+      <h2>{{ 'SETTINGS_SCREEN.ABOUT_APP' | translate }}</h2>
+    </ion-item>
+
+  </ion-list>
+
+</ion-content>

@@ -6,6 +6,7 @@ import { NavParams } from "ionic-angular/navigation/nav-params";
 import { UsersComponent } from "./users/users.component";
 import { ClassesComponent } from "./classes/classes.component";
 import { ToastController } from "ionic-angular";
+import { AddUserComponent } from "./users/adduser.component";
 @Component({
   selector: 'page-usernclass',
   templateUrl: 'usersnclasses.html'
@@ -15,12 +16,13 @@ export class UsersnClassesComponent {
   page1: any = UsersComponent;
   page2: any = ClassesComponent;
 
+  titleOne = "{{'CLASSES' | translate}}";
+
   showIcons: boolean = true;
   showTitles: boolean = true;
   pageTitle: string = 'Full Height';
 
-  constructor(public navCtrl: NavController, private navParams: NavParams, private superTabsCtrl: SuperTabsController, private toastCtrl: ToastController) {
-    const type = navParams.get('type');
+  constructor(public navCtrl: NavController, private superTabsCtrl: SuperTabsController, private toastCtrl: ToastController) {
 
   }
 
@@ -28,7 +30,6 @@ export class UsersnClassesComponent {
   }
 
   onTabSelect(tab: { index: number; id: string; }) {
-    console.log(`Selected tab: `, tab);
   }
 
   goBack() {
@@ -54,12 +55,7 @@ export class UsersnClassesComponent {
   }
 
   addUser() {
-    let toast = this.toastCtrl.create({
-      message: 'Add user functionality is under progress',
-      duration: 3000,
-      position: 'bottom'
-    });
-    toast.present();
+   this.navCtrl.push(AddUserComponent);
   }
 
 }

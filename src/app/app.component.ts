@@ -2,9 +2,10 @@ import { Component } from '@angular/core';
 import { Platform, ModalController, AlertController } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
-
-import { PluginService } from '../core';
+import { TabsPage } from "../core/container/tabs/tabs";
+import { PluginService } from './plugins.service';
 import { OnboardingPage } from '../plugins/onboarding/onboarding';
+import { Session } from '../core/services/auth/session';
 
 declare var chcp: any;
 
@@ -18,9 +19,12 @@ export class MyApp {
   constructor(platform: Platform, statusBar: StatusBar,
     splashScreen: SplashScreen,
     private pluginLoader: PluginService,  private modalCtrl: ModalController,
-    private alertCtrl: AlertController) {
+    private alertCtrl: AlertController,
+    private session: Session) {
 
     platform.ready().then(() => {
+      if (this.session.isValidSession())
+        this.rootPage = TabsPage;
       this.pluginLoader.loadAllPlugins();
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.

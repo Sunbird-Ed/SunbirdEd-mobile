@@ -10,6 +10,8 @@ import { BasePlugin, ContainerService } from '../../core';
 })
 export class CoursesPage implements BasePlugin {
 
+  hello: string = "HELLO";
+
   constructor(public navCtrl: NavController) {
 
   }

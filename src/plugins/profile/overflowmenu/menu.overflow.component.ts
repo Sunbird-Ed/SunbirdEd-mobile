@@ -5,6 +5,7 @@ import { NavParams } from "ionic-angular/navigation/nav-params";
 import { ViewController } from "ionic-angular/navigation/view-controller";
 import { UsersnClassesComponent } from "../usersnclasses/usersnclass.component";
 import { ToastController } from "ionic-angular";
+import { SettingsPage } from "../../settings/settings";
 
 @Component({
     selector: 'menu-overflow',
@@ -39,12 +40,7 @@ export class OverflowMenuComponent {
                 break;
             }
             case 2: {
-                let toast = this.toastCtrl.create({
-                    message: 'Settings functionality is under progress',
-                    duration: 3000,
-                    position: 'bottom'
-                  });
-                  toast.present();
+                  this.navCtrl.push(SettingsPage)
                 break;
             }
             case 3: {

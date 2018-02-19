@@ -1,6 +1,6 @@
 <ion-content padding>
     <ion-list>
-        <ion-card padding *ngFor="let user of users" >
+        <ion-card padding *ngFor="let user of users">
             <ion-row justify-content-start>
                 <ion-col col-2>
                     <ion-avatar>
@@ -12,7 +12,7 @@
                     <h3>{{user.type}}</h3>
                 </ion-col>
                 <ion-col col-1 text-right>
-                    <ion-icon name="more" (click)="showMenu(user)"></ion-icon>
+                    <ion-icon name="more" (click)="showMenu($event,user)"></ion-icon>
                 </ion-col>
             </ion-row>
         </ion-card>
