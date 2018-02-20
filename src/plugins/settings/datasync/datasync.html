@@ -16,22 +16,22 @@
 <ion-content padding>
 
   <div>
-      {{ 'DATA_SYNC_SCREEN.AUTO_DATA_SYNC' | translate }}
+    {{ 'DATA_SYNC_SCREEN.AUTO_DATA_SYNC' | translate }}
   </div>
 
-  <ion-list radio-group no-lines>
+  <ion-list radio-group no-lines [(ngModel)]="dataSyncType" (ionChange)="onSelected()">
     <ion-item>
-      <ion-radio checked="true" value="off" item-left></ion-radio>
+      <ion-radio checked="true" [value]="OPTIONS.off" item-left></ion-radio>
       <ion-label>{{ 'DATA_SYNC_SCREEN.OFF' | translate }}</ion-label>
     </ion-item>
 
     <ion-item>
-      <ion-radio value="over_wifi" item-left></ion-radio>
+      <ion-radio [value]="OPTIONS.over_wifi" item-left></ion-radio>
       <ion-label>{{ 'DATA_SYNC_SCREEN.OVER_WIFI' | translate }}</ion-label>
     </ion-item>
 
     <ion-item>
-      <ion-radio value="always_on" item-left></ion-radio>
+      <ion-radio [value]="OPTIONS.always_on" item-left></ion-radio>
       <ion-label>{{ 'DATA_SYNC_SCREEN.ALWAYS_ON' | translate }}</ion-label>
     </ion-item>
   </ion-list>
