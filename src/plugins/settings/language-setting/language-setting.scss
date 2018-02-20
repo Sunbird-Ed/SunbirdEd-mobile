@@ -1,6 +1,6 @@
 page-language-setting {
     .ion-label {
-        width:100% !important; 
+        width:100% !important;
         color: #000000;
       }
 
@@ -11,5 +11,35 @@ page-language-setting {
 
     ion-label {
         color: #000000 !important;
+    }
+
+    .radio-md {
+      .radio-icon {
+        border-style: none;
+        border-radius: 0%;
+      }
+
+      .radio-inner {
+        background-color: rgba(0, 0, 0, 0) !important;
+        border-style: none !important;
+        border-radius: 0% ;
+      }
+
+      .radio-checked, .radio-inner {
+        /*Add another block-level blank space*/
+        content: '';
+        display: block;
+
+        /*Make it a small rectangle so the border will create an L-shape*/
+        width: 6px;
+        height: 12px;
+
+        /*Add a white border on the bottom and left, creating that 'L' */
+        border: solid blue;
+        border-width: 0 2px 2px 0;
+
+        /*Rotate the L 45 degrees to turn it into a checkmark*/
+        transform: rotate(45deg);
+      }
     }
 }

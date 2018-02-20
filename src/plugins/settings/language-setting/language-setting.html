@@ -20,7 +20,7 @@
   <ion-list radio-group>
     <ion-item *ngFor="let language of languages"  class="grey-bg">
         <ion-label>{{ language.label | translate }}</ion-label>
-        <ion-radio mode="ios" value="{{language.code}}" checked="{{language.isApplied}}"></ion-radio>
+        <ion-radio value="{{language.code}}" checked="{{language.isApplied}}"></ion-radio>
     </ion-item>
   </ion-list>
 
