@@ -3,5 +3,6 @@
     "version": "0.0.1",
     "module": "CoursesPageModule",
     "main": "CoursesPage",
-    "children": []
+    "children": [],
+    "appVersion": "0.0.1"
 }

@@ -3,5 +3,6 @@
     "version": "0.0.1",
     "module": "GroupPageModule",
     "main": "GroupPage",
-    "children": []
+    "children": [],
+    "appVersion": "0.0.1"
 }

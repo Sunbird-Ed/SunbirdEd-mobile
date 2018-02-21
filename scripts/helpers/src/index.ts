@@ -1,9 +1,26 @@
 import Ast from "ts-simple-ast";
 import { SourceFile, Scope } from "ts-simple-ast";
+import parser = require('xml-parser');
 
 const ast = new Ast();
 
+const configFile = ast.addExistingSourceFile("../../config.xml");
+
+let configContent: parser.Document = parser(configFile.getFullText());
+
+ast.removeSourceFile(configFile);
+
+const appVersion = configContent.root.attributes.version;
+
+let [major, minor, patch] = appVersion.split(".");
+
+let appMajor = +major;
+let appMinor = +minor;
+let appPatch = +patch;
+
 ast.addExistingSourceFiles("../../src/plugins/*/*{.d.ts,.ts,.json}");
+
+
 const allSources = ast.getSourceFiles();
 
 let moduleArray = new Array<SourceFile>();
@@ -16,17 +33,25 @@ allSources.forEach(element => {
   if (element.getSourceFile().getBaseName() == 'manifest.json') {
     let manifest = JSON.parse(element.getText());
 
-    const directory = element.getSourceFile().getDirectory().getSourceFiles().forEach(file => {
-      if (file.getSourceFile().getClass(manifest.module) !== undefined) {
-        moduleArray.push(file.getSourceFile());
-        moduleNameArray.push(manifest.module);
-      }
+    let [major, minor, patch] = manifest.appVersion.split(".");
 
-      if (file.getSourceFile().getClass(manifest.main) != undefined) {
-        pageArray.push(file.getSourceFile());
-        pageNameArray.push(manifest.main);
-      }
-    });
+    let pluginMajor = +major;
+    let pluginMinor = +minor;
+    let pluginPatch = +patch;
+
+    if (appMajor === pluginMajor && appMinor === pluginMinor && appPatch === pluginPatch) {
+      const directory = element.getSourceFile().getDirectory().getSourceFiles().forEach(file => {
+        if (file.getSourceFile().getClass(manifest.module) !== undefined) {
+          moduleArray.push(file.getSourceFile());
+          moduleNameArray.push(manifest.module);
+        }
+
+        if (file.getSourceFile().getClass(manifest.main) != undefined) {
+          pageArray.push(file.getSourceFile());
+          pageNameArray.push(manifest.main);
+        }
+      });
+    }
   }
 })
 

@@ -4,13 +4,17 @@
   "description": "Helper Project for sunbird",
   "main": "./dist/index.js",
   "scripts": {
-    "install": "tsc && node ./dist/index.js",
+    "build": "tsc && node ./dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "vinayagasundar",
   "license": "ISC",
   "devDependencies": {
     "ts-simple-ast": "^7.1.0",
-    "typescript": "^2.7.2"
+    "typescript": "^2.7.2",
+    "xml-parser": "^1.2.1"
+  },
+  "dependencies": {
+    "@types/xml-parser": "^1.2.29"
   }
 }
