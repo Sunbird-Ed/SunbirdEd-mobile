@@ -13,9 +13,17 @@ import { PopoverController } from 'ionic-angular/components/popover/popover-cont
 })
 export class ProfilePage implements BasePlugin {
   imageUri: string = "assets/imgs/ic_profile_default.png";
-  list:Array<String>=['SWITCH_ACCOUNT','DOWNLOAD_MANAGER','SETTINGS','SIGN_OUT'];
+  list: Array<String> = ['SWITCH_ACCOUNT', 'DOWNLOAD_MANAGER', 'SETTINGS', 'SIGN_OUT'];
+  lastLoginTime: string = "Last login time:Feb 13,2018,3:20:05 PM";
+  userName: string = "User Name-vinayagasundar";
+  profileName: string = "Boss Name";
+  sunbird: string = "Sunbird";
+  profileCompletionText: string = "Your profile is 82% completed";
+  progValue: string = "82";
+  profDesc: string = "Here are the detailed description of the profile fdhfh";
+  uncompletedDetails: string = "+ Add Experience";
 
-  constructor(public navCtrl: NavController, private cameraService: CameraService,public popoverCtrl: PopoverController) {
+  constructor(public navCtrl: NavController, private cameraService: CameraService, public popoverCtrl: PopoverController) {
   }
 
   init(containerService: ContainerService) {
@@ -42,13 +50,13 @@ export class ProfilePage implements BasePlugin {
     this.navCtrl.push(FormExperience);
   }
 
-   showOverflowMenu(event) {
-    let popover = this.popoverCtrl.create(OverflowMenuComponent,{
-        list:this.list
+  showOverflowMenu(event) {
+    let popover = this.popoverCtrl.create(OverflowMenuComponent, {
+      list: this.list
     });
     popover.present({
       ev: event
     });
-  } 
+  }
 
 }

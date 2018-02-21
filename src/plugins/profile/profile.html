@@ -1,7 +1,7 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      Profile
+      {{ 'PROFILE_LW' | translate }}
     </ion-title>
     <ion-buttons end>
       <button ion-button icon-only (click)="showOverflowMenu($event)">
@@ -14,42 +14,41 @@
 
   <ion-list>
 
-    <p class="profile-last-login-text">Last login time:Feb 13,2018,3:20:05 PM</p>
+    <p class="profile-last-login-text">{{lastLoginTime}}</p>
 
     <div ion-item text-center>
       <img class="custom-avatar" [src]="imageUri" (click)="editPicture()" />
-      <p class="profile-name">BossName</p>
+      <p class="profile-name">{{profileName}}</p>
       <p>
-        <span class="grey-bg">User Name-vinayagasundar</span>
+        <span class="grey-bg">{{userName}}</span>
       </p>
       <p>
-        <span class="grey-bg">Sunbird
+        <span class="grey-bg">{{sunbird}}
           <ion-icon name="mail"></ion-icon>
         </span>
       </p>
 
       <ion-row class="profile-completed-ion-row">
         <ion-col class="profile-completed-ion-col">
-          <p class="profile-completed-text">Your profile is 82% completed</p>
+          <p class="profile-completed-text">{{profileCompletionText}}</p>
         </ion-col>
         <ion-col class="profile-completed-ion-col">
-          <p class="profile-add-exp-text">+ Add Experience</p>
+          <p class="profile-add-exp-text">{{uncompletedDetails}}</p>
         </ion-col>
       </ion-row>
 
-      <pb-horizontal [progress]="82"></pb-horizontal>
+      <pb-horizontal progress={{progValue}}></pb-horizontal>
 
     </div>
 
-
     <ion-list-header class="list-header">
-      Description
+      {{'DESCRIPTION' | translate}}
     </ion-list-header>
 
-    <ion-item class="description">Hello</ion-item>
+    <ion-item class="description">{{profDesc}}</ion-item>
 
-    <ion-list-header class="list-header">
-      Education
+    <ion-list-header class="list-header" no-lines>
+      {{'TITLE_EDUCATION' | translate}}
 
       <span float-right (click)="editEduDetails()">Add</span>
     </ion-list-header>
@@ -92,7 +91,7 @@
     </ion-item>
 
     <ion-list-header class="list-header">
-      Experience
+      {{'EXPERIENCE' | translate}}
       <span float-right (click)="editExperience()">Add</span>
     </ion-list-header>
 
@@ -114,7 +113,7 @@
     </ion-item>
 
     <ion-list-header class="list-header">
-      Address
+      {{'TITLE_ADDRESS' | translate}}
       <span float-right (click)="editAddress()">Add</span>
     </ion-list-header>
 
@@ -125,7 +124,7 @@
         </ion-col>
         <ion-col col-9>
           <span>Current</span>
-          <span>4th Main Rd</span>
+          <span style="text-overflow: ellipsis;">4th Main Rd, Bangalure, Karanataka, Bangalure, Karanataka, Bangalure, Karanataka</span>
           <span>Bangalure, Karanataka</span>
         </ion-col>
         <ion-col col-1>
@@ -135,13 +134,13 @@
     </ion-item>
 
     <ion-list-header class="list-header">
-      Skill Tags
+      {{'SKILL_TAGS' | translate}}
 
       <span float-right>Add</span>
     </ion-list-header>
 
     <ion-list-header class="list-header">
-      Additional Information
+      {{'ADDITIONAL_INFORMATION' | translate}}
 
     </ion-list-header>
 

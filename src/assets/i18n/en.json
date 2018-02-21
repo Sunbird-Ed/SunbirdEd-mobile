@@ -326,6 +326,7 @@
     "SIGN_OUT":"Sign Out",
     "USERS_CLASSES":"Users and Classes",
     "USERS":"Users",
-    "CLASSES":"Classes"
+    "CLASSES":"Classes",
 
+    "EXPERIENCE" : "Experience"
 }
