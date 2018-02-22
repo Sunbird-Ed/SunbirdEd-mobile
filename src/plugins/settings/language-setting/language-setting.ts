@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
+import { OnboardingPage } from '../../onboarding/onboarding';
+import { ViewController } from 'ionic-angular/navigation/view-controller';
 
 /**
  * Generated class for the LanguageSettingPage page.
@@ -14,40 +16,50 @@ import { NavController, NavParams } from 'ionic-angular';
 })
 export class LanguageSettingPage {
 
-  languages : any[];
+  languages: any[];
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  constructor(public navCtrl: NavController, public navParams: NavParams,
+    private viewCtrl: ViewController) {
     this.languages = [
       {
-        'label' : 'English',
-        'code' : 'en',
-        'isApplied' : true
+        'label': 'English',
+        'code': 'en',
+        'isApplied': false
       },
       {
-        'label' : 'हिंदी',
-        'code' : 'hi',
-        'isApplied' : false
+        'label': 'हिंदी',
+        'code': 'hi',
+        'isApplied': false
       },
       {
-        'label' : 'తెలుగు',
-        'code' : 'te',
-        'isApplied' : false
+        'label': 'తెలుగు',
+        'code': 'te',
+        'isApplied': false
       },
       {
-        'label' : 'தமிழ்',
-        'code' : 'ta',
-        'isApplied' : false
+        'label': 'தமிழ்',
+        'code': 'ta',
+        'isApplied': false
       },
       {
-        'label' : 'मराठी',
-        'code' : 'mr',
-        'isApplied' : false
+        'label': 'मराठी',
+        'code': 'mr',
+        'isApplied': false
       }
     ];
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad LanguageSettingPage');
+  }
+
+  continue() {
+    this.navCtrl.push(OnboardingPage).then(() => {
+      // first we find the index of the current view controller:
+      const index = this.viewCtrl.index;
+      // then we remove it from the navigation stack
+      this.navCtrl.remove(index);
+    });;
   }
 
 }

@@ -328,5 +328,6 @@
     "USERS":"Users",
     "CLASSES":"Classes",
 
-    "EXPERIENCE" : "Experience"
+    "EXPERIENCE" : "Experience",
+    "CONTINUE" : "CONTINUE"
 }

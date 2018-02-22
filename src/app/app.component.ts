@@ -6,6 +6,7 @@ import { TabsPage } from "../core/container/tabs/tabs";
 import { PluginService } from './plugins.service';
 import { OnboardingPage } from '../plugins/onboarding/onboarding';
 import { Session } from '../core/services/auth/session';
+import { LanguageSettingPage } from '../plugins/settings/language-setting/language-setting';
 
 declare var chcp: any;
 
@@ -14,7 +15,8 @@ declare var chcp: any;
   templateUrl: 'app.html'
 })
 export class MyApp {
-  rootPage:any = OnboardingPage;
+  // rootPage:any = OnboardingPage;
+  rootPage:any = LanguageSettingPage;
 
   constructor(platform: Platform, statusBar: StatusBar,
     splashScreen: SplashScreen,

@@ -4,13 +4,13 @@
   See http://ionicframework.com/docs/components/#navigation for more info on
   Ionic pages and navigation.
 -->
-<ion-header>
+<!-- <ion-header>
 
   <ion-navbar>
     <ion-title>{{ 'SETTINGS_SCREEN.LANGUAGE_SETTINGS' | translate }}</ion-title>
   </ion-navbar>
 
-</ion-header>
+</ion-header> -->
 
 
 <ion-content padding>
@@ -18,10 +18,36 @@
   <ion-label class="ion-label" text-center padding>{{ 'CHOOSE_PREFERRED_LANGUAGE' | translate }}</ion-label>
 
   <ion-list radio-group>
-    <ion-item *ngFor="let language of languages"  class="grey-bg">
-        <ion-label>{{ language.label | translate }}</ion-label>
-        <ion-radio value="{{language.code}}" checked="{{language.isApplied}}"></ion-radio>
+    <ion-item *ngFor="let language of languages" class="grey-bg">
+      <ion-label>{{ language.label | translate }}</ion-label>
+      <ion-radio value="{{language.code}}" checked="{{language.isApplied}}"></ion-radio>
     </ion-item>
   </ion-list>
+
+  <ion-footer no-border>
+
+    <ion-row padding no-border>
+      <!-- <button class="action-button" padding ion-button block item-right (click)="continue()">
+        {{ 'CONTINUE' | translate }}
+        <ion-icon name="arrow-round-forward"></ion-icon>
+      </button> -->
+
+      <!-- <p class="p-padding">
+          <span style="background-color: #488aff;
+          width: 100%;
+          height: 100%;"> {{ 'CONTINUE' | translate }}
+            <ion-icon name="mail" role="img" class="icon icon-md ion-md-mail item-icon" aria-label="mail" ng-reflect-name="mail"></ion-icon>
+          </span>
+        </p> -->
+
+      <!-- <p style="width: 100%; height: 100%"> -->
+      <div class="continue-bg" (click)="continue()">
+        <span>{{ 'CONTINUE' | translate }}
+          <!-- <ion-icon name="mail"></ion-icon> -->
+        </span>
+        <ion-icon name="arrow-round-forward"></ion-icon>
+      </div>
+    </ion-row>
+  </ion-footer>
 
 </ion-content>
