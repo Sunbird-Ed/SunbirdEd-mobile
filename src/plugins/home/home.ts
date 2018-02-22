@@ -39,7 +39,11 @@ export class HomePage implements BasePlugin {
   }
 
   onSyncClick() {
-    this.telemetryService.sync();
+    this.telemetryService.sync((response) => {
+      console.log("Telemetry Home : " + response);
+    }, (error) => {
+      console.log("Telemetry Home : " + error);
+    });
 
     this.downloadContent();
   }

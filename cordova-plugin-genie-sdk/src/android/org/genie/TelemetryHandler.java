@@ -3,6 +3,7 @@ package org.genie;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.apache.cordova.CallbackContext;
 import org.ekstep.genieservices.GenieService;
 import org.ekstep.genieservices.commons.IResponseHandler;
 import org.ekstep.genieservices.commons.bean.GenieResponse;
@@ -21,6 +22,7 @@ import org.ekstep.genieservices.commons.bean.telemetry.Share;
 import org.ekstep.genieservices.commons.bean.telemetry.Start;
 import org.ekstep.genieservices.commons.bean.telemetry.Telemetry;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.json.JSONException;
 
 /**
@@ -43,7 +45,7 @@ public class TelemetryHandler {
     private static final String TYPE_SAVE_SHARE = "saveShare";
     private static final String TYPE_SYNC = "sync";
 
-    public static void handle(JSONArray args) {
+    public static void handle(JSONArray args, CallbackContext callbackContext) {
         try {
             String type = args.getString(0);
             if (type.equals(TYPE_SAVE_IMPRESSION)) {
@@ -71,7 +73,7 @@ public class TelemetryHandler {
             } else if (type.equals(TYPE_SAVE_SHARE)) {
                 saveShare(args);
             } else if (type.equals(TYPE_SYNC)) {
-                sync();
+                sync(callbackContext);
             }
 
         } catch (JSONException e) {
@@ -79,33 +81,40 @@ public class TelemetryHandler {
         }
     }
 
-    private static void sync() {
+    private static void sync(CallbackContext callbackContext) {
+        final Gson gson = new GsonBuilder().create();
+
         GenieService.getAsyncService().getSyncService().sync(new IResponseHandler<SyncStat>() {
             @Override
             public void onSuccess(GenieResponse<SyncStat> genieResponse) {
-                //ignore
+                try {
+                    String response = gson.toJson(genieResponse);
+
+                    callbackContext.success(new JSONObject(response));
+
+                } catch (JSONException e) {
+                }
             }
 
             @Override
             public void onError(GenieResponse<SyncStat> genieResponse) {
-                //ignore
+                callbackContext.error(gson.toJson(genieResponse));
             }
         });
     }
 
     private static void save(Telemetry telemetry) {
-        GenieService.getAsyncService().getTelemetryService()
-                .saveTelemetry(telemetry, new IResponseHandler<Void>() {
-                    @Override
-                    public void onSuccess(GenieResponse<Void> genieResponse) {
-                        //ignore
-                    }
+        GenieService.getAsyncService().getTelemetryService().saveTelemetry(telemetry, new IResponseHandler<Void>() {
+            @Override
+            public void onSuccess(GenieResponse<Void> genieResponse) {
+                //ignore
+            }
 
-                    @Override
-                    public void onError(GenieResponse<Void> genieResponse) {
-                        //ignore
-                    }
-                });
+            @Override
+            public void onError(GenieResponse<Void> genieResponse) {
+                //ignore
+            }
+        });
     }
 
     private static void saveAudit(JSONArray args) throws JSONException {

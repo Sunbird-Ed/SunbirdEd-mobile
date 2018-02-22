@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { TelemetryService } from '../../../core/services/telemetry/telemetry.service';
 import { Storage } from "@ionic/storage";
 import { DataSyncType } from "./datasynctype.enum"
+import { SyncStat } from "./syncstat"
 
 /**
  * Generated class for the DatasyncPage page.
@@ -55,7 +56,24 @@ export class DatasyncPage {
 
   onSyncClick() {
     console.log('Sync called');
-    this.telemetryService.sync();
+    this.telemetryService.sync((response) => {
+      console.log("Telemetry Data Sync : " + response);
+
+      let syncStat: SyncStat = response.result;
+      console.log("Telemetry Data Sync Time : " + syncStat.syncTime);
+      let milliseconds = Number(syncStat.syncTime);
+
+      //get date
+      let date: Date = new Date(milliseconds);
+
+      //complete date and time
+      let dateAndTime: String = date.getDate() + "/" + date.getMonth() + "/" + date.getFullYear() + ", " + date.getHours() + ":" + date.getMinutes();
+
+
+      console.log("Telemetry Data Sync Time : " + dateAndTime);
+    }, (error) => {
+      console.log("Telemetry Data Sync Error: " + error);
+    });
   }
 
 

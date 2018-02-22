@@ -24,6 +24,9 @@
     <js-module src="www/event.js" name="event">
         <clobbers target="event" />
     </js-module>
+     <js-module src="www/downloadService.js" name="downloadService">
+        <clobbers target="downloadService" />
+    </js-module>
     <!-- android -->
     <platform name="android">
 

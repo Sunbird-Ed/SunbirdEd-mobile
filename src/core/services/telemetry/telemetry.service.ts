@@ -1,6 +1,8 @@
 import { Injectable } from "@angular/core";
 import { Impression, Start, Audit, End, ExData, Feedback, Interact, Interrupt, Log, Search, Share } from './bean';
 import { TelemetryServiceFactory } from "./factory";
+import { GenieResponse } from "../service.bean";
+import { SyncStat } from "../../../plugins/settings/datasync/syncstat";
 
 @Injectable()
 export class TelemetryService {
@@ -109,9 +111,10 @@ export class TelemetryService {
     }
   }
 
-  sync() {
+  sync(successCallback: (response: GenieResponse<SyncStat>) => void,
+    errorCallback: (error: string) => void) {
     try {
-      this.factory.getService().sync();
+      this.factory.getService().sync(successCallback, errorCallback);
     } catch (error) {
       console.log(error);
     }
