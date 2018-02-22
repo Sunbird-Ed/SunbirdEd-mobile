@@ -19,10 +19,10 @@
     <div ion-item text-center>
       <img class="custom-avatar" [src]="imageUri" (click)="editPicture()" />
       <p class="profile-name">{{profileName}}</p>
-      <p>
+      <p class="p-padding">
         <span class="grey-bg">{{userName}}</span>
       </p>
-      <p>
+      <p class="p-padding">
         <span class="grey-bg">{{sunbird}}
           <ion-icon name="mail"></ion-icon>
         </span>
@@ -41,11 +41,12 @@
 
     </div>
 
-    <ion-list-header class="list-header">
-      {{'DESCRIPTION' | translate}}
-    </ion-list-header>
+    <div ion-item text-wrap>
+      <p class="description">{{'DESCRIPTION' | translate}}</p>
 
-    <ion-item class="description">{{profDesc}}</ion-item>
+      <p>{{profDesc}}</p>
+
+    </div>
 
     <ion-list-header class="list-header" no-lines>
       {{'TITLE_EDUCATION' | translate}}

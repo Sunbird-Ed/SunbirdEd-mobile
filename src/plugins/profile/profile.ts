@@ -20,7 +20,7 @@ export class ProfilePage implements BasePlugin {
   sunbird: string = "Sunbird";
   profileCompletionText: string = "Your profile is 82% completed";
   progValue: string = "82";
-  profDesc: string = "Here are the detailed description of the profile fdhfh";
+  profDesc: string = "Here are the detailed description of the profile fdhfh Here are the detailed description of the profile fdhfh";
   uncompletedDetails: string = "+ Add Experience";
 
   constructor(public navCtrl: NavController, private cameraService: CameraService, public popoverCtrl: PopoverController) {

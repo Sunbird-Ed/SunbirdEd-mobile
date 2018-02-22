@@ -66,7 +66,7 @@ page-profile {
        margin-right: auto;
     }
 
-    p {
+    .p-padding {
         padding: 5px;
     }
 
@@ -83,9 +83,12 @@ page-profile {
     }
 
     .description {
-        color: #797777;
-        padding-top: 0%;
-        margin-top: 0%;
+        color:black;
+        margin-bottom: 3%;
+        font-size: large; 
+        padding: 0%;
+        margin-left: 0%;
+        font-weight: bold;
     }
 
     .image-holder {
