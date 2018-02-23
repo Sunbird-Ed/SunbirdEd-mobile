@@ -14,7 +14,7 @@ export class GroupPage implements BasePlugin {
   }
 
   init(container: ContainerService) {
-    container.addTab({root: GroupPage, label: "GROUPS", icon:"groups"});
+    container.addTab({root: GroupPage, label: "GROUPS", icon:"groups", index: 3});
   }
 
 }

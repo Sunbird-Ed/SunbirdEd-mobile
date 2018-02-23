@@ -21,7 +21,11 @@ export class ContainerService {
     // }
 
     getAllTabs(): Array<any> {
-        return this.tabs;
+        return this.tabs.sort((prev, next) => {
+          if (prev.index < next.index) return -1;
+          if (prev.index > next.index) return 1;
+          return 0;
+        });
     }
 
 }

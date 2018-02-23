@@ -27,7 +27,7 @@ export class ProfilePage implements BasePlugin {
   }
 
   init(containerService: ContainerService) {
-    containerService.addTab({ root: ProfilePage, label: "PROFILE", icon: "profile" })
+    containerService.addTab({ root: ProfilePage, label: "PROFILE", icon: "profile", index: 4})
   }
 
   editEduDetails() {

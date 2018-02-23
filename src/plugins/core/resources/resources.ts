@@ -13,7 +13,7 @@ export class ResourcesPage implements BasePlugin {
   }
 
   init(container: ContainerService) {
-    container.addTab({root: ResourcesPage, label: "RESOURCES", icon: "resources"});
+    container.addTab({root: ResourcesPage, label: "RESOURCES", icon: "resources", index: 2});
   }
 
 }
