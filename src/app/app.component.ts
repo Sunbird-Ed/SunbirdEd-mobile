@@ -2,11 +2,9 @@ import { Component } from '@angular/core';
 import { Platform, ModalController, AlertController } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
-import { TabsPage } from "../core/container/tabs/tabs";
+import { TabsPage, Session } from "../framework";
 import { PluginService } from './plugins.service';
-import { OnboardingPage } from '../plugins/onboarding/onboarding';
-import { Session } from '../core/services/auth/session';
-import { LanguageSettingPage } from '../plugins/settings/language-setting/language-setting';
+import { LanguageSettingPage } from '../plugins/core/settings/language-setting/language-setting';
 
 declare var chcp: any;
 

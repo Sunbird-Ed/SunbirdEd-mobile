@@ -1,0 +1,49 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons left>
+      <button ion-button icon-only (click)="goBack()">
+        <ion-icon name="arrow-back"></ion-icon>
+      </button>
+    </ion-buttons>
+
+  </ion-toolbar>
+
+</ion-header>
+
+<ion-content padding center>
+  <ion-list>
+    <ion-card *ngFor="let r of roles; let i = index">
+      <ion-card-content>
+        <ion-grid>
+          <ion-row>
+            <ion-col>
+                <ion-avatar item-start>
+                    <img src="../assets/imgs/ic_profile.png"/>
+                  </ion-avatar>
+            </ion-col>
+            <ion-col col-10>
+                <span class="rolename">{{r}}</span>
+                <ion-list>
+                    <ion-item *ngFor="let c of allContents[i]">
+                      <ion-grid item-content>
+                        <ion-row>
+                          <ion-col col-1>
+                              <div class="bullet"></div>
+                          </ion-col>
+                          <ion-col col-10>
+                              <ion-label class="desc">{{c}}</ion-label>
+                            
+                          </ion-col>
+                        </ion-row>
+                      </ion-grid>
+                    </ion-item>
+                </ion-list>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+        
+        
+      </ion-card-content>
+    </ion-card>
+  </ion-list>
+</ion-content>

@@ -4,17 +4,15 @@ import { IonicApp, IonicModule, IonicErrorHandler, Events } from 'ionic-angular'
 import { MyApp } from './app.component';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
-import { ContainerService } from '../core/container/container.services';
-import { PluginService } from './plugins.service';
-import { TelemetryService } from '../core/services/telemetry/telemetry.service';
-import { CoreModule, TabsPage } from "../core";
 import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClientModule, HttpClient } from "@angular/common/http";
-import { OnboardingPage } from '../plugins/onboarding/onboarding';
-import { EventService } from '../core/services/event/event.service';
 import { IonicStorageModule } from "@ionic/storage";
 import { HTTP } from "@ionic-native/http";
+
+import { PluginService } from './plugins.service';
+import { TelemetryService, EventService, FrameworkModule, ContainerService, TabsPage } from '../framework';
+import { OnboardingPage } from '../plugins/core/onboarding/onboarding';
 
 const pluginModules = PluginService.getAllPluginModules();
 
@@ -26,7 +24,7 @@ const pluginModules = PluginService.getAllPluginModules();
   imports: [
     HttpClientModule,
     BrowserModule,
-    CoreModule,
+    FrameworkModule,
     IonicStorageModule.forRoot({
       name: "org.sunbird.framework.storage"
     }),

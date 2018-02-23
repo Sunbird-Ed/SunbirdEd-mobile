@@ -18,7 +18,7 @@ let appMajor = +major;
 let appMinor = +minor;
 let appPatch = +patch;
 
-ast.addExistingSourceFiles("../../src/plugins/*/*{.d.ts,.ts,.json}");
+ast.addExistingSourceFiles("../../src/plugins/*/*/*{.d.ts,.ts,.json}");
 
 
 const allSources = ast.getSourceFiles();
@@ -119,7 +119,7 @@ pluginServiceFile.addImportDeclaration({
   namedImports: [{
     name: "ContainerService"
   }],
-  moduleSpecifier: "../core/"
+  moduleSpecifier: "../framework/"
 })
 
 for (var i = 0; i < moduleArray.length; i++) {
