@@ -18,7 +18,7 @@ export class CoursesPage implements BasePlugin {
 
   init(container: ContainerService) {
 
-    container.addTab({root: CoursesPage, icon: "courses", label:"COURSES"});
+    container.addTab({root: CoursesPage, icon: "courses", label:"COURSES", index: 1});
   }
 
 }

@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { NavController, Events } from 'ionic-angular';
-import { TelemetryService, 
-  Impression, 
-  FrameworkModule, 
-  BasePlugin, 
-  ContainerService, 
-  ContentImport, 
+import { TelemetryService,
+  Impression,
+  FrameworkModule,
+  BasePlugin,
+  ContainerService,
+  ContentImport,
   ContentImportRequest,
   ContentService
 } from '../../../framework';
@@ -31,7 +31,7 @@ export class HomePage implements BasePlugin {
 
   init(container: ContainerService) {
 
-    container.addTab({root: HomePage, label: "HOME", icon:"home"});
+    container.addTab({root: HomePage, label: "HOME", icon:"home", index: 0});
   }
 
   ionViewDidLoad() {
