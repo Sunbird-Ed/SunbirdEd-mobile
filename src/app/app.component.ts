@@ -4,7 +4,7 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { TabsPage, Session } from "../framework";
 import { PluginService } from './plugins.service';
-import { LanguageSettingPage } from '../plugins/core/settings/language-setting/language-setting';
+import { LanguageSettingsPage } from '../plugins/core/language-settings/language-settings';
 
 declare var chcp: any;
 
@@ -14,7 +14,7 @@ declare var chcp: any;
 })
 export class MyApp {
   // rootPage:any = OnboardingPage;
-  rootPage:any = LanguageSettingPage;
+  rootPage:any = LanguageSettingsPage;
 
   constructor(platform: Platform, statusBar: StatusBar,
     splashScreen: SplashScreen,

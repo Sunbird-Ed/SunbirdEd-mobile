@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-import { OnboardingPage } from '../../onboarding/onboarding';
+import { OnboardingPage } from '../onboarding/onboarding';
 import { ViewController } from 'ionic-angular/navigation/view-controller';
 
 /**
@@ -11,10 +11,10 @@ import { ViewController } from 'ionic-angular/navigation/view-controller';
  */
 
 @Component({
-  selector: 'page-language-setting',
-  templateUrl: 'language-setting.html',
+  selector: 'page-language-settings',
+  templateUrl: 'language-settings.html',
 })
-export class LanguageSettingPage {
+export class LanguageSettingsPage {
 
   languages: any[];
 

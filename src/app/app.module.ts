@@ -13,6 +13,7 @@ import { HTTP } from "@ionic-native/http";
 import { PluginService } from './plugins.service';
 import { TelemetryService, EventService, FrameworkModule, ContainerService, TabsPage } from '../framework';
 import { OnboardingPage } from '../plugins/core/onboarding/onboarding';
+import { LanguageSettingsPage } from '../plugins/core/language-settings/language-settings';
 
 const pluginModules = PluginService.getAllPluginModules();
 
@@ -42,7 +43,8 @@ const pluginModules = PluginService.getAllPluginModules();
   entryComponents: [
     MyApp,
     OnboardingPage,
-    TabsPage
+    TabsPage,
+    LanguageSettingsPage
   ],
   providers: [
     StatusBar,

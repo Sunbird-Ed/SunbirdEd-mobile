@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController } from "ionic-angular";
 import { DatasyncPage } from './datasync/datasync';
-import { LanguageSettingPage } from './language-setting/language-setting';
+import { LanguageSettingsPage } from '../language-settings/language-settings';
 
 @Component({
   selector: 'settings',
@@ -21,7 +21,7 @@ export class SettingsPage {
   }
 
   languageSetting() {
-    this.navCtrl.push(LanguageSettingPage);
+    this.navCtrl.push(LanguageSettingsPage);
   }
 
   dataSync() {
