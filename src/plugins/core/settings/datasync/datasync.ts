@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { TelemetryService, SyncStat } from '../../../../framework';
 import { Storage } from "@ionic/storage";
@@ -12,6 +12,7 @@ import { DataSyncType } from "./datasynctype.enum"
  */
 
 const KEY_DATA_SYNC_TYPE = "data_sync_type";
+const KEY_DATA_SYNC_TIME = "data_sync_time";
 
 @Component({
   selector: 'page-datasync',
@@ -20,10 +21,12 @@ const KEY_DATA_SYNC_TYPE = "data_sync_type";
 })
 export class DatasyncPage {
   dataSyncType: DataSyncType;
+  lastSyncedTime: String = "LAST_SYNCED_TIME";
+  latestSync: String;
 
   OPTIONS: typeof DataSyncType = DataSyncType;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private telemetryService: TelemetryService, private storage: Storage) {
+  constructor(public zone: NgZone, public navCtrl: NavController, public navParams: NavParams, private telemetryService: TelemetryService, private storage: Storage) {
     this.init();
   }
 
@@ -55,26 +58,45 @@ export class DatasyncPage {
 
   onSyncClick() {
     console.log('Sync called');
+    let that = this;
     this.telemetryService.sync((response) => {
-      console.log("Telemetry Data Sync : " + response);
 
-      let syncStat: SyncStat = response.result;
-      console.log("Telemetry Data Sync Time : " + syncStat.syncTime);
-      let milliseconds = Number(syncStat.syncTime);
+      that.zone.run(() => {
+        console.log("Telemetry Data Sync : " + response);
 
-      //get date
-      let date: Date = new Date(milliseconds);
+        let syncStat: SyncStat = response.result;
+        console.log("Telemetry Data Sync Time : " + syncStat.syncTime);
+        let milliseconds = Number(syncStat.syncTime);
 
-      //complete date and time
-      let dateAndTime: String = date.getDate() + "/" + date.getMonth() + "/" + date.getFullYear() + ", " + date.getHours() + ":" + date.getMinutes();
+        //get date
+        let date: Date = new Date(milliseconds);
+
+        //complete date and time
+        let dateAndTime: string = date.getDate() + "/" + date.getMonth() +
+          "/" + date.getFullYear() + ", " + that.getTimeIn12HourFormat(date);
 
 
-      console.log("Telemetry Data Sync Time : " + dateAndTime);
+        that.latestSync = this.lastSyncedTime + dateAndTime;
+
+        console.log("Telemetry Data Sync Time : " + this.latestSync);
+      });
+
+
     }, (error) => {
       console.log("Telemetry Data Sync Error: " + error);
     });
   }
 
-
-
+  getTimeIn12HourFormat(time: Date): String {
+    let date = new Date(time);
+    let hours = date.getHours();
+    let minutes: number = date.getMinutes();
+    let newMinutes: string;
+    let ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    newMinutes = minutes < 10 ? '0' + minutes : '' + minutes;
+    var strTime = hours + ':' + newMinutes + ' ' + ampm;
+    return strTime;
+  }
 }

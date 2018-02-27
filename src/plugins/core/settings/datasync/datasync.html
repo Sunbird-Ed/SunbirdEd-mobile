@@ -36,7 +36,7 @@
     </ion-item>
   </ion-list>
 
-  <ion-label class="last-datasync-style">{{ 'DATA_SYNC_SCREEN.LAST_SYNCED_TIME' | translate }}</ion-label>
+  <ion-label class="last-datasync-style">{{ latestSync | translate}}</ion-label>
 
   <ion-item>
     <button ion-button block class="sync-now-button-style" (click)="onSyncClick()">{{ 'DATA_SYNC_SCREEN.SYNC_NOW' | translate }}</button>

@@ -1,5 +1,5 @@
 {
-	"HELLO": "hello",
+	"HELLO": "hello again",
 	"ONBOARD_SLIDE_TITLE_1" : "Get Content On-the-Go",
 	"ONBOARD_SLIDE_DESC_1" : "Browse and consume content from our growing collection of free courses and resources.",
 	"ONBOARD_SLIDE_TITLE_2" : "Scan QR Codes for Quick Access",
@@ -311,10 +311,11 @@
         "OFF" :  "Off",
         "OVER_WIFI" : "Over WiFi",
         "ALWAYS_ON" : "Always On",
-        "LAST_SYNCED_TIME" : "Last synced on 02/01/2018, 02:20PM",
         "SYNC_NOW" : "Sync Now",
         "SHARE_TELEMETRY" : "Share Telemetry"
     },
+
+    "LAST_SYNCED_TIME" : "Last synced on ",
 
     "ADD_USER" : "Add User",
     "USER" :"User",
