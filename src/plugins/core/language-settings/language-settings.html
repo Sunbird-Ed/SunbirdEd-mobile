@@ -17,10 +17,10 @@
 
   <ion-label class="ion-label" text-center padding>{{ 'CHOOSE_PREFERRED_LANGUAGE' | translate }}</ion-label>
 
-  <ion-list radio-group>
+  <ion-list radio-group [(ngModel)]="language"  (ionChange)="onLanguageSelected()">
     <ion-item *ngFor="let language of languages" class="grey-bg">
       <ion-label>{{ language.label | translate }}</ion-label>
-      <ion-radio value="{{language.code}}" checked="{{language.isApplied}}" (ionSelect)="onLanguageSelected(language)">
+      <ion-radio value="{{language.code}}">
 
       </ion-radio>
     </ion-item>
