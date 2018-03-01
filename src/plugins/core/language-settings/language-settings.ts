@@ -5,6 +5,7 @@ import { ViewController } from 'ionic-angular/navigation/view-controller';
 import { TranslateService } from '@ngx-translate/core';
 import { Globalization } from '@ionic-native/globalization';
 import { Storage } from "@ionic/storage";
+import { TabsPage } from '../../../framework';
 
 /**
  * Generated class for the LanguageSettingPage page.
@@ -14,6 +15,8 @@ import { Storage } from "@ionic/storage";
  */
 
 const KEY_SELECTED_LANGUAGE = "selected_language";
+const KEY_USER_ONBOARDED = "user_onboarded";
+const KEY_USER_LOGIN_MODE = "user_login_mode";
 
 @Component({
   selector: 'page-language-settings',
@@ -148,5 +151,4 @@ export class LanguageSettingsPage {
       this.navCtrl.remove(index);
     });;
   }
-
 }

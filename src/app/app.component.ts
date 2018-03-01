@@ -1,30 +1,47 @@
-import { Component } from '@angular/core';
-import { Platform, ModalController, AlertController } from 'ionic-angular';
+import { Component, ViewChild } from '@angular/core';
+import { Platform, ModalController, AlertController, NavController, ViewController, Nav } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { TabsPage, Session } from "../framework";
 import { PluginService } from './plugins.service';
 import { LanguageSettingsPage } from '../plugins/core/language-settings/language-settings';
+import { Storage } from "@ionic/storage";
 
 declare var chcp: any;
 
+const KEY_USER_ONBOARDED = "user_onboarded";
+const KEY_USER_LOGIN_MODE = "user_login_mode";
 
 @Component({
   templateUrl: 'app.html'
 })
 export class MyApp {
+  @ViewChild(Nav) nav;
   // rootPage:any = OnboardingPage;
-  rootPage:any = LanguageSettingsPage;
+  rootPage: any;
 
   constructor(platform: Platform, statusBar: StatusBar,
     splashScreen: SplashScreen,
-    private pluginLoader: PluginService,  private modalCtrl: ModalController,
+    private pluginLoader: PluginService, private modalCtrl: ModalController,
     private alertCtrl: AlertController,
-    private session: Session) {
+    private session: Session,
+    private storage: Storage) {
 
     platform.ready().then(() => {
-      if (this.session.isValidSession())
+      if (this.session.isValidSession()) {
         this.rootPage = TabsPage;
+      } else {
+        //check if the user has already onboarded, then take him to the home screen
+        this.storage.get(KEY_USER_ONBOARDED)
+          .then(val => {
+            if (val) {
+              this.checkLoginType()
+            }else {
+              this.rootPage = LanguageSettingsPage;
+            }
+          })
+      }
+
       this.pluginLoader.loadAllPlugins();
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
@@ -39,6 +56,27 @@ export class MyApp {
 
       }
     });
+  }
+
+  private checkLoginType() {
+    this.storage.get(KEY_USER_LOGIN_MODE)
+      .then(val => {
+        if (val === "signin") {
+          //take user to home page
+          this.takeToHomeAsIdentifiedUser()
+        } else if (val === "guest") {
+          //take user to home page
+          this.takeToHomeAsGuest()
+        } 
+      })
+  }
+
+  takeToHomeAsIdentifiedUser() {
+    this.nav.push(TabsPage, { loginMode: 'signin' });
+  }
+
+  takeToHomeAsGuest() {
+    this.nav.push(TabsPage, { loginMode: 'guest' });
   }
 
   fetchUpdate() {
@@ -56,26 +94,27 @@ export class MyApp {
         title: 'Application Update',
         message: 'Update available, do you want to apply it?',
         buttons: [
-         {text: 'No'},
-         {text: 'Yes',
-           handler: () => {
-             chcp.installUpdate(error => {
-               if (error) {
-                 console.error(error);
-                 window["thisRef"].alertCtrl.create({
-                   title: 'Update Download',
-                   subTitle: `Error ${error.code}`,
-                   buttons: ['OK']
-                 }).present();
-               } else {
-                 console.log('Update installed...');
-               }
-             });
-           }
-         }
+          { text: 'No' },
+          {
+            text: 'Yes',
+            handler: () => {
+              chcp.installUpdate(error => {
+                if (error) {
+                  console.error(error);
+                  window["thisRef"].alertCtrl.create({
+                    title: 'Update Download',
+                    subTitle: `Error ${error.code}`,
+                    buttons: ['OK']
+                  }).present();
+                } else {
+                  console.log('Update installed...');
+                }
+              });
+            }
+          }
         ]
       });
       confirm.present();
-     }
-   }
+    }
+  }
 }
