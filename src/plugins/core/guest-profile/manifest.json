@@ -1,0 +1,8 @@
+{
+    "id": "sunnird.plugin.profile",
+    "version": "0.0.1",
+    "module": "GuestProfilePageModule",
+    "main": "GuestProfilePage",
+    "children": [],
+    "appVersion": "0.0.1"
+}

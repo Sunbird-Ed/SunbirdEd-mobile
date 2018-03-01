@@ -1,0 +1,117 @@
+page-guest-profile {
+ .profile-name{
+      color: black;
+      text-align: center;
+      margin-bottom: 0px;
+      font-size: larger; 
+      padding: 0px;
+      font-weight: bold;   
+  }
+
+  .user-name {
+    color: rgb(104, 103, 101);
+    text-align: center;
+    margin-bottom: 0px;
+    font-size: small; 
+    padding: 5px;   
+}
+
+ .custom-avatar {
+     height: 22vw;
+     width: 22vw;
+     border: 1px solid #fff;
+     border-radius: 50%;
+     display: inline-block;
+     margin-left: auto;
+     margin-right: auto;
+  }
+
+  .list-header {
+      font-size: 12pt;
+      color: black;
+      font-weight: 500;
+      margin-bottom: 0 !important;
+
+      span {
+          font-size: 10pt;
+          color: blue;
+      }
+  }
+
+  .description {
+      color:black;
+      margin-bottom: 3%;
+      font-size: large; 
+      padding: 0%;
+      margin-left: 0%;
+      font-weight: bold;
+  }
+
+  ion-item {
+      span {
+          display: block;
+      }
+  }
+
+  .edit-icon {
+    color: blue;
+  }
+
+  // ion content bg
+  .ion-content-grey-bg {
+    background-color: rgba(224, 223, 223, 0.158);
+  }
+
+  .col-11-custom {
+    font-weight: bold; 
+    text-align: left; 
+    vertical-align: middle
+  }
+
+  .profile-details-left-header {
+    font-size: small; 
+    color: rgb(77, 80, 83)
+  }
+
+  .profile-details-right-des {
+    font-size: initial;
+    padding-right: 8px
+  }
+
+  .profile-details-add{
+    font-size: small; 
+    padding-right: 8px; 
+    color:blue; 
+    font-weight: bold;
+  }
+
+  .custom-text-align-right {
+    text-align: right;
+  }
+
+  .custom-text-left {
+    text-align: left;
+    padding-left: 0px;
+  }
+
+  .ion-card-custom-padding {
+    margin: 20px;
+    width: calc(100% - 40px);
+  }
+
+  .text-bold {
+    font-weight: bold;
+  }
+
+  .do-not-have-acc-text {
+    font-size: small; 
+    color: rgb(77, 80, 83);
+  }
+
+  .create-an-acc-text {
+    font-size: small; 
+    padding-left: 0px; 
+    color:blue;
+  }
+   
+}
