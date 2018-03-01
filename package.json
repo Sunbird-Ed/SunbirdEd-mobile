@@ -36,6 +36,7 @@
     "@ionic-native/browser-tab": "^4.5.3",
     "@ionic-native/camera": "^4.5.3",
     "@ionic-native/core": "4.4.0",
+    "@ionic-native/globalization": "^4.5.3",
     "@ionic-native/http": "^4.5.3",
     "@ionic-native/splash-screen": "4.4.0",
     "@ionic-native/status-bar": "4.4.0",
@@ -52,6 +53,7 @@
     "cordova-plugin-device": "^1.1.7",
     "cordova-plugin-file": "^6.0.1",
     "cordova-plugin-genie-sdk": "file:cordova-plugin-genie-sdk",
+    "cordova-plugin-globalization": "^1.0.9",
     "cordova-plugin-inappbrowser": "^2.0.2",
     "cordova-plugin-ionic-webview": "^1.1.16",
     "cordova-plugin-splashscreen": "^4.1.0",
@@ -103,7 +105,8 @@
       "cordova-sqlite-storage": {},
       "cordova-plugin-inappbrowser": {},
       "cordova-plugin-advanced-http": {},
-      "cordova-plugin-browsertab": {}
+      "cordova-plugin-browsertab": {},
+      "cordova-plugin-globalization": {}
     },
     "platforms": [
       "android"

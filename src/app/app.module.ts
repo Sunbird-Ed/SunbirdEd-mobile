@@ -14,6 +14,7 @@ import { PluginService } from './plugins.service';
 import { TelemetryService, EventService, FrameworkModule, ContainerService, TabsPage } from '../framework';
 import { OnboardingPage } from '../plugins/core/onboarding/onboarding';
 import { LanguageSettingsPage } from '../plugins/core/language-settings/language-settings';
+import { Globalization } from '@ionic-native/globalization';
 
 const pluginModules = PluginService.getAllPluginModules();
 
@@ -51,6 +52,7 @@ const pluginModules = PluginService.getAllPluginModules();
     SplashScreen,
     PluginService,
     HTTP,
+    Globalization,
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })
