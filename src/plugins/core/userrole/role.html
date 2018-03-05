@@ -10,40 +10,36 @@
 
 </ion-header>
 
-<ion-content padding center>
-  <ion-list>
-    <ion-card *ngFor="let r of roles; let i = index">
-      <ion-card-content>
-        <ion-grid>
-          <ion-row>
-            <ion-col>
-                <ion-avatar item-start>
-                    <img src="../assets/imgs/ic_profile.png"/>
-                  </ion-avatar>
-            </ion-col>
-            <ion-col col-10>
-                <span class="rolename">{{r}}</span>
-                <ion-list>
-                    <ion-item *ngFor="let c of allContents[i]">
-                      <ion-grid item-content>
-                        <ion-row>
-                          <ion-col col-1>
-                              <div class="bullet"></div>
-                          </ion-col>
-                          <ion-col col-10>
-                              <ion-label class="desc">{{c}}</ion-label>
-                            
-                          </ion-col>
-                        </ion-row>
-                      </ion-grid>
-                    </ion-item>
-                </ion-list>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-        
-        
-      </ion-card-content>
-    </ion-card>
-  </ion-list>
+<ion-content padding>
+
+  <h6 class="alignment">You are a</h6>
+
+  <!-- Teacher card -->
+  <ion-card (click)="selectTeacherCard()" class="card-related-style" [ngStyle]="{'border-color': teacherCardBorderColor}">
+    <ion-card-content>
+      <h4 class="card-title">Teacher</h4>
+      <ul class="bullet-style">
+        <li>Browse through courses</li>
+        <li>Find relevant resources</li>
+        <li>Browse through groups</li>
+      </ul>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Student card -->
+  <ion-card (click)="selectStudentCard()" class="card-related-style" [ngStyle]="{'border-color': studentCardBorderColor}">
+    <ion-card-content>
+      <h4 class="card-title">Student</h4>
+      <ul class="bullet-style">
+        <li>Browse through resources</li>
+      </ul>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-footer no-border>
+    <button *ngIf="roleSelected" class="continue-related-style" ion-button block ion-end (click)="continue()">
+      {{continueAs}}
+      <ion-icon name='arrow-round-forward'></ion-icon>
+    </button>
+  </ion-footer>
 </ion-content>

@@ -2,6 +2,10 @@ import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { TabsPage, OAuthService } from '../../../framework';
 import { ViewController } from 'ionic-angular/navigation/view-controller';
+import { RolePage } from '../userrole/role';
+import { Storage } from "@ionic/storage";
+
+const KEY_LOGGED_IN_MODE = "logged_in_mode";
 
 @Component({
   selector: 'page-onboarding',
@@ -11,10 +15,11 @@ export class OnboardingPage {
 
   slides: any[];
 
-  constructor(public navCtrl: NavController, 
-    public navParams: NavParams, 
+  constructor(public navCtrl: NavController,
+    public navParams: NavParams,
     private viewCtrl: ViewController,
-    private auth: OAuthService) {
+    private auth: OAuthService,
+    private storage: Storage) {
 
     this.slides = [
       {
@@ -43,32 +48,22 @@ export class OnboardingPage {
     let that = this;
 
     that.auth.doOAuthStepOne()
-    .then(token => {
-      return that.auth.doOAuthStepTwo(token);
-    })
-    .then(() => {
-      return that.navCtrl.push(TabsPage, { loginMode: 'signin' });
-    })
-    .then(() => {
-      // first we find the index of the current view controller:
-      const index = that.viewCtrl.index;
-      // then we remove it from the navigation stack
-      that.navCtrl.remove(index);
-    })
-    .catch(error => {
-      console.log(error);
-    });
-    
+      .then(token => {
+        return that.auth.doOAuthStepTwo(token);
+      })
+      .then(() => {
+        this.storage.set(KEY_LOGGED_IN_MODE, 'signin');
+        return that.navCtrl.push(RolePage);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+
   }
 
   browseAsGuest() {
-    this.navCtrl.push(TabsPage, { loginMode: 'guest' })
-      .then(() => {
-        // first we find the index of the current view controller:
-        const index = this.viewCtrl.index;
-        // then we remove it from the navigation stack
-        this.navCtrl.remove(index);
-      });
+    this.storage.set(KEY_LOGGED_IN_MODE, 'guest');
+    this.navCtrl.push(RolePage);
   }
 
 }
