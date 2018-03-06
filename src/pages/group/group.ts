@@ -7,14 +7,10 @@ import { BasePlugin, ContainerService } from 'sunbird';
   selector: 'page-group',
   templateUrl: 'group.html'
 })
-export class GroupPage implements BasePlugin {
+export class GroupPage {
 
   constructor(public navCtrl: NavController) {
 
-  }
-
-  init(container: ContainerService) {
-    container.addTab({root: GroupPage, label: "GROUPS", icon:"groups", index: 3});
   }
 
 }

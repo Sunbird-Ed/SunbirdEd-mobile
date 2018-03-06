@@ -3,8 +3,6 @@ import { NavController, Events } from 'ionic-angular';
 import { TelemetryService,
   Impression,
   FrameworkModule,
-  BasePlugin,
-  ContainerService,
   ContentImport,
   ContentImportRequest,
   ContentService
@@ -17,21 +15,15 @@ import { TelemetryService,
   providers: [TelemetryService]
 
 })
-export class HomePage implements BasePlugin {
+export class HomePage {
 
   constructor(public navCtrl: NavController,
-    private container: ContainerService,
     private telemetryService: TelemetryService, private contentService: ContentService, private events: Events) {
 
     this.events.subscribe('genie.event', (response) => {
       console.log("Result " + response);
     });
 
-  }
-
-  init(container: ContainerService) {
-
-    container.addTab({root: HomePage, label: "HOME", icon:"home", index: 0});
   }
 
   ionViewDidLoad() {

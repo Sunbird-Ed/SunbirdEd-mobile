@@ -4,8 +4,8 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { TabsPage, AuthService } from "sunbird";
 import { PluginService } from './plugins.service';
-import { LanguageSettingsPage } from '../plugins/core/language-settings/language-settings';
 import { Storage } from "@ionic/storage";
+import { LanguageSettingsPage } from '../pages/language-settings/language-settings';
 
 declare var chcp: any;
 
@@ -32,6 +32,7 @@ export class MyApp {
     platform.ready().then(() => {
 
       that.authService.isLoggedIn(() => {
+        that.pluginLoader.initUserTabs();
         that.rootPage = TabsPage;
       }, m => {
         //check if the user has already onboarded, then take him to the home screen
@@ -45,7 +46,6 @@ export class MyApp {
           });
       });
 
-      this.pluginLoader.loadAllPlugins();
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
       statusBar.styleDefault();
@@ -79,6 +79,7 @@ export class MyApp {
   }
 
   takeToHomeAsGuest() {
+    this.pluginLoader.initGuestTabs();
     this.nav.push(TabsPage, { loginMode: 'guest' });
   }
 

@@ -16,7 +16,7 @@ import { ContainerService, CameraService } from 'sunbird';
 import { SettingsPageModule } from '../settings/settings.module';
 import { ActionMenuComponent } from './actionmenu/menu.action.component';
 import { AddUserComponent } from './usersnclasses/users/adduser.component';
-import { PBHorizontal } from "../../../component/pbhorizontal/pb-horizontal";
+import { PBHorizontal } from '../../component/pbhorizontal/pb-horizontal';
 
 
 @NgModule({

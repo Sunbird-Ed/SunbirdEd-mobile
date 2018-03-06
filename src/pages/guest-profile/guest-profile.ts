@@ -18,7 +18,7 @@ import { GuestEditProfilePage } from '../guest-edit.profile/guest-edit.profile';
   selector: 'page-guest-profile',
   templateUrl: 'guest-profile.html',
 })
-export class GuestProfilePage implements BasePlugin {
+export class GuestProfilePage {
 
   imageUri: string = "assets/imgs/ic_profile_default.png";
   list: Array<String> = ['SWITCH_ACCOUNT', 'DOWNLOAD_MANAGER', 'SETTINGS', 'SIGN_OUT'];

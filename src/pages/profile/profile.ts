@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
-import { BasePlugin, ContainerService, CameraService } from 'sunbird';
+import { CameraService } from 'sunbird';
 import { FormEducation } from './education/form.education';
 import { FormAddress } from './address/form.address';
 import { FormExperience } from './experience/form.experience';
@@ -11,7 +11,7 @@ import { PopoverController } from 'ionic-angular/components/popover/popover-cont
   selector: 'page-profile',
   templateUrl: 'profile.html'
 })
-export class ProfilePage implements BasePlugin {
+export class ProfilePage {
   imageUri: string = "assets/imgs/ic_profile_default.png";
   list: Array<String> = ['SWITCH_ACCOUNT', 'DOWNLOAD_MANAGER', 'SETTINGS', 'SIGN_OUT'];
   lastLoginTime: string = "Last login time:Feb 13,2018,3:20:05 PM";
@@ -24,10 +24,6 @@ export class ProfilePage implements BasePlugin {
   uncompletedDetails: string = "+ Add Experience";
 
   constructor(public navCtrl: NavController, private cameraService: CameraService, public popoverCtrl: PopoverController) {
-  }
-
-  init(containerService: ContainerService) {
-    containerService.addTab({ root: ProfilePage, label: "PROFILE", icon: "profile", index: 4})
   }
 
   editEduDetails() {

@@ -12,11 +12,11 @@ import { HTTP } from "@ionic-native/http";
 
 import { PluginService } from './plugins.service';
 import { TelemetryService, EventService, FrameworkModule, ContainerService, TabsPage } from 'sunbird';
-import { OnboardingPage } from '../plugins/core/onboarding/onboarding';
-import { LanguageSettingsPage } from '../plugins/core/language-settings/language-settings';
 import { Globalization } from '@ionic-native/globalization';
-import {GuestEditProfilePage} from '../plugins/core/guest-edit.profile/guest-edit.profile'
-import { RolePage } from '../plugins/core/userrole/role';
+import { RolePage } from '../pages/userrole/role';
+import { OnboardingPage } from '../pages/onboarding/onboarding';
+import { LanguageSettingsPage } from '../pages/language-settings/language-settings';
+import { GuestEditProfilePage } from '../pages/guest-edit.profile/guest-edit.profile';
 
 const pluginModules = PluginService.getAllPluginModules();
 
