@@ -2,7 +2,7 @@ import { Component, ViewChild } from '@angular/core';
 import { Platform, ModalController, AlertController, NavController, ViewController, Nav } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
-import { TabsPage, Session } from "../framework";
+import { TabsPage, AuthService } from "sunbird";
 import { PluginService } from './plugins.service';
 import { LanguageSettingsPage } from '../plugins/core/language-settings/language-settings';
 import { Storage } from "@ionic/storage";
@@ -24,23 +24,26 @@ export class MyApp {
     splashScreen: SplashScreen,
     private pluginLoader: PluginService, private modalCtrl: ModalController,
     private alertCtrl: AlertController,
-    private session: Session,
+    private authService: AuthService,
     private storage: Storage) {
 
+    let that = this;
+
     platform.ready().then(() => {
-      if (this.session.isValidSession()) {
-        this.rootPage = TabsPage;
-      } else {
+
+      that.authService.isLoggedIn(() => {
+        that.rootPage = TabsPage;
+      }, m => {
         //check if the user has already onboarded, then take him to the home screen
-        this.storage.get(KEY_USER_ONBOARDED)
+        that.storage.get(KEY_USER_ONBOARDED)
           .then(val => {
             if (val) {
-              this.checkLoginType()
+              that.checkLoginType()
             }else {
-              this.rootPage = LanguageSettingsPage;
+              that.rootPage = LanguageSettingsPage;
             }
-          })
-      }
+          });
+      });
 
       this.pluginLoader.loadAllPlugins();
       // Okay, so the platform is ready and our plugins are available.

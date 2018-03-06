@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
-import { ContainerService, BasePlugin } from '../../../framework';
+import { ContainerService, BasePlugin } from 'sunbird';
 
 @Component({
   selector: 'page-resources',

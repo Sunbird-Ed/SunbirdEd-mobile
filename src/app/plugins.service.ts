@@ -1,5 +1,5 @@
 import {Injectable} from "@angular/core";
-import {ContainerService} from "../framework/";
+import {ContainerService} from "sunbird";
 import {CoursesPageModule} from "./../plugins/core/courses/courses.module";
 import {GroupPageModule} from "./../plugins/core/group/group.module";
 import {HomePageModule} from "./../plugins/core/home/home.module";
@@ -20,7 +20,7 @@ export class PluginService {
 
     loadAllPlugins() {
         CoursesPage.prototype.init(this.container);
-        GroupPage.prototype.init(this.container);
+        // GroupPage.prototype.init(this.container);
         HomePage.prototype.init(this.container);
         // ProfilePage.prototype.init(this.container);
         GuestProfilePage.prototype.init(this.container);

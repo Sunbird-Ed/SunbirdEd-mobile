@@ -3,7 +3,7 @@ import { NavController, NavParams } from 'ionic-angular';
 import { OnboardingPage } from '../onboarding/onboarding';
 import { ViewController } from 'ionic-angular/navigation/view-controller';
 import { TranslateService } from '@ngx-translate/core';
-import { BasePlugin, ContainerService} from '../../../framework';
+import { BasePlugin, ContainerService} from 'sunbird';
 import { PopoverController } from 'ionic-angular/components/popover/popover-controller';
 
 /**

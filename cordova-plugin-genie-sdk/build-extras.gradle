@@ -17,6 +17,9 @@ allprojects {
         maven {
             url "https://platform.ekstep.in/downloads/content/repositories/releases"
         }
+        flatDir {
+            dirs 'libs'
+        }
     }
 }
 
@@ -74,6 +77,14 @@ android {
 }
 
 dependencies {
-    compile "org.ekstep.genieservices:genie-providers:1.0.519"
-    compile "org.ekstep.genieservices:genie-integration:1.0.519"
+    // compile "org.ekstep.genieservices:genie-providers:1.0.519"
+    // compile "org.ekstep.genieservices:genie-integration:1.0.519"
+    compile "com.google.code.gson:gson:2.8.2"
+    compile "joda-time:joda-time:2.9.9"
+    compile "org.greenrobot:eventbus:3.1.1"
+    compile "com.google.android.gms:play-services-location:9.4.0"
+    compile "com.squareup.okhttp3:okhttp:3.9.1"
+    compile (name:'genie-integration-1.0.local',ext:'aar')
+    compile (name:'genie-providers-1.0.local',ext:'aar')
+    compile (name:'genie-services-1.0.local',ext:'aar')
 }

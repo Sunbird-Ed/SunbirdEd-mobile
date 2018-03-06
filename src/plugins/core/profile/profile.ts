@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
-import { BasePlugin, ContainerService, CameraService } from '../../../framework';
+import { BasePlugin, ContainerService, CameraService } from 'sunbird';
 import { FormEducation } from './education/form.education';
 import { FormAddress } from './address/form.address';
 import { FormExperience } from './experience/form.experience';

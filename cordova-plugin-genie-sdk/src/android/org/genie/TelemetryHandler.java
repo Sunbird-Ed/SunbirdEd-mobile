@@ -45,7 +45,7 @@ public class TelemetryHandler {
     private static final String TYPE_SAVE_SHARE = "saveShare";
     private static final String TYPE_SYNC = "sync";
 
-    public static void handle(JSONArray args, CallbackContext callbackContext) {
+    public static void handle(JSONArray args, final CallbackContext callbackContext) {
         try {
             String type = args.getString(0);
             if (type.equals(TYPE_SAVE_IMPRESSION)) {
@@ -81,7 +81,7 @@ public class TelemetryHandler {
         }
     }
 
-    private static void sync(CallbackContext callbackContext) {
+    private static void sync(final CallbackContext callbackContext) {
         final Gson gson = new GsonBuilder().create();
 
         GenieService.getAsyncService().getSyncService().sync(new IResponseHandler<SyncStat>() {

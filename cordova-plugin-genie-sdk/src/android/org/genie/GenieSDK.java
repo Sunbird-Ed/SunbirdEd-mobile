@@ -31,7 +31,7 @@ public class GenieSDK extends CordovaPlugin {
         } else if (action.equals("content")) {
             ContentHandler.handle(args, callbackContext);
         } else if (action.equals("auth")) {
-            AuthHandler.handle(callbackContext);
+            AuthHandler.handle(args, callbackContext);
         } else if (action.equals("event")) {
             GenieEventHandler.handle(args, callbackContext);
         }

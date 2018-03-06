@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { IonicPage } from 'ionic-angular';
-import { BasePlugin, ContainerService } from '../../../framework';
+import { BasePlugin, ContainerService } from 'sunbird';
 
 @IonicPage()
 @Component({

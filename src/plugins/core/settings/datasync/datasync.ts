@@ -1,6 +1,6 @@
 import { Component, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { TelemetryService, SyncStat } from '../../../../framework';
+import { TelemetryService, SyncStat } from 'sunbird';
 import { Storage } from "@ionic/storage";
 import { DataSyncType } from "./datasynctype.enum"
 

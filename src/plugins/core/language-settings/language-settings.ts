@@ -5,7 +5,7 @@ import { ViewController } from 'ionic-angular/navigation/view-controller';
 import { TranslateService } from '@ngx-translate/core';
 import { Globalization } from '@ionic-native/globalization';
 import { Storage } from "@ionic/storage";
-import { TabsPage } from '../../../framework';
+import { TabsPage } from 'sunbird';
 
 /**
  * Generated class for the LanguageSettingPage page.

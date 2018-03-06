@@ -8,7 +8,7 @@ import { TelemetryService,
   ContentImport,
   ContentImportRequest,
   ContentService
-} from '../../../framework';
+} from 'sunbird';
 
 
 @Component({
