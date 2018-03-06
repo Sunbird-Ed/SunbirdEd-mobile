@@ -2,12 +2,12 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { GuestProfilePage } from '../guest-profile/guest-profile';
-// import { OnboardingPageModule } from '../onboarding/onboarding.module';
+import { GuestEditProfileModule } from '../guest-edit.profile/guest-edit-profile.module';
 
 @NgModule({
 	declarations: [GuestProfilePage],
 	imports: [
-    // OnboardingPageModule,
+		GuestEditProfileModule,
 		IonicPageModule.forChild(GuestProfilePage),
 		TranslateModule.forChild()
 	],

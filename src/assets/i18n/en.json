@@ -339,5 +339,7 @@
     "GET_UNLIMITED_ACCESS": "Get Unlimited Access to Sunbird.",
     "SIGNIN_TO_UNBLOCK_ALL_THE_BENFITS" : "Signin to unblock all the benfits that Sunbird has to offer.",
     "DONT_HAVE_AN_ACCOUNT" : "Don't have an account?",
-    "CREATE_AN_ACCOUNT" : "Create an account"
+    "CREATE_AN_ACCOUNT" : "Create an account",
+    "LABEL_BOARD" : "BOARD",
+    "SUBJECTS_CAPS" : "SUBJECTS"
 }

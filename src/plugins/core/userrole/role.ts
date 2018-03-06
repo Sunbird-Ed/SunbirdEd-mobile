@@ -73,4 +73,8 @@ export class RolePage {
     this.navCtrl.pop();
   }
 
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 42f520846b80784a22866fa06d82a9b9ecbf154f
