@@ -3,11 +3,12 @@ import { NavController, NavParams } from 'ionic-angular';
 import { OnboardingPage } from '../onboarding/onboarding';
 import { ViewController } from 'ionic-angular/navigation/view-controller';
 import { TranslateService } from '@ngx-translate/core';
-import { BasePlugin, ContainerService} from '../../../framework';
+import { BasePlugin, ContainerService } from '../../../framework';
 import { PopoverController } from 'ionic-angular/components/popover/popover-controller';
+import { GuestEditProfilePage } from '../guest-edit.profile/guest-edit.profile';
 
 /**
- * Generated class for the LanguageSettingPage page.
+ * Generated class for the GuestProfilePage page.
  *
  * See https://ionicframework.com/docs/components/#navigation for more info on
  * Ionic pages and navigation.
@@ -17,7 +18,7 @@ import { PopoverController } from 'ionic-angular/components/popover/popover-cont
   selector: 'page-guest-profile',
   templateUrl: 'guest-profile.html',
 })
-export class GuestProfilePage implements BasePlugin{
+export class GuestProfilePage implements BasePlugin {
 
   imageUri: string = "assets/imgs/ic_profile_default.png";
   list: Array<String> = ['SWITCH_ACCOUNT', 'DOWNLOAD_MANAGER', 'SETTINGS', 'SIGN_OUT'];
@@ -34,7 +35,7 @@ export class GuestProfilePage implements BasePlugin{
   }
 
   init(containerService: ContainerService) {
-    containerService.addTab({ root: GuestProfilePage, label: "PROFILE", icon: "profile", index: 4})
+    containerService.addTab({ root: GuestProfilePage, label: "PROFILE", icon: "profile", index: 4 })
   }
 
   ionViewDidLoad() {
@@ -42,7 +43,7 @@ export class GuestProfilePage implements BasePlugin{
   }
 
   editGuestProf() {
-
+    this.navCtrl.push(GuestEditProfilePage);
   }
 
 

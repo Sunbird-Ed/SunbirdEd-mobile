@@ -15,6 +15,7 @@ import { TelemetryService, EventService, FrameworkModule, ContainerService, Tabs
 import { OnboardingPage } from '../plugins/core/onboarding/onboarding';
 import { LanguageSettingsPage } from '../plugins/core/language-settings/language-settings';
 import { Globalization } from '@ionic-native/globalization';
+import {GuestEditProfilePage} from '../plugins/core/guest-edit.profile/guest-edit.profile'
 
 const pluginModules = PluginService.getAllPluginModules();
 
@@ -45,7 +46,8 @@ const pluginModules = PluginService.getAllPluginModules();
     MyApp,
     OnboardingPage,
     TabsPage,
-    LanguageSettingsPage
+    LanguageSettingsPage,
+    GuestEditProfilePage
   ],
   providers: [
     StatusBar,
