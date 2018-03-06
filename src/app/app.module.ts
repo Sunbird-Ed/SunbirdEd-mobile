@@ -1,6 +1,6 @@
 import { NgModule, ErrorHandler } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { IonicApp, IonicModule, IonicErrorHandler, Events } from 'ionic-angular';
+import { IonicApp, IonicModule, IonicErrorHandler, Events, NavController } from 'ionic-angular';
 import { MyApp } from './app.component';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -15,13 +15,18 @@ import { TelemetryService, EventService, FrameworkModule, ContainerService, Tabs
 import { OnboardingPage } from '../plugins/core/onboarding/onboarding';
 import { LanguageSettingsPage } from '../plugins/core/language-settings/language-settings';
 import { Globalization } from '@ionic-native/globalization';
+<<<<<<< HEAD
 import {GuestEditProfilePage} from '../plugins/core/guest-edit.profile/guest-edit.profile'
+=======
+import { RolePage } from '../plugins/core/userrole/role';
+>>>>>>> 92140282edc223bf5e51290ff7c4e8dc7009c1fb
 
 const pluginModules = PluginService.getAllPluginModules();
 
 @NgModule({
   declarations: [
     MyApp,
+    RolePage,
     TabsPage
   ],
   imports: [
@@ -46,8 +51,13 @@ const pluginModules = PluginService.getAllPluginModules();
     MyApp,
     OnboardingPage,
     TabsPage,
+<<<<<<< HEAD
     LanguageSettingsPage,
     GuestEditProfilePage
+=======
+    RolePage,
+    LanguageSettingsPage
+>>>>>>> 92140282edc223bf5e51290ff7c4e8dc7009c1fb
   ],
   providers: [
     StatusBar,

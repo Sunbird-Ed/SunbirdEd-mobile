@@ -2,6 +2,10 @@ import { Component, ViewChild } from '@angular/core';
 import { ContainerService } from '../container.services';
 import { Tabs } from 'ionic-angular';
 import { NavParams } from 'ionic-angular';
+import { Storage } from "@ionic/storage";
+
+const KEY_USER_ONBOARDED = "user_onboarded";
+const KEY_USER_LOGIN_MODE = "user_login_mode";
 
 @Component({
   selector: 'page-tabs',
@@ -15,7 +19,10 @@ export class TabsPage {
   tabs = [];
 
 
-  constructor(private container: ContainerService, private navParams: NavParams) {
+  constructor(private container: ContainerService, private navParams: NavParams,  private storage: Storage) {
+    let loginMode: string = this.navParams.get('loginMode');
+    storage.set(KEY_USER_ONBOARDED, true);
+    storage.set(KEY_USER_LOGIN_MODE, loginMode)
   }
 
   ionViewWillEnter() {
