@@ -9,15 +9,15 @@ var auth = {
     },
 
     startSession: function (session) {
-      exec(null, null, PLUGIN_NAME, this.action(), ["startSession"]);
+      exec(null, null, PLUGIN_NAME, this.action(), ["startSession", session]);
     },
 
     endSession: function () {
       exec(null, null, PLUGIN_NAME, this.action(), ["endSession"]);
     },
 
-    isValidSession: function (success, error) {
-      exec(success, error, PLUGIN_NAME, this.action(), ["isValidSession"]);
+    getSessionData: function (success) {
+      exec(success, null, PLUGIN_NAME, this.action(), ["getSessionData"]);
     },
 
     action: function () {

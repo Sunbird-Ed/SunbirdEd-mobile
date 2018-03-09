@@ -5,12 +5,14 @@ import { DatasyncPage } from './datasync/datasync';
 import { TranslateModule } from '@ngx-translate/core';
 import { LanguageSettingsPage } from '../language-settings/language-settings';
 import { OnboardingPageModule } from '../onboarding/onboarding.module';
+import { LanguageSettingsPageModule } from '../language-settings/language-settings.module';
 
 @NgModule({
-	declarations: [SettingsPage, LanguageSettingsPage, DatasyncPage],
-	entryComponents: [LanguageSettingsPage, DatasyncPage],
+	declarations: [SettingsPage, DatasyncPage],
+	entryComponents: [DatasyncPage],
 	imports: [
 		OnboardingPageModule,
+		LanguageSettingsPageModule,
 		IonicPageModule.forChild(SettingsPage),
 		TranslateModule.forChild()
 	],

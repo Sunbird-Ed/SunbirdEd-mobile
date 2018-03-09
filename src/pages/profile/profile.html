@@ -10,140 +10,230 @@
     </ion-buttons>
   </ion-navbar>
 </ion-header>
+
 <ion-content>
+    <!-- <ion-refresher (ionRefresh)="doRefresh($event)">
+      <ion-refresher-content>
+          
+      </ion-refresher-content>
+    </ion-refresher> -->
 
-  <ion-list>
-
-    <p class="profile-last-login-text">{{lastLoginTime}}</p>
-
-    <div ion-item text-center>
-      <img class="custom-avatar" [src]="imageUri" (click)="editPicture()" />
-      <p class="profile-name">{{profileName}}</p>
-      <p class="p-padding">
-        <span class="grey-bg">{{userName}}</span>
-      </p>
-      <p class="p-padding">
-        <span class="grey-bg">{{sunbird}}
-          <ion-icon name="mail"></ion-icon>
-        </span>
-      </p>
-
-      <ion-row class="profile-completed-ion-row">
-        <ion-col class="profile-completed-ion-col">
-          <p class="profile-completed-text">{{profileCompletionText}}</p>
-        </ion-col>
-        <ion-col class="profile-completed-ion-col">
-          <p class="profile-add-exp-text">{{uncompletedDetails}}</p>
-        </ion-col>
-      </ion-row>
-
-      <pb-horizontal progress={{progValue}}></pb-horizontal>
-
-    </div>
-
-    <div ion-item text-wrap>
-      <p class="description">{{'DESCRIPTION' | translate}}</p>
-
-      <p>{{profDesc}}</p>
-
-    </div>
-
-    <ion-list-header class="list-header" no-lines>
-      {{'TITLE_EDUCATION' | translate}}
-
-      <span float-right (click)="editEduDetails()">Add</span>
-    </ion-list-header>
-
-
-    <ion-item>
-      <ion-row justify-content-start>
-        <ion-col col-2>
-          <div class="image-holder"></div>
-        </ion-col>
-        <ion-col col-9>
-          <span>SXC1</span>
-          <span>B.Sc</span>
-          <span>Year of Passing : 2014</span>
-          <span>Grade: Grade(90%)</span>
-          <span>SXC</span>
-        </ion-col>
-        <ion-col col-1>
-          <ion-icon name="md-create" class="edit-icon" (click)="editEduDetails()"></ion-icon>
-        </ion-col>
-      </ion-row>
-    </ion-item>
-
-    <ion-item>
-      <ion-row justify-content-start>
-        <ion-col col-2>
-          <div class="image-holder"></div>
-        </ion-col>
-        <ion-col col-9>
-          <span>SXC1</span>
-          <span>B.Sc</span>
-          <span>Year of Passing : 2014</span>
-          <span>Grade: Grade(90%)</span>
-          <span>SXC</span>
-        </ion-col>
-        <ion-col col-1>
-          <ion-icon name="md-create" class="edit-icon" (click)="editEduDetails()"></ion-icon>
-        </ion-col>
-      </ion-row>
-    </ion-item>
-
-    <ion-list-header class="list-header">
-      {{'EXPERIENCE' | translate}}
-      <span float-right (click)="editExperience()">Add</span>
-    </ion-list-header>
-
-    <ion-item>
-      <ion-row justify-content-start>
-        <ion-col col-2>
-          <div class="image-holder"></div>
-        </ion-col>
-        <ion-col col-9>
-          <span>Teacher</span>
-          <span>Tarento school</span>
-          <span>Subject: English</span>
-          <span>Feb 18-Preset</span>
-        </ion-col>
-        <ion-col col-1>
-          <ion-icon name="md-create" class="edit-icon"></ion-icon>
-        </ion-col>
-      </ion-row>
-    </ion-item>
-
-    <ion-list-header class="list-header">
-      {{'TITLE_ADDRESS' | translate}}
-      <span float-right (click)="editAddress()">Add</span>
-    </ion-list-header>
-
-    <ion-item>
-      <ion-row justify-content-start>
-        <ion-col col-2>
-          <div class="image-holder"></div>
-        </ion-col>
-        <ion-col col-9>
-          <span>Current</span>
-          <span style="text-overflow: ellipsis;">4th Main Rd, Bangalure, Karanataka, Bangalure, Karanataka, Bangalure, Karanataka</span>
-          <span>Bangalure, Karanataka</span>
-        </ion-col>
-        <ion-col col-1>
-          <ion-icon name="md-create" class="edit-icon" (click)="editAddress()"></ion-icon>
-        </ion-col>
-      </ion-row>
-    </ion-item>
-
-    <ion-list-header class="list-header">
-      {{'SKILL_TAGS' | translate}}
-
-      <span float-right>Add</span>
-    </ion-list-header>
-
-    <ion-list-header class="list-header">
-      {{'ADDITIONAL_INFORMATION' | translate}}
-
-    </ion-list-header>
-
-  </ion-list>
+    <ion-list>
+      <p class="profile-last-login-text">{{lastLoginTime}}</p>
+  
+      <div ion-item text-center>
+        <img class="custom-avatar" [src]="imageUri" (click)="editPicture()" />
+        <p class="profile-name">{{profileName}}</p>
+        <p class="p-padding">
+          <span class="grey-bg">{{userName}}</span>
+        </p>
+        <!-- <p class="p-padding">
+          <span class="grey-bg">{{sunbird}}
+            <ion-icon name="mail"></ion-icon>
+          </span>
+        </p> -->
+  
+        <ion-row class="profile-completed-ion-row">
+          <ion-col class="profile-completed-ion-col">
+            <p class="profile-completed-text">{{profileCompletionText}}</p>
+          </ion-col>
+          <ion-col class="profile-completed-ion-col">
+            <p class="profile-add-exp-text">{{uncompletedDetails}}</p>
+          </ion-col>
+        </ion-row>
+  
+        <pb-horizontal progress={{profileProgress}}></pb-horizontal>
+  
+      </div>
+  
+      <div ion-item text-wrap>
+        <p class="description">{{'DESCRIPTION' | translate}}</p>
+  
+        <p>{{profile?.profileSummary}}</p>
+  
+      </div>
+  
+      <ion-list-header class="list-header" no-lines>
+        {{'TITLE_EDUCATION' | translate}}
+  
+        <span float-right (click)="editEduDetails()">Add</span>
+      </ion-list-header>
+  
+      <ion-item *ngFor="let ed of profile.education">
+        <ion-row justify-content-start>
+          <ion-col col-2>
+            <div class="image-holder"></div>
+          </ion-col>
+          <ion-col col-9>
+            <span>{{ed.name}}</span>
+            <span>{{ed.degree}}</span>
+            <span>Year of Passing : {{ed.yearOfPassing}}</span>
+            <span>Grade: {{ed.grade}}({{ed.percentage}}%)</span>
+            <span>{{ed.boardOrUniversity}}</span>
+          </ion-col>
+          <ion-col col-1>
+            <ion-icon name="md-create" class="edit-icon" (click)="editEduDetails()"></ion-icon>
+          </ion-col>
+        </ion-row>
+      </ion-item>
+      
+  
+      <ion-list-header class="list-header">
+        {{'EXPERIENCE' | translate}}
+        <span float-right (click)="editExperience()">Add</span>
+      </ion-list-header>
+  
+      <ion-item *ngFor="let job of profile.formattedJobProfile">
+        <ion-row justify-content-start>
+          <ion-col col-2>
+            <div class="image-holder"></div>
+          </ion-col>
+          <ion-col col-9>
+            <span>{{job.jobName}}</span>
+            <span>{{job.role}}</span>
+            <span>{{job.orgName}}</span>
+            <span>{{job.subject}}</span>
+            <span>{{job.duration}}</span>
+          </ion-col>
+          <ion-col col-1>
+            <ion-icon name="md-create" class="edit-icon"></ion-icon>
+          </ion-col>
+        </ion-row>
+      </ion-item>
+      
+  
+      <ion-list-header class="list-header">
+        {{'TITLE_ADDRESS' | translate}}
+        <span float-right (click)="editAddress()">Add</span>
+      </ion-list-header>
+  
+      <ion-item  *ngFor="let add of profile.address">
+        <ion-row justify-content-start>
+          <ion-col col-2>
+            <div class="image-holder"></div>
+          </ion-col>
+          <ion-col col-9>
+            <span>{{add.addType}}</span>
+            <span style="text-overflow: ellipsis;">{{add.addressLine1}}</span>
+            <span>{{add.city}}</span>
+          </ion-col>
+          <ion-col col-1>
+            <ion-icon name="md-create" class="edit-icon" (click)="editAddress()"></ion-icon>
+          </ion-col>
+        </ion-row>
+      </ion-item>
+      
+  
+      <ion-list-header class="list-header">
+        {{'SKILL_TAGS' | translate}}
+  
+        <span float-right>Add</span>
+      </ion-list-header>
+  
+      <ion-item  *ngFor="let skill of profile.skills">
+        <ion-row justify-content-start class="skill-row">
+          <ion-col col-9>
+            <span>{{skill.skillName}}</span>
+          </ion-col>
+          <ion-col col-1>
+            <span float-right>{{skill.endorsementcount}}</span>
+          </ion-col>
+        </ion-row>
+      </ion-item>
+  
+      <ion-list-header class="list-header">
+        {{'ADDITIONAL_INFORMATION' | translate}}
+  
+      </ion-list-header>
+  
+      <ion-item>
+        <ion-row justify-content-start>
+          <ion-col col-2>
+            <span>{{'LANGUAGE' | translate}}</span>
+          </ion-col>
+          <ion-col col-6>
+            <span float-right>{{profile.language && profile.language[0]}}</span>
+          </ion-col>
+        </ion-row>
+      </ion-item>
+  
+      <ion-item>
+        <ion-row justify-content-start>
+          <ion-col col-2>
+            <span>{{'EMAIL_ID' | translate}}</span>
+          </ion-col>
+          <ion-col col-8>
+            <span>{{profile?.email}}</span>
+          </ion-col>
+        </ion-row>
+      </ion-item>
+  
+      <ion-item>
+        <ion-row justify-content-start>
+          <ion-col col-2>
+            <span>{{'PHONE' | translate}}</span>
+          </ion-col>
+          <ion-col col-8>
+            <span>{{profile?.phone}}</span>
+          </ion-col>
+        </ion-row>
+      </ion-item>
+  
+  
+      <ion-item>
+        <ion-row justify-content-start>
+          <ion-col col-2>
+            <span>{{'GENDER' | translate}}</span>
+          </ion-col>
+          <ion-col col-8>
+            <span>{{profile?.gender}}</span>
+          </ion-col>
+        </ion-row>
+      </ion-item>
+  
+      <ion-item>
+        <ion-row justify-content-start>
+          <ion-col col-2>
+            <span>{{'SUBJECTS' | translate}}</span>
+          </ion-col>
+          <ion-col col-8>
+            <span>{{subjects}}</span>
+          </ion-col>
+        </ion-row>
+      </ion-item>
+  
+      <ion-item>
+        <ion-row justify-content-start>
+          <ion-col col-2>
+            <span>{{'DATE_OF_BIRTH' | translate}}</span>
+          </ion-col>
+          <ion-col col-8>
+            <span>{{profile?.dob}}</span>
+          </ion-col>
+        </ion-row>
+      </ion-item>
+  
+      <ion-item>
+        <ion-row justify-content-start>
+          <ion-col col-2>
+            <span>{{'GRADE' | translate}}</span>
+          </ion-col>
+          <ion-col col-8>
+            <span>{{grades}}</span>
+          </ion-col>
+        </ion-row>
+      </ion-item>
+  
+      <ion-item>
+        <ion-row justify-content-start>
+          <ion-col col-2>
+            <span>{{'LANGUAGE' | translate}}</span>
+          </ion-col>
+          <ion-col col-8>
+            <span>{{profile?.location}}</span>
+          </ion-col>
+        </ion-row>
+      </ion-item>
+  
+    </ion-list>
 </ion-content>

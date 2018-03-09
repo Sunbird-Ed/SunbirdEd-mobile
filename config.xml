@@ -99,9 +99,10 @@
     <plugin name="cordova-plugin-browsertab" spec="^0.2.0" />
     <allow-navigation href="http://172.16.0.75:8100" />
     <allow-navigation href="http://172.17.20.105:8100" />
+    <plugin name="cordova-plugin-globalization" spec="^1.0.9" />
+    <allow-navigation href="http://192.168.1.6:8100" />
     <plugin name="cordova-plugin-camera" spec="^4.0.2" />
     <plugin name="cordova-sqlite-storage" spec="^2.2.1" />
     <plugin name="cordova-plugin-genie-sdk" spec="cordova-plugin-genie-sdk" />
-    <plugin name="cordova-plugin-globalization" spec="^1.0.9" />
     <engine name="android" spec="~6.3.0" />
 </widget>

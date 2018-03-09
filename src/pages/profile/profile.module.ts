@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { DatePipe } from "@angular/common";
 import { IonicPageModule } from 'ionic-angular';
 import { Camera } from '@ionic-native/camera';
 import { TranslateModule } from '@ngx-translate/core';
@@ -58,7 +59,8 @@ import { PBHorizontal } from '../../component/pbhorizontal/pb-horizontal';
   providers: [
     ContainerService,
     Camera,
-    CameraService
+    CameraService,
+    DatePipe
   ]
 })
 export class ProfilePageModule { }

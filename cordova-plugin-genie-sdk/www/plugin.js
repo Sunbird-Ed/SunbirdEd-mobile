@@ -4,6 +4,7 @@ var content = require("./content");
 var auth = require("./auth");
 var event = require("./event");
 var downloadService = require("./downloadService");
+var profile = require("./profile");
 
 var GenieSDK = {
 
@@ -11,7 +12,8 @@ var GenieSDK = {
   content: content,
   auth: auth,
   event: event,
-  downloadService: downloadService
+  downloadService: downloadService,
+  profile: profile
 };
 
 

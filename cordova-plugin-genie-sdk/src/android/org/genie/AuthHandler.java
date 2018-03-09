@@ -16,7 +16,7 @@ import org.json.JSONException;
 public class AuthHandler {
 
     private static final String TYPE_GET_BEARER_TOKEN = "getMobileDeviceBearerToken";
-    private static final String TYPE_VALID_SESSION = "isValidSession";
+    private static final String TYPE_VALID_SESSION = "getSessionData";
     private static final String TYPE_START_SESSION = "startSession";
     private static final String TYPE_END_SESSION = "endSession";
 
@@ -31,7 +31,7 @@ public class AuthHandler {
             } else if (type.equals(TYPE_END_SESSION)) {
                 endSession();
             } else if (type.equals(TYPE_VALID_SESSION)) {
-                isValidSession(callbackContext);
+                getSessionData(callbackContext);
             }
 
         } catch (JSONException e) {
@@ -41,12 +41,9 @@ public class AuthHandler {
 
     }
 
-    private static void isValidSession(final CallbackContext callbackContext) {
-        if (GenieService.getService().getAuthSession().getSessionData() != null) {
-            callbackContext.success();
-        } else {
-            callbackContext.error(0);
-        }
+    private static void getSessionData(final CallbackContext callbackContext) {
+        Session session = GenieService.getService().getAuthSession().getSessionData();
+        callbackContext.success(GsonUtil.toJson(session));
     }
 
     private static void endSession() {

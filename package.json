@@ -106,8 +106,8 @@
       "cordova-plugin-inappbrowser": {},
       "cordova-plugin-advanced-http": {},
       "cordova-plugin-browsertab": {},
-      "cordova-plugin-genie-sdk": {},
-      "cordova-plugin-globalization": {}
+      "cordova-plugin-globalization": {},
+      "cordova-plugin-genie-sdk": {}
     },
     "platforms": [
       "android"
