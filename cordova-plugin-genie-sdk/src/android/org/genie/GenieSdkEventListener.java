@@ -46,7 +46,7 @@ public class GenieSdkEventListener {
             throws InterruptedException {
 
         PluginResult pluginResult = new PluginResult(PluginResult.Status.OK,
-                mGson.toJson(contentImportResponse));
+                mGson.toJson(new EventResponse(EventResponse.TYPE_CONTENT_IMPORT_RESPONSE, contentImportResponse)));
         pluginResult.setKeepCallback(true);
 
         mCallback.sendPluginResult(pluginResult);
@@ -57,7 +57,7 @@ public class GenieSdkEventListener {
             throws InterruptedException {
 
         PluginResult pluginResult = new PluginResult(PluginResult.Status.OK,
-                mGson.toJson(importContentProgress));
+                mGson.toJson(new EventResponse(EventResponse.TYPE_CONTENT_IMPORT_PROGRESS, importContentProgress)));
         pluginResult.setKeepCallback(true);
 
         mCallback.sendPluginResult(pluginResult);
@@ -68,9 +68,24 @@ public class GenieSdkEventListener {
     public void onDownloadProgress(DownloadProgress downloadProgress)
             throws InterruptedException {
         PluginResult pluginResult = new PluginResult(PluginResult.Status.OK,
-                mGson.toJson(downloadProgress));
+                mGson.toJson(new EventResponse(EventResponse.TYPE_DOWNLOAD_PRGORESS, downloadProgress)));
         pluginResult.setKeepCallback(true);
 
         mCallback.sendPluginResult(pluginResult);
+    }
+
+    public class EventResponse {
+      public static final String TYPE_CONTENT_IMPORT_RESPONSE = "contentImport";
+      public static final String TYPE_CONTENT_IMPORT_PROGRESS = "contentImportProgress";
+      public static final String TYPE_DOWNLOAD_PRGORESS = "downloadProgress";
+
+      public final String type;
+      public final Object data;
+
+      public EventResponse(String type, Object data) {
+        this.type = type;
+        this.data = data;
+      }
+
     }
 }
