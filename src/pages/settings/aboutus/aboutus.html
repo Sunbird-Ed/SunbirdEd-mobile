@@ -1,0 +1,48 @@
+<!--
+  Generated template for the AboutusPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>{{ 'ABOUT_US_SCREEN.ABOUT_US' | translate }}</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+  <ion-list>
+    <!-- Device Id -->
+    <ion-item>
+      <h2>{{ 'ABOUT_US_SCREEN.DEVICE_ID' | translate }}</h2>
+      <p class="settings-item-style">{{ deviceId | translate}}</p>
+    </ion-item>
+
+    <!-- App Version -->
+    <ion-item>
+      <h2>{{ 'ABOUT_US_SCREEN.APP_VERSION' | translate }}</h2>
+      <p class="settings-item-style">{{ appVersion | translate}}</p>
+    </ion-item>
+
+    <!-- Privacy Policy -->
+    <ion-item (click)="privacyPolicy()">
+      <h2>{{ 'ABOUT_US_SCREEN.PRIVACY_POLICY' | translate }}</h2>
+      <ion-icon name="ios-arrow-forward" item-end></ion-icon>
+    </ion-item>
+
+    <!-- Terms of Service -->
+    <ion-item (click)="termsOfService()">
+      <h2>{{ 'ABOUT_US_SCREEN.TERMS_OF_SERVICE' | translate }}</h2>
+      <ion-icon name="ios-arrow-forward" item-end></ion-icon>
+    </ion-item>
+
+    <!-- About the Application -->
+    <ion-item (click)="aboutApp()">
+      <h2>{{ 'ABOUT_US_SCREEN.ABOUT_THE_APP' | translate }}</h2>
+      <ion-icon name="ios-arrow-forward" item-end></ion-icon>
+    </ion-item>
+  </ion-list>
+</ion-content>

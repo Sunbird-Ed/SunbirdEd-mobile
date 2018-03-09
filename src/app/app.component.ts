@@ -31,20 +31,23 @@ export class MyApp {
 
     platform.ready().then(() => {
 
-      that.authService.isLoggedIn(() => {
-        that.pluginLoader.initUserTabs();
-        that.rootPage = TabsPage;
-      }, m => {
-        //check if the user has already onboarded, then take him to the home screen
-        that.storage.get(KEY_USER_ONBOARDED)
-          .then(val => {
-            if (val) {
-              that.checkLoginType()
-            }else {
-              that.rootPage = LanguageSettingsPage;
-            }
-          });
-      });
+      // that.authService.isLoggedIn(() => {
+      //   that.pluginLoader.initUserTabs();
+      //   that.rootPage = TabsPage;
+      // }, m => {
+      //   //check if the user has already onboarded, then take him to the home screen
+      //   that.storage.get(KEY_USER_ONBOARDED)
+      //     .then(val => {
+      //       if (val) {
+      //         that.checkLoginType()
+      //       }else {
+      //         that.rootPage = LanguageSettingsPage;
+      //       }
+      //     });
+      // });
+
+      that.pluginLoader.initUserTabs();
+      that.rootPage = TabsPage;
 
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
@@ -70,7 +73,7 @@ export class MyApp {
         } else if (val === "guest") {
           //take user to home page
           this.takeToHomeAsGuest()
-        } 
+        }
       })
   }
 
