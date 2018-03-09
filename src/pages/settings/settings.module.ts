@@ -9,12 +9,14 @@ import { PrivacypolicyPage } from './privacypolicy/privacypolicy';
 import { TranslateModule } from '@ngx-translate/core';
 import { LanguageSettingsPage } from '../language-settings/language-settings';
 import { OnboardingPageModule } from '../onboarding/onboarding.module';
+import { LanguageSettingsPageModule } from '../language-settings/language-settings.module';
 
 @NgModule({
 	declarations: [SettingsPage, LanguageSettingsPage, DatasyncPage, AboutusPage, AboutappPage, PrivacypolicyPage, TermsofservicePage],
 	entryComponents: [LanguageSettingsPage, DatasyncPage, AboutusPage, AboutappPage, PrivacypolicyPage, TermsofservicePage],
 	imports: [
 		OnboardingPageModule,
+		LanguageSettingsPageModule,
 		IonicPageModule.forChild(SettingsPage),
 		TranslateModule.forChild()
 	],

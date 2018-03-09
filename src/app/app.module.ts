@@ -10,7 +10,7 @@ import { HttpClientModule, HttpClient } from "@angular/common/http";
 import { IonicStorageModule } from "@ionic/storage";
 import { HTTP } from "@ionic-native/http";
 
-import { PluginService } from './plugins.service';
+import { ModuleService } from './module.service';
 import { TelemetryService, EventService, FrameworkModule, ContainerService, TabsPage } from 'sunbird';
 import { Globalization } from '@ionic-native/globalization';
 import { RolePage } from '../pages/userrole/role';
@@ -18,12 +18,11 @@ import { OnboardingPage } from '../pages/onboarding/onboarding';
 import { LanguageSettingsPage } from '../pages/language-settings/language-settings';
 import { GuestEditProfilePage } from '../pages/guest-edit.profile/guest-edit.profile';
 
-const pluginModules = PluginService.getAllPluginModules();
+const pluginModules = ModuleService.getAllPluginModules();
 
 @NgModule({
   declarations: [
     MyApp,
-    RolePage,
     TabsPage
   ],
   imports: [
@@ -46,17 +45,11 @@ const pluginModules = PluginService.getAllPluginModules();
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
-    OnboardingPage,
-    TabsPage,
-    LanguageSettingsPage,
-    GuestEditProfilePage,
-    RolePage,
-    LanguageSettingsPage
+    TabsPage
   ],
   providers: [
     StatusBar,
     SplashScreen,
-    PluginService,
     HTTP,
     Globalization,
     { provide: ErrorHandler, useClass: IonicErrorHandler }

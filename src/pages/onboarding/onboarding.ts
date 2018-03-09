@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-import { TabsPage, OAuthService } from 'sunbird';
+import { TabsPage, OAuthService, ContainerService } from 'sunbird';
 import { ViewController } from 'ionic-angular/navigation/view-controller';
 import { RolePage } from '../userrole/role';
 import { Storage } from "@ionic/storage";
-
-const KEY_LOGGED_IN_MODE = "logged_in_mode";
+import { ModuleService } from '../../app/module.service';
 
 @Component({
   selector: 'page-onboarding',
@@ -19,6 +18,7 @@ export class OnboardingPage {
     public navParams: NavParams,
     private viewCtrl: ViewController,
     private auth: OAuthService,
+    private container: ContainerService,
     private storage: Storage) {
 
     this.slides = [
@@ -52,8 +52,8 @@ export class OnboardingPage {
         return that.auth.doOAuthStepTwo(token);
       })
       .then(() => {
-        this.storage.set(KEY_LOGGED_IN_MODE, 'signin');
-        return that.navCtrl.push(RolePage);
+        ModuleService.initUserTabs(that.container);
+        return that.navCtrl.push(TabsPage);
       })
       .catch(error => {
         console.log(error);
@@ -62,7 +62,7 @@ export class OnboardingPage {
   }
 
   browseAsGuest() {
-    this.storage.set(KEY_LOGGED_IN_MODE, 'guest');
+    ModuleService.initGuestTabs(this.container);
     this.navCtrl.push(RolePage);
   }
 
