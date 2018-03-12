@@ -1,4 +1,5 @@
 page-profile {
+
     .profile-last-login-text{
         color: rgb(104, 103, 101);
         text-align: center;
@@ -78,8 +79,16 @@ page-profile {
 
         span {
             font-size: 10pt;
-            color: blue;
+            color: map-get($colors, primary);
         }
+    }
+
+    ion-list-header {
+        padding: 0%!important;
+    }
+
+    ion-label {
+        margin-right: 0%!important;
     }
 
     .description {
@@ -105,12 +114,25 @@ page-profile {
     }
 
     ion-item {
+        padding: 0%!important;
         span {
             display: block;
         }
     }
 
+    ion-row {
+        padding: 0%!important;
+    }
+
     .edit-icon {
-      color: blue;
+      color: map-get($colors, primary);
+    }
+
+    col-2 {
+        padding-left: 0%!important;
+    }
+
+    col-1 {
+        padding-right: 0%!important;
     }
 }

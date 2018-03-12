@@ -11,7 +11,7 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content>
+<ion-content padding>
     <!-- <ion-refresher (ionRefresh)="doRefresh($event)">
       <ion-refresher-content>
           
@@ -21,7 +21,7 @@
     <ion-list>
       <p class="profile-last-login-text">{{lastLoginTime}}</p>
   
-      <div ion-item text-center>
+      <div text-center>
         <img class="custom-avatar" [src]="imageUri" (click)="editPicture()" />
         <p class="profile-name">{{profileName}}</p>
         <p class="p-padding">
@@ -46,7 +46,7 @@
   
       </div>
   
-      <div ion-item text-wrap>
+      <div text-wrap>
         <p class="description">{{'DESCRIPTION' | translate}}</p>
   
         <p>{{profile?.profileSummary}}</p>
