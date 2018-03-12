@@ -105,4 +105,6 @@
     <plugin name="cordova-sqlite-storage" spec="^2.2.1" />
     <plugin name="cordova-plugin-genie-sdk" spec="cordova-plugin-genie-sdk" />
     <engine name="android" spec="~6.3.0" />
+    <plugin name="cordova-sqlite-storage" spec="^2.2.1" />
+    <plugin name="cordova-plugin-camera" spec="^4.0.2" />
 </widget>
