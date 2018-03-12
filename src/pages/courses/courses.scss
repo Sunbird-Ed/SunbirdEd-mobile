@@ -1,3 +1,10 @@
 page-courses {
+  .inner {
+    width: auto;
+    height: 100%;
 
+    course-card {
+      display: table-cell;
+    }
+  }
 }

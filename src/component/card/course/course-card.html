@@ -1,0 +1,23 @@
+<ion-card>
+  <ion-grid no-padding>
+    <ion-row class="top-container" no-padding>
+      <ion-col col-12>
+          <div class="img-container">
+          </div>
+          <img src="https://cdn-images-1.medium.com/max/2000/1*LZZ9Sr4XL7j2-LjSJ5uq9Q.jpeg" />
+          <ion-label class="card-title" padding-left>Hello</ion-label>
+      </ion-col>
+    </ion-row>
+
+    <ion-row class="bottom-container" no-padding>
+      <ion-col col-8 class="info-container">
+        <rating [(ngModel)]="rate" readOnly="true" max="5" no-padding></rating>
+        <ion-label class="size_txt" no-margin>Size [180kb]</ion-label>
+      </ion-col>
+
+      <ion-col col-4 class="center-item">
+          <button ion-button outline small>Open</button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-card>
