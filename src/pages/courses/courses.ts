@@ -10,7 +10,6 @@ import { ContainerService } from 'sunbird';
 })
 export class CoursesPage {
 
-  hello: string = "HELLO";
 
   constructor(public navCtrl: NavController) {
 
