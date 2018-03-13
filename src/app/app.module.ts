@@ -19,6 +19,7 @@ import { LanguageSettingsPage } from '../pages/language-settings/language-settin
 import { GuestEditProfilePage } from '../pages/guest-edit.profile/guest-edit.profile';
 import { UniqueDeviceID } from '@ionic-native/unique-device-id';
 import { AppVersion } from '@ionic-native/app-version';
+import { SocialSharing } from '@ionic-native/social-sharing';
 
 const pluginModules = ModuleService.getAllPluginModules();
 
@@ -56,6 +57,7 @@ const pluginModules = ModuleService.getAllPluginModules();
     Globalization,
     UniqueDeviceID,
     AppVersion,
+    SocialSharing,
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })
