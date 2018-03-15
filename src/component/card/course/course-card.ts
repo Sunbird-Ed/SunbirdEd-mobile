@@ -11,6 +11,8 @@ export class CourseCard {
    */
   @Input() course: any;
 
+  @Input() layoutName: string;
+
   constructor() {
   }
 }

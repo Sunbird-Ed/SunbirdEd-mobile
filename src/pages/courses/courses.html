@@ -17,7 +17,7 @@
     </div>
     <ion-scroll scrollX="true" style="width: 100%; height: 166px;" no-padding>
       <div class="inner inprogress-courses">
-        <course-card *ngFor="let item of enrolledCourse" [course]="item"></course-card>
+        <course-card *ngFor="let item of enrolledCourse" [course]="item" [layoutName]="'uuuuu'"></course-card>
       </div>
     </ion-scroll>
   </div>
@@ -32,7 +32,7 @@
         </div>
         <ion-scroll scrollX="true" style="width: 100%; height: 166px;" no-padding>
           <div class="inner nilesh">
-            <course-card *ngFor="let item of items.contents" [course]="item">
+            <course-card *ngFor="let item of items.contents" [course]="item" [layoutName]="'uuuuu'">
             </course-card>
           </div>
         </ion-scroll>
