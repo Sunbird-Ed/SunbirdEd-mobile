@@ -8,8 +8,18 @@ import { NavController } from 'ionic-angular';
 })
 
 export class FormAddress {
-  constructor(public navCtrl: NavController, public formBuilder: FormBuilder) { }
+  tabBarElement: any;
+  constructor(public navCtrl: NavController, public formBuilder: FormBuilder) {
+    this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
+  }
 
+  ionViewWillEnter() {
+    this.tabBarElement.style.display = 'none';
+  }
+ 
+  ionViewWillLeave() {
+    this.tabBarElement.style.display = 'flex';
+  }
 
   onSubmit(values) {
     // this.navCtrl.push(UserPage);

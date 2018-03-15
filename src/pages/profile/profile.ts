@@ -3,10 +3,13 @@ import { NavController } from 'ionic-angular';
 import { CameraService, ProfileService, AuthService } from 'sunbird';
 import { FormEducation } from './education/form.education';
 import { FormAddress } from './address/form.address';
+import { SkillTagsComponent } from './skill-tags/skill-tags';
+import { AdditionalInfoComponent } from './additional-info/additional-info';
 import { FormExperience } from './experience/form.experience';
 import { OverflowMenuComponent } from './overflowmenu/menu.overflow.component';
 import { PopoverController } from 'ionic-angular/components/popover/popover-controller';
 import { DatePipe } from '@angular/common';
+
 
 @Component({
   selector: 'page-profile',
@@ -76,7 +79,7 @@ export class ProfilePage {
           let s = JSON.parse(session);
           let req = {
             userId: s["userToken"], 
-            requiredFields: ["completeness","missingFields","lastLoginTime","topics"], 
+            requiredFields: ["completeness", "missingFields", "lastLoginTime", "topics"], 
             refreshUserProfileDetails: true
           };
           that.profileService.getProfileById(req, res => {
@@ -84,6 +87,7 @@ export class ProfilePage {
               that.resetProfile();
               let r = JSON.parse(res);
               that.profile = r.response;
+              if(r.response.avatar) that.imageUri = r.response.avatar;
               that.formatLastLoginTime();
               that.formatUserName();
               that.formatProfileName();
@@ -104,17 +108,11 @@ export class ProfilePage {
   }
 
   formatGrades() {
-    let that = this;
-    this.profile.grade.forEach(element => {
-      that.grades = that.grades + ", " + element;
-    });
+    this.grades = this.profile.grade.join(', ');
   }
 
   formatSubjects() {
-    let that = this;
-    this.profile.subject.forEach(element => {
-      that.subjects = that.subjects + ", " + element;
-    });
+    this.subjects = this.profile.subject.join(', ');
   }
 
   formatJobProfile() {
@@ -137,10 +135,7 @@ export class ProfilePage {
   }
 
   formatLastLoginTime() {
-    let millis: number = this.profile.lastLoginTime;
-    let date = new Date(millis);
-    let value = this.datePipe.transform(date, "MMM dd, yyyy, hh:mm:ss a");
-    this.lastLoginTime = this.lastLoginTime + value;
+    this.lastLoginTime = this.lastLoginTime + this.datePipe.transform(new Date(this.profile.lastLoginTime), "MMM dd, yyyy, hh:mm:ss a");
   }
 
   formatUserName() {
@@ -159,12 +154,16 @@ export class ProfilePage {
     this.profileProgress = this.profile.completeness + "";
   }
 
-  editEduDetails() {
-    this.navCtrl.push(FormEducation);
+  editEduDetails(isNewForm) {
+    this.navCtrl.push(FormEducation, { addForm: isNewForm});
   }
 
   editAddress() {
     this.navCtrl.push(FormAddress);
+  }
+
+  addSkillTags() {
+    this.navCtrl.push(SkillTagsComponent);
   }
 
   editPicture() {
@@ -177,6 +176,10 @@ export class ProfilePage {
 
   editExperience() {
     this.navCtrl.push(FormExperience);
+  }
+
+  editAdditionalInfo() {
+    this.navCtrl.push(AdditionalInfoComponent);
   }
 
   showOverflowMenu(event) {

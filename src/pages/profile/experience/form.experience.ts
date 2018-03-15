@@ -8,18 +8,23 @@ import { NavController } from 'ionic-angular';
 })
 
 export class FormExperience {
-  constructor(public navCtrl: NavController, public formBuilder: FormBuilder) { }
+  tabBarElement: any;
+  constructor(public navCtrl: NavController, public formBuilder: FormBuilder) {
+    //Need to hide bottom tab
+    this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
+   }
 
+   ionViewWillEnter() {
+    this.tabBarElement.style.display = 'none';
+  }
+
+  ionViewWillLeave() {
+    this.tabBarElement.style.display = 'flex';
+  }
 
   onSubmit(values) {
     // this.navCtrl.push(UserPage);
   }
 
-//   loadData() {
-//   this.yourService.getData().subscribe((data) => {
-//     console.log("what is in the data ", data);
-//     this.myjsondata = data;
-//   });
-// }
 
 }

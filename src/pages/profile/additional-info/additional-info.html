@@ -1,0 +1,87 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      {{ 'PERSONAL_DETAILS' | translate }}
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-item>
+    <ion-label stacked>{{ 'NAME' | translate }}</ion-label>
+    <ion-input placeholder="{{'NAME_HINT' | translate }}"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label stacked>{{ 'LAST_NAME' | translate }}</ion-label>
+    <ion-input placeholder="{{'LAST_NAME_HINT' | translate }}"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label stacked>{{'LANGUAGES' | translate }}</ion-label>
+    <ion-select interface="popover" placeholder="{{'SELECT' | translate }}">
+      <ion-option value="en">English</ion-option>
+      <ion-option value="mr">Marathi</ion-option>
+      <ion-option value="hi">Hindi</ion-option>
+    </ion-select>
+  </ion-item>
+  <ion-item>
+    <ion-label stacked>{{'EMAIL_ID' | translate }}</ion-label>
+    <ion-input placeholder="{{'ERROR_EMPTY_EMAIL' | translate }}" type="email"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label stacked>{{'PHONE' | translate }}</ion-label>
+    <ion-input placeholder="{{'ERROR_EMPTY_MOBILE' | translate }}" type="number"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label stacked>{{'DESCRIPTION' | translate }}</ion-label>
+    <ion-input placeholder="optional"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label stacked>{{'SUBJECTS' | translate }}</ion-label>
+    <ion-select multiple="true" interface="popover" placeholder="{{'SELECT' | translate }}">
+      <ion-option value="en">English</ion-option>
+      <ion-option value="mr">Marathi</ion-option>
+      <ion-option value="hi">Hindi</ion-option>
+    </ion-select>
+  </ion-item>
+  <ion-item>
+    <ion-label stacked>{{'GENDER' | translate }}</ion-label>
+    <ion-select interface="popover" placeholder="{{'SELECT' | translate }}">
+      <ion-option value="m">Male</ion-option>
+      <ion-option value="f">Female</ion-option>
+      <ion-option value="t">Transgender</ion-option>
+    </ion-select>
+  </ion-item>
+  <ion-item>
+    <ion-label stacked>{{'DATE_OF_BIRTH' | translate }}</ion-label>
+    <ion-datetime displayFormat="MM/DD/YYYY"></ion-datetime>
+  </ion-item>
+  <ion-item>
+    <ion-label stacked>{{'GRADE' | translate }}</ion-label>
+    <ion-select multiple="true" interface="popover" placeholder="{{'SELECT' | translate }}">
+      <ion-option value="kg">Kindergarten</ion-option>
+      <ion-option value="g1">Grade 1</ion-option>
+      <ion-option value="g2">Grade 2</ion-option>
+    </ion-select>
+  </ion-item>
+  <ion-item>
+    <ion-label stacked>{{'CURRENT_LOCATION' | translate }}</ion-label>
+    <ion-input placeholder="optional"></ion-input>
+  </ion-item>
+  <ion-label stacked>SOCIAL MEDIA LINKS</ion-label>
+  <ion-item>
+    <ion-label stacked>{{'FACEBOOK' | translate }}</ion-label>
+    <ion-input placeholder="optional" type="url"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label stacked>{{'TWITTER' | translate }}</ion-label>
+    <ion-input placeholder="optional" type="url"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label stacked>{{'LINKEDIN' | translate }}</ion-label>
+    <ion-input placeholder="optional" type="url"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label stacked>{{'BLOG' | translate }}</ion-label>
+    <ion-input placeholder="optional" type="url"></ion-input>
+  </ion-item>
+</ion-content>

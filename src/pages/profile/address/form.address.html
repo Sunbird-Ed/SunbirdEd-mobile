@@ -1,124 +1,71 @@
 <ion-header>
   <ion-navbar>
-    <ion-title>Address</ion-title>
+    <ion-title>{{ 'TITLE_ADDRESS' | translate }}</ion-title>
   </ion-navbar>
 </ion-header>
 
-<ion-content padding class="form-content">
-  <!-- <form class="form" [formGroup]="validations_form" (ngSubmit)="onSubmit(validations_form.value)"> -->
+<ion-content padding>
   <form class="form">
-    <!-- <ion-item>
-      <ion-label stacked>DEGREE
-        <span class="star" style="color: red">&nbsp;*</span>
-      </ion-label>
-      <ion-input type="text" placeholder="Degree" class="form-controll" required></ion-input>
-    </ion-item> -->
-
-    <!-- <ion-item>
-        <ion-label>Pepperoni</ion-label>
-        <ion-checkbox [(ngModel)]="pepperoni"></ion-checkbox>
-      </ion-item>
-    
-      <ion-item>
-        <ion-label>Sausage</ion-label>
-        <ion-checkbox [(ngModel)]="sausage" disabled="true"></ion-checkbox>
-      </ion-item>
-
-    <ion-item>
-      <ion-row>
-        <ion-col padding>
-          <ion-spinner name="bubbles"></ion-spinner>
-          <! <button no-margin ion-button full large color="primary">Update</button> -->
-        <!-- </ion-col>
-        <ion-col padding>
-          <ion-spinner name="bubbles"></ion-spinner>
-          <! <button no-margin ion-button full large color="danger">Cancel</button> -->
-        <!-- </ion-col>
-      </ion-row>
-    </ion-item> --> 
-
-    <!-- <ion-item>
-        <ion-label>Pepperoni</ion-label>
-        <ion-checkbox ></ion-checkbox>
-      </ion-item>
-    
-      <ion-item>
-        <ion-label>Sausage</ion-label>
-        <ion-checkbox disabled="true"></ion-checkbox>
-      </ion-item> -->
-
-    <!-- <div class="form-top-margin"></div> -->
-
-    <ion-item>
-      <ion-label stacked>ADDRESS LINE 1
-        <span class="star" style="color: red">&nbsp;*</span>
-      </ion-label>
-      <ion-input type="text" placeholder="Address Line 1" class="form-controll" required></ion-input>
-    </ion-item>
-
-    <div class="form-top-margin"></div>
-
-    <ion-item>
-      <ion-label stacked>ADDRESS LINE 2</ion-label>
-      <ion-input type="text" placeholder="Optional"></ion-input>
-    </ion-item>
-
-    <div class="form-top-margin"></div>
-
-    <ion-item>
-      <ion-label stacked>CITY
-        <span class="star" style="color: red">&nbsp;*</span>
-      </ion-label>
-      <ion-input type="text" placeholder="City" class="form-controll" required></ion-input>
-    </ion-item>
-
-    <div class="form-top-margin"></div>
-
-    <ion-item>
-      <ion-label stacked>STATE</ion-label>
-      <ion-input type="text" placeholder="Optional"></ion-input>
-    </ion-item>
-
-    <div class="form-top-margin"></div>
-
-    <ion-item>
-      <ion-label stacked>COUNTRY</ion-label>
-      <ion-input type="text" value="India" placeholder="Optional"></ion-input>
-    </ion-item>
-
-    <div class="form-top-margin"></div>
-
-    <ion-item>
-      <ion-label stacked>PINCODE</ion-label>
-      <ion-input type="number" placeholder="Optional"></ion-input>
-    </ion-item>
-
-    <div class="form-top-margin"></div>
-
-    <!-- <ion-footer> -->
-    <ion-row>
-      <ion-col padding>
-        <button class="action-button" ion-button outline icon-start>
-          Delete
-        </button>
-        <!-- <button no-margin ion-button full large color="primary">Update</button> -->
+    <ion-label stacked>{{ 'SELECT_ADDRESS_TYPE' | translate }}</ion-label>
+    <ion-row radio-group>
+      <ion-col col-6>
+        <ion-item no-lines>
+          <ion-label class="text-capitalize">{{ 'PERMANENT' | translate }}</ion-label>
+          <ion-radio class="radio-margin" item-left value="per"></ion-radio>
+        </ion-item>
       </ion-col>
-      <ion-col padding>
-        <button class="action-button" ion-button icon-start [disabled]="true" item-end>
-          Save
-        </button>
-        <!-- <button no-margin ion-button full large color="danger">Cancel</button> -->
+      <ion-col col-6>
+        <ion-item no-lines>
+          <ion-label class="text-capitalize">{{ 'CURRENT' | translate }}</ion-label>
+          <ion-radio item-left value="cur"></ion-radio>
+        </ion-item>
       </ion-col>
     </ion-row>
 
-    <!-- <div class="validation-errors">
-        <ng-container *ngFor="let validation of validation_messages.terms">
-          <div class="error-message" *ngIf="validations_form.get('terms').hasError(validation.type) && (validations_form.get('terms').dirty || validations_form.get('terms').touched)">
-            {{ validation.message }}
-          </div>
-        </ng-container>
-      </div> -->
+    <ion-item>
+      <ion-label stacked>{{ 'ADDRESS_LINE1' | translate }}
+        <span ion-text color="danger">&nbsp;*</span>
+      </ion-label>
+      <ion-input type="text" placeholder="{{ 'ADDRESS_LINE1' | translate }}" class="form-controll" required></ion-input>
+    </ion-item>
 
-    <!-- <button ion-button full type="submit" [disabled]="!validations_form.valid">Submit</button> -->
+    <ion-item>
+      <ion-label stacked>{{ 'ADDRESS_LINE2' | translate }}</ion-label>
+      <ion-input type="text" placeholder="{{ 'OPTIONAL' | translate }}"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label stacked>{{ 'CITY' | translate }}
+        <span ion-text color="danger">&nbsp;*</span>
+      </ion-label>
+      <ion-input type="text" placeholder="{{ 'CITY' | translate }}" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label stacked>{{ 'STATE' | translate }}</ion-label>
+      <ion-input type="text" placeholder="{{ 'OPTIONAL' | translate }}"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label stacked>{{ 'COUNTRY' | translate }}</ion-label>
+      <ion-input type="text" placeholder="{{ 'OPTIONAL' | translate }}"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label stacked>{{ 'PINCODE' | translate }}</ion-label>
+      <ion-input type="number" placeholder="{{ 'OPTIONAL' | translate }}"></ion-input>
+    </ion-item>
+
   </form>
 </ion-content>
+
+<ion-footer>
+  <ion-row>
+    <ion-col padding>
+      <button ion-button block outline class="text-capitalize">{{ 'DELETE' | translate }}</button>
+    </ion-col>
+    <ion-col padding>
+      <button ion-button block [disabled]="true" class="text-capitalize">{{ 'SAVE' | translate }}</button>
+    </ion-col>
+  </ion-row>
+</ion-footer>
