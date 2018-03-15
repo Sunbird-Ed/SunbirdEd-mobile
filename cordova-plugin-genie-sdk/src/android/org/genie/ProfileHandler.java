@@ -26,7 +26,7 @@ public class ProfileHandler {
             if (type.equals(TYPE_GET_PROFILE)) {
                 getProfileById(args, callbackContext);
             } else if (type.equals(TYPE_CREATE_PROFILE)) {
-                createProfile(args, callbackContext)
+                createProfile(args, callbackContext);
             }
 
         } catch (JSONException e) {
