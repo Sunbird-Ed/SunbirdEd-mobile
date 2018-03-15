@@ -2,20 +2,19 @@
   <ion-grid no-padding>
     <ion-row class="top-container" no-padding>
       <ion-col col-12>
-          <div class="img-container">
-          </div>
-          <img src="{{course.courseLogoUrl || course.appIcon }}" width="200px" height="95px"/>
-          <ion-label class="card-title" padding-left>{{course.courseName}}</ion-label>
+        <div class="img-container">
+        </div>
+        <img src="{{course.courseLogoUrl || course.appIcon }}" width="200px" height="95px" />
+        <ion-label class="card-title" padding-left>{{course.courseName}}</ion-label>
       </ion-col>
     </ion-row>
-    <ion-row class="bottom-container" [ngStyle]="{'background': styleClass === 'popular' ? '#FDFEFE' : '#efeff4'}" no-padding>
+    <ion-row class="bottom-container" no-padding>
       <ion-col col-8>
         <rating [(ngModel)]="rate" readOnly="true" max="5" no-padding></rating>
         <ion-label class="size_txt" no-margin>Size [180kb]</ion-label>
       </ion-col>
-
       <ion-col col-4>
-          <button ion-button outline small float-right>Open</button>
+        <button ion-button outline small float-right>Open</button>
       </ion-col>
     </ion-row>
   </ion-grid>

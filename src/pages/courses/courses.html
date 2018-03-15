@@ -6,38 +6,38 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content style="background: #efeff4;">
-  <div>
-    <div class="" *ngIf="enrolledCourse && enrolledCourse.length">
-      <div class="item" style="padding: 11px;">
-        <span float-left class="scroll-heading">Courses in progress</span>
-        <span float-right class="view-all-link">
-          <a>View All</a>
-        </span>
-      </div>
-      <ion-scroll scrollX="true" style="width: 100%; height: 166px;" no-padding>
-        <div class="inner">
-          <course-card *ngFor="let item of enrolledCourse" [course]="item"></course-card>
-        </div>
-      </ion-scroll>
+<ion-content class="course-page-color">
+  <!-- <div> -->
+  <div class="" *ngIf="enrolledCourse && enrolledCourse.length">
+    <div class="item padding-11">
+      <span float-left class="scroll-heading">Courses in progress</span>
+      <span float-right class="view-all-link">
+        <a>View All</a>
+      </span>
     </div>
-    <div *ngFor="let items of popularAndLatestCourses">
-      <div *ngIf="items.contents.length">
-        <div class="course-scroll-holder">
-          <div class="item" style="padding: 11px;">
-            <span float-left class="scroll-heading">{{items.name}}</span>
-            <span float-right class="view-all-link">
-              <a>View All</a>
-            </span>
-          </div>
-          <ion-scroll scrollX="true" style="width: 100%; height: 166px;" no-padding>
-            <div class="inner">
-              <course-card *ngFor="let item of items.contents" [course]="item" [styleClass]="popular">
-              </course-card>
-            </div>
-          </ion-scroll>
+    <ion-scroll scrollX="true" style="width: 100%; height: 166px;" no-padding>
+      <div class="inner inprogress-courses">
+        <course-card *ngFor="let item of enrolledCourse" [course]="item"></course-card>
+      </div>
+    </ion-scroll>
+  </div>
+  <div *ngFor="let items of popularAndLatestCourses">
+    <div *ngIf="items.contents.length">
+      <div class="course-scroll-holder nilesh-more">
+        <div class="item padding-11">
+          <span float-left class="scroll-heading">{{items.name}}</span>
+          <span float-right class="view-all-link">
+            <a>View All</a>
+          </span>
         </div>
+        <ion-scroll scrollX="true" style="width: 100%; height: 166px;" no-padding>
+          <div class="inner nilesh">
+            <course-card *ngFor="let item of items.contents" [course]="item">
+            </course-card>
+          </div>
+        </ion-scroll>
       </div>
     </div>
   </div>
+  <!-- </div> -->
 </ion-content>

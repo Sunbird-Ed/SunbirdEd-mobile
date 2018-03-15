@@ -2,7 +2,6 @@ import { CourseCard } from './../../component/card/course/course-card';
 import { Component, OnInit } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { IonicPage } from 'ionic-angular';
-import { ContainerService } from 'sunbird';
 import { HttpClient } from '@angular/common/http';
 
 @IonicPage()
@@ -33,8 +32,10 @@ export class CoursesPage implements OnInit {
   public http: HttpClient;
 
   /**
+   * Default method of class CoursesPage
    * 
-   * @param navCtrl 
+   * @param {NavController} navCtrl Reference of nav controller to navigate user from one page to another
+   * @param {HttpClient} http Reference of http client service to make api call
    */
   constructor(public navCtrl: NavController, http: HttpClient) {
     this.http = http;
@@ -43,15 +44,15 @@ export class CoursesPage implements OnInit {
   }
 
   /**
-   * To get enrolled course
+   * To get enrolled course(s) of logged-in user.
+   * 
+   * It internally calls course handler of genie sdk
    */
-  getEnrolledCourses() {
+  getEnrolledCourses(): void {
     console.log('fetching enrolled course...');
     this.http.get('http://www.mocky.io/v2/5aa8ebdb3200003f22165980').subscribe(
       (data: any) => {
-        console.log('enrolled course...', data);
         this.enrolledCourse = data.courses;
-        console.log(this.enrolledCourse, 'viveks');
       },
       (error: any) => {
         console.log('error while fetching enrolled courses');
@@ -60,17 +61,17 @@ export class CoursesPage implements OnInit {
   }
 
   /**
+   * To get popular course.
    * 
+   * It internally calls course handler of genie sdk
    */
-  getPopularAndLatestCourses() {
-    console.log('insied popular');
-    // 
+  getPopularAndLatestCourses(): void {
     this.http.get('http://www.mocky.io/v2/5aa9ff1c330000ba092da65a').subscribe(
       (data: any) => {
         this.popularAndLatestCourses = data.result.response.sections ? data.result.response.sections : [];
       },
       (error: any) => {
-        console.log('error while fetching papular courses');
+        console.log('error while fetching popular courses');
       }
     );
   }
@@ -83,5 +84,4 @@ export class CoursesPage implements OnInit {
     this.getEnrolledCourses();
     this.getPopularAndLatestCourses();
   }
-
 }

@@ -11,9 +11,6 @@ export class CourseCard {
    */
   @Input() course: any;
 
-  @Input() styleClass: any | '';
-
   constructor() {
-    console.log('ASK', this.course);
   }
 }

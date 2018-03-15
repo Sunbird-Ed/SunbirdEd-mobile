@@ -119,10 +119,10 @@
       "cordova-plugin-advanced-http": {},
       "cordova-plugin-browsertab": {},
       "cordova-plugin-globalization": {},
-      "cordova-plugin-genie-sdk": {},
       "cordova-plugin-uniquedeviceid": {},
       "cordova-plugin-app-version": {},
-      "cordova-plugin-x-socialsharing": {}
+      "cordova-plugin-x-socialsharing": {},
+      "cordova-plugin-genie-sdk": {}
     },
     "platforms": [
       "android"
