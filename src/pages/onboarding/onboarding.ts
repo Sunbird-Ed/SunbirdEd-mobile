@@ -4,7 +4,7 @@ import { TabsPage, OAuthService, ContainerService } from 'sunbird';
 import { ViewController } from 'ionic-angular/navigation/view-controller';
 import { RolePage } from '../userrole/role';
 import { Storage } from "@ionic/storage";
-import { ModuleService } from '../../app/module.service';
+import { initGuestTabs, initUserTabs } from '../../app/module.service';
 
 @Component({
   selector: 'page-onboarding',
@@ -52,7 +52,7 @@ export class OnboardingPage {
         return that.auth.doOAuthStepTwo(token);
       })
       .then(() => {
-        ModuleService.initUserTabs(that.container);
+        initUserTabs(that.container);
         return that.navCtrl.push(TabsPage);
       })
       .catch(error => {
@@ -62,7 +62,7 @@ export class OnboardingPage {
   }
 
   browseAsGuest() {
-    ModuleService.initGuestTabs(this.container);
+    initGuestTabs(this.container);
     this.navCtrl.push(RolePage);
   }
 
