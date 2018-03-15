@@ -31,13 +31,13 @@
       <ion-icon name="ios-arrow-forward" item-end></ion-icon>
     </ion-item>
 
-    <ion-item>
+    <ion-item (click)="sendMessage()">
       <h2>{{ 'SETTINGS_SCREEN.SUPPORT' | translate }}</h2>
       <p class="settings-item-style">{{ 'SETTINGS_SCREEN.FACING_PROBLEM_SEND_MESSAGE' | translate }}</p>
       <ion-icon name="ios-arrow-forward" item-end></ion-icon>
     </ion-item>
 
-    <ion-item>
+    <ion-item (click)="shareApp()">
       <h2>{{ 'SETTINGS_SCREEN.SHARE_APP' | translate }}</h2>
     </ion-item>
 

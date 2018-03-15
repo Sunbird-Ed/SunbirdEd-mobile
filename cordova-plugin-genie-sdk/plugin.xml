@@ -30,6 +30,9 @@
      <js-module src="www/downloadService.js" name="downloadService">
         <clobbers target="downloadService" />
     </js-module>
+     <js-module src="www/course.js" name="course">
+        <clobbers target="course" />
+    </js-module>
     <!-- android -->
     <platform name="android">
 
@@ -47,7 +50,7 @@
       <source-file src="src/android/org/genie/ProfileHandler.java" target-dir="src/org/genie/" />
       <source-file src="src/android/org/genie/GenieEventHandler.java" target-dir="src/org/genie/" />
       <source-file src="src/android/org/genie/GenieSdkEventListener.java" target-dir="src/org/genie/" />
-      <source-file src="src/android/org/genie/DownloadService.java" target-dir="src/org/genie/" />
+      <source-file src="src/android/org/genie/CourseHandler.java" target-dir="src/org/genie/" />
 
     </platform>
 

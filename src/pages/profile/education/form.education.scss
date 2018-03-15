@@ -1,32 +1,15 @@
 page-education {
+    .form ion-label {
+      @extend .text-uppercase;
+    }
+    .item-md {
+      padding-left: 0 !important;
+    }
+  }
 
-    .term {
-      padding-top: 20px;
-    }
-  
-    .terms-checkbox-label
-    {
-      overflow: visible;
-      text-overflow: initial;
-      white-space: initial;
-      opacity: 0.5;
-      font-size: 14px;
-      font-weight: bold;
-    }
-  
-    .error-message
-    {
-      color: red;
-    }
-
-    .action-button
-    {
-      width:100%; 
-      height: 200%
-    }
-
-    .form-top-margin
-    {
-      margin-top:4%
-    }
+  .text-capitalize {
+    text-transform: capitalize !important;
+  }
+  .text-uppercase {
+    text-transform: uppercase !important;
   }

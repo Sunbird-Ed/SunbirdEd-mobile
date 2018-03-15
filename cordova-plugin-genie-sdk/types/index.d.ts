@@ -19,4 +19,8 @@ export declare class GenieSDK {
     static UserService: {
 
     };
+
+    static CourseService: {
+
+    };
 }

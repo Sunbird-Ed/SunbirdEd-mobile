@@ -1,138 +1,166 @@
 page-profile {
+  .profile-last-login-text {
+    color: #bdbdbd;
+    text-align: center;
+    margin: 0;
+    font-size: 1.2rem;
+    padding: 0 5px 8px 5px;
+  }
 
-    .profile-last-login-text{
-        color: rgb(104, 103, 101);
-        text-align: center;
-        margin-bottom: 0px;
-        font-size: small; 
-        padding: 5px;   
-    }
+  .profile-completed-text {
+    color: rgb(104, 103, 101);
+    text-align: left;
+    margin-bottom: 8px;
+    font-size: small;
+    padding: 0;
+  }
 
-    .profile-completed-text{
-        color: rgb(104, 103, 101);
-        text-align: left;
-        margin-bottom: 8px;
-        font-size: small; 
-        padding: 0;
-    }
+  .profile-add-exp-text {
+    color: map-get($colors, primary);
+    text-align: right;
+    margin-bottom: 8px;
+    font-size: small;
+    padding: 0;
+    font-weight: bold;
+  }
 
-    .profile-add-exp-text{
+  .profile-completed-ion-row {
+    padding-bottom: 1%;
+    padding-top: 6%;
+  }
+
+  .profile-completed-ion-col {
+    padding: 0;
+  }
+
+  .profile-name {
+    color: map-get($colors, dark);
+    text-align: center;
+    margin: 0;
+    font-size: 2rem;
+    padding: 5px;
+    font-weight: bold;
+  }
+
+  .ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .grey-bg {
+    background: rgba(99, 99, 99, 0.158);
+    font-size: 14px;
+    border-radius: 5px;
+    padding: 6px;
+  }
+
+  .item-profile-img {
+    max-width: 100px;
+    border-radius: 50%;
+    text-align: center;
+  }
+
+  .custom-avatar {
+    height: 22vw;
+    width: 22vw;
+    border: 1px solid #fff;
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .list-header {
+    font-size: 12pt;
+    color: black;
+    font-weight: 500;
+    margin-bottom: 0 !important;
+
+    span {
         color: map-get($colors, primary);
-        text-align: right;
-        margin-bottom: 8px;
-        font-size: small; 
-        padding: 0;
-        font-weight: bold;
+        font-size: 1.5rem;
     }
+  }
 
-    .profile-completed-ion-row{
-        padding-bottom: 1%; 
-        padding-top: 6%;
+  ion-list-header {
+    font-weight: 700 !important;
+  }
+
+  ion-label {
+    margin-right: 0 !important;
+  }
+
+  .section-title {
+    color: map-get($colors, dark);
+    margin-bottom: 3%;
+    font-size: 1.6rem;
+    padding: 0;
+    margin-left: 0;
+    font-weight: bold;
+  }
+
+  .info-title {
+    color: #696969;
+    font-size: 0.9em;
+    font-weight: 500;
+  }
+
+  .image-holder {
+    width: 50px;
+    height: 50px;
+    background: #d8d8d8;
+  }
+
+  .skill-row {
+    border-radius: 50px;
+    background: #f1f1f1;
+    margin-top: 12px !important;
+  }
+
+  ion-item {
+    padding: 0 !important;
+    span {
+      display: block;
     }
+  }
 
-    .profile-completed-ion-col{
-        padding: 0%;
-    }
+  ion-row {
+    padding: 0 !important;
+  }
 
+  col-2 {
+    padding-left: 0 !important;
+  }
 
-    .profile-name{
-        color: black;
-        text-align: center;
-        margin-bottom: 0px;
-        font-size: x-large; 
-        padding: 5px;
-        font-weight: bold;   
-    }
+  .item-md.item-block .item-inner {
+    padding-right: 0 !important;
+  }
 
-    .grey-bg {
-        background: rgba(99, 99, 99, 0.158);
-        font-size: 14px;
-        border-radius: 20%;
-        padding: 10px;
-    }
+  .additional-info ion-row {
+    font-size: 1.2rem;
+    padding-bottom: 10px !important;
+  }
+  .details-title {
+    font-size: 1.3rem;
+    font-weight: bold;
+  }
+  .details p {
+    font-size: 1.2rem !important;
+  }
+}
 
-    .item-profile-img {
-        max-width: 100px;
-        border-radius: 50%;
-        text-align: center;
-    }
-    
-   .custom-avatar {
-       height: 22vw;
-       width: 22vw;
-       border: 1px solid #fff;
-       border-radius: 50%;
-       display: inline-block;
-       margin-left: auto;
-       margin-right: auto;
-    }
-
-    .p-padding {
-        padding: 5px;
-    }
-
-    .list-header {
-        font-size: 12pt;
-        color: black;
-        font-weight: 500;
-        margin-bottom: 0 !important;
-
-        span {
-            font-size: 10pt;
-            color: map-get($colors, primary);
-        }
-    }
-
-    ion-list-header {
-        padding: 0%!important;
-    }
-
-    ion-label {
-        margin-right: 0%!important;
-    }
-
-    .description {
-        color:black;
-        margin-bottom: 3%;
-        font-size: large; 
-        padding: 0%;
-        margin-left: 0%;
-        font-weight: bold;
-    }
-
-    .image-holder {
-        width: 50px;
-        height: 50px;
-        background: #d8d8d8;
-    }
-
-    .skill-row {
-        width: 100%;
-        height: 100%;
-        border-radius: 10px;
-        background: #d8d8d8;
-    }
-
-    ion-item {
-        padding: 0%!important;
-        span {
-            display: block;
-        }
-    }
-
-    ion-row {
-        padding: 0%!important;
-    }
-
-    .edit-icon {
-      color: map-get($colors, primary);
-    }
-
-    col-2 {
-        padding-left: 0%!important;
-    }
-
-    col-1 {
-        padding-right: 0%!important;
-    }
+.padding-right-10 {
+  padding-right: 10px;
+}
+.padding-left-10 {
+  padding-left: 10px;
+}
+.padding-left-none {
+    padding-left: 0 !important;
+}
+.padding-left-5 {
+    padding-left: 5px !important;
+}
+.padding-5 {
+    padding: 5px !important;
 }

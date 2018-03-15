@@ -78,8 +78,8 @@ android {
 }
 
 dependencies {
-    compile "org.ekstep.genieservices:genie-providers:1.0.545"
-    compile "org.ekstep.genieservices:genie-integration:1.0.545"
+    compile "org.ekstep.genieservices:genie-providers:1.0.552"
+    compile "org.ekstep.genieservices:genie-integration:1.0.552"
     // compile "com.google.code.gson:gson:2.8.2"
     // compile "joda-time:joda-time:2.9.9"
     // compile "org.greenrobot:eventbus:3.1.1"
