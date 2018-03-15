@@ -10,7 +10,7 @@ import { HttpClientModule, HttpClient } from "@angular/common/http";
 import { IonicStorageModule } from "@ionic/storage";
 import { HTTP } from "@ionic-native/http";
 
-import { ModuleService } from './module.service';
+import { PluginModules } from './module.service';
 import { TelemetryService, EventService, FrameworkModule, ContainerService, TabsPage } from 'sunbird';
 import { Globalization } from '@ionic-native/globalization';
 import { RolePage } from '../pages/userrole/role';
@@ -21,7 +21,6 @@ import { UniqueDeviceID } from '@ionic-native/unique-device-id';
 import { AppVersion } from '@ionic-native/app-version';
 import { SocialSharing } from '@ionic-native/social-sharing';
 
-const pluginModules = ModuleService.getAllPluginModules();
 
 @NgModule({
   declarations: [
@@ -43,7 +42,7 @@ const pluginModules = ModuleService.getAllPluginModules();
       }
     }),
     IonicModule.forRoot(MyApp),
-    ...pluginModules
+    ...PluginModules
   ],
   bootstrap: [IonicApp],
   entryComponents: [
