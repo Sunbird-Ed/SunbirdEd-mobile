@@ -1,6 +1,4 @@
-import { Component } from "@angular/core";
-
-
+import { Component, Input } from "@angular/core";
 
 @Component({
   selector: 'course-card',
@@ -8,4 +6,14 @@ import { Component } from "@angular/core";
 })
 export class CourseCard {
 
+  /**
+   * Contains course details
+   */
+  @Input() course: any;
+
+  @Input() styleClass: any | '';
+
+  constructor() {
+    console.log('ASK', this.course);
+  }
 }
