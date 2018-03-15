@@ -20,7 +20,7 @@ import { GuestEditProfileModule } from "../pages/guest-edit.profile/guest-edit-p
 export class ModuleService {
 
     static initUserTabs(container: ContainerService) {
-        container.removeAllTabs();
+        // container.removeAllTabs();
         container.addTab({root: GroupPage, label: "GROUPS", icon:"groups", index: 3});
         container.addTab({root: CoursesPage, icon: "courses", label:"COURSES", index: 1});
         container.addTab({root: HomePage, label: "HOME", icon:"home", index: 0});
@@ -29,7 +29,7 @@ export class ModuleService {
     }
 
     static initGuestTabs(container: ContainerService) {
-        container.removeAllTabs();
+        // container.removeAllTabs();
         container.addTab({root: GroupPage, label: "GROUPS", icon:"groups", index: 3});
         container.addTab({root: CoursesPage, icon: "courses", label:"COURSES", index: 1});
         container.addTab({ root: GuestProfilePage, label: "PROFILE", icon: "profile", index: 4 })

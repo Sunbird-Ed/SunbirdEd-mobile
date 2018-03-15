@@ -29,14 +29,17 @@ export class MyApp {
 
     platform.ready().then(() => {
 
-      that.authService.getSessionData((session) => {
-        if (session == "null") {
-          that.rootPage = LanguageSettingsPage;
-        } else {
-          ModuleService.initUserTabs(that.containerService);
-          that.rootPage = TabsPage;
-        }
-      });
+      // that.authService.getSessionData((session) => {
+      //   if (session == "null") {
+      //     that.rootPage = LanguageSettingsPage;
+      //   } else {
+      //     ModuleService.initUserTabs(that.containerService);
+      //     that.rootPage = TabsPage;
+      //   }
+      // });
+
+      ModuleService.initUserTabs(that.containerService);
+      that.rootPage = TabsPage;
 
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.

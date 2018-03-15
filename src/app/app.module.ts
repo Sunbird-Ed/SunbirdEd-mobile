@@ -17,6 +17,9 @@ import { RolePage } from '../pages/userrole/role';
 import { OnboardingPage } from '../pages/onboarding/onboarding';
 import { LanguageSettingsPage } from '../pages/language-settings/language-settings';
 import { GuestEditProfilePage } from '../pages/guest-edit.profile/guest-edit.profile';
+import { UniqueDeviceID } from '@ionic-native/unique-device-id';
+import { AppVersion } from '@ionic-native/app-version';
+import { SocialSharing } from '@ionic-native/social-sharing';
 
 const pluginModules = ModuleService.getAllPluginModules();
 
@@ -52,6 +55,9 @@ const pluginModules = ModuleService.getAllPluginModules();
     SplashScreen,
     HTTP,
     Globalization,
+    UniqueDeviceID,
+    AppVersion,
+    SocialSharing,
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })
