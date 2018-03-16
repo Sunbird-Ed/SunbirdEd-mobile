@@ -17,31 +17,25 @@ import { LanguageSettingsPageModule } from "../pages/language-settings/language-
 import { RolePageModule } from "../pages/userrole/role.module";
 import { GuestEditProfileModule } from "../pages/guest-edit.profile/guest-edit-profile.module";
 
-export class ModuleService {
-
-    static initUserTabs(container: ContainerService) {
-        // container.removeAllTabs();
-        container.addTab({root: GroupPage, label: "GROUPS", icon:"groups", index: 3});
-        container.addTab({root: CoursesPage, icon: "courses", label:"COURSES", index: 1});
-        container.addTab({root: HomePage, label: "HOME", icon:"home", index: 0});
-        container.addTab({ root: ProfilePage, label: "PROFILE", icon: "profile", index: 4});
-        container.addTab({root: ResourcesPage, label: "RESOURCES", icon: "resources", index: 2});
-    }
-
-    static initGuestTabs(container: ContainerService) {
-        // container.removeAllTabs();
-        container.addTab({root: GroupPage, label: "GROUPS", icon:"groups", index: 3});
-        container.addTab({root: CoursesPage, icon: "courses", label:"COURSES", index: 1});
-        container.addTab({ root: GuestProfilePage, label: "PROFILE", icon: "profile", index: 4 })
-        container.addTab({root: HomePage, label: "HOME", icon:"home", index: 0});
-        container.addTab({root: ResourcesPage, label: "RESOURCES", icon: "resources", index: 2});
-    }
-
-    static getAllPluginModules(): Array<any> {
-        let modules = [CoursesPageModule, GroupPageModule, HomePageModule, 
-            ProfilePageModule, ResourcesPageModule, GuestProfilePageModule, 
-            OnboardingPageModule, LanguageSettingsPageModule, RolePageModule,
-            GuestEditProfileModule];
-        return modules;
-    }
+export function initUserTabs(container: ContainerService) {
+    container.removeAllTabs();
+    container.addTab({root: GroupPage, label: "GROUPS", icon:"groups", index: 3});
+    container.addTab({root: CoursesPage, icon: "courses", label:"COURSES", index: 1});
+    container.addTab({root: HomePage, label: "HOME", icon:"home", index: 0});
+    container.addTab({ root: ProfilePage, label: "PROFILE", icon: "profile", index: 4});
+    container.addTab({root: ResourcesPage, label: "RESOURCES", icon: "resources", index: 2});
 }
+
+export function initGuestTabs(container: ContainerService) {
+    container.removeAllTabs();
+    container.addTab({root: GroupPage, label: "GROUPS", icon:"groups", index: 3});
+    container.addTab({root: CoursesPage, icon: "courses", label:"COURSES", index: 1});
+    container.addTab({ root: GuestProfilePage, label: "PROFILE", icon: "profile", index: 4 })
+    container.addTab({root: HomePage, label: "HOME", icon:"home", index: 0});
+    container.addTab({root: ResourcesPage, label: "RESOURCES", icon: "resources", index: 2});
+}
+
+export const PluginModules = [CoursesPageModule, GroupPageModule, HomePageModule, 
+    ProfilePageModule, ResourcesPageModule, GuestProfilePageModule, 
+    OnboardingPageModule, LanguageSettingsPageModule, RolePageModule,
+    GuestEditProfileModule];

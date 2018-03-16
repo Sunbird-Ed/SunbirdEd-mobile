@@ -3,7 +3,7 @@ import { Platform, ModalController, AlertController, NavController, ViewControll
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { TabsPage, AuthService, ContainerService } from "sunbird";
-import { ModuleService } from './module.service';
+import { initGuestTabs, initUserTabs } from './module.service';
 import { Storage } from "@ionic/storage";
 import { LanguageSettingsPage } from '../pages/language-settings/language-settings';
 
@@ -29,17 +29,17 @@ export class MyApp {
 
     platform.ready().then(() => {
 
-      // that.authService.getSessionData((session) => {
-      //   if (session == "null") {
-      //     that.rootPage = LanguageSettingsPage;
-      //   } else {
-      //     ModuleService.initUserTabs(that.containerService);
-      //     that.rootPage = TabsPage;
-      //   }
-      // });
+      that.authService.getSessionData((session) => {
+        if (session == "null") {
+          that.rootPage = LanguageSettingsPage;
+        } else {
+          initUserTabs(that.containerService);
+          that.rootPage = TabsPage;
+        }
+      });
 
-      ModuleService.initUserTabs(that.containerService);
-      that.rootPage = TabsPage;
+      // ModuleService.initUserTabs(that.containerService);
+      // that.rootPage = TabsPage;
 
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
@@ -74,7 +74,7 @@ export class MyApp {
   }
 
   takeToHomeAsGuest() {
-    ModuleService.initGuestTabs(this.containerService);
+    initGuestTabs(this.containerService);
     this.nav.push(TabsPage, { loginMode: 'guest' });
   }
 
