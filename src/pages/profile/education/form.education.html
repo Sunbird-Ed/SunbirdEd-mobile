@@ -5,49 +5,47 @@
 </ion-header>
 
 <ion-content padding>
-  <form class="form">
+  <form [formGroup]="educationForm" class="form" (ngSubmit)="onSubmit($event)">
     <ion-item>
       <ion-label stacked>{{ 'DEGREE' | translate }}
         <span ion-text color="danger">&nbsp;*</span>
       </ion-label>
-      <ion-input type="text" placeholder="{{ 'DEGREE' | translate }}" class="form-control" required></ion-input>
+      <ion-input type="text" formControlName="degree" placeholder="{{ 'DEGREE' | translate }}" class="form-control" required></ion-input>
     </ion-item>
 
     <ion-item>
       <ion-label stacked>{{ 'INSTITUTION_NAME' | translate }}
         <span ion-text color="danger">&nbsp;*</span>
       </ion-label>
-      <ion-input type="text" placeholder="{{ 'INSTITUTION_NAME' | translate }}" class="form-control" required></ion-input>
+      <ion-input type="text" formControlName="instituteName" placeholder="{{ 'INSTITUTION_NAME' | translate }}" class="form-control" required></ion-input>
     </ion-item>
 
     <ion-item>
       <ion-label stacked>{{ 'YEAR_OF_PASSING' | translate }}</ion-label>
-      <ion-input type="number" placeholder="{{ 'OPTIONAL' | translate }}"></ion-input>
+      <ion-input type="number" formControlName="yop" placeholder="{{ 'OPTIONAL' | translate }}"></ion-input>
     </ion-item>
 
     <ion-item>
       <ion-label stacked>{{ 'PERCENTAGE' | translate }}</ion-label>
-      <ion-input type="number" placeholder="{{ 'OPTIONAL' | translate }}"></ion-input>
+      <ion-input type="number" formControlName="percentage" placeholder="{{ 'OPTIONAL' | translate }}"></ion-input>
     </ion-item>
 
     <ion-item>
       <ion-label stacked>{{ 'GRADE' | translate }}</ion-label>
-      <ion-input type="text" placeholder="{{ 'OPTIONAL' | translate }}"></ion-input>
+      <ion-input type="text" formControlName="grade" placeholder="{{ 'OPTIONAL' | translate }}"></ion-input>
     </ion-item>
 
     <ion-item>
       <ion-label stacked>{{ 'BOARD_UNIVERSITY' | translate }}</ion-label>
-      <ion-input type="text" placeholder="{{ 'OPTIONAL' | translate }}"></ion-input>
+      <ion-input type="text" formControlName="board" placeholder="{{ 'OPTIONAL' | translate }}"></ion-input>
     </ion-item>
   </form>
-</ion-content>
-<ion-footer>
   <ion-row>
-    <ion-col padding *ngIf="!isNewForm">
-      <button class="action-button" ion-button block outline class="text-capitalize">{{ 'DELETE' | translate }}</button>
-    </ion-col>
-    <ion-col padding>
-      <button class="action-button" ion-button block [disabled]="true" class="text-capitalize">{{ 'SAVE' | translate }}</button>
-    </ion-col>
-  </ion-row>
-</ion-footer>
+      <ion-col padding *ngIf="!isNewForm">
+        <button class="action-button" ion-button block outline class="text-capitalize">{{ 'DELETE' | translate }}</button>
+      </ion-col>
+      <ion-col padding>
+        <button class="action-button" ion-button block [disabled]="!educationForm.valid" class="text-capitalize">{{ 'SAVE' | translate }}</button>
+      </ion-col>
+    </ion-row>
+</ion-content>

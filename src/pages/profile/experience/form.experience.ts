@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
-import { NavController } from 'ionic-angular';
+import { NavController, NavParams } from 'ionic-angular';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'page-experience',
@@ -9,9 +9,21 @@ import { NavController } from 'ionic-angular';
 
 export class FormExperience {
   tabBarElement: any;
-  constructor(public navCtrl: NavController, public formBuilder: FormBuilder) {
+  isNewForm: boolean = true;
+  experienceForm: FormGroup;
+  constructor(public navCtrl: NavController, public fb: FormBuilder, public navParams: NavParams) {
     //Need to hide bottom tab
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
+    this.isNewForm = this.navParams.get('addForm');
+    this.experienceForm = this.fb.group({
+      jobName: [''],
+      org: ['', Validators.required],
+      position: [''],
+      subjects: ['', Validators.required],
+      isCurrentJob: [''],
+      fromDate: [''],
+      toDate: ['']
+    });
    }
 
    ionViewWillEnter() {
@@ -22,8 +34,9 @@ export class FormExperience {
     this.tabBarElement.style.display = 'flex';
   }
 
-  onSubmit(values) {
-    // this.navCtrl.push(UserPage);
+  onSubmit(event) {
+    let formVal = this.experienceForm.value;
+    console.log("Event", event);
   }
 
 

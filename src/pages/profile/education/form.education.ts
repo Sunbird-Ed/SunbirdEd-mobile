@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavController, NavParams } from 'ionic-angular';
 
 @Component({
@@ -10,10 +10,19 @@ import { NavController, NavParams } from 'ionic-angular';
 export class FormEducation {
   tabBarElement: any;
   isNewForm: boolean = true;
-  constructor(public navCtrl: NavController, public formBuilder: FormBuilder, public navParams: NavParams) {
+  educationForm: FormGroup;
+  constructor(public navCtrl: NavController, public fb: FormBuilder, public navParams: NavParams) {
     //Need to hide bottom tab
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
     this.isNewForm = this.navParams.get('addForm');
+    this.educationForm = this.fb.group({
+      degree: ['', Validators.required],
+      instituteName: ['', Validators.required],
+      yop: [''],
+      percentage: [''],
+      grade: [''],
+      board: ['']
+    });
   }
 
   ionViewWillEnter() {
@@ -24,8 +33,9 @@ export class FormEducation {
     this.tabBarElement.style.display = 'flex';
   }
 
-  onSubmit(values) {
-    // this.navCtrl.push(UserPage);
+  onSubmit(event) {
+    let formVal = this.educationForm.value;
+    console.log("Event", event);
   }
 
 }
