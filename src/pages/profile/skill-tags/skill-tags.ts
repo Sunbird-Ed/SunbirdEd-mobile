@@ -7,6 +7,7 @@ import { Component } from '@angular/core';
 export class SkillTagsComponent {
 
   items: Array<string>;
+  tags: Array<string> = [];
 
   constructor() {
     this.items = ['Pizza', 'Pasta', 'Parmesan'];

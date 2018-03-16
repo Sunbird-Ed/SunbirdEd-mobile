@@ -155,11 +155,11 @@ export class ProfilePage {
   }
 
   editEduDetails(isNewForm) {
-    this.navCtrl.push(FormEducation, { addForm: isNewForm});
+    this.navCtrl.push(FormEducation, { addForm: isNewForm });
   }
 
-  editAddress() {
-    this.navCtrl.push(FormAddress);
+  editAddress(isNewForm) {
+    this.navCtrl.push(FormAddress, { addForm: isNewForm });
   }
 
   addSkillTags() {
@@ -174,8 +174,8 @@ export class ProfilePage {
     });
   }
 
-  editExperience() {
-    this.navCtrl.push(FormExperience);
+  editExperience(isNewForm) {
+    this.navCtrl.push(FormExperience, { addForm: isNewForm });
   }
 
   editAdditionalInfo() {
