@@ -25,6 +25,8 @@ course-card {
       font-weight: bold;
       font-size: 1.2em;
       width: 100%;
+
+      @include padding(null, null, null, 16px);
     }
 
     .top-container {
