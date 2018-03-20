@@ -1,5 +1,5 @@
 import { Component, NgZone } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, LoadingController } from 'ionic-angular';
 import { CameraService, ProfileService, AuthService } from 'sunbird';
 import { FormEducation } from './education/form.education';
 import { FormAddress } from './address/form.address';
@@ -13,7 +13,7 @@ import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'page-profile',
-  templateUrl: 'profile.html'
+  templateUrl: 'profile.html' 
 })
 export class ProfilePage {
 
@@ -25,13 +25,9 @@ export class ProfilePage {
   profileProgress: string;
   subjects: string;
   grades: string;
-
   imageUri: string = "assets/imgs/ic_profile_default.png";
   list: Array<String> = ['SWITCH_ACCOUNT', 'DOWNLOAD_MANAGER', 'SETTINGS', 'SIGN_OUT'];
-  
   sunbird: string = "Sunbird";
-  
-  profDesc: string = "Here are the detailed description of the profile fdhfh Here are the detailed description of the profile fdhfh";
   uncompletedDetails: string = "+ Add Experience";
 
   constructor(public navCtrl: NavController, 
@@ -40,24 +36,28 @@ export class ProfilePage {
     private profileService: ProfileService,
     private zone: NgZone,
     private datePipe: DatePipe,
-    private authService: AuthService) {
+    private authService: AuthService,
+    private loadingCtrl: LoadingController) {
 
   }
 
   ionViewWillEnter() {
-    this.refreshProfileData();
+    this.doRefresh();
   }
 
-  doRefresh(refresher) {
-    this.refreshProfileData()
-    .then( () => {
+  doRefresh(refresher?) {
+    let loader = this.getLoader();
+    loader.present();
+    this.refreshProfileData().then( () => {
       setTimeout(() => {
         console.log('Async operation has ended');
-        refresher.complete();
+        if(refresher) refresher.complete();
+        loader.dismiss();
       }, 200);
     })
     .catch(error => {
       console.log(error);
+      loader.dismiss();
     })
   }
 
@@ -154,12 +154,12 @@ export class ProfilePage {
     this.profileProgress = this.profile.completeness + "";
   }
 
-  editEduDetails(isNewForm) {
-    this.navCtrl.push(FormEducation, { addForm: isNewForm });
+  editEduDetails(isNewForm, formDetails) {
+    this.navCtrl.push(FormEducation, { addForm: isNewForm, formDetails: formDetails });
   }
 
-  editAddress(isNewForm) {
-    this.navCtrl.push(FormAddress, { addForm: isNewForm });
+  editAddress(isNewForm, addressDetails) {
+    this.navCtrl.push(FormAddress, { addForm: isNewForm, addressDetails: addressDetails });
   }
 
   addSkillTags() {
@@ -174,8 +174,8 @@ export class ProfilePage {
     });
   }
 
-  editExperience(isNewForm) {
-    this.navCtrl.push(FormExperience, { addForm: isNewForm });
+  editExperience(isNewForm, jobInfo) {
+    this.navCtrl.push(FormExperience, { addForm: isNewForm, jobInfo: jobInfo });
   }
 
   editAdditionalInfo() {
@@ -190,5 +190,11 @@ export class ProfilePage {
       ev: event
     });
   }
+
+  getLoader() {
+    return this.loadingCtrl.create({duration: 30000, spinner: "crescent" });
+  }
+
+
 
 }

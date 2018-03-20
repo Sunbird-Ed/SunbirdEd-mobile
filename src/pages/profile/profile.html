@@ -17,7 +17,7 @@
           
       </ion-refresher-content>
     </ion-refresher> -->
-
+  <ion-refresher (ionRefresh)="doRefresh($event)"></ion-refresher>
   <p class="profile-last-login-text">{{ lastLoginTime }}</p>
 
   <div text-center>
@@ -30,12 +30,12 @@
 
   <ion-item>
     <ion-row class="profile-completed-ion-row">
-      <ion-col col-8 class="profile-completed-ion-col">
+      <ion-col class="profile-completed-ion-col">
         <p class="profile-completed-text">{{ profileCompletionText }}</p>
       </ion-col>
-      <ion-col col-4 text-right class="profile-completed-ion-col">
+      <!-- <ion-col col-4 text-right class="profile-completed-ion-col">
         <p class="profile-add-exp-text">{{ uncompletedDetails }}</p>
-      </ion-col>
+      </ion-col> -->
     </ion-row>
     <pb-horizontal progress={{profileProgress}}></pb-horizontal>
   </ion-item>
@@ -49,7 +49,7 @@
 
   <ion-list-header class="section-title" no-lines>
     {{ 'TITLE_EDUCATION' | translate }}
-    <span float-right color="primary" (click)="editEduDetails(true)">{{ 'ADD' | translate }}
+    <span float-right color="primary" (click)="editEduDetails(true, {})">{{ 'ADD' | translate }}
         <ion-icon color="dark" class="padding-left-5" name="unlock"></ion-icon>
     </span>
   </ion-list-header>
@@ -69,7 +69,7 @@
         </div>
       </ion-col>
       <ion-col col-1 text-right>
-        <ion-icon name="md-create" color="primary" (click)="editEduDetails(false)"></ion-icon>
+        <ion-icon name="md-create" color="primary" (click)="editEduDetails(false, ed)"></ion-icon>
       </ion-col>
     </ion-row>
   </ion-item>
@@ -77,7 +77,7 @@
 
   <ion-list-header class="section-title">
     {{ 'EXPERIENCE' | translate }}
-    <span float-right color="primary" (click)="editExperience(true)">{{ 'ADD' | translate }}
+    <span float-right color="primary" (click)="editExperience(true, {})">{{ 'ADD' | translate }}
         <ion-icon color="dark" class="padding-left-5" name="unlock"></ion-icon>
     </span>
   </ion-list-header>
@@ -97,7 +97,7 @@
         </div>
       </ion-col>
       <ion-col col-1 text-right>
-        <ion-icon name="md-create" color="primary" color="editExperience(false)"></ion-icon>
+        <ion-icon name="md-create" color="primary" (click)="editExperience(false, job)"></ion-icon>
       </ion-col>
     </ion-row>
   </ion-item>
@@ -105,25 +105,25 @@
 
   <ion-list-header class="section-title">
     {{ 'TITLE_ADDRESS' | translate }}
-    <span float-right color="primary" (click)="editAddress(true)">{{ 'ADD' | translate }}
+    <span float-right color="primary" (click)="editAddress(true, {})">{{ 'ADD' | translate }}
         <ion-icon color="dark" class="padding-left-5" name="unlock"></ion-icon>
     </span>
   </ion-list-header>
 
-  <ion-item *ngFor="let add of profile?.address">
+  <ion-item *ngFor="let addr of profile?.address">
     <ion-row justify-content-start>
       <ion-col col-2 class="padding-left-none">
         <div class="image-holder"></div>
       </ion-col>
       <ion-col col-9>
-        <span class="details-title">{{ add.addType }}</span>
+        <span class="details-title">{{ addr.addType }}</span>
         <div class="details">
-          <p>{{ add.addressLine1 }}</p>
-          <p>{{ add.city }}</p>
+          <p>{{ addr.addressLine1 }}</p>
+          <p>{{ addr.city }}</p>
         </div>
       </ion-col>
       <ion-col col-1 text-right>
-        <ion-icon name="md-create" color="primary" (click)="editAddress(false)"></ion-icon>
+        <ion-icon name="md-create" color="primary" (click)="editAddress(false, addr)"></ion-icon>
       </ion-col>
     </ion-row>
   </ion-item>
@@ -137,9 +137,10 @@
   </ion-list-header>
 
   <ion-list>
-    <ion-row *ngFor="let skill of profile.skills" class="skill-row">
-      <ion-col col-9 class="ellipsis padding-left-10">{{ skill?.skillName }}</ion-col>
-      <ion-col col-3 text-right class="padding-right-10">{{ skill?.endorsementcount }}</ion-col>
+    
+    <ion-row *ngFor="let skill of profile.skills; let i = index" class="skill-row">
+        <ion-col col-9 class="ellipsis padding-left-10">{{ skill?.skillName }}</ion-col>
+        <ion-col col-3 text-right class="padding-right-10">{{ skill?.endorsementcount }}</ion-col>
     </ion-row>
   </ion-list>
 
@@ -175,7 +176,6 @@
         <span class="ellipsis">{{ profile?.phone }}</span>
       </ion-col>
     </ion-row>
-
 
     <ion-row>
       <ion-col col-5>

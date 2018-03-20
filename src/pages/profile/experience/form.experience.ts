@@ -10,16 +10,18 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 export class FormExperience {
   tabBarElement: any;
   isNewForm: boolean = true;
+  jobInfo: any = {};
   experienceForm: FormGroup;
   constructor(public navCtrl: NavController, public fb: FormBuilder, public navParams: NavParams) {
     //Need to hide bottom tab
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
     this.isNewForm = this.navParams.get('addForm');
+    this.jobInfo = this.navParams.get('jobInfo');
     this.experienceForm = this.fb.group({
-      jobName: [''],
-      org: ['', Validators.required],
-      position: [''],
-      subjects: ['', Validators.required],
+      jobName: [(this.jobInfo.jobName) ? this.jobInfo.jobName : ''],
+      org: [(this.jobInfo.orgName) ? this.jobInfo.orgName : '', Validators.required],
+      position: [(this.jobInfo.role) ? this.jobInfo.role : ''],
+      subjects: [(this.jobInfo.subject) ? this.jobInfo.subject : '', Validators.required],
       isCurrentJob: [''],
       fromDate: [''],
       toDate: ['']

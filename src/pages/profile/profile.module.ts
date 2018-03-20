@@ -23,6 +23,7 @@ import { PBHorizontal } from '../../component/pbhorizontal/pb-horizontal';
 
 import { TagInputModule } from 'ngx-chips';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ExpansionPanelsModule } from 'ng2-expansion-panels';
 
 @NgModule({
   declarations: [
@@ -60,7 +61,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     SettingsPageModule, 
     TranslateModule.forChild(),
     TagInputModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    ExpansionPanelsModule
   ],
   exports: [
     ProfilePage,
