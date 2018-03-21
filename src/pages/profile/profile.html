@@ -14,7 +14,7 @@
 <ion-content padding>
   <!-- <ion-refresher (ionRefresh)="doRefresh($event)">
       <ion-refresher-content>
-          
+
       </ion-refresher-content>
     </ion-refresher> -->
   <ion-refresher (ionRefresh)="doRefresh($event)"></ion-refresher>
@@ -33,7 +33,7 @@
       <ion-col class="profile-completed-ion-col">
         <p class="profile-completed-text">{{ profileCompletionText }}</p>
       </ion-col>
-      <!-- <ion-col col-4 text-right class="profile-completed-ion-col">
+      <!-- <ion-col col-4 text-end class="profile-completed-ion-col">
         <p class="profile-add-exp-text">{{ uncompletedDetails }}</p>
       </ion-col> -->
     </ion-row>
@@ -42,14 +42,14 @@
 
   <ion-item text-wrap>
     <p class="section-title">{{ 'DESCRIPTION' | translate }}
-        <ion-icon float-right class="padding-left-5" name="unlock"></ion-icon>
+        <ion-icon float-end class="padding-left-5" name="unlock"></ion-icon>
     </p>
     <p>{{ profile?.profileSummary }}</p>
   </ion-item>
 
-  <ion-list-header class="section-title" no-lines>
+  <ion-list-header class="section-title" no-lines no-padding>
     {{ 'TITLE_EDUCATION' | translate }}
-    <span float-right color="primary" (click)="editEduDetails(true, {})">{{ 'ADD' | translate }}
+    <span float-end color="primary" (click)="editEduDetails(true, {})">{{ 'ADD' | translate }}
         <ion-icon color="dark" class="padding-left-5" name="unlock"></ion-icon>
     </span>
   </ion-list-header>
@@ -68,16 +68,16 @@
           <p>{{ ed.boardOrUniversity }}</p>
         </div>
       </ion-col>
-      <ion-col col-1 text-right>
+      <ion-col col-1 text-end>
         <ion-icon name="md-create" color="primary" (click)="editEduDetails(false, ed)"></ion-icon>
       </ion-col>
     </ion-row>
   </ion-item>
 
 
-  <ion-list-header class="section-title">
+  <ion-list-header class="section-title" no-padding>
     {{ 'EXPERIENCE' | translate }}
-    <span float-right color="primary" (click)="editExperience(true, {})">{{ 'ADD' | translate }}
+    <span float-end color="primary" (click)="editExperience(true, {})">{{ 'ADD' | translate }}
         <ion-icon color="dark" class="padding-left-5" name="unlock"></ion-icon>
     </span>
   </ion-list-header>
@@ -96,16 +96,16 @@
           <p>{{ job.duration }}</p>
         </div>
       </ion-col>
-      <ion-col col-1 text-right>
+      <ion-col col-1 text-end>
         <ion-icon name="md-create" color="primary" (click)="editExperience(false, job)"></ion-icon>
       </ion-col>
     </ion-row>
   </ion-item>
 
 
-  <ion-list-header class="section-title">
+  <ion-list-header class="section-title" no-padding>
     {{ 'TITLE_ADDRESS' | translate }}
-    <span float-right color="primary" (click)="editAddress(true, {})">{{ 'ADD' | translate }}
+    <span float-end color="primary" (click)="editAddress(true, {})">{{ 'ADD' | translate }}
         <ion-icon color="dark" class="padding-left-5" name="unlock"></ion-icon>
     </span>
   </ion-list-header>
@@ -122,31 +122,31 @@
           <p>{{ addr.city }}</p>
         </div>
       </ion-col>
-      <ion-col col-1 text-right>
+      <ion-col col-1 text-end>
         <ion-icon name="md-create" color="primary" (click)="editAddress(false, addr)"></ion-icon>
       </ion-col>
     </ion-row>
   </ion-item>
 
 
-  <ion-list-header class="section-title">
+  <ion-list-header class="section-title" no-padding>
     {{ 'SKILL_TAGS' | translate }}
-    <span float-right color="primary" (click)="addSkillTags()">{{ 'ADD' | translate }}
+    <span float-end color="primary" (click)="addSkillTags()">{{ 'ADD' | translate }}
         <ion-icon color="dark" class="padding-left-5" name="unlock"></ion-icon>
     </span>
   </ion-list-header>
 
   <ion-list>
-    
+
     <ion-row *ngFor="let skill of profile.skills; let i = index" class="skill-row">
         <ion-col col-9 class="ellipsis padding-left-10">{{ skill?.skillName }}</ion-col>
-        <ion-col col-3 text-right class="padding-right-10">{{ skill?.endorsementcount }}</ion-col>
+        <ion-col col-3 text-end class="padding-right-10">{{ skill?.endorsementcount }}</ion-col>
     </ion-row>
   </ion-list>
 
-  <ion-list-header class="section-title">
+  <ion-list-header class="section-title" no-padding>
     {{ 'ADDITIONAL_INFORMATION' | translate }}
-    <ion-icon float-right name="md-create" color="primary" (click)="editAdditionalInfo()"></ion-icon>
+    <ion-icon float-end name="md-create" color="primary" (click)="editAdditionalInfo()"></ion-icon>
   </ion-list-header>
 
   <ion-item class="additional-info">
@@ -154,7 +154,7 @@
       <ion-col col-5>
         <span text-uppercase class="info-title">{{ 'LANGUAGE' | translate }}</span>
       </ion-col>
-      <ion-col col-7 text-right>
+      <ion-col col-7 text-end>
         <span class="ellipsis">{{ profile.language && profile.language[0] }}</span>
       </ion-col>
     </ion-row>
@@ -163,7 +163,7 @@
       <ion-col col-5>
         <span text-uppercase class="info-title">{{ 'EMAIL_ID' | translate }}</span>
       </ion-col>
-      <ion-col col-7 text-right>
+      <ion-col col-7 text-end>
         <span class="ellipsis">{{ profile?.email }}</span>
       </ion-col>
     </ion-row>
@@ -172,7 +172,7 @@
       <ion-col col-5>
         <span text-uppercase class="info-title">{{ 'PHONE' | translate }}</span>
       </ion-col>
-      <ion-col col-7 text-right>
+      <ion-col col-7 text-end>
         <span class="ellipsis">{{ profile?.phone }}</span>
       </ion-col>
     </ion-row>
@@ -181,7 +181,7 @@
       <ion-col col-5>
         <span text-uppercase class="info-title">{{ 'GENDER' | translate }}</span>
       </ion-col>
-      <ion-col col-7 text-right>
+      <ion-col col-7 text-end>
         <span class="ellipsis">{{ profile?.gender }}</span>
       </ion-col>
     </ion-row>
@@ -190,7 +190,7 @@
       <ion-col col-5>
         <span text-uppercase class="info-title">{{ 'SUBJECTS' | translate }}</span>
       </ion-col>
-      <ion-col col-7 text-right>
+      <ion-col col-7 text-end>
         <span class="ellipsis">{{ subjects }}</span>
       </ion-col>
     </ion-row>
@@ -199,7 +199,7 @@
       <ion-col col-5>
         <span text-uppercase class="info-title">{{ 'DATE_OF_BIRTH' | translate }}</span>
       </ion-col>
-      <ion-col col-7 text-right>
+      <ion-col col-7 text-end>
         <span class="ellipsis">{{ profile?.dob }}</span>
       </ion-col>
     </ion-row>
@@ -208,7 +208,7 @@
       <ion-col col-5>
         <span text-uppercase class="info-title">{{ 'GRADE' | translate }}</span>
       </ion-col>
-      <ion-col col-7 text-right>
+      <ion-col col-7 text-end>
         <span class="ellipsis">{{ grades }}</span>
       </ion-col>
     </ion-row>
@@ -217,7 +217,7 @@
       <ion-col col-5>
         <span text-uppercase class="info-title">{{ 'CURRENT_LOCATION' | translate }}</span>
       </ion-col>
-      <ion-col col-7 text-right>
+      <ion-col col-7 text-end>
         <span class="ellipsis">{{ profile?.location }}</span>
       </ion-col>
     </ion-row>
