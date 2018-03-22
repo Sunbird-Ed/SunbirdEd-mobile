@@ -8,6 +8,9 @@ import { Ionic2RatingModule } from "ionic2-rating";
 import { HttpClient } from '@angular/common/http';
 import { HttpClientModule } from '@angular/common/http';
 import { HttpModule } from '@angular/http';
+import { FrameworkModule } from "sunbird";
+import { IonicImageLoader } from "ionic-image-loader";
+
 
 @NgModule({
   declarations: [
@@ -20,10 +23,13 @@ import { HttpModule } from '@angular/http';
     Ionic2RatingModule,
     HttpModule,
     HttpClientModule,
+    FrameworkModule,
+    IonicImageLoader
   ],
   providers: [HttpClient],
   exports: [
     CoursesPage
   ]
 })
-export class CoursesPageModule {}
+export class CoursesPageModule {
+}

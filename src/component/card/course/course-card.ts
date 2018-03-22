@@ -1,4 +1,5 @@
 import { Component, Input } from "@angular/core";
+import { ImageLoader } from "ionic-image-loader";
 
 /**
  * The course card component
@@ -35,5 +36,9 @@ export class CourseCard {
    */
   constructor() {
     this.defaultImg = 'assets/imgs/ic_action_course.png';
+  }
+
+  onImageLoad(imgLoader: ImageLoader) {
+    console.log("Image Loader " + imgLoader.nativeAvailable);
   }
 }
