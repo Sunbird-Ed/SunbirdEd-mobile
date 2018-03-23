@@ -126,9 +126,9 @@
       "cordova-plugin-app-version": {},
       "cordova-plugin-x-socialsharing": {},
       "cordova-plugin-device": {},
-      "cordova-plugin-genie-sdk": {},
       "cordova-plugin-file": {},
-      "cordova-plugin-file-transfer": {}
+      "cordova-plugin-file-transfer": {},
+      "cordova-plugin-genie-sdk": {}
     },
     "platforms": [
       "android"

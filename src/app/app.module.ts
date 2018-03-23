@@ -27,7 +27,7 @@ import { IonicImageLoader, ImageLoader, ImageLoaderConfig } from "ionic-image-lo
 @NgModule({
   declarations: [
     MyApp,
-    TabsPage
+    TabsPage,
   ],
   imports: [
     HttpClientModule,
