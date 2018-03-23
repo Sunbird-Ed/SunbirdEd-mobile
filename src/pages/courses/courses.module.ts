@@ -11,6 +11,9 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientModule } from '@angular/common/http';
 import { HttpModule } from '@angular/http';
 import { GenieSDKServiceProvider } from 'sunbird';
+import { FrameworkModule } from "sunbird";
+import { IonicImageLoader } from "ionic-image-loader";
+
 
 @NgModule({
   declarations: [
@@ -26,6 +29,8 @@ import { GenieSDKServiceProvider } from 'sunbird';
     Ionic2RatingModule,
     HttpModule,
     HttpClientModule,
+    FrameworkModule,
+    IonicImageLoader
   ],
   providers: [HttpClient, GenieSDKServiceProvider],
   exports: [

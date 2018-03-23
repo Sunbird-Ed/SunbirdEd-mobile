@@ -1,10 +1,10 @@
 import { Component, Input } from "@angular/core";
 import { NavController } from 'ionic-angular';
 import { CourseDetailComponent } from "../../../pages/courses/course-detail/course-detail";
-
+import { ImageLoader } from "ionic-image-loader";
 
 /**
- * The course card component 
+ * The course card component
  */
 @Component({
   selector: 'course-card',
@@ -19,17 +19,19 @@ export class CourseCard {
 
   /**
    * Contains layout name
-   * 
+   *
    * @example layoutName = Inprogress / popular
    */
   @Input() layoutName: string;
 
   /**
    * Contains default image path.
-   * 
+   *
    * It gets used when perticular course does not have a course/content icon
    */
   defaultImg: string;
+
+  rate: string = "4";
 
   /**
    * Default method of class CourseCard
@@ -45,5 +47,9 @@ export class CourseCard {
    */
   navigateToCourseDetailPage(id: string, layoutName: string): void {
     this.navCtrl.push(CourseDetailComponent, { identifier: id, layoutType: layoutName });
+  }
+
+  onImageLoad(imgLoader: ImageLoader) {
+    console.log("Image Loader " + imgLoader.nativeAvailable);
   }
 }

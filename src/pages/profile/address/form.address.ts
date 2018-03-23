@@ -10,18 +10,21 @@ import { NavController, NavParams } from 'ionic-angular';
 export class FormAddress {
   tabBarElement: any;
   isNewForm: boolean = true;
+  addressDetails: any = [];
   addressForm: FormGroup;
   constructor(public navCtrl: NavController, public fb: FormBuilder, public navParams: NavParams) {
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
     this.isNewForm = this.navParams.get('addForm');
+    this.addressDetails = this.navParams.get('addressDetails');
+
     this.addressForm = this.fb.group({
-      addressType: [''],
-      addressLine1: ['', Validators.required],
-      addressLine2: [''],
-      city: ['', Validators.required],
-      state: [''],
-      country: [''],
-      pinCode: ['']
+      addressType: [(this.addressDetails.addType) ? this.addressDetails.addType : ''],
+      addressLine1: [(this.addressDetails.addressLine1) ? this.addressDetails.addressLine1 : '', Validators.required],
+      addressLine2: [(this.addressDetails.addressLine2) ? this.addressDetails.addressLine2 : ''],
+      city: [(this.addressDetails.city) ? this.addressDetails.city : '', Validators.required],
+      state: [(this.addressDetails.state) ? this.addressDetails.state : ''],
+      country: [(this.addressDetails.country) ? this.addressDetails.country : ''],
+      pinCode: [(this.addressDetails.zipcode) ? this.addressDetails.zipcode : '']
     });
   }
 

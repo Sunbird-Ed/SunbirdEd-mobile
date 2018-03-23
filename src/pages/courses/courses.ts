@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, Platform } from 'ionic-angular';
 import { IonicPage } from 'ionic-angular';
 import { HttpClient } from '@angular/common/http';
 import { CourseService, AuthService, EnrolledCoursesRequest, ContentService } from 'sunbird';
 import { CourseCard } from './../../component/card/course/course-card';
+import { DocumentDirection } from 'ionic-angular/platform/platform';
 
 @IonicPage()
 @Component({
@@ -47,14 +48,16 @@ export class CoursesPage implements OnInit {
    */
   public authService: AuthService;
 
+  currentStyle = "ltr";
+
   /**
    * Default method of class CoursesPage
-   * 
+   *
    * @param {NavController} navCtrl Reference of nav controller to navigate user from one page to another
    * @param {HttpClient} http Reference of http client service to make api call
    */
   constructor(public navCtrl: NavController, http: HttpClient, courseService: CourseService, authService: AuthService,
-  private contentService: ContentService) {
+  private contentService: ContentService, public platform: Platform) {
     this.http = http;
     this.courseService = courseService;
     this.authService = authService;
@@ -64,7 +67,7 @@ export class CoursesPage implements OnInit {
 
   /**
    * To get enrolled course(s) of logged-in user.
-   * 
+   *
    * It internally calls course handler of genie sdk
    */
   getEnrolledCourses(): void {
@@ -87,7 +90,7 @@ export class CoursesPage implements OnInit {
 
   /**
    * To get popular course.
-   * 
+   *
    * It internally calls course handler of genie sdk
    */
   getPopularAndLatestCourses(): void {
@@ -116,5 +119,15 @@ export class CoursesPage implements OnInit {
     this.spinner(true);
     this.getEnrolledCourses();
     this.getPopularAndLatestCourses();
+  }
+
+  changeLanguage(event) {
+    if (this.currentStyle === "ltr") {
+      this.currentStyle = "rtl";
+    } else {
+      this.currentStyle = "ltr";
+    }
+
+    this.platform.setDir(this.currentStyle as DocumentDirection, true);
   }
 }

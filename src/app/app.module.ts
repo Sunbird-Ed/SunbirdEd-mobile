@@ -9,6 +9,7 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClientModule, HttpClient } from "@angular/common/http";
 import { IonicStorageModule } from "@ionic/storage";
 import { HTTP } from "@ionic-native/http";
+import { File } from "@ionic-native/file";
 
 import { PluginModules } from './module.service';
 import { TelemetryService, EventService, FrameworkModule, ContainerService, TabsPage } from 'sunbird';
@@ -20,6 +21,7 @@ import { GuestEditProfilePage } from '../pages/guest-edit.profile/guest-edit.pro
 import { UniqueDeviceID } from '@ionic-native/unique-device-id';
 import { AppVersion } from '@ionic-native/app-version';
 import { SocialSharing } from '@ionic-native/social-sharing';
+import { IonicImageLoader, ImageLoader, ImageLoaderConfig } from "ionic-image-loader";
 
 
 @NgModule({
@@ -42,6 +44,7 @@ import { SocialSharing } from '@ionic-native/social-sharing';
       }
     }),
     IonicModule.forRoot(MyApp),
+    IonicImageLoader.forRoot(),
     ...PluginModules
   ],
   bootstrap: [IonicApp],
@@ -53,19 +56,23 @@ import { SocialSharing } from '@ionic-native/social-sharing';
     StatusBar,
     SplashScreen,
     HTTP,
+    File,
     Globalization,
     UniqueDeviceID,
     AppVersion,
     SocialSharing,
+    ImageLoader,
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })
 export class AppModule {
 
-  constructor(translate: TranslateService, private eventService: EventService, private events: Events) {
+  constructor(translate: TranslateService, private eventService: EventService, private events: Events, private imageConfig: ImageLoaderConfig) {
     translate.setDefaultLang('en');
 
     this.registerForEvent();
+    this.imageConfig.enableDebugMode();
+    this.imageConfig.maxCacheSize = 2 * 1024 * 1024;
   }
 
 

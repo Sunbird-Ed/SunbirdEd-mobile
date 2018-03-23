@@ -4,20 +4,23 @@
       <ion-col col-12>
         <div class="img-container">
         </div>
-        <img src="{{course.courseLogoUrl || course.appIcon || defaultImg}}" width="200px" height="95px" />
+        <img-loader src="{{ course.courseLogoUrl || course.appIcon || defaultImg }}" width="200px" height="95px"
+        spinner="true" (load)="onImageLoad($event)"></img-loader>
         <ion-label class="card-title" padding-left>{{course.courseName || course.name}}</ion-label>
       </ion-col>
     </ion-row>
     <ion-row class="bottom-container" no-padding>
       <ion-col col-8 *ngIf="layoutName === 'Popular'">
         <rating [(ngModel)]="rate" readOnly="true" max="5" no-padding></rating>
-        <ion-label class="size_txt" no-margin>Size [180kb]</ion-label>
+        <ion-label class="size_txt" no-margin>Size 180KB</ion-label>
       </ion-col>
       <ion-col col-8 *ngIf="layoutName === 'Inprogress'" style="padding-top: 8px;">
         Completed: {{course.progress}} %
       </ion-col>
       <ion-col col-4>
         <button ion-button outline small float-right (click)="navigateToCourseDetailPage(course.contentId, layoutName);">{{layoutName === 'Inprogress' ? 'RESUME' : 'OPEN' }}</button>
+      <ion-col col-5>
+        <button ion-button outline small float-end>{{layoutName === 'Inprogress' ? 'RESUME' : 'OPEN' }}</button>
       </ion-col>
     </ion-row>
   </ion-grid>
