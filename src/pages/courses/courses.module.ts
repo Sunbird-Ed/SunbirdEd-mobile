@@ -6,6 +6,9 @@ import { TranslateModule } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
 import { HttpClientModule } from '@angular/common/http';
 import { HttpModule } from '@angular/http';
+import { FrameworkModule } from "sunbird";
+import { IonicImageLoader } from "ionic-image-loader";
+
 
 import { ComponentsModule } from "../../component/components.module";
 
@@ -18,11 +21,14 @@ import { ComponentsModule } from "../../component/components.module";
     TranslateModule.forChild(),
     HttpModule,
     HttpClientModule,
-    ComponentsModule
+    ComponentsModule,
+    FrameworkModule,
+    IonicImageLoader
   ],
   providers: [HttpClient],
   exports: [
     CoursesPage
   ]
 })
-export class CoursesPageModule {}
+export class CoursesPageModule {
+}
