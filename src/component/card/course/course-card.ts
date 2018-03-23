@@ -1,4 +1,7 @@
 import { Component, Input } from "@angular/core";
+import { NavController } from 'ionic-angular';
+import { CourseDetailComponent } from "../../../pages/courses/course-detail/course-detail";
+
 
 /**
  * The course card component 
@@ -31,7 +34,16 @@ export class CourseCard {
   /**
    * Default method of class CourseCard
    */
-  constructor() {
+  constructor(public navCtrl: NavController) {
     this.defaultImg = 'assets/imgs/ic_action_course.png';
+  }
+
+  /**
+   * Navigate to the course/content details page
+   * 
+   * @param {string} id content identifier
+   */
+  navigateToCourseDetailPage(id: string, layoutName: string): void {
+    this.navCtrl.push(CourseDetailComponent, { identifier: id, layoutType: layoutName });
   }
 }

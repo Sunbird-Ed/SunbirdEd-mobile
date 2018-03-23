@@ -2,14 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { IonicPage } from 'ionic-angular';
 import { HttpClient } from '@angular/common/http';
-import { CourseService, AuthService, EnrolledCoursesRequest } from 'sunbird';
+import { CourseService, AuthService, EnrolledCoursesRequest, ContentService } from 'sunbird';
 import { CourseCard } from './../../component/card/course/course-card';
 
 @IonicPage()
 @Component({
   selector: 'page-courses',
-  templateUrl: 'courses.html',
-  providers:[CourseService, AuthService]
+  templateUrl: 'courses.html'
 })
 export class CoursesPage implements OnInit {
 
@@ -54,7 +53,8 @@ export class CoursesPage implements OnInit {
    * @param {NavController} navCtrl Reference of nav controller to navigate user from one page to another
    * @param {HttpClient} http Reference of http client service to make api call
    */
-  constructor(public navCtrl: NavController, http: HttpClient, courseService: CourseService, authService: AuthService) {
+  constructor(public navCtrl: NavController, http: HttpClient, courseService: CourseService, authService: AuthService,
+  private contentService: ContentService) {
     this.http = http;
     this.courseService = courseService;
     this.authService = authService;
@@ -68,18 +68,21 @@ export class CoursesPage implements OnInit {
    * It internally calls course handler of genie sdk
    */
   getEnrolledCourses(): void {
-    console.log('fetching enrolled course...');
-    this.spinner(true);
-    this.http.get('http://www.mocky.io/v2/5aa8ebdb3200003f22165980').subscribe(
-      (data: any) => {
-        this.enrolledCourse = data.courses;
-        this.spinner(false);
-      },
-      (error: any) => {
-        console.log('error while fetching enrolled courses');
+    console.log('making api call to get enrolled courses');
+    let option = { 
+      userId: this.userId,
+      refreshEnrolledCourses: false 
+    };
+    this.courseService.getEnrolledCourses(option, (data: any) => {
+      if (data) {
+        data = JSON.parse(data);
+        this.enrolledCourse = data.result.courses ? data.result.courses : [];
         this.spinner(false);
       }
-    );
+    }, (error: any) => {
+      console.log('error while loading enrolled courses', error);
+      this.spinner(false);
+    });
   }
 
   /**
@@ -88,15 +91,12 @@ export class CoursesPage implements OnInit {
    * It internally calls course handler of genie sdk
    */
   getPopularAndLatestCourses(): void {
-    this.spinner(true);
     this.http.get('http://www.mocky.io/v2/5aa9ff1c330000ba092da65a').subscribe(
       (data: any) => {
         this.popularAndLatestCourses = data.result.response.sections ? data.result.response.sections : [];
-        this.spinner(false);
       },
       (error: any) => {
         console.log('error while fetching popular courses');
-        this.spinner(false);
       }
     );
   }
@@ -107,11 +107,13 @@ export class CoursesPage implements OnInit {
   spinner(flag: boolean){
     this.showLoader = flag;
   }
+ 
   /**
    * Angular life cycle hooks
    */
   ngOnInit() {
     console.log('courses component initialized...');
+    this.spinner(true);
     this.getEnrolledCourses();
     this.getPopularAndLatestCourses();
   }

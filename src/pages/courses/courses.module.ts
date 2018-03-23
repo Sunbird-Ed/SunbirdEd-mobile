@@ -1,3 +1,5 @@
+import { CourseBatchesComponent } from './course-batches/course-batches';
+import { CourseDetailComponent } from './course-detail/course-detail';
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { CoursesPage } from './courses';
@@ -8,12 +10,16 @@ import { Ionic2RatingModule } from "ionic2-rating";
 import { HttpClient } from '@angular/common/http';
 import { HttpClientModule } from '@angular/common/http';
 import { HttpModule } from '@angular/http';
+import { GenieSDKServiceProvider } from 'sunbird';
 
 @NgModule({
   declarations: [
     CoursesPage,
-    CourseCard
+    CourseCard,
+    CourseDetailComponent,
+    CourseBatchesComponent
   ],
+  entryComponents: [CourseDetailComponent, CourseBatchesComponent],
   imports: [
     IonicPageModule.forChild(CoursesPage),
     TranslateModule.forChild(),
@@ -21,9 +27,9 @@ import { HttpModule } from '@angular/http';
     HttpModule,
     HttpClientModule,
   ],
-  providers: [HttpClient],
+  providers: [HttpClient, GenieSDKServiceProvider],
   exports: [
     CoursesPage
   ]
 })
-export class CoursesPageModule {}
+export class CoursesPageModule { }
