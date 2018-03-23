@@ -14,7 +14,7 @@
   <!-- <div> -->
   <div class="">
     <div class="item padding-11">
-      <span float-start class="scroll-heading">{{ 'SAVED_RESOURCES' | translate }}</span>
+      <span float-start class="scroll-heading" *ngIf="localResources && localResources.length">{{ 'SAVED_RESOURCES' | translate }}</span>
       <span float-end class="view-all-link" *ngIf="localResources && localResources.length">
         <a>{{ 'VIEW_ALL' | translate }}</a>
       </span>
