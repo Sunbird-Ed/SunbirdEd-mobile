@@ -25,7 +25,7 @@ import { SocialSharing } from '@ionic-native/social-sharing';
 @NgModule({
   declarations: [
     MyApp,
-    TabsPage
+    TabsPage,
   ],
   imports: [
     HttpClientModule,
