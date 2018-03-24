@@ -78,10 +78,10 @@ export class AppModule {
 
   registerForEvent() {
     this.eventService.register((response) => {
-      console.log("Event : " + response);
+      // console.log("Event : " + response);
       this.events.publish('genie.event', response);
     }, (error) => {
-      console.log("Event : " + error);
+      // console.log("Event : " + error);
     });
   }
 }

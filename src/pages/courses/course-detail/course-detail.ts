@@ -33,6 +33,11 @@ export class CourseDetailComponent implements OnInit {
   showChildrenLoader: boolean;
 
   /**
+   * To hold course hierarchy 
+   */
+  hierarchyInfo: any;
+
+  /**
    * Contains reference of content service
    */
   public contentService: ContentService;
@@ -65,6 +70,7 @@ export class CourseDetailComponent implements OnInit {
     this.contentService = contentService;
     this.zone = zone;
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
+    console.log('Course identifier ===> ', this.navParams.get('identifier'));
   }
 
   /** 
@@ -72,42 +78,30 @@ export class CourseDetailComponent implements OnInit {
    */
   getContentDetails() {
     const option = {
-      contentId: 'do_212465766404055040181',
+      contentId: this.navParams.get('identifier'),
       attachFeedback: false,
       attachContentAccess: false,
       refreshContentDetails: false  
     }
 
     console.log('Making api call to get content details');
-    /*this.contentService.getContentDetail(option, (data: any) => {
+    this.contentService.getContentDetail(option, (data: any) => {
       this.zone.run(() => {
-        console.log('details', data);
         data = JSON.parse(data);
+        console.log('content details response ==>', data);
         if (data && data.result) {
           this.contentDetail = data.result.contentData ? data.result.contentData : [];
-          if (!data.isAvailableLocally) {
+          if (data.result.isAvailableLocally === false) {
             this.importContent();
+          } else {
+            this.importChildrenContent();
           }
         }
       });
     },
     error => {
       console.log('error while loading content details', error);
-    });*/
-
-    this.http.get('http://www.mocky.io/v2/5ab3514f2f00000f00ca3665').subscribe(
-      (data: any) => {
-        console.log('data', data);
-        this.contentDetail = data.result.contentData ? data.result.contentData : [];
-        if (!data.isAvailableLocally) {
-          this.importContent();
-        }
-      },
-      (error: any) => {
-        console.log('error while fetching popular courses');
-      }
-    );
-
+    });
   }
 
 
@@ -122,7 +116,7 @@ export class CourseDetailComponent implements OnInit {
         [0]: {
           isChildContent: false,
           destinationFolder: '/storage/emulated/0/Android/data/org.sunbird.app/files',
-          contentId: 'do_212465766404055040181',
+          contentId: this.navParams.get('identifier'),
           correlationData: []
         }
       },
@@ -137,8 +131,23 @@ export class CourseDetailComponent implements OnInit {
     });
   }
 
-  importChildren(): void {
-    console.warn('do import children api call ======================> ');
+  /**
+   * 
+   */
+  importChildrenContent(): void {
+    console.log('do import children api call ======================>');
+    const option = {
+      contentId: this.navParams.get('identifier'),
+      hierarchyInfo: null,
+      level: 1
+    };
+
+    this.contentService.getChildContents(option, (data: string) => {
+      console.log('children data success ==>', data)
+    },
+    (error: string) => {
+      console.log('error while fetching children', error);
+    });
   }
 
   /**
@@ -152,7 +161,7 @@ export class CourseDetailComponent implements OnInit {
       data = JSON.parse(data);
       let res = data;
       if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
-        this.importChildren();
+        this.importChildrenContent();
       }
     });
   }
