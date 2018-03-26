@@ -1,0 +1,47 @@
+<!-- Generated template for the CourseDetailComponent component -->
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      <ion-icon md="md-share" float-right></ion-icon>
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+<!-- Page body -->
+<ion-content padding>
+  <div class="content-details-holder" *ngIf="contentDetail">
+    <h4>{{contentDetail.name}}</h4>
+    <p>{{contentDetail.description}}</p>
+
+    <div class="about-section">
+      <h4 class="padding-10 background-gray">About</h4>
+      <p padding>{{contentDetail.description}}</p>
+      <div *ngIf="contentDetail.gradeLevel && contentDetail.gradeLevel.length">
+        <div>GRADE:</div>
+        <span *ngFor="let grade of contentDetail.gradeLevel">
+          <span>{{grade}}</span>
+        </span>
+      </div>
+      <div *ngIf="contentDetail.subject">
+        <div>SUBJECT:</div>
+        <span>{{contentDetail.subject}}</span>
+      </div>
+    </div>
+
+    <div class="structure-section">
+      <h4 class="padding-10 background-gray">Structure</h4>
+      <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+      <ion-item>
+        <span ion-text>Example one</span>
+      </ion-item>
+      <ion-item>
+        <span ion-text>Example two</span>
+      </ion-item>
+    </div>
+  </div>
+</ion-content>
+<!-- Page footer -->
+<ion-footer>
+  <ion-toolbar padding>
+    <button ion-button block (click)="navigateToBatchListPage('');">ENROLL IN COURSE</button>
+  </ion-toolbar>
+</ion-footer>
