@@ -66,7 +66,7 @@ export class ProfilePage {
   resetProfile() {
     this.profile = {};
     this.lastLoginTime = "Last login time: ";
-    this.userName = "User Name-";
+    this.userName = "User Name - ";
     this.subjects = "";
     this.grades = "";
   }
@@ -197,8 +197,8 @@ export class ProfilePage {
       } else {
         let req = {
           userId: JSON.parse(session)["userToken"],
-          private: (privacy == 'private') ? [field] : [],
-          public: (privacy == 'public') ? [field] : []
+          privateFields: (privacy == 'private') ? [field] : [],
+          publicFields: (privacy == 'public') ? [field] : []
         }
         this.userProfileService.setProfileVisibility(req, res => {
           console.log("Res", res);
