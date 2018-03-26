@@ -24,7 +24,7 @@
 .header-title {
   font-size: 20px;
   height: 100%;
-  vertical-align: text-bottom;
+  vertical-align: middle;
 }
 
 .tabbar, .tabs-ios, .tabs-md, .tabs-wp {
@@ -195,5 +195,16 @@
       .tab-button-icon[ng-reflect-name=profile], .tab-button-icon[aria-label=profile] {
           background-image: url(../assets/imgs/ic_profile_blue.png);
       }
+  }
+}
+
+/* For changing the input placeholder based on Language Direction  */
+input::placeholder {
+  @include ltr() {
+    text-align: left;
+  }
+
+  @include rtl() {
+    text-align: right;
   }
 }

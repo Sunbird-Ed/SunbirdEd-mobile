@@ -10,4 +10,38 @@ page-resources {
         margin: 10px;
         float: right;
     }
+    .inner {
+        width: auto;
+        height: 100%;
+    
+    course-card {
+        display: table-cell;
+    }
+    }
+    .inprogress-courses {
+    .bottom-container{
+        background: #efeff4;
+    }
+    }
+
+    .scroll-heading {
+    padding-top: 5px;
+    font-weight: 500;
+    font-family: 'sunbirdboldfont';
+    font-size: 1.375em;
+    }
+    .view-all-link {
+    font-size: 1.2rem;
+    padding-top: 11px;
+    font-family: 'sunbirdboldfont';
+    }
+    .course-scroll-holder {
+    background-color: #FDFEFE;
+    }
+    .course-page-color {
+    background: #efeff4;
+    }
+    .padding-11 {
+    padding: 11px;
+    }
 }
