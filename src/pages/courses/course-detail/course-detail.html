@@ -15,13 +15,13 @@
     <div class="about-section">
       <h4 class="padding-10 background-gray">About</h4>
       <p padding>{{contentDetail.description}}</p>
-      <div *ngIf="contentDetail.gradeLevel && contentDetail.gradeLevel.length" padding>
+      <div *ngIf="contentDetail.gradeLevel && contentDetail.gradeLevel.length">
         <div>GRADE:</div>
         <span *ngFor="let grade of contentDetail.gradeLevel">
           <span>{{grade}}</span>
         </span>
       </div>
-      <div *ngIf="contentDetail.subject" padding>
+      <div *ngIf="contentDetail.subject">
         <div>SUBJECT:</div>
         <span>{{contentDetail.subject}}</span>
       </div>
@@ -29,13 +29,12 @@
 
     <div class="structure-section">
       <h4 class="padding-10 background-gray">Structure</h4>
-      <p>Ionic apps are created and developed primarily through the Ionic command line utility (the “CLI”), and use Cordova
-        to build/deploy as a native app.</p>
+      <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
       <ion-item>
-        <span ion-text>AA</span>
+        <span ion-text>Example one</span>
       </ion-item>
       <ion-item>
-        <span ion-text>BB</span>
+        <span ion-text>Example two</span>
       </ion-item>
     </div>
   </div>
