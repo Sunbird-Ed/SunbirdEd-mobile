@@ -164,3 +164,13 @@ page-profile {
 .padding-5 {
     padding: 5px !important;
 }
+.loading{
+  background-color: transparent !important;
+}
+
+.loading-md .loading-wrapper {
+  border-radius: 50% !important;
+  padding: 10px !important;
+  max-height: 48px !important;
+  max-width: 48px !important;
+}

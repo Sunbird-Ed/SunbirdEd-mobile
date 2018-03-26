@@ -23,7 +23,6 @@ import { AppVersion } from '@ionic-native/app-version';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { IonicImageLoader, ImageLoader, ImageLoaderConfig } from "ionic-image-loader";
 
-
 @NgModule({
   declarations: [
     MyApp,

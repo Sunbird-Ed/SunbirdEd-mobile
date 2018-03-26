@@ -1,6 +1,6 @@
 import { Component, NgZone } from '@angular/core';
 import { NavController, LoadingController } from 'ionic-angular';
-import { CameraService, ProfileService, AuthService } from 'sunbird';
+import { CameraService, ProfileService, AuthService, UserProfileService } from 'sunbird';
 import { FormEducation } from './education/form.education';
 import { FormAddress } from './address/form.address';
 import { SkillTagsComponent } from './skill-tags/skill-tags';
@@ -9,7 +9,6 @@ import { FormExperience } from './experience/form.experience';
 import { OverflowMenuComponent } from './overflowmenu/menu.overflow.component';
 import { PopoverController } from 'ionic-angular/components/popover/popover-controller';
 import { DatePipe } from '@angular/common';
-
 
 @Component({
   selector: 'page-profile',
@@ -29,20 +28,23 @@ export class ProfilePage {
   list: Array<String> = ['SWITCH_ACCOUNT', 'DOWNLOAD_MANAGER', 'SETTINGS', 'SIGN_OUT'];
   sunbird: string = "Sunbird";
   uncompletedDetails: string = "+ Add Experience";
+  readonly DEFAULT_PAGINATION_LIMIT: number = 10;
+  paginationLimit: number = 10;
+  startLimit: number = 0;
 
   constructor(public navCtrl: NavController, 
     private cameraService: CameraService, 
     public popoverCtrl: PopoverController,
     private profileService: ProfileService,
+    public userProfileService: UserProfileService,
     private zone: NgZone,
     private datePipe: DatePipe,
-    private authService: AuthService,
+    public authService: AuthService,
     private loadingCtrl: LoadingController) {
-
+      this.doRefresh();
   }
 
   ionViewWillEnter() {
-    this.doRefresh();
   }
 
   doRefresh(refresher?) {
@@ -52,8 +54,8 @@ export class ProfilePage {
       setTimeout(() => {
         console.log('Async operation has ended');
         if(refresher) refresher.complete();
-        loader.dismiss();
-      }, 200);
+          loader.dismiss();
+      }, 500);
     })
     .catch(error => {
       console.log(error);
@@ -70,32 +72,31 @@ export class ProfilePage {
   }
 
   refreshProfileData() {
-    let that = this;
-    return new Promise(function (resolve, reject) {
-      that.authService.getSessionData(session => {
+    return new Promise((resolve, reject) => {
+      this.authService.getSessionData((session) => {
         if (session === undefined || session == null) {
           reject("session is null");
         } else {
-          let s = JSON.parse(session);
+          let sessionObj = JSON.parse(session);
           let req = {
-            userId: s["userToken"], 
+            userId: sessionObj["userToken"],
             requiredFields: ["completeness", "missingFields", "lastLoginTime", "topics"], 
             refreshUserProfileDetails: true
           };
-          that.profileService.getProfileById(req, res => {
-            that.zone.run(() => {
-              that.resetProfile();
+          this.userProfileService.getUserProfileDetails(req, res => {
+            this.zone.run(() => {
+              this.resetProfile();
               let r = JSON.parse(res);
-              that.profile = r.response;
-              if(r.response.avatar) that.imageUri = r.response.avatar;
-              that.formatLastLoginTime();
-              that.formatUserName();
-              that.formatProfileName();
-              that.formatProfileCompletion();
-              that.formatProfileProgress();
-              that.formatJobProfile();
-              that.formatSubjects();
-              that.formatGrades();
+              this.profile = r.response;
+              if(r.response && r.response.avatar) this.imageUri = r.response.avatar;
+              this.formatLastLoginTime();
+              this.formatUserName();
+              this.formatProfileName();
+              this.formatProfileCompletion();
+              this.formatProfileProgress();
+              this.formatJobProfile();
+              this.formatSubjects();
+              this.formatGrades();
               resolve();
             });
           }, error => {
@@ -182,6 +183,33 @@ export class ProfilePage {
     this.navCtrl.push(AdditionalInfoComponent);
   }
 
+  toggleLock(item) {
+    if(item === 'education') {
+      this.profile.profileVisibility.education == 'private' ? this.profile.profileVisibility.education = 'public' : this.profile.profileVisibility.education = 'private';
+      this.setProfileVisibility('education', this.profile.profileVisibility.education);
+    }
+  }
+
+  setProfileVisibility(field, privacy) {
+    this.authService.getSessionData((session) => {
+      if (session === undefined || session == null) {
+        console.error('session is null');
+      } else {
+        let req = {
+          userId: JSON.parse(session)["userToken"],
+          private: (privacy == 'private') ? [field] : [],
+          public: (privacy == 'public') ? [field] : []
+        }
+        this.userProfileService.setProfileVisibility(req, res => {
+          console.log("Res", res);
+        },
+        error => {
+          console.log("Unable to set profile visibility.", error);
+        });
+      }
+    });
+  }
+
   showOverflowMenu(event) {
     let popover = this.popoverCtrl.create(OverflowMenuComponent, {
       list: this.list
@@ -191,10 +219,19 @@ export class ProfilePage {
     });
   }
 
-  getLoader() {
-    return this.loadingCtrl.create({duration: 30000, spinner: "crescent" });
+  completeProfile() {
+    //alert(this.uncompletedDetails);
   }
 
-
+  showMoreItems() {
+    this.paginationLimit = this.profile.skills.length;
+  }
+  showLessItems() {
+    this.paginationLimit = this.DEFAULT_PAGINATION_LIMIT;
+  }
+    
+   getLoader() {
+    return this.loadingCtrl.create({duration: 30000, spinner: "crescent" });
+  }
 
 }
