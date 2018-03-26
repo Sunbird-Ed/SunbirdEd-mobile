@@ -7,16 +7,18 @@
 </ion-header>
 
 <ion-content padding>
-    <tag-input [ngModel]="tags" theme='dark' [placeholder]="'+Skill'" [secondaryPlaceholder]="'Add a Skill'">
-        <tag-input-dropdown [autocompleteItems]="items">
+    <tag-input [(ngModel)]="skillTags" theme='dark' placeholder="+Skill" secondaryPlaceholder="{{'LABEL_ADD_A_SKILL' | translate}}" [separatorKeyCodes]="[32, 188]">
+        <tag-input-dropdown [autocompleteItems]="suggestedSkills">
         </tag-input-dropdown>
     </tag-input>
 </ion-content>
-<ion-row>
-    <ion-col padding>
-        <button class="action-button" ion-button block outline class="text-capitalize">{{ 'CANCEL' | translate }}</button>
-    </ion-col>
-    <ion-col padding>
-        <button class="action-button" ion-button block class="text-capitalize">{{ 'APPLY' | translate }}</button>
-    </ion-col>
-</ion-row>
+<ion-footer>
+    <ion-row>
+        <ion-col padding>
+            <button class="action-button" ion-button block outline class="text-capitalize" (click)="goBack()">{{ 'CANCEL' | translate }}</button>
+        </ion-col>
+        <ion-col padding>
+            <button class="action-button" ion-button block class="text-capitalize" [disabled]="skillTags?.length" (click)="addSkills()">{{ 'APPLY' | translate }}</button>
+        </ion-col>
+    </ion-row>
+</ion-footer>

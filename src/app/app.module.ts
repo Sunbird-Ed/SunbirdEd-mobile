@@ -21,7 +21,6 @@ import { UniqueDeviceID } from '@ionic-native/unique-device-id';
 import { AppVersion } from '@ionic-native/app-version';
 import { SocialSharing } from '@ionic-native/social-sharing';
 
-
 @NgModule({
   declarations: [
     MyApp,

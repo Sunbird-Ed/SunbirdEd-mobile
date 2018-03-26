@@ -12,11 +12,6 @@
 </ion-header>
 
 <ion-content padding>
-  <!-- <ion-refresher (ionRefresh)="doRefresh($event)">
-      <ion-refresher-content>
-          
-      </ion-refresher-content>
-    </ion-refresher> -->
   <ion-refresher (ionRefresh)="doRefresh($event)"></ion-refresher>
   <p class="profile-last-login-text">{{ lastLoginTime }}</p>
 
@@ -33,9 +28,9 @@
       <ion-col class="profile-completed-ion-col">
         <p class="profile-completed-text">{{ profileCompletionText }}</p>
       </ion-col>
-      <!-- <ion-col col-4 text-right class="profile-completed-ion-col">
-        <p class="profile-add-exp-text">{{ uncompletedDetails }}</p>
-      </ion-col> -->
+      <ion-col col-4 text-right class="profile-completed-ion-col">
+        <p class="profile-add-exp-text" (click)="completeProfile()">{{ uncompletedDetails }}</p>
+      </ion-col>
     </ion-row>
     <pb-horizontal progress={{profileProgress}}></pb-horizontal>
   </ion-item>
@@ -44,17 +39,17 @@
     <p class="section-title">{{ 'DESCRIPTION' | translate }}
         <ion-icon float-right class="padding-left-5" name="unlock"></ion-icon>
     </p>
-    <p>{{ profile?.profileSummary }}</p>
+    <p [readMore]="profile?.profileSummary" [length]="100" [showMoreText]="'SHOW_MORE' | translate" [showLessText]="'SHOW_LESS' | translate">{{profile?.profileSummary}}</p>
   </ion-item>
 
   <ion-list-header class="section-title" no-lines>
     {{ 'TITLE_EDUCATION' | translate }}
-    <span float-right color="primary" (click)="editEduDetails(true, {})">{{ 'ADD' | translate }}
-        <ion-icon color="dark" class="padding-left-5" name="unlock"></ion-icon>
+    <span float-right color="primary"><span (click)="editEduDetails(true, {})">{{ 'ADD' | translate }}</span>
+        <ion-icon color="dark" class="padding-left-5" (click)="toggleLock('education')" name="{{ profile?.profileVisibility?.education == 'private' ? 'lock' : 'unlock' }}"></ion-icon>
     </span>
   </ion-list-header>
 
-  <ion-item *ngFor="let ed of profile.education">
+  <ion-item *ngFor="let ed of profile?.education">
     <ion-row>
       <ion-col col-2 class="padding-left-none">
         <div class="image-holder"></div>
@@ -62,10 +57,10 @@
       <ion-col col-9>
         <span class="details-title">{{ ed.name }}</span>
         <div class="details">
-          <p>{{ ed.degree }}</p>
-          <p>Year of Passing : {{ ed.yearOfPassing }}</p>
-          <p>Grade: {{ ed.grade }}({{ ed.percentage }}%)</p>
-          <p>{{ ed.boardOrUniversity }}</p>
+          <p>{{ ed?.degree }}</p>
+          <p>Year of Passing : {{ ed?.yearOfPassing }}</p>
+          <p>Grade: {{ ed?.grade }}({{ ed?.percentage }}%)</p>
+          <p>{{ ed?.boardOrUniversity }}</p>
         </div>
       </ion-col>
       <ion-col col-1 text-right>
@@ -82,18 +77,18 @@
     </span>
   </ion-list-header>
 
-  <ion-item *ngFor="let job of profile.formattedJobProfile">
+  <ion-item *ngFor="let job of profile?.formattedJobProfile">
     <ion-row justify-content-start>
       <ion-col col-2 class="padding-left-none">
         <div class="image-holder"></div>
       </ion-col>
       <ion-col col-9>
-        <span class="details-title">{{ job.jobName }}</span>
+        <span class="details-title">{{ job?.jobName }}</span>
         <div class="details">
-          <p>{{ job.role }}</p>
-          <p>{{ job.orgName }}</p>
-          <p>{{ job.subject }}</p>
-          <p>{{ job.duration }}</p>
+          <p>{{ job?.role }}</p>
+          <p>{{ job?.orgName }}</p>
+          <p>{{ job?.subject }}</p>
+          <p>{{ job?.duration }}</p>
         </div>
       </ion-col>
       <ion-col col-1 text-right>
@@ -106,7 +101,7 @@
   <ion-list-header class="section-title">
     {{ 'TITLE_ADDRESS' | translate }}
     <span float-right color="primary" (click)="editAddress(true, {})">{{ 'ADD' | translate }}
-        <ion-icon color="dark" class="padding-left-5" name="unlock"></ion-icon>
+        <ion-icon color="dark" class="padding-left-5" name="{{ profile?.profileVisibility?.location == 'private' ? 'lock' : 'unlock' }}"></ion-icon>
     </span>
   </ion-list-header>
 
@@ -132,16 +127,19 @@
   <ion-list-header class="section-title">
     {{ 'SKILL_TAGS' | translate }}
     <span float-right color="primary" (click)="addSkillTags()">{{ 'ADD' | translate }}
-        <ion-icon color="dark" class="padding-left-5" name="unlock"></ion-icon>
+        <ion-icon color="dark" class="padding-left-5" name="{{ profile?.profileVisibility?.skills == 'private' ? 'lock' : 'unlock' }}"></ion-icon>
     </span>
   </ion-list-header>
 
   <ion-list>
-    
-    <ion-row *ngFor="let skill of profile.skills; let i = index" class="skill-row">
+    <ion-row *ngFor="let skill of profile?.skills | slice : startLimit:paginationLimit" class="skill-row">
         <ion-col col-9 class="ellipsis padding-left-10">{{ skill?.skillName }}</ion-col>
         <ion-col col-3 text-right class="padding-right-10">{{ skill?.endorsementcount }}</ion-col>
     </ion-row>
+    <div text-center>
+      <button ion-button outline *ngIf ="paginationLimit < profile?.skills?.length" (click)="showMoreItems()">{{ 'SHOW_MORE' | translate }}</button>
+      <button ion-button outline *ngIf ="paginationLimit > DEFAULT_PAGINATION_LIMIT" (click)="showLessItems()">{{ 'SHOW_LESS' | translate }}</button>
+    </div>
   </ion-list>
 
   <ion-list-header class="section-title">
@@ -155,7 +153,7 @@
         <span text-uppercase class="info-title">{{ 'LANGUAGE' | translate }}</span>
       </ion-col>
       <ion-col col-7 text-right>
-        <span class="ellipsis">{{ profile.language && profile.language[0] }}</span>
+        <span class="ellipsis">{{ profile?.language && profile?.language[0] }}</span>
       </ion-col>
     </ion-row>
 
