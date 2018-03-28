@@ -112,9 +112,9 @@ export class CourseDetailComponent {
         }
       });
     },
-      error => {
-        console.log('error while loading content details', error);
-      });
+    error => {
+      console.log('error while loading content details', error);
+    });
   }
 
 
@@ -149,6 +149,7 @@ export class CourseDetailComponent {
    */
   importChildrenContent(): void {
     console.log('import child content')
+    this.showChildrenLoader = true;
     const option = {
       contentId: this.navParams.get('identifier'),
       hierarchyInfo: null,
@@ -156,9 +157,9 @@ export class CourseDetailComponent {
     };
 
     this.contentService.getChildContents(option, (data: any) => {
-      data = JSON.parse(data);
-      console.log('children data success ==>', data)
       this.zone.run(() => {
+        data = JSON.parse(data);
+        console.log('children data success ==>', data)
         this.childrenData = data.result;
       });
     },

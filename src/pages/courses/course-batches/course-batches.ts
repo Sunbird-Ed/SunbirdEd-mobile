@@ -34,6 +34,8 @@ export class CourseBatchesComponent implements OnInit {
    */
   showLoader: boolean;
 
+  shownGroup = null;
+
   /**
    * Contains batches list
    */
@@ -73,7 +75,7 @@ export class CourseBatchesComponent implements OnInit {
    * @param {NgZone} zone To bind data 
    * @param {AuthService} authService To get logged-in user data
    */
-  constructor(courseService: CourseService, navCtrl: NavController, navParams: NavParams, zone: NgZone, 
+  constructor(courseService: CourseService, navCtrl: NavController, navParams: NavParams, zone: NgZone,
     authService: AuthService) {
     this.courseService = courseService;
     this.navCtrl = navCtrl;
@@ -101,9 +103,9 @@ export class CourseBatchesComponent implements OnInit {
         console.log('You have successfully enrolled...');
       });
     },
-    (error: any) => {
-      console.log('error while enrolling into batch ==>', error);
-    });
+      (error: any) => {
+        console.log('error while enrolling into batch ==>', error);
+      });
   }
 
   /**
@@ -136,11 +138,22 @@ export class CourseBatchesComponent implements OnInit {
         this.showLoader = false;
       });
     },
-    (error: any) => {
-      console.log('error while fetching course batches ==>', error);
-      this.showLoader = false;
-    });
+      (error: any) => {
+        console.log('error while fetching course batches ==>', error);
+        this.showLoader = false;
+      });
   }
+
+  toggleGroup(group) {
+    if (this.isGroupShown(group)) {
+      this.shownGroup = null;
+    } else {
+      this.shownGroup = group;
+    }
+  };
+  isGroupShown(group) {
+    return this.shownGroup === group;
+  };
 
   ngOnInit(): void {
     this.tabBarElement.style.display = 'none';

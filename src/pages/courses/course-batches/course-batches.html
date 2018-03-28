@@ -8,7 +8,7 @@
 </ion-header>
 <!-- Page body -->
 <ion-content padding>
-  <div class="batch-list" *ngIf="batches && batches.length && !showLoader">
+  <div class="batch-list" *ngIf="batches && batches.length && !showLoader" padding-top>
     <ion-list>
       <ion-item *ngFor="let batch of batches">
         <h3>{{batch.name}}</h3>
