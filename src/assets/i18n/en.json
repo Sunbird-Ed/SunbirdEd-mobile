@@ -320,7 +320,8 @@
         "TERMS_OF_SERVICE": "Terms of Service",
         "ABOUT_THE_APP": "About the Application"
     },
-    "LAST_SYNCED_TIME": "Last synced on ",
+    "LAST_SYNCED_TIME": "Last synced on",
+    "NOT_SYNCED_YET_ONCE" : "Not synced yet once",
     "ADD_USER": "Add User",
     "USER": "User",
     "TEACHER": "Teacher",

@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { TelemetryService, SyncStat } from 'sunbird';
 import { Storage } from "@ionic/storage";
 import { DataSyncType } from "./datasynctype.enum"
+import { TranslateService } from '@ngx-translate/core'
 
 /**
  * Generated class for the DatasyncPage page.
@@ -21,17 +22,37 @@ const KEY_DATA_SYNC_TIME = "data_sync_time";
 })
 export class DatasyncPage {
   dataSyncType: DataSyncType;
-  lastSyncedTime: String = "LAST_SYNCED_TIME";
+  lastSyncedTimeString : String = "LAST_SYNCED_TIME";
   latestSync: String;
 
   OPTIONS: typeof DataSyncType = DataSyncType;
 
-  constructor(public zone: NgZone, public navCtrl: NavController, public navParams: NavParams, private telemetryService: TelemetryService, private storage: Storage) {
+  constructor(public zone: NgZone, public navCtrl: NavController, public navParams: NavParams, private telemetryService: TelemetryService, private storage: Storage,
+    private translate: TranslateService) {
     this.init();
   }
 
   private init() {
     let that = this;
+
+    //fetch the string 
+    this.translate.get('LAST_SYNCED_TIME').subscribe(value => {
+      this.lastSyncedTimeString = value;
+
+      //check what was the last sync time
+      this.storage.get(KEY_DATA_SYNC_TIME)
+        .then(val => {
+          if (val === undefined || val === "" || val === null) {
+            return "NOT_SYNCED_YET_ONCE"
+          } else {
+            return this.lastSyncedTimeString + " " + val
+          }
+        }).then(val => {
+          this.latestSync = val
+        })
+    });
+
+    //check what sync option is selected
     that.storage.get(KEY_DATA_SYNC_TYPE)
       .then(val => {
         if (val === undefined || val === "" || val === null) {
@@ -71,12 +92,16 @@ export class DatasyncPage {
         //get date
         let date: Date = new Date(milliseconds);
 
+        let month: Number = date.getMonth() + 1
+
         //complete date and time
-        let dateAndTime: string = date.getDate() + "/" + date.getMonth() +
+        let dateAndTime: string = date.getDate() + "/" + month +
           "/" + date.getFullYear() + ", " + that.getTimeIn12HourFormat(date);
 
+        that.latestSync = this.lastSyncedTimeString + " " + dateAndTime
 
-        that.latestSync = this.lastSyncedTime + dateAndTime;
+        //store the latest sync time
+        this.storage.set(KEY_DATA_SYNC_TIME, dateAndTime)
 
         console.log("Telemetry Data Sync Time : " + this.latestSync);
       });
