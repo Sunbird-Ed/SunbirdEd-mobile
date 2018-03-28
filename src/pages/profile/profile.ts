@@ -20,14 +20,16 @@ export class ProfilePage {
   lastLoginTime: string;
   userName: string;
   profileName: string;
-  profileCompletionText: string = "Your profile is {c}% completed";
   profileProgress: string;
   subjects: string;
   grades: string;
   imageUri: string = "assets/imgs/ic_profile_default.png";
   list: Array<String> = ['SWITCH_ACCOUNT', 'DOWNLOAD_MANAGER', 'SETTINGS', 'SIGN_OUT'];
+  profileCompletionText: string = "Your profile is {c}% completed";
   sunbird: string = "Sunbird";
-  uncompletedDetails: string = "+ Add Experience";
+  uncompletedDetails: any = {
+    title: ""
+  }
   readonly DEFAULT_PAGINATION_LIMIT: number = 10;
   paginationLimit: number = 10;
   startLimit: number = 0;
@@ -44,21 +46,17 @@ export class ProfilePage {
       this.doRefresh();
   }
 
-  ionViewWillEnter() {
-  }
-
   doRefresh(refresher?) {
     let loader = this.getLoader();
     loader.present();
     this.refreshProfileData().then( () => {
       setTimeout(() => {
-        console.log('Async operation has ended');
         if(refresher) refresher.complete();
-          loader.dismiss();
+        loader.dismiss();
       }, 500);
     })
     .catch(error => {
-      console.log(error);
+      console.log("Error while Fetching Data", error);
       loader.dismiss();
     })
   }
@@ -88,33 +86,45 @@ export class ProfilePage {
             that.zone.run(() => {
               that.resetProfile();
               let r = JSON.parse(res);
-              that.profile = r.response;
-              if(r.response && r.response.avatar) that.imageUri = r.response.avatar;
-              that.formatLastLoginTime();
-              that.formatUserName();
-              that.formatProfileName();
-              that.formatProfileCompletion();
-              that.formatProfileProgress();
-              that.formatJobProfile();
-              that.formatSubjects();
-              that.formatGrades();
+              this.profile = r.response;
+              if(r.response && r.response.avatar) this.imageUri = r.response.avatar;
+              this.formatLastLoginTime();
+              this.formatUserName();
+              this.formatProfileCompletion();
+              this.formatProfileProgress();
+              this.formatJobProfile();
+              this.subjects = this.arrayToString(this.profile.subject);
+              this.grades = this.arrayToString(this.profile.grade);
+              this.formatMissingFields();
               resolve();
             });
           }, error => {
               reject(error);
-              console.log(error);
+              console.error(error);
           });
         }
       });
     });
   }
 
-  formatGrades() {
-    this.grades = this.profile.grade.join(', ');
+  arrayToString(stringArray) {
+    return stringArray.join(', ');
   }
 
-  formatSubjects() {
-    this.subjects = this.profile.subject.join(', ');
+  formatMissingFields() {
+    if(this.profile.missingFields.length) {
+      switch(this.profile.missingFields[0]) {
+        case "education":   this.uncompletedDetails.title = "+ Add Education";
+                            this.uncompletedDetails.page = FormEducation;
+                            break;
+        case "jobProfile":  this.uncompletedDetails.title = "+ Add Experience";
+                            this.uncompletedDetails.page = FormExperience;
+                            break;
+        case "avatar":      this.uncompletedDetails.title = "+ Add Profile Picture";
+                            this.uncompletedDetails.page = 'picture';
+                            break;
+      }
+    }
   }
 
   formatJobProfile() {
@@ -146,16 +156,12 @@ export class ProfilePage {
     this.userName = this.userName + this.profile.userName;
   }
 
-  formatProfileName() {
-    this.profileName = this.profile.firstName + " " + this.profile.lastName;
-  }
-
   formatProfileCompletion() {
     this.profileCompletionText = this.profileCompletionText.replace("{c}", this.profile.completeness);
   }
 
   formatProfileProgress() {
-    this.profileProgress = this.profile.completeness + "";
+    this.profileProgress = String(this.profile.completeness);
   }
 
   editEduDetails(isNewForm, formDetails) {
@@ -174,7 +180,7 @@ export class ProfilePage {
     this.cameraService.getPicture().then((imageData) => {
       this.imageUri = imageData;
     }, (err) => {
-      // Handle error
+      console.error("Error", err);
     });
   }
 
@@ -224,7 +230,11 @@ export class ProfilePage {
   }
 
   completeProfile() {
-    //alert(this.uncompletedDetails);
+    if(this.uncompletedDetails.page == 'picture') {
+      this.editPicture();
+    } else {
+      this.navCtrl.push(this.uncompletedDetails.page);
+    }
   }
 
   showMoreItems() {
