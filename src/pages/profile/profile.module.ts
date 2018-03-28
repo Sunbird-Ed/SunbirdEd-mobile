@@ -24,7 +24,7 @@ import { PBHorizontal } from '../../component/pbhorizontal/pb-horizontal';
 import { TagInputModule } from 'ngx-chips';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ExpansionPanelsModule } from 'ng2-expansion-panels';
-import { ReadMoreDirective } from '../../directives/read-more/read-more';
+import { DirectivesModule } from '../../directives/directives.module';
 
 @NgModule({
   declarations: [
@@ -41,7 +41,6 @@ import { ReadMoreDirective } from '../../directives/read-more/read-more';
     ActionMenuComponent,
     AddUserComponent,
     PBHorizontal,
-    ReadMoreDirective
   ],
   entryComponents: [
     ProfilePage, 
@@ -64,7 +63,8 @@ import { ReadMoreDirective } from '../../directives/read-more/read-more';
     TranslateModule.forChild(),
     TagInputModule,
     BrowserAnimationsModule,
-    ExpansionPanelsModule
+    ExpansionPanelsModule,
+    DirectivesModule
   ],
   exports: [
     ProfilePage,

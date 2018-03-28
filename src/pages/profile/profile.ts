@@ -72,8 +72,9 @@ export class ProfilePage {
   }
 
   refreshProfileData() {
+    let that = this;
     return new Promise((resolve, reject) => {
-      this.authService.getSessionData((session) => {
+      that.authService.getSessionData((session) => {
         if (session === undefined || session == null) {
           reject("session is null");
         } else {
@@ -83,20 +84,20 @@ export class ProfilePage {
             requiredFields: ["completeness", "missingFields", "lastLoginTime", "topics"], 
             refreshUserProfileDetails: true
           };
-          this.userProfileService.getUserProfileDetails(req, res => {
-            this.zone.run(() => {
-              this.resetProfile();
+          that.userProfileService.getUserProfileDetails(req, res => {
+            that.zone.run(() => {
+              that.resetProfile();
               let r = JSON.parse(res);
-              this.profile = r.response;
-              if(r.response && r.response.avatar) this.imageUri = r.response.avatar;
-              this.formatLastLoginTime();
-              this.formatUserName();
-              this.formatProfileName();
-              this.formatProfileCompletion();
-              this.formatProfileProgress();
-              this.formatJobProfile();
-              this.formatSubjects();
-              this.formatGrades();
+              that.profile = r.response;
+              if(r.response && r.response.avatar) that.imageUri = r.response.avatar;
+              that.formatLastLoginTime();
+              that.formatUserName();
+              that.formatProfileName();
+              that.formatProfileCompletion();
+              that.formatProfileProgress();
+              that.formatJobProfile();
+              that.formatSubjects();
+              that.formatGrades();
               resolve();
             });
           }, error => {
@@ -136,7 +137,9 @@ export class ProfilePage {
   }
 
   formatLastLoginTime() {
-    this.lastLoginTime = this.lastLoginTime + this.datePipe.transform(new Date(this.profile.lastLoginTime), "MMM dd, yyyy, hh:mm:ss a");
+    this.lastLoginTime = this.lastLoginTime + 
+    this.datePipe.transform(new Date(
+      this.profile.lastLoginTime), "MMM dd, yyyy, hh:mm:ss a");
   }
 
   formatUserName() {
@@ -185,7 +188,8 @@ export class ProfilePage {
 
   toggleLock(item) {
     if(item === 'education') {
-      this.profile.profileVisibility.education == 'private' ? this.profile.profileVisibility.education = 'public' : this.profile.profileVisibility.education = 'private';
+      this.profile.profileVisibility.education == 'private' ? 
+      this.profile.profileVisibility.education = 'public' : this.profile.profileVisibility.education = 'private';
       this.setProfileVisibility('education', this.profile.profileVisibility.education);
     }
   }
