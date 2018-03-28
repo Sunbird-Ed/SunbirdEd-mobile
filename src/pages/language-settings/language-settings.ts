@@ -6,6 +6,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { Globalization } from '@ionic-native/globalization';
 import { Storage } from "@ionic/storage";
 import { TabsPage } from 'sunbird';
+import { Page } from 'ionic-angular/navigation/nav-util';
+import { SettingsPage } from '../settings/settings';
 
 /**
  * Generated class for the LanguageSettingPage page.
@@ -26,6 +28,7 @@ export class LanguageSettingsPage {
 
   languages: any[];
   language: any;
+  isFromSettings: Boolean = false;
 
   constructor(public zone: NgZone, public navCtrl: NavController, public navParams: NavParams,
     private viewCtrl: ViewController, public translateService: TranslateService, private globalization: Globalization,
@@ -84,6 +87,8 @@ export class LanguageSettingsPage {
         console.error("default value - " + this.language);
       })
 
+    this.isFromSettings = this.navParams.get('isFromSettings');
+
   }
 
   private getDeviceLanguage() {
@@ -132,7 +137,8 @@ export class LanguageSettingsPage {
    */
   onLanguageSelected() {
     console.log("language selected : " + this.language);
-    this.storage.set(KEY_SELECTED_LANGUAGE, this.language)
+    let selectedLanguage = this.languages.find(i => i.code === this.language)
+    this.storage.set(KEY_SELECTED_LANGUAGE, selectedLanguage.label)
   }
 
   continue() {
@@ -144,11 +150,17 @@ export class LanguageSettingsPage {
       this.translateService.use('en');
     }
 
-    this.navCtrl.push(OnboardingPage).then(() => {
-      // first we find the index of the current view controller:
-      const index = this.viewCtrl.index;
-      // then we remove it from the navigation stack
-      this.navCtrl.remove(index);
-    });;
+    let page: Page;
+
+    if (this.isFromSettings) {
+      this.navCtrl.pop();
+    } else {
+      this.navCtrl.push(OnboardingPage).then(() => {
+        // first we find the index of the current view controller:
+        const index = this.viewCtrl.index;
+        // then we remove it from the navigation stack
+        this.navCtrl.remove(index);
+      });
+    }
   }
 }

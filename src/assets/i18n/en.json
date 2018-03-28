@@ -298,7 +298,7 @@
         "SUPPORT": "Support",
         "SHARE_APP": "Share the Genie App",
         "ABOUT_APP": "About App",
-        "CURRENT_LANGUAGE_CHOSEN": "Current Language: English",
+        "CURRENT_LANGUAGE_CHOSEN": "Current Language: ",
         "BACK_UP_DATA_AND_TELEMETRY": "Backup your data, Transfer Telemetry",
         "ADD_REMOVE_DEVICE_TAGS": "Add/Remove Device Tags",
         "FACING_PROBLEM_SEND_MESSAGE": "Facing a problem? Send us a message"
