@@ -8,15 +8,16 @@
 </ion-header>
 <!-- Page body -->
 <ion-content padding>
-  <div class="batch-list">
+  <div class="batch-list" *ngIf="batches && batches.length && !showLoader">
     <ion-list>
       <ion-item *ngFor="let batch of batches">
         <h3>{{batch.name}}</h3>
         <span>{{batch.startDate}} - {{batch.endDate}}</span>
-        <p>Created by Test User 1</p>
+        <p *ngIf="batch.creatorFirstName">Created by {{batch.creatorFirstName + ' ' + batch.creatorLastName}}</p>
         <!-- <p><ion-datetime displayFormat="MMM DD, YYYY" [(ngModel)]="batch.startDate"></ion-datetime></p> -->
-        <button ion-button clear item-end>ENROLL</button>
+        <button ion-button clear item-end (click)="enrollIntoBatch(batch)">ENROLL</button>
       </ion-item>
     </ion-list>
   </div>
+  <ion-spinner *ngIf="showLoader" padding></ion-spinner>
 </ion-content>

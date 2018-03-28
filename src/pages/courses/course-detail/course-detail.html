@@ -11,31 +11,32 @@
   <div class="content-details-holder" *ngIf="contentDetail">
     <h4>{{contentDetail.name}}</h4>
     <p>{{contentDetail.description}}</p>
-
     <div class="about-section">
       <h4 class="padding-10 background-gray">About</h4>
-      <p padding>{{contentDetail.description}}</p>
-      <div *ngIf="contentDetail.gradeLevel && contentDetail.gradeLevel.length">
+      <p>{{contentDetail.description}}</p>
+      <div *ngIf="contentDetail.gradeLevel && contentDetail.gradeLevel.length" margin-top>
         <div>GRADE:</div>
         <span *ngFor="let grade of contentDetail.gradeLevel">
           <span>{{grade}}</span>
         </span>
       </div>
-      <div *ngIf="contentDetail.subject">
+      <div *ngIf="contentDetail.subject" margin-top>
         <div>SUBJECT:</div>
         <span>{{contentDetail.subject}}</span>
       </div>
     </div>
 
-    <div class="structure-section">
+    <div class="structure-section" margin-top>
       <h4 class="padding-10 background-gray">Structure</h4>
-      <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
-      <ion-item>
-        <span ion-text>Example one</span>
-      </ion-item>
-      <ion-item>
-        <span ion-text>Example two</span>
-      </ion-item>
+      <span *ngFor="let structure of objectKeys(courseStructure)">
+          {{courseStructure[structure] + '  ' +  structure}}
+      </span>
+      <!-- {{childrenData.children}} -->
+      <div *ngIf="childrenData && childrenData.children">
+        <ion-item *ngFor="let item of childrenData.children; let i = index" style="padding-left: 0px;">
+        <span ion-text>{{ (i) + (1) }}: {{ item.contentData.name }}</span>
+        </ion-item>
+      </div>
     </div>
   </div>
 </ion-content>

@@ -4,7 +4,6 @@ import { NavController, NavParams, Events } from 'ionic-angular';
 import { ContentService } from 'sunbird';
 import { HttpClient } from '@angular/common/http';
 
-
 /**
  * Generated class for the CourseDetailComponent component.
  *
@@ -15,7 +14,7 @@ import { HttpClient } from '@angular/common/http';
   selector: 'course-detail',
   templateUrl: 'course-detail.html'
 })
-export class CourseDetailComponent implements OnInit {
+export class CourseDetailComponent {
 
   /**
    * Contains content details
@@ -23,9 +22,14 @@ export class CourseDetailComponent implements OnInit {
   contentDetail: any;
 
   /**
-   * 
+   * To hide menu
    */
   tabBarElement: any;
+
+  /**
+   * Contains children content data
+   */
+  childrenData: Array<any>;
 
   /**
    * Show loader while importing content
@@ -36,6 +40,16 @@ export class CourseDetailComponent implements OnInit {
    * To hold course hierarchy 
    */
   hierarchyInfo: any;
+
+  /**
+   * Contains course structure information
+   */
+  courseStructure: any;
+
+  /**
+   * 
+   */
+  objectKeys = Object.keys;
 
   /**
    * Contains reference of content service
@@ -63,7 +77,7 @@ export class CourseDetailComponent implements OnInit {
    * @param navParams 
    * @param contentService 
    */
-  constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, zone: NgZone, private http: HttpClient, 
+  constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, zone: NgZone, private http: HttpClient,
     private events: Events) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
@@ -81,10 +95,9 @@ export class CourseDetailComponent implements OnInit {
       contentId: this.navParams.get('identifier'),
       attachFeedback: false,
       attachContentAccess: false,
-      refreshContentDetails: false  
+      refreshContentDetails: false
     }
 
-    console.log('Making api call to get content details');
     this.contentService.getContentDetail(option, (data: any) => {
       this.zone.run(() => {
         data = JSON.parse(data);
@@ -99,9 +112,9 @@ export class CourseDetailComponent implements OnInit {
         }
       });
     },
-    error => {
-      console.log('error while loading content details', error);
-    });
+      error => {
+        console.log('error while loading content details', error);
+      });
   }
 
 
@@ -126,28 +139,32 @@ export class CourseDetailComponent implements OnInit {
     this.contentService.importContent(option, (data: any) => {
       console.log('datata', data);
     },
-    error => {
-      console.log('error while loading content details', error);
-    });
+      error => {
+        console.log('error while loading content details', error);
+      });
   }
 
   /**
    * 
    */
   importChildrenContent(): void {
-    console.log('do import children api call ======================>');
+    console.log('import child content')
     const option = {
       contentId: this.navParams.get('identifier'),
       hierarchyInfo: null,
       level: 1
     };
 
-    this.contentService.getChildContents(option, (data: string) => {
+    this.contentService.getChildContents(option, (data: any) => {
+      data = JSON.parse(data);
       console.log('children data success ==>', data)
+      this.zone.run(() => {
+        this.childrenData = data.result;
+      });
     },
-    (error: string) => {
-      console.log('error while fetching children', error);
-    });
+      (error: string) => {
+        console.log('error while fetching children', error);
+      });
   }
 
   /**
@@ -156,6 +173,7 @@ export class CourseDetailComponent implements OnInit {
   ionViewWillEnter(): void {
     this.tabBarElement.style.display = 'none';
     this.getContentDetails();
+    this.courseStructure = this.navParams.get('contentTypesCount')
 
     this.events.subscribe('genie.event', (data) => {
       data = JSON.parse(data);
@@ -165,20 +183,13 @@ export class CourseDetailComponent implements OnInit {
       }
     });
   }
- 
+
   ionViewWillLeave(): void {
     this.tabBarElement.style.display = 'flex';
     this.events.unsubscribe('genie.event');
   }
 
   navigateToBatchListPage(id: string): void {
-    this.navCtrl.push(CourseBatchesComponent, { identifier: 'nileshmore===>'});
-  }
-
-  /**
-   * Angular life cycle hooks
-   */
-  ngOnInit() {
-    // this.getContentDetails();
+    this.navCtrl.push(CourseBatchesComponent, { identifier: this.navParams.get('identifier') });
   }
 }

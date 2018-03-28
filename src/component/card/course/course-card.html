@@ -24,7 +24,8 @@
         Completed: {{course.progress}} %
       </ion-col>
       <ion-col col-4>
-        <button ion-button outline small float-end (click)="navigateToCourseDetailPage(course.contentId || course.identifier, layoutName);">{{layoutName === 'Inprogress' ? 'RESUME' : 'OPEN' }}</button>
+        <button ion-button outline small float-end 
+          (click)="navigateToCourseDetailPage(course.contentId || course.identifier, layoutName, course.contentTypesCount);">{{layoutName === 'Inprogress' ? 'RESUME' : 'OPEN' }}</button>
       </ion-col>
     </ion-row>
   </ion-grid>
