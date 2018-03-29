@@ -12,7 +12,8 @@ export class AdditionalInfoComponent {
   additionalInfoForm: FormGroup;
   constructor(public navCtrl: NavController, public fb: FormBuilder, public navParams: NavParams) {
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
-    this.isNewForm = this.navParams.get('addForm');
+    this.isNewForm = this.navParams.get('addForm') || true;
+
     this.additionalInfoForm = this.fb.group({
       name: ['', Validators.required],
       lastName: [''],

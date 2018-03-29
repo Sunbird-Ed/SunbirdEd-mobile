@@ -10,12 +10,12 @@ import { NavController, NavParams } from 'ionic-angular';
 export class FormAddress {
   tabBarElement: any;
   isNewForm: boolean = true;
-  addressDetails: any = [];
+  addressDetails: any = {};
   addressForm: FormGroup;
   constructor(public navCtrl: NavController, public fb: FormBuilder, public navParams: NavParams) {
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
-    this.isNewForm = this.navParams.get('addForm');
-    this.addressDetails = this.navParams.get('addressDetails');
+    this.isNewForm = this.navParams.get('addForm') || true;
+    this.addressDetails = this.navParams.get('addressDetails') || {};
 
     this.addressForm = this.fb.group({
       addressType: [(this.addressDetails.addType) ? this.addressDetails.addType : ''],

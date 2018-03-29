@@ -15,8 +15,9 @@ export class FormExperience {
   constructor(public navCtrl: NavController, public fb: FormBuilder, public navParams: NavParams) {
     //Need to hide bottom tab
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
-    this.isNewForm = this.navParams.get('addForm');
-    this.jobInfo = this.navParams.get('jobInfo');
+    this.isNewForm = this.navParams.get('addForm') || true;
+    this.jobInfo = this.navParams.get('jobInfo') || {};
+
     this.experienceForm = this.fb.group({
       jobName: [(this.jobInfo.jobName) ? this.jobInfo.jobName : ''],
       org: [(this.jobInfo.orgName) ? this.jobInfo.orgName : '', Validators.required],

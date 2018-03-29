@@ -17,7 +17,7 @@
 
   <div text-center>
     <img class="custom-avatar" [src]="imageUri" (click)="editPicture()" />
-    <p class="profile-name">{{ profileName }}</p>
+    <p class="profile-name">{{ profile?.firstName }}  {{ profile?.lastName }}</p>
     <div class="padding-5 ellipsis" col-12>
       <span class="grey-bg">{{ userName }}</span>
     </div>
@@ -29,7 +29,7 @@
         <p class="profile-completed-text">{{ profileCompletionText }}</p>
       </ion-col>
       <ion-col col-4 text-right class="profile-completed-ion-col">
-        <p class="profile-add-exp-text" (click)="completeProfile()">{{ uncompletedDetails }}</p>
+        <p class="profile-add-exp-text" (click)="completeProfile()">{{ uncompletedDetails.title }}</p>
       </ion-col>
     </ion-row>
     <pb-horizontal progress={{profileProgress}}></pb-horizontal>
@@ -39,7 +39,7 @@
     <p class="section-title">{{ 'DESCRIPTION' | translate }}
         <ion-icon float-end class="padding-left-5" name="unlock"></ion-icon>
     </p>
-    <p [readMore]="profile?.profileSummary" [length]="100" [showMoreText]="'SHOW_MORE' | translate" [showLessText]="'SHOW_LESS' | translate">{{profile?.profileSummary}}</p>
+    <p [readMore]="profile?.profileSummary" [length]="100" [showMoreText]="'READ_MORE' | translate" [showLessText]="'READ_LESS' | translate">{{profile?.profileSummary}}</p>
   </ion-item>
 
   <ion-list-header class="section-title" no-lines no-padding>
