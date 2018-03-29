@@ -52,6 +52,11 @@ export class CourseDetailComponent {
   objectKeys = Object.keys;
 
   /**
+   * Help to show / hide buttons 
+   */
+  layoutName: string;
+
+  /**
    * Contains reference of content service
    */
   public contentService: ContentService;
@@ -157,15 +162,15 @@ export class CourseDetailComponent {
     };
 
     this.contentService.getChildContents(option, (data: any) => {
+      data = JSON.parse(data);
+      console.log('Import child content data success ==>', data)
       this.zone.run(() => {
-        data = JSON.parse(data);
-        console.log('children data success ==>', data)
         this.childrenData = data.result;
       });
     },
-      (error: string) => {
-        console.log('error while fetching children', error);
-      });
+    (error: string) => {
+      console.log('error while fetching children', error);
+    });
   }
 
   /**
@@ -173,6 +178,7 @@ export class CourseDetailComponent {
    */
   ionViewWillEnter(): void {
     this.tabBarElement.style.display = 'none';
+    this.layoutName = this.navParams.get('layoutType');
     this.getContentDetails();
     this.courseStructure = this.navParams.get('contentTypesCount')
 

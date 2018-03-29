@@ -8,6 +8,18 @@
 </ion-header>
 <!-- Page body -->
 <ion-content padding>
+  <div>
+    <ion-col float-left>
+      <b (click)="showFilter = true">{{selectedFilter}}</b>
+      <ion-icon name="arrow-down" (click)="showFilter = true" float-end></ion-icon>
+      <br>
+      <div *ngIf="showFilter" style="margin-top: 9px;">
+        <div (click)="showFilter = false; selectedFilter = 'View ongoing batches'" [hidden]="selectedFilter === 'View ongoing batches'">View ongoing batches</div>
+        <div (click)="showFilter = false; selectedFilter = 'View upcoming batches'" [hidden]="selectedFilter === 'View upcoming batches'">View upcoming batches</div>
+      </div>
+    </ion-col>
+  </div>
+
   <div class="batch-list" *ngIf="batches && batches.length && !showLoader" padding-top>
     <ion-list>
       <ion-item *ngFor="let batch of batches">
@@ -19,5 +31,12 @@
       </ion-item>
     </ion-list>
   </div>
-  <ion-spinner *ngIf="showLoader" padding></ion-spinner>
+  <div *ngIf="showLoader">
+    <ion-row style="padding-top: 30px;" padding>
+      <ion-col text-center>
+        <p>Loading batches...</p>
+        <ion-spinner padding></ion-spinner>
+      </ion-col>
+    </ion-row>
+  </div>
 </ion-content>

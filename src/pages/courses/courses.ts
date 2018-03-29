@@ -141,7 +141,9 @@ export class CoursesPage implements OnInit {
    * To start / stop spinner
    */
   spinner(flag: boolean) {
-    this.showLoader = flag;
+    this.ngZone.run(() => {
+      this.showLoader = flag;
+    });
   }
 
   /**

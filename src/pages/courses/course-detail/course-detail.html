@@ -9,6 +9,7 @@
 <!-- Page body -->
 <ion-content padding>
   <div class="content-details-holder" *ngIf="contentDetail">
+      layoutName: {{layoutName}}
     <h4>{{contentDetail.name}}</h4>
     <p>{{contentDetail.description}}</p>
     <div class="about-section">
@@ -45,6 +46,8 @@
 <!-- Page footer -->
 <ion-footer>
   <ion-toolbar padding>
-    <button ion-button block (click)="navigateToBatchListPage('');">ENROLL IN COURSE</button>
+    <button ion-button block (click)="navigateToBatchListPage('');" *ngIf="layoutName === 'Popular'">ENROLL IN COURSE</button>
+    <button ion-button block (click)="navigateToBatchListPage('');" *ngIf="layoutName === 'Inprogress'">START</button>
+    <button ion-button block (click)="navigateToBatchListPage('');" *ngIf="layoutName === 'Inprogress'">DOWNLOAD ALL</button>
   </ion-toolbar>
 </ion-footer>

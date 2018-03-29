@@ -66,6 +66,8 @@ export class CourseBatchesComponent implements OnInit {
    */
   public authService: AuthService;
 
+  selectedFilter: string;
+
   /**
    * Default method of class CourseBatchesComponent
    * 
@@ -83,6 +85,7 @@ export class CourseBatchesComponent implements OnInit {
     this.zone = zone;
     this.authService = authService;
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
+    this.selectedFilter = 'View ongoing batches';
   }
 
   /**
@@ -135,26 +138,29 @@ export class CourseBatchesComponent implements OnInit {
       this.zone.run(() => {
         console.log('getCourseBatches', data);
         this.batches = data.result.content;
-        this.showLoader = false;
+        this.spinner(false);
       });
     },
       (error: any) => {
         console.log('error while fetching course batches ==>', error);
-        this.showLoader = false;
+        this.spinner(false);
       });
   }
 
-  toggleGroup(group) {
-    if (this.isGroupShown(group)) {
-      this.shownGroup = null;
-    } else {
-      this.shownGroup = group;
-    }
-  };
-  isGroupShown(group) {
-    return this.shownGroup === group;
-  };
+  spinner(flag) {
+    this.zone.run(() => {
+      this.showLoader = false;
+    });
+  }
 
+  toggleDetails(data) {
+    this.selectedFilter = data.title;
+  }
+
+  ionViewWillEnter(): void {
+    this.tabBarElement.style.display = 'none';
+  }
+  
   ngOnInit(): void {
     this.tabBarElement.style.display = 'none';
     this.getUserId();
