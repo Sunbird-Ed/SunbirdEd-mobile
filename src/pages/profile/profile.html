@@ -19,7 +19,7 @@
   <p *ngIf="isLoggedInUser" class="profile-last-login-text">{{ lastLoginTime }}</p>
 
   <div text-center>
-    <img class="custom-avatar" [src]="imageUri" (click)="editPicture()" />
+    <img class="custom-avatar" [src]="imageUri" (click)="editPicture()"/>
     <p class="profile-name">{{ profile?.firstName }}  {{ profile?.lastName }}</p>
     <div class="padding-5 ellipsis" col-12>
       <span class="grey-bg" *ngIf="profile?.userName">{{ userName }}</span>
@@ -47,6 +47,8 @@
 
   <ion-list-header *ngIf="profile?.education" class="section-title" no-lines no-padding>
     {{ 'TITLE_EDUCATION' | translate }}
+
+    
     <span *ngIf="isLoggedInUser" float-right color="primary">
         <span (click)="editEduDetails(true, {})">{{ 'ADD' | translate }}</span>
         <ion-icon color="dark" class="padding-left-5" (click)="toggleLock('education')" name="{{ profile?.profileVisibility?.education == 'private' ? 'lock' : 'unlock' }}"></ion-icon>

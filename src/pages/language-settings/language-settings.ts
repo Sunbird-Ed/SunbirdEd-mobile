@@ -145,7 +145,7 @@ export class LanguageSettingsPage {
     // if language is not null, then select the checked language,
     // else set default language as english
     if (this.language) {
-      this.translateService.use(this.language.code);
+      this.translateService.use(this.language);
     } else {
       this.translateService.use('en');
     }
