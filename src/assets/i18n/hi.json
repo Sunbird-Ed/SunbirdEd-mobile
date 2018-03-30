@@ -146,7 +146,7 @@
     "SHOW_MORE": "और दिखाएं",
     "CREATOR_OF": "के द्वारा बनाई गई",
     "USERNAME": "उपयोगकर्ता नाम: %s",
-    "YOUR_PROFILE_IS": "आपकी प्रोफ़ाइल %s% पूर्ण है",
+    "YOUR_PROFILE_IS": "आपकी प्रोफ़ाइल {{value}}% पूर्ण है",
     "FOLLOW": "अनुसरण",
     "PEOPLE_YOU_FOLLOW": "लॉग जिनका आप अनुसरण करते हो",
     "GROUPS_YOU_FOLLOW": "जिन समूहों का आप अनुसरण करते हैं",

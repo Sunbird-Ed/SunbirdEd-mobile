@@ -143,7 +143,7 @@
     "SHOW_MORE": "ఇంకా చూపించు",
     "CREATOR_OF": "తయారుచేసినది",
     "USERNAME": "వాడకందారు పేరు: %s",
-    "YOUR_PROFILE_IS": "మీ ప్రొఫైలు %s%",
+    "YOUR_PROFILE_IS": "మీ ప్రొఫైలు {{value}}%",
     "FOLLOW": "అనుసరించండి",
     "PEOPLE_YOU_FOLLOW": "మీరు అనుసరిస్తున్న వ్యక్తులు",
     "GROUPS_YOU_FOLLOW": "మీరు అనుసరిస్తున్నగుంపులు",

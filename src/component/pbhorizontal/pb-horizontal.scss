@@ -2,7 +2,6 @@ pb-horizontal {
  
     .progress-outer {
         width: 100%;
-        // margin: 10px 2%;
         text-align: center;
         background-color: #f4f4f4;
         color: #fff;
@@ -17,5 +16,11 @@ pb-horizontal {
         border-radius: 20px;
         background-color: map-get($colors, primary);
     }
- 
+
+    .progress-inner-primary {
+        background-color: map-get($colors, primary);
+    }
+    .progress-inner-secondary {
+        background-color: map-get($colors, secondary);
+    }
 }
