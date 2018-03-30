@@ -143,7 +143,9 @@ export class ProfilePage {
     });
   }
   formatLastLoginTime() {
-    this.lastLoginTime = this.lastLoginTime + this.datePipe.transform(new Date(this.profile.lastLoginTime), "MMM dd, yyyy, hh:mm:ss a");
+    this.lastLoginTime = this.lastLoginTime + 
+    this.datePipe.transform(new Date(
+      this.profile.lastLoginTime), "MMM dd, yyyy, hh:mm:ss a");
   }
 
   formatUserName() {

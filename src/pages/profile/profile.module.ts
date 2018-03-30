@@ -26,7 +26,7 @@ import { AddUserComponent } from './usersnclasses/users/adduser.component';
 import { UserSearchComponent } from './user-search/user-search';
 import { PBHorizontal } from '../../component/pbhorizontal/pb-horizontal';
 
-import { ReadMoreDirective } from '../../directives/read-more/read-more';
+import { DirectivesModule } from '../../directives/directives.module';
 
 @NgModule({
   declarations: [
@@ -44,7 +44,6 @@ import { ReadMoreDirective } from '../../directives/read-more/read-more';
     AddUserComponent,
     UserSearchComponent,
     PBHorizontal,
-    ReadMoreDirective
   ],
   entryComponents: [
     ProfilePage, 
@@ -68,7 +67,8 @@ import { ReadMoreDirective } from '../../directives/read-more/read-more';
     TranslateModule.forChild(),
     TagInputModule,
     BrowserAnimationsModule,
-    ExpansionPanelsModule
+    ExpansionPanelsModule,
+    DirectivesModule
   ],
   exports: [
     ProfilePage,
