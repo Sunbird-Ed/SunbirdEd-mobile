@@ -22,15 +22,24 @@
 
   <div class="batch-list" padding-top>
     <div [hidden]="selectedFilter === 'View upcoming batches'">
-    <ion-list *ngIf="ongoingBatches && ongoingBatches.length && !showLoader">
-      <ion-item *ngFor="let batch of ongoingBatches">
-        <h3>{{batch.name}}</h3>
-        <span>{{batch.startDate}} - {{batch.endDate}}</span>
-        <p *ngIf="batch.creatorFirstName">Created by {{batch.creatorFirstName + ' ' + batch.creatorLastName}}</p>
-        <!-- <p><ion-datetime displayFormat="MMM DD, YYYY" [(ngModel)]="batch.startDate"></ion-datetime></p> -->
-        <button ion-button clear item-end (click)="enrollIntoBatch(batch)">ENROLL</button>
-      </ion-item>
-    </ion-list>
+      <ion-list *ngIf="ongoingBatches && ongoingBatches.length && !showLoader">
+        <ion-item *ngFor="let batch of ongoingBatches">
+          <h3>{{batch.name}}</h3>
+          <span>{{batch.startDate}} - {{batch.endDate}}</span>
+          <p *ngIf="batch.creatorFirstName">Created by {{batch.creatorFirstName + ' ' + batch.creatorLastName}}</p>
+          <!-- <p><ion-datetime displayFormat="MMM DD, YYYY" [(ngModel)]="batch.startDate"></ion-datetime></p> -->
+          <button ion-button clear item-end (click)="enrollIntoBatch(batch)">ENROLL</button>
+        </ion-item>
+      </ion-list>
+
+      <div *ngIf="ongoingBatches && ongoingBatches.length === 0" style="padding-top: 100px;">
+        <div style="padding-top: 30px;" padding>
+          <img style="width: 50px; margin-left: 118px;" src="assets/imgs/ic_no_batch.png" />
+          <br/>
+          <br/>
+          <span style="font-size: 1.3em;font-weight: 300;">There are no batches for this course</span>
+        </div>
+      </div>
     </div>
     <div [hidden]="selectedFilter === 'View ongoing batches'">
       <ion-list *ngIf="upcommingBatches && upcommingBatches.length && !showLoader">
@@ -42,8 +51,17 @@
           <button ion-button clear item-end (click)="enrollIntoBatch(batch)">ENROLL</button>
         </ion-item>
       </ion-list>
+      <div *ngIf="upcommingBatches && upcommingBatches.length === 0" style="padding-top: 100px;">
+        <div style="padding-top: 30px;" padding>
+          <img style="width: 50px; margin-left: 118px;" src="assets/imgs/ic_no_batch.png" />
+          <br/>
+          <br/>
+          <span style="font-size: 1.3em;font-weight: 300;">There are no batches for this course</span>
+        </div>
+      </div>
     </div>
   </div>
+
   <div *ngIf="showLoader">
     <ion-row style="padding-top: 30px;" padding>
       <ion-col text-center>

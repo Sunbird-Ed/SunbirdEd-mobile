@@ -1,3 +1,4 @@
+import { DirectivesModule } from './../../directives/directives.module';
 import { CourseBatchesComponent } from './course-batches/course-batches';
 import { CourseDetailComponent } from './course-detail/course-detail';
 import { NgModule } from '@angular/core';
@@ -29,7 +30,8 @@ import { ComponentsModule } from "../../component/components.module";
     HttpClientModule,
     ComponentsModule,
     FrameworkModule,
-    IonicImageLoader
+    IonicImageLoader,
+    DirectivesModule
   ],
   providers: [HttpClient, GenieSDKServiceProvider],
   exports: [

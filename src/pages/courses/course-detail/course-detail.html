@@ -10,7 +10,8 @@
 <ion-content padding>
   <div class="content-details-holder" *ngIf="contentDetail">
     <h4>{{contentDetail.name}}</h4>
-    <p>{{contentDetail.description}}</p>
+    <p [readMore]="contentDetail.description" [length]="80" [showMoreText]="'READ_MORE' | translate" [showLessText]="'READ_LESS' | translate">{{contentDetail.description}}</p>
+
     <div class="about-section">
       <h4 class="padding-10 background-gray">About</h4>
       <p>{{contentDetail.description}}</p>
@@ -43,7 +44,7 @@
       <div *ngIf="showChildrenLoader">
         <ion-row style="padding-top: 30px;" padding>
           <ion-col text-center>
-            <p>Fetching content...</p>
+            <p>Fetching content... {{ downloadProgress ? downloadProgress : '' }}</p>
             <ion-spinner padding></ion-spinner>
           </ion-col>
         </ion-row>
@@ -56,7 +57,7 @@
 <ion-footer>
   <ion-toolbar padding>
     <button ion-button block (click)="navigateToBatchListPage('');" *ngIf="layoutName === 'Popular'">ENROLL IN COURSE</button>
-    <button ion-button block (click)="navigateToBatchListPage('');" *ngIf="layoutName === 'Inprogress'">START</button>
+    <button ion-button block *ngIf="layoutName === 'Inprogress'">START</button>
     <!-- <button ion-button block (click)="navigateToBatchListPage('');" *ngIf="layoutName === 'Inprogress'">DOWNLOAD ALL</button> -->
   </ion-toolbar>
 </ion-footer>

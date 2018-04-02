@@ -57,6 +57,11 @@ export class CourseDetailComponent {
   layoutName: string;
 
   /**
+   * Contains download progress
+   */
+  downloadProgress: string;
+
+  /**
    * Contains reference of content service
    */
   public contentService: ContentService;
@@ -210,11 +215,16 @@ export class CourseDetailComponent {
     this.courseStructure = this.navParams.get('contentTypesCount')
 
     this.events.subscribe('genie.event', (data) => {
-      data = JSON.parse(data);
-      let res = data;
-      if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
-        this.importChildrenContent();
-      }
+      this.zone.run(() => {
+        data = JSON.parse(data);
+        let res = data;
+        if (res.type === 'downloadProgress' && res.data.downloadProgress) {
+          this.downloadProgress = res.data.downloadProgress + ' %';
+        }
+        if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
+          this.importChildrenContent();
+        }
+      });
     });
   }
 
