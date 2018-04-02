@@ -9,7 +9,6 @@
 <!-- Page body -->
 <ion-content padding>
   <div class="content-details-holder" *ngIf="contentDetail">
-      layoutName: {{layoutName}}
     <h4>{{contentDetail.name}}</h4>
     <p>{{contentDetail.description}}</p>
     <div class="about-section">
@@ -31,15 +30,25 @@
       <h4 class="padding-10 background-gray">Structure</h4>
       <div *ngIf="courseStructure">
         <span *ngFor="let structure of objectKeys(courseStructure)">
-            {{courseStructure[structure] + '  ' +  structure}}
+          {{courseStructure[structure] + ' ' + structure}}
         </span>
       </div>
       <!-- {{childrenData.children}} -->
       <div *ngIf="childrenData && childrenData.children" padding-top>
         <ion-item *ngFor="let item of childrenData.children; let i = index" style="padding-left: 0px;">
-        <span ion-text>{{ (i) + (1) }}: {{ item.contentData.name }}</span>
+          <span ion-text>{{ (i) + (1) }}: {{ item.contentData.name }}</span>
         </ion-item>
       </div>
+      <!-- Import content loader -->
+      <div *ngIf="showChildrenLoader">
+        <ion-row style="padding-top: 30px;" padding>
+          <ion-col text-center>
+            <p>Fetching content...</p>
+            <ion-spinner padding></ion-spinner>
+          </ion-col>
+        </ion-row>
+      </div>
+      <!-- End import content -->
     </div>
   </div>
 </ion-content>
@@ -48,6 +57,6 @@
   <ion-toolbar padding>
     <button ion-button block (click)="navigateToBatchListPage('');" *ngIf="layoutName === 'Popular'">ENROLL IN COURSE</button>
     <button ion-button block (click)="navigateToBatchListPage('');" *ngIf="layoutName === 'Inprogress'">START</button>
-    <button ion-button block (click)="navigateToBatchListPage('');" *ngIf="layoutName === 'Inprogress'">DOWNLOAD ALL</button>
+    <!-- <button ion-button block (click)="navigateToBatchListPage('');" *ngIf="layoutName === 'Inprogress'">DOWNLOAD ALL</button> -->
   </ion-toolbar>
 </ion-footer>

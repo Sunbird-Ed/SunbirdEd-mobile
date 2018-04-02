@@ -1,6 +1,7 @@
 import { Component, NgZone, OnInit } from '@angular/core';
 import { CourseService, AuthService, EnrolledCoursesRequest } from 'sunbird';
 import { NavController, NavParams } from 'ionic-angular';
+import * as _ from 'lodash';
 
 /**
  * Generated class for the CourseBatchesComponent component.
@@ -34,8 +35,8 @@ export class CourseBatchesComponent implements OnInit {
    */
   showLoader: boolean;
 
-  shownGroup = null;
-
+  upcommingBatches: Array<any> = [];
+  ongoingBatches: Array<any> = [];
   /**
    * Contains batches list
    */
@@ -129,17 +130,27 @@ export class CourseBatchesComponent implements OnInit {
    * To get batches by course id
    */
   getBatchesByCourseId(): void {
+    console.log('getting course batches.... =>')
     this.showLoader = true;
     const option = {
       courseIds: [this.navParams.get('identifier')]
     }
     this.courseService.getCourseBatches(option, (data: any) => {
       data = JSON.parse(data);
+      console.log('Batches received successfully... =>', data);
       this.zone.run(() => {
-        console.log('getCourseBatches', data);
         this.batches = data.result.content;
         this.spinner(false);
+        _.forEach(data.result.content, (value, key) => {
+          if (value.status === 1) {
+            this.ongoingBatches.push(value);
+          } else {
+            this.upcommingBatches.push(value);
+          }
+        });
       });
+      console.log('AAAAAAAAAA', this.ongoingBatches);
+      console.log('bbbbbbbbbb', this.upcommingBatches);
     },
       (error: any) => {
         console.log('error while fetching course batches ==>', error);
@@ -160,7 +171,7 @@ export class CourseBatchesComponent implements OnInit {
   ionViewWillEnter(): void {
     this.tabBarElement.style.display = 'none';
   }
-  
+
   ngOnInit(): void {
     this.tabBarElement.style.display = 'none';
     this.getUserId();

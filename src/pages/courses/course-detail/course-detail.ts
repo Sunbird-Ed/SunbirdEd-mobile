@@ -2,7 +2,7 @@ import { CourseBatchesComponent } from './../course-batches/course-batches';
 import { Component, OnInit, NgZone } from '@angular/core';
 import { NavController, NavParams, Events } from 'ionic-angular';
 import { ContentService } from 'sunbird';
-import { HttpClient } from '@angular/common/http';
+import * as _ from 'lodash';
 
 /**
  * Generated class for the CourseDetailComponent component.
@@ -82,7 +82,7 @@ export class CourseDetailComponent {
    * @param navParams 
    * @param contentService 
    */
-  constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, zone: NgZone, private http: HttpClient,
+  constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, zone: NgZone,
     private events: Events) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
@@ -117,9 +117,9 @@ export class CourseDetailComponent {
         }
       });
     },
-    error => {
-      console.log('error while loading content details', error);
-    });
+      error => {
+        console.log('error while loading content details', error);
+      });
   }
 
 
@@ -133,6 +133,7 @@ export class CourseDetailComponent {
       contentImportMap: {
         [0]: {
           isChildContent: false,
+          // TODO: need discussion with Swayangjit
           destinationFolder: '/storage/emulated/0/Android/data/org.sunbird.app/files',
           contentId: this.navParams.get('identifier'),
           correlationData: []
@@ -166,11 +167,37 @@ export class CourseDetailComponent {
       console.log('Import child content data success ==>', data)
       this.zone.run(() => {
         this.childrenData = data.result;
+        this.showChildrenLoader = false;
       });
+      let childData = data.result.children || []
+      this.enableDownloadAllBtn(childData);
     },
-    (error: string) => {
-      console.log('error while fetching children', error);
+      (error: string) => {
+        console.log('error while fetching children', error);
+        this.zone.run(() => {
+          this.showChildrenLoader = false;
+        });
+      });
+  }
+
+  enableDownloadAllBtn(data) {
+    let filtered_people;
+    let downloadContentIds = [];
+    this.zone.run(() => {
+
+      _.forEach(data, function (value, key) {
+        console.log('isAvailableLocally... => ', value.isAvailableLocally);
+        if (value.isAvailableLocally === false) {
+          downloadContentIds.push()
+        }
+      });
+
+      filtered_people = _.filter(data, function (p) {
+        return _.includes(false, p.isAvailableLocally);
+      });
     });
+    console.log('downlodable content idss...', filtered_people);
+    console.log('downloadContentIds ===>', downloadContentIds);
   }
 
   /**
