@@ -1,14 +1,17 @@
 import { Component, NgZone } from '@angular/core';
-import { NavController, LoadingController } from 'ionic-angular';
+import { NavController, LoadingController, NavParams } from 'ionic-angular';
 import { CameraService, ProfileService, AuthService, UserProfileService } from 'sunbird';
+import { PopoverController } from 'ionic-angular/components/popover/popover-controller';
+import { DatePipe } from '@angular/common';
+
 import { FormEducation } from './education/form.education';
 import { FormAddress } from './address/form.address';
 import { SkillTagsComponent } from './skill-tags/skill-tags';
 import { AdditionalInfoComponent } from './additional-info/additional-info';
 import { FormExperience } from './experience/form.experience';
 import { OverflowMenuComponent } from './overflowmenu/menu.overflow.component';
-import { PopoverController } from 'ionic-angular/components/popover/popover-controller';
-import { DatePipe } from '@angular/common';
+import { UserSearchComponent } from './user-search/user-search';
+import { ImagePicker } from "./imagepicker/imagepicker";
 
 @Component({
   selector: 'page-profile',
@@ -17,19 +20,24 @@ import { DatePipe } from '@angular/common';
 export class ProfilePage {
 
   profile: any = {};
+  userId: number = 0;
+  isLoggedInUser: boolean = false;
   lastLoginTime: string;
   userName: string;
   profileName: string;
-  profileProgress: string;
+  profileProgress: string = '';
   subjects: string;
   grades: string;
   imageUri: string = "assets/imgs/ic_profile_default.png";
+  educationIcon:  string = "assets/imgs/ic_businessman.png";
+  locationIcon:  string = "assets/imgs/ic_location.png";
   list: Array<String> = ['SWITCH_ACCOUNT', 'DOWNLOAD_MANAGER', 'SETTINGS', 'SIGN_OUT'];
   profileCompletionText: string = "Your profile is {c}% completed";
   sunbird: string = "Sunbird";
   uncompletedDetails: any = {
     title: ""
   }
+
   readonly DEFAULT_PAGINATION_LIMIT: number = 10;
   paginationLimit: number = 10;
   startLimit: number = 0;
@@ -42,7 +50,10 @@ export class ProfilePage {
     private zone: NgZone,
     private datePipe: DatePipe,
     public authService: AuthService,
-    private loadingCtrl: LoadingController) {
+    private loadingCtrl: LoadingController,
+    private navParams: NavParams) {
+    this.userId = this.navParams.get('userId');
+    this.isLoggedInUser = this.userId ? false : true;
       this.doRefresh();
   }
 
@@ -70,27 +81,25 @@ export class ProfilePage {
   }
 
   refreshProfileData() {
-    let that = this;
     return new Promise((resolve, reject) => {
-      that.authService.getSessionData((session) => {
+      this.authService.getSessionData((session) => {
         if (session === undefined || session == null) {
           reject("session is null");
         } else {
           let sessionObj = JSON.parse(session);
           let req = {
-            userId: sessionObj["userToken"],
+            userId: (this.userId) ? this.userId : sessionObj["userToken"],
             requiredFields: ["completeness", "missingFields", "lastLoginTime", "topics"], 
             refreshUserProfileDetails: true
           };
-          that.userProfileService.getUserProfileDetails(req, res => {
-            that.zone.run(() => {
-              that.resetProfile();
+          this.userProfileService.getUserProfileDetails(req, res => {
+            this.zone.run(() => {
+              this.resetProfile();
               let r = JSON.parse(res);
               this.profile = r.response;
               if(r.response && r.response.avatar) this.imageUri = r.response.avatar;
               this.formatLastLoginTime();
               this.formatUserName();
-              this.formatProfileCompletion();
               this.formatProfileProgress();
               this.formatJobProfile();
               this.subjects = this.arrayToString(this.profile.subject);
@@ -112,7 +121,7 @@ export class ProfilePage {
   }
 
   formatMissingFields() {
-    if(this.profile.missingFields.length) {
+    if(this.profile.missingFields && this.profile.missingFields.length) {
       switch(this.profile.missingFields[0]) {
         case "education":   this.uncompletedDetails.title = "+ Add Education";
                             this.uncompletedDetails.page = FormEducation;
@@ -128,24 +137,12 @@ export class ProfilePage {
   }
 
   formatJobProfile() {
-    let jobProfile = this.profile.jobProfile;
-    let formattedJobProfile = [];
-    jobProfile.forEach(j => {
-      let t:any = {};
-      t.jobName = j.jobName;
-      t.role = j.role;
-      t.orgName = j.orgName;
-      t.subject = "Subjects: ";
-      let s = j.subject;
-      s.forEach(element => {
-        t.subject = t.subject + element + ", ";
-      });
-      t.duration = j.joiningDate + " - " + j.endDate;
-      formattedJobProfile.push(t);
+    this.profile.jobProfile.forEach(job => {
+        if(job.subject) {
+            job.subject = this.arrayToString(job.subject);
+        }
     });
-    this.profile.formattedJobProfile = formattedJobProfile;
   }
-
   formatLastLoginTime() {
     this.lastLoginTime = this.lastLoginTime + 
     this.datePipe.transform(new Date(
@@ -154,10 +151,6 @@ export class ProfilePage {
 
   formatUserName() {
     this.userName = this.userName + this.profile.userName;
-  }
-
-  formatProfileCompletion() {
-    this.profileCompletionText = this.profileCompletionText.replace("{c}", this.profile.completeness);
   }
 
   formatProfileProgress() {
@@ -177,11 +170,15 @@ export class ProfilePage {
   }
 
   editPicture() {
-    this.cameraService.getPicture().then((imageData) => {
-      this.imageUri = imageData;
-    }, (err) => {
-      console.error("Error", err);
+    // this.cameraService.getPicture().then((imageData) => {
+    //   this.imageUri = imageData;
+    // }, (err) => {
+    //   console.error("Error", err);
+    // });
+    let popover = this.popoverCtrl.create(ImagePicker, {
+      imageUri: this.imageUri
     });
+    popover.present();
   }
 
   editExperience(isNewForm, jobInfo) {
@@ -192,33 +189,30 @@ export class ProfilePage {
     this.navCtrl.push(AdditionalInfoComponent);
   }
 
-  toggleLock(item) {
-    if(item === 'education') {
-      this.profile.profileVisibility.education == 'private' ? 
-      this.profile.profileVisibility.education = 'public' : this.profile.profileVisibility.education = 'private';
-      this.setProfileVisibility('education', this.profile.profileVisibility.education);
-    }
-  }
+  toggleLock(field) {
 
-  setProfileVisibility(field, privacy) {
-    this.authService.getSessionData((session) => {
-      if (session === undefined || session == null) {
-        console.error('session is null');
-      } else {
-        let req = {
-          userId: JSON.parse(session)["userToken"],
-          privateFields: (privacy == 'private') ? [field] : [],
-          publicFields: (privacy == 'public') ? [field] : []
-        }
-        this.userProfileService.setProfileVisibility(req, res => {
-          console.log("Res", res);
-        },
-        error => {
-          console.log("Unable to set profile visibility.", error);
-        });
-      }
-    });
+    this.profile.profileVisibility[field] = this.profile.profileVisibility[field] == 'private' ? 'public' : 'private';
+    this.setProfileVisibility(field);
   }
+    setProfileVisibility(field) {
+        this.authService.getSessionData((session) => {
+            if (session === undefined || session == null) {
+              console.error('session is null');
+            } else {
+              let req = {
+                  userId: JSON.parse(session)["userToken"],
+                  privateFields: (this.profile.profileVisibility[field] == 'private') ? [field] : [],
+                  publicFields: (this.profile.profileVisibility[field] == 'public') ? [field] : []
+              }
+              this.userProfileService.setProfileVisibility(req, res => {
+                  console.log("success", res);
+              },
+              error => {
+                  console.error("Unable to set profile visibility.", error);
+              });
+            }
+          });
+    }
 
   showOverflowMenu(event) {
     let popover = this.popoverCtrl.create(OverflowMenuComponent, {
@@ -235,6 +229,10 @@ export class ProfilePage {
     } else {
       this.navCtrl.push(this.uncompletedDetails.page);
     }
+  }
+
+  gotoSearchPage() {
+    this.navCtrl.push(UserSearchComponent);
   }
 
   showMoreItems() {

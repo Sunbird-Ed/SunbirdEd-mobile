@@ -154,7 +154,7 @@
     "SHOW_MORE": "Show More",
     "CREATOR_OF": "Created by",
     "USERNAME": "User name: %s",
-    "YOUR_PROFILE_IS": "Your profile is %s% complete",
+    "YOUR_PROFILE_IS": "Your profile is {{value}}% complete",
     "FOLLOW": "Follow",
     "PEOPLE_YOU_FOLLOW": "People you follow",
     "GROUPS_YOU_FOLLOW": "Groups you follow",

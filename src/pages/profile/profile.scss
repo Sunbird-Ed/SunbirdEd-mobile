@@ -42,11 +42,6 @@ page-profile {
     font-weight: bold;
   }
 
-  .ellipsis {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
   .grey-bg {
     background: rgba(99, 99, 99, 0.158);
     font-size: 14px;
@@ -108,7 +103,6 @@ page-profile {
   .image-holder {
     width: 50px;
     height: 50px;
-    background: #d8d8d8;
   }
 
   .skill-row {
@@ -147,13 +141,18 @@ page-profile {
   .details p {
     font-size: 1.2rem !important;
   }
+  .vertical-separator {
+    border-left: solid;
+    border-width: 1px;
+    border-color: darkgrey;
+  }
 }
 
 .padding-right-10 {
-  padding-right: 10px;
+  padding-right: 10px !important;
 }
 .padding-left-10 {
-  padding-left: 10px;
+  padding-left: 10px !important;
 }
 .padding-left-none {
     padding-left: 0 !important;
@@ -173,4 +172,12 @@ page-profile {
   padding: 10px !important;
   max-height: 48px !important;
   max-width: 48px !important;
+}
+.ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+.display-inline-block {
+    display: inline-block !important;
 }

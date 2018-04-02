@@ -1,0 +1,15 @@
+<ion-list>
+    <img
+        class="center"
+        [src]="imageUri"
+        align="middle"/>
+    <ion-row class="button-row">
+        <ion-col>
+            <button ion-button outline center (click)="changeImage()">Change</button>
+        </ion-col>
+        <ion-col>
+            <button ion-button outline center (click)="deleteImage()">Remove</button>
+        </ion-col>
+    </ion-row>
+    
+</ion-list>

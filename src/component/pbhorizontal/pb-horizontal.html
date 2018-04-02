@@ -1,5 +1,4 @@
 <div class="progress-outer">
-  <div class="progress-inner" [style.width]="progress + '%'">
-   
+  <div class="progress-inner" [style.width]="progress + '%'" [ngClass]="(progress < 100) ? 'progress-inner-primary' : 'progress-inner-secondary'">
   </div>
 </div>
