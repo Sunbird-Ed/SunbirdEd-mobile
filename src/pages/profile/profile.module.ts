@@ -27,6 +27,8 @@ import { UserSearchComponent } from './user-search/user-search';
 import { PBHorizontal } from '../../component/pbhorizontal/pb-horizontal';
 
 import { DirectivesModule } from '../../directives/directives.module';
+import { IonicImageLoader } from 'ionic-image-loader';
+import { ImagePicker } from './imagepicker/imagepicker';
 
 @NgModule({
   declarations: [
@@ -44,6 +46,7 @@ import { DirectivesModule } from '../../directives/directives.module';
     AddUserComponent,
     UserSearchComponent,
     PBHorizontal,
+    ImagePicker
   ],
   entryComponents: [
     ProfilePage, 
@@ -58,13 +61,16 @@ import { DirectivesModule } from '../../directives/directives.module';
     UsersComponent,
     ClassesComponent,
     ActionMenuComponent,
-    AddUserComponent],
+    AddUserComponent,
+    ImagePicker
+    ],
 
   imports: [
     IonicPageModule.forChild(ProfilePage),
     SuperTabsModule.forRoot(),
     SettingsPageModule, 
     TranslateModule.forChild(),
+    IonicImageLoader,
     TagInputModule,
     BrowserAnimationsModule,
     ExpansionPanelsModule,

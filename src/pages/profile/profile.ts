@@ -1,21 +1,17 @@
-import { Component, NgZone } from "@angular/core";
-import { NavController, LoadingController, NavParams } from "ionic-angular";
-import {
-    CameraService,
-    ProfileService,
-    AuthService,
-    UserProfileService
-} from "sunbird";
-import { PopoverController } from "ionic-angular/components/popover/popover-controller";
-import { DatePipe } from "@angular/common";
+import { Component, NgZone } from '@angular/core';
+import { NavController, LoadingController, NavParams } from 'ionic-angular';
+import { CameraService, ProfileService, AuthService, UserProfileService } from 'sunbird';
+import { PopoverController } from 'ionic-angular/components/popover/popover-controller';
+import { DatePipe } from '@angular/common';
 
-import { FormEducation } from "./education/form.education";
-import { FormAddress } from "./address/form.address";
-import { SkillTagsComponent } from "./skill-tags/skill-tags";
-import { AdditionalInfoComponent } from "./additional-info/additional-info";
-import { FormExperience } from "./experience/form.experience";
-import { OverflowMenuComponent } from "./overflowmenu/menu.overflow.component";
-import { UserSearchComponent } from "./user-search/user-search";
+import { FormEducation } from './education/form.education';
+import { FormAddress } from './address/form.address';
+import { SkillTagsComponent } from './skill-tags/skill-tags';
+import { AdditionalInfoComponent } from './additional-info/additional-info';
+import { FormExperience } from './experience/form.experience';
+import { OverflowMenuComponent } from './overflowmenu/menu.overflow.component';
+import { UserSearchComponent } from './user-search/user-search';
+import { ImagePicker } from "./imagepicker/imagepicker";
 
 @Component({
     selector: "page-profile",
@@ -228,14 +224,15 @@ export class ProfilePage {
     }
 
     editPicture() {
-        this.cameraService.getPicture().then(
-            imageData => {
-                this.imageUri = imageData;
-            },
-            err => {
-                console.error("Error", err);
-            }
-        );
+    // this.cameraService.getPicture().then((imageData) => {
+    //   this.imageUri = imageData;
+    // }, (err) => {
+    //   console.error("Error", err);
+    // });
+    let popover = this.popoverCtrl.create(ImagePicker, {
+        imageUri: this.imageUri
+      });
+      popover.present();
     }
 
     editExperience(isNewForm, jobInfo) {
