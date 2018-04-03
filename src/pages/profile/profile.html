@@ -69,7 +69,7 @@
                     <p>{{ ed?.boardOrUniversity }}</p>
                 </div>
             </ion-col>
-            <ion-col col-1 text-end>
+            <ion-col col-1 *ngIf="isLoggedInUser" text-end>
                 <ion-icon name="md-create" color="primary" (click)="editEduDetails(false, ed)"></ion-icon>
             </ion-col>
         </ion-row>
@@ -146,13 +146,13 @@
     </ion-list-header>
 
     <ion-list>
-        <ion-row *ngFor="let skill of profile?.skills | slice : startLimit:paginationLimit" class="skill-row">
+        <ion-row *ngFor="let skill of profile?.skills | slice : startLimit:paginationLimit; let i=index" class="skill-row">
             <ion-col class="ellipsis padding-left-10 skill-name-col" [attr.col-9]="isLoggedInUser ? '' : null" [attr.col-7]="!isLoggedInUser ? '' : null">{{ skill?.skillName }}</ion-col>
             <ion-col col-3 text-end class="padding-right-10 skill-count-col">
                 <span class="vertical-separator">&nbsp;&nbsp;{{ skill?.endorsementcount }}</span>
             </ion-col>
             <ion-col *ngIf="!isLoggedInUser" col-1></ion-col>
-            <ion-col *ngIf="!isLoggedInUser" text-end col-1 class="skill-endorse-col"><span *ngIf="skill?.canEndorse">+1</span></ion-col>
+            <ion-col *ngIf="!isLoggedInUser" text-end col-1 class="skill-endorse-col" (click)="endorseSkill(i)"><span *ngIf="skill?.canEndorse">+1</span></ion-col>
         </ion-row>
         <div text-center>
             <button ion-button outline *ngIf="paginationLimit < profile?.skills?.length" (click)="showMoreItems()">{{ 'SHOW_MORE' | translate }}</button>

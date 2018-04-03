@@ -96,8 +96,11 @@ export class ProfilePage {
                 } else {
                     let sessionObj = JSON.parse(session);
                     this.loggedInUserId = sessionObj["userToken"];
+                    if(this.userId && sessionObj["userToken"] === this.userId)
+                        this.isLoggedInUser = true;
+
                     let req = {
-                        userId: this.userId
+                        userId: this.userId && this.userId != sessionObj["userToken"]
                             ? this.userId
                             : sessionObj["userToken"],
                         requiredFields: [
@@ -183,18 +186,13 @@ export class ProfilePage {
 
     formatSkills() {
         this.profile.skills.forEach(skill => {
-            if (skill.endorsersList) {
-                // skill.endorsersList.forEach(element => {
-                //     if(this.loggedInUserId == element.userId)
-                //         skill.canEndorse = true;
-                //     else
-                //         skill.canEndorse = false;
-                // });
-                skill.canEndorse = skill.endorsersList.filter(
-                    endorser => endorser.userId === this.loggedInUserId
-                );
-            }
+            skill.canEndorse = true;
+            skill.endorsersList.filter(
+                endorser => {
+                    skill.canEndorse =  endorser.userId === this.loggedInUserId ? false : true;
+                });
         });
+        console.log("SKills", this.profile.skills);
     }
 
     formatUserName() {
@@ -221,6 +219,30 @@ export class ProfilePage {
 
     addSkillTags() {
         this.navCtrl.push(SkillTagsComponent);
+    }
+
+    endorseSkill(num) {
+        this.profile.skills[num].endorsementcount += 1;
+        this.profile.skills[num].canEndorse = false;
+        this.authService.getSessionData((session) => {
+            if (session === undefined || session == null) {
+              console.error("session is null");
+            } else {
+              let req = {
+                userId: this.profile.skills[num].addedBy,
+                skills: [this.profile.skills[num].skillName]
+              };
+              console.log("Request Object", req);
+              this.userProfileService.endorseOrAddSkill(req, res => {
+                console.log("Success", JSON.parse(res));
+               },
+               error => {
+                console.error("Error", JSON.parse(error));
+                this.profile.skills[num].endorsementcount -= 1;
+                this.profile.skills[num].canEndorse = true;
+               });
+            }
+          });
     }
 
     editPicture() {
