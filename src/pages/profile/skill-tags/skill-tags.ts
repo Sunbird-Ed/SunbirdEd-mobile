@@ -52,7 +52,7 @@ export class SkillTagsComponent {
       } else {
         let req = {
           userId: JSON.parse(session)["userToken"],
-          skills: this.skillTags.map(function (item) {
+          skills: this.skillTags.map(item => {
             return item["value"];
           })
         };

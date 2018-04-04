@@ -106,9 +106,20 @@ page-profile {
   }
 
   .skill-row {
-    border-radius: 50px;
-    background: #f1f1f1;
     margin-top: 12px !important;
+  }
+
+  .skill-name-col {
+    border-radius: 50px 0 0 50px;
+    background-color: #f1f1f1;
+  }
+  .skill-count-col {
+    border-radius: 0 50px 50px 0;
+    background-color: #f1f1f1;
+  }
+  .skill-endorse-col {
+    border-radius: 50px;
+    background-color: #f1f1f1;
   }
 
   ion-item {
