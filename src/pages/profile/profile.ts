@@ -90,7 +90,7 @@ export class ProfilePage {
           let req = {
             userId: (this.userId) ? this.userId : sessionObj["userToken"],
             requiredFields: ["completeness", "missingFields", "lastLoginTime", "topics"], 
-            refreshUserProfileDetails: true
+            refreshUserProfileDetails: false
           };
           this.userProfileService.getUserProfileDetails(req, res => {
             this.zone.run(() => {

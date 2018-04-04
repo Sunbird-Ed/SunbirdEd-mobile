@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-import { TabsPage, OAuthService, ContainerService } from 'sunbird';
+import { TabsPage, OAuthService, ContainerService, UserProfileService, AuthService, TenantInfoRequest } from 'sunbird';
 import { ViewController } from 'ionic-angular/navigation/view-controller';
 import { RolePage } from '../userrole/role';
 import { Storage } from "@ionic/storage";
@@ -19,7 +19,10 @@ export class OnboardingPage {
     private viewCtrl: ViewController,
     private auth: OAuthService,
     private container: ContainerService,
-    private storage: Storage) {
+    private storage: Storage,
+    private zone: NgZone,
+    private userProfileService: UserProfileService,
+    private authService: AuthService) {
 
     this.slides = [
       {
@@ -53,12 +56,56 @@ export class OnboardingPage {
       })
       .then(() => {
         initUserTabs(that.container);
-        return that.navCtrl.push(TabsPage);
+        return that.refreshProfileData();
+      })
+      .then(() => {
+        that.navCtrl.push(TabsPage);
       })
       .catch(error => {
         console.log(error);
       });
 
+  }
+
+  refreshTenantData(slug: string) {
+    return new Promise((resolve, reject) => {
+      let request = new TenantInfoRequest();
+      request.refreshTenantInfo = true;
+      request.slug = slug;
+      this.userProfileService.getTenantInfo(
+        request, 
+        res => {
+
+        }, 
+        error => {
+          
+        })
+    });
+  }
+
+  refreshProfileData() {
+    return new Promise((resolve, reject) => {
+      this.authService.getSessionData((session) => {
+        if (session === undefined || session == null) {
+          reject("session is null");
+        } else {
+          let sessionObj = JSON.parse(session);
+          let req = {
+            userId: sessionObj["userToken"],
+            requiredFields: ["completeness", "missingFields", "lastLoginTime", "topics"], 
+            refreshUserProfileDetails: true
+          };
+          this.userProfileService.getUserProfileDetails(req, res => {
+            this.zone.run(() => {
+              resolve();
+            });
+          }, error => {
+              reject(error);
+              console.error(error);
+          });
+        }
+      });
+    });
   }
 
   browseAsGuest() {
