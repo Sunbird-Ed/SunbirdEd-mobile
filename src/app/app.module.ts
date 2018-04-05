@@ -3,7 +3,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { IonicApp, IonicModule, IonicErrorHandler, Events, NavController } from 'ionic-angular';
 import { MyApp } from './app.component';
 import { StatusBar } from '@ionic-native/status-bar';
-import { SplashScreen } from '@ionic-native/splash-screen';
 import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClientModule, HttpClient } from "@angular/common/http";
@@ -53,7 +52,6 @@ import { IonicImageLoader, ImageLoader, ImageLoaderConfig } from "ionic-image-lo
   ],
   providers: [
     StatusBar,
-    SplashScreen,
     HTTP,
     File,
     Globalization,
