@@ -3,12 +3,18 @@
         class="center"
         [src]="imageUri"
         align="middle"/>
-    <ion-row class="button-row">
+    <ion-row>
         <ion-col>
-            <button ion-button outline center (click)="changeImage()">Change</button>
+            <button ion-button outline center icon-left (click)="changeImage()">
+                <ion-icon name="create"></ion-icon>
+                Change
+            </button>
         </ion-col>
         <ion-col>
-            <button ion-button outline center (click)="deleteImage()">Remove</button>
+            <button ion-button outline center icon-left (click)="deleteImage()">
+                <ion-icon name="close"></ion-icon>
+                Remove
+            </button>
         </ion-col>
     </ion-row>
     

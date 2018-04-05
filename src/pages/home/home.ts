@@ -1,11 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { NavController, Events } from 'ionic-angular';
 import { TelemetryService,
   Impression,
   FrameworkModule,
   ContentImport,
   ContentImportRequest,
-  ContentService
+  ContentService,
+  UserProfileService,
+  TenantInfoRequest
 } from 'sunbird';
 
 
@@ -17,8 +19,14 @@ import { TelemetryService,
 })
 export class HomePage {
 
+  logo: string = "assets/imgs/ic_logo.png";
+
   constructor(public navCtrl: NavController,
-    private telemetryService: TelemetryService, private contentService: ContentService, private events: Events) {
+    private telemetryService: TelemetryService, 
+    private contentService: ContentService, 
+    private events: Events,
+    private ngZone: NgZone,
+    private userProfileService: UserProfileService) {
 
     this.events.subscribe('genie.event', (response) => {
       console.log("Result " + response);
@@ -27,10 +35,29 @@ export class HomePage {
   }
 
   ionViewDidLoad() {
-    let impression = new Impression();
-    impression.type = "view";
-    impression.pageId = "ionic_sunbird";
-    this.telemetryService.impression(impression);
+    // let impression = new Impression();
+    // impression.type = "view";
+    // impression.pageId = "ionic_sunbird";
+    // this.telemetryService.impression(impression);
+    this.refreshTenantData();
+  }
+
+  refreshTenantData() {
+    let request = new TenantInfoRequest();
+      request.refreshTenantInfo = true;
+      request.slug = "sunbird";
+      this.userProfileService.getTenantInfo(
+        request, 
+        res => {
+          this.ngZone.run(() => {
+            let r = JSON.parse(res);
+            this.logo = r["logo"];
+          });
+        }, 
+        error => {
+
+        }
+      );
   }
 
   onSyncClick() {
