@@ -77,7 +77,7 @@ export class CoursesPage implements OnInit {
    * @param {PageAssembleService} pageService Service to get latest and popular courses
    * @param {NgZone} ngZone To bind data
    */
-  constructor(navCtrl: NavController, courseService: CourseService, authService: AuthService, platform: Platform, 
+  constructor(navCtrl: NavController, courseService: CourseService, authService: AuthService, platform: Platform,
     pageService: PageAssembleService, ngZone: NgZone) {
     this.navCtrl = navCtrl;
     this.courseService = courseService;

@@ -31,8 +31,6 @@ export class CourseCard {
    */
   defaultImg: string;
 
-  rate: string = "4";
-
   /**
    * Default method of class CourseCard
    * 
@@ -45,11 +43,15 @@ export class CourseCard {
   /**
    * Navigate to the course/content details page
    * 
-   * @param {string} id content identifier
+   * @param {string} layoutName 
+   * @param {object} content 
    */
-  navigateToCourseDetailPage(id: string, layoutName: string, contentTypesCount: string | ''): void {
-    contentTypesCount = contentTypesCount ? JSON.parse(contentTypesCount) : '';
-    this.navCtrl.push(CourseDetailComponent, { identifier: id, layoutType: layoutName, contentTypesCount: contentTypesCount });
+  navigateToCourseDetailPage(layoutName: string, content): void {
+    console.log('card info...', content);
+    this.navCtrl.push(CourseDetailComponent, {
+      layoutType: layoutName,
+      content: content
+    });
   }
 
   onImageLoad(imgLoader: ImageLoader) {

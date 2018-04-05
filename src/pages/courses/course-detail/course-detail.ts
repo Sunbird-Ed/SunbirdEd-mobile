@@ -1,7 +1,9 @@
+import { ParentDetailsComponent } from './../parent-details/parent-details';
 import { CourseBatchesComponent } from './../course-batches/course-batches';
 import { Component, OnInit, NgZone } from '@angular/core';
 import { NavController, NavParams, Events } from 'ionic-angular';
 import { ContentService } from 'sunbird';
+import { NgModel } from '@angular/forms';
 import * as _ from 'lodash';
 
 /**
@@ -59,7 +61,17 @@ export class CourseDetailComponent {
   /**
    * Contains download progress
    */
-  downloadProgress: string;
+  downloadProgress: any;
+
+  /**
+   * Contains carry forward data from courses page
+   */
+  cardData: any;
+
+  /**
+   * To hold content identifier
+   */
+  identifier: string;
 
   /**
    * Contains reference of content service
@@ -94,7 +106,6 @@ export class CourseDetailComponent {
     this.contentService = contentService;
     this.zone = zone;
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
-    console.log('Course identifier ===> ', this.navParams.get('identifier'));
   }
 
   /** 
@@ -102,7 +113,7 @@ export class CourseDetailComponent {
    */
   getContentDetails() {
     const option = {
-      contentId: this.navParams.get('identifier'),
+      contentId: this.identifier,
       attachFeedback: false,
       attachContentAccess: false,
       refreshContentDetails: false
@@ -114,10 +125,11 @@ export class CourseDetailComponent {
         console.log('content details response ==>', data);
         if (data && data.result) {
           this.contentDetail = data.result.contentData ? data.result.contentData : [];
+          this.contentDetail.contentTypesCount = this.contentDetail.contentTypesCount ? JSON.parse(this.contentDetail.contentTypesCount) : '';
           if (data.result.isAvailableLocally === false) {
             this.importContent();
           } else {
-            this.importChildrenContent();
+            this.getChildContents();
           }
         }
       });
@@ -127,12 +139,17 @@ export class CourseDetailComponent {
       });
   }
 
-
+  navigateToChildrenDetailsPage(content, depth) {
+    this.navCtrl.push(ParentDetailsComponent, {
+      content: content,
+      depth: depth
+    });
+  }
   /**
    * To import content
    */
   importContent(): void {
-    console.log('importing content==> ');
+    console.log('importing content ==> ');
     this.showChildrenLoader = true;
     const option = {
       contentImportMap: {
@@ -140,29 +157,30 @@ export class CourseDetailComponent {
           isChildContent: false,
           // TODO: need discussion with Swayangjit
           destinationFolder: '/storage/emulated/0/Android/data/org.sunbird.app/files',
-          contentId: this.navParams.get('identifier'),
+          contentId: this.identifier,
           correlationData: []
         }
       },
       contentStatusArray: []
     }
 
+    // Call content service
     this.contentService.importContent(option, (data: any) => {
-      console.log('datata', data);
+      console.log('import progress details...', data);
     },
-      error => {
-        console.log('error while loading content details', error);
-      });
+    error => {
+      console.log('error while loading content details', error);
+    });
   }
 
   /**
-   * 
+   * Get child contents
    */
-  importChildrenContent(): void {
+  getChildContents(): void {
     console.log('import child content')
     this.showChildrenLoader = true;
     const option = {
-      contentId: this.navParams.get('identifier'),
+      contentId: this.identifier,
       hierarchyInfo: null,
       level: 1
     };
@@ -178,7 +196,7 @@ export class CourseDetailComponent {
       this.enableDownloadAllBtn(childData);
     },
       (error: string) => {
-        console.log('error while fetching children', error);
+        console.log('error while fetching child content', error);
         this.zone.run(() => {
           this.showChildrenLoader = false;
         });
@@ -201,8 +219,6 @@ export class CourseDetailComponent {
         return _.includes(false, p.isAvailableLocally);
       });
     });
-    console.log('downlodable content idss...', filtered_people);
-    console.log('downloadContentIds ===>', downloadContentIds);
   }
 
   /**
@@ -210,30 +226,47 @@ export class CourseDetailComponent {
    */
   ionViewWillEnter(): void {
     this.tabBarElement.style.display = 'none';
+    this.cardData = this.navParams.get('content');
     this.layoutName = this.navParams.get('layoutType');
+    this.identifier = this.cardData.contentId || this.cardData.identifier;
     this.getContentDetails();
-    this.courseStructure = this.navParams.get('contentTypesCount')
+    this.subscribeGenieEvent();
+  }
 
+  /**
+   * Subscribe genie event to get content download progress
+   */
+  subscribeGenieEvent() {
     this.events.subscribe('genie.event', (data) => {
       this.zone.run(() => {
         data = JSON.parse(data);
         let res = data;
+        // Show download percentage
         if (res.type === 'downloadProgress' && res.data.downloadProgress) {
           this.downloadProgress = res.data.downloadProgress + ' %';
         }
+        // Get child content
         if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
-          this.importChildrenContent();
+          this.getChildContents();
         }
       });
     });
   }
 
+  /**
+   * Ionic default function
+   */
   ionViewWillLeave(): void {
     this.tabBarElement.style.display = 'flex';
     this.events.unsubscribe('genie.event');
   }
 
+  /**
+   * Navigate user to batch list page
+   * 
+   * @param {string} id 
+   */
   navigateToBatchListPage(id: string): void {
-    this.navCtrl.push(CourseBatchesComponent, { identifier: this.navParams.get('identifier') });
+    this.navCtrl.push(CourseBatchesComponent, { identifier: this.identifier });
   }
 }

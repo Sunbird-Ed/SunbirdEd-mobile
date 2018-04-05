@@ -149,8 +149,6 @@ export class CourseBatchesComponent implements OnInit {
           }
         });
       });
-      console.log('AAAAAAAAAA', this.ongoingBatches);
-      console.log('bbbbbbbbbb', this.upcommingBatches);
     },
       (error: any) => {
         console.log('error while fetching course batches ==>', error);

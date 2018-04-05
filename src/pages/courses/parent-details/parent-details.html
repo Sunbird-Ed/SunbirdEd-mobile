@@ -1,0 +1,42 @@
+<!-- Generated template for the CourseDetailComponent component -->
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      <ion-icon md="md-share" float-right></ion-icon>
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+<!-- Page body -->
+<ion-content padding>
+  <div class="content-details-holder" *ngIf="details">
+    <h5>{{ depth }}: {{details.name}}</h5>
+    <div class="course-size">
+      <span>Module size: {{ details.size }}</span>
+    </div>
+    <div class="mrgin-top-8">
+      <rating [ngModel]="0" readOnly="true" max="5" no-padding></rating>
+    </div><br/>
+    <div class="description" *ngIf="details.contentType === 'Resource'" margin-top>
+      <h5>Description</h5>
+      <p [readMore]="details.description" [length]="80" [showMoreText]="'READ_MORE' | translate" [showLessText]="'READ_LESS' | translate">{{details.description}}</p>
+      <br/>
+    </div>
+    <div *ngIf="childrenData && childrenData">
+      <ion-item *ngFor="let item of childrenData; let i = index" style="padding-left: 0px;">
+        <span (click)="navigateToChildrenDetailsPage(item, depth + '.' + (i + 1))">
+          <span ion-text>{{ depth }}.{{ (i) + (1) }} : {{ item.contentData.name }}</span>
+          <ion-icon name="ios-arrow-forward" float-end></ion-icon>
+        </span>
+      </ion-item>
+    </div>
+  </div>
+</ion-content>
+<!-- Page footer -->
+<ion-footer>
+  <ion-toolbar padding *ngIf="details">
+    <button ion-button block (click)="downloadContent(details.identifier)" *ngIf="details.contentType === 'Resource' && isAvailableLocally === false">{{ 'DOWNLOAD' | translate }}
+    </button>
+    <button ion-button block *ngIf="details.contentType === 'Resource' && isAvailableLocally === true" [disabled]="true">{{ 'PLAY' | translate }}
+    </button>
+  </ion-toolbar>
+</ion-footer>
