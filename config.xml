@@ -100,10 +100,11 @@
     <plugin name="cordova-plugin-device" spec="^1.1.7" />
     <plugin name="cordova-plugin-file" spec="^6.0.1" />
     <plugin name="cordova-plugin-file-transfer" spec="^1.7.1" />
-    <plugin name="cordova-plugin-camera" spec="^4.0.2" />
     <plugin name="cordova-sqlite-storage" spec="^2.3.0" />
-    <plugin name="cordova-plugin-genie-sdk" spec="../ext-framework/cordova-plugins/cordova-plugin-genie-sdk" />
-    <plugin name="cordova-plugin-imagechooser" spec="../ext-framework/cordova-plugins/cordova-plugin-imagechooser" />
-    <plugin name="cordova-plugin-sunbirdsplash" spec="../ext-framework/cordova-plugins/cordova-plugin-sunbirdsplash" />
-    <engine name="android" spec="~6.3.0" />
+    <plugin name="cordova-plugin-camera" spec="^4.0.2" />
+    <plugin name="cordova-plugin-genie-sdk" spec="/home/shriharsh/VisualStudioProjects/ext-framework/cordova-plugins/cordova-plugin-genie-sdk" />
+    <plugin name="cordova-plugin-imagechooser" spec="/home/shriharsh/VisualStudioProjects/ext-framework/cordova-plugins/cordova-plugin-imagechooser" />
+    <plugin name="cordova-plugin-sunbirdsplash" spec="/home/shriharsh/VisualStudioProjects/ext-framework/cordova-plugins/cordova-plugin-sunbirdsplash" />
+    <plugin name="cordova-plugin-file-support" spec="/home/shriharsh/VisualStudioProjects/ext-framework/cordova-plugins/cordova-plugin-file-support" />
+    <engine name="android" spec="6.3.0" />
 </widget>
