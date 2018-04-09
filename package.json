@@ -42,6 +42,7 @@
     "@ionic-native/file": "^4.6.0",
     "@ionic-native/globalization": "^4.5.3",
     "@ionic-native/http": "^4.5.3",
+    "@ionic-native/in-app-browser": "^4.6.0",
     "@ionic-native/social-sharing": "^4.5.3",
     "@ionic-native/splash-screen": "4.4.0",
     "@ionic-native/status-bar": "4.4.0",
@@ -118,7 +119,6 @@
       "cordova-plugin-ionic-webview": {},
       "cordova-hot-code-push-plugin": {},
       "cordova-custom-config": {},
-      "cordova-plugin-inappbrowser": {},
       "cordova-plugin-advanced-http": {},
       "cordova-plugin-browsertab": {},
       "cordova-plugin-globalization": {},
@@ -128,7 +128,8 @@
       "cordova-plugin-device": {},
       "cordova-plugin-file": {},
       "cordova-plugin-file-transfer": {},
-      "cordova-plugin-genie-sdk": {}
+      "cordova-plugin-genie-sdk": {},
+      "cordova-plugin-inappbrowser": {}
     },
     "platforms": [
       "android"

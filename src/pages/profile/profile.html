@@ -19,7 +19,7 @@
     <p *ngIf="isLoggedInUser" class="profile-last-login-text">{{ lastLoginTime }}</p>
 
     <div text-center>
-        <img class="custom-avatar" [src]="imageUri" (click)="editPicture()" />
+        <img class="custom-avatar" [src]="imageUri" (click)="isLoggedInUser && editPicture()" />
         <p class="profile-name">{{ profile?.firstName }} {{ profile?.lastName }}</p>
         <div class="padding-5 ellipsis" col-12>
             <span class="grey-bg" *ngIf="profile?.userName">{{ userName }}</span>
@@ -152,13 +152,24 @@
                 <span class="vertical-separator">&nbsp;&nbsp;{{ skill?.endorsementcount }}</span>
             </ion-col>
             <ion-col *ngIf="!isLoggedInUser" col-1></ion-col>
-            <ion-col *ngIf="!isLoggedInUser" text-end col-1 class="skill-endorse-col" (click)="endorseSkill(i)"><span *ngIf="skill?.canEndorse">+1</span></ion-col>
+            <ion-col *ngIf="!isLoggedInUser" text-end col-1 class="skill-endorse-col" (click)="endorseSkill(i)">
+                <span *ngIf="skill?.canEndorse">+1</span>
+            </ion-col>
         </ion-row>
         <div text-center>
             <button ion-button outline *ngIf="paginationLimit < profile?.skills?.length" (click)="showMoreItems()">{{ 'SHOW_MORE' | translate }}</button>
             <button ion-button outline *ngIf="paginationLimit > DEFAULT_PAGINATION_LIMIT" (click)="showLessItems()">{{ 'SHOW_LESS' | translate }}</button>
         </div>
     </ion-list>
+
+    <div>
+        <span class="section-title">{{ 'CREATED_BY_SMALL' | translate }}</span>
+        <ion-scroll scrollX="true" class="course-scroll-dimensions" no-padding>
+            <div class="inner">
+                <course-card *ngFor="let courseItem of enrolledCourse" [course]="courseItem" [layoutName]="'Popular'"></course-card>
+            </div>
+        </ion-scroll>
+    </div>
 
     <ion-list-header class="section-title" no-padding>
         {{ 'ADDITIONAL_INFORMATION' | translate }}
@@ -235,6 +246,17 @@
             </ion-col>
             <ion-col col-7 text-end>
                 <span class="ellipsis">{{ profile?.location }}</span>
+            </ion-col>
+        </ion-row>
+        <ion-row>
+            <ion-col col-5>
+                <span text-uppercase class="info-title">{{ 'SOCIAL' | translate }}</span>
+            </ion-col>
+            <ion-col col-7 text-end class="social-icon-size">
+                <a (click)="openLink(fbLink)" *ngIf="fbLink"><ion-icon color="facebook" name="logo-facebook"></ion-icon></a>
+                <a (click)="openLink(twitterLink)" *ngIf="twitterLink"><ion-icon color="twitter" name="logo-twitter"></ion-icon></a>
+                <a (click)="openLink(linkedInLink)" *ngIf="linkedInLink"><ion-icon *ngIf="linkedInLink" color="linkedIn" name="logo-linkedin"></ion-icon></a>
+                <a (click)="openLink(blogLink)" *ngIf="blogLink" ><ion-icon name="create"></ion-icon></a>
             </ion-col>
         </ion-row>
     </ion-item>
