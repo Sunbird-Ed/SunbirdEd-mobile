@@ -90,11 +90,10 @@ export class ParentDetailsComponent {
           this.details = res.result.contentData;
           this.isAvailableLocally = res.result.isAvailableLocally;
           this.details.size = this.niceBytes(+this.details.size);
-          console.log('is isAvailableLocally ==>', this.isAvailableLocally);
           this.details.contentTypesCount = this.details.contentTypesCount ? JSON.parse(this.details.contentTypesCount) : '';
-          if (res.result.isAvailableLocally === false) {
+          if (res.result.isAvailableLocally === false && res.result.contentType !== 'resource') {
             this.importContent(data);
-          } else if(res.result.contentType !== 'resource') {
+          } else if (res.result.contentType !== 'resource') {
             this.getChildContents(data);
           }
         }
@@ -125,7 +124,7 @@ export class ParentDetailsComponent {
 
     // Call content service
     this.contentService.importContent(option, (data: any) => {
-      console.log('Parent component: import progress details...', data);
+      console.log('Children component: import progress details...', data);
     },
       error => {
         console.log('error while loading content details', error);
@@ -164,7 +163,7 @@ export class ParentDetailsComponent {
    * @param {object} item  contains content details
    * @param {string} depth course depth level
    */
-  navigateToChildrenDetailsPage(item, depth): void{
+  navigateToChildrenDetailsPage(item, depth): void {
     this.depth = depth;
     this.navCtrl.push(ParentDetailsComponent, {
       content: item,
@@ -191,5 +190,14 @@ export class ParentDetailsComponent {
     this.childrenData = [];
     console.log('parent data details', data);
     this.getContentDetails(data);
+  }
+
+  /**
+   * Download content 
+   */
+  downloadContent(id) {
+    let data = { identifier: id };
+    this.importContent(data);
+    this.isAvailableLocally = true;
   }
 }

@@ -73,7 +73,20 @@ export class CourseDetailComponent {
    */
   identifier: string;
 
+  /**
+   * Show more info flag
+   */
   showMoreFlag = false;
+
+  /**
+   * Contains list of identifiers which are locally not available at SDK 
+   */
+  downloadableIdentifiers = [];
+
+  /**
+   * Contains content size which are locally not available at SDK
+   */
+  contentDownloadSize: string;
 
   /**
    * Contains reference of content service
@@ -119,9 +132,9 @@ export class CourseDetailComponent {
   /** 
    * To get content details
    */
-  getContentDetails() {
+  getContentDetails(identifier) {
     const option = {
-      contentId: this.identifier,
+      contentId: identifier,
       attachFeedback: false,
       attachContentAccess: false,
       refreshContentDetails: false
@@ -135,7 +148,7 @@ export class CourseDetailComponent {
           this.contentDetail = data.result.contentData ? data.result.contentData : [];
           this.contentDetail.contentTypesCount = this.contentDetail.contentTypesCount ? JSON.parse(this.contentDetail.contentTypesCount) : '';
           if (data.result.isAvailableLocally === false) {
-            this.importContent();
+            this.importContent(this.identifier);
           } else {
             this.getChildContents();
           }
@@ -154,6 +167,11 @@ export class CourseDetailComponent {
       content: content,
       depth: depth
     });
+  }
+
+  resumeContent(identifier) {
+    console.log('resume content..... =>>>');
+    this.getContentDetails(identifier);
   }
 
   /**
@@ -180,16 +198,15 @@ export class CourseDetailComponent {
   /**
    * To import content
    */
-  importContent(): void {
+  importContent(identifiers): void {
     console.log('importing content ==> ');
     this.showChildrenLoader = true;
     const option = {
       contentImportMap: {
         [0]: {
           isChildContent: false,
-          // TODO: need discussion with Swayangjit
           destinationFolder: '/storage/emulated/0/Android/data/org.sunbird.app/files',
-          contentId: this.identifier,
+          contentId: identifiers,
           correlationData: []
         }
       },
@@ -206,12 +223,12 @@ export class CourseDetailComponent {
         this.showChildrenLoader = false;
       }
     },
-    error => {
-      console.log('error while loading content details', error);
-      const message = 'Something went wrong, please check after some time';
-      this.showErrorMessage(message, false);
-      this.showChildrenLoader = false;
-    });
+      error => {
+        console.log('error while loading content details', error);
+        const message = 'Something went wrong, please check after some time';
+        this.showErrorMessage(message, false);
+        this.showChildrenLoader = false;
+      });
   }
 
   /**
@@ -232,9 +249,9 @@ export class CourseDetailComponent {
       this.zone.run(() => {
         this.childrenData = data.result;
         this.showChildrenLoader = false;
+        let childData = data.result.children || [];
+        this.enableDownloadAllBtn(childData);
       });
-      let childData = data.result.children || []
-      this.enableDownloadAllBtn(childData);
     },
       (error: string) => {
         console.log('error while fetching child content', error);
@@ -245,20 +262,15 @@ export class CourseDetailComponent {
   }
 
   enableDownloadAllBtn(data) {
-    let filtered_people;
-    let downloadContentIds = [];
+    let size = 0;
     this.zone.run(() => {
-
-      _.forEach(data, function (value, key) {
-        console.log('isAvailableLocally... => ', value.isAvailableLocally);
+      _.forEach(data, (value, key) => {
         if (value.isAvailableLocally === false) {
-          downloadContentIds.push()
+          this.downloadableIdentifiers.push(value.contentData.identifier);
+          size += value.contentData.size;
         }
       });
-
-      filtered_people = _.filter(data, function (p) {
-        return _.includes(false, p.isAvailableLocally);
-      });
+      this.contentDownloadSize = this.getFileSize(size);
     });
   }
 
@@ -270,7 +282,7 @@ export class CourseDetailComponent {
     this.cardData = this.navParams.get('content');
     this.layoutName = this.navParams.get('layoutType');
     this.identifier = this.cardData.contentId || this.cardData.identifier;
-    this.getContentDetails();
+    this.getContentDetails(this.identifier);
     this.subscribeGenieEvent();
   }
 
@@ -292,6 +304,14 @@ export class CourseDetailComponent {
         }
       });
     });
+  }
+
+  getFileSize(x) {
+    const units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    let l = 0, n = parseInt(x, 10) || 0;
+    while (n >= 1024 && ++l)
+      n = n / 1024;
+    return (n.toFixed(n >= 10 || l < 1 ? 0 : 1) + ' ' + units[l]);
   }
 
   toggleDetails(flag) {

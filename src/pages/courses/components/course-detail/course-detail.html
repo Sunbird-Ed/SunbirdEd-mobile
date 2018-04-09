@@ -85,7 +85,12 @@
 <ion-footer>
   <ion-toolbar padding>
     <button ion-button block (click)="navigateToBatchListPage('');" *ngIf="layoutName === 'Popular'">ENROLL IN COURSE</button>
-    <button ion-button block *ngIf="layoutName === 'Inprogress'" [disabled]="true">START</button>
+    <button ion-button block 
+      *ngIf="layoutName === 'Inprogress' && cardData && cardData.lastReadContentId"
+      (click)="resumeContent(cardData.lastReadContentId)">
+      RESUME
+    </button>
+    <button ion-button block outline *ngIf="downloadableIdentifiers && downloadableIdentifiers.length" (click)="downloadContent()">DOWNLOAD ALL ({{ contentDownloadSize }})</button>
     <!-- <button ion-button block (click)="navigateToBatchListPage('');" *ngIf="layoutName === 'Inprogress'">DOWNLOAD ALL</button> -->
   </ion-toolbar>
 </ion-footer>
