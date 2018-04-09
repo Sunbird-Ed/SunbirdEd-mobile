@@ -1,7 +1,7 @@
 import { ParentDetailsComponent } from './../parent-details/parent-details';
 import { CourseBatchesComponent } from './../course-batches/course-batches';
 import { Component, OnInit, NgZone } from '@angular/core';
-import { NavController, NavParams, Events } from 'ionic-angular';
+import { NavController, NavParams, Events, ToastController } from 'ionic-angular';
 import { ContentService } from 'sunbird';
 import { NgModel } from '@angular/forms';
 import * as _ from 'lodash';
@@ -49,7 +49,7 @@ export class CourseDetailComponent {
   courseStructure: any;
 
   /**
-   * 
+   * To get course structure keys
    */
   objectKeys = Object.keys;
 
@@ -73,6 +73,8 @@ export class CourseDetailComponent {
    */
   identifier: string;
 
+  showMoreFlag = false;
+
   /**
    * Contains reference of content service
    */
@@ -94,17 +96,23 @@ export class CourseDetailComponent {
   public zone: NgZone;
 
   /**
+   * Contains reference of ionic toast controller
+   */
+  public toastCtrl: ToastController;
+
+  /**
    * 
    * @param navCtrl 
    * @param navParams 
    * @param contentService 
    */
   constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, zone: NgZone,
-    private events: Events) {
+    private events: Events, toastCtrl: ToastController) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
     this.zone = zone;
+    this.toastCtrl = toastCtrl;
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
   }
 
@@ -136,6 +144,8 @@ export class CourseDetailComponent {
     },
       error => {
         console.log('error while loading content details', error);
+        const message = 'Something went wrong, please check after some time';
+        this.showErrorMessage(message, true);
       });
   }
 
@@ -145,6 +155,28 @@ export class CourseDetailComponent {
       depth: depth
     });
   }
+
+  /**
+   * Show error messages
+   * 
+   * @param message
+   */
+  showErrorMessage(message: string, isPop: boolean | false): void {
+    let toast = this.toastCtrl.create({
+      message: message,
+      duration: 2000,
+      position: 'bottom'
+    });
+    toast.onDidDismiss(() => {
+      console.log('Dismissed toast');
+      if (isPop) {
+        this.navCtrl.pop();
+      }
+    });
+
+    toast.present();
+  }
+
   /**
    * To import content
    */
@@ -166,10 +198,19 @@ export class CourseDetailComponent {
 
     // Call content service
     this.contentService.importContent(option, (data: any) => {
-      console.log('import progress details...', data);
+      data = JSON.parse(data);
+      console.log('Import data =>', data);
+      if (data.result && data.result[0].status === 'NOT_FOUND') {
+        const message = 'Unable to fetch content';
+        this.showErrorMessage(message, false);
+        this.showChildrenLoader = false;
+      }
     },
     error => {
       console.log('error while loading content details', error);
+      const message = 'Something went wrong, please check after some time';
+      this.showErrorMessage(message, false);
+      this.showChildrenLoader = false;
     });
   }
 
@@ -251,6 +292,10 @@ export class CourseDetailComponent {
         }
       });
     });
+  }
+
+  toggleDetails(flag) {
+    this.showMoreFlag = !flag;
   }
 
   /**

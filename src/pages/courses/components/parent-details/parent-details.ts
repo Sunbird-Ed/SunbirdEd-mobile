@@ -4,18 +4,12 @@ import { ContentService } from 'sunbird';
 
 /**
  * Generated class for the ParentDetailsComponent component.
- *
- * See https://angular.io/api/core/Component for more info on Angular
- * Components.
  */
 @Component({
   selector: 'parent-details',
   templateUrl: 'parent-details.html'
 })
 export class ParentDetailsComponent {
-
-  text: string;
-
   /**
    * Contains content details
    */
@@ -41,6 +35,9 @@ export class ParentDetailsComponent {
    */
   isAvailableLocally: boolean;
 
+  /**
+   * Contains reference of navigation controller
+   */
   navCtrl: NavController;
 
   /**
@@ -58,16 +55,26 @@ export class ParentDetailsComponent {
    */
   public zone: NgZone;
 
+  /**
+   * Default method of class ParentDetailsComponent
+   * 
+   * @param navParams 
+   * @param contentService 
+   * @param zone 
+   * @param navCtrl 
+   */
   constructor(navParams: NavParams, contentService: ContentService, zone: NgZone, navCtrl: NavController) {
     this.navParams = navParams;
     this.contentService = contentService;
     this.zone = zone;
     this.navCtrl = navCtrl;
     this.tabBarMenuElement = document.querySelector('.tabbar.show-tabbar');
-
   }
 
-  getContentDetails(data) {
+  /**
+   * Get content details
+   */
+  getContentDetails(data): void {
     const option = {
       contentId: data.identifier,
       attachFeedback: false,
@@ -87,7 +94,7 @@ export class ParentDetailsComponent {
           this.details.contentTypesCount = this.details.contentTypesCount ? JSON.parse(this.details.contentTypesCount) : '';
           if (res.result.isAvailableLocally === false) {
             this.importContent(data);
-          } else {
+          } else if(res.result.contentType !== 'resource') {
             this.getChildContents(data);
           }
         }
@@ -108,7 +115,6 @@ export class ParentDetailsComponent {
       contentImportMap: {
         [0]: {
           isChildContent: false,
-          // TODO: need discussion with Swayangjit
           destinationFolder: '/storage/emulated/0/Android/data/org.sunbird.app/files',
           contentId: data.identifier,
           correlationData: []

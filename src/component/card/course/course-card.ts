@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { NavController } from 'ionic-angular';
-import { CourseDetailComponent } from "../../../pages/courses/course-detail/course-detail";
+import { CourseDetailComponent } from './../../../pages/courses/components/course-detail/course-detail';
 import { ImageLoader } from "ionic-image-loader";
 
 /**

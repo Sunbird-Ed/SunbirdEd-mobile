@@ -22,6 +22,7 @@ import { UniqueDeviceID } from '@ionic-native/unique-device-id';
 import { AppVersion } from '@ionic-native/app-version';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { IonicImageLoader, ImageLoader, ImageLoaderConfig } from "ionic-image-loader";
+import { CourseProvider } from '../providers/course/course';
 
 @NgModule({
   declarations: [
@@ -61,7 +62,9 @@ import { IonicImageLoader, ImageLoader, ImageLoaderConfig } from "ionic-image-lo
     AppVersion,
     SocialSharing,
     ImageLoader,
-    { provide: ErrorHandler, useClass: IonicErrorHandler }
+    { provide: ErrorHandler, useClass: IonicErrorHandler },
+    CourseProvider,
+    CourseProvider
   ]
 })
 export class AppModule {

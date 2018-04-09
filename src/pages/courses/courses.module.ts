@@ -1,4 +1,3 @@
-import { ParentDetailsComponent } from './parent-details/parent-details';
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { CoursesPage } from './courses';
@@ -10,13 +9,13 @@ import { FrameworkModule } from "sunbird";
 import { IonicImageLoader } from "ionic-image-loader";
 import { ComponentsModule } from "../../component/components.module";
 import { Ionic2RatingModule } from "ionic2-rating";
-
 import { DirectivesModule } from './../../directives/directives.module';
-import { CourseBatchesComponent } from './course-batches/course-batches';
-import { CourseDetailComponent } from './course-detail/course-detail';
+import { ParentDetailsComponent } from './components/parent-details/parent-details';
+import { CourseBatchesComponent } from './components/course-batches/course-batches';
+import { CourseDetailComponent } from './components/course-detail/course-detail';
 
 @NgModule({
-  declarations: [ 
+  declarations: [
     CoursesPage,
     CourseDetailComponent,
     CourseBatchesComponent,
