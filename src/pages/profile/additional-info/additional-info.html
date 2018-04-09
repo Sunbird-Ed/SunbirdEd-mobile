@@ -9,9 +9,9 @@
 <ion-content padding>
   <form [formGroup]="additionalInfoForm" class="form" (ngSubmit)="onSubmit($event)">
     <ion-item>
-      <ion-label stacked>{{ 'NAME' | translate }} </ion-label>
+      <ion-label stacked text-capitalize>{{ 'NAME' | translate }} </ion-label>
       <span ion-text color="danger">&nbsp;*</span>
-      <ion-input formControlName="name" placeholder="{{'NAME_HINT' | translate }}"></ion-input>
+      <ion-input formControlName="firstName" placeholder="{{'NAME_HINT' | translate }}"></ion-input>
     </ion-item>
 
     <ion-item>
@@ -20,11 +20,9 @@
     </ion-item>
 
     <ion-item>
-      <ion-label stacked>{{'LANGUAGES' | translate }}</ion-label>
-      <ion-select formControlName="languages" interface="popover" placeholder="{{'SELECT' | translate }}">
-        <ion-option value="en">English</ion-option>
-        <ion-option value="mr">Marathi</ion-option>
-        <ion-option value="hi">Hindi</ion-option>
+      <ion-label stacked text-capitalize>{{'LANGUAGES' | translate }}</ion-label>
+      <ion-select formControlName="languages" multiple="true" interface="popover" placeholder="{{'SELECT' | translate }}">
+          <ion-option *ngFor="let lang of languageList" text-capitalize value="{{lang}}">{{lang}}</ion-option>
       </ion-select>
     </ion-item>
 
@@ -46,18 +44,16 @@
     <ion-item>
       <ion-label stacked>{{'SUBJECTS' | translate }}</ion-label>
       <ion-select formControlName="subjects" multiple="true" interface="popover" placeholder="{{'SELECT' | translate }}">
-        <ion-option value="en">English</ion-option>
-        <ion-option value="mr">Marathi</ion-option>
-        <ion-option value="hi">Hindi</ion-option>
+          <ion-option *ngFor="let subject of subjectList" text-capitalize value="{{subject}}">{{subject}}</ion-option>
       </ion-select>
     </ion-item>
 
     <ion-item>
       <ion-label stacked>{{'GENDER' | translate }}</ion-label>
       <ion-select formControlName="gender" interface="popover" placeholder="{{'SELECT' | translate }}">
-        <ion-option value="m">Male</ion-option>
-        <ion-option value="f">Female</ion-option>
-        <ion-option value="t">Transgender</ion-option>
+        <ion-option value="Male">Male</ion-option>
+        <ion-option value="Female">Female</ion-option>
+        <ion-option value="Transgender">Transgender</ion-option>
       </ion-select>
     </ion-item>
 
@@ -69,9 +65,7 @@
     <ion-item>
       <ion-label stacked>{{'GRADE' | translate }}</ion-label>
       <ion-select formControlName="grade" multiple="true" interface="popover" placeholder="{{'SELECT' | translate }}">
-        <ion-option value="kg">Kindergarten</ion-option>
-        <ion-option value="g1">Grade 1</ion-option>
-        <ion-option value="g2">Grade 2</ion-option>
+          <ion-option *ngFor="let grade of gradeList" text-capitalize value="{{grade}}">{{grade}}</ion-option>
       </ion-select>
     </ion-item>
 
