@@ -1,37 +1,39 @@
-import { CourseBatchesComponent } from './course-batches/course-batches';
-import { CourseDetailComponent } from './course-detail/course-detail';
+import { ParentDetailsComponent } from './parent-details/parent-details';
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { CoursesPage } from './courses';
 import { TranslateModule } from '@ngx-translate/core';
 // TODO: remove it before pushing the code
-import { HttpClient } from '@angular/common/http';
-import { HttpClientModule } from '@angular/common/http';
 import { HttpModule } from '@angular/http';
 import { GenieSDKServiceProvider } from 'sunbird';
 import { FrameworkModule } from "sunbird";
 import { IonicImageLoader } from "ionic-image-loader";
-
 import { ComponentsModule } from "../../component/components.module";
+import { Ionic2RatingModule } from "ionic2-rating";
+
+import { DirectivesModule } from './../../directives/directives.module';
+import { CourseBatchesComponent } from './course-batches/course-batches';
+import { CourseDetailComponent } from './course-detail/course-detail';
 
 @NgModule({
-  declarations: [
+  declarations: [ 
     CoursesPage,
-    // CourseCard,
     CourseDetailComponent,
-    CourseBatchesComponent
+    CourseBatchesComponent,
+    ParentDetailsComponent
   ],
-  entryComponents: [CourseDetailComponent, CourseBatchesComponent],
+  entryComponents: [CourseDetailComponent, CourseBatchesComponent, ParentDetailsComponent],
   imports: [
     IonicPageModule.forChild(CoursesPage),
     TranslateModule.forChild(),
     HttpModule,
-    HttpClientModule,
     ComponentsModule,
     FrameworkModule,
-    IonicImageLoader
+    IonicImageLoader,
+    DirectivesModule,
+    Ionic2RatingModule
   ],
-  providers: [HttpClient, GenieSDKServiceProvider],
+  providers: [GenieSDKServiceProvider],
   exports: [
     CoursesPage
   ]

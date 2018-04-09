@@ -3,7 +3,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { IonicApp, IonicModule, IonicErrorHandler, Events, NavController } from 'ionic-angular';
 import { MyApp } from './app.component';
 import { StatusBar } from '@ionic-native/status-bar';
-import { SplashScreen } from '@ionic-native/splash-screen';
 import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClientModule, HttpClient } from "@angular/common/http";
@@ -22,6 +21,7 @@ import { UniqueDeviceID } from '@ionic-native/unique-device-id';
 import { AppVersion } from '@ionic-native/app-version';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { IonicImageLoader, ImageLoader, ImageLoaderConfig } from "ionic-image-loader";
+import { FilePath } from '@ionic-native/file-path';
 
 @NgModule({
   declarations: [
@@ -53,7 +53,6 @@ import { IonicImageLoader, ImageLoader, ImageLoaderConfig } from "ionic-image-lo
   ],
   providers: [
     StatusBar,
-    SplashScreen,
     HTTP,
     File,
     Globalization,
@@ -61,6 +60,7 @@ import { IonicImageLoader, ImageLoader, ImageLoaderConfig } from "ionic-image-lo
     AppVersion,
     SocialSharing,
     ImageLoader,
+    FilePath,
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })

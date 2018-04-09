@@ -17,14 +17,15 @@
     </ion-row>
     <ion-row class="bottom-container" no-padding>
       <ion-col col-8 *ngIf="layoutName === 'Popular'">
-        <rating [(ngModel)]="rate" readOnly="true" max="5" no-padding></rating>
-        <ion-label class="size_txt" no-margin>Size 180KB</ion-label>
+        <rating [(ngModel)]="course.progress" readOnly="true" max="5" no-padding></rating>
+        <ion-label class="size_txt" no-margin *ngIf="course.size">Size 230KB</ion-label>
       </ion-col>
       <ion-col col-8 *ngIf="layoutName === 'Inprogress'" style="padding-top: 8px;">
         Completed: {{course.progress}} %
       </ion-col>
       <ion-col col-4>
-        <button ion-button outline small float-end (click)="navigateToCourseDetailPage(course.contentId || course.identifier, layoutName);">{{layoutName === 'Inprogress' ? 'RESUME' : 'OPEN' }}</button>
+        <button ion-button outline small float-end 
+          (click)="navigateToCourseDetailPage(layoutName, course);">{{layoutName === 'Inprogress' ? 'RESUME' : 'OPEN' }}</button>
       </ion-col>
     </ion-row>
   </ion-grid>

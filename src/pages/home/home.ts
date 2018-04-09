@@ -1,13 +1,18 @@
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { NavController, Events } from 'ionic-angular';
-import { TelemetryService,
+import { Storage } from "@ionic/storage";
+import {
+  TelemetryService,
   Impression,
   FrameworkModule,
   ContentImport,
   ContentImportRequest,
-  ContentService
+  ContentService,
+  UserProfileService,
+  TenantInfoRequest
 } from 'sunbird';
 
+const KEY_SUNBIRD_SUPPORT_FILE_PATH = "sunbird_support_file_path";
 
 @Component({
   selector: 'page-home',
@@ -17,8 +22,15 @@ import { TelemetryService,
 })
 export class HomePage {
 
+  logo: string = "assets/imgs/ic_logo.png";
+
   constructor(public navCtrl: NavController,
-    private telemetryService: TelemetryService, private contentService: ContentService, private events: Events) {
+    private telemetryService: TelemetryService,
+    private contentService: ContentService,
+    private events: Events,
+    private ngZone: NgZone,
+    private userProfileService: UserProfileService,
+    private storage: Storage) {
 
     this.events.subscribe('genie.event', (response) => {
       console.log("Result " + response);
@@ -27,10 +39,35 @@ export class HomePage {
   }
 
   ionViewDidLoad() {
-    let impression = new Impression();
-    impression.type = "view";
-    impression.pageId = "ionic_sunbird";
-    this.telemetryService.impression(impression);
+    // let impression = new Impression();
+    // impression.type = "view";
+    // impression.pageId = "ionic_sunbird";
+    // this.telemetryService.impression(impression);
+    this.refreshTenantData();
+    (<any>window).supportfile.makeEntryInSunbirdSupportFile((result) => {
+      console.log("Result - " + JSON.parse(result));
+      this.storage.set(KEY_SUNBIRD_SUPPORT_FILE_PATH, JSON.parse(result));
+    }, (error) => {
+      console.log("Error - " + error);
+    });
+  }
+
+  refreshTenantData() {
+    let request = new TenantInfoRequest();
+    request.refreshTenantInfo = true;
+    request.slug = "sunbird";
+    this.userProfileService.getTenantInfo(
+      request,
+      res => {
+        this.ngZone.run(() => {
+          let r = JSON.parse(res);
+          this.logo = r["logo"];
+        });
+      },
+      error => {
+
+      }
+    );
   }
 
   onSyncClick() {

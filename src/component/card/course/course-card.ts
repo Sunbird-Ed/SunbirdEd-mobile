@@ -20,7 +20,7 @@ export class CourseCard {
   /**
    * Contains layout name
    *
-   * @example layoutName = Inprogress / popular
+   * @example layoutName = Inprogress / popular 
    */
   @Input() layoutName: string;
 
@@ -31,10 +31,10 @@ export class CourseCard {
    */
   defaultImg: string;
 
-  rate: string = "4";
-
   /**
    * Default method of class CourseCard
+   * 
+   * @param navCtrl To navigate user from one page to another
    */
   constructor(public navCtrl: NavController) {
     this.defaultImg = 'assets/imgs/ic_action_course.png';
@@ -43,10 +43,15 @@ export class CourseCard {
   /**
    * Navigate to the course/content details page
    * 
-   * @param {string} id content identifier
+   * @param {string} layoutName 
+   * @param {object} content 
    */
-  navigateToCourseDetailPage(id: string, layoutName: string): void {
-    this.navCtrl.push(CourseDetailComponent, { identifier: id, layoutType: layoutName });
+  navigateToCourseDetailPage(layoutName: string, content): void {
+    console.log('card info...', content);
+    this.navCtrl.push(CourseDetailComponent, {
+      layoutType: layoutName,
+      content: content
+    });
   }
 
   onImageLoad(imgLoader: ImageLoader) {

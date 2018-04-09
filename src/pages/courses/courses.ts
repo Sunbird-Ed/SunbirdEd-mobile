@@ -1,8 +1,7 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { NavController, Platform } from 'ionic-angular';
 import { IonicPage } from 'ionic-angular';
-import { HttpClient } from '@angular/common/http';
-import { CourseService, AuthService, EnrolledCoursesRequest, ContentService, PageAssembleService, PageAssembleCriteria } from 'sunbird';
+import { CourseService, AuthService, EnrolledCoursesRequest, PageAssembleService, PageAssembleCriteria } from 'sunbird';
 import { CourseCard } from './../../component/card/course/course-card';
 import { DocumentDirection } from 'ionic-angular/platform/platform';
 
@@ -34,9 +33,9 @@ export class CoursesPage implements OnInit {
   showLoader: boolean;
 
   /**
-   * Http service to make api call
+   * Style
    */
-  public http: HttpClient;
+  currentStyle = "ltr";
 
   /**
    * Course service to get enrolled courses
@@ -44,25 +43,48 @@ export class CoursesPage implements OnInit {
   public courseService: CourseService;
 
   /**
-   * Auth service to get user id
+   * Auth service to get user id.
    */
   public authService: AuthService;
 
-  currentStyle = "ltr";
+  /**
+   * Contains reference of ionic nav controller
+   */
+  public navCtrl: NavController;
+
+  /**
+   * Contains reference of ionic platform
+   */
+  public platform: Platform;
+
+  /**
+   * Contains reference of page api service
+   */
+  public pageService: PageAssembleService;
+
+  /**
+   * Contains reference of page api service
+   */
+  public ngZone: NgZone;
 
   /**
    * Default method of class CoursesPage
-   *
-   * @param {NavController} navCtrl Reference of nav controller to navigate user from one page to another
-   * @param {HttpClient} http Reference of http client service to make api call
+   * 
+   * @param {NavController} navCtrl To navigate user from one page to another
+   * @param {CourseService} courseService Service to get enrolled courses
+   * @param {AuthService} authService To get logged-in user data
+   * @param {Platform} platform Ionic platform
+   * @param {PageAssembleService} pageService Service to get latest and popular courses
+   * @param {NgZone} ngZone To bind data
    */
-  constructor(public navCtrl: NavController, http: HttpClient, courseService: CourseService, authService: AuthService,
-    private contentService: ContentService, public platform: Platform, private pageService: PageAssembleService, private ngZone: NgZone) {
-    this.http = http;
+  constructor(navCtrl: NavController, courseService: CourseService, authService: AuthService, platform: Platform,
+    pageService: PageAssembleService, ngZone: NgZone) {
+    this.navCtrl = navCtrl;
     this.courseService = courseService;
     this.authService = authService;
-    // TODO: remove this hardcodec id before pushing the code
-    this.userId = '659b011a-06ec-4107-84ad-955e16b0a48a';
+    this.platform = platform;
+    this.pageService = pageService;
+    this.ngZone = ngZone;
   }
 
   /**
@@ -80,7 +102,7 @@ export class CoursesPage implements OnInit {
       if (data) {
         data = JSON.parse(data);
         this.enrolledCourse = data.result.courses ? data.result.courses : [];
-        console.log('this mmmmmmmmm enrolledCourse', this.enrolledCourse);
+        console.log('enrolled courses details', data);
 
         this.spinner(false);
       }
@@ -108,7 +130,7 @@ export class CoursesPage implements OnInit {
           newSections.push(element);
         });
         this.popularAndLatestCourses = newSections;
-        console.log('this mmmmmmmmm', this.popularAndLatestCourses);
+        console.log('Popular courses', this.popularAndLatestCourses);
       });
     }, (error: string) => {
       console.log('Page assmble error', error);
@@ -116,10 +138,29 @@ export class CoursesPage implements OnInit {
   }
 
   /**
-   * To start and stop loader
+   * To start / stop spinner
    */
   spinner(flag: boolean) {
-    this.showLoader = flag;
+    this.ngZone.run(() => {
+      this.showLoader = flag;
+    });
+  }
+
+  /**
+   * Get user id. 
+   * 
+   * Used to get enrolled course(s) of logged-in user
+   */
+  getUserId(): void {
+    this.authService.getSessionData((session) => {
+      if (session === undefined || session == null) {
+        console.log('session expired')
+      } else {
+        let sessionObj = JSON.parse(session);
+        this.userId = sessionObj["userToken"];
+        this.getEnrolledCourses();
+      }
+    });
   }
 
   /**
@@ -128,10 +169,13 @@ export class CoursesPage implements OnInit {
   ngOnInit() {
     console.log('courses component initialized...');
     this.spinner(true);
-    this.getEnrolledCourses();
+    this.getUserId();
     this.getPopularAndLatestCourses();
   }
 
+  /**
+   * Change language / direction
+   */
   changeLanguage(event) {
     if (this.currentStyle === "ltr") {
       this.currentStyle = "rtl";

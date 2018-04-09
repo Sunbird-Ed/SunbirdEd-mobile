@@ -10,38 +10,66 @@
 <ion-content padding>
   <div class="content-details-holder" *ngIf="contentDetail">
     <h4>{{contentDetail.name}}</h4>
-    <p>{{contentDetail.description}}</p>
-
+    <p *ngIf="layoutName === 'Popular'" [readMore]="contentDetail.description" [length]="80" [showMoreText]="'READ_MORE' | translate"
+      [showLessText]="'READ_LESS' | translate">{{contentDetail.description}}</p>
+    <div class="progress-section" *ngIf="layoutName === 'Inprogress'">
+      <p>Your progress: {{cardData.progress ? cardData.progress : '0'}} % </p>
+      <rating [ngModel]="0" readOnly="true" max="5" no-padding></rating>
+    </div>
+    <br/>
     <div class="about-section">
-      <h4 class="padding-10 background-gray">About</h4>
-      <p padding>{{contentDetail.description}}</p>
-      <div *ngIf="contentDetail.gradeLevel && contentDetail.gradeLevel.length">
+      <h4 class="padding-10 background-gray">{{ 'ABOUT' | translate }}</h4>
+      <p>{{contentDetail.description}}</p>
+      <div *ngIf="contentDetail.gradeLevel && contentDetail.gradeLevel.length" margin-top>
         <div>GRADE:</div>
         <span *ngFor="let grade of contentDetail.gradeLevel">
           <span>{{grade}}</span>
         </span>
       </div>
-      <div *ngIf="contentDetail.subject">
+      <div *ngIf="contentDetail.subject" margin-top>
         <div>SUBJECT:</div>
         <span>{{contentDetail.subject}}</span>
       </div>
     </div>
-
-    <div class="structure-section">
+    <!-- Course structure section -->
+    <div class="structure-section" margin-top>
       <h4 class="padding-10 background-gray">Structure</h4>
-      <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
-      <ion-item>
-        <span ion-text>Example one</span>
-      </ion-item>
-      <ion-item>
-        <span ion-text>Example two</span>
-      </ion-item>
+      <div *ngIf="contentDetail.contentTypesCount">
+        <span *ngFor="let structure of objectKeys(contentDetail.contentTypesCount)">
+          {{contentDetail.contentTypesCount[structure] + ' ' + structure}}
+        </span>
+      </div>
+      <div *ngIf="childrenData && childrenData.children" padding-top>
+        <ion-item *ngFor="let item of childrenData.children; let i = index" style="padding-left: 0px;">
+          <span [ngSwitch]="layoutName">
+            <span *ngSwitchCase="'Inprogress'" (click)="navigateToChildrenDetailsPage(item, i + 1);">
+              <span ion-text>{{ (i) + (1) }}: {{ item.contentData.name }}</span>
+              <ion-icon name="ios-arrow-forward" float-end></ion-icon>
+            </span>
+            <span *ngSwitchCase="'Popular'">
+              <span ion-text>{{ (i) + (1) }}: {{ item.contentData.name }}</span>
+            </span>
+          </span>
+        </ion-item>
+      </div>
+      <!-- Import content loader -->
+      <div *ngIf="showChildrenLoader">
+        <ion-row style="padding-top: 30px;" padding>
+          <ion-col text-center>
+            <p>Fetching content {{ downloadProgress ? downloadProgress : '' }}</p>
+            <ion-spinner padding></ion-spinner>
+          </ion-col>
+        </ion-row>
+      </div>
+      <!-- End import content -->
     </div>
   </div>
 </ion-content>
 <!-- Page footer -->
 <ion-footer>
   <ion-toolbar padding>
-    <button ion-button block (click)="navigateToBatchListPage('');">ENROLL IN COURSE</button>
+    <button ion-button block (click)="navigateToBatchListPage('');" *ngIf="layoutName === 'Popular'">ENROLL IN COURSE</button>
+    <button ion-button block *ngIf="layoutName === 'Inprogress'" [disabled]="true">START</button>
+    <!-- <button ion-button block (click)="navigateToBatchListPage('');" *ngIf="layoutName === 'Inprogress'">DOWNLOAD ALL</button> -->
   </ion-toolbar>
 </ion-footer>

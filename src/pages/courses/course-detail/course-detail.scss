@@ -6,21 +6,34 @@ course-detail {
         background: #efeff4;
     }
 
-.scroll{
-    position:absolute !important;
-    top:0 !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    overflow:scroll !important;
-      
+    .scroll{
+        position:absolute !important;
+        top:0 !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        overflow:scroll !important;
     }
-    
-    
+
     .item-divider{
         position: -webkit-sticky !important;
         position: sticky !important;
         top: 0px;
         z-index: 3 !important;
     }
+
+    ul {
+        padding: 0px;
+        margin: 0px;
+  
+        &.rating li {
+          padding: 1px 1px !important;
+          background: none;
+          color: map-get($colors, primary);
+  
+          ion-icon {
+            font-size: 16px;
+          }
+        }
+      }
 }

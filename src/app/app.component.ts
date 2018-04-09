@@ -1,7 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { Platform, ModalController, AlertController, NavController, ViewController, Nav } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
-import { SplashScreen } from '@ionic-native/splash-screen';
 import { TabsPage, AuthService, ContainerService } from "sunbird";
 import { initGuestTabs, initUserTabs } from './module.service';
 import { Storage } from "@ionic/storage";
@@ -18,7 +17,6 @@ export class MyApp {
   rootPage: any;
 
   constructor(platform: Platform, statusBar: StatusBar,
-    splashScreen: SplashScreen,
     private modalCtrl: ModalController,
     private alertCtrl: AlertController,
     private authService: AuthService,
@@ -44,7 +42,7 @@ export class MyApp {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
       statusBar.styleDefault();
-      splashScreen.hide();
+      (<any>window).splashscreen.hide();
 
       window["thisRef"] = this;
       try {
