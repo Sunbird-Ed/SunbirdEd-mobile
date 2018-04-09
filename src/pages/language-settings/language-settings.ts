@@ -16,6 +16,7 @@ import { SettingsPage } from '../settings/settings';
  * Ionic pages and navigation.
  */
 
+const KEY_SELECTED_LANGUAGE_CODE = "selected_language_code";
 const KEY_SELECTED_LANGUAGE = "selected_language";
 const KEY_USER_ONBOARDED = "user_onboarded";
 const KEY_USER_LOGIN_MODE = "user_login_mode";
@@ -71,7 +72,7 @@ export class LanguageSettingsPage {
       }
     ];
 
-    this.storage.get(KEY_SELECTED_LANGUAGE)
+    this.storage.get(KEY_SELECTED_LANGUAGE_CODE)
       .then(val => {
         if (val === undefined || val === "" || val === null) {
           console.error("Language not set");
@@ -138,6 +139,7 @@ export class LanguageSettingsPage {
   onLanguageSelected() {
     console.log("language selected : " + this.language);
     let selectedLanguage = this.languages.find(i => i.code === this.language)
+    this.storage.set(KEY_SELECTED_LANGUAGE_CODE, selectedLanguage.code)
     this.storage.set(KEY_SELECTED_LANGUAGE, selectedLanguage.label)
   }
 

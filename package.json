@@ -49,11 +49,7 @@
     "@ionic/storage": "^2.1.3",
     "@ngx-translate/core": "^9.1.1",
     "@ngx-translate/http-loader": "^2.0.1",
-<<<<<<< Updated upstream
     "cordova-android": "7.0.0",
-=======
-    "cordova-android": "6.3.0",
->>>>>>> Stashed changes
     "cordova-custom-config": "^5.0.2",
     "cordovandroida-hot-code-push-plugin": "^1.5.3",
     "cordova-plugin-advanced-http": "^1.11.1",
@@ -67,16 +63,9 @@
     "cordova-plugin-file-transfer": "^1.7.1",
     "cordova-plugin-genie-sdk": "file:../ext-framework/cordova-plugins/cordova-plugin-imagechooser",
     "cordova-plugin-globalization": "^1.0.9",
-<<<<<<< Updated upstream
-    "cordova-plugin-imagechooser": "../ext-framework/cordova-plugins/cordova-plugin-imagechooser",
-    "cordova-plugin-inappbrowser": "^2.0.2",
-    "cordova-plugin-ionic-webview": "^1.1.19",
-    "cordova-plugin-qr-scanner": "file:../ext-framework/cordova-plugins/cordova-plugin-qr-scanner",
-=======
     "cordova-plugin-imagechooser": "/home/shriharsh/VisualStudioProjects/ext-framework/cordova-plugins/cordova-plugin-imagechooser",
     "cordova-plugin-inappbrowser": "^2.0.2",
     "cordova-plugin-ionic-webview": "^1.1.19",
->>>>>>> Stashed changes
     "cordova-plugin-sunbirdsplash": "file:../ext-framework/cordova-plugins/cordova-plugin-sunbirdsplash",
     "cordova-plugin-uniquedeviceid": "^1.3.2",
     "cordova-plugin-whitelist": "^1.3.3",
@@ -144,11 +133,7 @@
       "cordova-plugin-genie-sdk": {},
       "cordova-plugin-imagechooser": {},
       "cordova-plugin-sunbirdsplash": {},
-<<<<<<< Updated upstream
-      "cordova-plugin-qr-scanner": {}
-=======
       "cordova-plugin-file-support": {}
->>>>>>> Stashed changes
     },
     "platforms": [
       "android"
