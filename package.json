@@ -63,9 +63,10 @@
     "cordova-plugin-file-transfer": "^1.7.1",
     "cordova-plugin-genie-sdk": "file:../ext-framework/cordova-plugins/cordova-plugin-imagechooser",
     "cordova-plugin-globalization": "^1.0.9",
-    "cordova-plugin-imagechooser": "/home/shriharsh/VisualStudioProjects/ext-framework/cordova-plugins/cordova-plugin-imagechooser",
+    "cordova-plugin-imagechooser": "../ext-framework/cordova-plugins/cordova-plugin-imagechooser",
     "cordova-plugin-inappbrowser": "^2.0.2",
     "cordova-plugin-ionic-webview": "^1.1.19",
+    "cordova-plugin-qr-scanner": "file:../ext-framework/cordova-plugins/cordova-plugin-qr-scanner",
     "cordova-plugin-sunbirdsplash": "file:../ext-framework/cordova-plugins/cordova-plugin-sunbirdsplash",
     "cordova-plugin-uniquedeviceid": "^1.3.2",
     "cordova-plugin-whitelist": "^1.3.3",
@@ -133,6 +134,7 @@
       "cordova-plugin-genie-sdk": {},
       "cordova-plugin-imagechooser": {},
       "cordova-plugin-sunbirdsplash": {},
+      "cordova-plugin-qr-scanner": {},
       "cordova-plugin-file-support": {}
     },
     "platforms": [
