@@ -88,6 +88,11 @@ export class CourseDetailComponent {
    */
   contentDownloadSize: string;
 
+  downloadObject: { totalCount: number, currentCount: 0 };
+  showDownloadProgress: boolean;
+  totalDownload: number;
+  currentCount: number;
+
   /**
    * Contains reference of content service
    */
@@ -148,7 +153,7 @@ export class CourseDetailComponent {
           this.contentDetail = data.result.contentData ? data.result.contentData : [];
           this.contentDetail.contentTypesCount = this.contentDetail.contentTypesCount ? JSON.parse(this.contentDetail.contentTypesCount) : '';
           if (data.result.isAvailableLocally === false) {
-            this.importContent(this.identifier);
+            this.importContent([this.identifier], false);
           } else {
             this.getChildContents();
           }
@@ -195,24 +200,32 @@ export class CourseDetailComponent {
     toast.present();
   }
 
+
+  buildImportContentReq(identifiers, isChild: boolean) {
+    let reqBody = []
+    _.forEach(identifiers, (value, key) => {
+      reqBody.push({
+        isChildContent: isChild,
+        destinationFolder: '/storage/emulated/0/Android/data/org.sunbird.app/files',
+        contentId: value,
+        correlationData: []
+      })
+    });
+
+    console.log('reqbody', reqBody);
+    return reqBody;
+  }
+
   /**
    * To import content
    */
-  importContent(identifiers): void {
-    console.log('importing content ==> ');
+  importContent(identifiers, isChild: boolean | false): void {
+    console.log('importing content ==> ', identifiers);
     this.showChildrenLoader = true;
     const option = {
-      contentImportMap: {
-        [0]: {
-          isChildContent: false,
-          destinationFolder: '/storage/emulated/0/Android/data/org.sunbird.app/files',
-          contentId: identifiers,
-          correlationData: []
-        }
-      },
+      contentImportMap: _.extend({}, this.buildImportContentReq(identifiers, isChild)),
       contentStatusArray: []
     }
-
     // Call content service
     this.contentService.importContent(option, (data: any) => {
       data = JSON.parse(data);
@@ -235,7 +248,7 @@ export class CourseDetailComponent {
    * Get child contents
    */
   getChildContents(): void {
-    console.log('import child content')
+    console.log('import child content');
     this.showChildrenLoader = true;
     const option = {
       contentId: this.identifier,
@@ -272,6 +285,8 @@ export class CourseDetailComponent {
       });
       this.contentDownloadSize = this.getFileSize(size);
     });
+
+    console.log('download content identifiers', this.downloadableIdentifiers);
   }
 
   /**
@@ -294,12 +309,23 @@ export class CourseDetailComponent {
       this.zone.run(() => {
         data = JSON.parse(data);
         let res = data;
+        console.log('event bus........', res);
         // Show download percentage
         if (res.type === 'downloadProgress' && res.data.downloadProgress) {
           this.downloadProgress = res.data.downloadProgress + ' %';
         }
+
+        if (this.downloadableIdentifiers.length && res.type === 'contentImportProgress') {
+          this.zone.run(() => {
+          this.showDownloadProgress = true;
+          this.totalDownload = res.data.totalCount;
+          this.currentCount = res.data.currentCount;
+          console.log('totalDownload', this.totalDownload)
+          })
+        }
+
         // Get child content
-        if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
+        if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport' && this.downloadableIdentifiers.length === 0) {
           this.getChildContents();
         }
       });
