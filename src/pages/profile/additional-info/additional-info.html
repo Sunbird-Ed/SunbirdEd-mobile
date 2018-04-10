@@ -9,8 +9,7 @@
 <ion-content padding>
   <form [formGroup]="additionalInfoForm" class="form" (ngSubmit)="onSubmit($event)">
     <ion-item>
-      <ion-label stacked text-capitalize>{{ 'NAME' | translate }} </ion-label>
-      <span ion-text color="danger">&nbsp;*</span>
+      <ion-label stacked text-capitalize>{{ 'NAME' | translate }} <span ion-text color="danger">&nbsp;*</span></ion-label>
       <ion-input formControlName="firstName" placeholder="{{'NAME_HINT' | translate }}"></ion-input>
     </ion-item>
 
@@ -20,20 +19,23 @@
     </ion-item>
 
     <ion-item>
-      <ion-label stacked text-capitalize>{{'LANGUAGES' | translate }}</ion-label>
+      <ion-label stacked text-capitalize>{{'LANGUAGES' | translate }} <span ion-text color="danger">&nbsp;*</span></ion-label>
       <ion-select formControlName="languages" multiple="true" interface="popover" placeholder="{{'SELECT' | translate }}">
           <ion-option *ngFor="let lang of languageList" text-capitalize value="{{lang}}">{{lang}}</ion-option>
       </ion-select>
+      <ion-icon name="lock" small item-right></ion-icon>
     </ion-item>
 
     <ion-item>
       <ion-label stacked>{{'EMAIL_ID' | translate }}</ion-label>
       <ion-input formControlName="emailId" placeholder="{{'ERROR_EMPTY_EMAIL' | translate }}" type="email"></ion-input>
+      <ion-icon name="lock" small item-right></ion-icon>
     </ion-item>
 
     <ion-item>
-      <ion-label stacked>{{'PHONE' | translate }}</ion-label>
+      <ion-label stacked>{{'PHONE' | translate }} <span ion-text color="danger">&nbsp;*</span></ion-label>
       <ion-input formControlName="phone" placeholder="{{'ERROR_EMPTY_MOBILE' | translate }}" type="number"></ion-input>
+      <ion-icon name="lock" small item-right></ion-icon>
     </ion-item>
 
     <ion-item>
@@ -55,11 +57,13 @@
         <ion-option value="Female">Female</ion-option>
         <ion-option value="Transgender">Transgender</ion-option>
       </ion-select>
+      <ion-icon name="lock" small item-right></ion-icon>
     </ion-item>
 
     <ion-item>
       <ion-label stacked>{{'DATE_OF_BIRTH' | translate }}</ion-label>
       <ion-datetime formControlName="dob" displayFormat="MM/DD/YYYY"></ion-datetime>
+      <ion-icon name="lock" small item-right></ion-icon>
     </ion-item>
 
     <ion-item>
@@ -67,32 +71,35 @@
       <ion-select formControlName="grade" multiple="true" interface="popover" placeholder="{{'SELECT' | translate }}">
           <ion-option *ngFor="let grade of gradeList" text-capitalize value="{{grade}}">{{grade}}</ion-option>
       </ion-select>
+      <ion-icon name="lock" small item-right></ion-icon>
     </ion-item>
 
     <ion-item>
       <ion-label stacked>{{'CURRENT_LOCATION' | translate }}</ion-label>
-      <ion-input formControlName="currentLoc" placeholder="optional"></ion-input>
+      <ion-input formControlName="currentLoc" placeholder="{{'OPTIONAL' | translate}}"></ion-input>
+      <ion-icon name="lock" small item-right></ion-icon>
     </ion-item>
 
-    <ion-label stacked>SOCIAL MEDIA LINKS</ion-label>
+    <ion-label stacked>{{'SOCIAL' | translate}}</ion-label>
+    <ion-icon name="lock" small item-right></ion-icon>
     <ion-item>
       <ion-label stacked>{{'FACEBOOK' | translate }}</ion-label>
-      <ion-input formControlName="facebookLink" placeholder="optional" type="url"></ion-input>
+      <ion-input formControlName="facebookLink" placeholder="{{'OPTIONAL' | translate}}" type="url"></ion-input>
     </ion-item>
 
     <ion-item>
       <ion-label stacked>{{'TWITTER' | translate }}</ion-label>
-      <ion-input formControlName="twitterLink" placeholder="optional" type="url"></ion-input>
+      <ion-input formControlName="twitterLink" placeholder="{{'OPTIONAL' | translate}}" type="url"></ion-input>
     </ion-item>
 
     <ion-item>
       <ion-label stacked>{{'LINKEDIN' | translate }}</ion-label>
-      <ion-input formControlName="linkedInLink" placeholder="optional" type="url"></ion-input>
+      <ion-input formControlName="linkedInLink" placeholder="{{'OPTIONAL' | translate}}" type="url"></ion-input>
     </ion-item>
 
     <ion-item>
       <ion-label stacked>{{'BLOG' | translate }}</ion-label>
-      <ion-input formControlName="blogLink" placeholder="optional" type="url"></ion-input>
+      <ion-input formControlName="blogLink" placeholder="{{'OPTIONAL' | translate}}" type="url"></ion-input>
     </ion-item>
 
     <ion-item>

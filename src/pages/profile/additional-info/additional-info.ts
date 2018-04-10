@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavController, NavParams } from 'ionic-angular';
 
 import { UserProfileService } from 'sunbird';
+import { ProfilePage } from './../profile';
+
 @Component({
   selector: 'additional-info',
   templateUrl: 'additional-info.html'
@@ -45,7 +47,7 @@ export class AdditionalInfoComponent {
       lastName: [this.profile.lastName ? this.profile.lastName : ''],
       languages: [this.profile.language ? this.profile.language : [], Validators.required],
       emailId: [this.profile.email ? this.profile.email : ''],
-      phone: [this.profile.phone ? this.profile.phone : '', Validators.required],
+      phone: [this.profile.phone ? this.profile.phone : '', [Validators.required, Validators.minLength(8)]],
       description: [this.profile.profileSummary ? this.profile.profileSummary : ''],
       subjects: [this.profile.subject ? this.profile.subject : []],
       gender: [this.profile.gender ? this.profile.gender : ''],
@@ -100,6 +102,7 @@ export class AdditionalInfoComponent {
     this.userProfileService.updateUserInfo(req,
       res => {
         console.log("Response", res);
+        this.navCtrl.setRoot(ProfilePage);
       },
       err => {
         console.log("Error", err);

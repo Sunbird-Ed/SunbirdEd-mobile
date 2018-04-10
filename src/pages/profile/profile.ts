@@ -20,7 +20,7 @@ import { OverflowMenuComponent } from "./overflowmenu/menu.overflow.component";
 import { UserSearchComponent } from "./user-search/user-search";
 import { ImagePicker } from "./imagepicker/imagepicker";
 
-/**
+/*
  * The Profile page
  */
 @Component({
@@ -28,11 +28,11 @@ import { ImagePicker } from "./imagepicker/imagepicker";
   templateUrl: "profile.html"
 })
 export class ProfilePage {
-  /**
+  /*
    * Contains Profile Object
    */
   profile: any = {};
-  /**
+  /*
    * Contains userId for the Profile
    */
   userId: number = 0;
@@ -45,7 +45,7 @@ export class ProfilePage {
   subjects: string;
   grades: string;
 
-  /**
+  /*
    * Contains paths to icons
    */
   imageUri: string = "assets/imgs/ic_profile_default.png";
@@ -57,12 +57,11 @@ export class ProfilePage {
     "SETTINGS",
     "SIGN_OUT"
   ];
-  profileCompletionText: string = "Your profile is {c}% completed";
-  sunbird: string = "Sunbird";
   uncompletedDetails: any = {
     title: ""
   };
 
+  /* Social Media Links */
   fbLink: string = "";
   twitterLink: string = "";
   linkedInLink: string = "";
@@ -109,9 +108,8 @@ export class ProfilePage {
       });
   }
 
-  /* 
+  /*
   * To reset Profile Before calling new fresh API for Profile
-  * 
   */
   resetProfile() {
     this.profile = {};
@@ -121,9 +119,8 @@ export class ProfilePage {
     this.grades = "";
   }
 
-  /* 
+  /*
   * To refresh Profile data on pull to refresh or on click on the profile
-  * 
   */
   refreshProfileData() {
     return new Promise((resolve, reject) => {
@@ -181,17 +178,15 @@ export class ProfilePage {
     });
   }
 
-  /* 
+  /*
   * Method to convert Array to Comma separated string
-  * 
   */
   arrayToString(stringArray) {
     return stringArray.join(", ");
   }
 
-  /* 
+  /*
   * To Format the missing fields and gives it proper name based on missing field
-  * 
   */
   formatMissingFields() {
     if (this.profile.missingFields && this.profile.missingFields.length) {
@@ -263,9 +258,8 @@ export class ProfilePage {
     this.profileProgress = String(this.profile.completeness);
   }
 
-  /* 
+  /*
   * Redirects to the Education form and passes current form data if available
-  * 
   */
   editEduDetails(isNewForm, formDetails) {
     this.navCtrl.push(FormEducation, {
@@ -274,9 +268,8 @@ export class ProfilePage {
     });
   }
 
-  /* 
+  /*
   * Redirects to the Address form and passes current form data if available
-  * 
   */
   editAddress(isNewForm, addressDetails) {
     this.navCtrl.push(FormAddress, {
@@ -285,17 +278,15 @@ export class ProfilePage {
     });
   }
 
-  /* 
+  /*
   * Redirects to the Add Skill page
-  * 
   */
   addSkillTags() {
     this.navCtrl.push(SkillTagsComponent);
   }
 
-  /* 
+  /*
   * Calls Endorse skill API and update the count of Skill endorsement
-  * 
   */
   endorseSkill(num) {
     this.profile.skills[num].endorsementcount += 1;
@@ -324,6 +315,9 @@ export class ProfilePage {
     });
   }
 
+  /*
+  * Shows the pop up with current Image or open camera instead.
+  */
   editPicture() {
     // this.cameraService.getPicture().then((imageData) => {
     //   this.imageUri = imageData;
@@ -336,6 +330,9 @@ export class ProfilePage {
     popover.present();
   }
 
+  /*
+  * Open up the experience form in edit mode
+  */
   editExperience(isNewForm, jobInfo) {
     this.navCtrl.push(FormExperience, {
       addForm: isNewForm,
@@ -343,6 +340,9 @@ export class ProfilePage {
     });
   }
 
+  /*
+  * Open up the Additional Information form in edit mode
+  */
   editAdditionalInfo() {
     this.navCtrl.push(AdditionalInfoComponent, {
       userId: this.loggedInUserId,
@@ -350,11 +350,18 @@ export class ProfilePage {
     });
   }
 
+  /*
+  * To Toggle the lock
+  *  */
   toggleLock(field) {
     this.profile.profileVisibility[field] =
       this.profile.profileVisibility[field] == "private" ? "public" : "private";
     this.setProfileVisibility(field);
   }
+
+  /*
+  * To set Profile visibility
+  */
   setProfileVisibility(field) {
     this.authService.getSessionData(session => {
       if (session === undefined || session == null) {
@@ -380,6 +387,9 @@ export class ProfilePage {
     });
   }
 
+  /*
+  * To show popover menu
+  */
   showOverflowMenu(event) {
     let popover = this.popoverCtrl.create(OverflowMenuComponent, {
       list: this.list
@@ -397,7 +407,7 @@ export class ProfilePage {
     }
   }
 
-  /**
+  /*
    * To get enrolled course(s) of logged-in user.
    *
    * It internally calls course handler of genie sdk
@@ -416,7 +426,6 @@ export class ProfilePage {
           data.result.courses
             ? data.result.courses.forEach(element => {
                 if(element.addedBy === this.loggedInUserId) {
-                    console.log("This", this);
                     this.enrolledCourse.push(element);
                 }
             })
@@ -430,13 +439,24 @@ export class ProfilePage {
     );
   }
 
+  /*
+  * Navigates to User Search Page
+  */
   gotoSearchPage() {
     this.navCtrl.push(UserSearchComponent);
   }
 
+  /*
+  * To show more Items in skills list
+  */
   showMoreItems() {
     this.paginationLimit = this.profile.skills.length;
   }
+
+  /*
+  * To show Less items in skills list
+  * DEFAULT_PAGINATION_LIMIT = 10
+  *  */
   showLessItems() {
     this.paginationLimit = this.DEFAULT_PAGINATION_LIMIT;
   }
