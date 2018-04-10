@@ -34,7 +34,7 @@
 <!-- Page footer -->
 <ion-footer>
   <ion-toolbar padding *ngIf="details">
-    <button ion-button block (click)="downloadContent(details.identifier)" *ngIf="details.contentType === 'Resource' && isAvailableLocally === false">{{ 'DOWNLOAD' | translate }}
+    <button ion-button block (click)="downloadContent(details.identifier)" *ngIf="details.contentType === 'Resource' && isAvailableLocally === false" (click)="downloadContent()">{{ 'DOWNLOAD' | translate }}
     </button>
     <button ion-button block *ngIf="details.contentType === 'Resource' && isAvailableLocally === true" [disabled]="true">{{ 'PLAY' | translate }}
     </button>

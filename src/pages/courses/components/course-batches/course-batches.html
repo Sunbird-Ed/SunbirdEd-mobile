@@ -32,7 +32,7 @@
         </ion-item>
       </ion-list>
 
-      <div *ngIf="ongoingBatches && ongoingBatches.length === 0" style="padding-top: 100px;">
+      <div *ngIf="ongoingBatches && ongoingBatches.length === 0 && !showLoader" style="padding-top: 100px;">
         <div style="padding-top: 30px;" padding>
           <img style="width: 50px; margin-left: 118px;" src="assets/imgs/ic_no_batch.png" />
           <br/>
@@ -51,7 +51,7 @@
           <button ion-button clear item-end (click)="enrollIntoBatch(batch)">ENROLL</button>
         </ion-item>
       </ion-list>
-      <div *ngIf="upcommingBatches && upcommingBatches.length === 0" style="padding-top: 100px;">
+      <div *ngIf="upcommingBatches && upcommingBatches.length === 0 && !showLoader" style="padding-top: 100px;">
         <div style="padding-top: 30px;" padding>
           <img style="width: 50px; margin-left: 118px;" src="assets/imgs/ic_no_batch.png" />
           <br/>

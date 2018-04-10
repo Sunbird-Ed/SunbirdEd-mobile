@@ -9,7 +9,7 @@
 <!-- Page body -->
 <ion-content padding>
   <div class="content-details-holder" *ngIf="contentDetail">
-    <h4>{{contentDetail.name}}</h4>
+    <h6>{{contentDetail.name}}</h6>
     <p *ngIf="layoutName === 'Popular'" [readMore]="contentDetail.description" [length]="80" [showMoreText]="'READ_MORE' | translate"
       [showLessText]="'READ_LESS' | translate">{{contentDetail.description}}</p>
     <div class="progress-section" *ngIf="layoutName === 'Inprogress'">
@@ -18,23 +18,39 @@
     </div>
     <br/>
     <div class="about-section">
-      <h4 class="padding-10 background-gray">{{ 'ABOUT' | translate }}</h4>
-      <p>{{contentDetail.description}}</p>
-      <div *ngIf="contentDetail.gradeLevel && contentDetail.gradeLevel.length" margin-top>
-        <div>GRADE:</div>
-        <span *ngFor="let grade of contentDetail.gradeLevel">
-          <span>{{grade}}</span>
+      <h6 class="padding-10 background-gray">{{ 'ABOUT' | translate }}</h6>
+      <p *ngIf="!showMoreFlag">
+        {{ (contentDetail.description.length > 6) ? (contentDetail.description | slice:0:6) + '...' : (contentDetail.description)
+        }} </p>
+      <div class="course-details" *ngIf="showMoreFlag">
+        <p *ngIf="showMoreFlag && contentDetail.description.length > 6">
+          {{ contentDetail.description }}
+        </p>
+        <div *ngIf="contentDetail.gradeLevel && contentDetail.gradeLevel.length" margin-top>
+          <div>GRADE:</div>
+          <span *ngFor="let grade of contentDetail.gradeLevel">
+            <span>{{grade}}</span>
+          </span>
+        </div>
+        <div *ngIf="contentDetail.subject" margin-top>
+          <div>SUBJECT:</div>
+          <span>{{contentDetail.subject}}</span>
+        </div>
+      </div>
+
+      <span class="read-more" *ngIf="contentDetail.description && contentDetail.description.length > 6" (click)="toggleDetails(showMoreFlag)">
+        <span *ngIf="showMoreFlag">
+          {{ 'READ_LESS' | translate }}<ion-icon name="ios-arrow-up"></ion-icon>
         </span>
-      </div>
-      <div *ngIf="contentDetail.subject" margin-top>
-        <div>SUBJECT:</div>
-        <span>{{contentDetail.subject}}</span>
-      </div>
+        <span *ngIf="!showMoreFlag">
+          {{ 'READ_MORE' | translate }} <ion-icon name="ios-arrow-down"></ion-icon>
+          </span>
+      </span>
     </div>
     <!-- Course structure section -->
     <div class="structure-section" margin-top>
-      <h4 class="padding-10 background-gray">Structure</h4>
-      <div *ngIf="contentDetail.contentTypesCount">
+      <h6 class="padding-10 background-gray">Structure</h6>
+      <div *ngIf="contentDetail.contentTypesCount" padding-top>
         <span *ngFor="let structure of objectKeys(contentDetail.contentTypesCount)">
           {{contentDetail.contentTypesCount[structure] + ' ' + structure}}
         </span>
@@ -69,7 +85,10 @@
 <ion-footer>
   <ion-toolbar padding>
     <button ion-button block (click)="navigateToBatchListPage('');" *ngIf="layoutName === 'Popular'">ENROLL IN COURSE</button>
-    <button ion-button block *ngIf="layoutName === 'Inprogress'" [disabled]="true">START</button>
-    <!-- <button ion-button block (click)="navigateToBatchListPage('');" *ngIf="layoutName === 'Inprogress'">DOWNLOAD ALL</button> -->
+    <button ion-button block *ngIf="layoutName === 'Inprogress' && cardData && !cardData.lastReadContentId">START</button>
+    <button ion-button block *ngIf="layoutName === 'Inprogress' && cardData && cardData.lastReadContentId" (click)="resumeContent(cardData.lastReadContentId)">RESUME</button>
+    <button ion-button block outline *ngIf="downloadableIdentifiers && downloadableIdentifiers.length && !showDownloadProgress" (click)="importContent(downloadableIdentifiers, true)">DOWNLOAD ALL ({{ contentDownloadSize }})</button>
+    <button *ngIf="showDownloadProgress" ion-button block outline [style.width]="downloadProgress" [ngClass]="(currentCount < 100) ? 'progress-inner-primary' : 'progress-inner-secondary'">{{ currentCount }} / {{ totalDownload }}</button>
+
   </ion-toolbar>
 </ion-footer>
