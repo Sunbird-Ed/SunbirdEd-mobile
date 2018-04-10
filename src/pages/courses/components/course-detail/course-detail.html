@@ -86,9 +86,8 @@
   <ion-toolbar padding>
     <button ion-button block (click)="navigateToBatchListPage('');" *ngIf="layoutName === 'Popular'">ENROLL IN COURSE</button>
     <button ion-button block *ngIf="layoutName === 'Inprogress' && cardData && !cardData.lastReadContentId">START</button>
-    <button ion-button block *ngIf="layoutName === 'Inprogress' && cardData && cardData.lastReadContentId" (click)="resumeContent(cardData.lastReadContentId)">RESUME</button>
+    <button ion-button block *ngIf="layoutName === 'Inprogress' && showResumeBtn" (click)="resumeContent(cardData.lastReadContentId)">RESUME</button>
     <button ion-button block outline *ngIf="downloadableIdentifiers && downloadableIdentifiers.length && !showDownloadProgress" (click)="importContent(downloadableIdentifiers, true)">DOWNLOAD ALL ({{ contentDownloadSize }})</button>
-    <button *ngIf="showDownloadProgress" ion-button block outline [style.width]="downloadProgress" [ngClass]="(currentCount < 100) ? 'progress-inner-primary' : 'progress-inner-secondary'">{{ currentCount }} / {{ totalDownload }}</button>
-
+    <button *ngIf="showDownloadProgress && !isDownloadComplete" ion-button block outline [style.width]="downloadProgress" [ngClass]="(currentCount < 100) ? 'progress-inner-primary' : 'progress-inner-secondary'">DOWNLOADING... {{ currentCount }} of {{ totalDownload }}</button>
   </ion-toolbar>
 </ion-footer>

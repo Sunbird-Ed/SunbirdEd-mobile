@@ -92,7 +92,8 @@ export class CourseDetailComponent {
   showDownloadProgress: boolean;
   totalDownload: number;
   currentCount: number;
-
+  isDownloadComplete = false;
+  showResumeBtn: boolean;
   /**
    * Contains reference of content service
    */
@@ -176,6 +177,8 @@ export class CourseDetailComponent {
 
   resumeContent(identifier) {
     console.log('resume content..... =>>>');
+    this.childrenData = [];
+    this.showResumeBtn = false;
     this.getContentDetails(identifier);
   }
 
@@ -206,6 +209,7 @@ export class CourseDetailComponent {
     _.forEach(identifiers, (value, key) => {
       reqBody.push({
         isChildContent: isChild,
+        // TODO - check with Anil for destination folder path
         destinationFolder: '/storage/emulated/0/Android/data/org.sunbird.app/files',
         contentId: value,
         correlationData: []
@@ -221,7 +225,7 @@ export class CourseDetailComponent {
    */
   importContent(identifiers, isChild: boolean | false): void {
     console.log('importing content ==> ', identifiers);
-    this.showChildrenLoader = true;
+    this.showChildrenLoader = this.downloadableIdentifiers.length === 0 ? true : false;
     const option = {
       contentImportMap: _.extend({}, this.buildImportContentReq(identifiers, isChild)),
       contentStatusArray: []
@@ -297,6 +301,7 @@ export class CourseDetailComponent {
     this.cardData = this.navParams.get('content');
     this.layoutName = this.navParams.get('layoutType');
     this.identifier = this.cardData.contentId || this.cardData.identifier;
+    this.showResumeBtn = this.cardData.lastReadContentId ? true : false;
     this.getContentDetails(this.identifier);
     this.subscribeGenieEvent();
   }
@@ -325,8 +330,13 @@ export class CourseDetailComponent {
         }
 
         // Get child content
-        if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport' && this.downloadableIdentifiers.length === 0) {
-          this.getChildContents();
+        if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
+          if (this.downloadableIdentifiers.length > 0) {
+            // this.showDownloadProgress = false;
+            this.isDownloadComplete = true;
+          } else {
+            this.getChildContents();
+          }
         }
       });
     });
