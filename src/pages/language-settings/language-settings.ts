@@ -157,12 +157,13 @@ export class LanguageSettingsPage {
     if (this.isFromSettings) {
       this.navCtrl.pop();
     } else {
-      this.navCtrl.push(OnboardingPage).then(() => {
-        // first we find the index of the current view controller:
-        const index = this.viewCtrl.index;
-        // then we remove it from the navigation stack
-        this.navCtrl.remove(index);
-      });
+      this.navCtrl.push(OnboardingPage);
+      // .then(() => {
+      //   // first we find the index of the current view controller:
+      //   const index = this.viewCtrl.index;
+      //   // then we remove it from the navigation stack
+      //   this.navCtrl.remove(index);
+      // });
     }
   }
 }
