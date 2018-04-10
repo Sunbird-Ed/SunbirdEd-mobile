@@ -11,9 +11,13 @@ import { ProfilePage } from "./../profile";
 export class UserSearchComponent {
 
   searchInput: string = "";
-  userList: any;
+  userList: any = [];
   fallBackImage: string = "./assets/imgs/ic_profile_default.png";
   inactive: string = "Inactive";
+
+  enableInfiniteScroll: boolean = false;
+  apiOffset: number = 0;
+  apiLimit: number = 10;
 
   constructor(
     public navCtrl: NavController,
@@ -25,7 +29,7 @@ export class UserSearchComponent {
     console.log("Hello UserSearchComponent Component");
   }
 
-  onInput() {
+  onInput(scrollEvent = undefined) {
     this.authService.getSessionData(session => {
       if (session === undefined || session == null) {
         console.error("session is null");
@@ -33,8 +37,8 @@ export class UserSearchComponent {
         let sessionObj = JSON.parse(session);
         let req = {
           query: this.searchInput,
-          offset: 0,
-          limit: 10,
+          offset: this.apiOffset,
+          limit: this.apiLimit,
           identifiers: [],
           fields: []
         };
@@ -44,11 +48,14 @@ export class UserSearchComponent {
           this.userService.searchUser(req,
             res => {
               this.zone.run(() => {
-                this.userList = JSON.parse(JSON.parse(res).searchUser).content;
+                Array.prototype.push.apply(this.userList,JSON.parse(JSON.parse(res).searchUser).content)
+                this.enableInfiniteScroll = (this.apiOffset + this.apiLimit) < JSON.parse(JSON.parse(res).searchUser).count ? true : false;
+                if(scrollEvent) scrollEvent.complete();
               });
             },
             error => {
               console.error("Error", error);
+              if(scrollEvent) scrollEvent.complete();
             }
           );
         }
@@ -61,5 +68,14 @@ export class UserSearchComponent {
   }
   openUserProfile(id) {
     this.navCtrl.push(ProfilePage, { userId: id });
+  }
+
+  doInfiniteScroll(scrollEvent) {
+    if(this.enableInfiniteScroll) {
+      this.apiOffset += this.apiLimit;
+      this.onInput(scrollEvent);
+    } else {
+      scrollEvent.complete();
+    }
   }
 }
