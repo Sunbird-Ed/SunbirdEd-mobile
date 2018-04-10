@@ -27,17 +27,17 @@ export class OnboardingPage {
     this.slides = [
       {
         'title': 'ONBOARD_SLIDE_TITLE_1',
-        'imageUri': 'assets/imgs/logo.png',
+        'imageUri': 'assets/imgs/ic_onboard_1.png',
         'desc': 'ONBOARD_SLIDE_DESC_1'
       },
       {
         'title': 'ONBOARD_SLIDE_TITLE_2',
-        'imageUri': 'assets/imgs/logo.png',
+        'imageUri': 'assets/imgs/ic_onboard_2.png',
         'desc': 'ONBOARD_SLIDE_DESC_2'
       },
       {
         'title': 'ONBOARD_SLIDE_TITLE_3',
-        'imageUri': 'assets/imgs/logo.png',
+        'imageUri': 'assets/imgs/ic_onboard_3.png',
         'desc': 'ONBOARD_SLIDE_DESC_3'
       },
     ]
