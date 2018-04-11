@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { HomePage } from './home';
+import { TranslateModule } from '@ngx-translate/core';
+import { FrameworkModule } from 'sunbird';
 
 @NgModule({
   declarations: [
@@ -8,6 +10,8 @@ import { HomePage } from './home';
   ],
   imports: [
     IonicPageModule.forChild(HomePage),
+    TranslateModule.forChild(),
+    FrameworkModule
   ],
   exports: [
     HomePage

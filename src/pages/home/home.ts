@@ -7,9 +7,9 @@ import { TelemetryService,
   ContentImportRequest,
   ContentService,
   UserProfileService,
-  TenantInfoRequest
+  TenantInfoRequest,
 } from 'sunbird';
-
+import { SunbirdQRScanner, QRResultCallback } from '../qrscanner/sunbirdqrscanner.service';
 
 @Component({
   selector: 'page-home',
@@ -22,11 +22,12 @@ export class HomePage {
   logo: string = "assets/imgs/ic_logo.png";
 
   constructor(public navCtrl: NavController,
-    private telemetryService: TelemetryService, 
-    private contentService: ContentService, 
+    private telemetryService: TelemetryService,
+    private contentService: ContentService,
     private events: Events,
     private ngZone: NgZone,
-    private userProfileService: UserProfileService) {
+    private userProfileService: UserProfileService,
+    private qrScanner: SunbirdQRScanner) {
 
     this.events.subscribe('genie.event', (response) => {
       console.log("Result " + response);
@@ -47,13 +48,13 @@ export class HomePage {
       request.refreshTenantInfo = true;
       request.slug = "sunbird";
       this.userProfileService.getTenantInfo(
-        request, 
+        request,
         res => {
           this.ngZone.run(() => {
             let r = JSON.parse(res);
             this.logo = r["logo"];
           });
-        }, 
+        },
         error => {
 
         }
@@ -91,6 +92,20 @@ export class HomePage {
     });
 
 
+  }
+
+
+  scanQRCode() {
+    const callback: QRResultCallback = {
+      dialcode(scanResult, dialCode) {
+        console.log("Scan QR " + scanResult + " " + dialCode);
+      },
+      content(scanResult, contentId) {
+        console.log("Scan QR " + scanResult + " " + contentId);
+      }
+    }
+
+    this.qrScanner.startScanner(undefined, undefined, undefined, callback);
   }
 
 }
