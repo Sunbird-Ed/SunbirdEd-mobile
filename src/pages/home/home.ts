@@ -1,6 +1,8 @@
 import { Component, NgZone } from '@angular/core';
 import { NavController, Events } from 'ionic-angular';
-import { TelemetryService,
+import { Storage } from "@ionic/storage";
+import {
+  TelemetryService,
   Impression,
   FrameworkModule,
   ContentImport,
@@ -10,6 +12,8 @@ import { TelemetryService,
   TenantInfoRequest,
 } from 'sunbird';
 import { SunbirdQRScanner, QRResultCallback } from '../qrscanner/sunbirdqrscanner.service';
+
+const KEY_SUNBIRD_SUPPORT_FILE_PATH = "sunbird_support_file_path";
 
 @Component({
   selector: 'page-home',
@@ -27,7 +31,8 @@ export class HomePage {
     private events: Events,
     private ngZone: NgZone,
     private userProfileService: UserProfileService,
-    private qrScanner: SunbirdQRScanner) {
+    private qrScanner: SunbirdQRScanner,
+    private storage: Storage) {
 
     this.events.subscribe('genie.event', (response) => {
       console.log("Result " + response);
@@ -41,24 +46,30 @@ export class HomePage {
     // impression.pageId = "ionic_sunbird";
     // this.telemetryService.impression(impression);
     this.refreshTenantData();
+    (<any>window).supportfile.makeEntryInSunbirdSupportFile((result) => {
+      console.log("Result - " + JSON.parse(result));
+      this.storage.set(KEY_SUNBIRD_SUPPORT_FILE_PATH, JSON.parse(result));
+    }, (error) => {
+      console.log("Error - " + error);
+    });
   }
 
   refreshTenantData() {
     let request = new TenantInfoRequest();
-      request.refreshTenantInfo = true;
-      request.slug = "sunbird";
-      this.userProfileService.getTenantInfo(
-        request,
-        res => {
-          this.ngZone.run(() => {
-            let r = JSON.parse(res);
-            this.logo = r["logo"];
-          });
-        },
-        error => {
+    request.refreshTenantInfo = true;
+    request.slug = "sunbird";
+    this.userProfileService.getTenantInfo(
+      request,
+      res => {
+        this.ngZone.run(() => {
+          let r = JSON.parse(res);
+          this.logo = r["logo"];
+        });
+      },
+      error => {
 
-        }
-      );
+      }
+    );
   }
 
   onSyncClick() {

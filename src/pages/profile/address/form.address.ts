@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavController, NavParams } from 'ionic-angular';
+import { AuthService } from 'sunbird';
 
 @Component({
   selector: 'page-address',
@@ -12,7 +13,11 @@ export class FormAddress {
   isNewForm: boolean = true;
   addressDetails: any = {};
   addressForm: FormGroup;
-  constructor(public navCtrl: NavController, public fb: FormBuilder, public navParams: NavParams) {
+  constructor(public navCtrl: NavController,
+    public fb: FormBuilder,
+    public navParams: NavParams,
+    public authService: AuthService
+  ) {
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
     this.isNewForm = this.navParams.get('addForm') || true;
     this.addressDetails = this.navParams.get('addressDetails') || {};
@@ -39,6 +44,13 @@ export class FormAddress {
   onSubmit(event) {
     let formVal = this.addressForm.value;
     console.log("Event", event);
+    this.authService.getSessionData((session) => {
+      if (session === undefined || session == null) {
+        console.error("session is null");
+      } else {
+        
+      }
+    });
   }
 
 }

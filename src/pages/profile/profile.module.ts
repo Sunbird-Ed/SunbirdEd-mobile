@@ -8,6 +8,7 @@ import { SuperTabsModule } from 'ionic2-super-tabs';
 import { TagInputModule } from 'ngx-chips';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ExpansionPanelsModule } from 'ng2-expansion-panels';
+import { InAppBrowser } from '@ionic-native/in-app-browser';
 
 import { ProfilePage } from './profile';
 import { FormEducation } from './education/form.education';
@@ -27,6 +28,7 @@ import { UserSearchComponent } from './user-search/user-search';
 import { PBHorizontal } from '../../component/pbhorizontal/pb-horizontal';
 
 import { DirectivesModule } from '../../directives/directives.module';
+import { ComponentsModule } from "../../component/components.module";
 import { IonicImageLoader } from 'ionic-image-loader';
 import { ImagePicker } from './imagepicker/imagepicker';
 
@@ -74,7 +76,8 @@ import { ImagePicker } from './imagepicker/imagepicker';
     TagInputModule,
     BrowserAnimationsModule,
     ExpansionPanelsModule,
-    DirectivesModule
+    DirectivesModule,
+    ComponentsModule
   ],
   exports: [
     ProfilePage,
@@ -89,7 +92,8 @@ import { ImagePicker } from './imagepicker/imagepicker';
     ContainerService,
     Camera,
     CameraService,
-    DatePipe
+    DatePipe,
+    InAppBrowser
   ]
 })
 export class ProfilePageModule { }

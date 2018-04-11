@@ -113,4 +113,8 @@ export class OnboardingPage {
     this.navCtrl.push(RolePage);
   }
 
+  goBack() {
+    this.navCtrl.pop();
+  }
+
 }

@@ -2,8 +2,11 @@ course-detail {
     .padding-10 {
         padding: 10px;
     }
+
     .background-gray {
         background: #efeff4;
+        margin: 0 -26px;
+        padding-left: 25px !important;
     }
 
     .scroll{
@@ -36,4 +39,28 @@ course-detail {
           }
         }
       }
+
+    .read-more {
+        color: rgb(17, 85, 204);
+    }
+    .back-button-md {
+        margin-left: -1px !important;
+    }
+
+    .progress-inner {
+        min-width: 15%;
+        white-space: nowrap;
+        overflow: hidden;
+        padding: 5px;
+        border-radius: 20px;
+        background-color: map-get($colors, primary);
+    }
+
+    .progress-inner-primary {
+        background-color: #AED6F1;
+
+    }
+    // .progress-inner-secondary {
+    //     background-color: map-get($colors, secondary);
+    // }
 }

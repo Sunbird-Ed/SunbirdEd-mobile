@@ -157,6 +157,22 @@ page-profile {
     border-width: 1px;
     border-color: darkgrey;
   }
+  .social-icon-size ion-icon{
+    font-size: 1.8em !important;
+    padding-left: 10px !important;
+  }
+
+  .inner {
+    width: auto;
+    height: 100%;
+
+    course-card {
+      display: table-cell;
+    }
+  }
+  .course-scroll-dimensions{
+    width: 100%; height: 166px;
+  }
 }
 
 .padding-right-10 {
