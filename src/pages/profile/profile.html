@@ -51,10 +51,10 @@
     </ion-item>
 
     <!-- Profile Education -->
-    <ion-list-header *ngIf="profile?.education?.length" class="section-title" no-lines no-padding>
+    <ion-list-header *ngIf="(profile?.education?.length && !isLoggedInUser) || isLoggedInUser" class="section-title" no-lines no-padding>
         {{ 'TITLE_EDUCATION' | translate }}
         <span *ngIf="isLoggedInUser" float-right color="primary">
-            <span (click)="editEduDetails(true, {})">{{ 'ADD' | translate }}</span>
+            <span (click)="editEduDetails(true, profile)">{{ 'ADD' | translate }}</span>
             <ion-icon color="dark" class="padding-left-5" (click)="toggleLock('education')" name="{{ profile?.profileVisibility?.education == 'private' ? 'lock' : 'unlock' }}"></ion-icon>
         </span>
     </ion-list-header>
@@ -76,7 +76,7 @@
                 </div>
             </ion-col>
             <ion-col col-1 *ngIf="isLoggedInUser" text-end>
-                <ion-icon name="md-create" color="primary" (click)="editEduDetails(false, ed)"></ion-icon>
+                <ion-icon name="md-create" color="primary" (click)="editEduDetails(false, profile, ed)"></ion-icon>
             </ion-col>
         </ion-row>
     </ion-item>
@@ -85,7 +85,7 @@
     <ion-list-header *ngIf="profile?.jobProfile?.length" class="section-title" no-padding>
         {{ 'EXPERIENCE' | translate }}
         <span *ngIf="isLoggedInUser" float-end color="primary">
-            <span (click)="editExperience(true, {})">{{ 'ADD' | translate }}</span>
+            <span (click)="editExperience()">{{ 'ADD' | translate }}</span>
             <ion-icon color="dark" (click)="toggleLock('jobProfile')" class="padding-left-5" name="{{ profile?.profileVisibility?.jobProfile == 'private' ? 'lock' : 'unlock' }}"></ion-icon>
         </span>
     </ion-list-header>
@@ -118,7 +118,7 @@
     <ion-list-header *ngIf="profile?.address?.length" class="section-title" no-padding>
         {{ 'TITLE_ADDRESS' | translate }}
         <span *ngIf="isLoggedInUser" float-right color="primary">
-            <span (click)="editAddress(true, {})">{{ 'ADD' | translate }}</span>
+            <span (click)="editAddress()">{{ 'ADD' | translate }}</span>
             <ion-icon color="dark" class="padding-left-5" (click)="toggleLock('location')" name="{{ profile?.profileVisibility?.location == 'private' ? 'lock' : 'unlock' }}"></ion-icon>
         </span>
     </ion-list-header>
@@ -158,7 +158,7 @@
             <ion-col col-3 text-end class="padding-right-10 skill-count-col" [ngClass]="">
                 <span class="vertical-separator">&nbsp;&nbsp;{{ skill?.endorsementcount }}</span>
             </ion-col>
-            <!-- <ion-col *ngIf="!isLoggedInUser" col-1></ion-col> -->
+
             <ion-col *ngIf="!isLoggedInUser && skill?.canEndorse" text-end col-1 [ngClass]="{'skill-endorse-col':!isLoggedInUser && skill?.canEndorse}" (click)="endorseSkill(i)">
                 <span *ngIf="skill?.canEndorse">+1</span>
             </ion-col>
@@ -170,7 +170,7 @@
     </ion-list>
 
     <!-- User's Creations -->
-    <div *ngIf="enrolledCourse">
+    <div *ngIf="enrolledCourse.length">
         <span class="section-title">{{ 'CREATED_BY_SMALL' | translate }}</span>
         <ion-scroll scrollX="true" class="course-scroll-dimensions" no-padding>
             <div class="inner">

@@ -321,7 +321,7 @@
         "ABOUT_THE_APP": "About the Application"
     },
     "LAST_SYNCED_TIME": "Last synced on",
-    "NOT_SYNCED_YET_ONCE" : "Not synced yet once",
+    "NOT_SYNCED_YET_ONCE": "Not synced yet once",
     "ADD_USER": "Add User",
     "USER": "User",
     "TEACHER": "Teacher",
@@ -345,11 +345,13 @@
     "CREATE_AN_ACCOUNT": "Create an account",
     "LABEL_BOARD": "BOARD",
     "SUBJECTS_CAPS": "SUBJECTS",
+    "CONTINUE_AS_TEACHER": "Continue as teacher",
+    "CONTINUE_AS_STUDENT": "Continue as student",
     "QR_SCREEN": {
-      "SCAN_QR_CODE": "Scan QR Code",
-      "SCAN_QR_INSTRUCTION": "Scan the QR code with your phone camera ",
-      "UNKNOWN_QR": "No content found associated with that QR code",
-      "CANCEL": "CANCEL",
-      "TRY_AGAIN": "TRY AGAIN"
+        "SCAN_QR_CODE": "Scan QR Code",
+        "SCAN_QR_INSTRUCTION": "Scan the QR code with your phone camera ",
+        "UNKNOWN_QR": "No content found associated with that QR code",
+        "CANCEL": "CANCEL",
+        "TRY_AGAIN": "TRY AGAIN"
     }
 }
