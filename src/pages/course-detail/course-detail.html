@@ -98,9 +98,13 @@
 <!-- Page footer -->
 <ion-footer *ngIf="details">
   <ion-toolbar padding>
-    <button ion-button block *ngIf="layoutName !== 'SavedResources'" (click)="navigateToBatchListPage('');">ENROLL IN COURSE</button>
-    <button ion-button block *ngIf="layoutName === 'SavedResources' && !contentPlayBtn && !details.isAvailableLocally" (click)="downloadContent()">DOWNLOAD</button>
-    <button ion-button block *ngIf="layoutName === 'SavedResources' && contentPlayBtn">PLAY</button>
-    <button ion-button block outline *ngIf="showDownloadBtn === 'downloadAll'" (click)="importContent(downloadIdentifiers, true)">DOWNLOAD ALL ({{ downloadContentsSize }})</button>
+    <span *ngIf="layoutName === 'SavedResources'">
+      <button ion-button block *ngIf="!contentPlayBtn && !details.isAvailableLocally" (click)="downloadContent()">DOWNLOAD</button>
+      <button ion-button block *ngIf="contentPlayBtn">PLAY</button>
+      <button ion-button block outline *ngIf="showDownloadBtn === 'downloadAll'" (click)="importContent(downloadIdentifiers, true)">DOWNLOAD ALL ({{ downloadContentsSize }})</button>
+    </span>
+    <span *ngIf="layoutName !== 'SavedResources'">
+      <button ion-button block (click)="navigateToBatchListPage('');">ENROLL IN COURSE</button>
+    </span>
   </ion-toolbar>
 </ion-footer>

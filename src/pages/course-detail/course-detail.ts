@@ -171,7 +171,8 @@ export class CourseDetailPage {
       this.setChildContents();
       this.contentDetail.contentSize = this.getReadableFileSize(data.result.sizeOnDevice);
       this.contentPlayBtn = true;
-    } else if (mimeType === '') {
+    } else if (data.result.isAvailableLocally === true && mimeType === 'application/vnd.ekstep.content-collection') {
+      this.contentPlayBtn = true;
     }
   }
 
