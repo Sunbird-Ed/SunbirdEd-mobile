@@ -344,5 +344,12 @@
     "DONT_HAVE_AN_ACCOUNT": "Don't have an account?",
     "CREATE_AN_ACCOUNT": "Create an account",
     "LABEL_BOARD": "BOARD",
-    "SUBJECTS_CAPS": "SUBJECTS"
+    "SUBJECTS_CAPS": "SUBJECTS",
+    "QR_SCREEN": {
+      "SCAN_QR_CODE": "Scan QR Code",
+      "SCAN_QR_INSTRUCTION": "Scan the QR code with your phone camera ",
+      "UNKNOWN_QR": "No content found associated with that QR code",
+      "CANCEL": "CANCEL",
+      "TRY_AGAIN": "TRY AGAIN"
+    }
 }

@@ -22,6 +22,7 @@ import { OnboardingPageModule } from "../pages/onboarding/onboarding.module";
 import { LanguageSettingsPageModule } from "../pages/language-settings/language-settings.module";
 import { RolePageModule } from "../pages/userrole/role.module";
 import { GuestEditProfileModule } from "../pages/guest-edit.profile/guest-edit-profile.module";
+import { QRScannerModule } from "../pages/qrscanner/qrscanner.module";
 
 
 export function initUserTabs(container: ContainerService) {
@@ -42,7 +43,7 @@ export function initGuestTabs(container: ContainerService) {
     container.addTab({root: ResourcesPage, label: "LIBRARY", icon: "resources", index: 2});
 }
 
-export const PluginModules = [CoursesPageModule, GroupPageModule, HomePageModule, 
-    ProfilePageModule, ResourcesPageModule, GuestProfilePageModule, 
+export const PluginModules = [CoursesPageModule, GroupPageModule, HomePageModule,
+    ProfilePageModule, ResourcesPageModule, GuestProfilePageModule,
     OnboardingPageModule, LanguageSettingsPageModule, RolePageModule,
-    GuestEditProfileModule, CourseDetailPageModule, ChildContentDetailsPageModule, CourseBatchesPageModule, EnrolledCourseDetailsPageModule];
+    GuestEditProfileModule, CourseDetailPageModule, ChildContentDetailsPageModule, CourseBatchesPageModule, EnrolledCourseDetailsPageModule, QRScannerModule];
