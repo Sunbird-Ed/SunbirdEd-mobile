@@ -73,6 +73,8 @@ export class CourseDetailPage {
    */
   contentPlayBtn = false;
 
+  cancelDownloadBtn = false;
+
   /**
    * Contains download progress
    */
@@ -161,6 +163,10 @@ export class CourseDetailPage {
     this.details = data.result;
     console.log('Contane base path ===>>>>', this.details);
     this.contentDetail = data.result.contentData ? data.result.contentData : [];
+    if (this.contentDetail.me_totalDownloads) {
+      this.contentDetail.me_totalDownloads = this.contentDetail.me_totalDownloads.split('.')[0];
+    }
+
     let mimeType = this.contentDetail.mimeType;
     this.contentDetail.contentTypesCount = this.contentDetail.contentTypesCount ? JSON.parse(this.contentDetail.contentTypesCount) : '';
     if (mimeType === 'application/vnd.ekstep.content-collection' && data.result.isAvailableLocally === false) {
@@ -273,7 +279,7 @@ export class CourseDetailPage {
         console.log('event bus........', res);
         // Show download percentage
         if (res.type === 'downloadProgress' && res.data.downloadProgress) {
-          this.downloadProgress = res.data.downloadProgress + ' %';
+          this.downloadProgress = res.data.downloadProgress === -1 ? 0 : res.data.downloadProgress + ' %';
         }
 
         // Get executed when user clicks on download all button
@@ -285,8 +291,14 @@ export class CourseDetailPage {
 
         // Get child content
         if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
+          if (this.contentDetail.mimeType === 'application/vnd.ekstep.content-collection'){
             this.setChildContents();
+          }
+          // TODO -check before pushing
+          if (this.cancelDownloadBtn) {
             this.setContentDetails(this.identifier, false);
+            this.cancelDownloadBtn = false;
+          }
         }
       });
     });
@@ -295,7 +307,8 @@ export class CourseDetailPage {
   /**
    * Show error messages
    * 
-   * @param message
+   * @param {string}  message Error message
+   * @param {boolean} isPop True = navigate to previous state
    */
   showErrorMessage(message: string, isPop: boolean | false): void {
     let toast = this.toastCtrl.create({
@@ -317,12 +330,23 @@ export class CourseDetailPage {
   /**
    * Download single content
    */
-  downloadContent() {
+  downloadContent(): void {
+    this.cancelDownloadBtn = true;
     this.importContent([this.identifier], false);
   }
 
+  cancelDownload() {
+    this.contentService.cancelDownload(this.identifier, (data: any) => {
+      console.log('Success: download success =>>>>>', data)
+      this.cancelDownloadBtn = false;
+      this.downloadProgress = 0;
+    }, (error: any) => {
+      console.log('Error: download error =>>>>>', error)
+    })
+  }
+
   /**
-   * 
+   * To integrate genie canvas
    */
   playContent() {
     let details = JSON.stringify(this.details);

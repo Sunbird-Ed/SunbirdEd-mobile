@@ -40,8 +40,8 @@
         {{ (contentDetail.description.length > 100) ? (contentDetail.description | slice:0:10) + '...' : (contentDetail.description)
         }} </p>
       <div class="course-details" *ngIf="showMoreFlag">
-        <p *ngIf="showMoreFlag && contentDetail.description.length > 100">
-          {{ contentDetail.description }
+        <p *ngIf="contentDetail.description.length">
+          {{ contentDetail.description }}
         </p>
         <div *ngIf="contentDetail.gradeLevel && contentDetail.gradeLevel.length" margin-top>
           <div>GRADE:</div>
@@ -63,6 +63,26 @@
         </span>
         <span *ngIf="!showMoreFlag">
           {{ 'READ_MORE' | translate }}
+          <ion-icon name="ios-arrow-down"></ion-icon>
+        </span>
+      </span>
+    </div>
+    <br/>
+    <div class="license-section padding-10 background-gray" *ngIf="contentDetail.license">
+      <div class="row" *ngIf="showLicense">
+        <span *ngIf="contentDetail.license">
+          <div class="size_txt">LICENSE</div>
+          <div class="margin-top-5">{{ contentDetail.license }}</div>
+        </span>
+      </div>
+      <span class="read-more">
+        <span *ngIf="showLicense" (click)="showLicense = false">
+          <br/>
+          Hide Credits and Licensing Info
+          <ion-icon name="ios-arrow-up"></ion-icon>
+        </span>
+        <span *ngIf="!showLicense" (click)="showLicense = true">
+          View Credits and Licensing Info
           <ion-icon name="ios-arrow-down"></ion-icon>
         </span>
       </span>
@@ -99,9 +119,11 @@
 <ion-footer *ngIf="details">
   <ion-toolbar padding>
     <span *ngIf="layoutName === 'SavedResources'">
-      <button ion-button block *ngIf="!contentPlayBtn && !details.isAvailableLocally" (click)="downloadContent()">DOWNLOAD</button>
-      <button ion-button block *ngIf="contentPlayBtn">PLAY</button>
+      <button ion-button block outline *ngIf="cancelDownloadBtn" (click)="cancelDownload()">CANCEL DOWNLOAD</button>
+      <button ion-button block *ngIf="!contentPlayBtn && !details.isAvailableLocally && !cancelDownloadBtn" (click)="downloadContent()">DOWNLOAD</button>
+      <button ion-button block *ngIf="contentPlayBtn" (click)="playContent()">PLAY</button>
       <button ion-button block outline *ngIf="showDownloadBtn === 'downloadAll'" (click)="importContent(downloadIdentifiers, true)">DOWNLOAD ALL ({{ downloadContentsSize }})</button>
+      <button *ngIf="cancelDownloadBtn" ion-button block outline [ngClass]="(downloadProgress < 100) ? 'progress-inner-primary' : 'progress-inner-secondary'">DOWNLOADING {{ downloadProgress }}</button>
     </span>
     <span *ngIf="layoutName !== 'SavedResources'">
       <button ion-button block (click)="navigateToBatchListPage('');">ENROLL IN COURSE</button>
