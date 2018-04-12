@@ -344,5 +344,7 @@
     "DONT_HAVE_AN_ACCOUNT": "Don't have an account?",
     "CREATE_AN_ACCOUNT": "Create an account",
     "LABEL_BOARD": "BOARD",
-    "SUBJECTS_CAPS": "SUBJECTS"
+    "SUBJECTS_CAPS": "SUBJECTS",
+    "CONTINUE_AS_TEACHER": "Continue as teacher",
+    "CONTINUE_AS_STUDENT": "Continue as student"
 }
