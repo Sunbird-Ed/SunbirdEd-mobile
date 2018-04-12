@@ -20,7 +20,7 @@
 
     <ion-item>
       <ion-label stacked text-capitalize>{{'LANGUAGES' | translate }} <span ion-text color="danger">&nbsp;*</span></ion-label>
-      <ion-select formControlName="languages" multiple="true" interface="popover" placeholder="{{'SELECT' | translate }}">
+      <ion-select formControlName="language" multiple="true" interface="popover" placeholder="{{'SELECT' | translate }}">
           <ion-option *ngFor="let lang of languageList" text-capitalize value="{{lang}}">{{lang}}</ion-option>
       </ion-select>
       <ion-icon name="lock" small item-right></ion-icon>
@@ -28,24 +28,24 @@
 
     <ion-item>
       <ion-label stacked>{{'EMAIL_ID' | translate }}</ion-label>
-      <ion-input formControlName="emailId" placeholder="{{'ERROR_EMPTY_EMAIL' | translate }}" type="email"></ion-input>
+      <ion-input formControlName="email" [disabled]="true" placeholder="{{'ERROR_EMPTY_EMAIL' | translate }}" type="email"></ion-input>
       <ion-icon name="lock" small item-right></ion-icon>
     </ion-item>
 
     <ion-item>
       <ion-label stacked>{{'PHONE' | translate }} <span ion-text color="danger">&nbsp;*</span></ion-label>
-      <ion-input formControlName="phone" placeholder="{{'ERROR_EMPTY_MOBILE' | translate }}" type="number"></ion-input>
+      <ion-input formControlName="phone" placeholder="{{ profile?.phone || 'ERROR_EMPTY_MOBILE' | translate }}" type="number"></ion-input>
       <ion-icon name="lock" small item-right></ion-icon>
     </ion-item>
 
     <ion-item>
       <ion-label stacked>{{'DESCRIPTION' | translate }}</ion-label>
-      <ion-input formControlName="description" placeholder="optional"></ion-input>
+      <ion-input formControlName="profileSummary" placeholder="{{'OPTIONAL' | translate}}"></ion-input>
     </ion-item>
 
     <ion-item>
       <ion-label stacked>{{'SUBJECTS' | translate }}</ion-label>
-      <ion-select formControlName="subjects" multiple="true" interface="popover" placeholder="{{'SELECT' | translate }}">
+      <ion-select formControlName="subject" multiple="true" interface="popover" placeholder="{{'SELECT' | translate }}">
           <ion-option *ngFor="let subject of subjectList" text-capitalize value="{{subject}}">{{subject}}</ion-option>
       </ion-select>
     </ion-item>
@@ -76,7 +76,7 @@
 
     <ion-item>
       <ion-label stacked>{{'CURRENT_LOCATION' | translate }}</ion-label>
-      <ion-input formControlName="currentLoc" placeholder="{{'OPTIONAL' | translate}}"></ion-input>
+      <ion-input formControlName="location" placeholder="{{'OPTIONAL' | translate}}"></ion-input>
       <ion-icon name="lock" small item-right></ion-icon>
     </ion-item>
 
@@ -102,8 +102,6 @@
       <ion-input formControlName="blogLink" placeholder="{{'OPTIONAL' | translate}}" type="url"></ion-input>
     </ion-item>
 
-    <ion-item>
-          <button type="submit" [disabled]="!additionalInfoForm.valid" ion-button block class="text-capitalize">{{ 'SAVE' | translate }}</button>
-    </ion-item>
+    <button type="submit" [disabled]="!additionalInfoForm.valid" ion-button block class="text-capitalize">{{ 'SAVE' | translate }}</button>
 </form>
 </ion-content>

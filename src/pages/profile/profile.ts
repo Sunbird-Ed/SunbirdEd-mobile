@@ -5,11 +5,13 @@ import {
   ProfileService,
   AuthService,
   UserProfileService,
-  CourseService
+  CourseService,
+  ContentService
 } from "sunbird";
 import { PopoverController } from "ionic-angular/components/popover/popover-controller";
 import { DatePipe } from "@angular/common";
 import { InAppBrowser } from '@ionic-native/in-app-browser';
+import * as _ from 'lodash';
 
 import { FormEducation } from "./education/form.education";
 import { FormAddress } from "./address/form.address";
@@ -19,6 +21,7 @@ import { FormExperience } from "./experience/form.experience";
 import { OverflowMenuComponent } from "./overflowmenu/menu.overflow.component";
 import { UserSearchComponent } from "./user-search/user-search";
 import { ImagePicker } from "./imagepicker/imagepicker";
+
 
 /*
  * The Profile page
@@ -35,7 +38,7 @@ export class ProfilePage {
   /*
    * Contains userId for the Profile
    */
-  userId: number = 0;
+  userId: string = '';
   isLoggedInUser: boolean = false;
   loggedInUserId: string = "";
   lastLoginTime: string;
@@ -83,11 +86,12 @@ export class ProfilePage {
     private datePipe: DatePipe,
     public authService: AuthService,
     public courseService: CourseService,
+    public contentService: ContentService,
     private loadingCtrl: LoadingController,
     private navParams: NavParams,
     private iab: InAppBrowser
   ) {
-    this.userId = this.navParams.get("userId");
+    this.userId = this.navParams.get("userId") || '';
     this.isLoggedInUser = this.userId ? false : true;
     this.doRefresh();
   }
@@ -148,7 +152,7 @@ export class ProfilePage {
           };
           this.userProfileService.getUserProfileDetails(
             req,
-            res => {
+            (res: any) => {
               this.zone.run(() => {
                 this.resetProfile();
                 let r = JSON.parse(res);
@@ -164,11 +168,11 @@ export class ProfilePage {
                 this.grades = this.arrayToString(this.profile.grade);
                 this.formatMissingFields();
                 this.formatSocialLinks();
-                this.getEnrolledCourses();
+                this.searchContent();
                 resolve();
               });
             },
-            error => {
+            (error: any) => {
               reject(error);
               console.error(error);
             }
@@ -180,8 +184,10 @@ export class ProfilePage {
 
   /*
   * Method to convert Array to Comma separated string
+  * @param {Array<string>} stringArray
+  * @returns {string}
   */
-  arrayToString(stringArray) {
+  arrayToString(stringArray: Array<string>): string {
     return stringArray.join(", ");
   }
 
@@ -224,13 +230,14 @@ export class ProfilePage {
       );
   }
 
+  /* Add new node in endorsersList as `canEndorse` */
   formatSkills() {
     this.profile.skills.forEach(skill => {
-      skill.canEndorse = true;
-      skill.endorsersList.filter(endorser => {
-        skill.canEndorse =
-          endorser.userId === this.loggedInUserId ? false : true;
-      });
+      skill.canEndorse = !Boolean(_.find(skill.endorsersList, 
+        (element) => {
+          return element.userId === this.loggedInUserId; 
+        })
+      );
     });
   }
 
@@ -261,20 +268,22 @@ export class ProfilePage {
   /*
   * Redirects to the Education form and passes current form data if available
   */
-  editEduDetails(isNewForm, formDetails) {
+  editEduDetails(isNewForm, profile, formDetails = {}) {
     this.navCtrl.push(FormEducation, {
       addForm: isNewForm,
-      formDetails: formDetails
+      formDetails: formDetails,
+      profile: profile
     });
   }
 
   /*
   * Redirects to the Address form and passes current form data if available
   */
-  editAddress(isNewForm, addressDetails) {
+  editAddress(isNewForm: boolean = true, addressDetails: any = {}) {
     this.navCtrl.push(FormAddress, {
       addForm: isNewForm,
-      addressDetails: addressDetails
+      addressDetails: addressDetails,
+      profile: this.profile
     });
   }
 
@@ -287,10 +296,14 @@ export class ProfilePage {
 
   /*
   * Calls Endorse skill API and update the count of Skill endorsement
+  * @param {number} num - position of the skill in the skills Array
   */
   endorseSkill(num) {
+
+    // Increase the Endorsement Count with 1 and make it as endorsed
     this.profile.skills[num].endorsementcount += 1;
     this.profile.skills[num].canEndorse = false;
+
     this.authService.getSessionData(session => {
       if (session === undefined || session == null) {
         console.error("session is null");
@@ -299,14 +312,15 @@ export class ProfilePage {
           userId: this.profile.skills[num].addedBy,
           skills: [this.profile.skills[num].skillName]
         };
-        console.log("Request Object", req);
         this.userProfileService.endorseOrAddSkill(
           req,
-          res => {
+          (res: any) => {
             console.log("Success", JSON.parse(res));
           },
-          error => {
+          (error: any) => {
             console.error("Error", JSON.parse(error));
+
+            /* Revert Changes if API call get fails to update */
             this.profile.skills[num].endorsementcount -= 1;
             this.profile.skills[num].canEndorse = true;
           }
@@ -332,11 +346,14 @@ export class ProfilePage {
 
   /*
   * Open up the experience form in edit mode
+  * @param {boolean} isNewForm - Tells whether user clicked on New Button or edit button
+  * @param {object} jobInfo - job object if available
   */
-  editExperience(isNewForm, jobInfo) {
+  editExperience(isNewForm: boolean = true, jobInfo: any = {}): void {
     this.navCtrl.push(FormExperience, {
       addForm: isNewForm,
-      jobInfo: jobInfo
+      jobInfo: jobInfo,
+      profile: this.profile
     });
   }
 
@@ -344,16 +361,19 @@ export class ProfilePage {
   * Open up the Additional Information form in edit mode
   */
   editAdditionalInfo() {
+    /* Required profile fields to pass to an Additional Info page */
+    let requiredProfileFields: Array<string> = ['userId', 'firstName', 'lastName', 'language', 'email', 'phone', 'profileSummary', 'subject', 'gender', 'dob', 'grade', 'location', 'webPages'];
+
     this.navCtrl.push(AdditionalInfoComponent, {
       userId: this.loggedInUserId,
-      profile: this.profile
+      profile: this.getSubset(requiredProfileFields, this.profile)
     });
   }
 
   /*
   * To Toggle the lock
-  *  */
-  toggleLock(field) {
+  */
+  toggleLock(field: string) {
     this.profile.profileVisibility[field] =
       this.profile.profileVisibility[field] == "private" ? "public" : "private";
     this.setProfileVisibility(field);
@@ -408,48 +428,35 @@ export class ProfilePage {
   }
 
   /*
-   * To get enrolled course(s) of logged-in user.
-   *
-   * It internally calls course handler of genie sdk
-   */
-  getEnrolledCourses(): void {
-    console.log("making api call to get enrolled courses");
-    let option = {
-      userId: this.loggedInUserId,
-      refreshEnrolledCourses: false
-    };
-    this.courseService.getEnrolledCourses(
-      option,
-      (data: any) => {
-        if (data) {
-          data = JSON.parse(data);
-          data.result.courses
-            ? data.result.courses.forEach(element => {
-                if(element.addedBy === this.loggedInUserId) {
-                    this.enrolledCourse.push(element);
-                }
-            })
-            : [];
-          console.log("this mmmmmmmmm enrolledCourse", this.enrolledCourse);
-        }
+  * Searches contents created by the user
+  */
+  searchContent(): void {
+    let req = {
+      createdBy: [this.userId || this.loggedInUserId]
+      //contentTypes: ["course", "resource"]
+    }
+
+    this.contentService.searchContent(req,
+      (result: any) => {
+        this.enrolledCourse = JSON.parse(result).result.contentDataList;
       },
       (error: any) => {
-        console.log("error while loading enrolled courses", error);
+        console.error("Error", error);
       }
-    );
+    )
   }
 
   /*
   * Navigates to User Search Page
   */
-  gotoSearchPage() {
+  gotoSearchPage(): void {
     this.navCtrl.push(UserSearchComponent);
   }
 
   /*
   * To show more Items in skills list
   */
-  showMoreItems() {
+  showMoreItems(): void {
     this.paginationLimit = this.profile.skills.length;
   }
 
@@ -457,34 +464,45 @@ export class ProfilePage {
   * To show Less items in skills list
   * DEFAULT_PAGINATION_LIMIT = 10
   *  */
-  showLessItems() {
+  showLessItems(): void {
     this.paginationLimit = this.DEFAULT_PAGINATION_LIMIT;
   }
 
-  getLoader() {
+  getLoader(): any {
     return this.loadingCtrl.create({
       duration: 30000,
       spinner: "crescent"
     });
   }
 
-  openLink(url) {
+  /* Opens Link in the browser
+  * @param {string} url
+  */
+  openLink(url): void {
     if (url) {
-        let options = 'location=no,hidden=yes,hardwareback=yes,clearcache=no,zoom=no,toolbar=yes,clearsessioncache=no,closebuttoncaption=Done,disallowoverscroll=yes';
-        const browser = this.iab.create(url, '_system', options);
-        let loading = this.getLoader();
-        browser.on('loadstart').subscribe(() => {
-            loading.present();
-        });
-        browser.on('loadstop').subscribe(() => {
-            loading.dismiss();
-            browser.show();
-        });
-        browser.on('loaderror').subscribe(() => {
-            loading.dismiss();
-            browser.close();
-        });
+      let options = 'location=no,hidden=yes,hardwareback=yes,clearcache=no,zoom=no,toolbar=yes,clearsessioncache=no,closebuttoncaption=Done,disallowoverscroll=yes';
+      const browser = this.iab.create(url, '_system', options);
+      let loading = this.getLoader();
+      browser.on('loadstart').subscribe(() => {
+        loading.present();
+      });
+      browser.on('loadstop').subscribe(() => {
+        loading.dismiss();
+        browser.show();
+      });
+      browser.on('loaderror').subscribe(() => {
+        loading.dismiss();
+        browser.close();
+      });
     }
-}
+  }
 
+  /* Returns the Object with given Keys only
+  * @param {string} keys - Keys of the object which are required in new sub object
+  * @param {object} obj - Actual object
+  * @returns {object}
+  */
+  getSubset(keys, obj) {
+    return keys.reduce((a, c) => ({ ...a, [c]: obj[c] }), {});
+  }
 }

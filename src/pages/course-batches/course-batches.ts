@@ -1,20 +1,21 @@
 import { Component, NgZone, OnInit } from '@angular/core';
 import { CourseService, AuthService, EnrolledCoursesRequest } from 'sunbird';
-import { NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import * as _ from 'lodash';
 
 /**
- * Generated class for the CourseBatchesComponent component.
+ * Generated class for the CourseBatchesPage page.
  *
- * See https://angular.io/api/core/Component for more info on Angular
- * Components.
+ * See https://ionicframework.com/docs/components/#navigation for more info on
+ * Ionic pages and navigation.
  */
-@Component({
-  selector: 'course-batches',
-  templateUrl: 'course-batches.html'
-})
-export class CourseBatchesComponent implements OnInit {
 
+@IonicPage()
+@Component({
+  selector: 'page-course-batches',
+  templateUrl: 'course-batches.html',
+})
+export class CourseBatchesPage implements OnInit {
   /**
    * Contains user id
    */

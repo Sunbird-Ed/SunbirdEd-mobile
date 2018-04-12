@@ -1,15 +1,20 @@
-import { NavParams, NavController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Component, NgZone } from '@angular/core';
 import { ContentService } from 'sunbird';
 
 /**
- * Generated class for the ParentDetailsComponent component.
+ * Generated class for the ChildContentDetailsPage page.
+ *
+ * See https://ionicframework.com/docs/components/#navigation for more info on
+ * Ionic pages and navigation.
  */
+
+@IonicPage()
 @Component({
-  selector: 'parent-details',
-  templateUrl: 'parent-details.html'
+  selector: 'page-child-content-details',
+  templateUrl: 'child-content-details.html',
 })
-export class ParentDetailsComponent {
+export class ChildContentDetailsPage {
   /**
    * Contains content details
    */
@@ -165,7 +170,7 @@ export class ParentDetailsComponent {
    */
   navigateToChildrenDetailsPage(item, depth): void {
     this.depth = depth;
-    this.navCtrl.push(ParentDetailsComponent, {
+    this.navCtrl.push(ChildContentDetailsPage, {
       content: item,
       depth: depth
     })

@@ -5,21 +5,21 @@
 </ion-header>
 
 <ion-content padding>
-  <form [formGroup]="addressForm" class="form" (ngSubmit)="onSubmit($event)">
+  <form [formGroup]="addressForm" class="form">
     <ion-item>
       <ion-label stacked>{{ 'SELECT_ADDRESS_TYPE' | translate }}</ion-label>
     </ion-item>
-    <ion-row radio-group formControlName="addressType">
+    <ion-row radio-group formControlName="addType">
       <ion-col col-6>
         <ion-item no-lines>
           <ion-label style="text-transform: capitalize !important; font-size: 1.2rem !important;">{{ 'PERMANENT' | translate }}</ion-label>
-          <ion-radio item-left value="per"></ion-radio>
+          <ion-radio item-left value="permanent"></ion-radio>
         </ion-item>
       </ion-col>
       <ion-col col-6>
         <ion-item no-lines>
           <ion-label style="text-transform: capitalize !important; font-size: 1.2rem !important;">{{ 'CURRENT' | translate }}</ion-label>
-          <ion-radio item-left value="cur"></ion-radio>
+          <ion-radio item-left value="current"></ion-radio>
         </ion-item>
       </ion-col>
     </ion-row>
@@ -28,7 +28,7 @@
       <ion-label stacked>{{ 'ADDRESS_LINE1' | translate }}
         <span ion-text color="danger">&nbsp;*</span>
       </ion-label>
-      <ion-input  formControlName="addressLine1" placeholder="{{ 'ADDRESS_LINE1' | translate }}" class="form-controll" required></ion-input>
+      <ion-input  formControlName="addressLine1" placeholder="{{ 'ADDRESS_LINE1' | translate }}"></ion-input>
     </ion-item>
 
     <ion-item>
@@ -55,15 +55,15 @@
 
     <ion-item>
       <ion-label stacked>{{ 'PINCODE' | translate }}</ion-label>
-      <ion-input type="number" formControlName="pinCode" placeholder="{{ 'OPTIONAL' | translate }}"></ion-input>
+      <ion-input type="number" formControlName="zipcode" placeholder="{{ 'OPTIONAL' | translate }}"></ion-input>
     </ion-item>
 
     <ion-row>
-      <ion-col padding>
-        <button ion-button block outline class="text-capitalize">{{ 'DELETE' | translate }}</button>
+      <ion-col padding *ngIf="!isNewForm">
+        <button (click)="onSubmit($event)" ion-button block outline class="text-capitalize">{{ 'DELETE' | translate }}</button>
       </ion-col>
       <ion-col padding>
-        <button type="submit" [disabled]="!addressForm.valid" ion-button block class="text-capitalize">{{ 'SAVE' | translate }}</button>
+        <button type="submit" [disabled]="!addressForm.valid" (click)="onSubmit($event)" ion-button block class="text-capitalize">{{ 'SAVE' | translate }}</button>
       </ion-col>
     </ion-row>
   </form>
