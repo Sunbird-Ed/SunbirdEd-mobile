@@ -1,0 +1,110 @@
+<!-- Generated template for the CourseDetailComponent component -->
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      <ion-icon md="md-share" float-right></ion-icon>
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+<!-- Page body -->
+<ion-content padding>
+  <div class="content-details-holder" *ngIf="contentDetail">
+    <h6>{{contentDetail.name}}</h6>
+    <p *ngIf="layoutName !== 'SavedResources'" [readMore]="contentDetail.description" [length]="80" [showMoreText]="'READ_MORE' | translate"
+      [showLessText]="'READ_LESS' | translate">{{contentDetail.description}}</p>
+
+    <!-- Owner and download info -->
+    <ion-grid *ngIf="layoutName === 'SavedResources'" class="padding-0">
+      <p *ngIf="contentDetail.owner">By {{ contentDetail.owner }}</p>
+      <ion-row>
+        <ion-col class="padding-0">
+          <div class="size_txt padding-bottom-5" no-margin *ngIf="contentDetail.contentType">
+            <span>{{ contentDetail.contentType }} </span>
+            <span *ngIf="contentDetail.contentSize">[{{ contentDetail.contentSize }}]</span>
+          </div>
+          <rating align-items-start *ngIf="contentDetail.me_averageRating" [(ngModel)]="contentDetail.me_averageRating" readOnly="true"
+            max="5" no-padding></rating>
+        </ion-col>
+        <ion-col offset-4 *ngIf="contentDetail.me_totalDownloads">
+          <div class="padding-bottom-5 text-align-end">{{ contentDetail.me_totalDownloads }}</div>
+          <div float-right>downloads</div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+    <br/>
+
+    <!-- Read more / less -->
+    <div class="about-section">
+      <h6 class="padding-10 background-gray">{{ 'ABOUT' | translate }}</h6>
+      <p *ngIf="!showMoreFlag">
+        {{ (contentDetail.description.length > 100) ? (contentDetail.description | slice:0:10) + '...' : (contentDetail.description)
+        }} </p>
+      <div class="course-details" *ngIf="showMoreFlag">
+        <p *ngIf="showMoreFlag && contentDetail.description.length > 100">
+          {{ contentDetail.description }
+        </p>
+        <div *ngIf="contentDetail.gradeLevel && contentDetail.gradeLevel.length" margin-top>
+          <div>GRADE:</div>
+          <span *ngFor="let grade of contentDetail.gradeLevel">
+            <span>{{grade}}</span>
+          </span>
+        </div>
+        <div *ngIf="contentDetail.subject" margin-top>
+          <div>SUBJECT:</div>
+          <span>{{contentDetail.subject}}</span>
+        </div>
+      </div>
+
+      <span class="read-more" *ngIf="contentDetail.description && contentDetail.description.length > 100 || contentDetail.gradeLevel || contentDetail.subject"
+        (click)="showMoreFlag = !showMoreFlag">
+        <span *ngIf="showMoreFlag">
+          {{ 'READ_LESS' | translate }}
+          <ion-icon name="ios-arrow-up"></ion-icon>
+        </span>
+        <span *ngIf="!showMoreFlag">
+          {{ 'READ_MORE' | translate }}
+          <ion-icon name="ios-arrow-down"></ion-icon>
+        </span>
+      </span>
+    </div>
+    <!-- Content details start-->
+    <!-- Content details end -->
+    <!-- Course structure section -->
+    <div class="structure-section" margin-top *ngIf="contentDetail.mimeType === 'application/vnd.ekstep.content-collection'">
+      <h6 class="padding-10 background-gray">Structure</h6>
+      <div padding-top>
+        <span *ngFor="let structure of objectKeys(contentDetail.contentTypesCount)">
+          {{contentDetail.contentTypesCount[structure] + ' ' + structure}}
+        </span>
+      </div>
+      <div *ngIf="childrenData && childrenData.children" padding-top>
+        <ion-item *ngFor="let item of childrenData.children; let i = index" style="padding-left: 0px;">
+          <span ion-text>{{ (i) + (1) }}: {{ item.contentData.name }}</span>
+        </ion-item>
+      </div>
+      <!-- Import content loader -->
+      <div *ngIf="showChildrenLoader">
+        <ion-row style="padding-top: 30px;" padding>
+          <ion-col text-center>
+            <p>Fetching content {{ downloadProgress ? downloadProgress : '' }}</p>
+            <ion-spinner padding></ion-spinner>
+          </ion-col>
+        </ion-row>
+      </div>
+      <!-- End import content -->
+    </div>
+  </div>
+</ion-content>
+<!-- Page footer -->
+<ion-footer *ngIf="details">
+  <ion-toolbar padding>
+    <span *ngIf="layoutName === 'SavedResources'">
+      <button ion-button block *ngIf="!contentPlayBtn && !details.isAvailableLocally" (click)="downloadContent()">DOWNLOAD</button>
+      <button ion-button block *ngIf="contentPlayBtn">PLAY</button>
+      <button ion-button block outline *ngIf="showDownloadBtn === 'downloadAll'" (click)="importContent(downloadIdentifiers, true)">DOWNLOAD ALL ({{ downloadContentsSize }})</button>
+    </span>
+    <span *ngIf="layoutName !== 'SavedResources'">
+      <button ion-button block (click)="navigateToBatchListPage('');">ENROLL IN COURSE</button>
+    </span>
+  </ion-toolbar>
+</ion-footer>

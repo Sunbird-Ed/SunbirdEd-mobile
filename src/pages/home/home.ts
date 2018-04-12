@@ -9,8 +9,9 @@ import {
   ContentImportRequest,
   ContentService,
   UserProfileService,
-  TenantInfoRequest
+  TenantInfoRequest,
 } from 'sunbird';
+import { SunbirdQRScanner, QRResultCallback } from '../qrscanner/sunbirdqrscanner.service';
 
 const KEY_SUNBIRD_SUPPORT_FILE_PATH = "sunbird_support_file_path";
 
@@ -30,6 +31,7 @@ export class HomePage {
     private events: Events,
     private ngZone: NgZone,
     private userProfileService: UserProfileService,
+    private qrScanner: SunbirdQRScanner,
     private storage: Storage) {
 
     this.events.subscribe('genie.event', (response) => {
@@ -101,6 +103,20 @@ export class HomePage {
     });
 
 
+  }
+
+
+  scanQRCode() {
+    const callback: QRResultCallback = {
+      dialcode(scanResult, dialCode) {
+        console.log("Scan QR " + scanResult + " " + dialCode);
+      },
+      content(scanResult, contentId) {
+        console.log("Scan QR " + scanResult + " " + contentId);
+      }
+    }
+
+    this.qrScanner.startScanner(undefined, undefined, undefined, callback);
   }
 
 }

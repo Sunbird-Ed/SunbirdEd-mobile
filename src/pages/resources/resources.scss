@@ -1,47 +1,91 @@
 page-resources {
-    .logo {
-        width: 40px;
-        height: 40px;
-        margin-left: 10px;
-    }
-    .search {
-        width: 25px;
-        height: 25px;
-        margin: 10px;
-        float: right;
-    }
+    // .logo {
+    //     width: 40px;
+    //     height: 40px;
+    //     margin-left: 10px;
+    // }
+    // .search {
+    //     width: 25px;
+    //     height: 25px;
+    //     margin: 10px;
+    //     float: right;
+    // }
+    // .inner {
+    //     width: auto;
+    //     height: 100%;
+    
+    // course-card {
+    //     display: table-cell;
+    // }
+    // }
+    // .inprogress-courses {
+    // .bottom-container{
+    //     background: #efeff4;
+    // }
+    // }
+
+    // .scroll-heading {
+    // padding-top: 5px;
+    // font-weight: 500;
+    // font-family: 'sunbirdboldfont';
+    // font-size: 1.375em;
+    // }
+    // .view-all-link {
+    // font-size: 1.2rem;
+    // padding-top: 11px;
+    // font-family: 'sunbirdboldfont';
+    // }
+    // .course-scroll-holder {
+    // background-color: #FDFEFE;
+    // }
+    // .course-page-color {
+    // background: #efeff4;
+    // }
+    // .padding-11 {
+    // padding: 11px;
+    // }
+
     .inner {
         width: auto;
         height: 100%;
     
-    course-card {
-        display: table-cell;
-    }
-    }
-    .inprogress-courses {
-    .bottom-container{
+        course-card {
+          display: table-cell;
+        }
+      }
+      .inprogress-courses {
+        .bottom-container{
+          background: #efeff4;
+        }
+      }
+    
+      .scroll-heading {
+        padding-top: 10px;
+        font-weight: 500;
+        font-family: 'sunbirdboldfont';
+        font-size: 1.250em;
+      }
+      .view-all-link {
+        font-size: 1.2rem;
+        padding-top: 11px;
+        font-family: 'sunbirdboldfont';
+        font-weight: 500;
+      }
+      .course-scroll-holder {
+        background-color: #FDFEFE;
+      }
+      .toolbar-title-md {
+        margin-left: -5px !important;
+      }
+      .course-page-color {
         background: #efeff4;
-    }
-    }
-
-    .scroll-heading {
-    padding-top: 5px;
-    font-weight: 500;
-    font-family: 'sunbirdboldfont';
-    font-size: 1.375em;
-    }
-    .view-all-link {
-    font-size: 1.2rem;
-    padding-top: 11px;
-    font-family: 'sunbirdboldfont';
-    }
-    .course-scroll-holder {
-    background-color: #FDFEFE;
-    }
-    .course-page-color {
-    background: #efeff4;
-    }
-    .padding-11 {
-    padding: 11px;
-    }
+      }
+      .padding-11 {
+        padding: 11px;
+      }
+    
+      ion-spinner {
+        display: block;
+        margin: auto;
+      }
 }
