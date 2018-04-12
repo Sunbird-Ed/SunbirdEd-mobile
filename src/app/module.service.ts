@@ -1,3 +1,9 @@
+import { EnrolledCourseDetailsPageModule } from './../pages/enrolled-course-details/enrolled-course-details.module';
+import { CourseBatchesPageModule } from './../pages/course-batches/course-batches.module';
+import { ChildContentDetailsPageModule } from './../pages/child-content-details/child-content-details.module';
+import { CourseDetailPageModule } from './../pages/course-detail/course-detail.module';
+
+
 import {Injectable} from "@angular/core";
 import {ContainerService} from "sunbird";
 import { GroupPage } from "../pages/group/group";
@@ -16,6 +22,7 @@ import { OnboardingPageModule } from "../pages/onboarding/onboarding.module";
 import { LanguageSettingsPageModule } from "../pages/language-settings/language-settings.module";
 import { RolePageModule } from "../pages/userrole/role.module";
 import { GuestEditProfileModule } from "../pages/guest-edit.profile/guest-edit-profile.module";
+
 
 export function initUserTabs(container: ContainerService) {
     container.removeAllTabs();
@@ -38,4 +45,4 @@ export function initGuestTabs(container: ContainerService) {
 export const PluginModules = [CoursesPageModule, GroupPageModule, HomePageModule, 
     ProfilePageModule, ResourcesPageModule, GuestProfilePageModule, 
     OnboardingPageModule, LanguageSettingsPageModule, RolePageModule,
-    GuestEditProfileModule];
+    GuestEditProfileModule, CourseDetailPageModule, ChildContentDetailsPageModule, CourseBatchesPageModule, EnrolledCourseDetailsPageModule];
