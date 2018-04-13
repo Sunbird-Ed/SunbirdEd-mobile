@@ -1,4 +1,4 @@
-import { SearchPageModule } from './../pages/search/search.module';
+import { ViewMoreActivityPageModule } from './../pages/view-more-activity/view-more-activity.module';
 import { EnrolledCourseDetailsPageModule } from './../pages/enrolled-course-details/enrolled-course-details.module';
 import { CourseBatchesPageModule } from './../pages/course-batches/course-batches.module';
 import { ChildContentDetailsPageModule } from './../pages/child-content-details/child-content-details.module';
@@ -58,4 +58,4 @@ export const PluginModules = [CoursesPageModule,
     CourseBatchesPageModule,
     EnrolledCourseDetailsPageModule,
     QRScannerModule,
-    SearchPageModule];
+    ViewMoreActivityPageModule];

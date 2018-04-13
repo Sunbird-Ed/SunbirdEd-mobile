@@ -3,16 +3,16 @@ import { Component } from '@angular/core';
 import { ImageLoader } from "ionic-image-loader";
 
 /**
- * Generated class for the SearchListComponent component.
+ * Generated class for the ViewMoreActivityListComponent component.
  *
  * See https://angular.io/api/core/Component for more info on Angular
  * Components.
  */
 @Component({
-  selector: 'search-list',
-  templateUrl: 'search-list.html'
+  selector: 'view-more-activity-list',
+  templateUrl: 'view-more-activity-list.html'
 })
-export class SearchListComponent {
+export class ViewMoreActivityListComponent {
 
   /**
    * Contains content details

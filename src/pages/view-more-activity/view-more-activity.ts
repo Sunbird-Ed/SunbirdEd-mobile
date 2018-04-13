@@ -1,22 +1,20 @@
-import { SearchListComponent } from './../../component/search-list/search-list';
-import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { Component } from '@angular/core';
 import { ContentService } from 'sunbird';
-
+import { ViewMoreActivityListComponent } from '../../component/view-more-activity-list/view-more-activity-list';
 
 /**
- * Generated class for the SearchPage page.
+ * Generated class for the ViewMoreActivityPage page.
  *
  * See https://ionicframework.com/docs/components/#navigation for more info on
  * Ionic pages and navigation.
  */
-
 @IonicPage()
 @Component({
-  selector: 'page-search',
-  templateUrl: 'search.html',
+  selector: 'page-view-more-activity',
+  templateUrl: 'view-more-activity.html',
 })
-export class SearchPage {
+export class ViewMoreActivityPage {
 
   /**
    * Contains search query

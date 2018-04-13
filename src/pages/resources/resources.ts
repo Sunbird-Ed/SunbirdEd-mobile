@@ -1,8 +1,8 @@
 import { Component, NgZone, OnInit } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { PageAssembleService, PageAssembleCriteria, ContentService, AuthService } from "sunbird";
-import { SearchPage } from './../search/search';
 import * as _ from 'lodash';
+import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
 
 @Component({
   selector: 'page-resources',
@@ -92,7 +92,7 @@ export class ResourcesPage implements OnInit {
    * @param {string} queryParams search query params
    */
   searchAllContent(queryParams): void {
-    this.navCtrl.push(SearchPage, {
+    this.navCtrl.push(ViewMoreActivityPage, {
       requestParams: queryParams
     });
   }
