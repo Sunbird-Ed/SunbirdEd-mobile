@@ -1,0 +1,12 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>search</ion-title>
+  </ion-navbar>
+
+</ion-header>
+<ion-content padding>
+  <div *ngIf="searchList && searchList.length">
+    <search-list *ngFor="let item of searchList" [content]="item" [type]="library"></search-list>
+  </div>
+  <button ion-button block (click)="loadMore();">LOAD MORE</button>
+</ion-content>

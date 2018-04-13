@@ -1,0 +1,36 @@
+<div class="row-holder">
+  <ion-row>
+    <ion-col col-4>
+      <div class="img-container"></div>
+      <!-- <img src="{{ content.appIcon || defaultImg }}"> -->
+      <img-loader src="{{ (content.appIcon) || (content.courseLogoUrl) || (defaultImg) }}" 
+      backgroundSize="cover"
+      height="90px"
+      spinner="true"
+      fallback="{{defaultImg}}"
+      fallbackAsPlaceholder="true"
+      (load)="onImageLoad($event)"></img-loader>
+    </ion-col>
+    <ion-col col-8>
+      <h6 style="margin-top: 0px;">{{(content.name.length > 21) ? (content.name | slice:0:10) + '...' : (content.name)}}</h6>
+      <!-- <p>November 5, 1955</p> -->
+      <div class="row" padding-top>
+        <div>
+          <span>Nov 5, 1955</span><br/>
+          <span *ngIf="content.contentType">{{ content.contentType }}</span>
+          <span *ngIf="content.size">[{{ content.size }}]</span>
+        </div>
+        <div>
+          <button ion-button outline small float-end border-radius-5 style="margin-left: 63px;margin-top: 0px;">OPEN</button>
+        </div>
+      </div>
+      <!-- <div class="row">
+        <span *ngIf="content.contentType">{{ content.contentType }}</span>
+        <span *ngIf="content.size">[{{ content.size }}]</span>
+      </div> -->
+      <!-- <ion-row>
+          <ion-col col-8>
+      </ion-row> -->
+    </ion-col>
+  </ion-row>
+</div>
