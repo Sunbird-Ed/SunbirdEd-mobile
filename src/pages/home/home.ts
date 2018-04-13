@@ -13,6 +13,7 @@ import {
 } from 'sunbird';
 import { SunbirdQRScanner, QRResultCallback } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
+import { FilterPage } from '../search/filters/filter';
 
 const KEY_SUNBIRD_SUPPORT_FILE_PATH = "sunbird_support_file_path";
 
