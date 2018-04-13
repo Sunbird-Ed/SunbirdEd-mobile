@@ -17,6 +17,7 @@ import { LanguageSettingsPageModule } from "../pages/language-settings/language-
 import { RolePageModule } from "../pages/userrole/role.module";
 import { GuestEditProfileModule } from "../pages/guest-edit.profile/guest-edit-profile.module";
 import { QRScannerModule } from "../pages/qrscanner/qrscanner.module";
+import { SearchModule } from "../pages/search/search.module";
 
 export function initUserTabs(container: ContainerService) {
     container.removeAllTabs();
@@ -39,4 +40,4 @@ export function initGuestTabs(container: ContainerService) {
 export const PluginModules = [CoursesPageModule, GroupPageModule, HomePageModule,
     ProfilePageModule, ResourcesPageModule, GuestProfilePageModule,
     OnboardingPageModule, LanguageSettingsPageModule, RolePageModule,
-    GuestEditProfileModule, QRScannerModule];
+    GuestEditProfileModule, SearchModule, QRScannerModule];
