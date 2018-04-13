@@ -27,6 +27,8 @@ export class CourseCard {
 
   @Input() pageName: string;
 
+  @Input() onProfile: boolean = false;
+
   /**
    * Contains default image path.
    *

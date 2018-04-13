@@ -44,7 +44,7 @@
     "ERROR_SHORT_MOBILE": "मोबाइल नंबर 10 अंक होना चाहिए",
     "ERROR_SHORT_PASSWORD": "पासवर्ड 8 वर्णों से कम नहीं हो सकता",
     "FETCHING_CONTENTS": "पाठ्यक्रम प्राप्ति:%s%",
-    "FILE_SIZE": "आकार [%s]",
+    "FILE_SIZE": "आकार",
     "FILTER": "फिल्टर",
     "FILTER_BY": "के द्वारा फिल्टर",
     "FIRST_NAME": "नाम",
