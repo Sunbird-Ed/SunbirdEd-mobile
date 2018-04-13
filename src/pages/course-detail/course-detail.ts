@@ -167,6 +167,7 @@ export class CourseDetailPage {
       this.contentDetail.me_totalDownloads = this.contentDetail.me_totalDownloads.split('.')[0];
     }
 
+    // TODO: locally = true && mimeType == collection then call getChildContents
     let mimeType = this.contentDetail.mimeType;
     this.contentDetail.contentTypesCount = this.contentDetail.contentTypesCount ? JSON.parse(this.contentDetail.contentTypesCount) : '';
     if (mimeType === 'application/vnd.ekstep.content-collection' && data.result.isAvailableLocally === false) {
@@ -179,6 +180,7 @@ export class CourseDetailPage {
       this.contentPlayBtn = true;
     } else if (data.result.isAvailableLocally === true && mimeType === 'application/vnd.ekstep.content-collection') {
       this.contentPlayBtn = true;
+      this.setChildContents();
     }
   }
 
@@ -377,6 +379,9 @@ export class CourseDetailPage {
     });
 
     console.log('download content identifiers', this.downloadIdentifiers);
+    if (this.downloadIdentifiers.length) {
+      this.contentPlayBtn = false;
+    }
   }
 
   /**

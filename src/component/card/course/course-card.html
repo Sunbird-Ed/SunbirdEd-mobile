@@ -19,7 +19,7 @@
     <ion-row class="bottom-container" no-padding>
       <ion-col col-8 *ngIf="layoutName === 'Popular' && pageName !== 'library'">
         <rating [(ngModel)]="course.progress" readOnly="true" max="5" no-padding></rating>
-        <ion-label class="size_txt" no-margin *ngIf="course?.size">Size[{{course?.size / 10000 | number : '1.0-2'}}KB]</ion-label>
+        <ion-label class="size_txt" no-margin *ngIf="course?.size">Size [{{course?.size | fileSize }}]</ion-label>
       </ion-col>
       <!-- Saved Resources -->
       <ion-col col-8 *ngIf="layoutName === 'SavedResources'">

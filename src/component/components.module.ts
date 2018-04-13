@@ -1,3 +1,4 @@
+import { PipesModule } from './../pipes/pipes.module';
 import { NgModule } from "@angular/core";
 import { CourseCard } from "./card/course/course-card";
 import { IonicPageModule } from 'ionic-angular';
@@ -13,7 +14,8 @@ import { ViewMoreActivityListComponent } from './view-more-activity-list/view-mo
     imports: [
         IonicPageModule.forChild(CourseCard),
         Ionic2RatingModule,
-        IonicImageLoader
+        IonicImageLoader,
+        PipesModule
     ],
     exports: [
         CourseCard,

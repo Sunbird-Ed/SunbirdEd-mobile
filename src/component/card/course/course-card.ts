@@ -1,3 +1,4 @@
+import { PipesModule } from './../../../pipes/pipes.module';
 import { Component, Input } from "@angular/core";
 import { NavController } from 'ionic-angular';
 import { ImageLoader } from "ionic-image-loader";
