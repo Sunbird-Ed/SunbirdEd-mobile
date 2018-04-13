@@ -132,13 +132,15 @@
       "cordova-plugin-device": {},
       "cordova-plugin-file": {},
       "cordova-plugin-file-transfer": {},
-      "cordova-plugin-genie-sdk": {},
       "cordova-plugin-imagechooser": {},
       "cordova-plugin-sunbirdsplash": {},
       "cordova-plugin-qr-scanner": {},
       "cordova-plugin-file-support": {},
-      "cordova-plugin-inappbrowser": {}
+      "cordova-plugin-inappbrowser": {},
+      "cordova-plugin-genie-sdk": {}
     },
-    "platforms": []
+    "platforms": [
+      "android"
+    ]
   }
 }

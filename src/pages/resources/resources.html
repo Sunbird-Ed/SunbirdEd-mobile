@@ -13,10 +13,10 @@
 
 <ion-content class="course-page-color">
   <!-- <div> -->
-  <div class="">
+  <div class="" [ngStyle]="{'height-25': localResources && localResources.length === 0}">
     <div class="item padding-11">
-      <span float-start class="scroll-heading" *ngIf="localResources && localResources.length">{{ 'SAVED_RESOURCES' | translate }}</span>
-      <span float-end class="view-all-link" *ngIf="localResources && localResources.length">
+      <span float-start class="scroll-heading">{{ 'SAVED_RESOURCES' | translate }}</span>
+      <span float-end class="view-all-link" *ngIf="localResources && localResources.length > 0 && !showLoader"> 
         <a>{{ 'VIEW_ALL' | translate }}</a>
       </span>
     </div>
@@ -26,7 +26,7 @@
       </div>
     </ion-scroll>
     <ion-spinner *ngIf="showLoader"></ion-spinner>
-    <div *ngIf="localResources && localResources.length === 0 && !showLoader">No data found</div>
+    <div *ngIf="localResources && localResources.length === 0 && !showLoader" class="text-center">No data found</div>
   </div>
 
   <div *ngFor="let items of storyAndWorksheets">
