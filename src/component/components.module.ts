@@ -1,3 +1,4 @@
+import { SearchListComponent } from './search-list/search-list';
 import { NgModule } from "@angular/core";
 import { CourseCard } from "./card/course/course-card";
 import { IonicPageModule } from 'ionic-angular';
@@ -7,6 +8,7 @@ import { IonicImageLoader } from "ionic-image-loader";
 @NgModule({
     declarations: [
         CourseCard,
+        SearchListComponent
     ],
     imports: [
         IonicPageModule.forChild(CourseCard),
@@ -14,7 +16,8 @@ import { IonicImageLoader } from "ionic-image-loader";
         IonicImageLoader
     ],
     exports: [
-        CourseCard
+        CourseCard,
+        SearchListComponent
     ]
 })
-export class ComponentsModule {}
+export class ComponentsModule { }

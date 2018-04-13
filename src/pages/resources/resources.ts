@@ -1,6 +1,7 @@
 import { Component, NgZone, OnInit } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { PageAssembleService, PageAssembleCriteria, ContentService, AuthService } from "sunbird";
+import { SearchPage } from './../search/search';
 import * as _ from 'lodash';
 
 @Component({
@@ -69,6 +70,8 @@ export class ResourcesPage implements OnInit {
         let response = JSON.parse(res);
         //TODO Temporary code - should be fixed at backend
         let a = JSON.parse(response.sections);
+        console.log('page service ==>>>>', a);
+
         let newSections = [];
         a.forEach(element => {
           element.display = JSON.parse(element.display);
@@ -76,9 +79,21 @@ export class ResourcesPage implements OnInit {
         });
         //END OF TEMPORARY CODE
         that.storyAndWorksheets = newSections;
+        console.log('storyAndWorksheets', that.storyAndWorksheets);
       });
     }, error => {
       console.log('error while getting popular resources...', error);
+    });
+  }
+
+  /**
+   * Navigate to search page
+   * 
+   * @param {string} queryParams search query params
+   */
+  searchAllContent(queryParams): void {
+    this.navCtrl.push(SearchPage, {
+      requestParams: queryParams
     });
   }
 

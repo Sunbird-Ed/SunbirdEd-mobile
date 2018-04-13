@@ -34,7 +34,7 @@
       <div class="course-scroll-holder">
         <div class="item padding-11">
           <span float-start class="scroll-heading">{{items.display.name.en}}</span>
-          <span float-end class="view-all-link">
+          <span float-end class="view-all-link" (click)="searchAllContent(items.searchQuery)">
             <a>{{ 'VIEW_ALL' | translate }}</a>
           </span>
         </div>
