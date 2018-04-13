@@ -4,7 +4,6 @@ import { CourseBatchesPageModule } from './../pages/course-batches/course-batche
 import { ChildContentDetailsPageModule } from './../pages/child-content-details/child-content-details.module';
 import { CourseDetailPageModule } from './../pages/course-detail/course-detail.module';
 
-
 import { Injectable } from "@angular/core";
 import { ContainerService } from "sunbird";
 import { GroupPage } from "../pages/group/group";
@@ -24,6 +23,7 @@ import { LanguageSettingsPageModule } from "../pages/language-settings/language-
 import { RolePageModule } from "../pages/userrole/role.module";
 import { GuestEditProfileModule } from "../pages/guest-edit.profile/guest-edit-profile.module";
 import { QRScannerModule } from "../pages/qrscanner/qrscanner.module";
+import { SearchModule } from "../pages/search/search.module";
 
 export function initUserTabs(container: ContainerService) {
     container.removeAllTabs();
@@ -58,4 +58,5 @@ export const PluginModules = [CoursesPageModule,
     CourseBatchesPageModule,
     EnrolledCourseDetailsPageModule,
     QRScannerModule,
+    SearchModule,
     ViewMoreActivityPageModule];

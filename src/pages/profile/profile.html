@@ -174,7 +174,7 @@
         <span class="section-title">{{ 'CREATED_BY_SMALL' | translate }}</span>
         <ion-scroll scrollX="true" class="course-scroll-dimensions" no-padding>
             <div class="inner">
-                <course-card *ngFor="let courseItem of enrolledCourse" [course]="courseItem" [layoutName]="'Popular'"></course-card>
+                <course-card *ngFor="let courseItem of enrolledCourse" [course]="courseItem" [layoutName]="'Popular'" [onProfile]="onProfile"></course-card>
             </div>
         </ion-scroll>
     </div>

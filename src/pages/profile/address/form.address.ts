@@ -44,7 +44,7 @@ export class FormAddress {
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
 
     /* Receive data from other component */
-    this.isNewForm = this.navParams.get('addForm') || true;
+    this.isNewForm = this.navParams.get('addForm');
     this.addressDetails = this.navParams.get('addressDetails') || {};
     this.profile = this.navParams.get('profile') || {};
 

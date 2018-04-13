@@ -47,6 +47,7 @@ export class ProfilePage {
   profileProgress: string = "";
   subjects: string;
   grades: string;
+  onProfile: boolean = true;
 
   /*
    * Contains paths to icons
@@ -159,6 +160,7 @@ export class ProfilePage {
                 this.profile = r.response;
                 if (r.response && r.response.avatar)
                   this.imageUri = r.response.avatar;
+                this.searchContent();
                 this.formatLastLoginTime();
                 this.formatUserName();
                 this.formatProfileProgress();
@@ -168,7 +170,6 @@ export class ProfilePage {
                 this.grades = this.arrayToString(this.profile.grade);
                 this.formatMissingFields();
                 this.formatSocialLinks();
-                this.searchContent();
                 resolve();
               });
             },

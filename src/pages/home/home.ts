@@ -12,6 +12,7 @@ import {
   TenantInfoRequest,
 } from 'sunbird';
 import { SunbirdQRScanner, QRResultCallback } from '../qrscanner/sunbirdqrscanner.service';
+import { SearchPage } from '../search/search';
 
 const KEY_SUNBIRD_SUPPORT_FILE_PATH = "sunbird_support_file_path";
 
@@ -107,12 +108,13 @@ export class HomePage {
 
 
   scanQRCode() {
+    const that = this;
     const callback: QRResultCallback = {
       dialcode(scanResult, dialCode) {
-        console.log("Scan QR " + scanResult + " " + dialCode);
+        that.navCtrl.push(SearchPage, { dialCode: dialCode });
       },
       content(scanResult, contentId) {
-        console.log("Scan QR " + scanResult + " " + contentId);
+        // that.navCtrl.push(SearchPage);
       }
     }
 
