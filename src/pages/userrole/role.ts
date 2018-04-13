@@ -4,10 +4,12 @@ import { TabsPage, OAuthService } from 'sunbird';
 import { ViewController } from 'ionic-angular/navigation/view-controller';
 import { TranslateService } from '@ngx-translate/core';
 import { Storage } from "@ionic/storage";
+import { ProfileType, ProfileService } from 'sunbird'
 
 const selectedCardBorderColor = '#0080ff';
 const borderColor = '#fff';
 const KEY_SELECTED_ROLE = "selected_role";
+const KEY_SELECTED_LANGUAGE = "selected_language";
 
 @Component({
   selector: 'page-role',
@@ -24,9 +26,10 @@ export class RolePage {
   studentCardBorderColor: string = '#fff';
   roleSelected: boolean = false;
   selectedRole: string;
-  continueAs: string = "Continue as ";
+  continueAs: string = "";
+  language: string;
 
-  constructor(public navCtrl: NavController, private translator: TranslateService, private storage: Storage) {
+  constructor(public navCtrl: NavController, private translator: TranslateService, private storage: Storage, private profileService: ProfileService) {
     this.initData();
   }
 
@@ -51,7 +54,9 @@ export class RolePage {
     this.teacherCardBorderColor = selectedCardBorderColor;
     this.studentCardBorderColor = borderColor;
     this.selectedRole = "teacher";
-    this.continueAs = "Continue as teacher";
+    this.translator.get('CONTINUE_AS_TEACHER').subscribe(value => {
+      this.continueAs = value;
+    })
     this.storage.set(KEY_SELECTED_ROLE, this.selectedRole);
   }
 
@@ -61,16 +66,66 @@ export class RolePage {
     this.teacherCardBorderColor = borderColor;
     this.studentCardBorderColor = selectedCardBorderColor;
     this.selectedRole = "student";
-    this.continueAs = "Continue as student";
+    this.translator.get('CONTINUE_AS_STUDENT').subscribe(value => {
+      this.continueAs = value;
+    })
     this.storage.set(KEY_SELECTED_ROLE, this.selectedRole)
   }
 
   continue() {
-    this.navCtrl.push(TabsPage);
+    let profileRequest;
+
+    if (this.selectedRole == "teacher") {
+      profileRequest = {
+        handle: "Guest1",
+        avatar: "avatar",
+        language: "en",
+        age: -1,
+        day: -1,
+        month: -1,
+        standard: -1,
+        profileType: ProfileType.TEACHER
+      };
+    } else {
+      profileRequest = {
+        handle: "Guest1",
+        avatar: "avatar",
+        language: "en",
+        age: -1,
+        day: -1,
+        month: -1,
+        standard: -1,
+        profileType: ProfileType.STUDENT
+      };
+    }
+
+    this.profileService.createProfile(profileRequest, (successResponse) => {
+      console.log("createProfile success : " + successResponse);
+      if (successResponse) {
+        let response = JSON.parse(successResponse);
+
+        console.log("UID of the created user - " + response.uid)
+        this.setUser(response.uid)
+      }
+
+
+    }, (errorResponse) => {
+      console.log("createProfile success : " + errorResponse);
+    })
+
   }
 
   goBack() {
     this.navCtrl.pop();
+  }
+
+  setUser(uid: string) {
+    this.profileService.setCurrentUser(uid, (successResponse) => {
+      console.log("Set User Success - " + successResponse);
+      this.navCtrl.push(TabsPage);
+    }, (errorResponse) => {
+      console.log("Set User Error -" + errorResponse);
+    })
   }
 
 }

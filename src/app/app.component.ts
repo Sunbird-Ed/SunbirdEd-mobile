@@ -36,7 +36,7 @@ export class MyApp {
         }
       });
 
-      // ModuleService.initUserTabs(that.containerService);
+      // initUserTabs(that.containerService);
       // that.rootPage = TabsPage;
 
       // Okay, so the platform is ready and our plugins are available.
@@ -63,7 +63,7 @@ export class MyApp {
   //       } else if (val === "guest") {
   //         //take user to home page
   //         this.takeToHomeAsGuest()
-  //       } 
+  //       }
   //     })
   // }
 

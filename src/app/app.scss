@@ -27,6 +27,19 @@
   vertical-align: middle;
 }
 
+// Re-usable css
+.padding-bottom-5 {
+    padding-bottom: 5px;
+}
+.text-align-end {
+    text-align: end;
+}
+.margin-top-5{
+    margin-top: 5px;
+}
+.height-25{
+    height: 25%;
+}
 .tabbar, .tabs-ios, .tabs-md, .tabs-wp {
   .tab-button-icon {
       background-repeat: no-repeat;

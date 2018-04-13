@@ -1,7 +1,8 @@
 import { Component, Input } from "@angular/core";
 import { NavController } from 'ionic-angular';
-import { CourseDetailComponent } from './../../../pages/courses/components/course-detail/course-detail';
 import { ImageLoader } from "ionic-image-loader";
+import { EnrolledCourseDetailsPage } from "../../../pages/enrolled-course-details/enrolled-course-details";
+import { CourseDetailPage } from './../../../pages/course-detail/course-detail';
 
 /**
  * The course card component
@@ -23,6 +24,10 @@ export class CourseCard {
    * @example layoutName = Inprogress / popular 
    */
   @Input() layoutName: string;
+
+  @Input() pageName: string;
+
+  @Input() onProfile: boolean = false;
 
   /**
    * Contains default image path.
@@ -48,10 +53,21 @@ export class CourseCard {
    */
   navigateToCourseDetailPage(layoutName: string, content): void {
     console.log('card info...', content);
-    this.navCtrl.push(CourseDetailComponent, {
-      layoutType: layoutName,
-      content: content
-    });
+    console.log('page name ->', this.pageName);
+    if (this.pageName === 'library') {
+      layoutName = 'SavedResources';
+    }
+    if (layoutName === 'SavedResources') {
+      this.navCtrl.push(CourseDetailPage, {
+        layoutType: layoutName,
+        content: content
+      });
+    } else {
+      this.navCtrl.push(layoutName === 'Inprogress' ? EnrolledCourseDetailsPage : CourseDetailPage, {
+        layoutType: layoutName,
+        content: content
+      });
+    }
   }
 
   onImageLoad(imgLoader: ImageLoader) {

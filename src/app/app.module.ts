@@ -21,7 +21,6 @@ import { UniqueDeviceID } from '@ionic-native/unique-device-id';
 import { AppVersion } from '@ionic-native/app-version';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { IonicImageLoader, ImageLoader, ImageLoaderConfig } from "ionic-image-loader";
-import { CourseProvider } from '../providers/course/course';
 import { FilePath } from '@ionic-native/file-path';
 
 @NgModule({
@@ -62,7 +61,6 @@ import { FilePath } from '@ionic-native/file-path';
     SocialSharing,
     ImageLoader,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
-    CourseProvider,
     FilePath,
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
