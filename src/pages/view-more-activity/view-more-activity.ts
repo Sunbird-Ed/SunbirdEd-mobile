@@ -1,5 +1,5 @@
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { ContentService } from 'sunbird';
 import { ViewMoreActivityListComponent } from '../../component/view-more-activity-list/view-more-activity-list';
 
@@ -14,6 +14,7 @@ import { ViewMoreActivityListComponent } from '../../component/view-more-activit
   selector: 'page-view-more-activity',
   templateUrl: 'view-more-activity.html',
 })
+
 export class ViewMoreActivityPage {
 
   /**
@@ -42,10 +43,33 @@ export class ViewMoreActivityPage {
   searchLimit: number = 10
 
   /**
-   * 
+   * Total search count
    */
   totalCount: number;
 
+  /**
+   * Load more flag
+   */
+  isLoadMore: boolean = false;
+
+  /**
+   * Contains reference of NgZone
+   */
+  ngZone: NgZone;
+
+  /**
+   * Contains reference of NavController
+   */
+  navCtrl: NavController;
+
+  /**
+   * Contains reference of NavParams
+   */
+  navParams: NavParams;
+
+  /**
+   * Contains reference of ContentService
+   */
   public contentService: ContentService;
 
   /**
@@ -53,25 +77,28 @@ export class ViewMoreActivityPage {
    * 
    * @param navCtrl 
    * @param navParams 
+   * @param contentService 
+   * @param ngZone 
    */
-  constructor(public navCtrl: NavController, public navParams: NavParams, contentService: ContentService) {
-    this.searchList = { "message": "successful", "result": { "contentData": { "appIcon": "https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/content/do_2121989290225418241106/artifact/51fc00bbaf7f23db5a43f844b3bac7d2_1486535628609.thumb.jpeg", "artifactUrl": "https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/content/do_2121989290225418241106/artifact/1489127366073_do_2121989290225418241106.zip", "audience": "Learner", "contentDisposition": "inline", "contentEncoding": "gzip", "contentType": "Story", "copyright": "", "createdOn": "2017-03-10T06:24:37.947+0000", "description": "Telemetry", "downloadUrl": "https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/do_2121989290225418241106/copied-from-telemetry-test_1489127366521_do_2121989290225418241106_1.0.ecar", "gradeLevel": ["Grade 1"], "identifier": "do_2121989290225418241106", "language": ["English"], "lastPublishedOn": "2017-03-10T06:29:26.520+0000", "me_averageRating": "5.0", "me_totalDownloads": "2.0", "me_totalRatings": "1.0", "mimeType": "application/vnd.ekstep.ecml-archive", "name": "Copied From Telemetry Test", "osId": "org.ekstep.quiz.app", "owner": "", "pkgVersion": "1.0", "publisher": "", "size": "442073.0", "status": "Live", "variants": { "spine": { "ecarUrl": "https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/do_2121989290225418241106/copied-from-telemetry-test_1489127366706_do_2121989290225418241106_1.0_spine.ecar", "size": 7607 } }, "versionKey": "1497245126216" }, "contentType": "story", "identifier": "do_2121989290225418241106", "isAvailableLocally": false, "isUpdateAvailable": false, "lastUpdatedTime": 0, "mimeType": "application/vnd.ekstep.ecml-archive", "referenceCount": 1 }, "status": true };
+  constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, ngZone: NgZone) {
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
     this.contentService = contentService;
+    this.ngZone = ngZone;
+    this.navCtrl = navCtrl;
+    this.navParams = navParams;
   }
 
   /**
-   * Get api request body
+   * Function to build api request
    */
   getRequestBody(): object {
-    console.log('ppppppppffffffffff', this.searchQuery)
     let data = JSON.parse(this.searchQuery);
     data = data.request;
     const requestParams = {
       query: data.query,
       limit: this.searchLimit,
       contentStatusArray: data.filters.status,
-      contentTypes: data.filters.contentType
+      contentTypes: ['Collection']
     }
 
     return requestParams;
@@ -83,25 +110,28 @@ export class ViewMoreActivityPage {
   search() {
     this.contentService.searchContent(this.getRequestBody(), (data: any) => {
       data = JSON.parse(data);
-      if (data.result && data.result.contentDataList) {
-        this.searchList = data.result.contentDataList;
-      }
+      console.log('search limit...', data);
+      this.ngZone.run(() => {
+        if (data.result && data.result.contentDataList) {
+          if (this.isLoadMore) {
+            this.searchList.push(data.result.contentDataList);
+          } else {
+            this.searchList = data.result.contentDataList;
+          }
+        }
+      })
     }, (error: any) => {
-
+      console.log('Error: while fetchig view more content')
     })
   }
 
+  /**
+   * Load more result
+   */
   loadMore() {
+    // TODO: Issue in SDK - SDK is not accepting offset value.
     this.searchLimit = this.searchLimit + 10;
     this.search();
-  }
-
-
-  /**
-   * Ionic default life cycle hook
-   */
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad SearchPage');
   }
 
   /**
@@ -112,5 +142,12 @@ export class ViewMoreActivityPage {
     this.searchQuery = this.navParams.get('requestParams');
     this.search();
     console.log('queryParams received =>>>>', this.navParams.get('requestParams'));
+  }
+
+  /**
+   * Ionic life cycle hook
+   */
+  ionViewCanLeave() {
+    this.tabBarElement.style.display = 'flex';
   }
 }

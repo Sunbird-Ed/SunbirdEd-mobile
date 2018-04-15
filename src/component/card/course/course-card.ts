@@ -4,6 +4,8 @@ import { NavController } from 'ionic-angular';
 import { ImageLoader } from "ionic-image-loader";
 import { EnrolledCourseDetailsPage } from "../../../pages/enrolled-course-details/enrolled-course-details";
 import { CourseDetailPage } from './../../../pages/course-detail/course-detail';
+import { CollectionDetailsPage } from '../../../pages/collection-details/collection-details';
+import { ContentDetailsPage } from '../../../pages/content-details/content-details';
 
 /**
  * The course card component
@@ -52,8 +54,8 @@ export class CourseCard {
    * @param {string} layoutName 
    * @param {object} content 
    */
-  navigateToCourseDetailPage(layoutName: string, content): void {
-    console.log('card info...', content);
+  navigateToCourseDetailPage(content: any, layoutName: string): void {
+    /*console.log('card info...', content);
     console.log('page name ->', this.pageName);
     if (this.pageName === 'library') {
       layoutName = 'SavedResources';
@@ -68,6 +70,24 @@ export class CourseCard {
         layoutType: layoutName,
         content: content
       });
+    }*/
+
+    console.log('Card details... @@@', content);
+    if (content.contentType === 'Course') {
+      console.log('12345');
+      this.navCtrl.push(CourseDetailPage, {
+        content: content
+      })
+    } else if (content.mimeType === 'application/vnd.ekstep.content-collection') {
+      console.log('123456');
+      this.navCtrl.push(CollectionDetailsPage, {
+        content: content
+      })
+    } else {
+      console.log('1234567');
+      this.navCtrl.push(ContentDetailsPage, {
+        content: content
+      })
     }
   }
 

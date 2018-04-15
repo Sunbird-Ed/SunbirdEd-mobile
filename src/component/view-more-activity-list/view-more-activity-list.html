@@ -7,7 +7,7 @@
     </ion-col>
     <ion-col col-8>
       <h6 style="margin-top: 0px;">{{(content.name.length > 21) ? (content.name | slice:0:10) + '...' : (content.name)}}</h6>
-      <div class="row" padding-top>
+      <div class="row padding-top-5">
         <div>
           <span>Nov 5, 1955</span>
           <br/>
@@ -16,7 +16,8 @@
           <span *ngIf="content.size">[{{ content.size | fileSize }}]</span>
         </div>
         <div>
-          <button ion-button outline small float-end border-radius-5 style="margin-left: 30px;margin-top: 0px;">OPEN</button>
+          <button ion-button outline small border-radius-5 style="margin-left: 65px;margin-top: 0px;"
+          (click)="navigateToDetailsPage(content)">OPEN</button>
         </div>
       </div>
     </ion-col>

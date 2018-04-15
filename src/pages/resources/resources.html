@@ -13,20 +13,27 @@
 
 <ion-content class="course-page-color">
   <!-- <div> -->
-  <div class="" [ngStyle]="{'height-25': localResources && localResources.length === 0}">
+  <div class="" [ngClass]="{'empty-saved-resources' : localResources && localResources.length === 0}">
     <div class="item padding-11">
       <span float-start class="scroll-heading">{{ 'SAVED_RESOURCES' | translate }}</span>
-      <span float-end class="view-all-link" *ngIf="localResources && localResources.length > 0 && !showLoader"> 
+      <span float-end class="view-all-link" *ngIf="localResources && localResources.length > 0 && !showLoader">
         <a>{{ 'VIEW_ALL' | translate }}</a>
       </span>
     </div>
-    <ion-scroll *ngIf="localResources && localResources.length && !showLoader" scrollX="true" style="width: 100%; height: 166px;" no-padding>
+    <ion-scroll *ngIf="localResources && localResources.length && !showLoader" scrollX="true" style="width: 100%; height: 166px;"
+      no-padding>
       <div class="inner inprogress-courses">
         <course-card *ngFor="let item of localResources" [course]="item.contentData" [layoutName]="'SavedResources'"></course-card>
       </div>
     </ion-scroll>
     <ion-spinner *ngIf="showLoader"></ion-spinner>
-    <div *ngIf="localResources && localResources.length === 0 && !showLoader" class="text-center">No data found</div>
+    <ion-grid class="padding-top-25" *ngIf="localResources && localResources.length === 0 && !showLoader">
+      <ion-row>
+        <ion-col>
+          <div text-center> No resources stored </div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
   </div>
 
   <div *ngFor="let items of storyAndWorksheets">

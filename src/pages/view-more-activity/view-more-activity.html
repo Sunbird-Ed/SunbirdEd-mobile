@@ -4,9 +4,11 @@
   </ion-navbar>
 
 </ion-header>
-<ion-content padding>
+<ion-content padding overflow-scroll = "true">
   <div *ngIf="searchList && searchList.length">
     <view-more-activity-list *ngFor="let item of searchList" [content]="item" [type]="library"></view-more-activity-list>
+    <br/>
   </div>
-  <button ion-button block (click)="loadMore();">LOAD MORE</button>
+  <!-- TODO: need good logic here -->
+  <button ion-button block *ngIf="searchList && searchList.length" (click)="loadMore();">LOAD MORE</button>
 </ion-content>
