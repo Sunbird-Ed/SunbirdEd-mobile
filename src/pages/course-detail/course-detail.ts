@@ -152,7 +152,11 @@ export class CourseDetailPage {
     }
   }
 
+  /**
+   * Set course structure info
+   */
   setCourseStructure(){
+    this.showChildrenLoader = true;
     this.course.contentTypesCount = this.course.contentTypesCount ? JSON.parse(this.course.contentTypesCount) : '';
   }
 
@@ -161,14 +165,16 @@ export class CourseDetailPage {
    */
   setChildContents() {
     console.log('Making child contents api call... @@@');
-    this.zone.run(() => { this.showChildrenLoader = true; });
-
     const option = { contentId: this.identifier, hierarchyInfo: null, level: 1 };
     this.contentService.getChildContents(option, (data: any) => {
       data = JSON.parse(data);
       console.log('Success: child contents ===>>>', data);
       this.zone.run(() => {
-        this.childrenData = data.result;
+        if (data && data.result && data.result.children) {
+          this.childrenData = data.result.children;
+        } else {
+          this.childrenData = [];
+        }
         this.showChildrenLoader = false;
       });
     },
@@ -223,7 +229,7 @@ export class CourseDetailPage {
         } else {
           console.log('Success: content imported successfully... @@@', data);
         }
-        this.showChildrenLoader = false;
+        // this.showChildrenLoader = false;
       })
     },
       error => {
@@ -231,7 +237,7 @@ export class CourseDetailPage {
           console.log('error while loading content details', error);
           const message = 'Something went wrong, please check after some time';
           this.showErrorMessage(message, false);
-          this.showChildrenLoader = false;
+          // this.showChildrenLoader = false;
         })
       });
   }

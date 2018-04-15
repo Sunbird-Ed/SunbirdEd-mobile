@@ -105,7 +105,7 @@ export class ViewMoreActivityPage implements OnInit {
       query: data.query,
       limit: this.searchLimit,
       contentStatusArray: data.filters.status,
-      contentTypes: data.filters.contentType
+      contentTypes: data.filters.contentTypes
     }
 
     return requestParams;

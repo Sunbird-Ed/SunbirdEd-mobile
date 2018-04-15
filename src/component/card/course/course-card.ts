@@ -55,39 +55,28 @@ export class CourseCard {
    * @param {object} content 
    */
   navigateToCourseDetailPage(content: any, layoutName: string): void {
-    /*console.log('card info...', content);
-    console.log('page name ->', this.pageName);
-    if (this.pageName === 'library') {
-      layoutName = 'SavedResources';
-    }
-    if (layoutName === 'SavedResources') {
-      this.navCtrl.push(CourseDetailPage, {
-        layoutType: layoutName,
-        content: content
-      });
-    } else {
-      this.navCtrl.push(layoutName === 'Inprogress' ? EnrolledCourseDetailsPage : CourseDetailPage, {
-        layoutType: layoutName,
-        content: content
-      });
-    }*/
-
     console.log('Card details... @@@', content);
-    if (content.contentType === 'Course') {
-      console.log('Inside course details page');
-      this.navCtrl.push(CourseDetailPage, {
-        content: content
-      })
-    } else if (content.mimeType === 'application/vnd.ekstep.content-collection') {
-      console.log('123456');
-      this.navCtrl.push(CollectionDetailsPage, {
+    if (layoutName === 'Inprogress') {
+      this.navCtrl.push(EnrolledCourseDetailsPage, {
         content: content
       })
     } else {
-      console.log('1234567');
-      this.navCtrl.push(ContentDetailsPage, {
-        content: content
-      })
+      if (content.contentType === 'Course') {
+        console.log('Inside course details page');
+        this.navCtrl.push(CourseDetailPage, {
+          content: content
+        })
+      } else if (content.mimeType === 'application/vnd.ekstep.content-collection') {
+        console.log('Inside CollectionDetailsPage');
+        this.navCtrl.push(CollectionDetailsPage, {
+          content: content
+        })
+      } else {
+        console.log('Inside ContentDetailsPage');
+        this.navCtrl.push(ContentDetailsPage, {
+          content: content
+        })
+      }
     }
   }
 

@@ -216,6 +216,7 @@ export class CollectionDetailsPage {
    * Set collection structure
    */
   setCollectionStructure() {
+    this.showChildrenLoader = true;
     if (this.contentDetail.contentTypesCount) {
       this.contentDetail.contentTypesCount = JSON.parse(this.contentDetail.contentTypesCount);
     } else if (this.cardData.contentTypesCount) {
@@ -268,7 +269,7 @@ export class CollectionDetailsPage {
         } else {
           console.log('Success: content imported successfully... @@@', data);
         }
-        this.showChildrenLoader = false;
+        // this.showChildrenLoader = false;
       })
     },
       error => {
@@ -286,13 +287,15 @@ export class CollectionDetailsPage {
    */
   setChildContents() {
     console.log('Making child contents api call... @@@');
-    this.zone.run(() => { this.showChildrenLoader = true; });
+    // this.zone.run(() => { this.showChildrenLoader = true; });
     const option = { contentId: this.identifier, hierarchyInfo: null, level: 1 };
     this.contentService.getChildContents(option, (data: any) => {
       data = JSON.parse(data);
       console.log('Success: child contents data =', data);
       this.zone.run(() => {
-        this.childrenData = data.result;
+        if (data && data.result && data.result.children) {
+          this.childrenData = data.result.children;
+        }
         this.showDownloadAllBtn(data.result.children || []);
         this.showChildrenLoader = false;
       });
@@ -331,9 +334,9 @@ export class CollectionDetailsPage {
    */
   ionViewWillEnter(): void {
     this.tabBarElement.style.display = 'none';
+    this.resetVariables();
     this.cardData = this.navParams.get('content');
     this.identifier = this.cardData.contentId || this.cardData.identifier;
-    this.resetVariables();
     this.setContentDetails(this.identifier, true);
     this.subscribeGenieEvent();
   }
@@ -448,6 +451,7 @@ export class CollectionDetailsPage {
    * Ionic life cycle hook
    */
   ionViewWillLeave(): void {
+    this.downloadProgress = '';
     this.tabBarElement.style.display = 'flex';
     this.events.unsubscribe('genie.event');
   }
