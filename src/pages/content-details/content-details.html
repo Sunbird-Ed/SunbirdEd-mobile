@@ -88,7 +88,7 @@
 <!-- Page footer -->
 <ion-footer>
   <ion-toolbar padding>
-      <button ion-button block outline *ngIf="isDownloadStarted" (click)="cancelDownloading()">CANCEL DOWNLOAD</button>
+      <button ion-button block outline *ngIf="isDownloadStarted" (click)="cancelDownload()">CANCEL DOWNLOAD</button>
       <button ion-button block *ngIf="showDownloadBtn" (click)="downloadContent()">
         {{ isDownloadStarted ? 'DOWNLOADING... ' + downloadProgress : 'DOWNLOAD' }}
       </button>

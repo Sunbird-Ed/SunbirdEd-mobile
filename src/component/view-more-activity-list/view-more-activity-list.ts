@@ -2,7 +2,7 @@ import { CollectionDetailsPage } from './../../pages/collection-details/collecti
 import { ContentDetailsPage } from './../../pages/content-details/content-details';
 import { CourseDetailPage } from './../../pages/course-detail/course-detail';
 
-import { Input } from '@angular/core';
+import { Input, NgZone } from '@angular/core';
 import { Component } from '@angular/core';
 import { ImageLoader } from "ionic-image-loader";
 import { IonicPage, NavController, NavParams, Events, ToastController } from 'ionic-angular';
@@ -39,6 +39,8 @@ export class ViewMoreActivityListComponent {
    */
   public navParams: NavParams;
 
+  public zone: NgZone;
+
   /**
    * Contains default image path.
    * 
@@ -49,31 +51,35 @@ export class ViewMoreActivityListComponent {
   /**
    * Default method of cass SearchListComponent
    */
-  constructor(navCtrl: NavController, navParams: NavParams) {
+  constructor(navCtrl: NavController, navParams: NavParams, zone: NgZone) {
     console.log('View more activity Component');
     this.defaultImg = 'assets/imgs/ic_action_course.png';
     this.navCtrl = navCtrl;
     this.navParams = navParams;
+    this.zone = zone;
   }
 
   navigateToDetailsPage(content: any) {
-    console.log('Card details... @@@', content);
-    if (content.contentType === 'Course') {
-      console.log('12345');
-      this.navCtrl.push(CourseDetailPage, {
-        content: content
-      })
-    } else if (content.mimeType === 'application/vnd.ekstep.content-collection') {
-      console.log('123456');
-      this.navCtrl.push(CollectionDetailsPage, {
-        content: content
-      })
-    } else {
-      console.log('1234567      ');
-      this.navCtrl.push(ContentDetailsPage, {
-        content: content
-      })
-    }
+    console.log('View more ard details... @@@', content);
+    this.zone.run(() => {
+
+      if (content.contentType === 'Course') {
+        console.log('Inside course details');
+        this.navCtrl.push(CourseDetailPage, {
+          content: content
+        })
+      } else if (content.mimeType === 'application/vnd.ekstep.content-collection') {
+        console.log('Inside collection details');
+        this.navCtrl.push(CollectionDetailsPage, {
+          content: content
+        })
+      } else {
+        console.log('Inside content details');
+        this.navCtrl.push(ContentDetailsPage, {
+          content: content
+        })
+      }
+    })
   }
 
   onImageLoad(imgLoader: ImageLoader) {

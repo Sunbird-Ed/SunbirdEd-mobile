@@ -74,7 +74,7 @@ export class CourseCard {
 
     console.log('Card details... @@@', content);
     if (content.contentType === 'Course') {
-      console.log('12345');
+      console.log('Inside course details page');
       this.navCtrl.push(CourseDetailPage, {
         content: content
       })

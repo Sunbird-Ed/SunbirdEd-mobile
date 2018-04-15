@@ -1,5 +1,5 @@
 import { Component, NgZone } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events, ToastController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController } from 'ionic-angular';
 import { ContentService } from 'sunbird';
 import { NgModel } from '@angular/forms';
 import * as _ from 'lodash';
@@ -75,6 +75,12 @@ export class CollectionDetailsPage {
    */
   depth: string = '1';
 
+  /**
+   * Its get true when child is collection.
+   * Used to show content depth
+   * 
+   * @example 1.1 Collection 1 
+   */
   isDepthChild: boolean = false;
 
   /**
@@ -103,6 +109,11 @@ export class CollectionDetailsPage {
   downloadContentsSize: string;
 
   /**
+   * Contains loader instance
+   */
+  loader: any;
+
+  /**
    * Contains reference of content service
    */
   public contentService: ContentService;
@@ -127,14 +138,20 @@ export class CollectionDetailsPage {
    */
   public toastCtrl: ToastController;
 
+  /**
+   * Contains reference of LoadingController
+   */
+  public loadingCtrl: LoadingController;
+
   constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, zone: NgZone,
-    private events: Events, toastCtrl: ToastController) {
+    private events: Events, toastCtrl: ToastController, loadingCtrl: LoadingController) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
     this.zone = zone;
     this.toastCtrl = toastCtrl;
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
+    this.loadingCtrl = loadingCtrl;
     console.warn('Inside new module..........................');
   }
 
@@ -144,6 +161,8 @@ export class CollectionDetailsPage {
    * @param {string} identifier identifier of content / course
    */
   setContentDetails(identifier, refreshContentDetails: boolean | true) {
+    let loader = this.getLoader();
+    loader.present();
     const option = { contentId: identifier, refreshContentDetails: refreshContentDetails }
     this.contentService.getContentDetail(option, (data: any) => {
       this.details = data.result;
@@ -153,17 +172,19 @@ export class CollectionDetailsPage {
         if (data && data.result) {
           this.extractApiResponse(data);
         }
+        loader.dismiss();
       });
     },
       error => {
         console.log('error while loading content details', error);
         const message = 'Something went wrong, please check after some time';
+        this.loader.dismiss();
         this.showErrorMessage(message, true);
       });
   }
 
   /**
-   * 
+   * Function to extract api response.
    */
   extractApiResponse(data) {
     this.contentDetail = data.result.contentData ? data.result.contentData : [];
@@ -239,20 +260,24 @@ export class CollectionDetailsPage {
 
     // Call content service
     this.contentService.importContent(option, (data: any) => {
-      data = JSON.parse(data);
-      if (data.result && data.result[0].status === 'NOT_FOUND') {
-        const message = 'Unable to fetch content';
-        this.showErrorMessage(message, false);
-      } else {
-        console.log('Success: content imported successfully... @@@', data);
-      }
-      this.showChildrenLoader = false;
+      this.zone.run(() => {
+        data = JSON.parse(data);
+        if (data.result && data.result[0].status === 'NOT_FOUND') {
+          const message = 'Unable to fetch content';
+          this.showErrorMessage(message, false);
+        } else {
+          console.log('Success: content imported successfully... @@@', data);
+        }
+        this.showChildrenLoader = false;
+      })
     },
       error => {
-        console.log('error while loading content details', error);
-        const message = 'Something went wrong, please check after some time';
-        this.showErrorMessage(message, false);
-        this.showChildrenLoader = false;
+        this.zone.run(() => {
+          console.log('error while loading content details', error);
+          const message = 'Something went wrong, please check after some time';
+          this.showErrorMessage(message, false);
+          this.showChildrenLoader = false;
+        })
       });
   }
 
@@ -261,15 +286,15 @@ export class CollectionDetailsPage {
    */
   setChildContents() {
     console.log('Making child contents api call... @@@');
-    this.showChildrenLoader = true;
+    this.zone.run(() => { this.showChildrenLoader = true; });
     const option = { contentId: this.identifier, hierarchyInfo: null, level: 1 };
     this.contentService.getChildContents(option, (data: any) => {
       data = JSON.parse(data);
       console.log('Success: child contents data =', data);
       this.zone.run(() => {
         this.childrenData = data.result;
-        this.showChildrenLoader = false;
         this.showDownloadAllBtn(data.result.children || []);
+        this.showChildrenLoader = false;
       });
     },
       (error: string) => {
@@ -316,29 +341,28 @@ export class CollectionDetailsPage {
   navigateToDetailsPage(content: any, depth) {
     console.log('Card details... @@@', content);
     console.log('Content depth... @@@', depth);
-    if (content.contentType === 'Course') {
-      console.log('12345');
-      console.warn('=>>>>>>>>>>>>>', 'CourseDetailPage');
-      this.navCtrl.push(CourseDetailPage, {
-        content: content,
-        depth: depth
-      })
-    } else if (content.mimeType === 'application/vnd.ekstep.content-collection') {
-      console.log('123456');
-      console.warn('=>>>>>>>>>>>>>', 'CollectionDetailsPage');
-      this.isDepthChild = true;
-      this.navCtrl.push(CollectionDetailsPage, {
-        content: content,
-        depth: depth
-      })
-    } else {
-      console.log('1234567');
-      console.warn('=>>>>>>>>>>>>>', 'ContentDetailsPage');
-      this.navCtrl.push(ContentDetailsPage, {
-        content: content,
-        depth: depth
-      })
-    }
+    this.zone.run(() => {
+      if (content.contentType === 'Course') {
+        console.warn('Inside CourseDetailPage >>>');
+        this.navCtrl.push(CourseDetailPage, {
+          content: content,
+          depth: depth
+        })
+      } else if (content.mimeType === 'application/vnd.ekstep.content-collection') {
+        console.warn('Inside CollectionDetailsPage >>>');
+        this.isDepthChild = true;
+        this.navCtrl.push(CollectionDetailsPage, {
+          content: content,
+          depth: depth
+        })
+      } else {
+        console.warn('Inside ContentDetailsPage >>>');
+        this.navCtrl.push(ContentDetailsPage, {
+          content: content,
+          depth: depth
+        })
+      }
+    })
   }
   /**
    * Reset all values
@@ -439,5 +463,15 @@ export class CollectionDetailsPage {
     while (n >= 1024 && ++l)
       n = n / 1024;
     return (n.toFixed(n >= 10 || l < 1 ? 0 : 1) + ' ' + units[l]);
+  }
+
+  /**
+   * Function to get loader instance
+   */
+  getLoader(): any {
+    return this.loadingCtrl.create({
+      duration: 30000,
+      spinner: "crescent"
+    });
   }
 }

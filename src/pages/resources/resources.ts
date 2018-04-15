@@ -18,6 +18,11 @@ export class ResourcesPage implements OnInit {
   localResources: Array<any>;
 
   /**
+   * Loader
+   */
+  showLoader: boolean = false;
+
+  /**
    * Contains reference of content service
    */
   public contentService: ContentService;
@@ -37,6 +42,7 @@ export class ResourcesPage implements OnInit {
    * Get saved content
    */
   setSavedContent() {
+    this.showLoader = true;
     const requestParams = {
       contentTypes: ['Story', 'Worksheet', 'Collection', 'Game', 'TextBook', 'Course', 'Resource', 'LessonPlan']
     };
@@ -51,9 +57,11 @@ export class ResourcesPage implements OnInit {
           });
           this.localResources = data.result;
         }
+        this.showLoader = false;
       });
     }, error => {
       console.log('error while getting saved contents', error);
+      this.showLoader = false;
     });
 
   }
@@ -68,6 +76,7 @@ export class ResourcesPage implements OnInit {
     this.pageService.getPageAssemble(criteria, res => {
       that.ngZone.run(() => {
         let response = JSON.parse(res);
+        console.log('Saved resources', response);
         //TODO Temporary code - should be fixed at backend
         let a = JSON.parse(response.sections);
         console.log('page service ==>>>>', a);
@@ -92,6 +101,7 @@ export class ResourcesPage implements OnInit {
    * @param {string} queryParams search query params
    */
   searchAllContent(queryParams): void {
+    console.log('Search query...', queryParams);
     this.navCtrl.push(ViewMoreActivityPage, {
       requestParams: queryParams
     });

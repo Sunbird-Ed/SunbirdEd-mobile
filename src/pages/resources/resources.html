@@ -11,7 +11,7 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content class="course-page-color">
+<ion-content overflow-scroll = "true">
   <!-- <div> -->
   <div class="" [ngClass]="{'empty-saved-resources' : localResources && localResources.length === 0}">
     <div class="item padding-11">
@@ -35,7 +35,7 @@
       </ion-row>
     </ion-grid>
   </div>
-
+  <div class="devider-line" *ngIf="!showLoader"></div>
   <div *ngFor="let items of storyAndWorksheets">
     <div *ngIf="items.contents">
       <div class="course-scroll-holder">

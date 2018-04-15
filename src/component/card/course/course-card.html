@@ -16,7 +16,7 @@
         <ion-label class="card-title" padding-left>{{course?.courseName || course?.name}}</ion-label>
       </ion-col>
     </ion-row>
-    <ion-row class="bottom-container" no-padding>
+    <ion-row class="" [ngClass]="{'bottom-container' : layoutName !== 'SavedResources'}" no-padding>
       <ion-col col-8 *ngIf="layoutName === 'Popular' && pageName !== 'library'">
         <rating [(ngModel)]="course.progress" readOnly="true" max="5" no-padding></rating>
         <ion-label class="size_txt" no-margin *ngIf="course?.size">Size [{{course?.size | fileSize }}]</ion-label>

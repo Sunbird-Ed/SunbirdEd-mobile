@@ -4,6 +4,8 @@ import { ContentService, ContentSearchCriteria } from "sunbird";
 import { GenieResponse } from "../settings/datasync/genieresponse";
 import { FilterPage } from "./filters/filter";
 import { CourseDetailPage } from "../course-detail/course-detail";
+import { CollectionDetailsPage } from "../collection-details/collection-details";
+import { ContentDetailsPage } from "../content-details/content-details";
 
 @IonicPage()
 @Component({
@@ -30,7 +32,8 @@ export class SearchPage {
 
   openCollection(collection) {
     // TODO: Add mimeType check
-    this.navCtrl.push(CourseDetailPage, {'content': collection})
+    // this.navCtrl.push(CourseDetailPage, {'content': collection})
+    this.showContentDetails(collection);
   }
 
 
@@ -39,7 +42,27 @@ export class SearchPage {
       // this.navCtrl.push(CourseDetailPage, {'content': content});
     } else {
       // TODO: Add mimeType check
-      this.navCtrl.push(CourseDetailPage, {'content': content});
+      // this.navCtrl.push(CourseDetailPage, {'content': content});
+      this.showContentDetails(content);
+    }
+  }
+
+  showContentDetails(content) {
+    if (content.contentType === 'Course') {
+      console.log('Calling course details page');
+      this.navCtrl.push(CourseDetailPage, {
+        content: content
+      })
+    } else if (content.mimeType === 'application/vnd.ekstep.content-collection') {
+      console.log('Calling collection details page');
+      this.navCtrl.push(CollectionDetailsPage, {
+        content: content
+      })
+    } else {
+      console.log('Calling content details page');
+      this.navCtrl.push(ContentDetailsPage, {
+        content: content
+      })
     }
   }
 

@@ -1,5 +1,5 @@
 import { Component, NgZone } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events, ToastController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController } from 'ionic-angular';
 import { ContentService } from 'sunbird';
 import { NgModel } from '@angular/forms';
 import * as _ from 'lodash';
@@ -74,6 +74,11 @@ export class ContentDetailsPage {
   playContentBtn: boolean = false;
 
   /**
+   * Contains loader instance
+   */
+  loader: any;
+
+  /**
    * Contains reference of content service
    */
   public contentService: ContentService;
@@ -99,6 +104,11 @@ export class ContentDetailsPage {
   public toastCtrl: ToastController;
 
   /**
+   * Contains reference of LoadingController
+   */
+  public loadingCtrl: LoadingController;
+
+  /**
    * 
    * @param navCtrl 
    * @param navParams 
@@ -108,14 +118,15 @@ export class ContentDetailsPage {
    * @param toastCtrl 
    */
   constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, zone: NgZone,
-    private events: Events, toastCtrl: ToastController) {
+    private events: Events, toastCtrl: ToastController, loadingCtrl: LoadingController) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
     this.zone = zone;
     this.toastCtrl = toastCtrl;
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
-    console.warn('Inside new module..........................');
+    this.loadingCtrl = loadingCtrl;
+    console.warn('Inside content details page');
   }
 
   /**
@@ -124,6 +135,8 @@ export class ContentDetailsPage {
    * @param {string} identifier identifier of content / course
    */
   setContentDetails(identifier, refreshContentDetails: boolean | true) {
+    let loader = this.getLoader();
+    loader.present();
     const option = {
       contentId: identifier,
       refreshContentDetails: refreshContentDetails
@@ -135,12 +148,16 @@ export class ContentDetailsPage {
         console.log('Success: Content details received... @@@', data);
         if (data && data.result) {
           this.extractApiResponse(data);
+          loader.dismiss();
+        } else {
+          loader.dismiss();
         }
       });
     },
       error => {
         console.log('error while loading content details', error);
         const message = 'Something went wrong, please check after some time';
+        loader.dismiss();
         this.showErrorMessage(message, true);
       });
   }
@@ -325,7 +342,13 @@ export class ContentDetailsPage {
     console.log('Needed Genie canvas data...', this.content.playContentData);
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad ContentDetailsPage');
+  /**
+   * Function to get loader instance
+   */
+  getLoader(): any {
+    return this.loadingCtrl.create({
+      duration: 30000,
+      spinner: "crescent"
+    });
   }
 }
