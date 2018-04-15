@@ -29,6 +29,7 @@ export class SearchPage {
 
 
   openCollection(collection) {
+    // TODO: Add mimeType check
     this.navCtrl.push(CourseDetailPage, {'content': collection})
   }
 
@@ -37,6 +38,7 @@ export class SearchPage {
     if (collection !== undefined) {
       // this.navCtrl.push(CourseDetailPage, {'content': content});
     } else {
+      // TODO: Add mimeType check
       this.navCtrl.push(CourseDetailPage, {'content': content});
     }
   }
@@ -105,7 +107,6 @@ export class SearchPage {
           this.dialCodeContentResult.push(content);
         }
       })
-      return;
     }
 
     if (contentArray && contentArray.length == 1) {
