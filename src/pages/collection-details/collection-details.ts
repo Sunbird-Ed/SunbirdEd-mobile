@@ -323,7 +323,7 @@ export class CollectionDetailsPage {
           size += value.contentData.size;
         }
       });
-      this.downloadContentsSize = this.getReadableFileSize(size);
+      this.downloadContentsSize = this.getReadableFileSize(+size);
       console.log('download content identifiers', this.downloadIdentifiers);
       if (this.downloadIdentifiers.length) {
         this.showDownloadBtn = true;
@@ -412,7 +412,6 @@ export class CollectionDetailsPage {
           if (this.isDownloadStarted) {
             this.isDownloadStarted = false;
             this.showDownloadBtn = false;
-            this.downloadProgress = '0 %';
           } else {
             this.setChildContents();
           }
@@ -428,10 +427,10 @@ export class CollectionDetailsPage {
    * @param {boolean} isPop True = navigate to previous state
    */
   showErrorMessage(message: string, isPop: boolean | false): void {
-    if (this.isDownloadStarted) {
+    /*if (this.isDownloadStarted) {
       this.showDownloadBtn = true;
       this.isDownloadStarted = false;
-    }
+    }*/
 
     let toast = this.toastCtrl.create({
       message: message,
@@ -453,6 +452,7 @@ export class CollectionDetailsPage {
    * Download single content
    */
   downloadAllContent(): void {
+    this.downloadProgress = '0 %';
     this.isDownloadStarted = true;
     this.importContent(this.downloadIdentifiers, true);
   }
