@@ -296,7 +296,9 @@ export class CollectionDetailsPage {
         if (data && data.result && data.result.children) {
           this.childrenData = data.result.children;
         }
-        this.showDownloadAllBtn(data.result.children || []);
+        if (!this.isDepthChild) {
+          this.showDownloadAllBtn(data.result.children || []);
+        }
         this.showChildrenLoader = false;
       });
     },
@@ -336,6 +338,12 @@ export class CollectionDetailsPage {
     this.tabBarElement.style.display = 'none';
     this.resetVariables();
     this.cardData = this.navParams.get('content');
+    let depth = this.navParams.get('depth');
+    if (depth !== undefined) {
+      this.depth = depth;
+      this.showDownloadBtn = false;
+      this.isDepthChild = true;
+    }
     this.identifier = this.cardData.contentId || this.cardData.identifier;
     this.setContentDetails(this.identifier, true);
     this.subscribeGenieEvent();
@@ -378,6 +386,7 @@ export class CollectionDetailsPage {
     this.contentDetail = '';
     this.showDownloadBtn = false;
     this.downloadIdentifiers = [];
+    this.isDepthChild = false;
   }
 
   /**
@@ -403,6 +412,7 @@ export class CollectionDetailsPage {
           if (this.isDownloadStarted) {
             this.isDownloadStarted = false;
             this.showDownloadBtn = false;
+            this.downloadProgress = '0 %';
           } else {
             this.setChildContents();
           }
