@@ -44,7 +44,7 @@
     "ERROR_SHORT_MOBILE": "मोबाइल नंबर 10 अंकी असावा",
     "ERROR_SHORT_PASSWORD": "पासवर्ड किमान 8 अक्षरांचा असावा",
     "FETCHING_CONTENTS": "साहित्य प्राप्त करीत आहे:%s%",
-    "FILE_SIZE": "आकार [%s]",
+    "FILE_SIZE": "आकार",
     "FILTER": "फिल्टर",
     "FILTER_BY": "द्वारे फिल्टर",
     "FIRST_NAME": "नाव",

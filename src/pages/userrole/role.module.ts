@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-
+import { GenieSDKServiceProvider } from 'sunbird';
 import { RolePage } from './role';
 import { TranslateModule } from '@ngx-translate/core';
 
