@@ -5,6 +5,9 @@ import { NgModel } from '@angular/forms';
 import * as _ from 'lodash';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { CourseDetailPage } from '../course-detail/course-detail';
+import { ContentActionsComponent } from '../../component/content-actions/content-actions';
+import { PopoverController } from "ionic-angular/components/popover/popover-controller";
+
 
 /**
  * Generated class for the CollectionDetailsPage page.
@@ -88,6 +91,9 @@ export class CollectionDetailsPage {
    */
   queuedIdentifiers: Array<any> = [];
 
+  /**
+   * Download complete falg
+   */
   isDownlaodCompleted: boolean = false;
 
   /**
@@ -101,26 +107,19 @@ export class CollectionDetailsPage {
   currentCount: number = 0;
 
   /**
-   * Content details
-   */
-  details: any;
-
-  /**
    * Contains identifier(s) of locally not available content(s)
    */
   downloadIdentifiers = [];
 
+  /**
+   * Child content size
+   */
   downloadSize: number = 0;
 
   /**
    * Contains total size of locally not available content(s)
    */
   downloadContentsSize: string;
-
-  /**
-   * Contains loader instance
-   */
-  loader: any;
 
   /**
    * Contains reference of content service
@@ -153,7 +152,7 @@ export class CollectionDetailsPage {
   public loadingCtrl: LoadingController;
 
   constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, zone: NgZone,
-    private events: Events, toastCtrl: ToastController, loadingCtrl: LoadingController) {
+    private events: Events, toastCtrl: ToastController, loadingCtrl: LoadingController, public popoverCtrl: PopoverController) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
@@ -174,7 +173,6 @@ export class CollectionDetailsPage {
     loader.present();
     const option = { contentId: identifier, refreshContentDetails: refreshContentDetails }
     this.contentService.getContentDetail(option, (data: any) => {
-      this.details = data.result;
       this.zone.run(() => {
         data = JSON.parse(data);
         console.log('Content details ==>>>>>', data);
@@ -187,8 +185,8 @@ export class CollectionDetailsPage {
       error => {
         console.log('error while loading content details', error);
         const message = 'Something went wrong, please check after some time';
-        this.loader.dismiss();
-        this.showErrorMessage(message, true);
+        loader.dismiss();
+        // this.showErrorMessage(message, true);
       });
   }
 
@@ -197,6 +195,7 @@ export class CollectionDetailsPage {
    */
   extractApiResponse(data) {
     this.contentDetail = data.result.contentData ? data.result.contentData : [];
+    this.contentDetail.isAvailableLocally = data.result.isAvailableLocally;
     switch (data.result.isAvailableLocally) {
       case true: {
         console.log("Content locally available. Geting child content... @@@");
@@ -229,7 +228,9 @@ export class CollectionDetailsPage {
     if (this.contentDetail.contentTypesCount) {
       this.contentDetail.contentTypesCount = JSON.parse(this.contentDetail.contentTypesCount);
     } else if (this.cardData.contentTypesCount) {
-      this.contentDetail.contentTypesCount = JSON.parse(this.cardData.contentTypesCount);
+      if (!_.isObject(this.cardData.contentTypesCount)) {
+        this.contentDetail.contentTypesCount = JSON.parse(this.cardData.contentTypesCount);
+      }
     } else {
       this.contentDetail.contentTypesCount;
     }
@@ -302,10 +303,8 @@ export class CollectionDetailsPage {
    */
   setChildContents() {
     console.log('Making child contents api call... @@@');
-    // this.zone.run(() => { this.showChildrenLoader = true; });
     const option = { contentId: this.identifier, hierarchyInfo: null }; // TODO: remove level
     this.contentService.getChildContents(option, (data: any) => {
-      // console.log('FFFFFFFFFFFFFFFFFF', data);
       data = JSON.parse(data);
       console.log('Success: child contents data =', data);
       this.zone.run(() => {
@@ -328,22 +327,20 @@ export class CollectionDetailsPage {
   }
 
   getContentsSize(data) {
+    this.downloadSize = 0;
     _.forEach(data, (value, key) => {
-
-      // check children first
       if (value.children && value.children.length) {
-        console.log('Recurssion called');
         this.getContentsSize(value.children);
       }
 
       if (value.isAvailableLocally === false) {
         this.downloadIdentifiers.push(value.contentData.identifier);
-        if (value.contentData.size) {
+        if (value.contentData.size && !this.isDepthChild) {
           this.downloadSize += +value.contentData.size;
         }
       }
     });
-    console.log('downloadIdentifiers???????????????', this.downloadIdentifiers);
+    console.log('downloadIdentifiers', this.downloadIdentifiers);
     console.log('Download size ===>', this.downloadSize);
     if (this.downloadIdentifiers.length && !this.isDownlaodCompleted) {
       this.showDownloadBtn = true;
@@ -426,7 +423,13 @@ export class CollectionDetailsPage {
     this.contentDetail = '';
     this.showDownloadBtn = false;
     this.downloadIdentifiers = [];
-    this.isDepthChild = false;
+    // Added on date 16-april
+    this.queuedIdentifiers = [];
+    this.isDepthChild = this.isDepthChild;
+    this.isDownloadStarted = false;
+    this.showDownloadBtn = false;
+    this.isDownlaodCompleted = false;
+    this.currentCount = 0;
   }
 
   /**
@@ -453,6 +456,7 @@ export class CollectionDetailsPage {
               this.isDownloadStarted = false;
               this.showDownloadBtn = false;
               this.isDownlaodCompleted = true;
+              this.contentDetail.isAvailableLocally = true;
             }
           } else {
             this.setChildContents();
@@ -529,6 +533,24 @@ export class CollectionDetailsPage {
     return this.loadingCtrl.create({
       duration: 30000,
       spinner: "crescent"
+    });
+  }
+
+  showOverflowMenu(event) {
+    let popover = this.popoverCtrl.create(ContentActionsComponent, {
+      content: this.contentDetail,
+      isChild: this.isDepthChild
+    });
+    popover.present({
+      ev: event
+    });
+    popover.onDidDismiss(data => {
+      console.log('Yaahooooo.... content deleted successfully', data);
+      if (data === 0) {
+        this.resetVariables();
+        this.setContentDetails(this.identifier, false);
+      } else {
+      }
     });
   }
 }

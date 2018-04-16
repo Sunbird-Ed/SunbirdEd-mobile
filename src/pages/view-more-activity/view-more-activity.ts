@@ -108,6 +108,7 @@ export class ViewMoreActivityPage implements OnInit {
       contentTypes: data.filters.contentTypes
     }
 
+    console.log('Request params.....', requestParams);
     return requestParams;
   }
 
