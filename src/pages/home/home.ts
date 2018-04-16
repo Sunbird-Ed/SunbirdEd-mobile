@@ -107,6 +107,20 @@ export class HomePage {
 
   }
 
+  search() {
+    const contentType: Array<string> = [
+      "Story",
+      "Worksheet",
+      "Game",
+      "Collection",
+      "TextBook",
+      "Course",
+      "LessonPlan",
+      "Resource",
+    ];
+
+    this.navCtrl.push(SearchPage, { contentType: contentType})
+  }
 
   scanQRCode() {
     const that = this;
