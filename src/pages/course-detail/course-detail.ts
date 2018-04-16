@@ -325,6 +325,7 @@ export class CourseDetailPage {
    */
   playContent() {
     let details = JSON.stringify(this.details);
+    (<any>window).geniecanvas.play(details);
   }
 
   /**

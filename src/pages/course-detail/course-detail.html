@@ -100,7 +100,7 @@
   <ion-toolbar padding>
     <button ion-button block *ngIf="layoutName !== 'SavedResources'" (click)="navigateToBatchListPage('');">ENROLL IN COURSE</button>
     <button ion-button block *ngIf="layoutName === 'SavedResources' && !contentPlayBtn && !details.isAvailableLocally" (click)="downloadContent()">DOWNLOAD</button>
-    <button ion-button block *ngIf="layoutName === 'SavedResources' && contentPlayBtn">PLAY</button>
+    <button ion-button block *ngIf="layoutName === 'SavedResources' && contentPlayBtn" (click)="playContent()">PLAY</button>
     <button ion-button block outline *ngIf="showDownloadBtn === 'downloadAll'" (click)="importContent(downloadIdentifiers, true)">DOWNLOAD ALL ({{ downloadContentsSize }})</button>
   </ion-toolbar>
 </ion-footer>
