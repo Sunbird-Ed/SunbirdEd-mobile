@@ -42,7 +42,11 @@ import { FilePath } from '@ionic-native/file-path';
         deps: [HttpClient]
       }
     }),
-    IonicModule.forRoot(MyApp),
+    IonicModule.forRoot(MyApp, {
+      scrollPadding: false,
+      scrollAssist: true,
+      autoFocusAssist: false
+    }),
     IonicImageLoader.forRoot(),
     ...PluginModules
   ],

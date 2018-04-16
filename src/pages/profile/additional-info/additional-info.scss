@@ -1,3 +1,19 @@
 additional-info {
-
+    .lock-position {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    .item-md {
+        padding-left: 0 !important;
+        padding-right: 0;
+    }
+    .item-inner button {
+        margin-right: 0 !important;
+    }
+    .item-md.item-block .item-inner {
+        padding-right: 0 !important;
+    }
+    .button-inner ion-icon {
+        margin-top: 0 !important;
+    }
 }

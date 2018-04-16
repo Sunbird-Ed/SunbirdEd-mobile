@@ -1,5 +1,5 @@
 import { Component, NgZone } from "@angular/core";
-import { NavController, LoadingController, NavParams } from "ionic-angular";
+import { NavController, LoadingController, NavParams, Events } from "ionic-angular";
 import {
   CameraService,
   ProfileService,
@@ -10,7 +10,6 @@ import {
 } from "sunbird";
 import { PopoverController } from "ionic-angular/components/popover/popover-controller";
 import { DatePipe } from "@angular/common";
-import { InAppBrowser } from '@ionic-native/in-app-browser';
 import * as _ from 'lodash';
 
 import { FormEducation } from "./education/form.education";
@@ -23,7 +22,7 @@ import { UserSearchComponent } from "./user-search/user-search";
 import { ImagePicker } from "./imagepicker/imagepicker";
 
 
-/*
+/**
  * The Profile page
  */
 @Component({
@@ -31,11 +30,11 @@ import { ImagePicker } from "./imagepicker/imagepicker";
   templateUrl: "profile.html"
 })
 export class ProfilePage {
-  /*
+  /**
    * Contains Profile Object
    */
   profile: any = {};
-  /*
+  /**
    * Contains userId for the Profile
    */
   userId: string = '';
@@ -45,11 +44,13 @@ export class ProfilePage {
   userName: string;
   profileName: string;
   profileProgress: string = "";
+  languages: string;
   subjects: string;
   grades: string;
   onProfile: boolean = true;
+  isUploading: boolean = false;
 
-  /*
+  /**
    * Contains paths to icons
    */
   imageUri: string = "assets/imgs/ic_profile_default.png";
@@ -90,11 +91,20 @@ export class ProfilePage {
     public contentService: ContentService,
     private loadingCtrl: LoadingController,
     private navParams: NavParams,
-    private iab: InAppBrowser
+    public events: Events
   ) {
     this.userId = this.navParams.get("userId") || '';
     this.isLoggedInUser = this.userId ? false : true;
     this.doRefresh();
+    /* events.subscribe('profilePicture:update', (url) => {
+      console.log('URL=', url);
+      this.imageUri = url;
+    }); */
+    events.subscribe('profilePicture:update', (res) => {
+      console.log('URL=', res.url);
+      if (res.isUploading) this.imageUri = res.url;
+      this.isUploading = res.isUploading;
+    });
   }
 
   doRefresh(refresher?) {
@@ -113,20 +123,21 @@ export class ProfilePage {
       });
   }
 
-  /*
-  * To reset Profile Before calling new fresh API for Profile
-  */
+  /**
+   * To reset Profile Before calling new fresh API for Profile
+   */
   resetProfile() {
     this.profile = {};
     this.lastLoginTime = "Last login time: ";
     this.userName = "User Name - ";
     this.subjects = "";
     this.grades = "";
+    this.languages = "";
   }
 
-  /*
-  * To refresh Profile data on pull to refresh or on click on the profile
-  */
+  /**
+   * To refresh Profile data on pull to refresh or on click on the profile
+   */
   refreshProfileData() {
     return new Promise((resolve, reject) => {
       this.authService.getSessionData(session => {
@@ -167,6 +178,7 @@ export class ProfilePage {
                 this.formatJobProfile();
                 if (!this.isLoggedInUser) this.formatSkills();
                 this.subjects = this.arrayToString(this.profile.subject);
+                this.languages = this.arrayToString(this.profile.language);
                 this.grades = this.arrayToString(this.profile.grade);
                 this.formatMissingFields();
                 this.formatSocialLinks();
@@ -183,18 +195,18 @@ export class ProfilePage {
     });
   }
 
-  /*
-  * Method to convert Array to Comma separated string
-  * @param {Array<string>} stringArray
-  * @returns {string}
-  */
+  /**
+   * Method to convert Array to Comma separated string
+   * @param {Array<string>} stringArray
+   * @returns {string}
+   */
   arrayToString(stringArray: Array<string>): string {
     return stringArray.join(", ");
   }
 
-  /*
-  * To Format the missing fields and gives it proper name based on missing field
-  */
+  /**
+   * To Format the missing fields and gives it proper name based on missing field
+   */
   formatMissingFields() {
     if (this.profile.missingFields && this.profile.missingFields.length) {
       switch (this.profile.missingFields[0]) {
@@ -210,6 +222,9 @@ export class ProfilePage {
           this.uncompletedDetails.title = "+ Add Profile Picture";
           this.uncompletedDetails.page = "picture";
           break;
+        case "location":
+          this.uncompletedDetails.title = "+ Add Location";
+          this.uncompletedDetails.page = FormAddress;
       }
     }
   }
@@ -234,9 +249,9 @@ export class ProfilePage {
   /* Add new node in endorsersList as `canEndorse` */
   formatSkills() {
     this.profile.skills.forEach(skill => {
-      skill.canEndorse = !Boolean(_.find(skill.endorsersList, 
-        (element) => {
-          return element.userId === this.loggedInUserId; 
+      skill.canEndorse = !Boolean(_.find(skill.endorsersList,
+        (element)  => {
+          return  element.userId  ===  this.loggedInUserId;
         })
       );
     });
@@ -266,9 +281,9 @@ export class ProfilePage {
     this.profileProgress = String(this.profile.completeness);
   }
 
-  /*
-  * Redirects to the Education form and passes current form data if available
-  */
+  /**
+   * Redirects to the Education form and passes current form data if available
+   */
   editEduDetails(isNewForm, profile, formDetails = {}) {
     this.navCtrl.push(FormEducation, {
       addForm: isNewForm,
@@ -277,9 +292,9 @@ export class ProfilePage {
     });
   }
 
-  /*
-  * Redirects to the Address form and passes current form data if available
-  */
+  /**
+   * Redirects to the Address form and passes current form data if available
+   */
   editAddress(isNewForm: boolean = true, addressDetails: any = {}) {
     this.navCtrl.push(FormAddress, {
       addForm: isNewForm,
@@ -288,17 +303,17 @@ export class ProfilePage {
     });
   }
 
-  /*
-  * Redirects to the Add Skill page
-  */
+  /**
+   * Redirects to the Add Skill page
+   */
   addSkillTags() {
     this.navCtrl.push(SkillTagsComponent);
   }
 
-  /*
-  * Calls Endorse skill API and update the count of Skill endorsement
-  * @param {number} num - position of the skill in the skills Array
-  */
+  /**
+   * Calls Endorse skill API and update the count of Skill endorsement
+   * @param {number} num - position of the skill in the skills Array
+   */
   endorseSkill(num) {
 
     // Increase the Endorsement Count with 1 and make it as endorsed
@@ -330,26 +345,28 @@ export class ProfilePage {
     });
   }
 
-  /*
-  * Shows the pop up with current Image or open camera instead.
-  */
+  /**
+   * Shows the pop up with current Image or open camera instead.
+    */
   editPicture() {
     // this.cameraService.getPicture().then((imageData) => {
     //   this.imageUri = imageData;
     // }, (err) => {
     //   console.error("Error", err);
     // });
-    let popover = this.popoverCtrl.create(ImagePicker, {
-      imageUri: this.imageUri
-    });
+    let popover = this.popoverCtrl.create(ImagePicker,
+      {
+        imageUri: this.imageUri,
+        profile: this.profile
+      });
     popover.present();
   }
 
-  /*
-  * Open up the experience form in edit mode
-  * @param {boolean} isNewForm - Tells whether user clicked on New Button or edit button
-  * @param {object} jobInfo - job object if available
-  */
+  /**
+   * Open up the experience form in edit mode
+   * @param {boolean} isNewForm - Tells whether user clicked on New Button or edit button
+   * @param {object} jobInfo - job object if available
+   */
   editExperience(isNewForm: boolean = true, jobInfo: any = {}): void {
     this.navCtrl.push(FormExperience, {
       addForm: isNewForm,
@@ -358,31 +375,32 @@ export class ProfilePage {
     });
   }
 
-  /*
-  * Open up the Additional Information form in edit mode
-  */
+  /**
+   * Open up the Additional Information form in edit mode
+   */
   editAdditionalInfo() {
     /* Required profile fields to pass to an Additional Info page */
     let requiredProfileFields: Array<string> = ['userId', 'firstName', 'lastName', 'language', 'email', 'phone', 'profileSummary', 'subject', 'gender', 'dob', 'grade', 'location', 'webPages'];
 
     this.navCtrl.push(AdditionalInfoComponent, {
       userId: this.loggedInUserId,
-      profile: this.getSubset(requiredProfileFields, this.profile)
+      profile: this.getSubset(requiredProfileFields, this.profile),
+      profileVisibility: this.profile.profileVisibility
     });
   }
 
-  /*
-  * To Toggle the lock
-  */
+  /**
+   * To Toggle the lock
+   */
   toggleLock(field: string) {
     this.profile.profileVisibility[field] =
       this.profile.profileVisibility[field] == "private" ? "public" : "private";
     this.setProfileVisibility(field);
   }
 
-  /*
-  * To set Profile visibility
-  */
+  /**
+   * To set Profile visibility
+   */
   setProfileVisibility(field) {
     this.authService.getSessionData(session => {
       if (session === undefined || session == null) {
@@ -397,20 +415,21 @@ export class ProfilePage {
         };
         this.userProfileService.setProfileVisibility(
           req,
-          res => {
+          (res: any) => {
             console.log("success", res);
           },
-          error => {
-            console.error("Unable to set profile visibility.", error);
+          (err: any) => {
+            console.error("Unable to set profile visibility.", err);
+            this.toggleLock(field); // In-case of API fails to update, make privacy lock icon as it was.
           }
         );
       }
     });
   }
 
-  /*
-  * To show popover menu
-  */
+  /**
+   * To show popover menu
+   */
   showOverflowMenu(event) {
     let popover = this.popoverCtrl.create(OverflowMenuComponent, {
       list: this.list
@@ -428,13 +447,14 @@ export class ProfilePage {
     }
   }
 
-  /*
-  * Searches contents created by the user
-  */
+  /**
+   * Searches contents created by the user
+   */
   searchContent(): void {
     let req = {
-      createdBy: [this.userId || this.loggedInUserId]
-      //contentTypes: ["course", "resource"]
+      createdBy: [this.userId || this.loggedInUserId],
+      limit: 20,
+      contentTypes: ["story", "worksheet", "game", "collection", "textBook", "course", "lessonPlan", "resource"]
     }
 
     this.contentService.searchContent(req,
@@ -447,24 +467,24 @@ export class ProfilePage {
     )
   }
 
-  /*
-  * Navigates to User Search Page
-  */
+  /**
+   * Navigates to User Search Page
+   */
   gotoSearchPage(): void {
     this.navCtrl.push(UserSearchComponent);
   }
 
-  /*
-  * To show more Items in skills list
-  */
+  /**
+   * To show more Items in skills list
+   */
   showMoreItems(): void {
     this.paginationLimit = this.profile.skills.length;
   }
 
-  /*
-  * To show Less items in skills list
-  * DEFAULT_PAGINATION_LIMIT = 10
-  *  */
+  /**
+   * To show Less items in skills list
+   * DEFAULT_PAGINATION_LIMIT = 10
+   */
   showLessItems(): void {
     this.paginationLimit = this.DEFAULT_PAGINATION_LIMIT;
   }
@@ -476,33 +496,12 @@ export class ProfilePage {
     });
   }
 
-  /* Opens Link in the browser
-  * @param {string} url
-  */
-  openLink(url): void {
-    if (url) {
-      let options = 'location=no,hidden=yes,hardwareback=yes,clearcache=no,zoom=no,toolbar=yes,clearsessioncache=no,closebuttoncaption=Done,disallowoverscroll=yes';
-      const browser = this.iab.create(url, '_system', options);
-      let loading = this.getLoader();
-      browser.on('loadstart').subscribe(() => {
-        loading.present();
-      });
-      browser.on('loadstop').subscribe(() => {
-        loading.dismiss();
-        browser.show();
-      });
-      browser.on('loaderror').subscribe(() => {
-        loading.dismiss();
-        browser.close();
-      });
-    }
-  }
-
-  /* Returns the Object with given Keys only
-  * @param {string} keys - Keys of the object which are required in new sub object
-  * @param {object} obj - Actual object
-  * @returns {object}
-  */
+  /**
+   *  Returns the Object with given Keys only
+   * @param {string} keys - Keys of the object which are required in new sub object
+   * @param {object} obj - Actual object
+   * @returns {object}
+   */
   getSubset(keys, obj) {
     return keys.reduce((a, c) => ({ ...a, [c]: obj[c] }), {});
   }
