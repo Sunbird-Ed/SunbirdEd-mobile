@@ -78,6 +78,8 @@ export class ContentDetailsPage {
    */
   loader: any;
 
+  downloadingText: string = 'DOWNLOADIG... ';
+
   /**
    * Contains reference of content service
    */
@@ -298,6 +300,9 @@ export class ContentDetailsPage {
         let res = data;
         console.log('event bus........', res);
         if (res.type === 'downloadProgress' && res.data.downloadProgress) {
+          if (res.data.downloadProgress === 100) {
+            this.downloadingText = 'DOWNLOADED ';
+          }
           this.downloadProgress = res.data.downloadProgress === -1 ? '0 %' : res.data.downloadProgress + ' %';
         }
 

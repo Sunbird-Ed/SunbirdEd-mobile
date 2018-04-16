@@ -320,9 +320,10 @@ export class CollectionDetailsPage {
       _.forEach(data, (value, key) => {
         if (value.isAvailableLocally === false) {
           this.downloadIdentifiers.push(value.contentData.identifier);
-          size += value.contentData.size;
+          size += +value.contentData.size;
         }
       });
+      console.log('Download size ===>', size);
       this.downloadContentsSize = this.getReadableFileSize(+size);
       console.log('download content identifiers', this.downloadIdentifiers);
       if (this.downloadIdentifiers.length) {
@@ -427,10 +428,10 @@ export class CollectionDetailsPage {
    * @param {boolean} isPop True = navigate to previous state
    */
   showErrorMessage(message: string, isPop: boolean | false): void {
-    /*if (this.isDownloadStarted) {
+    if (this.isDownloadStarted) {
       this.showDownloadBtn = true;
       this.isDownloadStarted = false;
-    }*/
+    }
 
     let toast = this.toastCtrl.create({
       message: message,
