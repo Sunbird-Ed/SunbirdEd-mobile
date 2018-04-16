@@ -157,9 +157,13 @@ page-profile {
     border-width: 1px;
     border-color: darkgrey;
   }
-  .social-icon-size ion-icon{
+  .social-icon-size ion-icon {
     font-size: 1.8em !important;
     padding-left: 10px !important;
+  }
+
+  .social-icon-size a {
+    color: transparent;
   }
 
   .inner {
@@ -181,7 +185,14 @@ page-profile {
     left: 47vw;
     top: 10vh;
     height: 20px;
-}
+  }
+
+  .spinner-crescent circle {
+    stroke-width: 7px;
+  }
+  .spinner-md-crescent circle {
+      stroke: #0288d1;
+  }
 }
 
 .padding-right-10 {

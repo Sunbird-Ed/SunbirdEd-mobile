@@ -102,7 +102,7 @@ export class ProfilePage {
     }); */
     events.subscribe('profilePicture:update', (res) => {
       console.log('URL=', res.url);
-      if (res.isUploading) this.imageUri = res.url;
+      if (res.isUploading && res.url != '') this.imageUri = res.url;
       this.isUploading = res.isUploading;
     });
   }
@@ -206,25 +206,50 @@ export class ProfilePage {
 
   /**
    * To Format the missing fields and gives it proper name based on missing field
+   * TODO: Need to replace following strings with the language constants
    */
   formatMissingFields() {
+    this.uncompletedDetails.title = '';
     if (this.profile.missingFields && this.profile.missingFields.length) {
       switch (this.profile.missingFields[0]) {
         case "education":
           this.uncompletedDetails.title = "+ Add Education";
           this.uncompletedDetails.page = FormEducation;
+          this.uncompletedDetails.data = {
+            addForm: true,
+            profile: this.profile
+          }
           break;
         case "jobProfile":
           this.uncompletedDetails.title = "+ Add Experience";
           this.uncompletedDetails.page = FormExperience;
+          this.uncompletedDetails.data = {
+            addForm: true,
+            profile: this.profile
+          }
           break;
         case "avatar":
           this.uncompletedDetails.title = "+ Add Profile Picture";
           this.uncompletedDetails.page = "picture";
           break;
-        case "location":
-          this.uncompletedDetails.title = "+ Add Location";
+        case "address":
+          this.uncompletedDetails.title = "+ Add Address";
           this.uncompletedDetails.page = FormAddress;
+          this.uncompletedDetails.data = {
+            addForm: true,
+            profile: this.profile
+          };
+          break;
+        case "location":
+          let requiredProfileFields: Array<string> = ['userId', 'firstName', 'lastName', 'language', 'email', 'phone', 'profileSummary', 'subject', 'gender', 'dob', 'grade', 'location', 'webPages'];
+          this.uncompletedDetails.title = "+ Add Location";
+          this.uncompletedDetails.page = AdditionalInfoComponent;
+          this.uncompletedDetails.data = {
+            userId: this.loggedInUserId,
+            profile: this.getSubset(requiredProfileFields, this.profile),
+            profileVisibility: this.profile.profileVisibility
+          }
+          break;
       }
     }
   }
@@ -250,8 +275,8 @@ export class ProfilePage {
   formatSkills() {
     this.profile.skills.forEach(skill => {
       skill.canEndorse = !Boolean(_.find(skill.endorsersList,
-        (element)  => {
-          return  element.userId  ===  this.loggedInUserId;
+        (element) => {
+          return element.userId === this.loggedInUserId;
         })
       );
     });
@@ -443,7 +468,7 @@ export class ProfilePage {
     if (this.uncompletedDetails.page == "picture") {
       this.editPicture();
     } else {
-      this.navCtrl.push(this.uncompletedDetails.page);
+      this.navCtrl.push(this.uncompletedDetails.page, this.uncompletedDetails.data);
     }
   }
 
