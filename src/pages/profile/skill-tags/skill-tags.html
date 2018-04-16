@@ -7,7 +7,8 @@
 </ion-header>
 
 <ion-content padding>
-    <tag-input [(ngModel)]="skillTags" theme='dark' placeholder="+Skill" secondaryPlaceholder="{{'LABEL_ADD_A_SKILL' | translate}}" [separatorKeyCodes]="[32, 188]">
+    <tag-input [(ngModel)]="skillTags" theme='dark' placeholder="+Skill" secondaryPlaceholder="{{'LABEL_ADD_A_SKILL' | translate}}"
+        [separatorKeyCodes]="[32, 188]">
         <tag-input-dropdown [autocompleteItems]="suggestedSkills">
         </tag-input-dropdown>
     </tag-input>
