@@ -1,6 +1,6 @@
 <ion-header>
     <ion-navbar>
-        <ion-searchbar [(ngModel)]="searchInput" #input [showCancelButton]="true" (ionInput)="onInput($event)" (ionCancel)="onCancel($event)"
+        <ion-searchbar [(ngModel)]="searchInput" #input [showCancelButton]="true" (ionInput)="onInput()" (ionCancel)="onCancel($event)"
             [spellcheck]="true" [autocomplete]="true">
         </ion-searchbar>
     </ion-navbar>
@@ -20,7 +20,6 @@
         </ion-item>
     </ion-list>
     <ion-infinite-scroll *ngIf="enableInfiniteScroll" (ionInfinite)="doInfiniteScroll($event)">
-		<ion-infinite-scroll-content></ion-infinite-scroll-content>
-	</ion-infinite-scroll>
-
+        <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
 </ion-content>

@@ -1,0 +1,52 @@
+<ion-header>
+  <ion-navbar>
+    <ion-input type="text" placeholder="Search"></ion-input>
+    <ion-buttons end>
+        <button ion-button (click)="showFilter()">
+            <img [src]="filterIcon" class="tool-icon" float-end/>
+          </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+<ion-content>
+  <div class="spinner-container" *ngIf="showLoader">
+      <ion-spinner padding class="loader"></ion-spinner>
+  </div>
+  <ion-list no-lines *ngIf="dialCodeResult && dialCodeResult.length" class="collection-list">
+    <div ion-item no-margin *ngFor="let result of dialCodeResult" no-padding>
+      <div no-lines class="collection-header" margin-start>
+        <div class="collection-name">
+          <span>From </span>{{ result.name }}</div>
+        <button ion-button clear no-padding class="view-collection" (click)="openCollection(result)">
+          View {{ result.contentType }} &nbsp;
+          <ion-icon ios="ios-arrow-forward" md="ios-arrow-forward"></ion-icon>
+        </button>
+      </div>
+
+      <ion-list *ngFor="let content of result.content" class="content-list" margin-start>
+        <ion-item no-padding (click)="openContent(result, content)">
+          <ion-avatar item-start>
+            <img src="./assets/imgs/ic_logo.png" width="24px" height="24px">
+          </ion-avatar>
+          <h2> {{ content.name }}</h2>
+          <p>{{ content.contentType }} • 220Kb</p>
+        </ion-item>
+      </ion-list>
+      <div style="width: 100%; height: 4px; background-color: #f3f3f3"></div>
+    </div>
+  </ion-list>
+
+  <ion-list>
+      <ion-list *ngFor="let content of dialCodeContentResult" class="content-list" margin-start>
+          <ion-item no-padding (click)="openContent(undefined, content)">
+            <ion-avatar item-start>
+              <img src="./assets/imgs/ic_logo.png" width="24px" height="24px">
+            </ion-avatar>
+            <h2> {{ content.name }}</h2>
+            <p>{{ content.contentType }} • 220Kb</p>
+          </ion-item>
+        </ion-list>
+        <div style="width: 100%; height: 4px; background-color: #f3f3f3"></div>
+  </ion-list>
+
+</ion-content>

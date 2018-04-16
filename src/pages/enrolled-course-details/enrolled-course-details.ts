@@ -284,6 +284,7 @@ export class EnrolledCourseDetailsPage {
    * Ionic life cycle hook
    */
   ionViewWillEnter(): void {
+    console.log('Inside enrolled course details page');
     this.tabBarElement.style.display = 'none';
     this.cardData = this.navParams.get('content');
     this.identifier = this.cardData.contentId || this.cardData.identifier;

@@ -8,6 +8,7 @@ import { IonicImageLoader } from "ionic-image-loader";
 import { Ionic2RatingModule } from "ionic2-rating";
 import { ComponentsModule } from './../../component/components.module';
 import { DirectivesModule } from './../../directives/directives.module';
+import { PipesModule } from '../../pipes/pipes.module';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { DirectivesModule } from './../../directives/directives.module';
     FrameworkModule,
     IonicImageLoader,
     DirectivesModule,
-    Ionic2RatingModule
+    Ionic2RatingModule,
+    PipesModule
   ],
   providers: [GenieSDKServiceProvider],
   exports: [

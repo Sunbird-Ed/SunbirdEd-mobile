@@ -37,7 +37,13 @@ page-resources {
       .padding-11 {
         padding: 11px;
       }
-    
+      .empty-saved-resources {
+        height: 140px;
+      }
+      .devider-line {
+        background: #efeff4;
+        height: 7px;
+      }
       ion-spinner {
         display: block;
         margin: auto;

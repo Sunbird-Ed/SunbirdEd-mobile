@@ -1,7 +1,7 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      {{ 'LIBRARY' | translate }}
+      {{ 'LIBRARY_LW' | translate}}
     </ion-title>
     <ion-buttons end>
       <img src="assets/imgs/ic_action_filter.png" class="tool-icon" float-end/>
@@ -11,8 +11,7 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content class="course-page-color">
-
+<ion-content overflow-scroll="true">
   <!-- onBoardingSLides starts here -->
   <p class="onbording-card-header-text">{{ 'ONBOARDING_SLIDES_HEADER_TEXT' | translate }}</p>
 
@@ -39,10 +38,11 @@
   </ion-slides>
   <!-- onBoardingSLides ends here -->
 
-  <div class="">
+  <!-- <div> -->
+  <div class="" [ngClass]="{'empty-saved-resources' : localResources && localResources.length === 0}">
     <div class="item padding-11">
-      <span float-start class="scroll-heading" *ngIf="localResources && localResources.length">{{ 'SAVED_RESOURCES' | translate }}</span>
-      <span float-end class="view-all-link" *ngIf="localResources && localResources.length">
+      <span float-start class="scroll-heading">{{ 'SAVED_RESOURCES' | translate }}</span>
+      <span float-end class="view-all-link" *ngIf="localResources && localResources.length > 0 && !showLoader">
         <a>{{ 'VIEW_ALL' | translate }}</a>
       </span>
     </div>
@@ -53,15 +53,21 @@
       </div>
     </ion-scroll>
     <ion-spinner *ngIf="showLoader"></ion-spinner>
-    <div *ngIf="localResources && localResources.length === 0 && !showLoader">No data found</div>
+    <ion-grid class="padding-top-25" *ngIf="localResources && localResources.length === 0 && !showLoader">
+      <ion-row>
+        <ion-col>
+          <div text-center> No resources stored </div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
   </div>
-
+  <div class="devider-line" *ngIf="!showLoader"></div>
   <div *ngFor="let items of storyAndWorksheets">
     <div *ngIf="items.contents">
       <div class="course-scroll-holder">
         <div class="item padding-11">
           <span float-start class="scroll-heading">{{items.display.name.en}}</span>
-          <span float-end class="view-all-link">
+          <span float-end class="view-all-link" (click)="searchAllContent(items.searchQuery)">
             <a>{{ 'VIEW_ALL' | translate }}</a>
           </span>
         </div>

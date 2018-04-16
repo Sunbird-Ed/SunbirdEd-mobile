@@ -22,7 +22,8 @@
   },
   "config": {
     "ionic_source_map_type": "inline-source-map",
-    "ionic_webpack": "./config/webpack.config.js"
+    "ionic_webpack": "./config/webpack.config.js",
+    "ionic_www_dir": "./www/sunbird"
   },
   "dependencies": {
     "@angular/animations": "^5.2.8",
@@ -48,10 +49,10 @@
     "@ionic-native/splash-screen": "^4.6.0",
     "@ionic-native/status-bar": "4.4.0",
     "@ionic-native/unique-device-id": "^4.5.3",
+    "@ionic/cli-plugin-gulp": "^1.1.1",
     "@ionic/storage": "^2.1.3",
     "@ngx-translate/core": "^9.1.1",
     "@ngx-translate/http-loader": "^2.0.1",
-    "cordova-android": "7.0.0",
     "cordova-custom-config": "^5.0.2",
     "cordova-hot-code-push-plugin": "^1.5.3",
     "cordova-plugin-advanced-http": "^1.11.1",
@@ -59,17 +60,19 @@
     "cordova-plugin-browsertab": "^0.2.0",
     "cordova-plugin-camera": "^4.0.2",
     "cordova-plugin-compat": "^1.2.0",
+    "cordova-plugin-console": "^1.1.0",
     "cordova-plugin-device": "^1.1.7",
     "cordova-plugin-file": "^6.0.1",
-    "cordova-plugin-file-support": "file:../ext-framework/cordova-plugins/cordova-plugin-file-support",
+    "cordova-plugin-file-support": "file:///home/souvikmondal/Projects/EkStep/Sunbird/ext-framework/cordova-plugins/cordova-plugin-file-support",
     "cordova-plugin-file-transfer": "^1.7.1",
-    "cordova-plugin-genie-sdk": "file:../ext-framework/cordova-plugins/cordova-plugin-genie-sdk",
+    "cordova-plugin-genie-sdk": "file:///home/souvikmondal/Projects/EkStep/Sunbird/ext-framework/cordova-plugins/cordova-plugin-genie-sdk",
+    "cordova-plugin-geniecanvas": "file:///home/souvikmondal/Projects/EkStep/Sunbird/ext-framework/cordova-plugins/cordova-plugin-geniecanvas",
     "cordova-plugin-globalization": "^1.0.9",
-    "cordova-plugin-imagechooser": "file:../ext-framework/cordova-plugins/cordova-plugin-imagechooser",
+    "cordova-plugin-imagechooser": "../ext-framework/cordova-plugins/cordova-plugin-genie-sdk",
     "cordova-plugin-inappbrowser": "^2.0.2",
-    "cordova-plugin-ionic-webview": "^1.1.19",
-    "cordova-plugin-qr-scanner": "file:../ext-framework/cordova-plugins/cordova-plugin-qr-scanner",
-    "cordova-plugin-sunbirdsplash": "file:../ext-framework/cordova-plugins/cordova-plugin-sunbirdsplash",
+    "cordova-plugin-ionic-webview": "^1.2.0",
+    "cordova-plugin-qr-scanner": "file:///home/souvikmondal/Projects/EkStep/Sunbird/ext-framework/cordova-plugins/cordova-plugin-qr-scanner",
+    "cordova-plugin-sunbirdsplash": "file:///home/souvikmondal/Projects/EkStep/Sunbird/ext-framework/cordova-plugins/cordova-plugin-sunbirdsplash",
     "cordova-plugin-uniquedeviceid": "^1.3.2",
     "cordova-plugin-whitelist": "^1.3.3",
     "cordova-plugin-x-socialsharing": "^5.3.2",
@@ -87,15 +90,17 @@
     "ngx-chips": "^1.6.7",
     "node-sass": "^4.7.2",
     "rxjs": "5.5.2",
-    "sunbird": "file:../ext-framework/mobile/sunbird-1.0.0.tgz",
+    "sunbird": "file:///home/souvikmondal/Projects/EkStep/Sunbird/ext-framework/mobile/dist/sunbird-1.0.0.tgz",
     "sw-toolbox": "3.6.0",
-    "zone.js": "0.8.18"
+    "zone.js": "0.8.18",
+    "cordova-android": "~7.0.0"
   },
   "devDependencies": {
     "@ionic/app-scripts": "3.1.6",
     "@types/jasmine": "^2.8.6",
     "@types/node": "^9.4.6",
     "angular2-template-loader": "^0.6.2",
+    "gulp": "^3.9.1",
     "html-loader": "^0.5.5",
     "istanbul-instrumenter-loader": "^3.0.0",
     "jasmine": "^2.9.1",
@@ -132,13 +137,17 @@
       "cordova-plugin-device": {},
       "cordova-plugin-file": {},
       "cordova-plugin-file-transfer": {},
-      "cordova-plugin-genie-sdk": {},
-      "cordova-plugin-imagechooser": {},
+      "cordova-plugin-inappbrowser": {},
       "cordova-plugin-sunbirdsplash": {},
+      "cordova-plugin-console": {},
+      "cordova-plugin-imagechooser": {},
       "cordova-plugin-qr-scanner": {},
       "cordova-plugin-file-support": {},
-      "cordova-plugin-inappbrowser": {}
+      "cordova-plugin-genie-sdk": {},
+      "cordova-plugin-geniecanvas": {}
     },
-    "platforms": []
+    "platforms": [
+      "android"
+    ]
   }
 }

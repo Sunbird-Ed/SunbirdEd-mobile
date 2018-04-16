@@ -8,6 +8,8 @@ import { ProfilePage } from "./../profile";
   selector: "user-search",
   templateUrl: "user-search.html"
 })
+
+/* This component shows the list of user based on search*/
 export class UserSearchComponent {
 
   searchInput: string = "";
@@ -16,6 +18,8 @@ export class UserSearchComponent {
   inactive: string = "Inactive";
 
   enableInfiniteScroll: boolean = false;
+
+  /* Default Limits for the API */
   apiOffset: number = 0;
   apiLimit: number = 10;
 
@@ -25,11 +29,13 @@ export class UserSearchComponent {
     private authService: AuthService,
     private userService: UserProfileService,
     private zone: NgZone
-  ) {
-    console.log("Hello UserSearchComponent Component");
-  }
+  ) { }
 
-  onInput(scrollEvent = undefined) {
+  /**
+   * Makes an search user API call
+   * @param {object} scrollEvent - infinite Scroll Event
+   */
+  onInput(scrollEvent = undefined): void {
     this.authService.getSessionData(session => {
       if (session === undefined || session == null) {
         console.error("session is null");
@@ -46,16 +52,16 @@ export class UserSearchComponent {
           this.userList = [];
         } else {
           this.userService.searchUser(req,
-            res => {
+            (res: any) => {
               this.zone.run(() => {
-                Array.prototype.push.apply(this.userList,JSON.parse(JSON.parse(res).searchUser).content)
+                Array.prototype.push.apply(this.userList, JSON.parse(JSON.parse(res).searchUser).content)
                 this.enableInfiniteScroll = (this.apiOffset + this.apiLimit) < JSON.parse(JSON.parse(res).searchUser).count ? true : false;
-                if(scrollEvent) scrollEvent.complete();
+                if (scrollEvent) scrollEvent.complete();
               });
             },
-            error => {
+            (error: any) => {
               console.error("Error", error);
-              if(scrollEvent) scrollEvent.complete();
+              if (scrollEvent) scrollEvent.complete();
             }
           );
         }
@@ -63,15 +69,24 @@ export class UserSearchComponent {
     });
   }
 
-  onCancel() {
+  onCancel(): void {
     console.log("OnCancel Triggered");
   }
-  openUserProfile(id) {
+
+  /**
+   * Navigates to the User Profile
+   * @param {string} id User ID
+   */
+  openUserProfile(id): void {
     this.navCtrl.push(ProfilePage, { userId: id });
   }
 
-  doInfiniteScroll(scrollEvent) {
-    if(this.enableInfiniteScroll) {
+  /**
+   * Makes an infinite scroll call.
+   * @param {object} scrollEvent - Infinite scroll event
+   */
+  doInfiniteScroll(scrollEvent): void {
+    if (this.enableInfiniteScroll) {
       this.apiOffset += this.apiLimit;
       this.onInput(scrollEvent);
     } else {
