@@ -55,10 +55,10 @@ export class ContentActionsComponent {
         console.log('Delete troggered', this.content);
         this.contentService.deleteContent(this.getDeleteRequestBody(), (res: any) => {
           console.log('success data', res);
-          this.viewCtrl.dismiss();
+          this.viewCtrl.dismiss(i);
         }, (error: any) => {
           console.log('delete error', error);
-          this.viewCtrl.dismiss(i);
+          this.viewCtrl.dismiss(1);
         })
         break;
       }
