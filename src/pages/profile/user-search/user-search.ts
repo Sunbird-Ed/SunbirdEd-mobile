@@ -29,11 +29,12 @@ export class UserSearchComponent {
     private authService: AuthService,
     private userService: UserProfileService,
     private zone: NgZone
-  ) {}
+  ) { }
 
-  /* Makes an search user API call
-  * @param {object} scrollEvent - infinite Scroll Event
-  */
+  /**
+   * Makes an search user API call
+   * @param {object} scrollEvent - infinite Scroll Event
+   */
   onInput(scrollEvent = undefined): void {
     this.authService.getSessionData(session => {
       if (session === undefined || session == null) {
@@ -55,12 +56,12 @@ export class UserSearchComponent {
               this.zone.run(() => {
                 Array.prototype.push.apply(this.userList, JSON.parse(JSON.parse(res).searchUser).content)
                 this.enableInfiniteScroll = (this.apiOffset + this.apiLimit) < JSON.parse(JSON.parse(res).searchUser).count ? true : false;
-                if(scrollEvent) scrollEvent.complete();
+                if (scrollEvent) scrollEvent.complete();
               });
             },
             (error: any) => {
               console.error("Error", error);
-              if(scrollEvent) scrollEvent.complete();
+              if (scrollEvent) scrollEvent.complete();
             }
           );
         }
@@ -72,19 +73,20 @@ export class UserSearchComponent {
     console.log("OnCancel Triggered");
   }
 
-  /*
-  * Navigates to the User Profile
-  * @param {string} id User ID
-  */
+  /**
+   * Navigates to the User Profile
+   * @param {string} id User ID
+   */
   openUserProfile(id): void {
     this.navCtrl.push(ProfilePage, { userId: id });
   }
 
-  /* Makes an infinite scroll call.
-  * @param {object} scrollEvent - Infinite scroll event
-  */
+  /**
+   * Makes an infinite scroll call.
+   * @param {object} scrollEvent - Infinite scroll event
+   */
   doInfiniteScroll(scrollEvent): void {
-    if(this.enableInfiniteScroll) {
+    if (this.enableInfiniteScroll) {
       this.apiOffset += this.apiLimit;
       this.onInput(scrollEvent);
     } else {

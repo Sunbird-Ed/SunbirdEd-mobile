@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, NgZone } from "@angular/core";
 import { IonicPage, NavParams, NavController } from "ionic-angular";
 import { ContentService, ContentSearchCriteria } from "sunbird";
 import { GenieResponse } from "../settings/datasync/genieresponse";
@@ -24,7 +24,7 @@ export class SearchPage {
 
   filterIcon = "./assets/imgs/ic_action_filter.png";
 
-  constructor(private contentService: ContentService, private navParams: NavParams, private navCtrl: NavController) {
+  constructor(private contentService: ContentService, private navParams: NavParams, private navCtrl: NavController, private zone: NgZone) {
     this.dialCode = this.navParams.get('dialCode');
     this.getContentForDialCode()
   }
@@ -39,9 +39,10 @@ export class SearchPage {
 
   openContent(collection, content) {
     if (collection !== undefined) {
-      // this.navCtrl.push(CourseDetailPage, {'content': content});
+      this.navCtrl.push(CollectionDetailsPage, {
+        content: content
+      })
     } else {
-      // TODO: Add mimeType check
       // this.navCtrl.push(CourseDetailPage, {'content': content});
       this.showContentDetails(content);
     }
@@ -84,15 +85,18 @@ export class SearchPage {
     }
 
     this.contentService.searchContent(contentSearchRequest, (responseData) => {
-      let response: GenieResponse = JSON.parse(responseData);
-      console.log("result " + response);
-      if (response.status && response.result) {
-        this.processDialCodeResult(response.result);
-      }
+      this.zone.run(() => {
+        let response: GenieResponse = JSON.parse(responseData);
+        if (response.status && response.result) {
+          this.processDialCodeResult(response.result);
+        }
 
-      this.showLoader = false;
+        this.showLoader = false;
+      })
     }, (error) => {
-      this.showLoader = false;
+      this.zone.run(() => {
+        this.showLoader = false;
+      });
     });
   }
 
