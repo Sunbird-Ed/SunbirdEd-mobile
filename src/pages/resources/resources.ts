@@ -1,7 +1,8 @@
-import { Component, NgZone, OnInit } from '@angular/core';
+import { Component, NgZone, ViewChild, OnInit } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { PageAssembleService, PageAssembleCriteria, ContentService, AuthService } from "sunbird";
 import * as _ from 'lodash';
+import { Slides } from 'ionic-angular';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
 
 @Component({
@@ -17,6 +18,10 @@ export class ResourcesPage implements OnInit {
    */
   localResources: Array<any>;
 
+  userId: string;
+  onBoardingSlides: any[];
+  @ViewChild(Slides) mSlides: Slides;
+  selectedOptions: any;
   /**
    * Loader
    */
@@ -36,6 +41,66 @@ export class ResourcesPage implements OnInit {
     contentService: ContentService, authService: AuthService) {
     this.contentService = contentService;
     this.authService = authService;
+
+    this.selectedOptions = [];
+
+    this.onBoardingSlides = [
+      {
+        'title': 'Which board does your school follow?',
+        'desc': 'SELECT BOARD',
+        'options': [
+          { text: 'Board1', value: 'board1' },
+          { text: 'Board2', value: 'board2' },
+          { text: 'Board3', value: 'board3' },
+          { text: 'Board4', value: 'board4' }
+        ]
+      },
+      {
+        'title': 'Which class do you belong to?',
+        'desc': 'SELECT CLASS',
+        'options': [
+          { text: 'Board1', value: 'board1' },
+          { text: 'Board2', value: 'board2' },
+          { text: 'Board3', value: 'board3' },
+          { text: 'Board4', value: 'board4' }
+        ]
+      },
+      {
+        'title': 'Which subjects are you looking for?',
+        'desc': 'SELECT SUBJECT',
+        'options': [
+          { text: 'Board1', value: 'board1' },
+          { text: 'Board2', value: 'board2' },
+          { text: 'Board3', value: 'board3' },
+          { text: 'Board4', value: 'board4' }
+        ]
+      },
+      {
+        'title': 'What medium/language does your school teach in?',
+        'desc': 'SELECT MEDIUM/LANG',
+        'options': [
+          { text: 'Board1', value: 'board1' },
+          { text: 'Board2', value: 'board2' },
+          { text: 'Board3', value: 'board3' },
+          { text: 'Board4', value: 'board4' }
+        ]
+      }
+    ]
+  }
+
+  onSlideDrag() {
+    let currentIndex = this.mSlides.getActiveIndex();
+    console.log('Current index is', currentIndex);
+    console.log(this.selectedOptions.length);
+    console.log(this.selectedOptions[currentIndex]);
+    // let lockSwipeToNext = !(this.pets.length && this.pets[currentIndex] && this.pets[currentIndex].length);
+    this.mSlides.lockSwipeToNext(!(this.selectedOptions.length && this.selectedOptions[currentIndex]
+      && this.selectedOptions[currentIndex].length));
+  }
+
+  handleOnBoardingOptionSelected(index: number) {
+    console.log("index: " + index + ", selectedOptions " + this.selectedOptions[index]);
+    // slides.
   }
 
   /**
