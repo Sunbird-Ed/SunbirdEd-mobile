@@ -9,14 +9,14 @@
       <h6 style="margin-top: 0px;">{{(content.name.length > 21) ? (content.name | slice:0:10) + '...' : (content.name)}}</h6>
       <div class="row padding-top-5">
         <div>
-          <span>Nov 5, 1955</span>
+          <span>{{ content.createdOn | date: 'mediumDate' }}</span>
           <br/>
-          <span *ngIf="content.contentType">{{ content.contentType }}</span>
+          <span *ngIf="content.contentType">{{ content.contentType | slice:0:7 }}</span>
           <br/>
           <span *ngIf="content.size">[{{ content.size | fileSize }}]</span>
         </div>
         <div>
-          <button ion-button outline small border-radius-5 style="margin-left: 65px;margin-top: 0px;"
+          <button ion-button outline small border-radius-5 style="margin-left: 60px;margin-top: 0px;"
           (click)="navigateToDetailsPage(content)">OPEN</button>
         </div>
       </div>
