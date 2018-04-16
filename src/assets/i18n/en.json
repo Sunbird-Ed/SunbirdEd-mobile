@@ -345,6 +345,7 @@
     "CREATE_AN_ACCOUNT": "Create an account",
     "LABEL_BOARD": "BOARD",
     "SUBJECTS_CAPS": "SUBJECTS",
+    "ONBOARDING_SLIDES_HEADER_TEXT":"Help us get you content thats relevant to you.",
     "CONTINUE_AS_TEACHER": "Continue as teacher",
     "CONTINUE_AS_STUDENT": "Continue as student",
     "QR_SCREEN": {

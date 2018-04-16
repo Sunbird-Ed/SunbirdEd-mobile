@@ -167,7 +167,7 @@ export class ContentDetailsPage {
   extractApiResponse(data) {
     this.content = data.result.contentData;
     this.content.downloadable = data.result.isAvailableLocally;
-    this.content.playContentData = JSON.stringify(data);
+    this.content.playContent = JSON.stringify(data.result);
 
     // Check locally available
     switch (data.result.isAvailableLocally) {
@@ -344,7 +344,7 @@ export class ContentDetailsPage {
    * Play content
    */
   playContent() {
-    console.log('Needed Genie canvas data...', this.content.playContentData);
+    (<any>window).geniecanvas.play(this.content.playContent);
   }
 
   /**
