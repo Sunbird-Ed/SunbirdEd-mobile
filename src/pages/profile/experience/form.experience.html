@@ -5,31 +5,30 @@
 </ion-header>
 
 <ion-content padding>
-  <form [formGroup]="experienceForm" class="form" (ngSubmit)="onSubmit($event)">
+  <form [formGroup]="experienceForm" class="form">
     <ion-item>
       <ion-label stacked>{{ 'JOB_NAME' | translate }}
         <span ion-text color="danger">&nbsp;*</span>
       </ion-label>
-      <ion-input type="text" formControlName="jobName" placeholder="{{ 'JOB_NAME' | translate }}" required></ion-input>
+      <ion-input type="text" formControlName="jobName" placeholder="{{ 'JOB_NAME' | translate }}"></ion-input>
     </ion-item>
 
     <ion-item>
       <ion-label stacked>{{ 'ORGANIZATION' | translate }}
         <span ion-text color="danger">&nbsp;*</span>
       </ion-label>
-      <ion-input type="text" formControlName="org" placeholder="{{ 'ORGANIZATION' | translate }}" required></ion-input>
+      <ion-input type="text" formControlName="orgName" placeholder="{{ 'ORGANIZATION' | translate }}"></ion-input>
     </ion-item>
 
     <ion-item>
       <ion-label stacked>{{ 'POSITION' | translate }}</ion-label>
-      <ion-input type="text" formControlName="position" placeholder="{{ 'OPTIONAL' | translate }}"></ion-input>
+      <ion-input type="text" formControlName="role" placeholder="{{ 'OPTIONAL' | translate }}"></ion-input>
     </ion-item>
 
     <ion-item no-lines>
       <ion-label stacked>{{ 'SUBJECTS' | translate }}</ion-label>
-      <ion-select formControlName="subjects" interface="popover" multiple="true" placeholder="{{ 'SELECT' | translate }}">
-        <ion-option value="assamese">Assamese</ion-option>
-        <ion-option value="English">English</ion-option>
+      <ion-select formControlName="subject" interface="popover" multiple="true" placeholder="{{ 'SELECT' | translate }}">
+        <ion-option *ngFor="let subject of subjectList" text-capitalize value="{{subject}}">{{subject}}</ion-option>
       </ion-select>
     </ion-item>
 
@@ -37,40 +36,42 @@
     <ion-row radio-group formControlName="isCurrentJob">
       <ion-col col-4>
         <ion-item no-lines>
-          <ion-label text-capitalize>{{ 'YES' | translate }}</ion-label>
-          <ion-radio class="radio-margin" item-left value="yes"></ion-radio>
+          <ion-label class="radio-label">{{ 'YES' | translate }}</ion-label>
+          <ion-radio class="radio-margin" (ionSelect)="currentJob=true" item-left value="true"></ion-radio>
         </ion-item>
       </ion-col>
       <ion-col col-4>
         <ion-item no-lines>
-          <ion-label text-capitalize>{{ 'NO' | translate }}</ion-label>
-          <ion-radio item-left value="no"></ion-radio>
+          <ion-label class="radio-label">{{ 'NO' | translate }}</ion-label>
+          <ion-radio (ionSelect)="currentJob=false" item-left value="false"></ion-radio>
         </ion-item>
       </ion-col>
     </ion-row>
 
     <ion-row>
       <ion-col>
-            <ion-label>{{ 'FROM' | translate }}</ion-label>
-            <ion-icon name="calendar"></ion-icon>
-            <ion-datetime formControlName="fromDate" displayFormat="MM/DD/YYYY" placeholder="{{ 'SELECT_DATE' | translate }}"></ion-datetime>
-        </ion-col>
-        <ion-col>
-            <ion-label>{{ 'TO' | translate }}</ion-label>
-            <ion-icon name="calendar"></ion-icon>
-            <ion-datetime formControlName="toDate" displayFormat="MM/DD/YYYY" placeholder="{{ 'SELECT_DATE' | translate }}"></ion-datetime>
-        </ion-col>
-      </ion-row>
+        <ion-label>{{ 'FROM' | translate }}</ion-label>
+        <ion-icon name="calendar"></ion-icon>
+        <ion-datetime formControlName="joiningDate" displayFormat="DD-MM-YYYY" pickerFormat="DDDD MMMM YYYY" min="1950" [max]="todayDate"
+          placeholder="{{ 'SELECT_DATE' | translate }}" (ionChange)="changeJoiningDate()"></ion-datetime>
+      </ion-col>
+      <ion-col *ngIf="!currentJob">
+        <ion-label>{{ 'TO' | translate }}</ion-label>
+        <ion-icon name="calendar"></ion-icon>
+        <ion-datetime formControlName="endDate" displayFormat="DD-MM-YYYY" pickerFormat="DDDD MMMM YYYY" [min]="joiningDate" [max]="todayDate"
+          placeholder="{{ 'SELECT_DATE' | translate }}"></ion-datetime>
+      </ion-col>
+    </ion-row>
   </form>
 </ion-content>
 
 <ion-footer>
   <ion-row>
     <ion-col padding *ngIf="!isNewForm">
-      <button ion-button block outline class="text-capitalize">{{ 'DELETE' | translate }}</button>
+      <button ion-button block outline type="submit" (click)="onSubmit($event, true)" class="text-capitalize">{{ 'DELETE' | translate }}</button>
     </ion-col>
     <ion-col padding>
-      <button ion-button block [disabled]="!experienceForm.valid" class="text-capitalize">{{ 'SAVE' | translate }}</button>
+      <button ion-button block [disabled]="!experienceForm.valid" type="submit" (click)="onSubmit($event)" class="text-capitalize">{{ 'SAVE' | translate }}</button>
     </ion-col>
   </ion-row>
 </ion-footer>

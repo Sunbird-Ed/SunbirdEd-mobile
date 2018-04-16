@@ -1,47 +1,111 @@
 page-resources {
-    .logo {
-        width: 40px;
-        height: 40px;
-        margin-left: 10px;
-    }
-    .search {
-        width: 25px;
-        height: 25px;
-        margin: 10px;
-        float: right;
-    }
     .inner {
         width: auto;
         height: 100%;
     
-    course-card {
-        display: table-cell;
-    }
-    }
-    .inprogress-courses {
-    .bottom-container{
-        background: #efeff4;
-    }
-    }
+        course-card {
+          display: table-cell;
+        }
+      }
+      .inprogress-courses {
+        .bottom-container{
+          background: #efeff4;
+        }
+      }
 
-    .scroll-heading {
-    padding-top: 5px;
-    font-weight: 500;
-    font-family: 'sunbirdboldfont';
-    font-size: 1.375em;
-    }
-    .view-all-link {
-    font-size: 1.2rem;
-    padding-top: 11px;
-    font-family: 'sunbirdboldfont';
-    }
-    .course-scroll-holder {
-    background-color: #FDFEFE;
-    }
-    .course-page-color {
-    background: #efeff4;
-    }
-    .padding-11 {
-    padding: 11px;
-    }
+      .custom-ion-content {
+        background: rgb(245, 245, 245)
+      }
+    
+      .scroll-heading {
+        padding-top: 10px;
+        font-weight: 500;
+        font-family: 'sunbirdboldfont';
+        font-size: 1.250em;
+      }
+      .view-all-link {
+        font-size: 1.2rem;
+        padding-top: 11px;
+        font-family: 'sunbirdboldfont';
+        font-weight: 500;
+      }
+      .course-scroll-holder {
+        background-color: #FDFEFE;
+      }
+      .toolbar-title-md {
+        margin-left: -5px !important;
+      }
+      .course-page-color {
+        background: #efeff4;
+      }
+      .padding-11 {
+        padding: 11px;
+      }
+      .empty-saved-resources {
+        height: 140px;
+      }
+      .devider-line {
+        background: #efeff4;
+        height: 7px;
+      }
+      ion-spinner {
+        display: block;
+        margin: auto;
+      }
+
+      .onbording-card-header-text {
+        color: rgb(90, 88, 88);
+        text-align: center;
+        margin: 0;
+        font-size: 1.6rem;
+        padding-top: 15px;
+        .p {
+           padding: 0%
+        }
+      }
+
+      .onbording-slides {
+        height: 180px;
+      }
+
+      .onbording-slide-div {
+        height: 120px;
+        background: white;
+        margin-left: 10px;
+        margin-right: 10px;
+        margin-top: -4%;
+        padding-top:2%;
+        padding-left: 4%;
+        padding-right:3%;
+        text-align: left;
+        position:relative;
+      }
+
+      .onbording-slide-title {
+        color:  rgb(90, 88, 88); 
+        font-size: 1.6rem;
+      }
+
+      .onbording-slide-footer {
+        padding-top: 2%;
+        padding-left: 4%;
+        padding-right: 3%;
+        padding-bottom: 4%;
+      }
+
+      .board-select  .select-icon .select-icon-inner{
+        border: none !important;
+        padding: 0%;
+      }
+
+      ion-select {
+        max-width: 75%;
+        font-size:14px;
+        color: #488aff;
+        font-weight: bold;
+      }
+
+      .board-select.select-md .select-placeholder {
+       color:#488aff !important;
+      }
 }

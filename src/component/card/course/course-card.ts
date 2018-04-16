@@ -1,7 +1,11 @@
+import { PipesModule } from './../../../pipes/pipes.module';
 import { Component, Input } from "@angular/core";
 import { NavController } from 'ionic-angular';
-import { CourseDetailComponent } from "../../../pages/courses/course-detail/course-detail";
 import { ImageLoader } from "ionic-image-loader";
+import { EnrolledCourseDetailsPage } from "../../../pages/enrolled-course-details/enrolled-course-details";
+import { CourseDetailPage } from './../../../pages/course-detail/course-detail';
+import { CollectionDetailsPage } from '../../../pages/collection-details/collection-details';
+import { ContentDetailsPage } from '../../../pages/content-details/content-details';
 
 /**
  * The course card component
@@ -20,9 +24,13 @@ export class CourseCard {
   /**
    * Contains layout name
    *
-   * @example layoutName = Inprogress / popular
+   * @example layoutName = Inprogress / popular 
    */
   @Input() layoutName: string;
+
+  @Input() pageName: string;
+
+  @Input() onProfile: boolean = false;
 
   /**
    * Contains default image path.
@@ -31,10 +39,10 @@ export class CourseCard {
    */
   defaultImg: string;
 
-  rate: string = "4";
-
   /**
    * Default method of class CourseCard
+   * 
+   * @param navCtrl To navigate user from one page to another
    */
   constructor(public navCtrl: NavController) {
     this.defaultImg = 'assets/imgs/ic_action_course.png';
@@ -43,10 +51,33 @@ export class CourseCard {
   /**
    * Navigate to the course/content details page
    * 
-   * @param {string} id content identifier
+   * @param {string} layoutName 
+   * @param {object} content 
    */
-  navigateToCourseDetailPage(id: string, layoutName: string): void {
-    this.navCtrl.push(CourseDetailComponent, { identifier: id, layoutType: layoutName });
+  navigateToCourseDetailPage(content: any, layoutName: string): void {
+    console.log('Card details... @@@', content);
+    if (layoutName === 'Inprogress') {
+      this.navCtrl.push(EnrolledCourseDetailsPage, {
+        content: content
+      })
+    } else {
+      if (content.contentType === 'Course') {
+        console.log('Inside course details page');
+        this.navCtrl.push(CourseDetailPage, {
+          content: content
+        })
+      } else if (content.mimeType === 'application/vnd.ekstep.content-collection') {
+        console.log('Inside CollectionDetailsPage');
+        this.navCtrl.push(CollectionDetailsPage, {
+          content: content
+        })
+      } else {
+        console.log('Inside ContentDetailsPage');
+        this.navCtrl.push(ContentDetailsPage, {
+          content: content
+        })
+      }
+    }
   }
 
   onImageLoad(imgLoader: ImageLoader) {

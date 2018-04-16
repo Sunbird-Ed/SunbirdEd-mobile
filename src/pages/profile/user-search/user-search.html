@@ -1,18 +1,16 @@
 <ion-header>
     <ion-navbar>
-        <ion-title>Search User</ion-title>
+        <ion-searchbar [(ngModel)]="searchInput" #input [showCancelButton]="true" (ionInput)="onInput()" (ionCancel)="onCancel($event)"
+            [spellcheck]="true" [autocomplete]="true">
+        </ion-searchbar>
     </ion-navbar>
 </ion-header>
 
 <ion-content>
-    <ion-searchbar [(ngModel)]="searchInput"  #input [showCancelButton]="true" (ionInput)="onInput($event)" (ionCancel)="onCancel($event)"
-        [spellcheck]="true" [animated]="true" [autocomplete]="true">
-    </ion-searchbar>
-
     <ion-list>
         <ion-item *ngFor="let user of userList" (click)="user?.status && openUserProfile(user?.id)">
             <ion-avatar item-start>
-                <img src="{{ user?.avatar || fallBackImage }}" class="avatar"/>
+                <img src="{{ user?.avatar || fallBackImage }}" class="avatar" />
             </ion-avatar>
             <h2 class="ellipsis font-weight-500" text-capitalize>{{ user?.firstName }} {{ user?.lastName }}</h2>
             <div>
@@ -21,4 +19,7 @@
             </div>
         </ion-item>
     </ion-list>
+    <ion-infinite-scroll *ngIf="enableInfiniteScroll" (ionInfinite)="doInfiniteScroll($event)">
+        <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
 </ion-content>

@@ -44,7 +44,7 @@
     "ERROR_SHORT_MOBILE": "தொலைப்பேசி எண் வடிவத்தைப் பரிசோதிக்கவும்",
     "ERROR_SHORT_PASSWORD": "கடவுச்சொல்லை எட்டு எழுத்துக்களுக்குக் குறைவாக இருக்கமுடியாது",
     "FETCHING_CONTENTS": "பாடங்கள் பெறுகிறது: %s%",
-    "FILE_SIZE": "அளவு [%s]",
+    "FILE_SIZE": "அளவு",
     "FILTER": "பில்டர்",
     "FILTER_BY": "இதன் அடிப்படையில் பில்டர் செய்க",
     "FIRST_NAME": "பெயர்",
@@ -248,5 +248,12 @@
     "CAMERA_PERMISSION_SETTINGS": "அனுமதி அளிக்க, செட்டிங்க்ஸ்சை திறந்து, %s செயலியைத் தேர்வுசெய்து, கேமராவை அழுத்தவும்.",
     "CAMERA_PERMISSION_DENIED": "கேமராவுக்கு அனுமதி மறுக்கப்பட்டது",
     "SELECT_STATE_TO_GET_STARTED": "தொடங்குவதற்காக மாநிலத்தைத் தேர்வு செய்யவும்",
-    "MSG_ALREADY_IMPORTED": "முன்னரே இம்போர்ட் செய்யப்பட்டுள்ளது"
+    "MSG_ALREADY_IMPORTED": "முன்னரே இம்போர்ட் செய்யப்பட்டுள்ளது",
+    "QR_SCREEN": {
+      "SCAN_QR_CODE": "Scan QR Code",
+      "SCAN_QR_INSTRUCTION": "Scan the QR code with your phone camera ",
+      "UNKNOWN_QR": "அந்த க்யு ஆர் குறியீட்டுடன் இணைத்த எந்தப் பாடமும் இல்லை",
+      "CANCEL": "ரத்து",
+      "TRY_AGAIN": "மறுமுறை முயற்சிக்கவும்"
+    }
   }

@@ -2,6 +2,7 @@ import { Component, OnInit, NgZone } from '@angular/core';
 import { NavController, Events, Platform } from 'ionic-angular';
 import { DocumentDirection } from 'ionic-angular/platform/platform';
 import { HttpClient } from '@angular/common/http';
+import { Storage } from "@ionic/storage";
 
 import {
   CourseService,
@@ -14,12 +15,18 @@ import {
   FrameworkModule,
   ContentImport,
   ContentImportRequest,
-  ContentService
+  ContentService,
+  UserProfileService,
+  TenantInfoRequest,
 } from 'sunbird';
 import { CourseCard } from './../../component/card/course/course-card';
 import { HomeAnnouncementCard } from '../../component/card/home/home-announcement-card'
 import { AnnouncementListComponent } from './announcement-list/announcement-list'
+import { SunbirdQRScanner, QRResultCallback } from '../qrscanner/sunbirdqrscanner.service';
+import { SearchPage } from '../search/search';
+import { FilterPage } from '../search/filters/filter';
 
+const KEY_SUNBIRD_SUPPORT_FILE_PATH = "sunbird_support_file_path";
 
 @Component({
   selector: 'page-home',
@@ -57,6 +64,8 @@ export class HomePage implements OnInit {
    * @param {HttpClient} http Reference of http client service to make api call
    */
 
+  logo: string = "assets/imgs/ic_logo.png";
+
   constructor(public navCtrl: NavController,
     private http: HttpClient,
     private courseService: CourseService,
@@ -67,7 +76,10 @@ export class HomePage implements OnInit {
     private events: Events,
     public platform: Platform,
     private pageService: PageAssembleService,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private userProfileService: UserProfileService,
+    private qrScanner: SunbirdQRScanner,
+    private storage: Storage
   ) {
     this.getUserId();
     // // TODO: remove this hardcodec id before pushing the code
@@ -167,10 +179,35 @@ export class HomePage implements OnInit {
   }
 
   ionViewDidLoad() {
-    let impression = new Impression();
-    impression.type = "view";
-    impression.pageId = "ionic_sunbird";
-    this.telemetryService.impression(impression);
+    // let impression = new Impression();
+    // impression.type = "view";
+    // impression.pageId = "ionic_sunbird";
+    // this.telemetryService.impression(impression);
+    this.refreshTenantData();
+    (<any>window).supportfile.makeEntryInSunbirdSupportFile((result) => {
+      console.log("Result - " + JSON.parse(result));
+      this.storage.set(KEY_SUNBIRD_SUPPORT_FILE_PATH, JSON.parse(result));
+    }, (error) => {
+      console.log("Error - " + error);
+    });
+  }
+
+  refreshTenantData() {
+    let request = new TenantInfoRequest();
+    request.refreshTenantInfo = true;
+    request.slug = "sunbird";
+    this.userProfileService.getTenantInfo(
+      request,
+      res => {
+        this.ngZone.run(() => {
+          let r = JSON.parse(res);
+          this.logo = r["logo"];
+        });
+      },
+      error => {
+
+      }
+    );
   }
 
   onSyncClick() {
@@ -217,4 +254,19 @@ export class HomePage implements OnInit {
       }
     });
   }
+
+  scanQRCode() {
+    const that = this;
+    const callback: QRResultCallback = {
+      dialcode(scanResult, dialCode) {
+        that.navCtrl.push(SearchPage, { dialCode: dialCode });
+      },
+      content(scanResult, contentId) {
+        // that.navCtrl.push(SearchPage);
+      }
+    }
+
+    this.qrScanner.startScanner(undefined, undefined, undefined, callback);
+  }
+
 }

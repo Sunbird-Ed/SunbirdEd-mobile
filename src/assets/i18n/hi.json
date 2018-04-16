@@ -44,7 +44,7 @@
     "ERROR_SHORT_MOBILE": "मोबाइल नंबर 10 अंक होना चाहिए",
     "ERROR_SHORT_PASSWORD": "पासवर्ड 8 वर्णों से कम नहीं हो सकता",
     "FETCHING_CONTENTS": "पाठ्यक्रम प्राप्ति:%s%",
-    "FILE_SIZE": "आकार [%s]",
+    "FILE_SIZE": "आकार",
     "FILTER": "फिल्टर",
     "FILTER_BY": "के द्वारा फिल्टर",
     "FIRST_NAME": "नाम",
@@ -271,5 +271,12 @@
     "ERROR_GETTING_SKILLS": "कौशल प्राप्त करने में त्रुटि",
     "ERROR_COLLECTION_IS_EMPTY": "संग्रह खाली है",
     "SKILL_ALREADY_ADDED": "कौशल पहले से ही जोड़ा है",
-    "BLOG": "ब्लॉग"
+    "BLOG": "ब्लॉग",
+    "QR_SCREEN": {
+      "SCAN_QR_CODE": "QR कोड स्कैन करें",
+      "SCAN_QR_INSTRUCTION": "अपने फोन कैमरे के QR कोड स्कैन करें",
+      "UNKNOWN_QR": "कोई पाठ्यक्रम QR कोड से संबद्ध नहीं मिली",
+      "CANCEL": "रद्द ",
+      "TRY_AGAIN": "पुनः प्रयास करें"
+    }
   }

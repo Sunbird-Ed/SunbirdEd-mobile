@@ -62,4 +62,14 @@ course-card {
         }
       }
     }
+
+    .badge {
+      position: absolute;
+      right: 5px;
+      top: 5px;
+    }
+    .badge-md-light{
+      color: map-get($colors, light);;
+      background-color: #1c1c1c;
+    }
 }

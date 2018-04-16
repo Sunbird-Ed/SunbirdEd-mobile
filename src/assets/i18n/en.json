@@ -3,7 +3,7 @@
     "ONBOARD_SLIDE_TITLE_1": "Get Content On-the-Go",
     "ONBOARD_SLIDE_DESC_1": "Browse and consume content from our growing collection of free courses and resources.",
     "ONBOARD_SLIDE_TITLE_2": "Scan QR Codes for Quick Access",
-    "ONBOARD_SLIDE_DESC_2": "Scan QR Codes using the Sunbird app to quickly get access to related content and resources.",
+    "ONBOARD_SLIDE_DESC_2": "Scan QR Codes using the %s app to quickly get access to related content and resources.",
     "ONBOARD_SLIDE_TITLE_3": "Content with Peers and Experts",
     "ONBOARD_SLIDE_DESC_3": "Join communities and speak to peers and experts. Learn and share your knowledge",
     "BROWSE_AS_GUEST": "Browse As Guest",
@@ -52,7 +52,7 @@
     "ERROR_SHORT_MOBILE": "Mobile number should be 10 digits",
     "ERROR_SHORT_PASSWORD": "Password should be minimum 8 characters",
     "FETCHING_CONTENTS": "Fetching content: %s%",
-    "FILE_SIZE": "Size [%s]",
+    "FILE_SIZE": "Size",
     "FILTER": "Filter",
     "FILTER_BY": "FILTER BY",
     "FIRST_NAME": "NAME",
@@ -232,7 +232,7 @@
     "CITY": "City",
     "STATE": "State",
     "COUNTRY": "Country",
-    "PINCODE": "Pincode",
+    "PINCODE": "Pin code",
     "PERMANENT": "Permanent Address",
     "CURRENT": "Current Address",
     "JOB_NAME": "Job Name",
@@ -321,7 +321,7 @@
         "ABOUT_THE_APP": "About the Application"
     },
     "LAST_SYNCED_TIME": "Last synced on",
-    "NOT_SYNCED_YET_ONCE" : "Not synced yet once",
+    "NOT_SYNCED_YET_ONCE": "Not synced yet once",
     "ADD_USER": "Add User",
     "USER": "User",
     "TEACHER": "Teacher",
@@ -344,5 +344,15 @@
     "DONT_HAVE_AN_ACCOUNT": "Don't have an account?",
     "CREATE_AN_ACCOUNT": "Create an account",
     "LABEL_BOARD": "BOARD",
-    "SUBJECTS_CAPS": "SUBJECTS"
+    "SUBJECTS_CAPS": "SUBJECTS",
+    "ONBOARDING_SLIDES_HEADER_TEXT":"Help us get you content thats relevant to you.",
+    "CONTINUE_AS_TEACHER": "Continue as teacher",
+    "CONTINUE_AS_STUDENT": "Continue as student",
+    "QR_SCREEN": {
+        "SCAN_QR_CODE": "Scan QR Code",
+        "SCAN_QR_INSTRUCTION": "Scan the QR code with your phone camera ",
+        "UNKNOWN_QR": "No content found associated with that QR code",
+        "CANCEL": "CANCEL",
+        "TRY_AGAIN": "TRY AGAIN"
+    }
 }

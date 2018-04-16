@@ -1,15 +1,17 @@
 <ion-list>
-    <img
-        class="center"
-        [src]="imageUri"
-        align="middle"/>
-    <ion-row class="button-row">
-        <ion-col>
-            <button ion-button outline center (click)="changeImage()">Change</button>
+    <img class="center" [src]="imageUri" align="middle" />
+    <ion-row>
+        <ion-col col-6>
+            <button ion-button outline center icon-left (click)="changeImage()">
+                <ion-icon name="create"></ion-icon>
+                {{'CHANGE' | translate}}
+            </button>
         </ion-col>
-        <ion-col>
-            <button ion-button outline center (click)="deleteImage()">Remove</button>
+        <ion-col col-6>
+            <button ion-button outline center icon-left (click)="deleteImage()">
+                <ion-icon name="close"></ion-icon>
+                {{'REMOVE' | translate}}
+            </button>
         </ion-col>
     </ion-row>
-    
 </ion-list>
