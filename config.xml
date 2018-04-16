@@ -21,6 +21,7 @@
     <preference name="BackupWebStorage" value="none" />
     <preference name="SplashScreenDelay" value="5000" />
     <preference name="Orientation" value="portrait" />
+    <preference name="KeyboardDisplayRequiresUserAction" value="false" />
     <platform name="android">
         <preference name="android-manifest/@xmlns:tools" value="http://schemas.android.com/tools" />
         <preference name="android-manifest/application/@tools:replace" value="android:allowBackup" />
