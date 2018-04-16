@@ -1,0 +1,44 @@
+<ion-list class="borderBottom" (click)="gotoAnnnouncementDetails(announcement?.id)">
+  <div padding>
+      <div class="border-bottom">
+          <div class="announcement-type">{{announcement?.type}}</div>
+          <div style="margin-top:12px">
+              <b>{{announcement?.description}}</b>
+          </div>
+          <div style="margin-top:12px">{{announcement?.from}}</div>
+          <div style="margin-top:12px" *ngIf="announcement?.links?.length">
+              <div class="inline-block">
+                  <div class="ellipsis inline-block">
+                      <div float-start>
+                          <img src="assets/imgs/ic_action_attachment.png" class="icon" />
+                      </div>&nbsp;
+                      <div class="inline-block">
+                          <a target="_blank" href="{{announcement?.links[0]}}">{{announcement?.links[0]}}</a>
+                      </div>
+                  </div>
+              </div>
+              <div *ngIf="announcement?.links?.length > 1" style="margin-top:8px">
+                  <span class="inline-block">{{'+' + ((announcement?.links?.length)-1 + ' Weblinks')}}</span>
+              </div>
+          </div>
+          <div>
+              <div *ngIf="announcement?.attachments?.length" class="link-div">
+                  <div float-start class="inline-block">
+                      <img src="assets/imgs/ic_action_link.png" class="icon" />
+                  </div>&nbsp;
+                  <div class="inline-block" style="width:60%">
+                      <a target="_blank" href="{{announcement?.attachments[0]?.link}}">{{' ' + announcement?.attachments[0]?.name}}</a>
+                  </div>
+                  <div class="inline-block">
+                      {{'(' +announcement?.attachments[0]?.mimetype + ','}}
+                  </div>
+                  <div *ngIf="announcement?.attachments[0]?.mimetype" class="inline-block">{{announcement?.attachments[0]?.size + ')'}}</div>
+              </div>
+          </div>
+          <div *ngIf="announcement?.attachments?.length > 1" style="margin-top:8px">
+              <span class="inline-block">{{'+' + ((announcement?.attachments?.length)-1 + ' ' + ' Attachments')}}</span>
+          </div>
+      </div>
+  </div>
+  <div padding style="padding-top: 10px">sent on {{ announcement.createdDate | date:'MMM d, y,'}}</div>
+</ion-list>
