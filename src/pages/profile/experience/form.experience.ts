@@ -5,8 +5,11 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { UserProfileService } from 'sunbird';
 import { ProfilePage } from './../profile';
+import * as _ from 'lodash';
 
-/* Interface for the Toast Object */
+/**
+ * Interface for the Toast Object
+ */
 export interface toastOptions {
   message: string,
   duration: number,
@@ -18,15 +21,22 @@ export interface toastOptions {
   templateUrl: 'form.experience.html'
 })
 
-/* This contains form for the Experience where user can Add new job exprience Entry or can edit/delete previous one */
+/**
+ * This contains form for the Experience where user can Add new job exprience Entry or can edit/delete previous one
+ */
 export class FormExperience {
   tabBarElement: any;
   isNewForm: boolean = true;
   jobInfo: any = {};
   experienceForm: FormGroup;
   profile: any = {};
+  currentJob: boolean = false;
+  todayDate: string = new Date().toISOString().slice(0, 10);
+  joiningDate: string = "1950";
 
-  /* @todo Fetch languageList, SubjectList and gradeList from the framework */
+  /**
+   * @todo Fetch languageList, SubjectList and gradeList from the framework
+   */
   subjectList: Array<String> = ["Assamese", "Bengali", "English", "Gujarati", "Hindi", "Kannada", "Marathi", "Punjabi", "Tamil", "Telugu"];
 
   options: toastOptions = {
@@ -52,17 +62,19 @@ export class FormExperience {
 
     /* Initialize form with default values */
     this.experienceForm = this.fb.group({
-      jobName: [this.jobInfo.jobName || ''],
+      jobName: [this.jobInfo.jobName || '', Validators.required],
       orgName: [this.jobInfo.orgName || '', Validators.required],
       role: [this.jobInfo.role || ''],
-      subject: [this.jobInfo.subject || ''],
-      isCurrentJob: [''],
-      joiningDate: [''],
-      endDate: ['']
+      subject: [this.stringToArray(this.jobInfo.subject) || []],
+      isCurrentJob: [<string>this.jobInfo.isCurrentJob || (this.isNewForm ? '' : 'false')],
+      joiningDate: [this.jobInfo.joiningDate || ''],
+      endDate: [this.jobInfo.endDate || '']
     });
-   }
 
-   ionViewWillEnter() {
+    if (this.jobInfo.isCurrentJob) this.currentJob = true;
+  }
+
+  ionViewWillEnter() {
     this.tabBarElement.style.display = 'none';
   }
 
@@ -70,24 +82,36 @@ export class FormExperience {
     this.tabBarElement.style.display = 'flex';
   }
 
-  /* This will call on click of DELETE and SAVE button
-  * @param {object} event - Form event
-  * @param {boolean} isDeleted - Flag to delete
-  */
+  changeJoiningDate() {
+    this.joiningDate = this.experienceForm.value.joiningDate;
+    this.experienceForm.patchValue({
+      endDate: ''
+    })
+  }
+  /**
+   * This will call on click of DELETE and SAVE button
+   * @param {object} event - Form event
+   * @param {boolean} isDeleted - Flag to delete
+   */
   onSubmit(event, isDeleted: boolean = false): void {
     let formVal = this.experienceForm.value;
+
+    this.validateForm(formVal);
     let userJobProfile = {
       jobName: formVal.jobName,
       orgName: formVal.orgName,
       role: formVal.role,
       subject: formVal.subject,
-      isCurrentJob: <boolean>formVal.isCurrentJob
+      isCurrentJob: <boolean>formVal.isCurrentJob, // If not available must be false
+      joiningDate: <string>formVal.joiningDate, //
+      endDate: <string>formVal.endDate // Should be current Date if `isCurrentJob` is `true`
     }
 
-    if(formVal.joiningDate != '') userJobProfile['joiningDate'] = <string>formVal.joiningDate;
-    if(formVal.endDate != '') userJobProfile['endDate'] = <string>formVal.endDate;
-    if(this.jobInfo.id) userJobProfile['id'] = this.jobInfo.id;
-    if(isDeleted) userJobProfile['isDeleted'] = isDeleted;
+    if (this.jobInfo.id) userJobProfile['id'] = this.jobInfo.id;
+    if (isDeleted) userJobProfile['isDeleted'] = isDeleted;
+
+    // Remove empty object element
+    Object.keys(userJobProfile).forEach((key) => (userJobProfile[key] === '') && delete userJobProfile[key]);
 
     let req: any = {
       userId: this.profile.userId,
@@ -100,38 +124,61 @@ export class FormExperience {
     this.updateExprience(req);
   }
 
-  /* This will call Update User's Info API
-  * @param {object} req - Request object for the User profile Service
-  */
+  /**
+   * It will validates a form
+   */
+  validateForm(formVal) {
+    if (<boolean>formVal.isCurrentJob) {
+      this.experienceForm.patchValue({
+        endDate: new Date().toJSON().slice(0, 10)
+      })
+    } else if (formVal.isCurrentJob === '') {
+      this.experienceForm.patchValue({
+        isCurrentJob: false
+      })
+    }
+  }
+
+  /**
+   * This will call Update User's Info API
+   * @param {object} req - Request object for the User profile Service
+   */
   updateExprience(req): void {
     this.userProfileService.updateUserInfo(req,
       (res: any) => {
-        console.log("Response", res);
         this.getToast(JSON.parse(res).message).present();
-        setTimeout(() => {
-          this.navCtrl.setRoot(ProfilePage);
-        }, 2000);
+        this.navCtrl.setRoot(ProfilePage);
       },
       (err: any) => {
-        console.log("Error", err);
         this.getToast(err).present();
       });
   }
 
-  /* It will returns Toast Object
-  * @param {message} string - Message for the Toast to show
-  * @returns {object} - toast Object
-  */
+  /**
+   * It will returns Toast Object
+   * @param {message} string - Message for the Toast to show
+   * @returns {object} - toast Object
+   */
   getToast(message: string = ''): any {
     this.options.message = message;
-    if(message.length) return this.toastCtrl.create(this.options);
+    if (message.length) return this.toastCtrl.create(this.options);
   }
 
-  /* This method formats the date from YYY-MM-dd HH:MM:SS Z to YYYY-MM-dd 
-  * @param {string} date - Date in the string Format
-  * @param {string} - Date in the ISO format
-  */
+  /**
+   * This method formats the date from YYY-MM-dd HH:MM:SS Z to YYYY-MM-dd
+   * @param {string} date - Date in the string Format
+   * @param {string} - Date in the ISO format
+   */
   formatDate(date: string): string {
     return new Date(date).toISOString().slice(0, 10);
+  }
+
+
+  /**
+   * @param {string} str - Input String that need to convert into the Array
+   * @returns {array}
+   */
+  stringToArray(str: string = '') {
+    return _.split(str, ', ');
   }
 }
