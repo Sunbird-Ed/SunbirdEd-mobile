@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavController, NavParams, ToastController } from 'ionic-angular';
-import { AuthService } from 'sunbird';
+import { TranslateService } from '@ngx-translate/core';
 
-import { UserProfileService } from 'sunbird';
+import { AuthService, UserProfileService } from 'sunbird';
 import { ProfilePage } from './../profile';
 
 /* Interface for the Toast Object */
@@ -38,7 +38,8 @@ export class FormAddress {
     public navParams: NavParams,
     public authService: AuthService,
     private userProfileService: UserProfileService,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private translate: TranslateService
   ) {
     /* Returns a html element for tab bar*/
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
@@ -50,13 +51,13 @@ export class FormAddress {
 
     /* Initialize form with default values */
     this.addressForm = this.fb.group({
-      addType: [this.addressDetails.addType || '', Validators.required],
-      addressLine1: [this.addressDetails.addressLine1 || '', Validators.required],
+      addType: [this.addressDetails.addType || (this.isNewForm ? '' : 'permanent')],
+      addressLine1: [this.addressDetails.addressLine1 || '', [Validators.required]],
       addressLine2: [this.addressDetails.addressLine2 || ''],
-      city: [this.addressDetails.city || '', Validators.required],
+      city: [this.addressDetails.city || '', [Validators.required]],
       state: [this.addressDetails.state || ''],
       country: [this.addressDetails.country || ''],
-      zipcode: [this.addressDetails.zipcode || '', Validators.minLength(4)]
+      zipcode: [this.addressDetails.zipcode || '']
     });
   }
 
@@ -68,64 +69,98 @@ export class FormAddress {
     this.tabBarElement.style.display = 'flex';
   }
 
-  /* This will call on click of DELETE and SAVE button
-  * @param {object} event - Form event
-  * @param {boolean} isDeleted - Flag to delete
-  */
+  /**
+   * This will call on click of DELETE and SAVE button
+   * @param {object} event - Form event
+   * @param {boolean} isDeleted - Flag to delete
+   */
   onSubmit(event, isDeleted: boolean = false): void {
 
     let formVal = this.addressForm.value;
-    let userAddress = {
-      addType: formVal.addType,
-      addressLine1: formVal.addressLine1,
-      addressLine2: formVal.addressLine2,
-      city: formVal.city,
-      state: formVal.state,
-      country: formVal.country,
-      zipcode: formVal.zipcode,
-      id: this.addressDetails.id || ''
+
+    if (this.validateForm(formVal)) {
+
+      //Default Address type is `Permanent`
+      if (formVal.addType === '') {
+        this.addressForm.patchValue({
+          addType: 'permanent'
+        })
+      }
+
+      let userAddress = {
+        addType: formVal.addType,
+        addressLine1: formVal.addressLine1,
+        addressLine2: formVal.addressLine2,
+        city: formVal.city,
+        state: formVal.state,
+        country: formVal.country,
+        zipcode: formVal.zipcode,
+        id: this.addressDetails.id || ''
+      }
+
+      if (isDeleted) userAddress['isDeleted'] = isDeleted;
+
+      // Remove empty object element
+      Object.keys(userAddress).forEach((key) => (userAddress[key] === '') && delete userAddress[key]);
+
+      // TODO: Need to Remove hard coded Mobile Number
+      let req: any = {
+        userId: this.profile.userId,
+        firstName: this.profile.firstName,
+        language: this.profile.language,
+        phone: '8698645680',
+        address: [userAddress]
+      };
+
+      this.updateAddress(req);
     }
-
-    if(isDeleted) userAddress['isDeleted'] = isDeleted;
-
-    // Remove empty object element
-    Object.keys(userAddress).forEach((key) => (userAddress[key] === '') && delete userAddress[key]);
-
-    let req: any = {
-      userId: this.profile.userId,
-      firstName: this.profile.firstName,
-      language: this.profile.language,
-      phone: '8698645680',
-      address: [userAddress]
-    };
-
-    this.updateAddress(req);
   }
 
-  /* This will call Update User's Info API
-  * @param {object} req - Request object for the User profile Service
-  */
+  validateForm(formVal): boolean {
+
+    if (formVal.zipcode != '' && formVal.zipcode.length != 6) {
+      this.getToast(this.translateMessage('INVALID_PINCODE')).present();
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * This will call Update User's Info API
+   * @param {object} req - Request object for the User profile Service
+   */
   updateAddress(req): void {
     this.userProfileService.updateUserInfo(req,
       (res: any) => {
-        console.log("Response", res);
         this.getToast(JSON.parse(res).message).present();
-        setTimeout(() => {
-          this.navCtrl.setRoot(ProfilePage);
-        }, 2000);
+        this.navCtrl.setRoot(ProfilePage);
       },
       (err: any) => {
-        console.log("Error", err);
         this.getToast(err).present();
       });
   }
 
-  /* It will returns Toast Object
-  * @param {message} string - Message for the Toast to show
-  * @returns {object} - toast Object
-  */
+  /**
+   * Used to Translate message to current Language
+   * @param {string} messageConst - Message Constant to be translated
+   * @returns {string} translatedMsg - Translated Message
+   */
+  translateMessage(messageConst: string): string {
+    let translatedMsg = '';
+    this.translate.get(messageConst).subscribe(
+      (value: any) => {
+        translatedMsg = value;
+      }
+    );
+    return translatedMsg;
+  }
+
+  /** It will returns Toast Object
+   * @param {message} string - Message for the Toast to show
+   * @returns {object} - toast Object
+   */
   getToast(message: string = ''): any {
     this.options.message = message;
-    if(message.length) return this.toastCtrl.create(this.options);
+    if (message.length) return this.toastCtrl.create(this.options);
   }
 }

@@ -11,4 +11,8 @@ page-experience {
     ion-datetime {
         display: inline-flex !important;
     }
+    .radio-label {
+        font-size: 1.2rem;
+        text-transform: capitalize !important;
+    }
 }
