@@ -11,7 +11,7 @@
         <div>
           <span>{{ content.createdOn | date: 'mediumDate' }}</span>
           <br/>
-          <span *ngIf="content.contentType">{{ content.contentType | slice:0:7 }}</span>
+          <span *ngIf="content.contentType">{{(content.contentType && content.contentType.length > 7) ? (content.contentType | slice:0:7) + '..' : content.contentType }}</span>
           <br/>
           <span *ngIf="content.size">[{{ content.size | fileSize }}]</span>
         </div>

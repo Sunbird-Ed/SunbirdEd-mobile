@@ -66,7 +66,7 @@ export class CollectionDetailsPage {
   showDownloadBtn: boolean = false;
 
   /**
-   * 
+   * Flag downlaoded started
    */
   isDownloadStarted: boolean = false;
 
@@ -84,6 +84,13 @@ export class CollectionDetailsPage {
   isDepthChild: boolean = false;
 
   /**
+   * To hold 
+   */
+  queuedIdentifiers: Array<any> = [];
+
+  isDownlaodCompleted: boolean = false;
+
+  /**
    * Total downlaod count
    */
   totalDownload: number;
@@ -91,7 +98,7 @@ export class CollectionDetailsPage {
   /**
    * Current download count 
    */
-  currentCount: number;
+  currentCount: number = 0;
 
   /**
    * Content details
@@ -102,6 +109,8 @@ export class CollectionDetailsPage {
    * Contains identifier(s) of locally not available content(s)
    */
   downloadIdentifiers = [];
+
+  downloadSize: number = 0;
 
   /**
    * Contains total size of locally not available content(s)
@@ -263,12 +272,18 @@ export class CollectionDetailsPage {
     this.contentService.importContent(option, (data: any) => {
       this.zone.run(() => {
         data = JSON.parse(data);
-        if (data.result && data.result[0].status === 'NOT_FOUND') {
-          const message = 'Unable to fetch content';
-          this.showErrorMessage(message, false);
-        } else {
-          console.log('Success: content imported successfully... @@@', data);
+
+        if (data.result && data.result.length && this.isDownloadStarted) {
+          _.forEach(data.result, (value, key) => {
+            if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
+              this.queuedIdentifiers.push(value.identifier);
+            }
+          });
+          if (this.queuedIdentifiers.length === 0) {
+            this.showErrorMessage('Unable to fetch content', false);
+          }
         }
+        console.log('Success: content imported successfully... @@@', data);
         // this.showChildrenLoader = false;
       })
     },
@@ -288,16 +303,18 @@ export class CollectionDetailsPage {
   setChildContents() {
     console.log('Making child contents api call... @@@');
     // this.zone.run(() => { this.showChildrenLoader = true; });
-    const option = { contentId: this.identifier, hierarchyInfo: null, level: 1 };
+    const option = { contentId: this.identifier, hierarchyInfo: null }; // TODO: remove level
     this.contentService.getChildContents(option, (data: any) => {
+      // console.log('FFFFFFFFFFFFFFFFFF', data);
       data = JSON.parse(data);
       console.log('Success: child contents data =', data);
       this.zone.run(() => {
         if (data && data.result && data.result.children) {
           this.childrenData = data.result.children;
         }
+
         if (!this.isDepthChild) {
-          this.showDownloadAllBtn(data.result.children || []);
+          this.getContentsSize(data.result.children || []);
         }
         this.showChildrenLoader = false;
       });
@@ -310,6 +327,28 @@ export class CollectionDetailsPage {
       });
   }
 
+  getContentsSize(data) {
+    _.forEach(data, (value, key) => {
+
+      // check children first
+      if (value.children && value.children.length) {
+        console.log('Recurssion called');
+        this.getContentsSize(value.children);
+      }
+
+      if (value.isAvailableLocally === false) {
+        this.downloadIdentifiers.push(value.contentData.identifier);
+        if (value.contentData.size) {
+          this.downloadSize += +value.contentData.size;
+        }
+      }
+    });
+    console.log('downloadIdentifiers???????????????', this.downloadIdentifiers);
+    console.log('Download size ===>', this.downloadSize);
+    if (this.downloadIdentifiers.length && !this.isDownlaodCompleted) {
+      this.showDownloadBtn = true;
+    }
+  }
   /**
    * 
    * @param {array} data 
@@ -402,21 +441,24 @@ export class CollectionDetailsPage {
         if (res.type === 'downloadProgress' && res.data.downloadProgress) {
           this.downloadProgress = res.data.downloadProgress === -1 ? 0 : res.data.downloadProgress + ' %';
         }
-
-        if (this.downloadIdentifiers.length && res.type === 'contentImportProgress') {
-          this.totalDownload = res.data.totalCount;
-          this.currentCount = res.data.currentCount;
-        }
-
         // Get child content
         if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
-          if (this.isDownloadStarted) {
-            this.isDownloadStarted = false;
-            this.showDownloadBtn = false;
+          if (this.queuedIdentifiers.length && this.isDownloadStarted) {
+            if (_.includes(this.queuedIdentifiers, res.data.identifier)) {
+              this.currentCount++;
+              console.log('current download count ===>>>>', this.currentCount);
+              console.log('queuedIdentifiers count ===>>>>', this.queuedIdentifiers.length);
+            }
+            if (this.queuedIdentifiers.length === this.currentCount) {
+              this.isDownloadStarted = false;
+              this.showDownloadBtn = false;
+              this.isDownlaodCompleted = true;
+            }
           } else {
             this.setChildContents();
           }
         }
+
       });
     });
   }
