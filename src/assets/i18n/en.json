@@ -345,6 +345,8 @@
     "CREATE_AN_ACCOUNT": "Create an account",
     "LABEL_BOARD": "BOARD",
     "SUBJECTS_CAPS": "SUBJECTS",
+    "LIBRARY":"Library",
+    "ONBOARDING_SLIDES_HEADER_TEXT":"Help us get you content thats relevant to you.",
     "QR_SCREEN": {
       "SCAN_QR_CODE": "Scan QR Code",
       "SCAN_QR_INSTRUCTION": "Scan the QR code with your phone camera ",
