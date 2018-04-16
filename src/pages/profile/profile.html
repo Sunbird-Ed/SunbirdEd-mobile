@@ -24,6 +24,7 @@
     <p *ngIf="isLoggedInUser" class="profile-last-login-text">{{ lastLoginTime }}</p>
     <div text-center>
         <img class="custom-avatar" [src]="imageUri" (click)="isLoggedInUser && editPicture()" />
+        <ion-spinner *ngIf="isUploading" name="crescent"></ion-spinner>
         <p class="profile-name">{{ profile?.firstName }} {{ profile?.lastName }}</p>
         <div class="padding-5 ellipsis" col-12>
             <span class="grey-bg" *ngIf="profile?.userName">{{ userName }}</span>
@@ -51,7 +52,8 @@
     </ion-item>
 
     <!-- Profile Education -->
-    <ion-list-header *ngIf="(profile?.education?.length && !isLoggedInUser) || isLoggedInUser" class="section-title" no-lines no-padding>
+    <ion-list-header *ngIf="(profile?.education?.length && !isLoggedInUser) || isLoggedInUser" class="section-title" no-lines
+        no-padding>
         {{ 'TITLE_EDUCATION' | translate }}
         <span *ngIf="isLoggedInUser" float-right color="primary">
             <span (click)="editEduDetails(true, profile)">{{ 'ADD' | translate }}</span>
@@ -82,7 +84,7 @@
     </ion-item>
 
     <!-- User Experience -->
-    <ion-list-header *ngIf="profile?.jobProfile?.length" class="section-title" no-padding>
+    <ion-list-header *ngIf="(profile?.jobProfile?.length && !isLoggedInUser) || isLoggedInUser" class="section-title" no-padding>
         {{ 'EXPERIENCE' | translate }}
         <span *ngIf="isLoggedInUser" float-end color="primary">
             <span (click)="editExperience()">{{ 'ADD' | translate }}</span>
@@ -103,7 +105,7 @@
                     <p>{{ job?.role }}</p>
                     <p>{{ job?.orgName }}</p>
                     <p *ngIf="job?.subject">{{ 'SUBJECTS' | translate }} - {{ job?.subject }}</p>
-                    <p>{{ job?.joiningDate }}
+                    <p *ngIf="job?.joiningDate">{{ job?.joiningDate }}
                         <span class="display-inline-block" *ngIf="job?.endDate">&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;</span>{{ job?.endDate}}</p>
                 </div>
             </ion-col>
@@ -117,7 +119,7 @@
     <!-- User Address Current/Permanent -->
     <ion-list-header *ngIf="profile?.address?.length" class="section-title" no-padding>
         {{ 'TITLE_ADDRESS' | translate }}
-        <span *ngIf="isLoggedInUser" float-right color="primary">
+        <span *ngIf="isLoggedInUser && profile?.address?.length < 2 " float-right color="primary">
             <span (click)="editAddress()">{{ 'ADD' | translate }}</span>
             <ion-icon color="dark" class="padding-left-5" (click)="toggleLock('location')" name="{{ profile?.profileVisibility?.location == 'private' ? 'lock' : 'unlock' }}"></ion-icon>
         </span>
@@ -131,10 +133,11 @@
                 </div>
             </ion-col>
             <ion-col col-9>
-                <span class="details-title">{{ addr?.addType }}</span>
+                <span text-capitalize class="details-title">{{ addr?.addType }}</span>
+                <!-- TODO: Add word wrap -->
                 <div class="details">
                     <p>{{ addr?.addressLine1 }}</p>
-                    <p>{{ addr?.city }}</p>
+                    <p text-capitalize>{{ addr?.city }}</p>
                 </div>
             </ion-col>
             <ion-col *ngIf="isLoggedInUser" col-1 text-end>
@@ -159,7 +162,8 @@
                 <span class="vertical-separator">&nbsp;&nbsp;{{ skill?.endorsementcount }}</span>
             </ion-col>
 
-            <ion-col *ngIf="!isLoggedInUser && skill?.canEndorse" text-end col-1 [ngClass]="{'skill-endorse-col':!isLoggedInUser && skill?.canEndorse}" (click)="endorseSkill(i)">
+            <ion-col *ngIf="!isLoggedInUser && skill?.canEndorse" text-end col-1 [ngClass]="{'skill-endorse-col':!isLoggedInUser && skill?.canEndorse}"
+                (click)="endorseSkill(i)">
                 <span *ngIf="skill?.canEndorse">+1</span>
             </ion-col>
         </ion-row>
@@ -186,12 +190,12 @@
     </ion-list-header>
 
     <ion-item class="additional-info" no-lines>
-        <ion-row  *ngIf="profile?.language && profile?.language[0]">
+        <ion-row *ngIf="profile?.language && profile?.language[0]">
             <ion-col col-5>
                 <span text-uppercase class="info-title">{{ 'LANGUAGE' | translate }}</span>
             </ion-col>
             <ion-col col-7 text-right>
-                <span class="ellipsis">{{ profile?.language && profile?.language[0] }}</span>
+                <span class="ellipsis">{{ languages }}</span>
             </ion-col>
         </ion-row>
 
@@ -262,10 +266,18 @@
                 <span text-uppercase class="info-title">{{ 'SOCIAL' | translate }}</span>
             </ion-col>
             <ion-col col-7 text-end class="social-icon-size">
-                <a (click)="openLink(fbLink)" *ngIf="fbLink"><ion-icon color="facebook" name="logo-facebook"></ion-icon></a>
-                <a (click)="openLink(twitterLink)" *ngIf="twitterLink"><ion-icon color="twitter" name="logo-twitter"></ion-icon></a>
-                <a (click)="openLink(linkedInLink)" *ngIf="linkedInLink"><ion-icon *ngIf="linkedInLink" color="linkedIn" name="logo-linkedin"></ion-icon></a>
-                <a (click)="openLink(blogLink)" *ngIf="blogLink" ><ion-icon name="create"></ion-icon></a>
+                <a [href]="fbLink" *ngIf="fbLink">
+                    <ion-icon color="facebook" name="logo-facebook"></ion-icon>
+                </a>
+                <a [href]="twitterLink" *ngIf="twitterLink">
+                    <ion-icon color="twitter" name="logo-twitter"></ion-icon>
+                </a>
+                <a [href]="linkedInLink" *ngIf="linkedInLink">
+                    <ion-icon *ngIf="linkedInLink" color="linkedIn" name="logo-linkedin"></ion-icon>
+                </a>
+                <a [href]="blogLink" *ngIf="blogLink">
+                    <ion-icon name="create"></ion-icon>
+                </a>
             </ion-col>
         </ion-row>
     </ion-item>
