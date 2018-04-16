@@ -57,7 +57,11 @@
       <ion-label stacked>{{ 'PINCODE' | translate }}</ion-label>
       <ion-input type="number" formControlName="zipcode" placeholder="{{ 'OPTIONAL' | translate }}"></ion-input>
     </ion-item>
+  </form>
+</ion-content>
 
+<ion-footer>
+  <ion-toolbar>
     <ion-row>
       <ion-col padding *ngIf="!isNewForm">
         <button (click)="onSubmit($event, true)" ion-button block outline class="text-capitalize">{{ 'DELETE' | translate }}</button>
@@ -66,5 +70,5 @@
         <button type="submit" [disabled]="!addressForm.valid" (click)="onSubmit($event)" ion-button block class="text-capitalize">{{ 'SAVE' | translate }}</button>
       </ion-col>
     </ion-row>
-  </form>
-</ion-content>
+  </ion-toolbar>
+</ion-footer>
