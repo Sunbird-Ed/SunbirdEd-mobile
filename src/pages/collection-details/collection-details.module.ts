@@ -1,22 +1,24 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { CourseDetailPage } from './course-detail';
+import { CollectionDetailsPage } from './collection-details';
+
 import { TranslateModule } from '@ngx-translate/core';
 import { GenieSDKServiceProvider } from 'sunbird';
 import { FrameworkModule } from "sunbird";
 import { IonicImageLoader } from "ionic-image-loader";
 import { Ionic2RatingModule } from "ionic2-rating";
-import { ComponentsModule } from './../../component/components.module';
-import { DirectivesModule } from './../../directives/directives.module';
+import { ComponentsModule } from '../../component/components.module';
+import { DirectivesModule } from '../../directives/directives.module';
 import { PipesModule } from '../../pipes/pipes.module';
+
 
 @NgModule({
   declarations: [
-    CourseDetailPage,
+    CollectionDetailsPage,
   ],
   entryComponents: [],
   imports: [
-    IonicPageModule.forChild(CourseDetailPage),
+    IonicPageModule.forChild(CollectionDetailsPage),
     TranslateModule.forChild(),
     ComponentsModule,
     FrameworkModule,
@@ -27,7 +29,7 @@ import { PipesModule } from '../../pipes/pipes.module';
   ],
   providers: [GenieSDKServiceProvider],
   exports: [
-    CourseDetailPage
+    CollectionDetailsPage
   ]
 })
-export class CourseDetailPageModule {}
+export class CollectionDetailsPageModule {}

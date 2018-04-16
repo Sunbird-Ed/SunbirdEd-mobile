@@ -1,12 +1,13 @@
 import { Component, NgZone } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events, ToastController } from 'ionic-angular';
-import { CourseBatchesPage } from './../course-batches/course-batches';
+import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController } from 'ionic-angular';
 import { ContentService } from 'sunbird';
 import { NgModel } from '@angular/forms';
 import * as _ from 'lodash';
+import { ContentDetailsPage } from '../content-details/content-details';
+import { CourseDetailPage } from '../course-detail/course-detail';
 
 /**
- * Generated class for the CourseDetailPage page.
+ * Generated class for the CollectionDetailsPage page.
  *
  * See https://ionicframework.com/docs/components/#navigation for more info on
  * Ionic pages and navigation.
@@ -14,13 +15,14 @@ import * as _ from 'lodash';
 
 @IonicPage()
 @Component({
-  selector: 'page-course-detail',
-  templateUrl: 'course-detail.html',
+  selector: 'page-collection-details',
+  templateUrl: 'collection-details.html',
 })
-export class CourseDetailPage {
+export class CollectionDetailsPage {
+
   /**
-   * Contains content details
-   */
+  * Contains content details
+  */
   contentDetail: any;
 
   /**
@@ -58,9 +60,58 @@ export class CourseDetailPage {
    */
   objectKeys = Object.keys;
 
+  /**
+   * Contains
+   */
+  showDownloadBtn: boolean = false;
+
+  /**
+   * 
+   */
+  isDownloadStarted: boolean = false;
+
+  /**
+   * Contains current course depth
+   */
+  depth: string = '1';
+
+  /**
+   * Its get true when child is collection.
+   * Used to show content depth
+   * 
+   * @example 1.1 Collection 1 
+   */
+  isDepthChild: boolean = false;
+
+  /**
+   * Total downlaod count
+   */
+  totalDownload: number;
+
+  /**
+   * Current download count 
+   */
+  currentCount: number;
+
+  /**
+   * Content details
+   */
   details: any;
 
-  course: any;
+  /**
+   * Contains identifier(s) of locally not available content(s)
+   */
+  downloadIdentifiers = [];
+
+  /**
+   * Contains total size of locally not available content(s)
+   */
+  downloadContentsSize: string;
+
+  /**
+   * Contains loader instance
+   */
+  loader: any;
 
   /**
    * Contains reference of content service
@@ -87,14 +138,20 @@ export class CourseDetailPage {
    */
   public toastCtrl: ToastController;
 
+  /**
+   * Contains reference of LoadingController
+   */
+  public loadingCtrl: LoadingController;
+
   constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, zone: NgZone,
-    private events: Events, toastCtrl: ToastController) {
+    private events: Events, toastCtrl: ToastController, loadingCtrl: LoadingController) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
     this.zone = zone;
     this.toastCtrl = toastCtrl;
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
+    this.loadingCtrl = loadingCtrl;
     console.warn('Inside new module..........................');
   }
 
@@ -104,39 +161,37 @@ export class CourseDetailPage {
    * @param {string} identifier identifier of content / course
    */
   setContentDetails(identifier, refreshContentDetails: boolean | true) {
+    let loader = this.getLoader();
+    loader.present();
     const option = { contentId: identifier, refreshContentDetails: refreshContentDetails }
     this.contentService.getContentDetail(option, (data: any) => {
+      this.details = data.result;
       this.zone.run(() => {
         data = JSON.parse(data);
         console.log('Content details ==>>>>>', data);
         if (data && data.result) {
           this.extractApiResponse(data);
         }
+        loader.dismiss();
       });
     },
       error => {
         console.log('error while loading content details', error);
         const message = 'Something went wrong, please check after some time';
+        this.loader.dismiss();
         this.showErrorMessage(message, true);
       });
   }
 
   /**
-   * To check content is locally available or not.
-   * If not then make import content api call else make getChildContents api call to get children
+   * Function to extract api response.
    */
-  extractApiResponse(data): void {
+  extractApiResponse(data) {
     this.contentDetail = data.result.contentData ? data.result.contentData : [];
-    this.course = data.result.contentData ? data.result.contentData : [];
-    if (this.course.me_totalDownloads) {
-      this.course.me_totalDownloads = this.course.me_totalDownloads.split('.')[0];
-    }
-    this.setCourseStructure();
-
     switch (data.result.isAvailableLocally) {
       case true: {
-        console.log("Course locally available. Geting child content... @@@");
-        this.course.size = data.result.sizeOnDevice;
+        console.log("Content locally available. Geting child content... @@@");
+        this.contentDetail.size = data.result.sizeOnDevice;
         this.setChildContents();
         break;
       }
@@ -150,40 +205,25 @@ export class CourseDetailPage {
         break;
       }
     }
+
+    if (this.contentDetail.me_totalDownloads) {
+      this.contentDetail.me_totalDownloads = this.contentDetail.me_totalDownloads.split('.')[0];
+    }
+    this.setCollectionStructure();
   }
 
   /**
-   * Set course structure info
+   * Set collection structure
    */
-  setCourseStructure(){
+  setCollectionStructure() {
     this.showChildrenLoader = true;
-    this.course.contentTypesCount = this.course.contentTypesCount ? JSON.parse(this.course.contentTypesCount) : '';
-  }
-
-  /**
-   * Function to set child contents
-   */
-  setChildContents() {
-    console.log('Making child contents api call... @@@');
-    const option = { contentId: this.identifier, hierarchyInfo: null, level: 1 };
-    this.contentService.getChildContents(option, (data: any) => {
-      data = JSON.parse(data);
-      console.log('Success: child contents ===>>>', data);
-      this.zone.run(() => {
-        if (data && data.result && data.result.children) {
-          this.childrenData = data.result.children;
-        } else {
-          this.childrenData = [];
-        }
-        this.showChildrenLoader = false;
-      });
-    },
-      (error: string) => {
-        console.log('Error: while fetching child contents ===>>>', error);
-        this.zone.run(() => {
-          this.showChildrenLoader = false;
-        });
-      });
+    if (this.contentDetail.contentTypesCount) {
+      this.contentDetail.contentTypesCount = JSON.parse(this.contentDetail.contentTypesCount);
+    } else if (this.cardData.contentTypesCount) {
+      this.contentDetail.contentTypesCount = JSON.parse(this.cardData.contentTypesCount);
+    } else {
+      this.contentDetail.contentTypesCount;
+    }
   }
 
   /**
@@ -237,9 +277,59 @@ export class CourseDetailPage {
           console.log('error while loading content details', error);
           const message = 'Something went wrong, please check after some time';
           this.showErrorMessage(message, false);
-          // this.showChildrenLoader = false;
+          this.showChildrenLoader = false;
         })
       });
+  }
+
+  /**
+   * Function to set child contents
+   */
+  setChildContents() {
+    console.log('Making child contents api call... @@@');
+    // this.zone.run(() => { this.showChildrenLoader = true; });
+    const option = { contentId: this.identifier, hierarchyInfo: null, level: 1 };
+    this.contentService.getChildContents(option, (data: any) => {
+      data = JSON.parse(data);
+      console.log('Success: child contents data =', data);
+      this.zone.run(() => {
+        if (data && data.result && data.result.children) {
+          this.childrenData = data.result.children;
+        }
+        if (!this.isDepthChild) {
+          this.showDownloadAllBtn(data.result.children || []);
+        }
+        this.showChildrenLoader = false;
+      });
+    },
+      (error: string) => {
+        console.log('Error: while fetching child contents ===>>>', error);
+        this.zone.run(() => {
+          this.showChildrenLoader = false;
+        });
+      });
+  }
+
+  /**
+   * 
+   * @param {array} data 
+   */
+  showDownloadAllBtn(data) {
+    let size = 0;
+    this.zone.run(() => {
+      _.forEach(data, (value, key) => {
+        if (value.isAvailableLocally === false) {
+          this.downloadIdentifiers.push(value.contentData.identifier);
+          size += +value.contentData.size;
+        }
+      });
+      console.log('Download size ===>', size);
+      this.downloadContentsSize = this.getReadableFileSize(+size);
+      console.log('download content identifiers', this.downloadIdentifiers);
+      if (this.downloadIdentifiers.length) {
+        this.showDownloadBtn = true;
+      }
+    });
   }
 
   /**
@@ -247,10 +337,57 @@ export class CourseDetailPage {
    */
   ionViewWillEnter(): void {
     this.tabBarElement.style.display = 'none';
+    this.resetVariables();
     this.cardData = this.navParams.get('content');
+    let depth = this.navParams.get('depth');
+    if (depth !== undefined) {
+      this.depth = depth;
+      this.showDownloadBtn = false;
+      this.isDepthChild = true;
+    }
     this.identifier = this.cardData.contentId || this.cardData.identifier;
     this.setContentDetails(this.identifier, true);
     this.subscribeGenieEvent();
+  }
+
+  navigateToDetailsPage(content: any, depth) {
+    console.log('Card details... @@@', content);
+    console.log('Content depth... @@@', depth);
+    this.zone.run(() => {
+      if (content.contentType === 'Course') {
+        console.warn('Inside CourseDetailPage >>>');
+        this.navCtrl.push(CourseDetailPage, {
+          content: content,
+          depth: depth
+        })
+      } else if (content.mimeType === 'application/vnd.ekstep.content-collection') {
+        console.warn('Inside CollectionDetailsPage >>>');
+        this.isDepthChild = true;
+        this.navCtrl.push(CollectionDetailsPage, {
+          content: content,
+          depth: depth
+        })
+      } else {
+        console.warn('Inside ContentDetailsPage >>>');
+        this.navCtrl.push(ContentDetailsPage, {
+          content: content,
+          depth: depth
+        })
+      }
+    })
+  }
+  /**
+   * Reset all values
+   */
+  resetVariables() {
+    this.isDownloadStarted = false;
+    this.downloadProgress = '';
+    this.cardData = '';
+    this.childrenData = [];
+    this.contentDetail = '';
+    this.showDownloadBtn = false;
+    this.downloadIdentifiers = [];
+    this.isDepthChild = false;
   }
 
   /**
@@ -263,12 +400,22 @@ export class CourseDetailPage {
         let res = data;
         console.log('event bus........', res);
         if (res.type === 'downloadProgress' && res.data.downloadProgress) {
-          this.downloadProgress = res.data.downloadProgress === -1 ? '0 %' : res.data.downloadProgress + ' %';
+          this.downloadProgress = res.data.downloadProgress === -1 ? 0 : res.data.downloadProgress + ' %';
+        }
+
+        if (this.downloadIdentifiers.length && res.type === 'contentImportProgress') {
+          this.totalDownload = res.data.totalCount;
+          this.currentCount = res.data.currentCount;
         }
 
         // Get child content
         if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
-          this.setChildContents();
+          if (this.isDownloadStarted) {
+            this.isDownloadStarted = false;
+            this.showDownloadBtn = false;
+          } else {
+            this.setChildContents();
+          }
         }
       });
     });
@@ -281,6 +428,11 @@ export class CourseDetailPage {
    * @param {boolean} isPop True = navigate to previous state
    */
   showErrorMessage(message: string, isPop: boolean | false): void {
+    if (this.isDownloadStarted) {
+      this.showDownloadBtn = true;
+      this.isDownloadStarted = false;
+    }
+
     let toast = this.toastCtrl.create({
       message: message,
       duration: 2000,
@@ -298,9 +450,19 @@ export class CourseDetailPage {
 
 
   /**
+   * Download single content
+   */
+  downloadAllContent(): void {
+    this.downloadProgress = '0 %';
+    this.isDownloadStarted = true;
+    this.importContent(this.downloadIdentifiers, true);
+  }
+
+  /**
    * Ionic life cycle hook
    */
   ionViewWillLeave(): void {
+    this.downloadProgress = '';
     this.tabBarElement.style.display = 'flex';
     this.events.unsubscribe('genie.event');
   }
@@ -319,11 +481,12 @@ export class CourseDetailPage {
   }
 
   /**
-   * Navigate user to batch list page
-   * 
-   * @param {string} id 
+   * Function to get loader instance
    */
-  navigateToBatchListPage(id: string): void {
-    this.navCtrl.push(CourseBatchesPage, { identifier: this.identifier });
+  getLoader(): any {
+    return this.loadingCtrl.create({
+      duration: 30000,
+      spinner: "crescent"
+    });
   }
 }

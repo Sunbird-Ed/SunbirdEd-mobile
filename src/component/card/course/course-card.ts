@@ -1,8 +1,11 @@
+import { PipesModule } from './../../../pipes/pipes.module';
 import { Component, Input } from "@angular/core";
 import { NavController } from 'ionic-angular';
 import { ImageLoader } from "ionic-image-loader";
 import { EnrolledCourseDetailsPage } from "../../../pages/enrolled-course-details/enrolled-course-details";
 import { CourseDetailPage } from './../../../pages/course-detail/course-detail';
+import { CollectionDetailsPage } from '../../../pages/collection-details/collection-details';
+import { ContentDetailsPage } from '../../../pages/content-details/content-details';
 
 /**
  * The course card component
@@ -51,22 +54,29 @@ export class CourseCard {
    * @param {string} layoutName 
    * @param {object} content 
    */
-  navigateToCourseDetailPage(layoutName: string, content): void {
-    console.log('card info...', content);
-    console.log('page name ->', this.pageName);
-    if (this.pageName === 'library') {
-      layoutName = 'SavedResources';
-    }
-    if (layoutName === 'SavedResources') {
-      this.navCtrl.push(CourseDetailPage, {
-        layoutType: layoutName,
+  navigateToCourseDetailPage(content: any, layoutName: string): void {
+    console.log('Card details... @@@', content);
+    if (layoutName === 'Inprogress') {
+      this.navCtrl.push(EnrolledCourseDetailsPage, {
         content: content
-      });
+      })
     } else {
-      this.navCtrl.push(layoutName === 'Inprogress' ? EnrolledCourseDetailsPage : CourseDetailPage, {
-        layoutType: layoutName,
-        content: content
-      });
+      if (content.contentType === 'Course') {
+        console.log('Inside course details page');
+        this.navCtrl.push(CourseDetailPage, {
+          content: content
+        })
+      } else if (content.mimeType === 'application/vnd.ekstep.content-collection') {
+        console.log('Inside CollectionDetailsPage');
+        this.navCtrl.push(CollectionDetailsPage, {
+          content: content
+        })
+      } else {
+        console.log('Inside ContentDetailsPage');
+        this.navCtrl.push(ContentDetailsPage, {
+          content: content
+        })
+      }
     }
   }
 

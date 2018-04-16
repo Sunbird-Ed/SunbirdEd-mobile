@@ -1,20 +1,20 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { ResourcesPage } from './resources';
+import { ViewMoreActivityPage } from './view-more-activity';
 import { TranslateModule } from '@ngx-translate/core';
 import { ComponentsModule } from "../../component/components.module";
 
 @NgModule({
   declarations: [
-    ResourcesPage,
+    ViewMoreActivityPage,
   ],
   imports: [
-    IonicPageModule.forChild(ResourcesPage),
+    IonicPageModule.forChild(ViewMoreActivityPage),
     TranslateModule.forChild(),
     ComponentsModule
   ],
   exports: [
-    ResourcesPage
+    ViewMoreActivityPage
   ]
 })
-export class ResourcesPageModule {}
+export class ViewMoreActivityPageModule {}

@@ -2,6 +2,7 @@ import { Component, NgZone, OnInit } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { PageAssembleService, PageAssembleCriteria, ContentService, AuthService } from "sunbird";
 import * as _ from 'lodash';
+import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
 
 @Component({
   selector: 'page-resources',
@@ -15,6 +16,11 @@ export class ResourcesPage implements OnInit {
    * Contains local resources
    */
   localResources: Array<any>;
+
+  /**
+   * Loader
+   */
+  showLoader: boolean = false;
 
   /**
    * Contains reference of content service
@@ -36,6 +42,7 @@ export class ResourcesPage implements OnInit {
    * Get saved content
    */
   setSavedContent() {
+    this.showLoader = true;
     const requestParams = {
       contentTypes: ['Story', 'Worksheet', 'Collection', 'Game', 'TextBook', 'Course', 'Resource', 'LessonPlan']
     };
@@ -50,9 +57,11 @@ export class ResourcesPage implements OnInit {
           });
           this.localResources = data.result;
         }
+        this.showLoader = false;
       });
     }, error => {
       console.log('error while getting saved contents', error);
+      this.showLoader = false;
     });
 
   }
@@ -67,8 +76,11 @@ export class ResourcesPage implements OnInit {
     this.pageService.getPageAssemble(criteria, res => {
       that.ngZone.run(() => {
         let response = JSON.parse(res);
+        console.log('Saved resources', response);
         //TODO Temporary code - should be fixed at backend
         let a = JSON.parse(response.sections);
+        console.log('page service ==>>>>', a);
+
         let newSections = [];
         a.forEach(element => {
           element.display = JSON.parse(element.display);
@@ -76,9 +88,22 @@ export class ResourcesPage implements OnInit {
         });
         //END OF TEMPORARY CODE
         that.storyAndWorksheets = newSections;
+        console.log('storyAndWorksheets', that.storyAndWorksheets);
       });
     }, error => {
       console.log('error while getting popular resources...', error);
+    });
+  }
+
+  /**
+   * Navigate to search page
+   * 
+   * @param {string} queryParams search query params
+   */
+  searchAllContent(queryParams): void {
+    console.log('Search query...', queryParams);
+    this.navCtrl.push(ViewMoreActivityPage, {
+      requestParams: queryParams
     });
   }
 
