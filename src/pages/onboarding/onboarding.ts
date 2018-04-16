@@ -58,6 +58,9 @@ export class OnboardingPage {
         initUserTabs(that.container);
         return that.refreshProfileData();
       })
+      .then(slug => {
+        return that.refreshTenantData(slug);
+      })
       .then(() => {
         that.navCtrl.push(TabsPage);
       })
@@ -75,16 +78,18 @@ export class OnboardingPage {
       this.userProfileService.getTenantInfo(
         request, 
         res => {
-
+          let r = JSON.parse(res);
+          (<any>window).splashscreen.setContent(r.titleName, r.logo);
+          resolve();
         }, 
         error => {
-          
+          resolve();//ignore
         })
     });
   }
 
   refreshProfileData() {
-    return new Promise((resolve, reject) => {
+    return new Promise<string>((resolve, reject) => {
       this.authService.getSessionData((session) => {
         if (session === undefined || session == null) {
           reject("session is null");
@@ -96,9 +101,8 @@ export class OnboardingPage {
             refreshUserProfileDetails: true
           };
           this.userProfileService.getUserProfileDetails(req, res => {
-            this.zone.run(() => {
-              resolve();
-            });
+            let r = JSON.parse(res);
+            resolve(r.response.rootOrg.slug);
           }, error => {
               reject(error);
               console.error(error);
