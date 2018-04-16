@@ -5,6 +5,9 @@ import { NgModel } from '@angular/forms';
 import * as _ from 'lodash';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { CourseDetailPage } from '../course-detail/course-detail';
+import { ContentActionsComponent } from '../../component/content-actions/content-actions';
+import { PopoverController } from "ionic-angular/components/popover/popover-controller";
+
 
 /**
  * Generated class for the CollectionDetailsPage page.
@@ -66,7 +69,7 @@ export class CollectionDetailsPage {
   showDownloadBtn: boolean = false;
 
   /**
-   * 
+   * Flag downlaoded started
    */
   isDownloadStarted: boolean = false;
 
@@ -84,6 +87,16 @@ export class CollectionDetailsPage {
   isDepthChild: boolean = false;
 
   /**
+   * To hold 
+   */
+  queuedIdentifiers: Array<any> = [];
+
+  /**
+   * Download complete falg
+   */
+  isDownlaodCompleted: boolean = false;
+
+  /**
    * Total downlaod count
    */
   totalDownload: number;
@@ -91,12 +104,7 @@ export class CollectionDetailsPage {
   /**
    * Current download count 
    */
-  currentCount: number;
-
-  /**
-   * Content details
-   */
-  details: any;
+  currentCount: number = 0;
 
   /**
    * Contains identifier(s) of locally not available content(s)
@@ -104,14 +112,14 @@ export class CollectionDetailsPage {
   downloadIdentifiers = [];
 
   /**
+   * Child content size
+   */
+  downloadSize: number = 0;
+
+  /**
    * Contains total size of locally not available content(s)
    */
   downloadContentsSize: string;
-
-  /**
-   * Contains loader instance
-   */
-  loader: any;
 
   /**
    * Contains reference of content service
@@ -144,7 +152,7 @@ export class CollectionDetailsPage {
   public loadingCtrl: LoadingController;
 
   constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, zone: NgZone,
-    private events: Events, toastCtrl: ToastController, loadingCtrl: LoadingController) {
+    private events: Events, toastCtrl: ToastController, loadingCtrl: LoadingController, public popoverCtrl: PopoverController) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
@@ -165,7 +173,6 @@ export class CollectionDetailsPage {
     loader.present();
     const option = { contentId: identifier, refreshContentDetails: refreshContentDetails }
     this.contentService.getContentDetail(option, (data: any) => {
-      this.details = data.result;
       this.zone.run(() => {
         data = JSON.parse(data);
         console.log('Content details ==>>>>>', data);
@@ -178,8 +185,8 @@ export class CollectionDetailsPage {
       error => {
         console.log('error while loading content details', error);
         const message = 'Something went wrong, please check after some time';
-        this.loader.dismiss();
-        this.showErrorMessage(message, true);
+        loader.dismiss();
+        // this.showErrorMessage(message, true);
       });
   }
 
@@ -188,6 +195,7 @@ export class CollectionDetailsPage {
    */
   extractApiResponse(data) {
     this.contentDetail = data.result.contentData ? data.result.contentData : [];
+    this.contentDetail.isAvailableLocally = data.result.isAvailableLocally;
     switch (data.result.isAvailableLocally) {
       case true: {
         console.log("Content locally available. Geting child content... @@@");
@@ -220,7 +228,9 @@ export class CollectionDetailsPage {
     if (this.contentDetail.contentTypesCount) {
       this.contentDetail.contentTypesCount = JSON.parse(this.contentDetail.contentTypesCount);
     } else if (this.cardData.contentTypesCount) {
-      this.contentDetail.contentTypesCount = JSON.parse(this.cardData.contentTypesCount);
+      if (!_.isObject(this.cardData.contentTypesCount)) {
+        this.contentDetail.contentTypesCount = JSON.parse(this.cardData.contentTypesCount);
+      }
     } else {
       this.contentDetail.contentTypesCount;
     }
@@ -263,12 +273,18 @@ export class CollectionDetailsPage {
     this.contentService.importContent(option, (data: any) => {
       this.zone.run(() => {
         data = JSON.parse(data);
-        if (data.result && data.result[0].status === 'NOT_FOUND') {
-          const message = 'Unable to fetch content';
-          this.showErrorMessage(message, false);
-        } else {
-          console.log('Success: content imported successfully... @@@', data);
+
+        if (data.result && data.result.length && this.isDownloadStarted) {
+          _.forEach(data.result, (value, key) => {
+            if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
+              this.queuedIdentifiers.push(value.identifier);
+            }
+          });
+          if (this.queuedIdentifiers.length === 0) {
+            this.showErrorMessage('Unable to fetch content', false);
+          }
         }
+        console.log('Success: content imported successfully... @@@', data);
         // this.showChildrenLoader = false;
       })
     },
@@ -287,8 +303,7 @@ export class CollectionDetailsPage {
    */
   setChildContents() {
     console.log('Making child contents api call... @@@');
-    // this.zone.run(() => { this.showChildrenLoader = true; });
-    const option = { contentId: this.identifier, hierarchyInfo: null, level: 1 };
+    const option = { contentId: this.identifier, hierarchyInfo: null }; // TODO: remove level
     this.contentService.getChildContents(option, (data: any) => {
       data = JSON.parse(data);
       console.log('Success: child contents data =', data);
@@ -296,8 +311,9 @@ export class CollectionDetailsPage {
         if (data && data.result && data.result.children) {
           this.childrenData = data.result.children;
         }
+
         if (!this.isDepthChild) {
-          this.showDownloadAllBtn(data.result.children || []);
+          this.getContentsSize(data.result.children || []);
         }
         this.showChildrenLoader = false;
       });
@@ -310,6 +326,26 @@ export class CollectionDetailsPage {
       });
   }
 
+  getContentsSize(data) {
+    this.downloadSize = 0;
+    _.forEach(data, (value, key) => {
+      if (value.children && value.children.length) {
+        this.getContentsSize(value.children);
+      }
+
+      if (value.isAvailableLocally === false) {
+        this.downloadIdentifiers.push(value.contentData.identifier);
+        if (value.contentData.size && !this.isDepthChild) {
+          this.downloadSize += +value.contentData.size;
+        }
+      }
+    });
+    console.log('downloadIdentifiers', this.downloadIdentifiers);
+    console.log('Download size ===>', this.downloadSize);
+    if (this.downloadIdentifiers.length && !this.isDownlaodCompleted) {
+      this.showDownloadBtn = true;
+    }
+  }
   /**
    * 
    * @param {array} data 
@@ -387,7 +423,13 @@ export class CollectionDetailsPage {
     this.contentDetail = '';
     this.showDownloadBtn = false;
     this.downloadIdentifiers = [];
-    this.isDepthChild = false;
+    // Added on date 16-april
+    this.queuedIdentifiers = [];
+    this.isDepthChild = this.isDepthChild;
+    this.isDownloadStarted = false;
+    this.showDownloadBtn = false;
+    this.isDownlaodCompleted = false;
+    this.currentCount = 0;
   }
 
   /**
@@ -402,21 +444,25 @@ export class CollectionDetailsPage {
         if (res.type === 'downloadProgress' && res.data.downloadProgress) {
           this.downloadProgress = res.data.downloadProgress === -1 ? 0 : res.data.downloadProgress + ' %';
         }
-
-        if (this.downloadIdentifiers.length && res.type === 'contentImportProgress') {
-          this.totalDownload = res.data.totalCount;
-          this.currentCount = res.data.currentCount;
-        }
-
         // Get child content
         if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
-          if (this.isDownloadStarted) {
-            this.isDownloadStarted = false;
-            this.showDownloadBtn = false;
+          if (this.queuedIdentifiers.length && this.isDownloadStarted) {
+            if (_.includes(this.queuedIdentifiers, res.data.identifier)) {
+              this.currentCount++;
+              console.log('current download count ===>>>>', this.currentCount);
+              console.log('queuedIdentifiers count ===>>>>', this.queuedIdentifiers.length);
+            }
+            if (this.queuedIdentifiers.length === this.currentCount) {
+              this.isDownloadStarted = false;
+              this.showDownloadBtn = false;
+              this.isDownlaodCompleted = true;
+              this.contentDetail.isAvailableLocally = true;
+            }
           } else {
             this.setChildContents();
           }
         }
+
       });
     });
   }
@@ -487,6 +533,24 @@ export class CollectionDetailsPage {
     return this.loadingCtrl.create({
       duration: 30000,
       spinner: "crescent"
+    });
+  }
+
+  showOverflowMenu(event) {
+    let popover = this.popoverCtrl.create(ContentActionsComponent, {
+      content: this.contentDetail,
+      isChild: this.isDepthChild
+    });
+    popover.present({
+      ev: event
+    });
+    popover.onDidDismiss(data => {
+      console.log('Yaahooooo.... content deleted successfully', data);
+      if (data === 0) {
+        this.resetVariables();
+        this.setContentDetails(this.identifier, false);
+      } else {
+      }
     });
   }
 }

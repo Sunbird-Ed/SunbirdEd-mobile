@@ -1,16 +1,17 @@
 <ion-header>
   <ion-navbar>
-    <ion-input type="text" placeholder="Search"></ion-input>
+    <ion-input type="search" placeholder="Search" [(ngModel)]="searchKeywords" (ionChange)="searchOnChange($event)" (keyup.enter)="handleSearch()"
+      clearInput></ion-input>
     <ion-buttons end>
-        <button ion-button (click)="showFilter()">
-            <img [src]="filterIcon" class="tool-icon" float-end/>
-          </button>
+      <button ion-button (click)="showFilter()" *ngIf="filterIcon">
+        <img [src]="filterIcon" class="tool-icon" float-end/>
+      </button>
     </ion-buttons>
   </ion-navbar>
 </ion-header>
 <ion-content>
   <div class="spinner-container" *ngIf="showLoader">
-      <ion-spinner padding class="loader"></ion-spinner>
+    <ion-spinner padding class="loader"></ion-spinner>
   </div>
   <ion-list no-lines *ngIf="dialCodeResult && dialCodeResult.length" class="collection-list">
     <div ion-item no-margin *ngFor="let result of dialCodeResult" no-padding>
@@ -29,24 +30,36 @@
             <img src="./assets/imgs/ic_logo.png" width="24px" height="24px">
           </ion-avatar>
           <h2> {{ content.name }}</h2>
-          <p>{{ content.contentType }} • 220Kb</p>
+          <p>{{ content.contentType }} • {{ getReadableFileSize(content.size) }}</p>
         </ion-item>
       </ion-list>
-      <div style="width: 100%; height: 4px; background-color: #f3f3f3"></div>
+      <div class="divider"></div>
     </div>
   </ion-list>
 
-  <ion-list>
-      <ion-list *ngFor="let content of dialCodeContentResult" class="content-list" margin-start>
-          <ion-item no-padding (click)="openContent(undefined, content)">
-            <ion-avatar item-start>
-              <img src="./assets/imgs/ic_logo.png" width="24px" height="24px">
-            </ion-avatar>
-            <h2> {{ content.name }}</h2>
-            <p>{{ content.contentType }} • 220Kb</p>
-          </ion-item>
-        </ion-list>
-        <div style="width: 100%; height: 4px; background-color: #f3f3f3"></div>
+  <ion-list no-lines *ngIf="dialCodeContentResult && dialCodeContentResult.length">
+    <ion-list *ngFor="let content of dialCodeContentResult" class="content-list" margin-start>
+      <ion-item no-padding (click)="openContent(undefined, content)">
+        <ion-avatar item-start>
+          <img src="./assets/imgs/ic_logo.png" width="24px" height="24px">
+        </ion-avatar>
+        <h2> {{ content.name }}</h2>
+        <p>{{ content.contentType }} • {{ getReadableFileSize(content.size) }}</p>
+      </ion-item>
+    </ion-list>
+    <div class="divider"></div>
+  </ion-list>
+
+
+  <ion-list *ngIf="searchContentResult && searchContentResult.length">
+    <ion-item *ngFor="let content of searchContentResult" (click)="openContent(undefined, content)">
+      <ion-avatar item-start>
+        <img src="{{content.appIcon}}" width="24px" height="24px">
+      </ion-avatar>
+      <h2> {{ content.name }}</h2>
+      <p>{{ content.contentType }} • {{ getReadableFileSize(content.size) }}</p>
+      <p>{{ content.gradeLevel[0] }} • {{ content.language[0] }}</p>
+    </ion-item>
   </ion-list>
 
 </ion-content>

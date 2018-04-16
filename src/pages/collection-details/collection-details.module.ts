@@ -1,3 +1,4 @@
+import { ContentActionsComponent } from './../../component/content-actions/content-actions';
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { CollectionDetailsPage } from './collection-details';
@@ -15,8 +16,9 @@ import { PipesModule } from '../../pipes/pipes.module';
 @NgModule({
   declarations: [
     CollectionDetailsPage,
+    ContentActionsComponent
   ],
-  entryComponents: [],
+  entryComponents: [ContentActionsComponent],
   imports: [
     IonicPageModule.forChild(CollectionDetailsPage),
     TranslateModule.forChild(),

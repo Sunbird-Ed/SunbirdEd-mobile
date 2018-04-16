@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, NgZone } from "@angular/core";
 import { IonicPage, NavParams, NavController } from "ionic-angular";
 import { ContentService, ContentSearchCriteria } from "sunbird";
 import { GenieResponse } from "../settings/datasync/genieresponse";
@@ -14,19 +14,24 @@ import { ContentDetailsPage } from "../content-details/content-details";
 })
 export class SearchPage {
 
+  contentType: Array<string> = [];
+
   dialCode: string;
 
   dialCodeResult: Array<any> = [];
 
   dialCodeContentResult: Array<any> = [];
 
-  showLoader: boolean = true;
+  searchContentResult: Array<any> = [];
 
-  filterIcon = "./assets/imgs/ic_action_filter.png";
+  showLoader: boolean = false;
 
-  constructor(private contentService: ContentService, private navParams: NavParams, private navCtrl: NavController) {
-    this.dialCode = this.navParams.get('dialCode');
-    this.getContentForDialCode()
+  filterIcon;
+
+  searchKeywords: string = ""
+
+  constructor(private contentService: ContentService, private navParams: NavParams, private navCtrl: NavController, private zone: NgZone) {
+    this.init();
   }
 
 
@@ -39,9 +44,10 @@ export class SearchPage {
 
   openContent(collection, content) {
     if (collection !== undefined) {
-      // this.navCtrl.push(CourseDetailPage, {'content': content});
+      this.navCtrl.push(CollectionDetailsPage, {
+        content: content
+      })
     } else {
-      // TODO: Add mimeType check
       // this.navCtrl.push(CourseDetailPage, {'content': content});
       this.showContentDetails(content);
     }
@@ -70,6 +76,48 @@ export class SearchPage {
     this.navCtrl.push(FilterPage);
   }
 
+  searchOnChange(event) {
+    console.log("Search keyword " + this.searchKeywords);
+  }
+
+  handleSearch() {
+    if (this.searchKeywords.length < 3) {
+      return;
+    }
+
+    (<any> window).cordova.plugins.Keyboard.close()
+
+    let contentSearchRequest: ContentSearchCriteria = {
+      query: this.searchKeywords,
+      contentTypes: this.contentType,
+      facets: ["language", "grade", "domain", "contentType", "subject", "medium"]
+    }
+
+    this.contentService.searchContent(contentSearchRequest, (responseData) => {
+
+      this.zone.run(() => {
+        let response: GenieResponse = JSON.parse(responseData);
+        if (response.status && response.result) {
+          this.searchContentResult = response.result.contentDataList;
+          this.filterIcon = "./assets/imgs/ic_action_filter.png";
+        }
+      });
+    }, (error) => {
+      console.log("Error : " + JSON.stringify(error));
+    });
+  }
+
+
+  private init() {
+    this.dialCode = this.navParams.get('dialCode');
+    this.contentType = this.navParams.get('contentType');
+
+    if (this.dialCode !== undefined && this.dialCode.length > 0) {
+      this.getContentForDialCode()
+    }
+  }
+
+
 
   private getContentForDialCode() {
     if (this.dialCode == undefined || this.dialCode.length == 0) {
@@ -84,15 +132,18 @@ export class SearchPage {
     }
 
     this.contentService.searchContent(contentSearchRequest, (responseData) => {
-      let response: GenieResponse = JSON.parse(responseData);
-      console.log("result " + response);
-      if (response.status && response.result) {
-        this.processDialCodeResult(response.result);
-      }
+      this.zone.run(() => {
+        let response: GenieResponse = JSON.parse(responseData);
+        if (response.status && response.result) {
+          this.processDialCodeResult(response.result);
+        }
 
-      this.showLoader = false;
+        this.showLoader = false;
+      })
     }, (error) => {
-      this.showLoader = false;
+      this.zone.run(() => {
+        this.showLoader = false;
+      });
     });
   }
 
@@ -135,5 +186,12 @@ export class SearchPage {
     if (contentArray && contentArray.length == 1) {
       return;
     }
+  }
+
+  private getReadableFileSize(bytes) {
+    if (bytes < 1024) return (bytes / 1).toFixed(0) + " Bytes";
+    else if (bytes < 1048576) return (bytes / 1024).toFixed(0) + " KB";
+    else if (bytes < 1073741824) return (bytes / 1048576).toFixed(0) + " MB";
+    else return (bytes / 1073741824).toFixed(3) + " GB";
   }
 }
