@@ -56,10 +56,8 @@ export class ProfilePage {
   educationIcon: string = "assets/imgs/ic_businessman.png";
   locationIcon: string = "assets/imgs/ic_location.png";
   list: Array<String> = [
-    "SWITCH_ACCOUNT",
-    "DOWNLOAD_MANAGER",
     "SETTINGS",
-    "SIGN_OUT"
+    "LOGOUT"
   ];
   uncompletedDetails: any = {
     title: ""

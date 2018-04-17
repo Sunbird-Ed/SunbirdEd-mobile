@@ -55,6 +55,7 @@ export class MyApp {
       // Here you can do any higher level native things you might need.
       statusBar.styleDefault();
       (<any>window).splashscreen.hide();
+      
 
       window["thisRef"] = this;
       try {

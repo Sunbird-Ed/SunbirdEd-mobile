@@ -1,5 +1,5 @@
 import { Component, NgZone } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, LoadingController } from 'ionic-angular';
 import { TabsPage, OAuthService, ContainerService, UserProfileService, AuthService, TenantInfoRequest } from 'sunbird';
 import { ViewController } from 'ionic-angular/navigation/view-controller';
 import { UserTypeSelectionPage } from '../user-type-selection/user-type-selection';
@@ -22,7 +22,8 @@ export class OnboardingPage {
     private storage: Storage,
     private zone: NgZone,
     private userProfileService: UserProfileService,
-    private authService: AuthService) {
+    private authService: AuthService,
+    private loadingCtrl: LoadingController) {
 
     this.slides = [
       {
@@ -47,8 +48,16 @@ export class OnboardingPage {
     console.log('ionViewDidLoad OnboardingPage');
   }
 
+  getLoader(): any {
+    return this.loadingCtrl.create({
+      spinner: "crescent"
+    });
+  }
+
   singin() {
     let that = this;
+    let loader = this.getLoader();
+    loader.present();
 
     that.auth.doOAuthStepOne()
       .then(token => {
@@ -62,9 +71,11 @@ export class OnboardingPage {
         return that.refreshTenantData(slug);
       })
       .then(() => {
+        loader.dismiss();
         that.navCtrl.push(TabsPage);
       })
       .catch(error => {
+        loader.dismiss();
         console.log(error);
       });
 

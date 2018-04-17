@@ -1,4 +1,4 @@
-import { Component, NgZone, ViewChild, OnInit } from '@angular/core';
+import { Component, NgZone, ViewChild } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { PageAssembleService, PageAssembleCriteria, ContentService, AuthService } from "sunbird";
 import * as _ from 'lodash';
@@ -9,7 +9,9 @@ import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
   selector: 'page-resources',
   templateUrl: 'resources.html'
 })
-export class ResourcesPage implements OnInit {
+export class ResourcesPage {
+
+  pageLoadedSuccess = false;
 
   storyAndWorksheets: Array<any>;
 
@@ -121,6 +123,11 @@ export class ResourcesPage implements OnInit {
           //TODO Temporary code - should be fixed at backend
           _.forEach(data.result, (value, key) => {
             value.contentData.lastUpdatedOn = value.lastUpdatedTime;
+            // if (value.contentData.appIcon.startsWith("http")) {
+            //   value.contentLogo = value.contentData.appIcon;
+            // } else {
+            //   value.contentLogo = "file://" + value.basePath + "/" + value.contentData.appIcon;
+            // }
           });
           this.localResources = data.result;
         }
@@ -156,6 +163,7 @@ export class ResourcesPage implements OnInit {
         //END OF TEMPORARY CODE
         that.storyAndWorksheets = newSections;
         console.log('storyAndWorksheets', that.storyAndWorksheets);
+        this.pageLoadedSuccess = true;
       });
     }, error => {
       console.log('error while getting popular resources...', error);
@@ -175,12 +183,11 @@ export class ResourcesPage implements OnInit {
   }
 
   /**
-   * Angular life cycle hooks
+   * Ionic life cycle hooks
    */
-  ngOnInit() {
+  ionViewDidLoad() {
     console.log('Resources component initialized...==>>');
     this.getPopularContent();
-    this.setSavedContent();
     this.authService.getSessionData(res => {
       if (res === undefined) {
         this.guestUser = true;
@@ -188,5 +195,12 @@ export class ResourcesPage implements OnInit {
         this.guestUser = false;
       }
     });
+  }
+
+  ionViewWillEnter() {
+    if (!this.pageLoadedSuccess) {
+      this.getPopularContent();
+    }
+    this.setSavedContent();
   }
 }

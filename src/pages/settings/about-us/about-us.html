@@ -7,7 +7,7 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>{{ 'ABOUT_US_SCREEN.ABOUT_US' | translate }}</ion-title>
+    <ion-title>{{ 'ABOUT_US' | translate }}</ion-title>
   </ion-navbar>
 
 </ion-header>
@@ -17,32 +17,32 @@
   <ion-list>
     <!-- Device Id -->
     <ion-item>
-      <h2>{{ 'ABOUT_US_SCREEN.DEVICE_ID' | translate }}</h2>
+      <h2>{{ 'DEVICE_ID' | translate }}</h2>
       <p class="settings-item-style">{{ deviceId | translate}}</p>
     </ion-item>
 
     <!-- App Version -->
     <ion-item>
-      <h2>{{ 'ABOUT_US_SCREEN.APP_VERSION' | translate }}</h2>
+      <h2>{{ 'APP_VERSION' | translate }}</h2>
       <p class="settings-item-style">{{ version | translate}}</p>
     </ion-item>
 
     <!-- Privacy Policy -->
-    <ion-item (click)="privacyPolicy()">
+    <!-- <ion-item (click)="privacyPolicy()">
       <h2>{{ 'ABOUT_US_SCREEN.PRIVACY_POLICY' | translate }}</h2>
       <ion-icon name="ios-arrow-forward" item-end></ion-icon>
-    </ion-item>
+    </ion-item> -->
 
     <!-- Terms of Service --> 
-    <ion-item (click)="termsOfService()">
+    <!-- <ion-item (click)="termsOfService()">
       <h2>{{ 'ABOUT_US_SCREEN.TERMS_OF_SERVICE' | translate }}</h2>
       <ion-icon name="ios-arrow-forward" item-end></ion-icon>
-    </ion-item>
+    </ion-item> -->
 
     <!-- About the Application -->
-    <ion-item (click)="aboutApp()">
+    <!-- <ion-item (click)="aboutApp()">
       <h2>{{ 'ABOUT_US_SCREEN.ABOUT_THE_APP' | translate }}</h2>
       <ion-icon name="ios-arrow-forward" item-end></ion-icon>
-    </ion-item>
+    </ion-item> -->
   </ion-list>
 </ion-content>

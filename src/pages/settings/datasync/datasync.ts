@@ -22,28 +22,31 @@ const KEY_DATA_SYNC_TIME = "data_sync_time";
 })
 export class DatasyncPage {
   dataSyncType: DataSyncType;
-  lastSyncedTimeString : String = "LAST_SYNCED_TIME";
+  lastSyncedTimeString : String = "LAST_SYNC";
   latestSync: String;
 
   OPTIONS: typeof DataSyncType = DataSyncType;
 
-  constructor(public zone: NgZone, public navCtrl: NavController, public navParams: NavParams, private telemetryService: TelemetryService, private storage: Storage,
+  constructor(public zone: NgZone, 
+    public navCtrl: NavController, 
+    public navParams: NavParams, 
+    private telemetryService: TelemetryService, 
+    private storage: Storage,
     private translate: TranslateService) {
-    this.init();
   }
 
   private init() {
     let that = this;
 
     //fetch the string 
-    this.translate.get('LAST_SYNCED_TIME').subscribe(value => {
+    this.translate.get('LAST_SYNC').subscribe(value => {
       this.lastSyncedTimeString = value;
 
       //check what was the last sync time
       this.storage.get(KEY_DATA_SYNC_TIME)
         .then(val => {
           if (val === undefined || val === "" || val === null) {
-            return "NOT_SYNCED_YET_ONCE"
+            return ""
           } else {
             return this.lastSyncedTimeString + " " + val
           }
@@ -69,12 +72,16 @@ export class DatasyncPage {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad DatasyncPage');
+    this.init();
   }
 
   onSelected() {
     console.log("Value - " + this.dataSyncType)
     this.storage.set(KEY_DATA_SYNC_TYPE, this.dataSyncType)
+  }
+
+  goBack() {
+    this.navCtrl.pop();
   }
 
   onSyncClick() {

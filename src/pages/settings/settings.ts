@@ -7,6 +7,7 @@ import { SocialSharing } from '@ionic-native/social-sharing';
 import { TranslateService } from '@ngx-translate/core';
 import { Storage } from "@ionic/storage";
 import { FilePath } from '@ionic-native/file-path';
+import { AppVersion } from "@ionic-native/app-version";
 
 const KEY_SELECTED_LANGUAGE = "selected_language";
 const KEY_SUNBIRD_SUPPORT_FILE_PATH = "sunbird_support_file_path";
@@ -19,25 +20,34 @@ export class SettingsPage {
   chosenLanguageString: String;
   selectedlanguage: String;
   fileUrl: string;
+  shareAppLabel: string;
 
-  constructor(private navCtrl: NavController, private socialSharing: SocialSharing, private storage: Storage,
+  constructor(private navCtrl: NavController, private appVersion: AppVersion,
+    private socialSharing: SocialSharing, private storage: Storage,
     private translate: TranslateService, private filePath: FilePath) {
-
-    translate.get('SETTINGS_SCREEN.CURRENT_LANGUAGE_CHOSEN').subscribe(
-      value => {
-        this.chosenLanguageString = value;
-      }
-    );
+    
   }
 
   ionViewDidLoad() {
-
+    this.translate.get('SHARE_APP').subscribe(
+      value => {
+        this.appVersion.getAppName()
+        .then((appName: any) => {
+          this.shareAppLabel = value.replace("%s", appName);
+        });
+      }
+    );
   }
 
   ionViewDidEnter() {
     this.storage.get(KEY_SELECTED_LANGUAGE).then(value => {
       this.selectedlanguage = this.chosenLanguageString + value;
-    })
+    });
+    this.translate.get('CURRENT_LANGUAGE').subscribe(
+      value => {
+        this.chosenLanguageString = value;
+      }
+    );
   }
 
   goBack() {

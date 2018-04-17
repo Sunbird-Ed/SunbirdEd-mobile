@@ -14,36 +14,39 @@ import { SettingsPage } from "../../settings/settings";
 
 export class OverflowMenuComponent {
     items: Array<string>;
+    
     constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController, private toastCtrl: ToastController) {
         this.items = this.navParams.get("list");
     }
-     showToast(toastCtrl: ToastController, message: String) {
+     
+    showToast(toastCtrl: ToastController, message: String) {
         
-      }
+    }
+    
     close(event, i) {
         this.viewCtrl.dismiss(JSON.stringify({
             "content": event.target.innerText,
             "index": i
         }));
         switch (i) {
+            // case 0: {
+            //     this.navCtrl.push(UsersnClassesComponent);
+            //     break;
+            // }
+            // case 1: {
+            //     let toast = this.toastCtrl.create({
+            //         message: 'Download Manager functionality is under progress',
+            //         duration: 3000,
+            //         position: 'bottom'
+            //       });
+            //       toast.present();
+            //     break;
+            // }
             case 0: {
-                this.navCtrl.push(UsersnClassesComponent);
-                break;
-            }
-            case 1: {
-                let toast = this.toastCtrl.create({
-                    message: 'Download Manager functionality is under progress',
-                    duration: 3000,
-                    position: 'bottom'
-                  });
-                  toast.present();
-                break;
-            }
-            case 2: {
                   this.navCtrl.push(SettingsPage)
                 break;
             }
-            case 3: {
+            case 1: {
                 let toast = this.toastCtrl.create({
                     message: 'Sign Out functionality is under progress',
                     duration: 3000,
