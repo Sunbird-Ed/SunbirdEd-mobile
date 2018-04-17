@@ -1,20 +1,14 @@
 import { Component, NgZone } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-import { OnboardingPage } from '../onboarding/onboarding';
+
 import { ViewController } from 'ionic-angular/navigation/view-controller';
 import { TranslateService } from '@ngx-translate/core';
 import { Globalization } from '@ionic-native/globalization';
 import { Storage } from "@ionic/storage";
 import { TabsPage } from 'sunbird';
-import { Page } from 'ionic-angular/navigation/nav-util';
-import { SettingsPage } from '../settings/settings';
 
-/**
- * Generated class for the LanguageSettingPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import { SettingsPage } from '../settings/settings';
+import { OnboardingPage } from '../onboarding/onboarding';
 
 const KEY_SELECTED_LANGUAGE_CODE = "selected_language_code";
 const KEY_SELECTED_LANGUAGE = "selected_language";
@@ -30,11 +24,16 @@ export class LanguageSettingsPage {
   languages: any[];
   language: any;
   isFromSettings: Boolean = false;
+  defaultDeviceLang: string = '';
 
-  constructor(public zone: NgZone, public navCtrl: NavController, public navParams: NavParams,
-    private viewCtrl: ViewController, public translateService: TranslateService, private globalization: Globalization,
-    private storage: Storage) {
-
+  constructor(public zone: NgZone,
+    public navCtrl: NavController,
+    public navParams: NavParams,
+    private viewCtrl: ViewController,
+    public translateService: TranslateService,
+    private globalization: Globalization,
+    private storage: Storage
+  ) {
     this.init()
   }
 
@@ -77,6 +76,7 @@ export class LanguageSettingsPage {
         if (val === undefined || val === "" || val === null) {
           console.error("Language not set");
           let defaultLanguage = this.getDeviceLanguage();
+          this.defaultDeviceLang = this.getDeviceLanguage();
           console.error("default value - " + defaultLanguage);
           return defaultLanguage
         } else {
@@ -152,18 +152,10 @@ export class LanguageSettingsPage {
       this.translateService.use('en');
     }
 
-    let page: Page;
-
     if (this.isFromSettings) {
       this.navCtrl.pop();
     } else {
       this.navCtrl.push(OnboardingPage);
-      // .then(() => {
-      //   // first we find the index of the current view controller:
-      //   const index = this.viewCtrl.index;
-      //   // then we remove it from the navigation stack
-      //   this.navCtrl.remove(index);
-      // });
     }
   }
 }

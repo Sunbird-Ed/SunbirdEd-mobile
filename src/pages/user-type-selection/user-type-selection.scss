@@ -1,77 +1,70 @@
 page-user-type-selection {
 
-    // img {
-    //     width: 20px;
-    //     height: 20px;
-    // }
-
-    .alignment{
-        text-align: center;
-    }
-
-    .card-title{
+    .card-title {
         padding-left: 25px;
     }
 
-    .bullet-style{
-        color: #808080;
-    }
-
-    .card-related-style{
+    .card-related-style {
         border-style: solid;
         border-width: 2px;
-        border-radius : 5px;
+        border-radius: 8px !important;
     }
 
     .continue-related-style{
-        margin-bottom: 20px;
-        margin-left: 20px;
-        margin-right: 20px;
-    }
-
-    .bullet {
-		display: inline-block;
-		width: 8px;
-		height: 8px;
-		background-color: rgb(204, 198, 198);
-        border-radius: 50%;
-        padding: 0px!important;
-        margin: 0px!important;
+        margin-bottom: 20;
+        margin-left: 20;
+        margin-right: 20;
     }
 
     .desc {
         font-size: 12px;
         color: gray;
-        padding: 0px!important;
-        margin-left: 0px!important;
+        padding: 0!important;
+        margin-left: 0!important;
         margin-top: 5px!important;
-        margin-bottom: 0px!important;
-        margin-right: 0px!important;
+        margin-bottom: 0!important;
+        margin-right: 0!important;
     }
-    
+
     ion-list {
-        padding: 0px!important;
-        margin: 0px!important;
+        padding: 0!important;
+        margin: 0!important;
     }
 
     ion-item {
-        padding: 0px!important;
-        margin: 0px!important;
-        min-height: 0px!important;
+        padding: 0!important;
+        margin: 0!important;
+        min-height: 0!important;
     }
 
     ion-grid {
-        padding: 0px!important;
-        margin: 0px!important;
+        padding: 0!important;
+        margin: 0!important;
     }
 
     ion-col {
-        padding: 0px!important;
-        margin: 0px!important;
+        padding: 0!important;
+        margin: 0!important;
     }
 
     ion-row {
-        padding: 0px!important;
-        margin: 0px!important;
+        padding: 0!important;
+        margin: 0!important;
+    }
+
+    .card-content-md {
+        padding-left: 0 !important;
+    }
+
+    .item-md ion-avatar {
+        padding-left: 8px;
+    }
+
+    ion-avatar img {
+        width: 60px !important;
+        height: 60px !important;
+    }
+    .item-md ion-avatar[item-start] {
+        margin-right: 0 !important;
     }
 }

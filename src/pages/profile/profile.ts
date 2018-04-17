@@ -479,6 +479,7 @@ export class ProfilePage {
     }
 
     this.contentService.searchContent(req,
+      false,
       (result: any) => {
         this.enrolledCourse = JSON.parse(result).result.contentDataList;
       },

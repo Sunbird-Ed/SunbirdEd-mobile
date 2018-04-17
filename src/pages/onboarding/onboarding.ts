@@ -4,6 +4,7 @@ import { TabsPage, OAuthService, ContainerService, UserProfileService, AuthServi
 import { ViewController } from 'ionic-angular/navigation/view-controller';
 import { UserTypeSelectionPage } from '../user-type-selection/user-type-selection';
 import { Storage } from "@ionic/storage";
+
 import { initGuestTabs, initUserTabs } from '../../app/module.service';
 
 @Component({
@@ -22,8 +23,13 @@ export class OnboardingPage {
     private storage: Storage,
     private zone: NgZone,
     private userProfileService: UserProfileService,
+<<<<<<< HEAD
     private authService: AuthService,
     private loadingCtrl: LoadingController) {
+=======
+    private authService: AuthService
+  ) {
+>>>>>>> 36db98bf325cb7616a0990c838cfe200e126c95a
 
     this.slides = [
       {
@@ -48,6 +54,7 @@ export class OnboardingPage {
     console.log('ionViewDidLoad OnboardingPage');
   }
 
+<<<<<<< HEAD
   getLoader(): any {
     return this.loadingCtrl.create({
       spinner: "crescent"
@@ -55,6 +62,9 @@ export class OnboardingPage {
   }
 
   singin() {
+=======
+  singIn() {
+>>>>>>> 36db98bf325cb7616a0990c838cfe200e126c95a
     let that = this;
     let loader = this.getLoader();
     loader.present();
@@ -87,12 +97,12 @@ export class OnboardingPage {
       request.refreshTenantInfo = true;
       request.slug = slug;
       this.userProfileService.getTenantInfo(
-        request, 
+        request,
         res => {
           let r = JSON.parse(res);
           (<any>window).splashscreen.setContent(r.titleName, r.logo);
           resolve();
-        }, 
+        },
         error => {
           resolve();//ignore
         })
@@ -108,15 +118,15 @@ export class OnboardingPage {
           let sessionObj = JSON.parse(session);
           let req = {
             userId: sessionObj["userToken"],
-            requiredFields: ["completeness", "missingFields", "lastLoginTime", "topics"], 
+            requiredFields: ["completeness", "missingFields", "lastLoginTime", "topics"],
             refreshUserProfileDetails: true
           };
           this.userProfileService.getUserProfileDetails(req, res => {
             let r = JSON.parse(res);
             resolve(r.response.rootOrg.slug);
           }, error => {
-              reject(error);
-              console.error(error);
+            reject(error);
+            console.error(error);
           });
         }
       });
@@ -128,8 +138,8 @@ export class OnboardingPage {
     this.navCtrl.push(UserTypeSelectionPage);
   }
 
-  goBack() {
-    this.navCtrl.pop();
-  }
+  /*   goBack() {
+      this.navCtrl.pop();
+    } */
 
 }

@@ -2,18 +2,14 @@ page-onboarding {
     ion-slide {
         background-color: #ffffff;
     }
-
     .action-button {
-      width:100% !important; 
+        width:100% !important;
     }
-
-    .ion-slides {
-        max-height: 72% !important;
-    }
-
     .item-img {
         max-width: 80%;
         text-align: center;
     }
-
+    .swiper-slide {
+        height: 75% !important;
+    }
 }

@@ -4,6 +4,8 @@ import { PageAssembleService, PageAssembleCriteria, ContentService, AuthService 
 import * as _ from 'lodash';
 import { Slides } from 'ionic-angular';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
+import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
+import { SearchPage } from '../search/search';
 
 @Component({
   selector: 'page-resources',
@@ -42,7 +44,7 @@ export class ResourcesPage {
   public authService: AuthService;
 
   constructor(public navCtrl: NavController, private pageService: PageAssembleService, private ngZone: NgZone,
-    contentService: ContentService, authService: AuthService) {
+    contentService: ContentService, authService: AuthService, private qrScanner: SunbirdQRScanner) {
     this.contentService = contentService;
     this.authService = authService;
 
@@ -172,7 +174,7 @@ export class ResourcesPage {
 
   /**
    * Navigate to search page
-   * 
+   *
    * @param {string} queryParams search query params
    */
   searchAllContent(queryParams): void {
@@ -197,10 +199,40 @@ export class ResourcesPage {
     });
   }
 
+<<<<<<< HEAD
   ionViewWillEnter() {
     if (!this.pageLoadedSuccess) {
       this.getPopularContent();
     }
     this.setSavedContent();
+=======
+
+  scanQRCode() {
+    const that = this;
+    const callback: QRResultCallback = {
+      dialcode(scanResult, dialCode) {
+        that.navCtrl.push(SearchPage, { dialCode: dialCode });
+      },
+      content(scanResult, contentId) {
+        // that.navCtrl.push(SearchPage);
+      }
+    }
+
+    this.qrScanner.startScanner(undefined, undefined, undefined, callback);
+  }
+
+  search() {
+    const contentType: Array<string> = [
+      "Story",
+      "Worksheet",
+      "Game",
+      "Collection",
+      "TextBook",
+      "LessonPlan",
+      "Resource",
+    ];
+
+    this.navCtrl.push(SearchPage, { contentType: contentType})
+>>>>>>> 36db98bf325cb7616a0990c838cfe200e126c95a
   }
 }
