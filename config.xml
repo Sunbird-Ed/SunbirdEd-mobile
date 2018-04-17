@@ -106,4 +106,5 @@
     <plugin name="cordova-plugin-sunbirdsplash" spec="https://github.com/project-sunbird/cordova-plugin-sunbirdsplash.git" />
     <plugin name="cordova-plugin-qr-scanner" spec="https://github.com/project-sunbird/cordova-plugin-qr-scanner.git" />
     <plugin name="cordova-plugin-genie-sdk" spec="https://github.com/project-sunbird/cordova-plugin-genie-sdk.git" />
+    <engine name="android" spec="~7.0.0" />
 </widget>

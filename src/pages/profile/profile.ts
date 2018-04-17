@@ -1,7 +1,6 @@
 import { Component, NgZone } from "@angular/core";
 import { NavController, LoadingController, NavParams, Events } from "ionic-angular";
 import {
-  CameraService,
   ProfileService,
   AuthService,
   UserProfileService,
@@ -80,7 +79,6 @@ export class ProfilePage {
 
   constructor(
     public navCtrl: NavController,
-    private cameraService: CameraService,
     public popoverCtrl: PopoverController,
     private profileService: ProfileService,
     public userProfileService: UserProfileService,

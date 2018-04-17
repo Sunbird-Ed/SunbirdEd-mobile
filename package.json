@@ -94,7 +94,8 @@
     "rxjs": "5.5.2",
     "sunbird": "file:///home/souvikmondal/Projects/EkStep/Sunbird/ext-framework/mobile/dist/sunbird-1.0.0.tgz",
     "sw-toolbox": "3.6.0",
-    "zone.js": "0.8.18"
+    "zone.js": "0.8.18",
+    "cordova-android": "~7.0.0"
   },
   "devDependencies": {
     "@ionic/app-scripts": "3.1.6",
@@ -147,6 +148,8 @@
       "cordova-plugin-qr-scanner": {},
       "cordova-plugin-genie-sdk": {}
     },
-    "platforms": []
+    "platforms": [
+      "android"
+    ]
   }
 }
