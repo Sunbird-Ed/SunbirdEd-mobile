@@ -29,20 +29,20 @@ import { SearchModule } from "../pages/search/search.module";
 
 export function initUserTabs(container: ContainerService) {
     container.removeAllTabs();
-    // container.addTab({root: GroupPage, label: "GROUPS", icon:"groups", index: 3});
-    container.addTab({ root: CoursesPage, icon: "courses", label: "COURSES", index: 1 });
-    container.addTab({ root: HomePage, label: "HOME", icon: "home", index: 0 });
-    container.addTab({ root: ProfilePage, label: "PROFILE", icon: "profile", index: 3 });
-    container.addTab({ root: ResourcesPage, label: "LIBRARY", icon: "resources", index: 2 });
+    //container.addTab({ root: HomePage, label: "HOME", icon: "home", index: 0 });
+    container.addTab({ root: CoursesPage, icon: "courses", label: "COURSES", index: 0 });
+    container.addTab({ root: ResourcesPage, label: "LIBRARY", icon: "resources", index: 1 });
+    container.addTab({ root: ProfilePage, label: "PROFILE", icon: "profile", index: 2 });
 }
 
 export function initGuestTabs(container: ContainerService) {
     container.removeAllTabs();
-    // container.addTab({root: GroupPage, label: "GROUPS", icon:"groups", index: 3});
-    container.addTab({ root: CoursesPage, icon: "courses", label: "COURSES", index: 1 });
-    container.addTab({ root: GuestProfilePage, label: "PROFILE", icon: "profile", index: 3 })
-    container.addTab({ root: HomePage, label: "HOME", icon: "home", index: 0 });
-    container.addTab({ root: ResourcesPage, label: "LIBRARY", icon: "resources", index: 2 });
+    //container.addTab({ root: HomePage, label: "HOME", icon: "home", index: 0 });
+    container.addTab({ root: CoursesPage, icon: "courses", label: "COURSES", index: 0 });
+    container.addTab({ root: ResourcesPage, label: "LIBRARY", icon: "resources", index: 1 });
+    container.addTab({ root: GuestProfilePage, label: "PROFILE", icon: "profile", index: 2 })
+
+
 }
 
 export const PluginModules = [CoursesPageModule,
