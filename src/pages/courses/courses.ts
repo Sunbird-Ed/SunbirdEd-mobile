@@ -1,9 +1,11 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { NavController, Platform } from 'ionic-angular';
 import { IonicPage } from 'ionic-angular';
-import { CourseService, AuthService, EnrolledCoursesRequest, PageAssembleService, PageAssembleCriteria } from 'sunbird';
+import { CourseService, AuthService, EnrolledCoursesRequest, PageAssembleService, PageAssembleCriteria, QRScanner } from 'sunbird';
 import { CourseCard } from './../../component/card/course/course-card';
 import { DocumentDirection } from 'ionic-angular/platform/platform';
+import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
+import { SearchPage } from '../search/search';
 
 @IonicPage()
 @Component({
@@ -69,7 +71,7 @@ export class CoursesPage implements OnInit {
 
   /**
    * Default method of class CoursesPage
-   * 
+   *
    * @param {NavController} navCtrl To navigate user from one page to another
    * @param {CourseService} courseService Service to get enrolled courses
    * @param {AuthService} authService To get logged-in user data
@@ -78,7 +80,7 @@ export class CoursesPage implements OnInit {
    * @param {NgZone} ngZone To bind data
    */
   constructor(navCtrl: NavController, courseService: CourseService, authService: AuthService, platform: Platform,
-    pageService: PageAssembleService, ngZone: NgZone) {
+    pageService: PageAssembleService, ngZone: NgZone, private qrScanner: SunbirdQRScanner) {
     this.navCtrl = navCtrl;
     this.courseService = courseService;
     this.authService = authService;
@@ -147,8 +149,8 @@ export class CoursesPage implements OnInit {
   }
 
   /**
-   * Get user id. 
-   * 
+   * Get user id.
+   *
    * Used to get enrolled course(s) of logged-in user
    */
   getUserId(): void {
@@ -184,5 +186,27 @@ export class CoursesPage implements OnInit {
     }
 
     this.platform.setDir(this.currentStyle as DocumentDirection, true);
+  }
+
+  scanQRCode() {
+    const that = this;
+    const callback: QRResultCallback = {
+      dialcode(scanResult, dialCode) {
+        that.navCtrl.push(SearchPage, { dialCode: dialCode });
+      },
+      content(scanResult, contentId) {
+        // that.navCtrl.push(SearchPage);
+      }
+    }
+
+    this.qrScanner.startScanner(undefined, undefined, undefined, callback);
+  }
+
+  search() {
+    const contentType: Array<string> = [
+      "Course",
+    ];
+
+    this.navCtrl.push(SearchPage, { contentType: contentType})
   }
 }
