@@ -29,7 +29,16 @@ export class RolePage {
   continueAs: string = "";
   language: string;
 
-  constructor(public navCtrl: NavController, private translator: TranslateService, private storage: Storage, private profileService: ProfileService) {
+  /**
+   * Contains paths to icons
+   */
+  userImageUri: string = "assets/imgs/ic_anonymous.png";
+
+  constructor(public navCtrl: NavController,
+    private translator: TranslateService,
+    private storage: Storage,
+    private profileService: ProfileService
+  ) {
     this.initData();
   }
 
@@ -49,7 +58,6 @@ export class RolePage {
   }
 
   selectTeacherCard() {
-    console.log("Teacher card");
     this.roleSelected = true;
     this.teacherCardBorderColor = selectedCardBorderColor;
     this.studentCardBorderColor = borderColor;
@@ -61,7 +69,6 @@ export class RolePage {
   }
 
   selectStudentCard() {
-    console.log("Student card");
     this.roleSelected = true;
     this.teacherCardBorderColor = borderColor;
     this.studentCardBorderColor = selectedCardBorderColor;
@@ -73,59 +80,47 @@ export class RolePage {
   }
 
   continue() {
-    let profileRequest;
+    let profileRequest = {
+      handle: "Guest1",
+      avatar: "avatar",
+      language: "en",
+      age: -1,
+      day: -1,
+      month: -1,
+      standard: -1,
+      profileType: ProfileType.TEACHER
+    };
 
-    if (this.selectedRole == "teacher") {
-      profileRequest = {
-        handle: "Guest1",
-        avatar: "avatar",
-        language: "en",
-        age: -1,
-        day: -1,
-        month: -1,
-        standard: -1,
-        profileType: ProfileType.TEACHER
-      };
-    } else {
-      profileRequest = {
-        handle: "Guest1",
-        avatar: "avatar",
-        language: "en",
-        age: -1,
-        day: -1,
-        month: -1,
-        standard: -1,
-        profileType: ProfileType.STUDENT
-      };
+    if (this.selectedRole != "teacher") {
+      profileRequest.profileType = ProfileType.STUDENT;
     }
 
-    this.profileService.createProfile(profileRequest, (successResponse) => {
-      console.log("createProfile success : " + successResponse);
-      if (successResponse) {
-        let response = JSON.parse(successResponse);
+    this.profileService.createProfile(profileRequest,
+      (success: any) => {
+        console.log("createProfile success : " + success);
+        if (success) {
+          let response = JSON.parse(success);
 
-        console.log("UID of the created user - " + response.uid)
-        this.setUser(response.uid)
-      }
+          console.log("UID of the created user - " + response.uid)
+          this.setUser(response.uid)
+        }
+      },
+      (errorResponse: any) => {
+        console.log("createProfile success : " + errorResponse);
+      })
 
-
-    }, (errorResponse) => {
-      console.log("createProfile success : " + errorResponse);
-    })
-
-  }
-
-  goBack() {
-    this.navCtrl.pop();
   }
 
   setUser(uid: string) {
-    this.profileService.setCurrentUser(uid, (successResponse) => {
-      console.log("Set User Success - " + successResponse);
-      this.navCtrl.push(TabsPage);
-    }, (errorResponse) => {
-      console.log("Set User Error -" + errorResponse);
-    })
+    this.profileService.setCurrentUser(uid,
+      (success: any) => {
+        console.log("Set User Success - " + success);
+        this.navCtrl.push(TabsPage, {
+          loginMode: 'guest'
+        });
+      }, (error: any) => {
+        console.log("Set User Error -" + error);
+      })
   }
 
 }
