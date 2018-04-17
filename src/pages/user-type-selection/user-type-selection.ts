@@ -58,7 +58,7 @@ export class UserTypeSelectionPage {
   }
 
   selectTeacherCard() {
-    this.roleSelected = true;
+    this.userTypeSelected = true;
     this.teacherCardBorderColor = selectedCardBorderColor;
     this.studentCardBorderColor = borderColor;
     this.selectedUserType = "teacher";
@@ -69,7 +69,7 @@ export class UserTypeSelectionPage {
   }
 
   selectStudentCard() {
-    this.roleSelected = true;
+    this.userTypeSelected = true;
     this.teacherCardBorderColor = borderColor;
     this.studentCardBorderColor = selectedCardBorderColor;
     this.selectedUserType = "student";
