@@ -1,6 +1,6 @@
 import { NgModule, ErrorHandler } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { IonicApp, IonicModule, IonicErrorHandler, Events, NavController } from 'ionic-angular';
+import { IonicApp, IonicModule, IonicErrorHandler, Events } from 'ionic-angular';
 import { MyApp } from './app.component';
 import { StatusBar } from '@ionic-native/status-bar';
 import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
@@ -11,12 +11,8 @@ import { HTTP } from "@ionic-native/http";
 import { File } from "@ionic-native/file";
 
 import { PluginModules } from './module.service';
-import { TelemetryService, EventService, FrameworkModule, ContainerService, TabsPage } from 'sunbird';
+import { TelemetryService, EventService, FrameworkModule, TabsPage } from 'sunbird';
 import { Globalization } from '@ionic-native/globalization';
-import { RolePage } from '../pages/userrole/role';
-import { OnboardingPage } from '../pages/onboarding/onboarding';
-import { LanguageSettingsPage } from '../pages/language-settings/language-settings';
-import { GuestEditProfilePage } from '../pages/guest-edit.profile/guest-edit.profile';
 import { UniqueDeviceID } from '@ionic-native/unique-device-id';
 import { AppVersion } from '@ionic-native/app-version';
 import { SocialSharing } from '@ionic-native/social-sharing';

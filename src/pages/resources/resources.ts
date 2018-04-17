@@ -13,6 +13,8 @@ export class ResourcesPage implements OnInit {
 
   storyAndWorksheets: Array<any>;
 
+  guestUser: boolean = false;
+
   /**
    * Contains local resources
    */
@@ -179,5 +181,12 @@ export class ResourcesPage implements OnInit {
     console.log('Resources component initialized...==>>');
     this.getPopularContent();
     this.setSavedContent();
+    this.authService.getSessionData(res => {
+      if (res === undefined) {
+        this.guestUser = true;
+      } else {
+        this.guestUser = false;
+      }
+    });
   }
 }
