@@ -199,13 +199,12 @@ export class ResourcesPage {
     });
   }
 
-<<<<<<< HEAD
   ionViewWillEnter() {
     if (!this.pageLoadedSuccess) {
       this.getPopularContent();
     }
     this.setSavedContent();
-=======
+  }
 
   scanQRCode() {
     const that = this;
@@ -233,6 +232,5 @@ export class ResourcesPage {
     ];
 
     this.navCtrl.push(SearchPage, { contentType: contentType})
->>>>>>> 36db98bf325cb7616a0990c838cfe200e126c95a
   }
 }

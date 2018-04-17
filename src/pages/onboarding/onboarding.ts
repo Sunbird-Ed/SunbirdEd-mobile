@@ -23,13 +23,9 @@ export class OnboardingPage {
     private storage: Storage,
     private zone: NgZone,
     private userProfileService: UserProfileService,
-<<<<<<< HEAD
     private authService: AuthService,
-    private loadingCtrl: LoadingController) {
-=======
-    private authService: AuthService
+    private loadingCtrl: LoadingController
   ) {
->>>>>>> 36db98bf325cb7616a0990c838cfe200e126c95a
 
     this.slides = [
       {
@@ -54,17 +50,13 @@ export class OnboardingPage {
     console.log('ionViewDidLoad OnboardingPage');
   }
 
-<<<<<<< HEAD
   getLoader(): any {
     return this.loadingCtrl.create({
       spinner: "crescent"
     });
   }
 
-  singin() {
-=======
   singIn() {
->>>>>>> 36db98bf325cb7616a0990c838cfe200e126c95a
     let that = this;
     let loader = this.getLoader();
     loader.present();
