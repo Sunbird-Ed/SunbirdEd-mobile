@@ -22,7 +22,7 @@ import { ResourcesPageModule } from "../pages/resources/resources.module";
 import { GuestProfilePageModule } from "../pages/guest-profile/guest-profile.module";
 import { OnboardingPageModule } from "../pages/onboarding/onboarding.module";
 import { LanguageSettingsPageModule } from "../pages/language-settings/language-settings.module";
-import { RolePageModule } from "../pages/userrole/role.module";
+import { UserTypeSelectionPageModule } from "../pages/user-type-selection/user-type-selection.module";
 import { GuestEditProfileModule } from "../pages/guest-edit.profile/guest-edit-profile.module";
 import { QRScannerModule } from "../pages/qrscanner/qrscanner.module";
 import { SearchModule } from "../pages/search/search.module";
@@ -53,7 +53,7 @@ export const PluginModules = [CoursesPageModule,
     GuestProfilePageModule,
     OnboardingPageModule,
     LanguageSettingsPageModule,
-    RolePageModule,
+    UserTypeSelectionPageModule,
     GuestEditProfileModule,
     CourseDetailPageModule,
     ChildContentDetailsPageModule,
