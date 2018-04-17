@@ -1,0 +1,47 @@
+<ion-header>
+  <ion-navbar></ion-navbar>
+</ion-header>
+
+<ion-content padding>
+
+  <h6 text-center>You are a</h6>
+
+  <!-- Teacher card -->
+  <ion-card (click)="selectTeacherCard()" class="card-related-style" [ngStyle]="{'border-color': teacherCardBorderColor}">
+    <ion-item>
+      <ion-avatar item-start>
+        <img [src]="userImageUri" />
+      </ion-avatar>
+      <ion-card-content>
+        <h4 class="card-title">{{'TEACHER' | translate}}</h4>
+        <ol>
+          <li>Browse through courses</li>
+          <li>Find relevant resources</li>
+          <li>Browse through groups</li>
+        </ol>
+      </ion-card-content>
+    </ion-item>
+  </ion-card>
+
+  <!-- Student card -->
+  <ion-card (click)="selectStudentCard()" class="card-related-style" style="margin-top:20px" [ngStyle]="{'border-color': studentCardBorderColor}">
+    <ion-item>
+      <ion-avatar item-start>
+        <img [src]="userImageUri" />
+      </ion-avatar>
+      <ion-card-content>
+        <h4 class="card-title">Student</h4>
+        <ol>
+          <li>Browse through resources</li>
+        </ol>
+      </ion-card-content>
+    </ion-item>
+  </ion-card>
+</ion-content>
+
+<ion-footer padding no-border>
+  <button *ngIf="roleSelected" class="continue-related-style" ion-button block ion-end (click)="continue()">
+    {{continueAs}}
+    <ion-icon name='arrow-round-forward'></ion-icon>
+  </button>
+</ion-footer>

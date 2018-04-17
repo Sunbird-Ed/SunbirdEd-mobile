@@ -2,8 +2,9 @@ import { Component, NgZone } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { TabsPage, OAuthService, ContainerService, UserProfileService, AuthService, TenantInfoRequest } from 'sunbird';
 import { ViewController } from 'ionic-angular/navigation/view-controller';
-import { RolePage } from '../userrole/role';
+import { UserTypeSelectionPage } from '../user-type-selection/user-type-selection';
 import { Storage } from "@ionic/storage";
+
 import { initGuestTabs, initUserTabs } from '../../app/module.service';
 
 @Component({
@@ -22,7 +23,8 @@ export class OnboardingPage {
     private storage: Storage,
     private zone: NgZone,
     private userProfileService: UserProfileService,
-    private authService: AuthService) {
+    private authService: AuthService
+  ) {
 
     this.slides = [
       {
@@ -47,7 +49,7 @@ export class OnboardingPage {
     console.log('ionViewDidLoad OnboardingPage');
   }
 
-  singin() {
+  singIn() {
     let that = this;
 
     that.auth.doOAuthStepOne()
@@ -76,12 +78,12 @@ export class OnboardingPage {
       request.refreshTenantInfo = true;
       request.slug = slug;
       this.userProfileService.getTenantInfo(
-        request, 
+        request,
         res => {
           let r = JSON.parse(res);
           (<any>window).splashscreen.setContent(r.titleName, r.logo);
           resolve();
-        }, 
+        },
         error => {
           resolve();//ignore
         })
@@ -97,15 +99,15 @@ export class OnboardingPage {
           let sessionObj = JSON.parse(session);
           let req = {
             userId: sessionObj["userToken"],
-            requiredFields: ["completeness", "missingFields", "lastLoginTime", "topics"], 
+            requiredFields: ["completeness", "missingFields", "lastLoginTime", "topics"],
             refreshUserProfileDetails: true
           };
           this.userProfileService.getUserProfileDetails(req, res => {
             let r = JSON.parse(res);
             resolve(r.response.rootOrg.slug);
           }, error => {
-              reject(error);
-              console.error(error);
+            reject(error);
+            console.error(error);
           });
         }
       });
@@ -114,11 +116,11 @@ export class OnboardingPage {
 
   browseAsGuest() {
     initGuestTabs(this.container);
-    this.navCtrl.push(RolePage);
+    this.navCtrl.push(UserTypeSelectionPage);
   }
 
-  goBack() {
-    this.navCtrl.pop();
-  }
+  /*   goBack() {
+      this.navCtrl.pop();
+    } */
 
 }

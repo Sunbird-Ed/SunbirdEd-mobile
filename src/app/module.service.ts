@@ -22,27 +22,27 @@ import { ResourcesPageModule } from "../pages/resources/resources.module";
 import { GuestProfilePageModule } from "../pages/guest-profile/guest-profile.module";
 import { OnboardingPageModule } from "../pages/onboarding/onboarding.module";
 import { LanguageSettingsPageModule } from "../pages/language-settings/language-settings.module";
-import { RolePageModule } from "../pages/userrole/role.module";
+import { UserTypeSelectionPageModule } from "../pages/user-type-selection/user-type-selection.module";
 import { GuestEditProfileModule } from "../pages/guest-edit.profile/guest-edit-profile.module";
 import { QRScannerModule } from "../pages/qrscanner/qrscanner.module";
 import { SearchModule } from "../pages/search/search.module";
 
 export function initUserTabs(container: ContainerService) {
     container.removeAllTabs();
-    // container.addTab({root: GroupPage, label: "GROUPS", icon:"groups", index: 3});
-    container.addTab({ root: CoursesPage, icon: "courses", label: "COURSES", index: 1 });
-    container.addTab({ root: HomePage, label: "HOME", icon: "home", index: 0 });
-    container.addTab({ root: ProfilePage, label: "PROFILE", icon: "profile", index: 3 });
-    container.addTab({ root: ResourcesPage, label: "LIBRARY", icon: "resources", index: 2 });
+    //container.addTab({ root: HomePage, label: "HOME", icon: "home", index: 0 });
+    container.addTab({ root: CoursesPage, icon: "courses", label: "COURSES", index: 0 });
+    container.addTab({ root: ResourcesPage, label: "LIBRARY", icon: "resources", index: 1 });
+    container.addTab({ root: ProfilePage, label: "PROFILE", icon: "profile", index: 2 });
 }
 
 export function initGuestTabs(container: ContainerService) {
     container.removeAllTabs();
-    // container.addTab({root: GroupPage, label: "GROUPS", icon:"groups", index: 3});
-    container.addTab({ root: CoursesPage, icon: "courses", label: "COURSES", index: 1 });
-    container.addTab({ root: GuestProfilePage, label: "PROFILE", icon: "profile", index: 3 })
-    container.addTab({ root: HomePage, label: "HOME", icon: "home", index: 0 });
-    container.addTab({ root: ResourcesPage, label: "LIBRARY", icon: "resources", index: 2 });
+    //container.addTab({ root: HomePage, label: "HOME", icon: "home", index: 0 });
+    container.addTab({ root: CoursesPage, icon: "courses", label: "COURSES", index: 0 });
+    container.addTab({ root: ResourcesPage, label: "LIBRARY", icon: "resources", index: 1 });
+    container.addTab({ root: GuestProfilePage, label: "PROFILE", icon: "profile", index: 2 })
+
+
 }
 
 export const PluginModules = [CoursesPageModule,
@@ -53,7 +53,7 @@ export const PluginModules = [CoursesPageModule,
     GuestProfilePageModule,
     OnboardingPageModule,
     LanguageSettingsPageModule,
-    RolePageModule,
+    UserTypeSelectionPageModule,
     GuestEditProfileModule,
     CourseDetailPageModule,
     ChildContentDetailsPageModule,

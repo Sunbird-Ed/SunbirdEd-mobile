@@ -1,70 +1,48 @@
 page-language-settings {
     .ion-label {
-        width:100% !important;
+        //width:100% !important;
         color: #000000;
-      }
-
-      .grey-bg{
+    }
+    .grey-bg{
         background: rgba(224, 223, 223, 0.158);
     }
-
-
     .p-padding {
-      padding: 5px;
-  }
-
-  .continue-bg {
-    border-radius: 2px;
-    overflow: hidden;
-    height: 3.6rem;
-    font-size: 1.4rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    color: #fff;
-    background-color: #488aff;
-    margin: 0.4rem 0.2rem;
-    align-items: center;
-    -webkit-box-pack: center;
-    -webkit-justify-content: center;
-    -ms-flex-pack: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    padding: 10px;
-    text-align: center;
-}
-
+        padding: 5px;
+    }
     ion-label {
         color: #000000 !important;
     }
 
-    .radio-md {
-      .radio-icon {
-        border-style: none;
-        border-radius: 0%;
-      }
+    // .radio-md {
+    //   .radio-icon {
+    //     border-style: none;
+    //     border-radius: 0%;
+    //   }
 
-      .radio-inner {
-        background-color: rgba(0, 0, 0, 0) !important;
-        border-style: none !important;
-        border-radius: 0% ;
-      }
+    //   .radio-inner {
+    //     background-color: rgba(0, 0, 0, 0) !important;
+    //     border-style: none !important;
+    //     border-radius: 0% ;
+    //   }
 
-      .radio-checked, .radio-inner {
-        /*Add another block-level blank space*/
-        content: '';
-        display: block;
+    //   .radio-checked, .radio-inner {
+    //     display:inline-block;
+    //     &:after{
+    //     /*Add another block-level blank space*/
+    //     content: '';
+    //     display: block;
 
-        /*Make it a small rectangle so the border will create an L-shape*/
-        width: 6px;
-        height: 12px;
+    //     /*Make it a small rectangle so the border will create an L-shape*/
+    //     width: 6px;
+    //     height: 12px;
 
-        /*Add a white border on the bottom and left, creating that 'L' */
-        border: solid blue;
-        border-width: 0 2px 2px 0;
+    //     /*Add a white border on the bottom and left, creating that 'L' */
+    //     border: solid blue;
+    //     border-width: 0 2px 2px 0;
 
-        /*Rotate the L 45 degrees to turn it into a checkmark*/
-        transform: rotate(45deg) !important;
-      }
-    }
+    //     /*Rotate the L 45 degrees to turn it into a checkmark*/
+    //     transform: rotate(45deg) !important;
+    //     }
+    //   }
+    // }
 }
