@@ -2,11 +2,7 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { NavController, NavParams, Events, Alert } from 'ionic-angular';
 import { AnnouncementService } from 'sunbird';
-import { HttpClient } from '@angular/common/http';
 import { SocialSharing } from '@ionic-native/social-sharing';
-import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
-import { File } from '@ionic-native/file';
-import { FileOpener } from '@ionic-native/file-opener';
 import {
     TelemetryService,
     FrameworkModule
@@ -21,7 +17,6 @@ import {
  *
  */
 export class AnnouncementDetailComponent implements OnInit {
-    public fileTransfer: FileTransferObject;
     /**
      * Contains announcemet  details
      */
@@ -54,13 +49,13 @@ export class AnnouncementDetailComponent implements OnInit {
      * @param navParams 
      * @param contentService 
      */
-    constructor(navCtrl: NavController, private socialSharing: SocialSharing, private transfer: FileTransfer, private file: File, private fileOpener: FileOpener, navParams: NavParams, announcementService: AnnouncementService, zone: NgZone, private http: HttpClient,
-        private events: Events) {
+    constructor(navCtrl: NavController, private socialSharing: SocialSharing, 
+        navParams: NavParams, announcementService: AnnouncementService, 
+        zone: NgZone, private events: Events) {
         this.navCtrl = navCtrl;
         this.navParams = navParams;
         this.announcementService = announcementService;
         this.zone = zone;
-        this.fileTransfer = this.transfer.create();
         console.log('Course identifier ===> ', this.navParams.get('identifier'));
         this.id = this.navParams.get('id');
         console.log(this.id);
@@ -103,18 +98,18 @@ export class AnnouncementDetailComponent implements OnInit {
         });
     }
     downloadattachment(attachmentsLink) {
-        let url = attachmentsLink;
-        let fileUrl = url.split("/");
-        let myFile = fileUrl[fileUrl.length - 1];
-        this.fileTransfer.download(url, this.file.externalRootDirectory + myFile).then((entry) => {
-            // this.fileOpener.open('/storage/emulated/file.pdf', 'application/pdf')
-            //     .then(() => console.log('File is opened'))
-            //     .catch(e => console.log('Error opening file', e));
-            console.log(entry);
-            console.log('download complete: ' + entry.toURL());
-        }, (error) => {
-            console.log('download Incomplete: ', error);
-        });
+        // let url = attachmentsLink;
+        // let fileUrl = url.split("/");
+        // let myFile = fileUrl[fileUrl.length - 1];
+        // this.fileTransfer.download(url, this.file.externalRootDirectory + myFile).then((entry) => {
+        //     // this.fileOpener.open('/storage/emulated/file.pdf', 'application/pdf')
+        //     //     .then(() => console.log('File is opened'))
+        //     //     .catch(e => console.log('Error opening file', e));
+        //     console.log(entry);
+        //     console.log('download complete: ' + entry.toURL());
+        // }, (error) => {
+        //     console.log('download Incomplete: ', error);
+        // });
     }
 }
 

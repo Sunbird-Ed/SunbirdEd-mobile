@@ -13,29 +13,31 @@
 
 <ion-content overflow-scroll="true" class="custom-ion-content">
   <!-- onBoardingSLides starts here -->
-  <p class="onbording-card-header-text">{{ 'ONBOARDING_SLIDES_HEADER_TEXT' | translate }}</p>
+  <div *ngIf="guestUser">
+    <p class="onbording-card-header-text">{{ 'ONBOARDING_SLIDES_HEADER_TEXT' | translate }}</p>
 
-  <ion-slides (ionSlideDrag)="onSlideDrag()" class="onbording-slides" pager=true centeredSlides=false speed=50 padding-left
-    padding-right>
+    <ion-slides (ionSlideDrag)="onSlideDrag()" class="onbording-slides" pager=true centeredSlides=false speed=50 padding-left
+      padding-right>
 
-    <ion-slide *ngFor="let slide of onBoardingSlides; let i=index">
-      <div class="onbording-slide-div">
-        <ion-row>
-          <p class="onbording-slide-title">
-            {{ slide.title}}
-          </p>
-        </ion-row>
+      <ion-slide *ngFor="let slide of onBoardingSlides; let i=index">
+        <div class="onbording-slide-div">
+          <ion-row>
+            <p class="onbording-slide-title">
+              {{ slide.title}}
+            </p>
+          </ion-row>
 
-        <ion-footer class="onbording-slide-footer" no-shadow no-border>
-          <ion-select [(ngModel)]="selectedOptions[i]" class="board-select" (ionChange)="handleOnBoardingOptionSelected(i)" multiple="true"
-            interface="popover" [selectOptions]="{ subTitle: slide.title}" placeholder="{{slide.desc}}" bold no-padding>
-            <ion-option *ngFor="let o of slide.options" [value]="o.value">{{o.text}}</ion-option>
-          </ion-select>
-        </ion-footer>
-      </div>
-    </ion-slide>
+          <ion-footer class="onbording-slide-footer" no-shadow no-border>
+            <ion-select [(ngModel)]="selectedOptions[i]" class="board-select" (ionChange)="handleOnBoardingOptionSelected(i)" multiple="true"
+              interface="popover" [selectOptions]="{ subTitle: slide.title}" placeholder="{{slide.desc}}" bold no-padding>
+              <ion-option *ngFor="let o of slide.options" [value]="o.value">{{o.text}}</ion-option>
+            </ion-select>
+          </ion-footer>
+        </div>
+      </ion-slide>
 
-  </ion-slides>
+    </ion-slides>
+  </div>
   <!-- onBoardingSLides ends here -->
 
   <!-- <div> -->
