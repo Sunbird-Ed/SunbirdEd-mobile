@@ -1,7 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { Platform, ModalController, AlertController, NavController, ViewController, Nav } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
-import { TabsPage, AuthService, ContainerService } from "sunbird";
+import { TabsPage, AuthService, ContainerService, PermissionService } from "sunbird";
 import { initGuestTabs, initUserTabs } from './module.service';
 import { Storage } from "@ionic/storage";
 import { LanguageSettingsPage } from '../pages/language-settings/language-settings';
@@ -16,16 +16,28 @@ export class MyApp {
   // rootPage:any = OnboardingPage;
   rootPage: any;
 
+  readonly permissionList = ["android.permission.CAMERA",
+  "android.permission.WRITE_EXTERNAL_STORAGE",
+  "android.permission.ACCESS_FINE_LOCATION",
+  "android.permission.RECORD_AUDIO"];
+
   constructor(platform: Platform, statusBar: StatusBar,
     private modalCtrl: ModalController,
     private alertCtrl: AlertController,
     private authService: AuthService,
     private containerService: ContainerService,
-    private storage: Storage) {
+    private storage: Storage,
+    private permission: PermissionService) {
 
     let that = this;
 
     platform.ready().then(() => {
+
+      permission.requestPermission(this.permissionList, (response) => {
+
+      }, (error) => {
+
+      })
 
       that.authService.getSessionData((session) => {
         if (session == "null") {
