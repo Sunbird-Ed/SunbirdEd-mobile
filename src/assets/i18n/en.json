@@ -378,6 +378,6 @@
     "WHAT_WENT_WRONG": "What went wrong?",
     "YEAR_OF_PASSING": "Pass year",
     "YES": "Yes",
-    "YOUR_PROFILE_IS": "Your profile is %s% complete",
+    "YOUR_PROFILE_IS": "Your profile is {{value}}% complete",
     "YOUR_PROGRESS": "Your Progress: %s%"
   }

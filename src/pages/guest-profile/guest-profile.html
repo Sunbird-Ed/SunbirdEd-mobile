@@ -1,24 +1,24 @@
+<!-- Header Bar -->
 <ion-header>
   <ion-navbar>
-    <ion-title>
-      <span class="header-title">{{ 'PROFILE_LW' | translate }}</span>
-      <img src="assets/imgs/ic_action_filter.png" class="tool-icon" float-end />
-      <img src="assets/imgs/ic_action_search.png" class="tool-icon" float-end />
-    </ion-title>
+    <ion-title>{{ 'PROFILE_LW' | translate }}</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="showOverflowMenu($event)">
+          <ion-icon name="more" float-end></ion-icon>
+      </button>
+  </ion-buttons>
   </ion-navbar>
 </ion-header>
-<ion-content class="ion-content-grey-bg">
 
+<ion-content>
   <ion-list>
-
     <div ion-item text-center>
       <img class="custom-avatar" [src]="imageUri" />
       <p class="profile-name">{{profileName}}</p>
-      <p class="user-name">{{userName}}</p>
+      <!-- <p class="user-name">{{userName}}</p> -->
     </div>
 
     <ion-item>
-
       <ion-row justify-content-center>
         <ion-col col-11 class="col-11-custom">
           <span>{{'PROFILE_DETAILS_TITLE' | translate}}</span>
@@ -27,16 +27,6 @@
           <ion-icon name="md-create" class="edit-icon" (click)="editGuestProf()"></ion-icon>
         </ion-col>
       </ion-row>
-
-      <!-- TODO enable if required in future -->
-      <!-- <ion-row justify-content-start>
-        <ion-col col-3 justify-content-center>
-          <span class="profile-details-left-header">{{'STATE_CAPS' | translate}}</span>
-        </ion-col>
-        <ion-col col-9 class="custom-text-align-right">
-          <span class="profile-details-right-des">karnataka</span>
-        </ion-col>
-      </ion-row> -->
 
       <ion-row justify-content-start>
         <ion-col col-3 justify-content-center>
@@ -74,21 +64,11 @@
         </ion-col>
       </ion-row>
 
-      <!-- TODO enable if required -->
-      <!-- <ion-row justify-content-start>
-        <ion-col col-3 justify-content-center>
-          <span class="profile-details-left-header">{{'SYLLABUS_CAPS' | translate}}</span>
-        </ion-col>
-        <ion-col col-9 class="custom-text-align-right">
-          <span class="profile-details-add">Add</span>
-        </ion-col>
-      </ion-row> -->
-
     </ion-item>
 
   </ion-list>
 
-  <ion-card class="ion-card-custom-padding">
+  <!-- <ion-card class="ion-card-custom-padding">
     <ion-card-header class="text-bold">
       {{'GET_UNLIMITED_ACCESS' | translate}}
     </ion-card-header>
@@ -101,15 +81,6 @@
         {{ 'SIGN_IN' | translate }}
       </button>
     </ion-row>
-
-    <ion-row justify-content-center>
-      <ion-col col-6 justify-content-center class="custom-text-align-right">
-        <span class="do-not-have-acc-text">{{'DONT_HAVE_AN_ACCOUNT' | translate}}</span>
-      </ion-col>
-      <ion-col col-5 class="custom-text-left">
-        <span class="create-an-acc-text">{{'CREATE_AN_ACCOUNT' | translate}}</span>
-      </ion-col>
-    </ion-row>
-
-  </ion-card>
+  </ion-card> -->
+  <sign-in-card></sign-in-card>
 </ion-content>

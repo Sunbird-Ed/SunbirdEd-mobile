@@ -1,4 +1,5 @@
 page-guest-profile {
+  @import url('../profile/profile');
  .profile-name{
       color: black;
       text-align: center;
@@ -55,11 +56,6 @@ page-guest-profile {
 
   .edit-icon {
     color: blue;
-  }
-
-  // ion content bg
-  .ion-content-grey-bg {
-    background-color: rgba(224, 223, 223, 0.158);
   }
 
   .col-11-custom {

@@ -312,6 +312,6 @@
   "WHAT_WENT_WRONG": "ఏం పొరపాటు జరిగింది?",
   "YEAR_OF_PASSING": "ఉత్తీర్ణులైన సంవత్సరం ",
   "YES": "అవును",
-  "YOUR_PROFILE_IS": "మీ ప్రొఫైలు %s%",
+  "YOUR_PROFILE_IS": "మీ ప్రొఫైలు {{value}}%",
   "YOUR_PROGRESS": "మీ ప్రగతి: %s%"
 }

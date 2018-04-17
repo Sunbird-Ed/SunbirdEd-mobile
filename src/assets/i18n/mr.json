@@ -324,6 +324,6 @@
   "WHAT_WENT_WRONG": "काय चूक झाली?",
   "YEAR_OF_PASSING": "उत्तीर्ण वर्ष",
   "YES": "होय",
-  "YOUR_PROFILE_IS": "आपले प्रोफाईल  %s% पूर्ण आहे.",
+  "YOUR_PROFILE_IS": "आपले प्रोफाईल  {{value}}% पूर्ण आहे.",
   "YOUR_PROGRESS": "तुमची प्रगती: %s%"
 }

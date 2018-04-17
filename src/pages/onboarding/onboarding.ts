@@ -1,9 +1,7 @@
 import { Component, NgZone } from '@angular/core';
-import { NavController, NavParams, LoadingController } from 'ionic-angular';
+import { NavController, LoadingController } from 'ionic-angular';
 import { TabsPage, OAuthService, ContainerService, UserProfileService, AuthService, TenantInfoRequest } from 'sunbird';
-import { ViewController } from 'ionic-angular/navigation/view-controller';
 import { UserTypeSelectionPage } from '../user-type-selection/user-type-selection';
-import { Storage } from "@ionic/storage";
 
 import { initGuestTabs, initUserTabs } from '../../app/module.service';
 
@@ -16,11 +14,8 @@ export class OnboardingPage {
   slides: any[];
 
   constructor(public navCtrl: NavController,
-    public navParams: NavParams,
-    private viewCtrl: ViewController,
     private auth: OAuthService,
     private container: ContainerService,
-    private storage: Storage,
     private zone: NgZone,
     private userProfileService: UserProfileService,
     private authService: AuthService,

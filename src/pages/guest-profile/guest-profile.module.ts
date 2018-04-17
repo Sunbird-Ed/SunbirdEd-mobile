@@ -1,3 +1,4 @@
+import { ComponentsModule } from './../../component/components.module';
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
@@ -9,7 +10,8 @@ import { GuestEditProfileModule } from '../guest-edit.profile/guest-edit-profile
 	imports: [
 		GuestEditProfileModule,
 		IonicPageModule.forChild(GuestProfilePage),
-		TranslateModule.forChild()
+		TranslateModule.forChild(),
+		ComponentsModule
 	],
 	exports: [GuestProfilePage]
 })
