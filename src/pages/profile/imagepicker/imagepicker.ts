@@ -71,7 +71,7 @@ export class ImagePicker {
                         },
                         (error: any) => {
                             this.presentToast(this.translateMessage('ERROR_UPLOADING_IMG'));
-                            this.viewCtrl.dismiss();
+                            this.updateProfilePictureEvent('', false);
                         });
                 });
             },

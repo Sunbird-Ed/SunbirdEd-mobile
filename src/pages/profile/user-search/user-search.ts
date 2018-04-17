@@ -38,7 +38,7 @@ export class UserSearchComponent {
    * Makes an search user API call
    * @param {object} scrollEvent - infinite Scroll Event
    */
-  onInput(event, scrollEvent = undefined): void {
+  onInput(event = undefined, scrollEvent = undefined): void {
     let loader = this.getLoader();
 
     if(!this.enableInfiniteScroll) loader.present();
@@ -105,7 +105,7 @@ export class UserSearchComponent {
   }
 
   ionViewDidEnter() {
-    setTimeout(()=>{
+    setTimeout(() => {
       this.input.setFocus();
     }, 100);
   }
@@ -115,5 +115,9 @@ export class UserSearchComponent {
       duration: 30000,
       spinner: "crescent"
     });
+  }
+
+  checkClear() {
+    if(this.searchInput === '') this.onInput();
   }
 }
