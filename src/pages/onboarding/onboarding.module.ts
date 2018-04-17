@@ -3,7 +3,6 @@ import { IonicPageModule } from 'ionic-angular';
 
 import { OnboardingPage } from './onboarding';
 import { TranslateModule } from '@ngx-translate/core';
-import { ContainerService } from 'sunbird';
 
 @NgModule({
   declarations: [

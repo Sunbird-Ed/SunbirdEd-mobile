@@ -1,7 +1,6 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { NavController, Events, Platform } from 'ionic-angular';
 import { DocumentDirection } from 'ionic-angular/platform/platform';
-import { HttpClient } from '@angular/common/http';
 import { Storage } from "@ionic/storage";
 
 import {
@@ -67,7 +66,6 @@ export class HomePage implements OnInit {
   logo: string = "assets/imgs/ic_logo.png";
 
   constructor(public navCtrl: NavController,
-    private http: HttpClient,
     private courseService: CourseService,
     private announcementService: AnnouncementService,
     private authService: AuthService,

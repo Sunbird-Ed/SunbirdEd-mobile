@@ -1,19 +1,19 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { GenieSDKServiceProvider } from 'sunbird';
-import { RolePage } from './role';
+import { UserTypeSelectionPage } from './user-type-selection';
 import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   declarations: [
-    RolePage
+    UserTypeSelectionPage
   ],
   imports: [
-    IonicPageModule.forChild(RolePage),
+    IonicPageModule.forChild(UserTypeSelectionPage),
     TranslateModule.forChild()
   ],
   exports: [
-    RolePage
+    UserTypeSelectionPage
   ],
 })
-export class RolePageModule {}
+export class UserTypeSelectionPageModule {}

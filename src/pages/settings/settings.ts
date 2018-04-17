@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NavController } from "ionic-angular";
 import { DatasyncPage } from './datasync/datasync';
 import { LanguageSettingsPage } from '../language-settings/language-settings';
-import { AboutusPage } from './aboutus/aboutus';
+import { AboutUsPage } from './about-us/about-us';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { TranslateService } from '@ngx-translate/core';
 import { Storage } from "@ionic/storage";
@@ -55,7 +55,7 @@ export class SettingsPage {
   }
 
   aboutUs() {
-    this.navCtrl.push(AboutusPage)
+    this.navCtrl.push(AboutUsPage)
   }
 
   sendMessage() {

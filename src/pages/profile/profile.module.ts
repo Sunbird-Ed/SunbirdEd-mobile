@@ -20,7 +20,7 @@ import { UsersnClassesComponent } from './usersnclasses/usersnclass.component';
 import { UsersComponent } from './usersnclasses/users/users.component';
 import { ClassesComponent } from './usersnclasses/classes/classes.component';
 import { OverflowMenuComponent } from './overflowmenu/menu.overflow.component';
-import { ContainerService, CameraService } from 'sunbird';
+import { ContainerService } from 'sunbird';
 import { SettingsPageModule } from '../settings/settings.module';
 import { ActionMenuComponent } from './actionmenu/menu.action.component';
 import { AddUserComponent } from './usersnclasses/users/adduser.component';
@@ -91,7 +91,6 @@ import { ImagePicker } from './imagepicker/imagepicker';
   providers: [
     ContainerService,
     Camera,
-    CameraService,
     DatePipe,
     InAppBrowser
   ]
