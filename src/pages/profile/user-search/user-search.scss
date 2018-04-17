@@ -12,6 +12,17 @@ user-search {
     [dir="ltr"] .label-md {
         margin: 4px 0 4px 0 !important;
     }
+    .searchbar-md .searchbar-search-icon {
+        height: 0 !important;
+    }
+    .searchbar-md .searchbar-input {
+        padding: 0 !important;
+        background-color: inherit !important;
+        box-shadow: none !important;
+    }
+    .searchbar-md.searchbar-has-focus.searchbar-show-cancel .searchbar-md-cancel {
+        display: none !important;
+    }
 }
 .font-weight-500 {
     font-weight: 500 !important;

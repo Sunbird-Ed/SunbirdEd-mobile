@@ -30,7 +30,6 @@
       <button ion-button item-right clear small icon-only color="dark" (click)="toggleLock('language')">
         <ion-icon name="{{ profileVisibility?.language == 'private' ? 'lock' : 'unlock' }}" class="lock-position"></ion-icon>
       </button>
-
     </ion-item>
 
     <ion-item>
@@ -49,7 +48,6 @@
       <button ion-button item-right clear small icon-only color="dark" (click)="toggleLock('phone')">
         <ion-icon name="{{ profileVisibility?.phone == 'private' ? 'lock' : 'unlock' }}" class="lock-position"></ion-icon>
       </button>
-
     </ion-item>
 
     <ion-item>
@@ -65,7 +63,6 @@
       <button ion-button item-right clear small icon-only color="dark" (click)="toggleLock('subject')">
         <ion-icon name="{{ profileVisibility?.subject == 'private' ? 'lock' : 'unlock' }}" class="lock-position"></ion-icon>
       </button>
-
     </ion-item>
 
     <ion-item>
@@ -78,7 +75,6 @@
       <button ion-button item-right clear small icon-only color="dark" (click)="toggleLock('gender')">
         <ion-icon name="{{ profileVisibility?.gender == 'private' ? 'lock' : 'unlock' }}" class="lock-position"></ion-icon>
       </button>
-
     </ion-item>
 
     <ion-item>
@@ -87,7 +83,6 @@
       <button ion-button item-right clear small icon-only color="dark" (click)="toggleLock('dob')">
         <ion-icon name="{{ profileVisibility?.dob == 'private' ? 'lock' : 'unlock' }}" class="lock-position"></ion-icon>
       </button>
-
     </ion-item>
 
     <ion-item>
@@ -98,7 +93,6 @@
       <button ion-button item-right clear small icon-only color="dark" (click)="toggleLock('grade')">
         <ion-icon name="{{ profileVisibility?.grade == 'private' ? 'lock' : 'unlock' }}" class="lock-position"></ion-icon>
       </button>
-
     </ion-item>
 
     <ion-item>
@@ -110,9 +104,9 @@
 
     </ion-item>
 
-    <ion-label stacked>{{'SOCIAL' | translate}}
-      <button item-right clear small icon-only color="dark" (click)="toggleLock('location')" style="float:right; margin-top:0">
-        <ion-icon name="{{ profileVisibility?.webPages == 'private' ? 'lock' : 'unlock' }}" class="lock-position"></ion-icon>
+    <ion-label class="social-label" stacked>{{'SOCIAL' | translate}}
+      <button item-right clear small icon-only color="dark" (click)="toggleLock('location')" style="float:right; margin-top:0; background-color: transparent">
+        <ion-icon small name="{{ profileVisibility?.webPages == 'private' ? 'lock' : 'unlock' }}" class="lock-position"></ion-icon>
       </button>
     </ion-label>
 

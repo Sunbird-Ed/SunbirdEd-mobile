@@ -46,6 +46,7 @@ export class FormAddress {
 
     /* Receive data from other component */
     this.isNewForm = this.navParams.get('addForm');
+    if(this.isNewForm === undefined) this.isNewForm = true;
     this.addressDetails = this.navParams.get('addressDetails') || {};
     this.profile = this.navParams.get('profile') || {};
 
@@ -118,7 +119,8 @@ export class FormAddress {
 
   validateForm(formVal): boolean {
 
-    if (formVal.zipcode != '' && formVal.zipcode.length != 6) {
+    /* Allowed only Numbers and 6 digits */
+    if (formVal.zipcode != '' && !formVal.zipcode.match(/^\d{6}$/)) {
       this.getToast(this.translateMessage('INVALID_PINCODE')).present();
       return false;
     }

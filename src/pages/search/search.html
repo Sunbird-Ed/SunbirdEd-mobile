@@ -58,7 +58,7 @@
       </ion-avatar>
       <h2> {{ content.name }}</h2>
       <p>{{ content.contentType }} • {{ getReadableFileSize(content.size) }}</p>
-      <p>{{ content.gradeLevel[0] }} • {{ content.language[0] }}</p>
+      <p><span *ngIf="content.gradeLevel && content.gradeLevel.length">{{ content.gradeLevel[0] }}</span> • <span *ngIf="content.language && content.language.length">{{ content.language[0] }}</span></p>
     </ion-item>
   </ion-list>
 

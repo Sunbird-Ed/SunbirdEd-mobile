@@ -24,7 +24,7 @@
     <p *ngIf="isLoggedInUser" class="profile-last-login-text">{{ lastLoginTime }}</p>
     <div text-center>
         <img class="custom-avatar" [src]="imageUri" (click)="isLoggedInUser && editPicture()" />
-        <ion-spinner *ngIf="isUploading" name="crescent"></ion-spinner>
+        <ion-spinner *ngIf="isUploading"></ion-spinner>
         <p class="profile-name">{{ profile?.firstName }} {{ profile?.lastName }}</p>
         <div class="padding-5 ellipsis" col-12>
             <span class="grey-bg" *ngIf="profile?.userName">{{ userName }}</span>
@@ -70,7 +70,7 @@
             </ion-col>
             <ion-col col-9>
                 <span class="details-title">{{ ed?.name }}</span>
-                <div class="details">
+                <div class="details ellipsis">
                     <p>{{ ed?.degree }}</p>
                     <p *ngIf="ed?.yearOfPassing">Year of Passing : {{ ed?.yearOfPassing }}</p>
                     <p *ngIf="ed?.grade">Grade: {{ ed?.grade }}({{ ed?.percentage }}%)</p>
@@ -106,7 +106,8 @@
                     <p>{{ job?.orgName }}</p>
                     <p *ngIf="job?.subject">{{ 'SUBJECTS' | translate }} - {{ job?.subject }}</p>
                     <p *ngIf="job?.joiningDate">{{ job?.joiningDate }}
-                        <span class="display-inline-block" *ngIf="job?.endDate">&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;</span>{{ job?.endDate}}</p>
+                        <span class="display-inline-block" *ngIf="job?.endDate">&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;</span>{{ job?.endDate}}
+                    </p>
                 </div>
             </ion-col>
             <ion-col *ngIf="isLoggedInUser" col-1 text-end>
@@ -117,7 +118,7 @@
 
 
     <!-- User Address Current/Permanent -->
-    <ion-list-header *ngIf="profile?.address?.length" class="section-title" no-padding>
+    <ion-list-header *ngIf="(profile?.address?.length && !isLoggedInUser) || isLoggedInUser" class="section-title" no-padding>
         {{ 'TITLE_ADDRESS' | translate }}
         <span *ngIf="isLoggedInUser && profile?.address?.length < 2 " float-right color="primary">
             <span (click)="editAddress()">{{ 'ADD' | translate }}</span>
@@ -135,7 +136,7 @@
             <ion-col col-9>
                 <span text-capitalize class="details-title">{{ addr?.addType }}</span>
                 <!-- TODO: Add word wrap -->
-                <div class="details">
+                <div class="details ellipsis">
                     <p>{{ addr?.addressLine1 }}</p>
                     <p text-capitalize>{{ addr?.city }}</p>
                 </div>
