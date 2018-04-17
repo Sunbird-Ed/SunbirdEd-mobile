@@ -2,7 +2,7 @@ import { Component, NgZone } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { TabsPage, OAuthService, ContainerService, UserProfileService, AuthService, TenantInfoRequest } from 'sunbird';
 import { ViewController } from 'ionic-angular/navigation/view-controller';
-import { RolePage } from '../userrole/role';
+import { UserTypeSelectionPage } from '../user-type-selection/user-type-selection';
 import { Storage } from "@ionic/storage";
 import { initGuestTabs, initUserTabs } from '../../app/module.service';
 
@@ -114,7 +114,7 @@ export class OnboardingPage {
 
   browseAsGuest() {
     initGuestTabs(this.container);
-    this.navCtrl.push(RolePage);
+    this.navCtrl.push(UserTypeSelectionPage);
   }
 
   goBack() {

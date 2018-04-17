@@ -8,24 +8,24 @@ import { ProfileType, ProfileService } from 'sunbird'
 
 const selectedCardBorderColor = '#0080ff';
 const borderColor = '#fff';
-const KEY_SELECTED_ROLE = "selected_role";
+const KEY_SELECTED_USER_TYPE = "selected_user_type";
 const KEY_SELECTED_LANGUAGE = "selected_language";
 
 @Component({
-  selector: 'page-role',
-  templateUrl: 'role.html',
+  selector: 'page-user-type-selection',
+  templateUrl: 'user-type-selection.html',
 })
 
-export class RolePage {
+export class UserTypeSelectionPage {
 
-  roles: Array<string>;
+  userTypes: Array<string>;
   teacherContents: Array<string>;
   studentContents: Array<string>;
   allContents: Array<Array<string>> = [];
   teacherCardBorderColor: string = '#fff';
   studentCardBorderColor: string = '#fff';
-  roleSelected: boolean = false;
-  selectedRole: string;
+  userTypeSelected: boolean = false;
+  selectedUserType: string;
   continueAs: string = "";
   language: string;
 
@@ -37,7 +37,7 @@ export class RolePage {
     let that = this;
     this.translator.get(["ROLE.ROLE_TYPE", "ROLE.TEACHER_CONTENT", "ROLE.STUDENT_CONTENT"])
       .subscribe(val => {
-        that.roles = val["ROLE.ROLE_TYPE"];
+        that.userTypes = val["ROLE.ROLE_TYPE"];
         that.teacherContents = val["ROLE.TEACHER_CONTENT"];
         that.studentContents = val["ROLE.STUDENT_CONTENT"];
         that.allContents.push(that.teacherContents);
@@ -50,32 +50,32 @@ export class RolePage {
 
   selectTeacherCard() {
     console.log("Teacher card");
-    this.roleSelected = true;
+    this.userTypeSelected = true;
     this.teacherCardBorderColor = selectedCardBorderColor;
     this.studentCardBorderColor = borderColor;
-    this.selectedRole = "teacher";
+    this.selectedUserType = "teacher";
     this.translator.get('CONTINUE_AS_TEACHER').subscribe(value => {
       this.continueAs = value;
     })
-    this.storage.set(KEY_SELECTED_ROLE, this.selectedRole);
+    this.storage.set(KEY_SELECTED_USER_TYPE, this.selectedUserType);
   }
 
   selectStudentCard() {
     console.log("Student card");
-    this.roleSelected = true;
+    this.userTypeSelected = true;
     this.teacherCardBorderColor = borderColor;
     this.studentCardBorderColor = selectedCardBorderColor;
-    this.selectedRole = "student";
+    this.selectedUserType = "student";
     this.translator.get('CONTINUE_AS_STUDENT').subscribe(value => {
       this.continueAs = value;
     })
-    this.storage.set(KEY_SELECTED_ROLE, this.selectedRole)
+    this.storage.set(KEY_SELECTED_USER_TYPE, this.selectedUserType)
   }
 
   continue() {
     let profileRequest;
 
-    if (this.selectedRole == "teacher") {
+    if (this.selectedUserType == "teacher") {
       profileRequest = {
         handle: "Guest1",
         avatar: "avatar",
