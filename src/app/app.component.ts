@@ -5,6 +5,7 @@ import { TabsPage, AuthService, ContainerService, PermissionService } from "sunb
 import { initGuestTabs, initUserTabs } from './module.service';
 import { Storage } from "@ionic/storage";
 import { LanguageSettingsPage } from '../pages/language-settings/language-settings';
+import { ImageLoaderConfig } from 'ionic-image-loader';
 
 declare var chcp: any;
 
@@ -27,7 +28,8 @@ export class MyApp {
     private authService: AuthService,
     private containerService: ContainerService,
     private storage: Storage,
-    private permission: PermissionService) {
+    private permission: PermissionService,
+    private imageLoaderConfig: ImageLoaderConfig) {
 
     let that = this;
 
@@ -65,6 +67,9 @@ export class MyApp {
 
       }
     });
+
+    this.imageLoaderConfig.enableDebugMode();
+    this.imageLoaderConfig.setMaximumCacheSize(100 * 1024 * 1024);
   }
 
   // private checkLoginType() {
