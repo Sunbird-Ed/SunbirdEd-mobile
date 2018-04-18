@@ -34,6 +34,8 @@ export class SearchPage {
 
   responseData: any;
 
+  isDialCodeSearch = false;
+
   constructor(private contentService: ContentService, private navParams: NavParams, private navCtrl: NavController, private zone: NgZone, private event: Events) {
     this.init();
   }
@@ -96,8 +98,14 @@ export class SearchPage {
         let response: GenieResponse = JSON.parse(responseData);
         this.responseData = response;
         if (response.status && response.result) {
-          this.searchContentResult = response.result.contentDataList;
-          this.filterIcon = "./assets/imgs/ic_action_filter.png";
+
+          if (this.isDialCodeSearch) {
+            this.processDialCodeResult(response.result);
+          } else {
+            this.searchContentResult = response.result.contentDataList;
+          }
+
+          this.updateFilterIcon();
         }
         this.showLoader = false;
       });
@@ -128,6 +136,8 @@ export class SearchPage {
       facets: ["language", "grade", "domain", "contentType", "subject", "medium"]
     }
 
+    this.isDialCodeSearch = false;
+
     this.contentService.searchContent(contentSearchRequest, false, (responseData) => {
 
       this.zone.run(() => {
@@ -135,7 +145,7 @@ export class SearchPage {
         this.responseData = response;
         if (response.status && response.result) {
           this.searchContentResult = response.result.contentDataList;
-          this.filterIcon = "./assets/imgs/ic_action_filter.png";
+          this.updateFilterIcon();
         }
         this.showLoader = false;
       });
@@ -169,11 +179,19 @@ export class SearchPage {
       return
     }
 
+    this.isDialCodeSearch = true;
+
     this.showLoader = true;
+    this.contentType = [
+      "TextBook",
+      "TextBookUnit",
+    ]
 
     let contentSearchRequest: ContentSearchCriteria = {
       dialCodes: [this.dialCode],
-      mode: "collection"
+      mode: "collection",
+      facets: ["language", "grade", "domain", "contentType", "subject", "medium"],
+      contentTypes: this.contentType
     }
 
     this.contentService.searchContent(contentSearchRequest, false, (responseData) => {
@@ -182,6 +200,7 @@ export class SearchPage {
         this.responseData = response;
         if (response.status && response.result) {
           this.processDialCodeResult(response.result);
+          this.updateFilterIcon();
         }
 
         this.showLoader = false;
@@ -231,6 +250,26 @@ export class SearchPage {
 
     if (contentArray && contentArray.length == 1) {
       return;
+    }
+  }
+
+  private updateFilterIcon() {
+    let isFilterApplied = false;
+
+    this.responseData.result.filterCriteria.facetFilters.forEach(facet => {
+      if (facet.values && facet.values.length > 0) {
+        facet.values.forEach(value => {
+          if (value.apply) {
+            isFilterApplied = true;
+          }
+        })
+      }
+    });
+
+    if (isFilterApplied) {
+      this.filterIcon = "./assets/imgs/ic_action_filter_applied.png";
+    } else {
+      this.filterIcon = "./assets/imgs/ic_action_filter.png"
     }
   }
 
