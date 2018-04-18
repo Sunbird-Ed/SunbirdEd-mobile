@@ -18,7 +18,7 @@
 </ion-header>
 
 <ion-content overflow-scroll="true">
-  <div class="course-page-color">
+  <div *ngIf="!guestUser" class="course-page-color">
     <div class="item padding-11">
       <span float-start class="scroll-heading">
         {{ 'COURSES_IN_PROGRESS' | translate }}
@@ -55,4 +55,5 @@
     </div>
   </div>
   <!-- </div> -->
+  <sign-in-card *ngIf="guestUser"></sign-in-card>
 </ion-content>
