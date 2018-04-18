@@ -1,24 +1,25 @@
 page-filter {
-  .subtitle {
-    text-transform: uppercase;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 400;
-    background-color: #f1f1f1;
-  }
-
-  .filter-item {
-    width: auto;
-    margin: 16px !important;
-    background-color: #f1f1f1;
-    color: #b3b3b3;
-
-    ion-icon {
-      color: #b3b3b3;
+    .subtitle {
+        text-transform: uppercase;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        background-color: #f1f1f1;
     }
-  }
 
-  // .apply-button {
-  //   margin: 16px !important;
-  // }
+    .filter-item {
+        width: auto;
+        margin: 16px !important;
+        background-color: #f1f1f1;
+        color: #b3b3b3;
+
+        ion-icon {
+            color: #b3b3b3;
+        }
+    }
+
+    .apply-button {
+        margin: 16px !important;
+        width: 90%;
+    }
 }
