@@ -17,7 +17,7 @@ export class FilterPage {
   }
 
   openFilterOptions(facet) {
-    let popUp = this.popCtrl.create(FilterOptions, { facet: facet});
+    let popUp = this.popCtrl.create(FilterOptions, { facet: facet}, {cssClass: 'option-box'});
     popUp.present();
   }
 
