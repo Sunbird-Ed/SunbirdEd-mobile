@@ -1,7 +1,7 @@
 <ion-header>
   <ion-navbar>
-    <ion-input type="search" #searchInput placeholder="Search" [(ngModel)]="searchKeywords" (ionChange)="searchOnChange($event)" (keyup.enter)="handleSearch()"
-      clearInput></ion-input>
+    <ion-input type="search" #searchInput placeholder="Search" [(ngModel)]="searchKeywords" (ionChange)="searchOnChange($event)"
+      (keyup.enter)="handleSearch()" clearInput></ion-input>
     <ion-buttons end>
       <button ion-button (click)="showFilter()" *ngIf="filterIcon">
         <img [src]="filterIcon" class="tool-icon" float-end/>
@@ -54,11 +54,15 @@
   <ion-list *ngIf="searchContentResult && searchContentResult.length">
     <ion-item *ngFor="let content of searchContentResult" (click)="openContent(undefined, content)">
       <ion-avatar item-start>
-        <img src="{{content.appIcon}}" width="24px" height="24px">
+        <img-loader src="{{ content.appIcon }}" backgroundSize="cover" width="100%" height="100%" spinner="true" fallback="./assets/imgs/ic_logo.png"
+          fallbackAsPlaceholder="true" useImg></img-loader>
       </ion-avatar>
       <h2> {{ content.name }}</h2>
       <p>{{ content.contentType }} • {{ getReadableFileSize(content.size) }}</p>
-      <p><span *ngIf="content.gradeLevel && content.gradeLevel.length">{{ content.gradeLevel[0] }}</span> • <span *ngIf="content.language && content.language.length">{{ content.language[0] }}</span></p>
+      <p>
+        <span *ngIf="content.gradeLevel && content.gradeLevel.length">{{ content.gradeLevel[0] }}</span> •
+        <span *ngIf="content.language && content.language.length">{{ content.language[0] }}</span>
+      </p>
     </ion-item>
   </ion-list>
 

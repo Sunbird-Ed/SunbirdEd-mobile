@@ -379,5 +379,10 @@
     "YEAR_OF_PASSING": "Pass year",
     "YES": "Yes",
     "YOUR_PROFILE_IS": "Your profile is {{value}}% complete",
-    "YOUR_PROGRESS": "Your Progress: %s%"
+    "YOUR_PROGRESS": "Your Progress: %s%",
+    "CONTINUE_AS_TEACHER": "Continue as teacher",
+    "CONTINUE_AS_STUDENT": "Continue as student",
+    "SUBJECTS_CAPS": "SUBJECTS",
+    "GET_UNLIMITED_ACCESS": "Get Unlimited Access to Sunbird.",
+    "SIGNIN_TO_UNBLOCK_ALL_THE_BENFITS": "Sign in to unblock all the benefits that Sunbird has to offer."
   }
