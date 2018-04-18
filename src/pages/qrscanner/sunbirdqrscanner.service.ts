@@ -8,11 +8,11 @@ import { QRScannerAlert, QRAlertCallBack } from "./qrscanner_alert";
 export class SunbirdQRScanner {
 
   private readonly QR_SCANNER_TEXT = [
-    'QR_SCREEN.SCAN_QR_CODE',
-    'QR_SCREEN.SCAN_QR_INSTRUCTION',
-    'QR_SCREEN.UNKNOWN_QR',
-    'QR_SCREEN.CANCEL',
-    'QR_SCREEN.TRY_AGAIN',
+    'SCAN_QR_CODE',
+    'SCAN_QR_INSTRUCTION',
+    'UNKNOWN_QR',
+    'CANCEL',
+    'TRY_AGAIN',
   ]
 
   private mQRScannerText;
@@ -30,8 +30,8 @@ export class SunbirdQRScanner {
     });
   }
 
-  public startScanner(screenTitle: String = this.mQRScannerText['QR_SCREEN.SCAN_QR_CODE'],
-    displayText: String = this.mQRScannerText['QR_SCREEN.SCAN_QR_INSTRUCTION'],
+  public startScanner(screenTitle: String = this.mQRScannerText['SCAN_QR_CODE'],
+    displayText: String = this.mQRScannerText['SCAN_QR_INSTRUCTION'],
     displayTextColor: String = "#0000ff", callback: QRResultCallback) {
     (<any>window).qrScanner.startScanner(screenTitle, displayText, displayTextColor, (code) => {
       let results = code.split("/");
