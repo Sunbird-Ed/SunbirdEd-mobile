@@ -1,7 +1,6 @@
 import { Component, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { TelemetryService, SyncStat } from 'sunbird';
-import { Storage } from "@ionic/storage";
+import { TelemetryService, SyncStat, SharedPreferences } from 'sunbird';
 import { DataSyncType } from "./datasynctype.enum"
 import { TranslateService } from '@ngx-translate/core'
 
@@ -31,7 +30,7 @@ export class DatasyncPage {
     public navCtrl: NavController, 
     public navParams: NavParams, 
     private telemetryService: TelemetryService, 
-    private storage: Storage,
+    private preference: SharedPreferences,
     private translate: TranslateService) {
   }
 
@@ -43,32 +42,23 @@ export class DatasyncPage {
       this.lastSyncedTimeString = value;
 
       //check what was the last sync time
-      this.storage.get(KEY_DATA_SYNC_TIME)
-        .then(val => {
-          if (val === undefined || val === "" || val === null) {
-            return ""
-          } else {
-            return this.lastSyncedTimeString + " " + val
-          }
-        }).then(val => {
-          this.latestSync = val
-        })
+      this.preference.getString(KEY_DATA_SYNC_TIME, val => {
+        if (val === undefined || val === "" || val === null) {
+          this.latestSync = "";
+        } else {
+          this.latestSync = this.lastSyncedTimeString + " " + val
+        }
+      });
     });
 
     //check what sync option is selected
-    that.storage.get(KEY_DATA_SYNC_TYPE)
-      .then(val => {
-        if (val === undefined || val === "" || val === null) {
-          return DataSyncType.off
-        } else {
-          return val
-        }
-      })
-      .then(val => {
-        this.dataSyncType = val
-
-        console.error("default value - " + this.dataSyncType)
-      })
+    that.preference.getString(KEY_DATA_SYNC_TYPE, val => {
+      if (val === undefined || val === "" || val === null) {
+        this.dataSyncType = DataSyncType.off
+      } else {
+        this.dataSyncType = DataSyncType[val];
+      }
+    });
   }
 
   ionViewDidLoad() {
@@ -77,7 +67,7 @@ export class DatasyncPage {
 
   onSelected() {
     console.log("Value - " + this.dataSyncType)
-    this.storage.set(KEY_DATA_SYNC_TYPE, this.dataSyncType)
+    this.preference.putString(KEY_DATA_SYNC_TYPE, this.dataSyncType)
   }
 
   goBack() {
@@ -108,7 +98,7 @@ export class DatasyncPage {
         that.latestSync = this.lastSyncedTimeString + " " + dateAndTime
 
         //store the latest sync time
-        this.storage.set(KEY_DATA_SYNC_TIME, dateAndTime)
+        this.preference.putString(KEY_DATA_SYNC_TIME, dateAndTime)
 
         console.log("Telemetry Data Sync Time : " + this.latestSync);
       });

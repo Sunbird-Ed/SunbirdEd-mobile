@@ -6,7 +6,6 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClientModule, HttpClient } from "@angular/common/http";
-import { IonicStorageModule } from "@ionic/storage";
 import { HTTP } from "@ionic-native/http";
 import { File } from "@ionic-native/file";
 
@@ -18,7 +17,6 @@ import { AppVersion } from '@ionic-native/app-version';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { IonicImageLoader, ImageLoader, ImageLoaderConfig } from "ionic-image-loader";
 import { FilePath } from '@ionic-native/file-path';
-import { Network } from "@ionic-native/network"
 
 @NgModule({
   declarations: [
@@ -29,9 +27,6 @@ import { Network } from "@ionic-native/network"
     HttpClientModule,
     BrowserModule,
     FrameworkModule,
-    IonicStorageModule.forRoot({
-      name: "org.sunbird.framework.storage"
-    }),
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -63,12 +58,14 @@ import { Network } from "@ionic-native/network"
     ImageLoader,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
     FilePath,
-    Network
   ]
 })
 export class AppModule {
 
-  constructor(translate: TranslateService, private eventService: EventService, private events: Events, private imageConfig: ImageLoaderConfig) {
+  constructor(translate: TranslateService, 
+    private eventService: EventService, 
+    private events: Events, 
+    private imageConfig: ImageLoaderConfig) {
     translate.setDefaultLang('en');
 
     this.registerForEvent();
