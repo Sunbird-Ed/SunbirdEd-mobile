@@ -12,7 +12,6 @@ import { File } from "@ionic-native/file";
 import { PluginModules } from './module.service';
 import { TelemetryService, EventService, FrameworkModule, TabsPage } from 'sunbird';
 import { Globalization } from '@ionic-native/globalization';
-import { UniqueDeviceID } from '@ionic-native/unique-device-id';
 import { AppVersion } from '@ionic-native/app-version';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { IonicImageLoader, ImageLoader, ImageLoaderConfig } from "ionic-image-loader";
@@ -52,7 +51,6 @@ import { FilePath } from '@ionic-native/file-path';
     HTTP,
     File,
     Globalization,
-    UniqueDeviceID,
     AppVersion,
     SocialSharing,
     ImageLoader,
