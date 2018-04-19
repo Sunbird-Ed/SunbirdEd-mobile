@@ -190,13 +190,6 @@ export class ResourcesPage {
   ionViewDidLoad() {
     console.log('Resources component initialized...==>>');
     this.getPopularContent();
-    this.authService.getSessionData(res => {
-      if (res === undefined) {
-        this.guestUser = true;
-      } else {
-        this.guestUser = false;
-      }
-    });
   }
 
   ionViewWillEnter() {
@@ -204,6 +197,13 @@ export class ResourcesPage {
       this.getPopularContent();
     }
     this.setSavedContent();
+    this.authService.getSessionData((res: string) => {
+      if (res === undefined || res === "null") {
+        this.guestUser = true;
+      } else {
+        this.guestUser = false;
+      }
+    });
   }
 
   scanQRCode() {

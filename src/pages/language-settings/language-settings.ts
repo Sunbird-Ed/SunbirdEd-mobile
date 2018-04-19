@@ -1,13 +1,10 @@
-import { Component, NgZone } from '@angular/core';
+import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-
-import { ViewController } from 'ionic-angular/navigation/view-controller';
 import { TranslateService } from '@ngx-translate/core';
 import { Globalization } from '@ionic-native/globalization';
 import { Storage } from "@ionic/storage";
 import { TabsPage } from 'sunbird';
 
-import { SettingsPage } from '../settings/settings';
 import { OnboardingPage } from '../onboarding/onboarding';
 
 const KEY_SELECTED_LANGUAGE_CODE = "selected_language_code";
@@ -21,15 +18,14 @@ const KEY_USER_LOGIN_MODE = "user_login_mode";
 })
 export class LanguageSettingsPage {
 
-  languages: any[];
+  languages: any = [];
   language: any;
-  isFromSettings: Boolean = false;
+  isFromSettings: boolean = false;
   defaultDeviceLang: string = '';
 
-  constructor(public zone: NgZone,
+  constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
-    private viewCtrl: ViewController,
     public translateService: TranslateService,
     private globalization: Globalization,
     private storage: Storage
@@ -37,7 +33,7 @@ export class LanguageSettingsPage {
     this.init()
   }
 
-  private init() {
+  init(): void {
     this.languages = [
       {
         'label': 'English',
@@ -78,9 +74,9 @@ export class LanguageSettingsPage {
           let defaultLanguage = this.getDeviceLanguage();
           this.defaultDeviceLang = this.getDeviceLanguage();
           console.error("default value - " + defaultLanguage);
-          return defaultLanguage
+          return defaultLanguage;
         } else {
-          return val
+          return val;
         }
       })
       .then(val => {

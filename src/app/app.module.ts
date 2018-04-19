@@ -18,6 +18,7 @@ import { AppVersion } from '@ionic-native/app-version';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { IonicImageLoader, ImageLoader, ImageLoaderConfig } from "ionic-image-loader";
 import { FilePath } from '@ionic-native/file-path';
+import { Network } from "@ionic-native/network"
 
 @NgModule({
   declarations: [
@@ -62,7 +63,7 @@ import { FilePath } from '@ionic-native/file-path';
     ImageLoader,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
     FilePath,
-    { provide: ErrorHandler, useClass: IonicErrorHandler }
+    Network
   ]
 })
 export class AppModule {

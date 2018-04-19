@@ -10,7 +10,7 @@ import { Injectable } from "@angular/core";
 import { ContainerService } from "sunbird";
 import { GroupPage } from "../pages/group/group";
 import { CoursesPage } from "../pages/courses/courses";
-import { GuestProfilePage } from "../pages/guest-profile/guest-profile";
+import { GuestProfilePage } from "../pages/profile/guest-profile/guest-profile";
 import { HomePage } from "../pages/home/home";
 import { ProfilePage } from "../pages/profile/profile";
 import { ResourcesPage } from "../pages/resources/resources";
@@ -19,11 +19,10 @@ import { GroupPageModule } from "../pages/group/group.module";
 import { HomePageModule } from "../pages/home/home.module";
 import { ProfilePageModule } from "../pages/profile/profile.module";
 import { ResourcesPageModule } from "../pages/resources/resources.module";
-import { GuestProfilePageModule } from "../pages/guest-profile/guest-profile.module";
 import { OnboardingPageModule } from "../pages/onboarding/onboarding.module";
 import { LanguageSettingsPageModule } from "../pages/language-settings/language-settings.module";
 import { UserTypeSelectionPageModule } from "../pages/user-type-selection/user-type-selection.module";
-import { GuestEditProfileModule } from "../pages/guest-edit.profile/guest-edit-profile.module";
+
 import { QRScannerModule } from "../pages/qrscanner/qrscanner.module";
 import { SearchModule } from "../pages/search/search.module";
 
@@ -50,11 +49,9 @@ export const PluginModules = [CoursesPageModule,
     HomePageModule,
     ProfilePageModule,
     ResourcesPageModule,
-    GuestProfilePageModule,
     OnboardingPageModule,
     LanguageSettingsPageModule,
     UserTypeSelectionPageModule,
-    GuestEditProfileModule,
     CourseDetailPageModule,
     ChildContentDetailsPageModule,
     CourseBatchesPageModule,

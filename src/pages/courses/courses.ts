@@ -69,6 +69,8 @@ export class CoursesPage implements OnInit {
    */
   public ngZone: NgZone;
 
+  guestUser: boolean = false;
+
   /**
    * Default method of class CoursesPage
    *
@@ -155,11 +157,13 @@ export class CoursesPage implements OnInit {
    */
   getUserId(): void {
     this.authService.getSessionData((session) => {
-      if (session === undefined || session == null) {
-        console.log('session expired')
+      if (session === undefined || session == null || session === "null") {
+        console.log('session expired');
+        this.guestUser = true;
       } else {
         let sessionObj = JSON.parse(session);
         this.userId = sessionObj["userToken"];
+        this.guestUser = false;
         this.getEnrolledCourses();
       }
     });
