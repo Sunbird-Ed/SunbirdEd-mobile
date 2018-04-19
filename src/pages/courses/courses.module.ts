@@ -10,12 +10,19 @@ import { IonicImageLoader } from "ionic-image-loader";
 import { ComponentsModule } from "../../component/components.module";
 import { Ionic2RatingModule } from "ionic2-rating";
 import { DirectivesModule } from './../../directives/directives.module';
+import { CourseFilter } from './filters/course.filter';
+import { CourseFilterOptions } from './filters/options/filter.options';
 
 @NgModule({
   declarations: [
     CoursesPage,
+    CourseFilter,
+    CourseFilterOptions
   ],
-  entryComponents: [],
+  entryComponents: [
+    CourseFilter,
+    CourseFilterOptions
+  ],
   imports: [
     IonicPageModule.forChild(CoursesPage),
     TranslateModule.forChild(),
@@ -28,7 +35,7 @@ import { DirectivesModule } from './../../directives/directives.module';
   ],
   providers: [GenieSDKServiceProvider],
   exports: [
-    CoursesPage
+    CoursesPage,
   ]
 })
 export class CoursesPageModule { }

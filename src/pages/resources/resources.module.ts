@@ -3,10 +3,14 @@ import { IonicPageModule } from 'ionic-angular';
 import { ResourcesPage } from './resources';
 import { TranslateModule } from '@ngx-translate/core';
 import { ComponentsModule } from "../../component/components.module";
+import { ResourceFilter } from './filters/resource.filter';
+import { ResourceFilterOptions } from './filters/options/filter.options';
 
 @NgModule({
   declarations: [
     ResourcesPage,
+    ResourceFilter,
+    ResourceFilterOptions
   ],
   imports: [
     IonicPageModule.forChild(ResourcesPage),
@@ -15,6 +19,10 @@ import { ComponentsModule } from "../../component/components.module";
   ],
   exports: [
     ResourcesPage
+  ],
+  entryComponents: [
+    ResourceFilter,
+    ResourceFilterOptions
   ]
 })
 export class ResourcesPageModule {}
