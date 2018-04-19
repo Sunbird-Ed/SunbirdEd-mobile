@@ -8,6 +8,7 @@ import { CourseDetailPageModule } from './../pages/course-detail/course-detail.m
 
 import { Injectable } from "@angular/core";
 import { ContainerService } from "sunbird";
+
 import { GroupPage } from "../pages/group/group";
 import { CoursesPage } from "../pages/courses/courses";
 import { GuestProfilePage } from "../pages/profile/guest-profile/guest-profile";
@@ -22,29 +23,27 @@ import { ResourcesPageModule } from "../pages/resources/resources.module";
 import { OnboardingPageModule } from "../pages/onboarding/onboarding.module";
 import { LanguageSettingsPageModule } from "../pages/language-settings/language-settings.module";
 import { UserTypeSelectionPageModule } from "../pages/user-type-selection/user-type-selection.module";
-
 import { QRScannerModule } from "../pages/qrscanner/qrscanner.module";
 import { SearchModule } from "../pages/search/search.module";
 
 export function initUserTabs(container: ContainerService) {
     container.removeAllTabs();
-    //container.addTab({ root: HomePage, label: "HOME", icon: "home", index: 0, tabsHideOnSubPages: true });
+    //container.addTab({ root: HomePage, icon: "home", label: "HOME", index: 0, tabsHideOnSubPages: true });
     container.addTab({ root: CoursesPage, icon: "courses", label: "COURSES", index: 0, tabsHideOnSubPages: true });
-    container.addTab({ root: ResourcesPage, label: "LIBRARY", icon: "resources", index: 1, tabsHideOnSubPages: true });
-    container.addTab({ root: ProfilePage, label: "PROFILE", icon: "profile", index: 2, tabsHideOnSubPages: true });
+    container.addTab({ root: ResourcesPage, icon: "resources", label: "LIBRARY", index: 1, tabsHideOnSubPages: true });
+    container.addTab({ root: ProfilePage, icon: "profile", label: "PROFILE", index: 2, tabsHideOnSubPages: true });
 }
 
 export function initGuestTabs(container: ContainerService) {
     container.removeAllTabs();
-    //container.addTab({ root: HomePage, label: "HOME", icon: "home", index: 0, tabsHideOnSubPages: true });
+    //container.addTab({ root: HomePage, icon: "home", label: "HOME", index: 0, tabsHideOnSubPages: true });
     container.addTab({ root: CoursesPage, icon: "courses", label: "COURSES", index: 0, tabsHideOnSubPages: true });
-    container.addTab({ root: ResourcesPage, label: "LIBRARY", icon: "resources", index: 1, tabsHideOnSubPages: true });
-    container.addTab({ root: GuestProfilePage, label: "PROFILE", icon: "profile", index: 2, tabsHideOnSubPages: true })
-
-
+    container.addTab({ root: ResourcesPage, icon: "resources", label: "LIBRARY", index: 1, tabsHideOnSubPages: true });
+    container.addTab({ root: GuestProfilePage, icon: "profile", label: "PROFILE", index: 2, tabsHideOnSubPages: true });
 }
 
-export const PluginModules = [CoursesPageModule,
+export const PluginModules = [
+    CoursesPageModule,
     GroupPageModule,
     HomePageModule,
     ProfilePageModule,
@@ -60,4 +59,5 @@ export const PluginModules = [CoursesPageModule,
     SearchModule,
     CollectionDetailsPageModule,
     ContentDetailsPageModule,
-    ViewMoreActivityPageModule];
+    ViewMoreActivityPageModule
+];

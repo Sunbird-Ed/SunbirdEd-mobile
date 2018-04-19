@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavController, NavParams, ToastController } from 'ionic-angular';
 import * as _ from 'lodash';
 
-import { UserProfileService, AuthService } from 'sunbird';
+import { UserProfileService, AuthService, FrameworkService, CategoryRequest } from 'sunbird';
 import { ProfilePage } from './../profile';
 
 /* Interface for the Toast Object */
@@ -32,8 +32,43 @@ export class AdditionalInfoComponent {
   /**
    *  @todo Fetch languageList, SubjectList and gradeList from the framework
    */
-  languageList: Array<String> = ["Assamese", "Bengali", "English", "Gujarati", "Hindi", "Kannada", "Marathi", "Punjabi", "Tamil", "Telugu"];
-  subjectList: Array<String> = ["Assamese", "Bengali", "English", "Gujarati", "Hindi", "Kannada", "Marathi", "Punjabi", "Tamil", "Telugu"];
+  languageList: Array<String> = [
+    "Assamese",
+    "Bengali",
+    "English",
+    "Gujarati",
+    "Hindi",
+    "Kannada",
+    "Marathi",
+    "Punjabi",
+    "Tamil",
+    "Telugu",
+    "Urdu"
+  ];
+  subjectList: Array<String> = [
+    "Mathematics",
+    "English",
+    "Tamil",
+    "Telugu",
+    "Geography",
+    "Urdu",
+    "Kannada",
+    "Assamese",
+    "Physics",
+    "Chemistry",
+    "Hindi",
+    "Marathi",
+    "Environmental Studies",
+    "Political Science",
+    "Bengali",
+    "History",
+    "Gujarati",
+    "Biology",
+    "Oriya",
+    "Punjabi",
+    "Nepali",
+    "Malayalam"
+  ];
   gradeList: Array<String> = [
     "Kindergarten",
     "Grade 1",
@@ -47,7 +82,8 @@ export class AdditionalInfoComponent {
     "Grade 9",
     "Grade 10",
     "Grade 11",
-    "Grade 12"
+    "Grade 12",
+    "Other"
   ];
 
   options: toastOptions = {
@@ -62,7 +98,8 @@ export class AdditionalInfoComponent {
     public userProfileService: UserProfileService,
     private toastCtrl: ToastController,
     private authService: AuthService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private frameworkService: FrameworkService
   ) {
     /* Returns a html element for tab bar */
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
@@ -72,6 +109,8 @@ export class AdditionalInfoComponent {
     this.profile = this.navParams.get('profile');
     this.profileVisibility = this.navParams.get('profileVisibility');
 
+    this.getFrameworkData('subject', 'subjectList');
+    this.getFrameworkData('gradeLevel', 'gradeList');
     /* Initialize form with default values */
     this.additionalInfoForm = this.fb.group({
       firstName: [this.profile.firstName || '', Validators.required],
@@ -113,6 +152,26 @@ export class AdditionalInfoComponent {
         }
       });
     }
+  }
+
+  /**
+   * This will internally call framework API
+   * @param {string} currentCategory - request Parameter passing to the framework API
+   * @param {string} list - Local variable name to hold the list data
+   */
+  getFrameworkData(currentCategory: string, list: string): void {
+    let req: CategoryRequest = {
+      currentCategory: currentCategory
+    };
+
+    this.frameworkService.getCategoryData(req,
+      (res: any) => {
+        this[list] = _.map(JSON.parse(res), 'name');
+        console.log(list + " Category Response: " + this[list]);
+      },
+      (err: any) => {
+        console.log("Subject Category Response: ", JSON.parse(err));
+      });
   }
 
   ionViewWillEnter() {
