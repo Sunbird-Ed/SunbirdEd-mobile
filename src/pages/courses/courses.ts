@@ -1,11 +1,12 @@
 import { Component, OnInit, NgZone } from '@angular/core';
-import { NavController, Platform } from 'ionic-angular';
+import { NavController, Platform, PopoverController } from 'ionic-angular';
 import { IonicPage } from 'ionic-angular';
 import { CourseService, AuthService, EnrolledCoursesRequest, PageAssembleService, PageAssembleCriteria, QRScanner } from 'sunbird';
 import { CourseCard } from './../../component/card/course/course-card';
 import { DocumentDirection } from 'ionic-angular/platform/platform';
 import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
+import { CourseFilter } from './filters/course.filter';
 
 @IonicPage()
 @Component({
@@ -82,7 +83,7 @@ export class CoursesPage implements OnInit {
    * @param {NgZone} ngZone To bind data
    */
   constructor(navCtrl: NavController, courseService: CourseService, authService: AuthService, platform: Platform,
-    pageService: PageAssembleService, ngZone: NgZone, private qrScanner: SunbirdQRScanner) {
+    pageService: PageAssembleService, ngZone: NgZone, private qrScanner: SunbirdQRScanner, private popCtrl: PopoverController) {
     this.navCtrl = navCtrl;
     this.courseService = courseService;
     this.authService = authService;
@@ -212,5 +213,10 @@ export class CoursesPage implements OnInit {
     ];
 
     this.navCtrl.push(SearchPage, { contentType: contentType})
+  }
+
+  showFilter() {
+    let filter = this.popCtrl.create(CourseFilter, {}, {cssClass: 'course-filter'});
+    filter.present();
   }
 }

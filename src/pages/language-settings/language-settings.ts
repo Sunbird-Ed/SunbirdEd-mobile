@@ -2,15 +2,12 @@ import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Globalization } from '@ionic-native/globalization';
-import { Storage } from "@ionic/storage";
-import { TabsPage } from 'sunbird';
+import { TabsPage, SharedPreferences } from 'sunbird';
 
 import { OnboardingPage } from '../onboarding/onboarding';
 
 const KEY_SELECTED_LANGUAGE_CODE = "selected_language_code";
 const KEY_SELECTED_LANGUAGE = "selected_language";
-const KEY_USER_ONBOARDED = "user_onboarded";
-const KEY_USER_LOGIN_MODE = "user_login_mode";
 
 @Component({
   selector: 'page-language-settings',
@@ -28,7 +25,7 @@ export class LanguageSettingsPage {
     public navParams: NavParams,
     public translateService: TranslateService,
     private globalization: Globalization,
-    private storage: Storage
+    private preferences: SharedPreferences
   ) {
     this.init()
   }
@@ -67,22 +64,17 @@ export class LanguageSettingsPage {
       }
     ];
 
-    this.storage.get(KEY_SELECTED_LANGUAGE_CODE)
-      .then(val => {
-        if (val === undefined || val === "" || val === null) {
-          console.error("Language not set");
-          let defaultLanguage = this.getDeviceLanguage();
-          this.defaultDeviceLang = this.getDeviceLanguage();
-          console.error("default value - " + defaultLanguage);
-          return defaultLanguage;
-        } else {
-          return val;
-        }
-      })
-      .then(val => {
+    this.preferences.getString(KEY_SELECTED_LANGUAGE_CODE, val => {
+      if (val === undefined || val === "" || val === null) {
+        console.error("Language not set");
+        let defaultLanguage = this.getDeviceLanguage();
+        this.defaultDeviceLang = this.getDeviceLanguage();
+        console.error("default value - " + defaultLanguage);
+        this.language = defaultLanguage;
+      } else {
         this.language = val;
-        console.error("default value - " + this.language);
-      })
+      }
+    });
 
     this.isFromSettings = this.navParams.get('isFromSettings');
 
@@ -134,9 +126,9 @@ export class LanguageSettingsPage {
    */
   onLanguageSelected() {
     console.log("language selected : " + this.language);
-    let selectedLanguage = this.languages.find(i => i.code === this.language)
-    this.storage.set(KEY_SELECTED_LANGUAGE_CODE, selectedLanguage.code)
-    this.storage.set(KEY_SELECTED_LANGUAGE, selectedLanguage.label)
+    let selectedLanguage = this.languages.find(i => i.code === this.language);
+    this.preferences.putString(KEY_SELECTED_LANGUAGE_CODE, selectedLanguage.code);
+    this.preferences.putString(KEY_SELECTED_LANGUAGE, selectedLanguage.label);
   }
 
   continue() {

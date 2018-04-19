@@ -5,9 +5,9 @@ import { LanguageSettingsPage } from '../language-settings/language-settings';
 import { AboutUsPage } from './about-us/about-us';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { TranslateService } from '@ngx-translate/core';
-import { Storage } from "@ionic/storage";
 import { FilePath } from '@ionic-native/file-path';
 import { AppVersion } from "@ionic-native/app-version";
+import { SharedPreferences } from "sunbird";
 
 const KEY_SELECTED_LANGUAGE = "selected_language";
 const KEY_SUNBIRD_SUPPORT_FILE_PATH = "sunbird_support_file_path";
@@ -22,9 +22,12 @@ export class SettingsPage {
   fileUrl: string;
   shareAppLabel: string;
 
-  constructor(private navCtrl: NavController, private appVersion: AppVersion,
-    private socialSharing: SocialSharing, private storage: Storage,
-    private translate: TranslateService, private filePath: FilePath) {
+  constructor(private navCtrl: NavController, 
+    private appVersion: AppVersion,
+    private socialSharing: SocialSharing, 
+    private translate: TranslateService, 
+    private filePath: FilePath,
+    private preference: SharedPreferences) {
     
   }
 
@@ -40,7 +43,7 @@ export class SettingsPage {
   }
 
   ionViewDidEnter() {
-    this.storage.get(KEY_SELECTED_LANGUAGE).then(value => {
+    this.preference.getString(KEY_SELECTED_LANGUAGE, value => {
       this.selectedlanguage = this.chosenLanguageString + value;
     });
     this.translate.get('CURRENT_LANGUAGE').subscribe(
@@ -69,7 +72,7 @@ export class SettingsPage {
   }
 
   sendMessage() {
-    this.storage.get(KEY_SUNBIRD_SUPPORT_FILE_PATH).then(val => {
+    this.preference.getString(KEY_SUNBIRD_SUPPORT_FILE_PATH, val => {
       if (val === undefined || val === "" || val === null) {
         //do nothing
       } else {
@@ -83,7 +86,7 @@ export class SettingsPage {
           // Error!
         });
       }
-    })
+    });
 
   }
 

@@ -3,7 +3,6 @@ import { Platform, ModalController, AlertController, NavController, ViewControll
 import { StatusBar } from '@ionic-native/status-bar';
 import { TabsPage, AuthService, ContainerService, PermissionService } from "sunbird";
 import { initGuestTabs, initUserTabs } from './module.service';
-import { Storage } from "@ionic/storage";
 import { LanguageSettingsPage } from '../pages/language-settings/language-settings';
 import { ImageLoaderConfig } from 'ionic-image-loader';
 
@@ -27,7 +26,6 @@ export class MyApp {
     private alertCtrl: AlertController,
     private authService: AuthService,
     private containerService: ContainerService,
-    private storage: Storage,
     private permission: PermissionService,
     private imageLoaderConfig: ImageLoaderConfig) {
 

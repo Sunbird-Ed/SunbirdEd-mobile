@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-import { TabsPage, OAuthService } from 'sunbird';
+import { TabsPage, OAuthService, SharedPreferences } from 'sunbird';
 import { ViewController } from 'ionic-angular/navigation/view-controller';
 import { TranslateService } from '@ngx-translate/core';
-import { Storage } from "@ionic/storage";
 import { ProfileType, ProfileService } from 'sunbird'
 
 const selectedCardBorderColor = '#0080ff';
@@ -36,8 +35,8 @@ export class UserTypeSelectionPage {
 
   constructor(public navCtrl: NavController,
     private translator: TranslateService,
-    private storage: Storage,
-    private profileService: ProfileService
+    private profileService: ProfileService,
+    private preference: SharedPreferences
   ) {
     this.initData();
   }
@@ -65,7 +64,7 @@ export class UserTypeSelectionPage {
     this.translator.get('CONTINUE_AS_TEACHER').subscribe(value => {
       this.continueAs = value;
     })
-    this.storage.set(KEY_SELECTED_USER_TYPE, this.selectedUserType);
+    this.preference.putString(KEY_SELECTED_USER_TYPE, this.selectedUserType);
   }
 
   selectStudentCard() {
@@ -76,7 +75,7 @@ export class UserTypeSelectionPage {
     this.translator.get('CONTINUE_AS_STUDENT').subscribe(value => {
       this.continueAs = value;
     })
-    this.storage.set(KEY_SELECTED_USER_TYPE, this.selectedUserType)
+    this.preference.putString(KEY_SELECTED_USER_TYPE, this.selectedUserType)
   }
 
   continue() {

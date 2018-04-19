@@ -1,7 +1,7 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { NavController, Events, Platform } from 'ionic-angular';
 import { DocumentDirection } from 'ionic-angular/platform/platform';
-import { Storage } from "@ionic/storage";
+// import { Storage } from "@ionic/storage";
 
 import {
   CourseService,
@@ -77,7 +77,7 @@ export class HomePage implements OnInit {
     private ngZone: NgZone,
     private userProfileService: UserProfileService,
     private qrScanner: SunbirdQRScanner,
-    private storage: Storage
+    // private storage: Storage
   ) {
     this.getUserId();
     // // TODO: remove this hardcodec id before pushing the code
@@ -184,7 +184,7 @@ export class HomePage implements OnInit {
     this.refreshTenantData();
     (<any>window).supportfile.makeEntryInSunbirdSupportFile((result) => {
       console.log("Result - " + JSON.parse(result));
-      this.storage.set(KEY_SUNBIRD_SUPPORT_FILE_PATH, JSON.parse(result));
+      // this.storage.set(KEY_SUNBIRD_SUPPORT_FILE_PATH, JSON.parse(result));
     }, (error) => {
       console.log("Error - " + error);
     });
