@@ -1,7 +1,7 @@
 import { Component, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController } from 'ionic-angular';
 import { CourseBatchesPage } from './../course-batches/course-batches';
-import { ContentService } from 'sunbird';
+import { ContentService, FileUtil } from 'sunbird';
 import { NgModel } from '@angular/forms';
 import * as _ from 'lodash';
 
@@ -88,7 +88,7 @@ export class CourseDetailPage {
   public toastCtrl: ToastController;
 
   constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, zone: NgZone,
-    private events: Events, toastCtrl: ToastController) {
+    private events: Events, toastCtrl: ToastController, private fileUtil: FileUtil) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
@@ -198,7 +198,7 @@ export class CourseDetailPage {
       requestParams.push({
         isChildContent: isChild,
         // TODO - check with Anil for destination folder path
-        destinationFolder: '/storage/emulated/0/Android/data/org.sunbird.app/files',
+        destinationFolder: this.fileUtil.internalStoragePath(),
         contentId: value,
         correlationData: []
       })

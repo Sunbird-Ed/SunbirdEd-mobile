@@ -1,6 +1,6 @@
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Component, NgZone } from '@angular/core';
-import { ContentService } from 'sunbird';
+import { ContentService, FileUtil } from 'sunbird';
 
 /**
  * Generated class for the ChildContentDetailsPage page.
@@ -68,7 +68,11 @@ export class ChildContentDetailsPage {
    * @param zone 
    * @param navCtrl 
    */
-  constructor(navParams: NavParams, contentService: ContentService, zone: NgZone, navCtrl: NavController) {
+  constructor(navParams: NavParams, 
+    contentService: ContentService, 
+    zone: NgZone, 
+    navCtrl: NavController,
+    private fileUtil: FileUtil) {
     this.navParams = navParams;
     this.contentService = contentService;
     this.zone = zone;
@@ -119,7 +123,7 @@ export class ChildContentDetailsPage {
       contentImportMap: {
         [0]: {
           isChildContent: false,
-          destinationFolder: '/storage/emulated/0/Android/data/org.sunbird.app/files',
+          destinationFolder: this.fileUtil.internalStoragePath(),
           contentId: data.identifier,
           correlationData: []
         }
