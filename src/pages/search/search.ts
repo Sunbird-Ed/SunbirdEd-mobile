@@ -6,6 +6,7 @@ import { FilterPage } from "./filters/filter";
 import { CourseDetailPage } from "../course-detail/course-detail";
 import { CollectionDetailsPage } from "../collection-details/collection-details";
 import { ContentDetailsPage } from "../content-details/content-details";
+import { Network } from "@ionic-native/network";
 
 @IonicPage()
 @Component({
@@ -36,8 +37,15 @@ export class SearchPage {
 
   isDialCodeSearch = false;
 
-  constructor(private contentService: ContentService, private navParams: NavParams, private navCtrl: NavController, private zone: NgZone, private event: Events) {
+  constructor(private contentService: ContentService,
+    private navParams: NavParams,
+    private navCtrl: NavController,
+    private zone: NgZone,
+    private event: Events,
+    private network: Network) {
     this.init();
+
+    console.log("Network Type : " + this.network.type);
   }
 
   ionViewDidEnter() {
@@ -187,11 +195,18 @@ export class SearchPage {
       "TextBookUnit",
     ]
 
+    let isOfflineSearch = false;
+
+    if (this.network.type === 'none') {
+      isOfflineSearch = true;
+    }
+
     let contentSearchRequest: ContentSearchCriteria = {
       dialCodes: [this.dialCode],
       mode: "collection",
       facets: ["language", "grade", "domain", "contentType", "subject", "medium"],
-      contentTypes: this.contentType
+      contentTypes: this.contentType,
+      offlineSearch: isOfflineSearch
     }
 
     this.contentService.searchContent(contentSearchRequest, false, (responseData) => {
@@ -255,6 +270,10 @@ export class SearchPage {
 
   private updateFilterIcon() {
     let isFilterApplied = false;
+
+    if (!this.responseData.result.filterCriteria) {
+      return;
+    }
 
     this.responseData.result.filterCriteria.facetFilters.forEach(facet => {
       if (facet.values && facet.values.length > 0) {

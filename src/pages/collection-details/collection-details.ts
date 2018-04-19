@@ -1,6 +1,6 @@
 import { Component, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController } from 'ionic-angular';
-import { ContentService } from 'sunbird';
+import { ContentService, FileUtil } from 'sunbird';
 import { NgModel } from '@angular/forms';
 import * as _ from 'lodash';
 import { ContentDetailsPage } from '../content-details/content-details';
@@ -152,7 +152,8 @@ export class CollectionDetailsPage {
   public loadingCtrl: LoadingController;
 
   constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, zone: NgZone,
-    private events: Events, toastCtrl: ToastController, loadingCtrl: LoadingController, public popoverCtrl: PopoverController) {
+    private events: Events, toastCtrl: ToastController, loadingCtrl: LoadingController, 
+    public popoverCtrl: PopoverController, private fileUtil: FileUtil) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
@@ -248,7 +249,7 @@ export class CollectionDetailsPage {
       requestParams.push({
         isChildContent: isChild,
         // TODO - check with Anil for destination folder path
-        destinationFolder: '/storage/emulated/0/Android/data/org.sunbird.app/files',
+        destinationFolder: this.fileUtil.internalStoragePath(),
         contentId: value,
         correlationData: []
       })
