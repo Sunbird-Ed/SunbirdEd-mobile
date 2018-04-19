@@ -9,19 +9,19 @@ import { initGuestTabs, initUserTabs } from '../../app/module.service';
   selector: 'sign-in-card',
   template: `<ion-card>
                   <ion-card-header>
-                    {{'GET_UNLIMITED_ACCESS' | translate}}
+                    {{ 'OVERLAY_LABEL_COMMON' | translate:{'%s': sunbird} }}
                   </ion-card-header>
                   <ion-card-content>
-                    {{'SIGNIN_TO_UNBLOCK_ALL_THE_BENFITS' | translate}}
+                    {{ 'OVERLAY_INFO_TEXT_COMMON' | translate:{'%s': sunbird} }}
                     <br />
                     <br />
                     <button ion-button full (click)="singIn()">{{ 'SIGN_IN' | translate }}</button>
                   </ion-card-content>
-                </ion-card>`
+            </ion-card>`
 })
 export class SignInCardComponent {
 
-  text: string;
+  sunbird: string = "Sunbird";
 
   constructor(public translate: TranslateService,
     public navCtrl: NavController,
@@ -30,8 +30,6 @@ export class SignInCardComponent {
     private userProfileService: UserProfileService,
     private authService: AuthService,
     private loadingCtrl: LoadingController) {
-    console.log('Hello SignInCardComponent Component');
-    this.text = 'Hello World';
   }
 
   singIn() {
