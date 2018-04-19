@@ -115,9 +115,6 @@ export class FormExperience {
 
     let req: any = {
       userId: this.profile.userId,
-      firstName: this.profile.firstName,
-      language: this.profile.language,
-      phone: '8698645680',
       jobProfile: [userJobProfile]
     };
 

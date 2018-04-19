@@ -113,11 +113,11 @@ export class AdditionalInfoComponent {
     this.getFrameworkData('gradeLevel', 'gradeList');
     /* Initialize form with default values */
     this.additionalInfoForm = this.fb.group({
-      firstName: [this.profile.firstName || '', Validators.required],
+      firstName: [this.profile.firstName || ''],
       lastName: [this.profile.lastName || ''],
-      language: [this.profile.language || [], Validators.required],
+      language: [this.profile.language || []],
       email: [this.profile.email || ''],
-      phone: ['', [Validators.required, Validators.minLength(10)]], // Need to assign phone value
+      phone: ['', [Validators.minLength(10)]], // Need to assign phone value
       profileSummary: [this.profile.profileSummary || ''],
       subject: [this.profile.subject || []],
       gender: [this.profile.gender || ''],

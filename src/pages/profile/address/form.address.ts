@@ -107,9 +107,6 @@ export class FormAddress {
       // TODO: Need to Remove hard coded Mobile Number
       let req: any = {
         userId: this.profile.userId,
-        firstName: this.profile.firstName,
-        language: this.profile.language,
-        phone: '8698645680',
         address: [userAddress]
       };
 
