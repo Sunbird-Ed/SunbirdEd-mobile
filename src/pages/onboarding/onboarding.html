@@ -6,7 +6,7 @@
   <ion-slides pager="true" centeredSlides="true" speed="50" class="ion-slides">
     <ion-slide *ngFor="let slide of slides">
       <ion-row>
-        <ion-col>
+        <ion-col class="title">
           {{ slide.title | translate }}
         </ion-col>
       </ion-row>
@@ -16,8 +16,8 @@
         </ion-col>
       </ion-row>
       <ion-row>
-        <ion-col>
-          {{ slide.desc | translate }}
+        <ion-col class="description">
+          {{ slide.desc | translate:{'%s': sunbird} }}
         </ion-col>
       </ion-row>
     </ion-slide>

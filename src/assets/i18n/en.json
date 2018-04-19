@@ -227,7 +227,7 @@
     "OFF": "Off",
     "ONBOARDING_CARDS_HEADING": "Help us get you content thats relevant to you.",
     "ONBOARD_SLIDE_DESC_1": "Browse and consume content from our growing collection of free courses and resources.",
-    "ONBOARD_SLIDE_DESC_2": "Scan QR Codes using the %s app to quickly get access to related content and resources.",
+    "ONBOARD_SLIDE_DESC_2": "Scan QR Codes using the {{%s}} app to quickly get access to related content and resources.",
     "ONBOARD_SLIDE_DESC_3": "Join communities and speak to peers and experts. Learn and share your knowledge.",
     "ONBOARD_SLIDE_TITLE_1": "Get Content On-the-Go",
     "ONBOARD_SLIDE_TITLE_2": "Scan QR Codes for Quick Access",
@@ -326,7 +326,7 @@
     "STRENGTHEN_YOUR_PROFILE": "Strengthen your profile",
     "STRUCTURE": "Structure",
     "STUDENT_ROLE": "Student",
-    "STUDENT_ROLE_DESC": "1. Browse through resources",
+    "STUDENT_ROLE_DESC": "Browse through resources",
     "SUBJECT": "SUBJECT",
     "SUBJECTS": "Subjects",
     "SUBJECT_OPTION_TEXT": "SELECT SUBJECT",
@@ -384,5 +384,8 @@
     "CONTINUE_AS_STUDENT": "Continue as student",
     "SUBJECTS_CAPS": "SUBJECTS",
     "GET_UNLIMITED_ACCESS": "Get Unlimited Access to Sunbird.",
-    "SIGNIN_TO_UNBLOCK_ALL_THE_BENFITS": "Sign in to unblock all the benefits that Sunbird has to offer."
+    "SIGNIN_TO_UNBLOCK_ALL_THE_BENFITS": "Sign in to unblock all the benefits that Sunbird has to offer.",
+    "TEACHER_ROLE_DESC1": "Browse through courses",
+    "TEACHER_ROLE_DESC2": "Find relevant resources",
+    "TEACHER_ROLE_DESC3": "Browse through groups"
   }
