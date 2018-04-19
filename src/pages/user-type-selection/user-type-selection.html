@@ -4,7 +4,7 @@
 
 <ion-content padding>
 
-  <h6 text-center>You are a</h6>
+  <h6 text-center>{{ 'ROLE_SELECTOR_QUERY' | translate }}</h6>
 
   <!-- Teacher card -->
   <ion-card (click)="selectTeacherCard()" class="card-related-style" [ngStyle]="{'border-color': teacherCardBorderColor}">
@@ -13,11 +13,11 @@
         <img [src]="userImageUri" />
       </ion-avatar>
       <ion-card-content>
-        <h4 class="card-title">{{'TEACHER' | translate}}</h4>
-        <ol>
-          <li>Browse through courses</li>
-          <li>Find relevant resources</li>
-          <li>Browse through groups</li>
+        <h4 class="card-title">{{ 'TEACHER_ROLE' | translate }}</h4>
+        <ol class="description">
+          <li>{{ 'TEACHER_ROLE_DESC1' | translate }}</li>
+          <li>{{ 'TEACHER_ROLE_DESC2' | translate }}</li>
+          <li>{{ 'TEACHER_ROLE_DESC3' | translate }}</li>
         </ol>
       </ion-card-content>
     </ion-item>
@@ -30,9 +30,9 @@
         <img [src]="userImageUri" />
       </ion-avatar>
       <ion-card-content>
-        <h4 class="card-title">Student</h4>
-        <ol>
-          <li>Browse through resources</li>
+        <h4 class="card-title">{{ 'STUDENT_ROLE' | translate }}</h4>
+        <ol class="description">
+          <li>{{ 'STUDENT_ROLE_DESC' | translate }}</li>
         </ol>
       </ion-card-content>
     </ion-item>
@@ -40,7 +40,7 @@
 </ion-content>
 
 <ion-footer padding no-border>
-  <button *ngIf="userTypeSelected" class="continue-related-style" ion-button block ion-end (click)="continue()">
+  <button *ngIf="userTypeSelected" class="continue-related-style arrow-icon" ion-button block icon-end (click)="continue()">
     {{continueAs}}
     <ion-icon name='arrow-round-forward'></ion-icon>
   </button>
