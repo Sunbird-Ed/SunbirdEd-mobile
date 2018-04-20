@@ -4,7 +4,7 @@
         <ion-title>
             <!-- <ion-icon md="md-share" float-right></ion-icon> -->
         </ion-title>
-        <ion-buttons end>
+        <ion-buttons end *ngIf="!isDepthChild">
             <button ion-button icon-only>
                 <ion-icon md="md-share" float-right></ion-icon>
             </button>

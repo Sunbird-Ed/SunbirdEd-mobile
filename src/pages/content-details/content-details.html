@@ -2,8 +2,16 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      <ion-icon md="md-share" float-right></ion-icon>
+      <!-- <ion-icon md="md-share" float-right></ion-icon> -->
     </ion-title>
+    <ion-buttons end>
+        <button ion-button icon-only>
+            <ion-icon md="md-share" float-right></ion-icon>
+        </button>
+        <button *ngIf="content && content.downloadable" ion-button icon-only (click)="showOverflowMenu($event)">
+            <ion-icon md="md-more" float-end></ion-icon>
+        </button>
+    </ion-buttons>
   </ion-navbar>
 </ion-header>
 <!-- Page body -->
@@ -86,12 +94,12 @@
   </div>
 </ion-content>
 <!-- Page footer -->
-<ion-footer>
+<ion-footer *ngIf="content">
   <ion-toolbar padding>
       <button ion-button block outline *ngIf="isDownloadStarted" (click)="cancelDownload()">CANCEL DOWNLOAD</button>
-      <button ion-button block *ngIf="showDownloadBtn" (click)="downloadContent()">
+      <button ion-button block *ngIf="!content.downloadable" (click)="downloadContent()">
         {{ isDownloadStarted ? downloadingText + downloadProgress : 'DOWNLOAD' }}
       </button>
-      <button ion-button block *ngIf="playContentBtn" (click)="playContent()">PLAY</button>
+      <button ion-button block *ngIf="content.downloadable" (click)="playContent()">PLAY</button>
   </ion-toolbar>
 </ion-footer>

@@ -17,10 +17,10 @@
     <div class="about-section">
       <h6 class="padding-10 background-gray">{{ 'ABOUT' | translate }}</h6>
       <p *ngIf="!showMoreFlag">
-        {{ (contentDetail.description.length > 6) ? (contentDetail.description | slice:0:6) + '...' : (contentDetail.description)
+        {{ (contentDetail.description && contentDetail.description.length > 6) ? (contentDetail.description | slice:0:6) + '...' : (contentDetail.description)
         }} </p>
       <div class="course-details" *ngIf="showMoreFlag">
-        <p *ngIf="showMoreFlag && contentDetail.description.length > 6">
+        <p *ngIf="showMoreFlag && contentDetail.description && contentDetail.description.length > 6">
           {{ contentDetail.description }}
         </p>
         <div *ngIf="contentDetail.gradeLevel && contentDetail.gradeLevel.length" margin-top>
@@ -76,8 +76,8 @@
 <!-- Page footer -->
 <ion-footer>
   <ion-toolbar padding>
-    <button ion-button block *ngIf="cardData && !cardData.lastReadContentId">START</button>
-    <button ion-button block *ngIf="showResumeBtn" (click)="resumeContent(cardData.lastReadContentId)">RESUME</button>
+    <button ion-button block *ngIf="cardData && !cardData.lastReadContentId" (click)="startContent()">START</button>
+    <button ion-button block *ngIf="showResumeBtn" (click)="resumeContent(cardData.lastReadContentId)">RESUME COURSE</button>
     <button ion-button block outline *ngIf="downloadIdentifiers && downloadIdentifiers.length && !showDownloadProgress"
       (click)="importContent(downloadIdentifiers, true)">DOWNLOAD ALL ({{ downloadContentsSize }})</button>
     <button *ngIf="showDownloadProgress && !isDownloadComplete" ion-button block outline [style.width]="downloadProgress" [ngClass]="(currentCount < 100) ? 'progress-inner-primary' : 'progress-inner-secondary'">DOWNLOADING... {{ currentCount }} of {{ totalDownload }}</button>
