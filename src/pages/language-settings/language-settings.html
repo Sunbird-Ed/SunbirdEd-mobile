@@ -1,11 +1,11 @@
 <ion-content padding>
 
-  <ion-label class="ion-label" text-center padding>{{ 'CHOOSE_LANGUAGE' | translate }}</ion-label>
+  <ion-label class="font-size-17" text-center padding>{{ 'CHOOSE_LANGUAGE' | translate }}</ion-label>
 
-  <ion-list mode="ios" radio-group [(ngModel)]="language" (ionChange)="onLanguageSelected()">
+  <ion-list inset mode="ios" radio-group [(ngModel)]="language" (ionChange)="onLanguageSelected()">
     <ion-item mode="ios" *ngFor="let language of languages" class="grey-bg">
       <ion-label>{{ language?.label | translate }}
-        <span *ngIf="defaultDeviceLang == language?.code">(Preffered Language)</span>
+        <span class="grey-color" *ngIf="defaultDeviceLang === language?.code">&nbsp;&nbsp;({{ 'HINT_LANGUAGE' | translate }})</span>
       </ion-label>
       <ion-radio mode="ios" [value]="language?.code"></ion-radio>
     </ion-item>
@@ -13,7 +13,7 @@
 </ion-content>
 
 <ion-footer padding no-border>
-  <button ion-button icon-end block (click)="continue()">{{ 'CONTINUE' | translate }}
+  <button class="arrow-icon" ion-button icon-end block (click)="continue()">{{ 'CONTINUE' | translate }}
     <ion-icon name="arrow-round-forward"></ion-icon>
   </button>
 </ion-footer>

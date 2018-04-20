@@ -3,8 +3,8 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { AboutAppPage } from '../about-app/about-app';
 import { TermsofservicePage } from '../termsofservice/termsofservice';
 import { PrivacypolicyPage } from '../privacypolicy/privacypolicy';
-import { UniqueDeviceID } from '@ionic-native/unique-device-id';
 import { AppVersion } from '@ionic-native/app-version';
+import { DeviceInfoService } from 'sunbird';
 
 /**
  * Generated class for the AboutUsPage page.
@@ -21,20 +21,24 @@ export class AboutUsPage {
   deviceId: String;
   version: String;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private uniqueDeviceID: UniqueDeviceID, private appVersion: AppVersion) {
+  constructor(public navCtrl: NavController,
+    public navParams: NavParams,
+    private deviceInfoService: DeviceInfoService,
+    private appVersion: AppVersion) {
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad AboutUsPage');
     this.version = "app version will be shown here"
 
-    this.uniqueDeviceID.get()
-      .then((uuid: any) => {
-        console.log(uuid);
-        this.deviceId = uuid
-      })
-      .catch((error: any) => console.log(error));
-
+    this.deviceInfoService.getDeviceID(
+      (res: any) => {
+        console.log("Device Id: ", res);
+        this.deviceId = res;
+      },
+      (err: any) => {
+        console.log("Device Id: ", JSON.parse(err));
+      });
 
     this.appVersion.getAppName()
       .then((appName: any) => {

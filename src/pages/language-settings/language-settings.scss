@@ -3,4 +3,29 @@ page-language-settings {
     .item-ios {
         background-color: #fbfbfb;
     }
+    .button-inner {
+        justify-content: flex-end;
+    }
+    .arrow-icon.button-inner .ion-icon {
+        margin-right: 2vw;
+        margin-left: 38vw;
+    }
+    ion-list[inset] {
+        margin: 0 !important;
+    }
+    [icon-end] ion-icon {
+        margin-left: 28vw;
+    }
+    /* Change height of the ion-item*/
+    .item-block {
+        min-height: 5.5 rem !important;
+    }
+    .grey-color {
+        color: darkgrey;
+        font-style: italic;
+        font-size: 1.3rem;
+    }
+}
+.font-size-17 {
+    font-size: 17px !important;
 }

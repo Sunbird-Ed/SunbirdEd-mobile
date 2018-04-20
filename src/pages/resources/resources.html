@@ -17,7 +17,7 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content overflow-scroll="true" class="custom-ion-content">
+<ion-content overflow-scroll="true" class="course-scroll-holder">
   <!-- onBoardingSLides starts here -->
   <div *ngIf="guestUser">
     <p class="onbording-card-header-text">{{ 'ONBOARDING_SLIDES_HEADER_TEXT' | translate }}</p>
@@ -25,22 +25,24 @@
     <ion-slides (ionSlideDrag)="onSlideDrag()" class="onbording-slides" pager=true centeredSlides=false speed=50 padding-left
       padding-right>
 
-      <ion-slide *ngFor="let slide of onBoardingSlides; let i=index">
-        <div class="onbording-slide-div">
-          <ion-row>
-            <p class="onbording-slide-title">
-              {{ slide?.title}}
-            </p>
-          </ion-row>
+    <ion-slide *ngFor="let slide of onBoardingSlides; let i=index">
+      <div class="onbording-slide-div">
+        <ion-row>
+          <p class="onbording-slide-title">
+            {{slide.title}}
+          </p>
+        </ion-row>
 
-          <ion-footer class="onbording-slide-footer" no-shadow no-border>
-            <ion-select [(ngModel)]="selectedOptions[i]" class="board-select" (ionChange)="handleOnBoardingOptionSelected(i)" multiple="true"
-              interface="popover" [selectOptions]="{ subTitle: slide?.title}" placeholder="{{slide?.desc}}" bold no-padding>
-              <ion-option *ngFor="let o of slide?.options" [value]="o?.value">{{o?.text}}</ion-option>
-            </ion-select>
-          </ion-footer>
-        </div>
-      </ion-slide>
+        <ion-footer class="onbording-slide-footer" no-shadow no-border>
+          <div *ngIf="!selectedValue[i]" (click)="openFilterOptions(slide, i)">{{slide.desc}}</div>
+          <div (click)="openFilterOptions(slide, i)" class="row" >
+          <div  class="ellipsis" style="display:inline">
+            {{selectedValue[i]}}</div> &nbsp;
+             <ion-icon *ngIf="selectedValue[i]" style="display:inline" name="md-create" color="primary"></ion-icon>
+          </div>
+        </ion-footer>
+      </div>
+    </ion-slide>
 
     </ion-slides>
   </div>
@@ -50,7 +52,7 @@
   <div [ngClass]="{'empty-saved-resources' : localResources && localResources.length === 0}">
     <div class="item padding-11">
       <span float-start class="scroll-heading">{{ 'SAVED_RESOURCES' | translate }}</span>
-      <span float-end class="view-all-link" *ngIf="localResources && localResources.length > 0 && !showLoader">
+      <span float-end class="view-all-link" *ngIf="localResources && localResources.length > 0 && !showLoader" (click)="viewAllSavedResources();">
         <a>{{ 'VIEW_ALL' | translate }}</a>
       </span>
     </div>
@@ -75,7 +77,7 @@
       <div class="course-scroll-holder">
         <div class="item padding-11">
           <span float-start class="scroll-heading">{{items?.display?.name?.en}}</span>
-          <span float-end class="view-all-link" (click)="searchAllContent(items?.searchQuery)">
+          <span float-end class="view-all-link" (click)="searchAllContent(items?.searchQuery, items?.display?.name?.en)">
             <a>{{ 'VIEW_ALL' | translate }}</a>
           </span>
         </div>

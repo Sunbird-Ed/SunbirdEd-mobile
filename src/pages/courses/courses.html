@@ -18,12 +18,13 @@
 </ion-header>
 
 <ion-content overflow-scroll="true">
-  <div *ngIf="!guestUser" class="course-page-color">
+  <div *ngIf="!guestUser" class="course-page-color" [ngClass]="{'height-130': showLoader}">
     <div class="item padding-11">
       <span float-start class="scroll-heading">
         {{ 'COURSES_IN_PROGRESS' | translate }}
       </span>
-      <span float-end class="view-all-link" *ngIf="enrolledCourse && enrolledCourse.length">
+      <span float-end class="view-all-link" *ngIf="enrolledCourse && enrolledCourse.length"
+      (click)="viewMoreEnrolledCourses()">
         <a>{{ 'VIEW_ALL' | translate }}</a>
       </span>
     </div>
@@ -41,7 +42,7 @@
       <div class="course-scroll-holder">
         <div class="item padding-11">
           <span float-start class="scroll-heading">{{items.name}}</span>
-          <span float-end class="view-all-link">
+          <span float-end class="view-all-link" (click)="viewAllCourses(items.searchQuery, items.name)">
             <a>{{ 'VIEW_ALL' | translate }}</a>
           </span>
         </div>
