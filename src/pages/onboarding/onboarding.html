@@ -1,48 +1,38 @@
-<!--
-  Generated template for the OnboardingPage page.
-
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
 <ion-header>
-  <ion-toolbar>
-    <ion-buttons left>
-      <button ion-button icon-only (click)="goBack()">
-        <ion-icon name="arrow-back"></ion-icon>
-      </button>
-    </ion-buttons>
-  </ion-toolbar>
+  <ion-navbar></ion-navbar>
 </ion-header>
 
-<ion-content padding-left padding-right padding-bottom>
-  <ion-slides pager=true centeredSlides=true speed=50 class="ion-slides" padding-left padding-right>
+<ion-content padding>
+  <ion-slides pager="true" centeredSlides="true" speed="50" class="ion-slides">
     <ion-slide *ngFor="let slide of slides">
       <ion-row>
-        <ion-col>
+        <ion-col class="title">
           {{ slide.title | translate }}
         </ion-col>
       </ion-row>
-      <ion-row padding-left padding-right>
+      <ion-row>
         <ion-col>
           <img class="item-img" [src]="slide.imageUri" />
         </ion-col>
       </ion-row>
       <ion-row>
-        <ion-col>
-            {{ slide.desc | translate }}
+        <ion-col class="description">
+          {{ slide.desc | translate:{'%s': sunbird} }}
         </ion-col>
       </ion-row>
     </ion-slide>
   </ion-slides>
+</ion-content>
 
-  <ion-row padding-horizontal>
-    <button class="action-button" ion-button (click)="singin()">
+<ion-footer padding no-border>
+  <ion-row>
+    <button block ion-button (click)="singIn()">
       {{ 'SIGN_IN' | translate }}
     </button>
   </ion-row>
-  <ion-row padding-horizontal padding-bottom style="padding-top:8px;">
-    <button class="action-button" ion-button outline (click)="browseAsGuest()">
+  <ion-row style="padding-top:8px;">
+    <button block ion-button outline (click)="browseAsGuest()">
       {{ 'BROWSE_AS_GUEST' | translate }}
     </button>
   </ion-row>
-</ion-content>
+</ion-footer>

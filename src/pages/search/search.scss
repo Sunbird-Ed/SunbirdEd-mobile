@@ -1,5 +1,11 @@
 page-search {
 
+  text-overflow: ellipsis;
+
+  .text-input-clear-icon {
+    display: block !important;
+  }
+
   .collection-list {
     margin-bottom: 0px !important;
   }
@@ -23,6 +29,11 @@ page-search {
     }
   }
 
+  .divider {
+    width: 100%;
+    height: 4px;
+    background-color: #f3f3f3;
+  }
 
 
   ion-item {

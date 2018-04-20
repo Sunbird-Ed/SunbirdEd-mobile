@@ -119,16 +119,8 @@ page-resources {
        color:#488aff !important;
       }
 
-      ion-aleart {
-        margin: 0;
-        width: 100%;
-        height: auto;
-        box-shadow: unset;
-        position: fixed;
-        left: 0 !important;
-        top: unset !important;
-        bottom: 0;
-        transform-origin: bottom -100% !important;
-        transform: translateY(0) !important;
+      /* To give some space between the icons in the header */
+      .tool-icon {
+        margin: 10px 2px !important;
       }
 }

@@ -42,4 +42,9 @@ page-courses {
     display: block;
     margin: auto;
   }
+
+/* To give some space between the icons in the header */
+  .tool-icon {
+    margin: 10px 2px !important;
+  }
 }

@@ -1,4 +1,3 @@
-
 import { NgModule } from '@angular/core';
 import { DatePipe } from "@angular/common";
 import { IonicPageModule } from 'ionic-angular';
@@ -11,6 +10,8 @@ import { ExpansionPanelsModule } from 'ng2-expansion-panels';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 
 import { ProfilePage } from './profile';
+import { GuestProfilePage } from './guest-profile/guest-profile';
+import { GuestEditProfilePage } from './guest-edit.profile/guest-edit.profile';
 import { FormEducation } from './education/form.education';
 import { FormAddress } from './address/form.address';
 import { AdditionalInfoComponent } from './additional-info/additional-info';
@@ -20,7 +21,7 @@ import { UsersnClassesComponent } from './usersnclasses/usersnclass.component';
 import { UsersComponent } from './usersnclasses/users/users.component';
 import { ClassesComponent } from './usersnclasses/classes/classes.component';
 import { OverflowMenuComponent } from './overflowmenu/menu.overflow.component';
-import { ContainerService, CameraService } from 'sunbird';
+import { ContainerService } from 'sunbird';
 import { SettingsPageModule } from '../settings/settings.module';
 import { ActionMenuComponent } from './actionmenu/menu.action.component';
 import { AddUserComponent } from './usersnclasses/users/adduser.component';
@@ -35,6 +36,8 @@ import { ImagePicker } from './imagepicker/imagepicker';
 @NgModule({
   declarations: [
     ProfilePage,
+    GuestProfilePage,
+    GuestEditProfilePage,
     FormEducation,
     FormAddress,
     AdditionalInfoComponent,
@@ -51,10 +54,12 @@ import { ImagePicker } from './imagepicker/imagepicker';
     ImagePicker
   ],
   entryComponents: [
-    ProfilePage, 
-    FormEducation, 
+    ProfilePage,
+    GuestProfilePage,
+    GuestEditProfilePage,
+    FormEducation,
     FormAddress,
-    AdditionalInfoComponent, 
+    AdditionalInfoComponent,
     FormExperience,
     SkillTagsComponent,
     OverflowMenuComponent,
@@ -70,7 +75,7 @@ import { ImagePicker } from './imagepicker/imagepicker';
   imports: [
     IonicPageModule.forChild(ProfilePage),
     SuperTabsModule.forRoot(),
-    SettingsPageModule, 
+    SettingsPageModule,
     TranslateModule.forChild(),
     IonicImageLoader,
     TagInputModule,
@@ -81,6 +86,8 @@ import { ImagePicker } from './imagepicker/imagepicker';
   ],
   exports: [
     ProfilePage,
+    GuestProfilePage,
+    GuestEditProfilePage,
     FormAddress,
     AdditionalInfoComponent,
     FormEducation,
@@ -91,7 +98,6 @@ import { ImagePicker } from './imagepicker/imagepicker';
   providers: [
     ContainerService,
     Camera,
-    CameraService,
     DatePipe,
     InAppBrowser
   ]

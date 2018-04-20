@@ -25,7 +25,6 @@ export interface toastOptions {
  * This contains form for the Experience where user can Add new job exprience Entry or can edit/delete previous one
  */
 export class FormExperience {
-  tabBarElement: any;
   isNewForm: boolean = true;
   jobInfo: any = {};
   experienceForm: FormGroup;
@@ -52,9 +51,6 @@ export class FormExperience {
     private toastCtrl: ToastController
   ) {
 
-    /* Returns a html element for tab bar*/
-    this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
-
     /* Receive data from other component */
     this.isNewForm = this.navParams.get('addForm');
     this.jobInfo = this.navParams.get('jobInfo') || {};
@@ -72,14 +68,6 @@ export class FormExperience {
     });
 
     if (this.jobInfo.isCurrentJob) this.currentJob = true;
-  }
-
-  ionViewWillEnter() {
-    this.tabBarElement.style.display = 'none';
-  }
-
-  ionViewWillLeave() {
-    this.tabBarElement.style.display = 'flex';
   }
 
   changeJoiningDate() {
@@ -115,9 +103,6 @@ export class FormExperience {
 
     let req: any = {
       userId: this.profile.userId,
-      firstName: this.profile.firstName,
-      language: this.profile.language,
-      phone: '8698645680',
       jobProfile: [userJobProfile]
     };
 

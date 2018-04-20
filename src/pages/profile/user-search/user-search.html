@@ -1,6 +1,6 @@
 <ion-header>
     <ion-navbar>
-        <ion-searchbar [(ngModel)]="searchInput" #input [showCancelButton]="true" (ionInput)="onInput()" (ionCancel)="onCancel($event)"
+        <ion-searchbar [(ngModel)]="searchInput" #input debounce="1000" [showCancelButton]="true" (ionInput)="checkClear()" (search)="onInput($event)" (ionCancel)="onCancel($event)"
             [spellcheck]="true" [autocomplete]="true">
         </ion-searchbar>
     </ion-navbar>

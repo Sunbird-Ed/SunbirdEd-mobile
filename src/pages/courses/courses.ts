@@ -1,9 +1,12 @@
 import { Component, OnInit, NgZone } from '@angular/core';
-import { NavController, Platform } from 'ionic-angular';
+import { NavController, Platform, PopoverController } from 'ionic-angular';
 import { IonicPage } from 'ionic-angular';
-import { CourseService, AuthService, EnrolledCoursesRequest, PageAssembleService, PageAssembleCriteria } from 'sunbird';
+import { CourseService, AuthService, EnrolledCoursesRequest, PageAssembleService, PageAssembleCriteria, QRScanner } from 'sunbird';
 import { CourseCard } from './../../component/card/course/course-card';
 import { DocumentDirection } from 'ionic-angular/platform/platform';
+import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
+import { SearchPage } from '../search/search';
+import { CourseFilter } from './filters/course.filter';
 
 @IonicPage()
 @Component({
@@ -67,9 +70,11 @@ export class CoursesPage implements OnInit {
    */
   public ngZone: NgZone;
 
+  guestUser: boolean = false;
+
   /**
    * Default method of class CoursesPage
-   * 
+   *
    * @param {NavController} navCtrl To navigate user from one page to another
    * @param {CourseService} courseService Service to get enrolled courses
    * @param {AuthService} authService To get logged-in user data
@@ -78,7 +83,7 @@ export class CoursesPage implements OnInit {
    * @param {NgZone} ngZone To bind data
    */
   constructor(navCtrl: NavController, courseService: CourseService, authService: AuthService, platform: Platform,
-    pageService: PageAssembleService, ngZone: NgZone) {
+    pageService: PageAssembleService, ngZone: NgZone, private qrScanner: SunbirdQRScanner, private popCtrl: PopoverController) {
     this.navCtrl = navCtrl;
     this.courseService = courseService;
     this.authService = authService;
@@ -147,17 +152,19 @@ export class CoursesPage implements OnInit {
   }
 
   /**
-   * Get user id. 
-   * 
+   * Get user id.
+   *
    * Used to get enrolled course(s) of logged-in user
    */
   getUserId(): void {
     this.authService.getSessionData((session) => {
-      if (session === undefined || session == null) {
-        console.log('session expired')
+      if (session === undefined || session == null || session === "null") {
+        console.log('session expired');
+        this.guestUser = true;
       } else {
         let sessionObj = JSON.parse(session);
         this.userId = sessionObj["userToken"];
+        this.guestUser = false;
         this.getEnrolledCourses();
       }
     });
@@ -184,5 +191,32 @@ export class CoursesPage implements OnInit {
     }
 
     this.platform.setDir(this.currentStyle as DocumentDirection, true);
+  }
+
+  scanQRCode() {
+    const that = this;
+    const callback: QRResultCallback = {
+      dialcode(scanResult, dialCode) {
+        that.navCtrl.push(SearchPage, { dialCode: dialCode });
+      },
+      content(scanResult, contentId) {
+        // that.navCtrl.push(SearchPage);
+      }
+    }
+
+    this.qrScanner.startScanner(undefined, undefined, undefined, callback);
+  }
+
+  search() {
+    const contentType: Array<string> = [
+      "Course",
+    ];
+
+    this.navCtrl.push(SearchPage, { contentType: contentType})
+  }
+
+  showFilter() {
+    let filter = this.popCtrl.create(CourseFilter, {}, {cssClass: 'course-filter'});
+    filter.present();
   }
 }

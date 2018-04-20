@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>{{ 'SETTINGS_SCREEN.SETTINGS' | translate }}</ion-title>
+    <ion-title>{{ 'SETTINGS' | translate }}</ion-title>
     <ion-buttons left>
       <button ion-button icon-only (click)="goBack()">
         <ion-icon name="arrow-back"></ion-icon>
@@ -14,35 +14,35 @@
 <ion-content>
   <ion-list>
     <ion-item (click)="languageSetting()">
-      <h2>{{ 'SETTINGS_SCREEN.LANGUAGE_SETTINGS' | translate }}</h2>
+      <h2>{{ 'CHANGE_LANGUAGE' | translate }}</h2>
       <p class="settings-item-style">{{ selectedlanguage | translate }}</p>
       <ion-icon name="ios-arrow-forward" item-end></ion-icon>
     </ion-item>
 
     <ion-item (click)="dataSync()">
-      <h2>{{ 'SETTINGS_SCREEN.DATA_SYNC' | translate }}</h2>
-      <p class="settings-item-style">{{ 'SETTINGS_SCREEN.BACK_UP_DATA_AND_TELEMETRY' | translate }}</p>
+      <h2>{{ 'DATA_SYNC' | translate }}</h2>
+      <p class="settings-item-style">{{ 'DATA_SYNC_SUB' | translate }}</p>
       <ion-icon name="ios-arrow-forward" item-end></ion-icon>
     </ion-item>
 
-    <ion-item>
+    <!-- <ion-item>
       <h2>{{ 'SETTINGS_SCREEN.DEVICE_TAG' | translate }}</h2>
       <p class="settings-item-style">{{ 'SETTINGS_SCREEN.ADD_REMOVE_DEVICE_TAGS' | translate }}</p>
       <ion-icon name="ios-arrow-forward" item-end></ion-icon>
-    </ion-item>
+    </ion-item> -->
 
     <ion-item (click)="sendMessage()">
-      <h2>{{ 'SETTINGS_SCREEN.SUPPORT' | translate }}</h2>
-      <p class="settings-item-style">{{ 'SETTINGS_SCREEN.FACING_PROBLEM_SEND_MESSAGE' | translate }}</p>
+      <h2>{{ 'SUPPORT' | translate }}</h2>
+      <p class="settings-item-style">{{ 'SUPPORT_MESSAGE' | translate }}</p>
       <ion-icon name="ios-arrow-forward" item-end></ion-icon>
     </ion-item>
 
     <ion-item (click)="shareApp()">
-      <h2>{{ 'SETTINGS_SCREEN.SHARE_APP' | translate }}</h2>
+      <h2>{{ shareAppLabel }}</h2>
     </ion-item>
 
     <ion-item (click)="aboutUs()">
-      <h2>{{ 'SETTINGS_SCREEN.ABOUT_APP' | translate }}</h2>
+      <h2>{{ 'ABOUT_US' | translate }}</h2>
     </ion-item>
 
   </ion-list>

@@ -22,7 +22,6 @@ export interface toastOptions {
 
 /* This contains form for the Education where user can Add new Education Entry or can edit/delete previous one */
 export class FormEducation {
-  tabBarElement: any;
   isNewForm: boolean = true;
   educationForm: FormGroup;
   formDetails: any = {};
@@ -43,8 +42,6 @@ export class FormEducation {
     private toastCtrl: ToastController,
     private translate: TranslateService
   ) {
-    //To hide bottom tab
-    this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
 
     /* Receive data from other component */
     this.isNewForm = this.navParams.get('addForm');
@@ -60,14 +57,6 @@ export class FormEducation {
       grade: [this.formDetails.grade || ''],
       boardOrUniversity: [this.formDetails.boardOrUniversity || '']
     });
-  }
-
-  ionViewWillEnter() {
-    this.tabBarElement.style.display = 'none';
-  }
-
-  ionViewWillLeave() {
-    this.tabBarElement.style.display = 'flex';
   }
 
   /**
@@ -97,9 +86,6 @@ export class FormEducation {
 
       let req: UpdateUserInfoRequest = {
         userId: this.profile.userId,
-        firstName: this.profile.firstName,
-        language: this.profile.language,
-        phone: '8698645680',
         education: [userEducation]
       };
 

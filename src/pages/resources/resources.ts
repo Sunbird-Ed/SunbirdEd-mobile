@@ -4,19 +4,25 @@ import { PageAssembleService, PageAssembleCriteria, ContentService, AuthService 
 import * as _ from 'lodash';
 import { Slides } from 'ionic-angular';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
+import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
+import { SearchPage } from '../search/search';
+import { ResourceFilter } from './filters/resource.filter';
 import { FilterOptions, onBoardingSlidesCallback } from './onboarding-alert/onboarding-alert';
-
 
 
 @Component({
   selector: 'page-resources',
   templateUrl: 'resources.html'
 })
-export class ResourcesPage implements OnInit {
+export class ResourcesPage {
+
+  pageLoadedSuccess = false;
 
   storyAndWorksheets: Array<any>;
   selectedValue: Array<string> = [];
 
+
+  guestUser: boolean = false;
 
   /**
    * Contains local resources
@@ -42,9 +48,8 @@ export class ResourcesPage implements OnInit {
    */
   public authService: AuthService;
 
-  constructor(public navCtrl: NavController, private popupCtrl: PopoverController, private pageService: PageAssembleService, private ngZone: NgZone,
-    contentService: ContentService, authService: AuthService) {
-
+  constructor(public navCtrl: NavController, private pageService: PageAssembleService, private ngZone: NgZone,private popupCtrl: PopoverController,
+    contentService: ContentService, authService: AuthService, private qrScanner: SunbirdQRScanner, private popCtrl: PopoverController) {
     this.contentService = contentService;
     this.authService = authService;
 
@@ -166,6 +171,11 @@ export class ResourcesPage implements OnInit {
           //TODO Temporary code - should be fixed at backend
           _.forEach(data.result, (value, key) => {
             value.contentData.lastUpdatedOn = value.lastUpdatedTime;
+            // if (value.contentData.appIcon.startsWith("http")) {
+            //   value.contentLogo = value.contentData.appIcon;
+            // } else {
+            //   value.contentLogo = "file://" + value.basePath + "/" + value.contentData.appIcon;
+            // }
           });
           this.localResources = data.result;
         }
@@ -201,6 +211,7 @@ export class ResourcesPage implements OnInit {
         //END OF TEMPORARY CODE
         that.storyAndWorksheets = newSections;
         console.log('storyAndWorksheets', that.storyAndWorksheets);
+        this.pageLoadedSuccess = true;
       });
     }, error => {
       console.log('error while getting popular resources...', error);
@@ -220,12 +231,58 @@ export class ResourcesPage implements OnInit {
   }
 
   /**
-   * Angular life cycle hooks
+   * Ionic life cycle hooks
    */
-  ngOnInit() {
+  ionViewDidLoad() {
     console.log('Resources component initialized...==>>');
     this.getPopularContent();
+  }
+
+  ionViewWillEnter() {
+    if (!this.pageLoadedSuccess) {
+      this.getPopularContent();
+    }
     this.setSavedContent();
+    this.authService.getSessionData((res: string) => {
+      if (res === undefined || res === "null") {
+        this.guestUser = true;
+      } else {
+        this.guestUser = false;
+      }
+    });
+  }
+
+  scanQRCode() {
+    const that = this;
+    const callback: QRResultCallback = {
+      dialcode(scanResult, dialCode) {
+        that.navCtrl.push(SearchPage, { dialCode: dialCode });
+      },
+      content(scanResult, contentId) {
+        // that.navCtrl.push(SearchPage);
+      }
+    }
+
+    this.qrScanner.startScanner(undefined, undefined, undefined, callback);
+  }
+
+  search() {
+    const contentType: Array<string> = [
+      "Story",
+      "Worksheet",
+      "Game",
+      "Collection",
+      "TextBook",
+      "LessonPlan",
+      "Resource",
+    ];
+
+    this.navCtrl.push(SearchPage, { contentType: contentType })
+  }
+
+  showFilter() {
+    let filter = this.popCtrl.create(ResourceFilter, {}, {cssClass: 'resource-filter'})
+    filter.present();
   }
 }
 

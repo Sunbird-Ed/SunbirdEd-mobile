@@ -1,25 +1,13 @@
-import { Component, NgZone } from '@angular/core';
+import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-import { OnboardingPage } from '../onboarding/onboarding';
-import { ViewController } from 'ionic-angular/navigation/view-controller';
 import { TranslateService } from '@ngx-translate/core';
 import { Globalization } from '@ionic-native/globalization';
-import { Storage } from "@ionic/storage";
-import { TabsPage } from 'sunbird';
-import { Page } from 'ionic-angular/navigation/nav-util';
-import { SettingsPage } from '../settings/settings';
+import { TabsPage, SharedPreferences } from 'sunbird';
 
-/**
- * Generated class for the LanguageSettingPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import { OnboardingPage } from '../onboarding/onboarding';
 
 const KEY_SELECTED_LANGUAGE_CODE = "selected_language_code";
 const KEY_SELECTED_LANGUAGE = "selected_language";
-const KEY_USER_ONBOARDED = "user_onboarded";
-const KEY_USER_LOGIN_MODE = "user_login_mode";
 
 @Component({
   selector: 'page-language-settings',
@@ -27,18 +15,22 @@ const KEY_USER_LOGIN_MODE = "user_login_mode";
 })
 export class LanguageSettingsPage {
 
-  languages: any[];
+  languages: any = [];
   language: any;
-  isFromSettings: Boolean = false;
+  isFromSettings: boolean = false;
+  defaultDeviceLang: string = '';
 
-  constructor(public zone: NgZone, public navCtrl: NavController, public navParams: NavParams,
-    private viewCtrl: ViewController, public translateService: TranslateService, private globalization: Globalization,
-    private storage: Storage) {
-
+  constructor(
+    public navCtrl: NavController,
+    public navParams: NavParams,
+    public translateService: TranslateService,
+    private globalization: Globalization,
+    private preferences: SharedPreferences
+  ) {
     this.init()
   }
 
-  private init() {
+  init(): void {
     this.languages = [
       {
         'label': 'English',
@@ -72,60 +64,44 @@ export class LanguageSettingsPage {
       }
     ];
 
-    this.storage.get(KEY_SELECTED_LANGUAGE_CODE)
-      .then(val => {
-        if (val === undefined || val === "" || val === null) {
-          console.error("Language not set");
-          let defaultLanguage = this.getDeviceLanguage();
-          console.error("default value - " + defaultLanguage);
-          return defaultLanguage
-        } else {
-          return val
-        }
-      })
-      .then(val => {
+    this.preferences.getString(KEY_SELECTED_LANGUAGE_CODE, val => {
+      if (val === undefined || val === "" || val === null) {
+        console.error("Language not set");
+        this.getDeviceLanguage();
+      } else {
         this.language = val;
-        console.error("default value - " + this.language);
-      })
+      }
+    });
 
     this.isFromSettings = this.navParams.get('isFromSettings');
-
   }
 
-  private getDeviceLanguage() {
-    let someLanguage;
-
+  getDeviceLanguage() {
     //Get device set language
     this.globalization.getPreferredLanguage()
       .then(res => {
-        console.log(res.value);
-        //split the result on "-"
-        var splitLang = res.value.split("-")
+        this.defaultDeviceLang = res.value.split("-")[0];
 
-        console.log("Split lang 1 - " + splitLang[0])
-        console.log("Split lang 2 - " + splitLang[1])
-
-        //find the language based on the code
-        let lang = this.languages.find(i => i.code === splitLang[0])
+        let lang = this.languages.find(i => i.code === this.defaultDeviceLang);
 
         if (lang != undefined && lang != null) {
           console.log("Language chosen - " + lang.code)
           lang.isApplied = true;
           this.language = lang.code;
-          someLanguage = this.language;
         } else {
-          this.languages[0].isApplied = true;
-          this.language = this.languages[0].code
-          someLanguage = this.language;
+          this.makeDefaultLanguage();
         }
       })
       .catch(e => {
-        console.log(e)
-        this.language = this.languages[0].code
-        someLanguage = this.language;
+          this.makeDefaultLanguage();
       });
 
-    return someLanguage;
+
+  }
+
+  makeDefaultLanguage() {
+    this.language = this.languages[0].code;
+    this.languages[0].isApplied = true;
   }
 
   ionViewDidLoad() {
@@ -138,9 +114,11 @@ export class LanguageSettingsPage {
    */
   onLanguageSelected() {
     console.log("language selected : " + this.language);
-    let selectedLanguage = this.languages.find(i => i.code === this.language)
-    this.storage.set(KEY_SELECTED_LANGUAGE_CODE, selectedLanguage.code)
-    this.storage.set(KEY_SELECTED_LANGUAGE, selectedLanguage.label)
+    if(this.language) {
+      let selectedLanguage = this.languages.find(i => i.code === this.language);
+      this.preferences.putString(KEY_SELECTED_LANGUAGE_CODE, selectedLanguage.code);
+      this.preferences.putString(KEY_SELECTED_LANGUAGE, selectedLanguage.label);
+    }
   }
 
   continue() {
@@ -152,18 +130,10 @@ export class LanguageSettingsPage {
       this.translateService.use('en');
     }
 
-    let page: Page;
-
     if (this.isFromSettings) {
       this.navCtrl.pop();
     } else {
       this.navCtrl.push(OnboardingPage);
-      // .then(() => {
-      //   // first we find the index of the current view controller:
-      //   const index = this.viewCtrl.index;
-      //   // then we remove it from the navigation stack
-      //   this.navCtrl.remove(index);
-      // });
     }
   }
 }

@@ -79,13 +79,13 @@ export class ViewMoreActivityPage implements OnInit {
 
   /**
    * Default method of class SearchPage
-   * 
-   * @param navCtrl 
-   * @param navParams 
-   * @param contentService 
-   * @param ngZone 
+   *
+   * @param navCtrl
+   * @param navParams
+   * @param contentService
+   * @param ngZone
    */
-  constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, ngZone: NgZone, 
+  constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, ngZone: NgZone,
     loadingCtrl: LoadingController) {
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
     this.contentService = contentService;
@@ -108,6 +108,7 @@ export class ViewMoreActivityPage implements OnInit {
       contentTypes: data.filters.contentTypes
     }
 
+    console.log('Request params.....', requestParams);
     return requestParams;
   }
 
@@ -117,7 +118,7 @@ export class ViewMoreActivityPage implements OnInit {
   search() {
     let loader = this.getLoader();
     loader.present();
-    this.contentService.searchContent(this.getRequestBody(), (data: any) => {
+    this.contentService.searchContent(this.getRequestBody(), false, (data: any) => {
       data = JSON.parse(data);
       console.log('search limit...', data);
       this.ngZone.run(() => {

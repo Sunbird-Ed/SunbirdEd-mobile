@@ -1,11 +1,12 @@
-import { Component, NgZone } from "@angular/core";
-import { IonicPage, NavParams, NavController } from "ionic-angular";
+import { Component, NgZone, Input, ViewChild } from "@angular/core";
+import { IonicPage, NavParams, NavController, Events } from "ionic-angular";
 import { ContentService, ContentSearchCriteria } from "sunbird";
 import { GenieResponse } from "../settings/datasync/genieresponse";
 import { FilterPage } from "./filters/filter";
 import { CourseDetailPage } from "../course-detail/course-detail";
 import { CollectionDetailsPage } from "../collection-details/collection-details";
 import { ContentDetailsPage } from "../content-details/content-details";
+import { Network } from "@ionic-native/network";
 
 @IonicPage()
 @Component({
@@ -14,19 +15,45 @@ import { ContentDetailsPage } from "../content-details/content-details";
 })
 export class SearchPage {
 
+  @ViewChild('searchInput') searchBar;
+
+  contentType: Array<string> = [];
+
   dialCode: string;
 
   dialCodeResult: Array<any> = [];
 
   dialCodeContentResult: Array<any> = [];
 
-  showLoader: boolean = true;
+  searchContentResult: Array<any> = [];
 
-  filterIcon = "./assets/imgs/ic_action_filter.png";
+  showLoader: boolean = false;
 
-  constructor(private contentService: ContentService, private navParams: NavParams, private navCtrl: NavController, private zone: NgZone) {
-    this.dialCode = this.navParams.get('dialCode');
-    this.getContentForDialCode()
+  filterIcon;
+
+  searchKeywords: string = ""
+
+  responseData: any;
+
+  isDialCodeSearch = false;
+
+  constructor(private contentService: ContentService,
+    private navParams: NavParams,
+    private navCtrl: NavController,
+    private zone: NgZone,
+    private event: Events,
+    private network: Network) {
+    this.init();
+
+    console.log("Network Type : " + this.network.type);
+  }
+
+  ionViewDidEnter() {
+    if (!this.dialCode && this.searchContentResult.length == 0) {
+      setTimeout(() => {
+        this.searchBar.setFocus();
+      }, 100);
+    }
   }
 
 
@@ -68,8 +95,91 @@ export class SearchPage {
   }
 
   showFilter() {
-    this.navCtrl.push(FilterPage);
+    this.navCtrl.push(FilterPage, { filterCriteria: this.responseData.result.filterCriteria });
   }
+
+  applyFilter() {
+    this.showLoader = true;
+    this.contentService.searchContent(this.responseData.result.filterCriteria, true, (responseData) => {
+
+      this.zone.run(() => {
+        let response: GenieResponse = JSON.parse(responseData);
+        this.responseData = response;
+        if (response.status && response.result) {
+
+          if (this.isDialCodeSearch) {
+            this.processDialCodeResult(response.result);
+          } else {
+            this.searchContentResult = response.result.contentDataList;
+          }
+
+          this.updateFilterIcon();
+        }
+        this.showLoader = false;
+      });
+    }, (error) => {
+      console.log("Error : " + JSON.stringify(error));
+      this.zone.run(() => {
+        this.showLoader = false;
+      })
+    });
+  }
+
+  searchOnChange(event) {
+    console.log("Search keyword " + this.searchKeywords);
+  }
+
+  handleSearch() {
+    if (this.searchKeywords.length < 3) {
+      return;
+    }
+
+    this.showLoader = true;
+
+    (<any>window).cordova.plugins.Keyboard.close()
+
+    let contentSearchRequest: ContentSearchCriteria = {
+      query: this.searchKeywords,
+      contentTypes: this.contentType,
+      facets: ["language", "grade", "domain", "contentType", "subject", "medium"]
+    }
+
+    this.isDialCodeSearch = false;
+
+    this.contentService.searchContent(contentSearchRequest, false, (responseData) => {
+
+      this.zone.run(() => {
+        let response: GenieResponse = JSON.parse(responseData);
+        this.responseData = response;
+        if (response.status && response.result) {
+          this.searchContentResult = response.result.contentDataList;
+          this.updateFilterIcon();
+        }
+        this.showLoader = false;
+      });
+    }, (error) => {
+      console.log("Error : " + JSON.stringify(error));
+      this.zone.run(() => {
+        this.showLoader = false;
+      })
+    });
+  }
+
+
+  private init() {
+    this.dialCode = this.navParams.get('dialCode');
+    this.contentType = this.navParams.get('contentType');
+
+    if (this.dialCode !== undefined && this.dialCode.length > 0) {
+      this.getContentForDialCode()
+    }
+
+    this.event.subscribe('search.applyFilter', (filterCriteria) => {
+      this.responseData.result.filterCriteria = filterCriteria;
+      this.applyFilter();
+    });
+  }
+
 
 
   private getContentForDialCode() {
@@ -77,18 +187,35 @@ export class SearchPage {
       return
     }
 
+    this.isDialCodeSearch = true;
+
     this.showLoader = true;
+    this.contentType = [
+      "TextBook",
+      "TextBookUnit",
+    ]
+
+    let isOfflineSearch = false;
+
+    if (this.network.type === 'none') {
+      isOfflineSearch = true;
+    }
 
     let contentSearchRequest: ContentSearchCriteria = {
       dialCodes: [this.dialCode],
-      mode: "collection"
+      mode: "collection",
+      facets: ["language", "grade", "domain", "contentType", "subject", "medium"],
+      contentTypes: this.contentType,
+      offlineSearch: isOfflineSearch
     }
 
-    this.contentService.searchContent(contentSearchRequest, (responseData) => {
+    this.contentService.searchContent(contentSearchRequest, false, (responseData) => {
       this.zone.run(() => {
         let response: GenieResponse = JSON.parse(responseData);
+        this.responseData = response;
         if (response.status && response.result) {
           this.processDialCodeResult(response.result);
+          this.updateFilterIcon();
         }
 
         this.showLoader = false;
@@ -139,5 +266,36 @@ export class SearchPage {
     if (contentArray && contentArray.length == 1) {
       return;
     }
+  }
+
+  private updateFilterIcon() {
+    let isFilterApplied = false;
+
+    if (!this.responseData.result.filterCriteria) {
+      return;
+    }
+
+    this.responseData.result.filterCriteria.facetFilters.forEach(facet => {
+      if (facet.values && facet.values.length > 0) {
+        facet.values.forEach(value => {
+          if (value.apply) {
+            isFilterApplied = true;
+          }
+        })
+      }
+    });
+
+    if (isFilterApplied) {
+      this.filterIcon = "./assets/imgs/ic_action_filter_applied.png";
+    } else {
+      this.filterIcon = "./assets/imgs/ic_action_filter.png"
+    }
+  }
+
+  private getReadableFileSize(bytes) {
+    if (bytes < 1024) return (bytes / 1).toFixed(0) + " Bytes";
+    else if (bytes < 1048576) return (bytes / 1024).toFixed(0) + " KB";
+    else if (bytes < 1073741824) return (bytes / 1048576).toFixed(0) + " MB";
+    else return (bytes / 1073741824).toFixed(3) + " GB";
   }
 }

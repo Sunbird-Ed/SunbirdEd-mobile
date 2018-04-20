@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams, ViewController, ToastController, LoadingController, Events } from "ionic-angular";
+import { NavController, NavParams, ViewController, ToastController, Events } from "ionic-angular";
 import { TranslateService } from '@ngx-translate/core';
 
 import { UsersnClassesComponent } from "../usersnclasses/usersnclass.component";
@@ -21,7 +21,6 @@ export interface toastOptions {
 export class ImagePicker {
 
     imageUri: string;
-    loader: any;
     profile: any = {};
     req: UpdateUserInfoRequest;
 
@@ -30,14 +29,12 @@ export class ImagePicker {
         public viewCtrl: ViewController,
         private toastCtrl: ToastController,
         private userProfileService: UserProfileService,
-        private loadingCtrl: LoadingController,
         private authService: AuthService,
         private translate: TranslateService,
         public events: Events) {
 
         this.imageUri = navParams.get('imageUri');
         this.profile = navParams.get('profile');
-        this.loader = this.loadingCtrl.create({ duration: 10000, spinner: "crescent" });
 
         this.req = {
             userId: this.profile.userId,
@@ -54,8 +51,8 @@ export class ImagePicker {
     changeImage(): void {
         (<any>window).imagechooser.chooseImage(
             (path: any) => {
-                this.imageUri = path;
-                this.loader.present();
+                this.updateProfilePictureEvent('', true);
+                this.viewCtrl.dismiss();
 
                 this.authService.getSessionData(session => {
                     let request: UploadFileRequest = {
@@ -68,15 +65,13 @@ export class ImagePicker {
                         (response: any) => {
                             let resObj = JSON.parse(response);
                             let url = resObj["url"];
-                            this.loader.dismiss();
                             this.updateProfilePictureEvent(url, true);
                             this.req['avatar'] = url;
                             this.updateProfilePicture();
                         },
                         (error: any) => {
-                            this.loader.dismiss();
                             this.presentToast(this.translateMessage('ERROR_UPLOADING_IMG'));
-                            this.viewCtrl.dismiss();
+                            this.updateProfilePictureEvent('', false);
                         });
                 });
             },

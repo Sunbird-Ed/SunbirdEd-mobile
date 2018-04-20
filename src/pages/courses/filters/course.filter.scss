@@ -1,0 +1,36 @@
+page-course-filter {
+    .subtitle {
+        text-transform: uppercase;
+        font-style: normal;
+        font-weight: 400;
+    }
+
+    .filter-item {
+        width: auto;
+        margin: 16px !important;
+        background-color: #f1f1f1;
+        color: #b3b3b3;
+
+        ion-icon {
+            color: #b3b3b3;
+        }
+    }
+
+    .apply-button {
+        margin: 16px !important;
+        width: 90%;
+    }
+}
+
+.course-filter .popover-content {
+  margin: 0;
+  width: 100% !important;
+  height: 80% !important;
+  box-shadow: unset;
+  position: fixed;
+  left: 0 !important;
+  top: unset !important;
+  bottom: 0;
+  transform-origin: bottom -100% !important;
+  transform: translateY(0) !important;
+}

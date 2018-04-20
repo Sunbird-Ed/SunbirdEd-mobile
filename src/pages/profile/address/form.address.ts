@@ -21,7 +21,6 @@ export interface toastOptions {
 /* This contains form for the Education where user can Add new Address Entry or can edit/delete previous one */
 export class FormAddress {
 
-  tabBarElement: any;
   isNewForm: boolean = true;
   addressDetails: any = {};
   addressForm: FormGroup;
@@ -41,11 +40,10 @@ export class FormAddress {
     private toastCtrl: ToastController,
     private translate: TranslateService
   ) {
-    /* Returns a html element for tab bar*/
-    this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
 
     /* Receive data from other component */
     this.isNewForm = this.navParams.get('addForm');
+    if(this.isNewForm === undefined) this.isNewForm = true;
     this.addressDetails = this.navParams.get('addressDetails') || {};
     this.profile = this.navParams.get('profile') || {};
 
@@ -59,14 +57,6 @@ export class FormAddress {
       country: [this.addressDetails.country || ''],
       zipcode: [this.addressDetails.zipcode || '']
     });
-  }
-
-  ionViewWillEnter() {
-    this.tabBarElement.style.display = 'none';
-  }
-
-  ionViewWillLeave() {
-    this.tabBarElement.style.display = 'flex';
   }
 
   /**
@@ -106,9 +96,6 @@ export class FormAddress {
       // TODO: Need to Remove hard coded Mobile Number
       let req: any = {
         userId: this.profile.userId,
-        firstName: this.profile.firstName,
-        language: this.profile.language,
-        phone: '8698645680',
         address: [userAddress]
       };
 
@@ -118,7 +105,8 @@ export class FormAddress {
 
   validateForm(formVal): boolean {
 
-    if (formVal.zipcode != '' && formVal.zipcode.length != 6) {
+    /* Allowed only Numbers and 6 digits */
+    if (formVal.zipcode != '' && !formVal.zipcode.match(/^\d{6}$/)) {
       this.getToast(this.translateMessage('INVALID_PINCODE')).present();
       return false;
     }

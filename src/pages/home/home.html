@@ -1,54 +1,45 @@
 <ion-header>
-
-<ion-navbar>
-        <ion-title>
-            <img src="assets/imgs/ic_logo.png" class="logo" />
-        </ion-title>
-        <!-- <ion-buttons end>
-            <img src="assets/imgs/ic_scanqr.png" class="tool-icon" float-end/>
-            <img src="assets/imgs/ic_action_search.png" class="tool-icon" float-end/>
-        </ion-buttons> -->
-        <ion-buttons end>
-            <button ion-button>
-              <img src="assets/imgs/ic_action_search.png" class="tool-icon" float-end/>
-            </button>
-            <button ion-button (click)="scanQRCode()">
-                <img src="assets/imgs/ic_scanqr.png" class="tool-icon" float-end/>
-            </button>
-
-            <!-- <button ion-button icon-only (click)="changeLanguage($event)"><ion-icon name="globe"></ion-icon></button> -->
-          </ion-buttons>
-    </ion-navbar>
+  <ion-navbar>
+    <img [src]="logo" class="logo" />
+    <ion-buttons end>
+      <button ion-button (click)="search()">
+        <img src="assets/imgs/ic_action_search.png" class="tool-icon" float-end/>
+      </button>
+      <button ion-button (click)="scanQRCode()">
+        <img src="assets/imgs/ic_scanqr.png" class="tool-icon" float-end/>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
 </ion-header>
 <ion-content>
-    <div class="course-page-color">
-        <div class="item padding-11">
-            <span float-start class="scroll-heading">
-                {{ 'To Do' | translate }}
-            </span>
-            <span float-end class="view-all-link" *ngIf="enrolledCourse && enrolledCourse?.length">
-                <a>{{ 'VIEW_ALL' | translate }}</a>
-            </span>
-        </div>
-        <ion-scroll *ngIf="enrolledCourse && enrolledCourse?.length" scrollX="true" style="width: 100%; height: 166px;" no-padding>
-            <div class="inner inprogress-courses">
-                <course-card *ngFor="let item of enrolledCourse" [course]="item" [layoutName]="'Inprogress'"></course-card>
-            </div>
-        </ion-scroll>
-        <div *ngIf="enrolledCourse && enrolledCourse.length === 0 && !showLoader">No data found</div>
-        <ion-spinner *ngIf="showLoader" padding></ion-spinner>
+  <div class="course-page-color">
+    <div class="item padding-11">
+      <span float-start class="scroll-heading">
+        {{ 'To Do' | translate }}
+      </span>
+      <span float-end class="view-all-link" *ngIf="enrolledCourse && enrolledCourse?.length">
+        <a>{{ 'VIEW_ALL' | translate }}</a>
+      </span>
     </div>
-    <div class="item padding-11" style="background-color:#efeff4">
-        <span float-start class="scroll-heading">
-            {{ 'Announcemet' | translate }}
-        </span>
-        <span float-end class="view-all-link">
-            <a (click)="navigateToAnnouncementListPage()">{{ 'VIEW_ALL' | translate }}</a>
-        </span>
-    </div>
-    <div class="bordernone" *ngIf="announcementList && announcementList.length">
-        <home-announcement-card *ngFor="let item of announcementList" [announcement]="item"></home-announcement-card>
-    </div>
-    <div *ngIf="announcementList && announcementList?.length === 0 && !showLoader">No data found</div>
+    <ion-scroll *ngIf="enrolledCourse && enrolledCourse?.length" scrollX="true" style="width: 100%; height: 166px;" no-padding>
+      <div class="inner inprogress-courses">
+        <course-card *ngFor="let item of enrolledCourse" [course]="item" [layoutName]="'Inprogress'"></course-card>
+      </div>
+    </ion-scroll>
+    <div *ngIf="enrolledCourse && enrolledCourse.length === 0 && !showLoader">No data found</div>
     <ion-spinner *ngIf="showLoader" padding></ion-spinner>
+  </div>
+  <div class="item padding-11" style="background-color:#efeff4">
+    <span float-start class="scroll-heading">
+      {{ 'Announcemet' | translate }}
+    </span>
+    <span float-end class="view-all-link">
+      <a (click)="navigateToAnnouncementListPage()">{{ 'VIEW_ALL' | translate }}</a>
+    </span>
+  </div>
+  <div class="bordernone" *ngIf="announcementList && announcementList.length">
+    <home-announcement-card *ngFor="let item of announcementList" [announcement]="item"></home-announcement-card>
+  </div>
+  <div *ngIf="announcementList && announcementList?.length === 0 && !showLoader">No data found</div>
+  <ion-spinner *ngIf="showLoader" padding></ion-spinner>
 </ion-content>

@@ -2,18 +2,40 @@ page-onboarding {
     ion-slide {
         background-color: #ffffff;
     }
-
     .action-button {
-      width:100% !important; 
+        width:100% !important;
     }
-
-    .ion-slides {
-        max-height: 72% !important;
-    }
-
     .item-img {
-        max-width: 80%;
         text-align: center;
+        padding-top: 20px;
+        padding-bottom: 25px;
     }
-
+    .swiper-slide {
+        height: 75% !important;
+    }
+    .swiper-slide img {
+        width: 80vw;
+        height: 55vw;
+    }
+    .title {
+        color: #939393;
+        font-weight: 500;
+    }
+    .description {
+        color: #939393;
+        font-size: 1.5rem;
+    }
 }
+
+/* Slider Active bullet color, Size, and spacing */
+.swiper-pagination-bullet-active {
+    background: #696969;
+}
+.swiper-pagination-bullet {
+    width: 10px;
+    height: 10px;
+}
+.swiper-container-horizontal > .swiper-pagination-bullets .swiper-pagination-bullet {
+    margin: 0 2px !important;
+}
+/* End of slider style */
