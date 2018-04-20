@@ -52,6 +52,16 @@ page-resources {
         display: block;
         margin: auto;
       }
+      .ellipsis {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 40vw;
+      }
+      ion-icon {
+        display: inline-block;
+        font-size: 1em;
+    }
 
       .onbording-card-header-text {
         color: rgb(90, 88, 88);
