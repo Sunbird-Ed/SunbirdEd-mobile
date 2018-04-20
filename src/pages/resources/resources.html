@@ -17,7 +17,7 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content overflow-scroll="true" class="custom-ion-content">
+<ion-content overflow-scroll="true" class="course-scroll-holder">
   <!-- onBoardingSLides starts here -->
   <div *ngIf="guestUser">
     <p class="onbording-card-header-text">{{ 'ONBOARDING_SLIDES_HEADER_TEXT' | translate }}</p>
@@ -50,7 +50,7 @@
   <div [ngClass]="{'empty-saved-resources' : localResources && localResources.length === 0}">
     <div class="item padding-11">
       <span float-start class="scroll-heading">{{ 'SAVED_RESOURCES' | translate }}</span>
-      <span float-end class="view-all-link" *ngIf="localResources && localResources.length > 0 && !showLoader">
+      <span float-end class="view-all-link" *ngIf="localResources && localResources.length > 0 && !showLoader" (click)="viewAllSavedResources();">
         <a>{{ 'VIEW_ALL' | translate }}</a>
       </span>
     </div>
@@ -75,7 +75,7 @@
       <div class="course-scroll-holder">
         <div class="item padding-11">
           <span float-start class="scroll-heading">{{items?.display?.name?.en}}</span>
-          <span float-end class="view-all-link" (click)="searchAllContent(items?.searchQuery)">
+          <span float-end class="view-all-link" (click)="searchAllContent(items?.searchQuery, items?.display?.name?.en)">
             <a>{{ 'VIEW_ALL' | translate }}</a>
           </span>
         </div>

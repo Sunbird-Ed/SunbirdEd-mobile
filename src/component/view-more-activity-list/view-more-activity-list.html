@@ -1,25 +1,72 @@
-<div class="row-holder">
+<div class="row-holder" (click)="navigateToDetailsPage(content)">
   <ion-row>
-    <ion-col col-4>
+    <!-- <ion-col col-4>
       <div class="img-container"></div>
       <img-loader src="{{ (content.appIcon) || (content.courseLogoUrl) || (defaultImg) }}" backgroundSize="cover" height="90px"
         spinner="true" fallback="{{defaultImg}}" fallbackAsPlaceholder="true" (load)="onImageLoad($event)"></img-loader>
-    </ion-col>
-    <ion-col col-8>
-      <h6 style="margin-top: 0px;">{{(content.name.length > 21) ? (content.name | slice:0:10) + '...' : (content.name)}}</h6>
-      <div class="row padding-top-5">
-        <div>
-          <span>{{ content.createdOn | date: 'mediumDate' }}</span>
-          <br/>
-          <span *ngIf="content.contentType">{{(content.contentType && content.contentType.length > 7) ? (content.contentType | slice:0:7) + '..' : content.contentType }}</span>
-          <br/>
-          <span *ngIf="content.size">[{{ content.size | fileSize }}]</span>
-        </div>
-        <div>
-          <button ion-button outline small border-radius-5 style="margin-left: 60px;margin-top: 0px;"
-          (click)="navigateToDetailsPage(content)">OPEN</button>
+    </ion-col> -->
+    <div style="width: 30%; background-color: gray;">
+      <!-- <div class="img-container"></div> -->
+      <img-loader src="{{ (content.appIcon) || (content.courseLogoUrl) || (defaultImg) }}" backgroundSize="cover" height="90px"
+        spinner="true" fallback="{{defaultImg}}" fallbackAsPlaceholder="true" (load)="onImageLoad($event)"></img-loader>
+    </div>
+    <div style="width: 70%">
+      <div class="margin-top-left-5">
+        <h6 class="margin-top-0" *ngIf="content.name && content.name.length">{{(content.name.length > 21) ? (content.name | slice:0:20) + '...' : (content.name)}}</h6>
+        <h6 class="margin-top-0" *ngIf="content.courseName && content.courseName.length">{{(content.courseName.length > 21) ? (content.courseName | slice:0:20) + '...' : (content.courseName)}}</h6>
+        <h6 class="margin-top-0" *ngIf="content.contentData && content.contentData.name && content.contentData.name.length">{{(content.contentData.name.length > 21) ? (content.contentData.name | slice:0:20) + '...' : (content.contentData.name)}}</h6>
+
+        <div class="row padding-top-5">
+          <div class="content-meta float-left width-60 padding-top-12" [ngSwitch]="type" [ngClass]="{'width-64' : type !== 'enrolledCourse'}"
+            style="float: left;width: 60%;">
+            <span *ngSwitchCase="'enrolledCourse'">
+              <span>Completed: {{content.progress ? content.progress : 0 }}%</span>
+            </span>
+            <span *ngSwitchCase="'library'">
+              <span *ngIf="content.createdOn">{{ content.createdOn | date: 'mediumDate' }}</span>
+              <br/>
+              <span *ngIf="content.contentType">{{(content.contentType && content.contentType.length > 7) ? (content.contentType | slice:0:7) + '..' : content.contentType
+                }}
+              </span>
+              <span *ngIf="content.size">[{{ content.size | fileSize }}]</span>
+              <span *ngIf="content.sizeOnDevice">[{{ content.sizeOnDevice | fileSize }}]</span>
+            </span>
+            <span *ngSwitchCase="'popularCourses'">
+              <span *ngIf="content.size">[{{ content.size | fileSize }}]</span>
+            </span>
+          </div>
+          <div style="float: right;width: 36%;" class="padding-top-10">
+            <button ion-button outline small border-radius-5 class="button-position">{{ type === 'enrolledCourse' ? 'RESUME' : 'OPEN' }}</button>
+          </div>
         </div>
       </div>
-    </ion-col>
+    </div>
+    <!-- <ion-col col-8>
+      <h6 class="margin-top-0" *ngIf="content.name && content.name.length">{{(content.name.length > 21) ? (content.name | slice:0:20) + '...' : (content.name)}}</h6>
+      <h6 class="margin-top-0" *ngIf="content.courseName && content.courseName.length">{{(content.courseName.length > 21) ? (content.courseName | slice:0:20) + '...' : (content.courseName)}}</h6>
+      <h6 class="margin-top-0" *ngIf="content.contentData && content.contentData.name && content.contentData.name.length">{{(content.contentData.name.length > 21) ? (content.contentData.name | slice:0:20) + '...' : (content.contentData.name)}}</h6>
+
+      <div class="row padding-top-5">
+        <div class="content-meta float-left width-60 padding-top-12" [ngSwitch]="type" [ngClass]="{'width-64' : type !== 'enrolledCourse'}" style="float: left;width: 60%;">
+          <span *ngSwitchCase="'enrolledCourse'">
+              <span>Completed: {{content.progress ? content.progress : 0 }}%</span>
+          </span>
+          <span *ngSwitchCase="'library'">
+              <span *ngIf="content.createdOn">{{ content.createdOn | date: 'mediumDate' }}</span>
+              <br/>
+              <span *ngIf="content.contentType">{{(content.contentType && content.contentType.length > 7) ? (content.contentType | slice:0:7) + '..' : content.contentType }}</span>
+              <span *ngIf="content.size">[{{ content.size | fileSize }}]</span>
+              <span *ngIf="content.sizeOnDevice">[{{ content.sizeOnDevice | fileSize }}]</span>
+          </span>
+          <span *ngSwitchCase="'popularCourses'">
+              <span *ngIf="content.size">[{{ content.size | fileSize }}]</span>
+          </span>
+        </div>
+        <div style="float: right;width: 36%;" class="padding-top-10">
+          <button ion-button outline small border-radius-5 class="button-position">{{ type === 'enrolledCourse' ? 'RESUME' : 'OPEN' }}</button>
+        </div>
+      </div>
+    </ion-col> -->
   </ion-row>
 </div>
+<br/>

@@ -101,8 +101,8 @@
                 </span>
             </div>
             <div *ngIf="childrenData && childrenData.length" padding-top>
-                <ion-item *ngFor="let item of childrenData; let i = index" style="padding-left: 0px;">
-                    <span (click)="navigateToDetailsPage(item, depth + '.' + (i + 1))">
+                <ion-item *ngFor="let item of childrenData; let i = index" style="padding-left: 0px;" (click)="navigateToDetailsPage(item, depth + '.' + (i + 1))">
+                    <span>
                         <span ion-text>{{ (i) + (1) }}: {{ (item?.contentData?.name && item?.contentData?.name.length > 30) ? (item?.contentData?.name
                             | slice:0:30) + '...' : (item?.contentData?.name)}}</span>
                         <ion-icon name="ios-arrow-forward" float-end></ion-icon>

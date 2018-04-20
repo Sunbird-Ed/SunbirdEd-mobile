@@ -109,6 +109,13 @@ export class ResourcesPage {
     // slides.
   }
 
+  viewAllSavedResources() {
+    this.navCtrl.push(ViewMoreActivityPage, {
+      headerTitle: 'Saved Resources',
+      pageName: 'resource.SavedResources'
+    });
+  }
+
   /**
    * Get saved content
    */
@@ -177,10 +184,11 @@ export class ResourcesPage {
    *
    * @param {string} queryParams search query params
    */
-  searchAllContent(queryParams): void {
+  searchAllContent(queryParams, headerTitle): void {
     console.log('Search query...', queryParams);
     this.navCtrl.push(ViewMoreActivityPage, {
-      requestParams: queryParams
+      requestParams: queryParams,
+      headerTitle: headerTitle
     });
   }
 

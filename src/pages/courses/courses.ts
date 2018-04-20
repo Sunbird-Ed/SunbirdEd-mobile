@@ -1,3 +1,4 @@
+import { ViewMoreActivityPage } from './../view-more-activity/view-more-activity';
 import { Component, OnInit, NgZone } from '@angular/core';
 import { NavController, Platform } from 'ionic-angular';
 import { IonicPage } from 'ionic-angular';
@@ -91,6 +92,21 @@ export class CoursesPage implements OnInit {
     this.ngZone = ngZone;
   }
 
+  viewMoreEnrolledCourses() {
+    this.navCtrl.push(ViewMoreActivityPage, {
+      headerTitle: 'Courses In Progress',
+      userId: this.userId,
+      pageName: 'course.EnrolledCourses'
+    })
+  }
+
+  viewAllCourses(searchQuery, headerTitle) {
+    this.navCtrl.push(ViewMoreActivityPage, {
+      headerTitle: headerTitle,
+      pageName: 'course.PopularContent',
+      requestParams: searchQuery
+    })
+  }
   /**
    * To get enrolled course(s) of logged-in user.
    *
