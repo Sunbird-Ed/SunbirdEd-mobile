@@ -1,12 +1,17 @@
 import { Component } from "@angular/core";
-import { PopoverController, ViewController } from "ionic-angular";
+import { PopoverController, ViewController, NavParams } from "ionic-angular";
 import { ResourceFilterOptions } from "./options/filter.options";
+import { PageAssembleCriteria, PageAssembleFilter } from "sunbird";
 
 @Component({
   selector: 'page-resource-filter',
   templateUrl: './resource.filter.html'
 })
 export class ResourceFilter {
+  pagetAssemblefilter = new PageAssembleFilter();
+
+  callback: ResourceFilterCallback;
+
   facetsFilter = [
     {
       name: "language",
@@ -139,8 +144,8 @@ export class ResourceFilter {
     }];
 
 
-  constructor(private popCtrl: PopoverController, private viewCtrl: ViewController) {
-
+  constructor(private popCtrl: PopoverController, private viewCtrl: ViewController, navParams: NavParams) {
+    this.callback = navParams.get('callback');
   }
 
   openFilterOptions(facet) {
@@ -152,6 +157,7 @@ export class ResourceFilter {
 
   getSelectedOptionCount(facet) {
     if (facet.selected && facet.selected.length > 0) {
+      this.pagetAssemblefilter[facet.name] = facet.selected
       return facet.selected.length + " added";
     } else {
       return "";
@@ -159,10 +165,17 @@ export class ResourceFilter {
   }
 
   apply() {
+    if (this.callback) {
+      this.callback.applyFilter(this.pagetAssemblefilter);
+    }
     this.viewCtrl.dismiss();
   }
 
   cancel() {
     this.viewCtrl.dismiss();
   }
+}
+
+export interface ResourceFilterCallback {
+  applyFilter(filter: PageAssembleFilter);
 }
