@@ -3,10 +3,11 @@ import { IonicPageModule } from 'ionic-angular';
 import { ResourcesPage } from './resources';
 import { TranslateModule } from '@ngx-translate/core';
 import { ComponentsModule } from "../../component/components.module";
+import { FilterOptions }  from "./onboarding-alert/onboarding-alert";
 
 @NgModule({
   declarations: [
-    ResourcesPage,
+    ResourcesPage,FilterOptions
   ],
   imports: [
     IonicPageModule.forChild(ResourcesPage),
@@ -15,6 +16,7 @@ import { ComponentsModule } from "../../component/components.module";
   ],
   exports: [
     ResourcesPage
-  ]
+  ],
+  entryComponents: [FilterOptions]
 })
 export class ResourcesPageModule {}

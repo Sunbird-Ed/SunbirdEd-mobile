@@ -22,15 +22,23 @@
       <div class="onbording-slide-div">
         <ion-row>
           <p class="onbording-slide-title">
-            {{ slide.title}}
+            {{slide.title}}
           </p>
         </ion-row>
 
         <ion-footer class="onbording-slide-footer" no-shadow no-border>
-          <ion-select [(ngModel)]="selectedOptions[i]" class="board-select" (ionChange)="handleOnBoardingOptionSelected(i)" multiple="true"
+          <!-- <div >{{slide?.desc}}</div> -->
+          <!-- <div *ngFor = "let selectedItem of onBoardingSlides.options"> -->
+          <div *ngIf="!selectedValue[i]" (click)="openFilterOptions(slide, i)">{{slide.desc}}</div>
+          <div (click)="openFilterOptions(slide, i)" class="row" >
+          <div  class="ellipsis" style="display:inline">
+            {{selectedValue[i]}}</div> &nbsp;
+             <ion-icon *ngIf="selectedValue[i]" style="display:inline" name="md-create" color="primary"></ion-icon>
+          </div>
+          <!-- <ion-select [(ngModel)]="selectedOptions[i]" class="board-select" (ionChange)="handleOnBoardingOptionSelected(i)" multiple="true"
             interface="popover" [selectOptions]="{ subTitle: slide.title}" placeholder="{{slide.desc}}" bold no-padding>
             <ion-option *ngFor="let o of slide.options" [value]="o.value">{{o.text}}</ion-option>
-          </ion-select>
+          </ion-select> -->
         </ion-footer>
       </div>
     </ion-slide>

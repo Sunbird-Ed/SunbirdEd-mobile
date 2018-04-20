@@ -1,9 +1,12 @@
 import { Component, NgZone, ViewChild, OnInit } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, PopoverController } from 'ionic-angular';
 import { PageAssembleService, PageAssembleCriteria, ContentService, AuthService } from "sunbird";
 import * as _ from 'lodash';
 import { Slides } from 'ionic-angular';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
+import { FilterOptions, onBoardingSlidesCallback } from './onboarding-alert/onboarding-alert';
+
+
 
 @Component({
   selector: 'page-resources',
@@ -12,6 +15,8 @@ import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
 export class ResourcesPage implements OnInit {
 
   storyAndWorksheets: Array<any>;
+  selectedValue: Array<string> = [];
+
 
   /**
    * Contains local resources
@@ -37,8 +42,9 @@ export class ResourcesPage implements OnInit {
    */
   public authService: AuthService;
 
-  constructor(public navCtrl: NavController, private pageService: PageAssembleService, private ngZone: NgZone,
+  constructor(public navCtrl: NavController, private popupCtrl: PopoverController, private pageService: PageAssembleService, private ngZone: NgZone,
     contentService: ContentService, authService: AuthService) {
+
     this.contentService = contentService;
     this.authService = authService;
 
@@ -49,43 +55,84 @@ export class ResourcesPage implements OnInit {
         'title': 'Which board does your school follow?',
         'desc': 'SELECT BOARD',
         'options': [
-          { text: 'Board1', value: 'board1' },
-          { text: 'Board2', value: 'board2' },
-          { text: 'Board3', value: 'board3' },
-          { text: 'Board4', value: 'board4' }
+          { text: 'Board1', value: 'board1', checked: true },
+          { text: 'Board2', value: 'board2', checked: false },
+          { text: 'Board3', value: 'board3', checked: false },
+          { text: 'Board4', value: 'board4', checked: false },
+          { text: 'Board5', value: 'board5', checked: false },
+          { text: 'Board6', value: 'board6', checked: false },
+          { text: 'Board7', value: 'board7', checked: false }
         ]
       },
       {
         'title': 'Which class do you belong to?',
         'desc': 'SELECT CLASS',
         'options': [
-          { text: 'Board1', value: 'board1' },
-          { text: 'Board2', value: 'board2' },
-          { text: 'Board3', value: 'board3' },
-          { text: 'Board4', value: 'board4' }
+          { text: 'Class1', value: 'Class1', checked: false },
+          { text: 'Class2', value: 'Class2', checked: false },
+          { text: 'Class3', value: 'Class3', checked: false },
+          { text: 'Class4', value: 'Class4', checked: false },
+          { text: 'Class5', value: 'Class5', checked: false },
+          { text: 'Class6', value: 'Class6', checked: false },
+          { text: 'Class7', value: 'Class7', checked: false }
         ]
       },
       {
         'title': 'Which subjects are you looking for?',
         'desc': 'SELECT SUBJECT',
         'options': [
-          { text: 'Board1', value: 'board1' },
-          { text: 'Board2', value: 'board2' },
-          { text: 'Board3', value: 'board3' },
-          { text: 'Board4', value: 'board4' }
+          { text: 'Subject1', value: 'Subject1', checked: false },
+          { text: 'Subject2', value: 'Subject2', checked: false },
+          { text: 'Subject3', value: 'Subject3', checked: false },
+          { text: 'Subject4', value: 'Subject4', checked: false },
+          { text: 'Subject5', value: 'Subject5', checked: false },
+          { text: 'Subject6', value: 'Subject6', checked: false },
+          { text: 'Subject7', value: 'Subject7', checked: false }
         ]
       },
       {
         'title': 'What medium/language does your school teach in?',
         'desc': 'SELECT MEDIUM/LANG',
         'options': [
-          { text: 'Board1', value: 'board1' },
-          { text: 'Board2', value: 'board2' },
-          { text: 'Board3', value: 'board3' },
-          { text: 'Board4', value: 'board4' }
+          { text: 'Lang1', value: 'Lang1', checked: true },
+          { text: 'Lang2', value: 'Lang2', checked: false },
+          { text: 'Lang3', value: 'Lang3', checked: false },
+          { text: 'Lang4', value: 'Lang4', checked: false },
+          { text: 'Lang5', value: 'Lang5', checked: false },
+          { text: 'Lang6', value: 'Lang6', checked: false },
+          { text: 'Lang7', value: 'Lang7', checked: false }
         ]
       }
     ]
+  }
+
+  openFilterOptions(selectedSlide, index) {
+    const that = this;
+    const callback: onBoardingSlidesCallback = {
+      save() {
+        console.log('getting data from popup.ts through call back resources');
+        that.selectedCheckboxValue(selectedSlide, index);
+      }
+    }
+    let popUp = this.popupCtrl.create(FilterOptions, { facet: selectedSlide, callback: callback, index: index },{
+      cssClass: 'onboarding-alert'
+    });
+
+    popUp.present();
+  }
+
+  selectedCheckboxValue(selectedSlide, index) {
+    var optionsCSV = '';
+    selectedSlide.options.forEach(function (options) {
+      if (options.checked) {
+        //   var optionsCSV = options.value;
+        if (optionsCSV) {
+          optionsCSV += ','
+        }
+        optionsCSV += options.value;
+      }
+    })
+    this.selectedValue[index] = optionsCSV;
   }
 
   onSlideDrag() {
@@ -93,9 +140,9 @@ export class ResourcesPage implements OnInit {
     console.log('Current index is', currentIndex);
     console.log(this.selectedOptions.length);
     console.log(this.selectedOptions[currentIndex]);
-    // let lockSwipeToNext = !(this.pets.length && this.pets[currentIndex] && this.pets[currentIndex].length);
-    this.mSlides.lockSwipeToNext(!(this.selectedOptions.length && this.selectedOptions[currentIndex]
-      && this.selectedOptions[currentIndex].length));
+    //let lockSwipeToNext = !(this.pets.length && this.pets[currentIndex] && this.pets[currentIndex].length);
+    this.mSlides.lockSwipeToNext(!(this.selectedValue.length && this.selectedValue[currentIndex]
+      && this.selectedValue[currentIndex].length));
   }
 
   handleOnBoardingOptionSelected(index: number) {
@@ -162,7 +209,7 @@ export class ResourcesPage implements OnInit {
 
   /**
    * Navigate to search page
-   * 
+   *
    * @param {string} queryParams search query params
    */
   searchAllContent(queryParams): void {
@@ -181,3 +228,7 @@ export class ResourcesPage implements OnInit {
     this.setSavedContent();
   }
 }
+
+
+
+
