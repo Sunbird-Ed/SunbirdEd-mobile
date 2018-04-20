@@ -124,7 +124,6 @@ export class CoursesPage implements OnInit {
         data = JSON.parse(data);
         this.enrolledCourse = data.result.courses ? data.result.courses : [];
         console.log('enrolled courses details', data);
-
         this.spinner(false);
       }
     }, (error: any) => {
