@@ -1,11 +1,12 @@
 import { Component, NgZone, ViewChild } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, PopoverController } from 'ionic-angular';
 import { PageAssembleService, PageAssembleCriteria, ContentService, AuthService } from "sunbird";
 import * as _ from 'lodash';
 import { Slides } from 'ionic-angular';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
 import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
+import { ResourceFilter } from './filters/resource.filter';
 
 @Component({
   selector: 'page-resources',
@@ -44,7 +45,7 @@ export class ResourcesPage {
   public authService: AuthService;
 
   constructor(public navCtrl: NavController, private pageService: PageAssembleService, private ngZone: NgZone,
-    contentService: ContentService, authService: AuthService, private qrScanner: SunbirdQRScanner) {
+    contentService: ContentService, authService: AuthService, private qrScanner: SunbirdQRScanner, private popCtrl: PopoverController) {
     this.contentService = contentService;
     this.authService = authService;
 
@@ -239,6 +240,11 @@ export class ResourcesPage {
       "Resource",
     ];
 
-    this.navCtrl.push(SearchPage, { contentType: contentType})
+    this.navCtrl.push(SearchPage, { contentType: contentType })
+  }
+
+  showFilter() {
+    let filter = this.popCtrl.create(ResourceFilter, {}, {cssClass: 'resource-filter'})
+    filter.present();
   }
 }

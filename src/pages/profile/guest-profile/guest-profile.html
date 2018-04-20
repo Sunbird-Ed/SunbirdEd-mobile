@@ -13,7 +13,7 @@
 <ion-content padding>
   <ion-refresher (ionRefresh)="doRefresh($event)"></ion-refresher>
 
-  <div text-center>
+  <div text-center class="padding-bottom-10">
     <img class="custom-avatar" [src]="imageUri" />
     <p class="profile-name">{{profileName}}</p>
     <!-- <p class="user-name">{{userName}}</p> -->
@@ -25,7 +25,7 @@
       <ion-icon float-end name="md-create" color="primary" (click)="editGuestProfile()"></ion-icon>
     </ion-list-header>
 
-    <ion-item>
+    <ion-item *ngIf="board">
       <ion-row *ngIf="board">
         <ion-col col-6>
           <span text-uppercase class="info-title">{{'BOARD' | translate}}</span>

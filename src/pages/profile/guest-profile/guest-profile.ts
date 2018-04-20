@@ -16,7 +16,7 @@ import { OverflowMenuComponent } from "./../overflowmenu/menu.overflow.component
 export class GuestProfilePage {
 
   imageUri: string = "assets/imgs/ic_profile_default.png";
-  list: Array<String> = ['SWITCH_ACCOUNT', 'DOWNLOAD_MANAGER', 'SETTINGS', 'SIGN_OUT'];
+  list: Array<String> = ['SETTINGS'];
 
   /* Temporary Language Constants */
   userName: string = "Teacher";
@@ -43,8 +43,10 @@ export class GuestProfilePage {
    * @param {object} event
    */
   showOverflowMenu(event) {
-    this.popoverCtrl.create(OverflowMenuComponent,{
+    this.popoverCtrl.create(OverflowMenuComponent, {
       list: this.list
+    },{
+      cssClass: 'box'
     }).present({
       ev: event
     });

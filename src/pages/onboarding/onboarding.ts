@@ -12,6 +12,7 @@ import { initGuestTabs, initUserTabs } from '../../app/module.service';
 export class OnboardingPage {
 
   slides: any[];
+  sunbird: string = "SUNBIRD";
 
   constructor(public navCtrl: NavController,
     private auth: OAuthService,
