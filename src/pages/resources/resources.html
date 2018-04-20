@@ -25,7 +25,6 @@
     <ion-slides (ionSlideDrag)="onSlideDrag()" class="onbording-slides" pager=true centeredSlides=false speed=50 padding-left
       padding-right>
 
-<<<<<<< HEAD
     <ion-slide *ngFor="let slide of onBoardingSlides; let i=index">
       <div class="onbording-slide-div">
         <ion-row>
@@ -44,24 +43,6 @@
         </ion-footer>
       </div>
     </ion-slide>
-=======
-      <ion-slide *ngFor="let slide of onBoardingSlides; let i=index">
-        <div class="onbording-slide-div">
-          <ion-row>
-            <p class="onbording-slide-title">
-              {{ slide?.title}}
-            </p>
-          </ion-row>
-
-          <ion-footer class="onbording-slide-footer" no-shadow no-border>
-            <ion-select [(ngModel)]="selectedOptions[i]" class="board-select" (ionChange)="handleOnBoardingOptionSelected(i)" multiple="true"
-              interface="popover" [selectOptions]="{ subTitle: slide?.title}" placeholder="{{slide?.desc}}" bold no-padding>
-              <ion-option *ngFor="let o of slide?.options" [value]="o?.value">{{o?.text}}</ion-option>
-            </ion-select>
-          </ion-footer>
-        </div>
-      </ion-slide>
->>>>>>> 74d38a08f1f0012274f3d4fde2eb8d3acc718e34
 
     </ion-slides>
   </div>
