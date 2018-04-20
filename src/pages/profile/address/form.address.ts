@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavController, NavParams, ToastController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 
-import { AuthService, UserProfileService } from 'sunbird';
+import { AuthService, UserProfileService, UpdateUserInfoRequest } from 'sunbird';
 import { ProfilePage } from './../profile';
 
 /* Interface for the Toast Object */
@@ -93,8 +93,7 @@ export class FormAddress {
       // Remove empty object element
       Object.keys(userAddress).forEach((key) => (userAddress[key] === '') && delete userAddress[key]);
 
-      // TODO: Need to Remove hard coded Mobile Number
-      let req: any = {
+      let req: UpdateUserInfoRequest = {
         userId: this.profile.userId,
         address: [userAddress]
       };
