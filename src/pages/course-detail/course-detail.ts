@@ -95,7 +95,7 @@ export class CourseDetailPage {
     this.zone = zone;
     this.toastCtrl = toastCtrl;
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
-    console.warn('Inside new module..........................');
+    console.warn('Inside course details page');
   }
 
   /**

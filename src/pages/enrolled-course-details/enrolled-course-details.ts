@@ -4,6 +4,9 @@ import { IonicPage, NavController, NavParams, Events, ToastController } from 'io
 import { ContentService, FileUtil } from 'sunbird';
 import { NgModel } from '@angular/forms';
 import * as _ from 'lodash';
+import { CourseDetailPage } from '../course-detail/course-detail';
+import { CollectionDetailsPage } from '../collection-details/collection-details';
+import { ContentDetailsPage } from '../content-details/content-details';
 
 /**
  * Generated class for the EnrolledCourseDetailsPage page.
@@ -222,10 +225,27 @@ export class EnrolledCourseDetailsPage {
    * @param depth 
    */
   navigateToChildrenDetailsPage(content, depth): void {
-    this.navCtrl.push(ChildContentDetailsPage, {
-      content: content,
-      depth: depth
-    });
+    this.zone.run(() => {
+      if (content.contentType === 'Course') {
+        console.warn('Inside CourseDetailPage >>>');
+        this.navCtrl.push(CourseDetailPage, {
+          content: content,
+          depth: depth
+        })
+      } else if (content.mimeType === 'application/vnd.ekstep.content-collection') {
+        console.warn('Inside CollectionDetailsPage >>>');
+        this.navCtrl.push(CollectionDetailsPage, {
+          content: content,
+          depth: depth
+        })
+      } else {
+        console.warn('Inside ContentDetailsPage >>>');
+        this.navCtrl.push(ContentDetailsPage, {
+          content: content,
+          depth: depth
+        })
+      }
+    })
   }
 
   /**
