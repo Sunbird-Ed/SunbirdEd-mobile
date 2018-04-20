@@ -6,7 +6,7 @@ import { Slides } from 'ionic-angular';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
 import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
-import { ResourceFilter } from './filters/resource.filter';
+import { ResourceFilter, ResourceFilterCallback } from './filters/resource.filter';
 import { FilterOptions, onBoardingSlidesCallback } from './onboarding-alert/onboarding-alert';
 
 
@@ -289,7 +289,38 @@ export class ResourcesPage {
   }
 
   showFilter() {
-    let filter = this.popCtrl.create(ResourceFilter, {}, {cssClass: 'resource-filter'})
+    const that = this;
+    const callback: ResourceFilterCallback = {
+      applyFilter(filter) {
+        let criteria = new PageAssembleCriteria();
+        criteria.name = "Resource";
+        criteria.filters = filter;
+        that.pageService.getPageAssemble(criteria, res => {
+          that.ngZone.run(() => {
+            let response = JSON.parse(res);
+            console.log('Saved resources', response);
+            //TODO Temporary code - should be fixed at backend
+            let a = JSON.parse(response.sections);
+            console.log('page service ==>>>>', a);
+
+            let newSections = [];
+            a.forEach(element => {
+              element.display = JSON.parse(element.display);
+              newSections.push(element);
+            });
+            //END OF TEMPORARY CODE
+            that.storyAndWorksheets = newSections;
+            console.log('storyAndWorksheets', that.storyAndWorksheets);
+            that.pageLoadedSuccess = true;
+          });
+        }, error => {
+          console.log('error while getting popular resources...', error);
+        });
+      }
+    }
+
+
+    let filter = this.popCtrl.create(ResourceFilter, {callback: callback}, {cssClass: 'resource-filter'})
     filter.present();
   }
 }
