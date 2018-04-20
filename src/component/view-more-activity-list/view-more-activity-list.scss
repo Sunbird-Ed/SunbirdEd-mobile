@@ -7,7 +7,29 @@ view-more-activity-list {
         background-color: #000;
         width: 92%;
         height: 90%;
-        position: absolute;
+        // position: absolute;
         opacity: 0.4;
+    }
+
+    .button-position {
+        margin-left: 60px;margin-top: 0px;
+    }
+
+    .padding-top-12 {
+        padding-top: 12px
+    }
+    .float-left {
+        float: left;
+    }
+    .width-64 {
+        width: 64% !important;
+    }
+
+    .width-60 {
+        width: 60%;
+    }
+    .margin-top-left-5 {
+        margin-left: 5px;
+        margin-top: 5px;
     }
 }

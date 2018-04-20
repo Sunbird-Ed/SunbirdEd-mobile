@@ -21,7 +21,6 @@ export interface toastOptions {
 /* This contains form for the Education where user can Add new Address Entry or can edit/delete previous one */
 export class FormAddress {
 
-  tabBarElement: any;
   isNewForm: boolean = true;
   addressDetails: any = {};
   addressForm: FormGroup;
@@ -41,8 +40,6 @@ export class FormAddress {
     private toastCtrl: ToastController,
     private translate: TranslateService
   ) {
-    /* Returns a html element for tab bar*/
-    this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
 
     /* Receive data from other component */
     this.isNewForm = this.navParams.get('addForm');
@@ -60,14 +57,6 @@ export class FormAddress {
       country: [this.addressDetails.country || ''],
       zipcode: [this.addressDetails.zipcode || '']
     });
-  }
-
-  ionViewWillEnter() {
-    this.tabBarElement.style.display = 'none';
-  }
-
-  ionViewWillLeave() {
-    this.tabBarElement.style.display = 'flex';
   }
 
   /**

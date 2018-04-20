@@ -5,12 +5,14 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ComponentsModule } from "../../component/components.module";
 import { ResourceFilter } from './filters/resource.filter';
 import { ResourceFilterOptions } from './filters/options/filter.options';
+import { FilterOptions }  from "./onboarding-alert/onboarding-alert";
 
 @NgModule({
   declarations: [
     ResourcesPage,
     ResourceFilter,
-    ResourceFilterOptions
+    ResourceFilterOptions,
+    FilterOptions
   ],
   imports: [
     IonicPageModule.forChild(ResourcesPage),
@@ -22,7 +24,8 @@ import { ResourceFilterOptions } from './filters/options/filter.options';
   ],
   entryComponents: [
     ResourceFilter,
-    ResourceFilterOptions
+    ResourceFilterOptions,
+    FilterOptions
   ]
 })
 export class ResourcesPageModule {}

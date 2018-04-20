@@ -7,19 +7,19 @@
 <ion-content>
   <form [formGroup]="guestEditForm">
     <ion-item>
-      <ion-label stacked>{{ 'NAME' | translate }}</ion-label>
+      <ion-label stacked text-uppercase>{{ 'NAME' | translate }}</ion-label>
       <ion-input formControlName="name" placeholder="{{'NAME_HINT' | translate }}"></ion-input>
     </ion-item>
     <ion-item>
-      <ion-label stacked text-capitalize>{{'BOARD' | translate }}
+      <ion-label stacked text-uppercase>{{'BOARD' | translate }}
       </ion-label>
-      <ion-select formControlName="boards" interface="popover" placeholder="{{'SELECT' | translate }}">
+      <ion-select formControlName="boards" placeholder="{{'SELECT' | translate }}">
         <ion-option *ngFor="let board of boardList" text-capitalize value="{{board}}">{{board}}</ion-option>
       </ion-select>
     </ion-item>
 
     <ion-item>
-      <ion-label stacked text-capitalize>{{'GRADE' | translate }}
+      <ion-label stacked text-uppercase>{{'GRADE' | translate }}
       </ion-label>
       <ion-select formControlName="grades" multiple="true" interface="popover" placeholder="{{'SELECT' | translate }}">
         <ion-option *ngFor="let grade of gradeList" text-capitalize value="{{grade}}">{{grade}}</ion-option>
@@ -27,7 +27,7 @@
     </ion-item>
 
     <ion-item>
-      <ion-label stacked text-capitalize>{{'SUBJECTS' | translate }}
+      <ion-label stacked text-uppercase>{{'SUBJECTS' | translate }}
       </ion-label>
       <ion-select formControlName="subjects" multiple="true" interface="popover" placeholder="{{'SELECT' | translate }}">
         <ion-option *ngFor="let subject of subjectList" text-capitalize value="{{subject}}">{{subject}}</ion-option>
@@ -35,7 +35,7 @@
     </ion-item>
 
     <ion-item>
-      <ion-label stacked text-capitalize>{{'MEDIUM' | translate }}
+      <ion-label stacked text-uppercase>{{'MEDIUM' | translate }}
       </ion-label>
       <ion-select formControlName="medium" multiple="true" interface="popover" placeholder="{{'SELECT' | translate }}">
         <ion-option *ngFor="let medium of mediumList" text-capitalize value="{{medium}}">{{medium}}</ion-option>

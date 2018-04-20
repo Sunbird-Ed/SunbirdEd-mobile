@@ -1,6 +1,9 @@
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Component, NgZone } from '@angular/core';
 import { ContentService, FileUtil } from 'sunbird';
+import { CourseDetailPage } from '../course-detail/course-detail';
+import { CollectionDetailsPage } from '../collection-details/collection-details';
+import { ContentDetailsPage } from '../content-details/content-details';
 
 /**
  * Generated class for the ChildContentDetailsPage page.
@@ -172,11 +175,33 @@ export class ChildContentDetailsPage {
    * @param {object} item  contains content details
    * @param {string} depth course depth level
    */
-  navigateToChildrenDetailsPage(item, depth): void {
+  navigateToChildrenDetailsPage(content, depth): void {
     this.depth = depth;
-    this.navCtrl.push(ChildContentDetailsPage, {
+    /*this.navCtrl.push(ChildContentDetailsPage, {
       content: item,
       depth: depth
+    })*/
+
+    this.zone.run(() => {
+      if (content.contentType === 'Course') {
+        console.warn('Inside CourseDetailPage >>>');
+        this.navCtrl.push(CourseDetailPage, {
+          content: content,
+          depth: depth
+        })
+      } else if (content.mimeType === 'application/vnd.ekstep.content-collection') {
+        console.warn('Inside CollectionDetailsPage >>>');
+        this.navCtrl.push(CollectionDetailsPage, {
+          content: content,
+          depth: depth
+        })
+      } else {
+        console.warn('Inside ContentDetailsPage >>>');
+        this.navCtrl.push(ContentDetailsPage, {
+          content: content,
+          depth: depth
+        })
+      }
     })
   }
 

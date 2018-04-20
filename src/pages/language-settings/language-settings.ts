@@ -67,53 +67,41 @@ export class LanguageSettingsPage {
     this.preferences.getString(KEY_SELECTED_LANGUAGE_CODE, val => {
       if (val === undefined || val === "" || val === null) {
         console.error("Language not set");
-        let defaultLanguage = this.getDeviceLanguage();
-        this.defaultDeviceLang = this.getDeviceLanguage();
-        console.error("default value - " + defaultLanguage);
-        this.language = defaultLanguage;
+        this.getDeviceLanguage();
       } else {
         this.language = val;
       }
     });
 
     this.isFromSettings = this.navParams.get('isFromSettings');
-
   }
 
-  private getDeviceLanguage() {
-    let someLanguage;
-
+  getDeviceLanguage() {
     //Get device set language
     this.globalization.getPreferredLanguage()
       .then(res => {
-        console.log(res.value);
-        //split the result on "-"
-        var splitLang = res.value.split("-")
+        this.defaultDeviceLang = res.value.split("-")[0];
 
-        console.log("Split lang 1 - " + splitLang[0])
-        console.log("Split lang 2 - " + splitLang[1])
-
-        //find the language based on the code
-        let lang = this.languages.find(i => i.code === splitLang[0])
+        let lang = this.languages.find(i => i.code === this.defaultDeviceLang);
 
         if (lang != undefined && lang != null) {
           console.log("Language chosen - " + lang.code)
           lang.isApplied = true;
           this.language = lang.code;
-          someLanguage = this.language;
         } else {
-          this.languages[0].isApplied = true;
-          this.language = this.languages[0].code
-          someLanguage = this.language;
+          this.makeDefaultLanguage();
         }
       })
       .catch(e => {
-        console.log(e)
-        this.language = this.languages[0].code
-        someLanguage = this.language;
+          this.makeDefaultLanguage();
       });
 
-    return someLanguage;
+
+  }
+
+  makeDefaultLanguage() {
+    this.language = this.languages[0].code;
+    this.languages[0].isApplied = true;
   }
 
   ionViewDidLoad() {
@@ -126,9 +114,11 @@ export class LanguageSettingsPage {
    */
   onLanguageSelected() {
     console.log("language selected : " + this.language);
-    let selectedLanguage = this.languages.find(i => i.code === this.language);
-    this.preferences.putString(KEY_SELECTED_LANGUAGE_CODE, selectedLanguage.code);
-    this.preferences.putString(KEY_SELECTED_LANGUAGE, selectedLanguage.label);
+    if(this.language) {
+      let selectedLanguage = this.languages.find(i => i.code === this.language);
+      this.preferences.putString(KEY_SELECTED_LANGUAGE_CODE, selectedLanguage.code);
+      this.preferences.putString(KEY_SELECTED_LANGUAGE, selectedLanguage.label);
+    }
   }
 
   continue() {
