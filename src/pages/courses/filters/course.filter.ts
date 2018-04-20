@@ -1,12 +1,18 @@
 import { Component } from "@angular/core";
-import { PopoverController, ViewController } from "ionic-angular";
+import { PopoverController, ViewController, NavParams } from "ionic-angular";
 import { CourseFilterOptions } from "./options/filter.options";
+import { PageAssembleFilter } from "sunbird";
 
 @Component({
   selector: 'page-course-filter',
   templateUrl: './course.filter.html'
 })
 export class CourseFilter {
+
+  pagetAssemblefilter = new PageAssembleFilter();
+
+  callback: CourseFilterCallback;
+
   facetsFilter = [
     {
       name: "language",
@@ -77,8 +83,8 @@ export class CourseFilter {
     }];
 
 
-    constructor(private popCtrl: PopoverController, private viewCtrl: ViewController) {
-
+    constructor(private popCtrl: PopoverController, private viewCtrl: ViewController, navParams: NavParams) {
+      this.callback = navParams.get('callback');
     }
 
     openFilterOptions(facet) {
@@ -90,6 +96,7 @@ export class CourseFilter {
 
     getSelectedOptionCount(facet) {
       if (facet.selected && facet.selected.length > 0) {
+        this.pagetAssemblefilter[facet.name] = facet.selected
         return facet.selected.length + " added";
       } else {
         return "";
@@ -97,10 +104,17 @@ export class CourseFilter {
     }
 
     apply() {
+      if (this.callback) {
+        this.callback.applyFilter(this.pagetAssemblefilter);
+      }
       this.viewCtrl.dismiss();
     }
 
     cancel() {
       this.viewCtrl.dismiss();
     }
+}
+
+export interface CourseFilterCallback {
+  applyFilter(filter: PageAssembleFilter);
 }

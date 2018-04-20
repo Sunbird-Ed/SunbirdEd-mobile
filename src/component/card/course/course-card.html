@@ -1,4 +1,4 @@
-<ion-card>
+<ion-card (click)="navigateToCourseDetailPage(course, layoutName);">
   <ion-grid no-padding>
     <ion-row class="top-container" no-padding>
       <ion-col col-12>
@@ -34,8 +34,7 @@
         Completed: {{course?.progress}} %
       </ion-col>
       <ion-col col-4>
-        <button ion-button outline small float-end 
-          (click)="navigateToCourseDetailPage(course, layoutName);">{{layoutName === 'Inprogress' ? 'RESUME' : 'OPEN' }}</button>
+        <button ion-button outline small float-end>{{layoutName === 'Inprogress' ? 'RESUME' : 'OPEN' }}</button>
       </ion-col>
     </ion-row>
   </ion-grid>

@@ -106,6 +106,7 @@ export class CourseBatchesPage implements OnInit {
       data = JSON.parse(data);
       this.zone.run(() => {
         console.log('You have successfully enrolled...');
+        this.navCtrl.pop();
       });
     },
       (error: any) => {
