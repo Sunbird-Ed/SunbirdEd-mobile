@@ -3,7 +3,6 @@ import { Component } from '@angular/core';
 import { NavController, NavParams, PopoverController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 
-import { ContainerService } from 'sunbird';
 import { GuestEditProfilePage } from './../guest-edit.profile/guest-edit.profile';
 import { SignInCardComponent } from './../../../component/sign-in-card/sign-in-card';
 import { OverflowMenuComponent } from "./../overflowmenu/menu.overflow.component";
@@ -35,7 +34,9 @@ export class GuestProfilePage {
   }
 
   editGuestProfile() {
-    this.navCtrl.push(GuestEditProfilePage);
+    this.navCtrl.push(GuestEditProfilePage, {
+      userName: this.userName
+    });
   }
 
   /**

@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams, ToastController, ToastCmp } from 'ionic-angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import * as _ from 'lodash';
+import { FrameworkDetailsRequest, CategoryRequest, FrameworkService } from 'sunbird';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -19,6 +21,12 @@ export class GuestEditProfilePage {
   tabBarElement: any;
   guestEditForm: FormGroup;
   profile: any = {};
+  categories: Array<any> = [];
+  boardList: Array<string> = [];
+  gradeList: Array<string> = [];
+  subjectList: Array<string> = [];
+  mediumList: Array<string> = [];
+  userName: string  = '';
 
   options: toastOptions = {
     message: '',
@@ -26,19 +34,111 @@ export class GuestEditProfilePage {
     position: 'bottom'
   };
 
-  constructor(private navCtrl: NavController, private fb: FormBuilder, public navParams: NavParams, private toastCtrl: ToastController) {
-    /* Returns a html element for tab bar */
-    this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
-    this.profile = this.navParams.get('profile');
+  constructor(private navCtrl: NavController,
+    private fb: FormBuilder,
+    public navParams: NavParams,
+    private toastCtrl: ToastController,
+    private frameworkService: FrameworkService
+  ) {
+    this.userName = this.navParams.get('userName');
 
     /* Initialize form with default values */
     this.guestEditForm = this.fb.group({
-      name: ['', Validators.required],
+      name: [this.userName || '', Validators.required],
       boards: [[], Validators.required],
       grades: [[]],
-      subjects: [[], Validators.required],
+      subjects: [[],],
       medium: [[]]
     });
+  }
+
+  ionViewWillEnter() {
+    this.getFrameworkDetails();
+  }
+
+  getFrameworkDetails(): void {
+    let req: FrameworkDetailsRequest = {
+      defaultFrameworkDetails: true
+    };
+
+    this.frameworkService.getFrameworkDetails(req,
+      (res: any) => {
+        this.categories = JSON.parse(JSON.parse(res).result.framework).categories;
+
+        this.checkPrevValue(0, 'boardList');
+        console.log("Framework details Response: ", JSON.parse(JSON.parse(res).result.framework).categories);
+      },
+      (err: any) => {
+        console.log("Framework details Response: ", JSON.parse(err));
+      });
+  }
+
+  /**
+   * This will internally call framework API
+   * @param {string} currentCategory - request Parameter passing to the framework API
+   * @param {string} list - Local variable name to hold the list data
+   */
+  getCategoryData(req: CategoryRequest, list): void {
+
+    this.frameworkService.getCategoryData(req,
+      (res: any) => {
+        this[list] = _.map(JSON.parse(res), 'name');
+        console.log(list + " Category Response: " + this[list]);
+      },
+      (err: any) => {
+        console.log("Subject Category Response: ", err);
+      });
+  }
+
+  checkPrevValue(index = 0, currentField, prevSelectedValue = '', ) {
+    console.log('coming here');
+    if (index != 0) {
+      let request: CategoryRequest = {
+        currentCategory: this.categories[index].code,
+        prevCategory: this.categories[index - 1].code,
+        selectedCode: [prevSelectedValue]
+      }
+      this.getCategoryData(request, currentField);
+    } else {
+      let request: CategoryRequest = {
+        currentCategory: this.categories[index].code
+      }
+      this.getCategoryData(request, currentField);
+    }
+  }
+
+  resetForm(index: number = 0): void {
+    switch (index) {
+      case 0:
+        this.guestEditForm.patchValue({
+          grades: [],
+          subjects: [],
+          medium: []
+        });
+        this.checkPrevValue(index + 1, 'gradeList', this.guestEditForm.value.boards);
+        break;
+
+      case 1:
+        this.guestEditForm.patchValue({
+          subjects: [],
+          medium: []
+        });
+        this.checkPrevValue(index + 1, 'subjectList', this.guestEditForm.value.subjects);
+        break;
+
+      case 2:
+        this.guestEditForm.patchValue({
+          medium: []
+        });
+        this.checkPrevValue(index + 1, 'mediumList', this.guestEditForm.value.medium);
+        break;
+    }
+  }
+
+  onChanges(): void {
+    // this.guestEditForm.get('name').valueChanges.subscribe(val => {
+    //   this.formattedMessage = `My name is ${val}.`;
+    // });
   }
 
   /**
@@ -57,13 +157,4 @@ export class GuestEditProfilePage {
     this.options.message = message;
     if (message.length) return this.toastCtrl.create(this.options);
   }
-
-  ionViewWillEnter() {
-    this.tabBarElement.style.display = 'none';
-  }
-
-  ionViewWillLeave() {
-    this.tabBarElement.style.display = 'flex';
-  }
-
 }

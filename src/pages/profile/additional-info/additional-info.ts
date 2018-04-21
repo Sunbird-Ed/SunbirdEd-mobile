@@ -30,7 +30,7 @@ export class AdditionalInfoComponent {
   todayDate: string = new Date().toISOString().slice(0, 10);
 
   /**
-   *  @todo Fetch languageList, SubjectList and gradeList from the framework
+   *  Fallback values for the list items
    */
   languageList: Array<String> = [
     "Assamese",
@@ -111,6 +111,7 @@ export class AdditionalInfoComponent {
 
     this.getFrameworkData('subject', 'subjectList');
     this.getFrameworkData('gradeLevel', 'gradeList');
+
     /* Initialize form with default values */
     this.additionalInfoForm = this.fb.group({
       firstName: [this.profile.firstName || ''],

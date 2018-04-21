@@ -7,7 +7,7 @@ import { CourseCard } from './../../component/card/course/course-card';
 import { DocumentDirection } from 'ionic-angular/platform/platform';
 import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
-import { CourseFilter } from './filters/course.filter';
+import { CourseFilter, CourseFilterCallback } from './filters/course.filter';
 
 @IonicPage()
 @Component({
@@ -231,7 +231,34 @@ export class CoursesPage implements OnInit {
   }
 
   showFilter() {
-    let filter = this.popCtrl.create(CourseFilter, {}, {cssClass: 'course-filter'});
+    const that = this;
+
+    const callback: CourseFilterCallback = {
+      applyFilter(filter) {
+        that.ngZone.run(() => {
+          let criteria = new PageAssembleCriteria();
+          criteria.name = "Course";
+          criteria.filters = filter;
+          that.pageService.getPageAssemble(criteria, (res: any) => {
+            res = JSON.parse(res);
+            that.ngZone.run(() => {
+              let sections = JSON.parse(res.sections);
+              let newSections = [];
+              sections.forEach(element => {
+                element.display = JSON.parse(element.display);
+                newSections.push(element);
+              });
+              that.popularAndLatestCourses = newSections;
+              console.log('Popular courses', that.popularAndLatestCourses);
+            });
+          }, (error: string) => {
+            console.log('Page assmble error', error);
+          });
+        })
+      }
+    }
+
+    let filter = this.popCtrl.create(CourseFilter, {callback: callback}, {cssClass: 'course-filter'});
     filter.present();
   }
 }
