@@ -10,27 +10,27 @@
   <div class="content-details-holder" *ngIf="contentDetail">
     <h6>{{contentDetail.name}}</h6>
     <div class="progress-section">
-      <p>Your progress: {{cardData.progress ? cardData.progress : '0'}} % </p>
+      <p>{{ 'YOUR_PROGRESS_1' | translate }} {{cardData.progress ? cardData.progress : '0'}} % </p>
       <rating [ngModel]="0" readOnly="true" max="5" no-padding></rating>
     </div>
     <br/>
     <div class="about-section">
       <h6 class="padding-10 background-gray">{{ 'ABOUT' | translate }}</h6>
       <p *ngIf="!showMoreFlag">
-        {{ (contentDetail.description.length > 6) ? (contentDetail.description | slice:0:6) + '...' : (contentDetail.description)
+        {{ (contentDetail.description && contentDetail.description.length > 6) ? (contentDetail.description | slice:0:6) + '...' : (contentDetail.description)
         }} </p>
       <div class="course-details" *ngIf="showMoreFlag">
-        <p *ngIf="showMoreFlag && contentDetail.description.length > 6">
+        <p *ngIf="showMoreFlag && contentDetail.description && contentDetail.description.length > 6">
           {{ contentDetail.description }}
         </p>
         <div *ngIf="contentDetail.gradeLevel && contentDetail.gradeLevel.length" margin-top>
-          <div>GRADE:</div>
+          <div>{{ 'GRADE' | translate }}:</div>
           <span *ngFor="let grade of contentDetail.gradeLevel">
             <span>{{grade}}</span>
           </span>
         </div>
         <div *ngIf="contentDetail.subject" margin-top>
-          <div>SUBJECT:</div>
+          <div>{{ 'SUBJECT' | translate }}:</div>
           <span>{{contentDetail.subject}}</span>
         </div>
       </div>
@@ -48,7 +48,7 @@
     </div>
     <!-- Course structure section -->
     <div class="structure-section" margin-top>
-      <h6 class="padding-10 background-gray">Structure</h6>
+      <h6 class="padding-10 background-gray">{{ 'STRUCTURE' | translate }}</h6>
       <div *ngIf="contentDetail.contentTypesCount" padding-top>
         <span *ngFor="let structure of objectKeys(contentDetail.contentTypesCount)">
           {{contentDetail.contentTypesCount[structure] + ' ' + structure}}
@@ -64,7 +64,7 @@
       <div *ngIf="showChildrenLoader">
         <ion-row style="padding-top: 30px;" padding>
           <ion-col text-center>
-            <p>Fetching content {{ downloadProgress ? downloadProgress : '' }}</p>
+            <p>{{ 'FETCHING_CONTENTS_1' | translate }} {{ downloadProgress ? downloadProgress : '' }}</p>
             <ion-spinner padding></ion-spinner>
           </ion-col>
         </ion-row>
@@ -76,10 +76,10 @@
 <!-- Page footer -->
 <ion-footer>
   <ion-toolbar padding>
-    <button ion-button block *ngIf="cardData && !cardData.lastReadContentId">START</button>
-    <button ion-button block *ngIf="showResumeBtn" (click)="resumeContent(cardData.lastReadContentId)">RESUME</button>
+    <button ion-button block *ngIf="cardData && !cardData.lastReadContentId" (click)="startContent()">{{ 'START_COURSE' | translate }}</button>
+    <button ion-button block *ngIf="showResumeBtn" (click)="resumeContent(cardData.lastReadContentId)">{{ 'RESUME_COURSE' | translate }}</button>
     <button ion-button block outline *ngIf="downloadIdentifiers && downloadIdentifiers.length && !showDownloadProgress"
-      (click)="importContent(downloadIdentifiers, true)">DOWNLOAD ALL ({{ downloadContentsSize }})</button>
-    <button *ngIf="showDownloadProgress && !isDownloadComplete" ion-button block outline [style.width]="downloadProgress" [ngClass]="(currentCount < 100) ? 'progress-inner-primary' : 'progress-inner-secondary'">DOWNLOADING... {{ currentCount }} of {{ totalDownload }}</button>
+      (click)="importContent(downloadIdentifiers, true)">{{ 'DOWNLOAD_ALL_CONTENT' | translate }} ({{ downloadContentsSize }})</button>
+    <button *ngIf="showDownloadProgress && !isDownloadComplete" ion-button block outline [style.width]="downloadProgress" [ngClass]="(currentCount < 100) ? 'progress-inner-primary' : 'progress-inner-secondary'">{{ 'DOWNLOADING_2' | translate }}... {{ currentCount }} {{ 'OF' | translate }} {{ totalDownload }}</button>
   </ion-toolbar>
 </ion-footer>

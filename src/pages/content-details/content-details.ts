@@ -1,8 +1,11 @@
+import { ContentActionsComponent } from './../../component/content-actions/content-actions';
 import { Component, NgZone } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, PopoverController } from 'ionic-angular';
 import { ContentService, FileUtil } from 'sunbird';
 import { NgModel } from '@angular/forms';
 import * as _ from 'lodash';
+// import { ContentActionsComponent } from '../../component/content-actions/content-actions';
+// ContentActionsComponent
 
 /**
  * Generated class for the ContentDetailsPage page.
@@ -121,7 +124,7 @@ export class ContentDetailsPage {
    */
   constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, zone: NgZone,
     private events: Events, toastCtrl: ToastController, loadingCtrl: LoadingController,
-    private fileUtil: FileUtil) {
+    private fileUtil: FileUtil, public popoverCtrl: PopoverController) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
@@ -175,12 +178,12 @@ export class ContentDetailsPage {
       case true: {
         console.log("Content locally available. Lets play the content");
         this.content.size = data.result.sizeOnDevice;
-        this.playContentBtn = true;
+        // this.playContentBtn = true;
         break;
       }
       case false: {
         console.log("Content locally not available. Import started... @@@");
-        this.showDownloadBtn = true;
+        // this.showDownloadBtn = true;
         this.content.size = this.content.size;
         break;
       }
@@ -223,7 +226,8 @@ export class ContentDetailsPage {
    */
   showErrorMessage(message: string, isPop: boolean | false): void {
     if (this.isDownloadStarted) {
-      this.showDownloadBtn = true;
+      // this.showDownloadBtn = true;
+      this.content.downloadable = false;
       this.isDownloadStarted = false;
     }
 
@@ -262,7 +266,7 @@ export class ContentDetailsPage {
 
     return requestParams;
   }
-  
+
   /**
    * Function to get import content api request params
    * 
@@ -309,13 +313,17 @@ export class ContentDetailsPage {
 
         // Get child content
         if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
-          if (this.isDownloadStarted) {
-            this.isDownloadStarted = false;
-            this.cancelDownloading = false;
-            this.showDownloadBtn = false;
-            this.setContentDetails(this.identifier, true);
-            this.playContentBtn = true;
-          } 
+          this.zone.run(() => {
+            if (this.isDownloadStarted) {
+              this.isDownloadStarted = false;
+              this.cancelDownloading = false;
+              // this.showDownloadBtn = false;
+              this.setContentDetails(this.identifier, true);
+              // this.playContentBtn = true;
+              this.content.downloadable = true;
+              console.log('this.content.isAvailableLocally = ', this.content.downloadable);
+            }
+          })
         }
       });
     });
@@ -335,7 +343,8 @@ export class ContentDetailsPage {
       console.log('Success: download success =>>>>>', data)
       this.isDownloadStarted = false;
       this.downloadProgress = '0 %';
-      this.playContentBtn = false;
+      // this.playContentBtn = false;
+      this.content.downloadable = false;
     }, (error: any) => {
       console.log('Error: download error =>>>>>', error)
     })
@@ -355,6 +364,24 @@ export class ContentDetailsPage {
     return this.loadingCtrl.create({
       duration: 30000,
       spinner: "crescent"
+    });
+  }
+
+  showOverflowMenu(event) {
+    let popover = this.popoverCtrl.create(ContentActionsComponent, {
+      content: this.content,
+      isChild: false
+    });
+    popover.present({
+      ev: event
+    });
+    popover.onDidDismiss(data => {
+      if (data === 0) {
+        console.log('Yaahooooo.... content deleted successfully', data);
+        this.content.downloadable = false;
+        // this.showDownloadBtn = true;
+        // this.playContentBtn = false;
+      }
     });
   }
 }

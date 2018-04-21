@@ -37,6 +37,8 @@ export class EnrolledCourseDetailsPage {
    */
   childrenData: Array<any>;
 
+  startData: any;
+
   /**
    * Show loader while importing content
    */
@@ -209,6 +211,8 @@ export class EnrolledCourseDetailsPage {
         this.childrenData = data.result;
         this.showChildrenLoader = false;
         this.showDownloadAllBtn(data.result.children || []);
+        // TODO: need better logic here
+        this.startData = data.result.children;
       });
     },
       (error: string) => {
@@ -378,5 +382,19 @@ export class EnrolledCourseDetailsPage {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad EnrolledCourseDetailsPage');
+  }
+
+  /**
+   * Get executed when user click on start button
+   */
+  startContent() {
+    let data = this.childrenData;
+    if (this.startData && this.startData.length) {
+      let firstChild = _.first(_.values(this.startData), 1);
+      // this.identifier = firstChild.identifier;
+      // console.log('DDDDDDDDDDDDDDDDDD', this.identifier);
+      // this.setContentDetails(this.identifier);
+      this.navigateToChildrenDetailsPage(firstChild, 1);
+    }
   }
 }

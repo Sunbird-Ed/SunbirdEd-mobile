@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { NavController, NavParams, ToastController } from 'ionic-angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { UserProfileService } from 'sunbird';
+import { UserProfileService, UpdateUserInfoRequest } from 'sunbird';
 import { ProfilePage } from './../profile';
 import * as _ from 'lodash';
 
@@ -101,7 +101,7 @@ export class FormExperience {
     // Remove empty object element
     Object.keys(userJobProfile).forEach((key) => (userJobProfile[key] === '') && delete userJobProfile[key]);
 
-    let req: any = {
+    let req: UpdateUserInfoRequest = {
       userId: this.profile.userId,
       jobProfile: [userJobProfile]
     };

@@ -38,9 +38,6 @@ export class ImagePicker {
 
         this.req = {
             userId: this.profile.userId,
-            firstName: this.profile.firstName,
-            language: this.profile.language,
-            phone: '8698645680'
         }
     }
 

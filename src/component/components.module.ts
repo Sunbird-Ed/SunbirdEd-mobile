@@ -1,3 +1,4 @@
+// import { ContentActionsComponent } from './content-actions/content-actions';
 import { TranslateModule } from '@ngx-translate/core';
 import { PipesModule } from './../pipes/pipes.module';
 import { NgModule } from "@angular/core";
@@ -16,6 +17,7 @@ import { SignInCardComponent } from './sign-in-card/sign-in-card';
         HomeAnnouncementCard,
         ViewMoreActivityListComponent,
         SignInCardComponent
+        // ContentActionsComponent
     ],
     imports: [
         IonicPageModule.forChild(CourseCard),
@@ -29,6 +31,7 @@ import { SignInCardComponent } from './sign-in-card/sign-in-card';
         HomeAnnouncementCard,
         ViewMoreActivityListComponent,
         SignInCardComponent
+        // ContentActionsComponent
     ]
 })
 export class ComponentsModule { }
