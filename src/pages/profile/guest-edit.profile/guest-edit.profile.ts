@@ -1,8 +1,10 @@
+import { TranslateService } from '@ngx-translate/core';
 import { Component } from '@angular/core';
 import { NavController, NavParams, ToastController, ToastCmp } from 'ionic-angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import * as _ from 'lodash';
-import { FrameworkDetailsRequest, CategoryRequest, FrameworkService } from 'sunbird';
+
+import { FrameworkDetailsRequest, CategoryRequest, FrameworkService, ProfileService, Profile, ProfileType } from 'sunbird';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -28,6 +30,7 @@ export class GuestEditProfilePage {
   mediumList: Array<string> = [];
   userName: string  = '';
 
+
   options: toastOptions = {
     message: '',
     duration: 3000,
@@ -38,13 +41,15 @@ export class GuestEditProfilePage {
     private fb: FormBuilder,
     public navParams: NavParams,
     private toastCtrl: ToastController,
-    private frameworkService: FrameworkService
+    private frameworkService: FrameworkService,
+    private profileService: ProfileService,
+    private translate: TranslateService
   ) {
-    this.userName = this.navParams.get('userName');
+    this.profile = this.navParams.get('profile');
 
     /* Initialize form with default values */
     this.guestEditForm = this.fb.group({
-      name: [this.userName || '', Validators.required],
+      name: [this.profile.handle || '', Validators.required],
       boards: [[], Validators.required],
       grades: [[]],
       subjects: [[],],
@@ -145,11 +150,52 @@ export class GuestEditProfilePage {
    * Call on Submit the form
    */
   onSubmit(): void {
-    //TODO: make an API call
+    let formVal = this.guestEditForm.value;
+    let req: Profile = {
+      age: -1,
+      day: -1,
+      month: -1,
+      standard: -1,
+      board: formVal.boards,
+      grade: formVal.grades,
+      subject: formVal.subjects,
+      medium: formVal.medium,
+      uid: this.profile.uid,
+      handle: formVal.name,
+      isGroupUser: false,
+      language: "en",
+      avatar: "avatar"
+    }
+
+    this.profileService.updateProfile(req,
+      (res: any) => {
+        console.log("Update Response", res);
+        this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
+        this.navCtrl.pop();
+      },
+      (err: any) => {
+        this.getToast(this.translateMessage('PROFILE_UPDATE_FAILED')).present();
+        console.log("Err", err);
+      });
+
   }
 
   /**
-   * It will returns Toast Object
+   * Used to Translate message to current Language
+   * @param {string} messageConst - Message Constant to be translated
+   * @returns {string} translatedMsg - Translated Message
+   */
+  translateMessage(messageConst: string): string {
+    let translatedMsg = '';
+    this.translate.get(messageConst).subscribe(
+      (value: any) => {
+        translatedMsg = value;
+      }
+    );
+    return translatedMsg;
+  }
+
+  /** It will returns Toast Object
    * @param {message} string - Message for the Toast to show
    * @returns {object} - toast Object
    */

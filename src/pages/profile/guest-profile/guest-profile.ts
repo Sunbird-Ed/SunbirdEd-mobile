@@ -1,11 +1,11 @@
-
 import { Component } from '@angular/core';
-import { NavController, NavParams, PopoverController } from 'ionic-angular';
+import { NavController, NavParams, PopoverController, LoadingController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 
 import { GuestEditProfilePage } from './../guest-edit.profile/guest-edit.profile';
 import { SignInCardComponent } from './../../../component/sign-in-card/sign-in-card';
 import { OverflowMenuComponent } from "./../overflowmenu/menu.overflow.component";
+import { ProfileService } from 'sunbird';
 
 @Component({
   selector: 'page-guest-profile',
@@ -24,18 +24,40 @@ export class GuestProfilePage {
   grade: string = "";
   medium: string = "";
   subjects: string = "";
+  profile: any = {};
 
-  constructor(public navCtrl: NavController, public popoverCtrl: PopoverController) {
+  constructor(public navCtrl: NavController,
+    public popoverCtrl: PopoverController,
+    private profileService: ProfileService,
+    private loadingCtrl: LoadingController
+  ) {
     // TODO: Need to make an get Profile user details API call.
+    this.refreshProfileData();
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad LanguageSettingPage');
   }
 
+  refreshProfileData(refresher:any = false) {
+    let loader = this.getLoader();
+    loader.present();
+    this.profileService.getCurrentUser((res: any) => {
+      this.profile = JSON.parse(res);
+      setTimeout(() => {
+        if (refresher) refresher.complete();
+        loader.dismiss();
+      }, 500);
+      console.log("Response", res);
+    },
+      (err: any) => {
+        loader.dismiss();
+        console.log("Err1", err);
+      });
+  }
   editGuestProfile() {
     this.navCtrl.push(GuestEditProfilePage, {
-      userName: this.userName
+      profile: this.profile
     });
   }
 
@@ -46,10 +68,17 @@ export class GuestProfilePage {
   showOverflowMenu(event) {
     this.popoverCtrl.create(OverflowMenuComponent, {
       list: this.list
-    },{
-      cssClass: 'box'
-    }).present({
-      ev: event
+    }, {
+        cssClass: 'box'
+      }).present({
+        ev: event
+      });
+  }
+
+  getLoader(): any {
+    return this.loadingCtrl.create({
+      duration: 30000,
+      spinner: "crescent"
     });
   }
 }
