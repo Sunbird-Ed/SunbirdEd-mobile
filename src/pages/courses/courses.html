@@ -8,8 +8,8 @@
         <img src="assets/imgs/ic_scanqr.png" class="tool-icon" float-end/>
       </button>
       <button ion-button icon-only (click)="search()">
-          <img src="assets/imgs/ic_action_search.png" class="tool-icon" float-end/>
-        </button>
+        <img src="assets/imgs/ic_action_search.png" class="tool-icon" float-end/>
+      </button>
       <button ion-button icon-only (click)="showFilter()">
         <img src="assets/imgs/ic_action_filter.png" class="tool-icon" float-end/>
       </button>
@@ -18,13 +18,43 @@
 </ion-header>
 
 <ion-content overflow-scroll="true">
+  <!-- onBoardingSLides starts here -->
+  <div *ngIf="guestUser">
+    <p class="onbording-card-header-text">{{ 'ONBOARDING_SLIDES_HEADER_TEXT' | translate }}</p>
+
+    <ion-slides (ionSlideDrag)="onSlideDrag()" class="onbording-slides" pager=true centeredSlides=false speed=50 padding-left
+      padding-right>
+
+      <ion-slide *ngFor="let slide of onBoardingSlides; let i=index">
+        <div class="onbording-slide-div">
+          <ion-row>
+            <p class="onbording-slide-title">
+              {{slide.title}}
+            </p>
+          </ion-row>
+
+          <ion-footer class="onbording-slide-footer" no-shadow no-border>
+            <div *ngIf="!selectedValue[i]" (click)="openFilterOptions(slide, i)">{{slide.desc}}</div>
+            <div (click)="openFilterOptions(slide, i)" class="row">
+              <div class="ellipsis" style="display:inline" text-uppercase>
+                {{selectedValue[i]}}</div> &nbsp;
+              <ion-icon *ngIf="selectedValue[i]" style="display:inline" name="md-create" color="primary"></ion-icon>
+            </div>
+          </ion-footer>
+        </div>
+      </ion-slide>
+
+    </ion-slides>
+  </div>
+  <!-- onBoardingSLides ends here -->
+
+
   <div *ngIf="!guestUser" class="course-page-color" [ngClass]="{'height-130': showLoader}">
     <div class="item padding-11">
       <span float-start class="scroll-heading">
         {{ 'COURSES_IN_PROGRESS' | translate }}
       </span>
-      <span float-end class="view-all-link" *ngIf="enrolledCourse && enrolledCourse.length"
-      (click)="viewMoreEnrolledCourses()">
+      <span float-end class="view-all-link" *ngIf="enrolledCourse && enrolledCourse.length" (click)="viewMoreEnrolledCourses()">
         <a>{{ 'VIEW_ALL' | translate }}</a>
       </span>
     </div>

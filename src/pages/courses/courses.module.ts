@@ -12,6 +12,7 @@ import { Ionic2RatingModule } from "ionic2-rating";
 import { DirectivesModule } from './../../directives/directives.module';
 import { CourseFilter } from './filters/course.filter';
 import { CourseFilterOptions } from './filters/options/filter.options';
+import { ResourcesPageModule } from '../resources/resources.module';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { CourseFilterOptions } from './filters/options/filter.options';
   imports: [
     IonicPageModule.forChild(CoursesPage),
     TranslateModule.forChild(),
+    ResourcesPageModule,
     HttpModule,
     ComponentsModule,
     FrameworkModule,
