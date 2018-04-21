@@ -36,7 +36,6 @@ export class UserTypeSelectionPage {
   constructor(public navCtrl: NavController,
     private translator: TranslateService,
     private preference: SharedPreferences,
-    private storage: Storage,
     private profileService: ProfileService,
     private telemetryService: TelemetryService
   ) {
