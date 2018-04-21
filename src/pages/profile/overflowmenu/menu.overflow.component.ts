@@ -6,6 +6,8 @@ import { ViewController } from "ionic-angular/navigation/view-controller";
 import { UsersnClassesComponent } from "../usersnclasses/usersnclass.component";
 import { ToastController } from "ionic-angular";
 import { SettingsPage } from "../../settings/settings";
+import { OAuthService } from "sunbird";
+import { OnboardingPage } from "../../onboarding/onboarding";
 
 @Component({
     selector: 'menu-overflow',
@@ -15,7 +17,11 @@ import { SettingsPage } from "../../settings/settings";
 export class OverflowMenuComponent {
     items: Array<string>;
     
-    constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController, private toastCtrl: ToastController) {
+    constructor(public navCtrl: NavController, 
+        public navParams: NavParams, 
+        public viewCtrl: ViewController, 
+        private toastCtrl: ToastController,
+        private oauth: OAuthService) {
         this.items = this.navParams.get("list");
     }
      
@@ -47,12 +53,14 @@ export class OverflowMenuComponent {
                 break;
             }
             case 1: {
-                let toast = this.toastCtrl.create({
-                    message: 'Sign Out functionality is under progress',
-                    duration: 3000,
-                    position: 'bottom'
-                  });
-                  toast.present();
+                // let toast = this.toastCtrl.create({
+                //     message: 'Sign Out functionality is under progress',
+                //     duration: 3000,
+                //     position: 'bottom'
+                //   });
+                //   toast.present();
+                this.oauth.doLogOut();
+                this.navCtrl.setRoot(OnboardingPage);
                 break;
             }
 

@@ -8,8 +8,8 @@
         <img src="assets/imgs/ic_scanqr.png" class="tool-icon" float-end/>
       </button>
       <button ion-button icon-only (click)="search()">
-          <img src="assets/imgs/ic_action_search.png" class="tool-icon" float-end/>
-        </button>
+        <img src="assets/imgs/ic_action_search.png" class="tool-icon" float-end/>
+      </button>
       <button ion-button icon-only (click)="showFilter()">
         <img src="assets/imgs/ic_action_filter.png" class="tool-icon" float-end/>
       </button>
@@ -25,24 +25,24 @@
     <ion-slides (ionSlideDrag)="onSlideDrag()" class="onbording-slides" pager=true centeredSlides=false speed=50 padding-left
       padding-right>
 
-    <ion-slide *ngFor="let slide of onBoardingSlides; let i=index">
-      <div class="onbording-slide-div">
-        <ion-row>
-          <p class="onbording-slide-title">
-            {{slide.title}}
-          </p>
-        </ion-row>
+      <ion-slide *ngFor="let slide of onBoardingSlides; let i=index">
+        <div class="onbording-slide-div">
+          <ion-row>
+            <p class="onbording-slide-title">
+              {{slide.title}}
+            </p>
+          </ion-row>
 
-        <ion-footer class="onbording-slide-footer" no-shadow no-border>
-          <div *ngIf="!selectedValue[i]" (click)="openFilterOptions(slide, i)">{{slide.desc}}</div>
-          <div (click)="openFilterOptions(slide, i)" class="row" >
-          <div  class="ellipsis" style="display:inline">
-            {{selectedValue[i]}}</div> &nbsp;
-             <ion-icon *ngIf="selectedValue[i]" style="display:inline" name="md-create" color="primary"></ion-icon>
-          </div>
-        </ion-footer>
-      </div>
-    </ion-slide>
+          <ion-footer class="onbording-slide-footer" no-shadow no-border>
+            <div *ngIf="!selectedValue[i]" (click)="openFilterOptions(slide, i)">{{slide.desc}}</div>
+            <div (click)="openFilterOptions(slide, i)" class="row">
+              <div class="ellipsis" style="display:inline" text-uppercase>
+                {{selectedValue[i]}}</div> &nbsp;
+              <ion-icon *ngIf="selectedValue[i]" style="display:inline" name="md-create" color="primary"></ion-icon>
+            </div>
+          </ion-footer>
+        </div>
+      </ion-slide>
 
     </ion-slides>
   </div>

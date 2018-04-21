@@ -20,8 +20,8 @@
           <div class="content-meta float-left width-60 padding-top-12" [ngSwitch]="type" [ngClass]="{'width-64' : type !== 'enrolledCourse'}"
             style="float: left;width: 60%;">
             <span *ngSwitchCase="'enrolledCourse'">
-              <span>Completed: {{content.progress ? content.progress : 0 }}%</span><br/>
-              <span>Duration unavail...</span>
+              <span>{{ 'COURSE_PROGRESS_COMPLETED_1' | translate }} {{content.progress ? content.progress : 0 }}%</span><br/>
+              <span>{{ 'ERROR_DURATION_NOT_AVAILABLE' | translate | slice:0:14 }}...</span>
             </span>
             <span *ngSwitchCase="'library'">
               <span *ngIf="content.createdOn">{{ content.createdOn | date: 'mediumDate' }}</span>
@@ -34,11 +34,14 @@
             </span>
             <span *ngSwitchCase="'popularCourses'">
               <span *ngIf="content.size">[{{ content.size | fileSize }}]</span><br/>
-              <span>Duration unavail...</span>
+              <span>{{ 'ERROR_DURATION_NOT_AVAILABLE' | translate | slice:0:14 }}...</span>
             </span>
           </div>
           <div style="float: right;width: 36%;" class="padding-top-10">
-            <button ion-button outline small border-radius-5 class="button-position">{{ type === 'enrolledCourse' ? 'RESUME' : 'OPEN' }}</button>
+            <button ion-button outline small border-radius-5 class="button-position btn-width-70" [ngClass]="{'btn-width-80' : type === 'enrolledCourse'}">
+                <span *ngIf="type === 'enrolledCourse'">{{ 'RESUME' | translate }}</span> 
+                <span *ngIf="type !== 'enrolledCourse'">{{ 'OPEN' | translate }}</span> 
+            </button>
           </div>
         </div>
       </div>

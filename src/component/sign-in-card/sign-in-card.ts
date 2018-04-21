@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { NavController, LoadingController } from 'ionic-angular';
 
@@ -29,7 +29,8 @@ export class SignInCardComponent {
     private container: ContainerService,
     private userProfileService: UserProfileService,
     private authService: AuthService,
-    private loadingCtrl: LoadingController) {
+    private loadingCtrl: LoadingController,
+    private ngZone: NgZone) {
   }
 
   singIn() {
@@ -50,7 +51,10 @@ export class SignInCardComponent {
       })
       .then(() => {
         loader.dismiss();
-        that.navCtrl.setRoot(TabsPage);
+        that.ngZone.run(() => {
+          window.location.reload();
+          // TabsPage.prototype.ionVieit wWillEnter();
+        });
       })
       .catch(error => {
         loader.dismiss();
