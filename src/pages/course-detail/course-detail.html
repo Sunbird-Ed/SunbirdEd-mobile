@@ -10,10 +10,9 @@
 <ion-content padding>
   <div class="content-details-holder" *ngIf="course">
     <h6>{{course.name}}</h6>
-
     <!-- Owner and download info -->
     <ion-grid class="padding-0">
-      <p *ngIf="course.owner">By {{ course.owner }}</p>
+      <p *ngIf="course.owner">{{ 'BY' | translate }} {{ course.owner }}</p>
       <ion-row>
         <ion-col class="padding-0">
           <div class="size_txt padding-bottom-5" no-margin *ngIf="course.contentType">
@@ -24,7 +23,7 @@
         </ion-col>
         <ion-col offset-4 *ngIf="course.me_totalDownloads">
           <div class="padding-bottom-5 text-align-end">{{ course.me_totalDownloads }}</div>
-          <div float-right>downloads</div>
+          <div float-right>{{ 'DOWNLOADS' | translate }}</div>
         </ion-col>
       </ion-row>
     </ion-grid>
@@ -41,13 +40,13 @@
           {{ course.description }}
         </p>
         <div *ngIf="course.gradeLevel && course.gradeLevel.length" margin-top>
-          <div>GRADE:</div>
+          <div>{{ 'GRADE' | translate }}:</div>
           <span *ngFor="let grade of course.gradeLevel">
             <span>{{grade}}</span>
           </span>
         </div>
         <div *ngIf="course.subject" margin-top>
-          <div>SUBJECT:</div>
+          <div>{{ 'SUBJECT' | translate }}:</div>
           <span>{{course.subject}}</span>
         </div>
       </div>
@@ -68,24 +67,24 @@
     <div class="license-section padding-10 background-gray" *ngIf="course.license">
       <div class="row" *ngIf="showLicense">
         <span *ngIf="course.license">
-          <div class="size_txt">LICENSE</div>
+          <div class="size_txt">{{ 'LICENSE' | translate }}</div>
           <div class="margin-top-5">{{ course.license }}</div>
         </span>
       </div>
       <span class="read-more">
         <span *ngIf="showLicense" (click)="showLicense = false">
-          <br/> Hide Credits and Licensing Info
+          <br/> {{ 'HIDE_CREDITS_INFO' | translate }}
           <ion-icon name="ios-arrow-up"></ion-icon>
         </span>
         <span *ngIf="!showLicense" (click)="showLicense = true">
-          View Credits and Licensing Info
+          {{ 'VIEW_CREDITS_INFO' | translate }}
           <ion-icon name="ios-arrow-down"></ion-icon>
         </span>
       </span>
     </div>
     <!-- Course structure section -->
     <div class="structure-section" margin-top>
-      <h6 class="padding-10 background-gray">Structure</h6>
+      <h6 class="padding-10 background-gray">{{ 'STRUCTURE' | translate }}</h6>
       <div padding-top *ngIf="course.contentTypesCount">
         <span *ngFor="let structure of objectKeys(course.contentTypesCount)">
           {{course.contentTypesCount[structure] + ' ' + structure}}
@@ -100,7 +99,7 @@
       <div *ngIf="showChildrenLoader">
         <ion-row style="padding-top: 30px;" padding>
           <ion-col text-center>
-            <p>Fetching content {{ downloadProgress ? downloadProgress : '' }}</p>
+            <p>{{ 'FETCHING_CONTENTS_1' | translate }} {{ downloadProgress ? downloadProgress : '' }}</p>
             <ion-spinner padding></ion-spinner>
           </ion-col>
         </ion-row>
@@ -109,7 +108,7 @@
       <ion-grid class="padding-top-25" *ngIf="childrenData && childrenData.length === 0 && !showChildrenLoader">
         <ion-row>
           <ion-col>
-            <div text-center> Content(s) not added yet </div>
+            <div text-center>{{ 'CONTENT_NOT_ADDED_YET' | translate }}</div>
           </ion-col>
         </ion-row>
       </ion-grid>
@@ -119,6 +118,6 @@
 <!-- Page footer -->
 <ion-footer>
   <ion-toolbar padding>
-    <button ion-button block (click)="navigateToBatchListPage('');">ENROLL IN COURSE</button>
+    <button ion-button block (click)="navigateToBatchListPage('');">{{ 'ENROLL_COURSE' | translate }}</button>
   </ion-toolbar>
 </ion-footer>

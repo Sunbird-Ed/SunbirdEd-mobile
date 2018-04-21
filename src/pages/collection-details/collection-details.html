@@ -21,7 +21,7 @@
             | slice:0:25) + '...' : (contentDetail?.name) }}</h6>
         <!-- Owner and download info -->
         <ion-grid class="padding-0" *ngIf="contentDetail.contentType || contentDetail.owner">
-            <p *ngIf="contentDetail.owner">By {{ contentDetail.owner }}</p>
+            <p *ngIf="contentDetail.owner">{{ 'BY' | translate }} {{ contentDetail.owner }}</p>
             <ion-row>
                 <ion-col class="padding-0">
                     <div class="size_txt padding-bottom-5" no-margin *ngIf="contentDetail.contentType">
@@ -33,7 +33,7 @@
                 </ion-col>
                 <ion-col offset-4 *ngIf="contentDetail.me_totalDownloads">
                     <div class="padding-bottom-5 text-align-end">{{ contentDetail.me_totalDownloads }}</div>
-                    <div float-right>downloads</div>
+                    <div float-right>{{ 'DOWNLOADS' | translate }}</div>
                 </ion-col>
             </ion-row>
         </ion-grid>
@@ -50,13 +50,13 @@
                     {{ contentDetail.description }}
                 </p>
                 <div *ngIf="contentDetail.gradeLevel && contentDetail.gradeLevel.length" margin-top>
-                    <div>GRADE:</div>
+                    <div>{{ 'GRADE' | translate }}:</div>
                     <span *ngFor="let grade of contentDetail.gradeLevel">
                         <span>{{grade}}</span>
                     </span>
                 </div>
                 <div *ngIf="contentDetail?.subject" margin-top>
-                    <div>SUBJECT:</div>
+                    <div>{{ 'SUBJECT' | translate }}:</div>
                     <span>{{contentDetail.subject}}</span>
                 </div>
             </div>
@@ -77,24 +77,24 @@
         <div class="license-section padding-10 background-gray" *ngIf="contentDetail.license">
             <div class="row" *ngIf="showLicense">
                 <span *ngIf="contentDetail.license">
-                    <div class="size_txt">LICENSE</div>
+                    <div class="size_txt">{{ 'LICENSE' | translate }}</div>
                     <div class="margin-top-5">{{ contentDetail.license }}</div>
                 </span>
             </div>
             <span class="read-more">
                 <span *ngIf="showLicense" (click)="showLicense = false">
-                    <br/> Hide Credits and Licensing Info
+                    <br/> {{ 'HIDE_CREDITS_INFO' | translate }}
                     <ion-icon name="ios-arrow-up"></ion-icon>
                 </span>
                 <span *ngIf="!showLicense" (click)="showLicense = true">
-                    View Credits and Licensing Info
+                    {{ 'VIEW_CREDITS_INFO' | translate }}
                     <ion-icon name="ios-arrow-down"></ion-icon>
                 </span>
             </span>
         </div>
         <!-- Course structure section -->
         <div class="structure-section" margin-top>
-            <h6 class="padding-10 background-gray">Structure</h6>
+            <h6 class="padding-10 background-gray">{{ 'STRUCTURE' | translate }}</h6>
             <div padding-top *ngIf="contentDetail.contentTypesCount">
                 <span *ngFor="let structure of objectKeys(contentDetail.contentTypesCount)">
                     {{contentDetail.contentTypesCount[structure] + ' ' + structure}}
@@ -111,7 +111,7 @@
             <div *ngIf="showChildrenLoader">
                 <ion-row style="padding-top: 30px;" padding>
                     <ion-col text-center>
-                        <p>Fetching content {{ downloadProgress ? downloadProgress : '' }}</p>
+                        <p>{{ 'FETCHING_CONTENTS_1' | translate }} {{ downloadProgress ? downloadProgress : '' }}</p>
                         <ion-spinner padding></ion-spinner>
                     </ion-col>
                 </ion-row>
@@ -119,7 +119,7 @@
             <ion-grid class="padding-top-25" *ngIf="childrenData && childrenData.length === 0 && !showChildrenLoader">
                 <ion-row>
                     <ion-col>
-                        <div text-center> Content(s) not added yet </div>
+                        <div text-center> {{ 'CONTENT_NOT_ADDED_YET' | translate }} </div>
                     </ion-col>
                 </ion-row>
             </ion-grid>
@@ -130,7 +130,7 @@
 <!-- Page footer -->
 <ion-footer *ngIf="showDownloadBtn && !isDepthChild">
     <ion-toolbar padding>
-        <button ion-button block *ngIf="showDownloadBtn && !isDownloadStarted" (click)="downloadAllContent()">DOWNLOAD ALL ({{ (downloadSize && downloadSize > 0) ? (downloadSize | fileSize) : 'O BYTES' }})</button>
-        <button *ngIf="isDownloadStarted" ion-button block outline>DOWNLOADING... {{ currentCount }} / {{ queuedIdentifiers.length }}</button>
+        <button ion-button block *ngIf="showDownloadBtn && !isDownloadStarted" (click)="downloadAllContent()"> {{ 'DOWNLOAD_ALL_CONTENT' | translate }} ({{ (downloadSize && downloadSize > 0) ? (downloadSize | fileSize) : 'O BYTES' }})</button>
+        <button *ngIf="isDownloadStarted" ion-button block outline>{{ 'DOWNLOADING_2' | translate }}... {{ currentCount }} / {{ queuedIdentifiers.length }}</button>
     </ion-toolbar>
 </ion-footer>
