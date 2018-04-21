@@ -1,6 +1,6 @@
 import { Component, NgZone } from '@angular/core';
 import { NavController, LoadingController } from 'ionic-angular';
-import { TabsPage, OAuthService, ContainerService, UserProfileService, AuthService, TenantInfoRequest } from 'sunbird';
+import { TabsPage, OAuthService, ContainerService, UserProfileService, AuthService, TenantInfoRequest, Interact, InteractType, InteractSubtype, Environment, TelemetryService } from 'sunbird';
 import { UserTypeSelectionPage } from '../user-type-selection/user-type-selection';
 
 import { initGuestTabs, initUserTabs } from '../../app/module.service';
@@ -20,6 +20,7 @@ export class OnboardingPage {
     private zone: NgZone,
     private userProfileService: UserProfileService,
     private authService: AuthService,
+    private telemetryService : TelemetryService,
     private loadingCtrl: LoadingController
   ) {
 
@@ -122,8 +123,18 @@ export class OnboardingPage {
   }
 
   browseAsGuest() {
+    this.generateInteractEvent();
     initGuestTabs(this.container);
     this.navCtrl.push(UserTypeSelectionPage);
+  }
+
+  generateInteractEvent() {
+    let interact = new Interact();
+    interact.type = InteractType.TOUCH;
+    interact.subType = InteractSubtype.BROWSE_AS_GUEST_CLICKED;
+    interact.pageId ="";
+    interact.env = Environment.HOME;
+    this.telemetryService.interact(interact);
   }
 
   /*   goBack() {

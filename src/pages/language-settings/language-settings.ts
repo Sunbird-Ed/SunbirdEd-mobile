@@ -2,13 +2,16 @@ import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Globalization } from '@ionic-native/globalization';
-import { TabsPage, SharedPreferences } from 'sunbird';
+import { Storage } from "@ionic/storage";
+import { TabsPage, SharedPreferences, Impression, ImpressionType, PageId, Environment, TelemetryService, Interact, InteractType, InteractSubtype } from 'sunbird';
 
 import { OnboardingPage } from '../onboarding/onboarding';
 
 const KEY_SELECTED_LANGUAGE_CODE = "selected_language_code";
 const KEY_SELECTED_LANGUAGE = "selected_language";
-
+class CMap {
+  [key: string]: any
+}
 @Component({
   selector: 'page-language-settings',
   templateUrl: 'language-settings.html',
@@ -19,13 +22,15 @@ export class LanguageSettingsPage {
   language: any;
   isFromSettings: boolean = false;
   defaultDeviceLang: string = '';
+  previousLanguage: any;
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     public translateService: TranslateService,
     private globalization: Globalization,
-    private preferences: SharedPreferences
+    private preferences: SharedPreferences,
+    private telemetryService: TelemetryService
   ) {
     this.init()
   }
@@ -68,12 +73,17 @@ export class LanguageSettingsPage {
       if (val === undefined || val === "" || val === null) {
         console.error("Language not set");
         this.getDeviceLanguage();
+        this.previousLanguage=undefined;
       } else {
+        this.previousLanguage=val;
         this.language = val;
       }
     });
 
     this.isFromSettings = this.navParams.get('isFromSettings');
+
+    this.generateImpressionEvent();
+
   }
 
   getDeviceLanguage() {
@@ -93,7 +103,7 @@ export class LanguageSettingsPage {
         }
       })
       .catch(e => {
-          this.makeDefaultLanguage();
+        this.makeDefaultLanguage();
       });
 
 
@@ -108,22 +118,57 @@ export class LanguageSettingsPage {
     console.log('ionViewDidLoad LanguageSettingPage');
   }
 
+  ionViewDidEnter() {
+    this.generateImpressionEvent();
+  }
+
   /**
    * on language selected
    * @param language
    */
   onLanguageSelected() {
+   
     console.log("language selected : " + this.language);
-    if(this.language) {
+    if (this.language) {
       let selectedLanguage = this.languages.find(i => i.code === this.language);
       this.preferences.putString(KEY_SELECTED_LANGUAGE_CODE, selectedLanguage.code);
       this.preferences.putString(KEY_SELECTED_LANGUAGE, selectedLanguage.label);
     }
   }
 
+  generateInteractEvent(previousLanguage: string, currentLanguage: string) {
+    let interact = new Interact();
+    interact.type = InteractType.TOUCH;
+    interact.subType = InteractSubtype.LANGUAGE_SETTINGS_SUCCESS;
+    if (this.isFromSettings) {
+      interact.pageId = PageId.SETTINGS_LANGUAGE;
+      interact.id = PageId.SETTINGS_LANGUAGE;
+      interact.env = Environment.SETTINGS;
+    }
+    else {
+      interact.pageId = PageId.ONBOARDING;
+      interact.id = PageId.ONBOARDING;
+      interact.env = Environment.HOME;
+    }
+
+    let valuesMap = new CMap();
+    if (previousLanguage == undefined) {
+      valuesMap["PreviousLanguage"] = "";
+    }
+    else {
+      valuesMap["PreviousLanguage"] = previousLanguage;
+    }
+
+    valuesMap["CurrentLanguage"] = currentLanguage;
+    interact.valueMap=valuesMap;
+
+    this.telemetryService.interact(interact);
+  }
+
   continue() {
     // if language is not null, then select the checked language,
     // else set default language as english
+    this.generateInteractEvent(this.previousLanguage,this.language);
     if (this.language) {
       this.translateService.use(this.language);
     } else {
@@ -136,4 +181,20 @@ export class LanguageSettingsPage {
       this.navCtrl.push(OnboardingPage);
     }
   }
+
+  generateImpressionEvent() {
+    let impression = new Impression();
+    impression.type = ImpressionType.VIEW;
+    if (this.isFromSettings) {
+      impression.pageId = PageId.SETTINGS_LANGUAGE;
+    }
+    else {
+      impression.pageId = PageId.ONBOARDING;
+    }
+
+    impression.env = Environment.SETTINGS;
+    this.telemetryService.impression(impression);
+  }
 }
+
+

@@ -1,7 +1,7 @@
 import { Component, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController } from 'ionic-angular';
 import { CourseBatchesPage } from './../course-batches/course-batches';
-import { ContentService, FileUtil } from 'sunbird';
+import { ContentService,FileUtil,Impression, ImpressionType, PageId, Environment, TelemetryService } from 'sunbird';
 import { NgModel } from '@angular/forms';
 import * as _ from 'lodash';
 
@@ -87,7 +87,7 @@ export class CourseDetailPage {
    */
   public toastCtrl: ToastController;
 
-  constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, zone: NgZone,
+  constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService,private telemetryService : TelemetryService, zone: NgZone,
     private events: Events, toastCtrl: ToastController, private fileUtil: FileUtil) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
@@ -131,6 +131,8 @@ export class CourseDetailPage {
     if (this.course.me_totalDownloads) {
       this.course.me_totalDownloads = this.course.me_totalDownloads.split('.')[0];
     }
+
+    this.generateImpressionEvent(this.contentDetail.identifier, this.contentDetail.contentType, this.contentDetail.pkgVersion);
     this.setCourseStructure();
 
     switch (data.result.isAvailableLocally) {
@@ -155,7 +157,7 @@ export class CourseDetailPage {
   /**
    * Set course structure info
    */
-  setCourseStructure(){
+  setCourseStructure() {
     this.showChildrenLoader = true;
     this.course.contentTypesCount = this.course.contentTypesCount ? JSON.parse(this.course.contentTypesCount) : '';
   }
@@ -251,6 +253,20 @@ export class CourseDetailPage {
     this.identifier = this.cardData.contentId || this.cardData.identifier;
     this.setContentDetails(this.identifier, true);
     this.subscribeGenieEvent();
+  }
+
+  ionViewDidEnter() {
+  }
+
+  generateImpressionEvent(objectId, objectType, objectVersion) {
+    let impression = new Impression();
+    impression.type = ImpressionType.DETAIL;
+    impression.pageId = PageId.COURSE_DETAIL;
+    impression.env = Environment.HOME;
+    impression.objId = objectId;
+    impression.objType = objectType;
+    impression.objVer = objectVersion;
+    this.telemetryService.impression(impression);
   }
 
   /**

@@ -8,6 +8,7 @@ import { ToastController } from "ionic-angular";
 import { SettingsPage } from "../../settings/settings";
 import { OAuthService } from "sunbird";
 import { OnboardingPage } from "../../onboarding/onboarding";
+import { Interact, InteractType, InteractSubtype, PageId, Environment, TelemetryService } from "sunbird";
 
 @Component({
     selector: 'menu-overflow',
@@ -21,7 +22,8 @@ export class OverflowMenuComponent {
         public navParams: NavParams, 
         public viewCtrl: ViewController, 
         private toastCtrl: ToastController,
-        private oauth: OAuthService) {
+        private oauth: OAuthService,
+        private telemetryService : TelemetryService) {
         this.items = this.navParams.get("list");
     }
      
@@ -49,6 +51,7 @@ export class OverflowMenuComponent {
             //     break;
             // }
             case 0: {
+                this.generateInteractEvent()
                   this.navCtrl.push(SettingsPage)
                 break;
             }
@@ -66,5 +69,15 @@ export class OverflowMenuComponent {
 
         }
     }
+
+    generateInteractEvent() {
+        let interact = new Interact();
+        interact.type = InteractType.TOUCH;
+        interact.subType = InteractSubtype.SETTINGS_CLICKED;
+        interact.pageId = PageId.PROFILE;
+        interact.id = PageId.PROFILE;
+        interact.env = Environment.USER;
+        this.telemetryService.interact(interact);
+      }
      
 }

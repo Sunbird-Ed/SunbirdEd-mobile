@@ -5,6 +5,7 @@ import { TermsofservicePage } from '../termsofservice/termsofservice';
 import { PrivacypolicyPage } from '../privacypolicy/privacypolicy';
 import { AppVersion } from '@ionic-native/app-version';
 import { DeviceInfoService } from 'sunbird';
+import { Impression, ImpressionType, PageId, Environment, TelemetryService } from 'sunbird';
 
 /**
  * Generated class for the AboutUsPage page.
@@ -24,7 +25,7 @@ export class AboutUsPage {
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
     private deviceInfoService: DeviceInfoService,
-    private appVersion: AppVersion) {
+    private appVersion: AppVersion,private telemetryService: TelemetryService) {
   }
 
   ionViewDidLoad() {
@@ -63,6 +64,14 @@ export class AboutUsPage {
 
   privacyPolicy() {
     this.navCtrl.push(PrivacypolicyPage)
+  }
+
+  generateImpressionEvent() {
+    let impression = new Impression();
+    impression.type = ImpressionType.VIEW;
+    impression.pageId = PageId.SETTINGS_ABOUT_US;
+    impression.env = Environment.SETTINGS;
+    this.telemetryService.impression(impression);
   }
 
 }

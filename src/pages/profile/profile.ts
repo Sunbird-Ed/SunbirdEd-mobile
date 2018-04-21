@@ -5,7 +5,12 @@ import {
   AuthService,
   UserProfileService,
   CourseService,
-  ContentService
+  ContentService,
+  Impression,
+  TelemetryService,
+  ImpressionType,
+  PageId,
+  Environment
 } from "sunbird";
 import { PopoverController } from "ionic-angular/components/popover/popover-controller";
 import { DatePipe } from "@angular/common";
@@ -85,6 +90,7 @@ export class ProfilePage {
     public authService: AuthService,
     public courseService: CourseService,
     public contentService: ContentService,
+    public telemetryService : TelemetryService,
     private loadingCtrl: LoadingController,
     private navParams: NavParams,
     public events: Events
@@ -117,6 +123,18 @@ export class ProfilePage {
         console.log("Error while Fetching Data", error);
         loader.dismiss();
       });
+  }
+
+  ionViewDidEnter(){
+    this.generateImpressionEvent();
+  }
+
+  generateImpressionEvent(){
+    let impression = new Impression();
+    impression.type =ImpressionType.VIEW;
+    impression.pageId = PageId.PROFILE;
+    impression.env=Environment.USER;
+    this.telemetryService.impression(impression);
   }
 
   /**

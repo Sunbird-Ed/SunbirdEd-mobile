@@ -7,7 +7,8 @@ import { SocialSharing } from '@ionic-native/social-sharing';
 import { TranslateService } from '@ngx-translate/core';
 import { FilePath } from '@ionic-native/file-path';
 import { AppVersion } from "@ionic-native/app-version";
-import { SharedPreferences } from "sunbird";
+import { SharedPreferences, Interact, InteractType, InteractSubtype } from "sunbird";
+import { Impression, ImpressionType, Environment, PageId, TelemetryService } from 'sunbird';
 
 const KEY_SELECTED_LANGUAGE = "selected_language";
 const KEY_SUNBIRD_SUPPORT_FILE_PATH = "sunbird_support_file_path";
@@ -22,12 +23,11 @@ export class SettingsPage {
   fileUrl: string;
   shareAppLabel: string;
 
-  constructor(private navCtrl: NavController, 
-    private appVersion: AppVersion,
-    private socialSharing: SocialSharing, 
-    private translate: TranslateService, 
-    private filePath: FilePath,
-    private preference: SharedPreferences) {
+  constructor(private navCtrl: NavController, private appVersion: AppVersion,
+    private socialSharing: SocialSharing,
+    private translate: TranslateService, private filePath: FilePath,
+    private preference: SharedPreferences,
+    private telemetryService : TelemetryService) {
     
   }
 
@@ -42,6 +42,7 @@ export class SettingsPage {
     );
   }
 
+  
   ionViewDidEnter() {
     this.preference.getString(KEY_SELECTED_LANGUAGE, value => {
       this.selectedlanguage = this.chosenLanguageString + value;
@@ -53,22 +54,43 @@ export class SettingsPage {
     );
   }
 
+  generateImpressionEvent(){
+    let impression = new Impression();
+    impression.type =ImpressionType.VIEW;
+    impression.pageId = PageId.SETTINGS;
+    impression.env=Environment.SETTINGS;
+    this.telemetryService.impression(impression);
+  }
+
   goBack() {
     this.navCtrl.pop();
   }
 
   languageSetting() {
+    this.generateInteractEvent(InteractSubtype.LANGUAGE_CLICKED);
     this.navCtrl.push(LanguageSettingsPage, {
       isFromSettings: true
     });
   }
 
   dataSync() {
+    this.generateInteractEvent(InteractSubtype.DATA_SYNC_CLICKED);
     this.navCtrl.push(DatasyncPage)
   }
 
   aboutUs() {
+    this.generateInteractEvent(InteractSubtype.ABOUT_APP_CLICKED);
     this.navCtrl.push(AboutUsPage)
+  }
+
+  generateInteractEvent(subType : string) {
+    let interact = new Interact();
+    interact.type = InteractType.TOUCH;
+    interact.subType = subType;
+    interact.pageId = PageId.SETTINGS;
+    interact.id = PageId.SETTINGS;
+    interact.env = Environment.SETTINGS;
+    this.telemetryService.interact(interact);
   }
 
   sendMessage() {

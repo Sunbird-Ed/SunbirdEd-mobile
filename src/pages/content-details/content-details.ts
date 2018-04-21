@@ -1,7 +1,7 @@
 import { ContentActionsComponent } from './../../component/content-actions/content-actions';
 import { Component, NgZone } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, PopoverController } from 'ionic-angular';
-import { ContentService, FileUtil } from 'sunbird';
+import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController,PopoverController } from 'ionic-angular';
+import { ContentService,FileUtil, Impression, ImpressionType, PageId, Environment, TelemetryService } from 'sunbird';
 import { NgModel } from '@angular/forms';
 import * as _ from 'lodash';
 // import { ContentActionsComponent } from '../../component/content-actions/content-actions';
@@ -122,7 +122,7 @@ export class ContentDetailsPage {
    * @param events 
    * @param toastCtrl 
    */
-  constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, zone: NgZone,
+  constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService,private telemetryService : TelemetryService, zone: NgZone,
     private events: Events, toastCtrl: ToastController, loadingCtrl: LoadingController,
     private fileUtil: FileUtil, public popoverCtrl: PopoverController) {
     this.navCtrl = navCtrl;
@@ -173,6 +173,8 @@ export class ContentDetailsPage {
     this.content.downloadable = data.result.isAvailableLocally;
     this.content.playContent = JSON.stringify(data.result);
 
+    this.generateImpressionEvent(this.content.identifier, this.content.contentType, this.content.pkgVersion);
+
     // Check locally available
     switch (data.result.isAvailableLocally) {
       case true: {
@@ -195,6 +197,17 @@ export class ContentDetailsPage {
     if (this.content.me_totalDownloads) {
       this.content.me_totalDownloads = this.content.me_totalDownloads.split('.')[0];
     }
+  }
+
+  generateImpressionEvent(objectId, objectType, objectVersion) {
+    let impression = new Impression();
+    impression.type = ImpressionType.DETAIL;
+    impression.pageId = PageId.CONTENT_DETAIL;
+    impression.env = Environment.HOME;
+    impression.objId = objectId;
+    impression.objType = objectType;
+    impression.objVer = objectVersion;
+    this.telemetryService.impression(impression);
   }
 
   /**

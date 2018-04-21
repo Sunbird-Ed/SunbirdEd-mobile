@@ -1,6 +1,6 @@
 import { Component, NgZone, Input, ViewChild } from "@angular/core";
 import { IonicPage, NavParams, NavController, Events } from "ionic-angular";
-import { ContentService, ContentSearchCriteria } from "sunbird";
+import { ContentService, ContentSearchCriteria, Log, LogLevel, TelemetryService, Impression, ImpressionType, Environment, Interact, InteractType, InteractSubtype } from "sunbird";
 import { GenieResponse } from "../settings/datasync/genieresponse";
 import { FilterPage } from "./filters/filter";
 import { CourseDetailPage } from "../course-detail/course-detail";
@@ -8,16 +8,24 @@ import { CollectionDetailsPage } from "../collection-details/collection-details"
 import { ContentDetailsPage } from "../content-details/content-details";
 import { Network } from "@ionic-native/network";
 
+class CMap{
+  [key:string]:any
+}
 @IonicPage()
 @Component({
   selector: 'page-search',
   templateUrl: './search.html'
 })
+
+
 export class SearchPage {
 
+  
   @ViewChild('searchInput') searchBar;
 
   contentType: Array<string> = [];
+
+  source: string;
 
   dialCode: string;
 
@@ -38,6 +46,7 @@ export class SearchPage {
   isDialCodeSearch = false;
 
   constructor(private contentService: ContentService,
+    private telemetryService: TelemetryService,
     private navParams: NavParams,
     private navCtrl: NavController,
     private zone: NgZone,
@@ -64,7 +73,8 @@ export class SearchPage {
   }
 
 
-  openContent(collection, content) {
+  openContent(collection, content, index) {
+    this.generateInteractEvent(content.identifier, content.contentType, content.pkgVersion, index);
     if (collection !== undefined) {
       this.navCtrl.push(CollectionDetailsPage, {
         content: content
@@ -74,6 +84,9 @@ export class SearchPage {
       this.showContentDetails(content);
     }
   }
+
+
+
 
   showContentDetails(content) {
     if (content.contentType === 'Course') {
@@ -154,6 +167,8 @@ export class SearchPage {
         if (response.status && response.result) {
           this.searchContentResult = response.result.contentDataList;
           this.updateFilterIcon();
+          this.generateImpressionEvent();
+          this.generateLogEvent(response.result);
         }
         this.showLoader = false;
       });
@@ -169,6 +184,7 @@ export class SearchPage {
   private init() {
     this.dialCode = this.navParams.get('dialCode');
     this.contentType = this.navParams.get('contentType');
+    this.source = this.navParams.get('source');
 
     if (this.dialCode !== undefined && this.dialCode.length > 0) {
       this.getContentForDialCode()
@@ -226,6 +242,48 @@ export class SearchPage {
       });
     });
   }
+  private generateImpressionEvent() {
+    let impression = new Impression();
+    impression.type = ImpressionType.SEARCH;
+    impression.pageId = this.source;
+    impression.env = Environment.HOME;
+    this.telemetryService.impression(impression);
+  }
+
+  private generateLogEvent(searchResult) {
+    let log = new Log();
+    log.level = LogLevel.INFO;
+    if (searchResult != null) {
+      let contentArray: Array<any> = searchResult.contentDataList;
+      let params = new Array<any>();
+      let paramsMap: Map<string, any> = new Map();
+      paramsMap.set("SearchResults", contentArray.length);
+      paramsMap.set("SearchCriteria", searchResult.request);
+      params.push(paramsMap);
+      log.params = params;
+      this.telemetryService.log(log);
+    }
+
+  }
+
+  generateInteractEvent(identifier, contentType, pkgVersion, index) {
+    let interact = new Interact();
+    interact.type = InteractType.TOUCH;
+    interact.subType = InteractSubtype.CONTENT_CLICKED;
+    interact.pageId = this.source;
+    interact.env = Environment.HOME;
+    let valuesMap = new CMap();
+    
+    valuesMap["SearchPhrase"]= this.searchKeywords;
+    valuesMap["PositionClicked"]= index;
+    interact.valueMap = valuesMap;
+    interact.id = this.source;
+    interact.objId = identifier;
+    interact.objType = contentType;
+    interact.objType = pkgVersion;
+    this.telemetryService.interact(interact);
+  }
+
 
 
   private processDialCodeResult(searchResult) {

@@ -17,6 +17,7 @@ import {
   ContentService,
   UserProfileService,
   TenantInfoRequest,
+  PageId,
 } from 'sunbird';
 import { CourseCard } from './../../component/card/course/course-card';
 import { HomeAnnouncementCard } from '../../component/card/home/home-announcement-card'
@@ -177,10 +178,6 @@ export class HomePage implements OnInit {
   }
 
   ionViewDidLoad() {
-    // let impression = new Impression();
-    // impression.type = "view";
-    // impression.pageId = "ionic_sunbird";
-    // this.telemetryService.impression(impression);
     this.refreshTenantData();
     (<any>window).supportfile.makeEntryInSunbirdSupportFile((result) => {
       console.log("Result - " + JSON.parse(result));
@@ -248,7 +245,7 @@ export class HomePage implements OnInit {
       "Resource",
     ];
 
-    this.navCtrl.push(SearchPage, { contentType: contentType})
+    this.navCtrl.push(SearchPage, { contentType: contentType,source :PageId.HOME})
   }
 
    /**

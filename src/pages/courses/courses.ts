@@ -2,7 +2,7 @@ import { ViewMoreActivityPage } from './../view-more-activity/view-more-activity
 import { Component, OnInit, NgZone, ViewChild } from '@angular/core';
 import { NavController, Platform, PopoverController } from 'ionic-angular';
 import { IonicPage, Slides } from 'ionic-angular';
-import { CourseService, AuthService, EnrolledCoursesRequest, PageAssembleService, PageAssembleCriteria, QRScanner, FrameworkDetailsRequest, CategoryRequest, FrameworkService } from 'sunbird';
+import { CourseService, AuthService, EnrolledCoursesRequest, PageAssembleService, PageAssembleCriteria, QRScanner,FrameworkDetailsRequest, CategoryRequest, FrameworkService, Impression, ImpressionType, PageId, Environment, TelemetryService } from 'sunbird';
 import { CourseCard } from './../../component/card/course/course-card';
 import { DocumentDirection } from 'ionic-angular/platform/platform';
 import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
@@ -97,7 +97,7 @@ export class CoursesPage implements OnInit {
    * @param {NgZone} ngZone To bind data
    */
   constructor(navCtrl: NavController, courseService: CourseService, authService: AuthService, platform: Platform,
-    pageService: PageAssembleService, ngZone: NgZone, private qrScanner: SunbirdQRScanner, private popCtrl: PopoverController,  private framework: FrameworkService) {
+    pageService: PageAssembleService, ngZone: NgZone, private qrScanner: SunbirdQRScanner, private popCtrl: PopoverController,  private framework: FrameworkService,public telemetryService : TelemetryService) {
     this.navCtrl = navCtrl;
     this.courseService = courseService;
     this.authService = authService;
@@ -301,7 +301,19 @@ export class CoursesPage implements OnInit {
       "Course",
     ];
 
-    this.navCtrl.push(SearchPage, { contentType: contentType})
+    this.navCtrl.push(SearchPage, { contentType: contentType,source :PageId.COURSES})
+  }
+
+  ionViewDidEnter(){
+    this.generateImpressionEvent();
+  }
+
+  generateImpressionEvent(){
+    let impression = new Impression();
+    impression.type =ImpressionType.VIEW;
+    impression.pageId = PageId.COURSES;
+    impression.env=Environment.HOME;
+    this.telemetryService.impression(impression);
   }
 
   showFilter() {

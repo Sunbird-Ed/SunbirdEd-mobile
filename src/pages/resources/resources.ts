@@ -1,6 +1,6 @@
 import { Component, NgZone, ViewChild, OnInit } from '@angular/core';
 import { NavController, PopoverController } from 'ionic-angular';
-import { PageAssembleService, PageAssembleCriteria, ContentService, AuthService, FrameworkService, CategoryRequest, FrameworkDetailsRequest } from "sunbird";
+import { PageAssembleService, PageAssembleCriteria, ContentService, AuthService,FrameworkService, CategoryRequest, FrameworkDetailsRequest ,Impression, ImpressionType, PageId, Environment, TelemetryService } from "sunbird";
 import * as _ from 'lodash';
 import { Slides } from 'ionic-angular';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
@@ -56,7 +56,7 @@ export class ResourcesPage {
   mediumList: Array<string> = [];
 
   constructor(public navCtrl: NavController, private pageService: PageAssembleService, private ngZone: NgZone, private popupCtrl: PopoverController,
-    contentService: ContentService, authService: AuthService, private qrScanner: SunbirdQRScanner, private popCtrl: PopoverController, private framework: FrameworkService) {
+    contentService: ContentService, authService: AuthService, private qrScanner: SunbirdQRScanner, private popCtrl: PopoverController, private framework: FrameworkService,private telemetryService :TelemetryService) {
     this.contentService = contentService;
     this.authService = authService;
 
@@ -269,6 +269,10 @@ export class ResourcesPage {
     this.getPopularContent();
   }
 
+  ionViewDidEnter() {
+    this.generateImpressionEvent();
+  }
+
   ionViewWillEnter() {
     if (!this.pageLoadedSuccess) {
       this.getPopularContent();
@@ -281,6 +285,14 @@ export class ResourcesPage {
         this.guestUser = false;
       }
     });
+  }
+
+  generateImpressionEvent() {
+    let impression = new Impression();
+    impression.type = ImpressionType.VIEW;
+    impression.pageId = PageId.COURSES;
+    impression.env = Environment.HOME;
+    this.telemetryService.impression(impression);
   }
 
   scanQRCode() {

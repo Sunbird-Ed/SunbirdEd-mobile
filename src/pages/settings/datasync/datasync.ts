@@ -1,6 +1,7 @@
 import { Component, NgZone } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { TelemetryService, SyncStat, SharedPreferences } from 'sunbird';
+import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
+import { TelemetryService, SyncStat, SharedPreferences, PageId, Environment, ImpressionType, Impression, Interact, InteractType, InteractSubtype } from 'sunbird';
+import { Storage } from "@ionic/storage";
 import { DataSyncType } from "./datasynctype.enum"
 import { TranslateService } from '@ngx-translate/core'
 
@@ -14,6 +15,9 @@ import { TranslateService } from '@ngx-translate/core'
 const KEY_DATA_SYNC_TYPE = "data_sync_type";
 const KEY_DATA_SYNC_TIME = "data_sync_time";
 
+class CMap {
+  [key: string]: any
+}
 @Component({
   selector: 'page-datasync',
   templateUrl: 'datasync.html',
@@ -21,17 +25,18 @@ const KEY_DATA_SYNC_TIME = "data_sync_time";
 })
 export class DatasyncPage {
   dataSyncType: DataSyncType;
-  lastSyncedTimeString : String = "LAST_SYNC";
+  lastSyncedTimeString: String = "LAST_SYNC";
   latestSync: String;
 
   OPTIONS: typeof DataSyncType = DataSyncType;
 
-  constructor(public zone: NgZone, 
-    public navCtrl: NavController, 
-    public navParams: NavParams, 
-    private telemetryService: TelemetryService, 
+  constructor(public zone: NgZone,
+    public navCtrl: NavController,
+    public navParams: NavParams,
+    private telemetryService: TelemetryService,
     private preference: SharedPreferences,
-    private translate: TranslateService) {
+    private translate: TranslateService,
+    private loadingCtrl: LoadingController) {
   }
 
   private init() {
@@ -65,6 +70,10 @@ export class DatasyncPage {
     this.init();
   }
 
+  ionViewDidEnter() {
+    this.generateImpressionEvent();
+  }
+
   onSelected() {
     console.log("Value - " + this.dataSyncType)
     this.preference.putString(KEY_DATA_SYNC_TYPE, this.dataSyncType)
@@ -77,12 +86,16 @@ export class DatasyncPage {
   onSyncClick() {
     console.log('Sync called');
     let that = this;
+    let loader = this.getLoader();
+    loader.present();
+    this.generateInteractEvent(InteractType.TOUCH,InteractSubtype.MANUALSYNC_INITIATED,null);
     this.telemetryService.sync((response) => {
 
       that.zone.run(() => {
         console.log("Telemetry Data Sync : " + response);
-
+       
         let syncStat: SyncStat = response.result;
+        this.generateInteractEvent(InteractType.OTHER,InteractSubtype.MANUALSYNC_SUCCESS,syncStat.syncedFileSize.toString());
         console.log("Telemetry Data Sync Time : " + syncStat.syncTime);
         let milliseconds = Number(syncStat.syncTime);
 
@@ -101,6 +114,7 @@ export class DatasyncPage {
         this.preference.putString(KEY_DATA_SYNC_TIME, dateAndTime)
 
         console.log("Telemetry Data Sync Time : " + this.latestSync);
+        loader.dismiss()
       });
 
 
@@ -108,6 +122,9 @@ export class DatasyncPage {
       console.log("Telemetry Data Sync Error: " + error);
     });
   }
+
+  
+
 
   getTimeIn12HourFormat(time: Date): String {
     let date = new Date(time);
@@ -120,5 +137,31 @@ export class DatasyncPage {
     newMinutes = minutes < 10 ? '0' + minutes : '' + minutes;
     var strTime = hours + ':' + newMinutes + ' ' + ampm;
     return strTime;
+  }
+
+  generateImpressionEvent() {
+    let impression = new Impression();
+    impression.type = ImpressionType.VIEW;
+    impression.pageId = PageId.SETTINGS_DATASYNC;
+    impression.env = Environment.SETTINGS;
+    this.telemetryService.impression(impression);
+  }
+
+  generateInteractEvent(interactType: string, subtype: string, size: string) {
+    let interact = new Interact();
+    interact.type = interactType;
+    interact.subType = subtype;
+    if (size != null) {
+      let valuesMap = new CMap();
+      valuesMap["SizeOfFileInKB"] = size;
+      interact.valueMap=valuesMap;
+    }
+    this.telemetryService.interact(interact);
+  }
+
+  getLoader(): any {
+    return this.loadingCtrl.create({
+      spinner: "crescent"
+    });
   }
 }

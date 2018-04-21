@@ -1,5 +1,5 @@
 import { Component, NgZone, ViewChild, Input } from "@angular/core";
-import { AuthService, UserProfileService } from "sunbird";
+import { AuthService, UserProfileService, Impression, ImpressionType, PageId, Environment, TelemetryService } from "sunbird";
 import { NavController, NavParams, LoadingController } from "ionic-angular";
 import { Renderer } from '@angular/core';
 
@@ -29,6 +29,7 @@ export class UserSearchComponent {
     public navParams: NavParams,
     private authService: AuthService,
     private userService: UserProfileService,
+    private telemetryService: TelemetryService,
     private zone: NgZone,
     private renderer: Renderer,
     private loadingCtrl: LoadingController,
@@ -105,10 +106,20 @@ export class UserSearchComponent {
   }
 
   ionViewDidEnter() {
+    this.generateImpressionEvent();
     setTimeout(() => {
       this.input.setFocus();
     }, 100);
   }
+
+  generateImpressionEvent() {
+    let impression = new Impression();
+    impression.type = ImpressionType.SEARCH;
+    impression.pageId = PageId.PROFILE;
+    impression.env = Environment.USER;
+    this.telemetryService.impression(impression);
+  }
+
 
   getLoader(): any {
     return this.loadingCtrl.create({

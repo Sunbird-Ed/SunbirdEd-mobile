@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-import { TabsPage, OAuthService, SharedPreferences } from 'sunbird';
+import { TabsPage,SharedPreferences, OAuthService, Interact, TelemetryService, InteractType, InteractSubtype, Environment, PageId } from 'sunbird';
 import { ViewController } from 'ionic-angular/navigation/view-controller';
 import { TranslateService } from '@ngx-translate/core';
 import { ProfileType, ProfileService } from 'sunbird'
@@ -35,8 +35,10 @@ export class UserTypeSelectionPage {
 
   constructor(public navCtrl: NavController,
     private translator: TranslateService,
+    private preference: SharedPreferences,
+    private storage: Storage,
     private profileService: ProfileService,
-    private preference: SharedPreferences
+    private telemetryService: TelemetryService
   ) {
     this.initData();
   }
@@ -90,6 +92,8 @@ export class UserTypeSelectionPage {
       profileType: ProfileType.TEACHER
     };
 
+    this.generateInteractEvent(this.selectedUserType);
+
     if (this.selectedUserType != "teacher") {
       profileRequest.profileType = ProfileType.STUDENT;
     }
@@ -120,6 +124,20 @@ export class UserTypeSelectionPage {
       }, (error: any) => {
         console.log("Set User Error -" + error);
       })
+  }
+
+  generateInteractEvent(userType) {
+    let interact = new Interact();
+    interact.type = InteractType.TOUCH;
+    interact.subType = InteractSubtype.CONTINUE_CLICKED;
+    interact.pageId = PageId.USER_TYPE_SELECTION;
+    let values = new Array<any>();
+    let paramsMap: Map<string, any> = new Map();
+    paramsMap.set("UserType", userType);
+    values.push(paramsMap);
+    interact.values=values;
+    interact.env = Environment.HOME;
+    this.telemetryService.interact(interact);
   }
 
 }

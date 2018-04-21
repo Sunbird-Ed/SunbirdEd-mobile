@@ -23,9 +23,10 @@
           <ion-icon ios="ios-arrow-forward" md="ios-arrow-forward"></ion-icon>
         </button>
       </div>
-
+      <div *ngIf="result && result.content && result.content.length">
+        sway
       <ion-list *ngFor="let content of result.content" class="content-list" margin-start>
-        <ion-item no-padding (click)="openContent(result, content)">
+        AA: {{index}}<ion-item no-padding (click)="openContent(result, content,index)">
           <ion-avatar item-start>
             <img src="./assets/imgs/ic_logo.png" width="24px" height="24px">
           </ion-avatar>
@@ -33,13 +34,14 @@
           <p>{{ content.contentType }} • {{ getReadableFileSize(content.size) }}</p>
         </ion-item>
       </ion-list>
+      </div>
       <div class="divider"></div>
     </div>
   </ion-list>
 
   <ion-list no-lines *ngIf="dialCodeContentResult && dialCodeContentResult.length">
-    <ion-list *ngFor="let content of dialCodeContentResult" class="content-list" margin-start>
-      <ion-item no-padding (click)="openContent(undefined, content)">
+    <ion-list *ngFor="let content of dialCodeContentResult; let i = index" class="content-list" margin-start>
+      <ion-item no-padding (click)="openContent(undefined, content,index)">
         <ion-avatar item-start>
           <img src="./assets/imgs/ic_logo.png" width="24px" height="24px">
         </ion-avatar>
@@ -52,7 +54,7 @@
 
 
   <ion-list *ngIf="searchContentResult && searchContentResult.length">
-    <ion-item *ngFor="let content of searchContentResult" (click)="openContent(undefined, content)">
+    <ion-item *ngFor="let content of searchContentResult; let i = index" (click)="openContent(undefined, content,i)">
       <ion-avatar item-start>
         <img-loader src="{{ content.appIcon }}" backgroundSize="cover" width="100%" height="100%" spinner="true" fallback="./assets/imgs/ic_logo.png"
           fallbackAsPlaceholder="true" useImg></img-loader>
