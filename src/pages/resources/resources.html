@@ -17,14 +17,12 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content overflow-scroll="true" class="course-scroll-holder">
+<ion-content overflow-scroll="true" class="course-scroll-holder1" style="background: #efeff4;">
   <!-- onBoardingSLides starts here -->
   <div *ngIf="guestUser">
-    <p class="onbording-card-header-text">{{ 'ONBOARDING_SLIDES_HEADER_TEXT' | translate }}</p>
-
+    <p class="onbording-card-header-text">{{ 'ONBOARDING_CARDS_HEADING' | translate }}</p>
     <ion-slides (ionSlideDrag)="onSlideDrag()" class="onbording-slides" pager=true centeredSlides=false speed=50 padding-left
       padding-right>
-
       <ion-slide *ngFor="let slide of onBoardingSlides; let i=index">
         <div class="onbording-slide-div">
           <ion-row>
@@ -46,10 +44,11 @@
 
     </ion-slides>
   </div>
+  <!-- <div *ngIf="guestUser" class="devider-line"></div> -->
   <!-- onBoardingSLides ends here -->
 
   <!-- <div> -->
-  <div [ngClass]="{'empty-saved-resources' : localResources && localResources.length === 0}">
+  <div class="course-scroll-holder" [ngClass]="{'empty-saved-resources' : localResources && localResources.length === 0}">
     <div class="item padding-11">
       <span float-start class="scroll-heading">{{ 'SAVED_RESOURCES' | translate }}</span>
       <span float-end class="view-all-link" *ngIf="localResources && localResources.length > 0 && !showLoader" (click)="viewAllSavedResources();">
