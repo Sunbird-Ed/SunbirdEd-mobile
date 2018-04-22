@@ -38,4 +38,32 @@ page-course-batches {
     .guest-user-info {
         padding-top: 135px;
     }
+    .batch-name {
+        margin-top: 0px; 
+        font-size: 1.6rem;
+        font-weight: 500;
+    }
+    .selected-filter {
+        width: 88%;
+        padding-top: 8px; 
+        font-weight:600;
+    }
+    .padding-top-30 {
+        padding-top: 30px;
+    }
+    .batch-list {
+        margin-left: -10px;
+        .enroll-btn{
+            padding-right: 0 !important;
+        }
+    }
+    .padding-top-8 {
+        padding-top: 8px;
+    }
+    .padding-top-9 {
+        padding-top: 9px;
+    }
+    .font-weight-500{
+        font-weight: 500;
+    }
 }
