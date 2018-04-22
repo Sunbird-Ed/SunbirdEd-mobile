@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Globalization } from '@ionic-native/globalization';
-// import { Storage } from "@ionic/storage";
 import { TabsPage, SharedPreferences, Impression, ImpressionType, PageId, Environment, TelemetryService, Interact, InteractType, InteractSubtype } from 'sunbird';
 
 import { OnboardingPage } from '../onboarding/onboarding';
