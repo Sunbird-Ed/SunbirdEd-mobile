@@ -1,6 +1,6 @@
 import { Component, NgZone, OnInit } from '@angular/core';
 import { CourseService, AuthService, EnrolledCoursesRequest } from 'sunbird';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angular';
 import * as _ from 'lodash';
 
 /**
@@ -16,6 +16,7 @@ import * as _ from 'lodash';
   templateUrl: 'course-batches.html',
 })
 export class CourseBatchesPage implements OnInit {
+
   /**
    * Contains user id
    */
@@ -36,8 +37,21 @@ export class CourseBatchesPage implements OnInit {
    */
   showLoader: boolean;
 
+  /**
+   * Contains upcomming batches list
+   */
   upcommingBatches: Array<any> = [];
+
+  /**
+   * Contains ongoing batches list
+   */
   ongoingBatches: Array<any> = [];
+
+  /**
+   * Flag to check guest user
+   */
+  isGuestUser: boolean = false;
+
   /**
    * Contains batches list
    */
@@ -68,6 +82,11 @@ export class CourseBatchesPage implements OnInit {
    */
   public authService: AuthService;
 
+  /**
+   * Contains reference of ionic toast controller
+   */
+  public toastCtrl: ToastController;
+
   selectedFilter: string;
 
   /**
@@ -80,7 +99,7 @@ export class CourseBatchesPage implements OnInit {
    * @param {AuthService} authService To get logged-in user data
    */
   constructor(courseService: CourseService, navCtrl: NavController, navParams: NavParams, zone: NgZone,
-    authService: AuthService) {
+    authService: AuthService, toastCtrl: ToastController) {
     this.courseService = courseService;
     this.navCtrl = navCtrl;
     this.navParams = navParams;
@@ -88,6 +107,7 @@ export class CourseBatchesPage implements OnInit {
     this.authService = authService;
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
     this.selectedFilter = 'View ongoing batches';
+    this.toastCtrl = toastCtrl;
   }
 
   /**
@@ -119,11 +139,16 @@ export class CourseBatchesPage implements OnInit {
    */
   getUserId(): void {
     this.authService.getSessionData((session) => {
-      if (session === undefined || session == null) {
-        console.log('session expired')
+      if (session === undefined || session == null || session === "null") {
+        console.log('session expired');
+        this.zone.run(() => { this.isGuestUser = true; });
       } else {
-        let sessionObj = JSON.parse(session);
-        this.userId = sessionObj["userToken"];
+        this.zone.run(() => { 
+          let sessionObj = JSON.parse(session);
+          this.isGuestUser = false;
+          this.userId = sessionObj["userToken"];
+          this.getBatchesByCourseId();
+        });
       }
     });
   }
@@ -172,9 +197,25 @@ export class CourseBatchesPage implements OnInit {
     this.tabBarElement.style.display = 'none';
   }
 
+  showMessage(message: string) {
+    let toast = this.toastCtrl.create({
+      message: message,
+      duration: 2000,
+      position: 'bottom'
+    });
+    toast.onDidDismiss(() => {
+    });
+
+    toast.present();
+  }
+
+  signIn() {
+    let message = 'Sign in functionality is under progress'
+    this.showMessage(message)
+  }
+
   ngOnInit(): void {
     this.tabBarElement.style.display = 'none';
     this.getUserId();
-    this.getBatchesByCourseId();
   }
 }
