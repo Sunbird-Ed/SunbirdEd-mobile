@@ -17,10 +17,10 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content overflow-scroll="true">
+<ion-content overflow-scroll="true" style="background: #efeff4;">
   <!-- onBoardingSLides starts here -->
   <div *ngIf="guestUser">
-    <p class="onbording-card-header-text">{{ 'ONBOARDING_SLIDES_HEADER_TEXT' | translate }}</p>
+    <p class="onbording-card-header-text">{{ 'ONBOARDING_CARDS_HEADING' | translate }}</p>
 
     <ion-slides (ionSlideDrag)="onSlideDrag()" class="onbording-slides" pager=true centeredSlides=false speed=50 padding-left
       padding-right>

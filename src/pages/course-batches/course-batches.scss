@@ -1,3 +1,41 @@
 page-course-batches {
-
+    .my-overlay {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        //background: rgba(0,0,0,0.7);
+        background: rgba(255, 255, 255, 0.8);
+        z-index: 20;
+        top: 0;
+        left: 0;
+        margin-top: 56px;
+      }
+    .batch-filter-icon {
+        float: right;
+        padding-right: 25px;
+    }
+    .batch-filter-holder{
+        margin-top: -10px;
+    }
+    .background-gray{
+        background: #efeff4;
+        margin: 0 -26px;
+        padding-left: 25px !important;
+        margin-top: -13px;
+    }
+    .batch-empty-msg-wrapper {
+        padding-top: 100px;
+        .msg-holder {
+            padding-top: 30px;
+            .empty-batch-icon{
+                width: 50px; margin-left: 118px;
+            }
+            .text-holder{
+                font-size: 1.3em;font-weight: 300;
+            }
+        }
+    }
+    .guest-user-info {
+        padding-top: 135px;
+    }
 }
