@@ -384,6 +384,8 @@ export class ContentDetailsPage {
     let popover = this.popoverCtrl.create(ContentActionsComponent, {
       content: this.content,
       isChild: false
+    },{
+      cssClass: 'content-action'
     });
     popover.present({
       ev: event
