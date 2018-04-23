@@ -320,7 +320,7 @@ export class ResourcesPage {
       "Resource",
     ];
 
-    this.navCtrl.push(SearchPage, { contentType: contentType })
+    this.navCtrl.push(SearchPage, { contentType: contentType });
   }
 
   showFilter() {
