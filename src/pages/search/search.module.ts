@@ -6,6 +6,7 @@ import { TranslateModule } from "@ngx-translate/core";
 import { FilterPage } from "./filters/filter";
 import { FilterOptions } from "./filters/options/options";
 import { IonicImageLoader } from "ionic-image-loader";
+import { Network } from "@ionic-native/network";
 
 @NgModule({
   declarations: [
@@ -22,6 +23,9 @@ import { IonicImageLoader } from "ionic-image-loader";
   entryComponents: [
     FilterPage,
     FilterOptions
+  ],
+  providers: [
+    Network,
   ]
 })
 export class SearchModule {
