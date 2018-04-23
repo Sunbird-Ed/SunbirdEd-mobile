@@ -8,7 +8,7 @@
             <button ion-button icon-only>
                 <ion-icon md="md-share" float-right></ion-icon>
             </button>
-            <button *ngIf="contentDetail && contentDetail.isAvailableLocally" ion-button icon-only (click)="showOverflowMenu($event)">
+            <button *ngIf="contentDetail && contentDetail.isAvailableLocally" ion-button icon-only (click)="showOverflowMenu($event)" style="font-size: 1.8rem;">
                 <ion-icon md="md-more" float-end></ion-icon>
             </button>
         </ion-buttons>
