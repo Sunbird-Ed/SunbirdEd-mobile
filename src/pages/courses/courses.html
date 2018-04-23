@@ -16,35 +16,10 @@
     </ion-buttons>
   </ion-navbar>
 </ion-header>
-
+<pb-horizontal [progress]="onBoardingProgress"></pb-horizontal>
 <ion-content overflow-scroll="true" style="background: #efeff4;">
   <!-- onBoardingSLides starts here -->
-  <div *ngIf="guestUser">
-    <p class="onbording-card-header-text">{{ 'ONBOARDING_CARDS_HEADING' | translate }}</p>
-
-    <ion-slides (ionSlideDrag)="onSlideDrag()" class="onbording-slides" pager=true centeredSlides=false speed=50 padding-left
-      padding-right>
-
-      <ion-slide *ngFor="let slide of onBoardingSlides; let i=index">
-        <div class="onbording-slide-div">
-          <ion-row>
-            <p class="onbording-slide-title">
-              {{slide.title}}
-            </p>
-          </ion-row>
-
-          <ion-footer class="onbording-slide-footer" no-shadow no-border>
-            <div *ngIf="!selectedValue[i]" (click)="openFilterOptions(slide, i)" style="font-size: 1.2rem; font-weight: bold; color: dodgerblue;">{{slide.desc}}</div>
-            <div (click)="openFilterOptions(slide, i)" class="row">
-              <div class="ellipsis" style="display:inline;font-size: 1.2rem;" text-uppercase>
-                {{selectedValue[i]}}</div> &nbsp;
-              <ion-icon *ngIf="selectedValue[i]" style="display:inline;font-size: 1.7rem;" name="md-create" color="primary"></ion-icon>
-            </div>
-          </ion-footer>
-        </div>
-      </ion-slide>
-    </ion-slides>
-  </div>
+    <onboarding-card *ngIf="guestUser && !isOnBoardingCardCompleted"></onboarding-card>
   <!-- onBoardingSLides ends here -->
 
 

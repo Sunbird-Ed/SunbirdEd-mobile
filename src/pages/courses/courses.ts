@@ -1,6 +1,6 @@
 import { ViewMoreActivityPage } from './../view-more-activity/view-more-activity';
 import { Component, OnInit, NgZone, ViewChild } from '@angular/core';
-import { NavController, Platform, PopoverController } from 'ionic-angular';
+import { NavController, Platform, PopoverController, Events } from 'ionic-angular';
 import { IonicPage, Slides } from 'ionic-angular';
 import { CourseService, AuthService, EnrolledCoursesRequest, PageAssembleService, PageAssembleCriteria, QRScanner,FrameworkDetailsRequest, CategoryRequest, FrameworkService, Impression, ImpressionType, PageId, Environment, TelemetryService } from 'sunbird';
 import { CourseCard } from './../../component/card/course/course-card';
@@ -8,7 +8,6 @@ import { DocumentDirection } from 'ionic-angular/platform/platform';
 import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
 import { CourseFilter, CourseFilterCallback } from './filters/course.filter';
-import { FilterOptions, onBoardingSlidesCallback } from '../resources/onboarding-alert/onboarding-alert';
 
 @IonicPage()
 @Component({
@@ -74,17 +73,8 @@ export class CoursesPage implements OnInit {
 
   guestUser: boolean = false;
 
-
-  categories: Array<any> = [];
-  boardList: Array<string> = [];
-  gradeList: Array<string> = [];
-  subjectList: Array<string> = [];
-  mediumList: Array<string> = [];
-
-
-  onBoardingSlides: any[];
-  @ViewChild(Slides) mSlides: Slides;
-  selectedOptions: any;
+  isOnBoardingCardCompleted: boolean = false;
+  onBoardingProgress: number = 0;
 
   /**
    * Default method of class CoursesPage
@@ -97,7 +87,7 @@ export class CoursesPage implements OnInit {
    * @param {NgZone} ngZone To bind data
    */
   constructor(navCtrl: NavController, courseService: CourseService, authService: AuthService, platform: Platform,
-    pageService: PageAssembleService, ngZone: NgZone, private qrScanner: SunbirdQRScanner, private popCtrl: PopoverController,  private framework: FrameworkService,public telemetryService : TelemetryService) {
+    pageService: PageAssembleService, ngZone: NgZone, private qrScanner: SunbirdQRScanner, private popCtrl: PopoverController,  private framework: FrameworkService,public telemetryService : TelemetryService,  private events: Events) {
     this.navCtrl = navCtrl;
     this.courseService = courseService;
     this.authService = authService;
@@ -105,66 +95,13 @@ export class CoursesPage implements OnInit {
     this.pageService = pageService;
     this.ngZone = ngZone;
 
-    this.getFrameworkDetails();
+    this.events.subscribe('onboarding-card:copleted', (isOnBoardingCardCompleted) => {
+      this.isOnBoardingCardCompleted = isOnBoardingCardCompleted;
+    });
 
-    this.onBoardingSlides = [
-      {
-        'id': 'boardList',
-        'title': 'Which board does your school follow?',
-        'desc': 'SELECT BOARD',
-        'options': [
-          // { text: 'Board1', value: 'board1', checked: true },
-          // { text: 'Board2', value: 'board2', checked: false },
-          // { text: 'Board3', value: 'board3', checked: false },
-          // { text: 'Board4', value: 'board4', checked: false },
-          // { text: 'Board5', value: 'board5', checked: false },
-          // { text: 'Board6', value: 'board6', checked: false },
-          // { text: 'Board7', value: 'board7', checked: false }
-        ]
-      },
-      {
-        'id': 'gradeList',
-        'title': 'Which class do you belong to?',
-        'desc': 'SELECT CLASS',
-        'options': [
-          // { text: 'Class1', value: 'Class1', checked: false },
-          // { text: 'Class2', value: 'Class2', checked: false },
-          // { text: 'Class3', value: 'Class3', checked: false },
-          // { text: 'Class4', value: 'Class4', checked: false },
-          // { text: 'Class5', value: 'Class5', checked: false },
-          // { text: 'Class6', value: 'Class6', checked: false },
-          // { text: 'Class7', value: 'Class7', checked: false }
-        ]
-      },
-      {
-        'id': 'subjectList',
-        'title': 'Which subjects are you looking for?',
-        'desc': 'SELECT SUBJECT',
-        'options': [
-          // { text: 'Subject1', value: 'Subject1', checked: false },
-          // { text: 'Subject2', value: 'Subject2', checked: false },
-          // { text: 'Subject3', value: 'Subject3', checked: false },
-          // { text: 'Subject4', value: 'Subject4', checked: false },
-          // { text: 'Subject5', value: 'Subject5', checked: false },
-          // { text: 'Subject6', value: 'Subject6', checked: false },
-          // { text: 'Subject7', value: 'Subject7', checked: false }
-        ]
-      },
-      {
-        'id': 'mediumList',
-        'title': 'What medium/language does your school teach in?',
-        'desc': 'SELECT MEDIUM/LANG',
-        'options': [
-          // { text: 'Lang1', value: 'Lang1', checked: true },
-          // { text: 'Lang2', value: 'Lang2', checked: false },
-          // { text: 'Lang3', value: 'Lang3', checked: false },
-          // { text: 'Lang4', value: 'Lang4', checked: false },
-          // { text: 'Lang5', value: 'Lang5', checked: false },
-          // { text: 'Lang6', value: 'Lang6', checked: false },
-          // { text: 'Lang7', value: 'Lang7', checked: false }
-        ]
-      }
-    ]
+    this.events.subscribe('onboarding-card:increaseProgress', (cardProgress) => {
+      this.onBoardingProgress = cardProgress;
+    });
   }
 
   viewMoreEnrolledCourses() {
@@ -344,148 +281,7 @@ export class CoursesPage implements OnInit {
       }
     }
 
-    let filter = this.popCtrl.create(CourseFilter, {callback: callback}, {cssClass: 'course-filter'});
+    let filter = this.popCtrl.create(CourseFilter, { callback: callback }, { cssClass: 'course-filter' });
     filter.present();
   }
-
-
-
-
-  // This for Guest-Profile Onboarding Cards
-
-  getFrameworkDetails(): void {
-    let req: FrameworkDetailsRequest = {
-      defaultFrameworkDetails: true
-    };
-
-    this.framework.getFrameworkDetails(req,
-      (res: any) => {
-        this.categories = JSON.parse(JSON.parse(res).result.framework).categories;
-        console.log("Framework details Response: ", JSON.parse(JSON.parse(res).result.framework).categories);
-      },
-      (err: any) => {
-        console.log("Framework details Response: ", JSON.parse(err));
-      });
-  }
-
-
-  /**
-  * This will internally call framework API
-  * @param {string} currentCategory - request Parameter passing to the framework API
-  * @param {string} list - Local variable name to hold the list data
-  */
-  getCategoryData(req: CategoryRequest, list): void {
-
-    this.framework.getCategoryData(req,
-      (res: any) => {
-        // { text: 'Lang1', value: 'Lang1', checked: true }
-        const resposneArray = JSON.parse(res);
-        this[list] = [];
-
-        resposneArray.forEach(element => {
-          const value = {'text': element.name, 'value': element.code, 'checked': false}
-          this[list].push(value)
-        });
-
-        // this[list] = resposneArray;
-        this.getListArray(list);
-        console.log(list + " Category Response: " + this[list]);
-      },
-      (err: any) => {
-        console.log("Subject Category Response: ", err);
-      });
-  }
-
-  checkPrevValue(index = 0, currentField, prevSelectedValue = '', ) {
-    console.log('coming here');
-    if (index != 0) {
-      let request: CategoryRequest = {
-        currentCategory: this.categories[index].code,
-        prevCategory: this.categories[index - 1].code,
-        selectedCode: [prevSelectedValue]
-      }
-      this.getCategoryData(request, currentField);
-    } else {
-      let request: CategoryRequest = {
-        currentCategory: this.categories[index].code
-      }
-      this.getCategoryData(request, currentField);
-    }
-  }
-
-  getListName(index: number): string {
-    if (index == 0) {
-      return 'boardList';
-    } else if (index == 1) {
-      return 'gradeList';
-    } else if (index == 2) {
-      return 'subjectList';
-    } else if (index == 3) {
-      return 'mediumList';
-    } else {
-      return 'boardList';
-    }
-  }
-
-  getListArray(name) {
-    if (name == 'boardList') {
-      this.onBoardingSlides[0].options = this.boardList;
-    } else if (name == 'gradeList') {
-      this.onBoardingSlides[1].options = this.gradeList;
-    } else if (name == 'subjectList') {
-      this.onBoardingSlides[2].options = this.subjectList;
-    } else if (name == 'mediumList') {
-      this.onBoardingSlides[3].options = this.mediumList;
-    }
-  }
-
-  openFilterOptions(selectedSlide, index) {
-    const that = this;
-    const callback: onBoardingSlidesCallback = {
-      save() {
-        console.log('getting data from popup.ts through call back resources');
-        that.selectedCheckboxValue(selectedSlide, index);
-      }
-    }
-
-    this.checkPrevValue(index, this.getListName(index));
-
-
-    let popUp = this.popCtrl.create(FilterOptions, { facet: selectedSlide, callback: callback, index: index }, {
-      cssClass: 'onboarding-alert'
-    });
-
-    popUp.present();
-  }
-
-  selectedCheckboxValue(selectedSlide, index) {
-    var optionsCSV = '';
-    selectedSlide.options.forEach(function (options) {
-      if (options.checked) {
-        //   var optionsCSV = options.value;
-        if (optionsCSV) {
-          optionsCSV += ','
-        }
-        optionsCSV += options.value;
-      }
-    })
-    this.selectedValue[index] = optionsCSV;
-  }
-
-  onSlideDrag() {
-    let currentIndex = this.mSlides.getActiveIndex();
-    console.log('Current index is', currentIndex);
-    console.log(this.selectedOptions.length);
-    console.log(this.selectedOptions[currentIndex]);
-    //let lockSwipeToNext = !(this.pets.length && this.pets[currentIndex] && this.pets[currentIndex].length);
-    this.mSlides.lockSwipeToNext(!(this.selectedValue.length && this.selectedValue[currentIndex]
-      && this.selectedValue[currentIndex].length));
-  }
-
-  handleOnBoardingOptionSelected(index: number) {
-    console.log("index: " + index + ", selectedOptions " + this.selectedOptions[index]);
-    // slides.
-  }
-
-  selectedValue: Array<string> = [];
 }
