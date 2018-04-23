@@ -32,11 +32,11 @@
           </ion-row>
 
           <ion-footer class="onbording-slide-footer" no-shadow no-border>
-            <div *ngIf="!selectedValue[i]" (click)="openFilterOptions(slide, i)">{{slide.desc}}</div>
+            <div *ngIf="!selectedValue[i]" (click)="openFilterOptions(slide, i)" style="font-size: 1.2rem; font-weight: bold; color: dodgerblue;">{{slide.desc}}</div>
             <div (click)="openFilterOptions(slide, i)" class="row">
-              <div class="ellipsis" style="display:inline" text-uppercase>
+              <div class="ellipsis" style="display:inline; font-size: 1.2rem;" text-uppercase>
                 {{selectedValue[i]}}</div> &nbsp;
-              <ion-icon *ngIf="selectedValue[i]" style="display:inline" name="md-create" color="primary"></ion-icon>
+              <ion-icon *ngIf="selectedValue[i]" style="display:inline;font-size: 1.7rem;" name="md-create" color="primary"></ion-icon>
             </div>
           </ion-footer>
         </div>
