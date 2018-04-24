@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams, PopoverController, LoadingController } from 'ionic-angular';
+import { NavController, NavParams, PopoverController, Events, LoadingController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 
 import { GuestEditProfilePage } from './../guest-edit.profile/guest-edit.profile';
@@ -29,7 +29,8 @@ export class GuestProfilePage {
   constructor(public navCtrl: NavController,
     public popoverCtrl: PopoverController,
     private profileService: ProfileService,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private events: Events
   ) {
     // TODO: Need to make an get Profile user details API call.
     this.refreshProfileData();
@@ -39,7 +40,7 @@ export class GuestProfilePage {
     console.log('ionViewDidLoad LanguageSettingPage');
   }
 
-  refreshProfileData(refresher:any = false) {
+  refreshProfileData(refresher: any = false) {
     let loader = this.getLoader();
     loader.present();
     this.profileService.getCurrentUser((res: any) => {
@@ -79,6 +80,12 @@ export class GuestProfilePage {
     return this.loadingCtrl.create({
       duration: 30000,
       spinner: "crescent"
+    });
+  }
+
+  ionViewWillEnter() {
+    this.events.subscribe('refresh:profile', () => {
+      this.refreshProfileData();
     });
   }
 }

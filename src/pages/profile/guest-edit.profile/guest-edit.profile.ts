@@ -1,6 +1,6 @@
 import { TranslateService } from '@ngx-translate/core';
 import { Component } from '@angular/core';
-import { NavController, NavParams, ToastController, ToastCmp } from 'ionic-angular';
+import { NavController, NavParams, ToastController, ToastCmp, Events } from 'ionic-angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import * as _ from 'lodash';
 
@@ -43,7 +43,8 @@ export class GuestEditProfilePage {
     private toastCtrl: ToastController,
     private frameworkService: FrameworkService,
     private profileService: ProfileService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private events: Events
   ) {
     this.profile = this.navParams.get('profile');
 
@@ -156,28 +157,34 @@ export class GuestEditProfilePage {
       day: -1,
       month: -1,
       standard: -1,
-      board: formVal.boards,
-      grade: formVal.grades,
-      subject: formVal.subjects,
-      medium: formVal.medium,
+      board: formVal.boards || this.profile.board,
+      grade: formVal.grades || this.profile.grade,
+      subject: formVal.subjects || this.profile.subject,
+      medium: formVal.medium || this.profile.medium,
       uid: this.profile.uid,
       handle: formVal.name,
       isGroupUser: false,
       language: "en",
-      avatar: "avatar"
+      avatar: "avatar",
+      createdAt: this.profile.createdAt
     }
 
     this.profileService.updateProfile(req,
       (res: any) => {
         console.log("Update Response", res);
         this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
+
+        // Publish event if the all the fields are submitted
+        if(formVal.boards.length && formVal.grades.length && formVal.medium.length && formVal.subjects.length) {
+          this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: true });
+        }
+        this.events.publish('refresh:profile');
         this.navCtrl.pop();
       },
       (err: any) => {
         this.getToast(this.translateMessage('PROFILE_UPDATE_FAILED')).present();
         console.log("Err", err);
       });
-
   }
 
   /**
