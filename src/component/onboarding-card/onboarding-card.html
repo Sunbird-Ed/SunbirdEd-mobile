@@ -1,0 +1,23 @@
+<div>
+  <p class="onbording-card-header">{{ 'ONBOARDING_CARDS_HEADING' | translate }}</p>
+  <ion-slides (ionSlideDrag)="onSlideDrag()" class="onbording-slides" pager="true" centeredSlides="false" speed="50">
+    <ion-slide *ngFor="let slide of onboardingService?.onBoardingSlides; let i=index">
+      <div class="onbording-slide-div">
+        <ion-row>
+          <p class="onbording-slide-title">
+            {{slide?.title | translate}}
+          </p>
+        </ion-row>
+
+        <ion-footer class="onbording-slide-footer" no-shadow no-border>
+          <div *ngIf="!slide.selectedOptions.length" (click)="openFilterOptions(slide, i)" class="font-bold font-size-small blue-color">{{slide?.desc | translate}}</div>
+          <div (click)="openFilterOptions(slide, i)" class="row">
+            <div class="font-size-small ellipsis text-width-50 display-inline" text-uppercase>
+              {{ slide?.selectedOptions}}</div> &nbsp;
+            <ion-icon *ngIf="slide.selectedOptions.length" class="font-size-small display-inline" name="md-create" color="primary"></ion-icon>
+          </div>
+        </ion-footer>
+      </div>
+    </ion-slide>
+  </ion-slides>
+</div>

@@ -10,13 +10,21 @@ import { Ionic2RatingModule } from "ionic2-rating";
 import { IonicImageLoader } from "ionic-image-loader";
 import { ViewMoreActivityListComponent } from './view-more-activity-list/view-more-activity-list';
 import { SignInCardComponent } from './sign-in-card/sign-in-card';
+import { OnboardingCardComponent } from './onboarding-card/onboarding-card';
+import { OnboardingAlert } from './onboarding-alert/onboarding-alert';
+import { OnboardingService } from './onboarding-card/onboarding.service';
+import { PBHorizontal } from './pbhorizontal/pb-horizontal';
+
 
 @NgModule({
     declarations: [
         CourseCard,
         HomeAnnouncementCard,
         ViewMoreActivityListComponent,
-        SignInCardComponent
+        SignInCardComponent,
+        OnboardingCardComponent,
+        OnboardingAlert,
+        PBHorizontal
         // ContentActionsComponent
     ],
     imports: [
@@ -24,14 +32,21 @@ import { SignInCardComponent } from './sign-in-card/sign-in-card';
         TranslateModule.forChild(),
         Ionic2RatingModule,
         IonicImageLoader,
-        PipesModule
+        PipesModule,
     ],
     exports: [
         CourseCard,
         HomeAnnouncementCard,
         ViewMoreActivityListComponent,
-        SignInCardComponent
+        SignInCardComponent,
+        OnboardingCardComponent,
+        OnboardingAlert,
+        PBHorizontal
         // ContentActionsComponent
-    ]
+    ],
+    entryComponents: [
+        OnboardingAlert
+    ],
+    providers: [OnboardingService]
 })
 export class ComponentsModule { }

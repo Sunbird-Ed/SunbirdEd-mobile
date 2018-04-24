@@ -34,6 +34,10 @@ export class SunbirdQRScanner {
     displayText: String = this.mQRScannerText['SCAN_QR_INSTRUCTION'],
     displayTextColor: String = "#0000ff", callback: QRResultCallback) {
     (<any>window).qrScanner.startScanner(screenTitle, displayText, displayTextColor, (code) => {
+      if (code === "cancel") {
+        return;
+      }
+
       let results = code.split("/");
 
       if (results[results.length - 2] == "dial") {

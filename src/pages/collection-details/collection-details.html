@@ -8,7 +8,8 @@
             <button ion-button icon-only>
                 <ion-icon md="md-share" float-right></ion-icon>
             </button>
-            <button *ngIf="contentDetail && contentDetail.isAvailableLocally" ion-button icon-only (click)="showOverflowMenu($event)" style="font-size: 1.8rem;">
+            <button *ngIf="contentDetail && contentDetail.isAvailableLocally" ion-button icon-only (click)="showOverflowMenu($event)"
+                style="font-size: 1.8rem;">
                 <ion-icon md="md-more" float-end></ion-icon>
             </button>
         </ion-buttons>
@@ -74,24 +75,6 @@
             </span>
         </div>
         <br/>
-        <div class="license-section padding-10 background-gray" *ngIf="contentDetail.license">
-            <div class="row" *ngIf="showLicense">
-                <span *ngIf="contentDetail.license">
-                    <div class="size_txt">{{ 'LICENSE' | translate }}</div>
-                    <div class="margin-top-5">{{ contentDetail.license }}</div>
-                </span>
-            </div>
-            <span class="read-more">
-                <span *ngIf="showLicense" (click)="showLicense = false">
-                    <br/> {{ 'HIDE_CREDITS_INFO' | translate }}
-                    <ion-icon name="ios-arrow-up"></ion-icon>
-                </span>
-                <span *ngIf="!showLicense" (click)="showLicense = true">
-                    {{ 'VIEW_CREDITS_INFO' | translate }}
-                    <ion-icon name="ios-arrow-down"></ion-icon>
-                </span>
-            </span>
-        </div>
         <!-- Course structure section -->
         <div class="structure-section" margin-top>
             <h6 class="padding-10 background-gray">{{ 'STRUCTURE' | translate }}</h6>
@@ -102,9 +85,9 @@
             </div>
             <div *ngIf="childrenData && childrenData.length" padding-top>
                 <ion-item *ngFor="let item of childrenData; let i = index" style="padding-left: 0px;" (click)="navigateToDetailsPage(item, depth + '.' + (i + 1))">
-                        <span ion-text>{{ (i) + (1) }}: {{ (item?.contentData?.name && item?.contentData?.name.length > 30) ? (item?.contentData?.name
-                            | slice:0:30) + '...' : (item?.contentData?.name)}}</span>
-                        <ion-icon name="ios-arrow-forward" float-end></ion-icon>
+                    <span ion-text>{{ (i) + (1) }}: {{ (item?.contentData?.name && item?.contentData?.name.length > 30) ? (item?.contentData?.name
+                        | slice:0:30) + '...' : (item?.contentData?.name)}}</span>
+                    <ion-icon name="ios-arrow-forward" float-end></ion-icon>
                 </ion-item>
             </div>
             <!-- Import content loader -->
@@ -125,12 +108,32 @@
             </ion-grid>
             <!-- End import content -->
         </div>
+        <br/>
+        <div class="license-section padding-10 background-gray" *ngIf="contentDetail.license">
+            <div class="row" *ngIf="showLicense">
+                <span *ngIf="contentDetail.license">
+                    <div class="size_txt">{{ 'LICENSE' | translate }}</div>
+                    <div class="margin-top-5">{{ contentDetail.license }}</div>
+                </span>
+            </div>
+            <span class="read-more">
+                <span *ngIf="showLicense" (click)="showLicense = false">
+                    <br/> {{ 'HIDE_CREDITS_INFO' | translate }}
+                    <ion-icon name="ios-arrow-up"></ion-icon>
+                </span>
+                <span *ngIf="!showLicense" (click)="showLicense = true">
+                    {{ 'VIEW_CREDITS_INFO' | translate }}
+                    <ion-icon name="ios-arrow-down"></ion-icon>
+                </span>
+            </span>
+        </div>
     </div>
 </ion-content>
 <!-- Page footer -->
 <ion-footer *ngIf="showDownloadBtn && !isDepthChild">
     <ion-toolbar padding>
-        <button ion-button block *ngIf="showDownloadBtn && !isDownloadStarted" (click)="downloadAllContent()"> {{ 'DOWNLOAD_ALL_CONTENT' | translate }} ({{ (downloadSize && downloadSize > 0) ? (downloadSize | fileSize) : 'O BYTES' }})</button>
+        <button ion-button block *ngIf="showDownloadBtn && !isDownloadStarted" (click)="downloadAllContent()"> {{ 'DOWNLOAD_ALL_CONTENT' | translate }} ({{ (downloadSize && downloadSize > 0) ? (downloadSize | fileSize) : 'O
+            BYTES' }})</button>
         <button *ngIf="isDownloadStarted" ion-button block outline>{{ 'DOWNLOADING_2' | translate }}... {{ currentCount }} / {{ queuedIdentifiers.length }}</button>
     </ion-toolbar>
 </ion-footer>
