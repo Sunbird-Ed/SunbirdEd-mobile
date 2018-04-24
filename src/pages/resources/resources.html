@@ -1,101 +1,73 @@
 <ion-header>
-  <ion-navbar>
-    <ion-title>
-      {{ 'LIBRARY_LW' | translate}}
-    </ion-title>
-    <ion-buttons end>
-      <button ion-button icon-only (click)="scanQRCode()">
-        <img src="assets/imgs/ic_scanqr.png" class="tool-icon" float-end/>
-      </button>
-      <button ion-button icon-only (click)="search()">
-        <img src="assets/imgs/ic_action_search.png" class="tool-icon" float-end/>
-      </button>
-      <button ion-button icon-only (click)="showFilter()">
-        <img src="assets/imgs/ic_action_filter.png" class="tool-icon" float-end/>
-      </button>
-    </ion-buttons>
-  </ion-navbar>
+	<ion-navbar>
+		<ion-title>
+			{{ 'LIBRARY_LW' | translate}}
+		</ion-title>
+		<ion-buttons end>
+			<button ion-button icon-only (click)="scanQRCode()">
+				<img src="assets/imgs/ic_scanqr.png" class="tool-icon" float-end/>
+			</button>
+			<button ion-button icon-only (click)="search()">
+				<img src="assets/imgs/ic_action_search.png" class="tool-icon" float-end/>
+			</button>
+			<button ion-button icon-only (click)="showFilter()">
+				<img src="assets/imgs/ic_action_filter.png" class="tool-icon" float-end/>
+			</button>
+		</ion-buttons>
+	</ion-navbar>
 </ion-header>
-
+<pb-horizontal progress="{{onBoardingProgress}}"></pb-horizontal>
 <ion-content overflow-scroll="true" class="course-scroll-holder1" style="background: #efeff4;">
-  <!-- onBoardingSLides starts here -->
-  <ion-refresher (ionRefresh)="swipeDownToRefresh($event)"></ion-refresher>
-  <div *ngIf="guestUser">
-    <p class="onbording-card-header-text">{{ 'ONBOARDING_CARDS_HEADING' | translate }}</p>
-    <ion-slides (ionSlideDrag)="onSlideDrag()" class="onbording-slides" pager=true centeredSlides=false speed=50 padding-left
-      padding-right>
-      <ion-slide *ngFor="let slide of onBoardingSlides; let i=index">
-        <div class="onbording-slide-div">
-          <ion-row>
-            <p class="onbording-slide-title">
-              {{slide.title}}
-            </p>
-          </ion-row>
-
-          <ion-footer class="onbording-slide-footer" no-shadow no-border>
-            <div *ngIf="!selectedValue[i]" (click)="openFilterOptions(slide, i)" style="font-size: 1.2rem; font-weight: bold; color: dodgerblue;">{{slide.desc}}</div>
-            <div (click)="openFilterOptions(slide, i)" class="row">
-              <div class="ellipsis" style="display:inline; font-size: 1.2rem;" text-uppercase>
-                {{selectedValue[i]}}</div> &nbsp;
-              <ion-icon *ngIf="selectedValue[i]" style="display:inline;font-size: 1.7rem;" name="md-create" color="primary"></ion-icon>
-            </div>
-          </ion-footer>
-        </div>
-      </ion-slide>
-
-    </ion-slides>
-  </div>
-  <!-- <div *ngIf="guestUser" class="devider-line"></div> -->
-  <!-- onBoardingSLides ends here -->
-
-  <!-- <div> -->
-  <div class="course-scroll-holder" [ngClass]="{'empty-saved-resources' : (localResources && localResources.length === 0 || showLoader)}">
-    <div class="item padding-11">
-      <span float-start class="scroll-heading">{{ 'SAVED_RESOURCES' | translate }}</span>
-      <span float-end class="view-all-link" *ngIf="localResources && localResources.length > 0 && !showLoader" (click)="viewAllSavedResources();">
-        <a>{{ 'VIEW_ALL' | translate }}</a>
-      </span>
-    </div>
-    <ion-scroll *ngIf="localResources && localResources?.length && !showLoader" scrollX="true" style="width: 100%; height: 166px;"
-      no-padding>
-      <div class="inner inprogress-courses">
-        <course-card *ngFor="let item of localResources" [course]="item?.contentData" [layoutName]="'SavedResources'"></course-card>
-      </div>
-    </ion-scroll>
-    <ion-spinner *ngIf="showLoader" padding style="padding-top: 100px;"></ion-spinner>
-    <ion-grid class="padding-top-25" *ngIf="localResources && localResources.length === 0 && !showLoader">
-      <ion-row>
-        <ion-col>
-          <div text-center> {{ 'ERROR_NO_OFFLINE_RESOURCE' | translate }} </div>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </div>
-  <div class="devider-line"></div>
-  <div *ngFor="let items of storyAndWorksheets">
-    <div *ngIf="items?.contents">
-      <div class="course-scroll-holder">
-        <div class="item padding-11">
-          <span float-start class="scroll-heading">{{items?.display?.name?.en}}</span>
-          <span float-end class="view-all-link" (click)="searchAllContent(items?.searchQuery, items?.display?.name?.en)">
-            <a>{{ 'VIEW_ALL' | translate }}</a>
-          </span>
-        </div>
-        <ion-scroll scrollX="true" style="width: 100%; height: 166px;" no-padding>
-          <div class="inner">
-            <course-card *ngFor="let item of items?.contents" [course]="item" [pageName]="'library'" [layoutName]="'Popular'">
-            </course-card>
-          </div>
-        </ion-scroll>
-      </div>
-    </div>
-  </div>
-  <div *ngIf="pageApiLoader && storyAndWorksheets && storyAndWorksheets.length === 0">
-    <div class="course-scroll-holder" style="height: 500px;">
-      <ion-spinner padding style="padding-top: 110px;"></ion-spinner>
-    </div>
-  </div>
-
-  <sign-in-card *ngIf="guestUser"></sign-in-card>
-
+	<ion-refresher (ionRefresh)="swipeDownToRefresh($event)"></ion-refresher>
+	<!-- onBoardingSLides starts here -->
+	<onboarding-card *ngIf="guestUser && !isOnBoardingCardCompleted"></onboarding-card>
+	<!-- onBoardingSLides ends here -->
+	<!-- <div> -->
+	<div class="course-scroll-holder" [ngClass]="{'empty-saved-resources' : (localResources && localResources.length === 0 || showLoader)}">
+		<div class="item padding-11">
+			<span float-start class="scroll-heading">{{ 'SAVED_RESOURCES' | translate }}</span>
+			<span float-end class="view-all-link" *ngIf="localResources && localResources.length > 0 && !showLoader" (click)="viewAllSavedResources();">
+				<a>{{ 'VIEW_ALL' | translate }}</a>
+			</span>
+		</div>
+		<ion-scroll *ngIf="localResources && localResources?.length && !showLoader" scrollX="true" style="width: 100%; height: 166px;"
+		 no-padding>
+			<div class="inner inprogress-courses">
+				<course-card *ngFor="let item of localResources" [course]="item?.contentData" [layoutName]="'SavedResources'"></course-card>
+			</div>
+		</ion-scroll>
+		<ion-spinner *ngIf="showLoader" padding style="padding-top: 100px;"></ion-spinner>
+		<ion-grid class="padding-top-25" *ngIf="localResources && localResources.length === 0 && !showLoader">
+			<ion-row>
+				<ion-col>
+					<div text-center> {{ 'ERROR_NO_OFFLINE_RESOURCE' | translate }} </div>
+				</ion-col>
+			</ion-row>
+		</ion-grid>
+	</div>
+	<div class="devider-line"></div>
+	<div *ngFor="let items of storyAndWorksheets">
+		<div *ngIf="items?.contents">
+			<div class="course-scroll-holder">
+				<div class="item padding-11">
+					<span float-start class="scroll-heading">{{items?.display?.name?.en}}</span>
+					<span float-end class="view-all-link" (click)="searchAllContent(items?.searchQuery, items?.display?.name?.en)">
+						<a>{{ 'VIEW_ALL' | translate }}</a>
+					</span>
+				</div>
+				<ion-scroll scrollX="true" style="width: 100%; height: 166px;" no-padding>
+					<div class="inner">
+						<course-card *ngFor="let item of items?.contents" [course]="item" [pageName]="'library'" [layoutName]="'Popular'">
+						</course-card>
+					</div>
+				</ion-scroll>
+			</div>
+		</div>
+	</div>
+	<div *ngIf="pageApiLoader && storyAndWorksheets && storyAndWorksheets.length === 0">
+		<div class="course-scroll-holder" style="height: 500px;">
+			<ion-spinner padding style="padding-top: 110px;"></ion-spinner>
+		</div>
+	</div>
+	<sign-in-card *ngIf="guestUser"></sign-in-card>
 </ion-content>

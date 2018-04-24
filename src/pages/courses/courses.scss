@@ -53,63 +53,11 @@ page-courses {
     margin: auto;
   }
 
-  .onbording-card-header-text {
-    color: rgb(90, 88, 88);
-    text-align: center;
-    margin: 0;
-    font-size: 1.6rem;
-    padding-top: 15px;
-    .p {
-       padding: 0%
-    }
-  }
-
-  .onbording-slides {
-    height: 180px;
-  }
-
-  .onbording-slide-div {
-    height: 120px;
-    background: white;
-    margin-left: 10px;
-    margin-right: 10px;
-    margin-top: -4%;
-    padding-top:2%;
-    padding-left: 4%;
-    padding-right:3%;
-    text-align: left;
-    position:relative;
-    border-radius: 0.4rem;
-    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
-  }
-
-  .onbording-slide-title {
-    color:  rgb(90, 88, 88);
-    font-size: 1.6rem;
-    font-weight: bold;
-  }
-
-  .onbording-slide-footer {
-    padding-top: 2%;
-    padding-left: 4%;
-    padding-right: 3%;
-    padding-bottom: 4%;
-  }
-
-  .board-select  .select-icon .select-icon-inner{
-    border: none !important;
-    padding: 0%;
-  }
-
   ion-select {
     max-width: 75%;
     font-size:14px;
     color: #488aff;
     font-weight: bold;
-  }
-
-  .board-select.select-md .select-placeholder {
-   color:#488aff !important;
   }
 
   /* To give some space between the icons in the header */

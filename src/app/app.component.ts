@@ -71,27 +71,33 @@ export class MyApp {
         this.fetchUpdate();
       } catch (error) {
         console.log(error);
-
       }
+
+      this.handleBackButton();
     });
 
     this.imageLoaderConfig.enableDebugMode();
     this.imageLoaderConfig.setMaximumCacheSize(100 * 1024 * 1024);
-    this.handleBackButton();
     this.subscribeEvents();
   }
 
   handleBackButton() {
+    let self = this;
     this.platform.registerBackButtonAction(() => {
-      if (this.counter == 0) {
-        this.counter++;
-        this.presentToast();
-        setTimeout(() => { this.counter = 0 }, 3000)
-      } else {
-        this.platform.exitApp();
-      }
-    }, 0)
 
+      let navObj = self.app.getActiveNavs()[0];
+      if (navObj.canGoBack()) {
+        navObj.pop();
+      } else {
+        if (self.counter == 0) {
+          self.counter++;
+          self.presentToast();
+          setTimeout(() => { self.counter = 0 }, 1500)
+        } else {
+          self.platform.exitApp();
+        }
+      }
+    });
   }
 
   presentToast() {

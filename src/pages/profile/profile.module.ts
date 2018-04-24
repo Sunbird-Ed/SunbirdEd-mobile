@@ -26,7 +26,6 @@ import { SettingsPageModule } from '../settings/settings.module';
 import { ActionMenuComponent } from './actionmenu/menu.action.component';
 import { AddUserComponent } from './usersnclasses/users/adduser.component';
 import { UserSearchComponent } from './user-search/user-search';
-import { PBHorizontal } from '../../component/pbhorizontal/pb-horizontal';
 
 import { DirectivesModule } from '../../directives/directives.module';
 import { ComponentsModule } from "../../component/components.module";
@@ -50,7 +49,6 @@ import { ImagePicker } from './imagepicker/imagepicker';
     ActionMenuComponent,
     AddUserComponent,
     UserSearchComponent,
-    PBHorizontal,
     ImagePicker
   ],
   entryComponents: [
