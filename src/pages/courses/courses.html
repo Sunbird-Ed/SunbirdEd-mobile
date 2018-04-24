@@ -16,10 +16,11 @@
     </ion-buttons>
   </ion-navbar>
 </ion-header>
-<pb-horizontal [progress]="onBoardingProgress"></pb-horizontal>
+
 <ion-content overflow-scroll="true" style="background: #efeff4;">
+  <pb-horizontal *ngIf="!isOnBoardingCardCompleted" [progress]="onBoardingProgress" [isOnBoardCard]="!isOnBoardingCardCompleted"></pb-horizontal>
   <!-- onBoardingSLides starts here -->
-    <onboarding-card *ngIf="guestUser && !isOnBoardingCardCompleted"></onboarding-card>
+  <onboarding-card *ngIf="guestUser && !isOnBoardingCardCompleted"></onboarding-card>
   <!-- onBoardingSLides ends here -->
 
 

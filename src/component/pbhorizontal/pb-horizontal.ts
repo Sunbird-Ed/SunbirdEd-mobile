@@ -7,6 +7,7 @@ import { Component, Input } from '@angular/core';
 export class PBHorizontal {
 
   @Input('progress') progress;
+  @Input('isOnBoardCard') isOnBoardCard;
 
   constructor() {
 
