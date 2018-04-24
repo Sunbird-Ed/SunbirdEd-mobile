@@ -194,6 +194,7 @@ export class ResourcesPage implements OnInit {
    * Get saved content
    */
   setSavedContent() {
+    this.localResources = [];
     this.showLoader = true;
     const requestParams = {
       contentTypes: ['Story', 'Worksheet', 'Collection', 'Game', 'TextBook', 'Resource', 'LessonPlan']
@@ -213,7 +214,9 @@ export class ResourcesPage implements OnInit {
       });
     }, error => {
       console.log('error while getting saved contents', error);
-      this.showLoader = false;
+      this.ngZone.run(() => {
+        this.showLoader = false;
+      })
     });
 
   }
@@ -242,7 +245,7 @@ export class ResourcesPage implements OnInit {
         that.storyAndWorksheets = newSections;
         console.log('storyAndWorksheets', that.storyAndWorksheets);
         this.pageLoadedSuccess = true;
-        // this.pageApiLoader = false;
+        this.pageApiLoader = false;
       });
     }, error => {
       console.log('error while getting popular resources...', error);
@@ -295,7 +298,6 @@ export class ResourcesPage implements OnInit {
    */
   swipeDownToRefresh(refresher?) {
     refresher.complete();
-    this.localResources = [];
     this.storyAndWorksheets = [];
     this.setSavedContent();
     this.getPopularContent();
