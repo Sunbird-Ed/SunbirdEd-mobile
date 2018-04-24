@@ -75,7 +75,7 @@
   "DISMISS": "रद्द करा",
   "DOWNLOAD": "डाउनलोड करा",
   "DOWNLOADING": "डाऊनलोड करीत आहे %s %",
-  "DOWNLOADING_1": " डाउनलोड %s चालू",
+  "DOWNLOADING_1": " डाउनलोड {{%s}} चालू",
   "DOWNLOADING_ATTACHMENT": "अटाचमेंट डाउनलोड चालू",
   "DOWNLOADS": "डाउनलोड",
   "DOWNLOAD_ALL": "सर्व संकलन डाउनलोड करायचे का?",

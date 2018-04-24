@@ -5,15 +5,6 @@ import { ContentService,FileUtil, Impression, ImpressionType, PageId, Environmen
 import { NgModel } from '@angular/forms';
 import { SocialSharing } from "@ionic-native/social-sharing";
 import * as _ from 'lodash';
-// import { ContentActionsComponent } from '../../component/content-actions/content-actions';
-// ContentActionsComponent
-
-/**
- * Generated class for the ContentDetailsPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
 
 @IonicPage()
 @Component({
@@ -81,8 +72,6 @@ export class ContentDetailsPage {
    * Contains loader instance
    */
   loader: any;
-
-  downloadingText: string = 'DOWNLOADIG... ';
 
   /**
    * Contains reference of content service
@@ -320,25 +309,23 @@ export class ContentDetailsPage {
         let res = data;
         console.log('event bus........', res);
         if (res.type === 'downloadProgress' && res.data.downloadProgress) {
-          if (res.data.downloadProgress === 100) {
-            this.downloadingText = 'DOWNLOADED ';
-          }
+          // if (res.data.downloadProgress === 100) {
+            // this.downloadingText = 'DOWNLOADED ';
+          // }
           this.downloadProgress = res.data.downloadProgress === -1 ? '0 %' : res.data.downloadProgress + ' %';
         }
 
         // Get child content
         if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
-          this.zone.run(() => {
-            if (this.isDownloadStarted) {
-              this.isDownloadStarted = false;
-              this.cancelDownloading = false;
-              // this.showDownloadBtn = false;
-              this.setContentDetails(this.identifier, true);
-              // this.playContentBtn = true;
-              this.content.downloadable = true;
-              console.log('this.content.isAvailableLocally = ', this.content.downloadable);
-            }
-          })
+          if (this.isDownloadStarted) {
+            this.isDownloadStarted = false;
+            this.cancelDownloading = false;
+            // this.showDownloadBtn = false;
+            this.setContentDetails(this.identifier, true);
+            // this.playContentBtn = true;
+            this.content.downloadable = true;
+            console.log('this.content.isAvailableLocally = ', this.content.downloadable);
+          }
         }
       });
     });
@@ -348,7 +335,7 @@ export class ContentDetailsPage {
    * Download content
    */
   downloadContent() {
-    this.downloadProgress = '0 %';
+    // this.downloadProgress = '0 %';
     this.isDownloadStarted = true;
     this.importContent([this.identifier], false);
   }
@@ -357,7 +344,7 @@ export class ContentDetailsPage {
     this.contentService.cancelDownload(this.identifier, (data: any) => {
       console.log('Success: download success =>>>>>', data)
       this.isDownloadStarted = false;
-      this.downloadProgress = '0 %';
+      // this.downloadProgress = '0 %';
       // this.playContentBtn = false;
       this.content.downloadable = false;
     }, (error: any) => {
