@@ -1,8 +1,9 @@
 import { ContentActionsComponent } from './../../component/content-actions/content-actions';
 import { Component, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController,PopoverController } from 'ionic-angular';
-import { ContentService,FileUtil, Impression, ImpressionType, PageId, Environment, TelemetryService } from 'sunbird';
+import { ContentService,FileUtil, Impression, ImpressionType, PageId, Environment, TelemetryService, ShareUtil } from 'sunbird';
 import { NgModel } from '@angular/forms';
+import { SocialSharing } from "@ionic-native/social-sharing";
 import * as _ from 'lodash';
 // import { ContentActionsComponent } from '../../component/content-actions/content-actions';
 // ContentActionsComponent
@@ -124,7 +125,8 @@ export class ContentDetailsPage {
    */
   constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService,private telemetryService : TelemetryService, zone: NgZone,
     private events: Events, toastCtrl: ToastController, loadingCtrl: LoadingController,
-    private fileUtil: FileUtil, public popoverCtrl: PopoverController) {
+    private fileUtil: FileUtil, public popoverCtrl: PopoverController, private shareUtil: ShareUtil,
+    private social: SocialSharing) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
@@ -397,6 +399,28 @@ export class ContentDetailsPage {
         // this.showDownloadBtn = true;
         // this.playContentBtn = false;
       }
+    });
+  }
+
+  share() {
+    let loader = this.getLoader();
+    loader.present();
+    let url = "https://staging.open-sunbird.org/public/#!/content/" + this.content.identifier;
+    this.shareUtil.exportEcar(this.content.identifier, path => {
+      loader.dismiss();
+      if (this.content.downloadable) {
+        this.social.share("", "", "file://" + path, url);
+      } else {
+        this.social.share("", "", "", url);
+      }
+    }, error => {
+      loader.dismiss();
+      let toast = this.toastCtrl.create({
+        message: "Unable to share content.",
+        duration: 2000,
+        position: 'bottom'
+      });
+      toast.present();
     });
   }
 }

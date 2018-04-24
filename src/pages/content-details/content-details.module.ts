@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { ContentDetailsPage } from './content-details';
-import { GenieSDKServiceProvider } from 'sunbird';
 import { FrameworkModule } from "sunbird";
 import { IonicImageLoader } from "ionic-image-loader";
 import { Ionic2RatingModule } from "ionic2-rating";
@@ -10,6 +9,7 @@ import { Ionic2RatingModule } from "ionic2-rating";
 import { DirectivesModule } from '../../directives/directives.module';
 import { PipesModule } from '../../pipes/pipes.module';
 import { ContentActionsComponent } from './../../component/content-actions/content-actions';
+import { SocialSharing } from "@ionic-native/social-sharing";
 
 
 @NgModule({
@@ -25,9 +25,11 @@ import { ContentActionsComponent } from './../../component/content-actions/conte
     IonicImageLoader,
     DirectivesModule,
     Ionic2RatingModule,
-    PipesModule
+    PipesModule,
   ],
-  providers: [GenieSDKServiceProvider],
+  providers: [
+    SocialSharing
+  ],
   exports: [
     ContentDetailsPage
   ]
