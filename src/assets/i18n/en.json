@@ -89,7 +89,7 @@
     "DISMISS": "CANCEL",
     "DOWNLOAD": "Download",
     "DOWNLOADING": "DOWNLOADING %s %",
-    "DOWNLOADING_1": "Downloading %s",
+    "DOWNLOADING_1": "Downloading {{%s}}",
     "DOWNLOADING_2": "DOWNLOADING",
     "DOWNLOADING_ATTACHMENT": "Downloading Attachment",
     "DOWNLOADS": "downloads",

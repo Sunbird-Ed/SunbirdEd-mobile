@@ -91,8 +91,13 @@ export class ResourcesPage implements OnInit {
 					//TODO Temporary code - should be fixed at backend
 					_.forEach(data.result, (value, key) => {
 						value.contentData.lastUpdatedOn = value.lastUpdatedTime;
+						if (value.contentData.appIcon) {
+							value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
+						}
 					});
 					this.localResources = data.result;
+					console.log('Success: localResources resources', this.localResources);
+
 				}
 				this.showLoader = false;
 			});
@@ -166,7 +171,6 @@ export class ResourcesPage implements OnInit {
 		if (!this.pageLoadedSuccess) {
 			this.getPopularContent();
 		}
-		this.setSavedContent();
 		this.authService.getSessionData((res: string) => {
 			if (res === undefined || res === "null") {
 				this.guestUser = true;
@@ -193,6 +197,7 @@ export class ResourcesPage implements OnInit {
 	ngOnInit() {
 		console.log('courses component initialized...');
 		// this.getCourseTabData();
+		this.setSavedContent();
 	}
 
 	generateImpressionEvent() {

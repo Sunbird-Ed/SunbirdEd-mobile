@@ -1,18 +1,10 @@
 import { ContentActionsComponent } from './../../component/content-actions/content-actions';
 import { Component, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController,PopoverController } from 'ionic-angular';
-import { ContentService,FileUtil, Impression, ImpressionType, PageId, Environment, TelemetryService } from 'sunbird';
+import { ContentService,FileUtil, Impression, ImpressionType, PageId, Environment, TelemetryService, ShareUtil } from 'sunbird';
 import { NgModel } from '@angular/forms';
+import { SocialSharing } from "@ionic-native/social-sharing";
 import * as _ from 'lodash';
-// import { ContentActionsComponent } from '../../component/content-actions/content-actions';
-// ContentActionsComponent
-
-/**
- * Generated class for the ContentDetailsPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
 
 @IonicPage()
 @Component({
@@ -77,8 +69,6 @@ export class ContentDetailsPage {
    */
   loader: any;
 
-  downloadingText: string = 'DOWNLOADIG... ';
-
   /**
    * Contains reference of content service
    */
@@ -120,7 +110,8 @@ export class ContentDetailsPage {
    */
   constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService,private telemetryService : TelemetryService, zone: NgZone,
     private events: Events, toastCtrl: ToastController, loadingCtrl: LoadingController,
-    private fileUtil: FileUtil, public popoverCtrl: PopoverController) {
+    private fileUtil: FileUtil, public popoverCtrl: PopoverController, private shareUtil: ShareUtil,
+    private social: SocialSharing) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
@@ -311,25 +302,23 @@ export class ContentDetailsPage {
         let res = data;
         console.log('event bus........', res);
         if (res.type === 'downloadProgress' && res.data.downloadProgress) {
-          if (res.data.downloadProgress === 100) {
-            this.downloadingText = 'DOWNLOADED ';
-          }
+          // if (res.data.downloadProgress === 100) {
+            // this.downloadingText = 'DOWNLOADED ';
+          // }
           this.downloadProgress = res.data.downloadProgress === -1 ? '0 %' : res.data.downloadProgress + ' %';
         }
 
         // Get child content
         if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
-          this.zone.run(() => {
-            if (this.isDownloadStarted) {
-              this.isDownloadStarted = false;
-              this.cancelDownloading = false;
-              // this.showDownloadBtn = false;
-              this.setContentDetails(this.identifier, true);
-              // this.playContentBtn = true;
-              this.content.downloadable = true;
-              console.log('this.content.isAvailableLocally = ', this.content.downloadable);
-            }
-          })
+          if (this.isDownloadStarted) {
+            this.isDownloadStarted = false;
+            this.cancelDownloading = false;
+            // this.showDownloadBtn = false;
+            this.setContentDetails(this.identifier, true);
+            // this.playContentBtn = true;
+            this.content.downloadable = true;
+            console.log('this.content.isAvailableLocally = ', this.content.downloadable);
+          }
         }
       });
     });
@@ -339,7 +328,7 @@ export class ContentDetailsPage {
    * Download content
    */
   downloadContent() {
-    this.downloadProgress = '0 %';
+    // this.downloadProgress = '0 %';
     this.isDownloadStarted = true;
     this.importContent([this.identifier], false);
   }
@@ -348,7 +337,7 @@ export class ContentDetailsPage {
     this.contentService.cancelDownload(this.identifier, (data: any) => {
       console.log('Success: download success =>>>>>', data)
       this.isDownloadStarted = false;
-      this.downloadProgress = '0 %';
+      // this.downloadProgress = '0 %';
       // this.playContentBtn = false;
       this.content.downloadable = false;
     }, (error: any) => {
@@ -390,6 +379,28 @@ export class ContentDetailsPage {
         // this.showDownloadBtn = true;
         // this.playContentBtn = false;
       }
+    });
+  }
+
+  share() {
+    let loader = this.getLoader();
+    loader.present();
+    let url = "https://staging.open-sunbird.org/public/#!/content/" + this.content.identifier;
+    this.shareUtil.exportEcar(this.content.identifier, path => {
+      loader.dismiss();
+      if (this.content.downloadable) {
+        this.social.share("", "", "file://" + path, url);
+      } else {
+        this.social.share("", "", "", url);
+      }
+    }, error => {
+      loader.dismiss();
+      let toast = this.toastCtrl.create({
+        message: "Unable to share content.",
+        duration: 2000,
+        position: 'bottom'
+      });
+      toast.present();
     });
   }
 }
