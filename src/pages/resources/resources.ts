@@ -74,7 +74,7 @@ getCurrentUser(): void {
 	this.profileService.getCurrentUser(
 		(res: any) => {
 			let profile = JSON.parse(res);
-			if (profile.board.length && profile.grade.length && profile.medium.length && profile.subject.length) {
+			if (profile.board && profile.board.length && profile.grade && profile.grade.length && profile.medium && profile.medium.length && profile.subject && profile.subject.length) {
 				this.isOnBoardingCardCompleted = true;
 				this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
 			}

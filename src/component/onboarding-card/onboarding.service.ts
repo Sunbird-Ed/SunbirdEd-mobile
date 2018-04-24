@@ -131,16 +131,16 @@ export class OnboardingService {
                     this[list] = [];
                     let value = {};
                     resposneArray.forEach(element => {
-                        if(list === "boardList" && this.profile.board && this.profile.board.length && this.profile.board.indexOf(element.name) > -1) {
+                        if(list === "boardList" && this.profile.board && this.profile.board.length && this.profile.board.indexOf(element.code) > -1) {
                             this.onBoardingSlides[0].selectedCode.push(element.code);
                             value = { 'text': element.name, 'value': element.code, 'checked': true };
-                        } else if(list === "gradeList" && this.profile.grade && this.profile.grade.length && this.profile.grade.indexOf(element.name) > -1) {
+                        } else if(list === "gradeList" && this.profile.grade && this.profile.grade.length && this.profile.grade.indexOf(element.code) > -1) {
                             this.onBoardingSlides[1].selectedCode.push(element.code);
                             value = { 'text': element.name, 'value': element.code, 'checked': true };
-                        } else if(list === "subjectList" && this.profile.subjects && this.profile.subjects.length && this.profile.subjects.indexOf(element.name) > -1) {
+                        } else if(list === "subjectList" && this.profile.subjects && this.profile.subjects.length && this.profile.subjects.indexOf(element.code) > -1) {
                             this.onBoardingSlides[2].selectedCode.push(element.code);
                             value = { 'text': element.name, 'value': element.code, 'checked': true };
-                        } else if(list === "mediumList" && this.profile.medium && this.profile.medium.length && this.profile.medium.indexOf(element.name) > -1) {
+                        } else if(list === "mediumList" && this.profile.medium && this.profile.medium.length && this.profile.medium.indexOf(element.code) > -1) {
                             this.onBoardingSlides[3].selectedCode.push(element.code);
                             value = { 'text': element.name, 'value': element.code, 'checked': true };
                         } else {
