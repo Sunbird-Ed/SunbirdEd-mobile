@@ -24,7 +24,7 @@
       <ion-row>
         <ion-col class="padding-0">
           <div class="size_txt padding-bottom-5" no-margin *ngIf="content.size">
-            <span *ngIf="content.size">{{ 'MODULE_SIZE_1' | translate }} [{{ content.size | fileSize }}]</span>
+            <span *ngIf="content.size" class="content-size">{{ 'MODULE_SIZE_1' | translate }} {{ content.size | fileSize }}</span>
           </div>
           <rating align-items-start *ngIf="content.me_averageRating" [(ngModel)]="content.me_averageRating" readOnly="true"
             max="5" no-padding></rating>
