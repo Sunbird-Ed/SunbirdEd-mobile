@@ -2,7 +2,7 @@ import { ViewMoreActivityPage } from './../view-more-activity/view-more-activity
 import { Component, OnInit, NgZone, ViewChild } from '@angular/core';
 import { NavController, Platform, PopoverController } from 'ionic-angular';
 import { IonicPage, Slides } from 'ionic-angular';
-import { CourseService, AuthService, EnrolledCoursesRequest, PageAssembleService, PageAssembleCriteria, QRScanner,FrameworkDetailsRequest, CategoryRequest, FrameworkService, Impression, ImpressionType, PageId, Environment, TelemetryService } from 'sunbird';
+import { CourseService, AuthService, EnrolledCoursesRequest, PageAssembleService, PageAssembleCriteria, QRScanner, FrameworkDetailsRequest, CategoryRequest, FrameworkService, Impression, ImpressionType, PageId, Environment, TelemetryService } from 'sunbird';
 import { CourseCard } from './../../component/card/course/course-card';
 import { DocumentDirection } from 'ionic-angular/platform/platform';
 import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
@@ -35,7 +35,12 @@ export class CoursesPage implements OnInit {
   /**
    * Flag to show/hide loader
    */
-  showLoader: boolean;
+  showLoader: boolean = true;
+
+  /**
+   * Flag to show latest and popular course loader
+   */
+  pageApiLoader: boolean = true;
 
   /**
    * Style
@@ -97,7 +102,7 @@ export class CoursesPage implements OnInit {
    * @param {NgZone} ngZone To bind data
    */
   constructor(navCtrl: NavController, courseService: CourseService, authService: AuthService, platform: Platform,
-    pageService: PageAssembleService, ngZone: NgZone, private qrScanner: SunbirdQRScanner, private popCtrl: PopoverController,  private framework: FrameworkService,public telemetryService : TelemetryService) {
+    pageService: PageAssembleService, ngZone: NgZone, private qrScanner: SunbirdQRScanner, private popCtrl: PopoverController, private framework: FrameworkService, public telemetryService: TelemetryService) {
     this.navCtrl = navCtrl;
     this.courseService = courseService;
     this.authService = authService;
@@ -188,6 +193,7 @@ export class CoursesPage implements OnInit {
    * It internally calls course handler of genie sdk
    */
   getEnrolledCourses(): void {
+    this.spinner(true);
     console.log('making api call to get enrolled courses');
     let option = {
       userId: this.userId,
@@ -212,6 +218,7 @@ export class CoursesPage implements OnInit {
    * It internally calls course handler of genie sdk
    */
   getPopularAndLatestCourses(): void {
+    this.pageApiLoader = true;
     let criteria = new PageAssembleCriteria();
     criteria.name = "Course";
     this.pageService.getPageAssemble(criteria, (res: any) => {
@@ -225,9 +232,11 @@ export class CoursesPage implements OnInit {
         });
         this.popularAndLatestCourses = newSections;
         console.log('Popular courses', this.popularAndLatestCourses);
+        this.pageApiLoader = !this.pageApiLoader;
       });
     }, (error: string) => {
       console.log('Page assmble error', error);
+      this.pageApiLoader = !this.pageApiLoader;
     });
   }
 
@@ -245,28 +254,52 @@ export class CoursesPage implements OnInit {
    *
    * Used to get enrolled course(s) of logged-in user
    */
-  getUserId(): void {
-    this.authService.getSessionData((session) => {
-      if (session === undefined || session == null || session === "null") {
-        console.log('session expired');
-        this.guestUser = true;
-      } else {
-        let sessionObj = JSON.parse(session);
-        this.userId = sessionObj["userToken"];
-        this.guestUser = false;
-        this.getEnrolledCourses();
-      }
+  getUserId() {
+    return new Promise((resolve, reject) => {
+      this.authService.getSessionData((session) => {
+        if (session === undefined || session == null || session === "null") {
+          console.log('session expired');
+          this.guestUser = true;
+          reject('session expired');
+        } else {
+          let sessionObj = JSON.parse(session);
+          this.userId = sessionObj["userToken"];
+          this.guestUser = false;
+          this.getEnrolledCourses();
+          resolve();
+        }
+      });
     });
   }
 
+  /**
+   * 
+   * @param refresher 
+   */
+  getCourseTabData(refresher?) {
+    setTimeout(() => {
+      if (refresher) {
+        refresher.complete();
+      }
+    }, 10);
+    this.enrolledCourse = [];
+    this.popularAndLatestCourses = [];
+    this.getUserId()
+      .then(() => {
+
+      })
+      .catch(error => {
+        console.log("Error while Fetching Data", error);
+      });
+
+    this.getPopularAndLatestCourses();
+  }
   /**
    * Angular life cycle hooks
    */
   ngOnInit() {
     console.log('courses component initialized...');
-    this.spinner(true);
-    this.getUserId();
-    this.getPopularAndLatestCourses();
+    this.getCourseTabData();
   }
 
   /**
@@ -301,18 +334,18 @@ export class CoursesPage implements OnInit {
       "Course",
     ];
 
-    this.navCtrl.push(SearchPage, { contentType: contentType,source :PageId.COURSES})
+    this.navCtrl.push(SearchPage, { contentType: contentType, source: PageId.COURSES })
   }
 
-  ionViewDidEnter(){
+  ionViewDidEnter() {
     this.generateImpressionEvent();
   }
 
-  generateImpressionEvent(){
+  generateImpressionEvent() {
     let impression = new Impression();
-    impression.type =ImpressionType.VIEW;
+    impression.type = ImpressionType.VIEW;
     impression.pageId = PageId.COURSES;
-    impression.env=Environment.HOME;
+    impression.env = Environment.HOME;
     this.telemetryService.impression(impression);
   }
 
@@ -344,7 +377,7 @@ export class CoursesPage implements OnInit {
       }
     }
 
-    let filter = this.popCtrl.create(CourseFilter, {callback: callback}, {cssClass: 'course-filter'});
+    let filter = this.popCtrl.create(CourseFilter, { callback: callback }, { cssClass: 'course-filter' });
     filter.present();
   }
 
@@ -383,7 +416,7 @@ export class CoursesPage implements OnInit {
         this[list] = [];
 
         resposneArray.forEach(element => {
-          const value = {'text': element.name, 'value': element.code, 'checked': false}
+          const value = { 'text': element.name, 'value': element.code, 'checked': false }
           this[list].push(value)
         });
 

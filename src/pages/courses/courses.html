@@ -18,6 +18,8 @@
 </ion-header>
 
 <ion-content overflow-scroll="true" style="background: #efeff4;">
+  <ion-refresher (ionRefresh)="getCourseTabData($event)"></ion-refresher>
+
   <!-- onBoardingSLides starts here -->
   <div *ngIf="guestUser">
     <p class="onbording-card-header-text">{{ 'ONBOARDING_CARDS_HEADING' | translate }}</p>
@@ -63,7 +65,7 @@
       </div>
     </ion-scroll>
     <div *ngIf="enrolledCourse && enrolledCourse.length === 0 && !showLoader">No data found</div>
-    <ion-spinner *ngIf="showLoader" padding></ion-spinner>
+    <ion-spinner *ngIf="showLoader" padding style="padding-top: 100px;"></ion-spinner>
   </div>
 
   <div *ngFor="let items of popularAndLatestCourses">
@@ -84,6 +86,11 @@
       </div>
     </div>
     <div class="devider-line"></div>
+  </div>
+  <div *ngIf="pageApiLoader && popularAndLatestCourses && popularAndLatestCourses.length === 0">
+    <div class="course-scroll-holder" style="height: 500px;">
+      <ion-spinner padding style="padding-top: 110px;"></ion-spinner>
+    </div>
   </div>
   <!-- </div> -->
   <sign-in-card *ngIf="guestUser"></sign-in-card>

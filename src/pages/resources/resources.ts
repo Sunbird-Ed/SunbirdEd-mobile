@@ -1,6 +1,6 @@
 import { Component, NgZone, ViewChild, OnInit } from '@angular/core';
 import { NavController, PopoverController } from 'ionic-angular';
-import { PageAssembleService, PageAssembleCriteria, ContentService, AuthService,FrameworkService, CategoryRequest, FrameworkDetailsRequest ,Impression, ImpressionType, PageId, Environment, TelemetryService } from "sunbird";
+import { PageAssembleService, PageAssembleCriteria, ContentService, AuthService, FrameworkService, CategoryRequest, FrameworkDetailsRequest, Impression, ImpressionType, PageId, Environment, TelemetryService } from "sunbird";
 import * as _ from 'lodash';
 import { Slides } from 'ionic-angular';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
@@ -14,7 +14,7 @@ import { FilterOptions, onBoardingSlidesCallback } from './onboarding-alert/onbo
   selector: 'page-resources',
   templateUrl: 'resources.html'
 })
-export class ResourcesPage {
+export class ResourcesPage implements OnInit {
 
   pageLoadedSuccess = false;
 
@@ -39,6 +39,11 @@ export class ResourcesPage {
   showLoader: boolean = false;
 
   /**
+   * Flag to show latest and popular course loader
+   */
+  pageApiLoader: boolean = true;
+
+  /**
    * Contains reference of content service
    */
   public contentService: ContentService;
@@ -56,7 +61,7 @@ export class ResourcesPage {
   mediumList: Array<string> = [];
 
   constructor(public navCtrl: NavController, private pageService: PageAssembleService, private ngZone: NgZone, private popupCtrl: PopoverController,
-    contentService: ContentService, authService: AuthService, private qrScanner: SunbirdQRScanner, private popCtrl: PopoverController, private framework: FrameworkService,private telemetryService :TelemetryService) {
+    contentService: ContentService, authService: AuthService, private qrScanner: SunbirdQRScanner, private popCtrl: PopoverController, private framework: FrameworkService, private telemetryService: TelemetryService) {
     this.contentService = contentService;
     this.authService = authService;
 
@@ -191,7 +196,7 @@ export class ResourcesPage {
   setSavedContent() {
     this.showLoader = true;
     const requestParams = {
-      contentTypes: ['Story', 'Worksheet', 'Collection', 'Game', 'TextBook', 'Course', 'Resource', 'LessonPlan']
+      contentTypes: ['Story', 'Worksheet', 'Collection', 'Game', 'TextBook', 'Resource', 'LessonPlan']
     };
     this.contentService.getAllLocalContents(requestParams, (data: any) => {
       data = JSON.parse(data);
@@ -201,11 +206,6 @@ export class ResourcesPage {
           //TODO Temporary code - should be fixed at backend
           _.forEach(data.result, (value, key) => {
             value.contentData.lastUpdatedOn = value.lastUpdatedTime;
-            // if (value.contentData.appIcon.startsWith("http")) {
-            //   value.contentLogo = value.contentData.appIcon;
-            // } else {
-            //   value.contentLogo = "file://" + value.basePath + "/" + value.contentData.appIcon;
-            // }
           });
           this.localResources = data.result;
         }
@@ -222,17 +222,17 @@ export class ResourcesPage {
    * Get popular content
    */
   getPopularContent() {
+    this.pageApiLoader = true;
     let that = this;
     let criteria = new PageAssembleCriteria();
     criteria.name = "Resource";
     this.pageService.getPageAssemble(criteria, res => {
       that.ngZone.run(() => {
         let response = JSON.parse(res);
-        console.log('Saved resources', response);
+        console.log('Popular content, response');
         //TODO Temporary code - should be fixed at backend
         let a = JSON.parse(response.sections);
         console.log('page service ==>>>>', a);
-
         let newSections = [];
         a.forEach(element => {
           element.display = JSON.parse(element.display);
@@ -242,9 +242,11 @@ export class ResourcesPage {
         that.storyAndWorksheets = newSections;
         console.log('storyAndWorksheets', that.storyAndWorksheets);
         this.pageLoadedSuccess = true;
+        // this.pageApiLoader = false;
       });
     }, error => {
       console.log('error while getting popular resources...', error);
+      this.pageApiLoader = false;
     });
   }
 
@@ -266,7 +268,7 @@ export class ResourcesPage {
    */
   ionViewDidLoad() {
     console.log('Resources component initialized...==>>');
-    this.getPopularContent();
+    // this.getPopularContent();
   }
 
   ionViewDidEnter() {
@@ -285,6 +287,26 @@ export class ResourcesPage {
         this.guestUser = false;
       }
     });
+  }
+
+  /**
+   * 
+   * @param refresher
+   */
+  swipeDownToRefresh(refresher?) {
+    refresher.complete();
+    this.localResources = [];
+    this.storyAndWorksheets = [];
+    this.setSavedContent();
+    this.getPopularContent();
+  }
+
+  /**
+   * Angular life cycle hooks
+   */
+  ngOnInit() {
+    console.log('courses component initialized...');
+    // this.getCourseTabData();
   }
 
   generateImpressionEvent() {
@@ -393,7 +415,7 @@ export class ResourcesPage {
         this[list] = [];
 
         resposneArray.forEach(element => {
-          const value = {'text': element.name, 'value': element.code, 'checked': false}
+          const value = { 'text': element.name, 'value': element.code, 'checked': false }
           this[list].push(value)
         });
 

@@ -19,6 +19,7 @@
 
 <ion-content overflow-scroll="true" class="course-scroll-holder1" style="background: #efeff4;">
   <!-- onBoardingSLides starts here -->
+  <ion-refresher (ionRefresh)="swipeDownToRefresh($event)"></ion-refresher>
   <div *ngIf="guestUser">
     <p class="onbording-card-header-text">{{ 'ONBOARDING_CARDS_HEADING' | translate }}</p>
     <ion-slides (ionSlideDrag)="onSlideDrag()" class="onbording-slides" pager=true centeredSlides=false speed=50 padding-left
@@ -48,7 +49,7 @@
   <!-- onBoardingSLides ends here -->
 
   <!-- <div> -->
-  <div class="course-scroll-holder" [ngClass]="{'empty-saved-resources' : localResources && localResources.length === 0}">
+  <div class="course-scroll-holder" [ngClass]="{'empty-saved-resources' : (localResources && localResources.length === 0 || showLoader)}">
     <div class="item padding-11">
       <span float-start class="scroll-heading">{{ 'SAVED_RESOURCES' | translate }}</span>
       <span float-end class="view-all-link" *ngIf="localResources && localResources.length > 0 && !showLoader" (click)="viewAllSavedResources();">
@@ -61,7 +62,7 @@
         <course-card *ngFor="let item of localResources" [course]="item?.contentData" [layoutName]="'SavedResources'"></course-card>
       </div>
     </ion-scroll>
-    <ion-spinner *ngIf="showLoader"></ion-spinner>
+    <ion-spinner *ngIf="showLoader" padding style="padding-top: 100px;"></ion-spinner>
     <ion-grid class="padding-top-25" *ngIf="localResources && localResources.length === 0 && !showLoader">
       <ion-row>
         <ion-col>
@@ -70,7 +71,7 @@
       </ion-row>
     </ion-grid>
   </div>
-  <div class="devider-line" *ngIf="!showLoader"></div>
+  <div class="devider-line"></div>
   <div *ngFor="let items of storyAndWorksheets">
     <div *ngIf="items?.contents">
       <div class="course-scroll-holder">
@@ -87,6 +88,11 @@
           </div>
         </ion-scroll>
       </div>
+    </div>
+  </div>
+  <div *ngIf="pageApiLoader && storyAndWorksheets && storyAndWorksheets.length === 0">
+    <div class="course-scroll-holder" style="height: 500px;">
+      <ion-spinner padding style="padding-top: 110px;"></ion-spinner>
     </div>
   </div>
 
