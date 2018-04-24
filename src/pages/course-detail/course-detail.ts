@@ -23,10 +23,7 @@ export class CourseDetailPage {
    */
   contentDetail: any;
 
-  /**
-   * To hide menu
-   */
-  tabBarElement: any;
+
 
   /**
    * Contains children content data
@@ -68,7 +65,7 @@ export class CourseDetailPage {
   public contentService: ContentService;
 
   /**
-   * Contains ref of navigation controller 
+   * Contains ref of navigation controller
    */
   public navCtrl: NavController;
 
@@ -94,13 +91,12 @@ export class CourseDetailPage {
     this.contentService = contentService;
     this.zone = zone;
     this.toastCtrl = toastCtrl;
-    this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
     console.warn('Inside course details page');
   }
 
   /**
    * To set content details in local variable
-   * 
+   *
    * @param {string} identifier identifier of content / course
    */
   setContentDetails(identifier, refreshContentDetails: boolean | true) {
@@ -190,9 +186,9 @@ export class CourseDetailPage {
 
   /**
    * Function to get import content api request params
-   * 
+   *
    * @param {Array<string>} identifiers contains list of content identifier(s)
-   * @param {boolean} isChild 
+   * @param {boolean} isChild
    */
   getImportContentRequestBody(identifiers: Array<string>, isChild: boolean) {
     let requestParams = [];
@@ -211,9 +207,9 @@ export class CourseDetailPage {
 
   /**
    * Function to get import content api request params
-   * 
+   *
    * @param {Array<string>} identifiers contains list of content identifier(s)
-   * @param {boolean} isChild 
+   * @param {boolean} isChild
    */
   importContent(identifiers: Array<string>, isChild: boolean) {
     const option = {
@@ -248,7 +244,6 @@ export class CourseDetailPage {
    * Ionic life cycle hook
    */
   ionViewWillEnter(): void {
-    this.tabBarElement.style.display = 'none';
     this.cardData = this.navParams.get('content');
     this.identifier = this.cardData.contentId || this.cardData.identifier;
     this.setContentDetails(this.identifier, true);
@@ -292,7 +287,7 @@ export class CourseDetailPage {
 
   /**
    * Show error messages
-   * 
+   *
    * @param {string}  message Error message
    * @param {boolean} isPop True = navigate to previous state
    */
@@ -317,14 +312,13 @@ export class CourseDetailPage {
    * Ionic life cycle hook
    */
   ionViewWillLeave(): void {
-    this.tabBarElement.style.display = 'flex';
     this.events.unsubscribe('genie.event');
   }
 
   /**
    * To get redable file size
-   * 
-   * @param {number} size 
+   *
+   * @param {number} size
    */
   getReadableFileSize(size): string {
     const units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
@@ -336,8 +330,8 @@ export class CourseDetailPage {
 
   /**
    * Navigate user to batch list page
-   * 
-   * @param {string} id 
+   *
+   * @param {string} id
    */
   navigateToBatchListPage(id: string): void {
     this.navCtrl.push(CourseBatchesPage, { identifier: this.identifier });

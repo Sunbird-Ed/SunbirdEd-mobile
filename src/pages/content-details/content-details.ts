@@ -46,10 +46,6 @@ export class ContentDetailsPage {
    */
   depth: string;
 
-  /**
-   * To hide menu
-   */
-  tabBarElement: any;
 
   /**
    * To show download button if content locally not available
@@ -89,7 +85,7 @@ export class ContentDetailsPage {
   public contentService: ContentService;
 
   /**
-   * Contains ref of navigation controller 
+   * Contains ref of navigation controller
    */
   public navCtrl: NavController;
 
@@ -114,13 +110,13 @@ export class ContentDetailsPage {
   public loadingCtrl: LoadingController;
 
   /**
-   * 
-   * @param navCtrl 
-   * @param navParams 
-   * @param contentService 
-   * @param zone 
-   * @param events 
-   * @param toastCtrl 
+   *
+   * @param navCtrl
+   * @param navParams
+   * @param contentService
+   * @param zone
+   * @param events
+   * @param toastCtrl
    */
   constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService,private telemetryService : TelemetryService, zone: NgZone,
     private events: Events, toastCtrl: ToastController, loadingCtrl: LoadingController,
@@ -130,14 +126,13 @@ export class ContentDetailsPage {
     this.contentService = contentService;
     this.zone = zone;
     this.toastCtrl = toastCtrl;
-    this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
     this.loadingCtrl = loadingCtrl;
     console.warn('Inside content details page');
   }
 
   /**
    * To set content details in local variable
-   * 
+   *
    * @param {string} identifier identifier of content / course
    */
   setContentDetails(identifier, refreshContentDetails: boolean | true) {
@@ -214,7 +209,6 @@ export class ContentDetailsPage {
    * Ionic life cycle hook
    */
   ionViewWillEnter(): void {
-    this.tabBarElement.style.display = 'none';
     this.cardData = this.navParams.get('content');
     this.cardData.depth = this.navParams.get('depth') === undefined ? '' : this.navParams.get('depth');
     this.identifier = this.cardData.contentId || this.cardData.identifier;
@@ -227,13 +221,12 @@ export class ContentDetailsPage {
    * Ionic life cycle hook
    */
   ionViewWillLeave(): void {
-    this.tabBarElement.style.display = 'flex';
     this.events.unsubscribe('genie.event');
   }
 
   /**
    * Show error messages
-   * 
+   *
    * @param {string}  message Error message
    * @param {boolean} isPop True = navigate to previous state
    */
@@ -261,9 +254,9 @@ export class ContentDetailsPage {
 
   /**
    * Function to get import content api request params
-   * 
+   *
    * @param {Array<string>} identifiers contains list of content identifier(s)
-   * @param {boolean} isChild 
+   * @param {boolean} isChild
    */
   getImportContentRequestBody(identifiers: Array<string>, isChild: boolean) {
     let requestParams = [];
@@ -282,9 +275,9 @@ export class ContentDetailsPage {
 
   /**
    * Function to get import content api request params
-   * 
+   *
    * @param {Array<string>} identifiers contains list of content identifier(s)
-   * @param {boolean} isChild 
+   * @param {boolean} isChild
    */
   importContent(identifiers: Array<string>, isChild: boolean) {
     const option = {
