@@ -14,6 +14,51 @@
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
 
+@font-face {
+    font-family: 'OpenSans/Regular';
+    font-style: normal;
+    font-weight: 400;
+    src: url('../assets/fonts/opensans/OpenSans-Regular.ttf');
+}
+
+@font-face {
+    font-family: 'OpenSans/Semibold';
+    font-style: semi-bold;
+    font-weight: 600;
+    src: url('../assets/fonts/opensans/OpenSans-Semibold.ttf');
+}
+
+@font-face {
+    font-family: 'OpenSans/Bold';
+    font-style: bold;
+    font-weight: 700;
+    src: url('../assets/fonts/opensans/OpenSans-Bold.ttf');
+}
+
+@font-face {
+    font-family: 'OpenSans/ExtraBold';
+    font-style: extra-bold;
+    font-weight: 900;
+    src: url('../assets/fonts/opensans/OpenSans-ExtraBold.ttf');
+}
+
+h6 {
+    font-family: "OpenSans/Bold" !important;
+}
+
+.font-size-20 {
+    font-size: 20px !important;
+}
+.span-semibold {
+   font-family: 'OpenSans/Semibold';
+}
+
+.content-meta-title {
+    font-family: 'OpenSans/Regular' !important;
+    font-weight: 600;
+    color: gray;
+}
+
 .tool-icon {
   width: 25px;
   height: 25px;
