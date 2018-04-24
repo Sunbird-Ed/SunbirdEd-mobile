@@ -1,6 +1,6 @@
 import { Component, NgZone, ViewChild, OnInit } from '@angular/core';
 import { NavController, PopoverController, Events } from 'ionic-angular';
-import { PageAssembleService, PageAssembleCriteria, ContentService, AuthService,FrameworkService, CategoryRequest ,Impression, ImpressionType, PageId, Environment, TelemetryService } from "sunbird";
+import { PageAssembleService, PageAssembleCriteria, ContentService, AuthService, FrameworkService, CategoryRequest, Impression, ImpressionType, PageId, Environment, TelemetryService, ProfileService } from "sunbird";
 import * as _ from 'lodash';
 import { Slides } from 'ionic-angular';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
@@ -46,20 +46,38 @@ export class ResourcesPage {
   public authService: AuthService;
 
   isOnBoardingCardCompleted: boolean = false;
-  onBoardingProgress: number = 80;
+  onBoardingProgress: number = 0;
 
   constructor(public navCtrl: NavController, private pageService: PageAssembleService, private ngZone: NgZone, private popupCtrl: PopoverController,
-    contentService: ContentService, authService: AuthService, private qrScanner: SunbirdQRScanner, private popCtrl: PopoverController,private telemetryService :TelemetryService, private events: Events) {
+    contentService: ContentService, authService: AuthService, private qrScanner: SunbirdQRScanner, private popCtrl: PopoverController, private telemetryService: TelemetryService, private events: Events, private profileService: ProfileService) {
     this.contentService = contentService;
     this.authService = authService;
 
-    this.events.subscribe('onboarding-card:copleted', (isOnBoardingCardCompleted) => {
+    this.events.subscribe('onboarding-card:completed', (isOnBoardingCardCompleted) => {
       this.isOnBoardingCardCompleted = isOnBoardingCardCompleted;
     });
 
-    this.events.subscribe('onboarding-card:increaseProgress', (cardProgress) => {
-      this.onBoardingProgress = cardProgress;
+    this.events.subscribe('onboarding-card:increaseProgress', (progress) => {
+      console.log("Progress", progress.cardProgress);
+      this.onBoardingProgress = progress.cardProgress;
     });
+  }
+
+  /**
+ * It will fetch the guest user profile details
+ */
+  getCurrentUser(): void {
+    this.profileService.getCurrentUser(
+      (res: any) => {
+        let profile = JSON.parse(res);
+        if (profile.board.length && profile.grade.length && profile.medium.length && profile.subject.length) {
+          this.isOnBoardingCardCompleted = true;
+          this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
+        }
+      },
+      (err: any) => {
+        this.isOnBoardingCardCompleted = false;
+      });
   }
 
   viewAllSavedResources() {
@@ -165,6 +183,7 @@ export class ResourcesPage {
     this.authService.getSessionData((res: string) => {
       if (res === undefined || res === "null") {
         this.guestUser = true;
+        this.getCurrentUser();
       } else {
         this.guestUser = false;
       }

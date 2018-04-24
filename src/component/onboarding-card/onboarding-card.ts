@@ -30,14 +30,18 @@ export class OnboardingCardComponent {
     public navCtrl: NavController,
     private popupCtrl: PopoverController,
     private popCtrl: PopoverController,
-    private onboardingService: OnboardingService
+    private onboardingService: OnboardingService,
+    private events: Events
   ) {
 
     if(!this.onboardingService.categories.length) {
       this.onboardingService.initializeCard();
     }
-    else if(this.onboardingService.isOnBoardingCardCompleted) {
-      this.onboardingService.events.publish('onboarding-card:copleted', { isOnBoardingCardCompleted: true });
+    if(this.onboardingService.currentIndex) {
+      this.events.publish('onboarding-card:increaseProgress', { cardProgress: ((this.onboardingService.currentIndex) / this.onboardingService.onBoardingSlides.length ) * 100 });
+    }
+    if(this.onboardingService.isOnBoardingCardCompleted) {
+      this.onboardingService.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: true });
     }
   }
 

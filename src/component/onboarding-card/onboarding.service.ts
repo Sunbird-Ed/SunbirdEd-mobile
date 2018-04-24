@@ -20,6 +20,7 @@ export class OnboardingService {
     profile: any = {};
     onBoardingSlides: any[];
     isOnBoardingCardCompleted: boolean = false;
+    currentIndex: number = 0;
 
     categories: Array<any> = [];
     boardList: Array<string> = [];
@@ -87,6 +88,10 @@ export class OnboardingService {
     getCurrentUser(): void {
         this.profileService.getCurrentUser((res: any) => {
             this.profile = JSON.parse(res);
+            this.onBoardingSlides[0].selectedOptions = (this.profile.board && this.profile.board[0] !== '') ? this.profile.board : '';
+            this.onBoardingSlides[1].selectedOptions = (this.profile.grade && this.profile.grade[0] !== '') ? this.profile.grade : '';
+            this.onBoardingSlides[2].selectedOptions = (this.profile.subjects && this.profile.subjects[0] !== '') ? this.profile.subjects : '';
+            this.onBoardingSlides[3].selectedOptions = (this.profile.medium && this.profile.medium[0] !== '') ? this.profile.medium : '';
         },
             (err: any) => {
                 console.log("Err1", err);
@@ -124,9 +129,24 @@ export class OnboardingService {
                     // { text: 'Lang1', value: 'Lang1', checked: true }
                     const resposneArray = JSON.parse(res);
                     this[list] = [];
-
+                    let value = {};
                     resposneArray.forEach(element => {
-                        const value = { 'text': element.name, 'value': element.code, 'checked': false }
+                        if(list === "boardList" && this.profile.board && this.profile.board.length && this.profile.board.indexOf(element.name) > -1) {
+                            this.onBoardingSlides[0].selectedCode.push(element.code);
+                            value = { 'text': element.name, 'value': element.code, 'checked': true };
+                        } else if(list === "gradeList" && this.profile.grade && this.profile.grade.length && this.profile.grade.indexOf(element.name) > -1) {
+                            this.onBoardingSlides[1].selectedCode.push(element.code);
+                            value = { 'text': element.name, 'value': element.code, 'checked': true };
+                        } else if(list === "subjectList" && this.profile.subjects && this.profile.subjects.length && this.profile.subjects.indexOf(element.name) > -1) {
+                            this.onBoardingSlides[2].selectedCode.push(element.code);
+                            value = { 'text': element.name, 'value': element.code, 'checked': true };
+                        } else if(list === "mediumList" && this.profile.medium && this.profile.medium.length && this.profile.medium.indexOf(element.name) > -1) {
+                            this.onBoardingSlides[3].selectedCode.push(element.code);
+                            value = { 'text': element.name, 'value': element.code, 'checked': true };
+                        } else {
+                            value = { 'text': element.name, 'value': element.code, 'checked': false };
+                        }
+
                         this[list].push(value)
                     });
 
@@ -146,6 +166,8 @@ export class OnboardingService {
      * @param {string} prevSelectedValue
      */
     checkPrevValue(index: number = 0, currentField, prevSelectedValue: string = '', ) {
+
+
         if (index != 0) {
             let request: CategoryRequest = {
                 currentCategory: this.categories[index].code,
@@ -213,17 +235,19 @@ export class OnboardingService {
             handle: this.profile.handle,
             isGroupUser: false,
             language: "en",
-            avatar: "avatar"
+            avatar: "avatar",
+            createdAt: this.profile.createdAt
         }
         this.profileService.updateProfile(req,
             (res: any) => {
 
-                this.events.publish('onboarding-card:increaseProgress', { cardProgress: (this.onBoardingSlides.length / (index + 1)) * 100 });
+                this.events.publish('onboarding-card:increaseProgress', { cardProgress: ((index + 1) / this.onBoardingSlides.length ) * 100 });
 
                 if(this.onBoardingSlides.length === (index + 1)) {
                     this.isOnBoardingCardCompleted = true;
-                    this.events.publish('onboarding-card:copleted', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
+                    this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
                 }
+                this.currentIndex++;
                 console.log("Update Response", res);
             },
             (err: any) => {

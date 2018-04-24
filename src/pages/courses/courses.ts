@@ -2,7 +2,7 @@ import { ViewMoreActivityPage } from './../view-more-activity/view-more-activity
 import { Component, OnInit, NgZone, ViewChild } from '@angular/core';
 import { NavController, Platform, PopoverController, Events } from 'ionic-angular';
 import { IonicPage, Slides } from 'ionic-angular';
-import { CourseService, AuthService, EnrolledCoursesRequest, PageAssembleService, PageAssembleCriteria, QRScanner,FrameworkDetailsRequest, CategoryRequest, FrameworkService, Impression, ImpressionType, PageId, Environment, TelemetryService } from 'sunbird';
+import { CourseService, AuthService, EnrolledCoursesRequest, PageAssembleService, PageAssembleCriteria, QRScanner, FrameworkDetailsRequest, CategoryRequest, FrameworkService, Impression, ImpressionType, PageId, Environment, TelemetryService, ProfileService } from 'sunbird';
 import { CourseCard } from './../../component/card/course/course-card';
 import { DocumentDirection } from 'ionic-angular/platform/platform';
 import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
@@ -87,7 +87,7 @@ export class CoursesPage implements OnInit {
    * @param {NgZone} ngZone To bind data
    */
   constructor(navCtrl: NavController, courseService: CourseService, authService: AuthService, platform: Platform,
-    pageService: PageAssembleService, ngZone: NgZone, private qrScanner: SunbirdQRScanner, private popCtrl: PopoverController,  private framework: FrameworkService,public telemetryService : TelemetryService,  private events: Events) {
+    pageService: PageAssembleService, ngZone: NgZone, private qrScanner: SunbirdQRScanner, private popCtrl: PopoverController, private framework: FrameworkService, public telemetryService: TelemetryService, private events: Events, private profileService: ProfileService) {
     this.navCtrl = navCtrl;
     this.courseService = courseService;
     this.authService = authService;
@@ -95,12 +95,12 @@ export class CoursesPage implements OnInit {
     this.pageService = pageService;
     this.ngZone = ngZone;
 
-    this.events.subscribe('onboarding-card:copleted', (isOnBoardingCardCompleted) => {
+    this.events.subscribe('onboarding-card:completed', (isOnBoardingCardCompleted) => {
       this.isOnBoardingCardCompleted = isOnBoardingCardCompleted;
     });
 
-    this.events.subscribe('onboarding-card:increaseProgress', (cardProgress) => {
-      this.onBoardingProgress = cardProgress;
+    this.events.subscribe('onboarding-card:increaseProgress', (progress) => {
+      this.onBoardingProgress = progress.cardProgress;
     });
   }
 
@@ -187,6 +187,7 @@ export class CoursesPage implements OnInit {
       if (session === undefined || session == null || session === "null") {
         console.log('session expired');
         this.guestUser = true;
+        this.getCurrentUser();
       } else {
         let sessionObj = JSON.parse(session);
         this.userId = sessionObj["userToken"];
@@ -206,6 +207,22 @@ export class CoursesPage implements OnInit {
     this.getPopularAndLatestCourses();
   }
 
+  /**
+   * It will fetch the guest user profile details
+   */
+  getCurrentUser(): void {
+    this.profileService.getCurrentUser(
+      (res: any) => {
+        let profile = JSON.parse(res);
+        if(profile.board.length && profile.grade.length && profile.medium.length && profile.subject.length) {
+          this.isOnBoardingCardCompleted = true;
+          this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
+        }
+      },
+      (err: any) => {
+        this.isOnBoardingCardCompleted = false;
+      });
+  }
   /**
    * Change language / direction
    */
@@ -238,18 +255,18 @@ export class CoursesPage implements OnInit {
       "Course",
     ];
 
-    this.navCtrl.push(SearchPage, { contentType: contentType,source :PageId.COURSES})
+    this.navCtrl.push(SearchPage, { contentType: contentType, source: PageId.COURSES })
   }
 
-  ionViewDidEnter(){
+  ionViewDidEnter() {
     this.generateImpressionEvent();
   }
 
-  generateImpressionEvent(){
+  generateImpressionEvent() {
     let impression = new Impression();
-    impression.type =ImpressionType.VIEW;
+    impression.type = ImpressionType.VIEW;
     impression.pageId = PageId.COURSES;
-    impression.env=Environment.HOME;
+    impression.env = Environment.HOME;
     this.telemetryService.impression(impression);
   }
 
