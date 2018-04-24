@@ -72,4 +72,7 @@ course-card {
       color: map-get($colors, light);;
       background-color: #1c1c1c;
     }
+    .padding-top-8 {
+      padding-top: 8px !important;
+    }
 }

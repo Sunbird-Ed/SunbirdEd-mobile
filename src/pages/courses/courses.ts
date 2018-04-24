@@ -34,7 +34,12 @@ export class CoursesPage implements OnInit {
   /**
    * Flag to show/hide loader
    */
-  showLoader: boolean;
+  showLoader: boolean = true;
+
+  /**
+   * Flag to show latest and popular course loader
+   */
+  pageApiLoader: boolean = true;
 
   /**
    * Style
@@ -125,6 +130,7 @@ export class CoursesPage implements OnInit {
    * It internally calls course handler of genie sdk
    */
   getEnrolledCourses(): void {
+    this.spinner(true);
     console.log('making api call to get enrolled courses');
     let option = {
       userId: this.userId,
@@ -149,6 +155,7 @@ export class CoursesPage implements OnInit {
    * It internally calls course handler of genie sdk
    */
   getPopularAndLatestCourses(): void {
+    this.pageApiLoader = true;
     let criteria = new PageAssembleCriteria();
     criteria.name = "Course";
     this.pageService.getPageAssemble(criteria, (res: any) => {
@@ -162,9 +169,11 @@ export class CoursesPage implements OnInit {
         });
         this.popularAndLatestCourses = newSections;
         console.log('Popular courses', this.popularAndLatestCourses);
+        this.pageApiLoader = !this.pageApiLoader;
       });
     }, (error: string) => {
       console.log('Page assmble error', error);
+      this.pageApiLoader = !this.pageApiLoader;
     });
   }
 
@@ -182,29 +191,53 @@ export class CoursesPage implements OnInit {
    *
    * Used to get enrolled course(s) of logged-in user
    */
-  getUserId(): void {
-    this.authService.getSessionData((session) => {
-      if (session === undefined || session == null || session === "null") {
-        console.log('session expired');
-        this.guestUser = true;
-        this.getCurrentUser();
-      } else {
-        let sessionObj = JSON.parse(session);
-        this.userId = sessionObj["userToken"];
-        this.guestUser = false;
-        this.getEnrolledCourses();
-      }
+  getUserId() {
+    return new Promise((resolve, reject) => {
+      this.authService.getSessionData((session) => {
+        if (session === undefined || session == null || session === "null") {
+          console.log('session expired');
+          this.guestUser = true;
+          this.getCurrentUser();
+          reject('session expired');
+        } else {
+          let sessionObj = JSON.parse(session);
+          this.userId = sessionObj["userToken"];
+          this.guestUser = false;
+          this.getEnrolledCourses();
+          resolve();
+        }
+      });
     });
   }
 
+  /**
+   *
+   * @param refresher
+   */
+  getCourseTabData(refresher?) {
+    setTimeout(() => {
+      if (refresher) {
+        refresher.complete();
+      }
+    }, 10);
+    this.enrolledCourse = [];
+    this.popularAndLatestCourses = [];
+    this.getUserId()
+      .then(() => {
+
+      })
+      .catch(error => {
+        console.log("Error while Fetching Data", error);
+      });
+
+    this.getPopularAndLatestCourses();
+  }
   /**
    * Angular life cycle hooks
    */
   ngOnInit() {
     console.log('courses component initialized...');
-    this.spinner(true);
-    this.getUserId();
-    this.getPopularAndLatestCourses();
+    this.getCourseTabData();
   }
 
   /**

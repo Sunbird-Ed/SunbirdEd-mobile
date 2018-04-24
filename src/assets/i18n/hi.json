@@ -76,7 +76,7 @@
   "DISMISS": "रद्द",
   "DOWNLOAD": "डाउनलोड ",
   "DOWNLOADING": "डौन्लोडिंग %s %",
-  "DOWNLOADING_1": "डाउनलोड %s",
+  "DOWNLOADING_1": "डाउनलोड {{%s}}",
   "DOWNLOADING_ATTACHMENT": "अनुलग्नक डाउनलोड हो रहा है",
   "DOWNLOADS": "डाउनलोड ",
   "DOWNLOAD_ALL": "सभी पाठ्यक्रम डाउनलोड करें?",

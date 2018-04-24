@@ -7,6 +7,10 @@ import { LanguageSettingsPage } from '../pages/language-settings/language-settin
 import { ImageLoaderConfig } from 'ionic-image-loader';
 import { platform } from 'os';
 import { TranslateService } from '@ngx-translate/core';
+import { SearchPage } from '../pages/search/search';
+import { CourseDetailPage } from '../pages/course-detail/course-detail';
+import { CollectionDetailsPage } from '../pages/collection-details/collection-details';
+import { ContentDetailsPage } from '../pages/content-details/content-details';
 
 declare var chcp: any;
 
@@ -41,7 +45,9 @@ export class MyApp {
 
     let that = this;
 
+
     platform.ready().then(() => {
+      this.registerDeeplinks();
 
       permission.requestPermission(this.permissionList, (response) => {
 
@@ -213,5 +219,41 @@ export class MyApp {
     interact.id = pageid.toLowerCase();
     interact.env = Environment.HOME;
     this.telemetryService.interact(interact);
+  }
+
+  registerDeeplinks() {
+    (<any>window).splashscreen.onDeepLink(deepLinkResponse => {
+
+      setTimeout(() => {
+        let response = deepLinkResponse;
+
+        if (response.type === "dialcode") {
+          let results = response.code.split("/");
+          let dialCode = results[results.length - 1];
+          this.nav.push(SearchPage, {dialCode: dialCode});
+        } else if (response.result) {
+          this.showContentDetails(response.result);
+        }
+      }, 300);
+    });
+  }
+
+  showContentDetails(content) {
+    if (content.contentType === 'Course') {
+      console.log('Calling course details page');
+      this.nav.push(CourseDetailPage, {
+        content: content
+      })
+    } else if (content.mimeType === 'application/vnd.ekstep.content-collection') {
+      console.log('Calling collection details page');
+      this.nav.push(CollectionDetailsPage, {
+        content: content
+      })
+    } else {
+      console.log('Calling content details page');
+      this.nav.push(ContentDetailsPage, {
+        content: content
+      })
+    }
   }
 }

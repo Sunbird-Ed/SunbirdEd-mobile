@@ -5,7 +5,7 @@
       <!-- <ion-icon md="md-share" float-right></ion-icon> -->
     </ion-title>
     <ion-buttons end>
-        <button ion-button icon-only>
+        <button ion-button icon-only (click)="share()">
             <ion-icon md="md-share" float-right></ion-icon>
         </button>
         <button *ngIf="content && content.downloadable" ion-button icon-only (click)="showOverflowMenu($event)" style="font-size: 1.8rem;">
@@ -17,14 +17,14 @@
 <!-- Page body -->
 <ion-content padding overflow-scroll = "true">
   <div class="content-details-holder" *ngIf="content">
-    <h6>{{ cardData.depth ? cardData.depth + ': ' : '' }}{{content.name}}</h6>
+    <h6 class="font-size-20">{{ cardData.depth ? cardData.depth + ': ' : '' }}{{content.name}}</h6>
     <!-- Owner and download info -->
     <ion-grid class="padding-0" *ngIf="content.owner || content.size">
       <p *ngIf="content.owner">{{ 'BY' | translate }} {{ content.owner }}</p>
       <ion-row>
         <ion-col class="padding-0">
           <div class="size_txt padding-bottom-5" no-margin *ngIf="content.size">
-            <span *ngIf="content.size">{{ 'MODULE_SIZE_1' | translate }} [{{ content.size | fileSize }}]</span>
+            <span *ngIf="content.size" class="content-size">{{ 'MODULE_SIZE_1' | translate }} {{ content.size | fileSize }}</span>
           </div>
           <rating align-items-start *ngIf="content.me_averageRating" [(ngModel)]="content.me_averageRating" readOnly="true"
             max="5" no-padding></rating>
@@ -39,7 +39,7 @@
 
     <!-- Read more / less -->
     <div class="about-section" *ngIf="content.description || content.gradeLevel || content.subject">
-      <h6 class="padding-10 background-gray">{{ 'ABOUT' | translate }}</h6>
+      <h6 class="padding-10 background-gray font-size-20">{{ 'ABOUT' | translate }}</h6>
       <p *ngIf="!showMoreFlag">
         {{ (content.description && content.description.length > 100) ? (content.description | slice:0:10) + '...' : (content.description)
         }} </p>
@@ -48,28 +48,28 @@
           {{ content.description }}
         </p>
         <div *ngIf="content.gradeLevel && content.gradeLevel.length" margin-top>
-          <div>{{ 'GRADE' | translate }}:</div>
+          <div class="content-meta-title">{{ 'GRADE' | translate }}</div>
           <span *ngFor="let grade of content.gradeLevel">
             <span>{{grade}}</span>
           </span>
         </div>
         <div *ngIf="content.subject" margin-top>
-          <div>{{ 'SUBJECT' | translate }}:</div>
+          <div class="content-meta-title">{{ 'SUBJECT' | translate }}</div>
           <span>{{content.subject}}</span>
         </div>
       </div>
 
-      <span class="read-more" *ngIf="content.description && content.description.length > 100 || content.gradeLevel || content.subject"
+      <div class="read-more" *ngIf="content.description && content.description.length > 100 || content.gradeLevel || content.subject"
         (click)="showMoreFlag = !showMoreFlag">
-        <span *ngIf="showMoreFlag">
+        <div *ngIf="showMoreFlag" class="padding-top-10">
           {{ 'READ_LESS' | translate }}
           <ion-icon name="ios-arrow-up"></ion-icon>
-        </span>
-        <span *ngIf="!showMoreFlag">
+        </div>
+        <div *ngIf="!showMoreFlag">
           {{ 'READ_MORE' | translate }}
           <ion-icon name="ios-arrow-down"></ion-icon>
-        </span>
-      </span>
+        </div>
+      </div>
     </div>
     <br/>
     <div class="license-section padding-10 background-gray" *ngIf="content.license">
@@ -97,7 +97,7 @@
   <ion-toolbar padding>
       <button ion-button block outline *ngIf="isDownloadStarted" (click)="cancelDownload()">{{ 'CANCEL_DOWNLOAD' | translate }}</button>
       <button ion-button block *ngIf="!content.downloadable" (click)="downloadContent()" text-uppercase> 
-        {{ isDownloadStarted ? downloadingText + downloadProgress : 'DOWNLOAD' | translate }}
+        {{ downloadProgress ? ('DOWNLOADING_1' | translate:{'%s': downloadProgress}) : ('DOWNLOAD' | translate) }}
       </button>
       <button ion-button block *ngIf="content.downloadable" (click)="playContent()">{{ 'PLAY' | translate }}</button>
   </ion-toolbar>

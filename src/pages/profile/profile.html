@@ -85,7 +85,7 @@
 
     <!-- User Experience -->
     <ion-list-header *ngIf="(profile?.jobProfile?.length && !isLoggedInUser) || isLoggedInUser" class="section-title" no-padding>
-        {{ 'EXPERIENCE' | translate }}
+        {{ 'TITLE_EXPERIENCE' | translate }}
         <span *ngIf="isLoggedInUser" float-end color="primary">
             <span (click)="editExperience()">{{ 'ADD' | translate }}</span>
             <ion-icon color="dark" (click)="toggleLock('jobProfile')" class="padding-left-5" name="{{ profile?.profileVisibility?.jobProfile == 'private' ? 'lock' : 'unlock' }}"></ion-icon>

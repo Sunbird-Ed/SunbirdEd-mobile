@@ -29,11 +29,6 @@ export class CollectionDetailsPage {
   contentDetail: any;
 
   /**
-   * To hide menu
-   */
-  tabBarElement: any;
-
-  /**
    * Contains children content data
    */
   childrenData: Array<any>;
@@ -81,13 +76,13 @@ export class CollectionDetailsPage {
   /**
    * Its get true when child is collection.
    * Used to show content depth
-   * 
-   * @example 1.1 Collection 1 
+   *
+   * @example 1.1 Collection 1
    */
   isDepthChild: boolean = false;
 
   /**
-   * To hold 
+   * To hold
    */
   queuedIdentifiers: Array<any> = [];
 
@@ -102,7 +97,7 @@ export class CollectionDetailsPage {
   totalDownload: number;
 
   /**
-   * Current download count 
+   * Current download count
    */
   currentCount: number = 0;
 
@@ -127,7 +122,7 @@ export class CollectionDetailsPage {
   public contentService: ContentService;
 
   /**
-   * Contains ref of navigation controller 
+   * Contains ref of navigation controller
    */
   public navCtrl: NavController;
 
@@ -152,21 +147,20 @@ export class CollectionDetailsPage {
   public loadingCtrl: LoadingController;
 
   constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, zone: NgZone,
-    private events: Events, toastCtrl: ToastController, loadingCtrl: LoadingController, 
+    private events: Events, toastCtrl: ToastController, loadingCtrl: LoadingController,
     public popoverCtrl: PopoverController, private fileUtil: FileUtil) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
     this.zone = zone;
     this.toastCtrl = toastCtrl;
-    this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
     this.loadingCtrl = loadingCtrl;
     console.warn('Inside new module..........................');
   }
 
   /**
    * To set content details in local variable
-   * 
+   *
    * @param {string} identifier identifier of content / course
    */
   setContentDetails(identifier, refreshContentDetails: boolean | true) {
@@ -239,9 +233,9 @@ export class CollectionDetailsPage {
 
   /**
    * Function to get import content api request params
-   * 
+   *
    * @param {Array<string>} identifiers contains list of content identifier(s)
-   * @param {boolean} isChild 
+   * @param {boolean} isChild
    */
   getImportContentRequestBody(identifiers: Array<string>, isChild: boolean) {
     let requestParams = [];
@@ -260,9 +254,9 @@ export class CollectionDetailsPage {
 
   /**
    * Function to get import content api request params
-   * 
+   *
    * @param {Array<string>} identifiers contains list of content identifier(s)
-   * @param {boolean} isChild 
+   * @param {boolean} isChild
    */
   importContent(identifiers: Array<string>, isChild: boolean) {
     const option = {
@@ -348,8 +342,8 @@ export class CollectionDetailsPage {
     }
   }
   /**
-   * 
-   * @param {array} data 
+   *
+   * @param {array} data
    */
   showDownloadAllBtn(data) {
     let size = 0;
@@ -373,7 +367,6 @@ export class CollectionDetailsPage {
    * Ionic life cycle hook
    */
   ionViewWillEnter(): void {
-    this.tabBarElement.style.display = 'none';
     this.resetVariables();
     this.cardData = this.navParams.get('content');
     let depth = this.navParams.get('depth');
@@ -470,7 +463,7 @@ export class CollectionDetailsPage {
 
   /**
    * Show error messages
-   * 
+   *
    * @param {string}  message Error message
    * @param {boolean} isPop True = navigate to previous state
    */
@@ -510,14 +503,13 @@ export class CollectionDetailsPage {
    */
   ionViewWillLeave(): void {
     this.downloadProgress = '';
-    this.tabBarElement.style.display = 'flex';
     this.events.unsubscribe('genie.event');
   }
 
   /**
    * To get redable file size
-   * 
-   * @param {number} size 
+   *
+   * @param {number} size
    */
   getReadableFileSize(size): string {
     const units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
