@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-import { TabsPage,SharedPreferences, OAuthService, Interact, TelemetryService, InteractType, InteractSubtype, Environment, PageId } from 'sunbird';
+import { TabsPage, SharedPreferences, OAuthService, Interact, TelemetryService, InteractType, InteractSubtype, Environment, PageId } from 'sunbird';
 import { ViewController } from 'ionic-angular/navigation/view-controller';
 import { TranslateService } from '@ngx-translate/core';
 import { ProfileType, ProfileService } from 'sunbird'
@@ -34,7 +34,7 @@ export class UserTypeSelectionPage {
   userImageUri: string = "assets/imgs/ic_anonymous.png";
 
   constructor(public navCtrl: NavController,
-    private translator: TranslateService,
+    private translate: TranslateService,
     private preference: SharedPreferences,
     private profileService: ProfileService,
     private telemetryService: TelemetryService
@@ -44,7 +44,7 @@ export class UserTypeSelectionPage {
 
   initData() {
     let that = this;
-    this.translator.get(["ROLE.ROLE_TYPE", "ROLE.TEACHER_CONTENT", "ROLE.STUDENT_CONTENT"])
+    this.translate.get(["ROLE.ROLE_TYPE", "ROLE.TEACHER_CONTENT", "ROLE.STUDENT_CONTENT"])
       .subscribe(val => {
         that.userTypes = val["ROLE.ROLE_TYPE"];
         that.teacherContents = val["ROLE.TEACHER_CONTENT"];
@@ -62,9 +62,7 @@ export class UserTypeSelectionPage {
     this.teacherCardBorderColor = selectedCardBorderColor;
     this.studentCardBorderColor = borderColor;
     this.selectedUserType = "teacher";
-    this.translator.get('CONTINUE_AS_TEACHER').subscribe(value => {
-      this.continueAs = value;
-    })
+    this.continueAs = this.translateMessage('CONTINUE_AS_TEACHER');
     this.preference.putString(KEY_SELECTED_USER_TYPE, this.selectedUserType);
   }
 
@@ -73,9 +71,7 @@ export class UserTypeSelectionPage {
     this.teacherCardBorderColor = borderColor;
     this.studentCardBorderColor = selectedCardBorderColor;
     this.selectedUserType = "student";
-    this.translator.get('CONTINUE_AS_STUDENT').subscribe(value => {
-      this.continueAs = value;
-    })
+    this.continueAs = this.translateMessage('CONTINUE_AS_STUDENT');
     this.preference.putString(KEY_SELECTED_USER_TYPE, this.selectedUserType)
   }
 
@@ -134,9 +130,24 @@ export class UserTypeSelectionPage {
     let paramsMap: Map<string, any> = new Map();
     paramsMap.set("UserType", userType);
     values.push(paramsMap);
-    interact.values=values;
+    interact.values = values;
     interact.env = Environment.HOME;
     this.telemetryService.interact(interact);
+  }
+
+  /**
+   * Used to Translate message to current Language
+   * @param {string} messageConst - Message Constant to be translated
+   * @returns {string} translatedMsg - Translated Message
+   */
+  translateMessage(messageConst: string): string {
+    let translatedMsg = '';
+    this.translate.get(messageConst).subscribe(
+      (value: any) => {
+        translatedMsg = value;
+      }
+    );
+    return translatedMsg;
   }
 
 }

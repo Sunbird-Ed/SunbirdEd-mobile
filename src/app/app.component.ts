@@ -1,7 +1,7 @@
 import { Component, ViewChild, NgZone } from '@angular/core';
 import { Platform, ModalController, AlertController, NavController, ViewController, Nav, App, ToastController, Events } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
-import { TabsPage, AuthService, ContainerService, PermissionService, Interact, InteractType, InteractSubtype, Environment, TelemetryService } from "sunbird";
+import { TabsPage, AuthService, ContainerService, PermissionService, Interact, InteractType, InteractSubtype, Environment, TelemetryService, SharedPreferences } from "sunbird";
 import { initGuestTabs, initUserTabs } from './module.service';
 import { LanguageSettingsPage } from '../pages/language-settings/language-settings';
 import { ImageLoaderConfig } from 'ionic-image-loader';
@@ -36,7 +36,8 @@ export class MyApp {
     public translate: TranslateService,
     private events: Events,
     private zone: NgZone,
-    private telemetryService: TelemetryService) {
+    private telemetryService: TelemetryService,
+    private preference: SharedPreferences) {
 
     let that = this;
 
@@ -50,7 +51,12 @@ export class MyApp {
 
       that.authService.getSessionData((session) => {
         if (session == "null") {
-          that.rootPage = LanguageSettingsPage;
+          this.preference.getString('selected_user_type', (val) => {
+
+            initGuestTabs(this.containerService);
+
+            that.rootPage = (val != "") ? this.nav.setRoot(TabsPage, { loginMode: 'guest' }) : this.nav.setRoot(LanguageSettingsPage);
+          })
         } else {
           initUserTabs(that.containerService);
           that.rootPage = TabsPage;
@@ -137,12 +143,12 @@ export class MyApp {
   // }
 
   takeToHomeAsIdentifiedUser() {
-    this.nav.push(TabsPage, { loginMode: 'signin' });
+    this.nav.setRoot(TabsPage, { loginMode: 'signin' });
   }
 
   takeToHomeAsGuest() {
     initGuestTabs(this.containerService);
-    this.nav.push(TabsPage, { loginMode: 'guest' });
+    this.nav.setRoot(TabsPage, { loginMode: 'guest' });
   }
 
   fetchUpdate() {

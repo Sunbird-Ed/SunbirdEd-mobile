@@ -125,7 +125,7 @@ export class OnboardingPage {
   browseAsGuest() {
     this.generateInteractEvent();
     initGuestTabs(this.container);
-    this.navCtrl.push(UserTypeSelectionPage);
+    this.navCtrl.setRoot(UserTypeSelectionPage);
   }
 
   generateInteractEvent() {
