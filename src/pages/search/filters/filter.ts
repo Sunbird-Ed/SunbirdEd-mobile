@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+  import { Component } from "@angular/core";
 import { NavParams, PopoverController, NavController, Events } from "ionic-angular";
 import { FilterOptions } from "./options/options";
 

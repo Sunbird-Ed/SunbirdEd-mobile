@@ -276,7 +276,7 @@ export class HomePage implements OnInit {
       }
     }
 
-    this.qrScanner.startScanner(undefined, undefined, undefined, callback);
+    this.qrScanner.startScanner(undefined, undefined, undefined, callback,PageId.HOME);
   }
 
 }

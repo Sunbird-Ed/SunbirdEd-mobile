@@ -1,7 +1,8 @@
 import { Component } from "@angular/core";
 import { PopoverController, ViewController, NavParams } from "ionic-angular";
 import { ResourceFilterOptions } from "./options/filter.options";
-import { PageAssembleCriteria, PageAssembleFilter } from "sunbird";
+import { PageAssembleCriteria, PageAssembleFilter, TelemetryService, InteractType, InteractSubtype, Environment, PageId } from "sunbird";
+import { generateInteractEvent } from "../../../app/telemetryutil";
 
 @Component({
   selector: 'page-resource-filter',
@@ -144,7 +145,7 @@ export class ResourceFilter {
     }];
 
 
-  constructor(private popCtrl: PopoverController, private viewCtrl: ViewController, navParams: NavParams) {
+  constructor(private popCtrl: PopoverController, private viewCtrl: ViewController, navParams: NavParams,private telemetryService: TelemetryService) {
     this.callback = navParams.get('callback');
   }
 
@@ -172,6 +173,11 @@ export class ResourceFilter {
   }
 
   cancel() {
+    this.telemetryService.interact(
+      generateInteractEvent(InteractType.TOUCH,
+        InteractSubtype.CANCEL,
+        Environment.HOME,
+      PageId.LIBRARY_PAGE_FILTER,null));
     this.viewCtrl.dismiss();
   }
 }
