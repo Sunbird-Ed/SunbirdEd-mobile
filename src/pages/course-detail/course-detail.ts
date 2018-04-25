@@ -1,9 +1,10 @@
-import { Component, NgZone } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events, ToastController } from 'ionic-angular';
+import { Component, NgZone, ViewChild } from '@angular/core';
+import { IonicPage, NavController, NavParams, Events, ToastController, Platform, Navbar } from 'ionic-angular';
 import { CourseBatchesPage } from './../course-batches/course-batches';
-import { ContentService,FileUtil,Impression, ImpressionType, PageId, Environment, TelemetryService } from 'sunbird';
+import { ContentService, FileUtil, Impression, ImpressionType, PageId, Environment, TelemetryService, Start, Mode, End } from 'sunbird';
 import { NgModel } from '@angular/forms';
 import * as _ from 'lodash';
+import { generateImpressionEvent } from '../../app/telemetryutil';
 
 /**
  * Generated class for the CourseDetailPage page.
@@ -84,14 +85,23 @@ export class CourseDetailPage {
    */
   public toastCtrl: ToastController;
 
-  constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService,private telemetryService : TelemetryService, zone: NgZone,
-    private events: Events, toastCtrl: ToastController, private fileUtil: FileUtil) {
+  private objId;
+  private objType;
+  private objVer;
+  @ViewChild(Navbar) navBar: Navbar;
+  constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, private telemetryService: TelemetryService, zone: NgZone,
+    private events: Events, toastCtrl: ToastController, private fileUtil: FileUtil,
+    private platform: Platform) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
     this.zone = zone;
     this.toastCtrl = toastCtrl;
     console.warn('Inside course details page');
+    this.platform.registerBackButtonAction(() => {
+      this.generateEndEvent(this.objId, this.objType, this.objVer);
+      this.navCtrl.pop();
+    }, 0)
   }
 
   /**
@@ -128,6 +138,11 @@ export class CourseDetailPage {
       this.course.me_totalDownloads = this.course.me_totalDownloads.split('.')[0];
     }
 
+    this.objId = this.contentDetail.identifier;
+    this.objType = this.contentDetail.contentType;
+    this.objVer = this.contentDetail.pkgVersion;
+
+    this.generateStartEvent(this.contentDetail.identifier, this.contentDetail.contentType, this.contentDetail.pkgVersion);
     this.generateImpressionEvent(this.contentDetail.identifier, this.contentDetail.contentType, this.contentDetail.pkgVersion);
     this.setCourseStructure();
 
@@ -253,15 +268,44 @@ export class CourseDetailPage {
   ionViewDidEnter() {
   }
 
+  ionViewDidLoad() {
+    this.navBar.backButtonClick = (e: UIEvent) => {
+      this.generateEndEvent(this.objId, this.objType, this.objVer);
+      this.navCtrl.pop();
+    }
+  }
+
   generateImpressionEvent(objectId, objectType, objectVersion) {
-    let impression = new Impression();
-    impression.type = ImpressionType.DETAIL;
-    impression.pageId = PageId.COURSE_DETAIL;
-    impression.env = Environment.HOME;
-    impression.objId = objectId;
-    impression.objType = objectType;
-    impression.objVer = objectVersion;
-    this.telemetryService.impression(impression);
+    this.telemetryService.impression(generateImpressionEvent(ImpressionType.DETAIL,
+      PageId.COURSE_DETAIL,
+      Environment.HOME,
+      objectId,
+      objectType,
+      objectVersion));
+  }
+
+  generateStartEvent(objectId, objectType, objectVersion) {
+    let start = new Start();
+    start.type = objectType;
+    start.pageId = PageId.COURSE_DETAIL;
+    start.env = Environment.HOME;
+    start.mode = Mode.PLAY;
+    start.objId = objectId;
+    start.objType = objectType;
+    start.objVer = objectVersion;
+    this.telemetryService.start(start);
+  }
+
+  generateEndEvent(objectId, objectType, objectVersion) {
+    let end = new End();
+    end.type = objectType;
+    end.pageId = PageId.COURSE_DETAIL;
+    end.env = Environment.HOME;
+    end.mode = Mode.PLAY;
+    end.objId = objectId;
+    end.objType = objectType;
+    end.objVer = objectVersion;
+    this.telemetryService.end(end);
   }
 
   /**

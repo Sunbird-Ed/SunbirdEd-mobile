@@ -1,6 +1,6 @@
-import { Component, NgZone } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController } from 'ionic-angular';
-import { ContentService, FileUtil } from 'sunbird';
+import { Component, NgZone, ViewChild } from '@angular/core';
+import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, Platform, Navbar } from 'ionic-angular';
+import { ContentService, FileUtil, Start, PageId, Environment, Mode, Impression, ImpressionType, TelemetryService, End } from 'sunbird';
 import { NgModel } from '@angular/forms';
 import * as _ from 'lodash';
 import { ContentDetailsPage } from '../content-details/content-details';
@@ -145,10 +145,17 @@ export class CollectionDetailsPage {
    * Contains reference of LoadingController
    */
   public loadingCtrl: LoadingController;
+  private objId;
+  private objType;
+  private objVer;
 
+  @ViewChild(Navbar) navBar: Navbar;
   constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, zone: NgZone,
     private events: Events, toastCtrl: ToastController, loadingCtrl: LoadingController,
-    public popoverCtrl: PopoverController, private fileUtil: FileUtil) {
+    public popoverCtrl: PopoverController, 
+    private fileUtil: FileUtil,
+    private platform : Platform,
+    private telemetryService : TelemetryService) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
@@ -156,6 +163,10 @@ export class CollectionDetailsPage {
     this.toastCtrl = toastCtrl;
     this.loadingCtrl = loadingCtrl;
     console.warn('Inside new module..........................');
+    this.platform.registerBackButtonAction(() => {
+      this.generateEndEvent(this.objId, this.objType, this.objVer);
+      this.navCtrl.pop();
+    }, 0)
   }
 
   /**
@@ -191,6 +202,11 @@ export class CollectionDetailsPage {
   extractApiResponse(data) {
     this.contentDetail = data.result.contentData ? data.result.contentData : [];
     this.contentDetail.isAvailableLocally = data.result.isAvailableLocally;
+    this.objId = this.contentDetail.identifier;
+    this.objType = data.result.contentType;
+    this.objVer = this.contentDetail.pkgVersion;
+    this.generateStartEvent(this.contentDetail.identifier, this.contentDetail.contentType, this.contentDetail.pkgVersion);
+    this.generateImpressionEvent(this.contentDetail.identifier, this.contentDetail.contentType, this.contentDetail.pkgVersion);
     switch (data.result.isAvailableLocally) {
       case true: {
         console.log("Content locally available. Geting child content... @@@");
@@ -380,6 +396,13 @@ export class CollectionDetailsPage {
     this.subscribeGenieEvent();
   }
 
+  ionViewDidLoad() {
+    this.navBar.backButtonClick = (e: UIEvent) => {
+      this.generateEndEvent(this.objId, this.objType, this.objVer);
+      this.navCtrl.pop();
+    }
+  }
+
   navigateToDetailsPage(content: any, depth) {
     console.log('Card details... @@@', content);
     console.log('Content depth... @@@', depth);
@@ -547,5 +570,40 @@ export class CollectionDetailsPage {
       } else {
       }
     });
+  }
+
+  generateImpressionEvent(objectId, objectType, objectVersion) {
+    let impression = new Impression();
+    impression.type = ImpressionType.DETAIL;
+    impression.pageId = PageId.COURSE_DETAIL;
+    impression.env = Environment.HOME;
+    impression.objId = objectId;
+    impression.objType = objectType;
+    impression.objVer = objectVersion;
+    this.telemetryService.impression(impression);
+  }
+
+  generateStartEvent(objectId, objectType, objectVersion) {
+    let start = new Start();
+    start.type = objectType;
+    start.pageId = PageId.COLLECTION_DETAIL;
+    start.env = Environment.HOME;
+    start.mode = Mode.PLAY;
+    start.objId = objectId;
+    start.objType = objectType;
+    start.objVer = objectVersion;
+    this.telemetryService.start(start);
+  }
+
+  generateEndEvent(objectId, objectType, objectVersion) {
+    let end = new End();
+    end.type = objectType;
+    end.pageId = PageId.COLLECTION_DETAIL;
+    end.env = Environment.HOME;
+    end.mode = Mode.PLAY;
+    end.objId = objectId;
+    end.objType = objectType;
+    end.objVer = objectVersion;
+    this.telemetryService.end(end);
   }
 }

@@ -1,9 +1,10 @@
-import { Component, NgZone } from '@angular/core';
+import { Component, NgZone, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { NavController, LoadingController } from 'ionic-angular';
 
-import { TabsPage, OAuthService, ContainerService, UserProfileService, AuthService, TenantInfoRequest } from 'sunbird';
+import { TabsPage, OAuthService, ContainerService, UserProfileService, AuthService, TenantInfoRequest, TelemetryService, InteractType, InteractSubtype, Environment } from 'sunbird';
 import { initGuestTabs, initUserTabs } from '../../app/module.service';
+import { generateInteractEvent } from '../../app/telemetryutil';
 
 @Component({
   selector: 'sign-in-card',
@@ -15,14 +16,14 @@ import { initGuestTabs, initUserTabs } from '../../app/module.service';
                     {{ 'OVERLAY_INFO_TEXT_COMMON' | translate:{'%s': sunbird} }}
                     <br />
                     <br />
-                    <button ion-button block (click)="singIn()">{{ 'SIGN_IN' | translate }}</button>
+                    <button ion-button block (click)="singIn()" class="sign-in-btn">{{ 'SIGN_IN' | translate }}</button>
                   </ion-card-content>
             </ion-card>`
 })
 export class SignInCardComponent {
 
   sunbird: string = "SUNBIRD";
-
+  @Input() source: string = "";
   constructor(public translate: TranslateService,
     public navCtrl: NavController,
     private auth: OAuthService,
@@ -30,14 +31,21 @@ export class SignInCardComponent {
     private userProfileService: UserProfileService,
     private authService: AuthService,
     private loadingCtrl: LoadingController,
-    private ngZone: NgZone) {
+    private ngZone: NgZone,
+    private telemetryService: TelemetryService) {
   }
 
   singIn() {
+
+    this.telemetryService.interact(
+      generateInteractEvent(InteractType.TOUCH,
+        InteractSubtype.SIGNIN_OVERLAY_CLICKED,
+        Environment.HOME,
+        this.source, null)
+    );
     let that = this;
     let loader = this.getLoader();
     loader.present();
-
     that.auth.doOAuthStepOne()
       .then(token => {
         return that.auth.doOAuthStepTwo(token);
