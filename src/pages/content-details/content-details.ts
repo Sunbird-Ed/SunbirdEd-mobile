@@ -1,10 +1,11 @@
 import { ContentActionsComponent } from './../../component/content-actions/content-actions';
-import { Component, NgZone } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController,PopoverController } from 'ionic-angular';
-import { ContentService,FileUtil, Impression, ImpressionType, PageId, Environment, TelemetryService, ShareUtil } from 'sunbird';
+import { Component, NgZone, ViewChild } from '@angular/core';
+import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController,PopoverController, Navbar, Platform } from 'ionic-angular';
+import { ContentService,FileUtil, Impression, ImpressionType, PageId, Environment, TelemetryService, Start, Mode, End, ShareUtil, InteractType, InteractSubtype } from 'sunbird';
 import { NgModel } from '@angular/forms';
 import { SocialSharing } from "@ionic-native/social-sharing";
 import * as _ from 'lodash';
+import { generateInteractEvent, Map } from '../../app/telemetryutil';
 
 @IonicPage()
 @Component({
@@ -69,6 +70,8 @@ export class ContentDetailsPage {
    */
   loader: any;
 
+  downloadingText: string = 'DOWNLOADING... ';
+
   /**
    * Contains reference of content service
    */
@@ -99,6 +102,9 @@ export class ContentDetailsPage {
    */
   public loadingCtrl: LoadingController;
 
+  private objId;
+  private objType;
+  private objVer;
   /**
    *
    * @param navCtrl
@@ -108,10 +114,11 @@ export class ContentDetailsPage {
    * @param events
    * @param toastCtrl
    */
+  @ViewChild(Navbar) navBar: Navbar;
   constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService,private telemetryService : TelemetryService, zone: NgZone,
     private events: Events, toastCtrl: ToastController, loadingCtrl: LoadingController,
     private fileUtil: FileUtil, public popoverCtrl: PopoverController, private shareUtil: ShareUtil,
-    private social: SocialSharing) {
+    private social: SocialSharing,private platform :Platform) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
@@ -119,6 +126,10 @@ export class ContentDetailsPage {
     this.toastCtrl = toastCtrl;
     this.loadingCtrl = loadingCtrl;
     console.warn('Inside content details page');
+    this.platform.registerBackButtonAction(() => {
+      this.navCtrl.pop();
+      this.generateEndEvent(this.objId, this.objType, this.objVer);
+    }, 0)
   }
 
   /**
@@ -158,7 +169,13 @@ export class ContentDetailsPage {
     this.content = data.result.contentData;
     this.content.downloadable = data.result.isAvailableLocally;
     this.content.playContent = JSON.stringify(data.result);
-
+    if (this.content.gradeLevel && this.content.gradeLevel.length) {
+      this.content.gradeLevel = this.content.gradeLevel.join(", ");
+    }
+    this.objId = this.content.identifier;
+    this.objType = data.result.contentType;
+    this.objVer = this.content.pkgVersion;
+    this.generateStartEvent(this.content.identifier, this.content.contentType, this.content.pkgVersion);
     this.generateImpressionEvent(this.content.identifier, this.content.contentType, this.content.pkgVersion);
 
     // Check locally available
@@ -196,6 +213,30 @@ export class ContentDetailsPage {
     this.telemetryService.impression(impression);
   }
 
+  generateStartEvent(objectId, objectType, objectVersion) {
+    let start = new Start();
+    start.type =objectType ;
+    start.pageId = PageId.CONTENT_DETAIL;
+    start.env = Environment.HOME;
+    start.mode = Mode.PLAY;
+    start.objId = objectId;
+    start.objType = objectType;
+    start.objVer = objectVersion;
+    this.telemetryService.start(start);
+  }
+
+  generateEndEvent(objectId, objectType, objectVersion) {
+    let end = new End();
+    end.type =objectType ;
+    end.pageId = PageId.CONTENT_DETAIL;
+    end.env = Environment.HOME;
+    end.mode = Mode.PLAY;
+    end.objId = objectId;
+    end.objType = objectType;
+    end.objVer = objectVersion;
+    this.telemetryService.end(end);
+  }
+
   /**
    * Ionic life cycle hook
    */
@@ -213,6 +254,13 @@ export class ContentDetailsPage {
    */
   ionViewWillLeave(): void {
     this.events.unsubscribe('genie.event');
+  }
+
+  ionViewDidLoad() {
+    this.navBar.backButtonClick = (e: UIEvent) => {
+      this.generateEndEvent(this.objId, this.objType, this.objVer);
+      this.navCtrl.pop();
+    }
   }
 
   /**
@@ -383,24 +431,39 @@ export class ContentDetailsPage {
   }
 
   share() {
+    this.generateShareInteractEvents(InteractType.TOUCH,InteractSubtype.SHARE_LIBRARY_INITIATED,this.content.contentType);
     let loader = this.getLoader();
     loader.present();
     let url = "https://staging.open-sunbird.org/public/#!/content/" + this.content.identifier;
-    this.shareUtil.exportEcar(this.content.identifier, path => {
-      loader.dismiss();
-      if (this.content.downloadable) {
+    if (this.content.downloadable) {
+      this.shareUtil.exportEcar(this.content.identifier, path => {
+        loader.dismiss();
+        this.generateShareInteractEvents(InteractType.OTHER,InteractSubtype.SHARE_LIBRARY_SUCCESS,this.content.contentType);
         this.social.share("", "", "file://" + path, url);
-      } else {
-        this.social.share("", "", "", url);
-      }
-    }, error => {
-      loader.dismiss();
-      let toast = this.toastCtrl.create({
-        message: "Unable to share content.",
-        duration: 2000,
-        position: 'bottom'
+      }, error => {
+        loader.dismiss();
+        let toast = this.toastCtrl.create({
+          message: "Unable to share content.",
+          duration: 2000,
+          position: 'bottom'
+        });
+        toast.present();
       });
-      toast.present();
-    });
+    } else {
+      this.generateShareInteractEvents(InteractType.OTHER,InteractSubtype.SHARE_LIBRARY_SUCCESS,this.content.contentType);
+      this.social.share("", "", "", url);
+    }
+   
+  }
+
+  generateShareInteractEvents(interactType,subType,contentType){
+    let values= new Map();
+    values["ContentType"]=contentType;
+    this.telemetryService.interact(
+			generateInteractEvent(interactType,
+			  subType,
+			  Environment.HOME,
+			  PageId.CONTENT_DETAIL, values)
+		  );
   }
 }

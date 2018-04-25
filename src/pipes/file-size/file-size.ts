@@ -18,8 +18,8 @@ export class FileSizePipe implements PipeTransform {
       if (isNaN(size))
         size = 0;
 
-      if (size < 1024)
-        return size + ' Bytes';
+      // if (size < 1024)
+      //   return size + ' Bytes';
 
       size /= 1024;
 

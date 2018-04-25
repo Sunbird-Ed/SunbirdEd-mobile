@@ -12,5 +12,5 @@
     <view-more-activity-list *ngFor="let item of searchList" [content]="item" [type]="pageType"></view-more-activity-list>
   </div>
   <!-- TODO: need good logic here -->
-  <button ion-button block *ngIf="searchList && searchList.length && loadMoreBtn" (click)="loadMore();">{{ 'LOAD_MORE' | translate }}</button>
+  <button ion-button block *ngIf="searchList && searchList.length && loadMoreBtn" (click)="loadMore();">{{ 'VIEW_MORE' | translate }}</button>
 </ion-content>

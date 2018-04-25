@@ -280,7 +280,7 @@ export class CoursesPage implements OnInit {
       }
     }
 
-    this.qrScanner.startScanner(undefined, undefined, undefined, callback);
+    this.qrScanner.startScanner(undefined, undefined, undefined, callback,PageId.COURSES);
   }
 
   search() {
