@@ -37,6 +37,7 @@ export class OnboardingCardComponent {
     this.initializeService();
 
     this.events.subscribe('refresh:onboardingcard', () => {
+      this.mSlides.slideTo(0, 500);
       this.onboardingService.currentIndex = 0;
       this.onboardingService.initializeCard();
     });
@@ -49,10 +50,6 @@ export class OnboardingCardComponent {
     if (this.onboardingService.isOnBoardingCardCompleted) {
       this.onboardingService.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: true });
     }
-    //TODO: Need to move to unfilled slide
-    /*     this.events.subscribe('onboarding-card:set-defaultSlide', (param) => {
-          this.mSlides.slideTo(param.slideIndex, 500);
-        }); */
   }
 
   /**

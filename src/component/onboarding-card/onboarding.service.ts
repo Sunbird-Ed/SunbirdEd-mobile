@@ -89,10 +89,10 @@ export class OnboardingService {
         this.profileService.getCurrentUser((res: any) => {
             this.profile = JSON.parse(res);
             this.currentIndex = 0;
-            if (this.profile.board && this.profile.board[0] !== '') { this.onBoardingSlides[0].selectedOptions = this.profile.board; this.currentIndex = 0; }
-            if (this.profile.grade && this.profile.grade[0] !== '') { this.onBoardingSlides[1].selectedOptions = this.profile.grade; this.currentIndex = 25; }
-            if (this.profile.subject && this.profile.subject[0] !== '') { this.onBoardingSlides[2].selectedOptions = this.profile.subject; this.currentIndex = 50; }
-            if (this.profile.medium && this.profile.medium[0] !== '') { this.onBoardingSlides[3].selectedOptions = this.profile.medium; this.currentIndex = 75; }
+            if (this.profile.board && this.profile.board[0] !== '') { this.onBoardingSlides[0].selectedOptions = this.profile.board; this.currentIndex = 25; }
+            if (this.profile.grade && this.profile.grade[0] !== '') { this.onBoardingSlides[1].selectedOptions = this.profile.grade; this.currentIndex = 50; }
+            if (this.profile.subject && this.profile.subject[0] !== '') { this.onBoardingSlides[2].selectedOptions = this.profile.subject; this.currentIndex = 75; }
+            if (this.profile.medium && this.profile.medium[0] !== '') { this.onBoardingSlides[3].selectedOptions = this.profile.medium; this.currentIndex = 100; }
         },
             (err: any) => {
                 console.log("Err1", err);
@@ -228,15 +228,18 @@ export class OnboardingService {
             month: -1,
             standard: -1,
             board: (_.find(this.onBoardingSlides, ['id', 'boardList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'boardList']).selectedCode : this.profile.board,
-            grade: (_.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode) ? _.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode : this.profile.grade,
-            subject: (_.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode) ? _.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode : this.profile.subject,
-            medium: (_.find(this.onBoardingSlides, ['id', 'mediumList']).selectedCode) ? _.find(this.onBoardingSlides, ['id', 'mediumList']).selectedCode : this.profile.medium,
+            grade: (_.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode : this.profile.grade,
+            subject: (_.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode : this.profile.subject,
+            medium: (_.find(this.onBoardingSlides, ['id', 'mediumList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'mediumList']).selectedCode : this.profile.medium,
             uid: this.profile.uid,
             handle: this.profile.handle,
             isGroupUser: false,
             language: "en",
             avatar: "avatar",
             createdAt: this.profile.createdAt
+        }
+        if(index === 0 && !_.find(this.onBoardingSlides, ['id', 'boardList']).selectedCode.length) {
+            req.board = [];
         }
         this.profileService.updateProfile(req,
             (res: any) => {
