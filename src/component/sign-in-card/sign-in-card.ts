@@ -15,7 +15,7 @@ import { initGuestTabs, initUserTabs } from '../../app/module.service';
                     {{ 'OVERLAY_INFO_TEXT_COMMON' | translate:{'%s': sunbird} }}
                     <br />
                     <br />
-                    <button ion-button block (click)="singIn()">{{ 'SIGN_IN' | translate }}</button>
+                    <button ion-button block (click)="singIn()" class="sign-in-btn">{{ 'SIGN_IN' | translate }}</button>
                   </ion-card-content>
             </ion-card>`
 })
