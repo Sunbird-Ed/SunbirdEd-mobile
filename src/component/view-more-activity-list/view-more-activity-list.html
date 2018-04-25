@@ -1,10 +1,5 @@
 <div class="row-holder" (click)="navigateToDetailsPage(content)">
   <ion-row>
-    <!-- <ion-col col-4>
-      <div class="img-container"></div>
-      <img-loader src="{{ (content.appIcon) || (content.courseLogoUrl) || (defaultImg) }}" backgroundSize="cover" height="90px"
-        spinner="true" fallback="{{defaultImg}}" fallbackAsPlaceholder="true" (load)="onImageLoad($event)"></img-loader>
-    </ion-col> -->
     <div style="width: 30%; background-color: gray;">
       <!-- <div class="img-container"></div> -->
       <img-loader src="{{ (content.appIcon) || (content.courseLogoUrl) || (defaultImg) }}" backgroundSize="cover" height="90px"
@@ -12,66 +7,44 @@
     </div>
     <div style="width: 70%">
       <div class="margin-top-left-5">
-        <h6 class="margin-top-0" *ngIf="content.name && content.name.length">{{(content.name.length > 17) ? (content.name | slice:0:17) + '...' : (content.name)}}</h6>
-        <h6 class="margin-top-0" *ngIf="content.courseName && content.courseName.length">{{(content.courseName.length > 17) ? (content.courseName | slice:0:17) + '...' : (content.courseName)}}</h6>
-        <h6 class="margin-top-0" *ngIf="content.contentData && content.contentData.name && content.contentData.name.length">{{(content.contentData.name.length > 17) ? (content.contentData.name | slice:0:17) + '...' : (content.contentData.name)}}</h6>
+        <span class="content-name margin-top-0" *ngIf="content.name && content.name.length">{{(content.name.length > 22) ? (content.name | slice:0:22) + '...' : (content.name)}}</span>
+        <span class="content-name margin-top-0" *ngIf="content.courseName && content.courseName.length">{{(content.courseName.length > 22) ? (content.courseName | slice:0:22) + '...' : (content.courseName)}}</span>
+        <span class="content-name margin-top-0" *ngIf="content.contentData && content.contentData.name && content.contentData.name.length">{{(content.contentData.name.length > 22) ? (content.contentData.name | slice:0:22) + '...' : (content.contentData.name)}}</span>
 
         <div class="row padding-top-5">
           <div class="content-meta float-left width-60 padding-top-12" [ngSwitch]="type" [ngClass]="{'width-64' : type !== 'enrolledCourse'}"
             style="float: left;width: 60%;">
             <span *ngSwitchCase="'enrolledCourse'">
-              <span>{{ 'COURSE_PROGRESS_COMPLETED_1' | translate }} {{content.progress ? content.progress : 0 }}%</span><br/>
+              <span>{{ 'COURSE_PROGRESS_COMPLETED_1' | translate }} {{content.progress ? content.progress : 0 }}%</span>
+              <br/>
               <span>{{ 'ERROR_DURATION_NOT_AVAILABLE' | translate | slice:0:14 }}...</span>
             </span>
-            <span *ngSwitchCase="'library'">
-              <span *ngIf="content.createdOn">{{ content.createdOn | date: 'mediumDate' }}</span>
+            <div *ngSwitchCase="'library'" style="padding-top: 4px;">
+              <span class="content-created-date" *ngIf="content.createdOn">{{ content.createdOn | date: 'mediumDate' }}</span>
               <br/>
-              <span *ngIf="content.contentType">{{(content.contentType && content.contentType.length > 7) ? (content.contentType | slice:0:7) + '..' : content.contentType
-                }}
-              </span>
-              <span *ngIf="content.size">[{{ content.size | fileSize }}]</span>
-              <span *ngIf="content.sizeOnDevice">[{{ content.sizeOnDevice | fileSize }}]</span>
-            </span>
+              <div>
+                <span class="content-type" *ngIf="content.contentType">
+                  {{(content.contentType && content.contentType.length > 7) ? (content.contentType | slice:0:7) + '..' : content.contentType }}
+                </span>
+                <span class="content-size" *ngIf="content.size">[{{ content.size | fileSize }}]</span>
+                <span class="content-size" *ngIf="content.sizeOnDevice">[{{ content.sizeOnDevice | fileSize }}]</span>
+              </div>
+            </div>
             <span *ngSwitchCase="'popularCourses'">
-              <span *ngIf="content.size">[{{ content.size | fileSize }}]</span><br/>
+              <span *ngIf="content.size">[{{ content.size | fileSize }}]</span>
+              <br/>
               <span>{{ 'ERROR_DURATION_NOT_AVAILABLE' | translate | slice:0:14 }}...</span>
             </span>
           </div>
           <div style="float: right;width: 36%;" class="padding-top-10">
             <button ion-button outline small border-radius-5 class="button-position btn-width-70" [ngClass]="{'btn-width-80' : type === 'enrolledCourse'}">
-                <span *ngIf="type === 'enrolledCourse'">{{ 'RESUME' | translate }}</span> 
-                <span *ngIf="type !== 'enrolledCourse'">{{ 'OPEN' | translate }}</span> 
+              <span *ngIf="type === 'enrolledCourse'">{{ 'RESUME' | translate }}</span>
+              <span *ngIf="type !== 'enrolledCourse'">{{ 'OPEN' | translate }}</span>
             </button>
           </div>
         </div>
       </div>
     </div>
-    <!-- <ion-col col-8>
-      <h6 class="margin-top-0" *ngIf="content.name && content.name.length">{{(content.name.length > 21) ? (content.name | slice:0:20) + '...' : (content.name)}}</h6>
-      <h6 class="margin-top-0" *ngIf="content.courseName && content.courseName.length">{{(content.courseName.length > 21) ? (content.courseName | slice:0:20) + '...' : (content.courseName)}}</h6>
-      <h6 class="margin-top-0" *ngIf="content.contentData && content.contentData.name && content.contentData.name.length">{{(content.contentData.name.length > 21) ? (content.contentData.name | slice:0:20) + '...' : (content.contentData.name)}}</h6>
-
-      <div class="row padding-top-5">
-        <div class="content-meta float-left width-60 padding-top-12" [ngSwitch]="type" [ngClass]="{'width-64' : type !== 'enrolledCourse'}" style="float: left;width: 60%;">
-          <span *ngSwitchCase="'enrolledCourse'">
-              <span>Completed: {{content.progress ? content.progress : 0 }}%</span>
-          </span>
-          <span *ngSwitchCase="'library'">
-              <span *ngIf="content.createdOn">{{ content.createdOn | date: 'mediumDate' }}</span>
-              <br/>
-              <span *ngIf="content.contentType">{{(content.contentType && content.contentType.length > 7) ? (content.contentType | slice:0:7) + '..' : content.contentType }}</span>
-              <span *ngIf="content.size">[{{ content.size | fileSize }}]</span>
-              <span *ngIf="content.sizeOnDevice">[{{ content.sizeOnDevice | fileSize }}]</span>
-          </span>
-          <span *ngSwitchCase="'popularCourses'">
-              <span *ngIf="content.size">[{{ content.size | fileSize }}]</span>
-          </span>
-        </div>
-        <div style="float: right;width: 36%;" class="padding-top-10">
-          <button ion-button outline small border-radius-5 class="button-position">{{ type === 'enrolledCourse' ? 'RESUME' : 'OPEN' }}</button>
-        </div>
-      </div>
-    </ion-col> -->
   </ion-row>
 </div>
 <br/>

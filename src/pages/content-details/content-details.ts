@@ -159,6 +159,10 @@ export class ContentDetailsPage {
     this.content.downloadable = data.result.isAvailableLocally;
     this.content.playContent = JSON.stringify(data.result);
 
+    if (this.content.gradeLevel && this.content.gradeLevel.length) {
+      this.content.gradeLevel = this.content.gradeLevel.join(", ");
+    }
+
     this.generateImpressionEvent(this.content.identifier, this.content.contentType, this.content.pkgVersion);
 
     // Check locally available

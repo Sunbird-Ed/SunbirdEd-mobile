@@ -38,4 +38,23 @@ view-more-activity-list {
     .btn-width-80{
         width: 80px !important;
     }
+    .content-type {
+        color: #b4b4b3;
+        font-family: "OpenSans/Regular";
+        font-size: 1.3rem;
+    }
+    .content-size {
+        color: #b4b4b3;
+        font-family: "OpenSans/Regular";
+        font-size: 1.3rem;
+    }
+    .content-name{
+        color: #4F4F4F;
+        font-size: 1.6rem;
+        font-weight: 500;
+        line-height: 1.2;
+    }
+    .content-created-date {
+        font-family: 'OpenSans/Regular' !important;
+    }
 }
