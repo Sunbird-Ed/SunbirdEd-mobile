@@ -25,6 +25,8 @@ course-card {
       font-weight: bold;
       font-size: 1.2em;
       width: 100%;
+      padding-left:10px;
+      padding-right:10px;
 
       @include padding(null, null, null, 16px);
     }
@@ -46,6 +48,7 @@ course-card {
     .info-container {
       padding-left: 8px !important;
       padding-top: 1px !important;
+//padding-right: 0px !important;
     }
 
     ul {
