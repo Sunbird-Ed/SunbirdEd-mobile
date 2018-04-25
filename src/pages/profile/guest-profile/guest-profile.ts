@@ -34,6 +34,9 @@ export class GuestProfilePage {
   ) {
     // TODO: Need to make an get Profile user details API call.
     this.refreshProfileData();
+    this.events.subscribe('refresh:profile', () => {
+      this.refreshProfileData();
+    });
   }
 
   ionViewDidLoad() {
@@ -83,9 +86,4 @@ export class GuestProfilePage {
     });
   }
 
-  ionViewWillEnter() {
-    this.events.subscribe('refresh:profile', () => {
-      this.refreshProfileData();
-    });
-  }
 }
