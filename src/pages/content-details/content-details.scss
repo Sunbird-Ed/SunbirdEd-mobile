@@ -41,7 +41,7 @@ page-content-details {
       }
 
     .read-more {
-        color: rgb(17, 85, 204);
+        color: rgb(17, 85, 204) !important;
     }
     .back-button-md {
         margin-left: -1px !important;
@@ -66,11 +66,16 @@ page-content-details {
     .content-size {
         font-family: 'OpenSans/Regular' !important;
         color: grey;
-        font-weight: 600;
+        font-size: 1.3rem;
     }
 
     button {
         border-radius: 4px !important;
+    }
+
+    .text-gray-color {
+        color: gray;
+        font-family: 'OpenSans/Regular';
     }
 }
 .content-action .list{

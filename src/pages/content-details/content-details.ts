@@ -169,6 +169,9 @@ export class ContentDetailsPage {
     this.content = data.result.contentData;
     this.content.downloadable = data.result.isAvailableLocally;
     this.content.playContent = JSON.stringify(data.result);
+    if (this.content.gradeLevel && this.content.gradeLevel.length) {
+      this.content.gradeLevel = this.content.gradeLevel.join(", ");
+    }
     this.objId = this.content.identifier;
     this.objType = data.result.contentType;
     this.objVer = this.content.pkgVersion;
