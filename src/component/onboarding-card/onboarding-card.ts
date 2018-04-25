@@ -25,6 +25,7 @@ import { OnboardingAlert, onBoardingSlidesCallback } from './../onboarding-alert
 export class OnboardingCardComponent {
 
   @ViewChild(Slides) mSlides: Slides;
+  isOnBoardCard: boolean = true;
 
   constructor(
     public navCtrl: NavController,
@@ -33,16 +34,25 @@ export class OnboardingCardComponent {
     private onboardingService: OnboardingService,
     private events: Events
   ) {
+    this.initializeService();
 
-    if(!this.onboardingService.categories.length) {
+    this.events.subscribe('refresh:onboardingcard', () => {
+      this.onboardingService.currentIndex = 0;
+      this.onboardingService.initializeCard();
+    });
+  }
+
+  initializeService() {
+    if (!this.onboardingService.categories.length) {
       this.onboardingService.initializeCard();
     }
-    if(this.onboardingService.currentIndex) {
-      this.events.publish('onboarding-card:increaseProgress', { cardProgress: ((this.onboardingService.currentIndex) / this.onboardingService.onBoardingSlides.length ) * 100 });
-    }
-    if(this.onboardingService.isOnBoardingCardCompleted) {
+    if (this.onboardingService.isOnBoardingCardCompleted) {
       this.onboardingService.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: true });
     }
+    //TODO: Need to move to unfilled slide
+    /*     this.events.subscribe('onboarding-card:set-defaultSlide', (param) => {
+          this.mSlides.slideTo(param.slideIndex, 500);
+        }); */
   }
 
   /**
@@ -61,6 +71,23 @@ export class OnboardingCardComponent {
   selectedCheckboxValue(selectedSlide: any, index: number) {
     this.onboardingService.onBoardingSlides[index].selectedCode = [];
     this.onboardingService.onBoardingSlides[index].selectedOptions = '';
+
+    for (let i = index; i < 4; i++) {
+      this.onboardingService.onBoardingSlides[i].selectedCode = [];
+      this.onboardingService.onBoardingSlides[i].selectedOptions = '';
+    }
+
+    if (index === 0) {
+      this.onboardingService.profile.grade = [];
+      this.onboardingService.profile.subject = [];
+      this.onboardingService.profile.medium = [];
+    } else if (index === 1) {
+      this.onboardingService.profile.subject = [];
+      this.onboardingService.profile.medium = [];
+    } else if (index === 2) {
+      this.onboardingService.profile.medium = [];
+    }
+
     selectedSlide.options.forEach(options => {
       if (options.checked) {
         this.onboardingService.onBoardingSlides[index].selectedCode.push(options.value);
@@ -69,7 +96,11 @@ export class OnboardingCardComponent {
 
     this.onboardingService.onBoardingSlides[index].selectedOptions = this.onboardingService.onBoardingSlides[index].selectedCode.join(", ");
 
-    this.mSlides.slideNext();
+    // If user Selected Something from the list then only move the slide to next slide
+    if (this.onboardingService.onBoardingSlides[index].selectedOptions != '') {
+      this.mSlides.lockSwipes(false);
+      this.mSlides.slideNext(500);
+    }
     this.onboardingService.saveDetails(index);
   }
 
@@ -86,7 +117,10 @@ export class OnboardingCardComponent {
       }
     }
 
-    this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index));
+    if (index === 0) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index));
+    if (index === 1) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.board);
+    if (index === 2) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.grade);
+    if (index === 3) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.subject);
 
     let popUp = this.popupCtrl.create(OnboardingAlert, { facet: selectedSlide, callback: callback, index: index }, {
       cssClass: 'onboarding-alert'

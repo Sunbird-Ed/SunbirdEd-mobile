@@ -18,7 +18,7 @@
 </ion-header>
 
 <ion-content overflow-scroll="true" style="background: #efeff4;">
-  <pb-horizontal *ngIf="!isOnBoardingCardCompleted" [progress]="onBoardingProgress" [isOnBoardCard]="!isOnBoardingCardCompleted"></pb-horizontal>
+  <!-- <pb-horizontal *ngIf="!isOnBoardingCardCompleted && guestUser" [progress]="onBoardingProgress" [isOnBoardCard]="!isOnBoardingCardCompleted"></pb-horizontal> -->
   <ion-refresher (ionRefresh)="getCourseTabData($event)"></ion-refresher>
 
   <!-- onBoardingSLides starts here -->
