@@ -164,7 +164,7 @@ getCurrentUser(): void {
 	 *
 	 * @param {string} queryParams search query params
 	 */
-	searchAllContent(queryParams, headerTitle): void {
+	viewAllPopularContent(queryParams, headerTitle): void {
 		console.log('Search query...', queryParams);
 		this.navCtrl.push(ViewMoreActivityPage, {
 			requestParams: queryParams,
