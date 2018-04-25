@@ -51,15 +51,16 @@ export class GuestEditProfilePage {
     /* Initialize form with default values */
     this.guestEditForm = this.fb.group({
       name: [this.profile.handle || '', Validators.required],
-      boards: [[], Validators.required],
-      grades: [[]],
-      subjects: [[],],
-      medium: [[]]
+      boards: [this.profile.board || [], Validators.required],
+      grades: [this.profile.grade || []],
+      subjects: [this.profile.subject || []],
+      medium: [this.profile.medium || []]
     });
   }
 
   ionViewWillEnter() {
     this.getFrameworkDetails();
+
   }
 
   getFrameworkDetails(): void {
@@ -72,6 +73,17 @@ export class GuestEditProfilePage {
         this.categories = JSON.parse(JSON.parse(res).result.framework).categories;
 
         this.checkPrevValue(0, 'boardList');
+        if(this.profile.board.length) {
+          //this.resetForm(0);
+          this.checkPrevValue(1, 'gradeList', this.profile.grade);
+        }
+        if(this.profile.grade.length) {
+          //this.resetForm(1);
+          this.checkPrevValue(2, 'subjectList', this.profile.subject);
+        }
+        if(this.profile.subject.length) {
+          this.checkPrevValue(3, 'mediumList', this.profile.medium);
+        }
         console.log("Framework details Response: ", JSON.parse(JSON.parse(res).result.framework).categories);
       },
       (err: any) => {
@@ -97,7 +109,6 @@ export class GuestEditProfilePage {
   }
 
   checkPrevValue(index = 0, currentField, prevSelectedValue = '', ) {
-    console.log('coming here');
     if (index != 0) {
       let request: CategoryRequest = {
         currentCategory: this.categories[index].code,
@@ -134,7 +145,7 @@ export class GuestEditProfilePage {
 
       case 2:
         this.guestEditForm.patchValue({
-          medium: []
+          medium: [],
         });
         this.checkPrevValue(index + 1, 'mediumList', this.guestEditForm.value.medium);
         break;
