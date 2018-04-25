@@ -11,6 +11,7 @@ import { SearchPage } from '../pages/search/search';
 import { CourseDetailPage } from '../pages/course-detail/course-detail';
 import { CollectionDetailsPage } from '../pages/collection-details/collection-details';
 import { ContentDetailsPage } from '../pages/content-details/content-details';
+import { generateEndEvent } from './telemetryutil';
 
 declare var chcp: any;
 
@@ -106,6 +107,7 @@ export class MyApp {
           self.presentToast();
           setTimeout(() => { self.counter = 0 }, 1500)
         } else {
+          this.telemetryService.end(generateEndEvent("app","","","","",""));
           self.platform.exitApp();
         }
       }

@@ -9,6 +9,7 @@ import { SettingsPage } from "../../settings/settings";
 import { OAuthService } from "sunbird";
 import { OnboardingPage } from "../../onboarding/onboarding";
 import { Interact, InteractType, InteractSubtype, PageId, Environment, TelemetryService } from "sunbird";
+import { generateInteractEvent } from "../../../app/telemetryutil";
 
 @Component({
     selector: 'menu-overflow',
@@ -17,20 +18,20 @@ import { Interact, InteractType, InteractSubtype, PageId, Environment, Telemetry
 
 export class OverflowMenuComponent {
     items: Array<string>;
-    
-    constructor(public navCtrl: NavController, 
-        public navParams: NavParams, 
-        public viewCtrl: ViewController, 
+
+    constructor(public navCtrl: NavController,
+        public navParams: NavParams,
+        public viewCtrl: ViewController,
         private toastCtrl: ToastController,
         private oauth: OAuthService,
-        private telemetryService : TelemetryService) {
+        private telemetryService: TelemetryService) {
         this.items = this.navParams.get("list");
     }
-     
+
     showToast(toastCtrl: ToastController, message: String) {
-        
+
     }
-    
+
     close(event, i) {
         this.viewCtrl.dismiss(JSON.stringify({
             "content": event.target.innerText,
@@ -52,7 +53,7 @@ export class OverflowMenuComponent {
             // }
             case 0: {
                 this.generateInteractEvent()
-                  this.navCtrl.push(SettingsPage)
+                this.navCtrl.push(SettingsPage)
                 break;
             }
             case 1: {
@@ -62,8 +63,22 @@ export class OverflowMenuComponent {
                 //     position: 'bottom'
                 //   });
                 //   toast.present();
+                let valuesMap = new Map();
+                valuesMap["UID"] = "";
+                this.telemetryService.interact(
+                    generateInteractEvent(InteractType.TOUCH,
+                        InteractSubtype.LOGOUT_INITIATE,
+                        Environment.HOME,
+                        PageId.LOGOUT,
+                        valuesMap));
+
                 this.oauth.doLogOut();
                 this.navCtrl.setRoot(OnboardingPage);
+                this.telemetryService.interact(
+                    generateInteractEvent(InteractType.OTHER,
+                        InteractSubtype.LOGOUT_SUCCESS,
+                        Environment.HOME, PageId.LOGOUT,
+                        valuesMap));
                 break;
             }
 
@@ -78,6 +93,6 @@ export class OverflowMenuComponent {
         interact.id = PageId.PROFILE;
         interact.env = Environment.USER;
         this.telemetryService.interact(interact);
-      }
-     
+    }
+
 }

@@ -10,7 +10,9 @@ import {
   TelemetryService,
   ImpressionType,
   PageId,
-  Environment
+  Environment,
+  InteractType,
+  InteractSubtype
 } from "sunbird";
 import { PopoverController } from "ionic-angular/components/popover/popover-controller";
 import { DatePipe } from "@angular/common";
@@ -24,6 +26,7 @@ import { FormExperience } from "./experience/form.experience";
 import { OverflowMenuComponent } from "./overflowmenu/menu.overflow.component";
 import { UserSearchComponent } from "./user-search/user-search";
 import { ImagePicker } from "./imagepicker/imagepicker";
+import { generateInteractEvent } from "../../app/telemetryutil";
 
 
 /**
@@ -513,6 +516,11 @@ export class ProfilePage {
    * Navigates to User Search Page
    */
   gotoSearchPage(): void {
+    this.telemetryService.interact(
+      generateInteractEvent(InteractType.TOUCH,
+        InteractSubtype.SEARCH_BUTTON_CLICKED,
+        Environment.HOME,
+        PageId.PROFILE, null));
     this.navCtrl.push(UserSearchComponent);
   }
 

@@ -1,12 +1,14 @@
 import { Component, NgZone, ViewChild, OnInit } from '@angular/core';
+import { PageAssembleService, PageAssembleCriteria, ContentService, AuthService, FrameworkService, CategoryRequest, Impression, ImpressionType, PageId, Environment, TelemetryService, FrameworkDetailsRequest, InteractType, InteractSubtype, ProfileService } from "sunbird";
 import { NavController, PopoverController, Events } from 'ionic-angular';
-import { PageAssembleService, PageAssembleCriteria, ContentService, AuthService, FrameworkService, CategoryRequest, Impression, ImpressionType, PageId, Environment, TelemetryService, ProfileService } from "sunbird";
 import * as _ from 'lodash';
 import { Slides } from 'ionic-angular';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
 import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
 import { ResourceFilter, ResourceFilterCallback } from './filters/resource.filter';
+import { FilterOptions, onBoardingSlidesCallback } from './onboarding-alert/onboarding-alert';
+import { generateInteractEvent, Map } from '../../app/telemetryutil';
 
 
 
@@ -50,8 +52,9 @@ export class ResourcesPage implements OnInit {
 	 */
 	public authService: AuthService;
 
-  isOnBoardingCardCompleted: boolean = false;
-  onBoardingProgress: number = 0;
+	isOnBoardingCardCompleted: boolean = false;
+	onBoardingProgress: number = 80;
+	public source= "resource";
 
 	constructor(public navCtrl: NavController, private pageService: PageAssembleService, private ngZone: NgZone, private popupCtrl: PopoverController,
 		contentService: ContentService, authService: AuthService, private qrScanner: SunbirdQRScanner, private popCtrl: PopoverController, private telemetryService: TelemetryService, private events: Events, private profileService: ProfileService) {
@@ -166,6 +169,14 @@ getCurrentUser(): void {
 	 */
 	viewAllPopularContent(queryParams, headerTitle): void {
 		console.log('Search query...', queryParams);
+		let values=new Map();
+		values["SectionName"]=headerTitle;
+		this.telemetryService.interact(
+			generateInteractEvent(InteractType.TOUCH,
+			  InteractSubtype.VIEWALL_CLICKED,
+			  Environment.HOME,
+			  this.source, values)
+		  );
 		this.navCtrl.push(ViewMoreActivityPage, {
 			requestParams: queryParams,
 			headerTitle: headerTitle
@@ -227,6 +238,11 @@ getCurrentUser(): void {
 	}
 
 	scanQRCode() {
+		this.telemetryService.interact(
+			generateInteractEvent(InteractType.TOUCH,
+				InteractSubtype.QRCodeScanClicked,
+				Environment.HOME,
+				PageId.LIBRARY, null));
 		const that = this;
 		const callback: QRResultCallback = {
 			dialcode(scanResult, dialCode) {
@@ -237,10 +253,17 @@ getCurrentUser(): void {
 			}
 		}
 
-		this.qrScanner.startScanner(undefined, undefined, undefined, callback);
+		this.qrScanner.startScanner(undefined, undefined, undefined, callback, PageId.LIBRARY);
 	}
 
 	search() {
+
+		this.telemetryService.interact(
+			generateInteractEvent(InteractType.TOUCH,
+				InteractSubtype.SEARCH_BUTTON_CLICKED,
+				Environment.HOME,
+				PageId.LIBRARY, null));
+
 		const contentType: Array<string> = [
 			"Story",
 			"Worksheet",
@@ -255,6 +278,12 @@ getCurrentUser(): void {
 	}
 
 	showFilter() {
+		this.telemetryService.interact(
+			generateInteractEvent(InteractType.TOUCH,
+				InteractSubtype.FILTER_BUTTON_CLICKED,
+				Environment.HOME,
+				PageId.LIBRARY, null));
+
 		const that = this;
 		const callback: ResourceFilterCallback = {
 			applyFilter(filter) {

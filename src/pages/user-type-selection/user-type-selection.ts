@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-import { TabsPage, SharedPreferences, OAuthService, Interact, TelemetryService, InteractType, InteractSubtype, Environment, PageId } from 'sunbird';
+import { TabsPage,SharedPreferences, OAuthService, Interact, TelemetryService, InteractType, InteractSubtype, Environment, PageId, ImpressionType } from 'sunbird';
 import { ViewController } from 'ionic-angular/navigation/view-controller';
 import { TranslateService } from '@ngx-translate/core';
 import { ProfileType, ProfileService } from 'sunbird'
+import { generateImpressionEvent } from '../../app/telemetryutil';
 
 const selectedCardBorderColor = '#0080ff';
 const borderColor = '#fff';
@@ -55,6 +56,14 @@ export class UserTypeSelectionPage {
   }
 
   ionViewDidLoad() {
+  }
+
+  ionViewDidEnter(){
+    this.telemetryService.impression(
+      generateImpressionEvent(ImpressionType.VIEW,
+        PageId.USER_TYPE_SELECTION, 
+        Environment.HOME, "", "", "")
+    );
   }
 
   selectTeacherCard() {

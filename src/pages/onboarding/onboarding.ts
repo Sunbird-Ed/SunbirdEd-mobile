@@ -1,9 +1,10 @@
 import { Component, NgZone } from '@angular/core';
 import { NavController, LoadingController } from 'ionic-angular';
-import { TabsPage, OAuthService, ContainerService, UserProfileService, AuthService, TenantInfoRequest, Interact, InteractType, InteractSubtype, Environment, TelemetryService } from 'sunbird';
+import { TabsPage, OAuthService, ContainerService, UserProfileService, AuthService, TenantInfoRequest, Interact, InteractType, InteractSubtype, Environment, TelemetryService, PageId, ImpressionType } from 'sunbird';
 import { UserTypeSelectionPage } from '../user-type-selection/user-type-selection';
 
 import { initGuestTabs, initUserTabs } from '../../app/module.service';
+import { generateInteractEvent, Map, generateImpressionEvent } from '../../app/telemetryutil';
 
 @Component({
   selector: 'page-onboarding',
@@ -20,7 +21,7 @@ export class OnboardingPage {
     private zone: NgZone,
     private userProfileService: UserProfileService,
     private authService: AuthService,
-    private telemetryService : TelemetryService,
+    private telemetryService: TelemetryService,
     private loadingCtrl: LoadingController
   ) {
 
@@ -47,6 +48,14 @@ export class OnboardingPage {
     console.log('ionViewDidLoad OnboardingPage');
   }
 
+  ionViewDidEnter() {
+    this.telemetryService.impression(
+      generateImpressionEvent(ImpressionType.VIEW,
+        PageId.ONBOARDING, 
+        Environment.HOME, "", "", "")
+    );
+  }
+
   getLoader(): any {
     return this.loadingCtrl.create({
       spinner: "crescent"
@@ -58,11 +67,25 @@ export class OnboardingPage {
     let loader = this.getLoader();
     loader.present();
 
+    let valuesMap = new Map();
+    valuesMap["UID"] = "";
+    this.telemetryService.interact(
+      generateInteractEvent(InteractType.TOUCH,
+        InteractSubtype.LOGIN_INITIATE,
+        Environment.HOME,
+        PageId.LOGIN,
+        valuesMap));
     that.auth.doOAuthStepOne()
       .then(token => {
         return that.auth.doOAuthStepTwo(token);
       })
       .then(() => {
+        this.telemetryService.interact(
+          generateInteractEvent(InteractType.OTHER,
+            InteractSubtype.LOGIN_SUCCESS,
+            Environment.HOME,
+            PageId.LOGIN,
+            valuesMap));
         initUserTabs(that.container);
         return that.refreshProfileData();
       })
@@ -132,7 +155,7 @@ export class OnboardingPage {
     let interact = new Interact();
     interact.type = InteractType.TOUCH;
     interact.subType = InteractSubtype.BROWSE_AS_GUEST_CLICKED;
-    interact.pageId ="";
+    interact.pageId = "";
     interact.env = Environment.HOME;
     this.telemetryService.interact(interact);
   }
