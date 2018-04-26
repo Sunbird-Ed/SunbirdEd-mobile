@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { NavParams, ViewController, PopoverController, Popover } from "ionic-angular";
+import { NavParams, ViewController, PopoverController, Popover, Platform } from "ionic-angular";
 
 @Component({
   selector: 'onboarding-alert',
@@ -13,11 +13,18 @@ export class OnboardingAlert {
   selectedOptions: any;
   index: number = 0;
 
-  constructor(private navParams: NavParams, private popCtrl: PopoverController, private viewCtrl: ViewController) {
+  backButtonFunc = undefined;
+
+  constructor(private navParams: NavParams, private popCtrl: PopoverController, private viewCtrl: ViewController, private platform: Platform) {
     this.selectedSlide = this.navParams.get('facet');
     this.callback = this.navParams.get('callback');
     this.index = this.navParams.get('index');
     this.selectedOptions = [];
+
+    this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      this.viewCtrl.dismiss();
+      this.backButtonFunc();
+    }, 10);
   }
 
   onSaveClick() {
