@@ -1,9 +1,9 @@
 <div class="row-holder" (click)="navigateToDetailsPage(content)">
-  <ion-row>
+  <ion-row class="meta-data-holder">
     <div style="width: 30%; background-color: gray;">
       <!-- <div class="img-container"></div> -->
-      <img-loader src="{{ (content.appIcon) || (content.courseLogoUrl) || (defaultImg) }}" backgroundSize="cover" height="90px"
-        spinner="true" fallback="{{defaultImg}}" fallbackAsPlaceholder="true" (load)="onImageLoad($event)"></img-loader>
+      <img-loader src="{{ (content.appIcon) || (content.courseLogoUrl) || (defaultImg) }}" backgroundSize="contain"
+        spinner="true" fallback="{{defaultImg}}" fallbackAsPlaceholder="true" (load)="onImageLoad($event)" style="background-position: center center !important"></img-loader>
     </div>
     <div style="width: 70%">
       <div class="margin-top-left-5">
@@ -11,7 +11,7 @@
         <span class="content-name margin-top-0" *ngIf="content.courseName && content.courseName.length">{{(content.courseName.length > 22) ? (content.courseName | slice:0:22) + '...' : (content.courseName)}}</span>
         <span class="content-name margin-top-0" *ngIf="content.contentData && content.contentData.name && content.contentData.name.length">{{(content.contentData.name.length > 22) ? (content.contentData.name | slice:0:22) + '...' : (content.contentData.name)}}</span>
 
-        <div class="row padding-top-5">
+        <div class="row padding-top-10">
           <div class="content-meta float-left width-60 padding-top-12" [ngSwitch]="type" [ngClass]="{'width-64' : type !== 'enrolledCourse'}"
             style="float: left;width: 60%;">
             <span *ngSwitchCase="'enrolledCourse'">
