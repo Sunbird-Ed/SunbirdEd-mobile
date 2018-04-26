@@ -19,18 +19,18 @@ page-guest-profile {
   }
 
   .info-title {
-    color: #696969;
-    font-size: 0.9em;
-    font-weight: 500;
+    color: map-get($colors, dark_gray);
+    font-size: 1.2rem;
+    font-weight: 700;
   }
 
   .section-title {
     color: map-get($colors, dark);
     margin-bottom: 3%;
-    font-size: 1.6rem;
+    font-size: 1.7rem;
     padding: 0;
     margin-left: 0;
-    font-weight: bold;
+    font-weight: 700;
   }
 }
 .padding-bottom-10 {
@@ -42,7 +42,13 @@ page-guest-profile {
 .padding-left-10 {
   padding-left: 10px !important;
 }
+
 /* Hide extra margin of the popover-controller */
 .box .list.list-md {
   margin-bottom: 0 !important;
+}
+
+.signin-card-bg {
+  background-color: map-get($colors, light_gray);
+  padding: 10px;
 }

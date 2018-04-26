@@ -30,7 +30,7 @@
         <ion-col col-6>
           <span text-uppercase class="info-title">{{'BOARD' | translate}}</span>
         </ion-col>
-        <ion-col class="ellipsis" text-uppercase col-6 text-end>
+        <ion-col class="ellipsis font-size-14rem" text-uppercase col-6 text-end>
           {{profile?.board}}
         </ion-col>
       </ion-row>
@@ -39,7 +39,7 @@
         <ion-col col-6>
           <span class="info-title">{{'GRADE' | translate}}</span>
         </ion-col>
-        <ion-col class="ellipsis" text-capitalize col-6 text-end>
+        <ion-col class="ellipsis font-size-14rem" text-uppercase col-6 text-end>
           {{profile?.grade}}
         </ion-col>
       </ion-row>
@@ -48,7 +48,7 @@
         <ion-col col-6>
           <span class="info-title">{{'MEDIUM_2' | translate}}</span>
         </ion-col>
-        <ion-col class="ellipsis" text-capitalize col-6 text-end>
+        <ion-col class="ellipsis font-size-14rem" text-uppercase col-6 text-end>
           {{profile?.medium}}
         </ion-col>
       </ion-row>
@@ -57,7 +57,7 @@
         <ion-col col-6>
           <span class="info-title">{{'SUBJECTS' | translate}}</span>
         </ion-col>
-        <ion-col class="ellipsis" text-capitalize col-6 text-end>
+        <ion-col class="ellipsis font-size-14rem" text-uppercase col-6 text-end>
           {{profile?.subject}}
         </ion-col>
       </ion-row>
@@ -66,5 +66,8 @@
 
   </ion-list>
 
-  <sign-in-card></sign-in-card>
+  <div class="signin-card-bg">
+    <sign-in-card></sign-in-card>
+  </div>
+
 </ion-content>

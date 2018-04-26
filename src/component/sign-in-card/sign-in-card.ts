@@ -12,13 +12,21 @@ import { generateInteractEvent } from '../../app/telemetryutil';
                   <ion-card-header>
                     <b>{{ 'OVERLAY_LABEL_COMMON' | translate:{'%s': sunbird} }}</b>
                   </ion-card-header>
-                  <ion-card-content>
+                  <ion-card-content class="sign-in-card-text">
                     {{ 'OVERLAY_INFO_TEXT_COMMON' | translate:{'%s': sunbird} }}
                     <br />
                     <br />
                     <button ion-button block (click)="singIn()" class="sign-in-btn">{{ 'SIGN_IN' | translate }}</button>
                   </ion-card-content>
-            </ion-card>`
+            </ion-card>`,
+  styles:   [ `.sign-in-btn {
+                border-radius: 4px !important;
+              }
+              .sign-in-card-text {
+                font-weight: 600 !important;
+                color: map-get($colors, primary_black) !important;
+              }`
+            ]
 })
 export class SignInCardComponent {
 
