@@ -84,7 +84,7 @@ export class ResourcesPage implements OnInit {
 
 	viewAllSavedResources() {
 		this.navCtrl.push(ViewMoreActivityPage, {
-			headerTitle: 'Saved Resources',
+			headerTitle: 'SAVED_RESOURCES',
 			pageName: 'resource.SavedResources'
 		});
 	}
