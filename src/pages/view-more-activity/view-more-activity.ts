@@ -245,11 +245,12 @@ export class ViewMoreActivityPage implements OnInit {
 		const requestParams = {
 			contentTypes: ['Story', 'Worksheet', 'Collection', 'Game', 'TextBook', 'Course', 'Resource', 'LessonPlan']
 		};
-		this.contentService.getAllLocalContents(requestParams, (data: any) => {
-			data = JSON.parse(data);
-			console.log('Success: saved resources', data);
+		this.contentService.getAllLocalContents(requestParams, (res: any) => {
+			let data = JSON.parse(res);
+			console.log('Success: saved resources...', data);
 			this.ngZone.run(() => {
 				if (data.result) {
+					let contentData = [];
 					// TODO Temporary code - should be fixed at backend
 					_.forEach(data.result, (value, key) => {
 						value.contentData.lastUpdatedOn = value.lastUpdatedTime;
@@ -257,8 +258,9 @@ export class ViewMoreActivityPage implements OnInit {
 						if (value.contentData.appIcon && value.basePath) {
 							value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
 						}
+						contentData.push(value.contentData)
 					});
-					this.searchList = data.result;
+					this.searchList = contentData;
 				}
 				loader.dismiss();
 				this.loadMoreBtn = false;
