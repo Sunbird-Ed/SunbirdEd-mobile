@@ -246,7 +246,7 @@ export class ProfilePage {
           }
           break;
         case "avatar":
-          this.uncompletedDetails.title = "+ Add Profile Picture";
+          this.uncompletedDetails.title = "+ Add Avatar";
           this.uncompletedDetails.page = "picture";
           break;
         case "address":

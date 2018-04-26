@@ -32,6 +32,11 @@ page-guest-profile {
     margin-left: 0;
     font-weight: 700;
   }
+
+  .content {
+    font-weight: 600;
+    color: map-get($colors, secondary_black);
+  }
 }
 .padding-bottom-10 {
   padding-bottom: 10px !important;
