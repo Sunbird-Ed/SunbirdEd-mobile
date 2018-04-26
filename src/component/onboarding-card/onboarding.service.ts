@@ -241,6 +241,15 @@ export class OnboardingService {
         if(index === 0 && !_.find(this.onBoardingSlides, ['id', 'boardList']).selectedCode.length) {
             req.board = [];
         }
+        if(index === 1 && !_.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode.length) {
+            req.grade = [];
+        }
+        if(index === 2 && !_.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode.length) {
+            req.subject = [];
+        }
+        if(index === 3 && !_.find(this.onBoardingSlides, ['id', 'mediumList']).selectedCode.length) {
+            req.medium = [];
+        }
         this.profileService.updateProfile(req,
             (res: any) => {
                 if (this.onBoardingSlides.length === (index + 1)) {

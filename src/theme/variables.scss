@@ -34,19 +34,59 @@ $app-direction: multi;
 // The "primary" color is the only required color in the map.
 
 $colors: (
-  primary:    #488aff,
-  secondary:  #32db64,
-  danger:     #f53d3d,
-  light:      #f4f4f4,
-  dark:       #222,
-  title:      #9E9E9E,
-  facebook:   #3b5998,
-  twitter:    #55acee,
-  linkedIn:   #007bb5
+  primary:         #006DE5, //#488aff
+  secondary:       #32db64,
+  danger:          #f53d3d,
+  light:           #f4f4f4,
+  dark:            #222,
+  title:           #9E9E9E,
+  facebook:        #3b5998,
+  twitter:         #55acee,
+  linkedIn:        #007bb5,
+
+  black:         #000000,
+  primary_black:   #333333,
+  secondary_black: #484848,
+  shadow_black:    #CBCBCB,
+
+  dark_gray:       #979797,
+  medium_gray:     #CCCCCC,
+  light_gray:      #ECEFF0,
+
+  white:         #FFFFFF,
+  white_f7 :       #F7F7F7,
+  white_f2 :       #F2F2F2,
+  white_f4 :       #F4F4F4,
+  white_f0 :       #F0F0F0,
+
+  green:         #27BC5C,
+  dark_green:      #4CB5AB,
+  success_green:   #7ED321,
+  dirt_green:      #37474F,
+
+  orange:        #FF9F00,
+  yellow:        #E3C31C,
+  lemon_yellow:    #CCE310,
+
+  dark_violet:     #9012FE,
+  medium_violet:   #F0E9FD,
+  light_violet:    #F3E7FE,
+
+  red:           #D50000,
+  light_red:       #FA8F9C,
+
+  thick_blue:      #006DE5,
+  primary_blue:    #007AFF,
+  fade_blue:       #F2F8FF
 );
 
-$button-md-height: 4.5rem;
-$button-md-font-weight: 600;
+$button-md-height: 4.3rem;
+$button-md-font-weight: 700;
+$button-md-border-radius: 6px;
+
+$toolbar-md-title-font-size: 1.6rem;
+$toolbar-md-title-text-color: map-get($colors, primary_black);
+
 
 // App iOS Variables
 // --------------------------------------------------
@@ -92,3 +132,8 @@ $button-md-font-weight: 600;
 
 @import "roboto";
 @import "noto-sans";
+
+$font-family-base: 'OpenSans';
+$font-family-ios-base: 'OpenSans';
+$font-family-md-base: 'OpenSans';
+$font-family-wp-base: 'OpenSans';
