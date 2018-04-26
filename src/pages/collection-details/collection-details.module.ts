@@ -7,7 +7,7 @@ import { GenieSDKServiceProvider } from 'sunbird';
 import { FrameworkModule } from "sunbird";
 import { IonicImageLoader } from "ionic-image-loader";
 import { Ionic2RatingModule } from "ionic2-rating";
-// import { ComponentsModule } from '../../component/components.module';
+import { ComponentsModule } from '../../component/components.module';
 import { DirectivesModule } from '../../directives/directives.module';
 import { PipesModule } from '../../pipes/pipes.module';
 
@@ -20,7 +20,7 @@ import { PipesModule } from '../../pipes/pipes.module';
   imports: [
     IonicPageModule.forChild(CollectionDetailsPage),
     TranslateModule.forChild(),
-    // ComponentsModule,
+    ComponentsModule,
     FrameworkModule,
     IonicImageLoader,
     DirectivesModule,

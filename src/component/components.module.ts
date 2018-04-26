@@ -14,7 +14,7 @@ import { OnboardingCardComponent } from './onboarding-card/onboarding-card';
 import { OnboardingAlert } from './onboarding-alert/onboarding-alert';
 import { OnboardingService } from './onboarding-card/onboarding.service';
 import { PBHorizontal } from './pbhorizontal/pb-horizontal';
-
+import { ConfirmAlertComponent } from './confirm-alert/confirm-alert';
 
 @NgModule({
     declarations: [
@@ -24,7 +24,8 @@ import { PBHorizontal } from './pbhorizontal/pb-horizontal';
         SignInCardComponent,
         OnboardingCardComponent,
         OnboardingAlert,
-        PBHorizontal
+        PBHorizontal,
+        ConfirmAlertComponent
         // ContentActionsComponent
     ],
     imports: [
@@ -32,7 +33,7 @@ import { PBHorizontal } from './pbhorizontal/pb-horizontal';
         TranslateModule.forChild(),
         Ionic2RatingModule,
         IonicImageLoader,
-        PipesModule,
+        PipesModule
     ],
     exports: [
         CourseCard,
@@ -41,11 +42,13 @@ import { PBHorizontal } from './pbhorizontal/pb-horizontal';
         SignInCardComponent,
         OnboardingCardComponent,
         OnboardingAlert,
-        PBHorizontal
+        PBHorizontal,
+        ConfirmAlertComponent
         // ContentActionsComponent
     ],
     entryComponents: [
-        OnboardingAlert
+        OnboardingAlert,
+        ConfirmAlertComponent
     ],
     providers: [OnboardingService]
 })

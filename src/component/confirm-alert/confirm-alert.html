@@ -1,0 +1,13 @@
+<ion-content>
+  <h5 padding-left class="font-weight-700">{{'DOWNLOAD_ALL' | translate}}
+    <button class="close-button" ion-button icon-only float-end outline (click)="selectOption(false)"><ion-icon class="icon-size" name="close"></ion-icon></button>
+  </h5>
+  <ion-row>
+    <ion-col padding>
+      <button (click)="selectOption(false)" ion-button block outline>{{ 'CANCEL' | translate }}</button>
+    </ion-col>
+    <ion-col padding>
+      <button (click)="selectOption(true)" ion-button block>{{ 'CONFIRM' | translate }}</button>
+    </ion-col>
+  </ion-row>
+</ion-content>

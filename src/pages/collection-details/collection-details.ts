@@ -1,12 +1,12 @@
 import { Component, NgZone, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, Platform, Navbar } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, Platform, Navbar, PopoverController } from 'ionic-angular';
 import { ContentService, FileUtil, Start, PageId, Environment, Mode, Impression, ImpressionType, TelemetryService, End } from 'sunbird';
 import { NgModel } from '@angular/forms';
 import * as _ from 'lodash';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { CourseDetailPage } from '../course-detail/course-detail';
 import { ContentActionsComponent } from '../../component/content-actions/content-actions';
-import { PopoverController } from "ionic-angular/components/popover/popover-controller";
+import { ConfirmAlertComponent } from '../../component/confirm-alert/confirm-alert';
 
 
 /**
@@ -152,7 +152,7 @@ export class CollectionDetailsPage {
   @ViewChild(Navbar) navBar: Navbar;
   constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, zone: NgZone,
     private events: Events, toastCtrl: ToastController, loadingCtrl: LoadingController,
-    public popoverCtrl: PopoverController, 
+    public popoverCtrl: PopoverController,
     private fileUtil: FileUtil,
     private platform : Platform,
     private telemetryService : TelemetryService) {
@@ -605,5 +605,19 @@ export class CollectionDetailsPage {
     end.objType = objectType;
     end.objVer = objectVersion;
     this.telemetryService.end(end);
+  }
+
+  showDownloadAlert(myEvent) {
+    let popover = this.popoverCtrl.create(ConfirmAlertComponent, {}, {
+      cssClass: 'confirm-alert-box'
+    });
+    popover.present({
+      ev: myEvent
+    });
+    popover.onDidDismiss((canDownload: boolean = false) => {
+      if(canDownload) {
+        this.downloadAllContent();
+      }
+    });
   }
 }
