@@ -22,8 +22,8 @@ course-card {
       position: absolute;
       bottom: 0%;
       color: #fff;
-      font-weight: bold;
-      font-size: 1.2em;
+      font-weight: 600;
+      font-size: 1.5rem;
       width: 100%;
       padding-left:10px;
       padding-right:10px;
@@ -41,8 +41,8 @@ course-card {
     }
 
     .size_txt {
-      font-size: 12px;
-      color: grey;
+      font-size: 1.2rem;
+      color: map-get($colors, dark_gray);
     }
 
     .info-container {
