@@ -28,7 +28,7 @@ export class GuestEditProfilePage {
   gradeList: Array<string> = [];
   subjectList: Array<string> = [];
   mediumList: Array<string> = [];
-  userName: string  = '';
+  userName: string = '';
 
 
   options: toastOptions = {
@@ -73,15 +73,15 @@ export class GuestEditProfilePage {
         this.categories = JSON.parse(JSON.parse(res).result.framework).categories;
 
         this.checkPrevValue(0, 'boardList');
-        if(this.profile.board.length) {
+        if (this.profile.board && this.profile.board.length) {
           //this.resetForm(0);
           this.checkPrevValue(1, 'gradeList', this.profile.grade);
         }
-        if(this.profile.grade.length) {
+        if (this.profile.grade && this.profile.grade.length) {
           //this.resetForm(1);
           this.checkPrevValue(2, 'subjectList', this.profile.subject);
         }
-        if(this.profile.subject.length) {
+        if (this.profile.subject && this.profile.subject.length) {
           this.checkPrevValue(3, 'mediumList', this.profile.medium);
         }
         console.log("Framework details Response: ", JSON.parse(JSON.parse(res).result.framework).categories);
@@ -100,7 +100,7 @@ export class GuestEditProfilePage {
 
     this.frameworkService.getCategoryData(req,
       (res: any) => {
-        this[list] = _.map(JSON.parse(res), 'name');
+        this[list] = _.map(JSON.parse(res), 'code');
         console.log(list + " Category Response: " + this[list]);
       },
       (err: any) => {
@@ -132,7 +132,7 @@ export class GuestEditProfilePage {
           subjects: [],
           medium: []
         });
-        this.checkPrevValue(index + 1, 'gradeList', this.guestEditForm.value.boards);
+        this.checkPrevValue(1, 'gradeList', this.guestEditForm.value.boards);
         break;
 
       case 1:
@@ -140,22 +140,16 @@ export class GuestEditProfilePage {
           subjects: [],
           medium: []
         });
-        this.checkPrevValue(index + 1, 'subjectList', this.guestEditForm.value.subjects);
+        this.checkPrevValue(2, 'subjectList', this.guestEditForm.value.subjects);
         break;
 
       case 2:
         this.guestEditForm.patchValue({
           medium: [],
         });
-        this.checkPrevValue(index + 1, 'mediumList', this.guestEditForm.value.medium);
+        this.checkPrevValue(3, 'mediumList', this.guestEditForm.value.medium);
         break;
     }
-  }
-
-  onChanges(): void {
-    // this.guestEditForm.get('name').valueChanges.subscribe(val => {
-    //   this.formattedMessage = `My name is ${val}.`;
-    // });
   }
 
   /**
@@ -168,10 +162,10 @@ export class GuestEditProfilePage {
       day: -1,
       month: -1,
       standard: -1,
-      board: formVal.boards || this.profile.board,
-      grade: formVal.grades || this.profile.grade,
-      subject: formVal.subjects || this.profile.subject,
-      medium: formVal.medium || this.profile.medium,
+      board: formVal.boards,
+      grade: formVal.grades,
+      subject: formVal.subjects,
+      medium: formVal.medium,
       uid: this.profile.uid,
       handle: formVal.name,
       isGroupUser: false,
@@ -186,10 +180,14 @@ export class GuestEditProfilePage {
         this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
 
         // Publish event if the all the fields are submitted
-        if(formVal.boards.length && formVal.grades.length && formVal.medium.length && formVal.subjects.length) {
+        if (formVal.boards.length && formVal.grades.length && formVal.medium.length && formVal.subjects.length) {
           this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: true });
+        } else {
+          this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: false });
         }
         this.events.publish('refresh:profile');
+        this.events.publish('refresh:onboardingcard');
+
         this.navCtrl.pop();
       },
       (err: any) => {

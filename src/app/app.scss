@@ -1,5 +1,4 @@
 // http://ionicframework.com/docs/theming/
-
 // App Global Sass
 // --------------------------------------------------
 // Put style rules here that you want to apply globally. These
@@ -13,50 +12,66 @@
 // To declare rules for a specific mode, create a child rule
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
-
 @font-face {
-    font-family: 'OpenSans/Regular';
-    font-style: normal;
-    font-weight: 400;
-    src: url('../assets/fonts/opensans/OpenSans-Regular.ttf');
+  font-family: 'OpenSans';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../assets/fonts/opensans/OpenSans-Regular.ttf');
 }
 
 @font-face {
-    font-family: 'OpenSans/Semibold';
-    font-style: semi-bold;
-    font-weight: 600;
-    src: url('../assets/fonts/opensans/OpenSans-Semibold.ttf');
+  font-family: 'OpenSans';
+  font-style: semi-bold;
+  font-weight: 600;
+  src: url('../assets/fonts/opensans/OpenSans-Semibold.ttf');
 }
 
 @font-face {
-    font-family: 'OpenSans/Bold';
-    font-style: bold;
-    font-weight: 700;
-    src: url('../assets/fonts/opensans/OpenSans-Bold.ttf');
+  font-family: 'OpenSans';
+  font-style: bold;
+  font-weight: 700;
+  src: url('../assets/fonts/opensans/OpenSans-Bold.ttf');
 }
 
 @font-face {
-    font-family: 'OpenSans/ExtraBold';
-    font-style: extra-bold;
-    font-weight: 900;
-    src: url('../assets/fonts/opensans/OpenSans-ExtraBold.ttf');
+  font-family: 'OpenSans';
+  font-style: extra-bold;
+  font-weight: 900;
+  src: url('../assets/fonts/opensans/OpenSans-ExtraBold.ttf');
+}
+
+.font-weight-400 {
+  font-weight: 400 !important;
+}
+
+.font-weight-600 {
+  font-weight: 600 !important;
+}
+
+.font-weight-700 {
+  font-weight: 700 !important;
+}
+
+.font-weight-900 {
+  font-weight: 900 !important;
 }
 
 h6 {
-    font-family: "OpenSans/Bold" !important;
+  font-family: "OpenSans/Bold" !important;
 }
 
 .font-size-20 {
-    font-size: 20px !important;
+  font-size: 20px !important;
 }
+
 .span-semibold {
-   font-family: 'OpenSans/Semibold';
+  font-family: 'OpenSans/Semibold';
 }
 
 .content-meta-title {
-    font-family: 'OpenSans/Regular' !important;
-    font-weight: 600;
-    color: gray;
+  font-family: 'OpenSans/Regular' !important;
+  font-weight: 600;
+  color: gray;
 }
 
 .tool-icon {
@@ -74,216 +89,235 @@ h6 {
 
 // Re-usable css
 .padding-bottom-5 {
-    padding-bottom: 5px;
+  padding-bottom: 5px;
 }
-.text-align-end {
-    text-align: end;
-}
-.margin-top-5{
-    margin-top: 5px;
-}
-.height-25{
-    height: 25%;
-}
-.border-radius-5{
-    border-radius: 5px;
-}
-.padding-top-25 {
-    padding-top: 25px !important;
-}
-.padding-top-10 {
-    padding-top: 10px !important;
-}
-.margin-top-0 {
-    margin-top: 0px;
-}
-.padding-right-0{
-    padding-right: 0px;
-}
-.tabbar, .tabs-ios, .tabs-md, .tabs-wp {
-  .tab-button-icon {
-      background-repeat: no-repeat;
-      background-position: center;
-      height: 20px;
-      width: 20px;
-      background-size: contain;
-      -webkit-background-size: contain;
-      -moz-background-size: contain;
-      -o-background-size: contain;
 
-      &:before {
-          display: none;
-      }
+.text-align-end {
+  text-align: end;
+}
+
+.margin-top-5 {
+  margin-top: 5px;
+}
+
+.height-25 {
+  height: 25%;
+}
+
+.border-radius-5 {
+  border-radius: 5px;
+}
+
+.padding-top-25 {
+  padding-top: 25px !important;
+}
+
+.padding-top-10 {
+  padding-top: 10px !important;
+}
+
+.margin-top-0 {
+  margin-top: 0px;
+}
+
+.padding-right-0 {
+  padding-right: 0px;
+}
+
+.tabbar,
+.tabs-ios,
+.tabs-md,
+.tabs-wp {
+  .tab-button-icon {
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 20px;
+    width: 20px;
+    background-size: contain;
+    -webkit-background-size: contain;
+    -moz-background-size: contain;
+    -o-background-size: contain;
+    &:before {
+      display: none;
+    }
   }
 }
 
 .tabs-ios {
-
-
   a[aria-selected=false] {
-      .tab-button-icon[ng-reflect-name=courses], .tab-button-icon[aria-label=courses] {
-          background-image: url(../assets/imgs/ic_courses.png);
-      }
-
-      .tab-button-icon[ng-reflect-name=home], .tab-button-icon[aria-label=home] {
-          background-image: url(../assets/imgs/ic_home.png);
-      }
-
-      .tab-button-icon[ng-reflect-name=resources], .tab-button-icon[aria-label=resources] {
-          background-image: url(../assets/imgs/ic_notebook.png);
-      }
-
-      .tab-button-icon[ng-reflect-name=groups], .tab-button-icon[aria-label=groups] {
-          background-image: url(../assets/imgs/ic_chat.png);
-      }
-
-      .tab-button-icon[ng-reflect-name=profile], .tab-button-icon[aria-label=profile] {
-          background-image: url(../assets/imgs/ic_profile.png);
-      }
+    .tab-button-icon[ng-reflect-name=courses],
+    .tab-button-icon[aria-label=courses] {
+      background-image: url(../assets/imgs/ic_courses.png);
+    }
+    .tab-button-icon[ng-reflect-name=home],
+    .tab-button-icon[aria-label=home] {
+      background-image: url(../assets/imgs/ic_home.png);
+    }
+    .tab-button-icon[ng-reflect-name=resources],
+    .tab-button-icon[aria-label=resources] {
+      background-image: url(../assets/imgs/ic_notebook.png);
+    }
+    .tab-button-icon[ng-reflect-name=groups],
+    .tab-button-icon[aria-label=groups] {
+      background-image: url(../assets/imgs/ic_chat.png);
+    }
+    .tab-button-icon[ng-reflect-name=profile],
+    .tab-button-icon[aria-label=profile] {
+      background-image: url(../assets/imgs/ic_profile.png);
+    }
   }
-
   a[aria-selected=true] {
-      //führ eventuellen text
-      //span {
-      //color: #f00; //whatever colour you want to use for the text
-      //}
-      .tab-button-icon[ng-reflect-name=courses], .tab-button-icon[aria-label=courses] {
-          background-image: url(../assets/imgs/ic_courses_blue.png);
-      }
-
-      .tab-button-icon[ng-reflect-name=home], .tab-button-icon[aria-label=home] {
-          background-image: url(../assets/imgs/ic_home_blue.png);
-      }
-
-      .tab-button-icon[ng-reflect-name=resources], .tab-button-icon[aria-label=resources] {
-          background-image: url(../assets/imgs/ic_notebook_blue.png);
-      }
-
-      .tab-button-icon[ng-reflect-name=groups], .tab-button-icon[aria-label=groups] {
-          background-image: url(../assets/imgs/ic_chat_blue.png);
-      }
-
-      .tab-button-icon[ng-reflect-name=profile], .tab-button-icon[aria-label=profile] {
-          background-image: url(../assets/imgs/ic_profile_blue.png);
-      }
+    //führ eventuellen text
+    //span {
+    //color: #f00; //whatever colour you want to use for the text
+    //}
+    .tab-button-icon[ng-reflect-name=courses],
+    .tab-button-icon[aria-label=courses] {
+      background-image: url(../assets/imgs/ic_courses_blue.png);
+    }
+    .tab-button-icon[ng-reflect-name=home],
+    .tab-button-icon[aria-label=home] {
+      background-image: url(../assets/imgs/ic_home_blue.png);
+    }
+    .tab-button-icon[ng-reflect-name=resources],
+    .tab-button-icon[aria-label=resources] {
+      background-image: url(../assets/imgs/ic_notebook_blue.png);
+    }
+    .tab-button-icon[ng-reflect-name=groups],
+    .tab-button-icon[aria-label=groups] {
+      background-image: url(../assets/imgs/ic_chat_blue.png);
+    }
+    .tab-button-icon[ng-reflect-name=profile],
+    .tab-button-icon[aria-label=profile] {
+      background-image: url(../assets/imgs/ic_profile_blue.png);
+    }
   }
 }
 
 .tabs-md {
-
   a[aria-selected=false] {
-      .tab-button-icon[ng-reflect-name=courses], .tab-button-icon[aria-label=courses] {
-          background-image: url(../assets/imgs/ic_courses.png);
-      }
-
-      .tab-button-icon[ng-reflect-name=home], .tab-button-icon[aria-label=home] {
-          background-image: url(../assets/imgs/ic_home.png);
-      }
-
-      .tab-button-icon[ng-reflect-name=resources], .tab-button-icon[aria-label=resources] {
-          background-image: url(../assets/imgs/ic_notebook.png);
-      }
-
-      .tab-button-icon[ng-reflect-name=groups], .tab-button-icon[aria-label=groups] {
-          background-image: url(../assets/imgs/ic_chat.png);
-      }
-
-      .tab-button-icon[ng-reflect-name=profile], .tab-button-icon[aria-label=profile] {
-          background-image: url(../assets/imgs/ic_profile.png);
-      }
+    .tab-button-icon[ng-reflect-name=courses],
+    .tab-button-icon[aria-label=courses] {
+      background-image: url(../assets/imgs/ic_courses.png);
+    }
+    .tab-button-icon[ng-reflect-name=home],
+    .tab-button-icon[aria-label=home] {
+      background-image: url(../assets/imgs/ic_home.png);
+    }
+    .tab-button-icon[ng-reflect-name=resources],
+    .tab-button-icon[aria-label=resources] {
+      background-image: url(../assets/imgs/ic_notebook.png);
+    }
+    .tab-button-icon[ng-reflect-name=groups],
+    .tab-button-icon[aria-label=groups] {
+      background-image: url(../assets/imgs/ic_chat.png);
+    }
+    .tab-button-icon[ng-reflect-name=profile],
+    .tab-button-icon[aria-label=profile] {
+      background-image: url(../assets/imgs/ic_profile.png);
+    }
   }
-
   a[aria-selected=true] {
-      //führ eventuellen text
-      //span {
-      //color: #f00; //whatever colour you want to use for the text
-      //}
-      .tab-button-icon[ng-reflect-name=courses], .tab-button-icon[aria-label=courses] {
-          background-image: url(../assets/imgs/ic_courses_blue.png);
-      }
-
-      .tab-button-icon[ng-reflect-name=home], .tab-button-icon[aria-label=home] {
-          background-image: url(../assets/imgs/ic_home_blue.png);
-      }
-
-      .tab-button-icon[ng-reflect-name=resources], .tab-button-icon[aria-label=resources] {
-          background-image: url(../assets/imgs/ic_notebook_blue.png);
-      }
-
-      .tab-button-icon[ng-reflect-name=groups], .tab-button-icon[aria-label=groups] {
-          background-image: url(../assets/imgs/ic_chat_blue.png);
-      }
-
-      .tab-button-icon[ng-reflect-name=profile], .tab-button-icon[aria-label=profile] {
-          background-image: url(../assets/imgs/ic_profile_blue.png);
-      }
+    //führ eventuellen text
+    //span {
+    //color: #f00; //whatever colour you want to use for the text
+    //}
+    .tab-button-icon[ng-reflect-name=courses],
+    .tab-button-icon[aria-label=courses] {
+      background-image: url(../assets/imgs/ic_courses_blue.png);
+    }
+    .tab-button-icon[ng-reflect-name=home],
+    .tab-button-icon[aria-label=home] {
+      background-image: url(../assets/imgs/ic_home_blue.png);
+    }
+    .tab-button-icon[ng-reflect-name=resources],
+    .tab-button-icon[aria-label=resources] {
+      background-image: url(../assets/imgs/ic_notebook_blue.png);
+    }
+    .tab-button-icon[ng-reflect-name=groups],
+    .tab-button-icon[aria-label=groups] {
+      background-image: url(../assets/imgs/ic_chat_blue.png);
+    }
+    .tab-button-icon[ng-reflect-name=profile],
+    .tab-button-icon[aria-label=profile] {
+      background-image: url(../assets/imgs/ic_profile_blue.png);
+    }
   }
 }
 
 .tabs-wp {
-
   a[aria-selected=false] {
-      .tab-button-icon[ng-reflect-name=courses], .tab-button-icon[aria-label=courses] {
-          background-image: url(../assets/imgs/ic_courses.png);
-      }
-
-      .tab-button-icon[ng-reflect-name=home], .tab-button-icon[aria-label=home] {
-          background-image: url(../assets/imgs/ic_home.png);
-      }
-
-      .tab-button-icon[ng-reflect-name=resources], .tab-button-icon[aria-label=resources] {
-          background-image: url(../assets/imgs/ic_notebook.png);
-      }
-
-      .tab-button-icon[ng-reflect-name=groups], .tab-button-icon[aria-label=groups] {
-          background-image: url(../assets/imgs/ic_chat.png);
-      }
-
-      .tab-button-icon[ng-reflect-name=profile], .tab-button-icon[aria-label=profile] {
-          background-image: url(../assets/imgs/ic_profile.png);
-      }
+    .tab-button-icon[ng-reflect-name=courses],
+    .tab-button-icon[aria-label=courses] {
+      background-image: url(../assets/imgs/ic_courses.png);
+    }
+    .tab-button-icon[ng-reflect-name=home],
+    .tab-button-icon[aria-label=home] {
+      background-image: url(../assets/imgs/ic_home.png);
+    }
+    .tab-button-icon[ng-reflect-name=resources],
+    .tab-button-icon[aria-label=resources] {
+      background-image: url(../assets/imgs/ic_notebook.png);
+    }
+    .tab-button-icon[ng-reflect-name=groups],
+    .tab-button-icon[aria-label=groups] {
+      background-image: url(../assets/imgs/ic_chat.png);
+    }
+    .tab-button-icon[ng-reflect-name=profile],
+    .tab-button-icon[aria-label=profile] {
+      background-image: url(../assets/imgs/ic_profile.png);
+    }
   }
-
   a[aria-selected=true] {
-      //führ eventuellen text
-      //span {
-      //color: #f00; //whatever colour you want to use for the text
-      //}
-      .tab-button-icon[ng-reflect-name=courses], .tab-button-icon[aria-label=courses] {
-          background-image: url(../assets/imgs/ic_courses_blue.png);
-      }
-
-      .tab-button-icon[ng-reflect-name=home], .tab-button-icon[aria-label=home] {
-          background-image: url(../assets/imgs/ic_home_blue.png);
-      }
-
-      .tab-button-icon[ng-reflect-name=resources], .tab-button-icon[aria-label=resources] {
-          background-image: url(../assets/imgs/ic_notebook_blue.png);
-      }
-
-      .tab-button-icon[ng-reflect-name=groups], .tab-button-icon[aria-label=groups] {
-          background-image: url(../assets/imgs/ic_chat_blue.png);
-      }
-
-      .tab-button-icon[ng-reflect-name=profile], .tab-button-icon[aria-label=profile] {
-          background-image: url(../assets/imgs/ic_profile_blue.png);
-      }
+    //führ eventuellen text
+    //span {
+    //color: #f00; //whatever colour you want to use for the text
+    //}
+    .tab-button-icon[ng-reflect-name=courses],
+    .tab-button-icon[aria-label=courses] {
+      background-image: url(../assets/imgs/ic_courses_blue.png);
+    }
+    .tab-button-icon[ng-reflect-name=home],
+    .tab-button-icon[aria-label=home] {
+      background-image: url(../assets/imgs/ic_home_blue.png);
+    }
+    .tab-button-icon[ng-reflect-name=resources],
+    .tab-button-icon[aria-label=resources] {
+      background-image: url(../assets/imgs/ic_notebook_blue.png);
+    }
+    .tab-button-icon[ng-reflect-name=groups],
+    .tab-button-icon[aria-label=groups] {
+      background-image: url(../assets/imgs/ic_chat_blue.png);
+    }
+    .tab-button-icon[ng-reflect-name=profile],
+    .tab-button-icon[aria-label=profile] {
+      background-image: url(../assets/imgs/ic_profile_blue.png);
+    }
   }
 }
 
 /* For changing the input placeholder based on Language Direction  */
+
 input::placeholder {
   @include ltr() {
     text-align: left;
   }
-
   @include rtl() {
     text-align: right;
   }
 }
-.width-100{
-    width: 100%;
+
+.width-100 {
+  width: 100%;
 }
-.sign-in-btn{
-    border-radius: 4px !important;
+
+.sign-in-btn {
+  border-radius: 4px !important;
+}
+
+
+
+/* Ionic component Overrides */
+.toolbar-title-md {
+  font-weight: 600 !important;
 }

@@ -1,10 +1,10 @@
-  .onboarding-alert .checkbox-scroll {
+.onboarding-alert .checkbox-scroll {
     height: 185px;
     overflow-y: scroll;
     padding-bottom: 50px;
-  }
+}
 
-  .onboarding-alert .popover-content {
+.onboarding-alert .popover-content {
     margin: 0;
     width: 100% !important;
     height: 54vh !important;
@@ -16,20 +16,25 @@
     transform-origin: bottom -100% !important;
     transform: translateY(0) !important;
     overflow-y: hidden;
-  }
+}
 
-  .onboarding-alert .popover-md .popover-viewport {
+.onboarding-alert .popover-md .popover-viewport {
     overflow-y: hidden;
-  }
+}
 
-  .onboarding-alert .cancel {
+.onboarding-alert .cancel {
     background-color: map-get($colors, light);
-    color: map-get($colors, primary);;
+    color: map-get($colors, primary);
     border: 1px solid map-get($colors, primary);
-  }
+}
 
-  .onboarding-alert .footer-button {
+.onboarding-alert .footer-button {
     z-index: 999;
-    background-color: map-get($colors, light );
+    background-color: map-get($colors, light);
     padding: 10px;
-  }
+}
+
+.onboarding-alert ion-backdrop {
+    background-color: #000 !important;
+    opacity: 0.4 !important;
+}

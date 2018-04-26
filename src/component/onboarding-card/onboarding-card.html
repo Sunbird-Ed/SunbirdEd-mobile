@@ -1,3 +1,4 @@
+<pb-horizontal *ngIf="!onboardingService.isOnBoardingCardCompleted" [progress]="onboardingService.currentIndex" [isOnBoardCard]="isOnBoardCard"></pb-horizontal>
 <div>
   <p class="onbording-card-header">{{ 'ONBOARDING_CARDS_HEADING' | translate }}</p>
   <ion-slides (ionSlideDrag)="onSlideDrag()" class="onbording-slides" pager="true" centeredSlides="false" speed="50">

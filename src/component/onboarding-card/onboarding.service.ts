@@ -34,7 +34,7 @@ export class OnboardingService {
         private telemetryService: TelemetryService,
         private profileService: ProfileService,
         public events: Events
-    ) {}
+    ) { }
     initializeCard() {
         this.getFrameworkDetails();
 
@@ -79,7 +79,7 @@ export class OnboardingService {
         this.onBoardingSlides[2].options = this.subjectList;
         this.onBoardingSlides[3].options = this.mediumList;
 
-        this.getCurrentUser();
+        return this.getCurrentUser();
     }
 
     /**
@@ -88,10 +88,11 @@ export class OnboardingService {
     getCurrentUser(): void {
         this.profileService.getCurrentUser((res: any) => {
             this.profile = JSON.parse(res);
-            this.onBoardingSlides[0].selectedOptions = (this.profile.board && this.profile.board[0] !== '') ? this.profile.board : '';
-            this.onBoardingSlides[1].selectedOptions = (this.profile.grade && this.profile.grade[0] !== '') ? this.profile.grade : '';
-            this.onBoardingSlides[2].selectedOptions = (this.profile.subjects && this.profile.subjects[0] !== '') ? this.profile.subjects : '';
-            this.onBoardingSlides[3].selectedOptions = (this.profile.medium && this.profile.medium[0] !== '') ? this.profile.medium : '';
+            this.currentIndex = 0;
+            if (this.profile.board && this.profile.board[0] !== '') { this.onBoardingSlides[0].selectedOptions = this.profile.board; this.currentIndex = 25; }
+            if (this.profile.grade && this.profile.grade[0] !== '') { this.onBoardingSlides[1].selectedOptions = this.profile.grade; this.currentIndex = 50; }
+            if (this.profile.subject && this.profile.subject[0] !== '') { this.onBoardingSlides[2].selectedOptions = this.profile.subject; this.currentIndex = 75; }
+            if (this.profile.medium && this.profile.medium[0] !== '') { this.onBoardingSlides[3].selectedOptions = this.profile.medium; this.currentIndex = 100; }
         },
             (err: any) => {
                 console.log("Err1", err);
@@ -123,40 +124,40 @@ export class OnboardingService {
      */
     getCategoryData(req: CategoryRequest, list): void {
 
-        if (!this[list].length) {
-            this.framework.getCategoryData(req,
-                (res: any) => {
-                    // { text: 'Lang1', value: 'Lang1', checked: true }
-                    const resposneArray = JSON.parse(res);
-                    this[list] = [];
-                    let value = {};
-                    resposneArray.forEach(element => {
-                        if(list === "boardList" && this.profile.board && this.profile.board.length && this.profile.board.indexOf(element.code) > -1) {
-                            this.onBoardingSlides[0].selectedCode.push(element.code);
-                            value = { 'text': element.name, 'value': element.code, 'checked': true };
-                        } else if(list === "gradeList" && this.profile.grade && this.profile.grade.length && this.profile.grade.indexOf(element.code) > -1) {
-                            this.onBoardingSlides[1].selectedCode.push(element.code);
-                            value = { 'text': element.name, 'value': element.code, 'checked': true };
-                        } else if(list === "subjectList" && this.profile.subjects && this.profile.subjects.length && this.profile.subjects.indexOf(element.code) > -1) {
-                            this.onBoardingSlides[2].selectedCode.push(element.code);
-                            value = { 'text': element.name, 'value': element.code, 'checked': true };
-                        } else if(list === "mediumList" && this.profile.medium && this.profile.medium.length && this.profile.medium.indexOf(element.code) > -1) {
-                            this.onBoardingSlides[3].selectedCode.push(element.code);
-                            value = { 'text': element.name, 'value': element.code, 'checked': true };
-                        } else {
-                            value = { 'text': element.name, 'value': element.code, 'checked': false };
-                        }
+        //if (!this[list].length) {
+        this.framework.getCategoryData(req,
+            (res: any) => {
+                // { text: 'Lang1', value: 'Lang1', checked: true }
+                const resposneArray = JSON.parse(res);
+                this[list] = [];
+                let value = {};
+                resposneArray.forEach(element => {
+                    if (list === "boardList" && this.profile.board && this.profile.board.length && this.profile.board.indexOf(element.code) > -1) {
+                        this.onBoardingSlides[0].selectedCode.push(element.code);
+                        value = { 'text': element.name, 'value': element.code, 'checked': true };
+                    } else if (list === "gradeList" && this.profile.grade && this.profile.grade.length && this.profile.grade.indexOf(element.code) > -1) {
+                        this.onBoardingSlides[1].selectedCode.push(element.code);
+                        value = { 'text': element.name, 'value': element.code, 'checked': true };
+                    } else if (list === "subjectList" && this.profile.subject && this.profile.subject.length && this.profile.subject.indexOf(element.code) > -1) {
+                        this.onBoardingSlides[2].selectedCode.push(element.code);
+                        value = { 'text': element.name, 'value': element.code, 'checked': true };
+                    } else if (list === "mediumList" && this.profile.medium && this.profile.medium.length && this.profile.medium.indexOf(element.code) > -1) {
+                        this.onBoardingSlides[3].selectedCode.push(element.code);
+                        value = { 'text': element.name, 'value': element.code, 'checked': true };
+                    } else {
+                        value = { 'text': element.name, 'value': element.code, 'checked': false };
+                    }
 
-                        this[list].push(value)
-                    });
-
-                    this.getListArray(list);
-                    console.log(list + " Category Response: " + this[list]);
-                },
-                (err: any) => {
-                    console.log("Subject Category Response: ", err);
+                    this[list].push(value)
                 });
-        }
+
+                this.getListArray(list);
+                console.log(list + " Category Response: " + this[list]);
+            },
+            (err: any) => {
+                console.log("Subject Category Response: ", err);
+            });
+        //}
     }
 
     /**
@@ -165,14 +166,13 @@ export class OnboardingService {
      * @param {any}    currentField
      * @param {string} prevSelectedValue
      */
-    checkPrevValue(index: number = 0, currentField, prevSelectedValue: string = '', ) {
-
+    checkPrevValue(index: number = 0, currentField, prevSelectedValue = []) {
 
         if (index != 0) {
             let request: CategoryRequest = {
                 currentCategory: this.categories[index].code,
                 prevCategory: this.categories[index - 1].code,
-                selectedCode: [prevSelectedValue]
+                selectedCode: prevSelectedValue
             }
             this.getCategoryData(request, currentField);
         } else {
@@ -227,10 +227,10 @@ export class OnboardingService {
             day: -1,
             month: -1,
             standard: -1,
-            board: _.find(this.onBoardingSlides, ['id', 'boardList']).selectedCode,
-            grade: _.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode,
-            subject: _.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode,
-            medium: _.find(this.onBoardingSlides, ['id', 'mediumList']).selectedCode,
+            board: (_.find(this.onBoardingSlides, ['id', 'boardList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'boardList']).selectedCode : this.profile.board,
+            grade: (_.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode : this.profile.grade,
+            subject: (_.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode : this.profile.subject,
+            medium: (_.find(this.onBoardingSlides, ['id', 'mediumList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'mediumList']).selectedCode : this.profile.medium,
             uid: this.profile.uid,
             handle: this.profile.handle,
             isGroupUser: false,
@@ -238,17 +238,31 @@ export class OnboardingService {
             avatar: "avatar",
             createdAt: this.profile.createdAt
         }
+        if(index === 0 && !_.find(this.onBoardingSlides, ['id', 'boardList']).selectedCode.length) {
+            req.board = [];
+        }
+        if(index === 1 && !_.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode.length) {
+            req.grade = [];
+        }
+        if(index === 2 && !_.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode.length) {
+            req.subject = [];
+        }
+        if(index === 3 && !_.find(this.onBoardingSlides, ['id', 'mediumList']).selectedCode.length) {
+            req.medium = [];
+        }
         this.profileService.updateProfile(req,
             (res: any) => {
-
-                this.events.publish('onboarding-card:increaseProgress', { cardProgress: ((index + 1) / this.onBoardingSlides.length ) * 100 });
-
-                if(this.onBoardingSlides.length === (index + 1)) {
+                if (this.onBoardingSlides.length === (index + 1)) {
                     this.isOnBoardingCardCompleted = true;
                     this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
+                } else {
+                    this.isOnBoardingCardCompleted = false;
+                    this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
                 }
-                this.currentIndex++;
-                console.log("Update Response", res);
+                this.currentIndex = index + 1;
+                this.events.publish('refresh:profile');
+
+                this.getCurrentUser();
             },
             (err: any) => {
                 console.log("Err", err);

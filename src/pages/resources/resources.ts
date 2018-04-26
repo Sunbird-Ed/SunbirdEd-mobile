@@ -53,7 +53,6 @@ export class ResourcesPage implements OnInit {
 	public authService: AuthService;
 
 	isOnBoardingCardCompleted: boolean = false;
-	onBoardingProgress: number = 80;
 	public source= "resource";
 
 	constructor(public navCtrl: NavController, private pageService: PageAssembleService, private ngZone: NgZone, private popupCtrl: PopoverController,
@@ -61,31 +60,27 @@ export class ResourcesPage implements OnInit {
 		this.contentService = contentService;
 		this.authService = authService;
 
-    this.events.subscribe('onboarding-card:completed', (isOnBoardingCardCompleted) => {
-      this.isOnBoardingCardCompleted = isOnBoardingCardCompleted;
-    });
-
-    this.events.subscribe('onboarding-card:increaseProgress', (progress) => {
-      this.onBoardingProgress = progress.cardProgress;
-    });
+		this.events.subscribe('onboarding-card:completed', (param) => {
+			this.isOnBoardingCardCompleted = param.isOnBoardingCardCompleted;
+		});
 	}
 
-	  /**
- * It will fetch the guest user profile details
- */
-getCurrentUser(): void {
-	this.profileService.getCurrentUser(
-		(res: any) => {
-			let profile = JSON.parse(res);
-			if (profile.board && profile.board.length && profile.grade && profile.grade.length && profile.medium && profile.medium.length && profile.subject && profile.subject.length) {
-				this.isOnBoardingCardCompleted = true;
-				this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
-			}
-		},
-		(err: any) => {
-			this.isOnBoardingCardCompleted = false;
-		});
-}
+	/**
+* It will fetch the guest user profile details
+*/
+	getCurrentUser(): void {
+		this.profileService.getCurrentUser(
+			(res: any) => {
+				let profile = JSON.parse(res);
+				if (profile.board && profile.board.length && profile.grade && profile.grade.length && profile.medium && profile.medium.length && profile.subject && profile.subject.length) {
+					this.isOnBoardingCardCompleted = true;
+					this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
+				}
+			},
+			(err: any) => {
+				this.isOnBoardingCardCompleted = false;
+			});
+	}
 
 	viewAllSavedResources() {
 		this.navCtrl.push(ViewMoreActivityPage, {

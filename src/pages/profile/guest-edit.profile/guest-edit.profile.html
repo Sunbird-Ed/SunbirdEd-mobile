@@ -13,7 +13,7 @@
     <ion-item>
       <ion-label stacked text-uppercase>{{'BOARD' | translate }}
       </ion-label>
-      <ion-select multiple="true" formControlName="boards" (ionChange)="resetForm(0)" placeholder="{{'SELECT' | translate }}">
+      <ion-select text-uppercase multiple="true" formControlName="boards" (ionChange)="resetForm(0)" placeholder="{{'SELECT' | translate }}">
         <ion-option *ngFor="let board of boardList" text-capitalize value="{{board}}">{{board}}</ion-option>
       </ion-select>
     </ion-item>
@@ -21,7 +21,8 @@
     <ion-item>
       <ion-label stacked text-uppercase>{{'GRADE' | translate }}
       </ion-label>
-      <ion-select [disabled]="!(guestEditForm.value.boards != '')" formControlName="grades" (ionChange)="resetForm(1)" multiple="true" interface="popover" placeholder="{{'SELECT' | translate }}">
+      <ion-select text-capitalize [disabled]="!(guestEditForm.value.boards != '')" formControlName="grades" (ionChange)="resetForm(1)"
+        multiple="true" interface="popover" placeholder="{{'SELECT' | translate }}">
         <ion-option *ngFor="let grade of gradeList" text-capitalize value="{{grade}}">{{grade}}</ion-option>
       </ion-select>
     </ion-item>
@@ -29,7 +30,8 @@
     <ion-item>
       <ion-label stacked text-uppercase>{{'SUBJECTS' | translate }}
       </ion-label>
-      <ion-select (ionChange)="resetForm(2)" [disabled]="!(guestEditForm.value.grades != '')" formControlName="subjects" multiple="true" interface="popover" placeholder="{{'SELECT' | translate }}">
+      <ion-select text-capitalize (ionChange)="resetForm(2)" [disabled]="!(guestEditForm.value.grades != '')" formControlName="subjects"
+        multiple="true" interface="popover" placeholder="{{'SELECT' | translate }}">
         <ion-option *ngFor="let subject of subjectList" text-capitalize value="{{subject}}">{{subject}}</ion-option>
       </ion-select>
     </ion-item>
@@ -37,7 +39,8 @@
     <ion-item>
       <ion-label stacked text-uppercase>{{'MEDIUM' | translate }}
       </ion-label>
-      <ion-select [disabled]="!(guestEditForm.value.subjects != '')" formControlName="medium" multiple="true" interface="popover" placeholder="{{'SELECT' | translate }}">
+      <ion-select text-capitalize [disabled]="!(guestEditForm.value.subjects != '')" formControlName="medium" multiple="true" interface="popover"
+        placeholder="{{'SELECT' | translate }}">
         <ion-option *ngFor="let medium of mediumList" text-capitalize value="{{medium}}">{{medium}}</ion-option>
       </ion-select>
     </ion-item>
@@ -45,5 +48,5 @@
 </ion-content>
 
 <ion-footer padding no-border>
-    <button ion-button block (click)="onSubmit()">{{'SAVE' | translate}}</button>
+  <button ion-button block (click)="onSubmit()">{{'SAVE' | translate}}</button>
 </ion-footer>
