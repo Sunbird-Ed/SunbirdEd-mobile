@@ -59,6 +59,9 @@
 h6 {
   font-family: "OpenSans/Bold" !important;
 }
+.font-size-14rem {
+  font-size: 1.4rem !important;
+}
 
 .font-size-20 {
   font-size: 20px !important;
@@ -310,12 +313,6 @@ input::placeholder {
 .width-100 {
   width: 100%;
 }
-
-.sign-in-btn {
-  border-radius: 4px !important;
-}
-
-
 
 /* Ionic component Overrides */
 .toolbar-title-md {
