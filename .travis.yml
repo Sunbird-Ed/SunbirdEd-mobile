@@ -1,0 +1,62 @@
+branches:
+  only:
+  - master
+matrix:
+  include:
+  - os: linux
+    sudo: false
+    language: android
+    android:
+      components:
+      - tools
+      - platform-tools
+      - tools
+      - build-tools-26.0.0
+      - android-25
+      - extra-google-google_play_services
+      - extra-google-m2repository
+      - extra-android-m2repository
+    addons:
+      apt:
+        sources:
+        - sourceline: deb https://dl.yarnpkg.com/debian/ stable main
+          key_url: https://dl.yarnpkg.com/debian/pubkey.gpg
+        packages:
+        - oracle-java8-installer
+        - oracle-java8-set-default
+        - yarn
+        - jq
+    licenses:
+    - android-sdk-preview-license-.+
+    - android-sdk-license-.+
+    - google-gdk-license-.+
+
+before_cache:
+- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+- rm -f  $HOME/.gradle/caches/transforms-1/transforms-1.lock
+- rm -rf $HOME/.gradle/caches/3.5/fileHashes/
+- rm -rf $HOME/.gradle/caches/*/plugin-resolution/
+cache:
+  directories:
+  - $HOME/.gradle/caches/
+  - $HOME/.gradle/wrapper/
+  - $HOME/.cache/yarn/v1/
+before_install:
+- export LANG=en_US.UTF-8
+- nvm install 8
+- yarn global add ionic cordova
+before_script:
+- echo "Before Script"
+- git clone https://github.com/project-sunbird/genie-sdk-wrapper.git
+- cd genie-sdk-wrapper
+- yarn install
+- yarn run build
+- yarn pack `pwd`/dist
+- cd ..
+- yarn install --save `pwd`/genie-sdk-wrapper/*.tgz
+script:
+- ionic cordova build android --prod
+
+env:
+  global:
+  - JAVA_HOME=/usr/lib/jvm/java-8-oracle

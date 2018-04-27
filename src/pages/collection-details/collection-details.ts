@@ -149,6 +149,8 @@ export class CollectionDetailsPage {
   private objType;
   private objVer;
 
+  public showLoading = false;
+
   @ViewChild(Navbar) navBar: Navbar;
   constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, zone: NgZone,
     private events: Events, toastCtrl: ToastController, loadingCtrl: LoadingController,
@@ -459,7 +461,12 @@ export class CollectionDetailsPage {
         let res = data;
         console.log('event bus........', res);
         if (res.type === 'downloadProgress' && res.data.downloadProgress) {
-          this.downloadProgress = res.data.downloadProgress === -1 ? 0 : res.data.downloadProgress + ' %';
+          this.downloadProgress = res.data.downloadProgress === -1 ? 0 : res.data.downloadProgress;
+          this.showLoading = true;
+
+          if (this.downloadProgress === 100) {
+            this.showLoading = false;
+          }
         }
         // Get child content
         if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
@@ -618,6 +625,14 @@ export class CollectionDetailsPage {
       if(canDownload) {
         this.downloadAllContent();
       }
+    });
+  }
+
+  cancelDownload() {
+    this.contentService.cancelDownload(this.identifier, (response) => {
+      this.navCtrl.pop();
+    }, (error) => {
+      this.navCtrl.pop();
     });
   }
 }
