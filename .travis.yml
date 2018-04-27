@@ -43,11 +43,10 @@ cache:
   - $HOME/.cache/yarn/v1/
 before_install:
 - export LANG=en_US.UTF-8
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update ; brew install yarn ios-sim
-  jq ios-deploy cocoapods ; rvm use system ; pod setup ; fi
 - nvm install 8
 - yarn global add ionic cordova
 before_script:
+- echo "Before Script"
 - git clone https://github.com/project-sunbird/genie-sdk-wrapper.git
 - cd genie-sdk-wrapper
 - yarn i
