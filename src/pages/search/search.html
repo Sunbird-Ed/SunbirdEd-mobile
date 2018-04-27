@@ -24,9 +24,8 @@
         </button>
       </div>
       <div *ngIf="result && result.content && result.content.length">
-        sway
       <ion-list *ngFor="let content of result.content" class="content-list" margin-start>
-        AA: {{index}}<ion-item no-padding (click)="openContent(result, content,index)">
+        <ion-item no-padding (click)="openContent(result, content,index)">
           <ion-avatar item-start>
             <img src="./assets/imgs/ic_logo.png" width="24px" height="24px">
           </ion-avatar>
