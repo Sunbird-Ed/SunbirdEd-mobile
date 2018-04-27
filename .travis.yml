@@ -53,6 +53,7 @@ before_script:
 - npm run build
 - npm pack `pwd`/dist
 - cd ..
+- npm install
 - npm install --save `pwd`/genie-sdk-wrapper/*.tgz
 script:
 - ionic cordova build android --prod
