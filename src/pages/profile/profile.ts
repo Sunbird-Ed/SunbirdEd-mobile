@@ -48,7 +48,7 @@ export class ProfilePage {
   isLoggedInUser: boolean = false;
   loggedInUserId: string = "";
   lastLoginTime: string;
-  userName: string;
+  //userName: string;
   profileName: string;
   profileProgress: string = "";
   languages: string;
@@ -101,12 +101,8 @@ export class ProfilePage {
     this.userId = this.navParams.get("userId") || '';
     this.isLoggedInUser = this.userId ? false : true;
     this.doRefresh();
-    /* events.subscribe('profilePicture:update', (url) => {
-      console.log('URL=', url);
-      this.imageUri = url;
-    }); */
+
     events.subscribe('profilePicture:update', (res) => {
-      console.log('URL=', res.url);
       if (res.isUploading && res.url != '') this.imageUri = res.url;
       this.isUploading = res.isUploading;
     });
@@ -145,8 +141,6 @@ export class ProfilePage {
    */
   resetProfile() {
     this.profile = {};
-    this.lastLoginTime = "Last login time: ";
-    this.userName = "User Name - ";
     this.subjects = "";
     this.grades = "";
     this.languages = "";
@@ -190,7 +184,6 @@ export class ProfilePage {
                   this.imageUri = r.response.avatar;
                 this.searchContent();
                 this.formatLastLoginTime();
-                this.formatUserName();
                 this.formatProfileProgress();
                 this.formatJobProfile();
                 if (!this.isLoggedInUser) this.formatSkills();
@@ -280,12 +273,7 @@ export class ProfilePage {
   }
 
   formatLastLoginTime() {
-    this.lastLoginTime =
-      this.lastLoginTime +
-      this.datePipe.transform(
-        new Date(this.profile.lastLoginTime),
-        "MMM dd, yyyy, hh:mm:ss a"
-      );
+      this.lastLoginTime = this.datePipe.transform(new Date(this.profile.lastLoginTime), "MMM dd, yyyy, hh:mm:ss a");
   }
 
   /* Add new node in endorsersList as `canEndorse` */
@@ -313,10 +301,6 @@ export class ProfilePage {
         }
       });
     }
-  }
-
-  formatUserName() {
-    this.userName = this.userName + this.profile.userName;
   }
 
   formatProfileProgress() {
@@ -391,11 +375,6 @@ export class ProfilePage {
    * Shows the pop up with current Image or open camera instead.
     */
   editPicture() {
-    // this.cameraService.getPicture().then((imageData) => {
-    //   this.imageUri = imageData;
-    // }, (err) => {
-    //   console.error("Error", err);
-    // });
     let popover = this.popoverCtrl.create(ImagePicker,
       {
         imageUri: this.imageUri,

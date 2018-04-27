@@ -21,13 +21,13 @@
     <ion-refresher (ionRefresh)="doRefresh($event)"></ion-refresher>
 
     <!-- Logged In User Profile Pictures and Username -->
-    <p *ngIf="isLoggedInUser" class="profile-last-login-text">{{ lastLoginTime }}</p>
+    <p *ngIf="isLoggedInUser" class="profile-last-login-text">{{ 'LAST_LOGIN_TIME' | translate:{'%s': lastLoginTime } }}</p>
     <div text-center>
         <img class="custom-avatar" [src]="imageUri" (click)="isLoggedInUser && editPicture()" />
         <ion-spinner *ngIf="isUploading"></ion-spinner>
         <p class="profile-name">{{ profile?.firstName }} {{ profile?.lastName }}</p>
         <div class="padding-5 ellipsis" col-12>
-            <span class="grey-bg" *ngIf="profile?.userName">{{ userName }}</span>
+            <span class="grey-bg" *ngIf="profile?.userName">{{ 'USER_NAME_PROFILE' | translate }} - {{ profile?.userName }}</span>
         </div>
     </div>
 

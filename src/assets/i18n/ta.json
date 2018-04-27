@@ -159,7 +159,7 @@
   "LANGUAGE": "மொழி",
   "LANGUAGES": "மொழிகளை",
   "LANGUAGE_SETTINGS": "மொழி அமைப்புகள்",
-  "LAST_LOGIN_TIME": "கடைசியாக புகுபதிவுசெய்த நேரம்: %s",
+  "LAST_LOGIN_TIME": "கடைசியாக புகுபதிவுசெய்த நேரம்: {{%s}}",
   "LAST_SYNC": "கடைசியாக சின்க் ஆனது",
   "LATEST_COURSES": "புதிய கோர்ஸ்கள்",
   "LINKEDIN": "லிங்க்ட்இன்",

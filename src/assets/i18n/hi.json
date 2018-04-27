@@ -165,7 +165,7 @@
   "LANGUAGE": "भाषा",
   "LANGUAGES": "भाषा",
   "LANGUAGE_SETTINGS": "भाषा सेटिंग",
-  "LAST_LOGIN_TIME": "अंतिम लॉगिन समय: %s",
+  "LAST_LOGIN_TIME": "अंतिम लॉगिन समय: {{%s}}",
   "LAST_NAME": "कुलनाम ",
   "LAST_NAME_HINT": "अपना कुलनाम दर्ज करें",
   "LAST_SYNC": "आखिर में समन्वयित हुआ",

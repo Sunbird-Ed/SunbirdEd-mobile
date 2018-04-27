@@ -163,7 +163,7 @@
   "LABEL_ADD_A_SKILL": "कौशल्य जोडा",
   "LANGUAGE": "भाषा",
   "LANGUAGES": "भाषा",
-  "LAST_LOGIN_TIME": "शेवटी लॉगीन केलीली वेळ: %s",
+  "LAST_LOGIN_TIME": "शेवटी लॉगीन केलीली वेळ: {{%s}}",
   "LAST_NAME": "आडनाव",
   "LAST_NAME_HINT": "आपले आडनाव लिहा ",
   "LATEST_COURSES": "नवीन कोर्स",

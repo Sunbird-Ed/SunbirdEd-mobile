@@ -165,7 +165,7 @@
   "LANGUAGE": "భాష",
   "LANGUAGES": "భాషలు",
   "LANGUAGE_SETTINGS": "భాష సెట్టింగ్స్",
-  "LAST_LOGIN_TIME": "చివర లాగిన్ అయిన సమయం: %s",
+  "LAST_LOGIN_TIME": "చివర లాగిన్ అయిన సమయం: {{%s}}",
   "LAST_NAME": "ఇంటిపేరు",
   "LAST_NAME_HINT": "మీ ఇంటిపేరు (లాస్ట్ నేమ్) ఇవ్వండి",
   "LATEST_COURSES": "తాజా కోర్సులు",
