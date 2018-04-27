@@ -34,7 +34,7 @@ matrix:
 before_cache:
 - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
 - rm -f  $HOME/.gradle/caches/transforms-1/transforms-1.lock
-- rm -rf $HOME/.gradle/caches/3.5/fileHashes/
+- rm -rf $HOME/.gradle/caches/*/fileHashes/
 - rm -rf $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
@@ -58,9 +58,13 @@ before_script:
 - npm install --save `pwd`/genie-sdk-wrapper/*.tgz
 - mkdir -p ./plugins/cordova-plugin-genie-sdk/
 - curl -L -o ./plugins/cordova-plugin-genie-sdk/secret.gradle https://www.dropbox.com/s/wjxnd7s8h4ce7vl/secret.gradle?dl=1
+- if [ -e ./plugins/cordova-plugin-genie-sdk/secret.gradle ]; then echo "Ok"; else echo "Not Okay"; fi
 
 script:
+- if [ -e ./plugins/cordova-plugin-genie-sdk/secret.gradle ]; then echo "Ok"; else echo "Not Okay"; fi
 - ionic cordova platform add android
+- if [ -e ./plugins/cordova-plugin-genie-sdk/secret.gradle ]; then echo "Ok"; else echo "Not Okay"; fi
+- ionic cordova build android --prod
 - ionic cordova build android --prod
 
 env:
