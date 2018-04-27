@@ -49,7 +49,7 @@ before_script:
 - echo "Before Script"
 - git clone https://github.com/project-sunbird/genie-sdk-wrapper.git
 - cd genie-sdk-wrapper
-- yarn i
+- yarn install
 - yarn run build
 - yarn pack `pwd`/dist
 - cd ..
