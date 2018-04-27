@@ -48,9 +48,16 @@ before_install:
 - nvm install 8
 - yarn global add ionic cordova
 before_script:
+- git clone https://github.com/project-sunbird/genie-sdk-wrapper.git
+- cd genie-sdk-wrapper
+- yarn i
+- yarn run build
+- yarn pack `pwd`/dist
+- cd ..
+- yarn install --save `pwd`/genie-sdk-wrapper/*.tgz
 script:
-- yarn install
-- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./travis/build-android.sh && ./travis/package-android.sh ; fi
+- ionic cordova build android --prod
+
 env:
   global:
   - JAVA_HOME=/usr/lib/jvm/java-8-oracle
