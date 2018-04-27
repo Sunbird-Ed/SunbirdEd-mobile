@@ -44,16 +44,16 @@ cache:
 before_install:
 - export LANG=en_US.UTF-8
 - nvm install 8
-- yarn global add ionic cordova
+- npm install -g ionic cordova
 before_script:
 - echo "Before Script"
 - git clone https://github.com/project-sunbird/genie-sdk-wrapper.git
 - cd genie-sdk-wrapper
-- yarn install
-- yarn run build
-- yarn pack `pwd`/dist
+- npm install
+- npm run build
+- npm pack `pwd`/dist
 - cd ..
-- yarn install --save `pwd`/genie-sdk-wrapper/*.tgz
+- npm install --save `pwd`/genie-sdk-wrapper/*.tgz
 script:
 - ionic cordova build android --prod
 
