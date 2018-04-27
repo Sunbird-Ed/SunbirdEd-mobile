@@ -1,8 +1,8 @@
-<div class="row-holder" (click)="navigateToDetailsPage(content)">
+<!--<div class="row-holder" (click)="navigateToDetailsPage(content)">
   <ion-row class="meta-data-holder">
     <div style="width: 30%; background-color: gray;">
-      <!-- <div class="img-container"></div> -->
-      <img-loader src="{{ (content.appIcon) || (content.courseLogoUrl) || (defaultImg) }}" backgroundSize="contain"
+      <div class="img-container"></div> -->
+<!--<img-loader src="{{ (content.appIcon) || (content.courseLogoUrl) || (defaultImg) }}" backgroundSize="contain"
         spinner="true" fallback="{{defaultImg}}" fallbackAsPlaceholder="true" (load)="onImageLoad($event)" style="background-position: center center !important"></img-loader>
     </div>
     <div style="width: 70%">
@@ -46,5 +46,54 @@
       </div>
     </div>
   </ion-row>
-</div>
+</div>-->
+<ion-grid>
+  <!-- Last min change col- style="background-color: gray; height: fit-content;" //// img = height: 90px !important;width: 100px !important; align-items: center; background-position: center center;-->
+  <ion-row style="height: 100px !important; margin-top: -5px; border: 2px solid #e9e9e9; border-radius: 6px"> 
+    <ion-col style="background-color: gray;">
+      <div style="height: 90px !important;">
+        <img src="{{ (content.appIcon) || (content.courseLogoUrl) || (defaultImg) }}" style="width: 100px;margin: auto; position: absolute;top: 0;left: 0;bottom: 0;right: 0;">
+      </div>
+    </ion-col>
+    <ion-col col-8>
+      <ion-row>
+        <ion-col col-12>
+          <h6 class="meta-name" text-wrap *ngIf="content.name && content.name.length">{{(content.name.length > 22) ? (content.name | slice:0:22) + '...' : (content.name)}}</h6>
+          <h6 class="meta-name" text-wrap *ngIf="content.courseName && content.courseName.length">{{(content.courseName.length > 22) ? (content.courseName | slice:0:22) + '...' : (content.courseName)}}</h6>
+          <h6 class="meta-name" text-wrap *ngIf="content.contentData && content.contentData.name && content.contentData.name.length">{{(content.contentData.name.length > 22) ? (content.contentData.name | slice:0:22) + '...' : (content.contentData.name)}}</h6>
+        </ion-col>
+      </ion-row>
+      <ion-row [ngSwitch]="type" style="overflow: hidden;">
+        <!-- *ngSwitchCase="'enrolledCourse'" -->
+
+        <ion-col col-6 *ngSwitchCase="'enrolledCourse'" col-sm>
+          <span> {{ 'COURSE_PROGRESS_COMPLETED_1' | translate }} {{content.progress ? content.progress : 0 }}%</span>
+          <span>{{ 'ERROR_DURATION_NOT_AVAILABLE' | translate | slice:0:14 }}...</span>
+        </ion-col>
+ 
+        <ion-col col-6 *ngSwitchCase="'library'" col-sm>
+          <span class="content-created-date1" *ngIf="content.createdOn"> {{ content.createdOn | date: 'mediumDate' }} </span><br/>
+          <span class="content-type" *ngIf="content.contentType">
+              {{(content.contentType && content.contentType.length > 7) ? (content.contentType | slice:0:7) + '..' : content.contentType }}
+            </span>
+            <span class="content-size1" *ngIf="content.size">[{{ content.size | fileSize | slice:0:07 }}]</span>
+            <span class="content-size1" *ngIf="content.sizeOnDevice">[{{ content.sizeOnDevice | fileSize }}]</span>
+        </ion-col>
+
+        <ion-col col-6 *ngSwitchCase="'popularCourses'" col-sm>
+            <span class="content-size1" *ngIf="content.size">[{{ content.size | fileSize | slice:0:07 }}]</span><br/>
+            <span>{{ 'ERROR_DURATION_NOT_AVAILABLE' | translate | slice:0:14 }}...</span>
+          </ion-col>
+
+        <!-- Button -->
+        <ion-col col-6>
+          <button ion-button outline small style="white-space: normal; overflow: hidden;display: block; width: 90px">
+            <ion-label style="font-size: 12px !important" *ngIf="type === 'enrolledCourse'">{{ 'RESUME' | translate}}</ion-label>
+            <ion-label style="font-size: 12px !important" *ngIf="type !== 'enrolledCourse'">{{ 'OPEN' | translate}}</ion-label>
+          </button>
+        </ion-col>
+      </ion-row>
+    </ion-col>
+  </ion-row>
+</ion-grid>
 <br/>
