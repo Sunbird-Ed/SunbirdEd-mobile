@@ -56,6 +56,12 @@ export class MyApp {
 
       })
 
+      this.preference.getString('selected_language_code', (val: string) => {
+        if (val && val.length) {
+          this.translate.use(val);
+        }
+      });
+
       that.authService.getSessionData((session) => {
         if (session == "null") {
           this.preference.getString('selected_user_type', (val) => {
@@ -107,7 +113,7 @@ export class MyApp {
           self.presentToast();
           setTimeout(() => { self.counter = 0 }, 1500)
         } else {
-          this.telemetryService.end(generateEndEvent("app","","","","",""));
+          this.telemetryService.end(generateEndEvent("app", "", "", "", "", ""));
           self.platform.exitApp();
         }
       }
@@ -232,7 +238,7 @@ export class MyApp {
         if (response.type === "dialcode") {
           let results = response.code.split("/");
           let dialCode = results[results.length - 1];
-          this.nav.push(SearchPage, {dialCode: dialCode});
+          this.nav.push(SearchPage, { dialCode: dialCode });
         } else if (response.result) {
           this.showContentDetails(response.result);
         }
