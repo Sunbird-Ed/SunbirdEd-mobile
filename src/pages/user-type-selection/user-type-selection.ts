@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { TabsPage,SharedPreferences, OAuthService, Interact, TelemetryService, InteractType, InteractSubtype, Environment, PageId, ImpressionType } from 'sunbird';
 import { ViewController } from 'ionic-angular/navigation/view-controller';
@@ -38,7 +38,8 @@ export class UserTypeSelectionPage {
     private translate: TranslateService,
     private preference: SharedPreferences,
     private profileService: ProfileService,
-    private telemetryService: TelemetryService
+    private telemetryService: TelemetryService,
+    private zone: NgZone
   ) {
     this.initData();
   }
@@ -61,27 +62,31 @@ export class UserTypeSelectionPage {
   ionViewDidEnter(){
     this.telemetryService.impression(
       generateImpressionEvent(ImpressionType.VIEW,
-        PageId.USER_TYPE_SELECTION, 
+        PageId.USER_TYPE_SELECTION,
         Environment.HOME, "", "", "")
     );
   }
 
   selectTeacherCard() {
-    this.userTypeSelected = true;
-    this.teacherCardBorderColor = selectedCardBorderColor;
-    this.studentCardBorderColor = borderColor;
-    this.selectedUserType = "teacher";
-    this.continueAs = this.translateMessage('CONTINUE_AS_TEACHER');
-    this.preference.putString(KEY_SELECTED_USER_TYPE, this.selectedUserType);
+    this.zone.run(() => {
+      this.userTypeSelected = true;
+      this.teacherCardBorderColor = selectedCardBorderColor;
+      this.studentCardBorderColor = borderColor;
+      this.selectedUserType = "teacher";
+      this.continueAs = this.translateMessage('CONTINUE_AS_TEACHER');
+      this.preference.putString(KEY_SELECTED_USER_TYPE, this.selectedUserType);
+    });
   }
 
   selectStudentCard() {
-    this.userTypeSelected = true;
-    this.teacherCardBorderColor = borderColor;
-    this.studentCardBorderColor = selectedCardBorderColor;
-    this.selectedUserType = "student";
-    this.continueAs = this.translateMessage('CONTINUE_AS_STUDENT');
-    this.preference.putString(KEY_SELECTED_USER_TYPE, this.selectedUserType)
+    this.zone.run(() => {
+      this.userTypeSelected = true;
+      this.teacherCardBorderColor = borderColor;
+      this.studentCardBorderColor = selectedCardBorderColor;
+      this.selectedUserType = "student";
+      this.continueAs = this.translateMessage('CONTINUE_AS_STUDENT');
+      this.preference.putString(KEY_SELECTED_USER_TYPE, this.selectedUserType)
+    });
   }
 
   continue() {
