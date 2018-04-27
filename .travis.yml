@@ -53,8 +53,12 @@ before_script:
 - npm run build
 - npm pack `pwd`/dist
 - cd ..
+- rm -rf node_modules platforms plugins www
 - npm install
 - npm install --save `pwd`/genie-sdk-wrapper/*.tgz
+- mkdir -p ./plugins/cordova-plugin-genie-sdk/
+- curl -L -o ./plugins/cordova-plugin-genie-sdk/secret.gradle https://www.dropbox.com/s/wjxnd7s8h4ce7vl/secret.gradle?dl=1
+
 script:
 - ionic cordova platform add android
 - ionic cordova build android --prod
