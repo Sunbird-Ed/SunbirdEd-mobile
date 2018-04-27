@@ -4,7 +4,7 @@ import { NavController } from "ionic-angular/navigation/nav-controller";
 import { NavParams } from "ionic-angular/navigation/nav-params";
 import { ViewController } from "ionic-angular/navigation/view-controller";
 import { UsersnClassesComponent } from "../usersnclasses/usersnclass.component";
-import { ToastController } from "ionic-angular";
+import { ToastController, App } from "ionic-angular";
 import { SettingsPage } from "../../settings/settings";
 import { OAuthService } from "sunbird";
 import { OnboardingPage } from "../../onboarding/onboarding";
@@ -24,7 +24,9 @@ export class OverflowMenuComponent {
         public viewCtrl: ViewController,
         private toastCtrl: ToastController,
         private oauth: OAuthService,
-        private telemetryService: TelemetryService) {
+        private telemetryService: TelemetryService,
+        private app: App
+    ) {
         this.items = this.navParams.get("list");
     }
 
@@ -52,8 +54,8 @@ export class OverflowMenuComponent {
             //     break;
             // }
             case 0: {
-                this.generateInteractEvent()
-                this.navCtrl.push(SettingsPage)
+                this.generateInteractEvent();
+                this.app.getActiveNav().push(SettingsPage);
                 break;
             }
             case 1: {

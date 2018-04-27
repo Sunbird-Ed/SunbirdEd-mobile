@@ -51,7 +51,7 @@ export class OnboardingPage {
   ionViewDidEnter() {
     this.telemetryService.impression(
       generateImpressionEvent(ImpressionType.VIEW,
-        PageId.ONBOARDING, 
+        PageId.ONBOARDING,
         Environment.HOME, "", "", "")
     );
   }
@@ -148,7 +148,7 @@ export class OnboardingPage {
   browseAsGuest() {
     this.generateInteractEvent();
     initGuestTabs(this.container);
-    this.navCtrl.setRoot(UserTypeSelectionPage);
+    this.navCtrl.push(UserTypeSelectionPage);
   }
 
   generateInteractEvent() {

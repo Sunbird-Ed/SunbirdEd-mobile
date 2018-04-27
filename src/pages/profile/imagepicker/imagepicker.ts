@@ -3,7 +3,6 @@ import { NavController, NavParams, ViewController, ToastController, Events } fro
 import { TranslateService } from '@ngx-translate/core';
 
 import { UsersnClassesComponent } from "../usersnclasses/usersnclass.component";
-import { SettingsPage } from "../../settings/settings";
 import { UserProfileService, UploadFileRequest, AuthService, UpdateUserInfoRequest } from "sunbird";
 
 /* Interface for the Toast Object */
