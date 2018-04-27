@@ -1,5 +1,5 @@
 export enum DataSyncType {
-    off = "off",
-    over_wifi = "over-wifi",
-    always_on = "always-on"
+    off = "OFF",
+    over_wifi = "OVER_WIFI_ONLY",
+    always_on = "ALWAYS_ON"
 }

@@ -98,6 +98,15 @@ export class MyApp {
     this.imageLoaderConfig.enableDebugMode();
     this.imageLoaderConfig.setMaximumCacheSize(100 * 1024 * 1024);
     this.subscribeEvents();
+    this.saveDefaultSyncSetting();
+  }
+
+  saveDefaultSyncSetting(){
+    this.preference.getString("sync_config", val => {
+      if (val === undefined || val === "" || val === null) {
+        this.preference.putString("sync_config","ALWAYS_ON");
+      } 
+    });
   }
 
   handleBackButton() {
