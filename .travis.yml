@@ -63,7 +63,7 @@ script:
 - mkdir -p ./plugins/cordova-plugin-genie-sdk/
 - curl -L -o ./plugins/cordova-plugin-genie-sdk/secret.gradle https://www.dropbox.com/s/wjxnd7s8h4ce7vl/secret.gradle?dl=1
 - if [ -e ./plugins/cordova-plugin-genie-sdk/secret.gradle ]; then echo "Ok"; else echo "Not Okay"; fi
-- ionic cordova build android --prod
+- ionic cordova run android --prod
 
 env:
   global:
