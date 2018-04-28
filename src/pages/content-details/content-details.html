@@ -101,7 +101,7 @@
   <ion-toolbar padding>
     <button ion-button block outline *ngIf="isDownloadStarted" (click)="cancelDownload()">{{ 'CANCEL_DOWNLOAD' | translate }}</button>
     <button ion-button block *ngIf="!content.downloadable" (click)="downloadContent()" text-uppercase>
-      {{ downloadProgress ? ('DOWNLOADING_1' | translate:{'%s': downloadProgress}) : ('DOWNLOAD' | translate) }}
+      {{ isDownloadStarted ? ('DOWNLOADING_1' | translate:{'%s': downloadProgress}) + ' %' : ('DOWNLOAD' | translate) }}
     </button>
     <button ion-button block *ngIf="content.downloadable" (click)="playContent()">{{ 'PLAY' | translate }}</button>
   </ion-toolbar>

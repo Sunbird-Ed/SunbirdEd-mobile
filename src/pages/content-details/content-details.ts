@@ -1,7 +1,7 @@
 import { ContentActionsComponent } from './../../component/content-actions/content-actions';
 import { Component, NgZone, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController,PopoverController, Navbar, Platform } from 'ionic-angular';
-import { ContentService,FileUtil, Impression, ImpressionType, PageId, Environment, TelemetryService, Start, Mode, End, ShareUtil, InteractType, InteractSubtype } from 'sunbird';
+import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, PopoverController, Navbar, Platform } from 'ionic-angular';
+import { ContentService, FileUtil, Impression, ImpressionType, PageId, Environment, TelemetryService, Start, Mode, End, ShareUtil, InteractType, InteractSubtype } from 'sunbird';
 import { NgModel } from '@angular/forms';
 import { SocialSharing } from "@ionic-native/social-sharing";
 import * as _ from 'lodash';
@@ -115,10 +115,10 @@ export class ContentDetailsPage {
    * @param toastCtrl
    */
   @ViewChild(Navbar) navBar: Navbar;
-  constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService,private telemetryService : TelemetryService, zone: NgZone,
+  constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, private telemetryService: TelemetryService, zone: NgZone,
     private events: Events, toastCtrl: ToastController, loadingCtrl: LoadingController,
     private fileUtil: FileUtil, public popoverCtrl: PopoverController, private shareUtil: ShareUtil,
-    private social: SocialSharing,private platform :Platform) {
+    private social: SocialSharing, private platform: Platform) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
@@ -215,7 +215,7 @@ export class ContentDetailsPage {
 
   generateStartEvent(objectId, objectType, objectVersion) {
     let start = new Start();
-    start.type =objectType ;
+    start.type = objectType;
     start.pageId = PageId.CONTENT_DETAIL;
     start.env = Environment.HOME;
     start.mode = Mode.PLAY;
@@ -227,7 +227,7 @@ export class ContentDetailsPage {
 
   generateEndEvent(objectId, objectType, objectVersion) {
     let end = new End();
-    end.type =objectType ;
+    end.type = objectType;
     end.pageId = PageId.CONTENT_DETAIL;
     end.env = Environment.HOME;
     end.mode = Mode.PLAY;
@@ -350,10 +350,7 @@ export class ContentDetailsPage {
         let res = data;
         console.log('event bus........', res);
         if (res.type === 'downloadProgress' && res.data.downloadProgress) {
-          // if (res.data.downloadProgress === 100) {
-            // this.downloadingText = 'DOWNLOADED ';
-          // }
-          this.downloadProgress = res.data.downloadProgress === -1 ? '0 %' : res.data.downloadProgress + ' %';
+          this.downloadProgress = res.data.downloadProgress === -1 ? '0' : res.data.downloadProgress;
         }
 
         // Get child content
@@ -361,11 +358,9 @@ export class ContentDetailsPage {
           if (this.isDownloadStarted) {
             this.isDownloadStarted = false;
             this.cancelDownloading = false;
-            // this.showDownloadBtn = false;
-            this.setContentDetails(this.identifier, true);
-            // this.playContentBtn = true;
             this.content.downloadable = true;
-            console.log('this.content.isAvailableLocally = ', this.content.downloadable);
+            this.setContentDetails(this.identifier, true);
+            this.downloadProgress = '';
           }
         }
       });
@@ -376,17 +371,15 @@ export class ContentDetailsPage {
    * Download content
    */
   downloadContent() {
-    // this.downloadProgress = '0 %';
+    this.downloadProgress = '0';
     this.isDownloadStarted = true;
     this.importContent([this.identifier], false);
   }
 
   cancelDownload() {
     this.contentService.cancelDownload(this.identifier, (data: any) => {
-      console.log('Success: download success =>>>>>', data)
       this.isDownloadStarted = false;
-      // this.downloadProgress = '0 %';
-      // this.playContentBtn = false;
+      this.downloadProgress = '';
       this.content.downloadable = false;
     }, (error: any) => {
       console.log('Error: download error =>>>>>', error)
@@ -414,9 +407,9 @@ export class ContentDetailsPage {
     let popover = this.popoverCtrl.create(ContentActionsComponent, {
       content: this.content,
       isChild: false
-    },{
-      cssClass: 'content-action'
-    });
+    }, {
+        cssClass: 'content-action'
+      });
     popover.present({
       ev: event
     });
@@ -431,14 +424,14 @@ export class ContentDetailsPage {
   }
 
   share() {
-    this.generateShareInteractEvents(InteractType.TOUCH,InteractSubtype.SHARE_LIBRARY_INITIATED,this.content.contentType);
+    this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_LIBRARY_INITIATED, this.content.contentType);
     let loader = this.getLoader();
     loader.present();
     let url = "https://staging.open-sunbird.org/public/#!/content/" + this.content.identifier;
     if (this.content.downloadable) {
       this.shareUtil.exportEcar(this.content.identifier, path => {
         loader.dismiss();
-        this.generateShareInteractEvents(InteractType.OTHER,InteractSubtype.SHARE_LIBRARY_SUCCESS,this.content.contentType);
+        this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.content.contentType);
         this.social.share("", "", "file://" + path, url);
       }, error => {
         loader.dismiss();
@@ -450,20 +443,20 @@ export class ContentDetailsPage {
         toast.present();
       });
     } else {
-      this.generateShareInteractEvents(InteractType.OTHER,InteractSubtype.SHARE_LIBRARY_SUCCESS,this.content.contentType);
+      this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.content.contentType);
       this.social.share("", "", "", url);
     }
-   
+
   }
 
-  generateShareInteractEvents(interactType,subType,contentType){
-    let values= new Map();
-    values["ContentType"]=contentType;
+  generateShareInteractEvents(interactType, subType, contentType) {
+    let values = new Map();
+    values["ContentType"] = contentType;
     this.telemetryService.interact(
-			generateInteractEvent(interactType,
-			  subType,
-			  Environment.HOME,
-			  PageId.CONTENT_DETAIL, values)
-		  );
+      generateInteractEvent(interactType,
+        subType,
+        Environment.HOME,
+        PageId.CONTENT_DETAIL, values)
+    );
   }
 }
