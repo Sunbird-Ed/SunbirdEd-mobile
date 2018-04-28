@@ -25,7 +25,7 @@
       <!-- Saved Resources -->
       <ion-col col-8 *ngIf="layoutName === 'SavedResources'">
           <p style="font-size: 0.95em; padding-top: 3px;">{{ course?.contentType }}</p>
-          <p style="font-size: 0.80em;">{{ 'SAVED_ON' | translate }} {{ course?.lastUpdatedOn | date: 'medium' | slice:0:6 }}...</p>
+          <p style="font-size: 1rem; color: #979797;">{{ 'SAVED_ON' | translate }} {{ course?.lastUpdatedOn | date: 'medium' | slice:0:6 }}...</p>
       </ion-col>
       <ion-col col-8 *ngIf="pageName === 'library'">
           <rating [(ngModel)]="course.progress" readOnly="true" max="5" no-padding></rating>
