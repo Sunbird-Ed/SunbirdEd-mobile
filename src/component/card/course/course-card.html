@@ -36,8 +36,8 @@
       </ion-col>
       <ion-col col-4>
         <button ion-button outline small float-end>
-          <span *ngIf="layoutName === 'Inprogress'">{{ ('RESUME' | translate).length > 5 ? ('RESUME' | translate | slice:0:05) + '...' : ('RESUME' | translate) }}</span>
-          <span *ngIf="layoutName !== 'Inprogress'">{{ ('OPEN' | translate).length > 5 ? ('OPEN' | translate | slice:0:05) + '...' : ('OPEN' | translate) }}</span>
+          <span *ngIf="layoutName === 'Inprogress'">{{ ('RESUME' | translate).length > 6 ? ('RESUME' | translate | slice:0:06) + '...' : ('RESUME' | translate) }}</span>
+          <span *ngIf="layoutName !== 'Inprogress'">{{ ('OPEN' | translate).length > 6 ? ('OPEN' | translate | slice:0:06) + '...' : ('OPEN' | translate) }}</span>
         </button>
       </ion-col>
     </ion-row>
