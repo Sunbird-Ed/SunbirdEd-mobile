@@ -1,6 +1,6 @@
 page-onboarding {
     ion-slide {
-        background-color: #ffffff;
+        background-color: map-get($colors, white);
     }
     .action-button {
         width:100% !important;
@@ -18,18 +18,19 @@ page-onboarding {
         height: 55vw;
     }
     .title {
-        color: #939393;
+        color: map-get($colors, dark_gray);
         font-weight: 500;
+        font-size: 1.6rem;
     }
     .description {
-        color: #484848;
+        color: map-get($colors, secondary_black);
         font-size: 1.5rem;
     }
 }
 
 /* Slider Active bullet color, Size, and spacing */
 .swiper-pagination-bullet-active {
-    background: #696969;
+    background: map-get($colors, dark_gray);
 }
 .swiper-pagination-bullet {
     width: 10px;
