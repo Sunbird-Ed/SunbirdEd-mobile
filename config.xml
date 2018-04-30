@@ -22,9 +22,9 @@
     <preference name="SplashScreenDelay" value="5000" />
     <preference name="Orientation" value="portrait" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
-    <preference name="auth_redirect_url" value="https://staging.open-sunbird.org/oauth2callback"/>
-    <preference name="auth_url" value="https://staging.open-sunbird.org/auth/realms/sunbird/protocol/openid-connect/auth?redirect_uri=https://staging.open-sunbird.org/oauth2callback&response_type=code&scope=offline_access&client_id=${CID}"/>
-    <preference name="logout_url" value="https://staging.open-sunbird.org/auth/realms/sunbird/protocol/openid-connect/logout?redirect_uri=https://staging.open-sunbird.org/oauth2callback"/>
+    <preference name="auth_redirect_url" value="https://staging.open-sunbird.org/oauth2callback" />
+    <preference name="auth_url" value="https://staging.open-sunbird.org/auth/realms/sunbird/protocol/openid-connect/auth?redirect_uri=https://staging.open-sunbird.org/oauth2callback&amp;response_type=code&amp;scope=offline_access&amp;client_id=${CID}" />
+    <preference name="logout_url" value="https://staging.open-sunbird.org/auth/realms/sunbird/protocol/openid-connect/logout?redirect_uri=https://staging.open-sunbird.org/oauth2callback" />
     <platform name="android">
         <preference name="android-manifest/@xmlns:tools" value="http://schemas.android.com/tools" />
         <preference name="android-manifest/application/@tools:replace" value="android:allowBackup" />
@@ -106,9 +106,10 @@
     <plugin name="cordova-plugin-network-information" spec="^2.0.1" />
     <plugin name="cordova-plugin-file" spec="^6.0.1" />
     <plugin name="cordova-plugin-file" spec="^6.0.1" />
-    <engine name="android" spec="~7.0.0" />
     <plugin name="cordova-plugin-browsertab" spec="^0.2.0" />
     <plugin name="cordova-plugin-inappbrowser" spec="^2.0.2" />
-    <plugin name="cordova-plugin-genie-sdk" spec="https://github.com/project-sunbird/cordova-plugin-genie-sdk.git" />
     <plugin name="cordova-plugin-sunbirdsplash" spec="https://github.com/project-sunbird/cordova-plugin-sunbirdsplash.git" />
+    <engine name="android" spec="~7.0.0" />
+    <plugin name="cordova-plugin-genie-sdk" spec="../cordova-plugins/cordova-plugin-genie-sdk" />
+    <plugin name="cordova-plugin-customconfigparameters" spec="^3.0.0" />
 </widget>
