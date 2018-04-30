@@ -6,8 +6,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { ProfileType, ProfileService } from 'sunbird'
 import { generateImpressionEvent } from '../../app/telemetryutil';
 
-const selectedCardBorderColor = '#0080ff';
-const borderColor = '#fff';
+const selectedCardBorderColor = '#006DE5';
+const borderColor = '#F7F7F7';
 const KEY_SELECTED_USER_TYPE = "selected_user_type";
 const KEY_SELECTED_LANGUAGE = "selected_language";
 
@@ -22,8 +22,8 @@ export class UserTypeSelectionPage {
   teacherContents: Array<string>;
   studentContents: Array<string>;
   allContents: Array<Array<string>> = [];
-  teacherCardBorderColor: string = '#fff';
-  studentCardBorderColor: string = '#fff';
+  teacherCardBorderColor: string = '#F7F7F7';
+  studentCardBorderColor: string = '#F7F7F7';
   userTypeSelected: boolean = false;
   selectedUserType: string;
   continueAs: string = "";

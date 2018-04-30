@@ -1,43 +1,35 @@
 page-user-type-selection {
-
-
-
     .card-related-style {
         border-style: solid;
         border-width: 2px;
         border-radius: 6px !important;
     }
     .description {
-        color: #696969;
+        color: map-get($colors, secondary_black);
         font-size: 1.4rem;
         font-weight: 500;
     }
     .card-title {
         padding-left: 25px;
         font-weight: 500;
-        color: #696969;
+        color: map-get($colors, secondary_black);
     }
     .continue-related-style {
         margin: 0 20px 20px 20px;
     }
-
     ion-list, ion-item, ion-grid, ion-col, ion-row {
         padding: 0!important;
         margin: 0!important;
     }
-
     ion-item {
         min-height: 0!important;
     }
-
     .card-content-md {
         padding-left: 0 !important;
     }
-
     .item-md ion-avatar {
         padding-left: 8px;
     }
-
     ion-avatar img {
         width: 60px !important;
         height: 60px !important;
@@ -46,7 +38,7 @@ page-user-type-selection {
         margin-right: 0 !important;
     }
     .card-md, .item-md {
-        background-color:#F2F2F3 !important;
+        background-color:map-get($colors, white_f7) !important;
     }
     .card-md {
         margin: 20px 0 0 0 !important;
@@ -54,7 +46,7 @@ page-user-type-selection {
     }
     /* For Arrow icon at the end */
     [icon-end] ion-icon {
-        margin-left: 15vw;
+        margin-left: 28vw;
     }
     .button-inner {
         justify-content: flex-end;
@@ -64,6 +56,6 @@ page-user-type-selection {
         margin-left: 38vw;
     }
     .gray-color{
-        color: #484848;
+        color: map-get($colors, primary_black);
     }
 }

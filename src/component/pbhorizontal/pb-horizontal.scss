@@ -3,8 +3,8 @@ pb-horizontal {
     .progress-outer {
         width: 100%;
         text-align: center;
-        background-color: #f4f4f4;
-        color: #fff;
+        background-color: map-get($colors, light_gray);
+        color: map-get($colors, white);
         border-radius: 20px;
     }
 
