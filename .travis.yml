@@ -61,6 +61,8 @@ before_script:
 
 script:
 - ionic cordova platform add android
+- ionic cordova plugin rm cordova-plugin-customconfigparameters
+- ionic cordova plugin add cordova-plugin-customconfigparameters
 - mkdir -p ./plugins/cordova-plugin-genie-sdk/
 - curl -L -o ./plugins/cordova-plugin-genie-sdk/secret.gradle https://www.dropbox.com/s/wjxnd7s8h4ce7vl/secret.gradle?dl=1
 - curl -L -o ./gk.jks https://www.dropbox.com/s/0vorw73102zr97c/gk.jks?dl=1
