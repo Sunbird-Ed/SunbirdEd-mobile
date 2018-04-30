@@ -5,7 +5,7 @@
   <ion-list inset mode="ios" radio-group [(ngModel)]="language" (ionChange)="onLanguageSelected()">
     <ion-item mode="ios" *ngFor="let language of languages">
       <ion-label class="gray-color">{{ language?.label | translate }}
-        <span *ngIf="defaultDeviceLang === language?.code">&nbsp;&nbsp;({{ 'HINT_LANGUAGE' | translate }})</span>
+        <span *ngIf="defaultDeviceLang === language?.code">&nbsp;&nbsp;({{ 'DETECTED' | translate }})</span>
       </ion-label>
       <ion-radio mode="ios" [value]="language?.code"></ion-radio>
     </ion-item>

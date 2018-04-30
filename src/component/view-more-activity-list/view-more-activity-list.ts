@@ -6,6 +6,7 @@ import { Input, NgZone } from '@angular/core';
 import { Component } from '@angular/core';
 import { ImageLoader } from "ionic-image-loader";
 import { IonicPage, NavController, NavParams, Events, ToastController } from 'ionic-angular';
+import { DomSanitizer } from '@angular/platform-browser';
 
 /**
  * Generated class for the ViewMoreActivityListComponent component.
@@ -51,7 +52,7 @@ export class ViewMoreActivityListComponent {
   /**
    * Default method of cass SearchListComponent
    */
-  constructor(navCtrl: NavController, navParams: NavParams, zone: NgZone) {
+  constructor(navCtrl: NavController, navParams: NavParams, zone: NgZone, private _sanitizer: DomSanitizer) {
     console.log('View more activity Component');
     this.defaultImg = 'assets/imgs/ic_action_course.png';
     this.navCtrl = navCtrl;
@@ -84,5 +85,15 @@ export class ViewMoreActivityListComponent {
 
   onImageLoad(imgLoader: ImageLoader) {
     console.log("Image Loader " + imgLoader.nativeAvailable);
+  }
+
+  public sanitizeImage(content) {
+    if (content.appIcon) {
+      return this._sanitizer.bypassSecurityTrustStyle(`url(${content.appIcon})`);
+    } else if (content.courseLogoUrl) {
+      return this._sanitizer.bypassSecurityTrustStyle(`url(${content.courseLogoUrl})`);
+    } else {
+      return this._sanitizer.bypassSecurityTrustStyle(`url(${this.defaultImg})`);
+    }
   }
 }

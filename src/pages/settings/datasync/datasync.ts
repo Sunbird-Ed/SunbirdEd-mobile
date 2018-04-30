@@ -1,8 +1,9 @@
 import { Component, NgZone } from '@angular/core';
-import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
-import { TelemetryService, SyncStat, SharedPreferences, PageId, Environment, ImpressionType, Impression, Interact, InteractType, InteractSubtype } from 'sunbird';
+import { IonicPage, NavController, NavParams, LoadingController, ToastController } from 'ionic-angular';
+import { TelemetryService, SyncStat, SharedPreferences, PageId, Environment, ImpressionType, Impression, Interact, InteractType, InteractSubtype, ShareUtil } from 'sunbird';
 import { DataSyncType } from "./datasynctype.enum"
 import { TranslateService } from '@ngx-translate/core'
+import { SocialSharing } from '@ionic-native/social-sharing';
 
 /**
  * Generated class for the DatasyncPage page.
@@ -11,7 +12,7 @@ import { TranslateService } from '@ngx-translate/core'
  * Ionic pages and navigation.
  */
 
-const KEY_DATA_SYNC_TYPE = "data_sync_type";
+const KEY_DATA_SYNC_TYPE = "sync_config";
 const KEY_DATA_SYNC_TIME = "data_sync_time";
 
 class CMap {
@@ -35,7 +36,10 @@ export class DatasyncPage {
     private telemetryService: TelemetryService,
     private preference: SharedPreferences,
     private translate: TranslateService,
-    private loadingCtrl: LoadingController) {
+    private loadingCtrl: LoadingController,
+    private shareUtil: ShareUtil,
+    private social: SocialSharing,
+    private toastCtrl: ToastController) {
   }
 
   private init() {
@@ -58,9 +62,17 @@ export class DatasyncPage {
     //check what sync option is selected
     that.preference.getString(KEY_DATA_SYNC_TYPE, val => {
       if (val === undefined || val === "" || val === null) {
-        this.dataSyncType = DataSyncType.off
+        that.dataSyncType = DataSyncType.off
       } else {
-        this.dataSyncType = DataSyncType[val];
+        if (val === "OFF") {
+          that.dataSyncType = DataSyncType.off
+        }
+        else if (val === "OVER_WIFI_ONLY") {
+          that.dataSyncType = DataSyncType.over_wifi
+        }
+        else if (val === "ALWAYS_ON") {
+          that.dataSyncType = DataSyncType.always_on
+        }
       }
     });
   }
@@ -74,12 +86,30 @@ export class DatasyncPage {
   }
 
   onSelected() {
-    console.log("Value - " + this.dataSyncType)
-    this.preference.putString(KEY_DATA_SYNC_TYPE, this.dataSyncType)
+    if (this.dataSyncType !== undefined) {
+      this.preference.putString(KEY_DATA_SYNC_TYPE, this.dataSyncType)
+    }
+
   }
 
   goBack() {
     this.navCtrl.pop();
+  }
+
+  shareTelemetry() {
+    let loader = this.getLoader();
+    this.shareUtil.exportTelemetry(path => {
+      loader.dismiss();
+      this.social.share("", "", "file://" + path, "");
+    }, error => {
+      loader.dismiss();
+      let toast = this.toastCtrl.create({
+        message: "Unable to share content.",
+        duration: 2000,
+        position: 'bottom'
+      });
+      toast.present();
+    });
   }
 
   onSyncClick() {
@@ -87,14 +117,14 @@ export class DatasyncPage {
     let that = this;
     let loader = this.getLoader();
     loader.present();
-    this.generateInteractEvent(InteractType.TOUCH,InteractSubtype.MANUALSYNC_INITIATED,null);
+    this.generateInteractEvent(InteractType.TOUCH, InteractSubtype.MANUALSYNC_INITIATED, null);
     this.telemetryService.sync((response) => {
 
       that.zone.run(() => {
         console.log("Telemetry Data Sync : " + response);
-       
+
         let syncStat: SyncStat = response.result;
-        this.generateInteractEvent(InteractType.OTHER,InteractSubtype.MANUALSYNC_SUCCESS,syncStat.syncedFileSize.toString());
+        this.generateInteractEvent(InteractType.OTHER, InteractSubtype.MANUALSYNC_SUCCESS, syncStat.syncedFileSize.toString());
         console.log("Telemetry Data Sync Time : " + syncStat.syncTime);
         let milliseconds = Number(syncStat.syncTime);
 
@@ -122,7 +152,7 @@ export class DatasyncPage {
     });
   }
 
-  
+
 
 
   getTimeIn12HourFormat(time: Date): String {
@@ -153,7 +183,7 @@ export class DatasyncPage {
     if (size != null) {
       let valuesMap = new CMap();
       valuesMap["SizeOfFileInKB"] = size;
-      interact.valueMap=valuesMap;
+      interact.valueMap = valuesMap;
     }
     this.telemetryService.interact(interact);
   }
