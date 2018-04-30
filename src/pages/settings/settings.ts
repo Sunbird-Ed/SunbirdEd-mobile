@@ -24,7 +24,7 @@ export class SettingsPage {
 
   constructor(private navCtrl: NavController, private appVersion: AppVersion,
     private socialSharing: SocialSharing,
-    private translate: TranslateService, private filePath: FilePath,
+    private translate: TranslateService,
     private preference: SharedPreferences,
     private telemetryService : TelemetryService) {
     
