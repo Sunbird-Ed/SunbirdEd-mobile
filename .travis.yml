@@ -79,6 +79,7 @@ deploy:
   on:
     repo: project-sunbird/sunbird-mobile
     tags: true
+    jdk: oraclejdk8
   api_key:
     secure: f6IZLByfFFYyF4/FOU6qpQmdVrs3H8aMRfJT0zh/94hipKQyqnXKdeo1MdwGVBiauMsBqA/6v6KV8D3vvZ0ig3fNpl6VNqTW03C33CdWTqKSn
       c01FVIHAYSySKZ16qX7aHF7gsslhTHbdRnBzaQN4k5MG8GnD0Kia60+ZLhnhPSCZIg5SfvDwPSHyDDgxpP1nPUHsC0/FQAdYFZ7ztpvmQwnwpd8eP24qiv7C
