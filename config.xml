@@ -104,7 +104,6 @@
     <plugin name="cordova-plugin-qr-scanner" spec="git+https://github.com/project-sunbird/cordova-plugin-qr-scanner.git" />
     <plugin name="cordova-plugin-network-information" spec="^2.0.1" />
     <plugin name="cordova-plugin-file" spec="^6.0.1" />
-    <plugin name="cordova-plugin-file" spec="^6.0.1" />
     <plugin name="cordova-plugin-browsertab" spec="^0.2.0" />
     <plugin name="cordova-plugin-inappbrowser" spec="^2.0.2" />
     <plugin name="cordova-plugin-sunbirdsplash" spec="https://github.com/project-sunbird/cordova-plugin-sunbirdsplash.git" />
