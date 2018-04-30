@@ -29,7 +29,7 @@ import { SearchModule } from "../pages/search/search.module";
 export function initUserTabs(container: ContainerService) {
     container.removeAllTabs();
     //container.addTab({ root: HomePage, icon: "home", label: "HOME_BNAV", index: 0, tabsHideOnSubPages: true });
-    container.addTab({ root: CoursesPage, icon: "courses", label: "COURSES_BNAV", index: 0, tabsHideOnSubPages: true });
+    // container.addTab({ root: CoursesPage, icon: "courses", label: "COURSES_BNAV", index: 0, tabsHideOnSubPages: true });
     container.addTab({ root: ResourcesPage, icon: "resources", label: "LIBRARY_BNAV", index: 1, tabsHideOnSubPages: true });
     container.addTab({ root: ProfilePage, icon: "profile", label: "PROFILE_BNAV", index: 2, tabsHideOnSubPages: true });
 }
@@ -37,7 +37,7 @@ export function initUserTabs(container: ContainerService) {
 export function initGuestTabs(container: ContainerService) {
     container.removeAllTabs();
     //container.addTab({ root: HomePage, icon: "home", label: "HOME_BNAV", index: 0, tabsHideOnSubPages: true });
-    container.addTab({ root: CoursesPage, icon: "courses", label: "COURSES_BNAV", index: 0, tabsHideOnSubPages: true });
+    // container.addTab({ root: CoursesPage, icon: "courses", label: "COURSES_BNAV", index: 0, tabsHideOnSubPages: true });
     container.addTab({ root: ResourcesPage, icon: "resources", label: "LIBRARY_BNAV", index: 1, tabsHideOnSubPages: true });
     container.addTab({ root: GuestProfilePage, icon: "profile", label: "PROFILE_BNAV", index: 2, tabsHideOnSubPages: true });
 }
