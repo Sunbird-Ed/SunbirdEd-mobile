@@ -1,6 +1,6 @@
-branches:
-  only:
-  - master
+# branches:
+#   only:
+#   - master
 matrix:
   include:
   - os: linux
@@ -54,8 +54,8 @@ before_script:
 - npm pack `pwd`/dist
 - cd ..
 - rm -rf node_modules platforms plugins www
-- npm install --save `pwd`/genie-sdk-wrapper/*.tgz
 - npm install
+- npm install --save `pwd`/genie-sdk-wrapper/*.tgz
 - ionic cordova plugin add cordova-plugin-network-information
 
 script:
