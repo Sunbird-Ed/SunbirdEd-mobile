@@ -5,14 +5,15 @@
         <div class="img-container">
         </div>
         <ion-badge class="badge" *ngIf="onProfile" color="light" item-end>{{course?.contentType}}</ion-badge>
-        <img-loader src="{{ course?.courseLogoUrl || course?.appIcon || defaultImg }}"
+        <!-- <img-loader src="{{ course?.courseLogoUrl || course?.appIcon || defaultImg }}"
           backgroundSize="cover"
           width="200px"
           height="95px"
           spinner="true"
           fallback="{{defaultImg}}"
           fallbackAsPlaceholder="true"
-          (load)="onImageLoad($event)"></img-loader>
+          (load)="onImageLoad($event)"></img-loader> -->
+          <img class="app-icon" src="{{ course?.courseLogoUrl || course?.appIcon || defaultImg }}"/>
         <ion-label class="card-title">{{course?.courseName || course?.name}}</ion-label>
       </ion-col>
     </ion-row>
@@ -24,7 +25,7 @@
       <!-- Saved Resources -->
       <ion-col col-8 *ngIf="layoutName === 'SavedResources'">
           <p style="font-size: 0.95em; padding-top: 3px;">{{ course?.contentType }}</p>
-          <p style="font-size: 0.80em;">{{ 'SAVED_ON' | translate }} {{ course?.lastUpdatedOn | date: 'medium' | slice:0:6 }}...</p>
+          <p style="font-size: 1rem; color: #979797;">{{ 'SAVED_ON' | translate }} {{ course?.lastUpdatedOn | date: 'medium' | slice:0:6 }}...</p>
       </ion-col>
       <ion-col col-8 *ngIf="pageName === 'library'">
           <rating [(ngModel)]="course.progress" readOnly="true" max="5" no-padding></rating>
@@ -35,8 +36,8 @@
       </ion-col>
       <ion-col col-4>
         <button ion-button outline small float-end>
-          <span *ngIf="layoutName === 'Inprogress'">{{ 'RESUME' | translate }}</span>
-          <span *ngIf="layoutName !== 'Inprogress'">{{ 'OPEN' | translate }}</span>
+          <span *ngIf="layoutName === 'Inprogress'">{{ ('RESUME' | translate).length > 6 ? ('RESUME' | translate | slice:0:06) + '...' : ('RESUME' | translate) }}</span>
+          <span *ngIf="layoutName !== 'Inprogress'">{{ ('OPEN' | translate).length > 6 ? ('OPEN' | translate | slice:0:06) + '...' : ('OPEN' | translate) }}</span>
         </button>
       </ion-col>
     </ion-row>
