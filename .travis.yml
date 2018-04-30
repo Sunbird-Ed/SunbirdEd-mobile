@@ -57,6 +57,7 @@ before_script:
 - npm install
 - npm install --save `pwd`/genie-sdk-wrapper/*.tgz
 - ionic cordova plugin add cordova-plugin-network-information
+- ionic cordova plugin add cordova-plugin-customconfigparameters
 
 script:
 - ionic cordova platform add android
@@ -65,7 +66,7 @@ script:
 - curl -L -o ./gk.jks https://www.dropbox.com/s/0vorw73102zr97c/gk.jks?dl=1
 - curl -L -o ./build.json https://www.dropbox.com/s/n7aj1kf1ztigidn/build.json?dl=1
 - if [ -e ./plugins/cordova-plugin-genie-sdk/secret.gradle ]; then echo "Ok"; else echo "Not Okay"; fi
-- ionic cordova build android
+- ionic cordova build android --prod --release --buildConfig build.json
 
 env:
   global:
