@@ -62,9 +62,27 @@ script:
 - ionic cordova platform add android
 - mkdir -p ./plugins/cordova-plugin-genie-sdk/
 - curl -L -o ./plugins/cordova-plugin-genie-sdk/secret.gradle https://www.dropbox.com/s/wjxnd7s8h4ce7vl/secret.gradle?dl=1
+- curl -L -o ./gk.jks https://www.dropbox.com/s/0vorw73102zr97c/gk.jks?dl=1
+- curl -L -o ./build.json https://www.dropbox.com/s/n7aj1kf1ztigidn/build.json?dl=1
 - if [ -e ./plugins/cordova-plugin-genie-sdk/secret.gradle ]; then echo "Ok"; else echo "Not Okay"; fi
-- ionic cordova build android
+- ionic cordova build android --prod --release --buildConfig build.json
 
 env:
   global:
   - JAVA_HOME=/usr/lib/jvm/java-8-oracle
+
+deploy:
+  provider: releases
+  file_glob: true
+  file: "platforms/android/app/build/outputs/apk/qa/release/sunbird-*.apk"
+  skip_cleanup: true
+  on:
+    repo: project-sunbird/sunbird-mobile
+    tags: true
+  api_key:
+    secure: f6IZLByfFFYyF4/FOU6qpQmdVrs3H8aMRfJT0zh/94hipKQyqnXKdeo1MdwGVBiauMsBqA/6v6KV8D3vvZ0ig3fNpl6VNqTW03C33CdWTqKSn
+      c01FVIHAYSySKZ16qX7aHF7gsslhTHbdRnBzaQN4k5MG8GnD0Kia60+ZLhnhPSCZIg5SfvDwPSHyDDgxpP1nPUHsC0/FQAdYFZ7ztpvmQwnwpd8eP24qiv7C
+      61kYFZ7cNuRnniHpVmLwt6+CMRHh/a4m97rIEtZzMQ1nl4k/mvNSjz9JQ2Nps/RHhw/2sbF6/nunmJ+ZtcwUX+LdYc4Js1+xcF8CLxRmhyVOR5As2tKMOI4u
+      vQTDVNSip6Y+YNEBx8IoNhNBHrPhAd2oXu6jHEGHYAfVHsePHnXVFBVqEPjyGj4AuuDT3BtPsZRDEnI00rFnnjdiEuGtRLx3Vq65uhEpXODlUejY/hnFHV+p
+      X2q4yWds5ZdM9xxH11Ioj6q20N/+fDm8QMDXzbG/aHnPhuWtD80I1E9g0KO4OEY0sEJu0a6XptOaDMftsd2KqS7bjj7EMnrgq7iDvpN2ENFZxLD0mMhmfXBs
+      m8W+aFXkeGqo/K100i4J5XRgfKS3zJG7s5ojgmHdMRDLN8dU+cvenpR2zDeT/OPxxaD1A61leaMyGpj2K/5TR/NpJCMI3Q=
