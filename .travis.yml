@@ -54,8 +54,9 @@ before_script:
 - npm pack `pwd`/dist
 - cd ..
 - rm -rf node_modules platforms plugins www
-- npm install
+- npm uninstall sunbird
 - npm install --save `pwd`/genie-sdk-wrapper/*.tgz
+- npm install
 - ionic cordova plugin add cordova-plugin-network-information
 
 script:
