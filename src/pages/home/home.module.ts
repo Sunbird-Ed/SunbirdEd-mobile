@@ -13,7 +13,6 @@ import { FrameworkModule } from "sunbird";
 import { IonicImageLoader } from "ionic-image-loader";
 import { ComponentsModule } from "../../component/components.module";
 import { SocialSharing } from '@ionic-native/social-sharing';
-import { File } from '@ionic-native/file';
 
 
 @NgModule({

@@ -5,7 +5,6 @@ import { LanguageSettingsPage } from '../language-settings/language-settings';
 import { AboutUsPage } from './about-us/about-us';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { TranslateService } from '@ngx-translate/core';
-import { FilePath } from '@ionic-native/file-path';
 import { AppVersion } from "@ionic-native/app-version";
 import { SharedPreferences, Interact, InteractType, InteractSubtype } from "sunbird";
 import { Impression, ImpressionType, Environment, PageId, TelemetryService } from 'sunbird';

@@ -36,16 +36,10 @@
     "@angular/platform-browser": "5.0.3",
     "@angular/platform-browser-dynamic": "5.0.3",
     "@ionic-native/app-version": "^4.5.3",
-    "@ionic-native/browser-tab": "^4.5.3",
-    "@ionic-native/camera": "^4.5.3",
     "@ionic-native/core": "^4.4.0",
     "@ionic-native/device": "^4.5.3",
-    "@ionic-native/file": "^4.6.0",
-    "@ionic-native/file-opener": "^4.7.0",
-    "@ionic-native/file-path": "^4.7.0",
-    "@ionic-native/file-transfer": "^4.7.0",
+    "@ionic-native/file": "^4.7.0",
     "@ionic-native/globalization": "^4.5.3",
-    "@ionic-native/http": "^4.5.3",
     "@ionic-native/in-app-browser": "^4.7.0",
     "@ionic-native/network": "^4.7.0",
     "@ionic-native/social-sharing": "^4.7.0",
@@ -54,13 +48,7 @@
     "@ionic/cli-plugin-gulp": "^1.1.1",
     "@ngx-translate/core": "^9.1.1",
     "@ngx-translate/http-loader": "^2.0.1",
-    "cordova-android": "7.0.0",
-    "cordova-custom-config": "^5.0.2",
-    "cordova-plugin-advanced-http": "^1.11.1",
     "cordova-plugin-app-version": "^0.1.9",
-    "cordova-plugin-browsertab": "^0.2.0",
-    "cordova-plugin-camera": "^4.0.3",
-    "cordova-plugin-compat": "^1.2.0",
     "cordova-plugin-console": "^1.1.0",
     "cordova-plugin-customconfigparameters": "^3.0.0",
     "cordova-plugin-device": "^1.1.7",
@@ -122,13 +110,9 @@
   "description": "An Ionic project",
   "cordova": {
     "plugins": {
-      "cordova-plugin-camera": {},
       "ionic-plugin-keyboard": {},
       "cordova-plugin-whitelist": {},
       "cordova-plugin-ionic-webview": {},
-      "cordova-custom-config": {},
-      "cordova-plugin-advanced-http": {},
-      "cordova-plugin-browsertab": {},
       "cordova-plugin-globalization": {},
       "cordova-plugin-uniquedeviceid": {},
       "cordova-plugin-app-version": {},
@@ -147,8 +131,6 @@
       "cordova-plugin-genie-sdk": {},
       "cordova-plugin-customconfigparameters": {}
     },
-    "platforms": [
-      "android"
-    ]
+    "platforms": []
   }
 }
