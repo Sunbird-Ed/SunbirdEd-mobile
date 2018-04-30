@@ -79,10 +79,4 @@ deploy:
   on:
     repo: project-sunbird/sunbird-mobile
     tags: true
-  api_key:
-    secure: f6IZLByfFFYyF4/FOU6qpQmdVrs3H8aMRfJT0zh/94hipKQyqnXKdeo1MdwGVBiauMsBqA/6v6KV8D3vvZ0ig3fNpl6VNqTW03C33CdWTqKSn
-      c01FVIHAYSySKZ16qX7aHF7gsslhTHbdRnBzaQN4k5MG8GnD0Kia60+ZLhnhPSCZIg5SfvDwPSHyDDgxpP1nPUHsC0/FQAdYFZ7ztpvmQwnwpd8eP24qiv7C
-      61kYFZ7cNuRnniHpVmLwt6+CMRHh/a4m97rIEtZzMQ1nl4k/mvNSjz9JQ2Nps/RHhw/2sbF6/nunmJ+ZtcwUX+LdYc4Js1+xcF8CLxRmhyVOR5As2tKMOI4u
-      vQTDVNSip6Y+YNEBx8IoNhNBHrPhAd2oXu6jHEGHYAfVHsePHnXVFBVqEPjyGj4AuuDT3BtPsZRDEnI00rFnnjdiEuGtRLx3Vq65uhEpXODlUejY/hnFHV+p
-      X2q4yWds5ZdM9xxH11Ioj6q20N/+fDm8QMDXzbG/aHnPhuWtD80I1E9g0KO4OEY0sEJu0a6XptOaDMftsd2KqS7bjj7EMnrgq7iDvpN2ENFZxLD0mMhmfXBs
-      m8W+aFXkeGqo/K100i4J5XRgfKS3zJG7s5ojgmHdMRDLN8dU+cvenpR2zDeT/OPxxaD1A61leaMyGpj2K/5TR/NpJCMI3Q=
+  api_key: 249e483f06cdd219540eb387903c54e0b7be05b9
