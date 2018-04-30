@@ -110,6 +110,7 @@
   "description": "An Ionic project",
   "cordova": {
     "plugins": {
+      "cordova-plugin-customconfigparameters": {},
       "ionic-plugin-keyboard": {},
       "cordova-plugin-whitelist": {},
       "cordova-plugin-ionic-webview": {},
@@ -128,8 +129,7 @@
       "cordova-plugin-qr-scanner": {},
       "cordova-plugin-network-information": {},
       "cordova-plugin-sunbirdsplash": {},
-      "cordova-plugin-genie-sdk": {},
-      "cordova-plugin-customconfigparameters": {}
+      "cordova-plugin-genie-sdk": {}
     },
     "platforms": []
   }
