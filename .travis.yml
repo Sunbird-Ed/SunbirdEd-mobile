@@ -53,16 +53,15 @@ before_script:
 - npm run build
 - npm pack `pwd`/dist
 - cd ..
-- rm -rf node_modules platforms plugins www
+# - rm -rf node_modules platforms plugins www
+- ionic cordova platform rm android
+- rm -rf platforms
+- npm uninstall sunbird --save
+- npm install `pwd`/genie-sdk-wrapper/*.tgz --save
 - npm install
-- npm install --save `pwd`/genie-sdk-wrapper/*.tgz
-- ionic cordova plugin add cordova-plugin-network-information
-- ionic cordova plugin add cordova-plugin-customconfigparameters
 
 script:
-- ionic cordova platform add android
-- ionic cordova plugin rm cordova-plugin-customconfigparameters
-- ionic cordova plugin add cordova-plugin-customconfigparameters
+- ionic cordova platform add android@7.0.0
 - mkdir -p ./plugins/cordova-plugin-genie-sdk/
 - curl -L -o ./plugins/cordova-plugin-genie-sdk/secret.gradle https://www.dropbox.com/s/wjxnd7s8h4ce7vl/secret.gradle?dl=1
 - curl -L -o ./gk.jks https://www.dropbox.com/s/0vorw73102zr97c/gk.jks?dl=1
