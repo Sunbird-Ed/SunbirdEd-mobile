@@ -11,8 +11,8 @@ matrix:
       - tools
       - platform-tools
       - tools
-      - build-tools-26.0.0
-      - android-25
+      - build-tools-26.0.2
+      - android-26
       - extra-google-google_play_services
       - extra-google-m2repository
       - extra-android-m2repository
@@ -34,7 +34,7 @@ matrix:
 before_cache:
 - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
 - rm -f  $HOME/.gradle/caches/transforms-1/transforms-1.lock
-- rm -rf $HOME/.gradle/caches/3.5/fileHashes/
+- rm -rf $HOME/.gradle/caches/*/fileHashes/
 - rm -rf $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
@@ -44,19 +44,45 @@ cache:
 before_install:
 - export LANG=en_US.UTF-8
 - nvm install 8
-- yarn global add ionic cordova
+- npm install -g ionic cordova
 before_script:
 - echo "Before Script"
 - git clone https://github.com/project-sunbird/genie-sdk-wrapper.git
 - cd genie-sdk-wrapper
-- yarn install
-- yarn run build
-- yarn pack `pwd`/dist
+- npm install
+- npm run build
+- npm pack `pwd`/dist
 - cd ..
-- yarn install --save `pwd`/genie-sdk-wrapper/*.tgz
+- rm -rf node_modules platforms plugins www
+- npm install
+- npm install --save `pwd`/genie-sdk-wrapper/*.tgz
+- ionic cordova plugin add cordova-plugin-network-information
+
 script:
-- ionic cordova build android --prod
+- ionic cordova platform add android
+- mkdir -p ./plugins/cordova-plugin-genie-sdk/
+- curl -L -o ./plugins/cordova-plugin-genie-sdk/secret.gradle https://www.dropbox.com/s/wjxnd7s8h4ce7vl/secret.gradle?dl=1
+- curl -L -o ./gk.jks https://www.dropbox.com/s/0vorw73102zr97c/gk.jks?dl=1
+- curl -L -o ./build.json https://www.dropbox.com/s/n7aj1kf1ztigidn/build.json?dl=1
+- if [ -e ./plugins/cordova-plugin-genie-sdk/secret.gradle ]; then echo "Ok"; else echo "Not Okay"; fi
+- ionic cordova build android --prod --release --buildConfig build.json
 
 env:
   global:
   - JAVA_HOME=/usr/lib/jvm/java-8-oracle
+
+deploy:
+  provider: releases
+  file_glob: true
+  file: "platforms/android/app/build/outputs/apk/qa/release/sunbird-*.apk"
+  skip_cleanup: true
+  on:
+    repo: project-sunbird/sunbird-mobile
+    tags: true
+  api_key:
+    secure: f6IZLByfFFYyF4/FOU6qpQmdVrs3H8aMRfJT0zh/94hipKQyqnXKdeo1MdwGVBiauMsBqA/6v6KV8D3vvZ0ig3fNpl6VNqTW03C33CdWTqKSn
+      c01FVIHAYSySKZ16qX7aHF7gsslhTHbdRnBzaQN4k5MG8GnD0Kia60+ZLhnhPSCZIg5SfvDwPSHyDDgxpP1nPUHsC0/FQAdYFZ7ztpvmQwnwpd8eP24qiv7C
+      61kYFZ7cNuRnniHpVmLwt6+CMRHh/a4m97rIEtZzMQ1nl4k/mvNSjz9JQ2Nps/RHhw/2sbF6/nunmJ+ZtcwUX+LdYc4Js1+xcF8CLxRmhyVOR5As2tKMOI4u
+      vQTDVNSip6Y+YNEBx8IoNhNBHrPhAd2oXu6jHEGHYAfVHsePHnXVFBVqEPjyGj4AuuDT3BtPsZRDEnI00rFnnjdiEuGtRLx3Vq65uhEpXODlUejY/hnFHV+p
+      X2q4yWds5ZdM9xxH11Ioj6q20N/+fDm8QMDXzbG/aHnPhuWtD80I1E9g0KO4OEY0sEJu0a6XptOaDMftsd2KqS7bjj7EMnrgq7iDvpN2ENFZxLD0mMhmfXBs
+      m8W+aFXkeGqo/K100i4J5XRgfKS3zJG7s5ojgmHdMRDLN8dU+cvenpR2zDeT/OPxxaD1A61leaMyGpj2K/5TR/NpJCMI3Q=
