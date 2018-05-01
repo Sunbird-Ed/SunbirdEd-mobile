@@ -53,10 +53,9 @@ before_script:
 - npm run build
 - npm pack `pwd`/dist
 - cd ..
-- ionic cordova platform rm android
 - rm -rf node_modules platforms plugins www
+- npm install
 - npm install `pwd`/genie-sdk-wrapper/*.tgz --save
-- npm install 
 
 script:
 - ionic cordova platform add android
