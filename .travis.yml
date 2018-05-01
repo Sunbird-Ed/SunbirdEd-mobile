@@ -53,26 +53,18 @@ before_script:
 - npm run build
 - npm pack `pwd`/dist
 - cd ..
-- git clone https://github.com/project-sunbird/cordova-plugin-genie-sdk.git
-- cd cordova-plugin-genie-sdk
-- curl -L -o secret.gradle https://www.dropbox.com/s/wjxnd7s8h4ce7vl/secret.gradle?dl=1
-- cd ..
 - ionic cordova platform rm android
 - rm -rf node_modules platforms plugins www
-# - rm -rf platforms
-- npm uninstall sunbird --save
 - npm install `pwd`/genie-sdk-wrapper/*.tgz --save
-- ionic cordova plugin rm cordova-plugin-genie-sdk
-- ionic cordova plugin add `pwd`/cordova-plugin-genie-sdk
 - npm install 
 
 script:
 - ionic cordova platform add android
-# - mkdir -p ./plugins/cordova-plugin-genie-sdk/
-# - curl -L -o ./plugins/cordova-plugin-genie-sdk/secret.gradle https://www.dropbox.com/s/wjxnd7s8h4ce7vl/secret.gradle?dl=1
+- mkdir -p ./plugins/cordova-plugin-genie-sdk/
+- curl -L -o ./plugins/cordova-plugin-genie-sdk/secret.gradle https://www.dropbox.com/s/wjxnd7s8h4ce7vl/secret.gradle?dl=1
 - curl -L -o ./gk.jks https://www.dropbox.com/s/0vorw73102zr97c/gk.jks?dl=1
 - curl -L -o ./build.json https://www.dropbox.com/s/n7aj1kf1ztigidn/build.json?dl=1
-# - if [ -e ./plugins/cordova-plugin-genie-sdk/secret.gradle ]; then echo "Ok"; else echo "Not Okay"; fi
+- if [ -e ./plugins/cordova-plugin-genie-sdk/secret.gradle ]; then echo "Ok"; else echo "Not Okay"; fi
 - ionic cordova build android --prod --release --buildConfig build.json
 
 env:
