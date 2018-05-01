@@ -57,9 +57,9 @@ before_script:
 - cd cordova-plugin-genie-sdk
 - curl -L -o secret.gradle https://www.dropbox.com/s/wjxnd7s8h4ce7vl/secret.gradle?dl=1
 - cd ..
-# - rm -rf node_modules platforms plugins www
 - ionic cordova platform rm android
-- rm -rf platforms
+- rm -rf node_modules platforms plugins www
+# - rm -rf platforms
 - npm uninstall sunbird --save
 - npm install `pwd`/genie-sdk-wrapper/*.tgz --save
 - ionic cordova plugin rm cordova-plugin-genie-sdk
@@ -67,7 +67,7 @@ before_script:
 - npm install 
 
 script:
-- ionic cordova platform add android@7.0.0
+- ionic cordova platform add android
 # - mkdir -p ./plugins/cordova-plugin-genie-sdk/
 # - curl -L -o ./plugins/cordova-plugin-genie-sdk/secret.gradle https://www.dropbox.com/s/wjxnd7s8h4ce7vl/secret.gradle?dl=1
 - curl -L -o ./gk.jks https://www.dropbox.com/s/0vorw73102zr97c/gk.jks?dl=1
