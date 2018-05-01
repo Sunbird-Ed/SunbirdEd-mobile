@@ -1,0 +1,155 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "cordova-plugin-device@^1.1.7",
+        "scope": null,
+        "escapedName": "cordova-plugin-device",
+        "name": "cordova-plugin-device",
+        "rawSpec": "^1.1.7",
+        "spec": ">=1.1.7 <2.0.0",
+        "type": "range"
+      },
+      "/home/souvikmondal/Projects/EkStep/Sunbird/workspace/sunbird-mobile"
+    ]
+  ],
+  "_from": "cordova-plugin-device@>=1.1.7 <2.0.0",
+  "_id": "cordova-plugin-device@1.1.7",
+  "_inCache": true,
+  "_location": "/cordova-plugin-device",
+  "_nodeVersion": "6.6.0",
+  "_npmOperationalInternal": {
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/cordova-plugin-device-1.1.7.tgz_1510361662619_0.999291472369805"
+  },
+  "_npmUser": {
+    "name": "stevegill",
+    "email": "stevengill97@gmail.com"
+  },
+  "_npmVersion": "4.6.1",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "cordova-plugin-device@^1.1.7",
+    "scope": null,
+    "escapedName": "cordova-plugin-device",
+    "name": "cordova-plugin-device",
+    "rawSpec": "^1.1.7",
+    "spec": ">=1.1.7 <2.0.0",
+    "type": "range"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-device/-/cordova-plugin-device-1.1.7.tgz",
+  "_shasum": "fc94111be6932628c66868938ddf3dc82c9fbfe6",
+  "_shrinkwrap": null,
+  "_spec": "cordova-plugin-device@^1.1.7",
+  "_where": "/home/souvikmondal/Projects/EkStep/Sunbird/workspace/sunbird-mobile",
+  "author": {
+    "name": "Apache Software Foundation"
+  },
+  "bugs": {
+    "url": "https://issues.apache.org/jira/browse/CB"
+  },
+  "cordova": {
+    "id": "cordova-plugin-device",
+    "platforms": [
+      "firefoxos",
+      "tizen",
+      "android",
+      "amazon-fireos",
+      "ubuntu",
+      "ios",
+      "blackberry10",
+      "wp7",
+      "wp8",
+      "windows8",
+      "windows",
+      "browser",
+      "osx"
+    ]
+  },
+  "dependencies": {},
+  "description": "Cordova Device Plugin",
+  "devDependencies": {
+    "eslint": "^3.19.0",
+    "eslint-config-semistandard": "^11.0.0",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.3.0",
+    "eslint-plugin-node": "^5.0.0",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^3.0.1"
+  },
+  "directories": {},
+  "dist": {
+    "shasum": "fc94111be6932628c66868938ddf3dc82c9fbfe6",
+    "tarball": "https://registry.npmjs.org/cordova-plugin-device/-/cordova-plugin-device-1.1.7.tgz"
+  },
+  "engines": {
+    "cordovaDependencies": {
+      "2.0.0": {
+        "cordova": ">100"
+      }
+    }
+  },
+  "homepage": "https://github.com/apache/cordova-plugin-device#readme",
+  "keywords": [
+    "cordova",
+    "device",
+    "ecosystem:cordova",
+    "cordova-firefoxos",
+    "cordova-tizen",
+    "cordova-android",
+    "cordova-amazon-fireos",
+    "cordova-ubuntu",
+    "cordova-ios",
+    "cordova-blackberry10",
+    "cordova-wp7",
+    "cordova-wp8",
+    "cordova-windows8",
+    "cordova-windows",
+    "cordova-browser",
+    "cordova-osx"
+  ],
+  "license": "Apache-2.0",
+  "maintainers": [
+    {
+      "name": "bowserj",
+      "email": "bowserj@apache.org"
+    },
+    {
+      "name": "csantanapr",
+      "email": "csantana23@gmail.com"
+    },
+    {
+      "name": "filmaj",
+      "email": "maj.fil@gmail.com"
+    },
+    {
+      "name": "purplecabbage",
+      "email": "purplecabbage@gmail.com"
+    },
+    {
+      "name": "shazron",
+      "email": "shazron@gmail.com"
+    },
+    {
+      "name": "stevegill",
+      "email": "stevengill97@gmail.com"
+    }
+  ],
+  "name": "cordova-plugin-device",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/apache/cordova-plugin-device.git"
+  },
+  "scripts": {
+    "eslint": "node node_modules/eslint/bin/eslint www && node node_modules/eslint/bin/eslint src && node node_modules/eslint/bin/eslint tests",
+    "test": "npm run eslint"
+  },
+  "types": "./types/index.d.ts",
+  "version": "1.1.7"
+}

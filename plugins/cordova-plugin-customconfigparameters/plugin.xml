@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+    xmlns:rim="http://www.blackberry.com/ns/widgets"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    id="cordova-plugin-customconfigparameters"
+    version="3.0.0">
+    <name>Custom Config Parameters</name>
+    <description>Cordova Custom Config Parameters Plugin</description>
+    <license>Apache 2.0</license>
+    <keywords>cordova,settings,customconfigparameters,dyd,ionic,secure,store data,ecosystem:cordova</keywords>
+
+	<js-module src="www/customconfigparameters.js" name="CustomConfigParameters" >
+		<clobbers target="CustomConfigParameters" />
+	</js-module>
+  <!-- android -->
+  <platform name="android">
+    <config-file target="res/xml/config.xml" parent="/*">
+      <feature name="CustomConfigParameters" >
+        <param name="android-package" value="org.apache.cordova.customconfigparameters.CustomConfigParameters"/>
+      </feature>
+   
+    </config-file>
+    
+    <source-file src="src/android/CustomConfigParameters.java" target-dir="src/org/apache/cordova/customconfigparameters" />
+  </platform>
+
+  <!-- ios -->
+  <platform name="ios">
+    <config-file target="config.xml" parent="/*">
+      <feature name="CustomConfigParameters">
+        <param name="ios-package" value="CustomConfigParameters"/>
+      </feature>
+    </config-file>
+    
+    <header-file src="src/ios/CustomConfigParameters.h" />
+    <source-file src="src/ios/CustomConfigParameters.m" />
+  </platform>
+  
+</plugin>

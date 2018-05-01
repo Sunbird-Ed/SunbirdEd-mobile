@@ -55,7 +55,6 @@
     "cordova-plugin-file": "^6.0.1",
     "cordova-plugin-file-support": "git+https://github.com/project-sunbird/cordova-plugin-file-support.git",
     "cordova-plugin-file-transfer": "^1.7.1",
-    "cordova-plugin-genie-sdk": "git+https://github.com/project-sunbird/cordova-plugin-genie-sdk",
     "cordova-plugin-geniecanvas": "git+https://github.com/project-sunbird/cordova-plugin-geniecanvas.git",
     "cordova-plugin-globalization": "^1.11.0",
     "cordova-plugin-imagechooser": "git+https://github.com/project-sunbird/cordova-plugin-imagechooser.git",
@@ -66,7 +65,7 @@
     "cordova-plugin-sunbirdsplash": "git+https://github.com/project-sunbird/cordova-plugin-sunbirdsplash.git",
     "cordova-plugin-uniquedeviceid": "^1.3.2",
     "cordova-plugin-whitelist": "^1.3.3",
-    "cordova-plugin-x-socialsharing": "^5.3.2",
+    "cordova-plugin-x-socialsharing": "^5.4.0",
     "es6-promise-plugin": "^4.2.2",
     "ionic-angular": "^3.9.2",
     "ionic-image-loader": "^5.0.0",
@@ -122,14 +121,13 @@
       "cordova-plugin-file-transfer": {},
       "cordova-plugin-inappbrowser": {},
       "cordova-plugin-console": {},
-      "cordova-plugin-geniecanvas": {},
       "cordova-plugin-imagechooser": {},
       "cordova-plugin-file-support": {},
       "cordova-plugin-qr-scanner": {},
       "cordova-plugin-network-information": {},
       "cordova-plugin-sunbirdsplash": {},
-      "cordova-plugin-genie-sdk": {},
-      "cordova-plugin-customconfigparameters": {}
+      "cordova-plugin-customconfigparameters": {},
+      "cordova-plugin-geniecanvas": {}
     },
     "platforms": []
   }

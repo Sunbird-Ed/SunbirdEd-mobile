@@ -1,0 +1,110 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "cordova-plugin-uniquedeviceid@^1.3.2",
+        "scope": null,
+        "escapedName": "cordova-plugin-uniquedeviceid",
+        "name": "cordova-plugin-uniquedeviceid",
+        "rawSpec": "^1.3.2",
+        "spec": ">=1.3.2 <2.0.0",
+        "type": "range"
+      },
+      "/home/souvikmondal/Projects/EkStep/Sunbird/workspace/sunbird-mobile"
+    ]
+  ],
+  "_from": "cordova-plugin-uniquedeviceid@>=1.3.2 <2.0.0",
+  "_id": "cordova-plugin-uniquedeviceid@1.3.2",
+  "_inCache": true,
+  "_location": "/cordova-plugin-uniquedeviceid",
+  "_nodeVersion": "0.12.7",
+  "_npmUser": {
+    "name": "paldom",
+    "email": "public@dpal.hu"
+  },
+  "_npmVersion": "2.11.3",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "cordova-plugin-uniquedeviceid@^1.3.2",
+    "scope": null,
+    "escapedName": "cordova-plugin-uniquedeviceid",
+    "name": "cordova-plugin-uniquedeviceid",
+    "rawSpec": "^1.3.2",
+    "spec": ">=1.3.2 <2.0.0",
+    "type": "range"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-uniquedeviceid/-/cordova-plugin-uniquedeviceid-1.3.2.tgz",
+  "_shasum": "be05947af2fd1815cb8e3407d72df68c8522fa96",
+  "_shrinkwrap": null,
+  "_spec": "cordova-plugin-uniquedeviceid@^1.3.2",
+  "_where": "/home/souvikmondal/Projects/EkStep/Sunbird/workspace/sunbird-mobile",
+  "author": {
+    "name": "Domonkos Pal",
+    "email": "public@dpal.hu",
+    "url": "https://github.com/Paldom"
+  },
+  "bugs": {
+    "url": "https://github.com/Paldom/UniqueDeviceID/issues"
+  },
+  "cordova": {
+    "id": "cordova-plugin-uniquedeviceid",
+    "platforms": [
+      "ios",
+      "android",
+      "wp8"
+    ]
+  },
+  "dependencies": {},
+  "description": "PhoneGap / Cordova unique device id (UUID) plugin for Android, iOS and Windows Phone 8. Remains the same after app uninstall.",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "shasum": "be05947af2fd1815cb8e3407d72df68c8522fa96",
+    "tarball": "https://registry.npmjs.org/cordova-plugin-uniquedeviceid/-/cordova-plugin-uniquedeviceid-1.3.2.tgz"
+  },
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=3.0.0"
+    }
+  ],
+  "gitHead": "8301e5f289b61f912e5f65c0ad239440d93ae13f",
+  "homepage": "https://github.com/Paldom/UniqueDeviceID#readme",
+  "keywords": [
+    "phonegap",
+    "cordova",
+    "android",
+    "ios",
+    "wp",
+    "Windows",
+    "phone",
+    "device",
+    "id",
+    "uuid",
+    "unique",
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-ios",
+    "cordova-wp8"
+  ],
+  "license": "MIT",
+  "maintainers": [
+    {
+      "name": "paldom",
+      "email": "public@dpal.hu"
+    }
+  ],
+  "name": "cordova-plugin-uniquedeviceid",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Paldom/UniqueDeviceID.git"
+  },
+  "scripts": {},
+  "version": "1.3.2"
+}

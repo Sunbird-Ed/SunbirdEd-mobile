@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="cordova-plugin-qr-scanner" version="1.0.0" 
+    xmlns="http://apache.org/cordova/ns/plugins/1.0" 
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <name>cordova-plugin-qr-scanner</name>
+     <js-module src="www/plugin.js" name="plugin">
+        <clobbers target="qrScanner" />
+    </js-module>
+    <platform name="android">
+        <framework src="build-extras.gradle" custom="true" type="gradleReference"/>
+
+        <config-file parent="/*" target="res/xml/config.xml">
+            <feature name="qrScanner">
+                <param name="android-package" value="org.sunbird.QRScanner" />
+                <param name="onload" value="true" />
+            </feature>
+        </config-file>
+        <source-file src="src/android/org/sunbird/QRScanner.java" target-dir="src/org/sunbird/" />
+        <resource-file src="res/drawable/ic_scanqrdemo.png" target="res/drawable/ic_scanqrdemo.png" />
+        <resource-file src="res/drawable-xxhdpi/ic_action_arrow_left.png" target="res/drawable-xxhdpi/ic_action_arrow_left.png" />
+        <resource-file src="res/layout/qr_scanner_dialog.xml" target="res/layout/qr_scanner_dialog.xml" />
+    </platform>
+</plugin>

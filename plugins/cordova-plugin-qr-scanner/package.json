@@ -1,0 +1,72 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "https://github.com/project-sunbird/cordova-plugin-qr-scanner.git",
+        "scope": null,
+        "escapedName": null,
+        "name": null,
+        "rawSpec": "https://github.com/project-sunbird/cordova-plugin-qr-scanner.git",
+        "spec": "git+https://github.com/project-sunbird/cordova-plugin-qr-scanner.git",
+        "type": "hosted",
+        "hosted": {
+          "type": "github",
+          "ssh": "git@github.com:project-sunbird/cordova-plugin-qr-scanner.git",
+          "sshUrl": "git+ssh://git@github.com/project-sunbird/cordova-plugin-qr-scanner.git",
+          "httpsUrl": "git+https://github.com/project-sunbird/cordova-plugin-qr-scanner.git",
+          "gitUrl": "git://github.com/project-sunbird/cordova-plugin-qr-scanner.git",
+          "shortcut": "github:project-sunbird/cordova-plugin-qr-scanner",
+          "directUrl": "https://raw.githubusercontent.com/project-sunbird/cordova-plugin-qr-scanner/master/package.json"
+        }
+      },
+      "/home/souvikmondal/Projects/EkStep/Sunbird/workspace/sunbird-mobile"
+    ]
+  ],
+  "_from": "git+https://github.com/project-sunbird/cordova-plugin-qr-scanner.git",
+  "_id": "cordova-plugin-qr-scanner@1.0.0",
+  "_inCache": true,
+  "_location": "/cordova-plugin-qr-scanner",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "https://github.com/project-sunbird/cordova-plugin-qr-scanner.git",
+    "scope": null,
+    "escapedName": null,
+    "name": null,
+    "rawSpec": "https://github.com/project-sunbird/cordova-plugin-qr-scanner.git",
+    "spec": "git+https://github.com/project-sunbird/cordova-plugin-qr-scanner.git",
+    "type": "hosted",
+    "hosted": {
+      "type": "github",
+      "ssh": "git@github.com:project-sunbird/cordova-plugin-qr-scanner.git",
+      "sshUrl": "git+ssh://git@github.com/project-sunbird/cordova-plugin-qr-scanner.git",
+      "httpsUrl": "git+https://github.com/project-sunbird/cordova-plugin-qr-scanner.git",
+      "gitUrl": "git://github.com/project-sunbird/cordova-plugin-qr-scanner.git",
+      "shortcut": "github:project-sunbird/cordova-plugin-qr-scanner",
+      "directUrl": "https://raw.githubusercontent.com/project-sunbird/cordova-plugin-qr-scanner/master/package.json"
+    }
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "git+https://github.com/project-sunbird/cordova-plugin-qr-scanner.git#19a2dfcaf922cb1d5a3666e81af7fdea2123c55b",
+  "_shasum": "02efd346664fba3727ce168ba0699691f422b27d",
+  "_shrinkwrap": null,
+  "_spec": "https://github.com/project-sunbird/cordova-plugin-qr-scanner.git",
+  "_where": "/home/souvikmondal/Projects/EkStep/Sunbird/workspace/sunbird-mobile",
+  "cordova": {
+    "id": "cordova-plugin-qr-scanner",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "dependencies": {},
+  "description": "A starting point for a Cordova Plugin",
+  "devDependencies": {},
+  "gitHead": "19a2dfcaf922cb1d5a3666e81af7fdea2123c55b",
+  "name": "cordova-plugin-qr-scanner",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "version": "1.0.0"
+}
