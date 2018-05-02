@@ -29,7 +29,7 @@
           <ion-avatar item-start>
             <img src="./assets/imgs/ic_logo.png" width="24px" height="24px">
           </ion-avatar>
-          <h2> {{ content.name }}</h2>
+          <h3> {{ content.name }} </h3>
           <p>{{ content.contentType }} • {{ getReadableFileSize(content.size) }}</p>
         </ion-item>
       </ion-list>
@@ -44,7 +44,7 @@
         <ion-avatar item-start>
           <img src="./assets/imgs/ic_logo.png" width="24px" height="24px">
         </ion-avatar>
-        <h2> {{ content.name }}</h2>
+        <h3> {{ content.name }}</h3>
         <p>{{ content.contentType }} • {{ getReadableFileSize(content.size) }}</p>
       </ion-item>
     </ion-list>
@@ -58,7 +58,7 @@
         <img-loader src="{{ content.appIcon }}" backgroundSize="cover" width="100%" height="100%" spinner="true" fallback="./assets/imgs/ic_logo.png"
           fallbackAsPlaceholder="true" useImg></img-loader>
       </ion-avatar>
-      <h2> {{ content.name }}</h2>
+      <h3> {{ content.name }}</h3>
       <p>{{ content.contentType }} • {{ getReadableFileSize(content.size) }}</p>
       <p>
         <span *ngIf="content.gradeLevel && content.gradeLevel.length">{{ content.gradeLevel[0] }}</span> •

@@ -68,10 +68,19 @@ page-search {
     font-size: 14px;
     color: black;
     font-weight: bold;
+  }
 
     span {
       color: grey;
       font-weight: unset;
     }
+    .item-md p {
+      font-size: 1.3rem !important;
+      font-weight: 600 !important;
   }
+  .item-md h3, {
+    font-size: 1.5rem !important;
+    font-weight: 600 !important;
 }
+}
+
