@@ -23,7 +23,8 @@
 	<onboarding-card *ngIf="guestUser && !isOnBoardingCardCompleted"></onboarding-card>
 	<!-- onBoardingSLides ends here -->
 	<!-- <div> -->
-	<div class="course-scroll-holder" [ngClass]="{'empty-saved-resources' : (localResources && localResources.length === 0 || showLoader)}">
+	<div class="course-scroll-holder" [ngClass]="{'empty-saved-resources' : (localResources && localResources.length === 0 || showLoader)}"
+	*ngIf="localResources && localResources.length">
 		<div class="item padding-11">
 			<span float-start class="scroll-heading">{{ 'SAVED_RESOURCES' | translate }}</span>
 			<span float-end class="view-all-link" *ngIf="localResources && localResources.length > 0 && !showLoader" (click)="viewAllSavedResources();">
