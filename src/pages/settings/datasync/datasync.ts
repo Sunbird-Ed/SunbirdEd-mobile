@@ -131,23 +131,24 @@ export class DatasyncPage {
         //get date
         let date: Date = new Date(milliseconds);
 
-        let month: Number = date.getMonth() + 1
+        let month: Number = date.getMonth() + 1;
 
         //complete date and time
         let dateAndTime: string = date.getDate() + "/" + month +
           "/" + date.getFullYear() + ", " + that.getTimeIn12HourFormat(date);
 
-        that.latestSync = this.lastSyncedTimeString + " " + dateAndTime
+        that.latestSync = this.lastSyncedTimeString + " " + dateAndTime;
 
         //store the latest sync time
-        this.preference.putString(KEY_DATA_SYNC_TIME, dateAndTime)
+        this.preference.putString(KEY_DATA_SYNC_TIME, dateAndTime);
 
         console.log("Telemetry Data Sync Time : " + this.latestSync);
-        loader.dismiss()
+        loader.dismiss();
       });
 
 
     }, (error) => {
+      loader.dismiss();
       console.log("Telemetry Data Sync Error: " + error);
     });
   }

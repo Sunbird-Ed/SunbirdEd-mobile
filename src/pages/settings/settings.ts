@@ -5,7 +5,6 @@ import { LanguageSettingsPage } from '../language-settings/language-settings';
 import { AboutUsPage } from './about-us/about-us';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { TranslateService } from '@ngx-translate/core';
-import { FilePath } from '@ionic-native/file-path';
 import { AppVersion } from "@ionic-native/app-version";
 import { SharedPreferences, Interact, InteractType, InteractSubtype } from "sunbird";
 import { Impression, ImpressionType, Environment, PageId, TelemetryService } from 'sunbird';
@@ -25,7 +24,7 @@ export class SettingsPage {
 
   constructor(private navCtrl: NavController, private appVersion: AppVersion,
     private socialSharing: SocialSharing,
-    private translate: TranslateService, private filePath: FilePath,
+    private translate: TranslateService,
     private preference: SharedPreferences,
     private telemetryService : TelemetryService) {
     

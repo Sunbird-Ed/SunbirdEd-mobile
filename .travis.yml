@@ -1,6 +1,6 @@
-branches:
-  only:
-  - master
+# branches:
+#   only:
+#   - master
 matrix:
   include:
   - os: linux
@@ -11,8 +11,8 @@ matrix:
       - tools
       - platform-tools
       - tools
-      - build-tools-26.0.0
-      - android-25
+      - build-tools-26.0.2
+      - android-26
       - extra-google-google_play_services
       - extra-google-m2repository
       - extra-android-m2repository
@@ -34,7 +34,7 @@ matrix:
 before_cache:
 - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
 - rm -f  $HOME/.gradle/caches/transforms-1/transforms-1.lock
-- rm -rf $HOME/.gradle/caches/3.5/fileHashes/
+- rm -rf $HOME/.gradle/caches/*/fileHashes/
 - rm -rf $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
@@ -44,19 +44,41 @@ cache:
 before_install:
 - export LANG=en_US.UTF-8
 - nvm install 8
-- yarn global add ionic cordova
+- npm install -g ionic cordova
 before_script:
 - echo "Before Script"
 - git clone https://github.com/project-sunbird/genie-sdk-wrapper.git
 - cd genie-sdk-wrapper
-- yarn install
-- yarn run build
-- yarn pack `pwd`/dist
+- npm install
+- npm run build
+- npm pack `pwd`/dist
 - cd ..
-- yarn install --save `pwd`/genie-sdk-wrapper/*.tgz
+- npm i
+- npm install `pwd`/genie-sdk-wrapper/*.tgz --save
+- git clone https://github.com/project-sunbird/cordova-plugin-genie-sdk.git
+- curl -L -o ./cordova-plugin-genie-sdk/secret.gradle https://www.dropbox.com/s/wjxnd7s8h4ce7vl/secret.gradle?dl=1
+- ionic cordova plugin add ./cordova-plugin-genie-sdk
+
 script:
-- ionic cordova build android --prod
+- ionic cordova platform add android
+# - mkdir -p ./plugins/cordova-plugin-genie-sdk/
+# - curl -L -o ./plugins/cordova-plugin-genie-sdk/secret.gradle https://www.dropbox.com/s/wjxnd7s8h4ce7vl/secret.gradle?dl=1
+- curl -L -o ./gk.jks https://www.dropbox.com/s/0vorw73102zr97c/gk.jks?dl=1
+- curl -L -o ./build.json https://www.dropbox.com/s/n7aj1kf1ztigidn/build.json?dl=1
+- if [ -e ./plugins/cordova-plugin-genie-sdk/secret.gradle ]; then echo "Ok"; else echo "Not Okay"; fi
+- ionic cordova build android --prod --release --buildConfig build.json
 
 env:
   global:
   - JAVA_HOME=/usr/lib/jvm/java-8-oracle
+
+deploy:
+  provider: releases
+  file_glob: true
+  file: "platforms/android/app/build/outputs/apk/qa/release/sunbird-*.apk"
+  skip_cleanup: true
+  on:
+    repo: project-sunbird/sunbird-mobile
+    tags: true
+  api_key:
+    secure: "GuVa0/8rtL41aRz5p4G1xOQVEA9TRXwCI7W15q16sVeYFatGYkTfHdDDAPGt+wR2VEdAx+hc6D/MhzpT1DQDs1I7lEBOBa89hUPJkFBfXcH0WjaxIKuPAUjF3Es3SYYrjGRrqvVOfroHjWeNrBgqyu1NC/7xiUpf9NGhzuIEOziAhav833Ixw3uGRBQShnzpPTzYJF9TF83H0aDZe5Ie9NdVxRNk5Zzm/Ai6qoups4yVaC/aUqutov2bP0pM+pq0PH1EAaNWupnR3XalmQI1nslmYrGFcrKGj1Dcic7XD1xw87/uTy5eIx5TYs0qJcof0qFZZWw9Hf3VfLhDnVTPpPBISqYQV6AWaUI1y0VAzUctjiw9wL2SV9mQpljp2D/3FrB1WHvUFyp1lUVPGPteZr3GskWnoCl5KAeIPfL9NZ0SxiJf6+jVVrqK2SkWL3f6uDcd1fy2XcS/ip0wO+fryiyWYLHG6vQao7GljF8B95kbr180DaP09SHrv63QMN8ThbJDg4/PVugKz2hG0Yxb2xqBgaGlc4xqIc+5yPetoriCc65hVIGvf/V9dAVwsi+OmOllB5JAwJOtmT4MHxzfnFpq7a6sPIUqSx2ygJvUeHEUS1nvLctLoK0Sjjdf6mt/HALWOgjnhco8abRn3W1NiXvL/DKNYLmWb6Zm0IWd9AA="

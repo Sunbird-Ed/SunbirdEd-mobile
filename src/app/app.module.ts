@@ -6,8 +6,6 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClientModule, HttpClient } from "@angular/common/http";
-import { HTTP } from "@ionic-native/http";
-import { File } from "@ionic-native/file";
 
 import { PluginModules } from './module.service';
 import { TelemetryService, EventService, FrameworkModule, TabsPage } from 'sunbird';
@@ -15,7 +13,6 @@ import { Globalization } from '@ionic-native/globalization';
 import { AppVersion } from '@ionic-native/app-version';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { IonicImageLoader, ImageLoader, ImageLoaderConfig } from "ionic-image-loader";
-import { FilePath } from '@ionic-native/file-path';
 
 @NgModule({
   declarations: [
@@ -48,14 +45,11 @@ import { FilePath } from '@ionic-native/file-path';
   ],
   providers: [
     StatusBar,
-    HTTP,
-    File,
     Globalization,
     AppVersion,
     SocialSharing,
     ImageLoader,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
-    FilePath,
   ]
 })
 export class AppModule {

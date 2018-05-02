@@ -77,6 +77,11 @@ page-content-details {
         color: gray;
         font-family: 'OpenSans/Regular';
     }
+    .text-font {
+        .button-inner{
+            font-size: 1rem !important;
+        }
+    }
 }
 .content-action .list{
     margin-bottom: 0px !important;

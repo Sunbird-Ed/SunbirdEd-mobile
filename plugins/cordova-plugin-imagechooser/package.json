@@ -1,0 +1,72 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "https://github.com/project-sunbird/cordova-plugin-imagechooser.git",
+        "scope": null,
+        "escapedName": null,
+        "name": null,
+        "rawSpec": "https://github.com/project-sunbird/cordova-plugin-imagechooser.git",
+        "spec": "git+https://github.com/project-sunbird/cordova-plugin-imagechooser.git",
+        "type": "hosted",
+        "hosted": {
+          "type": "github",
+          "ssh": "git@github.com:project-sunbird/cordova-plugin-imagechooser.git",
+          "sshUrl": "git+ssh://git@github.com/project-sunbird/cordova-plugin-imagechooser.git",
+          "httpsUrl": "git+https://github.com/project-sunbird/cordova-plugin-imagechooser.git",
+          "gitUrl": "git://github.com/project-sunbird/cordova-plugin-imagechooser.git",
+          "shortcut": "github:project-sunbird/cordova-plugin-imagechooser",
+          "directUrl": "https://raw.githubusercontent.com/project-sunbird/cordova-plugin-imagechooser/master/package.json"
+        }
+      },
+      "/home/souvikmondal/Projects/EkStep/Sunbird/workspace/sunbird-mobile"
+    ]
+  ],
+  "_from": "git+https://github.com/project-sunbird/cordova-plugin-imagechooser.git",
+  "_id": "cordova-plugin-imagechooser@1.0.0",
+  "_inCache": true,
+  "_location": "/cordova-plugin-imagechooser",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "https://github.com/project-sunbird/cordova-plugin-imagechooser.git",
+    "scope": null,
+    "escapedName": null,
+    "name": null,
+    "rawSpec": "https://github.com/project-sunbird/cordova-plugin-imagechooser.git",
+    "spec": "git+https://github.com/project-sunbird/cordova-plugin-imagechooser.git",
+    "type": "hosted",
+    "hosted": {
+      "type": "github",
+      "ssh": "git@github.com:project-sunbird/cordova-plugin-imagechooser.git",
+      "sshUrl": "git+ssh://git@github.com/project-sunbird/cordova-plugin-imagechooser.git",
+      "httpsUrl": "git+https://github.com/project-sunbird/cordova-plugin-imagechooser.git",
+      "gitUrl": "git://github.com/project-sunbird/cordova-plugin-imagechooser.git",
+      "shortcut": "github:project-sunbird/cordova-plugin-imagechooser",
+      "directUrl": "https://raw.githubusercontent.com/project-sunbird/cordova-plugin-imagechooser/master/package.json"
+    }
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "git+https://github.com/project-sunbird/cordova-plugin-imagechooser.git#1295839b004cb50842e6c8368b1d914f3ee393f8",
+  "_shasum": "9bf690bde5c4b0ca0c948f0eb65ef6e14c561f10",
+  "_shrinkwrap": null,
+  "_spec": "https://github.com/project-sunbird/cordova-plugin-imagechooser.git",
+  "_where": "/home/souvikmondal/Projects/EkStep/Sunbird/workspace/sunbird-mobile",
+  "cordova": {
+    "id": "cordova-plugin-imagechooser",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "dependencies": {},
+  "description": "A starting point for a Cordova Plugin",
+  "devDependencies": {},
+  "gitHead": "1295839b004cb50842e6c8368b1d914f3ee393f8",
+  "name": "cordova-plugin-imagechooser",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "version": "1.0.0"
+}

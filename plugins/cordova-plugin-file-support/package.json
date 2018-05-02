@@ -1,0 +1,72 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "https://github.com/project-sunbird/cordova-plugin-file-support.git",
+        "scope": null,
+        "escapedName": null,
+        "name": null,
+        "rawSpec": "https://github.com/project-sunbird/cordova-plugin-file-support.git",
+        "spec": "git+https://github.com/project-sunbird/cordova-plugin-file-support.git",
+        "type": "hosted",
+        "hosted": {
+          "type": "github",
+          "ssh": "git@github.com:project-sunbird/cordova-plugin-file-support.git",
+          "sshUrl": "git+ssh://git@github.com/project-sunbird/cordova-plugin-file-support.git",
+          "httpsUrl": "git+https://github.com/project-sunbird/cordova-plugin-file-support.git",
+          "gitUrl": "git://github.com/project-sunbird/cordova-plugin-file-support.git",
+          "shortcut": "github:project-sunbird/cordova-plugin-file-support",
+          "directUrl": "https://raw.githubusercontent.com/project-sunbird/cordova-plugin-file-support/master/package.json"
+        }
+      },
+      "/home/souvikmondal/Projects/EkStep/Sunbird/workspace/sunbird-mobile"
+    ]
+  ],
+  "_from": "git+https://github.com/project-sunbird/cordova-plugin-file-support.git",
+  "_id": "cordova-plugin-file-support@1.0.0",
+  "_inCache": true,
+  "_location": "/cordova-plugin-file-support",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "https://github.com/project-sunbird/cordova-plugin-file-support.git",
+    "scope": null,
+    "escapedName": null,
+    "name": null,
+    "rawSpec": "https://github.com/project-sunbird/cordova-plugin-file-support.git",
+    "spec": "git+https://github.com/project-sunbird/cordova-plugin-file-support.git",
+    "type": "hosted",
+    "hosted": {
+      "type": "github",
+      "ssh": "git@github.com:project-sunbird/cordova-plugin-file-support.git",
+      "sshUrl": "git+ssh://git@github.com/project-sunbird/cordova-plugin-file-support.git",
+      "httpsUrl": "git+https://github.com/project-sunbird/cordova-plugin-file-support.git",
+      "gitUrl": "git://github.com/project-sunbird/cordova-plugin-file-support.git",
+      "shortcut": "github:project-sunbird/cordova-plugin-file-support",
+      "directUrl": "https://raw.githubusercontent.com/project-sunbird/cordova-plugin-file-support/master/package.json"
+    }
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "git+https://github.com/project-sunbird/cordova-plugin-file-support.git#e6d1263ede050d046b58e1c43346aa2c37be4997",
+  "_shasum": "7832ad1ddb831c4ce3ae3f07afd9b4d56d14baa0",
+  "_shrinkwrap": null,
+  "_spec": "https://github.com/project-sunbird/cordova-plugin-file-support.git",
+  "_where": "/home/souvikmondal/Projects/EkStep/Sunbird/workspace/sunbird-mobile",
+  "cordova": {
+    "id": "cordova-plugin-file-support",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "dependencies": {},
+  "description": "A Cordova Plugin for sunbird file support",
+  "devDependencies": {},
+  "gitHead": "e6d1263ede050d046b58e1c43346aa2c37be4997",
+  "name": "cordova-plugin-file-support",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "version": "1.0.0"
+}

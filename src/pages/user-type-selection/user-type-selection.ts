@@ -4,10 +4,10 @@ import { TabsPage,SharedPreferences, OAuthService, Interact, TelemetryService, I
 import { ViewController } from 'ionic-angular/navigation/view-controller';
 import { TranslateService } from '@ngx-translate/core';
 import { ProfileType, ProfileService } from 'sunbird'
-import { generateImpressionEvent } from '../../app/telemetryutil';
+import { generateImpressionEvent, Map } from '../../app/telemetryutil';
 
-const selectedCardBorderColor = '#0080ff';
-const borderColor = '#fff';
+const selectedCardBorderColor = '#006DE5';
+const borderColor = '#F7F7F7';
 const KEY_SELECTED_USER_TYPE = "selected_user_type";
 const KEY_SELECTED_LANGUAGE = "selected_language";
 
@@ -22,8 +22,8 @@ export class UserTypeSelectionPage {
   teacherContents: Array<string>;
   studentContents: Array<string>;
   allContents: Array<Array<string>> = [];
-  teacherCardBorderColor: string = '#fff';
-  studentCardBorderColor: string = '#fff';
+  teacherCardBorderColor: string = '#F7F7F7';
+  studentCardBorderColor: string = '#F7F7F7';
   userTypeSelected: boolean = false;
   selectedUserType: string;
   continueAs: string = "";
@@ -140,11 +140,10 @@ export class UserTypeSelectionPage {
     interact.type = InteractType.TOUCH;
     interact.subType = InteractSubtype.CONTINUE_CLICKED;
     interact.pageId = PageId.USER_TYPE_SELECTION;
-    let values = new Array<any>();
-    let paramsMap: Map<string, any> = new Map();
-    paramsMap.set("UserType", userType);
-    values.push(paramsMap);
-    interact.values = values;
+    interact.id = PageId.USER_TYPE_SELECTION;
+    let values =new Map();
+    values["UserType"]=userType;
+    interact.valueMap = values;
     interact.env = Environment.HOME;
     this.telemetryService.interact(interact);
   }

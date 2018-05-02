@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { DatePipe } from "@angular/common";
 import { IonicPageModule } from 'ionic-angular';
-import { Camera } from '@ionic-native/camera';
 import { TranslateModule } from '@ngx-translate/core';
 import { SuperTabsModule } from 'ionic2-super-tabs';
 import { TagInputModule } from 'ngx-chips';
@@ -95,7 +94,6 @@ import { ImagePicker } from './imagepicker/imagepicker';
   ],
   providers: [
     ContainerService,
-    Camera,
     DatePipe,
     InAppBrowser
   ]
