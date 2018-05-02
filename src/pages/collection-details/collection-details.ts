@@ -485,6 +485,9 @@ export class CollectionDetailsPage {
           } else {
             this.setChildContents();
           }
+          this.events.publish('savedResources:update', {
+            update: true
+          });
         }
 
       });

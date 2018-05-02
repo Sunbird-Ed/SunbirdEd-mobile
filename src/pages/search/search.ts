@@ -1,5 +1,5 @@
 import { Component, NgZone, Input, ViewChild } from "@angular/core";
-import { IonicPage, NavParams, NavController, Events } from "ionic-angular";
+import { IonicPage, NavParams, NavController, Events, ToastController } from "ionic-angular";
 import { ContentService, ContentSearchCriteria, Log, LogLevel, TelemetryService, Impression, ImpressionType, Environment, Interact, InteractType, InteractSubtype } from "sunbird";
 import { GenieResponse } from "../settings/datasync/genieresponse";
 import { FilterPage } from "./filters/filter";
@@ -7,9 +7,11 @@ import { CourseDetailPage } from "../course-detail/course-detail";
 import { CollectionDetailsPage } from "../collection-details/collection-details";
 import { ContentDetailsPage } from "../content-details/content-details";
 import { Network } from "@ionic-native/network";
+import { TranslateService } from '@ngx-translate/core';
 
-class CMap{
-  [key:string]:any
+
+class CMap {
+  [key: string]: any
 }
 @IonicPage()
 @Component({
@@ -20,7 +22,7 @@ class CMap{
 
 export class SearchPage {
 
-  
+
   @ViewChild('searchInput') searchBar;
 
   contentType: Array<string> = [];
@@ -45,13 +47,17 @@ export class SearchPage {
 
   isDialCodeSearch = false;
 
+  showEmptyMessage: boolean;
+
   constructor(private contentService: ContentService,
     private telemetryService: TelemetryService,
     private navParams: NavParams,
     private navCtrl: NavController,
     private zone: NgZone,
     private event: Events,
-    private network: Network) {
+    private network: Network,
+    private toastCtrl: ToastController,
+    private translate: TranslateService) {
     this.init();
 
     console.log("Network Type : " + this.network.type);
@@ -170,12 +176,16 @@ export class SearchPage {
           this.generateImpressionEvent();
           this.generateLogEvent(response.result);
         }
+        this.showEmptyMessage = this.searchContentResult.length === 0 ? true : false;
         this.showLoader = false;
       });
     }, (error) => {
-      console.log("Error : " + JSON.stringify(error));
+      console.log("Error : " + JSON.parse(error));
       this.zone.run(() => {
         this.showLoader = false;
+        if (this.network.type === 'none') {
+          this.showMessage('ERROR_OFFLINE_MODE');
+        }
       })
     });
   }
@@ -215,6 +225,7 @@ export class SearchPage {
 
     if (this.network.type === 'none') {
       isOfflineSearch = true;
+      this.showMessage('ERROR_OFFLINE_MODE');
     }
 
     let contentSearchRequest: ContentSearchCriteria = {
@@ -273,9 +284,9 @@ export class SearchPage {
     interact.pageId = this.source;
     interact.env = Environment.HOME;
     let valuesMap = new CMap();
-    
-    valuesMap["SearchPhrase"]= this.searchKeywords;
-    valuesMap["PositionClicked"]= index;
+
+    valuesMap["SearchPhrase"] = this.searchKeywords;
+    valuesMap["PositionClicked"] = index;
     interact.valueMap = valuesMap;
     interact.id = this.source;
     interact.objId = identifier;
@@ -355,5 +366,23 @@ export class SearchPage {
     else if (bytes < 1048576) return (bytes / 1024).toFixed(0) + " KB";
     else if (bytes < 1073741824) return (bytes / 1048576).toFixed(0) + " MB";
     else return (bytes / 1073741824).toFixed(3) + " GB";
+  }
+
+  showMessage(constant) {
+    if (constant) {
+      this.translate.get(constant).subscribe(
+        (value: any) => {
+          let toast = this.toastCtrl.create({
+            message: value,
+            duration: 2000,
+            position: 'bottom'
+          });
+          toast.onDidDismiss(() => {
+          });
+
+          toast.present();
+        }
+      );
+    }
   }
 }

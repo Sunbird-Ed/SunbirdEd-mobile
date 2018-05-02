@@ -13,32 +13,29 @@ export class FileSizePipe implements PipeTransform {
   /**
    * Takes a size and return readable size.
    */
-  transform(size: any, ...args) {
+  transform(size: any, roundOf: number = 2) {
     if (size) {
       if (isNaN(size))
         size = 0;
 
-      // if (size < 1024)
-      //   return size + ' Bytes';
+      size /= 1024;
+
+      if (size < 1024)
+        return size.toFixed(roundOf) + ' KB';
 
       size /= 1024;
 
       if (size < 1024)
-        return size.toFixed(2) + ' KB';
+        return size.toFixed(roundOf) + ' MB';
 
       size /= 1024;
 
       if (size < 1024)
-        return size.toFixed(2) + ' MB';
+        return size.toFixed(roundOf) + ' GB';
 
       size /= 1024;
 
-      if (size < 1024)
-        return size.toFixed(2) + ' GB';
-
-      size /= 1024;
-
-      return size.toFixed(2) + ' TB';
+      return size.toFixed(roundOf) + ' TB';
     };
   }
 }

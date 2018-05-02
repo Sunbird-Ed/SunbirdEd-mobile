@@ -45,7 +45,7 @@
     <div class="about-section" *ngIf="content.description || content.gradeLevel || content.subject">
       <h6 class="padding-10 background-gray font-size-20">{{ 'ABOUT' | translate }}</h6>
       <p *ngIf="!showMoreFlag" class="text-gray-color">
-        {{ (content.description && content.description.length > 100) ? (content.description | slice:0:10) + '...' : (content.description)
+        {{ (content.description && content.description.length > 100) ? (content.description | slice:0:99) + '...' : (content.description)
         }} </p>
       <div class="course-details" *ngIf="showMoreFlag">
         <p *ngIf="content.description && content.description.length" class="text-gray-color">
