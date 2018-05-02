@@ -429,6 +429,9 @@ export class ContentDetailsPage {
       if (data === 0) {
         this.content.downloadable = false;
         this.translateAndDisplayMessage('MSG_RESOURCE_DELETED', false);
+        this.events.publish('savedResources:update', {
+          update: true
+        });
       }
     });
   }

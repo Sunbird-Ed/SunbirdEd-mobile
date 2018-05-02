@@ -581,12 +581,13 @@ export class CollectionDetailsPage {
       ev: event
     });
     popover.onDidDismiss(data => {
-      console.log('Yaahooooo.... content deleted successfully', data);
       if (data === 0) {
         this.translateAndDisplayMessage('MSG_RESOURCE_DELETED', false)
         this.resetVariables();
         this.setContentDetails(this.identifier, false);
-      } else {
+        this.events.publish('savedResources:update', {
+          update: true
+        });
       }
     });
   }
