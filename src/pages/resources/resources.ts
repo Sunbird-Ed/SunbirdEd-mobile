@@ -99,7 +99,7 @@ export class ResourcesPage implements OnInit {
 	 * Get saved content
 	 */
 	setSavedContent() {
-		this.localResources = [];
+		// this.localResources = [];
 		this.showLoader = true;
 		const requestParams = {
 			contentTypes: ['Story', 'Worksheet', 'Collection', 'Game', 'TextBook', 'Resource', 'LessonPlan']

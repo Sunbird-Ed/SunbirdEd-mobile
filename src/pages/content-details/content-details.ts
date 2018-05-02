@@ -6,6 +6,8 @@ import { NgModel } from '@angular/forms';
 import { SocialSharing } from "@ionic-native/social-sharing";
 import * as _ from 'lodash';
 import { generateInteractEvent, Map } from '../../app/telemetryutil';
+import { TranslateService } from '@ngx-translate/core';
+
 
 @IonicPage()
 @Component({
@@ -118,7 +120,7 @@ export class ContentDetailsPage {
   constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, private telemetryService: TelemetryService, zone: NgZone,
     private events: Events, toastCtrl: ToastController, loadingCtrl: LoadingController,
     private fileUtil: FileUtil, public popoverCtrl: PopoverController, private shareUtil: ShareUtil,
-    private social: SocialSharing, private platform: Platform) {
+    private social: SocialSharing, private platform: Platform, private translate: TranslateService) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
@@ -161,7 +163,7 @@ export class ContentDetailsPage {
         console.log('error while loading content details', error);
         const message = 'Something went wrong, please check after some time';
         loader.dismiss();
-        this.showErrorMessage(message, true);
+        this.showMessage(message, true);
       });
   }
 
@@ -270,7 +272,7 @@ export class ContentDetailsPage {
    * @param {string}  message Error message
    * @param {boolean} isPop True = navigate to previous state
    */
-  showErrorMessage(message: string, isPop: boolean | false): void {
+  showMessage(message: string, isPop: boolean | false): void {
     if (this.isDownloadStarted) {
       // this.showDownloadBtn = true;
       this.content.downloadable = false;
@@ -330,17 +332,23 @@ export class ContentDetailsPage {
       data = JSON.parse(data);
       console.log('Success: Import content =>', data);
       if (data.result && data.result[0].status === 'NOT_FOUND') {
-        const message = 'Unable to fetch content';
-        this.showErrorMessage(message, false);
+        this.translateAndDisplayMessage('ERROR_CONTENT_NOT_AVAILABLE', false)
       }
     },
       error => {
         console.log('error while loading content details', error);
         const message = 'Something went wrong, please check after some time';
-        this.showErrorMessage(message, false);
+        this.showMessage(message, false);
       });
   }
 
+  translateAndDisplayMessage(constant: any, isPop: boolean = false) {
+    this.translate.get(constant).subscribe(
+      (value: any) => {
+        this.showMessage(value, isPop);
+      }
+    );
+  }
   /**
    * Subscribe genie event to get content download progress
    */
@@ -419,10 +427,11 @@ export class ContentDetailsPage {
     });
     popover.onDidDismiss(data => {
       if (data === 0) {
-        console.log('Yaahooooo.... content deleted successfully', data);
         this.content.downloadable = false;
-        // this.showDownloadBtn = true;
-        // this.playContentBtn = false;
+        this.translateAndDisplayMessage('MSG_RESOURCE_DELETED', false);
+        this.events.publish('savedResources:update', {
+          update: true
+        });
       }
     });
   }
