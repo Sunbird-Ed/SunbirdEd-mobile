@@ -247,6 +247,7 @@ export class ContentDetailsPage {
     // this.resetVariables();
     this.setContentDetails(this.identifier, true);
     this.subscribeGenieEvent();
+    // this.events.unsubscribe('savedResources:update');
   }
 
   /**
@@ -361,6 +362,9 @@ export class ContentDetailsPage {
             this.content.downloadable = true;
             this.setContentDetails(this.identifier, true);
             this.downloadProgress = '';
+            this.events.publish('savedResources:update', {
+              update: true
+            });
           }
         }
       });

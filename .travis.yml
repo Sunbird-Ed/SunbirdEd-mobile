@@ -47,26 +47,8 @@ before_install:
 - npm install -g ionic cordova
 before_script:
 - echo "Before Script"
-- git clone https://github.com/project-sunbird/genie-sdk-wrapper.git
-- cd genie-sdk-wrapper
-- npm install
-- npm run build
-- npm pack `pwd`/dist
-- cd ..
-- npm i
-- npm install `pwd`/genie-sdk-wrapper/*.tgz --save
-- git clone https://github.com/project-sunbird/cordova-plugin-genie-sdk.git
-- curl -L -o ./cordova-plugin-genie-sdk/secret.gradle https://www.dropbox.com/s/wjxnd7s8h4ce7vl/secret.gradle?dl=1
-- ionic cordova plugin add ./cordova-plugin-genie-sdk
-
 script:
-- ionic cordova platform add android
-# - mkdir -p ./plugins/cordova-plugin-genie-sdk/
-# - curl -L -o ./plugins/cordova-plugin-genie-sdk/secret.gradle https://www.dropbox.com/s/wjxnd7s8h4ce7vl/secret.gradle?dl=1
-- curl -L -o ./gk.jks https://www.dropbox.com/s/0vorw73102zr97c/gk.jks?dl=1
-- curl -L -o ./build.json https://www.dropbox.com/s/n7aj1kf1ztigidn/build.json?dl=1
-- if [ -e ./plugins/cordova-plugin-genie-sdk/secret.gradle ]; then echo "Ok"; else echo "Not Okay"; fi
-- ionic cordova build android --prod --release --buildConfig build.json
+- ./build.sh
 
 env:
   global:
