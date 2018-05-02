@@ -1,9 +1,35 @@
-.last-datasync-style {
-    font-size:15px ; 
-    color:#686868 ;
-    margin-left: 20px 
-}
+page-datasync{
 
-.label {
-    font-size:15px ; 
-}
+    .last-datasync-style {
+        font-size:15px ;
+        color:#686868 ;
+        margin-left: 20px
+    }
+
+    .label {
+        font-size:15px ;
+    }
+    hr{
+    -webkit-margin-before: 16px;
+        /* -webkit-padding-before: 1px; */
+        height: 2px;
+        border-width: 0;
+        -webkit-box-sizing: content-box;
+        box-sizing: content-box;
+    }
+    .content-md hr {
+        background-color: #CCCCCC;
+    }
+    .item-block{
+
+        min-height: unset;
+        height: 3.0rem;
+    }
+    .item-md .radio-md[item-left]{
+        margin: 11px 17px 10px 0 !important;
+    }
+    .item-md {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    }
