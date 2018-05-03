@@ -318,6 +318,7 @@ export class SearchPage {
     let addedContent = new Array<any>();
 
     if (contentArray && contentArray.length == 1) {
+      this.navCtrl.pop();
       this.showContentDetails(contentArray[0]);
       return;
     }
