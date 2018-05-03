@@ -3,13 +3,10 @@ user-search {
         width: 60px !important;
         height: 60px !important;
     }
-    [dir="ltr"] .item-md{
+    .item-md{
         padding-left: 10px !important;
     }
-    [dir="ltr"] .label-md {
-        margin: 13px 8px 0px 0px !important;
-    }
-    [dir="ltr"] .label-md {
+    .label-md {
         margin: 4px 0 4px 0 !important;
     }
     .searchbar-md .searchbar-search-icon {
@@ -24,6 +21,4 @@ user-search {
         display: none !important;
     }
 }
-.font-weight-500 {
-    font-weight: 500 !important;
-}
+

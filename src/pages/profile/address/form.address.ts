@@ -119,11 +119,12 @@ export class FormAddress {
   updateAddress(req): void {
     this.userProfileService.updateUserInfo(req,
       (res: any) => {
-        this.getToast(JSON.parse(res).message).present();
+        this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
         this.navCtrl.setRoot(ProfilePage);
       },
       (err: any) => {
-        this.getToast(err).present();
+        this.getToast(this.translateMessage('PROFILE_UPDATE_FAILED')).present();
+        console.error("Error", err);
       });
   }
 

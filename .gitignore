@@ -27,6 +27,7 @@ hooks/
 platforms/
 /www/
 $RECYCLE.BIN/
+/plugins
 
 .DS_Store
 Thumbs.db

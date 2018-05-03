@@ -42,13 +42,18 @@
       <ion-input type="text" formControlName="boardOrUniversity" placeholder="{{ 'OPTIONAL' | translate }}"></ion-input>
     </ion-item>
   </form>
-  <ion-row>
-    <ion-col padding *ngIf="!isNewForm">
-      <button class="action-button" type="submit" (click)="onSubmit($event, true)" ion-button block outline class="text-capitalize">{{ 'DELETE' | translate }}</button>
-    </ion-col>
-    <ion-col padding>
-      <button class="action-button" type="submit" (click)="onSubmit($event)" ion-button block [disabled]="!educationForm.valid"
-        class="text-capitalize">{{ 'SAVE' | translate }}</button>
-    </ion-col>
-  </ion-row>
 </ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-row>
+      <ion-col padding *ngIf="!isNewForm">
+        <button class="action-button" type="submit" (click)="onSubmit($event, true)" ion-button block outline class="text-capitalize">{{ 'DELETE' | translate }}</button>
+      </ion-col>
+      <ion-col padding>
+        <button class="action-button" type="submit" (click)="onSubmit($event)" ion-button block [disabled]="!educationForm.valid"
+          class="text-capitalize">{{ 'SAVE' | translate }}</button>
+      </ion-col>
+    </ion-row>
+  </ion-toolbar>
+</ion-footer>

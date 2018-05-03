@@ -15,6 +15,8 @@ import { generateEndEvent } from './telemetryutil';
 
 declare var chcp: any;
 
+const KEY_SUNBIRD_SUPPORT_FILE_PATH = "sunbird_support_file_path";
+
 @Component({
   templateUrl: 'app.html'
 })
@@ -60,6 +62,13 @@ export class MyApp {
         if (val && val.length) {
           this.translate.use(val);
         }
+      });
+
+      (<any>window).supportfile.makeEntryInSunbirdSupportFile((result) => {
+        console.log("Result - " + JSON.parse(result));
+        this.preference.putString(KEY_SUNBIRD_SUPPORT_FILE_PATH, JSON.parse(result));
+      }, (error) => {
+        console.log("Error - " + error);
       });
 
       that.authService.getSessionData((session) => {
