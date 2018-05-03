@@ -53,7 +53,7 @@ export class ResourcesPage implements OnInit {
 	public authService: AuthService;
 
 	isOnBoardingCardCompleted: boolean = false;
-	public source= "resource";
+	public source = "resource";
 
 	constructor(public navCtrl: NavController, private pageService: PageAssembleService, private ngZone: NgZone, private popupCtrl: PopoverController,
 		contentService: ContentService, authService: AuthService, private qrScanner: SunbirdQRScanner, private popCtrl: PopoverController, private telemetryService: TelemetryService, private events: Events, private profileService: ProfileService) {
@@ -62,6 +62,12 @@ export class ResourcesPage implements OnInit {
 
 		this.events.subscribe('onboarding-card:completed', (param) => {
 			this.isOnBoardingCardCompleted = param.isOnBoardingCardCompleted;
+		});
+
+		this.events.subscribe('savedResources:update', (res) => {
+			if (res && res.update) {
+				this.setSavedContent();
+			}
 		});
 	}
 
@@ -93,7 +99,7 @@ export class ResourcesPage implements OnInit {
 	 * Get saved content
 	 */
 	setSavedContent() {
-		this.localResources = [];
+		// this.localResources = [];
 		this.showLoader = true;
 		const requestParams = {
 			contentTypes: ['Story', 'Worksheet', 'Collection', 'Game', 'TextBook', 'Resource', 'LessonPlan']
@@ -164,14 +170,14 @@ export class ResourcesPage implements OnInit {
 	 */
 	viewAllPopularContent(queryParams, headerTitle): void {
 		console.log('Search query...', queryParams);
-		let values=new Map();
-		values["SectionName"]=headerTitle;
+		let values = new Map();
+		values["SectionName"] = headerTitle;
 		this.telemetryService.interact(
 			generateInteractEvent(InteractType.TOUCH,
-			  InteractSubtype.VIEWALL_CLICKED,
-			  Environment.HOME,
-			  this.source, values)
-		  );
+				InteractSubtype.VIEWALL_CLICKED,
+				Environment.HOME,
+				this.source, values)
+		);
 		this.navCtrl.push(ViewMoreActivityPage, {
 			requestParams: queryParams,
 			headerTitle: headerTitle
@@ -194,6 +200,7 @@ export class ResourcesPage implements OnInit {
 		if (!this.pageLoadedSuccess) {
 			this.getPopularContent();
 		}
+
 		this.authService.getSessionData((res: string) => {
 			if (res === undefined || res === "null") {
 				this.guestUser = true;
@@ -202,8 +209,23 @@ export class ResourcesPage implements OnInit {
 				this.guestUser = false;
 			}
 		});
+		this.subscribeGenieEvents();
 	}
 
+	subscribeGenieEvents() {
+		this.events.subscribe('genie.event', (data) => {
+			let res = JSON.parse(data);
+			if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
+				this.setSavedContent();
+			}
+		})
+	}
+	/**
+	 * Ionic life cycle hook
+	 */
+	ionViewWillLeave(): void {
+		this.events.unsubscribe('genie.event');
+	}
 	/**
 	 *
 	 * @param refresher

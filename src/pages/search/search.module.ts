@@ -7,6 +7,7 @@ import { FilterPage } from "./filters/filter";
 import { FilterOptions } from "./filters/options/options";
 import { IonicImageLoader } from "ionic-image-loader";
 import { Network } from "@ionic-native/network";
+import { PipesModule } from "../../pipes/pipes.module";
 
 @NgModule({
   declarations: [
@@ -19,6 +20,7 @@ import { Network } from "@ionic-native/network";
     TranslateModule.forChild(),
     IonicImageLoader,
     FrameworkModule,
+    PipesModule
   ],
   entryComponents: [
     FilterPage,

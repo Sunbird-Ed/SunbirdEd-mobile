@@ -7,7 +7,7 @@ import { ContentDetailsPage } from '../content-details/content-details';
 import { CourseDetailPage } from '../course-detail/course-detail';
 import { ContentActionsComponent } from '../../component/content-actions/content-actions';
 import { ConfirmAlertComponent } from '../../component/confirm-alert/confirm-alert';
-
+import { TranslateService } from '@ngx-translate/core';
 
 /**
  * Generated class for the CollectionDetailsPage page.
@@ -157,7 +157,7 @@ export class CollectionDetailsPage {
     public popoverCtrl: PopoverController,
     private fileUtil: FileUtil,
     private platform : Platform,
-    private telemetryService : TelemetryService) {
+    private telemetryService : TelemetryService, private translate: TranslateService) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
@@ -194,7 +194,7 @@ export class CollectionDetailsPage {
         console.log('error while loading content details', error);
         const message = 'Something went wrong, please check after some time';
         loader.dismiss();
-        // this.showErrorMessage(message, true);
+        // this.showMessage(message, true);
       });
   }
 
@@ -294,7 +294,7 @@ export class CollectionDetailsPage {
             }
           });
           if (this.queuedIdentifiers.length === 0) {
-            this.showErrorMessage('Unable to fetch content', false);
+            // this.showMessage('Unable to fetch content', false);
           }
         }
         console.log('Success: content imported successfully... @@@', data);
@@ -305,7 +305,7 @@ export class CollectionDetailsPage {
         this.zone.run(() => {
           console.log('error while loading content details', error);
           const message = 'Something went wrong, please check after some time';
-          this.showErrorMessage(message, false);
+          this.showMessage(message, false);
           this.showChildrenLoader = false;
         })
       });
@@ -485,10 +485,21 @@ export class CollectionDetailsPage {
           } else {
             this.setChildContents();
           }
+          this.events.publish('savedResources:update', {
+            update: true
+          });
         }
 
       });
     });
+  }
+
+  translateAndDisplayMessage(constant: any, isPop: boolean = false) {
+    this.translate.get(constant).subscribe(
+      (value: any) => {
+        this.showMessage(value, isPop);
+      }
+    );
   }
 
   /**
@@ -497,7 +508,7 @@ export class CollectionDetailsPage {
    * @param {string}  message Error message
    * @param {boolean} isPop True = navigate to previous state
    */
-  showErrorMessage(message: string, isPop: boolean | false): void {
+  showMessage(message: string, isPop: boolean | false): void {
     if (this.isDownloadStarted) {
       this.showDownloadBtn = true;
       this.isDownloadStarted = false;
@@ -570,11 +581,13 @@ export class CollectionDetailsPage {
       ev: event
     });
     popover.onDidDismiss(data => {
-      console.log('Yaahooooo.... content deleted successfully', data);
       if (data === 0) {
+        this.translateAndDisplayMessage('MSG_RESOURCE_DELETED', false)
         this.resetVariables();
         this.setContentDetails(this.identifier, false);
-      } else {
+        this.events.publish('savedResources:update', {
+          update: true
+        });
       }
     });
   }
