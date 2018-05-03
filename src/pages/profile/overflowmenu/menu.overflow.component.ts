@@ -8,7 +8,7 @@ import { ToastController, App } from "ionic-angular";
 import { SettingsPage } from "../../settings/settings";
 import { OAuthService } from "sunbird";
 import { OnboardingPage } from "../../onboarding/onboarding";
-import { Interact, InteractType, InteractSubtype, PageId, Environment, TelemetryService } from "sunbird";
+import { Interact, InteractType, InteractSubtype, PageId, Environment, TelemetryService, ProfileService } from "sunbird";
 import { generateInteractEvent } from "../../../app/telemetryutil";
 
 @Component({
@@ -25,7 +25,8 @@ export class OverflowMenuComponent {
         private toastCtrl: ToastController,
         private oauth: OAuthService,
         private telemetryService: TelemetryService,
-        private app: App
+        private app: App,
+        private profileService: ProfileService
     ) {
         this.items = this.navParams.get("list");
     }
@@ -75,6 +76,12 @@ export class OverflowMenuComponent {
                         valuesMap));
 
                 this.oauth.doLogOut();
+                this.profileService.setAnonymousUser(success => {
+
+                },
+                error => {
+
+                });
                 this.navCtrl.setRoot(OnboardingPage);
                 this.telemetryService.interact(
                     generateInteractEvent(InteractType.OTHER,
