@@ -534,4 +534,9 @@ export class ProfilePage {
   getSubset(keys, obj) {
     return keys.reduce((a, c) => ({ ...a, [c]: obj[c] }), {});
   }
+
+  openLink(url: string): void {
+    let options = 'hardwareback=yes,clearcache=no,zoom=no,toolbar=yes,clearsessioncache=no,closebuttoncaption=Done,disallowoverscroll=yes';
+    (<any>window).cordova.InAppBrowser.open(url, '_system', options);
+  }
 }
