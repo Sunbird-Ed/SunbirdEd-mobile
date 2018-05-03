@@ -138,10 +138,10 @@ export class OnboardingPage {
           this.userProfileService.getUserProfileDetails(req, res => {
             let r = JSON.parse(res);
             let profileRequest = {
-              uid: r.response.userId,
+              uid: r.response.userId, //req
               handle: r.response.userId, //TODO check with nikhil
-              avatar: "avatar",
-              language: "en",
+              avatar: "avatar", //req
+              language: "en", //req
               age: -1,
               day: -1,
               month: -1,
@@ -174,9 +174,9 @@ export class OnboardingPage {
       if(val != "") {
         let profileRequest = {
           uid: val,
-          handle: "Guest1",
-          avatar: "avatar",
-          language: "en",
+          handle: "Guest1", //req
+          avatar: "avatar", //req
+          language: "en", //req
           age: -1,
           day: -1,
           month: -1,
@@ -193,9 +193,7 @@ export class OnboardingPage {
       } else {
         this.navCtrl.push(UserTypeSelectionPage);
       }
-    })
-
-
+    });
   }
 
   generateInteractEvent() {
@@ -206,9 +204,4 @@ export class OnboardingPage {
     interact.env = Environment.HOME;
     this.telemetryService.interact(interact);
   }
-
-  /*   goBack() {
-      this.navCtrl.pop();
-    } */
-
 }
