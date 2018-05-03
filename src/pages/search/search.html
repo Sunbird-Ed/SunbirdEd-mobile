@@ -24,8 +24,8 @@
         </button>
       </div>
       <div *ngIf="result && result.content && result.content.length">
-        <ion-list *ngFor="let content of result.content" class="content-list" margin-start>
-          <ion-item no-padding (click)="openContent(result, content,index)">
+        <ion-list no-padding *ngFor="let content of result.content" class="content-list">
+          <ion-item (click)="openContent(result, content,index)">
             <ion-avatar item-start>
               <img src="./assets/imgs/ic_logo.png" width="24px" height="24px">
             </ion-avatar>
@@ -33,29 +33,36 @@
             <p><span>{{ content.contentType }}</span>
             <span *ngIf="content.size"> • {{ content.size | fileSize: 0}}</span></p>
           </ion-item>
+          <div class="divider"></div>
         </ion-list>
       </div>
-      <div class="divider"></div>
+
     </div>
   </ion-list>
 
   <ion-list no-lines *ngIf="dialCodeContentResult && dialCodeContentResult.length">
-    <ion-list *ngFor="let content of dialCodeContentResult; let i = index" class="content-list" margin-start>
-      <ion-item no-padding (click)="openContent(undefined, content,index)">
+    <ion-list *ngFor="let content of dialCodeContentResult; let i = index; let last = last" class="content-list">
+      <ion-item padding-start (click)="oplenContent(undefined, content,index)">
         <ion-avatar item-start>
           <img src="./assets/imgs/ic_logo.png" width="24px" height="24px">
         </ion-avatar>
         <h3> {{ (content.name && content.name.length > 30) ? (content.name | slice:0:30) + '...' : (content.name) }}</h3>
         <p><span>{{ content.contentType }}</span>
         <span *ngIf="content.size"> • {{ content.size | fileSize: 0}}</span></p>
+        <p><span *ngIf="content.gradeLevel && content.gradeLevel.length">
+          {{ content?.gradeLevel[0] }}
+        </span>
+          <span *ngIf="content.subject"> • {{ content?.subject}}</span>
+        </p>
       </ion-item>
+      <div *ngIf="!last" class="divider"></div>
     </ion-list>
-    <div class="divider"></div>
+
   </ion-list>
 
 
   <ion-list *ngIf="searchContentResult && searchContentResult.length">
-    <ion-item *ngFor="let content of searchContentResult; let i = index" (click)="openContent(undefined, content,i)">
+    <ion-item padding-right *ngFor="let content of searchContentResult; let i = index" (click)="openContent(undefined, content,i)">
       <ion-avatar item-start>
         <img-loader src="{{ content.appIcon }}" backgroundSize="cover" width="100%" height="100%" spinner="true" fallback="./assets/imgs/ic_logo.png"
           fallbackAsPlaceholder="true" useImg></img-loader>
@@ -66,7 +73,8 @@
         <span *ngIf="content.size"> • {{ content.size | fileSize: 0}}</span>
       </p>
       <p>
-        <span *ngIf="content.gradeLevel && content.gradeLevel.length">{{ content.gradeLevel[0] }}</span>
+       <span  *ngIf="content.gradeLevel && content.gradeLevel.length">
+          <span *ngFor="let gradelevel of content.gradeLevel; let i= index">{{i == 0 ? '' : ',' +' '}} {{ gradelevel}}</span></span>
         <span *ngIf="content.language && content.language.length">{{ content.gradeLevel && content.gradeLevel.length ? '•' : '' }} {{ content.language[0] }}</span>
       </p>
     </ion-item>

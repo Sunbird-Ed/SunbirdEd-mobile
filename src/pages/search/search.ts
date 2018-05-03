@@ -130,6 +130,7 @@ export class SearchPage {
             this.processDialCodeResult(response.result);
           } else {
             this.searchContentResult = response.result.contentDataList;
+            console.log('searchContentResult', + this.searchContentResult);
           }
 
           this.updateFilterIcon();
@@ -172,6 +173,8 @@ export class SearchPage {
         this.responseData = response;
         if (response.status && response.result) {
           this.searchContentResult = response.result.contentDataList;
+          console.log('inside search content service');
+          console.log(this.searchContentResult);
           this.updateFilterIcon();
           this.generateImpressionEvent();
           this.generateLogEvent(response.result);
@@ -319,6 +322,7 @@ export class SearchPage {
           }
         })
         this.dialCodeResult.push(collection);
+        console.log(this.dialCodeResult);
       })
     }
 
@@ -328,6 +332,7 @@ export class SearchPage {
       contentArray.forEach((content) => {
         if (addedContent.indexOf(content.identifier) < 0) {
           this.dialCodeContentResult.push(content);
+          console.log(this.dialCodeContentResult);
         }
       })
     }
