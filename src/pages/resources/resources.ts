@@ -7,7 +7,6 @@ import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
 import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
 import { ResourceFilter, ResourceFilterCallback } from './filters/resource.filter';
-import { FilterOptions, onBoardingSlidesCallback } from './onboarding-alert/onboarding-alert';
 import { generateInteractEvent, Map } from '../../app/telemetryutil';
 
 
