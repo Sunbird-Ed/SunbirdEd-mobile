@@ -27,7 +27,7 @@
         <ion-list *ngFor="let content of result.content" class="content-list" margin-start>
           <ion-item no-padding (click)="openContent(result, content,index)">
             <ion-avatar item-start>
-              <img src="./assets/imgs/ic_logo.png" width="24px" height="24px">
+              <img src="{{ defaultAppIcon }}" width="24px" height="24px">
             </ion-avatar>
             <h2> {{ (content.name && content.name.length > 30) ? (content.name | slice:0:30) + '...' : (content.name) }}</h2>
             <p><span>{{ content.contentType }}</span>
@@ -43,7 +43,7 @@
     <ion-list *ngFor="let content of dialCodeContentResult; let i = index" class="content-list" margin-start>
       <ion-item no-padding (click)="openContent(undefined, content,index)">
         <ion-avatar item-start>
-          <img src="./assets/imgs/ic_logo.png" width="24px" height="24px">
+          <img src="{{ defaultAppIcon }}" width="24px" height="24px">
         </ion-avatar>
         <h2> {{ (content.name && content.name.length > 30) ? (content.name | slice:0:30) + '...' : (content.name) }}</h2>
         <p><span>{{ content.contentType }}</span>
@@ -57,8 +57,10 @@
   <ion-list *ngIf="searchContentResult && searchContentResult.length">
     <ion-item *ngFor="let content of searchContentResult; let i = index" (click)="openContent(undefined, content,i)">
       <ion-avatar item-start>
-        <img-loader src="{{ content.appIcon }}" backgroundSize="cover" width="100%" height="100%" spinner="true" fallback="./assets/imgs/ic_logo.png"
-          fallbackAsPlaceholder="true" useImg></img-loader>
+        <!-- <img-loader src="{{ content.appIcon }}" backgroundSize="cover" width="100%" height="100%" spinner="true" fallback="./assets/imgs/ic_logo.png"
+          fallbackAsPlaceholder="true" useImg></img-loader> -->
+          <img src="{{ content.appIcon || defaultAppIcon }}" width="24px" height="24px" />
+
       </ion-avatar>
       <h2> {{ (content.name && content.name.length > 30) ? (content.name | slice:0:30) + '...' : (content.name) }}</h2>
       <p>

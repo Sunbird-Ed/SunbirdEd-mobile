@@ -49,6 +49,8 @@ export class SearchPage {
 
   showEmptyMessage: boolean;
 
+  defaultAppIcon: string;
+
   constructor(private contentService: ContentService,
     private telemetryService: TelemetryService,
     private navParams: NavParams,
@@ -61,6 +63,7 @@ export class SearchPage {
     this.init();
 
     console.log("Network Type : " + this.network.type);
+    this.defaultAppIcon = 'assets/imgs/ic_launcher.png';
   }
 
   ionViewDidEnter() {
