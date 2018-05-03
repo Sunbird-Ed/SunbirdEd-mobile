@@ -1,6 +1,6 @@
 import { Component, NgZone, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, Platform, Navbar, PopoverController } from 'ionic-angular';
-import { ContentService, FileUtil, Start, PageId, Environment, Mode, Impression, ImpressionType, TelemetryService, End } from 'sunbird';
+import { ContentService, FileUtil, Start, PageId, Environment, Mode, Impression, ImpressionType, TelemetryService, End, Rollup } from 'sunbird';
 import { NgModel } from '@angular/forms';
 import * as _ from 'lodash';
 import { ContentDetailsPage } from '../content-details/content-details';
@@ -153,13 +153,18 @@ export class CollectionDetailsPage {
 
   public showLoading = false;
 
+  /**
+   * Telemetry roll up object
+   */
+  public objRollup: Rollup;
+
   @ViewChild(Navbar) navBar: Navbar;
   constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, zone: NgZone,
     private events: Events, toastCtrl: ToastController, loadingCtrl: LoadingController,
     public popoverCtrl: PopoverController,
     private fileUtil: FileUtil,
-    private platform : Platform,
-    private telemetryService : TelemetryService, private translate: TranslateService) {
+    private platform: Platform,
+    private telemetryService: TelemetryService, private translate: TranslateService) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
@@ -171,6 +176,7 @@ export class CollectionDetailsPage {
       this.generateEndEvent(this.objId, this.objType, this.objVer);
       this.navCtrl.pop();
     }, 0)
+    this.objRollup = new Rollup();
   }
 
   /**
@@ -209,6 +215,7 @@ export class CollectionDetailsPage {
     this.objId = this.contentDetail.identifier;
     this.objType = data.result.contentType;
     this.objVer = this.contentDetail.pkgVersion;
+    this.generateRollUp();
     this.generateStartEvent(this.contentDetail.identifier, this.contentDetail.contentType, this.contentDetail.pkgVersion);
     this.generateImpressionEvent(this.contentDetail.identifier, this.contentDetail.contentType, this.contentDetail.pkgVersion);
     switch (data.result.isAvailableLocally) {
@@ -233,6 +240,26 @@ export class CollectionDetailsPage {
       this.contentDetail.me_totalDownloads = this.contentDetail.me_totalDownloads.split('.')[0];
     }
     this.setCollectionStructure();
+  }
+
+  generateRollUp() {
+    let hierarchyInfo = this.cardData.hierarchyInfo ? this.cardData.hierarchyInfo : null;
+    if (hierarchyInfo === null) {
+      this.objRollup.l1 = this.identifier;
+    } else {
+      _.forEach(hierarchyInfo, (value, key) => {
+        if (key === 0) {
+          this.objRollup.l1 = value.identifier
+        } else if (key === 1) {
+          this.objRollup.l2 = value.identifier
+        } else if (key === 2) {
+          this.objRollup.l3 = value.identifier
+        } else if (key === 3) {
+          this.objRollup.l4 = value.identifier
+        }
+      });
+    }
+    console.log('generateRollUp', this.objRollup);
   }
 
   /**
@@ -318,7 +345,12 @@ export class CollectionDetailsPage {
    */
   setChildContents() {
     console.log('Making child contents api call... @@@');
-    const option = { contentId: this.identifier, hierarchyInfo: null }; // TODO: remove level
+    let hierarchyInfo = this.cardData.hierarchyInfo ? this.cardData.hierarchyInfo : null;
+
+
+
+
+    const option = { contentId: this.identifier, hierarchyInfo: hierarchyInfo }; // TODO: remove level
     this.contentService.getChildContents(option, (data: any) => {
       data = JSON.parse(data);
       console.log('Success: child contents data =', data);
@@ -355,8 +387,6 @@ export class CollectionDetailsPage {
         }
       }
     });
-    console.log('downloadIdentifiers', this.downloadIdentifiers);
-    console.log('Download size ===>', this.downloadSize);
     if (this.downloadIdentifiers.length && !this.isDownlaodCompleted) {
       this.showDownloadBtn = true;
     }
@@ -374,9 +404,7 @@ export class CollectionDetailsPage {
           size += +value.contentData.size;
         }
       });
-      console.log('Download size ===>', size);
       this.downloadContentsSize = this.getReadableFileSize(+size);
-      console.log('download content identifiers', this.downloadIdentifiers);
       if (this.downloadIdentifiers.length) {
         this.showDownloadBtn = true;
       }
@@ -478,7 +506,7 @@ export class CollectionDetailsPage {
               this.currentCount++;
               console.log('current download count:', this.currentCount);
               console.log('queuedIdentifiers count:', this.queuedIdentifiers.length);
-              this.downloadPercentage = +((this.currentCount / this.queuedIdentifiers.length ) * (100)).toFixed(0);
+              this.downloadPercentage = +((this.currentCount / this.queuedIdentifiers.length) * (100)).toFixed(0);
             }
             if (this.queuedIdentifiers.length === this.currentCount) {
               this.isDownloadStarted = false;
@@ -587,8 +615,8 @@ export class CollectionDetailsPage {
       content: this.contentDetail,
       isChild: this.isDepthChild
     }, {
-      cssClass: 'content-action'
-    });
+        cssClass: 'content-action'
+      });
     popover.present({
       ev: event
     });
@@ -647,7 +675,7 @@ export class CollectionDetailsPage {
       ev: myEvent
     });
     popover.onDidDismiss((canDownload: boolean = false) => {
-      if(canDownload) {
+      if (canDownload) {
         this.downloadAllContent();
       }
     });

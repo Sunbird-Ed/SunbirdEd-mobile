@@ -1,7 +1,7 @@
 import { ContentActionsComponent } from './../../component/content-actions/content-actions';
 import { Component, NgZone, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, PopoverController, Navbar, Platform } from 'ionic-angular';
-import { ContentService, FileUtil, Impression, ImpressionType, PageId, Environment, TelemetryService, Start, Mode, End, ShareUtil, InteractType, InteractSubtype } from 'sunbird';
+import { ContentService, FileUtil, Impression, ImpressionType, PageId, Environment, TelemetryService, Start, Mode, End, ShareUtil, InteractType, InteractSubtype, Rollup } from 'sunbird';
 import { NgModel } from '@angular/forms';
 import { SocialSharing } from "@ionic-native/social-sharing";
 import * as _ from 'lodash';
@@ -104,6 +104,9 @@ export class ContentDetailsPage {
    */
   public loadingCtrl: LoadingController;
 
+  public objRollup: Rollup;
+
+
   private objId;
   private objType;
   private objVer;
@@ -132,6 +135,7 @@ export class ContentDetailsPage {
       this.navCtrl.pop();
       this.generateEndEvent(this.objId, this.objType, this.objVer);
     }, 0)
+    this.objRollup = new Rollup();
   }
 
   /**
@@ -177,6 +181,7 @@ export class ContentDetailsPage {
     this.objId = this.content.identifier;
     this.objType = data.result.contentType;
     this.objVer = this.content.pkgVersion;
+    this.generateRollUp();
     this.generateStartEvent(this.content.identifier, this.content.contentType, this.content.pkgVersion);
     this.generateImpressionEvent(this.content.identifier, this.content.contentType, this.content.pkgVersion);
 
@@ -202,6 +207,26 @@ export class ContentDetailsPage {
     if (this.content.me_totalDownloads) {
       this.content.me_totalDownloads = this.content.me_totalDownloads.split('.')[0];
     }
+  }
+
+  generateRollUp() {
+    let hierarchyInfo = this.cardData.hierarchyInfo ? this.cardData.hierarchyInfo : null;
+    if (hierarchyInfo === null) {
+      this.objRollup.l1 = this.identifier;
+    } else {
+      _.forEach(hierarchyInfo, (value, key) => {
+        if (key === 0) {
+          this.objRollup.l1 = value.identifier
+        } else if (key === 1) {
+          this.objRollup.l2 = value.identifier
+        } else if (key === 2) {
+          this.objRollup.l3 = value.identifier
+        } else if (key === 3) {
+          this.objRollup.l4 = value.identifier
+        }
+      });
+    }
+    console.log('generateRollUp', this.objRollup);
   }
 
   generateImpressionEvent(objectId, objectType, objectVersion) {
