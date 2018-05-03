@@ -1,5 +1,5 @@
-import { IonicPage } from "ionic-angular/navigation/ionic-page";
-import { Component } from '@angular/core';
+import { IonicPage, Nav } from "ionic-angular";
+import { Component, ViewChild } from '@angular/core';
 import { NavController } from "ionic-angular/navigation/nav-controller";
 import { NavParams } from "ionic-angular/navigation/nav-params";
 import { ViewController } from "ionic-angular/navigation/view-controller";
@@ -17,6 +17,7 @@ import { generateInteractEvent } from "../../../app/telemetryutil";
 })
 
 export class OverflowMenuComponent {
+    @ViewChild(Nav) nav;
     items: Array<string>;
 
     constructor(public navCtrl: NavController,
@@ -75,7 +76,7 @@ export class OverflowMenuComponent {
                         valuesMap));
 
                 this.oauth.doLogOut();
-                this.navCtrl.setRoot(OnboardingPage);
+                this.app.getRootNav().setRoot(OnboardingPage);
                 this.telemetryService.interact(
                     generateInteractEvent(InteractType.OTHER,
                         InteractSubtype.LOGOUT_SUCCESS,

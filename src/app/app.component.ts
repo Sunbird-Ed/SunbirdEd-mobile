@@ -77,7 +77,8 @@ export class MyApp {
 
             initGuestTabs(this.containerService);
 
-            that.rootPage = (val != "") ? this.nav.setRoot(TabsPage, { loginMode: 'guest' }) : this.nav.setRoot(LanguageSettingsPage);
+            that.rootPage = (val != "") ? this.nav.setRoot(TabsPage, { loginMode: 'guest' }) 
+            : this.nav.setRoot(LanguageSettingsPage);
           })
         } else {
           initUserTabs(that.containerService);

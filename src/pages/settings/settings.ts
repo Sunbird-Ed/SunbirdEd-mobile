@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
-import { NavController } from "ionic-angular";
+import { NavController, LoadingController} from "ionic-angular";
 import { DatasyncPage } from './datasync/datasync';
 import { LanguageSettingsPage } from '../language-settings/language-settings';
 import { AboutUsPage } from './about-us/about-us';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { TranslateService } from '@ngx-translate/core';
 import { AppVersion } from "@ionic-native/app-version";
-import { SharedPreferences, Interact, InteractType, InteractSubtype } from "sunbird";
+import { SharedPreferences, Interact, InteractType, InteractSubtype, ShareUtil } from "sunbird";
 import { Impression, ImpressionType, Environment, PageId, TelemetryService } from 'sunbird';
 
 const KEY_SELECTED_LANGUAGE = "selected_language";
@@ -26,7 +26,9 @@ export class SettingsPage {
     private socialSharing: SocialSharing,
     private translate: TranslateService,
     private preference: SharedPreferences,
-    private telemetryService : TelemetryService) {
+    private telemetryService : TelemetryService,
+    private shareUtil: ShareUtil,
+    private loadingCtrl: LoadingController) {
     
   }
 
@@ -93,7 +95,10 @@ export class SettingsPage {
   }
 
   sendMessage() {
+    let loader = this.getLoader();
+    loader.present();
     this.preference.getString(KEY_SUNBIRD_SUPPORT_FILE_PATH, val => {
+      loader.dismiss();
       if (val === undefined || val === "" || val === null) {
         //do nothing
       } else {
@@ -112,10 +117,20 @@ export class SettingsPage {
   }
 
   shareApp() {
-    this.socialSharing.share().then(() => {
-      console.log("Shared");
-    }).catch(() => {
-      //Error
+    let loader = this.getLoader();
+    loader.present();
+    this.shareUtil.exportApk(filePath => {
+      loader.dismiss();
+      this.socialSharing.share("", "", "file://" + filePath, "");
+    }, error => {
+      loader.dismiss();
+    });
+  }
+
+  getLoader(): any {
+    return this.loadingCtrl.create({
+      duration: 30000,
+      spinner: "crescent"
     });
   }
 }
