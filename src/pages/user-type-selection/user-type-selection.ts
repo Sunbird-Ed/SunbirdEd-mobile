@@ -1,6 +1,6 @@
 import { Component, NgZone } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-import { TabsPage,SharedPreferences, OAuthService, Interact, TelemetryService, InteractType, InteractSubtype, Environment, PageId, ImpressionType } from 'sunbird';
+import { TabsPage, SharedPreferences, OAuthService, Interact, TelemetryService, InteractType, InteractSubtype, Environment, PageId, ImpressionType } from 'sunbird';
 import { ViewController } from 'ionic-angular/navigation/view-controller';
 import { TranslateService } from '@ngx-translate/core';
 import { ProfileType, ProfileService } from 'sunbird'
@@ -59,7 +59,7 @@ export class UserTypeSelectionPage {
   ionViewDidLoad() {
   }
 
-  ionViewDidEnter(){
+  ionViewDidEnter() {
     this.telemetryService.impression(
       generateImpressionEvent(ImpressionType.VIEW,
         PageId.USER_TYPE_SELECTION,
@@ -107,7 +107,23 @@ export class UserTypeSelectionPage {
       profileRequest.profileType = ProfileType.STUDENT;
     }
 
-    this.profileService.createProfile(profileRequest,
+    this.profileService.setCurrentProfile(true, profileRequest, res => {
+      this.profileService.getCurrentUser(success => {
+        let userId = JSON.parse(success).uid
+        if (userId !== "null") this.preference.putString('GUEST_USER_ID_BEFORE_LOGIN', userId);
+        this.navCtrl.push(TabsPage, {
+          loginMode: 'guest'
+        });
+      },
+        error => {
+          console.error("Error", error);
+          return "null";
+        });
+    },
+      err => {
+        console.error("Error", err);
+      });
+    /* this.profileService.createProfile(profileRequest,
       (success: any) => {
         console.log("createProfile success : " + success);
         if (success) {
@@ -119,9 +135,20 @@ export class UserTypeSelectionPage {
       },
       (errorResponse: any) => {
         console.log("createProfile success : " + errorResponse);
-      })
+      }) */
 
   }
+
+  getCurrentUserId(): any {
+    this.profileService.getCurrentUser(success => {
+      return JSON.parse(success).uid;
+    },
+      error => {
+        console.error("Error", error);
+        return "null";
+      });
+  }
+
 
   setUser(uid: string) {
     this.profileService.setCurrentUser(uid,
@@ -141,8 +168,8 @@ export class UserTypeSelectionPage {
     interact.subType = InteractSubtype.CONTINUE_CLICKED;
     interact.pageId = PageId.USER_TYPE_SELECTION;
     interact.id = PageId.USER_TYPE_SELECTION;
-    let values =new Map();
-    values["UserType"]=userType;
+    let values = new Map();
+    values["UserType"] = userType;
     interact.valueMap = values;
     interact.env = Environment.HOME;
     this.telemetryService.interact(interact);

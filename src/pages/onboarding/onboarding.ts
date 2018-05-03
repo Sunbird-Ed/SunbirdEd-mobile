@@ -1,6 +1,6 @@
 import { Component, NgZone } from '@angular/core';
 import { NavController, LoadingController } from 'ionic-angular';
-import { TabsPage, OAuthService, ContainerService, UserProfileService, AuthService, TenantInfoRequest, Interact, InteractType, InteractSubtype, Environment, TelemetryService, PageId, ImpressionType } from 'sunbird';
+import { TabsPage, OAuthService, ContainerService, UserProfileService, ProfileService, Profile,  ProfileType, AuthService, TenantInfoRequest, Interact, InteractType, InteractSubtype, Environment, TelemetryService, PageId, ImpressionType, SharedPreferences } from 'sunbird';
 import { UserTypeSelectionPage } from '../user-type-selection/user-type-selection';
 
 import { initGuestTabs, initUserTabs } from '../../app/module.service';
@@ -20,9 +20,11 @@ export class OnboardingPage {
     private container: ContainerService,
     private zone: NgZone,
     private userProfileService: UserProfileService,
+    private profileService: ProfileService,
     private authService: AuthService,
     private telemetryService: TelemetryService,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private preferences: SharedPreferences
   ) {
 
     this.slides = [
@@ -135,6 +137,26 @@ export class OnboardingPage {
           };
           this.userProfileService.getUserProfileDetails(req, res => {
             let r = JSON.parse(res);
+            let profileRequest = {
+              uid: r.response.userId,
+              handle: r.response.userId, //TODO check with nikhil
+              avatar: "avatar",
+              language: "en",
+              age: -1,
+              day: -1,
+              month: -1,
+              standard: -1,
+              profileType: ProfileType.TEACHER
+            };
+            this.profileService.setCurrentProfile(false, profileRequest,
+              (res: any) => {
+                //TODO: Do we need to ignore or use, check with nikhil
+                resolve(r.response.rootOrg.slug);
+              },
+              (err: any) => {
+                reject(err);
+            });
+
             resolve(r.response.rootOrg.slug);
           }, error => {
             reject(error);
@@ -148,7 +170,32 @@ export class OnboardingPage {
   browseAsGuest() {
     this.generateInteractEvent();
     initGuestTabs(this.container);
-    this.navCtrl.push(UserTypeSelectionPage);
+    this.preferences.getString('GUEST_USER_ID_BEFORE_LOGIN', (val) => {
+      if(val != "") {
+        let profileRequest = {
+          uid: val,
+          handle: "Guest1",
+          avatar: "avatar",
+          language: "en",
+          age: -1,
+          day: -1,
+          month: -1,
+          standard: -1,
+          profileType: ProfileType.TEACHER
+        };
+        this.profileService.setCurrentProfile(true, profileRequest, res => {
+          this.navCtrl.push(TabsPage, {
+            loginMode: 'guest'
+          });
+        }, err => {
+          this.navCtrl.push(UserTypeSelectionPage);
+        });
+      } else {
+        this.navCtrl.push(UserTypeSelectionPage);
+      }
+    })
+
+
   }
 
   generateInteractEvent() {

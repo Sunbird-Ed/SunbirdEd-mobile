@@ -16,7 +16,6 @@ export class UserSearchComponent {
   searchInput: string = "";
   userList: any = [];
   fallBackImage: string = "./assets/imgs/ic_profile_default.png";
-  inactive: string = "Inactive";
 
   enableInfiniteScroll: boolean = false;
 
@@ -78,6 +77,14 @@ export class UserSearchComponent {
         }
       }
     });
+  }
+
+  /**
+   * fires on scroll end.
+   * @param {object} event
+   */
+  onScrollEnd(event: any): void {
+    console.log("end of scroll");
   }
 
   onCancel(): void {

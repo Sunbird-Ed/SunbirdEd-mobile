@@ -54,7 +54,7 @@ export class ViewMoreActivityListComponent {
    */
   constructor(navCtrl: NavController, navParams: NavParams, zone: NgZone, private _sanitizer: DomSanitizer) {
     console.log('View more activity Component');
-    this.defaultImg = 'assets/imgs/ic_action_course.png';
+    this.defaultImg = 'assets/imgs/ic_launcher.png';
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.zone = zone;

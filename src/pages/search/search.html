@@ -13,6 +13,9 @@
   <div class="spinner-container" *ngIf="showLoader">
     <ion-spinner padding class="loader"></ion-spinner>
   </div>
+  <div text-center *ngIf="isEmptyResult">
+    <h4>{{ 'EMPTY_SEARCH_RESULTS' | translate }}</h4>
+  </div>
   <ion-list no-lines *ngIf="dialCodeResult && dialCodeResult.length" class="collection-list">
     <div ion-item no-margin *ngFor="let result of dialCodeResult" no-padding>
       <div no-lines class="collection-header" margin-start>
@@ -27,11 +30,13 @@
         <ion-list *ngFor="let content of result.content" class="content-list" margin-start>
           <ion-item no-padding (click)="openContent(result, content,index)">
             <ion-avatar item-start>
-              <img src="./assets/imgs/ic_logo.png" width="24px" height="24px">
+              <img src="{{ defaultAppIcon }}" width="24px" height="24px">
             </ion-avatar>
             <h2> {{ (content.name && content.name.length > 30) ? (content.name | slice:0:30) + '...' : (content.name) }}</h2>
-            <p><span>{{ content.contentType }}</span>
-            <span *ngIf="content.size"> • {{ content.size | fileSize: 0}}</span></p>
+            <p>
+              <span>{{ content.contentType }}</span>
+              <span *ngIf="content.size"> • {{ content.size | fileSize: 0}}</span>
+            </p>
           </ion-item>
         </ion-list>
       </div>
@@ -43,11 +48,13 @@
     <ion-list *ngFor="let content of dialCodeContentResult; let i = index" class="content-list" margin-start>
       <ion-item no-padding (click)="openContent(undefined, content,index)">
         <ion-avatar item-start>
-          <img src="./assets/imgs/ic_logo.png" width="24px" height="24px">
+          <img src="{{ defaultAppIcon }}" width="24px" height="24px">
         </ion-avatar>
         <h2> {{ (content.name && content.name.length > 30) ? (content.name | slice:0:30) + '...' : (content.name) }}</h2>
-        <p><span>{{ content.contentType }}</span>
-        <span *ngIf="content.size"> • {{ content.size | fileSize: 0}}</span></p>
+        <p>
+          <span>{{ content.contentType }}</span>
+          <span *ngIf="content.size"> • {{ content.size | fileSize: 0}}</span>
+        </p>
       </ion-item>
     </ion-list>
     <div class="divider"></div>
@@ -57,8 +64,10 @@
   <ion-list *ngIf="searchContentResult && searchContentResult.length">
     <ion-item *ngFor="let content of searchContentResult; let i = index" (click)="openContent(undefined, content,i)">
       <ion-avatar item-start>
-        <img-loader src="{{ content.appIcon }}" backgroundSize="cover" width="100%" height="100%" spinner="true" fallback="./assets/imgs/ic_logo.png"
-          fallbackAsPlaceholder="true" useImg></img-loader>
+        <!-- <img-loader src="{{ content.appIcon }}" backgroundSize="cover" width="100%" height="100%" spinner="true" fallback="./assets/imgs/ic_logo.png"
+          fallbackAsPlaceholder="true" useImg></img-loader> -->
+          <img src="{{ content.appIcon || defaultAppIcon }}" width="24px" height="24px" />
+
       </ion-avatar>
       <h2> {{ (content.name && content.name.length > 30) ? (content.name | slice:0:30) + '...' : (content.name) }}</h2>
       <p>

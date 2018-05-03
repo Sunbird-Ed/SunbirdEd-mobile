@@ -69,6 +69,7 @@
     "COURSE_PROGRESS_COMPLETED_1": "Completed:",
     "CREATED_BY": "CREATED BY",
     "CREATED_BY_SMALL": "Created by",
+    "CREATED_BY_ME": "Created by me",
     "CREATOR_NAME_NOT_AVAILABLE": "Creator's name unavailable",
     "CREATOR_OF": "Created by",
     "CREDITS": "CREDITS",
@@ -197,6 +198,7 @@
     "LICENSE": "LICENSE",
     "LINKEDIN": "LinkedIn",
     "LOADING_CONTENT": "Loading content",
+    "LOADING_CONTENTS": "Loading contents {{%s}} %",
     "LOGGED_OUT": "Logged out",
     "LOGOUT": "Sign out",
     "MEDIUM": "Medium of instruction",
@@ -396,5 +398,6 @@
     "SIGNIN_TO_UNBLOCK_ALL_THE_BENFITS": "Sign in to unblock all the benefits that Sunbird has to offer.",
     "TEACHER_ROLE_DESC1": "Browse through courses",
     "TEACHER_ROLE_DESC2": "Find relevant resources",
-    "TEACHER_ROLE_DESC3": "Browse through groups"
+    "TEACHER_ROLE_DESC3": "Browse through groups",
+    "INACTIVE": "Inactive"
   }

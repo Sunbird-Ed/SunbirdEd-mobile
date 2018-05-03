@@ -45,7 +45,7 @@ export class CourseCard {
    * @param navCtrl To navigate user from one page to another
    */
   constructor(public navCtrl: NavController) {
-    this.defaultImg = 'assets/imgs/ic_action_course.png';
+    this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
 
   /**
