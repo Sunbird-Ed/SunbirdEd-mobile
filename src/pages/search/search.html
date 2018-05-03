@@ -13,6 +13,9 @@
   <div class="spinner-container" *ngIf="showLoader">
     <ion-spinner padding class="loader"></ion-spinner>
   </div>
+  <div text-center *ngIf="isEmptyResult">
+    <h4>{{ 'EMPTY_SEARCH_RESULTS' | translate }}</h4>
+  </div>
   <ion-list no-lines *ngIf="dialCodeResult && dialCodeResult.length" class="collection-list">
     <div ion-item no-margin *ngFor="let result of dialCodeResult" no-padding>
       <div no-lines class="collection-header" margin-start>
@@ -30,8 +33,10 @@
               <img src="./assets/imgs/ic_logo.png" width="24px" height="24px">
             </ion-avatar>
             <h2> {{ (content.name && content.name.length > 30) ? (content.name | slice:0:30) + '...' : (content.name) }}</h2>
-            <p><span>{{ content.contentType }}</span>
-            <span *ngIf="content.size"> • {{ content.size | fileSize: 0}}</span></p>
+            <p>
+              <span>{{ content.contentType }}</span>
+              <span *ngIf="content.size"> • {{ content.size | fileSize: 0}}</span>
+            </p>
           </ion-item>
         </ion-list>
       </div>
@@ -46,8 +51,10 @@
           <img src="./assets/imgs/ic_logo.png" width="24px" height="24px">
         </ion-avatar>
         <h2> {{ (content.name && content.name.length > 30) ? (content.name | slice:0:30) + '...' : (content.name) }}</h2>
-        <p><span>{{ content.contentType }}</span>
-        <span *ngIf="content.size"> • {{ content.size | fileSize: 0}}</span></p>
+        <p>
+          <span>{{ content.contentType }}</span>
+          <span *ngIf="content.size"> • {{ content.size | fileSize: 0}}</span>
+        </p>
       </ion-item>
     </ion-list>
     <div class="divider"></div>

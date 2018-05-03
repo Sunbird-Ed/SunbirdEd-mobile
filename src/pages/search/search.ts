@@ -49,6 +49,8 @@ export class SearchPage {
 
   showEmptyMessage: boolean;
 
+  isEmptyResult: boolean = false;
+
   constructor(private contentService: ContentService,
     private telemetryService: TelemetryService,
     private navParams: NavParams,
@@ -130,9 +132,13 @@ export class SearchPage {
             this.processDialCodeResult(response.result);
           } else {
             this.searchContentResult = response.result.contentDataList;
+            this.isEmptyResult = false;
           }
 
+
           this.updateFilterIcon();
+        } else {
+          this.isEmptyResult = true;
         }
         this.showLoader = false;
       });
@@ -173,8 +179,13 @@ export class SearchPage {
         if (response.status && response.result) {
           this.searchContentResult = response.result.contentDataList;
           this.updateFilterIcon();
+
+          this.isEmptyResult = false;
+
           this.generateImpressionEvent();
           this.generateLogEvent(response.result);
+        } else {
+          this.isEmptyResult = true;
         }
         this.showEmptyMessage = this.searchContentResult.length === 0 ? true : false;
         this.showLoader = false;
@@ -304,6 +315,11 @@ export class SearchPage {
     this.dialCodeResult = [];
     let addedContent = new Array<any>();
 
+    if (contentArray && contentArray.length == 1) {
+      this.showContentDetails(contentArray[0]);
+      return;
+    }
+
     if (collectionArray && collectionArray.length > 0) {
       collectionArray.forEach((collection) => {
         contentArray.forEach((content) => {
@@ -332,8 +348,11 @@ export class SearchPage {
       })
     }
 
-    if (contentArray && contentArray.length == 1) {
-      return;
+
+    if (this.dialCodeResult.length == 0 && this.dialCodeContentResult.length == 0) {
+      this.isEmptyResult = true;
+    } else {
+      this.isEmptyResult = false;
     }
   }
 
