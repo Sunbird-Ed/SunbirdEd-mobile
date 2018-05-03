@@ -74,6 +74,8 @@ course-card {
     .badge-md-light{
       color: map-get($colors, light);;
       background-color: #1c1c1c;
+      font-weight: 400;
+      font-size: xx-small;
     }
     .padding-top-8 {
       padding-top: 8px !important;

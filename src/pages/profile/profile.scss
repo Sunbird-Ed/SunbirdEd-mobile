@@ -228,3 +228,9 @@ page-profile {
 .display-inline-block {
     display: inline-block !important;
 }
+.courses-holder{
+  height: 46%;
+  .scroll-content{
+    padding-left: 0px !important;
+  }
+}

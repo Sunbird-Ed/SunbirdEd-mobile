@@ -175,8 +175,8 @@
     </ion-list>
 
     <!-- User's Creations -->
-    <div *ngIf="enrolledCourse.length">
-        <span class="section-title">{{ 'CREATED_BY_SMALL' | translate }}</span>
+    <div *ngIf="enrolledCourse && enrolledCourse.length" class="courses-holder">
+        <span class="section-title">{{ 'CREATED_BY_ME' | translate }}</span>
         <ion-scroll scrollX="true" class="course-scroll-dimensions" no-padding>
             <div class="inner">
                 <course-card *ngFor="let courseItem of enrolledCourse" [course]="courseItem" [layoutName]="'Popular'" [onProfile]="onProfile"></course-card>
