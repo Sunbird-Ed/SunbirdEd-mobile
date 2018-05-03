@@ -8,6 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { AppVersion } from "@ionic-native/app-version";
 import { SharedPreferences, Interact, InteractType, InteractSubtype } from "sunbird";
 import { Impression, ImpressionType, Environment, PageId, TelemetryService } from 'sunbird';
+import { generateInteractEvent } from '../../app/telemetryutil';
 
 const KEY_SELECTED_LANGUAGE = "selected_language";
 const KEY_SUNBIRD_SUPPORT_FILE_PATH = "sunbird_support_file_path";
@@ -66,33 +67,24 @@ export class SettingsPage {
   }
 
   languageSetting() {
-    this.generateInteractEvent(InteractSubtype.LANGUAGE_CLICKED);
+    this.generateInteractTelemetry(InteractType.TOUCH,InteractSubtype.LANGUAGE_CLICKED);
     this.navCtrl.push(LanguageSettingsPage, {
       isFromSettings: true
     });
   }
 
   dataSync() {
-    this.generateInteractEvent(InteractSubtype.DATA_SYNC_CLICKED);
+    this.generateInteractTelemetry(InteractType.TOUCH,InteractSubtype.DATA_SYNC_CLICKED);
     this.navCtrl.push(DatasyncPage)
   }
 
   aboutUs() {
-    this.generateInteractEvent(InteractSubtype.ABOUT_APP_CLICKED);
+    this.generateInteractTelemetry(InteractType.TOUCH,InteractSubtype.ABOUT_APP_CLICKED);
     this.navCtrl.push(AboutUsPage)
   }
 
-  generateInteractEvent(subType : string) {
-    let interact = new Interact();
-    interact.type = InteractType.TOUCH;
-    interact.subType = subType;
-    interact.pageId = PageId.SETTINGS;
-    interact.id = PageId.SETTINGS;
-    interact.env = Environment.SETTINGS;
-    this.telemetryService.interact(interact);
-  }
-
   sendMessage() {
+    this.generateInteractTelemetry(InteractType.TOUCH,InteractSubtype.SUPPORT_CLICKED);
     this.preference.getString(KEY_SUNBIRD_SUPPORT_FILE_PATH, val => {
       if (val === undefined || val === "" || val === null) {
         //do nothing
@@ -112,10 +104,20 @@ export class SettingsPage {
   }
 
   shareApp() {
+    this.generateInteractTelemetry(InteractType.TOUCH,InteractSubtype.SHARE_APP_CLICKED);
+    this.generateInteractTelemetry(InteractType.TOUCH,InteractSubtype.SHARE_APP_INITIATED);
     this.socialSharing.share().then(() => {
-      console.log("Shared");
+      this.generateInteractTelemetry(InteractType.OTHER,InteractSubtype.SHARE_APP_SUCCESS);
     }).catch(() => {
       //Error
     });
+  }
+
+  generateInteractTelemetry(interactionType, interactSubtype) {
+    this.telemetryService.interact(generateInteractEvent(
+      interactionType,interactSubtype,
+      PageId.SETTINGS,
+      Environment.SETTINGS,null
+    ));
   }
 }

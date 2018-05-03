@@ -16,6 +16,7 @@ export function generateInteractEvent(interactType, subType, env, pageId,values:
     interact.type = interactType;
     interact.subType = subType;
     interact.pageId = pageId;
+    interact.id = pageId;
     interact.env = env;
     if(values!== undefined){
         interact.valueMap=values;
