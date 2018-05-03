@@ -396,5 +396,6 @@
     "SIGNIN_TO_UNBLOCK_ALL_THE_BENFITS": "Sign in to unblock all the benefits that Sunbird has to offer.",
     "TEACHER_ROLE_DESC1": "Browse through courses",
     "TEACHER_ROLE_DESC2": "Find relevant resources",
-    "TEACHER_ROLE_DESC3": "Browse through groups"
+    "TEACHER_ROLE_DESC3": "Browse through groups",
+    "INACTIVE": "Inactive"
   }
