@@ -6,19 +6,20 @@
     </ion-navbar>
 </ion-header>
 
-<ion-content>
+<ion-content (ionScrollEnd)="onScrollEnd($event, user)">
     <ion-list>
         <ion-item *ngFor="let user of userList" (click)="user?.status && openUserProfile(user?.id)">
             <ion-avatar item-start>
                 <img src="{{ user?.avatar || fallBackImage }}" class="avatar" />
             </ion-avatar>
-            <h2 class="ellipsis font-weight-500" text-capitalize>{{ user?.firstName }} {{ user?.lastName }}</h2>
+            <h2 class="ellipsis font-weight-700" text-capitalize>{{ user?.firstName }} {{ user?.lastName }}</h2>
             <div>
                 <ion-badge *ngIf="user?.status" color="title" item-end>{{ 'ACTIVE' | translate }}</ion-badge>
-                <ion-badge *ngIf="!user?.status" color="title" item-end>{{ inactive }}</ion-badge>
+                <ion-badge *ngIf="!user?.status" color="title" item-end>{{ 'INACTIVE' | translate }}</ion-badge>
             </div>
         </ion-item>
     </ion-list>
+    <h5 *ngIf="!userList?.length" text-center>{{'EMPTY_SEARCH_RESULTS' | translate}}</h5>
     <ion-infinite-scroll *ngIf="enableInfiniteScroll" (ionInfinite)="doInfiniteScroll($event)">
         <ion-infinite-scroll-content></ion-infinite-scroll-content>
     </ion-infinite-scroll>

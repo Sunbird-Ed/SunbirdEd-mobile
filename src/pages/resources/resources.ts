@@ -1,14 +1,16 @@
 import { Component, NgZone, ViewChild, OnInit } from '@angular/core';
-import { PageAssembleService, PageAssembleCriteria, ContentService, AuthService, FrameworkService, CategoryRequest, Impression, ImpressionType, PageId, Environment, TelemetryService, FrameworkDetailsRequest, InteractType, InteractSubtype, ProfileService } from "sunbird";
-import { NavController, PopoverController, Events } from 'ionic-angular';
+import { PageAssembleService, PageAssembleCriteria, ContentService, AuthService, FrameworkService, CategoryRequest, Impression, ImpressionType, PageId, Environment, TelemetryService, FrameworkDetailsRequest, InteractType, InteractSubtype, ProfileService, ContentDetailRequest } from "sunbird";
+import { NavController, PopoverController, Events, ToastController } from 'ionic-angular';
 import * as _ from 'lodash';
 import { Slides } from 'ionic-angular';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
 import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
 import { ResourceFilter, ResourceFilterCallback } from './filters/resource.filter';
-import { FilterOptions, onBoardingSlidesCallback } from './onboarding-alert/onboarding-alert';
 import { generateInteractEvent, Map } from '../../app/telemetryutil';
+import { CourseDetailPage } from '../course-detail/course-detail';
+import { CollectionDetailsPage } from '../collection-details/collection-details';
+import { ContentDetailsPage } from '../content-details/content-details';
 
 
 
@@ -56,7 +58,7 @@ export class ResourcesPage implements OnInit {
 	public source = "resource";
 
 	constructor(public navCtrl: NavController, private pageService: PageAssembleService, private ngZone: NgZone, private popupCtrl: PopoverController,
-		contentService: ContentService, authService: AuthService, private qrScanner: SunbirdQRScanner, private popCtrl: PopoverController, private telemetryService: TelemetryService, private events: Events, private profileService: ProfileService) {
+		contentService: ContentService, authService: AuthService, private qrScanner: SunbirdQRScanner, private popCtrl: PopoverController, private telemetryService: TelemetryService, private events: Events, private profileService: ProfileService, private toastCtrl: ToastController) {
 		this.contentService = contentService;
 		this.authService = authService;
 
@@ -99,7 +101,7 @@ export class ResourcesPage implements OnInit {
 	 * Get saved content
 	 */
 	setSavedContent() {
-		this.localResources = [];
+		// this.localResources = [];
 		this.showLoader = true;
 		const requestParams = {
 			contentTypes: ['Story', 'Worksheet', 'Collection', 'Game', 'TextBook', 'Resource', 'LessonPlan']
@@ -266,7 +268,22 @@ export class ResourcesPage implements OnInit {
 				that.navCtrl.push(SearchPage, { dialCode: dialCode });
 			},
 			content(scanResult, contentId) {
-				// that.navCtrl.push(SearchPage);
+        // that.navCtrl.push(SearchPage);
+        let request: ContentDetailRequest = {
+          contentId: contentId
+        }
+        that.contentService.getContentDetail(request, (response)=> {
+          let data = JSON.parse(response);
+          that.showContentDetails(data.result);
+        }, (error)=> {
+          console.log("Error " + error);
+          let toast = that.toastCtrl.create({
+            message: "No content found associated with that QR code",
+            duration: 3000
+          })
+
+          toast.present();
+        });
 			}
 		}
 
@@ -292,7 +309,26 @@ export class ResourcesPage implements OnInit {
 		];
 
 		this.navCtrl.push(SearchPage, { contentType: contentType });
-	}
+  }
+
+  showContentDetails(content) {
+    if (content.contentType === 'Course') {
+      console.log('Calling course details page');
+      this.navCtrl.push(CourseDetailPage, {
+        content: content
+      })
+    } else if (content.mimeType === 'application/vnd.ekstep.content-collection') {
+      console.log('Calling collection details page');
+      this.navCtrl.push(CollectionDetailsPage, {
+        content: content
+      })
+    } else {
+      console.log('Calling content details page');
+      this.navCtrl.push(ContentDetailsPage, {
+        content: content
+      })
+    }
+  }
 
 	showFilter() {
 		this.telemetryService.interact(

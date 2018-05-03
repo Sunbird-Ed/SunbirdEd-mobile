@@ -1,5 +1,5 @@
-import { IonicPage } from "ionic-angular/navigation/ionic-page";
-import { Component } from '@angular/core';
+import { IonicPage, Nav } from "ionic-angular";
+import { Component, ViewChild } from '@angular/core';
 import { NavController } from "ionic-angular/navigation/nav-controller";
 import { NavParams } from "ionic-angular/navigation/nav-params";
 import { ViewController } from "ionic-angular/navigation/view-controller";
@@ -8,7 +8,7 @@ import { ToastController, App } from "ionic-angular";
 import { SettingsPage } from "../../settings/settings";
 import { OAuthService } from "sunbird";
 import { OnboardingPage } from "../../onboarding/onboarding";
-import { Interact, InteractType, InteractSubtype, PageId, Environment, TelemetryService } from "sunbird";
+import { Interact, InteractType, InteractSubtype, PageId, Environment, TelemetryService, ProfileService } from "sunbird";
 import { generateInteractEvent } from "../../../app/telemetryutil";
 
 @Component({
@@ -17,6 +17,7 @@ import { generateInteractEvent } from "../../../app/telemetryutil";
 })
 
 export class OverflowMenuComponent {
+    @ViewChild(Nav) nav;
     items: Array<string>;
 
     constructor(public navCtrl: NavController,
@@ -25,7 +26,8 @@ export class OverflowMenuComponent {
         private toastCtrl: ToastController,
         private oauth: OAuthService,
         private telemetryService: TelemetryService,
-        private app: App
+        private app: App,
+        private profileService: ProfileService
     ) {
         this.items = this.navParams.get("list");
     }
@@ -75,7 +77,13 @@ export class OverflowMenuComponent {
                         valuesMap));
 
                 this.oauth.doLogOut();
-                this.navCtrl.setRoot(OnboardingPage);
+                this.profileService.setAnonymousUser(success => {
+
+                },
+                error => {
+
+                });
+                this.app.getRootNav().setRoot(OnboardingPage);
                 this.telemetryService.interact(
                     generateInteractEvent(InteractType.OTHER,
                         InteractSubtype.LOGOUT_SUCCESS,

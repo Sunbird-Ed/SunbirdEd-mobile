@@ -6,7 +6,7 @@
         </ion-title>
         <ion-buttons end>
             <button ion-button icon-only (click)="gotoSearchPage()">
-                <ion-icon name="search"></ion-icon>
+                <img src="assets/imgs/ic_action_search.png" class="tool-icon" float-end/>
             </button>
             <button ion-button icon-only (click)="showOverflowMenu($event)">
                 <ion-icon name="more" float-end></ion-icon>
@@ -175,8 +175,8 @@
     </ion-list>
 
     <!-- User's Creations -->
-    <div *ngIf="enrolledCourse.length">
-        <span class="section-title">{{ 'CREATED_BY_SMALL' | translate }}</span>
+    <div *ngIf="enrolledCourse && enrolledCourse.length" class="courses-holder">
+        <span class="section-title">{{ 'CREATED_BY_ME' | translate }}</span>
         <ion-scroll scrollX="true" class="course-scroll-dimensions" no-padding>
             <div class="inner">
                 <course-card *ngFor="let courseItem of enrolledCourse" [course]="courseItem" [layoutName]="'Popular'" [onProfile]="onProfile"></course-card>
@@ -267,16 +267,16 @@
                 <span text-uppercase class="info-title">{{ 'SOCIAL' | translate }}</span>
             </ion-col>
             <ion-col col-7 text-end class="social-icon-size">
-                <a [href]="fbLink" *ngIf="fbLink">
+                <a (click)="openLink(fbLink)" *ngIf="fbLink">
                     <ion-icon color="facebook" name="logo-facebook"></ion-icon>
                 </a>
-                <a [href]="twitterLink" *ngIf="twitterLink">
+                <a (click)="openLink(twitterLink)" *ngIf="twitterLink">
                     <ion-icon color="twitter" name="logo-twitter"></ion-icon>
                 </a>
-                <a [href]="linkedInLink" *ngIf="linkedInLink">
+                <a (click)="openLink(linkedInLink)" *ngIf="linkedInLink">
                     <ion-icon *ngIf="linkedInLink" color="linkedIn" name="logo-linkedin"></ion-icon>
                 </a>
-                <a [href]="blogLink" *ngIf="blogLink">
+                <a (click)="openLink(blogLink)" *ngIf="blogLink">
                     <ion-icon name="create"></ion-icon>
                 </a>
             </ion-col>

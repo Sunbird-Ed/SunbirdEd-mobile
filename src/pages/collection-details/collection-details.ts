@@ -7,7 +7,7 @@ import { ContentDetailsPage } from '../content-details/content-details';
 import { CourseDetailPage } from '../course-detail/course-detail';
 import { ContentActionsComponent } from '../../component/content-actions/content-actions';
 import { ConfirmAlertComponent } from '../../component/confirm-alert/confirm-alert';
-
+import { TranslateService } from '@ngx-translate/core';
 
 /**
  * Generated class for the CollectionDetailsPage page.
@@ -116,6 +116,8 @@ export class CollectionDetailsPage {
    */
   downloadContentsSize: string;
 
+  downloadPercentage: number;
+
   /**
    * Contains reference of content service
    */
@@ -157,7 +159,7 @@ export class CollectionDetailsPage {
     public popoverCtrl: PopoverController,
     private fileUtil: FileUtil,
     private platform : Platform,
-    private telemetryService : TelemetryService) {
+    private telemetryService : TelemetryService, private translate: TranslateService) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
@@ -194,7 +196,7 @@ export class CollectionDetailsPage {
         console.log('error while loading content details', error);
         const message = 'Something went wrong, please check after some time';
         loader.dismiss();
-        // this.showErrorMessage(message, true);
+        // this.showMessage(message, true);
       });
   }
 
@@ -294,7 +296,7 @@ export class CollectionDetailsPage {
             }
           });
           if (this.queuedIdentifiers.length === 0) {
-            this.showErrorMessage('Unable to fetch content', false);
+            this.showMessage('Unable to fetch content', false);
           }
         }
         console.log('Success: content imported successfully... @@@', data);
@@ -305,7 +307,7 @@ export class CollectionDetailsPage {
         this.zone.run(() => {
           console.log('error while loading content details', error);
           const message = 'Something went wrong, please check after some time';
-          this.showErrorMessage(message, false);
+          this.showMessage(message, false);
           this.showChildrenLoader = false;
         })
       });
@@ -436,6 +438,7 @@ export class CollectionDetailsPage {
    */
   resetVariables() {
     this.isDownloadStarted = false;
+    this.showLoading = false;
     this.downloadProgress = '';
     this.cardData = '';
     this.childrenData = [];
@@ -445,10 +448,10 @@ export class CollectionDetailsPage {
     // Added on date 16-april
     this.queuedIdentifiers = [];
     this.isDepthChild = this.isDepthChild;
-    this.isDownloadStarted = false;
     this.showDownloadBtn = false;
     this.isDownlaodCompleted = false;
     this.currentCount = 0;
+    this.downloadPercentage = 0;
   }
 
   /**
@@ -464,7 +467,7 @@ export class CollectionDetailsPage {
           this.downloadProgress = res.data.downloadProgress === -1 ? 0 : res.data.downloadProgress;
           this.showLoading = true;
 
-          if (this.downloadProgress === 100) {
+          if (this.downloadProgress === 100 && !this.isDownloadStarted) {
             this.showLoading = false;
           }
         }
@@ -473,25 +476,39 @@ export class CollectionDetailsPage {
           if (this.queuedIdentifiers.length && this.isDownloadStarted) {
             if (_.includes(this.queuedIdentifiers, res.data.identifier)) {
               this.currentCount++;
-              console.log('current download count ===>>>>', this.currentCount);
-              console.log('queuedIdentifiers count ===>>>>', this.queuedIdentifiers.length);
+              console.log('current download count:', this.currentCount);
+              console.log('queuedIdentifiers count:', this.queuedIdentifiers.length);
+              this.downloadPercentage = +((this.currentCount / this.queuedIdentifiers.length ) * (100)).toFixed(0);
             }
             if (this.queuedIdentifiers.length === this.currentCount) {
               this.isDownloadStarted = false;
               this.showDownloadBtn = false;
               this.isDownlaodCompleted = true;
               this.contentDetail.isAvailableLocally = true;
+              this.showLoading = false;
+              this.downloadPercentage = 0;
+              this.events.publish('savedResources:update', {
+                update: true
+              });
             }
           } else {
             this.setChildContents();
+            this.events.publish('savedResources:update', {
+              update: true
+            });
           }
-          this.events.publish('savedResources:update', {
-            update: true
-          });
         }
 
       });
     });
+  }
+
+  translateAndDisplayMessage(constant: any, isPop: boolean = false) {
+    this.translate.get(constant).subscribe(
+      (value: any) => {
+        this.showMessage(value, isPop);
+      }
+    );
   }
 
   /**
@@ -500,10 +517,11 @@ export class CollectionDetailsPage {
    * @param {string}  message Error message
    * @param {boolean} isPop True = navigate to previous state
    */
-  showErrorMessage(message: string, isPop: boolean | false): void {
+  showMessage(message: string, isPop: boolean | false): void {
     if (this.isDownloadStarted) {
       this.showDownloadBtn = true;
       this.isDownloadStarted = false;
+      this.showLoading = false;
     }
 
     let toast = this.toastCtrl.create({
@@ -527,7 +545,9 @@ export class CollectionDetailsPage {
    */
   downloadAllContent(): void {
     this.downloadProgress = '0 %';
+    this.showLoading = true;
     this.isDownloadStarted = true;
+    this.downloadPercentage = 0;
     this.importContent(this.downloadIdentifiers, true);
   }
 
@@ -573,11 +593,13 @@ export class CollectionDetailsPage {
       ev: event
     });
     popover.onDidDismiss(data => {
-      console.log('Yaahooooo.... content deleted successfully', data);
       if (data === 0) {
+        this.translateAndDisplayMessage('MSG_RESOURCE_DELETED', false)
         this.resetVariables();
         this.setContentDetails(this.identifier, false);
-      } else {
+        this.events.publish('savedResources:update', {
+          update: true
+        });
       }
     });
   }

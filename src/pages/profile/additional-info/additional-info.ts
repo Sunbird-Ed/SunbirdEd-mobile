@@ -298,13 +298,14 @@ export class AdditionalInfoComponent {
   updateInfo(req: any): void {
     this.userProfileService.updateUserInfo(req,
       (res: any) => {
-        this.getToast(JSON.parse(res).message).present();
+        this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
         setTimeout(() => {
           this.navCtrl.setRoot(ProfilePage);
         }, 2000);
       },
       (err: any) => {
-        console.log("Error", err);
+        this.getToast(this.translateMessage('PROFILE_UPDATE_FAILED')).present();
+        console.error("Error", err);
       });
   }
 

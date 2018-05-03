@@ -105,7 +105,7 @@
     </ion-item>
 
     <ion-label class="social-label" stacked>{{'SOCIAL' | translate}}
-      <button item-right clear small icon-only color="dark" (click)="toggleLock('location')" style="float:right; margin-top:0; background-color: transparent">
+      <button item-right clear small icon-only color="dark" (click)="toggleLock('location')" style="float:right; margin-top:0; background-color: transparent; padding-right: 0;font-size: 1.4em;">
         <ion-icon small name="{{ profileVisibility?.webPages == 'private' ? 'lock' : 'unlock' }}" class="lock-position"></ion-icon>
       </button>
     </ion-label>

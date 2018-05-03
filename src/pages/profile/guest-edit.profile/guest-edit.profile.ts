@@ -108,12 +108,12 @@ export class GuestEditProfilePage {
       });
   }
 
-  checkPrevValue(index = 0, currentField, prevSelectedValue = '', ) {
+  checkPrevValue(index = 0, currentField, prevSelectedValue = [], ) {
     if (index != 0) {
       let request: CategoryRequest = {
         currentCategory: this.categories[index].code,
         prevCategory: this.categories[index - 1].code,
-        selectedCode: [prevSelectedValue]
+        selectedCode: prevSelectedValue
       }
       this.getCategoryData(request, currentField);
     } else {
@@ -140,14 +140,14 @@ export class GuestEditProfilePage {
           subjects: [],
           medium: []
         });
-        this.checkPrevValue(2, 'subjectList', this.guestEditForm.value.subjects);
+        this.checkPrevValue(2, 'subjectList', this.guestEditForm.value.grades);
         break;
 
       case 2:
         this.guestEditForm.patchValue({
           medium: [],
         });
-        this.checkPrevValue(3, 'mediumList', this.guestEditForm.value.medium);
+        this.checkPrevValue(3, 'mediumList', this.guestEditForm.value.subjects);
         break;
     }
   }

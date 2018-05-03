@@ -49,6 +49,9 @@ export class SearchPage {
 
   showEmptyMessage: boolean;
 
+  defaultAppIcon: string;
+  isEmptyResult: boolean = false;
+
   constructor(private contentService: ContentService,
     private telemetryService: TelemetryService,
     private navParams: NavParams,
@@ -61,6 +64,7 @@ export class SearchPage {
     this.init();
 
     console.log("Network Type : " + this.network.type);
+    this.defaultAppIcon = 'assets/imgs/ic_launcher.png';
   }
 
   ionViewDidEnter() {
@@ -130,10 +134,17 @@ export class SearchPage {
             this.processDialCodeResult(response.result);
           } else {
             this.searchContentResult = response.result.contentDataList;
+<<<<<<< HEAD
             console.log('searchContentResult', + this.searchContentResult);
+=======
+            this.isEmptyResult = false;
+>>>>>>> ac932338f755f4177cb2b789f9e13d5eba1be691
           }
 
+
           this.updateFilterIcon();
+        } else {
+          this.isEmptyResult = true;
         }
         this.showLoader = false;
       });
@@ -176,8 +187,13 @@ export class SearchPage {
           console.log('inside search content service');
           console.log(this.searchContentResult);
           this.updateFilterIcon();
+
+          this.isEmptyResult = false;
+
           this.generateImpressionEvent();
           this.generateLogEvent(response.result);
+        } else {
+          this.isEmptyResult = true;
         }
         this.showEmptyMessage = this.searchContentResult.length === 0 ? true : false;
         this.showLoader = false;
@@ -307,6 +323,11 @@ export class SearchPage {
     this.dialCodeResult = [];
     let addedContent = new Array<any>();
 
+    if (contentArray && contentArray.length == 1) {
+      this.showContentDetails(contentArray[0]);
+      return;
+    }
+
     if (collectionArray && collectionArray.length > 0) {
       collectionArray.forEach((collection) => {
         contentArray.forEach((content) => {
@@ -337,8 +358,11 @@ export class SearchPage {
       })
     }
 
-    if (contentArray && contentArray.length == 1) {
-      return;
+
+    if (this.dialCodeResult.length == 0 && this.dialCodeContentResult.length == 0) {
+      this.isEmptyResult = true;
+    } else {
+      this.isEmptyResult = false;
     }
   }
 

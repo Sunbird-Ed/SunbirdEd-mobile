@@ -1,5 +1,5 @@
 import { Component, OnInit, NgZone } from '@angular/core';
-import { NavController, Events, Platform } from 'ionic-angular';
+import { NavController, Events, Platform, ToastController } from 'ionic-angular';
 import { DocumentDirection } from 'ionic-angular/platform/platform';
 // import { Storage } from "@ionic/storage";
 
@@ -18,6 +18,7 @@ import {
   UserProfileService,
   TenantInfoRequest,
   PageId,
+  ContentDetailRequest,
 } from 'sunbird';
 import { CourseCard } from './../../component/card/course/course-card';
 import { HomeAnnouncementCard } from '../../component/card/home/home-announcement-card'
@@ -25,6 +26,9 @@ import { AnnouncementListComponent } from './announcement-list/announcement-list
 import { SunbirdQRScanner, QRResultCallback } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
 import { FilterPage } from '../search/filters/filter';
+import { CourseDetailPage } from '../course-detail/course-detail';
+import { CollectionDetailsPage } from '../collection-details/collection-details';
+import { ContentDetailsPage } from '../content-details/content-details';
 
 const KEY_SUNBIRD_SUPPORT_FILE_PATH = "sunbird_support_file_path";
 
@@ -78,6 +82,7 @@ export class HomePage implements OnInit {
     private ngZone: NgZone,
     private userProfileService: UserProfileService,
     private qrScanner: SunbirdQRScanner,
+    private toastCtrl: ToastController
     // private storage: Storage
   ) {
     this.getUserId();
@@ -273,10 +278,44 @@ export class HomePage implements OnInit {
       },
       content(scanResult, contentId) {
         // that.navCtrl.push(SearchPage);
+        let request: ContentDetailRequest = {
+          contentId: contentId
+        }
+        that.contentService.getContentDetail(request, (response)=> {
+          let data = JSON.parse(response);
+          that.showContentDetails(data.result);
+        }, (error)=> {
+          console.log("Error " + error);
+          let toast = that.toastCtrl.create({
+            message: "No content found associated with that QR code",
+            duration: 3000
+          })
+
+          toast.present();
+        });
       }
     }
 
     this.qrScanner.startScanner(undefined, undefined, undefined, callback,PageId.HOME);
+  }
+
+  showContentDetails(content) {
+    if (content.contentType === 'Course') {
+      console.log('Calling course details page');
+      this.navCtrl.push(CourseDetailPage, {
+        content: content
+      })
+    } else if (content.mimeType === 'application/vnd.ekstep.content-collection') {
+      console.log('Calling collection details page');
+      this.navCtrl.push(CollectionDetailsPage, {
+        content: content
+      })
+    } else {
+      console.log('Calling content details page');
+      this.navCtrl.push(ContentDetailsPage, {
+        content: content
+      })
+    }
   }
 
 }

@@ -2,10 +2,12 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams, ToastController } from 'ionic-angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { TranslateService } from '@ngx-translate/core';
+import * as _ from 'lodash';
 
 import { UserProfileService, UpdateUserInfoRequest } from 'sunbird';
 import { ProfilePage } from './../profile';
-import * as _ from 'lodash';
+
 
 /**
  * Interface for the Toast Object
@@ -48,7 +50,8 @@ export class FormExperience {
     private fb: FormBuilder,
     private navParams: NavParams,
     private userProfileService: UserProfileService,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private translate: TranslateService
   ) {
 
     /* Receive data from other component */
@@ -131,11 +134,12 @@ export class FormExperience {
   updateExprience(req): void {
     this.userProfileService.updateUserInfo(req,
       (res: any) => {
-        this.getToast(JSON.parse(res).message).present();
+        this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
         this.navCtrl.setRoot(ProfilePage);
       },
       (err: any) => {
-        this.getToast(err).present();
+        this.getToast(this.translateMessage('PROFILE_UPDATE_FAILED')).present();
+        console.error("Error", err);
       });
   }
 
@@ -165,5 +169,20 @@ export class FormExperience {
    */
   stringToArray(str: string = '') {
     return _.split(str, ', ');
+  }
+
+  /**
+   * Used to Translate message to current Language
+   * @param {string} messageConst - Message Constant to be translated
+   * @returns {string} translatedMsg - Translated Message
+   */
+  translateMessage(messageConst: string): string {
+    let translatedMsg = '';
+    this.translate.get(messageConst).subscribe(
+      (value: any) => {
+        translatedMsg = value;
+      }
+    );
+    return translatedMsg;
   }
 }

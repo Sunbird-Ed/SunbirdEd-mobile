@@ -15,6 +15,8 @@ import { generateEndEvent } from './telemetryutil';
 
 declare var chcp: any;
 
+const KEY_SUNBIRD_SUPPORT_FILE_PATH = "sunbird_support_file_path";
+
 @Component({
   templateUrl: 'app.html'
 })
@@ -62,13 +64,21 @@ export class MyApp {
         }
       });
 
+      (<any>window).supportfile.makeEntryInSunbirdSupportFile((result) => {
+        console.log("Result - " + JSON.parse(result));
+        this.preference.putString(KEY_SUNBIRD_SUPPORT_FILE_PATH, JSON.parse(result));
+      }, (error) => {
+        console.log("Error - " + error);
+      });
+
       that.authService.getSessionData((session) => {
         if (session == "null") {
           this.preference.getString('selected_user_type', (val) => {
 
             initGuestTabs(this.containerService);
 
-            that.rootPage = (val != "") ? this.nav.setRoot(TabsPage, { loginMode: 'guest' }) : this.nav.setRoot(LanguageSettingsPage);
+            that.rootPage = (val != "") ? this.nav.setRoot(TabsPage, { loginMode: 'guest' }) 
+            : this.nav.setRoot(LanguageSettingsPage);
           })
         } else {
           initUserTabs(that.containerService);
