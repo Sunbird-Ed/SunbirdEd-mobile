@@ -32,17 +32,9 @@
             <ion-avatar item-start>
               <img src="{{ defaultAppIcon }}" width="24px" height="24px">
             </ion-avatar>
-<<<<<<< HEAD
             <h3> {{ (content.name && content.name.length > 30) ? (content.name | slice:0:30) + '...' : (content.name) }}</h3>
             <p><span>{{ content.contentType }}</span>
             <span *ngIf="content.size"> • {{ content.size | fileSize: 0}}</span></p>
-=======
-            <h2> {{ (content.name && content.name.length > 30) ? (content.name | slice:0:30) + '...' : (content.name) }}</h2>
-            <p>
-              <span>{{ content.contentType }}</span>
-              <span *ngIf="content.size"> • {{ content.size | fileSize: 0}}</span>
-            </p>
->>>>>>> ac932338f755f4177cb2b789f9e13d5eba1be691
           </ion-item>
           <div class="divider"></div>
         </ion-list>
@@ -57,7 +49,6 @@
         <ion-avatar item-start>
           <img src="{{ defaultAppIcon }}" width="24px" height="24px">
         </ion-avatar>
-<<<<<<< HEAD
         <h3> {{ (content.name && content.name.length > 30) ? (content.name | slice:0:30) + '...' : (content.name) }}</h3>
         <p><span>{{ content.contentType }}</span>
         <span *ngIf="content.size"> • {{ content.size | fileSize: 0}}</span></p>
@@ -65,12 +56,6 @@
           {{ content?.gradeLevel[0] }}
         </span>
           <span *ngIf="content.subject"> • {{ content?.subject}}</span>
-=======
-        <h2> {{ (content.name && content.name.length > 30) ? (content.name | slice:0:30) + '...' : (content.name) }}</h2>
-        <p>
-          <span>{{ content.contentType }}</span>
-          <span *ngIf="content.size"> • {{ content.size | fileSize: 0}}</span>
->>>>>>> ac932338f755f4177cb2b789f9e13d5eba1be691
         </p>
       </ion-item>
       <div *ngIf="!last" class="divider"></div>

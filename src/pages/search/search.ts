@@ -134,11 +134,7 @@ export class SearchPage {
             this.processDialCodeResult(response.result);
           } else {
             this.searchContentResult = response.result.contentDataList;
-<<<<<<< HEAD
-            console.log('searchContentResult', + this.searchContentResult);
-=======
             this.isEmptyResult = false;
->>>>>>> ac932338f755f4177cb2b789f9e13d5eba1be691
           }
 
 
