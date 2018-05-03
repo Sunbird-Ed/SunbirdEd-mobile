@@ -100,4 +100,5 @@
     <plugin name="cordova-plugin-sunbirdsplash" spec="git+https://github.com/project-sunbird/cordova-plugin-sunbirdsplash.git" />
     <plugin name="cordova-plugin-customconfigparameters" spec="^3.0.0" />
     <plugin name="cordova-plugin-geniecanvas" spec="git+https://github.com/project-sunbird/cordova-plugin-geniecanvas.git" />
+    <plugin name="cordova-plugin-genie-sdk" spec="../cordova-plugin-genie-sdk" />
 </widget>
