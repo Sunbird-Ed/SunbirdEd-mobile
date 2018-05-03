@@ -1,13 +1,16 @@
 import { ViewMoreActivityPage } from './../view-more-activity/view-more-activity';
 import { Component, OnInit, NgZone, ViewChild } from '@angular/core';
-import { NavController, Platform, PopoverController, Events } from 'ionic-angular';
+import { NavController, Platform, PopoverController, Events, ToastController } from 'ionic-angular';
 import { IonicPage, Slides } from 'ionic-angular';
-import { CourseService, AuthService, EnrolledCoursesRequest, PageAssembleService, PageAssembleCriteria, QRScanner, FrameworkDetailsRequest, CategoryRequest, FrameworkService, Impression, ImpressionType, PageId, Environment, TelemetryService, ProfileService } from 'sunbird';
+import { CourseService, AuthService, EnrolledCoursesRequest, PageAssembleService, PageAssembleCriteria, QRScanner, FrameworkDetailsRequest, CategoryRequest, FrameworkService, Impression, ImpressionType, PageId, Environment, TelemetryService, ProfileService, ContentDetailRequest, ContentService } from 'sunbird';
 import { CourseCard } from './../../component/card/course/course-card';
 import { DocumentDirection } from 'ionic-angular/platform/platform';
 import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
 import { CourseFilter, CourseFilterCallback } from './filters/course.filter';
+import { CourseDetailPage } from '../course-detail/course-detail';
+import { CollectionDetailsPage } from '../collection-details/collection-details';
+import { ContentDetailsPage } from '../content-details/content-details';
 
 @IonicPage()
 @Component({
@@ -92,7 +95,7 @@ export class CoursesPage implements OnInit {
    * @param {NgZone} ngZone To bind data
    */
   constructor(navCtrl: NavController, courseService: CourseService, authService: AuthService, platform: Platform,
-    pageService: PageAssembleService, ngZone: NgZone, private qrScanner: SunbirdQRScanner, private popCtrl: PopoverController, private framework: FrameworkService, public telemetryService: TelemetryService, private events: Events, private profileService: ProfileService) {
+    pageService: PageAssembleService, ngZone: NgZone, private qrScanner: SunbirdQRScanner, private popCtrl: PopoverController, private framework: FrameworkService, public telemetryService: TelemetryService, private events: Events, private profileService: ProfileService, private contentService: ContentService, private toastCtrl: ToastController) {
     this.navCtrl = navCtrl;
     this.courseService = courseService;
     this.authService = authService;
@@ -277,10 +280,44 @@ export class CoursesPage implements OnInit {
       },
       content(scanResult, contentId) {
         // that.navCtrl.push(SearchPage);
+        let request: ContentDetailRequest = {
+          contentId: contentId
+        }
+        that.contentService.getContentDetail(request, (response)=> {
+          let data = JSON.parse(response);
+          that.showContentDetails(data.result);
+        }, (error)=> {
+          console.log("Error " + error);
+          let toast = that.toastCtrl.create({
+            message: "No content found associated with that QR code",
+            duration: 3000
+          })
+
+          toast.present();
+        });
       }
     }
 
     this.qrScanner.startScanner(undefined, undefined, undefined, callback,PageId.COURSES);
+  }
+
+  showContentDetails(content) {
+    if (content.contentType === 'Course') {
+      console.log('Calling course details page');
+      this.navCtrl.push(CourseDetailPage, {
+        content: content
+      })
+    } else if (content.mimeType === 'application/vnd.ekstep.content-collection') {
+      console.log('Calling collection details page');
+      this.navCtrl.push(CollectionDetailsPage, {
+        content: content
+      })
+    } else {
+      console.log('Calling content details page');
+      this.navCtrl.push(ContentDetailsPage, {
+        content: content
+      })
+    }
   }
 
   search() {
