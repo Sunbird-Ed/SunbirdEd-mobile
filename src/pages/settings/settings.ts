@@ -30,7 +30,7 @@ export class SettingsPage {
     private telemetryService : TelemetryService,
     private shareUtil: ShareUtil,
     private loadingCtrl: LoadingController) {
-    
+
   }
 
   ionViewDidLoad() {
@@ -44,7 +44,7 @@ export class SettingsPage {
     );
   }
 
-  
+
   ionViewDidEnter() {
     this.preference.getString(KEY_SELECTED_LANGUAGE, value => {
       this.selectedlanguage = this.chosenLanguageString + value;
@@ -86,12 +86,9 @@ export class SettingsPage {
   }
 
   sendMessage() {
-<<<<<<< HEAD
     let loader = this.getLoader();
     loader.present();
-=======
     this.generateInteractTelemetry(InteractType.TOUCH,InteractSubtype.SUPPORT_CLICKED);
->>>>>>> 8e230aedf2ba09bfe65451dda8e07b70159b8d8d
     this.preference.getString(KEY_SUNBIRD_SUPPORT_FILE_PATH, val => {
       loader.dismiss();
       if (val === undefined || val === "" || val === null) {
