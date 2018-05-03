@@ -198,6 +198,7 @@
     "LICENSE": "LICENSE",
     "LINKEDIN": "LinkedIn",
     "LOADING_CONTENT": "Loading content",
+    "LOADING_CONTENTS": "Loading contents {{%s}} %",
     "LOGGED_OUT": "Logged out",
     "LOGOUT": "Sign out",
     "MEDIUM": "Medium of instruction",
