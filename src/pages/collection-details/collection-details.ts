@@ -200,9 +200,8 @@ export class CollectionDetailsPage {
     },
       error => {
         console.log('error while loading content details', error);
-        const message = 'Something went wrong, please check after some time';
         loader.dismiss();
-        // this.showMessage(message, true);
+        this.translateAndDisplayMessage('ERROR_CONTENT_NOT_AVAILABLE', true);
       });
   }
 
@@ -501,6 +500,7 @@ export class CollectionDetailsPage {
         }
         // Get child content
         if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
+          this.showLoading = false;
           if (this.queuedIdentifiers.length && this.isDownloadStarted) {
             if (_.includes(this.queuedIdentifiers, res.data.identifier)) {
               this.currentCount++;
@@ -686,8 +686,10 @@ export class CollectionDetailsPage {
 
   cancelDownload() {
     this.contentService.cancelDownload(this.identifier, (response) => {
+      this.showLoading = false;
       this.navCtrl.pop();
     }, (error) => {
+      this.showLoading = false;
       this.navCtrl.pop();
     });
   }

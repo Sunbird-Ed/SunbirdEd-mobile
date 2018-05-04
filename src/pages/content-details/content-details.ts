@@ -164,10 +164,8 @@ export class ContentDetailsPage {
       });
     },
       error => {
-        console.log('error while loading content details', error);
-        const message = 'Something went wrong, please check after some time';
         loader.dismiss();
-        this.showMessage(message, true);
+        this.translateAndDisplayMessage('ERROR_CONTENT_NOT_AVAILABLE', true);
       });
   }
 
