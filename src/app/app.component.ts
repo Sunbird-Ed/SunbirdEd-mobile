@@ -52,6 +52,11 @@ export class MyApp {
     platform.ready().then(() => {
       this.registerDeeplinks();
 
+      this.imageLoaderConfig.enableDebugMode();
+      this.imageLoaderConfig.setMaximumCacheSize(100 * 1024 * 1024);
+      this.subscribeEvents();
+      this.saveDefaultSyncSetting();
+
       permission.requestPermission(this.permissionList, (response) => {
 
       }, (error) => {
@@ -95,7 +100,7 @@ export class MyApp {
       // Here you can do any higher level native things you might need.
       statusBar.styleDefault();
       
-
+      
 
       window["thisRef"] = this;
       try {
@@ -107,10 +112,7 @@ export class MyApp {
       this.handleBackButton();
     });
 
-    this.imageLoaderConfig.enableDebugMode();
-    this.imageLoaderConfig.setMaximumCacheSize(100 * 1024 * 1024);
-    this.subscribeEvents();
-    this.saveDefaultSyncSetting();
+    
   }
 
   saveDefaultSyncSetting(){
