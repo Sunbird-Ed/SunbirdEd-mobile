@@ -15,30 +15,18 @@ export class ResourceFilter {
 
   facetsFilter = [
     {
-      name: "language",
-      displayName: "Language",
-      values: ["English",
-        "Hindi",
-        "Assamese",
-        "Bengali",
-        "Gujarati",
-        "Kannada",
-        "Malayalam",
-        "Marathi",
-        "Nepali",
-        "Odia",
-        "Punjabi",
-        "Tamil",
-        "Telugu",
-        "Urdu",
-        "Sanskrit",
-        "Maithili",
-        "Munda",
-        "Santali",
-        "Juang",
-        "Ho",
-        "Other"]
-
+      name: "board",
+      displayName: "Board",
+      values: ["NCERT",
+        "CBSE",
+        "ICSE",
+        "UP Board",
+        "AP Board",
+        "TN Board",
+        "NCTE",
+        "MSCERT",
+        "BSER",
+        "Others"]
     },
     {
       name: "grade",
@@ -98,19 +86,6 @@ export class ResourceFilter {
 
     },
     {
-      name: "ageGroup",
-      displayName: "Age Group",
-      values: ["<5",
-        "5-6",
-        "6-7",
-        "7-8",
-        "8-10",
-        ">10",
-        "Other"
-
-      ]
-    },
-    {
       name: "medium",
       displayName: "Medium",
       values: ["English",
@@ -128,19 +103,6 @@ export class ResourceFilter {
         "Telugu",
         "Urdu",
         "Other"]
-
-    },
-    {
-      name: "ownership",
-      displayName: "Ownership",
-      values: ["current user",
-        "all"]
-
-    },
-    {
-      name: "status",
-      displayName: "Status",
-      values: ["Live"]
 
     }];
 

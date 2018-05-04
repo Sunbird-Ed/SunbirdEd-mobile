@@ -25,10 +25,11 @@ done < "$file"
 
 git clone --depth 1 https://github.com/project-sunbird/genie-sdk-wrapper.git
 cd genie-sdk-wrapper
+rm package-lock.json
 npm install
 npm run build
 
-rm `pwd`/dist/depedependencies.json
+rm `pwd`/dist/dependencies.json
 
 npm pack `pwd`/dist
 

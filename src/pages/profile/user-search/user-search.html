@@ -10,7 +10,8 @@
     <ion-list>
         <ion-item *ngFor="let user of userList" (click)="user?.status && openUserProfile(user?.id)">
             <ion-avatar item-start>
-                <img src="{{ user?.avatar || fallBackImage }}" class="avatar" />
+                <!-- <img src="{{ user?.avatar || fallBackImage }}" class="avatar" /> -->
+                <img src="{{ fallBackImage }}" class="avatar" />
             </ion-avatar>
             <h2 class="ellipsis font-weight-700" text-capitalize>{{ user?.firstName }} {{ user?.lastName }}</h2>
             <div>

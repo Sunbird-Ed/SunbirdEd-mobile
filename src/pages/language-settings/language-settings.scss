@@ -1,31 +1,31 @@
 page-language-settings {
-    /* This should be item-ios only as we are targeting mode as iOS for radio-button */
-    .item-ios {
-        background-color: map-get($colors, white_f7);
-    }
-    .button-inner {
-        justify-content: flex-end;
-    }
-    .arrow-icon.button-inner .ion-icon {
-        margin-right: 2vw;
-        margin-left: 38vw;
-    }
-    ion-list[inset] {
-        margin: 0 !important;
-    }
-    [icon-end] ion-icon {
-        margin-left: 28vw;
-    }
-    /* Change height of the ion-item*/
-    .item-block {
-        min-height: 5.5 rem !important;
-    }
-    .gray-color {
-        color: #484848;
-        font-size: 1.4rem;
-        font-weight: 520;
-    }
+  /* This should be item-ios only as we are targeting mode as iOS for radio-button */
+  .item-ios {
+    background-color: map-get($colors, white_f7);
+  }
+  .button-inner {
+    display: initial !important;
+  }
+  ion-icon {
+    float: right !important;
+  }
+  ion-list[inset] {
+    margin: 0 !important;
+  }
+  /* Change height of the ion-item*/
+  .item-block {
+    min-height: 5.5 rem !important;
+  }
+  .gray-color {
+    color: #484848;
+    font-size: 1.4rem;
+    font-weight: 520;
+  }
+  .arrow-icon {
+    padding-left: 2.8em !important;
+  }
 }
+
 .font-size-17 {
-    font-size: 17px !important;
+  font-size: 17px !important;
 }
