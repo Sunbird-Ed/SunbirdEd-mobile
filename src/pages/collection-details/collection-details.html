@@ -144,16 +144,10 @@
   </ion-toolbar>
 </ion-footer>
 
-<ion-backdrop class="loading-backdrop" *ngIf="showLoading" text-center>
+<ion-backdrop class="loading-backdrop" *ngIf="showLoading && !isDownloadStarted" text-center>
   <div class="backdrop-container">
-    <div *ngIf="!isDownloadStarted">
       <ion-label>{{ 'LOADING_CONTENT' | translate }} {{ downloadProgress ? (downloadProgress) : '0' }} %</ion-label>
       <pb-horizontal [progress]="downloadProgress" isOnBoardCard="false"></pb-horizontal>
-    </div>
-    <div *ngIf="isDownloadStarted">
-        <ion-label>{{'LOADING_CONTENTS' | translate: {'%s': downloadPercentage} }}</ion-label>
-        <pb-horizontal [progress]="downloadPercentage" isOnBoardCard="false"></pb-horizontal>
-      </div>
   </div>
 
   <div class="backdrop-footer">

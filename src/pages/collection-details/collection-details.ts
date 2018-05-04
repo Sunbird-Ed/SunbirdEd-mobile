@@ -220,6 +220,7 @@ export class CollectionDetailsPage {
     this.generateImpressionEvent(this.contentDetail.identifier, this.contentDetail.contentType, this.contentDetail.pkgVersion);
     switch (data.result.isAvailableLocally) {
       case true: {
+        this.showLoading = false;
         console.log("Content locally available. Geting child content... @@@");
         this.contentDetail.size = data.result.sizeOnDevice;
         this.setChildContents();
@@ -227,6 +228,7 @@ export class CollectionDetailsPage {
       }
       case false: {
         console.log("Content locally not available. Import started... @@@");
+        this.showLoading = true;
         this.importContent([this.identifier], false);
         break;
       }
@@ -346,10 +348,6 @@ export class CollectionDetailsPage {
   setChildContents() {
     console.log('Making child contents api call... @@@');
     let hierarchyInfo = this.cardData.hierarchyInfo ? this.cardData.hierarchyInfo : null;
-
-
-
-
     const option = { contentId: this.identifier, hierarchyInfo: hierarchyInfo }; // TODO: remove level
     this.contentService.getChildContents(option, (data: any) => {
       data = JSON.parse(data);
@@ -415,17 +413,21 @@ export class CollectionDetailsPage {
    * Ionic life cycle hook
    */
   ionViewWillEnter(): void {
-    this.resetVariables();
-    this.cardData = this.navParams.get('content');
-    let depth = this.navParams.get('depth');
-    if (depth !== undefined) {
-      this.depth = depth;
-      this.showDownloadBtn = false;
-      this.isDepthChild = true;
-    }
-    this.identifier = this.cardData.contentId || this.cardData.identifier;
-    this.setContentDetails(this.identifier, true);
-    this.subscribeGenieEvent();
+    this.zone.run(() => {
+      this.resetVariables();
+      this.cardData = this.navParams.get('content');
+      let depth = this.navParams.get('depth');
+      if (depth !== undefined) {
+        this.depth = depth;
+        this.showDownloadBtn = false;
+        this.isDepthChild = true;
+      } else {
+        this.isDepthChild = false;
+      }
+      this.identifier = this.cardData.contentId || this.cardData.identifier;
+      this.setContentDetails(this.identifier, true);
+      this.subscribeGenieEvent();
+    })
   }
 
   ionViewDidLoad() {
@@ -493,9 +495,7 @@ export class CollectionDetailsPage {
         console.log('event bus........', res);
         if (res.type === 'downloadProgress' && res.data.downloadProgress) {
           this.downloadProgress = res.data.downloadProgress === -1 ? 0 : res.data.downloadProgress;
-          this.showLoading = true;
-
-          if (this.downloadProgress === 100 && !this.isDownloadStarted) {
+          if (this.downloadProgress === 100) {
             this.showLoading = false;
           }
         }
@@ -513,7 +513,6 @@ export class CollectionDetailsPage {
               this.showDownloadBtn = false;
               this.isDownlaodCompleted = true;
               this.contentDetail.isAvailableLocally = true;
-              this.showLoading = false;
               this.downloadPercentage = 0;
               this.events.publish('savedResources:update', {
                 update: true
@@ -622,12 +621,16 @@ export class CollectionDetailsPage {
     });
     popover.onDidDismiss(data => {
       if (data === 0) {
-        this.translateAndDisplayMessage('MSG_RESOURCE_DELETED', false)
-        this.resetVariables();
-        this.setContentDetails(this.identifier, false);
+        this.translateAndDisplayMessage('MSG_RESOURCE_DELETED', false);
         this.events.publish('savedResources:update', {
           update: true
         });
+        this.navCtrl.pop();
+        /*this.resetVariables();
+        this.setContentDetails(this.identifier, false);
+        this.events.publish('savedResources:update', {
+          update: true
+        });*/
       }
     });
   }
