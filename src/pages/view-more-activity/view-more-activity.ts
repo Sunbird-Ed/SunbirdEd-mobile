@@ -128,49 +128,40 @@ export class ViewMoreActivityPage implements OnInit {
 	}
 
 	/**
-	 * Function to build api request
-	 */
-	getRequestBody(): object {
-		let data = JSON.parse(this.searchQuery);
-		data = data.request;
-		const requestParams = {
-			query: data.query,
-			limit: this.searchLimit,
-			contentStatusArray: data.filters.status,
-			contentTypes: data.filters.contentType
-		}
-
-		console.log('Request params.....', requestParams);
-		return requestParams;
-	}
-
-	/**
 	 * Search content
 	 */
 	search() {
 		console.log('Inside search');
 		let loader = this.getLoader();
 		loader.present();
-		this.contentService.searchContent(this.getRequestBody(), false, (data: any) => {
-			data = JSON.parse(data);
-			console.log('search limit...', data);
-			this.ngZone.run(() => {
-				if (data.result && data.result.contentDataList) {
-					if (this.isLoadMore) {
-						this.searchList.push(data.result.contentDataList);
-					} else {
-						this.searchList = data.result.contentDataList;
-					}
-				}
+
+		this.contentService.getSearchCriteriaFromRequest(this.searchQuery, (success: any) => {
+			// data = data;
+			console.log("getSearchCriteriaFromRequest -- success", success);
+			this.contentService.searchContent(JSON.parse(success), true, (data: any) => {
+				data = JSON.parse(data);
 				this.generateImpressionEvent();
 				this.generateLogEvent(data.result);
-				console.log('this.searchResult', this.searchList);
+				console.log('search limit...', data);
+				this.ngZone.run(() => {
+					if (data.result && data.result.contentDataList) {
+						if (this.isLoadMore) {
+							this.searchList.push(data.result.contentDataList);
+						} else {
+							this.searchList = data.result.contentDataList;
+						}
+					}
+					console.log('this.searchResult', this.searchList);
+					loader.dismiss();
+				})
+			}, (error: any) => {
+				console.log('Error: while fetchig view more content');
 				loader.dismiss();
 			})
 		}, (error: any) => {
 			console.log('Error: while fetchig view more content');
 			loader.dismiss();
-		})
+		});
 	}
 
 	private generateImpressionEvent() {
@@ -206,6 +197,16 @@ export class ViewMoreActivityPage implements OnInit {
 			this.searchLimit = this.searchLimit + 10;
 			this.mapper();
 		}
+	/**
+	 * Ionic default life cycle hook
+	 */
+	ionViewWillEnter(): void {
+		this.tabBarElement.style.display = 'none';
+		this.searchQuery = this.navParams.get('requestParams');
+		console.log('queryParams received =>>>>', this.searchQuery);
+		this.headerTitle = this.navParams.get('headerTitle');
+		this.mapper();
+	}
 
 		/**
 		 * Mapper to call api based on page.Layout name
@@ -227,17 +228,6 @@ export class ViewMoreActivityPage implements OnInit {
 				default:
 					this.search();
 			}
-		}
-
-		/**
-		 * Ionic default life cycle hook
-		 */
-		ionViewWillEnter(): void {
-			this.tabBarElement.style.display = 'none';
-			this.searchQuery = this.navParams.get('requestParams');
-			console.log('queryParams received =>>>>', this.navParams.get('requestParams'));
-			this.headerTitle = this.navParams.get('headerTitle');
-			this.mapper();
 		}
 
 		/**
