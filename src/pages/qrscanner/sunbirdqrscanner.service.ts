@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 import { TranslateService } from "@ngx-translate/core";
-import { AlertController, PopoverController, Popover } from "ionic-angular";
+import { AlertController, PopoverController, Popover, ToastController } from "ionic-angular";
 import { QRScannerAlert, QRAlertCallBack } from "./qrscanner_alert";
-import { Start, Environment, Mode, TelemetryService, InteractType, InteractSubtype, PageId, End } from "sunbird";
+import { Start, Environment, Mode, TelemetryService, InteractType, InteractSubtype, PageId, End, PermissionService, PermissionResponse } from "sunbird";
 import { generateInteractEvent, Map } from "../../app/telemetryutil";
 import { Network } from "@ionic-native/network";
 
@@ -20,10 +20,14 @@ export class SunbirdQRScanner {
 
   private mQRScannerText;
 
+  readonly permissionList = ["android.permission.CAMERA"];
+
   constructor(private translate: TranslateService,
     private popCtrl: PopoverController,
     private telemetryService: TelemetryService,
-    private network: Network) {
+    private network: Network,
+    private permission: PermissionService,
+    private toastCtrl: ToastController) {
     const that = this
     this.translate.get(this.QR_SCANNER_TEXT).subscribe((data) => {
       that.mQRScannerText = data
@@ -40,6 +44,86 @@ export class SunbirdQRScanner {
     displayText: String = this.mQRScannerText['SCAN_QR_INSTRUCTION'],
     displayTextColor: String = "#0000ff", callback: QRResultCallback, source: string) {
     this.generateStartEvent(source);
+
+    this.permission.hasPermission(this.permissionList, (response) => {
+      const result = JSON.parse(response);
+      if (result.status) {
+        const permissionResult = result.result;
+        let askPermission = [];
+        this.permissionList.forEach(element => {
+          if (!permissionResult[element]) {
+            askPermission.push(element);
+          }
+        })
+
+        if (askPermission.length > 0) {
+          this.permission.requestPermission(askPermission, (response) => {
+            const requestResult = JSON.parse(response);
+            if (requestResult.status) {
+              let permissionGranted = true;
+              const permissionRequestResult = requestResult.result;
+              askPermission.forEach(element => {
+                if (!permissionRequestResult[element]) {
+                  permissionGranted = false;
+                }
+              })
+
+              if (permissionGranted) {
+                this.startQRScanner(screenTitle, displayText, displayTextColor, callback, source);
+              } else {
+                console.log("Permission Denied");
+                const toast = this.toastCtrl.create({
+                  message: "Permission Denied",
+                  duration: 3000
+                })
+
+                toast.present();
+              }
+            }
+          }, (error) => {
+
+          })
+
+
+        } else {
+          this.startQRScanner(screenTitle, displayText, displayTextColor, callback, source);
+        }
+      }
+    }, (error) => {
+      console.log("Error : " + error);
+    });
+
+
+  }
+
+  public stopScanner(successCallback: () => void = null, errorCallback: () => void = null) {
+    (<any>window).qrScanner.stopScanner(successCallback, errorCallback);
+  }
+
+
+  private showInvalidCodeAlert(qrResultCallback: QRResultCallback) {
+    const that = this;
+    let popUp: Popover;
+    const callback: QRAlertCallBack = {
+      tryAgain() {
+        popUp.dismiss()
+        that.startScanner(undefined, undefined, undefined, qrResultCallback, undefined);
+      },
+      cancel() {
+        popUp.dismiss()
+      }
+    }
+    popUp = this.popCtrl.create(QRScannerAlert, {
+      callback: callback
+    }, {
+        cssClass: 'qr-alert'
+      });
+
+    popUp.present();
+  }
+
+  private startQRScanner(screenTitle: String, displayText: String,
+    displayTextColor: String, callback: QRResultCallback, source: string) {
     (<any>window).qrScanner.startScanner(screenTitle, displayText, displayTextColor, (code) => {
       if (code === "cancel") {
         return;
@@ -67,32 +151,6 @@ export class SunbirdQRScanner {
     }, () => {
       this.stopScanner(null, null);
     });
-  }
-
-  public stopScanner(successCallback: () => void = null, errorCallback: () => void = null) {
-    (<any>window).qrScanner.stopScanner(successCallback, errorCallback);
-  }
-
-
-  private showInvalidCodeAlert(qrResultCallback: QRResultCallback) {
-    const that = this;
-    let popUp: Popover;
-    const callback: QRAlertCallBack = {
-      tryAgain() {
-        popUp.dismiss()
-        that.startScanner(undefined, undefined, undefined, qrResultCallback, undefined);
-      },
-      cancel() {
-        popUp.dismiss()
-      }
-    }
-    popUp = this.popCtrl.create(QRScannerAlert, {
-      callback: callback
-    }, {
-        cssClass: 'qr-alert'
-      });
-
-    popUp.present();
   }
 
   generateStartEvent(pageId: string) {
