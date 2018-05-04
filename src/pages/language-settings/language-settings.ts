@@ -42,11 +42,6 @@ export class LanguageSettingsPage {
         'isApplied': false
       },
       {
-        'label': 'ಕನ್ನಡ',
-        'code': 'kn',
-        'isApplied': false
-      },
-      {
         'label': 'हिंदी',
         'code': 'hi',
         'isApplied': false
@@ -72,9 +67,9 @@ export class LanguageSettingsPage {
       if (val === undefined || val === "" || val === null) {
         console.error("Language not set");
         this.getDeviceLanguage();
-        this.previousLanguage=undefined;
+        this.previousLanguage = undefined;
       } else {
-        this.previousLanguage=val;
+        this.previousLanguage = val;
         this.language = val;
       }
     });
@@ -126,12 +121,12 @@ export class LanguageSettingsPage {
    * @param language
    */
   onLanguageSelected() {
-   
     console.log("language selected : " + this.language);
     if (this.language) {
       let selectedLanguage = this.languages.find(i => i.code === this.language);
       this.preferences.putString(KEY_SELECTED_LANGUAGE_CODE, selectedLanguage.code);
       this.preferences.putString(KEY_SELECTED_LANGUAGE, selectedLanguage.label);
+      this.translateService.use(this.language);
     }
   }
 
@@ -159,7 +154,7 @@ export class LanguageSettingsPage {
     }
 
     valuesMap["CurrentLanguage"] = currentLanguage;
-    interact.valueMap=valuesMap;
+    interact.valueMap = valuesMap;
 
     this.telemetryService.interact(interact);
   }
@@ -167,7 +162,7 @@ export class LanguageSettingsPage {
   continue() {
     // if language is not null, then select the checked language,
     // else set default language as english
-    this.generateInteractEvent(this.previousLanguage,this.language);
+    this.generateInteractEvent(this.previousLanguage, this.language);
     if (this.language) {
       this.translateService.use(this.language);
     } else {
