@@ -8,21 +8,14 @@ import { CollectionDetailsPage } from "../collection-details/collection-details"
 import { ContentDetailsPage } from "../content-details/content-details";
 import { Network } from "@ionic-native/network";
 import { TranslateService } from '@ngx-translate/core';
+import { Map } from "../../app/telemetryutil";
 
-
-class CMap {
-  [key: string]: any
-}
 @IonicPage()
 @Component({
   selector: 'page-search',
   templateUrl: './search.html'
 })
-
-
 export class SearchPage {
-
-
   @ViewChild('searchInput') searchBar;
 
   contentType: Array<string> = [];
@@ -279,12 +272,13 @@ export class SearchPage {
   private generateLogEvent(searchResult) {
     let log = new Log();
     log.level = LogLevel.INFO;
+    log.type = ImpressionType.SEARCH;
     if (searchResult != null) {
       let contentArray: Array<any> = searchResult.contentDataList;
       let params = new Array<any>();
-      let paramsMap: Map<string, any> = new Map();
-      paramsMap.set("SearchResults", contentArray.length);
-      paramsMap.set("SearchCriteria", searchResult.request);
+      let paramsMap = new Map();
+      paramsMap["SearchResults"]= contentArray.length;
+      paramsMap["SearchCriteria"]= searchResult.request;
       params.push(paramsMap);
       log.params = params;
       this.telemetryService.log(log);
@@ -298,7 +292,7 @@ export class SearchPage {
     interact.subType = InteractSubtype.CONTENT_CLICKED;
     interact.pageId = this.source;
     interact.env = Environment.HOME;
-    let valuesMap = new CMap();
+    let valuesMap = new Map();
 
     valuesMap["SearchPhrase"] = this.searchKeywords;
     valuesMap["PositionClicked"] = index;

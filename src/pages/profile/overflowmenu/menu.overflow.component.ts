@@ -42,53 +42,24 @@ export class OverflowMenuComponent {
             "index": i
         }));
         switch (i) {
-            // case 0: {
-            //     this.navCtrl.push(UsersnClassesComponent);
-            //     break;
-            // }
-            // case 1: {
-            //     let toast = this.toastCtrl.create({
-            //         message: 'Download Manager functionality is under progress',
-            //         duration: 3000,
-            //         position: 'bottom'
-            //       });
-            //       toast.present();
-            //     break;
-            // }
             case 0: {
                 this.generateInteractEvent();
                 this.app.getActiveNav().push(SettingsPage);
                 break;
             }
             case 1: {
-                // let toast = this.toastCtrl.create({
-                //     message: 'Sign Out functionality is under progress',
-                //     duration: 3000,
-                //     position: 'bottom'
-                //   });
-                //   toast.present();
-                let valuesMap = new Map();
-                valuesMap["UID"] = "";
-                this.telemetryService.interact(
-                    generateInteractEvent(InteractType.TOUCH,
-                        InteractSubtype.LOGOUT_INITIATE,
-                        Environment.HOME,
-                        PageId.LOGOUT,
-                        valuesMap));
-
+                this.generateLogoutInteractTelemetry(InteractType.TOUCH,
+                    InteractSubtype.LOGOUT_INITIATE, "");
                 this.oauth.doLogOut();
                 this.profileService.setAnonymousUser(success => {
 
                 },
-                error => {
+                    error => {
 
-                });
+                    });
                 this.app.getRootNav().setRoot(OnboardingPage);
-                this.telemetryService.interact(
-                    generateInteractEvent(InteractType.OTHER,
-                        InteractSubtype.LOGOUT_SUCCESS,
-                        Environment.HOME, PageId.LOGOUT,
-                        valuesMap));
+                this.generateLogoutInteractTelemetry(InteractType.OTHER,
+                    InteractSubtype.LOGOUT_SUCCESS, "");
                 break;
             }
 
@@ -103,6 +74,17 @@ export class OverflowMenuComponent {
         interact.id = PageId.PROFILE;
         interact.env = Environment.USER;
         this.telemetryService.interact(interact);
+    }
+
+    generateLogoutInteractTelemetry(interactType, interactSubtype, uid) {
+        let valuesMap = new Map();
+        valuesMap["UID"] = uid;
+        this.telemetryService.interact(
+            generateInteractEvent(interactType,
+                interactSubtype,
+                Environment.HOME,
+                PageId.LOGOUT,
+                valuesMap));
     }
 
 }
