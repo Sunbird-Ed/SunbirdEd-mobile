@@ -126,7 +126,6 @@ export class LanguageSettingsPage {
       let selectedLanguage = this.languages.find(i => i.code === this.language);
       this.preferences.putString(KEY_SELECTED_LANGUAGE_CODE, selectedLanguage.code);
       this.preferences.putString(KEY_SELECTED_LANGUAGE, selectedLanguage.label);
-      this.translateService.use(this.language);
     }
   }
 
