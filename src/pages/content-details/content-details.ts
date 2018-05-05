@@ -5,7 +5,7 @@ import { ContentService, FileUtil, Impression, ImpressionType, PageId, Environme
 import { NgModel } from '@angular/forms';
 import { SocialSharing } from "@ionic-native/social-sharing";
 import * as _ from 'lodash';
-import { generateInteractEvent, Map } from '../../app/telemetryutil';
+import { generateInteractEvent, Map, generateImpressionWithRollup, generateStartWithRollup, generateInteractWithRollup } from '../../app/telemetryutil';
 import { TranslateService } from '@ngx-translate/core';
 
 
@@ -164,10 +164,8 @@ export class ContentDetailsPage {
       });
     },
       error => {
-        console.log('error while loading content details', error);
-        const message = 'Something went wrong, please check after some time';
         loader.dismiss();
-        this.showMessage(message, true);
+        this.translateAndDisplayMessage('ERROR_CONTENT_NOT_AVAILABLE', true);
       });
   }
 
@@ -230,26 +228,26 @@ export class ContentDetailsPage {
   }
 
   generateImpressionEvent(objectId, objectType, objectVersion) {
-    let impression = new Impression();
-    impression.type = ImpressionType.DETAIL;
-    impression.pageId = PageId.CONTENT_DETAIL;
-    impression.env = Environment.HOME;
-    impression.objId = objectId;
-    impression.objType = objectType;
-    impression.objVer = objectVersion;
-    this.telemetryService.impression(impression);
+
+    this.telemetryService.impression(generateImpressionWithRollup(
+      ImpressionType.DETAIL,
+      PageId.CONTENT_DETAIL,
+      Environment.HOME,
+      objectId,
+      objectType,
+      objectVersion,
+      this.objRollup
+    ));
   }
 
   generateStartEvent(objectId, objectType, objectVersion) {
-    let start = new Start();
-    start.type = objectType;
-    start.pageId = PageId.CONTENT_DETAIL;
-    start.env = Environment.HOME;
-    start.mode = Mode.PLAY;
-    start.objId = objectId;
-    start.objType = objectType;
-    start.objVer = objectVersion;
-    this.telemetryService.start(start);
+    this.telemetryService.start(generateStartWithRollup(
+      PageId.CONTENT_DETAIL,
+      objectId,
+      objectType,
+      objectVersion,
+      this.objRollup
+    ));
   }
 
   generateEndEvent(objectId, objectType, objectVersion) {
@@ -427,6 +425,12 @@ export class ContentDetailsPage {
    * Play content
    */
   playContent() {
+    this.telemetryService.interact(
+      generateInteractWithRollup(InteractType.TOUCH,
+      InteractSubtype.CONTENT_PLAY,
+      Environment.HOME,
+      PageId.CONTENT_DETAIL,null,this.objRollup)
+    );
     (<any>window).geniecanvas.play(this.content.playContent);
   }
 

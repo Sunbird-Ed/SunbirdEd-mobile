@@ -1,8 +1,9 @@
 import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
 import { Component, NgZone, OnInit } from '@angular/core';
-import { ContentService, CourseService, PageAssembleService, PageAssembleCriteria } from 'sunbird';
+import { ContentService, CourseService, PageAssembleService, PageAssembleCriteria, TelemetryService, PageId, Environment, ImpressionType, Log, LogLevel } from 'sunbird';
 import { ViewMoreActivityListComponent } from '../../component/view-more-activity-list/view-more-activity-list';
 import * as _ from 'lodash';
+import { generateImpressionEvent } from '../../app/telemetryutil';
 
 /**
  * Generated class for the ViewMoreActivityPage page.
@@ -114,7 +115,8 @@ export class ViewMoreActivityPage implements OnInit {
 	 * @param ngZone
 	 */
 	constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, ngZone: NgZone,
-		loadingCtrl: LoadingController, pageService: PageAssembleService, courseService: CourseService) {
+		loadingCtrl: LoadingController, pageService: PageAssembleService, courseService: CourseService
+		, private telemetryService: TelemetryService) {
 		this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
 		this.contentService = contentService;
 		this.ngZone = ngZone;
@@ -126,177 +128,194 @@ export class ViewMoreActivityPage implements OnInit {
 	}
 
 	/**
-	 * Function to build api request
-	 */
-	getRequestBody(): object {
-		let data = JSON.parse(this.searchQuery);
-		data = data.request;
-		const requestParams = {
-			query: data.query,
-			limit: this.searchLimit,
-			contentStatusArray: data.filters.status,
-			contentTypes: data.filters.contentType
-		}
-
-		console.log('Request params.....', requestParams);
-		return requestParams;
-	}
-
-	/**
 	 * Search content
 	 */
 	search() {
 		console.log('Inside search');
 		let loader = this.getLoader();
 		loader.present();
-		this.contentService.searchContent(this.getRequestBody(), false, (data: any) => {
-			data = JSON.parse(data);
-			console.log('search limit...', data);
-			this.ngZone.run(() => {
-				if (data.result && data.result.contentDataList) {
-					if (this.isLoadMore) {
-						this.searchList.push(data.result.contentDataList);
-					} else {
-						this.searchList = data.result.contentDataList;
+
+		this.contentService.getSearchCriteriaFromRequest(this.searchQuery, (success: any) => {
+			// data = data;
+			console.log("getSearchCriteriaFromRequest -- success", success);
+			this.contentService.searchContent(JSON.parse(success), true, (data: any) => {
+				data = JSON.parse(data);
+				this.generateImpressionEvent();
+				this.generateLogEvent(data.result);
+				console.log('search limit...', data);
+				this.ngZone.run(() => {
+					if (data.result && data.result.contentDataList) {
+						if (this.isLoadMore) {
+							this.searchList.push(data.result.contentDataList);
+						} else {
+							this.searchList = data.result.contentDataList;
+						}
 					}
-				}
-				console.log('this.searchResult', this.searchList);
+					console.log('this.searchResult', this.searchList);
+					loader.dismiss();
+				})
+			}, (error: any) => {
+				console.log('Error: while fetchig view more content');
 				loader.dismiss();
 			})
 		}, (error: any) => {
 			console.log('Error: while fetchig view more content');
 			loader.dismiss();
-		})
+		});
 	}
 
-	/**
-	 * Load more result
-	 */
-	loadMore() {
-		// TODO: Issue in SDK - SDK is not accepting offset value.
-		this.searchLimit = this.searchLimit + 10;
-		this.mapper();
+	private generateImpressionEvent() {
+		this.telemetryService.impression(
+			generateImpressionEvent(
+				ImpressionType.SEARCH,
+				PageId.LIBRARY,
+				Environment.HOME,"","","")
+		);
 	}
 
-	/**
-	 * Mapper to call api based on page.Layout name
-	 */
-	mapper() {
-		const pageName = this.navParams.get('pageName');
-		switch (pageName) {
-			case 'course.EnrolledCourses':
-				this.pageType = 'enrolledCourse';
-				this.getEnrolledCourse();
-				break;
-			case 'course.PopularContent':
-				this.pageType = 'popularCourses';
-				this.search();
-				break;
-			case 'resource.SavedResources':
-				this.getLocalContents();
-				break;
-			default:
-				this.search();
+	private generateLogEvent(searchResult) {
+		let log = new Log();
+		log.level = LogLevel.INFO;
+		log.type = ImpressionType.SEARCH;
+		if (searchResult != null) {
+			let contentArray: Array<any> = searchResult.contentDataList;
+			let params = new Array<any>();
+			let paramsMap = new Map();
+			paramsMap["SearchResults"] = contentArray.length;
+			paramsMap["SearchCriteria"] = searchResult.request;
+			params.push(paramsMap);
+			log.params = params;
+			this.telemetryService.log(log);
 		}
 	}
 
+		/**
+		 * Load more result
+		 */
+		loadMore() {
+			// TODO: Issue in SDK - SDK is not accepting offset value.
+			this.searchLimit = this.searchLimit + 10;
+			this.mapper();
+		}
 	/**
 	 * Ionic default life cycle hook
 	 */
 	ionViewWillEnter(): void {
 		this.tabBarElement.style.display = 'none';
 		this.searchQuery = this.navParams.get('requestParams');
-		console.log('queryParams received =>>>>', this.navParams.get('requestParams'));
+		console.log('queryParams received =>>>>', this.searchQuery);
 		this.headerTitle = this.navParams.get('headerTitle');
 		this.mapper();
 	}
 
-	/**
-	 * Get enrolled courses
-	 */
-	getEnrolledCourse() {
-		let loader = this.getLoader();
-		loader.present();
-		this.pageType = 'enrolledCourse';
-		let option = {
-			userId: this.navParams.get('userId'),
-			refreshEnrolledCourses: false
-		};
-		this.courseService.getEnrolledCourses(option, (data: any) => {
-			if (data) {
-				data = JSON.parse(data);
-				this.searchList = data.result.courses ? data.result.courses : [];
-				console.log('Enrolled courses', this.searchList);
-				this.loadMoreBtn = false;
+		/**
+		 * Mapper to call api based on page.Layout name
+		 */
+		mapper() {
+			const pageName = this.navParams.get('pageName');
+			switch (pageName) {
+				case 'course.EnrolledCourses':
+					this.pageType = 'enrolledCourse';
+					this.getEnrolledCourse();
+					break;
+				case 'course.PopularContent':
+					this.pageType = 'popularCourses';
+					this.search();
+					break;
+				case 'resource.SavedResources':
+					this.getLocalContents();
+					break;
+				default:
+					this.search();
 			}
-			loader.dismiss();
-		}, (error: any) => {
-			console.log('error while loading enrolled courses', error);
-			loader.dismiss();
-		});
-	}
+		}
 
-	/**
-	 * Get local content
-	 */
-	getLocalContents() {
-		let loader = this.getLoader();
-		loader.present();
-		const requestParams = {
-			contentTypes: ['Story', 'Worksheet', 'Collection', 'Game', 'TextBook', 'Course', 'Resource', 'LessonPlan']
-		};
-		this.contentService.getAllLocalContents(requestParams, (res: any) => {
-			let data = JSON.parse(res);
-			console.log('Success: saved resources...', data);
-			this.ngZone.run(() => {
-				if (data.result) {
-					let contentData = [];
-					// TODO Temporary code - should be fixed at backend
-					_.forEach(data.result, (value, key) => {
-						value.contentData.lastUpdatedOn = value.lastUpdatedTime;
-						value.createdOn = value.contentData.createdOn;
-						if (value.contentData.appIcon && value.basePath) {
-							value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
-						}
-						contentData.push(value.contentData)
-					});
-					this.searchList = contentData;
+		/**
+		 * Get enrolled courses
+		 */
+		getEnrolledCourse() {
+			let loader = this.getLoader();
+			loader.present();
+			this.pageType = 'enrolledCourse';
+			let option = {
+				userId: this.navParams.get('userId'),
+				refreshEnrolledCourses: false
+			};
+			this.courseService.getEnrolledCourses(option, (data: any) => {
+				if (data) {
+					data = JSON.parse(data);
+					this.searchList = data.result.courses ? data.result.courses : [];
+					console.log('Enrolled courses', this.searchList);
+					this.loadMoreBtn = false;
 				}
 				loader.dismiss();
-				this.loadMoreBtn = false;
+			}, (error: any) => {
+				console.log('error while loading enrolled courses', error);
+				loader.dismiss();
 			});
-		}, error => {
-			console.log('error while getting saved contents', error);
-			loader.dismiss();
-		});
+		}
+
+		/**
+		 * Get local content
+		 */
+		getLocalContents() {
+			let loader = this.getLoader();
+			loader.present();
+			const requestParams = {
+				contentTypes: ['Story', 'Worksheet', 'Collection', 'Game', 'TextBook', 'Course', 'Resource', 'LessonPlan']
+			};
+			this.contentService.getAllLocalContents(requestParams, (res: any) => {
+				let data = JSON.parse(res);
+				console.log('Success: saved resources...', data);
+				this.ngZone.run(() => {
+					if (data.result) {
+						let contentData = [];
+						// TODO Temporary code - should be fixed at backend
+						_.forEach(data.result, (value, key) => {
+							value.contentData.lastUpdatedOn = value.lastUpdatedTime;
+							value.createdOn = value.contentData.createdOn;
+							if (value.contentData.appIcon && value.basePath) {
+								value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
+							}
+							contentData.push(value.contentData)
+						});
+						this.searchList = contentData;
+					}
+					loader.dismiss();
+					this.loadMoreBtn = false;
+				});
+			}, error => {
+				console.log('error while getting saved contents', error);
+				loader.dismiss();
+			});
 
 
-	}
+		}
 
-	/**
-	 * Ionic life cycle hook
-	 */
-	ionViewCanLeave() {
-		this.tabBarElement.style.display = 'flex';
-		this.searchLimit = 10;
-		this.searchList = [];
-		this.loadMoreBtn = true;
-		this.pageType = 'library';
-	}
+		/**
+		 * Ionic life cycle hook
+		 */
+		ionViewCanLeave() {
+			this.tabBarElement.style.display = 'flex';
+			this.searchLimit = 10;
+			this.searchList = [];
+			this.loadMoreBtn = true;
+			this.pageType = 'library';
+		}
 
-	/**
-	 * Angular life cycle hooks
-	 */
-	ngOnInit() {
-		this.tabBarElement.style.display = 'none';
+		/**
+		 * Angular life cycle hooks
+		 */
+		ngOnInit() {
+			this.tabBarElement.style.display = 'none';
+		}
+		/**
+		 * Function to get loader instance
+		 */
+		getLoader(): any {
+			return this.loadingCtrl.create({
+				duration: 30000,
+				spinner: "crescent"
+			});
+		}
 	}
-	/**
-	 * Function to get loader instance
-	 */
-	getLoader(): any {
-		return this.loadingCtrl.create({
-			duration: 30000,
-			spinner: "crescent"
-		});
-	}
-}

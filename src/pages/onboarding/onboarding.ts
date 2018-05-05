@@ -1,6 +1,6 @@
 import { Component, NgZone } from '@angular/core';
 import { NavController, LoadingController } from 'ionic-angular';
-import { TabsPage, OAuthService, ContainerService, UserProfileService, ProfileService, Profile,  ProfileType, AuthService, TenantInfoRequest, Interact, InteractType, InteractSubtype, Environment, TelemetryService, PageId, ImpressionType, SharedPreferences } from 'sunbird';
+import { TabsPage, OAuthService, ContainerService, UserProfileService, ProfileService, Profile, ProfileType, AuthService, TenantInfoRequest, Interact, InteractType, InteractSubtype, Environment, TelemetryService, PageId, ImpressionType, SharedPreferences } from 'sunbird';
 import { UserTypeSelectionPage } from '../user-type-selection/user-type-selection';
 
 import { initGuestTabs, initUserTabs } from '../../app/module.service';
@@ -69,25 +69,14 @@ export class OnboardingPage {
     let loader = this.getLoader();
     loader.present();
 
-    let valuesMap = new Map();
-    valuesMap["UID"] = "";
-    this.telemetryService.interact(
-      generateInteractEvent(InteractType.TOUCH,
-        InteractSubtype.LOGIN_INITIATE,
-        Environment.HOME,
-        PageId.LOGIN,
-        valuesMap));
+    this.generateLoginInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.LOGIN_INITIATE, "");
     that.auth.doOAuthStepOne()
       .then(token => {
         return that.auth.doOAuthStepTwo(token);
       })
       .then(() => {
-        this.telemetryService.interact(
-          generateInteractEvent(InteractType.OTHER,
-            InteractSubtype.LOGIN_SUCCESS,
-            Environment.HOME,
-            PageId.LOGIN,
-            valuesMap));
+
         initUserTabs(that.container);
         return that.refreshProfileData();
       })
@@ -137,6 +126,8 @@ export class OnboardingPage {
           };
           this.userProfileService.getUserProfileDetails(req, res => {
             let r = JSON.parse(res);
+            this.generateLoginInteractTelemetry(InteractType.OTHER,
+              InteractSubtype.LOGIN_SUCCESS, r.response.userId);
             let profileRequest = {
               uid: r.response.userId, //req
               handle: r.response.userId, //TODO check with nikhil
@@ -155,7 +146,7 @@ export class OnboardingPage {
               },
               (err: any) => {
                 reject(err);
-            });
+              });
 
             resolve(r.response.rootOrg.slug);
           }, error => {
@@ -168,10 +159,15 @@ export class OnboardingPage {
   }
 
   browseAsGuest() {
-    this.generateInteractEvent();
+    this.telemetryService.interact(
+      generateInteractEvent(InteractType.TOUCH,
+        InteractSubtype.BROWSE_AS_GUEST_CLICKED,
+        Environment.HOME,
+        PageId.ONBOARDING,
+        null));
     initGuestTabs(this.container);
     this.preferences.getString('GUEST_USER_ID_BEFORE_LOGIN', (val) => {
-      if(val != "") {
+      if (val != "") {
         let profileRequest = {
           uid: val,
           handle: "Guest1", //req
@@ -196,12 +192,21 @@ export class OnboardingPage {
     });
   }
 
-  generateInteractEvent() {
-    let interact = new Interact();
-    interact.type = InteractType.TOUCH;
-    interact.subType = InteractSubtype.BROWSE_AS_GUEST_CLICKED;
-    interact.pageId = "";
-    interact.env = Environment.HOME;
-    this.telemetryService.interact(interact);
+
+
+  generateLoginInteractTelemetry(interactType, interactSubtype, uid) {
+    let valuesMap = new Map();
+    valuesMap["UID"] = uid;
+    this.telemetryService.interact(
+      generateInteractEvent(interactType,
+        interactSubtype,
+        Environment.HOME,
+        PageId.LOGIN,
+        valuesMap));
   }
+
+  /*   goBack() {
+      this.navCtrl.pop();
+    } */
+
 }

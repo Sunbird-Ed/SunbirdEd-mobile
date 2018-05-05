@@ -2,7 +2,7 @@ import { Component, NgZone, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { NavController, LoadingController } from 'ionic-angular';
 
-import { TabsPage, OAuthService, ContainerService, UserProfileService, AuthService, TenantInfoRequest, TelemetryService, InteractType, InteractSubtype, Environment } from 'sunbird';
+import { TabsPage, OAuthService, ContainerService, UserProfileService, AuthService, TenantInfoRequest, TelemetryService, InteractType, InteractSubtype, Environment, PageId } from 'sunbird';
 import { initGuestTabs, initUserTabs } from '../../app/module.service';
 import { generateInteractEvent } from '../../app/telemetryutil';
 
@@ -51,6 +51,10 @@ export class SignInCardComponent {
         Environment.HOME,
         this.source, null)
     );
+
+    this.generateLoginInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.LOGIN_INITIATE, "");
+
     let that = this;
     let loader = this.getLoader();
     loader.present();
@@ -92,6 +96,8 @@ export class SignInCardComponent {
           };
           this.userProfileService.getUserProfileDetails(req, res => {
             let r = JSON.parse(res);
+            this.generateLoginInteractTelemetry(InteractType.OTHER,
+              InteractSubtype.LOGIN_SUCCESS, r.response.userId);
             resolve(r.response.rootOrg.slug);
           }, error => {
             reject(error);
@@ -124,5 +130,16 @@ export class SignInCardComponent {
     return this.loadingCtrl.create({
       spinner: "crescent"
     });
+  }
+
+  generateLoginInteractTelemetry(interactType, interactSubtype, uid) {
+    let valuesMap = new Map();
+    valuesMap["UID"] = uid;
+    this.telemetryService.interact(
+      generateInteractEvent(interactType,
+        interactSubtype,
+        Environment.HOME,
+        PageId.LOGIN,
+        valuesMap));
   }
 }

@@ -8,6 +8,7 @@ import { CourseDetailPage } from '../course-detail/course-detail';
 import { ContentActionsComponent } from '../../component/content-actions/content-actions';
 import { ConfirmAlertComponent } from '../../component/confirm-alert/confirm-alert';
 import { TranslateService } from '@ngx-translate/core';
+import { generateImpressionWithRollup, generateStartWithRollup, generateEndWithRollup } from '../../app/telemetryutil';
 
 /**
  * Generated class for the CollectionDetailsPage page.
@@ -200,9 +201,8 @@ export class CollectionDetailsPage {
     },
       error => {
         console.log('error while loading content details', error);
-        const message = 'Something went wrong, please check after some time';
         loader.dismiss();
-        // this.showMessage(message, true);
+        this.translateAndDisplayMessage('ERROR_CONTENT_NOT_AVAILABLE', true);
       });
   }
 
@@ -501,6 +501,7 @@ export class CollectionDetailsPage {
         }
         // Get child content
         if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
+          this.showLoading = false;
           if (this.queuedIdentifiers.length && this.isDownloadStarted) {
             if (_.includes(this.queuedIdentifiers, res.data.identifier)) {
               this.currentCount++;
@@ -636,38 +637,37 @@ export class CollectionDetailsPage {
   }
 
   generateImpressionEvent(objectId, objectType, objectVersion) {
-    let impression = new Impression();
-    impression.type = ImpressionType.DETAIL;
-    impression.pageId = PageId.COURSE_DETAIL;
-    impression.env = Environment.HOME;
-    impression.objId = objectId;
-    impression.objType = objectType;
-    impression.objVer = objectVersion;
-    this.telemetryService.impression(impression);
+    this.telemetryService.impression(generateImpressionWithRollup(
+      ImpressionType.DETAIL,
+      PageId.COLLECTION_DETAIL,
+      Environment.HOME,
+      objectId,
+      objectType,
+      objectVersion,
+      this.objRollup
+    ));
   }
 
   generateStartEvent(objectId, objectType, objectVersion) {
-    let start = new Start();
-    start.type = objectType;
-    start.pageId = PageId.COLLECTION_DETAIL;
-    start.env = Environment.HOME;
-    start.mode = Mode.PLAY;
-    start.objId = objectId;
-    start.objType = objectType;
-    start.objVer = objectVersion;
-    this.telemetryService.start(start);
+    this.telemetryService.start(generateStartWithRollup(
+      PageId.COLLECTION_DETAIL,
+      objectId,
+      objectType,
+      objectVersion,
+      this.objRollup
+    ));
   }
 
   generateEndEvent(objectId, objectType, objectVersion) {
-    let end = new End();
-    end.type = objectType;
-    end.pageId = PageId.COLLECTION_DETAIL;
-    end.env = Environment.HOME;
-    end.mode = Mode.PLAY;
-    end.objId = objectId;
-    end.objType = objectType;
-    end.objVer = objectVersion;
-    this.telemetryService.end(end);
+    this.telemetryService.end(generateEndWithRollup(
+      objectType,
+      Mode.PLAY,
+      PageId.COLLECTION_DETAIL,
+      objectId,
+      objectType,
+      objectVersion,
+      this.objRollup
+    ));
   }
 
   showDownloadAlert(myEvent) {
@@ -686,8 +686,10 @@ export class CollectionDetailsPage {
 
   cancelDownload() {
     this.contentService.cancelDownload(this.identifier, (response) => {
+      this.showLoading = false;
       this.navCtrl.pop();
     }, (error) => {
+      this.showLoading = false;
       this.navCtrl.pop();
     });
   }

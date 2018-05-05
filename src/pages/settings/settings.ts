@@ -46,6 +46,7 @@ export class SettingsPage {
 
 
   ionViewDidEnter() {
+    this.generateImpressionEvent();
     this.preference.getString(KEY_SELECTED_LANGUAGE, value => {
       this.selectedlanguage = this.chosenLanguageString + value;
     });

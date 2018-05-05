@@ -74,12 +74,9 @@ page-search {
 
     span {
       color: grey;
-      font-weight: unset;
+      font-weight: 600;
+      font-size: 1.3rem;
     }
-    .item-md p {
-      font-size: 1.3rem !important;
-      font-weight: 600 !important;
-  }
   .empty-search-result {
     font-size: 1.2em;
   }
@@ -90,6 +87,28 @@ page-search {
 .item-md h3, {
   font-size: 1.5rem !important;
   font-weight: 600 !important;
+}
+.ellipsis1{
+
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  color: grey;
+
+
+}
+.subject{
+  display:inline-block;
+  color: grey;
+  font-weight: 600;
+  font-size: 1.3rem;
+  vertical-align: middle;
+  padding-bottom: 11px;
+}
+.inline-block{
+  display: inline-block;
+}
+.width{
+max-width: 60%;
 }
 // .list-md {
 //   margin: 16px 0 16px !important;

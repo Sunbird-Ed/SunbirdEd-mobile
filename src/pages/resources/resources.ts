@@ -308,7 +308,7 @@ export class ResourcesPage implements OnInit {
 			"Resource",
 		];
 
-		this.navCtrl.push(SearchPage, { contentType: contentType });
+		this.navCtrl.push(SearchPage, { contentType: contentType,source: PageId.LIBRARY });
   }
 
   showContentDetails(content) {
