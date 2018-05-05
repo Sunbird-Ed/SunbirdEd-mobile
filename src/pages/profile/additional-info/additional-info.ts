@@ -187,7 +187,7 @@ export class AdditionalInfoComponent {
    * To Toggle the lock
    */
   toggleLock(field: string) {
-    this.profileVisibility[field] = this.profileVisibility[field] == "private" ? "public" : "private";
+    this.profileVisibility[field] = this.profileVisibility[field] === "private" ? "public" : "private";
     this.setProfileVisibility(field);
   }
 
@@ -202,9 +202,9 @@ export class AdditionalInfoComponent {
         let req = {
           userId: JSON.parse(session)["userToken"],
           privateFields:
-            this.profileVisibility[field] == "private" ? [field] : [],
+            this.profileVisibility[field] === "private" ? [field] : [],
           publicFields:
-            this.profileVisibility[field] == "public" ? [field] : []
+            this.profileVisibility[field] === "public" ? [field] : []
         };
         this.userProfileService.setProfileVisibility(
           req,
