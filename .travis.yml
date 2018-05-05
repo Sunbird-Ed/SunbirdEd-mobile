@@ -45,6 +45,11 @@ before_install:
 - export LANG=en_US.UTF-8
 - nvm install 8
 - npm install -g ionic cordova
+- openssl aes-256-cbc -K $encrypted_2842cc8e28bf_key -iv $encrypted_2842cc8e28bf_iv -in ./buildConfig/secret.tar.enc -out ./buildConfig/secret.tar -d
+- cd buildConfig
+- tar xvf secret.tar
+- cd ..
+
 before_script:
 - echo "Before Script"
 script:
@@ -57,7 +62,7 @@ env:
 deploy:
   provider: releases
   file_glob: true
-  file: "platforms/android/app/build/outputs/apk/qa/release/sunbird-*.apk"
+  file: "platforms/android/app/build/outputs/apk/**/*/sunbird-*.apk"
   skip_cleanup: true
   on:
     repo: project-sunbird/sunbird-mobile
