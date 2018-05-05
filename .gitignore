@@ -32,3 +32,8 @@ $RECYCLE.BIN/
 .DS_Store
 Thumbs.db
 UserInterfaceState.xcuserstate
+
+/buildConfig/build.json
+/buildConfig/gk.jks
+/buildConfig/secret.gradle
+/buildConfig/secret.tar

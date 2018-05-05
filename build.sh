@@ -47,16 +47,8 @@ done
 
 rm -rf platforms
 
-curl -L -o ./plugins/cordova-plugin-genie-sdk/secret.gradle https://www.dropbox.com/s/wjxnd7s8h4ce7vl/secret.gradle?dl=1
 
 ionic cordova platforms add android
 
-
-curl -L -o ./gk.jks https://www.dropbox.com/s/0vorw73102zr97c/gk.jks?dl=1
-curl -L -o ./build.json https://www.dropbox.com/s/n7aj1kf1ztigidn/build.json?dl=1
-
-if [ -e ./plugins/cordova-plugin-genie-sdk/secret.gradle ]; then echo "Ok"; else echo "Not Okay"; fi
-
-
-ionic cordova build android --prod --release --buildConfig build.json
+ionic cordova build android --prod --release --buildConfig ./buildConfig/build.json
 

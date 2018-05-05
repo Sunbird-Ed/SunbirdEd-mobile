@@ -99,7 +99,7 @@
     <plugin name="cordova-plugin-network-information" spec="^2.0.1" />
     <plugin name="cordova-plugin-sunbirdsplash" spec="git+https://github.com/project-sunbird/cordova-plugin-sunbirdsplash.git" />
     <plugin name="cordova-plugin-customconfigparameters" spec="^3.0.0" />
-    <plugin name="cordova-plugin-genie-sdk" spec="/home/user/Ionic-Workspace/cordova-plugin-genie-sdk" />
-    <plugin name="cordova-plugin-geniecanvas" spec="/home/user/Ionic-Workspace/cordova-plugin-geniecanvas" />
+    <plugin name="cordova-plugin-genie-sdk" spec="git+https://github.com/project-sunbird/cordova-plugin-genie-sdk" />
+    <plugin name="cordova-plugin-geniecanvas" spec="git+https://github.com/project-sunbird/cordova-plugin-geniecanvas" />
     <engine name="android" spec="~7.0.0" />
 </widget>
