@@ -399,5 +399,7 @@
     "TEACHER_ROLE_DESC1": "Browse through courses",
     "TEACHER_ROLE_DESC2": "Find relevant resources",
     "TEACHER_ROLE_DESC3": "Browse through groups",
-    "INACTIVE": "Inactive"
+    "INACTIVE": "Inactive",
+    "CONTINUE_AS_TEACHER": "Continue as teacher",
+    "CONTINUE_AS_STUDENT": "Continue as student"
   }
