@@ -1,6 +1,6 @@
 import { Component, NgZone, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, Platform, Navbar, PopoverController } from 'ionic-angular';
-import { ContentService, FileUtil, Start, PageId, Environment, Mode, Impression, ImpressionType, TelemetryService, End, Rollup } from 'sunbird';
+import { ContentService, FileUtil, Start, PageId, Environment, Mode, Impression, ImpressionType, TelemetryService, End, Rollup, InteractType, InteractSubtype, ShareUtil } from 'sunbird';
 import { NgModel } from '@angular/forms';
 import * as _ from 'lodash';
 import { ContentDetailsPage } from '../content-details/content-details';
@@ -8,7 +8,8 @@ import { CourseDetailPage } from '../course-detail/course-detail';
 import { ContentActionsComponent } from '../../component/content-actions/content-actions';
 import { ConfirmAlertComponent } from '../../component/confirm-alert/confirm-alert';
 import { TranslateService } from '@ngx-translate/core';
-import { generateImpressionWithRollup, generateStartWithRollup, generateEndWithRollup } from '../../app/telemetryutil';
+import { generateImpressionWithRollup, generateStartWithRollup, generateEndWithRollup, generateInteractEvent } from '../../app/telemetryutil';
+import { SocialSharing } from '@ionic-native/social-sharing';
 
 /**
  * Generated class for the CollectionDetailsPage page.
@@ -165,7 +166,10 @@ export class CollectionDetailsPage {
     public popoverCtrl: PopoverController,
     private fileUtil: FileUtil,
     private platform: Platform,
-    private telemetryService: TelemetryService, private translate: TranslateService) {
+    private telemetryService: TelemetryService, 
+    private translate: TranslateService,
+    private social: SocialSharing,
+    private shareUtil: ShareUtil) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
@@ -567,6 +571,33 @@ export class CollectionDetailsPage {
     toast.present();
   }
 
+  share() {
+    this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_LIBRARY_INITIATED, this.contentDetail.contentType);
+    let loader = this.getLoader();
+    loader.present();
+    let url = "https://staging.open-sunbird.org/public/#!/content/" + this.contentDetail.identifier;
+    if (this.contentDetail.isAvailableLocally) {
+      this.shareUtil.exportEcar(this.contentDetail.identifier, path => {
+        loader.dismiss();
+        this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.contentDetail.contentType);
+        this.social.share("", "", "file://" + path, url);
+      }, error => {
+        loader.dismiss();
+        let toast = this.toastCtrl.create({
+          message: "Unable to share content.",
+          duration: 2000,
+          position: 'bottom'
+        });
+        toast.present();
+      });
+    } else {
+      loader.dismiss();
+      this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.contentDetail.contentType);
+      this.social.share("", "", "", url);
+    }
+
+  }
+
 
   /**
    * Download single content
@@ -668,6 +699,17 @@ export class CollectionDetailsPage {
       objectVersion,
       this.objRollup
     ));
+  }
+
+  generateShareInteractEvents(interactType, subType, contentType) {
+    let values = new Map();
+    values["ContentType"] = contentType;
+    this.telemetryService.interact(
+      generateInteractEvent(interactType,
+        subType,
+        Environment.HOME,
+        PageId.COLLECTION_DETAIL, values)
+    );
   }
 
   showDownloadAlert(myEvent) {

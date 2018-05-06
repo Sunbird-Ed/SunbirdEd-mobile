@@ -5,7 +5,7 @@
       <!-- <ion-icon md="md-share" float-right></ion-icon> -->
     </ion-title>
     <ion-buttons end *ngIf="!isDepthChild">
-      <button ion-button icon-only>
+      <button ion-button icon-only  (click)="share()">
         <ion-icon md="md-share" float-right></ion-icon>
       </button>
       <button *ngIf="contentDetail && contentDetail.isAvailableLocally" ion-button icon-only (click)="showOverflowMenu($event)"

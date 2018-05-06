@@ -1,6 +1,6 @@
 import { Component, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams, LoadingController, ToastController } from 'ionic-angular';
-import { TelemetryService, SyncStat, SharedPreferences, PageId, Environment, ImpressionType, Impression, Interact, InteractType, InteractSubtype, ShareUtil } from 'sunbird';
+import { TelemetryService, SyncStat, SharedPreferences, PageId, Environment, ImpressionType, Impression, Interact, InteractType, InteractSubtype, ShareUtil, TelemetryStat } from 'sunbird';
 import { DataSyncType } from "./datasynctype.enum"
 import { TranslateService } from '@ngx-translate/core'
 import { SocialSharing } from '@ionic-native/social-sharing';
@@ -26,7 +26,7 @@ class CMap {
 export class DatasyncPage {
   dataSyncType: DataSyncType;
   lastSyncedTimeString: String = "LAST_SYNC";
-  latestSync: String;
+  latestSync: String = "";
 
   OPTIONS: typeof DataSyncType = DataSyncType;
 
@@ -48,15 +48,8 @@ export class DatasyncPage {
     //fetch the string 
     this.translate.get('LAST_SYNC').subscribe(value => {
       this.lastSyncedTimeString = value;
-
-      //check what was the last sync time
-      this.preference.getString(KEY_DATA_SYNC_TIME, val => {
-        if (val === undefined || val === "" || val === null) {
-          this.latestSync = "";
-        } else {
-          this.latestSync = this.lastSyncedTimeString + " " + val
-        }
-      });
+      this.getLastSyncTime();
+      
     });
 
     //check what sync option is selected
@@ -94,6 +87,32 @@ export class DatasyncPage {
 
   goBack() {
     this.navCtrl.pop();
+  }
+
+  getLastSyncTime(){
+    this.telemetryService.getTelemetryStat((response: any) => {
+      let that = this;
+      that.zone.run(() => {
+        let syncStat: TelemetryStat =  JSON.parse(response).result;
+        console.log("Telemetry Data Sync Time : " + syncStat.lastSyncTime);
+        let milliseconds = Number(syncStat.lastSyncTime);
+
+        //get date
+        let date: Date = new Date(milliseconds);
+
+        let month: Number = date.getMonth() + 1;
+
+        //complete date and time
+        let dateAndTime: string = date.getDate() + "/" + month +
+          "/" + date.getFullYear() + ", " + that.getTimeIn12HourFormat(date);
+
+        that.latestSync = this.lastSyncedTimeString + " " + dateAndTime;
+      });
+
+
+    }, (error) => {
+      
+    });
   }
 
   shareTelemetry() {
