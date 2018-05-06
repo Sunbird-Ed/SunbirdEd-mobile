@@ -4,7 +4,7 @@ import { AboutAppPage } from '../about-app/about-app';
 import { TermsofservicePage } from '../termsofservice/termsofservice';
 import { PrivacypolicyPage } from '../privacypolicy/privacypolicy';
 import { AppVersion } from '@ionic-native/app-version';
-import { DeviceInfoService } from 'sunbird';
+import { DeviceInfoService} from 'sunbird';
 import { Impression, ImpressionType, PageId, Environment, TelemetryService } from 'sunbird';
 
 /**
@@ -25,7 +25,8 @@ export class AboutUsPage {
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
     private deviceInfoService: DeviceInfoService,
-    private appVersion: AppVersion,private telemetryService: TelemetryService) {
+    private appVersion: AppVersion,
+    private telemetryService: TelemetryService) {
   }
 
   ionViewDidLoad() {
@@ -41,15 +42,15 @@ export class AboutUsPage {
         console.log("Device Id: ", JSON.parse(err));
       });
 
+    
+
+    
     this.appVersion.getAppName()
       .then((appName: any) => {
         return appName;
       })
       .then(val => {
-        this.appVersion.getVersionNumber()
-          .then((version: any) => {
-            this.version = val + " " + version;
-          })
+          this.getVersionName(val);
       });
   }
 
@@ -72,6 +73,24 @@ export class AboutUsPage {
     impression.pageId = PageId.SETTINGS_ABOUT_US;
     impression.env = Environment.SETTINGS;
     this.telemetryService.impression(impression);
+  }
+
+  getVersionName(appName) : any {
+    this.deviceInfoService.getBuildConfigParam("VERSION_NAME", (response: any) => {
+      this.getVersionCode(appName,response);
+      return response;
+    }, (error) => {
+      return "";
+    });
+  }
+
+  getVersionCode(appName,versionName) : any {
+    this.deviceInfoService.getBuildConfigParam("VERSION_CODE", (response: any) => {
+      this.version = appName + " v" + versionName+"."+response;
+      return response;
+    }, (error) => {
+      return "";
+    });
   }
 
 }
