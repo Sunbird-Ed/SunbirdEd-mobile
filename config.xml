@@ -20,7 +20,8 @@
     <preference name="auth_redirect_url" value="https://staging.open-sunbird.org/oauth2callback" />
     <preference name="auth_url" value="https://staging.open-sunbird.org/auth/realms/sunbird/protocol/openid-connect/auth?redirect_uri=https://staging.open-sunbird.org/oauth2callback&amp;response_type=code&amp;scope=offline_access&amp;client_id=${CID}" />
     <preference name="logout_url" value="https://staging.open-sunbird.org/auth/realms/sunbird/protocol/openid-connect/logout?redirect_uri=https://staging.open-sunbird.org/oauth2callback" />
-    <hook src="scripts/copyGradleFiles.js" type="before_build" />
+    <hook type="before_build" src="scripts/copyGradleFiles.js" />
+    <hook type="before_run" src="scripts/copyGradleFiles.js" />
     <platform name="android">
         <preference name="android-manifest/@xmlns:tools" value="http://schemas.android.com/tools" />
         <preference name="android-manifest/application/@tools:replace" value="android:allowBackup" />
