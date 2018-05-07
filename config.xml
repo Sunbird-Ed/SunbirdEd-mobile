@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="org.sunbird.app" version="staging-2.0.0.01" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="org.sunbird.app" version="staging-2.0.0.01" android-versionCode="1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Sunbird</name>
     <description>Sunbird mobile app</description>
     <author email="joel@ekstep.org" href="http://ekstep.org">EkStep Team</author>
@@ -103,5 +103,5 @@
     <plugin name="cordova-plugin-customconfigparameters" spec="^3.0.0" />
     <plugin name="cordova-plugin-geniecanvas" spec="git+https://github.com/project-sunbird/cordova-plugin-geniecanvas" />
     <engine name="android" spec="~7.0.0" />
-    <plugin name="cordova-plugin-genie-sdk" spec="../cordova-plugin-genie-sdk" />
+    <plugin name="cordova-plugin-genie-sdk" spec="git+https://github.com/project-sunbird/cordova-plugin-genie-sdk.git" />
 </widget>
