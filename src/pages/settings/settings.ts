@@ -38,7 +38,8 @@ export class SettingsPage {
       value => {
         this.appVersion.getAppName()
         .then((appName: any) => {
-          this.shareAppLabel = value.replace("%s", appName);
+          //TODO: Need to add dynamic string substitution
+          this.shareAppLabel = value.replace("{{%s}}", appName);
         });
       }
     );
@@ -47,12 +48,12 @@ export class SettingsPage {
 
   ionViewDidEnter() {
     this.generateImpressionEvent();
-    this.preference.getString(KEY_SELECTED_LANGUAGE, value => {
-      this.selectedlanguage = this.chosenLanguageString + value;
-    });
     this.translate.get('CURRENT_LANGUAGE').subscribe(
       value => {
         this.chosenLanguageString = value;
+        this.preference.getString(KEY_SELECTED_LANGUAGE, value => {
+          this.selectedlanguage = this.chosenLanguageString + ': ' + value;
+        });
       }
     );
   }
