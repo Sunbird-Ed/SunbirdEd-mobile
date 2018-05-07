@@ -1,5 +1,20 @@
 apply from: 'secret.gradle'
 
+buildscript {
+  repositories {
+    maven { url 'https://maven.fabric.io/public' }
+  }
+
+  dependencies {
+    classpath 'io.fabric.tools:gradle:1.+'
+  }
+}
+
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
+
 def globalConf = ext
 
 allprojects {
@@ -17,6 +32,12 @@ allprojects {
     }
 }
 
+
+repositories {
+  maven { url 'https://maven.fabric.io/public' }
+}
+
+
 android {
 
     packagingOptions {
@@ -26,6 +47,8 @@ android {
 
     defaultConfig {
         ext.buildNumber = System.getenv("TRAVIS_BUILD_NUMBER") ?: "local"
+        setProperty("archivesBaseName", "sunbird-$versionName")
+        resValue("string", "release_fabric_api_key", "\"${globalConf.release_fabric_api_key}\"")
         versionCode 10
         versionName "2.0.$ext.buildNumber"
     }
@@ -75,6 +98,7 @@ android {
             buildConfigField 'String', 'MOBILE_APP_KEY', "\"${globalConf.dev_mobile_app_key}\""
             buildConfigField 'String', 'MOBILE_APP_SECRET', "\"${globalConf.dev_mobile_app_secret}\""
             buildConfigField 'String', 'OAUTH_SESSION', '"org.genie.KeycloakOAuthSessionService"'
+            
             flavorDimensions "default"
         }
 
