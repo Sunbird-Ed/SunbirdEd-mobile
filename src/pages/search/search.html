@@ -47,7 +47,7 @@
 
   <ion-list no-lines *ngIf="dialCodeContentResult && dialCodeContentResult.length">
     <ion-list *ngFor="let content of dialCodeContentResult; let i = index; let last = last" class="content-list">
-      <ion-item padding-start (click)="oplenContent(undefined, content,index)">
+      <ion-item padding-start (click)="openContent(undefined, content,index)">
         <ion-avatar item-start>
           <img src="{{ defaultAppIcon }}" width="24px" height="24px">
         </ion-avatar>

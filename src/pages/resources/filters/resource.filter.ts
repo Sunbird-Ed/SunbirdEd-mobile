@@ -1,5 +1,6 @@
+import { platform } from 'os';
 import { Component } from "@angular/core";
-import { PopoverController, ViewController, NavParams } from "ionic-angular";
+import { PopoverController, ViewController, NavParams, Platform } from "ionic-angular";
 import { ResourceFilterOptions } from "./options/filter.options";
 import { PageAssembleCriteria, PageAssembleFilter, TelemetryService, InteractType, InteractSubtype, Environment, PageId } from "sunbird";
 import { generateInteractEvent } from "../../../app/telemetryutil";
@@ -108,8 +109,9 @@ export class ResourceFilter {
 
   facetsFilter;
 
+  backButtonFunc = undefined;
 
-  constructor(private popCtrl: PopoverController, private viewCtrl: ViewController, navParams: NavParams,private telemetryService: TelemetryService) {
+  constructor(private popCtrl: PopoverController, private viewCtrl: ViewController, navParams: NavParams,private telemetryService: TelemetryService, private platform: Platform) {
     this.callback = navParams.get('callback');
 
     if (navParams.get('filter')) {
@@ -117,6 +119,11 @@ export class ResourceFilter {
     } else {
       this.facetsFilter = this.FILTERS;
     }
+
+    this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      this.viewCtrl.dismiss();
+      this.backButtonFunc();
+    }, 10);
   }
 
   openFilterOptions(facet) {

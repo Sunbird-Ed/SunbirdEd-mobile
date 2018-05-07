@@ -1,5 +1,5 @@
 import { Component, ViewContainerRef } from "@angular/core";
-import { NavParams, ViewController } from "ionic-angular";
+import { NavParams, ViewController, Platform } from "ionic-angular";
 
 @Component({
   selector: 'page-resource-filter-options',
@@ -7,9 +7,14 @@ import { NavParams, ViewController } from "ionic-angular";
 })
 export class ResourceFilterOptions {
   facets: any
+  backButtonFunc = undefined;
 
-  constructor(private navParams: NavParams, private viewCtrl: ViewController) {
+  constructor(private navParams: NavParams, private viewCtrl: ViewController, private platform: Platform) {
     this.facets = this.navParams.get('facets');
+    this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      this.viewCtrl.dismiss();
+      this.backButtonFunc();
+    }, 20);
   }
 
 
