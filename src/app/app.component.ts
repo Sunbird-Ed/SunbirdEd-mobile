@@ -82,9 +82,12 @@ export class MyApp {
 
             initGuestTabs(this.containerService);
 
-            that.rootPage = (val != "") ? this.nav.setRoot(TabsPage, { loginMode: 'guest' }) 
-            : this.nav.setRoot(LanguageSettingsPage);
-          })
+            if(val != "") {
+              that.rootPage = TabsPage;
+            } else {
+              that.rootPage = LanguageSettingsPage;
+            }
+          });
         } else {
           initUserTabs(that.containerService);
           that.rootPage = TabsPage;
@@ -99,8 +102,8 @@ export class MyApp {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
       statusBar.styleDefault();
-      
-      
+
+
 
       window["thisRef"] = this;
       try {
@@ -112,14 +115,14 @@ export class MyApp {
       this.handleBackButton();
     });
 
-    
+
   }
 
   saveDefaultSyncSetting(){
     this.preference.getString("sync_config", val => {
       if (val === undefined || val === "" || val === null) {
         this.preference.putString("sync_config","ALWAYS_ON");
-      } 
+      }
     });
   }
 

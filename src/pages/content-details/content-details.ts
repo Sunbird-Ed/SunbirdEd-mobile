@@ -485,6 +485,7 @@ export class ContentDetailsPage {
         toast.present();
       });
     } else {
+      loader.dismiss();
       this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.content.contentType);
       this.social.share("", "", "", url);
     }
