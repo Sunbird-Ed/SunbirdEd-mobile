@@ -30,7 +30,7 @@
         </ion-col>
         <!-- Popular course layout -->
         <ion-col col-7 *ngSwitchCase="'popularCourses'" col-sm>
-          <span class="content-size1" *ngIf="content.size">{{ 'FILE_SIZE_1' | translate }}[{{ content.size | fileSize | slice:0:07 }}]</span><br/>
+          <span class="content-size1" *ngIf="content.size">{{ 'FILE_SIZE' | translate: {'%s': content.size | fileSize | slice:0:07} }}</span><br/>
           <div class="content-meta">
             <span class="content-size1">{{ 'ERROR_DURATION_NOT_AVAILABLE' | translate }}</span>
           </div>

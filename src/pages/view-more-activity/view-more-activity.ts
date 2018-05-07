@@ -204,8 +204,10 @@ export class ViewMoreActivityPage implements OnInit {
 		this.tabBarElement.style.display = 'none';
 		this.searchQuery = this.navParams.get('requestParams');
 		console.log('queryParams received =>>>>', this.searchQuery);
-		this.headerTitle = this.navParams.get('headerTitle');
-		this.mapper();
+		if (this.headerTitle !== this.navParams.get('headerTitle')) {
+			this.headerTitle = this.navParams.get('headerTitle');
+			this.mapper();
+		}
 	}
 
 		/**
@@ -298,7 +300,7 @@ export class ViewMoreActivityPage implements OnInit {
 		ionViewCanLeave() {
 			this.tabBarElement.style.display = 'flex';
 			this.searchLimit = 10;
-			this.searchList = [];
+			// this.searchList = [];
 			this.loadMoreBtn = true;
 			this.pageType = 'library';
 		}
