@@ -13,7 +13,7 @@ export class ResourceFilter {
 
   callback: ResourceFilterCallback;
 
-  facetsFilter = [
+  FILTERS = [
     {
       name: "board",
       displayName: "Board",
@@ -106,9 +106,17 @@ export class ResourceFilter {
 
     }];
 
+  facetsFilter;
+
 
   constructor(private popCtrl: PopoverController, private viewCtrl: ViewController, navParams: NavParams,private telemetryService: TelemetryService) {
     this.callback = navParams.get('callback');
+
+    if (navParams.get('filter')) {
+      this.facetsFilter = navParams.get('filter');
+    } else {
+      this.facetsFilter = this.FILTERS;
+    }
   }
 
   openFilterOptions(facet) {
@@ -129,7 +137,7 @@ export class ResourceFilter {
 
   apply() {
     if (this.callback) {
-      this.callback.applyFilter(this.pagetAssemblefilter);
+      this.callback.applyFilter(this.pagetAssemblefilter, this.facetsFilter);
     }
     this.viewCtrl.dismiss();
   }
@@ -145,5 +153,5 @@ export class ResourceFilter {
 }
 
 export interface ResourceFilterCallback {
-  applyFilter(filter: PageAssembleFilter);
+  applyFilter(filter: PageAssembleFilter, appliedFilter: any);
 }

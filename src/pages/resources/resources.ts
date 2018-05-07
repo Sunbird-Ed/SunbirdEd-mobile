@@ -57,6 +57,12 @@ export class ResourcesPage implements OnInit {
 	isOnBoardingCardCompleted: boolean = false;
 	public source = "resource";
 
+	resourceFilter: any;
+
+	appliedFilter: any;
+
+	filterIcon = "./assets/imgs/ic_action_filter.png";
+
 	constructor(public navCtrl: NavController, private pageService: PageAssembleService, private ngZone: NgZone, private popupCtrl: PopoverController,
 		contentService: ContentService, authService: AuthService, private qrScanner: SunbirdQRScanner, private popCtrl: PopoverController, private telemetryService: TelemetryService, private events: Events, private profileService: ProfileService, private toastCtrl: ToastController) {
 		this.contentService = contentService;
@@ -195,7 +201,10 @@ export class ResourcesPage implements OnInit {
 	}
 
 	ionViewDidEnter() {
-		this.generateImpressionEvent();
+		// this.filterIcon = "./assets/imgs/ic_action_filter.png";
+		// this.resourceFilter = undefined;
+		// this.appliedFilter = undefined;
+		this.generateImpressionEvent();	
 	}
 
 	ionViewWillEnter() {
@@ -339,10 +348,27 @@ export class ResourcesPage implements OnInit {
 
 		const that = this;
 		const callback: ResourceFilterCallback = {
-			applyFilter(filter) {
+			applyFilter(filter, appliedFilter) {
 				let criteria = new PageAssembleCriteria();
 				criteria.name = "Resource";
 				criteria.filters = filter;
+				that.resourceFilter = appliedFilter;
+				that.appliedFilter = filter;
+
+				let filterApplied = false;
+
+				Object.keys(that.appliedFilter).forEach(key => {
+					if (that.appliedFilter[key].length > 0) {
+						filterApplied = true;
+					}
+				})
+
+				if (filterApplied) {
+					that.filterIcon = "./assets/imgs/ic_action_filter_applied.png";					
+				} else {
+					that.filterIcon = "./assets/imgs/ic_action_filter.png";
+				}
+
 				that.pageService.getPageAssemble(criteria, res => {
 					that.ngZone.run(() => {
 						let response = JSON.parse(res);
@@ -367,7 +393,15 @@ export class ResourcesPage implements OnInit {
 			}
 		}
 
-		let filter = this.popCtrl.create(ResourceFilter, { callback: callback }, { cssClass: 'resource-filter' })
+		let filterOptions = {
+			callback: callback
+		}
+
+		if (this.resourceFilter) {
+			filterOptions['filter'] = this.resourceFilter;
+		}
+
+		let filter = this.popCtrl.create(ResourceFilter, filterOptions, { cssClass: 'resource-filter' })
 		filter.present();
 	}
 }
