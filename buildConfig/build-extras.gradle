@@ -84,6 +84,9 @@ android {
             buildConfigField 'String', 'CONTENT_LISTING_BASE_URL', '"https://dev.open-sunbird.org/api/data/v1"'
             buildConfigField 'String', 'CONTENT_BASE_URL', '"https://dev.open-sunbird.org/api/content/v1"'
             buildConfigField 'String', 'APIGATEWAY_BASE_URL', '"https://dev.open-sunbird.org/api/api-manager/v1"'
+            buildConfigField 'String', 'USER_SERVICE_BASE_URL', '"https://dev.open-sunbird.org/api/user/v1"'
+            buildConfigField 'String', 'PAGE_SERVICE_BASE_URL', '"https://dev.open-sunbird.org/api/data/v1"'
+            buildConfigField 'String', 'COURSE_SERVICE_BASE_URL', '"https://dev.open-sunbird.org/api/course/v1"'
             buildConfigField 'String', 'CHANNEL_SERVICE_BASE_URL', '"https://dev.open-sunbird.org/api/channel/v1"'
             buildConfigField 'String', 'FRAMEWORK_SERVICE_BASE_URL', '"https://dev.open-sunbird.org/api/framework/v1"'
             buildConfigField 'String', 'ORG_SERVICE_BASE_URL', '"https://dev.open-sunbird.org/api/org/v1"'
@@ -98,7 +101,7 @@ android {
             buildConfigField 'String', 'MOBILE_APP_KEY', "\"${globalConf.dev_mobile_app_key}\""
             buildConfigField 'String', 'MOBILE_APP_SECRET', "\"${globalConf.dev_mobile_app_secret}\""
             buildConfigField 'String', 'OAUTH_SESSION', '"org.genie.KeycloakOAuthSessionService"'
-            
+
             flavorDimensions "default"
         }
 
@@ -185,8 +188,8 @@ android {
 }
 
 dependencies {
-    compile "org.ekstep.genieservices:genie-providers:1.0.636"
-    compile "org.ekstep.genieservices:genie-integration:1.0.636"
+    compile "org.ekstep.genieservices:genie-providers:1.0.639"
+    compile "org.ekstep.genieservices:genie-integration:1.0.639"
     compile('com.crashlytics.sdk.android:crashlytics:2.9.2@aar') {
           transitive = true;
     }
