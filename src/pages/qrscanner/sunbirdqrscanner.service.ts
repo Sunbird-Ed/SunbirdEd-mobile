@@ -126,6 +126,12 @@ export class SunbirdQRScanner {
     displayTextColor: String, callback: QRResultCallback, source: string) {
     (<any>window).qrScanner.startScanner(screenTitle, displayText, displayTextColor, (code) => {
       if (code === "cancel") {
+        this.telemetryService.interact(
+          generateInteractEvent(InteractType.OTHER,
+            InteractSubtype.QRCodeScanCancelled,
+            Environment.HOME,
+            PageId.QRCodeScanner, null));
+          this.generateEndEvent(source, "");
         return;
       }
 

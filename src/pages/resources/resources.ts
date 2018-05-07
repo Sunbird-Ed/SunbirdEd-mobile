@@ -251,7 +251,7 @@ export class ResourcesPage implements OnInit {
 	generateImpressionEvent() {
 		let impression = new Impression();
 		impression.type = ImpressionType.VIEW;
-		impression.pageId = PageId.COURSES;
+		impression.pageId = PageId.LIBRARY;
 		impression.env = Environment.HOME;
 		this.telemetryService.impression(impression);
 	}
