@@ -98,7 +98,7 @@
       <div *ngIf="showChildrenLoader">
         <ion-row style="padding-top: 30px;" padding>
           <ion-col text-center>
-            <p *ngIf="downloadProgress !== 100">{{ 'FETCHING_CONTENTS_1' | translate }} {{ downloadProgress ? downloadProgress : '0' }} %</p>
+            <p *ngIf="downloadProgress !== 100">{{ 'FETCHING_CONTENTS' | translate: {'%s': downloadProgress ? downloadProgress : '0'} }}</p>
             <p *ngIf="downloadProgress === 100">{{ 'LOADING_CONTENT' | translate }}</p>
             <ion-spinner padding></ion-spinner>
           </ion-col>

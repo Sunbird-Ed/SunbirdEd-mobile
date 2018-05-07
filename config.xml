@@ -21,6 +21,7 @@
     <preference name="auth_url" value="https://staging.open-sunbird.org/auth/realms/sunbird/protocol/openid-connect/auth?redirect_uri=https://staging.open-sunbird.org/oauth2callback&amp;response_type=code&amp;scope=offline_access&amp;client_id=${CID}" />
     <preference name="logout_url" value="https://staging.open-sunbird.org/auth/realms/sunbird/protocol/openid-connect/logout?redirect_uri=https://staging.open-sunbird.org/oauth2callback" />
     <hook type="before_build" src="scripts/copyGradleFiles.js" />
+    <hook type="before_run" src="scripts/copyGradleFiles.js" />
     <platform name="android">
         <preference name="android-manifest/@xmlns:tools" value="http://schemas.android.com/tools" />
         <preference name="android-manifest/application/@tools:replace" value="android:allowBackup" />
@@ -100,7 +101,7 @@
     <plugin name="cordova-plugin-network-information" spec="^2.0.1" />
     <plugin name="cordova-plugin-sunbirdsplash" spec="git+https://github.com/project-sunbird/cordova-plugin-sunbirdsplash.git" />
     <plugin name="cordova-plugin-customconfigparameters" spec="^3.0.0" />
-    <plugin name="cordova-plugin-genie-sdk" spec="git+https://github.com/project-sunbird/cordova-plugin-genie-sdk" />
     <plugin name="cordova-plugin-geniecanvas" spec="git+https://github.com/project-sunbird/cordova-plugin-geniecanvas" />
     <engine name="android" spec="~7.0.0" />
+    <plugin name="cordova-plugin-genie-sdk" spec="../cordova-plugin-genie-sdk" />
 </widget>

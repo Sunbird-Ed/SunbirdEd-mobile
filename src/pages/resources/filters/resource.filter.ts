@@ -29,7 +29,7 @@ export class ResourceFilter {
         "Others"]
     },
     {
-      name: "grade",
+      name: "gradeLevel",
       displayName: "Grade",
       values: ["Kindergarten",
         "Grade 1",
@@ -47,7 +47,7 @@ export class ResourceFilter {
         "Other"]
     },
     {
-      name: "Concepts",
+      name: "domain",
       displayName: "Domain",
       values: ["numeracy",
         "literacy",
