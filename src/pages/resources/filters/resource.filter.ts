@@ -1,9 +1,22 @@
 import { platform } from 'os';
 import { Component } from "@angular/core";
 import { PopoverController, ViewController, NavParams, Platform } from "ionic-angular";
+import * as _ from 'lodash';
+
+import {
+  PageAssembleCriteria,
+  PageAssembleFilter,
+  TelemetryService,
+  InteractType,
+  InteractSubtype,
+  Environment,
+  PageId,
+  CategoryRequest,
+  FrameworkService
+} from "sunbird";
 import { ResourceFilterOptions } from "./options/filter.options";
-import { PageAssembleCriteria, PageAssembleFilter, TelemetryService, InteractType, InteractSubtype, Environment, PageId } from "sunbird";
 import { generateInteractEvent } from "../../../app/telemetryutil";
+import * as frameworkDataList from "../../../config/framework.filters";
 
 @Component({
   selector: 'page-resource-filter',
@@ -18,112 +31,85 @@ export class ResourceFilter {
     {
       name: "board",
       displayName: "Board",
-      values: ["NCERT",
-        "CBSE",
-        "ICSE",
-        "UP Board",
-        "AP Board",
-        "TN Board",
-        "NCTE",
-        "MSCERT",
-        "BSER",
-        "Others"]
+      values: frameworkDataList.boardList.sort()
     },
     {
       name: "gradeLevel",
       displayName: "Grade",
-      values: ["Kindergarten",
-        "Grade 1",
-        "Grade 2",
-        "Grade 3",
-        "Grade 4",
-        "Grade 5",
-        "Grade 6",
-        "Grade 7",
-        "Grade 8",
-        "Grade 9",
-        "Grade 10",
-        "Grade 11",
-        "Grade 12",
-        "Other"]
-    },
-    {
-      name: "domain",
-      displayName: "Domain",
-      values: ["numeracy",
-        "literacy",
-        "science"]
-
-    },
-    {
-      name: "contentType",
-      displayName: "Content Type",
-      values: ["Story",
-        "Worksheet",
-        "Collection",
-        "LessonPlan",
-        "TextBook"]
-
+      values: frameworkDataList.gradeList.sort()
     },
     {
       name: "subject",
       displayName: "Subject",
-      values: ["Maths",
-        "English",
-        "Hindi",
-        "Assamese",
-        "Bengali",
-        "Gujarati",
-        "Kannada",
-        "Malayalam",
-        "Marathi",
-        "Nepali",
-        "Odia",
-        "Punjabi",
-        "Tamil",
-        "Telugu",
-        "Urdu",
-        "Other",]
+      values: frameworkDataList.subjectList.sort()
 
     },
     {
       name: "medium",
       displayName: "Medium",
-      values: ["English",
-        "Hindi",
-        "Assamese",
-        "Bengali",
-        "Gujarati",
-        "Kannada",
-        "Malayalam",
-        "Marathi",
-        "Nepali",
-        "Odia",
-        "Punjabi",
-        "Tamil",
-        "Telugu",
-        "Urdu",
-        "Other"]
+      values: frameworkDataList.mediumList.sort()
 
+    },
+    {
+      name: "domain",
+      displayName: "Domain",
+      values: frameworkDataList.domainList.sort()
+    },
+    {
+      name: "contentType",
+      displayName: "Content Type",
+      values: frameworkDataList.contentTypeList.sort()
     }];
 
   facetsFilter;
 
   backButtonFunc = undefined;
 
-  constructor(private popCtrl: PopoverController, private viewCtrl: ViewController, navParams: NavParams,private telemetryService: TelemetryService, private platform: Platform) {
+  constructor(
+    private popCtrl: PopoverController,
+    private viewCtrl: ViewController,
+    private navParams: NavParams,
+    private telemetryService: TelemetryService,
+    private platform: Platform,
+    private frameworkService: FrameworkService
+  ) {
     this.callback = navParams.get('callback');
 
     if (navParams.get('filter')) {
       this.facetsFilter = navParams.get('filter');
     } else {
-      this.facetsFilter = this.FILTERS;
+      this.FILTERS.forEach((element, index: number) => {
+        if(index < 4) this.getFrameworkData(element.name, index);
+
+        //Framework API doesn't return domain and content Type exclude them
+        if(index === this.FILTERS.length - 1) this.facetsFilter = this.FILTERS;
+      });
     }
 
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.viewCtrl.dismiss();
       this.backButtonFunc();
     }, 10);
+  }
+
+  /**
+ * This will internally call framework API
+ * @param {string} currentCategory - request Parameter passing to the framework API
+ * @param {number} index - Local variable name to hold the list data
+ */
+  getFrameworkData(currentCategory: string, index: number): void {
+    let req: CategoryRequest = {
+      currentCategory: currentCategory
+    };
+
+    this.frameworkService.getCategoryData(req,
+      (res: any) => {
+        this.FILTERS[index].values = _.map(JSON.parse(res), 'name').sort();
+        console.log(currentCategory + " Category Response: " + this.FILTERS[index]);
+      },
+      (err: any) => {
+        console.log("Subject Category Response: ", JSON.parse(err));
+      });
   }
 
   openFilterOptions(facet) {
@@ -154,7 +140,7 @@ export class ResourceFilter {
       generateInteractEvent(InteractType.TOUCH,
         InteractSubtype.CANCEL,
         Environment.HOME,
-      PageId.LIBRARY_PAGE_FILTER,null));
+        PageId.LIBRARY_PAGE_FILTER, null));
     this.viewCtrl.dismiss();
   }
 }
