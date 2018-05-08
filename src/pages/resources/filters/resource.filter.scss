@@ -1,33 +1,40 @@
 page-resource-filter {
-    .subtitle {
-        text-transform: uppercase;
-        font-style: normal;
-        font-weight: 400;
+  .subtitle {
+    text-transform: capitalize;
+    font-size: 1.3em;
+    font-weight: 700;
+    color: map-get($colors, primary_black);
+  }
+  .filter-item {
+    width: auto;
+    margin: 16px !important;
+    background-color: map-get($colors, white_f0);
+    color: map-get($colors, dark_gray);
+    font-size: 1em;
+    font-weight: 600;
+    height: 2em;
+    ion-icon {
+      color: map-get($colors, dark_gray);
     }
-
-    .filter-item {
-        width: auto;
-        margin: 16px !important;
-        background-color: #f1f1f1;
-        color: #b3b3b3;
-
-        ion-icon {
-            color: #b3b3b3;
-        }
-    }
-
-    .apply-button {
-        margin: 16px !important;
-        width: 90%;
-    }
-
-
+  }
+  .scroll-list {
+    overflow-y: scroll;
+    height: 50vh !important;
+    padding-bottom: 10vh !important;
+  }
+  .item-inner>ion-icon {
+    min-height: 2rem !important;
+    font-size: 2rem !important;
+  }
+  .item-inner {
+    padding-right: 0 !important;
+  }
 }
 
 .resource-filter .popover-content {
   margin: 0;
   width: 100% !important;
-  height: 80% !important;
+  height: 70% !important;
   box-shadow: unset;
   position: fixed;
   left: 0 !important;
@@ -38,6 +45,6 @@ page-resource-filter {
 }
 
 .resource-filter ion-backdrop {
-  background-color: #000 !important;
+  background-color: map-get($colors, black) !important;
   opacity: 0.4 !important;
 }

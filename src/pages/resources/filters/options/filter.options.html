@@ -1,24 +1,25 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title class="subtitle">{{ 'CHOOSE_FROM_FOLLOWING' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
 <ion-content>
-  <ion-grid>
-    <ion-row>
-      <ion-col col-12>
-        <h3> {{ 'CHOOSE_FROM_FOLLOWING' | translate }}</h3>
-      </ion-col>
-    </ion-row>
-
+  <!-- <h3 padding-left class="subtitle">{{ 'CHOOSE_FROM_FOLLOWING' | translate }}</h3> -->
+  <ion-grid class="scroll-list">
     <ion-row *ngIf="facets?.values && facets?.values.length">
       <ion-col col-6 *ngFor="let facetValue of facets.values">
-        <ion-item no-lines padding-no>
-          <ion-label margin-no text-capitalize>{{ facetValue }}</ion-label>
+        <ion-item no-lines no-padding>
+          <ion-label text-capitalize>{{ facetValue }}</ion-label>
           <ion-checkbox [checked]="isSelected(facetValue)" (ionChange)="changeValue(facetValue)"></ion-checkbox>
         </ion-item>
       </ion-col>
     </ion-row>
-
-    <ion-row>
-      <ion-col col-12 text-center>
-        <button ion-button block (click)="confirm()">{{ 'SELECT' | translate }}</button>
-      </ion-col>
-    </ion-row>
   </ion-grid>
 </ion-content>
+<ion-footer>
+  <ion-row>
+    <ion-col>
+      <button ion-button block (click)="confirm()">{{ 'SELECT' | translate }}</button>
+    </ion-col>
+  </ion-row>
+</ion-footer>
