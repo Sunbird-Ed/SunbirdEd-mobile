@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, Events } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Globalization } from '@ionic-native/globalization';
 import { TabsPage, SharedPreferences, Impression, ImpressionType, PageId, Environment, TelemetryService, Interact, InteractType, InteractSubtype } from 'sunbird';
@@ -29,7 +29,8 @@ export class LanguageSettingsPage {
     public translateService: TranslateService,
     private globalization: Globalization,
     private preferences: SharedPreferences,
-    private telemetryService: TelemetryService
+    private telemetryService: TelemetryService,
+    private events: Events
   ) {
     this.init()
   }
@@ -167,7 +168,9 @@ export class LanguageSettingsPage {
     } else {
       this.translateService.use('en');
     }
-
+    this.events.publish('onAfterLanguageChange:update', {
+      selectedLanguage: this.language
+    });
     if (this.isFromSettings) {
       this.navCtrl.pop();
     } else {
