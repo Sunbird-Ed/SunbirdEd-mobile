@@ -1,11 +1,10 @@
 import { Injectable } from "@angular/core";
 import { TranslateService } from "@ngx-translate/core";
-import { AlertController, PopoverController, Popover, ToastController } from "ionic-angular";
+import { AlertController, PopoverController, Popover, ToastController, Platform } from "ionic-angular";
 import { QRScannerAlert, QRAlertCallBack } from "./qrscanner_alert";
 import { Start, Environment, Mode, TelemetryService, InteractType, InteractSubtype, PageId, End, PermissionService, PermissionResponse } from "sunbird";
 import { generateInteractEvent, Map } from "../../app/telemetryutil";
 import { Network } from "@ionic-native/network";
-
 
 @Injectable()
 export class SunbirdQRScanner {
@@ -17,17 +16,16 @@ export class SunbirdQRScanner {
     'CANCEL',
     'TRY_AGAIN',
   ]
-
   private mQRScannerText;
-
   readonly permissionList = ["android.permission.CAMERA"];
-
+  backButtonFunc = undefined;
   constructor(private translate: TranslateService,
     private popCtrl: PopoverController,
     private telemetryService: TelemetryService,
     private network: Network,
     private permission: PermissionService,
-    private toastCtrl: ToastController) {
+    private toastCtrl: ToastController,
+    private platform: Platform) {
     const that = this
     this.translate.get(this.QR_SCANNER_TEXT).subscribe((data) => {
       that.mQRScannerText = data
@@ -43,6 +41,12 @@ export class SunbirdQRScanner {
   public startScanner(screenTitle: String = this.mQRScannerText['SCAN_QR_CODE'],
     displayText: String = this.mQRScannerText['SCAN_QR_INSTRUCTION'],
     displayTextColor: String = "#0000ff", callback: QRResultCallback, source: string) {
+
+      this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+        this.backButtonFunc();
+      }, 10
+      );
+
     this.generateStartEvent(source);
 
     this.permission.hasPermission(this.permissionList, (response) => {
@@ -97,6 +101,8 @@ export class SunbirdQRScanner {
   }
 
   public stopScanner(successCallback: () => void = null, errorCallback: () => void = null) {
+    //Unregister the button listner
+    this.backButtonFunc();
     (<any>window).qrScanner.stopScanner(successCallback, errorCallback);
   }
 
@@ -131,7 +137,7 @@ export class SunbirdQRScanner {
             InteractSubtype.QRCodeScanCancelled,
             Environment.HOME,
             PageId.QRCodeScanner, null));
-          this.generateEndEvent(source, "");
+        this.generateEndEvent(source, "");
         return;
       }
 
