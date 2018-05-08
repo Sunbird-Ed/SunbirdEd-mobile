@@ -1,5 +1,5 @@
 import { Component, NgZone, ViewChild, OnInit } from '@angular/core';
-import { PageAssembleService, PageAssembleCriteria, ContentService, AuthService, FrameworkService, CategoryRequest, Impression, ImpressionType, PageId, Environment, TelemetryService, FrameworkDetailsRequest, InteractType, InteractSubtype, ProfileService, ContentDetailRequest } from "sunbird";
+import { PageAssembleService, PageAssembleCriteria, ContentService, AuthService, FrameworkService, CategoryRequest, Impression, ImpressionType, PageId, Environment, TelemetryService, FrameworkDetailsRequest, InteractType, InteractSubtype, ProfileService, ContentDetailRequest, SharedPreferences } from "sunbird";
 import { NavController, PopoverController, Events, ToastController } from 'ionic-angular';
 import * as _ from 'lodash';
 import { Slides } from 'ionic-angular';
@@ -63,10 +63,27 @@ export class ResourcesPage implements OnInit {
 
 	filterIcon = "./assets/imgs/ic_action_filter.png";
 
-	constructor(public navCtrl: NavController, private pageService: PageAssembleService, private ngZone: NgZone, private popupCtrl: PopoverController,
-		contentService: ContentService, authService: AuthService, private qrScanner: SunbirdQRScanner, private popCtrl: PopoverController, private telemetryService: TelemetryService, private events: Events, private profileService: ProfileService, private toastCtrl: ToastController) {
+	selectedLanguage = 'en';
+
+	constructor(public navCtrl: NavController, private pageService: PageAssembleService, private ngZone: NgZone,
+		private popupCtrl: PopoverController,
+		contentService: ContentService,
+		authService: AuthService,
+		private qrScanner: SunbirdQRScanner,
+		private popCtrl: PopoverController,
+		private telemetryService: TelemetryService,
+		private events: Events,
+		private profileService: ProfileService,
+		private toastCtrl: ToastController,
+		private preference: SharedPreferences) {
 		this.contentService = contentService;
 		this.authService = authService;
+
+		this.preference.getString('selected_language_code', (val: string) => {
+			if (val && val.length) {
+				this.selectedLanguage = val;
+			}
+		});
 
 		this.events.subscribe('onboarding-card:completed', (param) => {
 			this.isOnBoardingCardCompleted = param.isOnBoardingCardCompleted;
@@ -75,6 +92,13 @@ export class ResourcesPage implements OnInit {
 		this.events.subscribe('savedResources:update', (res) => {
 			if (res && res.update) {
 				this.setSavedContent();
+			}
+		});
+
+		this.events.subscribe('onAfterLanguageChange:update', (res) => {
+			if (res && res.selectedLanguage) {
+				this.selectedLanguage = res.selectedLanguage;
+				this.getPopularContent();
 			}
 		});
 	}
@@ -157,6 +181,15 @@ export class ResourcesPage implements OnInit {
 				let newSections = [];
 				a.forEach(element => {
 					element.display = JSON.parse(element.display);
+					if (element.display.name) {
+						if (_.has(element.display.name, this.selectedLanguage)) {
+							let langs = [];
+							_.forEach(element.display.name, function (value, key) {
+								langs[key] = value;
+							});
+							element.name = langs[this.selectedLanguage];
+						}
+					}
 					newSections.push(element);
 				});
 				//END OF TEMPORARY CODE
@@ -192,19 +225,11 @@ export class ResourcesPage implements OnInit {
 		});
 	}
 
-	/**
-	 * Ionic life cycle hooks
-	 */
-	ionViewDidLoad() {
-		console.log('Resources component initialized...==>>');
-		// this.getPopularContent();
-	}
-
 	ionViewDidEnter() {
 		// this.filterIcon = "./assets/imgs/ic_action_filter.png";
 		// this.resourceFilter = undefined;
 		// this.appliedFilter = undefined;
-		this.generateImpressionEvent();	
+		this.generateImpressionEvent();
 	}
 
 	ionViewWillEnter() {
@@ -277,22 +302,22 @@ export class ResourcesPage implements OnInit {
 				that.navCtrl.push(SearchPage, { dialCode: dialCode });
 			},
 			content(scanResult, contentId) {
-        // that.navCtrl.push(SearchPage);
-        let request: ContentDetailRequest = {
-          contentId: contentId
-        }
-        that.contentService.getContentDetail(request, (response)=> {
-          let data = JSON.parse(response);
-          that.showContentDetails(data.result);
-        }, (error)=> {
-          console.log("Error " + error);
-          let toast = that.toastCtrl.create({
-            message: "No content found associated with that QR code",
-            duration: 3000
-          })
+				// that.navCtrl.push(SearchPage);
+				let request: ContentDetailRequest = {
+					contentId: contentId
+				}
+				that.contentService.getContentDetail(request, (response) => {
+					let data = JSON.parse(response);
+					that.showContentDetails(data.result);
+				}, (error) => {
+					console.log("Error " + error);
+					let toast = that.toastCtrl.create({
+						message: "No content found associated with that QR code",
+						duration: 3000
+					})
 
-          toast.present();
-        });
+					toast.present();
+				});
 			}
 		}
 
@@ -317,27 +342,27 @@ export class ResourcesPage implements OnInit {
 			"Resource",
 		];
 
-		this.navCtrl.push(SearchPage, { contentType: contentType,source: PageId.LIBRARY });
-  }
+		this.navCtrl.push(SearchPage, { contentType: contentType, source: PageId.LIBRARY });
+	}
 
-  showContentDetails(content) {
-    if (content.contentType === 'Course') {
-      console.log('Calling course details page');
-      this.navCtrl.push(CourseDetailPage, {
-        content: content
-      })
-    } else if (content.mimeType === 'application/vnd.ekstep.content-collection') {
-      console.log('Calling collection details page');
-      this.navCtrl.push(CollectionDetailsPage, {
-        content: content
-      })
-    } else {
-      console.log('Calling content details page');
-      this.navCtrl.push(ContentDetailsPage, {
-        content: content
-      })
-    }
-  }
+	showContentDetails(content) {
+		if (content.contentType === 'Course') {
+			console.log('Calling course details page');
+			this.navCtrl.push(CourseDetailPage, {
+				content: content
+			})
+		} else if (content.mimeType === 'application/vnd.ekstep.content-collection') {
+			console.log('Calling collection details page');
+			this.navCtrl.push(CollectionDetailsPage, {
+				content: content
+			})
+		} else {
+			console.log('Calling content details page');
+			this.navCtrl.push(ContentDetailsPage, {
+				content: content
+			})
+		}
+	}
 
 	showFilter() {
 		this.telemetryService.interact(
@@ -364,7 +389,7 @@ export class ResourcesPage implements OnInit {
 				})
 
 				if (filterApplied) {
-					that.filterIcon = "./assets/imgs/ic_action_filter_applied.png";					
+					that.filterIcon = "./assets/imgs/ic_action_filter_applied.png";
 				} else {
 					that.filterIcon = "./assets/imgs/ic_action_filter.png";
 				}

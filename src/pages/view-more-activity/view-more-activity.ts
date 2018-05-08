@@ -136,24 +136,31 @@ export class ViewMoreActivityPage implements OnInit {
 		loader.present();
 
 		this.contentService.getSearchCriteriaFromRequest(this.searchQuery, (success: any) => {
-			// data = data;
-			console.log("getSearchCriteriaFromRequest -- success", success);
-			this.contentService.searchContent(JSON.parse(success), true, (data: any) => {
+			let reqBody = JSON.parse(success);
+			reqBody.limit = 10;
+			reqBody.offset = this.offset === 0 ? reqBody.offset : this.offset;
+			console.log("Filters", JSON.stringify(reqBody));
+			this.contentService.searchContent(reqBody, true, (data: any) => {
 				data = JSON.parse(data);
-				this.generateImpressionEvent();
-				this.generateLogEvent(data.result);
-				console.log('search limit...', data);
+				console.log('search response...', data);
 				this.ngZone.run(() => {
 					if (data.result && data.result.contentDataList) {
+						this.loadMoreBtn = data.result.contentDataList.length < this.searchLimit ? false : true;
 						if (this.isLoadMore) {
-							this.searchList.push(data.result.contentDataList);
+							_.forEach(data.result.contentDataList, (value, key) => {
+								this.searchList.push(value);
+							});
 						} else {
 							this.searchList = data.result.contentDataList;
 						}
+					} else {
+						this.loadMoreBtn = false;
 					}
 					console.log('this.searchResult', this.searchList);
 					loader.dismiss();
 				})
+				this.generateImpressionEvent();
+				this.generateLogEvent(data.result);
 			}, (error: any) => {
 				console.log('Error: while fetchig view more content');
 				loader.dismiss();
@@ -169,7 +176,7 @@ export class ViewMoreActivityPage implements OnInit {
 			generateImpressionEvent(
 				ImpressionType.SEARCH,
 				PageId.LIBRARY,
-				Environment.HOME,"","","")
+				Environment.HOME, "", "", "")
 		);
 	}
 
@@ -189,14 +196,14 @@ export class ViewMoreActivityPage implements OnInit {
 		}
 	}
 
-		/**
-		 * Load more result
-		 */
-		loadMore() {
-			// TODO: Issue in SDK - SDK is not accepting offset value.
-			this.searchLimit = this.searchLimit + 10;
-			this.mapper();
-		}
+	/**
+	 * Load more result
+	 */
+	loadMore() {
+		this.isLoadMore = true;
+		this.offset = this.offset + this.searchLimit;
+		this.mapper();
+	}
 	/**
 	 * Ionic default life cycle hook
 	 */
@@ -206,118 +213,120 @@ export class ViewMoreActivityPage implements OnInit {
 		console.log('queryParams received =>>>>', this.searchQuery);
 		if (this.headerTitle !== this.navParams.get('headerTitle')) {
 			this.headerTitle = this.navParams.get('headerTitle');
+			this.offset = 0;
+			this.loadMoreBtn = true;
 			this.mapper();
 		}
 	}
 
-		/**
-		 * Mapper to call api based on page.Layout name
-		 */
-		mapper() {
-			const pageName = this.navParams.get('pageName');
-			switch (pageName) {
-				case 'course.EnrolledCourses':
-					this.pageType = 'enrolledCourse';
-					this.getEnrolledCourse();
-					break;
-				case 'course.PopularContent':
-					this.pageType = 'popularCourses';
-					this.search();
-					break;
-				case 'resource.SavedResources':
-					this.getLocalContents();
-					break;
-				default:
-					this.search();
-			}
-		}
-
-		/**
-		 * Get enrolled courses
-		 */
-		getEnrolledCourse() {
-			let loader = this.getLoader();
-			loader.present();
-			this.pageType = 'enrolledCourse';
-			let option = {
-				userId: this.navParams.get('userId'),
-				refreshEnrolledCourses: false
-			};
-			this.courseService.getEnrolledCourses(option, (data: any) => {
-				if (data) {
-					data = JSON.parse(data);
-					this.searchList = data.result.courses ? data.result.courses : [];
-					console.log('Enrolled courses', this.searchList);
-					this.loadMoreBtn = false;
-				}
-				loader.dismiss();
-			}, (error: any) => {
-				console.log('error while loading enrolled courses', error);
-				loader.dismiss();
-			});
-		}
-
-		/**
-		 * Get local content
-		 */
-		getLocalContents() {
-			let loader = this.getLoader();
-			loader.present();
-			const requestParams = {
-				contentTypes: ['Story', 'Worksheet', 'Collection', 'Game', 'TextBook', 'Course', 'Resource', 'LessonPlan']
-			};
-			this.contentService.getAllLocalContents(requestParams, (res: any) => {
-				let data = JSON.parse(res);
-				console.log('Success: saved resources...', data);
-				this.ngZone.run(() => {
-					if (data.result) {
-						let contentData = [];
-						// TODO Temporary code - should be fixed at backend
-						_.forEach(data.result, (value, key) => {
-							value.contentData.lastUpdatedOn = value.lastUpdatedTime;
-							value.createdOn = value.contentData.createdOn;
-							if (value.contentData.appIcon && value.basePath) {
-								value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
-							}
-							contentData.push(value.contentData)
-						});
-						this.searchList = contentData;
-					}
-					loader.dismiss();
-					this.loadMoreBtn = false;
-				});
-			}, error => {
-				console.log('error while getting saved contents', error);
-				loader.dismiss();
-			});
-
-
-		}
-
-		/**
-		 * Ionic life cycle hook
-		 */
-		ionViewCanLeave() {
-			this.tabBarElement.style.display = 'flex';
-			this.searchLimit = 10;
-			// this.searchList = [];
-			this.loadMoreBtn = true;
-			this.pageType = 'library';
-		}
-
-		/**
-		 * Angular life cycle hooks
-		 */
-		ngOnInit() {
-			this.tabBarElement.style.display = 'none';
-		}
-		/**
-		 * Function to get loader instance
-		 */
-		getLoader(): any {
-			return this.loadingCtrl.create({
-				duration: 30000,
-				spinner: "crescent"
-			});
+	/**
+	 * Mapper to call api based on page.Layout name
+	 */
+	mapper() {
+		const pageName = this.navParams.get('pageName');
+		switch (pageName) {
+			case 'course.EnrolledCourses':
+				this.pageType = 'enrolledCourse';
+				this.loadMoreBtn = false;
+				this.getEnrolledCourse();
+				break;
+			case 'course.PopularContent':
+				this.pageType = 'popularCourses';
+				this.search();
+				break;
+			case 'resource.SavedResources':
+				this.loadMoreBtn = false;
+				this.getLocalContents();
+				break;
+			default:
+				this.search();
 		}
 	}
+
+	/**
+	 * Get enrolled courses
+	 */
+	getEnrolledCourse() {
+		let loader = this.getLoader();
+		loader.present();
+		this.pageType = 'enrolledCourse';
+		let option = {
+			userId: this.navParams.get('userId'),
+			refreshEnrolledCourses: false
+		};
+		this.courseService.getEnrolledCourses(option, (data: any) => {
+			if (data) {
+				data = JSON.parse(data);
+				this.searchList = data.result.courses ? data.result.courses : [];
+				console.log('Enrolled courses', this.searchList);
+				this.loadMoreBtn = false;
+			}
+			loader.dismiss();
+		}, (error: any) => {
+			console.log('error while loading enrolled courses', error);
+			loader.dismiss();
+		});
+	}
+
+	/**
+	 * Get local content
+	 */
+	getLocalContents() {
+		let loader = this.getLoader();
+		loader.present();
+		const requestParams = {
+			contentTypes: ['Story', 'Worksheet', 'Collection', 'Game', 'TextBook', 'Course', 'Resource', 'LessonPlan']
+		};
+		this.contentService.getAllLocalContents(requestParams, (res: any) => {
+			let data = JSON.parse(res);
+			console.log('Success: saved resources...', data);
+			this.ngZone.run(() => {
+				if (data.result) {
+					let contentData = [];
+					// TODO Temporary code - should be fixed at backend
+					_.forEach(data.result, (value, key) => {
+						value.contentData.lastUpdatedOn = value.lastUpdatedTime;
+						value.createdOn = value.contentData.createdOn;
+						if (value.contentData.appIcon && value.basePath) {
+							value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
+						}
+						contentData.push(value.contentData)
+					});
+					this.searchList = contentData;
+				}
+				loader.dismiss();
+				this.loadMoreBtn = false;
+			});
+		}, error => {
+			console.log('error while getting saved contents', error);
+			loader.dismiss();
+		});
+
+
+	}
+
+	/**
+	 * Ionic life cycle hook
+	 */
+	ionViewCanLeave() {
+		this.tabBarElement.style.display = 'flex';
+		this.isLoadMore = false;
+		this.pageType = this.pageType;
+	}
+
+	/**
+	 * Angular life cycle hooks
+	 */
+	ngOnInit() {
+		this.tabBarElement.style.display = 'none';
+	}
+	/**
+	 * Function to get loader instance
+	 */
+	getLoader(): any {
+		return this.loadingCtrl.create({
+			duration: 30000,
+			spinner: "crescent"
+		});
+	}
+}
