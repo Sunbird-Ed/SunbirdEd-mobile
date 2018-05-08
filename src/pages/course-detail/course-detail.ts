@@ -1,7 +1,7 @@
 import { Component, NgZone, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, Platform, Navbar } from 'ionic-angular';
 import { CourseBatchesPage } from './../course-batches/course-batches';
-import { ContentService, FileUtil, Impression, ImpressionType, PageId, Environment, TelemetryService, Start, Mode, End } from 'sunbird';
+import { ContentService, FileUtil, Impression, ImpressionType, PageId, Environment, TelemetryService, Start, Mode, End, AuthService } from 'sunbird';
 import { NgModel } from '@angular/forms';
 import * as _ from 'lodash';
 import { generateImpressionEvent } from '../../app/telemetryutil';
@@ -23,8 +23,6 @@ export class CourseDetailPage {
    * Contains content details
    */
   contentDetail: any;
-
-
 
   /**
    * Contains children content data
@@ -60,6 +58,8 @@ export class CourseDetailPage {
 
   course: any;
 
+  userId: string = '';
+
   /**
    * Contains reference of content service
    */
@@ -91,7 +91,8 @@ export class CourseDetailPage {
   @ViewChild(Navbar) navBar: Navbar;
   constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, private telemetryService: TelemetryService, zone: NgZone,
     private events: Events, toastCtrl: ToastController, private fileUtil: FileUtil,
-    private platform: Platform) {
+    private platform: Platform,
+    public authService: AuthService) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
@@ -102,6 +103,14 @@ export class CourseDetailPage {
       this.generateEndEvent(this.objId, this.objType, this.objVer);
       this.navCtrl.pop();
     }, 0)
+    this.authService.getSessionData((res: string) => {
+			if (res === undefined || res === "null") {
+        this.userId = '';
+			} else {
+        res = JSON.parse(res);
+        this.userId = res["userToken"];
+			}
+		});
   }
 
   /**
