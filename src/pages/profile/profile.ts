@@ -477,7 +477,8 @@ export class ProfilePage {
     let req = {
       createdBy: [this.userId || this.loggedInUserId],
       limit: 20,
-      contentTypes: ["story", "worksheet", "game", "collection", "textBook", "course", "lessonPlan", "resource"]
+      //TODO: Removing Course for the release 1.6.0, need to add it
+      contentTypes: ["story", "worksheet", "game", "collection", "textBook", "lessonPlan", "resource"]
     }
 
     this.contentService.searchContent(req,
