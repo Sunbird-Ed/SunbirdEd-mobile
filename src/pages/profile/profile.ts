@@ -103,9 +103,12 @@ export class ProfilePage {
     this.userId = this.navParams.get("userId") || '';
     this.isRefreshProfile = this.navParams.get("returnRefreshedUserProfileDetails");
     this.isLoggedInUser = this.userId ? false : true;
-    this.doRefresh();
+    
+  }
 
-    events.subscribe('profilePicture:update', (res) => {
+  ionViewDidLoad() {
+    this.doRefresh();
+    this.events.subscribe('profilePicture:update', (res) => {
       if (res.isUploading && res.url != '') this.imageUri = res.url;
       this.isUploading = res.isUploading;
     });
