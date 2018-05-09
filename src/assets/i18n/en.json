@@ -160,7 +160,7 @@
     "GENDER": "Gender",
     "GET_CONTENT_DESC": "Browse and consume content from our growing collection of free courses and resources.",
     "GET_CONTENT_TITLE": "Get Content On-the-Go",
-    "GRADE": "GRADE",
+    "GRADE": "Grade",
     "GRADE_OPTION_TEXT": "SELECT CLASS",
     "GRADE_QUESTION": "Which class do you belong to?",
     "GROUPS": "Groups",
@@ -402,5 +402,11 @@
     "CONTINUE_AS_STUDENT": "Continue as student",
     "MALE": "Male",
     "Female": "Female",
-    "Transgender": "Transgender"
+    "Transgender": "Transgender",
+    "SOMETHING_WENT_WRONG": "Something went wrong, please try again",
+    "ADD_EDUCATION": "Add Education",
+    "ADD_EXPERIENCE": "Add Experience",
+    "ADD_AVATAR": "Add Avatar",
+    "ADD_ADDRESS": "Add Address",
+    "ADD_LOCATION": "Add Location"
   }
