@@ -83,8 +83,11 @@ course-card {
     .app-icon {
       display: block;
       height: 95px;
-      width: 200px;
+      width: auto;
       background-size: cover;
       background-repeat: no-repeat;
+      background-position: center;
+      margin-left: auto;
+      margin-right: auto;
     }
 }
