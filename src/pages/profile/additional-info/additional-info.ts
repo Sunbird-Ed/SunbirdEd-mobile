@@ -300,7 +300,7 @@ export class AdditionalInfoComponent {
       (res: any) => {
         this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
         setTimeout(() => {
-          this.navCtrl.setRoot(ProfilePage);
+          this.navCtrl.setRoot(ProfilePage, {returnRefreshedUserProfileDetails: true});
         }, 2000);
       },
       (err: any) => {

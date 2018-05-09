@@ -1,5 +1,3 @@
-apply from: 'secret.gradle'
-
 buildscript {
   repositories {
         maven {
@@ -22,7 +20,6 @@ repositories {
 
 apply plugin: com.crashlytics.tools.gradle.CrashlyticsPlugin
 
-def globalConf = ext
 
 allprojects {
     repositories {
@@ -58,7 +55,7 @@ android {
         versionCode 10
         versionName "2.0.$ext.buildNumber"
 
-        manifestPlaceholders = [fabricKey: "${globalConf.release_fabric_api_key}", fabricSecret: "${globalConf.release_fabric_api_secret}"]
+        manifestPlaceholders = [fabricKey: "${release_fabric_api_key}", fabricSecret: "${release_fabric_api_secret}"]
     }
 
     signingConfigs {
@@ -101,13 +98,13 @@ android {
             buildConfigField 'String', 'DATA_SERVICE_BASE_URL', '"https://dev.open-sunbird.org/api/data/v1"'
             buildConfigField 'String', 'ANNOUNCEMENT_BASE_URL', '"https://dev.open-sunbird.org/api/announcement/v1"'
             buildConfigField 'String', 'PRODUCER_UNIQUE_ID', '"sunbird.app"'
-            buildConfigField 'String', 'PRODUCER_ID', "\"${globalConf.dev_producer_id}\""
-            buildConfigField 'String', 'CHANNEL_ID', "\"${globalConf.dev_channel_id}\""
+            buildConfigField 'String', 'PRODUCER_ID', "\"${dev_producer_id}\""
+            buildConfigField 'String', 'CHANNEL_ID', "\"${dev_channel_id}\""
             buildConfigField 'String', 'LOG_LEVEL', '"INFO"'
             buildConfigField 'int', 'MAX_COMPATIBILITY_LEVEL', "4"
             buildConfigField 'String', 'MOBILE_APP_CONSUMER', '"mobile_device"'
-            buildConfigField 'String', 'MOBILE_APP_KEY', "\"${globalConf.dev_mobile_app_key}\""
-            buildConfigField 'String', 'MOBILE_APP_SECRET', "\"${globalConf.dev_mobile_app_secret}\""
+            buildConfigField 'String', 'MOBILE_APP_KEY', "\"${dev_mobile_app_key}\""
+            buildConfigField 'String', 'MOBILE_APP_SECRET', "\"${dev_mobile_app_secret}\""
             buildConfigField 'String', 'OAUTH_SESSION', '"org.genie.KeycloakOAuthSessionService"'
 
             flavorDimensions "default"
@@ -132,13 +129,13 @@ android {
             buildConfigField 'String', 'DATA_SERVICE_BASE_URL', '"https://staging.open-sunbird.org/api/data/v1"'
             buildConfigField 'String', 'ANNOUNCEMENT_BASE_URL', '"https://staging.open-sunbird.org/api/announcement/v1"'
             buildConfigField 'String', 'PRODUCER_UNIQUE_ID', '"sunbird.app"'
-            buildConfigField 'String', 'PRODUCER_ID', "\"${globalConf.staging_producer_id}\""
-            buildConfigField 'String', 'CHANNEL_ID', "\"${globalConf.staging_channel_id}\""
+            buildConfigField 'String', 'PRODUCER_ID', "\"${staging_producer_id}\""
+            buildConfigField 'String', 'CHANNEL_ID', "\"${staging_channel_id}\""
             buildConfigField 'String', 'LOG_LEVEL', '"INFO"'
             buildConfigField 'int', 'MAX_COMPATIBILITY_LEVEL', "4"
             buildConfigField 'String', 'MOBILE_APP_CONSUMER', '"mobile_device"'
-            buildConfigField 'String', 'MOBILE_APP_KEY', "\"${globalConf.staging_mobile_app_key}\""
-            buildConfigField 'String', 'MOBILE_APP_SECRET', "\"${globalConf.staging_mobile_app_secret}\""
+            buildConfigField 'String', 'MOBILE_APP_KEY', "\"${staging_mobile_app_key}\""
+            buildConfigField 'String', 'MOBILE_APP_SECRET', "\"${staging_mobile_app_secret}\""
             buildConfigField 'String', 'OAUTH_SESSION', '"org.genie.KeycloakOAuthSessionService"'
             flavorDimensions "default"
         }
@@ -162,13 +159,13 @@ android {
             buildConfigField 'String', 'DATA_SERVICE_BASE_URL', '"https://staging.open-sunbird.org/api/data/v1"'
             buildConfigField 'String', 'ANNOUNCEMENT_BASE_URL', '"https://staging.open-sunbird.org/api/announcement/v1"'
             buildConfigField 'String', 'PRODUCER_UNIQUE_ID', '"sunbird.app"'
-            buildConfigField 'String', 'PRODUCER_ID', "\"${globalConf.production_producer_id}\""
-            buildConfigField 'String', 'CHANNEL_ID', "\"${globalConf.production_channel_id}\""
+            buildConfigField 'String', 'PRODUCER_ID', "\"${production_producer_id}\""
+            buildConfigField 'String', 'CHANNEL_ID', "\"${production_channel_id}\""
             buildConfigField 'String', 'LOG_LEVEL', '"INFO"'
             buildConfigField 'int', 'MAX_COMPATIBILITY_LEVEL', "4"
             buildConfigField 'String', 'MOBILE_APP_CONSUMER', '"mobile_device"'
-            buildConfigField 'String', 'MOBILE_APP_KEY', "\"${globalConf.production_mobile_app_key}\""
-            buildConfigField 'String', 'MOBILE_APP_SECRET', "\"${globalConf.production_mobile_app_secret}\""
+            buildConfigField 'String', 'MOBILE_APP_KEY', "\"${production_mobile_app_key}\""
+            buildConfigField 'String', 'MOBILE_APP_SECRET', "\"${production_mobile_app_secret}\""
             buildConfigField 'String', 'OAUTH_SESSION', '"org.genie.KeycloakOAuthSessionService"'
             flavorDimensions "default"
         }

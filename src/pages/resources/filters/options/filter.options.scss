@@ -1,33 +1,51 @@
 page-resource-filter-options {
-    ion-item {
-        padding-left: 0px !important;
-
-        .checkbox {
-            margin: 8px !important;
-        }
-
-        ion-label {
-            font-size: 14px !important;
-            text-overflow: unset !important;
-            white-space: unset !important;
-        }
+  .subtitle {
+    text-transform: capitalize;
+    font-size: 1.3em;
+    font-weight: 700;
+    color: map-get($colors, primary_black);
+  }
+  ion-item {
+    padding-left: 0 !important;
+    .checkbox {
+      margin: 8px !important;
     }
+    ion-label {
+      font-size: 14px !important;
+      text-overflow: unset !important;
+      white-space: unset !important;
+    }
+  }
+  .col {
+    height: 3.3em !important;
+  }
+  .scroll-list {
+    overflow-y: scroll;
+    height: 50vh !important; //padding-bottom: 10vh !important;
+  }
+  .item-md {
+    font-size: 1.3rem !important;
+    font-weight: 600 !important;
+  }
+  ion-footer {
+    bottom: 15px !important;
+  }
 }
 
 .resource-filter-options .popover-content {
-    margin: 0;
-    width: 100% !important;
-    height: 80% !important;
-    box-shadow: unset;
-    position: fixed;
-    left: 0 !important;
-    top: unset !important;
-    bottom: 0;
-    transform-origin: bottom -100% !important;
-    transform: translateY(0) !important;
+  margin: 0;
+  width: 100% !important;
+  height: 70% !important;
+  box-shadow: unset;
+  position: fixed;
+  left: 0 !important;
+  top: unset !important;
+  bottom: 0;
+  transform-origin: bottom -100% !important;
+  transform: translateY(0) !important;
 }
 
 .resource-filter-options ion-backdrop {
-    background-color: #000 !important;
-    opacity: 0.4 !important;
+  background-color: map-get($colors, black) !important;
+  opacity: 0.4 !important;
 }

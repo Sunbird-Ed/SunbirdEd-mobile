@@ -68,9 +68,9 @@
     <ion-item>
       <ion-label stacked>{{'GENDER' | translate }}</ion-label>
       <ion-select formControlName="gender" interface="popover" placeholder="{{'SELECT' | translate }}">
-        <ion-option value="male">Male</ion-option>
-        <ion-option value="female">Female</ion-option>
-        <ion-option value="transgender">Transgender</ion-option>
+        <ion-option value="male">{{ 'Male' | translate }}</ion-option>
+        <ion-option value="female">{{'Female' | translate}}</ion-option>
+        <ion-option value="transgender">{{'Transgender' | translate}}</ion-option>
       </ion-select>
       <button ion-button item-right clear small icon-only color="dark" (click)="toggleLock('gender')">
         <ion-icon name="{{ profileVisibility?.gender === 'private' ? 'lock' : 'unlock' }}" class="lock-position"></ion-icon>

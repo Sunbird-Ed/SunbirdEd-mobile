@@ -399,5 +399,8 @@
     "TEACHER_ROLE_DESC3": "Browse through groups",
     "INACTIVE": "Inactive",
     "CONTINUE_AS_TEACHER": "Continue as teacher",
-    "CONTINUE_AS_STUDENT": "Continue as student"
+    "CONTINUE_AS_STUDENT": "Continue as student",
+    "MALE": "Male",
+    "Female": "Female",
+    "Transgender": "Transgender"
   }
