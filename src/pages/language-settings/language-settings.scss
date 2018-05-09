@@ -14,15 +14,18 @@ page-language-settings {
   }
   /* Change height of the ion-item*/
   .item-block {
-    min-height: 5.5 rem !important;
+    min-height: 5.5rem !important;
   }
   .gray-color {
-    color: #484848;
+    color: map-get($colors, secondary_black);
     font-size: 1.4rem;
     font-weight: 520;
   }
   .arrow-icon {
     padding-left: 2.8em !important;
+  }
+  .back-button {
+    display: block !important;
   }
 }
 
