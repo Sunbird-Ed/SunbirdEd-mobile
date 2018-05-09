@@ -104,7 +104,7 @@ export class ResourceFilter {
 
     this.frameworkService.getCategoryData(req,
       (res: any) => {
-        this.FILTERS[index].values = _.map(JSON.parse(res), 'name').sort();
+        this.FILTERS[index].values = (currentCategory !== 'gradeLevel') ? _.map(JSON.parse(res), 'name').sort() : _.map(JSON.parse(res), 'name');
         console.log(currentCategory + " Category Response: " + this.FILTERS[index]);
       },
       (err: any) => {
