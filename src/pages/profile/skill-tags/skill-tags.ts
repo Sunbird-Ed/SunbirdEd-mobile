@@ -71,7 +71,7 @@ export class SkillTagsComponent {
         this.userProfileService.endorseOrAddSkill(req,
           (res: any) => {
             this.presentToast(this.translateMessage('SKILLS_ADDED_SUCCESSFULLY'));
-            this.navCtrl.push(ProfilePage);
+            this.navCtrl.setRoot(ProfilePage, { returnRefreshedUserProfileDetails: true });
           },
           (error: any) => {
             console.error("Res", error);
