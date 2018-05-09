@@ -1,5 +1,5 @@
 import { Component, NgZone } from "@angular/core";
-import { NavController, LoadingController, NavParams, Events } from "ionic-angular";
+import { NavController, LoadingController, NavParams, Events, ToastController } from "ionic-angular";
 import {
   ProfileService,
   AuthService,
@@ -28,7 +28,14 @@ import { OverflowMenuComponent } from "./overflowmenu/menu.overflow.component";
 import { UserSearchComponent } from "./user-search/user-search";
 import { ImagePicker } from "./imagepicker/imagepicker";
 import { generateInteractEvent } from "../../app/telemetryutil";
+import { TranslateService } from "@ngx-translate/core";
 
+/* Interface for the Toast Object */
+export interface toastOptions {
+  message: string,
+  duration: number,
+  position: string
+};
 
 /**
  * The Profile page
@@ -85,6 +92,12 @@ export class ProfilePage {
 
   enrolledCourse: any = [];
 
+  options: toastOptions = {
+    message: '',
+    duration: 3000,
+    position: 'bottom'
+  };
+
   constructor(
     public navCtrl: NavController,
     public popoverCtrl: PopoverController,
@@ -98,12 +111,14 @@ export class ProfilePage {
     public telemetryService: TelemetryService,
     private loadingCtrl: LoadingController,
     private navParams: NavParams,
-    public events: Events
+    public events: Events,
+    public translate: TranslateService,
+    public toastCtrl: ToastController
   ) {
     this.userId = this.navParams.get("userId") || '';
     this.isRefreshProfile = this.navParams.get("returnRefreshedUserProfileDetails");
     this.isLoggedInUser = this.userId ? false : true;
-    
+
   }
 
   ionViewDidLoad() {
@@ -268,7 +283,22 @@ export class ProfilePage {
           };
           break;
         case "location":
-          let requiredProfileFields: Array<string> = ['userId', 'firstName', 'lastName', 'language', 'email', 'phone', 'profileSummary', 'subject', 'gender', 'dob', 'grade', 'location', 'webPages'];
+          let requiredProfileFields: Array<string> = [
+            'userId',
+            'firstName',
+            'lastName',
+            'language',
+            'email',
+            'phone',
+            'profileSummary',
+            'subject',
+            'gender',
+            'dob',
+            'grade',
+            'location',
+            'webPages'
+          ];
+
           this.uncompletedDetails.title = "+ Add Location";
           this.uncompletedDetails.page = AdditionalInfoComponent;
           this.uncompletedDetails.data = {
@@ -430,16 +460,22 @@ export class ProfilePage {
   /**
    * To Toggle the lock
    */
-  toggleLock(field: string) {
-    this.profile.profileVisibility[field] =
-      this.profile.profileVisibility[field] == "private" ? "public" : "private";
-    this.setProfileVisibility(field);
+  toggleLock(field: string, fieldDisplayName: string, revert: boolean = false, ) {
+    this.profile.profileVisibility[field] = this.profile.profileVisibility[field] == "private" ? "public" : "private";
+
+    if (!revert) {
+      if (this.profile.profileVisibility[field] === "private")
+        this.getToast(this.translateMessage('PRIVACY_HIDE_TEXT', this.translateMessage(fieldDisplayName))).present();
+      if (this.profile.profileVisibility[field] === "public")
+        this.getToast(this.translateMessage('PRIVACY_SHOW_TEXT', this.translateMessage(fieldDisplayName))).present();
+      this.setProfileVisibility(field, fieldDisplayName);
+    }
   }
 
   /**
    * To set Profile visibility
    */
-  setProfileVisibility(field) {
+  setProfileVisibility(field: string, fieldDisplayName: string) {
     this.authService.getSessionData(session => {
       if (session === undefined || session == null) {
         console.error("session is null");
@@ -455,10 +491,12 @@ export class ProfilePage {
           req,
           (res: any) => {
             console.log("success", res);
+            this.refreshProfileData();
           },
           (err: any) => {
             console.error("Unable to set profile visibility.", err);
-            this.toggleLock(field); // In-case of API fails to update, make privacy lock icon as it was.
+            this.getToast(this.translateMessage('SOMETHING_WENT_WRONG')).present();
+            this.toggleLock(field, '', true); // In-case of API fails to update, make privacy lock icon as it was.
           }
         );
       }
@@ -556,5 +594,30 @@ export class ProfilePage {
   openLink(url: string): void {
     let options = 'hardwareback=yes,clearcache=no,zoom=no,toolbar=yes,clearsessioncache=no,closebuttoncaption=Done,disallowoverscroll=yes';
     (<any>window).cordova.InAppBrowser.open(url, '_system', options);
+  }
+
+  /**
+   * Used to Translate message to current Language
+   * @param {string} messageConst - Message Constant to be translated
+   * @returns {string} translatedMsg - Translated Message
+   */
+  translateMessage(messageConst: string, field?: string): string {
+    let translatedMsg = '';
+    this.translate.get(messageConst, { '%s': field }).subscribe(
+      (value: any) => {
+        translatedMsg = value;
+      }
+    );
+    return translatedMsg;
+  }
+
+  /**
+   * It will returns Toast Object
+   * @param {message} string - Message for the Toast to show
+   * @returns {object} - toast Object
+   */
+  getToast(message: string = ''): any {
+    this.options.message = message;
+    if (message.length) return this.toastCtrl.create(this.options);
   }
 }

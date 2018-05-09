@@ -299,9 +299,7 @@ export class AdditionalInfoComponent {
     this.userProfileService.updateUserInfo(req,
       (res: any) => {
         this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
-        setTimeout(() => {
-          this.navCtrl.setRoot(ProfilePage, {returnRefreshedUserProfileDetails: true});
-        }, 2000);
+        this.navCtrl.setRoot(ProfilePage, {returnRefreshedUserProfileDetails: true});
       },
       (err: any) => {
         this.getToast(this.translateMessage('PROFILE_UPDATE_FAILED')).present();
