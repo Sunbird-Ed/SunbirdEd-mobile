@@ -171,6 +171,11 @@ export class ResourcesPage implements OnInit {
 		let that = this;
 		let criteria = new PageAssembleCriteria();
 		criteria.name = "Resource";
+		
+		if (that.appliedFilter) {
+			criteria.filters = that.appliedFilter;
+		}
+
 		this.pageService.getPageAssemble(criteria, res => {
 			that.ngZone.run(() => {
 				let response = JSON.parse(res);
