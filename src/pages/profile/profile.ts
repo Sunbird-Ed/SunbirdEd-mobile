@@ -95,7 +95,7 @@ export class ProfilePage {
     public authService: AuthService,
     public courseService: CourseService,
     public contentService: ContentService,
-    public telemetryService : TelemetryService,
+    public telemetryService: TelemetryService,
     private loadingCtrl: LoadingController,
     private navParams: NavParams,
     public events: Events
@@ -127,15 +127,15 @@ export class ProfilePage {
       });
   }
 
-  ionViewDidEnter(){
+  ionViewDidEnter() {
     this.generateImpressionEvent();
   }
 
-  generateImpressionEvent(){
+  generateImpressionEvent() {
     let impression = new Impression();
-    impression.type =ImpressionType.VIEW;
+    impression.type = ImpressionType.VIEW;
     impression.pageId = PageId.PROFILE;
-    impression.env=Environment.USER;
+    impression.env = Environment.USER;
     this.telemetryService.impression(impression);
   }
 
@@ -173,13 +173,20 @@ export class ProfilePage {
               "missingFields",
               "lastLoginTime",
               "topics"
-            ],
-            refreshUserProfileDetails: true
+            ]
           };
-          if(this.isRefreshProfile) {
+          if (this.isLoggedInUser) {
+            if (this.isRefreshProfile) {
+              req.returnRefreshedUserProfileDetails = true;
+              this.isRefreshProfile = false;
+            } else {
+              req.refreshUserProfileDetails = true;
+            }
+          } else {
             req.returnRefreshedUserProfileDetails = true;
             this.isRefreshProfile = false;
           }
+
           this.userProfileService.getUserProfileDetails(
             req,
             (res: any) => {
@@ -280,7 +287,7 @@ export class ProfilePage {
   }
 
   formatLastLoginTime() {
-      this.lastLoginTime = this.datePipe.transform(new Date(this.profile.lastLoginTime), "MMM dd, yyyy, hh:mm:ss a");
+    this.lastLoginTime = this.datePipe.transform(new Date(this.profile.lastLoginTime), "MMM dd, yyyy, hh:mm:ss a");
   }
 
   /* Add new node in endorsersList as `canEndorse` */
@@ -462,8 +469,8 @@ export class ProfilePage {
     let popover = this.popoverCtrl.create(OverflowMenuComponent, {
       list: this.list
     }, {
-      cssClass: 'box'
-    });
+        cssClass: 'box'
+      });
     popover.present({
       ev: event
     });
