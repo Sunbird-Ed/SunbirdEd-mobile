@@ -25,7 +25,7 @@ export class EnrolledCourseDetailsPage {
   /**
    * Contains content details
    */
-  contentDetail: any;
+  course: any;
 
   /**
    * To hide menu
@@ -52,7 +52,7 @@ export class EnrolledCourseDetailsPage {
   /**
    * Contains total size of locally not available content(s)
    */
-  downloadContentsSize: string;
+  downloadSize: string;
 
   /**
    * Flag to show / hide resume button
@@ -119,29 +119,72 @@ export class EnrolledCourseDetailsPage {
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
   }
 
-  setContentDetails(identifier) {
-    const option = { contentId: identifier }
-
-    this.contentService.getContentDetail(option, (data: any) => {
+  /**
+   * Set course details by passing course identifier
+   * 
+   * @param {string} identifier 
+   */
+  setContentDetails(identifier): void {
+    this.contentService.getContentDetail({ contentId: identifier }, (data: any) => {
       this.zone.run(() => {
         data = JSON.parse(data);
-        console.log('Enrolled course details ==>>>>>', data);
+        console.log('enrolled course details: ', data);
         if (data && data.result) {
-          this.contentDetail = data.result.contentData ? data.result.contentData : [];
-          this.contentDetail.contentTypesCount = this.contentDetail.contentTypesCount ? JSON.parse(this.contentDetail.contentTypesCount) : '';
-          if (data.result.isAvailableLocally === false) {
-            this.importContent([this.identifier], false);
-          } else {
-            this.setChildContents();
-          }
+          this.extractApiResponse(data);
         }
       });
     },
-      error => {
+      (error: any) => {
         console.log('error while loading content details', error);
         const message = 'Something went wrong, please check after some time';
         this.showErrorMessage(message, true);
       });
+  }
+
+  /**
+   * Function to extract api response. Check content is locally available or not.
+   * If locally available then make childContents api call else make import content api call
+   * 
+   * @param data 
+   */
+  extractApiResponse(data): void {
+    this.course = data.result.contentData ? data.result.contentData : [];
+
+    switch (data.result.isAvailableLocally) {
+      case true: {
+        console.log("Content locally available. Geting child content... @@@");
+        this.setChildContents();
+        break;
+      }
+      case false: {
+        console.log("Content locally not available. Import started... @@@");
+        this.importContent([this.identifier], false);
+        break;
+      }
+      default: {
+        console.log("Invalid choice");
+        break;
+      }
+    }
+    this.setCourseStructure();
+  }
+
+  /**
+   * Set course structure
+   */
+  setCourseStructure(): void {
+    if (this.course.contentTypesCount) {
+      this.course.contentTypesCount = JSON.parse(this.course.contentTypesCount);
+    } else if (this.cardData.contentTypesCount && !_.isObject(this.cardData.contentTypesCount)) {
+      this.course.contentTypesCount = JSON.parse(this.cardData.contentTypesCount);
+    }
+  }
+
+  /**
+   * Log telemetry
+   */
+  logTelemetry(): void {
+
   }
 
   /**
@@ -208,11 +251,13 @@ export class EnrolledCourseDetailsPage {
       data = JSON.parse(data);
       console.log('Success: child contents ===>>>', data);
       this.zone.run(() => {
-        this.childrenData = data.result;
+        if (data && data.result && data.result.children) {
+          this.childrenData = data.result.children;
+          this.startData = data.result.children;
+        }
         this.showChildrenLoader = false;
-        this.showDownloadAllBtn(data.result.children || []);
-        // TODO: need better logic here
-        this.startData = data.result.children;
+        // this.showDownloadAllBtn(this.childrenData);
+        this.getContentsSize(this.childrenData);
       });
     },
       (error: string) => {
@@ -286,10 +331,24 @@ export class EnrolledCourseDetailsPage {
           size += value.contentData.size;
         }
       });
-      this.downloadContentsSize = this.getReadableFileSize(size);
+      // this.downloadContentsSize = this.getReadableFileSize(size);
     });
 
     console.log('download content identifiers', this.downloadIdentifiers);
+  }
+
+  getContentsSize(data) {
+    this.downloadSize = this.downloadSize;
+    _.forEach(data, (value, key) => {
+      if (value.children && value.children.length) {
+        this.getContentsSize(value.children);
+      }
+
+      if (value.isAvailableLocally === false) {
+        this.downloadIdentifiers.push(value.contentData.identifier);
+        this.downloadSize += +value.contentData.size;
+      }
+    });
   }
 
   /**
@@ -391,9 +450,6 @@ export class EnrolledCourseDetailsPage {
     let data = this.childrenData;
     if (this.startData && this.startData.length) {
       let firstChild = _.first(_.values(this.startData), 1);
-      // this.identifier = firstChild.identifier;
-      // console.log('DDDDDDDDDDDDDDDDDD', this.identifier);
-      // this.setContentDetails(this.identifier);
       this.navigateToChildrenDetailsPage(firstChild, 1);
     }
   }
