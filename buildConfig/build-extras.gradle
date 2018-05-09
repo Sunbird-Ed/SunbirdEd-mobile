@@ -193,8 +193,8 @@ android {
 }
 
 dependencies {
-    compile "org.ekstep.genieservices:genie-providers:1.0.640"
-    compile "org.ekstep.genieservices:genie-integration:1.0.640"
+    compile "org.ekstep.genieservices:genie-providers:1.0.641"
+    compile "org.ekstep.genieservices:genie-integration:1.0.641"
     compile('com.crashlytics.sdk.android:crashlytics:2.9.2@aar') {
           transitive = true;
     }
