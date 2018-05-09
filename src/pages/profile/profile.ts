@@ -491,6 +491,7 @@ export class ProfilePage {
           req,
           (res: any) => {
             console.log("success", res);
+            this.isRefreshProfile = true;
             this.refreshProfileData();
           },
           (err: any) => {
