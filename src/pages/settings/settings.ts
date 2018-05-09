@@ -33,7 +33,7 @@ export class SettingsPage {
 
   }
 
-  ionViewDidLoad() {
+  ionViewWillEnter() {
     this.translate.get('SHARE_APP').subscribe(
       value => {
         this.appVersion.getAppName()
