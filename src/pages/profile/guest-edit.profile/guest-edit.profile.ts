@@ -101,6 +101,10 @@ export class GuestEditProfilePage {
     this.frameworkService.getCategoryData(req,
       (res: any) => {
         this[list] = _.map(JSON.parse(res), 'code');
+        if(list != 'gradeList')
+        {
+          this[list] = this[list].sort();
+         }
         console.log(list + " Category Response: " + this[list]);
       },
       (err: any) => {

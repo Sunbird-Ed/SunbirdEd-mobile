@@ -4,6 +4,7 @@ import {
   ProfileService,
   AuthService,
   UserProfileService,
+  UserProfileDetailsRequest,
   CourseService,
   ContentService,
   Impression,
@@ -46,9 +47,10 @@ export class ProfilePage {
    */
   userId: string = '';
   isLoggedInUser: boolean = false;
+  isRefreshProfile: boolean = false;
   loggedInUserId: string = "";
   lastLoginTime: string;
-  //userName: string;
+
   profileName: string;
   profileProgress: string = "";
   languages: string;
@@ -99,6 +101,7 @@ export class ProfilePage {
     public events: Events
   ) {
     this.userId = this.navParams.get("userId") || '';
+    this.isRefreshProfile = this.navParams.get("returnRefreshedUserProfileDetails");
     this.isLoggedInUser = this.userId ? false : true;
     this.doRefresh();
 
@@ -160,7 +163,7 @@ export class ProfilePage {
           if (this.userId && sessionObj["userToken"] === this.userId)
             this.isLoggedInUser = true;
 
-          let req = {
+          let req: UserProfileDetailsRequest = {
             userId:
               this.userId && this.userId != sessionObj["userToken"]
                 ? this.userId
@@ -173,6 +176,10 @@ export class ProfilePage {
             ],
             refreshUserProfileDetails: true
           };
+          if(this.isRefreshProfile) {
+            req.returnRefreshedUserProfileDetails = true;
+            this.isRefreshProfile = false;
+          }
           this.userProfileService.getUserProfileDetails(
             req,
             (res: any) => {
