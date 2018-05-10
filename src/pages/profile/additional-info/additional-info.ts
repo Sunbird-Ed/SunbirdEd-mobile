@@ -1,7 +1,7 @@
 import { TranslateService } from '@ngx-translate/core';
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NavController, NavParams, ToastController } from 'ionic-angular';
+import { NavController, NavParams, ToastController, LoadingController } from 'ionic-angular';
 import * as _ from 'lodash';
 
 import { UserProfileService, AuthService, FrameworkService, CategoryRequest } from 'sunbird';
@@ -97,6 +97,7 @@ export class AdditionalInfoComponent {
     public navParams: NavParams,
     public userProfileService: UserProfileService,
     private toastCtrl: ToastController,
+    private loadingCtrl: LoadingController,
     private authService: AuthService,
     private translate: TranslateService,
     private frameworkService: FrameworkService
@@ -296,12 +297,16 @@ export class AdditionalInfoComponent {
    * @param {object} req - Request object for the User profile Service
    */
   updateInfo(req: any): void {
+    let loader = this.getLoader();
+    loader.present();
     this.userProfileService.updateUserInfo(req,
       (res: any) => {
+        loader.dismiss();
         this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
         this.navCtrl.setRoot(ProfilePage, {returnRefreshedUserProfileDetails: true});
       },
       (err: any) => {
+        loader.dismiss();
         this.getToast(this.translateMessage('PROFILE_UPDATE_FAILED')).present();
         console.error("Error", err);
       });
@@ -340,5 +345,12 @@ export class AdditionalInfoComponent {
       }
     );
     return translatedMsg;
+  }
+
+  getLoader(): any {
+    return this.loadingCtrl.create({
+      duration: 30000,
+      spinner: "crescent"
+    });
   }
 }

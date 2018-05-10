@@ -1,6 +1,6 @@
 import { TranslateService } from '@ngx-translate/core';
 import { Component } from '@angular/core';
-import { NavController, NavParams, ToastController, ToastCmp, Events } from 'ionic-angular';
+import { NavController, NavParams, ToastController, ToastCmp, Events, LoadingController } from 'ionic-angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import * as _ from 'lodash';
 
@@ -41,6 +41,7 @@ export class GuestEditProfilePage {
     private fb: FormBuilder,
     public navParams: NavParams,
     private toastCtrl: ToastController,
+    private loadingCtrl: LoadingController,
     private frameworkService: FrameworkService,
     private profileService: ProfileService,
     private translate: TranslateService,
@@ -160,6 +161,8 @@ export class GuestEditProfilePage {
    * Call on Submit the form
    */
   onSubmit(): void {
+    let loader = this.getLoader();
+    loader.present();
     let formVal = this.guestEditForm.value;
     let req: Profile = {
       age: -1,
@@ -181,7 +184,6 @@ export class GuestEditProfilePage {
     this.profileService.updateProfile(req,
       (res: any) => {
         console.log("Update Response", res);
-        this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
 
         // Publish event if the all the fields are submitted
         if (formVal.boards.length && formVal.grades.length && formVal.medium.length && formVal.subjects.length) {
@@ -192,9 +194,12 @@ export class GuestEditProfilePage {
         this.events.publish('refresh:profile');
         this.events.publish('refresh:onboardingcard');
 
+        loader.dismiss();
+        this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
         this.navCtrl.pop();
       },
       (err: any) => {
+        loader.dismiss();
         this.getToast(this.translateMessage('PROFILE_UPDATE_FAILED')).present();
         console.log("Err", err);
       });
@@ -222,5 +227,12 @@ export class GuestEditProfilePage {
   getToast(message: string = ''): any {
     this.options.message = message;
     if (message.length) return this.toastCtrl.create(this.options);
+  }
+
+  getLoader(): any {
+    return this.loadingCtrl.create({
+      duration: 30000,
+      spinner: "crescent"
+    });
   }
 }
