@@ -77,4 +77,13 @@ page-resources {
       .tab-header{
         font-family: 'OpenSans/Regular';
       }
+    .no-connection{
+      height: 200px;
+      .img-no-internet {
+        width: 25%; height: 63%; background-color: white;
+      }
+      .offline-text {
+        font-weight: 700; color: gray
+      }
+    }
 }
