@@ -401,6 +401,7 @@ export class ResourcesPage implements OnInit {
 				PageId.LIBRARY, null));
 
 		const that = this;
+		this.storyAndWorksheets.length = 0;
 		const callback: ResourceFilterCallback = {
 			applyFilter(filter, appliedFilter) {
 				let criteria = new PageAssembleCriteria();
@@ -480,8 +481,8 @@ export class ResourcesPage implements OnInit {
 	checkEmptySearchResult() {
 		let flags = [];
 		_.forEach(this.storyAndWorksheets, function (value, key) {
-			if (value.contents && value.contents.length === 0) {
-				flags[key] = false;
+			if (value.contents && value.contents.length) {
+				flags[key] = true;
 			}
 		});
 
