@@ -1,7 +1,7 @@
 <ion-grid>
   <ion-row class="row-border" (click)="navigateToDetailsPage(content)">
-    <ion-col class="app-icon"
-      [style.background-image]="sanitizeImage(content)">
+    <ion-col class="image-align">
+      <img class="app-icon" src="{{ content.courseLogoUrl || content?.appIcon || defaultImg }}" />
     </ion-col>
     <ion-col col-8>
       <ion-row>
@@ -21,7 +21,8 @@
         </ion-col>
         <!-- Library layout -->
         <ion-col col-7 *ngSwitchCase="'library'" col-sm>
-          <span class="content-created-date1" *ngIf="content.createdOn"> {{ content.createdOn | date: 'mediumDate' }} </span><br/>
+          <span class="content-created-date1" *ngIf="content.createdOn"> {{ content.createdOn | date: 'mediumDate' }} </span>
+          <br/>
           <div class="content-meta">
             <span class="content-type" *ngIf="content.contentType">{{ content.contentType }}</span>
             <span class="content-size1" *ngIf="content.size">[{{ content.size | fileSize }}]</span>
@@ -30,7 +31,8 @@
         </ion-col>
         <!-- Popular course layout -->
         <ion-col col-7 *ngSwitchCase="'popularCourses'" col-sm>
-          <span class="content-size1" *ngIf="content.size">{{ 'FILE_SIZE' | translate: {'%s': content.size | fileSize | slice:0:07} }}</span><br/>
+          <span class="content-size1" *ngIf="content.size">{{ 'FILE_SIZE' | translate: {'%s': content.size | fileSize | slice:0:07} }}</span>
+          <br/>
           <div class="content-meta">
             <span class="content-size1">{{ 'ERROR_DURATION_NOT_AVAILABLE' | translate }}</span>
           </div>

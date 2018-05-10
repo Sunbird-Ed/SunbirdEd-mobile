@@ -31,7 +31,7 @@ export class ViewMoreActivityListComponent {
   @Input() type: string;
 
   /**
-   * Contains ref of navigation controller 
+   * Contains ref of navigation controller
    */
   public navCtrl: NavController;
 
@@ -44,7 +44,7 @@ export class ViewMoreActivityListComponent {
 
   /**
    * Contains default image path.
-   * 
+   *
    * Get used when content / course does not have appIcon or courseLogo
    */
   defaultImg: string;
@@ -87,13 +87,5 @@ export class ViewMoreActivityListComponent {
     console.log("Image Loader " + imgLoader.nativeAvailable);
   }
 
-  public sanitizeImage(content) {
-    if (content.appIcon) {
-      return this._sanitizer.bypassSecurityTrustStyle(`url(${content.appIcon})`);
-    } else if (content.courseLogoUrl) {
-      return this._sanitizer.bypassSecurityTrustStyle(`url(${content.courseLogoUrl})`);
-    } else {
-      return this._sanitizer.bypassSecurityTrustStyle(`url(${this.defaultImg})`);
-    }
-  }
+
 }
