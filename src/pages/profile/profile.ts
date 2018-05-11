@@ -469,9 +469,9 @@ export class ProfilePage {
 
     if (!revert) {
       if (this.profile.profileVisibility[field] === "private")
-        this.getToast(this.translateMessage('PRIVACY_HIDE_TEXT', this.translateMessage(fieldDisplayName))).present();
+        this.getToast(this.translateMessage('PRIVACY_HIDE_TEXT', this.translateMessage(fieldDisplayName).toLocaleLowerCase())).present();
       if (this.profile.profileVisibility[field] === "public")
-        this.getToast(this.translateMessage('PRIVACY_SHOW_TEXT', this.translateMessage(fieldDisplayName))).present();
+        this.getToast(this.translateMessage('PRIVACY_SHOW_TEXT', this.translateMessage(fieldDisplayName).toLocaleLowerCase())).present();
       this.setProfileVisibility(field, fieldDisplayName);
     }
   }

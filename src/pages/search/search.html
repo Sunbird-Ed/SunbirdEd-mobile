@@ -83,12 +83,12 @@
         <span *ngIf="content.size"> • {{ content.size | fileSize: 0}}</span>
       </p>
       <div *ngIf="content.gradeLevel && content.gradeLevel.length">
-        <div class="ellipsis1 inline-block width" *ngIf="content.subject">
+        <div class="ellipsis inline-block width" *ngIf="content.subject">
           <span *ngFor="let gradelevel of content.gradeLevel; let i= index">{{i == 0 ? '' : ',' +' '}} {{ gradelevel }}
           </span>
         </div>
-        <div *ngIf="content.subject" class="subject inline-block">{{ content.gradeLevel && content.gradeLevel.length ? '•' : '' }} {{ content.subject }}</div>
-        <div *ngIf="!content.subject" class="ellipsis1">
+        <div *ngIf="content.subject" class="subject inline-block"><span>{{ content.gradeLevel && content.gradeLevel.length ? '•' : '' }} {{ content.subject }}</span></div>
+        <div *ngIf="!content.subject" class="ellipsis">
           <span *ngFor="let gradelevel of content.gradeLevel; let i= index"> {{i == 0 ? '' : ',' + ' '}} {{ gradelevel }}
           </span>
         </div>
