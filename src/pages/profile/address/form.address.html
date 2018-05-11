@@ -7,7 +7,10 @@
 <ion-content padding>
   <form [formGroup]="addressForm" class="form">
     <ion-item no-lines>
-      <ion-label stacked>{{ 'SELECT_ADDRESS_TYPE' | translate }}</ion-label>
+      <ion-label stacked>{{ 'SELECT_ADDRESS_TYPE' | translate }}
+        <span ion-text color="danger">&nbsp;*</span>
+      </ion-label>
+
     </ion-item>
     <ion-row radio-group formControlName="addType">
       <ion-col col-6>
