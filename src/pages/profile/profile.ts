@@ -369,10 +369,12 @@ export class ProfilePage {
    * Redirects to the Address form and passes current form data if available
    */
   editAddress(isNewForm: boolean = true, addressDetails: any = {}) {
-    this.navCtrl.push(FormAddress, {
-      addForm: isNewForm,
-      addressDetails: addressDetails,
-      profile: this.profile
+    this.zone.run(()=> {
+      this.navCtrl.push(FormAddress, {
+        addForm: isNewForm,
+        addressDetails: addressDetails,
+        profile: this.profile
+      });
     });
   }
 
@@ -436,10 +438,12 @@ export class ProfilePage {
    * @param {object} jobInfo - job object if available
    */
   editExperience(isNewForm: boolean = true, jobInfo: any = {}): void {
-    this.navCtrl.push(FormExperience, {
-      addForm: isNewForm,
-      jobInfo: jobInfo,
-      profile: this.profile
+    this.zone.run(() => {
+      this.navCtrl.push(FormExperience, {
+        addForm: isNewForm,
+        jobInfo: jobInfo,
+        profile: this.profile
+      });
     });
   }
 
