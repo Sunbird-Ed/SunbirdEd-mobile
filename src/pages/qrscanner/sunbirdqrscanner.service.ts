@@ -18,7 +18,7 @@ export class SunbirdQRScanner {
   ]
   private mQRScannerText;
   readonly permissionList = ["android.permission.CAMERA"];
-  backButtonFunc = undefined;
+  private backButtonFunc = undefined;
   constructor(private translate: TranslateService,
     private popCtrl: PopoverController,
     private telemetryService: TelemetryService,
