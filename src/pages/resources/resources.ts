@@ -170,6 +170,7 @@ export class ResourcesPage implements OnInit {
 	 */
 	getPopularContent() {
 		this.pageApiLoader = true;
+		this.noInternetConnection = false;
 		let that = this;
 		let criteria = new PageAssembleCriteria();
 		criteria.name = "Resource";
@@ -205,6 +206,7 @@ export class ResourcesPage implements OnInit {
 				this.pageLoadedSuccess = true;
 				this.pageApiLoader = false;
 				this.noInternetConnection = false;
+				this.checkEmptySearchResult();
 			});
 		}, error => {
 			console.log('error while getting popular resources...', error);
@@ -212,6 +214,8 @@ export class ResourcesPage implements OnInit {
 				this.pageApiLoader = false;
 				if (error === 'CONNECTION_ERROR') {
 					this.noInternetConnection = true;
+				} else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR'){
+					this.getMessageByConst('ERROR_FETCHING_DATA');
 				}
 			});
 		});
@@ -402,6 +406,7 @@ export class ResourcesPage implements OnInit {
 
 		const that = this;
 		this.storyAndWorksheets.length = 0;
+		this.noInternetConnection = false;
 		const callback: ResourceFilterCallback = {
 			applyFilter(filter, appliedFilter) {
 				let criteria = new PageAssembleCriteria();
@@ -460,6 +465,8 @@ export class ResourcesPage implements OnInit {
 						that.pageApiLoader = false;
 						if (error === 'CONNECTION_ERROR') {
 							that.noInternetConnection = true;
+						} else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR'){
+							this.getMessageByConst('ERROR_FETCHING_DATA');
 						}
 					});
 				});
@@ -489,7 +496,7 @@ export class ResourcesPage implements OnInit {
 		if (flags.length && _.includes(flags, true)) {
 			console.log('search result found');
 		} else {
-			this.getMessageByConst('EMPTY_SEARCH_RESULTS');
+			this.getMessageByConst('NO_CONTENTS_FOUND');
 		}
 	}
 }
