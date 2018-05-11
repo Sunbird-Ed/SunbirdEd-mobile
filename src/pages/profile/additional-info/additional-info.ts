@@ -6,6 +6,7 @@ import * as _ from 'lodash';
 
 import { UserProfileService, AuthService, FrameworkService, CategoryRequest } from 'sunbird';
 import { ProfilePage } from './../profile';
+import { languageList, subjectList, gradeList } from './../../../config/framework.filters';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -32,59 +33,9 @@ export class AdditionalInfoComponent {
   /**
    *  Fallback values for the list items
    */
-  languageList: Array<String> = [
-    "Assamese",
-    "Bengali",
-    "English",
-    "Gujarati",
-    "Hindi",
-    "Kannada",
-    "Marathi",
-    "Punjabi",
-    "Tamil",
-    "Telugu",
-    "Urdu"
-  ];
-  subjectList: Array<String> = [
-    "Mathematics",
-    "English",
-    "Tamil",
-    "Telugu",
-    "Geography",
-    "Urdu",
-    "Kannada",
-    "Assamese",
-    "Physics",
-    "Chemistry",
-    "Hindi",
-    "Marathi",
-    "Environmental Studies",
-    "Political Science",
-    "Bengali",
-    "History",
-    "Gujarati",
-    "Biology",
-    "Oriya",
-    "Punjabi",
-    "Nepali",
-    "Malayalam"
-  ];
-  gradeList: Array<String> = [
-    "Kindergarten",
-    "Grade 1",
-    "Grade 2",
-    "Grade 3",
-    "Grade 4",
-    "Grade 5",
-    "Grade 6",
-    "Grade 7",
-    "Grade 8",
-    "Grade 9",
-    "Grade 10",
-    "Grade 11",
-    "Grade 12",
-    "Other"
-  ];
+  languageList: Array<String> = languageList;
+  subjectList: Array<String> = subjectList;
+  gradeList: Array<String> = gradeList;
 
   options: toastOptions = {
     message: '',
@@ -115,11 +66,11 @@ export class AdditionalInfoComponent {
 
     /* Initialize form with default values */
     this.additionalInfoForm = this.fb.group({
-      firstName: [this.profile.firstName || ''],
+      firstName: [this.profile.firstName || '', Validators.required],
       lastName: [this.profile.lastName || ''],
-      language: [this.profile.language || []],
+      language: [this.profile.language || [], Validators.required],
       email: [this.profile.email || ''],
-      phone: ['', [Validators.minLength(10)]], // Need to assign phone value
+      phone: [this.profile.phone, [Validators.minLength(10)]], // Need to assign phone value
       profileSummary: [this.profile.profileSummary || ''],
       subject: [this.profile.subject || []],
       gender: [this.profile.gender || ''],
@@ -228,6 +179,9 @@ export class AdditionalInfoComponent {
   onSubmit(event): void {
     let formVal = this.additionalInfoForm.value;
 
+    if(this.profile.phone.length && formVal.phone === '') {
+      formVal.phone = this.profile.phone;
+    }
     if (this.validateForm(formVal)) {
       let currentValues: any = {
         userId: this.userId,
@@ -273,25 +227,38 @@ export class AdditionalInfoComponent {
       let req: any = {
         userId: this.userId,
         firstName: formVal.firstName,
-        language: formVal.language,
-        phone: formVal.phone
+        language: formVal.language
       }
 
-      modifiedFields.forEach(element => {
-        req[element] = currentValues[element]
-      });
+      if(modifiedFields.length) {
+        modifiedFields.forEach(element => {
+          req[element] = currentValues[element]
+        });
 
-      this.updateInfo(req);
+        this.updateInfo(req);
+      } else {
+        this.getToast(this.translateMessage('NO_CHANGE')).present();
+      }
+
     }
   }
 
   validateForm(formVal): boolean {
-    if (formVal.phone != '' && !formVal.phone.match(/^\d{10}$/)) {
-      this.getToast(this.translateMessage('ERROR_SHORT_MOBILE')).present();
+    if(!formVal.firstName.length) {
+      this.getToast(this.translateMessage('ERROR_EMPTY_FIRSTNAME')).present();
       return false;
+    } else if(!formVal.language.length) {
+      this.getToast(this.translateMessage('ERROR_EMPTY_LANGUAGE')).present();
+      return false;
+    } else if(formVal.phone !== this.profile.phone || (formVal.phone === '' || (formVal.phone.length !== 10))) {
+      if (!formVal.phone.match(/^\d{10}$/)) {
+        this.getToast(this.translateMessage('ERROR_SHORT_MOBILE')).present();
+        return false;
+      }
     }
     return true;
   }
+
   /**
    * This will call Update User's Info API
    * @param {object} req - Request object for the User profile Service
