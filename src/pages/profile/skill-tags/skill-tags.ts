@@ -57,6 +57,8 @@ export class SkillTagsComponent {
    *  Makes an API call of Add Skill
    */
   addSkills(): void {
+    let loader = this.getLoader();
+    loader.present();
     this.authService.getSessionData((session) => {
       if (session === undefined || session == null) {
         console.error("session is null");
@@ -70,10 +72,12 @@ export class SkillTagsComponent {
 
         this.userProfileService.endorseOrAddSkill(req,
           (res: any) => {
+            loader.dismiss();
             this.presentToast(this.translateMessage('SKILLS_ADDED_SUCCESSFULLY'));
             this.navCtrl.setRoot(ProfilePage, { returnRefreshedUserProfileDetails: true });
           },
           (error: any) => {
+            loader.dismiss();
             console.error("Res", error);
             this.presentToast(this.translateMessage('SKILL_NOT_ADDED'));
           });
