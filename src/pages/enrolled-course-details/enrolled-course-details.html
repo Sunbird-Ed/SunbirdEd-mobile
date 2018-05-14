@@ -1,8 +1,16 @@
 <ion-header>
 	<ion-navbar>
 		<ion-title>
-			<ion-icon md="md-share" float-right></ion-icon>
+			<!-- <ion-icon md="md-share" float-right></ion-icon> -->
 		</ion-title>
+		<ion-buttons end *ngIf="!isDepthChild">
+			<button ion-button icon-only  (click)="share()">
+			  <ion-icon md="md-share" float-right></ion-icon>
+			</button>
+			<button ion-button icon-only (click)="showOverflowMenu($event)" style="font-size: 1.8rem;">
+			  <ion-icon md="md-more" float-end></ion-icon>
+			</button>
+		  </ion-buttons>
 	</ion-navbar>
 </ion-header>
 

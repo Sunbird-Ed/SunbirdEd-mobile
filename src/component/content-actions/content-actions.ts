@@ -1,11 +1,10 @@
 import { CollectionDetailsPage } from './../../pages/collection-details/collection-details';
 import { NavParams } from 'ionic-angular/navigation/nav-params';
-import { NavController } from 'ionic-angular/index';
+import { NavController, PopoverController } from 'ionic-angular/index';
 import { ViewController } from 'ionic-angular';
 import { Component } from '@angular/core';
 import { ContentService } from 'sunbird';
 import { ToastController } from "ionic-angular";
-
 
 /**
  * Generated class for the ContentActionsComponent component.
@@ -32,7 +31,7 @@ export class ContentActionsComponent {
       this.isChild = true;
     }
 
-    this.contentId = this.content.identifier;
+    this.contentId = (this.content && this.content.identifier) ? this.content.identifier : '';
   }
 
   getDeleteRequestBody() {
@@ -63,12 +62,6 @@ export class ContentActionsComponent {
         break;
       }
       case 1: {
-        let toast = this.toastCtrl.create({
-          message: 'Report issue functionality is under progress',
-          duration: 3000,
-          position: 'bottom'
-        });
-        toast.present();
         this.viewCtrl.dismiss(i);
         break;
       }

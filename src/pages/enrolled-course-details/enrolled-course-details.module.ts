@@ -9,7 +9,6 @@ import { IonicImageLoader } from "ionic-image-loader";
 import { Ionic2RatingModule } from "ionic2-rating";
 import { ComponentsModule } from './../../component/components.module';
 import { DirectivesModule } from './../../directives/directives.module';
-// import { FileSizePipe } from '../../pipes/file-size/file-size';
 import { PipesModule } from '../../pipes/pipes.module';
 
 

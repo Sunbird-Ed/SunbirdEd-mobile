@@ -1,13 +1,14 @@
 import { ChildContentDetailsPage } from './../child-content-details/child-content-details';
 import { Component, NgZone } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events, ToastController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Events, ToastController, PopoverController } from 'ionic-angular';
 import { ContentService, FileUtil } from 'sunbird';
 import { NgModel } from '@angular/forms';
 import * as _ from 'lodash';
 import { CourseDetailPage } from '../course-detail/course-detail';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
 import { ContentDetailsPage } from '../content-details/content-details';
-
+import { ContentActionsComponent } from '../../component/content-actions/content-actions';
+import { ReportIssuesComponent } from '../../component/report-issues/report-issues';
 /**
  * Generated class for the EnrolledCourseDetailsPage page.
  *
@@ -110,7 +111,8 @@ export class EnrolledCourseDetailsPage {
   public toastCtrl: ToastController;
 
   constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, zone: NgZone,
-    private events: Events, toastCtrl: ToastController, private fileUtil: FileUtil) {
+    private events: Events, toastCtrl: ToastController, private fileUtil: FileUtil, 
+    public popoverCtrl: PopoverController) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
@@ -119,6 +121,28 @@ export class EnrolledCourseDetailsPage {
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
   }
 
+  showOverflowMenu(event) {
+    let popover = this.popoverCtrl.create(ContentActionsComponent, {
+      content: this.course,
+    }, {
+        cssClass: 'content-action'
+      });
+    popover.present({
+      ev: event
+    });
+    
+    popover.onDidDismiss(data => {
+      if (data === 0) {
+      } else if (data === 1) {
+        let popUp = this.popoverCtrl.create(ReportIssuesComponent, {
+          content: this.course
+        }, { 
+          cssClass: 'report-issue-box'
+        });
+        popUp.present();
+      }
+    });
+  }
   /**
    * Set course details by passing course identifier
    * 

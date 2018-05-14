@@ -1,3 +1,4 @@
+import { ReportIssuesComponent } from './../../component/report-issues/report-issues';
 import { Component, NgZone, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, Platform, Navbar, PopoverController } from 'ionic-angular';
 import { ContentService, FileUtil, Start, PageId, Environment, Mode, Impression, ImpressionType, TelemetryService, End, Rollup, InteractType, InteractSubtype, ShareUtil } from 'sunbird';
@@ -663,6 +664,9 @@ export class CollectionDetailsPage {
         this.events.publish('savedResources:update', {
           update: true
         });*/
+      } else if (data === 1) {
+        let popUp = this.popoverCtrl.create(ReportIssuesComponent, {cssClass: 'report-issue-box'});
+        popUp.present();
       }
     });
   }
