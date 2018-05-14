@@ -59,5 +59,5 @@ export const PluginModules = [
     SearchModule,
     CollectionDetailsPageModule,
     ContentDetailsPageModule,
-    ViewMoreActivityPageModule
+    ViewMoreActivityPageModule,
 ];

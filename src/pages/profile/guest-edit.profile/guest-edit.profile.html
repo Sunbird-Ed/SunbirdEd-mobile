@@ -1,11 +1,29 @@
 <ion-header>
   <ion-navbar>
-    <ion-title>{{ 'EDIT_PROFILE' | translate }}</ion-title>
+    <ion-title>
+      <span *ngIf="mode==='edit'">{{ 'EDIT_PROFILE' | translate }}</span>
+      <span *ngIf="mode==='create'">{{'CREATE_PROFILE' | translate }}</span>
+    </ion-title>
+
+    <ion-buttons right *ngIf="mode==='create'">
+        <button ion-button icon-only (click)="download()">
+          <ion-icon name="download"></ion-icon>
+        </button>
+    </ion-buttons>
   </ion-navbar>
 </ion-header>
 
 <ion-content>
   <form [formGroup]="guestEditForm">
+    
+      <ion-row radio-group formControlName="userType">
+          <ion-col>
+            <ion-radio value="student" name="user"></ion-radio>&nbsp;&nbsp;&nbsp;Student
+          </ion-col>
+          <ion-col>
+            <ion-radio value="teacher" name="user"></ion-radio>&nbsp;&nbsp;&nbsp;Teacher
+          </ion-col>
+        </ion-row>
     <ion-item>
       <ion-label stacked text-uppercase>{{ 'NAME' | translate }}</ion-label>
       <ion-input formControlName="name" placeholder="{{'NAME_HINT' | translate }}"></ion-input>

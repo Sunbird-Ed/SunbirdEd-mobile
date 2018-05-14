@@ -10,6 +10,9 @@ import { OAuthService } from "sunbird";
 import { OnboardingPage } from "../../onboarding/onboarding";
 import { Interact, InteractType, InteractSubtype, PageId, Environment, TelemetryService, ProfileService } from "sunbird";
 import { generateInteractEvent } from "../../../app/telemetryutil";
+import { GuestEditProfilePage } from "./../guest-edit.profile/guest-edit.profile";
+
+
 
 @Component({
     selector: 'menu-overflow',
@@ -42,12 +45,14 @@ export class OverflowMenuComponent {
             "index": i
         }));
         switch (i) {
-            case 0: {
+            case 0:{
                 this.generateInteractEvent();
-                this.app.getActiveNav().push(SettingsPage);
+                this.app.getActiveNav().push(GuestEditProfilePage,{
+                    mode: 'create'
+                });
                 break;
             }
-            case 1: {
+            case 2: {
                 this.generateLogoutInteractTelemetry(InteractType.TOUCH,
                     InteractSubtype.LOGOUT_INITIATE, "");
                 this.oauth.doLogOut();

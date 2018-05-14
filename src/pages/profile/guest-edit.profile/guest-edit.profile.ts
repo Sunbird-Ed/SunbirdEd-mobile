@@ -29,6 +29,7 @@ export class GuestEditProfilePage {
   subjectList: Array<string> = [];
   mediumList: Array<string> = [];
   userName: string = '';
+  mode: any = {};
 
 
   options: toastOptions = {
@@ -46,10 +47,12 @@ export class GuestEditProfilePage {
     private translate: TranslateService,
     private events: Events
   ) {
-    this.profile = this.navParams.get('profile');
+    this.mode = this.navParams.get('mode');
+    this.profile = this.navParams.get('profile') || {};
 
     /* Initialize form with default values */
     this.guestEditForm = this.fb.group({
+      userType: [this.profile.userType || [] ],
       name: [this.profile.handle || '', Validators.required],
       boards: [this.profile.board || [], Validators.required],
       grades: [this.profile.grade || []],

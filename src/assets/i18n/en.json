@@ -402,5 +402,6 @@
     "CONTINUE_AS_STUDENT": "Continue as student",
     "MALE": "Male",
     "Female": "Female",
-    "Transgender": "Transgender"
+    "Transgender": "Transgender",
+    "CREATE_PROFILE": "Create Profile"
   }
