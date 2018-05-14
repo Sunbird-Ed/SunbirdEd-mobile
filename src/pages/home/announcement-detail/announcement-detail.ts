@@ -8,6 +8,7 @@ import {
     TelemetryService,
     FrameworkModule
 } from 'sunbird';
+import { ValueTransformer } from '@angular/compiler/src/util';
 @Component({
     selector: 'announcement-detail',
     templateUrl: 'announcement-detail.html',
@@ -28,6 +29,11 @@ export class AnnouncementDetailComponent implements OnInit {
      * Contains reference of Anoouncement service service
      */
     public announcementService: AnnouncementService;
+
+    /**
+     * Contains the announcement id
+     */
+    public announcementId: string;
 
     /**
      * Contains reference of Attachment service
@@ -54,7 +60,6 @@ export class AnnouncementDetailComponent implements OnInit {
      * Contains reference of zone service
      */
     public zone: NgZone;
-    id: string;
     /**
      * 
      * @param navCtrl 
@@ -71,8 +76,8 @@ export class AnnouncementDetailComponent implements OnInit {
         this.file = file;
         this.zone = zone;
         console.log('Course identifier ===> ', this.navParams.get('identifier'));
-        this.id = this.navParams.get('id');
-        console.log(this.id);
+        this.announcementId = this.navParams.get('id');
+        console.log(this.announcementId);
     }
     /** 
      * To get Announcement  details.
@@ -122,22 +127,93 @@ export class AnnouncementDetailComponent implements OnInit {
         let url = attachmentsLink;
         let fileUrl = url.split("/");
         let attachmentFileName = fileUrl[fileUrl.length - 1];
+        let announcementPath = this.file.externalRootDirectory + 'Announcements';
+        let attachmentPath = this.file.externalRootDirectory + '/Announcements/' + this.announcementId + '/';
 
+        //Check if the  announcement directory exists
+        this.file.checkDir(this.file.externalRootDirectory, 'Announcements').then(
+            (found) => {
+                if (found) {
+                    console.log("Found Announcement directory")
+                    this.checkAnnouncementIdDirectory(url, announcementPath, attachmentPath, attachmentFileName);
+                }
+            }
+        ).catch(
+            (err) => {
+                console.log("Announcement directory not found ")
+                this.file.createDir(this.file.externalRootDirectory, 'Announcements', true).then(
+                    (value) => {
+                        console.log("Announcement Directory created path - " + value);
+
+                        this.checkAnnouncementIdDirectory(url, announcementPath, attachmentPath, attachmentFileName);
+                    }
+                ).catch(
+                    (err) => {
+                        console.log("Error in creating  Announcements directory - " + err);
+                    }
+                );
+            }
+        );
+    }
+
+    /**
+     * This method checks if the announcement id directory already exists, if not, it will create one
+     * 
+     * @param url 
+     * @param announcementPath 
+     * @param attachmentPath 
+     * @param attachmentFileName 
+     */
+    checkAnnouncementIdDirectory(url, announcementPath, attachmentPath, attachmentFileName) {
+        //Check if the  announcement id directory exists
+        this.file.checkDir(announcementPath, this.announcementId).then(
+            (found) => {
+                if (found) {
+                    console.log("Found Announcement ID directory")
+                    this.downloadAndSaveFile(url, attachmentPath, attachmentFileName);
+                }
+            }
+        ).catch(
+            (err) => {
+                console.log("Announcement ID directory not found ")
+                this.file.createDir(announcementPath, this.announcementId, true).then(
+                    (value) => {
+                        console.log("Announcement ID Directory created path - " + value);
+
+                        this.downloadAndSaveFile(url, attachmentPath, attachmentFileName);
+
+                    }
+                ).catch(
+                    (err) => {
+                        console.log("Error in creating Announcement ID directory - " + err);
+                    });
+            }
+        );
+    }
+
+    /**
+     * This method downloads and saves a file to the specified directory
+     * 
+     * @param url 
+     * @param attachmentPath 
+     * @param attachmentFileName 
+     */
+    downloadAndSaveFile(url, attachmentPath, attachmentFileName) {
         //check if the attachment is already downloaded and stored locally
-        this.file.checkFile(this.file.externalRootDirectory, attachmentFileName).then(
+        this.file.checkFile(attachmentPath, attachmentFileName).then(
             (found) => {
                 if (found) {
                     console.log("files found " + found)
-                    let path: string = this.file.externalRootDirectory + attachmentFileName;
+                    let path: string = attachmentPath + attachmentFileName;
                     this.attachmentService.checkExtensionAndOpenFile(path);
                 } else {
-                    this.attachmentService.downloadAttachment(url, this.file.externalRootDirectory + attachmentFileName);
+                    this.attachmentService.downloadAttachment(url, attachmentPath + attachmentFileName);
                 }
             }
         ).catch(
             (err) => {
                 console.log("files not found ")
-                this.attachmentService.downloadAttachment(url, this.file.externalRootDirectory + attachmentFileName);
+                this.attachmentService.downloadAttachment(url, attachmentPath + attachmentFileName);
             }
         );
     }
