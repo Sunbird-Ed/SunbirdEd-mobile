@@ -468,18 +468,16 @@ export class ProfilePage {
     this.profile.profileVisibility[field] = this.profile.profileVisibility[field] == "private" ? "public" : "private";
 
     if (!revert) {
-      if (this.profile.profileVisibility[field] === "private")
-        this.getToast(this.translateMessage('PRIVACY_HIDE_TEXT', this.translateMessage(fieldDisplayName).toLocaleLowerCase())).present();
-      if (this.profile.profileVisibility[field] === "public")
-        this.getToast(this.translateMessage('PRIVACY_SHOW_TEXT', this.translateMessage(fieldDisplayName).toLocaleLowerCase())).present();
-      this.setProfileVisibility(field, fieldDisplayName);
+      let privacyString = (this.profile.profileVisibility[field] === "private") ? 'PRIVACY_HIDE_TEXT' : 'PRIVACY_SHOW_TEXT';
+      this.getToast(this.translateMessage(privacyString, this.translateMessage(fieldDisplayName).toLocaleLowerCase())).present();
+      this.setProfileVisibility(field);
     }
   }
 
   /**
    * To set Profile visibility
    */
-  setProfileVisibility(field: string, fieldDisplayName: string) {
+  setProfileVisibility(field: string) {
     this.authService.getSessionData(session => {
       if (session === undefined || session == null) {
         console.error("session is null");
