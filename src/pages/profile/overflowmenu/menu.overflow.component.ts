@@ -51,6 +51,7 @@ export class OverflowMenuComponent {
                 this.generateLogoutInteractTelemetry(InteractType.TOUCH,
                     InteractSubtype.LOGOUT_INITIATE, "");
                 this.oauth.doLogOut();
+                (<any>window).splashscreen.clearPrefs();
                 this.profileService.setAnonymousUser(success => {
 
                 },

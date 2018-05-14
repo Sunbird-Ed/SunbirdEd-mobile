@@ -1,5 +1,5 @@
 import { Component, NgZone } from "@angular/core";
-import { NavController, LoadingController, NavParams, Events } from "ionic-angular";
+import { NavController, LoadingController, NavParams, Events, ToastController } from "ionic-angular";
 import {
   ProfileService,
   AuthService,
@@ -28,7 +28,14 @@ import { OverflowMenuComponent } from "./overflowmenu/menu.overflow.component";
 import { UserSearchComponent } from "./user-search/user-search";
 import { ImagePicker } from "./imagepicker/imagepicker";
 import { generateInteractEvent } from "../../app/telemetryutil";
+import { TranslateService } from "@ngx-translate/core";
 
+/* Interface for the Toast Object */
+export interface toastOptions {
+  message: string,
+  duration: number,
+  position: string
+};
 
 /**
  * The Profile page
@@ -85,6 +92,12 @@ export class ProfilePage {
 
   enrolledCourse: any = [];
 
+  options: toastOptions = {
+    message: '',
+    duration: 3000,
+    position: 'bottom'
+  };
+
   constructor(
     public navCtrl: NavController,
     public popoverCtrl: PopoverController,
@@ -95,17 +108,22 @@ export class ProfilePage {
     public authService: AuthService,
     public courseService: CourseService,
     public contentService: ContentService,
-    public telemetryService : TelemetryService,
+    public telemetryService: TelemetryService,
     private loadingCtrl: LoadingController,
     private navParams: NavParams,
-    public events: Events
+    public events: Events,
+    public translate: TranslateService,
+    public toastCtrl: ToastController
   ) {
     this.userId = this.navParams.get("userId") || '';
     this.isRefreshProfile = this.navParams.get("returnRefreshedUserProfileDetails");
     this.isLoggedInUser = this.userId ? false : true;
-    this.doRefresh();
 
-    events.subscribe('profilePicture:update', (res) => {
+  }
+
+  ionViewDidLoad() {
+    this.doRefresh();
+    this.events.subscribe('profilePicture:update', (res) => {
       if (res.isUploading && res.url != '') this.imageUri = res.url;
       this.isUploading = res.isUploading;
     });
@@ -127,15 +145,15 @@ export class ProfilePage {
       });
   }
 
-  ionViewDidEnter(){
+  ionViewDidEnter() {
     this.generateImpressionEvent();
   }
 
-  generateImpressionEvent(){
+  generateImpressionEvent() {
     let impression = new Impression();
-    impression.type =ImpressionType.VIEW;
+    impression.type = ImpressionType.VIEW;
     impression.pageId = PageId.PROFILE;
-    impression.env=Environment.USER;
+    impression.env = Environment.USER;
     this.telemetryService.impression(impression);
   }
 
@@ -173,13 +191,20 @@ export class ProfilePage {
               "missingFields",
               "lastLoginTime",
               "topics"
-            ],
-            refreshUserProfileDetails: true
+            ]
           };
-          if(this.isRefreshProfile) {
+          if (this.isLoggedInUser) {
+            if (this.isRefreshProfile) {
+              req.returnRefreshedUserProfileDetails = true;
+              this.isRefreshProfile = false;
+            } else {
+              req.refreshUserProfileDetails = true;
+            }
+          } else {
             req.returnRefreshedUserProfileDetails = true;
             this.isRefreshProfile = false;
           }
+
           this.userProfileService.getUserProfileDetails(
             req,
             (res: any) => {
@@ -258,7 +283,22 @@ export class ProfilePage {
           };
           break;
         case "location":
-          let requiredProfileFields: Array<string> = ['userId', 'firstName', 'lastName', 'language', 'email', 'phone', 'profileSummary', 'subject', 'gender', 'dob', 'grade', 'location', 'webPages'];
+          let requiredProfileFields: Array<string> = [
+            'userId',
+            'firstName',
+            'lastName',
+            'language',
+            'email',
+            'phone',
+            'profileSummary',
+            'subject',
+            'gender',
+            'dob',
+            'grade',
+            'location',
+            'webPages'
+          ];
+
           this.uncompletedDetails.title = "+ Add Location";
           this.uncompletedDetails.page = AdditionalInfoComponent;
           this.uncompletedDetails.data = {
@@ -280,7 +320,7 @@ export class ProfilePage {
   }
 
   formatLastLoginTime() {
-      this.lastLoginTime = this.datePipe.transform(new Date(this.profile.lastLoginTime), "MMM dd, yyyy, hh:mm:ss a");
+    this.lastLoginTime = this.datePipe.transform(new Date(this.profile.lastLoginTime), "MMM dd, yyyy, hh:mm:ss a");
   }
 
   /* Add new node in endorsersList as `canEndorse` */
@@ -329,10 +369,12 @@ export class ProfilePage {
    * Redirects to the Address form and passes current form data if available
    */
   editAddress(isNewForm: boolean = true, addressDetails: any = {}) {
-    this.navCtrl.push(FormAddress, {
-      addForm: isNewForm,
-      addressDetails: addressDetails,
-      profile: this.profile
+    this.zone.run(()=> {
+      this.navCtrl.push(FormAddress, {
+        addForm: isNewForm,
+        addressDetails: addressDetails,
+        profile: this.profile
+      });
     });
   }
 
@@ -396,10 +438,12 @@ export class ProfilePage {
    * @param {object} jobInfo - job object if available
    */
   editExperience(isNewForm: boolean = true, jobInfo: any = {}): void {
-    this.navCtrl.push(FormExperience, {
-      addForm: isNewForm,
-      jobInfo: jobInfo,
-      profile: this.profile
+    this.zone.run(() => {
+      this.navCtrl.push(FormExperience, {
+        addForm: isNewForm,
+        jobInfo: jobInfo,
+        profile: this.profile
+      });
     });
   }
 
@@ -420,16 +464,20 @@ export class ProfilePage {
   /**
    * To Toggle the lock
    */
-  toggleLock(field: string) {
-    this.profile.profileVisibility[field] =
-      this.profile.profileVisibility[field] == "private" ? "public" : "private";
-    this.setProfileVisibility(field);
+  toggleLock(field: string, fieldDisplayName: string, revert: boolean = false, ) {
+    this.profile.profileVisibility[field] = this.profile.profileVisibility[field] == "private" ? "public" : "private";
+
+    if (!revert) {
+      let privacyString = (this.profile.profileVisibility[field] === "private") ? 'PRIVACY_HIDE_TEXT' : 'PRIVACY_SHOW_TEXT';
+      this.getToast(this.translateMessage(privacyString, this.translateMessage(fieldDisplayName).toLocaleLowerCase())).present();
+      this.setProfileVisibility(field);
+    }
   }
 
   /**
    * To set Profile visibility
    */
-  setProfileVisibility(field) {
+  setProfileVisibility(field: string) {
     this.authService.getSessionData(session => {
       if (session === undefined || session == null) {
         console.error("session is null");
@@ -445,10 +493,13 @@ export class ProfilePage {
           req,
           (res: any) => {
             console.log("success", res);
+            this.isRefreshProfile = true;
+            this.refreshProfileData();
           },
           (err: any) => {
             console.error("Unable to set profile visibility.", err);
-            this.toggleLock(field); // In-case of API fails to update, make privacy lock icon as it was.
+            this.getToast(this.translateMessage('SOMETHING_WENT_WRONG')).present();
+            this.toggleLock(field, '', true); // In-case of API fails to update, make privacy lock icon as it was.
           }
         );
       }
@@ -462,8 +513,8 @@ export class ProfilePage {
     let popover = this.popoverCtrl.create(OverflowMenuComponent, {
       list: this.list
     }, {
-      cssClass: 'box'
-    });
+        cssClass: 'box'
+      });
     popover.present({
       ev: event
     });
@@ -546,5 +597,30 @@ export class ProfilePage {
   openLink(url: string): void {
     let options = 'hardwareback=yes,clearcache=no,zoom=no,toolbar=yes,clearsessioncache=no,closebuttoncaption=Done,disallowoverscroll=yes';
     (<any>window).cordova.InAppBrowser.open(url, '_system', options);
+  }
+
+  /**
+   * Used to Translate message to current Language
+   * @param {string} messageConst - Message Constant to be translated
+   * @returns {string} translatedMsg - Translated Message
+   */
+  translateMessage(messageConst: string, field?: string): string {
+    let translatedMsg = '';
+    this.translate.get(messageConst, { '%s': field }).subscribe(
+      (value: any) => {
+        translatedMsg = value;
+      }
+    );
+    return translatedMsg;
+  }
+
+  /**
+   * It will returns Toast Object
+   * @param {message} string - Message for the Toast to show
+   * @returns {object} - toast Object
+   */
+  getToast(message: string = ''): any {
+    this.options.message = message;
+    if (message.length) return this.toastCtrl.create(this.options);
   }
 }

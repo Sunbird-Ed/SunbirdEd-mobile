@@ -159,14 +159,15 @@ export class CollectionDetailsPage {
    * Telemetry roll up object
    */
   public objRollup: Rollup;
-
+  private didViewLoad: boolean;
+  private backButtonFunc = undefined;
   @ViewChild(Navbar) navBar: Navbar;
   constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, zone: NgZone,
     private events: Events, toastCtrl: ToastController, loadingCtrl: LoadingController,
     public popoverCtrl: PopoverController,
     private fileUtil: FileUtil,
     private platform: Platform,
-    private telemetryService: TelemetryService, 
+    private telemetryService: TelemetryService,
     private translate: TranslateService,
     private social: SocialSharing,
     private shareUtil: ShareUtil) {
@@ -177,10 +178,12 @@ export class CollectionDetailsPage {
     this.toastCtrl = toastCtrl;
     this.loadingCtrl = loadingCtrl;
     console.warn('Inside new module..........................');
-    this.platform.registerBackButtonAction(() => {
+    this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      this.didViewLoad = false;
       this.generateEndEvent(this.objId, this.objType, this.objVer);
       this.navCtrl.pop();
-    }, 0)
+      this.backButtonFunc();
+    }, 10)
     this.objRollup = new Rollup();
   }
 
@@ -219,9 +222,7 @@ export class CollectionDetailsPage {
     this.objId = this.contentDetail.identifier;
     this.objType = data.result.contentType;
     this.objVer = this.contentDetail.pkgVersion;
-    this.generateRollUp();
-    this.generateStartEvent(this.contentDetail.identifier, this.contentDetail.contentType, this.contentDetail.pkgVersion);
-    this.generateImpressionEvent(this.contentDetail.identifier, this.contentDetail.contentType, this.contentDetail.pkgVersion);
+
     switch (data.result.isAvailableLocally) {
       case true: {
         this.showLoading = false;
@@ -413,6 +414,16 @@ export class CollectionDetailsPage {
     });
   }
 
+
+  ionViewDidLoad() {
+    this.navBar.backButtonClick = (e: UIEvent) => {
+      this.didViewLoad = false;
+      this.generateEndEvent(this.objId, this.objType, this.objVer);
+      this.navCtrl.pop();
+      this.backButtonFunc();
+    }
+  }
+
   /**
    * Ionic life cycle hook
    */
@@ -429,17 +440,19 @@ export class CollectionDetailsPage {
         this.isDepthChild = false;
       }
       this.identifier = this.cardData.contentId || this.cardData.identifier;
+
+
+      if (!this.didViewLoad) {
+        this.generateRollUp();
+        this.generateStartEvent(this.cardData.identifier, this.cardData.contentType, this.cardData.pkgVersion);
+        this.generateImpressionEvent(this.cardData.identifier, this.cardData.contentType, this.cardData.pkgVersion);
+      }
+      this.didViewLoad = true;
       this.setContentDetails(this.identifier, true);
       this.subscribeGenieEvent();
     })
   }
 
-  ionViewDidLoad() {
-    this.navBar.backButtonClick = (e: UIEvent) => {
-      this.generateEndEvent(this.objId, this.objType, this.objVer);
-      this.navCtrl.pop();
-    }
-  }
 
   navigateToDetailsPage(content: any, depth) {
     console.log('Card details... @@@', content);

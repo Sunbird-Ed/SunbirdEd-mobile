@@ -1,3 +1,8 @@
+//App specific Properties
+app_id = APP_ID
+app_name = APP_NAME
+app_version_code = APP_VERSION_CODE
+// Dev Enironment properties
 dev_mobile_app_key = DEV_MOBILE_APP_KEY
 dev_mobile_app_secret = DEV_MOBILE_APP_SECRET
 dev_channel_id = DEV_CHANNEL_ID
