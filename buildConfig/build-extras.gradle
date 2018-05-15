@@ -53,6 +53,7 @@ android {
 
     defaultConfig {
         applicationId "\"${app_id}\""
+        minSdkVersion 21
         ext.buildNumber = System.getenv("TRAVIS_BUILD_NUMBER") ?: "local"
         versionName "2.0.$ext.buildNumber"
         manifestPlaceholders = [fabricKey: "${release_fabric_api_key}", fabricSecret: "${release_fabric_api_secret}"]
