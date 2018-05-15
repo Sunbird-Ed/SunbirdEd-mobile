@@ -17,6 +17,8 @@
     <preference name="SplashScreenDelay" value="5000" />
     <preference name="Orientation" value="portrait" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
+    <hook src="scripts/copyGradleFiles.js" type="before_build" />
+    <hook src="scripts/copyGradleFiles.js" type="before_run" />
     <platform name="android">
         <config-file parent="/manifest/application" target="AndroidManifest.xml">
             <meta-data android:name="io.fabric.ApiKey" android:value="${fabricKey}" />
@@ -102,6 +104,5 @@
     <plugin name="cordova-plugin-qr-scanner" spec="https://github.com/project-sunbird/cordova-plugin-qr-scanner.git" />
     <plugin name="cordova-plugin-sunbirdsplash" spec="https://github.com/project-sunbird/cordova-plugin-sunbirdsplash.git" />
     <plugin name="cordova-plugin-geniecanvas" spec="https://github.com/project-sunbird/cordova-plugin-geniecanvas.git" />
-    <plugin name="cordova-plugin-genie-sdk" spec="/home/user/Ionic-Workspace/cordova-plugin-genie-sdk" />
-    <engine name="android" spec="~7.0.0" />
+    <plugin name="cordova-plugin-genie-sdk" spec="https://github.com/project-sunbird/cordova-plugin-genie-sdk" />
 </widget>
