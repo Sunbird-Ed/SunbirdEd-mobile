@@ -28,7 +28,7 @@
           <p style="font-size: 1rem; color: #979797;">{{ 'SAVED_ON' | translate }} {{ course?.lastUpdatedOn | date: 'medium' | slice:0:6 }}...</p>
       </ion-col>
       <ion-col col-8 *ngIf="pageName === 'library'">
-          <rating [(ngModel)]="course.progress" readOnly="true" max="5" no-padding></rating>
+          <rating [(ngModel)]="course.me_averageRating" readOnly="true" max="5" no-padding></rating>
           <ion-label class="size_txt" no-margin *ngIf="course?.contentType">{{ course?.contentType }}</ion-label>
       </ion-col>
       <ion-col col-8 *ngIf="layoutName === 'Inprogress'" style="padding-top: 8px;">

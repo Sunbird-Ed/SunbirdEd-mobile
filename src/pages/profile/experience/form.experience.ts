@@ -135,7 +135,7 @@ export class FormExperience {
     this.userProfileService.updateUserInfo(req,
       (res: any) => {
         this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
-        this.navCtrl.setRoot(ProfilePage);
+        this.navCtrl.setRoot(ProfilePage, { returnRefreshedUserProfileDetails: true });
       },
       (err: any) => {
         this.getToast(this.translateMessage('PROFILE_UPDATE_FAILED')).present();

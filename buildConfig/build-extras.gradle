@@ -20,7 +20,6 @@ repositories {
 
 apply plugin: com.crashlytics.tools.gradle.CrashlyticsPlugin
 
-
 allprojects {
     repositories {
         jcenter()
@@ -41,6 +40,9 @@ repositories {
   maven { url 'https://maven.fabric.io/public' }
 }
 
+ext {
+    cdvVersionCode=Integer.parseInt('' + "${app_version_code}")
+}
 
 android {
 
@@ -50,12 +52,11 @@ android {
     }
 
     defaultConfig {
+        applicationId "\"${app_id}\""
         ext.buildNumber = System.getenv("TRAVIS_BUILD_NUMBER") ?: "local"
-        setProperty("archivesBaseName", "sunbird-$versionName")
-        versionCode 10
         versionName "2.0.$ext.buildNumber"
-
         manifestPlaceholders = [fabricKey: "${release_fabric_api_key}", fabricSecret: "${release_fabric_api_secret}"]
+        resValue("string", "_app_name", "${app_name}")
     }
 
     signingConfigs {
@@ -66,7 +67,6 @@ android {
 
     buildTypes {
         release {
-            // signingConfig signingConfigs.release
             buildConfigField "boolean", "USE_CRASHLYTICS", "true"
             ext.enableCrashlytics = true
         }
@@ -81,53 +81,54 @@ android {
     productFlavors {
 
          dev {
-            applicationId "org.sunbird.app"
-            buildConfigField 'String', 'TELEMETRY_BASE_URL', '"https://dev.open-sunbird.org/api/data/v1"'
-            buildConfigField 'String', 'TERMS_BASE_URL', '"https://dev.open-sunbird.org/api/domain/v1"'
-            buildConfigField 'String', 'CONFIG_BASE_URL', '"https://dev.open-sunbird.org/api/meta/v1"'
-            buildConfigField 'String', 'SEARCH_BASE_URL', '"https://dev.open-sunbird.org/api/composite/v1"'
-            buildConfigField 'String', 'CONTENT_LISTING_BASE_URL', '"https://dev.open-sunbird.org/api/data/v1"'
-            buildConfigField 'String', 'CONTENT_BASE_URL', '"https://dev.open-sunbird.org/api/content/v1"'
-            buildConfigField 'String', 'APIGATEWAY_BASE_URL', '"https://dev.open-sunbird.org/api/api-manager/v1"'
-            buildConfigField 'String', 'USER_SERVICE_BASE_URL', '"https://dev.open-sunbird.org/api/user/v1"'
-            buildConfigField 'String', 'PAGE_SERVICE_BASE_URL', '"https://dev.open-sunbird.org/api/data/v1"'
-            buildConfigField 'String', 'COURSE_SERVICE_BASE_URL', '"https://dev.open-sunbird.org/api/course/v1"'
-            buildConfigField 'String', 'CHANNEL_SERVICE_BASE_URL', '"https://dev.open-sunbird.org/api/channel/v1"'
-            buildConfigField 'String', 'FRAMEWORK_SERVICE_BASE_URL', '"https://dev.open-sunbird.org/api/framework/v1"'
-            buildConfigField 'String', 'ORG_SERVICE_BASE_URL', '"https://dev.open-sunbird.org/api/org/v1"'
-            buildConfigField 'String', 'DATA_SERVICE_BASE_URL', '"https://dev.open-sunbird.org/api/data/v1"'
-            buildConfigField 'String', 'ANNOUNCEMENT_BASE_URL', '"https://dev.open-sunbird.org/api/announcement/v1"'
-            buildConfigField 'String', 'PRODUCER_UNIQUE_ID', '"sunbird.app"'
-            buildConfigField 'String', 'PRODUCER_ID', "\"${dev_producer_id}\""
-            buildConfigField 'String', 'CHANNEL_ID', "\"${dev_channel_id}\""
-            buildConfigField 'String', 'LOG_LEVEL', '"INFO"'
-            buildConfigField 'int', 'MAX_COMPATIBILITY_LEVEL', "4"
-            buildConfigField 'String', 'MOBILE_APP_CONSUMER', '"mobile_device"'
-            buildConfigField 'String', 'MOBILE_APP_KEY', "\"${dev_mobile_app_key}\""
-            buildConfigField 'String', 'MOBILE_APP_SECRET', "\"${dev_mobile_app_secret}\""
-            buildConfigField 'String', 'OAUTH_SESSION', '"org.genie.KeycloakOAuthSessionService"'
+             buildConfigField 'String', 'BASE_URL', "\"${dev_base_url}\""
+             buildConfigField 'String', 'TELEMETRY_BASE_URL', "\"${dev_base_url+"/api/data/v1"}\""
+             buildConfigField 'String', 'LANGUAGE_PLATFORM_BASE_URL', "\"${dev_base_url+"/api/language/v1"}\""
+             buildConfigField 'String', 'TERMS_BASE_URL', "\"${dev_base_url+"/api/domain/v1"}\""
+             buildConfigField 'String', 'CONFIG_BASE_URL', "\"${dev_base_url+"/api/meta/v1"}\""
+             buildConfigField 'String', 'SEARCH_BASE_URL', "\"${dev_base_url+"/api/composite/v1"}\""
+             buildConfigField 'String', 'CONTENT_LISTING_BASE_URL', "\"${dev_base_url+"/api/data/v1"}\""
+             buildConfigField 'String', 'CONTENT_BASE_URL', "\"${dev_base_url+"/api/content/v1"}\""
+             buildConfigField 'String', 'APIGATEWAY_BASE_URL', "\"${dev_base_url+"/api/api-manager/v1"}\""
+             buildConfigField 'String', 'USER_SERVICE_BASE_URL', "\"${dev_base_url+"/api/user/v1"}\""
+             buildConfigField 'String', 'PAGE_SERVICE_BASE_URL', "\"${dev_base_url+"/api/data/v1"}\""
+             buildConfigField 'String', 'COURSE_SERVICE_BASE_URL', "\"${dev_base_url+"/api/course/v1"}\""
+             buildConfigField 'String', 'CHANNEL_SERVICE_BASE_URL', "\"${dev_base_url+"/api/channel/v1"}\""
+             buildConfigField 'String', 'FRAMEWORK_SERVICE_BASE_URL', "\"${dev_base_url+"/api/framework/v1"}\""
+             buildConfigField 'String', 'ORG_SERVICE_BASE_URL', "\"${dev_base_url+"/api/org/v1"}\""
+             buildConfigField 'String', 'DATA_SERVICE_BASE_URL', "\"${dev_base_url+"/api/data/v1"}\""
+             buildConfigField 'String', 'ANNOUNCEMENT_BASE_URL', "\"${dev_base_url+"/api/announcement/v1"}\""
+             buildConfigField 'String', 'PRODUCER_UNIQUE_ID', '"sunbird.app"'
+             buildConfigField 'String', 'PRODUCER_ID', "\"${dev_producer_id}\""
+             buildConfigField 'String', 'CHANNEL_ID', "\"${dev_channel_id}\""
+             buildConfigField 'String', 'LOG_LEVEL', '"INFO"'
+             buildConfigField 'int', 'MAX_COMPATIBILITY_LEVEL', "4"
+             buildConfigField 'String', 'MOBILE_APP_CONSUMER', '"mobile_device"'
+             buildConfigField 'String', 'MOBILE_APP_KEY', "\"${dev_mobile_app_key}\""
+             buildConfigField 'String', 'MOBILE_APP_SECRET', "\"${dev_mobile_app_secret}\""
+             buildConfigField 'String', 'OAUTH_SESSION', '"org.genie.KeycloakOAuthSessionService"'
 
             flavorDimensions "default"
         }
 
         staging {
-            applicationId "org.sunbird.app"
-            buildConfigField 'String', 'TELEMETRY_BASE_URL', '"https://staging.open-sunbird.org/api/data/v1"'
-            buildConfigField 'String', 'LANGUAGE_PLATFORM_BASE_URL', '"https://staging.open-sunbird.org/api/language/v1"'
-            buildConfigField 'String', 'TERMS_BASE_URL', '"https://staging.open-sunbird.org/api/domain/v1"'
-            buildConfigField 'String', 'CONFIG_BASE_URL', '"https://staging.open-sunbird.org/api/meta/v1"'
-            buildConfigField 'String', 'SEARCH_BASE_URL', '"https://staging.open-sunbird.org/api/composite/v1"'
-            buildConfigField 'String', 'CONTENT_LISTING_BASE_URL', '"https://staging.open-sunbird.org/api/data/v1"'
-            buildConfigField 'String', 'CONTENT_BASE_URL', '"https://staging.open-sunbird.org/api/content/v1"'
-            buildConfigField 'String', 'APIGATEWAY_BASE_URL', '"https://staging.open-sunbird.org/api/api-manager/v1"'
-            buildConfigField 'String', 'USER_SERVICE_BASE_URL', '"https://staging.open-sunbird.org/api/user/v1"'
-            buildConfigField 'String', 'PAGE_SERVICE_BASE_URL', '"https://staging.open-sunbird.org/api/data/v1"'
-            buildConfigField 'String', 'COURSE_SERVICE_BASE_URL', '"https://staging.open-sunbird.org/api/course/v1"'
-            buildConfigField 'String', 'CHANNEL_SERVICE_BASE_URL', '"https://staging.open-sunbird.org/api/channel/v1"'
-            buildConfigField 'String', 'FRAMEWORK_SERVICE_BASE_URL', '"https://staging.open-sunbird.org/api/framework/v1"'
-            buildConfigField 'String', 'ORG_SERVICE_BASE_URL', '"https://staging.open-sunbird.org/api/org/v1"'
-            buildConfigField 'String', 'DATA_SERVICE_BASE_URL', '"https://staging.open-sunbird.org/api/data/v1"'
-            buildConfigField 'String', 'ANNOUNCEMENT_BASE_URL', '"https://staging.open-sunbird.org/api/announcement/v1"'
+            buildConfigField 'String', 'BASE_URL', "\"${staging_base_url}\""
+            buildConfigField 'String', 'TELEMETRY_BASE_URL', "\"${staging_base_url+"/api/data/v1"}\""
+            buildConfigField 'String', 'LANGUAGE_PLATFORM_BASE_URL', "\"${staging_base_url+"/api/language/v1"}\""
+            buildConfigField 'String', 'TERMS_BASE_URL', "\"${staging_base_url+"/api/domain/v1"}\""
+            buildConfigField 'String', 'CONFIG_BASE_URL', "\"${staging_base_url+"/api/meta/v1"}\""
+            buildConfigField 'String', 'SEARCH_BASE_URL', "\"${staging_base_url+"/api/composite/v1"}\""
+            buildConfigField 'String', 'CONTENT_LISTING_BASE_URL', "\"${staging_base_url+"/api/data/v1"}\""
+            buildConfigField 'String', 'CONTENT_BASE_URL', "\"${staging_base_url+"/api/content/v1"}\""
+            buildConfigField 'String', 'APIGATEWAY_BASE_URL', "\"${staging_base_url+"/api/api-manager/v1"}\""
+            buildConfigField 'String', 'USER_SERVICE_BASE_URL', "\"${staging_base_url+"/api/user/v1"}\""
+            buildConfigField 'String', 'PAGE_SERVICE_BASE_URL', "\"${staging_base_url+"/api/data/v1"}\""
+            buildConfigField 'String', 'COURSE_SERVICE_BASE_URL', "\"${staging_base_url+"/api/course/v1"}\""
+            buildConfigField 'String', 'CHANNEL_SERVICE_BASE_URL', "\"${staging_base_url+"/api/channel/v1"}\""
+            buildConfigField 'String', 'FRAMEWORK_SERVICE_BASE_URL', "\"${staging_base_url+"/api/framework/v1"}\""
+            buildConfigField 'String', 'ORG_SERVICE_BASE_URL', "\"${staging_base_url+"/api/org/v1"}\""
+            buildConfigField 'String', 'DATA_SERVICE_BASE_URL', "\"${staging_base_url+"/api/data/v1"}\""
+            buildConfigField 'String', 'ANNOUNCEMENT_BASE_URL', "\"${staging_base_url+"/api/announcement/v1"}\""
             buildConfigField 'String', 'PRODUCER_UNIQUE_ID', '"sunbird.app"'
             buildConfigField 'String', 'PRODUCER_ID', "\"${staging_producer_id}\""
             buildConfigField 'String', 'CHANNEL_ID', "\"${staging_channel_id}\""
@@ -141,23 +142,23 @@ android {
         }
 
         production {
-            applicationId "org.sunbird.app"
-            buildConfigField 'String', 'TELEMETRY_BASE_URL', '"https://staging.open-sunbird.org/api/data/v1"'
-            buildConfigField 'String', 'LANGUAGE_PLATFORM_BASE_URL', '"https://staging.open-sunbird.org/api/language/v1"'
-            buildConfigField 'String', 'TERMS_BASE_URL', '"https://staging.open-sunbird.org/api/domain/v1"'
-            buildConfigField 'String', 'CONFIG_BASE_URL', '"https://staging.open-sunbird.org/api/meta/v1"'
-            buildConfigField 'String', 'SEARCH_BASE_URL', '"https://staging.open-sunbird.org/api/composite/v1"'
-            buildConfigField 'String', 'CONTENT_LISTING_BASE_URL', '"https://staging.open-sunbird.org/api/data/v1"'
-            buildConfigField 'String', 'CONTENT_BASE_URL', '"https://staging.open-sunbird.org/api/content/v1"'
-            buildConfigField 'String', 'APIGATEWAY_BASE_URL', '"https://staging.open-sunbird.org/api/api-manager/v1"'
-            buildConfigField 'String', 'USER_SERVICE_BASE_URL', '"https://staging.open-sunbird.org/api/user/v1"'
-            buildConfigField 'String', 'PAGE_SERVICE_BASE_URL', '"https://staging.open-sunbird.org/api/data/v1"'
-            buildConfigField 'String', 'COURSE_SERVICE_BASE_URL', '"https://staging.open-sunbird.org/api/course/v1"'
-            buildConfigField 'String', 'CHANNEL_SERVICE_BASE_URL', '"https://staging.open-sunbird.org/api/channel/v1"'
-            buildConfigField 'String', 'FRAMEWORK_SERVICE_BASE_URL', '"https://staging.open-sunbird.org/api/framework/v1"'
-            buildConfigField 'String', 'ORG_SERVICE_BASE_URL', '"https://staging.open-sunbird.org/api/org/v1"'
-            buildConfigField 'String', 'DATA_SERVICE_BASE_URL', '"https://staging.open-sunbird.org/api/data/v1"'
-            buildConfigField 'String', 'ANNOUNCEMENT_BASE_URL', '"https://staging.open-sunbird.org/api/announcement/v1"'
+            buildConfigField 'String', 'BASE_URL', "\"${production_base_url}\""
+            buildConfigField 'String', 'TELEMETRY_BASE_URL', "\"${production_base_url+"/api/data/v1"}\""
+            buildConfigField 'String', 'LANGUAGE_PLATFORM_BASE_URL', "\"${production_base_url+"/api/language/v1"}\""
+            buildConfigField 'String', 'TERMS_BASE_URL', "\"${production_base_url+"/api/domain/v1"}\""
+            buildConfigField 'String', 'CONFIG_BASE_URL', "\"${production_base_url+"/api/meta/v1"}\""
+            buildConfigField 'String', 'SEARCH_BASE_URL', "\"${production_base_url+"/api/composite/v1"}\""
+            buildConfigField 'String', 'CONTENT_LISTING_BASE_URL', "\"${production_base_url+"/api/data/v1"}\""
+            buildConfigField 'String', 'CONTENT_BASE_URL', "\"${production_base_url+"/api/content/v1"}\""
+            buildConfigField 'String', 'APIGATEWAY_BASE_URL', "\"${production_base_url+"/api/api-manager/v1"}\""
+            buildConfigField 'String', 'USER_SERVICE_BASE_URL', "\"${production_base_url+"/api/user/v1"}\""
+            buildConfigField 'String', 'PAGE_SERVICE_BASE_URL', "\"${production_base_url+"/api/data/v1"}\""
+            buildConfigField 'String', 'COURSE_SERVICE_BASE_URL', "\"${production_base_url+"/api/course/v1"}\""
+            buildConfigField 'String', 'CHANNEL_SERVICE_BASE_URL', "\"${production_base_url+"/api/channel/v1"}\""
+            buildConfigField 'String', 'FRAMEWORK_SERVICE_BASE_URL', "\"${production_base_url+"/api/framework/v1"}\""
+            buildConfigField 'String', 'ORG_SERVICE_BASE_URL', "\"${production_base_url+"/api/org/v1"}\""
+            buildConfigField 'String', 'DATA_SERVICE_BASE_URL', "\"${production_base_url+"/api/data/v1"}\""
+            buildConfigField 'String', 'ANNOUNCEMENT_BASE_URL', "\"${production_base_url+"/api/announcement/v1"}\""
             buildConfigField 'String', 'PRODUCER_UNIQUE_ID', '"sunbird.app"'
             buildConfigField 'String', 'PRODUCER_ID', "\"${production_producer_id}\""
             buildConfigField 'String', 'CHANNEL_ID', "\"${production_channel_id}\""
@@ -186,24 +187,16 @@ android {
         }
         flavor.versionName = versionName;
         variant.outputs.each { output ->
-           output.outputFileName = new File(output.outputFile.parent, "sunbird-" + versionName + ".apk")
+            output.outputFileName = new File(output.outputFile.parent, "${app_name}-".toLowerCase() + versionName + ".apk")
         }
     }
 
 }
 
 dependencies {
-    compile "org.ekstep.genieservices:genie-providers:1.0.640"
-    compile "org.ekstep.genieservices:genie-integration:1.0.640"
+    compile "org.ekstep.genieservices:genie-providers:1.0.648"
+    compile "org.ekstep.genieservices:genie-integration:1.0.648"
     compile('com.crashlytics.sdk.android:crashlytics:2.9.2@aar') {
           transitive = true;
     }
-    // compile "com.google.code.gson:gson:2.8.2"
-    // compile "joda-time:joda-time:2.9.9"
-    // compile "org.greenrobot:eventbus:3.1.1"
-    // compile "com.google.android.gms:play-services-location:9.4.0"
-    // compile "com.squareup.okhttp3:okhttp:3.9.1"
-    // compile (name:'genie-integration-1.0.local',ext:'aar')
-    // compile (name:'genie-providers-1.0.local',ext:'aar')
-    // compile (name:'genie-services-1.0.local',ext:'aar')
 }
