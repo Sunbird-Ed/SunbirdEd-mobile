@@ -174,7 +174,7 @@
     </ion-list>
 
     <!-- User's Creations -->
-    <div *ngIf="enrolledCourse && enrolledCourse.length" class="courses-holder">
+    <div *ngIf="enrolledCourse && enrolledCourse.length && isLoggedInUser" class="courses-holder">
         <span class="section-title">{{ 'CREATED_BY_ME' | translate }}</span>
         <ion-scroll scrollX="true" class="course-scroll-dimensions" no-padding>
             <div class="inner">
