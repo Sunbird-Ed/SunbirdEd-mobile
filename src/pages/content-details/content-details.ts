@@ -423,9 +423,11 @@ export class ContentDetailsPage {
 
   cancelDownload() {
     this.contentService.cancelDownload(this.identifier, (data: any) => {
-      this.isDownloadStarted = false;
-      this.downloadProgress = '';
-      this.content.downloadable = false;
+      this.zone.run(() => {
+        this.isDownloadStarted = false;
+        this.downloadProgress = '';
+        this.content.downloadable = false;
+      })
     }, (error: any) => {
       console.log('Error: download error =>>>>>', error)
     })

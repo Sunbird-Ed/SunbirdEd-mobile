@@ -486,7 +486,7 @@ export class CollectionDetailsPage {
   resetVariables() {
     this.isDownloadStarted = false;
     this.showLoading = false;
-    this.downloadProgress = '';
+    this.downloadProgress = 0;
     this.cardData = '';
     this.childrenData = [];
     this.contentDetail = '';
@@ -616,7 +616,7 @@ export class CollectionDetailsPage {
    * Download single content
    */
   downloadAllContent(): void {
-    this.downloadProgress = '0 %';
+    this.downloadProgress = 0;
     this.showLoading = true;
     this.isDownloadStarted = true;
     this.downloadPercentage = 0;
@@ -627,7 +627,7 @@ export class CollectionDetailsPage {
    * Ionic life cycle hook
    */
   ionViewWillLeave(): void {
-    this.downloadProgress = '';
+    this.downloadProgress = 0;
     this.events.unsubscribe('genie.event');
   }
 
@@ -741,11 +741,15 @@ export class CollectionDetailsPage {
 
   cancelDownload() {
     this.contentService.cancelDownload(this.identifier, (response) => {
-      this.showLoading = false;
-      this.navCtrl.pop();
+      this.zone.run(() => {
+        this.showLoading = false;
+        this.navCtrl.pop();
+      });
     }, (error) => {
-      this.showLoading = false;
-      this.navCtrl.pop();
+      this.zone.run(() => {
+        this.showLoading = false;
+        this.navCtrl.pop();
+      });
     });
   }
 }
