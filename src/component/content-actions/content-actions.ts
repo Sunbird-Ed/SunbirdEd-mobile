@@ -4,7 +4,7 @@ import { NavController } from 'ionic-angular/index';
 import { ViewController } from 'ionic-angular';
 import { Component } from '@angular/core';
 import { ContentService } from 'sunbird';
-import { ToastController } from "ionic-angular";
+import { ToastController, Platform } from "ionic-angular";
 
 
 /**
@@ -24,15 +24,20 @@ export class ContentActionsComponent {
   isChild: boolean = false;
 
   contentId: string;
+  backButtonFunc = undefined;
 
   constructor(public viewCtrl: ViewController, private contentService: ContentService,
-    private navCtrl: NavController, private navParams: NavParams, private toastCtrl: ToastController) {
+    private navCtrl: NavController, private navParams: NavParams, private toastCtrl: ToastController, private platform: Platform) {
     this.content = this.navParams.get("content");
     if (this.navParams.get('isChild')) {
       this.isChild = true;
     }
 
     this.contentId = this.content.identifier;
+    this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      this.viewCtrl.dismiss();
+      this.backButtonFunc();
+    }, 20);
   }
 
   getDeleteRequestBody() {
