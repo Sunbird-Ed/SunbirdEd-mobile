@@ -9,7 +9,9 @@
 <ion-content padding>
   <form [formGroup]="additionalInfoForm" class="form">
     <ion-item>
-      <ion-label stacked text-capitalize>{{ 'NAME' | translate }}</ion-label>
+      <ion-label stacked text-capitalize>{{ 'NAME' | translate }}
+        <span ion-text color="danger">&nbsp;*</span>
+      </ion-label>
       <ion-input formControlName="firstName" placeholder="{{'NAME_HINT' | translate }}"></ion-input>
     </ion-item>
 
@@ -19,11 +21,13 @@
     </ion-item>
 
     <ion-item>
-      <ion-label stacked text-capitalize>{{'LANGUAGES' | translate }}</ion-label>
+      <ion-label stacked text-capitalize>{{'LANGUAGES' | translate }}
+        <span ion-text color="danger">&nbsp;*</span>
+      </ion-label>
       <ion-select formControlName="language" multiple="true" interface="popover" placeholder="{{'SELECT' | translate }}">
         <ion-option *ngFor="let lang of languageList" text-capitalize value="{{lang}}">{{lang}}</ion-option>
       </ion-select>
-      <button ion-button item-right clear small icon-only color="dark" (click)="toggleLock('language')">
+      <button ion-button item-right clear small icon-only color="dark" (click)="toggleLock('language', 'LANGUAGES')">
         <ion-icon name="{{ profileVisibility?.language === 'private' ? 'lock' : 'unlock' }}" class="lock-position"></ion-icon>
       </button>
     </ion-item>
@@ -31,15 +35,17 @@
     <ion-item>
       <ion-label stacked>{{'EMAIL_ID' | translate }}</ion-label>
       <ion-input formControlName="email" [disabled]="true" placeholder="{{'ERROR_EMPTY_EMAIL' | translate }}" type="email"></ion-input>
-      <button ion-button item-right clear small icon-only color="dark" (click)="toggleLock('email')">
+      <button ion-button item-right clear small icon-only color="dark" (click)="toggleLock('email', 'EMAIL_ID')">
         <ion-icon name="{{ profileVisibility?.email === 'private' ? 'lock' : 'unlock' }}" class="lock-position"></ion-icon>
       </button>
     </ion-item>
 
     <ion-item>
-      <ion-label stacked>{{'PHONE' | translate }}</ion-label>
+      <ion-label stacked>{{'PHONE' | translate }}
+        <span ion-text color="danger">&nbsp;*</span>
+      </ion-label>
       <ion-input formControlName="phone" placeholder="{{ profile?.phone || 'ERROR_EMPTY_MOBILE' | translate }}" type="number"></ion-input>
-      <button ion-button item-right clear small icon-only color="dark" (click)="toggleLock('phone')">
+      <button ion-button item-right clear small icon-only color="dark" (click)="toggleLock('phone', 'PHONE')">
         <ion-icon name="{{ profileVisibility?.phone === 'private' ? 'lock' : 'unlock' }}" class="lock-position"></ion-icon>
       </button>
     </ion-item>
@@ -47,6 +53,9 @@
     <ion-item>
       <ion-label stacked>{{'DESCRIPTION' | translate }}</ion-label>
       <ion-input formControlName="profileSummary" placeholder="{{'OPTIONAL' | translate}}"></ion-input>
+      <button ion-button item-right clear small icon-only color="dark" (click)="toggleLock('profileSummary', 'DESCRIPTION')">
+        <ion-icon name="{{ profileVisibility?.profileSummary === 'private' ? 'lock' : 'unlock' }}" class="lock-position"></ion-icon>
+      </button>
     </ion-item>
 
     <ion-item>
@@ -54,7 +63,7 @@
       <ion-select formControlName="subject" multiple="true" interface="popover" placeholder="{{'SELECT' | translate }}">
         <ion-option *ngFor="let subject of subjectList" text-capitalize value="{{subject}}">{{subject}}</ion-option>
       </ion-select>
-      <button ion-button item-right clear small icon-only color="dark" (click)="toggleLock('subject')">
+      <button ion-button item-right clear small icon-only color="dark" (click)="toggleLock('subject', 'SUBJECTS')">
         <ion-icon name="{{ profileVisibility?.subject === 'private' ? 'lock' : 'unlock' }}" class="lock-position"></ion-icon>
       </button>
     </ion-item>
@@ -66,7 +75,7 @@
         <ion-option value="female">Female</ion-option>
         <ion-option value="transgender">Transgender</ion-option>
       </ion-select>
-      <button ion-button item-right clear small icon-only color="dark" (click)="toggleLock('gender')">
+      <button ion-button item-right clear small icon-only color="dark" (click)="toggleLock('gender', 'GENDER')">
         <ion-icon name="{{ profileVisibility?.gender === 'private' ? 'lock' : 'unlock' }}" class="lock-position"></ion-icon>
       </button>
     </ion-item>
@@ -74,7 +83,7 @@
     <ion-item>
       <ion-label stacked>{{'DATE_OF_BIRTH' | translate }}</ion-label>
       <ion-datetime formControlName="dob" displayFormat="DD-MM-YYYY" pickerFormat="DDDD MMMM YYYY" min="1900" [max]="todayDate"></ion-datetime>
-      <button ion-button item-right clear small icon-only color="dark" (click)="toggleLock('dob')">
+      <button ion-button item-right clear small icon-only color="dark" (click)="toggleLock('dob', 'DATE_OF_BIRTH')">
         <ion-icon name="{{ profileVisibility?.dob === 'private' ? 'lock' : 'unlock' }}" class="lock-position"></ion-icon>
       </button>
     </ion-item>
@@ -84,7 +93,7 @@
       <ion-select formControlName="grade" multiple="true" interface="popover" placeholder="{{'SELECT' | translate }}">
         <ion-option *ngFor="let grade of gradeList" text-capitalize value="{{grade}}">{{grade}}</ion-option>
       </ion-select>
-      <button ion-button item-right clear small icon-only color="dark" (click)="toggleLock('grade')">
+      <button ion-button item-right clear small icon-only color="dark" (click)="toggleLock('grade', 'GRADE')">
         <ion-icon name="{{ profileVisibility?.grade === 'private' ? 'lock' : 'unlock' }}" class="lock-position"></ion-icon>
       </button>
     </ion-item>
@@ -92,14 +101,14 @@
     <ion-item>
       <ion-label stacked>{{'CURRENT_LOCATION' | translate }}</ion-label>
       <ion-input formControlName="location" placeholder="{{'OPTIONAL' | translate}}"></ion-input>
-      <button ion-button item-right clear small icon-only color="dark" (click)="toggleLock('location')">
+      <button ion-button item-right clear small icon-only color="dark" (click)="toggleLock('location', 'CURRENT_LOCATION')">
         <ion-icon name="{{ profileVisibility?.location === 'private' ? 'lock' : 'unlock' }}" class="lock-position"></ion-icon>
       </button>
 
     </ion-item>
 
     <ion-label class="social-label" stacked>{{'SOCIAL_MEDIA_LINKS' | translate}}
-      <button item-right clear small icon-only color="dark" (click)="toggleLock('webPages')" style="float:right; margin-top:0; background-color: transparent; padding-right: 0;font-size: 1.4em;">
+      <button item-right clear small icon-only color="dark" (click)="toggleLock('webPages', 'SOCIAL_MEDIA_LINKS')" style="float:right; margin-top:0; background-color: transparent; padding-right: 0;font-size: 1.4em;">
         <ion-icon small name="{{ profileVisibility?.webPages === 'private' ? 'lock' : 'unlock' }}" class="lock-position"></ion-icon>
       </button>
     </ion-label>
