@@ -31,15 +31,15 @@
   </div>
   <div class="item padding-11" style="background-color:#efeff4">
     <span float-start class="scroll-heading">
-      {{ 'Announcemet' | translate }}
+      {{ 'Announcement' | translate }}
     </span>
-    <span float-end class="view-all-link">
+    <span *ngIf="announcementList && announcementList?.length !== 0" float-end class="view-all-link">
       <a (click)="navigateToAnnouncementListPage()">{{ 'VIEW_ALL' | translate }}</a>
     </span>
   </div>
   <div class="bordernone" *ngIf="announcementList && announcementList.length">
     <home-announcement-card *ngFor="let item of announcementList" [announcement]="item"></home-announcement-card>
   </div>
-  <div *ngIf="announcementList && announcementList?.length === 0 && !showLoader">No data found</div>
+  <div *ngIf="announcementList && announcementList?.length === 0 && !showLoader" style="text-align: center; padding-top: 10px">{{'NO_ANNOUNCEMENTS' | translate}}</div>
   <ion-spinner *ngIf="showLoader" padding></ion-spinner>
 </ion-content>

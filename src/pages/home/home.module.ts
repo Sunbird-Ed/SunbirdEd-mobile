@@ -13,7 +13,8 @@ import { FrameworkModule } from "sunbird";
 import { IonicImageLoader } from "ionic-image-loader";
 import { ComponentsModule } from "../../component/components.module";
 import { SocialSharing } from '@ionic-native/social-sharing';
-
+import { FileTransfer } from '@ionic-native/file-transfer';
+import { FileOpener } from '@ionic-native/file-opener';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,7 @@ import { SocialSharing } from '@ionic-native/social-sharing';
     IonicImageLoader
 
   ],
-  providers: [HttpClient, GenieSDKServiceProvider, SocialSharing],
+  providers: [HttpClient, GenieSDKServiceProvider, SocialSharing, FileTransfer, FileOpener],
   exports: [
     HomePage
   ],
