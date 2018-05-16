@@ -1,5 +1,5 @@
-import { Component, ViewContainerRef } from "@angular/core";
-import { NavParams, ViewController, Platform } from "ionic-angular";
+import { Component } from "@angular/core";
+import { NavParams, Platform, ViewController } from "ionic-angular";
 
 @Component({
   selector: 'page-resource-filter-options',

@@ -3,7 +3,6 @@ import { NavController, NavParams, Events } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Globalization } from '@ionic-native/globalization';
 import {
-  TabsPage,
   SharedPreferences,
   Impression,
   ImpressionType,

@@ -1,14 +1,10 @@
 
 import { Component, OnInit, NgZone } from '@angular/core';
-import { NavController, NavParams, Events, Alert } from 'ionic-angular';
-import { File } from '@ionic-native/file';
-import { AnnouncementService, AttachmentService } from 'sunbird';
+import { NavController, NavParams} from 'ionic-angular';
+import { AnnouncementService, AttachmentService, TelemetryService } from 'sunbird';
 import { SocialSharing } from '@ionic-native/social-sharing';
-import {
-    TelemetryService,
-    FrameworkModule
-} from 'sunbird';
-import { ValueTransformer } from '@angular/compiler/src/util';
+import { File } from '@ionic-native/file';
+
 @Component({
     selector: 'announcement-detail',
     templateUrl: 'announcement-detail.html',
@@ -66,9 +62,10 @@ export class AnnouncementDetailComponent implements OnInit {
      * @param navParams 
      * @param contentService 
      */
-    constructor(navCtrl: NavController, private socialSharing: SocialSharing,
-        navParams: NavParams, announcementService: AnnouncementService,
-        zone: NgZone, private events: Events, attachmentService: AttachmentService, file: File) {
+    constructor(navCtrl: NavController, private socialSharing: SocialSharing, 
+        navParams: NavParams, announcementService: AnnouncementService, 
+        attachmentService: AttachmentService, file: File,
+        zone: NgZone) {
         this.navCtrl = navCtrl;
         this.navParams = navParams;
         this.announcementService = announcementService;

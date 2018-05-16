@@ -2,14 +2,9 @@ import { Injectable } from '@angular/core';
 import * as _ from 'lodash';
 import { Events } from 'ionic-angular';
 import {
-    AuthService,
     FrameworkService,
     CategoryRequest,
     FrameworkDetailsRequest,
-    Impression,
-    ImpressionType,
-    Environment,
-    TelemetryService,
     ProfileService,
     Profile
 } from 'sunbird';
@@ -29,9 +24,7 @@ export class OnboardingService {
     mediumList: Array<string> = [];
 
     constructor(
-        private authService: AuthService,
         private framework: FrameworkService,
-        private telemetryService: TelemetryService,
         private profileService: ProfileService,
         public events: Events
     ) { }

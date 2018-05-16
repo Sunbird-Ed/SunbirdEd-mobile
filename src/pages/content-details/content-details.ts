@@ -1,8 +1,7 @@
 import { ContentActionsComponent } from './../../component/content-actions/content-actions';
 import { Component, NgZone, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, PopoverController, Navbar, Platform } from 'ionic-angular';
-import { ContentService, FileUtil, Impression, ImpressionType, PageId, Environment, TelemetryService, Start, Mode, End, ShareUtil, InteractType, InteractSubtype, Rollup } from 'sunbird';
-import { NgModel } from '@angular/forms';
+import { ContentService, FileUtil, ImpressionType, PageId, Environment, TelemetryService,  Mode, End, ShareUtil, InteractType, InteractSubtype, Rollup } from 'sunbird';
 import { SocialSharing } from "@ionic-native/social-sharing";
 import * as _ from 'lodash';
 import { generateInteractEvent, Map, generateImpressionWithRollup, generateStartWithRollup, generateInteractWithRollup } from '../../app/telemetryutil';

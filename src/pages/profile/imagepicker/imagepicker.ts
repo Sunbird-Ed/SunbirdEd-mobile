@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { NavController, NavParams, ViewController, ToastController, Events } from "ionic-angular";
 import { TranslateService } from '@ngx-translate/core';
 
-import { UsersnClassesComponent } from "../usersnclasses/usersnclass.component";
 import { UserProfileService, UploadFileRequest, AuthService, UpdateUserInfoRequest } from "sunbird";
 
 /* Interface for the Toast Object */

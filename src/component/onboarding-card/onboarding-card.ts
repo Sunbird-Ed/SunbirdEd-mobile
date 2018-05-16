@@ -1,20 +1,7 @@
 import { NavController, Slides, PopoverController, Events } from 'ionic-angular';
-import { Component, ViewChild, NgZone } from '@angular/core';
-import * as _ from 'lodash';
+import { Component, ViewChild } from '@angular/core';
 
 import { OnboardingService } from '../onboarding-card/onboarding.service';
-import {
-  AuthService,
-  FrameworkService,
-  CategoryRequest,
-  FrameworkDetailsRequest,
-  Impression,
-  ImpressionType,
-  Environment,
-  TelemetryService,
-  ProfileService,
-  Profile
-} from 'sunbird';
 import { OnboardingAlert, onBoardingSlidesCallback } from './../onboarding-alert/onboarding-alert';
 
 
@@ -30,7 +17,6 @@ export class OnboardingCardComponent {
   constructor(
     public navCtrl: NavController,
     private popupCtrl: PopoverController,
-    private popCtrl: PopoverController,
     private onboardingService: OnboardingService,
     private events: Events
   ) {

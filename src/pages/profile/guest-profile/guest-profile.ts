@@ -1,9 +1,7 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams, PopoverController, Events, LoadingController } from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
+import { NavController,  PopoverController, Events, LoadingController } from 'ionic-angular';
 
 import { GuestEditProfilePage } from './../guest-edit.profile/guest-edit.profile';
-import { SignInCardComponent } from './../../../component/sign-in-card/sign-in-card';
 import { OverflowMenuComponent } from "./../overflowmenu/menu.overflow.component";
 import { ProfileService } from 'sunbird';
 

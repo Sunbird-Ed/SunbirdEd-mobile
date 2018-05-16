@@ -1,7 +1,6 @@
 import { Component, NgZone } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
-import { TabsPage, SharedPreferences, OAuthService, Interact, TelemetryService, InteractType, InteractSubtype, Environment, PageId, ImpressionType } from 'sunbird';
-import { ViewController } from 'ionic-angular/navigation/view-controller';
+import { NavController } from 'ionic-angular';
+import { TabsPage, SharedPreferences,  Interact, TelemetryService, InteractType, InteractSubtype, Environment, PageId, ImpressionType } from 'sunbird';
 import { TranslateService } from '@ngx-translate/core';
 import { ProfileType, ProfileService } from 'sunbird'
 import { generateImpressionEvent, Map } from '../../app/telemetryutil';
@@ -9,7 +8,6 @@ import { generateImpressionEvent, Map } from '../../app/telemetryutil';
 const selectedCardBorderColor = '#006DE5';
 const borderColor = '#F7F7F7';
 const KEY_SELECTED_USER_TYPE = "selected_user_type";
-const KEY_SELECTED_LANGUAGE = "selected_language";
 
 @Component({
   selector: 'page-user-type-selection',
