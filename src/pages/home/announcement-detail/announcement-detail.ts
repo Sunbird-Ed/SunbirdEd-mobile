@@ -1,8 +1,7 @@
 
 import { Component, OnInit, NgZone } from '@angular/core';
 import { NavController, NavParams, Events, Alert } from 'ionic-angular';
-import { File } from '@ionic-native/file';
-import { AnnouncementService, AttachmentService } from 'sunbird';
+import { AnnouncementService } from 'sunbird';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import {
     TelemetryService,
@@ -11,7 +10,7 @@ import {
 @Component({
     selector: 'announcement-detail',
     templateUrl: 'announcement-detail.html',
-    providers: [TelemetryService, AnnouncementService, AttachmentService]
+    providers: [TelemetryService, AnnouncementService]
 })
 /**
  * Generated class for the AnnouncementDetailComponent component.
@@ -28,17 +27,6 @@ export class AnnouncementDetailComponent implements OnInit {
      * Contains reference of Anoouncement service service
      */
     public announcementService: AnnouncementService;
-
-    /**
-     * Contains reference of Attachment service
-     */
-    public attachmentService: AttachmentService;
-
-    /**
-     * Contains reference of File
-     */
-    public file: File;
-
 
     /**
      * Contains ref of navigation controller 
@@ -63,12 +51,10 @@ export class AnnouncementDetailComponent implements OnInit {
      */
     constructor(navCtrl: NavController, private socialSharing: SocialSharing,
         navParams: NavParams, announcementService: AnnouncementService,
-        zone: NgZone, private events: Events, attachmentService: AttachmentService, file: File) {
+        zone: NgZone, private events: Events) {
         this.navCtrl = navCtrl;
         this.navParams = navParams;
         this.announcementService = announcementService;
-        this.attachmentService = attachmentService;
-        this.file = file;
         this.zone = zone;
         console.log('Course identifier ===> ', this.navParams.get('identifier'));
         this.id = this.navParams.get('id');
@@ -118,7 +104,7 @@ export class AnnouncementDetailComponent implements OnInit {
      * 
      * @param attachmentsLink 
      */
-    downloadattachment(attachmentsLink) {
+   /* downloadattachment(attachmentsLink) {
         let url = attachmentsLink;
         let fileUrl = url.split("/");
         let attachmentFileName = fileUrl[fileUrl.length - 1];
@@ -140,6 +126,6 @@ export class AnnouncementDetailComponent implements OnInit {
                 this.attachmentService.downloadAttachment(url, this.file.externalRootDirectory + attachmentFileName);
             }
         );
-    }
+    }*/
 }
 
