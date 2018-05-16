@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget android-versionCode="1" id="org.sunbird.app" version="staging-2.0.0.01" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Sunbird</name>
+    <name>@string/_app_name</name>
     <description>Sunbird mobile app</description>
     <author email="joel@ekstep.org" href="http://ekstep.org">EkStep Team</author>
     <content src="sunbird/index.html" />
@@ -17,9 +17,6 @@
     <preference name="SplashScreenDelay" value="5000" />
     <preference name="Orientation" value="portrait" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
-    <preference name="auth_redirect_url" value="https://staging.open-sunbird.org/oauth2callback" />
-    <preference name="auth_url" value="https://staging.open-sunbird.org/auth/realms/sunbird/protocol/openid-connect/auth?redirect_uri=https://staging.open-sunbird.org/oauth2callback&amp;response_type=code&amp;scope=offline_access&amp;client_id=${CID}" />
-    <preference name="logout_url" value="https://staging.open-sunbird.org/auth/realms/sunbird/protocol/openid-connect/logout?redirect_uri=https://staging.open-sunbird.org/oauth2callback" />
     <hook src="scripts/copyGradleFiles.js" type="before_build" />
     <hook src="scripts/copyGradleFiles.js" type="before_run" />
     <platform name="android">
