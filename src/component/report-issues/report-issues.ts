@@ -108,22 +108,25 @@ export class ReportIssuesComponent {
       }
     });
 
-    if (formValue.comment === '' && reasons.length === 0) {
+    if (reasons.length === 0 || this.userId === '') {
       this.showMessage(this.translateLangConst('ERROR_FLAG_CONTENT_MIN_REASON'))
     } else {
       const option = {
         contentId: this.content.identifier,
-        flagReasons: [formValue.comment],
+        flagReasons: reasons,
         flaggedBy: this.userId,
         versionKey: this.content.versionKey,
-        flags: reasons
+        flags: [formValue.comment]
       }
-      console.log('api request...', option);
       this.contentService.flagContent(option, (res: any) => {
         console.log('success:', res);
+        this.viewCtrl.dismiss('flag.success');
+        this.showMessage(this.translateLangConst('CONTENT_FLAGGED_MSG'));
       },
-        (error: any) => {
-          console.log('error:', error);
+        (data: any) => {
+          console.log('error:', data);
+          this.viewCtrl.dismiss();
+          this.showMessage(this.translateLangConst('CONTENT_FLAG_FAIL'));
         })
     }
   }
@@ -133,12 +136,10 @@ export class ReportIssuesComponent {
    * @param {string} constant 
    */
   translateLangConst(constant: string) {
-    console.log('constant...', constant);
     let msg = '';
     this.translate.get(constant).subscribe(
       (value: any) => {
         msg = value;
-        // return value;
       }
     );
     return msg;

@@ -7,7 +7,7 @@
 			<button ion-button icon-only  (click)="share()">
 			  <ion-icon md="md-share" float-right></ion-icon>
 			</button>
-			<button ion-button icon-only (click)="showOverflowMenu($event)" style="font-size: 1.8rem;">
+			<button ion-button icon-only *ngIf="course && course.isAvailableLocally" (click)="showOverflowMenu($event)" style="font-size: 1.8rem;">
 			  <ion-icon md="md-more" float-end></ion-icon>
 			</button>
 		  </ion-buttons>

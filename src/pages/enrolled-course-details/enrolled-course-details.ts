@@ -132,14 +132,10 @@ export class EnrolledCourseDetailsPage {
     });
     
     popover.onDidDismiss(data => {
-      if (data === 0) {
-      } else if (data === 1) {
-        let popUp = this.popoverCtrl.create(ReportIssuesComponent, {
-          content: this.course
-        }, { 
-          cssClass: 'report-issue-box'
-        });
-        popUp.present();
+      if (data === 'delete.success') {
+        this.navCtrl.pop();
+      } else if(data === 'flag.success') {
+        this.navCtrl.pop();
       }
     });
   }
@@ -173,6 +169,7 @@ export class EnrolledCourseDetailsPage {
    */
   extractApiResponse(data): void {
     this.course = data.result.contentData ? data.result.contentData : [];
+    this.course.isAvailableLocally = data.result.isAvailableLocally;
 
     switch (data.result.isAvailableLocally) {
       case true: {
@@ -411,7 +408,7 @@ export class EnrolledCourseDetailsPage {
         console.log('event bus........', res);
         // Show download percentage
         if (res.type === 'downloadProgress' && res.data.downloadProgress) {
-          this.downloadProgress = res.data.downloadProgress + ' %';
+          this.downloadProgress = res.data.downloadProgress === -1 ? 0 : res.data.downloadProgress;
         }
 
         // Get executed when user clicks on download all button

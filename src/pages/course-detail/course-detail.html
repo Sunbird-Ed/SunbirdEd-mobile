@@ -116,8 +116,8 @@
   </div>
 </ion-content>
 <!-- Page footer -->
-<ion-footer>
+<ion-footer *ngIf="userId && course && course.createdBy !== userId">
   <ion-toolbar padding>
-    <button *ngIf="course && course.createdBy !== userId" ion-button block (click)="navigateToBatchListPage('');">{{ 'ENROLL_COURSE' | translate }}</button>
+    <button ion-button block (click)="navigateToBatchListPage('');">{{ 'ENROLL_COURSE' | translate }}</button>
   </ion-toolbar>
 </ion-footer>
