@@ -1,6 +1,6 @@
 import { Component, NgZone, Input, ViewChild } from "@angular/core";
 import { IonicPage, NavParams, NavController, Events, ToastController } from "ionic-angular";
-import { ContentService, ContentSearchCriteria, Log, LogLevel, TelemetryService, Impression, ImpressionType, Environment, Interact, InteractType, InteractSubtype } from "sunbird";
+import { ContentService, ContentSearchCriteria, Log, LogLevel, TelemetryService, Impression, ImpressionType, Environment, Interact, InteractType, InteractSubtype, ContentDetailRequest, ContentImportRequest, FileUtil } from "sunbird";
 import { GenieResponse } from "../settings/datasync/genieresponse";
 import { FilterPage } from "./filters/filter";
 import { CourseDetailPage } from "../course-detail/course-detail";
@@ -9,6 +9,7 @@ import { ContentDetailsPage } from "../content-details/content-details";
 import { Network } from "@ionic-native/network";
 import { TranslateService } from '@ngx-translate/core';
 import { Map } from "../../app/telemetryutil";
+import * as _ from 'lodash';
 
 @IonicPage()
 @Component({
@@ -16,6 +17,9 @@ import { Map } from "../../app/telemetryutil";
   templateUrl: './search.html'
 })
 export class SearchPage {
+
+  showLoading: boolean;
+  downloadProgress: any;
   @ViewChild('searchInput') searchBar;
 
   contentType: Array<string> = [];
@@ -45,6 +49,14 @@ export class SearchPage {
   defaultAppIcon: string;
   isEmptyResult: boolean = false;
 
+  queuedIdentifiers = [];
+  isDownloadStarted: boolean = false;
+  currentCount: number = 0;
+
+  parentContent: any = undefined;
+  childContent: any = undefined;
+
+
   constructor(private contentService: ContentService,
     private telemetryService: TelemetryService,
     private navParams: NavParams,
@@ -52,8 +64,10 @@ export class SearchPage {
     private zone: NgZone,
     private event: Events,
     private network: Network,
+    private fileUtil: FileUtil,
     private toastCtrl: ToastController,
-    private translate: TranslateService) {
+    private translate: TranslateService,
+    private events: Events) {
     this.init();
 
     console.log("Network Type : " + this.network.type);
@@ -77,11 +91,12 @@ export class SearchPage {
 
 
   openContent(collection, content, index) {
+    this.parentContent = collection;
     this.generateInteractEvent(content.identifier, content.contentType, content.pkgVersion, index);
     if (collection !== undefined) {
-      this.navCtrl.push(CollectionDetailsPage, {
-        content: content
-      })
+      this.parentContent = collection;
+      this.childContent = content;
+      this.checkParent(collection, content);
     } else {
       // this.navCtrl.push(CourseDetailPage, {'content': content});
       this.showContentDetails(content);
@@ -277,8 +292,8 @@ export class SearchPage {
       let contentArray: Array<any> = searchResult.contentDataList;
       let params = new Array<any>();
       let paramsMap = new Map();
-      paramsMap["SearchResults"]= contentArray.length;
-      paramsMap["SearchCriteria"]= searchResult.request;
+      paramsMap["SearchResults"] = contentArray.length;
+      paramsMap["SearchCriteria"] = searchResult.request;
       params.push(paramsMap);
       log.params = params;
       this.telemetryService.log(log);
@@ -313,12 +328,6 @@ export class SearchPage {
     this.dialCodeResult = [];
     let addedContent = new Array<any>();
 
-    if (contentArray && contentArray.length == 1) {
-      this.navCtrl.pop();
-      this.showContentDetails(contentArray[0]);
-      return;
-    }
-
     if (collectionArray && collectionArray.length > 0) {
       collectionArray.forEach((collection) => {
         contentArray.forEach((content) => {
@@ -340,6 +349,17 @@ export class SearchPage {
 
     this.dialCodeContentResult = [];
 
+    let isParentCheckStarted = false;
+
+    if (this.dialCodeResult.length == 1 && this.dialCodeResult[0].content.length == 1) {
+      this.parentContent = this.dialCodeResult[0];
+      this.childContent = this.dialCodeResult[0].content[0];
+      this.checkParent(this.dialCodeResult[0], this.dialCodeResult[0].content[0]);
+      isParentCheckStarted = true;
+      // this.showContentDetails(this.dialCodeResult[0].content[0]);
+      // return;
+    }
+
     if (contentArray && contentArray.length > 1) {
       contentArray.forEach((content) => {
         if (addedContent.indexOf(content.identifier) < 0) {
@@ -349,6 +369,11 @@ export class SearchPage {
       })
     }
 
+    if (contentArray && contentArray.length == 1 && !isParentCheckStarted) {
+      this.navCtrl.pop();
+      this.showContentDetails(contentArray[0]);
+      return;
+    }
 
     if (this.dialCodeResult.length == 0 && this.dialCodeContentResult.length == 0) {
       this.isEmptyResult = true;
@@ -388,6 +413,99 @@ export class SearchPage {
     else return (bytes / 1073741824).toFixed(3) + " GB";
   }
 
+
+  private checkParent(parent, child) {
+    let identifier = parent.identifier
+    let contentRequest: ContentDetailRequest = {
+      contentId: identifier
+    }
+
+    this.contentService.getContentDetail(contentRequest, (data: any) => {
+      data = JSON.parse(data);
+      if (data && data.result) {
+        if (data.result.isAvailableLocally) {
+          this.zone.run(() => { this.showContentDetails(child); });
+        } else {
+          this.subscribeGenieEvent();
+          this.downloadParentContent(parent, child);
+        }
+      } else {
+        this.zone.run(() => { this.showContentDetails(child); });
+      }
+    }, (error) => {
+
+    });
+  }
+
+  private downloadParentContent(parent, child) {
+    this.zone.run(() => {
+      this.downloadProgress = 0;
+      this.showLoading = true;
+      this.isDownloadStarted = true;
+    });
+
+    const option = {
+      contentImportMap: _.extend({}, this.getImportContentRequestBody([parent.identifier], false)),
+      contentStatusArray: []
+    }
+    // Call content service
+    this.contentService.importContent(option, (data: any) => {
+      this.zone.run(() => {
+        data = JSON.parse(data);
+
+        if (data.result && data.result.length && this.isDownloadStarted) {
+          _.forEach(data.result, (value, key) => {
+            if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
+              this.queuedIdentifiers.push(value.identifier);
+            }
+          });
+        }
+      });
+
+    }, (error) => {
+
+    });
+  }
+
+  /**
+ * Subscribe genie event to get content download progress
+ */
+  subscribeGenieEvent() {
+    this.events.subscribe('genie.event', (data) => {
+      this.zone.run(() => {
+        data = JSON.parse(data);
+        let res = data;
+
+        if (res.type === 'downloadProgress' && res.data.downloadProgress) {
+          this.downloadProgress = res.data.downloadProgress === -1 ? 0 : res.data.downloadProgress;
+          if (this.downloadProgress === 100) {
+            // this.showLoading = false;
+          }
+        }
+
+        if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
+          if (this.queuedIdentifiers.length && this.isDownloadStarted) {
+            if (_.includes(this.queuedIdentifiers, res.data.identifier)) {
+              this.currentCount++;
+            }
+            if (this.queuedIdentifiers.length === this.currentCount) {
+              this.showLoading = false;
+              this.showContentDetails(this.childContent);
+              this.events.publish('savedResources:update', {
+                update: true
+              });
+            }
+          } else {
+            this.events.publish('savedResources:update', {
+              update: true
+            });
+          }
+        }
+
+      });
+    });
+  }
+
   showMessage(constant) {
     if (constant) {
       this.translate.get(constant).subscribe(
@@ -404,5 +522,38 @@ export class SearchPage {
         }
       );
     }
+  }
+
+  /**
+ * Function to get import content api request params
+ *
+ * @param {Array<string>} identifiers contains list of content identifier(s)
+ * @param {boolean} isChild
+ */
+  getImportContentRequestBody(identifiers: Array<string>, isChild: boolean) {
+    let requestParams = [];
+    _.forEach(identifiers, (value, key) => {
+      requestParams.push({
+        isChildContent: isChild,
+        // TODO - check with Anil for destination folder path
+        destinationFolder: this.fileUtil.internalStoragePath(),
+        contentId: value,
+        correlationData: []
+      })
+    });
+
+    return requestParams;
+  }
+
+  cancelDownload() {
+    this.contentService.cancelDownload(this.parentContent.identifier, (response) => {
+      this.zone.run(() => {
+        this.showLoading = false;
+      });
+    }, (error) => {
+      this.zone.run(() => {
+        this.showLoading = false;
+      });
+    });
   }
 }
