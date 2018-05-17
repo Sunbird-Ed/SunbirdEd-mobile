@@ -1,6 +1,4 @@
-import { CollectionDetailsPage } from './../../pages/collection-details/collection-details';
 import { NavParams } from 'ionic-angular/navigation/nav-params';
-import { NavController } from 'ionic-angular/index';
 import { ViewController } from 'ionic-angular';
 import { Component } from '@angular/core';
 import { ContentService } from 'sunbird';
@@ -26,7 +24,7 @@ export class ContentActionsComponent {
   contentId: string;
 
   constructor(public viewCtrl: ViewController, private contentService: ContentService,
-    private navCtrl: NavController, private navParams: NavParams, private toastCtrl: ToastController) {
+    private navParams: NavParams, private toastCtrl: ToastController) {
     this.content = this.navParams.get("content");
     if (this.navParams.get('isChild')) {
       this.isChild = true;

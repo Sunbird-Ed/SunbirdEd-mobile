@@ -1,5 +1,4 @@
 //TODO 13/02/2018 Consider creating a commom component and reuse
-import { IonicPage } from "ionic-angular/navigation/ionic-page";
 import { Component } from '@angular/core';
 import { NavController } from "ionic-angular/navigation/nav-controller";
 import { NavParams } from "ionic-angular/navigation/nav-params";

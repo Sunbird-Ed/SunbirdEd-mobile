@@ -1,8 +1,18 @@
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { NavController, NavParams, Events } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Globalization } from '@ionic-native/globalization';
-import { TabsPage, SharedPreferences, Impression, ImpressionType, PageId, Environment, TelemetryService, Interact, InteractType, InteractSubtype } from 'sunbird';
+import {
+  SharedPreferences,
+  Impression,
+  ImpressionType,
+  PageId,
+  Environment,
+  TelemetryService,
+  Interact,
+  InteractType,
+  InteractSubtype
+} from 'sunbird';
 
 import { OnboardingPage } from '../onboarding/onboarding';
 
@@ -22,6 +32,7 @@ export class LanguageSettingsPage {
   isFromSettings: boolean = false;
   defaultDeviceLang: string = '';
   previousLanguage: any;
+  selectedLanguage: any = {};
 
   constructor(
     public navCtrl: NavController,
@@ -30,10 +41,9 @@ export class LanguageSettingsPage {
     private globalization: Globalization,
     private preferences: SharedPreferences,
     private telemetryService: TelemetryService,
-    private events: Events
-  ) {
-    this.init()
-  }
+    private events: Events,
+    private zone: NgZone
+  ) {}
 
   init(): void {
     this.languages = [
@@ -75,7 +85,9 @@ export class LanguageSettingsPage {
       }
     });
 
-    this.isFromSettings = this.navParams.get('isFromSettings');
+    this.zone.run(() => {
+      this.isFromSettings = this.navParams.get('isFromSettings');
+    });
 
     this.generateImpressionEvent();
 
@@ -124,9 +136,10 @@ export class LanguageSettingsPage {
   onLanguageSelected() {
     console.log("language selected : " + this.language);
     if (this.language) {
-      let selectedLanguage = this.languages.find(i => i.code === this.language);
+/*       let selectedLanguage = this.languages.find(i => i.code === this.language);
       this.preferences.putString(KEY_SELECTED_LANGUAGE_CODE, selectedLanguage.code);
-      this.preferences.putString(KEY_SELECTED_LANGUAGE, selectedLanguage.label);
+      this.preferences.putString(KEY_SELECTED_LANGUAGE, selectedLanguage.label); */
+      this.translateService.use(this.language);
     }
   }
 
@@ -164,8 +177,13 @@ export class LanguageSettingsPage {
     // else set default language as english
     this.generateInteractEvent(this.previousLanguage, this.language);
     if (this.language) {
+      this.selectedLanguage = this.languages.find(i => i.code === this.language);
+      this.preferences.putString(KEY_SELECTED_LANGUAGE_CODE, this.selectedLanguage.code);
+      this.preferences.putString(KEY_SELECTED_LANGUAGE, this.selectedLanguage.label);
       this.translateService.use(this.language);
     } else {
+      this.preferences.putString(KEY_SELECTED_LANGUAGE_CODE, 'en');
+      this.preferences.putString(KEY_SELECTED_LANGUAGE, 'English');
       this.translateService.use('en');
     }
     this.events.publish('onAfterLanguageChange:update', {
@@ -190,6 +208,21 @@ export class LanguageSettingsPage {
 
     impression.env = Environment.SETTINGS;
     this.telemetryService.impression(impression);
+  }
+
+  ionViewWillEnter()
+  {
+    this.selectedLanguage = {};
+    this.init();
+  }
+
+  ionViewWillLeave() {
+    if(!this.selectedLanguage.code) {
+      if(this.previousLanguage)
+        this.translateService.use(this.previousLanguage);
+      else
+      this.translateService.use('en');
+    }
   }
 }
 

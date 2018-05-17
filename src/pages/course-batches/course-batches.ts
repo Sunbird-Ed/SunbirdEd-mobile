@@ -1,5 +1,5 @@
 import { Component, NgZone, OnInit } from '@angular/core';
-import { CourseService, AuthService, EnrolledCoursesRequest } from 'sunbird';
+import { CourseService, AuthService } from 'sunbird';
 import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angular';
 import * as _ from 'lodash';
 

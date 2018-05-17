@@ -8,7 +8,7 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClientModule, HttpClient } from "@angular/common/http";
 
 import { PluginModules } from './module.service';
-import { TelemetryService, EventService, FrameworkModule, TabsPage } from 'sunbird';
+import { EventService, FrameworkModule, TabsPage } from 'sunbird';
 import { Globalization } from '@ionic-native/globalization';
 import { AppVersion } from '@ionic-native/app-version';
 import { SocialSharing } from '@ionic-native/social-sharing';

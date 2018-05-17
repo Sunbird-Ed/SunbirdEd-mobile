@@ -6,13 +6,9 @@ import { CourseBatchesPageModule } from './../pages/course-batches/course-batche
 import { ChildContentDetailsPageModule } from './../pages/child-content-details/child-content-details.module';
 import { CourseDetailPageModule } from './../pages/course-detail/course-detail.module';
 
-import { Injectable } from "@angular/core";
 import { ContainerService } from "sunbird";
 
-import { GroupPage } from "../pages/group/group";
-import { CoursesPage } from "../pages/courses/courses";
 import { GuestProfilePage } from "../pages/profile/guest-profile/guest-profile";
-import { HomePage } from "../pages/home/home";
 import { ProfilePage } from "../pages/profile/profile";
 import { ResourcesPage } from "../pages/resources/resources";
 import { CoursesPageModule } from "../pages/courses/courses.module";
@@ -25,6 +21,8 @@ import { LanguageSettingsPageModule } from "../pages/language-settings/language-
 import { UserTypeSelectionPageModule } from "../pages/user-type-selection/user-type-selection.module";
 import { QRScannerModule } from "../pages/qrscanner/qrscanner.module";
 import { SearchModule } from "../pages/search/search.module";
+import { HomePage } from '../pages/home/home';
+import { CoursesPage } from '../pages/courses/courses';
 
 export function initUserTabs(container: ContainerService) {
     container.removeAllTabs();

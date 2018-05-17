@@ -7,7 +7,7 @@ import { TranslateModule } from '@ngx-translate/core';
 // TODO: remove it before pushing the code
 import { HttpClient } from '@angular/common/http';
 import { HttpClientModule } from '@angular/common/http';
-import { HttpModule, Http } from '@angular/http';
+import { HttpModule } from '@angular/http';
 import { GenieSDKServiceProvider } from 'sunbird';
 import { FrameworkModule } from "sunbird";
 import { IonicImageLoader } from "ionic-image-loader";

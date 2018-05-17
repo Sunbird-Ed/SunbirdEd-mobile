@@ -1,8 +1,5 @@
 import { Component } from "@angular/core";
-import { SuperTabsController } from 'ionic2-super-tabs';
-import { SuperTabs } from "ionic2-super-tabs";
 import { NavController } from "ionic-angular/navigation/nav-controller";
-import { NavParams } from "ionic-angular/navigation/nav-params";
 import { UsersComponent } from "./users/users.component";
 import { ClassesComponent } from "./classes/classes.component";
 import { ToastController } from "ionic-angular";
@@ -22,7 +19,7 @@ export class UsersnClassesComponent {
   showTitles: boolean = true;
   pageTitle: string = 'Full Height';
 
-  constructor(public navCtrl: NavController, private superTabsCtrl: SuperTabsController, private toastCtrl: ToastController) {
+  constructor(public navCtrl: NavController, private toastCtrl: ToastController) {
 
   }
 

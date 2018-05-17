@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, LoadingController } from 'ionic-angular';
 import { ToastController } from 'ionic-angular';
 import * as _ from 'lodash';
 import { TranslateService } from '@ngx-translate/core';
@@ -40,6 +40,7 @@ export class FormEducation {
     public navParams: NavParams,
     public userProfileService: UserProfileService,
     private toastCtrl: ToastController,
+    private loadingCtrl: LoadingController,
     private translate: TranslateService
   ) {
 
@@ -110,12 +111,16 @@ export class FormEducation {
    * @param {object} req - Request object for the User profile Service
    */
   updateEducation(req): void {
+    let loader = this.getLoader();
+    loader.present();
     this.userProfileService.updateUserInfo(req,
       (res: any) => {
+        loader.dismiss();
         this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
-        this.navCtrl.setRoot(ProfilePage);
+        this.navCtrl.setRoot(ProfilePage, { returnRefreshedUserProfileDetails: true });
       },
       (err: any) => {
+        loader.dismiss();
         this.getToast(this.translateMessage('PROFILE_UPDATE_FAILED')).present();
         console.error("Error", err);
       });
@@ -144,6 +149,13 @@ export class FormEducation {
   getToast(message: string = ''): any {
     this.options.message = message;
     if (message.length) return this.toastCtrl.create(this.options);
+  }
+
+  getLoader(): any {
+    return this.loadingCtrl.create({
+      duration: 30000,
+      spinner: "crescent"
+    });
   }
 
 }

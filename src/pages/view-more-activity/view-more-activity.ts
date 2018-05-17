@@ -1,7 +1,6 @@
 import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
 import { Component, NgZone, OnInit } from '@angular/core';
-import { ContentService, CourseService, PageAssembleService, PageAssembleCriteria, TelemetryService, PageId, Environment, ImpressionType, Log, LogLevel } from 'sunbird';
-import { ViewMoreActivityListComponent } from '../../component/view-more-activity-list/view-more-activity-list';
+import { ContentService, CourseService, PageAssembleService, TelemetryService, PageId, Environment, ImpressionType, Log, LogLevel } from 'sunbird';
 import * as _ from 'lodash';
 import { generateImpressionEvent } from '../../app/telemetryutil';
 

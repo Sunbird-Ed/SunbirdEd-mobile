@@ -1,11 +1,12 @@
 import { TranslateService } from '@ngx-translate/core';
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NavController, NavParams, ToastController } from 'ionic-angular';
+import { NavController, NavParams, ToastController, LoadingController } from 'ionic-angular';
 import * as _ from 'lodash';
 
 import { UserProfileService, AuthService, FrameworkService, CategoryRequest } from 'sunbird';
 import { ProfilePage } from './../profile';
+import { languageList, subjectList, gradeList } from './../../../config/framework.filters';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -32,59 +33,9 @@ export class AdditionalInfoComponent {
   /**
    *  Fallback values for the list items
    */
-  languageList: Array<String> = [
-    "Assamese",
-    "Bengali",
-    "English",
-    "Gujarati",
-    "Hindi",
-    "Kannada",
-    "Marathi",
-    "Punjabi",
-    "Tamil",
-    "Telugu",
-    "Urdu"
-  ];
-  subjectList: Array<String> = [
-    "Mathematics",
-    "English",
-    "Tamil",
-    "Telugu",
-    "Geography",
-    "Urdu",
-    "Kannada",
-    "Assamese",
-    "Physics",
-    "Chemistry",
-    "Hindi",
-    "Marathi",
-    "Environmental Studies",
-    "Political Science",
-    "Bengali",
-    "History",
-    "Gujarati",
-    "Biology",
-    "Oriya",
-    "Punjabi",
-    "Nepali",
-    "Malayalam"
-  ];
-  gradeList: Array<String> = [
-    "Kindergarten",
-    "Grade 1",
-    "Grade 2",
-    "Grade 3",
-    "Grade 4",
-    "Grade 5",
-    "Grade 6",
-    "Grade 7",
-    "Grade 8",
-    "Grade 9",
-    "Grade 10",
-    "Grade 11",
-    "Grade 12",
-    "Other"
-  ];
+  languageList: Array<String> = languageList;
+  subjectList: Array<String> = subjectList;
+  gradeList: Array<String> = gradeList;
 
   options: toastOptions = {
     message: '',
@@ -97,9 +48,11 @@ export class AdditionalInfoComponent {
     public navParams: NavParams,
     public userProfileService: UserProfileService,
     private toastCtrl: ToastController,
+    private loadingCtrl: LoadingController,
     private authService: AuthService,
     private translate: TranslateService,
-    private frameworkService: FrameworkService
+    private frameworkService: FrameworkService,
+    private zone: NgZone
   ) {
     /* Returns a html element for tab bar */
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
@@ -114,11 +67,11 @@ export class AdditionalInfoComponent {
 
     /* Initialize form with default values */
     this.additionalInfoForm = this.fb.group({
-      firstName: [this.profile.firstName || ''],
+      firstName: [this.profile.firstName || '', Validators.required],
       lastName: [this.profile.lastName || ''],
-      language: [this.profile.language || []],
+      language: [this.profile.language || [], Validators.required],
       email: [this.profile.email || ''],
-      phone: ['', [Validators.minLength(10)]], // Need to assign phone value
+      phone: [this.profile.phone, [Validators.minLength(10)]], // Need to assign phone value
       profileSummary: [this.profile.profileSummary || ''],
       subject: [this.profile.subject || []],
       gender: [this.profile.gender || ''],
@@ -186,9 +139,17 @@ export class AdditionalInfoComponent {
   /**
    * To Toggle the lock
    */
-  toggleLock(field: string) {
-    this.profileVisibility[field] = this.profileVisibility[field] === "private" ? "public" : "private";
-    this.setProfileVisibility(field);
+  toggleLock(field: string, fieldDisplayName: string, revert: boolean = false, ) {
+    this.zone.run(()=>{
+      this.profileVisibility[field] = this.profileVisibility[field] === "private" ? "public" : "private";
+    });
+
+      if (!revert) {
+        let privacyString = (this.profileVisibility[field] === "private") ? 'PRIVACY_HIDE_TEXT' : 'PRIVACY_SHOW_TEXT';
+        this.getToast(this.translateMessage(privacyString, this.translateMessage(fieldDisplayName).toLocaleLowerCase())).present();
+        this.setProfileVisibility(field);
+      }
+
   }
 
   /**
@@ -213,7 +174,7 @@ export class AdditionalInfoComponent {
           },
           (err: any) => {
             console.error("Unable to set profile visibility.", err);
-            this.toggleLock(field); // In-case of API fails to update, make privacy lock icon as it was.
+            this.toggleLock(field, '', true); // In-case of API fails to update, make privacy lock icon as it was.
           }
         );
       }
@@ -227,12 +188,15 @@ export class AdditionalInfoComponent {
   onSubmit(event): void {
     let formVal = this.additionalInfoForm.value;
 
+    if (this.profile.phone.length && formVal.phone === '') {
+      formVal.phone = this.profile.phone;
+    }
     if (this.validateForm(formVal)) {
       let currentValues: any = {
         userId: this.userId,
         firstName: formVal.firstName,
         language: formVal.language,
-        phone: formVal.phone,
+        phone: <number>formVal.phone,
         lastName: formVal.lastName,
         profileSummary: formVal.profileSummary,
         subject: formVal.subject,
@@ -272,39 +236,61 @@ export class AdditionalInfoComponent {
       let req: any = {
         userId: this.userId,
         firstName: formVal.firstName,
-        language: formVal.language,
-        phone: formVal.phone
+        language: formVal.language
       }
 
-      modifiedFields.forEach(element => {
-        req[element] = currentValues[element]
-      });
+      if (modifiedFields.length) {
+        modifiedFields.forEach(element => {
+          req[element] = currentValues[element]
+        });
 
-      this.updateInfo(req);
+        this.updateInfo(req);
+      } else {
+        this.getToast(this.translateMessage('NO_CHANGE')).present();
+      }
+
     }
   }
 
   validateForm(formVal): boolean {
-    if (formVal.phone != '' && !formVal.phone.match(/^\d{10}$/)) {
-      this.getToast(this.translateMessage('ERROR_SHORT_MOBILE')).present();
+    if (!formVal.firstName.length) {
+      this.getToast(this.translateMessage('ERROR_EMPTY_FIRSTNAME')).present();
       return false;
+    } else if (!formVal.language.length) {
+      this.getToast(this.translateMessage('ERROR_EMPTY_LANGUAGE')).present();
+      return false;
+    } else if (formVal.phone !== this.profile.phone || (formVal.phone === '' || (formVal.phone.length !== 10))) {
+      if (!formVal.phone.match(/^\d{10}$/)) {
+        this.getToast(this.translateMessage('ERROR_SHORT_MOBILE')).present();
+        return false;
+      }
     }
     return true;
   }
+
   /**
    * This will call Update User's Info API
    * @param {object} req - Request object for the User profile Service
    */
   updateInfo(req: any): void {
+    let loader = this.getLoader();
+    loader.present();
     this.userProfileService.updateUserInfo(req,
       (res: any) => {
+        loader.dismiss();
         this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
-        setTimeout(() => {
-          this.navCtrl.setRoot(ProfilePage, {returnRefreshedUserProfileDetails: true});
-        }, 2000);
+        this.navCtrl.setRoot(ProfilePage, { returnRefreshedUserProfileDetails: true });
       },
       (err: any) => {
-        this.getToast(this.translateMessage('PROFILE_UPDATE_FAILED')).present();
+        loader.dismiss();
+        try {
+          if (JSON.parse(err).errorMessages[0]) {
+            this.getToast(JSON.parse(err).errorMessages[0]).present();
+          }
+        }
+        catch (e) {
+          this.getToast(this.translateMessage('PROFILE_UPDATE_FAILED')).present();
+        }
         console.error("Error", err);
       });
   }
@@ -334,13 +320,20 @@ export class AdditionalInfoComponent {
    * @param {string} messageConst - Message Constant to be translated
    * @returns {string} translatedMsg - Translated Message
    */
-  translateMessage(messageConst: string): string {
+  translateMessage(messageConst: string, field?: string): string {
     let translatedMsg = '';
-    this.translate.get(messageConst).subscribe(
+    this.translate.get(messageConst, { '%s': field }).subscribe(
       (value: any) => {
         translatedMsg = value;
       }
     );
     return translatedMsg;
+  }
+
+  getLoader(): any {
+    return this.loadingCtrl.create({
+      duration: 30000,
+      spinner: "crescent"
+    });
   }
 }

@@ -1,20 +1,25 @@
+//App specific Properties
+app_id = APP_ID
+app_name = APP_NAME
+app_version_code = APP_VERSION_CODE
+// Dev Enironment properties
 dev_mobile_app_key = DEV_MOBILE_APP_KEY
 dev_mobile_app_secret = DEV_MOBILE_APP_SECRET
 dev_channel_id = DEV_CHANNEL_ID
 dev_producer_id = DEV_PRODUCER_ID
-
+dev_deeplink_base_url = DEV_DEEPLINK_BASE_URL
 // Staging envornment properties.
 staging_mobile_app_key = STAGING_MOBILE_APP_KEY
 staging_mobile_app_secret = STAGING_MOBILE_APP_SECRET
 staging_channel_id = STAGING_CHANNEL_ID
 staging_producer_id = STAGING_PRODUCER_ID
-
+staging_deeplink_base_url = STAGING_DEEPLINK_BASE_URL
 // Production envornment properties.
 production_mobile_app_key = PRODUCTION_MOBILE_APP_KEY
 production_mobile_app_secret = PRODUCTION_MOBILE_APP_SECRET
 production_channel_id = PRODUCTION_CHANNEL_ID
 production_producer_id = PRODUCTION_PRODUCER_ID
-
+production_deeplink_base_url = PRODUCTION_DEEPLINK_BASE_URL
 // Fabric Keys
 release_fabric_api_key = RELEASE_FABRIC_API_KEY
 release_fabric_api_secret = RELEASE_FABRIC_API_SECRET

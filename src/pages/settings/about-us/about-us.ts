@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams } from 'ionic-angular';
 import { AboutAppPage } from '../about-app/about-app';
 import { TermsofservicePage } from '../termsofservice/termsofservice';
 import { PrivacypolicyPage } from '../privacypolicy/privacypolicy';
 import { AppVersion } from '@ionic-native/app-version';
-import { DeviceInfoService} from 'sunbird';
+import { DeviceInfoService, BuildParamService} from 'sunbird';
 import { Impression, ImpressionType, PageId, Environment, TelemetryService } from 'sunbird';
 
 /**
@@ -25,6 +25,7 @@ export class AboutUsPage {
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
     private deviceInfoService: DeviceInfoService,
+    private buildParamService : BuildParamService,
     private appVersion: AppVersion,
     private telemetryService: TelemetryService) {
   }
@@ -76,7 +77,7 @@ export class AboutUsPage {
   }
 
   getVersionName(appName) : any {
-    this.deviceInfoService.getBuildConfigParam("VERSION_NAME", (response: any) => {
+    this.buildParamService.getBuildConfigParam("VERSION_NAME", (response: any) => {
       this.getVersionCode(appName,response);
       return response;
     }, (error) => {
@@ -85,7 +86,7 @@ export class AboutUsPage {
   }
 
   getVersionCode(appName,versionName) : any {
-    this.deviceInfoService.getBuildConfigParam("VERSION_CODE", (response: any) => {
+    this.buildParamService.getBuildConfigParam("VERSION_CODE", (response: any) => {
       this.version = appName + " v" + versionName+"."+response;
       return response;
     }, (error) => {

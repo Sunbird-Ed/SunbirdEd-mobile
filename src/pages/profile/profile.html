@@ -46,7 +46,7 @@
     <!-- Profile Description/ Profile Summary -->
     <ion-item text-wrap *ngIf="profile?.profileSummary">
         <p class="section-title">{{ 'DESCRIPTION' | translate }}
-            <ion-icon *ngIf="isLoggedInUser" (click)="toggleLock('profileSummary')" float-end class="padding-left-5" name="{{ profile?.profileVisibility?.profileSummary == 'private' ? 'lock' : 'unlock' }}"></ion-icon>
+            <ion-icon *ngIf="isLoggedInUser" (click)="toggleLock('profileSummary', 'DESCRIPTION')" float-end class="padding-left-5" name="{{ profile?.profileVisibility?.profileSummary == 'private' ? 'lock' : 'unlock' }}"></ion-icon>
         </p>
         <p [readMore]="profile?.profileSummary" [length]="100" [showMoreText]="'READ_MORE' | translate" [showLessText]="'READ_LESS' | translate">{{profile?.profileSummary}}</p>
     </ion-item>
@@ -57,7 +57,7 @@
         {{ 'TITLE_EDUCATION' | translate }}
         <span *ngIf="isLoggedInUser" float-right color="primary">
             <span (click)="editEduDetails(true, profile)">{{ 'ADD' | translate }}</span>
-            <ion-icon color="dark" class="padding-left-5" (click)="toggleLock('education')" name="{{ profile?.profileVisibility?.education == 'private' ? 'lock' : 'unlock' }}"></ion-icon>
+            <ion-icon color="dark" class="padding-left-5" (click)="toggleLock('education', 'TITLE_EDUCATION')" name="{{ profile?.profileVisibility?.education == 'private' ? 'lock' : 'unlock' }}"></ion-icon>
         </span>
     </ion-list-header>
 
@@ -72,8 +72,8 @@
                 <span class="details-title">{{ ed?.name }}</span>
                 <div class="details ellipsis">
                     <p>{{ ed?.degree }}</p>
-                    <p *ngIf="ed?.yearOfPassing">Year of Passing : {{ ed?.yearOfPassing }}</p>
-                    <p *ngIf="ed?.grade">Grade: {{ ed?.grade }}({{ ed?.percentage }}%)</p>
+                    <p *ngIf="ed?.yearOfPassing">{{ 'YEAR_OF_PASSING' | translate }} : {{ ed?.yearOfPassing }}</p>
+                    <p *ngIf="ed?.grade">{{ 'GRADE' | translate }}: {{ ed?.grade }}({{ ed?.percentage }}%)</p>
                     <p>{{ ed?.boardOrUniversity }}</p>
                 </div>
             </ion-col>
@@ -88,7 +88,7 @@
         {{ 'TITLE_EXPERIENCE' | translate }}
         <span *ngIf="isLoggedInUser" float-end color="primary">
             <span (click)="editExperience()">{{ 'ADD' | translate }}</span>
-            <ion-icon color="dark" (click)="toggleLock('jobProfile')" class="padding-left-5" name="{{ profile?.profileVisibility?.jobProfile == 'private' ? 'lock' : 'unlock' }}"></ion-icon>
+            <ion-icon color="dark" (click)="toggleLock('jobProfile', 'TITLE_EXPERIENCE')" class="padding-left-5" name="{{ profile?.profileVisibility?.jobProfile == 'private' ? 'lock' : 'unlock' }}"></ion-icon>
         </span>
     </ion-list-header>
 
@@ -122,7 +122,7 @@
         {{ 'TITLE_ADDRESS' | translate }}
         <span *ngIf="isLoggedInUser && profile?.address?.length < 2 " float-right color="primary">
             <span (click)="editAddress()">{{ 'ADD' | translate }}</span>
-            <ion-icon color="dark" class="padding-left-5" (click)="toggleLock('location')" name="{{ profile?.profileVisibility?.location == 'private' ? 'lock' : 'unlock' }}"></ion-icon>
+            <ion-icon color="dark" class="padding-left-5" (click)="toggleLock('location', 'TITLE_ADDRESS')" name="{{ profile?.profileVisibility?.location == 'private' ? 'lock' : 'unlock' }}"></ion-icon>
         </span>
     </ion-list-header>
 
@@ -135,7 +135,6 @@
             </ion-col>
             <ion-col col-9>
                 <span text-capitalize class="details-title">{{ addr?.addType }}</span>
-                <!-- TODO: Add word wrap -->
                 <div class="details ellipsis">
                     <p>{{ addr?.addressLine1 }}</p>
                     <p text-capitalize>{{ addr?.city }}</p>
@@ -152,7 +151,7 @@
         {{ 'SKILL_TAGS' | translate }}
         <span *ngIf="isLoggedInUser" float-right color="primary">
             <span (click)="addSkillTags()">{{ 'ADD' | translate }}</span>
-            <ion-icon color="dark" class="padding-left-5" (click)="toggleLock('skills')" name="{{ profile?.profileVisibility?.skills == 'private' ? 'lock' : 'unlock' }}"></ion-icon>
+            <ion-icon color="dark" class="padding-left-5" (click)="toggleLock('skills', 'SKILL_TAGS')" name="{{ profile?.profileVisibility?.skills == 'private' ? 'lock' : 'unlock' }}"></ion-icon>
         </span>
     </ion-list-header>
 
@@ -223,7 +222,7 @@
                 <span text-uppercase class="info-title">{{ 'GENDER' | translate }}</span>
             </ion-col>
             <ion-col col-7 text-end>
-                <span class="ellipsis">{{ profile?.gender }}</span>
+                <span text-capitalize class="ellipsis">{{ profile?.gender }}</span>
             </ion-col>
         </ion-row>
 

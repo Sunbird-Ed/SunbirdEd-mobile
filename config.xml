@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget android-versionCode="1" id="org.sunbird.app" version="staging-2.0.0.01" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Sunbird</name>
+    <name>@string/_app_name</name>
     <description>Sunbird mobile app</description>
     <author email="joel@ekstep.org" href="http://ekstep.org">EkStep Team</author>
     <content src="sunbird/index.html" />
@@ -12,14 +12,11 @@
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
     <preference name="ScrollEnabled" value="false" />
-    <preference name="android-minSdkVersion" value="16" />
+    <preference name="android-minSdkVersion" value="21" />
     <preference name="BackupWebStorage" value="none" />
     <preference name="SplashScreenDelay" value="5000" />
     <preference name="Orientation" value="portrait" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
-    <preference name="auth_redirect_url" value="https://staging.open-sunbird.org/oauth2callback" />
-    <preference name="auth_url" value="https://staging.open-sunbird.org/auth/realms/sunbird/protocol/openid-connect/auth?redirect_uri=https://staging.open-sunbird.org/oauth2callback&amp;response_type=code&amp;scope=offline_access&amp;client_id=${CID}" />
-    <preference name="logout_url" value="https://staging.open-sunbird.org/auth/realms/sunbird/protocol/openid-connect/logout?redirect_uri=https://staging.open-sunbird.org/oauth2callback" />
     <hook src="scripts/copyGradleFiles.js" type="before_build" />
     <hook src="scripts/copyGradleFiles.js" type="before_run" />
     <platform name="android">
@@ -102,12 +99,15 @@
     <plugin name="cordova-plugin-console" spec="^1.1.0" />
     <plugin name="cordova-plugin-network-information" spec="^2.0.1" />
     <plugin name="cordova-plugin-customconfigparameters" spec="^3.0.0" />
-    <plugin name="cordova-plugin-genie-sdk" spec="https://github.com/project-sunbird/cordova-plugin-genie-sdk.git" />
     <plugin name="cordova-plugin-imagechooser" spec="https://github.com/project-sunbird/cordova-plugin-imagechooser.git" />
     <plugin name="cordova-plugin-file-support" spec="https://github.com/project-sunbird/cordova-plugin-file-support.git" />
     <plugin name="cordova-plugin-qr-scanner" spec="https://github.com/project-sunbird/cordova-plugin-qr-scanner.git" />
     <plugin name="cordova-plugin-sunbirdsplash" spec="https://github.com/project-sunbird/cordova-plugin-sunbirdsplash.git" />
     <plugin name="cordova-plugin-geniecanvas" spec="https://github.com/project-sunbird/cordova-plugin-geniecanvas.git" />
+<<<<<<< HEAD
     <allow-navigation href="http://172.17.18.41:8100" />
     <engine name="android" spec="7.0.0" />
+=======
+    <plugin name="cordova-plugin-genie-sdk" spec="https://github.com/project-sunbird/cordova-plugin-genie-sdk" />
+>>>>>>> a0c32ff4266839c987e4078ca5ae8b4b4e0724db
 </widget>

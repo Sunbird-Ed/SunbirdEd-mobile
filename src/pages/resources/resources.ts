@@ -1,8 +1,7 @@
-import { Component, NgZone, ViewChild, OnInit } from '@angular/core';
-import { PageAssembleService, PageAssembleCriteria, ContentService, AuthService, FrameworkService, CategoryRequest, Impression, ImpressionType, PageId, Environment, TelemetryService, FrameworkDetailsRequest, InteractType, InteractSubtype, ProfileService, ContentDetailRequest, SharedPreferences } from "sunbird";
+import { Component, NgZone, OnInit } from '@angular/core';
+import { PageAssembleService, PageAssembleCriteria, ContentService, AuthService, Impression, ImpressionType, PageId, Environment, TelemetryService, InteractType, InteractSubtype, ProfileService, ContentDetailRequest, SharedPreferences } from "sunbird";
 import { NavController, PopoverController, Events, ToastController } from 'ionic-angular';
 import * as _ from 'lodash';
-import { Slides } from 'ionic-angular';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
 import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
@@ -11,8 +10,7 @@ import { generateInteractEvent, Map } from '../../app/telemetryutil';
 import { CourseDetailPage } from '../course-detail/course-detail';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
 import { ContentDetailsPage } from '../content-details/content-details';
-
-
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
 	selector: 'page-resources',
@@ -65,8 +63,9 @@ export class ResourcesPage implements OnInit {
 
 	selectedLanguage = 'en';
 
+	noInternetConnection: boolean = false;
+
 	constructor(public navCtrl: NavController, private pageService: PageAssembleService, private ngZone: NgZone,
-		private popupCtrl: PopoverController,
 		contentService: ContentService,
 		authService: AuthService,
 		private qrScanner: SunbirdQRScanner,
@@ -75,7 +74,8 @@ export class ResourcesPage implements OnInit {
 		private events: Events,
 		private profileService: ProfileService,
 		private toastCtrl: ToastController,
-		private preference: SharedPreferences) {
+		private preference: SharedPreferences,
+		private translate: TranslateService) {
 		this.contentService = contentService;
 		this.authService = authService;
 
@@ -104,8 +104,8 @@ export class ResourcesPage implements OnInit {
 	}
 
 	/**
-* It will fetch the guest user profile details
-*/
+	 * It will fetch the guest user profile details
+	 */
 	getCurrentUser(): void {
 		this.profileService.getCurrentUser(
 			(res: any) => {
@@ -168,9 +168,15 @@ export class ResourcesPage implements OnInit {
 	 */
 	getPopularContent() {
 		this.pageApiLoader = true;
+		this.noInternetConnection = false;
 		let that = this;
 		let criteria = new PageAssembleCriteria();
 		criteria.name = "Resource";
+
+		if (that.appliedFilter) {
+			criteria.filters = that.appliedFilter;
+		}
+
 		this.pageService.getPageAssemble(criteria, res => {
 			that.ngZone.run(() => {
 				let response = JSON.parse(res);
@@ -197,13 +203,38 @@ export class ResourcesPage implements OnInit {
 				console.log('storyAndWorksheets', that.storyAndWorksheets);
 				this.pageLoadedSuccess = true;
 				this.pageApiLoader = false;
+				this.noInternetConnection = false;
+				this.checkEmptySearchResult();
 			});
 		}, error => {
 			console.log('error while getting popular resources...', error);
-			this.pageApiLoader = false;
+			that.ngZone.run(() => {
+				this.pageApiLoader = false;
+				if (error === 'CONNECTION_ERROR') {
+					this.noInternetConnection = true;
+				} else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR'){
+					this.getMessageByConst('ERROR_FETCHING_DATA');
+				}
+			});
 		});
 	}
 
+	showMessage(message) {
+		let toast = this.toastCtrl.create({
+			message: message,
+			duration: 4000,
+			position: 'bottom'
+		  });
+		toast.present();
+	}
+
+	getMessageByConst(constant) {
+		this.translate.get(constant).subscribe(
+			(value: any) => {
+				this.showMessage(value);
+			}
+		);
+	}
 	/**
 	 * Navigate to search page
 	 *
@@ -372,6 +403,8 @@ export class ResourcesPage implements OnInit {
 				PageId.LIBRARY, null));
 
 		const that = this;
+		this.storyAndWorksheets.length = 0;
+		this.noInternetConnection = false;
 		const callback: ResourceFilterCallback = {
 			applyFilter(filter, appliedFilter) {
 				let criteria = new PageAssembleCriteria();
@@ -394,26 +427,46 @@ export class ResourcesPage implements OnInit {
 					that.filterIcon = "./assets/imgs/ic_action_filter.png";
 				}
 
+				that.pageApiLoader = true;
 				that.pageService.getPageAssemble(criteria, res => {
 					that.ngZone.run(() => {
 						let response = JSON.parse(res);
-						console.log('Saved resources', response);
-						//TODO Temporary code - should be fixed at backend
 						let a = JSON.parse(response.sections);
 						console.log('page service ==>>>>', a);
 
 						let newSections = [];
 						a.forEach(element => {
 							element.display = JSON.parse(element.display);
+							if (element.display.name) {
+								if (_.has(element.display.name, this.selectedLanguage)) {
+									let langs = [];
+									_.forEach(element.display.name, function (value, key) {
+										langs[key] = value;
+									});
+									element.name = langs[this.selectedLanguage];
+								}
+							}
 							newSections.push(element);
 						});
 						//END OF TEMPORARY CODE
 						that.storyAndWorksheets = newSections;
 						console.log('storyAndWorksheets', that.storyAndWorksheets);
 						that.pageLoadedSuccess = true;
+						that.pageApiLoader = false;
+						that.noInternetConnection = false;
+						that.checkEmptySearchResult();
+
 					});
 				}, error => {
 					console.log('error while getting popular resources...', error);
+					that.ngZone.run(() => {
+						that.pageApiLoader = false;
+						if (error === 'CONNECTION_ERROR') {
+							that.noInternetConnection = true;
+						} else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR'){
+							this.getMessageByConst('ERROR_FETCHING_DATA');
+						}
+					});
 				});
 			}
 		}
@@ -428,5 +481,20 @@ export class ResourcesPage implements OnInit {
 
 		let filter = this.popCtrl.create(ResourceFilter, filterOptions, { cssClass: 'resource-filter' })
 		filter.present();
+	}
+
+	checkEmptySearchResult() {
+		let flags = [];
+		_.forEach(this.storyAndWorksheets, function (value, key) {
+			if (value.contents && value.contents.length) {
+				flags[key] = true;
+			}
+		});
+
+		if (flags.length && _.includes(flags, true)) {
+			console.log('search result found');
+		} else {
+			this.getMessageByConst('NO_CONTENTS_FOUND');
+		}
 	}
 }

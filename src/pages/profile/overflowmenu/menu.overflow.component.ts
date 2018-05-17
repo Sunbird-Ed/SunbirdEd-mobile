@@ -1,9 +1,8 @@
-import { IonicPage, Nav } from "ionic-angular";
+import { Nav } from "ionic-angular";
 import { Component, ViewChild } from '@angular/core';
 import { NavController } from "ionic-angular/navigation/nav-controller";
 import { NavParams } from "ionic-angular/navigation/nav-params";
 import { ViewController } from "ionic-angular/navigation/view-controller";
-import { UsersnClassesComponent } from "../usersnclasses/usersnclass.component";
 import { ToastController, App } from "ionic-angular";
 import { SettingsPage } from "../../settings/settings";
 import { OAuthService } from "sunbird";
@@ -26,7 +25,6 @@ export class OverflowMenuComponent {
     constructor(public navCtrl: NavController,
         public navParams: NavParams,
         public viewCtrl: ViewController,
-        private toastCtrl: ToastController,
         private oauth: OAuthService,
         private telemetryService: TelemetryService,
         private app: App,
@@ -56,6 +54,7 @@ export class OverflowMenuComponent {
                 this.generateLogoutInteractTelemetry(InteractType.TOUCH,
                     InteractSubtype.LOGOUT_INITIATE, "");
                 this.oauth.doLogOut();
+                (<any>window).splashscreen.clearPrefs();
                 this.profileService.setAnonymousUser(success => {
 
                 },

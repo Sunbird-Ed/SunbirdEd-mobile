@@ -1,9 +1,8 @@
 import { ViewMoreActivityPage } from './../view-more-activity/view-more-activity';
-import { Component, OnInit, NgZone, ViewChild } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { NavController, Platform, PopoverController, Events, ToastController } from 'ionic-angular';
-import { IonicPage, Slides } from 'ionic-angular';
-import { CourseService, AuthService, EnrolledCoursesRequest, PageAssembleService, PageAssembleCriteria, QRScanner, FrameworkDetailsRequest, CategoryRequest, FrameworkService, Impression, ImpressionType, PageId, Environment, TelemetryService, ProfileService, ContentDetailRequest, ContentService } from 'sunbird';
-import { CourseCard } from './../../component/card/course/course-card';
+import { IonicPage } from 'ionic-angular';
+import { CourseService, AuthService, PageAssembleService, PageAssembleCriteria, Impression, ImpressionType, PageId, Environment, TelemetryService, ProfileService, ContentDetailRequest, ContentService } from 'sunbird';
 import { DocumentDirection } from 'ionic-angular/platform/platform';
 import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
@@ -95,7 +94,7 @@ export class CoursesPage implements OnInit {
    * @param {NgZone} ngZone To bind data
    */
   constructor(navCtrl: NavController, courseService: CourseService, authService: AuthService, platform: Platform,
-    pageService: PageAssembleService, ngZone: NgZone, private qrScanner: SunbirdQRScanner, private popCtrl: PopoverController, private framework: FrameworkService, public telemetryService: TelemetryService, private events: Events, private profileService: ProfileService, private contentService: ContentService, private toastCtrl: ToastController) {
+    pageService: PageAssembleService, ngZone: NgZone, private qrScanner: SunbirdQRScanner, private popCtrl: PopoverController, public telemetryService: TelemetryService, private events: Events, private profileService: ProfileService, private contentService: ContentService, private toastCtrl: ToastController) {
     this.navCtrl = navCtrl;
     this.courseService = courseService;
     this.authService = authService;

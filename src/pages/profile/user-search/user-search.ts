@@ -1,4 +1,4 @@
-import { Component, NgZone, ViewChild, Input } from "@angular/core";
+import { Component, NgZone, ViewChild } from "@angular/core";
 import { AuthService, UserProfileService, Impression, ImpressionType, PageId, Environment, TelemetryService } from "sunbird";
 import { NavController, NavParams, LoadingController } from "ionic-angular";
 import { Renderer } from '@angular/core';
@@ -14,10 +14,12 @@ import { ProfilePage } from "./../profile";
 export class UserSearchComponent {
   @ViewChild('input') input;
   searchInput: string = "";
+  prevSearchInput: string = "";
   userList: any = [];
   fallBackImage: string = "./assets/imgs/ic_profile_default.png";
 
   enableInfiniteScroll: boolean = false;
+  showEmptyMessage: boolean = false;
 
   /* Default Limits for the API */
   apiOffset: number = 0;
@@ -41,13 +43,12 @@ export class UserSearchComponent {
   onInput(event = undefined, scrollEvent = undefined): void {
     let loader = this.getLoader();
 
-    if(!this.enableInfiniteScroll) loader.present();
-    if(event) this.renderer.invokeElementMethod(event.target, 'blur');
+    if (!this.enableInfiniteScroll || !scrollEvent) loader.present();
+    if (event) this.renderer.invokeElementMethod(event.target, 'blur');
     this.authService.getSessionData(session => {
       if (session === undefined || session == null) {
         console.error("session is null");
       } else {
-        let sessionObj = JSON.parse(session);
         let req = {
           query: this.searchInput,
           offset: this.apiOffset,
@@ -57,14 +58,21 @@ export class UserSearchComponent {
         };
         if (req.query == "") {
           this.userList = [];
+          this.showEmptyMessage = false;
           loader.dismiss();
         } else {
           this.userService.searchUser(req,
             (res: any) => {
               this.zone.run(() => {
-                Array.prototype.push.apply(this.userList, JSON.parse(JSON.parse(res).searchUser).content)
-                this.enableInfiniteScroll = (this.apiOffset + this.apiLimit) < JSON.parse(JSON.parse(res).searchUser).count ? true : false;
+                let result = JSON.parse(JSON.parse(res).searchUser);
+
+                if(this.searchInput !== this.prevSearchInput) this.userList = [];
+                Array.prototype.push.apply(this.userList, result.content)
+                this.enableInfiniteScroll = (this.apiOffset + this.apiLimit) < result.count ? true : false;
+
                 if (scrollEvent) scrollEvent.complete();
+                this.showEmptyMessage  = result.content.length ? false : true;
+                this.prevSearchInput = this.searchInput;
                 loader.dismiss();
               });
             },
@@ -136,6 +144,6 @@ export class UserSearchComponent {
   }
 
   checkClear() {
-    if(this.searchInput === '') this.onInput();
+    if (this.searchInput === '') this.onInput();
   }
 }

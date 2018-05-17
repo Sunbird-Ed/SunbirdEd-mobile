@@ -1,8 +1,7 @@
 import { Component, NgZone, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, Platform, Navbar } from 'ionic-angular';
 import { CourseBatchesPage } from './../course-batches/course-batches';
-import { ContentService, FileUtil, Impression, ImpressionType, PageId, Environment, TelemetryService, Start, Mode, End, AuthService } from 'sunbird';
-import { NgModel } from '@angular/forms';
+import { ContentService, FileUtil, ImpressionType, PageId, Environment, TelemetryService, Start, Mode, End, AuthService } from 'sunbird';
 import * as _ from 'lodash';
 import { generateImpressionEvent } from '../../app/telemetryutil';
 

@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 import { TranslateService } from "@ngx-translate/core";
-import { AlertController, PopoverController, Popover, ToastController, Platform } from "ionic-angular";
+import { PopoverController, Popover, ToastController, Platform } from "ionic-angular";
 import { QRScannerAlert, QRAlertCallBack } from "./qrscanner_alert";
-import { Start, Environment, Mode, TelemetryService, InteractType, InteractSubtype, PageId, End, PermissionService, PermissionResponse } from "sunbird";
+import { Start, Environment, Mode, TelemetryService, InteractType, InteractSubtype, PageId, End, PermissionService } from "sunbird";
 import { generateInteractEvent, Map } from "../../app/telemetryutil";
 import { Network } from "@ionic-native/network";
 
@@ -18,7 +18,7 @@ export class SunbirdQRScanner {
   ]
   private mQRScannerText;
   readonly permissionList = ["android.permission.CAMERA"];
-  backButtonFunc = undefined;
+  private backButtonFunc = undefined;
   constructor(private translate: TranslateService,
     private popCtrl: PopoverController,
     private telemetryService: TelemetryService,

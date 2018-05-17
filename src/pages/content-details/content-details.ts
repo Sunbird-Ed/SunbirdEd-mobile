@@ -1,8 +1,7 @@
 import { ContentActionsComponent } from './../../component/content-actions/content-actions';
 import { Component, NgZone, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, PopoverController, Navbar, Platform } from 'ionic-angular';
-import { ContentService, FileUtil, Impression, ImpressionType, PageId, Environment, TelemetryService, Start, Mode, End, ShareUtil, InteractType, InteractSubtype, Rollup } from 'sunbird';
-import { NgModel } from '@angular/forms';
+import { ContentService, FileUtil, ImpressionType, PageId, Environment, TelemetryService,  Mode, End, ShareUtil, InteractType, InteractSubtype, Rollup } from 'sunbird';
 import { SocialSharing } from "@ionic-native/social-sharing";
 import * as _ from 'lodash';
 import { generateInteractEvent, Map, generateImpressionWithRollup, generateStartWithRollup, generateInteractWithRollup } from '../../app/telemetryutil';
@@ -110,6 +109,8 @@ export class ContentDetailsPage {
   private objId;
   private objType;
   private objVer;
+  private didViewLoad: boolean;
+  private backButtonFunc = undefined;
   /**
    *
    * @param navCtrl
@@ -131,10 +132,12 @@ export class ContentDetailsPage {
     this.toastCtrl = toastCtrl;
     this.loadingCtrl = loadingCtrl;
     console.warn('Inside content details page');
-    this.platform.registerBackButtonAction(() => {
+    this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      this.didViewLoad = false;
       this.navCtrl.pop();
       this.generateEndEvent(this.objId, this.objType, this.objVer);
-    }, 0)
+      this.backButtonFunc();
+    }, 10)
     this.objRollup = new Rollup();
   }
 
@@ -179,9 +182,7 @@ export class ContentDetailsPage {
     this.objId = this.content.identifier;
     this.objType = data.result.contentType;
     this.objVer = this.content.pkgVersion;
-    this.generateRollUp();
-    this.generateStartEvent(this.content.identifier, this.content.contentType, this.content.pkgVersion);
-    this.generateImpressionEvent(this.content.identifier, this.content.contentType, this.content.pkgVersion);
+
 
     // Check locally available
     switch (data.result.isAvailableLocally) {
@@ -269,6 +270,12 @@ export class ContentDetailsPage {
     this.cardData = this.navParams.get('content');
     this.cardData.depth = this.navParams.get('depth') === undefined ? '' : this.navParams.get('depth');
     this.identifier = this.cardData.contentId || this.cardData.identifier;
+    if (!this.didViewLoad) {
+      this.generateRollUp();
+      this.generateStartEvent(this.cardData.identifier, this.cardData.contentType, this.cardData.pkgVersion);
+      this.generateImpressionEvent(this.cardData.identifier, this.cardData.contentType, this.cardData.pkgVersion);
+    }
+    this.didViewLoad = true;
     // this.resetVariables();
     this.setContentDetails(this.identifier, true);
     this.subscribeGenieEvent();
@@ -284,8 +291,10 @@ export class ContentDetailsPage {
 
   ionViewDidLoad() {
     this.navBar.backButtonClick = (e: UIEvent) => {
+      this.didViewLoad = false;
       this.generateEndEvent(this.objId, this.objType, this.objVer);
       this.navCtrl.pop();
+      this.backButtonFunc();
     }
   }
 
@@ -427,9 +436,9 @@ export class ContentDetailsPage {
   playContent() {
     this.telemetryService.interact(
       generateInteractWithRollup(InteractType.TOUCH,
-      InteractSubtype.CONTENT_PLAY,
-      Environment.HOME,
-      PageId.CONTENT_DETAIL,null,this.objRollup)
+        InteractSubtype.CONTENT_PLAY,
+        Environment.HOME,
+        PageId.CONTENT_DETAIL, null, this.objRollup)
     );
     (<any>window).geniecanvas.play(this.content.playContent);
   }
