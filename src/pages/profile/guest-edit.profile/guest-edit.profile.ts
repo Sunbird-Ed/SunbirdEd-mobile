@@ -1,3 +1,4 @@
+import { boardList } from './../../../config/framework.filters';
 import { TranslateService } from '@ngx-translate/core';
 import { Component } from '@angular/core';
 import { NavController, NavParams, ToastController, ToastCmp, Events, LoadingController } from 'ionic-angular';
@@ -24,7 +25,7 @@ export class GuestEditProfilePage {
   guestEditForm: FormGroup;
   profile: any = {};
   categories: Array<any> = [];
-  boardList: Array<string> = [];
+  boardList: Array<any> = [];
   gradeList: Array<string> = [];
   subjectList: Array<string> = [];
   mediumList: Array<string> = [];
@@ -101,7 +102,13 @@ export class GuestEditProfilePage {
 
     this.frameworkService.getCategoryData(req,
       (res: any) => {
-        this[list] = _.map(JSON.parse(res), 'code');
+        //this[list] = _.map(JSON.parse(res), 'code');
+        if(list === 'boardList') {
+          this.boardList = JSON.parse(res);
+        } else {
+          this[list] = _.map(JSON.parse(res), 'code');
+        }
+        console.log("BoardList", this.boardList);
         if(list != 'gradeList')
         {
           this[list] = this[list].sort();
