@@ -97,7 +97,7 @@ android {
              buildConfigField 'String', 'COURSE_SERVICE_BASE_URL', "\"${dev_base_url+"/api/course/v1"}\""
              buildConfigField 'String', 'CHANNEL_SERVICE_BASE_URL', "\"${dev_base_url+"/api/channel/v1"}\""
              buildConfigField 'String', 'FRAMEWORK_SERVICE_BASE_URL', "\"${dev_base_url+"/api/framework/v1"}\""
-             buildConfigField 'String', 'ORG_SERVICE_BASE_URL', "\"${dev_base_url+"/api/org/v1"}\""
+             buildConfigField 'String', 'ORG_SERVICE_BASE_URL', "\"${dev_base_url+"/v1"}\""
              buildConfigField 'String', 'DATA_SERVICE_BASE_URL', "\"${dev_base_url+"/api/data/v1"}\""
              buildConfigField 'String', 'ANNOUNCEMENT_BASE_URL', "\"${dev_base_url+"/api/announcement/v1"}\""
              buildConfigField 'String', 'PRODUCER_UNIQUE_ID', '"sunbird.app"'
@@ -129,7 +129,7 @@ android {
             buildConfigField 'String', 'COURSE_SERVICE_BASE_URL', "\"${staging_base_url+"/api/course/v1"}\""
             buildConfigField 'String', 'CHANNEL_SERVICE_BASE_URL', "\"${staging_base_url+"/api/channel/v1"}\""
             buildConfigField 'String', 'FRAMEWORK_SERVICE_BASE_URL', "\"${staging_base_url+"/api/framework/v1"}\""
-            buildConfigField 'String', 'ORG_SERVICE_BASE_URL', "\"${staging_base_url+"/api/org/v1"}\""
+            buildConfigField 'String', 'ORG_SERVICE_BASE_URL', "\"${staging_base_url+"/v1"}\""
             buildConfigField 'String', 'DATA_SERVICE_BASE_URL', "\"${staging_base_url+"/api/data/v1"}\""
             buildConfigField 'String', 'ANNOUNCEMENT_BASE_URL', "\"${staging_base_url+"/api/announcement/v1"}\""
             buildConfigField 'String', 'PRODUCER_UNIQUE_ID', '"sunbird.app"'
@@ -160,7 +160,7 @@ android {
             buildConfigField 'String', 'COURSE_SERVICE_BASE_URL', "\"${production_base_url+"/api/course/v1"}\""
             buildConfigField 'String', 'CHANNEL_SERVICE_BASE_URL', "\"${production_base_url+"/api/channel/v1"}\""
             buildConfigField 'String', 'FRAMEWORK_SERVICE_BASE_URL', "\"${production_base_url+"/api/framework/v1"}\""
-            buildConfigField 'String', 'ORG_SERVICE_BASE_URL', "\"${production_base_url+"/api/org/v1"}\""
+            buildConfigField 'String', 'ORG_SERVICE_BASE_URL', "\"${production_base_url+"/v1"}\""
             buildConfigField 'String', 'DATA_SERVICE_BASE_URL', "\"${production_base_url+"/api/data/v1"}\""
             buildConfigField 'String', 'ANNOUNCEMENT_BASE_URL', "\"${production_base_url+"/api/announcement/v1"}\""
             buildConfigField 'String', 'PRODUCER_UNIQUE_ID', '"sunbird.app"'
