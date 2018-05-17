@@ -52,11 +52,6 @@ export class ResourceFilter {
 
     },
     {
-      name: "domain",
-      displayName: "Domain",
-      values: frameworkDataList.domainList.sort()
-    },
-    {
       name: "contentType",
       displayName: "Content Type",
       values: frameworkDataList.contentTypeList.sort()

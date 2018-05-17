@@ -178,7 +178,7 @@ export class SearchPage {
     let contentSearchRequest: ContentSearchCriteria = {
       query: this.searchKeywords,
       contentTypes: this.contentType,
-      facets: ["board", "gradeLevel",  "subject", "medium", "language", "domain", "contentType"]
+      facets: ["board", "gradeLevel",  "subject", "medium", "contentType"]
     }
 
     this.isDialCodeSearch = false;
@@ -256,7 +256,7 @@ export class SearchPage {
     let contentSearchRequest: ContentSearchCriteria = {
       dialCodes: [this.dialCode],
       mode: "collection",
-      facets: ["board", "gradeLevel",  "subject", "medium", "language", "domain", "contentType"],
+      facets: ["board", "gradeLevel",  "subject", "medium", "contentType"],
       contentTypes: this.contentType,
       offlineSearch: isOfflineSearch
     }
