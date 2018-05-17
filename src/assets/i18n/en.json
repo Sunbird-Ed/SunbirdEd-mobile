@@ -157,7 +157,7 @@
     "FLAG": "Report",
     "FOLLOW": "Follow",
     "FROM": "From",
-    "FULL_NAME": "NAME",
+    "FULL_NAME": "FULL NAME",
     "GENDER": "Gender",
     "GET_CONTENT_DESC": "Browse and access content from our growing collection of free courses and resources.",
     "GET_CONTENT_TITLE": "Get Content On-the-Go",
@@ -283,7 +283,8 @@
     "PROFILE_DETAILS_TITLE": "Profile Details",
     "PROFILE_LW": "Profile",
     "PROFILE_UPDATE_FAILED": "Updating profile failed, try again later",
-    "PROFILE_UPDATE_SUCCESS": "Profile updated successfully",
+    "PROFILE_CREATE_FAILED": "Creating profile failed, try again later",
+    "PROFILE_UPDATE_SUCCESS": "Profile is updated successfully.",
     "PUBLIC": "Public",
     "PUBLISHED_DATE": "Published date",
     "QUIZ": "QUIZ",
@@ -412,5 +413,7 @@
     "ADD_EXPERIENCE": "Add Experience",
     "ADD_AVATAR": "Add Avatar",
     "ADD_ADDRESS": "Add Address",
-    "ADD_LOCATION": "Add Location"
+    "ADD_LOCATION": "Add Location",
+    "USER_TYPE": "USER TYPE",
+    "USERS_AND_GROUPS": "Users and Groups"
   }

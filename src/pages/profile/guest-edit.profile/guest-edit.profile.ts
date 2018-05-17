@@ -53,7 +53,7 @@ export class GuestEditProfilePage {
 
     /* Initialize form with default values */
     this.guestEditForm = this.fb.group({
-      userType: [this.profile.userType || [] ],
+      userType: [this.profile.userType || ['student'] ],
       name: [this.profile.handle || '', Validators.required],
       boards: [this.profile.board || [], Validators.required],
       grades: [this.profile.grade || []],
@@ -202,8 +202,9 @@ export class GuestEditProfilePage {
         this.navCtrl.pop();
       },
       (err: any) => {
-        loader.dismiss();
-        this.getToast(this.translateMessage('PROFILE_UPDATE_FAILED')).present();
+        let errorMessage = (this.mode === 'create') ? 'PROFILE_CREATE_FAILED' : 'PROFILE_UPDATE_FAILED';
+        this.getToast(this.translateMessage(errorMessage)).present();
+        
         console.log("Err", err);
       });
   }

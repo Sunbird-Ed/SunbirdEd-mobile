@@ -1,4 +1,25 @@
-page-guest-edit-profile {
+page-guest-edit.profile {
+
+    .user-type-label{
+        margin-top:20px; 
+        font-size:13px;
+        opacity:0.5;
+    }
+    .user-type-radio-buttons{
+        margin-top:-15px;
+        margin-bottom:-5px;
+    }
+
+    .radio-padding {
+        margin-right: 8px !important;
+    }
+
+    .error{
+        margin-left: 13px;
+        margin-top: 10px;
+        color:red;
+    }
+
 }
 
 .multiple-select-alert .alert-head {
@@ -8,3 +29,4 @@ page-guest-edit-profile {
 .multiple-select-alert .alert-checkbox-label {
     text-transform: capitalize !important;
 }
+

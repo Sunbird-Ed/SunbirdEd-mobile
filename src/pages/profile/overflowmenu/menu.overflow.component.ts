@@ -50,6 +50,11 @@ export class OverflowMenuComponent {
                 });
                 break;
             }
+            case 1:{
+                this.generateInteractEvent();
+                this.app.getActiveNav().push(SettingsPage);
+                break;
+            }
             case 2: {
                 this.generateLogoutInteractTelemetry(InteractType.TOUCH,
                     InteractSubtype.LOGOUT_INITIATE, "");
