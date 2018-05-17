@@ -1,7 +1,6 @@
 import { Component, NgZone, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, Platform, Navbar, PopoverController } from 'ionic-angular';
-import { ContentService, FileUtil, Start, PageId, Environment, Mode, Impression, ImpressionType, TelemetryService, End, Rollup, InteractType, InteractSubtype, ShareUtil } from 'sunbird';
-import { NgModel } from '@angular/forms';
+import { ContentService, FileUtil, PageId, Environment, Mode, ImpressionType, TelemetryService,  Rollup, InteractType, InteractSubtype, ShareUtil } from 'sunbird';
 import * as _ from 'lodash';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { CourseDetailPage } from '../course-detail/course-detail';

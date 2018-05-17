@@ -1,5 +1,5 @@
 import { Component, NgZone } from '@angular/core';
-import { IonicPage, NavController, NavParams, LoadingController, ToastController } from 'ionic-angular';
+import { NavController, NavParams, LoadingController, ToastController } from 'ionic-angular';
 import { TelemetryService, SyncStat, SharedPreferences, PageId, Environment, ImpressionType, Impression, Interact, InteractType, InteractSubtype, ShareUtil, TelemetryStat } from 'sunbird';
 import { DataSyncType } from "./datasynctype.enum"
 import { TranslateService } from '@ngx-translate/core'

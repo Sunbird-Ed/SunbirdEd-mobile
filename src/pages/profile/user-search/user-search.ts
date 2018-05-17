@@ -1,4 +1,4 @@
-import { Component, NgZone, ViewChild, Input } from "@angular/core";
+import { Component, NgZone, ViewChild } from "@angular/core";
 import { AuthService, UserProfileService, Impression, ImpressionType, PageId, Environment, TelemetryService } from "sunbird";
 import { NavController, NavParams, LoadingController } from "ionic-angular";
 import { Renderer } from '@angular/core';
@@ -49,7 +49,6 @@ export class UserSearchComponent {
       if (session === undefined || session == null) {
         console.error("session is null");
       } else {
-        let sessionObj = JSON.parse(session);
         let req = {
           query: this.searchInput,
           offset: this.apiOffset,

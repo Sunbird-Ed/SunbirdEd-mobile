@@ -1,4 +1,4 @@
-import { Component, NgZone, Input, ViewChild } from "@angular/core";
+import { Component, NgZone, ViewChild } from "@angular/core";
 import { IonicPage, NavParams, NavController, Events, ToastController } from "ionic-angular";
 import { ContentService, ContentSearchCriteria, Log, LogLevel, TelemetryService, Impression, ImpressionType, Environment, Interact, InteractType, InteractSubtype } from "sunbird";
 import { GenieResponse } from "../settings/datasync/genieresponse";
@@ -379,13 +379,6 @@ export class SearchPage {
     } else {
       this.filterIcon = "./assets/imgs/ic_action_filter.png"
     }
-  }
-
-  private getReadableFileSize(bytes) {
-    if (bytes < 1024) return (bytes / 1).toFixed(0) + " Bytes";
-    else if (bytes < 1048576) return (bytes / 1024).toFixed(0) + " KB";
-    else if (bytes < 1073741824) return (bytes / 1048576).toFixed(0) + " MB";
-    else return (bytes / 1073741824).toFixed(3) + " GB";
   }
 
   showMessage(constant) {

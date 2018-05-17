@@ -7,11 +7,7 @@ import {
   CourseService,
   AnnouncementService,
   AuthService,
-  PageAssembleService,
-  PageAssembleCriteria,
   TelemetryService,
-  Impression,
-  FrameworkModule,
   ContentImport,
   ContentImportRequest,
   ContentService,
@@ -20,17 +16,13 @@ import {
   PageId,
   ContentDetailRequest,
 } from 'sunbird';
-import { CourseCard } from './../../component/card/course/course-card';
-import { HomeAnnouncementCard } from '../../component/card/home/home-announcement-card'
 import { AnnouncementListComponent } from './announcement-list/announcement-list'
 import { SunbirdQRScanner, QRResultCallback } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
-import { FilterPage } from '../search/filters/filter';
 import { CourseDetailPage } from '../course-detail/course-detail';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
 import { ContentDetailsPage } from '../content-details/content-details';
 
-const KEY_SUNBIRD_SUPPORT_FILE_PATH = "sunbird_support_file_path";
 
 @Component({
   selector: 'page-home',
@@ -78,7 +70,6 @@ export class HomePage implements OnInit {
     private contentService: ContentService,
     private events: Events,
     public platform: Platform,
-    private pageService: PageAssembleService,
     private ngZone: NgZone,
     private userProfileService: UserProfileService,
     private qrScanner: SunbirdQRScanner,

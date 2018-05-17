@@ -2,8 +2,8 @@ import { Component, NgZone, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { NavController, LoadingController } from 'ionic-angular';
 import { AppVersion } from "@ionic-native/app-version";
-import { TabsPage, OAuthService, ContainerService, UserProfileService, AuthService, TenantInfoRequest, TelemetryService, InteractType, InteractSubtype, Environment, PageId } from 'sunbird';
-import { initGuestTabs, initUserTabs } from '../../app/module.service';
+import { OAuthService, ContainerService, UserProfileService, AuthService, TenantInfoRequest, TelemetryService, InteractType, InteractSubtype, Environment, PageId } from 'sunbird';
+import { initUserTabs } from '../../app/module.service';
 import { generateInteractEvent } from '../../app/telemetryutil';
 
 @Component({

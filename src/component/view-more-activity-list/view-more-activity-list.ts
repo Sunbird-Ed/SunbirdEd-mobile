@@ -5,8 +5,7 @@ import { CourseDetailPage } from './../../pages/course-detail/course-detail';
 import { Input, NgZone } from '@angular/core';
 import { Component } from '@angular/core';
 import { ImageLoader } from "ionic-image-loader";
-import { IonicPage, NavController, NavParams, Events, ToastController } from 'ionic-angular';
-import { DomSanitizer } from '@angular/platform-browser';
+import { NavController, NavParams } from 'ionic-angular';
 
 /**
  * Generated class for the ViewMoreActivityListComponent component.
@@ -52,7 +51,7 @@ export class ViewMoreActivityListComponent {
   /**
    * Default method of cass SearchListComponent
    */
-  constructor(navCtrl: NavController, navParams: NavParams, zone: NgZone, private _sanitizer: DomSanitizer) {
+  constructor(navCtrl: NavController, navParams: NavParams, zone: NgZone) {
     console.log('View more activity Component');
     this.defaultImg = 'assets/imgs/ic_launcher.png';
     this.navCtrl = navCtrl;

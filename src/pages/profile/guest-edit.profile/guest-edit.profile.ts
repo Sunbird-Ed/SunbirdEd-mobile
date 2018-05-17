@@ -1,10 +1,10 @@
 import { TranslateService } from '@ngx-translate/core';
 import { Component } from '@angular/core';
-import { NavController, NavParams, ToastController, ToastCmp, Events, LoadingController } from 'ionic-angular';
+import { NavController, NavParams, ToastController, Events, LoadingController } from 'ionic-angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import * as _ from 'lodash';
 
-import { FrameworkDetailsRequest, CategoryRequest, FrameworkService, ProfileService, Profile, ProfileType } from 'sunbird';
+import { FrameworkDetailsRequest, CategoryRequest, FrameworkService, ProfileService, Profile } from 'sunbird';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
