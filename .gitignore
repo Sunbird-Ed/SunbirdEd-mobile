@@ -38,3 +38,5 @@ UserInterfaceState.xcuserstate
 /buildConfig/secret.gradle
 /buildConfig/sunbird.properties
 /buildConfig/secret.tar
+
+google-services.json

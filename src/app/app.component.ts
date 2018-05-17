@@ -11,6 +11,7 @@ import { CourseDetailPage } from '../pages/course-detail/course-detail';
 import { CollectionDetailsPage } from '../pages/collection-details/collection-details';
 import { ContentDetailsPage } from '../pages/content-details/content-details';
 import { generateEndEvent } from './telemetryutil';
+import { FCM } from '@ionic-native/fcm';
 
 declare var chcp: any;
 
@@ -43,9 +44,14 @@ export class MyApp {
     private events: Events,
     private zone: NgZone,
     private telemetryService: TelemetryService,
-    private preference: SharedPreferences) {
+    private preference: SharedPreferences,
+    public fcm: FCM) {
 
     let that = this;
+
+    this.fcm.getToken().then(token => {
+      console.log("FCM token - " + token);
+    });
 
 
     platform.ready().then(() => {
@@ -81,7 +87,7 @@ export class MyApp {
 
             initGuestTabs(this.containerService);
 
-            if(val != "") {
+            if (val != "") {
               that.rootPage = TabsPage;
             } else {
               that.rootPage = LanguageSettingsPage;
@@ -117,10 +123,10 @@ export class MyApp {
 
   }
 
-  saveDefaultSyncSetting(){
+  saveDefaultSyncSetting() {
     this.preference.getString("sync_config", val => {
       if (val === undefined || val === "" || val === null) {
-        this.preference.putString("sync_config","ALWAYS_ON");
+        this.preference.putString("sync_config", "ALWAYS_ON");
       }
     });
   }
