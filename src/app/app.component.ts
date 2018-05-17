@@ -1,11 +1,10 @@
 import { Component, ViewChild, NgZone } from '@angular/core';
-import { Platform, ModalController, AlertController, NavController, ViewController, Nav, App, ToastController, Events } from 'ionic-angular';
+import { Platform, ModalController, AlertController, Nav, App, ToastController, Events } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { TabsPage, AuthService, ContainerService, PermissionService, Interact, InteractType, InteractSubtype, Environment, TelemetryService, SharedPreferences } from "sunbird";
 import { initGuestTabs, initUserTabs } from './module.service';
 import { LanguageSettingsPage } from '../pages/language-settings/language-settings';
 import { ImageLoaderConfig } from 'ionic-image-loader';
-import { platform } from 'os';
 import { TranslateService } from '@ngx-translate/core';
 import { SearchPage } from '../pages/search/search';
 import { CourseDetailPage } from '../pages/course-detail/course-detail';

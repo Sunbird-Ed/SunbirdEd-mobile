@@ -1,8 +1,6 @@
-import { ChildContentDetailsPage } from './../child-content-details/child-content-details';
 import { Component, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, PopoverController } from 'ionic-angular';
 import { ContentService, FileUtil } from 'sunbird';
-import { NgModel } from '@angular/forms';
 import * as _ from 'lodash';
 import { CourseDetailPage } from '../course-detail/course-detail';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
@@ -468,7 +466,6 @@ export class EnrolledCourseDetailsPage {
    * Get executed when user click on start button
    */
   startContent() {
-    let data = this.childrenData;
     if (this.startData && this.startData.length) {
       let firstChild = _.first(_.values(this.startData), 1);
       this.navigateToChildrenDetailsPage(firstChild, 1);

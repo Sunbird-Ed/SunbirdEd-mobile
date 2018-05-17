@@ -1,7 +1,6 @@
 import { Component } from "@angular/core";
 import { NavController, PopoverController } from "ionic-angular";
 import { User } from "./model/user.interface";
-import { OverflowMenuComponent } from "../../overflowmenu/menu.overflow.component";
 import { ActionMenuComponent } from "../../actionmenu/menu.action.component";
 @Component({
   selector: 'page-users',

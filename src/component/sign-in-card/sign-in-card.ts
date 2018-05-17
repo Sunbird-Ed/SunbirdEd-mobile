@@ -1,9 +1,9 @@
 import { Component, NgZone, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { NavController, LoadingController } from 'ionic-angular';
-
-import { TabsPage, OAuthService, ContainerService, UserProfileService, AuthService, TenantInfoRequest, TelemetryService, InteractType, InteractSubtype, Environment, PageId } from 'sunbird';
-import { initGuestTabs, initUserTabs } from '../../app/module.service';
+import { AppVersion } from "@ionic-native/app-version";
+import { OAuthService, ContainerService, UserProfileService, AuthService, TenantInfoRequest, TelemetryService, InteractType, InteractSubtype, Environment, PageId } from 'sunbird';
+import { initUserTabs } from '../../app/module.service';
 import { generateInteractEvent } from '../../app/telemetryutil';
 
 @Component({
@@ -40,7 +40,13 @@ export class SignInCardComponent {
     private authService: AuthService,
     private loadingCtrl: LoadingController,
     private ngZone: NgZone,
-    private telemetryService: TelemetryService) {
+    private telemetryService: TelemetryService,
+    private appVersion: AppVersion) {
+
+      this.appVersion.getAppName()
+        .then((appName: any) => {
+          this.sunbird = appName
+        });
   }
 
   singIn() {

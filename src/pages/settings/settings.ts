@@ -6,7 +6,7 @@ import { AboutUsPage } from './about-us/about-us';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { TranslateService } from '@ngx-translate/core';
 import { AppVersion } from "@ionic-native/app-version";
-import { SharedPreferences, Interact, InteractType, InteractSubtype, ShareUtil } from "sunbird";
+import { SharedPreferences, InteractType, InteractSubtype, ShareUtil } from "sunbird";
 import { Impression, ImpressionType, Environment, PageId, TelemetryService } from 'sunbird';
 import { generateInteractEvent } from '../../app/telemetryutil';
 

@@ -53,6 +53,7 @@ android {
 
     defaultConfig {
         applicationId "\"${app_id}\""
+        minSdkVersion 21
         ext.buildNumber = System.getenv("TRAVIS_BUILD_NUMBER") ?: "local"
         versionName "2.0.$ext.buildNumber"
         manifestPlaceholders = [fabricKey: "${release_fabric_api_key}", fabricSecret: "${release_fabric_api_secret}"]
@@ -81,6 +82,7 @@ android {
     productFlavors {
 
          dev {
+             resValue("string", "deeplink_base_url", "${dev_deeplink_base_url}")
              buildConfigField 'String', 'BASE_URL', "\"${dev_base_url}\""
              buildConfigField 'String', 'TELEMETRY_BASE_URL', "\"${dev_base_url+"/api/data/v1"}\""
              buildConfigField 'String', 'LANGUAGE_PLATFORM_BASE_URL', "\"${dev_base_url+"/api/language/v1"}\""
@@ -112,6 +114,7 @@ android {
         }
 
         staging {
+            resValue("string", "deeplink_base_url", "${staging_deeplink_base_url}")
             buildConfigField 'String', 'BASE_URL', "\"${staging_base_url}\""
             buildConfigField 'String', 'TELEMETRY_BASE_URL', "\"${staging_base_url+"/api/data/v1"}\""
             buildConfigField 'String', 'LANGUAGE_PLATFORM_BASE_URL', "\"${staging_base_url+"/api/language/v1"}\""
@@ -142,6 +145,7 @@ android {
         }
 
         production {
+            resValue("string", "deeplink_base_url", "${production_deeplink_base_url}")
             buildConfigField 'String', 'BASE_URL', "\"${production_base_url}\""
             buildConfigField 'String', 'TELEMETRY_BASE_URL', "\"${production_base_url+"/api/data/v1"}\""
             buildConfigField 'String', 'LANGUAGE_PLATFORM_BASE_URL', "\"${production_base_url+"/api/language/v1"}\""
@@ -194,8 +198,8 @@ android {
 }
 
 dependencies {
-    compile "org.ekstep.genieservices:genie-providers:1.0.648"
-    compile "org.ekstep.genieservices:genie-integration:1.0.648"
+    compile "org.ekstep.genieservices:genie-providers:1.0.649"
+    compile "org.ekstep.genieservices:genie-integration:1.0.649"
     compile('com.crashlytics.sdk.android:crashlytics:2.9.2@aar') {
           transitive = true;
     }

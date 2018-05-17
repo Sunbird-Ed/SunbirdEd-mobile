@@ -1,10 +1,8 @@
-import { platform } from 'os';
 import { Component } from "@angular/core";
 import { PopoverController, ViewController, NavParams, Platform } from "ionic-angular";
 import * as _ from 'lodash';
 
 import {
-  PageAssembleCriteria,
   PageAssembleFilter,
   TelemetryService,
   InteractType,
@@ -68,7 +66,7 @@ export class ResourceFilter {
   constructor(
     private popCtrl: PopoverController,
     private viewCtrl: ViewController,
-    private navParams: NavParams,
+    navParams: NavParams,
     private telemetryService: TelemetryService,
     private platform: Platform,
     private frameworkService: FrameworkService

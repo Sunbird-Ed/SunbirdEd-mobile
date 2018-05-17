@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { NavParams, ViewController, PopoverController, Popover, Platform } from "ionic-angular";
+import { NavParams, ViewController, Platform } from "ionic-angular";
 
 @Component({
   selector: 'onboarding-alert',
@@ -15,7 +15,7 @@ export class OnboardingAlert {
 
   backButtonFunc = undefined;
 
-  constructor(private navParams: NavParams, private popCtrl: PopoverController, private viewCtrl: ViewController, private platform: Platform) {
+  constructor(private navParams: NavParams, private viewCtrl: ViewController, private platform: Platform) {
     this.selectedSlide = this.navParams.get('facet');
     this.callback = this.navParams.get('callback');
     this.index = this.navParams.get('index');

@@ -1,14 +1,11 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { NavController, Events, Platform } from 'ionic-angular';
-import { IonicPage } from 'ionic-angular';
 import { HttpClient } from '@angular/common/http';
-import { CourseService, AnnouncementService, AuthService, PageAssembleService, PageAssembleCriteria, AnnouncementDetailsRequest } from 'sunbird';
-import { HomeAnnouncementCard } from '../../../component/card/home/home-announcement-card'
+import { AnnouncementService, AuthService } from 'sunbird';
 import { DocumentDirection } from 'ionic-angular/platform/platform';
 import {
     TelemetryService,
     Impression,
-    FrameworkModule,
     ContentImport,
     ContentImportRequest,
     ContentService
@@ -52,7 +49,7 @@ export class AnnouncementListComponent implements OnInit {
     apiOffset = 0;
     apiLimit = 10;
     constructor(public navCtrl: NavController, http: HttpClient, announcementService: AnnouncementService, authService: AuthService,
-        private telemetryService: TelemetryService, private contentService: ContentService, private events: Events, public platform: Platform, private pageService: PageAssembleService, private ngZone: NgZone) {
+        private telemetryService: TelemetryService, private contentService: ContentService, private events: Events, public platform: Platform, private ngZone: NgZone) {
         this.http = http;
         this.announcementService = announcementService;
         this.authService = authService;

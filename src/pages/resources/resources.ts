@@ -1,8 +1,7 @@
-import { Component, NgZone, ViewChild, OnInit } from '@angular/core';
-import { PageAssembleService, PageAssembleCriteria, ContentService, AuthService, FrameworkService, CategoryRequest, Impression, ImpressionType, PageId, Environment, TelemetryService, FrameworkDetailsRequest, InteractType, InteractSubtype, ProfileService, ContentDetailRequest, SharedPreferences } from "sunbird";
+import { Component, NgZone, OnInit } from '@angular/core';
+import { PageAssembleService, PageAssembleCriteria, ContentService, AuthService, Impression, ImpressionType, PageId, Environment, TelemetryService, InteractType, InteractSubtype, ProfileService, ContentDetailRequest, SharedPreferences } from "sunbird";
 import { NavController, PopoverController, Events, ToastController } from 'ionic-angular';
 import * as _ from 'lodash';
-import { Slides } from 'ionic-angular';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
 import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
@@ -67,7 +66,6 @@ export class ResourcesPage implements OnInit {
 	noInternetConnection: boolean = false;
 
 	constructor(public navCtrl: NavController, private pageService: PageAssembleService, private ngZone: NgZone,
-		private popupCtrl: PopoverController,
 		contentService: ContentService,
 		authService: AuthService,
 		private qrScanner: SunbirdQRScanner,

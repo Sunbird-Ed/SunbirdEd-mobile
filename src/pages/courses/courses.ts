@@ -1,5 +1,5 @@
 import { ViewMoreActivityPage } from './../view-more-activity/view-more-activity';
-import { Component, OnInit, NgZone, ViewChild } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { NavController, Platform, PopoverController, Events, ToastController } from 'ionic-angular';
 import { IonicPage, Slides } from 'ionic-angular';
 import { SharedPreferences, CourseService, AuthService, EnrolledCoursesRequest, PageAssembleService, PageAssembleCriteria, QRScanner, FrameworkDetailsRequest, CategoryRequest, FrameworkService, Impression, ImpressionType, PageId, Environment, TelemetryService, ProfileService, ContentDetailRequest, ContentService } from 'sunbird';
