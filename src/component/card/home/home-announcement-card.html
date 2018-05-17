@@ -1,4 +1,4 @@
-<ion-list class="borderBottom" (click)="gotoAnnnouncementDetails(announcement?.id)">
+<div class="borderBottom" [ngClass]="!announcement?.read ? 'borderLeft' : ''" (click)="gotoAnnnouncementDetails(announcement?.id)">
     <div class="card-padding">
         <div class="border-bottom">
             <div class="announcement-type">{{announcement?.type}}</div>
@@ -7,24 +7,26 @@
             </div>
             <div class="marginTop">{{announcement?.from}}</div>
             <div class="marginTop" *ngIf="announcement?.links?.length">
-                    <span>
-                        <img src="assets/imgs/ic_action_attachment.png" class="icon" />
-                    </span>&nbsp;
+                <span>
+                    <img src="assets/imgs/ic_action_attachment.png" class="icon" />
+                </span>&nbsp;
 
-                        <a class="display-inline" target="_blank" href="{{announcement?.links[0]}}">{{announcement?.links[0]}}</a>
+                <a class="display-inline" target="_blank" href="{{announcement?.links[0]}}">{{announcement?.links[0]}}
 
+                </a>
 
-                </div>
-                <div *ngIf="announcement?.links?.length > 1">
-                    <span class="inline-block">{{'+' + ((announcement?.links?.length)-1 + ' Weblinks')}}</span>
-                </div>
+            </div>
+
+            <div *ngIf="announcement?.links?.length > 1">
+                <span class="inline-block">{{'+' + ((announcement?.links?.length)-1 + ' Weblinks')}}</span>
+            </div>
 
             <div>
                 <div *ngIf="announcement?.attachments?.length" class="marginTop">
-                    <div float-start class="inline-block">
+                    <div float-start class="inline-block verticle-align">
                         <img src="assets/imgs/ic_action_link.png" class="icon" />
                     </div>&nbsp;
-                    <div class="inline-block width60">
+                    <div class="inline-block verticle-align width60">
                         <a target="_blank" href="{{announcement?.attachments[0]?.link}}">{{' ' + announcement?.attachments[0]?.name}}</a>
                     </div>
                     <div class="inline-block">
@@ -39,4 +41,4 @@
         </div>
     </div>
     <div class="announcementDate">sent on {{ announcement.createdDate | date:'MMM d, y,'}}</div>
-</ion-list>
+</div>
