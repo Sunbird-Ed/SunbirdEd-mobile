@@ -21,7 +21,7 @@
     <ion-refresher (ionRefresh)="doRefresh($event)"></ion-refresher>
 
     <!-- Logged In User Profile Pictures and Username -->
-    <p *ngIf="isLoggedInUser" class="profile-last-login-text">{{ 'LAST_LOGIN_TIME' | translate:{'%s': lastLoginTime } }}</p>
+    <p *ngIf="isLoggedInUser && lastLoginTime.length" class="profile-last-login-text">{{ 'LAST_LOGIN_TIME' | translate:{'%s': lastLoginTime } }}</p>
     <div text-center>
         <!-- <img class="custom-avatar" [src]="imageUri" (click)="isLoggedInUser && editPicture()" /> -->
         <ion-spinner *ngIf="isUploading"></ion-spinner>
@@ -34,7 +34,7 @@
     <ion-item *ngIf="isLoggedInUser">
         <ion-row class="profile-completed-ion-row">
             <ion-col col-7 class="profile-completed-ion-col">
-                <p class="profile-completed-text">{{ 'YOUR_PROFILE_IS' | translate:{'value': profileProgress} }}</p>
+                <p class="profile-completed-text" *ngIf="profileProgress.length">{{ 'YOUR_PROFILE_IS' | translate:{'value': profileProgress} }}</p>
             </ion-col>
             <ion-col col-5 text-right class="profile-completed-ion-col">
                 <p class="profile-add-exp-text" (click)="completeProfile()">{{ uncompletedDetails?.title }}</p>

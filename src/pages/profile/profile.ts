@@ -56,7 +56,7 @@ export class ProfilePage {
   isLoggedInUser: boolean = false;
   isRefreshProfile: boolean = false;
   loggedInUserId: string = "";
-  lastLoginTime: string;
+  lastLoginTime: string = "";
 
   profileName: string;
   profileProgress: string = "";
