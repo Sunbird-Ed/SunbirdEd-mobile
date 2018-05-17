@@ -100,7 +100,7 @@ export class ResourcesPage implements OnInit {
 		this.events.subscribe('onAfterLanguageChange:update', (res) => {
 			if (res && res.selectedLanguage) {
 				this.selectedLanguage = res.selectedLanguage;
-				this.getPopularContent();
+				this.getPopularContent(true);
 			}
 		});
 	}
@@ -168,7 +168,7 @@ export class ResourcesPage implements OnInit {
 	/**
 	 * Get popular content
 	 */
-	getPopularContent() {
+	getPopularContent(isAfterLanguageChange = false) {
 		this.pageApiLoader = true;
 		this.noInternetConnection = false;
 		let that = this;
@@ -206,7 +206,7 @@ export class ResourcesPage implements OnInit {
 				this.pageLoadedSuccess = true;
 				this.pageApiLoader = false;
 				this.noInternetConnection = false;
-				this.checkEmptySearchResult();
+				this.checkEmptySearchResult(isAfterLanguageChange);
 			});
 		}, error => {
 			console.log('error while getting popular resources...', error);
@@ -215,7 +215,7 @@ export class ResourcesPage implements OnInit {
 				if (error === 'CONNECTION_ERROR') {
 					this.noInternetConnection = true;
 				} else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR'){
-					this.getMessageByConst('ERROR_FETCHING_DATA');
+					if(!isAfterLanguageChange) this.getMessageByConst('ERROR_FETCHING_DATA');
 				}
 			});
 		});
@@ -485,7 +485,7 @@ export class ResourcesPage implements OnInit {
 		filter.present();
 	}
 
-	checkEmptySearchResult() {
+	checkEmptySearchResult(isAfterLanguageChange = false) {
 		let flags = [];
 		_.forEach(this.storyAndWorksheets, function (value, key) {
 			if (value.contents && value.contents.length) {
@@ -496,7 +496,7 @@ export class ResourcesPage implements OnInit {
 		if (flags.length && _.includes(flags, true)) {
 			console.log('search result found');
 		} else {
-			this.getMessageByConst('NO_CONTENTS_FOUND');
+			if(!isAfterLanguageChange) this.getMessageByConst('NO_CONTENTS_FOUND');
 		}
 	}
 }

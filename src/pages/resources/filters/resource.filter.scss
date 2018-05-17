@@ -19,7 +19,7 @@ page-resource-filter {
   }
   .scroll-list {
     overflow-y: scroll;
-    height: 50vh !important;
+    max-height: 50vh !important;
     padding-bottom: 10vh !important;
   }
   .item-inner>ion-icon {
@@ -34,7 +34,7 @@ page-resource-filter {
 .resource-filter .popover-content {
   margin: 0;
   width: 100% !important;
-  height: 70% !important;
+  max-height: 70% !important;
   box-shadow: unset;
   position: fixed;
   left: 0 !important;
