@@ -48,9 +48,10 @@
     "@ionic/cli-plugin-gulp": "^1.1.1",
     "@ngx-translate/core": "^9.1.1",
     "@ngx-translate/http-loader": "^2.0.1",
-    "cordova-android": "~7.0.0",
+    "cordova-android": "7.0.0",
     "cordova-custom-config": "^5.0.2",
     "cordova-plugin-app-version": "^0.1.9",
+    "cordova-plugin-browsertab": "^0.2.0",
     "cordova-plugin-console": "^1.1.0",
     "cordova-plugin-customconfigparameters": "^3.0.0",
     "cordova-plugin-device": "^1.1.7",
@@ -58,7 +59,7 @@
     "cordova-plugin-file-support": "git+https://github.com/project-sunbird/cordova-plugin-file-support.git",
     "cordova-plugin-file-transfer": "^1.7.1",
     "cordova-plugin-genie-sdk": "git+https://github.com/project-sunbird/cordova-plugin-genie-sdk.git",
-    "cordova-plugin-geniecanvas": "git+https://github.com/project-sunbird/cordova-plugin-geniecanvas",
+    "cordova-plugin-geniecanvas": "git+https://github.com/project-sunbird/cordova-plugin-geniecanvas.git",
     "cordova-plugin-globalization": "^1.11.0",
     "cordova-plugin-imagechooser": "git+https://github.com/project-sunbird/cordova-plugin-imagechooser.git",
     "cordova-plugin-inappbrowser": "^2.0.2",
@@ -82,6 +83,7 @@
     "ngx-chips": "1.8.2",
     "node-sass": "^4.7.2",
     "rxjs": "5.5.2",
+    "sunbird": "file:../genie-sdk-wrapper/sunbird-1.0.0.tgz",
     "sw-toolbox": "3.6.0",
     "zone.js": "0.8.18"
   },
@@ -131,7 +133,8 @@
       "cordova-plugin-sunbirdsplash": {},
       "cordova-plugin-customconfigparameters": {},
       "cordova-plugin-geniecanvas": {},
-      "cordova-plugin-genie-sdk": {}
+      "cordova-plugin-genie-sdk": {},
+      "cordova-plugin-browsertab": {}
     },
     "platforms": [
       "android"

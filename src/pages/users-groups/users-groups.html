@@ -1,0 +1,74 @@
+<ion-header>
+  <ion-navbar >
+      <ion-title>Users and Groups</ion-title>
+      <ion-buttons right>
+        <button ion-button icon-only (click)="viewCtrl.download()">
+          <img src="assets/imgs/ic_action_download.png" class="tool-icon" float-end/>
+        </button>
+      </ion-buttons>
+      <ion-buttons right>
+        <button ion-button icon-only (click)="viewCtrl.share()">
+          <img src ="assets/imgs/ic_action_share_black.png" class="tool-icon" float-end/>
+        </button>
+      </ion-buttons>
+      <ion-buttons right>
+       <button ion-button icon-only (click)="viewCtrl.search()">
+        <img src="assets/imgs/ic_action_search.png" class="tool-icon" float-end/>
+       </button>
+      </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+<ion-segment [(ngModel)] ="catagories">
+  <ion-segment-button value="user" style="font-weight: bold">USERS</ion-segment-button>
+  <ion-segment-button value="groups" style="font-weight: bold">GROUPS</ion-segment-button>
+</ion-segment>
+<div [ngSwitch]="catagories">
+  <ion-list *ngSwitchCase="'user'" no-lines >
+    <ion-list-header>LOGGED IN AS</ion-list-header>
+    <button ion-item *ngFor="let name of logger" (click)="onTap(name)" class="itemDesign">
+      <ion-avatar item-start id="logged_user"> 
+        <img src="assets/imgs/ic_businessman.png">
+        <img src="assets/imgs/ic_check_circle.png" id="tick"/>
+      </ion-avatar>
+      <h2 style="color: dodgerblue">{{name}}</h2>
+      <p>Jawahar Vidya Mandir , Pune</p>
+    </button>
+
+
+  <ion-list no-lines>
+      
+    <ion-list-header><h2>USERS</h2></ion-list-header>
+    <ion-list>
+      
+      <button ion-item *ngFor="let name of users" (click)="nameSelected(name)" class="itemDesign">
+       
+        <ion-avatar item-start id="logged_user">
+          <img src="assets/imgs/ic_profile_default.png">
+        </ion-avatar>
+        <h2>{{name}}</h2>
+        <p>statues</p>
+        
+      
+      <button ion-button clear item-end class="more">
+          <ion-icon name="more" color ="dark" (click)="edit()"></ion-icon>
+        </button>
+      </button>
+    
+    </ion-list>   
+</ion-list>
+    </ion-list>
+    </div>
+    </ion-content>
+
+
+<ion-footer>
+<ion-toolbar>
+ <ion-row>
+    <ion-col padding >
+      <button ion-button outline center id="create" (click)="confirm()">CREATE NEW USER</button>
+    </ion-col>
+  </ion-row> 
+</ion-toolbar>
+</ion-footer>

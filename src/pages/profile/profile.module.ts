@@ -21,6 +21,7 @@ import { UsersComponent } from './usersnclasses/users/users.component';
 import { ClassesComponent } from './usersnclasses/classes/classes.component';
 import { OverflowMenuComponent } from './overflowmenu/menu.overflow.component';
 import { ContainerService } from 'sunbird';
+import {UsersGroupsPageModule} from '../users-groups/users-groups.module';
 import { SettingsPageModule } from '../settings/settings.module';
 import { ActionMenuComponent } from './actionmenu/menu.action.component';
 import { AddUserComponent } from './usersnclasses/users/adduser.component';
@@ -72,6 +73,7 @@ import { ImagePicker } from './imagepicker/imagepicker';
   imports: [
     IonicPageModule.forChild(ProfilePage),
     SuperTabsModule.forRoot(),
+    UsersGroupsPageModule,
     SettingsPageModule,
     TranslateModule.forChild(),
     IonicImageLoader,

@@ -72,6 +72,7 @@ export class ProfilePage {
   educationIcon: string = "assets/imgs/ic_businessman.png";
   locationIcon: string = "assets/imgs/ic_location.png";
   list: Array<String> = [
+    "Users and Groups",
     "SETTINGS",
     "LOGOUT"
   ];

@@ -4,6 +4,7 @@ import { NavController } from "ionic-angular/navigation/nav-controller";
 import { NavParams } from "ionic-angular/navigation/nav-params";
 import { ViewController } from "ionic-angular/navigation/view-controller";
 import { ToastController, App } from "ionic-angular";
+import {UsersGroupsPage} from '../../users-groups/users-groups';
 import { SettingsPage } from "../../settings/settings";
 import { OAuthService } from "sunbird";
 import { OnboardingPage } from "../../onboarding/onboarding";
@@ -42,10 +43,15 @@ export class OverflowMenuComponent {
         switch (i) {
             case 0: {
                 this.generateInteractEvent();
-                this.app.getActiveNav().push(SettingsPage);
+                this.app.getActiveNav().push(UsersGroupsPage);
                 break;
             }
             case 1: {
+                this.generateInteractEvent();
+                this.app.getActiveNav().push(SettingsPage);
+                break;
+            }
+            case 2: {
                 this.generateLogoutInteractTelemetry(InteractType.TOUCH,
                     InteractSubtype.LOGOUT_INITIATE, "");
                 this.oauth.doLogOut();
