@@ -13,8 +13,8 @@
     <ion-item>
       <ion-label stacked text-uppercase>{{'BOARD' | translate }}
       </ion-label>
-      <ion-select text-uppercase multiple="true" formControlName="boards" (ionChange)="resetForm(0)" placeholder="{{'SELECT' | translate }}" okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}">
-        <ion-option *ngFor="let board of boardList" value="{{board?.code}}">{{board.name}}</ion-option>
+      <ion-select multiple="true" formControlName="boards" (ionChange)="resetForm(0)" placeholder="{{'SELECT' | translate }}" okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}">
+        <ion-option *ngFor="let board of boardList" value="{{board?.code}}">{{board?.name}}</ion-option>
       </ion-select>
     </ion-item>
 
@@ -23,7 +23,7 @@
       </ion-label>
       <ion-select text-capitalize [disabled]="!(guestEditForm.value.boards != '')" formControlName="grades" (ionChange)="resetForm(1)"
         multiple="true" placeholder="{{'SELECT' | translate }}" okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}">
-        <ion-option *ngFor="let grade of gradeList" text-capitalize value="{{grade}}">{{grade}}</ion-option>
+        <ion-option *ngFor="let grade of gradeList" text-capitalize value="{{grade?.code}}">{{grade?.name}}</ion-option>
       </ion-select>
     </ion-item>
 
@@ -32,7 +32,7 @@
       </ion-label>
       <ion-select text-capitalize (ionChange)="resetForm(2)" [disabled]="!(guestEditForm.value.grades != '')" formControlName="subjects"
         multiple="true" placeholder="{{'SELECT' | translate }}" okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}">
-        <ion-option *ngFor="let subject of subjectList" text-capitalize value="{{subject}}">{{subject}}</ion-option>
+        <ion-option *ngFor="let subject of subjectList" text-capitalize value="{{subject?.code}}">{{subject?.name}}</ion-option>
       </ion-select>
     </ion-item>
 
@@ -41,7 +41,7 @@
       </ion-label>
       <ion-select text-capitalize [disabled]="!(guestEditForm.value.subjects != '')" formControlName="medium" multiple="true"
         placeholder="{{'SELECT' | translate }}" okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}">
-        <ion-option *ngFor="let medium of mediumList" text-capitalize value="{{medium}}">{{medium}}</ion-option>
+        <ion-option *ngFor="let medium of mediumList" text-capitalize value="{{medium?.code}}">{{medium?.name}}</ion-option>
       </ion-select>
     </ion-item>
   </form>

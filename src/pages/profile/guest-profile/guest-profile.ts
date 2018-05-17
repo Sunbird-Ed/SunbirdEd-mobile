@@ -26,6 +26,7 @@ export class GuestProfilePage {
   grade: string = "";
   medium: string = "";
   subjects: string = "";
+  categories: Array<any> = []
   profile: any = {};
 
   constructor(public navCtrl: NavController,
@@ -97,18 +98,42 @@ export class GuestProfilePage {
 
     this.frameworkService.getFrameworkDetails(req,
       (res: any) => {
-        let categories = JSON.parse(JSON.parse(res).result.framework).categories;
-        let boardList = [];
+        this.categories = JSON.parse(JSON.parse(res).result.framework).categories;
+        if(this.profile.board && this.profile.board.length) {
+          this.boards = this.getFieldDisplayValues(this.profile.board, 0);
+        }
+        if(this.profile.grade && this.profile.grade.length) {
+          this.grade = this.getFieldDisplayValues(this.profile.grade, 1);
+        }
+        if(this.profile.subject && this.profile.subject.length) {
+          this.subjects = this.getFieldDisplayValues(this.profile.subject, 2);
+        }
+        if(this.profile.medium && this.profile.medium.length) {
+          this.medium = this.getFieldDisplayValues(this.profile.medium, 3);
+        }
+
+
+        /* let boardList = [];
         this.profile.board && this.profile.board.length && categories[0].terms.forEach(element => {
-          if(_.includes(this.profile.board, element.code)) {
+          if (_.includes(this.profile.board, element.code)) {
             boardList.push(element.name);
           }
         });
-        this.boards = this.arrayToString(boardList);
+        this.boards = this.arrayToString(boardList); */
       },
       (error: any) => {
 
-      })
+      });
+  }
+
+  getFieldDisplayValues(field: Array<any>, catIndex: number): string {
+    let displayValues = [];
+    this.categories[catIndex].terms.forEach(element => {
+      if (_.includes(field, element.code)) {
+        displayValues.push(element.name);
+      }
+    });
+    return this.arrayToString(displayValues);
   }
 
   /**

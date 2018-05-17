@@ -103,11 +103,12 @@ export class GuestEditProfilePage {
     this.frameworkService.getCategoryData(req,
       (res: any) => {
         //this[list] = _.map(JSON.parse(res), 'code');
-        if(list === 'boardList') {
+        /* if(list === 'boardList') {
           this.boardList = JSON.parse(res);
         } else {
           this[list] = _.map(JSON.parse(res), 'code');
-        }
+        } */
+        this[list] = JSON.parse(res);
         console.log("BoardList", this.boardList);
         if(list != 'gradeList')
         {

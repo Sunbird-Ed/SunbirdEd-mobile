@@ -37,7 +37,9 @@ export class OnboardingService {
     ) { }
     initializeCard() {
         this.getFrameworkDetails();
+    }
 
+    initializeSlides() {
         this.onBoardingSlides = [
             {
                 'id': 'boardList',
@@ -79,9 +81,8 @@ export class OnboardingService {
         this.onBoardingSlides[2].options = this.subjectList;
         this.onBoardingSlides[3].options = this.mediumList;
 
-        return this.getCurrentUser();
+        this.getCurrentUser();
     }
-
     /**
      * Method user to fetch Current Guest User
      */
@@ -89,14 +90,48 @@ export class OnboardingService {
         this.profileService.getCurrentUser((res: any) => {
             this.profile = JSON.parse(res);
             this.currentIndex = 0;
-            if (this.profile.board && this.profile.board[0] !== '') { this.onBoardingSlides[0].selectedOptions = this.profile.board; this.currentIndex = 25; }
-            if (this.profile.grade && this.profile.grade[0] !== '') { this.onBoardingSlides[1].selectedOptions = this.profile.grade; this.currentIndex = 50; }
-            if (this.profile.subject && this.profile.subject[0] !== '') { this.onBoardingSlides[2].selectedOptions = this.profile.subject; this.currentIndex = 75; }
-            if (this.profile.medium && this.profile.medium[0] !== '') { this.onBoardingSlides[3].selectedOptions = this.profile.medium; this.currentIndex = 100; }
+            if (this.profile.board && this.profile.board[0] !== '') {
+                console.log("Categories", this.categories);
+                /* let boardsDisplayValues = [];
+                this.categories[0].terms.forEach(element => {
+                    if(_.includes(this.profile.board, element.code)) {
+                        boardsDisplayValues.push(element.name);
+                    }
+                });
+                this.onBoardingSlides[0].selectedOptions = this.arrayToString(boardsDisplayValues); */
+                //this.onBoardingSlides[0].selectedOptions = this.profile.board;
+                this.onBoardingSlides[0].selectedOptions = this.getDisplayValues(0, this.profile.board);
+                this.currentIndex = 25;
+            }
+            if (this.profile.grade && this.profile.grade[0] !== '') {
+                //this.onBoardingSlides[1].selectedOptions = this.profile.grade;
+                this.onBoardingSlides[1].selectedOptions = this.getDisplayValues(1, this.profile.grade);
+                this.currentIndex = 50;
+            }
+            if (this.profile.subject && this.profile.subject[0] !== '') {
+                //this.onBoardingSlides[2].selectedOptions = this.profile.subject;
+                this.onBoardingSlides[2].selectedOptions = this.getDisplayValues(2, this.profile.subject);
+                this.currentIndex = 75;
+            }
+            if (this.profile.medium && this.profile.medium[0] !== '') {
+                //this.onBoardingSlides[3].selectedOptions = this.profile.medium;
+                this.onBoardingSlides[3].selectedOptions = this.getDisplayValues(3, this.profile.medium);
+                this.currentIndex = 100;
+            }
         },
             (err: any) => {
                 console.log("Err1", err);
             });
+    }
+
+    getDisplayValues(index: number, field) {
+        let displayValues = [];
+        this.categories[index].terms.forEach(element => {
+            if(_.includes(field, element.code)) {
+                displayValues.push(element.name);
+            }
+        });
+        return displayValues;
     }
 
     /**
@@ -111,10 +146,11 @@ export class OnboardingService {
             (res: any) => {
                 this.categories = JSON.parse(JSON.parse(res).result.framework).categories;
                 console.log("Framework details Response: ", JSON.parse(JSON.parse(res).result.framework).categories);
+                this.initializeSlides();
             },
             (err: any) => {
                 console.log("Framework details Response: ", JSON.parse(err));
-            });
+        });
     }
 
     /**
@@ -267,5 +303,14 @@ export class OnboardingService {
             (err: any) => {
                 console.log("Err", err);
             });
+    }
+
+   /**
+   * Method to convert Array to Comma separated string
+   * @param {Array<string>} stringArray
+   * @returns {string}
+   */
+    arrayToString(stringArray: Array<string>): string {
+        return stringArray.join(", ");
     }
 }

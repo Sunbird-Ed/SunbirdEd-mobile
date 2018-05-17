@@ -91,7 +91,33 @@ export class OnboardingCardComponent {
       }
     });
 
-    this.onboardingService.onBoardingSlides[index].selectedOptions = this.onboardingService.onBoardingSlides[index].selectedCode.join(", ");
+    /* if(index === 0) {
+      let boardDisplayValues = [];
+      this.onboardingService.onBoardingSlides[index].options.forEach(element => {
+        if(_.includes(this.onboardingService.onBoardingSlides[index].selectedCode, element.value)) {
+          boardDisplayValues.push(element.text);
+        }
+      });
+      this.onboardingService.onBoardingSlides[index].selectedOptions = boardDisplayValues;
+    } else if(index === 1) {
+      let gradeDisplayValues = [];
+      this.onboardingService.onBoardingSlides[index].options.forEach(element => {
+        if(_.includes(this.onboardingService.onBoardingSlides[index].selectedCode, element.value)) {
+          gradeDisplayValues.push(element.text);
+        }
+      });
+      this.onboardingService.onBoardingSlides[index].selectedOptions = gradeDisplayValues;
+    } else {
+      this.onboardingService.onBoardingSlides[index].selectedOptions = this.onboardingService.onBoardingSlides[index].selectedCode.join(", ");
+    } */
+
+    let displayValues = [];
+    this.onboardingService.onBoardingSlides[index].options.forEach(element => {
+      if(_.includes(this.onboardingService.onBoardingSlides[index].selectedCode, element.value)) {
+        displayValues.push(element.text);
+      }
+    });
+    this.onboardingService.onBoardingSlides[index].selectedOptions = displayValues;
 
     // If user Selected Something from the list then only move the slide to next slide
     if (this.onboardingService.onBoardingSlides[index].selectedOptions != '') {
