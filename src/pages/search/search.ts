@@ -56,6 +56,8 @@ export class SearchPage {
   parentContent: any = undefined;
   childContent: any = undefined;
 
+  loadingDisplayText: string = "Loading content";
+
 
   constructor(private contentService: ContentService,
     private telemetryService: TelemetryService,
@@ -478,8 +480,11 @@ export class SearchPage {
 
         if (res.type === 'downloadProgress' && res.data.downloadProgress) {
           this.downloadProgress = res.data.downloadProgress === -1 ? 0 : res.data.downloadProgress;
+          this.loadingDisplayText = "Loading content " + this.downloadProgress + " %";
+
           if (this.downloadProgress === 100) {
             // this.showLoading = false;
+            this.loadingDisplayText = "Loading content "
           }
         }
 
