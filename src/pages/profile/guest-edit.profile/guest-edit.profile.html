@@ -14,7 +14,7 @@
       <ion-label stacked text-uppercase>{{'BOARD' | translate }}
       </ion-label>
       <ion-select text-uppercase multiple="true" formControlName="boards" (ionChange)="resetForm(0)" placeholder="{{'SELECT' | translate }}" okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}">
-        <ion-option *ngFor="let board of boardList" text-uppercase value="{{board?.code}}">{{board.name}}</ion-option>
+        <ion-option *ngFor="let board of boardList" value="{{board?.code}}">{{board.name}}</ion-option>
       </ion-select>
     </ion-item>
 

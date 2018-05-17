@@ -1,6 +1,7 @@
 import { Component } from "@angular/core";
 import { NavParams, PopoverController, NavController, Events } from "ionic-angular";
 import { TranslateService } from "@ngx-translate/core";
+import * as _ from 'lodash';
 
 import { FilterOptions } from "./options/options";
 
@@ -57,7 +58,9 @@ export class FilterPage {
 
     this.filterCriteria.facetFilters.forEach(facet => {
       if (facet.values && facet.values.length > 0) {
-        if(facet.name != 'grade') facet.values.sort();
+        if(facet.name != 'gradeLevel') {
+          facet.values = _.orderBy(facet.values, ['name'], ['asc']);
+        }
         this.facetsFilter.push(facet);
       }
     });
