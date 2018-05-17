@@ -12,7 +12,7 @@
                 <div class="margin-top" *ngIf="announcementDetail?.links">
                     <span>{{'WEBLINKS' | translate}}</span>
                     <div *ngFor="let webLink  of  announcementDetail?.links">
-                        <a target="_blank" href="{{webLink}}">{{webLink}}</a>
+                        <a (click)="openLink(webLink)">{{webLink}}</a>
                     </div>
                 </div>
                 <div class="margin-top" *ngIf="announcementDetail?.attachments">

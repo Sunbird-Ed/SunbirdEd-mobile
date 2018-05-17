@@ -43,7 +43,7 @@ export class AnnouncementDetailComponent implements OnInit {
 
 
     /**
-     * Contains ref of navigation controller 
+     * Contains ref of navigation controller
      */
     public navCtrl: NavController;
 
@@ -57,13 +57,13 @@ export class AnnouncementDetailComponent implements OnInit {
      */
     public zone: NgZone;
     /**
-     * 
-     * @param navCtrl 
-     * @param navParams 
-     * @param contentService 
+     *
+     * @param navCtrl
+     * @param navParams
+     * @param contentService
      */
-    constructor(navCtrl: NavController, private socialSharing: SocialSharing, 
-        navParams: NavParams, announcementService: AnnouncementService, 
+    constructor(navCtrl: NavController, private socialSharing: SocialSharing,
+        navParams: NavParams, announcementService: AnnouncementService,
         attachmentService: AttachmentService, file: File,
         zone: NgZone) {
         this.navCtrl = navCtrl;
@@ -76,7 +76,7 @@ export class AnnouncementDetailComponent implements OnInit {
         this.announcementId = this.navParams.get('id');
         console.log(this.announcementId);
     }
-    /** 
+    /**
      * To get Announcement  details.
      */
     getAnnouncementDetails() {
@@ -115,10 +115,25 @@ export class AnnouncementDetailComponent implements OnInit {
     }
 
     /**
-     * Method to download attachment 
-     * 
-     * 
-     * @param attachmentsLink 
+   *  Returns the Object with given Keys only
+   * @param {string} keys - Keys of the object which are required in new sub object
+   * @param {object} obj - Actual object
+   * @returns {object}
+   */
+  getSubset(keys, obj) {
+    return keys.reduce((a, c) => ({ ...a, [c]: obj[c] }), {});
+  }
+
+  openLink(url: string): void {
+    let options = 'hardwareback=yes,clearcache=no,zoom=no,toolbar=yes,clearsessioncache=no,closebuttoncaption=Done,disallowoverscroll=yes';
+    (<any>window).cordova.InAppBrowser.open(url, '_system', options);
+  }
+
+    /**
+     * Method to download attachment
+     *
+     *
+     * @param attachmentsLink
      */
     downloadattachment(attachmentsLink) {
         let url = attachmentsLink;
@@ -155,11 +170,11 @@ export class AnnouncementDetailComponent implements OnInit {
 
     /**
      * This method checks if the announcement id directory already exists, if not, it will create one
-     * 
-     * @param url 
-     * @param announcementPath 
-     * @param attachmentPath 
-     * @param attachmentFileName 
+     *
+     * @param url
+     * @param announcementPath
+     * @param attachmentPath
+     * @param attachmentFileName
      */
     checkAnnouncementIdDirectory(url, announcementPath, attachmentPath, attachmentFileName) {
         //Check if the  announcement id directory exists
@@ -190,10 +205,10 @@ export class AnnouncementDetailComponent implements OnInit {
 
     /**
      * This method downloads and saves a file to the specified directory
-     * 
-     * @param url 
-     * @param attachmentPath 
-     * @param attachmentFileName 
+     *
+     * @param url
+     * @param attachmentPath
+     * @param attachmentFileName
      */
     downloadAndSaveFile(url, attachmentPath, attachmentFileName) {
         //check if the attachment is already downloaded and stored locally
