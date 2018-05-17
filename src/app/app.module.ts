@@ -13,6 +13,7 @@ import { Globalization } from '@ionic-native/globalization';
 import { AppVersion } from '@ionic-native/app-version';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { IonicImageLoader, ImageLoader, ImageLoaderConfig } from "ionic-image-loader";
+import { FCM } from '@ionic-native/fcm';
 
 @NgModule({
   declarations: [
@@ -49,6 +50,7 @@ import { IonicImageLoader, ImageLoader, ImageLoaderConfig } from "ionic-image-lo
     AppVersion,
     SocialSharing,
     ImageLoader,
+    FCM,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
   ]
 })
