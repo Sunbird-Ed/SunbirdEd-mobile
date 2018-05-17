@@ -55,7 +55,7 @@ export class GuestEditProfilePage {
     this.guestEditForm = this.fb.group({
       userType: [this.profile.userType || ['student'] ],
       name: [this.profile.handle || '', Validators.required],
-      boards: [this.profile.board || [], Validators.required],
+      boards: [this.profile.board || []],
       grades: [this.profile.grade || []],
       subjects: [this.profile.subject || []],
       medium: [this.profile.medium || []]
