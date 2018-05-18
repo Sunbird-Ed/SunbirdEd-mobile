@@ -26,7 +26,7 @@
 </ion-segment>
 <div [ngSwitch]="catagories">
   <ion-list *ngSwitchCase="'user'" no-lines >
-    <ion-list-header>LOGGED IN AS</ion-list-header>
+    <ion-list-header>{{ 'LOGGED_IN_AS' | translate }}</ion-list-header>
     <button ion-item *ngFor="let name of logger" (click)="onTap(name)" class="itemDesign">
       <ion-avatar item-start id="logged_user"> 
         <img src="assets/imgs/ic_businessman.png">
@@ -39,7 +39,7 @@
 
   <ion-list no-lines>
       
-    <ion-list-header><h2>USERS</h2></ion-list-header>
+    <ion-list-header><h2>{{ 'USERS' | translate }}</h2></ion-list-header>
     <ion-list>
       
       <button ion-item *ngFor="let name of users" (click)="nameSelected(name)" class="itemDesign">
