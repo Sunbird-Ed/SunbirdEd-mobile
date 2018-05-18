@@ -70,7 +70,7 @@
     "CREATED_BY": "CREATED BY",
     "CREATED_BY_SMALL": "Created by",
     "CREATED_BY_ME": "Created by me",
-    "CREATED_BY_SMALL": "Created by",
+    
     "CREATOR_NAME_NOT_AVAILABLE": "Creator's name unavailable",
     "CREATOR_OF": "Created by",
     "CREDITS": "CREDITS",
@@ -215,7 +215,6 @@
     "MSG_LOADING_BATCHES": "Loading batches...",
     "MSG_ALREADY_IMPORTED": "Already Imported",
     "MSG_IMPORTED_SUCCESSFULLY": "Content imported successfully",
-    "MSG_LOADING_BATCHES": "Loading batches...",
     "MSG_NO_DETAILS_TO_SHOW": "Details unavailable",
     "MSG_NO_NEW_NOTIFICATION": "No new notification",
     "MSG_RESOURCE_DELETED": "Content deleted from device",
@@ -408,5 +407,10 @@
     "ADD_EXPERIENCE": "Add Experience",
     "ADD_AVATAR": "Add Avatar",
     "ADD_ADDRESS": "Add Address",
-    "ADD_LOCATION": "Add Location"
+    "ADD_LOCATION": "Add Location",
+    "USERS_AND_GROUPS": "USERS AND GROUPS",
+    "USERS": "USERS",
+    "LOGGED_IN_AS": "LOGGED IN AS",
+    "CREATE_NEW_USER": "CREATE NEW USER"
+    
   }

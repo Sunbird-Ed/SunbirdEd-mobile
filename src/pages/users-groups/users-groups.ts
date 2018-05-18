@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import {GuestEditProfilePage} from '../profile/guest-edit.profile/guest-edit.profile';
-
+import { TranslateService } from "@ngx-translate/core";
  
 /**
  * Generated class for the UsersGroupsPage page.
@@ -21,7 +21,7 @@ export class UsersGroupsPage {
   catagories :string;
   profile: any = {};
   gradeList: Array<string> = [];
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  constructor(public navCtrl: NavController, public navParams: NavParams ,private translate: TranslateService,) {
      this.catagories="user";
     
   }
