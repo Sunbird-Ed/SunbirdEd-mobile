@@ -13,7 +13,7 @@ import { ProfileService } from 'sunbird';
 export class GuestProfilePage {
 
   imageUri: string = "assets/imgs/ic_profile_default.png";
-  list: Array<String> = ['USERS_AND_GROUPS','SETTINGS'];
+  list: Array<String> = ['SETTINGS'];
 
   /* Temporary Language Constants */
   userName: string = "Teacher";

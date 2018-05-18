@@ -45,17 +45,10 @@ export class OverflowMenuComponent {
         switch (i) {
             case 0:{
                 this.generateInteractEvent();
-                this.app.getActiveNav().push(GuestEditProfilePage,{
-                    mode: 'create'
-                });
+                this.app.getActiveNav().push(GuestEditProfilePage);
                 break;
             }
-            case 1:{
-                this.generateInteractEvent();
-                this.app.getActiveNav().push(SettingsPage);
-                break;
-            }
-            case 2: {
+            case 1: {
                 this.generateLogoutInteractTelemetry(InteractType.TOUCH,
                     InteractSubtype.LOGOUT_INITIATE, "");
                 this.oauth.doLogOut();
