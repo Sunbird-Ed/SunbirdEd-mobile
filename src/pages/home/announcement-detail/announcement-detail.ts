@@ -107,7 +107,9 @@ export class AnnouncementDetailComponent implements OnInit {
      */
     share(announcementDetail) {
         let message: string = ` Type: ${announcementDetail.type}\nDescription: ${announcementDetail.description}\nTitle: ${announcementDetail.title}\n`;
-        this.socialSharing.share(message, null, null, "Links: " + announcementDetail.links.toString()).then(() => {
+        let attachmentPath: string = this.file.externalRootDirectory + '/Announcements/' + announcementDetail.id+ '/'+ announcementDetail.attachments[0].name;
+        console.log(attachmentPath);
+        this.socialSharing.share(message, null, attachmentPath, "Links: " + announcementDetail.links.toString()).then(() => {
             console.log('inside .then function');
         }).catch((error) => {
             console.log(error);
@@ -221,9 +223,9 @@ export class AnnouncementDetailComponent implements OnInit {
                 } else {
                     this.attachmentService.downloadAttachment(url, attachmentPath + attachmentFileName);
 
-                    this.attachmentService.listenDownloadProgress((event) => {
-                        console.log("Attachment download progress - " + "Total - " + event.total + "Loaded - " + event.loaded);
-                    })
+                    // this.attachmentService.listenDownloadProgress((event) => {
+                    //     console.log("Attachment download progress - " + "Total - " + event.total + "Loaded - " + event.loaded);
+                    // })
                 }
             }
         ).catch(
@@ -231,9 +233,9 @@ export class AnnouncementDetailComponent implements OnInit {
                 console.log("files not found ")
                 this.attachmentService.downloadAttachment(url, attachmentPath + attachmentFileName);
 
-                this.attachmentService.listenDownloadProgress((event) => {
-                    console.log("Attachment download progress - " + "Total - " + event.total + "Loaded - " + event.loaded);
-                })
+                // this.attachmentService.listenDownloadProgress((event) => {
+                //     console.log("Attachment download progress - " + "Total - " + event.total + "Loaded - " + event.loaded);
+                // })
             }
         );
     }
