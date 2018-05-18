@@ -54,7 +54,7 @@ export class AnnouncementDetailComponent implements OnInit {
 
    public isAttachment: boolean = true;
 
-   progress:number = 0;
+   progress:number;
     /**
      *
      * Contains reference of zone service
@@ -228,8 +228,9 @@ export class AnnouncementDetailComponent implements OnInit {
                     this.attachmentService.downloadAttachment(url, attachmentPath + attachmentFileName);
 
                     this.attachmentService.listenDownloadProgress((event) => {
-                        console.log("Attachment download progress - " + "Total - " + event.total + "Loaded - " + event.loaded);
                         this.progress=((event.loaded)/(event.total))*100;
+                        console.log("Progress - " + this.progress);
+
                     })
                 }
             }
@@ -239,7 +240,8 @@ export class AnnouncementDetailComponent implements OnInit {
                 this.attachmentService.downloadAttachment(url, attachmentPath + attachmentFileName);
 
                 this.attachmentService.listenDownloadProgress((event) => {
-                    console.log("Attachment download progress - " + "Total - " + event.total + "Loaded - " + event.loaded);
+                    this.progress=((event.loaded)/(event.total))*100;
+                    console.log("Progress - " + this.progress);
                 })
             }
         );
