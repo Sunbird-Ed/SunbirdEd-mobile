@@ -1,5 +1,23 @@
 import { Component, NgZone, ViewChild, OnInit } from '@angular/core';
-import { PageAssembleService, PageAssembleCriteria, ContentService, AuthService, FrameworkService, CategoryRequest, Impression, ImpressionType, PageId, Environment, TelemetryService, FrameworkDetailsRequest, InteractType, InteractSubtype, ProfileService, ContentDetailRequest, SharedPreferences } from "sunbird";
+import {
+	PageAssembleService,
+	PageAssembleCriteria,
+	ContentService,
+	AuthService,
+	FrameworkService,
+	CategoryRequest,
+	Impression,
+	ImpressionType,
+	PageId,
+	Environment,
+	TelemetryService,
+	FrameworkDetailsRequest,
+	InteractType,
+	InteractSubtype,
+	ProfileService,
+	ContentDetailRequest,
+	SharedPreferences
+} from "sunbird";
 import { NavController, PopoverController, Events, ToastController } from 'ionic-angular';
 import * as _ from 'lodash';
 import { Slides } from 'ionic-angular';
@@ -77,7 +95,9 @@ export class ResourcesPage implements OnInit {
 		private profileService: ProfileService,
 		private toastCtrl: ToastController,
 		private preference: SharedPreferences,
-		private translate: TranslateService) {
+		private translate: TranslateService,
+		private zone: NgZone
+	) {
 		this.contentService = contentService;
 		this.authService = authService;
 
@@ -85,10 +105,6 @@ export class ResourcesPage implements OnInit {
 			if (val && val.length) {
 				this.selectedLanguage = val;
 			}
-		});
-
-		this.events.subscribe('onboarding-card:completed', (param) => {
-			this.isOnBoardingCardCompleted = param.isOnBoardingCardCompleted;
 		});
 
 		this.events.subscribe('savedResources:update', (res) => {
@@ -105,6 +121,11 @@ export class ResourcesPage implements OnInit {
 		});
 	}
 
+	ngAfterViewInit() {
+		this.events.subscribe('onboarding-card:completed', (param) => {
+			this.isOnBoardingCardCompleted = param.isOnBoardingCardCompleted;
+		});
+	}
 	/**
 	 * It will fetch the guest user profile details
 	 */
@@ -116,6 +137,7 @@ export class ResourcesPage implements OnInit {
 					this.isOnBoardingCardCompleted = true;
 					this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
 				}
+				this.isOnBoardingCardCompleted = false;
 			},
 			(err: any) => {
 				this.isOnBoardingCardCompleted = false;

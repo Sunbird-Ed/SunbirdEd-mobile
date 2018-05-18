@@ -47,9 +47,9 @@ export class OnboardingCardComponent {
     if (!this.onboardingService.categories.length) {
       this.onboardingService.initializeCard();
     }
-    if (this.onboardingService.isOnBoardingCardCompleted) {
+    /* if (this.onboardingService.isOnBoardingCardCompleted) {
       this.onboardingService.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: true });
-    }
+    } */
   }
 
   /**
