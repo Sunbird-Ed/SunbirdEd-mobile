@@ -1,6 +1,6 @@
 
 import { Component, OnInit, NgZone } from '@angular/core';
-import { NavController, NavParams} from 'ionic-angular';
+import { NavController, NavParams } from 'ionic-angular';
 import { AnnouncementService, AttachmentService, TelemetryService } from 'sunbird';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { File } from '@ionic-native/file';
@@ -43,7 +43,7 @@ export class AnnouncementDetailComponent implements OnInit {
 
 
     /**
-     * Contains ref of navigation controller 
+     * Contains ref of navigation controller
      */
     public navCtrl: NavController;
 
@@ -52,18 +52,22 @@ export class AnnouncementDetailComponent implements OnInit {
      */
     public navParams: NavParams;
 
+   public isAttachment: boolean = true;
+
+   progress:number = 0;
     /**
+     *
      * Contains reference of zone service
      */
     public zone: NgZone;
     /**
-     * 
-     * @param navCtrl 
-     * @param navParams 
-     * @param contentService 
+     *
+     * @param navCtrl
+     * @param navParams
+     * @param contentService
      */
-    constructor(navCtrl: NavController, private socialSharing: SocialSharing, 
-        navParams: NavParams, announcementService: AnnouncementService, 
+    constructor(navCtrl: NavController, private socialSharing: SocialSharing,
+        navParams: NavParams, announcementService: AnnouncementService,
         attachmentService: AttachmentService, file: File,
         zone: NgZone) {
         this.navCtrl = navCtrl;
@@ -76,7 +80,7 @@ export class AnnouncementDetailComponent implements OnInit {
         this.announcementId = this.navParams.get('id');
         console.log(this.announcementId);
     }
-    /** 
+    /**
      * To get Announcement  details.
      */
     getAnnouncementDetails() {
@@ -107,7 +111,9 @@ export class AnnouncementDetailComponent implements OnInit {
      */
     share(announcementDetail) {
         let message: string = ` Type: ${announcementDetail.type}\nDescription: ${announcementDetail.description}\nTitle: ${announcementDetail.title}\n`;
-        this.socialSharing.share(message, null, null, "Links: " + announcementDetail.links.toString()).then(() => {
+        let attachmentPath: string = this.file.externalRootDirectory + '/Announcements/' + announcementDetail.id+ '/'+ announcementDetail.attachments[0].name;
+        console.log(attachmentPath);
+        this.socialSharing.share(message, null, attachmentPath, "Links: " + announcementDetail.links.toString()).then(() => {
             console.log('inside .then function');
         }).catch((error) => {
             console.log(error);
@@ -115,10 +121,25 @@ export class AnnouncementDetailComponent implements OnInit {
     }
 
     /**
-     * Method to download attachment 
-     * 
-     * 
-     * @param attachmentsLink 
+   *  Returns the Object with given Keys only
+   * @param {string} keys - Keys of the object which are required in new sub object
+   * @param {object} obj - Actual object
+   * @returns {object}
+   */
+  getSubset(keys, obj) {
+    return keys.reduce((a, c) => ({ ...a, [c]: obj[c] }), {});
+  }
+
+  openLink(url: string): void {
+    let options = 'hardwareback=yes,clearcache=no,zoom=no,toolbar=yes,clearsessioncache=no,closebuttoncaption=Done,disallowoverscroll=yes';
+    (<any>window).cordova.InAppBrowser.open(url, '_system', options);
+  }
+
+    /**
+     * Method to download attachment
+     *
+     *
+     * @param attachmentsLink
      */
     downloadattachment(attachmentsLink) {
         let url = attachmentsLink;
@@ -155,11 +176,11 @@ export class AnnouncementDetailComponent implements OnInit {
 
     /**
      * This method checks if the announcement id directory already exists, if not, it will create one
-     * 
-     * @param url 
-     * @param announcementPath 
-     * @param attachmentPath 
-     * @param attachmentFileName 
+     *
+     * @param url
+     * @param announcementPath
+     * @param attachmentPath
+     * @param attachmentFileName
      */
     checkAnnouncementIdDirectory(url, announcementPath, attachmentPath, attachmentFileName) {
         //Check if the  announcement id directory exists
@@ -190,10 +211,10 @@ export class AnnouncementDetailComponent implements OnInit {
 
     /**
      * This method downloads and saves a file to the specified directory
-     * 
-     * @param url 
-     * @param attachmentPath 
-     * @param attachmentFileName 
+     *
+     * @param url
+     * @param attachmentPath
+     * @param attachmentFileName
      */
     downloadAndSaveFile(url, attachmentPath, attachmentFileName) {
         //check if the attachment is already downloaded and stored locally
@@ -205,12 +226,21 @@ export class AnnouncementDetailComponent implements OnInit {
                     this.attachmentService.checkExtensionAndOpenFile(path);
                 } else {
                     this.attachmentService.downloadAttachment(url, attachmentPath + attachmentFileName);
+
+                    this.attachmentService.listenDownloadProgress((event) => {
+                        console.log("Attachment download progress - " + "Total - " + event.total + "Loaded - " + event.loaded);
+                        this.progress=((event.loaded)/(event.total))*100;
+                    })
                 }
             }
         ).catch(
             (err) => {
                 console.log("files not found ")
                 this.attachmentService.downloadAttachment(url, attachmentPath + attachmentFileName);
+
+                this.attachmentService.listenDownloadProgress((event) => {
+                    console.log("Attachment download progress - " + "Total - " + event.total + "Loaded - " + event.loaded);
+                })
             }
         );
     }

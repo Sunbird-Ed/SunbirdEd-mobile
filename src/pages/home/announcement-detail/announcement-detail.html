@@ -12,11 +12,12 @@
                 <div class="margin-top" *ngIf="announcementDetail?.links">
                     <span>{{'WEBLINKS' | translate}}</span>
                     <div *ngFor="let webLink  of  announcementDetail?.links">
-                        <a target="_blank" href="{{webLink}}">{{webLink}}</a>
+                        <a (click)="openLink(webLink)">{{webLink}}</a>
                     </div>
                 </div>
                 <div class="margin-top" *ngIf="announcementDetail?.attachments">
                     <span>{{'ATTACHMENTS' | translate}}</span>
+                    <pb-horizontal  [progress]="progress" [isOnBoardCard]="isAttachment"></pb-horizontal>
                     <ion-list style="border:1px solid #efeff4" *ngFor="let item of announcementDetail?.attachments">
                         <ion-item>
                             <ion-avatar item-start style="border:1px solid #efeff4">

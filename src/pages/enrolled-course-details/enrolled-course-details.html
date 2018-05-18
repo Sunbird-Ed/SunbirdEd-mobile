@@ -1,85 +1,130 @@
 <ion-header>
-  <ion-navbar>
-    <ion-title>
-      <ion-icon md="md-share" float-right></ion-icon>
-    </ion-title>
-  </ion-navbar>
+	<ion-navbar>
+		<ion-title>
+			<!-- <ion-icon md="md-share" float-right></ion-icon> -->
+		</ion-title>
+		<ion-buttons end *ngIf="!isDepthChild">
+			<button ion-button icon-only  (click)="share()">
+			  <ion-icon md="md-share" float-right></ion-icon>
+			</button>
+			<button ion-button icon-only *ngIf="course && course.isAvailableLocally" (click)="showOverflowMenu($event)" style="font-size: 1.8rem;">
+			  <ion-icon md="md-more" float-end></ion-icon>
+			</button>
+		  </ion-buttons>
+	</ion-navbar>
 </ion-header>
 
 <ion-content padding>
-  <div class="content-details-holder" *ngIf="contentDetail">
-    <h6>{{contentDetail.name}}</h6>
-    <div class="progress-section">
-      <p>{{ 'YOUR_PROGRESS_1' | translate }} {{cardData.progress ? cardData.progress : '0'}} % </p>
-      <rating [ngModel]="0" readOnly="true" max="5" no-padding></rating>
-    </div>
-    <br/>
-    <div class="about-section">
-      <h6 class="padding-10 background-gray">{{ 'ABOUT' | translate }}</h6>
-      <p *ngIf="!showMoreFlag">
-        {{ (contentDetail.description && contentDetail.description.length > 6) ? (contentDetail.description | slice:0:6) + '...' : (contentDetail.description)
-        }} </p>
-      <div class="course-details" *ngIf="showMoreFlag">
-        <p *ngIf="showMoreFlag && contentDetail.description && contentDetail.description.length > 6">
-          {{ contentDetail.description }}
-        </p>
-        <div *ngIf="contentDetail.gradeLevel && contentDetail.gradeLevel.length" margin-top>
-          <div>{{ 'GRADE' | translate }}:</div>
-          <span *ngFor="let grade of contentDetail.gradeLevel">
-            <span>{{grade}}</span>
-          </span>
-        </div>
-        <div *ngIf="contentDetail.subject" margin-top>
-          <div>{{ 'SUBJECT' | translate }}:</div>
-          <span>{{contentDetail.subject}}</span>
-        </div>
-      </div>
+	<div class="content-details-holder" *ngIf="course">
+		<h6>{{course.name}}</h6>
+		<ion-grid class="padding-0">
+			<div *ngIf="course.owner">
+				<span class="text-gray-color">{{ 'BY' | translate }}</span>
+				<span class="content-meta-title">{{ course.owner }}</span>
+			</div>
+			<div>
+				<rating align-items-start [(ngModel)]="course.me_averageRating" readOnly="true" max="5" no-padding></rating>
+			</div>
+		</ion-grid>
+		<br/>
+		<div class="about-section" *ngIf="course.description || course.gradeLevel || course.subject">
+			<h6 class="padding-10 background-gray font-size-20">{{ 'ABOUT' | translate }}</h6>
+			<p *ngIf="!showMoreFlag" class="text-gray-color">
+				{{ (course.description && course.description.length > 100) ? (course.description | slice:0:100) + '...' : (course.description)
+				}} </p>
+			<div class="course-details" *ngIf="showMoreFlag">
+				<p *ngIf="course.description && course.description.length" class="text-gray-color">
+					{{ course.description }}
+				</p>
+				<div *ngIf="course.gradeLevel && course.gradeLevel.length" margin-top>
+					<div class="content-meta-title">{{ 'GRADE' | translate }}</div>
+					<span *ngFor="let grade of course.gradeLevel">
+						<span class="text-gray-color">{{grade}}</span>
+					</span>
+				</div>
+				<div *ngIf="course?.subject" margin-top>
+					<div class="content-meta-title">{{ 'SUBJECT' | translate }}</div>
+					<span class="text-gray-color">{{course.subject}}</span>
+				</div>
+			</div>
 
-      <span class="read-more" *ngIf="contentDetail.description && contentDetail.description.length > 6" (click)="showMoreFlag = !showMoreFlag">
-        <span *ngIf="showMoreFlag">
-          {{ 'READ_LESS' | translate }}
-          <ion-icon name="ios-arrow-up"></ion-icon>
-        </span>
-        <span *ngIf="!showMoreFlag">
-          {{ 'READ_MORE' | translate }}
-          <ion-icon name="ios-arrow-down"></ion-icon>
-        </span>
-      </span>
-    </div>
-    <!-- Course structure section -->
-    <div class="structure-section" margin-top>
-      <h6 class="padding-10 background-gray">{{ 'STRUCTURE' | translate }}</h6>
-      <div *ngIf="contentDetail.contentTypesCount" padding-top>
-        <span *ngFor="let structure of objectKeys(contentDetail.contentTypesCount)">
-          {{contentDetail.contentTypesCount[structure] + ' ' + structure}}
-        </span>
-      </div>
-      <div *ngIf="childrenData && childrenData.children" padding-top>
-        <ion-item *ngFor="let item of childrenData.children; let i = index" style="padding-left: 0px;" (click)="navigateToChildrenDetailsPage(item, i + 1);">
-            <span ion-text>{{ (i) + (1) }}: {{ item.contentData.name }}</span>
-            <ion-icon name="ios-arrow-forward" float-end></ion-icon> 
-        </ion-item>
-      </div>
-      <!-- Import content loader -->
-      <div *ngIf="showChildrenLoader">
-        <ion-row style="padding-top: 30px;" padding>
-          <ion-col text-center>
-            <p>{{ 'LOADING_CONTENT' | translate }}</p>
-            <ion-spinner padding></ion-spinner>
-          </ion-col>
-        </ion-row>
-      </div>
-      <!-- End import content -->
-    </div>
-  </div>
+			<div class="read-more" *ngIf="course.description && course.description.length > 100 || course.gradeLevel || course.subject"
+			 (click)="showMoreFlag = !showMoreFlag">
+				<div *ngIf="showMoreFlag" class="padding-top-10">
+					{{ 'READ_LESS' | translate }}
+					<ion-icon name="ios-arrow-up"></ion-icon>
+				</div>
+				<div *ngIf="!showMoreFlag">
+					{{ 'READ_MORE' | translate }}
+					<ion-icon name="ios-arrow-down"></ion-icon>
+				</div>
+			</div>
+		</div>
+		<br/>
+
+		<div class="structure-section" margin-top>
+			<h6 class="padding-10 background-gray font-size-20">{{ 'STRUCTURE' | translate }}</h6>
+			<div padding-top *ngIf="course.contentTypesCount" class="content-structure">
+				<span *ngFor="let structure of objectKeys(course.contentTypesCount);let last = last;">
+					{{course.contentTypesCount[structure] + ' ' + structure}} {{last ? '' : ' |' }}
+				</span>
+			</div>
+			<div *ngIf="childrenData && childrenData.length" padding-top>
+				<ion-item *ngFor="let item of childrenData; let i = index;" style="padding-left: 0px;" (click)="navigateToChildrenDetailsPage(item, depth + '.' + (i + 1))">
+					<span ion-text class="span-semibold">{{ (item?.contentData?.name && item?.contentData?.name.length > 30) ? (item?.contentData?.name | slice:0:30)
+						+ '...' : (item?.contentData?.name)}}</span>
+					<ion-icon name="ios-arrow-forward" float-end></ion-icon>
+				</ion-item>
+			</div>
+			<!-- Import content loader -->
+			<div *ngIf="showChildrenLoader">
+				<ion-row style="padding-top: 30px;" padding>
+					<ion-col text-center>
+						<p *ngIf="downloadProgress !== 100">{{ 'FETCHING_CONTENTS' | translate: {'%s': downloadProgress ? downloadProgress : '0'} }}</p>
+						<p *ngIf="downloadProgress === 100">{{ 'LOADING_CONTENT' | translate }}</p>
+						<ion-spinner padding></ion-spinner>
+					</ion-col>
+				</ion-row>
+			</div>
+			<ion-grid class="padding-top-25" *ngIf="childrenData && childrenData.length === 0 && !showChildrenLoader">
+				<ion-row>
+					<ion-col>
+						<div text-center> {{ 'CONTENT_NOT_ADDED_YET' | translate }} </div>
+					</ion-col>
+				</ion-row>
+			</ion-grid>
+			<!-- End import content -->
+		</div>
+		<!-- -->
+		<div class="license-section padding-10 background-gray" *ngIf="course.license">
+			<div class="row" *ngIf="showLicense">
+				<span *ngIf="course.license">
+					<div class="size_txt content-meta-title">{{ 'LICENSE' | translate }}</div>
+					<div class="margin-top-5 text-gray-color">{{ course.license }}</div>
+				</span>
+			</div>
+			<span class="read-more text-gray-color">
+				<span *ngIf="showLicense" (click)="showLicense = false">
+					<br/> {{ 'HIDE_CREDITS_INFO' | translate }}
+					<ion-icon name="ios-arrow-up"></ion-icon>
+				</span>
+				<span *ngIf="!showLicense" (click)="showLicense = true">
+					{{ 'VIEW_CREDITS_INFO' | translate }}
+					<ion-icon name="ios-arrow-down"></ion-icon>
+				</span>
+			</span>
+		</div>
+	</div>
 </ion-content>
 <!-- Page footer -->
 <ion-footer>
-  <ion-toolbar padding>
-    <button ion-button block *ngIf="cardData && !cardData.lastReadContentId" (click)="startContent()">{{ 'START_COURSE' | translate }}</button>
-    <button ion-button block *ngIf="showResumeBtn" (click)="resumeContent(cardData.lastReadContentId)">{{ 'RESUME_COURSE' | translate }}</button>
-    <button ion-button block outline *ngIf="downloadIdentifiers && downloadIdentifiers.length && !showDownloadProgress"
-      (click)="importContent(downloadIdentifiers, true)">{{ 'DOWNLOAD_ALL_CONTENT' | translate }} ({{ downloadContentsSize }})</button>
-    <button *ngIf="showDownloadProgress && !isDownloadComplete" ion-button block outline [style.width]="downloadProgress" [ngClass]="(currentCount < 100) ? 'progress-inner-primary' : 'progress-inner-secondary'">{{ 'DOWNLOADING_2' | translate }}... {{ currentCount }} {{ 'OF' | translate }} {{ totalDownload }}</button>
-  </ion-toolbar>
+	<ion-toolbar padding>
+		<button ion-button block *ngIf="courseCardData && !courseCardData.lastReadContentId && childrenData && childrenData.length" (click)="startContent()">{{ 'START_COURSE' | translate }}</button>
+		<button ion-button block *ngIf="showResumeBtn" (click)="resumeContent(courseCardData.lastReadContentId)">{{ 'RESUME_COURSE' | translate }}</button>
+		<button ion-button block outline *ngIf="downloadIdentifiers && downloadIdentifiers.length && !isDownloadStarted" (click)="downloadAllContent();">{{ 'DOWNLOAD_ALL_CONTENT' | translate }} ({{ (downloadSize && downloadSize > 0) ? (downloadSize | fileSize) : 'O BYTES'
+		}})</button>
+		<button *ngIf="isDownloadStarted" ion-button block outline>{{ 'DOWNLOADING_2' | translate }}... {{ currentCount }} / {{ queuedIdentifiers.length }}</button>
+
+		<!-- <button *ngIf="showDownloadProgress && !isDownloadComplete" ion-button block outline [style.width]="downloadProgress" [ngClass]="(currentCount < 100) ? 'progress-inner-primary' : 'progress-inner-secondary'">{{ 'DOWNLOADING_2' | translate }}... {{ currentCount }} {{ 'OF' | translate }} {{ totalDownload }}</button> -->
+	</ion-toolbar>
 </ion-footer>
