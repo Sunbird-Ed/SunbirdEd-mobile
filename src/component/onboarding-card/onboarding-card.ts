@@ -117,7 +117,7 @@ export class OnboardingCardComponent {
         displayValues.push(element.text);
       }
     });
-    this.onboardingService.onBoardingSlides[index].selectedOptions = displayValues;
+    this.onboardingService.onBoardingSlides[index].selectedOptions = this.onboardingService.arrayToString(displayValues);
 
     // If user Selected Something from the list then only move the slide to next slide
     if (this.onboardingService.onBoardingSlides[index].selectedOptions != '') {
