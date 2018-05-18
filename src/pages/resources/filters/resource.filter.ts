@@ -53,7 +53,7 @@ export class ResourceFilter {
     },
     {
       name: "contentType",
-      displayName: "Content Type",
+      displayName: "Resource Type",
       values: frameworkDataList.contentTypeList.sort()
     }];
 
