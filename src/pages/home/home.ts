@@ -15,6 +15,7 @@ import {
   TenantInfoRequest,
   PageId,
   ContentDetailRequest,
+  UserProfileDetailsRequest
 } from 'sunbird';
 import { AnnouncementListComponent } from './announcement-list/announcement-list'
 import { SunbirdQRScanner, QRResultCallback } from '../qrscanner/sunbirdqrscanner.service';
@@ -22,7 +23,10 @@ import { SearchPage } from '../search/search';
 import { CourseDetailPage } from '../course-detail/course-detail';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
 import { ContentDetailsPage } from '../content-details/content-details';
-
+import { FormEducation } from "../profile/education/form.education";
+import { FormAddress } from "../profile/address/form.address";
+import { FormExperience } from "../profile/experience/form.experience"
+import { AdditionalInfoComponent } from "../profile/additional-info/additional-info";
 
 @Component({
   selector: 'page-home',
@@ -52,6 +56,16 @@ export class HomePage implements OnInit {
   showLoader: boolean;
 
   currentStyle = "ltr";
+
+  /**
+   * Contains Profile Object
+   */
+  profile: any = {};
+
+  uncompletedDetails: any = {
+    title: ""
+  };
+
 
   /**
    * Default method of class CoursesPage
@@ -241,24 +255,135 @@ export class HomePage implements OnInit {
       "Resource",
     ];
 
-    this.navCtrl.push(SearchPage, { contentType: contentType,source :PageId.HOME})
+    this.navCtrl.push(SearchPage, { contentType: contentType, source: PageId.HOME })
   }
 
-   /**
-   * Get user id.
-   *
-   * Used to get enrolled course(s) of logged-in user
-   */
+  /**
+  * Get user id.
+  *
+  * Used to get enrolled course(s) of logged-in user
+  */
   getUserId(): void {
     this.authService.getSessionData((session) => {
       if (session === undefined || session == null) {
         console.log('session expired')
       } else {
-        let sessionObj = JSON.parse(session);
-        this.userId = sessionObj["userToken"];
-        this.getEnrolledCourses();
+        this.getProfileCompletionDetails(session)
       }
     });
+  }
+
+  getProfileCompletionDetails(session: any) {
+    let sessionObj = JSON.parse(session);
+    this.userId = sessionObj["userToken"];
+
+    let req: UserProfileDetailsRequest = {
+      userId:
+        this.userId && this.userId != sessionObj["userToken"]
+          ? this.userId
+          : sessionObj["userToken"],
+      requiredFields: [
+        "completeness",
+        "missingFields",
+        "lastLoginTime",
+        "topics"
+      ],
+      refreshUserProfileDetails: true
+    };
+
+    this.userProfileService.getUserProfileDetails(
+      req,
+      (res: any) => {
+        this.ngZone.run(() => {
+          let r = JSON.parse(res);
+          this.profile = r.response;
+          this.formatMissingFields();
+          this.getEnrolledCourses();
+        });
+      },
+      (error: any) => {
+        console.error(error);
+        this.getEnrolledCourses();
+      }
+    );
+  }
+
+  /**
+   * To Format the missing fields and gives it proper name based on missing field
+   * TODO: Need to replace following strings with the language constants
+   */
+  formatMissingFields() {
+    this.uncompletedDetails.title = '';
+    if (this.profile.missingFields && this.profile.missingFields.length) {
+      switch (this.profile.missingFields[0]) {
+        case "education":
+          this.uncompletedDetails.title = "+ Add Education";
+          this.uncompletedDetails.page = FormEducation;
+          this.uncompletedDetails.data = {
+            addForm: true,
+            profile: this.profile
+          }
+          break;
+        case "jobProfile":
+          this.uncompletedDetails.title = "+ Add Experience";
+          this.uncompletedDetails.page = FormExperience;
+          this.uncompletedDetails.data = {
+            addForm: true,
+            profile: this.profile
+          }
+          break;
+        case "avatar":
+          this.uncompletedDetails.title = "+ Add Avatar";
+          this.uncompletedDetails.page = "picture";
+          break;
+        case "address":
+          this.uncompletedDetails.title = "+ Add Address";
+          this.uncompletedDetails.page = FormAddress;
+          this.uncompletedDetails.data = {
+            addForm: true,
+            profile: this.profile
+          };
+          break;
+        case "location":
+        case "profileSummary":
+        case "phone":
+        case "subject":
+        case "gender":
+        case "dob":
+        case "grade":
+        case "webPages":
+          let requiredProfileFields: Array<string> = [
+            'lastName',
+            'profileSummary',
+            'phone',
+            'subject',
+            'gender',
+            'dob',
+            'grade',
+            'location',
+            'webPages'
+          ];
+
+          this.uncompletedDetails.title = "+ " + this.profile.missingFields[0];
+          this.uncompletedDetails.page = AdditionalInfoComponent;
+          this.uncompletedDetails.data = {
+            userId: this.userId,
+            profile: this.getSubset(requiredProfileFields, this.profile),
+            profileVisibility: this.profile.profileVisibility
+          }
+          break;
+      }
+    }
+  }
+
+  /**
+   *  Returns the Object with given Keys only
+   * @param {string} keys - Keys of the object which are required in new sub object
+   * @param {object} obj - Actual object
+   * @returns {object}
+   */
+  getSubset(keys, obj) {
+    return keys.reduce((a, c) => ({ ...a, [c]: obj[c] }), {});
   }
 
   scanQRCode() {
@@ -272,10 +397,10 @@ export class HomePage implements OnInit {
         let request: ContentDetailRequest = {
           contentId: contentId
         }
-        that.contentService.getContentDetail(request, (response)=> {
+        that.contentService.getContentDetail(request, (response) => {
           let data = JSON.parse(response);
           that.showContentDetails(data.result);
-        }, (error)=> {
+        }, (error) => {
           console.log("Error " + error);
           let toast = that.toastCtrl.create({
             message: "No content found associated with that QR code",
@@ -287,7 +412,7 @@ export class HomePage implements OnInit {
       }
     }
 
-    this.qrScanner.startScanner(undefined, undefined, undefined, callback,PageId.HOME);
+    this.qrScanner.startScanner(undefined, undefined, undefined, callback, PageId.HOME);
   }
 
   showContentDetails(content) {
