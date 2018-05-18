@@ -1,6 +1,6 @@
 
 import { Component, OnInit, NgZone } from '@angular/core';
-import { NavController, NavParams} from 'ionic-angular';
+import { NavController, NavParams } from 'ionic-angular';
 import { AnnouncementService, AttachmentService, TelemetryService } from 'sunbird';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { File } from '@ionic-native/file';
@@ -62,8 +62,8 @@ export class AnnouncementDetailComponent implements OnInit {
      * @param navParams 
      * @param contentService 
      */
-    constructor(navCtrl: NavController, private socialSharing: SocialSharing, 
-        navParams: NavParams, announcementService: AnnouncementService, 
+    constructor(navCtrl: NavController, private socialSharing: SocialSharing,
+        navParams: NavParams, announcementService: AnnouncementService,
         attachmentService: AttachmentService, file: File,
         zone: NgZone) {
         this.navCtrl = navCtrl;
@@ -205,12 +205,20 @@ export class AnnouncementDetailComponent implements OnInit {
                     this.attachmentService.checkExtensionAndOpenFile(path);
                 } else {
                     this.attachmentService.downloadAttachment(url, attachmentPath + attachmentFileName);
+
+                    this.attachmentService.listenDownloadProgress((event) => {
+                        console.log("Attachment download progress - " + "Total - " + event.total + "Loaded - " + event.loaded);
+                    })
                 }
             }
         ).catch(
             (err) => {
                 console.log("files not found ")
                 this.attachmentService.downloadAttachment(url, attachmentPath + attachmentFileName);
+
+                this.attachmentService.listenDownloadProgress((event) => {
+                    console.log("Attachment download progress - " + "Total - " + event.total + "Loaded - " + event.loaded);
+                })
             }
         );
     }

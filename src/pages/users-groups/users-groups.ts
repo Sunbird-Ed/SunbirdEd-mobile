@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import {GuestEditProfilePage} from '../profile/guest-edit.profile/guest-edit.profile';
 
+ 
 /**
  * Generated class for the UsersGroupsPage page.
  *
@@ -13,10 +15,15 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
   selector: 'page-users-groups',
   templateUrl: 'users-groups.html',
 })
+
+
 export class UsersGroupsPage {
   catagories :string;
+  profile: any = {};
+  gradeList: Array<string> = [];
   constructor(public navCtrl: NavController, public navParams: NavParams) {
      this.catagories="user";
+    
   }
 
   logger = [
@@ -27,13 +34,15 @@ export class UsersGroupsPage {
     console.log("clicked",name);
   }
   users =[
-    'Anirudh Deep',
-    'Ananya Suresh',
-    'Ananya Suresh',
+    
   ]
 
   nameSelected(name: string){
-     
-    console.log("selected Name: ", name);
+  
  }
+ onConfirm(){
+   this.navCtrl.push(GuestEditProfilePage);
+   console.log("clicked");
+ }
+ 
 }

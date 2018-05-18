@@ -29,8 +29,6 @@ home-announcement-card {
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
-		overflow: hidden;
-		text-overflow: ellipsis;
 		width: 90%;
 	}
 	.inline-block{
@@ -62,6 +60,9 @@ home-announcement-card {
 	}
 	.width60{
 		max-width: 60% !important;
+		white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
 	}
 	.marginTop{
 		margin-top: 6px;
@@ -76,5 +77,14 @@ padding: 16px 16px 0 16px;
 	}
 .list-md {
 		margin:0px;
+	}
+	.borderLeft{
+    border-left: 2px solid blue !important;
+	}
+	.verticle-align{
+		vertical-align: top;
+	}
+	a {
+		text-decoration: none;
 	}
 }
