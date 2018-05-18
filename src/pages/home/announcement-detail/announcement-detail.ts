@@ -52,7 +52,11 @@ export class AnnouncementDetailComponent implements OnInit {
      */
     public navParams: NavParams;
 
+   public isAttachment: boolean = true;
+
+   progress:number = 0;
     /**
+     *
      * Contains reference of zone service
      */
     public zone: NgZone;
@@ -223,9 +227,10 @@ export class AnnouncementDetailComponent implements OnInit {
                 } else {
                     this.attachmentService.downloadAttachment(url, attachmentPath + attachmentFileName);
 
-                    // this.attachmentService.listenDownloadProgress((event) => {
-                    //     console.log("Attachment download progress - " + "Total - " + event.total + "Loaded - " + event.loaded);
-                    // })
+                    this.attachmentService.listenDownloadProgress((event) => {
+                        console.log("Attachment download progress - " + "Total - " + event.total + "Loaded - " + event.loaded);
+                        this.progress=((event.loaded)/(event.total))*100;
+                    })
                 }
             }
         ).catch(
@@ -233,9 +238,9 @@ export class AnnouncementDetailComponent implements OnInit {
                 console.log("files not found ")
                 this.attachmentService.downloadAttachment(url, attachmentPath + attachmentFileName);
 
-                // this.attachmentService.listenDownloadProgress((event) => {
-                //     console.log("Attachment download progress - " + "Total - " + event.total + "Loaded - " + event.loaded);
-                // })
+                this.attachmentService.listenDownloadProgress((event) => {
+                    console.log("Attachment download progress - " + "Total - " + event.total + "Loaded - " + event.loaded);
+                })
             }
         );
     }

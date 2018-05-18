@@ -17,6 +17,7 @@
                 </div>
                 <div class="margin-top" *ngIf="announcementDetail?.attachments">
                     <span>{{'ATTACHMENTS' | translate}}</span>
+                    <pb-horizontal  [progress]="progress" [isOnBoardCard]="isAttachment"></pb-horizontal>
                     <ion-list style="border:1px solid #efeff4" *ngFor="let item of announcementDetail?.attachments">
                         <ion-item>
                             <ion-avatar item-start style="border:1px solid #efeff4">
