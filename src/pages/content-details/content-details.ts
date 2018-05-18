@@ -40,12 +40,6 @@ export class ContentDetailsPage {
    */
   depth: string;
 
-
-  /**
-   * To show download button if content locally not available
-   */
-  showDownloadBtn: boolean = false;
-
   /**
    * Download started flag
    */
@@ -62,16 +56,9 @@ export class ContentDetailsPage {
   cancelDownloading: boolean = false;
 
   /**
-   * To play content
-   */
-  playContentBtn: boolean = false;
-
-  /**
    * Contains loader instance
    */
   loader: any;
-
-  downloadingText: string = 'DOWNLOADING... ';
 
   /**
    * Contains reference of content service
@@ -189,12 +176,10 @@ export class ContentDetailsPage {
       case true: {
         console.log("Content locally available. Lets play the content");
         this.content.size = data.result.sizeOnDevice;
-        // this.playContentBtn = true;
         break;
       }
       case false: {
         console.log("Content locally not available. Import started... @@@");
-        // this.showDownloadBtn = true;
         this.content.size = this.content.size;
         break;
       }
@@ -306,7 +291,6 @@ export class ContentDetailsPage {
    */
   showMessage(message: string, isPop: boolean | false): void {
     if (this.isDownloadStarted) {
-      // this.showDownloadBtn = true;
       this.content.downloadable = false;
       this.isDownloadStarted = false;
     }
@@ -422,11 +406,16 @@ export class ContentDetailsPage {
 
   cancelDownload() {
     this.contentService.cancelDownload(this.identifier, (data: any) => {
-      this.isDownloadStarted = false;
-      this.downloadProgress = '';
-      this.content.downloadable = false;
+      this.zone.run(() => {
+        console.log('download cancel success', data);
+        this.isDownloadStarted = false;
+        this.downloadProgress = '';
+        this.content.downloadable = false;
+      });
     }, (error: any) => {
-      console.log('Error: download error =>>>>>', error)
+      this.zone.run(() => {
+        console.log('Error: download error =>>>>>', error)
+      })
     })
   }
 

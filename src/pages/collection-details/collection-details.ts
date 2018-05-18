@@ -1,3 +1,4 @@
+import { ReportIssuesComponent } from './../../component/report-issues/report-issues';
 import { Component, NgZone, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, Platform, Navbar, PopoverController } from 'ionic-angular';
 import { ContentService, FileUtil, PageId, Environment, Mode, ImpressionType, TelemetryService,  Rollup, InteractType, InteractSubtype, ShareUtil } from 'sunbird';
@@ -485,7 +486,8 @@ export class CollectionDetailsPage {
   resetVariables() {
     this.isDownloadStarted = false;
     this.showLoading = false;
-    this.downloadProgress = '';
+    // this.downloadProgress = '';
+    this.downloadProgress = 0;
     this.cardData = '';
     this.childrenData = [];
     this.contentDetail = '';
@@ -509,8 +511,15 @@ export class CollectionDetailsPage {
         data = JSON.parse(data);
         let res = data;
         console.log('event bus........', res);
+        
         if (res.type === 'downloadProgress' && res.data.downloadProgress) {
-          this.downloadProgress = res.data.downloadProgress === -1 ? 0 : res.data.downloadProgress;
+          if (res.data.downloadProgress === -1 || res.data.downloadProgress === '-1') {
+            this.downloadProgress = 0;
+          } else {
+            this.downloadProgress = res.data.downloadProgress;
+          }
+
+          // this.downloadProgress = res.data.downloadProgress === -1 ? 0 : res.data.downloadProgress;
           if (this.downloadProgress === 100) {
             this.showLoading = false;
           }
@@ -615,7 +624,8 @@ export class CollectionDetailsPage {
    * Download single content
    */
   downloadAllContent(): void {
-    this.downloadProgress = '0 %';
+    // this.downloadProgress = '0 %';
+    this.downloadProgress = 0;
     this.showLoading = true;
     this.isDownloadStarted = true;
     this.downloadPercentage = 0;
@@ -626,7 +636,8 @@ export class CollectionDetailsPage {
    * Ionic life cycle hook
    */
   ionViewWillLeave(): void {
-    this.downloadProgress = '';
+    // this.downloadProgress = '';
+    this.downloadProgress = 0;
     this.events.unsubscribe('genie.event');
   }
 
@@ -664,17 +675,10 @@ export class CollectionDetailsPage {
       ev: event
     });
     popover.onDidDismiss(data => {
-      if (data === 0) {
-        this.translateAndDisplayMessage('MSG_RESOURCE_DELETED', false);
-        this.events.publish('savedResources:update', {
-          update: true
-        });
+      if (data === 'delete.success') {
         this.navCtrl.pop();
-        /*this.resetVariables();
-        this.setContentDetails(this.identifier, false);
-        this.events.publish('savedResources:update', {
-          update: true
-        });*/
+      } else if(data === 'flag.success') {
+        this.navCtrl.pop();
       }
     });
   }
