@@ -142,6 +142,11 @@ export class CourseDetailPage {
   extractApiResponse(data): void {
     this.contentDetail = data.result.contentData ? data.result.contentData : [];
     this.course = data.result.contentData ? data.result.contentData : [];
+    if (this.course.status != 'Live') {
+      this.navCtrl.pop();
+    } else {
+      console.log('JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ')
+    }
     if (this.course.me_totalDownloads) {
       this.course.me_totalDownloads = this.course.me_totalDownloads.split('.')[0];
     }

@@ -7,6 +7,8 @@ import { CollectionDetailsPage } from '../collection-details/collection-details'
 import { ContentDetailsPage } from '../content-details/content-details';
 import { ContentActionsComponent } from '../../component/content-actions/content-actions';
 import { ReportIssuesComponent } from '../../component/report-issues/report-issues';
+import { TranslateService } from '@ngx-translate/core';
+
 /**
  * Generated class for the EnrolledCourseDetailsPage page.
  *
@@ -51,7 +53,7 @@ export class EnrolledCourseDetailsPage {
   /**
    * Contains total size of locally not available content(s)
    */
-  downloadSize: string;
+  downloadSize: number = 0;
 
   /**
    * Flag to show / hide resume button
@@ -61,7 +63,7 @@ export class EnrolledCourseDetailsPage {
   /**
    * Contains card data of previous state
    */
-  cardData: any;
+  courseCardData: any;
 
   /**
    * To get course structure keys
@@ -80,8 +82,11 @@ export class EnrolledCourseDetailsPage {
 
   showDownloadProgress: boolean;
   totalDownload: number;
-  currentCount: number;
+  currentCount: number = 0;
   isDownloadComplete = false;
+  queuedIdentifiers: Array<string> = [];
+  isDownloadStarted: boolean = false;
+  isDownlaodCompleted: boolean = false;
 
   /**
    * Contains reference of content service
@@ -108,9 +113,15 @@ export class EnrolledCourseDetailsPage {
    */
   public toastCtrl: ToastController;
 
-  constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, zone: NgZone,
-    private events: Events, toastCtrl: ToastController, private fileUtil: FileUtil, 
-    public popoverCtrl: PopoverController) {
+  constructor(navCtrl: NavController,
+    navParams: NavParams,
+    contentService: ContentService,
+    zone: NgZone,
+    private events: Events,
+    toastCtrl: ToastController,
+    private fileUtil: FileUtil,
+    public popoverCtrl: PopoverController,
+    private translate: TranslateService) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
@@ -128,15 +139,26 @@ export class EnrolledCourseDetailsPage {
     popover.present({
       ev: event
     });
-    
+
     popover.onDidDismiss(data => {
       if (data === 'delete.success') {
         this.navCtrl.pop();
-      } else if(data === 'flag.success') {
+      } else if (data === 'flag.success') {
         this.navCtrl.pop();
       }
     });
   }
+
+  translateLanguageConstant(constant: string) {
+    let msg = '';
+    this.translate.get(constant).subscribe(
+      (value: any) => {
+        msg = value;
+      }
+    );
+    return msg;
+  }
+
   /**
    * Set course details by passing course identifier
    * 
@@ -154,8 +176,8 @@ export class EnrolledCourseDetailsPage {
     },
       (error: any) => {
         console.log('error while loading content details', error);
-        const message = 'Something went wrong, please check after some time';
-        this.showErrorMessage(message, true);
+        this.showMessage(this.translateLanguageConstant('ERROR_FETCHING_DATA'));
+        this.navCtrl.pop();
       });
   }
 
@@ -166,7 +188,17 @@ export class EnrolledCourseDetailsPage {
    * @param data 
    */
   extractApiResponse(data): void {
-    this.course = data.result.contentData ? data.result.contentData : [];
+    if (data.result.contentData) {
+      if (data.result.contentData.status != 'Live') {
+        this.showMessage(this.translateLanguageConstant('ERROR_CONTENT_NOT_AVAILABLE'));
+        this.navCtrl.pop();
+      }
+      this.course = data.result.contentData;
+    } else {
+      this.showMessage(this.translateLanguageConstant('ERROR_CONTENT_NOT_AVAILABLE'));
+      this.navCtrl.pop();
+    }
+
     this.course.isAvailableLocally = data.result.isAvailableLocally;
 
     switch (data.result.isAvailableLocally) {
@@ -194,8 +226,8 @@ export class EnrolledCourseDetailsPage {
   setCourseStructure(): void {
     if (this.course.contentTypesCount) {
       this.course.contentTypesCount = JSON.parse(this.course.contentTypesCount);
-    } else if (this.cardData.contentTypesCount && !_.isObject(this.cardData.contentTypesCount)) {
-      this.course.contentTypesCount = JSON.parse(this.cardData.contentTypesCount);
+    } else if (this.courseCardData.contentTypesCount && !_.isObject(this.courseCardData.contentTypesCount)) {
+      this.course.contentTypesCount = JSON.parse(this.courseCardData.contentTypesCount);
     }
   }
 
@@ -217,7 +249,6 @@ export class EnrolledCourseDetailsPage {
     _.forEach(identifiers, (value, key) => {
       requestParams.push({
         isChildContent: isChild,
-        // TODO - check with Anil for destination folder path
         destinationFolder: this.fileUtil.internalStoragePath(),
         contentId: value,
         correlationData: []
@@ -245,18 +276,43 @@ export class EnrolledCourseDetailsPage {
       console.log('Success: Import content =>', data);
       this.zone.run(() => {
         if (data.result && data.result[0].status === 'NOT_FOUND') {
-          const message = 'Unable to fetch content';
-          this.showErrorMessage(message, false);
-          this.showChildrenLoader = false;
+          // this.showMessage(this.translateLanguageConstant('ERROR_FETCHING_DATA'));
+          // this.showChildrenLoader = false;
+        }
+
+        if (data.result && data.result.length && this.isDownloadStarted) {
+          _.forEach(data.result, (value, key) => {
+            if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
+              this.queuedIdentifiers.push(value.identifier);
+            }
+          });
+          if (this.queuedIdentifiers.length === 0) {
+            this.showMessage(this.translateLanguageConstant('ERROR_FETCHING_DATA'));
+            this.restoreDownloadState();
+          }
         }
       });
     },
-      error => {
-        console.log('error while loading content details', error);
-        const message = 'Something went wrong, please check after some time';
-        this.showErrorMessage(message, false);
-        this.showChildrenLoader = false;
+      (error: any) => {
+        this.zone.run(() => {
+          if (this.isDownloadStarted) {
+            this.restoreDownloadState();
+          } else {
+            this.showMessage(this.translateLanguageConstant('ERROR_FETCHING_DATA'));
+            this.showChildrenLoader = false;
+          }
+        });
       });
+  }
+
+  restoreDownloadState() {
+    this.isDownloadStarted = false;
+  }
+
+  downloadAllContent() {
+    this.isDownloadStarted = true;
+    this.downloadProgress = 0;
+    this.importContent(this.downloadIdentifiers, true);
   }
 
   /**
@@ -265,7 +321,7 @@ export class EnrolledCourseDetailsPage {
   setChildContents(): void {
     // this.zone.run(() => { this.showChildrenLoader = true;});
     this.showChildrenLoader = true;
-    const option = { contentId: this.identifier, hierarchyInfo: null, level: 1 };
+    const option = { contentId: this.identifier, hierarchyInfo: null };
     this.contentService.getChildContents(option, (data: any) => {
       data = JSON.parse(data);
       console.log('Success: child contents ===>>>', data);
@@ -275,7 +331,6 @@ export class EnrolledCourseDetailsPage {
           this.startData = data.result.children;
         }
         this.showChildrenLoader = false;
-        // this.showDownloadAllBtn(this.childrenData);
         this.getContentsSize(this.childrenData);
       });
     },
@@ -316,47 +371,17 @@ export class EnrolledCourseDetailsPage {
     })
   }
 
-  /**
-   * Show error messages
-   * 
-   * @param message
-   */
-  showErrorMessage(message: string, isPop: boolean | false): void {
+  showMessage(message) {
     let toast = this.toastCtrl.create({
       message: message,
       duration: 2000,
       position: 'bottom'
     });
-    toast.onDidDismiss(() => {
-      console.log('Dismissed toast');
-      if (isPop) {
-        this.navCtrl.pop();
-      }
-    });
-
     toast.present();
   }
 
-  /**
-   * 
-   * @param {array} data 
-   */
-  showDownloadAllBtn(data) {
-    let size = 0;
-    this.zone.run(() => {
-      _.forEach(data, (value, key) => {
-        if (value.isAvailableLocally === false) {
-          this.downloadIdentifiers.push(value.contentData.identifier);
-          size += value.contentData.size;
-        }
-      });
-      // this.downloadContentsSize = this.getReadableFileSize(size);
-    });
-
-    console.log('download content identifiers', this.downloadIdentifiers);
-  }
-
   getContentsSize(data) {
+    console.log('downloadSize ==>>>', this.downloadSize);
     this.downloadSize = this.downloadSize;
     _.forEach(data, (value, key) => {
       if (value.children && value.children.length) {
@@ -368,6 +393,7 @@ export class EnrolledCourseDetailsPage {
         this.downloadSize += +value.contentData.size;
       }
     });
+    console.log('downloadIdentifiers =====>>>>>>>>>', this.downloadIdentifiers);
   }
 
   /**
@@ -377,7 +403,7 @@ export class EnrolledCourseDetailsPage {
    */
   resumeContent(identifier): void {
     console.log('resume content..... =>>>');
-    this.childrenData = [];
+    this.childrenData.length = 0;
     this.showResumeBtn = false;
     this.setContentDetails(identifier);
   }
@@ -386,11 +412,12 @@ export class EnrolledCourseDetailsPage {
    * Ionic life cycle hook
    */
   ionViewWillEnter(): void {
+    this.downloadSize = 0;
     console.log('Inside enrolled course details page');
     this.tabBarElement.style.display = 'none';
-    this.cardData = this.navParams.get('content');
-    this.identifier = this.cardData.contentId || this.cardData.identifier;
-    this.showResumeBtn = this.cardData.lastReadContentId ? true : false;
+    this.courseCardData = this.navParams.get('content');
+    this.identifier = this.courseCardData.contentId || this.courseCardData.identifier;
+    this.showResumeBtn = this.courseCardData.lastReadContentId ? true : false;
     this.setContentDetails(this.identifier);
     this.subscribeGenieEvent();
   }
@@ -409,19 +436,29 @@ export class EnrolledCourseDetailsPage {
           this.downloadProgress = res.data.downloadProgress === -1 ? 0 : res.data.downloadProgress;
         }
 
-        // Get executed when user clicks on download all button
-        if (this.downloadIdentifiers.length && res.type === 'contentImportProgress') {
-          this.showDownloadProgress = true;
-          this.totalDownload = res.data.totalCount;
-          this.currentCount = res.data.currentCount;
-        }
-
         // Get child content
         if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
-          if (this.downloadIdentifiers.length === 0) {
-            this.setChildContents();
+          if (this.queuedIdentifiers.length && this.isDownloadStarted) {
+            if (_.includes(this.queuedIdentifiers, res.data.identifier)) {
+              this.currentCount++;
+              console.log('current download count:', this.currentCount);
+              console.log('queuedIdentifiers count:', this.queuedIdentifiers.length);
+            }
+
+            if (this.queuedIdentifiers.length === this.currentCount) {
+              this.isDownloadStarted = false;
+              this.currentCount = 0;
+              this.isDownlaodCompleted = true;
+              this.isDownloadStarted = false;
+              this.downloadIdentifiers.length = 0;
+              this.queuedIdentifiers.length = 0;
+            }
           } else {
-            this.isDownloadComplete = true;
+            this.course.isAvailableLocally = true;
+            this.setChildContents();
+            this.events.publish('savedResources:update', {
+              update: true
+            });
           }
         }
       });
@@ -434,19 +471,6 @@ export class EnrolledCourseDetailsPage {
   ionViewWillLeave(): void {
     this.tabBarElement.style.display = 'flex';
     this.events.unsubscribe('genie.event');
-  }
-
-  /**
-   * To get redable file size
-   * 
-   * @param {number} size 
-   */
-  getReadableFileSize(size): string {
-    const units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-    let l = 0, n = parseInt(size, 10) || 0;
-    while (n >= 1024 && ++l)
-      n = n / 1024;
-    return (n.toFixed(n >= 10 || l < 1 ? 0 : 1) + ' ' + units[l]);
   }
 
   /**
