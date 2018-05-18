@@ -131,7 +131,7 @@ export class OnboardingService {
                 displayValues.push(element.name);
             }
         });
-        return displayValues;
+        return this.arrayToString(displayValues.sort());
     }
 
     /**

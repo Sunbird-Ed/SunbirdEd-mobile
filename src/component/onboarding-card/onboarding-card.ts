@@ -151,4 +151,3 @@ export class OnboardingCardComponent {
     popUp.present();
   }
 }
-

@@ -112,7 +112,8 @@ export class GuestEditProfilePage {
         console.log("BoardList", this.boardList);
         if(list != 'gradeList')
         {
-          this[list] = this[list].sort();
+          //this[list] = this[list].sort();
+          this[list] = _.orderBy(this[list], ['name'], ['asc']);
          }
         console.log(list + " Category Response: " + this[list]);
       },
