@@ -4,7 +4,7 @@ import { NavController, NavParams, ToastController, Events, LoadingController } 
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import * as _ from 'lodash';
 
-import { FrameworkDetailsRequest, CategoryRequest, FrameworkService, ProfileService, Profile } from 'sunbird';
+import { FrameworkDetailsRequest, CategoryRequest, FrameworkService, ProfileService, Profile, ProfileType } from 'sunbird';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -181,32 +181,52 @@ export class GuestEditProfilePage {
       isGroupUser: false,
       language: "en",
       avatar: "avatar",
-      createdAt: this.profile.createdAt
+      createdAt: this.profile.createdAt,
+      profileType: formVal.userType === 'student' ? ProfileType.STUDENT : ProfileType.TEACHER
     }
 
-    this.profileService.updateProfile(req,
-      (res: any) => {
-        console.log("Update Response", res);
-
-        // Publish event if the all the fields are submitted
-        if (formVal.boards.length && formVal.grades.length && formVal.medium.length && formVal.subjects.length) {
-          this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: true });
-        } else {
-          this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: false });
+    if(this.mode === 'create') {
+      this.profileService.createProfile(req,
+      (success: any) => {
+        console.log("createProfile success : " + success);
+        if (success) {
+          loader.dismiss();
+          let response = JSON.parse(success);
+          console.log("UID of the created user - " + response.uid);
+          this.getToast(this.translateMessage('PROFILE_CREATE_SUCCESS')).present();
+          this.navCtrl.pop();
         }
-        this.events.publish('refresh:profile');
-        this.events.publish('refresh:onboardingcard');
-
-        loader.dismiss();
-        this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
-        this.navCtrl.pop();
       },
-      (err: any) => {
-        let errorMessage = (this.mode === 'create') ? 'PROFILE_CREATE_FAILED' : 'PROFILE_UPDATE_FAILED';
-        this.getToast(this.translateMessage(errorMessage)).present();
-        
-        console.log("Err", err);
-      });
+      (errorResponse: any) => {
+        loader.dismiss();
+        this.getToast(this.translateMessage('PROFILE_CREATE_FAILED')).present();
+        console.log("createProfile success : " + errorResponse);
+      }) 
+    } else {
+      this.profileService.updateProfile(req,
+        (res: any) => {
+          console.log("Update Response", res);
+
+          // Publish event if the all the fields are submitted
+          if (formVal.boards.length && formVal.grades.length && formVal.medium.length && formVal.subjects.length) {
+            this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: true });
+          } else {
+            this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: false });
+          }
+          this.events.publish('refresh:profile');
+          this.events.publish('refresh:onboardingcard');
+
+          loader.dismiss();
+          this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
+          this.navCtrl.pop();
+        },
+        (err: any) => {
+          loader.dismiss();
+          this.getToast(this.translateMessage('PROFILE_UPDATE_FAILED')).present();
+          
+          console.log("Err", err);
+        });
+    }
   }
 
   /**

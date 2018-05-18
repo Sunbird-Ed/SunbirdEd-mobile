@@ -413,5 +413,6 @@
     "ADD_ADDRESS": "Add Address",
     "ADD_LOCATION": "Add Location",
     "USER_TYPE": "USER TYPE",
-    "USERS_AND_GROUPS": "Users and Groups"
+    "USERS_AND_GROUPS": "Users and Groups",
+    "PROFILE_CREATE_SUCCESS": "Profile created successfully"
   }
