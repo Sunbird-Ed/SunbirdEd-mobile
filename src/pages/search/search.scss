@@ -77,8 +77,8 @@ page-search {
       font-weight: 600;
       font-size: 1.3rem;
     }
-    span.button-inner {
-      color: map-get($colors, white);
+    .cancel-btn span {
+      color: map-get($colors, white) !important;
     }
   .empty-search-result {
     font-size: 1.2em;
