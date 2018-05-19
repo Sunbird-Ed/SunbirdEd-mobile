@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import * as _ from 'lodash';
 import { Events } from 'ionic-angular';
 import {
@@ -33,47 +33,52 @@ export class OnboardingService {
         private framework: FrameworkService,
         private telemetryService: TelemetryService,
         private profileService: ProfileService,
-        public events: Events
+        public events: Events,
+        public zone: NgZone
     ) { }
     initializeCard() {
         this.getFrameworkDetails();
     }
 
     initializeSlides() {
-        this.onBoardingSlides = [
-            {
-                'id': 'boardList',
-                'title': 'BOARD_QUESTION',
-                'desc': 'BOARD_OPTION_TEXT',
-                'options': [],
-                'selectedOptions': '',
-                'selectedCode': []
-            },
-            {
-                'id': 'gradeList',
-                'title': 'GRADE_QUESTION',
-                'desc': 'GRADE_OPTION_TEXT',
-                'options': [],
-                'selectedOptions': '',
-                'selectedCode': []
-            },
-            {
-                'id': 'subjectList',
-                'title': 'SUBJECT_QUESTION',
-                'desc': 'SUBJECT_OPTION_TEXT',
-                'options': [],
-                'selectedOptions': '',
-                'selectedCode': []
-            },
-            {
-                'id': 'mediumList',
-                'title': 'MEDIUM_QUESTION',
-                'desc': 'MEDIUM_OPTION_TEXT',
-                'options': [],
-                'selectedOptions': '',
-                'selectedCode': []
-            }
-        ]
+        this.zone.run(() => {
+            this.onBoardingSlides = [
+                {
+                    'id': 'boardList',
+                    'title': 'BOARD_QUESTION',
+                    'desc': 'BOARD_OPTION_TEXT',
+                    'options': [],
+                    'selectedOptions': '',
+                    'selectedCode': []
+                },
+                {
+                    'id': 'gradeList',
+                    'title': 'GRADE_QUESTION',
+                    'desc': 'GRADE_OPTION_TEXT',
+                    'options': [],
+                    'selectedOptions': '',
+                    'selectedCode': []
+                },
+                {
+                    'id': 'subjectList',
+                    'title': 'SUBJECT_QUESTION',
+                    'desc': 'SUBJECT_OPTION_TEXT',
+                    'options': [],
+                    'selectedOptions': '',
+                    'selectedCode': []
+                },
+                {
+                    'id': 'mediumList',
+                    'title': 'MEDIUM_QUESTION',
+                    'desc': 'MEDIUM_OPTION_TEXT',
+                    'options': [],
+                    'selectedOptions': '',
+                    'selectedCode': []
+                }
+            ];
+            console.log("Initialized", this.onBoardingSlides);
+        });
+
 
 
         this.onBoardingSlides[0].options = this.boardList;
@@ -127,7 +132,7 @@ export class OnboardingService {
     getDisplayValues(index: number, field) {
         let displayValues = [];
         this.categories[index].terms.forEach(element => {
-            if(_.includes(field, element.code)) {
+            if (_.includes(field, element.code)) {
                 displayValues.push(element.name);
             }
         });
@@ -150,7 +155,7 @@ export class OnboardingService {
             },
             (err: any) => {
                 console.log("Framework details Response: ", JSON.parse(err));
-        });
+            });
     }
 
     /**
@@ -274,16 +279,16 @@ export class OnboardingService {
             avatar: "avatar",
             createdAt: this.profile.createdAt
         }
-        if(index === 0 && !_.find(this.onBoardingSlides, ['id', 'boardList']).selectedCode.length) {
+        if (index === 0 && !_.find(this.onBoardingSlides, ['id', 'boardList']).selectedCode.length) {
             req.board = [];
         }
-        if(index === 1 && !_.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode.length) {
+        if (index === 1 && !_.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode.length) {
             req.grade = [];
         }
-        if(index === 2 && !_.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode.length) {
+        if (index === 2 && !_.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode.length) {
             req.subject = [];
         }
-        if(index === 3 && !_.find(this.onBoardingSlides, ['id', 'mediumList']).selectedCode.length) {
+        if (index === 3 && !_.find(this.onBoardingSlides, ['id', 'mediumList']).selectedCode.length) {
             req.medium = [];
         }
         this.profileService.updateProfile(req,
@@ -295,7 +300,7 @@ export class OnboardingService {
                     this.isOnBoardingCardCompleted = false;
                     this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
                 }
-                this.currentIndex = index + 1;
+                //this.currentIndex = index + 1;
                 this.events.publish('refresh:profile');
 
                 this.getCurrentUser();
@@ -305,11 +310,11 @@ export class OnboardingService {
             });
     }
 
-   /**
-   * Method to convert Array to Comma separated string
-   * @param {Array<string>} stringArray
-   * @returns {string}
-   */
+    /**
+    * Method to convert Array to Comma separated string
+    * @param {Array<string>} stringArray
+    * @returns {string}
+    */
     arrayToString(stringArray: Array<string>): string {
         return stringArray.join(", ");
     }
