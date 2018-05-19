@@ -427,7 +427,6 @@ export class ResourcesPage implements OnInit {
 				PageId.LIBRARY, null));
 
 		const that = this;
-		this.storyAndWorksheets.length = 0;
 		this.noInternetConnection = false;
 		const callback: ResourceFilterCallback = {
 			applyFilter(filter, appliedFilter) {
