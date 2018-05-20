@@ -4,7 +4,7 @@ import { NavParams } from 'ionic-angular/navigation/nav-params';
 import { NavController, PopoverController, Events } from 'ionic-angular/index';
 import { ViewController } from 'ionic-angular';
 import { Component } from '@angular/core';
-import { ContentService } from 'sunbird';
+import { ContentService, AuthService } from 'sunbird';
 import { ToastController } from "ionic-angular";
 import { ReportIssuesComponent } from '../report-issues/report-issues';
 
@@ -26,12 +26,15 @@ export class ContentActionsComponent {
 
   contentId: string;
 
+  userId: string = '';
+
   constructor(public viewCtrl: ViewController,
     private contentService: ContentService,
     private navCtrl: NavController,
     private navParams: NavParams,
     private toastCtrl: ToastController,
     public popoverCtrl: PopoverController,
+    private authService: AuthService,
     private events: Events,
     private translate: TranslateService) {
     this.content = this.navParams.get("content");
@@ -40,6 +43,19 @@ export class ContentActionsComponent {
     }
 
     this.contentId = (this.content && this.content.identifier) ? this.content.identifier : '';
+    this.getUserId();
+  }
+
+  getUserId() {
+    this.authService.getSessionData((data: string) => {
+      let res = JSON.parse(data);
+      console.log('auth service...', res);
+      if (res === undefined || res === "null") {
+        this.userId = '';
+      } else {
+        this.userId = res["userToken"] ? res["userToken"] : '';
+      }
+    });
   }
 
   /**

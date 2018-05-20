@@ -10,6 +10,7 @@ import { ConfirmAlertComponent } from '../../component/confirm-alert/confirm-ale
 import { TranslateService } from '@ngx-translate/core';
 import { generateImpressionWithRollup, generateStartWithRollup, generateEndWithRollup, generateInteractEvent } from '../../app/telemetryutil';
 import { SocialSharing } from '@ionic-native/social-sharing';
+import { ContentRatingAlertComponent } from '../../component/content-rating-alert/content-rating-alert';
 
 /**
  * Generated class for the CollectionDetailsPage page.
@@ -187,6 +188,26 @@ export class CollectionDetailsPage {
     this.objRollup = new Rollup();
   }
 
+  /**
+   * Function to rate content
+   */
+  rateContent() {
+    // TODO: check content is played or not
+    let popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
+      content: this.contentDetail,
+    }, {
+        cssClass: 'onboarding-alert'
+      });
+    popUp.present({
+      ev: event
+    });
+    popUp.onDidDismiss(data => {
+      if (data === 'rating.success') {
+        this.navCtrl.pop();
+      }
+    });
+  }
+  
   /**
    * To set content details in local variable
    *

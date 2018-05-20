@@ -30,7 +30,7 @@
             <span *ngIf="content.contentType" class="content-size">{{ content.contentType }}</span>
             <span class="content-size">[{{ content.size | fileSize }}]</span>
           </div>
-          <rating align-items-start *ngIf="content.me_averageRating" [(ngModel)]="content.me_averageRating" readOnly="true" max="5"
+          <rating align-items-start (click)="rateContent();" [(ngModel)]="content.me_averageRating" readOnly="true" max="5"
             no-padding></rating>
         </ion-col>
         <ion-col offset-2 *ngIf="content.me_totalDownloads">

@@ -1,12 +1,12 @@
+import { ContentRatingAlertComponent } from './../../component/content-rating-alert/content-rating-alert';
 import { ContentActionsComponent } from './../../component/content-actions/content-actions';
 import { Component, NgZone, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, PopoverController, Navbar, Platform } from 'ionic-angular';
-import { ContentService, FileUtil, ImpressionType, PageId, Environment, TelemetryService,  Mode, End, ShareUtil, InteractType, InteractSubtype, Rollup } from 'sunbird';
+import { ContentService, FileUtil, ImpressionType, PageId, Environment, TelemetryService, Mode, End, ShareUtil, InteractType, InteractSubtype, Rollup } from 'sunbird';
 import { SocialSharing } from "@ionic-native/social-sharing";
 import * as _ from 'lodash';
 import { generateInteractEvent, Map, generateImpressionWithRollup, generateStartWithRollup, generateInteractWithRollup } from '../../app/telemetryutil';
 import { TranslateService } from '@ngx-translate/core';
-
 
 @IonicPage()
 @Component({
@@ -126,6 +126,30 @@ export class ContentDetailsPage {
       this.backButtonFunc();
     }, 10)
     this.objRollup = new Rollup();
+  }
+
+  /**
+   * Function to rate content
+   */
+  rateContent() {
+    // TODO: check content is played or not
+    if (this.content.downloadable) {
+      let popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
+        content: this.content,
+      }, {
+          cssClass: 'onboarding-alert'
+        });
+      popUp.present({
+        ev: event
+      });
+      popUp.onDidDismiss(data => {
+        if (data === 'rating.success') {
+          this.navCtrl.pop();
+        }
+      });
+    } else {
+      this.translateAndDisplayMessage('TRY_BEFORE_RATING', false);
+    }
   }
 
   /**
@@ -321,7 +345,6 @@ export class ContentDetailsPage {
     _.forEach(identifiers, (value, key) => {
       requestParams.push({
         isChildContent: isChild,
-        // TODO - check with Anil for destination folder path
         destinationFolder: this.fileUtil.internalStoragePath(),
         contentId: value,
         correlationData: []
