@@ -37,7 +37,7 @@ export class OnboardingCardComponent {
     this.initializeService();
 
     this.events.subscribe('refresh:onboardingcard', () => {
-      this.mSlides.slideTo(0, 500);
+      //this.mSlides.slideTo(0, 500);
       this.onboardingService.currentIndex = 0;
       this.onboardingService.initializeCard();
     });
@@ -149,5 +149,11 @@ export class OnboardingCardComponent {
       cssClass: 'onboarding-alert'
     });
     popUp.present();
+  }
+
+  ionViewWillEnter() {
+    if(!this.onboardingService.currentIndex) {
+      this.mSlides.slideTo(0, 500);
+    }
   }
 }

@@ -80,7 +80,6 @@ export class OnboardingService {
         });
 
 
-
         this.onBoardingSlides[0].options = this.boardList;
         this.onBoardingSlides[1].options = this.gradeList;
         this.onBoardingSlides[2].options = this.subjectList;
@@ -189,8 +188,11 @@ export class OnboardingService {
                         value = { 'text': element.name, 'value': element.code, 'checked': false };
                     }
 
-                    this[list].push(value)
+                    this[list].push(value);
                 });
+                if(list !== 'gradeList') {
+                    this[list] =  _.orderBy(this[list], ['text'], ['asc']);
+                }
 
                 this.getListArray(list);
                 console.log(list + " Category Response: " + this[list]);

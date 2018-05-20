@@ -130,6 +130,7 @@ export class ResourcesPage implements OnInit {
 	 * It will fetch the guest user profile details
 	 */
 	getCurrentUser(): void {
+		this.isOnBoardingCardCompleted = false;
 		this.profileService.getCurrentUser(
 			(res: any) => {
 				let profile = JSON.parse(res);
@@ -137,7 +138,6 @@ export class ResourcesPage implements OnInit {
 					this.isOnBoardingCardCompleted = true;
 					this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
 				}
-				this.isOnBoardingCardCompleted = false;
 			},
 			(err: any) => {
 				this.isOnBoardingCardCompleted = false;
