@@ -36,13 +36,26 @@ export class OnboardingService {
         public events: Events,
         public zone: NgZone
     ) { }
-    initializeCard() {
-        this.getFrameworkDetails();
+
+    initializeCard(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.getFrameworkDetails()
+            .then(catagories => {
+                this.categories = catagories;
+                this.initializeSlides();
+                return this.getCurrentUser();
+            })
+            .then(index => {
+                resolve(index);
+            })
+            .catch(err => {
+                reject(err);
+            });
+        });
     }
 
     initializeSlides() {
-        this.zone.run(() => {
-            this.onBoardingSlides = [
+        this.onBoardingSlides = [
                 {
                     'id': 'boardList',
                     'title': 'BOARD_QUESTION',
@@ -77,55 +90,53 @@ export class OnboardingService {
                 }
             ];
             console.log("Initialized", this.onBoardingSlides);
-        });
 
 
         this.onBoardingSlides[0].options = this.boardList;
         this.onBoardingSlides[1].options = this.gradeList;
         this.onBoardingSlides[2].options = this.subjectList;
         this.onBoardingSlides[3].options = this.mediumList;
-
-        this.getCurrentUser();
     }
     /**
      * Method user to fetch Current Guest User
      */
-    getCurrentUser(): void {
-        this.profileService.getCurrentUser((res: any) => {
-            this.profile = JSON.parse(res);
-            this.currentIndex = 0;
-            if (this.profile.board && this.profile.board[0] !== '') {
-                console.log("Categories", this.categories);
-                /* let boardsDisplayValues = [];
-                this.categories[0].terms.forEach(element => {
-                    if(_.includes(this.profile.board, element.code)) {
-                        boardsDisplayValues.push(element.name);
-                    }
-                });
-                this.onBoardingSlides[0].selectedOptions = this.arrayToString(boardsDisplayValues); */
-                //this.onBoardingSlides[0].selectedOptions = this.profile.board;
-                this.onBoardingSlides[0].selectedOptions = this.getDisplayValues(0, this.profile.board);
-                this.currentIndex = 25;
-            }
-            if (this.profile.grade && this.profile.grade[0] !== '') {
-                //this.onBoardingSlides[1].selectedOptions = this.profile.grade;
-                this.onBoardingSlides[1].selectedOptions = this.getDisplayValues(1, this.profile.grade);
-                this.currentIndex = 50;
-            }
-            if (this.profile.subject && this.profile.subject[0] !== '') {
-                //this.onBoardingSlides[2].selectedOptions = this.profile.subject;
-                this.onBoardingSlides[2].selectedOptions = this.getDisplayValues(2, this.profile.subject);
-                this.currentIndex = 75;
-            }
-            if (this.profile.medium && this.profile.medium[0] !== '') {
-                //this.onBoardingSlides[3].selectedOptions = this.profile.medium;
-                this.onBoardingSlides[3].selectedOptions = this.getDisplayValues(3, this.profile.medium);
-                this.currentIndex = 100;
-            }
-        },
+    getCurrentUser(): Promise<any> {
+
+        return new Promise((resolve, reject) => {
+            this.profileService.getCurrentUser((res: any) => {
+                let index = 0;
+                this.profile = JSON.parse(res);
+                this.currentIndex = 0;
+                if (this.profile.board && this.profile.board[0] !== '') {
+                    console.log("Categories", this.categories);
+                    this.onBoardingSlides[0].selectedOptions = this.getDisplayValues(0, this.profile.board);
+                    this.currentIndex = 25;
+                }
+                if (this.profile.grade && this.profile.grade[0] !== '') {
+                    //this.onBoardingSlides[1].selectedOptions = this.profile.grade;
+                    this.onBoardingSlides[1].selectedOptions = this.getDisplayValues(1, this.profile.grade);
+                    this.currentIndex = 50;
+                    index = 1;
+                }
+                if (this.profile.subject && this.profile.subject[0] !== '') {
+                    //this.onBoardingSlides[2].selectedOptions = this.profile.subject;
+                    this.onBoardingSlides[2].selectedOptions = this.getDisplayValues(2, this.profile.subject);
+                    this.currentIndex = 75;
+                    index = 2;
+                }
+                if (this.profile.medium && this.profile.medium[0] !== '') {
+                    //this.onBoardingSlides[3].selectedOptions = this.profile.medium;
+                    this.onBoardingSlides[3].selectedOptions = this.getDisplayValues(3, this.profile.medium);
+                    this.currentIndex = 100;
+                    index = 3;
+                }
+                resolve(index);
+            },
             (err: any) => {
                 console.log("Err1", err);
+                reject(err);
             });
+        });
     }
 
     getDisplayValues(index: number, field) {
@@ -141,20 +152,22 @@ export class OnboardingService {
     /**
      * It fetches all the categories using Framework API
      */
-    getFrameworkDetails(): void {
-        let req: FrameworkDetailsRequest = {
-            defaultFrameworkDetails: true
-        };
+    getFrameworkDetails(): Promise<any> {
 
-        this.framework.getFrameworkDetails(req,
-            (res: any) => {
-                this.categories = JSON.parse(JSON.parse(res).result.framework).categories;
-                console.log("Framework details Response: ", JSON.parse(JSON.parse(res).result.framework).categories);
-                this.initializeSlides();
-            },
-            (err: any) => {
-                console.log("Framework details Response: ", JSON.parse(err));
-            });
+        return new Promise((resolve, reject) => {
+            let req: FrameworkDetailsRequest = {
+                defaultFrameworkDetails: true
+            };
+
+            this.framework.getFrameworkDetails(req,
+                (res: any) => {
+                    let categories = JSON.parse(JSON.parse(res).result.framework).categories;
+                    resolve(categories);
+                },
+                (err: any) => {
+                    reject(err);
+                });
+        });
     }
 
     /**

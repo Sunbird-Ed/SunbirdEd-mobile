@@ -32,20 +32,37 @@ export class OnboardingCardComponent {
     private popupCtrl: PopoverController,
     private popCtrl: PopoverController,
     private onboardingService: OnboardingService,
-    private events: Events
+    private events: Events,
+    private zone: NgZone
   ) {
     this.initializeService();
 
     this.events.subscribe('refresh:onboardingcard', () => {
       //this.mSlides.slideTo(0, 500);
-      this.onboardingService.currentIndex = 0;
-      this.onboardingService.initializeCard();
+      //this.onboardingService.currentIndex = 0;
+      this.onboardingService.initializeCard()
+      .then(index => {
+        setTimeout(() => {
+          if(index !== 3) this.mSlides.slideTo(index + 1, 500);
+        }, 500);
+      })
+      .catch(error => {
+
+      });
     });
   }
 
   initializeService() {
     if (!this.onboardingService.categories.length) {
-      this.onboardingService.initializeCard();
+      this.onboardingService.initializeCard()
+      .then(index => {
+        setTimeout(() => {
+          if(index !== 3) this.mSlides.slideTo(index + 1, 500);
+        }, 500);
+      })
+      .catch(error => {
+
+      });
     }
     /* if (this.onboardingService.isOnBoardingCardCompleted) {
       this.onboardingService.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: true });
