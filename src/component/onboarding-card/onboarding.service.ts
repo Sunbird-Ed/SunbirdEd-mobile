@@ -111,24 +111,25 @@ export class OnboardingService {
                     console.log("Categories", this.categories);
                     this.onBoardingSlides[0].selectedOptions = this.getDisplayValues(0, this.profile.board);
                     this.currentIndex = 25;
+                    index = 1;
                 }
                 if (this.profile.grade && this.profile.grade[0] !== '') {
                     //this.onBoardingSlides[1].selectedOptions = this.profile.grade;
                     this.onBoardingSlides[1].selectedOptions = this.getDisplayValues(1, this.profile.grade);
                     this.currentIndex = 50;
-                    index = 1;
+                    index = 2;
                 }
                 if (this.profile.subject && this.profile.subject[0] !== '') {
                     //this.onBoardingSlides[2].selectedOptions = this.profile.subject;
                     this.onBoardingSlides[2].selectedOptions = this.getDisplayValues(2, this.profile.subject);
                     this.currentIndex = 75;
-                    index = 2;
+                    index = 3;
                 }
                 if (this.profile.medium && this.profile.medium[0] !== '') {
                     //this.onBoardingSlides[3].selectedOptions = this.profile.medium;
                     this.onBoardingSlides[3].selectedOptions = this.getDisplayValues(3, this.profile.medium);
                     this.currentIndex = 100;
-                    index = 3;
+                    index = 4;
                 }
                 resolve(index);
             },

@@ -43,7 +43,7 @@ export class OnboardingCardComponent {
       this.onboardingService.initializeCard()
       .then(index => {
         setTimeout(() => {
-          if(index !== 3) this.mSlides.slideTo(index + 1, 500);
+          if(index !== 0 && index !== 4) this.mSlides.slideTo(index, 500);
         }, 500);
       })
       .catch(error => {
@@ -57,7 +57,7 @@ export class OnboardingCardComponent {
       this.onboardingService.initializeCard()
       .then(index => {
         setTimeout(() => {
-          if(index !== 3) this.mSlides.slideTo(index + 1, 500);
+          if(index !== 0 && index !== 4) this.mSlides.slideTo(index, 500);
         }, 500);
       })
       .catch(error => {
