@@ -120,10 +120,10 @@
   <!-- User Address Current/Permanent -->
   <ion-list-header *ngIf="(profile?.address?.length && !isLoggedInUser) || isLoggedInUser" class="section-title" no-padding>
     {{ 'TITLE_ADDRESS' | translate }}
-    <span *ngIf="isLoggedInUser && profile?.address?.length < 2 " float-right color="primary">
-      <span (click)="editAddress()">{{ 'ADD' | translate }}</span>
+    <span *ngIf="isLoggedInUser" float-end color="primary">
+      <span  *ngIf="profile?.address?.length < 2 "  (click)="editAddress()">{{ 'ADD' | translate }}</span>
+      <ion-icon color="dark" class="padding-left-5" (click)="toggleLock('location', 'TITLE_ADDRESS')" name="{{ profile?.profileVisibility?.location == 'private' ? 'lock' : 'unlock' }}"></ion-icon>
     </span>
-    <ion-icon color="dark" class="padding-left-5" (click)="toggleLock('location', 'TITLE_ADDRESS')" name="{{ profile?.profileVisibility?.location == 'private' ? 'lock' : 'unlock' }}"></ion-icon>
   </ion-list-header>
 
   <ion-item *ngFor="let addr of profile?.address">
