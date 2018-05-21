@@ -22,6 +22,11 @@ export class ContentDetailsPage {
   content: any;
 
   /**
+   * is child content
+   */
+  isChildContent: boolean = false;
+
+  /**
    * Contains content details
    */
   contentDetails: any;
@@ -269,6 +274,7 @@ export class ContentDetailsPage {
    */
   ionViewWillEnter(): void {
     this.cardData = this.navParams.get('content');
+    this.isChildContent = this.navParams.get('isChildContent');
     this.cardData.depth = this.navParams.get('depth') === undefined ? '' : this.navParams.get('depth');
     this.identifier = this.cardData.contentId || this.cardData.identifier;
     if (!this.didViewLoad) {
@@ -418,7 +424,7 @@ export class ContentDetailsPage {
   downloadContent() {
     this.downloadProgress = '0';
     this.isDownloadStarted = true;
-    this.importContent([this.identifier], false);
+    this.importContent([this.identifier], this.isChildContent);
   }
 
   cancelDownload() {

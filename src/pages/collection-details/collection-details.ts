@@ -474,6 +474,7 @@ export class CollectionDetailsPage {
       } else {
         console.warn('Inside ContentDetailsPage >>>');
         this.navCtrl.push(ContentDetailsPage, {
+          isChildContent: true,
           content: content,
           depth: depth
         })
