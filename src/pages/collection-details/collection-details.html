@@ -16,7 +16,7 @@
   </ion-navbar>
 </ion-header>
 <!-- Page body -->
-<ion-content style="height: 90%! important" padding>
+<ion-content [ngClass]="{'content-with-footer': (showDownloadBtn && !isDepthChild)}" padding>
   <div class="content-details-holder" *ngIf="contentDetail">
     <h6 class="font-size-20">{{isDepthChild && depth ? depth + ' :' : ''}} {{(contentDetail?.name && contentDetail?.name.length > 25) ? (contentDetail?.name
       | slice:0:25) + '...' : (contentDetail?.name) }}</h6>
