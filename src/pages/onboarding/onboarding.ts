@@ -14,6 +14,7 @@ export class OnboardingPage {
 
   slides: any[];
   sunbird: string = "SUNBIRD";
+  orgName: string;
 
   constructor(public navCtrl: NavController,
     private auth: OAuthService,
@@ -95,6 +96,7 @@ export class OnboardingPage {
   }
 
   refreshTenantData(slug: string) {
+    let that = this;
     return new Promise((resolve, reject) => {
       let request = new TenantInfoRequest();
       request.refreshTenantInfo = true;
@@ -103,7 +105,7 @@ export class OnboardingPage {
         request,
         res => {
           let r = JSON.parse(res);
-          (<any>window).splashscreen.setContent(r.titleName, r.logo);
+          (<any>window).splashscreen.setContent(that.orgName, r.logo);
           resolve();
         },
         error => {
@@ -113,6 +115,7 @@ export class OnboardingPage {
   }
 
   refreshProfileData() {
+    let that = this;
     return new Promise<string>((resolve, reject) => {
       this.authService.getSessionData((session) => {
         if (session === undefined || session == null) {
@@ -141,14 +144,12 @@ export class OnboardingPage {
             };
             this.profileService.setCurrentProfile(false, profileRequest,
               (res: any) => {
-                //TODO: Do we need to ignore or use, check with nikhil
+                that.orgName = r.response.rootOrg.orgName;
                 resolve(r.response.rootOrg.slug);
               },
               (err: any) => {
                 reject(err);
               });
-
-            resolve(r.response.rootOrg.slug);
           }, error => {
             reject(error);
             console.error(error);
