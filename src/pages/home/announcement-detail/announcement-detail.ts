@@ -1,7 +1,7 @@
 
 import { Component, OnInit, NgZone } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-import { AnnouncementService, AttachmentService, TelemetryService } from 'sunbird';
+import { AnnouncementService, AttachmentService, TelemetryService, AnnouncementStatus } from 'sunbird';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { File } from '@ionic-native/file';
 
@@ -105,11 +105,33 @@ export class AnnouncementDetailComponent implements OnInit {
                 console.log('Announcemet details response ==>', data);
                 this.announcementDetail = data ? data : [];
             });
+
+            if (this.announcementDetail !== null) {
+                if (!this.announcementDetail.read) {
+                    this.updateAnnouncementReadStatus();
+                }
+            }
         },
             error => {
                 console.log('error while loading content details', error);
             });
     }
+
+    updateAnnouncementReadStatus() {
+        let req = {
+            announcementId: this.navParams.get('id'),
+            announcementStatus: AnnouncementStatus.READ
+        }
+
+        this.announcementService.updateAnnouncementState(req,
+            (success: any) => {
+                console.log("Announce State Success - " + success);
+            }, (error: any) => {
+                console.log("Announce State Error - " + error);
+            })
+    }
+
+
     /**
      * Angular life cycle hooks
      */
@@ -123,7 +145,7 @@ export class AnnouncementDetailComponent implements OnInit {
         let message: string = ` Type: ${announcementDetail.type}\nDescription: ${announcementDetail.description}\nTitle: ${announcementDetail.title}\n Links:  ${announcementDetail.links}`;
         let attachmentPath: string = this.file.externalRootDirectory + 'Announcements/' + announcementDetail.id + '/' + announcementDetail.attachments[0].name;
         console.log(attachmentPath);
-        this.socialSharing.share(message, attachmentPath, attachmentPath, null).then(() => {
+        this.socialSharing.share(message, null, attachmentPath, null).then(() => {
             console.log('inside .then function');
         }).catch((error) => {
             console.log(error);
