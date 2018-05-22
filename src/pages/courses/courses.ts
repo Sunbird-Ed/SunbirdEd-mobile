@@ -195,18 +195,19 @@ export class CoursesPage implements OnInit {
    * Used to get enrolled course(s) of logged-in user
    */
   getUserId() {
+    let that = this;
     return new Promise((resolve, reject) => {
-      this.authService.getSessionData((session) => {
+      that.authService.getSessionData((session) => {
         if (session === undefined || session == null || session === "null") {
           console.log('session expired');
-          this.guestUser = true;
-          this.getCurrentUser();
+          that.guestUser = true;
+          that.getCurrentUser();
           reject('session expired');
         } else {
           let sessionObj = JSON.parse(session);
-          this.userId = sessionObj["userToken"];
-          this.guestUser = false;
-          this.getEnrolledCourses();
+          that.userId = sessionObj["userToken"];
+          that.guestUser = false;
+          that.getEnrolledCourses();
           resolve();
         }
       });

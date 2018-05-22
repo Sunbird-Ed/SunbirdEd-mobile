@@ -117,7 +117,7 @@ export class OnboardingPage {
   refreshProfileData() {
     let that = this;
     return new Promise<string>((resolve, reject) => {
-      this.authService.getSessionData((session) => {
+      that.authService.getSessionData((session) => {
         if (session === undefined || session == null) {
           reject("session is null");
         } else {
@@ -127,9 +127,9 @@ export class OnboardingPage {
             requiredFields: ["completeness", "missingFields", "lastLoginTime", "topics"],
             refreshUserProfileDetails: true
           };
-          this.userProfileService.getUserProfileDetails(req, res => {
+          that.userProfileService.getUserProfileDetails(req, res => {
             let r = JSON.parse(res);
-            this.generateLoginInteractTelemetry(InteractType.OTHER,
+            that.generateLoginInteractTelemetry(InteractType.OTHER,
               InteractSubtype.LOGIN_SUCCESS, r.response.userId);
             let profileRequest = {
               uid: r.response.userId, //req
@@ -142,7 +142,7 @@ export class OnboardingPage {
               standard: -1,
               profileType: ProfileType.TEACHER
             };
-            this.profileService.setCurrentProfile(false, profileRequest,
+            that.profileService.setCurrentProfile(false, profileRequest,
               (res: any) => {
                 that.orgName = r.response.rootOrg.orgName;
                 resolve(r.response.rootOrg.slug);

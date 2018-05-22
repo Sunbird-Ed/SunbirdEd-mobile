@@ -102,8 +102,9 @@ export class SignInCardComponent {
   }
 
   refreshProfileData() {
+    let that = this;
     return new Promise<string>((resolve, reject) => {
-      this.authService.getSessionData((session) => {
+      that.authService.getSessionData((session) => {
         if (session === undefined || session == null) {
           reject("session is null");
         } else {
@@ -113,9 +114,9 @@ export class SignInCardComponent {
             requiredFields: ["completeness", "missingFields", "lastLoginTime", "topics"],
             refreshUserProfileDetails: true
           };
-          this.userProfileService.getUserProfileDetails(req, res => {
+          that.userProfileService.getUserProfileDetails(req, res => {
             let r = JSON.parse(res);
-            this.generateLoginInteractTelemetry(InteractType.OTHER,
+            that.generateLoginInteractTelemetry(InteractType.OTHER,
               InteractSubtype.LOGIN_SUCCESS, r.response.userId);
             resolve(r.response.rootOrg.slug);
           }, error => {
