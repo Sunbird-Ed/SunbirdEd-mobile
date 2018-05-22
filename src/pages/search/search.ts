@@ -106,7 +106,9 @@ export class SearchPage {
   }
 
 
-
+  ionViewWillLeave(): void {
+    this.events.unsubscribe('genie.event');
+  }
 
   showContentDetails(content) {
     if (content.contentType === 'Course') {
