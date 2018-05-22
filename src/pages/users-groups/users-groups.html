@@ -1,0 +1,66 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title> {{ 'USERS_AND_GROUPS' | translate }}
+        </ion-title>
+        <ion-buttons right>
+            <button ion-button icon-only (click)="viewCtrl.download()">
+                <img src="assets/imgs/ic_action_download.png" class="tool-icon" float-end/>
+            </button>
+        </ion-buttons>
+        <ion-buttons right>
+            <button ion-button icon-only (click)="viewCtrl.share()">
+                <img src="assets/imgs/ic_action_share_black.png" class="tool-icon" float-end/>
+            </button>
+        </ion-buttons>
+        <ion-buttons right>
+            <button ion-button icon-only (click)="viewCtrl.search()">
+                <img src="assets/imgs/ic_action_search.png" class="tool-icon" float-end/>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-segment [(ngModel)]="catagories">
+        <ion-segment-button value="user" style="font-weight: bold">{{ 'USERS' | translate }}</ion-segment-button>
+        <ion-segment-button value="groups" style="font-weight: bold">{{ 'GROUPS' | translate }}</ion-segment-button>
+    </ion-segment>
+    <div [ngSwitch]="catagories">
+        <ion-list *ngSwitchCase="'user'" no-lines>
+            <ion-list-header>{{ 'LOGGED_IN_AS' | translate }}</ion-list-header>
+            <button ion-item *ngFor="let name of logger" (click)="onTap(name)" class="itemDesign">
+                <ion-avatar item-start id="logged_user">
+                    <img src={{loggerID}}>
+                    <img src="assets/imgs/ic_check_circle.png" id="tick" />
+                </ion-avatar>
+                <h2 style="color: dodgerblue">{{name}}</h2>
+                <p>{{logger_subValue}}</p>
+            </button>
+            <ion-list no-lines>
+                <ion-list-header style="border-top-width: 0px">
+                    <h2>{{ 'USERS' | translate }}</h2>
+                </ion-list-header>
+                <ion-list>
+                    <button ion-item *ngFor="let name of users" (click)="nameSelected(name)" class="itemDesign">
+                        <ion-avatar item-start id="logged_user">
+                            <img src={{usersID}}>
+                        </ion-avatar>
+                        <h2>{{name}}</h2>
+                        <p>{{users_subValue}}</p>
+                        <button ion-button clear item-end class="more">
+                            <ion-icon name="more" color="dark" (click)="edit()"></ion-icon>
+                        </button>
+                    </button>
+                </ion-list>
+            </ion-list>
+        </ion-list>
+    </div>
+</ion-content>
+<ion-footer>
+    <ion-toolbar>
+        <ion-row>
+            <ion-col padding>
+                <button ion-button outline center id="create" (click)="onConfirm()">{{ 'CREATE_NEW_USER' | translate }}</button>
+            </ion-col>
+        </ion-row>
+    </ion-toolbar>
+</ion-footer>
