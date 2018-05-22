@@ -12,9 +12,9 @@
 		<h6>{{course.name}}</h6>
 		<!-- Owner and download info -->
 		<ion-grid class="padding-0">
-			<div *ngIf="contentDetail.owner">
+			<div *ngIf="course.owner">
 				<span class="text-gray-color">{{ 'BY' | translate }}</span>
-				<span class="content-meta-title">{{ contentDetail.owner }}</span>
+				<span class="content-meta-title">{{ course.owner }}</span>
 			</div>
 			<!-- <p *ngIf="course.owner">{{ 'BY' | translate }} {{ course.owner }}</p> -->
 			<!--<ion-row>
@@ -31,7 +31,7 @@
 				</ion-col>
 			</ion-row>-->
 			<div>
-				<rating align-items-start [(ngModel)]="course.me_averageRating" readOnly="true" max="5" no-padding></rating>
+				<rating align-items-start (click)="rateContent();" [(ngModel)]="course.me_averageRating" readOnly="true" max="5" no-padding></rating>
 			</div>
 		</ion-grid>
 		<br/>

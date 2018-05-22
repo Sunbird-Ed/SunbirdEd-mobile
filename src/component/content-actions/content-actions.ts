@@ -4,8 +4,8 @@ import { NavParams } from 'ionic-angular/navigation/nav-params';
 import { NavController, PopoverController, Events } from 'ionic-angular/index';
 import { ViewController } from 'ionic-angular';
 import { Component } from '@angular/core';
-import { ContentService } from 'sunbird';
-import { ToastController } from "ionic-angular";
+import { ContentService, AuthService } from 'sunbird';
+import { ToastController, Platform } from "ionic-angular";
 import { ReportIssuesComponent } from '../report-issues/report-issues';
 
 /**
@@ -25,6 +25,9 @@ export class ContentActionsComponent {
   isChild: boolean = false;
 
   contentId: string;
+  backButtonFunc = undefined;
+
+  userId: string = '';
 
   constructor(public viewCtrl: ViewController,
     private contentService: ContentService,
@@ -32,14 +35,33 @@ export class ContentActionsComponent {
     private navParams: NavParams,
     private toastCtrl: ToastController,
     public popoverCtrl: PopoverController,
+    private authService: AuthService,
     private events: Events,
-    private translate: TranslateService) {
+    private translate: TranslateService,
+    private platform: Platform) {
     this.content = this.navParams.get("content");
     if (this.navParams.get('isChild')) {
       this.isChild = true;
     }
 
     this.contentId = (this.content && this.content.identifier) ? this.content.identifier : '';
+    this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      this.viewCtrl.dismiss();
+      this.backButtonFunc();
+    }, 20);
+    this.getUserId();
+  }
+
+  getUserId() {
+    this.authService.getSessionData((data: string) => {
+      let res = JSON.parse(data);
+      console.log('auth service...', res);
+      if (res === undefined || res === "null") {
+        this.userId = '';
+      } else {
+        this.userId = res["userToken"] ? res["userToken"] : '';
+      }
+    });
   }
 
   /**

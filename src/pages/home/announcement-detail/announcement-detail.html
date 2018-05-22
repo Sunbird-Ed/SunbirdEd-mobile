@@ -17,7 +17,7 @@
                 </div>
                 <div class="margin-top" *ngIf="announcementDetail?.attachments">
                     <span>{{'ATTACHMENTS' | translate}}</span>
-                    <pb-horizontal  [progress]="progress" [isOnBoardCard]="isAttachment"></pb-horizontal>
+                    <pb-horizontal *ngIf="showProgressBar" [progress]="progress" [isOnBoardCard]="isAttachment"></pb-horizontal>
                     <ion-list style="border:1px solid #efeff4" *ngFor="let item of announcementDetail?.attachments">
                         <ion-item>
                             <ion-avatar item-start style="border:1px solid #efeff4">
@@ -25,7 +25,8 @@
                             </ion-avatar>
                             <h2 class="ellipsis">{{item.name}}</h2>
                             <p>{{item?.size}}</p>
-                            <button (click)="downloadattachment(item.link)" style="border: 1px solid  steelblue;background-color:white;color:steelblue" ion-button item-end>View</button>
+                            <button (click)="downloadattachment(item.link)" style="border: 1px solid  steelblue;background-color:white;color:steelblue"
+                                ion-button item-end>View</button>
                         </ion-item>
                     </ion-list>
                 </div>

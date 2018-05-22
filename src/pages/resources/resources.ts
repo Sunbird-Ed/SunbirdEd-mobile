@@ -75,7 +75,9 @@ export class ResourcesPage implements OnInit {
 		private profileService: ProfileService,
 		private toastCtrl: ToastController,
 		private preference: SharedPreferences,
-		private translate: TranslateService) {
+		private translate: TranslateService,
+		private zone: NgZone
+	) {
 		this.contentService = contentService;
 		this.authService = authService;
 
@@ -83,10 +85,6 @@ export class ResourcesPage implements OnInit {
 			if (val && val.length) {
 				this.selectedLanguage = val;
 			}
-		});
-
-		this.events.subscribe('onboarding-card:completed', (param) => {
-			this.isOnBoardingCardCompleted = param.isOnBoardingCardCompleted;
 		});
 
 		this.events.subscribe('savedResources:update', (res) => {
@@ -98,15 +96,21 @@ export class ResourcesPage implements OnInit {
 		this.events.subscribe('onAfterLanguageChange:update', (res) => {
 			if (res && res.selectedLanguage) {
 				this.selectedLanguage = res.selectedLanguage;
-				this.getPopularContent();
+				this.getPopularContent(true);
 			}
 		});
 	}
 
+	ngAfterViewInit() {
+		this.events.subscribe('onboarding-card:completed', (param) => {
+			this.isOnBoardingCardCompleted = param.isOnBoardingCardCompleted;
+		});
+	}
 	/**
 	 * It will fetch the guest user profile details
 	 */
 	getCurrentUser(): void {
+		this.isOnBoardingCardCompleted = false;
 		this.profileService.getCurrentUser(
 			(res: any) => {
 				let profile = JSON.parse(res);
@@ -166,7 +170,7 @@ export class ResourcesPage implements OnInit {
 	/**
 	 * Get popular content
 	 */
-	getPopularContent() {
+	getPopularContent(isAfterLanguageChange = false) {
 		this.pageApiLoader = true;
 		this.noInternetConnection = false;
 		let that = this;
@@ -204,7 +208,7 @@ export class ResourcesPage implements OnInit {
 				this.pageLoadedSuccess = true;
 				this.pageApiLoader = false;
 				this.noInternetConnection = false;
-				this.checkEmptySearchResult();
+				this.checkEmptySearchResult(isAfterLanguageChange);
 			});
 		}, error => {
 			console.log('error while getting popular resources...', error);
@@ -213,7 +217,7 @@ export class ResourcesPage implements OnInit {
 				if (error === 'CONNECTION_ERROR') {
 					this.noInternetConnection = true;
 				} else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR'){
-					this.getMessageByConst('ERROR_FETCHING_DATA');
+					if(!isAfterLanguageChange) this.getMessageByConst('ERROR_FETCHING_DATA');
 				}
 			});
 		});
@@ -403,7 +407,6 @@ export class ResourcesPage implements OnInit {
 				PageId.LIBRARY, null));
 
 		const that = this;
-		this.storyAndWorksheets.length = 0;
 		this.noInternetConnection = false;
 		const callback: ResourceFilterCallback = {
 			applyFilter(filter, appliedFilter) {
@@ -483,7 +486,7 @@ export class ResourcesPage implements OnInit {
 		filter.present();
 	}
 
-	checkEmptySearchResult() {
+	checkEmptySearchResult(isAfterLanguageChange = false) {
 		let flags = [];
 		_.forEach(this.storyAndWorksheets, function (value, key) {
 			if (value.contents && value.contents.length) {
@@ -494,7 +497,7 @@ export class ResourcesPage implements OnInit {
 		if (flags.length && _.includes(flags, true)) {
 			console.log('search result found');
 		} else {
-			this.getMessageByConst('NO_CONTENTS_FOUND');
+			if(!isAfterLanguageChange) this.getMessageByConst('NO_CONTENTS_FOUND');
 		}
 	}
 }

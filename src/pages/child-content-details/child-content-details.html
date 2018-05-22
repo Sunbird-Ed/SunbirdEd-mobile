@@ -9,7 +9,7 @@
 <!-- Page body -->
 <ion-content padding>
   <div class="content-details-holder" *ngIf="details">
-    <h5>{{ depth }}: {{details.name}}</h5>
+    <h5>{{details.name}}</h5>
     <div class="course-size">
       <span>Module size: {{ details.size }}</span>
     </div>
@@ -24,7 +24,7 @@
     <div *ngIf="childrenData && childrenData">
       <ion-item *ngFor="let item of childrenData; let i = index" style="padding-left: 0px;">
         <span (click)="navigateToChildrenDetailsPage(item, depth + '.' + (i + 1))">
-          <span ion-text>{{ depth }}.{{ (i) + (1) }} : {{ item.contentData.name }}</span>
+          <span ion-text>{{ item.contentData.name }}</span>
           <ion-icon name="ios-arrow-forward" float-end></ion-icon>
         </span>
       </ion-item>

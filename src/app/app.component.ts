@@ -64,6 +64,8 @@ export class MyApp {
 
       permission.requestPermission(this.permissionList, (response) => {
 
+        this.makeEntryInSupportFolder();
+        
       }, (error) => {
 
       })
@@ -73,14 +75,7 @@ export class MyApp {
           this.translate.use(val);
         }
       });
-
-      (<any>window).supportfile.makeEntryInSunbirdSupportFile((result) => {
-        console.log("Result - " + JSON.parse(result));
-        this.preference.putString(KEY_SUNBIRD_SUPPORT_FILE_PATH, JSON.parse(result));
-      }, (error) => {
-        console.log("Error - " + error);
-      });
-
+      
       that.authService.getSessionData((session) => {
         if (session == "null") {
           this.preference.getString('selected_user_type', (val) => {
@@ -123,7 +118,16 @@ export class MyApp {
 
   }
 
-  saveDefaultSyncSetting() {
+  makeEntryInSupportFolder(){
+    (<any>window).supportfile.makeEntryInSunbirdSupportFile((result) => {
+      console.log("Result - " + JSON.parse(result));
+      this.preference.putString(KEY_SUNBIRD_SUPPORT_FILE_PATH, JSON.parse(result));
+    }, (error) => {
+      console.log("Error - " + error);
+    });
+  }
+
+  saveDefaultSyncSetting(){
     this.preference.getString("sync_config", val => {
       if (val === undefined || val === "" || val === null) {
         this.preference.putString("sync_config", "ALWAYS_ON");

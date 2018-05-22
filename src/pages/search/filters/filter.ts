@@ -1,6 +1,10 @@
-  import { Component } from "@angular/core";
+import { Component } from "@angular/core";
 import { NavParams, PopoverController, NavController, Events } from "ionic-angular";
+import { TranslateService } from "@ngx-translate/core";
+import * as _ from 'lodash';
+
 import { FilterOptions } from "./options/options";
+
 
 @Component({
   selector: 'page-filter',
@@ -12,7 +16,13 @@ export class FilterPage {
 
   facetsFilter: Array<any> = [];
 
-  constructor(private navParams: NavParams, private popCtrl: PopoverController, private navCtrl: NavController, private events: Events) {
+  constructor(
+    private navParams: NavParams,
+    private popCtrl: PopoverController,
+    private navCtrl: NavController,
+    private events: Events,
+    private translate: TranslateService
+  ) {
     this.init();
   }
 
@@ -37,7 +47,7 @@ export class FilterPage {
     });
 
     if (count > 0) {
-      return count + " added";
+      return `${count} ` + this.translateMessage('ADDED');
     }
 
     return "";
@@ -48,8 +58,27 @@ export class FilterPage {
 
     this.filterCriteria.facetFilters.forEach(facet => {
       if (facet.values && facet.values.length > 0) {
+        if(facet.name != 'gradeLevel') {
+          facet.values = _.orderBy(facet.values, ['name'], ['asc']);
+        }
         this.facetsFilter.push(facet);
       }
     });
+  }
+
+  /**
+   * Used to Translate message to current Language
+   * @param {string} messageConst - Message Constant to be translated
+   * @returns {string} translatedMsg - Translated Message
+   */
+  translateMessage(messageConst: string): string {
+    let translatedMsg = '';
+    this.translate.get(messageConst).subscribe(
+      (value: any) => {
+        translatedMsg = value;
+      }
+    );
+
+    return translatedMsg;
   }
 }

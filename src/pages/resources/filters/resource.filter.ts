@@ -1,6 +1,7 @@
 import { Component } from "@angular/core";
 import { PopoverController, ViewController, NavParams, Platform } from "ionic-angular";
 import * as _ from 'lodash';
+import { TranslateService } from "@ngx-translate/core";
 
 import {
   PageAssembleFilter,
@@ -49,13 +50,8 @@ export class ResourceFilter {
 
     },
     {
-      name: "domain",
-      displayName: "Domain",
-      values: frameworkDataList.domainList.sort()
-    },
-    {
       name: "contentType",
-      displayName: "Content Type",
+      displayName: "Resource Type",
       values: frameworkDataList.contentTypeList.sort()
     }];
 
@@ -69,7 +65,8 @@ export class ResourceFilter {
     navParams: NavParams,
     private telemetryService: TelemetryService,
     private platform: Platform,
-    private frameworkService: FrameworkService
+    private frameworkService: FrameworkService,
+    private translate: TranslateService
   ) {
     this.callback = navParams.get('callback');
 
@@ -120,10 +117,10 @@ export class ResourceFilter {
   getSelectedOptionCount(facet) {
     if (facet.selected && facet.selected.length > 0) {
       this.pagetAssemblefilter[facet.name] = facet.selected
-      return facet.selected.length + " added";
-    } else {
-      return "";
+      return `${facet.selected.length} ` + this.translateMessage('ADDED');
     }
+
+    return "";
   }
 
   apply() {
@@ -140,6 +137,22 @@ export class ResourceFilter {
         Environment.HOME,
         PageId.LIBRARY_PAGE_FILTER, null));
     this.viewCtrl.dismiss();
+  }
+
+  /**
+   * Used to Translate message to current Language
+   * @param {string} messageConst - Message Constant to be translated
+   * @returns {string} translatedMsg - Translated Message
+   */
+  translateMessage(messageConst: string): string {
+    let translatedMsg = '';
+    this.translate.get(messageConst).subscribe(
+      (value: any) => {
+        translatedMsg = value;
+      }
+    );
+
+    return translatedMsg;
   }
 }
 

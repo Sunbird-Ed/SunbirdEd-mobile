@@ -78,6 +78,7 @@ export class SignInCardComponent {
       .then(() => {
         loader.dismiss();
         that.ngZone.run(() => {
+
           window.location.reload();
           // TabsPage.prototype.ionVieit wWillEnter();
         });

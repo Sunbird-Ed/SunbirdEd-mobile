@@ -1,3 +1,4 @@
+import { ContentRatingAlertComponent } from './content-rating-alert/content-rating-alert';
 // import { ContentActionsComponent } from './content-actions/content-actions';
 import { TranslateModule } from '@ngx-translate/core';
 import { PipesModule } from './../pipes/pipes.module';
@@ -29,7 +30,8 @@ import { ReportIssuesComponent } from './report-issues/report-issues';
         PBHorizontal,
         ConfirmAlertComponent,
         // ContentActionsComponent,
-        ReportIssuesComponent
+        ReportIssuesComponent,
+        ContentRatingAlertComponent
     ],
     imports: [
         IonicPageModule.forChild(CourseCard),
@@ -47,13 +49,15 @@ import { ReportIssuesComponent } from './report-issues/report-issues';
         OnboardingAlert,
         PBHorizontal,
         ConfirmAlertComponent,
-        ReportIssuesComponent
+        ReportIssuesComponent,
+        ContentRatingAlertComponent
         // ContentActionsComponent
     ],
     entryComponents: [
         OnboardingAlert,
         ConfirmAlertComponent,
-        ReportIssuesComponent
+        ReportIssuesComponent,
+        ContentRatingAlertComponent
     ],
     providers: [OnboardingService]
 })

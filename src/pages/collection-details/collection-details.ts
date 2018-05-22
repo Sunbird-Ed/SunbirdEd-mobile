@@ -10,6 +10,7 @@ import { ConfirmAlertComponent } from '../../component/confirm-alert/confirm-ale
 import { TranslateService } from '@ngx-translate/core';
 import { generateImpressionWithRollup, generateStartWithRollup, generateEndWithRollup, generateInteractEvent } from '../../app/telemetryutil';
 import { SocialSharing } from '@ionic-native/social-sharing';
+import { ContentRatingAlertComponent } from '../../component/content-rating-alert/content-rating-alert';
 
 /**
  * Generated class for the CollectionDetailsPage page.
@@ -185,6 +186,26 @@ export class CollectionDetailsPage {
       this.backButtonFunc();
     }, 10)
     this.objRollup = new Rollup();
+  }
+
+  /**
+   * Function to rate content
+   */
+  rateContent() {
+    // TODO: check content is played or not
+    let popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
+      content: this.contentDetail,
+    }, {
+        cssClass: 'content-rating-alert'
+      });
+    popUp.present({
+      ev: event
+    });
+    popUp.onDidDismiss(data => {
+      if (data === 'rating.success') {
+        this.navCtrl.pop();
+      }
+    });
   }
 
   /**
@@ -474,6 +495,7 @@ export class CollectionDetailsPage {
       } else {
         console.warn('Inside ContentDetailsPage >>>');
         this.navCtrl.push(ContentDetailsPage, {
+          isChildContent: true,
           content: content,
           depth: depth
         })
@@ -511,7 +533,7 @@ export class CollectionDetailsPage {
         data = JSON.parse(data);
         let res = data;
         console.log('event bus........', res);
-        
+
         if (res.type === 'downloadProgress' && res.data.downloadProgress) {
           if (res.data.downloadProgress === -1 || res.data.downloadProgress === '-1') {
             this.downloadProgress = 0;
@@ -744,11 +766,15 @@ export class CollectionDetailsPage {
 
   cancelDownload() {
     this.contentService.cancelDownload(this.identifier, (response) => {
-      this.showLoading = false;
-      this.navCtrl.pop();
+      this.zone.run(() => {
+        this.showLoading = false;
+        this.navCtrl.pop();
+      });
     }, (error) => {
-      this.showLoading = false;
-      this.navCtrl.pop();
+      this.zone.run(() => {
+        this.showLoading = false;
+        this.navCtrl.pop();
+      });
     });
   }
 }

@@ -1,3 +1,4 @@
+import { ContentRatingAlertComponent } from './../../component/content-rating-alert/content-rating-alert';
 import { Component, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, PopoverController } from 'ionic-angular';
 import { ContentService, FileUtil } from 'sunbird';
@@ -128,6 +129,26 @@ export class EnrolledCourseDetailsPage {
     this.zone = zone;
     this.toastCtrl = toastCtrl;
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
+  }
+
+  /**
+   * Function to rate content
+   */
+  rateContent() {
+    // TODO: check content is played or not
+    let popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
+      content: this.course,
+    }, {
+        cssClass: 'onboarding-alert'
+      });
+    popUp.present({
+      ev: event
+    });
+    popUp.onDidDismiss(data => {
+      if (data === 'rating.success') {
+        this.navCtrl.pop();
+      }
+    });
   }
 
   showOverflowMenu(event) {
