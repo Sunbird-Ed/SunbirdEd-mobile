@@ -1,6 +1,11 @@
 import { Component, NgZone, ViewChild } from "@angular/core";
 import { IonicPage, NavParams, NavController, Events, ToastController } from "ionic-angular";
-import { ContentService, ContentSearchCriteria, Log, LogLevel, TelemetryService, Impression, ImpressionType, Environment, Interact, InteractType, InteractSubtype, ContentDetailRequest, ContentImportRequest, FileUtil } from "sunbird";
+import {
+  ContentService, ContentSearchCriteria,
+  Log, LogLevel, TelemetryService, Impression, ImpressionType, Environment,
+  Interact, InteractType, InteractSubtype,
+  ContentDetailRequest, ContentImportRequest, FileUtil
+} from "sunbird";
 import { GenieResponse } from "../settings/datasync/genieresponse";
 import { FilterPage } from "./filters/filter";
 import { CourseDetailPage } from "../course-detail/course-detail";
@@ -10,6 +15,7 @@ import { Network } from "@ionic-native/network";
 import { TranslateService } from '@ngx-translate/core';
 import { Map } from "../../app/telemetryutil";
 import * as _ from 'lodash';
+import { ContentType, MimeType, Search } from '../../app/app.constant';
 
 @IonicPage()
 @Component({
@@ -84,13 +90,11 @@ export class SearchPage {
     }
   }
 
-
   openCollection(collection) {
     // TODO: Add mimeType check
     // this.navCtrl.push(CourseDetailPage, {'content': collection})
     this.showContentDetails(collection);
   }
-
 
   openContent(collection, content, index) {
     this.parentContent = collection;
@@ -105,16 +109,13 @@ export class SearchPage {
     }
   }
 
-
-
-
   showContentDetails(content) {
-    if (content.contentType === 'Course') {
+    if (content.contentType === ContentType.COURSE) {
       console.log('Calling course details page');
       this.navCtrl.push(CourseDetailPage, {
         content: content
       })
-    } else if (content.mimeType === 'application/vnd.ekstep.content-collection') {
+    } else if (content.mimeType === MimeType.COLLECTION) {
       console.log('Calling collection details page');
       this.navCtrl.push(CollectionDetailsPage, {
         content: content
@@ -178,7 +179,7 @@ export class SearchPage {
     let contentSearchRequest: ContentSearchCriteria = {
       query: this.searchKeywords,
       contentTypes: this.contentType,
-      facets: ["board", "gradeLevel",  "subject", "medium", "contentType"]
+      facets: Search.FACETS
     }
 
     this.isDialCodeSearch = false;
@@ -215,7 +216,6 @@ export class SearchPage {
     });
   }
 
-
   private init() {
     this.dialCode = this.navParams.get('dialCode');
     this.contentType = this.navParams.get('contentType');
@@ -231,8 +231,6 @@ export class SearchPage {
     });
   }
 
-
-
   private getContentForDialCode() {
     if (this.dialCode == undefined || this.dialCode.length == 0) {
       return
@@ -241,10 +239,7 @@ export class SearchPage {
     this.isDialCodeSearch = true;
 
     this.showLoader = true;
-    this.contentType = [
-      "TextBook",
-      "TextBookUnit",
-    ]
+    this.contentType = ContentType.FOR_DIAL_CODE_SEARCH;
 
     let isOfflineSearch = false;
 
@@ -256,7 +251,7 @@ export class SearchPage {
     let contentSearchRequest: ContentSearchCriteria = {
       dialCodes: [this.dialCode],
       mode: "collection",
-      facets: ["board", "gradeLevel",  "subject", "medium", "contentType"],
+      facets: Search.FACETS,
       contentTypes: this.contentType,
       offlineSearch: isOfflineSearch
     }
@@ -300,7 +295,6 @@ export class SearchPage {
       log.params = params;
       this.telemetryService.log(log);
     }
-
   }
 
   generateInteractEvent(identifier, contentType, pkgVersion, index) {
@@ -320,8 +314,6 @@ export class SearchPage {
     interact.objType = pkgVersion;
     this.telemetryService.interact(interact);
   }
-
-
 
   private processDialCodeResult(searchResult) {
     let collectionArray: Array<any> = searchResult.collectionDataList;
@@ -415,7 +407,6 @@ export class SearchPage {
     else return (bytes / 1073741824).toFixed(3) + " GB";
   }
 
-
   private checkParent(parent, child) {
     let identifier = parent.identifier
     let contentRequest: ContentDetailRequest = {
@@ -463,7 +454,6 @@ export class SearchPage {
           });
         }
       });
-
     }, (error) => {
 
     });
