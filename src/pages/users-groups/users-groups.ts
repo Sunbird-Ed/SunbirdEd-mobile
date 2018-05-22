@@ -1,14 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import {GuestEditProfilePage} from '../profile/guest-edit.profile/guest-edit.profile';
+import { GuestEditProfilePage } from '../profile/guest-edit.profile/guest-edit.profile';
 import { TranslateService } from "@ngx-translate/core";
- 
-/**
- * Generated class for the UsersGroupsPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
 
 @IonicPage()
 @Component({
@@ -17,32 +10,43 @@ import { TranslateService } from "@ngx-translate/core";
 })
 
 
+
 export class UsersGroupsPage {
-  catagories :string;
-  profile: any = {};
-  gradeList: Array<string> = [];
-  constructor(public navCtrl: NavController, public navParams: NavParams ,private translate: TranslateService,) {
-     this.catagories="user";
-    
-  }
 
-  logger = [
-    'Harish Bookwalla'
-  ]
+  logger = ['Harish Bookwalla'];
 
-  onTap(name:string){
-    console.log("clicked",name);
-  }
-  users =[
-    
-  ]
+  users = ['Anirudh Deep' , 'Ananya Suresh', 'Ananya Suresh'];
 
-  nameSelected(name: string){
+  loggerID = "assets/imgs/ic_businessman.png";
+
+  usersID = "assets/imgs/ic_profile_default.png";
+
+  logger_subValue = "Jawahar Vidya Mandir , Pune";
   
- }
- onConfirm(){
-   this.navCtrl.push(GuestEditProfilePage);
-   console.log("clicked");
- }
- 
+  users_subValue = 'status';
+
+  catagories: string;
+
+  
+  constructor(private navCtrl: NavController,
+    private navParams: NavParams,
+    private translate: TranslateService) {
+
+    this.catagories = "user";
+  }
+
+  onTap(name: string) {
+    console.log("clicked", name);
+  }
+
+
+  nameSelected(name: string) {
+    console.log("Clicked list name is ", name);
+    }
+
+  onConfirm() {
+    this.navCtrl.push(GuestEditProfilePage);
+    console.log("clicked");
+  }
+
 }
