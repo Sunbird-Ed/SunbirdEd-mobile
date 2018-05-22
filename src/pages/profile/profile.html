@@ -16,13 +16,13 @@
 </ion-header>
 
 <!-- Main Page Body -->
-<ion-content padding>
+<ion-content padding-vertical>
   <!-- Pull to Refresh -->
   <ion-refresher (ionRefresh)="doRefresh($event)"></ion-refresher>
 
   <!-- Logged In User Profile Pictures and Username -->
-  <p *ngIf="isLoggedInUser && lastLoginTime.length" class="profile-last-login-text">{{ 'LAST_LOGIN_TIME' | translate:{'%s': lastLoginTime } }}</p>
-  <div text-center>
+  <p padding-horizontal *ngIf="isLoggedInUser && lastLoginTime.length" class="profile-last-login-text">{{ 'LAST_LOGIN_TIME' | translate:{'%s': lastLoginTime } }}</p>
+  <div padding-horizontal text-center>
     <!-- <img class="custom-avatar" [src]="imageUri" (click)="isLoggedInUser && editPicture()" /> -->
     <ion-spinner *ngIf="isUploading"></ion-spinner>
     <p class="profile-name">{{ profile?.firstName }} {{ profile?.lastName }}</p>
@@ -31,7 +31,7 @@
     </div>
   </div>
 
-  <ion-item *ngIf="isLoggedInUser">
+  <ion-item padding-horizontal *ngIf="isLoggedInUser">
     <ion-row class="profile-completed-ion-row">
       <ion-col col-7 class="profile-completed-ion-col">
         <p class="profile-completed-text" *ngIf="profileProgress.length">{{ 'YOUR_PROFILE_IS' | translate:{'value': profileProgress} }}</p>
@@ -44,7 +44,7 @@
   </ion-item>
 
   <!-- Profile Description/ Profile Summary -->
-  <ion-item text-wrap *ngIf="profile?.profileSummary">
+  <ion-item padding-horizontal text-wrap *ngIf="profile?.profileSummary">
     <p class="section-title">{{ 'DESCRIPTION' | translate }}
       <ion-icon *ngIf="isLoggedInUser" (click)="toggleLock('profileSummary', 'DESCRIPTION')" float-end class="padding-left-5" name="{{ profile?.profileVisibility?.profileSummary == 'private' ? 'lock' : 'unlock' }}"></ion-icon>
     </p>
@@ -52,7 +52,7 @@
   </ion-item>
 
   <!-- Profile Education -->
-  <ion-list-header *ngIf="(profile?.education?.length && !isLoggedInUser) || isLoggedInUser" class="section-title" no-lines
+  <ion-list-header padding-horizontal *ngIf="(profile?.education?.length && !isLoggedInUser) || isLoggedInUser" class="section-title" no-lines
     no-padding>
     {{ 'TITLE_EDUCATION' | translate }}
     <span *ngIf="isLoggedInUser" float-right color="primary">
@@ -61,7 +61,7 @@
     </span>
   </ion-list-header>
 
-  <ion-item *ngFor="let ed of profile?.education">
+  <ion-item padding-horizontal *ngFor="let ed of profile?.education">
     <ion-row>
       <ion-col col-2 class="padding-left-none">
         <div class="image-holder">
@@ -84,7 +84,7 @@
   </ion-item>
 
   <!-- User Experience -->
-  <ion-list-header *ngIf="(profile?.jobProfile?.length && !isLoggedInUser) || isLoggedInUser" class="section-title" no-padding>
+  <ion-list-header padding-horizontal *ngIf="(profile?.jobProfile?.length && !isLoggedInUser) || isLoggedInUser" class="section-title" no-padding>
     {{ 'TITLE_EXPERIENCE' | translate }}
     <span *ngIf="isLoggedInUser" float-end color="primary">
       <span (click)="editExperience()">{{ 'ADD' | translate }}</span>
@@ -92,7 +92,7 @@
     </span>
   </ion-list-header>
 
-  <ion-item *ngFor="let job of profile?.jobProfile">
+  <ion-item padding-horizontal *ngFor="let job of profile?.jobProfile">
     <ion-row justify-content-start>
       <ion-col col-2 class="padding-left-none">
         <div class="image-holder">
@@ -118,7 +118,7 @@
 
 
   <!-- User Address Current/Permanent -->
-  <ion-list-header *ngIf="(profile?.address?.length && !isLoggedInUser) || isLoggedInUser" class="section-title" no-padding>
+  <ion-list-header padding-horizontal *ngIf="(profile?.address?.length && !isLoggedInUser) || isLoggedInUser" class="section-title" no-padding>
     {{ 'TITLE_ADDRESS' | translate }}
     <span *ngIf="isLoggedInUser" float-end color="primary">
       <span  *ngIf="profile?.address?.length < 2 "  (click)="editAddress()">{{ 'ADD' | translate }}</span>
@@ -126,7 +126,7 @@
     </span>
   </ion-list-header>
 
-  <ion-item *ngFor="let addr of profile?.address">
+  <ion-item padding-horizontal *ngFor="let addr of profile?.address">
     <ion-row justify-content-start>
       <ion-col col-2 class="padding-left-none">
         <div class="image-holder">
@@ -147,7 +147,7 @@
   </ion-item>
 
   <!-- User's Skills -->
-  <ion-list-header *ngIf="profile?.skills?.length" class="section-title" no-padding>
+  <ion-list-header padding-horizontal *ngIf="profile?.skills?.length" class="section-title" no-padding>
     {{ 'SKILL_TAGS' | translate }}
     <span *ngIf="isLoggedInUser" float-right color="primary">
       <span (click)="addSkillTags()">{{ 'ADD' | translate }}</span>
@@ -155,7 +155,7 @@
     </span>
   </ion-list-header>
 
-  <ion-list>
+  <ion-list padding-horizontal>
     <ion-row *ngFor="let skill of profile?.skills | slice : startLimit:paginationLimit; let i=index" class="skill-row">
       <ion-col class="ellipsis padding-left-10 skill-name-col" [attr.col-9]="isLoggedInUser ? '' : null" [attr.col-8]="!isLoggedInUser ? '' : null">{{ skill?.skillName }}</ion-col>
       <ion-col col-3 text-end class="padding-right-10 skill-count-col" [ngClass]="">
@@ -175,7 +175,7 @@
 
   <!-- User's Creations -->
   <div *ngIf="enrolledCourse && enrolledCourse.length && isLoggedInUser" class="courses-holder">
-    <span class="section-title">{{ 'CREATED_BY_ME' | translate }}</span>
+    <span padding-horizontal class="section-title">{{ 'CREATED_BY_ME' | translate }}</span>
     <ion-scroll scrollX="true" class="course-scroll-dimensions" no-padding>
       <div class="inner">
         <course-card *ngFor="let courseItem of enrolledCourse" [course]="courseItem" [layoutName]="'Popular'" [onProfile]="onProfile"></course-card>
@@ -184,12 +184,12 @@
   </div>
 
   <!-- User's Additional Information -->
-  <ion-list-header class="section-title" no-padding>
+  <ion-list-header padding-horizontal class="section-title">
     {{ 'ADDITIONAL_INFORMATION' | translate }}
     <ion-icon *ngIf="isLoggedInUser" float-end name="md-create" color="primary" (click)="editAdditionalInfo()"></ion-icon>
   </ion-list-header>
 
-  <ion-item class="additional-info" no-lines>
+  <ion-item padding-horizontal class="additional-info" no-lines>
     <ion-row *ngIf="profile?.language && profile?.language[0]">
       <ion-col col-5>
         <span text-uppercase class="info-title">{{ 'LANGUAGE' | translate }}</span>
