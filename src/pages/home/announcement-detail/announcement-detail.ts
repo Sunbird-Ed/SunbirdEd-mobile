@@ -125,9 +125,7 @@ export class AnnouncementDetailComponent implements OnInit {
 
         this.announcementService.updateAnnouncementState(req,
             (success: any) => {
-                console.log("Announce State Success - " + success);
             }, (error: any) => {
-                console.log("Announce State Error - " + error);
             })
     }
 
