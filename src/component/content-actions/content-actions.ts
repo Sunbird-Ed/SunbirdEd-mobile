@@ -5,7 +5,7 @@ import { NavController, PopoverController, Events } from 'ionic-angular/index';
 import { ViewController } from 'ionic-angular';
 import { Component } from '@angular/core';
 import { ContentService, AuthService } from 'sunbird';
-import { ToastController } from "ionic-angular";
+import { ToastController, Platform } from "ionic-angular";
 import { ReportIssuesComponent } from '../report-issues/report-issues';
 
 /**
@@ -25,6 +25,7 @@ export class ContentActionsComponent {
   isChild: boolean = false;
 
   contentId: string;
+  backButtonFunc = undefined;
 
   userId: string = '';
 
@@ -36,13 +37,18 @@ export class ContentActionsComponent {
     public popoverCtrl: PopoverController,
     private authService: AuthService,
     private events: Events,
-    private translate: TranslateService) {
+    private translate: TranslateService,
+    private platform: Platform) {
     this.content = this.navParams.get("content");
     if (this.navParams.get('isChild')) {
       this.isChild = true;
     }
 
     this.contentId = (this.content && this.content.identifier) ? this.content.identifier : '';
+    this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      this.viewCtrl.dismiss();
+      this.backButtonFunc();
+    }, 20);
     this.getUserId();
   }
 

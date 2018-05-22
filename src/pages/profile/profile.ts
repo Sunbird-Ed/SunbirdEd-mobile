@@ -55,7 +55,7 @@ export class ProfilePage {
   isLoggedInUser: boolean = false;
   isRefreshProfile: boolean = false;
   loggedInUserId: string = "";
-  lastLoginTime: string;
+  lastLoginTime: string = "";
 
   profileName: string;
   profileProgress: string = "";
@@ -450,7 +450,21 @@ export class ProfilePage {
    */
   editAdditionalInfo() {
     /* Required profile fields to pass to an Additional Info page */
-    let requiredProfileFields: Array<string> = ['userId', 'firstName', 'lastName', 'language', 'email', 'phone', 'profileSummary', 'subject', 'gender', 'dob', 'grade', 'location', 'webPages'];
+    let requiredProfileFields: Array<string> = [
+      'userId',
+      'firstName',
+      'lastName',
+      'language',
+      'email',
+      'phone',
+      'profileSummary',
+      'subject',
+      'gender',
+      'dob',
+      'grade',
+      'location',
+      'webPages'
+    ];
 
     this.navCtrl.push(AdditionalInfoComponent, {
       userId: this.loggedInUserId,
@@ -466,8 +480,11 @@ export class ProfilePage {
     this.profile.profileVisibility[field] = this.profile.profileVisibility[field] == "private" ? "public" : "private";
 
     if (!revert) {
-      let privacyString = (this.profile.profileVisibility[field] === "private") ? 'PRIVACY_HIDE_TEXT' : 'PRIVACY_SHOW_TEXT';
-      this.getToast(this.translateMessage(privacyString, this.translateMessage(fieldDisplayName).toLocaleLowerCase())).present();
+      if(this.profile.profileVisibility[field] === "private") {
+        this.getToast(this.translateMessage('PRIVACY_HIDE_TEXT', this.translateMessage(fieldDisplayName).toLocaleLowerCase())).present();
+      } else {
+        this.getToast(this.translateMessage('PRIVACY_SHOW_TEXT', _.capitalize(this.translateMessage(fieldDisplayName)))).present();
+      }
       this.setProfileVisibility(field);
     }
   }

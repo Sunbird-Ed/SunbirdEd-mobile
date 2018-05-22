@@ -495,6 +495,7 @@ export class CollectionDetailsPage {
       } else {
         console.warn('Inside ContentDetailsPage >>>');
         this.navCtrl.push(ContentDetailsPage, {
+          isChildContent: true,
           content: content,
           depth: depth
         })
@@ -765,11 +766,15 @@ export class CollectionDetailsPage {
 
   cancelDownload() {
     this.contentService.cancelDownload(this.identifier, (response) => {
-      this.showLoading = false;
-      this.navCtrl.pop();
+      this.zone.run(() => {
+        this.showLoading = false;
+        this.navCtrl.pop();
+      });
     }, (error) => {
-      this.showLoading = false;
-      this.navCtrl.pop();
+      this.zone.run(() => {
+        this.showLoading = false;
+        this.navCtrl.pop();
+      });
     });
   }
 }

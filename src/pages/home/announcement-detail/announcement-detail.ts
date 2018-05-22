@@ -8,7 +8,7 @@ import { File } from '@ionic-native/file';
 @Component({
     selector: 'announcement-detail',
     templateUrl: 'announcement-detail.html',
-    providers: [TelemetryService, AnnouncementService, AttachmentService]
+    providers: [TelemetryService, AnnouncementService]
 })
 /**
  * Generated class for the AnnouncementDetailComponent component.
@@ -83,8 +83,6 @@ export class AnnouncementDetailComponent implements OnInit {
         this.navCtrl = navCtrl;
         this.navParams = navParams;
         this.announcementService = announcementService;
-        this.attachmentService = attachmentService;
-        this.file = file;
         this.zone = zone;
         console.log('Course identifier ===> ', this.navParams.get('identifier'));
         this.announcementId = this.navParams.get('id');
@@ -171,7 +169,7 @@ export class AnnouncementDetailComponent implements OnInit {
      *
      * @param attachmentsLink
      */
-    downloadattachment(attachmentsLink) {
+   /* downloadattachment(attachmentsLink) {
         let url = attachmentsLink;
         let fileUrl = url.split("/");
         let attachmentFileName = fileUrl[fileUrl.length - 1];

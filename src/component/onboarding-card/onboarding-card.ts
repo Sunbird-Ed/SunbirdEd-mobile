@@ -1,6 +1,6 @@
 import { NavController, Slides, PopoverController, Events } from 'ionic-angular';
 import { Component, ViewChild } from '@angular/core';
-
+import * as _ from 'lodash';
 import { OnboardingService } from '../onboarding-card/onboarding.service';
 import { OnboardingAlert, onBoardingSlidesCallback } from './../onboarding-alert/onboarding-alert';
 
@@ -23,19 +23,35 @@ export class OnboardingCardComponent {
     this.initializeService();
 
     this.events.subscribe('refresh:onboardingcard', () => {
-      this.mSlides.slideTo(0, 500);
-      this.onboardingService.currentIndex = 0;
-      this.onboardingService.initializeCard();
+      //this.mSlides.slideTo(0, 500);
+      //this.onboardingService.currentIndex = 0;
+      this.onboardingService.initializeCard()
+      .then(index => {
+        setTimeout(() => {
+          if(index !== 0 && index !== 4) this.mSlides.slideTo(index, 500);
+        }, 500);
+      })
+      .catch(error => {
+
+      });
     });
   }
 
   initializeService() {
     if (!this.onboardingService.categories.length) {
-      this.onboardingService.initializeCard();
+      this.onboardingService.initializeCard()
+      .then(index => {
+        setTimeout(() => {
+          if(index !== 0 && index !== 4) this.mSlides.slideTo(index, 500);
+        }, 500);
+      })
+      .catch(error => {
+
+      });
     }
-    if (this.onboardingService.isOnBoardingCardCompleted) {
+    /* if (this.onboardingService.isOnBoardingCardCompleted) {
       this.onboardingService.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: true });
-    }
+    } */
   }
 
   /**
@@ -77,7 +93,33 @@ export class OnboardingCardComponent {
       }
     });
 
-    this.onboardingService.onBoardingSlides[index].selectedOptions = this.onboardingService.onBoardingSlides[index].selectedCode.join(", ");
+    /* if(index === 0) {
+      let boardDisplayValues = [];
+      this.onboardingService.onBoardingSlides[index].options.forEach(element => {
+        if(_.includes(this.onboardingService.onBoardingSlides[index].selectedCode, element.value)) {
+          boardDisplayValues.push(element.text);
+        }
+      });
+      this.onboardingService.onBoardingSlides[index].selectedOptions = boardDisplayValues;
+    } else if(index === 1) {
+      let gradeDisplayValues = [];
+      this.onboardingService.onBoardingSlides[index].options.forEach(element => {
+        if(_.includes(this.onboardingService.onBoardingSlides[index].selectedCode, element.value)) {
+          gradeDisplayValues.push(element.text);
+        }
+      });
+      this.onboardingService.onBoardingSlides[index].selectedOptions = gradeDisplayValues;
+    } else {
+      this.onboardingService.onBoardingSlides[index].selectedOptions = this.onboardingService.onBoardingSlides[index].selectedCode.join(", ");
+    } */
+
+    let displayValues = [];
+    this.onboardingService.onBoardingSlides[index].options.forEach(element => {
+      if(_.includes(this.onboardingService.onBoardingSlides[index].selectedCode, element.value)) {
+        displayValues.push(element.text);
+      }
+    });
+    this.onboardingService.onBoardingSlides[index].selectedOptions = this.onboardingService.arrayToString(displayValues);
 
     // If user Selected Something from the list then only move the slide to next slide
     if (this.onboardingService.onBoardingSlides[index].selectedOptions != '') {
@@ -110,5 +152,10 @@ export class OnboardingCardComponent {
     });
     popUp.present();
   }
-}
 
+  ionViewWillEnter() {
+    if(!this.onboardingService.currentIndex) {
+      this.mSlides.slideTo(0, 500);
+    }
+  }
+}

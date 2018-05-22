@@ -1,5 +1,5 @@
 .onboarding-alert .checkbox-scroll {
-    height: 185px;
+    max-height: 185px;
     overflow-y: scroll;
     padding-bottom: 50px;
 }
@@ -7,7 +7,7 @@
 .onboarding-alert .popover-content {
     margin: 0;
     width: 100% !important;
-    height: 54vh !important;
+    max-height: 54vh !important;
     box-shadow: unset;
     position: fixed;
     left: 0 !important;

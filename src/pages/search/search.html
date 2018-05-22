@@ -20,9 +20,9 @@
     <div ion-item no-margin *ngFor="let result of dialCodeResult" no-padding>
       <div no-lines class="collection-header" margin-start>
         <div class="collection-name">
-          <span>From </span>{{ result.name }}</div>
+          <span>{{'FROM' | translate}} </span>{{ result.name }}</div>
         <button ion-button clear no-padding class="view-collection" (click)="openCollection(result)">
-          View {{ result.contentType }} &nbsp;
+          {{'VIEW' | translate}} {{ result.contentType }} &nbsp;
           <ion-icon ios="ios-arrow-forward" md="ios-arrow-forward"></ion-icon>
         </button>
       </div>
@@ -87,25 +87,27 @@
           <span *ngFor="let gradelevel of content.gradeLevel; let i= index">{{i == 0 ? '' : ',' +' '}} {{ gradelevel }}
           </span>
         </div>
-        <div *ngIf="content.subject" class="subject inline-block"><span>{{ content.gradeLevel && content.gradeLevel.length ? '•' : '' }} {{ content.subject }}</span></div>
+        <div *ngIf="content.subject" class="subject inline-block">
+          <span>{{ content.gradeLevel && content.gradeLevel.length ? '•' : '' }} {{ content.subject }}</span>
+        </div>
         <div *ngIf="!content.subject" class="ellipsis">
           <span *ngFor="let gradelevel of content.gradeLevel; let i= index"> {{i == 0 ? '' : ',' + ' '}} {{ gradelevel }}
           </span>
         </div>
       </div>
-        <!-- <span *ngIf="!content.subject">
+      <!-- <span *ngIf="!content.subject">
           <span *ngIf="content.gradeLevel.length">
             <span *ngFor="let gradelevel of content.gradeLevel; let i= index">{{i == 0 ? '' : ',' +' '}} {{ gradelevel }}</span>
           </span>
         </span> -->
-        <!-- <span *ngIf="content.gradeLevel.length && !content.subject">
+      <!-- <span *ngIf="content.gradeLevel.length && !content.subject">
             <span  style="width:50%" *ngFor="let gradelevel of content.gradeLevel; let i= index">{{i == 0 ? '' : ',' +' '}} {{ gradelevel }}</span>
           </span> -->
-        <!-- <span *ngIf="content.gradeLevel.length<=2 && !content.subject">
+      <!-- <span *ngIf="content.gradeLevel.length<=2 && !content.subject">
               <span  style="width:50%" *ngFor="let gradelevel of content.gradeLevel; let i= index">{{i == 0 ? '' : ',' +' '}} {{ gradelevel }}</span>
             </span> -->
-        <!-- </span> -->
-        <!-- <span *ngIf="content.subject">{{ content.gradeLevel && content.gradeLevel.length ? '•' : '' }} {{ content.subject }}</span> -->
+      <!-- </span> -->
+      <!-- <span *ngIf="content.subject">{{ content.gradeLevel && content.gradeLevel.length ? '•' : '' }} {{ content.subject }}</span> -->
 
     </ion-item>
   </ion-list>
@@ -113,3 +115,14 @@
     {{ 'EMPTY_SEARCH_RESULTS' | translate }}</div>
 
 </ion-content>
+
+<ion-backdrop class="loading-backdrop" *ngIf="showLoading" text-center>
+  <div class="backdrop-container">
+    <ion-label>{{ loadingDisplayText }}</ion-label>
+    <pb-horizontal [progress]="downloadProgress" isOnBoardCard="false"></pb-horizontal>
+  </div>
+
+  <div class="backdrop-footer">
+    <button ion-button small class="cancel-btn" (click)="cancelDownload()">{{'CANCEL' | translate}}</button>
+  </div>
+</ion-backdrop>

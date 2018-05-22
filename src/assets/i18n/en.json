@@ -408,5 +408,6 @@
     "ADD_EXPERIENCE": "Add Experience",
     "ADD_AVATAR": "Add Avatar",
     "ADD_ADDRESS": "Add Address",
-    "ADD_LOCATION": "Add Location"
+    "ADD_LOCATION": "Add Location",
+    "ADDED": "added"
   }
