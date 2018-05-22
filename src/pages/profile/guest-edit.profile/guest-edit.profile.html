@@ -1,15 +1,52 @@
 <ion-header>
   <ion-navbar>
-    <ion-title>{{ 'EDIT_PROFILE' | translate }}</ion-title>
+    <ion-title>
+      <span *ngIf="mode==='edit'">{{ 'EDIT_PROFILE' | translate }}</span>
+      <span *ngIf="mode==='create'">{{'CREATE_PROFILE' | translate }}</span>
+    </ion-title>
+
+    <ion-buttons right *ngIf="mode==='create'">
+      <button ion-button icon-only (click)="download()">
+        <ion-icon name="download"></ion-icon>
+      </button>
+    </ion-buttons>
   </ion-navbar>
 </ion-header>
 
 <ion-content>
   <form [formGroup]="guestEditForm">
+
+    <ion-item no-lines class="user-type-label">
+      <ion-label>{{ 'USER_TYPE' | translate }}
+        <span ion-text color="danger">&nbsp;*</span>
+      </ion-label>
+    </ion-item>
+
+    <ion-row radio-group formControlName="userType" class="user-type-radio-buttons">
+      <ion-col col-auto >
+        <ion-item no-lines >
+          <ion-label text-capitalize>{{'STUDENT_ROLE' | translate }}</ion-label>
+          <ion-radio class="radio-padding" value="student" name="user" item-left></ion-radio>
+        </ion-item>    
+      </ion-col>
+      <ion-col>
+        <ion-item no-lines>
+          <ion-label text-capitalize>{{'TEACHER_ROLE' | translate }}</ion-label>
+          <ion-radio class="radio-padding" value="teacher" name="user" item-left></ion-radio>
+      </ion-item>
+      </ion-col>
+    </ion-row>
+
     <ion-item>
-      <ion-label stacked text-uppercase>{{ 'NAME' | translate }}</ion-label>
+      <ion-label stacked text-uppercase>{{ 'FULL_NAME' | translate }}
+        <span ion-text color="danger">&nbsp;*</span>
+      </ion-label>
       <ion-input formControlName="name" placeholder="{{'NAME_HINT' | translate }}"></ion-input>
     </ion-item>
+    <span *ngIf="guestEditForm.get('name').hasError('required') && guestEditForm.get('name').touched">
+      <font class="error">*Full Name is mendatory</font>
+    </span>
+
     <ion-item>
       <ion-label stacked text-uppercase>{{'BOARD' | translate }}
       </ion-label>
@@ -39,14 +76,20 @@
     <ion-item>
       <ion-label stacked text-uppercase>{{'MEDIUM' | translate }}
       </ion-label>
+<<<<<<< HEAD
+      <ion-select text-capitalize [disabled]="!(guestEditForm.value.subjects != '')" formControlName="medium" multiple="true" placeholder="{{'SELECT' | translate }}"
+        okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}">
+        <ion-option *ngFor="let medium of mediumList" text-capitalize value="{{medium}}">{{medium}}</ion-option>
+=======
       <ion-select text-capitalize [disabled]="!(guestEditForm.value.subjects != '')" formControlName="medium" multiple="true"
         placeholder="{{'SELECT' | translate }}" okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}">
         <ion-option *ngFor="let medium of mediumList" text-capitalize value="{{medium?.code}}">{{medium?.name}}</ion-option>
+>>>>>>> 3e445c61a0ce0622c0eada922fc69d92be877ad9
       </ion-select>
     </ion-item>
   </form>
 </ion-content>
 
 <ion-footer padding no-border>
-  <button ion-button block (click)="onSubmit()">{{'SAVE' | translate}}</button>
+  <button ion-button block (click)="onSubmit()" [disabled]="!guestEditForm.valid" >{{'SAVE' | translate}} </button>
 </ion-footer>

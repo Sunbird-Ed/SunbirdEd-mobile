@@ -27,6 +27,7 @@ export class GuestProfilePage {
   categories: Array<any> = []
   profile: any = {};
 
+
   constructor(public navCtrl: NavController,
     public popoverCtrl: PopoverController,
     private profileService: ProfileService,
@@ -64,13 +65,14 @@ export class GuestProfilePage {
   }
   editGuestProfile() {
     this.navCtrl.push(GuestEditProfilePage, {
-      profile: this.profile
+      profile: this.profile,
+      mode: 'edit'
     });
   }
 
   /**
-   * To show popover menu
-   * @param {object} event
+   * To show popover 
+   * @param {object} eventmenu
    */
   showOverflowMenu(event) {
     this.popoverCtrl.create(OverflowMenuComponent, {
