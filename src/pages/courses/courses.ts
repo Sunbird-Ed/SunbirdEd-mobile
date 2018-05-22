@@ -1,8 +1,9 @@
 import { ViewMoreActivityPage } from './../view-more-activity/view-more-activity';
 import { Component, OnInit, NgZone } from '@angular/core';
 import { NavController, Platform, PopoverController, Events, ToastController } from 'ionic-angular';
-import { IonicPage } from 'ionic-angular';
-import { CourseService, AuthService, PageAssembleService, PageAssembleCriteria, Impression, ImpressionType, PageId, Environment, TelemetryService, ProfileService, ContentDetailRequest, ContentService } from 'sunbird';
+import { IonicPage, Slides } from 'ionic-angular';
+import { SharedPreferences, CourseService, AuthService, EnrolledCoursesRequest, PageAssembleService, PageAssembleCriteria, QRScanner, FrameworkDetailsRequest, CategoryRequest, FrameworkService, Impression, ImpressionType, PageId, Environment, TelemetryService, ProfileService, ContentDetailRequest, ContentService } from 'sunbird';
+import { CourseCard } from './../../component/card/course/course-card';
 import { DocumentDirection } from 'ionic-angular/platform/platform';
 import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
@@ -10,6 +11,8 @@ import { CourseFilter, CourseFilterCallback } from './filters/course.filter';
 import { CourseDetailPage } from '../course-detail/course-detail';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
 import { ContentDetailsPage } from '../content-details/content-details';
+import * as _ from 'lodash';
+
 
 @IonicPage()
 @Component({
@@ -82,6 +85,7 @@ export class CoursesPage implements OnInit {
 
   isOnBoardingCardCompleted: boolean = false;
   onBoardingProgress: number = 0;
+  selectedLanguage = 'en';
 
   /**
    * Default method of class CoursesPage
@@ -93,8 +97,21 @@ export class CoursesPage implements OnInit {
    * @param {PageAssembleService} pageService Service to get latest and popular courses
    * @param {NgZone} ngZone To bind data
    */
-  constructor(navCtrl: NavController, courseService: CourseService, authService: AuthService, platform: Platform,
-    pageService: PageAssembleService, ngZone: NgZone, private qrScanner: SunbirdQRScanner, private popCtrl: PopoverController, public telemetryService: TelemetryService, private events: Events, private profileService: ProfileService, private contentService: ContentService, private toastCtrl: ToastController) {
+  constructor(navCtrl: NavController, 
+    courseService: CourseService, 
+    authService: AuthService, 
+    platform: Platform,
+    pageService: PageAssembleService, 
+    ngZone: NgZone, 
+    private qrScanner: SunbirdQRScanner, 
+    private popCtrl: PopoverController, 
+    private framework: FrameworkService, 
+    public telemetryService: TelemetryService, 
+    private events: Events, 
+    private profileService: ProfileService, 
+    private contentService: ContentService, 
+    private toastCtrl: ToastController,
+    private preference: SharedPreferences) {
     this.navCtrl = navCtrl;
     this.courseService = courseService;
     this.authService = authService;
@@ -102,6 +119,12 @@ export class CoursesPage implements OnInit {
     this.pageService = pageService;
     this.ngZone = ngZone;
 
+		this.preference.getString('selected_language_code', (val: string) => {
+			if (val && val.length) {
+				this.selectedLanguage = val;
+			}
+    });
+    
     this.events.subscribe('onboarding-card:completed', (param) => {
       this.isOnBoardingCardCompleted = param.isOnBoardingCardCompleted;
     });
@@ -109,6 +132,17 @@ export class CoursesPage implements OnInit {
     this.events.subscribe('onboarding-card:increaseProgress', (progress) => {
       this.onBoardingProgress = progress.cardProgress;
     });
+    this.events.subscribe('savedResources:update', (res) => {
+			if (res && res.update) {
+				this.getEnrolledCourses();
+			}
+    });
+    this.events.subscribe('onAfterLanguageChange:update', (res) => {
+			if (res && res.selectedLanguage) {
+				this.selectedLanguage = res.selectedLanguage;
+				this.getPopularAndLatestCourses();
+			}
+		});
   }
 
   viewMoreEnrolledCourses() {
@@ -167,6 +201,15 @@ export class CoursesPage implements OnInit {
         let newSections = [];
         sections.forEach(element => {
           element.display = JSON.parse(element.display);
+          if (element.display.name) {
+						if (_.has(element.display.name, this.selectedLanguage)) {
+							let langs = [];
+							_.forEach(element.display.name, function (value, key) {
+								langs[key] = value;
+							});
+							element.name = langs[this.selectedLanguage];
+						}
+					}
           newSections.push(element);
         });
         this.popularAndLatestCourses = newSections;
@@ -355,6 +398,15 @@ export class CoursesPage implements OnInit {
               let newSections = [];
               sections.forEach(element => {
                 element.display = JSON.parse(element.display);
+                if (element.display.name) {
+                  if (_.has(element.display.name, this.selectedLanguage)) {
+                    let langs = [];
+                    _.forEach(element.display.name, function (value, key) {
+                      langs[key] = value;
+                    });
+                    element.name = langs[this.selectedLanguage];
+                  }
+                }
                 newSections.push(element);
               });
               that.popularAndLatestCourses = newSections;

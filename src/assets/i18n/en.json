@@ -382,7 +382,7 @@
     "WARNING_INVALID_YEAR_OF_PASSING": "Invalid pass year. Enter four (yyyy) digits for year of passing",
     "WARNING_PLEASE_ADD_MANDATORY_DETAILS": "Enter mandatory details",
     "WARNING_PLEASE_MAKE_SOME_CHANGES": "Make changes",
-    "WEBLINKS": "Social media links",
+    "WEBLINKS": "Weblinks",
     "WELCOME_BACK": "WELCOME BACK {{%s}}",
     "WELCOME_M1": "Welcome to {{%s}}",
     "WELCOME_M2": "Structured education for the educators",
@@ -408,9 +408,13 @@
     "ADD_AVATAR": "Add Avatar",
     "ADD_ADDRESS": "Add Address",
     "ADD_LOCATION": "Add Location",
+<<<<<<< HEAD
     "USERS_AND_GROUPS": "USERS AND GROUPS",
     "USERS": "USERS",
     "LOGGED_IN_AS": "LOGGED IN AS",
     "CREATE_NEW_USER": "CREATE NEW USER"
     
+=======
+    "ADDED": "added"
+>>>>>>> 5b3f5c4ba144f9b9e84e5bf1ce038bbe28dfee4e
   }

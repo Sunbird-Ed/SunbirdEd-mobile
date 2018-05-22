@@ -17,25 +17,22 @@ page-resource-filter-options {
     }
   }
   .col {
-    height: 3.3em !important;
+    min-height: 3.3em !important;
   }
   .scroll-list {
     overflow-y: scroll;
-    height: 50vh !important; //padding-bottom: 10vh !important;
+    max-height: 50vh !important; //padding-bottom: 10vh !important;
   }
   .item-md {
     font-size: 1.3rem !important;
     font-weight: 600 !important;
-  }
-  ion-footer {
-    bottom: 15px !important;
   }
 }
 
 .resource-filter-options .popover-content {
   margin: 0;
   width: 100% !important;
-  height: 70% !important;
+  max-height: 70% !important;
   box-shadow: unset;
   position: fixed;
   left: 0 !important;

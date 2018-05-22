@@ -1,3 +1,4 @@
+import { ReportIssuesComponent } from './../../component/report-issues/report-issues';
 import { Component, NgZone, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, Platform, Navbar, PopoverController } from 'ionic-angular';
 import { ContentService, FileUtil, PageId, Environment, Mode, ImpressionType, TelemetryService,  Rollup, InteractType, InteractSubtype, ShareUtil } from 'sunbird';
@@ -9,6 +10,7 @@ import { ConfirmAlertComponent } from '../../component/confirm-alert/confirm-ale
 import { TranslateService } from '@ngx-translate/core';
 import { generateImpressionWithRollup, generateStartWithRollup, generateEndWithRollup, generateInteractEvent } from '../../app/telemetryutil';
 import { SocialSharing } from '@ionic-native/social-sharing';
+import { ContentRatingAlertComponent } from '../../component/content-rating-alert/content-rating-alert';
 
 /**
  * Generated class for the CollectionDetailsPage page.
@@ -184,6 +186,26 @@ export class CollectionDetailsPage {
       this.backButtonFunc();
     }, 10)
     this.objRollup = new Rollup();
+  }
+
+  /**
+   * Function to rate content
+   */
+  rateContent() {
+    // TODO: check content is played or not
+    let popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
+      content: this.contentDetail,
+    }, {
+        cssClass: 'content-rating-alert'
+      });
+    popUp.present({
+      ev: event
+    });
+    popUp.onDidDismiss(data => {
+      if (data === 'rating.success') {
+        this.navCtrl.pop();
+      }
+    });
   }
 
   /**
@@ -473,6 +495,7 @@ export class CollectionDetailsPage {
       } else {
         console.warn('Inside ContentDetailsPage >>>');
         this.navCtrl.push(ContentDetailsPage, {
+          isChildContent: true,
           content: content,
           depth: depth
         })
@@ -485,7 +508,8 @@ export class CollectionDetailsPage {
   resetVariables() {
     this.isDownloadStarted = false;
     this.showLoading = false;
-    this.downloadProgress = '';
+    // this.downloadProgress = '';
+    this.downloadProgress = 0;
     this.cardData = '';
     this.childrenData = [];
     this.contentDetail = '';
@@ -509,8 +533,15 @@ export class CollectionDetailsPage {
         data = JSON.parse(data);
         let res = data;
         console.log('event bus........', res);
+
         if (res.type === 'downloadProgress' && res.data.downloadProgress) {
-          this.downloadProgress = res.data.downloadProgress === -1 ? 0 : res.data.downloadProgress;
+          if (res.data.downloadProgress === -1 || res.data.downloadProgress === '-1') {
+            this.downloadProgress = 0;
+          } else {
+            this.downloadProgress = res.data.downloadProgress;
+          }
+
+          // this.downloadProgress = res.data.downloadProgress === -1 ? 0 : res.data.downloadProgress;
           if (this.downloadProgress === 100) {
             this.showLoading = false;
           }
@@ -615,7 +646,8 @@ export class CollectionDetailsPage {
    * Download single content
    */
   downloadAllContent(): void {
-    this.downloadProgress = '0 %';
+    // this.downloadProgress = '0 %';
+    this.downloadProgress = 0;
     this.showLoading = true;
     this.isDownloadStarted = true;
     this.downloadPercentage = 0;
@@ -626,7 +658,8 @@ export class CollectionDetailsPage {
    * Ionic life cycle hook
    */
   ionViewWillLeave(): void {
-    this.downloadProgress = '';
+    // this.downloadProgress = '';
+    this.downloadProgress = 0;
     this.events.unsubscribe('genie.event');
   }
 
@@ -664,17 +697,10 @@ export class CollectionDetailsPage {
       ev: event
     });
     popover.onDidDismiss(data => {
-      if (data === 0) {
-        this.translateAndDisplayMessage('MSG_RESOURCE_DELETED', false);
-        this.events.publish('savedResources:update', {
-          update: true
-        });
+      if (data === 'delete.success') {
         this.navCtrl.pop();
-        /*this.resetVariables();
-        this.setContentDetails(this.identifier, false);
-        this.events.publish('savedResources:update', {
-          update: true
-        });*/
+      } else if(data === 'flag.success') {
+        this.navCtrl.pop();
       }
     });
   }
@@ -740,11 +766,15 @@ export class CollectionDetailsPage {
 
   cancelDownload() {
     this.contentService.cancelDownload(this.identifier, (response) => {
-      this.showLoading = false;
-      this.navCtrl.pop();
+      this.zone.run(() => {
+        this.showLoading = false;
+        this.navCtrl.pop();
+      });
     }, (error) => {
-      this.showLoading = false;
-      this.navCtrl.pop();
+      this.zone.run(() => {
+        this.showLoading = false;
+        this.navCtrl.pop();
+      });
     });
   }
 }

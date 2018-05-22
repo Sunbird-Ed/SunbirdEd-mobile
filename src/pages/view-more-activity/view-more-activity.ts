@@ -1,4 +1,4 @@
-import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, LoadingController, Events } from 'ionic-angular';
 import { Component, NgZone, OnInit } from '@angular/core';
 import { ContentService, CourseService, PageAssembleService, TelemetryService, PageId, Environment, ImpressionType, Log, LogLevel } from 'sunbird';
 import * as _ from 'lodash';
@@ -115,7 +115,7 @@ export class ViewMoreActivityPage implements OnInit {
 	 */
 	constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, ngZone: NgZone,
 		loadingCtrl: LoadingController, pageService: PageAssembleService, courseService: CourseService
-		, private telemetryService: TelemetryService) {
+		, private telemetryService: TelemetryService, private events: Events) {
 		this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
 		this.contentService = contentService;
 		this.ngZone = ngZone;
@@ -124,6 +124,11 @@ export class ViewMoreActivityPage implements OnInit {
 		this.loadingCtrl = loadingCtrl;
 		this.pageService = pageService;
 		this.courseService = courseService;
+		this.events.subscribe('savedResources:update', (res) => {
+			if (res && res.update) {
+				this.getLocalContents();
+			}
+		});
 	}
 
 	/**

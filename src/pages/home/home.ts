@@ -189,12 +189,6 @@ export class HomePage implements OnInit {
 
   ionViewDidLoad() {
     this.refreshTenantData();
-    (<any>window).supportfile.makeEntryInSunbirdSupportFile((result) => {
-      console.log("Result - " + JSON.parse(result));
-      // this.storage.set(KEY_SUNBIRD_SUPPORT_FILE_PATH, JSON.parse(result));
-    }, (error) => {
-      console.log("Error - " + error);
-    });
   }
 
   refreshTenantData() {

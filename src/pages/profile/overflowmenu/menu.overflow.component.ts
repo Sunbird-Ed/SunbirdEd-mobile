@@ -4,7 +4,11 @@ import { NavController } from "ionic-angular/navigation/nav-controller";
 import { NavParams } from "ionic-angular/navigation/nav-params";
 import { ViewController } from "ionic-angular/navigation/view-controller";
 import { ToastController, App } from "ionic-angular";
+<<<<<<< Updated upstream
 import { UsersGroupsPage } from '../../users-groups/users-groups';
+=======
+import {UsersGroupsPage} from '../../users-groups/users-groups';
+>>>>>>> Stashed changes
 import { SettingsPage } from "../../settings/settings";
 import { OAuthService } from "sunbird";
 import { OnboardingPage } from "../../onboarding/onboarding";

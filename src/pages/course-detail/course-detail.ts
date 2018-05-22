@@ -1,5 +1,6 @@
+import { ContentRatingAlertComponent } from './../../component/content-rating-alert/content-rating-alert';
 import { Component, NgZone, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events, ToastController, Platform, Navbar } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Events, ToastController, Platform, Navbar, PopoverController } from 'ionic-angular';
 import { CourseBatchesPage } from './../course-batches/course-batches';
 import { ContentService, FileUtil, ImpressionType, PageId, Environment, TelemetryService, Start, Mode, End, AuthService } from 'sunbird';
 import * as _ from 'lodash';
@@ -91,6 +92,7 @@ export class CourseDetailPage {
   constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, private telemetryService: TelemetryService, zone: NgZone,
     private events: Events, toastCtrl: ToastController, private fileUtil: FileUtil,
     private platform: Platform,
+    public popoverCtrl: PopoverController,
     public authService: AuthService) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
@@ -103,13 +105,35 @@ export class CourseDetailPage {
       this.navCtrl.pop();
     }, 0)
     this.authService.getSessionData((res: string) => {
-			if (res === undefined || res === "null") {
+      if (res === undefined || res === "null") {
         this.userId = '';
-			} else {
+      } else {
         res = JSON.parse(res);
         this.userId = res["userToken"];
-			}
-		});
+      }
+    });
+  }
+
+  /**
+   * Function to rate content
+   */
+  rateContent() {
+    if (this.userId) {
+      // TODO: check content is played or not
+      let popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
+        content: this.course,
+      }, {
+          cssClass: 'onboarding-alert'
+        });
+      popUp.present({
+        ev: event
+      });
+      popUp.onDidDismiss(data => {
+        if (data === 'rating.success') {
+          this.navCtrl.pop();
+        }
+      });
+    }
   }
 
   /**
@@ -140,18 +164,21 @@ export class CourseDetailPage {
    * If not then make import content api call else make getChildContents api call to get children
    */
   extractApiResponse(data): void {
-    this.contentDetail = data.result.contentData ? data.result.contentData : [];
+    // this.contentDetail = data.result.contentData ? data.result.contentData : [];
     this.course = data.result.contentData ? data.result.contentData : [];
+    if (this.course.status != 'Live') {
+      this.navCtrl.pop();
+    }
     if (this.course.me_totalDownloads) {
       this.course.me_totalDownloads = this.course.me_totalDownloads.split('.')[0];
     }
 
-    this.objId = this.contentDetail.identifier;
-    this.objType = this.contentDetail.contentType;
-    this.objVer = this.contentDetail.pkgVersion;
+    this.objId = this.course.identifier;
+    this.objType = this.course.contentType;
+    this.objVer = this.course.pkgVersion;
 
-    this.generateStartEvent(this.contentDetail.identifier, this.contentDetail.contentType, this.contentDetail.pkgVersion);
-    this.generateImpressionEvent(this.contentDetail.identifier, this.contentDetail.contentType, this.contentDetail.pkgVersion);
+    this.generateStartEvent(this.course.identifier, this.course.contentType, this.course.pkgVersion);
+    this.generateImpressionEvent(this.course.identifier, this.course.contentType, this.course.pkgVersion);
     this.setCourseStructure();
 
     switch (data.result.isAvailableLocally) {

@@ -6,9 +6,9 @@
     </ion-navbar>
 </ion-header>
 
-<ion-content (ionScrollEnd)="onScrollEnd($event, user)">
+<ion-content (ionScrollEnd)="onScrollEnd($event)">
     <ion-list>
-        <ion-item *ngFor="let user of userList" (click)="user?.status && openUserProfile(user?.id)">
+        <ion-item *ngFor="let user of userList; let i=index; let last=last;" [id]="i" (click)="user?.status && openUserProfile(user?.id)">
             <ion-avatar item-start>
                 <!-- <img src="{{ user?.avatar || fallBackImage }}" class="avatar" /> -->
                 <img src="{{ fallBackImage }}" class="avatar" />
@@ -18,6 +18,7 @@
                 <ion-badge *ngIf="user?.status" color="title" item-end>{{ 'ACTIVE' | translate }}</ion-badge>
                 <ion-badge *ngIf="!user?.status" color="title" item-end>{{ 'INACTIVE' | translate }}</ion-badge>
             </div>
+            <span *ngIf="last" (load)="contentLoad()">{{last}}</span>
         </ion-item>
     </ion-list>
     <h6 *ngIf="!userList?.length && showEmptyMessage" text-center>{{'EMPTY_SEARCH_RESULTS' | translate}}</h6>
