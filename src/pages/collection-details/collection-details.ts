@@ -196,7 +196,7 @@ export class CollectionDetailsPage {
     let popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
       content: this.contentDetail,
     }, {
-        cssClass: 'onboarding-alert'
+        cssClass: 'content-rating-alert'
       });
     popUp.present({
       ev: event
@@ -207,7 +207,7 @@ export class CollectionDetailsPage {
       }
     });
   }
-  
+
   /**
    * To set content details in local variable
    *
@@ -532,7 +532,7 @@ export class CollectionDetailsPage {
         data = JSON.parse(data);
         let res = data;
         console.log('event bus........', res);
-        
+
         if (res.type === 'downloadProgress' && res.data.downloadProgress) {
           if (res.data.downloadProgress === -1 || res.data.downloadProgress === '-1') {
             this.downloadProgress = 0;
