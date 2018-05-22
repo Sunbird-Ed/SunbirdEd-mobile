@@ -483,7 +483,11 @@ export class ProfilePage {
       if(this.profile.profileVisibility[field] === "private") {
         this.getToast(this.translateMessage('PRIVACY_HIDE_TEXT', this.translateMessage(fieldDisplayName).toLocaleLowerCase())).present();
       } else {
-        this.getToast(this.translateMessage('PRIVACY_SHOW_TEXT', _.capitalize(this.translateMessage(fieldDisplayName)))).present();
+        if(fieldDisplayName === "SKILL_TAGS") {
+          this.getToast(this.translateMessage('PRIVACY_SHOW_TEXT', _.startCase(this.translateMessage(fieldDisplayName)))).present();
+        } else {
+          this.getToast(this.translateMessage('PRIVACY_SHOW_TEXT', _.capitalize(this.translateMessage(fieldDisplayName)))).present();
+        }
       }
       this.setProfileVisibility(field);
     }

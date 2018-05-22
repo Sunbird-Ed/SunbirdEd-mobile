@@ -140,18 +140,23 @@ export class AdditionalInfoComponent {
    * To Toggle the lock
    */
   toggleLock(field: string, fieldDisplayName: string, revert: boolean = false, ) {
-    this.zone.run(()=>{
+    this.zone.run(() => {
       this.profileVisibility[field] = this.profileVisibility[field] === "private" ? "public" : "private";
     });
 
-      if (!revert) {
-        if(this.profileVisibility[field] === "private") {
-          this.getToast(this.translateMessage('PRIVACY_HIDE_TEXT', this.translateMessage(fieldDisplayName).toLocaleLowerCase())).present();
+    if (!revert) {
+      if (this.profileVisibility[field] === "private") {
+        this.getToast(this.translateMessage('PRIVACY_HIDE_TEXT', this.translateMessage(fieldDisplayName).toLocaleLowerCase())).present();
+      } else {
+        if (fieldDisplayName === "CURRENT_LOCATION") {
+          this.getToast(this.translateMessage('PRIVACY_SHOW_TEXT', _.startCase(this.translateMessage(fieldDisplayName)))).present();
         } else {
           this.getToast(this.translateMessage('PRIVACY_SHOW_TEXT', _.capitalize(this.translateMessage(fieldDisplayName)))).present();
         }
-        this.setProfileVisibility(field);
+
       }
+      this.setProfileVisibility(field);
+    }
 
   }
 
