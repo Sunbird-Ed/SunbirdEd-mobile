@@ -1,5 +1,10 @@
 import { Component, NgZone, OnInit } from '@angular/core';
-import { PageAssembleService, PageAssembleCriteria, ContentService, AuthService, Impression, ImpressionType, PageId, Environment, TelemetryService, InteractType, InteractSubtype, ProfileService, ContentDetailRequest, SharedPreferences } from "sunbird";
+import {
+	PageAssembleService, PageAssembleCriteria, ContentService, AuthService,
+	Impression, ImpressionType, PageId, Environment, TelemetryService,
+	InteractType, InteractSubtype,
+	ProfileService, ContentDetailRequest, SharedPreferences
+} from "sunbird";
 import { NavController, PopoverController, Events, ToastController } from 'ionic-angular';
 import * as _ from 'lodash';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
@@ -11,6 +16,7 @@ import { CourseDetailPage } from '../course-detail/course-detail';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { TranslateService } from '@ngx-translate/core';
+import { ContentType, MimeType } from '../../app/app.constant';
 
 @Component({
 	selector: 'page-resources',
@@ -18,11 +24,10 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class ResourcesPage implements OnInit {
 
-	pageLoadedSuccess = false;
+	pageLoadedSuccess: boolean = false;
 
 	storyAndWorksheets: Array<any>;
 	selectedValue: Array<string> = [];
-
 
 	guestUser: boolean = false;
 
@@ -42,16 +47,6 @@ export class ResourcesPage implements OnInit {
 	 */
 	pageApiLoader: boolean = true;
 
-	/**
-	 * Contains reference of content service
-	 */
-	public contentService: ContentService;
-
-	/**
-	 * Auth service to get user id.
-	 */
-	public authService: AuthService;
-
 	isOnBoardingCardCompleted: boolean = false;
 	public source = "resource";
 
@@ -61,13 +56,15 @@ export class ResourcesPage implements OnInit {
 
 	filterIcon = "./assets/imgs/ic_action_filter.png";
 
-	selectedLanguage = 'en';
+	selectedLanguage: string = 'en';
 
 	noInternetConnection: boolean = false;
 
-	constructor(public navCtrl: NavController, private pageService: PageAssembleService, private ngZone: NgZone,
-		contentService: ContentService,
-		authService: AuthService,
+	constructor(public navCtrl: NavController,
+		private pageService: PageAssembleService,
+		private ngZone: NgZone,
+		private contentService: ContentService,
+		private authService: AuthService,
 		private qrScanner: SunbirdQRScanner,
 		private popCtrl: PopoverController,
 		private telemetryService: TelemetryService,
@@ -75,11 +72,7 @@ export class ResourcesPage implements OnInit {
 		private profileService: ProfileService,
 		private toastCtrl: ToastController,
 		private preference: SharedPreferences,
-		private translate: TranslateService,
-		private zone: NgZone
-	) {
-		this.contentService = contentService;
-		this.authService = authService;
+		private translate: TranslateService) {
 
 		this.preference.getString('selected_language_code', (val: string) => {
 			if (val && val.length) {
@@ -114,7 +107,10 @@ export class ResourcesPage implements OnInit {
 		this.profileService.getCurrentUser(
 			(res: any) => {
 				let profile = JSON.parse(res);
-				if (profile.board && profile.board.length && profile.grade && profile.grade.length && profile.medium && profile.medium.length && profile.subject && profile.subject.length) {
+				if (profile.board && profile.board.length
+					&& profile.grade && profile.grade.length
+					&& profile.medium && profile.medium.length
+					&& profile.subject && profile.subject.length) {
 					this.isOnBoardingCardCompleted = true;
 					this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
 				}
@@ -138,7 +134,7 @@ export class ResourcesPage implements OnInit {
 		// this.localResources = [];
 		this.showLoader = true;
 		const requestParams = {
-			contentTypes: ['Story', 'Worksheet', 'Collection', 'Game', 'TextBook', 'Resource', 'LessonPlan']
+			contentTypes: ContentType.FOR_LIBRARY_TAB
 		};
 		this.contentService.getAllLocalContents(requestParams, (data: any) => {
 			data = JSON.parse(data);
@@ -164,7 +160,6 @@ export class ResourcesPage implements OnInit {
 				this.showLoader = false;
 			})
 		});
-
 	}
 
 	/**
@@ -216,8 +211,8 @@ export class ResourcesPage implements OnInit {
 				this.pageApiLoader = false;
 				if (error === 'CONNECTION_ERROR') {
 					this.noInternetConnection = true;
-				} else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR'){
-					if(!isAfterLanguageChange) this.getMessageByConst('ERROR_FETCHING_DATA');
+				} else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
+					if (!isAfterLanguageChange) this.getMessageByConst('ERROR_FETCHING_DATA');
 				}
 			});
 		});
@@ -228,7 +223,7 @@ export class ResourcesPage implements OnInit {
 			message: message,
 			duration: 4000,
 			position: 'bottom'
-		  });
+		});
 		toast.present();
 	}
 
@@ -367,26 +362,16 @@ export class ResourcesPage implements OnInit {
 				Environment.HOME,
 				PageId.LIBRARY, null));
 
-		const contentType: Array<string> = [
-			"Story",
-			"Worksheet",
-			"Game",
-			"Collection",
-			"TextBook",
-			"LessonPlan",
-			"Resource",
-		];
-
-		this.navCtrl.push(SearchPage, { contentType: contentType, source: PageId.LIBRARY });
+		this.navCtrl.push(SearchPage, { contentType: ContentType.FOR_LIBRARY_TAB, source: PageId.LIBRARY });
 	}
 
 	showContentDetails(content) {
-		if (content.contentType === 'Course') {
+		if (content.contentType === ContentType.COURSE) {
 			console.log('Calling course details page');
 			this.navCtrl.push(CourseDetailPage, {
 				content: content
 			})
-		} else if (content.mimeType === 'application/vnd.ekstep.content-collection') {
+		} else if (content.mimeType === MimeType.COLLECTION) {
 			console.log('Calling collection details page');
 			this.navCtrl.push(CollectionDetailsPage, {
 				content: content
@@ -466,7 +451,7 @@ export class ResourcesPage implements OnInit {
 						that.pageApiLoader = false;
 						if (error === 'CONNECTION_ERROR') {
 							that.noInternetConnection = true;
-						} else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR'){
+						} else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
 							this.getMessageByConst('ERROR_FETCHING_DATA');
 						}
 					});
@@ -497,7 +482,7 @@ export class ResourcesPage implements OnInit {
 		if (flags.length && _.includes(flags, true)) {
 			console.log('search result found');
 		} else {
-			if(!isAfterLanguageChange) this.getMessageByConst('NO_CONTENTS_FOUND');
+			if (!isAfterLanguageChange) this.getMessageByConst('NO_CONTENTS_FOUND');
 		}
 	}
 }
