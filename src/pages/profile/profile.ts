@@ -72,11 +72,7 @@ export class ProfilePage {
   educationIcon: string = "assets/imgs/ic_businessman.png";
   locationIcon: string = "assets/imgs/ic_location.png";
   list: Array<String> = [
-<<<<<<< Updated upstream
     "USERS_AND_GROUPS",
-=======
-    "Users and Groups",
->>>>>>> Stashed changes
     "SETTINGS",
     "LOGOUT"
   ];

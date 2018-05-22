@@ -15,11 +15,9 @@ import { ProfileService, FrameworkDetailsRequest, FrameworkService } from 'sunbi
 export class GuestProfilePage {
 
   imageUri: string = "assets/imgs/ic_profile_default.png";
-<<<<<<< Updated upstream
+
   list: Array<String> = ['USERS_AND_GROUPS','SETTINGS'];
-=======
-  list: Array<String> = ['Users and groups','SETTINGS'];
->>>>>>> Stashed changes
+
 
   /* Temporary Language Constants */
   userName: string = "Teacher";
