@@ -62,7 +62,7 @@
     "cordova-plugin-file-support": "git+https://github.com/project-sunbird/cordova-plugin-file-support.git",
     "cordova-plugin-file-transfer": "^1.7.1",
     "cordova-plugin-genie-sdk": "git+https://github.com/project-sunbird/cordova-plugin-genie-sdk.git",
-    "cordova-plugin-geniecanvas": "git+https://github.com/project-sunbird/cordova-plugin-geniecanvas.git",
+    "cordova-plugin-geniecanvas": "git+https://github.com/project-sunbird/cordova-plugin-geniecanvas",
     "cordova-plugin-globalization": "^1.11.0",
     "cordova-plugin-imagechooser": "git+https://github.com/project-sunbird/cordova-plugin-imagechooser.git",
     "cordova-plugin-inappbrowser": "^2.0.2",

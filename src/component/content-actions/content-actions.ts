@@ -1,9 +1,12 @@
+import { TranslateService } from '@ngx-translate/core';
+import { CollectionDetailsPage } from './../../pages/collection-details/collection-details';
 import { NavParams } from 'ionic-angular/navigation/nav-params';
+import { NavController, PopoverController, Events } from 'ionic-angular/index';
 import { ViewController } from 'ionic-angular';
 import { Component } from '@angular/core';
-import { ContentService } from 'sunbird';
+import { ContentService, AuthService } from 'sunbird';
 import { ToastController } from "ionic-angular";
-
+import { ReportIssuesComponent } from '../report-issues/report-issues';
 
 /**
  * Generated class for the ContentActionsComponent component.
@@ -23,16 +26,41 @@ export class ContentActionsComponent {
 
   contentId: string;
 
-  constructor(public viewCtrl: ViewController, private contentService: ContentService,
-    private navParams: NavParams, private toastCtrl: ToastController) {
+  userId: string = '';
+
+  constructor(public viewCtrl: ViewController,
+    private contentService: ContentService,
+    private navCtrl: NavController,
+    private navParams: NavParams,
+    private toastCtrl: ToastController,
+    public popoverCtrl: PopoverController,
+    private authService: AuthService,
+    private events: Events,
+    private translate: TranslateService) {
     this.content = this.navParams.get("content");
     if (this.navParams.get('isChild')) {
       this.isChild = true;
     }
 
-    this.contentId = this.content.identifier;
+    this.contentId = (this.content && this.content.identifier) ? this.content.identifier : '';
+    this.getUserId();
   }
 
+  getUserId() {
+    this.authService.getSessionData((data: string) => {
+      let res = JSON.parse(data);
+      console.log('auth service...', res);
+      if (res === undefined || res === "null") {
+        this.userId = '';
+      } else {
+        this.userId = res["userToken"] ? res["userToken"] : '';
+      }
+    });
+  }
+
+  /**
+   * Construct content delete request body
+   */
   getDeleteRequestBody() {
     let apiParams = {
       contentDeleteList: [{
@@ -40,7 +68,6 @@ export class ContentActionsComponent {
         isChildContent: this.isChild
       }]
     }
-    console.log('Delete api request....', apiParams);
     return apiParams;
   }
 
@@ -50,26 +77,64 @@ export class ContentActionsComponent {
   close(event, i) {
     switch (i) {
       case 0: {
-        console.log('Delete troggered', this.content);
-        this.contentService.deleteContent(this.getDeleteRequestBody(), (res: any) => {
-          console.log('success data', res);
-          this.viewCtrl.dismiss(i);
-        }, (error: any) => {
-          console.log('delete error', error);
-          this.viewCtrl.dismiss(1);
-        })
+        this.deleteContent();
+        // this.viewCtrl.dismiss();
         break;
       }
       case 1: {
-        let toast = this.toastCtrl.create({
-          message: 'Report issue functionality is under progress',
-          duration: 3000,
-          position: 'bottom'
-        });
-        toast.present();
-        this.viewCtrl.dismiss(i);
+        this.viewCtrl.dismiss();
+        this.reportIssue();
         break;
       }
     }
+  }
+
+  deleteContent() {
+    this.contentService.deleteContent(this.getDeleteRequestBody(), (res: any) => {
+      let data = JSON.parse(res);
+      if (data.result && data.result.status === 'NOT_FOUND') {
+        this.showToaster('Content deleting failed');
+      } else {
+        // Publish saved resources update event
+        this.events.publish('savedResources:update', {
+          update: true
+        });
+        console.log('delete response: ', data);
+        this.showToaster(this.getMessageByConstant('MSG_RESOURCE_DELETED'));
+        this.viewCtrl.dismiss('delete.success');
+      }
+    }, (error: any) => {
+      console.log('delete response: ', error);
+      this.showToaster('Content deleting failed');
+      this.viewCtrl.dismiss();
+    })
+  }
+
+  reportIssue() {
+    let popUp = this.popoverCtrl.create(ReportIssuesComponent, {
+      content: this.content
+    }, {
+        cssClass: 'report-issue-box'
+      });
+    popUp.present();
+  }
+
+  showToaster(message) {
+    let toast = this.toastCtrl.create({
+      message: message,
+      duration: 2000,
+      position: 'bottom'
+    });
+    toast.present();
+  }
+
+  getMessageByConstant(constant: string) {
+    let msg = '';
+    this.translate.get(constant).subscribe(
+      (value: any) => {
+        msg = value;
+      }
+    );
+    return msg;
   }
 }

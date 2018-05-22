@@ -17,7 +17,7 @@
 <!-- Page body -->
 <ion-content padding overflow-scroll="true">
   <div class="content-details-holder" *ngIf="content">
-    <h6 class="font-size-20">{{ cardData.depth ? cardData.depth + ': ' : '' }}{{content.name}}</h6>
+    <h6 class="font-size-20">{{content.name}}</h6>
     <!-- Owner and download info -->
     <ion-grid class="padding-0" *ngIf="content.owner || content.size">
       <div *ngIf="content.owner">
@@ -30,7 +30,7 @@
             <span *ngIf="content.contentType" class="content-size">{{ content.contentType }}</span>
             <span class="content-size">[{{ content.size | fileSize }}]</span>
           </div>
-          <rating align-items-start *ngIf="content.me_averageRating" [(ngModel)]="content.me_averageRating" readOnly="true" max="5"
+          <rating align-items-start (click)="rateContent();" [(ngModel)]="content.me_averageRating" readOnly="true" max="5"
             no-padding></rating>
         </ion-col>
         <ion-col offset-2 *ngIf="content.me_totalDownloads">

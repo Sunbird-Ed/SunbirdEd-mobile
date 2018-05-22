@@ -1,3 +1,4 @@
+import { ContentRatingAlertComponent } from './content-rating-alert/content-rating-alert';
 // import { ContentActionsComponent } from './content-actions/content-actions';
 import { TranslateModule } from '@ngx-translate/core';
 import { PipesModule } from './../pipes/pipes.module';
@@ -15,6 +16,8 @@ import { OnboardingAlert } from './onboarding-alert/onboarding-alert';
 import { OnboardingService } from './onboarding-card/onboarding.service';
 import { PBHorizontal } from './pbhorizontal/pb-horizontal';
 import { ConfirmAlertComponent } from './confirm-alert/confirm-alert';
+import { ReportIssuesComponent } from './report-issues/report-issues';
+
 
 @NgModule({
     declarations: [
@@ -25,8 +28,10 @@ import { ConfirmAlertComponent } from './confirm-alert/confirm-alert';
         OnboardingCardComponent,
         OnboardingAlert,
         PBHorizontal,
-        ConfirmAlertComponent
-        // ContentActionsComponent
+        ConfirmAlertComponent,
+        // ContentActionsComponent,
+        ReportIssuesComponent,
+        ContentRatingAlertComponent
     ],
     imports: [
         IonicPageModule.forChild(CourseCard),
@@ -43,12 +48,16 @@ import { ConfirmAlertComponent } from './confirm-alert/confirm-alert';
         OnboardingCardComponent,
         OnboardingAlert,
         PBHorizontal,
-        ConfirmAlertComponent
+        ConfirmAlertComponent,
+        ReportIssuesComponent,
+        ContentRatingAlertComponent
         // ContentActionsComponent
     ],
     entryComponents: [
         OnboardingAlert,
-        ConfirmAlertComponent
+        ConfirmAlertComponent,
+        ReportIssuesComponent,
+        ContentRatingAlertComponent
     ],
     providers: [OnboardingService]
 })

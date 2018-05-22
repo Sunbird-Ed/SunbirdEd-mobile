@@ -1,12 +1,12 @@
+import { ContentRatingAlertComponent } from './../../component/content-rating-alert/content-rating-alert';
 import { ContentActionsComponent } from './../../component/content-actions/content-actions';
 import { Component, NgZone, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, PopoverController, Navbar, Platform } from 'ionic-angular';
-import { ContentService, FileUtil, ImpressionType, PageId, Environment, TelemetryService,  Mode, End, ShareUtil, InteractType, InteractSubtype, Rollup } from 'sunbird';
+import { ContentService, FileUtil, ImpressionType, PageId, Environment, TelemetryService, Mode, End, ShareUtil, InteractType, InteractSubtype, Rollup } from 'sunbird';
 import { SocialSharing } from "@ionic-native/social-sharing";
 import * as _ from 'lodash';
 import { generateInteractEvent, Map, generateImpressionWithRollup, generateStartWithRollup, generateInteractWithRollup } from '../../app/telemetryutil';
 import { TranslateService } from '@ngx-translate/core';
-
 
 @IonicPage()
 @Component({
@@ -40,12 +40,6 @@ export class ContentDetailsPage {
    */
   depth: string;
 
-
-  /**
-   * To show download button if content locally not available
-   */
-  showDownloadBtn: boolean = false;
-
   /**
    * Download started flag
    */
@@ -62,16 +56,9 @@ export class ContentDetailsPage {
   cancelDownloading: boolean = false;
 
   /**
-   * To play content
-   */
-  playContentBtn: boolean = false;
-
-  /**
    * Contains loader instance
    */
   loader: any;
-
-  downloadingText: string = 'DOWNLOADING... ';
 
   /**
    * Contains reference of content service
@@ -142,6 +129,30 @@ export class ContentDetailsPage {
   }
 
   /**
+   * Function to rate content
+   */
+  rateContent() {
+    // TODO: check content is played or not
+    if (this.content.downloadable) {
+      let popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
+        content: this.content,
+      }, {
+          cssClass: 'onboarding-alert'
+        });
+      popUp.present({
+        ev: event
+      });
+      popUp.onDidDismiss(data => {
+        if (data === 'rating.success') {
+          this.navCtrl.pop();
+        }
+      });
+    } else {
+      this.translateAndDisplayMessage('TRY_BEFORE_RATING', false);
+    }
+  }
+
+  /**
    * To set content details in local variable
    *
    * @param {string} identifier identifier of content / course
@@ -189,12 +200,10 @@ export class ContentDetailsPage {
       case true: {
         console.log("Content locally available. Lets play the content");
         this.content.size = data.result.sizeOnDevice;
-        // this.playContentBtn = true;
         break;
       }
       case false: {
         console.log("Content locally not available. Import started... @@@");
-        // this.showDownloadBtn = true;
         this.content.size = this.content.size;
         break;
       }
@@ -306,7 +315,6 @@ export class ContentDetailsPage {
    */
   showMessage(message: string, isPop: boolean | false): void {
     if (this.isDownloadStarted) {
-      // this.showDownloadBtn = true;
       this.content.downloadable = false;
       this.isDownloadStarted = false;
     }
@@ -337,7 +345,6 @@ export class ContentDetailsPage {
     _.forEach(identifiers, (value, key) => {
       requestParams.push({
         isChildContent: isChild,
-        // TODO - check with Anil for destination folder path
         destinationFolder: this.fileUtil.internalStoragePath(),
         contentId: value,
         correlationData: []
@@ -422,11 +429,16 @@ export class ContentDetailsPage {
 
   cancelDownload() {
     this.contentService.cancelDownload(this.identifier, (data: any) => {
-      this.isDownloadStarted = false;
-      this.downloadProgress = '';
-      this.content.downloadable = false;
+      this.zone.run(() => {
+        console.log('download cancel success', data);
+        this.isDownloadStarted = false;
+        this.downloadProgress = '';
+        this.content.downloadable = false;
+      });
     }, (error: any) => {
-      console.log('Error: download error =>>>>>', error)
+      this.zone.run(() => {
+        console.log('Error: download error =>>>>>', error)
+      })
     })
   }
 
