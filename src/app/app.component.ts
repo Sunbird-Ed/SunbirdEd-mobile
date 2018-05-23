@@ -2,7 +2,7 @@ import { Component, ViewChild, NgZone } from '@angular/core';
 import { Platform, ModalController, AlertController, Nav, App, ToastController, Events } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { TabsPage, AuthService, ContainerService, PermissionService, Interact, InteractType, InteractSubtype, Environment, TelemetryService, SharedPreferences } from "sunbird";
-import { initGuestTabs, initUserTabs } from './module.service';
+import { initGuestTabs, initUserTabs, TEACHER_TABS, STUDENT_TABS } from './module.service';
 import { LanguageSettingsPage } from '../pages/language-settings/language-settings';
 import { ImageLoaderConfig } from 'ionic-image-loader';
 import { TranslateService } from '@ngx-translate/core';
@@ -65,7 +65,7 @@ export class MyApp {
       permission.requestPermission(this.permissionList, (response) => {
 
         this.makeEntryInSupportFolder();
-        
+
       }, (error) => {
 
       })
@@ -75,14 +75,18 @@ export class MyApp {
           this.translate.use(val);
         }
       });
-      
+
       that.authService.getSessionData((session) => {
         if (session == "null") {
           this.preference.getString('selected_user_type', (val) => {
-
-            initGuestTabs(this.containerService);
-
             if (val != "") {
+
+              if (val == "teacher") {
+                initGuestTabs(this.containerService, TEACHER_TABS);              
+              } else if (val == "student") {
+                initGuestTabs(this.containerService, STUDENT_TABS);              
+              }
+              
               that.rootPage = TabsPage;
             } else {
               that.rootPage = LanguageSettingsPage;
@@ -118,7 +122,7 @@ export class MyApp {
 
   }
 
-  makeEntryInSupportFolder(){
+  makeEntryInSupportFolder() {
     (<any>window).supportfile.makeEntryInSunbirdSupportFile((result) => {
       console.log("Result - " + JSON.parse(result));
       this.preference.putString(KEY_SUNBIRD_SUPPORT_FILE_PATH, JSON.parse(result));
@@ -127,7 +131,7 @@ export class MyApp {
     });
   }
 
-  saveDefaultSyncSetting(){
+  saveDefaultSyncSetting() {
     this.preference.getString("sync_config", val => {
       if (val === undefined || val === "" || val === null) {
         this.preference.putString("sync_config", "ALWAYS_ON");
