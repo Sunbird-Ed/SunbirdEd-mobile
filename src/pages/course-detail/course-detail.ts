@@ -1,6 +1,6 @@
 import { ContentRatingAlertComponent } from './../../component/content-rating-alert/content-rating-alert';
 import { Component, NgZone, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events, ToastController, Platform, Navbar, PopoverController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Events, ToastController, Platform, Navbar, PopoverController, LoadingController } from 'ionic-angular';
 import { CourseBatchesPage } from './../course-batches/course-batches';
 import { ContentService, FileUtil, ImpressionType, PageId, Environment, TelemetryService, Start, Mode, End, AuthService } from 'sunbird';
 import * as _ from 'lodash';
@@ -93,6 +93,7 @@ export class CourseDetailPage {
     private events: Events, toastCtrl: ToastController, private fileUtil: FileUtil,
     private platform: Platform,
     public popoverCtrl: PopoverController,
+    private loadingCtrl: LoadingController,
     public authService: AuthService) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
@@ -142,6 +143,7 @@ export class CourseDetailPage {
    * @param {string} identifier identifier of content / course
    */
   setContentDetails(identifier, refreshContentDetails: boolean | true) {
+    let loader = this.getLoader();
     const option = { contentId: identifier, refreshContentDetails: refreshContentDetails }
     this.contentService.getContentDetail(option, (data: any) => {
       this.zone.run(() => {
@@ -150,11 +152,13 @@ export class CourseDetailPage {
         if (data && data.result) {
           this.extractApiResponse(data);
         }
+        loader.dismiss();
       });
     },
       error => {
         console.log('error while loading content details', error);
         const message = 'Something went wrong, please check after some time';
+        loader.dismiss();
         this.showErrorMessage(message, true);
       });
   }
@@ -171,6 +175,10 @@ export class CourseDetailPage {
     }
     if (this.course.me_totalDownloads) {
       this.course.me_totalDownloads = this.course.me_totalDownloads.split('.')[0];
+    }
+
+    if (this.course.gradeLevel && this.course.gradeLevel.length) {
+      this.course.gradeLevel = this.course.gradeLevel.join(", ");
     }
 
     this.objId = this.course.identifier;
@@ -414,5 +422,15 @@ export class CourseDetailPage {
    */
   navigateToBatchListPage(id: string): void {
     this.navCtrl.push(CourseBatchesPage, { identifier: this.identifier });
+  }
+
+  /**
+   * Function to get loader instance
+   */
+  getLoader(): any {
+    return this.loadingCtrl.create({
+      duration: 30000,
+      spinner: "crescent"
+    });
   }
 }

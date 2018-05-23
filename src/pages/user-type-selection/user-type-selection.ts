@@ -1,9 +1,10 @@
 import { Component, NgZone } from '@angular/core';
 import { NavController } from 'ionic-angular';
-import { TabsPage, SharedPreferences,  Interact, TelemetryService, InteractType, InteractSubtype, Environment, PageId, ImpressionType } from 'sunbird';
+import { TabsPage, SharedPreferences,  Interact, TelemetryService, InteractType, InteractSubtype, Environment, PageId, ImpressionType, ContainerService } from 'sunbird';
 import { TranslateService } from '@ngx-translate/core';
 import { ProfileType, ProfileService } from 'sunbird'
 import { generateImpressionEvent, Map } from '../../app/telemetryutil';
+import { initGuestTabs, TEACHER_TABS, STUDENT_TABS } from '../../app/module.service';
 
 const selectedCardBorderColor = '#006DE5';
 const borderColor = '#F7F7F7';
@@ -37,6 +38,7 @@ export class UserTypeSelectionPage {
     private preference: SharedPreferences,
     private profileService: ProfileService,
     private telemetryService: TelemetryService,
+    private container: ContainerService,
     private zone: NgZone
   ) {
     this.initData();
@@ -73,6 +75,7 @@ export class UserTypeSelectionPage {
       this.selectedUserType = "teacher";
       this.continueAs = this.translateMessage('CONTINUE_AS_TEACHER');
       this.preference.putString(KEY_SELECTED_USER_TYPE, this.selectedUserType);
+      initGuestTabs(this.container, TEACHER_TABS);
     });
   }
 
@@ -84,6 +87,7 @@ export class UserTypeSelectionPage {
       this.selectedUserType = "student";
       this.continueAs = this.translateMessage('CONTINUE_AS_STUDENT');
       this.preference.putString(KEY_SELECTED_USER_TYPE, this.selectedUserType)
+      initGuestTabs(this.container, STUDENT_TABS);
     });
   }
 

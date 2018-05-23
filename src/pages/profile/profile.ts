@@ -169,20 +169,21 @@ export class ProfilePage {
    * To refresh Profile data on pull to refresh or on click on the profile
    */
   refreshProfileData() {
+    let that = this;
     return new Promise((resolve, reject) => {
-      this.authService.getSessionData(session => {
+      that.authService.getSessionData(session => {
         if (session === undefined || session == null) {
           reject("session is null");
         } else {
           let sessionObj = JSON.parse(session);
-          this.loggedInUserId = sessionObj["userToken"];
-          if (this.userId && sessionObj["userToken"] === this.userId)
-            this.isLoggedInUser = true;
+          that.loggedInUserId = sessionObj["userToken"];
+          if (that.userId && sessionObj["userToken"] === that.userId)
+            that.isLoggedInUser = true;
 
           let req: UserProfileDetailsRequest = {
             userId:
-              this.userId && this.userId != sessionObj["userToken"]
-                ? this.userId
+              that.userId && that.userId != sessionObj["userToken"]
+                ? that.userId
                 : sessionObj["userToken"],
             requiredFields: [
               "completeness",
@@ -191,37 +192,37 @@ export class ProfilePage {
               "topics"
             ]
           };
-          if (this.isLoggedInUser) {
-            if (this.isRefreshProfile) {
+          if (that.isLoggedInUser) {
+            if (that.isRefreshProfile) {
               req.returnRefreshedUserProfileDetails = true;
-              this.isRefreshProfile = false;
+              that.isRefreshProfile = false;
             } else {
               req.refreshUserProfileDetails = true;
             }
           } else {
             req.returnRefreshedUserProfileDetails = true;
-            this.isRefreshProfile = false;
+            that.isRefreshProfile = false;
           }
 
-          this.userProfileService.getUserProfileDetails(
+          that.userProfileService.getUserProfileDetails(
             req,
             (res: any) => {
-              this.zone.run(() => {
-                this.resetProfile();
+              that.zone.run(() => {
+                that.resetProfile();
                 let r = JSON.parse(res);
-                this.profile = r.response;
+                that.profile = r.response;
                 if (r.response && r.response.avatar)
-                  this.imageUri = r.response.avatar;
-                this.searchContent();
-                this.formatLastLoginTime();
-                this.formatProfileProgress();
-                this.formatJobProfile();
-                if (!this.isLoggedInUser) this.formatSkills();
-                this.subjects = this.arrayToString(this.profile.subject);
-                this.languages = this.arrayToString(this.profile.language);
-                this.grades = this.arrayToString(this.profile.grade);
-                this.formatMissingFields();
-                this.formatSocialLinks();
+                  that.imageUri = r.response.avatar;
+                that.searchContent();
+                that.formatLastLoginTime();
+                that.formatProfileProgress();
+                that.formatJobProfile();
+                if (!that.isLoggedInUser) that.formatSkills();
+                that.subjects = that.arrayToString(that.profile.subject);
+                that.languages = that.arrayToString(that.profile.language);
+                that.grades = that.arrayToString(that.profile.grade);
+                that.formatMissingFields();
+                that.formatSocialLinks();
                 resolve();
               });
             },

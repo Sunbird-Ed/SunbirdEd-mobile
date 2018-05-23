@@ -13,6 +13,10 @@
 </ion-header>
 <ion-content>
   <div class="course-page-color">
+
+    <incomplete-profile-card *ngIf="isProfileIncomplete" (click)="completeProfile()">
+    </incomplete-profile-card>
+
     <div class="item padding-11">
       <span float-start class="scroll-heading">
         {{ 'To Do' | translate }}

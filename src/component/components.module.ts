@@ -4,6 +4,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { PipesModule } from './../pipes/pipes.module';
 import { NgModule } from "@angular/core";
 import { CourseCard } from "./card/course/course-card";
+import { IncompleteProfileCard } from "./card/incomplete-profile/incomplete-profile-card"
 
 import { HomeAnnouncementCard } from './card/home/home-announcement-card'
 import { IonicPageModule } from 'ionic-angular';
@@ -22,6 +23,7 @@ import { ReportIssuesComponent } from './report-issues/report-issues';
 @NgModule({
     declarations: [
         CourseCard,
+        IncompleteProfileCard,
         HomeAnnouncementCard,
         ViewMoreActivityListComponent,
         SignInCardComponent,
@@ -42,6 +44,7 @@ import { ReportIssuesComponent } from './report-issues/report-issues';
     ],
     exports: [
         CourseCard,
+        IncompleteProfileCard,
         HomeAnnouncementCard,
         ViewMoreActivityListComponent,
         SignInCardComponent,

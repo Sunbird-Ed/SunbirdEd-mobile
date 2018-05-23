@@ -4,11 +4,12 @@ import { NavController, NavParams } from 'ionic-angular';
 import { AnnouncementService, AttachmentService, TelemetryService, AnnouncementStatus } from 'sunbird';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { File } from '@ionic-native/file';
+import { FileTransfer } from '@ionic-native/file-transfer';
 
 @Component({
     selector: 'announcement-detail',
     templateUrl: 'announcement-detail.html',
-    providers: [TelemetryService, AnnouncementService]
+    providers: [TelemetryService, AnnouncementService, FileTransfer]
 })
 /**
  * Generated class for the AnnouncementDetailComponent component.
@@ -169,7 +170,7 @@ export class AnnouncementDetailComponent implements OnInit {
      *
      * @param attachmentsLink
      */
-   /* downloadattachment(attachmentsLink) {
+    downloadattachment(attachmentsLink) {
         let url = attachmentsLink;
         let fileUrl = url.split("/");
         let attachmentFileName = fileUrl[fileUrl.length - 1];

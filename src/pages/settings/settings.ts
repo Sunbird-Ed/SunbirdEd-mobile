@@ -98,7 +98,7 @@ export class SettingsPage {
       } else {
         this.fileUrl = "file://" + val;
         // Share via email
-        this.socialSharing.shareViaEmail('', '', ['support@diksha.gov.in'], null, null, this.fileUrl).then(() => {
+        this.socialSharing.shareViaEmail('', '', ['dummy@example.com'], null, null, this.fileUrl).then(() => {
           console.log("Share is possible");
         }).catch(error => {
           console.log("Share is not possible");
