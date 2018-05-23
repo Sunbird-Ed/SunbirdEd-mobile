@@ -27,6 +27,8 @@ import { FormEducation } from "../profile/education/form.education";
 import { FormAddress } from "../profile/address/form.address";
 import { FormExperience } from "../profile/experience/form.experience"
 import { AdditionalInfoComponent } from "../profile/additional-info/additional-info";
+import { Network } from '@ionic-native/network';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'page-home',
@@ -87,7 +89,9 @@ export class HomePage implements OnInit {
     private ngZone: NgZone,
     private userProfileService: UserProfileService,
     private qrScanner: SunbirdQRScanner,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private network: Network,
+    private translate: TranslateService
     // private storage: Storage
   ) {
     this.getUserId();
@@ -396,12 +400,11 @@ export class HomePage implements OnInit {
           that.showContentDetails(data.result);
         }, (error) => {
           console.log("Error " + error);
-          let toast = that.toastCtrl.create({
-            message: "No content found associated with that QR code",
-            duration: 3000
-          })
-
-          toast.present();
+          if (that.network.type === 'none') {
+						that.getMessageByConst('ERROR_NO_INTERNET_MESSAGE');
+					} else {
+						that.getMessageByConst('UNKNOWN_QR');
+					}
         });
       }
     }
@@ -427,5 +430,22 @@ export class HomePage implements OnInit {
       })
     }
   }
+
+  showMessage(message) {
+		let toast = this.toastCtrl.create({
+			message: message,
+			duration: 4000,
+			position: 'bottom'
+		});
+		toast.present();
+	}
+
+	getMessageByConst(constant) {
+		this.translate.get(constant).subscribe(
+			(value: any) => {
+				this.showMessage(value);
+			}
+		);
+	}
 
 }

@@ -17,6 +17,7 @@ import { CollectionDetailsPage } from '../collection-details/collection-details'
 import { ContentDetailsPage } from '../content-details/content-details';
 import { TranslateService } from '@ngx-translate/core';
 import { ContentType, MimeType } from '../../app/app.constant';
+import { Network } from '@ionic-native/network';
 
 @Component({
 	selector: 'page-resources',
@@ -72,7 +73,12 @@ export class ResourcesPage implements OnInit {
 		private profileService: ProfileService,
 		private toastCtrl: ToastController,
 		private preference: SharedPreferences,
-		private translate: TranslateService) {
+		private translate: TranslateService,
+		private zone: NgZone,
+		private network: Network
+	) {
+		this.contentService = contentService;
+		this.authService = authService;
 
 		this.preference.getString('selected_language_code', (val: string) => {
 			if (val && val.length) {
@@ -341,12 +347,13 @@ export class ResourcesPage implements OnInit {
 					that.showContentDetails(data.result);
 				}, (error) => {
 					console.log("Error " + error);
-					let toast = that.toastCtrl.create({
-						message: "No content found associated with that QR code",
-						duration: 3000
-					})
 
-					toast.present();
+					if (that.network.type === 'none') {
+						that.getMessageByConst('ERROR_NO_INTERNET_MESSAGE');
+					} else {
+						that.getMessageByConst('UNKNOWN_QR');
+					}
+
 				});
 			}
 		}
