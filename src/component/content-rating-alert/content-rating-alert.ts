@@ -19,12 +19,12 @@ export class ContentRatingAlertComponent {
 
   isDisable: boolean = false;
   userId: string = '';
-  rate: number = 0;
   comment: string = '';
   backButtonFunc = undefined;
   ratingCount: any;
   content: any;
   showCommentBox: boolean = false;
+  userRating: number = 0;
 
   /**
    * Default function of class ContentRatingAlertComponent
@@ -34,20 +34,21 @@ export class ContentRatingAlertComponent {
    * @param authService 
    * @param contentService 
    */
-  constructor(private navParams: NavParams, 
+  constructor(private navParams: NavParams,
     private viewCtrl: ViewController,
     private platform: Platform,
     private authService: AuthService,
     private translate: TranslateService,
     private toastCtrl: ToastController,
     private contentService: ContentService) {
-      this.backButtonFunc = this.platform.registerBackButtonAction(() => {
-        this.viewCtrl.dismiss();
-        this.backButtonFunc();
-      }, 10);
-    
-      this.content = this.navParams.get("content");
-      this.getUserId();
+    this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      this.viewCtrl.dismiss();
+      this.backButtonFunc();
+    }, 10);
+
+    this.content = this.navParams.get("content");
+    this.userRating =  this.navParams.get("rating");
+    this.getUserId();
   }
 
   /**
@@ -88,7 +89,7 @@ export class ContentRatingAlertComponent {
       comments: this.comment,
       contentVersion: this.content.versionKey
     }
-    this.viewCtrl.dismiss();
+
     this.contentService.sendFeedback(option, (res: any) => {
       console.log('success:', res);
       this.viewCtrl.dismiss('rating.success');
@@ -122,5 +123,5 @@ export class ContentRatingAlertComponent {
       }
     );
     return msg;
-  }  
+  }
 }

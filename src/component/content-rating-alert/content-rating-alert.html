@@ -11,7 +11,7 @@
     </ion-row>
     <br/>
     <ion-row style="display:inline">
-      <rating [(ngModel)]="rate" align-items-start readOnly="false" max="5" no-padding (ngModelChange)="rateContent($event)"></rating>
+      <rating [(ngModel)]="userRating" align-items-start readOnly="false" max="5" no-padding (ngModelChange)="rateContent($event)"></rating>
       <ion-input *ngIf="showCommentBox" [(ngModel)]="comment" class="feedback" placeholder="{{ 'FEEDBACK_HINT' | translate }}"></ion-input>
     </ion-row>
   </ion-grid>
