@@ -12,6 +12,8 @@ import { CourseDetailPage } from '../course-detail/course-detail';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
 import { ContentDetailsPage } from '../content-details/content-details';
 import * as _ from 'lodash';
+import { TranslateService } from '@ngx-translate/core';
+import { Network } from '@ionic-native/network';
 
 
 @IonicPage()
@@ -111,7 +113,9 @@ export class CoursesPage implements OnInit {
     private profileService: ProfileService, 
     private contentService: ContentService, 
     private toastCtrl: ToastController,
-    private preference: SharedPreferences) {
+    private preference: SharedPreferences,
+    private translate: TranslateService,
+    private network: Network) {
     this.navCtrl = navCtrl;
     this.courseService = courseService;
     this.authService = authService;
@@ -330,12 +334,11 @@ export class CoursesPage implements OnInit {
           that.showContentDetails(data.result);
         }, (error)=> {
           console.log("Error " + error);
-          let toast = that.toastCtrl.create({
-            message: "No content found associated with that QR code",
-            duration: 3000
-          })
-
-          toast.present();
+          if (that.network.type === 'none') {
+						that.getMessageByConst('ERROR_NO_INTERNET_MESSAGE');
+					} else {
+						that.getMessageByConst('UNKNOWN_QR');
+					}
         });
       }
     }
@@ -422,4 +425,21 @@ export class CoursesPage implements OnInit {
     let filter = this.popCtrl.create(CourseFilter, { callback: callback }, { cssClass: 'course-filter' });
     filter.present();
   }
+
+  showMessage(message) {
+		let toast = this.toastCtrl.create({
+			message: message,
+			duration: 4000,
+			position: 'bottom'
+		});
+		toast.present();
+	}
+
+	getMessageByConst(constant) {
+		this.translate.get(constant).subscribe(
+			(value: any) => {
+				this.showMessage(value);
+			}
+		);
+	}
 }
