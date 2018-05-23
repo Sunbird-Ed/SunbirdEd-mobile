@@ -27,6 +27,8 @@ import { FormEducation } from "../profile/education/form.education";
 import { FormAddress } from "../profile/address/form.address";
 import { FormExperience } from "../profile/experience/form.experience"
 import { AdditionalInfoComponent } from "../profile/additional-info/additional-info";
+import { PopoverController } from "ionic-angular/components/popover/popover-controller";
+import { IncompleteProfileData } from '../../component/card/incomplete-profile/incomplete-profile-data';
 
 @Component({
   selector: 'page-home',
@@ -66,6 +68,14 @@ export class HomePage implements OnInit {
     title: ""
   };
 
+  /**
+   * Flag to check if profile is incomplete
+   */
+  isProfileIncomplete: boolean = false;
+
+  profileProgress: string = "";
+
+  incompleteProfileData: IncompleteProfileData;
 
   /**
    * Default method of class CoursesPage
@@ -87,7 +97,9 @@ export class HomePage implements OnInit {
     private ngZone: NgZone,
     private userProfileService: UserProfileService,
     private qrScanner: SunbirdQRScanner,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    public popoverCtrl: PopoverController,
+
     // private storage: Storage
   ) {
     this.getUserId();
@@ -291,6 +303,8 @@ export class HomePage implements OnInit {
         this.ngZone.run(() => {
           let r = JSON.parse(res);
           this.profile = r.response;
+          this.incompleteProfileData = new IncompleteProfileData();
+          this.formatProfileProgress();
           this.formatMissingFields();
           this.getEnrolledCourses();
         });
@@ -317,6 +331,9 @@ export class HomePage implements OnInit {
             addForm: true,
             profile: this.profile
           }
+          this.isProfileIncomplete = true;
+          this.incompleteProfileData.completenessRequires = "+ Add Education";
+          this.incompleteProfileData.avatar = this.profile.avatar;
           break;
         case "jobProfile":
           this.uncompletedDetails.title = "+ Add Experience";
@@ -325,10 +342,16 @@ export class HomePage implements OnInit {
             addForm: true,
             profile: this.profile
           }
+          this.isProfileIncomplete = true;
+          this.incompleteProfileData.completenessRequires = "+ Add Experience";
+          this.incompleteProfileData.avatar = this.profile.avatar;
           break;
         case "avatar":
           this.uncompletedDetails.title = "+ Add Avatar";
           this.uncompletedDetails.page = "picture";
+          this.isProfileIncomplete = true;
+          this.incompleteProfileData.completenessRequires = "+ Add Avatar";
+          this.incompleteProfileData.avatar = "";
           break;
         case "address":
           this.uncompletedDetails.title = "+ Add Address";
@@ -337,6 +360,9 @@ export class HomePage implements OnInit {
             addForm: true,
             profile: this.profile
           };
+          this.isProfileIncomplete = true;
+          this.incompleteProfileData.completenessRequires = "+ Add Address";
+          this.incompleteProfileData.avatar = this.profile.avatar;
           break;
         case "location":
         case "profileSummary":
@@ -358,16 +384,46 @@ export class HomePage implements OnInit {
             'webPages'
           ];
 
-          this.uncompletedDetails.title = "+ " + this.profile.missingFields[0];
+          this.uncompletedDetails.title = "+ Add " + this.profile.missingFields[0];
           this.uncompletedDetails.page = AdditionalInfoComponent;
           this.uncompletedDetails.data = {
             userId: this.userId,
             profile: this.getSubset(requiredProfileFields, this.profile),
             profileVisibility: this.profile.profileVisibility
           }
+          this.isProfileIncomplete = true;
+          this.incompleteProfileData.completenessRequires = "+ Add " + this.profile.missingFields[0];
+          this.incompleteProfileData.avatar = this.profile.avatar;
           break;
       }
+
+      console.log("Incomplete profile details - " + this.incompleteProfileData)
     }
+  }
+
+  formatProfileProgress() {
+    this.profileProgress = String(this.profile.completeness);
+    this.incompleteProfileData.profileCompleteness = this.profileProgress;
+  }
+
+  completeProfile() {
+    if (this.uncompletedDetails.page == "picture") {
+      this.editPicture();
+    } else {
+      this.navCtrl.push(this.uncompletedDetails.page, this.uncompletedDetails.data);
+    }
+  }
+
+  /**
+    * Shows the pop up with current Image or open camera instead.
+     */
+  editPicture() {
+    // let popover = this.popoverCtrl.create(ImagePicker,
+    //   {
+    //     imageUri: this.imageUri,
+    //     profile: this.profile
+    //   });
+    // popover.present();
   }
 
   /**
