@@ -355,7 +355,9 @@ export class SearchPage {
 
     let isParentCheckStarted = false;
 
-    if (this.dialCodeResult.length == 1 && this.dialCodeResult[0].content.length == 1) {
+    let isAllContentMappedToCollection = contentArray.length == addedContent.length;
+
+    if (this.dialCodeResult.length == 1 && this.dialCodeResult[0].content.length == 1 && isAllContentMappedToCollection) {
       this.parentContent = this.dialCodeResult[0];
       this.childContent = this.dialCodeResult[0].content[0];
       this.checkParent(this.dialCodeResult[0], this.dialCodeResult[0].content[0]);
