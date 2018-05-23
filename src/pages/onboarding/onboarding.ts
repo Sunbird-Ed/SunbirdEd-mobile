@@ -1,10 +1,17 @@
 import { Component } from '@angular/core';
 import { NavController, LoadingController } from 'ionic-angular';
-import { TabsPage, OAuthService, ContainerService, UserProfileService, ProfileService, ProfileType, AuthService, TenantInfoRequest,  InteractType, InteractSubtype, Environment, TelemetryService, PageId, ImpressionType, SharedPreferences } from 'sunbird';
+import {
+  TabsPage, OAuthService, ContainerService,
+  UserProfileService, ProfileService, ProfileType,
+  AuthService, TenantInfoRequest,
+  InteractType, InteractSubtype, Environment, TelemetryService, PageId, ImpressionType,
+  SharedPreferences
+} from 'sunbird';
 import { UserTypeSelectionPage } from '../user-type-selection/user-type-selection';
 
-import { initGuestTabs, initUserTabs, STUDENT_TABS, TEACHER_TABS } from '../../app/module.service';
+import { initTabs, GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, LOGIN_TEACHER_TABS } from '../../app/module.service';
 import { generateInteractEvent, Map, generateImpressionEvent } from '../../app/telemetryutil';
+import { ProfileConstants } from '../../app/app.constant';
 
 @Component({
   selector: 'page-onboarding',
@@ -76,8 +83,7 @@ export class OnboardingPage {
         return that.auth.doOAuthStepTwo(token);
       })
       .then(() => {
-
-        initUserTabs(that.container);
+        initTabs(that.container, LOGIN_TEACHER_TABS);
         return that.refreshProfileData();
       })
       .then(slug => {
@@ -91,7 +97,6 @@ export class OnboardingPage {
         loader.dismiss();
         console.log(error);
       });
-
   }
 
   refreshTenantData(slug: string) {
@@ -123,7 +128,7 @@ export class OnboardingPage {
           let sessionObj = JSON.parse(session);
           let req = {
             userId: sessionObj["userToken"],
-            requiredFields: ["completeness", "missingFields", "lastLoginTime", "topics"],
+            requiredFields: ProfileConstants.REQUIRED_FIELDS,
             refreshUserProfileDetails: true
           };
           that.userProfileService.getUserProfileDetails(req, res => {
@@ -165,13 +170,13 @@ export class OnboardingPage {
         Environment.HOME,
         PageId.ONBOARDING,
         null));
-      this.preferences.getString('selected_user_type', (val) => {
-        if (val == "student") {
-          initGuestTabs(this.container, STUDENT_TABS);
-        } else if (val == "teacher") {
-          initGuestTabs(this.container, TEACHER_TABS);
-        }
-      });
+    this.preferences.getString('selected_user_type', (val) => {
+      if (val == ProfileType.STUDENT) {
+        initTabs(this.container, GUEST_STUDENT_TABS);
+      } else if (val == ProfileType.TEACHER) {
+        initTabs(this.container, GUEST_TEACHER_TABS);
+      }
+    });
     this.preferences.getString('GUEST_USER_ID_BEFORE_LOGIN', (val) => {
       if (val != "") {
         let profileRequest = {
@@ -197,8 +202,6 @@ export class OnboardingPage {
       }
     });
   }
-
-
 
   generateLoginInteractTelemetry(interactType, interactSubtype, uid) {
     let valuesMap = new Map();

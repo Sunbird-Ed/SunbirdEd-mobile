@@ -31,6 +31,7 @@ import { PopoverController } from "ionic-angular/components/popover/popover-cont
 import { IncompleteProfileData } from '../../component/card/incomplete-profile/incomplete-profile-data';
 import { Network } from '@ionic-native/network';
 import { TranslateService } from '@ngx-translate/core';
+import { ProfileConstants } from '../../app/app.constant';
 
 @Component({
   selector: 'page-home',
@@ -292,12 +293,7 @@ export class HomePage implements OnInit {
         this.userId && this.userId != sessionObj["userToken"]
           ? this.userId
           : sessionObj["userToken"],
-      requiredFields: [
-        "completeness",
-        "missingFields",
-        "lastLoginTime",
-        "topics"
-      ],
+      requiredFields: ProfileConstants.REQUIRED_FIELDS,
       refreshUserProfileDetails: true
     };
 
@@ -457,10 +453,10 @@ export class HomePage implements OnInit {
         }, (error) => {
           console.log("Error " + error);
           if (that.network.type === 'none') {
-						that.getMessageByConst('ERROR_NO_INTERNET_MESSAGE');
-					} else {
-						that.getMessageByConst('UNKNOWN_QR');
-					}
+            that.getMessageByConst('ERROR_NO_INTERNET_MESSAGE');
+          } else {
+            that.getMessageByConst('UNKNOWN_QR');
+          }
         });
       }
     }
@@ -488,20 +484,20 @@ export class HomePage implements OnInit {
   }
 
   showMessage(message) {
-		let toast = this.toastCtrl.create({
-			message: message,
-			duration: 4000,
-			position: 'bottom'
-		});
-		toast.present();
-	}
+    let toast = this.toastCtrl.create({
+      message: message,
+      duration: 4000,
+      position: 'bottom'
+    });
+    toast.present();
+  }
 
-	getMessageByConst(constant) {
-		this.translate.get(constant).subscribe(
-			(value: any) => {
-				this.showMessage(value);
-			}
-		);
-	}
+  getMessageByConst(constant) {
+    this.translate.get(constant).subscribe(
+      (value: any) => {
+        this.showMessage(value);
+      }
+    );
+  }
 
 }

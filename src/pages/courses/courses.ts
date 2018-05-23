@@ -219,7 +219,7 @@ export class CoursesPage {
     let that = this;
     return new Promise((resolve, reject) => {
       that.authService.getSessionData((session) => {
-        if (session === undefined || session == null || session === "null") {
+        if (session === null || session === "null") {
           console.log('session expired');
           that.guestUser = true;
           that.getCurrentUser();

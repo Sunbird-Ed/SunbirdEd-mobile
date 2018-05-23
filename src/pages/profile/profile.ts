@@ -28,6 +28,7 @@ import { UserSearchComponent } from "./user-search/user-search";
 import { ImagePicker } from "./imagepicker/imagepicker";
 import { generateInteractEvent } from "../../app/telemetryutil";
 import { TranslateService } from "@ngx-translate/core";
+import { ProfileConstants } from "../../app/app.constant";
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -172,7 +173,7 @@ export class ProfilePage {
     let that = this;
     return new Promise((resolve, reject) => {
       that.authService.getSessionData(session => {
-        if (session === undefined || session == null) {
+        if (session === null || session === "null") {
           reject("session is null");
         } else {
           let sessionObj = JSON.parse(session);
@@ -185,12 +186,7 @@ export class ProfilePage {
               that.userId && that.userId != sessionObj["userToken"]
                 ? that.userId
                 : sessionObj["userToken"],
-            requiredFields: [
-              "completeness",
-              "missingFields",
-              "lastLoginTime",
-              "topics"
-            ]
+            requiredFields: ProfileConstants.REQUIRED_FIELDS
           };
           if (that.isLoggedInUser) {
             if (that.isRefreshProfile) {
@@ -368,7 +364,7 @@ export class ProfilePage {
    * Redirects to the Address form and passes current form data if available
    */
   editAddress(isNewForm: boolean = true, addressDetails: any = {}) {
-    this.zone.run(()=> {
+    this.zone.run(() => {
       this.navCtrl.push(FormAddress, {
         addForm: isNewForm,
         addressDetails: addressDetails,
@@ -481,10 +477,10 @@ export class ProfilePage {
     this.profile.profileVisibility[field] = this.profile.profileVisibility[field] == "private" ? "public" : "private";
 
     if (!revert) {
-      if(this.profile.profileVisibility[field] === "private") {
+      if (this.profile.profileVisibility[field] === "private") {
         this.getToast(this.translateMessage('PRIVACY_HIDE_TEXT', this.translateMessage(fieldDisplayName).toLocaleLowerCase())).present();
       } else {
-        if(fieldDisplayName === "SKILL_TAGS") {
+        if (fieldDisplayName === "SKILL_TAGS") {
           this.getToast(this.translateMessage('PRIVACY_SHOW_TEXT', _.startCase(this.translateMessage(fieldDisplayName)))).present();
         } else {
           this.getToast(this.translateMessage('PRIVACY_SHOW_TEXT', _.capitalize(this.translateMessage(fieldDisplayName)))).present();
