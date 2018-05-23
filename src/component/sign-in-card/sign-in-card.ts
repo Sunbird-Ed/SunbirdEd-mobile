@@ -2,9 +2,13 @@ import { Component, NgZone, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { NavController, LoadingController } from 'ionic-angular';
 import { AppVersion } from "@ionic-native/app-version";
-import { OAuthService, ContainerService, UserProfileService, AuthService, TenantInfoRequest, TelemetryService, InteractType, InteractSubtype, Environment, PageId } from 'sunbird';
-import { initUserTabs } from '../../app/module.service';
+import {
+  OAuthService, ContainerService, UserProfileService, AuthService, TenantInfoRequest,
+  TelemetryService, InteractType, InteractSubtype, Environment, PageId
+} from 'sunbird';
+import { initTabs, LOGIN_TEACHER_TABS } from '../../app/module.service';
 import { generateInteractEvent } from '../../app/telemetryutil';
+import { ProfileConstants } from '../../app/app.constant';
 
 @Component({
   selector: 'sign-in-card',
@@ -19,14 +23,14 @@ import { generateInteractEvent } from '../../app/telemetryutil';
                     <button ion-button block (click)="singIn()" class="sign-in-btn">{{ 'SIGN_IN' | translate }}</button>
                   </ion-card-content>
             </ion-card>`,
-  styles:   [ `.sign-in-btn {
+  styles: [`.sign-in-btn {
                 border-radius: 4px !important;
               }
               .sign-in-card-text {
                 font-weight: 600 !important;
                 color: map-get($colors, primary_black) !important;
               }`
-            ]
+  ]
 })
 export class SignInCardComponent {
 
@@ -43,14 +47,13 @@ export class SignInCardComponent {
     private telemetryService: TelemetryService,
     private appVersion: AppVersion) {
 
-      this.appVersion.getAppName()
-        .then((appName: any) => {
-          this.sunbird = appName
-        });
+    this.appVersion.getAppName()
+      .then((appName: any) => {
+        this.sunbird = appName
+      });
   }
 
   singIn() {
-
     this.telemetryService.interact(
       generateInteractEvent(InteractType.TOUCH,
         InteractSubtype.SIGNIN_OVERLAY_CLICKED,
@@ -69,7 +72,7 @@ export class SignInCardComponent {
         return that.auth.doOAuthStepTwo(token);
       })
       .then(() => {
-        initUserTabs(that.container);
+        initTabs(that.container, LOGIN_TEACHER_TABS);
         return that.refreshProfileData();
       })
       .then(slug => {
@@ -99,7 +102,7 @@ export class SignInCardComponent {
           let sessionObj = JSON.parse(session);
           let req = {
             userId: sessionObj["userToken"],
-            requiredFields: ["completeness", "missingFields", "lastLoginTime", "topics"],
+            requiredFields: ProfileConstants.REQUIRED_FIELDS,
             refreshUserProfileDetails: true
           };
           that.userProfileService.getUserProfileDetails(req, res => {

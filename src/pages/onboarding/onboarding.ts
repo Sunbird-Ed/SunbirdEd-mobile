@@ -1,11 +1,18 @@
 import { Component, ViewChild } from '@angular/core';
 import { NavController, LoadingController, Navbar, Platform } from 'ionic-angular';
-import { TabsPage, OAuthService, ContainerService, UserProfileService, ProfileService, ProfileType, AuthService, TenantInfoRequest,  InteractType, InteractSubtype, Environment, TelemetryService, PageId, ImpressionType, SharedPreferences } from 'sunbird';
+import {
+  TabsPage, OAuthService, ContainerService,
+  UserProfileService, ProfileService, ProfileType,
+  AuthService, TenantInfoRequest,
+  InteractType, InteractSubtype, Environment, TelemetryService, PageId, ImpressionType,
+  SharedPreferences
+} from 'sunbird';
 import { UserTypeSelectionPage } from '../user-type-selection/user-type-selection';
 
-import { initGuestTabs, initUserTabs } from '../../app/module.service';
+import { initTabs, GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, LOGIN_TEACHER_TABS } from '../../app/module.service';
 import { generateInteractEvent, Map, generateImpressionEvent } from '../../app/telemetryutil';
 import { LanguageSettingsPage } from '../language-settings/language-settings';
+import { ProfileConstants } from '../../app/app.constant';
 
 @Component({
   selector: 'page-onboarding',
@@ -87,8 +94,7 @@ export class OnboardingPage {
         return that.auth.doOAuthStepTwo(token);
       })
       .then(() => {
-
-        initUserTabs(that.container);
+        initTabs(that.container, LOGIN_TEACHER_TABS);
         return that.refreshProfileData();
       })
       .then(slug => {
@@ -102,7 +108,6 @@ export class OnboardingPage {
         loader.dismiss();
         console.log(error);
       });
-
   }
 
   refreshTenantData(slug: string) {
@@ -134,7 +139,7 @@ export class OnboardingPage {
           let sessionObj = JSON.parse(session);
           let req = {
             userId: sessionObj["userToken"],
-            requiredFields: ["completeness", "missingFields", "lastLoginTime", "topics"],
+            requiredFields: ProfileConstants.REQUIRED_FIELDS,
             refreshUserProfileDetails: true
           };
           that.userProfileService.getUserProfileDetails(req, res => {
@@ -176,7 +181,13 @@ export class OnboardingPage {
         Environment.HOME,
         PageId.ONBOARDING,
         null));
-    initGuestTabs(this.container);
+    this.preferences.getString('selected_user_type', (val) => {
+      if (val == ProfileType.STUDENT) {
+        initTabs(this.container, GUEST_STUDENT_TABS);
+      } else if (val == ProfileType.TEACHER) {
+        initTabs(this.container, GUEST_TEACHER_TABS);
+      }
+    });
     this.preferences.getString('GUEST_USER_ID_BEFORE_LOGIN', (val) => {
       if (val != "") {
         let profileRequest = {
@@ -202,8 +213,6 @@ export class OnboardingPage {
       }
     });
   }
-
-
 
   generateLoginInteractTelemetry(interactType, interactSubtype, uid) {
     let valuesMap = new Map();

@@ -77,9 +77,6 @@ export class ResourcesPage implements OnInit {
 		private zone: NgZone,
 		private network: Network
 	) {
-		this.contentService = contentService;
-		this.authService = authService;
-
 		this.preference.getString('selected_language_code', (val: string) => {
 			if (val && val.length) {
 				this.selectedLanguage = val;
@@ -470,6 +467,7 @@ export class ResourcesPage implements OnInit {
 			callback: callback
 		}
 
+		// Already apllied filter
 		if (this.resourceFilter) {
 			filterOptions['filter'] = this.resourceFilter;
 		}

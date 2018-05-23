@@ -25,3 +25,8 @@ export class MimeType {
 export class Search {
     public static readonly FACETS = ['board', 'gradeLevel', 'subject', 'medium', 'contentType'];
 }
+
+export class ProfileConstants {
+    public static readonly USER_TOKEN = 'userToken';
+    public static readonly REQUIRED_FIELDS = ['completeness', 'missingFields', 'lastLoginTime', 'topics'];
+}
