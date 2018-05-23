@@ -40,7 +40,7 @@
 		<div class="about-section" *ngIf="course.description || course.gradeLevel || course.subject">
 			<h6 class="padding-10 background-gray font-size-20">{{ 'ABOUT' | translate }}</h6>
 			<p *ngIf="!showMoreFlag">
-				{{ (course.description && course.description.length > 100) ? (course.description | slice:0:10) + '...' : (course.description)
+				{{ (course.description && course.description.length > 100) ? (course.description | slice:0:100) + '...' : (course.description)
 				}} </p>
 			<div class="course-details" *ngIf="showMoreFlag">
 				<p *ngIf="course.description && course.description.length">
@@ -48,9 +48,9 @@
 				</p>
 				<div *ngIf="course.gradeLevel && course.gradeLevel.length" margin-top>
 					<div class="content-meta-title">{{ 'GRADE' | translate }}:</div>
-					<span *ngFor="let grade of course.gradeLevel">
-						<span>{{grade}}</span>
-					</span>
+					<!-- <span *ngFor="let grade of course.gradeLevel"> -->
+						<span class="text-gray-color">{{course.gradeLevel}}</span>
+					<!-- </span> -->
 				</div>
 				<div *ngIf="course.subject" margin-top>
 					<div class="content-meta-title">{{ 'SUBJECT' | translate }}:</div>
