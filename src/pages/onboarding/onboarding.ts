@@ -3,7 +3,7 @@ import { NavController, LoadingController } from 'ionic-angular';
 import { TabsPage, OAuthService, ContainerService, UserProfileService, ProfileService, ProfileType, AuthService, TenantInfoRequest,  InteractType, InteractSubtype, Environment, TelemetryService, PageId, ImpressionType, SharedPreferences } from 'sunbird';
 import { UserTypeSelectionPage } from '../user-type-selection/user-type-selection';
 
-import { initGuestTabs, initUserTabs } from '../../app/module.service';
+import { initGuestTabs, initUserTabs, STUDENT_TABS, TEACHER_TABS } from '../../app/module.service';
 import { generateInteractEvent, Map, generateImpressionEvent } from '../../app/telemetryutil';
 
 @Component({
@@ -165,7 +165,13 @@ export class OnboardingPage {
         Environment.HOME,
         PageId.ONBOARDING,
         null));
-    initGuestTabs(this.container);
+      this.preferences.getString('selected_user_type', (val) => {
+        if (val == "student") {
+          initGuestTabs(this.container, STUDENT_TABS);
+        } else if (val == "teacher") {
+          initGuestTabs(this.container, TEACHER_TABS);
+        }
+      });
     this.preferences.getString('GUEST_USER_ID_BEFORE_LOGIN', (val) => {
       if (val != "") {
         let profileRequest = {
