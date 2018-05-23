@@ -1,20 +1,23 @@
-import { Component } from '@angular/core';
-import { NavController, LoadingController } from 'ionic-angular';
+import { Component, ViewChild } from '@angular/core';
+import { NavController, LoadingController, Navbar, Platform } from 'ionic-angular';
 import { TabsPage, OAuthService, ContainerService, UserProfileService, ProfileService, ProfileType, AuthService, TenantInfoRequest,  InteractType, InteractSubtype, Environment, TelemetryService, PageId, ImpressionType, SharedPreferences } from 'sunbird';
 import { UserTypeSelectionPage } from '../user-type-selection/user-type-selection';
 
 import { initGuestTabs, initUserTabs } from '../../app/module.service';
 import { generateInteractEvent, Map, generateImpressionEvent } from '../../app/telemetryutil';
+import { LanguageSettingsPage } from '../language-settings/language-settings';
 
 @Component({
   selector: 'page-onboarding',
   templateUrl: 'onboarding.html',
 })
 export class OnboardingPage {
+  @ViewChild(Navbar) navBar: Navbar;
 
   slides: any[];
   sunbird: string = "SUNBIRD";
   orgName: string;
+  backButtonFunc: any = undefined;
 
   constructor(public navCtrl: NavController,
     private auth: OAuthService,
@@ -24,7 +27,8 @@ export class OnboardingPage {
     private authService: AuthService,
     private telemetryService: TelemetryService,
     private loadingCtrl: LoadingController,
-    private preferences: SharedPreferences
+    private preferences: SharedPreferences,
+    private platform: Platform
   ) {
 
     this.slides = [
@@ -43,11 +47,18 @@ export class OnboardingPage {
         'imageUri': 'assets/imgs/ic_onboard_3.png',
         'desc': 'ONBOARD_SLIDE_DESC_3'
       }*/
-    ]
+    ];
+    this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      this.navCtrl.setRoot(LanguageSettingsPage);
+    }, 10);
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad OnboardingPage');
+    this.navBar.backButtonClick = (e:UIEvent)=>{
+      this.navCtrl.setRoot(LanguageSettingsPage);
+     }
+
   }
 
   ionViewDidEnter() {
