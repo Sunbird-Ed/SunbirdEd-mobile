@@ -4,7 +4,7 @@
 
 <ion-content padding>
 
-  <ion-label class="font-size-17" text-center padding>{{ 'CHOOSE_LANGUAGE' | translate }}</ion-label>
+  <ion-label class="font-size-17" text-center padding><b>{{ 'CHOOSE_LANGUAGE' | translate }}</b></ion-label>
 
   <ion-list inset mode="ios" radio-group [(ngModel)]="language" (ionChange)="onLanguageSelected()">
     <ion-item mode="ios" *ngFor="let language of languages">

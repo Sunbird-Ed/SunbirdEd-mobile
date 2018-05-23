@@ -74,18 +74,17 @@ export class LanguageSettingsPage {
       }
     ];
 
-    this.preferences.getString(KEY_SELECTED_LANGUAGE_CODE, val => {
-      if (val === undefined || val === "" || val === null) {
-        console.error("Language not set");
-        this.getDeviceLanguage();
-        this.previousLanguage = undefined;
-      } else {
-        this.previousLanguage = val;
-        this.language = val;
-      }
-    });
-
     this.zone.run(() => {
+      this.preferences.getString(KEY_SELECTED_LANGUAGE_CODE, val => {
+        if (val === undefined || val === "" || val === null) {
+          console.error("Language not set");
+          this.getDeviceLanguage();
+          this.previousLanguage = undefined;
+        } else {
+          this.previousLanguage = val;
+          this.language = val;
+        }
+      });
       this.isFromSettings = this.navParams.get('isFromSettings');
     });
 
