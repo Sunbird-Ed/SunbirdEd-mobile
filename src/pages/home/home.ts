@@ -31,7 +31,7 @@ import { PopoverController } from "ionic-angular/components/popover/popover-cont
 import { IncompleteProfileData } from '../../component/card/incomplete-profile/incomplete-profile-data';
 import { Network } from '@ionic-native/network';
 import { TranslateService } from '@ngx-translate/core';
-import { ProfileConstants } from '../../app/app.constant';
+import { ProfileConstants, ContentType, MimeType } from '../../app/app.constant';
 
 @Component({
   selector: 'page-home',
@@ -465,12 +465,12 @@ export class HomePage implements OnInit {
   }
 
   showContentDetails(content) {
-    if (content.contentType === 'Course') {
+    if (content.contentType === ContentType.COURSE) {
       console.log('Calling course details page');
       this.navCtrl.push(CourseDetailPage, {
         content: content
       })
-    } else if (content.mimeType === 'application/vnd.ekstep.content-collection') {
+    } else if (content.mimeType === MimeType.COLLECTION) {
       console.log('Calling collection details page');
       this.navCtrl.push(CollectionDetailsPage, {
         content: content

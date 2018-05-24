@@ -9,6 +9,7 @@ import { ContentDetailsPage } from '../content-details/content-details';
 import { ContentActionsComponent } from '../../component/content-actions/content-actions';
 import { ReportIssuesComponent } from '../../component/report-issues/report-issues';
 import { TranslateService } from '@ngx-translate/core';
+import { ContentType, MimeType } from '../../app/app.constant';
 
 /**
  * Generated class for the EnrolledCourseDetailsPage page.
@@ -370,13 +371,13 @@ export class EnrolledCourseDetailsPage {
    */
   navigateToChildrenDetailsPage(content, depth): void {
     this.zone.run(() => {
-      if (content.contentType === 'Course') {
+      if (content.contentType === ContentType.COURSE) {
         console.warn('Inside CourseDetailPage >>>');
         this.navCtrl.push(CourseDetailPage, {
           content: content,
           depth: depth
         })
-      } else if (content.mimeType === 'application/vnd.ekstep.content-collection') {
+      } else if (content.mimeType === MimeType.COLLECTION) {
         console.warn('Inside CollectionDetailsPage >>>');
         this.navCtrl.push(CollectionDetailsPage, {
           content: content,

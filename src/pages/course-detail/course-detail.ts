@@ -2,9 +2,10 @@ import { ContentRatingAlertComponent } from './../../component/content-rating-al
 import { Component, NgZone, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, Platform, Navbar, PopoverController, LoadingController } from 'ionic-angular';
 import { CourseBatchesPage } from './../course-batches/course-batches';
-import { ContentService, FileUtil, ImpressionType, PageId, Environment, TelemetryService, Start, Mode, End, AuthService } from 'sunbird';
+import { ContentService, FileUtil, ImpressionType, PageId, Environment, TelemetryService, Start, Mode, End, AuthService, InteractType, InteractSubtype, ShareUtil, BuildParamService } from 'sunbird';
 import * as _ from 'lodash';
-import { generateImpressionEvent } from '../../app/telemetryutil';
+import { generateImpressionEvent, generateInteractEvent } from '../../app/telemetryutil';
+import { SocialSharing } from '@ionic-native/social-sharing';
 
 /**
  * Generated class for the CourseDetailPage page.
@@ -88,13 +89,18 @@ export class CourseDetailPage {
   private objId;
   private objType;
   private objVer;
+  private baseUrl = "";
+
   @ViewChild(Navbar) navBar: Navbar;
   constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, private telemetryService: TelemetryService, zone: NgZone,
     private events: Events, toastCtrl: ToastController, private fileUtil: FileUtil,
     private platform: Platform,
     public popoverCtrl: PopoverController,
+    public authService: AuthService,
+    private social: SocialSharing,
+    private shareUtil: ShareUtil,
     private loadingCtrl: LoadingController,
-    public authService: AuthService) {
+    private buildParamService: BuildParamService) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
@@ -113,6 +119,12 @@ export class CourseDetailPage {
         this.userId = res["userToken"];
       }
     });
+
+    this.buildParamService.getBuildConfigParam("BASE_URL", (response: any) => {
+      this.baseUrl=response
+    }, (error) => {
+      return "";
+    });
   }
 
   /**
@@ -123,6 +135,7 @@ export class CourseDetailPage {
       // TODO: check content is played or not
       let popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
         content: this.course,
+        pageId: PageId.COURSE_DETAIL
       }, {
           cssClass: 'onboarding-alert'
         });
@@ -137,6 +150,32 @@ export class CourseDetailPage {
     }
   }
 
+  share() {
+    this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_COURSE_INITIATED, this.course.contentType);
+    let loader = this.getLoader();
+    loader.present();
+    let url =  this.baseUrl+"/public/#!/content/" + + this.course.identifier;
+    if (this.course.isAvailableLocally) {
+      this.shareUtil.exportEcar(this.course.identifier, path => {
+        loader.dismiss();
+        this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_COURSE_SUCCESS, this.course.contentType);
+        this.social.share("", "", "file://" + path, url);
+      }, error => {
+        loader.dismiss();
+        let toast = this.toastCtrl.create({
+          message: "Unable to share content.",
+          duration: 2000,
+          position: 'bottom'
+        });
+        toast.present();
+      });
+    } else {
+      loader.dismiss();
+      this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_COURSE_SUCCESS, this.course.contentType);
+      this.social.share("", "", "", url);
+    }
+  }
+  
   /**
    * To set content details in local variable
    *
@@ -349,6 +388,17 @@ export class CourseDetailPage {
     end.objType = objectType;
     end.objVer = objectVersion;
     this.telemetryService.end(end);
+  }
+
+  generateShareInteractEvents(interactType, subType, contentType) {
+    let values = new Map();
+    values["ContentType"] = contentType;
+    this.telemetryService.interact(
+      generateInteractEvent(interactType,
+        subType,
+        Environment.HOME,
+        PageId.CONTENT_DETAIL, values)
+    );
   }
 
   /**

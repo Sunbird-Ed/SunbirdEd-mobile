@@ -12,30 +12,26 @@ import { ProfileConstants } from '../../app/app.constant';
 
 @Component({
   selector: 'sign-in-card',
-  template: `<ion-card>
-                  <ion-card-header>
-                    <b>{{ 'OVERLAY_LABEL_COMMON' | translate:{'%s': sunbird} }}</b>
-                  </ion-card-header>
-                  <ion-card-content class="sign-in-card-text">
-                    {{ 'OVERLAY_INFO_TEXT_COMMON' | translate:{'%s': sunbird} }}
-                    <br />
-                    <br />
-                    <button ion-button block (click)="singIn()" class="sign-in-btn">{{ 'SIGN_IN' | translate }}</button>
-                  </ion-card-content>
-            </ion-card>`,
-  styles: [`.sign-in-btn {
-                border-radius: 4px !important;
-              }
-              .sign-in-card-text {
-                font-weight: 600 !important;
-                color: map-get($colors, primary_black) !important;
-              }`
-  ]
+  templateUrl: 'sign-in-card.html'
 })
 export class SignInCardComponent {
 
+  private readonly DEFAULT_TEXT = [
+    'OVERLAY_LABEL_COMMON',
+    'OVERLAY_INFO_TEXT_COMMON'
+  ]
+
+  private translateDisplayText;
+
   sunbird: string = "SUNBIRD";
+
+
   @Input() source: string = "";
+
+  @Input() title: string = "";
+
+  @Input() descrption: string = "";
+
   constructor(public translate: TranslateService,
     public navCtrl: NavController,
     private auth: OAuthService,
@@ -47,11 +43,26 @@ export class SignInCardComponent {
     private telemetryService: TelemetryService,
     private appVersion: AppVersion) {
 
-    this.appVersion.getAppName()
-      .then((appName: any) => {
-        this.sunbird = appName
-      });
+      this.appVersion.getAppName()
+        .then((appName: any) => {
+          this.sunbird = appName;
+          this.initText();
+        });
   }
+
+  initText() {
+    this.translate.get(this.DEFAULT_TEXT, {'%s': this.sunbird}).subscribe((value) => {
+      this.translateDisplayText = value;
+      if (this.title.length === 0) {
+        this.title = this.translateDisplayText['OVERLAY_LABEL_COMMON'];
+      }
+
+      if (this.descrption.length === 0) {
+        this.descrption = this.translateDisplayText['OVERLAY_INFO_TEXT_COMMON'];
+      }
+    });
+  }
+
 
   singIn() {
     this.telemetryService.interact(

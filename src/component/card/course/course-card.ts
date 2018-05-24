@@ -5,6 +5,7 @@ import { EnrolledCourseDetailsPage } from "../../../pages/enrolled-course-detail
 import { CourseDetailPage } from './../../../pages/course-detail/course-detail';
 import { CollectionDetailsPage } from '../../../pages/collection-details/collection-details';
 import { ContentDetailsPage } from '../../../pages/content-details/content-details';
+import { ContentType, MimeType } from "../../../app/app.constant";
 
 /**
  * The course card component
@@ -60,12 +61,12 @@ export class CourseCard {
         content: content
       })
     } else {
-      if (content.contentType === 'Course') {
+      if (content.contentType === ContentType.COURSE) {
         console.log('Inside course details page');
         this.navCtrl.push(CourseDetailPage, {
           content: content
         })
-      } else if (content.mimeType === 'application/vnd.ekstep.content-collection') {
+      } else if (content.mimeType === MimeType.COLLECTION) {
         console.log('Inside CollectionDetailsPage');
         this.navCtrl.push(CollectionDetailsPage, {
           content: content

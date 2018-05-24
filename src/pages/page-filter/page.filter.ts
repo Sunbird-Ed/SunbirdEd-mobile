@@ -13,20 +13,25 @@ import {
   CategoryRequest,
   FrameworkService
 } from "sunbird";
-import { ResourceFilterOptions } from "./options/filter.options";
-import { generateInteractEvent } from "../../../app/telemetryutil";
-import * as frameworkDataList from "../../../config/framework.filters";
+import { PageFilterOptions } from "./options/filter.options";
+import { generateInteractEvent } from "../../app/telemetryutil";
+import * as frameworkDataList from "../../config/framework.filters";
 
 @Component({
-  selector: 'page-resource-filter',
-  templateUrl: './resource.filter.html'
+  selector: 'page-filter',
+  templateUrl: './page.filter.html'
 })
-export class ResourceFilter {
+export class PageFilter {
   pagetAssemblefilter = new PageAssembleFilter();
 
-  callback: ResourceFilterCallback;
+  callback: PageFilterCallback;
 
   FILTERS = [
+    {
+      name: "language",
+      displayName: "Language",
+      values: frameworkDataList.languageList.sort()
+    },
     {
       name: "board",
       displayName: "Board",
@@ -74,7 +79,7 @@ export class ResourceFilter {
       this.facetsFilter = navParams.get('filter');
     } else {
       this.FILTERS.forEach((element, index: number) => {
-        if(index < 4) this.getFrameworkData(element.name, index);
+        if(index < 5 && element.name != "language") this.getFrameworkData(element.name, index);
 
         //Framework API doesn't return domain and content Type exclude them
         if(index === this.FILTERS.length - 1) this.facetsFilter = this.FILTERS;
@@ -108,7 +113,7 @@ export class ResourceFilter {
   }
 
   openFilterOptions(facet) {
-    let filterDialog = this.popCtrl.create(ResourceFilterOptions, { facets: facet }, {
+    let filterDialog = this.popCtrl.create(PageFilterOptions, { facets: facet }, {
       cssClass: 'resource-filter-options'
     });
     filterDialog.present();
@@ -156,6 +161,6 @@ export class ResourceFilter {
   }
 }
 
-export interface ResourceFilterCallback {
+export interface PageFilterCallback {
   applyFilter(filter: PageAssembleFilter, appliedFilter: any);
 }

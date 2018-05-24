@@ -2,10 +2,10 @@ import { Component } from "@angular/core";
 import { NavParams, Platform, ViewController } from "ionic-angular";
 
 @Component({
-  selector: 'page-resource-filter-options',
+  selector: 'page-filter-options',
   templateUrl: './filter.options.html'
 })
-export class ResourceFilterOptions {
+export class PageFilterOptions {
   facets: any
   backButtonFunc = undefined;
 

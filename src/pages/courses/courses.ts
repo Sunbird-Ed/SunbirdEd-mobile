@@ -1,5 +1,5 @@
 import { ViewMoreActivityPage } from './../view-more-activity/view-more-activity';
-import { Component, NgZone } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
 import { NavController, PopoverController, Events, ToastController } from 'ionic-angular';
 import { IonicPage } from 'ionic-angular';
 import {
@@ -17,15 +17,15 @@ import { ContentDetailsPage } from '../content-details/content-details';
 import * as _ from 'lodash';
 import { TranslateService } from '@ngx-translate/core';
 import { Network } from '@ionic-native/network';
+import { generateImpressionEvent } from '../../app/telemetryutil';
 import { ContentType, MimeType } from '../../app/app.constant';
-
 
 @IonicPage()
 @Component({
   selector: 'page-courses',
   templateUrl: 'courses.html'
 })
-export class CoursesPage {
+export class CoursesPage implements OnInit {
 
   /**
    * Contains enrolled course
@@ -53,6 +53,8 @@ export class CoursesPage {
   pageApiLoader: boolean = true;
 
   guestUser: boolean = false;
+
+  showSignInCard: boolean = false;
 
   isOnBoardingCardCompleted: boolean = false;
   onBoardingProgress: number = 0;
@@ -111,13 +113,12 @@ export class CoursesPage {
     });
   }
 
-  ionViewWillEnter() {
+  /**
+	 * Angular life cycle hooks
+	 */
+  ngOnInit() {
     console.log('courses component initialized...');
     this.getCourseTabData();
-  }
-
-  ionViewDidEnter() {
-    this.generateImpressionEvent();
   }
 
   viewMoreEnrolledCourses() {
@@ -264,6 +265,15 @@ export class CoursesPage {
    * It will fetch the guest user profile details
    */
   getCurrentUser(): void {
+    this.preference.getString('selected_user_type', (val) => {
+      if (val == "teacher") {
+        this.showSignInCard = true;
+      } else if (val == "student") {
+        this.showSignInCard = false;
+      }
+    })
+
+
     this.profileService.getCurrentUser(
       (res: any) => {
         let profile = JSON.parse(res);
@@ -329,16 +339,21 @@ export class CoursesPage {
   }
 
   search() {
-    this.navCtrl.push(SearchPage, { contentType: ContentType.FOR_COURSE_TAB, source: PageId.COURSES })
+    const contentType: Array<string> = [
+      "Course",
+    ];
+
+    this.navCtrl.push(SearchPage, { contentType: contentType, source: PageId.COURSES })
   }
 
-  generateImpressionEvent() {
-    let impression = new Impression();
-    impression.type = ImpressionType.VIEW;
-    impression.pageId = PageId.COURSES;
-    impression.env = Environment.HOME;
-    this.telemetryService.impression(impression);
+  ionViewDidEnter() {
+    this.telemetryService.impression(generateImpressionEvent(
+      ImpressionType.VIEW,
+      PageId.COURSES,
+      Environment.HOME, "", "", ""
+    ));
   }
+
 
   showFilter() {
     const that = this;

@@ -11,6 +11,18 @@ export function generateImpressionEvent(type, pageid, env, objectId, objectType,
     return impression;
 }
 
+export function generateImpressionTelemetry(type, subType, pageid, env, objectId, objectType, objectVersion): Impression {
+    let impression = new Impression();
+    impression.type = type;
+    impression.subType = subType;
+    impression.pageId = pageid;
+    impression.env = env;
+    impression.objId = objectId;
+    impression.objType = objectType;
+    impression.objVer = objectVersion;
+    return impression;
+}
+
 export function generateImpressionWithRollup(type, pageid, env, objectId, objectType, objectVersion, rollup: Rollup): Impression {
     let impression = new Impression();
     impression.type = type;
@@ -38,7 +50,7 @@ export function generateInteractEvent(interactType, subType, env, pageId, values
     return interact;
 }
 
-export function generateInteractWithRollup(interactType, subType, env, pageId, values: Map, rollup:Rollup): Interact {
+export function generateInteractWithRollup(interactType, subType, env, pageId, values: Map, rollup: Rollup): Interact {
     let interact = new Interact();
     interact.type = interactType;
     interact.subType = subType;
@@ -48,8 +60,8 @@ export function generateInteractWithRollup(interactType, subType, env, pageId, v
     if (values !== null) {
         interact.valueMap = values;
     }
-    if(rollup!==undefined){
-        interact.rollup=rollup;
+    if (rollup !== undefined) {
+        interact.rollup = rollup;
     }
     return interact;
 }

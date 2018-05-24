@@ -6,6 +6,7 @@ import { Input, NgZone } from '@angular/core';
 import { Component } from '@angular/core';
 import { ImageLoader } from "ionic-image-loader";
 import { NavController, NavParams } from 'ionic-angular';
+import { ContentType, MimeType } from '../../app/app.constant';
 
 /**
  * Generated class for the ViewMoreActivityListComponent component.
@@ -30,18 +31,6 @@ export class ViewMoreActivityListComponent {
   @Input() type: string;
 
   /**
-   * Contains ref of navigation controller
-   */
-  public navCtrl: NavController;
-
-  /**
-   * Contains ref of navigation params
-   */
-  public navParams: NavParams;
-
-  public zone: NgZone;
-
-  /**
    * Contains default image path.
    *
    * Get used when content / course does not have appIcon or courseLogo
@@ -50,25 +39,25 @@ export class ViewMoreActivityListComponent {
 
   /**
    * Default method of cass SearchListComponent
+   * @param {NavController} navCtrl To navigate user from one page to another
+   * @param {NavParams} navParams ref of navigation params
+   * @param {NgZone} ngZone To bind data
    */
-  constructor(navCtrl: NavController, navParams: NavParams, zone: NgZone) {
+  constructor(private navCtrl: NavController, private navParams: NavParams, private zone: NgZone) {
     console.log('View more activity Component');
     this.defaultImg = 'assets/imgs/ic_launcher.png';
-    this.navCtrl = navCtrl;
-    this.navParams = navParams;
-    this.zone = zone;
   }
 
   navigateToDetailsPage(content: any) {
     console.log('View more ard details... @@@', content);
     this.zone.run(() => {
 
-      if (content.contentType === 'Course') {
+      if (content.contentType === ContentType.COURSE) {
         console.log('Inside course details');
         this.navCtrl.push(CourseDetailPage, {
           content: content
         })
-      } else if (content.mimeType === 'application/vnd.ekstep.content-collection') {
+      } else if (content.mimeType === MimeType.COLLECTION) {
         console.log('Inside collection details');
         this.navCtrl.push(CollectionDetailsPage, {
           content: content
@@ -85,6 +74,5 @@ export class ViewMoreActivityListComponent {
   onImageLoad(imgLoader: ImageLoader) {
     console.log("Image Loader " + imgLoader.nativeAvailable);
   }
-
 
 }

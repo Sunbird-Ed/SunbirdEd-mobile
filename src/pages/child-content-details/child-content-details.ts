@@ -4,6 +4,7 @@ import { ContentService, FileUtil } from 'sunbird';
 import { CourseDetailPage } from '../course-detail/course-detail';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
 import { ContentDetailsPage } from '../content-details/content-details';
+import { MimeType, ContentType } from '../../app/app.constant';
 
 /**
  * Generated class for the ChildContentDetailsPage page.
@@ -44,26 +45,6 @@ export class ChildContentDetailsPage {
   isAvailableLocally: boolean;
 
   /**
-   * Contains reference of navigation controller
-   */
-  navCtrl: NavController;
-
-  /**
-   * Contains reference of content service
-   */
-  public contentService: ContentService;
-
-  /**
-   * Contains ref of navigation params
-   */
-  public navParams: NavParams;
-
-  /**
-   * Contains reference of zone service
-   */
-  public zone: NgZone;
-
-  /**
    * Default method of class ParentDetailsComponent
    * 
    * @param navParams 
@@ -71,15 +52,12 @@ export class ChildContentDetailsPage {
    * @param zone 
    * @param navCtrl 
    */
-  constructor(navParams: NavParams, 
-    contentService: ContentService, 
-    zone: NgZone, 
-    navCtrl: NavController,
+  constructor(private navParams: NavParams,
+    private contentService: ContentService,
+    private zone: NgZone,
+    private navCtrl: NavController,
     private fileUtil: FileUtil) {
-    this.navParams = navParams;
-    this.contentService = contentService;
-    this.zone = zone;
-    this.navCtrl = navCtrl;
+
     this.tabBarMenuElement = document.querySelector('.tabbar.show-tabbar');
   }
 
@@ -114,7 +92,6 @@ export class ChildContentDetailsPage {
       error => {
         console.log('error while loading content details', error);
       });
-
   }
 
   /**
@@ -158,7 +135,7 @@ export class ChildContentDetailsPage {
       data = JSON.parse(data);
       console.log('Parent component => Import child content data success ==>', data);
       this.zone.run(() => {
-        if (data.result && data.result.children && data.result.mimeType === 'application/vnd.ekstep.content-collection') {
+        if (data.result && data.result.children && data.result.mimeType === MimeType.COLLECTION) {
           this.childrenData = data.result.children
         } else {
           this.childrenData = [];
@@ -183,13 +160,13 @@ export class ChildContentDetailsPage {
     })*/
 
     this.zone.run(() => {
-      if (content.contentType === 'Course') {
+      if (content.contentType === ContentType.COURSE) {
         console.warn('Inside CourseDetailPage >>>');
         this.navCtrl.push(CourseDetailPage, {
           content: content,
           depth: depth
         })
-      } else if (content.mimeType === 'application/vnd.ekstep.content-collection') {
+      } else if (content.mimeType === MimeType.COLLECTION) {
         console.warn('Inside CollectionDetailsPage >>>');
         this.navCtrl.push(CollectionDetailsPage, {
           content: content,

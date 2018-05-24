@@ -23,6 +23,7 @@ import { QRScannerModule } from "../pages/qrscanner/qrscanner.module";
 import { SearchModule } from "../pages/search/search.module";
 import { HomePage } from '../pages/home/home';
 import { CoursesPage } from '../pages/courses/courses';
+import { PageFilterMoudule } from '../pages/page-filter/page.filter.module';
 
 const HOME_TAB = { root: HomePage, icon: "home", label: "HOME_BNAV", index: 0, tabsHideOnSubPages: true };
 const COURSE_TAB = { root: CoursesPage, icon: "courses", label: "COURSES_BNAV", index: 1, tabsHideOnSubPages: true };
@@ -79,5 +80,6 @@ export const PluginModules = [
     SearchModule,
     CollectionDetailsPageModule,
     ContentDetailsPageModule,
-    ViewMoreActivityPageModule
+    ViewMoreActivityPageModule,
+    PageFilterMoudule
 ];
