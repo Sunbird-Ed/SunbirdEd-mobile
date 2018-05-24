@@ -1,5 +1,5 @@
 import { ViewMoreActivityPage } from './../view-more-activity/view-more-activity';
-import { Component, NgZone } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
 import { NavController, PopoverController, Events, ToastController } from 'ionic-angular';
 import { IonicPage } from 'ionic-angular';
 import {
@@ -20,13 +20,12 @@ import { Network } from '@ionic-native/network';
 import { generateImpressionEvent } from '../../app/telemetryutil';
 import { ContentType, MimeType } from '../../app/app.constant';
 
-
 @IonicPage()
 @Component({
   selector: 'page-courses',
   templateUrl: 'courses.html'
 })
-export class CoursesPage {
+export class CoursesPage implements OnInit {
 
   /**
    * Contains enrolled course
@@ -114,12 +113,13 @@ export class CoursesPage {
     });
   }
 
-  ionViewWillEnter() {
+  /**
+	 * Angular life cycle hooks
+	 */
+  ngOnInit() {
     console.log('courses component initialized...');
     this.getCourseTabData();
   }
-
-  
 
   viewMoreEnrolledCourses() {
     this.navCtrl.push(ViewMoreActivityPage, {
@@ -266,12 +266,12 @@ export class CoursesPage {
    */
   getCurrentUser(): void {
     this.preference.getString('selected_user_type', (val) => {
-			if (val == "teacher") {
-				this.showSignInCard = true;
-			} else if (val == "student") {
-				this.showSignInCard = false;
-			}
-		})
+      if (val == "teacher") {
+        this.showSignInCard = true;
+      } else if (val == "student") {
+        this.showSignInCard = false;
+      }
+    })
 
 
     this.profileService.getCurrentUser(
@@ -350,7 +350,7 @@ export class CoursesPage {
     this.telemetryService.impression(generateImpressionEvent(
       ImpressionType.VIEW,
       PageId.COURSES,
-      Environment.HOME,"","",""
+      Environment.HOME, "", "", ""
     ));
   }
 
