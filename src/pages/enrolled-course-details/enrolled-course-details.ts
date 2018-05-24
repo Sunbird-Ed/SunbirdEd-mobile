@@ -1,7 +1,7 @@
 import { ContentRatingAlertComponent } from './../../component/content-rating-alert/content-rating-alert';
 import { Component, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, PopoverController } from 'ionic-angular';
-import { ContentService, FileUtil } from 'sunbird';
+import { ContentService, FileUtil, CourseService } from 'sunbird';
 import * as _ from 'lodash';
 import { CourseDetailPage } from '../course-detail/course-detail';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
@@ -122,7 +122,8 @@ export class EnrolledCourseDetailsPage {
     toastCtrl: ToastController,
     private fileUtil: FileUtil,
     public popoverCtrl: PopoverController,
-    private translate: TranslateService) {
+    private translate: TranslateService,
+    private courseService: CourseService) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
@@ -215,6 +216,9 @@ export class EnrolledCourseDetailsPage {
         this.navCtrl.pop();
       }
       this.course = data.result.contentData;
+      if (this.course.gradeLevel && this.course.gradeLevel.length) {
+        this.course.gradeLevel = this.course.gradeLevel.join(", ");
+      }
     } else {
       this.showMessage(this.translateLanguageConstant('ERROR_CONTENT_NOT_AVAILABLE'));
       this.navCtrl.pop();
@@ -239,6 +243,14 @@ export class EnrolledCourseDetailsPage {
       }
     }
     this.setCourseStructure();
+  }
+
+  /**
+   * Get batch details
+   */
+  getBatchDetails() {
+    const option = {  }
+    // this.courseService.getCourseBatches(option, (data => ))
   }
 
   /**

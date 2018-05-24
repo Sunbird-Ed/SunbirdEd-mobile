@@ -52,6 +52,11 @@ export class CourseBatchesPage implements OnInit {
    */
   isGuestUser: boolean = false;
 
+   filterList: {
+     'ONGOING' : 'VIEW_ONGOING_BATCHES',
+     'UPCOMING' : 'VIEW_UPCOMING_BATCHES'
+   };
+
   /**
    * Contains batches list
    */
