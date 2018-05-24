@@ -1,7 +1,7 @@
 import { ReportIssuesComponent } from './../../component/report-issues/report-issues';
 import { Component, NgZone, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, Platform, Navbar, PopoverController } from 'ionic-angular';
-import { ContentService, FileUtil, PageId, Environment, Mode, ImpressionType, TelemetryService,  Rollup, InteractType, InteractSubtype, ShareUtil } from 'sunbird';
+import { ContentService, FileUtil, PageId, Environment, Mode, ImpressionType, TelemetryService,  Rollup, InteractType, InteractSubtype, ShareUtil, BuildParamService } from 'sunbird';
 import * as _ from 'lodash';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { CourseDetailPage } from '../course-detail/course-detail';
@@ -162,6 +162,8 @@ export class CollectionDetailsPage {
   public objRollup: Rollup;
   private didViewLoad: boolean;
   private backButtonFunc = undefined;
+  private baseUrl = "";
+
   @ViewChild(Navbar) navBar: Navbar;
   constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, zone: NgZone,
     private events: Events, toastCtrl: ToastController, loadingCtrl: LoadingController,
@@ -171,7 +173,8 @@ export class CollectionDetailsPage {
     private telemetryService: TelemetryService,
     private translate: TranslateService,
     private social: SocialSharing,
-    private shareUtil: ShareUtil) {
+    private shareUtil: ShareUtil,
+    private buildParamService: BuildParamService) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
@@ -186,6 +189,11 @@ export class CollectionDetailsPage {
       this.backButtonFunc();
     }, 10)
     this.objRollup = new Rollup();
+    this.buildParamService.getBuildConfigParam("BASE_URL", (response: any) => {
+      this.baseUrl=response
+    }, (error) => {
+      return "";
+    });
   }
 
   /**
@@ -618,7 +626,7 @@ export class CollectionDetailsPage {
     this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_LIBRARY_INITIATED, this.contentDetail.contentType);
     let loader = this.getLoader();
     loader.present();
-    let url = "https://staging.open-sunbird.org/public/#!/content/" + this.contentDetail.identifier;
+    let url =  this.baseUrl+"/public/#!/content/" + + this.contentDetail.identifier;
     if (this.contentDetail.isAvailableLocally) {
       this.shareUtil.exportEcar(this.contentDetail.identifier, path => {
         loader.dismiss();

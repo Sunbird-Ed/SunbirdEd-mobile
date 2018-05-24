@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { NavParams, ViewController, Header, Platform, ToastController } from "ionic-angular";
-import { ContentService, AuthService } from 'sunbird';
+import { ContentService, AuthService, TelemetryService, InteractType, InteractSubtype, PageId, Environment, ImpressionType, ImpressionSubtype } from 'sunbird';
 import { NgModule } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { generateInteractEvent, generateImpressionEvent, generateImpressionTelemetry } from '../../app/telemetryutil';
 
 
 /**
@@ -25,6 +26,7 @@ export class ContentRatingAlertComponent {
   ratingCount: any;
   content: any;
   showCommentBox: boolean = false;
+  private pageId: String = "";
 
   /**
    * Default function of class ContentRatingAlertComponent
@@ -34,20 +36,21 @@ export class ContentRatingAlertComponent {
    * @param authService 
    * @param contentService 
    */
-  constructor(private navParams: NavParams, 
+  constructor(private navParams: NavParams,
     private viewCtrl: ViewController,
     private platform: Platform,
     private authService: AuthService,
     private translate: TranslateService,
     private toastCtrl: ToastController,
-    private contentService: ContentService) {
-      this.backButtonFunc = this.platform.registerBackButtonAction(() => {
-        this.viewCtrl.dismiss();
-        this.backButtonFunc();
-      }, 10);
-    
-      this.content = this.navParams.get("content");
-      this.getUserId();
+    private contentService: ContentService,
+    private telemetryService: TelemetryService) {
+    this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      this.viewCtrl.dismiss();
+      this.backButtonFunc();
+    }, 10);
+
+
+    this.getUserId();
   }
 
   /**
@@ -89,6 +92,14 @@ export class ContentRatingAlertComponent {
       contentVersion: this.content.versionKey
     }
     this.viewCtrl.dismiss();
+    let paramsMap = new Map();
+    paramsMap["Ratings"] = this.ratingCount;
+    paramsMap["Comment"] = this.comment;
+    this.telemetryService.interact(generateInteractEvent(InteractType.TOUCH,
+      InteractSubtype.RATING_SUBMITTED,
+      Environment.HOME,
+      this.pageId, paramsMap
+    ));
     this.contentService.sendFeedback(option, (res: any) => {
       console.log('success:', res);
       this.viewCtrl.dismiss('rating.success');
@@ -111,6 +122,20 @@ export class ContentRatingAlertComponent {
   }
 
   /**
+  * Ionic life cycle hook
+  */
+  ionViewDidLoad(): void {
+    this.content = this.navParams.get("content");
+    this.pageId = this.navParams.get("pageId");
+    this.telemetryService.impression(generateImpressionTelemetry(
+      ImpressionType.VIEW,
+      ImpressionSubtype.RATING_POPUP,
+      this.pageId,
+      Environment.HOME,"","",""
+    ));
+  }
+
+  /**
    * 
    * @param {string} constant 
    */
@@ -122,5 +147,5 @@ export class ContentRatingAlertComponent {
       }
     );
     return msg;
-  }  
+  }
 }

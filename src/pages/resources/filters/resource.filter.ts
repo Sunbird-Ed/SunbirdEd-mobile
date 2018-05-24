@@ -11,10 +11,11 @@ import {
   Environment,
   PageId,
   CategoryRequest,
-  FrameworkService
+  FrameworkService,
+  ImpressionType
 } from "sunbird";
 import { ResourceFilterOptions } from "./options/filter.options";
-import { generateInteractEvent } from "../../../app/telemetryutil";
+import { generateInteractEvent, generateImpressionEvent } from "../../../app/telemetryutil";
 import * as frameworkDataList from "../../../config/framework.filters";
 
 @Component({
@@ -74,10 +75,10 @@ export class ResourceFilter {
       this.facetsFilter = navParams.get('filter');
     } else {
       this.FILTERS.forEach((element, index: number) => {
-        if(index < 4) this.getFrameworkData(element.name, index);
+        if (index < 4) this.getFrameworkData(element.name, index);
 
         //Framework API doesn't return domain and content Type exclude them
-        if(index === this.FILTERS.length - 1) this.facetsFilter = this.FILTERS;
+        if (index === this.FILTERS.length - 1) this.facetsFilter = this.FILTERS;
       });
     }
 
@@ -137,6 +138,15 @@ export class ResourceFilter {
         Environment.HOME,
         PageId.LIBRARY_PAGE_FILTER, null));
     this.viewCtrl.dismiss();
+  }
+
+  ionViewDidLoad() {
+
+    this.telemetryService.impression(generateImpressionEvent(
+      ImpressionType.VIEW,
+      PageId.LIBRARY_PAGE_FILTER,
+      Environment.HOME,"","",""
+    ));
   }
 
   /**

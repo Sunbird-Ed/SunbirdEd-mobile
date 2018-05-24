@@ -14,6 +14,7 @@ import { ContentDetailsPage } from '../content-details/content-details';
 import * as _ from 'lodash';
 import { TranslateService } from '@ngx-translate/core';
 import { Network } from '@ionic-native/network';
+import { generateImpressionEvent } from '../../app/telemetryutil';
 
 
 @IonicPage()
@@ -375,16 +376,13 @@ export class CoursesPage implements OnInit {
   }
 
   ionViewDidEnter() {
-    this.generateImpressionEvent();
+    this.telemetryService.impression(generateImpressionEvent(
+      ImpressionType.VIEW,
+      PageId.COURSES,
+      Environment.HOME,"","",""
+    ));
   }
 
-  generateImpressionEvent() {
-    let impression = new Impression();
-    impression.type = ImpressionType.VIEW;
-    impression.pageId = PageId.COURSES;
-    impression.env = Environment.HOME;
-    this.telemetryService.impression(impression);
-  }
 
   showFilter() {
     const that = this;
