@@ -10,7 +10,6 @@ import * as _ from 'lodash';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
 import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
-import { ResourceFilter, ResourceFilterCallback } from './filters/resource.filter';
 import { generateInteractEvent, Map } from '../../app/telemetryutil';
 import { CourseDetailPage } from '../course-detail/course-detail';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
@@ -18,6 +17,7 @@ import { ContentDetailsPage } from '../content-details/content-details';
 import { TranslateService } from '@ngx-translate/core';
 import { ContentType, MimeType } from '../../app/app.constant';
 import { Network } from '@ionic-native/network';
+import { PageFilterCallback, PageFilter } from '../page-filter/page.filter';
 
 @Component({
 	selector: 'page-resources',
@@ -408,7 +408,7 @@ export class ResourcesPage implements OnInit {
 
 		const that = this;
 		this.noInternetConnection = false;
-		const callback: ResourceFilterCallback = {
+		const callback: PageFilterCallback = {
 			applyFilter(filter, appliedFilter) {
 				let criteria = new PageAssembleCriteria();
 				criteria.name = "Resource";
@@ -483,7 +483,7 @@ export class ResourcesPage implements OnInit {
 			filterOptions['filter'] = this.resourceFilter;
 		}
 
-		let filter = this.popCtrl.create(ResourceFilter, filterOptions, { cssClass: 'resource-filter' })
+		let filter = this.popCtrl.create(PageFilter, filterOptions, { cssClass: 'resource-filter' })
 		filter.present();
 	}
 
