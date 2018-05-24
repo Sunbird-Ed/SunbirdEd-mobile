@@ -15,17 +15,21 @@ page-onboarding {
         padding-top: 30px;
     }
     .swiper-slide img {
-        width: 80vw;
-        height: 55vw;
+        width: 70vw;
+        height: 30vh;
     }
     .title {
-        color: map-get($colors, dark_gray);
-        font-weight: 500;
+        color: map-get($colors, secondary_black);
+        font-weight: 700;
         font-size: 1.6rem;
+        margin-top: 10px;
+        margin-bottom: 20px;
     }
     .description {
-        color: map-get($colors, secondary_black);
+        color: map-get($colors, dark_gray);
         font-size: 1.5rem;
+        margin-left: 10%;
+        margin-right: 10%;
     }
 }
 

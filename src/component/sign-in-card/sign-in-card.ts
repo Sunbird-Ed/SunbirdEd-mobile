@@ -2,36 +2,36 @@ import { Component, NgZone, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { NavController, LoadingController } from 'ionic-angular';
 import { AppVersion } from "@ionic-native/app-version";
-import { OAuthService, ContainerService, UserProfileService, AuthService, TenantInfoRequest, TelemetryService, InteractType, InteractSubtype, Environment, PageId } from 'sunbird';
-import { initUserTabs } from '../../app/module.service';
+import {
+  OAuthService, ContainerService, UserProfileService, AuthService, TenantInfoRequest,
+  TelemetryService, InteractType, InteractSubtype, Environment, PageId
+} from 'sunbird';
+import { initTabs, LOGIN_TEACHER_TABS } from '../../app/module.service';
 import { generateInteractEvent } from '../../app/telemetryutil';
+import { ProfileConstants } from '../../app/app.constant';
 
 @Component({
   selector: 'sign-in-card',
-  template: `<ion-card>
-                  <ion-card-header>
-                    <b>{{ 'OVERLAY_LABEL_COMMON' | translate:{'%s': sunbird} }}</b>
-                  </ion-card-header>
-                  <ion-card-content class="sign-in-card-text">
-                    {{ 'OVERLAY_INFO_TEXT_COMMON' | translate:{'%s': sunbird} }}
-                    <br />
-                    <br />
-                    <button ion-button block (click)="singIn()" class="sign-in-btn">{{ 'SIGN_IN' | translate }}</button>
-                  </ion-card-content>
-            </ion-card>`,
-  styles:   [ `.sign-in-btn {
-                border-radius: 4px !important;
-              }
-              .sign-in-card-text {
-                font-weight: 600 !important;
-                color: map-get($colors, primary_black) !important;
-              }`
-            ]
+  templateUrl: 'sign-in-card.html'
 })
 export class SignInCardComponent {
 
+  private readonly DEFAULT_TEXT = [
+    'OVERLAY_LABEL_COMMON',
+    'OVERLAY_INFO_TEXT_COMMON'
+  ]
+
+  private translateDisplayText;
+
   sunbird: string = "SUNBIRD";
+
+
   @Input() source: string = "";
+
+  @Input() title: string = "";
+
+  @Input() descrption: string = "";
+
   constructor(public translate: TranslateService,
     public navCtrl: NavController,
     private auth: OAuthService,
@@ -45,12 +45,26 @@ export class SignInCardComponent {
 
       this.appVersion.getAppName()
         .then((appName: any) => {
-          this.sunbird = appName
+          this.sunbird = appName;
+          this.initText();
         });
   }
 
-  singIn() {
+  initText() {
+    this.translate.get(this.DEFAULT_TEXT, {'%s': this.sunbird}).subscribe((value) => {
+      this.translateDisplayText = value;
+      if (this.title.length === 0) {
+        this.title = this.translateDisplayText['OVERLAY_LABEL_COMMON'];
+      }
 
+      if (this.descrption.length === 0) {
+        this.descrption = this.translateDisplayText['OVERLAY_INFO_TEXT_COMMON'];
+      }
+    });
+  }
+
+
+  singIn() {
     this.telemetryService.interact(
       generateInteractEvent(InteractType.TOUCH,
         InteractSubtype.SIGNIN_OVERLAY_CLICKED,
@@ -69,7 +83,7 @@ export class SignInCardComponent {
         return that.auth.doOAuthStepTwo(token);
       })
       .then(() => {
-        initUserTabs(that.container);
+        initTabs(that.container, LOGIN_TEACHER_TABS);
         return that.refreshProfileData();
       })
       .then(slug => {
@@ -99,7 +113,7 @@ export class SignInCardComponent {
           let sessionObj = JSON.parse(session);
           let req = {
             userId: sessionObj["userToken"],
-            requiredFields: ["completeness", "missingFields", "lastLoginTime", "topics"],
+            requiredFields: ProfileConstants.REQUIRED_FIELDS,
             refreshUserProfileDetails: true
           };
           that.userProfileService.getUserProfileDetails(req, res => {

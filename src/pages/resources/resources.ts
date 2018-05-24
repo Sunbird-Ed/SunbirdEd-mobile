@@ -32,6 +32,8 @@ export class ResourcesPage implements OnInit {
 
 	guestUser: boolean = false;
 
+	showSignInCard: boolean = false;
+
 	/**
 	 * Contains local resources
 	 */
@@ -77,9 +79,6 @@ export class ResourcesPage implements OnInit {
 		private zone: NgZone,
 		private network: Network
 	) {
-		this.contentService = contentService;
-		this.authService = authService;
-
 		this.preference.getString('selected_language_code', (val: string) => {
 			if (val && val.length) {
 				this.selectedLanguage = val;
@@ -109,6 +108,15 @@ export class ResourcesPage implements OnInit {
 	 * It will fetch the guest user profile details
 	 */
 	getCurrentUser(): void {
+		this.preference.getString('selected_user_type', (val) => {
+			if (val == "teacher") {
+				this.showSignInCard = true;
+			} else if (val == "student") {
+				this.showSignInCard = false;
+			}
+		})
+
+
 		this.isOnBoardingCardCompleted = false;
 		this.profileService.getCurrentUser(
 			(res: any) => {
@@ -470,6 +478,7 @@ export class ResourcesPage implements OnInit {
 			callback: callback
 		}
 
+		// Already apllied filter
 		if (this.resourceFilter) {
 			filterOptions['filter'] = this.resourceFilter;
 		}

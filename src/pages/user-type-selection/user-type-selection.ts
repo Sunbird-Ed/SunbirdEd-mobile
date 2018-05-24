@@ -1,9 +1,15 @@
 import { Component, NgZone } from '@angular/core';
 import { NavController } from 'ionic-angular';
-import { TabsPage, SharedPreferences,  Interact, TelemetryService, InteractType, InteractSubtype, Environment, PageId, ImpressionType } from 'sunbird';
+import {
+  TabsPage, SharedPreferences,
+  Interact, TelemetryService, InteractType, InteractSubtype,
+  Environment, PageId, ImpressionType,
+  ContainerService
+} from 'sunbird';
 import { TranslateService } from '@ngx-translate/core';
 import { ProfileType, ProfileService } from 'sunbird'
 import { generateImpressionEvent, Map } from '../../app/telemetryutil';
+import { initTabs, GUEST_TEACHER_TABS, GUEST_STUDENT_TABS } from '../../app/module.service';
 
 const selectedCardBorderColor = '#006DE5';
 const borderColor = '#F7F7F7';
@@ -37,6 +43,7 @@ export class UserTypeSelectionPage {
     private preference: SharedPreferences,
     private profileService: ProfileService,
     private telemetryService: TelemetryService,
+    private container: ContainerService,
     private zone: NgZone
   ) {
     this.initData();
@@ -70,9 +77,10 @@ export class UserTypeSelectionPage {
       this.userTypeSelected = true;
       this.teacherCardBorderColor = selectedCardBorderColor;
       this.studentCardBorderColor = borderColor;
-      this.selectedUserType = "teacher";
+      this.selectedUserType = ProfileType.TEACHER;
       this.continueAs = this.translateMessage('CONTINUE_AS_TEACHER');
       this.preference.putString(KEY_SELECTED_USER_TYPE, this.selectedUserType);
+      initTabs(this.container, GUEST_TEACHER_TABS);
     });
   }
 
@@ -81,9 +89,10 @@ export class UserTypeSelectionPage {
       this.userTypeSelected = true;
       this.teacherCardBorderColor = borderColor;
       this.studentCardBorderColor = selectedCardBorderColor;
-      this.selectedUserType = "student";
+      this.selectedUserType = ProfileType.STUDENT;
       this.continueAs = this.translateMessage('CONTINUE_AS_STUDENT');
       this.preference.putString(KEY_SELECTED_USER_TYPE, this.selectedUserType)
+      initTabs(this.container, GUEST_STUDENT_TABS);
     });
   }
 
@@ -101,7 +110,7 @@ export class UserTypeSelectionPage {
 
     this.generateInteractEvent(this.selectedUserType);
 
-    if (this.selectedUserType != "teacher") {
+    if (this.selectedUserType != ProfileType.TEACHER) {
       profileRequest.profileType = ProfileType.STUDENT;
     }
 
@@ -121,20 +130,6 @@ export class UserTypeSelectionPage {
       err => {
         console.error("Error", err);
       });
-    /* this.profileService.createProfile(profileRequest,
-      (success: any) => {
-        console.log("createProfile success : " + success);
-        if (success) {
-          let response = JSON.parse(success);
-
-          console.log("UID of the created user - " + response.uid)
-          this.setUser(response.uid)
-        }
-      },
-      (errorResponse: any) => {
-        console.log("createProfile success : " + errorResponse);
-      }) */
-
   }
 
   getCurrentUserId(): any {
@@ -146,7 +141,6 @@ export class UserTypeSelectionPage {
         return "null";
       });
   }
-
 
   setUser(uid: string) {
     this.profileService.setCurrentUser(uid,

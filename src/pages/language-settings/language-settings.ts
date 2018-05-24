@@ -1,5 +1,5 @@
 import { Component, NgZone } from '@angular/core';
-import { NavController, NavParams, Events } from 'ionic-angular';
+import { NavController, NavParams, Events, Platform } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Globalization } from '@ionic-native/globalization';
 import {
@@ -15,6 +15,7 @@ import {
 } from 'sunbird';
 
 import { OnboardingPage } from '../onboarding/onboarding';
+import { DocumentDirection } from 'ionic-angular/platform/platform';
 
 const KEY_SELECTED_LANGUAGE_CODE = "selected_language_code";
 const KEY_SELECTED_LANGUAGE = "selected_language";
@@ -42,8 +43,9 @@ export class LanguageSettingsPage {
     private preferences: SharedPreferences,
     private telemetryService: TelemetryService,
     private events: Events,
+    private platform: Platform,
     private zone: NgZone
-  ) {}
+  ) { }
 
   init(): void {
     this.languages = [
@@ -74,18 +76,17 @@ export class LanguageSettingsPage {
       }
     ];
 
-    this.preferences.getString(KEY_SELECTED_LANGUAGE_CODE, val => {
-      if (val === undefined || val === "" || val === null) {
-        console.error("Language not set");
-        this.getDeviceLanguage();
-        this.previousLanguage = undefined;
-      } else {
-        this.previousLanguage = val;
-        this.language = val;
-      }
-    });
-
     this.zone.run(() => {
+      this.preferences.getString(KEY_SELECTED_LANGUAGE_CODE, val => {
+        if (val === undefined || val === "" || val === null) {
+          console.error("Language not set");
+          this.getDeviceLanguage();
+          this.previousLanguage = undefined;
+        } else {
+          this.previousLanguage = val;
+          this.language = val;
+        }
+      });
       this.isFromSettings = this.navParams.get('isFromSettings');
     });
 
@@ -136,9 +137,9 @@ export class LanguageSettingsPage {
   onLanguageSelected() {
     console.log("language selected : " + this.language);
     if (this.language) {
-/*       let selectedLanguage = this.languages.find(i => i.code === this.language);
-      this.preferences.putString(KEY_SELECTED_LANGUAGE_CODE, selectedLanguage.code);
-      this.preferences.putString(KEY_SELECTED_LANGUAGE, selectedLanguage.label); */
+      /*       let selectedLanguage = this.languages.find(i => i.code === this.language);
+            this.preferences.putString(KEY_SELECTED_LANGUAGE_CODE, selectedLanguage.code);
+            this.preferences.putString(KEY_SELECTED_LANGUAGE, selectedLanguage.label); */
       this.translateService.use(this.language);
     }
   }
@@ -196,6 +197,19 @@ export class LanguageSettingsPage {
     }
   }
 
+  /**
+ * Change language / direction
+ */
+  // changeLanguage(event) {
+  //   if (currentStyle === "ltr") {
+  //     currentStyle = "rtl";
+  //   } else {
+  //     currentStyle = "ltr";
+  //   }
+
+  //   this.platform.setDir(this.currentStyle as DocumentDirection, true);
+  // }
+
   generateImpressionEvent() {
     let impression = new Impression();
     impression.type = ImpressionType.VIEW;
@@ -210,20 +224,17 @@ export class LanguageSettingsPage {
     this.telemetryService.impression(impression);
   }
 
-  ionViewWillEnter()
-  {
+  ionViewWillEnter() {
     this.selectedLanguage = {};
     this.init();
   }
 
   ionViewWillLeave() {
-    if(!this.selectedLanguage.code) {
-      if(this.previousLanguage)
+    if (!this.selectedLanguage.code) {
+      if (this.previousLanguage)
         this.translateService.use(this.previousLanguage);
       else
-      this.translateService.use('en');
+        this.translateService.use('en');
     }
   }
 }
-
-

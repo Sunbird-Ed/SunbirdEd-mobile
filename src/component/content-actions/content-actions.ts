@@ -53,12 +53,12 @@ export class ContentActionsComponent {
   }
 
   getUserId() {
-    this.authService.getSessionData((data: string) => {
-      let res = JSON.parse(data);
-      console.log('auth service...', res);
-      if (res === undefined || res === "null") {
+    this.authService.getSessionData((session: string) => {
+      if (session === null || session === "null") {
         this.userId = '';
       } else {
+        let res = JSON.parse(session);
+        console.log('auth service...', res);
         this.userId = res["userToken"] ? res["userToken"] : '';
       }
     });

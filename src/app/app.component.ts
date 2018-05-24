@@ -1,8 +1,12 @@
 import { Component, ViewChild, NgZone } from '@angular/core';
 import { Platform, ModalController, AlertController, Nav, App, ToastController, Events } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
-import { TabsPage, AuthService, ContainerService, PermissionService, Interact, InteractType, InteractSubtype, Environment, TelemetryService, SharedPreferences } from "sunbird";
-import { initGuestTabs, initUserTabs } from './module.service';
+import {
+  TabsPage, AuthService, ContainerService, PermissionService,
+  Interact, InteractType, InteractSubtype, Environment, TelemetryService,
+  SharedPreferences, ProfileType
+} from "sunbird";
+import { initTabs, GUEST_TEACHER_TABS, GUEST_STUDENT_TABS, LOGIN_TEACHER_TABS } from './module.service';
 import { LanguageSettingsPage } from '../pages/language-settings/language-settings';
 import { ImageLoaderConfig } from 'ionic-image-loader';
 import { TranslateService } from '@ngx-translate/core';
@@ -22,7 +26,6 @@ const KEY_SUNBIRD_SUPPORT_FILE_PATH = "sunbird_support_file_path";
 })
 export class MyApp {
   @ViewChild(Nav) nav;
-  // rootPage:any = OnboardingPage;
   rootPage: any;
   public counter = 0;
 
@@ -53,7 +56,6 @@ export class MyApp {
       console.log("FCM token - " + token);
     });
 
-
     platform.ready().then(() => {
       this.registerDeeplinks();
 
@@ -65,7 +67,7 @@ export class MyApp {
       permission.requestPermission(this.permissionList, (response) => {
 
         this.makeEntryInSupportFolder();
-        
+
       }, (error) => {
 
       })
@@ -75,35 +77,33 @@ export class MyApp {
           this.translate.use(val);
         }
       });
-      
+
       that.authService.getSessionData((session) => {
-        if (session == "null") {
+        if (session === null || session === "null") {
           this.preference.getString('selected_user_type', (val) => {
-
-            initGuestTabs(this.containerService);
-
             if (val != "") {
+              if (val == ProfileType.TEACHER) {
+                initTabs(this.containerService, GUEST_TEACHER_TABS);
+              } else if (val == ProfileType.STUDENT) {
+                initTabs(this.containerService, GUEST_STUDENT_TABS);
+              }
+
               that.rootPage = TabsPage;
             } else {
               that.rootPage = LanguageSettingsPage;
             }
           });
         } else {
-          initUserTabs(that.containerService);
+          initTabs(that.containerService, LOGIN_TEACHER_TABS);
           that.rootPage = TabsPage;
         }
 
         (<any>window).splashscreen.hide();
       });
 
-      // initUserTabs(that.containerService);
-      // that.rootPage = TabsPage;
-
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
       statusBar.styleDefault();
-
-
 
       window["thisRef"] = this;
       try {
@@ -114,11 +114,9 @@ export class MyApp {
 
       this.handleBackButton();
     });
-
-
   }
 
-  makeEntryInSupportFolder(){
+  makeEntryInSupportFolder() {
     (<any>window).supportfile.makeEntryInSunbirdSupportFile((result) => {
       console.log("Result - " + JSON.parse(result));
       this.preference.putString(KEY_SUNBIRD_SUPPORT_FILE_PATH, JSON.parse(result));
@@ -127,7 +125,7 @@ export class MyApp {
     });
   }
 
-  saveDefaultSyncSetting(){
+  saveDefaultSyncSetting() {
     this.preference.getString("sync_config", val => {
       if (val === undefined || val === "" || val === null) {
         this.preference.putString("sync_config", "ALWAYS_ON");
@@ -176,28 +174,6 @@ export class MyApp {
       }
     );
     return translatedMsg;
-  }
-
-  // private checkLoginType() {
-  //   this.storage.get(KEY_USER_LOGIN_MODE)
-  //     .then(val => {
-  //       if (val === "signin") {
-  //         //take user to home page
-  //         this.takeToHomeAsIdentifiedUser()
-  //       } else if (val === "guest") {
-  //         //take user to home page
-  //         this.takeToHomeAsGuest()
-  //       }
-  //     })
-  // }
-
-  takeToHomeAsIdentifiedUser() {
-    this.nav.setRoot(TabsPage, { loginMode: 'signin' });
-  }
-
-  takeToHomeAsGuest() {
-    initGuestTabs(this.containerService);
-    this.nav.setRoot(TabsPage, { loginMode: 'guest' });
   }
 
   fetchUpdate() {

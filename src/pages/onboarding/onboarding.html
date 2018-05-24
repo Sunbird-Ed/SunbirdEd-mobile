@@ -6,8 +6,8 @@
   <ion-slides pager="true" centeredSlides="true" speed="50" class="ion-slides">
     <ion-slide *ngFor="let slide of slides">
       <div class="title">{{ slide.title | translate }}</div>
-      <div><img class="item-img" [src]="slide.imageUri" /></div>
-      <div class="description">
+      <img class="item-img" [src]="slide.imageUri" />
+      <div text-center class="description">
         {{ slide.desc | translate:{'%s': sunbird} }}
       </div>
     </ion-slide>

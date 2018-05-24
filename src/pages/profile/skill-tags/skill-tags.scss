@@ -1,6 +1,9 @@
 skill-tags {
-    :host /deep/:host /deep/ ng2-dropdown-menu div {
-        font-size: 1.4em !important;
-        /* background-color: yellow !important; */
-    }
 }
+//TODO Need optimal Solution for child component css override
+.ng2-dropdown-menu {
+    font-size: 1.6rem;
+    max-width: 55vw;
+    width: auto !important;
+}
+

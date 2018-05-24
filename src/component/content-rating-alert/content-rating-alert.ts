@@ -20,13 +20,13 @@ export class ContentRatingAlertComponent {
 
   isDisable: boolean = false;
   userId: string = '';
-  rate: number = 0;
   comment: string = '';
   backButtonFunc = undefined;
   ratingCount: any;
   content: any;
   showCommentBox: boolean = false;
   private pageId: String = "";
+  userRating: number = 0;
 
   /**
    * Default function of class ContentRatingAlertComponent
@@ -50,6 +50,8 @@ export class ContentRatingAlertComponent {
     }, 10);
 
 
+    this.content = this.navParams.get("content");
+    this.userRating =  this.navParams.get("rating");
     this.getUserId();
   }
 
@@ -100,6 +102,7 @@ export class ContentRatingAlertComponent {
       Environment.HOME,
       this.pageId, paramsMap
     ));
+
     this.contentService.sendFeedback(option, (res: any) => {
       console.log('success:', res);
       this.viewCtrl.dismiss('rating.success');

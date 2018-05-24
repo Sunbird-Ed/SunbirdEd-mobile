@@ -6,7 +6,7 @@ import { CourseBatchesPageModule } from './../pages/course-batches/course-batche
 import { ChildContentDetailsPageModule } from './../pages/child-content-details/child-content-details.module';
 import { CourseDetailPageModule } from './../pages/course-detail/course-detail.module';
 
-import { ContainerService } from "sunbird";
+import { ContainerService, TabOptions } from "sunbird";
 
 import { GuestProfilePage } from "../pages/profile/guest-profile/guest-profile";
 import { ProfilePage } from "../pages/profile/profile";
@@ -24,20 +24,42 @@ import { SearchModule } from "../pages/search/search.module";
 import { HomePage } from '../pages/home/home';
 import { CoursesPage } from '../pages/courses/courses';
 
-export function initUserTabs(container: ContainerService) {
-    container.removeAllTabs();
-    container.addTab({ root: HomePage, icon: "home", label: "HOME_BNAV", index: 0, tabsHideOnSubPages: true });
-    container.addTab({ root: CoursesPage, icon: "courses", label: "COURSES_BNAV", index: 1, tabsHideOnSubPages: true });
-    container.addTab({ root: ResourcesPage, icon: "resources", label: "LIBRARY_BNAV", index: 2, tabsHideOnSubPages: true });
-    container.addTab({ root: ProfilePage, icon: "profile", label: "PROFILE_BNAV", index: 3, tabsHideOnSubPages: true });
-}
+const HOME_TAB = { root: HomePage, icon: "home", label: "HOME_BNAV", index: 0, tabsHideOnSubPages: true };
+const COURSE_TAB = { root: CoursesPage, icon: "courses", label: "COURSES_BNAV", index: 1, tabsHideOnSubPages: true };
+const LIBRARY_TAB = { root: ResourcesPage, icon: "resources", label: "LIBRARY_BNAV", index: 2, tabsHideOnSubPages: true };
+const GUEST_PROFILE_TAB = { root: GuestProfilePage, icon: "profile", label: "PROFILE_BNAV", index: 3, tabsHideOnSubPages: true };
+const PROFILE_TAB = { root: ProfilePage, icon: "profile", label: "PROFILE_BNAV", index: 3, tabsHideOnSubPages: true };
 
-export function initGuestTabs(container: ContainerService) {
+export const GUEST_TEACHER_TABS = [
+    HOME_TAB,
+    COURSE_TAB,
+    LIBRARY_TAB,
+    GUEST_PROFILE_TAB
+]
+
+export const LOGIN_TEACHER_TABS = [
+    HOME_TAB,
+    COURSE_TAB,
+    LIBRARY_TAB,
+    PROFILE_TAB
+]
+
+export const GUEST_STUDENT_TABS = [
+    LIBRARY_TAB,
+    GUEST_PROFILE_TAB
+]
+
+export function initTabs(container: ContainerService, tabs: Array<TabOptions>) {
     container.removeAllTabs();
-    container.addTab({ root: HomePage, icon: "home", label: "HOME_BNAV", index: 0, tabsHideOnSubPages: true });
-    container.addTab({ root: CoursesPage, icon: "courses", label: "COURSES_BNAV", index: 1, tabsHideOnSubPages: true });
-    container.addTab({ root: ResourcesPage, icon: "resources", label: "LIBRARY_BNAV", index: 2, tabsHideOnSubPages: true });
-    container.addTab({ root: GuestProfilePage, icon: "profile", label: "PROFILE_BNAV", index: 3, tabsHideOnSubPages: true });
+
+    if (tabs && tabs.length > 0) {
+        tabs.forEach(tabOptions => {
+            container.addTab(tabOptions);
+        })
+    } else {
+        // TODO: through error / exception.
+        console.log("No tab is asigned.");
+    }
 }
 
 export const PluginModules = [

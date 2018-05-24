@@ -5,28 +5,25 @@ page-user-type-selection {
     border-radius: 6px !important;
   }
   .description {
-    color: map-get($colors, secondary_black);
+    color: map-get($colors, title);
     font-size: 1.4rem;
     font-weight: 500;
+    padding-left: 25px !important;
   }
   .card-title {
-    padding-left: 25px;
-    font-weight: 500;
+    padding-left: 10px;
+    font-weight: 700;
+    font-size: 1.7rem;
     color: map-get($colors, secondary_black);
+    margin-top: 10px !important;
   }
   .continue-related-style {
     margin: 0 20px 20px 20px;
   }
-  ion-list,
-  ion-item,
-  ion-grid,
-  ion-col,
-  ion-row {
-    padding: 0 !important;
-    margin: 0 !important;
-  }
-  ion-item {
-    min-height: 0 !important;
+  .thumbnail {
+    width: 70px;
+    height: 70px;
+    border-radius: 5px;
   }
   .card-content-md {
     padding-left: 0 !important;

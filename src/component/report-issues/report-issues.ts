@@ -1,7 +1,7 @@
 import { ContentService, AuthService, TelemetryService, InteractType, InteractSubtype, PageId, Environment } from 'sunbird';
 import { Component, NgModule } from '@angular/core';
 import { NavParams, ViewController, Platform, ToastController } from "ionic-angular";
-import { ReactiveFormsModule, FormsModule, FormBuilder, Validators, FormGroup, FormArray } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
 import { generateInteractEvent } from '../../app/telemetryutil';

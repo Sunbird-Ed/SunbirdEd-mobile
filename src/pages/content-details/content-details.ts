@@ -97,6 +97,19 @@ export class ContentDetailsPage {
 
   public objRollup: Rollup;
 
+  private pause;
+  private resume;
+
+  /**
+   * User Rating 
+   * 
+   */
+  private userRating: number = 0;
+
+  /**
+   * This flag helps in knowing when the content player is closed and the user is back on content details page.
+   */
+  public isPlayerLaunched: boolean = false;
 
   private objId;
   private objType;
@@ -139,6 +152,17 @@ export class ContentDetailsPage {
     }, (error) => {
       return "";
     });
+
+    this.pause = platform.pause.subscribe(() => {
+      
+    });
+
+    this.resume = platform.resume.subscribe(() => {
+      if (this.isPlayerLaunched) {
+        this.isPlayerLaunched = false;
+      }
+    });
+
   }
 
   /**
@@ -154,7 +178,8 @@ export class ContentDetailsPage {
       ));
       let popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
         content: this.content,
-        pageId: PageId.CONTENT_DETAIL
+        pageId: PageId.CONTENT_DETAIL,
+        rating: this.userRating
       }, {
           cssClass: 'onboarding-alert'
         });
@@ -181,7 +206,8 @@ export class ContentDetailsPage {
     loader.present();
     const option = {
       contentId: identifier,
-      refreshContentDetails: refreshContentDetails
+      refreshContentDetails: refreshContentDetails,
+      attachFeedback: true
     }
 
     this.contentService.getContentDetail(option, (data: any) => {
@@ -213,6 +239,12 @@ export class ContentDetailsPage {
     this.objType = data.result.contentType;
     this.objVer = this.content.pkgVersion;
 
+    //User Rating
+    let contentFeedback: any = data.result.contentFeedback;
+    if (contentFeedback !== undefined && contentFeedback.length !== 0) {
+      this.userRating = contentFeedback[0].rating;
+      console.log("User Rating  - " + this.userRating);
+    }
 
     // Check locally available
     switch (data.result.isAvailableLocally) {
@@ -316,6 +348,8 @@ export class ContentDetailsPage {
    */
   ionViewWillLeave(): void {
     this.events.unsubscribe('genie.event');
+    this.pause.unsubscribe();
+    this.resume.unsubscribe();
   }
 
   ionViewDidLoad() {
@@ -472,6 +506,11 @@ export class ContentDetailsPage {
         Environment.HOME,
         PageId.CONTENT_DETAIL, null, this.objRollup)
     );
+
+    //set the boolean to true, so when the content player is closed, we get to know that
+    //we are back from content player
+    this.isPlayerLaunched = true;
+
     (<any>window).geniecanvas.play(this.content.playContent);
   }
 

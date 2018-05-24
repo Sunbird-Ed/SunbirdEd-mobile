@@ -27,6 +27,10 @@ page-language-settings {
   .back-button {
     display: block !important;
   }
+  .item-radio-checked.item-ios ion-label {
+    color: map-get($colors, primary_black); /* Set Black color to the labe;l */
+    font-weight: 700;
+  }
 }
 
 .font-size-17 {
