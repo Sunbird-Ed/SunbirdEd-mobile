@@ -1,16 +1,27 @@
 import { ReportIssuesComponent } from './../../component/report-issues/report-issues';
 import { Component, NgZone, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, Platform, Navbar, PopoverController } from 'ionic-angular';
-import { ContentService, FileUtil, PageId, Environment, Mode, ImpressionType, TelemetryService,  Rollup, InteractType, InteractSubtype, ShareUtil } from 'sunbird';
+import {
+  IonicPage, NavController, NavParams, Events, ToastController,
+  LoadingController, Platform, Navbar, PopoverController
+} from 'ionic-angular';
+import {
+  ContentService, FileUtil,
+  PageId, Environment, Mode, ImpressionType, TelemetryService, Rollup, InteractType, InteractSubtype,
+  ShareUtil, BuildParamService
+} from 'sunbird';
 import * as _ from 'lodash';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { CourseDetailPage } from '../course-detail/course-detail';
 import { ContentActionsComponent } from '../../component/content-actions/content-actions';
 import { ConfirmAlertComponent } from '../../component/confirm-alert/confirm-alert';
 import { TranslateService } from '@ngx-translate/core';
-import { generateImpressionWithRollup, generateStartWithRollup, generateEndWithRollup, generateInteractEvent } from '../../app/telemetryutil';
+import {
+  generateImpressionWithRollup, generateStartWithRollup,
+  generateEndWithRollup, generateInteractEvent
+} from '../../app/telemetryutil';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { ContentRatingAlertComponent } from '../../component/content-rating-alert/content-rating-alert';
+import { ContentType, MimeType } from '../../app/app.constant';
 
 /**
  * Generated class for the CollectionDetailsPage page.
@@ -121,35 +132,6 @@ export class CollectionDetailsPage {
 
   downloadPercentage: number;
 
-  /**
-   * Contains reference of content service
-   */
-  public contentService: ContentService;
-
-  /**
-   * Contains ref of navigation controller
-   */
-  public navCtrl: NavController;
-
-  /**
-   * Contains ref of navigation params
-   */
-  public navParams: NavParams;
-
-  /**
-   * Contains reference of zone service
-   */
-  public zone: NgZone;
-
-  /**
-   * Contains reference of ionic toast controller
-   */
-  public toastCtrl: ToastController;
-
-  /**
-   * Contains reference of LoadingController
-   */
-  public loadingCtrl: LoadingController;
   private objId;
   private objType;
   private objVer;
@@ -162,22 +144,25 @@ export class CollectionDetailsPage {
   public objRollup: Rollup;
   private didViewLoad: boolean;
   private backButtonFunc = undefined;
+  private baseUrl = "";
+
   @ViewChild(Navbar) navBar: Navbar;
-  constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, zone: NgZone,
-    private events: Events, toastCtrl: ToastController, loadingCtrl: LoadingController,
+  constructor(private navCtrl: NavController,
+    private navParams: NavParams,
+    private contentService: ContentService,
+    private zone: NgZone,
+    private events: Events,
+    private toastCtrl: ToastController,
+    private loadingCtrl: LoadingController,
     public popoverCtrl: PopoverController,
     private fileUtil: FileUtil,
     private platform: Platform,
     private telemetryService: TelemetryService,
     private translate: TranslateService,
     private social: SocialSharing,
-    private shareUtil: ShareUtil) {
-    this.navCtrl = navCtrl;
-    this.navParams = navParams;
-    this.contentService = contentService;
-    this.zone = zone;
-    this.toastCtrl = toastCtrl;
-    this.loadingCtrl = loadingCtrl;
+    private shareUtil: ShareUtil,
+    private buildParamService: BuildParamService) {
+
     console.warn('Inside new module..........................');
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.didViewLoad = false;
@@ -186,6 +171,11 @@ export class CollectionDetailsPage {
       this.backButtonFunc();
     }, 10)
     this.objRollup = new Rollup();
+    this.buildParamService.getBuildConfigParam("BASE_URL", (response: any) => {
+      this.baseUrl = response
+    }, (error) => {
+      return "";
+    });
   }
 
   /**
@@ -474,18 +464,17 @@ export class CollectionDetailsPage {
     })
   }
 
-
   navigateToDetailsPage(content: any, depth) {
     console.log('Card details... @@@', content);
     console.log('Content depth... @@@', depth);
     this.zone.run(() => {
-      if (content.contentType === 'Course') {
+      if (content.contentType === ContentType.COURSE) {
         console.warn('Inside CourseDetailPage >>>');
         this.navCtrl.push(CourseDetailPage, {
           content: content,
           depth: depth
         })
-      } else if (content.mimeType === 'application/vnd.ekstep.content-collection') {
+      } else if (content.mimeType === MimeType.COLLECTION) {
         console.warn('Inside CollectionDetailsPage >>>');
         this.isDepthChild = true;
         this.navCtrl.push(CollectionDetailsPage, {
@@ -502,6 +491,7 @@ export class CollectionDetailsPage {
       }
     })
   }
+
   /**
    * Reset all values
    */
@@ -618,7 +608,7 @@ export class CollectionDetailsPage {
     this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_LIBRARY_INITIATED, this.contentDetail.contentType);
     let loader = this.getLoader();
     loader.present();
-    let url = "https://staging.open-sunbird.org/public/#!/content/" + this.contentDetail.identifier;
+    let url = this.baseUrl + "/public/#!/content/" + + this.contentDetail.identifier;
     if (this.contentDetail.isAvailableLocally) {
       this.shareUtil.exportEcar(this.contentDetail.identifier, path => {
         loader.dismiss();
@@ -638,9 +628,7 @@ export class CollectionDetailsPage {
       this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.contentDetail.contentType);
       this.social.share("", "", "", url);
     }
-
   }
-
 
   /**
    * Download single content
@@ -699,7 +687,7 @@ export class CollectionDetailsPage {
     popover.onDidDismiss(data => {
       if (data === 'delete.success') {
         this.navCtrl.pop();
-      } else if(data === 'flag.success') {
+      } else if (data === 'flag.success') {
         this.navCtrl.pop();
       }
     });

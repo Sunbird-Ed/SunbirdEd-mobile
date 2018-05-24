@@ -2,7 +2,7 @@ import { ContentRatingAlertComponent } from './../../component/content-rating-al
 import { ContentActionsComponent } from './../../component/content-actions/content-actions';
 import { Component, NgZone, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, PopoverController, Navbar, Platform } from 'ionic-angular';
-import { ContentService, FileUtil, ImpressionType, PageId, Environment, TelemetryService, Mode, End, ShareUtil, InteractType, InteractSubtype, Rollup } from 'sunbird';
+import { ContentService, FileUtil, ImpressionType, PageId, Environment, TelemetryService, Mode, End, ShareUtil, InteractType, InteractSubtype, Rollup, BuildParamService } from 'sunbird';
 import { SocialSharing } from "@ionic-native/social-sharing";
 import * as _ from 'lodash';
 import { generateInteractEvent, Map, generateImpressionWithRollup, generateStartWithRollup, generateInteractWithRollup } from '../../app/telemetryutil';
@@ -116,6 +116,8 @@ export class ContentDetailsPage {
   private objVer;
   private didViewLoad: boolean;
   private backButtonFunc = undefined;
+  private baseUrl = "";
+
   /**
    *
    * @param navCtrl
@@ -129,7 +131,8 @@ export class ContentDetailsPage {
   constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, private telemetryService: TelemetryService, zone: NgZone,
     private events: Events, toastCtrl: ToastController, loadingCtrl: LoadingController,
     private fileUtil: FileUtil, public popoverCtrl: PopoverController, private shareUtil: ShareUtil,
-    private social: SocialSharing, private platform: Platform, private translate: TranslateService) {
+    private social: SocialSharing, private platform: Platform, private translate: TranslateService,
+    private buildParamService: BuildParamService) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
@@ -144,6 +147,11 @@ export class ContentDetailsPage {
       this.backButtonFunc();
     }, 10)
     this.objRollup = new Rollup();
+    this.buildParamService.getBuildConfigParam("BASE_URL", (response: any) => {
+      this.baseUrl = response
+    }, (error) => {
+      return "";
+    });
 
     this.pause = platform.pause.subscribe(() => {
       
@@ -163,8 +171,14 @@ export class ContentDetailsPage {
   rateContent() {
     // TODO: check content is played or not
     if (this.content.downloadable) {
+      this.telemetryService.interact(generateInteractEvent(InteractType.TOUCH,
+        InteractSubtype.RATING_CLICKED,
+        Environment.HOME,
+        PageId.CONTENT_DETAIL, null
+      ));
       let popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
         content: this.content,
+        pageId: PageId.CONTENT_DETAIL,
         rating: this.userRating
       }, {
           cssClass: 'onboarding-alert'
@@ -513,7 +527,7 @@ export class ContentDetailsPage {
   showOverflowMenu(event) {
     let popover = this.popoverCtrl.create(ContentActionsComponent, {
       content: this.content,
-      isChild: false
+      isChild: this.isChildContent
     }, {
         cssClass: 'content-action'
       });
@@ -535,7 +549,7 @@ export class ContentDetailsPage {
     this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_LIBRARY_INITIATED, this.content.contentType);
     let loader = this.getLoader();
     loader.present();
-    let url = "https://staging.open-sunbird.org/public/#!/content/" + this.content.identifier;
+    let url =  this.baseUrl+"/public/#!/content/" + + this.content.identifier;
     if (this.content.downloadable) {
       this.shareUtil.exportEcar(this.content.identifier, path => {
         loader.dismiss();

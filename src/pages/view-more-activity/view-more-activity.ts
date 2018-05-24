@@ -3,6 +3,7 @@ import { Component, NgZone, OnInit } from '@angular/core';
 import { ContentService, CourseService, PageAssembleService, TelemetryService, PageId, Environment, ImpressionType, Log, LogLevel } from 'sunbird';
 import * as _ from 'lodash';
 import { generateImpressionEvent } from '../../app/telemetryutil';
+import { ContentType } from '../../app/app.constant';
 
 /**
  * Generated class for the ViewMoreActivityPage page.
@@ -279,7 +280,7 @@ export class ViewMoreActivityPage implements OnInit {
 		let loader = this.getLoader();
 		loader.present();
 		const requestParams = {
-			contentTypes: ['Story', 'Worksheet', 'Collection', 'Game', 'TextBook', 'Course', 'Resource', 'LessonPlan']
+			contentTypes: ContentType.FOR_LIBRARY_TAB
 		};
 		this.contentService.getAllLocalContents(requestParams, (res: any) => {
 			let data = JSON.parse(res);

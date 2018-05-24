@@ -16,6 +16,7 @@ import { CollectionDetailsPage } from '../pages/collection-details/collection-de
 import { ContentDetailsPage } from '../pages/content-details/content-details';
 import { generateEndEvent } from './telemetryutil';
 import { FCM } from '@ionic-native/fcm';
+import { MimeType, ContentType } from './app.constant';
 
 declare var chcp: any;
 
@@ -65,9 +66,7 @@ export class MyApp {
       this.saveDefaultSyncSetting();
 
       permission.requestPermission(this.permissionList, (response) => {
-
         this.makeEntryInSupportFolder();
-
       }, (error) => {
 
       })
@@ -258,12 +257,12 @@ export class MyApp {
   }
 
   showContentDetails(content) {
-    if (content.contentType === 'Course') {
+    if (content.contentType === ContentType.COURSE) {
       console.log('Calling course details page');
       this.nav.push(CourseDetailPage, {
         content: content
       })
-    } else if (content.mimeType === 'application/vnd.ekstep.content-collection') {
+    } else if (content.mimeType === MimeType.COLLECTION) {
       console.log('Calling collection details page');
       this.nav.push(CollectionDetailsPage, {
         content: content

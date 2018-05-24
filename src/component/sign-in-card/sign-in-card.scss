@@ -1,0 +1,9 @@
+sign-in-card {
+    .sign-in-btn {
+        border-radius: 4px !important;
+    }
+    .sign-in-card-text {
+        font-weight: 600 !important;
+        color: map-get($colors, primary_black) !important;
+    }
+}

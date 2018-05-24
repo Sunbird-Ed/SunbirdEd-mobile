@@ -1,13 +1,14 @@
 import { TranslateService } from '@ngx-translate/core';
 import { LoadingController, ToastController, NavController } from 'ionic-angular';
-import { Component, NgZone } from '@angular/core';
+import { Component, NgZone, ViewEncapsulation } from '@angular/core';
 import { AuthService, UserProfileService } from 'sunbird';
 
 import { ProfilePage } from './../profile';
 
 @Component({
   selector: 'skill-tags',
-  templateUrl: 'skill-tags.html'
+  templateUrl: 'skill-tags.html',
+  encapsulation: ViewEncapsulation.None,
 })
 
 /**

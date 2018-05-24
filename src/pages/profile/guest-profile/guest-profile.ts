@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 
 import { GuestEditProfilePage } from './../guest-edit.profile/guest-edit.profile';
 import { OverflowMenuComponent } from "./../overflowmenu/menu.overflow.component";
-import { ProfileService, FrameworkDetailsRequest, FrameworkService } from 'sunbird';
+import { ProfileService, FrameworkDetailsRequest, FrameworkService, SharedPreferences } from 'sunbird';
 
 @Component({
   selector: 'page-guest-profile',
@@ -16,6 +16,8 @@ export class GuestProfilePage {
 
   imageUri: string = "assets/imgs/ic_profile_default.png";
   list: Array<String> = ['SETTINGS'];
+
+  showSignInCard: boolean = false;
 
   /* Temporary Language Constants */
   userName: string = "Teacher";
@@ -32,13 +34,22 @@ export class GuestProfilePage {
     private profileService: ProfileService,
     private loadingCtrl: LoadingController,
     private events: Events,
-    private frameworkService: FrameworkService
+    private frameworkService: FrameworkService,
+    private preference: SharedPreferences
   ) {
     // TODO: Need to make an get Profile user details API call.
     this.refreshProfileData();
     this.events.subscribe('refresh:profile', () => {
       this.refreshProfileData();
     });
+
+    this.preference.getString('selected_user_type', (val) => {
+			if (val == "teacher") {
+				this.showSignInCard = true;
+			} else if (val == "student") {
+				this.showSignInCard = false;
+			}
+		})
   }
 
   ionViewDidLoad() {
