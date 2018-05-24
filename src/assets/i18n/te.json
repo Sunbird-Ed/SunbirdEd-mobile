@@ -363,5 +363,6 @@
   "YEAR_OF_PASSING": "ఉత్తీర్ణులైన సంవత్సరం ",
   "YES": "అవును",
   "YOUR_PROFILE_IS": "మీ ప్రొఫైలు {{value}}%",
-  "YOUR_PROGRESS": "మీ ప్రగతి: {{%s}}%"
+  "YOUR_PROGRESS": "మీ ప్రగతి: {{%s}}%",
+  "CHANGE_ROLE" : "CHANGE ROLE"
 }
