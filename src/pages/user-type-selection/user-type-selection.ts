@@ -36,7 +36,8 @@ export class UserTypeSelectionPage {
   /**
    * Contains paths to icons
    */
-  userImageUri: string = "assets/imgs/ic_anonymous.png";
+  studentImageUri: string = "assets/imgs/ic_student.png";
+  teacherImageUri: string = "assets/imgs/ic_teacher.png";
 
   constructor(public navCtrl: NavController,
     private translate: TranslateService,
