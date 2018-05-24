@@ -32,6 +32,8 @@ export class ResourcesPage implements OnInit {
 
 	guestUser: boolean = false;
 
+	showSignInCard: boolean = false;
+
 	/**
 	 * Contains local resources
 	 */
@@ -106,6 +108,15 @@ export class ResourcesPage implements OnInit {
 	 * It will fetch the guest user profile details
 	 */
 	getCurrentUser(): void {
+		this.preference.getString('selected_user_type', (val) => {
+			if (val == "teacher") {
+				this.showSignInCard = true;
+			} else if (val == "student") {
+				this.showSignInCard = false;
+			}
+		})
+
+
 		this.isOnBoardingCardCompleted = false;
 		this.profileService.getCurrentUser(
 			(res: any) => {

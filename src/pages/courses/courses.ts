@@ -54,6 +54,8 @@ export class CoursesPage {
 
   guestUser: boolean = false;
 
+  showSignInCard: boolean = false;
+
   isOnBoardingCardCompleted: boolean = false;
   onBoardingProgress: number = 0;
   selectedLanguage = 'en';
@@ -264,6 +266,15 @@ export class CoursesPage {
    * It will fetch the guest user profile details
    */
   getCurrentUser(): void {
+    this.preference.getString('selected_user_type', (val) => {
+			if (val == "teacher") {
+				this.showSignInCard = true;
+			} else if (val == "student") {
+				this.showSignInCard = false;
+			}
+		})
+
+
     this.profileService.getCurrentUser(
       (res: any) => {
         let profile = JSON.parse(res);
