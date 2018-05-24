@@ -10,7 +10,6 @@ import {
 } from 'sunbird';
 import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
-import { CourseFilter, CourseFilterCallback } from './filters/course.filter';
 import { CourseDetailPage } from '../course-detail/course-detail';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
 import { ContentDetailsPage } from '../content-details/content-details';
@@ -18,7 +17,8 @@ import * as _ from 'lodash';
 import { TranslateService } from '@ngx-translate/core';
 import { Network } from '@ionic-native/network';
 import { generateImpressionEvent } from '../../app/telemetryutil';
-import { ContentType, MimeType } from '../../app/app.constant';
+import { ContentType, MimeType, PageFilterConstants } from '../../app/app.constant';
+import { PageFilterCallback, PageFilter } from '../page-filter/page.filter';
 
 @IonicPage()
 @Component({
@@ -59,6 +59,12 @@ export class CoursesPage implements OnInit {
   isOnBoardingCardCompleted: boolean = false;
   onBoardingProgress: number = 0;
   selectedLanguage = 'en';
+
+  courseFilter: any;
+
+	appliedFilter: any;
+
+	filterIcon = "./assets/imgs/ic_action_filter.png";
 
   /**
    * Default method of class CoursesPage
@@ -173,6 +179,11 @@ export class CoursesPage implements OnInit {
     this.pageApiLoader = true;
     let criteria = new PageAssembleCriteria();
     criteria.name = "Course";
+
+    if (this.appliedFilter) {
+			criteria.filters = this.appliedFilter;
+		}
+
     this.pageService.getPageAssemble(criteria, (res: any) => {
       res = JSON.parse(res);
       this.ngZone.run(() => {
@@ -358,12 +369,29 @@ export class CoursesPage implements OnInit {
   showFilter() {
     const that = this;
 
-    const callback: CourseFilterCallback = {
-      applyFilter(filter) {
+    const callback: PageFilterCallback = {
+      applyFilter(filter, appliedFilter) {
         that.ngZone.run(() => {
           let criteria = new PageAssembleCriteria();
           criteria.name = "Course";
           criteria.filters = filter;
+
+          that.courseFilter = appliedFilter;
+          that.appliedFilter = filter;
+
+          let filterApplied = false;
+
+          Object.keys(that.appliedFilter).forEach(key => {
+            if (that.appliedFilter[key].length > 0) {
+              filterApplied = true;
+            }
+          })
+
+          if (filterApplied) {
+            that.filterIcon = "./assets/imgs/ic_action_filter_applied.png";
+          } else {
+            that.filterIcon = "./assets/imgs/ic_action_filter.png";
+          }
 
           that.pageService.getPageAssemble(criteria, (res: any) => {
             res = JSON.parse(res);
@@ -393,7 +421,18 @@ export class CoursesPage implements OnInit {
       }
     }
 
-    let filter = this.popCtrl.create(CourseFilter, { callback: callback }, { cssClass: 'course-filter' });
+    let filterOptions = {
+			callback: callback
+		}
+
+		// Already apllied filter
+		if (this.courseFilter) {
+			filterOptions['filter'] = this.courseFilter;
+		} else {
+			filterOptions['filter'] = PageFilterConstants.COURSE_FILTER;
+		}
+
+    let filter = this.popCtrl.create(PageFilter, filterOptions, { cssClass: 'resource-filter' });
     filter.present();
   }
 

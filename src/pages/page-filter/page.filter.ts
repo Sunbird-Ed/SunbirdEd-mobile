@@ -26,39 +26,7 @@ export class PageFilter {
 
   callback: PageFilterCallback;
 
-  FILTERS = [
-    {
-      name: "language",
-      displayName: "Language",
-      values: frameworkDataList.languageList.sort()
-    },
-    {
-      name: "board",
-      displayName: "Board",
-      values: frameworkDataList.boardList.sort()
-    },
-    {
-      name: "gradeLevel",
-      displayName: "Grade",
-      values: frameworkDataList.gradeList.sort()
-    },
-    {
-      name: "subject",
-      displayName: "Subject",
-      values: frameworkDataList.subjectList.sort()
-
-    },
-    {
-      name: "medium",
-      displayName: "Medium",
-      values: frameworkDataList.mediumList.sort()
-
-    },
-    {
-      name: "contentType",
-      displayName: "Resource Type",
-      values: frameworkDataList.contentTypeList.sort()
-    }];
+  FILTERS;
 
   facetsFilter;
 
@@ -75,16 +43,13 @@ export class PageFilter {
   ) {
     this.callback = navParams.get('callback');
 
-    if (navParams.get('filter')) {
-      this.facetsFilter = navParams.get('filter');
-    } else {
-      this.FILTERS.forEach((element, index: number) => {
-        if(index < 5 && element.name != "language") this.getFrameworkData(element.name, index);
+    this.FILTERS = navParams.get('filter')
+    this.FILTERS.forEach((element, index: number) => {
+      this.getFrameworkData(element.name, index);
 
-        //Framework API doesn't return domain and content Type exclude them
-        if(index === this.FILTERS.length - 1) this.facetsFilter = this.FILTERS;
-      });
-    }
+      //Framework API doesn't return domain and content Type exclude them
+      if (index === this.FILTERS.length - 1) this.facetsFilter = this.FILTERS;
+    });
 
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.viewCtrl.dismiss();
@@ -104,8 +69,11 @@ export class PageFilter {
 
     this.frameworkService.getCategoryData(req,
       (res: any) => {
-        this.FILTERS[index].values = (currentCategory !== 'gradeLevel') ? _.map(JSON.parse(res), 'name').sort() : _.map(JSON.parse(res), 'name');
-        console.log(currentCategory + " Category Response: " + this.FILTERS[index]);
+        let responseArray = JSON.parse(res);
+        if (responseArray && responseArray.length > 0) {
+          this.FILTERS[index].values = (currentCategory !== 'gradeLevel') ? _.map(responseArray, 'name').sort() : _.map(responseArray, 'name');
+          console.log(currentCategory + " Category Response: " + this.FILTERS[index]);
+        }
       },
       (err: any) => {
         console.log("Subject Category Response: ", JSON.parse(err));
