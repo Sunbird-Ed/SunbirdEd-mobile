@@ -20,7 +20,7 @@ export class GuestProfilePage {
   list: Array<String> = ['SETTINGS'];
 
   showSignInCard: boolean = false;
-  isNetworkAvailable: boolean = true;
+  isNetworkAvailable: boolean;
   networkAvailable: boolean = true;
   /* Temporary Language Constants */
   userName: string = "Teacher";
@@ -54,12 +54,17 @@ export class GuestProfilePage {
         this.showSignInCard = false;
       }
     })
+    if (this.network.type === 'none') {
+      this.isNetworkAvailable = false;
+    } else {
+      this.isNetworkAvailable = true;
+    }
     this.network.onDisconnect().subscribe((data) => {
       this.isNetworkAvailable = false;
-  });
-  this.network.onConnect().subscribe((data) => {
-    this.isNetworkAvailable = true;
-});
+    });
+    this.network.onConnect().subscribe((data) => {
+      this.isNetworkAvailable = true;
+    });
   }
 
   ionViewDidLoad() {
@@ -84,19 +89,17 @@ export class GuestProfilePage {
       });
   }
   editGuestProfile() {
-    if(!this.isNetworkAvailable)
-    {
+    if (!this.isNetworkAvailable) {
       this.networkAvailable = false;
-      setTimeout(()=>{
+      setTimeout(() => {
         this.networkAvailable = true;
-   },3000);
+      }, 3000);
     }
-    else
-    {
-    this.navCtrl.push(GuestEditProfilePage, {
-      profile: this.profile
-    });
-  }
+    else {
+      this.navCtrl.push(GuestEditProfilePage, {
+        profile: this.profile
+      });
+    }
   }
 
   /**
@@ -179,17 +182,16 @@ export class GuestProfilePage {
    *
    */
   goToRoles() {
-    if(!this.isNetworkAvailable)
-    {
+    if (!this.isNetworkAvailable) {
       this.networkAvailable = false;
-      setTimeout(()=>{
+      setTimeout(() => {
         this.networkAvailable = true;
-   },3000);
+      }, 3000);
     }
-    else{
-    this.navCtrl.push(UserTypeSelectionPage, {
-      profile: this.profile
-    })
-  }
+    else {
+      this.navCtrl.push(UserTypeSelectionPage, {
+        profile: this.profile
+      })
+    }
   }
 }
