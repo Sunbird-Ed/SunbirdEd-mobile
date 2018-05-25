@@ -17,7 +17,12 @@ page-guest-profile {
     font-weight: normal;
     margin: 0;
   }
-
+  .offline-message{
+    background-color: red !important;
+    line-height: 2.5em !important;
+    text-align: center !important;
+    color: white;
+  }
   .custom-avatar {
     height: 22vw;
     width: 22vw;

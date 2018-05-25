@@ -7,6 +7,7 @@ import { GuestEditProfilePage } from './../guest-edit.profile/guest-edit.profile
 import { OverflowMenuComponent } from "./../overflowmenu/menu.overflow.component";
 import { ProfileService, FrameworkDetailsRequest, FrameworkService, SharedPreferences } from 'sunbird';
 import { UserTypeSelectionPage } from '../../user-type-selection/user-type-selection';
+import { Network } from '@ionic-native/network';
 
 @Component({
   selector: 'page-guest-profile',
@@ -19,7 +20,8 @@ export class GuestProfilePage {
   list: Array<String> = ['SETTINGS'];
 
   showSignInCard: boolean = false;
-
+  isNetworkAvailable: boolean = true;
+  networkAvailable: boolean = true;
   /* Temporary Language Constants */
   userName: string = "Teacher";
   profileName: string = "Guest 1";
@@ -31,6 +33,7 @@ export class GuestProfilePage {
   profile: any = {};
 
   constructor(public navCtrl: NavController,
+    public network: Network,
     public popoverCtrl: PopoverController,
     private profileService: ProfileService,
     private loadingCtrl: LoadingController,
@@ -51,6 +54,12 @@ export class GuestProfilePage {
         this.showSignInCard = false;
       }
     })
+    this.network.onDisconnect().subscribe((data) => {
+      this.isNetworkAvailable = false;
+  });
+  this.network.onConnect().subscribe((data) => {
+    this.isNetworkAvailable = true;
+});
   }
 
   ionViewDidLoad() {
@@ -75,9 +84,19 @@ export class GuestProfilePage {
       });
   }
   editGuestProfile() {
+    if(!this.isNetworkAvailable)
+    {
+      this.networkAvailable = false;
+      setTimeout(()=>{
+        this.networkAvailable = true;
+   },3000);
+    }
+    else
+    {
     this.navCtrl.push(GuestEditProfilePage, {
       profile: this.profile
     });
+  }
   }
 
   /**
@@ -157,12 +176,20 @@ export class GuestProfilePage {
 
   /**
    * Takes the user to role selection screen
-   * 
+   *
    */
   goToRoles() {
+    if(!this.isNetworkAvailable)
+    {
+      this.networkAvailable = false;
+      setTimeout(()=>{
+        this.networkAvailable = true;
+   },3000);
+    }
+    else{
     this.navCtrl.push(UserTypeSelectionPage, {
       profile: this.profile
     })
   }
-
+  }
 }
