@@ -542,6 +542,10 @@ export class ContentDetailsPage {
           update: true
         });
       }
+      if (data === 'delete.success') {
+        // this.
+        this.content.downloadable = false;
+      }
     });
   }
 

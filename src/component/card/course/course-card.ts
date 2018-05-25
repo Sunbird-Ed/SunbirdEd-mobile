@@ -56,7 +56,7 @@ export class CourseCard {
    */
   navigateToCourseDetailPage(content: any, layoutName: string): void {
     console.log('Card details... @@@', content);
-    if (layoutName === 'Inprogress') {
+    if (layoutName === 'Inprogress' || content.contentType === ContentType.COURSE) {
       this.navCtrl.push(EnrolledCourseDetailsPage, {
         content: content
       })
@@ -65,7 +65,7 @@ export class CourseCard {
         console.log('Inside course details page');
         this.navCtrl.push(CourseDetailPage, {
           content: content
-        })
+        });
       } else if (content.mimeType === MimeType.COLLECTION) {
         console.log('Inside CollectionDetailsPage');
         this.navCtrl.push(CollectionDetailsPage, {

@@ -1,7 +1,7 @@
 import { ContentRatingAlertComponent } from './../../component/content-rating-alert/content-rating-alert';
 import { Component, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, PopoverController } from 'ionic-angular';
-import { ContentService, FileUtil, CourseService } from 'sunbird';
+import { ContentService, FileUtil, CourseService, ChildContentRequest } from 'sunbird';
 import * as _ from 'lodash';
 import { CourseDetailPage } from '../course-detail/course-detail';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
@@ -10,6 +10,7 @@ import { ContentActionsComponent } from '../../component/content-actions/content
 import { ReportIssuesComponent } from '../../component/report-issues/report-issues';
 import { TranslateService } from '@ngx-translate/core';
 import { ContentType, MimeType } from '../../app/app.constant';
+import { CourseBatchesPage } from '../course-batches/course-batches';
 
 /**
  * Generated class for the EnrolledCourseDetailsPage page.
@@ -212,10 +213,10 @@ export class EnrolledCourseDetailsPage {
    */
   extractApiResponse(data): void {
     if (data.result.contentData) {
-      if (data.result.contentData.status != 'Live') {
+      /*if (data.result.contentData.status != 'Live') {
         this.showMessage(this.translateLanguageConstant('ERROR_CONTENT_NOT_AVAILABLE'));
         this.navCtrl.pop();
-      }
+      }*/
       this.course = data.result.contentData;
       if (this.course.gradeLevel && this.course.gradeLevel.length) {
         this.course.gradeLevel = this.course.gradeLevel.join(", ");
@@ -353,9 +354,15 @@ export class EnrolledCourseDetailsPage {
    * Function to set child contents
    */
   setChildContents(): void {
-    // this.zone.run(() => { this.showChildrenLoader = true;});
     this.showChildrenLoader = true;
-    const option = { contentId: this.identifier, hierarchyInfo: null };
+    let option = new ChildContentRequest();
+    option.contentId = this.identifier;
+    option.hierarchyInfo = null;
+
+    if (!this.courseCardData.batchId) {
+      option.level = 1
+    }
+
     this.contentService.getChildContents(option, (data: any) => {
       data = JSON.parse(data);
       console.log('Success: child contents ===>>>', data);
@@ -365,7 +372,9 @@ export class EnrolledCourseDetailsPage {
           this.startData = data.result.children;
         }
         this.showChildrenLoader = false;
-        this.getContentsSize(this.childrenData);
+        if (this.courseCardData.batchId) {
+          this.getContentsSize(this.childrenData);
+        }
       });
     },
       (error: string) => {
@@ -453,6 +462,7 @@ export class EnrolledCourseDetailsPage {
     this.identifier = this.courseCardData.contentId || this.courseCardData.identifier;
     this.showResumeBtn = this.courseCardData.lastReadContentId ? true : false;
     this.setContentDetails(this.identifier);
+    // If courseCardData does not have a batch id then it is not a enrolled course
     this.subscribeGenieEvent();
   }
 
@@ -512,8 +522,8 @@ export class EnrolledCourseDetailsPage {
    * 
    * @param {string} id 
    */
-  navigateToBatchListPage(id: string): void {
-    // this.navCtrl.push(CourseBatchesPageModule, { identifier: this.identifier });
+  navigateToBatchListPage(): void {
+    this.navCtrl.push(CourseBatchesPage, { identifier: this.identifier });
   }
 
   ionViewDidLoad() {

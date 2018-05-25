@@ -223,4 +223,8 @@ export class CourseBatchesPage implements OnInit {
     this.tabBarElement.style.display = 'none';
     this.getUserId();
   }
+
+  changeFilter(selectedFilter: string) {
+    this.selectedFilter = selectedFilter;
+  }
 }
