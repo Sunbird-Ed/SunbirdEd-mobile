@@ -22,6 +22,7 @@ import {
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { ContentRatingAlertComponent } from '../../component/content-rating-alert/content-rating-alert';
 import { ContentType, MimeType } from '../../app/app.constant';
+import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 
 /**
  * Generated class for the CollectionDetailsPage page.
@@ -512,7 +513,7 @@ export class CollectionDetailsPage {
     this.zone.run(() => {
       if (content.contentType === ContentType.COURSE) {
         console.warn('Inside CourseDetailPage >>>');
-        this.navCtrl.push(CourseDetailPage, {
+        this.navCtrl.push(EnrolledCourseDetailsPage, {
           content: content,
           depth: depth
         })

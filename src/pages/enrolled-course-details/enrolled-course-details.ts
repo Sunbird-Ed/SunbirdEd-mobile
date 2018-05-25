@@ -90,6 +90,7 @@ export class EnrolledCourseDetailsPage {
   queuedIdentifiers: Array<string> = [];
   isDownloadStarted: boolean = false;
   isDownlaodCompleted: boolean = false;
+  batchDetails: any;
 
   /**
    * To hold logged in user id
@@ -169,7 +170,7 @@ export class EnrolledCourseDetailsPage {
   rateContent() {
     // TODO: check content is played or not
     if (this.userId) {
-      if (this.course.isAvailableLocally){
+      if (this.course.isAvailableLocally) {
         let popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
           content: this.course,
           rating: this.userRating,
@@ -264,6 +265,9 @@ export class EnrolledCourseDetailsPage {
     }
 
     this.course.isAvailableLocally = data.result.isAvailableLocally;
+    if (this.courseCardData.batchId) {
+      this.getBatchDetails();
+    }
 
     switch (data.result.isAvailableLocally) {
       case true: {
@@ -288,8 +292,18 @@ export class EnrolledCourseDetailsPage {
    * Get batch details
    */
   getBatchDetails() {
-    const option = {  }
-    // this.courseService.getCourseBatches(option, (data => ))
+    this.courseService.getBatchDetails({ batchId: this.courseCardData.batchId }, (data: any) => {
+      this.zone.run(() => {
+        data = JSON.parse(data);
+        console.log('batch details: ', data);
+        if (data.result) {
+          this.batchDetails = data.result;
+        }
+      });
+    },
+      (error: any) => {
+        console.log('error while loading content details', error);
+      });
   }
 
   /**
@@ -431,7 +445,7 @@ export class EnrolledCourseDetailsPage {
     this.zone.run(() => {
       if (content.contentType === ContentType.COURSE) {
         console.warn('Inside CourseDetailPage >>>');
-        this.navCtrl.push(CourseDetailPage, {
+        this.navCtrl.push(EnrolledCourseDetailsPage, {
           content: content,
           depth: depth
         })

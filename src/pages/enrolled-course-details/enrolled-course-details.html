@@ -48,6 +48,19 @@
 					<div class="content-meta-title">{{ 'SUBJECT' | translate }}</div>
 					<span class="text-gray-color">{{course.subject}}</span>
 				</div>
+
+				<div *ngIf="course?.board" margin-top>
+					<div class="content-meta-title">{{ 'BOARD' | translate }}</div>
+					<span class="text-gray-color">{{course.board}}</span>
+				</div>
+
+				<div *ngIf="course?.medium" margin-top>
+					<div class="content-meta-title">{{ 'MEDIUM_2' | translate }}</div>
+					<span class="text-gray-color">{{course.medium}}</span>
+				</div>
+				<!-- Batch details - only for enrolled courses -->
+				
+
 			</div>
 
 			<div class="read-more" *ngIf="course.description && course.description.length > 100 || course.gradeLevel || course.subject"
