@@ -1,7 +1,7 @@
 import { ContentRatingAlertComponent } from './../../component/content-rating-alert/content-rating-alert';
 import { Component, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, PopoverController } from 'ionic-angular';
-import { ContentService, FileUtil, CourseService, ChildContentRequest, AuthService, PageId } from 'sunbird';
+import { ContentService, FileUtil, CourseService, ChildContentRequest, AuthService, PageId, UserProfileService } from 'sunbird';
 import * as _ from 'lodash';
 import { CourseDetailPage } from '../course-detail/course-detail';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
@@ -142,6 +142,7 @@ export class EnrolledCourseDetailsPage {
     public popoverCtrl: PopoverController,
     private translate: TranslateService,
     private authService: AuthService,
+    private profileService: UserProfileService,
     private courseService: CourseService) {
     this.getUserId();
     this.navCtrl = navCtrl;
@@ -298,12 +299,26 @@ export class EnrolledCourseDetailsPage {
         console.log('batch details: ', data);
         if (data.result) {
           this.batchDetails = data.result;
+          this.getBatchCreatorName()
         }
       });
     },
       (error: any) => {
         console.log('error while loading content details', error);
       });
+  }
+
+  getBatchCreatorName() {
+    let req = {
+      userId: this.batchDetails.createdBy,
+      requiredFields: []
+    }
+    this.profileService.getUserProfileDetails(req, (data: any) => {
+      data = JSON.parse(data);
+      console.log(data);
+    }, (error: any) =>{
+      
+    })
   }
 
   /**

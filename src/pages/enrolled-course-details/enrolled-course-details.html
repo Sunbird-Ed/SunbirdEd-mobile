@@ -59,7 +59,14 @@
 					<span class="text-gray-color">{{course.medium}}</span>
 				</div>
 				<!-- Batch details - only for enrolled courses -->
-				
+				<div *ngIf="batchDetails" margin-top>
+					<p> {{batchDetails.name}}</p>
+					<span>{{ batchDetails.startDate | date: 'mediumDate' }} - {{ batchDetails.endDate | date: 'mediumDate' }}</span>
+					<p *ngIf="batchDetails.creatorFirstName">
+						<span> {{ 'CREATED_BY_SMALL' | translate }} </span>
+						<span class="font-weight-500"> {{batchDetails.creatorFirstName + ' ' + batchDetails.creatorLastName}} </span>
+					</p>
+				</div>
 
 			</div>
 

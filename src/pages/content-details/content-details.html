@@ -1,108 +1,114 @@
 <!-- Generated template for the CourseDetailComponent component -->
 <ion-header>
-  <ion-navbar>
-    <ion-title>
-      <!-- <ion-icon md="md-share" float-right></ion-icon> -->
-    </ion-title>
-    <ion-buttons end>
-      <button ion-button icon-only (click)="share()">
-        <ion-icon md="md-share" float-right></ion-icon>
-      </button>
-      <button *ngIf="content && content.downloadable" ion-button icon-only (click)="showOverflowMenu($event)" style="font-size: 1.8rem;">
-        <ion-icon md="md-more" float-end></ion-icon>
-      </button>
-    </ion-buttons>
-  </ion-navbar>
+	<ion-navbar>
+		<ion-title>
+			<!-- <ion-icon md="md-share" float-right></ion-icon> -->
+		</ion-title>
+		<ion-buttons end>
+			<button ion-button icon-only (click)="share()">
+				<ion-icon md="md-share" float-right></ion-icon>
+			</button>
+			<button *ngIf="content && content.downloadable" ion-button icon-only (click)="showOverflowMenu($event)" style="font-size: 1.8rem;">
+				<ion-icon md="md-more" float-end></ion-icon>
+			</button>
+		</ion-buttons>
+	</ion-navbar>
 </ion-header>
 <!-- Page body -->
 <ion-content padding overflow-scroll="true">
-  <div class="content-details-holder" *ngIf="content">
-    <h6 class="font-size-20">{{content.name}}</h6>
-    <!-- Owner and download info -->
-    <ion-grid class="padding-0" *ngIf="content.owner || content.size">
-      <div *ngIf="content.owner">
-        <span class="text-gray-color">{{ 'BY' | translate }}</span>
-        <span class="content-meta-title">{{ content.owner }}</span>
-      </div>
-      <ion-row class="padding-top-10">
-        <ion-col class="padding-0">
-          <div class="size_txt padding-bottom-5" no-margin *ngIf="content.size || content.contentType">
-            <span *ngIf="content.contentType" class="content-size">{{ content.contentType }}</span>
-            <span class="content-size">[{{ content.size | fileSize }}]</span>
-          </div>
-          <rating align-items-start (click)="rateContent();" [(ngModel)]="content.me_averageRating" readOnly="true" max="5"
-            no-padding></rating>
-        </ion-col>
-        <ion-col offset-2 *ngIf="content.me_totalDownloads">
-          <div class="padding-bottom-5 text-align-end content-meta-title">{{ content.me_totalDownloads }}</div>
-          <div float-right class="text-gray-color">{{ 'DOWNLOADS' | translate }}</div>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-    <br/>
+	<div class="content-details-holder" *ngIf="content">
+		<h6 class="font-size-20">{{content.name}}</h6>
+		<!-- Owner and download info -->
+		<ion-grid class="padding-0" *ngIf="content.owner || content.size">
+			<div *ngIf="content.owner">
+				<span class="text-gray-color">{{ 'BY' | translate }}</span>
+				<span class="content-meta-title">{{ content.owner }}</span>
+			</div>
+			<ion-row class="padding-top-10">
+				<ion-col class="padding-0">
+					<div class="size_txt padding-bottom-5" no-margin *ngIf="content.size || content.contentType">
+						<span *ngIf="content.contentType" class="content-size">{{ content.contentType }}</span>
+						<span class="content-size">[{{ content.size | fileSize }}]</span>
+					</div>
+					<rating align-items-start (click)="rateContent();" [(ngModel)]="content.me_averageRating" readOnly="true" max="5" no-padding></rating>
+				</ion-col>
+				<ion-col offset-2 *ngIf="content.me_totalDownloads">
+					<div class="padding-bottom-5 text-align-end content-meta-title">{{ content.me_totalDownloads }}</div>
+					<div float-right class="text-gray-color">{{ 'DOWNLOADS' | translate }}</div>
+				</ion-col>
+			</ion-row>
+		</ion-grid>
+		<br/>
 
-    <!-- Read more / less -->
-    <div class="about-section" *ngIf="content.description || content.gradeLevel || content.subject">
-      <h6 class="padding-10 background-gray font-size-20">{{ 'ABOUT' | translate }}</h6>
-      <p *ngIf="!showMoreFlag" class="text-gray-color">
-        {{ (content.description && content.description.length > 100) ? (content.description | slice:0:99) + '...' : (content.description)
-        }} </p>
-      <div class="course-details" *ngIf="showMoreFlag">
-        <p *ngIf="content.description && content.description.length" class="text-gray-color">
-          {{ content.description }}
-        </p>
-        <div *ngIf="content.gradeLevel && content.gradeLevel.length" margin-top>
-          <div class="content-meta-title">{{ 'GRADE' | translate }}</div>
-          <!-- <span *ngFor="let grade of content.gradeLevel"> -->
-            <span class="text-gray-color">{{content.gradeLevel}}</span>
-          <!-- </span> -->
-        </div>
-        <div *ngIf="content.subject" margin-top>
-          <div class="content-meta-title">{{ 'SUBJECT' | translate }}</div>
-          <span class="text-gray-color">{{content.subject}}</span>
-        </div>
-      </div>
+		<!-- Read more / less -->
+		<div class="about-section" *ngIf="content.description || content.gradeLevel || content.subject">
+			<h6 class="padding-10 background-gray font-size-20">{{ 'ABOUT' | translate }}</h6>
+			<p *ngIf="!showMoreFlag" class="text-gray-color">
+				{{ (content.description && content.description.length > 100) ? (content.description | slice:0:99) + '...' : (content.description)
+				}} </p>
+			<div class="course-details" *ngIf="showMoreFlag">
+				<p *ngIf="content.description && content.description.length" class="text-gray-color">
+					{{ content.description }}
+				</p>
+				<div *ngIf="content.gradeLevel && content.gradeLevel.length" margin-top>
+					<div class="content-meta-title">{{ 'GRADE' | translate }}</div>
+					<span class="text-gray-color">{{content.gradeLevel}}</span>
+				</div>
+				<div *ngIf="content.subject" margin-top>
+					<div class="content-meta-title">{{ 'SUBJECT' | translate }}</div>
+					<span class="text-gray-color">{{content.subject}}</span>
+				</div>
+				<div *ngIf="content?.board" margin-top>
+					<div class="content-meta-title">{{ 'BOARD' | translate }}</div>
+					<span class="text-gray-color">{{content.board}}</span>
+				</div>
 
-      <div class="read-more" *ngIf="content.description && content.description.length > 100 || content.gradeLevel || content.subject"
-        (click)="showMoreFlag = !showMoreFlag">
-        <div *ngIf="showMoreFlag" class="padding-top-10">
-          {{ 'READ_LESS' | translate }}
-          <ion-icon name="ios-arrow-up"></ion-icon>
-        </div>
-        <div *ngIf="!showMoreFlag">
-          {{ 'READ_MORE' | translate }}
-          <ion-icon name="ios-arrow-down"></ion-icon>
-        </div>
-      </div>
-    </div>
-    <br/>
-    <div class="license-section padding-10 background-gray" *ngIf="content.license">
-      <div class="row" *ngIf="showLicense">
-        <span *ngIf="content.license">
-          <div class="size_txt content-meta-title">{{ 'LICENSE' | translate }}</div>
-          <div class="margin-top-5 text-gray-color">{{ content.license }}</div>
-        </span>
-      </div>
-      <span class="read-more text-gray-color">
-        <span *ngIf="showLicense" (click)="showLicense = false">
-          <br/> {{ 'HIDE_CREDITS_INFO' | translate }}
-          <ion-icon name="ios-arrow-up"></ion-icon>
-        </span>
-        <span *ngIf="!showLicense" (click)="showLicense = true">
-          {{ 'VIEW_CREDITS_INFO' | translate }}
-          <ion-icon name="ios-arrow-down"></ion-icon>
-        </span>
-      </span>
-    </div>
-  </div>
+				<div *ngIf="content?.medium" margin-top>
+					<div class="content-meta-title">{{ 'MEDIUM_2' | translate }}</div>
+					<span class="text-gray-color">{{content.medium}}</span>
+				</div>
+			</div>
+
+			<div class="read-more" *ngIf="content.description && content.description.length > 100 || content.gradeLevel || content.subject"
+			 (click)="showMoreFlag = !showMoreFlag">
+				<div *ngIf="showMoreFlag" class="padding-top-10">
+					{{ 'READ_LESS' | translate }}
+					<ion-icon name="ios-arrow-up"></ion-icon>
+				</div>
+				<div *ngIf="!showMoreFlag">
+					{{ 'READ_MORE' | translate }}
+					<ion-icon name="ios-arrow-down"></ion-icon>
+				</div>
+			</div>
+		</div>
+		<br/>
+		<div class="license-section padding-10 background-gray" *ngIf="content.license">
+			<div class="row" *ngIf="showLicense">
+				<span *ngIf="content.license">
+					<div class="size_txt content-meta-title">{{ 'LICENSE' | translate }}</div>
+					<div class="margin-top-5 text-gray-color">{{ content.license }}</div>
+				</span>
+			</div>
+			<span class="read-more text-gray-color">
+				<span *ngIf="showLicense" (click)="showLicense = false">
+					<br/> {{ 'HIDE_CREDITS_INFO' | translate }}
+					<ion-icon name="ios-arrow-up"></ion-icon>
+				</span>
+				<span *ngIf="!showLicense" (click)="showLicense = true">
+					{{ 'VIEW_CREDITS_INFO' | translate }}
+					<ion-icon name="ios-arrow-down"></ion-icon>
+				</span>
+			</span>
+		</div>
+	</div>
 </ion-content>
 <!-- Page footer -->
 <ion-footer *ngIf="content">
-  <ion-toolbar padding>
-    <button ion-button block outline *ngIf="isDownloadStarted" (click)="cancelDownload()">{{ 'CANCEL_DOWNLOAD' | translate }}</button>
-    <button ion-button block *ngIf="!content.downloadable" (click)="downloadContent()" text-uppercase [ngClass]="{'text-font': isDownloadStarted && ('DOWNLOADING_1' | translate).length > 18}">
-      {{ isDownloadStarted ? ('DOWNLOADING_1' | translate:{'%s': downloadProgress}) + ' %' : ('DOWNLOAD' | translate) }}
-    </button>
-    <button ion-button block *ngIf="content.downloadable" (click)="playContent()">{{ 'PLAY' | translate }}</button>
-  </ion-toolbar>
+	<ion-toolbar padding>
+		<button ion-button block outline *ngIf="isDownloadStarted" (click)="cancelDownload()">{{ 'CANCEL_DOWNLOAD' | translate }}</button>
+		<button ion-button block *ngIf="!content.downloadable" (click)="downloadContent()" text-uppercase [ngClass]="{'text-font': isDownloadStarted && ('DOWNLOADING_1' | translate).length > 18}">
+			{{ isDownloadStarted ? ('DOWNLOADING_1' | translate:{'%s': downloadProgress}) + ' %' : ('DOWNLOAD' | translate) }}
+		</button>
+		<button ion-button block *ngIf="content.downloadable" (click)="playContent()">{{ 'PLAY' | translate }}</button>
+	</ion-toolbar>
 </ion-footer>
