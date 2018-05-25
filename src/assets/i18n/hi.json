@@ -385,5 +385,6 @@
   "YES": "हाँ",
   "YOUR_PROFILE_IS": "आपकी प्रोफ़ाइल {{value}}% पूर्ण है",
   "YOUR_PROGRESS": "आपकी प्रगति : {{%s}}%",
-  "CHANGE_ROLE" : "CHANGE ROLE"
+  "CHANGE_ROLE" : "CHANGE ROLE",
+  "SYLLABUS" : "Syllabus"
 }

@@ -25,6 +25,7 @@ export class GuestEditProfilePage {
   guestEditForm: FormGroup;
   profile: any = {};
   categories: Array<any> = [];
+  syllabusList: Array<any> = ['Syllabus 1', 'Syllabus 2']
   boardList: Array<any> = [];
   gradeList: Array<string> = [];
   subjectList: Array<string> = [];
