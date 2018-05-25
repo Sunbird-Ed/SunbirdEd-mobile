@@ -414,6 +414,7 @@
     "SKILL": "Skill",
     "CHANGE_ROLE" : "CHANGE ROLE",
     "SYLLABUS" : "Syllabus",
+    "NEED_INTERNET":"Need internet to make changes",
     "YOU_ARE_OFFLINE": "You are offline",
     "OFFLINE_WARNING": "Make sure your devices is connected to the internet"
   }

@@ -56,6 +56,9 @@ export class CoursesPage implements OnInit {
 
   showSignInCard: boolean = false;
 
+  isNetworkAvailable: boolean;
+	showWarning: boolean = false;
+
   isOnBoardingCardCompleted: boolean = false;
   onBoardingProgress: number = 0;
   selectedLanguage = 'en';
@@ -452,4 +455,13 @@ export class CoursesPage implements OnInit {
       }
     );
   }
+  showNetworkWarning() {
+		this.showWarning = true;
+		setTimeout(() => {
+		  this.showWarning = false;
+		}, 3000);
+	  }
+	  buttonClick(isNetAvailable) {
+		this.showNetworkWarning();
+	  }
 }

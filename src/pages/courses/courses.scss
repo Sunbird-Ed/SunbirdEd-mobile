@@ -64,4 +64,15 @@ page-courses {
   .tool-icon {
     margin: 10px 2px !important;
   }
+  .offline-message{
+    background-color: red !important;
+    line-height: 2.5em !important;
+    text-align: center !important;
+    color: white;
+    top: 0px;
+    position: sticky;
+    z-index: 11;
+    display: block;
+    width: 100%;
+  }
 }
