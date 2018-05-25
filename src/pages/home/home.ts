@@ -286,13 +286,13 @@ export class HomePage implements OnInit {
 
   getProfileCompletionDetails(session: any) {
     let sessionObj = JSON.parse(session);
-    this.userId = sessionObj["userToken"];
+    this.userId = sessionObj[ProfileConstants.USER_TOKEN];
 
     let req: UserProfileDetailsRequest = {
       userId:
-        this.userId && this.userId != sessionObj["userToken"]
+        this.userId && this.userId != sessionObj[ProfileConstants.USER_TOKEN]
           ? this.userId
-          : sessionObj["userToken"],
+          : sessionObj[ProfileConstants.USER_TOKEN],
       requiredFields: ProfileConstants.REQUIRED_FIELDS,
       refreshUserProfileDetails: true
     };

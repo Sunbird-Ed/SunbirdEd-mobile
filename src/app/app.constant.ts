@@ -12,6 +12,7 @@ export class ContentType {
     public static readonly TEXTBOOK_UNIT = 'TextBookUnit';
     public static readonly LESSON_PLAN_UNIT = 'LessonPlanUnit';
     public static readonly COURSE_UNIT = 'CourseUnit';
+
     public static readonly FOR_LIBRARY_TAB = [ContentType.STORY,
     ContentType.WORKSHEET, ContentType.GAME,
     ContentType.RESOURCE, ContentType.COLLECTION,

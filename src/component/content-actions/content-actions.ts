@@ -7,6 +7,7 @@ import { Component } from '@angular/core';
 import { ContentService, AuthService } from 'sunbird';
 import { ToastController, Platform } from "ionic-angular";
 import { ReportIssuesComponent } from '../report-issues/report-issues';
+import { ProfileConstants } from '../../app/app.constant';
 
 /**
  * Generated class for the ContentActionsComponent component.
@@ -59,7 +60,7 @@ export class ContentActionsComponent {
       } else {
         let res = JSON.parse(session);
         console.log('auth service...', res);
-        this.userId = res["userToken"] ? res["userToken"] : '';
+        this.userId = res[ProfileConstants.USER_TOKEN] ? res[ProfileConstants.USER_TOKEN] : '';
       }
     });
   }

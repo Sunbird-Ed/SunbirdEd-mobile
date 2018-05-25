@@ -6,7 +6,7 @@ import {
   SharedPreferences, CourseService, AuthService,
   PageAssembleService, PageAssembleCriteria,
   Impression, ImpressionType, PageId, Environment, TelemetryService,
-  ProfileService, ContentDetailRequest, ContentService
+  ProfileService, ContentDetailRequest, ContentService, ProfileType
 } from 'sunbird';
 import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
@@ -17,7 +17,7 @@ import * as _ from 'lodash';
 import { TranslateService } from '@ngx-translate/core';
 import { Network } from '@ionic-native/network';
 import { generateImpressionEvent } from '../../app/telemetryutil';
-import { ContentType, MimeType, PageFilterConstants } from '../../app/app.constant';
+import { ContentType, MimeType, PageFilterConstants, ProfileConstants } from '../../app/app.constant';
 import { PageFilterCallback, PageFilter } from '../page-filter/page.filter';
 
 @IonicPage()
@@ -241,7 +241,7 @@ export class CoursesPage implements OnInit {
           reject('session expired');
         } else {
           let sessionObj = JSON.parse(session);
-          that.userId = sessionObj["userToken"];
+          that.userId = sessionObj[ProfileConstants.USER_TOKEN];
           that.guestUser = false;
           that.getEnrolledCourses();
           resolve();
@@ -280,9 +280,9 @@ export class CoursesPage implements OnInit {
    */
   getCurrentUser(): void {
     this.preference.getString('selected_user_type', (val) => {
-      if (val == "teacher") {
+      if (val == ProfileType.TEACHER) {
         this.showSignInCard = true;
-      } else if (val == "student") {
+      } else if (val == ProfileType.STUDENT) {
         this.showSignInCard = false;
       }
     })

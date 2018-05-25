@@ -4,6 +4,7 @@ import { Component, NgZone, ViewEncapsulation } from '@angular/core';
 import { AuthService, UserProfileService } from 'sunbird';
 
 import { ProfilePage } from './../profile';
+import { ProfileConstants } from '../../../app/app.constant';
 
 @Component({
   selector: 'skill-tags',
@@ -65,7 +66,7 @@ export class SkillTagsComponent {
         console.error("session is null");
       } else {
         let req = {
-          userId: JSON.parse(session)["userToken"],
+          userId: JSON.parse(session)[ProfileConstants.USER_TOKEN],
           skills: this.skillTags.map(item => {
             return item["value"];
           })

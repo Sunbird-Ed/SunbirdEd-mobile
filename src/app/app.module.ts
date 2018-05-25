@@ -13,7 +13,6 @@ import { Globalization } from '@ionic-native/globalization';
 import { AppVersion } from '@ionic-native/app-version';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { IonicImageLoader, ImageLoader, ImageLoaderConfig } from "ionic-image-loader";
-import { FCM } from '@ionic-native/fcm';
 import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
 import { FileOpener } from '@ionic-native/file-opener';
 
@@ -52,7 +51,6 @@ import { FileOpener } from '@ionic-native/file-opener';
     AppVersion,
     SocialSharing,
     ImageLoader,
-    FCM,
     FileTransfer,
     FileTransferObject,
     FileOpener,

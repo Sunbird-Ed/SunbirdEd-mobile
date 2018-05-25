@@ -3,9 +3,9 @@ import {
 	PageAssembleService, PageAssembleCriteria, ContentService, AuthService,
 	Impression, ImpressionType, PageId, Environment, TelemetryService,
 	InteractType, InteractSubtype,
-	ProfileService, ContentDetailRequest, SharedPreferences
+	ProfileService, ContentDetailRequest, SharedPreferences, ProfileType
 } from "sunbird";
-import { NavController, PopoverController, Events, ToastController } from 'ionic-angular';
+import { NavController, PopoverController, Events, ToastController, LoadingController } from 'ionic-angular';
 import * as _ from 'lodash';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
 import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
@@ -64,7 +64,7 @@ export class ResourcesPage implements OnInit {
 
 	selectedLanguage: string = 'en';
 
-	noInternetConnection: boolean = false;
+	//noInternetConnection: boolean = false;
 
 	constructor(public navCtrl: NavController,
 		private pageService: PageAssembleService,
@@ -80,7 +80,8 @@ export class ResourcesPage implements OnInit {
 		private preference: SharedPreferences,
 		private translate: TranslateService,
 		private zone: NgZone,
-		private network: Network
+		private network: Network,
+		private loadingCtrl: LoadingController
 	) {
 		this.preference.getString('selected_language_code', (val: string) => {
 			if (val && val.length) {
@@ -124,12 +125,12 @@ export class ResourcesPage implements OnInit {
 	 */
 	getCurrentUser(): void {
 		this.preference.getString('selected_user_type', (val) => {
-			if (val == "teacher") {
+			if (val == ProfileType.TEACHER) {
 				this.showSignInCard = true;
-			} else if (val == "student") {
+			} else if (val == ProfileType.STUDENT) {
 				this.showSignInCard = false;
 			}
-		})
+		});
 
 
 		this.isOnBoardingCardCompleted = false;
@@ -187,16 +188,16 @@ export class ResourcesPage implements OnInit {
 			console.log('error while getting saved contents', error);
 			this.ngZone.run(() => {
 				this.showLoader = false;
-			})
+			});
 		});
 	}
 
 	/**
 	 * Get popular content
 	 */
-	getPopularContent(isAfterLanguageChange = false) {
+	getPopularContent(isAfterLanguageChange = false, loader?) {
 		this.pageApiLoader = true;
-		this.noInternetConnection = false;
+		//this.noInternetConnection = false;
 		let that = this;
 		let criteria = new PageAssembleCriteria();
 		criteria.name = "Resource";
@@ -231,18 +232,21 @@ export class ResourcesPage implements OnInit {
 				console.log('storyAndWorksheets', that.storyAndWorksheets);
 				this.pageLoadedSuccess = true;
 				this.pageApiLoader = false;
-				this.noInternetConnection = false;
+				//this.noInternetConnection = false;
 				this.checkEmptySearchResult(isAfterLanguageChange);
+          		if(loader) loader.dismiss();
 			});
 		}, error => {
 			console.log('error while getting popular resources...', error);
 			that.ngZone.run(() => {
 				this.pageApiLoader = false;
 				if (error === 'CONNECTION_ERROR') {
-					this.noInternetConnection = true;
+					//this.noInternetConnection = true;
+					this.isNetworkAvailable = false;
 				} else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
 					if (!isAfterLanguageChange) this.getMessageByConst('ERROR_FETCHING_DATA');
 				}
+				if(loader) loader.dismiss();
 			});
 		});
 	}
@@ -305,6 +309,10 @@ export class ResourcesPage implements OnInit {
 			}
 		});
 		this.subscribeGenieEvents();
+
+		if (this.network.type === 'none') {
+			this.isNetworkAvailable = false;
+		}
 	}
 
 	subscribeGenieEvents() {
@@ -326,10 +334,19 @@ export class ResourcesPage implements OnInit {
 	 * @param refresher
 	 */
 	swipeDownToRefresh(refresher?) {
-		refresher.complete();
+		let loader =  this.getLoader();
+		loader.present();
+ 		if(refresher) {
+			refresher.complete();
+		}
+
 		this.storyAndWorksheets = [];
 		this.setSavedContent();
-		this.getPopularContent();
+/* 		if(refresher)
+			this.getPopularContent(false, refresher, loader);
+		else */
+			this.getPopularContent(false, loader);
+		this.checkNetworkStatus();
 	}
 
 	/**
@@ -422,7 +439,7 @@ export class ResourcesPage implements OnInit {
 				PageId.LIBRARY, null));
 
 		const that = this;
-		this.noInternetConnection = false;
+		//this.noInternetConnection = false;
 		const callback: PageFilterCallback = {
 			applyFilter(filter, appliedFilter) {
 				let criteria = new PageAssembleCriteria();
@@ -471,7 +488,7 @@ export class ResourcesPage implements OnInit {
 						console.log('storyAndWorksheets', that.storyAndWorksheets);
 						that.pageLoadedSuccess = true;
 						that.pageApiLoader = false;
-						that.noInternetConnection = false;
+						//that.noInternetConnection = false;
 						that.checkEmptySearchResult();
 
 					});
@@ -480,7 +497,8 @@ export class ResourcesPage implements OnInit {
 					that.ngZone.run(() => {
 						that.pageApiLoader = false;
 						if (error === 'CONNECTION_ERROR') {
-							that.noInternetConnection = true;
+							//that.noInternetConnection = true;
+							that.isNetworkAvailable = false;
 						} else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
 							this.getMessageByConst('ERROR_FETCHING_DATA');
 						}
@@ -526,5 +544,23 @@ export class ResourcesPage implements OnInit {
 	  }
 	  buttonClick(isNetAvailable) {
 		this.showNetworkWarning();
+	  }
+
+	checkNetworkStatus(showRefresh = false) {
+		if (this.network.type === 'none') {
+			this.isNetworkAvailable = false;
+		} else {
+			this.isNetworkAvailable = true;
+			if(showRefresh) {
+				this.swipeDownToRefresh();
+			}
+		}
+	}
+
+	getLoader(): any {
+		return this.loadingCtrl.create({
+		  duration: 30000,
+		  spinner: "crescent"
+		});
 	  }
 }
