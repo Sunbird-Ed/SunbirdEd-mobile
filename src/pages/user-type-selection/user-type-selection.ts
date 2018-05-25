@@ -107,7 +107,7 @@ export class UserTypeSelectionPage {
     //When user is changing the role via the Guest Profile screen
     if (this.profile !== undefined) {
       //if role types are same
-      if (this.profile.userType === this.selectedUserType) {
+      if (this.profile.profileType === this.selectedUserType) {
         this.gotoTabsPage();
       } else {
         let updateRequest = {

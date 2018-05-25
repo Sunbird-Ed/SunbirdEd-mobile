@@ -286,7 +286,8 @@ export class OnboardingService {
             isGroupUser: false,
             language: "en",
             avatar: "avatar",
-            createdAt: this.profile.createdAt
+            createdAt: this.profile.createdAt,
+            profileType: this.profile.profileType
         }
         if (index === 0 && !_.find(this.onBoardingSlides, ['id', 'boardList']).selectedCode.length) {
             req.board = [];

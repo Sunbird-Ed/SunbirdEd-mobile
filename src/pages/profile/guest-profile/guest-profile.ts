@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 
 import { GuestEditProfilePage } from './../guest-edit.profile/guest-edit.profile';
 import { OverflowMenuComponent } from "./../overflowmenu/menu.overflow.component";
-import { ProfileService, FrameworkDetailsRequest, FrameworkService, SharedPreferences } from 'sunbird';
+import { ProfileService, FrameworkDetailsRequest, FrameworkService, SharedPreferences, ProfileType } from 'sunbird';
 import { UserTypeSelectionPage } from '../../user-type-selection/user-type-selection';
 import { Network } from '@ionic-native/network';
 
@@ -23,8 +23,6 @@ export class GuestProfilePage {
   isNetworkAvailable: boolean;
   networkAvailable: boolean = true;
   /* Temporary Language Constants */
-  userName: string = "Teacher";
-  profileName: string = "Guest 1";
   boards: string = "";
   grade: string = "";
   medium: string = "";
@@ -48,9 +46,9 @@ export class GuestProfilePage {
     });
 
     this.preference.getString('selected_user_type', (val) => {
-      if (val == "teacher") {
+      if (val == ProfileType.TEACHER) {
         this.showSignInCard = true;
-      } else if (val == "student") {
+      } else if (val == ProfileType.STUDENT) {
         this.showSignInCard = false;
       }
     })

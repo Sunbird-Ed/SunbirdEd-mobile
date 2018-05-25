@@ -3,7 +3,7 @@ import {
 	PageAssembleService, PageAssembleCriteria, ContentService, AuthService,
 	Impression, ImpressionType, PageId, Environment, TelemetryService,
 	InteractType, InteractSubtype,
-	ProfileService, ContentDetailRequest, SharedPreferences
+	ProfileService, ContentDetailRequest, SharedPreferences, ProfileType
 } from "sunbird";
 import { NavController, PopoverController, Events, ToastController, LoadingController } from 'ionic-angular';
 import * as _ from 'lodash';
@@ -115,9 +115,9 @@ export class ResourcesPage implements OnInit {
 	 */
 	getCurrentUser(): void {
 		this.preference.getString('selected_user_type', (val) => {
-			if (val == "teacher") {
+			if (val == ProfileType.TEACHER) {
 				this.showSignInCard = true;
-			} else if (val == "student") {
+			} else if (val == ProfileType.STUDENT) {
 				this.showSignInCard = false;
 			}
 		});
