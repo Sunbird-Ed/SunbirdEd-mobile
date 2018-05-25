@@ -1,4 +1,4 @@
-import { Component, NgZone, Input } from '@angular/core';
+import { Component, NgZone, Input, Output, EventEmitter } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { NavController, LoadingController } from 'ionic-angular';
 import { AppVersion } from "@ionic-native/app-version";
@@ -9,6 +9,7 @@ import {
 import { initTabs, LOGIN_TEACHER_TABS } from '../../app/module.service';
 import { generateInteractEvent } from '../../app/telemetryutil';
 import { ProfileConstants } from '../../app/app.constant';
+import { Network } from '@ionic-native/network';
 
 @Component({
   selector: 'sign-in-card',
@@ -24,6 +25,7 @@ export class SignInCardComponent {
   private translateDisplayText;
 
   sunbird: string = "SUNBIRD";
+  isNetworkAvailable: boolean;
 
 
   @Input() source: string = "";
@@ -32,7 +34,10 @@ export class SignInCardComponent {
 
   @Input() descrption: string = "";
 
+  @Output() valueChange = new EventEmitter();
+
   constructor(public translate: TranslateService,
+    public network: Network,
     public navCtrl: NavController,
     private auth: OAuthService,
     private container: ContainerService,
@@ -43,15 +48,26 @@ export class SignInCardComponent {
     private telemetryService: TelemetryService,
     private appVersion: AppVersion) {
 
-      this.appVersion.getAppName()
-        .then((appName: any) => {
-          this.sunbird = appName;
-          this.initText();
-        });
+    this.appVersion.getAppName()
+      .then((appName: any) => {
+        this.sunbird = appName;
+        this.initText();
+      });
+    if (this.network.type === 'none') {
+      this.isNetworkAvailable = false;
+    } else {
+      this.isNetworkAvailable = true;
+    }
+    this.network.onDisconnect().subscribe((data) => {
+      this.isNetworkAvailable = false;
+    });
+    this.network.onConnect().subscribe((data) => {
+      this.isNetworkAvailable = true;
+    });
   }
 
   initText() {
-    this.translate.get(this.DEFAULT_TEXT, {'%s': this.sunbird}).subscribe((value) => {
+    this.translate.get(this.DEFAULT_TEXT, { '%s': this.sunbird }).subscribe((value) => {
       this.translateDisplayText = value;
       if (this.title.length === 0) {
         this.title = this.translateDisplayText['OVERLAY_LABEL_COMMON'];
@@ -64,43 +80,51 @@ export class SignInCardComponent {
   }
 
 
+
+
   singIn() {
-    this.telemetryService.interact(
-      generateInteractEvent(InteractType.TOUCH,
-        InteractSubtype.SIGNIN_OVERLAY_CLICKED,
-        Environment.HOME,
-        this.source, null)
-    );
 
-    this.generateLoginInteractTelemetry(InteractType.TOUCH,
-      InteractSubtype.LOGIN_INITIATE, "");
+    if (!this.isNetworkAvailable) {
+      this.valueChange.emit(true);
+    }
+    else {
+      this.telemetryService.interact(
+        generateInteractEvent(InteractType.TOUCH,
+          InteractSubtype.SIGNIN_OVERLAY_CLICKED,
+          Environment.HOME,
+          this.source, null)
+      );
 
-    let that = this;
-    let loader = this.getLoader();
-    loader.present();
-    that.auth.doOAuthStepOne()
-      .then(token => {
-        return that.auth.doOAuthStepTwo(token);
-      })
-      .then(() => {
-        initTabs(that.container, LOGIN_TEACHER_TABS);
-        return that.refreshProfileData();
-      })
-      .then(slug => {
-        return that.refreshTenantData(slug);
-      })
-      .then(() => {
-        loader.dismiss();
-        that.ngZone.run(() => {
+      this.generateLoginInteractTelemetry(InteractType.TOUCH,
+        InteractSubtype.LOGIN_INITIATE, "");
 
-          window.location.reload();
-          // TabsPage.prototype.ionVieit wWillEnter();
+      let that = this;
+      let loader = this.getLoader();
+      loader.present();
+      that.auth.doOAuthStepOne()
+        .then(token => {
+          return that.auth.doOAuthStepTwo(token);
+        })
+        .then(() => {
+          initTabs(that.container, LOGIN_TEACHER_TABS);
+          return that.refreshProfileData();
+        })
+        .then(slug => {
+          return that.refreshTenantData(slug);
+        })
+        .then(() => {
+          loader.dismiss();
+          that.ngZone.run(() => {
+
+            window.location.reload();
+            // TabsPage.prototype.ionVieit wWillEnter();
+          });
+        })
+        .catch(error => {
+          loader.dismiss();
+          console.log(error);
         });
-      })
-      .catch(error => {
-        loader.dismiss();
-        console.log(error);
-      });
+    }
   }
 
   refreshProfileData() {

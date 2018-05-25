@@ -34,6 +34,9 @@ export class ResourcesPage implements OnInit {
 
 	showSignInCard: boolean = false;
 
+	isNetworkAvailable: boolean;
+	showWarning: boolean = false;
+
 	/**
 	 * Contains local resources
 	 */
@@ -97,6 +100,18 @@ export class ResourcesPage implements OnInit {
 				this.getPopularContent(true);
 			}
 		});
+
+		if (this.network.type === 'none') {
+			this.isNetworkAvailable = false;
+		  } else {
+			this.isNetworkAvailable = true;
+		  }
+		  this.network.onDisconnect().subscribe((data) => {
+			this.isNetworkAvailable = false;
+		  });
+		  this.network.onConnect().subscribe((data) => {
+			this.isNetworkAvailable = true;
+		  });
 	}
 
 	ngAfterViewInit() {
@@ -503,4 +518,13 @@ export class ResourcesPage implements OnInit {
 			if (!isAfterLanguageChange) this.getMessageByConst('NO_CONTENTS_FOUND');
 		}
 	}
+	showNetworkWarning() {
+		this.showWarning = true;
+		setTimeout(() => {
+		  this.showWarning = false;
+		}, 3000);
+	  }
+	  buttonClick(isNetAvailable) {
+		this.showNetworkWarning();
+	  }
 }

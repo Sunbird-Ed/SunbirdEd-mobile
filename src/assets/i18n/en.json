@@ -412,5 +412,6 @@
     "ADDED": "added",
     "SKILL": "Skill",
     "CHANGE_ROLE" : "CHANGE ROLE",
-    "SYLLABUS" : "Syllabus"
+    "SYLLABUS" : "Syllabus",
+    "NEED_INTERNET":"Need internet to make changes"
   }

@@ -21,7 +21,7 @@ export class GuestProfilePage {
 
   showSignInCard: boolean = false;
   isNetworkAvailable: boolean;
-  networkAvailable: boolean = true;
+  showWarning: boolean = false;
   /* Temporary Language Constants */
   userName: string = "Teacher";
   profileName: string = "Guest 1";
@@ -90,10 +90,7 @@ export class GuestProfilePage {
   }
   editGuestProfile() {
     if (!this.isNetworkAvailable) {
-      this.networkAvailable = false;
-      setTimeout(() => {
-        this.networkAvailable = true;
-      }, 3000);
+      this.showNetworkWarning();
     }
     else {
       this.navCtrl.push(GuestEditProfilePage, {
@@ -102,6 +99,12 @@ export class GuestProfilePage {
     }
   }
 
+  showNetworkWarning() {
+    this.showWarning = true;
+    setTimeout(() => {
+      this.showWarning = false;
+    }, 3000);
+  }
   /**
    * To show popover menu
    * @param {object} event
@@ -183,15 +186,17 @@ export class GuestProfilePage {
    */
   goToRoles() {
     if (!this.isNetworkAvailable) {
-      this.networkAvailable = false;
-      setTimeout(() => {
-        this.networkAvailable = true;
-      }, 3000);
+      this.showNetworkWarning();
     }
     else {
       this.navCtrl.push(UserTypeSelectionPage, {
         profile: this.profile
       })
     }
+  }
+
+  buttonClick(isNetAvailable) {
+   
+    this.showNetworkWarning();
   }
 }

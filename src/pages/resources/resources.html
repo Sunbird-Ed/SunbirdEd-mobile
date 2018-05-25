@@ -19,6 +19,7 @@
 
 <ion-content overflow-scroll="true" class="course-scroll-holder1" style="background: #efeff4;">
 	<ion-refresher (ionRefresh)="swipeDownToRefresh($event)"></ion-refresher>
+	<div *ngIf="showWarning" class="offline-message"> <span>{{'NEED_INTERNET' | translate}} </span></div>
 	<!-- onBoardingSLides starts here -->
 	<onboarding-card *ngIf="guestUser && !isOnBoardingCardCompleted"></onboarding-card>
 	<!-- onBoardingSLides ends here -->
@@ -76,5 +77,5 @@
 			<ion-spinner padding style="padding-top: 110px;"></ion-spinner>
 		</div>
 	</div>
-	<sign-in-card *ngIf="showSignInCard" [source]="source"></sign-in-card>
+	<sign-in-card (valueChange)="buttonClick($event)" *ngIf="showSignInCard" [source]="source"></sign-in-card>
 </ion-content>

@@ -20,7 +20,7 @@
 <ion-content overflow-scroll="true" style="background: #efeff4;">
   <!-- <pb-horizontal *ngIf="!isOnBoardingCardCompleted && guestUser" [progress]="onBoardingProgress" [isOnBoardCard]="!isOnBoardingCardCompleted"></pb-horizontal> -->
   <ion-refresher (ionRefresh)="getCourseTabData($event)"></ion-refresher>
-
+  <div *ngIf="showWarning" class="offline-message"> <span>{{'NEED_INTERNET' | translate}} </span></div>
   <!-- onBoardingSLides starts here -->
   <onboarding-card *ngIf="guestUser && !isOnBoardingCardCompleted"></onboarding-card>
   <!-- onBoardingSLides ends here -->
@@ -69,5 +69,5 @@
     </div>
   </div>
   <!-- </div> -->
-  <sign-in-card *ngIf="showSignInCard"></sign-in-card>
+  <sign-in-card (valueChange)="buttonClick($event)" *ngIf="showSignInCard"></sign-in-card>
 </ion-content>
