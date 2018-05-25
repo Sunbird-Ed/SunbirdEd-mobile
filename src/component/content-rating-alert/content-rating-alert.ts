@@ -4,6 +4,7 @@ import { ContentService, AuthService, TelemetryService, InteractType, InteractSu
 import { NgModule } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { generateInteractEvent, generateImpressionEvent, generateImpressionTelemetry } from '../../app/telemetryutil';
+import { ProfileConstants } from '../../app/app.constant';
 
 
 /**
@@ -65,7 +66,7 @@ export class ContentRatingAlertComponent {
       if (res === undefined || res === "null") {
         this.userId = '';
       } else {
-        this.userId = res["userToken"] ? res["userToken"] : '';
+        this.userId = res[ProfileConstants.USER_TOKEN] ? res[ProfileConstants.USER_TOKEN] : '';
       }
     });
   }

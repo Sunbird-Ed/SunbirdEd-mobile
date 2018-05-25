@@ -6,6 +6,7 @@ import { ContentService, FileUtil, ImpressionType, PageId, Environment, Telemetr
 import * as _ from 'lodash';
 import { generateImpressionEvent, generateInteractEvent } from '../../app/telemetryutil';
 import { SocialSharing } from '@ionic-native/social-sharing';
+import { ProfileConstants } from '../../app/app.constant';
 
 /**
  * Generated class for the CourseDetailPage page.
@@ -116,12 +117,12 @@ export class CourseDetailPage {
         this.userId = '';
       } else {
         res = JSON.parse(res);
-        this.userId = res["userToken"];
+        this.userId = res[ProfileConstants.USER_TOKEN];
       }
     });
 
     this.buildParamService.getBuildConfigParam("BASE_URL", (response: any) => {
-      this.baseUrl=response
+      this.baseUrl = response
     }, (error) => {
       return "";
     });
@@ -154,7 +155,7 @@ export class CourseDetailPage {
     this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_COURSE_INITIATED, this.course.contentType);
     let loader = this.getLoader();
     loader.present();
-    let url =  this.baseUrl+"/public/#!/content/" + + this.course.identifier;
+    let url = this.baseUrl + "/public/#!/content/" + + this.course.identifier;
     if (this.course.isAvailableLocally) {
       this.shareUtil.exportEcar(this.course.identifier, path => {
         loader.dismiss();
@@ -175,7 +176,7 @@ export class CourseDetailPage {
       this.social.share("", "", "", url);
     }
   }
-  
+
   /**
    * To set content details in local variable
    *

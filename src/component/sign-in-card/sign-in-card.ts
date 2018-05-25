@@ -112,7 +112,7 @@ export class SignInCardComponent {
         } else {
           let sessionObj = JSON.parse(session);
           let req = {
-            userId: sessionObj["userToken"],
+            userId: sessionObj[ProfileConstants.USER_TOKEN],
             requiredFields: ProfileConstants.REQUIRED_FIELDS,
             refreshUserProfileDetails: true
           };

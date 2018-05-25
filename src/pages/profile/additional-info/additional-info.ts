@@ -7,6 +7,7 @@ import * as _ from 'lodash';
 import { UserProfileService, AuthService, FrameworkService, CategoryRequest } from 'sunbird';
 import { ProfilePage } from './../profile';
 import { languageList, subjectList, gradeList } from './../../../config/framework.filters';
+import { ProfileConstants } from '../../../app/app.constant';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -169,7 +170,7 @@ export class AdditionalInfoComponent {
         console.error("session is null");
       } else {
         let req = {
-          userId: JSON.parse(session)["userToken"],
+          userId: JSON.parse(session)[ProfileConstants.USER_TOKEN],
           privateFields:
             this.profileVisibility[field] === "private" ? [field] : [],
           publicFields:

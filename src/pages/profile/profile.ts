@@ -177,15 +177,15 @@ export class ProfilePage {
           reject("session is null");
         } else {
           let sessionObj = JSON.parse(session);
-          that.loggedInUserId = sessionObj["userToken"];
-          if (that.userId && sessionObj["userToken"] === that.userId)
+          that.loggedInUserId = sessionObj[ProfileConstants.USER_TOKEN];
+          if (that.userId && sessionObj[ProfileConstants.USER_TOKEN] === that.userId)
             that.isLoggedInUser = true;
 
           let req: UserProfileDetailsRequest = {
             userId:
-              that.userId && that.userId != sessionObj["userToken"]
+              that.userId && that.userId != sessionObj[ProfileConstants.USER_TOKEN]
                 ? that.userId
-                : sessionObj["userToken"],
+                : sessionObj[ProfileConstants.USER_TOKEN],
             requiredFields: ProfileConstants.REQUIRED_FIELDS
           };
           if (that.isLoggedInUser) {
@@ -499,7 +499,7 @@ export class ProfilePage {
         console.error("session is null");
       } else {
         let req = {
-          userId: JSON.parse(session)["userToken"],
+          userId: JSON.parse(session)[ProfileConstants.USER_TOKEN],
           privateFields:
             this.profile.profileVisibility[field] == "private" ? [field] : [],
           publicFields:

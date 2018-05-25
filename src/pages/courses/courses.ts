@@ -17,7 +17,7 @@ import * as _ from 'lodash';
 import { TranslateService } from '@ngx-translate/core';
 import { Network } from '@ionic-native/network';
 import { generateImpressionEvent } from '../../app/telemetryutil';
-import { ContentType, MimeType, PageFilterConstants } from '../../app/app.constant';
+import { ContentType, MimeType, PageFilterConstants, ProfileConstants } from '../../app/app.constant';
 import { PageFilterCallback, PageFilter } from '../page-filter/page.filter';
 
 @IonicPage()
@@ -238,7 +238,7 @@ export class CoursesPage implements OnInit {
           reject('session expired');
         } else {
           let sessionObj = JSON.parse(session);
-          that.userId = sessionObj["userToken"];
+          that.userId = sessionObj[ProfileConstants.USER_TOKEN];
           that.guestUser = false;
           that.getEnrolledCourses();
           resolve();
