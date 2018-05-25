@@ -53,11 +53,12 @@ before_install:
 before_script:
 - echo "Before Script"
 script:
-- ./build.sh
+- ./build.sh $BUILD_BRANCH
 
 env:
   global:
   - JAVA_HOME=/usr/lib/jvm/java-8-oracle
+  - BUILD_BRANCH=$(git ls-remote origin | sed -n "\|$TRAVIS_COMMIT\s\+refs/heads/|{s///p}")
 
 deploy:
   provider: releases
