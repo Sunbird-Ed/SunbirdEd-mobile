@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 
 import { GuestEditProfilePage } from './../guest-edit.profile/guest-edit.profile';
 import { OverflowMenuComponent } from "./../overflowmenu/menu.overflow.component";
-import { ProfileService, FrameworkDetailsRequest, FrameworkService, SharedPreferences } from 'sunbird';
+import { ProfileService, FrameworkDetailsRequest, FrameworkService, SharedPreferences, ProfileType } from 'sunbird';
 import { UserTypeSelectionPage } from '../../user-type-selection/user-type-selection';
 import { Network } from '@ionic-native/network';
 
@@ -20,11 +20,9 @@ export class GuestProfilePage {
   list: Array<String> = ['SETTINGS'];
 
   showSignInCard: boolean = false;
-  isNetworkAvailable: boolean = true;
+  isNetworkAvailable: boolean;
   networkAvailable: boolean = true;
   /* Temporary Language Constants */
-  userName: string = "Teacher";
-  profileName: string = "Guest 1";
   boards: string = "";
   grade: string = "";
   medium: string = "";
@@ -48,18 +46,23 @@ export class GuestProfilePage {
     });
 
     this.preference.getString('selected_user_type', (val) => {
-      if (val == "teacher") {
+      if (val == ProfileType.TEACHER) {
         this.showSignInCard = true;
-      } else if (val == "student") {
+      } else if (val == ProfileType.STUDENT) {
         this.showSignInCard = false;
       }
     })
+    if (this.network.type === 'none') {
+      this.isNetworkAvailable = false;
+    } else {
+      this.isNetworkAvailable = true;
+    }
     this.network.onDisconnect().subscribe((data) => {
       this.isNetworkAvailable = false;
-  });
-  this.network.onConnect().subscribe((data) => {
-    this.isNetworkAvailable = true;
-});
+    });
+    this.network.onConnect().subscribe((data) => {
+      this.isNetworkAvailable = true;
+    });
   }
 
   ionViewDidLoad() {
@@ -84,19 +87,17 @@ export class GuestProfilePage {
       });
   }
   editGuestProfile() {
-    if(!this.isNetworkAvailable)
-    {
+    if (!this.isNetworkAvailable) {
       this.networkAvailable = false;
-      setTimeout(()=>{
+      setTimeout(() => {
         this.networkAvailable = true;
-   },3000);
+      }, 3000);
     }
-    else
-    {
-    this.navCtrl.push(GuestEditProfilePage, {
-      profile: this.profile
-    });
-  }
+    else {
+      this.navCtrl.push(GuestEditProfilePage, {
+        profile: this.profile
+      });
+    }
   }
 
   /**
@@ -179,17 +180,16 @@ export class GuestProfilePage {
    *
    */
   goToRoles() {
-    if(!this.isNetworkAvailable)
-    {
+    if (!this.isNetworkAvailable) {
       this.networkAvailable = false;
-      setTimeout(()=>{
+      setTimeout(() => {
         this.networkAvailable = true;
-   },3000);
+      }, 3000);
     }
-    else{
-    this.navCtrl.push(UserTypeSelectionPage, {
-      profile: this.profile
-    })
-  }
+    else {
+      this.navCtrl.push(UserTypeSelectionPage, {
+        profile: this.profile
+      })
+    }
   }
 }

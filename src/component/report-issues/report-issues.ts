@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
 import { generateInteractEvent } from '../../app/telemetryutil';
+import { ProfileConstants } from '../../app/app.constant';
 
 /**
  * Generated class for the ReportIssuesComponent component.
@@ -58,7 +59,7 @@ export class ReportIssuesComponent {
       if (res === undefined || res === "null") {
         this.userId = '';
       } else {
-        this.userId = res["userToken"] ? res["userToken"] : '';
+        this.userId = res[ProfileConstants.USER_TOKEN] ? res[ProfileConstants.USER_TOKEN] : '';
       }
     });
   }

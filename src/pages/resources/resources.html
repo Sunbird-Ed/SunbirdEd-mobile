@@ -17,10 +17,10 @@
 	</ion-navbar>
 </ion-header>
 
-<ion-content overflow-scroll="true" class="course-scroll-holder1" style="background: #efeff4;">
+<ion-content overflow-scroll="true" class="course-scroll-holder1" style="background: #EBEBEB;">
 	<ion-refresher (ionRefresh)="swipeDownToRefresh($event)"></ion-refresher>
 	<!-- onBoardingSLides starts here -->
-	<onboarding-card *ngIf="guestUser && !isOnBoardingCardCompleted"></onboarding-card>
+	<onboarding-card *ngIf="guestUser && !isOnBoardingCardCompleted && isNetworkAvailable"></onboarding-card>
 	<!-- onBoardingSLides ends here -->
 	<!-- <div> -->
 	<div class="course-scroll-holder" [ngClass]="{'empty-saved-resources' : (localResources && localResources.length === 0 || showLoader)}"
@@ -65,16 +65,17 @@
 			</div>
 		</div>
 	</div>
-	<div text-center padding *ngIf="noInternetConnection" class="course-scroll-holder no-connection">
-		<br/>
-			<img class="img-no-internet" src="assets/imgs/ic_no_internet.png" />
-			<br/>
-			<p class="offline-text">{{ 'ERROR_OFFLINE_MODE' | translate }}</p>
-	</div>
+
 	<div *ngIf="pageApiLoader && storyAndWorksheets && storyAndWorksheets.length === 0">
 		<div class="course-scroll-holder" style="height: 500px;">
 			<ion-spinner padding style="padding-top: 110px;"></ion-spinner>
 		</div>
+	</div>
+	<div padding text-center *ngIf="!isNetworkAvailable">
+		<img height="80" width="100" src="assets/imgs/ic_offline.png" />
+		<h6 ion-text color="secondary_black"><b>{{ 'YOU_ARE_OFFLINE' | translate }}</b></h6>
+		<p color="dark_gray">{{ 'OFFLINE_WARNING' | translate }}</p>
+		<b ion-text text-uppercase color="primary" (click)="checkNetworkStatus(true)">{{'RETRY_ACTION' | translate}}</b>
 	</div>
 	<sign-in-card *ngIf="showSignInCard" [source]="source"></sign-in-card>
 </ion-content>

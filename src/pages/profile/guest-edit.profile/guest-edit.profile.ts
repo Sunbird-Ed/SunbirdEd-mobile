@@ -188,6 +188,7 @@ export class GuestEditProfilePage {
       isGroupUser: false,
       language: "en",
       avatar: "avatar",
+      profileType:this.profile.profileType,
       createdAt: this.profile.createdAt
     }
 

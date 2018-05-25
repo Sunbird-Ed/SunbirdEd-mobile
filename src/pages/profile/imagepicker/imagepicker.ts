@@ -3,6 +3,7 @@ import { NavController, NavParams, ViewController, ToastController, Events } fro
 import { TranslateService } from '@ngx-translate/core';
 
 import { UserProfileService, UploadFileRequest, AuthService, UpdateUserInfoRequest } from "sunbird";
+import { ProfileConstants } from '../../../app/app.constant';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -52,7 +53,7 @@ export class ImagePicker {
                 this.authService.getSessionData(session => {
                     let request: UploadFileRequest = {
                         filePath: path,
-                        userId: JSON.parse(session)["userToken"]
+                        userId: JSON.parse(session)[ProfileConstants.USER_TOKEN]
                     }
 
                     this.userProfileService.uploadFile(

@@ -2,6 +2,7 @@ import { Component, NgZone, OnInit } from '@angular/core';
 import { CourseService, AuthService } from 'sunbird';
 import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angular';
 import * as _ from 'lodash';
+import { ProfileConstants } from '../../app/app.constant';
 
 /**
  * Generated class for the CourseBatchesPage page.
@@ -148,10 +149,10 @@ export class CourseBatchesPage implements OnInit {
         console.log('session expired');
         this.zone.run(() => { this.isGuestUser = true; });
       } else {
-        this.zone.run(() => { 
+        this.zone.run(() => {
           let sessionObj = JSON.parse(session);
           this.isGuestUser = false;
-          this.userId = sessionObj["userToken"];
+          this.userId = sessionObj[ProfileConstants.USER_TOKEN];
           this.getBatchesByCourseId();
         });
       }
