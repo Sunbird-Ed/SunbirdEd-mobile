@@ -155,6 +155,7 @@
     "FIRST_NAME": "NAME",
     "FIRST_NAME_HINT": "Enter name",
     "FLAG": "Report",
+    "FLAG_CONTENT_COMMENT_PLACEHOLDER": "Add comment(optional)",
     "FOLLOW": "Follow",
     "FROM": "From",
     "FULL_NAME": "NAME",
