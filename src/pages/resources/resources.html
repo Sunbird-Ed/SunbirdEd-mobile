@@ -72,12 +72,12 @@
 			<ion-spinner padding style="padding-top: 110px;"></ion-spinner>
 		</div>
 	</div>
-	<sign-in-card (valueChange)="buttonClick($event)" *ngIf="showSignInCard" [source]="source"></sign-in-card>
+
 	<div padding text-center *ngIf="!isNetworkAvailable">
 		<img height="80" width="100" src="assets/imgs/ic_offline.png" />
 		<h6 ion-text color="secondary_black"><b>{{ 'YOU_ARE_OFFLINE' | translate }}</b></h6>
 		<p color="dark_gray">{{ 'OFFLINE_WARNING' | translate }}</p>
 		<b ion-text text-uppercase color="primary" (click)="checkNetworkStatus(true)">{{'RETRY_ACTION' | translate}}</b>
 	</div>
-	<sign-in-card *ngIf="showSignInCard" [source]="source"></sign-in-card>
+	<sign-in-card (valueChange)="buttonClick($event)" *ngIf="showSignInCard" [source]="source"></sign-in-card>
 </ion-content>
