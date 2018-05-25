@@ -154,12 +154,15 @@ export class ContentDetailsPage {
     });
 
     this.pause = platform.pause.subscribe(() => {
-      
+
     });
 
     this.resume = platform.resume.subscribe(() => {
       if (this.isPlayerLaunched) {
         this.isPlayerLaunched = false;
+        if (this.userRating === 0) {
+          this.rateContent();
+        }
       }
     });
 

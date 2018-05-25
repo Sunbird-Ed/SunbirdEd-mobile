@@ -1,5 +1,5 @@
 import { Component, NgZone } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, NavParams } from 'ionic-angular';
 import {
   TabsPage, SharedPreferences,
   Interact, TelemetryService, InteractType, InteractSubtype,
@@ -29,9 +29,10 @@ export class UserTypeSelectionPage {
   teacherCardBorderColor: string = '#F7F7F7';
   studentCardBorderColor: string = '#F7F7F7';
   userTypeSelected: boolean = false;
-  selectedUserType: string;
+  selectedUserType: ProfileType;
   continueAs: string = "";
   language: string;
+  profile: any = {};
 
   /**
    * Contains paths to icons
@@ -40,6 +41,7 @@ export class UserTypeSelectionPage {
   teacherImageUri: string = "assets/imgs/ic_teacher.png";
 
   constructor(public navCtrl: NavController,
+    public navParams: NavParams,
     private translate: TranslateService,
     private preference: SharedPreferences,
     private profileService: ProfileService,
@@ -48,6 +50,8 @@ export class UserTypeSelectionPage {
     private zone: NgZone
   ) {
     this.initData();
+
+    this.profile = this.navParams.get('profile');
   }
 
   initData() {
@@ -98,30 +102,65 @@ export class UserTypeSelectionPage {
   }
 
   continue() {
-    let profileRequest = {
-      handle: "Guest1",
-      avatar: "avatar",
-      language: "en",
-      age: -1,
-      day: -1,
-      month: -1,
-      standard: -1,
-      profileType: ProfileType.TEACHER
-    };
-
     this.generateInteractEvent(this.selectedUserType);
 
-    if (this.selectedUserType != ProfileType.TEACHER) {
-      profileRequest.profileType = ProfileType.STUDENT;
+    //When user is changing the role via the Guest Profile screen
+    if (this.profile !== undefined) {
+      //if role types are same
+      if (this.profile.userType === this.selectedUserType) {
+        this.gotoTabsPage();
+      } else {
+        let updateRequest = {
+          age: -1,
+          day: -1,
+          month: -1,
+          standard: -1,
+          board: [],
+          grade: [],
+          subject: [],
+          medium: [],
+          handle: this.profile.handle,
+          avatar: this.profile.avatar,
+          language: this.profile.language,
+          uid: this.profile.uid,
+          profileType: this.selectedUserType,
+          isGroupUser: false,
+          createdAt: this.profile.createdAt
+        };
+        this.updateProfile(updateRequest);
+      }
+    } else {
+      let profileRequest = {
+        handle: "Guest1",
+        avatar: "avatar",
+        language: "en",
+        age: -1,
+        day: -1,
+        month: -1,
+        standard: -1,
+        profileType: this.selectedUserType
+      };
+      this.setProfile(profileRequest);
     }
+  }
 
+  updateProfile(updateRequest: any){
+    this.profileService.updateProfile(updateRequest,
+      (res: any) => {
+        console.log("Update Response", res);
+        this.gotoTabsPage();
+      },
+      (err: any) => {
+        console.log("Err", err);
+      });
+  }
+
+  setProfile(profileRequest: any) {
     this.profileService.setCurrentProfile(true, profileRequest, res => {
       this.profileService.getCurrentUser(success => {
         let userId = JSON.parse(success).uid
         if (userId !== "null") this.preference.putString('GUEST_USER_ID_BEFORE_LOGIN', userId);
-        this.navCtrl.push(TabsPage, {
-          loginMode: 'guest'
-        });
+        this.gotoTabsPage();
       },
         error => {
           console.error("Error", error);
@@ -131,6 +170,12 @@ export class UserTypeSelectionPage {
       err => {
         console.error("Error", err);
       });
+  }
+
+  gotoTabsPage(){
+    this.navCtrl.push(TabsPage, {
+      loginMode: 'guest'
+    });
   }
 
   getCurrentUserId(): any {

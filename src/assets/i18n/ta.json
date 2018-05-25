@@ -380,5 +380,6 @@
   "YEAR_OF_PASSING": "தேர்ச்சியடைந்த வருடம்",
   "YES": "ஆம்",
   "YOUR_PROFILE_IS": "தங்கள் சுயவிவரம் {{value}}% முடிந்தது",
-  "YOUR_PROGRESS": "தங்கள் முன்னேற்றம்: {{%s}}%"
+  "YOUR_PROGRESS": "தங்கள் முன்னேற்றம்: {{%s}}%",
+  "CHANGE_ROLE" : "CHANGE ROLE"
 }

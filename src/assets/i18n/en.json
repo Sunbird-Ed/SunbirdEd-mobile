@@ -410,5 +410,6 @@
     "ADD_ADDRESS": "Add Address",
     "ADD_LOCATION": "Add Location",
     "ADDED": "added",
-    "SKILL": "Skill"
+    "SKILL": "Skill",
+    "CHANGE_ROLE" : "CHANGE ROLE"
   }

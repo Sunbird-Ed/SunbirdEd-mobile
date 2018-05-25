@@ -1,3 +1,5 @@
+import * as frameworkDataList from "../config/framework.filters";
+
 export class ContentType {
     public static readonly STORY = 'Stroy';
     public static readonly WORKSHEET = 'Worksheet';
@@ -29,4 +31,55 @@ export class Search {
 export class ProfileConstants {
     public static readonly USER_TOKEN = 'userToken';
     public static readonly REQUIRED_FIELDS = ['completeness', 'missingFields', 'lastLoginTime', 'topics'];
+}
+
+export class PageFilterConstants {
+    public static readonly COURSE_FILTER = [
+        {
+            name: "language",
+            displayName: "Language",
+            values: frameworkDataList.languageList.sort()
+        },
+        {
+            name: "subject",
+            displayName: "Subject",
+            values: frameworkDataList.subjectList.sort()
+
+        },
+        {
+            name: "medium",
+            displayName: "Medium",
+            values: frameworkDataList.mediumList.sort()
+        }
+    ];
+
+    public static readonly RESOURCE_FILTER = [
+        {
+            name: "board",
+            displayName: "Board",
+            values: frameworkDataList.boardList.sort()
+        },
+        {
+            name: "gradeLevel",
+            displayName: "Grade",
+            values: frameworkDataList.gradeList.sort()
+        },
+        {
+            name: "subject",
+            displayName: "Subject",
+            values: frameworkDataList.subjectList.sort()
+
+        },
+        {
+            name: "medium",
+            displayName: "Medium",
+            values: frameworkDataList.mediumList.sort()
+
+        },
+        {
+            name: "contentType",
+            displayName: "Resource Type",
+            values: frameworkDataList.contentTypeList.sort()
+        }
+    ];
 }

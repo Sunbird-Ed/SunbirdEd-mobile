@@ -15,7 +15,7 @@ import { CourseDetailPage } from '../course-detail/course-detail';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { TranslateService } from '@ngx-translate/core';
-import { ContentType, MimeType } from '../../app/app.constant';
+import { ContentType, MimeType, PageFilterConstants } from '../../app/app.constant';
 import { Network } from '@ionic-native/network';
 import { PageFilterCallback, PageFilter } from '../page-filter/page.filter';
 
@@ -481,6 +481,8 @@ export class ResourcesPage implements OnInit {
 		// Already apllied filter
 		if (this.resourceFilter) {
 			filterOptions['filter'] = this.resourceFilter;
+		} else {
+			filterOptions['filter'] = PageFilterConstants.RESOURCE_FILTER;
 		}
 
 		let filter = this.popCtrl.create(PageFilter, filterOptions, { cssClass: 'resource-filter' })

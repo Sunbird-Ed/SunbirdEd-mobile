@@ -1,11 +1,12 @@
 import { boardList } from './../../../config/framework.filters';
 import { Component } from '@angular/core';
-import { NavController,  PopoverController, Events, LoadingController } from 'ionic-angular';
+import { NavController, PopoverController, Events, LoadingController } from 'ionic-angular';
 import * as _ from 'lodash';
 
 import { GuestEditProfilePage } from './../guest-edit.profile/guest-edit.profile';
 import { OverflowMenuComponent } from "./../overflowmenu/menu.overflow.component";
 import { ProfileService, FrameworkDetailsRequest, FrameworkService, SharedPreferences } from 'sunbird';
+import { UserTypeSelectionPage } from '../../user-type-selection/user-type-selection';
 
 @Component({
   selector: 'page-guest-profile',
@@ -44,12 +45,12 @@ export class GuestProfilePage {
     });
 
     this.preference.getString('selected_user_type', (val) => {
-			if (val == "teacher") {
-				this.showSignInCard = true;
-			} else if (val == "student") {
-				this.showSignInCard = false;
-			}
-		})
+      if (val == "teacher") {
+        this.showSignInCard = true;
+      } else if (val == "student") {
+        this.showSignInCard = false;
+      }
+    })
   }
 
   ionViewDidLoad() {
@@ -108,16 +109,16 @@ export class GuestProfilePage {
     this.frameworkService.getFrameworkDetails(req,
       (res: any) => {
         this.categories = JSON.parse(JSON.parse(res).result.framework).categories;
-        if(this.profile.board && this.profile.board.length) {
+        if (this.profile.board && this.profile.board.length) {
           this.boards = this.getFieldDisplayValues(this.profile.board, 0);
         }
-        if(this.profile.grade && this.profile.grade.length) {
+        if (this.profile.grade && this.profile.grade.length) {
           this.grade = this.getFieldDisplayValues(this.profile.grade, 1);
         }
-        if(this.profile.subject && this.profile.subject.length) {
+        if (this.profile.subject && this.profile.subject.length) {
           this.subjects = this.getFieldDisplayValues(this.profile.subject, 2);
         }
-        if(this.profile.medium && this.profile.medium.length) {
+        if (this.profile.medium && this.profile.medium.length) {
           this.medium = this.getFieldDisplayValues(this.profile.medium, 3);
         }
 
@@ -152,6 +153,16 @@ export class GuestProfilePage {
    */
   arrayToString(stringArray: Array<string>): string {
     return stringArray.join(", ");
+  }
+
+  /**
+   * Takes the user to role selection screen
+   * 
+   */
+  goToRoles() {
+    this.navCtrl.push(UserTypeSelectionPage, {
+      profile: this.profile
+    })
   }
 
 }

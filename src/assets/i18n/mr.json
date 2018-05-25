@@ -385,5 +385,6 @@
   "YEAR_OF_PASSING": "उत्तीर्ण वर्ष",
   "YES": "होय",
   "YOUR_PROFILE_IS": "आपले प्रोफाईल  {{value}}% पूर्ण आहे.",
-  "YOUR_PROGRESS": "तुमची प्रगती: {{%s}}%"
+  "YOUR_PROGRESS": "तुमची प्रगती: {{%s}}%",
+  "CHANGE_ROLE" : "CHANGE ROLE"
 }
