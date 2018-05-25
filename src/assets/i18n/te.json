@@ -364,5 +364,6 @@
   "YES": "అవును",
   "YOUR_PROFILE_IS": "మీ ప్రొఫైలు {{value}}%",
   "YOUR_PROGRESS": "మీ ప్రగతి: {{%s}}%",
-  "CHANGE_ROLE" : "CHANGE ROLE"
+  "CHANGE_ROLE" : "CHANGE ROLE",
+  "SYLLABUS" : "Syllabus"
 }
