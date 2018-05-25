@@ -13,6 +13,27 @@ report-issues {
         }
     
       }
+      .display-inline {
+        display: inline;
+      }
+      .page-title {
+        color: map-get($colors, dark);
+        margin-bottom: 3%;
+        font-size: 1.6rem;
+        padding: 0;
+        margin-left: 0;
+        font-weight: bold;
+      }
+      .additional-comment {
+        border-top: 0px;
+        border-left: 0px;
+        border-right: 0px;
+        border-bottom: 2px solid gray;
+        padding-top: 12px;
+      }
+      .negative-margin-6{
+        margin-left: -6px;
+      }
 }
 
 .report-issue-box .popover-content {

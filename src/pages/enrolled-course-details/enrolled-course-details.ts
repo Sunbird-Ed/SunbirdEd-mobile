@@ -1,7 +1,7 @@
 import { ContentRatingAlertComponent } from './../../component/content-rating-alert/content-rating-alert';
 import { Component, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, PopoverController } from 'ionic-angular';
-import { ContentService, FileUtil, CourseService, ChildContentRequest } from 'sunbird';
+import { ContentService, FileUtil, CourseService, ChildContentRequest, AuthService, PageId } from 'sunbird';
 import * as _ from 'lodash';
 import { CourseDetailPage } from '../course-detail/course-detail';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
@@ -92,6 +92,21 @@ export class EnrolledCourseDetailsPage {
   isDownlaodCompleted: boolean = false;
 
   /**
+   * To hold logged in user id
+   */
+  userId: string = '';
+
+  /**
+   * To hold rating data
+   */
+  userRating: number = 0;
+
+  /**
+   * Rating comment
+   */
+  ratingComment: string = '';
+
+  /**
    * Contains reference of content service
    */
   public contentService: ContentService;
@@ -125,7 +140,9 @@ export class EnrolledCourseDetailsPage {
     private fileUtil: FileUtil,
     public popoverCtrl: PopoverController,
     private translate: TranslateService,
+    private authService: AuthService,
     private courseService: CourseService) {
+    this.getUserId();
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
@@ -134,24 +151,48 @@ export class EnrolledCourseDetailsPage {
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
   }
 
+  getUserId() {
+    this.authService.getSessionData((session: string) => {
+      if (session === null || session === "null") {
+        this.userId = '';
+      } else {
+        let res = JSON.parse(session);
+        console.log('auth service...', res);
+        this.userId = res["userToken"] ? res["userToken"] : '';
+      }
+    });
+  }
+
   /**
    * Function to rate content
    */
   rateContent() {
     // TODO: check content is played or not
-    let popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
-      content: this.course,
-    }, {
-        cssClass: 'onboarding-alert'
-      });
-    popUp.present({
-      ev: event
-    });
-    popUp.onDidDismiss(data => {
-      if (data === 'rating.success') {
-        this.navCtrl.pop();
+    if (this.userId) {
+      if (this.course.isAvailableLocally){
+        let popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
+          content: this.course,
+          rating: this.userRating,
+          comment: this.ratingComment,
+          pageId: PageId.COURSE_DETAIL
+        }, {
+            cssClass: 'onboarding-alert'
+          });
+        popUp.present({
+          ev: event
+        });
+        popUp.onDidDismiss(data => {
+          if (data && data.message === 'rating.success') {
+            this.userRating = data.rating;
+            this.ratingComment = data.comment;
+          }
+        });
+      } else {
+        this.showMessage(this.translateLanguageConstant('TRY_BEFORE_RATING'));
       }
-    });
+    } else {
+      this.showMessage(this.translateLanguageConstant('SIGNIN_TO_USE_FEATURE'));
+    }
   }
 
   showOverflowMenu(event) {
@@ -213,10 +254,6 @@ export class EnrolledCourseDetailsPage {
    */
   extractApiResponse(data): void {
     if (data.result.contentData) {
-      /*if (data.result.contentData.status != 'Live') {
-        this.showMessage(this.translateLanguageConstant('ERROR_CONTENT_NOT_AVAILABLE'));
-        this.navCtrl.pop();
-      }*/
       this.course = data.result.contentData;
       if (this.course.gradeLevel && this.course.gradeLevel.length) {
         this.course.gradeLevel = this.course.gradeLevel.join(", ");

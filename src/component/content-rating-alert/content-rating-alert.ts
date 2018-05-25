@@ -44,15 +44,18 @@ export class ContentRatingAlertComponent {
     private toastCtrl: ToastController,
     private contentService: ContentService,
     private telemetryService: TelemetryService) {
+    this.getUserId();
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.viewCtrl.dismiss();
       this.backButtonFunc();
     }, 10);
 
-
     this.content = this.navParams.get("content");
     this.userRating =  this.navParams.get("rating");
-    this.getUserId();
+    if (this.navParams.get('comment')) {
+      this.comment = this.navParams.get('comment');
+      this.showCommentBox = true;
+    }
   }
 
   /**
@@ -103,15 +106,23 @@ export class ContentRatingAlertComponent {
       this.pageId, paramsMap
     ));
 
+    let viewDismissData = {
+      rating: this.ratingCount,
+      comment: this.comment,
+      message: ''
+    };
+
     this.contentService.sendFeedback(option, (res: any) => {
       console.log('success:', res);
-      this.viewCtrl.dismiss('rating.success');
+      viewDismissData.message = 'rating.success';
+      this.viewCtrl.dismiss(viewDismissData);
       this.showMessage(this.translateLangConst('THANK_FOR_RATING'));
     },
       (data: any) => {
         console.log('error:', data);
-        // TODO: ask anil to show error message
-        this.viewCtrl.dismiss();
+        viewDismissData.message = 'rating.error';
+        // TODO: ask anil to show error message(s)
+        this.viewCtrl.dismiss(viewDismissData);
       })
   }
 

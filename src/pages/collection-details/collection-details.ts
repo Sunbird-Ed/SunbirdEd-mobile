@@ -7,7 +7,7 @@ import {
 import {
   ContentService, FileUtil,
   PageId, Environment, Mode, ImpressionType, TelemetryService, Rollup, InteractType, InteractSubtype,
-  ShareUtil, BuildParamService
+  ShareUtil, BuildParamService, AuthService
 } from 'sunbird';
 import * as _ from 'lodash';
 import { ContentDetailsPage } from '../content-details/content-details';
@@ -88,6 +88,11 @@ export class CollectionDetailsPage {
   depth: string = '1';
 
   /**
+   * To hold logged in user id
+   */
+  userId: string = '';
+
+  /**
    * Its get true when child is collection.
    * Used to show content depth
    *
@@ -96,7 +101,7 @@ export class CollectionDetailsPage {
   isDepthChild: boolean = false;
 
   /**
-   * To hold
+   * To hold content identifiers
    */
   queuedIdentifiers: Array<any> = [];
 
@@ -139,6 +144,17 @@ export class CollectionDetailsPage {
   public showLoading = false;
 
   /**
+   * To hold rating data
+   */
+  userRating: number = 0;
+
+  /**
+   * Rating comment
+   */
+  ratingComment: string = '';
+
+
+  /**
    * Telemetry roll up object
    */
   public objRollup: Rollup;
@@ -158,11 +174,12 @@ export class CollectionDetailsPage {
     private fileUtil: FileUtil,
     private platform: Platform,
     private telemetryService: TelemetryService,
+    private authService: AuthService,
     private translate: TranslateService,
     private social: SocialSharing,
     private shareUtil: ShareUtil,
     private buildParamService: BuildParamService) {
-
+    this.getUserId();
     console.warn('Inside new module..........................');
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.didViewLoad = false;
@@ -178,24 +195,47 @@ export class CollectionDetailsPage {
     });
   }
 
+  getUserId() {
+    this.authService.getSessionData((session: string) => {
+      if (session === null || session === "null") {
+        this.userId = '';
+      } else {
+        let res = JSON.parse(session);
+        console.log('auth service...', res);
+        this.userId = res["userToken"] ? res["userToken"] : '';
+      }
+    });
+  }
+
   /**
    * Function to rate content
    */
   rateContent() {
-    // TODO: check content is played or not
-    let popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
-      content: this.contentDetail,
-    }, {
-        cssClass: 'content-rating-alert'
-      });
-    popUp.present({
-      ev: event
-    });
-    popUp.onDidDismiss(data => {
-      if (data === 'rating.success') {
-        this.navCtrl.pop();
+    if (this.userId) {
+      if (this.contentDetail.isAvailableLocally){
+        let popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
+          content: this.contentDetail,
+          rating: this.userRating,
+          comment: this.ratingComment,
+          pageId: PageId.COLLECTION_DETAIL,
+        }, {
+            cssClass: 'content-rating-alert'
+          });
+        popUp.present({
+          ev: event
+        });
+        popUp.onDidDismiss(data => {
+          if (data && data.message === 'rating.success') {
+            this.userRating = data.rating;
+            this.ratingComment = data.comment;
+          }
+        });
+      } else {
+        this.translateAndDisplayMessage('TRY_BEFORE_RATING');
       }
-    });
+    } else {
+      this.translateAndDisplayMessage('SIGNIN_TO_USE_FEATURE');
+    }
   }
 
   /**
@@ -233,7 +273,9 @@ export class CollectionDetailsPage {
     this.objId = this.contentDetail.identifier;
     this.objType = data.result.contentType;
     this.objVer = this.contentDetail.pkgVersion;
-
+    if (this.contentDetail.gradeLevel && this.contentDetail.gradeLevel.length) {
+      this.contentDetail.gradeLevel = this.contentDetail.gradeLevel.join(", ");
+    }
     switch (data.result.isAvailableLocally) {
       case true: {
         this.showLoading = false;
@@ -534,6 +576,7 @@ export class CollectionDetailsPage {
           // this.downloadProgress = res.data.downloadProgress === -1 ? 0 : res.data.downloadProgress;
           if (this.downloadProgress === 100) {
             this.showLoading = false;
+            this.contentDetail.isAvailableLocally = true;
           }
         }
         // Get child content

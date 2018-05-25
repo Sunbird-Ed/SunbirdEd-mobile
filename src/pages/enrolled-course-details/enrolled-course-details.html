@@ -23,7 +23,9 @@
 				<span class="content-meta-title">{{ course.owner }}</span>
 			</div>
 			<div>
-				<rating align-items-start (click)="rateContent();" [(ngModel)]="course.me_averageRating" readOnly="true" max="5" no-padding></rating>
+				<span>
+					<rating align-items-start (click)="rateContent();" [(ngModel)]="course.me_averageRating" readOnly="true" max="5" no-padding></rating>
+				</span>
 			</div>
 		</ion-grid>
 		<br/>

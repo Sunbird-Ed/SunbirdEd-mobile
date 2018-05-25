@@ -33,7 +33,7 @@
 						<span *ngIf="contentDetail.contentType" class="content-size">{{ contentDetail.contentType }} </span>
 						<span *ngIf="contentDetail.size" class="content-size">[{{ contentDetail.size | fileSize }}]</span>
 					</div>
-					<rating align-items-start (click)="rateContent();" *ngIf="contentDetail.me_averageRating" [(ngModel)]="contentDetail.me_averageRating" readOnly="true"
+					<rating align-items-start (click)="rateContent();" [(ngModel)]="contentDetail.me_averageRating" readOnly="true"
 					 max="5" no-padding></rating>
 				</ion-col>
 				<ion-col offset-2 *ngIf="contentDetail.me_totalDownloads">
@@ -56,9 +56,9 @@
 				</p>
 				<div *ngIf="contentDetail.gradeLevel && contentDetail.gradeLevel.length" margin-top>
 					<div class="content-meta-title">{{ 'GRADE' | translate }}</div>
-					<span *ngFor="let grade of contentDetail.gradeLevel">
-						<span class="text-gray-color">{{grade}}</span>
-					</span>
+					<!-- <span *ngFor="let grade of contentDetail.gradeLevel"> -->
+						<span class="text-gray-color">{{content.gradeLevel}}</span>
+					<!-- </span> -->
 				</div>
 				<div *ngIf="contentDetail?.subject" margin-top>
 					<div class="content-meta-title">{{ 'SUBJECT' | translate }}</div>

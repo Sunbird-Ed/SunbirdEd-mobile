@@ -105,6 +105,7 @@ export class ContentDetailsPage {
    * 
    */
   private userRating: number = 0;
+  ratingComment: string = '';
 
   /**
    * This flag helps in knowing when the content player is closed and the user is back on content details page.
@@ -172,7 +173,14 @@ export class ContentDetailsPage {
    * Function to rate content
    */
   rateContent() {
-    // TODO: check content is played or not
+
+    let ratingData = {
+      identifier: this.identifier,
+      pageId: PageId.CONTENT_DETAIL,
+      rating: this.userRating,
+      comment: this.ratingComment
+    }
+
     if (this.content.downloadable) {
       this.telemetryService.interact(generateInteractEvent(InteractType.TOUCH,
         InteractSubtype.RATING_CLICKED,
@@ -182,7 +190,8 @@ export class ContentDetailsPage {
       let popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
         content: this.content,
         pageId: PageId.CONTENT_DETAIL,
-        rating: this.userRating
+        rating: this.userRating,
+        comment: this.ratingComment
       }, {
           cssClass: 'onboarding-alert'
         });
@@ -190,8 +199,8 @@ export class ContentDetailsPage {
         ev: event
       });
       popUp.onDidDismiss(data => {
-        if (data === 'rating.success') {
-          this.navCtrl.pop();
+        if (data && data.message === 'rating.success') {
+          // this.navCtrl.pop();
         }
       });
     } else {
@@ -246,6 +255,7 @@ export class ContentDetailsPage {
     let contentFeedback: any = data.result.contentFeedback;
     if (contentFeedback !== undefined && contentFeedback.length !== 0) {
       this.userRating = contentFeedback[0].rating;
+      this.ratingComment = contentFeedback[0].comments;
       console.log("User Rating  - " + this.userRating);
     }
 

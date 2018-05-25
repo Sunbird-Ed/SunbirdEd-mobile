@@ -1,4 +1,7 @@
 content-rating-alert {
+  .display-inline {
+    display: inline;
+  }
   .heading1{
     color: map-get($colors, dark);
     margin-bottom: 3%;
