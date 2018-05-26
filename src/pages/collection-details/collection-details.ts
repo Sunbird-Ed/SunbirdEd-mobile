@@ -11,7 +11,7 @@ import {
 } from 'sunbird';
 import * as _ from 'lodash';
 import { ContentDetailsPage } from '../content-details/content-details';
-import { CourseDetailPage } from '../course-detail/course-detail';
+// import { CourseDetailPage } from '../course-detail/course-detail';
 import { ContentActionsComponent } from '../../component/content-actions/content-actions';
 import { ConfirmAlertComponent } from '../../component/confirm-alert/confirm-alert';
 import { TranslateService } from '@ngx-translate/core';
@@ -512,7 +512,7 @@ export class CollectionDetailsPage {
     console.log('Content depth... @@@', depth);
     this.zone.run(() => {
       if (content.contentType === ContentType.COURSE) {
-        console.warn('Inside CourseDetailPage >>>');
+        console.warn('Inside course details page >>>');
         this.navCtrl.push(EnrolledCourseDetailsPage, {
           content: content,
           depth: depth
@@ -602,6 +602,7 @@ export class CollectionDetailsPage {
             }
           } else {
             this.setChildContents();
+            this.contentDetail.isAvailableLocally = true;
             this.events.publish('savedResources:update', {
               update: true
             });

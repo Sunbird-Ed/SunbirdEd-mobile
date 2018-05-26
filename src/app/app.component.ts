@@ -11,11 +11,13 @@ import { LanguageSettingsPage } from '../pages/language-settings/language-settin
 import { ImageLoaderConfig } from 'ionic-image-loader';
 import { TranslateService } from '@ngx-translate/core';
 import { SearchPage } from '../pages/search/search';
-import { CourseDetailPage } from '../pages/course-detail/course-detail';
+// import { CourseDetailPage } from '../pages/course-detail/course-detail';
+
 import { CollectionDetailsPage } from '../pages/collection-details/collection-details';
 import { ContentDetailsPage } from '../pages/content-details/content-details';
 import { generateEndEvent } from './telemetryutil';
 import { MimeType, ContentType } from './app.constant';
+import { EnrolledCourseDetailsPage } from '../pages/enrolled-course-details/enrolled-course-details';
 
 declare var chcp: any;
 
@@ -254,7 +256,7 @@ export class MyApp {
   showContentDetails(content) {
     if (content.contentType === ContentType.COURSE) {
       console.log('Calling course details page');
-      this.nav.push(CourseDetailPage, {
+      this.nav.push(EnrolledCourseDetailsPage, {
         content: content
       })
     } else if (content.mimeType === MimeType.COLLECTION) {

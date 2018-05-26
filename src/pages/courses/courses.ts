@@ -10,7 +10,7 @@ import {
 } from 'sunbird';
 import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
-import { CourseDetailPage } from '../course-detail/course-detail';
+// import { CourseDetailPage } from '../course-detail/course-detail';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
 import { ContentDetailsPage } from '../content-details/content-details';
 import * as _ from 'lodash';
@@ -19,6 +19,7 @@ import { Network } from '@ionic-native/network';
 import { generateImpressionEvent } from '../../app/telemetryutil';
 import { ContentType, MimeType, PageFilterConstants, ProfileConstants } from '../../app/app.constant';
 import { PageFilterCallback, PageFilter } from '../page-filter/page.filter';
+import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 
 @IonicPage()
 @Component({
@@ -336,7 +337,7 @@ export class CoursesPage implements OnInit {
   showContentDetails(content) {
     if (content.contentType === ContentType.COURSE) {
       console.log('Calling course details page');
-      this.navCtrl.push(CourseDetailPage, {
+      this.navCtrl.push(EnrolledCourseDetailsPage, {
         content: content
       })
     } else if (content.mimeType === MimeType.COLLECTION) {

@@ -1,6 +1,7 @@
 import { CollectionDetailsPage } from './../../pages/collection-details/collection-details';
 import { ContentDetailsPage } from './../../pages/content-details/content-details';
-import { CourseDetailPage } from './../../pages/course-detail/course-detail';
+// import { CourseDetailPage } from './../../pages/course-detail/course-detail';
+import { EnrolledCourseDetailsPage } from './../../pages/enrolled-course-details/enrolled-course-details';
 
 import { Input, NgZone } from '@angular/core';
 import { Component } from '@angular/core';
@@ -54,7 +55,7 @@ export class ViewMoreActivityListComponent {
 
       if (content.contentType === ContentType.COURSE) {
         console.log('Inside course details');
-        this.navCtrl.push(CourseDetailPage, {
+        this.navCtrl.push(EnrolledCourseDetailsPage, {
           content: content
         })
       } else if (content.mimeType === MimeType.COLLECTION) {

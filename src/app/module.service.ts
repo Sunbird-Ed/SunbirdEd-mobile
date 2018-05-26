@@ -3,7 +3,7 @@ import { CollectionDetailsPageModule } from './../pages/collection-details/colle
 import { ViewMoreActivityPageModule } from './../pages/view-more-activity/view-more-activity.module';
 import { EnrolledCourseDetailsPageModule } from './../pages/enrolled-course-details/enrolled-course-details.module';
 import { CourseBatchesPageModule } from './../pages/course-batches/course-batches.module';
-import { CourseDetailPageModule } from './../pages/course-detail/course-detail.module';
+// import { CourseDetailPageModule } from './../pages/course-detail/course-detail.module';
 
 import { ContainerService, TabOptions } from "sunbird";
 
@@ -71,7 +71,7 @@ export const PluginModules = [
     OnboardingPageModule,
     LanguageSettingsPageModule,
     UserTypeSelectionPageModule,
-    CourseDetailPageModule,
+    // CourseDetailPageModule,
     CourseBatchesPageModule,
     EnrolledCourseDetailsPageModule,
     QRScannerModule,

@@ -3,7 +3,7 @@ import { Component, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, PopoverController } from 'ionic-angular';
 import { ContentService, FileUtil, CourseService, ChildContentRequest, AuthService, PageId, UserProfileService } from 'sunbird';
 import * as _ from 'lodash';
-import { CourseDetailPage } from '../course-detail/course-detail';
+// import { CourseDetailPage } from '../course-detail/course-detail';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { ContentActionsComponent } from '../../component/content-actions/content-actions';
@@ -315,7 +315,10 @@ export class EnrolledCourseDetailsPage {
     }
     this.profileService.getUserProfileDetails(req, (data: any) => {
       data = JSON.parse(data);
-      console.log(data);
+      if (data.response) {
+        this.batchDetails.creatorFirstName = data.response.firstName ? data.response.firstName : '';
+        this.batchDetails.creatorLastName = data.response.lastName ? data.response.lastName : '';
+      }
     }, (error: any) =>{
       
     })

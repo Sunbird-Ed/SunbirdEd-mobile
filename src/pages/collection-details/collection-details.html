@@ -56,13 +56,15 @@
 				</p>
 				<div *ngIf="contentDetail.gradeLevel && contentDetail.gradeLevel.length" margin-top>
 					<div class="content-meta-title">{{ 'GRADE' | translate }}</div>
-					<!-- <span *ngFor="let grade of contentDetail.gradeLevel"> -->
-						<span class="text-gray-color">{{content.gradeLevel}}</span>
-					<!-- </span> -->
+						<span class="text-gray-color">{{contentDetail.gradeLevel}}</span>
 				</div>
-				<div *ngIf="contentDetail?.subject" margin-top>
+				<div *ngIf="contentDetail.subject" margin-top>
 					<div class="content-meta-title">{{ 'SUBJECT' | translate }}</div>
 					<span class="text-gray-color">{{contentDetail.subject}}</span>
+				</div>
+				<div *ngIf="contentDetail.medium" margin-top>
+					<div class="content-meta-title">{{ 'MEDIUM_2' | translate }}</div>
+					<span class="text-gray-color">{{contentDetail.medium}}</span>
 				</div>
 			</div>
 

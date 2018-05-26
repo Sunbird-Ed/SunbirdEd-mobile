@@ -2,10 +2,11 @@ import { Component, Input } from "@angular/core";
 import { NavController } from 'ionic-angular';
 import { ImageLoader } from "ionic-image-loader";
 import { EnrolledCourseDetailsPage } from "../../../pages/enrolled-course-details/enrolled-course-details";
-import { CourseDetailPage } from './../../../pages/course-detail/course-detail';
+// import { CourseDetailPage } from './../../../pages/course-detail/course-detail';
 import { CollectionDetailsPage } from '../../../pages/collection-details/collection-details';
 import { ContentDetailsPage } from '../../../pages/content-details/content-details';
 import { ContentType, MimeType } from "../../../app/app.constant";
+
 
 /**
  * The course card component
@@ -63,7 +64,7 @@ export class CourseCard {
     } else {
       if (content.contentType === ContentType.COURSE) {
         console.log('Inside course details page');
-        this.navCtrl.push(CourseDetailPage, {
+        this.navCtrl.push(EnrolledCourseDetailsPage, {
           content: content
         });
       } else if (content.mimeType === MimeType.COLLECTION) {

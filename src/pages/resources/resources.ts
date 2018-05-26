@@ -11,13 +11,14 @@ import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
 import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
 import { generateInteractEvent, Map } from '../../app/telemetryutil';
-import { CourseDetailPage } from '../course-detail/course-detail';
+// import { CourseDetailPage } from '../course-detail/course-detail';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { TranslateService } from '@ngx-translate/core';
 import { ContentType, MimeType, PageFilterConstants } from '../../app/app.constant';
 import { Network } from '@ionic-native/network';
 import { PageFilterCallback, PageFilter } from '../page-filter/page.filter';
+import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 
 @Component({
 	selector: 'page-resources',
@@ -415,7 +416,7 @@ export class ResourcesPage implements OnInit {
 	showContentDetails(content) {
 		if (content.contentType === ContentType.COURSE) {
 			console.log('Calling course details page');
-			this.navCtrl.push(CourseDetailPage, {
+			this.navCtrl.push(EnrolledCourseDetailsPage, {
 				content: content
 			})
 		} else if (content.mimeType === MimeType.COLLECTION) {

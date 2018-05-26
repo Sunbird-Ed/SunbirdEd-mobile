@@ -8,7 +8,7 @@ import {
 } from "sunbird";
 import { GenieResponse } from "../settings/datasync/genieresponse";
 import { FilterPage } from "./filters/filter";
-import { CourseDetailPage } from "../course-detail/course-detail";
+// import { CourseDetailPage } from "../course-detail/course-detail";
 import { CollectionDetailsPage } from "../collection-details/collection-details";
 import { ContentDetailsPage } from "../content-details/content-details";
 import { Network } from "@ionic-native/network";
@@ -16,6 +16,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Map } from "../../app/telemetryutil";
 import * as _ from 'lodash';
 import { ContentType, MimeType, Search } from '../../app/app.constant';
+import { EnrolledCourseDetailsPage } from "../enrolled-course-details/enrolled-course-details";
 
 @IonicPage()
 @Component({
@@ -92,7 +93,7 @@ export class SearchPage {
 
   openCollection(collection) {
     // TODO: Add mimeType check
-    // this.navCtrl.push(CourseDetailPage, {'content': collection})
+    // this.navCtrl.push(EnrolledCourseDetailsPage, {'content': collection})
     this.showContentDetails(collection);
   }
 
@@ -104,7 +105,7 @@ export class SearchPage {
       this.childContent = content;
       this.checkParent(collection, content);
     } else {
-      // this.navCtrl.push(CourseDetailPage, {'content': content});
+      // this.navCtrl.push(EnrolledCourseDetailsPage, {'content': content});
       this.showContentDetails(content);
     }
   }
@@ -117,7 +118,7 @@ export class SearchPage {
   showContentDetails(content) {
     if (content.contentType === ContentType.COURSE) {
       console.log('Calling course details page');
-      this.navCtrl.push(CourseDetailPage, {
+      this.navCtrl.push(EnrolledCourseDetailsPage, {
         content: content
       })
     } else if (content.mimeType === MimeType.COLLECTION) {
