@@ -1,7 +1,9 @@
 import { ContentRatingAlertComponent } from './../../component/content-rating-alert/content-rating-alert';
 import { Component, NgZone } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events, ToastController, PopoverController } from 'ionic-angular';
-import { ContentService, FileUtil, CourseService, ChildContentRequest, AuthService, PageId, UserProfileService } from 'sunbird';
+import { IonicPage, NavController, NavParams, Events, ToastController, PopoverController, LoadingController } from 'ionic-angular';
+import { ContentService, FileUtil, CourseService, 
+  ChildContentRequest, AuthService, PageId, UserProfileService, InteractSubtype, TelemetryService, Environment, Start, Mode, End,
+  InteractType, BuildParamService, ShareUtil } from 'sunbird';
 import * as _ from 'lodash';
 // import { CourseDetailPage } from '../course-detail/course-detail';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
@@ -11,6 +13,8 @@ import { ReportIssuesComponent } from '../../component/report-issues/report-issu
 import { TranslateService } from '@ngx-translate/core';
 import { ContentType, MimeType } from '../../app/app.constant';
 import { CourseBatchesPage } from '../course-batches/course-batches';
+import { SocialSharing } from '@ionic-native/social-sharing';
+import { generateImpressionEvent, generateInteractEvent } from '../../app/telemetryutil';
 
 /**
  * Generated class for the EnrolledCourseDetailsPage page.
@@ -108,6 +112,11 @@ export class EnrolledCourseDetailsPage {
   ratingComment: string = '';
 
   /**
+   * To hold base url
+   */
+  private baseUrl = "";
+
+  /**
    * Contains reference of content service
    */
   public contentService: ContentService;
@@ -143,14 +152,23 @@ export class EnrolledCourseDetailsPage {
     private translate: TranslateService,
     private authService: AuthService,
     private profileService: UserProfileService,
-    private courseService: CourseService) {
-    this.getUserId();
-    this.navCtrl = navCtrl;
-    this.navParams = navParams;
-    this.contentService = contentService;
-    this.zone = zone;
-    this.toastCtrl = toastCtrl;
-    this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
+    private courseService: CourseService, 
+    private buildParamService: BuildParamService, 
+    private shareUtil: ShareUtil, 
+    private social: SocialSharing, 
+    private telemetryService: TelemetryService, private loadingCtrl: LoadingController) {
+      this.getUserId();
+      this.navCtrl = navCtrl;
+      this.navParams = navParams;
+      this.contentService = contentService;
+      this.zone = zone;
+      this.toastCtrl = toastCtrl;
+      this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
+
+      this.buildParamService.getBuildConfigParam("BASE_URL", (response: any) => {
+        this.baseUrl = response
+      }, (error) => {
+      });    
   }
 
   getUserId() {
@@ -611,4 +629,51 @@ export class EnrolledCourseDetailsPage {
       this.navigateToChildrenDetailsPage(firstChild, 1);
     }
   }
+
+  /**
+   * Function to get loader instance
+   */
+  getLoader(): any {
+    return this.loadingCtrl.create({
+      duration: 30000,
+      spinner: "crescent"
+    });
+  }
+  
+  share() {
+    this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_COURSE_INITIATED, this.course.contentType);
+    let loader = this.getLoader();
+    loader.present();
+    let url = this.baseUrl + "/public/#!/content/" + + this.course.identifier;
+    if (this.course.isAvailableLocally) {
+      this.shareUtil.exportEcar(this.course.identifier, path => {
+        loader.dismiss();
+        this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_COURSE_SUCCESS, this.course.contentType);
+        this.social.share("", "", "file://" + path, url);
+      }, error => {
+        loader.dismiss();
+        let toast = this.toastCtrl.create({
+          message: "Unable to share content.",
+          duration: 2000,
+          position: 'bottom'
+        });
+        toast.present();
+      });
+    } else {
+      loader.dismiss();
+      this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_COURSE_SUCCESS, this.course.contentType);
+      this.social.share("", "", "", url);
+    }
+  }  
+
+  generateShareInteractEvents(interactType, subType, contentType) {
+    let values = new Map();
+    values["ContentType"] = contentType;
+    this.telemetryService.interact(
+      generateInteractEvent(interactType,
+        subType,
+        Environment.HOME,
+        PageId.CONTENT_DETAIL, values)
+    );
+  }  
 }
