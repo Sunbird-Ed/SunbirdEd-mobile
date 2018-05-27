@@ -58,8 +58,8 @@ export class UserSearchComponent {
   ) { }
 
   ionViewWillEnter() {
-    this.userList = [];
-    this.visibleItems = [];
+    //this.userList = [];
+    //this.visibleItems = [];
   }
   /**
    * Makes an search user API call
