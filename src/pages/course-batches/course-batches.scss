@@ -31,7 +31,8 @@ page-course-batches {
                 width: 50px; margin-left: 118px;
             }
             .text-holder{
-                font-size: 1.3em;font-weight: 300;
+                font-size: 18px;
+                font-weight: 300;
             }
         }
     }
@@ -65,5 +66,8 @@ page-course-batches {
     }
     .font-weight-500{
         font-weight: 500;
+    }
+    .back-button-md {
+        margin-left: -1px !important;
     }
 }
