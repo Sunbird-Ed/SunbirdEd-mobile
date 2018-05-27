@@ -257,6 +257,9 @@ export class EnrolledCourseDetailsPage {
   extractApiResponse(data): void {
     if (data.result.contentData) {
       this.course = data.result.contentData;
+      if (this.course.status !== 'Live') {
+        this.navCtrl.pop();
+      }
       if (this.course.gradeLevel && this.course.gradeLevel.length) {
         this.course.gradeLevel = this.course.gradeLevel.join(", ");
       }

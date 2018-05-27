@@ -59,7 +59,6 @@ export class ContentActionsComponent {
         this.userId = '';
       } else {
         let res = JSON.parse(session);
-        console.log('auth service...', res);
         this.userId = res[ProfileConstants.USER_TOKEN] ? res[ProfileConstants.USER_TOKEN] : '';
       }
     });
@@ -85,7 +84,6 @@ export class ContentActionsComponent {
     switch (i) {
       case 0: {
         this.deleteContent();
-        // this.viewCtrl.dismiss();
         break;
       }
       case 1: {

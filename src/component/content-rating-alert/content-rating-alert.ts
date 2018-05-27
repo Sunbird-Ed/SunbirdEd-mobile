@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { NavParams, ViewController, Header, Platform, ToastController } from "ionic-angular";
 import { ContentService, AuthService, TelemetryService, InteractType, InteractSubtype, PageId, Environment, ImpressionType, ImpressionSubtype } from 'sunbird';
 import { NgModule } from '@angular/core';
@@ -43,6 +43,7 @@ export class ContentRatingAlertComponent {
     private authService: AuthService,
     private translate: TranslateService,
     private toastCtrl: ToastController,
+    private ngZone: NgZone,
     private contentService: ContentService,
     private telemetryService: TelemetryService) {
     this.getUserId();
@@ -50,13 +51,14 @@ export class ContentRatingAlertComponent {
       this.viewCtrl.dismiss();
       this.backButtonFunc();
     }, 10);
-
-    this.content = this.navParams.get("content");
-    this.userRating =  this.navParams.get("rating");
-    if (this.navParams.get('comment')) {
-      this.comment = this.navParams.get('comment');
-      this.showCommentBox = true;
-    }
+    this.ngZone.run(() => {
+      this.content = this.navParams.get("content");
+      this.userRating = this.navParams.get("rating");
+      if (this.navParams.get('comment')) {
+        this.comment = this.navParams.get('comment');
+        this.showCommentBox = true;
+      }
+    })
   }
 
   /**
@@ -109,7 +111,7 @@ export class ContentRatingAlertComponent {
 
     let viewDismissData = {
       rating: this.ratingCount,
-      comment: this.comment,
+      comment: this.comment ? this.comment : '',
       message: ''
     };
 
@@ -146,7 +148,7 @@ export class ContentRatingAlertComponent {
       ImpressionType.VIEW,
       ImpressionSubtype.RATING_POPUP,
       this.pageId,
-      Environment.HOME,"","",""
+      Environment.HOME, "", "", ""
     ));
   }
 

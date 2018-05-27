@@ -58,7 +58,7 @@ export class CoursesPage implements OnInit {
   showSignInCard: boolean = false;
 
   isNetworkAvailable: boolean;
-	showWarning: boolean = false;
+  showWarning: boolean = false;
 
   isOnBoardingCardCompleted: boolean = false;
   onBoardingProgress: number = 0;
@@ -66,9 +66,9 @@ export class CoursesPage implements OnInit {
 
   courseFilter: any;
 
-	appliedFilter: any;
+  appliedFilter: any;
 
-	filterIcon = "./assets/imgs/ic_action_filter.png";
+  filterIcon = "./assets/imgs/ic_action_filter.png";
 
   /**
    * Default method of class CoursesPage
@@ -164,9 +164,11 @@ export class CoursesPage implements OnInit {
     this.courseService.getEnrolledCourses(option, (data: any) => {
       if (data) {
         data = JSON.parse(data);
-        this.enrolledCourse = data.result.courses ? data.result.courses : [];
-        console.log('enrolled courses details', data);
-        this.spinner(false);
+        this.ngZone.run(() => {
+          this.enrolledCourse = data.result.courses ? data.result.courses : [];
+          console.log('enrolled courses details', data);
+          this.spinner(false);
+        });
       }
     }, (error: any) => {
       console.log('error while loading enrolled courses', error);
@@ -185,8 +187,8 @@ export class CoursesPage implements OnInit {
     criteria.name = "Course";
 
     if (this.appliedFilter) {
-			criteria.filters = this.appliedFilter;
-		}
+      criteria.filters = this.appliedFilter;
+    }
 
     this.pageService.getPageAssemble(criteria, (res: any) => {
       res = JSON.parse(res);
@@ -426,15 +428,15 @@ export class CoursesPage implements OnInit {
     }
 
     let filterOptions = {
-			callback: callback
-		}
+      callback: callback
+    }
 
-		// Already apllied filter
-		if (this.courseFilter) {
-			filterOptions['filter'] = this.courseFilter;
-		} else {
-			filterOptions['filter'] = PageFilterConstants.COURSE_FILTER;
-		}
+    // Already apllied filter
+    if (this.courseFilter) {
+      filterOptions['filter'] = this.courseFilter;
+    } else {
+      filterOptions['filter'] = PageFilterConstants.COURSE_FILTER;
+    }
 
     let filter = this.popCtrl.create(PageFilter, filterOptions, { cssClass: 'resource-filter' });
     filter.present();
@@ -457,12 +459,12 @@ export class CoursesPage implements OnInit {
     );
   }
   showNetworkWarning() {
-		this.showWarning = true;
-		setTimeout(() => {
-		  this.showWarning = false;
-		}, 3000);
-	  }
-	  buttonClick(isNetAvailable) {
-		this.showNetworkWarning();
-	  }
+    this.showWarning = true;
+    setTimeout(() => {
+      this.showWarning = false;
+    }, 3000);
+  }
+  buttonClick(isNetAvailable) {
+    this.showNetworkWarning();
+  }
 }

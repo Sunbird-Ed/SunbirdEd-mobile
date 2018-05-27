@@ -200,7 +200,8 @@ export class ContentDetailsPage {
       });
       popUp.onDidDismiss(data => {
         if (data && data.message === 'rating.success') {
-          // this.navCtrl.pop();
+          this.userRating = data.rating;
+          this.ratingComment = data.comment;
         }
       });
     } else {

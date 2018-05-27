@@ -26,7 +26,7 @@
   <!-- onBoardingSLides ends here -->
 
 
-  <div *ngIf="!guestUser" class="course-page-color" [ngClass]="{'height-130': showLoader}">
+  <div *ngIf="!guestUser && enrolledCourse && enrolledCourse.length" class="course-page-color" [ngClass]="{'height-130': showLoader}">
     <div class="item padding-11">
       <span float-start class="scroll-heading">
         {{ 'COURSES_IN_PROGRESS' | translate }}
