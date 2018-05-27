@@ -67,7 +67,6 @@ export class ContentRatingAlertComponent {
   getUserId() {
     this.authService.getSessionData((data: string) => {
       let res = JSON.parse(data);
-      console.log('auth service...', res);
       if (res === undefined || res === "null") {
         this.userId = '';
       } else {
@@ -78,13 +77,11 @@ export class ContentRatingAlertComponent {
 
   /**
    * 
-   * @param e 
+   * @param {number} ratingCount 
    */
-  rateContent(event) {
-    // this.isDisable = true;
+  rateContent(ratingCount) {
     this.showCommentBox = true;
-    this.ratingCount = event;
-    console.log(this.comment);
+    this.ratingCount = ratingCount;
   }
 
   cancel() {
