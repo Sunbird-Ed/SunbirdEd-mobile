@@ -15,11 +15,11 @@
       </div>
       <br>
       <div *ngIf="showFilter" class="padding-top-9">
-        <div class="width-100" (click)="showFilter = false; selectedFilter = 'View ongoing batches'" [hidden]="selectedFilter === 'View ongoing batches'">
-          {{ 'VIEW_ONGOING_BATCHES' | translate }}
+        <div class="width-100" (click)="changeFilter('ONGOING'); showFilter = false;" [hidden]="selectedFilter === filterList.ONGOING">
+          {{ filterList.ONGOING }}
         </div>
-        <div class="width-100" (click)="showFilter = false; selectedFilter = 'View upcoming batches'" [hidden]="selectedFilter === 'View upcoming batches'">
-          {{ 'VIEW_UPCOMING_BATCHES' | translate }}
+        <div class="width-100" (click)="changeFilter('UPCOMING'); showFilter = false;" [hidden]="selectedFilter === filterList.UPCOMING">
+          {{ filterList.UPCOMING }}
         </div>
       </div>
     </div>
@@ -36,14 +36,14 @@
     </div>
   </div>
   <div class="batch-list" padding-top *ngIf="!isGuestUser">
-    <div [hidden]="selectedFilter === 'View upcoming batches'">
+    <div [hidden]="selectedFilter === filterList.UPCOMING">
       <ion-list *ngIf="ongoingBatches && ongoingBatches.length && !showLoader">
         <ion-item *ngFor="let batch of ongoingBatches">
           <h3 class="batch-name">{{ batch.name }}</h3>
-          <span>{{batch.startDate | date: 'mediumDate' }} - {{ batch.endDate | date: 'mediumDate' }}</span>
+          <span class="text-gray-color">{{batch.startDate | date: 'mediumDate' }} - {{ batch.endDate | date: 'mediumDate' }}</span>
           <p *ngIf="batch.creatorFirstName">
             <span>{{ 'CREATED_BY_SMALL' | translate }}</span>
-            <span class="font-weight-500">{{ batch.creatorFirstName + ' ' + batch.creatorLastName }}</span>
+            <span class="font-weight-500 content-meta-title">{{ batch.creatorFirstName + ' ' + batch.creatorLastName }}</span>
           </p>
           <button class="enroll-btn" ion-button clear item-end (click)="enrollIntoBatch(batch)">{{ 'ENROLL' | translate }}</button>
         </ion-item>
@@ -58,7 +58,7 @@
         </div>
       </div>
     </div>
-    <div [hidden]="selectedFilter === 'View ongoing batches'">
+    <div [hidden]="selectedFilter === filterList.ONGOING">
       <ion-list *ngIf="upcommingBatches && upcommingBatches.length && !showLoader">
         <ion-item *ngFor="let batch of upcommingBatches">
           <h3 class="batch-name">{{ batch.name }}</h3>

@@ -127,7 +127,9 @@ export class ViewMoreActivityPage implements OnInit {
 		this.courseService = courseService;
 		this.events.subscribe('savedResources:update', (res) => {
 			if (res && res.update) {
-				this.getLocalContents();
+				if (this.navParams.get('pageName') === 'resource.SavedResources') {
+					this.getLocalContents();
+				}
 			}
 		});
 	}
@@ -221,6 +223,7 @@ export class ViewMoreActivityPage implements OnInit {
 			this.offset = 0;
 			this.loadMoreBtn = true;
 			this.mapper();
+			console.log('Header changed.......====>>>>');
 		}
 	}
 

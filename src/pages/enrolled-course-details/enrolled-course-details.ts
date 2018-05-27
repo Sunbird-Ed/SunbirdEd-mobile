@@ -114,6 +114,11 @@ export class EnrolledCourseDetailsPage {
   ratingComment: string = '';
 
   /**
+   * To hold batch id
+   */
+  batchId: string = '';
+
+  /**
    * To hold base url
    */
   private baseUrl = "";
@@ -171,6 +176,12 @@ export class EnrolledCourseDetailsPage {
       this.baseUrl = response
     }, (error) => {
     });
+
+		this.events.subscribe('course:batchEnrolled', (res) => {
+			if (res && res.batchId) {
+        this.batchId = res.batchId;
+			}
+		});    
   }
 
   getUserId() {
@@ -564,6 +575,9 @@ export class EnrolledCourseDetailsPage {
     console.log('Inside enrolled course details page');
     this.tabBarElement.style.display = 'none';
     this.courseCardData = this.navParams.get('content');
+    if (this.batchId) {
+      this.courseCardData.batchId = this.batchId;
+    }
     this.identifier = this.courseCardData.contentId || this.courseCardData.identifier;
     this.showResumeBtn = this.courseCardData.lastReadContentId ? true : false;
     this.setContentDetails(this.identifier);
