@@ -54,8 +54,8 @@ export class ContentRatingAlertComponent {
     this.ngZone.run(() => {
       this.content = this.navParams.get("content");
       this.userRating = this.navParams.get("rating");
-      if (this.navParams.get('comment')) {
-        this.comment = this.navParams.get('comment');
+      this.comment = this.navParams.get('comment');
+      if (this.userRating) {
         this.showCommentBox = true;
       }
     })
