@@ -15,11 +15,11 @@
 			</button>
 		</ion-buttons>
 	</ion-navbar>
+	<div *ngIf="showWarning" class="offline-message"> <span>{{'NEED_INTERNET' | translate}} </span></div>
 </ion-header>
 
 <ion-content overflow-scroll="true" class="course-scroll-holder1" style="background: #EBEBEB;">
 	<ion-refresher (ionRefresh)="swipeDownToRefresh($event)"></ion-refresher>
-	<div *ngIf="showWarning" class="offline-message"> <span>{{'NEED_INTERNET' | translate}} </span></div>
 	<!-- onBoardingSLides starts here -->
 	<onboarding-card *ngIf="guestUser && !isOnBoardingCardCompleted && isNetworkAvailable"></onboarding-card>
 	<!-- onBoardingSLides ends here -->
@@ -77,7 +77,7 @@
 		<img height="80" width="100" src="assets/imgs/ic_offline.png" />
 		<h6 ion-text color="secondary_black"><b>{{ 'YOU_ARE_OFFLINE' | translate }}</b></h6>
 		<p color="dark_gray">{{ 'OFFLINE_WARNING' | translate }}</p>
-		<b ion-text text-uppercase color="primary" (click)="checkNetworkStatus(true)">{{'RETRY_ACTION' | translate}}</b>
+		<b ion-text text-uppercase color="primary" (click)="checkNetworkStatus(true); buttonClick();">{{'RETRY_ACTION' | translate}}</b>
 	</div>
 	<sign-in-card (valueChange)="buttonClick($event)" *ngIf="showSignInCard" [source]="source"></sign-in-card>
 </ion-content>

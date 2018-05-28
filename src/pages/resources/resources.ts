@@ -105,15 +105,15 @@ export class ResourcesPage implements OnInit {
 
 		if (this.network.type === 'none') {
 			this.isNetworkAvailable = false;
-		  } else {
+		} else {
 			this.isNetworkAvailable = true;
-		  }
-		  this.network.onDisconnect().subscribe((data) => {
+		}
+		this.network.onDisconnect().subscribe((data) => {
 			this.isNetworkAvailable = false;
-		  });
-		  this.network.onConnect().subscribe((data) => {
+		});
+		this.network.onConnect().subscribe((data) => {
 			this.isNetworkAvailable = true;
-		  });
+		});
 	}
 
 	ngAfterViewInit() {
@@ -235,7 +235,7 @@ export class ResourcesPage implements OnInit {
 				this.pageApiLoader = false;
 				//this.noInternetConnection = false;
 				this.checkEmptySearchResult(isAfterLanguageChange);
-          		if(loader) loader.dismiss();
+				if (loader) loader.dismiss();
 			});
 		}, error => {
 			console.log('error while getting popular resources...', error);
@@ -247,7 +247,7 @@ export class ResourcesPage implements OnInit {
 				} else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
 					if (!isAfterLanguageChange) this.getMessageByConst('ERROR_FETCHING_DATA');
 				}
-				if(loader) loader.dismiss();
+				if (loader) loader.dismiss();
 			});
 		});
 	}
@@ -335,18 +335,18 @@ export class ResourcesPage implements OnInit {
 	 * @param refresher
 	 */
 	swipeDownToRefresh(refresher?) {
-		let loader =  this.getLoader();
+		let loader = this.getLoader();
 		loader.present();
- 		if(refresher) {
+		if (refresher) {
 			refresher.complete();
 		}
 
 		this.storyAndWorksheets = [];
 		this.setSavedContent();
-/* 		if(refresher)
-			this.getPopularContent(false, refresher, loader);
-		else */
-			this.getPopularContent(false, loader);
+		/* 		if(refresher)
+					this.getPopularContent(false, refresher, loader);
+				else */
+		this.getPopularContent(false, loader);
 		this.checkNetworkStatus();
 	}
 
@@ -535,22 +535,24 @@ export class ResourcesPage implements OnInit {
 			if (!isAfterLanguageChange) this.getMessageByConst('NO_CONTENTS_FOUND');
 		}
 	}
+
 	showNetworkWarning() {
 		this.showWarning = true;
 		setTimeout(() => {
-		  this.showWarning = false;
+			this.showWarning = false;
 		}, 3000);
-	  }
-	  buttonClick(isNetAvailable) {
+	}
+
+	buttonClick(isNetAvailable?) {
 		this.showNetworkWarning();
-	  }
+	}
 
 	checkNetworkStatus(showRefresh = false) {
 		if (this.network.type === 'none') {
 			this.isNetworkAvailable = false;
 		} else {
 			this.isNetworkAvailable = true;
-			if(showRefresh) {
+			if (showRefresh) {
 				this.swipeDownToRefresh();
 			}
 		}
@@ -558,8 +560,8 @@ export class ResourcesPage implements OnInit {
 
 	getLoader(): any {
 		return this.loadingCtrl.create({
-		  duration: 30000,
-		  spinner: "crescent"
+			duration: 30000,
+			spinner: "crescent"
 		});
-	  }
+	}
 }
