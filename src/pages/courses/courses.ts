@@ -1,6 +1,6 @@
 import { ViewMoreActivityPage } from './../view-more-activity/view-more-activity';
 import { Component, NgZone, OnInit } from '@angular/core';
-import { NavController, PopoverController, Events, ToastController } from 'ionic-angular';
+import { NavController, PopoverController, Events, ToastController, LoadingController } from 'ionic-angular';
 import { IonicPage } from 'ionic-angular';
 import {
   SharedPreferences, CourseService, AuthService,
@@ -93,7 +93,9 @@ export class CoursesPage implements OnInit {
     private toastCtrl: ToastController,
     private preference: SharedPreferences,
     private translate: TranslateService,
-    private network: Network) {
+    private network: Network,
+    private loadingCtrl: LoadingController
+  ) {
 
     this.preference.getString('selected_language_code', (val: string) => {
       if (val && val.length) {
@@ -121,6 +123,18 @@ export class CoursesPage implements OnInit {
         this.getPopularAndLatestCourses();
       }
     });
+
+    if (this.network.type === 'none') {
+			this.isNetworkAvailable = false;
+		} else {
+			this.isNetworkAvailable = true;
+		}
+		this.network.onDisconnect().subscribe((data) => {
+			this.isNetworkAvailable = false;
+		});
+		this.network.onConnect().subscribe((data) => {
+			this.isNetworkAvailable = true;
+		});
   }
 
   /**
@@ -258,6 +272,8 @@ export class CoursesPage implements OnInit {
    * @param refresher
    */
   getCourseTabData(refresher?) {
+    let loader = this.getLoader();
+    loader.present();
     setTimeout(() => {
       if (refresher) {
         refresher.complete();
@@ -269,9 +285,10 @@ export class CoursesPage implements OnInit {
 
     this.getUserId()
       .then(() => {
-
+        loader.dismiss();
       })
       .catch(error => {
+        loader.dismiss();
         console.log("Error while Fetching Data", error);
       });
 
@@ -467,4 +484,20 @@ export class CoursesPage implements OnInit {
   buttonClick(isNetAvailable) {
     this.showNetworkWarning();
   }
+  checkNetworkStatus(showRefresh = false) {
+		if (this.network.type === 'none') {
+			this.isNetworkAvailable = false;
+		} else {
+			this.isNetworkAvailable = true;
+			if (showRefresh) {
+				this.getCourseTabData();
+			}
+		}
+  }
+  getLoader(): any {
+		return this.loadingCtrl.create({
+			duration: 30000,
+			spinner: "crescent"
+		});
+	}
 }

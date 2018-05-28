@@ -32,7 +32,7 @@ export class SignInCardComponent {
 
   @Input() title: string = "";
 
-  @Input() descrption: string = "";
+  @Input() description: string = "";
 
   @Output() valueChange = new EventEmitter();
 
@@ -73,8 +73,8 @@ export class SignInCardComponent {
         this.title = this.translateDisplayText['OVERLAY_LABEL_COMMON'];
       }
 
-      if (this.descrption.length === 0) {
-        this.descrption = this.translateDisplayText['OVERLAY_INFO_TEXT_COMMON'];
+      if (this.description.length === 0) {
+        this.description = this.translateDisplayText['OVERLAY_INFO_TEXT_COMMON'];
       }
     });
   }
