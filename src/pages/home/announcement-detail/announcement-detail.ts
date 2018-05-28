@@ -62,7 +62,7 @@ export class AnnouncementDetailComponent implements OnInit {
 
     /**
      * Visibility of the progress bar
-     * 
+     *
      */
     public showProgressBar: boolean = false;
 
