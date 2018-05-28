@@ -1,8 +1,9 @@
 import { Component, NgZone, OnInit } from '@angular/core';
 import { CourseService, AuthService } from 'sunbird';
-import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ToastController, Events } from 'ionic-angular';
 import * as _ from 'lodash';
 import { ProfileConstants } from '../../app/app.constant';
+import { TranslateService } from '@ngx-translate/core';
 
 /**
  * Generated class for the CourseBatchesPage page.
@@ -53,7 +54,7 @@ export class CourseBatchesPage implements OnInit {
    */
   isGuestUser: boolean = false;
 
-   filterList: {
+   filterList: any =  {
      'ONGOING' : 'VIEW_ONGOING_BATCHES',
      'UPCOMING' : 'VIEW_UPCOMING_BATCHES'
    };
@@ -93,6 +94,9 @@ export class CourseBatchesPage implements OnInit {
    */
   public toastCtrl: ToastController;
 
+  /**
+   * Selected filter
+   */
   selectedFilter: string;
 
   /**
@@ -105,7 +109,7 @@ export class CourseBatchesPage implements OnInit {
    * @param {AuthService} authService To get logged-in user data
    */
   constructor(courseService: CourseService, navCtrl: NavController, navParams: NavParams, zone: NgZone,
-    authService: AuthService, toastCtrl: ToastController) {
+    authService: AuthService, toastCtrl: ToastController, private translate: TranslateService, private events: Events) {
     this.courseService = courseService;
     this.navCtrl = navCtrl;
     this.navParams = navParams;
@@ -114,6 +118,10 @@ export class CourseBatchesPage implements OnInit {
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
     this.selectedFilter = 'View ongoing batches';
     this.toastCtrl = toastCtrl;
+
+    this.filterList.ONGOING = this.translateLanguageConstant('VIEW_ONGOING_BATCHES');
+    this.filterList.UPCOMING = this.translateLanguageConstant('VIEW_UPCOMING_BATCHES');
+    this.selectedFilter = this.filterList.ONGOING;
   }
 
   /**
@@ -132,6 +140,10 @@ export class CourseBatchesPage implements OnInit {
       data = JSON.parse(data);
       this.zone.run(() => {
         console.log('You have successfully enrolled...');
+        this.showMessage(this.translateLanguageConstant('COURSE_ENROLLED'));
+        this.events.publish('course:batchEnrolled', {
+          batchId: item.id
+        });
         this.navCtrl.pop();
       });
     },
@@ -225,7 +237,21 @@ export class CourseBatchesPage implements OnInit {
     this.getUserId();
   }
 
-  changeFilter(selectedFilter: string) {
-    this.selectedFilter = selectedFilter;
+  changeFilter(filter: string) {
+    if (filter === 'ONGOING') {
+      this.selectedFilter = this.filterList.ONGOING;
+    } else {
+      this.selectedFilter = this.filterList.UPCOMING;
+    }
+  }
+
+  translateLanguageConstant(constant: string) {
+    let msg = '';
+    this.translate.get(constant).subscribe(
+      (value: any) => {
+        msg = value;
+      }
+    );
+    return msg;
   }
 }

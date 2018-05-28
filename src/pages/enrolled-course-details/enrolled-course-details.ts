@@ -1,9 +1,11 @@
 import { ContentRatingAlertComponent } from './../../component/content-rating-alert/content-rating-alert';
 import { Component, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, PopoverController, LoadingController } from 'ionic-angular';
-import { ContentService, FileUtil, CourseService, 
+import {
+  ContentService, FileUtil, CourseService,
   ChildContentRequest, AuthService, PageId, UserProfileService, InteractSubtype, TelemetryService, Environment, Start, Mode, End,
-  InteractType, BuildParamService, ShareUtil } from 'sunbird';
+  InteractType, BuildParamService, ShareUtil
+} from 'sunbird';
 import * as _ from 'lodash';
 // import { CourseDetailPage } from '../course-detail/course-detail';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
@@ -112,6 +114,11 @@ export class EnrolledCourseDetailsPage {
   ratingComment: string = '';
 
   /**
+   * To hold batch id
+   */
+  batchId: string = '';
+
+  /**
    * To hold base url
    */
   private baseUrl = "";
@@ -152,23 +159,29 @@ export class EnrolledCourseDetailsPage {
     private translate: TranslateService,
     private authService: AuthService,
     private profileService: UserProfileService,
-    private courseService: CourseService, 
-    private buildParamService: BuildParamService, 
-    private shareUtil: ShareUtil, 
-    private social: SocialSharing, 
+    private courseService: CourseService,
+    private buildParamService: BuildParamService,
+    private shareUtil: ShareUtil,
+    private social: SocialSharing,
     private telemetryService: TelemetryService, private loadingCtrl: LoadingController) {
-      this.getUserId();
-      this.navCtrl = navCtrl;
-      this.navParams = navParams;
-      this.contentService = contentService;
-      this.zone = zone;
-      this.toastCtrl = toastCtrl;
-      this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
+    this.getUserId();
+    this.navCtrl = navCtrl;
+    this.navParams = navParams;
+    this.contentService = contentService;
+    this.zone = zone;
+    this.toastCtrl = toastCtrl;
+    this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
 
-      this.buildParamService.getBuildConfigParam("BASE_URL", (response: any) => {
-        this.baseUrl = response
-      }, (error) => {
-      });    
+    this.buildParamService.getBuildConfigParam("BASE_URL", (response: any) => {
+      this.baseUrl = response
+    }, (error) => {
+    });
+
+		this.events.subscribe('course:batchEnrolled', (res) => {
+			if (res && res.batchId) {
+        this.batchId = res.batchId;
+			}
+		});    
   }
 
   getUserId() {
@@ -177,7 +190,6 @@ export class EnrolledCourseDetailsPage {
         this.userId = '';
       } else {
         let res = JSON.parse(session);
-        console.log('auth service...', res);
         this.userId = res["userToken"] ? res["userToken"] : '';
       }
     });
@@ -276,6 +288,7 @@ export class EnrolledCourseDetailsPage {
     if (data.result.contentData) {
       this.course = data.result.contentData;
       if (this.course.status !== 'Live') {
+        this.showMessage(this.translateLanguageConstant('ERROR_CONTENT_NOT_AVAILABLE'));
         this.navCtrl.pop();
       }
       if (this.course.gradeLevel && this.course.gradeLevel.length) {
@@ -340,8 +353,8 @@ export class EnrolledCourseDetailsPage {
         this.batchDetails.creatorFirstName = data.response.firstName ? data.response.firstName : '';
         this.batchDetails.creatorLastName = data.response.lastName ? data.response.lastName : '';
       }
-    }, (error: any) =>{
-      
+    }, (error: any) => {
+
     })
   }
 
@@ -535,10 +548,23 @@ export class EnrolledCourseDetailsPage {
    * @param {string} identifier 
    */
   resumeContent(identifier): void {
-    console.log('resume content..... =>>>');
-    this.childrenData.length = 0;
+    // this.childrenData.length = 0;
     this.showResumeBtn = false;
-    this.setContentDetails(identifier);
+    // this.setContentDetails(identifier);
+    this.contentService.getContentDetail({ contentId: identifier }, (data: any) => {
+      this.zone.run(() => {
+        data = JSON.parse(data);
+        console.log('enrolled course details: ', data);
+        if (data && data.result) {
+          this.navigateToChildrenDetailsPage(data.result, '1')
+        } else {
+          this.showMessage(this.translateLanguageConstant('ERROR_FETCHING_DATA'));
+        }
+      });
+    },
+      (error: any) => {
+        this.showMessage(this.translateLanguageConstant('ERROR_FETCHING_DATA'));
+      });
   }
 
   /**
@@ -549,6 +575,9 @@ export class EnrolledCourseDetailsPage {
     console.log('Inside enrolled course details page');
     this.tabBarElement.style.display = 'none';
     this.courseCardData = this.navParams.get('content');
+    if (this.batchId) {
+      this.courseCardData.batchId = this.batchId;
+    }
     this.identifier = this.courseCardData.contentId || this.courseCardData.identifier;
     this.showResumeBtn = this.courseCardData.lastReadContentId ? true : false;
     this.setContentDetails(this.identifier);
@@ -639,7 +668,7 @@ export class EnrolledCourseDetailsPage {
       spinner: "crescent"
     });
   }
-  
+
   share() {
     this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_COURSE_INITIATED, this.course.contentType);
     let loader = this.getLoader();
@@ -664,7 +693,7 @@ export class EnrolledCourseDetailsPage {
       this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_COURSE_SUCCESS, this.course.contentType);
       this.social.share("", "", "", url);
     }
-  }  
+  }
 
   generateShareInteractEvents(interactType, subType, contentType) {
     let values = new Map();
@@ -675,5 +704,5 @@ export class EnrolledCourseDetailsPage {
         Environment.HOME,
         PageId.CONTENT_DETAIL, values)
     );
-  }  
+  }
 }
