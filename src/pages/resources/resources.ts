@@ -388,13 +388,11 @@ export class ResourcesPage implements OnInit {
 					that.showContentDetails(data.result);
 				}, (error) => {
 					console.log("Error " + error);
-
 					if (that.network.type === 'none') {
 						that.getMessageByConst('ERROR_NO_INTERNET_MESSAGE');
 					} else {
 						that.getMessageByConst('UNKNOWN_QR');
 					}
-
 				});
 			}
 		}
