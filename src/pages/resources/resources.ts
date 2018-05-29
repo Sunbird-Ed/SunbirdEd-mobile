@@ -132,11 +132,11 @@ export class ResourcesPage implements OnInit {
 
 			if (val == ProfileType.TEACHER) {
 				this.showSignInCard = true;
-				this.audienceFilter = AudienceFilter.TEACHER;
+				this.audienceFilter = AudienceFilter.GUEST_TEACHER;
 				updateSavedContent = true;
 			} else if (val == ProfileType.STUDENT) {
 				this.showSignInCard = false;
-				this.audienceFilter = AudienceFilter.STUDENT;
+				this.audienceFilter = AudienceFilter.GUEST_STUDENT;
 				updateSavedContent = true;
 			}
 

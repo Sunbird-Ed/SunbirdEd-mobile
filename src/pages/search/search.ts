@@ -576,10 +576,10 @@ export class SearchPage {
       if (res === undefined || res === "null") {
         this.perference.getString('selected_user_type', (val) => {
           if (val == "student") {
-            this.audienceFilter = AudienceFilter.STUDENT;
+            this.audienceFilter = AudienceFilter.GUEST_STUDENT;
           }
           else if (val == "teacher") {
-            this.audienceFilter = AudienceFilter.TEACHER;
+            this.audienceFilter = AudienceFilter.GUEST_TEACHER;
           }
         });
       }
