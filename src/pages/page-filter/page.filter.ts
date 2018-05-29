@@ -43,7 +43,11 @@ export class PageFilter {
   ) {
     this.callback = navParams.get('callback');
 
-    this.FILTERS = navParams.get('filter')
+    const navParamsFilter = navParams.get('filter');
+
+    // #SB-3708 To avoid the object reference in Javascript. (Deep Clone) 
+    this.FILTERS = JSON.parse(JSON.stringify(navParams.get('filter')));
+
     this.FILTERS.forEach((element, index: number) => {
       this.getFrameworkData(element.name, index);
 
