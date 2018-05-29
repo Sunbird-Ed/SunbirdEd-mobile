@@ -2,7 +2,7 @@ import { ContentRatingAlertComponent } from './../../component/content-rating-al
 import { ContentActionsComponent } from './../../component/content-actions/content-actions';
 import { Component, NgZone, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, PopoverController, Navbar, Platform } from 'ionic-angular';
-import { ContentService, FileUtil, ImpressionType, PageId, Environment, TelemetryService, Mode, End, ShareUtil, InteractType, InteractSubtype, Rollup, BuildParamService, AuthService } from 'sunbird';
+import { ContentService, FileUtil, ImpressionType, PageId, Environment, TelemetryService, Mode, End, ShareUtil, InteractType, InteractSubtype, Rollup, BuildParamService, AuthService, SharedPreferences, ProfileType } from 'sunbird';
 import { SocialSharing } from "@ionic-native/social-sharing";
 import * as _ from 'lodash';
 import { generateInteractEvent, Map, generateImpressionWithRollup, generateStartWithRollup, generateInteractWithRollup } from '../../app/telemetryutil';
@@ -114,6 +114,8 @@ export class ContentDetailsPage {
 
   guestUser: boolean = false;
 
+  profileType: string = '';
+
   private objId;
   private objType;
   private objVer;
@@ -136,7 +138,8 @@ export class ContentDetailsPage {
     private fileUtil: FileUtil, public popoverCtrl: PopoverController, private shareUtil: ShareUtil,
     private social: SocialSharing, private platform: Platform, private translate: TranslateService,
     private buildParamService: BuildParamService,
-    private authService: AuthService) {
+    private authService: AuthService,
+    private preference: SharedPreferences) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
@@ -158,6 +161,7 @@ export class ContentDetailsPage {
     });
 
     this.checkLoggedInOrGuestUser();
+    this.checkCurrentUserType();
 
     //This is to know when the app has gone to background
     this.pause = platform.pause.subscribe(() => {
@@ -166,7 +170,7 @@ export class ContentDetailsPage {
 
     //This is to know when the app has come to foreground
     this.resume = platform.resume.subscribe(() => {
-      if (this.isPlayerLaunched) {
+      if (this.isPlayerLaunched && !this.guestUser) {
         this.isPlayerLaunched = false;
         if (this.userRating === 0) {
           this.rateContent();
@@ -186,6 +190,18 @@ export class ContentDetailsPage {
         this.guestUser = true;
       } else {
         this.guestUser = false;
+      }
+    });
+  }
+
+  checkCurrentUserType() {
+    this.preference.getString('selected_user_type', (val) => {
+      if (val != "") {
+        if (val == ProfileType.TEACHER) {
+          this.profileType = ProfileType.TEACHER;
+        } else if (val == ProfileType.STUDENT) {
+          this.profileType = ProfileType.STUDENT;
+        }
       }
     });
   }
@@ -230,7 +246,9 @@ export class ContentDetailsPage {
         this.translateAndDisplayMessage('TRY_BEFORE_RATING', false);
       }
     } else {
-      this.translateAndDisplayMessage('SIGNIN_TO_USE_FEATURE');
+      if (this.profileType == ProfileType.TEACHER) {
+        this.translateAndDisplayMessage('SIGNIN_TO_USE_FEATURE');
+      }
     }
   }
 

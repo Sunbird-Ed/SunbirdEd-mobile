@@ -7,7 +7,7 @@ import {
 import {
   ContentService, FileUtil,
   PageId, Environment, Mode, ImpressionType, TelemetryService, Rollup, InteractType, InteractSubtype,
-  ShareUtil, BuildParamService, AuthService
+  ShareUtil, BuildParamService, AuthService, SharedPreferences, ProfileType
 } from 'sunbird';
 import * as _ from 'lodash';
 import { ContentDetailsPage } from '../content-details/content-details';
@@ -89,11 +89,6 @@ export class CollectionDetailsPage {
   depth: string = '1';
 
   /**
-   * To hold logged in user id
-   */
-  userId: string = '';
-
-  /**
    * Its get true when child is collection.
    * Used to show content depth
    *
@@ -163,6 +158,11 @@ export class CollectionDetailsPage {
   private backButtonFunc = undefined;
   private baseUrl = "";
 
+
+  guestUser: boolean = false;
+
+  profileType: string = '';
+
   @ViewChild(Navbar) navBar: Navbar;
   constructor(private navCtrl: NavController,
     private navParams: NavParams,
@@ -179,8 +179,10 @@ export class CollectionDetailsPage {
     private translate: TranslateService,
     private social: SocialSharing,
     private shareUtil: ShareUtil,
-    private buildParamService: BuildParamService) {
-    this.getUserId();
+    private buildParamService: BuildParamService,
+    private preference: SharedPreferences) {
+    this.checkLoggedInOrGuestUser();
+    this.checkCurrentUserType();
     console.warn('Inside new module..........................');
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.didViewLoad = false;
@@ -196,24 +198,12 @@ export class CollectionDetailsPage {
     });
   }
 
-  getUserId() {
-    this.authService.getSessionData((session: string) => {
-      if (session === null || session === "null") {
-        this.userId = '';
-      } else {
-        let res = JSON.parse(session);
-        console.log('auth service...', res);
-        this.userId = res["userToken"] ? res["userToken"] : '';
-      }
-    });
-  }
-
   /**
    * Function to rate content
    */
   rateContent() {
-    if (this.userId) {
-      if (this.contentDetail.isAvailableLocally){
+    if (!this.guestUser) {
+      if (this.contentDetail.isAvailableLocally) {
         let popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
           content: this.contentDetail,
           rating: this.userRating,
@@ -235,8 +225,36 @@ export class CollectionDetailsPage {
         this.translateAndDisplayMessage('TRY_BEFORE_RATING');
       }
     } else {
-      this.translateAndDisplayMessage('SIGNIN_TO_USE_FEATURE');
+      if (this.profileType == ProfileType.TEACHER) {
+        this.translateAndDisplayMessage('SIGNIN_TO_USE_FEATURE');
+      }
     }
+  }
+
+  /**
+ * Get the session to know if the user is logged-in or guest
+ * 
+ */
+  checkLoggedInOrGuestUser() {
+    this.authService.getSessionData((session) => {
+      if (session === null || session === "null") {
+        this.guestUser = true;
+      } else {
+        this.guestUser = false;
+      }
+    });
+  }
+
+  checkCurrentUserType() {
+    this.preference.getString('selected_user_type', (val) => {
+      if (val != "") {
+        if (val == ProfileType.TEACHER) {
+          this.profileType = ProfileType.TEACHER;
+        } else if (val == ProfileType.STUDENT) {
+          this.profileType = ProfileType.STUDENT;
+        }
+      }
+    });
   }
 
   /**
