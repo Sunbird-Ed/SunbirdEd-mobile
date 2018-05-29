@@ -84,3 +84,12 @@ export class PageFilterConstants {
         }
     ];
 }
+
+export class AudienceFilter {
+
+    // TODO : Check with Anil for TEACHER & LOGGED_IN_USER values
+    public static readonly TEACHER = ["instructor"];
+    public static readonly STUDENT = ["learner"];
+
+    public static readonly LOGGED_IN_USER = ["instructor"];
+}
