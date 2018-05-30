@@ -14,7 +14,7 @@
       <ion-row [ngSwitch]="type" style="overflow: hidden;">
         <!--  Enrolled courses -->
         <ion-col col-7 *ngSwitchCase="'enrolledCourse'" col-sm>
-          <span class="content-size1"> {{ 'COURSE_PROGRESS_COMPLETED_1' | translate }} {{content.progress ? content.progress : 0 }}%</span>
+          <span class="content-size1"> {{ 'COURSE_PROGRESS_COMPLETED' | translate: {'%s': content.progress? content.progress : 0} }}</span>
           <div class="content-meta">
             <span class="content-size1">{{ 'ERROR_DURATION_NOT_AVAILABLE' | translate | slice:0:14 }}...</span>
           </div>

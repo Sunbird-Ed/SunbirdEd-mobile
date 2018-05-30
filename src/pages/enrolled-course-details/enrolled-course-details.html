@@ -19,10 +19,11 @@
 		<h6>{{course.name}}</h6>
 		<ion-grid class="padding-0">
 			<div *ngIf="course.owner">
-				<span class="text-gray-color">{{ 'BY' | translate }}</span>
+				<span class="text-gray-color">{{ 'CONTENT_CREATED_BY' | translate }}</span>
 				<span class="content-meta-title">{{ course.owner }}</span>
 			</div>
-			<div>
+			<div *ngIf="course.progress || course.me_averageRating">
+				<p>{{ 'YOUR_PROGRESS' | translate: {'%s': course.progress ? course.progress : '0'} }}</p>
 				<span>
 					<rating align-items-start (click)="rateContent();" [(ngModel)]="course.me_averageRating" readOnly="true" max="5" no-padding></rating>
 				</span>
@@ -64,7 +65,7 @@
 					<span class="text-gray-color"> {{batchDetails.name}}</span><br/>
 					<span class="text-gray-color">{{ batchDetails.startDate | date: 'mediumDate' }} - {{ batchDetails.endDate | date: 'mediumDate' }}</span><br/>
 					<span *ngIf="batchDetails.creatorFirstName">
-						<span class="text-gray-color"> {{ 'CREATED_BY_SMALL' | translate }} </span>
+						<span class="text-gray-color"> {{ 'BATCH_CREATED_BY' | translate }} </span>
 						<span class="font-weight-500 content-meta-title"> {{batchDetails.creatorFirstName + ' ' + batchDetails.creatorLastName}} </span>
 					</span>
 				</div>

@@ -1,5 +1,5 @@
 import { Component, NgZone } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, Events } from 'ionic-angular';
 import {
   TabsPage, SharedPreferences,
   Interact, TelemetryService, InteractType, InteractSubtype,
@@ -10,6 +10,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ProfileType, ProfileService } from 'sunbird'
 import { generateImpressionEvent, Map } from '../../app/telemetryutil';
 import { initTabs, GUEST_TEACHER_TABS, GUEST_STUDENT_TABS } from '../../app/module.service';
+import { AppGlobalService } from '../../service/app-global.service';
 
 const selectedCardBorderColor = '#006DE5';
 const borderColor = '#F7F7F7';
@@ -47,7 +48,8 @@ export class UserTypeSelectionPage {
     private profileService: ProfileService,
     private telemetryService: TelemetryService,
     private container: ContainerService,
-    private zone: NgZone
+    private zone: NgZone,
+    private event: Events
   ) {
     this.initData();
 
@@ -83,7 +85,7 @@ export class UserTypeSelectionPage {
       this.teacherCardBorderColor = selectedCardBorderColor;
       this.studentCardBorderColor = borderColor;
       this.selectedUserType = ProfileType.TEACHER;
-      this.continueAs = this.translateMessage('CONTINUE_AS_TEACHER');
+      this.continueAs = this.translateMessage('CONTINUE_AS_ROLE', this.translateMessage('TEACHER_ROLE'));
       this.preference.putString(KEY_SELECTED_USER_TYPE, this.selectedUserType);
       initTabs(this.container, GUEST_TEACHER_TABS);
     });
@@ -95,7 +97,7 @@ export class UserTypeSelectionPage {
       this.teacherCardBorderColor = borderColor;
       this.studentCardBorderColor = selectedCardBorderColor;
       this.selectedUserType = ProfileType.STUDENT;
-      this.continueAs = this.translateMessage('CONTINUE_AS_STUDENT');
+      this.continueAs = this.translateMessage('CONTINUE_AS_ROLE', this.translateMessage('STUDENT_ROLE'));
       this.preference.putString(KEY_SELECTED_USER_TYPE, this.selectedUserType)
       initTabs(this.container, GUEST_STUDENT_TABS);
     });
@@ -173,6 +175,10 @@ export class UserTypeSelectionPage {
   }
 
   gotoTabsPage(){
+    // Update the Global variable in the AppGlobalService
+    this.event.publish(AppGlobalService.USER_INFO_UPDATED);
+
+
     this.navCtrl.push(TabsPage, {
       loginMode: 'guest'
     });
@@ -213,14 +219,14 @@ export class UserTypeSelectionPage {
     this.telemetryService.interact(interact);
   }
 
-  /**
+ /**
    * Used to Translate message to current Language
    * @param {string} messageConst - Message Constant to be translated
    * @returns {string} translatedMsg - Translated Message
    */
-  translateMessage(messageConst: string): string {
+  translateMessage(messageConst: string, field?: string): string {
     let translatedMsg = '';
-    this.translate.get(messageConst).subscribe(
+    this.translate.get(messageConst, { '%s': field }).subscribe(
       (value: any) => {
         translatedMsg = value;
       }

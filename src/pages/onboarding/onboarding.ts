@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { NavController, LoadingController, Navbar, Platform, ToastController } from 'ionic-angular';
+import { NavController, LoadingController, Navbar, Platform, ToastController,Events } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import {
   TabsPage, OAuthService, ContainerService,
@@ -14,6 +14,7 @@ import { initTabs, GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, LOGIN_TEACHER_TABS } 
 import { generateInteractEvent, Map, generateImpressionEvent } from '../../app/telemetryutil';
 import { LanguageSettingsPage } from '../language-settings/language-settings';
 import { ProfileConstants } from '../../app/app.constant';
+import { AppGlobalService } from '../../service/app-global.service';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -51,7 +52,8 @@ export class OnboardingPage {
     private preferences: SharedPreferences,
     private platform: Platform,
     private translate: TranslateService,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private events: Events
   ) {
 
     this.slides = [
@@ -78,9 +80,9 @@ export class OnboardingPage {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad OnboardingPage');
-    this.navBar.backButtonClick = (e:UIEvent)=>{
+    this.navBar.backButtonClick = (e: UIEvent) => {
       this.navCtrl.setRoot(LanguageSettingsPage);
-     }
+    }
 
   }
 
@@ -114,6 +116,7 @@ export class OnboardingPage {
         return that.refreshProfileData();
       })
       .then(slug => {
+        this.events.publish(AppGlobalService.USER_INFO_UPDATED);
         return that.refreshTenantData(slug);
       })
       .then(() => {
@@ -222,6 +225,7 @@ export class OnboardingPage {
           profileType: ProfileType.TEACHER
         };
         this.profileService.setCurrentProfile(true, profileRequest, res => {
+          this.events.publish(AppGlobalService.USER_INFO_UPDATED);
           this.navCtrl.push(TabsPage, {
             loginMode: 'guest'
           });

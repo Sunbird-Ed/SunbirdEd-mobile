@@ -22,9 +22,8 @@
 			| slice:0:25) + '...' : (contentDetail?.name) }}</h6>
 		<!-- Owner and download info -->
 		<ion-grid class="padding-0" *ngIf="contentDetail.contentType || contentDetail.owner">
-			<!-- <p *ngIf="contentDetail.owner">{{ 'BY' | translate }} {{ contentDetail.owner }}</p> -->
 			<div *ngIf="contentDetail.owner">
-				<span class="text-gray-color">{{ 'BY' | translate }}</span>
+				<span class="text-gray-color">{{ 'CONTENT_CREATED_BY' | translate }}</span>
 				<span class="content-meta-title">{{ contentDetail.owner }}</span>
 			</div>
 			<ion-row class="padding-top-10">

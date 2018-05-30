@@ -3,10 +3,9 @@ import { Component, NgZone, OnInit } from '@angular/core';
 import { NavController, PopoverController, Events, ToastController, LoadingController } from 'ionic-angular';
 import { IonicPage } from 'ionic-angular';
 import {
-  SharedPreferences, CourseService, AuthService,
+  SharedPreferences, CourseService,
   PageAssembleService, PageAssembleCriteria,
-  Impression, ImpressionType, PageId, Environment, TelemetryService,
-  ProfileService, ContentDetailRequest, ContentService, ProfileType
+  Impression, ImpressionType, PageId, Environment, TelemetryService, ContentDetailRequest, ContentService, ProfileType
 } from 'sunbird';
 import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
@@ -20,6 +19,7 @@ import { generateImpressionEvent } from '../../app/telemetryutil';
 import { ContentType, MimeType, PageFilterConstants, ProfileConstants } from '../../app/app.constant';
 import { PageFilterCallback, PageFilter } from '../page-filter/page.filter';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
+import { AppGlobalService } from '../../service/app-global.service';
 
 @IonicPage()
 @Component({
@@ -75,26 +75,24 @@ export class CoursesPage implements OnInit {
    *
    * @param {NavController} navCtrl To navigate user from one page to another
    * @param {CourseService} courseService Service to get enrolled courses
-   * @param {AuthService} authService To get logged-in user data
    * @param {PageAssembleService} pageService Service to get latest and popular courses
    * @param {NgZone} ngZone To bind data
    */
   constructor(private navCtrl: NavController,
     private courseService: CourseService,
-    private authService: AuthService,
     private pageService: PageAssembleService,
     private ngZone: NgZone,
     private qrScanner: SunbirdQRScanner,
     private popCtrl: PopoverController,
     private telemetryService: TelemetryService,
     private events: Events,
-    private profileService: ProfileService,
     private contentService: ContentService,
     private toastCtrl: ToastController,
     private preference: SharedPreferences,
     private translate: TranslateService,
     private network: Network,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private appGlobal: AppGlobalService
   ) {
 
     this.preference.getString('selected_language_code', (val: string) => {
@@ -125,16 +123,16 @@ export class CoursesPage implements OnInit {
     });
 
     if (this.network.type === 'none') {
-			this.isNetworkAvailable = false;
-		} else {
-			this.isNetworkAvailable = true;
-		}
-		this.network.onDisconnect().subscribe((data) => {
-			this.isNetworkAvailable = false;
-		});
-		this.network.onConnect().subscribe((data) => {
-			this.isNetworkAvailable = true;
-		});
+      this.isNetworkAvailable = false;
+    } else {
+      this.isNetworkAvailable = true;
+    }
+    this.network.onDisconnect().subscribe((data) => {
+      this.isNetworkAvailable = false;
+    });
+    this.network.onConnect().subscribe((data) => {
+      this.isNetworkAvailable = true;
+    });
   }
 
   /**
@@ -250,20 +248,17 @@ export class CoursesPage implements OnInit {
   getUserId() {
     let that = this;
     return new Promise((resolve, reject) => {
-      that.authService.getSessionData((session) => {
-        if (session === null || session === "null") {
-          console.log('session expired');
-          that.guestUser = true;
-          that.getCurrentUser();
-          reject('session expired');
-        } else {
-          let sessionObj = JSON.parse(session);
-          that.userId = sessionObj[ProfileConstants.USER_TOKEN];
-          that.guestUser = false;
-          that.getEnrolledCourses();
-          resolve();
-        }
-      });
+      this.guestUser = !this.appGlobal.isUserLoggedIn();
+
+      if (this.guestUser) {
+        this.getCurrentUser();
+        reject('session expired');
+      } else {
+        let sessionObj = this.appGlobal.getSessionData();
+        this.userId = sessionObj[ProfileConstants.USER_TOKEN];
+        this.getEnrolledCourses();
+        resolve();
+      }
     });
   }
 
@@ -299,29 +294,22 @@ export class CoursesPage implements OnInit {
    * It will fetch the guest user profile details
    */
   getCurrentUser(): void {
-    this.preference.getString('selected_user_type', (val) => {
-      if (val == ProfileType.TEACHER) {
-        this.showSignInCard = true;
-      } else if (val == ProfileType.STUDENT) {
-        this.showSignInCard = false;
-      }
-    })
+    let profiletype = this.appGlobal.getGuestUserType();
+    if (profiletype == ProfileType.TEACHER) {
+      this.showSignInCard = true;
+    } else if (profiletype == ProfileType.STUDENT) {
+      this.showSignInCard = false;
+    }
 
 
-    this.profileService.getCurrentUser(
-      (res: any) => {
-        let profile = JSON.parse(res);
-        if (profile.board && profile.board.length
-          && profile.grade && profile.grade.length
-          && profile.medium && profile.medium.length
-          && profile.subject && profile.subject.length) {
-          this.isOnBoardingCardCompleted = true;
-          this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
-        }
-      },
-      (err: any) => {
-        this.isOnBoardingCardCompleted = false;
-      });
+    let profile = this.appGlobal.getCurrentUser();
+    if (profile.board && profile.board.length
+      && profile.grade && profile.grade.length
+      && profile.medium && profile.medium.length
+      && profile.subject && profile.subject.length) {
+      this.isOnBoardingCardCompleted = true;
+      this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
+    }
   }
 
   scanQRCode() {
@@ -485,19 +473,19 @@ export class CoursesPage implements OnInit {
     this.showNetworkWarning();
   }
   checkNetworkStatus(showRefresh = false) {
-		if (this.network.type === 'none') {
-			this.isNetworkAvailable = false;
-		} else {
-			this.isNetworkAvailable = true;
-			if (showRefresh) {
-				this.getCourseTabData();
-			}
-		}
+    if (this.network.type === 'none') {
+      this.isNetworkAvailable = false;
+    } else {
+      this.isNetworkAvailable = true;
+      if (showRefresh) {
+        this.getCourseTabData();
+      }
+    }
   }
   getLoader(): any {
-		return this.loadingCtrl.create({
-			duration: 30000,
-			spinner: "crescent"
-		});
-	}
+    return this.loadingCtrl.create({
+      duration: 30000,
+      spinner: "crescent"
+    });
+  }
 }

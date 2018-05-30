@@ -15,6 +15,7 @@ import { SocialSharing } from '@ionic-native/social-sharing';
 import { IonicImageLoader, ImageLoader, ImageLoaderConfig } from "ionic-image-loader";
 import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
 import { FileOpener } from '@ionic-native/file-opener';
+import { AppGlobalService } from '../service/app-global.service';
 
 @NgModule({
   declarations: [
@@ -54,6 +55,7 @@ import { FileOpener } from '@ionic-native/file-opener';
     FileTransfer,
     FileTransferObject,
     FileOpener,
+    AppGlobalService,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
   ]
 })

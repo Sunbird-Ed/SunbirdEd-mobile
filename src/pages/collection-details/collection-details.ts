@@ -265,7 +265,12 @@ export class CollectionDetailsPage {
   setContentDetails(identifier, refreshContentDetails: boolean | true) {
     let loader = this.getLoader();
     loader.present();
-    const option = { contentId: identifier, refreshContentDetails: refreshContentDetails }
+    const option = {
+      contentId: identifier,
+      refreshContentDetails: refreshContentDetails,
+      attachFeedback: true,
+      attachContentAccess: true
+    }
     this.contentService.getContentDetail(option, (data: any) => {
       this.zone.run(() => {
         data = JSON.parse(data);
@@ -528,26 +533,31 @@ export class CollectionDetailsPage {
   navigateToDetailsPage(content: any, depth) {
     console.log('Card details... @@@', content);
     console.log('Content depth... @@@', depth);
+    let stateData = this.navParams.get('contentState');
+
     this.zone.run(() => {
       if (content.contentType === ContentType.COURSE) {
         console.warn('Inside course details page >>>');
         this.navCtrl.push(EnrolledCourseDetailsPage, {
           content: content,
-          depth: depth
+          depth: depth,
+          contentState: stateData
         })
       } else if (content.mimeType === MimeType.COLLECTION) {
         console.warn('Inside CollectionDetailsPage >>>');
         this.isDepthChild = true;
         this.navCtrl.push(CollectionDetailsPage, {
           content: content,
-          depth: depth
+          depth: depth,
+          contentState: stateData
         })
       } else {
         console.warn('Inside ContentDetailsPage >>>');
         this.navCtrl.push(ContentDetailsPage, {
           isChildContent: true,
           content: content,
-          depth: depth
+          depth: depth,
+          contentState: stateData
         })
       }
     })

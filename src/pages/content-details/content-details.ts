@@ -2,7 +2,7 @@ import { ContentRatingAlertComponent } from './../../component/content-rating-al
 import { ContentActionsComponent } from './../../component/content-actions/content-actions';
 import { Component, NgZone, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, PopoverController, Navbar, Platform } from 'ionic-angular';
-import { ContentService, FileUtil, ImpressionType, PageId, Environment, TelemetryService, Mode, End, ShareUtil, InteractType, InteractSubtype, Rollup, BuildParamService, AuthService, SharedPreferences, ProfileType } from 'sunbird';
+import { ContentService, CourseService, FileUtil, ImpressionType, PageId, Environment, TelemetryService, Mode, End, ShareUtil, InteractType, InteractSubtype, Rollup, BuildParamService, AuthService, SharedPreferences, ProfileType } from 'sunbird';
 import { SocialSharing } from "@ionic-native/social-sharing";
 import * as _ from 'lodash';
 import { generateInteractEvent, Map, generateImpressionWithRollup, generateStartWithRollup, generateInteractWithRollup } from '../../app/telemetryutil';
@@ -64,6 +64,8 @@ export class ContentDetailsPage {
    * Contains loader instance
    */
   loader: any;
+
+  userId: string = '';
 
   /**
    * Contains reference of content service
@@ -138,8 +140,9 @@ export class ContentDetailsPage {
     private fileUtil: FileUtil, public popoverCtrl: PopoverController, private shareUtil: ShareUtil,
     private social: SocialSharing, private platform: Platform, private translate: TranslateService,
     private buildParamService: BuildParamService,
-    private authService: AuthService,
+    private authService: AuthService, private courseService: CourseService,
     private preference: SharedPreferences) {
+      this.getUserId();
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
@@ -176,6 +179,7 @@ export class ContentDetailsPage {
           this.rateContent();
         }
       }
+      this.updateContentProgress();
     });
 
   }
@@ -572,6 +576,43 @@ export class ContentDetailsPage {
     (<any>window).geniecanvas.play(this.content.playContent);
   }
 
+  getUserId() {
+    this.authService.getSessionData((session: string) => {
+      if (session === null || session === "null") {
+        this.userId = '';
+      } else {
+        let res = JSON.parse(session);
+        this.userId = res["userToken"] ? res["userToken"] : '';
+      }
+    });
+  }
+
+  updateContentProgress() {
+    let stateData = this.navParams.get('contentState');
+    console.log('stateData', stateData);
+    if (stateData !== undefined && stateData.batchId && stateData.courseId && this.userId) {
+      const data = {
+        courseId: stateData.courseId,
+        batchId: stateData.batchId,
+        contentId: this.identifier,
+        userId: this.userId,
+        status: 2
+      };
+
+      this.courseService.updateContentState(data, (data: any) => {
+        let res = JSON.parse(data);
+        this.zone.run(() => {
+          console.log('Course progress updated...', res);
+        });
+      }, (error: any) => {
+        this.zone.run(() => {
+          console.log('Error: while updating content state =>>>>>', error)
+        })
+      })
+    }
+  }
+
+
   /**
    * Function to get loader instance
    */
@@ -601,7 +642,6 @@ export class ContentDetailsPage {
         });
       }
       if (data === 'delete.success') {
-        // this.
         this.content.downloadable = false;
       }
     });

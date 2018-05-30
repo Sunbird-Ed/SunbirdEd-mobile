@@ -18,6 +18,7 @@ import { ContentDetailsPage } from '../pages/content-details/content-details';
 import { generateEndEvent } from './telemetryutil';
 import { MimeType, ContentType } from './app.constant';
 import { EnrolledCourseDetailsPage } from '../pages/enrolled-course-details/enrolled-course-details';
+import { AppGlobalService } from '../service/app-global.service';
 
 declare var chcp: any;
 
@@ -49,7 +50,8 @@ export class MyApp {
     private events: Events,
     private zone: NgZone,
     private telemetryService: TelemetryService,
-    private preference: SharedPreferences) {
+    private preference: SharedPreferences,
+    private appGlobal: AppGlobalService) {
 
     let that = this;
 
