@@ -22,7 +22,8 @@
 				<span class="text-gray-color">{{ 'BY' | translate }}</span>
 				<span class="content-meta-title">{{ course.owner }}</span>
 			</div>
-			<div>
+			<div *ngIf="course.progress || course.me_averageRating">
+				<p>{{ 'YOUR_PROGRESS' | translate: {'%s': course.progress ? course.progress : '0'} }}</p>
 				<span>
 					<rating align-items-start (click)="rateContent();" [(ngModel)]="course.me_averageRating" readOnly="true" max="5" no-padding></rating>
 				</span>

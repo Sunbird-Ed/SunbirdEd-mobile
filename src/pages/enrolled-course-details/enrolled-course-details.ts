@@ -494,24 +494,31 @@ export class EnrolledCourseDetailsPage {
    * @param depth 
    */
   navigateToChildrenDetailsPage(content, depth): void {
+    const contentState = { 
+      batchId: this.courseCardData.batchId ? this.courseCardData.batchId : '',
+      courseId: this.identifier
+     }
     this.zone.run(() => {
       if (content.contentType === ContentType.COURSE) {
         console.warn('Inside CourseDetailPage >>>');
         this.navCtrl.push(EnrolledCourseDetailsPage, {
           content: content,
-          depth: depth
+          depth: depth,
+          contentState: contentState
         })
       } else if (content.mimeType === MimeType.COLLECTION) {
         console.warn('Inside CollectionDetailsPage >>>');
         this.navCtrl.push(CollectionDetailsPage, {
           content: content,
-          depth: depth
+          depth: depth,
+          contentState: contentState
         })
       } else {
         console.warn('Inside ContentDetailsPage >>>');
         this.navCtrl.push(ContentDetailsPage, {
           content: content,
-          depth: depth
+          depth: depth,
+          contentState: contentState
         })
       }
     })
