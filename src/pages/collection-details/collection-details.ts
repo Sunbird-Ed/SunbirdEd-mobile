@@ -295,7 +295,7 @@ export class CollectionDetailsPage {
     this.contentDetail = data.result.contentData ? data.result.contentData : [];
     this.contentDetail.isAvailableLocally = data.result.isAvailableLocally;
     this.objId = this.contentDetail.identifier;
-    this.objType = data.result.contentType;
+    this.objType = this.contentDetail.contentType;
     this.objVer = this.contentDetail.pkgVersion;
     if (this.contentDetail.gradeLevel && this.contentDetail.gradeLevel.length) {
       this.contentDetail.gradeLevel = this.contentDetail.gradeLevel.join(", ");
