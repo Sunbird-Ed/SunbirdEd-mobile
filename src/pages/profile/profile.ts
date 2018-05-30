@@ -250,7 +250,7 @@ export class ProfilePage {
     if (this.profile.missingFields && this.profile.missingFields.length) {
       switch (this.profile.missingFields[0]) {
         case "education":
-          this.uncompletedDetails.title = "+ Add Education";
+          this.uncompletedDetails.title = "+ " + this.translateMessage('ADD_EDUCATION');
           this.uncompletedDetails.page = FormEducation;
           this.uncompletedDetails.data = {
             addForm: true,
@@ -258,7 +258,7 @@ export class ProfilePage {
           }
           break;
         case "jobProfile":
-          this.uncompletedDetails.title = "+ Add Experience";
+          this.uncompletedDetails.title = "+ " + this.translateMessage('ADD_EXPERIENCE');
           this.uncompletedDetails.page = FormExperience;
           this.uncompletedDetails.data = {
             addForm: true,
@@ -266,11 +266,11 @@ export class ProfilePage {
           }
           break;
         case "avatar":
-          this.uncompletedDetails.title = "+ Add Avatar";
+          this.uncompletedDetails.title = "+ " + this.translateMessage('ADD_AVATAR');
           this.uncompletedDetails.page = "picture";
           break;
         case "address":
-          this.uncompletedDetails.title = "+ Add Address";
+          this.uncompletedDetails.title = "+ " + this.translateMessage('ADD_ADDRESS');
           this.uncompletedDetails.page = FormAddress;
           this.uncompletedDetails.data = {
             addForm: true,
@@ -294,7 +294,7 @@ export class ProfilePage {
             'webPages'
           ];
 
-          this.uncompletedDetails.title = "+ Add Location";
+          this.uncompletedDetails.title = "+ " + this.translateMessage('ADD_LOCATION');
           this.uncompletedDetails.page = AdditionalInfoComponent;
           this.uncompletedDetails.data = {
             userId: this.loggedInUserId,
