@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { NavController, LoadingController, Navbar, Platform } from 'ionic-angular';
+import { NavController, LoadingController, Navbar, Platform, Events } from 'ionic-angular';
 import {
   TabsPage, OAuthService, ContainerService,
   UserProfileService, ProfileService, ProfileType,
@@ -13,6 +13,7 @@ import { initTabs, GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, LOGIN_TEACHER_TABS } 
 import { generateInteractEvent, Map, generateImpressionEvent } from '../../app/telemetryutil';
 import { LanguageSettingsPage } from '../language-settings/language-settings';
 import { ProfileConstants } from '../../app/app.constant';
+import { AppGlobalService } from '../../service/app-global.service';
 
 @Component({
   selector: 'page-onboarding',
@@ -35,7 +36,8 @@ export class OnboardingPage {
     private telemetryService: TelemetryService,
     private loadingCtrl: LoadingController,
     private preferences: SharedPreferences,
-    private platform: Platform
+    private platform: Platform,
+    private events: Events
   ) {
 
     this.slides = [
@@ -62,9 +64,9 @@ export class OnboardingPage {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad OnboardingPage');
-    this.navBar.backButtonClick = (e:UIEvent)=>{
+    this.navBar.backButtonClick = (e: UIEvent) => {
       this.navCtrl.setRoot(LanguageSettingsPage);
-     }
+    }
 
   }
 
@@ -98,6 +100,7 @@ export class OnboardingPage {
         return that.refreshProfileData();
       })
       .then(slug => {
+        this.events.publish(AppGlobalService.USER_INFO_UPDATED);
         return that.refreshTenantData(slug);
       })
       .then(() => {
@@ -202,6 +205,7 @@ export class OnboardingPage {
           profileType: ProfileType.TEACHER
         };
         this.profileService.setCurrentProfile(true, profileRequest, res => {
+          this.events.publish(AppGlobalService.USER_INFO_UPDATED);
           this.navCtrl.push(TabsPage, {
             loginMode: 'guest'
           });

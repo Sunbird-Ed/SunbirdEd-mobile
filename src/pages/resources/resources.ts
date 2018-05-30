@@ -1,9 +1,8 @@
 import { Component, NgZone, OnInit } from '@angular/core';
 import {
-	PageAssembleService, PageAssembleCriteria, ContentService, AuthService,
+	PageAssembleService, PageAssembleCriteria, ContentService,
 	Impression, ImpressionType, PageId, Environment, TelemetryService,
-	InteractType, InteractSubtype,
-	ProfileService, ContentDetailRequest, SharedPreferences, ContentFilterCriteria, ProfileType
+	InteractType, InteractSubtype, ContentDetailRequest, SharedPreferences, ContentFilterCriteria, ProfileType
 } from "sunbird";
 import { NavController, PopoverController, Events, ToastController, LoadingController } from 'ionic-angular';
 import * as _ from 'lodash';
@@ -19,6 +18,7 @@ import { ContentType, MimeType, PageFilterConstants, AudienceFilter } from '../.
 import { Network } from '@ionic-native/network';
 import { PageFilterCallback, PageFilter } from '../page-filter/page.filter';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
+import { AppGlobalService } from '../../service/app-global.service';
 
 @Component({
 	selector: 'page-resources',
@@ -73,18 +73,17 @@ export class ResourcesPage implements OnInit {
 		private pageService: PageAssembleService,
 		private ngZone: NgZone,
 		private contentService: ContentService,
-		private authService: AuthService,
 		private qrScanner: SunbirdQRScanner,
 		private popCtrl: PopoverController,
 		private telemetryService: TelemetryService,
 		private events: Events,
-		private profileService: ProfileService,
 		private toastCtrl: ToastController,
 		private preference: SharedPreferences,
 		private translate: TranslateService,
 		private zone: NgZone,
 		private network: Network,
-		private loadingCtrl: LoadingController
+		private loadingCtrl: LoadingController,
+		private appGlobal: AppGlobalService
 	) {
 		this.preference.getString('selected_language_code', (val: string) => {
 			if (val && val.length) {
@@ -127,40 +126,25 @@ export class ResourcesPage implements OnInit {
 	 * It will fetch the guest user profile details
 	 */
 	getCurrentUser(): void {
-		this.preference.getString('selected_user_type', (val) => {
-			let updateSavedContent = false;
-
-			if (val == ProfileType.TEACHER) {
-				this.showSignInCard = true;
+		let profiletype = this.appGlobal.getGuestUserType();
+		if (profiletype == ProfileType.TEACHER) {
+			this.showSignInCard = true;
 				this.audienceFilter = AudienceFilter.GUEST_TEACHER;
-				updateSavedContent = true;
-			} else if (val == ProfileType.STUDENT) {
-				this.showSignInCard = false;
-				this.audienceFilter = AudienceFilter.GUEST_STUDENT;
-				updateSavedContent = true;
-			}
+		} else if (profiletype == ProfileType.STUDENT) {
+			this.showSignInCard = false;
+			this.audienceFilter = AudienceFilter.GUEST_STUDENT;
+		}
 
-			if (updateSavedContent) {
-				this.setSavedContent();
-			}
-		});
+		this.setSavedContent();
 
-
-		this.isOnBoardingCardCompleted = false;
-		this.profileService.getCurrentUser(
-			(res: any) => {
-				let profile = JSON.parse(res);
-				if (profile.board && profile.board.length
-					&& profile.grade && profile.grade.length
-					&& profile.medium && profile.medium.length
-					&& profile.subject && profile.subject.length) {
-					this.isOnBoardingCardCompleted = true;
-					this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
-				}
-			},
-			(err: any) => {
-				this.isOnBoardingCardCompleted = false;
-			});
+		let profile = this.appGlobal.getCurrentUser();
+		if (profile.board && profile.board.length
+			&& profile.grade && profile.grade.length
+			&& profile.medium && profile.medium.length
+			&& profile.subject && profile.subject.length) {
+			this.isOnBoardingCardCompleted = true;
+			this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
+		}
 	}
 
 	viewAllSavedResources() {
@@ -314,15 +298,15 @@ export class ResourcesPage implements OnInit {
 			this.getPopularContent();
 		}
 
-		this.authService.getSessionData((res: string) => {
-			if (res === undefined || res === "null") {
-				this.guestUser = true;
-				this.getCurrentUser();
-			} else {
-				this.guestUser = false;
-				this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
-			}
-		});
+		this.guestUser = !this.appGlobal.isUserLoggedIn();
+
+
+		if (this.guestUser) {
+			this.getCurrentUser();
+		} else {
+			this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
+		}
+
 		this.subscribeGenieEvents();
 
 		if (this.network.type === 'none') {
