@@ -265,7 +265,12 @@ export class CollectionDetailsPage {
   setContentDetails(identifier, refreshContentDetails: boolean | true) {
     let loader = this.getLoader();
     loader.present();
-    const option = { contentId: identifier, refreshContentDetails: refreshContentDetails }
+    const option = {
+      contentId: identifier,
+      refreshContentDetails: refreshContentDetails,
+      attachFeedback: true,
+      attachContentAccess: true
+    }
     this.contentService.getContentDetail(option, (data: any) => {
       this.zone.run(() => {
         data = JSON.parse(data);
