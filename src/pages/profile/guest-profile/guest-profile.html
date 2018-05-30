@@ -41,7 +41,7 @@
             <div class="ellipsis text-align">{{boards}}</div>
             <ion-icon class="icon-align" float="end" name="md-create" color="primary" (click)="editGuestProfile()"></ion-icon>
           </div>
-          <div *ngIf="!profile?.board" (click)="editGuestProfile()" class="vertical-align">Add</div>
+          <div *ngIf="!profile?.board" (click)="editGuestProfile()" class="vertical-align">{{'ADD' | translate}}</div>
         </ion-col>
       </ion-row>
 
@@ -54,7 +54,7 @@
             <div class="ellipsis text-align">{{grade}}</div>
             <ion-icon class="icon-align" float="end" name="md-create" color="primary" (click)="editGuestProfile()"></ion-icon>
           </div>
-          <div *ngIf="grade === ''" (click)="editGuestProfile()" class="vertical-align">Add</div>
+          <div *ngIf="grade === ''" (click)="editGuestProfile()" class="vertical-align">{{'ADD' | translate}}</div>
         </ion-col>
       </ion-row>
 
@@ -67,7 +67,7 @@
             <div class="ellipsis text-align">{{medium}}</div>
             <ion-icon class="icon-align" float="end" name="md-create" color="primary" (click)="editGuestProfile()"></ion-icon>
           </div>
-          <div *ngIf="!profile?.medium" (click)="editGuestProfile()" class="vertical-align">Add</div>
+          <div *ngIf="!profile?.medium" (click)="editGuestProfile()" class="vertical-align">{{'ADD' | translate}}</div>
         </ion-col>
       </ion-row>
 
@@ -80,7 +80,7 @@
             <div class="ellipsis text-align">{{subjects}}</div>
             <ion-icon class="icon-align" float="end" name="md-create" color="primary" (click)="editGuestProfile()"></ion-icon>
           </div>
-          <div *ngIf="!profile?.subject" (click)="editGuestProfile()" class="vertical-align">Add</div>
+          <div *ngIf="!profile?.subject" (click)="editGuestProfile()" class="vertical-align">{{'ADD' | translate}}</div>
         </ion-col>
       </ion-row>
 
