@@ -83,7 +83,7 @@ export class UserTypeSelectionPage {
       this.teacherCardBorderColor = selectedCardBorderColor;
       this.studentCardBorderColor = borderColor;
       this.selectedUserType = ProfileType.TEACHER;
-      this.continueAs = this.translateMessage('CONTINUE_AS_TEACHER');
+      this.continueAs = this.translateMessage('CONTINUE_AS_ROLE', this.translateMessage('TEACHER_ROLE'));
       this.preference.putString(KEY_SELECTED_USER_TYPE, this.selectedUserType);
       initTabs(this.container, GUEST_TEACHER_TABS);
     });
@@ -95,7 +95,7 @@ export class UserTypeSelectionPage {
       this.teacherCardBorderColor = borderColor;
       this.studentCardBorderColor = selectedCardBorderColor;
       this.selectedUserType = ProfileType.STUDENT;
-      this.continueAs = this.translateMessage('CONTINUE_AS_STUDENT');
+      this.continueAs = this.translateMessage('CONTINUE_AS_ROLE', this.translateMessage('STUDENT_ROLE'));
       this.preference.putString(KEY_SELECTED_USER_TYPE, this.selectedUserType)
       initTabs(this.container, GUEST_STUDENT_TABS);
     });
@@ -213,14 +213,14 @@ export class UserTypeSelectionPage {
     this.telemetryService.interact(interact);
   }
 
-  /**
+ /**
    * Used to Translate message to current Language
    * @param {string} messageConst - Message Constant to be translated
    * @returns {string} translatedMsg - Translated Message
    */
-  translateMessage(messageConst: string): string {
+  translateMessage(messageConst: string, field?: string): string {
     let translatedMsg = '';
-    this.translate.get(messageConst).subscribe(
+    this.translate.get(messageConst, { '%s': field }).subscribe(
       (value: any) => {
         translatedMsg = value;
       }
