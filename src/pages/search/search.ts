@@ -4,7 +4,7 @@ import {
   ContentService, ContentSearchCriteria,
   Log, LogLevel, TelemetryService, Impression, ImpressionType, Environment,
   Interact, InteractType, InteractSubtype,
-  ContentDetailRequest, ContentImportRequest, FileUtil
+  ContentDetailRequest, ContentImportRequest, FileUtil, SharedPreferences, AuthService
 } from "sunbird";
 import { GenieResponse } from "../settings/datasync/genieresponse";
 import { FilterPage } from "./filters/filter";
@@ -15,7 +15,7 @@ import { Network } from "@ionic-native/network";
 import { TranslateService } from '@ngx-translate/core';
 import { Map } from "../../app/telemetryutil";
 import * as _ from 'lodash';
-import { ContentType, MimeType, Search } from '../../app/app.constant';
+import { ContentType, MimeType, Search, AudienceFilter } from '../../app/app.constant';
 import { EnrolledCourseDetailsPage } from "../enrolled-course-details/enrolled-course-details";
 
 @IonicPage()
@@ -65,6 +65,8 @@ export class SearchPage {
 
   loadingDisplayText: string = "Loading content";
 
+  audienceFilter = [];
+
 
   constructor(private contentService: ContentService,
     private telemetryService: TelemetryService,
@@ -76,12 +78,18 @@ export class SearchPage {
     private fileUtil: FileUtil,
     private toastCtrl: ToastController,
     private translate: TranslateService,
-    private events: Events) {
+    private events: Events,
+    private perference: SharedPreferences,
+    private authService: AuthService) {
+
+    this.checkUserSession();
+
     this.init();
 
     console.log("Network Type : " + this.network.type);
     this.defaultAppIcon = 'assets/imgs/ic_launcher.png';
   }
+
 
   ionViewDidEnter() {
     if (!this.dialCode && this.searchContentResult.length == 0) {
@@ -89,6 +97,8 @@ export class SearchPage {
         this.searchBar.setFocus();
       }, 100);
     }
+
+    this.checkUserSession();
   }
 
   openCollection(collection) {
@@ -185,7 +195,8 @@ export class SearchPage {
     let contentSearchRequest: ContentSearchCriteria = {
       query: this.searchKeywords,
       contentTypes: this.contentType,
-      facets: Search.FACETS
+      facets: Search.FACETS,
+      audience: this.audienceFilter
     }
 
     this.isDialCodeSearch = false;
@@ -559,4 +570,23 @@ export class SearchPage {
       });
     });
   }
+
+  private checkUserSession() {
+    this.authService.getSessionData((res: string) => {
+      if (res === undefined || res === "null") {
+        this.perference.getString('selected_user_type', (val) => {
+          if (val == "student") {
+            this.audienceFilter = AudienceFilter.GUEST_STUDENT;
+          }
+          else if (val == "teacher") {
+            this.audienceFilter = AudienceFilter.GUEST_TEACHER;
+          }
+        });
+      }
+      else {
+        this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
+      }
+    });
+  }
+
 }

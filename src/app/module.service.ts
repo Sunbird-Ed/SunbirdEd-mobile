@@ -31,14 +31,14 @@ const GUEST_PROFILE_TAB = { root: GuestProfilePage, icon: "profile", label: "PRO
 const PROFILE_TAB = { root: ProfilePage, icon: "profile", label: "PROFILE_BNAV", index: 3, tabsHideOnSubPages: true };
 
 export const GUEST_TEACHER_TABS = [
-    HOME_TAB,
+    // HOME_TAB,
     COURSE_TAB,
     LIBRARY_TAB,
     GUEST_PROFILE_TAB
 ]
 
 export const LOGIN_TEACHER_TABS = [
-    HOME_TAB,
+    // HOME_TAB,
     COURSE_TAB,
     LIBRARY_TAB,
     PROFILE_TAB

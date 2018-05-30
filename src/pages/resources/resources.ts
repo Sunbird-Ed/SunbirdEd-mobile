@@ -3,7 +3,7 @@ import {
 	PageAssembleService, PageAssembleCriteria, ContentService, AuthService,
 	Impression, ImpressionType, PageId, Environment, TelemetryService,
 	InteractType, InteractSubtype,
-	ProfileService, ContentDetailRequest, SharedPreferences, ProfileType
+	ProfileService, ContentDetailRequest, SharedPreferences, ContentFilterCriteria, ProfileType
 } from "sunbird";
 import { NavController, PopoverController, Events, ToastController, LoadingController } from 'ionic-angular';
 import * as _ from 'lodash';
@@ -15,7 +15,7 @@ import { generateInteractEvent, Map } from '../../app/telemetryutil';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { TranslateService } from '@ngx-translate/core';
-import { ContentType, MimeType, PageFilterConstants } from '../../app/app.constant';
+import { ContentType, MimeType, PageFilterConstants, AudienceFilter } from '../../app/app.constant';
 import { Network } from '@ionic-native/network';
 import { PageFilterCallback, PageFilter } from '../page-filter/page.filter';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
@@ -66,6 +66,8 @@ export class ResourcesPage implements OnInit {
 	selectedLanguage: string = 'en';
 
 	//noInternetConnection: boolean = false;
+
+	audienceFilter = [];
 
 	constructor(public navCtrl: NavController,
 		private pageService: PageAssembleService,
@@ -126,10 +128,20 @@ export class ResourcesPage implements OnInit {
 	 */
 	getCurrentUser(): void {
 		this.preference.getString('selected_user_type', (val) => {
+			let updateSavedContent = false;
+
 			if (val == ProfileType.TEACHER) {
 				this.showSignInCard = true;
+				this.audienceFilter = AudienceFilter.GUEST_TEACHER;
+				updateSavedContent = true;
 			} else if (val == ProfileType.STUDENT) {
 				this.showSignInCard = false;
+				this.audienceFilter = AudienceFilter.GUEST_STUDENT;
+				updateSavedContent = true;
+			}
+
+			if (updateSavedContent) {
+				this.setSavedContent();
 			}
 		});
 
@@ -164,8 +176,9 @@ export class ResourcesPage implements OnInit {
 	setSavedContent() {
 		// this.localResources = [];
 		this.showLoader = true;
-		const requestParams = {
-			contentTypes: ContentType.FOR_LIBRARY_TAB
+		const requestParams: ContentFilterCriteria = {
+			contentTypes: ContentType.FOR_LIBRARY_TAB,
+			audience: this.audienceFilter
 		};
 		this.contentService.getAllLocalContents(requestParams, (data: any) => {
 			data = JSON.parse(data);
@@ -307,6 +320,7 @@ export class ResourcesPage implements OnInit {
 				this.getCurrentUser();
 			} else {
 				this.guestUser = false;
+				this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
 			}
 		});
 		this.subscribeGenieEvents();

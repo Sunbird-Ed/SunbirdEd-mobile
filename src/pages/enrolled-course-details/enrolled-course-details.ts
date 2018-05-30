@@ -4,7 +4,7 @@ import { IonicPage, NavController, NavParams, Events, ToastController, PopoverCo
 import {
   ContentService, FileUtil, CourseService,
   ChildContentRequest, AuthService, PageId, UserProfileService, InteractSubtype, TelemetryService, Environment, Start, Mode, End,
-  InteractType, BuildParamService, ShareUtil
+  InteractType, BuildParamService, ShareUtil,  SharedPreferences, ProfileType
 } from 'sunbird';
 import * as _ from 'lodash';
 // import { CourseDetailPage } from '../course-detail/course-detail';
@@ -148,6 +148,10 @@ export class EnrolledCourseDetailsPage {
    */
   public toastCtrl: ToastController;
 
+  guestUser: boolean = false;
+
+  profileType: string = '';
+
   constructor(navCtrl: NavController,
     navParams: NavParams,
     contentService: ContentService,
@@ -163,8 +167,12 @@ export class EnrolledCourseDetailsPage {
     private buildParamService: BuildParamService,
     private shareUtil: ShareUtil,
     private social: SocialSharing,
-    private telemetryService: TelemetryService, private loadingCtrl: LoadingController) {
-    this.getUserId();
+    private telemetryService: TelemetryService, private loadingCtrl: LoadingController,
+    private preference: SharedPreferences) {
+    
+    this.checkLoggedInOrGuestUser();
+    this.checkCurrentUserType();
+
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
@@ -184,23 +192,38 @@ export class EnrolledCourseDetailsPage {
 		});    
   }
 
-  getUserId() {
-    this.authService.getSessionData((session: string) => {
-      if (session === null || session === "null") {
-        this.userId = '';
-      } else {
-        let res = JSON.parse(session);
-        this.userId = res["userToken"] ? res["userToken"] : '';
+  /**
+ * Get the session to know if the user is logged-in or guest
+ * 
+ */
+checkLoggedInOrGuestUser() {
+  this.authService.getSessionData((session) => {
+    if (session === null || session === "null") {
+      this.guestUser = true;
+    } else {
+      this.guestUser = false;
+    }
+  });
+}
+
+checkCurrentUserType() {
+  this.preference.getString('selected_user_type', (val) => {
+    if (val != "") {
+      if (val == ProfileType.TEACHER) {
+        this.profileType = ProfileType.TEACHER;
+      } else if (val == ProfileType.STUDENT) {
+        this.profileType = ProfileType.STUDENT;
       }
-    });
-  }
+    }
+  });
+}
 
   /**
    * Function to rate content
    */
   rateContent() {
     // TODO: check content is played or not
-    if (this.userId) {
+    if (!this.guestUser) {
       if (this.course.isAvailableLocally) {
         let popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
           content: this.course,
@@ -223,7 +246,9 @@ export class EnrolledCourseDetailsPage {
         this.showMessage(this.translateLanguageConstant('TRY_BEFORE_RATING'));
       }
     } else {
-      this.showMessage(this.translateLanguageConstant('SIGNIN_TO_USE_FEATURE'));
+      if (this.profileType == ProfileType.TEACHER) {
+        this.showMessage('SIGNIN_TO_USE_FEATURE');
+      }
     }
   }
 

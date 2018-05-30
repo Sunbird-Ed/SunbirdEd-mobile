@@ -2,7 +2,7 @@ import { ContentRatingAlertComponent } from './../../component/content-rating-al
 import { ContentActionsComponent } from './../../component/content-actions/content-actions';
 import { Component, NgZone, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, PopoverController, Navbar, Platform } from 'ionic-angular';
-import { ContentService, FileUtil, ImpressionType, PageId, Environment, TelemetryService, Mode, End, ShareUtil, InteractType, InteractSubtype, Rollup, BuildParamService, CourseService, AuthService } from 'sunbird';
+import { ContentService, CourseService, FileUtil, ImpressionType, PageId, Environment, TelemetryService, Mode, End, ShareUtil, InteractType, InteractSubtype, Rollup, BuildParamService, AuthService, SharedPreferences, ProfileType } from 'sunbird';
 import { SocialSharing } from "@ionic-native/social-sharing";
 import * as _ from 'lodash';
 import { generateInteractEvent, Map, generateImpressionWithRollup, generateStartWithRollup, generateInteractWithRollup } from '../../app/telemetryutil';
@@ -114,6 +114,10 @@ export class ContentDetailsPage {
    */
   public isPlayerLaunched: boolean = false;
 
+  guestUser: boolean = false;
+
+  profileType: string = '';
+
   private objId;
   private objType;
   private objVer;
@@ -135,7 +139,9 @@ export class ContentDetailsPage {
     private events: Events, toastCtrl: ToastController, loadingCtrl: LoadingController,
     private fileUtil: FileUtil, public popoverCtrl: PopoverController, private shareUtil: ShareUtil,
     private social: SocialSharing, private platform: Platform, private translate: TranslateService,
-    private buildParamService: BuildParamService, private courseService: CourseService, private authService: AuthService) {
+    private buildParamService: BuildParamService,
+    private authService: AuthService, private courseService: CourseService,
+    private preference: SharedPreferences) {
       this.getUserId();
     this.navCtrl = navCtrl;
     this.navParams = navParams;
@@ -157,12 +163,17 @@ export class ContentDetailsPage {
       return "";
     });
 
+    this.checkLoggedInOrGuestUser();
+    this.checkCurrentUserType();
+
+    //This is to know when the app has gone to background
     this.pause = platform.pause.subscribe(() => {
 
     });
 
+    //This is to know when the app has come to foreground
     this.resume = platform.resume.subscribe(() => {
-      if (this.isPlayerLaunched) {
+      if (this.isPlayerLaunched && !this.guestUser) {
         this.isPlayerLaunched = false;
         if (this.userRating === 0) {
           this.rateContent();
@@ -174,42 +185,74 @@ export class ContentDetailsPage {
   }
 
   /**
+   * Get the session to know if the user is logged-in or guest
+   * 
+   */
+  checkLoggedInOrGuestUser() {
+    this.authService.getSessionData((session) => {
+      if (session === null || session === "null") {
+        this.guestUser = true;
+      } else {
+        this.guestUser = false;
+      }
+    });
+  }
+
+  checkCurrentUserType() {
+    this.preference.getString('selected_user_type', (val) => {
+      if (val != "") {
+        if (val == ProfileType.TEACHER) {
+          this.profileType = ProfileType.TEACHER;
+        } else if (val == ProfileType.STUDENT) {
+          this.profileType = ProfileType.STUDENT;
+        }
+      }
+    });
+  }
+
+
+  /**
    * Function to rate content
    */
   rateContent() {
-
-    let ratingData = {
-      identifier: this.identifier,
-      pageId: PageId.CONTENT_DETAIL,
-      rating: this.userRating,
-      comment: this.ratingComment
-    }
-
-    if (this.content.downloadable) {
-      this.telemetryService.interact(generateInteractEvent(InteractType.TOUCH,
-        InteractSubtype.RATING_CLICKED,
-        Environment.HOME,
-        PageId.CONTENT_DETAIL, null
-      ));
-      let popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
-        content: this.content,
+    if (!this.guestUser) {
+      let ratingData = {
+        identifier: this.identifier,
         pageId: PageId.CONTENT_DETAIL,
         rating: this.userRating,
         comment: this.ratingComment
-      }, {
-          cssClass: 'onboarding-alert'
+      }
+
+      if (this.content.downloadable) {
+        this.telemetryService.interact(generateInteractEvent(InteractType.TOUCH,
+          InteractSubtype.RATING_CLICKED,
+          Environment.HOME,
+          PageId.CONTENT_DETAIL, null
+        ));
+        let popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
+          content: this.content,
+          pageId: PageId.CONTENT_DETAIL,
+          rating: this.userRating,
+          comment: this.ratingComment
+        }, {
+            cssClass: 'onboarding-alert'
+          });
+        popUp.present({
+          ev: event
         });
-      popUp.present({
-        ev: event
-      });
-      popUp.onDidDismiss(data => {
-        if (data && data.message === 'rating.success') {
-          this.userRating = data.rating;
-          this.ratingComment = data.comment;
-        }
-      });
+        popUp.onDidDismiss(data => {
+          if (data && data.message === 'rating.success') {
+            this.userRating = data.rating;
+            this.ratingComment = data.comment;
+          }
+        });
+      } else {
+        this.translateAndDisplayMessage('TRY_BEFORE_RATING', false);
+      }
     } else {
-      this.translateAndDisplayMessage('TRY_BEFORE_RATING', false);
+      if (this.profileType == ProfileType.TEACHER) {
+        this.translateAndDisplayMessage('SIGNIN_TO_USE_FEATURE');
+      }
     }
   }
 
@@ -224,7 +267,8 @@ export class ContentDetailsPage {
     const option = {
       contentId: identifier,
       refreshContentDetails: refreshContentDetails,
-      attachFeedback: true
+      attachFeedback: true,
+      attachContentAccess: true
     }
 
     this.contentService.getContentDetail(option, (data: any) => {
@@ -607,7 +651,7 @@ export class ContentDetailsPage {
     this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_LIBRARY_INITIATED, this.content.contentType);
     let loader = this.getLoader();
     loader.present();
-    let url =  this.baseUrl+"/public/#!/content/" + + this.content.identifier;
+    let url = this.baseUrl + "/public/#!/content/" + + this.content.identifier;
     if (this.content.downloadable) {
       this.shareUtil.exportEcar(this.content.identifier, path => {
         loader.dismiss();

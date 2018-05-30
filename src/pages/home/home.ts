@@ -40,7 +40,7 @@ import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-c
   providers: [TelemetryService, AnnouncementService]
 
 })
-export class HomePage implements OnInit {
+export class HomePage  {
 
   /**
    * Contains enrolled course
@@ -189,7 +189,7 @@ export class HomePage implements OnInit {
   /**
    * Angular life cycle hooks
    */
-  ngOnInit() {
+  ionViewWillEnter() {
     console.log('ng oninit component initialized...');
     this.spinner(true);
     this.getUserId();
