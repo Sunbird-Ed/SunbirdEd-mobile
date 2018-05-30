@@ -4,7 +4,7 @@ import {
   ContentService, ContentSearchCriteria,
   Log, LogLevel, TelemetryService, Impression, ImpressionType, Environment,
   Interact, InteractType, InteractSubtype,
-  ContentDetailRequest, ContentImportRequest, FileUtil, SharedPreferences, AuthService
+  ContentDetailRequest, ContentImportRequest, FileUtil, ProfileType
 } from "sunbird";
 import { GenieResponse } from "../settings/datasync/genieresponse";
 import { FilterPage } from "./filters/filter";
@@ -17,6 +17,7 @@ import { Map } from "../../app/telemetryutil";
 import * as _ from 'lodash';
 import { ContentType, MimeType, Search, AudienceFilter } from '../../app/app.constant';
 import { EnrolledCourseDetailsPage } from "../enrolled-course-details/enrolled-course-details";
+import { AppGlobalService } from "../../service/app-global.service";
 
 @IonicPage()
 @Component({
@@ -79,8 +80,7 @@ export class SearchPage {
     private toastCtrl: ToastController,
     private translate: TranslateService,
     private events: Events,
-    private perference: SharedPreferences,
-    private authService: AuthService) {
+    private appGlobal: AppGlobalService) {
 
     this.checkUserSession();
 
@@ -572,21 +572,19 @@ export class SearchPage {
   }
 
   private checkUserSession() {
-    this.authService.getSessionData((res: string) => {
-      if (res === undefined || res === "null") {
-        this.perference.getString('selected_user_type', (val) => {
-          if (val == "student") {
-            this.audienceFilter = AudienceFilter.GUEST_STUDENT;
-          }
-          else if (val == "teacher") {
-            this.audienceFilter = AudienceFilter.GUEST_TEACHER;
-          }
-        });
+  
+    let isGuestUser = !this.appGlobal.isUserLoggedIn();
+
+    if (isGuestUser) {
+      let userType = this.appGlobal.getGuestUserType();
+      if (userType == ProfileType.STUDENT) {
+        this.audienceFilter = AudienceFilter.GUEST_STUDENT;
+      } else if (userType == ProfileType.TEACHER) {
+        this.audienceFilter = AudienceFilter.GUEST_TEACHER;
       }
-      else {
-        this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
-      }
-    });
+    } else {
+      this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
+    }
   }
 
 }
