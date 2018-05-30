@@ -16,3 +16,47 @@ page-experience {
         text-transform: capitalize !important;
     }
 }
+
+.alert-wp.confirm-alert .alert-wrapper {
+    border: unset !important;
+    background: white !important;
+    bottom: 0;
+    position: fixed;
+}
+
+// .alert-wp .confirm-alert .ion-backdrop {
+//     background: black !important;
+// }
+
+.alert-btn-cancel.alert-button {
+    font-weight: 600 !important;
+    background: transparent;
+    color: map-get($colors, primary) !important;
+    border-color: map-get($colors, primary);
+    text-transform: uppercase;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 4px !important;
+    overflow: hidden;
+    height: 4.3rem;
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+.alert-btn-delete.alert-button{
+    font-weight: 600 !important;
+    background:  map-get($colors, primary) !important;
+    color: white !important;
+    border-color: map-get($colors, primary);
+    text-transform: uppercase;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 4px !important;
+    overflow: hidden;
+    height: 4.3rem;
+    font-size: 1.4rem;
+    font-weight: 700;
+
+}
+.alert-wp ion-backdrop {
+    background: black !important;
+}
