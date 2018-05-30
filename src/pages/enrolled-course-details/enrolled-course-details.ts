@@ -4,7 +4,7 @@ import { IonicPage, NavController, NavParams, Events, ToastController, PopoverCo
 import {
   ContentService, FileUtil, CourseService,
   ChildContentRequest, AuthService, PageId, UserProfileService, InteractSubtype, TelemetryService, Environment, Start, Mode, End,
-  InteractType, BuildParamService, ShareUtil,  SharedPreferences, ProfileType
+  InteractType, BuildParamService, ShareUtil, SharedPreferences, ProfileType
 } from 'sunbird';
 import * as _ from 'lodash';
 // import { CourseDetailPage } from '../course-detail/course-detail';
@@ -45,7 +45,7 @@ export class EnrolledCourseDetailsPage {
   /**
    * Contains children content data
    */
-  childrenData: Array<any>;
+  childrenData: Array<any> = [];
 
   startData: any;
 
@@ -169,7 +169,7 @@ export class EnrolledCourseDetailsPage {
     private social: SocialSharing,
     private telemetryService: TelemetryService, private loadingCtrl: LoadingController,
     private preference: SharedPreferences) {
-    
+
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
 
@@ -185,38 +185,38 @@ export class EnrolledCourseDetailsPage {
     }, (error) => {
     });
 
-		this.events.subscribe('course:batchEnrolled', (res) => {
-			if (res && res.batchId) {
+    this.events.subscribe('course:batchEnrolled', (res) => {
+      if (res && res.batchId) {
         this.batchId = res.batchId;
-			}
-		});    
+      }
+    });
   }
 
   /**
  * Get the session to know if the user is logged-in or guest
  * 
  */
-checkLoggedInOrGuestUser() {
-  this.authService.getSessionData((session) => {
-    if (session === null || session === "null") {
-      this.guestUser = true;
-    } else {
-      this.guestUser = false;
-    }
-  });
-}
-
-checkCurrentUserType() {
-  this.preference.getString('selected_user_type', (val) => {
-    if (val != "") {
-      if (val == ProfileType.TEACHER) {
-        this.profileType = ProfileType.TEACHER;
-      } else if (val == ProfileType.STUDENT) {
-        this.profileType = ProfileType.STUDENT;
+  checkLoggedInOrGuestUser() {
+    this.authService.getSessionData((session) => {
+      if (session === null || session === "null") {
+        this.guestUser = true;
+      } else {
+        this.guestUser = false;
       }
-    }
-  });
-}
+    });
+  }
+
+  checkCurrentUserType() {
+    this.preference.getString('selected_user_type', (val) => {
+      if (val != "") {
+        if (val == ProfileType.TEACHER) {
+          this.profileType = ProfileType.TEACHER;
+        } else if (val == ProfileType.STUDENT) {
+          this.profileType = ProfileType.STUDENT;
+        }
+      }
+    });
+  }
 
   /**
    * Function to rate content
@@ -499,10 +499,10 @@ checkCurrentUserType() {
           this.childrenData = data.result.children;
           this.startData = data.result.children;
         }
-        this.showChildrenLoader = false;
         if (this.courseCardData.batchId) {
           this.getContentsSize(this.childrenData);
         }
+          this.showChildrenLoader = false;
       });
     },
       (error: string) => {
@@ -519,10 +519,10 @@ checkCurrentUserType() {
    * @param depth 
    */
   navigateToChildrenDetailsPage(content, depth): void {
-    const contentState = { 
+    const contentState = {
       batchId: this.courseCardData.batchId ? this.courseCardData.batchId : '',
       courseId: this.identifier
-     }
+    }
     this.zone.run(() => {
       if (content.contentType === ContentType.COURSE) {
         console.warn('Inside CourseDetailPage >>>');
