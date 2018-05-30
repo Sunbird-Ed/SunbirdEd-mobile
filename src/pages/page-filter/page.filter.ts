@@ -94,7 +94,7 @@ export class PageFilter {
   getSelectedOptionCount(facet) {
     if (facet.selected && facet.selected.length > 0) {
       this.pagetAssemblefilter[facet.name] = facet.selected
-      return `${facet.selected.length} ` + this.translateMessage('ADDED');
+      return `${facet.selected.length} ` + this.translateMessage('FILTER_ADDED');
     }
 
     return "";
