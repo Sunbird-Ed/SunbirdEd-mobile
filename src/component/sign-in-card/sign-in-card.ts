@@ -2,9 +2,10 @@ import { Component, NgZone, Input, Output, EventEmitter } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { NavController, LoadingController } from 'ionic-angular';
 import { AppVersion } from "@ionic-native/app-version";
+
 import {
   OAuthService, ContainerService, UserProfileService, AuthService, TenantInfoRequest,
-  TelemetryService, InteractType, InteractSubtype, Environment, PageId
+  TelemetryService, InteractType, InteractSubtype, Environment, PageId, SharedPreferences
 } from 'sunbird';
 import { initTabs, LOGIN_TEACHER_TABS } from '../../app/module.service';
 import { generateInteractEvent } from '../../app/telemetryutil';
@@ -15,6 +16,8 @@ import { Network } from '@ionic-native/network';
   selector: 'sign-in-card',
   templateUrl: 'sign-in-card.html'
 })
+
+
 export class SignInCardComponent {
 
   private readonly DEFAULT_TEXT = [
@@ -36,7 +39,8 @@ export class SignInCardComponent {
 
   @Output() valueChange = new EventEmitter();
 
-  constructor(public translate: TranslateService,
+  constructor(
+    public translate: TranslateService,
     public network: Network,
     public navCtrl: NavController,
     private auth: OAuthService,
@@ -46,7 +50,9 @@ export class SignInCardComponent {
     private loadingCtrl: LoadingController,
     private ngZone: NgZone,
     private telemetryService: TelemetryService,
-    private appVersion: AppVersion) {
+    private appVersion: AppVersion,
+    private sharedPreferences: SharedPreferences
+  ) {
 
     this.appVersion.getAppName()
       .then((appName: any) => {
@@ -115,7 +121,7 @@ export class SignInCardComponent {
         .then(() => {
           loader.dismiss();
           that.ngZone.run(() => {
-
+            that.sharedPreferences.putString("SHOW_WELCOME_TOAST", "true");
             window.location.reload();
             // TabsPage.prototype.ionVieit wWillEnter();
           });
@@ -129,6 +135,7 @@ export class SignInCardComponent {
 
   refreshProfileData() {
     let that = this;
+
     return new Promise<string>((resolve, reject) => {
       that.authService.getSessionData((session) => {
         if (session === undefined || session == null) {
