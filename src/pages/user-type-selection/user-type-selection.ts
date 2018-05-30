@@ -1,5 +1,5 @@
 import { Component, NgZone } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, Events } from 'ionic-angular';
 import {
   TabsPage, SharedPreferences,
   Interact, TelemetryService, InteractType, InteractSubtype,
@@ -10,6 +10,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ProfileType, ProfileService } from 'sunbird'
 import { generateImpressionEvent, Map } from '../../app/telemetryutil';
 import { initTabs, GUEST_TEACHER_TABS, GUEST_STUDENT_TABS } from '../../app/module.service';
+import { AppGlobalService } from '../../service/app-global.service';
 
 const selectedCardBorderColor = '#006DE5';
 const borderColor = '#F7F7F7';
@@ -47,7 +48,8 @@ export class UserTypeSelectionPage {
     private profileService: ProfileService,
     private telemetryService: TelemetryService,
     private container: ContainerService,
-    private zone: NgZone
+    private zone: NgZone,
+    private event: Events
   ) {
     this.initData();
 
@@ -173,6 +175,10 @@ export class UserTypeSelectionPage {
   }
 
   gotoTabsPage(){
+    // Update the Global variable in the AppGlobalService
+    this.event.publish(AppGlobalService.USER_INFO_UPDATED);
+
+
     this.navCtrl.push(TabsPage, {
       loginMode: 'guest'
     });
