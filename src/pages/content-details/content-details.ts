@@ -102,6 +102,8 @@ export class ContentDetailsPage {
   private pause;
   private resume;
 
+  isContentPlayed: boolean = false;
+
   /**
    * User Rating 
    * 
@@ -142,7 +144,7 @@ export class ContentDetailsPage {
     private buildParamService: BuildParamService,
     private authService: AuthService, private courseService: CourseService,
     private preference: SharedPreferences) {
-      this.getUserId();
+    this.getUserId();
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
@@ -179,6 +181,7 @@ export class ContentDetailsPage {
           this.rateContent();
         }
       }
+      this.isContentPlayed = true;
       this.updateContentProgress();
     });
 
@@ -223,7 +226,7 @@ export class ContentDetailsPage {
         comment: this.ratingComment
       }
 
-      if (this.content.downloadable) {
+      if (this.isContentPlayed || (this.content.downloadable && this.content.contentAccess.length)) {
         this.telemetryService.interact(generateInteractEvent(InteractType.TOUCH,
           InteractSubtype.RATING_CLICKED,
           Environment.HOME,
@@ -292,6 +295,9 @@ export class ContentDetailsPage {
   extractApiResponse(data) {
     this.content = data.result.contentData;
     this.content.downloadable = data.result.isAvailableLocally;
+
+    this.content.contentAccess = data.result.contentAccess ? data.result.contentAccess : [];
+
     this.content.playContent = JSON.stringify(data.result);
     if (this.content.gradeLevel && this.content.gradeLevel.length) {
       this.content.gradeLevel = this.content.gradeLevel.join(", ");
@@ -562,16 +568,17 @@ export class ContentDetailsPage {
    * Play content
    */
   playContent() {
-    this.telemetryService.interact(
-      generateInteractWithRollup(InteractType.TOUCH,
-        InteractSubtype.CONTENT_PLAY,
-        Environment.HOME,
-        PageId.CONTENT_DETAIL, null, this.objRollup)
-    );
-
     //set the boolean to true, so when the content player is closed, we get to know that
     //we are back from content player
-    this.isPlayerLaunched = true;
+    this.zone.run(() => {
+      this.isPlayerLaunched = true;
+      this.telemetryService.interact(
+        generateInteractWithRollup(InteractType.TOUCH,
+          InteractSubtype.CONTENT_PLAY,
+          Environment.HOME,
+          PageId.CONTENT_DETAIL, null, this.objRollup)
+      );
+    });
 
     (<any>window).geniecanvas.play(this.content.playContent);
   }

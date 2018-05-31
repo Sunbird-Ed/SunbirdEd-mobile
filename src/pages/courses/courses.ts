@@ -5,7 +5,7 @@ import { IonicPage } from 'ionic-angular';
 import {
   SharedPreferences, CourseService,
   PageAssembleService, PageAssembleCriteria,
-  Impression, ImpressionType, PageId, Environment, TelemetryService, ContentDetailRequest, ContentService, ProfileType
+  Impression, ImpressionType, PageId, Environment, TelemetryService, ContentDetailRequest, ContentService, ProfileType, PageAssembleFilter
 } from 'sunbird';
 import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
@@ -70,6 +70,8 @@ export class CoursesPage implements OnInit {
 
   filterIcon = "./assets/imgs/ic_action_filter.png";
 
+  profile: any;
+
   /**
    * Default method of class CoursesPage
    *
@@ -104,6 +106,10 @@ export class CoursesPage implements OnInit {
     this.events.subscribe('onboarding-card:completed', (param) => {
       this.isOnBoardingCardCompleted = param.isOnBoardingCardCompleted;
     });
+
+    this.events.subscribe(AppGlobalService.PROFILE_OBJ_CHANGED, () => {
+      this.getCourseTabData();
+    })
 
     this.events.subscribe('onboarding-card:increaseProgress', (progress) => {
       this.onBoardingProgress = progress.cardProgress;
@@ -193,16 +199,45 @@ export class CoursesPage implements OnInit {
    *
    * It internally calls course handler of genie sdk
    */
-  getPopularAndLatestCourses(): void {
+  getPopularAndLatestCourses(pageAssembleCriteria: PageAssembleCriteria = undefined): void {
     this.pageApiLoader = true;
-    let criteria = new PageAssembleCriteria();
-    criteria.name = "Course";
 
-    if (this.appliedFilter) {
-      criteria.filters = this.appliedFilter;
+    if (pageAssembleCriteria == undefined) {
+      let criteria = new PageAssembleCriteria();
+      criteria.name = "Course";
+
+      if (this.appliedFilter) {
+        criteria.filters = this.appliedFilter;
+      }
+
+      pageAssembleCriteria = criteria;
     }
 
-    this.pageService.getPageAssemble(criteria, (res: any) => {
+
+    if (this.profile) {
+
+      if (!pageAssembleCriteria.filters) {
+        pageAssembleCriteria.filters = new PageAssembleFilter();
+      }
+
+      if (this.profile.board && this.profile.board.length) {
+        pageAssembleCriteria.filters.board = this.applyProfileFilter(this.profile.board, pageAssembleCriteria.filters.board);
+      }
+
+      if (this.profile.medium && this.profile.medium.length) {
+        pageAssembleCriteria.filters.medium = this.applyProfileFilter(this.profile.medium, pageAssembleCriteria.filters.medium);
+      }
+
+      if (this.profile.grade && this.profile.grade.length) {
+        pageAssembleCriteria.filters.gradeLevel = this.applyProfileFilter(this.profile.grade, pageAssembleCriteria.filters.gradeLevel);
+      }
+
+      if (this.profile.subject && this.profile.subject.length) {
+        pageAssembleCriteria.filters.subject = this.applyProfileFilter(this.profile.subject, pageAssembleCriteria.filters.subject);
+      }
+    }
+
+    this.pageService.getPageAssemble(pageAssembleCriteria, (res: any) => {
       res = JSON.parse(res);
       this.ngZone.run(() => {
         let sections = JSON.parse(res.sections);
@@ -229,6 +264,30 @@ export class CoursesPage implements OnInit {
       console.log('Page assmble error', error);
       this.pageApiLoader = !this.pageApiLoader;
     });
+  }
+
+
+  applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>) {
+    if (!assembleFilter) {
+      assembleFilter = [];
+    }
+    assembleFilter = assembleFilter.concat(profileFilter);
+
+    let unique_array = [];
+
+    for (let i = 0; i < assembleFilter.length; i++) {
+      if (unique_array.indexOf(assembleFilter[i]) == -1 && assembleFilter[i].length > 0) {
+        unique_array.push(assembleFilter[i])
+      }
+    }
+
+    assembleFilter = unique_array;
+
+    if (assembleFilter.length == 0) {
+      return undefined;
+    }
+
+    return assembleFilter;
   }
 
   /**
@@ -302,11 +361,11 @@ export class CoursesPage implements OnInit {
     }
 
 
-    let profile = this.appGlobal.getCurrentUser();
-    if (profile.board && profile.board.length
-      && profile.grade && profile.grade.length
-      && profile.medium && profile.medium.length
-      && profile.subject && profile.subject.length) {
+    this.profile = this.appGlobal.getCurrentUser();
+    if (this.profile && this.profile.board && this.profile.board.length
+      && this.profile.grade && this.profile.grade.length
+      && this.profile.medium && this.profile.medium.length
+      && this.profile.subject && this.profile.subject.length) {
       this.isOnBoardingCardCompleted = true;
       this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
     }
@@ -404,30 +463,7 @@ export class CoursesPage implements OnInit {
             that.filterIcon = "./assets/imgs/ic_action_filter.png";
           }
 
-          that.pageService.getPageAssemble(criteria, (res: any) => {
-            res = JSON.parse(res);
-            that.ngZone.run(() => {
-              let sections = JSON.parse(res.sections);
-              let newSections = [];
-              sections.forEach(element => {
-                element.display = JSON.parse(element.display);
-                if (element.display.name) {
-                  if (_.has(element.display.name, this.selectedLanguage)) {
-                    let langs = [];
-                    _.forEach(element.display.name, function (value, key) {
-                      langs[key] = value;
-                    });
-                    element.name = langs[this.selectedLanguage];
-                  }
-                }
-                newSections.push(element);
-              });
-              that.popularAndLatestCourses = newSections;
-              console.log('Popular courses', that.popularAndLatestCourses);
-            });
-          }, (error: string) => {
-            console.log('Page assmble error', error);
-          });
+          that.getPopularAndLatestCourses(criteria);
         })
       }
     }

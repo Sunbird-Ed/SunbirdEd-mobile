@@ -75,7 +75,7 @@
 
 	<div padding text-center *ngIf="!isNetworkAvailable">
 		<img height="80" width="100" src="assets/imgs/ic_offline.png" />
-		<h6 ion-text color="secondary_black"><b>{{ 'YOU_ARE_OFFLINE' | translate }}</b></h6>
+		<h6 ion-text color="secondary_black"><b>{{ 'NO_INTERNET_TITLE' | translate }}</b></h6>
 		<p color="dark_gray">{{ 'OFFLINE_WARNING' | translate }}</p>
 		<b ion-text text-uppercase color="primary" (click)="checkNetworkStatus(true); buttonClick();">{{'RETRY_ACTION' | translate}}</b>
 	</div>
