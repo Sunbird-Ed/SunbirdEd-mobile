@@ -1,6 +1,6 @@
 
 import { Component } from '@angular/core';
-import { NavController, NavParams, ToastController } from 'ionic-angular';
+import { NavController, NavParams, ToastController, Platform } from 'ionic-angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
@@ -54,7 +54,8 @@ export class FormExperience {
     private userProfileService: UserProfileService,
     private toastCtrl: ToastController,
     private translate: TranslateService,
-    public alertCtrl: AlertController
+    public alertCtrl: AlertController,
+    private platform: Platform
   ) {
 
     /* Receive data from other component */
@@ -191,9 +192,11 @@ export class FormExperience {
     );
     return translatedMsg;
   }
+  closePopup() {
+  }
   showDeleteConfirm() {
     let confirm = this.alertCtrl.create({
-      title: "Use this lightsaber?",
+      title: this.translateMessage('VIEW_ALL_COMMUNITIES'),
       // <ion-icon name='md-close'></ion-icon>
       mode: 'wp',
       cssClass: 'confirm-alert',
@@ -213,9 +216,30 @@ export class FormExperience {
             this.onSubmit(true);
             console.log('Agree clicked');
           }
+        },
+        {
+          text: 'x',
+          role:'cancel',
+          cssClass: 'closeButton',
+          handler: () => {
+            alert('closed');
+          }
         }
       ]
     });
     confirm.present();
+    let deregisterBackButton = this.platform.registerBackButtonAction(() => {
+      // dismiss on back press
+      confirm.dismiss();
+    }, 11);
+
+    // deregister handler after modal closes
+    confirm.onDidDismiss(() => {
+      deregisterBackButton();
+    });
+
+    function closePopup() {
+      confirm.dismiss();
+    }
   }
 }
