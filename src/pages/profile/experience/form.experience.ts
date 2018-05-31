@@ -196,7 +196,8 @@ export class FormExperience {
   }
   showDeleteConfirm() {
     let confirm = this.alertCtrl.create({
-      title: this.translateMessage('VIEW_ALL_COMMUNITIES'),
+      // title: this.translateMessage('VIEW_ALL_COMMUNITIES'),
+         title: "Do you wanr to delete",
       // <ion-icon name='md-close'></ion-icon>
       mode: 'wp',
       cssClass: 'confirm-alert',
