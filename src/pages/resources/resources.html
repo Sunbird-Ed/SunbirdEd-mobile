@@ -15,7 +15,7 @@
 			</button>
 		</ion-buttons>
 	</ion-navbar>
-	<div *ngIf="showWarning" class="offline-message"> <span>{{'NEED_INTERNET' | translate}} </span></div>
+	<div *ngIf="showWarning" class="offline-message"> <span>{{'NEED_INTERNET_TO_CHANGE' | translate}} </span></div>
 </ion-header>
 
 <ion-content overflow-scroll="true" class="course-scroll-holder1" style="background: #EBEBEB;">
@@ -75,7 +75,7 @@
 
 	<div padding text-center *ngIf="!isNetworkAvailable">
 		<img height="80" width="100" src="assets/imgs/ic_offline.png" />
-		<h6 ion-text color="secondary_black"><b>{{ 'YOU_ARE_OFFLINE' | translate }}</b></h6>
+		<h6 ion-text color="secondary_black"><b>{{ 'NO_INTERNET_TITLE' | translate }}</b></h6>
 		<p color="dark_gray">{{ 'OFFLINE_WARNING' | translate }}</p>
 		<b ion-text text-uppercase color="primary" (click)="checkNetworkStatus(true); buttonClick();">{{'RETRY_ACTION' | translate}}</b>
 	</div>
