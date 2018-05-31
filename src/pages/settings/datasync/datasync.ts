@@ -163,11 +163,13 @@ export class DatasyncPage {
 
         console.log("Telemetry Data Sync Time : " + this.latestSync);
         loader.dismiss();
+        this.presentToast("DATA_SYNC_SUCCESSFUL");
       });
 
 
     }, (error) => {
       loader.dismiss();
+      this.presentToast("DATA_SYNC_FAILURE");
       console.log("Telemetry Data Sync Error: " + error);
     });
   }
@@ -212,5 +214,28 @@ export class DatasyncPage {
     return this.loadingCtrl.create({
       spinner: "crescent"
     });
+  }
+
+  presentToast(translationId) {
+    let toast = this.toastCtrl.create({
+      message: this.translateMessage(translationId),
+      duration: 3000
+    });
+    toast.present();
+  }
+
+  /**
+  * Used to Translate message to current Language
+  * @param {string} messageConst - Message Constant to be translated
+  * @returns {string} translatedMsg - Translated Message
+  */
+  translateMessage(messageConst: string): string {
+    let translatedMsg = '';
+    this.translate.get(messageConst).subscribe(
+      (value: any) => {
+        translatedMsg = value;
+      }
+    );
+    return translatedMsg;
   }
 }

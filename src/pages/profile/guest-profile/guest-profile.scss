@@ -54,6 +54,22 @@ page-guest-profile {
     font-weight: 600;
     color: map-get($colors, secondary_black);
   }
+  .vertical-align{
+    vertical-align: sub;
+    color: #979797;
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+  .text-align{
+    width:90%;
+    display:inline-block;
+    vertical-align:top;
+  }
+  .icon-align{
+    margin-left: 4px;
+     size: 2px;
+      display:inline-block;
+  }
 }
 
 .padding-bottom-10 {

@@ -2,7 +2,7 @@ import { ContentRatingAlertComponent } from './../../component/content-rating-al
 import { ContentActionsComponent } from './../../component/content-actions/content-actions';
 import { Component, NgZone, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, PopoverController, Navbar, Platform } from 'ionic-angular';
-import { ContentService, FileUtil, ImpressionType, PageId, Environment, TelemetryService, Mode, End, ShareUtil, InteractType, InteractSubtype, Rollup, BuildParamService, AuthService } from 'sunbird';
+import { ContentService, CourseService, FileUtil, ImpressionType, PageId, Environment, TelemetryService, Mode, End, ShareUtil, InteractType, InteractSubtype, Rollup, BuildParamService, AuthService, SharedPreferences, ProfileType } from 'sunbird';
 import { SocialSharing } from "@ionic-native/social-sharing";
 import * as _ from 'lodash';
 import { generateInteractEvent, Map, generateImpressionWithRollup, generateStartWithRollup, generateInteractWithRollup } from '../../app/telemetryutil';
@@ -65,6 +65,8 @@ export class ContentDetailsPage {
    */
   loader: any;
 
+  userId: string = '';
+
   /**
    * Contains reference of content service
    */
@@ -100,6 +102,8 @@ export class ContentDetailsPage {
   private pause;
   private resume;
 
+  isContentPlayed: boolean = false;
+
   /**
    * User Rating 
    * 
@@ -113,6 +117,8 @@ export class ContentDetailsPage {
   public isPlayerLaunched: boolean = false;
 
   guestUser: boolean = false;
+
+  profileType: string = '';
 
   private objId;
   private objType;
@@ -136,7 +142,9 @@ export class ContentDetailsPage {
     private fileUtil: FileUtil, public popoverCtrl: PopoverController, private shareUtil: ShareUtil,
     private social: SocialSharing, private platform: Platform, private translate: TranslateService,
     private buildParamService: BuildParamService,
-    private authService: AuthService) {
+    private authService: AuthService, private courseService: CourseService,
+    private preference: SharedPreferences) {
+    this.getUserId();
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
@@ -158,6 +166,7 @@ export class ContentDetailsPage {
     });
 
     this.checkLoggedInOrGuestUser();
+    this.checkCurrentUserType();
 
     //This is to know when the app has gone to background
     this.pause = platform.pause.subscribe(() => {
@@ -166,12 +175,14 @@ export class ContentDetailsPage {
 
     //This is to know when the app has come to foreground
     this.resume = platform.resume.subscribe(() => {
-      if (this.isPlayerLaunched) {
+      if (this.isPlayerLaunched && !this.guestUser) {
         this.isPlayerLaunched = false;
         if (this.userRating === 0) {
           this.rateContent();
         }
       }
+      this.isContentPlayed = true;
+      this.updateContentProgress();
     });
 
   }
@@ -190,6 +201,18 @@ export class ContentDetailsPage {
     });
   }
 
+  checkCurrentUserType() {
+    this.preference.getString('selected_user_type', (val) => {
+      if (val != "") {
+        if (val == ProfileType.TEACHER) {
+          this.profileType = ProfileType.TEACHER;
+        } else if (val == ProfileType.STUDENT) {
+          this.profileType = ProfileType.STUDENT;
+        }
+      }
+    });
+  }
+
 
   /**
    * Function to rate content
@@ -203,7 +226,7 @@ export class ContentDetailsPage {
         comment: this.ratingComment
       }
 
-      if (this.content.downloadable) {
+      if (this.isContentPlayed || (this.content.downloadable && this.content.contentAccess.length)) {
         this.telemetryService.interact(generateInteractEvent(InteractType.TOUCH,
           InteractSubtype.RATING_CLICKED,
           Environment.HOME,
@@ -230,7 +253,9 @@ export class ContentDetailsPage {
         this.translateAndDisplayMessage('TRY_BEFORE_RATING', false);
       }
     } else {
-      this.translateAndDisplayMessage('SIGNIN_TO_USE_FEATURE');
+      if (this.profileType == ProfileType.TEACHER) {
+        this.translateAndDisplayMessage('SIGNIN_TO_USE_FEATURE');
+      }
     }
   }
 
@@ -270,12 +295,15 @@ export class ContentDetailsPage {
   extractApiResponse(data) {
     this.content = data.result.contentData;
     this.content.downloadable = data.result.isAvailableLocally;
+
+    this.content.contentAccess = data.result.contentAccess ? data.result.contentAccess : [];
+
     this.content.playContent = JSON.stringify(data.result);
     if (this.content.gradeLevel && this.content.gradeLevel.length) {
       this.content.gradeLevel = this.content.gradeLevel.join(", ");
     }
     this.objId = this.content.identifier;
-    this.objType = data.result.contentType;
+    this.objType = this.content.contentType;
     this.objVer = this.content.pkgVersion;
 
     //User Rating
@@ -540,19 +568,57 @@ export class ContentDetailsPage {
    * Play content
    */
   playContent() {
-    this.telemetryService.interact(
-      generateInteractWithRollup(InteractType.TOUCH,
-        InteractSubtype.CONTENT_PLAY,
-        Environment.HOME,
-        PageId.CONTENT_DETAIL, null, this.objRollup)
-    );
-
     //set the boolean to true, so when the content player is closed, we get to know that
     //we are back from content player
-    this.isPlayerLaunched = true;
+    this.zone.run(() => {
+      this.isPlayerLaunched = true;
+      this.telemetryService.interact(
+        generateInteractWithRollup(InteractType.TOUCH,
+          InteractSubtype.CONTENT_PLAY,
+          Environment.HOME,
+          PageId.CONTENT_DETAIL, null, this.objRollup)
+      );
+    });
 
     (<any>window).geniecanvas.play(this.content.playContent);
   }
+
+  getUserId() {
+    this.authService.getSessionData((session: string) => {
+      if (session === null || session === "null") {
+        this.userId = '';
+      } else {
+        let res = JSON.parse(session);
+        this.userId = res["userToken"] ? res["userToken"] : '';
+      }
+    });
+  }
+
+  updateContentProgress() {
+    let stateData = this.navParams.get('contentState');
+    console.log('stateData', stateData);
+    if (stateData !== undefined && stateData.batchId && stateData.courseId && this.userId) {
+      const data = {
+        courseId: stateData.courseId,
+        batchId: stateData.batchId,
+        contentId: this.identifier,
+        userId: this.userId,
+        status: 2
+      };
+
+      this.courseService.updateContentState(data, (data: any) => {
+        let res = JSON.parse(data);
+        this.zone.run(() => {
+          console.log('Course progress updated...', res);
+        });
+      }, (error: any) => {
+        this.zone.run(() => {
+          console.log('Error: while updating content state =>>>>>', error)
+        })
+      })
+    }
+  }
+
 
   /**
    * Function to get loader instance
@@ -583,7 +649,6 @@ export class ContentDetailsPage {
         });
       }
       if (data === 'delete.success') {
-        // this.
         this.content.downloadable = false;
       }
     });

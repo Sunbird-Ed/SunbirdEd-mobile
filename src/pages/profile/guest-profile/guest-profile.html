@@ -1,4 +1,4 @@
-<!-- Header Bar -->
+
 <ion-header>
   <ion-navbar>
     <ion-title>{{ 'PROFILE_LW' | translate }}</ion-title>
@@ -12,7 +12,9 @@
 
 <ion-content>
   <ion-refresher (ionRefresh)="refreshProfileData($event)"></ion-refresher>
-  <div *ngIf="showWarning" class="offline-message"> <span>{{'NEED_INTERNET' | translate}} </span></div>
+  <div *ngIf="showWarning" class="offline-message">
+    <span>{{'NEED_INTERNET_TO_CHANGE' | translate}} </span>
+  </div>
   <div text-center class="padding-top-10 padding-bottom-10">
     <p class="profile-name">
       {{profile?.handle}}
@@ -24,53 +26,61 @@
     </p>
   </div>
 
-  <!-- <div text-center>
-
-  </div> -->
-
   <ion-list>
     <ion-list-header class="section-title padding-left-10" no-padding>
       {{'PROFILE_DETAILS_TITLE' | translate}}
     </ion-list-header>
 
-    <ion-item no-padding class="padding-left-10" *ngIf="profile?.board">
-      <ion-row *ngIf="profile?.board && profile.board != ''">
+    <ion-item no-padding class="padding-left-10">
+      <ion-row>
         <ion-col col-6>
-          <span text-uppercase class="info-title">{{'BOARD' | translate}}</span>
+          <div text-uppercase class="info-title">{{'BOARD' | translate}}</div>
         </ion-col>
-        <ion-col class="ellipsis font-size-14rem page-content" col-6 text-end>
-          <span>{{boards}}</span>
-          <ion-icon  style="margin-left: 5px; size: 2px" float="end" name="md-create" color="primary" (click)="editGuestProfile()"></ion-icon>
+        <ion-col class="font-size-14rem page-content" col-6 text-end>
+          <div *ngIf="profile?.board && profile?.board != ''">
+            <div class="ellipsis text-align">{{boards}}</div>
+            <ion-icon class="icon-align" float="end" name="md-create" color="primary" (click)="editGuestProfile()"></ion-icon>
+          </div>
+          <div *ngIf="!profile?.board" (click)="editGuestProfile()" class="vertical-align">{{'ADD' | translate}}</div>
         </ion-col>
       </ion-row>
 
-      <ion-row *ngIf="profile?.grade && profile?.grade != ''">
+    <ion-row>
         <ion-col col-6>
-          <span class="info-title" text-uppercase>{{'GRADE' | translate}}</span>
+          <div class="info-title" text-uppercase>{{'GRADE' | translate}}</div>
         </ion-col>
         <ion-col class="ellipsis font-size-14rem page-content" col-6 text-end>
-         <span> {{grade}}</span>
-         <ion-icon  style="margin-left: 5px; size: 2px" float="end" name="md-create" color="primary" (click)="editGuestProfile()"></ion-icon>
+          <div *ngIf="profile?.grade && profile?.grade != ''">
+            <div class="ellipsis text-align">{{grade}}</div>
+            <ion-icon class="icon-align" float="end" name="md-create" color="primary" (click)="editGuestProfile()"></ion-icon>
+          </div>
+          <div *ngIf="grade === ''" (click)="editGuestProfile()" class="vertical-align">{{'ADD' | translate}}</div>
         </ion-col>
       </ion-row>
 
-      <ion-row *ngIf="profile?.medium && profile?.medium != ''">
+      <ion-row>
         <ion-col col-6>
-          <span class="info-title" text-uppercase>{{'MEDIUM_2' | translate}}</span>
+          <div class="info-title" text-uppercase>{{'MEDIUM_2' | translate}}</div>
         </ion-col>
         <ion-col class="ellipsis font-size-14rem page-content" col-6 text-end>
-         <span>{{medium}}</span>
-          <ion-icon  style="margin-left: 5px; size: 2px" float="end" name="md-create" color="primary" (click)="editGuestProfile()"></ion-icon>
+          <div *ngIf="profile?.medium && profile?.medium != ''">
+            <div class="ellipsis text-align">{{medium}}</div>
+            <ion-icon class="icon-align" float="end" name="md-create" color="primary" (click)="editGuestProfile()"></ion-icon>
+          </div>
+          <div *ngIf="!profile?.medium" (click)="editGuestProfile()" class="vertical-align">{{'ADD' | translate}}</div>
         </ion-col>
       </ion-row>
 
-      <ion-row *ngIf="profile?.subject && profile?.subject != ''">
+      <ion-row>
         <ion-col col-6>
-          <span class="info-title" text-uppercase>{{'SUBJECTS' | translate}}</span>
+          <div class="info-title" text-uppercase>{{'SUBJECTS' | translate}}</div>
         </ion-col>
         <ion-col class="ellipsis font-size-14rem page-content" col-6 text-end>
-         <span> {{subjects}}</span>
-          <ion-icon  style="margin-left: 5px; size: 2px" float="end" name="md-create" color="primary" (click)="editGuestProfile()"></ion-icon>
+          <div *ngIf="profile?.subject && profile?.subject != ''">
+            <div class="ellipsis text-align">{{subjects}}</div>
+            <ion-icon class="icon-align" float="end" name="md-create" color="primary" (click)="editGuestProfile()"></ion-icon>
+          </div>
+          <div *ngIf="!profile?.subject" (click)="editGuestProfile()" class="vertical-align">{{'ADD' | translate}}</div>
         </ion-col>
       </ion-row>
 

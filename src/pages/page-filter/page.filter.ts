@@ -43,7 +43,11 @@ export class PageFilter {
   ) {
     this.callback = navParams.get('callback');
 
-    this.FILTERS = navParams.get('filter')
+    const navParamsFilter = navParams.get('filter');
+
+    // #SB-3708 To avoid the object reference in Javascript. (Deep Clone) 
+    this.FILTERS = JSON.parse(JSON.stringify(navParams.get('filter')));
+
     this.FILTERS.forEach((element, index: number) => {
       this.getFrameworkData(element.name, index);
 
@@ -90,7 +94,7 @@ export class PageFilter {
   getSelectedOptionCount(facet) {
     if (facet.selected && facet.selected.length > 0) {
       this.pagetAssemblefilter[facet.name] = facet.selected
-      return `${facet.selected.length} ` + this.translateMessage('ADDED');
+      return `${facet.selected.length} ` + this.translateMessage('FILTER_ADDED');
     }
 
     return "";

@@ -1,12 +1,14 @@
 
 import { Component } from '@angular/core';
-import { NavController, NavParams, ToastController } from 'ionic-angular';
+import { NavController, NavParams, ToastController, Platform } from 'ionic-angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
 
 import { UserProfileService, UpdateUserInfoRequest } from 'sunbird';
 import { ProfilePage } from './../profile';
+
+import { AlertController } from 'ionic-angular';
 
 
 /**
@@ -51,7 +53,9 @@ export class FormExperience {
     private navParams: NavParams,
     private userProfileService: UserProfileService,
     private toastCtrl: ToastController,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public alertCtrl: AlertController,
+    private platform: Platform
   ) {
 
     /* Receive data from other component */
@@ -84,9 +88,12 @@ export class FormExperience {
    * @param {object} event - Form event
    * @param {boolean} isDeleted - Flag to delete
    */
-  onSubmit(event, isDeleted: boolean = false): void {
-    let formVal = this.experienceForm.value;
+  onSubmit(isDeleted: boolean = false): void {
+    // if(isDeleted == true){
+    //   this.showConfirm();
+    //  }
 
+    let formVal = this.experienceForm.value;
     this.validateForm(formVal);
     let userJobProfile = {
       jobName: formVal.jobName,
@@ -184,5 +191,56 @@ export class FormExperience {
       }
     );
     return translatedMsg;
+  }
+  closePopup() {
+  }
+  showDeleteConfirm() {
+    let confirm = this.alertCtrl.create({
+      // title: this.translateMessage('VIEW_ALL_COMMUNITIES'),
+         title: "Do you wanr to delete",
+      // <ion-icon name='md-close'></ion-icon>
+      mode: 'wp',
+      cssClass: 'confirm-alert',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'alert-btn-cancel',
+          handler: () => {
+            console.log('Disagree clicked');
+          }
+        },
+        {
+          text: 'Delete',
+          cssClass: 'alert-btn-delete',
+          handler: () => {
+            this.onSubmit(true);
+            console.log('Agree clicked');
+          }
+        },
+        {
+          text: 'x',
+          role:'cancel',
+          cssClass: 'closeButton',
+          handler: () => {
+           console.log('close icon clicked');
+          }
+        }
+      ]
+    });
+    confirm.present();
+    let deregisterBackButton = this.platform.registerBackButtonAction(() => {
+      // dismiss on back press
+      confirm.dismiss();
+    }, 11);
+
+    // deregister handler after modal closes
+    confirm.onDidDismiss(() => {
+      deregisterBackButton();
+    });
+
+    function closePopup() {
+      confirm.dismiss();
+    }
   }
 }

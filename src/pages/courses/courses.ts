@@ -4,10 +4,9 @@ import { NavController, PopoverController, Events, ToastController, LoadingContr
 import { AppVersion } from "@ionic-native/app-version";
 import { IonicPage } from 'ionic-angular';
 import {
-  CourseService, AuthService,
+  SharedPreferences, CourseService,
   PageAssembleService, PageAssembleCriteria,
-  Impression, ImpressionType, PageId, Environment, TelemetryService,
-  ProfileService, ContentDetailRequest, ContentService, ProfileType, SharedPreferences
+  Impression, ImpressionType, PageId, Environment, TelemetryService, ContentDetailRequest, ContentService, ProfileType, PageAssembleFilter
 } from 'sunbird';
 import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
@@ -21,6 +20,7 @@ import { generateImpressionEvent } from '../../app/telemetryutil';
 import { ContentType, MimeType, PageFilterConstants, ProfileConstants } from '../../app/app.constant';
 import { PageFilterCallback, PageFilter } from '../page-filter/page.filter';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
+import { AppGlobalService } from '../../service/app-global.service';
 
 import Driver from 'driver.js';
 
@@ -74,12 +74,13 @@ export class CoursesPage implements OnInit {
 
   filterIcon = "./assets/imgs/ic_action_filter.png";
 
+  profile: any;
+
   /**
    * Default method of class CoursesPage
    *
    * @param {NavController} navCtrl To navigate user from one page to another
    * @param {CourseService} courseService Service to get enrolled courses
-   * @param {AuthService} authService To get logged-in user data
    * @param {PageAssembleService} pageService Service to get latest and popular courses
    * @param {NgZone} ngZone To bind data
    */
@@ -87,21 +88,20 @@ export class CoursesPage implements OnInit {
     private appVersion: AppVersion,
     private navCtrl: NavController,
     private courseService: CourseService,
-    private authService: AuthService,
     private pageService: PageAssembleService,
     private ngZone: NgZone,
     private qrScanner: SunbirdQRScanner,
     private popCtrl: PopoverController,
     private telemetryService: TelemetryService,
     private events: Events,
-    private profileService: ProfileService,
     private contentService: ContentService,
     private toastCtrl: ToastController,
     private preference: SharedPreferences,
     private translate: TranslateService,
     private network: Network,
     private loadingCtrl: LoadingController,
-    private sharedPreferences: SharedPreferences
+    private sharedPreferences: SharedPreferences,
+    private appGlobal: AppGlobalService
   ) {
 
     this.preference.getString('selected_language_code', (val: string) => {
@@ -113,6 +113,10 @@ export class CoursesPage implements OnInit {
     this.events.subscribe('onboarding-card:completed', (param) => {
       this.isOnBoardingCardCompleted = param.isOnBoardingCardCompleted;
     });
+
+    this.events.subscribe(AppGlobalService.PROFILE_OBJ_CHANGED, () => {
+      this.getCourseTabData();
+    })
 
     this.events.subscribe('onboarding-card:increaseProgress', (progress) => {
       this.onBoardingProgress = progress.cardProgress;
@@ -145,7 +149,6 @@ export class CoursesPage implements OnInit {
 
     this.appVersion.getAppName()
       .then((appName: any) => {
-        //TODO: Need to add dynamic string substitution
         this.appLabel = appName;
       });
   }
@@ -179,7 +182,7 @@ export class CoursesPage implements OnInit {
           driver.highlight({
             element: '#qrIcon',
             popover: {
-              title: this.translateMessage('SCAN_QR_CODE'),
+              title: this.translateMessage('SCAN_QR_CODE_HERE'),
               description: "<img src='assets/imgs/ic_scanqrdemo.png' /><p>" + this.translateMessage('SCAN_QR_CODE_DESCRIPTION', this.appLabel) + "</p>",
               showButtons: true,         // Do not show control buttons in footer
               closeBtnText: this.translateMessage('DONE'),
@@ -248,16 +251,45 @@ export class CoursesPage implements OnInit {
    *
    * It internally calls course handler of genie sdk
    */
-  getPopularAndLatestCourses(): void {
+  getPopularAndLatestCourses(pageAssembleCriteria: PageAssembleCriteria = undefined): void {
     this.pageApiLoader = true;
-    let criteria = new PageAssembleCriteria();
-    criteria.name = "Course";
 
-    if (this.appliedFilter) {
-      criteria.filters = this.appliedFilter;
+    if (pageAssembleCriteria == undefined) {
+      let criteria = new PageAssembleCriteria();
+      criteria.name = "Course";
+
+      if (this.appliedFilter) {
+        criteria.filters = this.appliedFilter;
+      }
+
+      pageAssembleCriteria = criteria;
     }
 
-    this.pageService.getPageAssemble(criteria, (res: any) => {
+
+    if (this.profile) {
+
+      if (!pageAssembleCriteria.filters) {
+        pageAssembleCriteria.filters = new PageAssembleFilter();
+      }
+
+      if (this.profile.board && this.profile.board.length) {
+        pageAssembleCriteria.filters.board = this.applyProfileFilter(this.profile.board, pageAssembleCriteria.filters.board);
+      }
+
+      if (this.profile.medium && this.profile.medium.length) {
+        pageAssembleCriteria.filters.medium = this.applyProfileFilter(this.profile.medium, pageAssembleCriteria.filters.medium);
+      }
+
+      if (this.profile.grade && this.profile.grade.length) {
+        pageAssembleCriteria.filters.gradeLevel = this.applyProfileFilter(this.profile.grade, pageAssembleCriteria.filters.gradeLevel);
+      }
+
+      if (this.profile.subject && this.profile.subject.length) {
+        pageAssembleCriteria.filters.subject = this.applyProfileFilter(this.profile.subject, pageAssembleCriteria.filters.subject);
+      }
+    }
+
+    this.pageService.getPageAssemble(pageAssembleCriteria, (res: any) => {
       res = JSON.parse(res);
       this.ngZone.run(() => {
         let sections = JSON.parse(res.sections);
@@ -286,6 +318,30 @@ export class CoursesPage implements OnInit {
     });
   }
 
+
+  applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>) {
+    if (!assembleFilter) {
+      assembleFilter = [];
+    }
+    assembleFilter = assembleFilter.concat(profileFilter);
+
+    let unique_array = [];
+
+    for (let i = 0; i < assembleFilter.length; i++) {
+      if (unique_array.indexOf(assembleFilter[i]) == -1 && assembleFilter[i].length > 0) {
+        unique_array.push(assembleFilter[i])
+      }
+    }
+
+    assembleFilter = unique_array;
+
+    if (assembleFilter.length == 0) {
+      return undefined;
+    }
+
+    return assembleFilter;
+  }
+
   /**
    * To start / stop spinner
    */
@@ -303,20 +359,17 @@ export class CoursesPage implements OnInit {
   getUserId() {
     let that = this;
     return new Promise((resolve, reject) => {
-      that.authService.getSessionData((session) => {
-        if (session === null || session === "null") {
-          console.log('session expired');
-          that.guestUser = true;
-          that.getCurrentUser();
-          reject('session expired');
-        } else {
-          let sessionObj = JSON.parse(session);
-          that.userId = sessionObj[ProfileConstants.USER_TOKEN];
-          that.guestUser = false;
-          that.getEnrolledCourses();
-          resolve();
-        }
-      });
+      this.guestUser = !this.appGlobal.isUserLoggedIn();
+
+      if (this.guestUser) {
+        this.getCurrentUser();
+        reject('session expired');
+      } else {
+        let sessionObj = this.appGlobal.getSessionData();
+        this.userId = sessionObj[ProfileConstants.USER_TOKEN];
+        this.getEnrolledCourses();
+        resolve();
+      }
     });
   }
 
@@ -352,29 +405,22 @@ export class CoursesPage implements OnInit {
    * It will fetch the guest user profile details
    */
   getCurrentUser(): void {
-    this.preference.getString('selected_user_type', (val) => {
-      if (val == ProfileType.TEACHER) {
-        this.showSignInCard = true;
-      } else if (val == ProfileType.STUDENT) {
-        this.showSignInCard = false;
-      }
-    })
+    let profiletype = this.appGlobal.getGuestUserType();
+    if (profiletype == ProfileType.TEACHER) {
+      this.showSignInCard = true;
+    } else if (profiletype == ProfileType.STUDENT) {
+      this.showSignInCard = false;
+    }
 
 
-    this.profileService.getCurrentUser(
-      (res: any) => {
-        let profile = JSON.parse(res);
-        if (profile.board && profile.board.length
-          && profile.grade && profile.grade.length
-          && profile.medium && profile.medium.length
-          && profile.subject && profile.subject.length) {
-          this.isOnBoardingCardCompleted = true;
-          this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
-        }
-      },
-      (err: any) => {
-        this.isOnBoardingCardCompleted = false;
-      });
+    this.profile = this.appGlobal.getCurrentUser();
+    if (this.profile && this.profile.board && this.profile.board.length
+      && this.profile.grade && this.profile.grade.length
+      && this.profile.medium && this.profile.medium.length
+      && this.profile.subject && this.profile.subject.length) {
+      this.isOnBoardingCardCompleted = true;
+      this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
+    }
   }
 
   scanQRCode() {
@@ -469,30 +515,7 @@ export class CoursesPage implements OnInit {
             that.filterIcon = "./assets/imgs/ic_action_filter.png";
           }
 
-          that.pageService.getPageAssemble(criteria, (res: any) => {
-            res = JSON.parse(res);
-            that.ngZone.run(() => {
-              let sections = JSON.parse(res.sections);
-              let newSections = [];
-              sections.forEach(element => {
-                element.display = JSON.parse(element.display);
-                if (element.display.name) {
-                  if (_.has(element.display.name, this.selectedLanguage)) {
-                    let langs = [];
-                    _.forEach(element.display.name, function (value, key) {
-                      langs[key] = value;
-                    });
-                    element.name = langs[this.selectedLanguage];
-                  }
-                }
-                newSections.push(element);
-              });
-              that.popularAndLatestCourses = newSections;
-              console.log('Popular courses', that.popularAndLatestCourses);
-            });
-          }, (error: string) => {
-            console.log('Page assmble error', error);
-          });
+          that.getPopularAndLatestCourses(criteria);
         })
       }
     }

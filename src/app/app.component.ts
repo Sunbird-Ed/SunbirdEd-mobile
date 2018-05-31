@@ -4,7 +4,7 @@ import { StatusBar } from '@ionic-native/status-bar';
 import {
   TabsPage, AuthService, ContainerService, PermissionService,
   Interact, InteractType, InteractSubtype, Environment, TelemetryService,
-  SharedPreferences, ProfileType
+  SharedPreferences, ProfileType, UserProfileService
 } from "sunbird";
 import { initTabs, GUEST_TEACHER_TABS, GUEST_STUDENT_TABS, LOGIN_TEACHER_TABS } from './module.service';
 import { LanguageSettingsPage } from '../pages/language-settings/language-settings';
@@ -18,6 +18,8 @@ import { ContentDetailsPage } from '../pages/content-details/content-details';
 import { generateEndEvent } from './telemetryutil';
 import { MimeType, ContentType } from './app.constant';
 import { EnrolledCourseDetailsPage } from '../pages/enrolled-course-details/enrolled-course-details';
+import { AppGlobalService } from '../service/app-global.service';
+import { ProfileConstants } from './app.constant';
 
 declare var chcp: any;
 
@@ -36,7 +38,15 @@ export class MyApp {
     "android.permission.ACCESS_FINE_LOCATION",
     "android.permission.RECORD_AUDIO"];
 
-  constructor(private platform: Platform, statusBar: StatusBar,
+  options = {
+    message: '',
+    duration: 3000,
+    position: 'bottom'
+  };
+
+  constructor(
+    private platform: Platform,
+    statusBar: StatusBar,
     private modalCtrl: ModalController,
     private alertCtrl: AlertController,
     private toastCtrl: ToastController,
@@ -49,7 +59,10 @@ export class MyApp {
     private events: Events,
     private zone: NgZone,
     private telemetryService: TelemetryService,
-    private preference: SharedPreferences) {
+    private preference: SharedPreferences,
+    private appGlobal: AppGlobalService,
+    private userProfileService: UserProfileService
+  ) {
 
     let that = this;
 
@@ -92,6 +105,27 @@ export class MyApp {
           });
         } else {
           initTabs(that.containerService, LOGIN_TEACHER_TABS);
+          let sessionObj = JSON.parse(session);
+          this.preference.getString('SHOW_WELCOME_TOAST', (success) => {
+
+            if (success === "true") {
+              that.preference.putString('SHOW_WELCOME_TOAST', "false");
+              let req = {
+                userId: sessionObj[ProfileConstants.USER_TOKEN],
+                requiredFields: ProfileConstants.REQUIRED_FIELDS,
+                refreshUserProfileDetails: true
+              };
+
+              that.userProfileService.getUserProfileDetails(req, res => {
+
+                setTimeout(() => {
+                  that.getToast(this.translateMessage('WELCOME_BACK', JSON.parse(res).response.firstName)).present();
+                }, 2500);
+              }, (err: any) => {
+                });
+            }
+          });
+
           that.rootPage = TabsPage;
         }
 
@@ -159,13 +193,13 @@ export class MyApp {
   }
 
   /**
-  * Used to Translate message to current Language
-  * @param {string} messageConst - Message Constant to be translated
-  * @returns {string} translatedMsg - Translated Message
-  */
-  translateMessage(messageConst: string): string {
+   * Used to Translate message to current Language
+   * @param {string} messageConst - Message Constant to be translated
+   * @returns {string} translatedMsg - Translated Message
+   */
+  translateMessage(messageConst: string, field?: string): string {
     let translatedMsg = '';
-    this.translate.get(messageConst).subscribe(
+    this.translate.get(messageConst, { '%s': field }).subscribe(
       (value: any) => {
         translatedMsg = value;
       }
@@ -278,5 +312,15 @@ export class MyApp {
         let val = (value === '') ? 'true' : 'false';
         this.preference.putString('show_app_walkthrough_screen', val);
     });
+  }
+
+  /**
+   * It will returns Toast Object
+   * @param {message} string - Message for the Toast to show
+   * @returns {object} - toast Object
+   */
+  getToast(message: string = ''): any {
+    this.options.message = message;
+    if (message.length) return this.toastCtrl.create(this.options);
   }
 }

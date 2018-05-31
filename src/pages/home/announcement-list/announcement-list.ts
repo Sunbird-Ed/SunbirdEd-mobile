@@ -16,7 +16,7 @@ import {
     providers: [TelemetryService, AnnouncementService]
 
 })
-export class AnnouncementListComponent implements OnInit {
+export class AnnouncementListComponent  {
     /**
      * Contains announcement list
      */
@@ -103,7 +103,7 @@ export class AnnouncementListComponent implements OnInit {
     /**
      * Angular life cycle hooks
      */
-    ngOnInit() {
+    ionViewWillEnter() {
         console.log('ng oninit component initialized...');
         this.spinner(true);
         this.getAnnouncementList();

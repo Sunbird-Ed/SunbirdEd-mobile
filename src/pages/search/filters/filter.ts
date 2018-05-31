@@ -47,7 +47,7 @@ export class FilterPage {
     });
 
     if (count > 0) {
-      return `${count} ` + this.translateMessage('ADDED');
+      return `${count} ` + this.translateMessage('FILTER_ADDED');
     }
 
     return "";

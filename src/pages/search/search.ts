@@ -4,7 +4,7 @@ import {
   ContentService, ContentSearchCriteria,
   Log, LogLevel, TelemetryService, Impression, ImpressionType, Environment,
   Interact, InteractType, InteractSubtype,
-  ContentDetailRequest, ContentImportRequest, FileUtil, SharedPreferences, AuthService
+  ContentDetailRequest, ContentImportRequest, FileUtil, ProfileType
 } from "sunbird";
 import { GenieResponse } from "../settings/datasync/genieresponse";
 import { FilterPage } from "./filters/filter";
@@ -17,6 +17,7 @@ import { Map } from "../../app/telemetryutil";
 import * as _ from 'lodash';
 import { ContentType, MimeType, Search, AudienceFilter } from '../../app/app.constant';
 import { EnrolledCourseDetailsPage } from "../enrolled-course-details/enrolled-course-details";
+import { AppGlobalService } from "../../service/app-global.service";
 
 @IonicPage()
 @Component({
@@ -68,6 +69,9 @@ export class SearchPage {
   audienceFilter = [];
 
 
+  profile: any;
+
+
   constructor(private contentService: ContentService,
     private telemetryService: TelemetryService,
     private navParams: NavParams,
@@ -79,8 +83,7 @@ export class SearchPage {
     private toastCtrl: ToastController,
     private translate: TranslateService,
     private events: Events,
-    private perference: SharedPreferences,
-    private authService: AuthService) {
+    private appGlobal: AppGlobalService) {
 
     this.checkUserSession();
 
@@ -201,6 +204,25 @@ export class SearchPage {
 
     this.isDialCodeSearch = false;
 
+    if (this.profile) {
+
+			if (this.profile.board && this.profile.board.length) {
+				contentSearchRequest.board = this.applyProfileFilter(this.profile.board, contentSearchRequest.board);
+			}
+
+			if (this.profile.medium && this.profile.medium.length) {
+				contentSearchRequest.medium = this.applyProfileFilter(this.profile.medium, contentSearchRequest.medium);
+			}
+
+			if (this.profile.grade && this.profile.grade.length) {
+				contentSearchRequest.grade = this.applyProfileFilter(this.profile.grade, contentSearchRequest.grade);
+			}
+
+			// if (this.profile.subject && this.profile.subject.length) {
+			// 	contentSearchRequest.subject = this.applyProfileFilter(this.profile.subject, contentSearchRequest.subject);
+			// }
+		}
+
     this.contentService.searchContent(contentSearchRequest, false, (responseData) => {
 
       this.zone.run(() => {
@@ -232,6 +254,29 @@ export class SearchPage {
       })
     });
   }
+
+  applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>) {
+		if (!assembleFilter) {
+			assembleFilter = [];
+		}
+		assembleFilter = assembleFilter.concat(profileFilter);
+
+		let unique_array = [];
+
+		for (let i = 0; i < assembleFilter.length; i++) {
+			if (unique_array.indexOf(assembleFilter[i]) == -1 && assembleFilter[i].length > 0) {
+				unique_array.push(assembleFilter[i])
+			}
+		}
+
+		assembleFilter = unique_array;
+
+		if (assembleFilter.length == 0) {
+			return undefined;
+		}
+
+		return assembleFilter;
+	}
 
   private init() {
     this.dialCode = this.navParams.get('dialCode');
@@ -572,21 +617,22 @@ export class SearchPage {
   }
 
   private checkUserSession() {
-    this.authService.getSessionData((res: string) => {
-      if (res === undefined || res === "null") {
-        this.perference.getString('selected_user_type', (val) => {
-          if (val == "student") {
-            this.audienceFilter = AudienceFilter.STUDENT;
-          }
-          else if (val == "teacher") {
-            this.audienceFilter = AudienceFilter.TEACHER;
-          }
-        });
+
+    let isGuestUser = !this.appGlobal.isUserLoggedIn();
+
+    if (isGuestUser) {
+      let userType = this.appGlobal.getGuestUserType();
+      if (userType == ProfileType.STUDENT) {
+        this.audienceFilter = AudienceFilter.GUEST_STUDENT;
+      } else if (userType == ProfileType.TEACHER) {
+        this.audienceFilter = AudienceFilter.GUEST_TEACHER;
       }
-      else {
-        this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
-      }
-    });
+
+      this.profile = this.appGlobal.getCurrentUser();
+    } else {
+      this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
+      this.profile = undefined;
+    }
   }
 
 }
