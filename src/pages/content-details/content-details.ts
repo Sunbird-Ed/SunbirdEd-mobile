@@ -223,7 +223,7 @@ export class ContentDetailsPage {
         comment: this.ratingComment
       }
 
-      if (this.content.downloadable) {
+      if (this.content.downloadable && this.content.contentAccess.length) {
         this.telemetryService.interact(generateInteractEvent(InteractType.TOUCH,
           InteractSubtype.RATING_CLICKED,
           Environment.HOME,
@@ -292,6 +292,9 @@ export class ContentDetailsPage {
   extractApiResponse(data) {
     this.content = data.result.contentData;
     this.content.downloadable = data.result.isAvailableLocally;
+
+    this.content.contentAccess = data.result.contentAccess ? data.result.contentAccess : [];
+
     this.content.playContent = JSON.stringify(data.result);
     if (this.content.gradeLevel && this.content.gradeLevel.length) {
       this.content.gradeLevel = this.content.gradeLevel.join(", ");
