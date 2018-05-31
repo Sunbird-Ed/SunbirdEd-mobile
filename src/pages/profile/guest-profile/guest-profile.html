@@ -13,7 +13,7 @@
 <ion-content>
   <ion-refresher (ionRefresh)="refreshProfileData($event)"></ion-refresher>
   <div *ngIf="showWarning" class="offline-message">
-    <span>{{'NEED_INTERNET' | translate}} </span>
+    <span>{{'NEED_INTERNET_TO_CHANGE' | translate}} </span>
   </div>
   <div text-center class="padding-top-10 padding-bottom-10">
     <p class="profile-name">

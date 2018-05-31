@@ -1,5 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
-import { NavController, LoadingController, Navbar, Platform, Events } from 'ionic-angular';
+import { NavController, LoadingController, Navbar, Platform, ToastController,Events } from 'ionic-angular';
+import { TranslateService } from '@ngx-translate/core';
 import {
   TabsPage, OAuthService, ContainerService,
   UserProfileService, ProfileService, ProfileType,
@@ -7,13 +8,20 @@ import {
   InteractType, InteractSubtype, Environment, TelemetryService, PageId, ImpressionType,
   SharedPreferences
 } from 'sunbird';
-import { UserTypeSelectionPage } from '../user-type-selection/user-type-selection';
 
+import { UserTypeSelectionPage } from '../user-type-selection/user-type-selection';
 import { initTabs, GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, LOGIN_TEACHER_TABS } from '../../app/module.service';
 import { generateInteractEvent, Map, generateImpressionEvent } from '../../app/telemetryutil';
 import { LanguageSettingsPage } from '../language-settings/language-settings';
 import { ProfileConstants } from '../../app/app.constant';
 import { AppGlobalService } from '../../service/app-global.service';
+
+/* Interface for the Toast Object */
+export interface toastOptions {
+  message: string,
+  duration: number,
+  position: string
+};
 
 @Component({
   selector: 'page-onboarding',
@@ -27,6 +35,12 @@ export class OnboardingPage {
   orgName: string;
   backButtonFunc: any = undefined;
 
+  options: toastOptions = {
+    message: '',
+    duration: 3000,
+    position: 'bottom'
+  };
+
   constructor(public navCtrl: NavController,
     private auth: OAuthService,
     private container: ContainerService,
@@ -37,6 +51,8 @@ export class OnboardingPage {
     private loadingCtrl: LoadingController,
     private preferences: SharedPreferences,
     private platform: Platform,
+    private translate: TranslateService,
+    private toastCtrl: ToastController,
     private events: Events
   ) {
 
@@ -84,7 +100,7 @@ export class OnboardingPage {
     });
   }
 
-  singIn() {
+  signIn() {
     let that = this;
     let loader = this.getLoader();
     loader.present();
@@ -147,6 +163,10 @@ export class OnboardingPage {
           };
           that.userProfileService.getUserProfileDetails(req, res => {
             let r = JSON.parse(res);
+            setTimeout(() => {
+              this.getToast(this.translateMessage('WELCOME_BACK', r.response.firstName)).present();
+            }, 800);
+
             that.generateLoginInteractTelemetry(InteractType.OTHER,
               InteractSubtype.LOGIN_SUCCESS, r.response.userId);
             let profileRequest = {
@@ -229,8 +249,28 @@ export class OnboardingPage {
         valuesMap));
   }
 
-  /*   goBack() {
-      this.navCtrl.pop();
-    } */
+  /**
+   * It will returns Toast Object
+   * @param {message} string - Message for the Toast to show
+   * @returns {object} - toast Object
+   */
+  getToast(message: string = ''): any {
+    this.options.message = message;
+    if (message.length) return this.toastCtrl.create(this.options);
+  }
 
+  /**
+   * Used to Translate message to current Language
+   * @param {string} messageConst - Message Constant to be translated
+   * @returns {string} translatedMsg - Translated Message
+   */
+  translateMessage(messageConst: string, field?: string): string {
+    let translatedMsg = '';
+    this.translate.get(messageConst, { '%s': field }).subscribe(
+      (value: any) => {
+        translatedMsg = value;
+      }
+    );
+    return translatedMsg;
+  }
 }

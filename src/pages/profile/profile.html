@@ -147,7 +147,7 @@
   </ion-item>
 
   <!-- User's Skills -->
-  <ion-list-header padding-horizontal *ngIf="profile?.skills?.length" class="section-title" no-padding>
+  <ion-list-header padding-horizontal *ngIf="(profile?.skills?.length && !isLoggedInUser) || isLoggedInUser" class="section-title" no-padding>
     {{ 'SKILL_TAGS' | translate }}
     <span *ngIf="isLoggedInUser" float-right color="primary">
       <span (click)="addSkillTags()">{{ 'ADD' | translate }}</span>

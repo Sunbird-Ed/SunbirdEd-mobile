@@ -303,7 +303,7 @@ export class ContentDetailsPage {
       this.content.gradeLevel = this.content.gradeLevel.join(", ");
     }
     this.objId = this.content.identifier;
-    this.objType = data.result.contentType;
+    this.objType = this.content.contentType;
     this.objVer = this.content.pkgVersion;
 
     //User Rating

@@ -1,10 +1,10 @@
 import { ContentRatingAlertComponent } from './../../component/content-rating-alert/content-rating-alert';
-import { Component, NgZone } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events, ToastController, PopoverController, LoadingController } from 'ionic-angular';
+import { Component, NgZone, ViewChild } from '@angular/core';
+import { IonicPage, NavController, NavParams, Events, ToastController, PopoverController, LoadingController, Platform, Navbar } from 'ionic-angular';
 import {
   ContentService, FileUtil, CourseService,
   ChildContentRequest, AuthService, PageId, UserProfileService, InteractSubtype, TelemetryService, Environment, Start, Mode, End,
-  InteractType, BuildParamService, ShareUtil, SharedPreferences, ProfileType
+  InteractType, BuildParamService, ShareUtil,  SharedPreferences, ProfileType, ImpressionType
 } from 'sunbird';
 import * as _ from 'lodash';
 // import { CourseDetailPage } from '../course-detail/course-detail';
@@ -16,7 +16,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ContentType, MimeType } from '../../app/app.constant';
 import { CourseBatchesPage } from '../course-batches/course-batches';
 import { SocialSharing } from '@ionic-native/social-sharing';
-import { generateImpressionEvent, generateInteractEvent } from '../../app/telemetryutil';
+import { generateImpressionEvent, generateInteractEvent, generateEndEvent, generateStartEvent } from '../../app/telemetryutil';
 
 /**
  * Generated class for the EnrolledCourseDetailsPage page.
@@ -151,7 +151,10 @@ export class EnrolledCourseDetailsPage {
   guestUser: boolean = false;
 
   profileType: string = '';
-
+  private objId;
+  private objType;
+  private objVer;
+  @ViewChild(Navbar) navBar: Navbar;
   constructor(navCtrl: NavController,
     navParams: NavParams,
     contentService: ContentService,
@@ -168,8 +171,9 @@ export class EnrolledCourseDetailsPage {
     private shareUtil: ShareUtil,
     private social: SocialSharing,
     private telemetryService: TelemetryService, private loadingCtrl: LoadingController,
-    private preference: SharedPreferences) {
-
+    private preference: SharedPreferences,
+    private platform: Platform) {
+    
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
 
@@ -188,8 +192,13 @@ export class EnrolledCourseDetailsPage {
     this.events.subscribe('course:batchEnrolled', (res) => {
       if (res && res.batchId) {
         this.batchId = res.batchId;
-      }
-    });
+			}
+    });   
+    
+    this.platform.registerBackButtonAction(() => {
+      this.generateEndEvent(this.objId, this.objType, this.objVer);
+      this.navCtrl.pop();
+    }, 0)
   }
 
   /**
@@ -312,6 +321,11 @@ export class EnrolledCourseDetailsPage {
   extractApiResponse(data): void {
     if (data.result.contentData) {
       this.course = data.result.contentData;
+      this.objId = this.course.identifier;
+      this.objType = this.course.contentType;
+      this.objVer = this.course.pkgVersion;
+      this.generateStartEvent(this.course.identifier, this.course.contentType, this.course.pkgVersion);
+      this.generateImpressionEvent(this.course.identifier, this.course.contentType, this.course.pkgVersion);
       if (this.course.status !== 'Live') {
         this.showMessage(this.translateLanguageConstant('ERROR_CONTENT_NOT_AVAILABLE'));
         this.navCtrl.pop();
@@ -677,10 +691,6 @@ export class EnrolledCourseDetailsPage {
     this.navCtrl.push(CourseBatchesPage, { identifier: this.identifier });
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad EnrolledCourseDetailsPage');
-  }
-
   /**
    * Get executed when user click on start button
    */
@@ -737,4 +747,39 @@ export class EnrolledCourseDetailsPage {
         PageId.CONTENT_DETAIL, values)
     );
   }
+
+  ionViewDidLoad() {
+    this.navBar.backButtonClick = (e: UIEvent) => {
+      this.generateEndEvent(this.objId, this.objType, this.objVer);
+      this.navCtrl.pop();
+    }
+  }
+
+  generateImpressionEvent(objectId, objectType, objectVersion) {
+    this.telemetryService.impression(generateImpressionEvent(ImpressionType.DETAIL,
+      PageId.COURSE_DETAIL,
+      Environment.HOME,
+      objectId,
+      objectType,
+      objectVersion));
+  }
+
+  generateStartEvent(objectId, objectType, objectVersion) {
+    this.telemetryService.start(generateStartEvent(PageId.COURSE_DETAIL,
+      objectId,
+      objectType,
+      objectVersion
+    ));
+  }
+
+  generateEndEvent(objectId, objectType, objectVersion) {
+    this.telemetryService.end(generateEndEvent(objectType,
+      Mode.PLAY,
+      PageId.COURSE_DETAIL,
+      objectId,
+      objectType,
+      objectVersion
+    ));
+  }
+
 }

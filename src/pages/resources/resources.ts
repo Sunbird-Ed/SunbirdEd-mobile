@@ -2,7 +2,7 @@ import { Component, NgZone, OnInit } from '@angular/core';
 import {
 	PageAssembleService, PageAssembleCriteria, ContentService,
 	Impression, ImpressionType, PageId, Environment, TelemetryService,
-	InteractType, InteractSubtype, ContentDetailRequest, SharedPreferences, ContentFilterCriteria, ProfileType
+	InteractType, InteractSubtype, ContentDetailRequest, SharedPreferences, ContentFilterCriteria, ProfileType, PageAssembleFilter
 } from "sunbird";
 import { NavController, PopoverController, Events, ToastController, LoadingController } from 'ionic-angular';
 import * as _ from 'lodash';
@@ -69,6 +69,8 @@ export class ResourcesPage implements OnInit {
 
 	audienceFilter = [];
 
+	profile: any;
+
 	constructor(public navCtrl: NavController,
 		private pageService: PageAssembleService,
 		private ngZone: NgZone,
@@ -104,6 +106,10 @@ export class ResourcesPage implements OnInit {
 			}
 		});
 
+		this.events.subscribe(AppGlobalService.PROFILE_OBJ_CHANGED, () => {
+			this.swipeDownToRefresh();
+		});
+
 		if (this.network.type === 'none') {
 			this.isNetworkAvailable = false;
 		} else {
@@ -129,7 +135,7 @@ export class ResourcesPage implements OnInit {
 		let profiletype = this.appGlobal.getGuestUserType();
 		if (profiletype == ProfileType.TEACHER) {
 			this.showSignInCard = true;
-				this.audienceFilter = AudienceFilter.GUEST_TEACHER;
+			this.audienceFilter = AudienceFilter.GUEST_TEACHER;
 		} else if (profiletype == ProfileType.STUDENT) {
 			this.showSignInCard = false;
 			this.audienceFilter = AudienceFilter.GUEST_STUDENT;
@@ -137,11 +143,11 @@ export class ResourcesPage implements OnInit {
 
 		this.setSavedContent();
 
-		let profile = this.appGlobal.getCurrentUser();
-		if (profile.board && profile.board.length
-			&& profile.grade && profile.grade.length
-			&& profile.medium && profile.medium.length
-			&& profile.subject && profile.subject.length) {
+		this.profile = this.appGlobal.getCurrentUser();
+		if (this.profile && this.profile.board && this.profile.board.length
+			&& this.profile.grade && this.profile.grade.length
+			&& this.profile.medium && this.profile.medium.length
+			&& this.profile.subject && this.profile.subject.length) {
 			this.isOnBoardingCardCompleted = true;
 			this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
 		}
@@ -193,18 +199,49 @@ export class ResourcesPage implements OnInit {
 	/**
 	 * Get popular content
 	 */
-	getPopularContent(isAfterLanguageChange = false, loader?) {
+	getPopularContent(isAfterLanguageChange = false, loader?, pageAssembleCriteria?: PageAssembleCriteria) {
 		this.pageApiLoader = true;
 		//this.noInternetConnection = false;
 		let that = this;
-		let criteria = new PageAssembleCriteria();
-		criteria.name = "Resource";
 
-		if (that.appliedFilter) {
-			criteria.filters = that.appliedFilter;
+
+
+		if (!pageAssembleCriteria) {
+			let criteria = new PageAssembleCriteria();
+			criteria.name = "Resource";
+
+			if (that.appliedFilter) {
+				criteria.filters = that.appliedFilter;
+			}
+
+			pageAssembleCriteria = criteria;
 		}
 
-		this.pageService.getPageAssemble(criteria, res => {
+		if (this.profile) {
+
+			if (!pageAssembleCriteria.filters) {
+				pageAssembleCriteria.filters = new PageAssembleFilter();
+			}
+
+			if (this.profile.board && this.profile.board.length) {
+				pageAssembleCriteria.filters.board = this.applyProfileFilter(this.profile.board, pageAssembleCriteria.filters.board);
+			}
+
+			if (this.profile.medium && this.profile.medium.length) {
+				pageAssembleCriteria.filters.medium = this.applyProfileFilter(this.profile.medium, pageAssembleCriteria.filters.medium);
+			}
+
+			if (this.profile.grade && this.profile.grade.length) {
+				pageAssembleCriteria.filters.gradeLevel = this.applyProfileFilter(this.profile.grade, pageAssembleCriteria.filters.gradeLevel);
+			}
+
+			if (this.profile.subject && this.profile.subject.length) {
+				pageAssembleCriteria.filters.subject = this.applyProfileFilter(this.profile.subject, pageAssembleCriteria.filters.subject);
+			}
+		}
+
+
+		this.pageService.getPageAssemble(pageAssembleCriteria, res => {
 			that.ngZone.run(() => {
 				let response = JSON.parse(res);
 				console.log('Popular content, response');
@@ -248,6 +285,30 @@ export class ResourcesPage implements OnInit {
 			});
 		});
 	}
+
+	applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>) {
+		if (!assembleFilter) {
+			assembleFilter = [];
+		}
+		assembleFilter = assembleFilter.concat(profileFilter);
+
+		let unique_array = [];
+
+		for (let i = 0; i < assembleFilter.length; i++) {
+			if (unique_array.indexOf(assembleFilter[i]) == -1 && assembleFilter[i].length > 0) {
+				unique_array.push(assembleFilter[i])
+			}
+		}
+
+		assembleFilter = unique_array;
+
+		if (assembleFilter.length == 0) {
+			return undefined;
+		}
+
+		return assembleFilter;
+	}
+
 
 	showMessage(message) {
 		let toast = this.toastCtrl.create({
@@ -344,6 +405,15 @@ export class ResourcesPage implements OnInit {
 		/* 		if(refresher)
 					this.getPopularContent(false, refresher, loader);
 				else */
+
+		this.guestUser = !this.appGlobal.isUserLoggedIn();
+
+		if (this.guestUser) {
+			this.getCurrentUser();
+		} else {
+			this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
+		}
+
 		this.getPopularContent(false, loader);
 		this.checkNetworkStatus();
 	}
@@ -459,48 +529,8 @@ export class ResourcesPage implements OnInit {
 					that.filterIcon = "./assets/imgs/ic_action_filter.png";
 				}
 
-				that.pageApiLoader = true;
-				that.pageService.getPageAssemble(criteria, res => {
-					that.ngZone.run(() => {
-						let response = JSON.parse(res);
-						let a = JSON.parse(response.sections);
-						console.log('page service ==>>>>', a);
 
-						let newSections = [];
-						a.forEach(element => {
-							element.display = JSON.parse(element.display);
-							if (element.display.name) {
-								if (_.has(element.display.name, this.selectedLanguage)) {
-									let langs = [];
-									_.forEach(element.display.name, function (value, key) {
-										langs[key] = value;
-									});
-									element.name = langs[this.selectedLanguage];
-								}
-							}
-							newSections.push(element);
-						});
-						//END OF TEMPORARY CODE
-						that.storyAndWorksheets = newSections;
-						console.log('storyAndWorksheets', that.storyAndWorksheets);
-						that.pageLoadedSuccess = true;
-						that.pageApiLoader = false;
-						//that.noInternetConnection = false;
-						that.checkEmptySearchResult();
-
-					});
-				}, error => {
-					console.log('error while getting popular resources...', error);
-					that.ngZone.run(() => {
-						that.pageApiLoader = false;
-						if (error === 'CONNECTION_ERROR') {
-							//that.noInternetConnection = true;
-							that.isNetworkAvailable = false;
-						} else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
-							this.getMessageByConst('ERROR_FETCHING_DATA');
-						}
-					});
-				});
+				that.getPopularContent(false, undefined, criteria)
 			}
 		}
 
