@@ -102,6 +102,8 @@ export class ContentDetailsPage {
   private pause;
   private resume;
 
+  isContentPlayed: boolean = false;
+
   /**
    * User Rating 
    * 
@@ -179,6 +181,7 @@ export class ContentDetailsPage {
           this.rateContent();
         }
       }
+      this.isContentPlayed = true;
       this.updateContentProgress();
     });
 
@@ -215,9 +218,6 @@ export class ContentDetailsPage {
    * Function to rate content
    */
   rateContent() {
-
-
-
     if (!this.guestUser) {
       let ratingData = {
         identifier: this.identifier,
@@ -226,7 +226,7 @@ export class ContentDetailsPage {
         comment: this.ratingComment
       }
 
-      if (this.isPlayerLaunched || (this.content.downloadable && this.content.contentAccess.length)) {
+      if (this.isContentPlayed || (this.content.downloadable && this.content.contentAccess.length)) {
         this.telemetryService.interact(generateInteractEvent(InteractType.TOUCH,
           InteractSubtype.RATING_CLICKED,
           Environment.HOME,
