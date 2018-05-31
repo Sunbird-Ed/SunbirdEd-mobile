@@ -69,6 +69,9 @@ export class SearchPage {
   audienceFilter = [];
 
 
+  profile: any;
+
+
   constructor(private contentService: ContentService,
     private telemetryService: TelemetryService,
     private navParams: NavParams,
@@ -201,6 +204,25 @@ export class SearchPage {
 
     this.isDialCodeSearch = false;
 
+    if (this.profile) {
+
+			if (this.profile.board && this.profile.board.length) {
+				contentSearchRequest.board = this.applyProfileFilter(this.profile.board, contentSearchRequest.board);
+			}
+
+			if (this.profile.medium && this.profile.medium.length) {
+				contentSearchRequest.medium = this.applyProfileFilter(this.profile.medium, contentSearchRequest.medium);
+			}
+
+			if (this.profile.grade && this.profile.grade.length) {
+				contentSearchRequest.grade = this.applyProfileFilter(this.profile.grade, contentSearchRequest.grade);
+			}
+
+			// if (this.profile.subject && this.profile.subject.length) {
+			// 	contentSearchRequest.subject = this.applyProfileFilter(this.profile.subject, contentSearchRequest.subject);
+			// }
+		}
+
     this.contentService.searchContent(contentSearchRequest, false, (responseData) => {
 
       this.zone.run(() => {
@@ -232,6 +254,29 @@ export class SearchPage {
       })
     });
   }
+
+  applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>) {
+		if (!assembleFilter) {
+			assembleFilter = [];
+		}
+		assembleFilter = assembleFilter.concat(profileFilter);
+
+		let unique_array = [];
+
+		for (let i = 0; i < assembleFilter.length; i++) {
+			if (unique_array.indexOf(assembleFilter[i]) == -1 && assembleFilter[i].length > 0) {
+				unique_array.push(assembleFilter[i])
+			}
+		}
+
+		assembleFilter = unique_array;
+
+		if (assembleFilter.length == 0) {
+			return undefined;
+		}
+
+		return assembleFilter;
+	}
 
   private init() {
     this.dialCode = this.navParams.get('dialCode');
@@ -572,7 +617,7 @@ export class SearchPage {
   }
 
   private checkUserSession() {
-  
+
     let isGuestUser = !this.appGlobal.isUserLoggedIn();
 
     if (isGuestUser) {
@@ -582,8 +627,11 @@ export class SearchPage {
       } else if (userType == ProfileType.TEACHER) {
         this.audienceFilter = AudienceFilter.GUEST_TEACHER;
       }
+
+      this.profile = this.appGlobal.getCurrentUser();
     } else {
       this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
+      this.profile = undefined;
     }
   }
 

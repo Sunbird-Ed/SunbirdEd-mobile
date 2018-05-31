@@ -7,6 +7,7 @@ import { Events } from "ionic-angular";
 export class AppGlobalService {
 
     public static readonly USER_INFO_UPDATED = 'user-profile-changed';
+    public static readonly PROFILE_OBJ_CHANGED = 'app-global:profile-obj-changed';
 
     guestUserProfile: Profile;
     isGuestUser: boolean = false;
@@ -60,8 +61,10 @@ export class AppGlobalService {
         console.log("getCurrentUserProfile");
         this.profile.getCurrentUser((response) => {
             this.guestUserProfile = JSON.parse(response);
+            this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
         }, (error) => {
             this.guestUserProfile = undefined;
+            this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
         });
     }
 
