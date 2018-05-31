@@ -4,7 +4,7 @@ import { IonicPage, NavController, NavParams, Events, ToastController, PopoverCo
 import {
   ContentService, FileUtil, CourseService,
   ChildContentRequest, AuthService, PageId, UserProfileService, InteractSubtype, TelemetryService, Environment, Start, Mode, End,
-  InteractType, BuildParamService, ShareUtil,  SharedPreferences, ProfileType, ImpressionType
+  InteractType, BuildParamService, ShareUtil, SharedPreferences, ProfileType, ImpressionType, CorrelationData
 } from 'sunbird';
 import * as _ from 'lodash';
 // import { CourseDetailPage } from '../course-detail/course-detail';
@@ -16,7 +16,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ContentType, MimeType } from '../../app/app.constant';
 import { CourseBatchesPage } from '../course-batches/course-batches';
 import { SocialSharing } from '@ionic-native/social-sharing';
-import { generateImpressionEvent, generateInteractEvent, generateEndEvent, generateStartEvent } from '../../app/telemetryutil';
+import { generateInteractTelemetry, generateEndTelemetry, generateStartTelemetry, generateImpressionTelemetry } from '../../app/telemetryutil';
 
 /**
  * Generated class for the EnrolledCourseDetailsPage page.
@@ -97,6 +97,7 @@ export class EnrolledCourseDetailsPage {
   isDownloadStarted: boolean = false;
   isDownlaodCompleted: boolean = false;
   batchDetails: any;
+  private corRelationList: Array<CorrelationData>;
 
   /**
    * To hold logged in user id
@@ -173,7 +174,7 @@ export class EnrolledCourseDetailsPage {
     private telemetryService: TelemetryService, private loadingCtrl: LoadingController,
     private preference: SharedPreferences,
     private platform: Platform) {
-    
+
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
 
@@ -192,9 +193,9 @@ export class EnrolledCourseDetailsPage {
     this.events.subscribe('course:batchEnrolled', (res) => {
       if (res && res.batchId) {
         this.batchId = res.batchId;
-			}
-    });   
-    
+      }
+    });
+
     this.platform.registerBackButtonAction(() => {
       this.generateEndEvent(this.objId, this.objType, this.objVer);
       this.navCtrl.pop();
@@ -516,7 +517,7 @@ export class EnrolledCourseDetailsPage {
         if (this.courseCardData.batchId) {
           this.getContentsSize(this.childrenData);
         }
-          this.showChildrenLoader = false;
+        this.showChildrenLoader = false;
       });
     },
       (error: string) => {
@@ -621,6 +622,7 @@ export class EnrolledCourseDetailsPage {
     console.log('Inside enrolled course details page');
     this.tabBarElement.style.display = 'none';
     this.courseCardData = this.navParams.get('content');
+    this.corRelationList = this.navParams.get('corRelation');
     if (this.batchId) {
       this.courseCardData.batchId = this.batchId;
     }
@@ -741,10 +743,12 @@ export class EnrolledCourseDetailsPage {
     let values = new Map();
     values["ContentType"] = contentType;
     this.telemetryService.interact(
-      generateInteractEvent(interactType,
+      generateInteractTelemetry(interactType,
         subType,
         Environment.HOME,
-        PageId.CONTENT_DETAIL, values)
+        PageId.CONTENT_DETAIL, values,
+        undefined,
+        this.corRelationList)
     );
   }
 
@@ -756,29 +760,33 @@ export class EnrolledCourseDetailsPage {
   }
 
   generateImpressionEvent(objectId, objectType, objectVersion) {
-    this.telemetryService.impression(generateImpressionEvent(ImpressionType.DETAIL,
-      PageId.COURSE_DETAIL,
+    this.telemetryService.impression(generateImpressionTelemetry(ImpressionType.DETAIL,
+      PageId.COURSE_DETAIL, "",
       Environment.HOME,
       objectId,
       objectType,
-      objectVersion));
+      objectVersion, undefined, this.corRelationList));
   }
 
   generateStartEvent(objectId, objectType, objectVersion) {
-    this.telemetryService.start(generateStartEvent(PageId.COURSE_DETAIL,
+    this.telemetryService.start(generateStartTelemetry(PageId.COURSE_DETAIL,
       objectId,
       objectType,
-      objectVersion
+      objectVersion,
+      undefined,
+      this.corRelationList
     ));
   }
 
   generateEndEvent(objectId, objectType, objectVersion) {
-    this.telemetryService.end(generateEndEvent(objectType,
+    this.telemetryService.end(generateEndTelemetry(objectType,
       Mode.PLAY,
       PageId.COURSE_DETAIL,
       objectId,
       objectType,
-      objectVersion
+      objectVersion,
+      undefined,
+      this.corRelationList
     ));
   }
 

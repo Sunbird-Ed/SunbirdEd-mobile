@@ -26,7 +26,7 @@ import { FormExperience } from "./experience/form.experience";
 import { OverflowMenuComponent } from "./overflowmenu/menu.overflow.component";
 import { UserSearchComponent } from "./user-search/user-search";
 import { ImagePicker } from "./imagepicker/imagepicker";
-import { generateInteractEvent } from "../../app/telemetryutil";
+import { generateInteractTelemetry, generateImpressionTelemetry } from "../../app/telemetryutil";
 import { TranslateService } from "@ngx-translate/core";
 import { ProfileConstants } from "../../app/app.constant";
 
@@ -126,6 +126,13 @@ export class ProfilePage {
       if (res.isUploading && res.url != '') this.imageUri = res.url;
       this.isUploading = res.isUploading;
     });
+    this.telemetryService.impression(generateImpressionTelemetry(
+      ImpressionType.VIEW, "",
+      PageId.PROFILE,
+      Environment.USER, "", "", "",
+      undefined,
+      undefined
+    ));
   }
 
   doRefresh(refresher?) {
@@ -142,18 +149,6 @@ export class ProfilePage {
         console.log("Error while Fetching Data", error);
         loader.dismiss();
       });
-  }
-
-  ionViewDidEnter() {
-    this.generateImpressionEvent();
-  }
-
-  generateImpressionEvent() {
-    let impression = new Impression();
-    impression.type = ImpressionType.VIEW;
-    impression.pageId = PageId.PROFILE;
-    impression.env = Environment.USER;
-    this.telemetryService.impression(impression);
   }
 
   /**
@@ -571,10 +566,12 @@ export class ProfilePage {
    */
   gotoSearchPage(): void {
     this.telemetryService.interact(
-      generateInteractEvent(InteractType.TOUCH,
+      generateInteractTelemetry(InteractType.TOUCH,
         InteractSubtype.SEARCH_BUTTON_CLICKED,
         Environment.HOME,
-        PageId.PROFILE, null));
+        PageId.PROFILE, null,
+        undefined,
+        undefined));
     this.navCtrl.push(UserSearchComponent);
   }
 

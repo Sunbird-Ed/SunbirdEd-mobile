@@ -2,8 +2,8 @@ import { Injectable } from "@angular/core";
 import { TranslateService } from "@ngx-translate/core";
 import { PopoverController, Popover, ToastController, Platform } from "ionic-angular";
 import { QRScannerAlert, QRAlertCallBack } from "./qrscanner_alert";
-import { Start, Environment, Mode, TelemetryService, InteractType, InteractSubtype, PageId, End, PermissionService } from "sunbird";
-import { generateInteractEvent, Map } from "../../app/telemetryutil";
+import { Start, Environment, Mode, TelemetryService, InteractType, InteractSubtype, PageId, End, PermissionService, ImpressionType, ImpressionSubtype } from "sunbird";
+import { generateInteractTelemetry, Map, generateStartTelemetry, generateEndTelemetry, generateImpressionTelemetry } from "../../app/telemetryutil";
 import { Network } from "@ionic-native/network";
 
 @Injectable()
@@ -42,10 +42,10 @@ export class SunbirdQRScanner {
     displayText: String = this.mQRScannerText['SCAN_QR_INSTRUCTION'],
     displayTextColor: String = "#0000ff", callback: QRResultCallback, source: string) {
 
-      this.backButtonFunc = this.platform.registerBackButtonAction(() => {
-        this.backButtonFunc();
-      }, 10
-      );
+    this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      this.backButtonFunc();
+    }, 10
+    );
 
     this.generateStartEvent(source);
 
@@ -133,10 +133,12 @@ export class SunbirdQRScanner {
     (<any>window).qrScanner.startScanner(screenTitle, displayText, displayTextColor, (code) => {
       if (code === "cancel") {
         this.telemetryService.interact(
-          generateInteractEvent(InteractType.OTHER,
+          generateInteractTelemetry(InteractType.OTHER,
             InteractSubtype.QRCodeScanCancelled,
             Environment.HOME,
-            PageId.QRCodeScanner, null));
+            PageId.QRCodeScanner, null,
+            undefined,
+            undefined));
         this.generateEndEvent(source, "");
         return;
       }
@@ -165,14 +167,26 @@ export class SunbirdQRScanner {
     });
   }
 
+  ionViewDidLoad() {
+    this.telemetryService.impression(generateImpressionTelemetry(
+      ImpressionType.VIEW,
+      ImpressionSubtype.QRCodeScanInitiate,
+      PageId.QRCodeScanner,
+      Environment.HOME, "", "", "",
+      undefined, undefined
+    ))
+  }
+
   generateStartEvent(pageId: string) {
     if (pageId !== undefined) {
-      let start = new Start();
-      start.type = "qr";
-      start.pageId = pageId;
-      start.env = Environment.HOME;
-      start.mode = Mode.PLAY;
-      this.telemetryService.start(start);
+      this.telemetryService.start(generateStartTelemetry(
+        pageId,
+        "",
+        "qr",
+        "",
+        undefined,
+        undefined
+      ));
     }
 
   }
@@ -183,23 +197,27 @@ export class SunbirdQRScanner {
     values["ScannedData"] = scannedData;
     values["Action"] = action;
     this.telemetryService.interact(
-      generateInteractEvent(InteractType.OTHER,
+      generateInteractTelemetry(InteractType.OTHER,
         InteractSubtype.QRCodeScanSuccess,
         Environment.HOME,
-        PageId.QRCodeScanner, values));
+        PageId.QRCodeScanner, values,
+        undefined,
+        undefined));
   }
 
 
   generateEndEvent(pageId: string, qrData: string) {
     if (pageId !== undefined) {
-      let end = new End();
-      end.type = "qr";
-      end.pageId = pageId;
-      end.env = Environment.HOME;
-      end.mode = Mode.PLAY;
-      end.objId = qrData;
-      end.objType = "qr";
-      this.telemetryService.end(end);
+      this.telemetryService.end(generateEndTelemetry(
+        "qr",
+        Mode.PLAY,
+        pageId,
+        qrData,
+        "qr",
+        "",
+        undefined,
+        undefined
+      ));
     }
   }
 }

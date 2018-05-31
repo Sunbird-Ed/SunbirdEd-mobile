@@ -16,7 +16,7 @@ import { ContentDetailsPage } from '../content-details/content-details';
 import * as _ from 'lodash';
 import { TranslateService } from '@ngx-translate/core';
 import { Network } from '@ionic-native/network';
-import { generateImpressionEvent } from '../../app/telemetryutil';
+import { generateImpressionTelemetry } from '../../app/telemetryutil';
 import { ContentType, MimeType, PageFilterConstants, ProfileConstants } from '../../app/app.constant';
 import { PageFilterCallback, PageFilter } from '../page-filter/page.filter';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
@@ -480,10 +480,11 @@ export class CoursesPage implements OnInit {
   }
 
   ionViewDidEnter() {
-    this.telemetryService.impression(generateImpressionEvent(
-      ImpressionType.VIEW,
+    this.telemetryService.impression(generateImpressionTelemetry(
+      ImpressionType.VIEW, "",
       PageId.COURSES,
-      Environment.HOME, "", "", ""
+      Environment.HOME, "", "", "",
+      undefined, undefined
     ));
   }
 

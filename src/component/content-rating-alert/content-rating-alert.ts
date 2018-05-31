@@ -3,7 +3,7 @@ import { NavParams, ViewController, Header, Platform, ToastController } from "io
 import { ContentService, AuthService, TelemetryService, InteractType, InteractSubtype, PageId, Environment, ImpressionType, ImpressionSubtype } from 'sunbird';
 import { NgModule } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { generateInteractEvent, generateImpressionEvent, generateImpressionTelemetry } from '../../app/telemetryutil';
+import {  generateImpressionTelemetry, generateInteractTelemetry } from '../../app/telemetryutil';
 import { ProfileConstants } from '../../app/app.constant';
 
 
@@ -100,10 +100,13 @@ export class ContentRatingAlertComponent {
     let paramsMap = new Map();
     paramsMap["Ratings"] = this.ratingCount;
     paramsMap["Comment"] = this.comment;
-    this.telemetryService.interact(generateInteractEvent(InteractType.TOUCH,
+    this.telemetryService.interact(generateInteractTelemetry(
+      InteractType.TOUCH,
       InteractSubtype.RATING_SUBMITTED,
       Environment.HOME,
-      this.pageId, paramsMap
+      this.pageId, paramsMap,
+      undefined,
+      undefined
     ));
 
     let viewDismissData = {
@@ -145,7 +148,9 @@ export class ContentRatingAlertComponent {
       ImpressionType.VIEW,
       ImpressionSubtype.RATING_POPUP,
       this.pageId,
-      Environment.HOME, "", "", ""
+      Environment.HOME, "", "", "",
+      undefined,
+      undefined
     ));
   }
 

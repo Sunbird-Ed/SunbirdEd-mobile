@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { NavController, LoadingController, Navbar, Platform, ToastController,Events } from 'ionic-angular';
+import { NavController, LoadingController, Navbar, Platform, ToastController, Events } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import {
   TabsPage, OAuthService, ContainerService,
@@ -11,7 +11,7 @@ import {
 
 import { UserTypeSelectionPage } from '../user-type-selection/user-type-selection';
 import { initTabs, GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, LOGIN_TEACHER_TABS } from '../../app/module.service';
-import { generateInteractEvent, Map, generateImpressionEvent } from '../../app/telemetryutil';
+import { generateInteractTelemetry, Map, generateImpressionTelemetry } from '../../app/telemetryutil';
 import { LanguageSettingsPage } from '../language-settings/language-settings';
 import { ProfileConstants } from '../../app/app.constant';
 import { AppGlobalService } from '../../service/app-global.service';
@@ -83,16 +83,15 @@ export class OnboardingPage {
     this.navBar.backButtonClick = (e: UIEvent) => {
       this.navCtrl.setRoot(LanguageSettingsPage);
     }
-
-  }
-
-  ionViewDidEnter() {
     this.telemetryService.impression(
-      generateImpressionEvent(ImpressionType.VIEW,
+      generateImpressionTelemetry(ImpressionType.VIEW, "",
         PageId.ONBOARDING,
-        Environment.HOME, "", "", "")
+        Environment.HOME, "", "", "",
+        undefined,
+        undefined)
     );
   }
+
 
   getLoader(): any {
     return this.loadingCtrl.create({
@@ -199,11 +198,13 @@ export class OnboardingPage {
 
   browseAsGuest() {
     this.telemetryService.interact(
-      generateInteractEvent(InteractType.TOUCH,
+      generateInteractTelemetry(InteractType.TOUCH,
         InteractSubtype.BROWSE_AS_GUEST_CLICKED,
         Environment.HOME,
         PageId.ONBOARDING,
-        null));
+        null,
+        undefined,
+        undefined));
     this.preferences.getString('selected_user_type', (val) => {
       if (val == ProfileType.STUDENT) {
         initTabs(this.container, GUEST_STUDENT_TABS);
@@ -242,11 +243,13 @@ export class OnboardingPage {
     let valuesMap = new Map();
     valuesMap["UID"] = uid;
     this.telemetryService.interact(
-      generateInteractEvent(interactType,
+      generateInteractTelemetry(interactType,
         interactSubtype,
         Environment.HOME,
         PageId.LOGIN,
-        valuesMap));
+        valuesMap,
+        undefined,
+        undefined));
   }
 
   /**

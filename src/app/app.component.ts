@@ -15,7 +15,7 @@ import { SearchPage } from '../pages/search/search';
 
 import { CollectionDetailsPage } from '../pages/collection-details/collection-details';
 import { ContentDetailsPage } from '../pages/content-details/content-details';
-import { generateEndEvent } from './telemetryutil';
+import { generateEndTelemetry, generateInteractTelemetry } from './telemetryutil';
 import { MimeType, ContentType } from './app.constant';
 import { EnrolledCourseDetailsPage } from '../pages/enrolled-course-details/enrolled-course-details';
 import { AppGlobalService } from '../service/app-global.service';
@@ -177,7 +177,7 @@ export class MyApp {
           self.presentToast();
           setTimeout(() => { self.counter = 0 }, 1500)
         } else {
-          this.telemetryService.end(generateEndEvent("app", "", "", "", "", ""));
+          this.telemetryService.end(generateEndTelemetry("app", "", "", "", "", "",undefined,undefined));
           self.platform.exitApp();
         }
       }
@@ -262,13 +262,15 @@ export class MyApp {
   }
 
   generateInteractEvent(pageid: string) {
-    let interact = new Interact();
-    interact.type = InteractType.TOUCH;
-    interact.subType = InteractSubtype.TAB_CLICKED;
-    interact.pageId = pageid.toLowerCase();
-    interact.id = pageid.toLowerCase();
-    interact.env = Environment.HOME;
-    this.telemetryService.interact(interact);
+    this.telemetryService.interact( generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.TAB_CLICKED,
+      Environment.HOME,
+      pageid.toLowerCase(),
+      null,
+      undefined,
+      undefined
+    ));
   }
 
   registerDeeplinks() {

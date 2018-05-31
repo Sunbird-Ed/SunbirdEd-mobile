@@ -2,14 +2,16 @@ import { Component, NgZone, OnInit } from '@angular/core';
 import {
 	PageAssembleService, PageAssembleCriteria, ContentService,
 	Impression, ImpressionType, PageId, Environment, TelemetryService,
-	InteractType, InteractSubtype, ContentDetailRequest, SharedPreferences, ContentFilterCriteria, ProfileType, PageAssembleFilter
+	InteractType, InteractSubtype, ContentDetailRequest, SharedPreferences,
+	ContentFilterCriteria, ProfileType, PageAssembleFilter,
+	CorrelationData
 } from "sunbird";
 import { NavController, PopoverController, Events, ToastController, LoadingController } from 'ionic-angular';
 import * as _ from 'lodash';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
 import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
-import { generateInteractEvent, Map } from '../../app/telemetryutil';
+import { generateInteractTelemetry, Map, generateImpressionTelemetry } from '../../app/telemetryutil';
 // import { CourseDetailPage } from '../course-detail/course-detail';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
 import { ContentDetailsPage } from '../content-details/content-details';
@@ -68,6 +70,7 @@ export class ResourcesPage implements OnInit {
 	//noInternetConnection: boolean = false;
 
 	audienceFilter = [];
+	private corRelationList: Array<CorrelationData>;
 
 	profile: any;
 
@@ -121,6 +124,8 @@ export class ResourcesPage implements OnInit {
 		this.network.onConnect().subscribe((data) => {
 			this.isNetworkAvailable = true;
 		});
+
+
 	}
 
 	ngAfterViewInit() {
@@ -336,10 +341,12 @@ export class ResourcesPage implements OnInit {
 		let values = new Map();
 		values["SectionName"] = headerTitle;
 		this.telemetryService.interact(
-			generateInteractEvent(InteractType.TOUCH,
+			generateInteractTelemetry(InteractType.TOUCH,
 				InteractSubtype.VIEWALL_CLICKED,
 				Environment.HOME,
-				this.source, values)
+				this.source, values,
+				undefined,
+				undefined)
 		);
 		this.navCtrl.push(ViewMoreActivityPage, {
 			requestParams: queryParams,
@@ -428,32 +435,42 @@ export class ResourcesPage implements OnInit {
 	}
 
 	generateImpressionEvent() {
-		let impression = new Impression();
-		impression.type = ImpressionType.VIEW;
-		impression.pageId = PageId.LIBRARY;
-		impression.env = Environment.HOME;
-		this.telemetryService.impression(impression);
+		this.telemetryService.impression(generateImpressionTelemetry(
+			ImpressionType.VIEW, "",
+			PageId.LIBRARY,
+			Environment.HOME, "", "", "",
+			undefined,
+			undefined
+
+		));
 	}
 
 	scanQRCode() {
 		this.telemetryService.interact(
-			generateInteractEvent(InteractType.TOUCH,
+			generateInteractTelemetry(InteractType.TOUCH,
 				InteractSubtype.QRCodeScanClicked,
 				Environment.HOME,
-				PageId.LIBRARY, null));
+				PageId.LIBRARY, null,
+				undefined,
+				undefined));
 		const that = this;
+
 		const callback: QRResultCallback = {
+
 			dialcode(scanResult, dialCode) {
-				that.navCtrl.push(SearchPage, { dialCode: dialCode });
+
+				that.addCorRelation(dialCode, "qr");
+				that.navCtrl.push(SearchPage, { dialCode: dialCode, corRelation: that.corRelationList });
 			},
 			content(scanResult, contentId) {
-				// that.navCtrl.push(SearchPage);
 				let request: ContentDetailRequest = {
 					contentId: contentId
 				}
+
 				that.contentService.getContentDetail(request, (response) => {
 					let data = JSON.parse(response);
-					that.showContentDetails(data.result);
+					that.addCorRelation(data.result.identifier, "qr")
+					that.showContentDetails(data.result, that.corRelationList);
 				}, (error) => {
 					console.log("Error " + error);
 					if (that.network.type === 'none') {
@@ -468,42 +485,63 @@ export class ResourcesPage implements OnInit {
 		this.qrScanner.startScanner(undefined, undefined, undefined, callback, PageId.LIBRARY);
 	}
 
+	addCorRelation(identifier: string, type: string) {
+		if (this.corRelationList === undefined) {
+			this.corRelationList = new Array<CorrelationData>();
+		}
+		else {
+			this.corRelationList = [];
+		}
+		let corRelation: CorrelationData = new CorrelationData();
+		corRelation.id = identifier;
+		corRelation.type = type;
+		this.corRelationList.push(corRelation);
+	}
+
 	search() {
 
 		this.telemetryService.interact(
-			generateInteractEvent(InteractType.TOUCH,
+			generateInteractTelemetry(InteractType.TOUCH,
 				InteractSubtype.SEARCH_BUTTON_CLICKED,
 				Environment.HOME,
-				PageId.LIBRARY, null));
+				PageId.LIBRARY, null,
+				undefined,
+				undefined));
 
 		this.navCtrl.push(SearchPage, { contentType: ContentType.FOR_LIBRARY_TAB, source: PageId.LIBRARY });
 	}
 
-	showContentDetails(content) {
+	showContentDetails(content, corRelation) {
+
 		if (content.contentType === ContentType.COURSE) {
 			console.log('Calling course details page');
 			this.navCtrl.push(EnrolledCourseDetailsPage, {
-				content: content
+				content: content,
+				corRelation: corRelation
 			})
 		} else if (content.mimeType === MimeType.COLLECTION) {
 			console.log('Calling collection details page');
 			this.navCtrl.push(CollectionDetailsPage, {
-				content: content
+				content: content,
+				corRelation: corRelation
 			})
 		} else {
 			console.log('Calling content details page');
 			this.navCtrl.push(ContentDetailsPage, {
-				content: content
+				content: content,
+				corRelation: corRelation
 			})
 		}
 	}
 
 	showFilter() {
 		this.telemetryService.interact(
-			generateInteractEvent(InteractType.TOUCH,
+			generateInteractTelemetry(InteractType.TOUCH,
 				InteractSubtype.FILTER_BUTTON_CLICKED,
 				Environment.HOME,
-				PageId.LIBRARY, null));
+				PageId.LIBRARY, null,
+				undefined,
+				undefined));
 
 		const that = this;
 		//this.noInternetConnection = false;

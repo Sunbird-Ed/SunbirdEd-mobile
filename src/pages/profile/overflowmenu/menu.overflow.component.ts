@@ -8,7 +8,7 @@ import { SettingsPage } from "../../settings/settings";
 import { OAuthService } from "sunbird";
 import { OnboardingPage } from "../../onboarding/onboarding";
 import { Interact, InteractType, InteractSubtype, PageId, Environment, TelemetryService, ProfileService } from "sunbird";
-import { generateInteractEvent } from "../../../app/telemetryutil";
+import { generateInteractTelemetry } from "../../../app/telemetryutil";
 
 @Component({
     selector: 'menu-overflow',
@@ -41,7 +41,15 @@ export class OverflowMenuComponent {
         }));
         switch (i) {
             case 0: {
-                this.generateInteractEvent();
+                this.telemetryService.interact(generateInteractTelemetry(
+                    InteractType.TOUCH,
+                    InteractSubtype.SETTINGS_CLICKED,
+                    Environment.USER,
+                    PageId.PROFILE,
+                    null,
+                    undefined,
+                    undefined
+                ));
                 this.app.getActiveNav().push(SettingsPage);
                 break;
             }
@@ -65,25 +73,18 @@ export class OverflowMenuComponent {
         }
     }
 
-    generateInteractEvent() {
-        let interact = new Interact();
-        interact.type = InteractType.TOUCH;
-        interact.subType = InteractSubtype.SETTINGS_CLICKED;
-        interact.pageId = PageId.PROFILE;
-        interact.id = PageId.PROFILE;
-        interact.env = Environment.USER;
-        this.telemetryService.interact(interact);
-    }
 
     generateLogoutInteractTelemetry(interactType, interactSubtype, uid) {
         let valuesMap = new Map();
         valuesMap["UID"] = uid;
         this.telemetryService.interact(
-            generateInteractEvent(interactType,
+            generateInteractTelemetry(interactType,
                 interactSubtype,
                 Environment.HOME,
                 PageId.LOGOUT,
-                valuesMap));
+                valuesMap,
+                undefined,
+                undefined));
     }
 
 }
