@@ -101,10 +101,10 @@
     <plugin name="cordova-plugin-customconfigparameters" spec="^3.0.0" />
     <plugin name="cordova-plugin-imagechooser" spec="https://github.com/project-sunbird/cordova-plugin-imagechooser.git" />
     <plugin name="cordova-plugin-file-support" spec="https://github.com/project-sunbird/cordova-plugin-file-support.git" />
+    <plugin name="cordova-plugin-qr-scanner" spec="https://github.com/project-sunbird/cordova-plugin-qr-scanner.git" />
+    <plugin name="cordova-plugin-sunbirdsplash" spec="https://github.com/project-sunbird/cordova-plugin-sunbirdsplash.git" />
     <plugin name="cordova-plugin-geniecanvas" spec="https://github.com/project-sunbird/cordova-plugin-geniecanvas.git" />
     <plugin name="cordova-plugin-file-opener2" spec="^2.0.19" />
-    <plugin name="cordova-plugin-fcm" spec="https://github.com/fechanique/cordova-plugin-fcm.git" />
-    <plugin name="cordova-plugin-sunbirdsplash" spec="/home/user/Ionic-Workspace/cordova-plugin-sunbirdsplash" />
-    <plugin name="cordova-plugin-genie-sdk" spec="/home/user/Ionic-Workspace/cordova-plugin-genie-sdk" />
+    <plugin name="cordova-plugin-genie-sdk" spec="https://github.com/project-sunbird/cordova-plugin-genie-sdk.git" />
     <engine name="android" spec="~7.0.0" />
 </widget>
