@@ -61,6 +61,7 @@ export class MyApp {
       this.imageLoaderConfig.setMaximumCacheSize(100 * 1024 * 1024);
       this.subscribeEvents();
       this.saveDefaultSyncSetting();
+      this.showAppWalkThroughScreen();
 
       permission.requestPermission(this.permissionList, (response) => {
         this.makeEntryInSupportFolder();
@@ -270,5 +271,12 @@ export class MyApp {
         content: content
       })
     }
+  }
+
+  showAppWalkThroughScreen() {
+    this.preference.getString('show_app_walkthrough_screen', (value) => {
+        let val = (value === '') ? 'true' : 'false';
+        this.preference.putString('show_app_walkthrough_screen', val);
+    });
   }
 }

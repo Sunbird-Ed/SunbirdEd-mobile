@@ -1,12 +1,13 @@
 import { ViewMoreActivityPage } from './../view-more-activity/view-more-activity';
 import { Component, NgZone, OnInit } from '@angular/core';
 import { NavController, PopoverController, Events, ToastController, LoadingController } from 'ionic-angular';
+import { AppVersion } from "@ionic-native/app-version";
 import { IonicPage } from 'ionic-angular';
 import {
-  SharedPreferences, CourseService, AuthService,
+  CourseService, AuthService,
   PageAssembleService, PageAssembleCriteria,
   Impression, ImpressionType, PageId, Environment, TelemetryService,
-  ProfileService, ContentDetailRequest, ContentService, ProfileType
+  ProfileService, ContentDetailRequest, ContentService, ProfileType, SharedPreferences
 } from 'sunbird';
 import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
@@ -20,6 +21,8 @@ import { generateImpressionEvent } from '../../app/telemetryutil';
 import { ContentType, MimeType, PageFilterConstants, ProfileConstants } from '../../app/app.constant';
 import { PageFilterCallback, PageFilter } from '../page-filter/page.filter';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
+
+import Driver from 'driver.js';
 
 @IonicPage()
 @Component({
@@ -63,6 +66,7 @@ export class CoursesPage implements OnInit {
   isOnBoardingCardCompleted: boolean = false;
   onBoardingProgress: number = 0;
   selectedLanguage = 'en';
+  appLabel: string;
 
   courseFilter: any;
 
@@ -79,7 +83,9 @@ export class CoursesPage implements OnInit {
    * @param {PageAssembleService} pageService Service to get latest and popular courses
    * @param {NgZone} ngZone To bind data
    */
-  constructor(private navCtrl: NavController,
+  constructor(
+    private appVersion: AppVersion,
+    private navCtrl: NavController,
     private courseService: CourseService,
     private authService: AuthService,
     private pageService: PageAssembleService,
@@ -94,7 +100,8 @@ export class CoursesPage implements OnInit {
     private preference: SharedPreferences,
     private translate: TranslateService,
     private network: Network,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private sharedPreferences: SharedPreferences
   ) {
 
     this.preference.getString('selected_language_code', (val: string) => {
@@ -125,16 +132,22 @@ export class CoursesPage implements OnInit {
     });
 
     if (this.network.type === 'none') {
-			this.isNetworkAvailable = false;
-		} else {
-			this.isNetworkAvailable = true;
-		}
-		this.network.onDisconnect().subscribe((data) => {
-			this.isNetworkAvailable = false;
-		});
-		this.network.onConnect().subscribe((data) => {
-			this.isNetworkAvailable = true;
-		});
+      this.isNetworkAvailable = false;
+    } else {
+      this.isNetworkAvailable = true;
+    }
+    this.network.onDisconnect().subscribe((data) => {
+      this.isNetworkAvailable = false;
+    });
+    this.network.onConnect().subscribe((data) => {
+      this.isNetworkAvailable = true;
+    });
+
+    this.appVersion.getAppName()
+      .then((appName: any) => {
+        //TODO: Need to add dynamic string substitution
+        this.appLabel = appName;
+      });
   }
 
   /**
@@ -143,6 +156,46 @@ export class CoursesPage implements OnInit {
   ngOnInit() {
     console.log('courses component initialized...');
     this.getCourseTabData();
+  }
+
+  /*   ngAfterViewInit() {
+      const driver = new Driver();
+      console.log("Driver", driver);
+      driver.highlight('#qrIcon');
+    } */
+
+  ionViewDidLoad() {
+    //this.sharedPreferences.
+    this.preference.getString('show_app_walkthrough_screen', (value) => {
+      if (value === 'true') {
+        const driver = new Driver({
+          allowClose: true,
+          closeBtnText: this.translateMessage('DONE'),
+          showButtons: true
+        });
+
+        console.log("Driver", driver);
+        setTimeout(() => {
+          driver.highlight({
+            element: '#qrIcon',
+            popover: {
+              title: this.translateMessage('SCAN_QR_CODE'),
+              description: "<img src='assets/imgs/ic_scanqrdemo.png' /><p>" + this.translateMessage('SCAN_QR_CODE_DESCRIPTION', this.appLabel) + "</p>",
+              showButtons: true,         // Do not show control buttons in footer
+              closeBtnText: this.translateMessage('DONE'),
+            }
+          });
+
+          let element = document.getElementById("driver-highlighted-element-stage");
+          var img = document.createElement("img");
+          img.src = "assets/imgs/ic_scan.png";
+          img.id = "qr_scanner";
+          element.appendChild(img);
+        }, 100);
+
+        this.preference.putString('show_app_walkthrough_screen', 'false');
+      }
+    });
   }
 
   viewMoreEnrolledCourses() {
@@ -485,19 +538,34 @@ export class CoursesPage implements OnInit {
     this.showNetworkWarning();
   }
   checkNetworkStatus(showRefresh = false) {
-		if (this.network.type === 'none') {
-			this.isNetworkAvailable = false;
-		} else {
-			this.isNetworkAvailable = true;
-			if (showRefresh) {
-				this.getCourseTabData();
-			}
-		}
+    if (this.network.type === 'none') {
+      this.isNetworkAvailable = false;
+    } else {
+      this.isNetworkAvailable = true;
+      if (showRefresh) {
+        this.getCourseTabData();
+      }
+    }
   }
   getLoader(): any {
-		return this.loadingCtrl.create({
-			duration: 30000,
-			spinner: "crescent"
-		});
-	}
+    return this.loadingCtrl.create({
+      duration: 30000,
+      spinner: "crescent"
+    });
+  }
+
+  /**
+   * Used to Translate message to current Language
+   * @param {string} messageConst - Message Constant to be translated
+   * @returns {string} translatedMsg - Translated Message
+   */
+  translateMessage(messageConst: string, field?: string): string {
+    let translatedMsg = '';
+    this.translate.get(messageConst, { '%s': field }).subscribe(
+      (value: any) => {
+        translatedMsg = value;
+      }
+    );
+    return translatedMsg;
+  }
 }

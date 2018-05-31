@@ -23,7 +23,9 @@ export class SettingsPage {
   fileUrl: string;
   shareAppLabel: string;
 
-  constructor(private navCtrl: NavController, private appVersion: AppVersion,
+  constructor(
+    private navCtrl: NavController,
+    private appVersion: AppVersion,
     private socialSharing: SocialSharing,
     private translate: TranslateService,
     private preference: SharedPreferences,

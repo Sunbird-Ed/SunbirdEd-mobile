@@ -416,5 +416,8 @@
     "SYLLABUS" : "Syllabus",
     "NEED_INTERNET":"Need internet to make changes",
     "YOU_ARE_OFFLINE": "You are offline",
-    "OFFLINE_WARNING": "Make sure your devices is connected to the internet"
+    "OFFLINE_WARNING": "Make sure your devices is connected to the internet",
+    "SCAN_QR_CODE": "Scan QR codes Here",
+    "SCAN_QR_CODE_DESCRIPTION": "You can now scan QR codes from your textbook to see associated {{%s}} Content",
+    "DONE": "Done"
   }
