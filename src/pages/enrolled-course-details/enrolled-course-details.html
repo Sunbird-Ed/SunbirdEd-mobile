@@ -62,8 +62,10 @@
 				<!-- Batch details - only for enrolled courses -->
 				<div *ngIf="batchDetails && batchDetails.name" margin-top>
 					<div class="content-meta-title" style="color: black !important">{{ 'BATCH_DETAILS' | translate }}</div>
-					<span class="text-gray-color"> {{batchDetails.name}}</span><br/>
-					<span class="text-gray-color">{{ batchDetails.startDate | date: 'mediumDate' }} - {{ batchDetails.endDate | date: 'mediumDate' }}</span><br/>
+					<span class="text-gray-color"> {{batchDetails.name}}</span>
+					<br/>
+					<span class="text-gray-color">{{ batchDetails.startDate | date: 'mediumDate' }} - {{ batchDetails.endDate | date: 'mediumDate' }}</span>
+					<br/>
 					<span *ngIf="batchDetails.creatorFirstName">
 						<span class="text-gray-color"> {{ 'BATCH_CREATED_BY' | translate }} </span>
 						<span class="font-weight-500 content-meta-title"> {{batchDetails.creatorFirstName + ' ' + batchDetails.creatorLastName}} </span>
@@ -161,7 +163,7 @@
 		<!-- <button *ngIf="showDownloadProgress && !isDownloadComplete" ion-button block outline [style.width]="downloadProgress" [ngClass]="(currentCount < 100) ? 'progress-inner-primary' : 'progress-inner-secondary'">{{ 'DOWNLOADING_2' | translate }}... {{ currentCount }} {{ 'OF' | translate }} {{ totalDownload }}</button> -->
 	</ion-toolbar>
 </ion-footer>
-<ion-footer *ngIf="(courseCardData && !courseCardData.batchId && userId && course && course.createdBy !== userId)">
+<ion-footer *ngIf="courseCardData && !courseCardData.batchId && userId && course && course.createdBy !== userId">
 	<ion-toolbar padding>
 		<button ion-button block (click)="navigateToBatchListPage();">{{ 'ENROLL_COURSE' | translate }}</button>
 	</ion-toolbar>
