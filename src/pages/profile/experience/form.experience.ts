@@ -223,7 +223,7 @@ export class FormExperience {
           role:'cancel',
           cssClass: 'closeButton',
           handler: () => {
-            alert('closed');
+           console.log('close icon clicked');
           }
         }
       ]
