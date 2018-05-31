@@ -142,7 +142,7 @@ export class ContentDetailsPage {
     private buildParamService: BuildParamService,
     private authService: AuthService, private courseService: CourseService,
     private preference: SharedPreferences) {
-      this.getUserId();
+    this.getUserId();
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
@@ -215,6 +215,9 @@ export class ContentDetailsPage {
    * Function to rate content
    */
   rateContent() {
+
+
+
     if (!this.guestUser) {
       let ratingData = {
         identifier: this.identifier,
@@ -223,7 +226,7 @@ export class ContentDetailsPage {
         comment: this.ratingComment
       }
 
-      if (this.content.downloadable && this.content.contentAccess.length) {
+      if (this.isPlayerLaunched || (this.content.downloadable && this.content.contentAccess.length)) {
         this.telemetryService.interact(generateInteractEvent(InteractType.TOUCH,
           InteractSubtype.RATING_CLICKED,
           Environment.HOME,
@@ -565,16 +568,17 @@ export class ContentDetailsPage {
    * Play content
    */
   playContent() {
-    this.telemetryService.interact(
-      generateInteractWithRollup(InteractType.TOUCH,
-        InteractSubtype.CONTENT_PLAY,
-        Environment.HOME,
-        PageId.CONTENT_DETAIL, null, this.objRollup)
-    );
-
     //set the boolean to true, so when the content player is closed, we get to know that
     //we are back from content player
-    this.isPlayerLaunched = true;
+    this.zone.run(() => {
+      this.isPlayerLaunched = true;
+      this.telemetryService.interact(
+        generateInteractWithRollup(InteractType.TOUCH,
+          InteractSubtype.CONTENT_PLAY,
+          Environment.HOME,
+          PageId.CONTENT_DETAIL, null, this.objRollup)
+      );
+    });
 
     (<any>window).geniecanvas.play(this.content.playContent);
   }
