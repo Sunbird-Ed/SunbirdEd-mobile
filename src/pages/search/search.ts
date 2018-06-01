@@ -4,7 +4,7 @@ import {
   ContentService, ContentSearchCriteria,
   Log, LogLevel, TelemetryService, Impression, ImpressionType, Environment,
   Interact, InteractType, InteractSubtype,
-  ContentDetailRequest, ContentImportRequest, FileUtil, ProfileType, CorrelationData
+  ContentDetailRequest, ContentImportRequest, FileUtil, ProfileType, CorrelationData, PageId
 } from "sunbird";
 import { GenieResponse } from "../settings/datasync/genieresponse";
 import { FilterPage } from "./filters/filter";
@@ -371,6 +371,8 @@ export class SearchPage {
   private generateLogEvent(searchResult) {
     let log = new Log();
     log.level = LogLevel.INFO;
+    log.message =this.source;
+    log.env =Environment.HOME;
     log.type = ImpressionType.SEARCH;
     if (searchResult != null) {
       let contentArray: Array<any> = searchResult.contentDataList;

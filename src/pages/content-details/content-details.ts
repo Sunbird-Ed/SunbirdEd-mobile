@@ -169,18 +169,11 @@ export class ContentDetailsPage {
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
 
-    //This is to know when the app has gone to background
-    this.pause = platform.pause.subscribe(() => {
-
-    });
-
     //This is to know when the app has come to foreground
     this.resume = platform.resume.subscribe(() => {
       if (this.isPlayerLaunched && !this.guestUser) {
         this.isPlayerLaunched = false;
-        if (this.userRating === 0) {
-          this.rateContent();
-        }
+        this.setContentDetails(this.identifier, false, true);
       }
       this.isContentPlayed = true;
       this.updateContentProgress();
@@ -218,7 +211,7 @@ export class ContentDetailsPage {
   /**
    * Function to rate content
    */
-  rateContent() {
+  rateContent(popupType: string) {
     if (!this.guestUser) {
       let ratingData = {
         identifier: this.identifier,
@@ -226,21 +219,17 @@ export class ContentDetailsPage {
         rating: this.userRating,
         comment: this.ratingComment
       }
+      let paramsMap = new Map();
+      if (this.isContentPlayed || (this.content.downloadable
+        && this.content.contentAccess.length)) {
 
-      if (this.isContentPlayed || (this.content.downloadable && this.content.contentAccess.length)) {
-        this.telemetryService.interact(generateInteractTelemetry(
-          InteractType.TOUCH,
-          InteractSubtype.RATING_CLICKED,
-          Environment.HOME,
-          PageId.CONTENT_DETAIL, null,
-          this.objRollup,
-          this.corRelationList
-        ));
+        paramsMap["IsPlayed"] = "Y";
         let popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
           content: this.content,
           pageId: PageId.CONTENT_DETAIL,
           rating: this.userRating,
-          comment: this.ratingComment
+          comment: this.ratingComment,
+          popupType: popupType
         }, {
             cssClass: 'onboarding-alert'
           });
@@ -254,8 +243,17 @@ export class ContentDetailsPage {
           }
         });
       } else {
+        paramsMap["IsPlayed"] = "N";
         this.translateAndDisplayMessage('TRY_BEFORE_RATING', false);
       }
+      this.telemetryService.interact(generateInteractTelemetry(
+        InteractType.TOUCH,
+        InteractSubtype.RATING_CLICKED,
+        Environment.HOME,
+        PageId.CONTENT_DETAIL, paramsMap,
+        this.objRollup,
+        this.corRelationList
+      ));
     } else {
       if (this.profileType == ProfileType.TEACHER) {
         this.translateAndDisplayMessage('SIGNIN_TO_USE_FEATURE');
@@ -268,9 +266,12 @@ export class ContentDetailsPage {
    *
    * @param {string} identifier identifier of content / course
    */
-  setContentDetails(identifier, refreshContentDetails: boolean | true) {
-    let loader = this.getLoader();
-    loader.present();
+  setContentDetails(identifier, refreshContentDetails: boolean | true, showRating: boolean) {
+    let loader ;
+    if(!showRating){
+      loader = this.getLoader();
+      loader.present();
+    }
     const option = {
       contentId: identifier,
       refreshContentDetails: refreshContentDetails,
@@ -284,14 +285,28 @@ export class ContentDetailsPage {
         console.log('Success: Content details received... @@@', data);
         if (data && data.result) {
           this.extractApiResponse(data);
-          loader.dismiss();
+          if(!showRating){
+            loader.dismiss();
+          }
+         
+
         } else {
-          loader.dismiss();
+          if(!showRating){
+            loader.dismiss();
+          }
+        }
+
+        if (showRating) {
+          if (this.userRating === 0) {
+            this.rateContent("automatic");
+          }
         }
       });
     },
       error => {
-        loader.dismiss();
+        if(showRating){
+          loader.dismiss();
+        }
         this.translateAndDisplayMessage('ERROR_CONTENT_NOT_AVAILABLE', true);
       });
   }
@@ -398,6 +413,17 @@ export class ContentDetailsPage {
     ));
   }
 
+  private generateRatingInteractEvent() {
+    this.telemetryService.interact(
+      generateInteractTelemetry(InteractType.TOUCH,
+        InteractSubtype.CONTENT_PLAY,
+        Environment.HOME,
+        PageId.CONTENT_DETAIL, null,
+        this.objRollup,
+        this.corRelationList)
+    );
+  }
+
   /**
    * Ionic life cycle hook
    */
@@ -411,12 +437,12 @@ export class ContentDetailsPage {
     if (!this.didViewLoad) {
       this.generateRollUp();
       let contentType = this.cardData.contentData ? this.cardData.contentData.contentType : this.cardData.contentType;
-      this.generateStartEvent(this.cardData.identifier,contentType, this.cardData.pkgVersion);
+      this.generateStartEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
       this.generateImpressionEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
     }
     this.didViewLoad = true;
     // this.resetVariables();
-    this.setContentDetails(this.identifier, true);
+    this.setContentDetails(this.identifier, true, false);
     this.subscribeGenieEvent();
     // this.events.unsubscribe('savedResources:update');
   }
@@ -426,7 +452,6 @@ export class ContentDetailsPage {
    */
   ionViewWillLeave(): void {
     this.events.unsubscribe('genie.event');
-    this.pause.unsubscribe();
     this.resume.unsubscribe();
   }
 
@@ -539,7 +564,7 @@ export class ContentDetailsPage {
             this.isDownloadStarted = false;
             this.cancelDownloading = false;
             this.content.downloadable = true;
-            this.setContentDetails(this.identifier, true);
+            this.setContentDetails(this.identifier, true, false);
             this.downloadProgress = '';
             this.events.publish('savedResources:update', {
               update: true

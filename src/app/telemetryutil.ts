@@ -4,6 +4,7 @@ import { Impression, Interact, Start, Mode, Environment, End, Rollup, Correlatio
 export function generateImpressionTelemetry(type, subtype, pageid, env, objectId, objectType, objectVersion, rollup: Rollup, corRelationList: Array<CorrelationData>): Impression {
     let impression = new Impression();
     impression.type = type;
+    impression.subType = subtype;
     impression.pageId = pageid;
     impression.env = env;
     impression.objId = objectId;

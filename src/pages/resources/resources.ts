@@ -511,25 +511,25 @@ export class ResourcesPage implements OnInit {
 		this.navCtrl.push(SearchPage, { contentType: ContentType.FOR_LIBRARY_TAB, source: PageId.LIBRARY });
 	}
 
-	showContentDetails(content, corRelation) {
+	showContentDetails(content, corRelationList) {
 
 		if (content.contentType === ContentType.COURSE) {
 			console.log('Calling course details page');
 			this.navCtrl.push(EnrolledCourseDetailsPage, {
 				content: content,
-				corRelation: corRelation
+				corRelation: corRelationList
 			})
 		} else if (content.mimeType === MimeType.COLLECTION) {
 			console.log('Calling collection details page');
 			this.navCtrl.push(CollectionDetailsPage, {
 				content: content,
-				corRelation: corRelation
+				corRelation: corRelationList
 			})
 		} else {
 			console.log('Calling content details page');
 			this.navCtrl.push(ContentDetailsPage, {
 				content: content,
-				corRelation: corRelation
+				corRelation: corRelationList
 			})
 		}
 	}
