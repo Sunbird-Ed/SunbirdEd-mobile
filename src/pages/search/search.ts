@@ -208,8 +208,7 @@ export class SearchPage {
       query: this.searchKeywords,
       contentTypes: this.contentType,
       facets: Search.FACETS,
-      audience: this.audienceFilter,
-      mode: "soft"
+      audience: this.audienceFilter
     }
 
     this.isDialCodeSearch = false;
