@@ -155,6 +155,9 @@ export class EnrolledCourseDetailsPage {
   private objId;
   private objType;
   private objVer;
+  private didViewLoad: boolean;
+  private backButtonFunc = undefined;
+
   @ViewChild(Navbar) navBar: Navbar;
   constructor(navCtrl: NavController,
     navParams: NavParams,
@@ -196,10 +199,12 @@ export class EnrolledCourseDetailsPage {
       }
     });
 
-    this.platform.registerBackButtonAction(() => {
+    this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      this.didViewLoad = false;
       this.generateEndEvent(this.objId, this.objType, this.objVer);
       this.navCtrl.pop();
-    }, 0)
+      this.backButtonFunc();
+    }, 10)
   }
 
   /**
@@ -325,8 +330,12 @@ export class EnrolledCourseDetailsPage {
       this.objId = this.course.identifier;
       this.objType = this.course.contentType;
       this.objVer = this.course.pkgVersion;
-      this.generateStartEvent(this.course.identifier, this.course.contentType, this.course.pkgVersion);
-      this.generateImpressionEvent(this.course.identifier, this.course.contentType, this.course.pkgVersion);
+      if (!this.didViewLoad) {
+        this.generateStartEvent(this.course.identifier, this.course.contentType, this.course.pkgVersion);
+        this.generateImpressionEvent(this.course.identifier, this.course.contentType, this.course.pkgVersion);
+      }
+      this.didViewLoad = true;
+
       if (this.course.status !== 'Live') {
         this.showMessage(this.translateLanguageConstant('ERROR_CONTENT_NOT_AVAILABLE'));
         this.navCtrl.pop();
@@ -429,7 +438,7 @@ export class EnrolledCourseDetailsPage {
         isChildContent: isChild,
         destinationFolder: this.fileUtil.internalStoragePath(),
         contentId: value,
-        correlationData: []
+        correlationData: this.corRelationList !== undefined ? this.corRelationList : []
       })
     });
 
@@ -754,8 +763,10 @@ export class EnrolledCourseDetailsPage {
 
   ionViewDidLoad() {
     this.navBar.backButtonClick = (e: UIEvent) => {
+      this.didViewLoad = false;
       this.generateEndEvent(this.objId, this.objType, this.objVer);
       this.navCtrl.pop();
+      this.backButtonFunc();
     }
   }
 

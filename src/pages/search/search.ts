@@ -623,7 +623,7 @@ export class SearchPage {
         // TODO - check with Anil for destination folder path
         destinationFolder: this.fileUtil.internalStoragePath(),
         contentId: value,
-        correlationData: []
+        correlationData: this.corRelationList !== undefined ? this.corRelationList : []
       })
     });
 

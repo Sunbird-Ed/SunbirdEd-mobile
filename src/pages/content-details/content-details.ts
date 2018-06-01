@@ -406,13 +406,13 @@ export class ContentDetailsPage {
     this.isChildContent = this.navParams.get('isChildContent');
     this.cardData.depth = this.navParams.get('depth') === undefined ? '' : this.navParams.get('depth');
     this.corRelationList = this.navParams.get('corRelation');
-    console.log("this.corRelation", "" + JSON.stringify(this.corRelationList));
 
     this.identifier = this.cardData.contentId || this.cardData.identifier;
     if (!this.didViewLoad) {
       this.generateRollUp();
-      this.generateStartEvent(this.cardData.identifier, this.cardData.contentType, this.cardData.pkgVersion);
-      this.generateImpressionEvent(this.cardData.identifier, this.cardData.contentType, this.cardData.pkgVersion);
+      let contentType = this.cardData.contentData ? this.cardData.contentData.contentType : this.cardData.contentType;
+      this.generateStartEvent(this.cardData.identifier,contentType, this.cardData.pkgVersion);
+      this.generateImpressionEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
     }
     this.didViewLoad = true;
     // this.resetVariables();
@@ -479,7 +479,7 @@ export class ContentDetailsPage {
         isChildContent: isChild,
         destinationFolder: this.fileUtil.internalStoragePath(),
         contentId: value,
-        correlationData: []
+        correlationData: this.corRelationList !== undefined ? this.corRelationList : []
       })
     });
 
