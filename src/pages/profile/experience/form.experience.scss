@@ -23,26 +23,21 @@ page-experience {
     bottom: 0;
     position: fixed;
 }
-// .alert-wp.confirm-alert .alert-title span {
-//     float: right;
-//     font-size: 20px;
-// }
+
 
 .alert-wp.confirm-alert .closeButton {
-    text-align: right;
+text-align: right;
 position: absolute;
 width: 5px !important;
 top: 3px;
-// right: -4px;
 z-index:1000;
-color: #029dff !important;
-//padding: 0px !important;
 background-color: transparent !important;
+font-size:18px !important;
+font-weight: 600 !important;
+padding-top: 12px !important;
+
 }
 
-// .alert-wp .confirm-alert .ion-backdrop {
-//     background: black !important;
-// }
 
 .alert-btn-cancel.alert-button {
     font-weight: 600 !important;
@@ -89,9 +84,9 @@ background-color: transparent !important;
     font-size: 1.7rem !important;
     font-weight: 600 !important;
 }
-h2{
-line-height: 0 !important;
-}
+// h2{
+// line-height: 0 !important;
+// }
 .alert-wp .alert-button-group{
     display: inline-block !important;
 

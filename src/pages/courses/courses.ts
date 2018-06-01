@@ -183,8 +183,8 @@ export class CoursesPage implements OnInit {
           driver.highlight({
             element: '#qrIcon',
             popover: {
-              title: this.translateMessage('SCAN_QR_CODE_HERE'),
-              description: "<img src='assets/imgs/ic_scanqrdemo.png' /><p>" + this.translateMessage('SCAN_QR_CODE_DESCRIPTION', this.appLabel) + "</p>",
+              title: this.translateMessage('ONBOARD_SCAN_QR_CODE'),
+              description: "<img src='assets/imgs/ic_scanqrdemo.png' /><p>" + this.translateMessage('ONBOARD_SCAN_QR_CODE_DESC', this.appLabel) + "</p>",
               showButtons: true,         // Do not show control buttons in footer
               closeBtnText: this.translateMessage('DONE'),
             }

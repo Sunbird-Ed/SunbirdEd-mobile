@@ -67,10 +67,10 @@
   <ion-toolbar>
     <ion-row>
       <ion-col padding *ngIf="!isNewForm">
-        <button (click)="onSubmit($event, true)" ion-button block outline class="text-capitalize">{{ 'DELETE' | translate }}</button>
+        <button (click)="showDeleteConfirm()" ion-button block outline class="text-capitalize">{{ 'DELETE' | translate }}</button>
       </ion-col>
       <ion-col padding>
-        <button type="submit" [disabled]="!addressForm.valid" (click)="onSubmit($event)" ion-button block class="text-capitalize">{{ 'SAVE' | translate }}</button>
+        <button type="submit" [disabled]="!addressForm.valid" (click)="onSubmit()" ion-button block class="text-capitalize">{{ 'SAVE' | translate }}</button>
       </ion-col>
     </ion-row>
   </ion-toolbar>
