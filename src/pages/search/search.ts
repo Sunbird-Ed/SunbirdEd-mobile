@@ -164,6 +164,8 @@ export class SearchPage {
 
   applyFilter() {
     this.showLoader = true;
+    this.responseData.result.filterCriteria.mode = "hard";
+
     this.contentService.searchContent(this.responseData.result.filterCriteria, true, (responseData) => {
 
       this.zone.run(() => {
@@ -208,7 +210,8 @@ export class SearchPage {
       query: this.searchKeywords,
       contentTypes: this.contentType,
       facets: Search.FACETS,
-      audience: this.audienceFilter
+      audience: this.audienceFilter,
+      mode: "soft"
     }
 
     this.isDialCodeSearch = false;
