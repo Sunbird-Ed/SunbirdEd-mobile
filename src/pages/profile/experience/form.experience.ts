@@ -183,22 +183,20 @@ export class FormExperience {
    * @param {string} messageConst - Message Constant to be translated
    * @returns {string} translatedMsg - Translated Message
    */
-  translateMessage(messageConst: string): string {
+  translateMessage(messageConst: string, field?: string): string {
     let translatedMsg = '';
-    this.translate.get(messageConst).subscribe(
+    this.translate.get(messageConst, { '%s': field }).subscribe(
       (value: any) => {
         translatedMsg = value;
       }
     );
     return translatedMsg;
   }
-  closePopup() {
-  }
+
   showDeleteConfirm() {
     let confirm = this.alertCtrl.create({
-      // title: this.translateMessage('VIEW_ALL_COMMUNITIES'),
-         title: "Do you wanr to delete",
-      // <ion-icon name='md-close'></ion-icon>
+      title: this.translateMessage('CONFIRM_DEL',this.translateMessage('TITLE_EXPERIENCE')),
+
       mode: 'wp',
       cssClass: 'confirm-alert',
       buttons: [
@@ -220,10 +218,10 @@ export class FormExperience {
         },
         {
           text: 'x',
-          role:'cancel',
+          role: 'cancel',
           cssClass: 'closeButton',
           handler: () => {
-           console.log('close icon clicked');
+            console.log('close icon clicked');
           }
         }
       ]
