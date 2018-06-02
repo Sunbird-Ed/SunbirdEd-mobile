@@ -71,4 +71,28 @@ page-enrolled-course-details {
     .padding-0 {
         padding-left: 0px !important;
     }
+
+    .course-progress {
+        position: absolute;
+        width: 100%;
+        
+        z-index: 10;
+  
+        .progress-outer {
+          background-color: transparent !important;
+        }
+  
+        .progress-inner {
+          min-width: unset !important;
+          padding: 2px !important;
+        }
+  
+        .progress-inner-primary{
+          background-color: #FF9F00 !important;
+        }
+  
+        .progress-inner-secondary {
+          background-color: #7ED321 !important;
+        }
+      }
 }

@@ -6,6 +6,7 @@ import * as _ from 'lodash';
 import { TranslateService } from "@ngx-translate/core";
 
 import { ProfilePage } from "./../profile";
+import { generateImpressionTelemetry } from "../../../app/telemetryutil";
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -114,7 +115,7 @@ export class UserSearchComponent {
   }
 
   contentLoad() {
-    if(this.userList.length <= this.apiLimit) {
+    if (this.userList.length <= this.apiLimit) {
       this.getVisibleElementRange();
     }
   }
@@ -152,20 +153,21 @@ export class UserSearchComponent {
     }
   }
 
+  ionViewDidLoad() {
+    this.telemetryService.impression(generateImpressionTelemetry(
+      ImpressionType.SEARCH, "",
+      PageId.PROFILE,
+      Environment.USER, "", "", "",
+      undefined, undefined
+    ));
+  }
+
   ionViewDidEnter() {
-    this.generateImpressionEvent();
     setTimeout(() => {
       this.input.setFocus();
     }, 100);
   }
 
-  generateImpressionEvent() {
-    let impression = new Impression();
-    impression.type = ImpressionType.SEARCH;
-    impression.pageId = PageId.PROFILE;
-    impression.env = Environment.USER;
-    this.telemetryService.impression(impression);
-  }
 
 
   getLoader(): any {
@@ -182,7 +184,7 @@ export class UserSearchComponent {
   getVisibleElementRange() {
     this.userList.forEach((element, index) => {
       console.log(`Index ${index}: `, this.isElementInViewport(document.getElementById(<string>index)));
-      if(document.getElementById(<string>index)) {
+      if (document.getElementById(<string>index)) {
         this.generateVisitObject(element, index);
       }
     });

@@ -4,7 +4,7 @@ import {
   ContentService, ContentSearchCriteria,
   Log, LogLevel, TelemetryService, Impression, ImpressionType, Environment,
   Interact, InteractType, InteractSubtype,
-  ContentDetailRequest, ContentImportRequest, FileUtil, ProfileType
+  ContentDetailRequest, ContentImportRequest, FileUtil, ProfileType, CorrelationData, PageId
 } from "sunbird";
 import { GenieResponse } from "../settings/datasync/genieresponse";
 import { FilterPage } from "./filters/filter";
@@ -13,7 +13,7 @@ import { CollectionDetailsPage } from "../collection-details/collection-details"
 import { ContentDetailsPage } from "../content-details/content-details";
 import { Network } from "@ionic-native/network";
 import { TranslateService } from '@ngx-translate/core';
-import { Map } from "../../app/telemetryutil";
+import { Map, generateImpressionTelemetry } from "../../app/telemetryutil";
 import * as _ from 'lodash';
 import { ContentType, MimeType, Search, AudienceFilter } from '../../app/app.constant';
 import { EnrolledCourseDetailsPage } from "../enrolled-course-details/enrolled-course-details";
@@ -55,22 +55,26 @@ export class SearchPage {
   showEmptyMessage: boolean;
 
   defaultAppIcon: string;
+
   isEmptyResult: boolean = false;
 
   queuedIdentifiers = [];
+
   isDownloadStarted: boolean = false;
+
   currentCount: number = 0;
 
   parentContent: any = undefined;
+
   childContent: any = undefined;
 
   loadingDisplayText: string = "Loading content";
 
   audienceFilter = [];
 
+  private corRelationList: Array<CorrelationData>;
 
   profile: any;
-
 
   constructor(private contentService: ContentService,
     private telemetryService: TelemetryService,
@@ -104,6 +108,10 @@ export class SearchPage {
     this.checkUserSession();
   }
 
+  ionViewDidLoad() {
+
+  }
+
   openCollection(collection) {
     // TODO: Add mimeType check
     // this.navCtrl.push(EnrolledCourseDetailsPage, {'content': collection})
@@ -132,17 +140,20 @@ export class SearchPage {
     if (content.contentType === ContentType.COURSE) {
       console.log('Calling course details page');
       this.navCtrl.push(EnrolledCourseDetailsPage, {
-        content: content
+        content: content,
+        corRelation: this.corRelationList
       })
     } else if (content.mimeType === MimeType.COLLECTION) {
       console.log('Calling collection details page');
       this.navCtrl.push(CollectionDetailsPage, {
-        content: content
+        content: content,
+        corRelation: this.corRelationList
       })
     } else {
       console.log('Calling content details page');
       this.navCtrl.push(ContentDetailsPage, {
-        content: content
+        content: content,
+        corRelation: this.corRelationList
       })
     }
   }
@@ -153,6 +164,8 @@ export class SearchPage {
 
   applyFilter() {
     this.showLoader = true;
+    this.responseData.result.filterCriteria.mode = "hard";
+
     this.contentService.searchContent(this.responseData.result.filterCriteria, true, (responseData) => {
 
       this.zone.run(() => {
@@ -166,8 +179,6 @@ export class SearchPage {
             this.searchContentResult = response.result.contentDataList;
             this.isEmptyResult = false;
           }
-
-
           this.updateFilterIcon();
         } else {
           this.isEmptyResult = true;
@@ -199,29 +210,30 @@ export class SearchPage {
       query: this.searchKeywords,
       contentTypes: this.contentType,
       facets: Search.FACETS,
-      audience: this.audienceFilter
+      audience: this.audienceFilter,
+      mode: "soft"
     }
 
     this.isDialCodeSearch = false;
 
     if (this.profile) {
 
-			if (this.profile.board && this.profile.board.length) {
-				contentSearchRequest.board = this.applyProfileFilter(this.profile.board, contentSearchRequest.board);
-			}
+      if (this.profile.board && this.profile.board.length) {
+        contentSearchRequest.board = this.applyProfileFilter(this.profile.board, contentSearchRequest.board);
+      }
 
-			if (this.profile.medium && this.profile.medium.length) {
-				contentSearchRequest.medium = this.applyProfileFilter(this.profile.medium, contentSearchRequest.medium);
-			}
+      if (this.profile.medium && this.profile.medium.length) {
+        contentSearchRequest.medium = this.applyProfileFilter(this.profile.medium, contentSearchRequest.medium);
+      }
 
-			if (this.profile.grade && this.profile.grade.length) {
-				contentSearchRequest.grade = this.applyProfileFilter(this.profile.grade, contentSearchRequest.grade);
-			}
+      if (this.profile.grade && this.profile.grade.length) {
+        contentSearchRequest.grade = this.applyProfileFilter(this.profile.grade, contentSearchRequest.grade);
+      }
 
-			// if (this.profile.subject && this.profile.subject.length) {
-			// 	contentSearchRequest.subject = this.applyProfileFilter(this.profile.subject, contentSearchRequest.subject);
-			// }
-		}
+      // if (this.profile.subject && this.profile.subject.length) {
+      // 	contentSearchRequest.subject = this.applyProfileFilter(this.profile.subject, contentSearchRequest.subject);
+      // }
+    }
 
     this.contentService.searchContent(contentSearchRequest, false, (responseData) => {
 
@@ -229,6 +241,7 @@ export class SearchPage {
         let response: GenieResponse = JSON.parse(responseData);
         this.responseData = response;
         if (response.status && response.result) {
+          this.addCorRelation(response.result.responseMessageId, "API");
           this.searchContentResult = response.result.contentDataList;
           console.log('inside search content service');
           console.log(this.searchContentResult);
@@ -236,7 +249,7 @@ export class SearchPage {
 
           this.isEmptyResult = false;
 
-          this.generateImpressionEvent();
+
           this.generateLogEvent(response.result);
         } else {
           this.isEmptyResult = true;
@@ -256,33 +269,34 @@ export class SearchPage {
   }
 
   applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>) {
-		if (!assembleFilter) {
-			assembleFilter = [];
-		}
-		assembleFilter = assembleFilter.concat(profileFilter);
+    if (!assembleFilter) {
+      assembleFilter = [];
+    }
+    assembleFilter = assembleFilter.concat(profileFilter);
 
-		let unique_array = [];
+    let unique_array = [];
 
-		for (let i = 0; i < assembleFilter.length; i++) {
-			if (unique_array.indexOf(assembleFilter[i]) == -1 && assembleFilter[i].length > 0) {
-				unique_array.push(assembleFilter[i])
-			}
-		}
+    for (let i = 0; i < assembleFilter.length; i++) {
+      if (unique_array.indexOf(assembleFilter[i]) == -1 && assembleFilter[i].length > 0) {
+        unique_array.push(assembleFilter[i])
+      }
+    }
 
-		assembleFilter = unique_array;
+    assembleFilter = unique_array;
 
-		if (assembleFilter.length == 0) {
-			return undefined;
-		}
+    if (assembleFilter.length == 0) {
+      return undefined;
+    }
 
-		return assembleFilter;
-	}
+    return assembleFilter;
+  }
 
   private init() {
     this.dialCode = this.navParams.get('dialCode');
     this.contentType = this.navParams.get('contentType');
     this.source = this.navParams.get('source');
-
+    this.corRelationList = this.navParams.get('corRelation');
+    this.generateImpressionEvent();
     if (this.dialCode !== undefined && this.dialCode.length > 0) {
       this.getContentForDialCode()
     }
@@ -323,6 +337,7 @@ export class SearchPage {
         let response: GenieResponse = JSON.parse(responseData);
         this.responseData = response;
         if (response.status && response.result) {
+          this.addCorRelation(response.result.responseMessageId, "API");
           this.processDialCodeResult(response.result);
           this.updateFilterIcon();
         }
@@ -335,17 +350,32 @@ export class SearchPage {
       });
     });
   }
+
+  private addCorRelation(id: string, type: string) {
+    if (this.corRelationList === undefined || this.corRelationList === null) {
+      this.corRelationList = new Array<CorrelationData>();
+    }
+    let corRelation: CorrelationData = new CorrelationData();
+    corRelation.id = id;
+    corRelation.type = type;
+    this.corRelationList.push(corRelation);
+  }
   private generateImpressionEvent() {
-    let impression = new Impression();
-    impression.type = ImpressionType.SEARCH;
-    impression.pageId = this.source;
-    impression.env = Environment.HOME;
-    this.telemetryService.impression(impression);
+    this.telemetryService.impression(generateImpressionTelemetry(
+      ImpressionType.SEARCH, "",
+      this.source,
+      Environment.HOME, "", "", "",
+      undefined,
+      this.corRelationList
+
+    ));
   }
 
   private generateLogEvent(searchResult) {
     let log = new Log();
     log.level = LogLevel.INFO;
+    log.message =this.source;
+    log.env =Environment.HOME;
     log.type = ImpressionType.SEARCH;
     if (searchResult != null) {
       let contentArray: Array<any> = searchResult.contentDataList;
@@ -374,6 +404,7 @@ export class SearchPage {
     interact.objId = identifier;
     interact.objType = contentType;
     interact.objType = pkgVersion;
+    interact.correlationData=this.corRelationList;
     this.telemetryService.interact(interact);
   }
 
@@ -597,7 +628,7 @@ export class SearchPage {
         // TODO - check with Anil for destination folder path
         destinationFolder: this.fileUtil.internalStoragePath(),
         contentId: value,
-        correlationData: []
+        correlationData: this.corRelationList !== undefined ? this.corRelationList : []
       })
     });
 

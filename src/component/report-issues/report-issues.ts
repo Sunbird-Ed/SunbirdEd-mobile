@@ -4,7 +4,7 @@ import { NavParams, ViewController, Platform, ToastController } from "ionic-angu
 import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
-import { generateInteractEvent } from '../../app/telemetryutil';
+import { generateInteractTelemetry} from '../../app/telemetryutil';
 import { ProfileConstants } from '../../app/app.constant';
 
 /**
@@ -125,20 +125,26 @@ export class ReportIssuesComponent {
       paramsMap["contentType"] = this.content.contentType;
       paramsMap["Reason"] = reasons.join(", ");
       paramsMap["Comment"] = formValue.comment;
-      this.telemetryService.interact(generateInteractEvent(InteractType.TOUCH,
+      this.telemetryService.interact(generateInteractTelemetry(
+        InteractType.TOUCH,
         InteractSubtype.FLAG_INITIATE,
         Environment.HOME,
-        PageId.CONTENT_DETAIL, paramsMap
+        PageId.CONTENT_DETAIL, paramsMap,
+        undefined,
+        undefined
       ));
 
       this.contentService.flagContent(option, (res: any) => {
         console.log('success:', res);
         let paramsMap = new Map();
         paramsMap["contentType"] = this.content.contentType;
-        this.telemetryService.interact(generateInteractEvent(InteractType.TOUCH,
+        this.telemetryService.interact(generateInteractTelemetry(
+          InteractType.TOUCH,
           InteractSubtype.FLAG_SUCCESS,
           Environment.HOME,
-          PageId.CONTENT_DETAIL, paramsMap
+          PageId.CONTENT_DETAIL, paramsMap,
+          undefined,
+          undefined
         ));
         this.viewCtrl.dismiss('flag.success');
         this.showMessage(this.translateLangConst('CONTENT_FLAGGED_MSG'));

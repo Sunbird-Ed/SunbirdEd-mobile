@@ -7,7 +7,7 @@ import {
 import {
   ContentService, FileUtil,
   PageId, Environment, Mode, ImpressionType, TelemetryService, Rollup, InteractType, InteractSubtype,
-  ShareUtil, BuildParamService, AuthService, SharedPreferences, ProfileType
+  ShareUtil, BuildParamService, AuthService, SharedPreferences, ProfileType, CorrelationData
 } from 'sunbird';
 import * as _ from 'lodash';
 import { ContentDetailsPage } from '../content-details/content-details';
@@ -16,8 +16,8 @@ import { ContentActionsComponent } from '../../component/content-actions/content
 import { ConfirmAlertComponent } from '../../component/confirm-alert/confirm-alert';
 import { TranslateService } from '@ngx-translate/core';
 import {
-  generateImpressionWithRollup, generateStartWithRollup,
-  generateEndWithRollup, generateInteractEvent
+  generateStartTelemetry,
+  generateEndTelemetry, generateInteractTelemetry, generateImpressionTelemetry
 } from '../../app/telemetryutil';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { ContentRatingAlertComponent } from '../../component/content-rating-alert/content-rating-alert';
@@ -162,6 +162,7 @@ export class CollectionDetailsPage {
   guestUser: boolean = false;
 
   profileType: string = '';
+  private corRelationList: Array<CorrelationData>;
 
   @ViewChild(Navbar) navBar: Navbar;
   constructor(private navCtrl: NavController,
@@ -376,7 +377,7 @@ export class CollectionDetailsPage {
         // TODO - check with Anil for destination folder path
         destinationFolder: this.fileUtil.internalStoragePath(),
         contentId: value,
-        correlationData: []
+        correlationData: this.corRelationList !== undefined ? this.corRelationList : []
       })
     });
 
@@ -508,6 +509,7 @@ export class CollectionDetailsPage {
     this.zone.run(() => {
       this.resetVariables();
       this.cardData = this.navParams.get('content');
+      this.corRelationList = this.navParams.get('corRelation');
       let depth = this.navParams.get('depth');
       if (depth !== undefined) {
         this.depth = depth;
@@ -521,8 +523,9 @@ export class CollectionDetailsPage {
 
       if (!this.didViewLoad) {
         this.generateRollUp();
-        this.generateStartEvent(this.cardData.identifier, this.cardData.contentType, this.cardData.pkgVersion);
-        this.generateImpressionEvent(this.cardData.identifier, this.cardData.contentType, this.cardData.pkgVersion);
+        let contentType = this.cardData.contentData ? this.cardData.contentData.contentType : this.cardData.contentType;
+        this.generateStartEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
+        this.generateImpressionEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
       }
       this.didViewLoad = true;
       this.setContentDetails(this.identifier, true);
@@ -541,7 +544,8 @@ export class CollectionDetailsPage {
         this.navCtrl.push(EnrolledCourseDetailsPage, {
           content: content,
           depth: depth,
-          contentState: stateData
+          contentState: stateData,
+          corRelation: this.corRelationList
         })
       } else if (content.mimeType === MimeType.COLLECTION) {
         console.warn('Inside CollectionDetailsPage >>>');
@@ -549,7 +553,8 @@ export class CollectionDetailsPage {
         this.navCtrl.push(CollectionDetailsPage, {
           content: content,
           depth: depth,
-          contentState: stateData
+          contentState: stateData,
+          corRelation: this.corRelationList
         })
       } else {
         console.warn('Inside ContentDetailsPage >>>');
@@ -557,7 +562,8 @@ export class CollectionDetailsPage {
           isChildContent: true,
           content: content,
           depth: depth,
-          contentState: stateData
+          contentState: stateData,
+          corRelation: this.corRelationList
         })
       }
     })
@@ -767,36 +773,39 @@ export class CollectionDetailsPage {
   }
 
   generateImpressionEvent(objectId, objectType, objectVersion) {
-    this.telemetryService.impression(generateImpressionWithRollup(
-      ImpressionType.DETAIL,
+    this.telemetryService.impression(generateImpressionTelemetry(
+      ImpressionType.DETAIL, "",
       PageId.COLLECTION_DETAIL,
       Environment.HOME,
       objectId,
       objectType,
       objectVersion,
-      this.objRollup
+      this.objRollup,
+      this.corRelationList
     ));
   }
 
   generateStartEvent(objectId, objectType, objectVersion) {
-    this.telemetryService.start(generateStartWithRollup(
+    this.telemetryService.start(generateStartTelemetry(
       PageId.COLLECTION_DETAIL,
       objectId,
       objectType,
       objectVersion,
-      this.objRollup
+      this.objRollup,
+      this.corRelationList
     ));
   }
 
   generateEndEvent(objectId, objectType, objectVersion) {
-    this.telemetryService.end(generateEndWithRollup(
+    this.telemetryService.end(generateEndTelemetry(
       objectType,
       Mode.PLAY,
       PageId.COLLECTION_DETAIL,
       objectId,
       objectType,
       objectVersion,
-      this.objRollup
+      this.objRollup,
+      this.corRelationList
     ));
   }
 
@@ -804,10 +813,12 @@ export class CollectionDetailsPage {
     let values = new Map();
     values["ContentType"] = contentType;
     this.telemetryService.interact(
-      generateInteractEvent(interactType,
+      generateInteractTelemetry(interactType,
         subType,
         Environment.HOME,
-        PageId.COLLECTION_DETAIL, values)
+        PageId.COLLECTION_DETAIL, values,
+        undefined,
+        this.corRelationList)
     );
   }
 

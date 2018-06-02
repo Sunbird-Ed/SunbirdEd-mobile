@@ -2,7 +2,7 @@ import { IonicPage, NavController, NavParams, LoadingController, Events } from '
 import { Component, NgZone, OnInit } from '@angular/core';
 import { ContentService, CourseService, PageAssembleService, TelemetryService, PageId, Environment, ImpressionType, Log, LogLevel } from 'sunbird';
 import * as _ from 'lodash';
-import { generateImpressionEvent } from '../../app/telemetryutil';
+import {  generateImpressionTelemetry } from '../../app/telemetryutil';
 import { ContentType } from '../../app/app.constant';
 
 /**
@@ -180,10 +180,12 @@ export class ViewMoreActivityPage implements OnInit {
 
 	private generateImpressionEvent() {
 		this.telemetryService.impression(
-			generateImpressionEvent(
-				ImpressionType.SEARCH,
+			generateImpressionTelemetry(
+				ImpressionType.SEARCH, "",
 				PageId.LIBRARY,
-				Environment.HOME, "", "", "")
+				Environment.HOME, "", "", "",
+				undefined,
+				undefined)
 		);
 	}
 

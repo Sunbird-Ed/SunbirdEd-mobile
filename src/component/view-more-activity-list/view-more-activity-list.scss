@@ -94,11 +94,35 @@ view-more-activity-list {
       }
     .image-align{
         border-radius: 5px 0 0 5px;
-        background-color: map-get($colors, secondary_black);
+        background-color: #979797 !important;
         padding: 0 !important;
 
     }
     .col {
         max-height: 98px;
+    }
+
+    .course-progress {
+        position: absolute;
+        width: 100%;
+        
+        z-index: 10;
+  
+        .progress-outer {
+          background-color: transparent !important;
+        }
+  
+        .progress-inner {
+          min-width: unset !important;
+          padding: 2px !important;
+        }
+  
+        .progress-inner-primary{
+          background-color: #FF9F00 !important;
+        }
+  
+        .progress-inner-secondary {
+          background-color: #7ED321 !important;
+        }
     }
 }
