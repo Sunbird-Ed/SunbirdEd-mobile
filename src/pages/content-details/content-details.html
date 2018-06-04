@@ -19,15 +19,16 @@
 	<div class="content-details-holder" *ngIf="content">
 		<h6 class="font-size-20">{{content.name}}</h6>
 		<!-- Owner and download info -->
-		<ion-grid class="padding-0" *ngIf="content.owner || content.size">
+		<ion-grid class="padding-0">
 			<div *ngIf="content.owner">
 				<span class="text-gray-color">{{ 'CONTENT_CREATED_BY' | translate }}</span>
 				<span class="content-meta-title">{{ content.owner }}</span>
 			</div>
 			<ion-row class="padding-top-10">
 				<ion-col class="padding-0">
-					<div class="size_txt padding-bottom-5" no-margin *ngIf="content.size || content.contentType">
-						<span *ngIf="content.contentType" class="content-size">{{ content.contentType }}</span>
+					<div class="size_txt padding-bottom-5" no-margin>
+						<span class="content-size">{{ content.contentType }}</span>
+						<!--Size 0 if not -->
 						<span class="content-size">[{{ content.size | fileSize }}]</span>
 					</div>
 					<rating align-items-start (click)="rateContent();" [(ngModel)]="content.me_averageRating" readOnly="true" max="5" no-padding></rating>

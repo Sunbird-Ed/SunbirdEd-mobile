@@ -21,15 +21,16 @@
 		<h6 class="font-size-20">{{(contentDetail?.name && contentDetail?.name.length > 25) ? (contentDetail?.name
 			| slice:0:25) + '...' : (contentDetail?.name) }}</h6>
 		<!-- Owner and download info -->
-		<ion-grid class="padding-0" *ngIf="contentDetail.contentType || contentDetail.owner">
+		<ion-grid class="padding-0">
 			<div *ngIf="contentDetail.owner">
 				<span class="text-gray-color">{{ 'CONTENT_CREATED_BY' | translate }}</span>
 				<span class="content-meta-title">{{ contentDetail.owner }}</span>
 			</div>
 			<ion-row class="padding-top-10">
 				<ion-col class="padding-0">
-					<div class="size_txt padding-bottom-5" no-margin *ngIf="contentDetail.contentType || contentDetail.size">
-						<span *ngIf="contentDetail.contentType" class="content-size">{{ contentDetail.contentType }} </span>
+					<div class="size_txt padding-bottom-5" no-margin>
+						<span class="content-size">{{ contentDetail.contentType }} </span>
+						<!--  TODO: show 0 if not available-->
 						<span *ngIf="contentDetail.size" class="content-size">[{{ contentDetail.size | fileSize }}]</span>
 					</div>
 					<rating align-items-start (click)="rateContent();" [(ngModel)]="contentDetail.me_averageRating" readOnly="true"

@@ -259,6 +259,7 @@ export class CoursesPage implements OnInit {
         this.popularAndLatestCourses = newSections;
         console.log('Popular courses', this.popularAndLatestCourses);
         this.pageApiLoader = !this.pageApiLoader;
+        this.checkEmptySearchResult();
       });
     }, (error: string) => {
       console.log('Page assmble error', error);
@@ -492,6 +493,24 @@ export class CoursesPage implements OnInit {
     toast.present();
   }
 
+  /**
+   * 
+   */
+  checkEmptySearchResult(isAfterLanguageChange = false) {
+		let flags = [];
+		_.forEach(this.popularAndLatestCourses, function (value, key) {
+			if (value.contents && value.contents.length) {
+				flags[key] = true;
+			}
+		});
+
+		if (flags.length && _.includes(flags, true)) {
+			console.log('search result found');
+		} else {
+			if (!isAfterLanguageChange) this.getMessageByConst('NO_CONTENTS_FOUND');
+		}
+  }
+  
   getMessageByConst(constant) {
     this.translate.get(constant).subscribe(
       (value: any) => {
