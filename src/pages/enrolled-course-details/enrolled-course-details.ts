@@ -16,6 +16,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ContentType, MimeType, ProfileConstants } from '../../app/app.constant';
 import { CourseBatchesPage } from '../course-batches/course-batches';
 import { SocialSharing } from '@ionic-native/social-sharing';
+import { Network } from '@ionic-native/network';
 import { generateInteractTelemetry, generateEndTelemetry, generateStartTelemetry, generateImpressionTelemetry } from '../../app/telemetryutil';
 
 /**
@@ -88,6 +89,11 @@ export class EnrolledCourseDetailsPage {
    * Contains child content import / download progress
    */
   downloadProgress: any;
+
+  /**
+   * To hold network status
+   */
+  isNetworkAvailable: boolean;
 
   showDownloadProgress: boolean;
   totalDownload: number;
@@ -176,8 +182,9 @@ export class EnrolledCourseDetailsPage {
     private social: SocialSharing,
     private telemetryService: TelemetryService, private loadingCtrl: LoadingController,
     private preference: SharedPreferences,
+    private network: Network,
     private platform: Platform) {
-      this.getUserId();
+    this.getUserId();
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
 
@@ -204,7 +211,19 @@ export class EnrolledCourseDetailsPage {
       this.generateEndEvent(this.objId, this.objType, this.objVer);
       this.navCtrl.pop();
       this.backButtonFunc();
-    }, 10)
+    }, 10);
+
+    if (this.network.type === 'none') {
+      this.isNetworkAvailable = false;
+    } else {
+      this.isNetworkAvailable = true;
+    }
+    this.network.onDisconnect().subscribe((data) => {
+      this.isNetworkAvailable = false;
+    });
+    this.network.onConnect().subscribe((data) => {
+      this.isNetworkAvailable = true;
+    });
   }
 
   /**
@@ -512,9 +531,13 @@ export class EnrolledCourseDetailsPage {
   }
 
   downloadAllContent() {
-    this.isDownloadStarted = true;
-    this.downloadProgress = 0;
-    this.importContent(this.downloadIdentifiers, true);
+    if (this.isNetworkAvailable) {
+      this.isDownloadStarted = true;
+      this.downloadProgress = 0;
+      this.importContent(this.downloadIdentifiers, true);
+    } else {
+      this.showMessage(this.translateLanguageConstant('ERROR_NO_INTERNET_MESSAGE'));
+    }
   }
 
   /**

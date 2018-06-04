@@ -319,7 +319,6 @@ export class CoursesPage implements OnInit {
 			this.ngZone.run(() => {
 				this.pageApiLoader = false;
 				if (error === 'CONNECTION_ERROR') {
-					//this.noInternetConnection = true;
 					this.isNetworkAvailable = false;
 				} else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
 					this.getMessageByConst('ERROR_FETCHING_DATA');

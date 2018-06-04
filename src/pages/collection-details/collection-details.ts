@@ -23,6 +23,7 @@ import { SocialSharing } from '@ionic-native/social-sharing';
 import { ContentRatingAlertComponent } from '../../component/content-rating-alert/content-rating-alert';
 import { ContentType, MimeType } from '../../app/app.constant';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
+import { Network } from '@ionic-native/network';
 
 /**
  * Generated class for the CollectionDetailsPage page.
@@ -131,6 +132,11 @@ export class CollectionDetailsPage {
    */
   downloadContentsSize: string;
 
+  /**
+   * To hold network status
+   */
+  isNetworkAvailable: boolean;
+
   downloadPercentage: number;
 
   private objId;
@@ -181,6 +187,7 @@ export class CollectionDetailsPage {
     private social: SocialSharing,
     private shareUtil: ShareUtil,
     private buildParamService: BuildParamService,
+    private network: Network,
     private preference: SharedPreferences) {
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
@@ -196,6 +203,18 @@ export class CollectionDetailsPage {
       this.baseUrl = response
     }, (error) => {
       return "";
+    });
+
+    if (this.network.type === 'none') {
+      this.isNetworkAvailable = false;
+    } else {
+      this.isNetworkAvailable = true;
+    }
+    this.network.onDisconnect().subscribe((data) => {
+      this.isNetworkAvailable = false;
+    });
+    this.network.onConnect().subscribe((data) => {
+      this.isNetworkAvailable = true;
     });
   }
 
@@ -823,17 +842,21 @@ export class CollectionDetailsPage {
   }
 
   showDownloadAlert(myEvent) {
-    let popover = this.popoverCtrl.create(ConfirmAlertComponent, {}, {
-      cssClass: 'confirm-alert-box'
-    });
-    popover.present({
-      ev: myEvent
-    });
-    popover.onDidDismiss((canDownload: boolean = false) => {
-      if (canDownload) {
-        this.downloadAllContent();
-      }
-    });
+    if (this.isNetworkAvailable){
+      let popover = this.popoverCtrl.create(ConfirmAlertComponent, {}, {
+        cssClass: 'confirm-alert-box'
+      });
+      popover.present({
+        ev: myEvent
+      });
+      popover.onDidDismiss((canDownload: boolean = false) => {
+        if (canDownload) {
+          this.downloadAllContent();
+        }
+      });
+    } else {
+      this.translateAndDisplayMessage('ERROR_NO_INTERNET_MESSAGE')
+    }
   }
 
   cancelDownload() {

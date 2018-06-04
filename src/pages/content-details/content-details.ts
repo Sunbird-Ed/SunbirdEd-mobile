@@ -4,6 +4,7 @@ import { Component, NgZone, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, PopoverController, Navbar, Platform } from 'ionic-angular';
 import { ContentService, CourseService, FileUtil, ImpressionType, PageId, Environment, TelemetryService, Mode, End, ShareUtil, InteractType, InteractSubtype, Rollup, BuildParamService, AuthService, SharedPreferences, ProfileType, CorrelationData } from 'sunbird';
 import { SocialSharing } from "@ionic-native/social-sharing";
+import { Network } from '@ionic-native/network';
 import * as _ from 'lodash';
 import { generateInteractTelemetry, Map, generateStartTelemetry, generateImpressionTelemetry, generateEndTelemetry } from '../../app/telemetryutil';
 import { TranslateService } from '@ngx-translate/core';
@@ -65,7 +66,15 @@ export class ContentDetailsPage {
    */
   loader: any;
 
+  /**
+   * To hold user id
+   */
   userId: string = '';
+
+  /**
+   * To hold network status
+   */
+  isNetworkAvailable: boolean;
 
   /**
    * Contains reference of content service
@@ -142,43 +151,54 @@ export class ContentDetailsPage {
     private events: Events, toastCtrl: ToastController, loadingCtrl: LoadingController,
     private fileUtil: FileUtil, public popoverCtrl: PopoverController, private shareUtil: ShareUtil,
     private social: SocialSharing, private platform: Platform, private translate: TranslateService,
-    private buildParamService: BuildParamService,
+    private buildParamService: BuildParamService, private network: Network,
     private authService: AuthService, private courseService: CourseService,
     private preference: SharedPreferences) {
-    this.getUserId();
-    this.navCtrl = navCtrl;
-    this.navParams = navParams;
-    this.contentService = contentService;
-    this.zone = zone;
-    this.toastCtrl = toastCtrl;
-    this.loadingCtrl = loadingCtrl;
-    console.warn('Inside content details page');
-    this.backButtonFunc = this.platform.registerBackButtonAction(() => {
-      this.didViewLoad = false;
-      this.navCtrl.pop();
-      this.generateEndEvent(this.objId, this.objType, this.objVer);
-      this.backButtonFunc();
-    }, 10)
-    this.objRollup = new Rollup();
-    this.buildParamService.getBuildConfigParam("BASE_URL", (response: any) => {
-      this.baseUrl = response
-    }, (error) => {
-      return "";
-    });
+      this.getUserId();
+      this.navCtrl = navCtrl;
+      this.navParams = navParams;
+      this.contentService = contentService;
+      this.zone = zone;
+      this.toastCtrl = toastCtrl;
+      this.loadingCtrl = loadingCtrl;
+      console.warn('Inside content details page');
+      this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+        this.didViewLoad = false;
+        this.navCtrl.pop();
+        this.generateEndEvent(this.objId, this.objType, this.objVer);
+        this.backButtonFunc();
+      }, 10)
+      this.objRollup = new Rollup();
+      this.buildParamService.getBuildConfigParam("BASE_URL", (response: any) => {
+        this.baseUrl = response
+      }, (error) => {
+        return "";
+      });
 
-    this.checkLoggedInOrGuestUser();
-    this.checkCurrentUserType();
+      this.checkLoggedInOrGuestUser();
+      this.checkCurrentUserType();
 
-    //This is to know when the app has come to foreground
-    this.resume = platform.resume.subscribe(() => {
-      if (this.isPlayerLaunched && !this.guestUser) {
-        this.isPlayerLaunched = false;
-        this.setContentDetails(this.identifier, false, true);
+      //This is to know when the app has come to foreground
+      this.resume = platform.resume.subscribe(() => {
+        if (this.isPlayerLaunched && !this.guestUser) {
+          this.isPlayerLaunched = false;
+          this.setContentDetails(this.identifier, false, true);
+        }
+        this.isContentPlayed = true;
+        this.updateContentProgress();
+      });
+
+      if (this.network.type === 'none') {
+        this.isNetworkAvailable = false;
+      } else {
+        this.isNetworkAvailable = true;
       }
-      this.isContentPlayed = true;
-      this.updateContentProgress();
-    });
-
+      this.network.onDisconnect().subscribe((data) => {
+        this.isNetworkAvailable = false;
+      });
+      this.network.onConnect().subscribe((data) => {
+        this.isNetworkAvailable = true;
+      });
   }
 
   /**
@@ -288,8 +308,6 @@ export class ContentDetailsPage {
           if(!showRating){
             loader.dismiss();
           }
-         
-
         } else {
           if(!showRating){
             loader.dismiss();
@@ -579,9 +597,13 @@ export class ContentDetailsPage {
    * Download content
    */
   downloadContent() {
-    this.downloadProgress = '0';
-    this.isDownloadStarted = true;
-    this.importContent([this.identifier], this.isChildContent);
+    if (this.isNetworkAvailable){
+      this.downloadProgress = '0';
+      this.isDownloadStarted = true;
+      this.importContent([this.identifier], this.isChildContent);
+    } else {
+      this.translateAndDisplayMessage('ERROR_NO_INTERNET_MESSAGE')
+    }
   }
 
   cancelDownload() {
