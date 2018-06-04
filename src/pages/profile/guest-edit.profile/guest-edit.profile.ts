@@ -5,7 +5,9 @@ import { NavController, NavParams, ToastController, Events, LoadingController } 
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import * as _ from 'lodash';
 
-import { FrameworkDetailsRequest, CategoryRequest, FrameworkService, ProfileService, Profile } from 'sunbird';
+import { FrameworkDetailsRequest, CategoryRequest, FrameworkService, ProfileService, Profile, FormService, SharedPreferences } from 'sunbird';
+import { FormRequest } from 'sunbird/services/form/bean';
+import { resolve } from 'path';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -25,13 +27,14 @@ export class GuestEditProfilePage {
   guestEditForm: FormGroup;
   profile: any = {};
   categories: Array<any> = [];
-  syllabusList: Array<any> = ['Syllabus 1', 'Syllabus 2']
+  syllabusList: Array<any> = []
   boardList: Array<any> = [];
   gradeList: Array<string> = [];
   subjectList: Array<string> = [];
   mediumList: Array<string> = [];
   userName: string = '';
-
+  selectedLanguage: string;
+  frameworks: Array<any> = [];
 
   options: toastOptions = {
     message: '',
@@ -47,51 +50,135 @@ export class GuestEditProfilePage {
     private frameworkService: FrameworkService,
     private profileService: ProfileService,
     private translate: TranslateService,
-    private events: Events
+    private events: Events,
+    private formService: FormService,
+    private preference: SharedPreferences
   ) {
     this.profile = this.navParams.get('profile');
 
     /* Initialize form with default values */
     this.guestEditForm = this.fb.group({
+      syllabus: [this.profile.syllabus && this.profile.syllabus[0] || [], Validators.required],
       name: [this.profile.handle || '', Validators.required],
       boards: [this.profile.board || [], Validators.required],
       grades: [this.profile.grade || []],
       subjects: [this.profile.subject || []],
       medium: [this.profile.medium || []]
     });
+
+
+    //language code
+    this.preference.getString('selected_language_code', (val: string) => {
+      if (val && val.length) {
+        this.selectedLanguage = val;
+      }
+    });
   }
 
   ionViewWillEnter() {
-    this.getFrameworkDetails();
-
+    this.getSyllabusDetails();
   }
 
-  getFrameworkDetails(): void {
-    let req: FrameworkDetailsRequest = {
-      defaultFrameworkDetails: true
+  getSyllabusDetails() {
+    let req: FormRequest = {
+      type: 'user',
+      subType: 'instructor',
+      action: 'onboarding',
     };
 
-    this.frameworkService.getFrameworkDetails(req,
+    this.formService.getForm(req,
       (res: any) => {
-        this.categories = JSON.parse(JSON.parse(res).result.framework).categories;
+        let response: any = JSON.parse(res);
+        console.log("Form Result - " + response.result);
+        let fields: Array<any> = response.result.fields;
 
-        this.checkPrevValue(0, 'boardList');
-        if (this.profile.board && this.profile.board.length) {
-          //this.resetForm(0);
-          this.checkPrevValue(1, 'gradeList', this.profile.grade);
+        fields.forEach(field => {
+          if (field.language === this.selectedLanguage) {
+            this.frameworks = field.range;
+          }
+        });
+
+        if (this.frameworks != null && this.frameworks.length > 0) {
+          this.frameworks.forEach(frameworkDetails => {
+            let value = { 'name': frameworkDetails.name, 'code': frameworkDetails.frameworkId };
+            this.syllabusList.push(value);
+          });
         }
-        if (this.profile.grade && this.profile.grade.length) {
-          //this.resetForm(1);
-          this.checkPrevValue(2, 'subjectList', this.profile.subject);
-        }
-        if (this.profile.subject && this.profile.subject.length) {
-          this.checkPrevValue(3, 'mediumList', this.profile.medium);
-        }
-        console.log("Framework details Response: ", JSON.parse(JSON.parse(res).result.framework).categories);
+
+        this.getFrameworkDetails()
+          .then(catagories => {
+            this.categories = catagories;
+
+            this.checkPrevValue(0, 'syllabusList');
+
+            this.resetForm(0);
+            this.guestEditForm.patchValue({
+              boards: this.profile.board || []
+            });
+
+            this.resetForm(1);
+            this.guestEditForm.patchValue({
+              grades: this.profile.grade || []
+            });
+
+            this.resetForm(2);
+            this.guestEditForm.patchValue({
+              subjects: this.profile.subject || []
+            });
+
+            this.resetForm(3);
+            this.guestEditForm.patchValue({
+              medium: this.profile.medium || []
+            });
+
+          });
+
       },
-      (err: any) => {
-        console.log("Framework details Response: ", JSON.parse(err));
-      });
+      (error: any) => {
+        console.log("Error - " + error);
+
+      })
+  }
+
+
+  getFrameworkDetails(frameworkId?: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let req: FrameworkDetailsRequest = {
+        defaultFrameworkDetails: true
+      };
+
+      if (frameworkId !== undefined && frameworkId.length) {
+        req.defaultFrameworkDetails = false;
+        req.frameworkId = frameworkId[0];
+      }
+
+
+      this.frameworkService.getFrameworkDetails(req,
+        (res: any) => {
+          let categories = JSON.parse(JSON.parse(res).result.framework).categories;
+
+
+
+          // if (this.profile.board && this.profile.board.length) {
+          //   //this.resetForm(0);
+          //   this.checkPrevValue(1, 'boardList', [this.profile.syllabus]);
+          // }
+          // if (this.profile.grade && this.profile.grade.length > 1) {
+          //   //this.resetForm(1);
+          //   this.checkPrevValue(2, 'gradeList', this.profile.board);
+          // }
+          // if (this.profile.subject && this.profile.subject.length) {
+          //   this.checkPrevValue(3, 'subjectList', this.profile.grade);
+          // }
+
+          console.log("Framework details Response: ", JSON.parse(JSON.parse(res).result.framework).categories);
+          resolve(categories);
+        },
+        (err: any) => {
+          console.log("Framework details Response: ", JSON.parse(err));
+          reject(err);
+        });
+    });
   }
 
   /**
@@ -111,11 +198,10 @@ export class GuestEditProfilePage {
         } */
         this[list] = JSON.parse(res);
         console.log("BoardList", this.boardList);
-        if(list != 'gradeList')
-        {
+        if (list != 'gradeList') {
           //this[list] = this[list].sort();
-          this[list] = _.orderBy(this[list], ['name'], ['asc']);
-         }
+          this[list] = _.orderBy(this[list], ['name'], ['asc']);
+        }
         console.log(list + " Category Response: " + this[list]);
       },
       (err: any) => {
@@ -124,45 +210,81 @@ export class GuestEditProfilePage {
   }
 
   checkPrevValue(index = 0, currentField, prevSelectedValue = [], ) {
-    if (index != 0) {
+    // if (index != 0) {
+    //   let request: CategoryRequest = {
+    //     currentCategory: this.categories[index].code,
+    //     prevCategory: this.categories[index - 1].code,
+    //     selectedCode: prevSelectedValue
+    //   }
+    //   this.getCategoryData(request, currentField);
+    // } else {
+    //   let request: CategoryRequest = {
+    //     currentCategory: this.categories[index].code
+    //   }
+    //   this.getCategoryData(request, currentField);
+    // }
+
+
+    if (index === 0) {
+      this[currentField] = this.syllabusList;
+    } else if (index === 1) {
+      this.getFrameworkDetails(prevSelectedValue[0])
+        .then(catagories => {
+          this.categories = catagories;
+
+          let request: CategoryRequest = {
+            currentCategory: this.categories[0].code,
+            // prevCategory: ,
+            // selectedCode: prevSelectedValue
+          }
+          this.getCategoryData(request, currentField);
+        });
+
+    } else {
       let request: CategoryRequest = {
-        currentCategory: this.categories[index].code,
-        prevCategory: this.categories[index - 1].code,
+        currentCategory: this.categories[index - 1].code,
+        prevCategory: this.categories[index - 2].code,
         selectedCode: prevSelectedValue
       }
       this.getCategoryData(request, currentField);
-    } else {
-      let request: CategoryRequest = {
-        currentCategory: this.categories[index].code
-      }
-      this.getCategoryData(request, currentField);
     }
+
   }
 
   resetForm(index: number = 0): void {
+    console.log("Reset Form Index - " + index);
     switch (index) {
       case 0:
+        this.guestEditForm.patchValue({
+          boards: [],
+          grades: [],
+          subjects: [],
+          medium: []
+        });
+        this.checkPrevValue(1, 'boardList', [this.guestEditForm.value.syllabus]);
+        break;
+
+      case 1:
         this.guestEditForm.patchValue({
           grades: [],
           subjects: [],
           medium: []
         });
-        this.checkPrevValue(1, 'gradeList', this.guestEditForm.value.boards);
-        break;
-
-      case 1:
-        this.guestEditForm.patchValue({
-          subjects: [],
-          medium: []
-        });
-        this.checkPrevValue(2, 'subjectList', this.guestEditForm.value.grades);
+        this.checkPrevValue(2, 'gradeList', this.guestEditForm.value.boards);
         break;
 
       case 2:
         this.guestEditForm.patchValue({
+          subjects: [],
           medium: [],
         });
-        this.checkPrevValue(3, 'mediumList', this.guestEditForm.value.subjects);
+        this.checkPrevValue(3, 'subjectList', this.guestEditForm.value.grades);
+        break;
+      case 3:
+        this.guestEditForm.patchValue({
+          medium: [],
+        });
+        this.checkPrevValue(4, 'mediumList', this.guestEditForm.value.subject);
         break;
     }
   }
@@ -188,8 +310,9 @@ export class GuestEditProfilePage {
       isGroupUser: false,
       language: "en",
       avatar: "avatar",
-      profileType:this.profile.profileType,
-      createdAt: this.profile.createdAt
+      profileType: this.profile.profileType,
+      createdAt: this.profile.createdAt,
+      syllabus: [formVal.syllabus]
     }
 
     this.profileService.updateProfile(req,
@@ -197,7 +320,7 @@ export class GuestEditProfilePage {
         console.log("Update Response", res);
 
         // Publish event if the all the fields are submitted
-        if (formVal.boards.length && formVal.grades.length && formVal.medium.length && formVal.subjects.length) {
+        if (formVal.syllabus.length && formVal.boards.length && formVal.grades.length && formVal.medium.length && formVal.subjects.length) {
           this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: true });
         } else {
           this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: false });

@@ -1,5 +1,5 @@
-import { NavController, Slides, PopoverController, Events } from 'ionic-angular';
-import { Component, ViewChild } from '@angular/core';
+import { NavController, Slides, PopoverController, Events, Platform } from 'ionic-angular';
+import { Component, ViewChild, NgZone } from '@angular/core';
 import * as _ from 'lodash';
 import { OnboardingService } from '../onboarding-card/onboarding.service';
 import { OnboardingAlert, onBoardingSlidesCallback } from './../onboarding-alert/onboarding-alert';
@@ -18,36 +18,45 @@ export class OnboardingCardComponent {
     public navCtrl: NavController,
     private popupCtrl: PopoverController,
     private onboardingService: OnboardingService,
-    private events: Events
+    private events: Events,
+    private zone: NgZone
   ) {
+
+    this.onboardingService.getSyllabusDetails();
+
     this.initializeService();
 
     this.events.subscribe('refresh:onboardingcard', () => {
       //this.mSlides.slideTo(0, 500);
       //this.onboardingService.currentIndex = 0;
       this.onboardingService.initializeCard()
-      .then(index => {
-        setTimeout(() => {
-          if(index !== 0 && index !== 4) this.mSlides.slideTo(index, 500);
-        }, 500);
-      })
-      .catch(error => {
+        .then(index => {
+          console.log("refresh:onboardingcard -  index = " + index);
 
-      });
+          setTimeout(() => {
+            if (index !== 0 && index !== 5) {
+              this.mSlides.slideTo(index, 500);
+            }
+          }, 500);
+        })
+        .catch(error => {
+
+        });
     });
   }
 
   initializeService() {
     if (!this.onboardingService.categories.length) {
       this.onboardingService.initializeCard()
-      .then(index => {
-        setTimeout(() => {
-          if(index !== 0 && index !== 4) this.mSlides.slideTo(index, 500);
-        }, 500);
-      })
-      .catch(error => {
+        .then(index => {
+          console.log("initializeService -  index = " + index);
+          setTimeout(() => {
+            if (index !== 0 && index !== 5) this.mSlides.slideTo(index, 500);
+          }, 500);
+        })
+        .catch(error => {
 
-      });
+        });
     }
     /* if (this.onboardingService.isOnBoardingCardCompleted) {
       this.onboardingService.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: true });
@@ -71,19 +80,24 @@ export class OnboardingCardComponent {
     this.onboardingService.onBoardingSlides[index].selectedCode = [];
     this.onboardingService.onBoardingSlides[index].selectedOptions = '';
 
-    for (let i = index; i < 4; i++) {
+    for (let i = index; i < 5; i++) {
       this.onboardingService.onBoardingSlides[i].selectedCode = [];
       this.onboardingService.onBoardingSlides[i].selectedOptions = '';
     }
 
     if (index === 0) {
+      this.onboardingService.profile.board = [];
       this.onboardingService.profile.grade = [];
       this.onboardingService.profile.subject = [];
       this.onboardingService.profile.medium = [];
     } else if (index === 1) {
+      this.onboardingService.profile.grade = [];
       this.onboardingService.profile.subject = [];
       this.onboardingService.profile.medium = [];
     } else if (index === 2) {
+      this.onboardingService.profile.subject = [];
+      this.onboardingService.profile.medium = [];
+    } else if (index === 3) {
       this.onboardingService.profile.medium = [];
     }
 
@@ -115,7 +129,7 @@ export class OnboardingCardComponent {
 
     let displayValues = [];
     this.onboardingService.onBoardingSlides[index].options.forEach(element => {
-      if(_.includes(this.onboardingService.onBoardingSlides[index].selectedCode, element.value)) {
+      if (_.includes(this.onboardingService.onBoardingSlides[index].selectedCode, element.value)) {
         displayValues.push(element.text);
       }
     });
@@ -143,9 +157,10 @@ export class OnboardingCardComponent {
     }
 
     if (index === 0) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index));
-    if (index === 1) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.board);
-    if (index === 2) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.grade);
-    if (index === 3) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.subject);
+    if (index === 1) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.syllabus);
+    if (index === 2) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.board);
+    if (index === 3) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.grade);
+    if (index === 4) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.subject);
 
     let popUp = this.popupCtrl.create(OnboardingAlert, { facet: selectedSlide, callback: callback, index: index }, {
       cssClass: 'onboarding-alert'
@@ -154,7 +169,7 @@ export class OnboardingCardComponent {
   }
 
   ionViewWillEnter() {
-    if(!this.onboardingService.currentIndex) {
+    if (!this.onboardingService.currentIndex) {
       this.mSlides.slideTo(0, 500);
     }
   }

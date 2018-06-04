@@ -39,6 +39,8 @@
   "BOARD": "BOARD",
   "BOARD_OPTION_TEXT": "SELECT BOARD",
   "BOARD_QUESTION": "What board does your school follow?",
+  "SYLLABUS_OPTION_TEXT": "SELECT SYLLABUS",
+  "SYLLABUS_QUESTION": "What syllabus does your school follow?",
   "BOARD_UNIVERSITY": "Board/University",
   "BROWSE_AS_GUEST": "Browse as guest",
   "BTN_CLICK_TO_OPEN_CONTENT": "Tap to view content",
