@@ -377,7 +377,7 @@ export class CollectionDetailsPage {
         // TODO - check with Anil for destination folder path
         destinationFolder: this.fileUtil.internalStoragePath(),
         contentId: value,
-        correlationData: []
+        correlationData: this.corRelationList !== undefined ? this.corRelationList : []
       })
     });
 
@@ -510,7 +510,6 @@ export class CollectionDetailsPage {
       this.resetVariables();
       this.cardData = this.navParams.get('content');
       this.corRelationList = this.navParams.get('corRelation');
-      console.log("this.corRelation", "" + JSON.stringify(this.corRelationList));
       let depth = this.navParams.get('depth');
       if (depth !== undefined) {
         this.depth = depth;
@@ -524,8 +523,9 @@ export class CollectionDetailsPage {
 
       if (!this.didViewLoad) {
         this.generateRollUp();
-        this.generateStartEvent(this.cardData.identifier, this.cardData.contentType, this.cardData.pkgVersion);
-        this.generateImpressionEvent(this.cardData.identifier, this.cardData.contentType, this.cardData.pkgVersion);
+        let contentType = this.cardData.contentData ? this.cardData.contentData.contentType : this.cardData.contentType;
+        this.generateStartEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
+        this.generateImpressionEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
       }
       this.didViewLoad = true;
       this.setContentDetails(this.identifier, true);

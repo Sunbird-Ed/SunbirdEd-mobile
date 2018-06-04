@@ -13,7 +13,7 @@ import { ContentDetailsPage } from '../content-details/content-details';
 import { ContentActionsComponent } from '../../component/content-actions/content-actions';
 import { ReportIssuesComponent } from '../../component/report-issues/report-issues';
 import { TranslateService } from '@ngx-translate/core';
-import { ContentType, MimeType } from '../../app/app.constant';
+import { ContentType, MimeType, ProfileConstants } from '../../app/app.constant';
 import { CourseBatchesPage } from '../course-batches/course-batches';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { generateInteractTelemetry, generateEndTelemetry, generateStartTelemetry, generateImpressionTelemetry } from '../../app/telemetryutil';
@@ -155,6 +155,9 @@ export class EnrolledCourseDetailsPage {
   private objId;
   private objType;
   private objVer;
+  private didViewLoad: boolean;
+  private backButtonFunc = undefined;
+
   @ViewChild(Navbar) navBar: Navbar;
   constructor(navCtrl: NavController,
     navParams: NavParams,
@@ -174,7 +177,7 @@ export class EnrolledCourseDetailsPage {
     private telemetryService: TelemetryService, private loadingCtrl: LoadingController,
     private preference: SharedPreferences,
     private platform: Platform) {
-
+      this.getUserId();
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
 
@@ -196,10 +199,27 @@ export class EnrolledCourseDetailsPage {
       }
     });
 
-    this.platform.registerBackButtonAction(() => {
+    this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      this.didViewLoad = false;
       this.generateEndEvent(this.objId, this.objType, this.objVer);
       this.navCtrl.pop();
-    }, 0)
+      this.backButtonFunc();
+    }, 10)
+  }
+
+  /**
+   * Get user id
+   */
+  getUserId() {
+    this.authService.getSessionData((data: string) => {
+      let res = JSON.parse(data);
+      if (res === undefined || res === "null") {
+        this.userId = '';
+      } else {
+        this.userId = res[ProfileConstants.USER_TOKEN] ? res[ProfileConstants.USER_TOKEN] : '';
+        console.log('UserId', this.userId);
+      }
+    });
   }
 
   /**
@@ -257,7 +277,7 @@ export class EnrolledCourseDetailsPage {
       }
     } else {
       if (this.profileType == ProfileType.TEACHER) {
-        this.showMessage('SIGNIN_TO_USE_FEATURE');
+        this.showMessage(this.translateLanguageConstant('SIGNIN_TO_USE_FEATURE'));
       }
     }
   }
@@ -325,8 +345,12 @@ export class EnrolledCourseDetailsPage {
       this.objId = this.course.identifier;
       this.objType = this.course.contentType;
       this.objVer = this.course.pkgVersion;
-      this.generateStartEvent(this.course.identifier, this.course.contentType, this.course.pkgVersion);
-      this.generateImpressionEvent(this.course.identifier, this.course.contentType, this.course.pkgVersion);
+      if (!this.didViewLoad) {
+        this.generateStartEvent(this.course.identifier, this.course.contentType, this.course.pkgVersion);
+        this.generateImpressionEvent(this.course.identifier, this.course.contentType, this.course.pkgVersion);
+      }
+      this.didViewLoad = true;
+
       if (this.course.status !== 'Live') {
         this.showMessage(this.translateLanguageConstant('ERROR_CONTENT_NOT_AVAILABLE'));
         this.navCtrl.pop();
@@ -429,7 +453,7 @@ export class EnrolledCourseDetailsPage {
         isChildContent: isChild,
         destinationFolder: this.fileUtil.internalStoragePath(),
         contentId: value,
-        correlationData: []
+        correlationData: this.corRelationList !== undefined ? this.corRelationList : []
       })
     });
 
@@ -754,8 +778,10 @@ export class EnrolledCourseDetailsPage {
 
   ionViewDidLoad() {
     this.navBar.backButtonClick = (e: UIEvent) => {
+      this.didViewLoad = false;
       this.generateEndEvent(this.objId, this.objType, this.objVer);
       this.navCtrl.pop();
+      this.backButtonFunc();
     }
   }
 
