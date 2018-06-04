@@ -6,15 +6,15 @@
       </ion-col>
     </ion-row>
 
-    <ion-row class="checkbox-scroll"  *ngIf="selectedSlide?.options && selectedSlide?.options.length;let i=index">
+    <ion-row class="checkbox-scroll"  *ngIf="selectedSlide?.options && selectedSlide?.options.length">
 
-      <ion-item no-lines *ngFor="let facetValue of selectedSlide.options">
+      <ion-item no-lines *ngFor="let facetValue of selectedSlide.options;let i=index">
         <ion-label bold> {{ facetValue.text }}</ion-label>
-        <ion-checkbox [(ngModel)]="facetValue.checked"></ion-checkbox>
+        <ion-checkbox *ngIf="index > 0" [(ngModel)]="facetValue.checked"></ion-checkbox>
+        <ion-radio *ngIf="index == 0" (ionSelect)="onSyllabusSelect(i)"></ion-radio>
 
       </ion-item>
     </ion-row>
-
 
   </ion-grid>
 </ion-content>

@@ -27,6 +27,10 @@ export class OnboardingAlert {
     }, 10);
   }
 
+  onSyllabusSelect(selectedIndex: number) {
+    this.selectedSlide.options[selectedIndex].checked = true;
+  }
+
   onSaveClick() {
 
     if (this.callback) {
