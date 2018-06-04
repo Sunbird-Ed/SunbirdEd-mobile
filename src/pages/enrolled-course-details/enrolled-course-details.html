@@ -19,9 +19,9 @@
 	<div class="content-details-holder" *ngIf="course">
 		<h6>{{course.name}}</h6>
 		<ion-grid class="padding-0">
-			<div *ngIf="course.owner">
+			<div *ngIf="course.creator || course.owner">
 				<span class="text-gray-color">{{ 'CONTENT_CREATED_BY' | translate }}</span>
-				<span class="content-meta-title">{{ course.owner }}</span>
+				<span class="content-meta-title">{{ course.creator || course.owner }}</span>
 			</div>
 			<div>
 				<p>{{ 'YOUR_PROGRESS' | translate: {'%s': courseCardData.progress ? courseCardData.progress : '0'} }}</p>

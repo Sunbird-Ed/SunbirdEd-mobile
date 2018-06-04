@@ -20,9 +20,9 @@
 		<h6 class="font-size-20">{{content.name}}</h6>
 		<!-- Owner and download info -->
 		<ion-grid class="padding-0">
-			<div *ngIf="content.owner">
+			<div *ngIf="content.creator || content.owner">
 				<span class="text-gray-color">{{ 'CONTENT_CREATED_BY' | translate }}</span>
-				<span class="content-meta-title">{{ content.owner }}</span>
+				<span class="content-meta-title">{{ content.creator || content.owner }}</span>
 			</div>
 			<ion-row class="padding-top-10">
 				<ion-col class="padding-0">
