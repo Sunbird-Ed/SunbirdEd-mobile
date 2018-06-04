@@ -277,7 +277,7 @@ export class EnrolledCourseDetailsPage {
       }
     } else {
       if (this.profileType == ProfileType.TEACHER) {
-        this.showMessage('SIGNIN_TO_USE_FEATURE');
+        this.showMessage(this.translateLanguageConstant('SIGNIN_TO_USE_FEATURE'));
       }
     }
   }
