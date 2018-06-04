@@ -18,7 +18,7 @@
 <ion-content padding>
 	<div class="content-details-holder" *ngIf="course">
 		<h6>{{course.name}}</h6>
-		<ion-grid class="padding-0">
+		<!--<ion-grid class="padding-0">
 			<div *ngIf="course.creator || course.owner">
 				<span class="text-gray-color">{{ 'CONTENT_CREATED_BY' | translate }}</span>
 				<span class="content-meta-title">{{ course.creator || course.owner }}</span>
@@ -29,6 +29,20 @@
 					<rating align-items-start (click)="rateContent();" [(ngModel)]="course.me_averageRating" readOnly="true" max="5" no-padding></rating>
 				</span>
 			</div>
+		</ion-grid>-->
+		<ion-grid class="padding-0">
+			<div *ngIf="course.creator || course.owner" style="padding-top: 0px;">
+				<span class="text-gray-color">{{ 'CONTENT_CREATED_BY' | translate }}</span>
+				<span class="content-meta-title">{{ course.creator || course.owner }}</span>
+			</div>
+			<ion-row class="padding-top-10">
+				<ion-col class="padding-0">
+					<div class="size_txt padding-bottom-5" no-margin>
+						<span class="content-size">{{ 'YOUR_PROGRESS' | translate: {'%s': courseCardData.progress ? courseCardData.progress : '0'} }}</span>
+					</div>
+					<rating align-items-start (click)="rateContent();" [(ngModel)]="course.me_averageRating" readOnly="true" max="5" no-padding></rating>
+				</ion-col>
+			</ion-row>
 		</ion-grid>
 		<br/>
 		<div class="about-section" *ngIf="course.description || course.gradeLevel || course.subject">

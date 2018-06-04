@@ -23,8 +23,6 @@
   <!-- onBoardingSLides starts here -->
   <onboarding-card *ngIf="guestUser && !isOnBoardingCardCompleted && isNetworkAvailable"></onboarding-card>
   <!-- onBoardingSLides ends here -->
-
-
   <div *ngIf="!guestUser && enrolledCourse && enrolledCourse.length" class="course-page-color" [ngClass]="{'height-130': showLoader}">
     <div class="item padding-11">
       <span float-start class="scroll-heading">
