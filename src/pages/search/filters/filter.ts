@@ -61,6 +61,13 @@ export class FilterPage {
         if(facet.name != 'gradeLevel') {
           facet.values = _.orderBy(facet.values, ['name'], ['asc']);
         }
+        facet.values.forEach((element, index) => {
+          if(element.name.toUpperCase() === 'other'.toUpperCase()) {
+            let elementVal = element;
+            facet.values.splice(index, 1);
+            facet.values.push(elementVal);
+          }
+        });
         this.facetsFilter.push(facet);
       }
     });

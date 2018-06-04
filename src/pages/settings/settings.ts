@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, LoadingController} from "ionic-angular";
+import { NavController, LoadingController } from "ionic-angular";
 import { DatasyncPage } from './datasync/datasync';
 import { LanguageSettingsPage } from '../language-settings/language-settings';
 import { AboutUsPage } from './about-us/about-us';
@@ -8,7 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { AppVersion } from "@ionic-native/app-version";
 import { SharedPreferences, InteractType, InteractSubtype, ShareUtil } from "sunbird";
 import { Impression, ImpressionType, Environment, PageId, TelemetryService } from 'sunbird';
-import { generateInteractEvent } from '../../app/telemetryutil';
+import { generateInteractTelemetry, generateImpressionTelemetry } from '../../app/telemetryutil';
 
 const KEY_SELECTED_LANGUAGE = "selected_language";
 const KEY_SUNBIRD_SUPPORT_FILE_PATH = "sunbird_support_file_path";
@@ -23,11 +23,13 @@ export class SettingsPage {
   fileUrl: string;
   shareAppLabel: string;
 
-  constructor(private navCtrl: NavController, private appVersion: AppVersion,
+  constructor(
+    private navCtrl: NavController,
+    private appVersion: AppVersion,
     private socialSharing: SocialSharing,
     private translate: TranslateService,
     private preference: SharedPreferences,
-    private telemetryService : TelemetryService,
+    private telemetryService: TelemetryService,
     private shareUtil: ShareUtil,
     private loadingCtrl: LoadingController) {
 
@@ -37,17 +39,29 @@ export class SettingsPage {
     this.translate.get('SHARE_APP').subscribe(
       value => {
         this.appVersion.getAppName()
-        .then((appName: any) => {
-          //TODO: Need to add dynamic string substitution
-          this.shareAppLabel = value.replace("{{%s}}", appName);
-        });
+          .then((appName: any) => {
+            //TODO: Need to add dynamic string substitution
+            this.shareAppLabel = value.replace("{{%s}}", appName);
+          });
       }
     );
   }
-
+  ionViewDidLoad() {
+    let impression = new Impression();
+    impression.type = ImpressionType.VIEW;
+    impression.pageId = PageId.SETTINGS;
+    impression.env = Environment.SETTINGS;
+    this.telemetryService.impression(generateImpressionTelemetry(
+      ImpressionType.VIEW, "",
+      PageId.SETTINGS,
+      Environment.SETTINGS, "", "", "",
+      undefined,
+      undefined
+    ));
+  }
 
   ionViewDidEnter() {
-    this.generateImpressionEvent();
+
     this.translate.get('CURRENT_LANGUAGE').subscribe(
       value => {
         this.chosenLanguageString = value;
@@ -58,39 +72,33 @@ export class SettingsPage {
     );
   }
 
-  generateImpressionEvent(){
-    let impression = new Impression();
-    impression.type =ImpressionType.VIEW;
-    impression.pageId = PageId.SETTINGS;
-    impression.env=Environment.SETTINGS;
-    this.telemetryService.impression(impression);
-  }
+
 
   goBack() {
     this.navCtrl.pop();
   }
 
   languageSetting() {
-    this.generateInteractTelemetry(InteractType.TOUCH,InteractSubtype.LANGUAGE_CLICKED);
+    this.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.LANGUAGE_CLICKED);
     this.navCtrl.push(LanguageSettingsPage, {
       isFromSettings: true
     });
   }
 
   dataSync() {
-    this.generateInteractTelemetry(InteractType.TOUCH,InteractSubtype.DATA_SYNC_CLICKED);
+    this.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.DATA_SYNC_CLICKED);
     this.navCtrl.push(DatasyncPage)
   }
 
   aboutUs() {
-    this.generateInteractTelemetry(InteractType.TOUCH,InteractSubtype.ABOUT_APP_CLICKED);
+    this.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.ABOUT_APP_CLICKED);
     this.navCtrl.push(AboutUsPage)
   }
 
   sendMessage() {
     let loader = this.getLoader();
     loader.present();
-    this.generateInteractTelemetry(InteractType.TOUCH,InteractSubtype.SUPPORT_CLICKED);
+    this.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.SUPPORT_CLICKED);
     this.preference.getString(KEY_SUNBIRD_SUPPORT_FILE_PATH, val => {
       loader.dismiss();
       if (val === undefined || val === "" || val === null) {
@@ -114,11 +122,11 @@ export class SettingsPage {
     let loader = this.getLoader();
     loader.present();
 
-    this.generateInteractTelemetry(InteractType.TOUCH,InteractSubtype.SHARE_APP_CLICKED);
-    this.generateInteractTelemetry(InteractType.TOUCH,InteractSubtype.SHARE_APP_INITIATED);
+    this.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.SHARE_APP_CLICKED);
+    this.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.SHARE_APP_INITIATED);
 
     this.shareUtil.exportApk(filePath => {
-      this.generateInteractTelemetry(InteractType.OTHER,InteractSubtype.SHARE_APP_SUCCESS);
+      this.generateInteractTelemetry(InteractType.OTHER, InteractSubtype.SHARE_APP_SUCCESS);
       loader.dismiss();
       this.socialSharing.share("", "", "file://" + filePath, "");
     }, error => {
@@ -134,10 +142,12 @@ export class SettingsPage {
   }
 
   generateInteractTelemetry(interactionType, interactSubtype) {
-    this.telemetryService.interact(generateInteractEvent(
-      interactionType,interactSubtype,
+    this.telemetryService.interact(generateInteractTelemetry(
+      interactionType, interactSubtype,
       PageId.SETTINGS,
-      Environment.SETTINGS,null
+      Environment.SETTINGS, null,
+      undefined,
+      undefined
     ));
   }
 }

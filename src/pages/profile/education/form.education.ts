@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NavController, NavParams, LoadingController } from 'ionic-angular';
+import { NavController, NavParams, LoadingController, Platform, AlertController } from 'ionic-angular';
 import { ToastController } from 'ionic-angular';
 import * as _ from 'lodash';
 import { TranslateService } from '@ngx-translate/core';
-
 import { UserProfileService, UserEducation, UpdateUserInfoRequest } from 'sunbird';
 import { ProfilePage } from '../profile';
+
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -41,7 +41,9 @@ export class FormEducation {
     public userProfileService: UserProfileService,
     private toastCtrl: ToastController,
     private loadingCtrl: LoadingController,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public alertCtrl: AlertController,
+    private platform: Platform
   ) {
 
     /* Receive data from other component */
@@ -65,7 +67,7 @@ export class FormEducation {
    * @param {object} event - Form event
    * @param {boolean} isDeleted - Flag to delete
    */
-  onSubmit(event, isDeleted: boolean = false): void {
+  onSubmit(isDeleted: boolean = false): void {
     let formVal = this.educationForm.value;
 
     if (this.validateForm(formVal)) {
@@ -125,22 +127,6 @@ export class FormEducation {
         console.error("Error", err);
       });
   }
-
-  /**
-   * Used to Translate message to current Language
-   * @param {string} messageConst - Message Constant to be translated
-   * @returns {string} translatedMsg - Translated Message
-   */
-  translateMessage(messageConst: string): string {
-    let translatedMsg = '';
-    this.translate.get(messageConst).subscribe(
-      (value: any) => {
-        translatedMsg = value;
-      }
-    );
-    return translatedMsg;
-  }
-
   /**
    *  It will returns Toast Object
    * @param {message} string - Message for the Toast to show
@@ -156,6 +142,69 @@ export class FormEducation {
       duration: 30000,
       spinner: "crescent"
     });
+  }
+
+  /**
+   * Used to Translate message to current Language
+   * @param {string} messageConst - Message Constant to be translated
+   * @returns {string} translatedMsg - Translated Message
+   */
+  translateMessage(messageConst: string, field?: string): string {
+    let translatedMsg = '';
+    this.translate.get(messageConst, { '%s': field }).subscribe(
+      (value: any) => {
+        translatedMsg = value;
+      }
+    );
+    return translatedMsg;
+  }
+  showDeleteConfirm() {
+    let confirm = this.alertCtrl.create({
+      title: this.translateMessage('CONFIRM_DEL',this.translateMessage('TITLE_EDUCATION')),
+
+      mode: 'wp',
+      cssClass: 'confirm-alert',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'alert-btn-cancel',
+          handler: () => {
+            console.log('Disagree clicked');
+          }
+        },
+        {
+          text: 'Delete',
+          cssClass: 'alert-btn-delete',
+          handler: () => {
+            this.onSubmit(true);
+            console.log('Agree clicked');
+          }
+        },
+        {
+          text: 'x',
+          role: 'cancel',
+          cssClass: 'closeButton',
+          handler: () => {
+            console.log('close icon clicked');
+          }
+        }
+      ]
+    });
+    confirm.present();
+    let deregisterBackButton = this.platform.registerBackButtonAction(() => {
+      // dismiss on back press
+      confirm.dismiss();
+    }, 11);
+
+    // deregister handler after modal closes
+    confirm.onDidDismiss(() => {
+      deregisterBackButton();
+    });
+
+    function closePopup() {
+      confirm.dismiss();
+    }
   }
 
 }

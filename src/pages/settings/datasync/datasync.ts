@@ -4,6 +4,7 @@ import { TelemetryService, SyncStat, SharedPreferences, PageId, Environment, Imp
 import { DataSyncType } from "./datasynctype.enum"
 import { TranslateService } from '@ngx-translate/core'
 import { SocialSharing } from '@ionic-native/social-sharing';
+import { generateImpressionTelemetry, generateInteractTelemetry } from '../../../app/telemetryutil';
 
 /**
  * Generated class for the DatasyncPage page.
@@ -49,7 +50,7 @@ export class DatasyncPage {
     this.translate.get('LAST_SYNC').subscribe(value => {
       this.lastSyncedTimeString = value;
       this.getLastSyncTime();
-      
+
     });
 
     //check what sync option is selected
@@ -72,10 +73,17 @@ export class DatasyncPage {
 
   ionViewDidLoad() {
     this.init();
-  }
-
-  ionViewDidEnter() {
-    this.generateImpressionEvent();
+    let impression = new Impression();
+    impression.type = ImpressionType.VIEW;
+    impression.pageId = PageId.SETTINGS_DATASYNC;
+    impression.env = Environment.SETTINGS;
+    this.telemetryService.impression(generateImpressionTelemetry(
+      ImpressionType.VIEW, "",
+      PageId.SETTINGS_DATASYNC,
+      Environment.SETTINGS, "", "", "",
+      undefined,
+      undefined
+    ));
   }
 
   onSelected() {
@@ -89,11 +97,11 @@ export class DatasyncPage {
     this.navCtrl.pop();
   }
 
-  getLastSyncTime(){
+  getLastSyncTime() {
     this.telemetryService.getTelemetryStat((response: any) => {
       let that = this;
       that.zone.run(() => {
-        let syncStat: TelemetryStat =  JSON.parse(response).result;
+        let syncStat: TelemetryStat = JSON.parse(response).result;
         console.log("Telemetry Data Sync Time : " + syncStat.lastSyncTime);
         let milliseconds = Number(syncStat.lastSyncTime);
 
@@ -111,7 +119,7 @@ export class DatasyncPage {
 
 
     }, (error) => {
-      
+
     });
   }
 
@@ -190,24 +198,22 @@ export class DatasyncPage {
     return strTime;
   }
 
-  generateImpressionEvent() {
-    let impression = new Impression();
-    impression.type = ImpressionType.VIEW;
-    impression.pageId = PageId.SETTINGS_DATASYNC;
-    impression.env = Environment.SETTINGS;
-    this.telemetryService.impression(impression);
-  }
+
 
   generateInteractEvent(interactType: string, subtype: string, size: string) {
-    let interact = new Interact();
-    interact.type = interactType;
-    interact.subType = subtype;
     if (size != null) {
       let valuesMap = new CMap();
       valuesMap["SizeOfFileInKB"] = size;
-      interact.valueMap = valuesMap;
+      this.telemetryService.interact(generateInteractTelemetry(
+        interactType,
+        subtype,
+        Environment.SETTINGS,
+        PageId.SETTINGS_DATASYNC,
+        valuesMap,
+        undefined,
+        undefined
+      ));
     }
-    this.telemetryService.interact(interact);
   }
 
   getLoader(): any {

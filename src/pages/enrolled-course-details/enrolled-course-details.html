@@ -12,6 +12,7 @@
 			</button>
 		</ion-buttons>
 	</ion-navbar>
+	<pb-horizontal *ngIf="courseCardData?.progress" [progress]="courseCardData?.progress" class="course-progress"></pb-horizontal>
 </ion-header>
 
 <ion-content padding>

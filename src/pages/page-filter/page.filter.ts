@@ -14,7 +14,7 @@ import {
   FrameworkService
 } from "sunbird";
 import { PageFilterOptions } from "./options/filter.options";
-import { generateInteractEvent } from "../../app/telemetryutil";
+import { generateInteractTelemetry } from "../../app/telemetryutil";
 import * as frameworkDataList from "../../config/framework.filters";
 
 @Component({
@@ -109,10 +109,13 @@ export class PageFilter {
 
   cancel() {
     this.telemetryService.interact(
-      generateInteractEvent(InteractType.TOUCH,
+      generateInteractTelemetry(InteractType.TOUCH,
         InteractSubtype.CANCEL,
         Environment.HOME,
-        PageId.LIBRARY_PAGE_FILTER, null));
+        PageId.LIBRARY_PAGE_FILTER,
+        null,
+        undefined,
+        undefined));
     this.viewCtrl.dismiss();
   }
 

@@ -1,6 +1,6 @@
 
 import { Component } from '@angular/core';
-import { NavController, NavParams, ToastController } from 'ionic-angular';
+import { NavController, NavParams, ToastController, Platform } from 'ionic-angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
@@ -54,7 +54,8 @@ export class FormExperience {
     private userProfileService: UserProfileService,
     private toastCtrl: ToastController,
     private translate: TranslateService,
-    public alertCtrl: AlertController
+    public alertCtrl: AlertController,
+    private platform: Platform
   ) {
 
     /* Receive data from other component */
@@ -182,19 +183,20 @@ export class FormExperience {
    * @param {string} messageConst - Message Constant to be translated
    * @returns {string} translatedMsg - Translated Message
    */
-  translateMessage(messageConst: string): string {
+  translateMessage(messageConst: string, field?: string): string {
     let translatedMsg = '';
-    this.translate.get(messageConst).subscribe(
+    this.translate.get(messageConst, { '%s': field }).subscribe(
       (value: any) => {
         translatedMsg = value;
       }
     );
     return translatedMsg;
   }
+
   showDeleteConfirm() {
     let confirm = this.alertCtrl.create({
-      title: "Use this lightsaber?",
-      // <ion-icon name='md-close'></ion-icon>
+      title: this.translateMessage('CONFIRM_DEL',this.translateMessage('TITLE_EXPERIENCE')),
+
       mode: 'wp',
       cssClass: 'confirm-alert',
       buttons: [
@@ -213,9 +215,30 @@ export class FormExperience {
             this.onSubmit(true);
             console.log('Agree clicked');
           }
+        },
+        {
+          text: 'x',
+          role: 'cancel',
+          cssClass: 'closeButton',
+          handler: () => {
+            console.log('close icon clicked');
+          }
         }
       ]
     });
     confirm.present();
+    let deregisterBackButton = this.platform.registerBackButtonAction(() => {
+      // dismiss on back press
+      confirm.dismiss();
+    }, 11);
+
+    // deregister handler after modal closes
+    confirm.onDidDismiss(() => {
+      deregisterBackButton();
+    });
+
+    function closePopup() {
+      confirm.dismiss();
+    }
   }
 }

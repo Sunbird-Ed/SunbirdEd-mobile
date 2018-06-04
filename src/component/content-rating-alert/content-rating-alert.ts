@@ -1,9 +1,9 @@
 import { Component, NgZone } from '@angular/core';
 import { NavParams, ViewController, Header, Platform, ToastController } from "ionic-angular";
-import { ContentService, AuthService, TelemetryService, InteractType, InteractSubtype, PageId, Environment, ImpressionType, ImpressionSubtype } from 'sunbird';
+import { ContentService, AuthService, TelemetryService, InteractType, InteractSubtype, PageId, Environment, ImpressionType, ImpressionSubtype, Log, LogLevel } from 'sunbird';
 import { NgModule } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { generateInteractEvent, generateImpressionEvent, generateImpressionTelemetry } from '../../app/telemetryutil';
+import { generateImpressionTelemetry, generateInteractTelemetry } from '../../app/telemetryutil';
 import { ProfileConstants } from '../../app/app.constant';
 
 
@@ -26,8 +26,9 @@ export class ContentRatingAlertComponent {
   ratingCount: any;
   content: any;
   showCommentBox: boolean = false;
-  private pageId: String = "";
+  private pageId: string = "";
   userRating: number = 0;
+  private popupType: string;
 
   /**
    * Default function of class ContentRatingAlertComponent
@@ -55,6 +56,7 @@ export class ContentRatingAlertComponent {
       this.content = this.navParams.get("content");
       this.userRating = this.navParams.get("rating");
       this.comment = this.navParams.get('comment');
+      this.popupType = this.navParams.get('popupType');
       if (this.userRating) {
         this.showCommentBox = true;
       }
@@ -100,10 +102,13 @@ export class ContentRatingAlertComponent {
     let paramsMap = new Map();
     paramsMap["Ratings"] = this.ratingCount;
     paramsMap["Comment"] = this.comment;
-    this.telemetryService.interact(generateInteractEvent(InteractType.TOUCH,
+    this.telemetryService.interact(generateInteractTelemetry(
+      InteractType.TOUCH,
       InteractSubtype.RATING_SUBMITTED,
       Environment.HOME,
-      this.pageId, paramsMap
+      this.pageId, paramsMap,
+      undefined,
+      undefined
     ));
 
     let viewDismissData = {
@@ -141,12 +146,30 @@ export class ContentRatingAlertComponent {
   ionViewDidLoad(): void {
     this.content = this.navParams.get("content");
     this.pageId = this.navParams.get("pageId");
+   
+  }
+
+  ionViewWillEnter(){
     this.telemetryService.impression(generateImpressionTelemetry(
       ImpressionType.VIEW,
       ImpressionSubtype.RATING_POPUP,
       this.pageId,
-      Environment.HOME, "", "", ""
+      Environment.HOME, "", "", "",
+      undefined,
+      undefined
     ));
+
+    let log = new Log();
+    log.level = LogLevel.INFO;
+    log.message = this.pageId;
+    log.env =Environment.HOME;
+    log.type = ImpressionType.VIEW;
+    let params = new Array<any>();
+    let paramsMap = new Map();
+    paramsMap["PopupType"] = this.popupType;
+    params.push(paramsMap);
+    log.params = params;
+    this.telemetryService.log(log);
   }
 
   /**

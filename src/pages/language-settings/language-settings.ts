@@ -16,12 +16,11 @@ import {
 
 import { OnboardingPage } from '../onboarding/onboarding';
 import { DocumentDirection } from 'ionic-angular/platform/platform';
+import { generateImpressionTelemetry, generateInteractTelemetry, Map } from '../../app/telemetryutil';
 
 const KEY_SELECTED_LANGUAGE_CODE = "selected_language_code";
 const KEY_SELECTED_LANGUAGE = "selected_language";
-class CMap {
-  [key: string]: any
-}
+
 @Component({
   selector: 'page-language-settings',
   templateUrl: 'language-settings.html',
@@ -123,12 +122,15 @@ export class LanguageSettingsPage {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad LanguageSettingPage');
+    this.telemetryService.impression(generateImpressionTelemetry(
+      ImpressionType.VIEW, "",
+      this.isFromSettings ? PageId.SETTINGS_LANGUAGE : PageId.ONBOARDING,
+      Environment.SETTINGS, "", "", "",
+      undefined, undefined
+    ));
   }
 
-  ionViewDidEnter() {
-    this.generateImpressionEvent();
-  }
+
 
   /**
    * on language selected
@@ -145,32 +147,23 @@ export class LanguageSettingsPage {
   }
 
   generateInteractEvent(previousLanguage: string, currentLanguage: string) {
-    let interact = new Interact();
-    interact.type = InteractType.TOUCH;
-    interact.subType = InteractSubtype.LANGUAGE_SETTINGS_SUCCESS;
-    if (this.isFromSettings) {
-      interact.pageId = PageId.SETTINGS_LANGUAGE;
-      interact.id = PageId.SETTINGS_LANGUAGE;
-      interact.env = Environment.SETTINGS;
-    }
-    else {
-      interact.pageId = PageId.ONBOARDING;
-      interact.id = PageId.ONBOARDING;
-      interact.env = Environment.HOME;
-    }
-
-    let valuesMap = new CMap();
+    let valuesMap = new Map();
     if (previousLanguage == undefined) {
       valuesMap["PreviousLanguage"] = "";
     }
     else {
       valuesMap["PreviousLanguage"] = previousLanguage;
     }
-
     valuesMap["CurrentLanguage"] = currentLanguage;
-    interact.valueMap = valuesMap;
-
-    this.telemetryService.interact(interact);
+    this.telemetryService.interact(generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.LANGUAGE_SETTINGS_SUCCESS,
+      this.isFromSettings ? Environment.SETTINGS : Environment.HOME,
+      this.isFromSettings ? PageId.SETTINGS_LANGUAGE : PageId.ONBOARDING,
+      valuesMap,
+      undefined,
+      undefined
+    ));
   }
 
   continue() {
@@ -211,17 +204,12 @@ export class LanguageSettingsPage {
   // }
 
   generateImpressionEvent() {
-    let impression = new Impression();
-    impression.type = ImpressionType.VIEW;
-    if (this.isFromSettings) {
-      impression.pageId = PageId.SETTINGS_LANGUAGE;
-    }
-    else {
-      impression.pageId = PageId.ONBOARDING;
-    }
-
-    impression.env = Environment.SETTINGS;
-    this.telemetryService.impression(impression);
+    this.telemetryService.impression(generateImpressionTelemetry(
+      ImpressionType.VIEW, "",
+      this.isFromSettings ? PageId.SETTINGS_LANGUAGE : PageId.ONBOARDING,
+      Environment.SETTINGS, "", "", "",
+      undefined, undefined
+    ));
   }
 
   ionViewWillEnter() {

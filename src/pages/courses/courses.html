@@ -4,7 +4,7 @@
       {{'COURSES_LW' | translate}}
     </ion-title>
     <ion-buttons end>
-      <button ion-button icon-only (click)="scanQRCode()">
+      <button id="qrIcon" ion-button icon-only (click)="scanQRCode()">
         <img src="assets/imgs/ic_scanqr.png" class="tool-icon" float-end/>
       </button>
       <button ion-button icon-only (click)="search()">
@@ -15,7 +15,7 @@
       </button>
     </ion-buttons>
   </ion-navbar>
-  <div *ngIf="showWarning" class="offline-message"> <span>{{'NEED_INTERNET_TO_CHANGE' | translate}} </span></div>
+  <div *ngIf="showWarning" class="offline-message"> <span>{{'NO_INTERNET_TITLE' | translate}} </span></div>
 </ion-header>
 
 <ion-content overflow-scroll="true" style="background: #efeff4;">

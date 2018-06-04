@@ -8,7 +8,7 @@ import {
 } from 'sunbird';
 import { TranslateService } from '@ngx-translate/core';
 import { ProfileType, ProfileService } from 'sunbird'
-import { generateImpressionEvent, Map } from '../../app/telemetryutil';
+import {  Map, generateImpressionTelemetry, generateInteractTelemetry } from '../../app/telemetryutil';
 import { initTabs, GUEST_TEACHER_TABS, GUEST_STUDENT_TABS } from '../../app/module.service';
 import { AppGlobalService } from '../../service/app-global.service';
 
@@ -69,14 +69,17 @@ export class UserTypeSelectionPage {
   }
 
   ionViewDidLoad() {
+    this.telemetryService.impression(
+      generateImpressionTelemetry(ImpressionType.VIEW, "",
+        PageId.USER_TYPE_SELECTION,
+        Environment.HOME, "", "", "",
+        undefined,
+        undefined)
+    );
   }
 
   ionViewDidEnter() {
-    this.telemetryService.impression(
-      generateImpressionEvent(ImpressionType.VIEW,
-        PageId.USER_TYPE_SELECTION,
-        Environment.HOME, "", "", "")
-    );
+
   }
 
   selectTeacherCard() {
@@ -146,7 +149,7 @@ export class UserTypeSelectionPage {
     }
   }
 
-  updateProfile(updateRequest: any){
+  updateProfile(updateRequest: any) {
     this.profileService.updateProfile(updateRequest,
       (res: any) => {
         console.log("Update Response", res);
@@ -174,7 +177,7 @@ export class UserTypeSelectionPage {
       });
   }
 
-  gotoTabsPage(){
+  gotoTabsPage() {
     // Update the Global variable in the AppGlobalService
     this.event.publish(AppGlobalService.USER_INFO_UPDATED);
 
@@ -207,23 +210,24 @@ export class UserTypeSelectionPage {
   }
 
   generateInteractEvent(userType) {
-    let interact = new Interact();
-    interact.type = InteractType.TOUCH;
-    interact.subType = InteractSubtype.CONTINUE_CLICKED;
-    interact.pageId = PageId.USER_TYPE_SELECTION;
-    interact.id = PageId.USER_TYPE_SELECTION;
     let values = new Map();
     values["UserType"] = userType;
-    interact.valueMap = values;
-    interact.env = Environment.HOME;
-    this.telemetryService.interact(interact);
+    this.telemetryService.interact(generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.CONTINUE_CLICKED,
+      Environment.HOME,
+      PageId.USER_TYPE_SELECTION,
+      values,
+      undefined,
+      undefined
+    ));
   }
 
- /**
-   * Used to Translate message to current Language
-   * @param {string} messageConst - Message Constant to be translated
-   * @returns {string} translatedMsg - Translated Message
-   */
+  /**
+    * Used to Translate message to current Language
+    * @param {string} messageConst - Message Constant to be translated
+    * @returns {string} translatedMsg - Translated Message
+    */
   translateMessage(messageConst: string, field?: string): string {
     let translatedMsg = '';
     this.translate.get(messageConst, { '%s': field }).subscribe(

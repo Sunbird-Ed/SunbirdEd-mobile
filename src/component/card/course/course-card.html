@@ -2,6 +2,7 @@
   <ion-grid no-padding>
     <ion-row class="top-container" no-padding>
       <ion-col col-12>
+        <pb-horizontal *ngIf="course.progress" [progress]="course.progress" class="course-progress"></pb-horizontal>
         <div class="img-container">
         </div>
         <ion-badge class="badge" *ngIf="onProfile" color="light" item-end>{{course?.contentType}}</ion-badge>

@@ -8,7 +8,7 @@ import {
   TelemetryService, InteractType, InteractSubtype, Environment, PageId, SharedPreferences
 } from 'sunbird';
 import { initTabs, LOGIN_TEACHER_TABS } from '../../app/module.service';
-import { generateInteractEvent } from '../../app/telemetryutil';
+import { generateInteractTelemetry } from '../../app/telemetryutil';
 import { ProfileConstants } from '../../app/app.constant';
 import { Network } from '@ionic-native/network';
 
@@ -95,10 +95,13 @@ export class SignInCardComponent {
     }
     else {
       this.telemetryService.interact(
-        generateInteractEvent(InteractType.TOUCH,
+        generateInteractTelemetry(
+          InteractType.TOUCH,
           InteractSubtype.SIGNIN_OVERLAY_CLICKED,
           Environment.HOME,
-          this.source, null)
+          this.source, null,
+          undefined,
+          undefined)
       );
 
       this.generateLoginInteractTelemetry(InteractType.TOUCH,
@@ -189,10 +192,12 @@ export class SignInCardComponent {
     let valuesMap = new Map();
     valuesMap["UID"] = uid;
     this.telemetryService.interact(
-      generateInteractEvent(interactType,
+      generateInteractTelemetry(interactType,
         interactSubtype,
         Environment.HOME,
         PageId.LOGIN,
-        valuesMap));
+        valuesMap,
+        undefined,
+        undefined));
   }
 }

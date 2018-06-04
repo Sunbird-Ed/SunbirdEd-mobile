@@ -2,10 +2,10 @@ import { ContentRatingAlertComponent } from './../../component/content-rating-al
 import { ContentActionsComponent } from './../../component/content-actions/content-actions';
 import { Component, NgZone, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, PopoverController, Navbar, Platform } from 'ionic-angular';
-import { ContentService, CourseService, FileUtil, ImpressionType, PageId, Environment, TelemetryService, Mode, End, ShareUtil, InteractType, InteractSubtype, Rollup, BuildParamService, AuthService, SharedPreferences, ProfileType } from 'sunbird';
+import { ContentService, CourseService, FileUtil, ImpressionType, PageId, Environment, TelemetryService, Mode, End, ShareUtil, InteractType, InteractSubtype, Rollup, BuildParamService, AuthService, SharedPreferences, ProfileType, CorrelationData } from 'sunbird';
 import { SocialSharing } from "@ionic-native/social-sharing";
 import * as _ from 'lodash';
-import { generateInteractEvent, Map, generateImpressionWithRollup, generateStartWithRollup, generateInteractWithRollup } from '../../app/telemetryutil';
+import { generateInteractTelemetry, Map, generateStartTelemetry, generateImpressionTelemetry, generateEndTelemetry } from '../../app/telemetryutil';
 import { TranslateService } from '@ngx-translate/core';
 
 @IonicPage()
@@ -109,7 +109,8 @@ export class ContentDetailsPage {
    * 
    */
   private userRating: number = 0;
-  ratingComment: string = '';
+  private ratingComment: string = '';
+  private corRelationList: Array<CorrelationData>;
 
   /**
    * This flag helps in knowing when the content player is closed and the user is back on content details page.
@@ -168,18 +169,11 @@ export class ContentDetailsPage {
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
 
-    //This is to know when the app has gone to background
-    this.pause = platform.pause.subscribe(() => {
-
-    });
-
     //This is to know when the app has come to foreground
     this.resume = platform.resume.subscribe(() => {
       if (this.isPlayerLaunched && !this.guestUser) {
         this.isPlayerLaunched = false;
-        if (this.userRating === 0) {
-          this.rateContent();
-        }
+        this.setContentDetails(this.identifier, false, true);
       }
       this.isContentPlayed = true;
       this.updateContentProgress();
@@ -217,7 +211,7 @@ export class ContentDetailsPage {
   /**
    * Function to rate content
    */
-  rateContent() {
+  rateContent(popupType: string) {
     if (!this.guestUser) {
       let ratingData = {
         identifier: this.identifier,
@@ -225,18 +219,17 @@ export class ContentDetailsPage {
         rating: this.userRating,
         comment: this.ratingComment
       }
+      let paramsMap = new Map();
+      if (this.isContentPlayed || (this.content.downloadable
+        && this.content.contentAccess.length)) {
 
-      if (this.isContentPlayed || (this.content.downloadable && this.content.contentAccess.length)) {
-        this.telemetryService.interact(generateInteractEvent(InteractType.TOUCH,
-          InteractSubtype.RATING_CLICKED,
-          Environment.HOME,
-          PageId.CONTENT_DETAIL, null
-        ));
+        paramsMap["IsPlayed"] = "Y";
         let popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
           content: this.content,
           pageId: PageId.CONTENT_DETAIL,
           rating: this.userRating,
-          comment: this.ratingComment
+          comment: this.ratingComment,
+          popupType: popupType
         }, {
             cssClass: 'onboarding-alert'
           });
@@ -250,8 +243,17 @@ export class ContentDetailsPage {
           }
         });
       } else {
+        paramsMap["IsPlayed"] = "N";
         this.translateAndDisplayMessage('TRY_BEFORE_RATING', false);
       }
+      this.telemetryService.interact(generateInteractTelemetry(
+        InteractType.TOUCH,
+        InteractSubtype.RATING_CLICKED,
+        Environment.HOME,
+        PageId.CONTENT_DETAIL, paramsMap,
+        this.objRollup,
+        this.corRelationList
+      ));
     } else {
       if (this.profileType == ProfileType.TEACHER) {
         this.translateAndDisplayMessage('SIGNIN_TO_USE_FEATURE');
@@ -264,9 +266,12 @@ export class ContentDetailsPage {
    *
    * @param {string} identifier identifier of content / course
    */
-  setContentDetails(identifier, refreshContentDetails: boolean | true) {
-    let loader = this.getLoader();
-    loader.present();
+  setContentDetails(identifier, refreshContentDetails: boolean | true, showRating: boolean) {
+    let loader ;
+    if(!showRating){
+      loader = this.getLoader();
+      loader.present();
+    }
     const option = {
       contentId: identifier,
       refreshContentDetails: refreshContentDetails,
@@ -280,14 +285,28 @@ export class ContentDetailsPage {
         console.log('Success: Content details received... @@@', data);
         if (data && data.result) {
           this.extractApiResponse(data);
-          loader.dismiss();
+          if(!showRating){
+            loader.dismiss();
+          }
+         
+
         } else {
-          loader.dismiss();
+          if(!showRating){
+            loader.dismiss();
+          }
+        }
+
+        if (showRating) {
+          if (this.userRating === 0) {
+            this.rateContent("automatic");
+          }
         }
       });
     },
       error => {
-        loader.dismiss();
+        if(showRating){
+          loader.dismiss();
+        }
         this.translateAndDisplayMessage('ERROR_CONTENT_NOT_AVAILABLE', true);
       });
   }
@@ -358,37 +377,51 @@ export class ContentDetailsPage {
 
   generateImpressionEvent(objectId, objectType, objectVersion) {
 
-    this.telemetryService.impression(generateImpressionWithRollup(
-      ImpressionType.DETAIL,
+    this.telemetryService.impression(generateImpressionTelemetry(
+      ImpressionType.DETAIL, "",
       PageId.CONTENT_DETAIL,
       Environment.HOME,
       objectId,
       objectType,
       objectVersion,
-      this.objRollup
+      this.objRollup,
+      this.corRelationList
     ));
   }
 
   generateStartEvent(objectId, objectType, objectVersion) {
-    this.telemetryService.start(generateStartWithRollup(
+    this.telemetryService.start(generateStartTelemetry(
       PageId.CONTENT_DETAIL,
       objectId,
       objectType,
       objectVersion,
-      this.objRollup
+      this.objRollup,
+      this.corRelationList
     ));
   }
 
   generateEndEvent(objectId, objectType, objectVersion) {
-    let end = new End();
-    end.type = objectType;
-    end.pageId = PageId.CONTENT_DETAIL;
-    end.env = Environment.HOME;
-    end.mode = Mode.PLAY;
-    end.objId = objectId;
-    end.objType = objectType;
-    end.objVer = objectVersion;
-    this.telemetryService.end(end);
+    this.telemetryService.end(generateEndTelemetry(
+      objectType,
+      Mode.PLAY,
+      PageId.CONTENT_DETAIL,
+      objectId,
+      objectType,
+      objectVersion,
+      this.objRollup,
+      this.corRelationList
+    ));
+  }
+
+  private generateRatingInteractEvent() {
+    this.telemetryService.interact(
+      generateInteractTelemetry(InteractType.TOUCH,
+        InteractSubtype.CONTENT_PLAY,
+        Environment.HOME,
+        PageId.CONTENT_DETAIL, null,
+        this.objRollup,
+        this.corRelationList)
+    );
   }
 
   /**
@@ -398,15 +431,18 @@ export class ContentDetailsPage {
     this.cardData = this.navParams.get('content');
     this.isChildContent = this.navParams.get('isChildContent');
     this.cardData.depth = this.navParams.get('depth') === undefined ? '' : this.navParams.get('depth');
+    this.corRelationList = this.navParams.get('corRelation');
+
     this.identifier = this.cardData.contentId || this.cardData.identifier;
     if (!this.didViewLoad) {
       this.generateRollUp();
-      this.generateStartEvent(this.cardData.identifier, this.cardData.contentType, this.cardData.pkgVersion);
-      this.generateImpressionEvent(this.cardData.identifier, this.cardData.contentType, this.cardData.pkgVersion);
+      let contentType = this.cardData.contentData ? this.cardData.contentData.contentType : this.cardData.contentType;
+      this.generateStartEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
+      this.generateImpressionEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
     }
     this.didViewLoad = true;
     // this.resetVariables();
-    this.setContentDetails(this.identifier, true);
+    this.setContentDetails(this.identifier, true, false);
     this.subscribeGenieEvent();
     // this.events.unsubscribe('savedResources:update');
   }
@@ -416,7 +452,6 @@ export class ContentDetailsPage {
    */
   ionViewWillLeave(): void {
     this.events.unsubscribe('genie.event');
-    this.pause.unsubscribe();
     this.resume.unsubscribe();
   }
 
@@ -469,7 +504,7 @@ export class ContentDetailsPage {
         isChildContent: isChild,
         destinationFolder: this.fileUtil.internalStoragePath(),
         contentId: value,
-        correlationData: []
+        correlationData: this.corRelationList !== undefined ? this.corRelationList : []
       })
     });
 
@@ -529,7 +564,7 @@ export class ContentDetailsPage {
             this.isDownloadStarted = false;
             this.cancelDownloading = false;
             this.content.downloadable = true;
-            this.setContentDetails(this.identifier, true);
+            this.setContentDetails(this.identifier, true, false);
             this.downloadProgress = '';
             this.events.publish('savedResources:update', {
               update: true
@@ -573,10 +608,12 @@ export class ContentDetailsPage {
     this.zone.run(() => {
       this.isPlayerLaunched = true;
       this.telemetryService.interact(
-        generateInteractWithRollup(InteractType.TOUCH,
+        generateInteractTelemetry(InteractType.TOUCH,
           InteractSubtype.CONTENT_PLAY,
           Environment.HOME,
-          PageId.CONTENT_DETAIL, null, this.objRollup)
+          PageId.CONTENT_DETAIL, null,
+          this.objRollup,
+          this.corRelationList)
       );
     });
 
@@ -685,10 +722,12 @@ export class ContentDetailsPage {
     let values = new Map();
     values["ContentType"] = contentType;
     this.telemetryService.interact(
-      generateInteractEvent(interactType,
+      generateInteractTelemetry(interactType,
         subType,
         Environment.HOME,
-        PageId.CONTENT_DETAIL, values)
+        PageId.CONTENT_DETAIL, values,
+        this.objRollup,
+        this.corRelationList)
     );
   }
 }

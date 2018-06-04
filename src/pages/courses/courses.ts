@@ -1,11 +1,12 @@
 import { ViewMoreActivityPage } from './../view-more-activity/view-more-activity';
 import { Component, NgZone, OnInit } from '@angular/core';
 import { NavController, PopoverController, Events, ToastController, LoadingController } from 'ionic-angular';
+import { AppVersion } from "@ionic-native/app-version";
 import { IonicPage } from 'ionic-angular';
 import {
   SharedPreferences, CourseService,
   PageAssembleService, PageAssembleCriteria,
-  Impression, ImpressionType, PageId, Environment, TelemetryService, ContentDetailRequest, ContentService, ProfileType, PageAssembleFilter
+  Impression, ImpressionType, PageId, Environment, TelemetryService, ContentDetailRequest, ContentService, ProfileType, PageAssembleFilter, CorrelationData
 } from 'sunbird';
 import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
@@ -15,11 +16,13 @@ import { ContentDetailsPage } from '../content-details/content-details';
 import * as _ from 'lodash';
 import { TranslateService } from '@ngx-translate/core';
 import { Network } from '@ionic-native/network';
-import { generateImpressionEvent } from '../../app/telemetryutil';
+import { generateImpressionTelemetry } from '../../app/telemetryutil';
 import { ContentType, MimeType, PageFilterConstants, ProfileConstants } from '../../app/app.constant';
 import { PageFilterCallback, PageFilter } from '../page-filter/page.filter';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 import { AppGlobalService } from '../../service/app-global.service';
+
+import Driver from 'driver.js';
 
 @IonicPage()
 @Component({
@@ -63,6 +66,7 @@ export class CoursesPage implements OnInit {
   isOnBoardingCardCompleted: boolean = false;
   onBoardingProgress: number = 0;
   selectedLanguage = 'en';
+  appLabel: string;
 
   courseFilter: any;
 
@@ -72,6 +76,7 @@ export class CoursesPage implements OnInit {
 
   profile: any;
 
+  private corRelationList: Array<CorrelationData>;
   /**
    * Default method of class CoursesPage
    *
@@ -80,7 +85,9 @@ export class CoursesPage implements OnInit {
    * @param {PageAssembleService} pageService Service to get latest and popular courses
    * @param {NgZone} ngZone To bind data
    */
-  constructor(private navCtrl: NavController,
+  constructor(
+    private appVersion: AppVersion,
+    private navCtrl: NavController,
     private courseService: CourseService,
     private pageService: PageAssembleService,
     private ngZone: NgZone,
@@ -94,6 +101,7 @@ export class CoursesPage implements OnInit {
     private translate: TranslateService,
     private network: Network,
     private loadingCtrl: LoadingController,
+    private sharedPreferences: SharedPreferences,
     private appGlobal: AppGlobalService
   ) {
 
@@ -139,6 +147,11 @@ export class CoursesPage implements OnInit {
     this.network.onConnect().subscribe((data) => {
       this.isNetworkAvailable = true;
     });
+
+    this.appVersion.getAppName()
+      .then((appName: any) => {
+        this.appLabel = appName;
+      });
   }
 
   /**
@@ -147,6 +160,46 @@ export class CoursesPage implements OnInit {
   ngOnInit() {
     console.log('courses component initialized...');
     this.getCourseTabData();
+  }
+
+  /*   ngAfterViewInit() {
+      const driver = new Driver();
+      console.log("Driver", driver);
+      driver.highlight('#qrIcon');
+    } */
+
+  ionViewDidLoad() {
+    //this.sharedPreferences.
+    this.preference.getString('show_app_walkthrough_screen', (value) => {
+      if (value === 'true') {
+        const driver = new Driver({
+          allowClose: true,
+          closeBtnText: this.translateMessage('DONE'),
+          showButtons: true
+        });
+
+        console.log("Driver", driver);
+        setTimeout(() => {
+          driver.highlight({
+            element: '#qrIcon',
+            popover: {
+              title: this.translateMessage('ONBOARD_SCAN_QR_CODE'),
+              description: "<img src='assets/imgs/ic_scanqrdemo.png' /><p>" + this.translateMessage('ONBOARD_SCAN_QR_CODE_DESC', this.appLabel) + "</p>",
+              showButtons: true,         // Do not show control buttons in footer
+              closeBtnText: this.translateMessage('DONE'),
+            }
+          });
+
+          let element = document.getElementById("driver-highlighted-element-stage");
+          var img = document.createElement("img");
+          img.src = "assets/imgs/ic_scan.png";
+          img.id = "qr_scanner";
+          element.appendChild(img);
+        }, 100);
+
+        this.preference.putString('show_app_walkthrough_screen', 'false');
+      }
+    });
   }
 
   viewMoreEnrolledCourses() {
@@ -376,7 +429,8 @@ export class CoursesPage implements OnInit {
     const that = this;
     const callback: QRResultCallback = {
       dialcode(scanResult, dialCode) {
-        that.navCtrl.push(SearchPage, { dialCode: dialCode });
+        that.addCorRelation(dialCode, "qr");
+        that.navCtrl.push(SearchPage, { dialCode: dialCode,corRelation: that.corRelationList });
       },
       content(scanResult, contentId) {
         // that.navCtrl.push(SearchPage);
@@ -386,7 +440,8 @@ export class CoursesPage implements OnInit {
 
         that.contentService.getContentDetail(request, (response) => {
           let data = JSON.parse(response);
-          that.showContentDetails(data.result);
+          that.addCorRelation(data.result.identifier, "qr")
+          that.showContentDetails(data.result, that.corRelationList);
         }, (error) => {
           console.log("Error " + error);
           if (that.network.type === 'none') {
@@ -401,21 +456,38 @@ export class CoursesPage implements OnInit {
     this.qrScanner.startScanner(undefined, undefined, undefined, callback, PageId.COURSES);
   }
 
-  showContentDetails(content) {
+  addCorRelation(identifier: string, type: string) {
+		if (this.corRelationList === undefined) {
+			this.corRelationList = new Array<CorrelationData>();
+		}
+		else {
+			this.corRelationList = [];
+		}
+		let corRelation: CorrelationData = new CorrelationData();
+		corRelation.id = identifier;
+		corRelation.type = type;
+		this.corRelationList.push(corRelation);
+	}
+
+
+  showContentDetails(content, corRelationList) {
     if (content.contentType === ContentType.COURSE) {
       console.log('Calling course details page');
       this.navCtrl.push(EnrolledCourseDetailsPage, {
-        content: content
+        content: content,
+				corRelation: corRelationList
       })
     } else if (content.mimeType === MimeType.COLLECTION) {
       console.log('Calling collection details page');
       this.navCtrl.push(CollectionDetailsPage, {
-        content: content
+        content: content,
+				corRelation: corRelationList
       })
     } else {
       console.log('Calling content details page');
       this.navCtrl.push(ContentDetailsPage, {
-        content: content
+        content: content,
+				corRelation: corRelationList
       })
     }
   }
@@ -429,10 +501,11 @@ export class CoursesPage implements OnInit {
   }
 
   ionViewDidEnter() {
-    this.telemetryService.impression(generateImpressionEvent(
-      ImpressionType.VIEW,
+    this.telemetryService.impression(generateImpressionTelemetry(
+      ImpressionType.VIEW, "",
       PageId.COURSES,
-      Environment.HOME, "", "", ""
+      Environment.HOME, "", "", "",
+      undefined, undefined
     ));
   }
 
@@ -542,5 +615,20 @@ export class CoursesPage implements OnInit {
       duration: 30000,
       spinner: "crescent"
     });
+  }
+
+  /**
+   * Used to Translate message to current Language
+   * @param {string} messageConst - Message Constant to be translated
+   * @returns {string} translatedMsg - Translated Message
+   */
+  translateMessage(messageConst: string, field?: string): string {
+    let translatedMsg = '';
+    this.translate.get(messageConst, { '%s': field }).subscribe(
+      (value: any) => {
+        translatedMsg = value;
+      }
+    );
+    return translatedMsg;
   }
 }
