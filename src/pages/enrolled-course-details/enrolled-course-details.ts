@@ -13,7 +13,7 @@ import { ContentDetailsPage } from '../content-details/content-details';
 import { ContentActionsComponent } from '../../component/content-actions/content-actions';
 import { ReportIssuesComponent } from '../../component/report-issues/report-issues';
 import { TranslateService } from '@ngx-translate/core';
-import { ContentType, MimeType } from '../../app/app.constant';
+import { ContentType, MimeType, ProfileConstants } from '../../app/app.constant';
 import { CourseBatchesPage } from '../course-batches/course-batches';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { generateInteractTelemetry, generateEndTelemetry, generateStartTelemetry, generateImpressionTelemetry } from '../../app/telemetryutil';
@@ -177,7 +177,7 @@ export class EnrolledCourseDetailsPage {
     private telemetryService: TelemetryService, private loadingCtrl: LoadingController,
     private preference: SharedPreferences,
     private platform: Platform) {
-
+      this.getUserId();
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
 
@@ -205,6 +205,21 @@ export class EnrolledCourseDetailsPage {
       this.navCtrl.pop();
       this.backButtonFunc();
     }, 10)
+  }
+
+  /**
+   * Get user id
+   */
+  getUserId() {
+    this.authService.getSessionData((data: string) => {
+      let res = JSON.parse(data);
+      if (res === undefined || res === "null") {
+        this.userId = '';
+      } else {
+        this.userId = res[ProfileConstants.USER_TOKEN] ? res[ProfileConstants.USER_TOKEN] : '';
+        console.log('UserId', this.userId);
+      }
+    });
   }
 
   /**
