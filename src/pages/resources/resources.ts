@@ -21,6 +21,8 @@ import { Network } from '@ionic-native/network';
 import { PageFilterCallback, PageFilter } from '../page-filter/page.filter';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 import { AppGlobalService } from '../../service/app-global.service';
+import Driver from 'driver.js';
+import { AppVersion } from "@ionic-native/app-version";
 
 @Component({
 	selector: 'page-resources',
@@ -73,6 +75,7 @@ export class ResourcesPage implements OnInit {
 	private corRelationList: Array<CorrelationData>;
 
 	profile: any;
+	appLabel: string;
 
 	constructor(public navCtrl: NavController,
 		private pageService: PageAssembleService,
@@ -88,7 +91,8 @@ export class ResourcesPage implements OnInit {
 		private zone: NgZone,
 		private network: Network,
 		private loadingCtrl: LoadingController,
-		private appGlobal: AppGlobalService
+		private appGlobal: AppGlobalService,
+		private appVersion: AppVersion
 	) {
 		this.preference.getString('selected_language_code', (val: string) => {
 			if (val && val.length) {
@@ -125,6 +129,10 @@ export class ResourcesPage implements OnInit {
 			this.isNetworkAvailable = true;
 		});
 
+		this.appVersion.getAppName()
+		.then((appName: any) => {
+		  this.appLabel = appName;
+		});
 
 	}
 
@@ -359,6 +367,36 @@ export class ResourcesPage implements OnInit {
 		// this.resourceFilter = undefined;
 		// this.appliedFilter = undefined;
 		this.generateImpressionEvent();
+		this.preference.getString('show_app_walkthrough_screen', (value) => {
+			if (value === 'true') {
+			  const driver = new Driver({
+				allowClose: true,
+				closeBtnText: this.translateMessage('DONE'),
+				showButtons: true
+			  });
+	  
+			  console.log("Driver", driver);
+			  setTimeout(() => {
+				driver.highlight({
+				  element: '#qrIcon',
+				  popover: {
+					title: this.translateMessage('ONBOARD_SCAN_QR_CODE'),
+					description: "<img src='assets/imgs/ic_scanqrdemo.png' /><p>" + this.translateMessage('ONBOARD_SCAN_QR_CODE_DESC', this.appLabel) + "</p>",
+					showButtons: true,         // Do not show control buttons in footer
+					closeBtnText: this.translateMessage('DONE'),
+				  }
+				});
+	  
+				let element = document.getElementById("driver-highlighted-element-stage");
+				var img = document.createElement("img");
+				img.src = "assets/imgs/ic_scan.png";
+				img.id = "qr_scanner";
+				element.appendChild(img);
+			  }, 100);
+	  
+			  this.preference.putString('show_app_walkthrough_screen', 'false');
+			}
+		  });
 	}
 
 	ionViewWillEnter() {
@@ -630,4 +668,19 @@ export class ResourcesPage implements OnInit {
 			spinner: "crescent"
 		});
 	}
+
+  /**
+   * Used to Translate message to current Language
+   * @param {string} messageConst - Message Constant to be translated
+   * @returns {string} translatedMsg - Translated Message
+   */
+  translateMessage(messageConst: string, field?: string): string {
+    let translatedMsg = '';
+    this.translate.get(messageConst, { '%s': field }).subscribe(
+      (value: any) => {
+        translatedMsg = value;
+      }
+    );
+    return translatedMsg;
+  }
 }
