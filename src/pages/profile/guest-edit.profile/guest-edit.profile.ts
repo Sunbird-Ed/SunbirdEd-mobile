@@ -80,7 +80,11 @@ export class GuestEditProfilePage {
     this.getSyllabusDetails();
   }
 
+
   getSyllabusDetails() {
+    let loader = this.getLoader();
+    loader.present();
+
     let req: FormRequest = {
       type: 'user',
       subType: 'instructor',
@@ -93,51 +97,57 @@ export class GuestEditProfilePage {
         console.log("Form Result - " + response.result);
         let fields: Array<any> = response.result.fields;
 
-        fields.forEach(field => {
-          if (field.language === this.selectedLanguage) {
-            this.frameworks = field.range;
+        if (fields !== undefined && fields.length > 0) {
+          fields.forEach(field => {
+            if (field.language === this.selectedLanguage) {
+              this.frameworks = field.range;
+            }
+          });
+
+          if (this.frameworks != null && this.frameworks.length > 0) {
+            this.frameworks.forEach(frameworkDetails => {
+              let value = { 'name': frameworkDetails.name, 'code': frameworkDetails.frameworkId };
+              this.syllabusList.push(value);
+            });
           }
-        });
 
-        if (this.frameworks != null && this.frameworks.length > 0) {
-          this.frameworks.forEach(frameworkDetails => {
-            let value = { 'name': frameworkDetails.name, 'code': frameworkDetails.frameworkId };
-            this.syllabusList.push(value);
-          });
+          loader.dismiss();
+
+          this.getFrameworkDetails()
+            .then(catagories => {
+              this.categories = catagories;
+
+              this.checkPrevValue(0, 'syllabusList');
+
+              this.resetForm(0);
+              this.guestEditForm.patchValue({
+                boards: this.profile.board || []
+              });
+
+              this.resetForm(1);
+              this.guestEditForm.patchValue({
+                grades: this.profile.grade || []
+              });
+
+              this.resetForm(2);
+              this.guestEditForm.patchValue({
+                subjects: this.profile.subject || []
+              });
+
+              this.resetForm(3);
+              this.guestEditForm.patchValue({
+                medium: this.profile.medium || []
+              });
+
+            });
+        }else{
+          this.getToast(this.translateMessage('NO_DATA_FOUND')).present();  
         }
-
-        this.getFrameworkDetails()
-          .then(catagories => {
-            this.categories = catagories;
-
-            this.checkPrevValue(0, 'syllabusList');
-
-            this.resetForm(0);
-            this.guestEditForm.patchValue({
-              boards: this.profile.board || []
-            });
-
-            this.resetForm(1);
-            this.guestEditForm.patchValue({
-              grades: this.profile.grade || []
-            });
-
-            this.resetForm(2);
-            this.guestEditForm.patchValue({
-              subjects: this.profile.subject || []
-            });
-
-            this.resetForm(3);
-            this.guestEditForm.patchValue({
-              medium: this.profile.medium || []
-            });
-
-          });
-
       },
       (error: any) => {
+        loader.dismiss();
         console.log("Error - " + error);
-
+        this.getToast(this.translateMessage('NO_DATA_FOUND')).present();
       })
   }
 
@@ -151,7 +161,7 @@ export class GuestEditProfilePage {
       if (frameworkId !== undefined && frameworkId.length) {
         req.defaultFrameworkDetails = false;
         req.frameworkId = frameworkId;
-        this.frameworkId =  frameworkId;
+        this.frameworkId = frameworkId;
       }
 
 

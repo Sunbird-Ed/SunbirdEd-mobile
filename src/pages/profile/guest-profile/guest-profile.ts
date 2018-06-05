@@ -1,13 +1,21 @@
 import { boardList } from './../../../config/framework.filters';
 import { Component } from '@angular/core';
-import { NavController, PopoverController, Events, LoadingController } from 'ionic-angular';
+import { NavController, PopoverController, Events, LoadingController, ToastController } from 'ionic-angular';
 import * as _ from 'lodash';
 
 import { GuestEditProfilePage } from './../guest-edit.profile/guest-edit.profile';
 import { OverflowMenuComponent } from "./../overflowmenu/menu.overflow.component";
-import { ProfileService, FrameworkDetailsRequest, FrameworkService, SharedPreferences, ProfileType } from 'sunbird';
+import { ProfileService, FrameworkDetailsRequest, FrameworkService, SharedPreferences, ProfileType, FormService, FormRequest } from 'sunbird';
 import { UserTypeSelectionPage } from '../../user-type-selection/user-type-selection';
 import { Network } from '@ionic-native/network';
+import { TranslateService } from '@ngx-translate/core';
+
+/* Interface for the Toast Object */
+export interface toastOptions {
+  message: string,
+  duration: number,
+  position: string
+};
 
 @Component({
   selector: 'page-guest-profile',
@@ -29,6 +37,14 @@ export class GuestProfilePage {
   subjects: string = "";
   categories: Array<any> = []
   profile: any = {};
+  syllabus: string = "";
+  selectedLanguage: string;
+
+  options: toastOptions = {
+    message: '',
+    duration: 3000,
+    position: 'bottom'
+  };
 
   constructor(public navCtrl: NavController,
     public network: Network,
@@ -37,8 +53,19 @@ export class GuestProfilePage {
     private loadingCtrl: LoadingController,
     private events: Events,
     private frameworkService: FrameworkService,
-    private preference: SharedPreferences
+    private preference: SharedPreferences,
+    private formService: FormService,
+    private toastCtrl: ToastController,
+    private translate: TranslateService
   ) {
+
+    //language code
+    this.preference.getString('selected_language_code', (val: string) => {
+      if (val && val.length) {
+        this.selectedLanguage = val;
+      }
+    });
+
     // TODO: Need to make an get Profile user details API call.
     this.refreshProfileData();
     this.events.subscribe('refresh:profile', () => {
@@ -74,7 +101,7 @@ export class GuestProfilePage {
     loader.present();
     this.profileService.getCurrentUser((res: any) => {
       this.profile = JSON.parse(res);
-      this.getFrameworkDetails();
+      this.getSyllabusDetails();
       setTimeout(() => {
         if (refresher) refresher.complete();
         loader.dismiss();
@@ -86,6 +113,7 @@ export class GuestProfilePage {
         console.log("Err1", err);
       });
   }
+
   editGuestProfile() {
     if (!this.isNetworkAvailable) {
       this.showNetworkWarning();
@@ -124,10 +152,58 @@ export class GuestProfilePage {
     });
   }
 
-  getFrameworkDetails(): void {
+  getSyllabusDetails() {
+    let req: FormRequest = {
+      type: 'user',
+      subType: 'instructor',
+      action: 'onboarding',
+    };
+
+    this.formService.getForm(req,
+      (res: any) => {
+        let response: any = JSON.parse(res);
+        console.log("Form Result - " + response.result);
+        let frameworks: Array<any> = [];
+        let selectedFrameworkId: string = '';
+        let fields: Array<any> = response.result.fields;
+
+        if (fields !== undefined && fields.length > 0) {
+          fields.forEach(field => {
+            if (field.language === this.selectedLanguage) {
+              frameworks = field.range;
+            }
+          });
+
+          if (frameworks != null && frameworks.length > 0) {
+            frameworks.forEach(frameworkDetails => {
+
+              if (this.profile.syllabus && this.profile.syllabus.length && this.profile.syllabus[0] === frameworkDetails.frameworkId) {
+                this.syllabus = frameworkDetails.name;
+                selectedFrameworkId = frameworkDetails.frameworkId;
+              }
+            });
+          }
+
+          this.getFrameworkDetails(selectedFrameworkId);
+        } else {
+          this.getToast(this.translateMessage('NO_DATA_FOUND')).present();
+        }
+      },
+      (error: any) => {
+        console.log("Error - " + error);
+        this.getToast(this.translateMessage('NO_DATA_FOUND')).present();
+      })
+  }
+
+
+  getFrameworkDetails(frameworkId?: string): void {
     let req: FrameworkDetailsRequest = {
       defaultFrameworkDetails: true
     };
+
+    if (frameworkId !== undefined && frameworkId.length) {
+      req.frameworkId = frameworkId
+    }
 
     this.frameworkService.getFrameworkDetails(req,
       (res: any) => {
@@ -194,7 +270,24 @@ export class GuestProfilePage {
   }
 
   buttonClick(isNetAvailable) {
-   
+
     this.showNetworkWarning();
   }
+
+  getToast(message: string = ''): any {
+    this.options.message = message;
+    if (message.length) return this.toastCtrl.create(this.options);
+  }
+
+  translateMessage(messageConst: string): string {
+    let translatedMsg = '';
+    this.translate.get(messageConst).subscribe(
+      (value: any) => {
+        translatedMsg = value;
+      }
+    );
+    return translatedMsg;
+  }
+
+
 }

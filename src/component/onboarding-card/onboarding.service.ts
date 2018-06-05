@@ -288,7 +288,7 @@ export class OnboardingService {
                         });
                     }
 
-                    resolve(true);
+                    resolve(fields);
                 },
                 (error: any) => {
                     console.log("Error - " + error);
