@@ -133,7 +133,7 @@ android {
             buildConfigField 'String', 'ORG_SERVICE_BASE_URL', "\"${staging_base_url+"/v1"}\""
             buildConfigField 'String', 'DATA_SERVICE_BASE_URL', "\"${staging_base_url+"/api/data/v1"}\""
             buildConfigField 'String', 'ANNOUNCEMENT_BASE_URL', "\"${staging_base_url+"/api/announcement/v1"}\""
-            buildConfigField 'String', 'FORM_BASE_URL', "\"${staging_base_url+"/api/data/v1/form"}\""
+            buildConfigField 'String', 'FORM_SERVICE_BASE_URL', "\"${staging_base_url+"/api/data/v1/form"}\""
             buildConfigField 'String', 'PRODUCER_UNIQUE_ID', '"sunbird.app"'
             buildConfigField 'String', 'PRODUCER_ID', "\"${staging_producer_id}\""
             buildConfigField 'String', 'CHANNEL_ID', "\"${staging_channel_id}\""
@@ -165,7 +165,7 @@ android {
             buildConfigField 'String', 'ORG_SERVICE_BASE_URL', "\"${production_base_url+"/v1"}\""
             buildConfigField 'String', 'DATA_SERVICE_BASE_URL', "\"${production_base_url+"/api/data/v1"}\""
             buildConfigField 'String', 'ANNOUNCEMENT_BASE_URL', "\"${production_base_url+"/api/announcement/v1"}\""
-            buildConfigField 'String', 'FORM_BASE_URL', "\"${production_base_url+"/api/data/v1/form"}\""
+            buildConfigField 'String', 'FORM_SERVICE_BASE_URL', "\"${production_base_url+"/api/data/v1/form"}\""
             buildConfigField 'String', 'PRODUCER_UNIQUE_ID', '"sunbird.app"'
             buildConfigField 'String', 'PRODUCER_ID', "\"${production_producer_id}\""
             buildConfigField 'String', 'CHANNEL_ID', "\"${production_channel_id}\""
@@ -202,8 +202,8 @@ android {
 
 dependencies {
      compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile "org.ekstep.genieservices:genie-providers:1.0.672"
-    compile "org.ekstep.genieservices:genie-integration:1.0.672"
+    compile "org.ekstep.genieservices:genie-providers:1.0.674"
+    compile "org.ekstep.genieservices:genie-integration:1.0.674"
     compile('com.crashlytics.sdk.android:crashlytics:2.9.2@aar') {
           transitive = true;
     }

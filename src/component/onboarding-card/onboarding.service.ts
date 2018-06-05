@@ -21,28 +21,13 @@ export class OnboardingService {
     currentIndex: number = 0;
     selectedLanguage: string;
     categories: Array<any> = [];
-    syllabusList: Array<any> = [
-        // {
-        //     'checked': false,
-        //     'text': 'Syllabus 1',
-        //     'value': 'sylllabus1',
-        // },
-        // {
-        //     'checked': false,
-        //     'text': 'Syllabus 2',
-        //     'value': 'sylllabus2',
-        // },
-        // {
-        //     'checked': false,
-        //     'text': 'Syllabus 3',
-        //     'value': 'sylllabus3',
-        // }
-    ];
+    syllabusList: Array<any> = [];
     boardList: Array<string> = [];
     gradeList: Array<string> = [];
     subjectList: Array<string> = [];
     mediumList: Array<string> = [];
     frameworks: Array<any> = [];
+    frameworkId: string = '';
 
     constructor(
         private framework: FrameworkService,
@@ -212,6 +197,7 @@ export class OnboardingService {
             if (frameworkId !== undefined && frameworkId.length) {
                 req.defaultFrameworkDetails = false;
                 req.frameworkId = frameworkId[0];
+                this.frameworkId = frameworkId[0];
             }
 
             this.framework.getFrameworkDetails(req,
@@ -231,6 +217,10 @@ export class OnboardingService {
      * @param {string} list - Local variable name to hold the list data
      */
     getCategoryData(req: CategoryRequest, list): void {
+
+        if (this.frameworkId !== undefined && this.frameworkId.length) {
+            req.frameworkId = this.frameworkId;
+        }
 
         //if (!this[list].length) {
         this.framework.getCategoryData(req,
@@ -272,34 +262,39 @@ export class OnboardingService {
     }
 
     getSyllabusDetails() {
-        let req: FormRequest = {
-            type: 'user',
-            subType: 'instructor',
-            action: 'onboarding',
-        };
+        return new Promise((resolve, reject) => {
+            let req: FormRequest = {
+                type: 'user',
+                subType: 'instructor',
+                action: 'onboarding',
+            };
 
-        this.formService.getForm(req,
-            (res: any) => {
-                let response: any = JSON.parse(res);
-                console.log("Form Result - " + response.result);
-                let fields: Array<any> = response.result.fields;
+            this.formService.getForm(req,
+                (res: any) => {
+                    let response: any = JSON.parse(res);
+                    console.log("Form Result - " + response.result);
+                    let fields: Array<any> = response.result.fields;
 
-                fields.forEach(field => {
-                    if (field.language === this.selectedLanguage) {
-                        this.frameworks = field.range;
-                    }
-                });
-
-                if (this.frameworks != null && this.frameworks.length > 0) {
-                    this.frameworks.forEach(frameworkDetails => {
-                        let value = { 'text': frameworkDetails.name, 'value': frameworkDetails.frameworkId, 'checked': false };
-                        this.syllabusList.push(value);
+                    fields.forEach(field => {
+                        if (field.language === this.selectedLanguage) {
+                            this.frameworks = field.range;
+                        }
                     });
-                }
-            },
-            (error: any) => {
-                console.log("Error - " + error);
-            })
+
+                    if (this.frameworks != null && this.frameworks.length > 0) {
+                        this.frameworks.forEach(frameworkDetails => {
+                            let value = { 'text': frameworkDetails.name, 'value': frameworkDetails.frameworkId, 'checked': false };
+                            this.syllabusList.push(value);
+                        });
+                    }
+
+                    resolve(true);
+                },
+                (error: any) => {
+                    console.log("Error - " + error);
+                    reject(false);
+                })
+        });
     }
 
     /**

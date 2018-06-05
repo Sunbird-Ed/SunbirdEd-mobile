@@ -13,6 +13,7 @@ export class OnboardingCardComponent {
 
   @ViewChild(Slides) mSlides: Slides;
   isOnBoardCard: boolean = true;
+  loader: boolean = false;
 
   constructor(
     public navCtrl: NavController,
@@ -22,7 +23,14 @@ export class OnboardingCardComponent {
     private zone: NgZone
   ) {
 
-    this.onboardingService.getSyllabusDetails();
+    this.showLoader(true);
+
+    this.onboardingService.getSyllabusDetails()
+      .then((result) => {
+        if (result) {
+          this.showLoader(false)
+        }
+      });
 
     this.initializeService();
 
@@ -43,6 +51,13 @@ export class OnboardingCardComponent {
 
         });
     });
+  }
+
+  /**
+   * To start and stop loader
+   */
+  showLoader(flag: boolean) {
+    this.loader = flag;
   }
 
   initializeService() {
