@@ -103,18 +103,21 @@ export class DatasyncPage {
       that.zone.run(() => {
         let syncStat: TelemetryStat = JSON.parse(response).result;
         console.log("Telemetry Data Sync Time : " + syncStat.lastSyncTime);
-        let milliseconds = Number(syncStat.lastSyncTime);
+        if (syncStat.lastSyncTime !== 0) {
+          let milliseconds = Number(syncStat.lastSyncTime);
 
-        //get date
-        let date: Date = new Date(milliseconds);
+          //get date
+          let date: Date = new Date(milliseconds);
 
-        let month: Number = date.getMonth() + 1;
+          let month: Number = date.getMonth() + 1;
 
-        //complete date and time
-        let dateAndTime: string = date.getDate() + "/" + month +
-          "/" + date.getFullYear() + ", " + that.getTimeIn12HourFormat(date);
+          //complete date and time
+          let dateAndTime: string = date.getDate() + "/" + month +
+            "/" + date.getFullYear() + ", " + that.getTimeIn12HourFormat(date);
 
-        that.latestSync = this.lastSyncedTimeString + " " + dateAndTime;
+          that.latestSync = this.lastSyncedTimeString + " " + dateAndTime;
+        }
+
       });
 
 
