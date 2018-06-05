@@ -35,6 +35,7 @@ export class GuestEditProfilePage {
   userName: string = '';
   selectedLanguage: string;
   frameworks: Array<any> = [];
+  frameworkId: string = '';
 
   options: toastOptions = {
     message: '',
@@ -149,7 +150,8 @@ export class GuestEditProfilePage {
 
       if (frameworkId !== undefined && frameworkId.length) {
         req.defaultFrameworkDetails = false;
-        req.frameworkId = frameworkId[0];
+        req.frameworkId = frameworkId;
+        this.frameworkId =  frameworkId;
       }
 
 
@@ -187,6 +189,10 @@ export class GuestEditProfilePage {
    * @param {string} list - Local variable name to hold the list data
    */
   getCategoryData(req: CategoryRequest, list): void {
+
+    if (this.frameworkId !== undefined && this.frameworkId.length) {
+      req.frameworkId = this.frameworkId;
+    }
 
     this.frameworkService.getCategoryData(req,
       (res: any) => {
