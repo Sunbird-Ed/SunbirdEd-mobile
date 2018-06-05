@@ -214,9 +214,20 @@ export class ResourcesPage implements OnInit {
 		if (!pageAssembleCriteria) {
 			let criteria = new PageAssembleCriteria();
 			criteria.name = "Resource";
+			criteria.mode = "soft";
 
 			if (that.appliedFilter) {
-				criteria.filters = that.appliedFilter;
+				let filterApplied = false;
+
+				Object.keys(this.appliedFilter).forEach(key => {
+					if (this.appliedFilter[key].length > 0) {
+						filterApplied = true;
+					}
+				})
+
+				if (filterApplied) {
+					criteria.mode = "hard";
+				}
 			}
 
 			pageAssembleCriteria = criteria;
@@ -355,9 +366,14 @@ export class ResourcesPage implements OnInit {
 	}
 
 	ionViewDidEnter() {
-		// this.filterIcon = "./assets/imgs/ic_action_filter.png";
-		// this.resourceFilter = undefined;
-		// this.appliedFilter = undefined;
+		if (this.appliedFilter) {
+			this.filterIcon = "./assets/imgs/ic_action_filter.png";
+			this.resourceFilter = undefined;
+			this.appliedFilter = undefined;
+			this.getPopularContent();
+		}
+
+
 		this.generateImpressionEvent();
 	}
 
@@ -550,6 +566,7 @@ export class ResourcesPage implements OnInit {
 				let criteria = new PageAssembleCriteria();
 				criteria.name = "Resource";
 				criteria.filters = filter;
+				criteria.mode = "hard";
 				that.resourceFilter = appliedFilter;
 				that.appliedFilter = filter;
 
@@ -562,8 +579,10 @@ export class ResourcesPage implements OnInit {
 				})
 
 				if (filterApplied) {
+					criteria.mode = "hard";
 					that.filterIcon = "./assets/imgs/ic_action_filter_applied.png";
 				} else {
+					criteria.mode = "soft";
 					that.filterIcon = "./assets/imgs/ic_action_filter.png";
 				}
 

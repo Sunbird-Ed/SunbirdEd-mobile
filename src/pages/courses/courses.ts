@@ -258,9 +258,22 @@ export class CoursesPage implements OnInit {
     if (pageAssembleCriteria == undefined) {
       let criteria = new PageAssembleCriteria();
       criteria.name = "Course";
+      criteria.mode = "soft";
 
       if (this.appliedFilter) {
-        criteria.filters = this.appliedFilter;
+        let filterApplied = false;
+        
+        Object.keys(this.appliedFilter).forEach(key => {
+          if (this.appliedFilter[key].length > 0) {
+            filterApplied = true;
+          }
+        })
+
+        if (filterApplied) {
+          criteria.mode = "hard";
+        }
+
+        criteria.filters = this.appliedFilter;        
       }
 
       pageAssembleCriteria = criteria;
@@ -437,7 +450,7 @@ export class CoursesPage implements OnInit {
     const callback: QRResultCallback = {
       dialcode(scanResult, dialCode) {
         that.addCorRelation(dialCode, "qr");
-        that.navCtrl.push(SearchPage, { dialCode: dialCode,corRelation: that.corRelationList });
+        that.navCtrl.push(SearchPage, { dialCode: dialCode, corRelation: that.corRelationList });
       },
       content(scanResult, contentId) {
         // that.navCtrl.push(SearchPage);
@@ -464,17 +477,17 @@ export class CoursesPage implements OnInit {
   }
 
   addCorRelation(identifier: string, type: string) {
-		if (this.corRelationList === undefined) {
-			this.corRelationList = new Array<CorrelationData>();
-		}
-		else {
-			this.corRelationList = [];
-		}
-		let corRelation: CorrelationData = new CorrelationData();
-		corRelation.id = identifier;
-		corRelation.type = type;
-		this.corRelationList.push(corRelation);
-	}
+    if (this.corRelationList === undefined) {
+      this.corRelationList = new Array<CorrelationData>();
+    }
+    else {
+      this.corRelationList = [];
+    }
+    let corRelation: CorrelationData = new CorrelationData();
+    corRelation.id = identifier;
+    corRelation.type = type;
+    this.corRelationList.push(corRelation);
+  }
 
 
   showContentDetails(content, corRelationList) {
@@ -482,19 +495,19 @@ export class CoursesPage implements OnInit {
       console.log('Calling course details page');
       this.navCtrl.push(EnrolledCourseDetailsPage, {
         content: content,
-				corRelation: corRelationList
+        corRelation: corRelationList
       })
     } else if (content.mimeType === MimeType.COLLECTION) {
       console.log('Calling collection details page');
       this.navCtrl.push(CollectionDetailsPage, {
         content: content,
-				corRelation: corRelationList
+        corRelation: corRelationList
       })
     } else {
       console.log('Calling content details page');
       this.navCtrl.push(ContentDetailsPage, {
         content: content,
-				corRelation: corRelationList
+        corRelation: corRelationList
       })
     }
   }
@@ -508,6 +521,13 @@ export class CoursesPage implements OnInit {
   }
 
   ionViewDidEnter() {
+    if (this.appliedFilter) {
+      this.filterIcon = "./assets/imgs/ic_action_filter.png";
+      this.courseFilter = undefined;
+      this.appliedFilter = undefined;
+      this.getPopularAndLatestCourses();
+    }
+
     this.telemetryService.impression(generateImpressionTelemetry(
       ImpressionType.VIEW, "",
       PageId.COURSES,
@@ -527,6 +547,7 @@ export class CoursesPage implements OnInit {
           criteria.name = "Course";
           criteria.filters = filter;
 
+
           that.courseFilter = appliedFilter;
           that.appliedFilter = filter;
 
@@ -539,8 +560,10 @@ export class CoursesPage implements OnInit {
           })
 
           if (filterApplied) {
+            criteria.mode = "hard";
             that.filterIcon = "./assets/imgs/ic_action_filter_applied.png";
           } else {
+            criteria.mode = "soft";
             that.filterIcon = "./assets/imgs/ic_action_filter.png";
           }
 
