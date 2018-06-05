@@ -43,7 +43,7 @@
 					{{ course.description }}
 				</p>
 				<div *ngIf="course.gradeLevel && course.gradeLevel.length" margin-top>
-					<div class="content-meta-title">{{ 'GRADE' | translate }}</div>
+					<div class="content-meta-title"text-uppercase>{{ 'GRADE' | translate }}</div>
 					<!-- <span *ngFor="let grade of course.gradeLevel"> -->
 					<span class="text-gray-color">{{course.gradeLevel}}</span>
 					<!-- </span> -->
