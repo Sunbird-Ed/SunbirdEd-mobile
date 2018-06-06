@@ -30,8 +30,8 @@ export class Search {
 }
 
 export class FlagContent {
-    public static readonly FLAG_REASONS_VALUE = ['Inappropriate Content', 'Copyright Violation', 'Privacy Violation', 'Other'];
-    public static readonly FLAG_REASONS_LABLE = ['OPTION_INAPPROPRIATE_CONTENT', 'OPTION_COPYRIGHT_VIOLATION', 'OPTION_PRIVACY_VIOLATION', 'OPTION_OTHER'];
+    public static readonly FLAG_REASONS_VALUE = ['Copyright Violation', 'Inappropriate Content', 'Privacy Violation', 'Other'];
+    public static readonly FLAG_REASONS_LABLE = ['OPTION_COPYRIGHT_VIOLATION', 'OPTION_INAPPROPRIATE_CONTENT', 'OPTION_PRIVACY_VIOLATION', 'OPTION_OTHER'];
 }
 
 export class ProfileConstants {

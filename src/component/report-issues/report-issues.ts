@@ -5,7 +5,7 @@ import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
 import { generateInteractTelemetry} from '../../app/telemetryutil';
-import { ProfileConstants } from '../../app/app.constant';
+import { ProfileConstants, FlagContent } from '../../app/app.constant';
 
 /**
  * Generated class for the ReportIssuesComponent component.
@@ -26,10 +26,10 @@ export class ReportIssuesComponent {
 
   options = {
     issues: [
-      { name: 'OPTION_COPYRIGHT_VIOLATION', selected: false, id: 1 },
-      { name: 'OPTION_INAPPROPRIATE_CONTENT', selected: false, id: 2 },
-      { name: 'OPTION_PRIVACY_VIOLATION', selected: false, id: 3 },
-      { name: 'OPTION_OTHER', selected: false, id: 4 }
+      { name: FlagContent.FLAG_REASONS_LABLE[0], value: FlagContent.FLAG_REASONS_VALUE[0], selected: false, id: 1 },
+      { name: FlagContent.FLAG_REASONS_LABLE[1], value: FlagContent.FLAG_REASONS_VALUE[1], selected: false, id: 2 },
+      { name: FlagContent.FLAG_REASONS_LABLE[2], value: FlagContent.FLAG_REASONS_VALUE[2], selected: false, id: 3 },
+      { name: FlagContent.FLAG_REASONS_LABLE[3], value: FlagContent.FLAG_REASONS_VALUE[3], selected: false, id: 4 }
     ]
   }
 
@@ -98,7 +98,7 @@ export class ReportIssuesComponent {
     const formValue = Object.assign({}, value, {
       issues: value.issues.map((selected, i) => {
         return {
-          name: this.options.issues[i].name,
+          name: this.options.issues[i].value,
           selected: selected
         }
       })
@@ -134,6 +134,7 @@ export class ReportIssuesComponent {
         undefined
       ));
 
+      console.log('reasons==>>', option);
       this.contentService.flagContent(option, (res: any) => {
         console.log('success:', res);
         let paramsMap = new Map();
