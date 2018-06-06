@@ -85,11 +85,11 @@ export class FilterPage {
     });
   }
 
-  getFilterValues(filterName: string) {
-    if (filterName) {
-      let boards = _.find(this.filterCriteria.facetFilters, ['name', filterName]);
-      if (boards && boards.values && boards.values.length) {
-        return boards;
+  getFilterValues(facet: string) {
+    if (facet) {
+      let filterName = _.find(this.filterCriteria.facetFilters, ['name', facet]);
+      if (filterName && filterName.values && filterName.values.length) {
+        return filterName;
       } else {
         return false;
       }
