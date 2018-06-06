@@ -321,7 +321,6 @@ export class SearchPage {
 
     if (this.network.type === 'none') {
       isOfflineSearch = true;
-      this.showMessage('ERROR_OFFLINE_MODE');
     }
 
     let contentSearchRequest: ContentSearchCriteria = {
@@ -347,6 +346,9 @@ export class SearchPage {
     }, (error) => {
       this.zone.run(() => {
         this.showLoader = false;
+        if (this.network.type === 'none') {
+          this.showMessage('ERROR_OFFLINE_MODE');
+        }
       });
     });
   }
@@ -374,8 +376,8 @@ export class SearchPage {
   private generateLogEvent(searchResult) {
     let log = new Log();
     log.level = LogLevel.INFO;
-    log.message =this.source;
-    log.env =Environment.HOME;
+    log.message = this.source;
+    log.env = Environment.HOME;
     log.type = ImpressionType.SEARCH;
     if (searchResult != null) {
       let contentArray: Array<any> = searchResult.contentDataList;
@@ -404,7 +406,7 @@ export class SearchPage {
     interact.objId = identifier;
     interact.objType = contentType;
     interact.objType = pkgVersion;
-    interact.correlationData=this.corRelationList;
+    interact.correlationData = this.corRelationList;
     this.telemetryService.interact(interact);
   }
 
@@ -547,6 +549,16 @@ export class SearchPage {
               this.queuedIdentifiers.push(value.identifier);
             }
           });
+        }
+
+        if (this.queuedIdentifiers.length === 0) {
+          this.showLoading = false;
+          this.isDownloadStarted = false;
+          if (this.network.type != 'none') {
+            this.showMessage('ERROR_CONTENT_NOT_AVAILABLE');
+          } else {
+            this.showMessage('ERROR_OFFLINE_MODE');
+          }
         }
       });
     }, (error) => {
