@@ -6,9 +6,9 @@
     <ion-slide *ngFor="let slide of onboardingService?.onBoardingSlides; let i=index">
       <div class="onbording-slide-div">
         <ion-row>
-          <p class="onbording-slide-title">
+          <span class="onbording-slide-title">
             {{slide?.title | translate}}
-          </p>
+          </span>
         </ion-row>
 
         <ion-spinner *ngIf="i === 0 && loader" padding></ion-spinner>

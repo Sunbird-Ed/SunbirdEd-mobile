@@ -44,12 +44,12 @@ export class OnboardingCardComponent {
     this.onboardingService.getSyllabusDetails()
       .then((result) => {
         this.showLoader(false)
-        
+
         if (result && result !== undefined) {
           this.isSyllabusDataAvailable = true;
         }else{
           this.isSyllabusDataAvailable = false;
-          this.getToast(this.translateMessage('NO_DATA_FOUND')).present();  
+          this.getToast(this.translateMessage('NO_DATA_FOUND')).present();
         }
       });
 
@@ -236,5 +236,5 @@ export class OnboardingCardComponent {
     if (message.length) return this.toastCtrl.create(this.options);
   }
 
-  
+
 }
