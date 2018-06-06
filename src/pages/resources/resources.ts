@@ -167,6 +167,16 @@ export class ResourcesPage implements OnInit {
 	}
 
 	viewAllSavedResources() {
+		let values = new Map();
+		values["SectionName"] = "Saved Resources";
+		this.telemetryService.interact(
+			generateInteractTelemetry(InteractType.TOUCH,
+				InteractSubtype.VIEWALL_CLICKED,
+				Environment.HOME,
+				this.source, values,
+				undefined,
+				undefined)
+		);
 		this.navCtrl.push(ViewMoreActivityPage, {
 			headerTitle: 'SAVED_RESOURCES',
 			pageName: 'resource.SavedResources'
