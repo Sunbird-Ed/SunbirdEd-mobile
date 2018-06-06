@@ -73,7 +73,7 @@
         <div class="details ellipsis">
           <p>{{ ed?.degree }}</p>
           <p *ngIf="ed?.yearOfPassing">{{ 'YEAR_OF_PASSING' | translate }} : {{ ed?.yearOfPassing }}</p>
-          <p *ngIf="ed?.grade">{{ 'GRADE' | translate }}: {{ ed?.grade }}({{ ed?.percentage }}%)</p>
+          <p *ngIf="ed?.grade">{{ 'CLASS' | translate }}: {{ ed?.grade }}({{ ed?.percentage }}%)</p>
           <p>{{ ed?.boardOrUniversity }}</p>
         </div>
       </ion-col>
