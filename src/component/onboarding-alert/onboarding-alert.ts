@@ -28,6 +28,11 @@ export class OnboardingAlert {
   }
 
   onSyllabusSelect(selectedIndex: number) {
+    //clear all the options selected before
+    this.selectedSlide.options.forEach(element => {
+      element.checked = false;
+    });
+
     this.selectedSlide.options[selectedIndex].checked = true;
   }
 
