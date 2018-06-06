@@ -111,8 +111,6 @@ export class GuestEditProfilePage {
             });
           }
 
-          loader.dismiss();
-
           this.getFrameworkDetails()
             .then(catagories => {
               this.categories = catagories;
@@ -140,7 +138,11 @@ export class GuestEditProfilePage {
               });
 
             });
+
+            loader.dismiss();
         }else{
+          loader.dismiss();
+          
           this.getToast(this.translateMessage('NO_DATA_FOUND')).present();  
         }
       },

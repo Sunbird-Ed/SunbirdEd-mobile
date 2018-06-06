@@ -76,6 +76,8 @@ export class SearchPage {
 
   profile: any;
 
+  isFirstLaunch: boolean = false;
+
   constructor(private contentService: ContentService,
     private telemetryService: TelemetryService,
     private navParams: NavParams,
@@ -91,6 +93,8 @@ export class SearchPage {
 
     this.checkUserSession();
 
+    this.isFirstLaunch = true;
+
     this.init();
 
     console.log("Network Type : " + this.network.type);
@@ -99,8 +103,9 @@ export class SearchPage {
 
 
   ionViewDidEnter() {
-    if (!this.dialCode && this.searchContentResult.length == 0) {
+    if (!this.dialCode && this.isFirstLaunch) {
       setTimeout(() => {
+        this.isFirstLaunch = false;
         this.searchBar.setFocus();
       }, 100);
     }
@@ -177,7 +182,13 @@ export class SearchPage {
             this.processDialCodeResult(response.result);
           } else {
             this.searchContentResult = response.result.contentDataList;
-            this.isEmptyResult = false;
+
+            if (this.searchContentResult && this.searchContentResult.length > 0) {
+              this.isEmptyResult = false;
+            } else {
+              this.isEmptyResult = true;
+            }
+
           }
           this.updateFilterIcon();
         } else {
@@ -475,6 +486,10 @@ export class SearchPage {
 
   private updateFilterIcon() {
     let isFilterApplied = false;
+
+    if (this.isEmptyResult) {
+      this.filterIcon = undefined;
+    }
 
     if (!this.responseData.result.filterCriteria) {
       return;

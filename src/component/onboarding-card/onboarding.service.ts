@@ -26,7 +26,6 @@ export class OnboardingService {
     gradeList: Array<string> = [];
     subjectList: Array<string> = [];
     mediumList: Array<string> = [];
-    frameworks: Array<any> = [];
     frameworkId: string = '';
 
     constructor(
@@ -263,6 +262,9 @@ export class OnboardingService {
 
     getSyllabusDetails() {
         return new Promise((resolve, reject) => {
+            //clear all the syllbusList
+            this.syllabusList = [];
+
             let req: FormRequest = {
                 type: 'user',
                 subType: 'instructor',
@@ -273,16 +275,17 @@ export class OnboardingService {
                 (res: any) => {
                     let response: any = JSON.parse(res);
                     console.log("Form Result - " + response.result);
+                    let frameworks: Array<any> = [];
                     let fields: Array<any> = response.result.fields;
 
                     fields.forEach(field => {
                         if (field.language === this.selectedLanguage) {
-                            this.frameworks = field.range;
+                            frameworks = field.range;
                         }
                     });
 
-                    if (this.frameworks != null && this.frameworks.length > 0) {
-                        this.frameworks.forEach(frameworkDetails => {
+                    if (frameworks != null && frameworks.length > 0) {
+                        frameworks.forEach(frameworkDetails => {
                             let value = { 'text': frameworkDetails.name, 'value': frameworkDetails.frameworkId, 'checked': false };
                             this.syllabusList.push(value);
                         });

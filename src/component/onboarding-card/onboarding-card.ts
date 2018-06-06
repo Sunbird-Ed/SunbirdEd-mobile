@@ -18,6 +18,9 @@ export interface toastOptions {
 })
 export class OnboardingCardComponent {
 
+  public static readonly USER_INFO_UPDATED = 'user-profile-changed';
+
+
   @ViewChild(Slides) mSlides: Slides;
   isOnBoardCard: boolean = true;
   loader: boolean = false;
@@ -47,7 +50,7 @@ export class OnboardingCardComponent {
 
         if (result && result !== undefined) {
           this.isSyllabusDataAvailable = true;
-        }else{
+        } else {
           this.isSyllabusDataAvailable = false;
           this.getToast(this.translateMessage('NO_DATA_FOUND')).present();
         }
@@ -55,23 +58,31 @@ export class OnboardingCardComponent {
 
     this.initializeService();
 
-    this.events.subscribe('refresh:onboardingcard', () => {
-      //this.mSlides.slideTo(0, 500);
-      //this.onboardingService.currentIndex = 0;
-      this.onboardingService.initializeCard()
-        .then(index => {
-          console.log("refresh:onboardingcard -  index = " + index);
-
-          setTimeout(() => {
-            if (index !== 0 && index !== 5) {
-              this.mSlides.slideTo(index, 500);
-            }
-          }, 500);
-        })
-        .catch(error => {
-
-        });
+    this.events.subscribe(OnboardingCardComponent.USER_INFO_UPDATED, () => {
+      this.reinitializeCards();
     });
+
+    this.events.subscribe('refresh:onboardingcard', () => {
+      this.reinitializeCards();
+    });
+  }
+
+  reinitializeCards() {
+    //this.mSlides.slideTo(0, 500);
+    //this.onboardingService.currentIndex = 0;
+    this.onboardingService.initializeCard()
+      .then(index => {
+        console.log("reinitializeCards -  index = " + index);
+
+        setTimeout(() => {
+          if (index !== 0 && index !== 5) {
+            this.mSlides.slideTo(index, 500);
+          }
+        }, 500);
+      })
+      .catch(error => {
+
+      });
   }
 
 

@@ -6,25 +6,29 @@
       </ion-col>
     </ion-row>
 
-    <ion-row class="checkbox-scroll"  *ngIf="selectedSlide?.options && selectedSlide?.options.length">
-
+    <ion-list class="checkbox-scroll" radio-group *ngIf="selectedSlide?.options && selectedSlide?.options.length && selectedSlide?.id === 'syllabusList'">
       <ion-item no-lines *ngFor="let facetValue of selectedSlide.options;let i=index">
         <ion-label bold> {{ facetValue.text }}</ion-label>
-        <ion-checkbox *ngIf="index > 0" [(ngModel)]="facetValue.checked"></ion-checkbox>
-        <ion-radio *ngIf="index == 0" (ionSelect)="onSyllabusSelect(i)"></ion-radio>
+        <ion-radio (ionSelect)="onSyllabusSelect(i)"></ion-radio>
+      </ion-item>
+    </ion-list>
 
+    <ion-row class="checkbox-scroll" *ngIf="selectedSlide?.options && selectedSlide?.options.length && selectedSlide?.id !== 'syllabusList' ">
+      <ion-item no-lines *ngFor="let facetValue of selectedSlide.options;let i=index">
+        <ion-label bold> {{ facetValue.text }}</ion-label>
+        <ion-checkbox [(ngModel)]="facetValue.checked"></ion-checkbox>
       </ion-item>
     </ion-row>
 
   </ion-grid>
 </ion-content>
 <ion-footer class="footer-button">
-<ion-row>
-  <ion-col col-6 text-center>
-    <button class="cancel" ion-button block (click)="cancel()">{{ 'CANCEL' | translate }}</button>
-  </ion-col>
-  <ion-col col-6 text-center>
-    <button  ion-button block (click)="onSaveClick()">{{ 'SAVE' | translate }}</button>
-  </ion-col>
-</ion-row>
+  <ion-row>
+    <ion-col col-6 text-center>
+      <button class="cancel" ion-button block (click)="cancel()">{{ 'CANCEL' | translate }}</button>
+    </ion-col>
+    <ion-col col-6 text-center>
+      <button ion-button block (click)="onSaveClick()">{{ 'SAVE' | translate }}</button>
+    </ion-col>
+  </ion-row>
 </ion-footer>

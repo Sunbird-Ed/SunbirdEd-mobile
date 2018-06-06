@@ -29,6 +29,11 @@ export class Search {
     public static readonly FACETS = ['board', 'gradeLevel', 'subject', 'medium', 'contentType'];
 }
 
+export class FlagContent {
+    public static readonly FLAG_REASONS_VALUE = ['Copyright Violation', 'Inappropriate Content', 'Privacy Violation', 'Other'];
+    public static readonly FLAG_REASONS_LABLE = ['OPTION_COPYRIGHT_VIOLATION', 'OPTION_INAPPROPRIATE_CONTENT', 'OPTION_PRIVACY_VIOLATION', 'OPTION_OTHER'];
+}
+
 export class ProfileConstants {
     public static readonly USER_TOKEN = 'userToken';
     public static readonly REQUIRED_FIELDS = ['completeness', 'missingFields', 'lastLoginTime', 'topics'];

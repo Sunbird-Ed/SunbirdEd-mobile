@@ -101,10 +101,10 @@ export class GuestProfilePage {
     loader.present();
     this.profileService.getCurrentUser((res: any) => {
       this.profile = JSON.parse(res);
-      this.getSyllabusDetails();
+      this.getSyllabusDetails(loader);
       setTimeout(() => {
         if (refresher) refresher.complete();
-        loader.dismiss();
+        // loader.dismiss();
       }, 500);
       console.log("Response", res);
     },
@@ -152,7 +152,7 @@ export class GuestProfilePage {
     });
   }
 
-  getSyllabusDetails() {
+  getSyllabusDetails(loader: any) {
     let req: FormRequest = {
       type: 'user',
       subType: 'instructor',
@@ -184,19 +184,21 @@ export class GuestProfilePage {
             });
           }
 
-          this.getFrameworkDetails(selectedFrameworkId);
+          this.getFrameworkDetails(loader, selectedFrameworkId);
         } else {
+          loader.dismiss();
           this.getToast(this.translateMessage('NO_DATA_FOUND')).present();
         }
       },
       (error: any) => {
+        loader.dismiss();
         console.log("Error - " + error);
         this.getToast(this.translateMessage('NO_DATA_FOUND')).present();
       })
   }
 
 
-  getFrameworkDetails(frameworkId?: string): void {
+  getFrameworkDetails(loader: any, frameworkId?: string): void {
     let req: FrameworkDetailsRequest = {
       defaultFrameworkDetails: true
     };
@@ -221,7 +223,7 @@ export class GuestProfilePage {
           this.medium = this.getFieldDisplayValues(this.profile.medium, 3);
         }
 
-
+        loader.dismiss();
         /* let boardList = [];
         this.profile.board && this.profile.board.length && categories[0].terms.forEach(element => {
           if (_.includes(this.profile.board, element.code)) {
@@ -231,7 +233,7 @@ export class GuestProfilePage {
         this.boards = this.arrayToString(boardList); */
       },
       (error: any) => {
-
+        loader.dismiss();
       });
   }
 
