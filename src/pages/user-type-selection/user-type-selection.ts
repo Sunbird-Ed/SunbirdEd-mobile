@@ -130,7 +130,8 @@ export class UserTypeSelectionPage {
           uid: this.profile.uid,
           profileType: this.selectedUserType,
           isGroupUser: false,
-          createdAt: this.profile.createdAt
+          createdAt: this.profile.createdAt,
+          syllabus: []
         };
         this.updateProfile(updateRequest);
       }
