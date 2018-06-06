@@ -27,7 +27,7 @@ export class FilterPage {
   }
 
   openFilterOptions(facet) {
-    let popUp = this.popCtrl.create(FilterOptions, { facet: facet}, {cssClass: 'option-box'});
+    let popUp = this.popCtrl.create(FilterOptions, { facet: facet }, { cssClass: 'option-box' });
     popUp.present();
   }
 
@@ -55,14 +55,26 @@ export class FilterPage {
 
   private init() {
     this.filterCriteria = this.navParams.get('filterCriteria');
+    let filters: Array<any> = [];
+    this.filterCriteria.facets.forEach(facet => {
+      let data = this.getFilterValues(facet)
+      if (data) {
+        filters.push(data);
+      }
+    });
+
+    if (filters && filters.length) {
+      this.filterCriteria.facetFilters.length = 0;
+      this.filterCriteria.facetFilters = filters;
+    }
 
     this.filterCriteria.facetFilters.forEach(facet => {
       if (facet.values && facet.values.length > 0) {
-        if(facet.name != 'gradeLevel') {
-          facet.values = _.orderBy(facet.values, ['name'], ['asc']);
+        if (facet.name != 'gradeLevel') {
+          facet.values = _.orderBy(facet.values, ['name'], ['asc']);
         }
         facet.values.forEach((element, index) => {
-          if(element.name.toUpperCase() === 'other'.toUpperCase()) {
+          if (element.name.toUpperCase() === 'other'.toUpperCase()) {
             let elementVal = element;
             facet.values.splice(index, 1);
             facet.values.push(elementVal);
@@ -71,6 +83,19 @@ export class FilterPage {
         this.facetsFilter.push(facet);
       }
     });
+  }
+
+  getFilterValues(facet: string) {
+    if (facet) {
+      let filterName = _.find(this.filterCriteria.facetFilters, ['name', facet]);
+      if (filterName && filterName.values && filterName.values.length) {
+        return filterName;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
   }
 
   /**

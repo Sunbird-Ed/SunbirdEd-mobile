@@ -41,6 +41,8 @@ repositories {
 }
 
 ext {
+    // To make minimum SDK as 21
+    cdvMinSdkVersion = null
     cdvVersionCode=Integer.parseInt('' + "${app_version_code}")
 }
 
