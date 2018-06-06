@@ -1,9 +1,16 @@
-import { NavController, Slides, PopoverController, Events, Platform } from 'ionic-angular';
+import { NavController, Slides, PopoverController, Events, Platform, ToastController } from 'ionic-angular';
 import { Component, ViewChild, NgZone } from '@angular/core';
 import * as _ from 'lodash';
 import { OnboardingService } from '../onboarding-card/onboarding.service';
 import { OnboardingAlert, onBoardingSlidesCallback } from './../onboarding-alert/onboarding-alert';
+import { TranslateService } from '@ngx-translate/core';
 
+/* Interface for the Toast Object */
+export interface toastOptions {
+  message: string,
+  duration: number,
+  position: string
+};
 
 @Component({
   selector: 'onboarding-card',
@@ -14,21 +21,35 @@ export class OnboardingCardComponent {
   @ViewChild(Slides) mSlides: Slides;
   isOnBoardCard: boolean = true;
   loader: boolean = false;
+  isSyllabusDataAvailable = false;
+
+  options: toastOptions = {
+    message: '',
+    duration: 3000,
+    position: 'bottom'
+  };
 
   constructor(
     public navCtrl: NavController,
     private popupCtrl: PopoverController,
     private onboardingService: OnboardingService,
     private events: Events,
-    private zone: NgZone
+    private zone: NgZone,
+    private toastCtrl: ToastController,
+    private translate: TranslateService
   ) {
 
     this.showLoader(true);
 
     this.onboardingService.getSyllabusDetails()
       .then((result) => {
-        if (result) {
-          this.showLoader(false)
+        this.showLoader(false)
+        
+        if (result && result !== undefined) {
+          this.isSyllabusDataAvailable = true;
+        }else{
+          this.isSyllabusDataAvailable = false;
+          this.getToast(this.translateMessage('NO_DATA_FOUND')).present();  
         }
       });
 
@@ -52,6 +73,23 @@ export class OnboardingCardComponent {
         });
     });
   }
+
+
+  /**
+   * Used to Translate message to current Language
+   * @param {string} messageConst - Message Constant to be translated
+   * @returns {string} translatedMsg - Translated Message
+   */
+  translateMessage(messageConst: string): string {
+    let translatedMsg = '';
+    this.translate.get(messageConst).subscribe(
+      (value: any) => {
+        translatedMsg = value;
+      }
+    );
+    return translatedMsg;
+  }
+
 
   /**
    * To start and stop loader
@@ -188,4 +226,15 @@ export class OnboardingCardComponent {
       this.mSlides.slideTo(0, 500);
     }
   }
+
+  /** It will returns Toast Object
+   * @param {message} string - Message for the Toast to show
+   * @returns {object} - toast Object
+   */
+  getToast(message: string = ''): any {
+    this.options.message = message;
+    if (message.length) return this.toastCtrl.create(this.options);
+  }
+
+  
 }

@@ -62,7 +62,7 @@ export class PageFilterConstants {
         },
         {
             name: "gradeLevel",
-            displayName: "Grade",
+            displayName: "Class",
             values: frameworkDataList.gradeList.sort()
         },
         {

@@ -196,8 +196,8 @@ export class OnboardingService {
 
             if (frameworkId !== undefined && frameworkId.length) {
                 req.defaultFrameworkDetails = false;
-                req.frameworkId = frameworkId[0];
-                this.frameworkId = frameworkId[0];
+                req.frameworkId = frameworkId;
+                this.frameworkId = frameworkId;
             }
 
             this.framework.getFrameworkDetails(req,
@@ -288,7 +288,7 @@ export class OnboardingService {
                         });
                     }
 
-                    resolve(true);
+                    resolve(fields);
                 },
                 (error: any) => {
                     console.log("Error - " + error);
