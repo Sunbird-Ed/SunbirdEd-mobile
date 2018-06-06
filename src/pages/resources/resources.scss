@@ -29,6 +29,12 @@ page-resources {
         font-family: 'sunbirdboldfont';
         font-weight: 500;
       }
+      .signin-card-bg {
+        background-color: map-get($colors, light_gray);
+        padding-top: 10px;
+        padding-bottom: 10px;
+      }
+
       .course-scroll-holder {
         background-color: #FDFEFE;
       }

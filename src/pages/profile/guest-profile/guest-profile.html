@@ -44,7 +44,7 @@
           <div *ngIf="!profile?.syllabus" (click)="editGuestProfile()" class="vertical-align">{{'ADD' | translate}}</div>
         </ion-col>
       </ion-row>
-     
+
       <ion-row>
         <ion-col col-6>
           <div text-uppercase class="info-title">{{'BOARD' | translate}}</div>
@@ -99,7 +99,7 @@
 
     </ion-item>
   </ion-list>
-  <div class="signin-card-bg">
+  <div *ngIf="showSignInCard" class="signin-card-bg">
     <sign-in-card (valueChange)="buttonClick($event)" *ngIf="showSignInCard"></sign-in-card>
   </div>
 </ion-content>

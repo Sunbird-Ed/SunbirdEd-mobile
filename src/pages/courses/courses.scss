@@ -43,6 +43,12 @@ page-courses {
     background: #efeff4;
     height: 7px;
   }
+  .signin-card-bg {
+    background-color: map-get($colors, light_gray);
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
   ion-spinner {
     display: block;
     margin: auto;
