@@ -210,8 +210,8 @@ export class GuestEditProfilePage {
    */
   getCategoryData(req: CategoryRequest, list): void {
 
-    let loader = this.getLoader();
-    loader.present();
+    // let loader = this.getLoader();
+    // loader.present();
 
     if (this.frameworkId !== undefined && this.frameworkId.length) {
       req.frameworkId = this.frameworkId;
@@ -232,10 +232,10 @@ export class GuestEditProfilePage {
           this[list] = _.orderBy(this[list], ['name'], ['asc']);
         }
         console.log(list + " Category Response: " + this[list]);
-        loader.dismiss();
+        // loader.dismiss();
       },
       (err: any) => {
-        loader.dismiss();
+        // loader.dismiss();
         console.log("Subject Category Response: ", err);
       });
   }
