@@ -82,6 +82,14 @@ export class OnboardingService {
                 'selectedCode': []
             },
             {
+                'id': 'mediumList',
+                'title': 'MEDIUM_QUESTION',
+                'desc': 'MEDIUM_OPTION_TEXT',
+                'options': [],
+                'selectedOptions': '',
+                'selectedCode': []
+            },
+            {
                 'id': 'gradeList',
                 'title': 'GRADE_QUESTION',
                 'desc': 'GRADE_OPTION_TEXT',
@@ -96,22 +104,14 @@ export class OnboardingService {
                 'options': [],
                 'selectedOptions': '',
                 'selectedCode': []
-            },
-            {
-                'id': 'mediumList',
-                'title': 'MEDIUM_QUESTION',
-                'desc': 'MEDIUM_OPTION_TEXT',
-                'options': [],
-                'selectedOptions': '',
-                'selectedCode': []
             }
         ];
 
         this.onBoardingSlides[0].options = this.syllabusList;
         this.onBoardingSlides[1].options = this.boardList;
-        this.onBoardingSlides[2].options = this.gradeList;
-        this.onBoardingSlides[3].options = this.subjectList;
-        this.onBoardingSlides[4].options = this.mediumList;
+        this.onBoardingSlides[2].options = this.mediumList;
+        this.onBoardingSlides[3].options = this.gradeList;
+        this.onBoardingSlides[4].options = this.subjectList;
 
         console.log("Initialized", this.onBoardingSlides);
     }
@@ -146,24 +146,25 @@ export class OnboardingService {
                     this.currentIndex = 40;
                     index = 2;
                 }
-                if (this.profile.grade && this.profile.grade[0] !== '') {
-                    //this.onBoardingSlides[1].selectedOptions = this.profile.grade;
-                    this.onBoardingSlides[2].selectedOptions = this.getDisplayValues(1, this.profile.grade);
+                if (this.profile.medium && this.profile.medium[0] !== '') {
+                    //this.onBoardingSlides[3].selectedOptions = this.profile.medium;
+                    this.onBoardingSlides[2].selectedOptions = this.getDisplayValues(1, this.profile.medium);
                     this.currentIndex = 60;
                     index = 3;
                 }
-                if (this.profile.subject && this.profile.subject[0] !== '') {
-                    //this.onBoardingSlides[2].selectedOptions = this.profile.subject;
-                    this.onBoardingSlides[3].selectedOptions = this.getDisplayValues(2, this.profile.subject);
+                if (this.profile.grade && this.profile.grade[0] !== '') {
+                    //this.onBoardingSlides[1].selectedOptions = this.profile.grade;
+                    this.onBoardingSlides[3].selectedOptions = this.getDisplayValues(2, this.profile.grade);
                     this.currentIndex = 80;
                     index = 4;
                 }
-                if (this.profile.medium && this.profile.medium[0] !== '') {
-                    //this.onBoardingSlides[3].selectedOptions = this.profile.medium;
-                    this.onBoardingSlides[4].selectedOptions = this.getDisplayValues(3, this.profile.medium);
+                if (this.profile.subject && this.profile.subject[0] !== '') {
+                    //this.onBoardingSlides[2].selectedOptions = this.profile.subject;
+                    this.onBoardingSlides[4].selectedOptions = this.getDisplayValues(3, this.profile.subject);
                     this.currentIndex = 100;
                     index = 5;
                 }
+
                 resolve(index);
             },
                 (err: any) => {
@@ -232,13 +233,13 @@ export class OnboardingService {
                     if (list === "boardList" && this.profile.board && this.profile.board.length && this.profile.board.indexOf(element.code) > -1) {
                         this.onBoardingSlides[1].selectedCode.push(element.code);
                         value = { 'text': element.name, 'value': element.code, 'checked': true };
-                    } else if (list === "gradeList" && this.profile.grade && this.profile.grade.length && this.profile.grade.indexOf(element.code) > -1) {
+                    } else if (list === "mediumList" && this.profile.medium && this.profile.medium.length && this.profile.medium.indexOf(element.code) > -1) {
                         this.onBoardingSlides[2].selectedCode.push(element.code);
                         value = { 'text': element.name, 'value': element.code, 'checked': true };
-                    } else if (list === "subjectList" && this.profile.subject && this.profile.subject.length && this.profile.subject.indexOf(element.code) > -1) {
+                    } else if (list === "gradeList" && this.profile.grade && this.profile.grade.length && this.profile.grade.indexOf(element.code) > -1) {
                         this.onBoardingSlides[3].selectedCode.push(element.code);
                         value = { 'text': element.name, 'value': element.code, 'checked': true };
-                    } else if (list === "mediumList" && this.profile.medium && this.profile.medium.length && this.profile.medium.indexOf(element.code) > -1) {
+                    } else if (list === "subjectList" && this.profile.subject && this.profile.subject.length && this.profile.subject.indexOf(element.code) > -1) {
                         this.onBoardingSlides[4].selectedCode.push(element.code);
                         value = { 'text': element.name, 'value': element.code, 'checked': true };
                     } else {
@@ -359,11 +360,11 @@ export class OnboardingService {
         } else if (index == 1) {
             return 'boardList';
         } else if (index == 2) {
-            return 'gradeList';
-        } else if (index == 3) {
-            return 'subjectList';
-        } else if (index == 4) {
             return 'mediumList';
+        } else if (index == 3) {
+            return 'gradeList';
+        } else if (index == 4) {
+            return 'subjectList';
         } else {
             return 'boardList';
         }
@@ -378,12 +379,12 @@ export class OnboardingService {
             this.onBoardingSlides[0].options = this.syllabusList;
         } else if (name == 'boardList') {
             this.onBoardingSlides[1].options = this.boardList;
-        } else if (name == 'gradeList') {
-            this.onBoardingSlides[2].options = this.gradeList;
-        } else if (name == 'subjectList') {
-            this.onBoardingSlides[3].options = this.subjectList;
         } else if (name == 'mediumList') {
-            this.onBoardingSlides[4].options = this.mediumList;
+            this.onBoardingSlides[2].options = this.mediumList;
+        } else if (name == 'gradeList') {
+            this.onBoardingSlides[3].options = this.gradeList;
+        } else if (name == 'subjectList') {
+            this.onBoardingSlides[4].options = this.subjectList;
         }
     }
 
