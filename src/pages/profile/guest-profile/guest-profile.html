@@ -1,4 +1,3 @@
-
 <ion-header>
   <ion-navbar>
     <ion-title>{{ 'PROFILE_LW' | translate }}</ion-title>
@@ -58,7 +57,20 @@
         </ion-col>
       </ion-row>
 
-    <ion-row>
+      <ion-row>
+        <ion-col col-6>
+          <div class="info-title" text-uppercase>{{'MEDIUM_2' | translate}}</div>
+        </ion-col>
+        <ion-col class="ellipsis font-size-14rem page-content" col-6 text-end>
+          <div *ngIf="profile?.medium && profile?.medium != ''">
+            <div class="ellipsis text-align">{{medium}}</div>
+            <ion-icon class="icon-align" float="end" name="md-create" color="primary" (click)="editGuestProfile()"></ion-icon>
+          </div>
+          <div *ngIf="!profile?.medium" (click)="editGuestProfile()" class="vertical-align">{{'ADD' | translate}}</div>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
         <ion-col col-6>
           <div class="info-title" text-uppercase>{{'GRADE' | translate}}</div>
         </ion-col>
@@ -81,19 +93,6 @@
             <ion-icon class="icon-align" float="end" name="md-create" color="primary" (click)="editGuestProfile()"></ion-icon>
           </div>
           <div *ngIf="!profile?.subject" (click)="editGuestProfile()" class="vertical-align">{{'ADD' | translate}}</div>
-        </ion-col>
-      </ion-row>
-
-      <ion-row>
-        <ion-col col-6>
-          <div class="info-title" text-uppercase>{{'MEDIUM_2' | translate}}</div>
-        </ion-col>
-        <ion-col class="ellipsis font-size-14rem page-content" col-6 text-end>
-          <div *ngIf="profile?.medium && profile?.medium != ''">
-            <div class="ellipsis text-align">{{medium}}</div>
-            <ion-icon class="icon-align" float="end" name="md-create" color="primary" (click)="editGuestProfile()"></ion-icon>
-          </div>
-          <div *ngIf="!profile?.medium" (click)="editGuestProfile()" class="vertical-align">{{'ADD' | translate}}</div>
         </ion-col>
       </ion-row>
 

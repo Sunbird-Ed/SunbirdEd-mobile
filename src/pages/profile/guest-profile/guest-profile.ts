@@ -204,6 +204,7 @@ export class GuestProfilePage {
     };
 
     if (frameworkId !== undefined && frameworkId.length) {
+      req.defaultFrameworkDetails = false;
       req.frameworkId = frameworkId
     }
 
@@ -213,14 +214,14 @@ export class GuestProfilePage {
         if (this.profile.board && this.profile.board.length) {
           this.boards = this.getFieldDisplayValues(this.profile.board, 0);
         }
+        if (this.profile.medium && this.profile.medium.length) {
+          this.medium = this.getFieldDisplayValues(this.profile.medium, 1);
+        }
         if (this.profile.grade && this.profile.grade.length) {
-          this.grade = this.getFieldDisplayValues(this.profile.grade, 1);
+          this.grade = this.getFieldDisplayValues(this.profile.grade, 2);
         }
         if (this.profile.subject && this.profile.subject.length) {
-          this.subjects = this.getFieldDisplayValues(this.profile.subject, 2);
-        }
-        if (this.profile.medium && this.profile.medium.length) {
-          this.medium = this.getFieldDisplayValues(this.profile.medium, 3);
+          this.subjects = this.getFieldDisplayValues(this.profile.subject, 3);
         }
 
         loader.dismiss();

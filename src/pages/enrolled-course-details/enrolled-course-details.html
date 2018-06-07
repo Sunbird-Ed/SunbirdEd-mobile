@@ -15,7 +15,7 @@
 	<pb-horizontal *ngIf="courseCardData?.progress" [progress]="courseCardData?.progress" class="course-progress"></pb-horizontal>
 </ion-header>
 
-<ion-content padding>
+<ion-content padding [ngClass]="{'content-with-footer': (courseCardData && (courseCardData.batchId || !courseCardData.batchId))}">
 	<div class="content-details-holder" *ngIf="course">
 		<h6>{{course.name}}</h6>
 		<ion-grid class="padding-0">
@@ -43,7 +43,7 @@
 					{{ course.description }}
 				</p>
 				<div *ngIf="course.gradeLevel && course.gradeLevel.length" margin-top>
-					<div class="content-meta-title"text-uppercase>{{ 'GRADE' | translate }}</div>
+					<div class="content-meta-title" text-uppercase>{{ 'GRADE' | translate }}</div>
 					<!-- <span *ngFor="let grade of course.gradeLevel"> -->
 					<span class="text-gray-color">{{course.gradeLevel}}</span>
 					<!-- </span> -->
@@ -98,7 +98,7 @@
 					{{course.contentTypesCount[structure] + ' ' + structure}} {{last ? '' : ' |' }}
 				</span>
 			</div>
-			<div *ngIf="childrenData && childrenData.length" padding-top>
+			<ion-list *ngIf="childrenData && childrenData.length" padding-top>
 				<span *ngIf="courseCardData && courseCardData.batchId">
 					<ion-item *ngFor="let item of childrenData; let i = index;" style="padding-left: 0px;" (click)="navigateToChildrenDetailsPage(item, depth + '.' + (i + 1))">
 						<span ion-text class="span-semibold">{{ (item?.contentData?.name && item?.contentData?.name.length > 30) ? (item?.contentData?.name | slice:0:30) + '...'
@@ -112,7 +112,7 @@
 							: (item?.contentData?.name)}}</span>
 					</ion-item>
 				</span>
-			</div>
+			</ion-list>
 			<!-- Import content loader -->
 			<div *ngIf="showChildrenLoader">
 				<ion-row style="padding-top: 30px;" padding>
@@ -133,8 +133,14 @@
 			<!-- End import content -->
 		</div>
 		<!-- -->
-		<div class="license-section padding-10 background-gray" *ngIf="course.license">
+		<div class="license-section padding-10 background-gray" *ngIf="course.license || course.attributions">
 			<div class="row" *ngIf="showLicense">
+				<span *ngIf="course.attributions">
+					<div class="size_txt content-meta-title">{{ 'CREDITS' | translate }}</div>
+					<div class="margin-top-5 text-gray-color">{{ course.attributions }}</div>
+				</span>
+			</div>
+			<div class="row" *ngIf="showLicense" [ngClass]="{'padding-top-16': course.attributions}">
 				<span *ngIf="course.license">
 					<div class="size_txt content-meta-title">{{ 'LICENSE' | translate }}</div>
 					<div class="margin-top-5 text-gray-color">{{ course.license }}</div>

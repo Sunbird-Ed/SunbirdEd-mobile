@@ -6,7 +6,6 @@ import {
   UserProfileDetailsRequest,
   CourseService,
   ContentService,
-  Impression,
   TelemetryService,
   ImpressionType,
   PageId,
@@ -17,7 +16,6 @@ import {
 import { PopoverController } from "ionic-angular/components/popover/popover-controller";
 import { DatePipe } from "@angular/common";
 import * as _ from 'lodash';
-
 import { FormEducation } from "./education/form.education";
 import { FormAddress } from "./address/form.address";
 import { SkillTagsComponent } from "./skill-tags/skill-tags";
@@ -245,27 +243,30 @@ export class ProfilePage {
     if (this.profile.missingFields && this.profile.missingFields.length) {
       switch (this.profile.missingFields[0]) {
         case "education":
-          this.uncompletedDetails.title = "+ " + this.translateMessage('ADD_EDUCATION');
+          this.uncompletedDetails.title = 'ADD_EDUCATION';
           this.uncompletedDetails.page = FormEducation;
           this.uncompletedDetails.data = {
             addForm: true,
             profile: this.profile
           }
           break;
+
         case "jobProfile":
-          this.uncompletedDetails.title = "+ " + this.translateMessage('ADD_EXPERIENCE');
+          this.uncompletedDetails.title = 'ADD_EXPERIENCE';
           this.uncompletedDetails.page = FormExperience;
           this.uncompletedDetails.data = {
             addForm: true,
             profile: this.profile
           }
           break;
+
         case "avatar":
-          this.uncompletedDetails.title = "+ " + this.translateMessage('ADD_AVATAR');
+          this.uncompletedDetails.title = 'ADD_AVATAR';
           this.uncompletedDetails.page = "picture";
           break;
+
         case "address":
-          this.uncompletedDetails.title = "+ " + this.translateMessage('ADD_ADDRESS');
+          this.uncompletedDetails.title = 'ADD_ADDRESS';
           this.uncompletedDetails.page = FormAddress;
           this.uncompletedDetails.data = {
             addForm: true,
@@ -289,7 +290,7 @@ export class ProfilePage {
             'webPages'
           ];
 
-          this.uncompletedDetails.title = "+ " + this.translateMessage('ADD_LOCATION');
+          this.uncompletedDetails.title = 'ADD_LOCATION';
           this.uncompletedDetails.page = AdditionalInfoComponent;
           this.uncompletedDetails.data = {
             userId: this.loggedInUserId,

@@ -159,10 +159,10 @@ export class OnboardingCardComponent {
       this.onboardingService.profile.subject = [];
       this.onboardingService.profile.medium = [];
     } else if (index === 2) {
+      this.onboardingService.profile.grade = [];
       this.onboardingService.profile.subject = [];
-      this.onboardingService.profile.medium = [];
     } else if (index === 3) {
-      this.onboardingService.profile.medium = [];
+      this.onboardingService.profile.subject = [];
     }
 
     selectedSlide.options.forEach(options => {
@@ -223,8 +223,8 @@ export class OnboardingCardComponent {
     if (index === 0) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index));
     if (index === 1) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.syllabus);
     if (index === 2) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.board);
-    if (index === 3) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.grade);
-    if (index === 4) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.subject);
+    if (index === 3) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.medium);
+    if (index === 4) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.grade);
 
     let popUp = this.popupCtrl.create(OnboardingAlert, { facet: selectedSlide, callback: callback, index: index }, {
       cssClass: 'onboarding-alert'

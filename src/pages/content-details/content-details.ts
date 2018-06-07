@@ -339,6 +339,9 @@ export class ContentDetailsPage {
     if (this.content.gradeLevel && this.content.gradeLevel.length) {
       this.content.gradeLevel = this.content.gradeLevel.join(", ");
     }
+    if (this.content.attributions && this.content.attributions.length) {
+      this.content.attributions = this.content.attributions.join(", ");
+    }
     this.objId = this.content.identifier;
     this.objType = this.content.contentType;
     this.objVer = this.content.pkgVersion;
