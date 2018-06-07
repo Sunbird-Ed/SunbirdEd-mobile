@@ -31,7 +31,8 @@
 						<!--Size 0 if not -->
 						<span class="content-size">[{{ content.size | fileSize }}]</span>
 					</div>
-					<rating align-items-start (click)="rateContent('manual');" [(ngModel)]="content.me_averageRating" readOnly="true" max="5" no-padding></rating>
+					<rating align-items-start (click)="rateContent('manual');" [(ngModel)]="content.me_averageRating" readOnly="true" max="5"
+					 no-padding></rating>
 				</ion-col>
 				<ion-col offset-2 *ngIf="content.me_totalDownloads">
 					<div class="padding-bottom-5 text-align-end content-meta-title">{{ content.me_totalDownloads }}</div>
@@ -83,8 +84,14 @@
 			</div>
 		</div>
 		<br/>
-		<div class="license-section padding-10 background-gray" *ngIf="content.license">
+		<div class="license-section padding-10 background-gray" *ngIf="content.license || content.attributions">
 			<div class="row" *ngIf="showLicense">
+				<span *ngIf="content.attributions">
+					<div class="size_txt content-meta-title">{{ 'CREDITS' | translate }}</div>
+					<div class="margin-top-5 text-gray-color">{{ content.attributions }}</div>
+				</span>
+			</div>
+			<div class="row" *ngIf="showLicense" [ngClass]="{'padding-top-16': content.attributions}">
 				<span *ngIf="content.license">
 					<div class="size_txt content-meta-title">{{ 'LICENSE' | translate }}</div>
 					<div class="margin-top-5 text-gray-color">{{ content.license }}</div>

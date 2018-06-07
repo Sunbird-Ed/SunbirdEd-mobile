@@ -320,6 +320,9 @@ export class CollectionDetailsPage {
     if (this.contentDetail.gradeLevel && this.contentDetail.gradeLevel.length) {
       this.contentDetail.gradeLevel = this.contentDetail.gradeLevel.join(", ");
     }
+    if (this.contentDetail.attributions && this.contentDetail.attributions.length) {
+      this.contentDetail.attributions = this.contentDetail.attributions.join(", ");
+    }
     switch (data.result.isAvailableLocally) {
       case true: {
         this.showLoading = false;
