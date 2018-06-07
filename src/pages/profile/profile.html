@@ -37,7 +37,7 @@
         <p class="profile-completed-text" *ngIf="profileProgress.length">{{ 'YOUR_PROFILE_IS' | translate:{'%s': profileProgress} }}</p>
       </ion-col>
       <ion-col col-5 text-right class="profile-completed-ion-col">
-        <p class="profile-add-exp-text" (click)="completeProfile()">{{ uncompletedDetails?.title }}</p>
+        <p class="profile-add-exp-text" (click)="completeProfile()">+ {{ uncompletedDetails?.title | translate }}</p>
       </ion-col>
     </ion-row>
     <pb-horizontal progress="{{ profileProgress }}"></pb-horizontal>
@@ -52,8 +52,8 @@
   </ion-item>
 
   <!-- Profile Education -->
-  <ion-list-header padding-horizontal *ngIf="(profile?.education?.length && !isLoggedInUser) || isLoggedInUser" class="section-title" no-lines
-    no-padding>
+  <ion-list-header padding-horizontal *ngIf="(profile?.education?.length && !isLoggedInUser) || isLoggedInUser" class="section-title"
+    no-lines no-padding>
     {{ 'TITLE_EDUCATION' | translate }}
     <span *ngIf="isLoggedInUser" float-right color="primary">
       <span (click)="editEduDetails(true, profile)">{{ 'ADD' | translate }}</span>
@@ -84,7 +84,8 @@
   </ion-item>
 
   <!-- User Experience -->
-  <ion-list-header padding-horizontal *ngIf="(profile?.jobProfile?.length && !isLoggedInUser) || isLoggedInUser" class="section-title" no-padding>
+  <ion-list-header padding-horizontal *ngIf="(profile?.jobProfile?.length && !isLoggedInUser) || isLoggedInUser" class="section-title"
+    no-padding>
     {{ 'TITLE_EXPERIENCE' | translate }}
     <span *ngIf="isLoggedInUser" float-end color="primary">
       <span (click)="editExperience()">{{ 'ADD' | translate }}</span>
@@ -118,10 +119,11 @@
 
 
   <!-- User Address Current/Permanent -->
-  <ion-list-header padding-horizontal *ngIf="(profile?.address?.length && !isLoggedInUser) || isLoggedInUser" class="section-title" no-padding>
+  <ion-list-header padding-horizontal *ngIf="(profile?.address?.length && !isLoggedInUser) || isLoggedInUser" class="section-title"
+    no-padding>
     {{ 'TITLE_ADDRESS' | translate }}
     <span *ngIf="isLoggedInUser" float-end color="primary">
-      <span  *ngIf="profile?.address?.length < 2 "  (click)="editAddress()">{{ 'ADD' | translate }}</span>
+      <span *ngIf="profile?.address?.length < 2 " (click)="editAddress()">{{ 'ADD' | translate }}</span>
       <ion-icon color="dark" class="padding-left-5" (click)="toggleLock('location', 'TITLE_ADDRESS')" name="{{ profile?.profileVisibility?.location == 'private' ? 'lock' : 'unlock' }}"></ion-icon>
     </span>
   </ion-list-header>
@@ -147,7 +149,8 @@
   </ion-item>
 
   <!-- User's Skills -->
-  <ion-list-header padding-horizontal *ngIf="(profile?.skills?.length && !isLoggedInUser) || isLoggedInUser" class="section-title" no-padding>
+  <ion-list-header padding-horizontal *ngIf="(profile?.skills?.length && !isLoggedInUser) || isLoggedInUser" class="section-title"
+    no-padding>
     {{ 'SKILL_TAGS' | translate }}
     <span *ngIf="isLoggedInUser" float-right color="primary">
       <span (click)="addSkillTags()">{{ 'ADD' | translate }}</span>

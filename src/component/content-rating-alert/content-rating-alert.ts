@@ -1,7 +1,9 @@
 import { Component, NgZone } from '@angular/core';
-import { NavParams, ViewController, Header, Platform, ToastController } from "ionic-angular";
-import { ContentService, AuthService, TelemetryService, InteractType, InteractSubtype, PageId, Environment, ImpressionType, ImpressionSubtype, Log, LogLevel } from 'sunbird';
-import { NgModule } from '@angular/core';
+import { NavParams, ViewController, Platform, ToastController } from "ionic-angular";
+import {
+  ContentService, AuthService, TelemetryService,
+  InteractType, InteractSubtype, Environment, ImpressionType, ImpressionSubtype, Log, LogLevel
+} from 'sunbird';
 import { TranslateService } from '@ngx-translate/core';
 import { generateImpressionTelemetry, generateInteractTelemetry } from '../../app/telemetryutil';
 import { ProfileConstants } from '../../app/app.constant';
@@ -146,10 +148,10 @@ export class ContentRatingAlertComponent {
   ionViewDidLoad(): void {
     this.content = this.navParams.get("content");
     this.pageId = this.navParams.get("pageId");
-   
+
   }
 
-  ionViewWillEnter(){
+  ionViewWillEnter() {
     this.telemetryService.impression(generateImpressionTelemetry(
       ImpressionType.VIEW,
       ImpressionSubtype.RATING_POPUP,
@@ -162,7 +164,7 @@ export class ContentRatingAlertComponent {
     let log = new Log();
     log.level = LogLevel.INFO;
     log.message = this.pageId;
-    log.env =Environment.HOME;
+    log.env = Environment.HOME;
     log.type = ImpressionType.VIEW;
     let params = new Array<any>();
     let paramsMap = new Map();

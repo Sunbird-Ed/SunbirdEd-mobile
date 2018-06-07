@@ -48,7 +48,16 @@ export class OnboardingService {
 
     initializeCard(): Promise<any> {
         return new Promise((resolve, reject) => {
-            this.getFrameworkDetails()
+
+            this.profileService.getCurrentUser((res: any) => {
+                let profile: Profile = JSON.parse(res);
+                let syllabusFramework: string = '';
+
+                if (profile.syllabus && profile.syllabus[0] !== '') {
+                    syllabusFramework = profile.syllabus[0];
+                }
+
+                this.getFrameworkDetails(syllabusFramework)
                 .then(catagories => {
                     this.categories = catagories;
                     this.initializeSlides();
@@ -58,6 +67,11 @@ export class OnboardingService {
                     resolve(index);
                 })
                 .catch(err => {
+                    reject(err);
+                });
+            },
+                (err: any) => {
+                    console.log("Err1", err);
                     reject(err);
                 });
         });
@@ -131,6 +145,7 @@ export class OnboardingService {
 
                     this.syllabusList.forEach(element => {
                         if (_.includes(this.profile.syllabus, element.value)) {
+                            element.checked = true;
                             displayValues.push(element.text);
                         }
                     });
