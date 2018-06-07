@@ -15,7 +15,7 @@
 	<pb-horizontal *ngIf="courseCardData?.progress" [progress]="courseCardData?.progress" class="course-progress"></pb-horizontal>
 </ion-header>
 
-<ion-content padding>
+<ion-content padding [ngClass]="{'content-with-footer': courseCardData && courseCardData.batchId || !courseCardData.batchId}">
 	<div class="content-details-holder" *ngIf="course">
 		<h6>{{course.name}}</h6>
 		<ion-grid class="padding-0">
@@ -98,7 +98,7 @@
 					{{course.contentTypesCount[structure] + ' ' + structure}} {{last ? '' : ' |' }}
 				</span>
 			</div>
-			<div *ngIf="childrenData && childrenData.length" padding-top>
+			<ion-list *ngIf="childrenData && childrenData.length" padding-top>
 				<span *ngIf="courseCardData && courseCardData.batchId">
 					<ion-item *ngFor="let item of childrenData; let i = index;" style="padding-left: 0px;" (click)="navigateToChildrenDetailsPage(item, depth + '.' + (i + 1))">
 						<span ion-text class="span-semibold">{{ (item?.contentData?.name && item?.contentData?.name.length > 30) ? (item?.contentData?.name | slice:0:30) + '...'
@@ -112,7 +112,7 @@
 							: (item?.contentData?.name)}}</span>
 					</ion-item>
 				</span>
-			</div>
+			</ion-list>
 			<!-- Import content loader -->
 			<div *ngIf="showChildrenLoader">
 				<ion-row style="padding-top: 30px;" padding>

@@ -16,7 +16,7 @@
 	</ion-navbar>
 </ion-header>
 <!-- Page body -->
-<ion-content padding overflow-scroll="true">
+<ion-content padding [ngClass]="{'content-with-footer': (showDownloadBtn && !isDepthChild)}">
 	<div class="content-details-holder" *ngIf="contentDetail">
 		<h6 class="font-size-20">{{(contentDetail?.name && contentDetail?.name.length > 25) ? (contentDetail?.name | slice:0:25) + '...' : (contentDetail?.name)
 			}}</h6>
@@ -88,13 +88,13 @@
 					{{contentDetail.contentTypesCount[structure] + ' ' + structure}} {{last ? '' : ' |' }}
 				</span>
 			</div>
-			<div *ngIf="childrenData && childrenData.length" padding-top>
+			<ion-list *ngIf="childrenData && childrenData.length" padding-top>
 				<ion-item *ngFor="let item of childrenData; let i = index;" style="padding-left: 0px;" (click)="navigateToDetailsPage(item, depth + '.' + (i + 1))">
 					<span ion-text class="span-semibold">{{ (item?.contentData?.name && item?.contentData?.name.length > 30) ? (item?.contentData?.name | slice:0:30) + '...'
 						: (item?.contentData?.name)}}</span>
 					<ion-icon name="ios-arrow-forward" float-end></ion-icon>
 				</ion-item>
-			</div>
+			</ion-list>
 			<!-- Import content loader -->
 			<div *ngIf="showChildrenLoader">
 				<ion-row style="padding-top: 30px;" padding>
