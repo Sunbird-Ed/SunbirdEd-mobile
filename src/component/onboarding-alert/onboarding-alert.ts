@@ -15,16 +15,23 @@ export class OnboardingAlert {
 
   backButtonFunc = undefined;
 
+  selectedSyllabus = '';
+
   constructor(private navParams: NavParams, private viewCtrl: ViewController, private platform: Platform) {
     this.selectedSlide = this.navParams.get('facet');
     this.callback = this.navParams.get('callback');
     this.index = this.navParams.get('index');
     this.selectedOptions = [];
-
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.viewCtrl.dismiss();
       this.backButtonFunc();
     }, 10);
+
+    this.selectedSlide.options.forEach(element => {
+      if (element.checked) {
+        this.selectedSyllabus = element.value
+      }
+    });
   }
 
   onSyllabusSelect(selectedIndex: number) {
