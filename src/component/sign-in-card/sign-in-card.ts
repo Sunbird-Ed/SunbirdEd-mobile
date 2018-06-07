@@ -76,17 +76,14 @@ export class SignInCardComponent {
     this.translate.get(this.DEFAULT_TEXT, { '%s': this.sunbird }).subscribe((value) => {
       this.translateDisplayText = value;
       if (this.title.length === 0) {
-        this.title = this.translateDisplayText['OVERLAY_LABEL_COMMON'];
+        this.title = 'OVERLAY_LABEL_COMMON';
       }
 
       if (this.description.length === 0) {
-        this.description = this.translateDisplayText['OVERLAY_INFO_TEXT_COMMON'];
+        this.description = 'OVERLAY_INFO_TEXT_COMMON';
       }
     });
   }
-
-
-
 
   singIn() {
 
