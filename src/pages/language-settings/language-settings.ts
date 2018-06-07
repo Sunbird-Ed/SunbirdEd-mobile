@@ -1,21 +1,17 @@
 import { Component, NgZone } from '@angular/core';
-import { NavController, NavParams, Events, Platform } from 'ionic-angular';
+import { NavController, NavParams, Events } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Globalization } from '@ionic-native/globalization';
 import {
   SharedPreferences,
-  Impression,
   ImpressionType,
   PageId,
   Environment,
   TelemetryService,
-  Interact,
   InteractType,
   InteractSubtype
 } from 'sunbird';
-
 import { OnboardingPage } from '../onboarding/onboarding';
-import { DocumentDirection } from 'ionic-angular/platform/platform';
 import { generateImpressionTelemetry, generateInteractTelemetry, Map } from '../../app/telemetryutil';
 
 const KEY_SELECTED_LANGUAGE_CODE = "selected_language_code";
@@ -42,7 +38,6 @@ export class LanguageSettingsPage {
     private preferences: SharedPreferences,
     private telemetryService: TelemetryService,
     private events: Events,
-    private platform: Platform,
     private zone: NgZone
   ) { }
 
@@ -90,7 +85,6 @@ export class LanguageSettingsPage {
     });
 
     this.generateImpressionEvent();
-
   }
 
   getDeviceLanguage() {
@@ -112,8 +106,6 @@ export class LanguageSettingsPage {
       .catch(e => {
         this.makeDefaultLanguage();
       });
-
-
   }
 
   makeDefaultLanguage() {
@@ -129,8 +121,6 @@ export class LanguageSettingsPage {
       undefined, undefined
     ));
   }
-
-
 
   /**
    * on language selected
