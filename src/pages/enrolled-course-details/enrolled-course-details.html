@@ -28,7 +28,14 @@
 					<div class="size_txt padding-bottom-5" no-margin>
 						<span class="content-size">{{ 'YOUR_PROGRESS' | translate: {'%s': courseCardData.progress ? courseCardData.progress : '0'} }}</span>
 					</div>
-					<rating align-items-start (click)="rateContent();" [(ngModel)]="course.me_averageRating" readOnly="true" max="5" no-padding></rating>
+					<ion-row>
+						<div class="col-2">
+							<rating align-items-start (click)="rateContent();" [(ngModel)]="course.me_averageRating" readOnly="true" max="5" no-padding></rating>
+						</div>
+						<div class="margin-top-3 text-gray-color col-1">
+						&nbsp;({{ course.me_totalRatings ? course.me_totalRatings : 0 }})
+						</div>
+					</ion-row>
 				</ion-col>
 			</ion-row>
 		</ion-grid>

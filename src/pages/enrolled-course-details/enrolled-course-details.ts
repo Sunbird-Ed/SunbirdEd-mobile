@@ -380,6 +380,12 @@ export class EnrolledCourseDetailsPage {
       if (this.course.attributions && this.course.attributions.length) {
         this.course.attributions = this.course.attributions.join(", ");
       }
+      if (this.course.me_totalRatings) {
+        let rating = this.course.me_totalRatings.split(".");
+        if (rating && rating[0]){
+          this.course.me_totalRatings =  rating[0];
+        }
+      }
     } else {
       this.showMessage(this.translateLanguageConstant('ERROR_CONTENT_NOT_AVAILABLE'));
       this.navCtrl.pop();

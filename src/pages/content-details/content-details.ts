@@ -342,6 +342,12 @@ export class ContentDetailsPage {
     if (this.content.attributions && this.content.attributions.length) {
       this.content.attributions = this.content.attributions.join(", ");
     }
+    if (this.content.me_totalRatings) {
+      let rating = this.content.me_totalRatings.split(".");
+      if (rating && rating[0]){
+        this.content.me_totalRatings =  rating[0];
+      }
+    }
     this.objId = this.content.identifier;
     this.objType = this.content.contentType;
     this.objVer = this.content.pkgVersion;

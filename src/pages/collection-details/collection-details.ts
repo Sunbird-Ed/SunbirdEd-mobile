@@ -323,6 +323,12 @@ export class CollectionDetailsPage {
     if (this.contentDetail.attributions && this.contentDetail.attributions.length) {
       this.contentDetail.attributions = this.contentDetail.attributions.join(", ");
     }
+    if (this.contentDetail.me_totalRatings) {
+      let rating = this.contentDetail.me_totalRatings.split(".");
+      if (rating && rating[0]){
+        this.contentDetail.me_totalRatings =  rating[0];
+      }
+    }
     switch (data.result.isAvailableLocally) {
       case true: {
         this.showLoading = false;

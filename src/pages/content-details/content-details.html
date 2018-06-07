@@ -31,8 +31,16 @@
 						<!--Size 0 if not -->
 						<span class="content-size">[{{ content.size | fileSize }}]</span>
 					</div>
-					<rating align-items-start (click)="rateContent('manual');" [(ngModel)]="content.me_averageRating" readOnly="true" max="5"
-					 no-padding></rating>
+					<ion-row>
+						<div class="col-2">
+							<rating align-items-start (click)="rateContent('manual');" [(ngModel)]="content.me_averageRating" readOnly="true" max="5"
+							 no-padding></rating>
+						</div>
+						<div class="margin-top-3 text-gray-color col-1">
+								&nbsp;({{ content.me_totalRatings ? content.me_totalRatings : 0 }})
+						</div>
+					</ion-row>
+
 				</ion-col>
 				<ion-col offset-2 *ngIf="content.me_totalDownloads">
 					<div class="padding-bottom-5 text-align-end content-meta-title">{{ content.me_totalDownloads }}</div>
