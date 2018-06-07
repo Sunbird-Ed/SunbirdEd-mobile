@@ -15,7 +15,7 @@
 	<pb-horizontal *ngIf="courseCardData?.progress" [progress]="courseCardData?.progress" class="course-progress"></pb-horizontal>
 </ion-header>
 
-<ion-content padding [ngClass]="{'content-with-footer': courseCardData && courseCardData.batchId || !courseCardData.batchId}">
+<ion-content padding [ngClass]="{'content-with-footer': (courseCardData && (courseCardData.batchId || !courseCardData.batchId))}">
 	<div class="content-details-holder" *ngIf="course">
 		<h6>{{course.name}}</h6>
 		<ion-grid class="padding-0">
