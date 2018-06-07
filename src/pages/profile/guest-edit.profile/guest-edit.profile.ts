@@ -96,6 +96,7 @@ export class GuestEditProfilePage {
         let response: any = JSON.parse(res);
         console.log("Form Result - " + response.result);
         let fields: Array<any> = response.result.fields;
+        let frameworkId: string = '';
 
         if (fields !== undefined && fields.length > 0) {
           fields.forEach(field => {
@@ -111,39 +112,41 @@ export class GuestEditProfilePage {
             });
           }
 
-          this.getFrameworkDetails()
-            .then(catagories => {
-              this.categories = catagories;
-
-              this.checkPrevValue(0, 'syllabusList');
-
-              this.resetForm(0);
-              this.guestEditForm.patchValue({
-                boards: this.profile.board || []
-              });
-
-              this.resetForm(1);
-              this.guestEditForm.patchValue({
-                grades: this.profile.grade || []
-              });
-
-              this.resetForm(2);
-              this.guestEditForm.patchValue({
-                subjects: this.profile.subject || []
-              });
-
-              this.resetForm(3);
-              this.guestEditForm.patchValue({
-                medium: this.profile.medium || []
-              });
-
-            });
-
-            loader.dismiss();
-        }else{
           loader.dismiss();
-          
-          this.getToast(this.translateMessage('NO_DATA_FOUND')).present();  
+          if (this.profile && this.profile.syllabus && this.profile.syllabus[0] !== undefined) {
+            this.getFrameworkDetails(this.profile.syllabus[0])
+              .then(catagories => {
+                this.categories = catagories;
+
+                // this.checkPrevValue(0, 'syllabusList');
+
+                this.resetForm(0);
+                this.guestEditForm.patchValue({
+                  boards: this.profile.board || []
+                });
+
+                this.resetForm(1);
+                this.guestEditForm.patchValue({
+                  medium: this.profile.medium || []
+                });
+
+                this.resetForm(2);
+                this.guestEditForm.patchValue({
+                  grades: this.profile.grade || []
+                });
+
+                this.resetForm(3);
+                this.guestEditForm.patchValue({
+                  subjects: this.profile.subject || []
+                });
+
+              });
+          }
+
+        } else {
+          loader.dismiss();
+
+          this.getToast(this.translateMessage('NO_DATA_FOUND')).present();
         }
       },
       (error: any) => {
@@ -156,6 +159,9 @@ export class GuestEditProfilePage {
 
   getFrameworkDetails(frameworkId?: string): Promise<any> {
     return new Promise((resolve, reject) => {
+      let loader = this.getLoader();
+      loader.present();
+
       let req: FrameworkDetailsRequest = {
         defaultFrameworkDetails: true
       };
@@ -170,7 +176,7 @@ export class GuestEditProfilePage {
       this.frameworkService.getFrameworkDetails(req,
         (res: any) => {
           let categories = JSON.parse(JSON.parse(res).result.framework).categories;
-
+          loader.dismiss();
 
 
           // if (this.profile.board && this.profile.board.length) {
@@ -189,6 +195,8 @@ export class GuestEditProfilePage {
           resolve(categories);
         },
         (err: any) => {
+          loader.dismiss();
+
           console.log("Framework details Response: ", JSON.parse(err));
           reject(err);
         });
@@ -201,6 +209,9 @@ export class GuestEditProfilePage {
    * @param {string} list - Local variable name to hold the list data
    */
   getCategoryData(req: CategoryRequest, list): void {
+
+    let loader = this.getLoader();
+    loader.present();
 
     if (this.frameworkId !== undefined && this.frameworkId.length) {
       req.frameworkId = this.frameworkId;
@@ -221,8 +232,10 @@ export class GuestEditProfilePage {
           this[list] = _.orderBy(this[list], ['name'], ['asc']);
         }
         console.log(list + " Category Response: " + this[list]);
+        loader.dismiss();
       },
       (err: any) => {
+        loader.dismiss();
         console.log("Subject Category Response: ", err);
       });
   }
@@ -288,21 +301,21 @@ export class GuestEditProfilePage {
           subjects: [],
           medium: []
         });
-        this.checkPrevValue(2, 'gradeList', this.guestEditForm.value.boards);
+        this.checkPrevValue(2, 'mediumList', this.guestEditForm.value.boards);
         break;
 
       case 2:
         this.guestEditForm.patchValue({
           subjects: [],
-          medium: [],
+          grades: [],
         });
-        this.checkPrevValue(3, 'subjectList', this.guestEditForm.value.grades);
+        this.checkPrevValue(3, 'gradeList', this.guestEditForm.value.medium);
         break;
       case 3:
         this.guestEditForm.patchValue({
-          medium: [],
+          subjects: [],
         });
-        this.checkPrevValue(4, 'mediumList', this.guestEditForm.value.subject);
+        this.checkPrevValue(4, 'subjectList', this.guestEditForm.value.grades);
         break;
     }
   }
