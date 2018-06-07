@@ -201,7 +201,7 @@ export class FormExperience {
       cssClass: 'confirm-alert',
       buttons: [
         {
-          text: 'Cancel',
+          text: this.translateMessage('CANCEL'),
           role: 'cancel',
           cssClass: 'alert-btn-cancel',
           handler: () => {
@@ -209,7 +209,7 @@ export class FormExperience {
           }
         },
         {
-          text: 'Delete',
+          text: this.translateMessage('DELETE'),
           cssClass: 'alert-btn-delete',
           handler: () => {
             this.onSubmit(true);
