@@ -377,6 +377,9 @@ export class EnrolledCourseDetailsPage {
       if (this.course.gradeLevel && this.course.gradeLevel.length) {
         this.course.gradeLevel = this.course.gradeLevel.join(", ");
       }
+      if (this.course.attributions && this.course.attributions.length) {
+        this.course.attributions = this.course.attributions.join(", ");
+      }
     } else {
       this.showMessage(this.translateLanguageConstant('ERROR_CONTENT_NOT_AVAILABLE'));
       this.navCtrl.pop();
