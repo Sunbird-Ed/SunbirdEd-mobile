@@ -41,11 +41,14 @@ page-enrolled-course-details {
       }
 
     .read-more {
-        color: rgb(17, 85, 204);
+        color: rgb(17, 85, 204) !important;
     }
     .back-button-md {
         margin-left: -1px !important;
     }
+    .scroll-content { 
+        margin-bottom: 0px !important;
+      }
 
     .progress-inner {
         min-width: 15%;
@@ -75,10 +78,7 @@ page-enrolled-course-details {
     .content-with-footer {
         height: 90% !important;
     }
-    
-    .empty-div-50px{
-        padding-top: 50px;
-    }
+
     .course-progress {
         position: absolute;
         width: 100%;
