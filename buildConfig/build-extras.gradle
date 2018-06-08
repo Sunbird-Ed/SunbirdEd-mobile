@@ -22,10 +22,11 @@ apply plugin: com.crashlytics.tools.gradle.CrashlyticsPlugin
 
 allprojects {
     repositories {
-        jcenter()
         maven {
             url "https://maven.google.com"
         }
+        jcenter()
+      
         maven {
             url "https://platform.ekstep.in/downloads/content/repositories/releases"
         }
