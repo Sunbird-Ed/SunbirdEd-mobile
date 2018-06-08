@@ -671,7 +671,8 @@ export class ContentDetailsPage {
         batchId: stateData.batchId,
         contentId: this.identifier,
         userId: this.userId,
-        status: 2
+        status: 2,
+        progress: 100
       };
 
       this.courseService.updateContentState(data, (data: any) => {
