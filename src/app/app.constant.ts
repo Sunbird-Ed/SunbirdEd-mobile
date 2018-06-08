@@ -98,3 +98,7 @@ export class AudienceFilter {
 
     public static readonly LOGGED_IN_USER = ["instructor", "learner"];
 }
+
+export class EventTopics {
+    public static readonly ENROL_COURSE_SUCCESS = 'ENROL_COURSE_SUCCESS';
+}

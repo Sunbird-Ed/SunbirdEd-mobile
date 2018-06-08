@@ -2,7 +2,7 @@ import { Component, NgZone, OnInit } from '@angular/core';
 import { CourseService, AuthService } from 'sunbird';
 import { IonicPage, NavController, NavParams, ToastController, Events } from 'ionic-angular';
 import * as _ from 'lodash';
-import { ProfileConstants } from '../../app/app.constant';
+import { ProfileConstants, EventTopics } from '../../app/app.constant';
 import { TranslateService } from '@ngx-translate/core';
 
 /**
@@ -141,7 +141,7 @@ export class CourseBatchesPage implements OnInit {
       this.zone.run(() => {
         console.log('You have successfully enrolled...');
         this.showMessage(this.translateLanguageConstant('COURSE_ENROLLED'));
-        this.events.publish('course:batchEnrolled', {
+        this.events.publish(EventTopics.ENROL_COURSE_SUCCESS, {
           batchId: item.id
         });
         this.navCtrl.pop();

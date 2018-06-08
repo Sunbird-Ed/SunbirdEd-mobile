@@ -13,7 +13,7 @@ import { ContentDetailsPage } from '../content-details/content-details';
 import { ContentActionsComponent } from '../../component/content-actions/content-actions';
 import { ReportIssuesComponent } from '../../component/report-issues/report-issues';
 import { TranslateService } from '@ngx-translate/core';
-import { ContentType, MimeType, ProfileConstants } from '../../app/app.constant';
+import { ContentType, MimeType, ProfileConstants, EventTopics } from '../../app/app.constant';
 import { CourseBatchesPage } from '../course-batches/course-batches';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { Network } from '@ionic-native/network';
@@ -200,7 +200,7 @@ export class EnrolledCourseDetailsPage {
     }, (error) => {
     });
 
-    this.events.subscribe('course:batchEnrolled', (res) => {
+    this.events.subscribe(EventTopics.ENROL_COURSE_SUCCESS, (res) => {
       if (res && res.batchId) {
         this.batchId = res.batchId;
       }
@@ -382,8 +382,8 @@ export class EnrolledCourseDetailsPage {
       }
       if (this.course.me_totalRatings) {
         let rating = this.course.me_totalRatings.split(".");
-        if (rating && rating[0]){
-          this.course.me_totalRatings =  rating[0];
+        if (rating && rating[0]) {
+          this.course.me_totalRatings = rating[0];
         }
       }
     } else {
@@ -723,9 +723,9 @@ export class EnrolledCourseDetailsPage {
           } else {
             this.course.isAvailableLocally = true;
             this.setChildContents();
-            this.events.publish('savedResources:update', {
-              update: true
-            });
+            // this.events.publish('savedResources:update', {
+            //   update: true
+            // });
           }
         }
       });
