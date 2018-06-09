@@ -79,7 +79,7 @@ export class ViewMoreActivityListComponent implements OnInit {
 
   ngOnInit() {
     if (this.type === 'enrolledCourse') {
-      this.content.progress = this.courseUtilService.getCourseProgress(this.content.leafNodesCount, this.content.progress);
+      this.content.cProgress = this.courseUtilService.getCourseProgress(this.content.leafNodesCount, this.content.progress);
     }
   }
 }

@@ -4,7 +4,7 @@
       <img class="app-icon" src="{{ content.courseLogoUrl || content?.appIcon || defaultImg }}" />
     </ion-col>
     <ion-col col-8 no-padding>
-      <pb-horizontal *ngIf="content.progress" [progress]="content.progress" class="course-progress"></pb-horizontal>
+      <pb-horizontal *ngIf="content.cProgress" [progress]="content.cProgress" class="course-progress"></pb-horizontal>
       <ion-row style="padding: 5px;">
         <ion-col col-12>
           <h6 class="meta-name" text-wrap *ngIf="content.name && content.name.length">{{(content.name.length > 22) ? (content.name | slice:0:22) + '...' : (content.name)}}</h6>
@@ -15,7 +15,7 @@
       <ion-row [ngSwitch]="type" style="overflow: hidden;padding: 5px;">
         <!--  Enrolled courses -->
         <ion-col col-7 *ngSwitchCase="'enrolledCourse'" col-sm>
-          <span class="content-size1"> {{ 'COURSE_PROGRESS_COMPLETED' | translate: {'%s': content.progress? content.progress : 0} }}</span>
+          <span class="content-size1"> {{ 'COURSE_PROGRESS_COMPLETED' | translate: {'%s': content.cProgress? content.cProgress : 0} }}</span>
           <div class="content-meta">
             <span class="content-size1">{{ 'ERROR_DURATION_NOT_AVAILABLE' | translate | slice:0:14 }}...</span>
           </div>

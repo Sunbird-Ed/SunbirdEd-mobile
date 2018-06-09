@@ -84,7 +84,7 @@ export class CourseCard implements OnInit {
 
   ngOnInit() {
     if (this.layoutName === 'Inprogress') {
-      this.course.progress = this.courseUtilService.getCourseProgress(this.course.leafNodesCount, this.course.progress);
+      this.course.cProgress = this.courseUtilService.getCourseProgress(this.course.leafNodesCount, this.course.progress);
     }
   }
 }
