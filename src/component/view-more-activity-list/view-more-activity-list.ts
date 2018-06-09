@@ -53,7 +53,6 @@ export class ViewMoreActivityListComponent implements OnInit {
   navigateToDetailsPage(content: any) {
     console.log('View more ard details... @@@', content);
     this.zone.run(() => {
-
       if (content.batchId || content.contentType === ContentType.COURSE) {
         console.log('Inside course details');
         this.navCtrl.push(EnrolledCourseDetailsPage, {
