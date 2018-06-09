@@ -12,10 +12,10 @@
 			</button>
 		</ion-buttons>
 	</ion-navbar>
-	<pb-horizontal *ngIf="courseCardData?.progress" [progress]="courseCardData?.progress" class="course-progress"></pb-horizontal>
+	<pb-horizontal *ngIf="course?.progress" [progress]="course?.progress" class="course-progress"></pb-horizontal>
 </ion-header>
 
-<ion-content padding [ngClass]="{'content-with-footer': (((courseCardData && courseCardData.batchId) && ( showResumeBtn || childrenData && childrenData.length || downloadIdentifiers && downloadIdentifiers.length && !isDownloadStarted )) || (courseCardData && !courseCardData.batchId && userId && course && course.createdBy !== userId))}">
+<ion-content padding [ngClass]="{'content-with-footer': (((courseCardData && courseCardData.batchId) && ( showResumeBtn || childrenData && childrenData.length || downloadIdentifiers && downloadIdentifiers.length && !isDownloadStarted )) || (courseCardData && !courseCardData.batchId && course && course.createdBy !== userId))}">
 	<div class="content-details-holder" *ngIf="course">
 		<h6>{{course.name}}</h6>
 		<ion-grid class="padding-0">
@@ -26,7 +26,7 @@
 			<ion-row class="padding-top-10">
 				<ion-col class="padding-0">
 					<div class="size_txt padding-bottom-5" no-margin>
-						<span class="content-size">{{ 'YOUR_PROGRESS' | translate: {'%s': courseCardData.progress ? courseCardData.progress : '0'} }}</span>
+						<span class="content-size">{{ 'YOUR_PROGRESS' | translate: {'%s': course.progress ? course.progress : '0'} }}</span>
 					</div>
 					<ion-row>
 						<div class="col-2">
@@ -180,7 +180,7 @@
 		<button *ngIf="isDownloadStarted" ion-button block outline>{{ 'DOWNLOADING_2' | translate }}... {{ currentCount }} / {{ queuedIdentifiers.length }}</button>
 	</ion-toolbar>
 </ion-footer>
-<ion-footer *ngIf="courseCardData && !courseCardData.batchId && userId && course && course.createdBy !== userId">
+<ion-footer *ngIf="courseCardData && !courseCardData.batchId && course && course.createdBy !== userId">
 	<ion-toolbar padding>
 		<button ion-button block (click)="navigateToBatchListPage();">{{ 'ENROLL_COURSE' | translate }}</button>
 	</ion-toolbar>

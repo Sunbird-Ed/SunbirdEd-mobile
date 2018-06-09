@@ -16,6 +16,8 @@ import { IonicImageLoader, ImageLoader, ImageLoaderConfig } from "ionic-image-lo
 import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
 import { FileOpener } from '@ionic-native/file-opener';
 import { AppGlobalService } from '../service/app-global.service';
+import { CourseUtilService } from '../service/course-util.service';
+
 
 @NgModule({
   declarations: [
@@ -56,6 +58,7 @@ import { AppGlobalService } from '../service/app-global.service';
     FileTransferObject,
     FileOpener,
     AppGlobalService,
+    CourseUtilService,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
   ]
 })

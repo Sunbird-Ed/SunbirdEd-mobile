@@ -204,7 +204,7 @@ export class CoursesPage implements OnInit {
 
   viewMoreEnrolledCourses() {
     this.navCtrl.push(ViewMoreActivityPage, {
-      headerTitle: 'Courses In Progress',
+      headerTitle: 'COURSES_IN_PROGRESS',
       userId: this.userId,
       pageName: 'course.EnrolledCourses'
     })
