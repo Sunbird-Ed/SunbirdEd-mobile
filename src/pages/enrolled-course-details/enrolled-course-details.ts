@@ -693,8 +693,10 @@ export class EnrolledCourseDetailsPage {
   }
 
   getCourseProgress() {
-    this.course.progress = this.courseUtilService.getCourseProgress(this.courseCardData.leafNodesCount, this.courseCardData.progress)
-    console.log('course progress', this.course.cProgress);
+    if (this.courseCardData.batchId) {
+      this.course.progress = this.courseUtilService.getCourseProgress(this.courseCardData.leafNodesCount, this.courseCardData.progress)
+      console.log('course progress', this.course.progress);
+    }
   }
 
   /**
