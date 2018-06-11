@@ -445,9 +445,9 @@ export class EnrolledCourseDetailsPage {
     }
     this.profileService.getUserProfileDetails(req, (data: any) => {
       data = JSON.parse(data);
-      if (data.response) {
-        this.batchDetails.creatorFirstName = data.response.firstName ? data.response.firstName : '';
-        this.batchDetails.creatorLastName = data.response.lastName ? data.response.lastName : '';
+      if (data) {
+        this.batchDetails.creatorFirstName = data.firstName ? data.firstName : '';
+        this.batchDetails.creatorLastName = data.lastName ? data.lastName : '';
       }
     }, (error: any) => {
 

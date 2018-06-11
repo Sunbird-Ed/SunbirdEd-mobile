@@ -163,14 +163,14 @@ export class OnboardingPage {
           that.userProfileService.getUserProfileDetails(req, res => {
             let r = JSON.parse(res);
             setTimeout(() => {
-              this.getToast(this.translateMessage('WELCOME_BACK', r.response.firstName)).present();
+              this.getToast(this.translateMessage('WELCOME_BACK', r.firstName)).present();
             }, 800);
 
             that.generateLoginInteractTelemetry(InteractType.OTHER,
-              InteractSubtype.LOGIN_SUCCESS, r.response.userId);
+              InteractSubtype.LOGIN_SUCCESS, r.userId);
             let profileRequest = {
-              uid: r.response.userId, //req
-              handle: r.response.userId, //TODO check with nikhil
+              uid: r.userId, //req
+              handle: r.userId, //TODO check with nikhil
               avatar: "avatar", //req
               language: "en", //req
               age: -1,
@@ -181,8 +181,8 @@ export class OnboardingPage {
             };
             that.profileService.setCurrentProfile(false, profileRequest,
               (res: any) => {
-                that.orgName = r.response.rootOrg.orgName;
-                resolve(r.response.rootOrg.slug);
+                that.orgName = r.rootOrg.orgName;
+                resolve(r.rootOrg.slug);
               },
               (err: any) => {
                 reject(err);
