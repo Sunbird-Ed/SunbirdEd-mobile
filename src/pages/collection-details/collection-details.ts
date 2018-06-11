@@ -715,7 +715,7 @@ export class CollectionDetailsPage {
     this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_LIBRARY_INITIATED, this.contentDetail.contentType);
     let loader = this.getLoader();
     loader.present();
-    let url = this.baseUrl + "/public/#!/content/" + + this.contentDetail.identifier;
+    let url = this.baseUrl + "/public/#!/content/"+this.contentDetail.identifier;
     if (this.contentDetail.isAvailableLocally) {
       this.shareUtil.exportEcar(this.contentDetail.identifier, path => {
         loader.dismiss();
