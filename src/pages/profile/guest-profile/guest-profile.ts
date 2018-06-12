@@ -184,12 +184,15 @@ export class GuestProfilePage {
 
 
   getFrameworkDetails(frameworkId?: string): void {
+    let loader = this.getLoader();
+    loader.present();
+
     this.formAndFrameworkUtilService.getFrameworkDetails(frameworkId)
       .then(catagories => {
         this.categories = catagories;
 
         if (this.profile.board && this.profile.board.length) {
-          this.boards = this.getFieldDisplayValues(this.profile.board, 0)          
+          this.boards = this.getFieldDisplayValues(this.profile.board, 0)
         }
         if (this.profile.medium && this.profile.medium.length) {
           this.medium = this.getFieldDisplayValues(this.profile.medium, 1);
@@ -200,6 +203,8 @@ export class GuestProfilePage {
         if (this.profile.subject && this.profile.subject.length) {
           this.subjects = this.getFieldDisplayValues(this.profile.subject, 3);
         }
+
+        loader.dismiss();
       });
   }
 

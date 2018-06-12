@@ -98,8 +98,10 @@ export class GuestEditProfilePage {
 
           loader.dismiss();
           if (this.profile && this.profile.syllabus && this.profile.syllabus[0] !== undefined) {
+            loader.present();
             this.formAndFrameworkUtilService.getFrameworkDetails(this.profile.syllabus[0])
               .then(catagories => {
+                loader.dismiss();
                 this.categories = catagories;
 
                 this.resetForm(0);
@@ -107,17 +109,17 @@ export class GuestEditProfilePage {
                   boards: this.profile.board || []
                 });
 
-                this.resetForm(1);
+                // this.resetForm(1);
                 this.guestEditForm.patchValue({
                   medium: this.profile.medium || []
                 });
 
-                this.resetForm(2);
+                // this.resetForm(2);
                 this.guestEditForm.patchValue({
                   grades: this.profile.grade || []
                 });
 
-                this.resetForm(3);
+                // this.resetForm(3);
                 this.guestEditForm.patchValue({
                   subjects: this.profile.subject || []
                 });
@@ -139,9 +141,18 @@ export class GuestEditProfilePage {
    * @param {string} list - Local variable name to hold the list data
    */
   getCategoryData(req: CategoryRequest, list): void {
+    let loader = this.getLoader();
+
+    if (list === 'boardList') {
+      loader.present();
+    }
 
     this.formAndFrameworkUtilService.getCategoryData(req, this.frameworkId).
       then((result) => {
+
+        if (list === 'boardList')
+          loader.dismiss();
+
         this[list] = result;
         if (list != 'gradeList') {
           this[list] = _.orderBy(this[list], ['name'], ['asc']);
@@ -155,10 +166,15 @@ export class GuestEditProfilePage {
     if (index === 0) {
       this[currentField] = this.syllabusList;
     } else if (index === 1) {
-      this.frameworkId =  prevSelectedValue[0];
+      let loader = this.getLoader();
+      loader.present();
+
+      this.frameworkId = prevSelectedValue[0];
       this.formAndFrameworkUtilService.getFrameworkDetails(this.frameworkId)
         .then(catagories => {
           this.categories = catagories;
+
+          loader.dismiss();
 
           let request: CategoryRequest = {
             currentCategory: this.categories[0].code,
