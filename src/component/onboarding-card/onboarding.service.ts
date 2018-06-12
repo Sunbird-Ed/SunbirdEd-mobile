@@ -275,7 +275,8 @@ export class OnboardingService {
         if (index === 0) {
             this[currentField] = this.syllabusList;
         } else if (index === 1) {
-            this.formAndFrameworkUtilService.getFrameworkDetails(prevSelectedValue[0])
+            this.frameworkId = prevSelectedValue[0];
+            this.formAndFrameworkUtilService.getFrameworkDetails(this.frameworkId)
                 .then(catagories => {
                     this.categories = catagories;
 
