@@ -77,6 +77,9 @@ export class ResourcesPage implements OnInit {
 	profile: any;
 	appLabel: string;
 
+
+	private isVisible: boolean = false;
+
 	constructor(public navCtrl: NavController,
 		private pageService: PageAssembleService,
 		private ngZone: NgZone,
@@ -130,9 +133,9 @@ export class ResourcesPage implements OnInit {
 		});
 
 		this.appVersion.getAppName()
-		.then((appName: any) => {
-		  this.appLabel = appName;
-		});
+			.then((appName: any) => {
+				this.appLabel = appName;
+			});
 
 	}
 
@@ -354,6 +357,10 @@ export class ResourcesPage implements OnInit {
 	}
 
 	getMessageByConst(constant) {
+		if (!this.isVisible) {
+			return
+		}
+
 		this.translate.get(constant).subscribe(
 			(value: any) => {
 				this.showMessage(value);
@@ -391,38 +398,39 @@ export class ResourcesPage implements OnInit {
 			this.getPopularContent();
 		}
 
+		this.isVisible = true;
 
 		this.generateImpressionEvent();
 		this.preference.getString('show_app_walkthrough_screen', (value) => {
 			if (value === 'true') {
-			  const driver = new Driver({
-				allowClose: true,
-				closeBtnText: this.translateMessage('DONE'),
-				showButtons: true
-			  });
-	  
-			  console.log("Driver", driver);
-			  setTimeout(() => {
-				driver.highlight({
-				  element: '#qrIcon',
-				  popover: {
-					title: this.translateMessage('ONBOARD_SCAN_QR_CODE'),
-					description: "<img src='assets/imgs/ic_scanqrdemo.png' /><p>" + this.translateMessage('ONBOARD_SCAN_QR_CODE_DESC', this.appLabel) + "</p>",
-					showButtons: true,         // Do not show control buttons in footer
+				const driver = new Driver({
+					allowClose: true,
 					closeBtnText: this.translateMessage('DONE'),
-				  }
+					showButtons: true
 				});
-	  
-				let element = document.getElementById("driver-highlighted-element-stage");
-				var img = document.createElement("img");
-				img.src = "assets/imgs/ic_scan.png";
-				img.id = "qr_scanner";
-				element.appendChild(img);
-			  }, 100);
-	  
-			  this.preference.putString('show_app_walkthrough_screen', 'false');
+
+				console.log("Driver", driver);
+				setTimeout(() => {
+					driver.highlight({
+						element: '#qrIcon',
+						popover: {
+							title: this.translateMessage('ONBOARD_SCAN_QR_CODE'),
+							description: "<img src='assets/imgs/ic_scanqrdemo.png' /><p>" + this.translateMessage('ONBOARD_SCAN_QR_CODE_DESC', this.appLabel) + "</p>",
+							showButtons: true,         // Do not show control buttons in footer
+							closeBtnText: this.translateMessage('DONE'),
+						}
+					});
+
+					let element = document.getElementById("driver-highlighted-element-stage");
+					var img = document.createElement("img");
+					img.src = "assets/imgs/ic_scan.png";
+					img.id = "qr_scanner";
+					element.appendChild(img);
+				}, 100);
+
+				this.preference.putString('show_app_walkthrough_screen', 'false');
 			}
-		  });
+		});
 	}
 
 	ionViewWillEnter() {
@@ -458,6 +466,7 @@ export class ResourcesPage implements OnInit {
 	 * Ionic life cycle hook
 	 */
 	ionViewWillLeave(): void {
+		this.isVisible = false;
 		this.events.unsubscribe('genie.event');
 	}
 	/**
@@ -698,18 +707,18 @@ export class ResourcesPage implements OnInit {
 		});
 	}
 
-  /**
-   * Used to Translate message to current Language
-   * @param {string} messageConst - Message Constant to be translated
-   * @returns {string} translatedMsg - Translated Message
-   */
-  translateMessage(messageConst: string, field?: string): string {
-    let translatedMsg = '';
-    this.translate.get(messageConst, { '%s': field }).subscribe(
-      (value: any) => {
-        translatedMsg = value;
-      }
-    );
-    return translatedMsg;
-  }
+	/**
+	 * Used to Translate message to current Language
+	 * @param {string} messageConst - Message Constant to be translated
+	 * @returns {string} translatedMsg - Translated Message
+	 */
+	translateMessage(messageConst: string, field?: string): string {
+		let translatedMsg = '';
+		this.translate.get(messageConst, { '%s': field }).subscribe(
+			(value: any) => {
+				translatedMsg = value;
+			}
+		);
+		return translatedMsg;
+	}
 }
