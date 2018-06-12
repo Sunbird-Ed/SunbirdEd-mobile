@@ -17,7 +17,7 @@
   <div text-center class="padding-top-10 padding-bottom-10">
     <p class="profile-name">
       {{profile?.handle}}
-      <ion-icon style="margin-left: 5px; size: 2px" name="md-create" color="primary" (click)="editGuestProfile()"></ion-icon>
+      <ion-icon class="editIcon" name="md-create" color="primary" (click)="editGuestProfile()"></ion-icon>
     </p>
 
     <p class="change-role" (click)="goToRoles()">
@@ -75,7 +75,7 @@
           <div class="info-title" text-uppercase>{{'GRADE' | translate}}</div>
         </ion-col>
         <ion-col class="ellipsis font-size-14rem page-content" col-6 text-end>
-          <div *ngIf="profile?.grade && profile?.grade != ''">
+          <div *ngIf="profile?.grade">
             <div class="ellipsis text-align">{{grade}}</div>
             <ion-icon class="icon-align" float="end" name="md-create" color="primary" (click)="editGuestProfile()"></ion-icon>
           </div>
@@ -84,7 +84,7 @@
       </ion-row>
 
       <ion-row>
-        <ion-col col-6>
+         <ion-col col-6>
           <div class="info-title" text-uppercase>{{'SUBJECTS' | translate}}</div>
         </ion-col>
         <ion-col class="ellipsis font-size-14rem page-content" col-6 text-end>

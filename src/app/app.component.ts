@@ -119,7 +119,7 @@ export class MyApp {
               that.userProfileService.getUserProfileDetails(req, res => {
 
                 setTimeout(() => {
-                  that.getToast(this.translateMessage('WELCOME_BACK', JSON.parse(res).response.firstName)).present();
+                  that.getToast(this.translateMessage('WELCOME_BACK', JSON.parse(res).firstName)).present();
                 }, 2500);
               }, (err: any) => {
                 });

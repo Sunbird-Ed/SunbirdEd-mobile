@@ -445,9 +445,9 @@ export class EnrolledCourseDetailsPage {
     }
     this.profileService.getUserProfileDetails(req, (data: any) => {
       data = JSON.parse(data);
-      if (data.response) {
-        this.batchDetails.creatorFirstName = data.response.firstName ? data.response.firstName : '';
-        this.batchDetails.creatorLastName = data.response.lastName ? data.response.lastName : '';
+      if (data) {
+        this.batchDetails.creatorFirstName = data.firstName ? data.firstName : '';
+        this.batchDetails.creatorLastName = data.lastName ? data.lastName : '';
       }
     }, (error: any) => {
 
@@ -787,7 +787,7 @@ export class EnrolledCourseDetailsPage {
     this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_COURSE_INITIATED, this.course.contentType);
     let loader = this.getLoader();
     loader.present();
-    let url = this.baseUrl + "/public/#!/content/" + + this.course.identifier;
+    let url = this.baseUrl + "/public/#!/content/" +this.course.identifier;
     if (this.course.isAvailableLocally) {
       this.shareUtil.exportEcar(this.course.identifier, path => {
         loader.dismiss();

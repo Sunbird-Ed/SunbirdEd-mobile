@@ -78,6 +78,8 @@ export class CoursesPage implements OnInit {
 
   profile: any;
 
+  private isVisible: boolean = false;
+
   private corRelationList: Array<CorrelationData>;
 
   /**
@@ -550,12 +552,18 @@ export class CoursesPage implements OnInit {
       this.getPopularAndLatestCourses();
     }
 
+    this.isVisible = true;
+
     this.telemetryService.impression(generateImpressionTelemetry(
       ImpressionType.VIEW, "",
       PageId.COURSES,
       Environment.HOME, "", "", "",
       undefined, undefined
     ));
+  }
+
+  ionViewWillLeave(): void {
+    this.isVisible = false;
   }
 
 
@@ -637,6 +645,10 @@ export class CoursesPage implements OnInit {
   }
 
   getMessageByConst(constant) {
+    if (!this.isVisible) {
+      return
+    }
+
     this.translate.get(constant).subscribe(
       (value: any) => {
         this.showMessage(value);

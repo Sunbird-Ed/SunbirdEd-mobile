@@ -199,9 +199,9 @@ export class ProfilePage {
               that.zone.run(() => {
                 that.resetProfile();
                 let r = JSON.parse(res);
-                that.profile = r.response;
-                if (r.response && r.response.avatar)
-                  that.imageUri = r.response.avatar;
+                that.profile = r;
+                if (r && r.avatar)
+                  that.imageUri = r.avatar;
                 that.searchContent();
                 that.formatLastLoginTime();
                 that.formatProfileProgress();

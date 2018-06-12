@@ -34,6 +34,21 @@ allprojects {
             dirs 'libs'
         }
     }
+
+    // task verifyAppId {
+    //     doFirst {
+    //         println("Application Id : ${app_id}")
+
+    //         if (app_id.isEmpty()) {
+    //             throw new GradleException("'app_id' is Emptry")
+    //         }
+
+    //         if (app_id.equalsIgnoreCase("org.sunbird.app")) {
+    //             throw new GradleException("Don't use app_id as 'org.sunbird.app'")
+    //         }
+    //     }
+    // }
+    // verifyAppId.execute()
 }
 
 repositories {
@@ -201,8 +216,8 @@ android {
 
 dependencies {
      compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile "org.ekstep.genieservices:genie-providers:1.0.677"
-    compile "org.ekstep.genieservices:genie-integration:1.0.677"
+    compile "org.ekstep.genieservices:genie-providers:1.0.679"
+    compile "org.ekstep.genieservices:genie-integration:1.0.679"
     compile('com.crashlytics.sdk.android:crashlytics:2.9.3@aar') {
           transitive = true;
     }
