@@ -26,14 +26,18 @@
     <br/>
   </div>
   <div class="my-overlay" padding *ngIf="isGuestUser">
-    <div class="guest-user-info" text-center>
+    <!--<div class="guest-user-info" text-center>
       <p> {{ 'OVERLAY_LABEL_TAKE_COURSE' | translate }} </p>
       <br/>
       <span>{{ 'OVERLAY_INFO_TEXT_TAKE_COURSE' | translate }} </span>
       <br/>
       <br/>
       <button ion-button block (click)="signIn()">{{ 'OVERLAY_SIGN_IN' | translate }}</button>
+    </div>-->
+    <div class="guest-user-info" text-center>
+      <sign-in-card (valueChange)="buttonClick($event)" [title]="'OVERLAY_LABEL_TAKE_COURSE'" [description]="'OVERLAY_INFO_TEXT_TAKE_COURSE'"></sign-in-card>
     </div>
+
   </div>
   <div class="batch-list" padding-top *ngIf="!isGuestUser">
     <div [hidden]="selectedFilter === filterList.UPCOMING">

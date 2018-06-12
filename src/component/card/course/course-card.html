@@ -2,7 +2,7 @@
   <ion-grid no-padding>
     <ion-row class="top-container" no-padding>
       <ion-col col-12>
-        <pb-horizontal *ngIf="course.progress" [progress]="course.progress" class="course-progress"></pb-horizontal>
+        <pb-horizontal *ngIf="course.cProgress" [progress]="course.cProgress" class="course-progress"></pb-horizontal>
         <div class="img-container">
         </div>
         <ion-badge class="badge" *ngIf="onProfile" color="light" item-end>{{course?.contentType}}</ion-badge>
@@ -33,7 +33,7 @@
           <ion-label class="size_txt" no-margin *ngIf="course?.contentType">{{ course?.contentType }}</ion-label>
       </ion-col>
       <ion-col col-8 *ngIf="layoutName === 'Inprogress'" style="padding-top: 8px;">
-        {{ 'COURSE_PROGRESS_COMPLETED' | translate: {'%s': course.progress? course.progress : 0} }}
+        {{ 'COURSE_PROGRESS_COMPLETED' | translate: {'%s': course.cProgress? course.cProgress : 0} }}
       </ion-col>
       <ion-col col-4>
         <button ion-button outline small float-end>

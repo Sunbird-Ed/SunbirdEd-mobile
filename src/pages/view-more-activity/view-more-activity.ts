@@ -219,7 +219,7 @@ export class ViewMoreActivityPage implements OnInit {
 	ionViewWillEnter(): void {
 		this.tabBarElement.style.display = 'none';
 		this.searchQuery = this.navParams.get('requestParams');
-		console.log('queryParams received =>>>>', this.searchQuery);
+		console.log('queryParams received:', this.searchQuery);
 		if (this.headerTitle !== this.navParams.get('headerTitle')) {
 			this.headerTitle = this.navParams.get('headerTitle');
 			this.offset = 0;

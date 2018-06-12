@@ -671,7 +671,8 @@ export class ContentDetailsPage {
         batchId: stateData.batchId,
         contentId: this.identifier,
         userId: this.userId,
-        status: 2
+        status: 2,
+        progress: 100
       };
 
       this.courseService.updateContentState(data, (data: any) => {
@@ -726,7 +727,7 @@ export class ContentDetailsPage {
     this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_LIBRARY_INITIATED, this.content.contentType);
     let loader = this.getLoader();
     loader.present();
-    let url = this.baseUrl + "/public/#!/content/" + + this.content.identifier;
+    let url = this.baseUrl + "/public/#!/content/" +this.content.identifier;
     if (this.content.downloadable) {
       this.shareUtil.exportEcar(this.content.identifier, path => {
         loader.dismiss();

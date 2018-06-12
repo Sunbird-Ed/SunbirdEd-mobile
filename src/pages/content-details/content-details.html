@@ -15,7 +15,7 @@
 	</ion-navbar>
 </ion-header>
 <!-- Page body -->
-<ion-content padding overflow-scroll="true">
+<ion-content padding [ngClass]="{'content-with-footer': content}">
 	<div class="content-details-holder" *ngIf="content">
 		<h6 class="font-size-20">{{content.name}}</h6>
 		<!-- Owner and download info -->
@@ -116,6 +116,7 @@
 				</span>
 			</span>
 		</div>
+		<div padding-top></div>
 	</div>
 </ion-content>
 <!-- Page footer -->

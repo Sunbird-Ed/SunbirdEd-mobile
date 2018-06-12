@@ -3,11 +3,12 @@ import { ContentDetailsPage } from './../../pages/content-details/content-detail
 // import { CourseDetailPage } from './../../pages/course-detail/course-detail';
 import { EnrolledCourseDetailsPage } from './../../pages/enrolled-course-details/enrolled-course-details';
 
-import { Input, NgZone } from '@angular/core';
+import { Input, NgZone, OnInit } from '@angular/core';
 import { Component } from '@angular/core';
 import { ImageLoader } from "ionic-image-loader";
 import { NavController, NavParams } from 'ionic-angular';
 import { ContentType, MimeType } from '../../app/app.constant';
+import { CourseUtilService } from '../../service/course-util.service';
 
 /**
  * Generated class for the ViewMoreActivityListComponent component.
@@ -19,7 +20,7 @@ import { ContentType, MimeType } from '../../app/app.constant';
   selector: 'view-more-activity-list',
   templateUrl: 'view-more-activity-list.html'
 })
-export class ViewMoreActivityListComponent {
+export class ViewMoreActivityListComponent implements OnInit {
 
   /**
    * Contains content details
@@ -44,7 +45,7 @@ export class ViewMoreActivityListComponent {
    * @param {NavParams} navParams ref of navigation params
    * @param {NgZone} ngZone To bind data
    */
-  constructor(private navCtrl: NavController, private navParams: NavParams, private zone: NgZone) {
+  constructor(private navCtrl: NavController, private navParams: NavParams, private zone: NgZone, private courseUtilService: CourseUtilService) {
     console.log('View more activity Component');
     this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
@@ -52,7 +53,6 @@ export class ViewMoreActivityListComponent {
   navigateToDetailsPage(content: any) {
     console.log('View more ard details... @@@', content);
     this.zone.run(() => {
-
       if (content.batchId || content.contentType === ContentType.COURSE) {
         console.log('Inside course details');
         this.navCtrl.push(EnrolledCourseDetailsPage, {
@@ -76,4 +76,9 @@ export class ViewMoreActivityListComponent {
     console.log("Image Loader " + imgLoader.nativeAvailable);
   }
 
+  ngOnInit() {
+    if (this.type === 'enrolledCourse') {
+      this.content.cProgress = this.courseUtilService.getCourseProgress(this.content.leafNodesCount, this.content.progress);
+    }
+  }
 }

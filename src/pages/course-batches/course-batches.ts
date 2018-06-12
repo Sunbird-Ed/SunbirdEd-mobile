@@ -2,7 +2,7 @@ import { Component, NgZone, OnInit } from '@angular/core';
 import { CourseService, AuthService } from 'sunbird';
 import { IonicPage, NavController, NavParams, ToastController, Events } from 'ionic-angular';
 import * as _ from 'lodash';
-import { ProfileConstants } from '../../app/app.constant';
+import { ProfileConstants, EventTopics } from '../../app/app.constant';
 import { TranslateService } from '@ngx-translate/core';
 
 /**
@@ -54,10 +54,10 @@ export class CourseBatchesPage implements OnInit {
    */
   isGuestUser: boolean = false;
 
-   filterList: any =  {
-     'ONGOING' : 'VIEW_ONGOING_BATCHES',
-     'UPCOMING' : 'VIEW_UPCOMING_BATCHES'
-   };
+  filterList: any = {
+    'ONGOING': 'VIEW_ONGOING_BATCHES',
+    'UPCOMING': 'VIEW_UPCOMING_BATCHES'
+  };
 
   /**
    * Contains batches list
@@ -116,7 +116,6 @@ export class CourseBatchesPage implements OnInit {
     this.zone = zone;
     this.authService = authService;
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
-    this.selectedFilter = 'View ongoing batches';
     this.toastCtrl = toastCtrl;
 
     this.filterList.ONGOING = this.translateLanguageConstant('VIEW_ONGOING_BATCHES');
@@ -141,7 +140,7 @@ export class CourseBatchesPage implements OnInit {
       this.zone.run(() => {
         console.log('You have successfully enrolled...');
         this.showMessage(this.translateLanguageConstant('COURSE_ENROLLED'));
-        this.events.publish('course:batchEnrolled', {
+        this.events.publish(EventTopics.ENROL_COURSE_SUCCESS, {
           batchId: item.id
         });
         this.navCtrl.pop();
@@ -149,6 +148,13 @@ export class CourseBatchesPage implements OnInit {
     },
       (error: any) => {
         console.log('error while enrolling into batch ==>', error);
+        this.zone.run(() => {
+          if (error === 'CONNECTION_ERROR') {
+            this.showMessage(this.translateLanguageConstant('ERROR_NO_INTERNET_MESSAGE'));
+          } else {
+            // TODO: Ask anil to add batch enrollement failed locale
+          }
+        });
       });
   }
 
@@ -207,10 +213,6 @@ export class CourseBatchesPage implements OnInit {
     });
   }
 
-  toggleDetails(data) {
-    this.selectedFilter = data.title;
-  }
-
   ionViewWillEnter(): void {
     this.tabBarElement.style.display = 'none';
   }
@@ -225,11 +227,6 @@ export class CourseBatchesPage implements OnInit {
     });
 
     toast.present();
-  }
-
-  signIn() {
-    let message = 'Sign in functionality is under progress'
-    this.showMessage(message)
   }
 
   ngOnInit(): void {

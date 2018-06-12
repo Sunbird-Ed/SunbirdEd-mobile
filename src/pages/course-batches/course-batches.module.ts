@@ -4,7 +4,6 @@ import { IonicPageModule } from 'ionic-angular';
 import { CourseBatchesPage } from './course-batches';
 import { TranslateModule } from '@ngx-translate/core';
 
-
 @NgModule({
   declarations: [
     CourseBatchesPage,

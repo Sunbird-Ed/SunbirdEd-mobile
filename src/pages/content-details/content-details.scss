@@ -72,7 +72,12 @@ page-content-details {
     button {
         border-radius: 4px !important;
     }
-
+    .content-with-footer {
+        height: 90% !important;
+    }
+    .scroll-content { 
+        margin-bottom: 0px !important;
+    }
     .text-gray-color {
         color: gray;
         font-family: 'OpenSans/Regular';

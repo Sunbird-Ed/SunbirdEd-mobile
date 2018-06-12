@@ -1,15 +1,15 @@
 buildscript {
-  repositories {
+    repositories {
         maven {
             url 'https://maven.fabric.io/public'
-  }
+        }
         maven { url 'https://maven.google.com' }
         jcenter()
         mavenCentral()
     }
-  dependencies {
+    dependencies {
         classpath 'io.fabric.tools:gradle:1.25.1'
-  }
+    }
 }
 
 repositories {
@@ -22,10 +22,11 @@ apply plugin: com.crashlytics.tools.gradle.CrashlyticsPlugin
 
 allprojects {
     repositories {
-        jcenter()
         maven {
             url "https://maven.google.com"
         }
+        jcenter()
+      
         maven {
             url "https://platform.ekstep.in/downloads/content/repositories/releases"
         }
@@ -33,8 +34,22 @@ allprojects {
             dirs 'libs'
         }
     }
-}
 
+    // task verifyAppId {
+    //     doFirst {
+    //         println("Application Id : ${app_id}")
+
+    //         if (app_id.isEmpty()) {
+    //             throw new GradleException("'app_id' is Emptry")
+    //         }
+
+    //         if (app_id.equalsIgnoreCase("org.sunbird.app")) {
+    //             throw new GradleException("Don't use app_id as 'org.sunbird.app'")
+    //         }
+    //     }
+    // }
+    // verifyAppId.execute()
+}
 
 repositories {
   maven { url 'https://maven.fabric.io/public' }
@@ -82,7 +97,6 @@ android {
     flavorDimensions "default"
 
     productFlavors {
-
          dev {
              resValue("string", "deeplink_base_url", "${dev_deeplink_base_url}")
              buildConfigField 'String', 'BASE_URL', "\"${dev_base_url}\""
@@ -179,7 +193,6 @@ android {
             buildConfigField 'String', 'OAUTH_SESSION', '"org.genie.KeycloakOAuthSessionService"'
             flavorDimensions "default"
         }
-
     }
 
     applicationVariants.all { variant ->
@@ -199,14 +212,13 @@ android {
             output.outputFileName = new File(output.outputFile.parent, "${app_name}-".toLowerCase() + versionName + ".apk")
         }
     }
-
 }
 
 dependencies {
      compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile "org.ekstep.genieservices:genie-providers:1.0.676"
-    compile "org.ekstep.genieservices:genie-integration:1.0.676"
-    compile('com.crashlytics.sdk.android:crashlytics:2.9.2@aar') {
+    compile "org.ekstep.genieservices:genie-providers:1.0.679"
+    compile "org.ekstep.genieservices:genie-integration:1.0.679"
+    compile('com.crashlytics.sdk.android:crashlytics:2.9.3@aar') {
           transitive = true;
     }
 

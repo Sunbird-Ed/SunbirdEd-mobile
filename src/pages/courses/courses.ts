@@ -17,7 +17,7 @@ import * as _ from 'lodash';
 import { TranslateService } from '@ngx-translate/core';
 import { Network } from '@ionic-native/network';
 import { generateImpressionTelemetry } from '../../app/telemetryutil';
-import { ContentType, MimeType, PageFilterConstants, ProfileConstants } from '../../app/app.constant';
+import { ContentType, MimeType, PageFilterConstants, ProfileConstants, EventTopics } from '../../app/app.constant';
 import { PageFilterCallback, PageFilter } from '../page-filter/page.filter';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 import { AppGlobalService } from '../../service/app-global.service';
@@ -76,6 +76,8 @@ export class CoursesPage implements OnInit {
 
   profile: any;
 
+  private isVisible: boolean = false;
+
   private corRelationList: Array<CorrelationData>;
   /**
    * Default method of class CoursesPage
@@ -123,8 +125,8 @@ export class CoursesPage implements OnInit {
       this.onBoardingProgress = progress.cardProgress;
     });
 
-    this.events.subscribe('savedResources:update', (res) => {
-      if (res && res.update) {
+    this.events.subscribe(EventTopics.ENROL_COURSE_SUCCESS, (res) => {
+      if (res && res.batchId) {
         this.getEnrolledCourses();
       }
     });
@@ -204,7 +206,7 @@ export class CoursesPage implements OnInit {
 
   viewMoreEnrolledCourses() {
     this.navCtrl.push(ViewMoreActivityPage, {
-      headerTitle: 'Courses In Progress',
+      headerTitle: 'COURSES_IN_PROGRESS',
       userId: this.userId,
       pageName: 'course.EnrolledCourses'
     })
@@ -229,7 +231,7 @@ export class CoursesPage implements OnInit {
 
     let option = {
       userId: this.userId,
-      refreshEnrolledCourses: false
+      refreshEnrolledCourses: true
     };
 
     this.courseService.getEnrolledCourses(option, (data: any) => {
@@ -262,7 +264,7 @@ export class CoursesPage implements OnInit {
 
       if (this.appliedFilter) {
         let filterApplied = false;
-        
+
         Object.keys(this.appliedFilter).forEach(key => {
           if (this.appliedFilter[key].length > 0) {
             filterApplied = true;
@@ -273,7 +275,7 @@ export class CoursesPage implements OnInit {
           criteria.mode = "hard";
         }
 
-        criteria.filters = this.appliedFilter;        
+        criteria.filters = this.appliedFilter;
       }
 
       pageAssembleCriteria = criteria;
@@ -329,14 +331,14 @@ export class CoursesPage implements OnInit {
       });
     }, (error: string) => {
       console.log('Page assmble error', error);
-			this.ngZone.run(() => {
-				this.pageApiLoader = false;
-				if (error === 'CONNECTION_ERROR') {
-					this.isNetworkAvailable = false;
-				} else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
-					this.getMessageByConst('ERROR_FETCHING_DATA');
-				}
-			});
+      this.ngZone.run(() => {
+        this.pageApiLoader = false;
+        if (error === 'CONNECTION_ERROR') {
+          this.isNetworkAvailable = false;
+        } else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
+          this.getMessageByConst('ERROR_FETCHING_DATA');
+        }
+      });
     });
   }
 
@@ -528,12 +530,18 @@ export class CoursesPage implements OnInit {
       this.getPopularAndLatestCourses();
     }
 
+    this.isVisible = true;
+
     this.telemetryService.impression(generateImpressionTelemetry(
       ImpressionType.VIEW, "",
       PageId.COURSES,
       Environment.HOME, "", "", "",
       undefined, undefined
     ));
+  }
+
+  ionViewWillLeave(): void {
+    this.isVisible = false;
   }
 
 
@@ -600,21 +608,25 @@ export class CoursesPage implements OnInit {
    * 
    */
   checkEmptySearchResult(isAfterLanguageChange = false) {
-		let flags = [];
-		_.forEach(this.popularAndLatestCourses, function (value, key) {
-			if (value.contents && value.contents.length) {
-				flags[key] = true;
-			}
-		});
+    let flags = [];
+    _.forEach(this.popularAndLatestCourses, function (value, key) {
+      if (value.contents && value.contents.length) {
+        flags[key] = true;
+      }
+    });
 
-		if (flags.length && _.includes(flags, true)) {
-			console.log('search result found');
-		} else {
-			if (!isAfterLanguageChange) this.getMessageByConst('NO_CONTENTS_FOUND');
-		}
+    if (flags.length && _.includes(flags, true)) {
+      console.log('search result found');
+    } else {
+      if (!isAfterLanguageChange) this.getMessageByConst('NO_CONTENTS_FOUND');
+    }
   }
-  
+
   getMessageByConst(constant) {
+    if (!this.isVisible) {
+      return
+    }
+
     this.translate.get(constant).subscribe(
       (value: any) => {
         this.showMessage(value);

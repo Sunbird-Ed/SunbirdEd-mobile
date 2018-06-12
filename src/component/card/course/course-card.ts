@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
 import { NavController } from 'ionic-angular';
 import { ImageLoader } from "ionic-image-loader";
 import { EnrolledCourseDetailsPage } from "../../../pages/enrolled-course-details/enrolled-course-details";
@@ -6,6 +6,7 @@ import { EnrolledCourseDetailsPage } from "../../../pages/enrolled-course-detail
 import { CollectionDetailsPage } from '../../../pages/collection-details/collection-details';
 import { ContentDetailsPage } from '../../../pages/content-details/content-details';
 import { ContentType, MimeType } from "../../../app/app.constant";
+import { CourseUtilService } from "../../../service/course-util.service";
 
 
 /**
@@ -15,7 +16,7 @@ import { ContentType, MimeType } from "../../../app/app.constant";
   selector: 'course-card',
   templateUrl: 'course-card.html'
 })
-export class CourseCard {
+export class CourseCard implements OnInit {
 
   /**
    * Contains course details
@@ -45,7 +46,7 @@ export class CourseCard {
    * 
    * @param navCtrl To navigate user from one page to another
    */
-  constructor(public navCtrl: NavController) {
+  constructor(public navCtrl: NavController, private courseUtilService: CourseUtilService) {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
 
@@ -81,7 +82,9 @@ export class CourseCard {
     }
   }
 
-  onImageLoad(imgLoader: ImageLoader) {
-    console.log("Image Loader " + imgLoader.nativeAvailable);
+  ngOnInit() {
+    if (this.layoutName === 'Inprogress') {
+      this.course.cProgress = this.courseUtilService.getCourseProgress(this.course.leafNodesCount, this.course.progress);
+    }
   }
 }

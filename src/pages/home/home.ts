@@ -40,7 +40,7 @@ import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-c
   providers: [TelemetryService, AnnouncementService]
 
 })
-export class HomePage  {
+export class HomePage {
 
   /**
    * Contains enrolled course
@@ -303,7 +303,7 @@ export class HomePage  {
       (res: any) => {
         this.ngZone.run(() => {
           let r = JSON.parse(res);
-          this.profile = r.response;
+          this.profile = r;
           this.incompleteProfileData = new IncompleteProfileData();
           this.formatProfileProgress();
           this.formatMissingFields();
