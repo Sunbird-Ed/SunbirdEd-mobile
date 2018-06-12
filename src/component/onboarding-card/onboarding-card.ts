@@ -68,8 +68,6 @@ export class OnboardingCardComponent {
   }
 
   reinitializeCards() {
-    //this.mSlides.slideTo(0, 500);
-    //this.onboardingService.currentIndex = 0;
     this.onboardingService.initializeCard()
       .then(index => {
         console.log("reinitializeCards -  index = " + index);
@@ -122,9 +120,6 @@ export class OnboardingCardComponent {
 
         });
     }
-    /* if (this.onboardingService.isOnBoardingCardCompleted) {
-      this.onboardingService.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: true });
-    } */
   }
 
   /**
@@ -170,26 +165,6 @@ export class OnboardingCardComponent {
         this.onboardingService.onBoardingSlides[index].selectedCode.push(options.value);
       }
     });
-
-    /* if(index === 0) {
-      let boardDisplayValues = [];
-      this.onboardingService.onBoardingSlides[index].options.forEach(element => {
-        if(_.includes(this.onboardingService.onBoardingSlides[index].selectedCode, element.value)) {
-          boardDisplayValues.push(element.text);
-        }
-      });
-      this.onboardingService.onBoardingSlides[index].selectedOptions = boardDisplayValues;
-    } else if(index === 1) {
-      let gradeDisplayValues = [];
-      this.onboardingService.onBoardingSlides[index].options.forEach(element => {
-        if(_.includes(this.onboardingService.onBoardingSlides[index].selectedCode, element.value)) {
-          gradeDisplayValues.push(element.text);
-        }
-      });
-      this.onboardingService.onBoardingSlides[index].selectedOptions = gradeDisplayValues;
-    } else {
-      this.onboardingService.onBoardingSlides[index].selectedOptions = this.onboardingService.onBoardingSlides[index].selectedCode.join(", ");
-    } */
 
     let displayValues = [];
     this.onboardingService.onBoardingSlides[index].options.forEach(element => {

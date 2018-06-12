@@ -11,6 +11,7 @@ import {
     FormRequest,
     FormService
 } from 'sunbird';
+import { FormAndFrameworkUtilService } from '../../pages/profile/formandframeworkutil.service';
 
 @Injectable()
 export class OnboardingService {
@@ -34,7 +35,8 @@ export class OnboardingService {
         public events: Events,
         public zone: NgZone,
         private preference: SharedPreferences,
-        private formService: FormService
+        private formService: FormService,
+        private formAndFrameworkUtilService: FormAndFrameworkUtilService
     ) {
 
         //fetch language code
@@ -57,18 +59,18 @@ export class OnboardingService {
                     syllabusFramework = profile.syllabus[0];
                 }
 
-                this.getFrameworkDetails(syllabusFramework)
-                .then(catagories => {
-                    this.categories = catagories;
-                    this.initializeSlides();
-                    return this.getCurrentUser();
-                })
-                .then(index => {
-                    resolve(index);
-                })
-                .catch(err => {
-                    reject(err);
-                });
+                this.formAndFrameworkUtilService.getFrameworkDetails(syllabusFramework)
+                    .then(catagories => {
+                        this.categories = catagories;
+                        this.initializeSlides();
+                        return this.getCurrentUser();
+                    })
+                    .then(index => {
+                        resolve(index);
+                    })
+                    .catch(err => {
+                        reject(err);
+                    });
             },
                 (err: any) => {
                     console.log("Err1", err);
@@ -140,7 +142,6 @@ export class OnboardingService {
                 this.profile = JSON.parse(res);
                 this.currentIndex = 0;
                 if (this.profile.syllabus && this.profile.syllabus[0] !== '') {
-                    //this.onBoardingSlides[0].selectedOptions = this.getDisplayValues(0, this.profile.syllabus);
                     let displayValues = [];
 
                     this.syllabusList.forEach(element => {
@@ -151,7 +152,6 @@ export class OnboardingService {
                     });
                     this.onBoardingSlides[0].selectedOptions = this.arrayToString(displayValues);
 
-                    // this.onBoardingSlides[0].selectedOptions = this.profile.syllabus[0];
                     this.currentIndex = 20;
                     index = 1;
                 }
@@ -162,19 +162,16 @@ export class OnboardingService {
                     index = 2;
                 }
                 if (this.profile.medium && this.profile.medium[0] !== '') {
-                    //this.onBoardingSlides[3].selectedOptions = this.profile.medium;
                     this.onBoardingSlides[2].selectedOptions = this.getDisplayValues(1, this.profile.medium);
                     this.currentIndex = 60;
                     index = 3;
                 }
                 if (this.profile.grade && this.profile.grade[0] !== '') {
-                    //this.onBoardingSlides[1].selectedOptions = this.profile.grade;
                     this.onBoardingSlides[3].selectedOptions = this.getDisplayValues(2, this.profile.grade);
                     this.currentIndex = 80;
                     index = 4;
                 }
                 if (this.profile.subject && this.profile.subject[0] !== '') {
-                    //this.onBoardingSlides[2].selectedOptions = this.profile.subject;
                     this.onBoardingSlides[4].selectedOptions = this.getDisplayValues(3, this.profile.subject);
                     this.currentIndex = 100;
                     index = 5;
@@ -200,33 +197,6 @@ export class OnboardingService {
     }
 
     /**
-     * It fetches all the categories using Framework API
-     */
-    getFrameworkDetails(frameworkId?: string): Promise<any> {
-
-        return new Promise((resolve, reject) => {
-            let req: FrameworkDetailsRequest = {
-                defaultFrameworkDetails: true
-            };
-
-            if (frameworkId !== undefined && frameworkId.length) {
-                req.defaultFrameworkDetails = false;
-                req.frameworkId = frameworkId;
-                this.frameworkId = frameworkId;
-            }
-
-            this.framework.getFrameworkDetails(req,
-                (res: any) => {
-                    let categories = JSON.parse(JSON.parse(res).result.framework).categories;
-                    resolve(categories);
-                },
-                (err: any) => {
-                    reject(err);
-                });
-        });
-    }
-
-    /**
      * This will internally call framework API to get latest list of item, wont call API if list is already present locally
      * @param {string} currentCategory - request Parameter passing to the framework API
      * @param {string} list - Local variable name to hold the list data
@@ -237,14 +207,12 @@ export class OnboardingService {
             req.frameworkId = this.frameworkId;
         }
 
-        //if (!this[list].length) {
-        this.framework.getCategoryData(req,
-            (res: any) => {
-                // { text: 'Lang1', value: 'Lang1', checked: true }
-                const resposneArray = JSON.parse(res);
+        this.formAndFrameworkUtilService.getCategoryData(req, this.frameworkId)
+        .then((result) => {
+            if(result && result !== undefined && result.length > 0){
                 this[list] = [];
                 let value = {};
-                resposneArray.forEach(element => {
+                result.forEach(element => {
                     if (list === "boardList" && this.profile.board && this.profile.board.length && this.profile.board.indexOf(element.code) > -1) {
                         this.onBoardingSlides[1].selectedCode.push(element.code);
                         value = { 'text': element.name, 'value': element.code, 'checked': true };
@@ -269,11 +237,9 @@ export class OnboardingService {
 
                 this.getListArray(list);
                 console.log(list + " Category Response: " + this[list]);
-            },
-            (err: any) => {
-                console.log("Subject Category Response: ", err);
-            });
-        //}
+            }
+        })
+
     }
 
     getSyllabusDetails() {
@@ -281,38 +247,20 @@ export class OnboardingService {
             //clear all the syllbusList
             this.syllabusList = [];
 
-            let req: FormRequest = {
-                type: 'user',
-                subType: 'instructor',
-                action: 'onboarding',
-            };
-
-            this.formService.getForm(req,
-                (res: any) => {
-                    let response: any = JSON.parse(res);
-                    console.log("Form Result - " + response.result);
-                    let frameworks: Array<any> = [];
-                    let fields: Array<any> = response.result.fields;
-
-                    fields.forEach(field => {
-                        if (field.language === this.selectedLanguage) {
-                            frameworks = field.range;
-                        }
-                    });
-
-                    if (frameworks != null && frameworks.length > 0) {
-                        frameworks.forEach(frameworkDetails => {
-                            let value = { 'text': frameworkDetails.name, 'value': frameworkDetails.frameworkId, 'checked': false };
+            this.formAndFrameworkUtilService.getSyllabusList()
+                .then((result) => {
+                    if (result && result !== undefined && result.length > 0) {
+                        result.forEach(element => {
+                            //renaming the fields to text, value and checked
+                            let value = { 'text': element.name, 'value': element.frameworkId, 'checked': false };
                             this.syllabusList.push(value);
                         });
-                    }
 
-                    resolve(fields);
-                },
-                (error: any) => {
-                    console.log("Error - " + error);
-                    reject(false);
-                })
+                        resolve(this.syllabusList);
+                    } else {
+                        reject(result);
+                    }
+                });
         });
     }
 
@@ -327,17 +275,15 @@ export class OnboardingService {
         if (index === 0) {
             this[currentField] = this.syllabusList;
         } else if (index === 1) {
-            this.getFrameworkDetails(prevSelectedValue[0])
+            this.formAndFrameworkUtilService.getFrameworkDetails(prevSelectedValue[0])
                 .then(catagories => {
                     this.categories = catagories;
-                });
 
-            let request: CategoryRequest = {
-                currentCategory: this.categories[0].code,
-                // prevCategory: ,
-                // selectedCode: prevSelectedValue
-            }
-            this.getCategoryData(request, currentField);
+                    let request: CategoryRequest = {
+                        currentCategory: this.categories[0].code,
+                    }
+                    this.getCategoryData(request, currentField);
+                });
         } else {
             let request: CategoryRequest = {
                 currentCategory: this.categories[index - 1].code,
@@ -347,21 +293,6 @@ export class OnboardingService {
             this.getCategoryData(request, currentField);
         }
 
-        // if (index != 0) {
-        //     let request: CategoryRequest = {
-        //         currentCategory: this.categories[index].code,
-        //         prevCategory: this.categories[index - 1].code,
-        //         selectedCode: prevSelectedValue
-        //     }
-        //     this.getCategoryData(request, currentField);
-        // } else {
-        //     // let request: CategoryRequest = {
-        //     //     currentCategory: this.categories[index].code
-        //     // }
-        //     // this.getCategoryData(request, currentField);
-        //     this[currentField] = this.syllabusList;
-
-        // }
     }
 
     /**
@@ -446,7 +377,6 @@ export class OnboardingService {
                     this.isOnBoardingCardCompleted = false;
                     this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
                 }
-                //this.currentIndex = index + 1;
                 this.events.publish('refresh:profile');
 
                 this.getCurrentUser();

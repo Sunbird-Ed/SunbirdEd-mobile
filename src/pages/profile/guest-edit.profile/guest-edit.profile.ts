@@ -8,6 +8,7 @@ import * as _ from 'lodash';
 import { FrameworkDetailsRequest, CategoryRequest, FrameworkService, ProfileService, Profile, FormService, SharedPreferences } from 'sunbird';
 import { FormRequest } from 'sunbird/services/form/bean';
 import { resolve } from 'path';
+import { FormAndFrameworkUtilService } from '../formandframeworkutil.service';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -53,7 +54,8 @@ export class GuestEditProfilePage {
     private translate: TranslateService,
     private events: Events,
     private formService: FormService,
-    private preference: SharedPreferences
+    private preference: SharedPreferences,
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService
   ) {
     this.profile = this.navParams.get('profile');
 
@@ -85,123 +87,106 @@ export class GuestEditProfilePage {
     let loader = this.getLoader();
     loader.present();
 
-    let req: FormRequest = {
-      type: 'user',
-      subType: 'instructor',
-      action: 'onboarding',
-    };
-
-    this.formService.getForm(req,
-      (res: any) => {
-        let response: any = JSON.parse(res);
-        console.log("Form Result - " + response.result);
-        let fields: Array<any> = response.result.fields;
-        let frameworkId: string = '';
-
-        if (fields !== undefined && fields.length > 0) {
-          fields.forEach(field => {
-            if (field.language === this.selectedLanguage) {
-              this.frameworks = field.range;
-            }
+    this.formAndFrameworkUtilService.getSyllabusList()
+      .then((result) => {
+        if (result && result !== undefined && result.length > 0) {
+          result.forEach(element => {
+            //renaming the fields to text, value and checked
+            let value = { 'name': element.name, 'code': element.frameworkId };
+            this.syllabusList.push(value);
           });
-
-          if (this.frameworks != null && this.frameworks.length > 0) {
-            this.frameworks.forEach(frameworkDetails => {
-              let value = { 'name': frameworkDetails.name, 'code': frameworkDetails.frameworkId };
-              this.syllabusList.push(value);
-            });
-          }
 
           loader.dismiss();
           if (this.profile && this.profile.syllabus && this.profile.syllabus[0] !== undefined) {
-            this.getFrameworkDetails(this.profile.syllabus[0])
+            this.formAndFrameworkUtilService.getFrameworkDetails(this.profile.syllabus[0])
               .then(catagories => {
                 this.categories = catagories;
 
-                // this.checkPrevValue(0, 'syllabusList');
-
-                this.resetForm(0);
-                this.guestEditForm.patchValue({
-                  boards: this.profile.board || []
-                });
-
-                this.resetForm(1);
-                this.guestEditForm.patchValue({
-                  medium: this.profile.medium || []
-                });
-
-                this.resetForm(2);
-                this.guestEditForm.patchValue({
-                  grades: this.profile.grade || []
-                });
-
-                this.resetForm(3);
-                this.guestEditForm.patchValue({
-                  subjects: this.profile.subject || []
-                });
-
               });
           }
-
         } else {
           loader.dismiss();
 
           this.getToast(this.translateMessage('NO_DATA_FOUND')).present();
         }
-      },
-      (error: any) => {
-        loader.dismiss();
-        console.log("Error - " + error);
-        this.getToast(this.translateMessage('NO_DATA_FOUND')).present();
-      })
+      });
+
+    // this.formService.getForm(req,
+    //   (res: any) => {
+    //     let response: any = JSON.parse(res);
+    //     console.log("Form Result - " + response.result);
+    //     let fields: Array<any> = response.result.fields;
+    //     let frameworkId: string = '';
+
+    //     if (fields !== undefined && fields.length > 0) {
+    //       fields.forEach(field => {
+    //         if (field.language === this.selectedLanguage) {
+    //           this.frameworks = field.range;
+    //         }
+    //       });
+
+    //       if (this.frameworks != null && this.frameworks.length > 0) {
+    //         this.frameworks.forEach(frameworkDetails => {
+    //           let value = { 'name': frameworkDetails.name, 'code': frameworkDetails.frameworkId };
+    //           this.syllabusList.push(value);
+    //         });
+    //       }
+
+    //       loader.dismiss();
+    //       if (this.profile && this.profile.syllabus && this.profile.syllabus[0] !== undefined) {
+    //         this.getFrameworkDetails(this.profile.syllabus[0])
+    //           .then(catagories => {
+    //             this.categories = catagories;
+
+    //           });
+    //       }
+
+    //     } else {
+    //       loader.dismiss();
+
+    //       this.getToast(this.translateMessage('NO_DATA_FOUND')).present();
+    //     }
+    //   },
+    //   (error: any) => {
+    //     loader.dismiss();
+    //     console.log("Error - " + error);
+    //     this.getToast(this.translateMessage('NO_DATA_FOUND')).present();
+    //   })
   }
 
 
-  getFrameworkDetails(frameworkId?: string): Promise<any> {
-    return new Promise((resolve, reject) => {
-      let loader = this.getLoader();
-      loader.present();
+  // getFrameworkDetails(frameworkId?: string): Promise<any> {
+  //   return new Promise((resolve, reject) => {
+  //     let loader = this.getLoader();
+  //     loader.present();
 
-      let req: FrameworkDetailsRequest = {
-        defaultFrameworkDetails: true
-      };
+  //     let req: FrameworkDetailsRequest = {
+  //       defaultFrameworkDetails: true
+  //     };  
 
-      if (frameworkId !== undefined && frameworkId.length) {
-        req.defaultFrameworkDetails = false;
-        req.frameworkId = frameworkId;
-        this.frameworkId = frameworkId;
-      }
+  //     if (frameworkId !== undefined && frameworkId.length) {
+  //       req.defaultFrameworkDetails = false;
+  //       req.frameworkId = frameworkId;
+  //       this.frameworkId = frameworkId;
+  //     }
+
+  //     this.frameworkService.getFrameworkDetails(req,
+  //       (res: any) => {
+  //         let categories = JSON.parse(JSON.parse(res).result.framework).categories;
+  //         loader.dismiss();
 
 
-      this.frameworkService.getFrameworkDetails(req,
-        (res: any) => {
-          let categories = JSON.parse(JSON.parse(res).result.framework).categories;
-          loader.dismiss();
+  //         console.log("Framework details Response Success: ", JSON.parse(JSON.parse(res).result.framework).categories);
+  //         resolve(categories);
+  //       },
+  //       (err: any) => {
+  //         loader.dismiss();
 
-
-          // if (this.profile.board && this.profile.board.length) {
-          //   //this.resetForm(0);
-          //   this.checkPrevValue(1, 'boardList', [this.profile.syllabus]);
-          // }
-          // if (this.profile.grade && this.profile.grade.length > 1) {
-          //   //this.resetForm(1);
-          //   this.checkPrevValue(2, 'gradeList', this.profile.board);
-          // }
-          // if (this.profile.subject && this.profile.subject.length) {
-          //   this.checkPrevValue(3, 'subjectList', this.profile.grade);
-          // }
-
-          console.log("Framework details Response: ", JSON.parse(JSON.parse(res).result.framework).categories);
-          resolve(categories);
-        },
-        (err: any) => {
-          loader.dismiss();
-
-          console.log("Framework details Response: ", JSON.parse(err));
-          reject(err);
-        });
-    });
-  }
+  //         console.log("Framework details Response Failure: ", JSON.parse(err));
+  //         reject(err);
+  //       });
+  //   });
+  // }
 
   /**
    * This will internally call framework API
@@ -210,63 +195,46 @@ export class GuestEditProfilePage {
    */
   getCategoryData(req: CategoryRequest, list): void {
 
-    // let loader = this.getLoader();
-    // loader.present();
+    // if (this.frameworkId !== undefined && this.frameworkId.length) {
+    //   req.frameworkId = this.frameworkId;
+    // }
 
-    if (this.frameworkId !== undefined && this.frameworkId.length) {
-      req.frameworkId = this.frameworkId;
-    }
+    // this.frameworkService.getCategoryData(req,
+    //   (res: any) => {
+    //     this[list] = JSON.parse(res);
+    //     console.log("BoardList", this.boardList);
+    //     if (list != 'gradeList') {
+    //       this[list] = _.orderBy(this[list], ['name'], ['asc']);
+    //     }
+    //     console.log(list + " Category Response: " + this[list]);
+    //   },
+    //   (err: any) => {
+    //     console.log("Subject Category Response: ", err);
+    //   });
 
-    this.frameworkService.getCategoryData(req,
-      (res: any) => {
-        //this[list] = _.map(JSON.parse(res), 'code');
-        /* if(list === 'boardList') {
-          this.boardList = JSON.parse(res);
-        } else {
-          this[list] = _.map(JSON.parse(res), 'code');
-        } */
-        this[list] = JSON.parse(res);
+
+    this.formAndFrameworkUtilService.getCategoryData(req, this.frameworkId).
+      then((result) => {
+        this[list] = result;
         console.log("BoardList", this.boardList);
         if (list != 'gradeList') {
-          //this[list] = this[list].sort();
           this[list] = _.orderBy(this[list], ['name'], ['asc']);
         }
         console.log(list + " Category Response: " + this[list]);
-        // loader.dismiss();
-      },
-      (err: any) => {
-        // loader.dismiss();
-        console.log("Subject Category Response: ", err);
-      });
+      })
   }
 
   checkPrevValue(index = 0, currentField, prevSelectedValue = [], ) {
-    // if (index != 0) {
-    //   let request: CategoryRequest = {
-    //     currentCategory: this.categories[index].code,
-    //     prevCategory: this.categories[index - 1].code,
-    //     selectedCode: prevSelectedValue
-    //   }
-    //   this.getCategoryData(request, currentField);
-    // } else {
-    //   let request: CategoryRequest = {
-    //     currentCategory: this.categories[index].code
-    //   }
-    //   this.getCategoryData(request, currentField);
-    // }
-
 
     if (index === 0) {
       this[currentField] = this.syllabusList;
     } else if (index === 1) {
-      this.getFrameworkDetails(prevSelectedValue[0])
+      this.formAndFrameworkUtilService.getFrameworkDetails(prevSelectedValue[0])
         .then(catagories => {
           this.categories = catagories;
 
           let request: CategoryRequest = {
             currentCategory: this.categories[0].code,
-            // prevCategory: ,
-            // selectedCode: prevSelectedValue
           }
           this.getCategoryData(request, currentField);
         });
