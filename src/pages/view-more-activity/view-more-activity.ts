@@ -1,9 +1,12 @@
-import { IonicPage, NavController, NavParams, LoadingController, Events } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, LoadingController, Events, ToastController } from 'ionic-angular';
 import { Component, NgZone, OnInit } from '@angular/core';
 import { ContentService, CourseService, PageAssembleService, TelemetryService, PageId, Environment, ImpressionType, Log, LogLevel } from 'sunbird';
 import * as _ from 'lodash';
-import {  generateImpressionTelemetry } from '../../app/telemetryutil';
+import { generateImpressionTelemetry } from '../../app/telemetryutil';
 import { ContentType } from '../../app/app.constant';
+import { ContentDetailsPage } from '../content-details/content-details';
+import { CourseUtilService } from '../../service/course-util.service';
+import { TranslateService } from '@ngx-translate/core';
 
 /**
  * Generated class for the ViewMoreActivityPage page.
@@ -85,6 +88,17 @@ export class ViewMoreActivityPage implements OnInit {
 	pageType = 'library'
 
 	/**
+	 * To queue downloaded identifier
+	 */
+	queuedIdentifiers: Array<any> = [];
+
+	downloadPercentage: number = 0;
+
+	showOverlay: boolean = false;
+
+	resumeContentData: any;
+
+	/**
 	 * Contains reference of ContentService
 	 */
 	public contentService: ContentService;
@@ -116,7 +130,7 @@ export class ViewMoreActivityPage implements OnInit {
 	 */
 	constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, ngZone: NgZone,
 		loadingCtrl: LoadingController, pageService: PageAssembleService, courseService: CourseService
-		, private telemetryService: TelemetryService, private events: Events) {
+		, private telemetryService: TelemetryService, private events: Events, private courseUtilService: CourseUtilService, private translate: TranslateService, private toastCtrl: ToastController) {
 		this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
 		this.contentService = contentService;
 		this.ngZone = ngZone;
@@ -132,6 +146,12 @@ export class ViewMoreActivityPage implements OnInit {
 				}
 			}
 		});
+
+		this.events.subscribe('viewMore:Courseresume', (data) => {
+			this.subscribeGenieEvent();
+			this.resumeContentData = data.content;
+			this.getContentDetails(data.content);
+		})
 	}
 
 	/**
@@ -315,6 +335,104 @@ export class ViewMoreActivityPage implements OnInit {
 
 	}
 
+	getContentDetails(content) {
+		let identifier = content.contentId || content.identifier;
+		this.contentService.getContentDetail({ contentId: identifier }, (data: any) => {
+			data = JSON.parse(data);
+			console.log('enrolled course details: ', data);
+			if (data && data.result) {
+				switch (data.result.isAvailableLocally) {
+					case true: {
+						console.log("Content locally available. Geting child content... @@@");
+						this.navCtrl.push(ContentDetailsPage, {
+							content: { identifier: content.lastReadContentId },
+							depth: '1',
+							contentState: {
+								batchId: content.batchId ? content.batchId : '',
+								courseId: identifier
+							},
+							isResumedCourse: true
+						});
+						break;
+					}
+					case false: {
+						console.log("Content locally not available. Import started... @@@");
+						this.showOverlay = true;
+						this.importContent([identifier], false);
+						break;
+					}
+					default: {
+						console.log("Invalid choice");
+						break;
+					}
+				}
+			}
+		},
+			(error: any) => {
+				console.log(error);
+				console.log('Error while getting resumed course data....')
+			});
+	}
+
+	importContent(identifiers, isChild) {
+		const option = {
+			contentImportMap: this.courseUtilService.getImportContentRequestBody(identifiers, isChild),
+			contentStatusArray: []
+		}
+
+		this.contentService.importContent(option, (data: any) => {
+			data = JSON.parse(data);
+			console.log('Success: Import content =>', data);
+			this.ngZone.run(() => {
+				if (data.result && data.result.length) {
+					_.forEach(data.result, (value, key) => {
+						if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
+							this.queuedIdentifiers.push(value.identifier);
+						}
+					});
+					if (this.queuedIdentifiers.length === 0) {
+						this.showOverlay = false;
+						this.showMessage(this.translateMessage('ERROR_CONTENT_NOT_AVAILABLE'));
+						console.log('Content not downloaded');
+					}
+				}
+			});
+		},
+			(error: any) => {
+				this.ngZone.run(() => {
+					this.showOverlay = false;
+					this.showMessage(this.translateMessage('ERROR_CONTENT_NOT_AVAILABLE'));
+				});
+			});
+	}
+
+	subscribeGenieEvent() {
+		let count = 0;
+		this.events.subscribe('genie.event', (data) => {
+			this.ngZone.run(() => {
+				data = JSON.parse(data);
+				let res = data;
+				console.log('event bus........', res);
+				if (res.type === 'downloadProgress' && res.data.downloadProgress) {
+					this.downloadPercentage = res.data.downloadProgress === -1 ? 0 : res.data.downloadProgress;
+				}
+				if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport' && this.downloadPercentage === 100) {
+					console.log('Comming after import complete')
+					this.showOverlay = false;
+					this.navCtrl.push(ContentDetailsPage, {
+						content: { identifier: this.resumeContentData.lastReadContentId },
+						depth: '1',
+						contentState: {
+							batchId: this.resumeContentData.batchId ? this.resumeContentData.batchId : '',
+							courseId: this.resumeContentData.contentId || this.resumeContentData.identifier
+						},
+						isResumedCourse: true
+					});
+				}
+			});
+		});
+	}
+
 	/**
 	 * Ionic life cycle hook
 	 */
@@ -322,6 +440,8 @@ export class ViewMoreActivityPage implements OnInit {
 		this.tabBarElement.style.display = 'flex';
 		this.isLoadMore = false;
 		this.pageType = this.pageType;
+		this.showOverlay = false;
+		this.events.subscribe('genie.event');
 	}
 
 	/**
@@ -338,5 +458,29 @@ export class ViewMoreActivityPage implements OnInit {
 			duration: 30000,
 			spinner: "crescent"
 		});
+	}
+
+	/**
+	 * Used to Translate message to current Language
+	 * @param {string} messageConst - Message Constant to be translated
+	 * @returns {string} translatedMsg - Translated Message
+	 */
+	translateMessage(messageConst: string, field?: string): string {
+		let translatedMsg = '';
+		this.translate.get(messageConst, { '%s': field }).subscribe(
+			(value: any) => {
+				translatedMsg = value;
+			}
+		);
+		return translatedMsg;
+	}
+
+	showMessage(message) {
+		let toast = this.toastCtrl.create({
+			message: message,
+			duration: 4000,
+			position: 'bottom'
+		});
+		toast.present();
 	}
 }

@@ -23,6 +23,7 @@ import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-c
 import { AppGlobalService } from '../../service/app-global.service';
 
 import Driver from 'driver.js';
+import { CourseUtilService } from '../../service/course-util.service';
 
 @IonicPage()
 @Component({
@@ -67,6 +68,7 @@ export class CoursesPage implements OnInit {
   onBoardingProgress: number = 0;
   selectedLanguage = 'en';
   appLabel: string;
+  tabBarElement: any;
 
   courseFilter: any;
 
@@ -77,6 +79,18 @@ export class CoursesPage implements OnInit {
   profile: any;
 
   private corRelationList: Array<CorrelationData>;
+
+  /**
+   * To queue downloaded identifier
+   */
+  queuedIdentifiers: Array<any> = [];
+
+  downloadPercentage: number = 0;
+
+  showOverlay: boolean = false;
+
+  resumeContentData: any;
+
   /**
    * Default method of class CoursesPage
    *
@@ -102,7 +116,8 @@ export class CoursesPage implements OnInit {
     private network: Network,
     private loadingCtrl: LoadingController,
     private sharedPreferences: SharedPreferences,
-    private appGlobal: AppGlobalService
+    private appGlobal: AppGlobalService,
+    private courseUtilService: CourseUtilService
   ) {
 
     this.preference.getString('selected_language_code', (val: string) => {
@@ -121,6 +136,12 @@ export class CoursesPage implements OnInit {
 
     this.events.subscribe('onboarding-card:increaseProgress', (progress) => {
       this.onBoardingProgress = progress.cardProgress;
+    });
+
+    this.events.subscribe('course:resume', (data) => {
+      this.subscribeGenieEvent();
+      this.resumeContentData = data.content;
+      this.getContentDetails(data.content);
     });
 
     this.events.subscribe(EventTopics.ENROL_COURSE_SUCCESS, (res) => {
@@ -152,6 +173,7 @@ export class CoursesPage implements OnInit {
       .then((appName: any) => {
         this.appLabel = appName;
       });
+      this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
   }
 
   /**
@@ -661,4 +683,129 @@ export class CoursesPage implements OnInit {
     );
     return translatedMsg;
   }
+
+  ionViewWillLeave() {
+    this.ngZone.run(() => {
+      this.showOverlay = false;
+      this.events.unsubscribe('genie.event');
+    })
+  }
+
+  getContentDetails(content) {
+    this.tabBarElement.style.display = 'none';
+    let identifier = content.contentId || content.identifier;
+    this.contentService.getContentDetail({ contentId: identifier }, (data: any) => {
+      data = JSON.parse(data);
+      console.log('enrolled course details: ', data);
+      if (data && data.result) {
+        switch (data.result.isAvailableLocally) {
+          case true: {
+            console.log("Content locally available. Geting child content... @@@");
+            this.navCtrl.push(ContentDetailsPage, {
+              content: { identifier: content.lastReadContentId },
+              depth: '1',
+              contentState: {
+                batchId: content.batchId ? content.batchId : '',
+                courseId: identifier
+              },
+              isResumedCourse: true 
+            });
+            break;
+          }
+          case false: {
+            console.log("Content locally not available. Import started... @@@");
+            this.showOverlay = true;
+            this.importContent([identifier], false);
+            break;
+          }
+          default: {
+            console.log("Invalid choice");
+            break;
+          }
+        }
+      }
+    },
+      (error: any) => {
+        console.log(error);
+        console.log('Error while getting resumed course data....')
+      });
+  }
+
+  importContent(identifiers, isChild) {
+    const option = {
+      contentImportMap:this.courseUtilService.getImportContentRequestBody(identifiers, isChild),
+      contentStatusArray: []
+    }
+
+    this.contentService.importContent(option, (data: any) => {
+      data = JSON.parse(data);
+      console.log('Success: Import content =>', data);
+      this.ngZone.run(() => {
+        if (data.result && data.result.length) {
+          _.forEach(data.result, (value, key) => {
+            if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
+              this.queuedIdentifiers.push(value.identifier);
+            }
+          });
+          if (this.queuedIdentifiers.length === 0) {
+            this.showOverlay = false;
+            this.tabBarElement.style.display = 'show';
+            this.showMessage(this.translateMessage('ERROR_CONTENT_NOT_AVAILABLE'));
+            console.log('Content not downloaded');
+          }
+        }
+      });
+    },
+      (error: any) => {
+        this.ngZone.run(() => {
+          this.showOverlay = false;
+          this.tabBarElement.style.display = 'show';
+          this.showMessage(this.translateMessage('ERROR_CONTENT_NOT_AVAILABLE'));
+        });
+      });
+  }
+
+
+  subscribeGenieEvent() {
+    let count = 0;
+    this.events.subscribe('genie.event', (data) => {
+      this.ngZone.run(() => {
+        data = JSON.parse(data);
+        let res = data;
+        console.log('event bus........', res);
+        if (res.type === 'downloadProgress' && res.data.downloadProgress) {
+          this.downloadPercentage = res.data.downloadProgress === -1 ? 0 : res.data.downloadProgress;
+        }
+
+        if (this.downloadPercentage === 100){
+          this.showOverlay = false;
+          this.tabBarElement.style.display = 'show';
+          this.navCtrl.push(ContentDetailsPage, {
+            content: { identifier: this.resumeContentData.lastReadContentId },
+            depth: '1',
+            contentState: {
+              batchId: this.resumeContentData.batchId ? this.resumeContentData.batchId : '',
+              courseId: this.resumeContentData.contentId || this.resumeContentData.identifier
+            },
+            isResumedCourse: true 
+          });
+        }
+
+        // Get child content
+        /*if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
+          if (this.queuedIdentifiers.length) {
+            if (_.includes(this.queuedIdentifiers, res.data.identifier)) {
+              count++
+              console.log('current download count:', count);
+              console.log('queuedIdentifiers count:', this.queuedIdentifiers.length);
+            }
+
+            if (this.queuedIdentifiers.length === count) {
+            }
+          }
+        }*/
+      });
+    });
+  }  
+
 }

@@ -5,4 +5,26 @@ page-view-more-activity {
     .empty-search-result {
         font-size: 1.2em;
     }
+    .loading-backdrop {
+        .backdrop-container {
+            width: 100%;
+            padding: 16px;
+            text-align: center;
+            position: absolute;
+            top: 50%;
+            margin-top: -50px;
+        }
+    
+        .backdrop-footer {
+            position: absolute;
+            width: 100%;
+            bottom: 0;
+            padding-bottom: 16px;
+        }
+    
+        background-color: #ffffff;
+        height: 100%;
+        z-index: 1000;
+        opacity: 1 !important;
+    }
 }

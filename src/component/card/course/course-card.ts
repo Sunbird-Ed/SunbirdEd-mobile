@@ -1,13 +1,13 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { NavController } from 'ionic-angular';
+import { NavController, Events } from 'ionic-angular';
 import { ImageLoader } from "ionic-image-loader";
 import { EnrolledCourseDetailsPage } from "../../../pages/enrolled-course-details/enrolled-course-details";
 // import { CourseDetailPage } from './../../../pages/course-detail/course-detail';
 import { CollectionDetailsPage } from '../../../pages/collection-details/collection-details';
 import { ContentDetailsPage } from '../../../pages/content-details/content-details';
 import { ContentType, MimeType } from "../../../app/app.constant";
+import * as _ from 'lodash';
 import { CourseUtilService } from "../../../service/course-util.service";
-
 
 /**
  * The course card component
@@ -46,7 +46,9 @@ export class CourseCard implements OnInit {
    * 
    * @param navCtrl To navigate user from one page to another
    */
-  constructor(public navCtrl: NavController, private courseUtilService: CourseUtilService) {
+  constructor(public navCtrl: NavController, 
+    private courseUtilService: CourseUtilService, 
+    private events: Events) {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
 
@@ -59,9 +61,15 @@ export class CourseCard implements OnInit {
   navigateToCourseDetailPage(content: any, layoutName: string): void {
     console.log('Card details... @@@', content);
     if (layoutName === 'Inprogress' || content.contentType === ContentType.COURSE) {
-      this.navCtrl.push(EnrolledCourseDetailsPage, {
-        content: content
-      })
+      if (content.lastReadContentId && content.status === 1) {
+        this.events.publish('course:resume', {
+          content: content
+        });
+      } else {
+        this.navCtrl.push(EnrolledCourseDetailsPage, {
+          content: content
+        })
+      }
     } else {
       if (content.contentType === ContentType.COURSE) {
         console.log('Inside course details page');

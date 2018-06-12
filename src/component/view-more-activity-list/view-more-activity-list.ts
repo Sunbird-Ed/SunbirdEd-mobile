@@ -6,7 +6,7 @@ import { EnrolledCourseDetailsPage } from './../../pages/enrolled-course-details
 import { Input, NgZone, OnInit } from '@angular/core';
 import { Component } from '@angular/core';
 import { ImageLoader } from "ionic-image-loader";
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, Events } from 'ionic-angular';
 import { ContentType, MimeType } from '../../app/app.constant';
 import { CourseUtilService } from '../../service/course-util.service';
 
@@ -45,7 +45,7 @@ export class ViewMoreActivityListComponent implements OnInit {
    * @param {NavParams} navParams ref of navigation params
    * @param {NgZone} ngZone To bind data
    */
-  constructor(private navCtrl: NavController, private navParams: NavParams, private zone: NgZone, private courseUtilService: CourseUtilService) {
+  constructor(private navCtrl: NavController, private navParams: NavParams, private zone: NgZone, private courseUtilService: CourseUtilService, private events: Events) {
     console.log('View more activity Component');
     this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
@@ -55,9 +55,15 @@ export class ViewMoreActivityListComponent implements OnInit {
     this.zone.run(() => {
       if (content.batchId || content.contentType === ContentType.COURSE) {
         console.log('Inside course details');
-        this.navCtrl.push(EnrolledCourseDetailsPage, {
-          content: content
-        })
+        if (content.lastReadContentId && content.status === 1) {
+          this.events.publish('viewMore:Courseresume', {
+            content: content
+          });
+        } else {
+          this.navCtrl.push(EnrolledCourseDetailsPage, {
+            content: content
+          })
+        }
       } else if (content.mimeType === MimeType.COLLECTION) {
         console.log('Inside collection details');
         this.navCtrl.push(CollectionDetailsPage, {
