@@ -75,7 +75,7 @@
           <div class="info-title" text-uppercase>{{'GRADE' | translate}}</div>
         </ion-col>
         <ion-col class="ellipsis font-size-14rem page-content" col-6 text-end>
-          <div *ngIf="profile?.grade && profile?.grade != ''">
+          <div *ngIf="profile?.grade">
             <div class="ellipsis text-align">{{grade}}</div>
             <ion-icon class="icon-align" float="end" name="md-create" color="primary" (click)="editGuestProfile()"></ion-icon>
           </div>
