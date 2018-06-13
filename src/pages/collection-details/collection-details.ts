@@ -315,7 +315,7 @@ export class CollectionDetailsPage {
     this.contentDetail = data.result.contentData ? data.result.contentData : [];
     this.contentDetail.isAvailableLocally = data.result.isAvailableLocally;
     this.objId = this.contentDetail.identifier;
-    this.objType = this.contentDetail.contentType;
+    // this.objType = this.contentDetail.contentType;
     this.objVer = this.contentDetail.pkgVersion;
     if (this.contentDetail.gradeLevel && this.contentDetail.gradeLevel.length) {
       this.contentDetail.gradeLevel = this.contentDetail.gradeLevel.join(", ");
@@ -325,8 +325,8 @@ export class CollectionDetailsPage {
     }
     if (this.contentDetail.me_totalRatings) {
       let rating = this.contentDetail.me_totalRatings.split(".");
-      if (rating && rating[0]){
-        this.contentDetail.me_totalRatings =  rating[0];
+      if (rating && rating[0]) {
+        this.contentDetail.me_totalRatings = rating[0];
       }
     }
     switch (data.result.isAvailableLocally) {
@@ -552,6 +552,7 @@ export class CollectionDetailsPage {
       if (!this.didViewLoad) {
         this.generateRollUp();
         let contentType = this.cardData.contentData ? this.cardData.contentData.contentType : this.cardData.contentType;
+        this.objType = contentType;
         this.generateStartEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
         this.generateImpressionEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
       }
@@ -715,7 +716,7 @@ export class CollectionDetailsPage {
     this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_LIBRARY_INITIATED, this.contentDetail.contentType);
     let loader = this.getLoader();
     loader.present();
-    let url = this.baseUrl + "/public/#!/content/"+this.contentDetail.identifier;
+    let url = this.baseUrl + "/public/#!/content/" + this.contentDetail.identifier;
     if (this.contentDetail.isAvailableLocally) {
       this.shareUtil.exportEcar(this.contentDetail.identifier, path => {
         loader.dismiss();
@@ -851,7 +852,7 @@ export class CollectionDetailsPage {
   }
 
   showDownloadAlert(myEvent) {
-    if (this.isNetworkAvailable){
+    if (this.isNetworkAvailable) {
       let popover = this.popoverCtrl.create(ConfirmAlertComponent, {}, {
         cssClass: 'confirm-alert-box'
       });
