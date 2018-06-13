@@ -562,11 +562,11 @@ export class CoursesPage implements OnInit {
   }
 
   ionViewWillLeave(): void {
-    this.isVisible = false;
     this.ngZone.run(() => {
+      this.events.unsubscribe('genie.event');
+      this.isVisible = false;
       this.showOverlay = false;
       this.downloadPercentage = 0;
-      this.events.unsubscribe('genie.event');
     })
   }
 

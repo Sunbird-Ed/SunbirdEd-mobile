@@ -419,7 +419,6 @@ export class ViewMoreActivityPage implements OnInit {
 					this.downloadPercentage = res.data.downloadProgress === -1 ? 0 : res.data.downloadProgress;
 				}
 				if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport' && this.downloadPercentage === 100) {
-					this.events.subscribe('genie.event');
 					console.log('Comming after import complete. Genie event unsubscribed')
 					this.showOverlay = false;
 					this.navCtrl.push(ContentDetailsPage, {
@@ -452,7 +451,7 @@ export class ViewMoreActivityPage implements OnInit {
 	ionViewCanLeave() {
 		this.ngZone.run(() => {
 			this.events.unsubscribe('viewMore:Courseresume');
-			this.events.subscribe('genie.event');
+			this.events.unsubscribe('genie.event');
 			console.log('Leaving view more page');
 			this.tabBarElement.style.display = 'flex';
 			this.isLoadMore = false;
