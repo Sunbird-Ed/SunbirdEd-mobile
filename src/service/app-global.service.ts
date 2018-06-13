@@ -98,11 +98,15 @@ export class AppGlobalService {
     private getGuestUserInfo() {
         console.log("getGuestUserInfo");
         this.preference.getString('selected_user_type', (val) => {
-            if (val != "") {
+            if (val !== undefined && val != "") {
                 if (val == ProfileType.STUDENT) {
                     this.guestProfileType = ProfileType.STUDENT;
                 }
                 else if (val == ProfileType.TEACHER) {
+                    this.guestProfileType = ProfileType.TEACHER;
+                } else if (val === "student") {
+                    this.guestProfileType = ProfileType.STUDENT;
+                } else if (val === "teacher") {
                     this.guestProfileType = ProfileType.TEACHER;
                 }
                 this.isGuestUser = true;
