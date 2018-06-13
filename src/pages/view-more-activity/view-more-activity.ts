@@ -450,7 +450,7 @@ export class ViewMoreActivityPage implements OnInit {
 	 */
 	ionViewCanLeave() {
 		this.ngZone.run(() => {
-			this.events.unsubscribe('viewMore:Courseresume');
+			// this.events.unsubscribe('viewMore:Courseresume');
 			this.events.unsubscribe('genie.event');
 			console.log('Leaving view more page');
 			this.tabBarElement.style.display = 'flex';

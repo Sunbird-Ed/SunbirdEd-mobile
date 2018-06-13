@@ -701,7 +701,6 @@ export class CoursesPage implements OnInit {
   }
 
   getContentDetails(content) {
-    this.showOverlay = true;
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
     this.tabBarElement.style.display = 'none';
     let identifier = content.contentId || content.identifier;
@@ -711,6 +710,7 @@ export class CoursesPage implements OnInit {
       if (data && data.result) {
         switch (data.result.isAvailableLocally) {
           case true: {
+            this.showOverlay = false;
             console.log("Content locally available. Geting child content... @@@");
             this.navCtrl.push(ContentDetailsPage, {
               content: { identifier: content.lastReadContentId },
