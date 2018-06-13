@@ -77,12 +77,15 @@
 </div>
 </ion-content>
 <ion-backdrop class="loading-backdrop" *ngIf="showOverlay" text-center>
-	<div class="backdrop-container">
-		<ion-label>{{ 'LOADING_CONTENT' | translate }} {{ downloadPercentage ? (downloadPercentage) : '0' }} %</ion-label>
-		<!-- <pb-horizontal [progress]="downloadPercentage" isOnBoardCard="false"></pb-horizontal> -->
-	</div>
-
-	<div class="backdrop-footer">
-		<button ion-button small (click)="cancelDownload()">Cancel</button>
-	</div>
-</ion-backdrop>
+    <div class="backdrop-container">
+      <span *ngIf="downloadPercentage !== 100">
+        <ion-label>{{ 'LOADING_CONTENT' | translate }} {{ downloadPercentage ? (downloadPercentage) : '0' }} %</ion-label>
+        <pb-horizontal [progress]="downloadPercentage" isOnBoardCard="false"></pb-horizontal>
+      </span>
+      <ion-label *ngIf="downloadPercentage === 100">{{ 'LOADING_CONTENT' | translate }}</ion-label>
+    </div>
+  
+    <div class="backdrop-footer" *ngIf="downloadPercentage !== 100">
+      <button ion-button small (click)="cancelDownload()">Cancel</button>
+    </div>
+  </ion-backdrop>

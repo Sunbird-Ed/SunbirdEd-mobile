@@ -175,7 +175,6 @@ export class CoursesPage implements OnInit {
       .then((appName: any) => {
         this.appLabel = appName;
       });
-      this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
   }
 
   /**
@@ -564,6 +563,11 @@ export class CoursesPage implements OnInit {
 
   ionViewWillLeave(): void {
     this.isVisible = false;
+    this.ngZone.run(() => {
+      this.showOverlay = false;
+      this.downloadPercentage = 0;
+      this.events.unsubscribe('genie.event');
+    })
   }
 
 
@@ -696,14 +700,9 @@ export class CoursesPage implements OnInit {
     return translatedMsg;
   }
 
-  ionViewWillLeave() {
-    this.ngZone.run(() => {
-      this.showOverlay = false;
-      this.events.unsubscribe('genie.event');
-    })
-  }
-
   getContentDetails(content) {
+    this.showOverlay = true;
+    this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
     this.tabBarElement.style.display = 'none';
     let identifier = content.contentId || content.identifier;
     this.contentService.getContentDetail({ contentId: identifier }, (data: any) => {
@@ -720,7 +719,7 @@ export class CoursesPage implements OnInit {
                 batchId: content.batchId ? content.batchId : '',
                 courseId: identifier
               },
-              isResumedCourse: true 
+              isResumedCourse: true
             });
             break;
           }
@@ -739,13 +738,14 @@ export class CoursesPage implements OnInit {
     },
       (error: any) => {
         console.log(error);
-        console.log('Error while getting resumed course data....')
+        console.log('Error while getting resumed course data....');
+        this.showMessage(this.translateMessage('ERROR_CONTENT_NOT_AVAILABLE'));
       });
   }
 
   importContent(identifiers, isChild) {
     const option = {
-      contentImportMap:this.courseUtilService.getImportContentRequestBody(identifiers, isChild),
+      contentImportMap: this.courseUtilService.getImportContentRequestBody(identifiers, isChild),
       contentStatusArray: []
     }
 
@@ -761,7 +761,7 @@ export class CoursesPage implements OnInit {
           });
           if (this.queuedIdentifiers.length === 0) {
             this.showOverlay = false;
-            this.tabBarElement.style.display = 'show';
+            this.tabBarElement.style.display = 'flex';
             this.showMessage(this.translateMessage('ERROR_CONTENT_NOT_AVAILABLE'));
             console.log('Content not downloaded');
           }
@@ -771,7 +771,7 @@ export class CoursesPage implements OnInit {
       (error: any) => {
         this.ngZone.run(() => {
           this.showOverlay = false;
-          this.tabBarElement.style.display = 'show';
+          this.tabBarElement.style.display = 'flex';
           this.showMessage(this.translateMessage('ERROR_CONTENT_NOT_AVAILABLE'));
         });
       });
@@ -789,9 +789,9 @@ export class CoursesPage implements OnInit {
           this.downloadPercentage = res.data.downloadProgress === -1 ? 0 : res.data.downloadProgress;
         }
 
-        if (this.downloadPercentage === 100){
+        if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport' && this.downloadPercentage === 100) {
           this.showOverlay = false;
-          this.tabBarElement.style.display = 'show';
+          this.tabBarElement.style.display = 'flex';
           this.navCtrl.push(ContentDetailsPage, {
             content: { identifier: this.resumeContentData.lastReadContentId },
             depth: '1',
@@ -799,25 +799,22 @@ export class CoursesPage implements OnInit {
               batchId: this.resumeContentData.batchId ? this.resumeContentData.batchId : '',
               courseId: this.resumeContentData.contentId || this.resumeContentData.identifier
             },
-            isResumedCourse: true 
+            isResumedCourse: true
           });
         }
-
-        // Get child content
-        /*if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
-          if (this.queuedIdentifiers.length) {
-            if (_.includes(this.queuedIdentifiers, res.data.identifier)) {
-              count++
-              console.log('current download count:', count);
-              console.log('queuedIdentifiers count:', this.queuedIdentifiers.length);
-            }
-
-            if (this.queuedIdentifiers.length === count) {
-            }
-          }
-        }*/
       });
     });
-  }  
+  }
 
+  cancelDownload() {
+    this.ngZone.run(() => {
+      this.contentService.cancelDownload(this.resumeContentData.contentId || this.resumeContentData.identifier, (response) => {
+        this.showOverlay = false;
+        this.tabBarElement.style.display = 'flex';
+      }, (error) => {
+        this.showOverlay = false;
+        this.tabBarElement.style.display = 'flex';
+      });
+    });
+  }
 }

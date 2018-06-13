@@ -148,7 +148,6 @@ export class ViewMoreActivityPage implements OnInit {
 		});
 
 		this.events.subscribe('viewMore:Courseresume', (data) => {
-			this.subscribeGenieEvent();
 			this.resumeContentData = data.content;
 			this.getContentDetails(data.content);
 		})
@@ -356,6 +355,7 @@ export class ViewMoreActivityPage implements OnInit {
 						break;
 					}
 					case false: {
+						this.subscribeGenieEvent();
 						console.log("Content locally not available. Import started... @@@");
 						this.showOverlay = true;
 						this.importContent([identifier], false);
@@ -375,6 +375,7 @@ export class ViewMoreActivityPage implements OnInit {
 	}
 
 	importContent(identifiers, isChild) {
+		this.queuedIdentifiers.length = 0;
 		const option = {
 			contentImportMap: this.courseUtilService.getImportContentRequestBody(identifiers, isChild),
 			contentStatusArray: []
@@ -392,6 +393,7 @@ export class ViewMoreActivityPage implements OnInit {
 					});
 					if (this.queuedIdentifiers.length === 0) {
 						this.showOverlay = false;
+						this.downloadPercentage = 0;
 						this.showMessage(this.translateMessage('ERROR_CONTENT_NOT_AVAILABLE'));
 						console.log('Content not downloaded');
 					}
@@ -417,7 +419,8 @@ export class ViewMoreActivityPage implements OnInit {
 					this.downloadPercentage = res.data.downloadProgress === -1 ? 0 : res.data.downloadProgress;
 				}
 				if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport' && this.downloadPercentage === 100) {
-					console.log('Comming after import complete')
+					this.events.subscribe('genie.event');
+					console.log('Comming after import complete. Genie event unsubscribed')
 					this.showOverlay = false;
 					this.navCtrl.push(ContentDetailsPage, {
 						content: { identifier: this.resumeContentData.lastReadContentId },
@@ -433,15 +436,29 @@ export class ViewMoreActivityPage implements OnInit {
 		});
 	}
 
+	cancelDownload() {
+		this.ngZone.run(() => {
+			this.contentService.cancelDownload(this.resumeContentData.contentId || this.resumeContentData.identifier, (response) => {
+				this.showOverlay = false;
+			}, (error) => {
+				this.showOverlay = false;
+			});
+		});
+	}
+
 	/**
 	 * Ionic life cycle hook
 	 */
 	ionViewCanLeave() {
-		this.tabBarElement.style.display = 'flex';
-		this.isLoadMore = false;
-		this.pageType = this.pageType;
-		this.showOverlay = false;
-		this.events.subscribe('genie.event');
+		this.ngZone.run(() => {
+			this.events.unsubscribe('viewMore:Courseresume');
+			this.events.subscribe('genie.event');
+			console.log('Leaving view more page');
+			this.tabBarElement.style.display = 'flex';
+			this.isLoadMore = false;
+			this.pageType = this.pageType;
+			this.showOverlay = false;
+		})
 	}
 
 	/**

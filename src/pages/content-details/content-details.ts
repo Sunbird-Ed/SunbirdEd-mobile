@@ -180,11 +180,11 @@ export class ContentDetailsPage {
 
       //This is to know when the app has come to foreground
       this.resume = platform.resume.subscribe(() => {
+        this.isContentPlayed = true;
         if (this.isPlayerLaunched && !this.guestUser) {
           this.isPlayerLaunched = false;
           this.setContentDetails(this.identifier, false, true);
         }
-        this.isContentPlayed = true;
         this.updateContentProgress();
       });
 
@@ -392,7 +392,8 @@ export class ContentDetailsPage {
   //
   generateTemetry(){
     console.log('Before =>', this.didViewLoad);
-    if (!this.didViewLoad) {
+    console.log('is content played', this.isContentPlayed);
+    if (!this.didViewLoad && !this.isContentPlayed) {
       this.generateRollUp();
       let contentType = this.cardData.contentData ? this.cardData.contentData.contentType : this.cardData.contentType;
       this.generateStartEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
