@@ -155,6 +155,11 @@ export class SunbirdQRScanner {
         this.generateQRScanSuccessInteractEvent(code, "ContentDetail");
         this.generateEndEvent(source, code);
         callback.content(code, contentId);
+      } else if (results[results.length - 3] == "play" && (results[results.length - 2] == "collection" || results[results.length - 2] == "content")) {
+        let contentId = results[results.length - 1];
+        this.generateQRScanSuccessInteractEvent(code, "ContentDetail");
+        this.generateEndEvent(source, code);
+        callback.content(code, contentId);
       } else {
         this.generateQRScanSuccessInteractEvent(code, "UNKNOWN");
         this.generateEndEvent(source, code);

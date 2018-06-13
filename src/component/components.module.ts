@@ -18,6 +18,7 @@ import { OnboardingService } from './onboarding-card/onboarding.service';
 import { PBHorizontal } from './pbhorizontal/pb-horizontal';
 import { ConfirmAlertComponent } from './confirm-alert/confirm-alert';
 import { ReportIssuesComponent } from './report-issues/report-issues';
+import { FormAndFrameworkUtilService } from '../pages/profile/formandframeworkutil.service';
 
 
 @NgModule({
@@ -62,6 +63,7 @@ import { ReportIssuesComponent } from './report-issues/report-issues';
         ReportIssuesComponent,
         ContentRatingAlertComponent
     ],
-    providers: [OnboardingService]
+    providers: [OnboardingService,
+        FormAndFrameworkUtilService]
 })
 export class ComponentsModule { }

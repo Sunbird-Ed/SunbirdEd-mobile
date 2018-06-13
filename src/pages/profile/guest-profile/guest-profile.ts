@@ -5,10 +5,11 @@ import * as _ from 'lodash';
 
 import { GuestEditProfilePage } from './../guest-edit.profile/guest-edit.profile';
 import { OverflowMenuComponent } from "./../overflowmenu/menu.overflow.component";
-import { ProfileService, FrameworkDetailsRequest, FrameworkService, SharedPreferences, ProfileType, FormService, FormRequest } from 'sunbird';
+import { ProfileService, CategoryRequest, FrameworkDetailsRequest, FrameworkService, SharedPreferences, ProfileType, FormService, FormRequest } from 'sunbird';
 import { UserTypeSelectionPage } from '../../user-type-selection/user-type-selection';
 import { Network } from '@ionic-native/network';
 import { TranslateService } from '@ngx-translate/core';
+import { FormAndFrameworkUtilService } from '../formandframeworkutil.service';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -56,7 +57,8 @@ export class GuestProfilePage {
     private preference: SharedPreferences,
     private formService: FormService,
     private toastCtrl: ToastController,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService
   ) {
 
     //language code
@@ -153,66 +155,44 @@ export class GuestProfilePage {
   }
 
   getSyllabusDetails(loader: any) {
-    let req: FormRequest = {
-      type: 'user',
-      subType: 'instructor',
-      action: 'onboarding',
-    };
+    let selectedFrameworkId: string = '';
 
-    this.formService.getForm(req,
-      (res: any) => {
-        let response: any = JSON.parse(res);
-        console.log("Form Result - " + response.result);
-        let frameworks: Array<any> = [];
-        let selectedFrameworkId: string = '';
-        let fields: Array<any> = response.result.fields;
+    this.formAndFrameworkUtilService.getSyllabusList()
+      .then((result) => {
+        if (result && result !== undefined && result.length > 0) {
 
-        if (fields !== undefined && fields.length > 0) {
-          fields.forEach(field => {
-            if (field.language === this.selectedLanguage) {
-              frameworks = field.range;
+          result.forEach(element => {
+
+            if (this.profile.syllabus && this.profile.syllabus.length && this.profile.syllabus[0] === element.frameworkId) {
+              this.syllabus = element.name;
+              selectedFrameworkId = element.frameworkId;
             }
           });
 
-          if (frameworks != null && frameworks.length > 0) {
-            frameworks.forEach(frameworkDetails => {
+          loader.dismiss();
 
-              if (this.profile.syllabus && this.profile.syllabus.length && this.profile.syllabus[0] === frameworkDetails.frameworkId) {
-                this.syllabus = frameworkDetails.name;
-                selectedFrameworkId = frameworkDetails.frameworkId;
-              }
-            });
+          if (selectedFrameworkId !== undefined && selectedFrameworkId.length > 0) {
+            this.getFrameworkDetails(selectedFrameworkId);
           }
-
-          this.getFrameworkDetails(loader, selectedFrameworkId);
         } else {
           loader.dismiss();
+
           this.getToast(this.translateMessage('NO_DATA_FOUND')).present();
         }
-      },
-      (error: any) => {
-        loader.dismiss();
-        console.log("Error - " + error);
-        this.getToast(this.translateMessage('NO_DATA_FOUND')).present();
-      })
+      });
   }
 
 
-  getFrameworkDetails(loader: any, frameworkId?: string): void {
-    let req: FrameworkDetailsRequest = {
-      defaultFrameworkDetails: true
-    };
+  getFrameworkDetails(frameworkId?: string): void {
+    let loader = this.getLoader();
+    loader.present();
 
-    if (frameworkId !== undefined && frameworkId.length) {
-      req.defaultFrameworkDetails = false;
-      req.frameworkId = frameworkId
-    }
+    this.formAndFrameworkUtilService.getFrameworkDetails(frameworkId)
+      .then(catagories => {
+        this.categories = catagories;
 
-    this.frameworkService.getFrameworkDetails(req,
-      (res: any) => {
-        this.categories = JSON.parse(JSON.parse(res).result.framework).categories;
         if (this.profile.board && this.profile.board.length) {
-          this.boards = this.getFieldDisplayValues(this.profile.board, 0);
+          this.boards = this.getFieldDisplayValues(this.profile.board, 0)
         }
         if (this.profile.medium && this.profile.medium.length) {
           this.medium = this.getFieldDisplayValues(this.profile.medium, 1);
@@ -224,16 +204,6 @@ export class GuestProfilePage {
           this.subjects = this.getFieldDisplayValues(this.profile.subject, 3);
         }
 
-        loader.dismiss();
-        /* let boardList = [];
-        this.profile.board && this.profile.board.length && categories[0].terms.forEach(element => {
-          if (_.includes(this.profile.board, element.code)) {
-            boardList.push(element.name);
-          }
-        });
-        this.boards = this.arrayToString(boardList); */
-      },
-      (error: any) => {
         loader.dismiss();
       });
   }

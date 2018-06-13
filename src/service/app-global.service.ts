@@ -6,6 +6,12 @@ import { Events } from "ionic-angular";
 @Injectable()
 export class AppGlobalService {
 
+    /**
+   * This property stores the form details at the app level for a particular app session 
+   * 
+   */
+    syllabusList: Array<any> = [];
+
     public static readonly USER_INFO_UPDATED = 'user-profile-changed';
     public static readonly PROFILE_OBJ_CHANGED = 'app-global:profile-obj-changed';
 
@@ -39,6 +45,26 @@ export class AppGlobalService {
 
     getSessionData(): any {
         return this.session;
+    }
+
+    /**
+   * This method stores the form details, for a particular session of the app
+   * 
+   * @param syllabusList 
+   * 
+   */
+    setSyllabusList(syllabusList: Array<any>): any {
+        this.syllabusList = syllabusList;
+    }
+
+    /**
+     * This method returns the form details cached, for a particular session of the app
+     * 
+     * @param syllabusList 
+     * 
+     */
+    getCachedSyllabusList(): Array<any> {
+        return this.syllabusList;
     }
 
     private initValues() {
