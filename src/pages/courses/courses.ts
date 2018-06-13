@@ -141,7 +141,6 @@ export class CoursesPage implements OnInit {
     });
 
     this.events.subscribe('course:resume', (data) => {
-      this.subscribeGenieEvent();
       this.resumeContentData = data.content;
       this.getContentDetails(data.content);
     });
@@ -724,6 +723,7 @@ export class CoursesPage implements OnInit {
             break;
           }
           case false: {
+            this.subscribeGenieEvent();
             console.log("Content locally not available. Import started... @@@");
             this.showOverlay = true;
             this.importContent([identifier], false);
@@ -817,4 +817,10 @@ export class CoursesPage implements OnInit {
       });
     });
   }
+
+  ionViewCanLeave() {
+		this.ngZone.run(() => {
+			this.events.unsubscribe('genie.event');
+		})
+	}
 }
