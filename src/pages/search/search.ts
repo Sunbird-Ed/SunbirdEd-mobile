@@ -1,5 +1,5 @@
 import { Component, NgZone, ViewChild } from "@angular/core";
-import { IonicPage, NavParams, NavController, Events, ToastController } from "ionic-angular";
+import { IonicPage, NavParams, NavController, Events, ToastController, Popover } from "ionic-angular";
 import {
   ContentService, ContentSearchCriteria,
   Log, LogLevel, TelemetryService, Impression, ImpressionType, Environment,
@@ -18,6 +18,8 @@ import * as _ from 'lodash';
 import { ContentType, MimeType, Search, AudienceFilter } from '../../app/app.constant';
 import { EnrolledCourseDetailsPage } from "../enrolled-course-details/enrolled-course-details";
 import { AppGlobalService } from "../../service/app-global.service";
+import { PopoverController } from "ionic-angular";
+import { QRAlertCallBack, QRScannerAlert } from "../qrscanner/qrscanner_alert";
 
 @IonicPage()
 @Component({
@@ -89,7 +91,8 @@ export class SearchPage {
     private toastCtrl: ToastController,
     private translate: TranslateService,
     private events: Events,
-    private appGlobal: AppGlobalService) {
+    private appGlobal: AppGlobalService,
+    private popUp: PopoverController) {
 
     this.checkUserSession();
 
@@ -478,7 +481,31 @@ export class SearchPage {
     }
 
     if (this.dialCodeResult.length == 0 && this.dialCodeContentResult.length == 0) {
-      this.isEmptyResult = true;
+      this.navCtrl.pop();
+      let popOver: Popover;
+      const callback: QRAlertCallBack = {
+        tryAgain() {
+          popOver.dismiss()
+        },
+        cancel() {
+          popOver.dismiss()
+        }
+      }
+      popOver = this.popUp.create(QRScannerAlert, {
+        callback: callback,
+        icon: "./assets/imgs/ic_coming_soon.png",
+        messageKey: "CONTENT_COMING_SOON",
+        cancelKey: "hide",
+        tryAgainKey: "DONE",
+      }, {
+          cssClass: 'qr-alert'
+        });
+
+      setTimeout(()=> {
+        popOver.present();
+      }, 300)
+
+      // this.isEmptyResult = true;
     } else {
       this.isEmptyResult = false;
     }
