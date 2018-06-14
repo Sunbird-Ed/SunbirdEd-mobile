@@ -318,7 +318,7 @@ export class CollectionDetailsPage {
     this.contentDetail = data.result.contentData ? data.result.contentData : [];
     this.contentDetail.isAvailableLocally = data.result.isAvailableLocally;
     this.objId = this.contentDetail.identifier;
-    this.objType = this.contentDetail.contentType;
+    // this.objType = this.contentDetail.contentType;
     this.objVer = this.contentDetail.pkgVersion;
     if (this.contentDetail.gradeLevel && this.contentDetail.gradeLevel.length) {
       this.contentDetail.gradeLevel = this.contentDetail.gradeLevel.join(", ");
@@ -565,6 +565,7 @@ export class CollectionDetailsPage {
       if (!this.didViewLoad) {
         this.generateRollUp();
         let contentType = this.cardData.contentData ? this.cardData.contentData.contentType : this.cardData.contentType;
+        this.objType = contentType;
         this.generateStartEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
         this.generateImpressionEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
       }

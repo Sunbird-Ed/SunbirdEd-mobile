@@ -37,7 +37,7 @@
         <p class="profile-completed-text" *ngIf="profileProgress.length">{{ 'YOUR_PROFILE_IS' | translate:{'%s': profileProgress} }}</p>
       </ion-col>
       <ion-col col-5 text-right class="profile-completed-ion-col">
-        <p class="profile-add-exp-text" (click)="completeProfile()">+ {{ uncompletedDetails?.title | translate }}</p>
+        <p class="profile-add-exp-text" (click)="completeProfile()" *ngIf="profileProgress<100">+ {{ uncompletedDetails?.title | translate }}</p>
       </ion-col>
     </ion-row>
     <pb-horizontal progress="{{ profileProgress }}"></pb-horizontal>

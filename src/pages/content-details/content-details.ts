@@ -349,7 +349,7 @@ export class ContentDetailsPage {
       }
     }
     this.objId = this.content.identifier;
-    this.objType = this.content.contentType;
+    // this.objType = this.content.contentType;
     this.objVer = this.content.pkgVersion;
 
     //User Rating
@@ -396,6 +396,7 @@ export class ContentDetailsPage {
     if (!this.didViewLoad && !this.isContentPlayed) {
       this.generateRollUp();
       let contentType = this.cardData.contentData ? this.cardData.contentData.contentType : this.cardData.contentType;
+      this.objType = contentType;
       this.generateStartEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
       this.generateImpressionEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
     }

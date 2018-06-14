@@ -91,11 +91,17 @@ export class MyApp {
       that.authService.getSessionData((session) => {
         if (session === null || session === "null") {
           this.preference.getString('selected_user_type', (val) => {
-            if (val != "") {
-              if (val == ProfileType.TEACHER) {
+            if (val !== undefined && val !== "") {
+              if (val === ProfileType.TEACHER) {
                 initTabs(this.containerService, GUEST_TEACHER_TABS);
-              } else if (val == ProfileType.STUDENT) {
+              } else if (val === ProfileType.STUDENT) {
                 initTabs(this.containerService, GUEST_STUDENT_TABS);
+              } else if (val === "student") {   // This additional checks are added because previous users had user type stored lower case and app would show blank screen due to mismatch in types
+                this.preference.putString('selected_user_type', ProfileType.STUDENT)
+                initTabs(this.containerService, GUEST_STUDENT_TABS);
+              } else if (val === "teacher") {
+                this.preference.putString('selected_user_type', ProfileType.TEACHER)
+                initTabs(this.containerService, GUEST_TEACHER_TABS);
               }
 
               that.rootPage = TabsPage;
@@ -122,7 +128,7 @@ export class MyApp {
                   that.getToast(this.translateMessage('WELCOME_BACK', JSON.parse(res).firstName)).present();
                 }, 2500);
               }, (err: any) => {
-                });
+              });
             }
           });
 
@@ -177,7 +183,7 @@ export class MyApp {
           self.presentToast();
           setTimeout(() => { self.counter = 0 }, 1500)
         } else {
-          this.telemetryService.end(generateEndTelemetry("app", "", "", "", "", "",undefined,undefined));
+          this.telemetryService.end(generateEndTelemetry("app", "", "", "", "", "", undefined, undefined));
           self.platform.exitApp();
         }
       }
@@ -262,7 +268,7 @@ export class MyApp {
   }
 
   generateInteractEvent(pageid: string) {
-    this.telemetryService.interact( generateInteractTelemetry(
+    this.telemetryService.interact(generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.TAB_CLICKED,
       Environment.HOME,
@@ -311,8 +317,8 @@ export class MyApp {
 
   showAppWalkThroughScreen() {
     this.preference.getString('show_app_walkthrough_screen', (value) => {
-        let val = (value === '') ? 'true' : 'false';
-        this.preference.putString('show_app_walkthrough_screen', val);
+      let val = (value === '') ? 'true' : 'false';
+      this.preference.putString('show_app_walkthrough_screen', val);
     });
   }
 
