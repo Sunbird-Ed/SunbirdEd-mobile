@@ -88,7 +88,7 @@ export class HomePage {
    * @param {HttpClient} http Reference of http client service to make api call
    */
 
-  logo: string = "assets/imgs/ic_logo.png";
+  logo: string = "assets/imgs/ic_launcher.png";
 
   constructor(public navCtrl: NavController,
     private courseService: CourseService,
