@@ -59,6 +59,7 @@
   "COMMUNITIES": "Community",
   "CONFIRM": "Confirm",
   "CONFIRM_DEL": "Delete {{%s}}?",
+  "CONTENT_COMING_SOON": "Content is coming soon",
   "CONTENT_CREATED_BY": "By",
   "CONTENT_FLAGGED_MSG": "Content flagged  ",
   "CONTENT_FLAG_FAIL": "Flagging content failed",
