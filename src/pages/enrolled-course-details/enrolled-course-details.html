@@ -130,18 +130,14 @@
 					</ion-col>
 				</ion-row>
 			</div>
-			<ion-grid class="padding-top-25" *ngIf="childrenData && childrenData.length === 0 && !showChildrenLoader">
-				<ion-row>
-					<ion-col>
-						<div text-center> {{ 'CONTENT_NOT_ADDED_YET' | translate }} </div>
-					</ion-col>
-				</ion-row>
-			</ion-grid>
+			<div text-center *ngIf="childrenData && childrenData.length === 0 && !showChildrenLoader">
+				<img src="assets/imgs/ic_coming_soon.png" width="100px" height="80px"/>
+				<h4><b>{{ 'UNIT_COMING_SOON' | translate }}</b></h4>
+				<p>{{ 'CONTENT_CREATING' | translate }}</p>
+			</div>
 			<!-- End import content -->
 		</div>
-		<br/>
-		<br/>
-		<!-- -->
+		<br/><br/>
 		<div class="license-section padding-10 background-gray" *ngIf="course.license || course.attributions">
 			<div class="row" *ngIf="showLicense">
 				<span *ngIf="course.attributions">
