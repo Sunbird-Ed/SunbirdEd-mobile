@@ -376,6 +376,8 @@
   "UNIT_COMING_SOON": "Coming soon!",
   "UNKNOWN_QR": "Could not find any content associated with scanned QR code",
   "UPDATE": "Update",
+  "UPDATE_CONTENT": "Update Content ({{%s}})",
+  "UPDATING_CONTENT": "Updating... {{%s}} %",
   "USERNAME": "User name: {{%s}}",
   "USER_NAME": "USER NAME",
   "USER_NAME_PROFILE": "User Name",
