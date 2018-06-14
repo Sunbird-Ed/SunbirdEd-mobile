@@ -58,6 +58,12 @@ export class OnboardingCardComponent {
 
     this.initializeService();
 
+    this.events.subscribe('slide-onboarding-card', (value) => {
+      console.log("Index value - " + value.slideIndex);
+      this.mSlides.lockSwipes(false);
+      this.mSlides.slideNext(500);
+    });
+
     this.events.subscribe(OnboardingCardComponent.USER_INFO_UPDATED, () => {
       this.reinitializeCards();
     });
@@ -131,58 +137,6 @@ export class OnboardingCardComponent {
   }
 
   /**
-   * It Filter out the selected value and stores in object
-   * @param {object} selectedSlide Object of all Options
-   * @param {number} index         Slide index
-   */
-  selectedCheckboxValue(selectedSlide: any, index: number) {
-    this.onboardingService.onBoardingSlides[index].selectedCode = [];
-    this.onboardingService.onBoardingSlides[index].selectedOptions = '';
-
-    for (let i = index; i < 5; i++) {
-      this.onboardingService.onBoardingSlides[i].selectedCode = [];
-      this.onboardingService.onBoardingSlides[i].selectedOptions = '';
-    }
-
-    if (index === 0) {
-      this.onboardingService.profile.board = [];
-      this.onboardingService.profile.grade = [];
-      this.onboardingService.profile.subject = [];
-      this.onboardingService.profile.medium = [];
-    } else if (index === 1) {
-      this.onboardingService.profile.grade = [];
-      this.onboardingService.profile.subject = [];
-      this.onboardingService.profile.medium = [];
-    } else if (index === 2) {
-      this.onboardingService.profile.grade = [];
-      this.onboardingService.profile.subject = [];
-    } else if (index === 3) {
-      this.onboardingService.profile.subject = [];
-    }
-
-    selectedSlide.options.forEach(options => {
-      if (options.checked) {
-        this.onboardingService.onBoardingSlides[index].selectedCode.push(options.value);
-      }
-    });
-
-    let displayValues = [];
-    this.onboardingService.onBoardingSlides[index].options.forEach(element => {
-      if (_.includes(this.onboardingService.onBoardingSlides[index].selectedCode, element.value)) {
-        displayValues.push(element.text);
-      }
-    });
-    this.onboardingService.onBoardingSlides[index].selectedOptions = this.onboardingService.arrayToString(displayValues);
-
-    // If user Selected Something from the list then only move the slide to next slide
-    if (this.onboardingService.onBoardingSlides[index].selectedOptions != '') {
-      this.mSlides.lockSwipes(false);
-      this.mSlides.slideNext(500);
-    }
-    this.onboardingService.saveDetails(index);
-  }
-
-  /**
    * This gets called when user clicks on the select box it will internally call an popover and receives a callback from that same page.
    * @param {object} selectedSlide object of Options
    * @param {number} index Slide index
@@ -191,7 +145,7 @@ export class OnboardingCardComponent {
     const that = this;
     const callback: onBoardingSlidesCallback = {
       save() {
-        that.selectedCheckboxValue(selectedSlide, index);
+        that.onboardingService.selectedCheckboxValue(selectedSlide, index);
       }
     }
 
