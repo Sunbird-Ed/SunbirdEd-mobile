@@ -52,25 +52,26 @@ export class OnboardingService {
         return new Promise((resolve, reject) => {
 
             this.profileService.getCurrentUser((res: any) => {
-                let profile: Profile = JSON.parse(res);
+                this.profile = JSON.parse(res);
                 let syllabusFramework: string = '';
 
-                if (profile.syllabus && profile.syllabus[0] !== '') {
-                    syllabusFramework = profile.syllabus[0];
-                }
+                this.initializeSlides();
 
-                this.formAndFrameworkUtilService.getFrameworkDetails(syllabusFramework)
-                    .then(catagories => {
-                        this.categories = catagories;
-                        this.initializeSlides();
-                        return this.getCurrentUser();
-                    })
-                    .then(index => {
-                        resolve(index);
-                    })
-                    .catch(err => {
-                        reject(err);
-                    });
+                if (this.profile.syllabus && this.profile.syllabus[0] !== '') {
+                    syllabusFramework = this.profile.syllabus[0];
+
+                    this.formAndFrameworkUtilService.getFrameworkDetails(syllabusFramework)
+                        .then(catagories => {
+                            this.categories = catagories;
+                            return this.getCurrentUser();
+                        })
+                        .then(index => {
+                            resolve(index);
+                        })
+                        .catch(err => {
+                            reject(err);
+                        });
+                }
             },
                 (err: any) => {
                     console.log("Err1", err);
@@ -201,7 +202,7 @@ export class OnboardingService {
      * @param {string} currentCategory - request Parameter passing to the framework API
      * @param {string} list - Local variable name to hold the list data
      */
-    getCategoryData(req: CategoryRequest, list, index?: number): void {
+    getCategoryData(req: CategoryRequest, list, index: number, hasUserClicked: boolean): void {
 
         if (this.frameworkId !== undefined && this.frameworkId.length) {
             req.frameworkId = this.frameworkId;
@@ -238,34 +239,41 @@ export class OnboardingService {
                     this.getListArray(list);
                     console.log(list + " Category Response: " + this[list]);
 
-                    //check if the list has single item
-                    if (list === "boardList" && this[list].length === 1) {
-                        //make the item as checked
-                        this[list][0].checked = true;
+                    //End the loader here
+                    this.events.publish('is-data-available', { show: true, index: index });
 
-                        this.onBoardingSlides[1].selectedOptions = this[list][0].text;
+                    //if the user has not clicked on the button, only then it has to be automated for single values
+                    if (!hasUserClicked) {
+                        //check if the list has single item
+                        if (list === "boardList" && this[list].length === 1) {
+                            //make the item as checked
+                            this[list][0].checked = true;
 
-                        this.onBoardingSlides[1].selectedCode.push(this[list][0].value);
+                            this.onBoardingSlides[1].selectedOptions = this[list][0].text;
 
-                        this.setAndSaveDetails(this.onBoardingSlides[index], index);
-                    }else if (list === "mediumList" && this[list].length === 1) {
-                          //make the item as checked
-                          this[list][0].checked = true;
+                            this.onBoardingSlides[1].selectedCode.push(this[list][0].value);
 
-                          this.onBoardingSlides[2].selectedOptions = this[list][0].text;
-  
-                          this.onBoardingSlides[2].selectedCode.push(this[list][0].value);
-  
-                          this.setAndSaveDetails(this.onBoardingSlides[index], index);
-                    } else if (list === "gradeList" && this[list].length === 1) {
-                          //make the item as checked
-                          this[list][0].checked = true;
+                            this.setAndSaveDetails(this.onBoardingSlides[index], index);
+                        } else if (list === "mediumList" && this[list].length === 1) {
+                            //make the item as checked
+                            this[list][0].checked = true;
 
-                          this.onBoardingSlides[3].selectedOptions = this[list][0].text;
-  
-                          this.onBoardingSlides[3].selectedCode.push(this[list][0].value);
-  
-                          this.setAndSaveDetails(this.onBoardingSlides[index], index);
+                            this.onBoardingSlides[2].selectedOptions = this[list][0].text;
+
+                            this.onBoardingSlides[2].selectedCode.push(this[list][0].value);
+
+                            this.setAndSaveDetails(this.onBoardingSlides[index], index);
+                        } else if (list === "gradeList" && this[list].length === 1) {
+                            //make the item as checked
+                            this[list][0].checked = true;
+
+                            this.onBoardingSlides[3].selectedOptions = this[list][0].text;
+
+                            this.onBoardingSlides[3].selectedCode.push(this[list][0].value);
+
+                            this.setAndSaveDetails(this.onBoardingSlides[index], index);
+                        }
+
                     }
                 }
             })
@@ -300,12 +308,17 @@ export class OnboardingService {
      * @param {any}    currentField
      * @param {string} prevSelectedValue
      */
-    checkPrevValue(index: number = 0, currentField, prevSelectedValue = []) {
+    checkPrevValue(index: number = 0, currentField, prevSelectedValue = [], hasUserClicked: boolean) {
 
         if (index === 0) {
             this[currentField] = this.syllabusList;
         } else if (index === 1) {
-            this.frameworkId = prevSelectedValue[0];
+            //if the user has not clicked on the button, only then it has to show the loader
+            if (!hasUserClicked) {
+                //publish a event to show the loader on card here
+                this.events.publish('is-data-available', { show: false, index: index });
+            }
+
             this.formAndFrameworkUtilService.getFrameworkDetails(this.frameworkId)
                 .then(catagories => {
                     this.categories = catagories;
@@ -313,15 +326,21 @@ export class OnboardingService {
                     let request: CategoryRequest = {
                         currentCategory: this.categories[0].code,
                     }
-                    this.getCategoryData(request, currentField, index);
+                    this.getCategoryData(request, currentField, index, hasUserClicked);
                 });
         } else {
+            //if the user has not clicked on the button, only then it has to show the loader
+            if (!hasUserClicked) {
+                //publish a event to show the loader on card here
+                this.events.publish('is-data-available', { show: false, index: index });
+            }
+
             let request: CategoryRequest = {
                 currentCategory: this.categories[index - 1].code,
                 prevCategory: this.categories[index - 2].code,
                 selectedCode: prevSelectedValue
             }
-            this.getCategoryData(request, currentField, index);
+            this.getCategoryData(request, currentField, index, hasUserClicked);
         }
 
     }
@@ -458,32 +477,39 @@ export class OnboardingService {
             }
         });
         this.onBoardingSlides[index].selectedOptions = this.arrayToString(displayValues);
+
+        this.saveDetails(index);
+
         // If user Selected Something from the list then only move the slide to next slide
         if (this.onBoardingSlides[index].selectedOptions != '') {
             this.events.publish('slide-onboarding-card', { slideIndex: index });
         }
-        this.saveDetails(index);
+
         if (index === 0) {
             this.profile.board = [];
             this.profile.grade = [];
             this.profile.subject = [];
             this.profile.medium = [];
-            this.checkPrevValue(index + 1, this.getListName(index + 1), this.profile.syllabus);
+
+            //save the framework id here
+            this.frameworkId = this.onBoardingSlides[index].selectedCode[0];
+
+            this.checkPrevValue(index + 1, this.getListName(index + 1), this.profile.syllabus, false);
         }
         else if (index === 1) {
             this.profile.grade = [];
             this.profile.subject = [];
             this.profile.medium = [];
-            this.checkPrevValue(index + 1, this.getListName(index + 1), this.profile.board);
+            this.checkPrevValue(index + 1, this.getListName(index + 1), this.profile.board, false);
         }
         else if (index === 2) {
             this.profile.grade = [];
             this.profile.subject = [];
-            this.checkPrevValue(index + 1, this.getListName(index + 1), this.profile.medium);
+            this.checkPrevValue(index + 1, this.getListName(index + 1), this.profile.medium, false);
         }
         else if (index === 3) {
             this.profile.subject = [];
-            this.checkPrevValue(index + 1, this.getListName(index + 1), this.profile.grade);
+            this.checkPrevValue(index + 1, this.getListName(index + 1), this.profile.grade, false);
         }
     }
 }

@@ -24,7 +24,7 @@ export class OnboardingCardComponent {
   @ViewChild(Slides) mSlides: Slides;
   isOnBoardCard: boolean = true;
   loader: boolean = false;
-  isSyllabusDataAvailable = false;
+  isDataAvailable = false;
 
   options: toastOptions = {
     message: '',
@@ -49,14 +49,22 @@ export class OnboardingCardComponent {
         this.showLoader(false)
 
         if (result && result !== undefined) {
-          this.isSyllabusDataAvailable = true;
+          this.isDataAvailable = true;
         } else {
-          this.isSyllabusDataAvailable = false;
+          this.isDataAvailable = false;
           this.getToast(this.translateMessage('NO_DATA_FOUND')).present();
         }
       });
 
     this.initializeService();
+
+
+    this.events.subscribe('is-data-available', (value) => {
+      let index = value.index;
+      let loaderFlag = !value.show;
+      this.showLoader(loaderFlag)
+      this.isDataAvailable = value.show;
+    });
 
     this.events.subscribe('slide-onboarding-card', (value) => {
       console.log("Index value - " + value.slideIndex);
@@ -149,11 +157,11 @@ export class OnboardingCardComponent {
       }
     }
 
-    if (index === 0) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index));
-    if (index === 1) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.syllabus);
-    if (index === 2) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.board);
-    if (index === 3) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.medium);
-    if (index === 4) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.grade);
+    if (index === 0) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), undefined, true);
+    if (index === 1) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.syllabus, true);
+    if (index === 2) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.board, true);
+    if (index === 3) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.medium, true);
+    if (index === 4) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.grade, true);
 
     let popUp = this.popupCtrl.create(OnboardingAlert, { facet: selectedSlide, callback: callback, index: index }, {
       cssClass: 'onboarding-alert'
