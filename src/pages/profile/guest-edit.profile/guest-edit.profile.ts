@@ -96,9 +96,7 @@ export class GuestEditProfilePage {
             this.syllabusList.push(value);
           });
 
-          loader.dismiss();
           if (this.profile && this.profile.syllabus && this.profile.syllabus[0] !== undefined) {
-            loader.present();
             this.formAndFrameworkUtilService.getFrameworkDetails(this.profile.syllabus[0])
               .then(catagories => {
                 loader.dismiss();
@@ -125,6 +123,8 @@ export class GuestEditProfilePage {
                 });
 
               });
+          } else {
+            loader.dismiss();
           }
         } else {
           loader.dismiss();
