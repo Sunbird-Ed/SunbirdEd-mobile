@@ -123,8 +123,8 @@ export class FormAndFrameworkUtilService {
 
             this.framework.getFrameworkDetails(req,
                 (res: any) => {
-                    let categories = JSON.parse(JSON.parse(res).result.framework).categories;
-                    resolve(categories);
+                    // let categories = JSON.parse(JSON.parse(res).result.framework).categories;
+                    resolve(res);
                 },
                 (err: any) => {
                     reject(err);
