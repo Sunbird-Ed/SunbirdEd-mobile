@@ -73,7 +73,7 @@
         <div class="details ellipsis">
           <p>{{ ed?.degree }}</p>
           <p *ngIf="ed?.yearOfPassing">{{ 'YEAR_OF_PASSING' | translate }} : {{ ed?.yearOfPassing }}</p>
-          <p *ngIf="ed?.grade">{{ 'CLASS' | translate }}: {{ ed?.grade }}({{ ed?.percentage }}%)</p>
+          <p *ngIf="ed?.grade">{{ 'GRADE' | translate }}: {{ ed?.grade }}({{ ed?.percentage }}%)</p>
           <p>{{ ed?.boardOrUniversity }}</p>
         </div>
       </ion-col>
@@ -195,7 +195,7 @@
   <ion-item padding-horizontal class="additional-info" no-lines>
     <ion-row *ngIf="profile?.language && profile?.language[0]">
       <ion-col col-5>
-        <span text-uppercase class="info-title">{{ 'LANGUAGE' | translate }}</span>
+        <span text-uppercase class="info-title">{{ 'LANGUAGES' | translate }}</span>
       </ion-col>
       <ion-col col-7 text-right>
         <span class="ellipsis">{{ languages }}</span>
@@ -249,7 +249,7 @@
 
     <ion-row *ngIf="grades">
       <ion-col col-5>
-        <span text-uppercase class="info-title">{{ 'GRADE' | translate }}</span>
+        <span text-uppercase class="info-title">{{ 'CLASS' | translate }}</span>
       </ion-col>
       <ion-col col-7 text-end>
         <span class="ellipsis">{{ grades }}</span>

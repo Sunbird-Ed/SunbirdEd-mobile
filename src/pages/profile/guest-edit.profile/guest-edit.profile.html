@@ -33,7 +33,7 @@
 
     <!-- Medium -->
     <ion-item no-lines>
-      <ion-label stacked text-uppercase>{{'MEDIUM' | translate }}
+      <ion-label stacked text-uppercase>{{'MEDIUM_OF_INSTRUCTION' | translate }}
       </ion-label>
       <ion-select mode="wp" multiple="true" text-capitalize [disabled]="!(guestEditForm.value.boards != '')" formControlName="medium"
         (ionChange)="resetForm(2)" placeholder="{{'SELECT' | translate }}" okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}">
@@ -43,7 +43,7 @@
 
     <!-- Grade -->
     <ion-item no-lines>
-      <ion-label stacked text-uppercase>{{'GRADE' | translate }}
+      <ion-label stacked text-uppercase>{{'CLASS' | translate }}
       </ion-label>
       <ion-select mode="wp" multiple="true" text-capitalize [disabled]="!(guestEditForm.value.medium != '')" formControlName="grades"
         (ionChange)="resetForm(3)" placeholder="{{'SELECT' | translate }}" okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}">

@@ -52,7 +52,7 @@
 		<br/>
 
 		<!-- Read more / less -->
-		<div class="about-section" *ngIf="contentDetail.description || contentDetail.gradeLevel || contentDetail.subject">
+		<div class="about-section" *ngIf="contentDetail.description || contentDetail.gradeLevel || contentDetail.subject || contentDetail.board">
 			<h6 class="padding-10 background-gray font-size-20">{{ 'ABOUT' | translate }}</h6>
 			<p *ngIf="!showMoreFlag" class="text-gray-color">
 				{{ (contentDetail.description && contentDetail.description.length > 100) ? (contentDetail.description | slice:0:10) + '...'
@@ -62,15 +62,19 @@
 					{{ contentDetail.description }}
 				</p>
 				<div *ngIf="contentDetail.gradeLevel && contentDetail.gradeLevel.length" margin-top>
-					<div class="content-meta-title" text-uppercase>{{ 'GRADE' | translate }}</div>
+					<div class="content-meta-title" text-uppercase>{{ 'CLASS' | translate }}</div>
 					<span class="text-gray-color">{{contentDetail.gradeLevel}}</span>
 				</div>
 				<div *ngIf="contentDetail.subject" margin-top>
-					<div class="content-meta-title">{{ 'SUBJECT' | translate }}</div>
+					<div class="content-meta-title" text-uppercase>{{ 'SUBJECT' | translate }}</div>
 					<span class="text-gray-color">{{contentDetail.subject}}</span>
 				</div>
+				<div *ngIf="contentDetail.board" margin-top>
+					<div class="content-meta-title" text-uppercase>{{ 'BOARD' | translate }}</div>
+					<span class="text-gray-color">{{contentDetail.board}}</span>
+				</div>
 				<div *ngIf="contentDetail.medium" margin-top>
-					<div class="content-meta-title">{{ 'MEDIUM_2' | translate }}</div>
+					<div class="content-meta-title">{{ 'MEDIUM' | translate }}</div>
 					<span class="text-gray-color">{{contentDetail.medium}}</span>
 				</div>
 			</div>

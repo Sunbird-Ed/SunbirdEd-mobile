@@ -43,18 +43,18 @@ export class PageFilterConstants {
     public static readonly COURSE_FILTER = [
         {
             name: "language",
-            displayName: "Language",
+            displayName: "LANGUAGE",
             values: frameworkDataList.languageList.sort()
         },
         {
             name: "subject",
-            displayName: "Subject",
+            displayName: "SUBJECT",
             values: frameworkDataList.subjectList.sort()
 
         },
         {
             name: "medium",
-            displayName: "Medium",
+            displayName: "MEDIUM",
             values: frameworkDataList.mediumList.sort()
         }
     ];
@@ -62,29 +62,29 @@ export class PageFilterConstants {
     public static readonly RESOURCE_FILTER = [
         {
             name: "board",
-            displayName: "Board",
+            displayName: "BOARD",
             values: frameworkDataList.boardList.sort()
         },
         {
             name: "gradeLevel",
-            displayName: "Class",
+            displayName: "CLASS",
             values: frameworkDataList.gradeList.sort()
         },
         {
             name: "subject",
-            displayName: "Subject",
+            displayName: "SUBJECT",
             values: frameworkDataList.subjectList.sort()
 
         },
         {
             name: "medium",
-            displayName: "Medium",
+            displayName: "MEDIUM",
             values: frameworkDataList.mediumList.sort()
 
         },
         {
             name: "contentType",
-            displayName: "Resource Type",
+            displayName: "RESOURCE_TYPE",
             values: frameworkDataList.contentTypeList.sort()
         }
     ];

@@ -89,11 +89,11 @@
     </ion-item>
 
     <ion-item>
-      <ion-label stacked>{{'GRADE' | translate }}</ion-label>
+      <ion-label stacked>{{'CLASS' | translate }}</ion-label>
       <ion-select formControlName="grade" multiple="true" interface="popover" placeholder="{{'SELECT' | translate }}">
         <ion-option *ngFor="let grade of gradeList" text-capitalize value="{{grade}}">{{grade}}</ion-option>
       </ion-select>
-      <button ion-button item-right clear small icon-only color="dark" (click)="toggleLock('grade', 'GRADE')">
+      <button ion-button item-right clear small icon-only color="dark" (click)="toggleLock('grade', 'CLASS')">
         <ion-icon name="{{ profileVisibility?.grade === 'private' ? 'lock' : 'unlock' }}" class="lock-position"></ion-icon>
       </button>
     </ion-item>
