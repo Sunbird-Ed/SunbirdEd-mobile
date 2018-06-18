@@ -8,6 +8,7 @@ import { Network } from '@ionic-native/network';
 import * as _ from 'lodash';
 import { generateInteractTelemetry, Map, generateStartTelemetry, generateImpressionTelemetry, generateEndTelemetry } from '../../app/telemetryutil';
 import { TranslateService } from '@ngx-translate/core';
+import { EventTopics } from '../../app/app.constant';
 
 @IonicPage()
 @Component({
@@ -154,51 +155,51 @@ export class ContentDetailsPage {
     private buildParamService: BuildParamService, private network: Network,
     private authService: AuthService, private courseService: CourseService,
     private preference: SharedPreferences) {
-      this.getUserId();
-      this.navCtrl = navCtrl;
-      this.navParams = navParams;
-      this.contentService = contentService;
-      this.zone = zone;
-      this.toastCtrl = toastCtrl;
-      this.loadingCtrl = loadingCtrl;
-      console.warn('Inside content details page');
-      this.backButtonFunc = this.platform.registerBackButtonAction(() => {
-        this.didViewLoad = false;
-        this.navCtrl.pop();
-        this.generateEndEvent(this.objId, this.objType, this.objVer);
-        this.backButtonFunc();
-      }, 10)
-      this.objRollup = new Rollup();
-      this.buildParamService.getBuildConfigParam("BASE_URL", (response: any) => {
-        this.baseUrl = response
-      }, (error) => {
-        return "";
-      });
+    this.getUserId();
+    this.navCtrl = navCtrl;
+    this.navParams = navParams;
+    this.contentService = contentService;
+    this.zone = zone;
+    this.toastCtrl = toastCtrl;
+    this.loadingCtrl = loadingCtrl;
+    console.warn('Inside content details page');
+    this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      this.didViewLoad = false;
+      this.navCtrl.pop();
+      this.generateEndEvent(this.objId, this.objType, this.objVer);
+      this.backButtonFunc();
+    }, 10)
+    this.objRollup = new Rollup();
+    this.buildParamService.getBuildConfigParam("BASE_URL", (response: any) => {
+      this.baseUrl = response
+    }, (error) => {
+      return "";
+    });
 
-      this.checkLoggedInOrGuestUser();
-      this.checkCurrentUserType();
+    this.checkLoggedInOrGuestUser();
+    this.checkCurrentUserType();
 
-      //This is to know when the app has come to foreground
-      this.resume = platform.resume.subscribe(() => {
-        this.isContentPlayed = true;
-        if (this.isPlayerLaunched && !this.guestUser) {
-          this.isPlayerLaunched = false;
-          this.setContentDetails(this.identifier, false, true);
-        }
-        this.updateContentProgress();
-      });
-
-      if (this.network.type === 'none') {
-        this.isNetworkAvailable = false;
-      } else {
-        this.isNetworkAvailable = true;
+    //This is to know when the app has come to foreground
+    this.resume = platform.resume.subscribe(() => {
+      this.isContentPlayed = true;
+      if (this.isPlayerLaunched && !this.guestUser) {
+        this.isPlayerLaunched = false;
+        this.setContentDetails(this.identifier, false, true);
       }
-      this.network.onDisconnect().subscribe((data) => {
-        this.isNetworkAvailable = false;
-      });
-      this.network.onConnect().subscribe((data) => {
-        this.isNetworkAvailable = true;
-      });
+      this.updateContentProgress();
+    });
+
+    if (this.network.type === 'none') {
+      this.isNetworkAvailable = false;
+    } else {
+      this.isNetworkAvailable = true;
+    }
+    this.network.onDisconnect().subscribe((data) => {
+      this.isNetworkAvailable = false;
+    });
+    this.network.onConnect().subscribe((data) => {
+      this.isNetworkAvailable = true;
+    });
   }
 
   /**
@@ -287,8 +288,8 @@ export class ContentDetailsPage {
    * @param {string} identifier identifier of content / course
    */
   setContentDetails(identifier, refreshContentDetails: boolean | true, showRating: boolean) {
-    let loader ;
-    if(!showRating){
+    let loader;
+    if (!showRating) {
       loader = this.getLoader();
       loader.present();
     }
@@ -305,11 +306,11 @@ export class ContentDetailsPage {
         console.log('Success: Content details received... @@@', data);
         if (data && data.result) {
           this.extractApiResponse(data);
-          if(!showRating){
+          if (!showRating) {
             loader.dismiss();
           }
         } else {
-          if(!showRating){
+          if (!showRating) {
             loader.dismiss();
           }
         }
@@ -322,7 +323,7 @@ export class ContentDetailsPage {
       });
     },
       error => {
-        if(showRating){
+        if (showRating) {
           loader.dismiss();
         }
         this.translateAndDisplayMessage('ERROR_CONTENT_NOT_AVAILABLE', true);
@@ -344,8 +345,8 @@ export class ContentDetailsPage {
     }
     if (this.content.me_totalRatings) {
       let rating = this.content.me_totalRatings.split(".");
-      if (rating && rating[0]){
-        this.content.me_totalRatings =  rating[0];
+      if (rating && rating[0]) {
+        this.content.me_totalRatings = rating[0];
       }
     }
     this.objId = this.content.identifier;
@@ -390,7 +391,7 @@ export class ContentDetailsPage {
   }
 
   //
-  generateTemetry(){
+  generateTemetry() {
     console.log('Before =>', this.didViewLoad);
     console.log('is content played', this.isContentPlayed);
     if (!this.didViewLoad && !this.isContentPlayed) {
@@ -621,7 +622,7 @@ export class ContentDetailsPage {
    * Download content
    */
   downloadContent() {
-    if (this.isNetworkAvailable){
+    if (this.isNetworkAvailable) {
       this.downloadProgress = '0';
       this.isDownloadStarted = true;
       this.importContent([this.identifier], this.isChildContent);
@@ -694,6 +695,9 @@ export class ContentDetailsPage {
         let res = JSON.parse(data);
         this.zone.run(() => {
           console.log('Course progress updated...', res);
+          this.events.publish(EventTopics.COURSE_STATUS_UPDATED_SUCCESSFULLY, {
+            update: true
+          });
         });
       }, (error: any) => {
         this.zone.run(() => {
@@ -742,7 +746,7 @@ export class ContentDetailsPage {
     this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_LIBRARY_INITIATED, this.content.contentType);
     let loader = this.getLoader();
     loader.present();
-    let url = this.baseUrl + "/public/#!/content/" +this.content.identifier;
+    let url = this.baseUrl + "/public/#!/content/" + this.content.identifier;
     if (this.content.downloadable) {
       this.shareUtil.exportEcar(this.content.identifier, path => {
         loader.dismiss();
