@@ -84,6 +84,9 @@ export class OnboardingCardComponent {
   }
 
   reinitializeCards() {
+    //reset slide index to -1
+    this.onboardingService.slideIndex = -1;
+
     this.onboardingService.initializeCard()
       .then(index => {
         console.log("reinitializeCards -  index = " + index);
@@ -124,7 +127,6 @@ export class OnboardingCardComponent {
   }
 
   initializeService() {
-    if (!this.onboardingService.categories.length) {
       this.onboardingService.initializeCard()
         .then(index => {
           console.log("initializeService -  index = " + index);
@@ -135,7 +137,6 @@ export class OnboardingCardComponent {
         .catch(error => {
 
         });
-    }
   }
 
   /**
