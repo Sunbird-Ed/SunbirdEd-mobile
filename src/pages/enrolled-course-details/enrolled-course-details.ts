@@ -618,7 +618,8 @@ export class EnrolledCourseDetailsPage {
         this.navCtrl.push(ContentDetailsPage, {
           content: content,
           depth: depth,
-          contentState: contentState
+          contentState: contentState,
+          isChildContent: true
         })
       }
     })
@@ -655,23 +656,17 @@ export class EnrolledCourseDetailsPage {
    * @param {string} identifier 
    */
   resumeContent(identifier): void {
-    // this.childrenData.length = 0;
     this.showResumeBtn = false;
-    // this.setContentDetails(identifier);
-    this.contentService.getContentDetail({ contentId: identifier }, (data: any) => {
-      this.zone.run(() => {
-        data = JSON.parse(data);
-        console.log('enrolled course details: ', data);
-        if (data && data.result) {
-          this.navigateToChildrenDetailsPage(data.result, '1')
-        } else {
-          this.showMessage(this.translateLanguageConstant('ERROR_FETCHING_DATA'));
-        }
-      });
-    },
-      (error: any) => {
-        this.showMessage(this.translateLanguageConstant('ERROR_FETCHING_DATA'));
-      });
+    this.navCtrl.push(ContentDetailsPage, {
+      content: { identifier: identifier },
+      depth: '1', // Needed to handle some UI elements. 
+      contentState: {
+        batchId: this.courseCardData.batchId ? this.courseCardData.batchId : '',
+        courseId: this.identifier
+      },
+      isResumedCourse: true,
+      isChildContent: true
+    });
   }
 
   /**
