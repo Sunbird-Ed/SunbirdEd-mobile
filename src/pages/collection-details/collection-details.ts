@@ -145,6 +145,8 @@ export class CollectionDetailsPage {
 
   public showLoading = false;
 
+  isUpdateAvailable: boolean = false;
+
   /**
    * To hold rating data
    */
@@ -295,10 +297,11 @@ export class CollectionDetailsPage {
       this.zone.run(() => {
         data = JSON.parse(data);
         console.log('Content details ==>>>>>', data);
-        if (data && data.result) {
-          this.extractApiResponse(data);
-        }
-        loader.dismiss();
+        loader.dismiss().then(() => {
+          if (data && data.result) {
+            this.extractApiResponse(data);
+          }
+        })
       });
     },
       error => {
@@ -332,9 +335,19 @@ export class CollectionDetailsPage {
     switch (data.result.isAvailableLocally) {
       case true: {
         this.showLoading = false;
-        console.log("Content locally available. Geting child content... @@@");
         this.contentDetail.size = data.result.sizeOnDevice;
-        this.setChildContents();
+        // data.result.isUpdateAvailable = true;
+        console.log("Content locally available. Looking for is update available or not...");
+        if (data.result.isUpdateAvailable && !this.isUpdateAvailable) {
+          console.log('update is available. Lets start import again...');
+          this.isUpdateAvailable = true;
+          this.showLoading = true;
+          this.importContent([this.identifier], false);
+        } else {
+          console.log('Update not available');
+          this.isUpdateAvailable = false;
+          this.setChildContents();
+        }
         break;
       }
       case false: {
@@ -618,6 +631,7 @@ export class CollectionDetailsPage {
     this.isDownlaodCompleted = false;
     this.currentCount = 0;
     this.downloadPercentage = 0;
+    this.isUpdateAvailable = false;
   }
 
   /**
@@ -659,20 +673,26 @@ export class CollectionDetailsPage {
               this.isDownlaodCompleted = true;
               this.contentDetail.isAvailableLocally = true;
               this.downloadPercentage = 0;
-              this.events.publish('savedResources:update', {
-                update: true
-              });
+              this.updateSavedResources();
             }
           } else {
-            this.setChildContents();
-            this.contentDetail.isAvailableLocally = true;
-            this.events.publish('savedResources:update', {
-              update: true
-            });
+            if (this.isUpdateAvailable) {
+              console.log('Done with auto import. Lets make getContentDetails api call with refreshContentDetails false');
+              this.setContentDetails(this.identifier, false);
+            } else {
+              this.updateSavedResources();
+              this.setChildContents();
+              this.contentDetail.isAvailableLocally = true;
+            }
           }
         }
-
       });
+    });
+  }
+
+  updateSavedResources() {
+    this.events.publish('savedResources:update', {
+      update: true
     });
   }
 
