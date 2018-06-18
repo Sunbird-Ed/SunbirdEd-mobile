@@ -225,7 +225,7 @@ export class ResourcesPage implements OnInit {
 	/**
 	 * Get popular content
 	 */
-	getPopularContent(isAfterLanguageChange = false, loader?, pageAssembleCriteria?: PageAssembleCriteria) {
+	getPopularContent(isAfterLanguageChange = false, pageAssembleCriteria?: PageAssembleCriteria) {
 		this.pageApiLoader = true;
 		//this.noInternetConnection = false;
 		let that = this;
@@ -306,7 +306,6 @@ export class ResourcesPage implements OnInit {
 				this.pageApiLoader = false;
 				//this.noInternetConnection = false;
 				this.checkEmptySearchResult(isAfterLanguageChange);
-				if (loader) loader.dismiss();
 			});
 		}, error => {
 			console.log('error while getting popular resources...', error);
@@ -318,7 +317,6 @@ export class ResourcesPage implements OnInit {
 				} else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
 					if (!isAfterLanguageChange) this.getMessageByConst('ERROR_FETCHING_DATA');
 				}
-				if (loader) loader.dismiss();
 			});
 		});
 	}
@@ -474,18 +472,12 @@ export class ResourcesPage implements OnInit {
 	 * @param refresher
 	 */
 	swipeDownToRefresh(refresher?) {
-		let loader = this.getLoader();
-		loader.present();
 		if (refresher) {
 			refresher.complete();
 		}
 
 		this.storyAndWorksheets = [];
 		this.setSavedContent();
-		/* 		if(refresher)
-					this.getPopularContent(false, refresher, loader);
-				else */
-
 		this.guestUser = !this.appGlobal.isUserLoggedIn();
 
 		if (this.guestUser) {
@@ -494,7 +486,7 @@ export class ResourcesPage implements OnInit {
 			this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
 		}
 
-		this.getPopularContent(false, loader);
+		this.getPopularContent(false);
 		this.checkNetworkStatus();
 	}
 
@@ -644,7 +636,7 @@ export class ResourcesPage implements OnInit {
 				}
 
 
-				that.getPopularContent(false, undefined, criteria)
+				that.getPopularContent(false, criteria)
 			}
 		}
 
@@ -698,13 +690,6 @@ export class ResourcesPage implements OnInit {
 				this.swipeDownToRefresh();
 			}
 		}
-	}
-
-	getLoader(): any {
-		return this.loadingCtrl.create({
-			duration: 30000,
-			spinner: "crescent"
-		});
 	}
 
 	/**

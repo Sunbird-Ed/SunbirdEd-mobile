@@ -423,8 +423,6 @@ export class CoursesPage implements OnInit {
    * @param refresher
    */
   getCourseTabData(refresher?) {
-    let loader = this.getLoader();
-    loader.present();
     setTimeout(() => {
       if (refresher) {
         refresher.complete();
@@ -436,10 +434,8 @@ export class CoursesPage implements OnInit {
 
     this.getUserId()
       .then(() => {
-        loader.dismiss();
       })
       .catch(error => {
-        loader.dismiss();
         console.log("Error while Fetching Data", error);
       });
 
@@ -631,7 +627,7 @@ export class CoursesPage implements OnInit {
   }
 
   /**
-   * 
+   *
    */
   checkEmptySearchResult(isAfterLanguageChange = false) {
     let flags = [];
@@ -677,12 +673,6 @@ export class CoursesPage implements OnInit {
         this.getCourseTabData();
       }
     }
-  }
-  getLoader(): any {
-    return this.loadingCtrl.create({
-      duration: 30000,
-      spinner: "crescent"
-    });
   }
 
   /**
