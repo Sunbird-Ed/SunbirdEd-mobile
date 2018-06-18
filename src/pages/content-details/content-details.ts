@@ -9,6 +9,7 @@ import * as _ from 'lodash';
 import { generateInteractTelemetry, Map, generateStartTelemetry, generateImpressionTelemetry, generateEndTelemetry } from '../../app/telemetryutil';
 import { TranslateService } from '@ngx-translate/core';
 import { EventTopics } from '../../app/app.constant';
+import { ShareUrl } from '../../app/app.constant';
 
 @IonicPage()
 @Component({
@@ -746,7 +747,7 @@ export class ContentDetailsPage {
     this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_LIBRARY_INITIATED, this.content.contentType);
     let loader = this.getLoader();
     loader.present();
-    let url = this.baseUrl + "/public/#!/content/" + this.content.identifier;
+    let url = this.baseUrl + ShareUrl.CONTENT +this.content.identifier;
     if (this.content.downloadable) {
       this.shareUtil.exportEcar(this.content.identifier, path => {
         loader.dismiss();

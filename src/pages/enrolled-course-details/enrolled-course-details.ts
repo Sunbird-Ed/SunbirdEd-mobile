@@ -13,7 +13,7 @@ import { ContentDetailsPage } from '../content-details/content-details';
 import { ContentActionsComponent } from '../../component/content-actions/content-actions';
 import { ReportIssuesComponent } from '../../component/report-issues/report-issues';
 import { TranslateService } from '@ngx-translate/core';
-import { ContentType, MimeType, ProfileConstants, EventTopics } from '../../app/app.constant';
+import { ContentType, MimeType, ProfileConstants, EventTopics, ShareUrl } from '../../app/app.constant';
 import { CourseBatchesPage } from '../course-batches/course-batches';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { Network } from '@ionic-native/network';
@@ -787,7 +787,7 @@ export class EnrolledCourseDetailsPage {
     this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_COURSE_INITIATED, this.course.contentType);
     let loader = this.getLoader();
     loader.present();
-    let url = this.baseUrl + "/public/#!/content/" +this.course.identifier;
+    let url = this.baseUrl + ShareUrl.COLLECTION +this.course.identifier;
     if (this.course.isAvailableLocally) {
       this.shareUtil.exportEcar(this.course.identifier, path => {
         loader.dismiss();
