@@ -73,9 +73,6 @@ export class OnboardingPage {
         'desc': 'ONBOARD_SLIDE_DESC_3'
       }*/
     ];
-    this.backButtonFunc = this.platform.registerBackButtonAction(() => {
-      this.navCtrl.setRoot(LanguageSettingsPage);
-    }, 10);
   }
 
   ionViewDidLoad() {
@@ -90,6 +87,16 @@ export class OnboardingPage {
         undefined,
         undefined)
     );
+  }
+
+  ionViewWillEnter() {
+    this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      this.navCtrl.setRoot(LanguageSettingsPage);
+    }, 10);
+  }
+
+  ionViewWillLeave() {
+    this.backButtonFunc();
   }
 
 
@@ -120,7 +127,7 @@ export class OnboardingPage {
       })
       .then(() => {
         loader.dismiss();
-        that.navCtrl.push(TabsPage);
+        that.navCtrl.setRoot(TabsPage);
       })
       .catch(error => {
         loader.dismiss();
@@ -227,7 +234,7 @@ export class OnboardingPage {
         };
         this.profileService.setCurrentProfile(true, profileRequest, res => {
           this.events.publish(AppGlobalService.USER_INFO_UPDATED);
-          this.navCtrl.push(TabsPage, {
+          this.navCtrl.setRoot(TabsPage, {
             loginMode: 'guest'
           });
         }, err => {
