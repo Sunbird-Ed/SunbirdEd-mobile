@@ -1,19 +1,11 @@
-<ion-card (click)="navigateToCourseDetailPage(course, layoutName);">
+<ion-card>
   <ion-grid no-padding>
-    <ion-row class="top-container" no-padding>
+    <ion-row class="top-container" no-padding (click)="navigateToCourseDetailPage(course, layoutName);">
       <ion-col col-12>
         <pb-horizontal *ngIf="course.cProgress" [progress]="course.cProgress" class="course-progress"></pb-horizontal>
         <div class="img-container">
         </div>
         <ion-badge class="badge" *ngIf="onProfile" color="light" item-end>{{course?.contentType}}</ion-badge>
-        <!-- <img-loader src="{{ course?.courseLogoUrl || course?.appIcon || defaultImg }}"
-          backgroundSize="cover"
-          width="200px"
-          height="95px"
-          spinner="true"
-          fallback="{{defaultImg}}"
-          fallbackAsPlaceholder="true"
-          (load)="onImageLoad($event)"></img-loader> -->
           <img class="app-icon" src="{{ course?.courseLogoUrl || course?.appIcon || defaultImg }}"/>
         <ion-label class="card-title">{{course?.courseName || course?.name}}</ion-label>
       </ion-col>
@@ -37,8 +29,8 @@
       </ion-col>
       <ion-col col-4>
         <button ion-button outline small float-end>
-          <span *ngIf="layoutName === 'Inprogress'">{{ ('RESUME' | translate).length > 6 ? ('RESUME' | translate | slice:0:06) + '...' : ('RESUME' | translate) }}</span>
-          <span *ngIf="layoutName !== 'Inprogress'">{{ ('OPEN' | translate).length > 6 ? ('OPEN' | translate | slice:0:06) + '...' : ('OPEN' | translate) }}</span>
+          <span *ngIf="layoutName === 'Inprogress'" (click)="resumeCourse(course);">{{ ('RESUME' | translate).length > 6 ? ('RESUME' | translate | slice:0:06) + '...' : ('RESUME' | translate) }}</span>
+          <span *ngIf="layoutName !== 'Inprogress'" (click)="navigateToCourseDetailPage(course, layoutName);">{{ ('OPEN' | translate).length > 6 ? ('OPEN' | translate | slice:0:06) + '...' : ('OPEN' | translate) }}</span>
         </button>
       </ion-col>
     </ion-row>

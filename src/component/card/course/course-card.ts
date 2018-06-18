@@ -46,8 +46,8 @@ export class CourseCard implements OnInit {
    * 
    * @param navCtrl To navigate user from one page to another
    */
-  constructor(public navCtrl: NavController, 
-    private courseUtilService: CourseUtilService, 
+  constructor(public navCtrl: NavController,
+    private courseUtilService: CourseUtilService,
     private events: Events) {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
@@ -60,33 +60,36 @@ export class CourseCard implements OnInit {
    */
   navigateToCourseDetailPage(content: any, layoutName: string): void {
     console.log('Card details... @@@', content);
+
     if (layoutName === 'Inprogress' || content.contentType === ContentType.COURSE) {
-      if (content.lastReadContentId && content.status === 1) {
-        this.events.publish('course:resume', {
-          content: content
-        });
-      } else {
-        this.navCtrl.push(EnrolledCourseDetailsPage, {
-          content: content
-        })
-      }
+      console.log('Inside course details page');
+      this.navCtrl.push(EnrolledCourseDetailsPage, {
+        content: content
+      });
+    } else if (content.mimeType === MimeType.COLLECTION) {
+      console.log('Inside CollectionDetailsPage');
+      this.navCtrl.push(CollectionDetailsPage, {
+        content: content
+      })
     } else {
-      if (content.contentType === ContentType.COURSE) {
-        console.log('Inside course details page');
-        this.navCtrl.push(EnrolledCourseDetailsPage, {
-          content: content
-        });
-      } else if (content.mimeType === MimeType.COLLECTION) {
-        console.log('Inside CollectionDetailsPage');
-        this.navCtrl.push(CollectionDetailsPage, {
-          content: content
-        })
-      } else {
-        console.log('Inside ContentDetailsPage');
-        this.navCtrl.push(ContentDetailsPage, {
-          content: content
-        })
-      }
+      console.log('Inside ContentDetailsPage');
+      this.navCtrl.push(ContentDetailsPage, {
+        content: content
+      })
+    }
+  }
+
+  resumeCourse(content: any) {
+    console.log('Resume course details... @@@', content);
+    if (content.lastReadContentId && content.status === 1) {
+      this.events.publish('course:resume', {
+        content: content
+      });
+    } else {
+      console.log('Inside CollectionDetailsPage');
+      this.navCtrl.push(EnrolledCourseDetailsPage, {
+        content: content
+      })
     }
   }
 
