@@ -696,8 +696,8 @@ export class CoursesPage implements OnInit {
   }
 
   getContentDetails(content) {
-    this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
-    this.tabBarElement.style.display = 'none';
+    // this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
+    // this.tabBarElement.style.display = 'none';
     let identifier = content.contentId || content.identifier;
     this.contentService.getContentDetail({ contentId: identifier }, (data: any) => {
       data = JSON.parse(data);
@@ -714,7 +714,8 @@ export class CoursesPage implements OnInit {
                 batchId: content.batchId ? content.batchId : '',
                 courseId: identifier
               },
-              isResumedCourse: true
+              isResumedCourse: true,
+              isChildContent: true
             });
             break;
           }
@@ -757,7 +758,7 @@ export class CoursesPage implements OnInit {
           });
           if (this.queuedIdentifiers.length === 0) {
             this.showOverlay = false;
-            this.tabBarElement.style.display = 'flex';
+            // this.tabBarElement.style.display = 'flex';
             this.showMessage(this.translateMessage('ERROR_CONTENT_NOT_AVAILABLE'));
             console.log('Content not downloaded');
           }
@@ -767,7 +768,7 @@ export class CoursesPage implements OnInit {
       (error: any) => {
         this.ngZone.run(() => {
           this.showOverlay = false;
-          this.tabBarElement.style.display = 'flex';
+          // this.tabBarElement.style.display = 'flex';
           this.showMessage(this.translateMessage('ERROR_CONTENT_NOT_AVAILABLE'));
         });
       });
@@ -787,7 +788,7 @@ export class CoursesPage implements OnInit {
 
         if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport' && this.downloadPercentage === 100) {
           this.showOverlay = false;
-          this.tabBarElement.style.display = 'flex';
+          // this.tabBarElement.style.display = 'flex';
           this.navCtrl.push(ContentDetailsPage, {
             content: { identifier: this.resumeContentData.lastReadContentId },
             depth: '1',
@@ -795,7 +796,8 @@ export class CoursesPage implements OnInit {
               batchId: this.resumeContentData.batchId ? this.resumeContentData.batchId : '',
               courseId: this.resumeContentData.contentId || this.resumeContentData.identifier
             },
-            isResumedCourse: true
+            isResumedCourse: true,
+            isChildContent: true
           });
         }
       });
@@ -806,10 +808,10 @@ export class CoursesPage implements OnInit {
     this.ngZone.run(() => {
       this.contentService.cancelDownload(this.resumeContentData.contentId || this.resumeContentData.identifier, (response) => {
         this.showOverlay = false;
-        this.tabBarElement.style.display = 'flex';
+        // this.tabBarElement.style.display = 'flex';
       }, (error) => {
         this.showOverlay = false;
-        this.tabBarElement.style.display = 'flex';
+        // this.tabBarElement.style.display = 'flex';
       });
     });
   }
