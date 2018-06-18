@@ -40,6 +40,7 @@ export class GuestProfilePage {
   profile: any = {};
   syllabus: string = "";
   selectedLanguage: string;
+  loader: any
 
   options: toastOptions = {
     message: '',
@@ -99,11 +100,11 @@ export class GuestProfilePage {
   }
 
   refreshProfileData(refresher: any = false) {
-    let loader = this.getLoader();
-    loader.present();
+    this.loader = this.getLoader();
+    this.loader.present();
     this.profileService.getCurrentUser((res: any) => {
       this.profile = JSON.parse(res);
-      this.getSyllabusDetails(loader);
+      this.getSyllabusDetails();
       setTimeout(() => {
         if (refresher) refresher.complete();
         // loader.dismiss();
@@ -111,7 +112,7 @@ export class GuestProfilePage {
       console.log("Response", res);
     },
       (err: any) => {
-        loader.dismiss();
+        this.loader.dismiss();
         console.log("Err1", err);
       });
   }
@@ -154,7 +155,7 @@ export class GuestProfilePage {
     });
   }
 
-  getSyllabusDetails(loader: any) {
+  getSyllabusDetails() {
     let selectedFrameworkId: string = '';
 
     this.formAndFrameworkUtilService.getSyllabusList()
@@ -169,13 +170,14 @@ export class GuestProfilePage {
             }
           });
 
-          loader.dismiss();
 
           if (selectedFrameworkId !== undefined && selectedFrameworkId.length > 0) {
             this.getFrameworkDetails(selectedFrameworkId);
+          } else {
+            this.loader.dismiss();
           }
         } else {
-          loader.dismiss();
+          this.loader.dismiss();
 
           this.getToast(this.translateMessage('NO_DATA_FOUND')).present();
         }
@@ -184,9 +186,6 @@ export class GuestProfilePage {
 
 
   getFrameworkDetails(frameworkId?: string): void {
-    let loader = this.getLoader();
-    loader.present();
-
     this.formAndFrameworkUtilService.getFrameworkDetails(frameworkId)
       .then(catagories => {
         this.categories = catagories;
@@ -204,7 +203,7 @@ export class GuestProfilePage {
           this.subjects = this.getFieldDisplayValues(this.profile.subject, 3);
         }
 
-        loader.dismiss();
+        this.loader.dismiss();
       });
   }
 

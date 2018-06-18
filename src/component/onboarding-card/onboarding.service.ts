@@ -296,7 +296,7 @@ export class OnboardingService {
 
                         resolve(this.syllabusList);
                     } else {
-                        reject(result);
+                        reject(this.syllabusList);
                     }
                 });
         });

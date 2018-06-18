@@ -37,6 +37,7 @@ export class GuestEditProfilePage {
   selectedLanguage: string;
   frameworks: Array<any> = [];
   frameworkId: string = '';
+  loader: any;
 
   options: toastOptions = {
     message: '',
@@ -84,8 +85,8 @@ export class GuestEditProfilePage {
 
 
   getSyllabusDetails() {
-    let loader = this.getLoader();
-    loader.present();
+    this.loader = this.getLoader();
+    this.loader.present();
 
     this.formAndFrameworkUtilService.getSyllabusList()
       .then((result) => {
@@ -99,10 +100,10 @@ export class GuestEditProfilePage {
           if (this.profile && this.profile.syllabus && this.profile.syllabus[0] !== undefined) {
             this.formAndFrameworkUtilService.getFrameworkDetails(this.profile.syllabus[0])
               .then(catagories => {
-                loader.dismiss();
+                // loader.dismiss();
                 this.categories = catagories;
 
-                this.resetForm(0);
+                this.resetForm(0, false);
                 this.guestEditForm.patchValue({
                   boards: this.profile.board || []
                 });
@@ -124,10 +125,10 @@ export class GuestEditProfilePage {
 
               });
           } else {
-            loader.dismiss();
+            this.loader.dismiss();
           }
         } else {
-          loader.dismiss();
+          this.loader.dismiss();
 
           this.getToast(this.translateMessage('NO_DATA_FOUND')).present();
         }
@@ -141,17 +142,18 @@ export class GuestEditProfilePage {
    * @param {string} list - Local variable name to hold the list data
    */
   getCategoryData(req: CategoryRequest, list): void {
-    let loader = this.getLoader();
+    // let loader = this.getLoader();
 
-    if (list === 'boardList') {
-      loader.present();
-    }
+    // if (list === 'boardList') {
+    //   loader.present();
+    // }
 
     this.formAndFrameworkUtilService.getCategoryData(req, this.frameworkId).
       then((result) => {
 
-        if (list === 'boardList')
-          loader.dismiss();
+        // if (list === 'boardList')
+        if (this.loader !== undefined)
+          this.loader.dismiss();
 
         this[list] = result;
         if (list != 'gradeList') {
@@ -161,20 +163,20 @@ export class GuestEditProfilePage {
       })
   }
 
-  checkPrevValue(index = 0, currentField, prevSelectedValue = [], ) {
+  checkPrevValue(index = 0, currentField, prevSelectedValue = []) {
 
     if (index === 0) {
       this[currentField] = this.syllabusList;
     } else if (index === 1) {
-      let loader = this.getLoader();
-      loader.present();
+      // let loader = this.getLoader();
+      // loader.present();
 
       this.frameworkId = prevSelectedValue[0];
       this.formAndFrameworkUtilService.getFrameworkDetails(this.frameworkId)
         .then(catagories => {
           this.categories = catagories;
 
-          loader.dismiss();
+          // loader.dismiss();
 
           let request: CategoryRequest = {
             currentCategory: this.categories[0].code,
@@ -193,7 +195,7 @@ export class GuestEditProfilePage {
 
   }
 
-  resetForm(index: number = 0): void {
+  resetForm(index: number = 0, showloader: boolean): void {
     console.log("Reset Form Index - " + index);
     switch (index) {
       case 0:
@@ -203,6 +205,10 @@ export class GuestEditProfilePage {
           subjects: [],
           medium: []
         });
+        if (showloader) {
+          this.loader = this.getLoader();
+          this.loader.present();
+        }
         this.checkPrevValue(1, 'boardList', [this.guestEditForm.value.syllabus]);
         break;
 
