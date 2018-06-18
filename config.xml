@@ -37,16 +37,16 @@
         <icon density="xxxhdpi" src="resources/android/icon/drawable-ldpi-icon.png" />
         <splash density="land-ldpi" src="resources/android/splash/drawable-ldpi-splash.png" />
         <splash density="land-mdpi" src="resources/android/splash/drawable-ldpi-splash.png" />
-        <splash density="land-hdpi" src="resources/android/splash/drawable-ldpi-splash.png" />
-        <splash density="land-xhdpi" src="resources/android/splash/drawable-ldpi-splash.png" />
-        <splash density="land-xxhdpi" src="resources/android/splash/drawable-ldpi-splash.png" />
-        <splash density="land-xxxhdpi" src="resources/android/splash/drawable-ldpi-splash.png" />
+        <splash density="land-hdpi" src="resources/android/splash/drawable-hdpi-splash.png" />
+        <splash density="land-xhdpi" src="resources/android/splash/drawable-hdpi-splash.png" />
+        <splash density="land-xxhdpi" src="resources/android/splash/drawable-xhdpi-splash.png" />
+        <splash density="land-xxxhdpi" src="resources/android/splash/drawable-xhdpi-splash.png" />
         <splash density="port-ldpi" src="resources/android/splash/drawable-ldpi-splash.png" />
         <splash density="port-mdpi" src="resources/android/splash/drawable-ldpi-splash.png" />
-        <splash density="port-hdpi" src="resources/android/splash/drawable-ldpi-splash.png" />
-        <splash density="port-xhdpi" src="resources/android/splash/drawable-ldpi-splash.png" />
-        <splash density="port-xxhdpi" src="resources/android/splash/drawable-ldpi-splash.png" />
-        <splash density="port-xxxhdpi" src="resources/android/splash/drawable-ldpi-splash.png" />
+        <splash density="port-hdpi" src="resources/android/splash/drawable-hdpi-splash.png" />
+        <splash density="port-xhdpi" src="resources/android/splash/drawable-hdpi-splash.png" />
+        <splash density="port-xxhdpi" src="resources/android/splash/drawable-xhdpi-splash.png" />
+        <splash density="port-xxxhdpi" src="resources/android/splash/drawable-xhdpi-splash.png" />
     </platform>
     <platform name="ios">
         <allow-intent href="itms:*" />

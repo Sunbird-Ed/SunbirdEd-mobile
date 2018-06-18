@@ -2,23 +2,29 @@
     <ion-grid>
       <ion-row>
         <ion-col col-12 style="text-align: center">
-          <img src="./assets/imgs/ic_warning_grey.png" width="50px" height="50px" />
+          <img [src]="icon" width="50px" height="50px" />
         </ion-col>
       </ion-row>
 
       <ion-row>
         <ion-col col-12 text-center class="msg">
-          <p> {{ 'UNKNOWN_QR' | translate }}</p>
+          <p> {{ messageKey | translate }}</p>
         </ion-col>
       </ion-row>
 
-      <ion-row>
+      <ion-row text-center *ngIf="!showOnlyPrimaryBtn">
         <ion-col col-6>
-          <button ion-button outline block (click)="cancel()"> {{ 'CANCEL' | translate }}</button>
+          <button ion-button outline block (click)="cancel()" > {{ cancelKey | translate }}</button>
         </ion-col>
 
         <ion-col col-6>
-          <button ion-button block (click)="tryAgain()"> {{ 'TRY_AGAIN' | translate }}</button>
+          <button ion-button block (click)="tryAgain()"> {{ tryAgainKey | translate }}</button>
+        </ion-col>
+      </ion-row>
+
+      <ion-row text-center *ngIf="showOnlyPrimaryBtn">
+        <ion-col col-12 text-center>
+          <button ion-button block (click)="tryAgain()"> {{ tryAgainKey | translate }}</button>
         </ion-col>
       </ion-row>
     </ion-grid>

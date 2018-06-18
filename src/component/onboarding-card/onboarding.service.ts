@@ -52,25 +52,26 @@ export class OnboardingService {
         return new Promise((resolve, reject) => {
 
             this.profileService.getCurrentUser((res: any) => {
-                let profile: Profile = JSON.parse(res);
+                this.profile = JSON.parse(res);
                 let syllabusFramework: string = '';
 
-                if (profile.syllabus && profile.syllabus[0] !== '') {
-                    syllabusFramework = profile.syllabus[0];
-                }
+                this.initializeSlides();
 
-                this.formAndFrameworkUtilService.getFrameworkDetails(syllabusFramework)
-                    .then(catagories => {
-                        this.categories = catagories;
-                        this.initializeSlides();
-                        return this.getCurrentUser();
-                    })
-                    .then(index => {
-                        resolve(index);
-                    })
-                    .catch(err => {
-                        reject(err);
-                    });
+                if (this.profile.syllabus && this.profile.syllabus[0] !== '') {
+                    syllabusFramework = this.profile.syllabus[0];
+
+                    this.formAndFrameworkUtilService.getFrameworkDetails(syllabusFramework)
+                        .then(catagories => {
+                            this.categories = catagories;
+                            return this.getCurrentUser();
+                        })
+                        .then(index => {
+                            resolve(index);
+                        })
+                        .catch(err => {
+                            reject(err);
+                        });
+                }
             },
                 (err: any) => {
                     console.log("Err1", err);
@@ -201,44 +202,81 @@ export class OnboardingService {
      * @param {string} currentCategory - request Parameter passing to the framework API
      * @param {string} list - Local variable name to hold the list data
      */
-    getCategoryData(req: CategoryRequest, list): void {
+    getCategoryData(req: CategoryRequest, list, index: number, hasUserClicked: boolean): void {
 
         if (this.frameworkId !== undefined && this.frameworkId.length) {
             req.frameworkId = this.frameworkId;
         }
 
         this.formAndFrameworkUtilService.getCategoryData(req, this.frameworkId)
-        .then((result) => {
-            if(result && result !== undefined && result.length > 0){
-                this[list] = [];
-                let value = {};
-                result.forEach(element => {
-                    if (list === "boardList" && this.profile.board && this.profile.board.length && this.profile.board.indexOf(element.code) > -1) {
-                        this.onBoardingSlides[1].selectedCode.push(element.code);
-                        value = { 'text': element.name, 'value': element.code, 'checked': true };
-                    } else if (list === "mediumList" && this.profile.medium && this.profile.medium.length && this.profile.medium.indexOf(element.code) > -1) {
-                        this.onBoardingSlides[2].selectedCode.push(element.code);
-                        value = { 'text': element.name, 'value': element.code, 'checked': true };
-                    } else if (list === "gradeList" && this.profile.grade && this.profile.grade.length && this.profile.grade.indexOf(element.code) > -1) {
-                        this.onBoardingSlides[3].selectedCode.push(element.code);
-                        value = { 'text': element.name, 'value': element.code, 'checked': true };
-                    } else if (list === "subjectList" && this.profile.subject && this.profile.subject.length && this.profile.subject.indexOf(element.code) > -1) {
-                        this.onBoardingSlides[4].selectedCode.push(element.code);
-                        value = { 'text': element.name, 'value': element.code, 'checked': true };
-                    } else {
-                        value = { 'text': element.name, 'value': element.code, 'checked': false };
+            .then((result) => {
+                if (result && result !== undefined && result.length > 0) {
+                    this[list] = [];
+                    let value = {};
+                    result.forEach(element => {
+                        if (list === "boardList" && this.profile.board && this.profile.board.length && this.profile.board.indexOf(element.code) > -1) {
+                            this.onBoardingSlides[1].selectedCode.push(element.code);
+                            value = { 'text': element.name, 'value': element.code, 'checked': true };
+                        } else if (list === "mediumList" && this.profile.medium && this.profile.medium.length && this.profile.medium.indexOf(element.code) > -1) {
+                            this.onBoardingSlides[2].selectedCode.push(element.code);
+                            value = { 'text': element.name, 'value': element.code, 'checked': true };
+                        } else if (list === "gradeList" && this.profile.grade && this.profile.grade.length && this.profile.grade.indexOf(element.code) > -1) {
+                            this.onBoardingSlides[3].selectedCode.push(element.code);
+                            value = { 'text': element.name, 'value': element.code, 'checked': true };
+                        } else if (list === "subjectList" && this.profile.subject && this.profile.subject.length && this.profile.subject.indexOf(element.code) > -1) {
+                            this.onBoardingSlides[4].selectedCode.push(element.code);
+                            value = { 'text': element.name, 'value': element.code, 'checked': true };
+                        } else {
+                            value = { 'text': element.name, 'value': element.code, 'checked': false };
+                        }
+
+                        this[list].push(value);
+                    });
+                    if (list !== 'gradeList') {
+                        this[list] = _.orderBy(this[list], ['text'], ['asc']);
                     }
 
-                    this[list].push(value);
-                });
-                if (list !== 'gradeList') {
-                    this[list] = _.orderBy(this[list], ['text'], ['asc']);
-                }
+                    this.getListArray(list);
+                    console.log(list + " Category Response: " + this[list]);
 
-                this.getListArray(list);
-                console.log(list + " Category Response: " + this[list]);
-            }
-        })
+                    //End the loader here
+                    this.events.publish('is-data-available', { show: true, index: index });
+
+                    //if the user has not clicked on the button, only then it has to be automated for single values
+                    if (!hasUserClicked) {
+                        //check if the list has single item
+                        if (list === "boardList" && this[list].length === 1) {
+                            //make the item as checked
+                            this[list][0].checked = true;
+
+                            this.onBoardingSlides[1].selectedOptions = this[list][0].text;
+
+                            this.onBoardingSlides[1].selectedCode.push(this[list][0].value);
+
+                            this.setAndSaveDetails(this.onBoardingSlides[index], index);
+                        } else if (list === "mediumList" && this[list].length === 1) {
+                            //make the item as checked
+                            this[list][0].checked = true;
+
+                            this.onBoardingSlides[2].selectedOptions = this[list][0].text;
+
+                            this.onBoardingSlides[2].selectedCode.push(this[list][0].value);
+
+                            this.setAndSaveDetails(this.onBoardingSlides[index], index);
+                        } else if (list === "gradeList" && this[list].length === 1) {
+                            //make the item as checked
+                            this[list][0].checked = true;
+
+                            this.onBoardingSlides[3].selectedOptions = this[list][0].text;
+
+                            this.onBoardingSlides[3].selectedCode.push(this[list][0].value);
+
+                            this.setAndSaveDetails(this.onBoardingSlides[index], index);
+                        }
+
+                    }
+                }
+            })
 
     }
 
@@ -270,12 +308,17 @@ export class OnboardingService {
      * @param {any}    currentField
      * @param {string} prevSelectedValue
      */
-    checkPrevValue(index: number = 0, currentField, prevSelectedValue = []) {
+    checkPrevValue(index: number = 0, currentField, prevSelectedValue = [], hasUserClicked: boolean) {
 
         if (index === 0) {
             this[currentField] = this.syllabusList;
         } else if (index === 1) {
-            this.frameworkId = prevSelectedValue[0];
+            //if the user has not clicked on the button, only then it has to show the loader
+            if (!hasUserClicked) {
+                //publish a event to show the loader on card here
+                this.events.publish('is-data-available', { show: false, index: index });
+            }
+
             this.formAndFrameworkUtilService.getFrameworkDetails(this.frameworkId)
                 .then(catagories => {
                     this.categories = catagories;
@@ -283,15 +326,21 @@ export class OnboardingService {
                     let request: CategoryRequest = {
                         currentCategory: this.categories[0].code,
                     }
-                    this.getCategoryData(request, currentField);
+                    this.getCategoryData(request, currentField, index, hasUserClicked);
                 });
         } else {
+            //if the user has not clicked on the button, only then it has to show the loader
+            if (!hasUserClicked) {
+                //publish a event to show the loader on card here
+                this.events.publish('is-data-available', { show: false, index: index });
+            }
+
             let request: CategoryRequest = {
                 currentCategory: this.categories[index - 1].code,
                 prevCategory: this.categories[index - 2].code,
                 selectedCode: prevSelectedValue
             }
-            this.getCategoryData(request, currentField);
+            this.getCategoryData(request, currentField, index, hasUserClicked);
         }
 
     }
@@ -394,5 +443,73 @@ export class OnboardingService {
     */
     arrayToString(stringArray: Array<string>): string {
         return stringArray.join(", ");
+    }
+
+
+    /**
+  * It Filter out the selected value and stores in object
+  * @param {object} selectedSlide Object of all Options
+  * @param {number} index         Slide index
+  */
+    selectedCheckboxValue(selectedSlide: any, index: number) {
+        this.onBoardingSlides[index].selectedCode = [];
+        this.onBoardingSlides[index].selectedOptions = '';
+
+        for (let i = index; i < 5; i++) {
+            this.onBoardingSlides[i].selectedCode = [];
+            this.onBoardingSlides[i].selectedOptions = '';
+        }
+
+        this.setAndSaveDetails(selectedSlide, index);
+    }
+
+
+    private setAndSaveDetails(selectedSlide: any, index: number) {
+        selectedSlide.options.forEach(options => {
+            if (options.checked) {
+                this.onBoardingSlides[index].selectedCode.push(options.value);
+            }
+        });
+        let displayValues = [];
+        this.onBoardingSlides[index].options.forEach(element => {
+            if (_.includes(this.onBoardingSlides[index].selectedCode, element.value)) {
+                displayValues.push(element.text);
+            }
+        });
+        this.onBoardingSlides[index].selectedOptions = this.arrayToString(displayValues);
+
+        this.saveDetails(index);
+
+        // If user Selected Something from the list then only move the slide to next slide
+        if (this.onBoardingSlides[index].selectedOptions != '') {
+            this.events.publish('slide-onboarding-card', { slideIndex: index });
+        }
+
+        if (index === 0) {
+            this.profile.board = [];
+            this.profile.grade = [];
+            this.profile.subject = [];
+            this.profile.medium = [];
+
+            //save the framework id here
+            this.frameworkId = this.onBoardingSlides[index].selectedCode[0];
+
+            this.checkPrevValue(index + 1, this.getListName(index + 1), this.profile.syllabus, false);
+        }
+        else if (index === 1) {
+            this.profile.grade = [];
+            this.profile.subject = [];
+            this.profile.medium = [];
+            this.checkPrevValue(index + 1, this.getListName(index + 1), this.profile.board, false);
+        }
+        else if (index === 2) {
+            this.profile.grade = [];
+            this.profile.subject = [];
+            this.checkPrevValue(index + 1, this.getListName(index + 1), this.profile.medium, false);
+        }
+        else if (index === 3) {
+            this.profile.subject = [];
+            this.checkPrevValue(index + 1, this.getListName(index + 1), this.profile.grade, false);
+        }
     }
 }

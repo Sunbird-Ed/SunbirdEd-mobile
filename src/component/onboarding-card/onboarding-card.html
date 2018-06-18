@@ -11,10 +11,10 @@
           </span>
         </ion-row>
 
-        <ion-spinner *ngIf="i === 0 && loader" padding></ion-spinner>
+        <ion-spinner *ngIf="loader" padding></ion-spinner>
 
         <ion-footer class="onbording-slide-footer" no-shadow no-border>
-          <div *ngIf="isSyllabusDataAvailable &&!slide.selectedOptions.length" (click)="openFilterOptions(slide, i)" class="font-bold font-size-small blue-color">{{slide?.desc | translate}}</div>
+          <div *ngIf="isDataAvailable &&!slide.selectedOptions.length" (click)="openFilterOptions(slide, i)" class="font-bold font-size-small blue-color">{{slide?.desc | translate}}</div>
           <div (click)="openFilterOptions(slide, i)" class="row">
             <div class="font-size-small ellipsis text-width-50 display-inline">
               {{ slide?.selectedOptions}}</div> &nbsp;

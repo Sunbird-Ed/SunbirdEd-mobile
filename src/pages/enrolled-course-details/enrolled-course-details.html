@@ -40,7 +40,7 @@
 			</ion-row>
 		</ion-grid>
 		<br/>
-		<div class="about-section" *ngIf="course.description || course.gradeLevel || course.subject">
+		<div class="about-section" *ngIf="course.description || course.gradeLevel || course.subject || course.board">
 			<h6 class="padding-10 background-gray font-size-20">{{ 'ABOUT' | translate }}</h6>
 			<p *ngIf="!showMoreFlag" class="text-gray-color">
 				{{ (course.description && course.description.length > 100) ? (course.description | slice:0:100) + '...' : (course.description)
@@ -50,23 +50,23 @@
 					{{ course.description }}
 				</p>
 				<div *ngIf="course.gradeLevel && course.gradeLevel.length" margin-top>
-					<div class="content-meta-title" text-uppercase>{{ 'GRADE' | translate }}</div>
+					<div class="content-meta-title" text-uppercase>{{ 'CLASS' | translate }}</div>
 					<!-- <span *ngFor="let grade of course.gradeLevel"> -->
 					<span class="text-gray-color">{{course.gradeLevel}}</span>
 					<!-- </span> -->
 				</div>
 				<div *ngIf="course?.subject" margin-top>
-					<div class="content-meta-title">{{ 'SUBJECT' | translate }}</div>
+					<div class="content-meta-title" text-uppercase>{{ 'SUBJECT' | translate }}</div>
 					<span class="text-gray-color">{{course.subject}}</span>
 				</div>
 
 				<div *ngIf="course?.board" margin-top>
-					<div class="content-meta-title">{{ 'BOARD' | translate }}</div>
+					<div class="content-meta-title" text-uppercase>{{ 'BOARD' | translate }}</div>
 					<span class="text-gray-color">{{course.board}}</span>
 				</div>
 
 				<div *ngIf="course?.medium" margin-top>
-					<div class="content-meta-title">{{ 'MEDIUM_2' | translate }}</div>
+					<div class="content-meta-title" text-uppercase>{{ 'MEDIUM' | translate }}</div>
 					<span class="text-gray-color">{{course.medium}}</span>
 				</div>
 				<!-- Batch details - only for enrolled courses -->
@@ -130,18 +130,14 @@
 					</ion-col>
 				</ion-row>
 			</div>
-			<ion-grid class="padding-top-25" *ngIf="childrenData && childrenData.length === 0 && !showChildrenLoader">
-				<ion-row>
-					<ion-col>
-						<div text-center> {{ 'CONTENT_NOT_ADDED_YET' | translate }} </div>
-					</ion-col>
-				</ion-row>
-			</ion-grid>
+			<div text-center *ngIf="childrenData && childrenData.length === 0 && !showChildrenLoader">
+				<img src="assets/imgs/ic_coming_soon.png" width="110px" height="80px"/>
+				<h4><b>{{ 'UNIT_COMING_SOON' | translate }}</b></h4>
+				<p>{{ 'CONTENT_CREATING' | translate }}</p>
+			</div>
 			<!-- End import content -->
 		</div>
-		<br/>
-		<br/>
-		<!-- -->
+		<br/><br/>
 		<div class="license-section padding-10 background-gray" *ngIf="course.license || course.attributions">
 			<div class="row" *ngIf="showLicense">
 				<span *ngIf="course.attributions">

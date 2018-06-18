@@ -72,7 +72,7 @@
   <ion-list *ngIf="searchContentResult && searchContentResult.length">
     <ion-item padding-right *ngFor="let content of searchContentResult; let i = index" (click)="openContent(undefined, content,i)">
       <ion-avatar item-start>
-        <!-- <img-loader src="{{ content.appIcon }}" backgroundSize="cover" width="100%" height="100%" spinner="true" fallback="./assets/imgs/ic_logo.png"
+        <!-- <img-loader src="{{ content.appIcon }}" backgroundSize="cover" width="100%" height="100%" spinner="true" fallback="./assets/imgs/ic_launcher.png"
           fallbackAsPlaceholder="true" useImg></img-loader> -->
         <img src="{{ content.appIcon || defaultAppIcon }}" width="24px" height="24px" />
 

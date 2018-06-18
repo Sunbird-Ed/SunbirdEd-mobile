@@ -109,7 +109,7 @@ export class FormAndFrameworkUtilService {
     /**
      * Get all categories using framework api
      */
-    getFrameworkDetails(frameworkId?: string): Promise<any> {
+    getFrameworkDetails(frameworkId: string): Promise<any> {
 
         return new Promise((resolve, reject) => {
             let req: FrameworkDetailsRequest = {
@@ -123,8 +123,8 @@ export class FormAndFrameworkUtilService {
 
             this.framework.getFrameworkDetails(req,
                 (res: any) => {
-                    let categories = JSON.parse(JSON.parse(res).result.framework).categories;
-                    resolve(categories);
+                    // let categories = JSON.parse(JSON.parse(res).result.framework).categories;
+                    resolve(res);
                 },
                 (err: any) => {
                     reject(err);
