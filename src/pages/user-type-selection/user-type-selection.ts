@@ -183,7 +183,7 @@ export class UserTypeSelectionPage {
     this.event.publish(AppGlobalService.USER_INFO_UPDATED);
 
 
-    this.navCtrl.push(TabsPage, {
+    this.navCtrl.setRoot(TabsPage, {
       loginMode: 'guest'
     });
   }
