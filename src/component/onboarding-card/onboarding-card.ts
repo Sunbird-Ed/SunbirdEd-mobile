@@ -48,7 +48,9 @@ export class OnboardingCardComponent {
       .then((result) => {
         this.showLoader(false)
 
-        if (result && result !== undefined) {
+        let syllabusList = (<any[]>result)
+
+        if (syllabusList && syllabusList !== undefined && syllabusList.length > 0) {
           this.isDataAvailable = true;
         } else {
           this.isDataAvailable = false;
