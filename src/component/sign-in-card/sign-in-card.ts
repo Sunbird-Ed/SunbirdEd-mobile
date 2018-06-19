@@ -150,7 +150,7 @@ export class SignInCardComponent {
           that.userProfileService.getUserProfileDetails(req, res => {
             let r = JSON.parse(res);
             that.generateLoginInteractTelemetry(InteractType.OTHER,
-              InteractSubtype.LOGIN_SUCCESS, r.userId);
+              InteractSubtype.LOGIN_SUCCESS, r.id);
             resolve(r.rootOrg.slug);
           }, error => {
             reject(error);

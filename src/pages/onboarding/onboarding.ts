@@ -176,8 +176,8 @@ export class OnboardingPage {
             that.generateLoginInteractTelemetry(InteractType.OTHER,
               InteractSubtype.LOGIN_SUCCESS, r.userId);
             let profileRequest = {
-              uid: r.userId, //req
-              handle: r.userId, //TODO check with nikhil
+              uid: r.id, //req
+              handle: r.id, //TODO check with nikhil
               avatar: "avatar", //req
               language: "en", //req
               age: -1,
