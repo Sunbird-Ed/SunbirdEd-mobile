@@ -253,7 +253,7 @@ export class ContentDetailsPage {
           comment: this.ratingComment,
           popupType: popupType
         }, {
-            cssClass: 'onboarding-alert'
+            cssClass: 'content-rating-alert'
           });
         popUp.present({
           ev: event

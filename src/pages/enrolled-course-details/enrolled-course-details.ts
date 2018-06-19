@@ -283,7 +283,7 @@ export class EnrolledCourseDetailsPage {
           comment: this.ratingComment,
           pageId: PageId.COURSE_DETAIL
         }, {
-            cssClass: 'onboarding-alert'
+            cssClass: 'content-rating-alert'
           });
         popUp.present({
           ev: event

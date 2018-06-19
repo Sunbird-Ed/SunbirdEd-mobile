@@ -64,6 +64,7 @@ content-rating-alert {
     overflow-y: hidden;
   }
 
-
-
-
+.content-rating-alert ion-backdrop {
+    background-color: map-get($colors, dark) !important;
+    opacity: 0.4 !important;
+}
