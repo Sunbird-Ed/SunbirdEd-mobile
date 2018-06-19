@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
-import { Profile, ProfileType, AuthService, SharedPreferences, ProfileService } from "sunbird";
+import { Profile, ProfileType, AuthService, SharedPreferences, ProfileService, FrameworkDetailsRequest, FrameworkService } from "sunbird";
 import { Events } from "ionic-angular";
+import { FormAndFrameworkUtilService } from "../pages/profile/formandframeworkutil.service";
 
 
 @Injectable()
@@ -21,10 +22,13 @@ export class AppGlobalService {
 
     session: any;
 
+    private frameWork = [];
+
 
     constructor(private event: Events,
         private authService: AuthService,
         private profile: ProfileService,
+        private framework: FrameworkService,
         private preference: SharedPreferences) {
         console.log("constructor");
         this.initValues();
@@ -45,6 +49,22 @@ export class AppGlobalService {
 
     getSessionData(): any {
         return this.session;
+    }
+
+    getNameForCodeInFramework(category, code) {
+        let name = undefined;
+
+        if (this.frameWork[category] && this.frameWork[category].terms && this.frameWork[category].terms.length > 0) {
+            let matchingTerm = this.frameWork[category].terms.find((term) => {
+                return term.code == code;
+            })
+
+            if (matchingTerm) {
+                name = matchingTerm.name;
+            }
+        }
+
+        return name;
     }
 
     /**
@@ -87,7 +107,20 @@ export class AppGlobalService {
         console.log("getCurrentUserProfile");
         this.profile.getCurrentUser((response) => {
             this.guestUserProfile = JSON.parse(response);
-            this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
+            this.getFrameworkDetails(this.guestUserProfile.syllabus[0])
+                .then((categories) => {
+                    categories.forEach(category => {
+                        this.frameWork[category.code] = category;
+                    })
+
+                    this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
+                }).catch((error) => {
+                    this.frameWork = undefined;
+                    this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
+                })
+
+
+
         }, (error) => {
             this.guestUserProfile = undefined;
             this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
@@ -121,6 +154,32 @@ export class AppGlobalService {
 
         this.event.subscribe('refresh:profile', () => {
             this.initValues();
+        });
+    }
+
+    /**
+ * Get all categories using framework api
+ */
+    private getFrameworkDetails(frameworkId?: string): Promise<any> {
+
+        return new Promise((resolve, reject) => {
+            let req: FrameworkDetailsRequest = {
+                defaultFrameworkDetails: true
+            };
+
+            if (frameworkId !== undefined && frameworkId.length) {
+                req.defaultFrameworkDetails = false;
+                req.frameworkId = frameworkId;
+            }
+
+            this.framework.getFrameworkDetails(req,
+                (res: any) => {
+                    let categories = res;
+                    resolve(categories);
+                },
+                (err: any) => {
+                    reject(err);
+                });
         });
     }
 }

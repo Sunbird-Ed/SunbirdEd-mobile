@@ -261,19 +261,19 @@ export class ResourcesPage implements OnInit {
 			}
 
 			if (this.profile.board && this.profile.board.length) {
-				pageAssembleCriteria.filters.board = this.applyProfileFilter(this.profile.board, pageAssembleCriteria.filters.board);
+				pageAssembleCriteria.filters.board = this.applyProfileFilter(this.profile.board, pageAssembleCriteria.filters.board, "board");
 			}
 
 			if (this.profile.medium && this.profile.medium.length) {
-				pageAssembleCriteria.filters.medium = this.applyProfileFilter(this.profile.medium, pageAssembleCriteria.filters.medium);
+				pageAssembleCriteria.filters.medium = this.applyProfileFilter(this.profile.medium, pageAssembleCriteria.filters.medium, "medium");
 			}
 
 			if (this.profile.grade && this.profile.grade.length) {
-				pageAssembleCriteria.filters.gradeLevel = this.applyProfileFilter(this.profile.grade, pageAssembleCriteria.filters.gradeLevel);
+				pageAssembleCriteria.filters.gradeLevel = this.applyProfileFilter(this.profile.grade, pageAssembleCriteria.filters.gradeLevel, "gradeLevel");
 			}
 
 			if (this.profile.subject && this.profile.subject.length) {
-				pageAssembleCriteria.filters.subject = this.applyProfileFilter(this.profile.subject, pageAssembleCriteria.filters.subject);
+				pageAssembleCriteria.filters.subject = this.applyProfileFilter(this.profile.subject, pageAssembleCriteria.filters.subject, "subject");
 			}
 		}
 
@@ -321,7 +321,23 @@ export class ResourcesPage implements OnInit {
 		});
 	}
 
-	applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>) {
+	applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>, categoryKey?: string) {
+		if (categoryKey) {
+			let nameArray = [];
+			profileFilter.forEach(filterCode => {
+				let nameForCode = this.appGlobal.getNameForCodeInFramework(categoryKey, filterCode);
+
+				if (!nameForCode) {
+					nameForCode = filterCode;
+				}
+
+				nameArray.push(nameForCode);
+			})
+
+			profileFilter = nameArray;
+		}
+
+
 		if (!assembleFilter) {
 			assembleFilter = [];
 		}
