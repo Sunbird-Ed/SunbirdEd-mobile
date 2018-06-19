@@ -107,7 +107,8 @@ export class AppGlobalService {
         console.log("getCurrentUserProfile");
         this.profile.getCurrentUser((response) => {
             this.guestUserProfile = JSON.parse(response);
-            this.getFrameworkDetails(this.guestUserProfile.syllabus[0])
+            if (this.guestUserProfile.syllabus && this.guestUserProfile.syllabus.length > 0) {
+                this.getFrameworkDetails(this.guestUserProfile.syllabus[0])
                 .then((categories) => {
                     categories.forEach(category => {
                         this.frameWork[category.code] = category;
@@ -118,8 +119,10 @@ export class AppGlobalService {
                     this.frameWork = undefined;
                     this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
                 })
-
-
+            } else {
+                this.frameWork = undefined;
+                this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
+            }
 
         }, (error) => {
             this.guestUserProfile = undefined;
