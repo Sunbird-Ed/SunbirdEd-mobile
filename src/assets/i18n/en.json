@@ -402,5 +402,7 @@
   "YEAR_OF_PASSING": "Year of Passing",
   "YES": "Yes",
   "YOUR_PROFILE_IS": "Your profile is {{%s}}% complete",
-  "YOUR_PROGRESS": "Your Progress: {{%s}}%"
+  "YOUR_PROGRESS": "Your Progress: {{%s}}%",
+  "ADD_PHONE_NUMBER": "Add Phone number",
+  "ADD_PROFILE_DESCRIPTION": "Add Profile description"
 }

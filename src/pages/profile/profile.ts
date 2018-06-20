@@ -274,31 +274,41 @@ export class ProfilePage {
           };
           break;
         case "location":
-          let requiredProfileFields: Array<string> = [
-            'userId',
-            'firstName',
-            'lastName',
-            'language',
-            'email',
-            'phone',
-            'profileSummary',
-            'subject',
-            'gender',
-            'dob',
-            'grade',
-            'location',
-            'webPages'
-          ];
-
-          this.uncompletedDetails.title = 'ADD_LOCATION';
-          this.uncompletedDetails.page = AdditionalInfoComponent;
-          this.uncompletedDetails.data = {
-            userId: this.loggedInUserId,
-            profile: this.getSubset(requiredProfileFields, this.profile),
-            profileVisibility: this.profile.profileVisibility
-          }
+          this.setMissingProfileDetails('ADD_LOCATION');
+          break;
+        case "phone":
+          this.setMissingProfileDetails('ADD_PHONE_NUMBER');
+          break;
+        case "profileSummary":
+          this.setMissingProfileDetails('ADD_PROFILE_DESCRIPTION');
           break;
       }
+    }
+  }
+
+  setMissingProfileDetails(title: string) {
+    let requiredProfileFields: Array<string> = [
+      'userId',
+      'firstName',
+      'lastName',
+      'language',
+      'email',
+      'phone',
+      'profileSummary',
+      'subject',
+      'gender',
+      'dob',
+      'grade',
+      'location',
+      'webPages'
+    ];
+
+    this.uncompletedDetails.title = title;
+    this.uncompletedDetails.page = AdditionalInfoComponent;
+    this.uncompletedDetails.data = {
+      userId: this.loggedInUserId,
+      profile: this.getSubset(requiredProfileFields, this.profile),
+      profileVisibility: this.profile.profileVisibility
     }
   }
 
