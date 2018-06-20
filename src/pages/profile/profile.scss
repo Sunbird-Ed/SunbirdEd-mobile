@@ -220,10 +220,10 @@ page-profile {
   max-width: 48px !important;
 }
 .ellipsis {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
 .display-inline-block {
     display: inline-block !important;
 }

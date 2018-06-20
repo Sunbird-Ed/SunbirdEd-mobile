@@ -116,11 +116,11 @@ export class AppGlobalService {
 
                     this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
                 }).catch((error) => {
-                    this.frameWork = undefined;
+                    this.frameWork = [];
                     this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
                 })
             } else {
-                this.frameWork = undefined;
+                this.frameWork = [];
                 this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
             }
 
