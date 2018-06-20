@@ -6,7 +6,7 @@ import {
 	ContentFilterCriteria, ProfileType, PageAssembleFilter,
 	CorrelationData
 } from "sunbird";
-import { NavController, PopoverController, Events, ToastController, LoadingController } from 'ionic-angular';
+import { NavController, PopoverController, Events, ToastController } from 'ionic-angular';
 import * as _ from 'lodash';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
 import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
@@ -93,7 +93,6 @@ export class ResourcesPage implements OnInit {
 		private translate: TranslateService,
 		private zone: NgZone,
 		private network: Network,
-		private loadingCtrl: LoadingController,
 		private appGlobal: AppGlobalService,
 		private appVersion: AppVersion
 	) {

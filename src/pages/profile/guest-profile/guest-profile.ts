@@ -72,7 +72,7 @@ export class GuestProfilePage {
     // TODO: Need to make an get Profile user details API call.
     this.refreshProfileData();
     this.events.subscribe('refresh:profile', () => {
-      this.refreshProfileData();
+      this.refreshProfileData(false, false);
     });
 
     this.preference.getString('selected_user_type', (val) => {
@@ -99,9 +99,13 @@ export class GuestProfilePage {
     console.log('ionViewDidLoad LanguageSettingPage');
   }
 
-  refreshProfileData(refresher: any = false) {
+  refreshProfileData(refresher: any = false, showLoader: boolean = true) {
     this.loader = this.getLoader();
-    this.loader.present();
+    
+    if (showLoader) {
+      this.loader.present();
+    }
+    
     this.profileService.getCurrentUser((res: any) => {
       this.profile = JSON.parse(res);
       this.getSyllabusDetails();

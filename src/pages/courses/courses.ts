@@ -1,6 +1,6 @@
 import { ViewMoreActivityPage } from './../view-more-activity/view-more-activity';
 import { Component, NgZone, OnInit } from '@angular/core';
-import { NavController, PopoverController, Events, ToastController, LoadingController } from 'ionic-angular';
+import { NavController, PopoverController, Events, ToastController } from 'ionic-angular';
 import { AppVersion } from "@ionic-native/app-version";
 import { IonicPage } from 'ionic-angular';
 import {
@@ -116,7 +116,6 @@ export class CoursesPage implements OnInit {
     private preference: SharedPreferences,
     private translate: TranslateService,
     private network: Network,
-    private loadingCtrl: LoadingController,
     private sharedPreferences: SharedPreferences,
     private appGlobal: AppGlobalService,
     private courseUtilService: CourseUtilService
