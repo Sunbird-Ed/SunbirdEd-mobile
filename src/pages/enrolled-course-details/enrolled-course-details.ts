@@ -389,6 +389,14 @@ export class EnrolledCourseDetailsPage {
           this.course.me_totalRatings = rating[0];
         }
       }
+
+      //User Rating
+      let contentFeedback: any = data.result.contentFeedback ? data.result.contentFeedback : [];
+      if (contentFeedback !== undefined && contentFeedback.length !== 0) {
+        this.userRating = contentFeedback[0].rating;
+        this.ratingComment = contentFeedback[0].comments;
+        console.log("User Rating  - " + this.userRating);
+      }
       this.getCourseProgress();
     } else {
       this.showMessage(this.translateLanguageConstant('ERROR_CONTENT_NOT_AVAILABLE'));
@@ -782,7 +790,7 @@ export class EnrolledCourseDetailsPage {
     this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_COURSE_INITIATED, this.course.contentType);
     let loader = this.getLoader();
     loader.present();
-    let url = this.baseUrl + ShareUrl.COLLECTION +this.course.identifier;
+    let url = this.baseUrl + ShareUrl.COLLECTION + this.course.identifier;
     if (this.course.isAvailableLocally) {
       this.shareUtil.exportEcar(this.course.identifier, path => {
         loader.dismiss();

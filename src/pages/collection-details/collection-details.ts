@@ -330,6 +330,15 @@ export class CollectionDetailsPage {
         this.contentDetail.me_totalRatings = rating[0];
       }
     }
+
+    //User Rating
+    let contentFeedback: any = data.result.contentFeedback ? data.result.contentFeedback : [];
+    if (contentFeedback !== undefined && contentFeedback.length !== 0) {
+      this.userRating = contentFeedback[0].rating;
+      this.ratingComment = contentFeedback[0].comments;
+      console.log("User Rating  - " + this.userRating);
+    }
+
     switch (data.result.isAvailableLocally) {
       case true: {
         this.showLoading = false;
