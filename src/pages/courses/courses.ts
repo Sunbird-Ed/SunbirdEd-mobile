@@ -138,7 +138,7 @@ export class CoursesPage implements OnInit {
 
     this.events.subscribe(EventTopics.COURSE_STATUS_UPDATED_SUCCESSFULLY, (data) => {
       if (data.update) {
-        this.getEnrolledCourses();
+        this.getEnrolledCourses(true);
       }
     })
 
@@ -153,7 +153,7 @@ export class CoursesPage implements OnInit {
 
     this.events.subscribe(EventTopics.ENROL_COURSE_SUCCESS, (res) => {
       if (res && res.batchId) {
-        this.getEnrolledCourses();
+        this.getEnrolledCourses(true);
       }
     });
 
@@ -251,13 +251,14 @@ export class CoursesPage implements OnInit {
    *
    * It internally calls course handler of genie sdk
    */
-  getEnrolledCourses(): void {
+  getEnrolledCourses(returnRefreshedCourses: boolean = false): void {
     this.spinner(true);
     console.log('making api call to get enrolled courses');
 
     let option = {
       userId: this.userId,
-      refreshEnrolledCourses: true
+      refreshEnrolledCourses: true,
+      returnRefreshedEnrolledCourses: returnRefreshedCourses
     };
 
     this.courseService.getEnrolledCourses(option, (data: any) => {
@@ -315,20 +316,20 @@ export class CoursesPage implements OnInit {
       }
 
       if (this.profile.board && this.profile.board.length) {
-				pageAssembleCriteria.filters.board = this.applyProfileFilter(this.profile.board, pageAssembleCriteria.filters.board, "board");
-			}
+        pageAssembleCriteria.filters.board = this.applyProfileFilter(this.profile.board, pageAssembleCriteria.filters.board);
+      }
 
-			if (this.profile.medium && this.profile.medium.length) {
-				pageAssembleCriteria.filters.medium = this.applyProfileFilter(this.profile.medium, pageAssembleCriteria.filters.medium, "medium");
-			}
+      if (this.profile.medium && this.profile.medium.length) {
+        pageAssembleCriteria.filters.medium = this.applyProfileFilter(this.profile.medium, pageAssembleCriteria.filters.medium);
+      }
 
-			if (this.profile.grade && this.profile.grade.length) {
-				pageAssembleCriteria.filters.gradeLevel = this.applyProfileFilter(this.profile.grade, pageAssembleCriteria.filters.gradeLevel, "gradeLevel");
-			}
+      if (this.profile.grade && this.profile.grade.length) {
+        pageAssembleCriteria.filters.gradeLevel = this.applyProfileFilter(this.profile.grade, pageAssembleCriteria.filters.gradeLevel);
+      }
 
-			if (this.profile.subject && this.profile.subject.length) {
-				pageAssembleCriteria.filters.subject = this.applyProfileFilter(this.profile.subject, pageAssembleCriteria.filters.subject, "subject");
-			}
+      if (this.profile.subject && this.profile.subject.length) {
+        pageAssembleCriteria.filters.subject = this.applyProfileFilter(this.profile.subject, pageAssembleCriteria.filters.subject);
+      }
     }
 
     this.pageService.getPageAssemble(pageAssembleCriteria, (res: any) => {
@@ -369,23 +370,7 @@ export class CoursesPage implements OnInit {
   }
 
 
-  applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>, categoryKey?: string) {
-		if (categoryKey) {
-			let nameArray = [];
-			profileFilter.forEach(filterCode => {
-				let nameForCode = this.appGlobal.getNameForCodeInFramework(categoryKey, filterCode);
-
-				if (!nameForCode) {
-					nameForCode = filterCode;
-				}
-
-				nameArray.push(nameForCode);
-			})
-
-			profileFilter = nameArray;
-    }
-    
-    
+  applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>) {
     if (!assembleFilter) {
       assembleFilter = [];
     }
