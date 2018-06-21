@@ -86,7 +86,7 @@ export class AdditionalInfoComponent {
     });
 
     /* Patch social Webpages links */
-    if (this.profile.webPages.length) {
+    if (this.profile && this.profile.webPages && this.profile.webPages.length) {
       this.profile.webPages.forEach(element => {
         if (element.type === 'fb') {
           this.additionalInfoForm.patchValue({
@@ -197,7 +197,7 @@ export class AdditionalInfoComponent {
   onSubmit(event): void {
     let formVal = this.additionalInfoForm.value;
 
-    if (this.profile.phone.length && formVal.phone === '') {
+    if (this.profile && this.profile.phone && this.profile.phone.length && formVal.phone === '') {
       formVal.phone = this.profile.phone;
     }
     if (this.validateForm(formVal)) {
