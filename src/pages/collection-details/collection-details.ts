@@ -739,7 +739,7 @@ export class CollectionDetailsPage {
       }, error => {
         loader.dismiss();
         let toast = this.toastCtrl.create({
-          message: "Unable to share content.",
+          message: this.translateMessage("SHARE_CONTENT_FAILED"),
           duration: 2000,
           position: 'bottom'
         });
@@ -895,5 +895,20 @@ export class CollectionDetailsPage {
         this.navCtrl.pop();
       });
     });
+  }
+
+  /**
+  * Used to Translate message to current Language
+  * @param {string} messageConst - Message Constant to be translated
+  * @returns {string} translatedMsg - Translated Message
+  */
+  translateMessage(messageConst: string): string {
+    let translatedMsg = '';
+    this.translate.get(messageConst).subscribe(
+      (value: any) => {
+        translatedMsg = value;
+      }
+    );
+    return translatedMsg;
   }
 }

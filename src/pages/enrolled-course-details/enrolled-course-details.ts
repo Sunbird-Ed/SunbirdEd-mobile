@@ -802,7 +802,7 @@ export class EnrolledCourseDetailsPage {
       }, error => {
         loader.dismiss();
         let toast = this.toastCtrl.create({
-          message: "Unable to share content.",
+          message: this.translateLanguageConstant('SHARE_CONTENT_FAILED'),
           duration: 2000,
           position: 'bottom'
         });

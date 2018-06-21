@@ -134,7 +134,7 @@ export class DatasyncPage {
     }, error => {
       loader.dismiss();
       let toast = this.toastCtrl.create({
-        message: "Unable to share content.",
+        message: this.translateMessage("SHARE_TELEMETRY_FAILED"),
         duration: 2000,
         position: 'bottom'
       });
