@@ -305,8 +305,11 @@ export class EnrolledCourseDetailsPage {
   }
 
   showOverflowMenu(event) {
+    let contentData = this.course;
+    contentData.batchId = this.courseCardData.batchId ? this.courseCardData.batchId : false;
     let popover = this.popoverCtrl.create(ContentActionsComponent, {
-      content: this.course,
+      content: contentData,
+      pageName: 'course'
     }, {
         cssClass: 'content-action'
       });
