@@ -716,7 +716,8 @@ export class CoursesPage implements OnInit {
                 courseId: identifier
               },
               isResumedCourse: true,
-              isChildContent: true
+              isChildContent: true,
+              resumedCourseCardData: content
             });
             break;
           }
