@@ -10,7 +10,6 @@ import { generateInteractTelemetry, Map, generateStartTelemetry, generateImpress
 import { TranslateService } from '@ngx-translate/core';
 import { EventTopics } from '../../app/app.constant';
 import { ShareUrl } from '../../app/app.constant';
-import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 
 @IonicPage()
 @Component({
@@ -485,14 +484,8 @@ export class ContentDetailsPage {
     this.cardData.depth = this.navParams.get('depth') === undefined ? '' : this.navParams.get('depth');
     this.corRelationList = this.navParams.get('corRelation');
     this.identifier = this.cardData.contentId || this.cardData.identifier;
-    let isResumedCourse = this.navParams.get('isResumedCourse');
-    if (!isResumedCourse) {
+    if (!this.navParams.get('isResumedCourse')) {
       this.generateTemetry();
-    }
-    if (isResumedCourse === true) {
-      this.navCtrl.insert(this.navCtrl.length() - 1, EnrolledCourseDetailsPage, {
-        content: this.navParams.get('resumedCourseCardData')
-      })
     }
     this.setContentDetails(this.identifier, true, false);
     this.subscribeGenieEvent();
@@ -754,7 +747,7 @@ export class ContentDetailsPage {
     this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_LIBRARY_INITIATED, this.content.contentType);
     let loader = this.getLoader();
     loader.present();
-    let url = this.baseUrl + ShareUrl.CONTENT + this.content.identifier;
+    let url = this.baseUrl + ShareUrl.CONTENT +this.content.identifier;
     if (this.content.downloadable) {
       this.shareUtil.exportEcar(this.content.identifier, path => {
         loader.dismiss();

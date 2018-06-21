@@ -350,8 +350,7 @@ export class ViewMoreActivityPage implements OnInit {
 								batchId: content.batchId ? content.batchId : '',
 								courseId: identifier
 							},
-							isResumedCourse: true,
-							resumedCourseCardData: content
+							isResumedCourse: true
 						});
 						break;
 					}
