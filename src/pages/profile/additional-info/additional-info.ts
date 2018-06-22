@@ -269,10 +269,11 @@ export class AdditionalInfoComponent {
     } else if (!formVal.language.length) {
       this.getToast(this.translateMessage('ERROR_EMPTY_LANGUAGE')).present();
       return false;
-    //} else if ((this.profile && this.profile.phone && (formVal.phone !== this.profile.phone)) || (formVal.phone === '' || (formVal.phone && formVal.phone.length !== 10))) {
-    } else if (!formVal.phone.match(/^\d{10}$/)) {
+    } else if ((this.profile && this.profile.phone && (formVal.phone !== this.profile.phone)) || (formVal.phone === '' || (formVal.phone.length !== 10))) {
+      if (!formVal.phone.match(/^\d{10}$/)) {
         this.getToast(this.translateMessage('ERROR_SHORT_MOBILE')).present();
         return false;
+      }
     }
     return true;
   }
