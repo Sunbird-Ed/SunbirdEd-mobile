@@ -350,7 +350,9 @@ export class ViewMoreActivityPage implements OnInit {
 								batchId: content.batchId ? content.batchId : '',
 								courseId: identifier
 							},
-							isResumedCourse: true
+							isResumedCourse: true,
+							isChildContent: true,
+							resumedCourseCardData: this.resumeContentData
 						});
 						break;
 					}
@@ -428,7 +430,9 @@ export class ViewMoreActivityPage implements OnInit {
 							batchId: this.resumeContentData.batchId ? this.resumeContentData.batchId : '',
 							courseId: this.resumeContentData.contentId || this.resumeContentData.identifier
 						},
-						isResumedCourse: true
+						isResumedCourse: true,
+						isChildContent: true,
+						resumedCourseCardData: this.resumeContentData
 					});
 				}
 			});
