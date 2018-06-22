@@ -23,6 +23,7 @@ import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-c
 import { AppGlobalService } from '../../service/app-global.service';
 import Driver from 'driver.js';
 import { AppVersion } from "@ionic-native/app-version";
+import { updateFilterInSearchQuery } from '../../util/filter.util';
 
 @Component({
 	selector: 'page-resources',
@@ -397,6 +398,9 @@ export class ResourcesPage implements OnInit {
 				undefined,
 				undefined)
 		);
+
+		queryParams = updateFilterInSearchQuery(queryParams, this.appliedFilter, this.profile, this.appGlobal);
+
 		this.navCtrl.push(ViewMoreActivityPage, {
 			requestParams: queryParams,
 			headerTitle: headerTitle

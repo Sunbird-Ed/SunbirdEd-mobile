@@ -24,6 +24,7 @@ import { AppGlobalService } from '../../service/app-global.service';
 
 import Driver from 'driver.js';
 import { CourseUtilService } from '../../service/course-util.service';
+import { updateFilterInSearchQuery } from '../../util/filter.util';
 
 @IonicPage()
 @Component({
@@ -238,6 +239,9 @@ export class CoursesPage implements OnInit {
   }
 
   viewAllCourses(searchQuery, headerTitle) {
+
+    searchQuery = updateFilterInSearchQuery(searchQuery, this.appliedFilter, this.profile, this.appGlobal);
+
     this.navCtrl.push(ViewMoreActivityPage, {
       headerTitle: headerTitle,
       pageName: 'course.PopularContent',
