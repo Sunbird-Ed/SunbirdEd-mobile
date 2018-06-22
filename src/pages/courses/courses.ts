@@ -719,7 +719,8 @@ export class CoursesPage implements OnInit {
                 courseId: identifier
               },
               isResumedCourse: true,
-              isChildContent: true
+              isChildContent: true,
+              resumedCourseCardData: content
             });
             break;
           }
@@ -802,7 +803,8 @@ export class CoursesPage implements OnInit {
               courseId: this.resumeContentData.contentId || this.resumeContentData.identifier
             },
             isResumedCourse: true,
-            isChildContent: true
+            isChildContent: true,
+            resumedCourseCardData: this.resumeContentData
           });
         }
       });
