@@ -37,7 +37,7 @@
 							 no-padding></rating>
 						</div>
 						<div class="margin-top-3 text-gray-color col-1">
-								&nbsp;({{ content.me_totalRatings ? content.me_totalRatings : 0 }})
+							&nbsp;({{ content.me_totalRatings ? content.me_totalRatings : 0 }})
 						</div>
 					</ion-row>
 
@@ -122,10 +122,16 @@
 <!-- Page footer -->
 <ion-footer *ngIf="content">
 	<ion-toolbar padding>
-		<button ion-button block outline *ngIf="isDownloadStarted" (click)="cancelDownload()">{{ 'CANCEL_DOWNLOAD' | translate }}</button>
-		<button ion-button block *ngIf="!content.downloadable" (click)="downloadContent()" text-uppercase [ngClass]="{'text-font': isDownloadStarted && ('DOWNLOADING_1' | translate).length > 18}">
+		<button ion-button block *ngIf="content.downloadable" (click)="playContent()" [disabled]="isDownloadStarted">{{ 'PLAY' | translate }}</button>
+		<ion-icon *ngIf="isDownloadStarted && downloadProgress !== 100" (click)="cancelDownload()" name="ios-close-circle-outline" class="cancel-download" color="primary"></ion-icon>
+		<button ion-button *ngIf="!content.downloadable" (click)="downloadContent()" text-uppercase [ngClass]="{'text-font': isDownloadStarted && ('DOWNLOADING_1' | translate).length > 18}"
+		 [ngStyle]="{'width': isDownloadStarted === true ? '80%' : '100%'}">
 			{{ isDownloadStarted ? ('DOWNLOADING_1' | translate:{'%s': downloadProgress}) + ' %' : ('DOWNLOAD' | translate) }}
 		</button>
-		<button ion-button block *ngIf="content.downloadable" (click)="playContent()">{{ 'PLAY' | translate }}</button>
+		<!-- Update content -->
+		<button ion-button *ngIf="isUpdateAvail && content.downloadable && downloadProgress !== 100" (click)="downloadContent()" text-uppercase [ngStyle]="{'width': isDownloadStarted === true ? '80%' : '100%'}">
+			{{ isDownloadStarted ? ('UPDATING_CONTENT' | translate:{'%s': downloadProgress}): ('UPDATE_CONTENT' | translate:{'%s': content.size
+			| fileSize}) }}
+		</button>
 	</ion-toolbar>
 </ion-footer>

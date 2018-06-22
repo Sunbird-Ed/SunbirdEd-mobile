@@ -146,6 +146,11 @@ export class CollectionDetailsPage {
   public showLoading = false;
 
   /**
+   * Needed to handle collection auto update workflow
+   */
+  isUpdateAvailable: boolean = false;
+
+  /**
    * To hold rating data
    */
   userRating: number = 0;
@@ -343,7 +348,18 @@ export class CollectionDetailsPage {
       case true: {
         this.showLoading = false;
         this.contentDetail.size = data.result.sizeOnDevice;
-        this.setChildContents();
+        console.log("Content locally available. Looking for is update available or not...");
+        // data.result.isUpdateAvailable = true;
+        if (data.result.isUpdateAvailable && !this.isUpdateAvailable){
+          console.log('update is available. Lets start import again...');
+          this.isUpdateAvailable = true;
+          this.showLoading = true;
+          this.importContent([this.identifier], false);
+        } else {
+          console.log('Update not available');
+          this.isUpdateAvailable = false;
+          this.setChildContents();
+        }
         break;
       }
       case false: {
@@ -445,8 +461,12 @@ export class CollectionDetailsPage {
             }
           });
           if (this.queuedIdentifiers.length === 0) {
-            this.showMessage('Unable to fetch content', false);
+            this.showMessage('UNABLE_TO_FETCH_CONTENT', false);
           }
+        } else if(data.result && data.result[0].status === 'NOT_FOUND') {
+          this.showLoading = false;
+          this.showChildrenLoader = false;
+          this.childrenData.length = 0;
         }
         console.log('Success: content imported successfully... @@@', data);
         // this.showChildrenLoader = false;
@@ -455,8 +475,7 @@ export class CollectionDetailsPage {
       error => {
         this.zone.run(() => {
           console.log('error while loading content details', error);
-          const message = 'Something went wrong, please check after some time';
-          this.showMessage(message, false);
+          this.showMessage('UNABLE_TO_FETCH_CONTENT', false);
           this.showChildrenLoader = false;
         })
       });
@@ -627,6 +646,7 @@ export class CollectionDetailsPage {
     this.isDownlaodCompleted = false;
     this.currentCount = 0;
     this.downloadPercentage = 0;
+    this.isUpdateAvailable = false;
   }
 
   /**
@@ -668,16 +688,17 @@ export class CollectionDetailsPage {
               this.isDownlaodCompleted = true;
               this.contentDetail.isAvailableLocally = true;
               this.downloadPercentage = 0;
-              this.events.publish('savedResources:update', {
-                update: true
-              });
+              this.updateSavedResources();
             }
           } else {
-            this.setChildContents();
-            this.contentDetail.isAvailableLocally = true;
-            this.events.publish('savedResources:update', {
-              update: true
-            });
+            if (this.isUpdateAvailable){
+              console.log('Done with auto import. Lets make getContentDetails api call with refreshContentDetails false');
+              this.setContentDetails(this.identifier, false);
+            } else {
+              this.updateSavedResources();
+              this.setChildContents();
+              this.contentDetail.isAvailableLocally = true;
+            }
           }
         }
       });

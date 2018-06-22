@@ -116,6 +116,11 @@ export class ContentDetailsPage {
   isContentPlayed: boolean = false;
 
   /**
+   * Used to handle update content workflow
+   */
+  isUpdateAvail: boolean = false;
+
+  /**
    * User Rating 
    * 
    */
@@ -367,6 +372,13 @@ export class ContentDetailsPage {
       case true: {
         console.log("Content locally available. Lets play the content");
         this.content.size = data.result.sizeOnDevice;
+        console.log('Update', data.result.isUpdateAvailable);
+        console.log('isUpdateAvail----', this.isUpdateAvail);
+        if (data.result.isUpdateAvailable && !this.isUpdateAvail) {
+          this.isUpdateAvail = true;
+        } else {
+          this.isUpdateAvail = false;
+        }
         break;
       }
       case false: {
@@ -623,13 +635,15 @@ export class ContentDetailsPage {
    * Download content
    */
   downloadContent() {
-    if (this.isNetworkAvailable) {
-      this.downloadProgress = '0';
-      this.isDownloadStarted = true;
-      this.importContent([this.identifier], this.isChildContent);
-    } else {
-      this.translateAndDisplayMessage('ERROR_NO_INTERNET_MESSAGE')
-    }
+    this.zone.run(() => {
+      if (this.isNetworkAvailable) {
+        this.downloadProgress = '0';
+        this.isDownloadStarted = true;
+        this.importContent([this.identifier], this.isChildContent);
+      } else {
+        this.translateAndDisplayMessage('ERROR_NO_INTERNET_MESSAGE')
+      }
+    });
   }
 
   cancelDownload() {
@@ -638,7 +652,9 @@ export class ContentDetailsPage {
         console.log('download cancel success', data);
         this.isDownloadStarted = false;
         this.downloadProgress = '';
-        this.content.downloadable = false;
+        if (!this.isUpdateAvail) {
+          this.content.downloadable = false;
+        }
       });
     }, (error: any) => {
       this.zone.run(() => {
@@ -730,16 +746,12 @@ export class ContentDetailsPage {
       ev: event
     });
     popover.onDidDismiss(data => {
-      if (data === 0) {
-        this.content.downloadable = false;
-        this.translateAndDisplayMessage('MSG_RESOURCE_DELETED', false);
-        this.events.publish('savedResources:update', {
-          update: true
-        });
-      }
-      if (data === 'delete.success') {
-        this.content.downloadable = false;
-      }
+      console.log('Delete data received.....', data);
+      this.zone.run(() => {
+        if (data === 'delete.success') {
+          this.content.downloadable = false;
+        }
+      });
     });
   }
 
