@@ -1,0 +1,29 @@
+<!--
+  Generated template for the GroupMemberPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Group Member</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+    <ion-list  *ngFor = "let users of value | slice:1">
+        <ion-item>
+              <ion-thumbnail item-start>
+                  <img class="rounded" src="http://srecalumni.org.in/user/resource/uploads/profile/male.png">
+                </ion-thumbnail>
+              <ion-label>
+                <h6>{{users.name}}</h6>
+                <p>{{users.profession}}</p>
+              </ion-label>
+        </ion-item>
+  </ion-list>
+
+</ion-content>

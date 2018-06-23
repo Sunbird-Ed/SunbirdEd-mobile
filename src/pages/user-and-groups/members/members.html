@@ -1,0 +1,55 @@
+<!--
+  Generated template for the MembersPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar>
+      <ion-title style="text-align: center">Users and Groups</ion-title>
+      <ion-buttons end>
+          <button ion-button icon-only>
+              <ion-icon name="md-add"></ion-icon>
+          </button>
+          <button ion-button icon-only>
+              <ion-icon name="search"></ion-icon>
+          </button>
+      </ion-buttons>
+  </ion-navbar>
+</ion-header>
+<ion-content padding>
+<ion-row>
+    <ion-col col-md-6>
+      <p>3 USERS</p>
+    </ion-col>
+    <ion-col col-md-6>
+      <p class="right primary" (click)="selectall()">SELECT ALL</p>
+    </ion-col>
+  </ion-row>
+<ion-list *ngFor="let user of allUsers">
+      <ion-item class="custom-ion-list">
+            <ion-thumbnail item-start>
+                <img class="rounded" src="http://srecalumni.org.in/user/resource/uploads/profile/male.png">
+              </ion-thumbnail>
+            <ion-label>
+              <h6>{{user.name}}</h6>
+              <p>{{user.profession}}</p>
+            </ion-label>
+             <ion-checkbox item-end checked={{user.selected}} 
+             (click)="selectedMember(user.name , user.profession, user.selected)"></ion-checkbox>
+      </ion-item>
+</ion-list>
+</ion-content>
+<ion-footer>
+    <div class="border" style="color:#d9d9d9">
+        <ion-row>
+  
+            <ion-col col-md-10 offset-md-1>
+                <button ion-button block (click)="createGroup()">CREATE GROUP</button>
+            </ion-col>
+  
+        </ion-row>
+    </div>
+  
+</ion-footer>
+

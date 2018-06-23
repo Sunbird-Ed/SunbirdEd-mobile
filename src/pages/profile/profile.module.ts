@@ -28,8 +28,12 @@ import { UserSearchComponent } from './user-search/user-search';
 
 import { DirectivesModule } from '../../directives/directives.module';
 import { ComponentsModule } from "../../component/components.module";
+//import { UserAndGroupsPageModule } from './../user-and-groups/user-and-groups.module';
+
 import { IonicImageLoader } from 'ionic-image-loader';
 import { ImagePicker } from './imagepicker/imagepicker';
+//import { GrouplandingPage } from '../user-and-groups/grouplanding/grouplanding';
+
 
 @NgModule({
   declarations: [
