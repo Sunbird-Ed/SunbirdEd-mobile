@@ -1,0 +1,134 @@
+
+<ion-header>
+    <ion-navbar no-border-bottom>
+      <ion-title>
+        Class V Biology Assessment
+      </ion-title>
+    </ion-navbar>
+
+    <ion-toolbar no-border-top>
+      <ion-segment [(ngModel)]="pet">
+        <ion-segment-button value="puppies">
+          BY USERS
+        </ion-segment-button>
+        <ion-segment-button value="kittens">
+          BY QUESTIONS
+        </ion-segment-button>
+      </ion-segment>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content>
+    <div [ngSwitch]="pet">
+            <ion-list *ngSwitchCase="'puppies'">
+        <div class="card">
+            <ion-row>
+                <ion-col col-6 class="column-align">
+                    <p class="text-align"> Average Score</p>
+                    <ion-icon class="icon-align" ios="ios-stats" md="ios-stats"></ion-icon>
+                    <span style="font-size:2.6rem">52/100</span>
+                    <p class="text-align">
+                        <span>High: 5</span> &nbsp;
+                        <span>Low:  0</span>
+                    </p>
+                </ion-col>
+
+                <ion-col col-6 class="column-align">
+                    <p class="text-align">Average Time</p>
+                    <ion-icon class="icon-align" ios="ios-time" md="md-time"></ion-icon>
+                    <span style="font-size:2.6rem">{{' 25:21'}}</span>
+                    <p class="text-align">
+                        <span>Max: 5 min</span> &nbsp;
+                        <span>Min:  1 min</span>
+                    </p>
+                </ion-col>
+            </ion-row>
+        </div>
+        <ion-grid class="grid-align">
+
+            <ion-row class="report-header" padding>
+                <ion-col col-6 class="white">
+                    {{'NAME'}}
+                    <ion-icon name="arrow-dropdown"></ion-icon>
+                </ion-col>
+                <ion-col col-3 class="white">
+                    TIME
+                    <ion-icon name="arrow-dropdown"></ion-icon>
+                </ion-col>
+                <ion-col col-3 class="result">
+                    SCORE
+                    <ion-icon name="arrow-dropdown"></ion-icon>
+                </ion-col>
+            </ion-row>
+            <ion-row (click)="presentPopover($event)" class="G" *ngFor="let question of questionResponse" padding>
+                <ion-col col-6 style="color:dodgerblue">
+                    {{question.user}}
+                </ion-col>
+                <ion-col col-3>
+                    {{question.time}}
+                </ion-col>
+                <ion-col col-3 style="text-align:center">
+                    <!-- <ion-icon class="icon-tickmark" *ngIf="question.result == 'pass'" name="checkmark"></ion-icon>
+                    <ion-icon class="icon-close" *ngIf="question.result == 'failed'" name="close"></ion-icon> -->
+                    {{question.marks}}
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </ion-list>
+      <ion-list *ngSwitchCase="'kittens'">
+            <div class="card">
+                    <ion-row>
+                        <ion-col col-6 class="column-align">
+                            <p class="text-align"> Average Score</p>
+                            <ion-icon class="icon-align" ios="ios-stats" md="ios-stats"></ion-icon>
+                            <span style="font-size:2.6rem">52/100</span>
+                            <p class="text-align">
+                                <span>High: 5</span> &nbsp;
+                                <span>Low:  0</span>
+                            </p>
+                        </ion-col>
+
+                        <ion-col col-6 class="column-align">
+                            <p class="text-align">Average Time</p>
+                            <ion-icon class="icon-align" ios="ios-time" md="md-time"></ion-icon>
+                            <span style="font-size:2.6rem">{{' 25:21'}}</span>
+                            <p class="text-align">
+                                <span>Max: 5 Min</span> &nbsp;
+                                <span>Min:  1 Min</span>
+                            </p>
+                        </ion-col>
+                    </ion-row>
+                </div>
+                <ion-grid class="grid-align">
+
+                    <ion-row class="report-header" padding>
+                        <ion-col col-6 class="white">
+                            QUESTIONS
+                            <ion-icon name="arrow-dropdown"></ion-icon>
+                        </ion-col>
+                        <ion-col col-3 class="white">
+                            MARKS
+                            <ion-icon name="arrow-dropdown"></ion-icon>
+                        </ion-col>
+                        <ion-col col-3 style="padding-right:0;padding-left:0" class="result">
+                            ACCURACY
+                      <!-- <ion-icon name="arrow-dropdown"></ion-icon> -->
+                        </ion-col>
+                    </ion-row>
+                    <ion-row (click)="presentPopover($event)" class="G" *ngFor="let question of questionResponse" padding>
+                        <ion-col col-6 style="color:dodgerblue">
+                            {{question.qId}}
+                        </ion-col>
+                        <ion-col col-3>
+                            {{question.time}}
+                        </ion-col>
+                        <ion-col col-3 style="text-align:center">
+                            <!-- <ion-icon class="icon-tickmark" *ngIf="question.result == 'pass'" name="checkmark"></ion-icon>
+                            <ion-icon class="icon-close" *ngIf="question.result == 'failed'" name="close"></ion-icon> -->
+                            {{question.marks}}
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
+      </ion-list>
+    </div>
+  </ion-content>

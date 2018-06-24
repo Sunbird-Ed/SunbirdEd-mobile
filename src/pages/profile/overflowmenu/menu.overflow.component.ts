@@ -5,6 +5,8 @@ import { NavParams } from "ionic-angular/navigation/nav-params";
 import { ViewController } from "ionic-angular/navigation/view-controller";
 import { ToastController, App } from "ionic-angular";
 import { SettingsPage } from "../../settings/settings";
+import { ReportPage } from '../../settings/reports/reports'
+import { GroupReportListPage } from '../../settings/reports/group-report-list/group-report-list'
 import { OAuthService } from "sunbird";
 import { OnboardingPage } from "../../onboarding/onboarding";
 import { Interact, InteractType, InteractSubtype, PageId, Environment, TelemetryService, ProfileService } from "sunbird";
@@ -73,6 +75,14 @@ export class OverflowMenuComponent {
         }
     }
 
+    goToReports(){
+
+        this.app.getActiveNav().push(ReportPage);
+    }
+    goToGroupReports(){
+       
+        this.app.getActiveNav().push(GroupReportListPage);
+    }
 
     generateLogoutInteractTelemetry(interactType, interactSubtype, uid) {
         let valuesMap = new Map();
