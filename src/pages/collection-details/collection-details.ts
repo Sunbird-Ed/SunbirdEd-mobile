@@ -174,6 +174,8 @@ export class CollectionDetailsPage {
 
   profileType: string = '';
   private corRelationList: Array<CorrelationData>;
+  private shouldGenerateEndTelemetry: boolean = false;
+  private source : string = "";
 
   @ViewChild(Navbar) navBar: Navbar;
   constructor(private navCtrl: NavController,
@@ -200,6 +202,9 @@ export class CollectionDetailsPage {
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.didViewLoad = false;
       this.generateEndEvent(this.objId, this.objType, this.objVer);
+      if(this.shouldGenerateEndTelemetry){
+        this.generateQRSessionEndEvent(this.source,this.cardData.identifier);
+      }
       this.navCtrl.pop();
       this.backButtonFunc();
     }, 10)
@@ -553,6 +558,9 @@ export class CollectionDetailsPage {
     this.navBar.backButtonClick = (e: UIEvent) => {
       this.didViewLoad = false;
       this.generateEndEvent(this.objId, this.objType, this.objVer);
+      if(this.shouldGenerateEndTelemetry){
+        this.generateQRSessionEndEvent(this.source,this.cardData.identifier);
+      }
       this.navCtrl.pop();
       this.backButtonFunc();
     }
@@ -567,6 +575,9 @@ export class CollectionDetailsPage {
       this.cardData = this.navParams.get('content');
       this.corRelationList = this.navParams.get('corRelation');
       let depth = this.navParams.get('depth');
+      this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
+      this.source = this.navParams.get('source');
+      
       if (depth !== undefined) {
         this.depth = depth;
         this.showDownloadBtn = false;
@@ -871,6 +882,21 @@ export class CollectionDetailsPage {
       this.objRollup,
       this.corRelationList
     ));
+  }
+
+  generateQRSessionEndEvent(pageId: string, qrData: string) {
+    if (pageId !== undefined) {
+      this.telemetryService.end(generateEndTelemetry(
+        "qr",
+        Mode.PLAY,
+        pageId,
+        qrData,
+        "qr",
+        "",
+        undefined,
+        this.corRelationList
+      ));
+    }
   }
 
   generateShareInteractEvents(interactType, subType, contentType) {

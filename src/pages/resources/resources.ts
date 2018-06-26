@@ -60,7 +60,7 @@ export class ResourcesPage implements OnInit {
 	pageApiLoader: boolean = true;
 
 	isOnBoardingCardCompleted: boolean = false;
-	public source = "resource";
+	public source = PageId.LIBRARY;
 
 	resourceFilter: any;
 
@@ -544,7 +544,10 @@ export class ResourcesPage implements OnInit {
 			dialcode(scanResult, dialCode) {
 
 				that.addCorRelation(dialCode, "qr");
-				that.navCtrl.push(SearchPage, { dialCode: dialCode, corRelation: that.corRelationList });
+				that.navCtrl.push(SearchPage, { dialCode: dialCode,
+					 corRelation: that.corRelationList,
+					 source: that.source,
+					 shouldGenerateEndTelemetry: true });
 			},
 			content(scanResult, contentId) {
 				let request: ContentDetailRequest = {
@@ -601,19 +604,26 @@ export class ResourcesPage implements OnInit {
 			console.log('Calling course details page');
 			this.navCtrl.push(EnrolledCourseDetailsPage, {
 				content: content,
-				corRelation: corRelationList
+				corRelation: corRelationList,
+				source: this.source,
+				shouldGenerateEndTelemetry: true
 			})
 		} else if (content.mimeType === MimeType.COLLECTION) {
 			console.log('Calling collection details page');
 			this.navCtrl.push(CollectionDetailsPage, {
 				content: content,
-				corRelation: corRelationList
+				corRelation: corRelationList,
+				source: this.source,
+				shouldGenerateEndTelemetry: true
+
 			})
 		} else {
 			console.log('Calling content details page');
 			this.navCtrl.push(ContentDetailsPage, {
 				content: content,
-				corRelation: corRelationList
+				corRelation: corRelationList,
+				source: this.source,
+				shouldGenerateEndTelemetry: true
 			})
 		}
 	}

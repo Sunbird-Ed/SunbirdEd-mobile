@@ -144,6 +144,8 @@ export class ContentDetailsPage {
   private didViewLoad: boolean;
   private backButtonFunc = undefined;
   private baseUrl = "";
+  private shouldGenerateEndTelemetry: boolean = false;
+  private source : string = "";
 
   /**
    *
@@ -174,6 +176,9 @@ export class ContentDetailsPage {
       this.didViewLoad = false;
       this.navCtrl.pop();
       this.generateEndEvent(this.objId, this.objType, this.objVer);
+      if(this.shouldGenerateEndTelemetry){
+        this.generateQRSessionEndEvent(this.source,this.cardData.identifier);
+      }
       this.backButtonFunc();
     }, 10)
     this.objRollup = new Rollup();
@@ -477,6 +482,21 @@ export class ContentDetailsPage {
     ));
   }
 
+  generateQRSessionEndEvent(pageId: string, qrData: string) {
+    if (pageId !== undefined) {
+      this.telemetryService.end(generateEndTelemetry(
+        "qr",
+        Mode.PLAY,
+        pageId,
+        qrData,
+        "qr",
+        "",
+        undefined,
+        this.corRelationList
+      ));
+    }
+  }
+
   private generateRatingInteractEvent() {
     this.telemetryService.interact(
       generateInteractTelemetry(InteractType.TOUCH,
@@ -498,6 +518,8 @@ export class ContentDetailsPage {
     this.corRelationList = this.navParams.get('corRelation');
     this.identifier = this.cardData.contentId || this.cardData.identifier;
     let isResumedCourse = this.navParams.get('isResumedCourse');
+    this.source = this.navParams.get('source');
+    this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
     if (!isResumedCourse) {
       this.generateTemetry();
     }
@@ -522,6 +544,9 @@ export class ContentDetailsPage {
     this.navBar.backButtonClick = (e: UIEvent) => {
       this.didViewLoad = false;
       this.generateEndEvent(this.objId, this.objType, this.objVer);
+      if(this.shouldGenerateEndTelemetry){
+        this.generateQRSessionEndEvent(this.source,this.cardData.identifier);
+      }
       this.navCtrl.pop();
       this.backButtonFunc();
     }

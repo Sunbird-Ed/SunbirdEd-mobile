@@ -478,7 +478,10 @@ export class CoursesPage implements OnInit {
     const callback: QRResultCallback = {
       dialcode(scanResult, dialCode) {
         that.addCorRelation(dialCode, "qr");
-        that.navCtrl.push(SearchPage, { dialCode: dialCode, corRelation: that.corRelationList });
+        that.navCtrl.push(SearchPage, { dialCode: dialCode, 
+          corRelation: that.corRelationList,
+          source: PageId.COURSES,
+          shouldGenerateEndTelemetry: true });
       },
       content(scanResult, contentId) {
         // that.navCtrl.push(SearchPage);
@@ -523,19 +526,25 @@ export class CoursesPage implements OnInit {
       console.log('Calling course details page');
       this.navCtrl.push(EnrolledCourseDetailsPage, {
         content: content,
-        corRelation: corRelationList
+        corRelation: corRelationList,
+        source: PageId.COURSES,
+        shouldGenerateEndTelemetry: true
       })
     } else if (content.mimeType === MimeType.COLLECTION) {
       console.log('Calling collection details page');
       this.navCtrl.push(CollectionDetailsPage, {
         content: content,
-        corRelation: corRelationList
+        corRelation: corRelationList,
+        source: PageId.COURSES,
+        shouldGenerateEndTelemetry: true
       })
     } else {
       console.log('Calling content details page');
       this.navCtrl.push(ContentDetailsPage, {
         content: content,
-        corRelation: corRelationList
+        corRelation: corRelationList,
+        source: PageId.COURSES,
+        shouldGenerateEndTelemetry: true
       })
     }
   }
