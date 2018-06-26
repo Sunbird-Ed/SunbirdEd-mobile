@@ -7,6 +7,7 @@ import {
 import { TranslateService } from '@ngx-translate/core';
 import { generateImpressionTelemetry, generateInteractTelemetry } from '../../app/telemetryutil';
 import { ProfileConstants } from '../../app/app.constant';
+import { AppGlobalService } from '../../service/app-global.service';
 
 
 /**
@@ -48,7 +49,8 @@ export class ContentRatingAlertComponent {
     private toastCtrl: ToastController,
     private ngZone: NgZone,
     private contentService: ContentService,
-    private telemetryService: TelemetryService) {
+    private telemetryService: TelemetryService,
+    private appGlobalService: AppGlobalService) {
     this.getUserId();
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.viewCtrl.dismiss();
@@ -69,14 +71,11 @@ export class ContentRatingAlertComponent {
    * Get user id
    */
   getUserId() {
-    this.authService.getSessionData((data: string) => {
-      let res = JSON.parse(data);
-      if (res === undefined || res === "null") {
-        this.userId = '';
-      } else {
-        this.userId = res[ProfileConstants.USER_TOKEN] ? res[ProfileConstants.USER_TOKEN] : '';
-      }
-    });
+    if (this.appGlobalService.getSessionData()) {
+      this.userId = this.appGlobalService.getSessionData()[ProfileConstants.USER_TOKEN];
+    } else {
+      this.userId = '';
+    }
   }
 
   /**
