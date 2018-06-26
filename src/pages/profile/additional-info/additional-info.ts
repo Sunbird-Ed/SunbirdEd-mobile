@@ -23,7 +23,6 @@ export interface toastOptions {
 
 /* This contains form for the User's Additional Information where user can edit previous one */
 export class AdditionalInfoComponent {
-  tabBarElement: any;
   isNewForm: boolean = true;
   additionalInfoForm: FormGroup;
   userId: string;
@@ -44,7 +43,8 @@ export class AdditionalInfoComponent {
     position: 'bottom'
   };
 
-  constructor(public navCtrl: NavController,
+  constructor(
+    public navCtrl: NavController,
     public fb: FormBuilder,
     public navParams: NavParams,
     public userProfileService: UserProfileService,
@@ -55,13 +55,10 @@ export class AdditionalInfoComponent {
     private frameworkService: FrameworkService,
     private zone: NgZone
   ) {
-    /* Returns a html element for tab bar */
-    this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
-
     /* Receive data from other component */
     this.userId = this.navParams.get('userId');
-    this.profile = this.navParams.get('profile');
-    this.profileVisibility = this.navParams.get('profileVisibility');
+    this.profile = this.navParams.get('profile') || {};
+    this.profileVisibility = this.navParams.get('profileVisibility') || {};
 
     this.getFrameworkData('subject', 'subjectList');
     this.getFrameworkData('gradeLevel', 'gradeList');
@@ -86,7 +83,7 @@ export class AdditionalInfoComponent {
     });
 
     /* Patch social Webpages links */
-    if (this.profile.webPages.length) {
+    if (this.profile && this.profile.webPages && this.profile.webPages.length) {
       this.profile.webPages.forEach(element => {
         if (element.type === 'fb') {
           this.additionalInfoForm.patchValue({
@@ -110,7 +107,7 @@ export class AdditionalInfoComponent {
   }
 
   /**
-   * This will internally call framework API
+   * This will internally call framework API, fetches framework data and stores in local variables.
    * @param {string} currentCategory - request Parameter passing to the framework API
    * @param {string} list - Local variable name to hold the list data
    */
@@ -129,18 +126,13 @@ export class AdditionalInfoComponent {
       });
   }
 
-  ionViewWillEnter() {
-    this.tabBarElement.style.display = 'none';
-  }
-
-  ionViewWillLeave() {
-    this.tabBarElement.style.display = 'flex';
-  }
-
   /**
    * To Toggle the lock
+   * @param {string} field - Field on the html form
+   * @param {string} fieldDisplayName - Language constant for the field
+   * @param {boolean} revert - Tells whether to revert changes or not
    */
-  toggleLock(field: string, fieldDisplayName: string, revert: boolean = false, ) {
+  toggleLock(field: string, fieldDisplayName: string, revert: boolean = false ) {
     this.zone.run(() => {
       this.profileVisibility[field] = this.profileVisibility[field] === "private" ? "public" : "private";
     });
@@ -163,8 +155,9 @@ export class AdditionalInfoComponent {
 
   /**
    * To set Profile visibility
+   * @param {string} field - Field on Form
    */
-  setProfileVisibility(field) {
+  setProfileVisibility(field: string) {
     this.authService.getSessionData(session => {
       if (session === undefined || session == null) {
         console.error("session is null");
@@ -195,11 +188,13 @@ export class AdditionalInfoComponent {
    * @param {object} event - Form event
    */
   onSubmit(event): void {
+    /* Holds form Values */
     let formVal = this.additionalInfoForm.value;
 
     if (this.profile.phone.length && formVal.phone === '') {
       formVal.phone = this.profile.phone;
     }
+
     if (this.validateForm(formVal)) {
       let currentValues: any = {
         userId: this.userId,
@@ -327,6 +322,7 @@ export class AdditionalInfoComponent {
   /**
    * Used to Translate message to current Language
    * @param {string} messageConst - Message Constant to be translated
+   * @param {string} field - The field to be added in the language constant
    * @returns {string} translatedMsg - Translated Message
    */
   translateMessage(messageConst: string, field?: string): string {
@@ -339,6 +335,9 @@ export class AdditionalInfoComponent {
     return translatedMsg;
   }
 
+  /**
+   * Returns the object of loading controller
+   */
   getLoader(): any {
     return this.loadingCtrl.create({
       duration: 30000,

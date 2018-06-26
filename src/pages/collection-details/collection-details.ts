@@ -24,6 +24,7 @@ import { ContentRatingAlertComponent } from '../../component/content-rating-aler
 import { ContentType, MimeType, ShareUrl } from '../../app/app.constant';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 import { Network } from '@ionic-native/network';
+import { AppGlobalService } from '../../service/app-global.service';
 
 /**
  * Generated class for the CollectionDetailsPage page.
@@ -190,7 +191,8 @@ export class CollectionDetailsPage {
     private shareUtil: ShareUtil,
     private buildParamService: BuildParamService,
     private network: Network,
-    private preference: SharedPreferences) {
+    private preference: SharedPreferences,
+    private appGlobalService: AppGlobalService) {
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
     console.warn('Inside new module..........................');
@@ -258,13 +260,7 @@ export class CollectionDetailsPage {
  * 
  */
   checkLoggedInOrGuestUser() {
-    this.authService.getSessionData((session) => {
-      if (session === null || session === "null") {
-        this.guestUser = true;
-      } else {
-        this.guestUser = false;
-      }
-    });
+    this.guestUser = !this.appGlobalService.isUserLoggedIn();
   }
 
   checkCurrentUserType() {

@@ -19,6 +19,7 @@ import { SocialSharing } from '@ionic-native/social-sharing';
 import { Network } from '@ionic-native/network';
 import { generateInteractTelemetry, generateEndTelemetry, generateStartTelemetry, generateImpressionTelemetry } from '../../app/telemetryutil';
 import { CourseUtilService } from '../../service/course-util.service';
+import { AppGlobalService } from '../../service/app-global.service';
 
 /**
  * Generated class for the EnrolledCourseDetailsPage page.
@@ -185,7 +186,8 @@ export class EnrolledCourseDetailsPage {
     private preference: SharedPreferences,
     private network: Network,
     private courseUtilService: CourseUtilService,
-    private platform: Platform) {
+    private platform: Platform,
+    private appGlobalService: AppGlobalService) {
     this.getUserId();
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
@@ -232,16 +234,11 @@ export class EnrolledCourseDetailsPage {
    * Get user id
    */
   getUserId() {
-    this.authService.getSessionData((data: string) => {
-      let res = JSON.parse(data);
-      console.log('auth result....', res);
-      if (res === undefined || res === "null") {
-        this.userId = '';
-      } else {
-        this.userId = res[ProfileConstants.USER_TOKEN] ? res[ProfileConstants.USER_TOKEN] : '';
-        console.log('UserId', this.userId);
-      }
-    });
+    if (this.appGlobalService.getSessionData()) {
+      this.userId = this.appGlobalService.getSessionData()[ProfileConstants.USER_TOKEN];
+    } else {
+      this.userId = '';
+    }
   }
 
   /**
@@ -249,13 +246,7 @@ export class EnrolledCourseDetailsPage {
  * 
  */
   checkLoggedInOrGuestUser() {
-    this.authService.getSessionData((session) => {
-      if (session === null || session === "null") {
-        this.guestUser = true;
-      } else {
-        this.guestUser = false;
-      }
-    });
+    this.guestUser = !this.appGlobalService.isUserLoggedIn();
   }
 
   checkCurrentUserType() {
@@ -787,7 +778,7 @@ export class EnrolledCourseDetailsPage {
     this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_COURSE_INITIATED, this.course.contentType);
     let loader = this.getLoader();
     loader.present();
-    let url = this.baseUrl + ShareUrl.COLLECTION +this.course.identifier;
+    let url = this.baseUrl + ShareUrl.COLLECTION + this.course.identifier;
     if (this.course.isAvailableLocally) {
       this.shareUtil.exportEcar(this.course.identifier, path => {
         loader.dismiss();
