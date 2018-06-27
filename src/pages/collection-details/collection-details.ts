@@ -146,6 +146,11 @@ export class CollectionDetailsPage {
   public showLoading = false;
 
   /**
+   * Needed to handle collection auto update workflow
+   */
+  isUpdateAvailable: boolean = false;
+
+  /**
    * To hold rating data
    */
   userRating: number = 0;
@@ -169,6 +174,8 @@ export class CollectionDetailsPage {
 
   profileType: string = '';
   private corRelationList: Array<CorrelationData>;
+  private shouldGenerateEndTelemetry: boolean = false;
+  private source : string = "";
 
   @ViewChild(Navbar) navBar: Navbar;
   constructor(private navCtrl: NavController,
@@ -195,6 +202,9 @@ export class CollectionDetailsPage {
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.didViewLoad = false;
       this.generateEndEvent(this.objId, this.objType, this.objVer);
+      if(this.shouldGenerateEndTelemetry){
+        this.generateQRSessionEndEvent(this.source,this.cardData.identifier);
+      }
       this.navCtrl.pop();
       this.backButtonFunc();
     }, 10)
@@ -343,7 +353,18 @@ export class CollectionDetailsPage {
       case true: {
         this.showLoading = false;
         this.contentDetail.size = data.result.sizeOnDevice;
-        this.setChildContents();
+        console.log("Content locally available. Looking for is update available or not...");
+        // data.result.isUpdateAvailable = true;
+        if (data.result.isUpdateAvailable && !this.isUpdateAvailable){
+          console.log('update is available. Lets start import again...');
+          this.isUpdateAvailable = true;
+          this.showLoading = true;
+          this.importContent([this.identifier], false);
+        } else {
+          console.log('Update not available');
+          this.isUpdateAvailable = false;
+          this.setChildContents();
+        }
         break;
       }
       case false: {
@@ -445,8 +466,12 @@ export class CollectionDetailsPage {
             }
           });
           if (this.queuedIdentifiers.length === 0) {
-            this.showMessage('Unable to fetch content', false);
+            this.showMessage('UNABLE_TO_FETCH_CONTENT', false);
           }
+        } else if(data.result && data.result[0].status === 'NOT_FOUND') {
+          this.showLoading = false;
+          this.showChildrenLoader = false;
+          this.childrenData.length = 0;
         }
         console.log('Success: content imported successfully... @@@', data);
         // this.showChildrenLoader = false;
@@ -455,8 +480,7 @@ export class CollectionDetailsPage {
       error => {
         this.zone.run(() => {
           console.log('error while loading content details', error);
-          const message = 'Something went wrong, please check after some time';
-          this.showMessage(message, false);
+          this.showMessage('UNABLE_TO_FETCH_CONTENT', false);
           this.showChildrenLoader = false;
         })
       });
@@ -534,6 +558,9 @@ export class CollectionDetailsPage {
     this.navBar.backButtonClick = (e: UIEvent) => {
       this.didViewLoad = false;
       this.generateEndEvent(this.objId, this.objType, this.objVer);
+      if(this.shouldGenerateEndTelemetry){
+        this.generateQRSessionEndEvent(this.source,this.cardData.identifier);
+      }
       this.navCtrl.pop();
       this.backButtonFunc();
     }
@@ -548,6 +575,9 @@ export class CollectionDetailsPage {
       this.cardData = this.navParams.get('content');
       this.corRelationList = this.navParams.get('corRelation');
       let depth = this.navParams.get('depth');
+      this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
+      this.source = this.navParams.get('source');
+      
       if (depth !== undefined) {
         this.depth = depth;
         this.showDownloadBtn = false;
@@ -627,6 +657,7 @@ export class CollectionDetailsPage {
     this.isDownlaodCompleted = false;
     this.currentCount = 0;
     this.downloadPercentage = 0;
+    this.isUpdateAvailable = false;
   }
 
   /**
@@ -668,16 +699,17 @@ export class CollectionDetailsPage {
               this.isDownlaodCompleted = true;
               this.contentDetail.isAvailableLocally = true;
               this.downloadPercentage = 0;
-              this.events.publish('savedResources:update', {
-                update: true
-              });
+              this.updateSavedResources();
             }
           } else {
-            this.setChildContents();
-            this.contentDetail.isAvailableLocally = true;
-            this.events.publish('savedResources:update', {
-              update: true
-            });
+            if (this.isUpdateAvailable){
+              console.log('Done with auto import. Lets make getContentDetails api call with refreshContentDetails false');
+              this.setContentDetails(this.identifier, false);
+            } else {
+              this.updateSavedResources();
+              this.setChildContents();
+              this.contentDetail.isAvailableLocally = true;
+            }
           }
         }
       });
@@ -850,6 +882,21 @@ export class CollectionDetailsPage {
       this.objRollup,
       this.corRelationList
     ));
+  }
+
+  generateQRSessionEndEvent(pageId: string, qrData: string) {
+    if (pageId !== undefined) {
+      this.telemetryService.end(generateEndTelemetry(
+        "qr",
+        Mode.PLAY,
+        pageId,
+        qrData,
+        "qr",
+        "",
+        undefined,
+        this.corRelationList
+      ));
+    }
   }
 
   generateShareInteractEvents(interactType, subType, contentType) {

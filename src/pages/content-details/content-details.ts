@@ -10,6 +10,7 @@ import { generateInteractTelemetry, Map, generateStartTelemetry, generateImpress
 import { TranslateService } from '@ngx-translate/core';
 import { EventTopics } from '../../app/app.constant';
 import { ShareUrl } from '../../app/app.constant';
+import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 
 @IonicPage()
 @Component({
@@ -116,6 +117,11 @@ export class ContentDetailsPage {
   isContentPlayed: boolean = false;
 
   /**
+   * Used to handle update content workflow
+   */
+  isUpdateAvail: boolean = false;
+
+  /**
    * User Rating 
    * 
    */
@@ -138,6 +144,8 @@ export class ContentDetailsPage {
   private didViewLoad: boolean;
   private backButtonFunc = undefined;
   private baseUrl = "";
+  private shouldGenerateEndTelemetry: boolean = false;
+  private source : string = "";
 
   /**
    *
@@ -168,6 +176,9 @@ export class ContentDetailsPage {
       this.didViewLoad = false;
       this.navCtrl.pop();
       this.generateEndEvent(this.objId, this.objType, this.objVer);
+      if(this.shouldGenerateEndTelemetry){
+        this.generateQRSessionEndEvent(this.source,this.cardData.identifier);
+      }
       this.backButtonFunc();
     }, 10)
     this.objRollup = new Rollup();
@@ -367,6 +378,13 @@ export class ContentDetailsPage {
       case true: {
         console.log("Content locally available. Lets play the content");
         this.content.size = data.result.sizeOnDevice;
+        console.log('Update', data.result.isUpdateAvailable);
+        console.log('isUpdateAvail----', this.isUpdateAvail);
+        if (data.result.isUpdateAvailable && !this.isUpdateAvail) {
+          this.isUpdateAvail = true;
+        } else {
+          this.isUpdateAvail = false;
+        }
         break;
       }
       case false: {
@@ -464,6 +482,21 @@ export class ContentDetailsPage {
     ));
   }
 
+  generateQRSessionEndEvent(pageId: string, qrData: string) {
+    if (pageId !== undefined) {
+      this.telemetryService.end(generateEndTelemetry(
+        "qr",
+        Mode.PLAY,
+        pageId,
+        qrData,
+        "qr",
+        "",
+        undefined,
+        this.corRelationList
+      ));
+    }
+  }
+
   private generateRatingInteractEvent() {
     this.telemetryService.interact(
       generateInteractTelemetry(InteractType.TOUCH,
@@ -484,8 +517,16 @@ export class ContentDetailsPage {
     this.cardData.depth = this.navParams.get('depth') === undefined ? '' : this.navParams.get('depth');
     this.corRelationList = this.navParams.get('corRelation');
     this.identifier = this.cardData.contentId || this.cardData.identifier;
-    if (!this.navParams.get('isResumedCourse')) {
+    let isResumedCourse = this.navParams.get('isResumedCourse');
+    this.source = this.navParams.get('source');
+    this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
+    if (!isResumedCourse) {
       this.generateTemetry();
+    }
+    if (isResumedCourse === true) {
+      this.navCtrl.insert(this.navCtrl.length() - 1, EnrolledCourseDetailsPage, {
+        content: this.navParams.get('resumedCourseCardData')
+      })
     }
     this.setContentDetails(this.identifier, true, false);
     this.subscribeGenieEvent();
@@ -503,6 +544,9 @@ export class ContentDetailsPage {
     this.navBar.backButtonClick = (e: UIEvent) => {
       this.didViewLoad = false;
       this.generateEndEvent(this.objId, this.objType, this.objVer);
+      if(this.shouldGenerateEndTelemetry){
+        this.generateQRSessionEndEvent(this.source,this.cardData.identifier);
+      }
       this.navCtrl.pop();
       this.backButtonFunc();
     }
@@ -623,13 +667,15 @@ export class ContentDetailsPage {
    * Download content
    */
   downloadContent() {
-    if (this.isNetworkAvailable) {
-      this.downloadProgress = '0';
-      this.isDownloadStarted = true;
-      this.importContent([this.identifier], this.isChildContent);
-    } else {
-      this.translateAndDisplayMessage('ERROR_NO_INTERNET_MESSAGE')
-    }
+    this.zone.run(() => {
+      if (this.isNetworkAvailable) {
+        this.downloadProgress = '0';
+        this.isDownloadStarted = true;
+        this.importContent([this.identifier], this.isChildContent);
+      } else {
+        this.translateAndDisplayMessage('ERROR_NO_INTERNET_MESSAGE')
+      }
+    });
   }
 
   cancelDownload() {
@@ -638,7 +684,9 @@ export class ContentDetailsPage {
         console.log('download cancel success', data);
         this.isDownloadStarted = false;
         this.downloadProgress = '';
-        this.content.downloadable = false;
+        if (!this.isUpdateAvail) {
+          this.content.downloadable = false;
+        }
       });
     }, (error: any) => {
       this.zone.run(() => {
@@ -730,16 +778,12 @@ export class ContentDetailsPage {
       ev: event
     });
     popover.onDidDismiss(data => {
-      if (data === 0) {
-        this.content.downloadable = false;
-        this.translateAndDisplayMessage('MSG_RESOURCE_DELETED', false);
-        this.events.publish('savedResources:update', {
-          update: true
-        });
-      }
-      if (data === 'delete.success') {
-        this.content.downloadable = false;
-      }
+      console.log('Delete data received.....', data);
+      this.zone.run(() => {
+        if (data === 'delete.success') {
+          this.content.downloadable = false;
+        }
+      });
     });
   }
 

@@ -24,6 +24,7 @@ import { AppGlobalService } from '../../service/app-global.service';
 
 import Driver from 'driver.js';
 import { CourseUtilService } from '../../service/course-util.service';
+import { updateFilterInSearchQuery } from '../../util/filter.util';
 
 @IonicPage()
 @Component({
@@ -238,6 +239,9 @@ export class CoursesPage implements OnInit {
   }
 
   viewAllCourses(searchQuery, headerTitle) {
+
+    searchQuery = updateFilterInSearchQuery(searchQuery, this.appliedFilter, this.profile, this.appGlobal);
+
     this.navCtrl.push(ViewMoreActivityPage, {
       headerTitle: headerTitle,
       pageName: 'course.PopularContent',
@@ -474,7 +478,10 @@ export class CoursesPage implements OnInit {
     const callback: QRResultCallback = {
       dialcode(scanResult, dialCode) {
         that.addCorRelation(dialCode, "qr");
-        that.navCtrl.push(SearchPage, { dialCode: dialCode, corRelation: that.corRelationList });
+        that.navCtrl.push(SearchPage, { dialCode: dialCode, 
+          corRelation: that.corRelationList,
+          source: PageId.COURSES,
+          shouldGenerateEndTelemetry: true });
       },
       content(scanResult, contentId) {
         // that.navCtrl.push(SearchPage);
@@ -519,19 +526,25 @@ export class CoursesPage implements OnInit {
       console.log('Calling course details page');
       this.navCtrl.push(EnrolledCourseDetailsPage, {
         content: content,
-        corRelation: corRelationList
+        corRelation: corRelationList,
+        source: PageId.COURSES,
+        shouldGenerateEndTelemetry: true
       })
     } else if (content.mimeType === MimeType.COLLECTION) {
       console.log('Calling collection details page');
       this.navCtrl.push(CollectionDetailsPage, {
         content: content,
-        corRelation: corRelationList
+        corRelation: corRelationList,
+        source: PageId.COURSES,
+        shouldGenerateEndTelemetry: true
       })
     } else {
       console.log('Calling content details page');
       this.navCtrl.push(ContentDetailsPage, {
         content: content,
-        corRelation: corRelationList
+        corRelation: corRelationList,
+        source: PageId.COURSES,
+        shouldGenerateEndTelemetry: true
       })
     }
   }
@@ -715,7 +728,8 @@ export class CoursesPage implements OnInit {
                 courseId: identifier
               },
               isResumedCourse: true,
-              isChildContent: true
+              isChildContent: true,
+              resumedCourseCardData: content
             });
             break;
           }
@@ -798,7 +812,8 @@ export class CoursesPage implements OnInit {
               courseId: this.resumeContentData.contentId || this.resumeContentData.identifier
             },
             isResumedCourse: true,
-            isChildContent: true
+            isChildContent: true,
+            resumedCourseCardData: this.resumeContentData
           });
         }
       });
