@@ -6,7 +6,7 @@ import {
 	ContentFilterCriteria, ProfileType, PageAssembleFilter,
 	CorrelationData
 } from "sunbird";
-import { NavController, PopoverController, Events, ToastController, LoadingController } from 'ionic-angular';
+import { NavController, PopoverController, Events, ToastController, LoadingController, AlertButton } from 'ionic-angular';
 import * as _ from 'lodash';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
 import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
@@ -23,6 +23,8 @@ import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-c
 import { AppGlobalService } from '../../service/app-global.service';
 import Driver from 'driver.js';
 import { AppVersion } from "@ionic-native/app-version";
+import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
+import { AlertController } from 'ionic-angular';
 
 @Component({
 	selector: 'page-resources',
@@ -95,8 +97,23 @@ export class ResourcesPage implements OnInit {
 		private network: Network,
 		private loadingCtrl: LoadingController,
 		private appGlobal: AppGlobalService,
-		private appVersion: AppVersion
+		private appVersion: AppVersion,
+		private formAndFrameowrkUtilService: FormAndFrameworkUtilService,
+		private alertCtrl: AlertController
 	) {
+		//check if any new app version is available
+		formAndFrameowrkUtilService.checkNewAppVersion()
+			.then(result => {
+				console.log("Resources | App upgrade type - " + result.type)
+				console.log("Resources | App upgrade title - " + result.title)
+				console.log("Resources | App upgrade desc - " + result.desc)
+
+				if (result) {
+					this.presentConfirm(result)
+				}
+
+			});
+
 		this.preference.getString('selected_language_code', (val: string) => {
 			if (val && val.length) {
 				this.selectedLanguage = val;
@@ -137,6 +154,32 @@ export class ResourcesPage implements OnInit {
 				this.appLabel = appName;
 			});
 
+	}
+
+	presentConfirm(result: any) {
+		let buttons: Array<AlertButton> = [];
+
+		//iterate on all the buttons
+		if (result.actionButtons) {
+			result.actionButtons.forEach(button => {
+				if (button) {
+					let alertButton: AlertButton = {
+						text: button.key,
+						handler: () => {
+							console.log(String(button.link))
+						}
+					};
+					buttons.push(alertButton);
+				}
+			});
+		}
+
+		let alert = this.alertCtrl.create({
+			title: result.title,
+			message: result.desc,
+			buttons: buttons
+		});
+		alert.present();
 	}
 
 	ngAfterViewInit() {
