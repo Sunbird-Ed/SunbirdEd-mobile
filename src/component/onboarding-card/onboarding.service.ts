@@ -211,10 +211,6 @@ export class OnboardingService {
      */
     getCategoryData(req: CategoryRequest, list, index: number, hasUserClicked: boolean): void {
 
-        if (this.frameworkId !== undefined && this.frameworkId.length) {
-            req.frameworkId = this.frameworkId;
-        }
-
         this.formAndFrameworkUtilService.getCategoryData(req, this.frameworkId)
             .then((result) => {
                 if (result && result !== undefined && result.length > 0) {

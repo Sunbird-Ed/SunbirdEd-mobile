@@ -1,4 +1,4 @@
-import { Component, NgZone, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit, ViewChild } from '@angular/core';
 import {
 	PageAssembleService, PageAssembleCriteria, ContentService,
 	Impression, ImpressionType, PageId, Environment, TelemetryService,
@@ -25,12 +25,15 @@ import Driver from 'driver.js';
 import { AppVersion } from "@ionic-native/app-version";
 import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
 import { AlertController } from 'ionic-angular';
+import { OnboardingCardComponent } from '../../component/onboarding-card/onboarding-card';
 
 @Component({
 	selector: 'page-resources',
 	templateUrl: 'resources.html'
 })
-export class ResourcesPage implements OnInit {
+export class ResourcesPage {
+
+	@ViewChild(OnboardingCardComponent) onboardingCard: OnboardingCardComponent;
 
 	pageLoadedSuccess: boolean = false;
 
@@ -60,7 +63,6 @@ export class ResourcesPage implements OnInit {
 	 */
 	pageApiLoader: boolean = true;
 
-	isOnBoardingCardCompleted: boolean = false;
 	public source = "resource";
 
 	resourceFilter: any;
@@ -181,11 +183,6 @@ export class ResourcesPage implements OnInit {
 		alert.present();
 	}
 
-	ngAfterViewInit() {
-		this.events.subscribe('onboarding-card:completed', (param) => {
-			this.isOnBoardingCardCompleted = param.isOnBoardingCardCompleted;
-		});
-	}
 	/**
 	 * It will fetch the guest user profile details
 	 */
@@ -202,13 +199,6 @@ export class ResourcesPage implements OnInit {
 		this.setSavedContent();
 
 		this.profile = this.appGlobal.getCurrentUser();
-		if (this.profile && this.profile.board && this.profile.board.length
-			&& this.profile.grade && this.profile.grade.length
-			&& this.profile.medium && this.profile.medium.length
-			&& this.profile.subject && this.profile.subject.length) {
-			this.isOnBoardingCardCompleted = true;
-			this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
-		}
 	}
 
 	viewAllSavedResources() {
@@ -447,6 +437,14 @@ export class ResourcesPage implements OnInit {
 	}
 
 	ionViewDidEnter() {
+
+		setTimeout(() => {
+			this.onboardingCard.ionViewDidEnter();
+		}, 100);
+
+
+		this.setSavedContent();
+
 		if (this.appliedFilter) {
 			this.filterIcon = "./assets/imgs/ic_action_filter.png";
 			this.resourceFilter = undefined;
@@ -546,15 +544,6 @@ export class ResourcesPage implements OnInit {
 
 		this.getPopularContent(false);
 		this.checkNetworkStatus();
-	}
-
-	/**
-	 * Angular life cycle hooks
-	 */
-	ngOnInit() {
-		console.log('courses component initialized...');
-		// this.getCourseTabData();
-		this.setSavedContent();
 	}
 
 	generateImpressionEvent() {

@@ -6,7 +6,7 @@ import * as _ from 'lodash';
 
 import { UserProfileService, AuthService, FrameworkService, CategoryRequest } from 'sunbird';
 import { ProfilePage } from './../profile';
-import { languageList, subjectList, gradeList } from './../../../config/framework.filters';
+import { languageList } from './../../../config/framework.filters';
 import { ProfileConstants } from '../../../app/app.constant';
 
 /* Interface for the Toast Object */
@@ -34,8 +34,8 @@ export class AdditionalInfoComponent {
    *  Fallback values for the list items
    */
   languageList: Array<String> = languageList;
-  subjectList: Array<String> = subjectList;
-  gradeList: Array<String> = gradeList;
+  subjectList: Array<String> = [];
+  gradeList: Array<String> = [];
 
   options: toastOptions = {
     message: '',
@@ -113,15 +113,14 @@ export class AdditionalInfoComponent {
    * @param {string} currentCategory - request Parameter passing to the framework API
    * @param {string} list - Local variable name to hold the list data
    */
-  getFrameworkData(currentCategory: string, list: string): void {
+  getFrameworkData(currentCategory: string, propertyName: string): void {
     let req: CategoryRequest = {
       currentCategory: currentCategory
     };
 
     this.frameworkService.getCategoryData(req,
       (res: any) => {
-        this[list] = _.map(JSON.parse(res), 'name');
-        console.log(list + " Category Response: " + this[list]);
+        this[propertyName] = _.map(JSON.parse(res), 'name');
       },
       (err: any) => {
         console.log("Subject Category Response: ", JSON.parse(err));

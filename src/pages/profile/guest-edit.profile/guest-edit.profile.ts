@@ -1,13 +1,14 @@
-import { boardList } from './../../../config/framework.filters';
 import { TranslateService } from '@ngx-translate/core';
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { NavController, NavParams, ToastController, Events, LoadingController } from 'ionic-angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import * as _ from 'lodash';
 
-import { FrameworkDetailsRequest, CategoryRequest, FrameworkService, ProfileService, Profile, FormService, SharedPreferences } from 'sunbird';
-import { FormRequest } from 'sunbird/services/form/bean';
-import { resolve } from 'path';
+import {
+  CategoryRequest,
+  ProfileService,
+  Profile,
+  SharedPreferences
+} from 'sunbird';
 import { FormAndFrameworkUtilService } from '../formandframeworkutil.service';
 
 /* Interface for the Toast Object */
@@ -50,24 +51,23 @@ export class GuestEditProfilePage {
     public navParams: NavParams,
     private toastCtrl: ToastController,
     private loadingCtrl: LoadingController,
-    private frameworkService: FrameworkService,
     private profileService: ProfileService,
     private translate: TranslateService,
     private events: Events,
-    private formService: FormService,
     private preference: SharedPreferences,
-    private formAndFrameworkUtilService: FormAndFrameworkUtilService
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
+    private zone: NgZone
   ) {
-    this.profile = this.navParams.get('profile');
+    this.profile = this.navParams.get('profile') || {};
 
     /* Initialize form with default values */
     this.guestEditForm = this.fb.group({
-      syllabus: [this.profile.syllabus && this.profile.syllabus[0] || [], Validators.required],
-      name: [this.profile.handle || '', Validators.required],
-      boards: [this.profile.board || [], Validators.required],
-      grades: [this.profile.grade || []],
-      subjects: [this.profile.subject || []],
-      medium: [this.profile.medium || []]
+      syllabus: [this.profile.syllabus],
+      name: [this.profile.handle],
+      boards: [this.profile.board],
+      grades: [this.profile.grade],
+      subjects: [this.profile.subject],
+      mediums: [this.profile.medium]
     });
 
 
@@ -80,161 +80,152 @@ export class GuestEditProfilePage {
   }
 
   ionViewWillEnter() {
-    this.getSyllabusDetails();
-  }
+    let loader = this.getLoader();
+    loader.present();
 
-
-  getSyllabusDetails() {
-    this.loader = this.getLoader();
-    this.loader.present();
-
-    this.formAndFrameworkUtilService.getSyllabusList()
-      .then((result) => {
-        if (result && result !== undefined && result.length > 0) {
-          result.forEach(element => {
-            //renaming the fields to text, value and checked
-            let value = { 'name': element.name, 'code': element.frameworkId };
-            this.syllabusList.push(value);
-          });
-
-          if (this.profile && this.profile.syllabus && this.profile.syllabus[0] !== undefined) {
-            this.formAndFrameworkUtilService.getFrameworkDetails(this.profile.syllabus[0])
-              .then(catagories => {
-                // loader.dismiss();
-                this.categories = catagories;
-
-                this.resetForm(0, false);
-                this.guestEditForm.patchValue({
-                  boards: this.profile.board || []
-                });
-
-                // this.resetForm(1);
-                this.guestEditForm.patchValue({
-                  medium: this.profile.medium || []
-                });
-
-                // this.resetForm(2);
-                this.guestEditForm.patchValue({
-                  grades: this.profile.grade || []
-                });
-
-                // this.resetForm(3);
-                this.guestEditForm.patchValue({
-                  subjects: this.profile.subject || []
-                });
-
-              });
-          } else {
-            this.loader.dismiss();
+    this.getSyllabusList()
+      .then(() => {
+        this.zone.run(() => {
+          let fwId = this.profile.syllabus;
+          if (fwId && fwId.length > 0) {
+            this.getBoardList(fwId[0]);
+            if (this.profile.board && this.profile.board.length > 0) {
+              this.getMediumList(fwId[0], this.profile.board);
+              if (this.profile.medium && this.profile.medium.length > 0) {
+                this.getGradeList(fwId[0], this.profile.medium);
+                if (this.profile.grade && this.profile.grade.length > 0) {
+                  this.getSubjectList(fwId[0], this.profile.grade);
+                }
+              }
+            }
           }
-        } else {
-          this.loader.dismiss();
-
-          this.getToast(this.translateMessage('NO_DATA_FOUND')).present();
-        }
-      });
-
-  }
-
-  /**
-   * This will internally call framework API
-   * @param {string} currentCategory - request Parameter passing to the framework API
-   * @param {string} list - Local variable name to hold the list data
-   */
-  getCategoryData(req: CategoryRequest, list): void {
-    // let loader = this.getLoader();
-
-    // if (list === 'boardList') {
-    //   loader.present();
-    // }
-
-    this.formAndFrameworkUtilService.getCategoryData(req, this.frameworkId).
-      then((result) => {
-
-        // if (list === 'boardList')
-        if (this.loader !== undefined)
-          this.loader.dismiss();
-
-        this[list] = result;
-        if (list != 'gradeList') {
-          this[list] = _.orderBy(this[list], ['name'], ['asc']);
-        }
-        console.log(list + " Category Response: " + this[list]);
+        });
+        loader.dismiss();
       })
+      .catch(() => {
+        loader.dismiss();
+      });
   }
 
-  checkPrevValue(index = 0, currentField, prevSelectedValue = []) {
-
-    if (index === 0) {
-      this[currentField] = this.syllabusList;
-    } else if (index === 1) {
-      // let loader = this.getLoader();
-      // loader.present();
-
-      this.frameworkId = prevSelectedValue[0];
-      this.formAndFrameworkUtilService.getFrameworkDetails(this.frameworkId)
-        .then(catagories => {
-          this.categories = catagories;
-
-          // loader.dismiss();
-
-          let request: CategoryRequest = {
-            currentCategory: this.categories[0].code,
+  getSyllabusList(): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.formAndFrameworkUtilService.getSyllabusList()
+        .then((result) => {
+          if (result && result !== undefined && result.length > 0) {
+            result.forEach(element => {
+              //renaming the fields to text, value and checked
+              let value = { 'name': element.name, 'code': element.frameworkId };
+              this.syllabusList.push(value);
+            });
+            resolve();
+          } else {
+            reject();
           }
-          this.getCategoryData(request, currentField);
+        })
+        .catch(e => {
+          reject();
         });
-
-    } else {
-      let request: CategoryRequest = {
-        currentCategory: this.categories[index - 1].code,
-        prevCategory: this.categories[index - 2].code,
-        selectedCode: prevSelectedValue
-      }
-      this.getCategoryData(request, currentField);
-    }
-
+    });
   }
 
-  resetForm(index: number = 0, showloader: boolean): void {
-    console.log("Reset Form Index - " + index);
-    switch (index) {
-      case 0:
-        this.guestEditForm.patchValue({
-          boards: [],
-          grades: [],
-          subjects: [],
-          medium: []
-        });
-        if (showloader) {
-          this.loader = this.getLoader();
-          this.loader.present();
-        }
-        this.checkPrevValue(1, 'boardList', [this.guestEditForm.value.syllabus]);
-        break;
+  getBoardList(frameworkId) {
+    let categoryRequest = new CategoryRequest();
+    categoryRequest.frameworkId = frameworkId;
+    categoryRequest.currentCategory = "board";
+    this.formAndFrameworkUtilService.getCategoryData(categoryRequest)
+      .then(res => {
+        this.boardList = res;
+      })
+      .catch(e => {
+      });
+  }
 
-      case 1:
-        this.guestEditForm.patchValue({
-          grades: [],
-          subjects: [],
-          medium: []
-        });
-        this.checkPrevValue(2, 'mediumList', this.guestEditForm.value.boards);
-        break;
+  resetBoard() {
+    this.boardList = [];
+    this.guestEditForm.value.boards = [];
+  }
 
-      case 2:
-        this.guestEditForm.patchValue({
-          subjects: [],
-          grades: [],
-        });
-        this.checkPrevValue(3, 'gradeList', this.guestEditForm.value.medium);
-        break;
-      case 3:
-        this.guestEditForm.patchValue({
-          subjects: [],
-        });
-        this.checkPrevValue(4, 'subjectList', this.guestEditForm.value.grades);
-        break;
-    }
+  getMediumList(frameworkId: string, selectedBoards: Array<any>) {
+    let categoryRequest = new CategoryRequest();
+    categoryRequest.frameworkId = frameworkId;
+    categoryRequest.currentCategory = "medium";
+    categoryRequest.prevCategory = "board";
+    categoryRequest.selectedCode = selectedBoards;
+    this.formAndFrameworkUtilService.getCategoryData(categoryRequest)
+      .then(res => {
+        this.mediumList = res;
+      })
+      .catch(e => {
+
+      });
+  }
+
+  resetMedium() {
+    this.mediumList = [];
+    this.guestEditForm.value.mediums = [];
+  }
+
+  getGradeList(frameworkId: string, selectedMediums: Array<any>) {
+    let categoryRequest = new CategoryRequest();
+    categoryRequest.frameworkId = frameworkId;
+    categoryRequest.currentCategory = "gradeLevel";
+    categoryRequest.prevCategory = "medium";
+    categoryRequest.selectedCode = selectedMediums;
+    this.formAndFrameworkUtilService.getCategoryData(categoryRequest)
+      .then(res => {
+        this.gradeList = res;
+      })
+      .catch(e => {
+
+      });
+  }
+
+  resetGrade() {
+    this.gradeList = [];
+    this.guestEditForm.value.grades = [];
+  }
+
+  getSubjectList(frameworkId: string, selectedGrades: Array<any>) {
+    let categoryRequest = new CategoryRequest();
+    categoryRequest.frameworkId = frameworkId;
+    categoryRequest.currentCategory = "subject";
+    categoryRequest.prevCategory = "gradeLevel";
+    categoryRequest.selectedCode = selectedGrades;
+    this.formAndFrameworkUtilService.getCategoryData(categoryRequest)
+      .then(res => {
+        this.subjectList = res;
+      })
+      .catch(e => {
+
+      });
+  }
+
+  resetSubject() {
+    this.subjectList = [];
+    this.guestEditForm.value.subjects = [];
+  }
+
+  onSyllabusSelected() {
+    this.getBoardList(this.guestEditForm.value.syllabus);
+    this.resetBoard();
+    this.resetMedium();
+    this.resetGrade();
+    this.resetSubject();
+  }
+
+  onBoardSelected() {
+    this.getMediumList(this.guestEditForm.value.syllabus, this.guestEditForm.value.selectedBoards);
+    this.resetGrade();
+    this.resetSubject();
+  }
+
+  onMediumSelected() {
+    this.getGradeList(this.guestEditForm.value.syllabus, this.guestEditForm.value.selectedMediums);
+    this.resetSubject();
+  }
+
+  onGradeSelected() {
+    this.getSubjectList(this.guestEditForm.value.syllabus, this.guestEditForm.value.selectedGrades);
   }
 
   /**
@@ -252,7 +243,7 @@ export class GuestEditProfilePage {
       board: formVal.boards,
       grade: formVal.grades,
       subject: formVal.subjects,
-      medium: formVal.medium,
+      medium: formVal.mediums,
       uid: this.profile.uid,
       handle: formVal.name,
       isGroupUser: false,
@@ -266,16 +257,8 @@ export class GuestEditProfilePage {
     this.profileService.updateProfile(req,
       (res: any) => {
         console.log("Update Response", res);
-
-        // Publish event if the all the fields are submitted
-        if (formVal.syllabus.length && formVal.boards.length && formVal.grades.length && formVal.medium.length && formVal.subjects.length) {
-          this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: true });
-        } else {
-          this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: false });
-        }
         this.events.publish('refresh:profile');
         this.events.publish('refresh:onboardingcard');
-
         loader.dismiss();
         this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
         this.navCtrl.pop();

@@ -46,7 +46,16 @@ export class OnboardingAlert {
   onSaveClick() {
 
     if (this.callback) {
-      this.callback.save();
+      this.selectedSlide.selectedCode = [];
+      this.selectedSlide.selectedOptions = [];
+      this.selectedSlide.options.forEach(element => {
+        if (element.checked) {
+          this.selectedSlide.selectedCode.push(element.value);
+          this.selectedSlide.selectedOptions.push(element.text);
+        }
+      });
+
+      this.callback.save(this.selectedSlide);
     }
     this.viewCtrl.dismiss();
   }
@@ -56,5 +65,5 @@ export class OnboardingAlert {
 }
 
 export interface onBoardingSlidesCallback {
-  save(): any;
+  save(selectedSlide): any;
 }
