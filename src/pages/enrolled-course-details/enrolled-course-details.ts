@@ -670,7 +670,7 @@ export class EnrolledCourseDetailsPage {
    */
   ionViewWillEnter(): void {
     this.downloadSize = 0;
-    this.tabBarElement.style.display = 'none';
+    // this.tabBarElement.style.display = 'none';
     this.courseCardData = this.navParams.get('content');
     this.corRelationList = this.navParams.get('corRelation');
     if (this.batchId) {
