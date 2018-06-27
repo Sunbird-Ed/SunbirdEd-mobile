@@ -63,24 +63,26 @@ export class AdditionalInfoComponent {
     this.getFrameworkData('subject', 'subjectList');
     this.getFrameworkData('gradeLevel', 'gradeList');
 
+    this.profile.gender = (this.profile.gender && this.profile.gender.length) ? this.profile.gender.toLocaleLowerCase() : '';
+
     /* Initialize form with default values */
-    this.additionalInfoForm = this.fb.group({
-      firstName: [this.profile.firstName || '', Validators.required],
-      lastName: [this.profile.lastName || ''],
-      language: [this.profile.language || [], Validators.required],
-      email: [this.profile.email || ''],
-      phone: [this.profile.phone, [Validators.minLength(10)]], // Need to assign phone value
-      profileSummary: [this.profile.profileSummary || ''],
-      subject: [this.profile.subject || []],
-      gender: [this.profile.gender || ''],
-      dob: [this.profile.dob || ''],
-      grade: [this.profile.grade || []],
-      location: [this.profile.location || ''],
-      facebookLink: [''],
-      twitterLink: [''],
-      linkedInLink: [''],
-      blogLink: ['']
-    });
+      this.additionalInfoForm = this.fb.group({
+        firstName: [this.profile.firstName || '', Validators.required],
+        lastName: [this.profile.lastName || ''],
+        language: [this.profile.language || [], Validators.required],
+        email: [this.profile.email || ''],
+        phone: [this.profile.phone, [Validators.minLength(10)]], // Need to assign phone value
+        profileSummary: [this.profile.profileSummary || ''],
+        subject: [this.profile.subject || []],
+        gender: [this.profile.gender || ''],
+        dob: [this.profile.dob || ''],
+        grade: [this.profile.grade || []],
+        location: [this.profile.location || ''],
+        facebookLink: [''],
+        twitterLink: [''],
+        linkedInLink: [''],
+        blogLink: ['']
+      });
 
     /* Patch social Webpages links */
     if (this.profile && this.profile.webPages && this.profile.webPages.length) {
