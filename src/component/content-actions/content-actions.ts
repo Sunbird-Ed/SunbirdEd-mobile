@@ -30,6 +30,8 @@ export class ContentActionsComponent {
   backButtonFunc = undefined;
 
   userId: string = '';
+  pageName: string = '';
+  showFlagMenu: boolean = true;
 
   constructor(public viewCtrl: ViewController,
     private contentService: ContentService,
@@ -43,6 +45,7 @@ export class ContentActionsComponent {
     private platform: Platform,
     private appGlobalService: AppGlobalService) {
     this.content = this.navParams.get("content");
+    this.pageName = this.navParams.get('pageName');
     if (this.navParams.get('isChild')) {
       this.isChild = true;
     }
@@ -56,11 +59,24 @@ export class ContentActionsComponent {
   }
 
   getUserId() {
-    if (this.appGlobalService.getSessionData()) {
-      this.userId = this.appGlobalService.getSessionData()[ProfileConstants.USER_TOKEN];
-    } else {
-      this.userId = '';
-    }
+    this.authService.getSessionData((session: string) => {
+      if (session === null || session === "null") {
+        this.userId = '';
+      } else {
+        let res = JSON.parse(session);
+        this.userId = res[ProfileConstants.USER_TOKEN] ? res[ProfileConstants.USER_TOKEN] : '';
+        // Needed: this get exeuted if user is on course details page. 
+        if (this.pageName === 'course' && this.userId) {
+          // If course is not enrolled then hide flag/report issue menu. 
+          // If course has batchId then it means it is enrolled course
+          if (this.content.batchId) {
+            this.showFlagMenu = true;
+          } else {
+            this.showFlagMenu = false;
+          }
+        }
+      }
+    });
   }
 
   /**

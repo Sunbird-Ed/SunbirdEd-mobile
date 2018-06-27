@@ -50,20 +50,13 @@ export class ViewMoreActivityListComponent implements OnInit {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
 
-  navigateToDetailsPage(content: any) {
+  navigateToDetailsPage(content: any, layoutName) {
     console.log('View more ard details... @@@', content);
     this.zone.run(() => {
-      if (content.batchId || content.contentType === ContentType.COURSE) {
-        console.log('Inside course details');
-        if (content.lastReadContentId && content.status === 1) {
-          this.events.publish('viewMore:Courseresume', {
-            content: content
-          });
-        } else {
-          this.navCtrl.push(EnrolledCourseDetailsPage, {
-            content: content
-          })
-        }
+      if (layoutName === 'enrolledCourse' || content.contentType === ContentType.COURSE) {
+        this.navCtrl.push(EnrolledCourseDetailsPage, {
+          content: content
+        })
       } else if (content.mimeType === MimeType.COLLECTION) {
         console.log('Inside collection details');
         this.navCtrl.push(CollectionDetailsPage, {
@@ -78,6 +71,19 @@ export class ViewMoreActivityListComponent implements OnInit {
     })
   }
 
+  resumeCourse(content: any) {
+    console.log('Resume course details... @@@', content);
+    if (content.lastReadContentId && content.status === 1) {
+      this.events.publish('course:resume', {
+        content: content
+      });
+    } else {
+      console.log('Inside CollectionDetailsPage');
+      this.navCtrl.push(EnrolledCourseDetailsPage, {
+        content: content
+      })
+    }
+  }
   onImageLoad(imgLoader: ImageLoader) {
     console.log("Image Loader " + imgLoader.nativeAvailable);
   }

@@ -233,16 +233,20 @@ export class SearchPage {
     if (this.profile) {
 
       if (this.profile.board && this.profile.board.length) {
-        contentSearchRequest.board = this.applyProfileFilter(this.profile.board, contentSearchRequest.board);
-      }
+				contentSearchRequest.board = this.applyProfileFilter(this.profile.board, contentSearchRequest.board, "board");
+			}
 
-      if (this.profile.medium && this.profile.medium.length) {
-        contentSearchRequest.medium = this.applyProfileFilter(this.profile.medium, contentSearchRequest.medium);
-      }
+			if (this.profile.medium && this.profile.medium.length) {
+				contentSearchRequest.medium = this.applyProfileFilter(this.profile.medium, contentSearchRequest.medium, "medium");
+			}
 
-      if (this.profile.grade && this.profile.grade.length) {
-        contentSearchRequest.grade = this.applyProfileFilter(this.profile.grade, contentSearchRequest.grade);
-      }
+			if (this.profile.grade && this.profile.grade.length) {
+				contentSearchRequest.grade = this.applyProfileFilter(this.profile.grade, contentSearchRequest.grade, "gradeLevel");
+			}
+
+			// if (this.profile.subject && this.profile.subject.length) {
+			// 	pageAssembleCriteria.filters.subject = this.applyProfileFilter(this.profile.subject, pageAssembleCriteria.filters.subject, "subject");
+			// }
 
       // if (this.profile.subject && this.profile.subject.length) {
       // 	contentSearchRequest.subject = this.applyProfileFilter(this.profile.subject, contentSearchRequest.subject);
@@ -282,7 +286,23 @@ export class SearchPage {
     });
   }
 
-  applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>) {
+  applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>, categoryKey?: string) {
+		if (categoryKey) {
+			let nameArray = [];
+			profileFilter.forEach(filterCode => {
+				let nameForCode = this.appGlobal.getNameForCodeInFramework(categoryKey, filterCode);
+
+				if (!nameForCode) {
+					nameForCode = filterCode;
+				}
+
+				nameArray.push(nameForCode);
+			})
+
+			profileFilter = nameArray;
+    }
+    
+    
     if (!assembleFilter) {
       assembleFilter = [];
     }

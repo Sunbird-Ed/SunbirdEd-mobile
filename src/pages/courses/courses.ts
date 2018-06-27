@@ -1,6 +1,6 @@
 import { ViewMoreActivityPage } from './../view-more-activity/view-more-activity';
 import { Component, NgZone, OnInit } from '@angular/core';
-import { NavController, PopoverController, Events, ToastController, LoadingController } from 'ionic-angular';
+import { NavController, PopoverController, Events, ToastController } from 'ionic-angular';
 import { AppVersion } from "@ionic-native/app-version";
 import { IonicPage } from 'ionic-angular';
 import {
@@ -116,7 +116,6 @@ export class CoursesPage implements OnInit {
     private preference: SharedPreferences,
     private translate: TranslateService,
     private network: Network,
-    private loadingCtrl: LoadingController,
     private sharedPreferences: SharedPreferences,
     private appGlobal: AppGlobalService,
     private courseUtilService: CourseUtilService
@@ -138,7 +137,7 @@ export class CoursesPage implements OnInit {
 
     this.events.subscribe(EventTopics.COURSE_STATUS_UPDATED_SUCCESSFULLY, (data) => {
       if (data.update) {
-        this.getEnrolledCourses();
+        this.getEnrolledCourses(true);
       }
     })
 
@@ -153,7 +152,7 @@ export class CoursesPage implements OnInit {
 
     this.events.subscribe(EventTopics.ENROL_COURSE_SUCCESS, (res) => {
       if (res && res.batchId) {
-        this.getEnrolledCourses();
+        this.getEnrolledCourses(true);
       }
     });
 
@@ -251,13 +250,14 @@ export class CoursesPage implements OnInit {
    *
    * It internally calls course handler of genie sdk
    */
-  getEnrolledCourses(): void {
+  getEnrolledCourses(returnRefreshedCourses: boolean = false): void {
     this.spinner(true);
     console.log('making api call to get enrolled courses');
 
     let option = {
       userId: this.userId,
-      refreshEnrolledCourses: true
+      refreshEnrolledCourses: true,
+      returnRefreshedEnrolledCourses: returnRefreshedCourses
     };
 
     this.courseService.getEnrolledCourses(option, (data: any) => {

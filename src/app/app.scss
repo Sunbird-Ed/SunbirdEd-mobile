@@ -326,3 +326,9 @@ input::placeholder {
 .toolbar-title-md {
   font-weight: 600 !important;
 }
+
+/* Rating Component Global class */
+ul.rating .ion-md-star-outline:before {
+  content: "\f384" !important; //Change Outline star to filled star
+  color: map-get($colors, dark_gray) !important; // Change the (fill) color of the Icon
+}

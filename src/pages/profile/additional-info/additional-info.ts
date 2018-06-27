@@ -193,7 +193,7 @@ export class AdditionalInfoComponent {
     /* Holds form Values */
     let formVal = this.additionalInfoForm.value;
 
-    if (this.profile.phone.length && formVal.phone === '') {
+    if (this.profile && this.profile.phone && this.profile.phone.length && formVal.phone === '') {
       formVal.phone = this.profile.phone;
     }
 
@@ -259,13 +259,14 @@ export class AdditionalInfoComponent {
   }
 
   validateForm(formVal): boolean {
+    formVal.phone = (formVal.phone === null) ? '' : formVal.phone;
     if (!formVal.firstName.length) {
       this.getToast(this.translateMessage('ERROR_EMPTY_FIRSTNAME')).present();
       return false;
     } else if (!formVal.language.length) {
       this.getToast(this.translateMessage('ERROR_EMPTY_LANGUAGE')).present();
       return false;
-    } else if (formVal.phone !== this.profile.phone || (formVal.phone === '' || (formVal.phone.length !== 10))) {
+    } else if ((this.profile && this.profile.phone && (formVal.phone !== this.profile.phone)) || (formVal.phone === '' || (formVal.phone.length !== 10))) {
       if (!formVal.phone.match(/^\d{10}$/)) {
         this.getToast(this.translateMessage('ERROR_SHORT_MOBILE')).present();
         return false;

@@ -15,6 +15,7 @@ import { generateInteractTelemetry, Map, generateImpressionTelemetry } from '../
 import { LanguageSettingsPage } from '../language-settings/language-settings';
 import { ProfileConstants } from '../../app/app.constant';
 import { AppGlobalService } from '../../service/app-global.service';
+import { AppVersion } from '@ionic-native/app-version';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -31,7 +32,7 @@ export class OnboardingPage {
   @ViewChild(Navbar) navBar: Navbar;
 
   slides: any[];
-  sunbird: string = "SUNBIRD";
+  appName: string = "";
   orgName: string;
   backButtonFunc: any = undefined;
 
@@ -53,6 +54,7 @@ export class OnboardingPage {
     private platform: Platform,
     private translate: TranslateService,
     private toastCtrl: ToastController,
+    private appVersion: AppVersion,
     private events: Events
   ) {
 
@@ -76,6 +78,10 @@ export class OnboardingPage {
   }
 
   ionViewDidLoad() {
+    this.appVersion.getAppName()
+      .then((appName: any) => {
+        this.appName = appName;
+      });
     console.log('ionViewDidLoad OnboardingPage');
     this.navBar.backButtonClick = (e: UIEvent) => {
       this.navCtrl.setRoot(LanguageSettingsPage);
@@ -176,8 +182,8 @@ export class OnboardingPage {
             that.generateLoginInteractTelemetry(InteractType.OTHER,
               InteractSubtype.LOGIN_SUCCESS, r.userId);
             let profileRequest = {
-              uid: r.userId, //req
-              handle: r.userId, //TODO check with nikhil
+              uid: r.id, //req
+              handle: r.id, //TODO check with nikhil
               avatar: "avatar", //req
               language: "en", //req
               age: -1,

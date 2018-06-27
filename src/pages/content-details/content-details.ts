@@ -248,7 +248,7 @@ export class ContentDetailsPage {
           comment: this.ratingComment,
           popupType: popupType
         }, {
-            cssClass: 'onboarding-alert'
+            cssClass: 'content-rating-alert'
           });
         popUp.present({
           ev: event
@@ -739,7 +739,7 @@ export class ContentDetailsPage {
     this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_LIBRARY_INITIATED, this.content.contentType);
     let loader = this.getLoader();
     loader.present();
-    let url = this.baseUrl + ShareUrl.CONTENT +this.content.identifier;
+    let url = this.baseUrl + ShareUrl.CONTENT + this.content.identifier;
     if (this.content.downloadable) {
       this.shareUtil.exportEcar(this.content.identifier, path => {
         loader.dismiss();
@@ -748,7 +748,7 @@ export class ContentDetailsPage {
       }, error => {
         loader.dismiss();
         let toast = this.toastCtrl.create({
-          message: "Unable to share content.",
+          message: this.translateMessage('SHARE_CONTENT_FAILED'),
           duration: 2000,
           position: 'bottom'
         });
@@ -773,5 +773,20 @@ export class ContentDetailsPage {
         this.objRollup,
         this.corRelationList)
     );
+  }
+
+  /**
+  * Used to Translate message to current Language
+  * @param {string} messageConst - Message Constant to be translated
+  * @returns {string} translatedMsg - Translated Message
+  */
+  translateMessage(messageConst: string): string {
+    let translatedMsg = '';
+    this.translate.get(messageConst).subscribe(
+      (value: any) => {
+        translatedMsg = value;
+      }
+    );
+    return translatedMsg;
   }
 }
