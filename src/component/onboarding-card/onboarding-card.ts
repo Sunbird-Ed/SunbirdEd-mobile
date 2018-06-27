@@ -1,9 +1,8 @@
 import { NavController, Slides, PopoverController, Events, Platform, ToastController } from 'ionic-angular';
 import { Component, ViewChild, NgZone } from '@angular/core';
-import * as _ from 'lodash';
-import { OnboardingService } from '../onboarding-card/onboarding.service';
 import { OnboardingAlert, onBoardingSlidesCallback } from './../onboarding-alert/onboarding-alert';
-import { TranslateService } from '@ngx-translate/core';
+import { FormAndFrameworkUtilService } from '../../pages/profile/formandframeworkutil.service';
+import { CategoryRequest, ProfileService, Profile } from 'sunbird';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -20,131 +19,455 @@ export class OnboardingCardComponent {
 
   public static readonly USER_INFO_UPDATED = 'user-profile-changed';
 
-
   @ViewChild(Slides) mSlides: Slides;
-  isOnBoardCard: boolean = true;
   loader: boolean = false;
-  isDataAvailable = false;
+  isOnBoardingCardCompleted: boolean = false;
+  currentProgress: number = 0;
+  onBoardingSlides: Array<any>;
 
   options: toastOptions = {
     message: '',
     duration: 3000,
     position: 'bottom'
   };
+  profile: any;
+
+  syllabusSlide = {
+    'id': 'syllabusList',
+    'title': 'SYLLABUS_QUESTION',
+    'desc': 'SYLLABUS_OPTION_TEXT',
+    'options': [],
+    'selectedOptions': '',
+    'selectedCode': []
+  };
+  boardSlide = {
+    'id': 'boardList',
+    'title': 'BOARD_QUESTION',
+    'desc': 'BOARD_OPTION_TEXT',
+    'options': [],
+    'selectedOptions': '',
+    'selectedCode': []
+  };
+  mediumSlide = {
+    'id': 'mediumList',
+    'title': 'MEDIUM_QUESTION',
+    'desc': 'MEDIUM_OPTION_TEXT',
+    'options': [],
+    'selectedOptions': '',
+    'selectedCode': []
+  };
+  gradeSlide = {
+    'id': 'gradeList',
+    'title': 'GRADE_QUESTION',
+    'desc': 'GRADE_OPTION_TEXT',
+    'options': [],
+    'selectedOptions': '',
+    'selectedCode': []
+  };
+  subjectSlide = {
+    'id': 'subjectList',
+    'title': 'SUBJECT_QUESTION',
+    'desc': 'SUBJECT_OPTION_TEXT',
+    'options': [],
+    'selectedOptions': '',
+    'selectedCode': []
+  };
 
   constructor(
     public navCtrl: NavController,
     private popupCtrl: PopoverController,
-    private onboardingService: OnboardingService,
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
+    private profileService: ProfileService,
     private events: Events,
     private zone: NgZone,
-    private toastCtrl: ToastController,
-    private translate: TranslateService
   ) {
-
-    this.showLoader(true);
-
-    this.onboardingService.getSyllabusDetails()
-      .then((result) => {
-        this.showLoader(false)
-
-        let syllabusList = (<any[]>result)
-
-        if (syllabusList && syllabusList !== undefined && syllabusList.length > 0) {
-          this.isDataAvailable = true;
-        } else {
-          this.isDataAvailable = false;
-          this.getToast(this.translateMessage('NO_DATA_FOUND')).present();
-        }
-      });
-
-    this.initializeService();
-
-
-    this.events.subscribe('is-data-available', (value) => {
-      let index = value.index;
-      let loaderFlag = !value.show;
-      this.showLoader(loaderFlag)
-      this.isDataAvailable = value.show;
-    });
-
-    this.events.subscribe('slide-onboarding-card', (value) => {
-      console.log("Index value - " + value.slideIndex);
-      this.mSlides.lockSwipes(false);
-      this.mSlides.slideNext(500);
-    });
-
-    this.events.subscribe(OnboardingCardComponent.USER_INFO_UPDATED, () => {
-      this.reinitializeCards();
-    });
-
-    this.events.subscribe('refresh:onboardingcard', () => {
-      this.reinitializeCards();
-    });
+    this.onBoardingSlides = [];
   }
 
-  reinitializeCards() {
-    //reset slide index to -1
-    this.onboardingService.slideIndex = -1;
+  ionViewDidEnter() {
+    this.onBoardingSlides = [
+      this.syllabusSlide,
+      this.boardSlide,
+      this.mediumSlide,
+      this.gradeSlide,
+      this.subjectSlide
+    ];
+    //show loader by default at first
+    this.currentProgress = 0;
+    let that = this;
+    this.profileService.getCurrentUser((res: any) => {
+      that.profile = JSON.parse(res);
 
-    this.onboardingService.initializeCard()
-      .then(index => {
-        console.log("reinitializeCards -  index = " + index);
+      that.isOnBoardingCardCompleted =
+        (that.profile.syllabus && that.profile.syllabus.length > 0) &&
+        (that.profile.board && that.profile.syllabus.length > 0) &&
+        (that.profile.medium && that.profile.syllabus.length > 0) &&
+        (that.profile.grade && that.profile.syllabus.length > 0) &&
+        (that.profile.subject && that.profile.syllabus.length > 0);
 
-        setTimeout(() => {
-          if (index !== 0 && index !== 5) {
-            this.mSlides.slideTo(index, 500);
-          }
-        }, 500);
-      })
-      .catch(error => {
+      if (!that.isOnBoardingCardCompleted) {
+        that.loader = true;
+        that.init()
+          .then(result => {
 
-      });
-  }
+            that.zone.run(() => {
+              that.syllabusSlide.options = that.mapSyllabi(result.syllabi);
+              that.boardSlide.options = that.mapBoards(result.boards);
+              that.mediumSlide.options = that.mapMediums(result.mediums);
+              that.gradeSlide.options = that.mapGrades(result.grades);
+              that.subjectSlide.options = that.mapSubjects(result.subjects);
+              that.onBoardingSlides = [
+                that.syllabusSlide,
+                that.boardSlide,
+                that.mediumSlide,
+                that.gradeSlide,
+                that.subjectSlide
+              ];
+              that.loader = false;
+              let slideNumber = 0;
+              if (that.profile.syllabus && that.profile.syllabus.length > 0) {
+                ++slideNumber;
+                that.onBoardingSlides[0].selectedCode = that.profile.syllabus;
+                that.onBoardingSlides[0].selectedOptions = that.syllabusSlide.options.reduce(
+                  (accumulator, currentValue) => {
+                    if (currentValue.checked) {
+                      return accumulator.concat(currentValue.text);
+                    } else {
+                      return accumulator;
+                    }
+                  }, ""
+                );
+                if (that.profile.board && that.profile.board.length > 0) {
+                  ++slideNumber;
+                  that.onBoardingSlides[1].selectedCode = that.profile.board;
+                  that.onBoardingSlides[1].selectedOptions = that.boardSlide.options.reduce(
+                    (accumulator, currentValue) => {
+                      if (currentValue.checked) {
+                        return accumulator.concat(currentValue.text);
+                      } else {
+                        return accumulator;
+                      }
+                    }, ""
+                  );
+                  if (that.profile.medium && that.profile.medium.length > 0) {
+                    ++slideNumber;
+                    that.onBoardingSlides[2].selectedCode = that.profile.medium;
+                    that.onBoardingSlides[2].selectedOptions = that.mediumSlide.options.reduce(
+                      (accumulator, currentValue) => {
+                        if (currentValue.checked) {
+                          return accumulator.concat(currentValue.text.concat(','));
+                        } else {
+                          return accumulator;
+                        }
+                      }, ""
+                    );
+                    if (that.profile.grade && that.profile.grade.length > 0) {
+                      ++slideNumber;
+                      that.onBoardingSlides[3].selectedCode = that.profile.grade;
+                      that.onBoardingSlides[3].selectedOptions = that.gradeSlide.options.reduce(
+                        (accumulator, currentValue) => {
+                          if (currentValue.checked) {
+                            return accumulator.concat(currentValue.text.concat(','));
+                          } else {
+                            return accumulator;
+                          }
+                        }, ""
+                      );
+                    }
+                  }
+                }
+              }
+              if (slideNumber > 0) {
+                that.currentProgress = slideNumber * 20;
+                setTimeout(() => {
+                  that.mSlides.slideTo(slideNumber);
+                }, 500);
+              }
+            });
 
-
-  /**
-   * Used to Translate message to current Language
-   * @param {string} messageConst - Message Constant to be translated
-   * @returns {string} translatedMsg - Translated Message
-   */
-  translateMessage(messageConst: string): string {
-    let translatedMsg = '';
-    this.translate.get(messageConst).subscribe(
-      (value: any) => {
-        translatedMsg = value;
+          })
+          .catch(err => {
+            that.loader = false;
+          })
       }
-    );
-    return translatedMsg;
+    }, error => {
+      this.loader = false;
+    });
+
   }
 
-
-  /**
-   * To start and stop loader
-   */
-  showLoader(flag: boolean) {
-    this.loader = flag;
+  private mapSyllabi(syllabi) {
+    let that = this;
+    return syllabi.map(element => {
+      return {
+        'text': element.name,
+        'value': element.frameworkId,
+        'checked': (that.profile.syllabus
+          && that.profile.syllabus.indexOf(element.frameworkId) > -1) ? true : false
+      }
+    }).sort((a, b) => {
+      if (a.text < b.text) {
+        return -1;
+      } else if (a.text > b.text) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
   }
 
-  initializeService() {
-      this.onboardingService.initializeCard()
-        .then(index => {
-          console.log("initializeService -  index = " + index);
-          setTimeout(() => {
-            if (index !== 0 && index !== 5) this.mSlides.slideTo(index, 500);
-          }, 500);
-        })
-        .catch(error => {
-
-        });
+  private mapBoards(boards) {
+    let that = this;
+    return boards.map(element => {
+      return {
+        'text': element.name,
+        'value': element.code,
+        'checked': (that.profile.board
+          && that.profile.board.indexOf(element.code) > -1) ? true : false
+      }
+    }).sort((a, b) => {
+      if (a.text < b.text) {
+        return -1;
+      } else if (a.text > b.text) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
   }
+
+  private mapMediums(mediums) {
+    let that = this;
+    return mediums.map(element => {
+      return {
+        'text': element.name,
+        'value': element.code,
+        'checked': (that.profile.medium
+          && that.profile.medium.indexOf(element.code) > -1) ? true : false
+      }
+    }).sort((a, b) => {
+      if (a.text < b.text) {
+        return -1;
+      } else if (a.text > b.text) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+  }
+
+  private mapGrades(grades) {
+    let that = this;
+    return grades.map(element => {
+      return {
+        'text': element.name,
+        'value': element.code,
+        'checked': (that.profile.grade
+          && that.profile.grade.indexOf(element.code) > -1) ? true : false
+      }
+    });
+  }
+
+  private mapSubjects(subjects) {
+    let that = this;
+    return subjects.map(element => {
+      return {
+        'text': element.name,
+        'value': element.code,
+        'checked': (that.profile.subject
+          && that.profile.subject.indexOf(element.code) > -1) ? true : false
+      }
+    }).sort((a, b) => {
+      if (a.text < b.text) {
+        return -1;
+      } else if (a.text > b.text) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+  }
+
+  private async init() {
+    let boards = [], mediums = [], grades = [], subjects = [], localSyllabi = [];
+
+    try {
+      localSyllabi = await this.getSyllabusList();
+      let frameworkId = (this.profile.syllabus && this.profile.syllabus.length > 0)
+        ? this.profile.syllabus[0] : undefined;
+      if (frameworkId) {
+        boards = await this.getBoardList(frameworkId);
+        let selectedBoards = (this.profile.board && this.profile.board.length > 0)
+          ? this.profile.board : undefined;
+        if (selectedBoards) {
+          mediums = await this.getMediumList(frameworkId, selectedBoards);
+          let selectedMediums = (this.profile.medium && this.profile.medium.length > 0)
+            ? this.profile.medium : undefined;
+          if (selectedMediums) {
+            grades = await this.getGradeList(frameworkId, selectedMediums);
+            let selectedGrades = (this.profile.grade && this.profile.grade.length > 0)
+              ? this.profile.grade : undefined;
+            if (selectedGrades) {
+              subjects = await this.getSubjectList(frameworkId, selectedGrades);
+            }
+          }
+        }
+      }
+
+      return await {
+        syllabi: localSyllabi,
+        boards: boards,
+        mediums: mediums,
+        grades: grades,
+        subjects: subjects
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  private async getSyllabusList() {
+    return await this.formAndFrameworkUtilService.getSyllabusList();
+  }
+
+  private async getBoardList(frameworkId) {
+    let that = this;
+    let categoryRequest = new CategoryRequest();
+    categoryRequest.frameworkId = frameworkId;
+    categoryRequest.currentCategory = "board";
+    return await this.formAndFrameworkUtilService.fetchNextCategory(categoryRequest);
+  }
+
+  private async getMediumList(frameworkId: string, selectedBoards: Array<any>) {
+    let that = this;
+    let categoryRequest = new CategoryRequest();
+    categoryRequest.frameworkId = frameworkId;
+    categoryRequest.currentCategory = "medium";
+    categoryRequest.prevCategory = "board";
+    categoryRequest.selectedCode = selectedBoards;
+    return await this.formAndFrameworkUtilService.fetchNextCategory(categoryRequest);
+  }
+
+  private async getGradeList(frameworkId: string, selectedMediums: Array<any>) {
+    let that = this;
+    let categoryRequest = new CategoryRequest();
+    categoryRequest.frameworkId = frameworkId;
+    categoryRequest.currentCategory = "gradeLevel";
+    categoryRequest.prevCategory = "medium";
+    categoryRequest.selectedCode = selectedMediums;
+    return await this.formAndFrameworkUtilService.fetchNextCategory(categoryRequest);
+  }
+
+  private async getSubjectList(frameworkId: string, selectedGrades: Array<any>) {
+    let that = this;
+    let categoryRequest = new CategoryRequest();
+    categoryRequest.frameworkId = frameworkId;
+    categoryRequest.currentCategory = "subject";
+    categoryRequest.prevCategory = "gradeLevel";
+    categoryRequest.selectedCode = selectedGrades;
+    return await this.formAndFrameworkUtilService.fetchNextCategory(categoryRequest);
+  }
+
 
   /**
    * This event get triggred when user tries to swipe the slide
    */
   onSlideDrag() {
     let currentIndex = this.mSlides.getActiveIndex();
-    this.mSlides.lockSwipeToNext(!(this.onboardingService.onBoardingSlides[currentIndex].selectedOptions.length));
+    this.mSlides.lockSwipeToNext(
+      this.onBoardingSlides[currentIndex].selectedCode == undefined ||
+      this.onBoardingSlides[currentIndex].selectedCode.length == 0
+    );
+  }
+
+  private saveAndGoToNext(index: number) {
+    let that = this;
+    that.saveDetails()
+      .then(() => {
+        switch (index) {
+          case 0:
+            that.getBoardList(that.profile.syllabus[0])
+              .then(result => {
+                that.zone.run(() => {
+                  that.boardSlide.options = that.mapBoards(result);
+                  that.onBoardingSlides[1] = that.boardSlide;
+                  that.mSlides.slideNext(500);
+                  that.currentProgress = ((index + 1) * 20);
+                  that.autoSelectAndProceed(index);
+                });
+              })
+              .catch(error => {
+
+              });
+            break;
+
+          case 1:
+            that.getMediumList(that.profile.syllabus[0], that.profile.board)
+              .then(result => {
+                that.zone.run(() => {
+                  that.mediumSlide.options = that.mapMediums(result);
+                  that.onBoardingSlides[2] = that.mediumSlide;
+                  that.mSlides.slideNext(500);
+                  that.currentProgress = ((index + 1) * 20);
+                  that.autoSelectAndProceed(index);
+                });
+              })
+              .catch(error => {
+
+              });
+            break;
+
+          case 2:
+            that.getGradeList(that.profile.syllabus[0], that.profile.medium)
+              .then(result => {
+                that.zone.run(() => {
+                  that.gradeSlide.options = that.mapGrades(result);
+                  that.onBoardingSlides[3] = that.gradeSlide;
+                  that.mSlides.slideNext(500);
+                  that.currentProgress = ((index + 1) * 20);
+                  that.autoSelectAndProceed(index);
+                });
+              })
+              .catch(error => {
+
+              });
+            break;
+
+          case 3:
+            that.getSubjectList(that.profile.syllabus[0], that.profile.grade)
+              .then(result => {
+                that.zone.run(() => {
+                  that.subjectSlide.options = that.mapSubjects(result);
+                  that.onBoardingSlides[4] = that.subjectSlide;
+                  that.mSlides.slideNext(500);
+                  that.currentProgress = ((index + 1) * 20);
+                  that.autoSelectAndProceed(index);
+                });
+              })
+              .catch(error => {
+
+              });
+            break;
+          case 4:
+            that.isOnBoardingCardCompleted = true;
+            break;
+        }
+      })
+      .catch(() => {
+
+      });
+  }
+
+  private autoSelectAndProceed(index: number) {
+    let nextIndex = index + 1;
+    if (nextIndex < this.onBoardingSlides.length - 1
+      && this.onBoardingSlides[nextIndex].options.length == 1) {
+      this.onBoardingSlides[nextIndex].selectedCode =
+        [this.onBoardingSlides[nextIndex].options[0].value];
+      this.onBoardingSlides[nextIndex].selectedOptions =
+        [this.onBoardingSlides[nextIndex].options[0].text];
+      this.saveAndGoToNext(nextIndex);
+    }
   }
 
   /**
@@ -155,37 +478,61 @@ export class OnboardingCardComponent {
   openFilterOptions(selectedSlide: any, index: number) {
     const that = this;
     const callback: onBoardingSlidesCallback = {
-      save() {
-        that.onboardingService.selectedCheckboxValue(selectedSlide, index);
+      save(updatedSlide) {
+        if (updatedSlide.selectedCode &&
+          updatedSlide.selectedCode.length > 0) {
+          that.onBoardingSlides[index] = updatedSlide;
+          that.saveAndGoToNext(index);
+        }
       }
     }
 
-    if (index === 0) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), undefined, true);
-    if (index === 1) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.syllabus, true);
-    if (index === 2) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.board, true);
-    if (index === 3) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.medium, true);
-    if (index === 4) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.grade, true);
-
-    let popUp = this.popupCtrl.create(OnboardingAlert, { facet: selectedSlide, callback: callback, index: index }, {
-      cssClass: 'onboarding-alert'
-    });
+    let popUp = this.popupCtrl.create(OnboardingAlert,
+      { facet: selectedSlide, callback: callback, index: index }, {
+        cssClass: 'onboarding-alert'
+      });
     popUp.present();
   }
 
-  ionViewWillEnter() {
-    if (!this.onboardingService.currentIndex) {
-      this.mSlides.slideTo(0, 500);
+  private saveDetails(): Promise<any> {
+    let that = this;
+    let req: Profile = {
+      age: -1,
+      day: -1,
+      month: -1,
+      standard: -1,
+      syllabus: that.onBoardingSlides[0].selectedCode,
+      board: that.onBoardingSlides[1].selectedCode,
+      grade: that.onBoardingSlides[3].selectedCode,
+      subject: that.onBoardingSlides[4].selectedCode,
+      medium: that.onBoardingSlides[2].selectedCode,
+      uid: this.profile.uid,
+      handle: this.profile.handle,
+      isGroupUser: false,
+      language: "en",
+      avatar: "avatar",
+      createdAt: this.profile.createdAt,
+      profileType: this.profile.profileType
     }
-  }
 
-  /** It will returns Toast Object
-   * @param {message} string - Message for the Toast to show
-   * @returns {object} - toast Object
-   */
-  getToast(message: string = ''): any {
-    this.options.message = message;
-    if (message.length) return this.toastCtrl.create(this.options);
-  }
+    return new Promise((resolve, reject) => {
+      this.profileService.updateProfile(req,
+        (res: any) => {
+          that.events.publish('refresh:profile');
+          that.profileService.getCurrentUser((res: any) => {
+            that.profile = JSON.parse(res);
+            resolve();
+          }, err => {
+            reject();
+          });
+          that.events.publish('refresh:profile');
+        },
+        (err: any) => {
+          console.log("Err", err);
+          reject();
+        });
+    });
 
+  }
 
 }

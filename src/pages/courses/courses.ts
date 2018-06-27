@@ -1,5 +1,5 @@
 import { ViewMoreActivityPage } from './../view-more-activity/view-more-activity';
-import { Component, NgZone, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit, ViewChild } from '@angular/core';
 import { NavController, PopoverController, Events, ToastController } from 'ionic-angular';
 import { AppVersion } from "@ionic-native/app-version";
 import { IonicPage } from 'ionic-angular';
@@ -24,13 +24,16 @@ import { AppGlobalService } from '../../service/app-global.service';
 
 import Driver from 'driver.js';
 import { CourseUtilService } from '../../service/course-util.service';
+import { OnboardingCardComponent } from '../../component/onboarding-card/onboarding-card';
 
 @IonicPage()
 @Component({
   selector: 'page-courses',
   templateUrl: 'courses.html'
 })
-export class CoursesPage implements OnInit {
+export class CoursesPage {
+
+  @ViewChild(OnboardingCardComponent) onboardingCard: OnboardingCardComponent;
 
   /**
    * Contains enrolled course
@@ -64,7 +67,6 @@ export class CoursesPage implements OnInit {
   isNetworkAvailable: boolean;
   showWarning: boolean = false;
 
-  isOnBoardingCardCompleted: boolean = false;
   onBoardingProgress: number = 0;
   selectedLanguage = 'en';
   appLabel: string;
@@ -127,10 +129,6 @@ export class CoursesPage implements OnInit {
       }
     });
 
-    this.events.subscribe('onboarding-card:completed', (param) => {
-      this.isOnBoardingCardCompleted = param.isOnBoardingCardCompleted;
-    });
-
     this.events.subscribe(AppGlobalService.PROFILE_OBJ_CHANGED, () => {
       this.getCourseTabData();
     })
@@ -181,20 +179,6 @@ export class CoursesPage implements OnInit {
       });
   }
 
-  /**
-	 * Angular life cycle hooks
-	 */
-  ngOnInit() {
-    console.log('courses component initialized...');
-    this.getCourseTabData();
-  }
-
-  /*   ngAfterViewInit() {
-      const driver = new Driver();
-      console.log("Driver", driver);
-      driver.highlight('#qrIcon');
-    } */
-
   ionViewDidLoad() {
     //this.sharedPreferences.
     this.preference.getString('show_app_walkthrough_screen', (value) => {
@@ -227,6 +211,8 @@ export class CoursesPage implements OnInit {
         this.preference.putString('show_app_walkthrough_screen', 'false');
       }
     });
+
+    this.getCourseTabData();
   }
 
   viewMoreEnrolledCourses() {
@@ -409,7 +395,6 @@ export class CoursesPage implements OnInit {
   getUserId() {
     let that = this;
     return new Promise((resolve, reject) => {
-      this.guestUser = !this.appGlobal.isUserLoggedIn();
 
       if (this.guestUser) {
         this.getCurrentUser();
@@ -428,11 +413,10 @@ export class CoursesPage implements OnInit {
    * @param refresher
    */
   getCourseTabData(refresher?) {
-    setTimeout(() => {
-      if (refresher) {
-        refresher.complete();
-      }
-    }, 10);
+    let that = this;
+    if (refresher) {
+      refresher.complete();
+    }
 
     this.enrolledCourse = [];
     this.popularAndLatestCourses = [];
@@ -457,16 +441,7 @@ export class CoursesPage implements OnInit {
     } else if (profiletype == ProfileType.STUDENT) {
       this.showSignInCard = false;
     }
-
-
     this.profile = this.appGlobal.getCurrentUser();
-    if (this.profile && this.profile.board && this.profile.board.length
-      && this.profile.grade && this.profile.grade.length
-      && this.profile.medium && this.profile.medium.length
-      && this.profile.subject && this.profile.subject.length) {
-      this.isOnBoardingCardCompleted = true;
-      this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
-    }
   }
 
   scanQRCode() {
@@ -545,6 +520,11 @@ export class CoursesPage implements OnInit {
   }
 
   ionViewDidEnter() {
+
+    setTimeout(() => {
+      this.onboardingCard.ionViewDidEnter();
+    }, 100);
+
     if (this.appliedFilter) {
       this.filterIcon = "./assets/imgs/ic_action_filter.png";
       this.courseFilter = undefined;
@@ -569,6 +549,13 @@ export class CoursesPage implements OnInit {
       this.showOverlay = false;
       this.downloadPercentage = 0;
     })
+  }
+
+  ionViewWillEnter() {
+    this.guestUser = !this.appGlobal.isUserLoggedIn();
+    if (this.network.type === 'none') {
+			this.isNetworkAvailable = false;
+		}
   }
 
 

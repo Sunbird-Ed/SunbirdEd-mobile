@@ -159,10 +159,6 @@ export class FormAndFrameworkUtilService {
     getCategoryData(req: CategoryRequest, frameworkId?: string): Promise<any> {
 
         return new Promise((resolve, reject) => {
-            if (frameworkId !== undefined && frameworkId.length) {
-                req.frameworkId = frameworkId;
-            }
-
             let categoryList: Array<any> = [];
 
             this.framework.getCategoryData(req,
@@ -251,6 +247,20 @@ export class FormAndFrameworkUtilService {
 
                         resolve(result);
                     });
+                });
+        });
+    }
+
+    fetchNextCategory(req: CategoryRequest): Promise<any> {
+
+        return new Promise((resolve, reject) => {
+            this.framework.getCategoryData(req,
+                (res: any) => {
+                    const resposneArray : Array<any> = JSON.parse(res);
+                    resolve(resposneArray);
+                },
+                (err: any) => {
+                    reject(err);
                 });
         });
     }
