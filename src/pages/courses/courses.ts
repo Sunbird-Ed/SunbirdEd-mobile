@@ -515,7 +515,7 @@ export class CoursesPage implements OnInit {
 
 
   showContentDetails(content, corRelationList) {
-    if (content.contentType === ContentType.COURSE) {
+    if (content.contentData.contentType === ContentType.COURSE) {
       console.log('Calling course details page');
       this.navCtrl.push(EnrolledCourseDetailsPage, {
         content: content,
