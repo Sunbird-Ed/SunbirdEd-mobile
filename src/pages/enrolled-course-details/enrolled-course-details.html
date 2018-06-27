@@ -170,7 +170,7 @@
 	<ion-toolbar padding>
 		<button ion-button block *ngIf="courseCardData && !courseCardData.lastReadContentId && childrenData && childrenData.length"
 		 (click)="startContent()">{{ 'START_COURSE' | translate }}</button>
-		<!-- <button ion-button block *ngIf="showResumeBtn" (click)="resumeContent(courseCardData.lastReadContentId)">{{ 'RESUME_COURSE' | translate }}</button> -->
+		<button ion-button block *ngIf="showResumeBtn" (click)="resumeContent(courseCardData.lastReadContentId)">{{ 'RESUME_COURSE' | translate }}</button>
 		<button ion-button block outline *ngIf="downloadIdentifiers && downloadIdentifiers.length && !isDownloadStarted" (click)="downloadAllContent();">{{ 'DOWNLOAD_ALL_CONTENT' | translate }} ({{ (downloadSize && downloadSize > 0) ? (downloadSize | fileSize) : 'O BYTES'
 			}})
 		</button>

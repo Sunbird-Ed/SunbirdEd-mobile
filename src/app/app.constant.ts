@@ -1,7 +1,7 @@
 import * as frameworkDataList from "../config/framework.filters";
 
 export class ContentType {
-    public static readonly STORY = 'Stroy';
+    public static readonly STORY = 'Story';
     public static readonly WORKSHEET = 'Worksheet';
     public static readonly GAME = 'Game';
     public static readonly RESOURCE = 'Resource';

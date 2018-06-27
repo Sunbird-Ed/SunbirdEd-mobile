@@ -90,6 +90,17 @@ export class FormAndFrameworkUtilService {
                     frameworks = field.range;
                 }
             });
+
+            //this condition will be executed when selected language is not present in the frameworks
+            //then it will be defaulted to English
+            if (frameworks.length === 0) {
+                fields.forEach(field => {
+                    if (field.language === 'en') {
+                        frameworks = field.range;
+                    }
+                });
+            }
+
             if (frameworks != null && frameworks.length > 0) {
                 frameworks.forEach(frameworkDetails => {
                     let value = { 'name': frameworkDetails.name, 'frameworkId': frameworkDetails.frameworkId };

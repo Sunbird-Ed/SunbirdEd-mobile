@@ -241,6 +241,10 @@ export class ProfilePage {
   formatMissingFields() {
     this.uncompletedDetails.title = '';
     if (this.profile.missingFields && this.profile.missingFields.length) {
+      if (this.profile.missingFields[0] === 'avatar') {   // Removing avatar from missing fields, because user can't add or edit profile image.
+        this.profile.missingFields.splice(0, 1);
+      }
+
       switch (this.profile.missingFields[0]) {
         case "education":
           this.uncompletedDetails.title = 'ADD_EDUCATION';
@@ -273,32 +277,52 @@ export class ProfilePage {
             profile: this.profile
           };
           break;
-        case "location":
-          let requiredProfileFields: Array<string> = [
-            'userId',
-            'firstName',
-            'lastName',
-            'language',
-            'email',
-            'phone',
-            'profileSummary',
-            'subject',
-            'gender',
-            'dob',
-            'grade',
-            'location',
-            'webPages'
-          ];
 
-          this.uncompletedDetails.title = 'ADD_LOCATION';
-          this.uncompletedDetails.page = AdditionalInfoComponent;
-          this.uncompletedDetails.data = {
-            userId: this.loggedInUserId,
-            profile: this.getSubset(requiredProfileFields, this.profile),
-            profileVisibility: this.profile.profileVisibility
-          }
+        case "location":
+          this.setMissingProfileDetails('ADD_LOCATION');
+          break;
+        case "phone":
+          this.setMissingProfileDetails('ADD_PHONE_NUMBER');
+          break;
+        case "profileSummary":
+          this.setMissingProfileDetails('ADD_PROFILE_DESCRIPTION');
+          break;
+        case "subject":
+          this.setMissingProfileDetails('ADD_SUBJECT');
+          break;
+        case "dob":
+          this.setMissingProfileDetails('ADD_DATE_OF_BIRTH');
+          break;
+        case "grade":
+          this.setMissingProfileDetails('ADD_CLASS');
           break;
       }
+    }
+  }
+
+  setMissingProfileDetails(title: string) {
+    let requiredProfileFields: Array<string> = [
+      'userId',
+      'firstName',
+      'lastName',
+      'language',
+      'email',
+      'phone',
+      'profileSummary',
+      'subject',
+      'gender',
+      'dob',
+      'grade',
+      'location',
+      'webPages'
+    ];
+
+    this.uncompletedDetails.title = title;
+    this.uncompletedDetails.page = AdditionalInfoComponent;
+    this.uncompletedDetails.data = {
+      userId: this.loggedInUserId,
+      profile: this.getSubset(requiredProfileFields, this.profile),
+      profileVisibility: this.profile.profileVisibility
     }
   }
 

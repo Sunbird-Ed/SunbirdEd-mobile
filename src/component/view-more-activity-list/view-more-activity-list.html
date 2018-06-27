@@ -1,6 +1,6 @@
 <ion-grid>
-  <ion-row class="row-border" (click)="navigateToDetailsPage(content)">
-    <ion-col class="image-align">
+  <ion-row class="row-border">
+    <ion-col class="image-align" (click)="navigateToDetailsPage(content, type)">
       <img class="app-icon" src="{{ content.courseLogoUrl || content?.appIcon || defaultImg }}" />
     </ion-col>
     <ion-col col-8 no-padding>
@@ -41,8 +41,8 @@
         <!-- Button -->
         <ion-col col-4 class="padding">
           <button ion-button outline small float-right style="white-space: normal; overflow: hidden;display: block; padding: 0 0.5em !important">
-            <span style="font-size: 12px !important" *ngIf="type === 'enrolledCourse'">{{ ('RESUME' | translate).length > 5 ? ('RESUME' | translate | slice:0:05) + '...' : ('RESUME' | translate) }}</span>
-            <span style="font-size: 12px !important" *ngIf="type !== 'enrolledCourse'">{{ ('OPEN' | translate).length > 5 ? ('OPEN' | translate | slice:0:05) + '...' : ('OPEN' | translate) }}</span>
+            <span style="font-size: 12px !important" *ngIf="type === 'enrolledCourse'" (click)="resumeCourse(content);">{{ ('RESUME' | translate).length > 5 ? ('RESUME' | translate | slice:0:05) + '...' : ('RESUME' | translate) }}</span>
+            <span style="font-size: 12px !important" *ngIf="type !== 'enrolledCourse'" (click)="navigateToDetailsPage(content, type)">{{ ('OPEN' | translate).length > 5 ? ('OPEN' | translate | slice:0:05) + '...' : ('OPEN' | translate) }}</span>
           </button>
         </ion-col>
       </ion-row>
