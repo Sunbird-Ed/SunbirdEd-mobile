@@ -142,9 +142,7 @@ export class AdditionalInfoComponent {
    */
   dismissPopup() {
     console.log("Fired ionViewWillLeave");
-    let activePortal = this.ionicApp._modalPortal.getActive() ||
-      this.ionicApp._toastPortal.getActive() ||
-      this.ionicApp._overlayPortal.getActive();
+    let activePortal = this.ionicApp._modalPortal.getActive() || this.ionicApp._overlayPortal.getActive();
 
     if (activePortal) {
       activePortal.dismiss();

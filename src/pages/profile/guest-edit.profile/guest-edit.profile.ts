@@ -147,9 +147,7 @@ export class GuestEditProfilePage {
    * It will Dismiss active popup
    */
   dismissPopup() {
-    let activePortal = this.ionicApp._modalPortal.getActive() ||
-      this.ionicApp._toastPortal.getActive() ||
-      this.ionicApp._overlayPortal.getActive();
+    let activePortal = this.ionicApp._modalPortal.getActive() || this.ionicApp._overlayPortal.getActive();
 
     if (activePortal) {
       activePortal.dismiss();
