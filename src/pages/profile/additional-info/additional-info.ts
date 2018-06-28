@@ -1,7 +1,7 @@
 import { TranslateService } from '@ngx-translate/core';
 import { Component, NgZone } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NavController, NavParams, ToastController, LoadingController } from 'ionic-angular';
+import { NavController, NavParams, ToastController, LoadingController, IonicApp, Platform } from 'ionic-angular';
 import * as _ from 'lodash';
 
 import { UserProfileService, AuthService, FrameworkService, CategoryRequest } from 'sunbird';
@@ -29,6 +29,7 @@ export class AdditionalInfoComponent {
   profile: any = {};
   profileVisibility: any;
   todayDate: string = new Date().toISOString().slice(0, 10);
+  unregisterBackButton: any;
 
   /**
    *  Fallback values for the list items
@@ -43,6 +44,22 @@ export class AdditionalInfoComponent {
     position: 'bottom'
   };
 
+  /* Options for ion-select box */
+  languageOptions = {
+    title: this.translateMessage('LANGUAGES'),
+    cssClass: 'select-box'
+  };
+
+  subjectOptions = {
+    title: this.translateMessage('SUBJECTS'),
+    cssClass: 'select-box'
+  };
+
+  gradeOptions = {
+    title: this.translateMessage('CLASS'),
+    cssClass: 'select-box'
+  };
+
   constructor(
     public navCtrl: NavController,
     public fb: FormBuilder,
@@ -53,7 +70,9 @@ export class AdditionalInfoComponent {
     private authService: AuthService,
     private translate: TranslateService,
     private frameworkService: FrameworkService,
-    private zone: NgZone
+    private zone: NgZone,
+    private ionicApp: IonicApp,
+    private platform: Platform
   ) {
     /* Receive data from other component */
     this.userId = this.navParams.get('userId');
@@ -66,23 +85,23 @@ export class AdditionalInfoComponent {
     this.profile.gender = (this.profile.gender && this.profile.gender.length) ? this.profile.gender.toLocaleLowerCase() : '';
 
     /* Initialize form with default values */
-      this.additionalInfoForm = this.fb.group({
-        firstName: [this.profile.firstName || '', Validators.required],
-        lastName: [this.profile.lastName || ''],
-        language: [this.profile.language || [], Validators.required],
-        email: [this.profile.email || ''],
-        phone: [this.profile.phone, [Validators.minLength(10)]], // Need to assign phone value
-        profileSummary: [this.profile.profileSummary || ''],
-        subject: [this.profile.subject || []],
-        gender: [this.profile.gender || ''],
-        dob: [this.profile.dob || ''],
-        grade: [this.profile.grade || []],
-        location: [this.profile.location || ''],
-        facebookLink: [''],
-        twitterLink: [''],
-        linkedInLink: [''],
-        blogLink: ['']
-      });
+    this.additionalInfoForm = this.fb.group({
+      firstName: [this.profile.firstName || '', Validators.required],
+      lastName: [this.profile.lastName || ''],
+      language: [this.profile.language || [], Validators.required],
+      email: [this.profile.email || ''],
+      phone: [this.profile.phone, [Validators.minLength(10)]], // Need to assign phone value
+      profileSummary: [this.profile.profileSummary || ''],
+      subject: [this.profile.subject || []],
+      gender: [this.profile.gender || ''],
+      dob: [this.profile.dob || ''],
+      grade: [this.profile.grade || []],
+      location: [this.profile.location || ''],
+      facebookLink: [''],
+      twitterLink: [''],
+      linkedInLink: [''],
+      blogLink: ['']
+    });
 
     /* Patch social Webpages links */
     if (this.profile && this.profile.webPages && this.profile.webPages.length) {
@@ -107,6 +126,33 @@ export class AdditionalInfoComponent {
       });
     }
   }
+
+  ionViewWillEnter() {
+    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+      this.dismissPopup();
+    }, 11);
+  }
+
+  ionViewWillLeave() {
+    this.unregisterBackButton();
+  }
+
+  /**
+   * It will Dismiss active popup
+   */
+  dismissPopup() {
+    console.log("Fired ionViewWillLeave");
+    let activePortal = this.ionicApp._modalPortal.getActive() ||
+      this.ionicApp._toastPortal.getActive() ||
+      this.ionicApp._overlayPortal.getActive();
+
+    if (activePortal) {
+      activePortal.dismiss();
+    } else {
+      this.navCtrl.pop();
+    }
+  }
+
 
   /**
    * This will internally call framework API, fetches framework data and stores in local variables.
@@ -133,7 +179,7 @@ export class AdditionalInfoComponent {
    * @param {string} fieldDisplayName - Language constant for the field
    * @param {boolean} revert - Tells whether to revert changes or not
    */
-  toggleLock(field: string, fieldDisplayName: string, revert: boolean = false ) {
+  toggleLock(field: string, fieldDisplayName: string, revert: boolean = false) {
     this.zone.run(() => {
       this.profileVisibility[field] = this.profileVisibility[field] === "private" ? "public" : "private";
     });

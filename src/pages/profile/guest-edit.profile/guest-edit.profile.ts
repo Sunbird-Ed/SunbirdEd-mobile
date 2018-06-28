@@ -1,6 +1,6 @@
 import { TranslateService } from '@ngx-translate/core';
 import { Component, NgZone } from '@angular/core';
-import { NavController, NavParams, ToastController, Events, LoadingController } from 'ionic-angular';
+import { NavController, NavParams, ToastController, Events, LoadingController, IonicApp, Platform } from 'ionic-angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import {
@@ -39,6 +39,7 @@ export class GuestEditProfilePage {
   frameworks: Array<any> = [];
   frameworkId: string = '';
   loader: any;
+  unregisterBackButton: any;
 
   options: toastOptions = {
     message: '',
@@ -46,7 +47,33 @@ export class GuestEditProfilePage {
     position: 'bottom'
   };
 
-  constructor(private navCtrl: NavController,
+  syllabusOptions = {
+    title: this.translateMessage('SYLLABUS'),
+    cssClass: 'select-box'
+  };
+
+  boardOptions = {
+    title: this.translateMessage('BOARD'),
+    cssClass: 'select-box'
+  };
+
+  mediumOptions = {
+    title: this.translateMessage('MEDIUM_OF_INSTRUCTION'),
+    cssClass: 'select-box'
+  };
+
+  classOptions = {
+    title: this.translateMessage('CLASS'),
+    cssClass: 'select-box'
+  };
+
+  subjectsOptions = {
+    title: this.translateMessage('SUBJECTS'),
+    cssClass: 'select-box'
+  };
+
+  constructor(
+    private navCtrl: NavController,
     private fb: FormBuilder,
     public navParams: NavParams,
     private toastCtrl: ToastController,
@@ -56,7 +83,9 @@ export class GuestEditProfilePage {
     private events: Events,
     private preference: SharedPreferences,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
-    private zone: NgZone
+    private zone: NgZone,
+    private platform: Platform,
+    private ionicApp: IonicApp
   ) {
     this.profile = this.navParams.get('profile') || {};
 
@@ -105,6 +134,28 @@ export class GuestEditProfilePage {
       .catch(() => {
         loader.dismiss();
       });
+    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+      this.dismissPopup();
+    }, 11);
+  }
+
+  ionViewWillLeave() {
+    this.unregisterBackButton();
+  }
+
+  /**
+   * It will Dismiss active popup
+   */
+  dismissPopup() {
+    let activePortal = this.ionicApp._modalPortal.getActive() ||
+      this.ionicApp._toastPortal.getActive() ||
+      this.ionicApp._overlayPortal.getActive();
+
+    if (activePortal) {
+      activePortal.dismiss();
+    } else {
+      this.navCtrl.pop();
+    }
   }
 
   getSyllabusList(): Promise<any> {
@@ -294,6 +345,9 @@ export class GuestEditProfilePage {
     if (message.length) return this.toastCtrl.create(this.options);
   }
 
+  /**
+   * Returns loading controller object
+   */
   getLoader(): any {
     return this.loadingCtrl.create({
       duration: 30000,

@@ -27,7 +27,8 @@
 
     <ion-item no-lines>
       <ion-label stacked>{{ 'SUBJECTS' | translate }}</ion-label>
-      <ion-select formControlName="subject" interface="popover" multiple="true" placeholder="{{ 'SELECT' | translate }}">
+      <ion-select formControlName="subject" [selectOptions]="subjectOptions" okText="{{'OKAY' | translate}}" cancelText="{{'CANCEL' | translate}}"
+        multiple="true" placeholder="{{ 'SELECT' | translate }}">
         <ion-option *ngFor="let subject of subjectList" text-capitalize value="{{subject}}">{{subject}}</ion-option>
       </ion-select>
     </ion-item>
@@ -53,13 +54,16 @@
         <ion-label>{{ 'FROM' | translate }}</ion-label>
         <ion-icon name="calendar"></ion-icon>
         <ion-datetime formControlName="joiningDate" displayFormat="DD-MM-YYYY" pickerFormat="DDDD MMMM YYYY" min="1950" [max]="todayDate"
-          placeholder="{{ 'SELECT_DATE' | translate }}" (ionChange)="changeJoiningDate()"></ion-datetime>
+          placeholder="{{ 'SELECT_DATE' | translate }}" cancelText="{{'CANCEL' | translate}}" doneText="{{'DONE' | translate}}"
+          (ionChange)="changeJoiningDate()">
+        </ion-datetime>
       </ion-col>
       <ion-col *ngIf="!currentJob">
         <ion-label>{{ 'TO' | translate }}</ion-label>
         <ion-icon name="calendar"></ion-icon>
         <ion-datetime formControlName="endDate" displayFormat="DD-MM-YYYY" pickerFormat="DDDD MMMM YYYY" [min]="joiningDate" [max]="todayDate"
-          placeholder="{{ 'SELECT_DATE' | translate }}"></ion-datetime>
+          placeholder="{{ 'SELECT_DATE' | translate }}" cancelText="{{'CANCEL' | translate}}" doneText="{{'DONE' | translate}}">
+        </ion-datetime>
       </ion-col>
     </ion-row>
   </form>
