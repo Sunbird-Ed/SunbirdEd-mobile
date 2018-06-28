@@ -460,7 +460,7 @@ export class CoursesPage implements OnInit {
 
 
     this.profile = this.appGlobal.getCurrentUser();
-    if (this.profile && this.profile.board && this.profile.board.length
+    if (this.profile && this.profile.syllabus && this.profile.syllabus[0] && this.profile.board && this.profile.board.length
       && this.profile.grade && this.profile.grade.length
       && this.profile.medium && this.profile.medium.length
       && this.profile.subject && this.profile.subject.length) {
@@ -818,11 +818,11 @@ export class CoursesPage implements OnInit {
   }
 
   ionViewCanLeave() {
-		this.ngZone.run(() => {
+    this.ngZone.run(() => {
       this.events.unsubscribe('genie.event');
       if (this.tabBarElement) {
         this.tabBarElement.style.display = 'flex';
       }
-		})
-	}
+    })
+  }
 }

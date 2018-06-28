@@ -159,7 +159,7 @@ export class ResourcesPage implements OnInit {
 		this.setSavedContent();
 
 		this.profile = this.appGlobal.getCurrentUser();
-		if (this.profile && this.profile.board && this.profile.board.length
+		if (this.profile && this.profile.syllabus && this.profile.syllabus[0] && this.profile.board && this.profile.board.length
 			&& this.profile.grade && this.profile.grade.length
 			&& this.profile.medium && this.profile.medium.length
 			&& this.profile.subject && this.profile.subject.length) {
