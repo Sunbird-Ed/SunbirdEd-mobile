@@ -229,20 +229,30 @@ export class FormAndFrameworkUtilService {
 
 
                             if (ranges && ranges.length > 0 && upgradeTypes && upgradeTypes.length > 0) {
+                                let type: string;
+                                const forceType = "force"
+
                                 ranges.forEach(element => {
                                     if (versionCode === element.minVersionCode ||
                                         (versionCode > element.minVersionCode && versionCode < element.maxVersionCode) ||
                                         versionCode === element.maxVersionCode) {
                                         console.log("App needs a upgrade of type - " + element.type)
+                                        type = element.type;
 
-                                        upgradeTypes.forEach(upgradeElement => {
-                                            if (element.type === upgradeElement.type) {
-                                                result = upgradeElement
-                                            }
-                                        });
+                                        if (type === forceType) {
+                                            return true; // this is to stop the foreach loop
+                                        }
+                                    }
+                                });
+
+                                upgradeTypes.forEach(upgradeElement => {
+                                    if (type === upgradeElement.type) {
+                                        result = upgradeElement
                                     }
                                 });
                             }
+
+
                         }
 
                         resolve(result);
@@ -256,7 +266,7 @@ export class FormAndFrameworkUtilService {
         return new Promise((resolve, reject) => {
             this.framework.getCategoryData(req,
                 (res: any) => {
-                    const resposneArray : Array<any> = JSON.parse(res);
+                    const resposneArray: Array<any> = JSON.parse(res);
                     resolve(resposneArray);
                 },
                 (err: any) => {
