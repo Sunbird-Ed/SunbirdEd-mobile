@@ -8,6 +8,7 @@ import { ContentService, AuthService } from 'sunbird';
 import { ToastController, Platform } from "ionic-angular";
 import { ReportIssuesComponent } from '../report-issues/report-issues';
 import { ProfileConstants } from '../../app/app.constant';
+import { AppGlobalService } from '../../service/app-global.service';
 
 /**
  * Generated class for the ContentActionsComponent component.
@@ -29,6 +30,8 @@ export class ContentActionsComponent {
   backButtonFunc = undefined;
 
   userId: string = '';
+  pageName: string = '';
+  showFlagMenu: boolean = true;
 
   constructor(public viewCtrl: ViewController,
     private contentService: ContentService,
@@ -39,8 +42,10 @@ export class ContentActionsComponent {
     private authService: AuthService,
     private events: Events,
     private translate: TranslateService,
-    private platform: Platform) {
+    private platform: Platform,
+    private appGlobalService: AppGlobalService) {
     this.content = this.navParams.get("content");
+    this.pageName = this.navParams.get('pageName');
     if (this.navParams.get('isChild')) {
       this.isChild = true;
     }
@@ -60,6 +65,16 @@ export class ContentActionsComponent {
       } else {
         let res = JSON.parse(session);
         this.userId = res[ProfileConstants.USER_TOKEN] ? res[ProfileConstants.USER_TOKEN] : '';
+        // Needed: this get exeuted if user is on course details page. 
+        if (this.pageName === 'course' && this.userId) {
+          // If course is not enrolled then hide flag/report issue menu. 
+          // If course has batchId then it means it is enrolled course
+          if (this.content.batchId) {
+            this.showFlagMenu = true;
+          } else {
+            this.showFlagMenu = false;
+          }
+        }
       }
     });
   }

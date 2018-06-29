@@ -24,6 +24,7 @@ import { ContentRatingAlertComponent } from '../../component/content-rating-aler
 import { ContentType, MimeType, ShareUrl } from '../../app/app.constant';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 import { Network } from '@ionic-native/network';
+import { AppGlobalService } from '../../service/app-global.service';
 
 /**
  * Generated class for the CollectionDetailsPage page.
@@ -145,8 +146,6 @@ export class CollectionDetailsPage {
 
   public showLoading = false;
 
-  isUpdateAvailable: boolean = false;
-
   /**
    * To hold rating data
    */
@@ -190,7 +189,8 @@ export class CollectionDetailsPage {
     private shareUtil: ShareUtil,
     private buildParamService: BuildParamService,
     private network: Network,
-    private preference: SharedPreferences) {
+    private preference: SharedPreferences,
+    private appGlobalService: AppGlobalService) {
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
     console.warn('Inside new module..........................');
@@ -258,13 +258,7 @@ export class CollectionDetailsPage {
  * 
  */
   checkLoggedInOrGuestUser() {
-    this.authService.getSessionData((session) => {
-      if (session === null || session === "null") {
-        this.guestUser = true;
-      } else {
-        this.guestUser = false;
-      }
-    });
+    this.guestUser = !this.appGlobalService.isUserLoggedIn();
   }
 
   checkCurrentUserType() {
@@ -332,22 +326,20 @@ export class CollectionDetailsPage {
         this.contentDetail.me_totalRatings = rating[0];
       }
     }
+
+    //User Rating
+    let contentFeedback: any = data.result.contentFeedback ? data.result.contentFeedback : [];
+    if (contentFeedback !== undefined && contentFeedback.length !== 0) {
+      this.userRating = contentFeedback[0].rating;
+      this.ratingComment = contentFeedback[0].comments;
+      console.log("User Rating  - " + this.userRating);
+    }
+
     switch (data.result.isAvailableLocally) {
       case true: {
         this.showLoading = false;
         this.contentDetail.size = data.result.sizeOnDevice;
-        // data.result.isUpdateAvailable = true;
-        console.log("Content locally available. Looking for is update available or not...");
-        if (data.result.isUpdateAvailable && !this.isUpdateAvailable) {
-          console.log('update is available. Lets start import again...');
-          this.isUpdateAvailable = true;
-          this.showLoading = true;
-          this.importContent([this.identifier], false);
-        } else {
-          console.log('Update not available');
-          this.isUpdateAvailable = false;
-          this.setChildContents();
-        }
+        this.setChildContents();
         break;
       }
       case false: {
@@ -631,7 +623,6 @@ export class CollectionDetailsPage {
     this.isDownlaodCompleted = false;
     this.currentCount = 0;
     this.downloadPercentage = 0;
-    this.isUpdateAvailable = false;
   }
 
   /**
@@ -673,17 +664,16 @@ export class CollectionDetailsPage {
               this.isDownlaodCompleted = true;
               this.contentDetail.isAvailableLocally = true;
               this.downloadPercentage = 0;
-              this.updateSavedResources();
+              this.events.publish('savedResources:update', {
+                update: true
+              });
             }
           } else {
-            if (this.isUpdateAvailable) {
-              console.log('Done with auto import. Lets make getContentDetails api call with refreshContentDetails false');
-              this.setContentDetails(this.identifier, false);
-            } else {
-              this.updateSavedResources();
-              this.setChildContents();
-              this.contentDetail.isAvailableLocally = true;
-            }
+            this.setChildContents();
+            this.contentDetail.isAvailableLocally = true;
+            this.events.publish('savedResources:update', {
+              update: true
+            });
           }
         }
       });
@@ -745,7 +735,7 @@ export class CollectionDetailsPage {
       }, error => {
         loader.dismiss();
         let toast = this.toastCtrl.create({
-          message: "Unable to share content.",
+          message: this.translateMessage("SHARE_CONTENT_FAILED"),
           duration: 2000,
           position: 'bottom'
         });
@@ -901,5 +891,20 @@ export class CollectionDetailsPage {
         this.navCtrl.pop();
       });
     });
+  }
+
+  /**
+  * Used to Translate message to current Language
+  * @param {string} messageConst - Message Constant to be translated
+  * @returns {string} translatedMsg - Translated Message
+  */
+  translateMessage(messageConst: string): string {
+    let translatedMsg = '';
+    this.translate.get(messageConst).subscribe(
+      (value: any) => {
+        translatedMsg = value;
+      }
+    );
+    return translatedMsg;
   }
 }

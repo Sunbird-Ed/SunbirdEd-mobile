@@ -90,7 +90,6 @@ export class UserTypeSelectionPage {
       this.selectedUserType = ProfileType.TEACHER;
       this.continueAs = this.translateMessage('CONTINUE_AS_ROLE', this.translateMessage('TEACHER_ROLE'));
       this.preference.putString(KEY_SELECTED_USER_TYPE, this.selectedUserType);
-      initTabs(this.container, GUEST_TEACHER_TABS);
     });
   }
 
@@ -102,7 +101,6 @@ export class UserTypeSelectionPage {
       this.selectedUserType = ProfileType.STUDENT;
       this.continueAs = this.translateMessage('CONTINUE_AS_ROLE', this.translateMessage('STUDENT_ROLE'));
       this.preference.putString(KEY_SELECTED_USER_TYPE, this.selectedUserType)
-      initTabs(this.container, GUEST_STUDENT_TABS);
     });
   }
 
@@ -183,7 +181,13 @@ export class UserTypeSelectionPage {
     this.event.publish(AppGlobalService.USER_INFO_UPDATED);
 
 
-    this.navCtrl.setRoot(TabsPage, {
+    if (this.selectedUserType == ProfileType.TEACHER) {
+      initTabs(this.container, GUEST_TEACHER_TABS);
+    } else if (this.selectedUserType == ProfileType.STUDENT) {
+      initTabs(this.container, GUEST_STUDENT_TABS);
+    }
+
+    this.navCtrl.push(TabsPage, {
       loginMode: 'guest'
     });
   }

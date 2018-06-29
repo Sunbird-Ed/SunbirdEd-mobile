@@ -23,8 +23,6 @@ export class GrouplandingPage {
   constructor(public navCtrl: NavController, public navParams: NavParams) {
     this.bar = "Groups";
     this.value = this.navParams.get('item');
-    // console.log(this.value);
-    // console.log(this.value.length);
     if(this.value){
       this.isShow = true;
       this.groupName = this.value[0]

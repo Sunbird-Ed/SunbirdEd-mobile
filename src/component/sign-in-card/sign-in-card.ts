@@ -27,7 +27,7 @@ export class SignInCardComponent {
 
   private translateDisplayText;
 
-  sunbird: string = "SUNBIRD";
+  appName: string = "";
   isNetworkAvailable: boolean;
 
 
@@ -56,7 +56,7 @@ export class SignInCardComponent {
 
     this.appVersion.getAppName()
       .then((appName: any) => {
-        this.sunbird = appName;
+        this.appName = appName;
         this.initText();
       });
     if (this.network.type === 'none') {
@@ -73,7 +73,7 @@ export class SignInCardComponent {
   }
 
   initText() {
-    this.translate.get(this.DEFAULT_TEXT, { '%s': this.sunbird }).subscribe((value) => {
+    this.translate.get(this.DEFAULT_TEXT, { '%s': this.appName }).subscribe((value) => {
       this.translateDisplayText = value;
       if (this.title.length === 0) {
         this.title = 'OVERLAY_LABEL_COMMON';
@@ -150,7 +150,7 @@ export class SignInCardComponent {
           that.userProfileService.getUserProfileDetails(req, res => {
             let r = JSON.parse(res);
             that.generateLoginInteractTelemetry(InteractType.OTHER,
-              InteractSubtype.LOGIN_SUCCESS, r.userId);
+              InteractSubtype.LOGIN_SUCCESS, r.id);
             resolve(r.rootOrg.slug);
           }, error => {
             reject(error);
