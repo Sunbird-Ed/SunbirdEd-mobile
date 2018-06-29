@@ -52,35 +52,35 @@ export class OnboardingService {
     initializeCard(): Promise<any> {
         return new Promise((resolve, reject) => {
 
-            if(this.slideIndex === -1) {
+            if (this.slideIndex === -1) {
 
-            this.profileService.getCurrentUser((res: any) => {
-                this.profile = JSON.parse(res);
-                let syllabusFramework: string = '';
+                this.profileService.getCurrentUser((res: any) => {
+                    this.profile = JSON.parse(res);
+                    let syllabusFramework: string = '';
 
-                this.initializeSlides();
+                    this.initializeSlides();
 
-                if (this.profile.syllabus && this.profile.syllabus[0] !== '') {
-                    syllabusFramework = this.profile.syllabus[0];
-
-                    this.formAndFrameworkUtilService.getFrameworkDetails(syllabusFramework)
-                        .then(catagories => {
-                            this.categories = catagories;
-                            return this.getCurrentUser();
-                        })
-                        .then(index => {
-                            this.slideIndex = index;
-                            resolve(index);
-                        })
-                        .catch(err => {
-                            reject(err);
-                        });
-                }
-            },
-                (err: any) => {
-                    console.log("Err1", err);
-                    reject(err);
-                });
+                    if (this.profile.syllabus && this.profile.syllabus[0] !== '') {
+                        syllabusFramework = this.profile.syllabus[0];
+                        this.frameworkId = syllabusFramework;
+                        this.formAndFrameworkUtilService.getFrameworkDetails(syllabusFramework)
+                            .then(catagories => {
+                                this.categories = catagories;
+                                return this.getCurrentUser();
+                            })
+                            .then(index => {
+                                this.slideIndex = index;
+                                resolve(index);
+                            })
+                            .catch(err => {
+                                reject(err);
+                            });
+                    }
+                },
+                    (err: any) => {
+                        console.log("Err1", err);
+                        reject(err);
+                    });
             } else {
                 resolve(this.slideIndex);
             }
@@ -415,16 +415,25 @@ export class OnboardingService {
         }
         if (index === 0 && !_.find(this.onBoardingSlides, ['id', 'boardList']).selectedCode.length) {
             req.board = [];
-        }
-        if (index === 1 && !_.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode.length) {
+            req.medium = [];
             req.grade = [];
-        }
-        if (index === 2 && !_.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode.length) {
             req.subject = [];
         }
-        if (index === 3 && !_.find(this.onBoardingSlides, ['id', 'mediumList']).selectedCode.length) {
+        if (index === 1 && !_.find(this.onBoardingSlides, ['id', 'mediumList']).selectedCode.length) {
             req.medium = [];
+            req.grade = [];
+            req.subject = [];
         }
+        
+        if (index === 2 && !_.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode.length) {
+            req.grade = [];
+            req.subject = [];
+        }
+
+        if (index === 3 && !_.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode.length) {
+            req.subject = [];
+        }
+       
         this.profileService.updateProfile(req,
             (res: any) => {
                 if (this.onBoardingSlides.length === (index + 1)) {
