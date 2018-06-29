@@ -2,14 +2,10 @@ import { Injectable, NgZone } from '@angular/core';
 import * as _ from 'lodash';
 import { Events } from 'ionic-angular';
 import {
-    FrameworkService,
     CategoryRequest,
-    FrameworkDetailsRequest,
     ProfileService,
     Profile,
     SharedPreferences,
-    FormRequest,
-    FormService
 } from 'sunbird';
 import { FormAndFrameworkUtilService } from '../../pages/profile/formandframeworkutil.service';
 
@@ -31,12 +27,10 @@ export class OnboardingService {
     frameworkId: string = '';
 
     constructor(
-        private framework: FrameworkService,
         private profileService: ProfileService,
         public events: Events,
         public zone: NgZone,
         private preference: SharedPreferences,
-        private formService: FormService,
         private formAndFrameworkUtilService: FormAndFrameworkUtilService
     ) {
 
@@ -424,16 +418,14 @@ export class OnboardingService {
             req.grade = [];
             req.subject = [];
         }
-        
         if (index === 2 && !_.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode.length) {
             req.grade = [];
             req.subject = [];
         }
-
         if (index === 3 && !_.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode.length) {
             req.subject = [];
         }
-       
+
         this.profileService.updateProfile(req,
             (res: any) => {
                 if (this.onBoardingSlides.length === (index + 1)) {

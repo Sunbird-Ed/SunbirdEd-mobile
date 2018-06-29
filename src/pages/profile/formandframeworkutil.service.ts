@@ -1,5 +1,4 @@
 import { Injectable, NgZone } from '@angular/core';
-import * as _ from 'lodash';
 import { Events } from 'ionic-angular';
 
 import {
@@ -12,8 +11,6 @@ import {
     FormRequest,
     FormService
 } from 'sunbird';
-import { resolve } from 'path';
-import { MyApp } from '../../app/app.component';
 import { AppGlobalService } from '../../service/app-global.service';
 
 @Injectable()
@@ -24,7 +21,6 @@ export class FormAndFrameworkUtilService {
      * 
      */
     selectedLanguage: string;
-
 
     constructor(
         private framework: FrameworkService,
@@ -61,9 +57,7 @@ export class FormAndFrameworkUtilService {
                 this.callSyllabusListApi(syllabusList, resolve, reject);
             }
         })
-
     }
-
 
     /**
      * Network call to form api
@@ -176,8 +170,19 @@ export class FormAndFrameworkUtilService {
                 (err: any) => {
                     reject(err);
                 });
-
         });
     }
 
+    fetchNextCategory(req: CategoryRequest): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.framework.getCategoryData(req,
+                (res: any) => {
+                    const resposneArray: Array<any> = JSON.parse(res);
+                    resolve(resposneArray);
+                },
+                (err: any) => {
+                    reject(err);
+                });
+        });
+    }
 }

@@ -1,13 +1,15 @@
-import { boardList } from './../../../config/framework.filters';
 import { TranslateService } from '@ngx-translate/core';
 import { Component } from '@angular/core';
 import { NavController, NavParams, ToastController, Events, LoadingController } from 'ionic-angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import * as _ from 'lodash';
 
-import { FrameworkDetailsRequest, CategoryRequest, FrameworkService, ProfileService, Profile, FormService, SharedPreferences } from 'sunbird';
-import { FormRequest } from 'sunbird/services/form/bean';
-import { resolve } from 'path';
+import {
+  CategoryRequest,
+  ProfileService,
+  Profile,
+  SharedPreferences
+} from 'sunbird';
 import { FormAndFrameworkUtilService } from '../formandframeworkutil.service';
 
 /* Interface for the Toast Object */
@@ -50,11 +52,9 @@ export class GuestEditProfilePage {
     public navParams: NavParams,
     private toastCtrl: ToastController,
     private loadingCtrl: LoadingController,
-    private frameworkService: FrameworkService,
     private profileService: ProfileService,
     private translate: TranslateService,
     private events: Events,
-    private formService: FormService,
     private preference: SharedPreferences,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService
   ) {
@@ -260,7 +260,7 @@ export class GuestEditProfilePage {
       avatar: "avatar",
       profileType: this.profile.profileType,
       createdAt: this.profile.createdAt,
-      syllabus: [formVal.syllabus]
+      syllabus: (!formVal.syllabus.length) ? [] : [formVal.syllabus]
     }
 
     this.profileService.updateProfile(req,
