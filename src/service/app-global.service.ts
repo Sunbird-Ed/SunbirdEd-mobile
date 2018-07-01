@@ -1,16 +1,21 @@
 import { Injectable } from "@angular/core";
-import { Profile, ProfileType, AuthService, SharedPreferences, ProfileService, FrameworkDetailsRequest, FrameworkService } from "sunbird";
+import {
+    Profile,
+    ProfileType,
+    AuthService,
+    SharedPreferences,
+    ProfileService,
+    FrameworkDetailsRequest,
+    FrameworkService
+} from "sunbird";
 import { Events } from "ionic-angular";
-import { FormAndFrameworkUtilService } from "../pages/profile/formandframeworkutil.service";
-
 
 @Injectable()
 export class AppGlobalService {
 
-    /**
-   * This property stores the form details at the app level for a particular app session 
-   * 
-   */
+   /**
+    * This property stores the form details at the app level for a particular app sessionI
+    */
     syllabusList: Array<any> = [];
 
     public static readonly USER_INFO_UPDATED = 'user-profile-changed';
@@ -22,7 +27,7 @@ export class AppGlobalService {
 
     session: any;
 
-    private frameWork = [];
+    private frameworkData = [];
 
 
     constructor(private event: Events,
@@ -54,8 +59,8 @@ export class AppGlobalService {
     getNameForCodeInFramework(category, code) {
         let name = undefined;
 
-        if (this.frameWork[category] && this.frameWork[category].terms && this.frameWork[category].terms.length > 0) {
-            let matchingTerm = this.frameWork[category].terms.find((term) => {
+        if (this.frameworkData[category] && this.frameworkData[category].terms && this.frameworkData[category].terms.length > 0) {
+            let matchingTerm = this.frameworkData[category].terms.find((term) => {
                 return term.code == code;
             })
 
@@ -109,18 +114,18 @@ export class AppGlobalService {
             this.guestUserProfile = JSON.parse(response);
             if (this.guestUserProfile.syllabus && this.guestUserProfile.syllabus.length > 0) {
                 this.getFrameworkDetails(this.guestUserProfile.syllabus[0])
-                .then((categories) => {
-                    categories.forEach(category => {
-                        this.frameWork[category.code] = category;
-                    })
+                    .then((categories) => {
+                        categories.forEach(category => {
+                            this.frameworkData[category.code] = category;
+                        })
 
-                    this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
-                }).catch((error) => {
-                    this.frameWork = [];
-                    this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
-                })
+                        this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
+                    }).catch((error) => {
+                        this.frameworkData = [];
+                        this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
+                    })
             } else {
-                this.frameWork = [];
+                this.frameworkData = [];
                 this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
             }
 
@@ -161,8 +166,8 @@ export class AppGlobalService {
     }
 
     /**
- * Get all categories using framework api
- */
+    * Get all categories using framework api
+    */
     private getFrameworkDetails(frameworkId?: string): Promise<any> {
 
         return new Promise((resolve, reject) => {
