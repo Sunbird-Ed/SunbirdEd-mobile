@@ -1,0 +1,87 @@
+<!--
+  Generated template for the CreateuserPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+      <ion-title>{{'CREATE_USER' | translate}}</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content padding>
+
+  <form>
+          <ion-row>
+            <ion-col col-md-12>
+              <p class="custom-label">USER TYPE<span class="mandatory">*</span></p>
+            </ion-col>
+          </ion-row>
+          <ion-row style="margin-left: -1rem;">
+              <ion-col col-md-3>
+                <ion-item no-lines>
+                  <ion-label class="checkbox-label">Student</ion-label>
+                  <ion-checkbox class="custom-checkbox" [(ngModel)]="user.student"   name="student"
+                   checked="false"></ion-checkbox>
+                </ion-item>
+              </ion-col>
+              <ion-col col-md-3>
+                <ion-item no-lines>
+                  <ion-label class="checkbox-label">Teacher</ion-label>
+                  <ion-checkbox class="custom-checkbox" [(ngModel)]="user.teacher"
+                  name="teacher" checked="false"></ion-checkbox>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+      <ion-item>
+          <ion-label stacked>Full Name<span class="mandatory">*</span></ion-label>
+          <ion-input type="text" [(ngModel)]="user.fullname" name="fullname"></ion-input>
+      </ion-item>
+      <ion-item>
+          <ion-label stacked>Board</ion-label>
+          <ion-select [(ngModel)]="user.board" name="board">
+              <ion-option value="icse">ICSE</ion-option>
+              <ion-option value="cbse">CBSE</ion-option>
+              <ion-option value="state">STATE BOARD</ion-option>
+          </ion-select>
+      </ion-item>
+      <ion-item>
+          <ion-label stacked>Grade</ion-label>
+          <ion-select [(ngModel)]="user.grade" name="grade">
+              <ion-option value="Grade1">Grade 1</ion-option>
+              <ion-option value="Grade2">Grade 2</ion-option>
+              <ion-option value="Grade3">Grade 3</ion-option>
+              <ion-option value="Grade4">Grade 4</ion-option>
+          </ion-select>
+      </ion-item>
+      <ion-item>
+          <ion-label stacked>Medium</ion-label>
+          <ion-select [(ngModel)]="user.medium" name="medium">
+              <ion-option value="English Medium">English Medium</ion-option>
+              <ion-option value="Hindi Medium">hindi Medium</ion-option>
+              <ion-option value="Bangla Medium">Bangala Medium</ion-option>
+          </ion-select>
+      </ion-item>
+      <ion-item>
+          <ion-label stacked>Subject</ion-label>
+          <ion-select [(ngModel)]="user.subject" name="subject">
+              <ion-option value="5 Subject">5 Subjects</ion-option>
+          </ion-select>
+      </ion-item>
+  </form>
+</ion-content>
+<ion-footer>
+  <div class="border" style="color:#d9d9d9">
+      <ion-row>
+
+          <ion-col col-md-10 offset-md-1>
+              <button ion-button block (click)="saveUser()">{{'SAVE' | translate}}</button>
+          </ion-col>
+
+      </ion-row>
+  </div>
+
+</ion-footer>

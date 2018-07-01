@@ -1,3 +1,5 @@
+import { UsersPage } from './../users/users';
+import { TranslateService } from '@ngx-translate/core';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { CreateGroupPage } from './../create-group/create-group';
@@ -18,16 +20,17 @@ import { GroupMemberPage } from '../group-member/group-member';
 export class GrouplandingPage {
   bar;
   value = [];
-  groupName:any;
-  isShow:boolean  = false;
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  groupName: any;
+  isShow: boolean = false;
+  constructor(public navCtrl: NavController, public navParams: NavParams ,  
+              public translate: TranslateService) {
     this.bar = "Groups";
     this.value = this.navParams.get('item');
-    if(this.value){
+    if (this.value) {
       this.isShow = true;
       this.groupName = this.value[0]
     }
-    else{
+    else {
       this.isShow = false;
     }
   }
@@ -35,15 +38,18 @@ export class GrouplandingPage {
     console.log('ionViewDidLoad GrouplandingPage');
   }
 
-  createGroup(){
+  createGroup() {
     this.navCtrl.push(CreateGroupPage, {
     });
-    
+
   }
-  members(){
-    this.navCtrl.push(GroupMemberPage , {
-      item:this.value
+  members() {
+    this.navCtrl.push(GroupMemberPage, {
+      item: this.value
     })
 
+  }
+  users(){
+    this.navCtrl.push(UsersPage, {})
   }
 }

@@ -6,7 +6,7 @@
 -->
 <ion-header>
   <ion-navbar>
-      <ion-title style="text-align: center">Users and Groups</ion-title>
+      <ion-title style="text-align: center">{{'USERS_AND_GROUPS' | translate}}</ion-title>
       <ion-buttons end>
           <button ion-button icon-only>
               <ion-icon name="md-add"></ion-icon>
@@ -29,7 +29,7 @@
 <ion-list *ngFor="let user of allUsers">
       <ion-item class="custom-ion-list">
             <ion-thumbnail item-start>
-                <img class="rounded" src="http://srecalumni.org.in/user/resource/uploads/profile/male.png">
+                <img class="rounded" src="assets/imgs/male.png">
               </ion-thumbnail>
             <ion-label>
               <h6>{{user.name}}</h6>
@@ -45,7 +45,7 @@
         <ion-row>
   
             <ion-col col-md-10 offset-md-1>
-                <button ion-button block (click)="createGroup()">CREATE GROUP</button>
+                <button ion-button block (click)="createGroup()">{{'CREATE_GROUP' | translate }}</button>
             </ion-col>
   
         </ion-row>

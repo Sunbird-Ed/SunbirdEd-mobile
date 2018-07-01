@@ -1,12 +1,18 @@
 page-members {
+    .rounded {
+        border-radius: 50%;
+    }
+    .right{
+        float: right;
+    }
+    .primary{
+        color: #488aff;
+    }
+    .border{
+        border: 2px solid #d9d9d9;
+    }
+    ion-item.custom-ion-list {
+        background-color: #f4f4f4;
+    }
+}
 
-}
-.rounded {
-    border-radius: 50%;
-}
-.right{
-    float: right;
-}
-.primary{
-    color: #488aff;
-}

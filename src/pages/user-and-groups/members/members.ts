@@ -1,3 +1,4 @@
+import { TranslateService } from '@ngx-translate/core';
 import { GrouplandingPage } from './../grouplanding/grouplanding';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
@@ -17,13 +18,6 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 export class MembersPage {
   value
   arr = [];
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
-    this.value = this.navParams.get('item');
-    console.log(this.arr);
-    this.arr.push(this.value.groupName);
-
-  }
-
   users =[
     {
       "name":"Anirudh Deep",
@@ -43,10 +37,14 @@ export class MembersPage {
     
   ]
   allUsers = this.users;
-
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad MembersPage');
+  constructor(public navCtrl: NavController, public navParams: NavParams,
+              public translate: TranslateService ) {
+    this.value = this.navParams.get('item');
+    console.log(this.arr);
+    this.arr.push(this.value.groupName);
   }
+
+
 
   selectedMember(name ,profession ){
     this.arr.push({"name":name , "profession": profession})
@@ -58,7 +56,6 @@ export class MembersPage {
         this.users[i].selected = true;
         this.arr.push(this.users[i]);
       } 
-    // this.arr.push(this.users);
     console.log(this.arr);
   }
   createGroup(){

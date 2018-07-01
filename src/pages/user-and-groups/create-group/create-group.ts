@@ -1,3 +1,4 @@
+import { TranslateService } from '@ngx-translate/core';
 import { MembersPage } from './../members/members';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
@@ -15,11 +16,13 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
   templateUrl: 'create-group.html',
 })
 export class CreateGroupPage {
+  group = {}
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  constructor(public navCtrl: NavController, public navParams: NavParams,
+    public translate: TranslateService) {
   }
 
-  group = {}
+ 
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad CreateGroupPage');
@@ -29,6 +32,5 @@ export class CreateGroupPage {
     this.navCtrl.push(MembersPage, {
       item: this.group
     });
-
   }
 }

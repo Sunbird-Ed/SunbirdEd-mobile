@@ -85,7 +85,10 @@
   "CREDITS": "CREDITS",
   "CURRENT": "Current Address",
   "CURRENT_LANGUAGE": "Current Language ",
+  "CREATE_NEW_GROUP":"CREATE NEW GROUP",
   "CURRENT_LOCATION": "Current Location",
+  "CREATE_USER":"Create User",
+  "CREATE_GROUP":"Create Group",
   "DATA_SYNC": "Data Sync",
   "DATA_SYNC_FAILURE": "Could not sync data,  try again later",
   "DATA_SYNC_SUB": "Backup Data, Transfer Telemetry",
@@ -179,6 +182,7 @@
   "GRADE_QUESTION": "What class do you belong to?",
   "GROUPS": "Groups",
   "GROUPS_BNAV": "GROUPS",
+  "GROUP_MEMBER":"Group Member",
   "GROUPS_YOU_FOLLOW": "Groups you follow",
   "HELP_US_BY_RATING": "Help us by rating this content",
   "HIDE_CREDITS_INFO": "Hide Credits and Licensing Info",
@@ -414,5 +418,6 @@
   "YOUR_PROFILE_IS": "Your profile is {{%s}}% complete",
   "YOUR_PROGRESS": "Your Progress: {{%s}}%",
   "USERS_AND_GROUPS": "Users and Groups",
+  "USERS":"Users",
   "OKAY":"Okay"
 }

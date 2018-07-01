@@ -1,0 +1,24 @@
+page-users {
+    .grey-color {
+        color: grey;
+    }
+    .nouser{
+     width: 100%;
+     height: 132px;
+     padding: 42px;
+     background-color: #f8f8f8;
+     text-align: center;
+    }
+    .custom{
+        background-color: white;
+        color:rgba(0, 0, 0, 0.5);
+        box-shadow:none;
+    }
+    .action-sheet-button{
+        width: 50% !important;
+        padding-left: 46px;
+    }
+    .action-sheet-wrapper .action-sheet-container .action-sheet-md .action-sheet-button{
+        width: 50% !important;
+    }
+}

@@ -1,79 +1,72 @@
 <ion-header>
-  <ion-navbar>
-      <!-- <ion-buttons left>
-          <button ion-button icon-only>
-              <ion-icon name="md-arrow-back"></ion-icon>
-          </button>
-      </ion-buttons> -->
-      <ion-title style="text-align: center">Users and Groups</ion-title>
-      <ion-buttons end>
-          <button ion-button icon-only>
-              <ion-icon name="md-download"></ion-icon>
-          </button>
-          <button ion-button icon-only>
-              <ion-icon name="md-share"></ion-icon>
-          </button>
-          <button ion-button icon-only>
-              <ion-icon name="search"></ion-icon>
-          </button>
-      </ion-buttons>
-  </ion-navbar>
+    <ion-navbar>
+        <ion-title style="text-align: center">{{'USERS_AND_GROUPS'| translate}}</ion-title>
+        <ion-buttons end>
+            <button ion-button icon-only>
+                <ion-icon name="md-download"></ion-icon>
+            </button>
+            <button ion-button icon-only>
+                <ion-icon name="md-share"></ion-icon>
+            </button>
+            <button ion-button icon-only>
+                <ion-icon name="search"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
 </ion-header>
-<ion-toolbar [(ngModel)]="bar" no-border-top>
-  <ion-segment color="primary">
-    <ion-segment-button  value="Users">
-      Users
-    </ion-segment-button>
-    <ion-segment-button  value="Groups">
-      Groups
-    </ion-segment-button>
-  </ion-segment>
+<ion-toolbar class="toolbar" [(ngModel)]="bar" no-border-top>
+    <ion-segment color="primary">
+        <ion-segment-button value="Users" (click)="users()">
+            {{'USERS' | translate}} 
+        </ion-segment-button>
+        <ion-segment-button value="Groups">
+            {{'GROUPS' | translate}}
+        </ion-segment-button>
+    </ion-segment>
 </ion-toolbar>
 <ion-content padding>
-  <div class="firstSection" *ngIf ="!isShow">
-  <div class="img-container">
-      <img style="width: 335px; height: 102px; border-radius:50%;" src="https://www.w3schools.com/howto/img_avatar.png">
-  </div>
-  <ion-row>
-      <ion-col col-md-6 offset-md-3>
-          <ion-col col-lg-6 offset-lg-3>
-              <div class="image-text">
-                  <h6>
-                      <b>No Groups Created Yet</b>
-                  </h6>
-                  <p>Gropus help to organize the user better.
-                      <br> you can also use groups to monitior better
-                      <br>progress overall</p>
-              </div>
-          </ion-col>
-      </ion-col>
-  </ion-row>
-</div>
-<div class="secondSection" *ngIf ="isShow">
-      <ion-list>
-              <ion-item>
-                    <ion-thumbnail item-start>
-                        <img class="rounded" (click)="members()" src="http://srecalumni.org.in/user/resource/uploads/profile/male.png">
-                      </ion-thumbnail>
-                    <ion-label>
-                      <h6 (click)="members()">{{groupName}}</h6>
-                    </ion-label>
-                    <button ion-button icon-only item-end class="custom">
-                          <ion-icon name="more"></ion-icon>
-                        </button>
-              </ion-item>
+    <div class="firstSection" *ngIf="!isShow">
+        <div class="img-container">
+            <img class="image_style" src="assets/imgs/img_group.png">
+        </div>
+        <ion-row>
+            <ion-col col-md-6 offset-md-3>
+                <ion-col col-lg-6 offset-lg-3>
+                    <div class="image-text">
+                        <h6>
+                            <b>No Groups Created Yet</b>
+                        </h6>
+                        <p>Gropus help to organize the user better.
+                            <br> you can also use groups to monitior better
+                            <br>progress overall</p>
+                    </div>
+                </ion-col>
+            </ion-col>
+        </ion-row>
+    </div>
+    <div class="secondSection" *ngIf="isShow">
+        <ion-list>
+            <ion-item class="custom-ion-list">
+                <ion-thumbnail item-start>
+                    <img class="rounded" (click)="members()" src="assets/imgs/male.png">
+                </ion-thumbnail>
+                <ion-label>
+                    <h6 (click)="members()">{{groupName}}</h6>
+                </ion-label>
+                <button ion-button icon-only item-end class="custom">
+                    <ion-icon name="more"></ion-icon>
+                </button>
+            </ion-item>
         </ion-list>
-      </div> 
+    </div>
 </ion-content>
 <ion-footer>
-      <div class="border" style="color:#d9d9d9">
-              <ion-row>
-      
-                  <ion-col col-md-10 offset-md-1>
-                      <button ion-button block outline (click)="createGroup()">CREATE NEW GROUP</button>
-                  </ion-col>
-      
-              </ion-row>
-          </div>
+    <div class="border">
+        <ion-row>
+            <ion-col col-md-10 offset-md-1>
+                <button ion-button block outline (click)="createGroup()">{{'CREATE_NEW_GROUP'| translate}}</button>
+            </ion-col>
 
+        </ion-row>
+    </div>
 </ion-footer>
