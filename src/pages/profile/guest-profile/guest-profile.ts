@@ -1,11 +1,20 @@
-import { boardList } from './../../../config/framework.filters';
 import { Component } from '@angular/core';
-import { NavController, PopoverController, Events, LoadingController, ToastController } from 'ionic-angular';
+import {
+  NavController,
+  PopoverController,
+  Events,
+  LoadingController,
+  ToastController
+} from 'ionic-angular';
 import * as _ from 'lodash';
 
 import { GuestEditProfilePage } from './../guest-edit.profile/guest-edit.profile';
 import { OverflowMenuComponent } from "./../overflowmenu/menu.overflow.component";
-import { ProfileService, CategoryRequest, FrameworkDetailsRequest, FrameworkService, SharedPreferences, ProfileType, FormService, FormRequest } from 'sunbird';
+import {
+  ProfileService,
+  SharedPreferences,
+  ProfileType,
+} from 'sunbird';
 import { UserTypeSelectionPage } from '../../user-type-selection/user-type-selection';
 import { Network } from '@ionic-native/network';
 import { TranslateService } from '@ngx-translate/core';
@@ -54,9 +63,7 @@ export class GuestProfilePage {
     private profileService: ProfileService,
     private loadingCtrl: LoadingController,
     private events: Events,
-    private frameworkService: FrameworkService,
     private preference: SharedPreferences,
-    private formService: FormService,
     private toastCtrl: ToastController,
     private translate: TranslateService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService
@@ -72,7 +79,7 @@ export class GuestProfilePage {
     // TODO: Need to make an get Profile user details API call.
     this.refreshProfileData();
     this.events.subscribe('refresh:profile', () => {
-      this.refreshProfileData();
+      this.refreshProfileData(false, false);
     });
 
     this.preference.getString('selected_user_type', (val) => {
@@ -99,9 +106,13 @@ export class GuestProfilePage {
     console.log('ionViewDidLoad LanguageSettingPage');
   }
 
-  refreshProfileData(refresher: any = false) {
+  refreshProfileData(refresher: any = false, showLoader: boolean = true) {
     this.loader = this.getLoader();
-    this.loader.present();
+
+    if (showLoader) {
+      this.loader.present();
+    }
+
     this.profileService.getCurrentUser((res: any) => {
       this.profile = JSON.parse(res);
       this.getSyllabusDetails();

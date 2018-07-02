@@ -6,7 +6,7 @@ import {
 	ContentFilterCriteria, ProfileType, PageAssembleFilter,
 	CorrelationData
 } from "sunbird";
-import { NavController, PopoverController, Events, ToastController, LoadingController } from 'ionic-angular';
+import { NavController, PopoverController, Events, ToastController } from 'ionic-angular';
 import * as _ from 'lodash';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
 import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
@@ -23,6 +23,7 @@ import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-c
 import { AppGlobalService } from '../../service/app-global.service';
 import Driver from 'driver.js';
 import { AppVersion } from "@ionic-native/app-version";
+import { updateFilterInSearchQuery } from '../../util/filter.util';
 
 @Component({
 	selector: 'page-resources',
@@ -59,7 +60,7 @@ export class ResourcesPage implements OnInit {
 	pageApiLoader: boolean = true;
 
 	isOnBoardingCardCompleted: boolean = false;
-	public source = "resource";
+	public source = PageId.LIBRARY;
 
 	resourceFilter: any;
 
@@ -93,7 +94,6 @@ export class ResourcesPage implements OnInit {
 		private translate: TranslateService,
 		private zone: NgZone,
 		private network: Network,
-		private loadingCtrl: LoadingController,
 		private appGlobal: AppGlobalService,
 		private appVersion: AppVersion
 	) {
@@ -160,7 +160,8 @@ export class ResourcesPage implements OnInit {
 		this.setSavedContent();
 
 		this.profile = this.appGlobal.getCurrentUser();
-		if (this.profile && this.profile.board && this.profile.board.length
+		if (this.profile && this.profile.syllabus && this.profile.syllabus[0]
+			&& this.profile.board && this.profile.board.length
 			&& this.profile.grade && this.profile.grade.length
 			&& this.profile.medium && this.profile.medium.length
 			&& this.profile.subject && this.profile.subject.length) {
@@ -230,8 +231,6 @@ export class ResourcesPage implements OnInit {
 		//this.noInternetConnection = false;
 		let that = this;
 
-
-
 		if (!pageAssembleCriteria) {
 			let criteria = new PageAssembleCriteria();
 			criteria.name = "Resource";
@@ -249,6 +248,8 @@ export class ResourcesPage implements OnInit {
 				if (filterApplied) {
 					criteria.mode = "hard";
 				}
+
+				criteria.filters = this.appliedFilter;
 			}
 
 			pageAssembleCriteria = criteria;
@@ -398,6 +399,9 @@ export class ResourcesPage implements OnInit {
 				undefined,
 				undefined)
 		);
+
+		queryParams = updateFilterInSearchQuery(queryParams, this.appliedFilter, this.profile, this.appGlobal);
+
 		this.navCtrl.push(ViewMoreActivityPage, {
 			requestParams: queryParams,
 			headerTitle: headerTitle
@@ -541,7 +545,10 @@ export class ResourcesPage implements OnInit {
 			dialcode(scanResult, dialCode) {
 
 				that.addCorRelation(dialCode, "qr");
-				that.navCtrl.push(SearchPage, { dialCode: dialCode, corRelation: that.corRelationList });
+				that.navCtrl.push(SearchPage, { dialCode: dialCode,
+					 corRelation: that.corRelationList,
+					 source: that.source,
+					 shouldGenerateEndTelemetry: true });
 			},
 			content(scanResult, contentId) {
 				let request: ContentDetailRequest = {
@@ -598,19 +605,26 @@ export class ResourcesPage implements OnInit {
 			console.log('Calling course details page');
 			this.navCtrl.push(EnrolledCourseDetailsPage, {
 				content: content,
-				corRelation: corRelationList
+				corRelation: corRelationList,
+				source: this.source,
+				shouldGenerateEndTelemetry: true
 			})
 		} else if (content.mimeType === MimeType.COLLECTION) {
 			console.log('Calling collection details page');
 			this.navCtrl.push(CollectionDetailsPage, {
 				content: content,
-				corRelation: corRelationList
+				corRelation: corRelationList,
+				source: this.source,
+				shouldGenerateEndTelemetry: true
+
 			})
 		} else {
 			console.log('Calling content details page');
 			this.navCtrl.push(ContentDetailsPage, {
 				content: content,
-				corRelation: corRelationList
+				corRelation: corRelationList,
+				source: this.source,
+				shouldGenerateEndTelemetry: true
 			})
 		}
 	}

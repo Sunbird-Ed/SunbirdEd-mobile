@@ -1,6 +1,6 @@
 import { ViewMoreActivityPage } from './../view-more-activity/view-more-activity';
 import { Component, NgZone, OnInit } from '@angular/core';
-import { NavController, PopoverController, Events, ToastController, LoadingController } from 'ionic-angular';
+import { NavController, PopoverController, Events, ToastController } from 'ionic-angular';
 import { AppVersion } from "@ionic-native/app-version";
 import { IonicPage } from 'ionic-angular';
 import {
@@ -24,6 +24,7 @@ import { AppGlobalService } from '../../service/app-global.service';
 
 import Driver from 'driver.js';
 import { CourseUtilService } from '../../service/course-util.service';
+import { updateFilterInSearchQuery } from '../../util/filter.util';
 
 @IonicPage()
 @Component({
@@ -116,7 +117,6 @@ export class CoursesPage implements OnInit {
     private preference: SharedPreferences,
     private translate: TranslateService,
     private network: Network,
-    private loadingCtrl: LoadingController,
     private sharedPreferences: SharedPreferences,
     private appGlobal: AppGlobalService,
     private courseUtilService: CourseUtilService
@@ -239,6 +239,9 @@ export class CoursesPage implements OnInit {
   }
 
   viewAllCourses(searchQuery, headerTitle) {
+
+    searchQuery = updateFilterInSearchQuery(searchQuery, this.appliedFilter, this.profile, this.appGlobal);
+
     this.navCtrl.push(ViewMoreActivityPage, {
       headerTitle: headerTitle,
       pageName: 'course.PopularContent',
@@ -461,7 +464,7 @@ export class CoursesPage implements OnInit {
 
 
     this.profile = this.appGlobal.getCurrentUser();
-    if (this.profile && this.profile.board && this.profile.board.length
+    if (this.profile && this.profile.syllabus && this.profile.syllabus[0] && this.profile.board && this.profile.board.length
       && this.profile.grade && this.profile.grade.length
       && this.profile.medium && this.profile.medium.length
       && this.profile.subject && this.profile.subject.length) {
@@ -475,7 +478,10 @@ export class CoursesPage implements OnInit {
     const callback: QRResultCallback = {
       dialcode(scanResult, dialCode) {
         that.addCorRelation(dialCode, "qr");
-        that.navCtrl.push(SearchPage, { dialCode: dialCode, corRelation: that.corRelationList });
+        that.navCtrl.push(SearchPage, { dialCode: dialCode, 
+          corRelation: that.corRelationList,
+          source: PageId.COURSES,
+          shouldGenerateEndTelemetry: true });
       },
       content(scanResult, contentId) {
         // that.navCtrl.push(SearchPage);
@@ -520,19 +526,25 @@ export class CoursesPage implements OnInit {
       console.log('Calling course details page');
       this.navCtrl.push(EnrolledCourseDetailsPage, {
         content: content,
-        corRelation: corRelationList
+        corRelation: corRelationList,
+        source: PageId.COURSES,
+        shouldGenerateEndTelemetry: true
       })
     } else if (content.mimeType === MimeType.COLLECTION) {
       console.log('Calling collection details page');
       this.navCtrl.push(CollectionDetailsPage, {
         content: content,
-        corRelation: corRelationList
+        corRelation: corRelationList,
+        source: PageId.COURSES,
+        shouldGenerateEndTelemetry: true
       })
     } else {
       console.log('Calling content details page');
       this.navCtrl.push(ContentDetailsPage, {
         content: content,
-        corRelation: corRelationList
+        corRelation: corRelationList,
+        source: PageId.COURSES,
+        shouldGenerateEndTelemetry: true
       })
     }
   }
@@ -716,7 +728,8 @@ export class CoursesPage implements OnInit {
                 courseId: identifier
               },
               isResumedCourse: true,
-              isChildContent: true
+              isChildContent: true,
+              resumedCourseCardData: content
             });
             break;
           }
@@ -799,7 +812,8 @@ export class CoursesPage implements OnInit {
               courseId: this.resumeContentData.contentId || this.resumeContentData.identifier
             },
             isResumedCourse: true,
-            isChildContent: true
+            isChildContent: true,
+            resumedCourseCardData: this.resumeContentData
           });
         }
       });
@@ -819,11 +833,11 @@ export class CoursesPage implements OnInit {
   }
 
   ionViewCanLeave() {
-		this.ngZone.run(() => {
+    this.ngZone.run(() => {
       this.events.unsubscribe('genie.event');
       if (this.tabBarElement) {
         this.tabBarElement.style.display = 'flex';
       }
-		})
-	}
+    })
+  }
 }

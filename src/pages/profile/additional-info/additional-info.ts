@@ -6,7 +6,7 @@ import * as _ from 'lodash';
 
 import { UserProfileService, AuthService, FrameworkService, CategoryRequest } from 'sunbird';
 import { ProfilePage } from './../profile';
-import { languageList, subjectList, gradeList } from './../../../config/framework.filters';
+import { languageList } from './../../../config/framework.filters';
 import { ProfileConstants } from '../../../app/app.constant';
 
 /* Interface for the Toast Object */
@@ -23,7 +23,6 @@ export interface toastOptions {
 
 /* This contains form for the User's Additional Information where user can edit previous one */
 export class AdditionalInfoComponent {
-  tabBarElement: any;
   isNewForm: boolean = true;
   additionalInfoForm: FormGroup;
   userId: string;
@@ -35,8 +34,8 @@ export class AdditionalInfoComponent {
    *  Fallback values for the list items
    */
   languageList: Array<String> = languageList;
-  subjectList: Array<String> = subjectList;
-  gradeList: Array<String> = gradeList;
+  subjectList: Array<String> = [];
+  gradeList: Array<String> = [];
 
   options: toastOptions = {
     message: '',
@@ -44,7 +43,8 @@ export class AdditionalInfoComponent {
     position: 'bottom'
   };
 
-  constructor(public navCtrl: NavController,
+  constructor(
+    public navCtrl: NavController,
     public fb: FormBuilder,
     public navParams: NavParams,
     public userProfileService: UserProfileService,
@@ -55,38 +55,37 @@ export class AdditionalInfoComponent {
     private frameworkService: FrameworkService,
     private zone: NgZone
   ) {
-    /* Returns a html element for tab bar */
-    this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
-
     /* Receive data from other component */
     this.userId = this.navParams.get('userId');
-    this.profile = this.navParams.get('profile');
-    this.profileVisibility = this.navParams.get('profileVisibility');
+    this.profile = this.navParams.get('profile') || {};
+    this.profileVisibility = this.navParams.get('profileVisibility') || {};
 
     this.getFrameworkData('subject', 'subjectList');
     this.getFrameworkData('gradeLevel', 'gradeList');
 
+    this.profile.gender = (this.profile.gender && this.profile.gender.length) ? this.profile.gender.toLocaleLowerCase() : '';
+
     /* Initialize form with default values */
-    this.additionalInfoForm = this.fb.group({
-      firstName: [this.profile.firstName || '', Validators.required],
-      lastName: [this.profile.lastName || ''],
-      language: [this.profile.language || [], Validators.required],
-      email: [this.profile.email || ''],
-      phone: [this.profile.phone, [Validators.minLength(10)]], // Need to assign phone value
-      profileSummary: [this.profile.profileSummary || ''],
-      subject: [this.profile.subject || []],
-      gender: [this.profile.gender || ''],
-      dob: [this.profile.dob || ''],
-      grade: [this.profile.grade || []],
-      location: [this.profile.location || ''],
-      facebookLink: [''],
-      twitterLink: [''],
-      linkedInLink: [''],
-      blogLink: ['']
-    });
+      this.additionalInfoForm = this.fb.group({
+        firstName: [this.profile.firstName || '', Validators.required],
+        lastName: [this.profile.lastName || ''],
+        language: [this.profile.language || [], Validators.required],
+        email: [this.profile.email || ''],
+        phone: [this.profile.phone, [Validators.minLength(10)]], // Need to assign phone value
+        profileSummary: [this.profile.profileSummary || ''],
+        subject: [this.profile.subject || []],
+        gender: [this.profile.gender || ''],
+        dob: [this.profile.dob || ''],
+        grade: [this.profile.grade || []],
+        location: [this.profile.location || ''],
+        facebookLink: [''],
+        twitterLink: [''],
+        linkedInLink: [''],
+        blogLink: ['']
+      });
 
     /* Patch social Webpages links */
-    if (this.profile.webPages.length) {
+    if (this.profile && this.profile.webPages && this.profile.webPages.length) {
       this.profile.webPages.forEach(element => {
         if (element.type === 'fb') {
           this.additionalInfoForm.patchValue({
@@ -110,37 +109,31 @@ export class AdditionalInfoComponent {
   }
 
   /**
-   * This will internally call framework API
+   * This will internally call framework API, fetches framework data and stores in local variables.
    * @param {string} currentCategory - request Parameter passing to the framework API
    * @param {string} list - Local variable name to hold the list data
    */
-  getFrameworkData(currentCategory: string, list: string): void {
+  getFrameworkData(currentCategory: string, propertyName: string): void {
     let req: CategoryRequest = {
       currentCategory: currentCategory
     };
 
     this.frameworkService.getCategoryData(req,
       (res: any) => {
-        this[list] = _.map(JSON.parse(res), 'name');
-        console.log(list + " Category Response: " + this[list]);
+        this[propertyName] = _.map(JSON.parse(res), 'name');
       },
       (err: any) => {
         console.log("Subject Category Response: ", JSON.parse(err));
       });
   }
 
-  ionViewWillEnter() {
-    this.tabBarElement.style.display = 'none';
-  }
-
-  ionViewWillLeave() {
-    this.tabBarElement.style.display = 'flex';
-  }
-
   /**
    * To Toggle the lock
+   * @param {string} field - Field on the html form
+   * @param {string} fieldDisplayName - Language constant for the field
+   * @param {boolean} revert - Tells whether to revert changes or not
    */
-  toggleLock(field: string, fieldDisplayName: string, revert: boolean = false, ) {
+  toggleLock(field: string, fieldDisplayName: string, revert: boolean = false ) {
     this.zone.run(() => {
       this.profileVisibility[field] = this.profileVisibility[field] === "private" ? "public" : "private";
     });
@@ -163,8 +156,9 @@ export class AdditionalInfoComponent {
 
   /**
    * To set Profile visibility
+   * @param {string} field - Field on Form
    */
-  setProfileVisibility(field) {
+  setProfileVisibility(field: string) {
     this.authService.getSessionData(session => {
       if (session === undefined || session == null) {
         console.error("session is null");
@@ -195,11 +189,13 @@ export class AdditionalInfoComponent {
    * @param {object} event - Form event
    */
   onSubmit(event): void {
+    /* Holds form Values */
     let formVal = this.additionalInfoForm.value;
 
-    if (this.profile.phone.length && formVal.phone === '') {
+    if (this.profile && this.profile.phone && this.profile.phone.length && formVal.phone === '') {
       formVal.phone = this.profile.phone;
     }
+
     if (this.validateForm(formVal)) {
       let currentValues: any = {
         userId: this.userId,
@@ -262,13 +258,14 @@ export class AdditionalInfoComponent {
   }
 
   validateForm(formVal): boolean {
+    formVal.phone = (formVal.phone === null) ? '' : formVal.phone;
     if (!formVal.firstName.length) {
       this.getToast(this.translateMessage('ERROR_EMPTY_FIRSTNAME')).present();
       return false;
     } else if (!formVal.language.length) {
       this.getToast(this.translateMessage('ERROR_EMPTY_LANGUAGE')).present();
       return false;
-    } else if (formVal.phone !== this.profile.phone || (formVal.phone === '' || (formVal.phone.length !== 10))) {
+    } else if ((this.profile && this.profile.phone && (formVal.phone !== this.profile.phone)) || (formVal.phone === '' || (formVal.phone.length !== 10))) {
       if (!formVal.phone.match(/^\d{10}$/)) {
         this.getToast(this.translateMessage('ERROR_SHORT_MOBILE')).present();
         return false;
@@ -327,6 +324,7 @@ export class AdditionalInfoComponent {
   /**
    * Used to Translate message to current Language
    * @param {string} messageConst - Message Constant to be translated
+   * @param {string} field - The field to be added in the language constant
    * @returns {string} translatedMsg - Translated Message
    */
   translateMessage(messageConst: string, field?: string): string {
@@ -339,6 +337,9 @@ export class AdditionalInfoComponent {
     return translatedMsg;
   }
 
+  /**
+   * Returns the object of loading controller
+   */
   getLoader(): any {
     return this.loadingCtrl.create({
       duration: 30000,
