@@ -145,7 +145,7 @@ export class ContentDetailsPage {
   private backButtonFunc = undefined;
   private baseUrl = "";
   private shouldGenerateEndTelemetry: boolean = false;
-  private source : string = "";
+  private source: string = "";
 
   /**
    *
@@ -176,8 +176,8 @@ export class ContentDetailsPage {
       this.didViewLoad = false;
       this.navCtrl.pop();
       this.generateEndEvent(this.objId, this.objType, this.objVer);
-      if(this.shouldGenerateEndTelemetry){
-        this.generateQRSessionEndEvent(this.source,this.cardData.identifier);
+      if (this.shouldGenerateEndTelemetry) {
+        this.generateQRSessionEndEvent(this.source, this.cardData.identifier);
       }
       this.backButtonFunc();
     }, 10)
@@ -334,11 +334,17 @@ export class ContentDetailsPage {
         }
       });
     },
-      error => {
-        if (showRating) {
-          loader.dismiss();
+    (error: any) => {
+      let data = JSON.parse(error);
+      console.log('Error received', data);
+        loader.dismiss();
+        if (data.error === 'CONNECTION_ERROR') {
+          this.translateAndDisplayMessage('ERROR_NO_INTERNET_MESSAGE', true);
+        } else if (data.error === 'SERVER_ERROR' || data.error === 'SERVER_AUTH_ERROR') {
+          this.translateAndDisplayMessage('ERROR_FETCHING_DATA', true);
+        } else {
+          this.translateAndDisplayMessage('ERROR_CONTENT_NOT_AVAILABLE', true);
         }
-        this.translateAndDisplayMessage('ERROR_CONTENT_NOT_AVAILABLE', true);
       });
   }
 
@@ -544,8 +550,8 @@ export class ContentDetailsPage {
     this.navBar.backButtonClick = (e: UIEvent) => {
       this.didViewLoad = false;
       this.generateEndEvent(this.objId, this.objType, this.objVer);
-      if(this.shouldGenerateEndTelemetry){
-        this.generateQRSessionEndEvent(this.source,this.cardData.identifier);
+      if (this.shouldGenerateEndTelemetry) {
+        this.generateQRSessionEndEvent(this.source, this.cardData.identifier);
       }
       this.navCtrl.pop();
       this.backButtonFunc();
