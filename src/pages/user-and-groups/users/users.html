@@ -6,7 +6,7 @@
 -->
 <ion-header>
   <ion-navbar>
-      <ion-title>Users and Groups</ion-title>
+      <ion-title>{{'USER_AND_GROUPS' | translate}}</ion-title>
       <ion-buttons end>
           <button ion-button icon-only>
               <ion-icon name="md-download"></ion-icon>
@@ -61,19 +61,19 @@
 </ion-content>
 <ion-footer>
   <div class="createUser" *ngIf="!showStyle">
-      <div class="border" style="color:#d9d9d9">
+      <div class="border">
           <ion-row>
               <ion-col col-md-10 offset-md-1>
-                  <button ion-button block outline (click)="createUser()">CREATE NEW USER</button>
+                  <button ion-button block outline (click)="createUser()">{{'CREATE_NEW_USER' | translate}}</button>
               </ion-col>
           </ion-row>
       </div>
   </div>
   <div class="switchUser" *ngIf="showStyle">
-      <div class="border" style="color:#d9d9d9">
+      <div class="border">
           <ion-row>
               <ion-col col-md-10 offset-md-1>
-                  <button ion-button block outline (click)="presentActionSheet()">SWITCH ACCOUNT</button>
+                  <button ion-button block outline (click)="presentActionSheet()">{{'SWITCH_ACCOUNT'| translate}}</button>
               </ion-col>
 
           </ion-row>

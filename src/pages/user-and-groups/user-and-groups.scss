@@ -1,3 +1,18 @@
 page-user-and-groups {
-    
+    .border{
+        border: 2px solid #d9d9d9;
+    }
+    .rounded {
+        border-radius: 50%;
+    }
+    .border{
+        border: 2px solid #d9d9d9;
+    }
+    .action-sheet-button{
+        width: 50% !important;
+        padding-left: 46px;
+    }
+    .action-sheet-wrapper .action-sheet-container .action-sheet-md .action-sheet-button{
+        width: 50% !important;
+    }
 }
