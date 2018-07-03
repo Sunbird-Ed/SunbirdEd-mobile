@@ -1,5 +1,13 @@
+import { CourseUtilService } from './../src/service/course-util.service';
+import { AppGlobalService } from './../src/service/app-global.service';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+import { AuthService, ContainerService, PermissionService, TelemetryService, GenieSDKServiceProvider } from "sunbird";
+import { ImageLoaderConfig } from "ionic-image-loader";
+import { TranslateLoader } from '@ngx-translate/core';
+import { Observable } from 'rxjs';
+
+declare let readJSON: any;
 
 export class PlatformMock {
   public ready(): Promise<string> {
@@ -79,19 +87,19 @@ export class SplashScreenMock extends SplashScreen {
 }
 
 export class NavMock {
- 
+
   public pop(): any {
-    return new Promise(function(resolve: Function): void {
+    return new Promise(function (resolve: Function): void {
       resolve();
     });
   }
- 
+
   public push(): any {
-    return new Promise(function(resolve: Function): void {
+    return new Promise(function (resolve: Function): void {
       resolve();
     });
   }
- 
+
   public getActive(): any {
     return {
       'instance': {
@@ -99,17 +107,87 @@ export class NavMock {
       },
     };
   }
- 
+
   public setRoot(): any {
     return true;
   }
 
-  public registerChildNav(nav: any): void {
-    return ;
+  public registerChildNav(nav: any): any {
+    return;
   }
 
 }
 
-export class DeepLinkerMock {
+export class DeepLinkerMock { }
 
+export class AuthServiceMock extends AuthService {
+  public getSessionData(successCallback: any): void { }
 }
+
+export class ContainerServiceMock extends ContainerService {
+}
+export class PermissionServiceMock extends PermissionService {
+  public requestPermission() {
+    return;
+  }
+}
+export class ImageLoaderConfigMock extends ImageLoaderConfig {
+  public enableDebugMode() {
+    return true;
+  }
+  public setMaximumCacheSize(limit: number) {
+    return;
+  }
+}
+
+export class TelemetryServiceMock extends TelemetryService { }
+
+export class AppGlobalServiceMock extends AppGlobalService { }
+
+export class CourseUtilServiceMock extends CourseUtilService { }
+
+export class TranslateServiceStub {
+  public get(key: any): any {
+    Observable.of(key);
+  }
+}
+
+export class TranslateLoaderMock implements TranslateLoader {
+  getTranslation(lang: string): Observable<any> {
+    if (lang == "mr") {
+      let ru = readJSON('assets/i18n/mr.json');
+      return Observable.of(ru);
+    }
+    let en = readJSON('assets/i18n/en.json');
+    return Observable.of(en);
+  }
+}
+
+
+export class NavParamsMock {
+  data = {
+  };
+
+  get(param) {
+    return this.data[param];
+  }
+}
+
+export class GenieSDKServiceProviderMock extends GenieSDKServiceProvider {
+  GenieSDK = {};
+  getSharedPreference() {
+    return (<any>window).GenieSDK['preferences'];
+  }
+}
+
+export class SharedPreferencesMock {
+  getString(value) {
+    return '';
+  }
+}
+
+export class FileUtilMock { }
+
+export class NavControllerMock { }
+
+export class SocialSharingMock { }
