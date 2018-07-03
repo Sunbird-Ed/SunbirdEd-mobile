@@ -17,8 +17,7 @@
             <div>
                 <ion-badge *ngIf="user?.status" color="title" item-end>{{ 'ACTIVE' | translate }}</ion-badge>
                 <ion-badge *ngIf="!user?.status" color="title" item-end>{{ 'INACTIVE' | translate }}</ion-badge>
-            </div>
-            <span *ngIf="last" (load)="contentLoad()">{{last}}</span>
+            </div>        
         </ion-item>
     </ion-list>
     <h6 *ngIf="!userList?.length && showEmptyMessage" text-center>{{'EMPTY_SEARCH_RESULTS' | translate}}</h6>

@@ -1,5 +1,4 @@
-import { boardList } from './../../../config/framework.filters';
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { NavController, PopoverController, Events, LoadingController, ToastController } from 'ionic-angular';
 import * as _ from 'lodash';
 
@@ -54,12 +53,11 @@ export class GuestProfilePage {
     private profileService: ProfileService,
     private loadingCtrl: LoadingController,
     private events: Events,
-    private frameworkService: FrameworkService,
     private preference: SharedPreferences,
-    private formService: FormService,
     private toastCtrl: ToastController,
     private translate: TranslateService,
-    private formAndFrameworkUtilService: FormAndFrameworkUtilService
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
+    private zone: NgZone
   ) {
 
     //language code
@@ -67,12 +65,6 @@ export class GuestProfilePage {
       if (val && val.length) {
         this.selectedLanguage = val;
       }
-    });
-
-    // TODO: Need to make an get Profile user details API call.
-    this.refreshProfileData();
-    this.events.subscribe('refresh:profile', () => {
-      this.refreshProfileData();
     });
 
     this.preference.getString('selected_user_type', (val) => {
@@ -99,22 +91,175 @@ export class GuestProfilePage {
     console.log('ionViewDidLoad LanguageSettingPage');
   }
 
-  refreshProfileData(refresher: any = false) {
+  ionViewDidEnter() {
+    this.refreshProfileData();
+  }
+
+  refreshProfileData(refresher: any = false, showLoader: boolean = true) {
     this.loader = this.getLoader();
-    this.loader.present();
+    let that = this;
+
+    if (showLoader) {
+      this.loader.present();
+    }
+
     this.profileService.getCurrentUser((res: any) => {
-      this.profile = JSON.parse(res);
-      this.getSyllabusDetails();
-      setTimeout(() => {
-        if (refresher) refresher.complete();
-        // loader.dismiss();
-      }, 500);
-      console.log("Response", res);
-    },
-      (err: any) => {
-        this.loader.dismiss();
-        console.log("Err1", err);
+      that.profile = JSON.parse(res);
+      that.init()
+      .then(result => {
+        that.zone.run(() => {
+          that.syllabus = that.mapSyllabi(result.syllabi);
+          that.boards = that.mapBoards(result.boards);
+          that.medium = that.mapMediums(result.mediums);
+          that.grade = that.mapGrades(result.grades);
+          that.subjects = that.mapSubjects(result.subjects);
+          that.loader.dismiss();
+          if (refresher) {
+            refresher.complete();
+          }
+        });
       });
+    }, err => {
+      that.loader.dismiss();
+      if (refresher) {
+        refresher.complete();
+      }
+    });
+  }
+
+  private mapSyllabi(syllabi) {
+    let that = this;
+    return syllabi.filter(element => {
+      return (that.profile.syllabus && that.profile.syllabus.indexOf(element.frameworkId) > -1);
+    }).reduce(
+      (accumulator, currentValue) => {
+        return accumulator.concat(currentValue.name.concat(','));
+      }, ""
+    );
+  }
+
+  private mapBoards(boards) {
+    let that = this;
+    return boards.filter(element => {
+      return (that.profile.board && that.profile.board.indexOf(element.code) > -1);
+    }).reduce(
+      (accumulator, currentValue) => {
+        return accumulator.concat(currentValue.name.concat(','));
+      }, ""
+    );
+  }
+
+  private mapMediums(mediums) {
+    let that = this;
+    return mediums.filter(element => {
+      return (that.profile.medium && that.profile.medium.indexOf(element.code) > -1);
+    }).reduce(
+      (accumulator, currentValue) => {
+        return accumulator.concat(currentValue.name.concat(','));
+      }, ""
+    );
+  }
+
+  private mapGrades(grades) {
+    let that = this;
+    return grades.filter(element => {
+      return (that.profile.grade && that.profile.grade.indexOf(element.code) > -1);
+    }).reduce(
+      (accumulator, currentValue) => {
+        return accumulator.concat(currentValue.name.concat(','));
+      }, ""
+    );
+  }
+
+  private mapSubjects(subjects) {
+    let that = this;
+    return subjects.filter(element => {
+      return (that.profile.subject && that.profile.subject.indexOf(element.code) > -1);
+    }).reduce(
+      (accumulator, currentValue) => {
+        return accumulator.concat(currentValue.name.concat(','));
+      }, ""
+    );
+  }
+
+  private async init() {
+    let boards = [], mediums = [], grades = [], subjects = [], localSyllabi = [];
+
+    try {
+      localSyllabi = await this.getSyllabusList();
+      let frameworkId = (this.profile.syllabus && this.profile.syllabus.length > 0)
+        ? this.profile.syllabus[0] : undefined;
+      if (frameworkId) {
+        boards = await this.getBoardList(frameworkId);
+        let selectedBoards = (this.profile.board && this.profile.board.length > 0)
+          ? this.profile.board : undefined;
+        if (selectedBoards) {
+          mediums = await this.getMediumList(frameworkId, selectedBoards);
+          let selectedMediums = (this.profile.medium && this.profile.medium.length > 0)
+            ? this.profile.medium : undefined;
+          if (selectedMediums) {
+            grades = await this.getGradeList(frameworkId, selectedMediums);
+            let selectedGrades = (this.profile.grade && this.profile.grade.length > 0)
+              ? this.profile.grade : undefined;
+            if (selectedGrades) {
+              subjects = await this.getSubjectList(frameworkId, selectedGrades);
+            }
+          }
+        }
+      }
+
+      return await {
+        syllabi: localSyllabi,
+        boards: boards,
+        mediums: mediums,
+        grades: grades,
+        subjects: subjects
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  private async getSyllabusList() {
+    return await this.formAndFrameworkUtilService.getSyllabusList();
+  }
+
+  private async getBoardList(frameworkId) {
+    let that = this;
+    let categoryRequest = new CategoryRequest();
+    categoryRequest.frameworkId = frameworkId;
+    categoryRequest.currentCategory = "board";
+    return await this.formAndFrameworkUtilService.fetchNextCategory(categoryRequest);
+  }
+
+  private async getMediumList(frameworkId: string, selectedBoards: Array<any>) {
+    let that = this;
+    let categoryRequest = new CategoryRequest();
+    categoryRequest.frameworkId = frameworkId;
+    categoryRequest.currentCategory = "medium";
+    categoryRequest.prevCategory = "board";
+    categoryRequest.selectedCode = selectedBoards;
+    return await this.formAndFrameworkUtilService.fetchNextCategory(categoryRequest);
+  }
+
+  private async getGradeList(frameworkId: string, selectedMediums: Array<any>) {
+    let that = this;
+    let categoryRequest = new CategoryRequest();
+    categoryRequest.frameworkId = frameworkId;
+    categoryRequest.currentCategory = "gradeLevel";
+    categoryRequest.prevCategory = "medium";
+    categoryRequest.selectedCode = selectedMediums;
+    return await this.formAndFrameworkUtilService.fetchNextCategory(categoryRequest);
+  }
+
+  private async getSubjectList(frameworkId: string, selectedGrades: Array<any>) {
+    let that = this;
+    let categoryRequest = new CategoryRequest();
+    categoryRequest.frameworkId = frameworkId;
+    categoryRequest.currentCategory = "subject";
+    categoryRequest.prevCategory = "gradeLevel";
+    categoryRequest.selectedCode = selectedGrades;
+    return await this.formAndFrameworkUtilService.fetchNextCategory(categoryRequest);
   }
 
   editGuestProfile() {
@@ -155,76 +300,6 @@ export class GuestProfilePage {
     });
   }
 
-  getSyllabusDetails() {
-    let selectedFrameworkId: string = '';
-
-    this.formAndFrameworkUtilService.getSyllabusList()
-      .then((result) => {
-        if (result && result !== undefined && result.length > 0) {
-
-          result.forEach(element => {
-
-            if (this.profile.syllabus && this.profile.syllabus.length && this.profile.syllabus[0] === element.frameworkId) {
-              this.syllabus = element.name;
-              selectedFrameworkId = element.frameworkId;
-            }
-          });
-
-
-          if (selectedFrameworkId !== undefined && selectedFrameworkId.length > 0) {
-            this.getFrameworkDetails(selectedFrameworkId);
-          } else {
-            this.loader.dismiss();
-          }
-        } else {
-          this.loader.dismiss();
-
-          this.getToast(this.translateMessage('NO_DATA_FOUND')).present();
-        }
-      });
-  }
-
-
-  getFrameworkDetails(frameworkId?: string): void {
-    this.formAndFrameworkUtilService.getFrameworkDetails(frameworkId)
-      .then(catagories => {
-        this.categories = catagories;
-
-        if (this.profile.board && this.profile.board.length) {
-          this.boards = this.getFieldDisplayValues(this.profile.board, 0)
-        }
-        if (this.profile.medium && this.profile.medium.length) {
-          this.medium = this.getFieldDisplayValues(this.profile.medium, 1);
-        }
-        if (this.profile.grade && this.profile.grade.length) {
-          this.grade = this.getFieldDisplayValues(this.profile.grade, 2);
-        }
-        if (this.profile.subject && this.profile.subject.length) {
-          this.subjects = this.getFieldDisplayValues(this.profile.subject, 3);
-        }
-
-        this.loader.dismiss();
-      });
-  }
-
-  getFieldDisplayValues(field: Array<any>, catIndex: number): string {
-    let displayValues = [];
-    this.categories[catIndex].terms.forEach(element => {
-      if (_.includes(field, element.code)) {
-        displayValues.push(element.name);
-      }
-    });
-    return this.arrayToString(displayValues);
-  }
-
-  /**
-   * Method to convert Array to Comma separated string
-   * @param {Array<string>} stringArray
-   * @returns {string}
-   */
-  arrayToString(stringArray: Array<string>): string {
-    return stringArray.join(", ");
-  }
 
   /**
    * Takes the user to role selection screen

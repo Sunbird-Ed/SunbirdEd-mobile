@@ -297,7 +297,7 @@ export class MyApp {
   }
 
   showContentDetails(content) {
-    if (content.contentType === ContentType.COURSE) {
+    if (content.contentData.contentType === ContentType.COURSE) {
       console.log('Calling course details page');
       this.nav.push(EnrolledCourseDetailsPage, {
         content: content

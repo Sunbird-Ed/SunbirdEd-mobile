@@ -160,13 +160,18 @@ export class SunbirdQRScanner {
         this.generateQRScanSuccessInteractEvent(code, "ContentDetail");
         this.generateEndEvent(source, code);
         callback.content(code, contentId);
+      } else if (results[results.length - 3] == "learn" && results[results.length - 2] == "course") {
+        let contentId = results[results.length - 1];
+        this.generateQRScanSuccessInteractEvent(code, "ContentDetail");
+        this.generateEndEvent(source, code);
+        callback.content(code, contentId);
       } else {
         this.generateQRScanSuccessInteractEvent(code, "UNKNOWN");
         this.generateEndEvent(source, code);
         this.showInvalidCodeAlert(callback);
       }
 
-      this.stopScanner(null, null);
+      this.stopScanner(null, null); 
     }, () => {
       this.stopScanner(null, null);
     });

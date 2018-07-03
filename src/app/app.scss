@@ -326,3 +326,78 @@ input::placeholder {
 .toolbar-title-md {
   font-weight: 600 !important;
 }
+
+/* Rating Component Global class */
+ul.rating .ion-md-star-outline:before {
+  content: "\f384" !important; //Change Outline star to filled star
+  color: map-get($colors, dark_gray) !important; // Change the (fill) color of the Icon
+}
+
+/* Customization for ion-select  */
+
+.select-box .alert-wrapper {
+  margin: 0;
+  width: 100vw !important;
+  max-width: unset !important;
+  max-height: 65vh;
+  height: auto !important;
+  box-shadow: unset;
+  position: fixed;
+  left: 0 !important;
+  top: unset !important;
+  bottom: 0;
+  -webkit-transform-origin: bottom -100% !important;
+  transform-origin: bottom -100% !important;
+  -webkit-transform: translateY(0) !important;
+  transform: translateY(0) !important;
+  overflow-y: hidden;
+  border: unset;
+  background: map-get($colors, white);
+}
+
+.select-box ion-backdrop {
+  background-color: map-get($colors, black) !important;
+  opacity: 0.4 !important;
+}
+
+.select-box.alert-md .alert-button:first-child:not(:only-child) {
+  background: transparent !important;
+  color: map-get($colors, primary) !important;
+  margin-right: 1%;
+}
+
+.select-box.alert-md .alert-button:last-child:not(:only-child) {
+  background: map-get($colors, primary) !important;
+  color: map-get($colors, white) !important;
+  margin-left: 5%;
+}
+
+.select-box.alert-md .alert-checkbox-group {
+  max-height: 35vh !important;
+  height: auto;
+}
+
+.select-box.alert-md .alert-button {
+  margin-right: 1%;
+  border-color: map-get($colors, primary);
+  text-transform: uppercase;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 4px !important;
+  overflow: hidden;
+  height: 4.3rem;
+  font-size: 1.4rem;
+  width: 46% !important;
+  font-weight: 700;
+}
+
+.select-box.alert-md .alert-button-group {
+  display: inline-block !important;
+}
+
+.select-box .alert-button {
+  display: unset !important;
+  .button-inner {
+    justify-content: center;
+  }
+}

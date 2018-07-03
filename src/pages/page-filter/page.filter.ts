@@ -1,5 +1,6 @@
 import { Component } from "@angular/core";
 import { PopoverController, ViewController, NavParams, Platform } from "ionic-angular";
+import { AppGlobalService } from "../../service/app-global.service";
 import * as _ from 'lodash';
 import { TranslateService } from "@ngx-translate/core";
 
@@ -11,7 +12,7 @@ import {
   Environment,
   PageId,
   CategoryRequest,
-  FrameworkService
+  FrameworkService,
 } from "sunbird";
 import { PageFilterOptions } from "./options/filter.options";
 import { generateInteractTelemetry } from "../../app/telemetryutil";
@@ -35,30 +36,36 @@ export class PageFilter {
   constructor(
     private popCtrl: PopoverController,
     private viewCtrl: ViewController,
-    navParams: NavParams,
+    private navParams: NavParams,
     private telemetryService: TelemetryService,
     private platform: Platform,
     private frameworkService: FrameworkService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private appGlobalService: AppGlobalService
   ) {
     this.callback = navParams.get('callback');
 
-    const navParamsFilter = navParams.get('filter');
-
-    // #SB-3708 To avoid the object reference in Javascript. (Deep Clone) 
-    this.FILTERS = JSON.parse(JSON.stringify(navParams.get('filter')));
-
-    this.FILTERS.forEach((element, index: number) => {
-      this.getFrameworkData(element.name, index);
-
-      //Framework API doesn't return domain and content Type exclude them
-      if (index === this.FILTERS.length - 1) this.facetsFilter = this.FILTERS;
-    });
-
+    this.initFilterValues();
+    
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.viewCtrl.dismiss();
       this.backButtonFunc();
     }, 10);
+  }
+
+  initFilterValues() {
+    // #SB-3708 To avoid the object reference in Javascript. (Deep Clone) 
+    this.FILTERS = JSON.parse(JSON.stringify(this.navParams.get('filter')));
+
+    let syllabus: Array<string> = this.appGlobalService.getCurrentUser().syllabus;
+    let frameworkId = (syllabus && syllabus.length > 0) ? syllabus[0]: undefined;
+
+    this.FILTERS.forEach((element, index: number) => {
+      this.getFrameworkData(frameworkId, element.name, index);
+
+      //Framework API doesn't return domain and content Type exclude them
+      if (index === this.FILTERS.length - 1) this.facetsFilter = this.FILTERS;
+    });
   }
 
   /**
@@ -66,17 +73,18 @@ export class PageFilter {
  * @param {string} currentCategory - request Parameter passing to the framework API
  * @param {number} index - Local variable name to hold the list data
  */
-  getFrameworkData(currentCategory: string, index: number): void {
+  getFrameworkData(frameworkId: string, currentCategory: string, index: number): void {
     let req: CategoryRequest = {
-      currentCategory: currentCategory
+      currentCategory: currentCategory,
+      frameworkId: frameworkId
     };
 
     this.frameworkService.getCategoryData(req,
       (res: any) => {
         let responseArray = JSON.parse(res);
         if (responseArray && responseArray.length > 0) {
-          this.FILTERS[index].values = (currentCategory !== 'gradeLevel') ? _.map(responseArray, 'name').sort() : _.map(responseArray, 'name');
-          console.log(currentCategory + " Category Response: " + this.FILTERS[index]);
+          this.FILTERS[index].values = (currentCategory !== 'gradeLevel') ? 
+          _.map(responseArray, 'name').sort() : _.map(responseArray, 'name');
         }
       },
       (err: any) => {

@@ -15,6 +15,8 @@ import {
 import { resolve } from 'path';
 import { MyApp } from '../../app/app.component';
 import { AppGlobalService } from '../../service/app-global.service';
+import { AppVersion } from "@ionic-native/app-version";
+
 
 @Injectable()
 export class FormAndFrameworkUtilService {
@@ -33,8 +35,11 @@ export class FormAndFrameworkUtilService {
         public zone: NgZone,
         private preference: SharedPreferences,
         private formService: FormService,
-        private appGlobalService: AppGlobalService
+        private appGlobalService: AppGlobalService,
+        private appVersion: AppVersion,
+
     ) {
+
 
         //Get language selected
         this.preference.getString('selected_language_code', (val: string) => {
@@ -90,6 +95,17 @@ export class FormAndFrameworkUtilService {
                     frameworks = field.range;
                 }
             });
+
+            //this condition will be executed when selected language is not present in the frameworks
+            //then it will be defaulted to English
+            if (frameworks.length === 0) {
+                fields.forEach(field => {
+                    if (field.language === 'en') {
+                        frameworks = field.range;
+                    }
+                });
+            }
+
             if (frameworks != null && frameworks.length > 0) {
                 frameworks.forEach(frameworkDetails => {
                     let value = { 'name': frameworkDetails.name, 'frameworkId': frameworkDetails.frameworkId };
@@ -143,10 +159,6 @@ export class FormAndFrameworkUtilService {
     getCategoryData(req: CategoryRequest, frameworkId?: string): Promise<any> {
 
         return new Promise((resolve, reject) => {
-            if (frameworkId !== undefined && frameworkId.length) {
-                req.frameworkId = frameworkId;
-            }
-
             let categoryList: Array<any> = [];
 
             this.framework.getCategoryData(req,
@@ -166,6 +178,98 @@ export class FormAndFrameworkUtilService {
                     reject(err);
                 });
 
+        });
+    }
+
+    /**
+     * This method checks if the newer version of the available and respectively shows the dialog with relevant contents
+     */
+    checkNewAppVersion(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            console.log("checkNewAppVersion Called");
+
+            this.appVersion.getVersionCode()
+                .then((versionCode: any) => {
+                    console.log("checkNewAppVersion Current app version - " + versionCode);
+
+                    let result: any;
+
+                    // form api request
+                    let req: FormRequest = {
+                        type: 'app',
+                        subType: 'install',
+                        action: 'upgrade',
+                    };
+                    //form api call
+                    this.formService.getForm(req, (res: any) => {
+                        let response: any = JSON.parse(res);
+
+                        let fields: Array<any> = [];
+                        let ranges: Array<any> = [];
+                        let upgradeTypes: Array<any> = [];
+
+                        if (response && response.result && response.result.fields) {
+                            fields = response.result.fields;
+
+                            fields.forEach(element => {
+                                if (element.language === this.selectedLanguage) {
+                                    if (element.range) {
+                                        ranges = element.range;
+                                    }
+
+                                    if (element.upgradeTypes) {
+                                        upgradeTypes = element.upgradeTypes;
+                                    }
+                                }
+                            });
+
+
+                            if (ranges && ranges.length > 0 && upgradeTypes && upgradeTypes.length > 0) {
+                                let type: string;
+                                const forceType = "force"
+
+                                ranges.forEach(element => {
+                                    if (versionCode === element.minVersionCode ||
+                                        (versionCode > element.minVersionCode && versionCode < element.maxVersionCode) ||
+                                        versionCode === element.maxVersionCode) {
+                                        console.log("App needs a upgrade of type - " + element.type)
+                                        type = element.type;
+
+                                        if (type === forceType) {
+                                            return true; // this is to stop the foreach loop
+                                        }
+                                    }
+                                });
+
+                                upgradeTypes.forEach(upgradeElement => {
+                                    if (type === upgradeElement.type) {
+                                        result = upgradeElement
+                                    }
+                                });
+                            }
+
+
+                        }
+
+                        resolve(result);
+                    }, (error: any) => {
+                        reject(error);
+                    });
+                });
+        });
+    }
+
+    fetchNextCategory(req: CategoryRequest): Promise<any> {
+
+        return new Promise((resolve, reject) => {
+            this.framework.getCategoryData(req,
+                (res: any) => {
+                    const resposneArray: Array<any> = JSON.parse(res);
+                    resolve(resposneArray);
+                },
+                (err: any) => {
+                    reject(err);
+                });
         });
     }
 

@@ -1,7 +1,7 @@
 import * as frameworkDataList from "../config/framework.filters";
 
 export class ContentType {
-    public static readonly STORY = 'Stroy';
+    public static readonly STORY = 'Story';
     public static readonly WORKSHEET = 'Worksheet';
     public static readonly GAME = 'Game';
     public static readonly RESOURCE = 'Resource';
@@ -44,18 +44,18 @@ export class PageFilterConstants {
         {
             name: "language",
             displayName: "LANGUAGE",
-            values: frameworkDataList.languageList.sort()
+            values: frameworkDataList.languageList.sort() //default list
         },
         {
             name: "subject",
             displayName: "SUBJECT",
-            values: frameworkDataList.subjectList.sort()
+            values: []
 
         },
         {
             name: "medium",
             displayName: "MEDIUM",
-            values: frameworkDataList.mediumList.sort()
+            values: []
         }
     ];
 
@@ -63,23 +63,23 @@ export class PageFilterConstants {
         {
             name: "board",
             displayName: "BOARD",
-            values: frameworkDataList.boardList.sort()
+            values: []
         },
         {
             name: "gradeLevel",
             displayName: "CLASS",
-            values: frameworkDataList.gradeList.sort()
+            values: []
         },
         {
             name: "subject",
             displayName: "SUBJECT",
-            values: frameworkDataList.subjectList.sort()
+            values: []
 
         },
         {
             name: "medium",
             displayName: "MEDIUM",
-            values: frameworkDataList.mediumList.sort()
+            values: []
 
         },
         {

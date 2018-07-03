@@ -1,12 +1,12 @@
 import { TranslateService } from '@ngx-translate/core';
 import { Component, NgZone } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NavController, NavParams, ToastController, LoadingController } from 'ionic-angular';
+import { NavController, NavParams, ToastController, LoadingController, IonicApp, Platform } from 'ionic-angular';
 import * as _ from 'lodash';
 
 import { UserProfileService, AuthService, FrameworkService, CategoryRequest } from 'sunbird';
 import { ProfilePage } from './../profile';
-import { languageList, subjectList, gradeList } from './../../../config/framework.filters';
+import { languageList } from './../../../config/framework.filters';
 import { ProfileConstants } from '../../../app/app.constant';
 
 /* Interface for the Toast Object */
@@ -29,18 +29,35 @@ export class AdditionalInfoComponent {
   profile: any = {};
   profileVisibility: any;
   todayDate: string = new Date().toISOString().slice(0, 10);
+  unregisterBackButton: any;
 
   /**
    *  Fallback values for the list items
    */
   languageList: Array<String> = languageList;
-  subjectList: Array<String> = subjectList;
-  gradeList: Array<String> = gradeList;
+  subjectList: Array<String> = [];
+  gradeList: Array<String> = [];
 
   options: toastOptions = {
     message: '',
     duration: 3000,
     position: 'bottom'
+  };
+
+  /* Options for ion-select box */
+  languageOptions = {
+    title: this.translateMessage('LANGUAGES'),
+    cssClass: 'select-box'
+  };
+
+  subjectOptions = {
+    title: this.translateMessage('SUBJECTS'),
+    cssClass: 'select-box'
+  };
+
+  gradeOptions = {
+    title: this.translateMessage('CLASS'),
+    cssClass: 'select-box'
   };
 
   constructor(
@@ -53,7 +70,9 @@ export class AdditionalInfoComponent {
     private authService: AuthService,
     private translate: TranslateService,
     private frameworkService: FrameworkService,
-    private zone: NgZone
+    private zone: NgZone,
+    private ionicApp: IonicApp,
+    private platform: Platform
   ) {
     /* Receive data from other component */
     this.userId = this.navParams.get('userId');
@@ -62,6 +81,8 @@ export class AdditionalInfoComponent {
 
     this.getFrameworkData('subject', 'subjectList');
     this.getFrameworkData('gradeLevel', 'gradeList');
+
+    this.profile.gender = (this.profile.gender && this.profile.gender.length) ? this.profile.gender.toLocaleLowerCase() : '';
 
     /* Initialize form with default values */
     this.additionalInfoForm = this.fb.group({
@@ -106,20 +127,44 @@ export class AdditionalInfoComponent {
     }
   }
 
+  ionViewWillEnter() {
+    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+      this.dismissPopup();
+    }, 11);
+  }
+
+  ionViewWillLeave() {
+    this.unregisterBackButton();
+  }
+
+  /**
+   * It will Dismiss active popup
+   */
+  dismissPopup() {
+    console.log("Fired ionViewWillLeave");
+    let activePortal = this.ionicApp._modalPortal.getActive() || this.ionicApp._overlayPortal.getActive();
+
+    if (activePortal) {
+      activePortal.dismiss();
+    } else {
+      this.navCtrl.pop();
+    }
+  }
+
+
   /**
    * This will internally call framework API, fetches framework data and stores in local variables.
    * @param {string} currentCategory - request Parameter passing to the framework API
    * @param {string} list - Local variable name to hold the list data
    */
-  getFrameworkData(currentCategory: string, list: string): void {
+  getFrameworkData(currentCategory: string, propertyName: string): void {
     let req: CategoryRequest = {
       currentCategory: currentCategory
     };
 
     this.frameworkService.getCategoryData(req,
       (res: any) => {
-        this[list] = _.map(JSON.parse(res), 'name');
-        console.log(list + " Category Response: " + this[list]);
+        this[propertyName] = _.map(JSON.parse(res), 'name');
       },
       (err: any) => {
         console.log("Subject Category Response: ", JSON.parse(err));
@@ -132,7 +177,7 @@ export class AdditionalInfoComponent {
    * @param {string} fieldDisplayName - Language constant for the field
    * @param {boolean} revert - Tells whether to revert changes or not
    */
-  toggleLock(field: string, fieldDisplayName: string, revert: boolean = false ) {
+  toggleLock(field: string, fieldDisplayName: string, revert: boolean = false) {
     this.zone.run(() => {
       this.profileVisibility[field] = this.profileVisibility[field] === "private" ? "public" : "private";
     });
@@ -191,7 +236,7 @@ export class AdditionalInfoComponent {
     /* Holds form Values */
     let formVal = this.additionalInfoForm.value;
 
-    if (this.profile.phone.length && formVal.phone === '') {
+    if (this.profile && this.profile.phone && this.profile.phone.length && formVal.phone === '') {
       formVal.phone = this.profile.phone;
     }
 
@@ -257,13 +302,14 @@ export class AdditionalInfoComponent {
   }
 
   validateForm(formVal): boolean {
+    formVal.phone = (formVal.phone === null) ? '' : formVal.phone;
     if (!formVal.firstName.length) {
       this.getToast(this.translateMessage('ERROR_EMPTY_FIRSTNAME')).present();
       return false;
     } else if (!formVal.language.length) {
       this.getToast(this.translateMessage('ERROR_EMPTY_LANGUAGE')).present();
       return false;
-    } else if (formVal.phone !== this.profile.phone || (formVal.phone === '' || (formVal.phone.length !== 10))) {
+    } else if ((this.profile && this.profile.phone && (formVal.phone !== this.profile.phone)) || (formVal.phone === '' || (formVal.phone.length !== 10))) {
       if (!formVal.phone.match(/^\d{10}$/)) {
         this.getToast(this.translateMessage('ERROR_SHORT_MOBILE')).present();
         return false;

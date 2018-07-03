@@ -5,10 +5,10 @@
 <ion-content padding>
   <ion-slides pager="true" centeredSlides="true" speed="50" class="ion-slides">
     <ion-slide *ngFor="let slide of slides">
-      <div class="title">{{ slide.title | translate }}</div>
+      <div class="title">{{ slide.title | translate:{'%s': appName} }}</div>
       <img class="item-img" [src]="slide.imageUri" />
       <div text-center class="description">
-        {{ slide.desc | translate:{'%s': sunbird} }}
+        {{ slide.desc | translate:{'%s': appName} }}
       </div>
     </ion-slide>
   </ion-slides>
