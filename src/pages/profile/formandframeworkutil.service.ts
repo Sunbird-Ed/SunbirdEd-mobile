@@ -202,18 +202,14 @@ export class FormAndFrameworkUtilService {
                     };
                     //form api call
                     this.formService.getForm(req, (res: any) => {
-                        //do changes here once the DEV server is up
-
-                        resolve(result);
-                    }, (error: any) => {
-                        let response: any = this.getStaticResponse();
+                        let response: any = JSON.parse(res);
 
                         let fields: Array<any> = [];
                         let ranges: Array<any> = [];
                         let upgradeTypes: Array<any> = [];
 
-                        if (response && response.result && response.result.data && response.result.data.fields) {
-                            fields = response.result.data.fields;
+                        if (response && response.result && response.result.fields) {
+                            fields = response.result.fields;
 
                             fields.forEach(element => {
                                 if (element.language === this.selectedLanguage) {
@@ -229,23 +225,35 @@ export class FormAndFrameworkUtilService {
 
 
                             if (ranges && ranges.length > 0 && upgradeTypes && upgradeTypes.length > 0) {
+                                let type: string;
+                                const forceType = "force"
+
                                 ranges.forEach(element => {
                                     if (versionCode === element.minVersionCode ||
                                         (versionCode > element.minVersionCode && versionCode < element.maxVersionCode) ||
                                         versionCode === element.maxVersionCode) {
                                         console.log("App needs a upgrade of type - " + element.type)
+                                        type = element.type;
 
-                                        upgradeTypes.forEach(upgradeElement => {
-                                            if (element.type === upgradeElement.type) {
-                                                result = upgradeElement
-                                            }
-                                        });
+                                        if (type === forceType) {
+                                            return true; // this is to stop the foreach loop
+                                        }
+                                    }
+                                });
+
+                                upgradeTypes.forEach(upgradeElement => {
+                                    if (type === upgradeElement.type) {
+                                        result = upgradeElement
                                     }
                                 });
                             }
+
+
                         }
 
                         resolve(result);
+                    }, (error: any) => {
+                        reject(error);
                     });
                 });
         });
@@ -256,139 +264,13 @@ export class FormAndFrameworkUtilService {
         return new Promise((resolve, reject) => {
             this.framework.getCategoryData(req,
                 (res: any) => {
-                    const resposneArray : Array<any> = JSON.parse(res);
+                    const resposneArray: Array<any> = JSON.parse(res);
                     resolve(resposneArray);
                 },
                 (err: any) => {
                     reject(err);
                 });
         });
-    }
-
-    getStaticResponse(): any {
-        let result =
-            {
-                "id": "api.form.read",
-                "ver": "1.0",
-                "ts": "2018-06-08T11:12:08.806Z",
-                "params": {
-                    "resmsgid": "c8d63060-6b0c-11e8-ad67-591f448b63dd",
-                    "msgid": "c8d19c80-6b0c-11e8-a37c-876542ad886c",
-                    "status": "successful",
-                    "err": null,
-                    "errmsg": null
-                },
-                "responseCode": "OK",
-                "result": {
-                    "type": "app",
-                    "subType": "install",
-                    "action": "upgrade",
-                    "data": {
-                        "templateName": "defaultAppUpgradeTemplate",
-                        "action": "upgrade",
-                        "fields": [
-                            {
-                                "code": "upgrade",
-                                "name": "Upgrade of app",
-                                "language": "en",
-                                "range": [
-                                    {
-                                        "minVersionCode": "10",
-                                        "maxVersionCode": "15",
-                                        "versionName": "",
-                                        "type": "force"
-                                    },
-                                    {
-                                        "minVersionCode": "0",
-                                        "maxVersionCode": "9",
-                                        "versionName": "",
-                                        "type": "optional"
-                                    }
-                                ],
-                                "upgradeTypes": [
-                                    {
-                                        "type": "force",
-                                        "title": "Upgrade App",
-                                        "desc": "Upgarde app",
-                                        "actionButtons": [
-                                            {
-                                                "key": "Upgrade",
-                                                "link": "https://play.google.com/store/apps/details?id=in.gov.diksha.app"
-                                            }
-                                        ]
-
-                                    },
-                                    {
-                                        "type": "optional",
-                                        "title": "Upgrade App",
-                                        "desc": "Upgarde app",
-                                        "actionButtons": [
-                                            {
-                                                "key": "Upgrade",
-                                                "link": "https://play.google.com/store/apps/details?id=in.gov.diksha.app"
-                                            },
-                                            {
-                                                "key": "Cancel",
-                                                "link": ""
-                                            }
-                                        ]
-                                    }
-                                ]
-                            },
-                            {
-                                "code": "upgrade",
-                                "name": "Upgrade of app",
-                                "language": "hi",
-                                "range": [
-                                    {
-                                        "minVersionCode": "10",
-                                        "maxVersionCode": "15",
-                                        "versionName": "",
-                                        "type": "force"
-                                    },
-                                    {
-                                        "minVersionCode": "0",
-                                        "maxVersionCode": "9",
-                                        "versionName": "",
-                                        "type": "optional"
-                                    }
-                                ],
-                                "upgradeTypes": [
-                                    {
-                                        "type": "force",
-                                        "title": "Upgrade App",
-                                        "desc": "Upgarde app",
-                                        "actionButtons": [
-                                            {
-                                                "key": "Upgrade",
-                                                "link": "https://play.google.com/store/apps/details?id=in.gov.diksha.app"
-                                            }
-                                        ]
-
-                                    },
-                                    {
-                                        "type": "optional",
-                                        "title": "Upgrade App",
-                                        "desc": "Upgarde app",
-                                        "actionButtons": [
-                                            {
-                                                "key": "Upgrade",
-                                                "link": "https://play.google.com/store/apps/details?id=in.gov.diksha.app"
-                                            },
-                                            {
-                                                "key": "Cancel",
-                                                "link": ""
-                                            }
-                                        ]
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                }
-            }
-
-        return result;
     }
 
 }
