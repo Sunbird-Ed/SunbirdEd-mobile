@@ -105,14 +105,12 @@ export class ResourcesPage {
 		//check if any new app version is available
 		formAndFrameowrkUtilService.checkNewAppVersion()
 			.then(result => {
-				console.log("Resources | App upgrade type - " + result.type)
-				console.log("Resources | App upgrade title - " + result.title)
-				console.log("Resources | App upgrade desc - " + result.desc)
-
 				if (result) {
 					this.presentConfirm(result)
 				}
-
+			})
+			.catch(error => {
+				console.log("Error - " + error)
 			});
 
 		this.preference.getString('selected_language_code', (val: string) => {
