@@ -84,6 +84,9 @@ export class SplashScreenMock extends SplashScreen {
   hide() {
     return;
   }
+  onDeepLink() {
+    return;
+  }
 }
 
 export class NavMock {
@@ -191,3 +194,7 @@ export class FileUtilMock { }
 export class NavControllerMock { }
 
 export class SocialSharingMock { }
+
+export class ViewControllerMock {}
+
+export class ToastControllerMock {}
