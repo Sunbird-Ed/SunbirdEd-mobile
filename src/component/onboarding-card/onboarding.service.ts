@@ -2,14 +2,10 @@ import { Injectable, NgZone } from '@angular/core';
 import * as _ from 'lodash';
 import { Events } from 'ionic-angular';
 import {
-    FrameworkService,
     CategoryRequest,
-    FrameworkDetailsRequest,
     ProfileService,
     Profile,
     SharedPreferences,
-    FormRequest,
-    FormService
 } from 'sunbird';
 import { FormAndFrameworkUtilService } from '../../pages/profile/formandframeworkutil.service';
 
@@ -31,12 +27,10 @@ export class OnboardingService {
     frameworkId: string = '';
 
     constructor(
-        private framework: FrameworkService,
         private profileService: ProfileService,
         public events: Events,
         public zone: NgZone,
         private preference: SharedPreferences,
-        private formService: FormService,
         private formAndFrameworkUtilService: FormAndFrameworkUtilService
     ) {
 
@@ -52,35 +46,35 @@ export class OnboardingService {
     initializeCard(): Promise<any> {
         return new Promise((resolve, reject) => {
 
-            if(this.slideIndex === -1) {
+            if (this.slideIndex === -1) {
 
-            this.profileService.getCurrentUser((res: any) => {
-                this.profile = JSON.parse(res);
-                let syllabusFramework: string = '';
+                this.profileService.getCurrentUser((res: any) => {
+                    this.profile = JSON.parse(res);
+                    let syllabusFramework: string = '';
 
-                this.initializeSlides();
+                    this.initializeSlides();
 
-                if (this.profile.syllabus && this.profile.syllabus[0] !== '') {
-                    syllabusFramework = this.profile.syllabus[0];
-
-                    this.formAndFrameworkUtilService.getFrameworkDetails(syllabusFramework)
-                        .then(catagories => {
-                            this.categories = catagories;
-                            return this.getCurrentUser();
-                        })
-                        .then(index => {
-                            this.slideIndex = index;
-                            resolve(index);
-                        })
-                        .catch(err => {
-                            reject(err);
-                        });
-                }
-            },
-                (err: any) => {
-                    console.log("Err1", err);
-                    reject(err);
-                });
+                    if (this.profile.syllabus && this.profile.syllabus[0] !== '') {
+                        syllabusFramework = this.profile.syllabus[0];
+                        this.frameworkId = syllabusFramework;
+                        this.formAndFrameworkUtilService.getFrameworkDetails(syllabusFramework)
+                            .then(catagories => {
+                                this.categories = catagories;
+                                return this.getCurrentUser();
+                            })
+                            .then(index => {
+                                this.slideIndex = index;
+                                resolve(index);
+                            })
+                            .catch(err => {
+                                reject(err);
+                            });
+                    }
+                },
+                    (err: any) => {
+                        console.log("Err1", err);
+                        reject(err);
+                    });
             } else {
                 resolve(this.slideIndex);
             }
@@ -210,6 +204,10 @@ export class OnboardingService {
      * @param {string} list - Local variable name to hold the list data
      */
     getCategoryData(req: CategoryRequest, list, index: number, hasUserClicked: boolean): void {
+
+        if (this.frameworkId !== undefined && this.frameworkId.length) {
+            req.frameworkId = this.frameworkId;
+        }
 
         this.formAndFrameworkUtilService.getCategoryData(req, this.frameworkId)
             .then((result) => {
@@ -404,16 +402,21 @@ export class OnboardingService {
         }
         if (index === 0 && !_.find(this.onBoardingSlides, ['id', 'boardList']).selectedCode.length) {
             req.board = [];
+            req.medium = [];
+            req.class = [];
+            req.subject = [];
         }
         if (index === 1 && !_.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode.length) {
             req.class = [];
         }
-        if (index === 2 && !_.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode.length) {
+        if (index === 2 && !_.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode.length) {
+            req.class = [];
             req.subject = [];
         }
-        if (index === 3 && !_.find(this.onBoardingSlides, ['id', 'mediumList']).selectedCode.length) {
-            req.medium = [];
+        if (index === 3 && !_.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode.length) {
+            req.subject = [];
         }
+
         this.profileService.updateProfile(req,
             (res: any) => {
                 if (this.onBoardingSlides.length === (index + 1)) {

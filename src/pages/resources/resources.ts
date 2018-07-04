@@ -1,39 +1,66 @@
-import { Component, NgZone, OnInit, ViewChild } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
 import {
-	PageAssembleService, PageAssembleCriteria, ContentService,
-	Impression, ImpressionType, PageId, Environment, TelemetryService,
-	InteractType, InteractSubtype, ContentDetailRequest, SharedPreferences,
-	ContentFilterCriteria, ProfileType, PageAssembleFilter,
+	PageAssembleService,
+	PageAssembleCriteria,
+	ContentService,
+	ImpressionType,
+	PageId,
+	Environment,
+	TelemetryService,
+	InteractType,
+	InteractSubtype,
+	ContentDetailRequest,
+	SharedPreferences,
+	ContentFilterCriteria,
+	ProfileType,
+	PageAssembleFilter,
 	CorrelationData
 } from "sunbird";
-import { NavController, PopoverController, Events, ToastController, LoadingController, AlertButton } from 'ionic-angular';
+import {
+	NavController,
+	PopoverController,
+	Events,
+	ToastController,
+	AlertButton
+} from 'ionic-angular';
 import * as _ from 'lodash';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
-import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
+import {
+	QRResultCallback,
+	SunbirdQRScanner
+} from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
-import { generateInteractTelemetry, Map, generateImpressionTelemetry } from '../../app/telemetryutil';
-// import { CourseDetailPage } from '../course-detail/course-detail';
+import {
+	generateInteractTelemetry,
+	Map,
+	generateImpressionTelemetry
+} from '../../app/telemetryutil';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { TranslateService } from '@ngx-translate/core';
-import { ContentType, MimeType, PageFilterConstants, AudienceFilter } from '../../app/app.constant';
+import {
+	ContentType,
+	MimeType,
+	PageFilterConstants,
+	AudienceFilter
+} from '../../app/app.constant';
 import { Network } from '@ionic-native/network';
-import { PageFilterCallback, PageFilter } from '../page-filter/page.filter';
+import {
+	PageFilterCallback,
+	PageFilter
+} from '../page-filter/page.filter';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 import { AppGlobalService } from '../../service/app-global.service';
 import Driver from 'driver.js';
 import { AppVersion } from "@ionic-native/app-version";
 import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
 import { AlertController } from 'ionic-angular';
-import { OnboardingCardComponent } from '../../component/onboarding-card/onboarding-card';
 
 @Component({
 	selector: 'page-resources',
 	templateUrl: 'resources.html'
 })
-export class ResourcesPage {
-
-	@ViewChild(OnboardingCardComponent) onboardingCard: OnboardingCardComponent;
+export class ResourcesPage implements OnInit {
 
 	pageLoadedSuccess: boolean = false;
 
@@ -63,6 +90,7 @@ export class ResourcesPage {
 	 */
 	pageApiLoader: boolean = true;
 
+	isOnBoardingCardCompleted: boolean = false;
 	public source = "resource";
 
 	resourceFilter: any;
@@ -74,7 +102,6 @@ export class ResourcesPage {
 	selectedLanguage: string = 'en';
 
 	//noInternetConnection: boolean = false;
-
 	audienceFilter = [];
 	private corRelationList: Array<CorrelationData>;
 
@@ -155,6 +182,93 @@ export class ResourcesPage {
 
 	}
 
+	/**
+	 * Angular life cycle hooks
+	 */
+	ngOnInit() {
+		console.log('courses component initialized...');
+		// this.getCourseTabData();
+		this.setSavedContent();
+	}
+
+	ngAfterViewInit() {
+		this.events.subscribe('onboarding-card:completed', (param) => {
+			this.isOnBoardingCardCompleted = param.isOnBoardingCardCompleted;
+		});
+	}
+
+	ionViewDidEnter() {
+		if (this.appliedFilter) {
+			this.filterIcon = "./assets/imgs/ic_action_filter.png";
+			this.resourceFilter = undefined;
+			this.appliedFilter = undefined;
+			this.getPopularContent();
+		}
+
+		this.isVisible = true;
+
+		this.generateImpressionEvent();
+		this.preference.getString('show_app_walkthrough_screen', (value) => {
+			if (value === 'true') {
+				const driver = new Driver({
+					allowClose: true,
+					closeBtnText: this.translateMessage('DONE'),
+					showButtons: true
+				});
+
+				console.log("Driver", driver);
+				setTimeout(() => {
+					driver.highlight({
+						element: '#qrIcon',
+						popover: {
+							title: this.translateMessage('ONBOARD_SCAN_QR_CODE'),
+							description: "<img src='assets/imgs/ic_scanqrdemo.png' /><p>" + this.translateMessage('ONBOARD_SCAN_QR_CODE_DESC', this.appLabel) + "</p>",
+							showButtons: true,         // Do not show control buttons in footer
+							closeBtnText: this.translateMessage('DONE'),
+						}
+					});
+
+					let element = document.getElementById("driver-highlighted-element-stage");
+					var img = document.createElement("img");
+					img.src = "assets/imgs/ic_scan.png";
+					img.id = "qr_scanner";
+					element.appendChild(img);
+				}, 100);
+
+				this.preference.putString('show_app_walkthrough_screen', 'false');
+			}
+		});
+	}
+
+	ionViewWillEnter() {
+		if (!this.pageLoadedSuccess) {
+			this.getPopularContent();
+		}
+
+		this.guestUser = !this.appGlobal.isUserLoggedIn();
+
+
+		if (this.guestUser) {
+			this.getCurrentUser();
+		} else {
+			this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
+		}
+
+		this.subscribeGenieEvents();
+
+		if (this.network.type === 'none') {
+			this.isNetworkAvailable = false;
+		}
+	}
+
+	/**
+	 * Ionic life cycle hook
+	 */
+	ionViewWillLeave(): void {
+		this.isVisible = false;
+		this.events.unsubscribe('genie.event');
+	}
+
 	presentConfirm(result: any) {
 		let buttons: Array<AlertButton> = [];
 
@@ -197,6 +311,14 @@ export class ResourcesPage {
 		this.setSavedContent();
 
 		this.profile = this.appGlobal.getCurrentUser();
+		if (this.profile && this.profile.syllabus && this.profile.syllabus[0]
+			&& this.profile.board && this.profile.board.length
+			&& this.profile.grade && this.profile.grade.length
+			&& this.profile.medium && this.profile.medium.length
+			&& this.profile.subject && this.profile.subject.length) {
+			this.isOnBoardingCardCompleted = true;
+			this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
+		}
 	}
 
 	viewAllSavedResources() {
@@ -260,8 +382,6 @@ export class ResourcesPage {
 		//this.noInternetConnection = false;
 		let that = this;
 
-
-
 		if (!pageAssembleCriteria) {
 			let criteria = new PageAssembleCriteria();
 			criteria.name = "Resource";
@@ -279,13 +399,14 @@ export class ResourcesPage {
 				if (filterApplied) {
 					criteria.mode = "hard";
 				}
+
+				criteria.filters = this.appliedFilter;
 			}
 
 			pageAssembleCriteria = criteria;
 		}
 
 		if (this.profile) {
-
 			if (!pageAssembleCriteria.filters) {
 				pageAssembleCriteria.filters = new PageAssembleFilter();
 			}
@@ -306,7 +427,6 @@ export class ResourcesPage {
 				pageAssembleCriteria.filters.subject = this.applyProfileFilter(this.profile.subject, pageAssembleCriteria.filters.subject, "subject");
 			}
 		}
-
 
 		this.pageService.getPageAssemble(pageAssembleCriteria, res => {
 			that.ngZone.run(() => {
@@ -434,78 +554,6 @@ export class ResourcesPage {
 		});
 	}
 
-	ionViewDidEnter() {
-
-		setTimeout(() => {
-			this.onboardingCard.ionViewDidEnter();
-		}, 100);
-
-
-		this.setSavedContent();
-
-		if (this.appliedFilter) {
-			this.filterIcon = "./assets/imgs/ic_action_filter.png";
-			this.resourceFilter = undefined;
-			this.appliedFilter = undefined;
-			this.getPopularContent();
-		}
-
-		this.isVisible = true;
-
-		this.generateImpressionEvent();
-		this.preference.getString('show_app_walkthrough_screen', (value) => {
-			if (value === 'true') {
-				const driver = new Driver({
-					allowClose: true,
-					closeBtnText: this.translateMessage('DONE'),
-					showButtons: true
-				});
-
-				console.log("Driver", driver);
-				setTimeout(() => {
-					driver.highlight({
-						element: '#qrIcon',
-						popover: {
-							title: this.translateMessage('ONBOARD_SCAN_QR_CODE'),
-							description: "<img src='assets/imgs/ic_scanqrdemo.png' /><p>" + this.translateMessage('ONBOARD_SCAN_QR_CODE_DESC', this.appLabel) + "</p>",
-							showButtons: true,         // Do not show control buttons in footer
-							closeBtnText: this.translateMessage('DONE'),
-						}
-					});
-
-					let element = document.getElementById("driver-highlighted-element-stage");
-					var img = document.createElement("img");
-					img.src = "assets/imgs/ic_scan.png";
-					img.id = "qr_scanner";
-					element.appendChild(img);
-				}, 100);
-
-				this.preference.putString('show_app_walkthrough_screen', 'false');
-			}
-		});
-	}
-
-	ionViewWillEnter() {
-		if (!this.pageLoadedSuccess) {
-			this.getPopularContent();
-		}
-
-		this.guestUser = !this.appGlobal.isUserLoggedIn();
-
-
-		if (this.guestUser) {
-			this.getCurrentUser();
-		} else {
-			this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
-		}
-
-		this.subscribeGenieEvents();
-
-		if (this.network.type === 'none') {
-			this.isNetworkAvailable = false;
-		}
-	}
-
 	subscribeGenieEvents() {
 		this.events.subscribe('genie.event', (data) => {
 			let res = JSON.parse(data);
@@ -514,13 +562,7 @@ export class ResourcesPage {
 			}
 		})
 	}
-	/**
-	 * Ionic life cycle hook
-	 */
-	ionViewWillLeave(): void {
-		this.isVisible = false;
-		this.events.unsubscribe('genie.event');
-	}
+
 	/**
 	 *
 	 * @param refresher
@@ -609,7 +651,6 @@ export class ResourcesPage {
 	}
 
 	search() {
-
 		this.telemetryService.interact(
 			generateInteractTelemetry(InteractType.TOUCH,
 				InteractSubtype.SEARCH_BUTTON_CLICKED,
@@ -622,7 +663,6 @@ export class ResourcesPage {
 	}
 
 	showContentDetails(content, corRelationList) {
-
 		if (content.contentData.contentType === ContentType.COURSE) {
 			console.log('Calling course details page');
 			this.navCtrl.push(EnrolledCourseDetailsPage, {
@@ -679,7 +719,6 @@ export class ResourcesPage {
 					criteria.mode = "soft";
 					that.filterIcon = "./assets/imgs/ic_action_filter.png";
 				}
-
 
 				that.getPopularContent(false, criteria)
 			}

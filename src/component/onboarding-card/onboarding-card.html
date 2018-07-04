@@ -1,9 +1,9 @@
-<pb-horizontal *ngIf="!isOnBoardingCardCompleted" [progress]="currentProgress"></pb-horizontal>
-<div *ngIf="!isOnBoardingCardCompleted">
+<pb-horizontal *ngIf="!onboardingService.isOnBoardingCardCompleted" [progress]="onboardingService.currentIndex" [isOnBoardCard]="isOnBoardCard"></pb-horizontal>
+<div>
   <p class="onbording-card-header">{{ 'ONBOARDING_CARDS_HEADING' | translate }}</p>
-  <ion-slides *ngIf="!isOnBoardingCardCompleted" (ionSlideDrag)="onSlideDrag()"
+  <ion-slides *ngIf="onboardingService?.onBoardingSlides && onboardingService?.onBoardingSlides.length === 5" (ionSlideDrag)="onSlideDrag()"
     class="onbording-slides" pager="true" centeredSlides="false" speed="50">
-    <ion-slide *ngFor="let slide of onBoardingSlides; let i=index">
+    <ion-slide *ngFor="let slide of onboardingService?.onBoardingSlides; let i=index">
       <div class="onbording-slide-div">
         <ion-row>
           <span class="onbording-slide-title">
@@ -14,7 +14,7 @@
         <ion-spinner *ngIf="loader" padding></ion-spinner>
 
         <ion-footer class="onbording-slide-footer" no-shadow no-border>
-          <div *ngIf="!slide.selectedOptions.length" (click)="openFilterOptions(slide, i)" class="font-bold font-size-small blue-color">{{slide?.desc | translate}}</div>
+          <div *ngIf="isDataAvailable &&!slide.selectedOptions.length" (click)="openFilterOptions(slide, i)" class="font-bold font-size-small blue-color">{{slide?.desc | translate}}</div>
           <div (click)="openFilterOptions(slide, i)" class="row">
             <div class="font-size-small ellipsis text-width-50 display-inline">
               {{ slide?.selectedOptions}}</div> &nbsp;

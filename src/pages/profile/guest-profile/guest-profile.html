@@ -40,7 +40,7 @@
             <div class="ellipsis text-align">{{syllabus}}</div>
             <ion-icon class="icon-align" float="end" name="md-create" color="primary" (click)="editGuestProfile()"></ion-icon>
           </div>
-          <div *ngIf="!profile?.syllabus" (click)="editGuestProfile()" class="vertical-align">{{'ADD' | translate}}</div>
+          <div *ngIf="!profile?.syllabus?.length" (click)="editGuestProfile()" class="vertical-align">{{'ADD' | translate}}</div>
         </ion-col>
       </ion-row>
 
@@ -49,11 +49,11 @@
           <div text-uppercase class="info-title">{{'BOARD' | translate}}</div>
         </ion-col>
         <ion-col class="font-size-14rem page-content" col-6 text-end>
-          <div *ngIf="profile?.board && profile?.board.length > 0">
+          <div *ngIf="profile?.syllabus?.length && profile?.board?.length">
             <div class="ellipsis text-align">{{boards}}</div>
             <ion-icon class="icon-align" float="end" name="md-create" color="primary" (click)="editGuestProfile()"></ion-icon>
           </div>
-          <div *ngIf="!profile?.board" (click)="editGuestProfile()" class="vertical-align">{{'ADD' | translate}}</div>
+          <div *ngIf="!profile.syllabus?.length || !profile?.board?.length" (click)="editGuestProfile()" class="vertical-align">{{'ADD' | translate}}</div>
         </ion-col>
       </ion-row>
 
@@ -62,11 +62,12 @@
           <div class="info-title" text-uppercase>{{'MEDIUM' | translate}}</div>
         </ion-col>
         <ion-col class="ellipsis font-size-14rem page-content" col-6 text-end>
-          <div *ngIf="profile?.medium && profile?.medium.length > 0">
+          <div *ngIf="profile?.syllabus?.length && profile?.board?.length && profile?.medium?.length">
             <div class="ellipsis text-align">{{medium}}</div>
             <ion-icon class="icon-align" float="end" name="md-create" color="primary" (click)="editGuestProfile()"></ion-icon>
           </div>
-          <div *ngIf="!profile?.medium" (click)="editGuestProfile()" class="vertical-align">{{'ADD' | translate}}</div>
+          <div *ngIf="!profile?.syllabus?.length || !profile?.board?.length || !profile?.medium?.length" (click)="editGuestProfile()"
+            class="vertical-align">{{'ADD' | translate}}</div>
         </ion-col>
       </ion-row>
 
@@ -75,11 +76,12 @@
           <div class="info-title" text-uppercase>{{'CLASS' | translate}}</div>
         </ion-col>
         <ion-col class="ellipsis font-size-14rem page-content" col-6 text-end>
-          <div *ngIf="profile?.grade && profile?.grade.length > 0">
+          <div *ngIf="profile?.syllabus?.length && profile?.board?.length && profile?.medium?.length && profile?.grade?.length">
             <div class="ellipsis text-align">{{grade}}</div>
             <ion-icon class="icon-align" float="end" name="md-create" color="primary" (click)="editGuestProfile()"></ion-icon>
           </div>
-          <div *ngIf="!profile?.grade" (click)="editGuestProfile()" class="vertical-align">{{'ADD' | translate}}</div>
+          <div *ngIf="!profile?.syllabus?.length || !profile?.board?.length || !profile?.medium?.length || !profile?.grade?.length"
+            (click)="editGuestProfile()" class="vertical-align">{{'ADD' | translate}}</div>
         </ion-col>
       </ion-row>
 
@@ -88,11 +90,12 @@
           <div class="info-title" text-uppercase>{{'SUBJECTS' | translate}}</div>
         </ion-col>
         <ion-col class="ellipsis font-size-14rem page-content" col-6 text-end>
-          <div *ngIf="profile?.subject && profile?.subject.length > 0">
+          <div *ngIf="profile?.syllabus?.length && profile?.board?.length && profile?.medium?.length && profile?.grade?.length && profile?.subject?.length">
             <div class="ellipsis text-align">{{subjects}}</div>
             <ion-icon class="icon-align" float="end" name="md-create" color="primary" (click)="editGuestProfile()"></ion-icon>
           </div>
-          <div *ngIf="!profile?.subject" (click)="editGuestProfile()" class="vertical-align">{{'ADD' | translate}}</div>
+          <div *ngIf="!profile?.syllabus?.length || !profile?.board?.length || !profile?.medium?.length || !profile?.grade?.length || !profile?.subject?.length"
+            (click)="editGuestProfile()" class="vertical-align">{{'ADD' | translate}}</div>
         </ion-col>
       </ion-row>
 
