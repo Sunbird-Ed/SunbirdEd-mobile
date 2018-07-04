@@ -1,22 +1,19 @@
-import { Injectable, NgZone } from '@angular/core';
-import * as _ from 'lodash';
+import {
+    Injectable,
+    NgZone
+} from '@angular/core';
 import { Events } from 'ionic-angular';
-
 import {
     FrameworkService,
     CategoryRequest,
     FrameworkDetailsRequest,
     ProfileService,
-    Profile,
     SharedPreferences,
     FormRequest,
     FormService
 } from 'sunbird';
-import { resolve } from 'path';
-import { MyApp } from '../../app/app.component';
 import { AppGlobalService } from '../../service/app-global.service';
 import { AppVersion } from "@ionic-native/app-version";
-
 
 @Injectable()
 export class FormAndFrameworkUtilService {
@@ -27,7 +24,6 @@ export class FormAndFrameworkUtilService {
      */
     selectedLanguage: string;
 
-
     constructor(
         private framework: FrameworkService,
         private profileService: ProfileService,
@@ -36,11 +32,8 @@ export class FormAndFrameworkUtilService {
         private preference: SharedPreferences,
         private formService: FormService,
         private appGlobalService: AppGlobalService,
-        private appVersion: AppVersion,
-
+        private appVersion: AppVersion
     ) {
-
-
         //Get language selected
         this.preference.getString('selected_language_code', (val: string) => {
             if (val && val.length) {
@@ -66,9 +59,7 @@ export class FormAndFrameworkUtilService {
                 this.callSyllabusListApi(syllabusList, resolve, reject);
             }
         })
-
     }
-
 
     /**
      * Network call to form api
@@ -159,6 +150,10 @@ export class FormAndFrameworkUtilService {
     getCategoryData(req: CategoryRequest, frameworkId?: string): Promise<any> {
 
         return new Promise((resolve, reject) => {
+            if (frameworkId !== undefined && frameworkId.length) {
+                req.frameworkId = frameworkId;
+            }
+
             let categoryList: Array<any> = [];
 
             this.framework.getCategoryData(req,
@@ -177,7 +172,19 @@ export class FormAndFrameworkUtilService {
                 (err: any) => {
                     reject(err);
                 });
+        });
+    }
 
+    fetchNextCategory(req: CategoryRequest): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.framework.getCategoryData(req,
+                (res: any) => {
+                    const resposneArray: Array<any> = JSON.parse(res);
+                    resolve(resposneArray);
+                },
+                (err: any) => {
+                    reject(err);
+                });
         });
     }
 
@@ -223,7 +230,6 @@ export class FormAndFrameworkUtilService {
                                 }
                             });
 
-
                             if (ranges && ranges.length > 0 && upgradeTypes && upgradeTypes.length > 0) {
                                 let type: string;
                                 const forceType = "force"
@@ -247,8 +253,6 @@ export class FormAndFrameworkUtilService {
                                     }
                                 });
                             }
-
-
                         }
 
                         resolve(result);
@@ -258,19 +262,4 @@ export class FormAndFrameworkUtilService {
                 });
         });
     }
-
-    fetchNextCategory(req: CategoryRequest): Promise<any> {
-
-        return new Promise((resolve, reject) => {
-            this.framework.getCategoryData(req,
-                (res: any) => {
-                    const resposneArray: Array<any> = JSON.parse(res);
-                    resolve(resposneArray);
-                },
-                (err: any) => {
-                    reject(err);
-                });
-        });
-    }
-
 }

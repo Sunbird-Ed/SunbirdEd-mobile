@@ -50,7 +50,6 @@ export class PageFilterConstants {
             name: "subject",
             displayName: "SUBJECT",
             values: []
-
         },
         {
             name: "medium",
@@ -74,13 +73,11 @@ export class PageFilterConstants {
             name: "subject",
             displayName: "SUBJECT",
             values: []
-
         },
         {
             name: "medium",
             displayName: "MEDIUM",
             values: []
-
         },
         {
             name: "contentType",
@@ -91,7 +88,6 @@ export class PageFilterConstants {
 }
 
 export class AudienceFilter {
-
     // TODO : Check with Anil for TEACHER & LOGGED_IN_USER values
     public static readonly GUEST_TEACHER = ["instructor", "learner"];
     public static readonly GUEST_STUDENT = ["learner"];
