@@ -205,7 +205,7 @@
   "LICENSE": "परवाना",
   "LINKEDIN": "लिंक्डइन",
   "LOADING_CONTENT": "साहित्य लोड होत आहे",
-  "LOADING_CONTENTS": "साहित्य लोड होत आहे {{%s}}",
+  "LOADING_CONTENTS": "साहित्य लोड होत आहे {{%s}} %",
   "LOGGED_OUT": "लॉग आउट यशस्वी",
   "LOGOUT": "साइन आउट करा",
   "MEDIUM": "माध्यम",
