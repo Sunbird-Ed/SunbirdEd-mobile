@@ -1,10 +1,28 @@
 import { TranslateService } from '@ngx-translate/core';
-import { Component, NgZone } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NavController, NavParams, ToastController, LoadingController, IonicApp, Platform } from 'ionic-angular';
+import {
+  Component,
+  NgZone
+} from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators
+} from '@angular/forms';
+import {
+  NavController,
+  NavParams,
+  ToastController,
+  LoadingController,
+  IonicApp,
+  Platform
+} from 'ionic-angular';
 import * as _ from 'lodash';
-
-import { UserProfileService, AuthService, FrameworkService, CategoryRequest } from 'sunbird';
+import {
+  UserProfileService,
+  AuthService,
+  FrameworkService,
+  CategoryRequest
+} from 'sunbird';
 import { ProfilePage } from './../profile';
 import { languageList } from './../../../config/framework.filters';
 import { ProfileConstants } from '../../../app/app.constant';
