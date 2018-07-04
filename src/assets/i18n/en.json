@@ -422,6 +422,7 @@
   "YOUR_PROFILE_IS": "Your profile is {{%s}}% complete",
   "YOUR_PROGRESS": "Your Progress: {{%s}}%",
   "USERS_AND_GROUPS": "Users and Groups",
+  "GROUP_NAME": "Group Name",
   "USERS":"Users",
   "OKAY":"Okay"
 }

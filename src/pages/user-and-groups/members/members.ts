@@ -1,14 +1,7 @@
-import { TranslateService } from '@ngx-translate/core';
 import { GrouplandingPage } from './../grouplanding/grouplanding';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-
-/**
- * Generated class for the MembersPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import { GroupService, Group } from 'sunbird';
 
 @IonicPage()
 @Component({
@@ -16,52 +9,51 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
   templateUrl: 'members.html',
 })
 export class MembersPage {
-  value
-  arr = [];
-  users =[
+  group: Group
+  users = [
     {
-      "name":"Anirudh Deep",
-      "profession": "Student",
-       selected: false
+      name: "Anirudh Deep",
+      profession: "Student",
+      selected: false
     },
     {
-      "name":"Ananya Suresh",
-      "profession": "Student",
-       selected: "false"
+      name: "Ananya Suresh",
+      profession: "Student",
+      selected: false
     },
     {
-      "name":"Rajesh  Verma",
-      "profession": "Student",
-       selected: "false"
+      name: "Rajesh  Verma",
+      profession: "Student",
+      selected: false
     }
-    
   ]
+
   allUsers = this.users;
-  constructor(public navCtrl: NavController, public navParams: NavParams,
-              public translate: TranslateService ) {
-    this.value = this.navParams.get('item');
-    console.log(this.arr);
-    this.arr.push(this.value.groupName);
+
+  constructor(public navCtrl: NavController,
+    public navParams: NavParams,
+    private groupService: GroupService) {
+    this.group = this.navParams.get('group');
   }
 
 
-
-  selectedMember(name ,profession ){
-    this.arr.push({"name":name , "profession": profession})
-    console.log(this.arr);
+  selectedMember(name, profession) {
 
   }
-  selectall(){
-    for(var i=0; i< this.users.length; i++){
-        this.users[i].selected = true;
-        this.arr.push(this.users[i]);
-      } 
-    console.log(this.arr);
+
+  selectall() {
+    for (var i = 0; i < this.users.length; i++) {
+      this.users[i].selected = true;
+    }
   }
-  createGroup(){
-    this.navCtrl.push(GrouplandingPage, {
-      item: this.arr
-    });
+
+  createGroup() {
+    this.groupService.createGroup(this.group)
+      .then((val) => {
+        this.navCtrl.push(GrouplandingPage);
+      }).catch((error) => {
+        console.log("Error : " + error);
+      });
   }
 
 }

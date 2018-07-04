@@ -35,7 +35,7 @@ export interface toastOptions {
 export class GuestProfilePage {
 
   imageUri: string = "assets/imgs/ic_profile_default.png";
-  list: Array<String> = ['SETTINGS'];
+  list: Array<String> = ["USERS_AND_GROUPS",'SETTINGS'];
 
   showSignInCard: boolean = false;
   isNetworkAvailable: boolean;

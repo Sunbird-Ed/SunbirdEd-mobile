@@ -4,7 +4,7 @@ import { StatusBar } from '@ionic-native/status-bar';
 import {
   TabsPage, AuthService, ContainerService, PermissionService,
   Interact, InteractType, InteractSubtype, Environment, TelemetryService,
-  SharedPreferences, ProfileType, UserProfileService, MigrationService
+  SharedPreferences, ProfileType, UserProfileService, MigrationService, GroupService
 } from "sunbird";
 import { initTabs, GUEST_TEACHER_TABS, GUEST_STUDENT_TABS, LOGIN_TEACHER_TABS } from './module.service';
 import { LanguageSettingsPage } from '../pages/language-settings/language-settings';
