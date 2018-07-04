@@ -115,8 +115,8 @@ export class SignInCardComponent {
           initTabs(that.container, LOGIN_TEACHER_TABS);
           return that.refreshProfileData();
         })
-        .then(slug => {
-          return that.refreshTenantData(slug);
+        .then(value => {
+          return that.refreshTenantData(value.slug, value.title);
         })
         .then(() => {
           loader.dismiss();
@@ -136,7 +136,7 @@ export class SignInCardComponent {
   refreshProfileData() {
     let that = this;
 
-    return new Promise<string>((resolve, reject) => {
+    return new Promise<any>((resolve, reject) => {
       that.authService.getSessionData((session) => {
         if (session === undefined || session == null) {
           reject("session is null");
@@ -151,7 +151,10 @@ export class SignInCardComponent {
             let r = JSON.parse(res);
             that.generateLoginInteractTelemetry(InteractType.OTHER,
               InteractSubtype.LOGIN_SUCCESS, r.id);
-            resolve(r.rootOrg.slug);
+            resolve({
+              slug: r.rootOrg.slug,
+              title: r.rootOrg.orgName
+            });
           }, error => {
             reject(error);
             console.error(error);
@@ -161,7 +164,7 @@ export class SignInCardComponent {
     });
   }
 
-  refreshTenantData(slug: string) {
+  refreshTenantData(slug: string, title: string) {
     return new Promise((resolve, reject) => {
       let request = new TenantInfoRequest();
       request.refreshTenantInfo = true;
@@ -170,7 +173,7 @@ export class SignInCardComponent {
         request,
         res => {
           let r = JSON.parse(res);
-          (<any>window).splashscreen.setContent(r.titleName, r.logo);
+          (<any>window).splashscreen.setContent(title, r.logo);
           resolve();
         },
         error => {

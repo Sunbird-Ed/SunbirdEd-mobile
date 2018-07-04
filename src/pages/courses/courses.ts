@@ -1,39 +1,65 @@
 import { ViewMoreActivityPage } from './../view-more-activity/view-more-activity';
-import { Component, NgZone, OnInit, ViewChild } from '@angular/core';
-import { NavController, PopoverController, Events, ToastController } from 'ionic-angular';
+import {
+  Component,
+  NgZone,
+  OnInit
+} from '@angular/core';
+import {
+  NavController,
+  PopoverController,
+  Events,
+  ToastController
+} from 'ionic-angular';
 import { AppVersion } from "@ionic-native/app-version";
 import { IonicPage } from 'ionic-angular';
 import {
-  SharedPreferences, CourseService,
-  PageAssembleService, PageAssembleCriteria,
-  Impression, ImpressionType, PageId, Environment, TelemetryService, ContentDetailRequest, ContentService, ProfileType, PageAssembleFilter, CorrelationData
+  SharedPreferences,
+  CourseService,
+  PageAssembleService,
+  PageAssembleCriteria,
+  ImpressionType,
+  PageId,
+  Environment,
+  TelemetryService,
+  ContentDetailRequest,
+  ContentService,
+  ProfileType,
+  PageAssembleFilter,
+  CorrelationData
 } from 'sunbird';
-import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
+import {
+  QRResultCallback,
+  SunbirdQRScanner
+} from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
-// import { CourseDetailPage } from '../course-detail/course-detail';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
 import { ContentDetailsPage } from '../content-details/content-details';
 import * as _ from 'lodash';
 import { TranslateService } from '@ngx-translate/core';
 import { Network } from '@ionic-native/network';
 import { generateImpressionTelemetry } from '../../app/telemetryutil';
-import { ContentType, MimeType, PageFilterConstants, ProfileConstants, EventTopics } from '../../app/app.constant';
-import { PageFilterCallback, PageFilter } from '../page-filter/page.filter';
+import {
+  ContentType,
+  MimeType,
+  PageFilterConstants,
+  ProfileConstants,
+  EventTopics
+} from '../../app/app.constant';
+import {
+  PageFilterCallback,
+  PageFilter
+} from '../page-filter/page.filter';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 import { AppGlobalService } from '../../service/app-global.service';
-
 import Driver from 'driver.js';
 import { CourseUtilService } from '../../service/course-util.service';
-import { OnboardingCardComponent } from '../../component/onboarding-card/onboarding-card';
 
 @IonicPage()
 @Component({
   selector: 'page-courses',
   templateUrl: 'courses.html'
 })
-export class CoursesPage {
-
-  @ViewChild(OnboardingCardComponent) onboardingCard: OnboardingCardComponent;
+export class CoursesPage implements OnInit {
 
   /**
    * Contains enrolled course
@@ -67,6 +93,7 @@ export class CoursesPage {
   isNetworkAvailable: boolean;
   showWarning: boolean = false;
 
+  isOnBoardingCardCompleted: boolean = false;
   onBoardingProgress: number = 0;
   selectedLanguage = 'en';
   appLabel: string;
@@ -118,7 +145,6 @@ export class CoursesPage {
     private preference: SharedPreferences,
     private translate: TranslateService,
     private network: Network,
-    private sharedPreferences: SharedPreferences,
     private appGlobal: AppGlobalService,
     private courseUtilService: CourseUtilService
   ) {
@@ -127,6 +153,10 @@ export class CoursesPage {
       if (val && val.length) {
         this.selectedLanguage = val;
       }
+    });
+
+    this.events.subscribe('onboarding-card:completed', (param) => {
+      this.isOnBoardingCardCompleted = param.isOnBoardingCardCompleted;
     });
 
     this.events.subscribe(AppGlobalService.PROFILE_OBJ_CHANGED, () => {
@@ -179,6 +209,20 @@ export class CoursesPage {
       });
   }
 
+  /**
+	 * Angular life cycle hooks
+	 */
+  ngOnInit() {
+    console.log('courses component initialized...');
+    this.getCourseTabData();
+  }
+
+  /*   ngAfterViewInit() {
+      const driver = new Driver();
+      console.log("Driver", driver);
+      driver.highlight('#qrIcon');
+    } */
+
   ionViewDidLoad() {
     //this.sharedPreferences.
     this.preference.getString('show_app_walkthrough_screen', (value) => {
@@ -211,8 +255,6 @@ export class CoursesPage {
         this.preference.putString('show_app_walkthrough_screen', 'false');
       }
     });
-
-    this.getCourseTabData();
   }
 
   viewMoreEnrolledCourses() {
@@ -395,6 +437,7 @@ export class CoursesPage {
   getUserId() {
     let that = this;
     return new Promise((resolve, reject) => {
+      this.guestUser = !this.appGlobal.isUserLoggedIn();
 
       if (this.guestUser) {
         this.getCurrentUser();
@@ -413,10 +456,11 @@ export class CoursesPage {
    * @param refresher
    */
   getCourseTabData(refresher?) {
-    let that = this;
-    if (refresher) {
-      refresher.complete();
-    }
+    setTimeout(() => {
+      if (refresher) {
+        refresher.complete();
+      }
+    }, 10);
 
     this.enrolledCourse = [];
     this.popularAndLatestCourses = [];
@@ -441,7 +485,16 @@ export class CoursesPage {
     } else if (profiletype == ProfileType.STUDENT) {
       this.showSignInCard = false;
     }
+
+
     this.profile = this.appGlobal.getCurrentUser();
+    if (this.profile && this.profile.syllabus && this.profile.syllabus[0] && this.profile.board && this.profile.board.length
+      && this.profile.grade && this.profile.grade.length
+      && this.profile.medium && this.profile.medium.length
+      && this.profile.subject && this.profile.subject.length) {
+      this.isOnBoardingCardCompleted = true;
+      this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
+    }
   }
 
   scanQRCode() {
@@ -520,11 +573,6 @@ export class CoursesPage {
   }
 
   ionViewDidEnter() {
-
-    setTimeout(() => {
-      this.onboardingCard.ionViewDidEnter();
-    }, 100);
-
     if (this.appliedFilter) {
       this.filterIcon = "./assets/imgs/ic_action_filter.png";
       this.courseFilter = undefined;
@@ -549,13 +597,6 @@ export class CoursesPage {
       this.showOverlay = false;
       this.downloadPercentage = 0;
     })
-  }
-
-  ionViewWillEnter() {
-    this.guestUser = !this.appGlobal.isUserLoggedIn();
-    if (this.network.type === 'none') {
-			this.isNetworkAvailable = false;
-		}
   }
 
 
@@ -805,11 +846,11 @@ export class CoursesPage {
   }
 
   ionViewCanLeave() {
-		this.ngZone.run(() => {
+    this.ngZone.run(() => {
       this.events.unsubscribe('genie.event');
       if (this.tabBarElement) {
         this.tabBarElement.style.display = 'flex';
       }
-		})
-	}
+    })
+  }
 }
