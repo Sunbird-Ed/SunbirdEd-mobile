@@ -199,7 +199,7 @@ export class SearchPage {
     this.showLoader = true;
     this.responseData.result.filterCriteria.mode = "hard";
 
-    this.contentService.searchContent(this.responseData.result.filterCriteria, true, (responseData) => {
+    this.contentService.searchContent(this.responseData.result.filterCriteria, true,false,false, (responseData) => {
 
       this.zone.run(() => {
         let response: GenieResponse = JSON.parse(responseData);
@@ -278,7 +278,7 @@ export class SearchPage {
       // }
     }
 
-    this.contentService.searchContent(contentSearchRequest, false, (responseData) => {
+    this.contentService.searchContent(contentSearchRequest, false,false,false, (responseData) => {
 
       this.zone.run(() => {
         let response: GenieResponse = JSON.parse(responseData);
@@ -392,7 +392,7 @@ export class SearchPage {
       offlineSearch: isOfflineSearch
     }
 
-    this.contentService.searchContent(contentSearchRequest, false, (responseData) => {
+    this.contentService.searchContent(contentSearchRequest, false,true,!this.appGlobal.isUserLoggedIn(), (responseData) => {
       this.zone.run(() => {
         let response: GenieResponse = JSON.parse(responseData);
         this.responseData = response;

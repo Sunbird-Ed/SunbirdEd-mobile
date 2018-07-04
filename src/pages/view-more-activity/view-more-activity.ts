@@ -166,7 +166,7 @@ export class ViewMoreActivityPage implements OnInit {
 			reqBody.limit = 10;
 			reqBody.offset = this.offset === 0 ? reqBody.offset : this.offset;
 			console.log("Filters", JSON.stringify(reqBody));
-			this.contentService.searchContent(reqBody, true, (data: any) => {
+			this.contentService.searchContent(reqBody, true,false,false,  (data: any) => {
 				data = JSON.parse(data);
 				console.log('search response...', data);
 				this.ngZone.run(() => {
