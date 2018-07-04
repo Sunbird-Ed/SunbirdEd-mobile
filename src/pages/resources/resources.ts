@@ -1,4 +1,4 @@
-import { Component, NgZone, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit, ViewChild } from '@angular/core';
 import {
 	PageAssembleService, PageAssembleCriteria, ContentService,
 	Impression, ImpressionType, PageId, Environment, TelemetryService,
@@ -6,7 +6,7 @@ import {
 	ContentFilterCriteria, ProfileType, PageAssembleFilter,
 	CorrelationData
 } from "sunbird";
-import { NavController, PopoverController, Events, ToastController, LoadingController } from 'ionic-angular';
+import { NavController, PopoverController, Events, ToastController, LoadingController, AlertButton } from 'ionic-angular';
 import * as _ from 'lodash';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
 import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
@@ -23,12 +23,17 @@ import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-c
 import { AppGlobalService } from '../../service/app-global.service';
 import Driver from 'driver.js';
 import { AppVersion } from "@ionic-native/app-version";
+import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
+import { AlertController } from 'ionic-angular';
+import { OnboardingCardComponent } from '../../component/onboarding-card/onboarding-card';
 
 @Component({
 	selector: 'page-resources',
 	templateUrl: 'resources.html'
 })
-export class ResourcesPage implements OnInit {
+export class ResourcesPage {
+
+	@ViewChild(OnboardingCardComponent) onboardingCard: OnboardingCardComponent;
 
 	pageLoadedSuccess: boolean = false;
 
@@ -58,7 +63,6 @@ export class ResourcesPage implements OnInit {
 	 */
 	pageApiLoader: boolean = true;
 
-	isOnBoardingCardCompleted: boolean = false;
 	public source = "resource";
 
 	resourceFilter: any;
@@ -93,10 +97,22 @@ export class ResourcesPage implements OnInit {
 		private translate: TranslateService,
 		private zone: NgZone,
 		private network: Network,
-		private loadingCtrl: LoadingController,
 		private appGlobal: AppGlobalService,
-		private appVersion: AppVersion
+		private appVersion: AppVersion,
+		private formAndFrameowrkUtilService: FormAndFrameworkUtilService,
+		private alertCtrl: AlertController
 	) {
+		//check if any new app version is available
+		formAndFrameowrkUtilService.checkNewAppVersion()
+			.then(result => {
+				if (result) {
+					this.presentConfirm(result)
+				}
+			})
+			.catch(error => {
+				console.log("Error - " + error)
+			});
+
 		this.preference.getString('selected_language_code', (val: string) => {
 			if (val && val.length) {
 				this.selectedLanguage = val;
@@ -139,11 +155,32 @@ export class ResourcesPage implements OnInit {
 
 	}
 
-	ngAfterViewInit() {
-		this.events.subscribe('onboarding-card:completed', (param) => {
-			this.isOnBoardingCardCompleted = param.isOnBoardingCardCompleted;
+	presentConfirm(result: any) {
+		let buttons: Array<AlertButton> = [];
+
+		//iterate on all the buttons
+		if (result.actionButtons) {
+			result.actionButtons.forEach(button => {
+				if (button) {
+					let alertButton: AlertButton = {
+						text: button.key,
+						handler: () => {
+							console.log(String(button.link))
+						}
+					};
+					buttons.push(alertButton);
+				}
+			});
+		}
+
+		let alert = this.alertCtrl.create({
+			title: result.title,
+			message: result.desc,
+			buttons: buttons
 		});
+		alert.present();
 	}
+
 	/**
 	 * It will fetch the guest user profile details
 	 */
@@ -160,13 +197,6 @@ export class ResourcesPage implements OnInit {
 		this.setSavedContent();
 
 		this.profile = this.appGlobal.getCurrentUser();
-		if (this.profile && this.profile.board && this.profile.board.length
-			&& this.profile.grade && this.profile.grade.length
-			&& this.profile.medium && this.profile.medium.length
-			&& this.profile.subject && this.profile.subject.length) {
-			this.isOnBoardingCardCompleted = true;
-			this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
-		}
 	}
 
 	viewAllSavedResources() {
@@ -261,19 +291,19 @@ export class ResourcesPage implements OnInit {
 			}
 
 			if (this.profile.board && this.profile.board.length) {
-				pageAssembleCriteria.filters.board = this.applyProfileFilter(this.profile.board, pageAssembleCriteria.filters.board);
+				pageAssembleCriteria.filters.board = this.applyProfileFilter(this.profile.board, pageAssembleCriteria.filters.board, "board");
 			}
 
 			if (this.profile.medium && this.profile.medium.length) {
-				pageAssembleCriteria.filters.medium = this.applyProfileFilter(this.profile.medium, pageAssembleCriteria.filters.medium);
+				pageAssembleCriteria.filters.medium = this.applyProfileFilter(this.profile.medium, pageAssembleCriteria.filters.medium, "medium");
 			}
 
 			if (this.profile.grade && this.profile.grade.length) {
-				pageAssembleCriteria.filters.gradeLevel = this.applyProfileFilter(this.profile.grade, pageAssembleCriteria.filters.gradeLevel);
+				pageAssembleCriteria.filters.gradeLevel = this.applyProfileFilter(this.profile.grade, pageAssembleCriteria.filters.gradeLevel, "gradeLevel");
 			}
 
 			if (this.profile.subject && this.profile.subject.length) {
-				pageAssembleCriteria.filters.subject = this.applyProfileFilter(this.profile.subject, pageAssembleCriteria.filters.subject);
+				pageAssembleCriteria.filters.subject = this.applyProfileFilter(this.profile.subject, pageAssembleCriteria.filters.subject, "subject");
 			}
 		}
 
@@ -321,7 +351,23 @@ export class ResourcesPage implements OnInit {
 		});
 	}
 
-	applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>) {
+	applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>, categoryKey?: string) {
+		if (categoryKey) {
+			let nameArray = [];
+			profileFilter.forEach(filterCode => {
+				let nameForCode = this.appGlobal.getNameForCodeInFramework(categoryKey, filterCode);
+
+				if (!nameForCode) {
+					nameForCode = filterCode;
+				}
+
+				nameArray.push(nameForCode);
+			})
+
+			profileFilter = nameArray;
+		}
+
+
 		if (!assembleFilter) {
 			assembleFilter = [];
 		}
@@ -389,6 +435,14 @@ export class ResourcesPage implements OnInit {
 	}
 
 	ionViewDidEnter() {
+
+		setTimeout(() => {
+			this.onboardingCard.ionViewDidEnter();
+		}, 100);
+
+
+		this.setSavedContent();
+
 		if (this.appliedFilter) {
 			this.filterIcon = "./assets/imgs/ic_action_filter.png";
 			this.resourceFilter = undefined;
@@ -490,15 +544,6 @@ export class ResourcesPage implements OnInit {
 		this.checkNetworkStatus();
 	}
 
-	/**
-	 * Angular life cycle hooks
-	 */
-	ngOnInit() {
-		console.log('courses component initialized...');
-		// this.getCourseTabData();
-		this.setSavedContent();
-	}
-
 	generateImpressionEvent() {
 		this.telemetryService.impression(generateImpressionTelemetry(
 			ImpressionType.VIEW, "",
@@ -578,7 +623,7 @@ export class ResourcesPage implements OnInit {
 
 	showContentDetails(content, corRelationList) {
 
-		if (content.contentType === ContentType.COURSE) {
+		if (content.contentData.contentType === ContentType.COURSE) {
 			console.log('Calling course details page');
 			this.navCtrl.push(EnrolledCourseDetailsPage, {
 				content: content,

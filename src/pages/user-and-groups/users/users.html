@@ -1,0 +1,82 @@
+<!--
+  Generated template for the UsersPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar>
+      <ion-title>{{'USER_AND_GROUPS' | translate}}</ion-title>
+      <!-- <ion-buttons end>
+          <button ion-button icon-only>
+              <ion-icon name="md-download"></ion-icon>
+          </button>
+          <button ion-button icon-only>
+              <ion-icon name="md-share"></ion-icon>
+          </button>
+          <button ion-button icon-only>
+              <ion-icon name="search"></ion-icon>
+          </button>
+      </ion-buttons> -->
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content padding>
+  <p class="grey-color">LOGGED IN AS</p>
+  <ion-list>
+      <ion-item class="custom-ion-list">
+          <ion-thumbnail item-start>
+              <img class="rounded" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSEkBrNkKJxEV0sn35rirbf8pBC42UOMyedKQJWbs6quuqv1x5Cg">
+          </ion-thumbnail>
+          <ion-label>
+              <h6 class="primary">Harish Bookwala</h6>
+              <p>Jwaharlal Nagar Pune</p>
+          </ion-label>
+      </ion-item>
+  </ion-list>
+  <p class="grey-color">USERS</p>
+  <div class="nouser" *ngIf="isShow">
+      <h6>No Users Created Yet</h6>
+      <p class="grey-color">you can create guest user accounts for
+          <br> your students/others teachers
+      </p>
+  </div>
+  <ion-list *ngIf="!isShow">
+      <ion-item class="custom-ion-list" [style.border]="getStyle()">
+          <ion-thumbnail item-start>
+              <img class="rounded" (click)="showStyle = !showStyle;"
+               src="http://srecalumni.org.in/user/resource/uploads/profile/male.png">
+          </ion-thumbnail>
+          <ion-label>
+              <h6 class="primary">{{fullname}}</h6>
+              <p>{{profession}}</p>
+          </ion-label>
+          <button ion-button icon-only item-end class="custom">
+              <ion-icon name="more"></ion-icon>
+          </button>
+      </ion-item>
+  </ion-list>
+
+</ion-content>
+<ion-footer>
+  <div class="createUser" *ngIf="!showStyle">
+      <div class="border">
+          <ion-row>
+              <ion-col col-md-10 offset-md-1>
+                  <button ion-button block outline (click)="createUser()">{{'CREATE_NEW_USER' | translate}}</button>
+              </ion-col>
+          </ion-row>
+      </div>
+  </div>
+  <div class="switchUser" *ngIf="showStyle">
+      <div class="border">
+          <ion-row>
+              <ion-col col-md-10 offset-md-1>
+                  <button ion-button block outline (click)="presentActionSheet()">{{'SWITCH_ACCOUNT'| translate}}</button>
+              </ion-col>
+
+          </ion-row>
+      </div>
+  </div>
+</ion-footer>

@@ -17,7 +17,7 @@ import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
 import { FileOpener } from '@ionic-native/file-opener';
 import { AppGlobalService } from '../service/app-global.service';
 import { CourseUtilService } from '../service/course-util.service';
-
+import { IonicStorageModule } from "@ionic/storage";
 
 @NgModule({
   declarations: [
@@ -41,6 +41,7 @@ import { CourseUtilService } from '../service/course-util.service';
       autoFocusAssist: false
     }),
     IonicImageLoader.forRoot(),
+    IonicStorageModule.forRoot(),
     ...PluginModules
   ],
   bootstrap: [IonicApp],
@@ -59,7 +60,7 @@ import { CourseUtilService } from '../service/course-util.service';
     FileOpener,
     AppGlobalService,
     CourseUtilService,
-    { provide: ErrorHandler, useClass: IonicErrorHandler },
+    { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })
 export class AppModule {

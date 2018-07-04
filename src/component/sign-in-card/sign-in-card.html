@@ -1,9 +1,9 @@
 <ion-card>
   <ion-card-header>
-    <b>{{ title | translate: {'%s': sunbird } }}</b>
+    <b>{{ title | translate: {'%s': appName } }}</b>
   </ion-card-header>
   <ion-card-content class="sign-in-card-text">
-    {{ description | translate: {'%s': sunbird } }}
+    {{ description | translate: {'%s': appName } }}
     <br />
     <br />
     <button ion-button block (click)="singIn()" class="sign-in-btn">{{ 'SIGN_IN' | translate }}</button>

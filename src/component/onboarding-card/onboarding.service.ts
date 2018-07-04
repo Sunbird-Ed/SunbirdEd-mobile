@@ -20,6 +20,7 @@ export class OnboardingService {
     onBoardingSlides: any[];
     isOnBoardingCardCompleted: boolean = false;
     currentIndex: number = 0;
+    slideIndex: number = -1;
     selectedLanguage: string;
     categories: Array<any> = [];
     syllabusList: Array<any> = [];
@@ -51,6 +52,8 @@ export class OnboardingService {
     initializeCard(): Promise<any> {
         return new Promise((resolve, reject) => {
 
+            if(this.slideIndex === -1) {
+
             this.profileService.getCurrentUser((res: any) => {
                 this.profile = JSON.parse(res);
                 let syllabusFramework: string = '';
@@ -66,6 +69,7 @@ export class OnboardingService {
                             return this.getCurrentUser();
                         })
                         .then(index => {
+                            this.slideIndex = index;
                             resolve(index);
                         })
                         .catch(err => {
@@ -77,6 +81,9 @@ export class OnboardingService {
                     console.log("Err1", err);
                     reject(err);
                 });
+            } else {
+                resolve(this.slideIndex);
+            }
         });
     }
 
@@ -203,10 +210,6 @@ export class OnboardingService {
      * @param {string} list - Local variable name to hold the list data
      */
     getCategoryData(req: CategoryRequest, list, index: number, hasUserClicked: boolean): void {
-
-        if (this.frameworkId !== undefined && this.frameworkId.length) {
-            req.frameworkId = this.frameworkId;
-        }
 
         this.formAndFrameworkUtilService.getCategoryData(req, this.frameworkId)
             .then((result) => {

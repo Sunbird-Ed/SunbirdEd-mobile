@@ -49,7 +49,7 @@
           <div text-uppercase class="info-title">{{'BOARD' | translate}}</div>
         </ion-col>
         <ion-col class="font-size-14rem page-content" col-6 text-end>
-          <div *ngIf="profile?.board && profile?.board !== ''">
+          <div *ngIf="profile?.board && profile?.board.length > 0">
             <div class="ellipsis text-align">{{boards}}</div>
             <ion-icon class="icon-align" float="end" name="md-create" color="primary" (click)="editGuestProfile()"></ion-icon>
           </div>
@@ -62,7 +62,7 @@
           <div class="info-title" text-uppercase>{{'MEDIUM' | translate}}</div>
         </ion-col>
         <ion-col class="ellipsis font-size-14rem page-content" col-6 text-end>
-          <div *ngIf="profile?.medium && profile?.medium !== ''">
+          <div *ngIf="profile?.medium && profile?.medium.length > 0">
             <div class="ellipsis text-align">{{medium}}</div>
             <ion-icon class="icon-align" float="end" name="md-create" color="primary" (click)="editGuestProfile()"></ion-icon>
           </div>
@@ -75,7 +75,7 @@
           <div class="info-title" text-uppercase>{{'CLASS' | translate}}</div>
         </ion-col>
         <ion-col class="ellipsis font-size-14rem page-content" col-6 text-end>
-          <div *ngIf="profile?.grade && profile?.grade !== ''">
+          <div *ngIf="profile?.grade && profile?.grade.length > 0">
             <div class="ellipsis text-align">{{grade}}</div>
             <ion-icon class="icon-align" float="end" name="md-create" color="primary" (click)="editGuestProfile()"></ion-icon>
           </div>
@@ -88,7 +88,7 @@
           <div class="info-title" text-uppercase>{{'SUBJECTS' | translate}}</div>
         </ion-col>
         <ion-col class="ellipsis font-size-14rem page-content" col-6 text-end>
-          <div *ngIf="profile?.subject && profile?.subject != ''">
+          <div *ngIf="profile?.subject && profile?.subject.length > 0">
             <div class="ellipsis text-align">{{subjects}}</div>
             <ion-icon class="icon-align" float="end" name="md-create" color="primary" (click)="editGuestProfile()"></ion-icon>
           </div>

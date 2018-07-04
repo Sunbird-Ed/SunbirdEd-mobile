@@ -7,6 +7,7 @@ module.exports = function(config) {
     frameworks: ['jasmine'],
 
     files: [
+      './test-config/read-json.js',
       {
         pattern: './test-config/karma-test-shim.js',
         watched: true

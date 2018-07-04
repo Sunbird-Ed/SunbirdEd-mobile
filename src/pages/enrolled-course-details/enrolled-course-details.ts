@@ -19,6 +19,7 @@ import { SocialSharing } from '@ionic-native/social-sharing';
 import { Network } from '@ionic-native/network';
 import { generateInteractTelemetry, generateEndTelemetry, generateStartTelemetry, generateImpressionTelemetry } from '../../app/telemetryutil';
 import { CourseUtilService } from '../../service/course-util.service';
+import { AppGlobalService } from '../../service/app-global.service';
 
 /**
  * Generated class for the EnrolledCourseDetailsPage page.
@@ -185,7 +186,8 @@ export class EnrolledCourseDetailsPage {
     private preference: SharedPreferences,
     private network: Network,
     private courseUtilService: CourseUtilService,
-    private platform: Platform) {
+    private platform: Platform,
+    private appGlobalService: AppGlobalService) {
     this.getUserId();
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
@@ -232,16 +234,11 @@ export class EnrolledCourseDetailsPage {
    * Get user id
    */
   getUserId() {
-    this.authService.getSessionData((data: string) => {
-      let res = JSON.parse(data);
-      console.log('auth result....', res);
-      if (res === undefined || res === "null") {
-        this.userId = '';
-      } else {
-        this.userId = res[ProfileConstants.USER_TOKEN] ? res[ProfileConstants.USER_TOKEN] : '';
-        console.log('UserId', this.userId);
-      }
-    });
+    if (this.appGlobalService.getSessionData()) {
+      this.userId = this.appGlobalService.getSessionData()[ProfileConstants.USER_TOKEN];
+    } else {
+      this.userId = '';
+    }
   }
 
   /**
@@ -249,13 +246,7 @@ export class EnrolledCourseDetailsPage {
  * 
  */
   checkLoggedInOrGuestUser() {
-    this.authService.getSessionData((session) => {
-      if (session === null || session === "null") {
-        this.guestUser = true;
-      } else {
-        this.guestUser = false;
-      }
-    });
+    this.guestUser = !this.appGlobalService.isUserLoggedIn();
   }
 
   checkCurrentUserType() {
@@ -283,7 +274,7 @@ export class EnrolledCourseDetailsPage {
           comment: this.ratingComment,
           pageId: PageId.COURSE_DETAIL
         }, {
-            cssClass: 'onboarding-alert'
+            cssClass: 'content-rating-alert'
           });
         popUp.present({
           ev: event
@@ -305,8 +296,11 @@ export class EnrolledCourseDetailsPage {
   }
 
   showOverflowMenu(event) {
+    let contentData = this.course;
+    contentData.batchId = this.courseCardData.batchId ? this.courseCardData.batchId : false;
     let popover = this.popoverCtrl.create(ContentActionsComponent, {
-      content: this.course,
+      content: contentData,
+      pageName: 'course'
     }, {
         cssClass: 'content-action'
       });
@@ -388,6 +382,14 @@ export class EnrolledCourseDetailsPage {
         if (rating && rating[0]) {
           this.course.me_totalRatings = rating[0];
         }
+      }
+
+      //User Rating
+      let contentFeedback: any = data.result.contentFeedback ? data.result.contentFeedback : [];
+      if (contentFeedback !== undefined && contentFeedback.length !== 0) {
+        this.userRating = contentFeedback[0].rating;
+        this.ratingComment = contentFeedback[0].comments;
+        console.log("User Rating  - " + this.userRating);
       }
       this.getCourseProgress();
     } else {
@@ -618,7 +620,8 @@ export class EnrolledCourseDetailsPage {
         this.navCtrl.push(ContentDetailsPage, {
           content: content,
           depth: depth,
-          contentState: contentState
+          contentState: contentState,
+          isChildContent: true
         })
       }
     })
@@ -655,23 +658,17 @@ export class EnrolledCourseDetailsPage {
    * @param {string} identifier 
    */
   resumeContent(identifier): void {
-    // this.childrenData.length = 0;
     this.showResumeBtn = false;
-    // this.setContentDetails(identifier);
-    this.contentService.getContentDetail({ contentId: identifier }, (data: any) => {
-      this.zone.run(() => {
-        data = JSON.parse(data);
-        console.log('enrolled course details: ', data);
-        if (data && data.result) {
-          this.navigateToChildrenDetailsPage(data.result, '1')
-        } else {
-          this.showMessage(this.translateLanguageConstant('ERROR_FETCHING_DATA'));
-        }
-      });
-    },
-      (error: any) => {
-        this.showMessage(this.translateLanguageConstant('ERROR_FETCHING_DATA'));
-      });
+    this.navCtrl.push(ContentDetailsPage, {
+      content: { identifier: identifier },
+      depth: '1', // Needed to handle some UI elements. 
+      contentState: {
+        batchId: this.courseCardData.batchId ? this.courseCardData.batchId : '',
+        courseId: this.identifier
+      },
+      isResumedCourse: true,
+      isChildContent: true
+    });
   }
 
   /**
@@ -679,7 +676,7 @@ export class EnrolledCourseDetailsPage {
    */
   ionViewWillEnter(): void {
     this.downloadSize = 0;
-    this.tabBarElement.style.display = 'none';
+    // this.tabBarElement.style.display = 'none';
     this.courseCardData = this.navParams.get('content');
     this.corRelationList = this.navParams.get('corRelation');
     if (this.batchId) {
@@ -787,7 +784,7 @@ export class EnrolledCourseDetailsPage {
     this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_COURSE_INITIATED, this.course.contentType);
     let loader = this.getLoader();
     loader.present();
-    let url = this.baseUrl + ShareUrl.COLLECTION +this.course.identifier;
+    let url = this.baseUrl + ShareUrl.COLLECTION + this.course.identifier;
     if (this.course.isAvailableLocally) {
       this.shareUtil.exportEcar(this.course.identifier, path => {
         loader.dismiss();
@@ -796,7 +793,7 @@ export class EnrolledCourseDetailsPage {
       }, error => {
         loader.dismiss();
         let toast = this.toastCtrl.create({
-          message: "Unable to share content.",
+          message: this.translateLanguageConstant('SHARE_CONTENT_FAILED'),
           duration: 2000,
           position: 'bottom'
         });

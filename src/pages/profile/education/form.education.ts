@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NavController, NavParams, LoadingController, Platform, AlertController } from 'ionic-angular';
+import { NavController, NavParams, LoadingController, Platform, AlertController, IonicApp } from 'ionic-angular';
 import { ToastController } from 'ionic-angular';
 import * as _ from 'lodash';
 import { TranslateService } from '@ngx-translate/core';
@@ -27,6 +27,7 @@ export class FormEducation {
   formDetails: any = {};
   profile: any = {};
   yopList: Array<number> = _.rangeRight(1950, new Date().getFullYear() + 1);
+  unregisterBackButton: any;
 
 
   options: toastOptions = {
@@ -35,7 +36,8 @@ export class FormEducation {
     position: 'bottom'
   };
 
-  constructor(public navCtrl: NavController,
+  constructor(
+    public navCtrl: NavController,
     public fb: FormBuilder,
     public navParams: NavParams,
     public userProfileService: UserProfileService,
@@ -43,7 +45,8 @@ export class FormEducation {
     private loadingCtrl: LoadingController,
     private translate: TranslateService,
     public alertCtrl: AlertController,
-    private platform: Platform
+    private platform: Platform,
+    private ionicApp: IonicApp
   ) {
 
     /* Receive data from other component */
@@ -62,6 +65,30 @@ export class FormEducation {
     });
   }
 
+  ionViewWillEnter() {
+    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+      this.dismissPopup();
+    }, 11);
+  }
+
+  ionViewWillLeave() {
+    this.unregisterBackButton();
+  }
+
+  /**
+   * It will Dismiss active popup
+   */
+  dismissPopup() {
+    console.log("Fired ionViewWillLeave");
+    let activePortal = this.ionicApp._modalPortal.getActive() || this.ionicApp._overlayPortal.getActive();
+
+    if (activePortal) {
+      activePortal.dismiss();
+    } else {
+      this.navCtrl.pop();
+    }
+  }
+
   /**
    * This will call on click of DELETE and SAVE button
    * @param {object} event - Form event
@@ -77,7 +104,7 @@ export class FormEducation {
         yearOfPassing: <number>formVal.yearOfPassing,
         percentage: <number>formVal.percentage,
         grade: formVal.grade,
-        boardOrUniversity: formVal.boardOrUniversity,
+        boardOrUniversity: formVal.boardOrUniversity
       }
 
       /* Add `id` if user editing or deleting Education entry */
@@ -160,7 +187,7 @@ export class FormEducation {
   }
   showDeleteConfirm() {
     let confirm = this.alertCtrl.create({
-      title: this.translateMessage('CONFIRM_DEL',this.translateMessage('TITLE_EDUCATION')),
+      title: this.translateMessage('CONFIRM_DEL', this.translateMessage('TITLE_EDUCATION')),
 
       mode: 'wp',
       cssClass: 'confirm-alert',
