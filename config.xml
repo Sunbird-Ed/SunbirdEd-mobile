@@ -107,4 +107,5 @@
     <plugin name="cordova-plugin-file-opener2" spec="^2.0.19" />
     <plugin name="cordova-plugin-genie-sdk" spec="https://github.com/project-sunbird/cordova-plugin-genie-sdk.git" />
     <engine name="android" spec="~7.0.0" />
+    <plugin name="cordova-sqlite-storage" spec="^2.3.2" />
 </widget>
