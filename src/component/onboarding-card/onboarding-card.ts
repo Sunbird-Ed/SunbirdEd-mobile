@@ -497,20 +497,13 @@ export class OnboardingCardComponent {
   private saveDetails(): Promise<any> {
     let that = this;
     let req: Profile = {
-      age: -1,
-      day: -1,
-      month: -1,
-      standard: -1,
       syllabus: that.onBoardingSlides[0].selectedCode,
       board: that.onBoardingSlides[1].selectedCode,
-      grade: that.onBoardingSlides[3].selectedCode,
+      class: that.onBoardingSlides[3].selectedCode,
       subject: that.onBoardingSlides[4].selectedCode,
       medium: that.onBoardingSlides[2].selectedCode,
       uid: this.profile.uid,
-      handle: this.profile.handle,
-      isGroupUser: false,
-      language: "en",
-      avatar: "avatar",
+      name: this.profile.name,
       createdAt: this.profile.createdAt,
       profileType: this.profile.profileType
     }

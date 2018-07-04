@@ -285,19 +285,12 @@ export class GuestEditProfilePage {
     loader.present();
     let formVal = this.guestEditForm.value;
     let req: Profile = {
-      age: -1,
-      day: -1,
-      month: -1,
-      standard: -1,
       board: formVal.boards,
-      grade: formVal.grades,
+      class: formVal.grades,
       subject: formVal.subjects,
       medium: formVal.mediums,
       uid: this.profile.uid,
-      handle: formVal.name,
-      isGroupUser: false,
-      language: "en",
-      avatar: "avatar",
+      name: formVal.name,
       profileType: this.profile.profileType,
       createdAt: this.profile.createdAt,
       syllabus: [formVal.syllabus]
