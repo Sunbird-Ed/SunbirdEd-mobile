@@ -2,42 +2,23 @@ page-grouplanding {
   .img-container {
     position: absolute;
     width: 100px;
-    /*the image width*/
     height: 100px;
-    /*the image height*/
     top: 30%;
     left: 60%;
     margin-left: -97px;
-    /*half the image width*/
-    margin-top: -144x;
-    /*half the image height*/
-  }
-  .img-text {
-    position: absolute;
-    text-align: center;
-    left: 62%;
-    top: 30%;
-    margin-left: -97px;
-    /*half the image width*/
     margin-top: -144x;
   }
   .image-text {
     text-align: center;
     margin-top: 38vh;
   }
-  ion-toolbar.toolbar.toolbar-md {
-    margin-top: 4em;
-  }
   .secondSection {
     margin-top: 13vh;
   }
   .custom {
-    background-color: white;
+    //background-color: white;
     color: rgba(0, 0, 0, 0.5);
     box-shadow: none;
-  }
-  .rounded {
-    border-radius: 50%;
   }
   .border {
     border: 2px solid #d9d9d9;
@@ -47,10 +28,23 @@ page-grouplanding {
     height: 102px;
     border-radius: 50%;
   }
-  .toolbar {
-    background-color: white;
+  .item-background.item-md {
+    background-color: map-get($colors, light_gray) !important;
   }
-  ion-item.custom-ion-list {
-    background-color: #f4f4f4;
+  .subTitle {
+    font-size: 1.4rem;
+    font-weight: 700;
   }
+}
+
+.segment-md .segment-button {
+  height: 5.2rem !important;
+  font-weight: 700 !important;
+  color: map-get($colors, dark_gray) !important;
+  line-height: 5rem !important;
+}
+
+.segment-md .segment-button.segment-activated {
+  border-color: map-get($colors, primary) !important;
+  color: map-get($colors, primary) !important;
 }
