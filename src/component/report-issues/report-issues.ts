@@ -1,11 +1,32 @@
-import { ContentService, AuthService, TelemetryService, InteractType, InteractSubtype, PageId, Environment } from 'sunbird';
-import { Component, NgModule } from '@angular/core';
-import { NavParams, ViewController, Platform, ToastController } from "ionic-angular";
-import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
+import {
+  ContentService,
+  TelemetryService,
+  InteractType,
+  InteractSubtype,
+  PageId,
+  Environment
+} from 'sunbird';
+import {
+  Component
+} from '@angular/core';
+import {
+  NavParams,
+  ViewController,
+  Platform,
+  ToastController
+} from "ionic-angular";
+import {
+  FormBuilder,
+  FormGroup,
+  FormArray
+} from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
 import { generateInteractTelemetry } from '../../app/telemetryutil';
-import { ProfileConstants, FlagContent } from '../../app/app.constant';
+import {
+  ProfileConstants,
+  FlagContent
+} from '../../app/app.constant';
 import { AppGlobalService } from '../../service/app-global.service';
 
 /**
@@ -40,7 +61,6 @@ export class ReportIssuesComponent {
     private contentService: ContentService,
     private navParams: NavParams,
     private translate: TranslateService,
-    private authService: AuthService,
     private toastCtrl: ToastController,
     private telemetryService: TelemetryService,
     private appGlobalService: AppGlobalService) {
