@@ -1,14 +1,10 @@
-import { TranslateService } from '@ngx-translate/core';
 import { MembersPage } from './../members/members';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-
-/**
- * Generated class for the CreateGroupPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import { AppGlobalService } from '../../../service/app-global.service';
+import { FormAndFrameworkUtilService } from '../../profile/formandframeworkutil.service';
+import { GroupService, CategoryRequest, Group } from 'sunbird';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @IonicPage()
 @Component({
@@ -16,21 +12,62 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
   templateUrl: 'create-group.html',
 })
 export class CreateGroupPage {
-  group = {}
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,
-    public translate: TranslateService) {
+
+  groupEditForm: FormGroup
+
+  gradeList = [];
+  group: Group = {}
+
+  constructor(private navCtrl: NavController,
+    private navParams: NavParams,
+    private fb: FormBuilder,
+    private appGlobalService: AppGlobalService,
+    private formAndFrameAPI: FormAndFrameworkUtilService,
+    private groupService: GroupService) {
+
+      this.groupEditForm = this.fb.group({
+        name: [this.group.name || ""],
+        grade: [this.group.class && this.group.class[0] || []]
+      });
+
+    this.init();
   }
 
- 
+  addMembers() {
+    let formValue = this.groupEditForm.value;
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad CreateGroupPage');
+    if (formValue.name) {
+      this.group.name = formValue.name;
+      this.group.class = [formValue.grade];
+
+      this.navCtrl.push(MembersPage, {
+        group: this.group
+      });
+    }
   }
-  addMembers(){
-    console.log(this.group);
-    this.navCtrl.push(MembersPage, {
-      item: this.group
-    });
+
+  private init() {
+    let profile = this.appGlobalService.getCurrentUser()
+
+    let frameworkId;
+
+    if (profile && profile.syllabus && profile.syllabus.length > 0) {
+      frameworkId = profile.syllabus[0];
+    }
+
+    this.formAndFrameAPI.getFrameworkDetails(frameworkId)
+      .then((categories) => {
+        let request: CategoryRequest = {
+          currentCategory: "gradeLevel"
+        }
+        return this.formAndFrameAPI.getCategoryData(request)
+      })
+      .then((grades) => {
+        this.gradeList = grades;
+      })
+      .catch(error => {
+        console.log("Error : " + error);
+      });
   }
 }
