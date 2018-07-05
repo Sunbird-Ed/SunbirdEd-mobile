@@ -9,7 +9,7 @@ import { ReportPage } from '../../settings/reports/reports'
 import { GroupReportListPage } from '../../settings/reports/group-report-list/group-report-list'
 import { OAuthService } from "sunbird";
 import { OnboardingPage } from "../../onboarding/onboarding";
-import { Interact, InteractType, InteractSubtype, PageId, Environment, TelemetryService, ProfileService } from "sunbird";
+import { InteractType, InteractSubtype, PageId, Environment, TelemetryService, ProfileService } from "sunbird";
 import { generateInteractTelemetry } from "../../../app/telemetryutil";
 import { GrouplandingPage } from "../../user-and-groups/grouplanding/grouplanding";
 
@@ -23,7 +23,8 @@ export class OverflowMenuComponent {
     @ViewChild(Nav) nav;
     items: Array<string>;
 
-    constructor(public navCtrl: NavController,
+    constructor(
+        public navCtrl: NavController,
         public navParams: NavParams,
         public viewCtrl: ViewController,
         private oauth: OAuthService,
@@ -99,5 +100,4 @@ export class OverflowMenuComponent {
                 undefined,
                 undefined));
     }
-
 }

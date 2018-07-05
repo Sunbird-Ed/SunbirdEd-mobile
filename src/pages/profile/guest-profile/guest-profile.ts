@@ -40,7 +40,6 @@ export class GuestProfilePage {
   showSignInCard: boolean = false;
   isNetworkAvailable: boolean;
   showWarning: boolean = false;
-  /* Temporary Language Constants */
   boards: string = "";
   grade: string = "";
   medium: string = "";
@@ -57,7 +56,8 @@ export class GuestProfilePage {
     position: 'bottom'
   };
 
-  constructor(public navCtrl: NavController,
+  constructor(
+    public navCtrl: NavController,
     public network: Network,
     public popoverCtrl: PopoverController,
     private profileService: ProfileService,
