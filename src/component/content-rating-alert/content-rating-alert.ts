@@ -1,14 +1,31 @@
-import { Component, NgZone } from '@angular/core';
-import { NavParams, ViewController, Platform, ToastController } from "ionic-angular";
 import {
-  ContentService, AuthService, TelemetryService,
-  InteractType, InteractSubtype, Environment, ImpressionType, ImpressionSubtype, Log, LogLevel
+  Component,
+  NgZone
+} from '@angular/core';
+import {
+  NavParams,
+  ViewController,
+  Platform,
+  ToastController
+} from "ionic-angular";
+import {
+  ContentService,
+  TelemetryService,
+  InteractType,
+  InteractSubtype,
+  Environment,
+  ImpressionType,
+  ImpressionSubtype,
+  Log,
+  LogLevel
 } from 'sunbird';
 import { TranslateService } from '@ngx-translate/core';
-import { generateImpressionTelemetry, generateInteractTelemetry } from '../../app/telemetryutil';
+import {
+  generateImpressionTelemetry,
+  generateInteractTelemetry
+} from '../../app/telemetryutil';
 import { ProfileConstants } from '../../app/app.constant';
 import { AppGlobalService } from '../../service/app-global.service';
-
 
 /**
  * Generated class for the ContentRatingAlertComponent component.
@@ -44,7 +61,6 @@ export class ContentRatingAlertComponent {
   constructor(private navParams: NavParams,
     private viewCtrl: ViewController,
     private platform: Platform,
-    private authService: AuthService,
     private translate: TranslateService,
     private toastCtrl: ToastController,
     private ngZone: NgZone,
@@ -65,6 +81,38 @@ export class ContentRatingAlertComponent {
         this.showCommentBox = true;
       }
     })
+  }
+
+  /**
+  * Ionic life cycle hook
+  */
+  ionViewDidLoad(): void {
+    this.content = this.navParams.get("content");
+    this.pageId = this.navParams.get("pageId");
+
+  }
+
+  ionViewWillEnter() {
+    this.telemetryService.impression(generateImpressionTelemetry(
+      ImpressionType.VIEW,
+      ImpressionSubtype.RATING_POPUP,
+      this.pageId,
+      Environment.HOME, "", "", "",
+      undefined,
+      undefined
+    ));
+
+    let log = new Log();
+    log.level = LogLevel.INFO;
+    log.message = this.pageId;
+    log.env = Environment.HOME;
+    log.type = ImpressionType.VIEW;
+    let params = new Array<any>();
+    let paramsMap = new Map();
+    paramsMap["PopupType"] = this.popupType;
+    params.push(paramsMap);
+    log.params = params;
+    this.telemetryService.log(log);
   }
 
   /**
@@ -139,38 +187,6 @@ export class ContentRatingAlertComponent {
       position: 'bottom'
     });
     toast.present();
-  }
-
-  /**
-  * Ionic life cycle hook
-  */
-  ionViewDidLoad(): void {
-    this.content = this.navParams.get("content");
-    this.pageId = this.navParams.get("pageId");
-
-  }
-
-  ionViewWillEnter() {
-    this.telemetryService.impression(generateImpressionTelemetry(
-      ImpressionType.VIEW,
-      ImpressionSubtype.RATING_POPUP,
-      this.pageId,
-      Environment.HOME, "", "", "",
-      undefined,
-      undefined
-    ));
-
-    let log = new Log();
-    log.level = LogLevel.INFO;
-    log.message = this.pageId;
-    log.env = Environment.HOME;
-    log.type = ImpressionType.VIEW;
-    let params = new Array<any>();
-    let paramsMap = new Map();
-    paramsMap["PopupType"] = this.popupType;
-    params.push(paramsMap);
-    log.params = params;
-    this.telemetryService.log(log);
   }
 
   /**

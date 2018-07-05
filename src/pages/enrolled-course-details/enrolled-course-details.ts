@@ -1,23 +1,60 @@
 import { ContentRatingAlertComponent } from './../../component/content-rating-alert/content-rating-alert';
-import { Component, NgZone, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events, ToastController, PopoverController, LoadingController, Platform, Navbar } from 'ionic-angular';
 import {
-  ContentService, FileUtil, CourseService,
-  ChildContentRequest, AuthService, PageId, UserProfileService, InteractSubtype, TelemetryService, Environment, Start, Mode, End,
-  InteractType, BuildParamService, ShareUtil, SharedPreferences, ProfileType, ImpressionType, CorrelationData
+  Component,
+  NgZone,
+  ViewChild
+} from '@angular/core';
+import {
+  IonicPage,
+  NavController,
+  NavParams,
+  Events,
+  ToastController,
+  PopoverController,
+  LoadingController,
+  Platform,
+  Navbar
+} from 'ionic-angular';
+import {
+  ContentService,
+  FileUtil,
+  CourseService,
+  ChildContentRequest,
+  PageId,
+  UserProfileService,
+  InteractSubtype,
+  TelemetryService,
+  Environment,
+  Mode,
+  InteractType,
+  BuildParamService,
+  ShareUtil,
+  SharedPreferences,
+  ProfileType,
+  ImpressionType,
+  CorrelationData
 } from 'sunbird';
 import * as _ from 'lodash';
-// import { CourseDetailPage } from '../course-detail/course-detail';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { ContentActionsComponent } from '../../component/content-actions/content-actions';
-import { ReportIssuesComponent } from '../../component/report-issues/report-issues';
 import { TranslateService } from '@ngx-translate/core';
-import { ContentType, MimeType, ProfileConstants, EventTopics, ShareUrl } from '../../app/app.constant';
+import {
+  ContentType,
+  MimeType,
+  ProfileConstants,
+  EventTopics,
+  ShareUrl
+} from '../../app/app.constant';
 import { CourseBatchesPage } from '../course-batches/course-batches';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { Network } from '@ionic-native/network';
-import { generateInteractTelemetry, generateEndTelemetry, generateStartTelemetry, generateImpressionTelemetry } from '../../app/telemetryutil';
+import {
+  generateInteractTelemetry,
+  generateEndTelemetry,
+  generateStartTelemetry,
+  generateImpressionTelemetry
+} from '../../app/telemetryutil';
 import { CourseUtilService } from '../../service/course-util.service';
 import { AppGlobalService } from '../../service/app-global.service';
 
@@ -143,16 +180,6 @@ export class EnrolledCourseDetailsPage {
   public navCtrl: NavController;
 
   /**
-   * Contains ref of navigation params
-   */
-  public navParams: NavParams;
-
-  /**
-   * Contains reference of zone service
-   */
-  public zone: NgZone;
-
-  /**
    * Contains reference of ionic toast controller
    */
   public toastCtrl: ToastController;
@@ -168,15 +195,14 @@ export class EnrolledCourseDetailsPage {
 
   @ViewChild(Navbar) navBar: Navbar;
   constructor(navCtrl: NavController,
-    navParams: NavParams,
+    private navParams: NavParams, // Contains ref of navigation params
     contentService: ContentService,
-    zone: NgZone,
+    private zone: NgZone, // Contains reference of zone service
     private events: Events,
     toastCtrl: ToastController,
     private fileUtil: FileUtil,
     public popoverCtrl: PopoverController,
     private translate: TranslateService,
-    private authService: AuthService,
     private profileService: UserProfileService,
     private courseService: CourseService,
     private buildParamService: BuildParamService,
