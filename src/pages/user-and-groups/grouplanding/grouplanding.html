@@ -1,10 +1,10 @@
 <ion-header>
-  <ion-navbar>
+  <ion-navbar color="white">
     <ion-title>{{'USERS_AND_GROUPS'| translate}}</ion-title>
   </ion-navbar>
 </ion-header>
 <ion-content>
-  <ion-segment no-padding [(ngModel)]="segmentType">
+  <ion-segment no-padding [(ngModel)]="segmentType" (ionChange)="onSegmentChange($event)">
     <ion-segment-button value="users">
       {{'USERS' | translate}}
     </ion-segment-button>
@@ -16,12 +16,13 @@
   <div [ngSwitch]="segmentType" padding>
     <ion-list *ngSwitchCase="'users'">
       <p ion-text text-uppercase color="dark_gray" class="subTitle">LOGGED IN AS</p>
-      <ion-item class="item-background">
+      <ion-item class="item-background" no-lines>
         <ion-avatar item-start>
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSEkBrNkKJxEV0sn35rirbf8pBC42UOMyedKQJWbs6quuqv1x5Cg">
+          <img src="{{userProfile?.avatar}}">
+          <img src="assets/imgs/ic_check_circle.png" id="tick" />
         </ion-avatar>
-        <p ion-text color="primary">Harish Bookwala</p>
-        <p ion-text color="dark_gray">Jwaharlal Nagar Pune</p>
+        <p ion-text color="primary">{{userProfile?.firstName}}&nbsp;{{userProfile?.lastName}}</p>
+        <p ion-text color="dark_gray">{{userProfile?.address}}</p>
       </ion-item>
       <p ion-text color="dark_gray" text-uppercase class="subTitle">{{'USERS' | translate}}</p>
       <div *ngIf="showEmptyUsersMessage">
@@ -31,20 +32,19 @@
         </p>
       </div>
       <ion-list *ngIf="!showEmptyUsersMessage">
-        <ion-item class="item-background" [style.border]="getStyle()" style="margin-bottom: 10px;" *ngFor="let user of usersList">
+        <ion-item *ngFor="let user of usersList; let i=index;" (click)="selectUser(i, user?.name)" class="item-background" [ngClass]="i===selectedUserIndex ? 'blueBorder' : ''" style="margin-bottom: 10px;" no-lines>
           <ion-avatar item-start>
-            <img (click)="showStyle = !showStyle;" src="http://srecalumni.org.in/user/resource/uploads/profile/male.png">
+            <img src="assets/imgs/ic_businessman.png">
           </ion-avatar>
           <h6>
             <b>{{user?.name}}</b>
           </h6>
           <p>{{user?.userType}} • {{user?.grade}}</p>
-          <button ion-button icon-only end>
-            <ion-icon name="more" float-end></ion-icon>
-          </button>
+          <ion-icon name="more" item-end float-end></ion-icon>
         </ion-item>
       </ion-list>
     </ion-list>
+
     <ion-list *ngSwitchCase="'groups'">
       <div class="firstSection" *ngIf="showEmptyGroupsMessage">
         <div class="img-container">
@@ -63,52 +63,36 @@
           </ion-col>
         </ion-row>
       </div>
-      <div class="secondSection" *ngIf="!showEmptyGroupsMessage">
-        <ion-list>
-          <ion-item class="custom-ion-list">
-            <ion-thumbnail item-start>
-              <img class="rounded" (click)="gotToGroupMembersPage()" src="assets/imgs/male.png">
-            </ion-thumbnail>
-            <ion-label>
-              <h6 (click)="gotToGroupMembersPage()">{{groupName}}</h6>
-            </ion-label>
-            <button ion-button icon-only end>
-              <ion-icon name="more" float-end></ion-icon>
-            </button>
-          </ion-item>
-        </ion-list>
-      </div>
+      <div class="groupSecondSection"  *ngIf="!showEmptyGroupsMessage">
+          <ion-list>
+            <ion-item class="item-background" style="margin-bottom: 10px;" *ngFor="let group of groupList">
+              <ion-avatar item-start>
+                <img src="assets/imgs/img_group.png">
+              </ion-avatar>
+              <h6>
+                <b>{{group?.groupName}}</b>
+              </h6>
+              <p>{{group?.grade}} • {{group?.noOfUsers}} users</p>
+                <ion-icon name="more" item-end float-end></ion-icon>
+            </ion-item>
+          </ion-list>
+        </div>
     </ion-list>
   </div>
-
 </ion-content>
 
 <ion-footer>
-  <div [ngSwitch]="segmentType">
-    <div *ngSwitchCase="'groups'">
-      <div>
-        <ion-row>
-          <ion-col col-md-10 offset-md-1>
-            <button ion-button block outline (click)="createGroup()">{{'CREATE_NEW_GROUP'| translate}}</button>
-          </ion-col>
-        </ion-row>
+  <ion-row>
+    <ion-col col-md-10 offset-md-1>
+      <div *ngIf="isUserSelected; else enableCreateButton">
+        <button ion-button block center (click)="switchAccountPrompt()">
+          {{'SWITCH_ACCOUNT'| translate}}
+        </button>
       </div>
-    </div>
-    <div *ngSwitchCase="'users'">
-      <div class="createUser" *ngIf="!showStyle">
-        <ion-row>
-          <ion-col col-md-10 offset-md-1>
-            <button ion-button block outline (click)="createUser()">{{'CREATE_NEW_USER' | translate}}</button>
-          </ion-col>
-        </ion-row>
-      </div>
-      <div class="switchUser" *ngIf="showStyle">
-        <ion-row>
-          <ion-col col-md-10 offset-md-1>
-            <button ion-button block outline (click)="switchAccountPrompt()">{{'SWITCH_ACCOUNT'| translate}}</button>
-          </ion-col>
-        </ion-row>
-      </div>
-    </div>
-  </div>
+      <ng-template #enableCreateButton>
+        <button ion-button outline block *ngIf="segmentType==='users'" (click)="createUser()">{{ 'CREATE_NEW_USER' | translate }}</button>
+        <button ion-button outline block (click)="createGroup()" *ngIf="segmentType==='groups'">{{ 'CREATE_NEW_GROUP' | translate }}</button>
+      </ng-template>
+    </ion-col>
+  </ion-row>
 </ion-footer>

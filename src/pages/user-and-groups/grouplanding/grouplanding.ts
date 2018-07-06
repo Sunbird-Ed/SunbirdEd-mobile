@@ -1,5 +1,5 @@
 import { TranslateService } from '@ngx-translate/core';
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams, ActionSheetController, PopoverController } from 'ionic-angular';
 
 import { CreateGroupPage } from './../create-group/create-group';
@@ -17,6 +17,7 @@ export class GrouplandingPage {
   groupName: string;
   showEmptyUsersMessage: boolean = false;
   showEmptyGroupsMessage: boolean = false;
+  isUserSelected: boolean = false;
   usersList: Array<any> = [
     {
       name: 'Harish BookWala',
@@ -32,19 +33,44 @@ export class GrouplandingPage {
       name: 'Guru Singh',
       userType: 'student',
       grade: 'Grade 1'
+    }
+  ];
+  groupList: Array<any> = [
+    {
+      groupName: 'English Group',
+      noOfUsers: '10',
+      grade: 'Grade 2'
     },
+    {
+      groupName: 'Hindi Group',
+      noOfUsers: '8',
+      grade: 'Grade 5'
+    },
+    {
+      groupName: 'Marathi Group',
+      noOfUsers: '5',
+      grade: 'Grade 1'
+    },
+  ];
 
-  ]
-  groupList: Array<string> = [];
   userType: string;
-  showStyle: false;
+  selectedUserIndex: number = -1;
+  userProfile = {
+    id: 'something',
+    firstName: 'Harish',
+    lastName: 'Bookwala',
+    address: 'Jawaharlal Nagar, Pune',
+    userType: 'teacher',
+    avatar: 'assets/imgs/ic_businessman.png'
+  }
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     public translate: TranslateService,
     public actionSheetCtrl: ActionSheetController,
-    public popOverCtrl: PopoverController
+    public popOverCtrl: PopoverController,
+    public zone: NgZone
   ) {
 
     /* Check usersList length and show message or list accordingly */
@@ -90,6 +116,22 @@ export class GrouplandingPage {
     this.navCtrl.push(CreateuserPage, {})
   }
 
+  selectUser(index: number, name: string) {
+    this.isUserSelected = !this.isUserSelected;
+    this.zone.run(() => {
+      this.selectedUserIndex = index;
+    });
+    console.log("Clicked list name is ", name);
+  }
+
+  onSegmentChange(event) {
+    this.isUserSelected = false;
+    this.zone.run(() => {
+      this.selectedUserIndex = -1;
+    })
+    console.log("Event", event);
+  }
+
   /**
    * Shows Prompt for switch Account
    */
@@ -113,17 +155,6 @@ export class GrouplandingPage {
       ]
     });
     actionSheet.present();
-  }
-
-  /**
-   * Returns Style for the border of the box
-   */
-  getStyle() {
-    if (this.showStyle) {
-      return "1px solid #488aff";
-    } else {
-      return "";
-    }
   }
 
   /**
