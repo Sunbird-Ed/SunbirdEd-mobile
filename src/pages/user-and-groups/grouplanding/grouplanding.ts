@@ -1,3 +1,4 @@
+import { Popover } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Component, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams, ActionSheetController, PopoverController } from 'ionic-angular';
@@ -6,6 +7,7 @@ import { CreateGroupPage } from './../create-group/create-group';
 import { UsersPage } from './../users/users';
 import { GroupMemberPage } from '../group-member/group-member';
 import { CreateuserPage } from '../createuser/createuser';
+import { PopoverPage } from '../popover/popover';
 
 @IonicPage()
 @Component({
@@ -17,7 +19,7 @@ export class GrouplandingPage {
   groupName: string;
   showEmptyUsersMessage: boolean = false;
   showEmptyGroupsMessage: boolean = false;
-  isUserSelected: boolean = false;
+  isUserSelected: number = -1;
   usersList: Array<any> = [
     {
       name: 'Harish BookWala',
@@ -50,7 +52,7 @@ export class GrouplandingPage {
       groupName: 'Marathi Group',
       noOfUsers: '5',
       grade: 'Grade 1'
-    },
+    }
   ];
 
   userType: string;
@@ -59,7 +61,7 @@ export class GrouplandingPage {
     id: 'something',
     firstName: 'Harish',
     lastName: 'Bookwala',
-    address: 'Jawaharlal Nagar, Pune',
+    grade:"CLASS 4A",
     userType: 'teacher',
     avatar: 'assets/imgs/ic_businessman.png'
   }
@@ -70,7 +72,8 @@ export class GrouplandingPage {
     public translate: TranslateService,
     public actionSheetCtrl: ActionSheetController,
     public popOverCtrl: PopoverController,
-    public zone: NgZone
+    public zone: NgZone,
+    public popoverCtrl: PopoverController
   ) {
 
     /* Check usersList length and show message or list accordingly */
@@ -86,6 +89,22 @@ export class GrouplandingPage {
     } else {
       this.showEmptyGroupsMessage = true;
     }
+  }
+
+  presentPopover(myEvent) {
+    let popover = this.popoverCtrl.create(PopoverPage, {
+      edit: function() {
+          alert('yay');
+          popover.dismiss()
+          },
+        delete: function(){
+          alert('delete clicked');
+          popover.dismiss()
+        },
+      });
+    popover.present({
+      ev: myEvent
+    });
   }
 
   ionViewDidLoad() {
@@ -117,7 +136,7 @@ export class GrouplandingPage {
   }
 
   selectUser(index: number, name: string) {
-    this.isUserSelected = !this.isUserSelected;
+    this.isUserSelected = -1;
     this.zone.run(() => {
       this.selectedUserIndex = index;
     });
@@ -125,7 +144,7 @@ export class GrouplandingPage {
   }
 
   onSegmentChange(event) {
-    this.isUserSelected = false;
+    this.isUserSelected = -1;
     this.zone.run(() => {
       this.selectedUserIndex = -1;
     })
