@@ -1,15 +1,12 @@
 
 import { Component } from '@angular/core';
-import { NavController, NavParams, ToastController, Platform } from 'ionic-angular';
+import { NavController, NavParams, ToastController, Platform, AlertController, IonicApp } from 'ionic-angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
 
 import { UserProfileService, UpdateUserInfoRequest } from 'sunbird';
 import { ProfilePage } from './../profile';
-
-import { AlertController } from 'ionic-angular';
-
 
 /**
  * Interface for the Toast Object
@@ -36,6 +33,12 @@ export class FormExperience {
   currentJob: boolean = false;
   todayDate: string = new Date().toISOString().slice(0, 10);
   joiningDate: string = "1950";
+  unregisterBackButton: any;
+
+  subjectOptions = {
+    title: this.translateMessage('SUBJECTS'),
+    cssClass: 'select-box'
+  };
 
   /**
    * @todo Fetch languageList, SubjectList and gradeList from the framework
@@ -48,18 +51,20 @@ export class FormExperience {
     position: 'bottom'
   };
 
-  constructor(public navCtrl: NavController,
+  constructor(
+    public navCtrl: NavController,
     private fb: FormBuilder,
     private navParams: NavParams,
     private userProfileService: UserProfileService,
     private toastCtrl: ToastController,
     private translate: TranslateService,
     public alertCtrl: AlertController,
-    private platform: Platform
+    private platform: Platform,
+    private ionicApp: IonicApp
   ) {
 
     /* Receive data from other component */
-    this.isNewForm = this.navParams.get('addForm');
+    this.isNewForm = Boolean(this.navParams.get('addForm'));
     this.jobInfo = this.navParams.get('jobInfo') || {};
     this.profile = this.navParams.get('profile') || {};
 
@@ -75,6 +80,30 @@ export class FormExperience {
     });
 
     if (this.jobInfo.isCurrentJob) this.currentJob = true;
+  }
+
+  ionViewWillEnter() {
+    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+      this.dismissPopup();
+    }, 11);
+  }
+
+  ionViewWillLeave() {
+    this.unregisterBackButton();
+  }
+
+  /**
+   * It will Dismiss active popup
+   */
+  dismissPopup() {
+    console.log("Fired ionViewWillLeave");
+    let activePortal = this.ionicApp._modalPortal.getActive() || this.ionicApp._overlayPortal.getActive();
+
+    if (activePortal) {
+      activePortal.dismiss();
+    } else {
+      this.navCtrl.pop();
+    }
   }
 
   changeJoiningDate() {
@@ -116,7 +145,7 @@ export class FormExperience {
       jobProfile: [userJobProfile]
     };
 
-    this.updateExprience(req);
+    this.updateExperience(req);
   }
 
   /**
@@ -138,7 +167,7 @@ export class FormExperience {
    * This will call Update User's Info API
    * @param {object} req - Request object for the User profile Service
    */
-  updateExprience(req): void {
+  updateExperience(req): void {
     this.userProfileService.updateUserInfo(req,
       (res: any) => {
         this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
@@ -152,7 +181,7 @@ export class FormExperience {
 
   /**
    * It will returns Toast Object
-   * @param {message} string - Message for the Toast to show
+   * @param {string} message - Message for the Toast to show
    * @returns {object} - toast Object
    */
   getToast(message: string = ''): any {
@@ -163,7 +192,7 @@ export class FormExperience {
   /**
    * This method formats the date from YYY-MM-dd HH:MM:SS Z to YYYY-MM-dd
    * @param {string} date - Date in the string Format
-   * @param {string} - Date in the ISO format
+   * @returns {string} - Date in the ISO format
    */
   formatDate(date: string): string {
     return new Date(date).toISOString().slice(0, 10);
@@ -172,7 +201,7 @@ export class FormExperience {
 
   /**
    * @param {string} str - Input String that need to convert into the Array
-   * @returns {array}
+   * @returns {array} - Array
    */
   stringToArray(str: string = '') {
     return _.split(str, ', ');
@@ -195,7 +224,7 @@ export class FormExperience {
 
   showDeleteConfirm() {
     let confirm = this.alertCtrl.create({
-      title: this.translateMessage('CONFIRM_DEL',this.translateMessage('TITLE_EXPERIENCE')),
+      title: this.translateMessage('CONFIRM_DEL', this.translateMessage('TITLE_EXPERIENCE')),
 
       mode: 'wp',
       cssClass: 'confirm-alert',
@@ -227,14 +256,14 @@ export class FormExperience {
       ]
     });
     confirm.present();
-    let deregisterBackButton = this.platform.registerBackButtonAction(() => {
+    let unregisterBackButton = this.platform.registerBackButtonAction(() => {
       // dismiss on back press
       confirm.dismiss();
     }, 11);
 
     // deregister handler after modal closes
     confirm.onDidDismiss(() => {
-      deregisterBackButton();
+      unregisterBackButton();
     });
 
     function closePopup() {

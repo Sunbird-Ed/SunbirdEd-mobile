@@ -8,6 +8,7 @@ import { ContentService, AuthService } from 'sunbird';
 import { ToastController, Platform } from "ionic-angular";
 import { ReportIssuesComponent } from '../report-issues/report-issues';
 import { ProfileConstants } from '../../app/app.constant';
+import { AppGlobalService } from '../../service/app-global.service';
 
 /**
  * Generated class for the ContentActionsComponent component.
@@ -41,7 +42,8 @@ export class ContentActionsComponent {
     private authService: AuthService,
     private events: Events,
     private translate: TranslateService,
-    private platform: Platform) {
+    private platform: Platform,
+    private appGlobalService: AppGlobalService) {
     this.content = this.navParams.get("content");
     this.pageName = this.navParams.get('pageName');
     if (this.navParams.get('isChild')) {

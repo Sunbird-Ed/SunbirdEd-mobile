@@ -2,14 +2,15 @@ import { ContentRatingAlertComponent } from './../../component/content-rating-al
 import { ContentActionsComponent } from './../../component/content-actions/content-actions';
 import { Component, NgZone, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, PopoverController, Navbar, Platform } from 'ionic-angular';
-import { ContentService, CourseService, FileUtil, ImpressionType, PageId, Environment, TelemetryService, Mode, End, ShareUtil, InteractType, InteractSubtype, Rollup, BuildParamService, AuthService, SharedPreferences, ProfileType, CorrelationData } from 'sunbird';
+import { ContentService, CourseService, FileUtil, ImpressionType, PageId, Environment, TelemetryService, Mode, ShareUtil, InteractType, InteractSubtype, Rollup, BuildParamService, SharedPreferences, ProfileType, CorrelationData } from 'sunbird';
 import { SocialSharing } from "@ionic-native/social-sharing";
 import { Network } from '@ionic-native/network';
 import * as _ from 'lodash';
 import { generateInteractTelemetry, Map, generateStartTelemetry, generateImpressionTelemetry, generateEndTelemetry } from '../../app/telemetryutil';
 import { TranslateService } from '@ngx-translate/core';
-import { EventTopics } from '../../app/app.constant';
+import { EventTopics, ProfileConstants } from '../../app/app.constant';
 import { ShareUrl } from '../../app/app.constant';
+import { AppGlobalService } from '../../service/app-global.service';
 
 @IonicPage()
 @Component({
@@ -116,8 +117,8 @@ export class ContentDetailsPage {
   isContentPlayed: boolean = false;
 
   /**
-   * User Rating 
-   * 
+   * User Rating
+   *
    */
   private userRating: number = 0;
   private ratingComment: string = '';
@@ -154,8 +155,8 @@ export class ContentDetailsPage {
     private fileUtil: FileUtil, public popoverCtrl: PopoverController, private shareUtil: ShareUtil,
     private social: SocialSharing, private platform: Platform, private translate: TranslateService,
     private buildParamService: BuildParamService, private network: Network,
-    private authService: AuthService, private courseService: CourseService,
-    private preference: SharedPreferences) {
+    private courseService: CourseService,
+    private preference: SharedPreferences, private appGlobalService: AppGlobalService) {
     this.getUserId();
     this.navCtrl = navCtrl;
     this.navParams = navParams;
@@ -205,16 +206,10 @@ export class ContentDetailsPage {
 
   /**
    * Get the session to know if the user is logged-in or guest
-   * 
+   *
    */
   checkLoggedInOrGuestUser() {
-    this.authService.getSessionData((session) => {
-      if (session === null || session === "null") {
-        this.guestUser = true;
-      } else {
-        this.guestUser = false;
-      }
-    });
+    this.guestUser = !this.appGlobalService.isUserLoggedIn();
   }
 
   checkCurrentUserType() {
@@ -669,14 +664,11 @@ export class ContentDetailsPage {
   }
 
   getUserId() {
-    this.authService.getSessionData((session: string) => {
-      if (session === null || session === "null") {
-        this.userId = '';
-      } else {
-        let res = JSON.parse(session);
-        this.userId = res["userToken"] ? res["userToken"] : '';
-      }
-    });
+    if (this.appGlobalService.getSessionData()) {
+      this.userId = this.appGlobalService.getSessionData()[ProfileConstants.USER_TOKEN];
+    } else {
+      this.userId = '';
+    }
   }
 
   updateContentProgress() {

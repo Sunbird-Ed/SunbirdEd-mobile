@@ -4,7 +4,7 @@ import { StatusBar } from '@ionic-native/status-bar';
 import {
   TabsPage, AuthService, ContainerService, PermissionService,
   Interact, InteractType, InteractSubtype, Environment, TelemetryService,
-  SharedPreferences, ProfileType, UserProfileService
+  SharedPreferences, ProfileType, UserProfileService, MigrationService, GroupService
 } from "sunbird";
 import { initTabs, GUEST_TEACHER_TABS, GUEST_STUDENT_TABS, LOGIN_TEACHER_TABS } from './module.service';
 import { LanguageSettingsPage } from '../pages/language-settings/language-settings';
@@ -20,6 +20,7 @@ import { MimeType, ContentType } from './app.constant';
 import { EnrolledCourseDetailsPage } from '../pages/enrolled-course-details/enrolled-course-details';
 import { AppGlobalService } from '../service/app-global.service';
 import { ProfileConstants } from './app.constant';
+import { AppVersion } from '@ionic-native/app-version';
 
 declare var chcp: any;
 
@@ -61,7 +62,9 @@ export class MyApp {
     private telemetryService: TelemetryService,
     private preference: SharedPreferences,
     private appGlobal: AppGlobalService,
-    private userProfileService: UserProfileService
+    private userProfileService: UserProfileService,
+    private migrationService: MigrationService,
+    private appVersion: AppVersion,
   ) {
 
     let that = this;
@@ -73,6 +76,7 @@ export class MyApp {
       this.imageLoaderConfig.enableDebugMode();
       this.imageLoaderConfig.setMaximumCacheSize(100 * 1024 * 1024);
       this.subscribeEvents();
+      this.checkForMigration();
       this.saveDefaultSyncSetting();
       this.showAppWalkThroughScreen();
 
@@ -168,6 +172,17 @@ export class MyApp {
         this.preference.putString("sync_config", "ALWAYS_ON");
       }
     });
+  }
+
+  checkForMigration() {
+    this.appVersion.getVersionCode()
+      .then((versionCode) => {
+        console.log("Current Version Code - " + versionCode);
+        this.migrationService.migrateFromSQLToNoSQL();
+      },
+        (error) => {
+
+        });
   }
 
   handleBackButton() {
@@ -297,7 +312,7 @@ export class MyApp {
   }
 
   showContentDetails(content) {
-    if (content.contentType === ContentType.COURSE) {
+    if (content.contentData.contentType === ContentType.COURSE) {
       console.log('Calling course details page');
       this.nav.push(EnrolledCourseDetailsPage, {
         content: content

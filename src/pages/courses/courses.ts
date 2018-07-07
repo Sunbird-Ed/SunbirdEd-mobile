@@ -1,27 +1,56 @@
 import { ViewMoreActivityPage } from './../view-more-activity/view-more-activity';
-import { Component, NgZone, OnInit } from '@angular/core';
-import { NavController, PopoverController, Events, ToastController } from 'ionic-angular';
+import {
+  Component,
+  NgZone,
+  OnInit
+} from '@angular/core';
+import {
+  NavController,
+  PopoverController,
+  Events,
+  ToastController
+} from 'ionic-angular';
 import { AppVersion } from "@ionic-native/app-version";
 import { IonicPage } from 'ionic-angular';
 import {
-  SharedPreferences, CourseService,
-  PageAssembleService, PageAssembleCriteria,
-  Impression, ImpressionType, PageId, Environment, TelemetryService, ContentDetailRequest, ContentService, ProfileType, PageAssembleFilter, CorrelationData
+  SharedPreferences,
+  CourseService,
+  PageAssembleService,
+  PageAssembleCriteria,
+  ImpressionType,
+  PageId,
+  Environment,
+  TelemetryService,
+  ContentDetailRequest,
+  ContentService,
+  ProfileType,
+  PageAssembleFilter,
+  CorrelationData
 } from 'sunbird';
-import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
+import {
+  QRResultCallback,
+  SunbirdQRScanner
+} from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
-// import { CourseDetailPage } from '../course-detail/course-detail';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
 import { ContentDetailsPage } from '../content-details/content-details';
 import * as _ from 'lodash';
 import { TranslateService } from '@ngx-translate/core';
 import { Network } from '@ionic-native/network';
 import { generateImpressionTelemetry } from '../../app/telemetryutil';
-import { ContentType, MimeType, PageFilterConstants, ProfileConstants, EventTopics } from '../../app/app.constant';
-import { PageFilterCallback, PageFilter } from '../page-filter/page.filter';
+import {
+  ContentType,
+  MimeType,
+  PageFilterConstants,
+  ProfileConstants,
+  EventTopics
+} from '../../app/app.constant';
+import {
+  PageFilterCallback,
+  PageFilter
+} from '../page-filter/page.filter';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 import { AppGlobalService } from '../../service/app-global.service';
-
 import Driver from 'driver.js';
 import { CourseUtilService } from '../../service/course-util.service';
 
@@ -116,7 +145,6 @@ export class CoursesPage implements OnInit {
     private preference: SharedPreferences,
     private translate: TranslateService,
     private network: Network,
-    private sharedPreferences: SharedPreferences,
     private appGlobal: AppGlobalService,
     private courseUtilService: CourseUtilService
   ) {
@@ -515,7 +543,7 @@ export class CoursesPage implements OnInit {
 
 
   showContentDetails(content, corRelationList) {
-    if (content.contentType === ContentType.COURSE) {
+    if (content.contentData.contentType === ContentType.COURSE) {
       console.log('Calling course details page');
       this.navCtrl.push(EnrolledCourseDetailsPage, {
         content: content,

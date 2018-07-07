@@ -13,9 +13,9 @@ import { Events } from "ionic-angular";
 @Injectable()
 export class AppGlobalService {
 
-   /**
-    * This property stores the form details at the app level for a particular app sessionI
-    */
+    /**
+     * This property stores the form details at the app level for a particular app sessionI
+     */
     syllabusList: Array<any> = [];
 
     public static readonly USER_INFO_UPDATED = 'user-profile-changed';
@@ -28,7 +28,6 @@ export class AppGlobalService {
     session: any;
 
     private frameworkData = [];
-
 
     constructor(private event: Events,
         private authService: AuthService,
@@ -59,7 +58,9 @@ export class AppGlobalService {
     getNameForCodeInFramework(category, code) {
         let name = undefined;
 
-        if (this.frameworkData[category] && this.frameworkData[category].terms && this.frameworkData[category].terms.length > 0) {
+        if (this.frameworkData[category]
+            && this.frameworkData[category].terms
+            && this.frameworkData[category].terms.length > 0) {
             let matchingTerm = this.frameworkData[category].terms.find((term) => {
                 return term.code == code;
             })
@@ -107,7 +108,6 @@ export class AppGlobalService {
         });
     }
 
-
     private getCurrentUserProfile() {
         console.log("getCurrentUserProfile");
         this.profile.getCurrentUser((response) => {
@@ -134,7 +134,6 @@ export class AppGlobalService {
             this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
         });
     }
-
 
     private getGuestUserInfo() {
         console.log("getGuestUserInfo");

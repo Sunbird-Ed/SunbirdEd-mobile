@@ -15,7 +15,9 @@
       </button>
     </ion-buttons>
   </ion-navbar>
-  <div *ngIf="showWarning" class="offline-message"> <span>{{'NO_INTERNET_TITLE' | translate}} </span></div>
+  <div *ngIf="showWarning" class="offline-message">
+    <span>{{'NO_INTERNET_TITLE' | translate}} </span>
+  </div>
 </ion-header>
 
 <ion-content overflow-scroll="true" style="background: #efeff4;">
@@ -67,25 +69,27 @@
   </div>
   <!-- </div> -->
   <div padding text-center *ngIf="!isNetworkAvailable">
-      <img height="80" width="100" src="assets/imgs/ic_offline.png" />
-      <h6 ion-text color="secondary_black"><b>{{ 'NO_INTERNET_TITLE' | translate }}</b></h6>
-      <p color="dark_gray">{{ 'OFFLINE_WARNING' | translate }}</p>
-      <b ion-text text-uppercase color="primary" (click)="checkNetworkStatus(true); buttonClick();">{{'RETRY_ACTION' | translate}}</b>
-    </div>
-    <div *ngIf="showSignInCard" class="signin-card-bg">
-  <sign-in-card (valueChange)="buttonClick($event)" *ngIf="showSignInCard"></sign-in-card>
-</div>
+    <img height="80" width="100" src="assets/imgs/ic_offline.png" />
+    <h6 ion-text color="secondary_black">
+      <b>{{ 'NO_INTERNET_TITLE' | translate }}</b>
+    </h6>
+    <p color="dark_gray">{{ 'OFFLINE_WARNING' | translate }}</p>
+    <b ion-text text-uppercase color="primary" (click)="checkNetworkStatus(true); buttonClick();">{{'RETRY_ACTION' | translate}}</b>
+  </div>
+  <div *ngIf="showSignInCard" class="signin-card-bg">
+    <sign-in-card (valueChange)="buttonClick($event)" *ngIf="showSignInCard"></sign-in-card>
+  </div>
 </ion-content>
 <ion-backdrop class="loading-backdrop" *ngIf="showOverlay" text-center>
-    <div class="backdrop-container">
-      <span *ngIf="downloadPercentage !== 100">
-        <ion-label>{{ 'LOADING_CONTENT' | translate }} {{ downloadPercentage ? (downloadPercentage) : '0' }} %</ion-label>
-        <pb-horizontal [progress]="downloadPercentage" isOnBoardCard="false"></pb-horizontal>
-      </span>
-      <ion-label *ngIf="downloadPercentage === 100">{{ 'LOADING_CONTENT' | translate }}</ion-label>
-    </div>
-  
-    <div class="backdrop-footer" *ngIf="downloadPercentage !== 100">
-      <button ion-button small (click)="cancelDownload()">Cancel</button>
-    </div>
-  </ion-backdrop>
+  <div class="backdrop-container">
+    <span *ngIf="downloadPercentage !== 100">
+      <ion-label>{{ 'LOADING_CONTENT' | translate }} {{ downloadPercentage ? (downloadPercentage) : '0' }} %</ion-label>
+      <pb-horizontal [progress]="downloadPercentage" isOnBoardCard="false"></pb-horizontal>
+    </span>
+    <ion-label *ngIf="downloadPercentage === 100">{{ 'LOADING_CONTENT' | translate }}</ion-label>
+  </div>
+
+  <div class="backdrop-footer" *ngIf="downloadPercentage !== 100">
+    <button ion-button small (click)="cancelDownload()">Cancel</button>
+  </div>
+</ion-backdrop>

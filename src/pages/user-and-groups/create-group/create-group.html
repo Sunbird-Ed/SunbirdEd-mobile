@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>{{'CREATE_GROUP' | translate}}</ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content padding>
+  <form [formGroup]="groupEditForm">
+    <ion-item>
+      <ion-label stacked text-uppercase>
+        {{ 'GROUP_NAME' | translate }}
+        <span class="mandatory">*</span>
+      </ion-label>
+      <ion-input type="text" formControlName="name"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label stacked text-uppercase>{{'CLASS' | translate}}</ion-label>
+      <ion-select formControlName="class" [selectOptions]="classOptions">
+        <ion-option [value]="class?.code" *ngFor="let class of classList">{{ class?.name }}</ion-option>
+      </ion-select>
+    </ion-item>
+  </form>
+</ion-content>
+<ion-footer>
+  <div class="border">
+    <ion-row>
+      <ion-col col-md-10 offset-md-1>
+        <button ion-button block (click)="navigateToUsersList()">{{'NEXT' | translate}}</button>
+      </ion-col>
+    </ion-row>
+  </div>
+</ion-footer>

@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>{{'USERS_AND_GROUPS' | translate}}</ion-title>
+  </ion-navbar>
+</ion-header>
+<ion-content padding>
+  <ion-row>
+    <ion-col col-md-6>
+    </ion-col>
+    <ion-col col-md-6>
+      <p class="right primary" (click)="selectAll()">SELECT ALL</p>
+    </ion-col>
+  </ion-row>
+
+
+  <ion-item *ngFor="let user of users" class="item-background" style="margin-bottom: 10px;" no-lines>
+    <ion-avatar item-start>
+      <img src="assets/imgs/ic_businessman.png">
+    </ion-avatar>
+    <h6>
+      <b>{{user?.name}}</b>
+    </h6>
+    <p>{{user?.profession}}</p>
+    <ion-checkbox item-end checked={{user?.selected}} (click)="selectedMember(user?.name , user?.profession, user?.selected)"></ion-checkbox>
+  </ion-item>
+
+
+</ion-content>
+<ion-footer>
+    <ion-row>
+      <ion-col col-md-10 offset-md-1>
+        <button ion-button block (click)="createGroup()">{{'CREATE_GROUP' | translate }}</button>
+      </ion-col>
+    </ion-row>
+</ion-footer>

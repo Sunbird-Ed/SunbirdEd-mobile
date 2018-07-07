@@ -1,4 +1,4 @@
-//TODO 13/02/2018 Consider creating a commom component and reuse
+//TODO 13/02/2018 Consider creating a common component and reuse
 import { Component } from '@angular/core';
 import { NavController } from "ionic-angular/navigation/nav-controller";
 import { NavParams } from "ionic-angular/navigation/nav-params";
@@ -16,7 +16,7 @@ export class ActionMenuComponent {
     constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController, private toastCtrl: ToastController) {
         this.items = this.navParams.get("list");
     }
-    
+
     close(event, i) {
         this.viewCtrl.dismiss(JSON.stringify({
             "content": event.target.innerText,
@@ -38,5 +38,5 @@ export class ActionMenuComponent {
             }
         }
     }
-     
+
 }

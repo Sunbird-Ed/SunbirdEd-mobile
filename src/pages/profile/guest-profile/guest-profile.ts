@@ -35,12 +35,11 @@ export interface toastOptions {
 export class GuestProfilePage {
 
   imageUri: string = "assets/imgs/ic_profile_default.png";
-  list: Array<String> = ['SETTINGS'];
+  list: Array<String> = ["USERS_AND_GROUPS",'SETTINGS'];
 
   showSignInCard: boolean = false;
   isNetworkAvailable: boolean;
   showWarning: boolean = false;
-  /* Temporary Language Constants */
   boards: string = "";
   grade: string = "";
   medium: string = "";
@@ -57,7 +56,8 @@ export class GuestProfilePage {
     position: 'bottom'
   };
 
-  constructor(public navCtrl: NavController,
+  constructor(
+    public navCtrl: NavController,
     public network: Network,
     public popoverCtrl: PopoverController,
     private profileService: ProfileService,
@@ -195,7 +195,6 @@ export class GuestProfilePage {
       });
   }
 
-
   getFrameworkDetails(frameworkId?: string): void {
     this.formAndFrameworkUtilService.getFrameworkDetails(frameworkId)
       .then(catagories => {
@@ -271,6 +270,5 @@ export class GuestProfilePage {
     );
     return translatedMsg;
   }
-
 
 }

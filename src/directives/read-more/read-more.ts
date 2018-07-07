@@ -14,9 +14,7 @@ export class ReadMoreDirective implements  AfterViewInit, OnChanges {
   toggleState: boolean = false; //Show Less in the beginning
   hideToggle: boolean = true; // Dont show any Link for less or More before checking the length of the text.
 
-  constructor(public el: ElementRef) {
-
-  }
+  constructor(public el: ElementRef) { }
 
   public ngAfterViewInit() {
     if(this.text) this.checkTextLength();

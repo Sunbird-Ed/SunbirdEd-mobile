@@ -183,13 +183,7 @@ export class OnboardingPage {
               InteractSubtype.LOGIN_SUCCESS, r.userId);
             let profileRequest = {
               uid: r.id, //req
-              handle: r.id, //TODO check with nikhil
-              avatar: "avatar", //req
-              language: "en", //req
-              age: -1,
-              day: -1,
-              month: -1,
-              standard: -1,
+              name: r.id, //TODO check with nikhil
               profileType: ProfileType.TEACHER
             };
             that.profileService.setCurrentProfile(false, profileRequest,
@@ -229,13 +223,7 @@ export class OnboardingPage {
       if (val != "") {
         let profileRequest = {
           uid: val,
-          handle: "Guest1", //req
-          avatar: "avatar", //req
-          language: "en", //req
-          age: -1,
-          day: -1,
-          month: -1,
-          standard: -1,
+          name: "Guest1", //req
           profileType: ProfileType.TEACHER
         };
         this.profileService.setCurrentProfile(true, profileRequest, res => {

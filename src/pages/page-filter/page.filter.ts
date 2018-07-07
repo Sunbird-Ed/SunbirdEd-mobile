@@ -12,7 +12,7 @@ import {
   Environment,
   PageId,
   CategoryRequest,
-  FrameworkService
+  FrameworkService,
 } from "sunbird";
 import { PageFilterOptions } from "./options/filter.options";
 import { generateInteractTelemetry } from "../../app/telemetryutil";

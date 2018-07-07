@@ -17,6 +17,7 @@ export const domainList: Array<string> = [
     "literacy",
     "science"
 ];
+
 export const contentTypeList: Array<string> = [
     "Story",
     "Worksheet",

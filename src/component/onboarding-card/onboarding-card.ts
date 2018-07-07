@@ -1,8 +1,20 @@
-import { NavController, Slides, PopoverController, Events, Platform, ToastController } from 'ionic-angular';
-import { Component, ViewChild, NgZone } from '@angular/core';
-import * as _ from 'lodash';
+import {
+  NavController,
+  Slides,
+  PopoverController,
+  Events,
+  ToastController
+} from 'ionic-angular';
+import {
+  Component,
+  ViewChild,
+  NgZone
+} from '@angular/core';
 import { OnboardingService } from '../onboarding-card/onboarding.service';
-import { OnboardingAlert, onBoardingSlidesCallback } from './../onboarding-alert/onboarding-alert';
+import {
+  OnboardingAlert,
+  onBoardingSlidesCallback
+} from './../onboarding-alert/onboarding-alert';
 import { TranslateService } from '@ngx-translate/core';
 
 /* Interface for the Toast Object */
@@ -19,7 +31,6 @@ export interface toastOptions {
 export class OnboardingCardComponent {
 
   public static readonly USER_INFO_UPDATED = 'user-profile-changed';
-
 
   @ViewChild(Slides) mSlides: Slides;
   isOnBoardCard: boolean = true;
@@ -102,7 +113,6 @@ export class OnboardingCardComponent {
       });
   }
 
-
   /**
    * Used to Translate message to current Language
    * @param {string} messageConst - Message Constant to be translated
@@ -118,7 +128,6 @@ export class OnboardingCardComponent {
     return translatedMsg;
   }
 
-
   /**
    * To start and stop loader
    */
@@ -127,16 +136,16 @@ export class OnboardingCardComponent {
   }
 
   initializeService() {
-      this.onboardingService.initializeCard()
-        .then(index => {
-          console.log("initializeService -  index = " + index);
-          setTimeout(() => {
-            if (index !== 0 && index !== 5) this.mSlides.slideTo(index, 500);
-          }, 500);
-        })
-        .catch(error => {
+    this.onboardingService.initializeCard()
+      .then(index => {
+        console.log("initializeService -  index = " + index);
+        setTimeout(() => {
+          if (index !== 0 && index !== 5) this.mSlides.slideTo(index, 500);
+        }, 500);
+      })
+      .catch(error => {
 
-        });
+      });
   }
 
   /**
@@ -186,6 +195,5 @@ export class OnboardingCardComponent {
     this.options.message = message;
     if (message.length) return this.toastCtrl.create(this.options);
   }
-
 
 }

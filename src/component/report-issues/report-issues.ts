@@ -1,11 +1,33 @@
-import { ContentService, AuthService, TelemetryService, InteractType, InteractSubtype, PageId, Environment } from 'sunbird';
-import { Component, NgModule } from '@angular/core';
-import { NavParams, ViewController, Platform, ToastController } from "ionic-angular";
-import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
+import {
+  ContentService,
+  TelemetryService,
+  InteractType,
+  InteractSubtype,
+  PageId,
+  Environment
+} from 'sunbird';
+import {
+  Component
+} from '@angular/core';
+import {
+  NavParams,
+  ViewController,
+  Platform,
+  ToastController
+} from "ionic-angular";
+import {
+  FormBuilder,
+  FormGroup,
+  FormArray
+} from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
-import { generateInteractTelemetry} from '../../app/telemetryutil';
-import { ProfileConstants, FlagContent } from '../../app/app.constant';
+import { generateInteractTelemetry } from '../../app/telemetryutil';
+import {
+  ProfileConstants,
+  FlagContent
+} from '../../app/app.constant';
+import { AppGlobalService } from '../../service/app-global.service';
 
 /**
  * Generated class for the ReportIssuesComponent component.
@@ -39,9 +61,9 @@ export class ReportIssuesComponent {
     private contentService: ContentService,
     private navParams: NavParams,
     private translate: TranslateService,
-    private authService: AuthService,
     private toastCtrl: ToastController,
-    private telemetryService : TelemetryService) {
+    private telemetryService: TelemetryService,
+    private appGlobalService: AppGlobalService) {
     console.log('Hello ReportIssuesComponent Component');
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.viewCtrl.dismiss();
@@ -53,15 +75,11 @@ export class ReportIssuesComponent {
   }
 
   getUserId() {
-    this.authService.getSessionData((data: string) => {
-      let res = JSON.parse(data);
-      console.log('auth service...', res);
-      if (res === undefined || res === "null") {
-        this.userId = '';
-      } else {
-        this.userId = res[ProfileConstants.USER_TOKEN] ? res[ProfileConstants.USER_TOKEN] : '';
-      }
-    });
+    if (this.appGlobalService.getSessionData()) {
+      this.userId = this.appGlobalService.getSessionData()[ProfileConstants.USER_TOKEN];
+    } else {
+      this.userId = '';
+    }
   }
 
   buildIssueList() {

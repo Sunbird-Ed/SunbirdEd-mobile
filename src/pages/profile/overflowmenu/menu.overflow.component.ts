@@ -7,8 +7,10 @@ import { ToastController, App } from "ionic-angular";
 import { SettingsPage } from "../../settings/settings";
 import { OAuthService } from "sunbird";
 import { OnboardingPage } from "../../onboarding/onboarding";
-import { Interact, InteractType, InteractSubtype, PageId, Environment, TelemetryService, ProfileService } from "sunbird";
+import { InteractType, InteractSubtype, PageId, Environment, TelemetryService, ProfileService } from "sunbird";
 import { generateInteractTelemetry } from "../../../app/telemetryutil";
+import { GrouplandingPage } from "../../user-and-groups/grouplanding/grouplanding";
+
 
 @Component({
     selector: 'menu-overflow',
@@ -19,7 +21,8 @@ export class OverflowMenuComponent {
     @ViewChild(Nav) nav;
     items: Array<string>;
 
-    constructor(public navCtrl: NavController,
+    constructor(
+        public navCtrl: NavController,
         public navParams: NavParams,
         public viewCtrl: ViewController,
         private oauth: OAuthService,
@@ -40,7 +43,7 @@ export class OverflowMenuComponent {
             "index": i
         }));
         switch (i) {
-            case 0: {
+            case "SETTINGS": {
                 this.telemetryService.interact(generateInteractTelemetry(
                     InteractType.TOUCH,
                     InteractSubtype.SETTINGS_CLICKED,
@@ -53,7 +56,7 @@ export class OverflowMenuComponent {
                 this.app.getActiveNav().push(SettingsPage);
                 break;
             }
-            case 1: {
+            case "LOGOUT":
                 this.generateLogoutInteractTelemetry(InteractType.TOUCH,
                     InteractSubtype.LOGOUT_INITIATE, "");
                 this.oauth.doLogOut();
@@ -68,8 +71,9 @@ export class OverflowMenuComponent {
                 this.generateLogoutInteractTelemetry(InteractType.OTHER,
                     InteractSubtype.LOGOUT_SUCCESS, "");
                 break;
-            }
-
+            case "USERS_AND_GROUPS":
+                this.app.getActiveNav().push(GrouplandingPage);
+                break;
         }
     }
 
@@ -86,5 +90,4 @@ export class OverflowMenuComponent {
                 undefined,
                 undefined));
     }
-
 }

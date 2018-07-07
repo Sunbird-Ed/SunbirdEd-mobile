@@ -70,7 +70,8 @@ export class ProfilePage {
   imageUri: string = "assets/imgs/ic_profile_default.png";
   educationIcon: string = "assets/imgs/ic_businessman.png";
   locationIcon: string = "assets/imgs/ic_location.png";
-  list: Array<String> = [
+  list: Array<string> = [
+    "USERS_AND_GROUPS",
     "SETTINGS",
     "LOGOUT"
   ];

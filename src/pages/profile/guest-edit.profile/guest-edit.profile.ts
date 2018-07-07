@@ -143,11 +143,9 @@ export class GuestEditProfilePage {
    */
   getCategoryData(req: CategoryRequest, list): void {
     // let loader = this.getLoader();
-
     // if (list === 'boardList') {
     //   loader.present();
     // }
-
     this.formAndFrameworkUtilService.getCategoryData(req, this.frameworkId).
       then((result) => {
 
@@ -170,14 +168,12 @@ export class GuestEditProfilePage {
     } else if (index === 1) {
       // let loader = this.getLoader();
       // loader.present();
-
       this.frameworkId = prevSelectedValue[0];
       this.formAndFrameworkUtilService.getFrameworkDetails(this.frameworkId)
         .then(catagories => {
           this.categories = catagories;
 
           // loader.dismiss();
-
           let request: CategoryRequest = {
             currentCategory: this.categories[0].code,
           }
@@ -245,19 +241,12 @@ export class GuestEditProfilePage {
     loader.present();
     let formVal = this.guestEditForm.value;
     let req: Profile = {
-      age: -1,
-      day: -1,
-      month: -1,
-      standard: -1,
       board: formVal.boards,
-      grade: formVal.grades,
+      class: formVal.grades,
       subject: formVal.subjects,
       medium: formVal.medium,
       uid: this.profile.uid,
-      handle: formVal.name,
-      isGroupUser: false,
-      language: "en",
-      avatar: "avatar",
+      name: formVal.name,
       profileType: this.profile.profileType,
       createdAt: this.profile.createdAt,
       syllabus: (!formVal.syllabus.length) ? [] : [formVal.syllabus]

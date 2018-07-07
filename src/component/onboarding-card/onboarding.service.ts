@@ -12,7 +12,7 @@ import { FormAndFrameworkUtilService } from '../../pages/profile/formandframewor
 @Injectable()
 export class OnboardingService {
     userId: string;
-    profile: any = {};
+    profile: any = {}; //TODO: Any should be changed to Profile
     onBoardingSlides: any[];
     isOnBoardingCardCompleted: boolean = false;
     currentIndex: number = 0;
@@ -390,36 +390,27 @@ export class OnboardingService {
      */
     saveDetails(index: number): void {
         let req: Profile = {
-            age: -1,
-            day: -1,
-            month: -1,
-            standard: -1,
             syllabus: (_.find(this.onBoardingSlides, ['id', 'syllabusList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'syllabusList']).selectedCode : this.profile.syllabus,
             board: (_.find(this.onBoardingSlides, ['id', 'boardList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'boardList']).selectedCode : this.profile.board,
-            grade: (_.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode : this.profile.grade,
+            class: (_.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode : this.profile.grade,
             subject: (_.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode : this.profile.subject,
             medium: (_.find(this.onBoardingSlides, ['id', 'mediumList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'mediumList']).selectedCode : this.profile.medium,
             uid: this.profile.uid,
-            handle: this.profile.handle,
-            isGroupUser: false,
-            language: "en",
-            avatar: "avatar",
+            name: this.profile.name,
             createdAt: this.profile.createdAt,
             profileType: this.profile.profileType
         }
         if (index === 0 && !_.find(this.onBoardingSlides, ['id', 'boardList']).selectedCode.length) {
             req.board = [];
             req.medium = [];
-            req.grade = [];
+            req.class = [];
             req.subject = [];
         }
-        if (index === 1 && !_.find(this.onBoardingSlides, ['id', 'mediumList']).selectedCode.length) {
-            req.medium = [];
-            req.grade = [];
-            req.subject = [];
+        if (index === 1 && !_.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode.length) {
+            req.class = [];
         }
         if (index === 2 && !_.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode.length) {
-            req.grade = [];
+            req.class = [];
             req.subject = [];
         }
         if (index === 3 && !_.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode.length) {

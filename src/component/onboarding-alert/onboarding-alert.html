@@ -6,7 +6,8 @@
       </ion-col>
     </ion-row>
 
-    <ion-spinner style="align-self: center" *ngIf="selectedSlide.options === undefined || selectedSlide.options.length === 0" padding></ion-spinner>
+    <ion-spinner style="align-self: center" *ngIf="selectedSlide.options === undefined || selectedSlide.options.length === 0"
+      padding></ion-spinner>
 
     <ion-list class="checkbox-scroll" radio-group [(ngModel)]="selectedSyllabus" *ngIf="selectedSlide?.options && selectedSlide?.options.length && selectedSlide?.id === 'syllabusList'">
       <ion-item no-lines *ngFor="let facetValue of selectedSlide.options;let i=index">

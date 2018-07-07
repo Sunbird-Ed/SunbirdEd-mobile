@@ -32,7 +32,8 @@ export class FormAddress {
     position: 'bottom'
   };
 
-  constructor(public navCtrl: NavController,
+  constructor(
+    public navCtrl: NavController,
     public fb: FormBuilder,
     public navParams: NavParams,
     public authService: AuthService,
@@ -105,6 +106,10 @@ export class FormAddress {
     }
   }
 
+  /**
+   * @param {object} formVal - Holds Form Values
+   * @returns {boolean}
+   */
   validateForm(formVal): boolean {
 
     /* Allowed only Numbers and 6 digits */
@@ -144,15 +149,20 @@ export class FormAddress {
     if (message.length) return this.toastCtrl.create(this.options);
   }
 
+  /**
+   * Returns Loading controller object with default config
+   */
   getLoader(): any {
     return this.loadingCtrl.create({
       duration: 30000,
       spinner: "crescent"
     });
   }
+
   /**
    * Used to Translate message to current Language
    * @param {string} messageConst - Message Constant to be translated
+   * @param {string} field - Holds Language constant substitution string
    * @returns {string} translatedMsg - Translated Message
    */
   translateMessage(messageConst: string, field?: string): string {
@@ -164,6 +174,10 @@ export class FormAddress {
     );
     return translatedMsg;
   }
+
+  /**
+   * Shows confirmation popup for delete
+   */
   showDeleteConfirm() {
     let confirm = this.alertCtrl.create({
       title: this.translateMessage('CONFIRM_DEL',this.translateMessage('TITLE_ADDRESS')),
@@ -197,15 +211,16 @@ export class FormAddress {
         }
       ]
     });
+
     confirm.present();
-    let deregisterBackButton = this.platform.registerBackButtonAction(() => {
+    let unregisterBackButton = this.platform.registerBackButtonAction(() => {
       // dismiss on back press
       confirm.dismiss();
     }, 11);
 
-    // deregister handler after modal closes
+    // unregister handler after modal closes
     confirm.onDidDismiss(() => {
-      deregisterBackButton();
+      unregisterBackButton();
     });
 
     function closePopup() {

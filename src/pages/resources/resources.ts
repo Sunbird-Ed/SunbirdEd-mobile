@@ -1,28 +1,60 @@
 import { Component, NgZone, OnInit } from '@angular/core';
 import {
-	PageAssembleService, PageAssembleCriteria, ContentService,
-	Impression, ImpressionType, PageId, Environment, TelemetryService,
-	InteractType, InteractSubtype, ContentDetailRequest, SharedPreferences,
-	ContentFilterCriteria, ProfileType, PageAssembleFilter,
+	PageAssembleService,
+	PageAssembleCriteria,
+	ContentService,
+	ImpressionType,
+	PageId,
+	Environment,
+	TelemetryService,
+	InteractType,
+	InteractSubtype,
+	ContentDetailRequest,
+	SharedPreferences,
+	ContentFilterCriteria,
+	ProfileType,
+	PageAssembleFilter,
 	CorrelationData
 } from "sunbird";
-import { NavController, PopoverController, Events, ToastController } from 'ionic-angular';
+import {
+	NavController,
+	PopoverController,
+	Events,
+	ToastController,
+	AlertButton
+} from 'ionic-angular';
 import * as _ from 'lodash';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
-import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
+import {
+	QRResultCallback,
+	SunbirdQRScanner
+} from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
-import { generateInteractTelemetry, Map, generateImpressionTelemetry } from '../../app/telemetryutil';
-// import { CourseDetailPage } from '../course-detail/course-detail';
+import {
+	generateInteractTelemetry,
+	Map,
+	generateImpressionTelemetry
+} from '../../app/telemetryutil';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { TranslateService } from '@ngx-translate/core';
-import { ContentType, MimeType, PageFilterConstants, AudienceFilter } from '../../app/app.constant';
+import {
+	ContentType,
+	MimeType,
+	PageFilterConstants,
+	AudienceFilter
+} from '../../app/app.constant';
 import { Network } from '@ionic-native/network';
-import { PageFilterCallback, PageFilter } from '../page-filter/page.filter';
+import {
+	PageFilterCallback,
+	PageFilter
+} from '../page-filter/page.filter';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 import { AppGlobalService } from '../../service/app-global.service';
 import Driver from 'driver.js';
 import { AppVersion } from "@ionic-native/app-version";
+import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
+import { AlertController } from 'ionic-angular';
 
 @Component({
 	selector: 'page-resources',
@@ -70,7 +102,6 @@ export class ResourcesPage implements OnInit {
 	selectedLanguage: string = 'en';
 
 	//noInternetConnection: boolean = false;
-
 	audienceFilter = [];
 	private corRelationList: Array<CorrelationData>;
 
@@ -94,8 +125,21 @@ export class ResourcesPage implements OnInit {
 		private zone: NgZone,
 		private network: Network,
 		private appGlobal: AppGlobalService,
-		private appVersion: AppVersion
+		private appVersion: AppVersion,
+		private formAndFrameowrkUtilService: FormAndFrameworkUtilService,
+		private alertCtrl: AlertController
 	) {
+		//check if any new app version is available
+		formAndFrameowrkUtilService.checkNewAppVersion()
+			.then(result => {
+				if (result) {
+					this.presentConfirm(result)
+				}
+			})
+			.catch(error => {
+				console.log("Error - " + error)
+			});
+
 		this.preference.getString('selected_language_code', (val: string) => {
 			if (val && val.length) {
 				this.selectedLanguage = val;
@@ -138,11 +182,119 @@ export class ResourcesPage implements OnInit {
 
 	}
 
+	/**
+	 * Angular life cycle hooks
+	 */
+	ngOnInit() {
+		console.log('courses component initialized...');
+		// this.getCourseTabData();
+		this.setSavedContent();
+	}
+
 	ngAfterViewInit() {
 		this.events.subscribe('onboarding-card:completed', (param) => {
 			this.isOnBoardingCardCompleted = param.isOnBoardingCardCompleted;
 		});
 	}
+
+	ionViewDidEnter() {
+		if (this.appliedFilter) {
+			this.filterIcon = "./assets/imgs/ic_action_filter.png";
+			this.resourceFilter = undefined;
+			this.appliedFilter = undefined;
+			this.getPopularContent();
+		}
+
+		this.isVisible = true;
+
+		this.generateImpressionEvent();
+		this.preference.getString('show_app_walkthrough_screen', (value) => {
+			if (value === 'true') {
+				const driver = new Driver({
+					allowClose: true,
+					closeBtnText: this.translateMessage('DONE'),
+					showButtons: true
+				});
+
+				console.log("Driver", driver);
+				setTimeout(() => {
+					driver.highlight({
+						element: '#qrIcon',
+						popover: {
+							title: this.translateMessage('ONBOARD_SCAN_QR_CODE'),
+							description: "<img src='assets/imgs/ic_scanqrdemo.png' /><p>" + this.translateMessage('ONBOARD_SCAN_QR_CODE_DESC', this.appLabel) + "</p>",
+							showButtons: true,         // Do not show control buttons in footer
+							closeBtnText: this.translateMessage('DONE'),
+						}
+					});
+
+					let element = document.getElementById("driver-highlighted-element-stage");
+					var img = document.createElement("img");
+					img.src = "assets/imgs/ic_scan.png";
+					img.id = "qr_scanner";
+					element.appendChild(img);
+				}, 100);
+
+				this.preference.putString('show_app_walkthrough_screen', 'false');
+			}
+		});
+	}
+
+	ionViewWillEnter() {
+		if (!this.pageLoadedSuccess) {
+			this.getPopularContent();
+		}
+
+		this.guestUser = !this.appGlobal.isUserLoggedIn();
+
+
+		if (this.guestUser) {
+			this.getCurrentUser();
+		} else {
+			this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
+		}
+
+		this.subscribeGenieEvents();
+
+		if (this.network.type === 'none') {
+			this.isNetworkAvailable = false;
+		}
+	}
+
+	/**
+	 * Ionic life cycle hook
+	 */
+	ionViewWillLeave(): void {
+		this.isVisible = false;
+		this.events.unsubscribe('genie.event');
+	}
+
+	presentConfirm(result: any) {
+		let buttons: Array<AlertButton> = [];
+
+		//iterate on all the buttons
+		if (result.actionButtons) {
+			result.actionButtons.forEach(button => {
+				if (button) {
+					let alertButton: AlertButton = {
+						text: button.key,
+						handler: () => {
+							console.log(String(button.link))
+						}
+					};
+					buttons.push(alertButton);
+				}
+			});
+		}
+
+		let alert = this.alertCtrl.create({
+			title: result.title,
+			message: result.desc,
+			buttons: buttons
+		});
+		alert.present();
+	}
+
 	/**
 	 * It will fetch the guest user profile details
 	 */
@@ -255,7 +407,6 @@ export class ResourcesPage implements OnInit {
 		}
 
 		if (this.profile) {
-
 			if (!pageAssembleCriteria.filters) {
 				pageAssembleCriteria.filters = new PageAssembleFilter();
 			}
@@ -276,7 +427,6 @@ export class ResourcesPage implements OnInit {
 				pageAssembleCriteria.filters.subject = this.applyProfileFilter(this.profile.subject, pageAssembleCriteria.filters.subject, "subject");
 			}
 		}
-
 
 		this.pageService.getPageAssemble(pageAssembleCriteria, res => {
 			that.ngZone.run(() => {
@@ -404,70 +554,6 @@ export class ResourcesPage implements OnInit {
 		});
 	}
 
-	ionViewDidEnter() {
-		if (this.appliedFilter) {
-			this.filterIcon = "./assets/imgs/ic_action_filter.png";
-			this.resourceFilter = undefined;
-			this.appliedFilter = undefined;
-			this.getPopularContent();
-		}
-
-		this.isVisible = true;
-
-		this.generateImpressionEvent();
-		this.preference.getString('show_app_walkthrough_screen', (value) => {
-			if (value === 'true') {
-				const driver = new Driver({
-					allowClose: true,
-					closeBtnText: this.translateMessage('DONE'),
-					showButtons: true
-				});
-
-				console.log("Driver", driver);
-				setTimeout(() => {
-					driver.highlight({
-						element: '#qrIcon',
-						popover: {
-							title: this.translateMessage('ONBOARD_SCAN_QR_CODE'),
-							description: "<img src='assets/imgs/ic_scanqrdemo.png' /><p>" + this.translateMessage('ONBOARD_SCAN_QR_CODE_DESC', this.appLabel) + "</p>",
-							showButtons: true,         // Do not show control buttons in footer
-							closeBtnText: this.translateMessage('DONE'),
-						}
-					});
-
-					let element = document.getElementById("driver-highlighted-element-stage");
-					var img = document.createElement("img");
-					img.src = "assets/imgs/ic_scan.png";
-					img.id = "qr_scanner";
-					element.appendChild(img);
-				}, 100);
-
-				this.preference.putString('show_app_walkthrough_screen', 'false');
-			}
-		});
-	}
-
-	ionViewWillEnter() {
-		if (!this.pageLoadedSuccess) {
-			this.getPopularContent();
-		}
-
-		this.guestUser = !this.appGlobal.isUserLoggedIn();
-
-
-		if (this.guestUser) {
-			this.getCurrentUser();
-		} else {
-			this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
-		}
-
-		this.subscribeGenieEvents();
-
-		if (this.network.type === 'none') {
-			this.isNetworkAvailable = false;
-		}
-	}
-
 	subscribeGenieEvents() {
 		this.events.subscribe('genie.event', (data) => {
 			let res = JSON.parse(data);
@@ -476,13 +562,7 @@ export class ResourcesPage implements OnInit {
 			}
 		})
 	}
-	/**
-	 * Ionic life cycle hook
-	 */
-	ionViewWillLeave(): void {
-		this.isVisible = false;
-		this.events.unsubscribe('genie.event');
-	}
+
 	/**
 	 *
 	 * @param refresher
@@ -504,15 +584,6 @@ export class ResourcesPage implements OnInit {
 
 		this.getPopularContent(false);
 		this.checkNetworkStatus();
-	}
-
-	/**
-	 * Angular life cycle hooks
-	 */
-	ngOnInit() {
-		console.log('courses component initialized...');
-		// this.getCourseTabData();
-		this.setSavedContent();
 	}
 
 	generateImpressionEvent() {
@@ -580,7 +651,6 @@ export class ResourcesPage implements OnInit {
 	}
 
 	search() {
-
 		this.telemetryService.interact(
 			generateInteractTelemetry(InteractType.TOUCH,
 				InteractSubtype.SEARCH_BUTTON_CLICKED,
@@ -593,8 +663,7 @@ export class ResourcesPage implements OnInit {
 	}
 
 	showContentDetails(content, corRelationList) {
-
-		if (content.contentType === ContentType.COURSE) {
+		if (content.contentData.contentType === ContentType.COURSE) {
 			console.log('Calling course details page');
 			this.navCtrl.push(EnrolledCourseDetailsPage, {
 				content: content,
@@ -650,7 +719,6 @@ export class ResourcesPage implements OnInit {
 					criteria.mode = "soft";
 					that.filterIcon = "./assets/imgs/ic_action_filter.png";
 				}
-
 
 				that.getPopularContent(false, criteria)
 			}
