@@ -10,7 +10,7 @@ import { GroupService, Group } from 'sunbird';
 })
 export class MembersPage {
   group: Group;
-  users = [
+  users: Array<any> = [
     {
       name: "Anirudh Deep",
       profession: "Student",
@@ -26,7 +26,7 @@ export class MembersPage {
       profession: "Student",
       selected: false
     }
-  ]
+  ];
 
   constructor(
     public navCtrl: NavController,
@@ -50,9 +50,7 @@ export class MembersPage {
   createGroup() {
     this.groupService.createGroup(this.group)
       .then((val) => {
-        console.log("Result", val);
-        //this.navCtrl.push(GrouplandingPage);
-        this.navCtrl.remove(this.navCtrl.getActive().index, 2);
+        this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length()-3));
       }).catch((error) => {
         console.log("Error : " + error);
       });

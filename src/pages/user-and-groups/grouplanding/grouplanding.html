@@ -4,7 +4,7 @@
   </ion-navbar>
 </ion-header>
 <ion-content>
-  <ion-segment no-padding [(ngModel)]="segmentType" (ionChange)="onSegmentChange($event)" 
+  <ion-segment no-padding [(ngModel)]="segmentType" (ionChange)="onSegmentChange($event)"
   class="users-groups-toolbar">
     <ion-segment-button value="users">
       {{'USERS' | translate}}
@@ -33,7 +33,7 @@
         </p>
       </div>
       <ion-list *ngIf="!showEmptyUsersMessage">
-        <ion-item *ngFor="let user of usersList; let i=index;" (click)="selectUser(i, user?.name)" class="item-background" 
+        <ion-item *ngFor="let user of usersList; let i=index;" (click)="selectUser(i, user?.name)" class="item-background"
         [ngClass]="i===selectedUserIndex ? 'blueBorder' : ''" style="margin-bottom: 10px;" no-lines>
           <ion-avatar item-start>
             <img src="assets/imgs/ic_businessman.png">
@@ -67,15 +67,15 @@
       </div>
       <div class="groupSecondSection"  *ngIf="!showEmptyGroupsMessage">
           <ion-list>
-            <ion-item class="item-background" style="margin-bottom: 10px;" *ngFor="let group of groupList">
+            <ion-item class="item-background" style="margin-bottom: 10px;" *ngFor="let group of groupList" no-lines>
               <ion-avatar item-start>
                 <img src="assets/imgs/img_group.png">
               </ion-avatar>
               <h6>
-                <b>{{group?.groupName}}</b>
+                <b>{{group?.name}}</b>
               </h6>
-              <p>{{group?.grade}} • {{group?.noOfUsers}} users</p>
-                <ion-icon name="more" item-end float-end (click)="presentPopover($event)"></ion-icon>
+              <p>{{group?.class[0]}} • {{group?.uids?.length}} users</p>
+                <ion-icon name="more" item-end float-end></ion-icon>
             </ion-item>
           </ion-list>
         </div>

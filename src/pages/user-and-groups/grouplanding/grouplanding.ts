@@ -4,10 +4,10 @@ import { Component, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams, ActionSheetController, PopoverController } from 'ionic-angular';
 
 import { CreateGroupPage } from './../create-group/create-group';
-import { UsersPage } from './../users/users';
 import { GroupMemberPage } from '../group-member/group-member';
 import { CreateuserPage } from '../createuser/createuser';
 import { PopoverPage } from '../popover/popover';
+import { GroupService, Group } from 'sunbird';
 
 @IonicPage()
 @Component({
@@ -19,7 +19,8 @@ export class GrouplandingPage {
   groupName: string;
   showEmptyUsersMessage: boolean = false;
   showEmptyGroupsMessage: boolean = false;
-  isUserSelected: number = -1;
+  isUserSelected: boolean = false;
+  fromPage: string = '';
   usersList: Array<any> = [
     {
       name: 'Harish BookWala',
@@ -37,23 +38,8 @@ export class GrouplandingPage {
       grade: 'Grade 1'
     }
   ];
-  groupList: Array<any> = [
-    {
-      groupName: 'English Group',
-      noOfUsers: '10',
-      grade: 'Grade 2'
-    },
-    {
-      groupName: 'Hindi Group',
-      noOfUsers: '8',
-      grade: 'Grade 5'
-    },
-    {
-      groupName: 'Marathi Group',
-      noOfUsers: '5',
-      grade: 'Grade 1'
-    }
-  ];
+
+  groupList: Array<any> = [];
 
   userType: string;
   selectedUserIndex: number = -1;
@@ -73,7 +59,8 @@ export class GrouplandingPage {
     public actionSheetCtrl: ActionSheetController,
     public popOverCtrl: PopoverController,
     public zone: NgZone,
-    public popoverCtrl: PopoverController
+    public popoverCtrl: PopoverController,
+    public groupService: GroupService
   ) {
 
     /* Check usersList length and show message or list accordingly */
@@ -89,6 +76,17 @@ export class GrouplandingPage {
     } else {
       this.showEmptyGroupsMessage = true;
     }
+
+    //this.getGroupsList();
+  }
+
+  ionViewWillEnter() {
+    /* this.fromPage = this.navParams.get('fromPage') || 'createGroup';
+    if (this.fromPage === 'createGroup') {
+      this.segmentType = 'groups';
+      this.getGroupsList();
+    } */
+    this.getGroupsList();
   }
 
   presentPopover(myEvent) {
@@ -111,6 +109,23 @@ export class GrouplandingPage {
     console.log('ionViewDidLoad GrouplandingPage');
   }
 
+  getGroupsList() {
+    this.groupService.getAllGroup().then((groups) => {
+      // Assign some groups here
+      if(groups.result && groups.result.length) {
+        this.zone.run(() => {
+          this.showEmptyGroupsMessage = false;
+          this.groupList = groups.result;
+        });
+      } else {
+        this.showEmptyGroupsMessage = true;
+      }
+      console.log("GroupList", groups);
+      //this.groupList = groups;
+    }).catch((error) => {
+      console.log("Something went wrong while fetching data");
+    });
+  }
   /**
    * Navigates to Create group Page
    */
@@ -136,7 +151,7 @@ export class GrouplandingPage {
   }
 
   selectUser(index: number, name: string) {
-    this.isUserSelected = -1;
+    this.isUserSelected = !this.isUserSelected;
     this.zone.run(() => {
       this.selectedUserIndex = index;
     });
@@ -144,7 +159,7 @@ export class GrouplandingPage {
   }
 
   onSegmentChange(event) {
-    this.isUserSelected = -1;
+    this.isUserSelected = false;
     this.zone.run(() => {
       this.selectedUserIndex = -1;
     })

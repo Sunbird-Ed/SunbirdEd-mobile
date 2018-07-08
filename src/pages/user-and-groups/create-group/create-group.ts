@@ -3,8 +3,8 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { AppGlobalService } from '../../../service/app-global.service';
 import { FormAndFrameworkUtilService } from '../../profile/formandframeworkutil.service';
-import { GroupService, CategoryRequest, Group } from 'sunbird';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CategoryRequest, Group } from 'sunbird';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 
 @IonicPage()
@@ -15,8 +15,7 @@ import { TranslateService } from '@ngx-translate/core';
 export class CreateGroupPage {
 
 
-  groupEditForm: FormGroup
-
+  groupEditForm: FormGroup;
   classList = [];
   group: Group = {}
 
@@ -27,11 +26,9 @@ export class CreateGroupPage {
   };
   constructor(
     private navCtrl: NavController,
-    private navParams: NavParams,
     private fb: FormBuilder,
     private appGlobalService: AppGlobalService,
     private formAndFrameAPI: FormAndFrameworkUtilService,
-    private groupService: GroupService,
     private translate: TranslateService
   ) {
 
