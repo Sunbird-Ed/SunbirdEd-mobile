@@ -15,6 +15,14 @@ page-grouplanding {
   .secondSection {
     margin-top: 13vh;
   }
+  .users-groups-toolbar{
+    position:fixed;
+    background-color: white;
+    z-index: 2;
+  }
+  .groupSecondSection{
+    margin-top: 7vh;
+  }
   .custom {
     //background-color: white;
     color: rgba(0, 0, 0, 0.5);

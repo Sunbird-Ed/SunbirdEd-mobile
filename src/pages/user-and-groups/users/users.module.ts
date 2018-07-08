@@ -6,6 +6,7 @@ import { TranslateModule } from '@ngx-translate/core';
 @NgModule({
   declarations: [
     UsersPage,
+
   ],
   imports: [
     IonicPageModule.forChild(UsersPage),
