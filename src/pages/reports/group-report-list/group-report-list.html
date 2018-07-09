@@ -1,0 +1,131 @@
+<ion-header>
+    <ion-navbar no-border-bottom>
+        <ion-title ellipsis>
+            Class V Biology Assessment
+        </ion-title>
+    </ion-navbar>
+
+    <ion-toolbar no-border-top>
+        <ion-segment [(ngModel)]="report">
+            <ion-segment-button value="users">
+               {{ 'BY_USERS' | translate }}
+            </ion-segment-button>
+            <ion-segment-button value="questions">
+                {{ 'BY_QUESTIONS' | translate }}
+            </ion-segment-button>
+        </ion-segment>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <div [ngSwitch]="report">
+        <ion-list *ngSwitchCase="'users'">
+            <div class="card">
+                <ion-row>
+                    <ion-col col-6 class="column-align">
+                        <p class="text-align"> {{ 'AVERAGE_SCORE' | translate }}</p>
+                        <ion-icon class="icon-align" ios="ios-stats" md="ios-stats"></ion-icon>
+                        <span style="font-size:2.6rem">52/100</span>
+                        <p class="text-align">
+                            <span>High: 5</span> &nbsp;
+                            <span>Low: 0</span>
+                        </p>
+                    </ion-col>
+
+                    <ion-col col-6 class="column-align">
+                        <p class="text-align">{{ 'AVERAGE_TIME' | translate }}</p>
+                        <ion-icon class="icon-align" ios="ios-time" md="md-time"></ion-icon>
+                        <span style="font-size:2.6rem">{{' 25:21'}}</span>
+                        <p class="text-align">
+                            <span>Max: 5 min</span> &nbsp;
+                            <span>Min: 1 min</span>
+                        </p>
+                    </ion-col>
+                </ion-row>
+            </div>
+            <ion-grid class="grid-align">
+
+                <ion-row class="report-header" padding>
+                    <ion-col col-4 class="text-center white">
+                        {{'NAME' | translate}}
+                        <ion-icon name="arrow-dropdown"></ion-icon>
+                    </ion-col>
+                    <ion-col col-4 class="text-center white">
+                        {{ 'TIME' | translate }}
+                        <ion-icon name="arrow-dropdown"></ion-icon>
+                    </ion-col>
+                    <ion-col col-4 class="text-center white">
+                         {{ 'SCORE' | translate }}
+                        <ion-icon name="arrow-dropdown"></ion-icon>
+                    </ion-col>
+                </ion-row>
+                <!-- <div class="scroll"> -->
+                <ion-row (click)="presentPopover($event)" class="G row-align" *ngFor="let question of questionResponse" padding>
+                    <ion-col col-4 class="text-center white" style="color:dodgerblue">
+                        {{question.user}}
+                    </ion-col>
+                    <ion-col col-4 class="text-center ">
+                        {{question.time}}
+                    </ion-col>
+                    <ion-col col-4 class="text-center">
+                        {{question.marks}}
+                    </ion-col>
+                </ion-row>
+                <!-- </div> -->
+            </ion-grid>
+        </ion-list>
+        <ion-list class="margin0" *ngSwitchCase="'questions'">
+            <div class="card">
+                <ion-row>
+                    <ion-col col-6 class="column-align">
+                        <p class="text-align">{{ 'AVERAGE_SCORE' | translate }}</p>
+                        <ion-icon class="icon-align" ios="ios-stats" md="ios-stats"></ion-icon>
+                        <span style="font-size:2.6rem">52/100</span>
+                        <p class="text-align">
+                            <span>High: 5</span> &nbsp;
+                            <span>Low: 0</span>
+                        </p>
+                    </ion-col>
+
+                    <ion-col col-6 class="column-align">
+                        <p class="text-align">{{ 'AVERAGE_TIME' | translate }}</p>
+                        <ion-icon class="icon-align" ios="ios-time" md="md-time"></ion-icon>
+                        <span style="font-size:2.6rem">{{' 25:21'}}</span>
+                        <p class="text-align">
+                            <span>Max: 5 Min</span> &nbsp;
+                            <span>Min: 1 Min</span>
+                        </p>
+                    </ion-col>
+                </ion-row>
+            </div>
+            <ion-grid class="grid-align">
+
+                <ion-row class="report-header" padding>
+                    <ion-col col-4 class="text-center white">
+                         {{ 'QUESTIONS' | translate }}
+                        <ion-icon name="arrow-dropdown"></ion-icon>
+                    </ion-col>
+                    <ion-col col-4  class="text-center white">
+                         {{ 'MARKS' | translate }}
+                        <ion-icon name="arrow-dropdown"></ion-icon>
+                    </ion-col>
+                    <ion-col col-4  class="text-center white">
+                         {{ 'ACCURACY' | translate }}
+                        <ion-icon name="arrow-dropdown"></ion-icon>
+                    </ion-col>
+                </ion-row>
+                <ion-row (click)="presentPopover($event)" class="G row-align" *ngFor="let question of questionResponse" padding>
+                    <ion-col col-4  class="text-center" style="color:dodgerblue">
+                        {{question.qId}}
+                    </ion-col>
+                    <ion-col col-4 class="text-center" >
+                        {{question.time}}
+                    </ion-col>
+                    <ion-col col-4 class="text-center" >
+                        {{question.marks}}
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+        </ion-list>
+    </div>
+</ion-content>
