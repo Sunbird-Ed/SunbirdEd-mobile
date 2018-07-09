@@ -3,8 +3,9 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { AppGlobalService } from '../../../service/app-global.service';
 import { FormAndFrameworkUtilService } from '../../profile/formandframeworkutil.service';
-import { GroupService, CategoryRequest, Group } from 'sunbird';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CategoryRequest, Group } from 'sunbird';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { TranslateService } from '@ngx-translate/core';
 
 @IonicPage()
 @Component({
@@ -14,32 +15,40 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 export class CreateGroupPage {
 
 
-  groupEditForm: FormGroup
-
-  gradeList = [];
+  groupEditForm: FormGroup;
+  classList = [];
   group: Group = {}
 
-  constructor(private navCtrl: NavController,
-    private navParams: NavParams,
+  /* Options for ion-select box */
+  classOptions = {
+    title: this.translateMessage('CLASS'),
+    cssClass: 'select-box'
+  };
+  constructor(
+    private navCtrl: NavController,
     private fb: FormBuilder,
     private appGlobalService: AppGlobalService,
     private formAndFrameAPI: FormAndFrameworkUtilService,
-    private groupService: GroupService) {
+    private translate: TranslateService
+  ) {
 
-      this.groupEditForm = this.fb.group({
-        name: [this.group.name || ""],
-        grade: [this.group.class && this.group.class[0] || []]
-      });
+    this.groupEditForm = this.fb.group({
+      name: [this.group.name || ""],
+      class: [this.group.class && this.group.class[0] || []]
+    });
 
     this.init();
   }
 
-  addMembers() {
+  /**
+   * Navigates to UsersList page
+   */
+  navigateToUsersList() {
     let formValue = this.groupEditForm.value;
 
     if (formValue.name) {
       this.group.name = formValue.name;
-      this.group.class = [formValue.grade];
+      this.group.class = [formValue.class];
 
       this.navCtrl.push(MembersPage, {
         group: this.group
@@ -48,9 +57,9 @@ export class CreateGroupPage {
   }
 
   private init() {
-    let profile = this.appGlobalService.getCurrentUser()
+    let profile = this.appGlobalService.getCurrentUser();
 
-    let frameworkId;
+    let frameworkId: string;
 
     if (profile && profile.syllabus && profile.syllabus.length > 0) {
       frameworkId = profile.syllabus[0];
@@ -61,13 +70,29 @@ export class CreateGroupPage {
         let request: CategoryRequest = {
           currentCategory: "gradeLevel"
         }
-        return this.formAndFrameAPI.getCategoryData(request)
+        return this.formAndFrameAPI.getCategoryData(request);
       })
-      .then((grades) => {
-        this.gradeList = grades;
+      .then((classes) => {
+        this.classList = classes;
       })
       .catch(error => {
         console.log("Error : " + error);
       });
+  }
+
+  /**
+   * Used to Translate message to current Language
+   * @param {string} messageConst - Message Constant to be translated
+   * @param {string} field - The field to be added in the language constant
+   * @returns {string} translatedMsg - Translated Message
+   */
+  translateMessage(messageConst: string, field?: string): string {
+    let translatedMsg = '';
+    this.translate.get(messageConst, { '%s': field }).subscribe(
+      (value: any) => {
+        translatedMsg = value;
+      }
+    );
+    return translatedMsg;
   }
 }

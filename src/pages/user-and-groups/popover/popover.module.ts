@@ -1,16 +1,15 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { UsersPage } from './users';
+import { PopoverPage } from './popover';
 import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   declarations: [
-    UsersPage,
-
+    PopoverPage,
   ],
   imports: [
-    IonicPageModule.forChild(UsersPage),
+    IonicPageModule.forChild(PopoverPage),
     TranslateModule.forChild()
   ],
 })
-export class UsersPageModule { }
+export class PopoverPageModule {}

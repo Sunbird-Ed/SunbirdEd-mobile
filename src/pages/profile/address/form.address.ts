@@ -181,7 +181,6 @@ export class FormAddress {
   showDeleteConfirm() {
     let confirm = this.alertCtrl.create({
       title: this.translateMessage('CONFIRM_DEL',this.translateMessage('TITLE_ADDRESS')),
-
       mode: 'wp',
       cssClass: 'confirm-alert',
       buttons: [

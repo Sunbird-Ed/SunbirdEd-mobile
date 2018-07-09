@@ -4,7 +4,7 @@ import { StatusBar } from '@ionic-native/status-bar';
 import {
   TabsPage, AuthService, ContainerService, PermissionService,
   Interact, InteractType, InteractSubtype, Environment, TelemetryService,
-  SharedPreferences, ProfileType, UserProfileService, MigrationService, GroupService
+  SharedPreferences, ProfileType, UserProfileService, MigrationService, GroupService, ProfileService
 } from "sunbird";
 import { initTabs, GUEST_TEACHER_TABS, GUEST_STUDENT_TABS, LOGIN_TEACHER_TABS } from './module.service';
 import { LanguageSettingsPage } from '../pages/language-settings/language-settings';
@@ -65,6 +65,7 @@ export class MyApp {
     private userProfileService: UserProfileService,
     private migrationService: MigrationService,
     private appVersion: AppVersion,
+    private profileService: ProfileService
   ) {
 
     let that = this;
@@ -178,7 +179,19 @@ export class MyApp {
     this.appVersion.getVersionCode()
       .then((versionCode) => {
         console.log("Current Version Code - " + versionCode);
-        this.migrationService.migrateFromSQLToNoSQL();
+
+        //migrate the profile to new type
+        this.migrationService.migrateProfiles().
+          then(() => {
+            //get all the newly stored profiles
+            this.migrationService.getAllProfiles().
+              then((response) => {
+                console.log("Migrated profiles response - " + JSON.stringify(response));
+              });
+          })
+          .catch(error => {
+            console.log("Error migrating profiles - ", error);
+          });;
       },
         (error) => {
 

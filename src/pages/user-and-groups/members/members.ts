@@ -1,5 +1,5 @@
 import { GrouplandingPage } from './../grouplanding/grouplanding';
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { GroupService, Group } from 'sunbird';
 
@@ -9,8 +9,8 @@ import { GroupService, Group } from 'sunbird';
   templateUrl: 'members.html',
 })
 export class MembersPage {
-  group: Group
-  users = [
+  groupName: Group;
+  usersList: Array<any> = [
     {
       name: "Anirudh Deep",
       profession: "Student",
@@ -26,34 +26,36 @@ export class MembersPage {
       profession: "Student",
       selected: false
     }
-  ]
+  ];
 
-  allUsers = this.users;
-
-  constructor(public navCtrl: NavController,
+  constructor(
+    public navCtrl: NavController,
     public navParams: NavParams,
-    private groupService: GroupService) {
-    this.group = this.navParams.get('group');
+    private groupService: GroupService,
+    private zone: NgZone
+  ) {
+    this.groupName = this.navParams.get('group');
   }
 
 
-  selectedMember(name, profession) {
-
+  toggleSelect(index: number) {
+    this.usersList[index].selected = !this.usersList[index].selected;
   }
 
-  selectall() {
-    for (var i = 0; i < this.users.length; i++) {
-      this.users[i].selected = true;
-    }
+  selectAll() {
+    this.zone.run(()=> {
+      for (var i = 0; i < this.usersList.length; i++) {
+        this.usersList[i].selected = true;
+      }
+    });
   }
 
   createGroup() {
-    this.groupService.createGroup(this.group)
+    this.groupService.createGroup(this.groupName)
       .then((val) => {
-        this.navCtrl.push(GrouplandingPage);
+        this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length()-3));
       }).catch((error) => {
         console.log("Error : " + error);
       });
   }
-
 }

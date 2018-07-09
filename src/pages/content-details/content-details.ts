@@ -153,7 +153,7 @@ export class ContentDetailsPage {
   constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, private telemetryService: TelemetryService, zone: NgZone,
     private events: Events, toastCtrl: ToastController, loadingCtrl: LoadingController,
     private fileUtil: FileUtil, public popoverCtrl: PopoverController, private shareUtil: ShareUtil,
-    private social: SocialSharing, private platform: Platform, private translate: TranslateService,
+    private social: SocialSharing, public platform: Platform, public translate: TranslateService,
     private buildParamService: BuildParamService, private network: Network,
     private courseService: CourseService,
     private preference: SharedPreferences, private appGlobalService: AppGlobalService) {
