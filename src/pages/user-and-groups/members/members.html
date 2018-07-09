@@ -1,44 +1,38 @@
 <ion-header>
-    <ion-navbar>
-        <ion-title>{{'USERS_AND_GROUPS' | translate}}</ion-title>
-        <!-- <ion-buttons end>
-          <button ion-button icon-only>
-              <ion-icon name="md-add"></ion-icon>
-          </button>
-          <button ion-button icon-only>
-              <ion-icon name="search"></ion-icon>
-          </button>
-      </ion-buttons> -->
-    </ion-navbar>
+  <ion-navbar>
+    <ion-title>{{'USERS_AND_GROUPS' | translate}}</ion-title>
+  </ion-navbar>
 </ion-header>
 <ion-content padding>
-    <ion-row>
-        <ion-col col-md-6>
-            <p>3 USERS</p>
-        </ion-col>
-        <ion-col col-md-6>
-            <p class="right primary" (click)="selectall()">SELECT ALL</p>
-        </ion-col>
-    </ion-row>
-    <ion-list *ngFor="let user of allUsers">
-        <ion-item class="custom-ion-list">
-            <ion-thumbnail item-start>
-                <img class="rounded" src="assets/imgs/male.png">
-            </ion-thumbnail>
-            <ion-label>
-                <h6>{{user.name}}</h6>
-                <p>{{user.profession}}</p>
-            </ion-label>
-            <ion-checkbox item-end checked={{user.selected}} (click)="selectedMember(user.name , user.profession, user.selected)"></ion-checkbox>
-        </ion-item>
-    </ion-list>
+  <ion-row>
+    <ion-col col-md-6>
+    </ion-col>
+    <ion-col col-md-6>
+      <p class="right primary" (click)="selectAll()">SELECT ALL</p>
+    </ion-col>
+  </ion-row>
+
+  <ion-item *ngFor="let user of users" class="item-background" style="margin-bottom: 10px;" no-lines>
+
+    {{user?.name}}
+    <ion-avatar item-start>
+      <img src="assets/imgs/ic_businessman.png">
+    </ion-avatar>
+    <ion-label>
+      <h6>
+        <b>{{user?.name}}</b>
+      </h6>
+      <p>{{user?.profession}}</p>
+    </ion-label>
+    <ion-checkbox item-end checked="{{user?.selected}}" (click)="selectedMember(user?.name , user?.profession, user?.selected)"></ion-checkbox>
+  </ion-item>
+
+
 </ion-content>
 <ion-footer>
-    <div class="border">
-        <ion-row>
-            <ion-col col-md-10 offset-md-1>
-                <button ion-button block (click)="createGroup()">{{'CREATE_GROUP' | translate }}</button>
-            </ion-col>
-        </ion-row>
-    </div>
+  <ion-row>
+    <ion-col col-md-10 offset-md-1>
+      <button ion-button block (click)="createGroup()">{{'CREATE_GROUP' | translate }}</button>
+    </ion-col>
+  </ion-row>
 </ion-footer>

@@ -9,8 +9,8 @@ import { GroupService, Group } from 'sunbird';
   templateUrl: 'members.html',
 })
 export class MembersPage {
-  group: Group
-  users = [
+  group: Group;
+  users: Array<any> = [
     {
       name: "Anirudh Deep",
       profession: "Student",
@@ -26,13 +26,13 @@ export class MembersPage {
       profession: "Student",
       selected: false
     }
-  ]
+  ];
 
-  allUsers = this.users;
-
-  constructor(public navCtrl: NavController,
+  constructor(
+    public navCtrl: NavController,
     public navParams: NavParams,
-    private groupService: GroupService) {
+    private groupService: GroupService
+  ) {
     this.group = this.navParams.get('group');
   }
 
@@ -41,7 +41,7 @@ export class MembersPage {
 
   }
 
-  selectall() {
+  selectAll() {
     for (var i = 0; i < this.users.length; i++) {
       this.users[i].selected = true;
     }
@@ -50,10 +50,9 @@ export class MembersPage {
   createGroup() {
     this.groupService.createGroup(this.group)
       .then((val) => {
-        this.navCtrl.push(GrouplandingPage);
+        this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length()-3));
       }).catch((error) => {
         console.log("Error : " + error);
       });
   }
-
 }

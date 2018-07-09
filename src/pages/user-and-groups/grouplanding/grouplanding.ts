@@ -1,11 +1,13 @@
+import { Popover } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams, ActionSheetController, PopoverController } from 'ionic-angular';
 
 import { CreateGroupPage } from './../create-group/create-group';
-import { UsersPage } from './../users/users';
 import { GroupMemberPage } from '../group-member/group-member';
 import { CreateuserPage } from '../createuser/createuser';
+import { PopoverPage } from '../popover/popover';
+import { GroupService, Group } from 'sunbird';
 
 @IonicPage()
 @Component({
@@ -17,6 +19,8 @@ export class GrouplandingPage {
   groupName: string;
   showEmptyUsersMessage: boolean = false;
   showEmptyGroupsMessage: boolean = false;
+  isUserSelected: boolean = false;
+  fromPage: string = '';
   usersList: Array<any> = [
     {
       name: 'Harish BookWala',
@@ -32,19 +36,31 @@ export class GrouplandingPage {
       name: 'Guru Singh',
       userType: 'student',
       grade: 'Grade 1'
-    },
+    }
+  ];
 
-  ]
-  groupList: Array<string> = [];
+  groupList: Array<any> = [];
+
   userType: string;
-  showStyle: false;
+  selectedUserIndex: number = -1;
+  userProfile = {
+    id: 'something',
+    firstName: 'Harish',
+    lastName: 'Bookwala',
+    grade:"CLASS 4A",
+    userType: 'teacher',
+    avatar: 'assets/imgs/ic_businessman.png'
+  }
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     public translate: TranslateService,
     public actionSheetCtrl: ActionSheetController,
-    public popOverCtrl: PopoverController
+    public popOverCtrl: PopoverController,
+    public zone: NgZone,
+    public popoverCtrl: PopoverController,
+    public groupService: GroupService
   ) {
 
     /* Check usersList length and show message or list accordingly */
@@ -60,12 +76,56 @@ export class GrouplandingPage {
     } else {
       this.showEmptyGroupsMessage = true;
     }
+
+    //this.getGroupsList();
+  }
+
+  ionViewWillEnter() {
+    /* this.fromPage = this.navParams.get('fromPage') || 'createGroup';
+    if (this.fromPage === 'createGroup') {
+      this.segmentType = 'groups';
+      this.getGroupsList();
+    } */
+    this.getGroupsList();
+  }
+
+  presentPopover(myEvent) {
+    let popover = this.popoverCtrl.create(PopoverPage, {
+      edit: function() {
+          alert('yay');
+          popover.dismiss()
+          },
+        delete: function(){
+          alert('delete clicked');
+          popover.dismiss()
+        },
+      });
+    popover.present({
+      ev: myEvent
+    });
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad GrouplandingPage');
   }
 
+  getGroupsList() {
+    this.groupService.getAllGroup().then((groups) => {
+      // Assign some groups here
+      if(groups.result && groups.result.length) {
+        this.zone.run(() => {
+          this.showEmptyGroupsMessage = false;
+          this.groupList = groups.result;
+        });
+      } else {
+        this.showEmptyGroupsMessage = true;
+      }
+      console.log("GroupList", groups);
+      //this.groupList = groups;
+    }).catch((error) => {
+      console.log("Something went wrong while fetching data");
+    });
+  }
   /**
    * Navigates to Create group Page
    */
@@ -88,6 +148,22 @@ export class GrouplandingPage {
    */
   createUser() {
     this.navCtrl.push(CreateuserPage, {})
+  }
+
+  selectUser(index: number, name: string) {
+    this.isUserSelected = !this.isUserSelected;
+    this.zone.run(() => {
+      this.selectedUserIndex = index;
+    });
+    console.log("Clicked list name is ", name);
+  }
+
+  onSegmentChange(event) {
+    this.isUserSelected = false;
+    this.zone.run(() => {
+      this.selectedUserIndex = -1;
+    })
+    console.log("Event", event);
   }
 
   /**
@@ -113,17 +189,6 @@ export class GrouplandingPage {
       ]
     });
     actionSheet.present();
-  }
-
-  /**
-   * Returns Style for the border of the box
-   */
-  getStyle() {
-    if (this.showStyle) {
-      return "1px solid #488aff";
-    } else {
-      return "";
-    }
   }
 
   /**

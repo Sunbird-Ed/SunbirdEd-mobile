@@ -89,6 +89,13 @@ $button-md-border-radius: 6px;
 $toolbar-md-title-font-size: 1.6rem;
 $toolbar-md-title-text-color: map-get($colors, primary_black);
 
+$segment-button-md-font-size: 1.4rem;
+$segment-button-md-border-color-activated: map-get($colors, primary);
+$segment-button-md-text-color-activated: map-get($colors, primary);
+$segment-button-md-height: 5.2rem;
+$segment-button-md-line-height: 5rem;
+
+
 
 // App iOS Variables
 // --------------------------------------------------

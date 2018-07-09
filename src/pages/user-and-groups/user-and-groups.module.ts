@@ -1,3 +1,5 @@
+import { PopoverPageModule } from './popover/popover.module';
+import { PopoverPage } from './popover/popover';
 import { CreateuserPage } from './createuser/createuser';
 import { UsersPage } from './users/users';
 import { NgModule } from '@angular/core';
@@ -25,7 +27,8 @@ import { UsersPageModule } from './users/users.module';
     GroupMemberPage,
     GrouplandingPage,
     MembersPage,
-    UsersPage
+    UsersPage,
+    PopoverPage
   ],
   imports: [
     IonicPageModule.forChild(UserAndGroupsPage),
@@ -35,7 +38,8 @@ import { UsersPageModule } from './users/users.module';
     GroupMemberPageModule,
     GrouplandingPageModule,
     MembersPageModule,
-    UsersPageModule
+    UsersPageModule,
+    PopoverPageModule
   ],
 })
 export class UserAndGroupsPageModule { }

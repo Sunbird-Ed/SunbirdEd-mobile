@@ -15,6 +15,14 @@ page-grouplanding {
   .secondSection {
     margin-top: 13vh;
   }
+  .users-groups-toolbar{
+    position:fixed;
+    background-color: white;
+    z-index: 2;
+  }
+  .groupSecondSection{
+    margin-top: 7vh;
+  }
   .custom {
     //background-color: white;
     color: rgba(0, 0, 0, 0.5);
@@ -35,13 +43,28 @@ page-grouplanding {
     font-size: 1.4rem;
     font-weight: 700;
   }
+  .blueBorder {
+    border-color: map-get($colors, primary) !important;
+    border-style: solid !important;
+    border-width: 2px !important;
+    border-radius: 4px;
+  }
+  #tick {
+    position: relative;
+    width: 20px;
+    bottom: 16px;
+    right: 6px;
+    height: 20px;
+  }
 }
 
 .segment-md .segment-button {
-  height: 5.2rem !important;
+  //height: 5.2rem !important;
   font-weight: 700 !important;
   color: map-get($colors, dark_gray) !important;
-  line-height: 5rem !important;
+  //line-height: 5rem !important;
+  //font-size: 1.5rem;
+  background-color: map-get($colors, white);
 }
 
 .segment-md .segment-button.segment-activated {

@@ -16,8 +16,8 @@
     </ion-item>
     <ion-item>
       <ion-label stacked text-uppercase>{{'CLASS' | translate}}</ion-label>
-      <ion-select formControlName="grade">
-        <ion-option [value]="grade.code" *ngFor="let grade of gradeList">{{ grade.name }}</ion-option>
+      <ion-select formControlName="class" [selectOptions]="classOptions">
+        <ion-option [value]="class?.code" *ngFor="let class of classList">{{ class?.name }}</ion-option>
       </ion-select>
     </ion-item>
   </form>
@@ -26,7 +26,7 @@
   <div class="border">
     <ion-row>
       <ion-col col-md-10 offset-md-1>
-        <button ion-button block (click)="addMembers()">{{'NEXT' | translate}}</button>
+        <button ion-button block (click)="navigateToUsersList()">{{'NEXT' | translate}}</button>
       </ion-col>
     </ion-row>
   </div>
