@@ -172,7 +172,7 @@ export class NavParamsMock {
   };
 
   get(param) {
-    return this.data[param];
+    return this.data[param] ? this.data[param] : this.data;
   }
 }
 
@@ -189,7 +189,11 @@ export class SharedPreferencesMock {
   }
 }
 
-export class FileUtilMock { }
+export class FileUtilMock { 
+  internalStoragePath() {
+    return '';
+  }
+ }
 
 export class NavControllerMock { }
 
@@ -198,3 +202,5 @@ export class SocialSharingMock { }
 export class ViewControllerMock {}
 
 export class ToastControllerMock {}
+
+export class StorageMock {}
