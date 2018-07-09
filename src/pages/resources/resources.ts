@@ -78,6 +78,8 @@ export class ResourcesPage implements OnInit {
 	profile: any;
 	appLabel: string;
 
+	private mode: string = "soft";
+
 
 	private isVisible: boolean = false;
 
@@ -255,6 +257,8 @@ export class ResourcesPage implements OnInit {
 			pageAssembleCriteria = criteria;
 		}
 
+		this.mode = pageAssembleCriteria.mode;
+
 		if (this.profile) {
 
 			if (!pageAssembleCriteria.filters) {
@@ -400,7 +404,7 @@ export class ResourcesPage implements OnInit {
 				undefined)
 		);
 
-		queryParams = updateFilterInSearchQuery(queryParams, this.appliedFilter, this.profile, this.appGlobal);
+		queryParams = updateFilterInSearchQuery(queryParams, this.appliedFilter, this.profile, this.mode, this.appGlobal);
 
 		this.navCtrl.push(ViewMoreActivityPage, {
 			requestParams: queryParams,

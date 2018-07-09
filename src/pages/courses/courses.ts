@@ -94,6 +94,10 @@ export class CoursesPage implements OnInit {
 
   resumeContentData: any;
 
+
+  private mode: string = "soft";
+
+
   /**
    * Default method of class CoursesPage
    *
@@ -240,7 +244,7 @@ export class CoursesPage implements OnInit {
 
   viewAllCourses(searchQuery, headerTitle) {
 
-    searchQuery = updateFilterInSearchQuery(searchQuery, this.appliedFilter, this.profile, this.appGlobal);
+    searchQuery = updateFilterInSearchQuery(searchQuery, this.appliedFilter, this.profile, this.mode, this.appGlobal);
 
     this.navCtrl.push(ViewMoreActivityPage, {
       headerTitle: headerTitle,
@@ -310,6 +314,8 @@ export class CoursesPage implements OnInit {
 
       pageAssembleCriteria = criteria;
     }
+
+    this.mode = pageAssembleCriteria.mode;
 
 
     if (this.profile) {

@@ -33,9 +33,11 @@ function applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any
     return unique_array;
 }
 
-export function updateFilterInSearchQuery(queryParams, appliedFilter, profile, appGlobal: AppGlobalService) {
+export function updateFilterInSearchQuery(queryParams, appliedFilter, profile, mode, appGlobal: AppGlobalService) {
     let queryObj = JSON.parse(queryParams);
     let filter = queryObj.request.filters;
+
+    queryObj.request.mode = mode;
 
     if (appliedFilter) {
         let appliedFilterKey = Object.keys(appliedFilter);
