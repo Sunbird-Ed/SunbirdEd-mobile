@@ -4,8 +4,8 @@ import { NavController, LoadingController } from 'ionic-angular';
 import { AppVersion } from "@ionic-native/app-version";
 
 import {
-  OAuthService, ContainerService, UserProfileService, AuthService, TenantInfoRequest,
-  TelemetryService, InteractType, InteractSubtype, Environment, PageId, SharedPreferences
+  OAuthService, ContainerService, UserProfileService, ProfileService, AuthService, TenantInfoRequest,
+  TelemetryService, InteractType, InteractSubtype, Environment, PageId, SharedPreferences, ProfileType
 } from 'sunbird';
 import { initTabs, LOGIN_TEACHER_TABS } from '../../app/module.service';
 import { generateInteractTelemetry } from '../../app/telemetryutil';
@@ -46,6 +46,7 @@ export class SignInCardComponent {
     private auth: OAuthService,
     private container: ContainerService,
     private userProfileService: UserProfileService,
+    private profileService : ProfileService,
     private authService: AuthService,
     private loadingCtrl: LoadingController,
     private ngZone: NgZone,
@@ -151,10 +152,28 @@ export class SignInCardComponent {
             let r = JSON.parse(res);
             that.generateLoginInteractTelemetry(InteractType.OTHER,
               InteractSubtype.LOGIN_SUCCESS, r.id);
-            resolve({
-              slug: r.rootOrg.slug,
-              title: r.rootOrg.orgName
-            });
+            let profileRequest = {
+              uid: r.id, //req
+              handle: r.id, //TODO check with nikhil
+              avatar: "avatar", //req
+              language: "en", //req
+              age: -1,
+              day: -1,
+              month: -1,
+              standard: -1,
+              profileType: ProfileType.TEACHER
+            };
+            that.profileService.setCurrentProfile(false, profileRequest,
+              (res: any) => {
+                resolve({
+                    slug: r.rootOrg.slug,
+                    title: r.rootOrg.orgName
+                  });
+              },
+              (err: any) => {
+                reject(err);
+              });
+
           }, error => {
             reject(error);
             console.error(error);

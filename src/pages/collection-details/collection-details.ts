@@ -466,7 +466,7 @@ export class CollectionDetailsPage {
             }
           });
           if (this.queuedIdentifiers.length === 0) {
-            this.showMessage('UNABLE_TO_FETCH_CONTENT', false);
+            this.showMessage(this.translateMessage("UNABLE_TO_FETCH_CONTENT"), false);
           }
         } else if(data.result && data.result[0].status === 'NOT_FOUND') {
           this.showLoading = false;
@@ -480,7 +480,7 @@ export class CollectionDetailsPage {
       error => {
         this.zone.run(() => {
           console.log('error while loading content details', error);
-          this.showMessage('UNABLE_TO_FETCH_CONTENT', false);
+          this.showMessage(this.translateMessage("UNABLE_TO_FETCH_CONTENT"), false);
           this.showChildrenLoader = false;
         })
       });
