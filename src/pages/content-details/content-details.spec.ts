@@ -182,4 +182,15 @@ describe('ContentDetailsPage Component', () => {
         component.ionViewWillEnter();
         expect(component.cardData).toEqual(cardData);
     });
+
+    it('should genearte rollup object', () => {
+        component.cardData = {};
+        component.cardData.hierarchyInfo = mockRes.hierarchyInfo;
+        spyOn(component, 'generateRollUp').and.callThrough();
+        component.generateRollUp();
+        expect(component.cardData.hierarchyInfo).not.toBeNull();
+        expect(component.generateRollUp).toBeDefined();
+        expect(component.generateRollUp).toHaveBeenCalled();
+        expect(component.objRollup).not.toBeUndefined();
+    });
 });

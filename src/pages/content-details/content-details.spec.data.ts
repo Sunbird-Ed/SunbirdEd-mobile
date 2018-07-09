@@ -56,5 +56,15 @@ export const mockRes = {
     },
     languageConstant: {
         "ERROR_NO_INTERNET_MESSAGE": "No internet access"
-    }
+    },
+    hierarchyInfo: [
+        {
+            identifier: 'do_123'
+        },{
+            identifier: 'do_1234'
+        },{
+            identifier: 'do_12345'
+        },{
+            identifier: 'do_123456'
+        }]
 }
