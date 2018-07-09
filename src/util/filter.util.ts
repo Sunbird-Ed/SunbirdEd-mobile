@@ -37,7 +37,9 @@ export function updateFilterInSearchQuery(queryParams, appliedFilter, profile, m
     let queryObj = JSON.parse(queryParams);
     let filter = queryObj.request.filters;
 
-    queryObj.request.mode = mode;
+    if (mode === "soft") {
+        queryObj.request.mode = mode;
+    }
 
     if (appliedFilter) {
         let appliedFilterKey = Object.keys(appliedFilter);

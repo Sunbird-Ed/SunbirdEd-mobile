@@ -184,6 +184,19 @@ export class CoursesPage implements OnInit {
       .then((appName: any) => {
         this.appLabel = appName;
       });
+
+    this.events.subscribe('tab.change', (data) => {
+      this.ngZone.run(() => {
+        if (data === "COURSES‌") {
+          if (this.appliedFilter) {
+            this.filterIcon = "./assets/imgs/ic_action_filter.png";
+            this.courseFilter = undefined;
+            this.appliedFilter = undefined;
+            this.getPopularAndLatestCourses();
+          }
+        }
+      });
+    });
   }
 
   /**
@@ -484,10 +497,12 @@ export class CoursesPage implements OnInit {
     const callback: QRResultCallback = {
       dialcode(scanResult, dialCode) {
         that.addCorRelation(dialCode, "qr");
-        that.navCtrl.push(SearchPage, { dialCode: dialCode, 
+        that.navCtrl.push(SearchPage, {
+          dialCode: dialCode,
           corRelation: that.corRelationList,
           source: PageId.COURSES,
-          shouldGenerateEndTelemetry: true });
+          shouldGenerateEndTelemetry: true
+        });
       },
       content(scanResult, contentId) {
         // that.navCtrl.push(SearchPage);
@@ -564,12 +579,7 @@ export class CoursesPage implements OnInit {
   }
 
   ionViewDidEnter() {
-    if (this.appliedFilter) {
-      this.filterIcon = "./assets/imgs/ic_action_filter.png";
-      this.courseFilter = undefined;
-      this.appliedFilter = undefined;
-      this.getPopularAndLatestCourses();
-    }
+
 
     this.isVisible = true;
 

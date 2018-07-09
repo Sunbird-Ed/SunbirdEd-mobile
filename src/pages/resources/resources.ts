@@ -139,6 +139,19 @@ export class ResourcesPage implements OnInit {
 				this.appLabel = appName;
 			});
 
+
+		this.events.subscribe('tab.change', (data) => {
+			this.zone.run(() => {
+				if (data === "LIBRARY‌") {
+					if (this.appliedFilter) {
+						this.filterIcon = "./assets/imgs/ic_action_filter.png";
+						this.resourceFilter = undefined;
+						this.appliedFilter = undefined;
+						this.getPopularContent();
+					}
+				}
+			});
+		});
 	}
 
 	ngAfterViewInit() {
@@ -413,12 +426,7 @@ export class ResourcesPage implements OnInit {
 	}
 
 	ionViewDidEnter() {
-		if (this.appliedFilter) {
-			this.filterIcon = "./assets/imgs/ic_action_filter.png";
-			this.resourceFilter = undefined;
-			this.appliedFilter = undefined;
-			this.getPopularContent();
-		}
+		
 
 		this.isVisible = true;
 
@@ -549,10 +557,12 @@ export class ResourcesPage implements OnInit {
 			dialcode(scanResult, dialCode) {
 
 				that.addCorRelation(dialCode, "qr");
-				that.navCtrl.push(SearchPage, { dialCode: dialCode,
-					 corRelation: that.corRelationList,
-					 source: that.source,
-					 shouldGenerateEndTelemetry: true });
+				that.navCtrl.push(SearchPage, {
+					dialCode: dialCode,
+					corRelation: that.corRelationList,
+					source: that.source,
+					shouldGenerateEndTelemetry: true
+				});
 			},
 			content(scanResult, contentId) {
 				let request: ContentDetailRequest = {
