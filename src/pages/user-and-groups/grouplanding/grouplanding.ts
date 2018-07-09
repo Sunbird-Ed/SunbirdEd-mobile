@@ -1,7 +1,7 @@
 import { Popover } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Component, NgZone } from '@angular/core';
-import { IonicPage, NavController, NavParams, ActionSheetController, PopoverController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController, PopoverController } from 'ionic-angular';
 
 import { CreateGroupPage } from './../create-group/create-group';
 import { GroupMemberPage } from '../group-member/group-member';
@@ -19,7 +19,8 @@ export class GrouplandingPage {
   groupName: string;
   showEmptyUsersMessage: boolean = false;
   showEmptyGroupsMessage: boolean = true;
-  fromPage: string = '';
+  isLoggedInUser: boolean = false;
+  currentUserId: string;
   usersList: Array<any> = [
     {
       name: 'Harish BookWala',
@@ -55,7 +56,7 @@ export class GrouplandingPage {
     public navCtrl: NavController,
     public navParams: NavParams,
     public translate: TranslateService,
-    public actionSheetCtrl: ActionSheetController,
+    public alertCtrl: AlertController,
     public popOverCtrl: PopoverController,
     public zone: NgZone,
     public popoverCtrl: PopoverController,
@@ -64,16 +65,16 @@ export class GrouplandingPage {
 
     /* Check usersList length and show message or list accordingly */
     this.showEmptyUsersMessage = (this.usersList && this.usersList.length) ? false : true;
-
-    /* Check usersList length and show message or list accordingly */
-    //this.showEmptyGroupsMessage = (this.groupList && this.groupList.length) ? false : true;
+    this.currentUserId = this.navParams.get('userId');
+    this.isLoggedInUser = this.navParams.get('isLoggedInUser');
   }
 
   ionViewWillEnter() {
     this.getGroupsList();
   }
 
-  presentPopover(myEvent) {
+  presentPopover(myEvent, userId) {
+
     let popover = this.popoverCtrl.create(PopoverPage, {
       edit: function () {
         alert('yay');
@@ -83,6 +84,7 @@ export class GrouplandingPage {
         alert('delete clicked');
         popover.dismiss()
       },
+      isCurrentUser: false
     });
     popover.present({
       ev: myEvent
@@ -96,8 +98,8 @@ export class GrouplandingPage {
   getGroupsList() {
     this.groupService.getAllGroup().then((groups) => {
       if (groups.result && groups.result.length) {
-          this.showEmptyGroupsMessage = false;
-          this.groupList = groups.result;
+        this.showEmptyGroupsMessage = false;
+        this.groupList = groups.result;
       } else {
         this.showEmptyGroupsMessage = true;
       }
@@ -149,25 +151,46 @@ export class GrouplandingPage {
   /**
    * Shows Prompt for switch Account
    */
-  switchAccountPrompt() {
-    let actionSheet = this.actionSheetCtrl.create({
-      title: 'Are you sure you want to switch accounts you will be signed out from your currently logged account ',
+  switchAccountConfirmBox() {
+    let alert = this.alertCtrl.create({
+      title: this.translateMessage('GROUP_DELETE_CONFIRM'),
+      mode: 'wp',
+      message: this.translateMessage('GROUP_DELETE_CONFIRM_MESSAGE'),
+      cssClass: 'confirm-alert',
       buttons: [
         {
-          text: 'CANCEL',
-          role: 'destructive',
+          text: this.translateMessage('CANCEL'),
+          role: 'cancel',
+          cssClass: 'alert-btn-cancel',
           handler: () => {
-            console.log('Destructive clicked');
+            console.log('Cancel clicked');
           }
         },
         {
-          text: 'OKAY',
+          text: this.translateMessage('OKAY'),
+          cssClass: 'alert-btn-delete',
           handler: () => {
-            console.log('Archive clicked');
+            console.log('Buy clicked');
           }
         }
       ]
     });
-    actionSheet.present();
+    alert.present();
+  }
+
+  /**
+   * Used to Translate message to current Language
+   * @param {string} messageConst Message Constant to be translated
+   * @param {string} field Field to be place in language string
+   * @returns {string} field Translated Message
+   */
+  translateMessage(messageConst: string, field?: string): string {
+    let translatedMsg = '';
+    this.translate.get(messageConst, { '%s': field }).subscribe(
+      (value: any) => {
+        translatedMsg = value;
+      }
+    );
+    return translatedMsg;
   }
 }

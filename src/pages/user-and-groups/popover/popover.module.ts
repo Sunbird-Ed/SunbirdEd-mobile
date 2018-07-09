@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { PopoverPage } from './popover';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   declarations: [
@@ -8,6 +9,7 @@ import { PopoverPage } from './popover';
   ],
   imports: [
     IonicPageModule.forChild(PopoverPage),
+    TranslateModule.forChild()
   ],
 })
 export class PopoverPageModule {}

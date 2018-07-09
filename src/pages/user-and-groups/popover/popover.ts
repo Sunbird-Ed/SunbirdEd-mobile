@@ -1,12 +1,6 @@
-//import { CreateGroupPage } from './../create-group/create-group';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-/**
- * Generated class for the PopoverPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import { TranslateService } from '@ngx-translate/core';
 
 @IonicPage()
 @Component({
@@ -15,12 +9,14 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 export class PopoverPage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  isCurrentUser: boolean = false;
+  constructor(public navCtrl: NavController, public navParams: NavParams, public translate: TranslateService) {
+    this.isCurrentUser = this.navParams.get('isCurrentUser');
   }
   delete() {
-    this.navParams.get('delete')(); 
-  }   
-  edit(){
+    this.navParams.get('delete')();
+  }
+  edit() {
     this.navParams.get('edit')();
   }
 
