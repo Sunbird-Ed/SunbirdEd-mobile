@@ -5,11 +5,10 @@ import { NavParams } from "ionic-angular/navigation/nav-params";
 import { ViewController } from "ionic-angular/navigation/view-controller";
 import { ToastController, App } from "ionic-angular";
 import { SettingsPage } from "../../settings/settings";
-import { ReportPage } from '../../settings/reports/reports'
-import { GroupReportListPage } from '../../settings/reports/group-report-list/group-report-list'
+import { ReportsPage } from '../../reports/reports'
 import { OAuthService } from "sunbird";
 import { OnboardingPage } from "../../onboarding/onboarding";
-import { InteractType, InteractSubtype, PageId, Environment, TelemetryService, ProfileService } from "sunbird";
+import { Interact, InteractType, InteractSubtype, PageId, Environment, TelemetryService, ProfileService } from "sunbird";
 import { generateInteractTelemetry } from "../../../app/telemetryutil";
 import { GrouplandingPage } from "../../user-and-groups/grouplanding/grouplanding";
 
@@ -23,8 +22,7 @@ export class OverflowMenuComponent {
     @ViewChild(Nav) nav;
     items: Array<string>;
 
-    constructor(
-        public navCtrl: NavController,
+    constructor(public navCtrl: NavController,
         public navParams: NavParams,
         public viewCtrl: ViewController,
         private oauth: OAuthService,
@@ -76,16 +74,10 @@ export class OverflowMenuComponent {
             case "USERS_AND_GROUPS":
                 this.app.getActiveNav().push(GrouplandingPage);
                 break;
+            case "REPORTS":
+                this.app.getActiveNav().push(ReportsPage);
+                break;
         }
-    }
-
-    goToReports(){
-
-        this.app.getActiveNav().push(ReportPage);
-    }
-    goToGroupReports(){
-       
-        this.app.getActiveNav().push(GroupReportListPage);
     }
 
     generateLogoutInteractTelemetry(interactType, interactSubtype, uid) {
@@ -100,4 +92,5 @@ export class OverflowMenuComponent {
                 undefined,
                 undefined));
     }
+
 }
