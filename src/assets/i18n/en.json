@@ -431,5 +431,6 @@
   "USERS_AND_GROUPS": "Users and Groups",
   "GROUP_NAME": "Group Name",
   "USERS":"Users",
-  "OKAY":"Okay"
+  "OKAY":"Okay",
+  "SELECT_ALL": "Select All"
 }

@@ -33,12 +33,12 @@
         </p>
       </div>
       <ion-list *ngIf="!showEmptyUsersMessage">
-        <ion-item *ngFor="let user of usersList; let i=index;" (click)="selectUser(i, user?.name)" class="item-background"
-        [ngClass]="i===selectedUserIndex ? 'blueBorder' : ''" style="margin-bottom: 10px;" no-lines>
-          <ion-avatar item-start>
+        <ion-item *ngFor="let user of usersList; let i=index;" class="item-background" margin-bottom
+        [ngClass]="i===selectedUserIndex ? 'blueBorder' : ''" no-lines>
+          <ion-avatar item-start (click)="selectUser(i, user?.name)">
             <img src="assets/imgs/ic_businessman.png">
           </ion-avatar>
-          <h6>
+          <h6 (click)="selectUser(i, user?.name)">
             <b>{{user?.name}}</b>
           </h6>
           <p>{{user?.userType}} • {{user?.grade}}</p>
@@ -52,7 +52,7 @@
         <div class="img-container">
           <img class="image_style" src="assets/imgs/img_group.png">
         </div>
-        <ion-row>
+        <ion-row padding-top>
           <ion-col col-md-6 offset-md-3 col-lg-6 offset-lg-3>
             <div class="image-text">
               <h6>
@@ -67,7 +67,7 @@
       </div>
       <div class="groupSecondSection"  *ngIf="!showEmptyGroupsMessage">
           <ion-list>
-            <ion-item class="item-background" style="margin-bottom: 10px;" *ngFor="let group of groupList" no-lines>
+            <ion-item class="item-background" margin-bottom *ngFor="let group of groupList" no-lines>
               <ion-avatar item-start>
                 <img src="assets/imgs/img_group.png">
               </ion-avatar>
@@ -86,7 +86,7 @@
 <ion-footer>
   <ion-row>
     <ion-col col-md-10 offset-md-1>
-      <div *ngIf="isUserSelected; else enableCreateButton">
+      <div *ngIf="selectedUserIndex !== -1; else enableCreateButton">
         <button ion-button block center (click)="switchAccountPrompt()">
           {{'SWITCH_ACCOUNT'| translate}}
         </button>

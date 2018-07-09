@@ -6,13 +6,15 @@
 <ion-content padding>
   <ion-row>
     <ion-col col-md-6>
+        <p *ngIf="usersList.length" text-left ion-text color="title" text-uppercase><b>{{usersList.length}}&nbsp;{{'USERS' | translate}}</b></p>
     </ion-col>
     <ion-col col-md-6>
-      <p class="right primary" (click)="selectAll()">SELECT ALL</p>
+      <!-- <p text-right (click)="selectAll()" ion-text color="primary" text-uppercase><b>{{'SELECT_ALL' | translate}}</b></p> -->
+      <button ion-button float-end clear (click)="selectAll()">{{'SELECT_ALL' | translate}}</button>
     </ion-col>
   </ion-row>
 
-  <ion-item *ngFor="let user of users" class="item-background" style="margin-bottom: 10px;" no-lines>
+  <ion-item *ngFor="let user of usersList; let i = index;" class="item-background" margin-bottom no-lines>
 
     {{user?.name}}
     <ion-avatar item-start>
@@ -24,7 +26,7 @@
       </h6>
       <p>{{user?.profession}}</p>
     </ion-label>
-    <ion-checkbox item-end checked="{{user?.selected}}" (click)="selectedMember(user?.name , user?.profession, user?.selected)"></ion-checkbox>
+    <ion-checkbox item-end mode="ios" checked="{{user?.selected}}" (click)="toggleSelect(i)"></ion-checkbox>
   </ion-item>
 
 

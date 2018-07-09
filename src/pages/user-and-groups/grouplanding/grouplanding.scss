@@ -59,11 +59,8 @@ page-grouplanding {
 }
 
 .segment-md .segment-button {
-  //height: 5.2rem !important;
   font-weight: 700 !important;
   color: map-get($colors, dark_gray) !important;
-  //line-height: 5rem !important;
-  //font-size: 1.5rem;
   background-color: map-get($colors, white);
 }
 

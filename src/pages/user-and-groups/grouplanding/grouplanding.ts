@@ -18,8 +18,7 @@ export class GrouplandingPage {
   segmentType: string = "users";
   groupName: string;
   showEmptyUsersMessage: boolean = false;
-  showEmptyGroupsMessage: boolean = false;
-  isUserSelected: boolean = false;
+  showEmptyGroupsMessage: boolean = true;
   fromPage: string = '';
   usersList: Array<any> = [
     {
@@ -47,7 +46,7 @@ export class GrouplandingPage {
     id: 'something',
     firstName: 'Harish',
     lastName: 'Bookwala',
-    grade:"CLASS 4A",
+    grade: "CLASS 4A",
     userType: 'teacher',
     avatar: 'assets/imgs/ic_businessman.png'
   }
@@ -64,42 +63,27 @@ export class GrouplandingPage {
   ) {
 
     /* Check usersList length and show message or list accordingly */
-    if (this.usersList && this.usersList.length) {
-      this.showEmptyUsersMessage = false;
-    } else {
-      this.showEmptyUsersMessage = true;
-    }
+    this.showEmptyUsersMessage = (this.usersList && this.usersList.length) ? false : true;
 
     /* Check usersList length and show message or list accordingly */
-    if (this.groupList && this.groupList.length) {
-      this.showEmptyGroupsMessage = false;
-    } else {
-      this.showEmptyGroupsMessage = true;
-    }
-
-    //this.getGroupsList();
+    //this.showEmptyGroupsMessage = (this.groupList && this.groupList.length) ? false : true;
   }
 
   ionViewWillEnter() {
-    /* this.fromPage = this.navParams.get('fromPage') || 'createGroup';
-    if (this.fromPage === 'createGroup') {
-      this.segmentType = 'groups';
-      this.getGroupsList();
-    } */
     this.getGroupsList();
   }
 
   presentPopover(myEvent) {
     let popover = this.popoverCtrl.create(PopoverPage, {
-      edit: function() {
-          alert('yay');
-          popover.dismiss()
-          },
-        delete: function(){
-          alert('delete clicked');
-          popover.dismiss()
-        },
-      });
+      edit: function () {
+        alert('yay');
+        popover.dismiss()
+      },
+      delete: function () {
+        alert('delete clicked');
+        popover.dismiss()
+      },
+    });
     popover.present({
       ev: myEvent
     });
@@ -111,21 +95,19 @@ export class GrouplandingPage {
 
   getGroupsList() {
     this.groupService.getAllGroup().then((groups) => {
-      // Assign some groups here
-      if(groups.result && groups.result.length) {
-        this.zone.run(() => {
+      if (groups.result && groups.result.length) {
           this.showEmptyGroupsMessage = false;
           this.groupList = groups.result;
-        });
       } else {
         this.showEmptyGroupsMessage = true;
       }
       console.log("GroupList", groups);
       //this.groupList = groups;
     }).catch((error) => {
-      console.log("Something went wrong while fetching data");
+      console.log("Something went wrong while fetching data", error);
     });
   }
+
   /**
    * Navigates to Create group Page
    */
@@ -151,15 +133,13 @@ export class GrouplandingPage {
   }
 
   selectUser(index: number, name: string) {
-    this.isUserSelected = !this.isUserSelected;
     this.zone.run(() => {
-      this.selectedUserIndex = index;
+      this.selectedUserIndex = (this.selectedUserIndex === index) ? -1 : index;
     });
     console.log("Clicked list name is ", name);
   }
 
   onSegmentChange(event) {
-    this.isUserSelected = false;
     this.zone.run(() => {
       this.selectedUserIndex = -1;
     })
@@ -190,15 +170,4 @@ export class GrouplandingPage {
     });
     actionSheet.present();
   }
-
-  /**
-   * Shows Popover for the edit and delete.
-   * @param myEvent
-   */
-  /* presentPopover(myEvent) {
-    let popover = this.popOverCtrl.create(PopoverPage);
-    popover.present({
-      ev: myEvent
-    });
-  } */
 }
