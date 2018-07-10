@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
+import { GroupService } from 'sunbird';
 
 @IonicPage()
 @Component({
@@ -10,7 +11,10 @@ import { TranslateService } from '@ngx-translate/core';
 export class PopoverPage {
 
   isCurrentUser: boolean = false;
-  constructor(public navCtrl: NavController, public navParams: NavParams, public translate: TranslateService) {
+  constructor(public navCtrl: NavController,
+     public navParams: NavParams,
+     public translate: TranslateService,
+     public groupService: GroupService) {
     this.isCurrentUser = this.navParams.get('isCurrentUser');
   }
   delete() {
