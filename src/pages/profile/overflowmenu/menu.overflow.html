@@ -1,3 +1,4 @@
 <ion-list>
     <ion-item ion-item  *ngFor="let item of items,let i = index" (click)="close($event, item)">{{item | translate }}</ion-item>
+    <!-- <ion-item (click)="goToReports()">Reports</ion-item> -->
 </ion-list>
