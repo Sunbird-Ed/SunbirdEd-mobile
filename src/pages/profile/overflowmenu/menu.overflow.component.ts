@@ -9,7 +9,7 @@ import { OAuthService } from "sunbird";
 import { OnboardingPage } from "../../onboarding/onboarding";
 import { InteractType, InteractSubtype, PageId, Environment, TelemetryService, ProfileService } from "sunbird";
 import { generateInteractTelemetry } from "../../../app/telemetryutil";
-import { GrouplandingPage } from "../../user-and-groups/grouplanding/grouplanding";
+import { UserAndGroupsPage } from "../../user-and-groups/user-and-groups";
 
 
 @Component({
@@ -72,7 +72,7 @@ export class OverflowMenuComponent {
                     InteractSubtype.LOGOUT_SUCCESS, "");
                 break;
             case "USERS_AND_GROUPS":
-                this.app.getActiveNav().push(GrouplandingPage);
+                this.app.getActiveNav().push(UserAndGroupsPage);
                 break;
         }
     }

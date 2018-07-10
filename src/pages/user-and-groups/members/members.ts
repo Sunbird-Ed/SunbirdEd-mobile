@@ -1,4 +1,3 @@
-import { GrouplandingPage } from './../grouplanding/grouplanding';
 import { Component, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { GroupService, Group } from 'sunbird';
