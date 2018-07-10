@@ -97,6 +97,8 @@ export class CoursesPage implements OnInit {
 
   private mode: string = "soft";
 
+  private isFilterApplied: boolean = false;
+
 
   /**
    * Default method of class CoursesPage
@@ -192,6 +194,7 @@ export class CoursesPage implements OnInit {
             this.filterIcon = "./assets/imgs/ic_action_filter.png";
             this.courseFilter = undefined;
             this.appliedFilter = undefined;
+            this.isFilterApplied = false;
             this.getPopularAndLatestCourses();
           }
         }
@@ -257,7 +260,7 @@ export class CoursesPage implements OnInit {
 
   viewAllCourses(searchQuery, headerTitle) {
 
-    searchQuery = updateFilterInSearchQuery(searchQuery, this.appliedFilter, this.profile, this.mode, this.appGlobal);
+    searchQuery = updateFilterInSearchQuery(searchQuery, this.appliedFilter, this.profile, this.mode, this.isFilterApplied, this.appGlobal);
 
     this.navCtrl.push(ViewMoreActivityPage, {
       headerTitle: headerTitle,
@@ -331,7 +334,7 @@ export class CoursesPage implements OnInit {
     this.mode = pageAssembleCriteria.mode;
 
 
-    if (this.profile) {
+    if (this.profile && !this.isFilterApplied) {
 
       if (!pageAssembleCriteria.filters) {
         pageAssembleCriteria.filters = new PageAssembleFilter();
@@ -617,9 +620,12 @@ export class CoursesPage implements OnInit {
 
           let filterApplied = false;
 
+          that.isFilterApplied = false;
+
           Object.keys(that.appliedFilter).forEach(key => {
             if (that.appliedFilter[key].length > 0) {
               filterApplied = true;
+              that.isFilterApplied = true;
             }
           })
 

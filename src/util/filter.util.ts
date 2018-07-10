@@ -33,7 +33,7 @@ function applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any
     return unique_array;
 }
 
-export function updateFilterInSearchQuery(queryParams, appliedFilter, profile, mode, appGlobal: AppGlobalService) {
+export function updateFilterInSearchQuery(queryParams, appliedFilter, profile, mode, isFilterApplied, appGlobal: AppGlobalService) {
     let queryObj = JSON.parse(queryParams);
     let filter = queryObj.request.filters;
 
@@ -59,7 +59,7 @@ export function updateFilterInSearchQuery(queryParams, appliedFilter, profile, m
         })
     }
 
-    if (profile) {
+    if (profile && !isFilterApplied) {
         if (profile.board && profile.board.length) {
             filter["board"] = applyProfileFilter(profile.board, filter["board"], "board", appGlobal);
         }

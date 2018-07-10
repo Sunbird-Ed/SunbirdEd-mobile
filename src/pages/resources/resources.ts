@@ -80,6 +80,8 @@ export class ResourcesPage implements OnInit {
 
 	private mode: string = "soft";
 
+	private isFilterApplied: boolean = false;
+
 
 	private isVisible: boolean = false;
 
@@ -147,6 +149,7 @@ export class ResourcesPage implements OnInit {
 						this.filterIcon = "./assets/imgs/ic_action_filter.png";
 						this.resourceFilter = undefined;
 						this.appliedFilter = undefined;
+						this.isFilterApplied = false;
 						this.getPopularContent();
 					}
 				}
@@ -272,7 +275,7 @@ export class ResourcesPage implements OnInit {
 
 		this.mode = pageAssembleCriteria.mode;
 
-		if (this.profile) {
+		if (this.profile && !this.isFilterApplied) {
 
 			if (!pageAssembleCriteria.filters) {
 				pageAssembleCriteria.filters = new PageAssembleFilter();
@@ -417,7 +420,7 @@ export class ResourcesPage implements OnInit {
 				undefined)
 		);
 
-		queryParams = updateFilterInSearchQuery(queryParams, this.appliedFilter, this.profile, this.mode, this.appGlobal);
+		queryParams = updateFilterInSearchQuery(queryParams, this.appliedFilter, this.profile, this.mode, this.isFilterApplied, this.appGlobal);
 
 		this.navCtrl.push(ViewMoreActivityPage, {
 			requestParams: queryParams,
@@ -664,10 +667,12 @@ export class ResourcesPage implements OnInit {
 				that.appliedFilter = filter;
 
 				let filterApplied = false;
+				that.isFilterApplied = false;
 
 				Object.keys(that.appliedFilter).forEach(key => {
 					if (that.appliedFilter[key].length > 0) {
 						filterApplied = true;
+						that.isFilterApplied = true;
 					}
 				})
 
