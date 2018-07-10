@@ -4,12 +4,12 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { UserAndGroupsPage } from './user-and-groups';
 import { CreateGroupPage } from './create-group/create-group';
-import { MembersPage } from './members/members';
-import { GroupMemberPage } from './group-member/group-member';
+import { GroupMembersPage } from './group-members/group-members';
+import { GroupDetailsPage } from './group-details/group-details';
 import { TranslateModule } from '@ngx-translate/core';
 import { CreateGroupPageModule } from './create-group/create-group.module';
-import { GroupMemberPageModule } from './group-member/group-member.module';
-import { MembersPageModule } from './members/members.module';
+import { GroupMembersPageModule } from './group-members/group-members.module';
+import { GroupDetailsPageModule } from './group-details/group-details.module';
 
 @NgModule({
   declarations: [
@@ -17,16 +17,16 @@ import { MembersPageModule } from './members/members.module';
   ],
   entryComponents: [
     CreateGroupPage,
-    GroupMemberPage,
-    MembersPage,
+    GroupMembersPage,
+    GroupDetailsPage,
     PopoverPage
   ],
   imports: [
     IonicPageModule.forChild(UserAndGroupsPage),
     TranslateModule.forChild(),
     CreateGroupPageModule,
-    GroupMemberPageModule,
-    MembersPageModule,
+    GroupMembersPageModule,
+    GroupDetailsPageModule,
     PopoverPageModule
   ],
 })

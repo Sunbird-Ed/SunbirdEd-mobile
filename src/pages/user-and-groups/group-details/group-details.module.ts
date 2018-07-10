@@ -1,15 +1,15 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { GroupMemberPage } from './group-member';
+import { GroupDetailsPage } from './group-details';
 import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   declarations: [
-    GroupMemberPage,
+    GroupDetailsPage,
   ],
   imports: [
-    IonicPageModule.forChild(GroupMemberPage),
+    IonicPageModule.forChild(GroupDetailsPage),
     TranslateModule.forChild()
   ],
 })
-export class GroupMemberPageModule { }
+export class GroupDetailsPageModule { }
