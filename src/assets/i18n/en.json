@@ -435,5 +435,7 @@
   "SELECT_ALL": "Select All",
   "LOGGED_IN_AS": "Logged In As",
   "GROUP_DELETE_CONFIRM": "Are you sure you want to switch accounts?",
-  "GROUP_DELETE_CONFIRM_MESSAGE": "You will be signed out from your currently logged account"
+  "GROUP_DELETE_CONFIRM_MESSAGE": "You will be signed out from your currently logged account",
+  "NO_USERS_ON_THIS_DEVICE": "No Users on This Device",
+  "NO_USERS_SUGGESTION_MESSAGE": "A group needs to have at least"
 }
