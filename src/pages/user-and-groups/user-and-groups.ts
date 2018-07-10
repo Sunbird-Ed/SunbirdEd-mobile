@@ -1,9 +1,9 @@
+import { GroupDetailsPage } from './group-details/group-details';
 import { TranslateService } from '@ngx-translate/core';
 import { Component, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController, PopoverController } from 'ionic-angular';
 
 import { CreateGroupPage } from './create-group/create-group';
-import { GroupMemberPage } from './group-member/group-member';
 import { PopoverPage } from './popover/popover';
 import { GroupService } from 'sunbird';
 import { GuestEditProfilePage } from '../profile/guest-edit.profile/guest-edit.profile';
@@ -127,10 +127,10 @@ export class UserAndGroupsPage {
   }
 
   /**
-   * Navigates to group Members page
+   * Navigates to group Details page
    */
-  gotToGroupMembersPage() {
-    this.navCtrl.push(GroupMemberPage, {
+  gotToGroupDetailsPage() {
+    this.navCtrl.push(GroupDetailsPage, {
       item: this.groupList
     })
   }

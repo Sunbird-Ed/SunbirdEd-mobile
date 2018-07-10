@@ -15,7 +15,7 @@
   </ion-row>
 
   <div text-center>
-    <img src="assets/imgs/ic_businessman.png" />
+    <img *ngIf="!usersList.length" src="assets/imgs/ic_businessman.png" />
   </div>
   <ion-item *ngFor="let user of usersList; let i = index;" class="item-background" margin-bottom no-lines>
     {{user?.name}}

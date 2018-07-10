@@ -5,9 +5,9 @@ import { GroupService, Group } from 'sunbird';
 @IonicPage()
 @Component({
   selector: 'page-members',
-  templateUrl: 'members.html',
+  templateUrl: 'group-members.html',
 })
-export class MembersPage {
+export class GroupMembersPage {
   groupName: Group;
   usersList: Array<any> = [
     {

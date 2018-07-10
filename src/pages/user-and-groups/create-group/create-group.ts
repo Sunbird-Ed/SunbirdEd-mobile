@@ -1,4 +1,4 @@
-import { MembersPage } from './../members/members';
+import { GroupMembersPage } from './../group-members/group-members';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { AppGlobalService } from '../../../service/app-global.service';
@@ -50,7 +50,7 @@ export class CreateGroupPage {
       this.group.name = formValue.name;
       this.group.class = [formValue.class];
 
-      this.navCtrl.push(MembersPage, {
+      this.navCtrl.push(GroupMembersPage, {
         group: this.group
       });
     }
