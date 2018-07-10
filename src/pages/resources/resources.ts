@@ -126,20 +126,7 @@ export class ResourcesPage implements OnInit {
 		private network: Network,
 		private appGlobal: AppGlobalService,
 		private appVersion: AppVersion,
-		private formAndFrameowrkUtilService: FormAndFrameworkUtilService,
-		private alertCtrl: AlertController
 	) {
-		//check if any new app version is available
-		formAndFrameowrkUtilService.checkNewAppVersion()
-			.then(result => {
-				if (result) {
-					this.presentConfirm(result)
-				}
-			})
-			.catch(error => {
-				console.log("Error - " + error)
-			});
-
 		this.preference.getString('selected_language_code', (val: string) => {
 			if (val && val.length) {
 				this.selectedLanguage = val;
@@ -162,6 +149,14 @@ export class ResourcesPage implements OnInit {
 		this.events.subscribe(AppGlobalService.PROFILE_OBJ_CHANGED, () => {
 			this.swipeDownToRefresh();
 		});
+
+		//Event for optional and forceful upgrade
+		this.events.subscribe('force_optional_upgrade', (upgrade) => {
+			if (upgrade) {
+				this.appGlobal.showUpgradeDialog(upgrade)
+			}
+		});
+
 
 		if (this.network.type === 'none') {
 			this.isNetworkAvailable = false;
@@ -267,32 +262,6 @@ export class ResourcesPage implements OnInit {
 	ionViewWillLeave(): void {
 		this.isVisible = false;
 		this.events.unsubscribe('genie.event');
-	}
-
-	presentConfirm(result: any) {
-		let buttons: Array<AlertButton> = [];
-
-		//iterate on all the buttons
-		if (result.actionButtons) {
-			result.actionButtons.forEach(button => {
-				if (button) {
-					let alertButton: AlertButton = {
-						text: button.key,
-						handler: () => {
-							console.log(String(button.link))
-						}
-					};
-					buttons.push(alertButton);
-				}
-			});
-		}
-
-		let alert = this.alertCtrl.create({
-			title: result.title,
-			message: result.desc,
-			buttons: buttons
-		});
-		alert.present();
 	}
 
 	/**

@@ -8,7 +8,7 @@ import {
     FrameworkDetailsRequest,
     FrameworkService
 } from "sunbird";
-import { Events } from "ionic-angular";
+import { Events, AlertButton, AlertController } from "ionic-angular";
 
 @Injectable()
 export class AppGlobalService {
@@ -33,7 +33,8 @@ export class AppGlobalService {
         private authService: AuthService,
         private profile: ProfileService,
         private framework: FrameworkService,
-        private preference: SharedPreferences) {
+        private preference: SharedPreferences,
+        private alertCtrl: AlertController) {
         console.log("constructor");
         this.initValues();
         this.listenForEvents();
@@ -188,5 +189,38 @@ export class AppGlobalService {
                     reject(err);
                 });
         });
+    }
+
+    showUpgradeDialog(result: any) {
+        let buttons: Array<AlertButton> = [];
+
+        //iterate on all the buttons
+        if (result.upgrade.actionButtons.length > 0) {
+            let shouldDismissAlert: boolean = true;
+            result.upgrade.actionButtons.forEach(button => {
+                if (button) {
+                    let alertButton: AlertButton = {
+                        text: button.key,
+                        handler: () => {
+                            console.log(String(button.link))
+                        }
+                    };
+                    buttons.push(alertButton);
+                }
+            });
+
+            if(result.upgrade.type === 'forceful'){
+                shouldDismissAlert = false;
+            }
+
+            let alert = this.alertCtrl.create({
+                title: result.upgrade.title,
+                message: result.upgrade.desc,
+                buttons: buttons,
+                enableBackdropDismiss: shouldDismissAlert
+            });
+            alert.dismiss()
+            alert.present();
+        }
     }
 }
