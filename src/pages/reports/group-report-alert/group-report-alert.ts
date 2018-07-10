@@ -1,11 +1,12 @@
 import { Component } from "@angular/core";
-import { NavParams, ViewController } from "ionic-angular";
+import { NavParams, ViewController, Platform, NavController, IonicApp } from "ionic-angular";
 
 @Component({
   selector: 'group-report-alert',
   templateUrl: './group-report-alert.html',
 })
 export class GroupReportAlert{
+  unregisterBackButton : any;
   callback: QRAlertCallBack
   report: string = 'user'
   option: string;
@@ -59,7 +60,7 @@ export class GroupReportAlert{
       result: 'failed'
   },]
 
-  constructor(navParams: NavParams, private viewCtrl: ViewController) {
+  constructor(navParams: NavParams, private viewCtrl: ViewController, private navCtrl: NavController, private platform: Platform, private ionicApp: IonicApp) {
     this.callback = navParams.get('callback');
 
     // if (navParams.get('icon')) {
@@ -85,6 +86,29 @@ export class GroupReportAlert{
       this.viewCtrl.dismiss();
   }
 
+  ionViewWillEnter() {
+    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+      this.dismissPopup();
+    }, 11);
+  }
+
+  ionViewWillLeave() {
+    this.unregisterBackButton();
+  }
+/**
+   * It will Dismiss active popup
+   */
+  dismissPopup() {
+   
+    console.log("Fired ionViewWillLeave");
+    let activePortal = this.ionicApp._modalPortal.getActive() || this.ionicApp._overlayPortal.getActive();
+
+    if (activePortal) {
+      activePortal.dismiss();
+    } else {
+      this.navCtrl.pop();
+    }
+  }
 }
 
 export interface QRAlertCallBack {
