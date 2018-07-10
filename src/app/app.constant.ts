@@ -42,9 +42,9 @@ export class ProfileConstants {
 export class PageFilterConstants {
     public static readonly COURSE_FILTER = [
         {
-            name: "language",
-            displayName: "LANGUAGE",
-            values: frameworkDataList.languageList.sort() //default list
+            name: "board",
+            displayName: "BOARD",
+            values: []
         },
         {
             name: "subject",
