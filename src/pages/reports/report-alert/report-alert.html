@@ -1,0 +1,28 @@
+<ion-content>
+  <ion-list>
+    <ion-item style="background-color:dodgerblue;color:white">
+      <span>some student(question No. 1)</span>
+      <ion-icon (click)="cancel()" ios="ios-close" md="md-close" item-end></ion-icon>
+    </ion-item>
+    <ion-item>
+      <p>{{'QUESTION TYPE'}}</p>
+      <h3>{{ "Multiple choice" }}</h3>
+    </ion-item>
+
+
+    <ion-item>
+        <p>{{'MARKS'}}</p>
+        <h3>{{ "0/5" }}</h3>
+      </ion-item>
+      <ion-item>
+          <p>{{'QUESTION'}}</p>
+          <h3>{{ "what is scientific name for indian cobra" }}</h3>
+      </ion-item>
+      <ion-item>
+          <p>{{'USERS-ANSWER'}}</p>
+          <h3>{{ "option-A Bangarus caeruleus"}}</h3>
+          <ion-icon style="color:green" ios="ios-checkmark" md="md-checkmark" item-end></ion-icon>
+        </ion-item>
+  </ion-list>
+
+</ion-content>
