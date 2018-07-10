@@ -401,3 +401,9 @@ ul.rating .ion-md-star-outline:before {
     justify-content: center;
   }
 }
+
+.user-popover .popover-content{
+  min-width: 96px;
+  width: auto;
+  display: inline-block;
+}

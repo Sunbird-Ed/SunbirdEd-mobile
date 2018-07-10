@@ -43,6 +43,9 @@ page-grouplanding {
     font-size: 1.4rem;
     font-weight: 700;
   }
+  .radius{
+    border-radius: 6px;
+  }
   .blueBorder {
     border-color: map-get($colors, primary) !important;
     border-style: solid !important;
@@ -57,6 +60,7 @@ page-grouplanding {
     height: 20px;
   }
 }
+
 
 .segment-md .segment-button {
   font-weight: 700 !important;

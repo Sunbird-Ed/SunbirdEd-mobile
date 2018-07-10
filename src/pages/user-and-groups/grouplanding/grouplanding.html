@@ -33,7 +33,7 @@
         </p>
       </div>
       <ion-list *ngIf="!showEmptyUsersMessage">
-        <ion-item *ngFor="let user of usersList; let i=index;" class="item-background" margin-bottom
+        <ion-item *ngFor="let user of usersList; let i=index;" class="item-background radius" margin-bottom
         [ngClass]="i===selectedUserIndex ? 'blueBorder' : ''" no-lines>
           <ion-avatar item-start (click)="selectUser(i, user?.name)">
             <img src="assets/imgs/ic_businessman.png">
@@ -76,7 +76,7 @@
                 <span *ngIf="group?.class?.length && group?.uids?.length">•</span>
                 <span *ngIf="group?.uids?.length">{{group?.uids?.length}} {{'USERS' | translate}}</span>
               </p>
-                <ion-icon name="more" item-end></ion-icon>
+                <ion-icon name="more" (click)="presentPopover($event)" item-end></ion-icon>
             </ion-item>
           </ion-list>
         </div>
@@ -84,8 +84,8 @@
   </div>
 </ion-content>
 
-<ion-footer>
-  <ion-row>
+<ion-footer >
+  <ion-row padding>
     <ion-col col-md-10 offset-md-1>
       <div *ngIf="selectedUserIndex !== -1; else enableCreateButton">
         <button ion-button block center (click)="switchAccountConfirmBox()">
