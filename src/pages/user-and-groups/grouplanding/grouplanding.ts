@@ -36,6 +36,34 @@ export class GrouplandingPage {
       name: 'Guru Singh',
       userType: 'student',
       grade: 'Grade 1'
+    },{
+      name: 'Guru Singh',
+      userType: 'student',
+      grade: 'Grade 1'
+    },{
+      name: 'Guru Singh',
+      userType: 'student',
+      grade: 'Grade 1'
+    },{
+      name: 'Guru Singh',
+      userType: 'student',
+      grade: 'Grade 1'
+    },{
+      name: 'Guru Singh',
+      userType: 'student',
+      grade: 'Grade 1'
+    },{
+      name: 'Guru Singh',
+      userType: 'student',
+      grade: 'Grade 1'
+    },{
+      name: 'Guru Singh',
+      userType: 'student',
+      grade: 'Grade 1'
+    },{
+      name: 'Guru Singh',
+      userType: 'student',
+      grade: 'Grade 1'
     }
   ];
 
@@ -85,7 +113,8 @@ export class GrouplandingPage {
         popover.dismiss()
       },
       isCurrentUser: false
-    });
+    } , {
+      cssClass: 'user-popover'});
     popover.present({
       ev: myEvent
     });
