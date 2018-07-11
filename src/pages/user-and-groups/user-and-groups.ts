@@ -82,15 +82,21 @@ export class UserAndGroupsPage {
   })
   }
 
-  presentPopover(myEvent, userId) {
-
+  presentPopover(myEvent, index) {
+    let self=this;
     let popover = this.popoverCtrl.create(PopoverPage, {
       edit: function () {
         alert('yay');
         popover.dismiss()
       },
       delete: function ($event) {
-        console.log($event);
+        console.log("ID");
+        self.groupService.deleteGroup(self.groupList[index].gid).then((success)=>{
+          console.log(success);
+          self.groupList.splice(index, 1);
+        }).catch((error)=>{
+          console.log(error);
+        })
         popover.dismiss()
       },
       isCurrentUser: false
