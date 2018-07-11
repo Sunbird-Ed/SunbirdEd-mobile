@@ -1,14 +1,17 @@
 import { Component, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { GroupService, Group } from 'sunbird';
+import { GroupService, Group, UserProfileSkillsRequest } from 'sunbird';
+import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
 
 @IonicPage()
 @Component({
   selector: 'page-members',
   templateUrl: 'group-members.html',
+  
 })
 export class GroupMembersPage {
   groupName: Group;
+  noMemberSection:boolean= true;
   usersList: Array<any> = [
     {
       name: "Anirudh Deep",
@@ -26,6 +29,7 @@ export class GroupMembersPage {
       selected: false
     }
   ];
+  
 
   constructor(
     public navCtrl: NavController,
@@ -34,7 +38,11 @@ export class GroupMembersPage {
     private zone: NgZone
   ) {
     this.groupName = this.navParams.get('group');
+    if(this.usersList && this.usersList.length>0){
+      this.noMemberSection = false;
+    }
   }
+
 
 
   toggleSelect(index: number) {
@@ -49,6 +57,9 @@ export class GroupMembersPage {
     });
   }
 
+  goTOGuestEdit(){
+    this.navCtrl.push(GuestEditProfilePage)
+  }
   createGroup() {
     this.groupService.createGroup(this.groupName)
       .then((val) => {
