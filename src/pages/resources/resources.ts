@@ -467,17 +467,16 @@ export class ResourcesPage implements OnInit {
 	}
 
 	ionViewWillEnter() {
-		if (!this.pageLoadedSuccess) {
-			this.getPopularContent();
-		}
-
 		this.guestUser = !this.appGlobal.isUserLoggedIn();
-
 
 		if (this.guestUser) {
 			this.getCurrentUser();
 		} else {
 			this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
+		}
+
+		if (!this.pageLoadedSuccess) {
+			this.getPopularContent();
 		}
 
 		this.subscribeGenieEvents();
