@@ -59,7 +59,7 @@ export class GuestEditProfilePage {
     private preference: SharedPreferences,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService
   ) {
-    this.profile = this.navParams.get('profile');
+    this.profile = this.navParams.get('profile') || {};
 
     /* Initialize form with default values */
     this.guestEditForm = this.fb.group({

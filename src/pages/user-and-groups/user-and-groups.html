@@ -46,7 +46,6 @@
           </h6>
           <p>{{user?.userType}} <span *ngIf="user?.grade?.length">•</span> {{user?.grade}}</p>
         </ion-label>
-          <ion-icon name="more" item-end (click)="presentPopover($event)"></ion-icon>
           <ion-icon name="more" item-end (click)="presentPopover($event, 'users')"></ion-icon>
 
         </ion-item>
@@ -84,7 +83,7 @@
                 <span *ngIf="group?.uids?.length">{{group?.uids?.length}} {{'USERS' | translate}}</span>
               </p>
             </ion-label>
-                <ion-icon name="more" (click)="presentPopover($event, i)" item-end></ion-icon>
+                <ion-icon name="more" (click)="presentPopover($event, i , group.name)" item-end></ion-icon>
             </ion-item>
           </ion-list>
         </div>
