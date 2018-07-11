@@ -341,19 +341,19 @@ export class CoursesPage implements OnInit {
       }
 
       if (this.profile.board && this.profile.board.length) {
-        pageAssembleCriteria.filters.board = this.applyProfileFilter(this.profile.board, pageAssembleCriteria.filters.board);
+        pageAssembleCriteria.filters.board = this.applyProfileFilter(this.profile.board, pageAssembleCriteria.filters.board,"board");
       }
 
       if (this.profile.medium && this.profile.medium.length) {
-        pageAssembleCriteria.filters.medium = this.applyProfileFilter(this.profile.medium, pageAssembleCriteria.filters.medium);
+        pageAssembleCriteria.filters.medium = this.applyProfileFilter(this.profile.medium, pageAssembleCriteria.filters.medium, "medium");
       }
 
       if (this.profile.grade && this.profile.grade.length) {
-        pageAssembleCriteria.filters.gradeLevel = this.applyProfileFilter(this.profile.grade, pageAssembleCriteria.filters.gradeLevel);
+        pageAssembleCriteria.filters.gradeLevel = this.applyProfileFilter(this.profile.grade, pageAssembleCriteria.filters.gradeLevel, "gradeLevel");
       }
 
       if (this.profile.subject && this.profile.subject.length) {
-        pageAssembleCriteria.filters.subject = this.applyProfileFilter(this.profile.subject, pageAssembleCriteria.filters.subject);
+        pageAssembleCriteria.filters.subject = this.applyProfileFilter(this.profile.subject, pageAssembleCriteria.filters.subject, "subject");
       }
     }
 
@@ -395,28 +395,45 @@ export class CoursesPage implements OnInit {
   }
 
 
-  applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>) {
-    if (!assembleFilter) {
-      assembleFilter = [];
-    }
-    assembleFilter = assembleFilter.concat(profileFilter);
+  applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>, categoryKey?: string) {
+		if (categoryKey) {
+			let nameArray = [];
+			profileFilter.forEach(filterCode => {
+				let nameForCode = this.appGlobal.getNameForCodeInFramework(categoryKey, filterCode);
 
-    let unique_array = [];
+				if (!nameForCode) {
+					nameForCode = filterCode;
+				}
 
-    for (let i = 0; i < assembleFilter.length; i++) {
-      if (unique_array.indexOf(assembleFilter[i]) == -1 && assembleFilter[i].length > 0) {
-        unique_array.push(assembleFilter[i])
-      }
-    }
+				nameArray.push(nameForCode);
+			})
 
-    assembleFilter = unique_array;
+			profileFilter = nameArray;
+		}
 
-    if (assembleFilter.length == 0) {
-      return undefined;
-    }
 
-    return assembleFilter;
-  }
+		if (!assembleFilter) {
+			assembleFilter = [];
+		}
+		assembleFilter = assembleFilter.concat(profileFilter);
+
+		let unique_array = [];
+
+		for (let i = 0; i < assembleFilter.length; i++) {
+			if (unique_array.indexOf(assembleFilter[i]) == -1 && assembleFilter[i].length > 0) {
+				unique_array.push(assembleFilter[i])
+			}
+		}
+
+		assembleFilter = unique_array;
+
+		if (assembleFilter.length == 0) {
+			return undefined;
+		}
+
+		return assembleFilter;
+	}
+
 
   /**
    * To start / stop spinner
