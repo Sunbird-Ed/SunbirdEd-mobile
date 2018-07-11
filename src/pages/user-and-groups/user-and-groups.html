@@ -22,8 +22,10 @@
           <img src="{{userProfile?.avatar}}">
           <img src="assets/imgs/ic_check_circle.png" id="tick" />
         </ion-avatar>
+        <ion-label padding-top>
         <p ion-text color="primary">{{userProfile?.firstName}}&nbsp;{{userProfile?.lastName}}</p>
         <p ion-text color="dark_gray">{{userProfile?.address}}</p>
+      </ion-label>
       </ion-item>
       <p ion-text color="dark_gray" text-uppercase class="subTitle">{{'USERS' | translate}}</p>
       <div *ngIf="showEmptyUsersMessage">
@@ -38,10 +40,12 @@
           <ion-avatar item-start (click)="selectUser(i, user?.name)">
             <img src="assets/imgs/ic_businessman.png">
           </ion-avatar>
+          <ion-label padding-top>
           <h6 (click)="selectUser(i, user?.name)">
             <b>{{user?.name}}</b>
           </h6>
           <p>{{user?.userType}} <span *ngIf="user?.grade?.length">•</span> {{user?.grade}}</p>
+        </ion-label>
           <ion-icon name="more" item-end (click)="presentPopover($event)"></ion-icon>
         </ion-item>
       </ion-list>
@@ -71,11 +75,13 @@
               <!-- <ion-avatar item-start>
                 <img src="assets/imgs/img_group.png">
               </ion-avatar> -->
+              <ion-label padding-top>
               <h6><b>{{group?.name}}</b></h6>
               <p>{{group?.class[0]}}
                 <span *ngIf="group?.class?.length && group?.uids?.length">•</span>
                 <span *ngIf="group?.uids?.length">{{group?.uids?.length}} {{'USERS' | translate}}</span>
               </p>
+            </ion-label>
                 <ion-icon name="more" (click)="presentPopover($event, i)" item-end></ion-icon>
             </ion-item>
           </ion-list>

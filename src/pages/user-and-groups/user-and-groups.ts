@@ -1,12 +1,13 @@
 import { GroupDetailsPage } from './group-details/group-details';
 import { TranslateService } from '@ngx-translate/core';
 import { Component, NgZone } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController, PopoverController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController,Platform, PopoverController } from 'ionic-angular';
 
 import { CreateGroupPage } from './create-group/create-group';
 import { PopoverPage } from './popover/popover';
 import { GroupService } from 'sunbird';
 import { GuestEditProfilePage } from '../profile/guest-edit.profile/guest-edit.profile';
+import { IonicApp } from 'ionic-angular';
 
 @IonicPage()
 @Component({
@@ -47,6 +48,7 @@ export class UserAndGroupsPage {
   ];
 
   groupList: Array<any> = [];
+  unregisterBackButton: any;
 
   userType: string;
   selectedUserIndex: number = -1;
@@ -67,7 +69,9 @@ export class UserAndGroupsPage {
     public popOverCtrl: PopoverController,
     public zone: NgZone,
     public popoverCtrl: PopoverController,
-    public groupService: GroupService
+    public groupService: GroupService,
+    public platform : Platform,
+    private ionicApp: IonicApp
   ) {
 
     /* Check usersList length and show message or list accordingly */
@@ -79,7 +83,20 @@ export class UserAndGroupsPage {
   ionViewWillEnter() {
     this.zone.run(()=>{
     this.getGroupsList();
-  })
+   })
+   this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+    this.dismissPopup();
+  }, 11);
+  }
+
+  dismissPopup() {
+    let activePortal = this.ionicApp._modalPortal.getActive() || this.ionicApp._overlayPortal.getActive();
+
+    if (activePortal) {
+      activePortal.dismiss();
+    } else {
+      this.navCtrl.pop();
+    }
   }
 
   presentPopover(myEvent, index) {
