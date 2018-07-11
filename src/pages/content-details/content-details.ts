@@ -120,7 +120,7 @@ export class ContentDetailsPage {
    * User Rating
    *
    */
-  private userRating: number = 0;
+  userRating: number = 0;
   private ratingComment: string = '';
   private corRelationList: Array<CorrelationData>;
 
@@ -331,9 +331,7 @@ export class ContentDetailsPage {
     this.content.downloadable = data.result.isAvailableLocally;
 
     this.content.contentAccess = data.result.contentAccess ? data.result.contentAccess : [];
-
-    this.content.playContent = JSON.stringify(data.result);
-    if (this.content.gradeLevel && this.content.gradeLevel.length) {
+    if (this.content.gradeLevel && this.content.gradeLevel.length && typeof this.content.gradeLevel !== 'string') {
       this.content.gradeLevel = this.content.gradeLevel.join(", ");
     }
     if (this.content.attributions && this.content.attributions.length) {
@@ -384,6 +382,7 @@ export class ContentDetailsPage {
       this.cardData.pkgVersion = this.content.pkgVersion
       this.generateTemetry()
     }
+    this.content.playContent = JSON.stringify(data.result);
   }
 
   //
@@ -685,9 +684,8 @@ export class ContentDetailsPage {
       };
 
       this.courseService.updateContentState(data, (data: any) => {
-        let res = JSON.parse(data);
         this.zone.run(() => {
-          console.log('Course progress updated...', res);
+          console.log('Course progress updated...', data);
           this.events.publish(EventTopics.COURSE_STATUS_UPDATED_SUCCESSFULLY, {
             update: true
           });
