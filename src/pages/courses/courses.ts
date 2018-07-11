@@ -465,12 +465,14 @@ export class CoursesPage implements OnInit {
 
     this.getUserId()
       .then(() => {
+        this.getPopularAndLatestCourses();
       })
       .catch(error => {
         console.log("Error while Fetching Data", error);
+        this.getPopularAndLatestCourses();
       });
 
-    this.getPopularAndLatestCourses();
+   
   }
 
   /**
