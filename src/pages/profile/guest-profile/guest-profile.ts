@@ -270,5 +270,4 @@ export class GuestProfilePage {
     );
     return translatedMsg;
   }
-
 }

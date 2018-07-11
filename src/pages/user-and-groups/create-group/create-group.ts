@@ -1,11 +1,19 @@
 import { GroupMembersPage } from './../group-members/group-members';
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angular';
 import { AppGlobalService } from '../../../service/app-global.service';
 import { FormAndFrameworkUtilService } from '../../profile/formandframeworkutil.service';
 import { CategoryRequest, Group } from 'sunbird';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
+import { LoadingController } from 'ionic-angular';
+
+/* Interface for the Toast Object */
+export interface toastOptions {
+  message: string,
+  duration: number,
+  position: string
+};
 
 @IonicPage()
 @Component({
@@ -13,11 +21,16 @@ import { TranslateService } from '@ngx-translate/core';
   templateUrl: 'create-group.html',
 })
 export class CreateGroupPage {
-
-
   groupEditForm: FormGroup;
   classList = [];
-  group: Group = {}
+  group: Group = {};
+  syllabusList: Array<any>;
+
+  options: toastOptions = {
+    message: '',
+    duration: 3000,
+    position: 'bottom'
+  };
 
   /* Options for ion-select box */
   classOptions = {
@@ -28,16 +41,35 @@ export class CreateGroupPage {
     private navCtrl: NavController,
     private fb: FormBuilder,
     private appGlobalService: AppGlobalService,
-    private formAndFrameAPI: FormAndFrameworkUtilService,
-    private translate: TranslateService
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
+    private translate: TranslateService,
+    private navParams: NavParams,
+    private loadingCtrl: LoadingController,
+    private toastCtrl: ToastController
   ) {
 
+    this.group = this.navParams.get('groupInfo') || {};
     this.groupEditForm = this.fb.group({
       name: [this.group.name || ""],
+      syllabus: [[]],
       class: [this.group.class && this.group.class[0] || []]
     });
 
     this.init();
+  }
+
+  ionViewWillEnter() {
+    this.getSyllabusDetails();
+  }
+
+  getSyllabusDetails() {
+    let loader = this.getLoader();
+    loader.present();
+
+    this.formAndFrameworkUtilService.getSyllabusList()
+      .then((result) => {
+      });
+
   }
 
   /**
@@ -65,12 +97,12 @@ export class CreateGroupPage {
       frameworkId = profile.syllabus[0];
     }
 
-    this.formAndFrameAPI.getFrameworkDetails(frameworkId)
+    this.formAndFrameworkUtilService.getFrameworkDetails(frameworkId)
       .then((categories) => {
         let request: CategoryRequest = {
           currentCategory: "gradeLevel"
         }
-        return this.formAndFrameAPI.getCategoryData(request);
+        return this.formAndFrameworkUtilService.getCategoryData(request);
       })
       .then((classes) => {
         this.classList = classes;
@@ -94,5 +126,21 @@ export class CreateGroupPage {
       }
     );
     return translatedMsg;
+  }
+
+  getLoader(): any {
+    return this.loadingCtrl.create({
+      duration: 30000,
+      spinner: "crescent"
+    });
+  }
+
+  /** It will returns Toast Object
+ * @param {message} string - Message for the Toast to show
+ * @returns {object} - toast Object
+ */
+  getToast(message: string = ''): any {
+    this.options.message = message;
+    if (message.length) return this.toastCtrl.create(this.options);
   }
 }
