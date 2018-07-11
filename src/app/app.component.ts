@@ -1,5 +1,5 @@
 import { Component, ViewChild, NgZone } from '@angular/core';
-import { Platform, ModalController, AlertController, Nav, App, ToastController, Events } from 'ionic-angular';
+import { Platform, ModalController, AlertController, Nav, App, ToastController, Events, AlertButton } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import {
   TabsPage, AuthService, ContainerService, PermissionService,
@@ -21,6 +21,7 @@ import { EnrolledCourseDetailsPage } from '../pages/enrolled-course-details/enro
 import { AppGlobalService } from '../service/app-global.service';
 import { ProfileConstants } from './app.constant';
 import { AppVersion } from '@ionic-native/app-version';
+import { FormAndFrameworkUtilService } from '../pages/profile/formandframeworkutil.service';
 
 declare var chcp: any;
 
@@ -65,7 +66,8 @@ export class MyApp {
     private userProfileService: UserProfileService,
     private migrationService: MigrationService,
     private appVersion: AppVersion,
-    private profileService: ProfileService
+    private profileService: ProfileService,
+    private formAndFrameowrkUtilService: FormAndFrameworkUtilService,
   ) {
 
     let that = this;
@@ -80,6 +82,9 @@ export class MyApp {
       this.checkForMigration();
       this.saveDefaultSyncSetting();
       this.showAppWalkThroughScreen();
+
+      //check if any new app version is available
+      this.checkForUpgrade();
 
       permission.requestPermission(this.permissionList, (response) => {
         this.makeEntryInSupportFolder();
@@ -156,6 +161,20 @@ export class MyApp {
 
       this.handleBackButton();
     });
+  }
+
+  private checkForUpgrade() {
+    this.formAndFrameowrkUtilService.checkNewAppVersion()
+      .then(result => {
+        console.log("Force Optional Upgrade - " + JSON.stringify(result));
+        this.preference.putString('force_optional_upgrade', result);
+        setTimeout(() => {
+          this.events.publish('force_optional_upgrade', { upgrade: result });
+        }, 5000);
+      })
+      .catch(error => {
+        console.log("Error - " + error);
+      });
   }
 
   makeEntryInSupportFolder() {

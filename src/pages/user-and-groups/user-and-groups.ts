@@ -36,11 +36,11 @@ export class UserAndGroupsPage {
       name: 'Guru Singh',
       userType: 'student',
       grade: 'Grade 1'
-    },{
+    }, {
       name: 'Guru Singh',
       userType: 'student',
       grade: 'Grade 1'
-    },{
+    }, {
       name: 'Guru Singh',
       userType: 'student',
       grade: 'Grade 1'
@@ -71,7 +71,7 @@ export class UserAndGroupsPage {
     public popoverCtrl: PopoverController,
     public groupService: GroupService,
     public platform : Platform,
-    private ionicApp: IonicApp
+    private ionicApp: IonicApp,
   ) {
 
     /* Check usersList length and show message or list accordingly */
@@ -101,9 +101,11 @@ export class UserAndGroupsPage {
 
   presentPopover(myEvent, index) {
     let self=this;
-    let popover = this.popoverCtrl.create(PopoverPage, {
+    let popover = this.popOverCtrl.create(PopoverPage, {
       edit: function () {
-        alert('yay');
+        self.navCtrl.push(CreateGroupPage, {
+          groupInfo: self.groupList[index]
+        });
         popover.dismiss()
       },
       delete: function ($event) {
@@ -117,8 +119,10 @@ export class UserAndGroupsPage {
         popover.dismiss()
       },
       isCurrentUser: false
-    } , {
-      cssClass: 'user-popover'});
+    },
+      {
+        cssClass: 'user-popover'
+      });
     popover.present({
       ev: myEvent
     });

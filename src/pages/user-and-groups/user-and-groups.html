@@ -47,6 +47,8 @@
           <p>{{user?.userType}} <span *ngIf="user?.grade?.length">•</span> {{user?.grade}}</p>
         </ion-label>
           <ion-icon name="more" item-end (click)="presentPopover($event)"></ion-icon>
+          <ion-icon name="more" item-end (click)="presentPopover($event, 'users')"></ion-icon>
+
         </ion-item>
       </ion-list>
     </ion-list>
