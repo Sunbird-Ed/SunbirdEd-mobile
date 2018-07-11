@@ -185,7 +185,7 @@ export class GenieSDKServiceProviderMock extends GenieSDKServiceProvider {
 
 export class SharedPreferencesMock {
   getString(value) {
-    return '';
+    return ''
   }
 }
 
@@ -197,7 +197,11 @@ export class FileUtilMock {
 
 export class NavControllerMock { }
 
-export class SocialSharingMock { }
+export class SocialSharingMock { 
+  share(message, subject, file, url) {
+    return '';
+  }
+}
 
 export class ViewControllerMock {}
 
