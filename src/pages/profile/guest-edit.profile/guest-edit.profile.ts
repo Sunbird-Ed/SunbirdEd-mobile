@@ -47,7 +47,8 @@ export class GuestEditProfilePage {
     position: 'bottom'
   };
 
-  constructor(private navCtrl: NavController,
+  constructor(
+    private navCtrl: NavController,
     private fb: FormBuilder,
     public navParams: NavParams,
     private toastCtrl: ToastController,

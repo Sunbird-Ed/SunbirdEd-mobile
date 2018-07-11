@@ -23,8 +23,10 @@ export interface toastOptions {
 export class CreateGroupPage {
   groupEditForm: FormGroup;
   classList = [];
-  group: Group = {};
-  syllabusList: Array<any>;
+  group: Group;
+  syllabusList: Array<any> = [];
+  categories: Array<any> = [];
+  loader: any;
 
   options: toastOptions = {
     message: '',
@@ -51,23 +53,41 @@ export class CreateGroupPage {
     this.group = this.navParams.get('groupInfo') || {};
     this.groupEditForm = this.fb.group({
       name: [this.group.name || ""],
-      syllabus: [[]],
-      class: [this.group.class && this.group.class[0] || []]
+      syllabus: [this.group.syllabus && this.group.syllabus[0] || []],
+      class: [this.group.class || []]
     });
 
-    this.init();
+    //this.init();
   }
 
   ionViewWillEnter() {
     this.getSyllabusDetails();
   }
 
+  /**
+   * get Syllabus Details and store locally
+   */
   getSyllabusDetails() {
-    let loader = this.getLoader();
-    loader.present();
+    this.loader = this.getLoader();
+    this.loader.present();
 
     this.formAndFrameworkUtilService.getSyllabusList()
       .then((result) => {
+        if (result && result !== undefined && result.length > 0) {
+          result.forEach(element => {
+
+            //renaming the fields to text, value and checked
+            let value = { 'name': element.name, 'code': element.frameworkId };
+            this.syllabusList.push(value);
+          });
+
+          if (this.group && this.group.syllabus && this.group.syllabus[0] !== undefined) {
+            this.getClassList(this.group.syllabus[0], false);
+          }
+        } else {
+          this.loader.dismiss();
+          this.getToast(this.translateMessage('NO_DATA_FOUND')).present();
+        }
       });
 
   }
@@ -81,6 +101,7 @@ export class CreateGroupPage {
     if (formValue.name) {
       this.group.name = formValue.name;
       this.group.class = [formValue.class];
+      this.group.syllabus = [formValue.syllabus];
 
       this.navCtrl.push(GroupMembersPage, {
         group: this.group
@@ -88,14 +109,14 @@ export class CreateGroupPage {
     }
   }
 
-  private init() {
-    let profile = this.appGlobalService.getCurrentUser();
+  resetForm() {
 
-    let frameworkId: string;
+  }
 
-    if (profile && profile.syllabus && profile.syllabus.length > 0) {
-      frameworkId = profile.syllabus[0];
-    }
+  getClassList(frameworkId, isSyllabusChanged: boolean = true) {
+    this.groupEditForm.patchValue({
+      class: []
+    });
 
     this.formAndFrameworkUtilService.getFrameworkDetails(frameworkId)
       .then((categories) => {
@@ -105,9 +126,17 @@ export class CreateGroupPage {
         return this.formAndFrameworkUtilService.getCategoryData(request);
       })
       .then((classes) => {
+        this.loader.dismiss();
         this.classList = classes;
+        if (!isSyllabusChanged) {
+          this.groupEditForm.patchValue({
+            class: this.group.class || []
+          });
+        }
+
       })
       .catch(error => {
+        this.loader.dismiss();
         console.log("Error : " + error);
       });
   }

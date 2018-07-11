@@ -18,14 +18,14 @@
     <ion-item no-lines>
       <ion-label stacked text-uppercase>{{'SYLLABUS' | translate }}
       </ion-label>
-      <ion-select mode="wp" multiple="false" text-capitalize formControlName="syllabus" placeholder="{{'SELECT' | translate }}"
-        (ionChange)="resetForm()" okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}">
+      <ion-select multiple="false" text-capitalize formControlName="syllabus" placeholder="{{'SELECT' | translate }}"
+        (ionChange)="getClassList()" okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}">
         <ion-option *ngFor="let eachSyllabus of syllabusList" value="{{eachSyllabus?.code}}">{{eachSyllabus?.name}}</ion-option>
       </ion-select>
     </ion-item>
     <ion-item>
       <ion-label stacked text-uppercase>{{'CLASS' | translate}}</ion-label>
-      <ion-select formControlName="class" [selectOptions]="classOptions" [disabled]="!(groupEditForm.value.syllabus != '')">
+      <ion-select multiple="true" formControlName="class" [selectOptions]="classOptions" [disabled]="!(groupEditForm.value.syllabus != '')">
         <ion-option [value]="class?.code" *ngFor="let class of classList">{{ class?.name }}</ion-option>
       </ion-select>
     </ion-item>
