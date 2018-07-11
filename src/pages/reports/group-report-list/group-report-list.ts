@@ -115,7 +115,7 @@ export class GroupReportListPage {
   }
 
    presentPopover(myEvent) {
-      
+
         let popover = this.popoverCtrl.create(GroupReportAlert,{}, {
             cssClass: 'group-report-alert'
         });
