@@ -77,7 +77,9 @@ export class UserAndGroupsPage {
   }
 
   ionViewWillEnter() {
+    this.zone.run(()=>{
     this.getGroupsList();
+  })
   }
 
   presentPopover(myEvent, userId) {
@@ -87,8 +89,8 @@ export class UserAndGroupsPage {
         alert('yay');
         popover.dismiss()
       },
-      delete: function () {
-        alert('delete clicked');
+      delete: function ($event) {
+        console.log($event);
         popover.dismiss()
       },
       isCurrentUser: false
@@ -101,9 +103,13 @@ export class UserAndGroupsPage {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad GrouplandingPage');
+    this.zone.run(()=>{
+      this.getGroupsList();
+    })
   }
 
-  getGroupsList() {
+getGroupsList() {
+    this.zone.run(() => {
     this.groupService.getAllGroup().then((groups) => {
       if (groups.result && groups.result.length) {
         this.showEmptyGroupsMessage = false;
@@ -116,7 +122,9 @@ export class UserAndGroupsPage {
     }).catch((error) => {
       console.log("Something went wrong while fetching data", error);
     });
+  })
   }
+
 
   /**
    * Navigates to Create group Page
