@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { NavController, Events } from 'ionic-angular';
+import { NavController, Events, ToastController } from 'ionic-angular';
 import { ImageLoader } from "ionic-image-loader";
 import { EnrolledCourseDetailsPage } from "../../../pages/enrolled-course-details/enrolled-course-details";
 // import { CourseDetailPage } from './../../../pages/course-detail/course-detail';
@@ -48,7 +48,8 @@ export class CourseCard implements OnInit {
    */
   constructor(public navCtrl: NavController,
     private courseUtilService: CourseUtilService,
-    private events: Events) {
+    private events: Events,
+    private toastCtrl: ToastController) {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
 
@@ -73,6 +74,7 @@ export class CourseCard implements OnInit {
       })
     } else {
       console.log('Inside ContentDetailsPage');
+
       this.navCtrl.push(ContentDetailsPage, {
         content: content
       })
@@ -92,6 +94,8 @@ export class CourseCard implements OnInit {
       })
     }
   }
+
+  
 
   ngOnInit() {
     if (this.layoutName === 'Inprogress') {

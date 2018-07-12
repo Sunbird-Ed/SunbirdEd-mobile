@@ -296,6 +296,7 @@ export class CoursesPage implements OnInit {
     };
 
     this.courseService.getEnrolledCourses(option, (data: any) => {
+      console.log('enrolled courses' , data);
       if (data) {
         data = JSON.parse(data);
         this.ngZone.run(() => {
@@ -394,8 +395,9 @@ export class CoursesPage implements OnInit {
       console.log('Page assmble error', error);
       this.ngZone.run(() => {
         this.pageApiLoader = false;
-        if (error === 'CONNECTION_ERROR') {
+        if (JSON.parse(error).error  === 'CONNECTION_ERROR') {
           this.isNetworkAvailable = false;
+          this.getMessageByConst('ERROR_NO_INTERNET_MESSAGE');
         } else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
           this.getMessageByConst('ERROR_FETCHING_DATA');
         }
