@@ -3,7 +3,12 @@ page-guest-edit.profile {
     ion-label{
         flex: unset !important;
     }
-
+    .list-header-md {
+        padding-bottom: 0 !important;
+    }
+    .item-md .radio-md[item-left] {
+        margin-right: 10px !important;
+    }
 }
 
 .multiple-select-alert .alert-head {
@@ -14,7 +19,7 @@ page-guest-edit.profile {
     text-transform: capitalize !important;
 }
 
-.select-wp{
+/* .select-wp{
     border-radius: 5px;
     height: 40px;
     border-width: 1px;
@@ -23,4 +28,4 @@ page-guest-edit.profile {
         -webkit-align-self: center;
         align-self: center;
     }
-}
+} */

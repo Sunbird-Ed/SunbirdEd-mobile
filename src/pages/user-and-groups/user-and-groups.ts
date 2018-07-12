@@ -168,7 +168,9 @@ getGroupsList() {
    * Navigates to Create User Page
    */
   createUser() {
-    this.navCtrl.push(GuestEditProfilePage, {})
+    this.navCtrl.push(GuestEditProfilePage, {
+      isNewUser: true
+    });
   }
 
   selectUser(index: number, name: string) {
@@ -241,7 +243,7 @@ getGroupsList() {
               self.groupList.splice(index, 1);
             }).catch((error)=>{
               console.log(error);
-            })    
+            })
           }
         }
       ]

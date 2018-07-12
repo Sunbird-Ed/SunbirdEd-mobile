@@ -1,6 +1,6 @@
 import { TranslateService } from '@ngx-translate/core';
 import { Component } from '@angular/core';
-import { NavController, NavParams, ToastController, Events, LoadingController } from 'ionic-angular';
+import { NavController, NavParams, ToastController, Events, LoadingController, IonicApp, Platform } from 'ionic-angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import * as _ from 'lodash';
 
@@ -25,8 +25,6 @@ export interface toastOptions {
 })
 
 export class GuestEditProfilePage {
-
-  tabBarElement: any;
   guestEditForm: FormGroup;
   profile: any = {};
   categories: Array<any> = [];
@@ -40,11 +38,38 @@ export class GuestEditProfilePage {
   frameworks: Array<any> = [];
   frameworkId: string = '';
   loader: any;
+  isNewUser: boolean = false;
+  unregisterBackButton: any;
 
   options: toastOptions = {
     message: '',
     duration: 3000,
     position: 'bottom'
+  };
+
+  syllabusOptions = {
+    title: this.translateMessage('SYLLABUS'),
+    cssClass: 'select-box'
+  };
+
+  boardOptions = {
+    title: this.translateMessage('BOARD'),
+    cssClass: 'select-box'
+  };
+
+  mediumOptions = {
+    title: this.translateMessage('MEDIUM_OF_INSTRUCTION'),
+    cssClass: 'select-box'
+  };
+
+  classOptions = {
+    title: this.translateMessage('CLASS'),
+    cssClass: 'select-box'
+  };
+
+  subjectsOptions = {
+    title: this.translateMessage('SUBJECTS'),
+    cssClass: 'select-box'
   };
 
   constructor(
@@ -57,12 +82,16 @@ export class GuestEditProfilePage {
     private translate: TranslateService,
     private events: Events,
     private preference: SharedPreferences,
-    private formAndFrameworkUtilService: FormAndFrameworkUtilService
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
+    private platform: Platform,
+      private ionicApp: IonicApp
   ) {
     this.profile = this.navParams.get('profile') || {};
+    this.isNewUser = this.navParams.get('isNewUser');
 
     /* Initialize form with default values */
     this.guestEditForm = this.fb.group({
+      profileType: [''],
       syllabus: [this.profile.syllabus && this.profile.syllabus[0] || [], Validators.required],
       name: [this.profile.handle || '', Validators.required],
       boards: [this.profile.board || [], Validators.required],
@@ -70,7 +99,6 @@ export class GuestEditProfilePage {
       subjects: [this.profile.subject || []],
       medium: [this.profile.medium || []]
     });
-
 
     //language code
     this.preference.getString('selected_language_code', (val: string) => {
@@ -82,8 +110,29 @@ export class GuestEditProfilePage {
 
   ionViewWillEnter() {
     this.getSyllabusDetails();
+    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+      this.dismissPopup();
+    }, 11);
   }
 
+  ionViewWillLeave() {
+    this.unregisterBackButton();
+  }
+
+  /**
+   * It will Dismiss active popup
+   */
+  dismissPopup() {
+    let activePortal = this.ionicApp._modalPortal.getActive() ||
+      this.ionicApp._toastPortal.getActive() ||
+      this.ionicApp._overlayPortal.getActive();
+
+    if (activePortal) {
+      activePortal.dismiss();
+    } else {
+      this.navCtrl.pop();
+    }
+  }
 
   getSyllabusDetails() {
     this.loader = this.getLoader();
@@ -237,10 +286,27 @@ export class GuestEditProfilePage {
   /**
    * Call on Submit the form
    */
+
   onSubmit(): void {
+
     let loader = this.getLoader();
     loader.present();
     let formVal = this.guestEditForm.value;
+    if (this.isNewUser) {
+      if (formVal.userType === '') {
+        this.getToast(this.translateMessage('USER_TYPE_SELECT_WARNING')).present();
+      } else {
+        this.submitNewUserForm(formVal, loader);
+      }
+    } else {
+      this.submitEditForm(formVal, loader);
+    }
+  }
+
+  /**
+   * This will submit edit form.
+   */
+  submitEditForm(formVal, loader): void {
     let req: Profile = {
       board: formVal.boards,
       class: formVal.grades,
@@ -276,6 +342,32 @@ export class GuestEditProfilePage {
         console.log("Err", err);
       });
   }
+
+  /**
+   * It will submit new user form
+   */
+  submitNewUserForm(formVal, loader): void {
+    let req: Profile = {
+      board: formVal.boards,
+      class: formVal.grades,
+      subject: formVal.subjects,
+      medium: formVal.medium,
+      uid: this.profile.uid,
+      name: formVal.name,
+      profileType: formVal.profileType,
+      createdAt: this.profile.createdAt,
+      syllabus: (!formVal.syllabus.length) ? [] : [formVal.syllabus]
+    }
+
+    this.profileService.createProfile(req, (success: any) => {
+      this.getToast(this.translateMessage("User Created successfully")).present();
+      this.navCtrl.pop();
+    },
+      (error: any) => {
+        this.getToast(this.translateMessage("SOMETHING_WENT_WRONG")).present();
+      });
+  }
+
 
   /**
    * Used to Translate message to current Language
