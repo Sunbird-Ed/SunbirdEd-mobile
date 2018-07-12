@@ -59,7 +59,7 @@ export class CourseCard implements OnInit {
    * @param {string} layoutName 
    * @param {object} content 
    */
-  navigateToCourseDetailPage(content: any, layoutName: string , error:any): void {
+  navigateToCourseDetailPage(content: any, layoutName: string): void {
     console.log('Card details... @@@', content);
 
     if (layoutName === 'Inprogress' || content.contentType === ContentType.COURSE) {
