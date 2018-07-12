@@ -6,56 +6,56 @@
 
 <ion-content>
   <form [formGroup]="guestEditForm">
-    <ion-item no-lines>
+    <ion-item>
       <ion-label stacked text-uppercase>{{ 'NAME' | translate }}</ion-label>
       <ion-input formControlName="name" placeholder="{{'NAME_HINT' | translate }}"></ion-input>
     </ion-item>
 
     <!-- Syllabus -->
-    <ion-item no-lines>
+    <ion-item>
       <ion-label stacked text-uppercase>{{'SYLLABUS' | translate }}
       </ion-label>
-      <ion-select mode="wp" multiple="false" text-capitalize formControlName="syllabus" placeholder="{{'SELECT' | translate }}"
+      <ion-select  multiple="false" text-capitalize formControlName="syllabus" placeholder="{{'SELECT' | translate }}"
         (ionChange)="resetForm(0, true)" okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}">
         <ion-option *ngFor="let eachSyllabus of syllabusList" value="{{eachSyllabus?.code}}">{{eachSyllabus?.name}}</ion-option>
       </ion-select>
     </ion-item>
 
     <!-- Board -->
-    <ion-item no-lines>
+    <ion-item>
       <ion-label stacked text-uppercase>{{'BOARD' | translate }}
       </ion-label>
-      <ion-select mode="wp" multiple="true" text-capitalize [disabled]="!(guestEditForm.value.syllabus != '')" formControlName="boards"
+      <ion-select  multiple="true" text-capitalize [disabled]="!(guestEditForm.value.syllabus != '')" formControlName="boards"
         (ionChange)="resetForm(1, false)" placeholder="{{'SELECT' | translate }}" okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}">
         <ion-option *ngFor="let board of boardList" value="{{board?.code}}">{{board?.name}}</ion-option>
       </ion-select>
     </ion-item>
 
     <!-- Medium -->
-    <ion-item no-lines>
+    <ion-item>
       <ion-label stacked text-uppercase>{{'MEDIUM_OF_INSTRUCTION' | translate }}
       </ion-label>
-      <ion-select mode="wp" multiple="true" text-capitalize [disabled]="!(guestEditForm.value.boards != '')" formControlName="medium"
+      <ion-select  multiple="true" text-capitalize [disabled]="!(guestEditForm.value.boards != '')" formControlName="medium"
         (ionChange)="resetForm(2, false)" placeholder="{{'SELECT' | translate }}" okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}">
         <ion-option *ngFor="let medium of mediumList" text-capitalize value="{{medium?.code}}">{{medium?.name}}</ion-option>
       </ion-select>
     </ion-item>
 
     <!-- Grade -->
-    <ion-item no-lines>
+    <ion-item>
       <ion-label stacked text-uppercase>{{'CLASS' | translate }}
       </ion-label>
-      <ion-select mode="wp" multiple="true" text-capitalize [disabled]="!(guestEditForm.value.medium != '')" formControlName="grades"
+      <ion-select  multiple="true" text-capitalize [disabled]="!(guestEditForm.value.medium != '')" formControlName="grades"
         (ionChange)="resetForm(3, false)" placeholder="{{'SELECT' | translate }}" okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}">
         <ion-option *ngFor="let grade of gradeList" text-capitalize value="{{grade?.code}}">{{grade?.name}}</ion-option>
       </ion-select>
     </ion-item>
 
     <!-- Subjects -->
-    <ion-item no-lines>
+    <ion-item>
       <ion-label stacked text-uppercase>{{'SUBJECTS' | translate }}
       </ion-label>
-      <ion-select mode="wp" multiple="true" text-capitalize [disabled]="!(guestEditForm.value.grades != '')" formControlName="subjects"
+      <ion-select  multiple="true" text-capitalize [disabled]="!(guestEditForm.value.grades != '')" formControlName="subjects"
         placeholder="{{'SELECT' | translate }}" okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}">
         <ion-option *ngFor="let subject of subjectList" text-capitalize value="{{subject?.code}}">{{subject?.name}}</ion-option>
       </ion-select>
