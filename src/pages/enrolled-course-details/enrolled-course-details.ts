@@ -370,7 +370,11 @@ export class EnrolledCourseDetailsPage {
     },
       (error: any) => {
         console.log('error while loading content details', error);
+        if(JSON.parse(error).error  === 'CONNECTION_ERROR'){
+        this.showMessage(this.translateLanguageConstant('ERROR_NO_INTERNET_MESSAGE'));
+        }else {
         this.showMessage(this.translateLanguageConstant('ERROR_FETCHING_DATA'));
+      }
         this.navCtrl.pop();
       });
   }

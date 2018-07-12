@@ -319,10 +319,16 @@ export class ContentDetailsPage {
       });
     },
       error => {
-        if (showRating) {
-          loader.dismiss();
+        console.log(error);
+        if(JSON.parse(error).error  === 'CONNECTION_ERROR'){
+          this.translateAndDisplayMessage('ERROR_NO_INTERNET_MESSAGE');
+        } else {
+          this.translateAndDisplayMessage('ERROR_CONTENT_NOT_AVAILABLE', true);
         }
-        this.translateAndDisplayMessage('ERROR_CONTENT_NOT_AVAILABLE', true);
+        // if (showRating) {
+        //   loader.dismiss();
+        // }
+        loader.dismiss();
       });
   }
 
