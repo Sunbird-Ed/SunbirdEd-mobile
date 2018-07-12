@@ -153,7 +153,7 @@ export class ResourcesPage implements OnInit {
 		//Event for optional and forceful upgrade
 		this.events.subscribe('force_optional_upgrade', (upgrade) => {
 			if (upgrade) {
-				this.appGlobal.showUpgradeDialog(upgrade)
+				this.appGlobal.openPopover(upgrade);
 			}
 		});
 

@@ -27,6 +27,7 @@ import { ImagePicker } from "./imagepicker/imagepicker";
 import { generateInteractTelemetry, generateImpressionTelemetry } from "../../app/telemetryutil";
 import { TranslateService } from "@ngx-translate/core";
 import { ProfileConstants } from "../../app/app.constant";
+import { AppGlobalService } from "../../service/app-global.service";
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -112,11 +113,19 @@ export class ProfilePage {
     private navParams: NavParams,
     public events: Events,
     public translate: TranslateService,
-    public toastCtrl: ToastController
+    public toastCtrl: ToastController,
+    private appGlobal: AppGlobalService
   ) {
     this.userId = this.navParams.get("userId") || '';
     this.isRefreshProfile = this.navParams.get("returnRefreshedUserProfileDetails");
     this.isLoggedInUser = this.userId ? false : true;
+
+    //Event for optional and forceful upgrade
+    this.events.subscribe('force_optional_upgrade', (upgrade) => {
+      if (upgrade) {
+        this.appGlobal.openPopover(upgrade)
+      }
+    });
 
   }
 
