@@ -8,7 +8,8 @@ import {
     FrameworkDetailsRequest,
     FrameworkService
 } from "sunbird";
-import { Events, AlertButton, AlertController } from "ionic-angular";
+import { Events, AlertButton, AlertController, PopoverController, PopoverOptions } from "ionic-angular";
+import { UpgradePopover } from "../pages/upgrade/upgrade-popover";
 
 @Injectable()
 export class AppGlobalService {
@@ -34,7 +35,8 @@ export class AppGlobalService {
         private profile: ProfileService,
         private framework: FrameworkService,
         private preference: SharedPreferences,
-        private alertCtrl: AlertController) {
+        private alertCtrl: AlertController,
+        private popoverCtrl: PopoverController) {
         console.log("constructor");
         this.initValues();
         this.listenForEvents();
@@ -191,36 +193,21 @@ export class AppGlobalService {
         });
     }
 
-    showUpgradeDialog(result: any) {
-        let buttons: Array<AlertButton> = [];
+    openPopover(upgradeType: any) {
+        let shouldDismissAlert: boolean = true;
 
-        //iterate on all the buttons
-        if (result.upgrade.actionButtons.length > 0) {
-            let shouldDismissAlert: boolean = true;
-            result.upgrade.actionButtons.forEach(button => {
-                if (button) {
-                    let alertButton: AlertButton = {
-                        text: button.key,
-                        handler: () => {
-                            console.log(String(button.link))
-                        }
-                    };
-                    buttons.push(alertButton);
-                }
-            });
-
-            if(result.upgrade.type === 'forceful'){
-                shouldDismissAlert = false;
-            }
-
-            let alert = this.alertCtrl.create({
-                title: result.upgrade.title,
-                message: result.upgrade.desc,
-                buttons: buttons,
-                enableBackdropDismiss: shouldDismissAlert
-            });
-            alert.dismiss()
-            alert.present();
+        if (upgradeType.upgrade.type === 'force') {
+            shouldDismissAlert = false;
         }
+
+        let options: PopoverOptions = {
+            cssClass: 'upgradePopover',
+            showBackdrop: true,
+            enableBackdropDismiss: shouldDismissAlert
+        }
+
+        let popover = this.popoverCtrl.create(UpgradePopover, { type: upgradeType }, options);
+        popover.present({
+        });
     }
 }

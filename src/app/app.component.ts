@@ -167,7 +167,6 @@ export class MyApp {
     this.formAndFrameowrkUtilService.checkNewAppVersion()
       .then(result => {
         console.log("Force Optional Upgrade - " + JSON.stringify(result));
-        this.preference.putString('force_optional_upgrade', result);
         setTimeout(() => {
           this.events.publish('force_optional_upgrade', { upgrade: result });
         }, 5000);

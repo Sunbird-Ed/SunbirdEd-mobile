@@ -18,11 +18,13 @@ import { FileOpener } from '@ionic-native/file-opener';
 import { AppGlobalService } from '../service/app-global.service';
 import { CourseUtilService } from '../service/course-util.service';
 import { IonicStorageModule } from "@ionic/storage";
+import { UpgradePopover } from '../pages/upgrade/upgrade-popover';
 
 @NgModule({
   declarations: [
     MyApp,
     TabsPage,
+    UpgradePopover
   ],
   imports: [
     HttpClientModule,
@@ -47,7 +49,8 @@ import { IonicStorageModule } from "@ionic/storage";
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
-    TabsPage
+    TabsPage,
+    UpgradePopover
   ],
   providers: [
     StatusBar,
