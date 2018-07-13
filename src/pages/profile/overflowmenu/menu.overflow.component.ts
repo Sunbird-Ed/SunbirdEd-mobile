@@ -1,14 +1,27 @@
 import { Nav } from "ionic-angular";
-import { Component, ViewChild } from '@angular/core';
+import {
+    Component,
+    ViewChild
+} from '@angular/core';
 import { NavController } from "ionic-angular/navigation/nav-controller";
 import { NavParams } from "ionic-angular/navigation/nav-params";
 import { ViewController } from "ionic-angular/navigation/view-controller";
-import { ToastController, App } from "ionic-angular";
+import {
+    ToastController,
+    App
+} from "ionic-angular";
 import { SettingsPage } from "../../settings/settings";
 import { ReportsPage } from '../../reports/reports'
 import { OAuthService } from "sunbird";
 import { OnboardingPage } from "../../onboarding/onboarding";
-import { Interact, InteractType, InteractSubtype, PageId, Environment, TelemetryService, ProfileService } from "sunbird";
+import {
+    InteractType,
+    InteractSubtype,
+    PageId,
+    Environment,
+    TelemetryService,
+    ProfileService
+} from "sunbird";
 import { generateInteractTelemetry } from "../../../app/telemetryutil";
 import { UserAndGroupsPage } from "../../user-and-groups/user-and-groups";
 
@@ -43,6 +56,14 @@ export class OverflowMenuComponent {
             "index": i
         }));
         switch (i) {
+            case "USERS_AND_GROUPS":
+                this.app.getActiveNav().push(UserAndGroupsPage);
+                break;
+
+            case "REPORTS":
+                this.app.getActiveNav().push(ReportsPage);
+                break;
+
             case "SETTINGS": {
                 this.telemetryService.interact(generateInteractTelemetry(
                     InteractType.TOUCH,
@@ -56,6 +77,7 @@ export class OverflowMenuComponent {
                 this.app.getActiveNav().push(SettingsPage);
                 break;
             }
+
             case "LOGOUT":
                 this.generateLogoutInteractTelemetry(InteractType.TOUCH,
                     InteractSubtype.LOGOUT_INITIATE, "");
@@ -70,12 +92,6 @@ export class OverflowMenuComponent {
                 this.app.getRootNav().setRoot(OnboardingPage);
                 this.generateLogoutInteractTelemetry(InteractType.OTHER,
                     InteractSubtype.LOGOUT_SUCCESS, "");
-                break;
-            case "USERS_AND_GROUPS":
-                this.app.getActiveNav().push(UserAndGroupsPage);
-                break;
-            case "REPORTS":
-                this.app.getActiveNav().push(ReportsPage);
                 break;
         }
     }

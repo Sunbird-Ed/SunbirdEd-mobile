@@ -1,5 +1,8 @@
 import { Component, NgZone } from "@angular/core";
-import { NavController, LoadingController, NavParams, Events, ToastController } from "ionic-angular";
+import {
+  NavController, LoadingController,
+  NavParams, Events, ToastController
+} from "ionic-angular";
 import {
   AuthService,
   UserProfileService,
@@ -24,9 +27,15 @@ import { FormExperience } from "./experience/form.experience";
 import { OverflowMenuComponent } from "./overflowmenu/menu.overflow.component";
 import { UserSearchComponent } from "./user-search/user-search";
 import { ImagePicker } from "./imagepicker/imagepicker";
-import { generateInteractTelemetry, generateImpressionTelemetry } from "../../app/telemetryutil";
+import {
+  generateInteractTelemetry,
+  generateImpressionTelemetry
+} from "../../app/telemetryutil";
 import { TranslateService } from "@ngx-translate/core";
-import { ProfileConstants } from "../../app/app.constant";
+import {
+  ProfileConstants,
+  MenuOverflow
+} from "../../app/app.constant";
 import { AppGlobalService } from "../../service/app-global.service";
 
 /* Interface for the Toast Object */
@@ -71,12 +80,7 @@ export class ProfilePage {
   imageUri: string = "assets/imgs/ic_profile_default.png";
   educationIcon: string = "assets/imgs/ic_businessman.png";
   locationIcon: string = "assets/imgs/ic_location.png";
-  list: Array<string> = [
-    "REPORTS",
-    "USERS_AND_GROUPS",
-    "SETTINGS",
-    "LOGOUT"
-  ];
+
   uncompletedDetails: any = {
     title: ""
   };
@@ -558,7 +562,7 @@ export class ProfilePage {
    */
   showOverflowMenu(event) {
     let popover = this.popoverCtrl.create(OverflowMenuComponent, {
-      list: this.list
+      list: MenuOverflow.MENU_GUEST
     }, {
         cssClass: 'box'
       });
