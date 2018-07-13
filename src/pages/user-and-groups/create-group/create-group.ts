@@ -34,9 +34,15 @@ export class CreateGroupPage {
     position: 'bottom'
   };
 
-  /* Options for ion-select box */
+  /* Options for class ion-select box */
   classOptions = {
     title: this.translateMessage('CLASS'),
+    cssClass: 'select-box'
+  };
+
+  /* Options for syllabus ion-select box */
+  syllabusOptions = {
+    title: this.translateMessage('SYLLABUS'),
     cssClass: 'select-box'
   };
   constructor(
@@ -59,6 +65,8 @@ export class CreateGroupPage {
 
     //this.init();
   }
+
+  
 
   ionViewWillEnter() {
     this.getSyllabusDetails();
@@ -97,7 +105,6 @@ export class CreateGroupPage {
    */
   navigateToUsersList() {
     let formValue = this.groupEditForm.value;
-
     if (formValue.name) {
       this.group.name = formValue.name;
       this.group.class = [formValue.class];
@@ -106,6 +113,9 @@ export class CreateGroupPage {
       this.navCtrl.push(GroupMembersPage, {
         group: this.group
       });
+    }
+    else{
+      this.getToast(this.translateMessage('ENTER_GROUP_NAME')).present();
     }
   }
 
