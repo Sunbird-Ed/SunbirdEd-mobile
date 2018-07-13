@@ -1,18 +1,12 @@
-import { Nav } from "ionic-angular";
-import {
-    Component,
-    ViewChild
-} from '@angular/core';
+import { Nav, ToastController } from "ionic-angular";
+import { Component, ViewChild } from '@angular/core';
 import { NavController } from "ionic-angular/navigation/nav-controller";
 import { NavParams } from "ionic-angular/navigation/nav-params";
 import { ViewController } from "ionic-angular/navigation/view-controller";
-import {
-    ToastController,
-    App
-} from "ionic-angular";
+import { App } from "ionic-angular";
+
 import { SettingsPage } from "../../settings/settings";
-import { ReportsPage } from '../../reports/reports'
-import { OAuthService } from "sunbird";
+import { OAuthService, SharedPreferences, ProfileType } from "sunbird";
 import { OnboardingPage } from "../../onboarding/onboarding";
 import {
     InteractType,
@@ -25,6 +19,9 @@ import {
 import { generateInteractTelemetry } from "../../../app/telemetryutil";
 import { UserAndGroupsPage } from "../../user-and-groups/user-and-groups";
 
+import { Network } from "@ionic-native/network";
+import { TranslateService } from "@ngx-translate/core";
+import { ReportsPage } from "../../reports/reports";
 
 @Component({
     selector: 'menu-overflow',
@@ -35,19 +32,20 @@ export class OverflowMenuComponent {
     @ViewChild(Nav) nav;
     items: Array<string>;
 
-    constructor(public navCtrl: NavController,
+    constructor(
+        public navCtrl: NavController,
         public navParams: NavParams,
         public viewCtrl: ViewController,
         private oauth: OAuthService,
         private telemetryService: TelemetryService,
         private app: App,
-        private profileService: ProfileService
+        private profileService: ProfileService,
+        private preferences: SharedPreferences,
+        private network: Network,
+        private translate: TranslateService,
+        private toastCtrl: ToastController
     ) {
-        this.items = this.navParams.get("list");
-    }
-
-    showToast(toastCtrl: ToastController, message: String) {
-
+        this.items = this.navParams.get("list") || [];
     }
 
     close(event, i) {
@@ -77,23 +75,62 @@ export class OverflowMenuComponent {
                 this.app.getActiveNav().push(SettingsPage);
                 break;
             }
+            case "LOGOUT": 
+                if (this.network.type === 'none') {
+                    let toast = this.toastCtrl.create({
+                        message: this.translateMessage("NEED_INTERNET_TO_CHANGE"),
+                        duration: 2000,
+                        position: 'bottom'
+                      });
+                      toast.present();
+                }
+                else {
+                    this.generateLogoutInteractTelemetry(InteractType.TOUCH,
+                        InteractSubtype.LOGOUT_INITIATE, "");
+                    this.oauth.doLogOut();
+                    (<any>window).splashscreen.clearPrefs();
 
-            case "LOGOUT":
-                this.generateLogoutInteractTelemetry(InteractType.TOUCH,
-                    InteractSubtype.LOGOUT_INITIATE, "");
-                this.oauth.doLogOut();
-                (<any>window).splashscreen.clearPrefs();
-                this.profileService.setAnonymousUser(success => {
-
-                },
-                    error => {
-
+                    this.preferences.getString('GUEST_USER_ID_BEFORE_LOGIN', (val) => {
+                        if (val != "") {
+                            let profileRequest = {
+                                uid: val,
+                                handle: "Guest1", //req
+                                avatar: "avatar", //req
+                                language: "en", //req
+                                age: -1,
+                                day: -1,
+                                month: -1,
+                                standard: -1,
+                                profileType: ProfileType.TEACHER
+                            };
+                            this.profileService.setCurrentProfile(true, profileRequest, res => { }, error => { });
+                        } else {
+                            this.profileService.setAnonymousUser(success => { }, error => { });
+                        }
                     });
-                this.app.getRootNav().setRoot(OnboardingPage);
-                this.generateLogoutInteractTelemetry(InteractType.OTHER,
-                    InteractSubtype.LOGOUT_SUCCESS, "");
+
+                    this.app.getRootNav().setRoot(OnboardingPage);
+                    this.generateLogoutInteractTelemetry(InteractType.OTHER,
+                        InteractSubtype.LOGOUT_SUCCESS, "");
+                }
+
                 break;
         }
+    }
+
+    /**
+     * Used to Translate message to current Language
+     * @param {string} messageConst - Message Constant to be translated
+     * @returns {string} translatedMsg - Translated Message
+     */
+    translateMessage(messageConst: string): string {
+        let translatedMsg = '';
+        this.translate.get(messageConst).subscribe(
+            (value: any) => {
+                translatedMsg = value;
+            }
+        );
+        return translatedMsg;
     }
 
     generateLogoutInteractTelemetry(interactType, interactSubtype, uid) {
@@ -106,7 +143,9 @@ export class OverflowMenuComponent {
                 PageId.LOGOUT,
                 valuesMap,
                 undefined,
-                undefined));
+                undefined
+            )
+        );
     }
 
 }

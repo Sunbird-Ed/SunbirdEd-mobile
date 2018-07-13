@@ -53,6 +53,7 @@ import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-c
 import { AppGlobalService } from '../../service/app-global.service';
 import Driver from 'driver.js';
 import { CourseUtilService } from '../../service/course-util.service';
+import { updateFilterInSearchQuery } from '../../util/filter.util';
 
 @IonicPage()
 @Component({
@@ -121,6 +122,12 @@ export class CoursesPage implements OnInit {
   showOverlay: boolean = false;
 
   resumeContentData: any;
+
+
+  private mode: string = "soft";
+
+  private isFilterApplied: boolean = false;
+
 
   /**
    * Default method of class CoursesPage
@@ -214,6 +221,20 @@ export class CoursesPage implements OnInit {
       .then((appName: any) => {
         this.appLabel = appName;
       });
+
+    this.events.subscribe('tab.change', (data) => {
+      this.ngZone.run(() => {
+        if (data === "COURSES‌") {
+          if (this.appliedFilter) {
+            this.filterIcon = "./assets/imgs/ic_action_filter.png";
+            this.courseFilter = undefined;
+            this.appliedFilter = undefined;
+            this.isFilterApplied = false;
+            this.getPopularAndLatestCourses();
+          }
+        }
+      });
+    });
   }
 
   /**
@@ -273,6 +294,9 @@ export class CoursesPage implements OnInit {
   }
 
   viewAllCourses(searchQuery, headerTitle) {
+
+    searchQuery = updateFilterInSearchQuery(searchQuery, this.appliedFilter, this.profile, this.mode, this.isFilterApplied, this.appGlobal);
+
     this.navCtrl.push(ViewMoreActivityPage, {
       headerTitle: headerTitle,
       pageName: 'course.PopularContent',
@@ -343,27 +367,29 @@ export class CoursesPage implements OnInit {
       pageAssembleCriteria = criteria;
     }
 
+    this.mode = pageAssembleCriteria.mode;
 
-    if (this.profile) {
+
+    if (this.profile && !this.isFilterApplied) {
 
       if (!pageAssembleCriteria.filters) {
         pageAssembleCriteria.filters = new PageAssembleFilter();
       }
 
       if (this.profile.board && this.profile.board.length) {
-        pageAssembleCriteria.filters.board = this.applyProfileFilter(this.profile.board, pageAssembleCriteria.filters.board);
+        pageAssembleCriteria.filters.board = this.applyProfileFilter(this.profile.board, pageAssembleCriteria.filters.board,"board");
       }
 
       if (this.profile.medium && this.profile.medium.length) {
-        pageAssembleCriteria.filters.medium = this.applyProfileFilter(this.profile.medium, pageAssembleCriteria.filters.medium);
+        pageAssembleCriteria.filters.medium = this.applyProfileFilter(this.profile.medium, pageAssembleCriteria.filters.medium, "medium");
       }
 
       if (this.profile.grade && this.profile.grade.length) {
-        pageAssembleCriteria.filters.gradeLevel = this.applyProfileFilter(this.profile.grade, pageAssembleCriteria.filters.gradeLevel);
+        pageAssembleCriteria.filters.gradeLevel = this.applyProfileFilter(this.profile.grade, pageAssembleCriteria.filters.gradeLevel, "gradeLevel");
       }
 
       if (this.profile.subject && this.profile.subject.length) {
-        pageAssembleCriteria.filters.subject = this.applyProfileFilter(this.profile.subject, pageAssembleCriteria.filters.subject);
+        pageAssembleCriteria.filters.subject = this.applyProfileFilter(this.profile.subject, pageAssembleCriteria.filters.subject, "subject");
       }
     }
 
@@ -406,28 +432,45 @@ export class CoursesPage implements OnInit {
   }
 
 
-  applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>) {
-    if (!assembleFilter) {
-      assembleFilter = [];
-    }
-    assembleFilter = assembleFilter.concat(profileFilter);
+  applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>, categoryKey?: string) {
+		if (categoryKey) {
+			let nameArray = [];
+			profileFilter.forEach(filterCode => {
+				let nameForCode = this.appGlobal.getNameForCodeInFramework(categoryKey, filterCode);
 
-    let unique_array = [];
+				if (!nameForCode) {
+					nameForCode = filterCode;
+				}
 
-    for (let i = 0; i < assembleFilter.length; i++) {
-      if (unique_array.indexOf(assembleFilter[i]) == -1 && assembleFilter[i].length > 0) {
-        unique_array.push(assembleFilter[i])
-      }
-    }
+				nameArray.push(nameForCode);
+			})
 
-    assembleFilter = unique_array;
+			profileFilter = nameArray;
+		}
 
-    if (assembleFilter.length == 0) {
-      return undefined;
-    }
 
-    return assembleFilter;
-  }
+		if (!assembleFilter) {
+			assembleFilter = [];
+		}
+		assembleFilter = assembleFilter.concat(profileFilter);
+
+		let unique_array = [];
+
+		for (let i = 0; i < assembleFilter.length; i++) {
+			if (unique_array.indexOf(assembleFilter[i]) == -1 && assembleFilter[i].length > 0) {
+				unique_array.push(assembleFilter[i])
+			}
+		}
+
+		assembleFilter = unique_array;
+
+		if (assembleFilter.length == 0) {
+			return undefined;
+		}
+
+		return assembleFilter;
+	}
+
 
   /**
    * To start / stop spinner
@@ -476,12 +519,14 @@ export class CoursesPage implements OnInit {
 
     this.getUserId()
       .then(() => {
+        this.getPopularAndLatestCourses();
       })
       .catch(error => {
         console.log("Error while Fetching Data", error);
+        this.getPopularAndLatestCourses();
       });
 
-    this.getPopularAndLatestCourses();
+   
   }
 
   /**
@@ -511,7 +556,12 @@ export class CoursesPage implements OnInit {
     const callback: QRResultCallback = {
       dialcode(scanResult, dialCode) {
         that.addCorRelation(dialCode, "qr");
-        that.navCtrl.push(SearchPage, { dialCode: dialCode, corRelation: that.corRelationList });
+        that.navCtrl.push(SearchPage, {
+          dialCode: dialCode,
+          corRelation: that.corRelationList,
+          source: PageId.COURSES,
+          shouldGenerateEndTelemetry: true
+        });
       },
       content(scanResult, contentId) {
         // that.navCtrl.push(SearchPage);
@@ -556,19 +606,25 @@ export class CoursesPage implements OnInit {
       console.log('Calling course details page');
       this.navCtrl.push(EnrolledCourseDetailsPage, {
         content: content,
-        corRelation: corRelationList
+        corRelation: corRelationList,
+        source: PageId.COURSES,
+        shouldGenerateEndTelemetry: true
       })
     } else if (content.mimeType === MimeType.COLLECTION) {
       console.log('Calling collection details page');
       this.navCtrl.push(CollectionDetailsPage, {
         content: content,
-        corRelation: corRelationList
+        corRelation: corRelationList,
+        source: PageId.COURSES,
+        shouldGenerateEndTelemetry: true
       })
     } else {
       console.log('Calling content details page');
       this.navCtrl.push(ContentDetailsPage, {
         content: content,
-        corRelation: corRelationList
+        corRelation: corRelationList,
+        source: PageId.COURSES,
+        shouldGenerateEndTelemetry: true
       })
     }
   }
@@ -582,12 +638,7 @@ export class CoursesPage implements OnInit {
   }
 
   ionViewDidEnter() {
-    if (this.appliedFilter) {
-      this.filterIcon = "./assets/imgs/ic_action_filter.png";
-      this.courseFilter = undefined;
-      this.appliedFilter = undefined;
-      this.getPopularAndLatestCourses();
-    }
+
 
     this.isVisible = true;
 
@@ -625,9 +676,12 @@ export class CoursesPage implements OnInit {
 
           let filterApplied = false;
 
+          that.isFilterApplied = false;
+
           Object.keys(that.appliedFilter).forEach(key => {
             if (that.appliedFilter[key].length > 0) {
               filterApplied = true;
+              that.isFilterApplied = true;
             }
           })
 
@@ -752,7 +806,8 @@ export class CoursesPage implements OnInit {
                 courseId: identifier
               },
               isResumedCourse: true,
-              isChildContent: true
+              isChildContent: true,
+              resumedCourseCardData: content
             });
             break;
           }
@@ -835,7 +890,8 @@ export class CoursesPage implements OnInit {
               courseId: this.resumeContentData.contentId || this.resumeContentData.identifier
             },
             isResumedCourse: true,
-            isChildContent: true
+            isChildContent: true,
+            resumedCourseCardData: this.resumeContentData
           });
         }
       });

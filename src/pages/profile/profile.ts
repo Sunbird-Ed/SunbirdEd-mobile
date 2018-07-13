@@ -591,7 +591,7 @@ export class ProfilePage {
     }
 
     this.contentService.searchContent(req,
-      false,
+      false,false,false,
       (result: any) => {
         this.enrolledCourse = JSON.parse(result).result.contentDataList;
       },

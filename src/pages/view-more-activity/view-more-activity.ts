@@ -166,7 +166,7 @@ export class ViewMoreActivityPage implements OnInit {
 			reqBody.limit = 10;
 			reqBody.offset = this.offset === 0 ? reqBody.offset : this.offset;
 			console.log("Filters", JSON.stringify(reqBody));
-			this.contentService.searchContent(reqBody, true, (data: any) => {
+			this.contentService.searchContent(reqBody, true,false,false,  (data: any) => {
 				data = JSON.parse(data);
 				console.log('search response...', data);
 				this.ngZone.run(() => {
@@ -350,7 +350,9 @@ export class ViewMoreActivityPage implements OnInit {
 								batchId: content.batchId ? content.batchId : '',
 								courseId: identifier
 							},
-							isResumedCourse: true
+							isResumedCourse: true,
+							isChildContent: true,
+							resumedCourseCardData: this.resumeContentData
 						});
 						break;
 					}
@@ -428,7 +430,9 @@ export class ViewMoreActivityPage implements OnInit {
 							batchId: this.resumeContentData.batchId ? this.resumeContentData.batchId : '',
 							courseId: this.resumeContentData.contentId || this.resumeContentData.identifier
 						},
-						isResumedCourse: true
+						isResumedCourse: true,
+						isChildContent: true,
+						resumedCourseCardData: this.resumeContentData
 					});
 				}
 			});
