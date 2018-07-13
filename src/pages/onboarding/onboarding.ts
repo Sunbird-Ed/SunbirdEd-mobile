@@ -183,7 +183,7 @@ export class OnboardingPage {
               InteractSubtype.LOGIN_SUCCESS, r.userId);
             let profileRequest = {
               uid: r.id, //req
-              name: r.id, //TODO check with nikhil
+              handle: r.id, //TODO check with nikhil
               profileType: ProfileType.TEACHER
             };
             that.profileService.setCurrentProfile(false, profileRequest,
@@ -223,7 +223,7 @@ export class OnboardingPage {
       if (val != "") {
         let profileRequest = {
           uid: val,
-          name: "Guest1", //req
+          handle: "Guest1", //req
           profileType: ProfileType.TEACHER
         };
         this.profileService.setCurrentProfile(true, profileRequest, res => {

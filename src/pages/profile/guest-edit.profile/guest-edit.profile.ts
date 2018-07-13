@@ -309,11 +309,11 @@ export class GuestEditProfilePage {
   submitEditForm(formVal, loader): void {
     let req: Profile = {
       board: formVal.boards,
-      class: formVal.grades,
+      grade: formVal.grades,
       subject: formVal.subjects,
       medium: formVal.medium,
       uid: this.profile.uid,
-      name: formVal.name,
+      handle: formVal.name,
       profileType: this.profile.profileType,
       createdAt: this.profile.createdAt,
       syllabus: (!formVal.syllabus.length) ? [] : [formVal.syllabus]
@@ -349,21 +349,21 @@ export class GuestEditProfilePage {
   submitNewUserForm(formVal, loader): void {
     let req: Profile = {
       board: formVal.boards,
-      class: formVal.grades,
+      grade: formVal.grades,
       subject: formVal.subjects,
       medium: formVal.medium,
-      uid: this.profile.uid,
-      name: formVal.name,
+      handle: formVal.name,
       profileType: formVal.profileType,
-      createdAt: this.profile.createdAt,
       syllabus: (!formVal.syllabus.length) ? [] : [formVal.syllabus]
     }
 
     this.profileService.createProfile(req, (success: any) => {
+      loader.dismiss();
       this.getToast(this.translateMessage("User Created successfully")).present();
       this.navCtrl.pop();
     },
       (error: any) => {
+        loader.dismiss();
         this.getToast(this.translateMessage("SOMETHING_WENT_WRONG")).present();
       });
   }
