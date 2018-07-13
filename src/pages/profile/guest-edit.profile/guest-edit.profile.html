@@ -9,19 +9,19 @@
   <form [formGroup]="guestEditForm">
     <ion-list radio-group *ngIf="isNewUser" formControlName="profileType">
 
-      <ion-list-header text-uppercase>
+      <ion-label text-uppercase>
         {{ 'USER_TYPE' | translate }}<span ion-text color="danger">&nbsp;*</span>
-      </ion-list-header>
+      </ion-label>
 
       <ion-row>
         <ion-item col-6 no-lines>
-          <ion-label text-capitalize>{{ 'STUDENT' | translate }}
+          <ion-label>{{ 'STUDENT' | translate | titlecase }}
           </ion-label>
           <ion-radio item-left value="STUDENT"></ion-radio>
         </ion-item>
 
         <ion-item col-6 no-lines>
-          <ion-label text-capitalize>{{ 'TEACHER' | translate }}</ion-label>
+          <ion-label>{{ 'TEACHER' | translate | titlecase }}</ion-label>
           <ion-radio item-left value="TEACHER"></ion-radio>
         </ion-item>
       </ion-row>

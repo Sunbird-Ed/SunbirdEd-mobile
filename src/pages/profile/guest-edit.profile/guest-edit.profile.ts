@@ -84,7 +84,7 @@ export class GuestEditProfilePage {
     private preference: SharedPreferences,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private platform: Platform,
-      private ionicApp: IonicApp
+    private ionicApp: IonicApp
   ) {
     this.profile = this.navParams.get('profile') || {};
     this.isNewUser = this.navParams.get('isNewUser');
@@ -183,7 +183,6 @@ export class GuestEditProfilePage {
           this.getToast(this.translateMessage('NO_DATA_FOUND')).present();
         }
       });
-
   }
 
   /**
@@ -307,17 +306,16 @@ export class GuestEditProfilePage {
    * This will submit edit form.
    */
   submitEditForm(formVal, loader): void {
-    let req: Profile = {
-      board: formVal.boards,
-      grade: formVal.grades,
-      subject: formVal.subjects,
-      medium: formVal.medium,
-      uid: this.profile.uid,
-      handle: formVal.name,
-      profileType: this.profile.profileType,
-      createdAt: this.profile.createdAt,
-      syllabus: (!formVal.syllabus.length) ? [] : [formVal.syllabus]
-    }
+    let req: Profile = new Profile();
+    req.board = formVal.boards;
+    req.grade = formVal.grades;
+    req.subject = formVal.subjects;
+    req.medium = formVal.medium;
+    req.uid = this.profile.uid;
+    req.handle = formVal.name;
+    req.profileType = this.profile.profileType;
+    req.createdAt = this.profile.createdAt;
+    req.syllabus = (!formVal.syllabus.length) ? [] : [formVal.syllabus];
 
     this.profileService.updateProfile(req,
       (res: any) => {
@@ -347,15 +345,14 @@ export class GuestEditProfilePage {
    * It will submit new user form
    */
   submitNewUserForm(formVal, loader): void {
-    let req: Profile = {
-      board: formVal.boards,
-      grade: formVal.grades,
-      subject: formVal.subjects,
-      medium: formVal.medium,
-      handle: formVal.name,
-      profileType: formVal.profileType,
-      syllabus: (!formVal.syllabus.length) ? [] : [formVal.syllabus]
-    }
+    let req: Profile = new Profile();
+    req.board = formVal.boards;
+    req.grade = formVal.grades;
+    req.subject = formVal.subjects;
+    req.medium = formVal.medium;
+    req.handle = formVal.name;
+    req.profileType = formVal.profileType;
+    req.syllabus = (!formVal.syllabus.length) ? [] : [formVal.syllabus];
 
     this.profileService.createProfile(req, (success: any) => {
       loader.dismiss();
