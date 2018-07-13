@@ -1,26 +1,51 @@
-import { Component, ViewChild, NgZone } from '@angular/core';
-import { Platform, ModalController, AlertController, Nav, App, ToastController, Events, AlertButton } from 'ionic-angular';
+import {
+  Component,
+  ViewChild,
+  NgZone
+} from '@angular/core';
+import {
+  Platform,
+  Nav,
+  App,
+  ToastController,
+  Events
+} from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import {
-  TabsPage, AuthService, ContainerService, PermissionService,
-  Interact, InteractType, InteractSubtype, Environment, TelemetryService,
-  SharedPreferences, ProfileType, UserProfileService, MigrationService, GroupService, ProfileService
+  TabsPage,
+  AuthService,
+  ContainerService,
+  PermissionService,
+  InteractType,
+  InteractSubtype,
+  Environment,
+  TelemetryService,
+  SharedPreferences,
+  ProfileType,
+  UserProfileService
 } from "sunbird";
-import { initTabs, GUEST_TEACHER_TABS, GUEST_STUDENT_TABS, LOGIN_TEACHER_TABS } from './module.service';
+import {
+  initTabs,
+  GUEST_TEACHER_TABS,
+  GUEST_STUDENT_TABS,
+  LOGIN_TEACHER_TABS
+} from './module.service';
 import { LanguageSettingsPage } from '../pages/language-settings/language-settings';
 import { ImageLoaderConfig } from 'ionic-image-loader';
 import { TranslateService } from '@ngx-translate/core';
 import { SearchPage } from '../pages/search/search';
-// import { CourseDetailPage } from '../pages/course-detail/course-detail';
-
 import { CollectionDetailsPage } from '../pages/collection-details/collection-details';
 import { ContentDetailsPage } from '../pages/content-details/content-details';
-import { generateEndTelemetry, generateInteractTelemetry } from './telemetryutil';
-import { MimeType, ContentType } from './app.constant';
+import {
+  generateEndTelemetry,
+  generateInteractTelemetry
+} from './telemetryutil';
+import {
+  MimeType,
+  ContentType
+} from './app.constant';
 import { EnrolledCourseDetailsPage } from '../pages/enrolled-course-details/enrolled-course-details';
-import { AppGlobalService } from '../service/app-global.service';
 import { ProfileConstants } from './app.constant';
-import { AppVersion } from '@ionic-native/app-version';
 import { FormAndFrameworkUtilService } from '../pages/profile/formandframeworkutil.service';
 
 declare var chcp: any;
@@ -49,8 +74,6 @@ export class MyApp {
   constructor(
     private platform: Platform,
     statusBar: StatusBar,
-    private modalCtrl: ModalController,
-    private alertCtrl: AlertController,
     private toastCtrl: ToastController,
     private authService: AuthService,
     private containerService: ContainerService,
@@ -62,16 +85,11 @@ export class MyApp {
     private zone: NgZone,
     private telemetryService: TelemetryService,
     private preference: SharedPreferences,
-    private appGlobal: AppGlobalService,
     private userProfileService: UserProfileService,
-    private migrationService: MigrationService,
-    private appVersion: AppVersion,
-    private profileService: ProfileService,
     private formAndFrameowrkUtilService: FormAndFrameworkUtilService,
   ) {
 
     let that = this;
-
 
     platform.ready().then(() => {
       this.registerDeeplinks();
@@ -79,14 +97,13 @@ export class MyApp {
       this.imageLoaderConfig.enableDebugMode();
       this.imageLoaderConfig.setMaximumCacheSize(100 * 1024 * 1024);
       this.subscribeEvents();
-      this.checkForMigration();
       this.saveDefaultSyncSetting();
       this.showAppWalkThroughScreen();
 
       //check if any new app version is available
       this.checkForUpgrade();
 
-      permission.requestPermission(this.permissionList, (response) => {
+      this.permission.requestPermission(this.permissionList, (response) => {
         this.makeEntryInSupportFolder();
       }, (error) => {
 
@@ -191,29 +208,6 @@ export class MyApp {
         this.preference.putString("sync_config", "ALWAYS_ON");
       }
     });
-  }
-
-  checkForMigration() {
-    this.appVersion.getVersionCode()
-      .then((versionCode) => {
-        console.log("Current Version Code - " + versionCode);
-
-        //migrate the profile to new type
-        this.migrationService.migrateProfiles().
-          then(() => {
-            //get all the newly stored profiles
-            this.migrationService.getAllProfiles().
-              then((response) => {
-                console.log("Migrated profiles response - " + JSON.stringify(response));
-              });
-          })
-          .catch(error => {
-            console.log("Error migrating profiles - ", error);
-          });;
-      },
-        (error) => {
-
-        });
   }
 
   handleBackButton() {
