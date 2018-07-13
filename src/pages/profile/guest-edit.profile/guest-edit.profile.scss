@@ -22,6 +22,12 @@ page-guest-edit.profile {
   .list-md {
     margin-bottom: 0 !important;
   }
+  ion-label.type-label {
+    margin-bottom: 0 !important;
+    font-weight: 700;
+    color: #999;
+    font-size: 1.2rem;
+  }
 }
 
 .multiple-select-alert .alert-head {
