@@ -14,14 +14,13 @@
   </ion-navbar>
 </ion-header>
 <ion-content padding>
-  <ion-row *ngIf="!noMemberSection">
+  <ion-row  *ngIf="!noMemberSection">
     <ion-col col-md-6>
       <p *ngIf="usersList.length" text-left ion-text color="title" text-uppercase>
         <b>{{usersList.length}}&nbsp;{{'USERS' | translate}}</b>
       </p>
     </ion-col>
     <ion-col col-md-6>
-      <!-- <p text-right (click)="selectAll()" ion-text color="primary" text-uppercase><b>{{'SELECT_ALL' | translate}}</b></p> -->
       <button ion-button float-end clear (click)="selectAll()">{{'SELECT_ALL' | translate}}</button>
     </ion-col>
   </ion-row>
@@ -35,9 +34,6 @@
   </div>
   <ion-item *ngFor="let user of usersList; let i = index;" class="item-background" margin-bottom no-lines>
     {{user?.name}}
-    <ion-avatar item-start>
-      <img  src="assets/imgs/ic_businessman.png">
-    </ion-avatar>
     <ion-label>
       <h6>
         <b>{{user?.name}}</b>

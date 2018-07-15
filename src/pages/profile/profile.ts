@@ -562,7 +562,8 @@ export class ProfilePage {
    */
   showOverflowMenu(event) {
     let popover = this.popoverCtrl.create(OverflowMenuComponent, {
-      list: MenuOverflow.MENU_GUEST
+      list: MenuOverflow.MENU_GUEST,
+      profile:this.profile
     }, {
         cssClass: 'box'
       });

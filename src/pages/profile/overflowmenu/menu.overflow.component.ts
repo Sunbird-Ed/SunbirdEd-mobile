@@ -34,6 +34,7 @@ import { UserAndGroupsPage } from "../../user-and-groups/user-and-groups";
 export class OverflowMenuComponent {
     @ViewChild(Nav) nav;
     items: Array<string>;
+    profile: any = {};
 
     constructor(public navCtrl: NavController,
         public navParams: NavParams,
@@ -44,6 +45,7 @@ export class OverflowMenuComponent {
         private profileService: ProfileService
     ) {
         this.items = this.navParams.get("list");
+        this.profile = this.navParams.get("profile") || {};
     }
 
     showToast(toastCtrl: ToastController, message: String) {
@@ -57,7 +59,7 @@ export class OverflowMenuComponent {
         }));
         switch (i) {
             case "USERS_AND_GROUPS":
-                this.app.getActiveNav().push(UserAndGroupsPage);
+                this.app.getActiveNav().push(UserAndGroupsPage, { profile: this.profile });
                 break;
 
             case "REPORTS":

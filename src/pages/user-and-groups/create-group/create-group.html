@@ -1,6 +1,7 @@
 <ion-header>
   <ion-navbar>
-    <ion-title>{{'CREATE_GROUP' | translate}}</ion-title>
+    <ion-title *ngIf="!group?.name?.length">{{'CREATE_GROUP' | translate}}</ion-title>
+      <ion-title *ngIf="group?.name?.length">{{'EDIT_GROUP' | translate}}</ion-title>
   </ion-navbar>
 </ion-header>
 <ion-content padding-top padding-right>
@@ -10,7 +11,7 @@
         {{ 'GROUP_NAME' | translate }}
         <span class="mandatory">*</span>
       </ion-label>
-      <ion-input type="text" formControlName="name" placeholder="{{'GROUP_NAME' | translate}}"></ion-input>
+      <ion-input type="text" formControlName="name" text-capitalize placeholder="{{'GROUP_NAME' | translate}}"></ion-input>
     </ion-item>
     <!-- Syllabus -->
     <ion-item>
@@ -23,13 +24,21 @@
     </ion-item>
 
     <!-- Class select box-->
+    <!-- <ion-item>
+      <ion-label stacked text-uppercase>{{'CLASS' | translate}}</ion-label>
+      <ion-select multiple="true" formControlName="class" [selectOptions]="classOptions" [disabled]="!(groupEditForm.value.syllabus != '')" plac placeholder="{{'CLASS'|translate}}">
+        <ion-option [value]="class?.code" *ngFor="let class of classList">{{ class?.name }}</ion-option>
+      </ion-select>
+    </ion-item> -->
+    <!--class select box new-->
     <ion-item>
       <ion-label stacked text-uppercase>{{'CLASS' | translate}}</ion-label>
       <ion-select multiple="true"   formControlName="class" [selectOptions]="classOptions" [disabled]="!(groupEditForm.value.syllabus != '')"
         placeholder="{{'CLASS'|translate}}" okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}">
-        <ion-option *ngFor="let class of classList" text-capitalize [value]="class?.code">{{ class?.name }}</ion-option>
+        <ion-option [value]="class?.code" *ngFor="let class of classList" text-capitalize >{{ class?.name }}</ion-option>
       </ion-select>
     </ion-item>
+    <!--class select box new ends-->
   </form>
 </ion-content>
 <ion-footer>

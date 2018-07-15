@@ -7,6 +7,7 @@ import { CategoryRequest, Group } from 'sunbird';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { LoadingController } from 'ionic-angular';
+import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -62,11 +63,11 @@ export class CreateGroupPage {
       syllabus: [this.group.syllabus && this.group.syllabus[0] || []],
       class: [this.group.class || []]
     });
-
+    
     //this.init();
   }
 
-  
+
 
   ionViewWillEnter() {
     this.getSyllabusDetails();
@@ -92,12 +93,19 @@ export class CreateGroupPage {
           if (this.group && this.group.syllabus && this.group.syllabus[0] !== undefined) {
             this.getClassList(this.group.syllabus[0], false);
           }
+          else {
+            this.loader.dismiss();
+          }
         } else {
           this.loader.dismiss();
           this.getToast(this.translateMessage('NO_DATA_FOUND')).present();
         }
       });
 
+  }
+  /**Naigates to guest edit profile */
+  goToGuestEdit() {
+    this.navCtrl.push(GuestEditProfilePage);
   }
 
   /**
@@ -114,7 +122,7 @@ export class CreateGroupPage {
         group: this.group
       });
     }
-    else{
+    else {
       this.getToast(this.translateMessage('ENTER_GROUP_NAME')).present();
     }
   }
