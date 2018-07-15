@@ -63,7 +63,7 @@ export class CreateGroupPage {
       syllabus: [this.group.syllabus && this.group.syllabus[0] || []],
       class: [this.group.class || []]
     });
-    
+
     //this.init();
   }
 
@@ -93,9 +93,6 @@ export class CreateGroupPage {
           if (this.group && this.group.syllabus && this.group.syllabus[0] !== undefined) {
             this.getClassList(this.group.syllabus[0], false);
           } else {
-            this.loader.dismiss();
-          }
-          else {
             this.loader.dismiss();
           }
         } else {
