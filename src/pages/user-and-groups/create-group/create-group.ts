@@ -92,6 +92,8 @@ export class CreateGroupPage {
 
           if (this.group && this.group.syllabus && this.group.syllabus[0] !== undefined) {
             this.getClassList(this.group.syllabus[0], false);
+          } else {
+            this.loader.dismiss();
           }
           else {
             this.loader.dismiss();

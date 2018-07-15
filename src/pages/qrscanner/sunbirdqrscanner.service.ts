@@ -148,17 +148,14 @@ export class SunbirdQRScanner {
       if (results[results.length - 2] == "dial") {
         let dialCode = results[results.length - 1];
         this.generateQRScanSuccessInteractEvent(code, "SearchResult");
-        this.generateEndEvent(source, code);
         callback.dialcode(code, dialCode);
       } else if ((results[results.length - 2] == "content" && results[results.length - 4] == "public")) {
         let contentId = results[results.length - 1];
         this.generateQRScanSuccessInteractEvent(code, "ContentDetail");
-        this.generateEndEvent(source, code);
         callback.content(code, contentId);
       } else if (results[results.length - 3] == "play" && (results[results.length - 2] == "collection" || results[results.length - 2] == "content")) {
         let contentId = results[results.length - 1];
         this.generateQRScanSuccessInteractEvent(code, "ContentDetail");
-        this.generateEndEvent(source, code);
         callback.content(code, contentId);
       } else if (results[results.length - 3] == "learn" && results[results.length - 2] == "course") {
         let contentId = results[results.length - 1];

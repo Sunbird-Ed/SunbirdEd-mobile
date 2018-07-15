@@ -389,28 +389,28 @@ export class OnboardingService {
      * This will makes an API call for the current category
      */
     saveDetails(index: number): void {
-        let req: Profile = {
-            syllabus: (_.find(this.onBoardingSlides, ['id', 'syllabusList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'syllabusList']).selectedCode : this.profile.syllabus,
-            board: (_.find(this.onBoardingSlides, ['id', 'boardList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'boardList']).selectedCode : this.profile.board,
-            class: (_.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode : this.profile.grade,
-            subject: (_.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode : this.profile.subject,
-            medium: (_.find(this.onBoardingSlides, ['id', 'mediumList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'mediumList']).selectedCode : this.profile.medium,
-            uid: this.profile.uid,
-            name: this.profile.name,
-            createdAt: this.profile.createdAt,
-            profileType: this.profile.profileType
-        }
+        let req: Profile = new Profile();
+            req.syllabus =  (_.find(this.onBoardingSlides, ['id', 'syllabusList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'syllabusList']).selectedCode : this.profile.syllabus
+            req.board =  (_.find(this.onBoardingSlides, ['id', 'boardList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'boardList']).selectedCode : this.profile.board;
+            req.grade =  (_.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode : this.profile.grade;
+            req.subject = (_.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode : this.profile.subject;
+            req.medium = (_.find(this.onBoardingSlides, ['id', 'mediumList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'mediumList']).selectedCode : this.profile.medium;
+            req.uid =  this.profile.uid;
+            req.handle =  this.profile.name;
+            req.createdAt = this.profile.createdAt;
+            req.profileType = this.profile.profileType;
+
         if (index === 0 && !_.find(this.onBoardingSlides, ['id', 'boardList']).selectedCode.length) {
             req.board = [];
             req.medium = [];
-            req.class = [];
+            req.grade = [];
             req.subject = [];
         }
         if (index === 1 && !_.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode.length) {
-            req.class = [];
+            req.grade = [];
         }
         if (index === 2 && !_.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode.length) {
-            req.class = [];
+            req.grade = [];
             req.subject = [];
         }
         if (index === 3 && !_.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode.length) {
