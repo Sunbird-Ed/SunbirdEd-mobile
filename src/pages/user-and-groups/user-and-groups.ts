@@ -49,6 +49,7 @@ export class UserAndGroupsPage {
 
   groupList: Array<any> = [];
   unregisterBackButton: any;
+  profileDetails: any;
 
   userType: string;
   selectedUserIndex: number = -1;
@@ -78,6 +79,8 @@ export class UserAndGroupsPage {
     this.showEmptyUsersMessage = (this.usersList && this.usersList.length) ? false : true;
     this.currentUserId = this.navParams.get('userId');
     this.isLoggedInUser = this.navParams.get('isLoggedInUser');
+    this.profileDetails = this.navParams.get('profile');
+    console.log(this.profileDetails);
   }
 
   ionViewWillEnter() {
@@ -144,6 +147,11 @@ getGroupsList() {
       console.log("Something went wrong while fetching data", error);
     });
   })
+  }
+
+  /**Navigates to group details page */
+  goToGroupDetail(){
+    this.navCtrl.push(GroupDetailsPage);
   }
 
 

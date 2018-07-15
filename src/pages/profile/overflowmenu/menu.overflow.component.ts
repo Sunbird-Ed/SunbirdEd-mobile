@@ -31,6 +31,7 @@ import { ReportsPage } from "../../reports/reports";
 export class OverflowMenuComponent {
     @ViewChild(Nav) nav;
     items: Array<string>;
+    profile: any = {};
 
     constructor(
         public navCtrl: NavController,
@@ -45,7 +46,13 @@ export class OverflowMenuComponent {
         private translate: TranslateService,
         private toastCtrl: ToastController
     ) {
-        this.items = this.navParams.get("list") || [];
+        this.items = this.navParams.get("list");
+        this.profile = this.navParams.get("profile") || {};
+    }
+
+    showToast(toastCtrl: ToastController, message: String) {
+    this.items = this.navParams.get("list") || [];
+
     }
 
     close(event, i) {
@@ -55,7 +62,7 @@ export class OverflowMenuComponent {
         }));
         switch (i) {
             case "USERS_AND_GROUPS":
-                this.app.getActiveNav().push(UserAndGroupsPage);
+                this.app.getActiveNav().push(UserAndGroupsPage, { profile: this.profile });
                 break;
 
             case "REPORTS":

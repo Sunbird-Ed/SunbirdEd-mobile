@@ -11,7 +11,7 @@ import { GroupService } from 'sunbird';
 export class PopoverPage {
 
   isCurrentUser: boolean = false;
-  //segmentType: string;
+
   constructor(public navCtrl: NavController, public navParams: NavParams, public translate: TranslateService) {
     this.isCurrentUser = this.navParams.get('isCurrentUser');
     //this.segmentType = this.navParams.get('segmentType');

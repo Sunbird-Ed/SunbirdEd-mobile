@@ -1,23 +1,24 @@
 <ion-header>
-
   <ion-navbar>
-    <ion-title>{{'GROUP_MEMBER'| translate}}</ion-title>
+    <ion-title>Class 4A</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="presentPopoverNav($event)">
+        <ion-icon name="more" float-end></ion-icon>
+      </button>
+    </ion-buttons>
   </ion-navbar>
-
 </ion-header>
-
-
 <ion-content padding>
-    <ion-list  *ngFor = "let users of value | slice:1">
-        <ion-item>
-              <ion-thumbnail item-start>
-                  <img class="rounded" src="assets/imgs/male.png">
-                </ion-thumbnail>
-              <ion-label>
-                <h6>{{users.name}}</h6>
-                <p>{{users.profession}}</p>
-              </ion-label>
-        </ion-item>
+  <ion-list>
+    <ion-item *ngFor="let user of usersList; let i=index;" class="item-background radius" margin-bottom no-lines>
+      <ion-label padding-top padding-bottom>
+        <h6 (click)="selectUser(i, user?.name)">
+          <b>{{user?.name}}</b>
+        </h6>
+        <p>{{user?.userType}}
+          <span *ngIf="user?.grade?.length">•</span> {{user?.grade}}</p>
+      </ion-label>
+      <ion-icon name="more" item-end (click)="presentPopover($event ,user)"></ion-icon>
+    </ion-item>
   </ion-list>
-
 </ion-content>
