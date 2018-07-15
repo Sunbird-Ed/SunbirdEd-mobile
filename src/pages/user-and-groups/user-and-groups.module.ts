@@ -10,6 +10,8 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CreateGroupPageModule } from './create-group/create-group.module';
 import { GroupMembersPageModule } from './group-members/group-members.module';
 import { GroupDetailsPageModule } from './group-details/group-details.module';
+import { GroupDetailNavPopoverPage } from './group-detail-nav-popover/group-detail-nav-popover';
+import { GroupDetailNavPopoverPageModule } from './group-detail-nav-popover/group-detail-nav-popover.module';
 
 @NgModule({
   declarations: [
@@ -19,7 +21,8 @@ import { GroupDetailsPageModule } from './group-details/group-details.module';
     CreateGroupPage,
     GroupMembersPage,
     GroupDetailsPage,
-    PopoverPage
+    PopoverPage,
+    GroupDetailNavPopoverPage
   ],
   imports: [
     IonicPageModule.forChild(UserAndGroupsPage),
@@ -27,7 +30,8 @@ import { GroupDetailsPageModule } from './group-details/group-details.module';
     CreateGroupPageModule,
     GroupMembersPageModule,
     GroupDetailsPageModule,
-    PopoverPageModule
+    PopoverPageModule,
+    GroupDetailNavPopoverPageModule
   ],
 })
 export class UserAndGroupsPageModule { }

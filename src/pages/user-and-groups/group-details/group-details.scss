@@ -2,5 +2,12 @@ page-group-member {
     ion-item.custom-ion-list {
         background-color: #f4f4f4;
     }
+
+    .radius{
+        border-radius: 6px;
+      }
+      .item-background.item-md {
+        background-color: map-get($colors, light_gray) !important;
+      }
 }
 

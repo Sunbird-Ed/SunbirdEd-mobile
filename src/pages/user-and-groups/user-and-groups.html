@@ -1,11 +1,16 @@
 <ion-header>
   <ion-navbar color="white">
     <ion-title>{{'USERS_AND_GROUPS'| translate}}</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only>
+        <ion-icon name="share" float-end></ion-icon>
+      </button>
+    </ion-buttons>
   </ion-navbar>
 </ion-header>
 <ion-content>
   <ion-segment no-padding [(ngModel)]="segmentType" (ionChange)="onSegmentChange($event)"
-  class="users-groups-toolbar">
+  class="users-groups-toolbar" padding-bottom>
     <ion-segment-button value="users">
       {{'USERS' | translate}}
     </ion-segment-button>
@@ -15,16 +20,17 @@
   </ion-segment>
 
   <div [ngSwitch]="segmentType" padding>
-    <ion-list *ngSwitchCase="'users'">
-      <p *ngIf="isLoggedInUser" ion-text text-uppercase color="dark_gray" class="subTitle">{{ 'LOGGED_IN_AS' | translate }}</p>
-      <ion-item *ngIf="isLoggedInUser" class="item-background" no-lines>
-        <ion-avatar item-start>
+    <ion-list *ngSwitchCase="'users'" padding-top>
+      <p  ion-text text-uppercase color="dark_gray" class="subTitle">{{ 'LOGGED_IN_AS' | translate }}</p>
+      <ion-item *ngIf="profileDetails" class="item-background" no-lines>
+        <!-- <ion-avatar item-start>
           <img src="{{userProfile?.avatar}}">
-          <img src="assets/imgs/ic_check_circle.png" id="tick" />
-        </ion-avatar>
-        <ion-label padding-top>
-        <p ion-text color="primary">{{userProfile?.firstName}}&nbsp;{{userProfile?.lastName}}</p>
-        <p ion-text color="dark_gray">{{userProfile?.address}}</p>
+          <img src="assets/imgs/ic_check_circle.png" id="tick" /> 
+        </ion-avatar> -->
+        <ion-label padding-top padding-bottom>
+            <!-- {{profileDetails.firstName}} {{profileDetails.lastName}} -->
+        <p ion-text color="primary"><b>{{profileDetails?.firstName}}&nbsp;{{profileDetails?.lastName}}</b></p>
+        <p>{{profileDetails?.grade}}</p>
       </ion-label>
       </ion-item>
       <p ion-text color="dark_gray" text-uppercase class="subTitle">{{'USERS' | translate}}</p>
@@ -40,7 +46,7 @@
           <!--<ion-avatar item-start (click)="selectUser(i, user?.name)">
              <img src="assets/imgs/ic_businessman.png">
           </ion-avatar> -->
-          <ion-label padding-top>
+          <ion-label padding-top padding-bottom>
           <h6 (click)="selectUser(i, user?.name)">
             <b>{{user?.name}}</b>
           </h6>
@@ -77,7 +83,7 @@
                 <img src="assets/imgs/img_group.png">
               </ion-avatar> -->
               <ion-label padding-top>
-              <h6><b>{{group?.name}}</b></h6>
+              <h6 (click)="goToGroupDetail()"><b>{{group?.name}}</b></h6>
               <p>{{group?.class[0]}}
                 <span *ngIf="group?.class?.length && group?.uids?.length">•</span>
                 <span *ngIf="group?.uids?.length">{{group?.uids?.length}} {{'USERS' | translate}}</span>
@@ -90,8 +96,7 @@
     </ion-list>
   </div>
 </ion-content>
-
-<ion-footer >
+<ion-footer>
   <ion-row padding>
     <ion-col col-md-10 offset-md-1>
       <div *ngIf="selectedUserIndex !== -1; else enableCreateButton">

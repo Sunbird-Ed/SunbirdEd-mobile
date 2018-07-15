@@ -1,10 +1,10 @@
 import { Component, NgZone, ViewChild } from "@angular/core";
-import { IonicPage, NavParams, NavController, Events, ToastController, Popover } from "ionic-angular";
+import { IonicPage, NavParams, NavController, Events, ToastController, Popover, Navbar, Platform } from "ionic-angular";
 import {
   ContentService, ContentSearchCriteria,
   Log, LogLevel, TelemetryService, Impression, ImpressionType, Environment,
   Interact, InteractType, InteractSubtype,
-  ContentDetailRequest, ContentImportRequest, FileUtil, ProfileType, CorrelationData, PageId
+  ContentDetailRequest, ContentImportRequest, FileUtil, ProfileType, CorrelationData, PageId, Mode
 } from "sunbird";
 import { GenieResponse } from "../settings/datasync/genieresponse";
 import { FilterPage } from "./filters/filter";
@@ -13,7 +13,7 @@ import { CollectionDetailsPage } from "../collection-details/collection-details"
 import { ContentDetailsPage } from "../content-details/content-details";
 import { Network } from "@ionic-native/network";
 import { TranslateService } from '@ngx-translate/core';
-import { Map, generateImpressionTelemetry } from "../../app/telemetryutil";
+import { Map, generateImpressionTelemetry, generateEndTelemetry } from "../../app/telemetryutil";
 import * as _ from 'lodash';
 import { ContentType, MimeType, Search, AudienceFilter } from '../../app/app.constant';
 import { EnrolledCourseDetailsPage } from "../enrolled-course-details/enrolled-course-details";
@@ -79,7 +79,10 @@ export class SearchPage {
   profile: any;
 
   isFirstLaunch: boolean = false;
+  private shouldGenerateEndTelemetry: boolean = false;
+  private backButtonFunc = undefined;
 
+  @ViewChild(Navbar) navBar: Navbar;
   constructor(private contentService: ContentService,
     private telemetryService: TelemetryService,
     private navParams: NavParams,
@@ -92,7 +95,8 @@ export class SearchPage {
     private translate: TranslateService,
     private events: Events,
     private appGlobal: AppGlobalService,
-    private popUp: PopoverController) {
+    private popUp: PopoverController,
+    private platform: Platform) {
 
     this.checkUserSession();
 
@@ -102,6 +106,13 @@ export class SearchPage {
 
     console.log("Network Type : " + this.network.type);
     this.defaultAppIcon = 'assets/imgs/ic_launcher.png';
+    this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      this.navCtrl.pop();
+      if (this.shouldGenerateEndTelemetry) {
+        this.generateQRSessionEndEvent(this.source, this.dialCode);
+      }
+      this.backButtonFunc();
+    }, 10)
   }
 
 
@@ -117,7 +128,13 @@ export class SearchPage {
   }
 
   ionViewDidLoad() {
-
+    this.navBar.backButtonClick = (e: UIEvent) => {
+      if (this.shouldGenerateEndTelemetry) {
+        this.generateQRSessionEndEvent(this.source, this.dialCode);
+      }
+      this.navCtrl.pop();
+      this.backButtonFunc();
+    }
   }
 
   openCollection(collection) {
@@ -145,24 +162,32 @@ export class SearchPage {
   }
 
   showContentDetails(content) {
+
+    let params;
+    if (this.shouldGenerateEndTelemetry) {
+      params = {
+        content: content,
+        corRelation: this.corRelationList,
+        source: this.source,
+        shouldGenerateEndTelemetry: this.shouldGenerateEndTelemetry
+      };
+    }
+    else {
+      params = {
+        content: content,
+        corRelation: this.corRelationList,
+      };
+    }
+
     if (content.contentType === ContentType.COURSE) {
       console.log('Calling course details page');
-      this.navCtrl.push(EnrolledCourseDetailsPage, {
-        content: content,
-        corRelation: this.corRelationList
-      })
+      this.navCtrl.push(EnrolledCourseDetailsPage, params)
     } else if (content.mimeType === MimeType.COLLECTION) {
       console.log('Calling collection details page');
-      this.navCtrl.push(CollectionDetailsPage, {
-        content: content,
-        corRelation: this.corRelationList
-      })
+      this.navCtrl.push(CollectionDetailsPage, params)
     } else {
       console.log('Calling content details page');
-      this.navCtrl.push(ContentDetailsPage, {
-        content: content,
-        corRelation: this.corRelationList
-      })
+      this.navCtrl.push(ContentDetailsPage, params)
     }
   }
 
@@ -174,7 +199,7 @@ export class SearchPage {
     this.showLoader = true;
     this.responseData.result.filterCriteria.mode = "hard";
 
-    this.contentService.searchContent(this.responseData.result.filterCriteria, true, (responseData) => {
+    this.contentService.searchContent(this.responseData.result.filterCriteria, true,false,false, (responseData) => {
 
       this.zone.run(() => {
         let response: GenieResponse = JSON.parse(responseData);
@@ -233,27 +258,27 @@ export class SearchPage {
     if (this.profile) {
 
       if (this.profile.board && this.profile.board.length) {
-				contentSearchRequest.board = this.applyProfileFilter(this.profile.board, contentSearchRequest.board, "board");
-			}
+        contentSearchRequest.board = this.applyProfileFilter(this.profile.board, contentSearchRequest.board, "board");
+      }
 
-			if (this.profile.medium && this.profile.medium.length) {
-				contentSearchRequest.medium = this.applyProfileFilter(this.profile.medium, contentSearchRequest.medium, "medium");
-			}
+      if (this.profile.medium && this.profile.medium.length) {
+        contentSearchRequest.medium = this.applyProfileFilter(this.profile.medium, contentSearchRequest.medium, "medium");
+      }
 
-			if (this.profile.grade && this.profile.grade.length) {
-				contentSearchRequest.grade = this.applyProfileFilter(this.profile.grade, contentSearchRequest.grade, "gradeLevel");
-			}
+      if (this.profile.grade && this.profile.grade.length) {
+        contentSearchRequest.grade = this.applyProfileFilter(this.profile.grade, contentSearchRequest.grade, "gradeLevel");
+      }
 
-			// if (this.profile.subject && this.profile.subject.length) {
-			// 	pageAssembleCriteria.filters.subject = this.applyProfileFilter(this.profile.subject, pageAssembleCriteria.filters.subject, "subject");
-			// }
+      // if (this.profile.subject && this.profile.subject.length) {
+      // 	pageAssembleCriteria.filters.subject = this.applyProfileFilter(this.profile.subject, pageAssembleCriteria.filters.subject, "subject");
+      // }
 
       // if (this.profile.subject && this.profile.subject.length) {
       // 	contentSearchRequest.subject = this.applyProfileFilter(this.profile.subject, contentSearchRequest.subject);
       // }
     }
 
-    this.contentService.searchContent(contentSearchRequest, false, (responseData) => {
+    this.contentService.searchContent(contentSearchRequest, false,false,false, (responseData) => {
 
       this.zone.run(() => {
         let response: GenieResponse = JSON.parse(responseData);
@@ -287,22 +312,22 @@ export class SearchPage {
   }
 
   applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>, categoryKey?: string) {
-		if (categoryKey) {
-			let nameArray = [];
-			profileFilter.forEach(filterCode => {
-				let nameForCode = this.appGlobal.getNameForCodeInFramework(categoryKey, filterCode);
+    if (categoryKey) {
+      let nameArray = [];
+      profileFilter.forEach(filterCode => {
+        let nameForCode = this.appGlobal.getNameForCodeInFramework(categoryKey, filterCode);
 
-				if (!nameForCode) {
-					nameForCode = filterCode;
-				}
+        if (!nameForCode) {
+          nameForCode = filterCode;
+        }
 
-				nameArray.push(nameForCode);
-			})
+        nameArray.push(nameForCode);
+      })
 
-			profileFilter = nameArray;
+      profileFilter = nameArray;
     }
-    
-    
+
+
     if (!assembleFilter) {
       assembleFilter = [];
     }
@@ -330,6 +355,8 @@ export class SearchPage {
     this.contentType = this.navParams.get('contentType');
     this.source = this.navParams.get('source');
     this.corRelationList = this.navParams.get('corRelation');
+    this.source = this.navParams.get('source');
+    this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
     this.generateImpressionEvent();
     if (this.dialCode !== undefined && this.dialCode.length > 0) {
       this.getContentForDialCode()
@@ -365,7 +392,7 @@ export class SearchPage {
       offlineSearch: isOfflineSearch
     }
 
-    this.contentService.searchContent(contentSearchRequest, false, (responseData) => {
+    this.contentService.searchContent(contentSearchRequest, false,true,!this.appGlobal.isUserLoggedIn(), (responseData) => {
       this.zone.run(() => {
         let response: GenieResponse = JSON.parse(responseData);
         this.responseData = response;
@@ -444,6 +471,21 @@ export class SearchPage {
     this.telemetryService.interact(interact);
   }
 
+  generateQRSessionEndEvent(pageId: string, qrData: string) {
+    if (pageId !== undefined) {
+      this.telemetryService.end(generateEndTelemetry(
+        "qr",
+        Mode.PLAY,
+        pageId,
+        qrData,
+        "qr",
+        "",
+        undefined,
+        this.corRelationList
+      ));
+    }
+  }
+
   private processDialCodeResult(searchResult) {
     let collectionArray: Array<any> = searchResult.collectionDataList;
     let contentArray: Array<any> = searchResult.contentDataList;
@@ -502,6 +544,9 @@ export class SearchPage {
 
     if (this.dialCodeResult.length == 0 && this.dialCodeContentResult.length == 0) {
       this.navCtrl.pop();
+      if (this.shouldGenerateEndTelemetry) {
+        this.generateQRSessionEndEvent(this.source, this.dialCode);
+      }
       let popOver: Popover;
       const callback: QRAlertCallBack = {
         tryAgain() {
@@ -521,7 +566,7 @@ export class SearchPage {
           cssClass: 'qr-alert'
         });
 
-      setTimeout(()=> {
+      setTimeout(() => {
         popOver.present();
       }, 300)
 

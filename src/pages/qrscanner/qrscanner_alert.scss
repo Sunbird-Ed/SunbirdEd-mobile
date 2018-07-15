@@ -19,3 +19,8 @@ page-alert-qr-scanner {
   transform: translateY(0) !important;
 }
 
+.qr-alert ion-backdrop {
+  background-color: #000 !important;
+  opacity: 0.4 !important;
+}
+
