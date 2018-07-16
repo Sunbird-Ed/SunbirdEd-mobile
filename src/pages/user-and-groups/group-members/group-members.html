@@ -1,27 +1,39 @@
 <ion-header>
-  <ion-navbar>
+  <ion-navbar *ngIf="!noMemberSection">
     <ion-title>{{'USERS_AND_GROUPS' | translate}}</ion-title>
+  </ion-navbar>
+  <ion-navbar *ngIf="noMemberSection">
+    <ion-title>
+      {{'ADD_USERS_TO_GROUP' | translate}}
+    </ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="goTOGuestEdit()">
+        <ion-icon name="add" float-end></ion-icon>
+      </button>
+    </ion-buttons>
   </ion-navbar>
 </ion-header>
 <ion-content padding>
-  <ion-row>
+  <ion-row  *ngIf="!noMemberSection">
     <ion-col col-md-6>
-        <p *ngIf="usersList.length" text-left ion-text color="title" text-uppercase><b>{{usersList.length}}&nbsp;{{'USERS' | translate}}</b></p>
+      <p *ngIf="usersList.length" text-left ion-text color="title" text-uppercase>
+        <b>{{usersList.length}}&nbsp;{{'USERS' | translate}}</b>
+      </p>
     </ion-col>
     <ion-col col-md-6>
-      <!-- <p text-right (click)="selectAll()" ion-text color="primary" text-uppercase><b>{{'SELECT_ALL' | translate}}</b></p> -->
       <button ion-button float-end clear (click)="selectAll()">{{'SELECT_ALL' | translate}}</button>
     </ion-col>
   </ion-row>
-
+  <div *ngIf="noMemberSection">
   <div text-center>
-    <img *ngIf="!usersList.length" src="assets/imgs/ic_businessman.png" />
+    <img *ngIf="!usersList.length" class="rounded image-style" src="assets/imgs/ic_businessman.png" />
+    <h6><b>No Users On This Device</b></h6>
+    <p ion-text [color]="grey">A Group needs to have atleast one user in it</p>
+    <h6 ion-text color="primary">CREATE USER</h6>
+  </div>
   </div>
   <ion-item *ngFor="let user of usersList; let i = index;" class="item-background" margin-bottom no-lines>
     {{user?.name}}
-    <ion-avatar item-start>
-      <img src="assets/imgs/ic_businessman.png">
-    </ion-avatar>
     <ion-label>
       <h6>
         <b>{{user?.name}}</b>
@@ -30,8 +42,7 @@
     </ion-label>
     <ion-checkbox item-end mode="ios" checked="{{user?.selected}}" (click)="toggleSelect(i)"></ion-checkbox>
   </ion-item>
-
-
+  
 </ion-content>
 <ion-footer>
   <ion-row padding>

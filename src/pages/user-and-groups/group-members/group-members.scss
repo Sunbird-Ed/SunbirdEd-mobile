@@ -23,4 +23,8 @@ page-members {
   .checkbox-ios .checkbox-checked {
       background-color: map-get($colors, primary) !important;
   }
+  .image-style{
+    margin-top: 20vh;
+    width: 50%;
+  }
 }

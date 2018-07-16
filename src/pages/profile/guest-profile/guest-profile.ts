@@ -19,6 +19,8 @@ import { UserTypeSelectionPage } from '../../user-type-selection/user-type-selec
 import { Network } from '@ionic-native/network';
 import { TranslateService } from '@ngx-translate/core';
 import { FormAndFrameworkUtilService } from '../formandframeworkutil.service';
+import { AppGlobalService } from '../../../service/app-global.service';
+import { MenuOverflow } from '../../../app/app.constant';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -35,7 +37,6 @@ export interface toastOptions {
 export class GuestProfilePage {
 
   imageUri: string = "assets/imgs/ic_profile_default.png";
-  list: Array<String> = ["USERS_AND_GROUPS",'SETTINGS'];
 
   showSignInCard: boolean = false;
   isNetworkAvailable: boolean;
@@ -66,6 +67,7 @@ export class GuestProfilePage {
     private preference: SharedPreferences,
     private toastCtrl: ToastController,
     private translate: TranslateService,
+    private appGlobal: AppGlobalService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService
   ) {
 
@@ -73,6 +75,13 @@ export class GuestProfilePage {
     this.preference.getString('selected_language_code', (val: string) => {
       if (val && val.length) {
         this.selectedLanguage = val;
+      }
+    });
+
+    //Event for optional and forceful upgrade
+    this.events.subscribe('force_optional_upgrade', (upgrade) => {
+      if (upgrade) {
+        this.appGlobal.openPopover(upgrade)
       }
     });
 
@@ -151,7 +160,7 @@ export class GuestProfilePage {
    */
   showOverflowMenu(event) {
     this.popoverCtrl.create(OverflowMenuComponent, {
-      list: this.list
+      list: MenuOverflow.MENU_GUEST
     }, {
         cssClass: 'box'
       }).present({

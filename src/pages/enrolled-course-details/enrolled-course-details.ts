@@ -192,6 +192,8 @@ export class EnrolledCourseDetailsPage {
   private objVer;
   private didViewLoad: boolean;
   private backButtonFunc = undefined;
+  private shouldGenerateEndTelemetry: boolean = false;
+  private source: string = "";
 
   @ViewChild(Navbar) navBar: Navbar;
   constructor(navCtrl: NavController,
@@ -239,6 +241,9 @@ export class EnrolledCourseDetailsPage {
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.didViewLoad = false;
       this.generateEndEvent(this.objId, this.objType, this.objVer);
+      if (this.shouldGenerateEndTelemetry) {
+        this.generateQRSessionEndEvent(this.source, this.course.identifier);
+      }
       this.navCtrl.pop();
       this.backButtonFunc();
     }, 10);
@@ -370,7 +375,11 @@ export class EnrolledCourseDetailsPage {
     },
       (error: any) => {
         console.log('error while loading content details', error);
+        if(JSON.parse(error).error  === 'CONNECTION_ERROR'){
+        this.showMessage(this.translateLanguageConstant('ERROR_NO_INTERNET_MESSAGE'));
+        }else {
         this.showMessage(this.translateLanguageConstant('ERROR_FETCHING_DATA'));
+      }
         this.navCtrl.pop();
       });
   }
@@ -705,6 +714,7 @@ export class EnrolledCourseDetailsPage {
     // this.tabBarElement.style.display = 'none';
     this.courseCardData = this.navParams.get('content');
     this.corRelationList = this.navParams.get('corRelation');
+    this.source = this.navParams.get('source');
     if (this.batchId) {
       this.courseCardData.batchId = this.batchId;
     }
@@ -849,8 +859,26 @@ export class EnrolledCourseDetailsPage {
     this.navBar.backButtonClick = (e: UIEvent) => {
       this.didViewLoad = false;
       this.generateEndEvent(this.objId, this.objType, this.objVer);
+      if (this.shouldGenerateEndTelemetry) {
+        this.generateQRSessionEndEvent(this.source, this.course.identifier);
+      }
       this.navCtrl.pop();
       this.backButtonFunc();
+    }
+  }
+
+  generateQRSessionEndEvent(pageId: string, qrData: string) {
+    if (pageId !== undefined) {
+      this.telemetryService.end(generateEndTelemetry(
+        "qr",
+        Mode.PLAY,
+        pageId,
+        qrData,
+        "qr",
+        "",
+        undefined,
+        this.corRelationList
+      ));
     }
   }
 

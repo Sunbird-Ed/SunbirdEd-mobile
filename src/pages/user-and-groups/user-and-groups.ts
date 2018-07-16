@@ -49,6 +49,7 @@ export class UserAndGroupsPage {
 
   groupList: Array<any> = [];
   unregisterBackButton: any;
+  profileDetails: any;
 
   userType: string;
   selectedUserIndex: number = -1;
@@ -78,6 +79,8 @@ export class UserAndGroupsPage {
     this.showEmptyUsersMessage = (this.usersList && this.usersList.length) ? false : true;
     this.currentUserId = this.navParams.get('userId');
     this.isLoggedInUser = this.navParams.get('isLoggedInUser');
+    this.profileDetails = this.navParams.get('profile');
+    console.log(this.profileDetails);
   }
 
   ionViewWillEnter() {
@@ -99,23 +102,17 @@ export class UserAndGroupsPage {
     }
   }
 
-  presentPopover(myEvent, index) {
+  presentPopover(myEvent, index , name) {
     let self=this;
     let popover = this.popOverCtrl.create(PopoverPage, {
       edit: function () {
-        self.navCtrl.push(CreateGroupPage, {
+        self.navCtrl.push('CreateGroupPage', {
           groupInfo: self.groupList[index]
         });
         popover.dismiss()
       },
       delete: function ($event) {
-        console.log("ID");
-        self.groupService.deleteGroup(self.groupList[index].gid).then((success)=>{
-          console.log(success);
-          self.groupList.splice(index, 1);
-        }).catch((error)=>{
-          console.log(error);
-        })
+        self.DeleteGroupConfirmBox(index , name);
         popover.dismiss()
       },
       isCurrentUser: false
@@ -152,12 +149,17 @@ getGroupsList() {
   })
   }
 
+  /**Navigates to group details page */
+  goToGroupDetail(){
+    this.navCtrl.push(GroupDetailsPage);
+  }
+
 
   /**
    * Navigates to Create group Page
    */
   createGroup() {
-    this.navCtrl.push(CreateGroupPage, {
+    this.navCtrl.push('CreateGroupPage', {
     });
   }
 
@@ -174,7 +176,9 @@ getGroupsList() {
    * Navigates to Create User Page
    */
   createUser() {
-    this.navCtrl.push(GuestEditProfilePage, {})
+    this.navCtrl.push(GuestEditProfilePage, {
+      isNewUser: true
+    });
   }
 
   selectUser(index: number, name: string) {
@@ -196,9 +200,9 @@ getGroupsList() {
    */
   switchAccountConfirmBox() {
     let alert = this.alertCtrl.create({
-      title: this.translateMessage('GROUP_DELETE_CONFIRM'),
+      title: this.translateMessage('ARE_YOU_SURE_YOU_WANT_TO_SWITCH_ACCOUNT'),
       mode: 'wp',
-      message: this.translateMessage('GROUP_DELETE_CONFIRM_MESSAGE'),
+      message: this.translateMessage('YOU_WILL_BE_SIGNED_OUT_FROM_YOUR_CURRENTLY_LOGGED_IN_ACCOUNT'),
       cssClass: 'confirm-alert',
       buttons: [
         {
@@ -214,6 +218,40 @@ getGroupsList() {
           cssClass: 'alert-btn-delete',
           handler: () => {
             console.log('Buy clicked');
+          }
+        }
+      ]
+    });
+    alert.present();
+  }
+
+  /** Delete alert box */
+  DeleteGroupConfirmBox(index ,name){
+    let self = this;
+    let alert = this.alertCtrl.create({
+      title: this.translateMessage('GROUP_DELETE_CONFIRM' , name),
+      mode: 'wp',
+      message: this.translateMessage('GROUP_DELETE_CONFIRM_MESSAGE'),
+      cssClass: 'confirm-alert',
+      buttons: [
+        {
+          text: this.translateMessage('CANCEL'),
+          role: 'cancel',
+          cssClass: 'alert-btn-cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: this.translateMessage('Yes'),
+          cssClass: 'alert-btn-delete',
+          handler: () => {
+            self.groupService.deleteGroup(self.groupList[index].gid).then((success)=>{
+              console.log(success);
+              self.groupList.splice(index, 1);
+            }).catch((error)=>{
+              console.log(error);
+            })
           }
         }
       ]

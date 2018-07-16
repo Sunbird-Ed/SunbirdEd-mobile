@@ -55,6 +55,7 @@ import Driver from 'driver.js';
 import { AppVersion } from "@ionic-native/app-version";
 import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
 import { AlertController } from 'ionic-angular';
+import { updateFilterInSearchQuery } from '../../util/filter.util';
 
 @Component({
 	selector: 'page-resources',
@@ -91,7 +92,7 @@ export class ResourcesPage implements OnInit {
 	pageApiLoader: boolean = true;
 
 	isOnBoardingCardCompleted: boolean = false;
-	public source = "resource";
+	public source = PageId.LIBRARY;
 
 	resourceFilter: any;
 
@@ -107,6 +108,10 @@ export class ResourcesPage implements OnInit {
 
 	profile: any;
 	appLabel: string;
+
+	private mode: string = "soft";
+
+	private isFilterApplied: boolean = false;
 
 
 	private isVisible: boolean = false;
@@ -153,7 +158,7 @@ export class ResourcesPage implements OnInit {
 		//Event for optional and forceful upgrade
 		this.events.subscribe('force_optional_upgrade', (upgrade) => {
 			if (upgrade) {
-				this.appGlobal.showUpgradeDialog(upgrade)
+				this.appGlobal.openPopover(upgrade);
 			}
 		});
 
@@ -175,6 +180,20 @@ export class ResourcesPage implements OnInit {
 				this.appLabel = appName;
 			});
 
+
+		this.events.subscribe('tab.change', (data) => {
+			this.zone.run(() => {
+				if (data === "LIBRARY‌") {
+					if (this.appliedFilter) {
+						this.filterIcon = "./assets/imgs/ic_action_filter.png";
+						this.resourceFilter = undefined;
+						this.appliedFilter = undefined;
+						this.isFilterApplied = false;
+						this.getPopularContent();
+					}
+				}
+			});
+		});
 	}
 
 	/**
@@ -191,71 +210,7 @@ export class ResourcesPage implements OnInit {
 			this.isOnBoardingCardCompleted = param.isOnBoardingCardCompleted;
 		});
 	}
-
-	ionViewDidEnter() {
-		if (this.appliedFilter) {
-			this.filterIcon = "./assets/imgs/ic_action_filter.png";
-			this.resourceFilter = undefined;
-			this.appliedFilter = undefined;
-			this.getPopularContent();
-		}
-
-		this.isVisible = true;
-
-		this.generateImpressionEvent();
-		this.preference.getString('show_app_walkthrough_screen', (value) => {
-			if (value === 'true') {
-				const driver = new Driver({
-					allowClose: true,
-					closeBtnText: this.translateMessage('DONE'),
-					showButtons: true
-				});
-
-				console.log("Driver", driver);
-				setTimeout(() => {
-					driver.highlight({
-						element: '#qrIcon',
-						popover: {
-							title: this.translateMessage('ONBOARD_SCAN_QR_CODE'),
-							description: "<img src='assets/imgs/ic_scanqrdemo.png' /><p>" + this.translateMessage('ONBOARD_SCAN_QR_CODE_DESC', this.appLabel) + "</p>",
-							showButtons: true,         // Do not show control buttons in footer
-							closeBtnText: this.translateMessage('DONE'),
-						}
-					});
-
-					let element = document.getElementById("driver-highlighted-element-stage");
-					var img = document.createElement("img");
-					img.src = "assets/imgs/ic_scan.png";
-					img.id = "qr_scanner";
-					element.appendChild(img);
-				}, 100);
-
-				this.preference.putString('show_app_walkthrough_screen', 'false');
-			}
-		});
-	}
-
-	ionViewWillEnter() {
-		if (!this.pageLoadedSuccess) {
-			this.getPopularContent();
-		}
-
-		this.guestUser = !this.appGlobal.isUserLoggedIn();
-
-
-		if (this.guestUser) {
-			this.getCurrentUser();
-		} else {
-			this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
-		}
-
-		this.subscribeGenieEvents();
-
-		if (this.network.type === 'none') {
-			this.isNetworkAvailable = false;
-		}
-	}
-
+	
 	/**
 	 * Ionic life cycle hook
 	 */
@@ -375,7 +330,10 @@ export class ResourcesPage implements OnInit {
 			pageAssembleCriteria = criteria;
 		}
 
-		if (this.profile) {
+		this.mode = pageAssembleCriteria.mode;
+
+		if (this.profile && !this.isFilterApplied) {
+
 			if (!pageAssembleCriteria.filters) {
 				pageAssembleCriteria.filters = new PageAssembleFilter();
 			}
@@ -517,10 +475,66 @@ export class ResourcesPage implements OnInit {
 				undefined,
 				undefined)
 		);
+
+		queryParams = updateFilterInSearchQuery(queryParams, this.appliedFilter, this.profile, this.mode, this.isFilterApplied, this.appGlobal);
+
 		this.navCtrl.push(ViewMoreActivityPage, {
 			requestParams: queryParams,
 			headerTitle: headerTitle
 		});
+	}
+
+	ionViewDidEnter() {
+		this.isVisible = true;
+		this.generateImpressionEvent();
+		this.preference.getString('show_app_walkthrough_screen', (value) => {
+			if (value === 'true') {
+				const driver = new Driver({
+					allowClose: true,
+					closeBtnText: this.translateMessage('DONE'),
+					showButtons: true
+				});
+
+				console.log("Driver", driver);
+				setTimeout(() => {
+					driver.highlight({
+						element: '#qrIcon',
+						popover: {
+							title: this.translateMessage('ONBOARD_SCAN_QR_CODE'),
+							description: "<img src='assets/imgs/ic_scanqrdemo.png' /><p>" + this.translateMessage('ONBOARD_SCAN_QR_CODE_DESC', this.appLabel) + "</p>",
+							showButtons: true,         // Do not show control buttons in footer
+							closeBtnText: this.translateMessage('DONE'),
+						}
+					});
+
+					let element = document.getElementById("driver-highlighted-element-stage");
+					var img = document.createElement("img");
+					img.src = "assets/imgs/ic_scan.png";
+					img.id = "qr_scanner";
+					element.appendChild(img);
+				}, 100);
+
+				this.preference.putString('show_app_walkthrough_screen', 'false');
+			}
+		});
+	}
+
+	ionViewWillEnter() {
+		this.guestUser = !this.appGlobal.isUserLoggedIn();
+		if (this.guestUser) {
+			this.getCurrentUser();
+		} else {
+			this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
+		}
+
+		if (!this.pageLoadedSuccess) {
+			this.getPopularContent();
+		}
+		this.subscribeGenieEvents();
+
+		if (this.network.type === 'none') {
+			this.isNetworkAvailable = false;
+		}
 	}
 
 	subscribeGenieEvents() {
@@ -581,7 +595,12 @@ export class ResourcesPage implements OnInit {
 			dialcode(scanResult, dialCode) {
 
 				that.addCorRelation(dialCode, "qr");
-				that.navCtrl.push(SearchPage, { dialCode: dialCode, corRelation: that.corRelationList });
+				that.navCtrl.push(SearchPage, {
+					dialCode: dialCode,
+					corRelation: that.corRelationList,
+					source: that.source,
+					shouldGenerateEndTelemetry: true
+				});
 			},
 			content(scanResult, contentId) {
 				let request: ContentDetailRequest = {
@@ -636,19 +655,26 @@ export class ResourcesPage implements OnInit {
 			console.log('Calling course details page');
 			this.navCtrl.push(EnrolledCourseDetailsPage, {
 				content: content,
-				corRelation: corRelationList
+				corRelation: corRelationList,
+				source: this.source,
+				shouldGenerateEndTelemetry: true
 			})
 		} else if (content.mimeType === MimeType.COLLECTION) {
 			console.log('Calling collection details page');
 			this.navCtrl.push(CollectionDetailsPage, {
 				content: content,
-				corRelation: corRelationList
+				corRelation: corRelationList,
+				source: this.source,
+				shouldGenerateEndTelemetry: true
+
 			})
 		} else {
 			console.log('Calling content details page');
 			this.navCtrl.push(ContentDetailsPage, {
 				content: content,
-				corRelation: corRelationList
+				corRelation: corRelationList,
+				source: this.source,
+				shouldGenerateEndTelemetry: true
 			})
 		}
 	}
@@ -674,10 +700,12 @@ export class ResourcesPage implements OnInit {
 				that.appliedFilter = filter;
 
 				let filterApplied = false;
+				that.isFilterApplied = false;
 
 				Object.keys(that.appliedFilter).forEach(key => {
 					if (that.appliedFilter[key].length > 0) {
 						filterApplied = true;
+						that.isFilterApplied = true;
 					}
 				})
 

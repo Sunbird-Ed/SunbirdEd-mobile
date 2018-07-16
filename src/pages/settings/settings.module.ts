@@ -9,9 +9,23 @@ import { PrivacypolicyPage } from './privacypolicy/privacypolicy';
 import { TranslateModule } from '@ngx-translate/core';
 import { OnboardingPageModule } from '../onboarding/onboarding.module';
 import { LanguageSettingsPageModule } from '../language-settings/language-settings.module';
+
 @NgModule({
-	declarations: [SettingsPage, DatasyncPage, AboutUsPage, AboutAppPage, PrivacypolicyPage, TermsofservicePage],
-	entryComponents: [DatasyncPage, AboutUsPage, AboutAppPage, PrivacypolicyPage, TermsofservicePage],
+	declarations: [
+		SettingsPage,
+		DatasyncPage,
+		AboutUsPage,
+		AboutAppPage,
+		PrivacypolicyPage,
+		TermsofservicePage
+	],
+	entryComponents: [
+		DatasyncPage,
+		AboutUsPage,
+		AboutAppPage,
+		PrivacypolicyPage,
+		TermsofservicePage
+	],
 	imports: [
 		OnboardingPageModule,
 		LanguageSettingsPageModule,

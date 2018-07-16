@@ -1,26 +1,50 @@
 page-guest-edit.profile {
-
-    ion-label{
-        flex: unset !important;
+  ion-label {
+    flex: unset !important;
+  }
+  .list-header-md {
+    padding-bottom: 0 !important;
+    margin-bottom: 13px;
+  }
+  .item-md {
+    margin-bottom: 0 !important;
+    .radio-md[item-left] {
+      margin-right: 10px !important;
     }
-    
+  }
+
+  ion-list-header ion-label {
+      margin-bottom: 0 !important;
+  }
+  .label-md[stacked] {
+    font-weight: 700;
+  }
+  .list-md {
+    margin-bottom: 0 !important;
+  }
+  ion-label.type-label {
+    margin-bottom: 0 !important;
+    font-weight: 700;
+    color: #999;
+    font-size: 1.2rem;
+  }
 }
 
 .multiple-select-alert .alert-head {
-    padding: 8px 20px 8px !important;
+  padding: 8px 20px 8px !important;
 }
 
 .multiple-select-alert .alert-checkbox-label {
-    text-transform: capitalize !important;
+  text-transform: capitalize !important;
 }
 
-.select-wp{
+/* .select-wp{
     border-radius: 5px;
     height: 40px;
     border-width: 1px;
 
     .select-text{
         -webkit-align-self: center;
-        align-self: center; 
+        align-self: center;
     }
-}
+} */
