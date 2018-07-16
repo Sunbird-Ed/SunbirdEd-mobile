@@ -14,7 +14,7 @@ export class UpgradePopover {
     isMandatoryUpgrade: boolean = false;
 
     constructor(private navParams: NavParams,
-        public viewCtrl: ViewController) {
+        private viewCtrl: ViewController) {
         this.upgradeType = this.navParams.get('type');
 
         console.log("Upgrade type in Popover  - type - " + JSON.stringify(this.upgradeType));
@@ -25,6 +25,14 @@ export class UpgradePopover {
 
     }
 
+    upgrade(link) {
+        let appId = link.substring(link.indexOf("=") + 1, link.lenght);
+        (<any>window).genieSdkUtil.openPlayStore(appId);
+        this.viewCtrl.dismiss();
+    }
 
+    cancel() {
+        this.viewCtrl.dismiss();
+    }
 
 }
