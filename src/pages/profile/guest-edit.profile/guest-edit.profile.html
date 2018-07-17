@@ -7,7 +7,7 @@
 
 <ion-content>
   <form [formGroup]="guestEditForm">
-    <ion-list radio-group *ngIf="isNewUser" formControlName="profileType">
+    <ion-list radio-group formControlName="profileType">
 
       <ion-label class="type-label" padding-left text-uppercase>
         {{ 'USER_TYPE' | translate }}<span ion-text color="danger">&nbsp;*</span>
