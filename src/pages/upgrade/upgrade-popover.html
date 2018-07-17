@@ -13,6 +13,6 @@
         <button ion-button block outline small (click)="cancel() ">{{ upgradeType?.upgrade?.actionButtons[1]?.label }}</button>
     </ion-row>
     <ion-row *ngIf="upgradeType?.upgrade?.actionButtons[0]?.action === 'yes'">
-        <button ion-button block small (click)="upgrade() ">{{ upgradeType?.upgrade?.actionButtons[0]?.label }}</button>
+        <button ion-button block small (click)="upgrade(upgradeType?.upgrade?.actionButtons[0]?.link) ">{{ upgradeType?.upgrade?.actionButtons[0]?.label }}</button>
     </ion-row>
 </ion-footer>

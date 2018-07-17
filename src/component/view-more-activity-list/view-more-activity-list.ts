@@ -1,6 +1,5 @@
 import { CollectionDetailsPage } from './../../pages/collection-details/collection-details';
 import { ContentDetailsPage } from './../../pages/content-details/content-details';
-// import { CourseDetailPage } from './../../pages/course-detail/course-detail';
 import { EnrolledCourseDetailsPage } from './../../pages/enrolled-course-details/enrolled-course-details';
 
 import { Input, NgZone, OnInit } from '@angular/core';
@@ -45,7 +44,7 @@ export class ViewMoreActivityListComponent implements OnInit {
    * @param {NavParams} navParams ref of navigation params
    * @param {NgZone} ngZone To bind data
    */
-  constructor(private navCtrl: NavController, private navParams: NavParams, private zone: NgZone, private courseUtilService: CourseUtilService, private events: Events) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, private zone: NgZone, public courseUtilService: CourseUtilService, public events: Events) {
     console.log('View more activity Component');
     this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
@@ -83,9 +82,6 @@ export class ViewMoreActivityListComponent implements OnInit {
         content: content
       })
     }
-  }
-  onImageLoad(imgLoader: ImageLoader) {
-    console.log("Image Loader " + imgLoader.nativeAvailable);
   }
 
   ngOnInit() {
