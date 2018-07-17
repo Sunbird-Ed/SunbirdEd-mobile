@@ -85,8 +85,8 @@
               </ion-avatar> -->
               <ion-label>
               <h6 class="line-height-2" (click)="goToGroupDetail()"><b>{{group?.name}}</b></h6>
-              <p>{{group?.class[0]}}
-                <span *ngIf="group?.class?.length && group?.uids?.length">•</span>
+              <p>{{group?.grade[0]}}
+                <span *ngIf="group?.grade?.length && group?.uids?.length">•</span>
                 <span *ngIf="group?.uids?.length">{{group?.uids?.length}} {{'USERS' | translate}}</span>
               </p>
             </ion-label>
