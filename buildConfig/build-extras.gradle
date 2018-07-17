@@ -75,6 +75,7 @@ android {
         versionName "2.0.$ext.buildNumber"
         manifestPlaceholders = [fabricKey: "${release_fabric_api_key}", fabricSecret: "${release_fabric_api_secret}"]
         resValue("string", "_app_name", "${app_name}")
+        resValue("string", "player_deeplink_scheme", "${player_deeplink_scheme}")
     }
 
     signingConfigs {
