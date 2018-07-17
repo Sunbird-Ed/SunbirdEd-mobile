@@ -91,7 +91,7 @@ export class GuestEditProfilePage {
 
     /* Initialize form with default values */
     this.guestEditForm = this.fb.group({
-      profileType: [''],
+      profileType: [this.profile.profileType || ''],
       syllabus: [this.profile.syllabus && this.profile.syllabus[0] || [], Validators.required],
       name: [this.profile.handle || '', Validators.required],
       boards: [this.profile.board || [], Validators.required],
