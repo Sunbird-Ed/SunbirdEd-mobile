@@ -12,17 +12,21 @@ import { GroupMembersPageModule } from './group-members/group-members.module';
 import { GroupDetailsPageModule } from './group-details/group-details.module';
 import { GroupDetailNavPopoverPage } from './group-detail-nav-popover/group-detail-nav-popover';
 import { GroupDetailNavPopoverPageModule } from './group-detail-nav-popover/group-detail-nav-popover.module';
+import { ShareUserAndGroupPage } from './share-user-and-groups/share-user-and-groups'
 
 @NgModule({
   declarations: [
-    UserAndGroupsPage
+    UserAndGroupsPage,
+    ShareUserAndGroupPage
+
   ],
   entryComponents: [
     CreateGroupPage,
     GroupMembersPage,
     GroupDetailsPage,
     PopoverPage,
-    GroupDetailNavPopoverPage
+    GroupDetailNavPopoverPage,
+    ShareUserAndGroupPage
   ],
   imports: [
     IonicPageModule.forChild(UserAndGroupsPage),
