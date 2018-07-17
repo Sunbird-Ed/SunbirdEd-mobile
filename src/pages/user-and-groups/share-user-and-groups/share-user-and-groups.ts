@@ -15,7 +15,7 @@ export class ShareUserAndGroupPage {
     {
       name: "Anirudh Deep",
       profession: "Student",
-      selected: true,
+      selected: false,
       groupName: 'Class 4A',
       noOfUsers: '2 users'
     },
