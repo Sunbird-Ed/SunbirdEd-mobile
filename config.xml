@@ -106,6 +106,6 @@
     <plugin name="cordova-plugin-geniecanvas" spec="https://github.com/project-sunbird/cordova-plugin-geniecanvas.git" />
     <plugin name="cordova-plugin-file-opener2" spec="^2.0.19" />
     <plugin name="cordova-sqlite-storage" spec="^2.3.2" />
-    <plugin name="cordova-plugin-genie-sdk" spec="/home/shriharsh/VisualStudioProjects/plugins/cordova-plugin-genie-sdk" />
+    <plugin name="cordova-plugin-genie-sdk" spec="https://github.com/project-sunbird/cordova-plugin-genie-sdk" />
     <engine name="android" spec="~7.0.0" />
 </widget>

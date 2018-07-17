@@ -25,6 +25,12 @@ export class UpgradePopover {
 
     }
 
+    cancel() {
+        this.viewCtrl.dismiss();
+    }
 
+    upgrade() {
+        this.viewCtrl.dismiss();
+    }
 
 }
