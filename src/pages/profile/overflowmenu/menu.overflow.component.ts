@@ -22,6 +22,7 @@ import { UserAndGroupsPage } from "../../user-and-groups/user-and-groups";
 import { Network } from "@ionic-native/network";
 import { TranslateService } from "@ngx-translate/core";
 import { ReportsPage } from "../../reports/reports";
+import { TablePage } from "../../table/table";
 
 @Component({
     selector: 'menu-overflow',
