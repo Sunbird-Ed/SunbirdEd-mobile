@@ -22,15 +22,6 @@
         <ion-option *ngFor="let eachSyllabus of syllabusList" value="{{eachSyllabus?.code}}">{{eachSyllabus?.name}}</ion-option>
       </ion-select>
     </ion-item>
-
-    <!-- Class select box-->
-    <!-- <ion-item>
-      <ion-label stacked text-uppercase>{{'CLASS' | translate}}</ion-label>
-      <ion-select multiple="true" formControlName="class" [selectOptions]="classOptions" [disabled]="!(groupEditForm.value.syllabus != '')" plac placeholder="{{'CLASS'|translate}}">
-        <ion-option [value]="class?.code" *ngFor="let class of classList">{{ class?.name }}</ion-option>
-      </ion-select>
-    </ion-item> -->
-    <!--class select box new-->
     <ion-item>
       <ion-label stacked text-uppercase>{{'CLASS' | translate}}</ion-label>
       <ion-select multiple="true"   formControlName="class" [selectOptions]="classOptions" [disabled]="!(groupEditForm.value.syllabus != '')"
@@ -38,7 +29,6 @@
         <ion-option [value]="class?.code" *ngFor="let class of classList" text-capitalize >{{ class?.name }}</ion-option>
       </ion-select>
     </ion-item>
-    <!--class select box new ends-->
   </form>
 </ion-content>
 <ion-footer>
