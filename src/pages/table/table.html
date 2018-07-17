@@ -1,0 +1,18 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Class V Biology Assessment</ion-title>
+    <ion-buttons left>
+      <button ion-button icon-only (click)="goBack()">
+        <ion-icon name="arrow-back"></ion-icon>
+      </button>
+    </ion-buttons>
+
+  </ion-toolbar>
+
+</ion-header>
+
+<ion-content>
+  <assessment-details [rows]="rows" [columns]="columns">
+  </assessment-details>
+</ion-content>
+

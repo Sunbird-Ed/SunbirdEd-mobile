@@ -19,6 +19,8 @@ import { PBHorizontal } from './pbhorizontal/pb-horizontal';
 import { ConfirmAlertComponent } from './confirm-alert/confirm-alert';
 import { ReportIssuesComponent } from './report-issues/report-issues';
 import { FormAndFrameworkUtilService } from '../pages/profile/formandframeworkutil.service';
+import { AssessmentDetailsComponent } from './assessment-details/assessment-details';
+import { NgxDatatableModule } from "@swimlane/ngx-datatable";
 
 
 @NgModule({
@@ -34,14 +36,16 @@ import { FormAndFrameworkUtilService } from '../pages/profile/formandframeworkut
         ConfirmAlertComponent,
         // ContentActionsComponent,
         ReportIssuesComponent,
-        ContentRatingAlertComponent
+        ContentRatingAlertComponent,
+        AssessmentDetailsComponent
     ],
     imports: [
         IonicPageModule.forChild(CourseCard),
         TranslateModule.forChild(),
         Ionic2RatingModule,
         IonicImageLoader,
-        PipesModule
+        PipesModule,
+        NgxDatatableModule
     ],
     exports: [
         CourseCard,
@@ -54,7 +58,8 @@ import { FormAndFrameworkUtilService } from '../pages/profile/formandframeworkut
         PBHorizontal,
         ConfirmAlertComponent,
         ReportIssuesComponent,
-        ContentRatingAlertComponent
+        ContentRatingAlertComponent,
+        AssessmentDetailsComponent
         // ContentActionsComponent
     ],
     entryComponents: [

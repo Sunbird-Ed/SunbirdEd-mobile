@@ -25,13 +25,13 @@ export class UpgradePopover {
 
     }
 
-    upgrade(link) {
-        let appId = link.substring(link.indexOf("=") + 1, link.lenght);
-        (<any>window).genieSdkUtil.openPlayStore(appId);
+    cancel() {
         this.viewCtrl.dismiss();
     }
 
-    cancel() {
+    upgrade(link) {
+        let appId = link.substring(link.indexOf("=") + 1, link.lenght);
+        (<any>window).genieSdkUtil.openPlayStore(appId);
         this.viewCtrl.dismiss();
     }
 

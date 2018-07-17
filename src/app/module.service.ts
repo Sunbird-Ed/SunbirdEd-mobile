@@ -25,6 +25,7 @@ import { CoursesPage } from '../pages/courses/courses';
 import { PageFilterMoudule } from '../pages/page-filter/page.filter.module';
 import { UserAndGroupsPageModule } from '../pages/user-and-groups/user-and-groups.module';
 import { ReportsPageModule } from '../pages/reports/reports.module'
+import { TablePageModule } from '../pages/table/table.module';
 
 const HOME_TAB = { root: HomePage, icon: "home", label: "HOME_BNAV", index: 0, tabsHideOnSubPages: true };
 const COURSE_TAB = { root: CoursesPage, icon: "courses", label: "COURSES_BNAV", index: 1, tabsHideOnSubPages: true };
@@ -83,5 +84,6 @@ export const PluginModules = [
     ViewMoreActivityPageModule,
     PageFilterMoudule,
     UserAndGroupsPageModule,
-    ReportsPageModule
+    ReportsPageModule,
+    TablePageModule
 ];
