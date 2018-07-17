@@ -35,7 +35,8 @@
   <div class="border">
     <ion-row padding>
       <ion-col col-md-10 offset-md-1>
-        <button ion-button block (click)="navigateToUsersList()">{{'NEXT' | translate}}</button>
+        <button ion-button block *ngIf="!isEditGroup" (click)="navigateToUsersList()">{{'NEXT' | translate}}</button>
+        <button ion-button block *ngIf="isEditGroup" (click)="updateGroup()">{{'SAVE' | translate}}</button>
       </ion-col>
     </ion-row>
   </div>
