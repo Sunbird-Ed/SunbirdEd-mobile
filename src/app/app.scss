@@ -406,11 +406,15 @@ ul.rating .ion-md-star-outline:before {
   min-width: 96px;
   width: auto;
   display: inline-block;
+  height: 99px !important;
 }
 
 .groupDetails-popover .popover-content{
   min-width: 96px;
   width:auto;
   display: inline-block;
-  height: 99px !important;
+}
+
+.line-height-2 {
+  line-height: 2rem !important;
 }

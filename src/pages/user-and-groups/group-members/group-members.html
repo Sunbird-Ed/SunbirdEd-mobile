@@ -1,6 +1,11 @@
 <ion-header>
   <ion-navbar *ngIf="!noMemberSection">
     <ion-title>{{'USERS_AND_GROUPS' | translate}}</ion-title>
+    <ion-buttons end>
+        <button ion-button icon-only (click)="goTOGuestEdit()">
+          <ion-icon name="add" float-end></ion-icon>
+        </button>
+      </ion-buttons>
   </ion-navbar>
   <ion-navbar *ngIf="noMemberSection">
     <ion-title>
@@ -15,15 +20,29 @@
 </ion-header>
 <ion-content padding>
   <ion-row  *ngIf="!noMemberSection">
-    <ion-col col-md-6>
+    <ion-col class="rm-padding-left" col-md-4>
       <p *ngIf="usersList.length" text-left ion-text color="title" text-uppercase>
         <b>{{usersList.length}}&nbsp;{{'USERS' | translate}}</b>
       </p>
     </ion-col>
-    <ion-col col-md-6>
-      <button ion-button float-end clear (click)="selectAll()">{{'SELECT_ALL' | translate}}</button>
+    <ion-col col-md-4 push-md-4 class="rm-padding-right">
+      <button class="rm-padding-right" ion-button  float-end clear (click)="selectAll()">{{'SELECT_ALL' | translate}}</button>
     </ion-col>
   </ion-row>
+  <!-- <ul id="list">
+    <li>{{usersList.length}}{{'USERS' | translate}}</li>
+    <li>{{'SELECT_ALL' | translate}}</li>
+  </ul> -->
+  <!-- ion nav bar testing-->
+  <!-- <ion-navbar class="custom-navbar" *ngIf="!noMemberSection">
+      <ion-title *ngIf="usersList.length" text-left ion-text color="title" text-uppercase
+      >{{usersList.length}}&nbsp;{{'USERS' | translate}}</ion-title>
+      <ion-buttons end>
+          <button ion-button  float-end clear (click)="selectAll()">{{'SELECT_ALL' | translate}}</button>
+        </ion-buttons>
+    </ion-navbar> -->
+  <!--ion navbar testing -->
+
   <div *ngIf="noMemberSection">
   <div text-center>
     <img *ngIf="!usersList.length" class="rounded image-style" src="assets/imgs/ic_businessman.png" />
@@ -35,7 +54,7 @@
   <ion-item *ngFor="let user of usersList; let i = index;" class="item-background" margin-bottom no-lines>
     {{user?.name}}
     <ion-label>
-      <h6>
+      <h6 class="line-height-2">
         <b>{{user?.name}}</b>
       </h6>
       <p>{{user?.profession}}</p>
