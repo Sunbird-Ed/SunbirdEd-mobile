@@ -54,9 +54,7 @@ export class GroupDetailsPage {
     let popover = this.popOverCtrl.create(GroupDetailNavPopoverPage, {
       goToEditGroup: function () {
         console.log('go to edit group');
-        self.navCtrl.push(CreateGroupPage, {
-          groupInfo: { name: 'class4A' }
-        })
+        self.navCtrl.push(CreateGroupPage)
         popover.dismiss();
       },
       deleteGroup: function () {

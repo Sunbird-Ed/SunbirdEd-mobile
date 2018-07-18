@@ -26,15 +26,15 @@ export class GroupDetailNavPopoverPage {
   goToEditGroup() {
     this.navParams.get('goToEditGroup')();
   }
-  deleteGroup(){
+  deleteGroup() {
     this.navParams.get('deleteGroup')();
   }
-  addUsers(){
+  addUsers() {
     this.navParams.get('addUsers')();
   }
-  removeUser(){
+  removeUser() {
     this.navParams.get('removeUser')();
   }
-  
+
 
 }

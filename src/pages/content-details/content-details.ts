@@ -331,9 +331,9 @@ export class ContentDetailsPage {
         }
       });
     },
-    (error: any) => {
-      let data = JSON.parse(error);
-      console.log('Error received', data);
+      (error: any) => {
+        let data = JSON.parse(error);
+        console.log('Error received', data);
         loader.dismiss();
         if (data.error === 'CONNECTION_ERROR') {
           this.translateAndDisplayMessage('ERROR_NO_INTERNET_MESSAGE', true);
@@ -350,6 +350,8 @@ export class ContentDetailsPage {
     this.content.downloadable = data.result.isAvailableLocally;
 
     this.content.contentAccess = data.result.contentAccess ? data.result.contentAccess : [];
+
+    this.content.playContent = JSON.stringify(data.result);
     if (this.content.gradeLevel && this.content.gradeLevel.length && typeof this.content.gradeLevel !== 'string') {
       this.content.gradeLevel = this.content.gradeLevel.join(", ");
     }
@@ -408,7 +410,7 @@ export class ContentDetailsPage {
       this.cardData.pkgVersion = this.content.pkgVersion
       this.generateTemetry()
     }
-    this.content.playContent = JSON.stringify(data.result);
+
   }
 
   //
