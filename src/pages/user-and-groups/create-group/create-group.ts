@@ -63,7 +63,7 @@ export class CreateGroupPage {
     this.groupEditForm = this.fb.group({
       name: [this.group.name || ""],
       syllabus: [this.group.syllabus && this.group.syllabus[0] || []],
-      class: [this.group.class || []]
+      class: [this.group.grade || []]
     });
 
     this.isEditGroup = this.group.hasOwnProperty('gid') ? true : false;
@@ -117,7 +117,7 @@ export class CreateGroupPage {
     let formValue = this.groupEditForm.value;
     if (formValue.name) {
       this.group.name = formValue.name;
-      this.group.class = formValue.class;
+      this.group.grade = formValue.class;
       this.group.syllabus = [formValue.syllabus];
 
       this.navCtrl.push(GroupMembersPage, {
@@ -164,7 +164,7 @@ export class CreateGroupPage {
         this.classList = classes;
         if (!isSyllabusChanged) {
           this.groupEditForm.patchValue({
-            class: this.group.class || []
+            class: this.group.grade || []
           });
         }
 
