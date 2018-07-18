@@ -148,6 +148,8 @@ export class CreateGroupPage {
    * @param isSyllabusChanged
    */
   getClassList(frameworkId, isSyllabusChanged: boolean = true) {
+    this.loader = this.getLoader();
+    this.loader.present();
     this.groupEditForm.patchValue({
       class: []
     });
