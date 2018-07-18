@@ -1,7 +1,7 @@
 import { GroupDetailsPage } from './group-details/group-details';
 import { TranslateService } from '@ngx-translate/core';
 import { Component, NgZone } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController, Platform, PopoverController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController,Platform, PopoverController } from 'ionic-angular';
 
 import { CreateGroupPage } from './create-group/create-group';
 import { PopoverPage } from './popover/popover';
@@ -71,7 +71,7 @@ export class UserAndGroupsPage {
     public zone: NgZone,
     public popoverCtrl: PopoverController,
     public groupService: GroupService,
-    public platform: Platform,
+    public platform : Platform,
     private ionicApp: IonicApp,
   ) {
 
@@ -84,12 +84,12 @@ export class UserAndGroupsPage {
   }
 
   ionViewWillEnter() {
-    this.zone.run(() => {
-      this.getGroupsList();
-    })
-    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
-      this.dismissPopup();
-    }, 11);
+    this.zone.run(()=>{
+    this.getGroupsList();
+   })
+   this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+    this.dismissPopup();
+  }, 11);
   }
 
   dismissPopup() {
@@ -102,8 +102,8 @@ export class UserAndGroupsPage {
     }
   }
 
-  presentPopover(myEvent, index, name) {
-    let self = this;
+  presentPopover(myEvent, index , name) {
+    let self=this;
     let popover = this.popOverCtrl.create(PopoverPage, {
       edit: function () {
         self.navCtrl.push('CreateGroupPage', {
@@ -112,7 +112,7 @@ export class UserAndGroupsPage {
         popover.dismiss()
       },
       delete: function ($event) {
-        self.DeleteGroupConfirmBox(index, name);
+        self.DeleteGroupConfirmBox(index , name);
         popover.dismiss()
       },
       isCurrentUser: false
@@ -127,30 +127,30 @@ export class UserAndGroupsPage {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad GrouplandingPage');
-    this.zone.run(() => {
+    this.zone.run(()=>{
       this.getGroupsList();
     })
   }
 
-  getGroupsList() {
+getGroupsList() {
     this.zone.run(() => {
-      this.groupService.getAllGroup().then((groups) => {
-        if (groups.result && groups.result.length) {
-          this.showEmptyGroupsMessage = false;
-          this.groupList = groups.result;
-        } else {
-          this.showEmptyGroupsMessage = true;
-        }
-        console.log("GroupList", groups);
-        //this.groupList = groups;
-      }).catch((error) => {
-        console.log("Something went wrong while fetching data", error);
-      });
-    })
+    this.groupService.getAllGroup().then((groups) => {
+      if (groups.result && groups.result.length) {
+        this.showEmptyGroupsMessage = false;
+        this.groupList = groups.result;
+      } else {
+        this.showEmptyGroupsMessage = true;
+      }
+      console.log("GroupList", groups);
+      //this.groupList = groups;
+    }).catch((error) => {
+      console.log("Something went wrong while fetching data", error);
+    });
+  })
   }
 
   /**Navigates to group details page */
-  goToGroupDetail() {
+  goToGroupDetail(){
     this.navCtrl.push(GroupDetailsPage);
   }
 
@@ -226,10 +226,10 @@ export class UserAndGroupsPage {
   }
 
   /** Delete alert box */
-  DeleteGroupConfirmBox(index, name) {
+  DeleteGroupConfirmBox(index ,name){
     let self = this;
     let alert = this.alertCtrl.create({
-      title: this.translateMessage('GROUP_DELETE_CONFIRM', name),
+      title: this.translateMessage('GROUP_DELETE_CONFIRM' , name),
       mode: 'wp',
       message: this.translateMessage('GROUP_DELETE_CONFIRM_MESSAGE'),
       cssClass: 'confirm-alert',
@@ -246,10 +246,10 @@ export class UserAndGroupsPage {
           text: this.translateMessage('Yes'),
           cssClass: 'alert-btn-delete',
           handler: () => {
-            self.groupService.deleteGroup(self.groupList[index].gid).then((success) => {
+            self.groupService.deleteGroup(self.groupList[index].gid).then((success)=>{
               console.log(success);
               self.groupList.splice(index, 1);
-            }).catch((error) => {
+            }).catch((error)=>{
               console.log(error);
             })
           }

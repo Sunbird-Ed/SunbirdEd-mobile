@@ -6,6 +6,7 @@ import { PopoverController } from 'ionic-angular';
 import { GroupDetailNavPopoverPage } from '../group-detail-nav-popover/group-detail-nav-popover';
 import { CreateGroupPage } from '../create-group/create-group';
 import { AlertController } from 'ionic-angular';
+import { AddOrRemoveGroupUserPage } from '../add-or-remove-group-user/add-or-remove-group-user';
 
 @IonicPage()
 @Component({
@@ -59,13 +60,19 @@ export class GroupDetailsPage {
       },
       deleteGroup: function () {
         self.DeleteGroupConfirmBox();
-        popover.dismiss()
+        popover.dismiss();
       },
       addUsers: function () {
-        console.log('go to add users');
+        self.navCtrl.push(AddOrRemoveGroupUserPage , {
+          isAddUsers : true
+        });
+        popover.dismiss();
       },
       removeUser: function () {
-        console.log('go to remove user');
+        self.navCtrl.push(AddOrRemoveGroupUserPage , {
+          isAddUsers  :false
+        });
+        popover.dismiss();
       }
     },
       {

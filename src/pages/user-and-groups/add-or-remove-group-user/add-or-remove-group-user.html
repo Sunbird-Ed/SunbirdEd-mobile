@@ -1,0 +1,38 @@
+<!--
+  Generated template for the AddOrRemoveGroupUserPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title *ngIf="addUsers">Add Users to Group</ion-title>
+    <ion-title *ngIf="!addUsers">Remove Users from Group</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <ion-row>
+    <ion-col class="rm-padding-left" col-md-4>
+      <p *ngIf="usersList.length" text-left ion-text color="title" text-uppercase>
+        <b>{{usersList.length}}&nbsp;{{'USERS' | translate}}</b>
+      </p>
+    </ion-col>
+    <ion-col col-md-4 push-md-4 class="rm-padding-right">
+      <button class="rm-padding-right" ion-button float-end clear (click)="selectAll()">{{'SELECT_ALL' | translate}}</button>
+    </ion-col>
+  </ion-row>
+  <ion-item *ngFor="let user of usersList; let i = index;" class="item-background" margin-bottom no-lines>
+    {{user?.name}}
+    <ion-label>
+      <h6 class="line-height-2">
+        <b>{{user?.name}}</b>
+      </h6>
+      <p>{{user?.profession}}</p>
+    </ion-label>
+    <ion-checkbox item-end mode="ios" checked="{{user?.selected}}" (click)="toggleSelect(i)"></ion-checkbox>
+  </ion-item>
+</ion-content>
