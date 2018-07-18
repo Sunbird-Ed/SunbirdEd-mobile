@@ -1,13 +1,37 @@
-import { Component, NgZone, Input, Output, EventEmitter } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
-import { NavController, LoadingController } from 'ionic-angular';
-import { AppVersion } from "@ionic-native/app-version";
-
 import {
-  OAuthService, ContainerService, UserProfileService, ProfileService, AuthService, TenantInfoRequest,
-  TelemetryService, InteractType, InteractSubtype, Environment, PageId, SharedPreferences, ProfileType
+  Component,
+  NgZone,
+  Input,
+  Output,
+  EventEmitter
+} from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import {
+  NavController,
+  LoadingController
+} from 'ionic-angular';
+import { AppVersion } from "@ionic-native/app-version";
+import {
+  OAuthService,
+  ContainerService,
+  UserProfileService,
+  ProfileService,
+  AuthService,
+  TenantInfoRequest,
+  TelemetryService,
+  InteractType,
+  InteractSubtype,
+  Environment,
+  PageId,
+  SharedPreferences,
+  ProfileType,
+  UserSource,
+  Profile
 } from 'sunbird';
-import { initTabs, LOGIN_TEACHER_TABS } from '../../app/module.service';
+import {
+  initTabs,
+  LOGIN_TEACHER_TABS
+} from '../../app/module.service';
 import { generateInteractTelemetry } from '../../app/telemetryutil';
 import { ProfileConstants } from '../../app/app.constant';
 import { Network } from '@ionic-native/network';
@@ -16,7 +40,6 @@ import { Network } from '@ionic-native/network';
   selector: 'sign-in-card',
   templateUrl: 'sign-in-card.html'
 })
-
 
 export class SignInCardComponent {
 
@@ -46,7 +69,7 @@ export class SignInCardComponent {
     private auth: OAuthService,
     private container: ContainerService,
     private userProfileService: UserProfileService,
-    private profileService : ProfileService,
+    private profileService: ProfileService,
     private authService: AuthService,
     private loadingCtrl: LoadingController,
     private ngZone: NgZone,
@@ -150,25 +173,20 @@ export class SignInCardComponent {
           };
           that.userProfileService.getUserProfileDetails(req, res => {
             let r = JSON.parse(res);
-            that.generateLoginInteractTelemetry(InteractType.OTHER,
-              InteractSubtype.LOGIN_SUCCESS, r.id);
-            let profileRequest = {
-              uid: r.id, //req
-              handle: r.id, //TODO check with nikhil
-              avatar: "avatar", //req
-              language: "en", //req
-              age: -1,
-              day: -1,
-              month: -1,
-              standard: -1,
-              profileType: ProfileType.TEACHER
-            };
-            that.profileService.setCurrentProfile(false, profileRequest,
+            that.generateLoginInteractTelemetry(InteractType.OTHER, InteractSubtype.LOGIN_SUCCESS, r.id);
+
+            let profile: Profile = new Profile();
+            profile.uid = r.id;
+            profile.handle = r.id;
+            profile.profileType = ProfileType.TEACHER;
+            profile.source = UserSource.SERVER;
+
+            that.profileService.setCurrentProfile(false, profile,
               (res: any) => {
                 resolve({
-                    slug: r.rootOrg.slug,
-                    title: r.rootOrg.orgName
-                  });
+                  slug: r.rootOrg.slug,
+                  title: r.rootOrg.orgName
+                });
               },
               (err: any) => {
                 reject(err);

@@ -1,4 +1,7 @@
-import { Injectable, NgZone } from '@angular/core';
+import {
+    Injectable,
+    NgZone
+} from '@angular/core';
 import * as _ from 'lodash';
 import { Events } from 'ionic-angular';
 import {
@@ -390,15 +393,16 @@ export class OnboardingService {
      */
     saveDetails(index: number): void {
         let req: Profile = new Profile();
-            req.syllabus =  (_.find(this.onBoardingSlides, ['id', 'syllabusList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'syllabusList']).selectedCode : this.profile.syllabus
-            req.board =  (_.find(this.onBoardingSlides, ['id', 'boardList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'boardList']).selectedCode : this.profile.board;
-            req.grade =  (_.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode : this.profile.grade;
-            req.subject = (_.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode : this.profile.subject;
-            req.medium = (_.find(this.onBoardingSlides, ['id', 'mediumList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'mediumList']).selectedCode : this.profile.medium;
-            req.uid =  this.profile.uid;
-            req.handle =  this.profile.name;
-            req.createdAt = this.profile.createdAt;
-            req.profileType = this.profile.profileType;
+        req.syllabus = (_.find(this.onBoardingSlides, ['id', 'syllabusList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'syllabusList']).selectedCode : this.profile.syllabus
+        req.board = (_.find(this.onBoardingSlides, ['id', 'boardList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'boardList']).selectedCode : this.profile.board;
+        req.grade = (_.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode : this.profile.grade;
+        req.subject = (_.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode : this.profile.subject;
+        req.medium = (_.find(this.onBoardingSlides, ['id', 'mediumList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'mediumList']).selectedCode : this.profile.medium;
+        req.uid = this.profile.uid;
+        req.handle = this.profile.name;
+        req.createdAt = this.profile.createdAt;
+        req.profileType = this.profile.profileType;
+        req.source = this.profile.source;
 
         if (index === 0 && !_.find(this.onBoardingSlides, ['id', 'boardList']).selectedCode.length) {
             req.board = [];
