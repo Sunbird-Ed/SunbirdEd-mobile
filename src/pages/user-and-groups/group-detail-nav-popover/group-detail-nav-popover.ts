@@ -19,10 +19,22 @@ export class GroupDetailNavPopoverPage {
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
-    private translate: TranslateService
+    public translate: TranslateService
   ) {
   }
 
+  goToEditGroup() {
+    this.navParams.get('goToEditGroup')();
+  }
+  deleteGroup(){
+    this.navParams.get('deleteGroup')();
+  }
+  addUsers(){
+    this.navParams.get('addUsers')();
+  }
+  removeUser(){
+    this.navParams.get('removeUser')();
+  }
   
 
 }

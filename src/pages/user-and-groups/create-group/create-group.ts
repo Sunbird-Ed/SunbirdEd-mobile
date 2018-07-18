@@ -56,15 +56,13 @@ export class CreateGroupPage {
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController
   ) {
-
     this.group = this.navParams.get('groupInfo') || {};
+    console.log(this.group);
     this.groupEditForm = this.fb.group({
       name: [this.group.name || ""],
       syllabus: [this.group.syllabus && this.group.syllabus[0] || []],
       class: [this.group.class || []]
     });
-
-    //this.init();
   }
 
 
