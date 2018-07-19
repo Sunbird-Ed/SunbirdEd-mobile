@@ -43,7 +43,7 @@
         </p>
       </div>
       <ion-list *ngIf="!showEmptyUsersMessage">
-        <ion-item *ngFor="let user of usersList; let i=index;" class="item-background radius" margin-bottom [ngClass]="i===selectedUserIndex ? 'blueBorder' : ''"
+        <ion-item *ngFor="let user of userList; let i=index;" class="item-background radius" margin-bottom [ngClass]="i===selectedUserIndex ? 'blueBorder' : ''"
           no-lines>
           <!--<ion-avatar item-start (click)="selectUser(i, user?.name)">
              <img src="assets/imgs/ic_businessman.png">

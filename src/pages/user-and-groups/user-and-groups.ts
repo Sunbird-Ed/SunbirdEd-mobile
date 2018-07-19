@@ -40,7 +40,7 @@ export class UserAndGroupsPage {
   isLoggedInUser: boolean = false;
   currentUserId: string;
 
-  usersList: Array<Profile> = [];
+  userList: Array<Profile> = [];
   groupList: Array<Group> = [];
 
   unregisterBackButton: any;
@@ -62,8 +62,8 @@ export class UserAndGroupsPage {
     private ionicApp: IonicApp,
   ) {
 
-    /* Check usersList length and show message or list accordingly */
-    this.showEmptyUsersMessage = (this.usersList && this.usersList.length) ? false : true;
+    /* Check userList length and show message or list accordingly */
+    this.showEmptyUsersMessage = (this.userList && this.userList.length) ? false : true;
     this.currentUserId = this.navParams.get('userId');
     this.isLoggedInUser = this.navParams.get('isLoggedInUser');
     this.profileDetails = this.navParams.get('profile');
@@ -73,7 +73,7 @@ export class UserAndGroupsPage {
   ionViewWillEnter() {
     this.zone.run(() => {
       this.getAllProfile();
-      this.getGroupsList();
+      this.getAllGroup();
     });
 
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
@@ -122,7 +122,7 @@ export class UserAndGroupsPage {
       this.profileService.getAllUserProfile(profileRequest).then((profiles) => {
         if (profiles && profiles.length) {
           this.showEmptyUsersMessage = false;
-          this.usersList = JSON.parse(profiles);
+          this.userList = JSON.parse(profiles);
         } else {
           this.showEmptyUsersMessage = true;
         }
@@ -133,7 +133,7 @@ export class UserAndGroupsPage {
     })
   }
 
-  getGroupsList() {
+  getAllGroup() {
     this.zone.run(() => {
       this.groupService.getAllGroup().then((groups) => {
         if (groups.result && groups.result.length) {
@@ -154,15 +154,12 @@ export class UserAndGroupsPage {
     this.navCtrl.push(GroupDetailsPage);
   }
 
-
   /**
    * Navigates to Create group Page
    */
   createGroup() {
-
     this.navCtrl.push('CreateGroupPage', {
     });
-
   }
 
   goToSharePage() {
