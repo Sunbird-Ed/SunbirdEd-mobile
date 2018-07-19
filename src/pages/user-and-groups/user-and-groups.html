@@ -1,6 +1,6 @@
 <ion-header>
   <ion-navbar color="white">
-    <ion-title>{{'USERS_AND_GROUPS'| translate}}</ion-title>
+    <ion-title>{{'USERS_AND_GROUPS'}}</ion-title>
     <ion-buttons end>
       <button (click)="goToSharePage()" ion-button icon-only>
         <ion-icon name="share" float-end></ion-icon>
@@ -11,54 +11,77 @@
 <ion-content>
   <ion-segment no-padding [(ngModel)]="segmentType" (ionChange)="onSegmentChange($event)" class="users-groups-toolbar" padding-bottom>
     <ion-segment-button value="users">
-      {{'USERS' | translate}}
+      {{'USERS' }}
     </ion-segment-button>
     <ion-segment-button value="groups">
-      {{'GROUPS' | translate}}
+      {{'GROUPS' }}
     </ion-segment-button>
   </ion-segment>
 
   <div [ngSwitch]="segmentType" padding>
-    <ion-list *ngSwitchCase="'users'" padding-top margin-top>
+    <ion-list *ngSwitchCase="'users'" margin-top>
+      <div class="custom-margin-top">
       <div *ngIf="profileDetails?.firstName">
-        <p ion-text text-uppercase color="dark_gray" class="subTitle">{{ 'LOGGED_IN_AS' | translate }}</p>
-        <ion-item class="item-background" no-lines>
-          <!-- <ion-avatar item-start>
-          <img src="{{profileDetails?.avatar}}">
-          <img src="assets/imgs/ic_check_circle.png" id="tick" /> 
-        </ion-avatar> -->
-          <ion-label padding-top padding-bottom>
-            <p ion-text color="primary">
-              <b>{{profileDetails?.firstName}}&nbsp;{{profileDetails?.lastName}}</b>
-            </p>
-            <p>{{profileDetails?.grade}}</p>
-          </ion-label>
+      <p  ion-text text-uppercase color="dark_gray" class="subTitle">{{ 'LOGGED_IN_AS'  }}</p>
+      <!-- <ion-item class="item-background" no-lines>
+         <ion-avatar item-start>
+          <img src="{{userProfile?.avatar}}">
+          <img src="assets/imgs/ic_check_circle.png" id="tick" />
+        </ion-avatar>
+        <ion-label padding-top padding-bottom>
+        <p ion-text color="primary"><b>{{profileDetails?.firstName}}&nbsp;{{profileDetails?.lastName}}</b></p>
+        <p>{{profileDetails?.grade}}</p>
+      </ion-label>
+      </ion-item> -->
+      <ion-item class="item-background radius" margin-bottom no-lines>
+          <ion-row class="bg-color-white">
+            <ion-col col-11 class="bg-color-white">
+              <ion-item class="bg-color-white padding-left-0 rm-label-margin" no-padding>
+                  <h6 class="line-height-2" color="primary" (click)="selectUser(i, user?.name)">
+                      <b>{{profileDetails?.firstName}}&nbsp;{{profileDetails?.lastName}}</b>
+                  </h6>
+                  <p>{{profileDetails?.grade}}</p>
+              </ion-item>
+            </ion-col>
+            <ion-col col-1 class="advanced-menu">
+              <!-- <ion-item item-end class="bg-color-white">
+                <ion-icon class="line-height-2" name="more" item-end (click)="presentPopover($event)"></ion-icon>
+              </ion-item> -->
+            </ion-col>
+          </ion-row>
         </ion-item>
-      </div>
-      <p ion-text color="dark_gray" text-uppercase class="subTitle">{{'USERS' | translate}}</p>
+      
+    </div>
+      <p ion-text color="dark_gray" text-uppercase class="subTitle">{{'USERS' }}</p>
       <div *ngIf="showEmptyUsersMessage">
-        <h6>{{'NO_USERS_CREATED_YET'| translate}}</h6>
-        <p class="grey-color">{{'YOU_CAN_CREATE_GUEST_USER_ACCOUNTS_FOR' | translate}}
-          <br> {{'YOUR_STUDENTS_OTHERS_TEACHERS' | translate}}
+        <h6>{{'NO_USERS_CREATED_YET'}}</h6>
+        <p class="grey-color">{{'YOU_CAN_CREATE_GUEST_USER_ACCOUNTS_FOR' }}
+          <br> {{'YOUR_STUDENTS_OTHERS_TEACHERS' }}
         </p>
       </div>
       <ion-list *ngIf="!showEmptyUsersMessage">
-        <ion-item *ngFor="let user of userList; let i=index;" class="item-background radius" margin-bottom [ngClass]="i===selectedUserIndex ? 'blueBorder' : ''"
-          no-lines>
-          <!--<ion-avatar item-start (click)="selectUser(i, user?.name)">
-             <img src="assets/imgs/ic_businessman.png">
-          </ion-avatar> -->
-          <ion-label>
-            <h6 class="line-height-2" (click)="selectUser(i, user?.handle)">
-              <b>{{user?.handle}}</b>
-            </h6>
-            <p>{{user?.profileType}}
-              <span *ngIf="user?.grade?.length">•</span> {{user?.grade}}</p>
-          </ion-label>
-          <ion-icon name="more" item-end (click)="presentPopover($event, 'users')"></ion-icon>
-
-        </ion-item>
+        <ion-item *ngFor="let user of usersList; let i=index;" class="item-background radius" margin-bottom 
+        [ngClass]="i===selectedUserIndex ? 'blueBorder' : ''" no-lines>
+            <ion-row class="bg-color-white">
+              <ion-col col-11 class="bg-color-white" (click)="selectUser(i, user?.name)">
+                <ion-item class="bg-color-white padding-left-0 rm-label-margin" no-padding>
+                    <h6 class="line-height-2" >
+                      <b>{{user?.name}}</b>
+                    </h6>
+                    <p>{{user?.userType}}
+                      <span *ngIf="user?.grade?.length">•</span> {{user?.grade}}</p>
+                </ion-item>
+              </ion-col>
+              <ion-col col-1 class="advanced-menu">
+                <ion-item item-end class="bg-color-white">
+                  <ion-icon class="line-height-2" name="more" item-end (click)="presentPopover($event , 'users')"></ion-icon>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+          </ion-item>
+        
       </ion-list>
+    </div>
     </ion-list>
 
     <ion-list *ngSwitchCase="'groups'" padding-top>
@@ -70,34 +93,39 @@
           <ion-col col-md-6 offset-md-3 col-lg-6 offset-lg-3>
             <div class="image-text">
               <h6>
-                <b>{{'NO_GROUPS_CREATED_YET' | translate}}</b>
+                <b>{{'NO_GROUPS_CREATED_YET' }}</b>
               </h6>
-              <p>{{'GROUPS_HELP_TO_ORGANIZE_THE_USER_BETTER' | translate}}.
-                <br> {{'YOU_CAN_ALSO_USE_GROUPS_TO_MONITOR_BETTER' | translate}}
-                <br>{{'PROGRESS_OVERALL' | translate}}</p>
+              <p>{{'GROUPS_HELP_TO_ORGANIZE_THE_USER_BETTER' }}.
+                <br> {{'YOU_CAN_ALSO_USE_GROUPS_TO_MONITOR_BETTER' }}
+                <br>{{'PROGRESS_OVERALL' }}</p>
             </div>
           </ion-col>
         </ion-row>
       </div>
+      <ion-list>
       <div class="groupSecondSection" *ngIf="!showEmptyGroupsMessage">
-        <ion-list>
-          <ion-item class="item-background radius" margin-bottom *ngFor="let group of groupList; let i = index" no-lines>
-            <!-- <ion-avatar item-start>
-                <img src="assets/imgs/img_group.png">
-              </ion-avatar> -->
-            <ion-label>
-              <h6 class="line-height-2" (click)="goToGroupDetail()">
-                <b>{{group?.name}}</b>
-              </h6>
-              <p>{{group?.grade[0]}}
-                <span *ngIf="group?.grade?.length && group?.uids?.length">•</span>
-                <span *ngIf="group?.uids?.length">{{group?.uids?.length}} {{'USERS' | translate}}</span>
-              </p>
-            </ion-label>
-            <ion-icon name="more" (click)="presentPopover($event, i , group.name)" item-end></ion-icon>
-          </ion-item>
-        </ion-list>
-      </div>
+              <ion-item *ngFor="let group of groupList; let i = index" class="item-background radius" margin-top margin-bottom no-lines>
+                <ion-row class="bg-color-white">
+                  <ion-col col-11 class="bg-color-white">
+                    <ion-item class="bg-color-white padding-left-0 rm-label-margin" no-padding>
+                        <h6 class="line-height-2" (click)="goToGroupDetail()">
+                          <b>{{group?.name}}</b>
+                        </h6>
+                        <p>{{group?.grade[0]}}
+                            <span *ngIf="group?.grade?.length && group?.uids?.length">•</span>
+                            <span *ngIf="group?.uids?.length">{{group?.uids?.length}} {{'USERS' }}</span>
+                        </p>
+                    </ion-item>
+                  </ion-col>
+                  <ion-col col-1 class="advanced-menu">
+                    <ion-item item-end class="bg-color-white">
+                      <ion-icon class="line-height-2" name="more" item-end (click)="presentPopover($event, i , group.name)"></ion-icon>
+                    </ion-item>
+                  </ion-col>
+                </ion-row>
+              </ion-item>
+        </div>
+      </ion-list>
     </ion-list>
   </div>
 </ion-content>
@@ -106,12 +134,12 @@
     <ion-col col-md-10 offset-md-1>
       <div *ngIf="selectedUserIndex !== -1; else enableCreateButton">
         <button ion-button block center (click)="switchAccountConfirmBox()">
-          {{'SWITCH_ACCOUNT'| translate}}
+          {{'SWITCH_ACCOUNT'}}
         </button>
       </div>
       <ng-template #enableCreateButton>
-        <button ion-button outline block *ngIf="segmentType==='users'" (click)="createUser()">{{ 'CREATE_NEW_USER' | translate }}</button>
-        <button ion-button outline block (click)="createGroup()" *ngIf="segmentType==='groups'">{{ 'CREATE_NEW_GROUP' | translate }}</button>
+        <button ion-button outline block *ngIf="segmentType==='users'" (click)="createUser()">{{ 'CREATE_NEW_USER'  }}</button>
+        <button ion-button outline block (click)="createGroup()" *ngIf="segmentType==='groups'">{{ 'CREATE_NEW_GROUP'  }}</button>
       </ng-template>
     </ion-col>
   </ion-row>

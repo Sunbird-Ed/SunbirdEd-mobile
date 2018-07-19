@@ -27,13 +27,13 @@
       </ion-row>
     </ion-list>
     <ion-item>
-      <ion-label stacked text-uppercase>{{ 'NAME' | translate }}<span ion-text color="danger">&nbsp;*</span></ion-label>
+      <ion-label stacked text-uppercase class="label-font">{{ 'NAME' | translate }}<span ion-text color="danger">&nbsp;*</span></ion-label>
       <ion-input formControlName="name" placeholder="{{'NAME_HINT' | translate }}"></ion-input>
     </ion-item>
 
     <!-- Syllabus -->
     <ion-item>
-      <ion-label stacked text-uppercase>{{'SYLLABUS' | translate }}
+      <ion-label stacked text-uppercase class="label-font">{{'SYLLABUS' | translate }}
       </ion-label>
       <ion-select multiple="false" text-capitalize formControlName="syllabus" [selectOptions]="syllabusOptions" placeholder="{{'SELECT' | translate }}"
         (ionChange)="resetForm(0, true)" okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}">
@@ -43,7 +43,7 @@
 
     <!-- Board -->
     <ion-item>
-      <ion-label stacked text-uppercase>{{'BOARD' | translate }}
+      <ion-label stacked text-uppercase class="label-font">{{'BOARD' | translate }}
       </ion-label>
       <ion-select multiple="true" text-capitalize [disabled]="!(guestEditForm.value.syllabus != '')" [selectOptions]="boardOptions"
         [selectOptions]="boardOptions" formControlName="boards" (ionChange)="resetForm(1, false)" placeholder="{{'SELECT' | translate }}"
@@ -54,7 +54,7 @@
 
     <!-- Medium -->
     <ion-item>
-      <ion-label stacked text-uppercase>{{'MEDIUM_OF_INSTRUCTION' | translate }}
+      <ion-label stacked text-uppercase class="label-font">{{'MEDIUM_OF_INSTRUCTION' | translate }}
       </ion-label>
       <ion-select multiple="true" text-capitalize [disabled]="!(guestEditForm.value.boards != '')" [selectOptions]="mediumOptions"
         formControlName="medium" (ionChange)="resetForm(2, false)" placeholder="{{'SELECT' | translate }}" okText="{{'BTN_SUBMIT' | translate}}"
@@ -65,7 +65,7 @@
 
     <!-- Grade -->
     <ion-item>
-      <ion-label stacked text-uppercase>{{'CLASS' | translate }}
+      <ion-label stacked text-uppercase class="label-font">{{'CLASS' | translate }}
       </ion-label>
       <ion-select multiple="true" text-capitalize [disabled]="!(guestEditForm.value.medium != '')" [selectOptions]="classOptions"
         formControlName="grades" (ionChange)="resetForm(3, false)" placeholder="{{'SELECT' | translate }}" okText="{{'BTN_SUBMIT' | translate}}"
@@ -76,7 +76,7 @@
 
     <!-- Subjects -->
     <ion-item>
-      <ion-label stacked text-uppercase>{{'SUBJECTS' | translate }}
+      <ion-label stacked text-uppercase class="label-font">{{'SUBJECTS' | translate }}
       </ion-label>
       <ion-select multiple="true" [selectOptions]="subjectsOptions" text-capitalize [disabled]="!(guestEditForm.value.grades != '')"
         formControlName="subjects" placeholder="{{'SELECT' | translate }}" okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}">
