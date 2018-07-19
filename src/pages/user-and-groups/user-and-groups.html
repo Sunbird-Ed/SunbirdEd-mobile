@@ -7,19 +7,23 @@
       </button>
     </ion-buttons>
   </ion-navbar>
+
+  <ion-toolbar no-border-top>
+      <ion-segment no-padding [(ngModel)]="segmentType" (ionChange)="onSegmentChange($event)">
+        <ion-segment-button value="users">
+          {{'USERS' | translate}}
+        </ion-segment-button>
+        <ion-segment-button value="groups">
+          {{'GROUPS' | translate}}
+        </ion-segment-button>
+      </ion-segment>
+    </ion-toolbar>
 </ion-header>
 <ion-content>
-  <ion-segment no-padding [(ngModel)]="segmentType" (ionChange)="onSegmentChange($event)" class="users-groups-toolbar" padding-bottom>
-    <ion-segment-button value="users">
-      {{'USERS' | translate}}
-    </ion-segment-button>
-    <ion-segment-button value="groups">
-      {{'GROUPS' | translate}}
-    </ion-segment-button>
-  </ion-segment>
+  
 
   <div [ngSwitch]="segmentType" padding>
-    <ion-list *ngSwitchCase="'users'" margin-top>
+    <ion-list *ngSwitchCase="'users'">
       <div class="custom-margin-top">
         <div *ngIf="profileDetails?.firstName">
           <p ion-text text-uppercase color="dark_gray" class="subTitle">{{ 'LOGGED_IN_AS' | translate}}</p>
@@ -41,7 +45,7 @@
         </div>
         <p ion-text color="dark_gray" text-uppercase class="subTitle">{{'USERS' | translate}}</p>
         <div *ngIf="showEmptyUsersMessage">
-          <h6>{{'NO_USERS_CREATED_YET'}}</h6>
+          <h6>{{'NO_USERS_CREATED_YET'  | translate}}</h6>
           <p class="grey-color">{{'YOU_CAN_CREATE_GUEST_USER_ACCOUNTS_FOR' | translate}}
             <br> {{'YOUR_STUDENTS_OTHERS_TEACHERS' | translate}}
           </p>
@@ -61,7 +65,7 @@
               </ion-col>
               <ion-col col-1 class="advanced-menu">
                 <ion-item item-end class="bg-color-white">
-                  <ion-icon class="line-height-2" name="more" item-end (click)="presentPopover($event , 'users')"></ion-icon>
+                  <ion-icon class="line-height-2" name="more" item-end (click)="presentPopover($event ,index,'users')"></ion-icon>
                 </ion-item>
               </ion-col>
             </ion-row>
@@ -70,7 +74,7 @@
       </div>
     </ion-list>
 
-    <ion-list *ngSwitchCase="'groups'" padding-top>
+    <ion-list *ngSwitchCase="'groups'">
       <div class="firstSection" *ngIf="showEmptyGroupsMessage">
         <div class="img-container">
           <img class="image_style" src="assets/imgs/ic_businessman.png">

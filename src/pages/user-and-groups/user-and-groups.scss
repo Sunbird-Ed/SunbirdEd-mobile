@@ -20,9 +20,9 @@ page-user-and-groups {
         background-color: white;
         z-index: 2;
       }
-      .groupSecondSection{
-        margin-top: 6vh;
-      }
+      // .groupSecondSection{
+      //   margin-top: 6vh;
+      // }
       .custom {
         //background-color: white;
         color: rgba(0, 0, 0, 0.5);
@@ -88,9 +88,13 @@ page-user-and-groups {
           margin-top: 0 !important;
           margin-bottom: 0 !important;
         }
-        .custom-margin-top{
-          margin-top: 7vh;
-        }
+        .header-md::after, .tabs-md[tabsPlacement="top"] > .tabbar::after, .footer-md::before, .tabs-md[tabsPlacement="bottom"] > .tabbar::before{
+
+          background-image: none;
+      }
+        //.custom-margin-top{
+          //margin-top: 7vh;
+        //}
 }
 
 
