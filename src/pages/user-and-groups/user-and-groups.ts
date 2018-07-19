@@ -140,9 +140,9 @@ export class UserAndGroupsPage {
         local: true
       };
       this.profileService.getAllUserProfile(profileRequest).then((profiles) => {
-        if (profiles.result && profiles.result.length) {
+        if (profiles && profiles.length) {
           this.showEmptyUsersMessage = false;
-          this.usersList = profiles.result;
+          this.usersList = JSON.parse(profiles);
         } else {
           this.showEmptyUsersMessage = true;
         }

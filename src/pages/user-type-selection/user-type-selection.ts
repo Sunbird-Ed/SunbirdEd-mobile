@@ -4,7 +4,9 @@ import {
   TabsPage, SharedPreferences,
   Interact, TelemetryService, InteractType, InteractSubtype,
   Environment, PageId, ImpressionType,
-  ContainerService
+  ContainerService,
+  Profile,
+  UserSource
 } from 'sunbird';
 import { TranslateService } from '@ngx-translate/core';
 import { ProfileType, ProfileService } from 'sunbird'
@@ -33,7 +35,7 @@ export class UserTypeSelectionPage {
   selectedUserType: ProfileType;
   continueAs: string = "";
   language: string;
-  profile: any = {};
+  profile: Profile;
 
   /**
    * Contains paths to icons
@@ -113,37 +115,31 @@ export class UserTypeSelectionPage {
       if (this.profile.profileType === this.selectedUserType) {
         this.gotoTabsPage();
       } else {
-        let updateRequest = {
-          age: -1,
-          day: -1,
-          month: -1,
-          standard: -1,
-          board: [],
-          grade: [],
-          subject: [],
-          medium: [],
-          handle: this.profile.handle,
-          avatar: this.profile.avatar,
-          language: this.profile.language,
-          uid: this.profile.uid,
-          profileType: this.selectedUserType,
-          isGroupUser: false,
-          createdAt: this.profile.createdAt,
-          syllabus: []
-        };
+        let updateRequest = new Profile();
+
+        updateRequest.handle = this.profile.handle;
+        updateRequest.avatar = this.profile.avatar;
+        updateRequest.language = this.profile.language;
+        updateRequest.uid = this.profile.uid;
+        updateRequest.profileType = this.selectedUserType;
+        updateRequest.createdAt = this.profile.createdAt;
+        updateRequest.source = UserSource.LOCAL;
+
+        updateRequest.syllabus = [];
+        updateRequest.board =  [];
+        updateRequest.grade =  [];
+        updateRequest.subject =  [];
+        updateRequest.medium =  [];
+
         this.updateProfile(updateRequest);
       }
     } else {
-      let profileRequest = {
-        handle: "Guest1",
-        avatar: "avatar",
-        language: "en",
-        age: -1,
-        day: -1,
-        month: -1,
-        standard: -1,
-        profileType: this.selectedUserType
-      };
+
+      let profileRequest = new Profile();
+      profileRequest.handle = "Guest1";
+      profileRequest.profileType = this.selectedUserType;
+      profileRequest.source = UserSource.LOCAL;
+      
       this.setProfile(profileRequest);
     }
   }
