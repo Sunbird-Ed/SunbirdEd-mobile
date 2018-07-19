@@ -45,7 +45,7 @@
 
   <div *ngIf="noMemberSection">
   <div text-center>
-    <img *ngIf="!usersList.length" class="rounded image-style" src="assets/imgs/ic_businessman.png" />
+    <img *ngIf="usersList?.length == 0" class="rounded image-style" src="assets/imgs/ic_businessman.png" />
     <h6><b>No Users On This Device</b></h6>
     <p ion-text [color]="grey">A Group needs to have atleast one user in it</p>
     <h6 ion-text color="primary">CREATE USER</h6>
@@ -55,11 +55,11 @@
     {{user?.name}}
     <ion-label>
       <h6 class="line-height-2">
-        <b>{{user?.name}}</b>
+        <b>{{user?.handle}}</b>
       </h6>
-      <p>{{user?.profession}}</p>
+      <p>{{user?.profileType}}</p>
     </ion-label>
-    <ion-checkbox item-end mode="ios" checked="{{user?.selected}}" (click)="toggleSelect(i)"></ion-checkbox>
+    <ion-checkbox item-end mode="ios" checked="{{isUserSelected(i)}}" (click)="toggleSelect(i)"></ion-checkbox>
   </ion-item>
   
 </ion-content>
