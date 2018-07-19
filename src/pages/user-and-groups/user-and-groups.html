@@ -60,21 +60,6 @@
         </p>
       </div>
       <ion-list *ngIf="!showEmptyUsersMessage">
-        <!-- <ion-item *ngFor="let user of usersList; let i=index;" class="item-background radius" margin-bottom
-        [ngClass]="i===selectedUserIndex ? 'blueBorder' : ''" no-lines>
-          <ion-avatar item-start (click)="selectUser(i, user?.name)">
-             <img src="assets/imgs/ic_businessman.png">
-          </ion-avatar> 
-          <ion-label>
-            <h6 class="line-height-2" (click)="selectUser(i, user?.handle)">
-              <b>{{user?.handle}}</b>
-            </h6>
-            <p>{{user?.profileType}}
-              <span *ngIf="user?.grade?.length">•</span> {{user?.grade}}</p>
-          </ion-label>
-          <ion-icon name="more" item-end (click)="presentPopover($event, 'users')"></ion-icon>
-
-        </ion-item> -->
         <ion-item *ngFor="let user of usersList; let i=index;" class="item-background radius" margin-bottom 
         [ngClass]="i===selectedUserIndex ? 'blueBorder' : ''" no-lines>
             <ion-row class="bg-color-white">
@@ -119,21 +104,6 @@
       </div>
       <ion-list>
       <div class="groupSecondSection" *ngIf="!showEmptyGroupsMessage">
-          <!-- <ion-list>
-            <ion-item class="item-background radius" margin-bottom *ngFor="let group of groupList; let i = index" no-lines>
-              <ion-avatar item-start>
-                <img src="assets/imgs/img_group.png">
-              </ion-avatar> 
-              <ion-label>
-              <h6 class="line-height-2" (click)="goToGroupDetail()"><b>{{group?.name}}</b></h6>
-              <p>{{group?.grade[0]}}
-                <span *ngIf="group?.grade?.length && group?.uids?.length">•</span>
-                <span *ngIf="group?.uids?.length">{{group?.uids?.length}} {{'USERS' }}</span>
-              </p>
-            </ion-label>
-                <ion-icon  name="more" (click)="presentPopover($event, i , group.name)" item-end></ion-icon>
-            </ion-item>
-          </ion-list> -->
               <ion-item *ngFor="let group of groupList; let i = index" class="item-background radius" margin-top margin-bottom no-lines>
                 <ion-row class="bg-color-white">
                   <ion-col col-11 class="bg-color-white">

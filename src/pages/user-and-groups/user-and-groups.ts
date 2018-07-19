@@ -17,7 +17,9 @@ import { PopoverPage } from './popover/popover';
 import {
   ProfileService,
   GroupService,
-  ProfileRequest
+  ProfileRequest,
+  Profile,
+  Group
 } from 'sunbird';
 import { GuestEditProfilePage } from '../profile/guest-edit.profile/guest-edit.profile';
 import { IonicApp } from 'ionic-angular';
@@ -30,39 +32,17 @@ import { ShareUserAndGroupPage } from './share-user-and-groups/share-user-and-gr
   templateUrl: 'user-and-groups.html',
 })
 export class UserAndGroupsPage {
+
   segmentType: string = "users";
   groupName: string;
   showEmptyUsersMessage: boolean = false;
   showEmptyGroupsMessage: boolean = true;
   isLoggedInUser: boolean = false;
   currentUserId: string;
-  usersList: Array<any> = [
-    {
-      handle: 'Harish BookWala',
-      profileType: 'student',
-      grade: 'Grade 2'
-    },
-    {
-      handle: 'Nilesh More',
-      profileType: 'student',
-      grade: 'Kindergarten'
-    },
-    {
-      handle: 'Guru Singh',
-      profileType: 'student',
-      grade: 'Grade 1'
-    }, {
-      handle: 'Guru Singh',
-      profileType: 'student',
-      grade: 'Grade 1'
-    }, {
-      handle: 'Guru Singh',
-      profileType: 'student',
-      grade: 'Grade 1'
-    }
-  ];
 
-  groupList: Array<any> = [];
+  userList: Array<Profile> = [];
+  groupList: Array<Group> = [];
+
   unregisterBackButton: any;
   profileDetails: any;
 
@@ -82,8 +62,8 @@ export class UserAndGroupsPage {
     private ionicApp: IonicApp,
   ) {
 
-    /* Check usersList length and show message or list accordingly */
-    this.showEmptyUsersMessage = (this.usersList && this.usersList.length) ? false : true;
+    /* Check userList length and show message or list accordingly */
+    this.showEmptyUsersMessage = (this.userList && this.userList.length) ? false : true;
     this.currentUserId = this.navParams.get('userId');
     this.isLoggedInUser = this.navParams.get('isLoggedInUser');
     this.profileDetails = this.navParams.get('profile');
@@ -93,7 +73,7 @@ export class UserAndGroupsPage {
   ionViewWillEnter() {
     this.zone.run(() => {
       this.getAllProfile();
-      this.getGroupsList();
+      this.getAllGroup();
     });
 
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
@@ -140,9 +120,9 @@ export class UserAndGroupsPage {
         local: true
       };
       this.profileService.getAllUserProfile(profileRequest).then((profiles) => {
-        if (profiles.result && profiles.result.length) {
+        if (profiles && profiles.length) {
           this.showEmptyUsersMessage = false;
-          this.usersList = profiles.result;
+          this.userList = JSON.parse(profiles);
         } else {
           this.showEmptyUsersMessage = true;
         }
@@ -153,7 +133,7 @@ export class UserAndGroupsPage {
     })
   }
 
-  getGroupsList() {
+  getAllGroup() {
     this.zone.run(() => {
       this.groupService.getAllGroup().then((groups) => {
         if (groups.result && groups.result.length) {
@@ -163,7 +143,6 @@ export class UserAndGroupsPage {
           this.showEmptyGroupsMessage = true;
         }
         console.log("GroupList", groups);
-        //this.groupList = groups;
       }).catch((error) => {
         console.log("Something went wrong while fetching data", error);
       });
@@ -175,21 +154,20 @@ export class UserAndGroupsPage {
     this.navCtrl.push(GroupDetailsPage);
   }
 
-
   /**
    * Navigates to Create group Page
    */
   createGroup() {
-
     this.navCtrl.push('CreateGroupPage', {
     });
-
   }
-  goToSharePage(){
-  this.navCtrl.push(ShareUserAndGroupPage, {
-    isNewUser: true
-  });
-}
+
+  goToSharePage() {
+    this.navCtrl.push(ShareUserAndGroupPage, {
+      isNewUser: true
+    });
+  }
+  
   /**
    * Navigates to group Details page
    */
