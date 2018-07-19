@@ -15,14 +15,15 @@ export class UpgradePopover {
 
     constructor(private navParams: NavParams,
         private viewCtrl: ViewController) {
-        this.upgradeType = this.navParams.get('type');
+        this.init();
+    }
 
-        console.log("Upgrade type in Popover  - type - " + JSON.stringify(this.upgradeType));
+    init() {
+        this.upgradeType = this.navParams.get('type');
 
         if (this.upgradeType.optional === "forceful") {
             this.isMandatoryUpgrade = true;
         }
-
     }
 
     cancel() {
