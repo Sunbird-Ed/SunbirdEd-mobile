@@ -1,7 +1,7 @@
 <ion-header>
   <ion-navbar>
-    <ion-title *ngIf="!group?.name?.length">{{'CREATE_GROUP' | translate}}</ion-title>
-      <ion-title *ngIf="group?.name?.length">{{'EDIT_GROUP' | translate}}</ion-title>
+    <ion-title *ngIf="!isEditGroup">{{'CREATE_GROUP' | translate}}</ion-title>
+      <ion-title *ngIf="isEditGroup">{{'EDIT_GROUP' | translate}}</ion-title>
   </ion-navbar>
 </ion-header>
 <ion-content padding-top padding-right>
@@ -22,30 +22,21 @@
         <ion-option *ngFor="let eachSyllabus of syllabusList" value="{{eachSyllabus?.code}}">{{eachSyllabus?.name}}</ion-option>
       </ion-select>
     </ion-item>
-
-    <!-- Class select box-->
-    <!-- <ion-item>
-      <ion-label stacked text-uppercase>{{'CLASS' | translate}}</ion-label>
-      <ion-select multiple="true" formControlName="class" [selectOptions]="classOptions" [disabled]="!(groupEditForm.value.syllabus != '')" plac placeholder="{{'CLASS'|translate}}">
-        <ion-option [value]="class?.code" *ngFor="let class of classList">{{ class?.name }}</ion-option>
-      </ion-select>
-    </ion-item> -->
-    <!--class select box new-->
     <ion-item>
       <ion-label stacked text-uppercase>{{'CLASS' | translate}}</ion-label>
-      <ion-select multiple="true"   formControlName="class" [selectOptions]="classOptions" [disabled]="!(groupEditForm.value.syllabus != '')"
+      <ion-select multiple="true" formControlName="class" [selectOptions]="classOptions" [disabled]="!(groupEditForm.value.syllabus != '')"
         placeholder="{{'CLASS'|translate}}" okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}">
-        <ion-option [value]="class?.code" *ngFor="let class of classList" text-capitalize >{{ class?.name }}</ion-option>
+        <ion-option [value]="class?.code" *ngFor="let class of classList" text-capitalize>{{ class?.name }}</ion-option>
       </ion-select>
     </ion-item>
-    <!--class select box new ends-->
   </form>
 </ion-content>
 <ion-footer>
   <div class="border">
     <ion-row padding>
       <ion-col col-md-10 offset-md-1>
-        <button ion-button block (click)="navigateToUsersList()">{{'NEXT' | translate}}</button>
+        <button ion-button block *ngIf="!isEditGroup" (click)="navigateToUsersList()">{{'NEXT' | translate}}</button>
+        <button ion-button block *ngIf="isEditGroup" (click)="updateGroup()">{{'SAVE' | translate}}</button>
       </ion-col>
     </ion-row>
   </div>

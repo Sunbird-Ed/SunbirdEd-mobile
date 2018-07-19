@@ -17,7 +17,6 @@ import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
 import { FileOpener } from '@ionic-native/file-opener';
 import { AppGlobalService } from '../service/app-global.service';
 import { CourseUtilService } from '../service/course-util.service';
-import { IonicStorageModule } from "@ionic/storage";
 import { UpgradePopover } from '../pages/upgrade/upgrade-popover';
 
 @NgModule({
@@ -43,7 +42,6 @@ import { UpgradePopover } from '../pages/upgrade/upgrade-popover';
       autoFocusAssist: false
     }),
     IonicImageLoader.forRoot(),
-    IonicStorageModule.forRoot(),
     ...PluginModules
   ],
   bootstrap: [IonicApp],

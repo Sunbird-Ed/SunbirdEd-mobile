@@ -8,7 +8,8 @@ import {
   CategoryRequest,
   ProfileService,
   Profile,
-  SharedPreferences
+  SharedPreferences,
+  UserSource
 } from 'sunbird';
 import { FormAndFrameworkUtilService } from '../formandframeworkutil.service';
 
@@ -91,7 +92,7 @@ export class GuestEditProfilePage {
 
     /* Initialize form with default values */
     this.guestEditForm = this.fb.group({
-      profileType: [''],
+      profileType: [this.profile.profileType || 'STUDENT'],
       syllabus: [this.profile.syllabus && this.profile.syllabus[0] || [], Validators.required],
       name: [this.profile.handle || '', Validators.required],
       boards: [this.profile.board || [], Validators.required],
@@ -314,6 +315,7 @@ export class GuestEditProfilePage {
     req.uid = this.profile.uid;
     req.handle = formVal.name;
     req.profileType = this.profile.profileType;
+    req.source = this.profile.source;
     req.createdAt = this.profile.createdAt;
     req.syllabus = (!formVal.syllabus.length) ? [] : [formVal.syllabus];
 
@@ -352,6 +354,7 @@ export class GuestEditProfilePage {
     req.medium = formVal.medium;
     req.handle = formVal.name;
     req.profileType = formVal.profileType;
+    req.source = UserSource.LOCAL;
     req.syllabus = (!formVal.syllabus.length) ? [] : [formVal.syllabus];
 
     this.profileService.createProfile(req, (success: any) => {

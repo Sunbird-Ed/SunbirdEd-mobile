@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angular';
 import { AppGlobalService } from '../../../service/app-global.service';
 import { FormAndFrameworkUtilService } from '../../profile/formandframeworkutil.service';
-import { CategoryRequest, Group } from 'sunbird';
+import { CategoryRequest, Group, GroupService } from 'sunbird';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { LoadingController } from 'ionic-angular';
@@ -25,6 +25,7 @@ export class CreateGroupPage {
   groupEditForm: FormGroup;
   classList = [];
   group: Group;
+  isEditGroup: boolean = false;
   syllabusList: Array<any> = [];
   categories: Array<any> = [];
   loader: any;
@@ -54,17 +55,17 @@ export class CreateGroupPage {
     private translate: TranslateService,
     private navParams: NavParams,
     private loadingCtrl: LoadingController,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private groupService: GroupService
   ) {
-
     this.group = this.navParams.get('groupInfo') || {};
     this.groupEditForm = this.fb.group({
       name: [this.group.name || ""],
       syllabus: [this.group.syllabus && this.group.syllabus[0] || []],
-      class: [this.group.class || []]
+      class: [this.group.grade || []]
     });
 
-    //this.init();
+    this.isEditGroup = this.group.hasOwnProperty('gid') ? true : false;
   }
 
 
@@ -102,7 +103,8 @@ export class CreateGroupPage {
       });
 
   }
-  /**Naigates to guest edit profile */
+
+  /**Navigates to guest edit profile */
   goToGuestEdit() {
     this.navCtrl.push(GuestEditProfilePage);
   }
@@ -114,7 +116,7 @@ export class CreateGroupPage {
     let formValue = this.groupEditForm.value;
     if (formValue.name) {
       this.group.name = formValue.name;
-      this.group.class = [formValue.class];
+      this.group.grade = formValue.class;
       this.group.syllabus = [formValue.syllabus];
 
       this.navCtrl.push(GroupMembersPage, {
@@ -126,11 +128,27 @@ export class CreateGroupPage {
     }
   }
 
-  resetForm() {
-
+  /**
+ * Internally calls Update group API
+ */
+  updateGroup() {
+    this.groupService.updateGroup(this.group)
+      .then((val) => {
+        this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
+      })
+      .catch((error) => {
+        console.log("Error : " + error);
+      })
   }
 
+  /**
+   *
+   * @param frameworkId
+   * @param isSyllabusChanged
+   */
   getClassList(frameworkId, isSyllabusChanged: boolean = true) {
+    this.loader = this.getLoader();
+    this.loader.present();
     this.groupEditForm.patchValue({
       class: []
     });
@@ -147,7 +165,7 @@ export class CreateGroupPage {
         this.classList = classes;
         if (!isSyllabusChanged) {
           this.groupEditForm.patchValue({
-            class: this.group.class || []
+            class: this.group.grade || []
           });
         }
 
@@ -174,6 +192,9 @@ export class CreateGroupPage {
     return translatedMsg;
   }
 
+  /**
+   * Returns Loader Object
+   */
   getLoader(): any {
     return this.loadingCtrl.create({
       duration: 30000,
@@ -182,9 +203,9 @@ export class CreateGroupPage {
   }
 
   /** It will returns Toast Object
- * @param {message} string - Message for the Toast to show
- * @returns {object} - toast Object
- */
+   * @param {message} string - Message for the Toast to show
+   * @returns {object} - toast Object
+   */
   getToast(message: string = ''): any {
     this.options.message = message;
     if (message.length) return this.toastCtrl.create(this.options);

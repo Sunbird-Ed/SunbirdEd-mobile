@@ -7,11 +7,11 @@ import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edi
 @Component({
   selector: 'page-members',
   templateUrl: 'group-members.html',
-  
+
 })
 export class GroupMembersPage {
-  groupName: Group;
-  noMemberSection:boolean= true;
+  group: Group;
+  noMemberSection: boolean = true;
   usersList: Array<any> = [
     {
       name: "Anirudh Deep",
@@ -29,7 +29,7 @@ export class GroupMembersPage {
       selected: false
     }
   ];
-  
+
 
   constructor(
     public navCtrl: NavController,
@@ -37,8 +37,8 @@ export class GroupMembersPage {
     private groupService: GroupService,
     private zone: NgZone
   ) {
-    this.groupName = this.navParams.get('group');
-    if(this.usersList && this.usersList.length>0){
+    this.group = this.navParams.get('group');
+    if (this.usersList && this.usersList.length > 0) {
       this.noMemberSection = false;
     }
   }
@@ -50,20 +50,24 @@ export class GroupMembersPage {
   }
 
   selectAll() {
-    this.zone.run(()=> {
+    this.zone.run(() => {
       for (var i = 0; i < this.usersList.length; i++) {
         this.usersList[i].selected = true;
       }
     });
   }
 
-  goTOGuestEdit(){
+  goTOGuestEdit() {
     this.navCtrl.push(GuestEditProfilePage)
   }
+
+  /**
+   * Internally call create Group
+   */
   createGroup() {
-    this.groupService.createGroup(this.groupName)
+    this.groupService.createGroup(this.group)
       .then((val) => {
-        this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length()-3));
+        this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 3));
       }).catch((error) => {
         console.log("Error : " + error);
       });

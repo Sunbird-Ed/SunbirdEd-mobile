@@ -219,11 +219,10 @@ android {
 }
 
 dependencies {
-     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile "org.ekstep.genieservices:genie-providers:1.0.707"
-    compile "org.ekstep.genieservices:genie-integration:1.0.707"
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile "org.ekstep.genieservices:genie-providers:1.0.729"
+    compile "org.ekstep.genieservices:genie-integration:1.0.729"
     compile('com.crashlytics.sdk.android:crashlytics:2.9.3@aar') {
           transitive = true;
     }
-
 }
