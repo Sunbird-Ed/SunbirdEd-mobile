@@ -104,9 +104,13 @@ export class UserAndGroupsPage {
     let self = this;
     let popover = this.popOverCtrl.create(PopoverPage, {
       edit: function () {
+        if(name='users'){
+          self.navCtrl.push(GuestEditProfilePage)
+        } else {
         self.navCtrl.push('CreateGroupPage', {
           groupInfo: self.groupList[index]
         });
+      }
         popover.dismiss()
       },
       delete: function ($event) {
