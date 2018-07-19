@@ -1,17 +1,47 @@
-import { Component, ViewChild } from '@angular/core';
-import { NavController, LoadingController, Navbar, Platform, ToastController, Events } from 'ionic-angular';
+import {
+  Component,
+  ViewChild
+} from '@angular/core';
+import {
+  NavController,
+  LoadingController,
+  Navbar,
+  Platform,
+  ToastController,
+  Events
+} from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import {
-  TabsPage, OAuthService, ContainerService,
-  UserProfileService, ProfileService, ProfileType,
-  AuthService, TenantInfoRequest,
-  InteractType, InteractSubtype, Environment, TelemetryService, PageId, ImpressionType,
-  SharedPreferences
+  TabsPage,
+  OAuthService,
+  ContainerService,
+  UserProfileService,
+  ProfileService,
+  ProfileType,
+  AuthService,
+  TenantInfoRequest,
+  InteractType,
+  InteractSubtype,
+  Environment,
+  TelemetryService,
+  PageId,
+  ImpressionType,
+  SharedPreferences,
+  UserSource,
+  Profile
 } from 'sunbird';
-
 import { UserTypeSelectionPage } from '../user-type-selection/user-type-selection';
-import { initTabs, GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, LOGIN_TEACHER_TABS } from '../../app/module.service';
-import { generateInteractTelemetry, Map, generateImpressionTelemetry } from '../../app/telemetryutil';
+import {
+  initTabs,
+  GUEST_STUDENT_TABS,
+  GUEST_TEACHER_TABS,
+  LOGIN_TEACHER_TABS
+} from '../../app/module.service';
+import {
+  generateInteractTelemetry,
+  Map,
+  generateImpressionTelemetry
+} from '../../app/telemetryutil';
 import { LanguageSettingsPage } from '../language-settings/language-settings';
 import { ProfileConstants } from '../../app/app.constant';
 import { AppGlobalService } from '../../service/app-global.service';
@@ -179,14 +209,15 @@ export class OnboardingPage {
               this.getToast(this.translateMessage('WELCOME_BACK', r.firstName)).present();
             }, 800);
 
-            that.generateLoginInteractTelemetry(InteractType.OTHER,
-              InteractSubtype.LOGIN_SUCCESS, r.userId);
-            let profileRequest = {
-              uid: r.id, //req
-              handle: r.id, //TODO check with nikhil
-              profileType: ProfileType.TEACHER
-            };
-            that.profileService.setCurrentProfile(false, profileRequest,
+            that.generateLoginInteractTelemetry(InteractType.OTHER, InteractSubtype.LOGIN_SUCCESS, r.userId);
+
+            let profile: Profile = new Profile();
+            profile.uid = r.id;
+            profile.handle = r.id;
+            profile.profileType = ProfileType.TEACHER;
+            profile.source = UserSource.SERVER;
+
+            that.profileService.setCurrentProfile(false, profile,
               (res: any) => {
                 that.orgName = r.rootOrg.orgName;
                 resolve(r.rootOrg.slug);
@@ -221,12 +252,13 @@ export class OnboardingPage {
     });
     this.preferences.getString('GUEST_USER_ID_BEFORE_LOGIN', (val) => {
       if (val != "") {
-        let profileRequest = {
-          uid: val,
-          handle: "Guest1", //req
-          profileType: ProfileType.TEACHER
-        };
-        this.profileService.setCurrentProfile(true, profileRequest, res => {
+        let profile: Profile = new Profile();
+        profile.uid = val;
+        profile.handle = "Guest1";
+        profile.profileType = ProfileType.TEACHER;
+        profile.source = UserSource.LOCAL;
+
+        this.profileService.setCurrentProfile(true, profile, res => {
           this.events.publish(AppGlobalService.USER_INFO_UPDATED);
           this.navCtrl.setRoot(TabsPage, {
             loginMode: 'guest'
