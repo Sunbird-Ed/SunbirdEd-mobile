@@ -21,6 +21,8 @@ import {
 } from 'sunbird';
 import { GuestEditProfilePage } from '../profile/guest-edit.profile/guest-edit.profile';
 import { IonicApp } from 'ionic-angular';
+import { ShareUserAndGroupPage } from './share-user-and-groups/share-user-and-groups';
+
 
 @IonicPage()
 @Component({
@@ -178,10 +180,16 @@ export class UserAndGroupsPage {
    * Navigates to Create group Page
    */
   createGroup() {
+
     this.navCtrl.push('CreateGroupPage', {
     });
-  }
 
+  }
+  goToSharePage(){
+  this.navCtrl.push(ShareUserAndGroupPage, {
+    isNewUser: true
+  });
+}
   /**
    * Navigates to group Details page
    */

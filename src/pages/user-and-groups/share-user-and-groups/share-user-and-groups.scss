@@ -1,0 +1,38 @@
+page-share-user-and-groups {
+  .rounded {
+    border-radius: 50%;
+  }
+  .item-background.item-md {
+    background-color: map-get($colors, light_gray) !important;
+    border-radius: 6px !important;
+  }
+  .padding-top{
+    padding-top: 2px !important;
+  }
+  .checkbox-inner {
+    left: 7px;
+    top: 4px;
+    position: absolute;
+    width: 4px;
+    height: 9px;
+    border-width: 0 1px 1px 0;
+    border-style: solid;
+    border-color: map-get($colors, dark_gray);
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+  }
+  .checkbox-ios .checkbox-icon {
+      background-color: transparent !important;
+  }
+  .checkbox-ios .checkbox-checked {
+      background-color: map-get($colors, primary) !important;
+  }
+  .image-style{
+    margin-top: 20vh;
+    width: 50%;
+  }
+  .padding-right0{
+
+    padding-right: 0 !important;
+  }
+}
