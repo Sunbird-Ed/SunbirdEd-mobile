@@ -7,7 +7,7 @@
 <ion-content padding-top padding-right>
   <form [formGroup]="groupEditForm">
     <ion-item>
-      <ion-label stacked>
+      <ion-label class="label-font" stacked>
         {{ 'GROUP_NAME' | translate }}
         <span class="mandatory">*</span>
       </ion-label>
@@ -15,7 +15,7 @@
     </ion-item>
     <!-- Syllabus -->
     <ion-item>
-      <ion-label stacked text-uppercase>{{'SYLLABUS' | translate }}
+      <ion-label stacked text-uppercase class="label-font">{{'SYLLABUS' | translate }}
       </ion-label>
       <ion-select multiple="false" text-capitalize formControlName="syllabus" placeholder="{{'SELECT' | translate }}" (ionChange)="getClassList()"
         okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}" [selectOptions]="syllabusOptions">
@@ -23,7 +23,7 @@
       </ion-select>
     </ion-item>
     <ion-item>
-      <ion-label stacked text-uppercase>{{'CLASS' | translate}}</ion-label>
+      <ion-label stacked text-uppercase class="label-font">{{'CLASS' | translate}}</ion-label>
       <ion-select multiple="true" formControlName="class" [selectOptions]="classOptions" [disabled]="!(groupEditForm.value.syllabus != '')"
         placeholder="{{'CLASS'|translate}}" okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}">
         <ion-option [value]="class?.code" *ngFor="let class of classList" text-capitalize>{{ class?.name }}</ion-option>

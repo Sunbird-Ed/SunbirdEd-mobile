@@ -59,6 +59,38 @@ page-user-and-groups {
         right: 6px;
         height: 20px;
       }
+
+      .radius{
+        border-radius: 6px;
+      }
+      //.item-background.item-md {
+        //background-color: cadetblue;
+      //}
+      .bg-color-white {
+        background-color: map-get($colors, light_gray) !important;
+      }
+      .advanced-menu{
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        padding-right: 0 !important;
+      }
+      .advanced-menu ion-icon[item-end] {
+            margin-top: 0 !important;
+            padding-right: 8px !important;
+        }
+        .advanced-menu .item-md, .advanced-menu .item-ios {
+          margin-top: 0 !important;
+        }
+        .padding-left-0 {
+          padding-left: 0 !important;
+        }
+        .rm-label-margin ion-label {
+          margin-top: 0 !important;
+          margin-bottom: 0 !important;
+        }
+        .custom-margin-top{
+          margin-top: 7vh;
+        }
 }
 
 
