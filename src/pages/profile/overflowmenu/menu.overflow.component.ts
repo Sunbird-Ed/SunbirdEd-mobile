@@ -1,12 +1,23 @@
-import { Nav, ToastController } from "ionic-angular";
-import { Component, ViewChild } from '@angular/core';
+import {
+    Nav,
+    ToastController
+} from "ionic-angular";
+import {
+    Component,
+    ViewChild
+} from '@angular/core';
 import { NavController } from "ionic-angular/navigation/nav-controller";
 import { NavParams } from "ionic-angular/navigation/nav-params";
 import { ViewController } from "ionic-angular/navigation/view-controller";
 import { App } from "ionic-angular";
-
 import { SettingsPage } from "../../settings/settings";
-import { OAuthService, SharedPreferences, ProfileType } from "sunbird";
+import {
+    OAuthService,
+    SharedPreferences,
+    ProfileType,
+    Profile,
+    UserSource
+} from "sunbird";
 import { OnboardingPage } from "../../onboarding/onboarding";
 import {
     InteractType,
@@ -22,7 +33,6 @@ import { UserAndGroupsPage } from "../../user-and-groups/user-and-groups";
 import { Network } from "@ionic-native/network";
 import { TranslateService } from "@ngx-translate/core";
 import { ReportsPage } from "../../reports/reports";
-import { TablePage } from "../../table/table";
 
 @Component({
     selector: 'menu-overflow',
@@ -52,7 +62,7 @@ export class OverflowMenuComponent {
     }
 
     showToast(toastCtrl: ToastController, message: String) {
-    this.items = this.navParams.get("list") || [];
+        this.items = this.navParams.get("list") || [];
 
     }
 
@@ -83,14 +93,14 @@ export class OverflowMenuComponent {
                 this.app.getActiveNav().push(SettingsPage);
                 break;
             }
-            case "LOGOUT": 
+            case "LOGOUT":
                 if (this.network.type === 'none') {
                     let toast = this.toastCtrl.create({
                         message: this.translateMessage("NEED_INTERNET_TO_CHANGE"),
                         duration: 2000,
                         position: 'bottom'
-                      });
-                      toast.present();
+                    });
+                    toast.present();
                 }
                 else {
                     this.generateLogoutInteractTelemetry(InteractType.TOUCH,
@@ -100,26 +110,20 @@ export class OverflowMenuComponent {
 
                     this.preferences.getString('GUEST_USER_ID_BEFORE_LOGIN', (val) => {
                         if (val != "") {
-                            let profileRequest = {
-                                uid: val,
-                                handle: "Guest1", //req
-                                avatar: "avatar", //req
-                                language: "en", //req
-                                age: -1,
-                                day: -1,
-                                month: -1,
-                                standard: -1,
-                                profileType: ProfileType.TEACHER
-                            };
-                            this.profileService.setCurrentProfile(true, profileRequest, res => { }, error => { });
+                            let profile: Profile = new Profile();
+                            profile.uid = val;
+                            profile.handle = "Guest1";
+                            profile.profileType = ProfileType.TEACHER;
+                            profile.source = UserSource.LOCAL;
+
+                            this.profileService.setCurrentProfile(true, profile, res => { }, error => { });
                         } else {
                             this.profileService.setAnonymousUser(success => { }, error => { });
                         }
                     });
 
                     this.app.getRootNav().setRoot(OnboardingPage);
-                    this.generateLogoutInteractTelemetry(InteractType.OTHER,
-                        InteractSubtype.LOGOUT_SUCCESS, "");
+                    this.generateLogoutInteractTelemetry(InteractType.OTHER, InteractSubtype.LOGOUT_SUCCESS, "");
                 }
 
                 break;

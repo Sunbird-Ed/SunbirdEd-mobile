@@ -1,13 +1,28 @@
 import { GroupDetailsPage } from './group-details/group-details';
 import { TranslateService } from '@ngx-translate/core';
-import { Component, NgZone } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController,Platform, PopoverController } from 'ionic-angular';
-
+import {
+  Component,
+  NgZone
+} from '@angular/core';
+import {
+  IonicPage,
+  NavController,
+  NavParams,
+  AlertController,
+  Platform,
+  PopoverController
+} from 'ionic-angular';
 import { CreateGroupPage } from './create-group/create-group';
 import { PopoverPage } from './popover/popover';
-import { GroupService } from 'sunbird';
+import {
+  ProfileService,
+  GroupService,
+  ProfileRequest
+} from 'sunbird';
 import { GuestEditProfilePage } from '../profile/guest-edit.profile/guest-edit.profile';
 import { IonicApp } from 'ionic-angular';
+import { ShareUserAndGroupPage } from './share-user-and-groups/share-user-and-groups';
+
 
 @IonicPage()
 @Component({
@@ -23,26 +38,26 @@ export class UserAndGroupsPage {
   currentUserId: string;
   usersList: Array<any> = [
     {
-      name: 'Harish BookWala',
-      userType: 'student',
+      handle: 'Harish BookWala',
+      profileType: 'student',
       grade: 'Grade 2'
     },
     {
-      name: 'Nilesh More',
-      userType: 'student',
+      handle: 'Nilesh More',
+      profileType: 'student',
       grade: 'Kindergarten'
     },
     {
-      name: 'Guru Singh',
-      userType: 'student',
+      handle: 'Guru Singh',
+      profileType: 'student',
       grade: 'Grade 1'
     }, {
-      name: 'Guru Singh',
-      userType: 'student',
+      handle: 'Guru Singh',
+      profileType: 'student',
       grade: 'Grade 1'
     }, {
-      name: 'Guru Singh',
-      userType: 'student',
+      handle: 'Guru Singh',
+      profileType: 'student',
       grade: 'Grade 1'
     }
   ];
@@ -53,25 +68,17 @@ export class UserAndGroupsPage {
 
   userType: string;
   selectedUserIndex: number = -1;
-  userProfile = {
-    id: 'something',
-    firstName: 'Harish',
-    lastName: 'Bookwala',
-    grade: "CLASS 4A",
-    userType: 'teacher',
-    avatar: 'assets/imgs/ic_businessman.png'
-  }
 
   constructor(
-    public navCtrl: NavController,
-    public navParams: NavParams,
-    public translate: TranslateService,
-    public alertCtrl: AlertController,
-    public popOverCtrl: PopoverController,
-    public zone: NgZone,
-    public popoverCtrl: PopoverController,
-    public groupService: GroupService,
-    public platform : Platform,
+    private navCtrl: NavController,
+    private navParams: NavParams,
+    private translate: TranslateService,
+    private alertCtrl: AlertController,
+    private popOverCtrl: PopoverController,
+    private zone: NgZone,
+    private profileService: ProfileService,
+    private groupService: GroupService,
+    private platform: Platform,
     private ionicApp: IonicApp,
   ) {
 
@@ -84,12 +91,14 @@ export class UserAndGroupsPage {
   }
 
   ionViewWillEnter() {
-    this.zone.run(()=>{
-    this.getGroupsList();
-   })
-   this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
-    this.dismissPopup();
-  }, 11);
+    this.zone.run(() => {
+      this.getAllProfile();
+      this.getGroupsList();
+    });
+
+    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+      this.dismissPopup();
+    }, 11);
   }
 
   dismissPopup() {
@@ -102,8 +111,8 @@ export class UserAndGroupsPage {
     }
   }
 
-  presentPopover(myEvent, index , name) {
-    let self=this;
+  presentPopover(myEvent, index, name) {
+    let self = this;
     let popover = this.popOverCtrl.create(PopoverPage, {
       edit: function () {
         self.navCtrl.push('CreateGroupPage', {
@@ -112,7 +121,7 @@ export class UserAndGroupsPage {
         popover.dismiss()
       },
       delete: function ($event) {
-        self.DeleteGroupConfirmBox(index , name);
+        self.deleteGroupConfirmBox(index, name);
         popover.dismiss()
       },
       isCurrentUser: false
@@ -125,32 +134,44 @@ export class UserAndGroupsPage {
     });
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad GrouplandingPage');
-    this.zone.run(()=>{
-      this.getGroupsList();
+  getAllProfile() {
+    this.zone.run(() => {
+      let profileRequest: ProfileRequest = {
+        local: true
+      };
+      this.profileService.getAllUserProfile(profileRequest).then((profiles) => {
+        if (profiles.result && profiles.result.length) {
+          this.showEmptyUsersMessage = false;
+          this.usersList = profiles.result;
+        } else {
+          this.showEmptyUsersMessage = true;
+        }
+        console.log("UserList", profiles);
+      }).catch((error) => {
+        console.log("Something went wrong while fetching user list", error);
+      });
     })
   }
 
-getGroupsList() {
+  getGroupsList() {
     this.zone.run(() => {
-    this.groupService.getAllGroup().then((groups) => {
-      if (groups.result && groups.result.length) {
-        this.showEmptyGroupsMessage = false;
-        this.groupList = groups.result;
-      } else {
-        this.showEmptyGroupsMessage = true;
-      }
-      console.log("GroupList", groups);
-      //this.groupList = groups;
-    }).catch((error) => {
-      console.log("Something went wrong while fetching data", error);
-    });
-  })
+      this.groupService.getAllGroup().then((groups) => {
+        if (groups.result && groups.result.length) {
+          this.showEmptyGroupsMessage = false;
+          this.groupList = groups.result;
+        } else {
+          this.showEmptyGroupsMessage = true;
+        }
+        console.log("GroupList", groups);
+        //this.groupList = groups;
+      }).catch((error) => {
+        console.log("Something went wrong while fetching data", error);
+      });
+    })
   }
 
   /**Navigates to group details page */
-  goToGroupDetail(){
+  goToGroupDetail() {
     this.navCtrl.push(GroupDetailsPage);
   }
 
@@ -159,10 +180,16 @@ getGroupsList() {
    * Navigates to Create group Page
    */
   createGroup() {
+
     this.navCtrl.push('CreateGroupPage', {
     });
-  }
 
+  }
+  goToSharePage(){
+  this.navCtrl.push(ShareUserAndGroupPage, {
+    isNewUser: true
+  });
+}
   /**
    * Navigates to group Details page
    */
@@ -226,10 +253,10 @@ getGroupsList() {
   }
 
   /** Delete alert box */
-  DeleteGroupConfirmBox(index ,name){
+  deleteGroupConfirmBox(index, name) {
     let self = this;
     let alert = this.alertCtrl.create({
-      title: this.translateMessage('GROUP_DELETE_CONFIRM' , name),
+      title: this.translateMessage('GROUP_DELETE_CONFIRM', name),
       mode: 'wp',
       message: this.translateMessage('GROUP_DELETE_CONFIRM_MESSAGE'),
       cssClass: 'confirm-alert',
@@ -246,10 +273,10 @@ getGroupsList() {
           text: this.translateMessage('Yes'),
           cssClass: 'alert-btn-delete',
           handler: () => {
-            self.groupService.deleteGroup(self.groupList[index].gid).then((success)=>{
+            self.groupService.deleteGroup(self.groupList[index].gid).then((success) => {
               console.log(success);
               self.groupList.splice(index, 1);
-            }).catch((error)=>{
+            }).catch((error) => {
               console.log(error);
             })
           }

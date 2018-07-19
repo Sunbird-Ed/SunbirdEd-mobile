@@ -562,8 +562,8 @@ export class ProfilePage {
    */
   showOverflowMenu(event) {
     let popover = this.popoverCtrl.create(OverflowMenuComponent, {
-      list: MenuOverflow.MENU_GUEST,
-      profile:this.profile
+      list: MenuOverflow.MENU_LOGIN,
+      profile: this.profile
     }, {
         cssClass: 'box'
       });
@@ -592,7 +592,7 @@ export class ProfilePage {
     }
 
     this.contentService.searchContent(req,
-      false,false,false,
+      false, false, false,
       (result: any) => {
         this.enrolledCourse = JSON.parse(result).result.contentDataList;
       },

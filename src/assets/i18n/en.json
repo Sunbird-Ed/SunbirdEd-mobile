@@ -361,6 +361,7 @@
   "SENT_ON": "Sent on",
   "SERVER_CONNECTION_ERROR": "Unable to connect to server",
   "SETTINGS": "Settings",
+  "SHARE": "Share",
   "SHARE_APP": "Share the {{%s}} app",
   "SHARE_CONTENT_FAILED": "Unable to share content",
   "SHARE_TELEMETRY": "Share Telemetry",
