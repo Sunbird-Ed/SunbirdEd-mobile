@@ -103,8 +103,8 @@
                   </h6>
                   <p *ngIf="group?.grade">{{group?.grade[0]}}
                     <span *ngIf="group?.grade?.length">•</span>
-                    <span *ngIf="group?.profilesCount > 0">{{group?.uids?.length}} {{'USERS' | translate}}</span>
-                    <span *ngIf="group?.profilesCount === 0">{{group?.uids?.length}} {{'NO_USERS' | translate}}</span>
+                    <span *ngIf="group?.profilesCount > 0">{{group?.profilesCount}} {{'USERS' | translate}}</span>
+                    <span *ngIf="group?.profilesCount === 0">{{'NO_USERS' | translate}}</span>
                   </p>
                 </ion-item>
               </ion-col>

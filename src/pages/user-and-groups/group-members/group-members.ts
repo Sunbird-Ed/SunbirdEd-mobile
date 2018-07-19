@@ -12,7 +12,8 @@ import {
   Group,
   ProfileRequest,
   Profile,
-  ProfileService
+  ProfileService,
+  AddUpdateProfilesRequest
 } from 'sunbird';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
 
@@ -94,22 +95,29 @@ export class GroupMembersPage {
    * Internally call create Group
    */
   createGroup() {
-//    this.userSelectionMap.forEach(this.logMapElements);  //Need for code optimize
+    //    this.userSelectionMap.forEach(this.logMapElements);  //Need for code optimize
+    let selectedUids: Array<string> = [];
     this.usersList.forEach((item) => {
-      if(Boolean(this.userSelectionMap.get(item.uid))) {
-        this.group.uids.push(item.uid);
+      if (Boolean(this.userSelectionMap.get(item.uid))) {
+        selectedUids.push(item.uid);
       }
     });
     this.groupService.createGroup(this.group)
-      .then((val) => {
-        this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 3));
+      .then((res) => {
+        let req: AddUpdateProfilesRequest = {
+          groupId: res.result.gid,
+          uidList: selectedUids
+        }
+        this.groupService.addUpdateProfilesToGroup(req).then((success) => {
+          this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 3));
+        });
       }).catch((error) => {
         console.log("Error : " + error);
       });
   }
 
   logMapElements(value, key, map) {
-    if(value) {
+    if (value) {
       this.group.uids.push(key);
     }
     console.log(`m[${key}] = ${value}`);
