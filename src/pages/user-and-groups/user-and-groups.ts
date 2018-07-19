@@ -24,6 +24,8 @@ import {
 import { GuestEditProfilePage } from '../profile/guest-edit.profile/guest-edit.profile';
 import { IonicApp } from 'ionic-angular';
 import { ShareUserAndGroupPage } from './share-user-and-groups/share-user-and-groups';
+import { Events } from 'ionic-angular';
+import { AppGlobalService } from '../../service/app-global.service';
 
 
 @IonicPage()
@@ -60,11 +62,18 @@ export class UserAndGroupsPage {
     private groupService: GroupService,
     private platform: Platform,
     private ionicApp: IonicApp,
+    private event: Events,
+    private appGlobalService: AppGlobalService
   ) {
 
     /* Check userList length and show message or list accordingly */
     this.showEmptyUsersMessage = (this.userList && this.userList.length) ? false : true;
     this.currentUserId = this.navParams.get('userId');
+
+    if (!this.currentUserId &&  this.appGlobalService.getCurrentUser()) {
+      this.currentUserId = this.appGlobalService.getCurrentUser().uid;
+    }
+
     this.isLoggedInUser = this.navParams.get('isLoggedInUser');
     this.profileDetails = this.navParams.get('profile');
     console.log(this.profileDetails);
@@ -204,6 +213,8 @@ export class UserAndGroupsPage {
    * Shows Prompt for switch Account
    */
   switchAccountConfirmBox() {
+    let selectedUser = this.userList[this.selectedUserIndex];
+
     let alert = this.alertCtrl.create({
       title: this.translateMessage('ARE_YOU_SURE_YOU_WANT_TO_SWITCH_ACCOUNT'),
       mode: 'wp',
@@ -215,14 +226,14 @@ export class UserAndGroupsPage {
           role: 'cancel',
           cssClass: 'alert-btn-cancel',
           handler: () => {
-            console.log('Cancel clicked');
+            console.log('Cancel clicked' + selectedUser);
           }
         },
         {
           text: this.translateMessage('OKAY'),
           cssClass: 'alert-btn-delete',
           handler: () => {
-            console.log('Buy clicked');
+            this.setAsCurrentUser(selectedUser);
           }
         }
       ]
@@ -278,5 +289,14 @@ export class UserAndGroupsPage {
       }
     );
     return translatedMsg;
+  }
+
+  private setAsCurrentUser(selectedUser) {
+    this.profileService.setCurrentUser(selectedUser.uid, (success) => {
+      this.event.publish('refresh:profile');
+      this.navCtrl.pop();
+    }, (error) => {
+      console.log("Error " + error);
+    });
   }
 }
