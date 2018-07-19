@@ -16,10 +16,10 @@ export class PopoverPage {
     this.isCurrentUser = this.navParams.get('isCurrentUser');
     //this.segmentType = this.navParams.get('segmentType');
   }
-  delete() {
+  delete(){
     this.navParams.get('delete')();
   }
-  edit() {
+  edit(){
     this.navParams.get('edit')();
   }
 

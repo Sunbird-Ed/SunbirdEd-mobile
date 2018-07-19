@@ -1,15 +1,15 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { GroupDetailNavPopoverPage } from './group-detail-nav-popover';
+import { AddOrRemoveGroupUserPage } from './add-or-remove-group-user';
 import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   declarations: [
-    GroupDetailNavPopoverPage,
+    AddOrRemoveGroupUserPage,
   ],
   imports: [
-    IonicPageModule.forChild(GroupDetailNavPopoverPage),
+    IonicPageModule.forChild(AddOrRemoveGroupUserPage),
     TranslateModule.forChild()
   ],
 })
-export class GroupDetailNavPopoverPageModule {}
+export class AddOrRemoveGroupUserPageModule {}

@@ -58,7 +58,6 @@ export class CreateGroupPage {
     private toastCtrl: ToastController,
     private groupService: GroupService
   ) {
-
     this.group = this.navParams.get('groupInfo') || {};
     this.groupEditForm = this.fb.group({
       name: [this.group.name || ""],

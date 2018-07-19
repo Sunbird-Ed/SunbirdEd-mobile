@@ -24,9 +24,9 @@
     </ion-item>
     <ion-item>
       <ion-label stacked text-uppercase>{{'CLASS' | translate}}</ion-label>
-      <ion-select multiple="true"   formControlName="class" [selectOptions]="classOptions" [disabled]="!(groupEditForm.value.syllabus != '')"
+      <ion-select multiple="true" formControlName="class" [selectOptions]="classOptions" [disabled]="!(groupEditForm.value.syllabus != '')"
         placeholder="{{'CLASS'|translate}}" okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}">
-        <ion-option [value]="class?.code" *ngFor="let class of classList" text-capitalize >{{ class?.name }}</ion-option>
+        <ion-option [value]="class?.code" *ngFor="let class of classList" text-capitalize>{{ class?.name }}</ion-option>
       </ion-select>
     </ion-item>
   </form>

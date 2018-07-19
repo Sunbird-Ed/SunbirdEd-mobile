@@ -12,6 +12,8 @@ import { GroupMembersPageModule } from './group-members/group-members.module';
 import { GroupDetailsPageModule } from './group-details/group-details.module';
 import { GroupDetailNavPopoverPage } from './group-detail-nav-popover/group-detail-nav-popover';
 import { GroupDetailNavPopoverPageModule } from './group-detail-nav-popover/group-detail-nav-popover.module';
+import { AddOrRemoveGroupUserPage } from './add-or-remove-group-user/add-or-remove-group-user';
+import { AddOrRemoveGroupUserPageModule } from './add-or-remove-group-user/add-or-remove-group-user.module';
 
 @NgModule({
   declarations: [
@@ -22,7 +24,8 @@ import { GroupDetailNavPopoverPageModule } from './group-detail-nav-popover/grou
     GroupMembersPage,
     GroupDetailsPage,
     PopoverPage,
-    GroupDetailNavPopoverPage
+    GroupDetailNavPopoverPage,
+    AddOrRemoveGroupUserPage
   ],
   imports: [
     IonicPageModule.forChild(UserAndGroupsPage),
@@ -31,7 +34,8 @@ import { GroupDetailNavPopoverPageModule } from './group-detail-nav-popover/grou
     GroupMembersPageModule,
     GroupDetailsPageModule,
     PopoverPageModule,
-    GroupDetailNavPopoverPageModule
+    GroupDetailNavPopoverPageModule,
+    AddOrRemoveGroupUserPageModule
   ],
 })
 export class UserAndGroupsPageModule { }

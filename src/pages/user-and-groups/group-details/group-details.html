@@ -9,16 +9,16 @@
   </ion-navbar>
 </ion-header>
 <ion-content padding>
-  
+
   <ion-list>
     <ion-item *ngFor="let user of usersList; let i=index;" class="item-background radius" margin-bottom no-lines>
       <ion-row>
         <ion-col col-10>
-            <h6 class="line-height-2" (click)="selectUser(i, user?.name)">
-              <b>{{user?.name}}</b>
-            </h6>
-            <p>{{user?.userType}}
-              <span *ngIf="user?.grade?.length">•</span> {{user?.grade}}</p>
+          <h6 class="line-height-2" (click)="selectUser(i, user?.name)">
+            <b>{{user?.name}}</b>
+          </h6>
+          <p>{{user?.userType}}
+            <span *ngIf="user?.grade?.length">•</span> {{user?.grade}}</p>
         </ion-col>
         <ion-col col-2 push-1>
           <ion-icon name="more" item-end (click)="presentPopover($event ,user)"></ion-icon>
