@@ -101,7 +101,6 @@ export class CreateGroupPage {
           this.getToast(this.translateMessage('NO_DATA_FOUND')).present();
         }
       });
-
   }
 
   /**Navigates to guest edit profile */
@@ -117,7 +116,8 @@ export class CreateGroupPage {
     if (formValue.name) {
       this.group.name = formValue.name;
       this.group.grade = formValue.class;
-      this.group.syllabus = [formValue.syllabus];
+      this.group.syllabus = (!formValue.syllabus.length) ? [] : [formValue.syllabus];
+      this.group.uids = [];
 
       this.navCtrl.push(GroupMembersPage, {
         group: this.group
@@ -132,13 +132,24 @@ export class CreateGroupPage {
  * Internally calls Update group API
  */
   updateGroup() {
-    this.groupService.updateGroup(this.group)
+    let formValue = this.groupEditForm.value;
+    if (formValue.name) {
+      this.group.name = formValue.name;
+      this.group.grade = formValue.class;
+      this.group.syllabus = (!formValue.syllabus.length) ? [] : [formValue.syllabus];
+
+      this.groupService.updateGroup(this.group)
       .then((val) => {
         this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
       })
       .catch((error) => {
         console.log("Error : " + error);
-      })
+      });
+    }
+    else {
+      this.getToast(this.translateMessage('ENTER_GROUP_NAME')).present();
+    }
+
   }
 
   /**
@@ -147,8 +158,11 @@ export class CreateGroupPage {
    * @param isSyllabusChanged
    */
   getClassList(frameworkId, isSyllabusChanged: boolean = true) {
-    this.loader = this.getLoader();
-    this.loader.present();
+    if (isSyllabusChanged) {
+      this.loader = this.getLoader();
+      this.loader.present();
+    }
+
     this.groupEditForm.patchValue({
       class: []
     });

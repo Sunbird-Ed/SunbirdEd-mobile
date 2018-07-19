@@ -67,7 +67,6 @@ export class UserAndGroupsPage {
   ) {
 
     /* Check userList length and show message or list accordingly */
-    this.showEmptyUsersMessage = (this.userList && this.userList.length) ? false : true;
     this.currentUserId = this.navParams.get('userId');
 
     if (!this.currentUserId &&  this.appGlobalService.getCurrentUser()) {
@@ -139,7 +138,6 @@ export class UserAndGroupsPage {
         } else {
           this.showEmptyUsersMessage = true;
         }
-        console.log("UserList", profiles);
       }).catch((error) => {
         console.log("Something went wrong while fetching user list", error);
       });
@@ -180,7 +178,7 @@ export class UserAndGroupsPage {
       isNewUser: true
     });
   }
-  
+
   /**
    * Navigates to group Details page
    */

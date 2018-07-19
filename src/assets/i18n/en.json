@@ -470,7 +470,8 @@
   "GROUP_DELETE_CONFIRM": "Confirm Delete of {{%s}}",
   "GROUP_DELETE_CONFIRM_MESSAGE": "This action is Permanent,Once deleted the user cannot be accessed",
   "NO_USERS_ON_THIS_DEVICE": "No Users on This Device",
-  "NO_USERS_SUGGESTION_MESSAGE": "A group needs to have at least",
+  "NO_USERS_SUGGESTION_MESSAGE": "A Group needs to have at least one user in it",
   "USER_TYPE": "User Type",
-  "USER_TYPE_SELECT_WARNING": "Please choose user type"
+  "USER_TYPE_SELECT_WARNING": "Please choose user type",
+  "NO_USERS": "No users"
 }

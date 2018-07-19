@@ -1,13 +1,5 @@
 <ion-header>
-  <ion-navbar *ngIf="!noMemberSection">
-    <ion-title>{{'USERS_AND_GROUPS' | translate}}</ion-title>
-    <ion-buttons end>
-        <button ion-button icon-only (click)="goTOGuestEdit()">
-          <ion-icon name="add" float-end></ion-icon>
-        </button>
-      </ion-buttons>
-  </ion-navbar>
-  <ion-navbar *ngIf="noMemberSection">
+  <ion-navbar>
     <ion-title>
       {{'ADD_USERS_TO_GROUP' | translate}}
     </ion-title>
@@ -19,49 +11,37 @@
   </ion-navbar>
 </ion-header>
 <ion-content padding>
-  <ion-row  *ngIf="!noMemberSection">
+  <ion-row *ngIf="!noMemberSection">
     <ion-col class="rm-padding-left" col-md-4>
       <p *ngIf="usersList.length" text-left ion-text color="title" text-uppercase>
-        <b>{{usersList.length}}&nbsp;{{'USERS' | translate}}</b>
+        <b>{{usersList?.length}}&nbsp;{{'USERS' | translate}}</b>
       </p>
     </ion-col>
     <ion-col col-md-4 push-md-4 class="rm-padding-right">
-      <button class="rm-padding-right" ion-button  float-end clear (click)="selectAll()">{{'SELECT_ALL' | translate}}</button>
+      <button class="rm-padding-right" ion-button float-end clear (click)="selectAll()">{{'SELECT_ALL' | translate}}</button>
     </ion-col>
   </ion-row>
-  <!-- <ul id="list">
-    <li>{{usersList.length}}{{'USERS' | translate}}</li>
-    <li>{{'SELECT_ALL' | translate}}</li>
-  </ul> -->
-  <!-- ion nav bar testing-->
-  <!-- <ion-navbar class="custom-navbar" *ngIf="!noMemberSection">
-      <ion-title *ngIf="usersList.length" text-left ion-text color="title" text-uppercase
-      >{{usersList.length}}&nbsp;{{'USERS' | translate}}</ion-title>
-      <ion-buttons end>
-          <button ion-button  float-end clear (click)="selectAll()">{{'SELECT_ALL' | translate}}</button>
-        </ion-buttons>
-    </ion-navbar> -->
-  <!--ion navbar testing -->
 
   <div *ngIf="noMemberSection">
-  <div text-center>
-    <img *ngIf="usersList?.length == 0" class="rounded image-style" src="assets/imgs/ic_businessman.png" />
-    <h6><b>No Users On This Device</b></h6>
-    <p ion-text [color]="grey">A Group needs to have atleast one user in it</p>
-    <h6 ion-text color="primary">CREATE USER</h6>
-  </div>
+    <div text-center>
+      <img class="rounded image-style" src="assets/imgs/ic_businessman.png" />
+      <h6>
+        <b>{{'NO_USERS_ON_THIS_DEVICE' | translate}}</b>
+      </h6>
+      <p ion-text [color]="grey">{{'NO_USERS_SUGGESTION_MESSAGE' | translate}}</p>
+      <h6 ion-text color="primary">{{'CREATE_USER' | translate}}</h6>
+    </div>
   </div>
   <ion-item *ngFor="let user of usersList; let i = index;" class="item-background" margin-bottom no-lines>
-    {{user?.name}}
     <ion-label>
       <h6 class="line-height-2">
         <b>{{user?.handle}}</b>
       </h6>
-      <p>{{user?.profileType}}</p>
+      <p ion-text text-capitalize>{{user?.profileType}}</p>
     </ion-label>
     <ion-checkbox item-end mode="ios" checked="{{isUserSelected(i)}}" (click)="toggleSelect(i)"></ion-checkbox>
   </ion-item>
-  
+
 </ion-content>
 <ion-footer>
   <ion-row padding>

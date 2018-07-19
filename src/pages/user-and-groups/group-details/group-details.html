@@ -21,7 +21,9 @@
             <span *ngIf="user?.grade?.length">•</span> {{user?.grade}}</p>
         </ion-col>
         <ion-col col-2 push-1>
-          <ion-icon name="more" item-end (click)="presentPopover($event ,user)"></ion-icon>
+          <ion-item item-end>
+            <ion-icon name="more" item-end (click)="presentPopover($event ,user)"></ion-icon>
+          </ion-item>
         </ion-col>
       </ion-row>
     </ion-item>
