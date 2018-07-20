@@ -135,15 +135,20 @@ export class CreateGroupPage {
   updateGroup() {
     let formValue = this.groupEditForm.value;
     if (formValue.name) {
+      let loader = this.getLoader();
+      loader.present();
+
       this.group.name = formValue.name;
       this.group.grade = formValue.class;
       this.group.syllabus = (!formValue.syllabus.length) ? [] : [formValue.syllabus];
 
       this.groupService.updateGroup(this.group)
       .then((val) => {
+        loader.dismiss();
         this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
       })
       .catch((error) => {
+        loader.dismiss();
         console.log("Error : " + error);
       });
     }

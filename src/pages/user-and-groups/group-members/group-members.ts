@@ -5,7 +5,8 @@ import {
 import {
   IonicPage,
   NavController,
-  NavParams
+  NavParams,
+  LoadingController
 } from 'ionic-angular';
 import {
   GroupService,
@@ -16,6 +17,14 @@ import {
   AddUpdateProfilesRequest
 } from 'sunbird';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
+import { TranslateService } from '@ngx-translate/core';
+
+/* Interface for the Toast Object */
+export interface toastOptions {
+  message: string,
+  duration: number,
+  position: string
+};
 
 @IonicPage()
 @Component({
@@ -29,12 +38,21 @@ export class GroupMembersPage {
   userList: Array<Profile> = [];
   userSelectionMap: Map<string, boolean> = new Map();
 
+  options: toastOptions = {
+    message: '',
+    duration: 3000,
+    position: 'bottom'
+  };
+
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
     private groupService: GroupService,
     private profileService: ProfileService,
-    private zone: NgZone
+    private zone: NgZone,
+    private loadingCtrl: LoadingController,
+    private toastCtrl: LoadingController,
+    private translate: TranslateService
   ) {
     this.group = this.navParams.get('group');
   }
@@ -96,6 +114,8 @@ export class GroupMembersPage {
    */
   createGroup() {
     //    this.userSelectionMap.forEach(this.logMapElements);  //Need for code optimize
+    let loader = this.getLoader();
+    loader.present();
     let selectedUids: Array<string> = [];
     this.userList.forEach((item) => {
       if (Boolean(this.userSelectionMap.get(item.uid))) {
@@ -110,11 +130,17 @@ export class GroupMembersPage {
         }
         this.groupService.addUpdateProfilesToGroup(req).then((success) => {
           console.log(success);
+          loader.dismiss();
+          this.getToast(this.translateMessage('GROUP_CREATE_SUCCESS')).present();
           this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 3));
         }).catch((error) => {
+          loader.dismiss();
+          this.getToast(this.translateMessage('SOMETHING_WENT_WRONG')).present();
           console.log("Error : " + error);
         });;
       }).catch((error) => {
+        loader.dismiss();
+        this.getToast(this.translateMessage('SOMETHING_WENT_WRONG')).present();
         console.log("Error : " + error);
       });
   }
@@ -126,4 +152,38 @@ export class GroupMembersPage {
     console.log(`m[${key}] = ${value}`);
   }
 
+  /**
+ * Returns Loader Object
+ */
+  getLoader(): any {
+    return this.loadingCtrl.create({
+      duration: 30000,
+      spinner: "crescent"
+    });
+  }
+
+  /** It will returns Toast Object
+   * @param {message} string - Message for the Toast to show
+   * @returns {object} - toast Object
+   */
+  getToast(message: string = ''): any {
+    this.options.message = message;
+    if (message.length) return this.toastCtrl.create(this.options);
+  }
+
+  /**
+   * Used to Translate message to current Language
+   * @param {string} messageConst - Message Constant to be translated
+   * @param {string} field - The field to be added in the language constant
+   * @returns {string} translatedMsg - Translated Message
+   */
+  translateMessage(messageConst: string, field?: string): string {
+    let translatedMsg = '';
+    this.translate.get(messageConst, { '%s': field }).subscribe(
+      (value: any) => {
+        translatedMsg = value;
+      }
+    );
+    return translatedMsg;
+  }
 }

@@ -475,5 +475,6 @@
   "USER_TYPE_SELECT_WARNING": "Please choose user type",
   "NO_USERS": "No users",
   "USER_DELETE_CONFIRM": "Confirm Delete of '{{%s}}'?",
-  "USER_DELETE_CONFIRM_MESSAGE": "This action is Permanent,Once deleted the user cannot be accessed"
+  "USER_DELETE_CONFIRM_MESSAGE": "This action is Permanent,Once deleted the user cannot be accessed",
+  "GROUP_CREATE_SUCCESS": "Group created successfully"
 }
