@@ -1,13 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import {ReportService, ProfileService} from 'sunbird';
-
-/**
- * Generated class for the TablePage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import { Component, NgZone } from '@angular/core';
+import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
+import { ReportService, ProfileService, ReportSummary } from 'sunbird';
 
 @IonicPage()
 @Component({
@@ -17,68 +10,71 @@ import {ReportService, ProfileService} from 'sunbird';
 export class TablePage {
   categories: string;
   assessmentData;
-  columns;
-  
+  columns = [
+    {
+      name: 'Question (Marks)',
+      prop: 'qtitle',
+      sortable: true
+    }, {
+      name: 'Time',
+      prop: 'timespent',
+      sortable: true
+    }, {
+      name: 'Result',
+      prop: 'result',
+      sortable: false
+    }
+  ];
+
   constructor(
-    public navCtrl: NavController, 
+    public navCtrl: NavController,
     public navParams: NavParams,
     public reportService: ReportService,
-    public profileService: ProfileService) {
+    public profileService: ProfileService,
+    public loading: LoadingController,
+    public zone: NgZone) {
   }
-  
+
   convertTotalTime(time: number): string {
     var mm = Math.floor(time / 60);
     var ss = Math.floor(time % 60);
     return (mm > 9 ? mm : ("0" + mm)) + ":" + (ss > 9 ? ss : ("0" + ss));
   }
-  
+
   ionViewWillEnter() {
-    
+
+    let loader = this.loading.create({
+        spinner: "crescent"
+    });
+    loader.present();
+
     let that = this;
+
+    let reportSummary: ReportSummary = this.navParams.get('report');
     
-    this.profileService.getCurrentUser(user => {
-      user = JSON.parse(user)
-      new Promise((resolve, reject) => {
-        that.reportService.getListOfReports([user.uid]).then((data) => {
-          if (data.length > 0) {
-            that.reportService.getDetailReport([user.uid], data[0].contentId).then((reports) => {
-              resolve(reports.get(user.uid));
-            })
-          } else {
-            resolve([]);
-          }
-        })
-      }).then(function(response){
-        let data = response;
-        let rows = data['reportDetailsList'].map(row => {
-          return {
-            "qtitle": row.qtitle,
-            "result": row.score + '/' + row.maxScore,
-            "timespent": that.convertTotalTime(row.timespent),
-            "qdesc": row.qdesc
-          }
-        })
-        data['reportDetailsList'] = rows;
-        data['totalTime'] = that.convertTotalTime(data['totalTime']);
+    that.reportService.getDetailReport([reportSummary.uid], reportSummary.contentId)
+    .then(reportsMap => {
+      let data = reportsMap.get(reportSummary.uid);
+      let rows = data.reportDetailsList.map(row => {
+        return {
+          "qtitle": row.qtitle,
+          "result": row.score + '/' + row.maxScore,
+          "timespent": that.convertTotalTime(row.timespent),
+          "qdesc": row.qdesc
+        }
+      })
+      data['uiRows'] = rows;
+      data['uiTotalTime'] = that.convertTotalTime(data['totalTime']);
+      that.zone.run(() => {
+        loader.dismiss();
         that.assessmentData = data;
       });
-    }, error => {
-      console.error("Error", error);
-      return "null";
     })
-    this.columns = [{
-      name: 'Question (Marks)',
-      prop: 'qtitle',
-      sortable: true
-    },{
-      name: 'Time',
-      prop: 'timespent',
-      sortable: true
-    },{
-      name: 'Result',
-      prop: 'result',
-      sortable: false
-    }]
+    .catch(err => {
+      console.log(err);
+      loader.dismiss();
+    });
+    
   }
 
   goBack() {

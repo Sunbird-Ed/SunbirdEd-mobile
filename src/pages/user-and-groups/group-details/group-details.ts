@@ -18,8 +18,18 @@ import {
   Profile,
   ProfileRequest,
   GroupService,
-  ProfileService
+  ProfileService,
+  Group,
+  OAuthService,
+  ProfileType,
+  TabsPage,
+  ContainerService,
+  SharedPreferences
 } from 'sunbird';
+import { Events } from 'ionic-angular';
+import { AppGlobalService } from '../../../service/app-global.service';
+import { initTabs, GUEST_STUDENT_TABS, GUEST_TEACHER_TABS } from '../../../app/module.service';
+import { App } from 'ionic-angular';
 
 @IonicPage()
 @Component({
@@ -27,9 +37,12 @@ import {
   templateUrl: 'group-details.html',
 })
 export class GroupDetailsPage {
-  value = [];
+  group: Group;
+  currentUserId: string;
   userList: Array<Profile> = [];
-  groupInfo : any;
+
+  selectedUserIndex: number = -1;
+  profileDetails: any;
 
   constructor(
     private navCtrl: NavController,
@@ -39,21 +52,25 @@ export class GroupDetailsPage {
     private zone: NgZone,
     private translate: TranslateService,
     private popOverCtrl: PopoverController,
-    private alertCtrl: AlertController
-  ) {
-    this.value = this.navParams.get('item');
-    this.groupInfo = this.navParams.get('groupInfo'); 
-    console.log('groupInfo is',this.groupInfo);
+    private alertCtrl: AlertController,
+    private oauth: OAuthService,
+    private container: ContainerService,
+    private preferences: SharedPreferences,
+    private app: App,
+    private event: Events) {
+    this.group = this.navParams.get('groupInfo');
+    this.currentUserId = this.navParams.get('currentUserId');
+    this.profileDetails = this.navParams.get('profile');
   }
 
-  ionViewWillEnter() {
+  ionViewDidEnter() {
     this.getAllProfile();
   }
 
   getAllProfile() {
     let profileRequest: ProfileRequest = {
       local: true,
-      gid: this.groupInfo.gid
+      gid: this.group.gid
     };
 
     this.zone.run(() => {
@@ -68,6 +85,54 @@ export class GroupDetailsPage {
         console.log("Something went wrong while fetching user list", error);
       });
     });
+  }
+
+  selectUser(index: number, name: string) {
+    this.zone.run(() => {
+      this.selectedUserIndex = (this.selectedUserIndex === index) ? -1 : index;
+    });
+    console.log("Clicked list name is ", name);
+  }
+
+  /**
+  * Shows Prompt for switch Account
+  */
+  switchAccountConfirmBox() {
+    // TODO : Handle the Group switching
+    let selectedUser = this.userList[this.selectedUserIndex];
+
+    let alert = this.alertCtrl.create({
+      title: this.translateMessage('ARE_YOU_SURE_YOU_WANT_TO_SWITCH_ACCOUNT'),
+      mode: 'wp',
+      message: this.translateMessage('YOU_WILL_BE_SIGNED_OUT_FROM_YOUR_CURRENTLY_LOGGED_IN_ACCOUNT'),
+      cssClass: 'confirm-alert',
+      buttons: [
+        {
+          text: this.translateMessage('CANCEL'),
+          role: 'cancel',
+          cssClass: 'alert-btn-cancel',
+          handler: () => {
+            console.log('Cancel clicked' + selectedUser);
+          }
+        },
+        {
+          text: this.translateMessage('OKAY'),
+          cssClass: 'alert-btn-delete',
+          handler: () => {
+            this.oauth.doLogOut();
+            (<any>window).splashscreen.clearPrefs();
+            this.setAsCurrentUser(selectedUser);
+          }
+        }
+      ]
+    });
+
+    if (this.profileDetails && this.profileDetails.id) {
+      alert.present();
+    } else {
+      this.setAsCurrentUser(selectedUser);
+    }
+
   }
 
   presentPopoverNav(myEvent) {
@@ -157,6 +222,28 @@ export class GroupDetailsPage {
       }
     );
     return translatedMsg;
+  }
+
+  private setAsCurrentUser(selectedUser) {
+    this.groupService.setCurrentGroup(this.group.gid);
+
+    this.profileService.setCurrentUser(selectedUser.uid, (success) => {
+      this.event.publish('refresh:profile');
+      this.event.publish(AppGlobalService.USER_INFO_UPDATED);
+
+      if (selectedUser.profileType == ProfileType.STUDENT) {
+        initTabs(this.container, GUEST_STUDENT_TABS);
+        this.preferences.putString('selected_user_type', ProfileType.STUDENT);
+      } else {
+        initTabs(this.container, GUEST_TEACHER_TABS);
+        this.preferences.putString('selected_user_type', ProfileType.TEACHER);
+      }
+
+      this.app.getRootNav().setRoot(TabsPage);
+
+    }, (error) => {
+      console.log("Error " + error);
+    });
   }
 
 }

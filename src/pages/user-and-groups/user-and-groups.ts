@@ -190,11 +190,11 @@ export class UserAndGroupsPage {
   }
 
   /**Navigates to group details page */
-  goToGroupDetail(index) {
-    console.log(index);
-    let self = this;
-    this.navCtrl.push(GroupDetailsPage, {
-      groupInfo: self.groupList[index]
+  goToGroupDetail(index){
+    this.navCtrl.push(GroupDetailsPage , {
+      groupInfo: this.groupList[index],
+      currentUserId: this.currentUserId,
+      profile: this.profileDetails
     });
   }
 
@@ -372,6 +372,8 @@ export class UserAndGroupsPage {
   }
 
   private setAsCurrentUser(selectedUser) {
+    this.groupService.setCurrentGroup(null);
+
     this.profileService.setCurrentUser(selectedUser.uid, (success) => {
       this.event.publish('refresh:profile');
       this.event.publish(AppGlobalService.USER_INFO_UPDATED);
