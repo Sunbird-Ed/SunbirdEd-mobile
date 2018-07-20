@@ -4,15 +4,19 @@ import {
 } from '@angular/core';
 import {
   NavController,
-  NavParams
+  NavParams,
+  LoadingController
 } from 'ionic-angular';
 import {
   GroupService,
   Group,
   Profile,
   ProfileRequest,
-  ProfileService
+  ProfileService,
+  ProfileExportRequest,
+  FileUtil
 } from 'sunbird';
+import { SocialSharing } from '@ionic-native/social-sharing';
 
 @Component({
   selector: 'page-share-user-and-groups',
@@ -30,11 +34,12 @@ export class ShareUserAndGroupPage {
   private userGroupMap: Map<string, Array<Profile>> = new Map();
 
   constructor(
-    private navCtrl: NavController,
-    private navParams: NavParams,
     private groupService: GroupService,
     private profileService: ProfileService,
-    private zone: NgZone
+    private zone: NgZone,
+    private fileUtil: FileUtil,
+    private socialShare: SocialSharing,
+    private loadingCtrl: LoadingController
   ) {
 
   }
@@ -166,6 +171,25 @@ export class ShareUserAndGroupPage {
   }
 
   share() {
-    
+    let profileExportRequest: ProfileExportRequest = {
+      userIds: this.selectedUserList,
+      groupIds: this.selectedGroupList,
+      destinationFolder: this.fileUtil.internalStoragePath()
+    }
+
+    let loader = this.loadingCtrl.create({
+      duration: 30000,
+      spinner: "crescent"
+    });
+
+    loader.present();
+
+    this.profileService.exportProfile(profileExportRequest, (path) => {
+      path = JSON.parse(path);
+      loader.dismiss();
+      this.socialShare.share("", "", "file://" + path.exportedFilePath, "");
+    }, (err) => {
+      loader.dismiss();
+    });
   }
 }
