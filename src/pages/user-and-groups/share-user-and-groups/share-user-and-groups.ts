@@ -28,13 +28,13 @@ export class ShareUserAndGroupPage {
   groupSelectionMap: Map<string, boolean> = new Map();
 
   constructor(
-    public navCtrl: NavController,
-    public navParams: NavParams,
+    private navCtrl: NavController,
+    private navParams: NavParams,
     private groupService: GroupService,
     private profileService: ProfileService,
     private zone: NgZone
   ) {
-    
+
   }
 
   ionViewWillEnter() {
