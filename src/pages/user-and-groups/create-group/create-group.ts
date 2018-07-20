@@ -116,7 +116,7 @@ export class CreateGroupPage {
     let formValue = this.groupEditForm.value;
     if (formValue.name) {
       this.group.name = formValue.name;
-      this.group.grade = formValue.class;
+      this.group.grade = (!formValue.class.length) ? [] : [formValue.class];
       this.group.syllabus = (!formValue.syllabus.length) ? [] : [formValue.syllabus];
       this.group.uids = [];
 
