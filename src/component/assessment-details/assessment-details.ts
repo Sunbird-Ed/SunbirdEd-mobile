@@ -1,4 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { PopoverController } from 'ionic-angular';
+import { ReportAlert } from '../../pages/reports/report-alert/report-alert';
 
 /**
  * Generated class for the AssessmentDetailsComponent component.
@@ -11,24 +13,15 @@ import { Component, OnInit, Input } from '@angular/core';
   templateUrl: './assessment-details.html'
 })
 export class AssessmentDetailsComponent implements OnInit {
-
-  totalTime: string; totalScore: string; categories: string;
-  @Input() rows: any;
+  
+  constructor(public popoverCtrl: PopoverController) {
+  }
+  categories: string;
+  @Input() assessmentData: any;
   @Input() columns: any;
 
   ngOnInit() {
-    let data = this.rows;   
-    let totalQuestionMaxScore = data.reduce(function (acc, val) { return acc + val.maxScore; }, 0)
-    let totalQuestionScore = data.reduce(function (acc, val) { return acc + val.score; }, 0)
-    let totalTimeSpent = data.reduce(function (acc, val) { return acc + val.timespent; }, 0)
-    this.totalTime = this.convertTotalTime(totalTimeSpent);
-    this.totalScore = totalQuestionScore + '/' + totalQuestionMaxScore;
-  }
-
-  convertTotalTime(time: number): string {
-    var mm = Math.floor(time / 60);
-    var ss = Math.floor(time % 60);
-    return (mm > 9 ? mm : ("0" + mm)) + ":" + (ss > 9 ? ss : ("0" + ss));
+    let data = this.assessmentData;   
   }
 
   // Function to add a custom class to columns
@@ -38,7 +31,7 @@ export class AssessmentDetailsComponent implements OnInit {
       case "QTITLE":
         className = " datatable-body-cell-qtitle";
         break;
-      case "TIME":
+      case "TIMESPENT":
         className = " datatable-body-cell-time";
         break;
       case "RESULT":
@@ -48,7 +41,15 @@ export class AssessmentDetailsComponent implements OnInit {
     return className;
   }
 
-  constructor() {
+  onActivate(event) {
+    let popover = this.popoverCtrl.create(ReportAlert,undefined, { cssClass: 'resource-filter' });
+    popover.present({
+      ev: event
+    });
+    console.log('Activate Event', event);
+    let data = event.row;
   }
+
+
 
 }
