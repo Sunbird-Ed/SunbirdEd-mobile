@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
+import {
+  IonicPage,
+  NavController,
+  NavParams
+} from 'ionic-angular';
 
 /**
  * Generated class for the GroupDetailNavPopoverPage page.
@@ -17,24 +20,25 @@ import { TranslateService } from '@ngx-translate/core';
 export class GroupDetailNavPopoverPage {
 
   constructor(
-    public navCtrl: NavController,
-    public navParams: NavParams,
-    public translate: TranslateService
+    private navCtrl: NavController,
+    private navParams: NavParams,
   ) {
   }
 
   goToEditGroup() {
     this.navParams.get('goToEditGroup')();
   }
+
   deleteGroup() {
     this.navParams.get('deleteGroup')();
   }
+
   addUsers() {
     this.navParams.get('addUsers')();
   }
+
   removeUser() {
     this.navParams.get('removeUser')();
   }
-
 
 }

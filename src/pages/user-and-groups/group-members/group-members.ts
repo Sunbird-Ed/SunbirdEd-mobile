@@ -26,12 +26,12 @@ export class GroupMembersPage {
 
   group: Group;
   noMemberSection: boolean = true;
-  usersList: Array<Profile> = [];
+  userList: Array<Profile> = [];
   userSelectionMap: Map<string, boolean> = new Map();
 
   constructor(
-    public navCtrl: NavController,
-    public navParams: NavParams,
+    private navCtrl: NavController,
+    private navParams: NavParams,
     private groupService: GroupService,
     private profileService: ProfileService,
     private zone: NgZone
@@ -52,7 +52,7 @@ export class GroupMembersPage {
       this.profileService.getAllUserProfile(profileRequest).then((profiles) => {
         this.zone.run(() => {
           if (profiles && profiles.length) {
-            this.usersList = JSON.parse(profiles);
+            this.userList = JSON.parse(profiles);
             this.noMemberSection = false;
           }
           console.log("UserList", profiles);
@@ -64,25 +64,25 @@ export class GroupMembersPage {
   }
 
   toggleSelect(index: number) {
-    let value = this.userSelectionMap.get(this.usersList[index].uid)
+    let value = this.userSelectionMap.get(this.userList[index].uid)
     if (value) {
       value = false;
     } else {
       value = true;
     }
-    this.userSelectionMap.set(this.usersList[index].uid, value);
+    this.userSelectionMap.set(this.userList[index].uid, value);
   }
 
   isUserSelected(index: number) {
     console.log("Index", index);
-    return Boolean(this.userSelectionMap.get(this.usersList[index].uid));
+    return Boolean(this.userSelectionMap.get(this.userList[index].uid));
   }
 
   selectAll() {
     this.userSelectionMap.clear();
     this.zone.run(() => {
-      for (var i = 0; i < this.usersList.length; i++) {
-        this.userSelectionMap.set(this.usersList[i].uid, true);
+      for (var i = 0; i < this.userList.length; i++) {
+        this.userSelectionMap.set(this.userList[i].uid, true);
       }
     });
   }
@@ -97,7 +97,7 @@ export class GroupMembersPage {
   createGroup() {
     //    this.userSelectionMap.forEach(this.logMapElements);  //Need for code optimize
     let selectedUids: Array<string> = [];
-    this.usersList.forEach((item) => {
+    this.userList.forEach((item) => {
       if (Boolean(this.userSelectionMap.get(item.uid))) {
         selectedUids.push(item.uid);
       }
