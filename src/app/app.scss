@@ -418,3 +418,12 @@ ul.rating .ion-md-star-outline:before {
 .line-height-2 {
   line-height: 2rem !important;
 }
+
+.circle {
+  display: map-get($colors, gray);
+  background: map-get($colors, gray);;
+  border-radius: 50%;
+  height: 0.6rem;
+  width: 0.6rem;
+  margin: 0;
+}

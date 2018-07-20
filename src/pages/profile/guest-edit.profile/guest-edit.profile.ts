@@ -41,6 +41,7 @@ export class GuestEditProfilePage {
   loader: any;
   isNewUser: boolean = false;
   unregisterBackButton: any;
+  isCurrentUser: boolean = true;
 
   options: toastOptions = {
     message: '',
@@ -88,7 +89,8 @@ export class GuestEditProfilePage {
     private ionicApp: IonicApp
   ) {
     this.profile = this.navParams.get('profile') || {};
-    this.isNewUser = this.navParams.get('isNewUser');
+    this.isNewUser = Boolean(this.navParams.get('isNewUser'));
+    this.isCurrentUser = Boolean(this.navParams.get('isCurrentUser'));
 
     /* Initialize form with default values */
     this.guestEditForm = this.fb.group({
@@ -192,10 +194,6 @@ export class GuestEditProfilePage {
    * @param {string} list - Local variable name to hold the list data
    */
   getCategoryData(req: CategoryRequest, list): void {
-    // let loader = this.getLoader();
-    // if (list === 'boardList') {
-    //   loader.present();
-    // }
     this.formAndFrameworkUtilService.getCategoryData(req, this.frameworkId).
       then((result) => {
 
@@ -322,16 +320,7 @@ export class GuestEditProfilePage {
     this.profileService.updateProfile(req,
       (res: any) => {
         console.log("Update Response", res);
-
-        // Publish event if the all the fields are submitted
-        if (formVal.syllabus.length && formVal.boards.length && formVal.grades.length && formVal.medium.length && formVal.subjects.length) {
-          this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: true });
-        } else {
-          this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: false });
-        }
-        this.events.publish('refresh:profile');
-        this.events.publish('refresh:onboardingcard');
-
+        this.isCurrentUser && this.publishProfileEvents(formVal);
         loader.dismiss();
         this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
         this.navCtrl.pop();
@@ -343,6 +332,16 @@ export class GuestEditProfilePage {
       });
   }
 
+  publishProfileEvents(formVal) {
+    // Publish event if the all the fields are submitted
+    if (formVal.syllabus.length && formVal.boards.length && formVal.grades.length && formVal.medium.length && formVal.subjects.length) {
+      this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: true });
+    } else {
+      this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: false });
+    }
+    this.events.publish('refresh:profile');
+    this.events.publish('refresh:onboardingcard');
+  }
   /**
    * It will submit new user form
    */

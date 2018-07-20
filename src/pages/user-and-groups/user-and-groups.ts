@@ -75,7 +75,6 @@ export class UserAndGroupsPage {
 
     this.isLoggedInUser = this.navParams.get('isLoggedInUser');
     this.profileDetails = this.navParams.get('profile');
-    console.log(this.profileDetails);
   }
 
   ionViewWillEnter() {
@@ -101,8 +100,11 @@ export class UserAndGroupsPage {
     let self = this;
     let popover = this.popOverCtrl.create(PopoverPage, {
       edit: function () {
-        if (name = 'users') {
-          self.navCtrl.push(GuestEditProfilePage)
+        if(name == 'users') {
+          self.navCtrl.push(GuestEditProfilePage, {
+            profile: self.userList[index],
+            isCurrentUser: (self.currentUserId === self.userList[index].uid) ? true : false
+          })
         } else {
           self.navCtrl.push('CreateGroupPage', {
             groupInfo: self.groupList[index]
