@@ -92,6 +92,8 @@ export class GuestEditProfilePage {
     this.isNewUser = Boolean(this.navParams.get('isNewUser'));
     this.isCurrentUser = Boolean(this.navParams.get('isCurrentUser'));
 
+    console.log(this.profile);
+
     /* Initialize form with default values */
     this.guestEditForm = this.fb.group({
       profileType: [this.profile.profileType || 'STUDENT'],
