@@ -39,6 +39,7 @@ import { App } from 'ionic-angular';
 export class GroupDetailsPage {
   group: Group;
   currentUserId: string;
+
   userList: Array<Profile> = [];
 
   selectedUserIndex: number = -1;
@@ -86,6 +87,8 @@ export class GroupDetailsPage {
       });
     });
   }
+
+
 
   selectUser(index: number, name: string) {
     this.zone.run(() => {
@@ -225,25 +228,31 @@ export class GroupDetailsPage {
   }
 
   private setAsCurrentUser(selectedUser) {
-    this.groupService.setCurrentGroup(this.group.gid);
+    this.groupService.setCurrentGroup(this.group.gid)
+      .then(val => {
+        console.log("Value : " + val);
+        this.profileService.setCurrentUser(selectedUser.uid, (success) => {
+          this.event.publish('refresh:profile');
+          this.event.publish(AppGlobalService.USER_INFO_UPDATED);
 
-    this.profileService.setCurrentUser(selectedUser.uid, (success) => {
-      this.event.publish('refresh:profile');
-      this.event.publish(AppGlobalService.USER_INFO_UPDATED);
+          if (selectedUser.profileType == ProfileType.STUDENT) {
+            initTabs(this.container, GUEST_STUDENT_TABS);
+            this.preferences.putString('selected_user_type', ProfileType.STUDENT);
+          } else {
+            initTabs(this.container, GUEST_TEACHER_TABS);
+            this.preferences.putString('selected_user_type', ProfileType.TEACHER);
+          }
 
-      if (selectedUser.profileType == ProfileType.STUDENT) {
-        initTabs(this.container, GUEST_STUDENT_TABS);
-        this.preferences.putString('selected_user_type', ProfileType.STUDENT);
-      } else {
-        initTabs(this.container, GUEST_TEACHER_TABS);
-        this.preferences.putString('selected_user_type', ProfileType.TEACHER);
-      }
+          this.app.getRootNav().setRoot(TabsPage);
 
-      this.app.getRootNav().setRoot(TabsPage);
+        }, (error) => {
+          console.log("Error " + error);
+        });
+      }).catch(error => {
+        console.log("Error : " + error);
+      });
 
-    }, (error) => {
-      console.log("Error " + error);
-    });
+
   }
 
 }
