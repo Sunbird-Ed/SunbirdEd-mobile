@@ -69,7 +69,7 @@ export class UserAndGroupsPage {
     /* Check userList length and show message or list accordingly */
     this.currentUserId = this.navParams.get('userId');
 
-    if (!this.currentUserId &&  this.appGlobalService.getCurrentUser()) {
+    if (!this.currentUserId && this.appGlobalService.getCurrentUser()) {
       this.currentUserId = this.appGlobalService.getCurrentUser().uid;
     }
 
@@ -79,10 +79,8 @@ export class UserAndGroupsPage {
   }
 
   ionViewWillEnter() {
-    this.zone.run(() => {
-      this.getAllProfile();
-      this.getAllGroup();
-    });
+    this.getAllProfile();
+    this.getAllGroup();
 
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
       this.dismissPopup();
@@ -103,13 +101,13 @@ export class UserAndGroupsPage {
     let self = this;
     let popover = this.popOverCtrl.create(PopoverPage, {
       edit: function () {
-        if(name='users'){
+        if (name = 'users') {
           self.navCtrl.push(GuestEditProfilePage)
         } else {
-        self.navCtrl.push('CreateGroupPage', {
-          groupInfo: self.groupList[index]
-        });
-      }
+          self.navCtrl.push('CreateGroupPage', {
+            groupInfo: self.groupList[index]
+          });
+        }
         popover.dismiss()
       },
       delete: function ($event) {
@@ -127,10 +125,11 @@ export class UserAndGroupsPage {
   }
 
   getAllProfile() {
+    let profileRequest: ProfileRequest = {
+      local: true
+    };
+
     this.zone.run(() => {
-      let profileRequest: ProfileRequest = {
-        local: true
-      };
       this.profileService.getAllUserProfile(profileRequest).then((profiles) => {
         if (profiles && profiles.length) {
           this.showEmptyUsersMessage = false;
