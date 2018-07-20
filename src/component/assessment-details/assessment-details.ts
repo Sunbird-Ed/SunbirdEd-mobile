@@ -2,12 +2,6 @@ import { Component, OnInit, Input } from '@angular/core';
 import { PopoverController } from 'ionic-angular';
 import { ReportAlert } from '../../pages/reports/report-alert/report-alert';
 
-/**
- * Generated class for the AssessmentDetailsComponent component.
- *
- * See https://angular.io/api/core/Component for more info on Angular
- * Components.
- */
 @Component({
   selector: 'assessment-details',
   templateUrl: './assessment-details.html'

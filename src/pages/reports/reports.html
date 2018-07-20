@@ -63,7 +63,8 @@
             <ion-item no-padding  ng-if="users.length > 0">
                 <p>{{ "OTHER USERS" }}</p>
             </ion-item>
-            <ion-item class="bgColor" (click)="goToReportList(user)" *ngFor="let user of users;let i=index" ng-if="users.length > 0">
+            <ion-item class="bgColor" (click)="goToReportList(user)" 
+            *ngFor="let user of otherUsers;let i=index" ng-if="otherUsers.length > 0">
                 <h2>{{user?.handle}}</h2>
                 <p>{{user?.profileType}}</p>
                 <ion-icon name="ios-arrow-forward" item-end></ion-icon>
