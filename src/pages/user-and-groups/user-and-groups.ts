@@ -107,31 +107,27 @@ export class UserAndGroupsPage {
     }
   }
 
-  presentPopover(myEvent, index, type) {
-    let self = this;
+  presentPopover(myEvent, index, isUser) {
     let popover = this.popOverCtrl.create(PopoverPage, {
-      edit: function () {
-        if (type == 'isGroup') {
-          self.navCtrl.push('CreateGroupPage', {
-            groupInfo: self.groupList[index]
+      edit: () => {
+        if(isUser) {
+          this.navCtrl.push(GuestEditProfilePage, {
+            profile: this.userList[index],
+            isCurrentUser: (this.currentUserId === this.userList[index].uid) ? true : false
           });
         } else {
-          self.navCtrl.push(GuestEditProfilePage, {
-            profile: self.userList[index],
-            isCurrentUser: (self.currentUserId === self.userList[index].uid) ? true : false
-          })
+          this.navCtrl.push('CreateGroupPage', {
+            groupInfo: this.groupList[index]
+          });
         }
-        popover.dismiss()
+        popover.dismiss();
       },
-      delete: function ($event) {
-        self.deleteGroupConfirmBox(index, name);
-        self.groupService.deleteGroup(index).then((response)=>{
-          console.log(response);
-          self.groupList.splice(index,1);
-        }).catch((error)=>{
-          console.log("error is" +" "+error);
-        })
-
+      delete: ($event) => {
+        if (isUser) {
+          this.deleteUserConfirmBox(index);
+        } else {
+          this.deleteGroupConfirmBox(index);
+        }
         popover.dismiss()
       },
       isCurrentUser: false
@@ -194,10 +190,10 @@ export class UserAndGroupsPage {
   }
 
   /**Navigates to group details page */
-  goToGroupDetail(index){
+  goToGroupDetail(index) {
     console.log(index);
     let self = this;
-    this.navCtrl.push(GroupDetailsPage , {
+    this.navCtrl.push(GroupDetailsPage, {
       groupInfo: self.groupList[index]
     });
   }
@@ -289,10 +285,10 @@ export class UserAndGroupsPage {
   }
 
   /** Delete alert box */
-  deleteGroupConfirmBox(index, name) {
+  deleteGroupConfirmBox(index) {
     let self = this;
     let alert = this.alertCtrl.create({
-      title: this.translateMessage('GROUP_DELETE_CONFIRM', name),
+      title: this.translateMessage('GROUP_DELETE_CONFIRM', this.groupList[index].name),
       mode: 'wp',
       message: this.translateMessage('GROUP_DELETE_CONFIRM_MESSAGE'),
       cssClass: 'confirm-alert',
@@ -321,6 +317,43 @@ export class UserAndGroupsPage {
     });
     alert.present();
   }
+
+  /** Delete alert box */
+  deleteUserConfirmBox(index) {
+    //let self = this;
+    let alert = this.alertCtrl.create({
+      title: this.translateMessage('USER_DELETE_CONFIRM', this.userList[index].handle),
+      mode: 'wp',
+      message: this.translateMessage('USER_DELETE_CONFIRM_MESSAGE'),
+      cssClass: 'confirm-alert',
+      buttons: [
+        {
+          text: this.translateMessage('CANCEL'),
+          role: 'cancel',
+          cssClass: 'alert-btn-cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: this.translateMessage('Yes'),
+          cssClass: 'alert-btn-delete',
+          handler: () => {
+            let request = this.userList[index].uid;
+            this.profileService.deleteUser(request,
+              (result) => {
+                console.log("User Deleted Successfully", result);
+                this.userList.splice(index, 1) ;
+              }, (error) => {
+                console.error("Error Occurred=", error);
+              });
+          }
+        }
+      ]
+    });
+    alert.present();
+  }
+
 
   /**
    * Used to Translate message to current Language

@@ -75,7 +75,7 @@
     </ion-item>
 
     <!-- Subjects -->
-    <ion-item>
+    <ion-item no-lines>
       <ion-label stacked text-uppercase class="label-font">{{'SUBJECTS' | translate }}
       </ion-label>
       <ion-select multiple="true" [selectOptions]="subjectsOptions" text-capitalize [disabled]="!(guestEditForm.value.grades != '')"
