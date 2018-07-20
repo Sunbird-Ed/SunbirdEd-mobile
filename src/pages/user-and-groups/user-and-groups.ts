@@ -48,6 +48,7 @@ export class UserAndGroupsPage {
   showEmptyGroupsMessage: boolean = true;
   isLoggedInUser: boolean = false;
   currentUserId: string;
+  currentGroupId: string;
 
   userList: Array<Profile> = [];
   groupList: Array<Group> = [];
@@ -91,10 +92,24 @@ export class UserAndGroupsPage {
   ionViewWillEnter() {
     this.getAllProfile();
     this.getAllGroup();
+    this.getCurrentGroup();
 
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
       this.dismissPopup();
     }, 11);
+  }
+
+  getCurrentGroup() {
+    this.groupService.getCurrentGroup().then(val => {
+      console.log("Value : " + val);
+      let group = val.result;
+      this.zone.run(() => {
+        console.log("Value : " + group.gid);
+        this.currentGroupId = group.gid
+      })
+    }).catch(error => {
+      console.log("Error : " + error);
+    })
   }
 
   dismissPopup() {
@@ -190,8 +205,8 @@ export class UserAndGroupsPage {
   }
 
   /**Navigates to group details page */
-  goToGroupDetail(index){
-    this.navCtrl.push(GroupDetailsPage , {
+  goToGroupDetail(index) {
+    this.navCtrl.push(GroupDetailsPage, {
       groupInfo: this.groupList[index],
       currentUserId: this.currentUserId,
       profile: this.profileDetails
@@ -372,7 +387,13 @@ export class UserAndGroupsPage {
   }
 
   private setAsCurrentUser(selectedUser) {
-    this.groupService.setCurrentGroup(null);
+    this.groupService.setCurrentGroup(null)
+      .then(val => {
+        console.log("Value : " + val);
+      })
+      .catch(error => {
+        console.log("Error : " + error);
+      });
 
     this.profileService.setCurrentUser(selectedUser.uid, (success) => {
       this.event.publish('refresh:profile');
