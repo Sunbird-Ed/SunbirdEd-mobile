@@ -14,23 +14,28 @@ import {ReportService, ProfileService} from 'sunbird';
   selector: 'page-table',
   templateUrl: 'table.html',
 })
-export class TablePage implements OnInit {
+export class TablePage {
   categories: string;
   assessmentData;
   columns;
+  
   constructor(
     public navCtrl: NavController, 
     public navParams: NavParams,
     public reportService: ReportService,
     public profileService: ProfileService) {
   }
+  
   convertTotalTime(time: number): string {
     var mm = Math.floor(time / 60);
     var ss = Math.floor(time % 60);
     return (mm > 9 ? mm : ("0" + mm)) + ":" + (ss > 9 ? ss : ("0" + ss));
   }
-  ngOnInit() {
+  
+  ionViewWillEnter() {
+    
     let that = this;
+    
     this.profileService.getCurrentUser(user => {
       user = JSON.parse(user)
       new Promise((resolve, reject) => {

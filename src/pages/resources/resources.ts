@@ -272,26 +272,20 @@ export class ResourcesPage implements OnInit {
 			contentTypes: ContentType.FOR_LIBRARY_TAB,
 			audience: this.audienceFilter
 		};
-		this.contentService.getAllLocalContents(requestParams, (data: any) => {
-			data = JSON.parse(data);
-			console.log('Success: saved resources', data);
-			this.ngZone.run(() => {
-				if (data.result) {
-					//TODO Temporary code - should be fixed at backend
-					_.forEach(data.result, (value, key) => {
-						value.contentData.lastUpdatedOn = value.lastUpdatedTime;
-						if (value.contentData.appIcon) {
-							value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
-						}
-					});
-					this.localResources = data.result;
-					console.log('Success: localResources resources', this.localResources);
-
+		this.contentService.getAllLocalContents(requestParams)
+		.then(data => {
+			_.forEach(data, (value, key) => {
+				value.contentData.lastUpdatedOn = value.lastUpdatedTime;
+				if (value.contentData.appIcon) {
+					value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
 				}
+			});
+			this.ngZone.run(() => {
+				this.localResources = data;
 				this.showLoader = false;
 			});
-		}, error => {
-			console.log('error while getting saved contents', error);
+		})
+		.catch(err => {
 			this.ngZone.run(() => {
 				this.showLoader = false;
 			});

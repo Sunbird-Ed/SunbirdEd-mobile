@@ -306,32 +306,25 @@ export class ViewMoreActivityPage implements OnInit {
 		const requestParams = {
 			contentTypes: ContentType.FOR_LIBRARY_TAB
 		};
-		this.contentService.getAllLocalContents(requestParams, (res: any) => {
-			let data = JSON.parse(res);
-			console.log('Success: saved resources...', data);
-			this.ngZone.run(() => {
-				if (data.result) {
-					let contentData = [];
-					// TODO Temporary code - should be fixed at backend
-					_.forEach(data.result, (value, key) => {
-						value.contentData.lastUpdatedOn = value.lastUpdatedTime;
-						value.createdOn = value.contentData.createdOn;
-						if (value.contentData.appIcon && value.basePath) {
-							value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
-						}
-						contentData.push(value.contentData)
-					});
-					this.searchList = contentData;
+		this.contentService.getAllLocalContents(requestParams)
+		.then(data => {
+			let contentData = [];
+			_.forEach(data, (value, key) => {
+				value.contentData.lastUpdatedOn = value.lastUpdatedTime;
+				if (value.contentData.appIcon) {
+					value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
 				}
+				contentData.push(value.contentData);
+			});
+			this.ngZone.run(() => {
+				this.searchList = contentData;
 				loader.dismiss();
 				this.loadMoreBtn = false;
 			});
-		}, error => {
-			console.log('error while getting saved contents', error);
+		})
+		.catch(err => {
 			loader.dismiss();
 		});
-
-
 	}
 
 	getContentDetails(content) {
