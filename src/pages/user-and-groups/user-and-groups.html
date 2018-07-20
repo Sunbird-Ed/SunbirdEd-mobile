@@ -97,8 +97,8 @@
           <ion-item *ngFor="let group of groupList; let i = index" class="item-background radius" margin-top margin-bottom no-lines>
             <ion-row class="bg-color-white">
               <ion-col col-11 class="bg-color-white">
-                <ion-item class="bg-color-white padding-left-0 rm-label-margin" no-padding>
-                  <h6 class="line-height-2" (click)="goToGroupDetail(i)">
+                <ion-item class="bg-color-white padding-left-0 rm-label-margin" no-padding  (click)="goToGroupDetail(i)">
+                  <h6 class="line-height-2">
                     <b>{{group?.name}}</b>
                   </h6>
                   <p ion-text color="text_gray" *ngIf="group?.grade">{{group?.grade[0]}}

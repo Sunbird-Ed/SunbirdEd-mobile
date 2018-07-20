@@ -3,6 +3,12 @@ page-group-member {
     //     background-color: #f4f4f4;
     // }
 
+    .blueBorder {
+      border-color: map-get($colors, primary) !important;
+      border-style: solid !important;
+      border-width: 2px !important;
+      border-radius: 4px;
+    }
     .radius{
         border-radius: 6px;
       }
