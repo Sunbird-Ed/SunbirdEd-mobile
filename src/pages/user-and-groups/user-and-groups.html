@@ -65,7 +65,7 @@
               </ion-col>
               <ion-col col-1 class="advanced-menu">
                 <ion-item item-end class="bg-color-white">
-                  <ion-icon class="line-height-2" name="more" item-end (click)="presentPopover($event ,index,'users')"></ion-icon>
+                  <ion-icon class="line-height-2" name="more" item-end (click)="presentPopover($event,index,name ,'isUser')"></ion-icon>
                 </ion-item>
               </ion-col>
             </ion-row>
@@ -98,7 +98,7 @@
             <ion-row class="bg-color-white">
               <ion-col col-11 class="bg-color-white">
                 <ion-item class="bg-color-white padding-left-0 rm-label-margin" no-padding>
-                  <h6 class="line-height-2" (click)="goToGroupDetail()">
+                  <h6 class="line-height-2" (click)="goToGroupDetail(i)">
                     <b>{{group?.name}}</b>
                   </h6>
                   <p *ngIf="group?.grade">{{group?.grade[0]}}
@@ -110,7 +110,7 @@
               </ion-col>
               <ion-col col-1 class="advanced-menu">
                 <ion-item item-end class="bg-color-white">
-                  <ion-icon class="line-height-2" name="more" item-end (click)="presentPopover($event, i , group.name)"></ion-icon>
+                  <ion-icon class="line-height-2" name="more" item-end (click)="presentPopover($event, i , group.name , 'isGroup')"></ion-icon>
                 </ion-item>
               </ion-col>
             </ion-row>

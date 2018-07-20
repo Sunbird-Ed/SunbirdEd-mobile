@@ -29,6 +29,7 @@ import {
 export class GroupDetailsPage {
   value = [];
   userList: Array<Profile> = [];
+  groupInfo : any;
 
   constructor(
     private navCtrl: NavController,
@@ -41,6 +42,8 @@ export class GroupDetailsPage {
     private alertCtrl: AlertController
   ) {
     this.value = this.navParams.get('item');
+    this.groupInfo = this.navParams.get('groupInfo'); 
+    console.log('groupInfo is',this.groupInfo);
   }
 
   ionViewWillEnter() {
@@ -49,7 +52,8 @@ export class GroupDetailsPage {
 
   getAllProfile() {
     let profileRequest: ProfileRequest = {
-      local: true
+      local: true,
+      gid: this.groupInfo.gid
     };
 
     this.zone.run(() => {

@@ -109,8 +109,11 @@ export class GroupMembersPage {
           uidList: selectedUids
         }
         this.groupService.addUpdateProfilesToGroup(req).then((success) => {
+          console.log(success);
           this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 3));
-        });
+        }).catch((error) => {
+          console.log("Error : " + error);
+        });;
       }).catch((error) => {
         console.log("Error : " + error);
       });

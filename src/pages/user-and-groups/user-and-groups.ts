@@ -108,21 +108,30 @@ export class UserAndGroupsPage {
     }
   }
 
-  presentPopover(myEvent, index, name) {
+  presentPopover(myEvent, index, name, Type) {
     let self = this;
     let popover = this.popOverCtrl.create(PopoverPage, {
       edit: function () {
-        if (name = 'users') {
-          self.navCtrl.push(GuestEditProfilePage)
-        } else {
+        if (Type == 'isGroup') {
           self.navCtrl.push('CreateGroupPage', {
             groupInfo: self.groupList[index]
+          });
+        } else {
+          self.navCtrl.push(GuestEditProfilePage , {
+            profile : self.userList[index]
           });
         }
         popover.dismiss()
       },
       delete: function ($event) {
         self.deleteGroupConfirmBox(index, name);
+        self.groupService.deleteGroup(index).then((response)=>{
+          console.log(response);
+          self.groupList.splice(index,1);
+        }).catch((error)=>{
+          console.log("error is" +" "+error);
+        })
+        
         popover.dismiss()
       },
       isCurrentUser: false
@@ -185,8 +194,12 @@ export class UserAndGroupsPage {
   }
 
   /**Navigates to group details page */
-  goToGroupDetail() {
-    this.navCtrl.push(GroupDetailsPage);
+  goToGroupDetail(index){
+    console.log(index);
+    let self = this;
+    this.navCtrl.push(GroupDetailsPage , {
+      groupInfo: self.groupList[index]
+    });
   }
 
   /**

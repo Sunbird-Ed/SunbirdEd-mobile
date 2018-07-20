@@ -64,6 +64,7 @@ export class CreateGroupPage {
       syllabus: [this.group.syllabus && this.group.syllabus[0] || []],
       class: [this.group.grade || []]
     });
+    console.log(this.groupEditForm);
 
     this.isEditGroup = this.group.hasOwnProperty('gid') ? true : false;
   }
