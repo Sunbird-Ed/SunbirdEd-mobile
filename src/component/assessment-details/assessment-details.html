@@ -12,12 +12,12 @@
       <p>Total Time</p>
       <div class="assessment-result">
         <ion-icon md="md-time"></ion-icon>
-        <span>{{assessmentData?.totalTime}}</span>
+        <span>{{assessmentData?.uiTotalTime}}</span>
       </div>
     </div>
   </div>
 </div>
-<ngx-datatable id="datatable" class="material striped" [rows]="assessmentData?.reportDetailsList" [rowClass]="getCell" [columns]="columns" [scrollbarV]="true"
+<ngx-datatable id="datatable" class="material striped" [rows]="assessmentData?.uiRows" [rowClass]="getCell" [columns]="columns" [scrollbarV]="true"
   [scrollbarH]="false" columnMode="flex" [headerHeight]="'50'" [footerHeight]="0" [rowHeight]="50" (activate)="onActivate($event)"
   (select)='onSelect($event)'>
     <ngx-datatable-column name={{columns[0].name}} prop={{columns[0].prop}} [flexGrow]="2" [cellClass]="getCellClass" headerClass="assessment-header"></ngx-datatable-column>
