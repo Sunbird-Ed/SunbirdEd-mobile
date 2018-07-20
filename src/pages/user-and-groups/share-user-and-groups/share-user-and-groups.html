@@ -7,7 +7,7 @@
   <ion-row>
     <ion-col col-md-6>
       <p *ngIf="groupList.length" text-left ion-text color="title" text-uppercase>
-        <b>{{'GROUPS' | translate}}</b> {{ '(' + groupList.length + ')'}}
+        <b>{{'GROUPS' | translate}}</b> {{ '(' + groupList?.length + ')'}}
       </p>
     </ion-col>
     <ion-col col-md-6 class="padding-right0">
@@ -20,13 +20,13 @@
       <h6 class="padding-top">
         <b>{{group?.name}}</b>
       </h6>
-      <p>{{group?.noOfUsers}}</p>
+      <p>{{group?.profilesCount}}</p>
     </ion-label>
     <ion-checkbox item-end mode="ios" checked="{{isGroupSelected(i)}}" (click)="toggleSelect(i)"></ion-checkbox>
   </ion-item>
 
   <p *ngIf="userList.length" text-left ion-text color="title" text-uppercase>
-    <b>{{'USERS' | translate}}</b> {{ '(' + userList.length + ')'}}
+    <b>{{'USERS' | translate}}</b> {{ '(' + userList?.length + ')'}}
   </p>
   <ion-item *ngFor="let user of userList; let i = index;" class="item-background" margin-bottom no-lines>
     <ion-label>

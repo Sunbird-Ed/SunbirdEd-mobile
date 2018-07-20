@@ -37,7 +37,7 @@
       <h6 class="line-height-2">
         <b>{{user?.handle}}</b>
       </h6>
-      <p ion-text text-capitalize>{{user?.profileType}}</p>
+      <p>{{user?.profileType | titlecase}}</p>
     </ion-label>
     <ion-checkbox item-end mode="ios" checked="{{isUserSelected(i)}}" (click)="toggleSelect(i)"></ion-checkbox>
   </ion-item>
