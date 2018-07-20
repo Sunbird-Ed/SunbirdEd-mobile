@@ -90,6 +90,8 @@ export class GuestEditProfilePage {
     this.profile = this.navParams.get('profile') || {};
     this.isNewUser = this.navParams.get('isNewUser');
 
+    console.log(this.profile);
+
     /* Initialize form with default values */
     this.guestEditForm = this.fb.group({
       profileType: [this.profile.profileType || 'STUDENT'],
