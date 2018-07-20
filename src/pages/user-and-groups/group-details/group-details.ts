@@ -1,12 +1,25 @@
 import { TranslateService } from '@ngx-translate/core';
-import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import {
+  Component,
+  NgZone
+} from '@angular/core';
+import {
+  IonicPage,
+  NavController,
+  NavParams
+} from 'ionic-angular';
 import { PopoverPage } from '../popover/popover';
 import { PopoverController } from 'ionic-angular';
 import { GroupDetailNavPopoverPage } from '../group-detail-nav-popover/group-detail-nav-popover';
 import { CreateGroupPage } from '../create-group/create-group';
 import { AlertController } from 'ionic-angular';
 import { AddOrRemoveGroupUserPage } from '../add-or-remove-group-user/add-or-remove-group-user';
+import {
+  Profile,
+  ProfileRequest,
+  GroupService,
+  ProfileService
+} from 'sunbird';
 
 @IonicPage()
 @Component({
@@ -15,38 +28,42 @@ import { AddOrRemoveGroupUserPage } from '../add-or-remove-group-user/add-or-rem
 })
 export class GroupDetailsPage {
   value = [];
-  usersList: Array<any> = [
-    {
-      name: 'Harish BookWala',
-      userType: 'student',
-      grade: 'Grade 2'
-    },
-    {
-      name: 'Nilesh More',
-      userType: 'student',
-      grade: 'Kindergarten'
-    },
-    {
-      name: 'Guru Singh',
-      userType: 'student',
-      grade: 'Grade 1'
-    }, {
-      name: 'Guru Singh',
-      userType: 'student',
-      grade: 'Grade 1'
-    }, {
-      name: 'Guru Singh',
-      userType: 'student',
-      grade: 'Grade 1'
-    }
-  ];
-  constructor(public navCtrl: NavController,
-    public navParams: NavParams,
-    public translate: TranslateService,
-    public popOverCtrl: PopoverController,
-    public alertCtrl: AlertController
+  userList: Array<Profile> = [];
+
+  constructor(
+    private navCtrl: NavController,
+    private navParams: NavParams,
+    private groupService: GroupService,
+    private profileService: ProfileService,
+    private zone: NgZone,
+    private translate: TranslateService,
+    private popOverCtrl: PopoverController,
+    private alertCtrl: AlertController
   ) {
     this.value = this.navParams.get('item');
+  }
+
+  ionViewWillEnter() {
+    this.getAllProfile();
+  }
+
+  getAllProfile() {
+    let profileRequest: ProfileRequest = {
+      local: true
+    };
+
+    this.zone.run(() => {
+      this.profileService.getAllUserProfile(profileRequest).then((profiles) => {
+        this.zone.run(() => {
+          if (profiles && profiles.length) {
+            this.userList = JSON.parse(profiles);
+          }
+          console.log("UserList", profiles);
+        })
+      }).catch((error) => {
+        console.log("Something went wrong while fetching user list", error);
+      });
+    });
   }
 
   presentPopoverNav(myEvent) {
@@ -59,18 +76,18 @@ export class GroupDetailsPage {
         popover.dismiss();
       },
       deleteGroup: function () {
-        self.DeleteGroupConfirmBox();
+        self.deleteGroupConfirmBox();
         popover.dismiss();
       },
       addUsers: function () {
-        self.navCtrl.push(AddOrRemoveGroupUserPage , {
-          isAddUsers : true
+        self.navCtrl.push(AddOrRemoveGroupUserPage, {
+          isAddUsers: true
         });
         popover.dismiss();
       },
       removeUser: function () {
-        self.navCtrl.push(AddOrRemoveGroupUserPage , {
-          isAddUsers  :false
+        self.navCtrl.push(AddOrRemoveGroupUserPage, {
+          isAddUsers: false
         });
         popover.dismiss();
       }
@@ -95,7 +112,7 @@ export class GroupDetailsPage {
   }
 
   /** Delete alert box */
-  DeleteGroupConfirmBox() {
+  deleteGroupConfirmBox() {
     let self = this;
     let alert = this.alertCtrl.create({
       title: this.translateMessage('GROUP_DELETE_CONFIRM', name),
@@ -121,8 +138,6 @@ export class GroupDetailsPage {
     });
     alert.present();
   }
-
-
 
   /**
   * Used to Translate message to current Language
