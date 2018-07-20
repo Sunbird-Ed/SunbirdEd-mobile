@@ -19,13 +19,20 @@ import {
   GroupService,
   ProfileRequest,
   Profile,
-  Group
+  Group,
+  ContainerService,
+  ProfileType,
+  TabsPage,
+  SharedPreferences,
+  OAuthService
 } from 'sunbird';
 import { GuestEditProfilePage } from '../profile/guest-edit.profile/guest-edit.profile';
 import { IonicApp } from 'ionic-angular';
 import { ShareUserAndGroupPage } from './share-user-and-groups/share-user-and-groups';
 import { Events } from 'ionic-angular';
 import { AppGlobalService } from '../../service/app-global.service';
+import { initTabs, GUEST_STUDENT_TABS, GUEST_TEACHER_TABS } from '../../app/module.service';
+import { App } from 'ionic-angular';
 
 
 @IonicPage()
@@ -63,7 +70,11 @@ export class UserAndGroupsPage {
     private platform: Platform,
     private ionicApp: IonicApp,
     private event: Events,
-    private appGlobalService: AppGlobalService
+    private appGlobalService: AppGlobalService,
+    private container: ContainerService,
+    private preferences: SharedPreferences,
+    private app: App,
+    private oauth: OAuthService,
   ) {
 
     /* Check userList length and show message or list accordingly */
@@ -133,7 +144,21 @@ export class UserAndGroupsPage {
       this.profileService.getAllUserProfile(profileRequest).then((profiles) => {
         if (profiles && profiles.length) {
           this.showEmptyUsersMessage = false;
-          this.userList = JSON.parse(profiles);
+          let profileList: Array<Profile> = JSON.parse(profiles);
+          this.userList = profileList.sort((prev: Profile, next: Profile) => {
+            if (prev.uid === this.currentUserId) {
+              return -1;
+            }
+
+            if (next.uid === this.currentUserId) {
+              return 1;
+            }
+
+
+            if (prev.handle < next.handle) return -1;
+            if (prev.handle > next.handle) return 1;
+            return 0;
+          });
         } else {
           this.showEmptyUsersMessage = true;
         }
@@ -214,6 +239,7 @@ export class UserAndGroupsPage {
    * Shows Prompt for switch Account
    */
   switchAccountConfirmBox() {
+    // TODO : Handle the Group switching
     let selectedUser = this.userList[this.selectedUserIndex];
 
     let alert = this.alertCtrl.create({
@@ -234,12 +260,19 @@ export class UserAndGroupsPage {
           text: this.translateMessage('OKAY'),
           cssClass: 'alert-btn-delete',
           handler: () => {
+            this.oauth.doLogOut();
+            (<any>window).splashscreen.clearPrefs();
             this.setAsCurrentUser(selectedUser);
           }
         }
       ]
     });
-    alert.present();
+
+    if (this.profileDetails.id) {
+      alert.present();
+    } else {
+      this.setAsCurrentUser(selectedUser);
+    }
   }
 
   /** Delete alert box */
@@ -295,7 +328,18 @@ export class UserAndGroupsPage {
   private setAsCurrentUser(selectedUser) {
     this.profileService.setCurrentUser(selectedUser.uid, (success) => {
       this.event.publish('refresh:profile');
-      this.navCtrl.pop();
+      this.event.publish(AppGlobalService.USER_INFO_UPDATED);
+
+      if (selectedUser.profileType == ProfileType.STUDENT) {
+        initTabs(this.container, GUEST_STUDENT_TABS);
+        this.preferences.putString('selected_user_type', ProfileType.STUDENT);
+      } else {
+        initTabs(this.container, GUEST_TEACHER_TABS);
+        this.preferences.putString('selected_user_type', ProfileType.TEACHER);
+      }
+
+      this.app.getRootNav().setRoot(TabsPage);
+
     }, (error) => {
       console.log("Error " + error);
     });
