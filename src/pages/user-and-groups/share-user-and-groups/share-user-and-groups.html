@@ -22,7 +22,7 @@
       </h6>
       <p>{{group?.profilesCount}}</p>
     </ion-label>
-    <ion-checkbox item-end mode="ios" checked="{{isGroupSelected(i)}}" (click)="toggleSelect(i)"></ion-checkbox>
+    <ion-checkbox item-end mode="ios" checked="{{isGroupSelected(group?.gid)}}" (click)="toggleGroupSelected(i)"></ion-checkbox>
   </ion-item>
 
   <p *ngIf="userList.length" text-left ion-text color="title" text-uppercase>
@@ -35,14 +35,14 @@
       </h6>
       <p>{{user?.profileType}}</p>
     </ion-label>
-    <ion-checkbox [(ngModel)]="termsprivacy" item-end mode="ios" checked="{{isUserSelected(i)}}" (click)="toggleSelect(i)"></ion-checkbox>
+    <ion-checkbox item-end mode="ios" checked="{{isUserSelected(user?.uid)}}" (click)="toggleUserSelected(i)"></ion-checkbox>
   </ion-item>
 
 </ion-content>
 <ion-footer>
   <ion-row padding>
     <ion-col col-md-10 offset-md-1>
-      <button ion-button block (click)="share()" [(disabled)]="!termsprivacy" text-uppercase>{{'SHARE' | translate }}</button>
+      <button ion-button block (click)="share()" [disabled]="!isShareEnabled()" text-uppercase>{{'SHARE' | translate }}</button>
     </ion-col>
   </ion-row>
 </ion-footer>
