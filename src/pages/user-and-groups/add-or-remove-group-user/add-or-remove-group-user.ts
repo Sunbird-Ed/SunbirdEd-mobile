@@ -5,15 +5,28 @@ import {
 import {
   IonicPage,
   NavController,
-  NavParams
+  NavParams,
+  ToastController
 } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import {
   Profile,
   ProfileRequest,
   GroupService,
-  ProfileService
+  ProfileService,
+  Group,
+  AddUpdateProfilesRequest
 } from 'sunbird';
+import * as _ from 'lodash';
+import { LoadingController } from 'ionic-angular';
+
+
+/* Interface for the Toast Object */
+export interface toastOptions {
+  message: string,
+  duration: number,
+  position: string
+};
 
 /**
  * Generated class for the AddOrRemoveGroupUserPage page.
@@ -32,6 +45,16 @@ export class AddOrRemoveGroupUserPage {
   addUsers: boolean = true;
   userList: Array<Profile> = [];
   userSelectionMap: Map<string, boolean> = new Map();
+  uniqueUserList: any;
+  groupInfo : Group;
+  groupMembers: any;
+  uid: any;
+
+  options: toastOptions = {
+    message: '',
+    duration: 3000,
+    position: 'bottom'
+  };
 
   constructor(
     public navCtrl: NavController,
@@ -39,9 +62,16 @@ export class AddOrRemoveGroupUserPage {
     private groupService: GroupService,
     private profileService: ProfileService,
     public zone: NgZone,
-    public translate: TranslateService
+    private loadingCtrl: LoadingController,
+    private toastCtrl: ToastController,
+    private translate: TranslateService
   ) {
     this.addUsers = this.navParams.get('isAddUsers');
+    this.groupInfo = this.navParams.get('groupInfo');
+    this.groupMembers = this.navParams.get('groupMembers');
+    console.log('group info',this.groupInfo);
+    console.log('group members',this.groupMembers);
+   
   }
 
   ionViewWillEnter() {
@@ -57,10 +87,15 @@ export class AddOrRemoveGroupUserPage {
       this.profileService.getAllUserProfile(profileRequest).then((profiles) => {
         this.zone.run(() => {
           if (profiles && profiles.length) {
-            this.userList = JSON.parse(profiles);
-          }
-          console.log("UserList", profiles);
-        })
+           // this.userList = JSON.parse(profiles);
+           console.log('1', JSON.parse(profiles))
+           console.log('2', this.groupMembers);
+           console.log('3', this.groupMembers.concat(JSON.parse(profiles)));
+           this.uniqueUserList = _.uniqBy(this.groupMembers.concat(JSON.parse(profiles)), 'uid');
+            console.log("UserList", this.uniqueUserList);
+            }
+            this.userList = this.uniqueUserList;
+          })
       }).catch((error) => {
         console.log("Something went wrong while fetching user list", error);
       });
@@ -77,6 +112,8 @@ export class AddOrRemoveGroupUserPage {
     this.userSelectionMap.set(this.userList[index].uid, value);
   }
 
+
+
   isUserSelected(index: number) {
     console.log("Index", index);
     return Boolean(this.userSelectionMap.get(this.userList[index].uid));
@@ -91,4 +128,74 @@ export class AddOrRemoveGroupUserPage {
     });
   }
 
+  add() {
+    let loader = this.getLoader();
+    loader.present();
+    console.log("List", this.userSelectionMap);
+    let groupMembersUids: Array<string> = [];
+    let selectedUids: Array<string> = [];
+
+    this.groupMembers.forEach(element => {
+      groupMembersUids.push(element.uid); 
+    });
+
+    this.userList.forEach((item) => {
+      if (Boolean(this.userSelectionMap.get(item.uid))) {
+        selectedUids.push(item.uid);
+      }
+    });
+
+    let req: AddUpdateProfilesRequest= {
+      groupId: this.groupInfo.gid,
+      uidList: groupMembersUids.concat(selectedUids)
+    }
+    this.groupService.addUpdateProfilesToGroup(req).then((success) => {
+      console.log(success);
+      loader.dismiss();
+      this.getToast(this.translateMessage('GROUP_CREATE_SUCCESS')).present();
+      this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
+    }).catch((error) => {
+      loader.dismiss();
+      this.getToast(this.translateMessage('SOMETHING_WENT_WRONG')).present();
+      console.log("Error : " + error);
+      loader.dismiss();
+    });
+
+    console.log("groupMembersUids", groupMembersUids);
+  }
+
+    /**
+ * Returns Loader Object
+ */
+getLoader(): any {
+  return this.loadingCtrl.create({
+    duration: 30000,
+    spinner: "crescent"
+  });
+}
+
+/** It will returns Toast Object
+ * @param {message} string - Message for the Toast to show
+ * @returns {object} - toast Object
+ */
+getToast(message: string = ''): any {
+  this.options.message = message;
+  if (message.length) return this.toastCtrl.create(this.options);
+}
+
+/**
+ * Used to Translate message to current Language
+ * @param {string} messageConst - Message Constant to be translated
+ * @param {string} field - The field to be added in the language constant
+ * @returns {string} translatedMsg - Translated Message
+ */
+translateMessage(messageConst: string, field?: string): string {
+  let translatedMsg = '';
+  this.translate.get(messageConst, { '%s': field }).subscribe(
+    (value: any) => {
+      translatedMsg = value;
+    }
+  );
+  return translatedMsg;
+}
 }

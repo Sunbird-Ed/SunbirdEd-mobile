@@ -153,13 +153,16 @@ export class GroupDetailsPage {
       },
       addUsers: function () {
         self.navCtrl.push(AddOrRemoveGroupUserPage, {
-          isAddUsers: true
+          isAddUsers: true,
+          groupInfo : self.group,
+          groupMembers:self.userList
         });
         popover.dismiss();
       },
       removeUser: function () {
         self.navCtrl.push(AddOrRemoveGroupUserPage, {
-          isAddUsers: false
+          isAddUsers: false,
+          groupInfo : self.group
         });
         popover.dismiss();
       }
@@ -185,7 +188,6 @@ export class GroupDetailsPage {
 
   /** Delete alert box */
   deleteGroupConfirmBox() {
-    let self = this;
     let alert = this.alertCtrl.create({
       title: this.translateMessage('GROUP_DELETE_CONFIRM', name),
       mode: 'wp',
