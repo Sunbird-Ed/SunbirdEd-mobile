@@ -137,11 +137,13 @@ export class GroupMembersPage {
           loader.dismiss();
           this.getToast(this.translateMessage('SOMETHING_WENT_WRONG')).present();
           console.log("Error : " + error);
-        });;
+          loader.dismiss();
+        });
       }).catch((error) => {
         loader.dismiss();
         this.getToast(this.translateMessage('SOMETHING_WENT_WRONG')).present();
         console.log("Error : " + error);
+        loader.dismiss();
       });
   }
 
