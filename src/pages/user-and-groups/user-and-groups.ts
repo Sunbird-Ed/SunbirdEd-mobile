@@ -145,7 +145,7 @@ export class UserAndGroupsPage {
         }
         popover.dismiss()
       },
-      isCurrentUser: false
+      isCurrentUser: (this.currentUserId === this.userList[index].uid) ? true : false
     },
       {
         cssClass: 'user-popover'

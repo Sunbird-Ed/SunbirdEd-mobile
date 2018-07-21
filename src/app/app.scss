@@ -411,11 +411,16 @@ ul.rating .ion-md-star-outline:before {
   }
 }
 
-.user-popover .popover-content{
-  min-width: 96px;
-  width: auto;
-  display: inline-block;
-  height: 99px !important;
+.user-popover {
+  .popover-content{
+    min-width: 96px;
+    width: auto;
+    display: inline-block;
+    height: auto !important;
+  }
+  .list-md {
+    margin-bottom: 0 !important;
+  }
 }
 
 .groupDetails-popover .popover-content{

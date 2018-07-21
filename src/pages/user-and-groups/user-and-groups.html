@@ -33,7 +33,7 @@
                   <h6 class="line-height-2" color="primary" (click)="selectUser(i, user?.name)">
                     <b>{{profileDetails?.firstName}}&nbsp;{{profileDetails?.lastName}}</b>
                   </h6>
-                  <p>{{profileDetails?.grade}}</p>
+                  <p>{{profileDetails?.grade | titlecase}}</p>
                 </ion-item>
               </ion-col>
               <ion-col col-1 class="advanced-menu">
