@@ -50,27 +50,27 @@ export class GuestEditProfilePage {
   };
 
   syllabusOptions = {
-    title: this.translateMessage('SYLLABUS'),
+    title: this.translateMessage('SYLLABUS').toLocaleUpperCase(),
     cssClass: 'select-box'
   };
 
   boardOptions = {
-    title: this.translateMessage('BOARD'),
+    title: this.translateMessage('BOARD').toLocaleUpperCase(),
     cssClass: 'select-box'
   };
 
   mediumOptions = {
-    title: this.translateMessage('MEDIUM_OF_INSTRUCTION'),
+    title: this.translateMessage('MEDIUM_OF_INSTRUCTION').toLocaleUpperCase(),
     cssClass: 'select-box'
   };
 
   classOptions = {
-    title: this.translateMessage('CLASS'),
+    title: this.translateMessage('CLASS').toLocaleUpperCase(),
     cssClass: 'select-box'
   };
 
   subjectsOptions = {
-    title: this.translateMessage('SUBJECTS'),
+    title: this.translateMessage('SUBJECTS').toLocaleUpperCase(),
     cssClass: 'select-box'
   };
 

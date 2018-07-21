@@ -4,7 +4,7 @@ import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angu
 import { AppGlobalService } from '../../../service/app-global.service';
 import { FormAndFrameworkUtilService } from '../../profile/formandframeworkutil.service';
 import { CategoryRequest, Group, GroupService } from 'sunbird';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { LoadingController } from 'ionic-angular';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
@@ -38,13 +38,13 @@ export class CreateGroupPage {
 
   /* Options for class ion-select box */
   classOptions = {
-    title: this.translateMessage('CLASS'),
+    title: this.translateMessage('CLASS').toLocaleUpperCase(),
     cssClass: 'select-box'
   };
 
   /* Options for syllabus ion-select box */
   syllabusOptions = {
-    title: this.translateMessage('SYLLABUS'),
+    title: this.translateMessage('SYLLABUS').toLocaleUpperCase(),
     cssClass: 'select-box'
   };
   constructor(
@@ -60,19 +60,20 @@ export class CreateGroupPage {
   ) {
     this.group = this.navParams.get('groupInfo') || {};
     this.groupEditForm = this.fb.group({
-      name: [this.group.name || ""],
+      name: [this.group.name || "", Validators.required],
       syllabus: [this.group.syllabus && this.group.syllabus[0] || []],
       class: [this.group.grade || []]
     });
     console.log(this.groupEditForm);
 
     this.isEditGroup = this.group.hasOwnProperty('gid') ? true : false;
+    this.getSyllabusDetails();
   }
 
 
 
   ionViewWillEnter() {
-    this.getSyllabusDetails();
+    //this.getSyllabusDetails();
   }
 
   /**

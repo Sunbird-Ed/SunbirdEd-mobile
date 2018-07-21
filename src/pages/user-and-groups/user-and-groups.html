@@ -21,7 +21,6 @@
 </ion-header>
 <ion-content>
 
-
   <div [ngSwitch]="segmentType" padding>
     <ion-list *ngSwitchCase="'users'">
       <div class="custom-margin-top">
@@ -102,8 +101,8 @@
                     <b>{{group?.name}}</b>
                   </h6>
                   <p ion-text color="text_gray" *ngIf="group?.grade">{{group?.grade[0]}}
-                    <!-- <span *ngIf="group?.grade?.length">•</span> -->
-                    <figure class="circle" *ngIf="group?.grade?.length"></figure>
+                    <span ion-text color="gray" *ngIf="group?.grade?.length">•</span>
+                    <!-- <span><figure class="circle" *ngIf="group?.grade?.length"></figure></span> -->
                     <span ion-text color="text_gray" *ngIf="group?.profilesCount > 0">{{group?.uids?.length}} {{'USERS' | translate}}</span>
                     <span ion-text color="text_gray" *ngIf="group?.profilesCount === 0">{{'NO_USERS' | translate}}</span>
                   </p>

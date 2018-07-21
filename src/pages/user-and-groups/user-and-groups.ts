@@ -217,8 +217,7 @@ export class UserAndGroupsPage {
    * Navigates to Create group Page
    */
   createGroup() {
-    this.navCtrl.push('CreateGroupPage', {
-    });
+    this.navCtrl.push('CreateGroupPage');
   }
 
   goToSharePage() {

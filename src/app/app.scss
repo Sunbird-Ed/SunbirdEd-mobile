@@ -355,9 +355,18 @@ ul.rating .ion-md-star-outline:before {
   background: map-get($colors, white);
 }
 
-.select-box ion-backdrop {
-  background-color: map-get($colors, black) !important;
-  opacity: 0.4 !important;
+.select-box {
+  .alert-head {
+    padding: 14px 14px !important;
+  }
+  .alert-title {
+    font-size: 1.4rem !important;
+    font-weight: 700;
+  }
+  ion-backdrop {
+    background-color: map-get($colors, black) !important;
+    opacity: 0.4 !important;
+  }
 }
 
 .select-box.alert-md .alert-button:first-child:not(:only-child) {

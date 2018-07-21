@@ -22,10 +22,10 @@
         <ion-option *ngFor="let eachSyllabus of syllabusList" value="{{eachSyllabus?.code}}">{{eachSyllabus?.name}}</ion-option>
       </ion-select>
     </ion-item>
-    <ion-item>
+    <ion-item no-lines>
       <ion-label stacked text-uppercase class="label-font">{{'CLASS' | translate}}</ion-label>
       <ion-select formControlName="class" [selectOptions]="classOptions" [disabled]="!(groupEditForm.value.syllabus != '')"
-        placeholder="{{'CLASS'|translate}}" okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}">
+        placeholder="{{'CLASS'|translate | titlecase}}" okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}">
         <ion-option [value]="class?.code" *ngFor="let class of classList" text-capitalize>{{ class?.name }}</ion-option>
       </ion-select>
     </ion-item>
@@ -35,8 +35,8 @@
   <div class="border">
     <ion-row padding>
       <ion-col col-md-10 offset-md-1>
-        <button ion-button block *ngIf="!isEditGroup" (click)="navigateToUsersList()">{{'NEXT' | translate}}</button>
-        <button ion-button block *ngIf="isEditGroup" (click)="updateGroup()">{{'SAVE' | translate}}</button>
+        <button ion-button block [disabled]="!groupEditForm.valid" *ngIf="!isEditGroup" (click)="navigateToUsersList()">{{'NEXT' | translate}}</button>
+        <button ion-button block [disabled]="!groupEditForm.valid" *ngIf="isEditGroup" (click)="updateGroup()">{{'SAVE' | translate}}</button>
       </ion-col>
     </ion-row>
   </div>
