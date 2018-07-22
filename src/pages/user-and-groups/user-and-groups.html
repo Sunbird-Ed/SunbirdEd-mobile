@@ -100,11 +100,13 @@
                   <h6 class="line-height-2" [ngStyle]="{'color': currentGroupId === group?.gid ? 'dodgerblue' : 'black'}">
                     <b>{{group?.name}}</b>
                   </h6>
-                  <p ion-text color="text_gray" *ngIf="group?.grade">{{group?.grade[0]}}
+                  <p>
+                    <span ion-text color="text_gray" *ngIf="group?.grade && group?.grade[0]">{{group?.grade[0]}}</span>
                     <span ion-text color="gray" *ngIf="group?.grade?.length">•</span>
                     <!-- <span><figure class="circle" *ngIf="group?.grade?.length"></figure></span> -->
-                    <span ion-text color="text_gray" *ngIf="group?.profilesCount > 0">{{group?.profilesCount}} {{'USERS' | translate}}</span>
-                    <span ion-text color="text_gray" *ngIf="group?.profilesCount === 0">{{'NO_USERS' | translate}}</span>
+                    <span ion-text color="text_gray" *ngIf="group?.profilesCount > 1">{{group?.profilesCount}} {{'USERS' | translate}}</span>
+                    <span ion-text color="text_gray" *ngIf="group?.profilesCount === 1">{{group?.profilesCount}} {{'USER' | translate}}</span>
+                    <span ion-text color="text_gray" *ngIf=" !group?.profilesCount || group?.profilesCount === 0">{{'NO_USERS' | translate}}</span>
                   </p>
                 </ion-item>
               </ion-col>

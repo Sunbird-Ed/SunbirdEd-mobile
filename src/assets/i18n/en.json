@@ -479,5 +479,6 @@
   "GROUP_CREATE_SUCCESS": "Group created successfully",
   "UNSELECT_ALL": "Unselect All",
   "GROUP_MEMBER_ADD_SUCCESS": "Group members add successfully",
-  "GROUP_MEMBER_DELETE_SUCCESS": "Group members deleted successfully"
+  "GROUP_MEMBER_DELETE_SUCCESS": "Group members deleted successfully",
+  "USER": "User"
 }
