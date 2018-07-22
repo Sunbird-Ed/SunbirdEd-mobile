@@ -88,10 +88,6 @@ export class AddOrRemoveGroupUserPage {
           this.uniqueUserList = uniqueUserList;
 
           if(!this.addUsers) {
-            this.uniqueUserList.forEach((element, index) => {
-              this.userSelectionMap.set(this.uniqueUserList[index].uid, true);
-            });
-
             this.groupMembers.forEach((element, index) => {
               this.memberSelectionMap.set(this.groupMembers[index].uid, true);
             });
@@ -152,9 +148,6 @@ export class AddOrRemoveGroupUserPage {
     this.zone.run(() => {
       for (var i = 0; i < this.uniqueUserList.length; i++) {
         this.memberSelectionMap.set(this.groupMembers[i].uid, false);
-      }
-      for (var i = 0; i < this.uniqueUserList.length; i++) {
-        this.userSelectionMap.set(this.uniqueUserList[i].uid, false);
       }
     });
   }
