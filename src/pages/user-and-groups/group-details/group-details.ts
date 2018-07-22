@@ -140,30 +140,32 @@ export class GroupDetailsPage {
 
   presentPopoverNav(myEvent) {
     console.log("clicked nav popover")
-    let self = this;
     let popover = this.popOverCtrl.create(GroupDetailNavPopoverPage, {
-      goToEditGroup: function () {
+      goToEditGroup: () => {
         console.log('go to edit group');
-        self.navCtrl.push(CreateGroupPage)
+        this.navCtrl.push(CreateGroupPage, {
+          groupInfo: this.group
+        })
         popover.dismiss();
       },
-      deleteGroup: function () {
-        self.deleteGroupConfirmBox();
+      deleteGroup: () => {
+       
+        this.deleteGroupConfirmBox();
         popover.dismiss();
       },
-      addUsers: function () {
-        self.navCtrl.push(AddOrRemoveGroupUserPage, {
+      addUsers: () => {
+        this.navCtrl.push(AddOrRemoveGroupUserPage, {
           isAddUsers: true,
-          groupInfo : self.group,
-          groupMembers:self.userList
+          groupInfo : this.group,
+          groupMembers:this.userList
         });
         popover.dismiss();
       },
-      removeUser: function () {
-        self.navCtrl.push(AddOrRemoveGroupUserPage, {
+      removeUser: () => {
+        this.navCtrl.push(AddOrRemoveGroupUserPage, {
           isAddUsers: false,
-          groupInfo : self.group,
-          groupMembers: self.userList
+          groupInfo : this.group,
+          groupMembers: this.userList
         });
         popover.dismiss();
       }
@@ -207,6 +209,14 @@ export class GroupDetailsPage {
           text: this.translateMessage('Yes'),
           cssClass: 'alert-btn-delete',
           handler: () => {
+            console.log(this.group.gid);
+            this.groupService.deleteGroup(this.group.gid).then((sucess)=>{
+                console.log(sucess);
+                this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2))
+                
+            }).catch((error)=>{
+              console.log(error);
+            })
           }
         }
       ]

@@ -19,6 +19,7 @@ import {
 } from 'sunbird';
 import * as _ from 'lodash';
 import { LoadingController } from 'ionic-angular';
+import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
 
 
 /* Interface for the Toast Object */
@@ -117,6 +118,11 @@ export class AddOrRemoveGroupUserPage {
     }
     this.memberSelectionMap.set(this.groupMembers[index].uid, value);
   }
+  goToEditGroup(index) {
+    this.navCtrl.push(GuestEditProfilePage, {
+
+    })
+  }
 
   isUserSelected(index: number) {
     console.log("Index", index);
@@ -148,18 +154,18 @@ export class AddOrRemoveGroupUserPage {
       uidList: selectedUids
     }
     this.groupService.addUpdateProfilesToGroup(req)
-    .then((success) => {
-      console.log(success);
-      loader.dismiss();
-      this.getToast(this.translateMessage('GROUP_CREATE_SUCCESS')).present();
-      this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
-    })
-    .catch((error) => {
-      loader.dismiss();
-      this.getToast(this.translateMessage('SOMETHING_WENT_WRONG')).present();
-      console.log("Error : " + error);
-      loader.dismiss();
-    });
+      .then((success) => {
+        console.log(success);
+        loader.dismiss();
+        this.getToast(this.translateMessage('GROUP_CREATE_SUCCESS')).present();
+        this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
+      })
+      .catch((error) => {
+        loader.dismiss();
+        this.getToast(this.translateMessage('SOMETHING_WENT_WRONG')).present();
+        console.log("Error : " + error);
+        loader.dismiss();
+      });
 
   }
 
@@ -184,18 +190,18 @@ export class AddOrRemoveGroupUserPage {
       uidList: groupMembersUids.concat(selectedUids)
     }
     this.groupService.addUpdateProfilesToGroup(req)
-    .then((success) => {
-      console.log(success);
-      loader.dismiss();
-      this.getToast(this.translateMessage('GROUP_CREATE_SUCCESS')).present();
-      this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
-    })
-    .catch((error) => {
-      loader.dismiss();
-      this.getToast(this.translateMessage('SOMETHING_WENT_WRONG')).present();
-      console.log("Error : " + error);
-      loader.dismiss();
-    });
+      .then((success) => {
+        console.log(success);
+        loader.dismiss();
+        this.getToast(this.translateMessage('GROUP_CREATE_SUCCESS')).present();
+        this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
+      })
+      .catch((error) => {
+        loader.dismiss();
+        this.getToast(this.translateMessage('SOMETHING_WENT_WRONG')).present();
+        console.log("Error : " + error);
+        loader.dismiss();
+      });
 
   }
 
