@@ -30,6 +30,7 @@ import { Events } from 'ionic-angular';
 import { AppGlobalService } from '../../../service/app-global.service';
 import { initTabs, GUEST_STUDENT_TABS, GUEST_TEACHER_TABS } from '../../../app/module.service';
 import { App } from 'ionic-angular';
+import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
 
 @IonicPage()
 @Component({
@@ -179,9 +180,19 @@ export class GroupDetailsPage {
     });
   }
 
-  presentPopover(myEvent, user) {
-    console.log(user);
-    let popover = this.popOverCtrl.create(PopoverPage, {},
+  presentPopover(myEvent , index) {
+    let popover = this.popOverCtrl.create(PopoverPage, {
+      
+      edit: () => {
+        this.navCtrl.push(GuestEditProfilePage,{
+          profile: this.userList[index]
+        })
+        popover.dismiss();
+      },
+      delete: ($event) => {
+        
+        }
+      },
       {
         cssClass: 'user-popover'
       });
