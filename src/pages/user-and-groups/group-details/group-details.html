@@ -32,17 +32,17 @@
     <ion-item *ngFor="let user of userList; let i=index;" class="item-background radius" margin-bottom no-lines [ngClass]="i===selectedUserIndex ? 'blueBorder' : ''">
       <ion-row class="bg-color-white">
         <ion-col col-11 class="bg-color-white">
-          <ion-item class="bg-color-white padding-left-0 rm-label-margin"  (click)="selectUser(i, user?.handle)" no-padding>
+          <ion-item class="bg-color-white padding-left-0 rm-label-margin"  (click)="selectUser(i, user?.handle, i )" no-padding>
             <h6 class="line-height-2" [ngStyle]="{'color': currentUserId === user?.uid ? 'dodgerblue' : 'black'}">
               <b>{{user?.handle | titlecase}}</b>
             </h6>
-            <p>{{user?.profileType}}
+            <p>{{user?.profileType | titlecase}}
               <span *ngIf="user?.grade?.length">•</span> {{user?.grade}}</p>
           </ion-item>
         </ion-col>
         <ion-col col-1 class="advanced-menu">
           <ion-item item-end class="bg-color-white">
-            <ion-icon class="line-height-2" name="more" item-end (click)="presentPopover($event)"></ion-icon>
+            <ion-icon class="line-height-2" name="more" item-end (click)="presentPopover($event , i)"></ion-icon>
           </ion-item>
         </ion-col>
       </ion-row>
