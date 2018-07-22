@@ -476,5 +476,10 @@
   "NO_USERS": "No users",
   "USER_DELETE_CONFIRM": "Confirm Delete of '{{%s}}'?",
   "USER_DELETE_CONFIRM_MESSAGE": "This action is Permanent,Once deleted the user cannot be accessed",
-  "GROUP_CREATE_SUCCESS": "Group created successfully"
+  "GROUP_CREATE_SUCCESS": "Group created successfully",
+  "UNSELECT_ALL": "Unselect All",
+  "GROUP_MEMBER_ADD_SUCCESS": "Group members add successfully",
+  "GROUP_MEMBER_DELETE_SUCCESS": "Group members deleted successfully",
+  "USER": "User",
+  "NO_USERS_IN_THIS_GROUP": "No Users in this group"
 }

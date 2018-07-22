@@ -29,13 +29,6 @@ export interface toastOptions {
   position: string
 };
 
-/**
- * Generated class for the AddOrRemoveGroupUserPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
-
 @IonicPage()
 @Component({
   selector: 'page-add-or-remove-group-user',
@@ -138,6 +131,15 @@ export class AddOrRemoveGroupUserPage {
     });
   }
 
+  unSelectAll() {
+    this.userSelectionMap.clear();
+    this.zone.run(() => {
+      for (var i = 0; i < this.uniqueUserList.length; i++) {
+        this.memberSelectionMap.set(this.uniqueUserList[i].uid, false);
+      }
+    });
+  }
+
   remove() {
     let loader = this.getLoader();
     loader.present();
@@ -153,19 +155,20 @@ export class AddOrRemoveGroupUserPage {
       groupId: this.groupInfo.gid,
       uidList: selectedUids
     }
+
     this.groupService.addUpdateProfilesToGroup(req)
-      .then((success) => {
-        console.log(success);
-        loader.dismiss();
-        this.getToast(this.translateMessage('GROUP_CREATE_SUCCESS')).present();
-        this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
-      })
-      .catch((error) => {
-        loader.dismiss();
-        this.getToast(this.translateMessage('SOMETHING_WENT_WRONG')).present();
-        console.log("Error : " + error);
-        loader.dismiss();
-      });
+    .then((success) => {
+      console.log(success);
+      loader.dismiss();
+      this.getToast(this.translateMessage('GROUP_MEMBER_DELETE_SUCCESS')).present();
+      this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
+    })
+    .catch((error) => {
+      loader.dismiss();
+      this.getToast(this.translateMessage('SOMETHING_WENT_WRONG')).present();
+      console.log("Error : " + error);
+      loader.dismiss();
+    });
 
   }
 
@@ -190,18 +193,18 @@ export class AddOrRemoveGroupUserPage {
       uidList: groupMembersUids.concat(selectedUids)
     }
     this.groupService.addUpdateProfilesToGroup(req)
-      .then((success) => {
-        console.log(success);
-        loader.dismiss();
-        this.getToast(this.translateMessage('GROUP_CREATE_SUCCESS')).present();
-        this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
-      })
-      .catch((error) => {
-        loader.dismiss();
-        this.getToast(this.translateMessage('SOMETHING_WENT_WRONG')).present();
-        console.log("Error : " + error);
-        loader.dismiss();
-      });
+    .then((success) => {
+      console.log(success);
+      loader.dismiss();
+      this.getToast(this.translateMessage('GROUP_MEMBER_ADD_SUCCESS')).present();
+      this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
+    })
+    .catch((error) => {
+      loader.dismiss();
+      this.getToast(this.translateMessage('SOMETHING_WENT_WRONG')).present();
+      console.log("Error : " + error);
+      loader.dismiss();
+    });
 
   }
 
