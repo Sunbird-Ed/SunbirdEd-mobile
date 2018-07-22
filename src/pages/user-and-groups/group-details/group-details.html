@@ -9,7 +9,23 @@
   </ion-navbar>
 </ion-header>
 <ion-content padding>
-
+    <div class="firstSection" *ngIf="showEmptyGroupsMessage">
+        <div class="img-container">
+          <img class="image_style" src="assets/imgs/ic_businessman.png">
+        </div>
+        <ion-row padding-top>
+          <ion-col col-md-6 offset-md-3 col-lg-6 offset-lg-3>
+            <div class="image-text">
+              <h6>
+                <b>{{'NO_GROUPS_CREATED_YET' | translate}}</b>
+              </h6>
+              <p>{{'GROUPS_HELP_TO_ORGANIZE_THE_USER_BETTER' | translate}}.
+                <br> {{'YOU_CAN_ALSO_USE_GROUPS_TO_MONITOR_BETTER' | translate}}
+                <br>{{'PROGRESS_OVERALL' | translate}}</p>
+            </div>
+          </ion-col>
+        </ion-row>
+      </div>
   <ion-list>
     <ion-item *ngFor="let user of userList; let i=index;" class="item-background radius" margin-bottom no-lines [ngClass]="i===selectedUserIndex ? 'blueBorder' : ''">
       <ion-row class="bg-color-white">
