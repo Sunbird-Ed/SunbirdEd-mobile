@@ -343,6 +343,7 @@
   "RETRY_ACTION": "Try again",
   "ROLE_SELECTOR_QUERY": "You are a",
   "REMOVE_USERS":"Remove Users",
+  "REMOVE_USERS_FROM_GROUP":"Remove Users from Group",
   "SAVE": "Save",
   "SAVED_ON": "Saved on",
   "SAVED_RESOURCES": "Saved Resources",

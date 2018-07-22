@@ -1,23 +1,24 @@
 
 <ion-header>
   <ion-navbar>
-    <ion-title *ngIf="addUsers">Add Users to Group</ion-title>
-    <ion-title *ngIf="!addUsers">Remove Users from Group</ion-title>
+    <ion-title *ngIf="addUsers">{{'ADD_USERS_TO_GROUP' | translate}}</ion-title>
+    <ion-title *ngIf="!addUsers">{{'REMOVE_USERS_FROM_GROUP' | translate}}</ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
   <ion-row>
     <ion-col class="rm-padding-left" col-md-4>
-      <p *ngIf="uniqueUserList?.length" text-left ion-text color="title" text-uppercase>
-        <b>{{allUsers?.length}}&nbsp;{{'USERS' | translate}}</b>
+      <p  text-left ion-text color="title" text-uppercase>
+        <b *ngIf="addUsers && uniqueUserList?.length">{{uniqueUserList?.length + groupMembers?.length}}&nbsp;{{'USERS' | translate}}</b>
+        <b *ngIf="!addUsers && groupMembers?.length">{{groupMembers?.length}}&nbsp;{{'USERS' | translate}}</b>
       </p>
     </ion-col>
     <ion-col col-md-4 push-md-4 class="rm-padding-right">
       <button class="rm-padding-right" *ngIf="addUsers" text-uppercase ion-button float-end clear
       (click)="selectAll()">{{'SELECT_ALL' | translate}}</button>
       <button class="rm-padding-right" *ngIf="!addUsers" text-uppercase ion-button float-end clear
-      (click)="unselectAll()">{{'UNSELECT_ALL' | translate}}</button>
+      (click)="unSelectAll()">{{'UNSELECT_ALL' | translate}}</button>
     </ion-col>
   </ion-row>
 
@@ -27,10 +28,10 @@
       <h6 class="line-height-2">
         <b>{{user?.handle}}</b>
       </h6>
-      <p>{{user?.profileType | titlecase}}</p>
+      <p>{{user?.profileType}}</p>
     </ion-label>
     <ion-checkbox item-end mode="ios"
-    checked="{{isGroupMemberSelected(i)}}"
+    checked="true"
     [disabled]="addUsers"
     (click)="toggleMemberSelect(i)"></ion-checkbox>
   </ion-item>
@@ -52,6 +53,6 @@
 </ion-content>
 
 <ion-footer padding>
-  <button block *ngIf="addUsers" (click)="add()" ion-button>Add Users to Group</button>
-  <button block *ngIf="!addUsers" (click)="remove()" ion-button>Remove Users from Group</button>
+  <button block *ngIf="addUsers" (click)="add()" ion-button>{{'ADD_USERS_TO_GROUP' | translate}}</button>
+  <button block *ngIf="!addUsers" (click)="remove()" ion-button>{{'REMOVE_USERS_FROM_GROUP' | translate}}</button>
 </ion-footer>
