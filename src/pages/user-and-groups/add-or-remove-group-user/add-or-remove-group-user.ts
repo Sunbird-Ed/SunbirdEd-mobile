@@ -132,8 +132,8 @@ export class AddOrRemoveGroupUserPage {
   }
 
   unSelectAll() {
-    this.userSelectionMap.clear();
     this.zone.run(() => {
+      this.userSelectionMap.clear();
       for (var i = 0; i < this.uniqueUserList.length; i++) {
         this.memberSelectionMap.set(this.uniqueUserList[i].uid, false);
       }

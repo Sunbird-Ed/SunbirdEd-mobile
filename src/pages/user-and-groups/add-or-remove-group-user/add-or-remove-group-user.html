@@ -1,8 +1,8 @@
 
 <ion-header>
   <ion-navbar>
-    <ion-title *ngIf="addUsers">Add Users to Group</ion-title>
-    <ion-title *ngIf="!addUsers">Remove Users from Group</ion-title>
+    <ion-title *ngIf="addUsers">{{'ADD_USERS_TO_GROUP' | translate}}</ion-title>
+    <ion-title *ngIf="!addUsers">{{'REMOVE_USERS_FROM_GROUP' | translate}}</ion-title>
   </ion-navbar>
 </ion-header>
 
@@ -52,6 +52,6 @@
 </ion-content>
 
 <ion-footer padding>
-  <button block *ngIf="addUsers" (click)="add()" ion-button>Add Users to Group</button>
-  <button block *ngIf="!addUsers" (click)="remove()" ion-button>Remove Users from Group</button>
+  <button block *ngIf="addUsers" (click)="add()" ion-button>{{'ADD_USERS_TO_GROUP' | translate}}</button>
+  <button block *ngIf="!addUsers" (click)="remove()" ion-button>{{'REMOVE_USERS_FROM_GROUP' | translate}}</button>
 </ion-footer>
