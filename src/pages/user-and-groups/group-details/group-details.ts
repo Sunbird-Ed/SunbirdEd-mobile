@@ -6,7 +6,8 @@ import {
 import {
   IonicPage,
   NavController,
-  NavParams
+  NavParams,
+  LoadingController
 } from 'ionic-angular';
 import { PopoverPage } from '../popover/popover';
 import { PopoverController } from 'ionic-angular';
@@ -40,11 +41,10 @@ import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edi
 export class GroupDetailsPage {
   group: Group;
   currentUserId: string;
-
   userList: Array<Profile> = [];
-
   selectedUserIndex: number = -1;
   profileDetails: any;
+  isNoUsers: boolean = false;
 
   constructor(
     private navCtrl: NavController,
@@ -59,17 +59,21 @@ export class GroupDetailsPage {
     private container: ContainerService,
     private preferences: SharedPreferences,
     private app: App,
-    private event: Events) {
+    private event: Events,
+    private loadingCtrl: LoadingController
+  ) {
     this.group = this.navParams.get('groupInfo');
     this.currentUserId = this.navParams.get('currentUserId');
     this.profileDetails = this.navParams.get('profile');
   }
 
-  ionViewDidEnter() {
+  ionViewWillEnter() {
     this.getAllProfile();
   }
 
   getAllProfile() {
+    let loader = this.getLoader();
+    loader.present();
     let profileRequest: ProfileRequest = {
       local: true,
       gid: this.group.gid
@@ -80,10 +84,13 @@ export class GroupDetailsPage {
         this.zone.run(() => {
           if (profiles && profiles.length) {
             this.userList = JSON.parse(profiles);
+            this.isNoUsers = (this.userList.length) ? false : true;
+            loader.dismiss();
           }
           console.log("UserList", JSON.parse(profiles));
         })
       }).catch((error) => {
+        loader.dismiss();
         console.log("Something went wrong while fetching user list", error);
       });
     });
@@ -150,22 +157,22 @@ export class GroupDetailsPage {
         popover.dismiss();
       },
       deleteGroup: () => {
-       
+
         this.deleteGroupConfirmBox();
         popover.dismiss();
       },
       addUsers: () => {
         this.navCtrl.push(AddOrRemoveGroupUserPage, {
           isAddUsers: true,
-          groupInfo : this.group,
-          groupMembers:this.userList
+          groupInfo: this.group,
+          groupMembers: this.userList
         });
         popover.dismiss();
       },
       removeUser: () => {
         this.navCtrl.push(AddOrRemoveGroupUserPage, {
           isAddUsers: false,
-          groupInfo : this.group,
+          groupInfo: this.group,
           groupMembers: this.userList
         });
         popover.dismiss();
@@ -222,11 +229,11 @@ export class GroupDetailsPage {
           cssClass: 'alert-btn-delete',
           handler: () => {
             console.log(this.group.gid);
-            this.groupService.deleteGroup(this.group.gid).then((sucess)=>{
-                console.log(sucess);
-                this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2))
-                
-            }).catch((error)=>{
+            this.groupService.deleteGroup(this.group.gid).then((sucess) => {
+              console.log(sucess);
+              this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2))
+
+            }).catch((error) => {
               console.log(error);
             })
           }
@@ -276,8 +283,19 @@ export class GroupDetailsPage {
       }).catch(error => {
         console.log("Error : " + error);
       });
+  }
 
+  navigateToAddUser() {
+    this.navCtrl.push(GuestEditProfilePage, {
+      isNewUser: true
+    });
+  }
 
+  getLoader(): any {
+    return this.loadingCtrl.create({
+      duration: 30000,
+      spinner: "crescent"
+    });
   }
 
 }

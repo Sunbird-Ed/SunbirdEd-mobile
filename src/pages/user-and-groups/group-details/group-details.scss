@@ -1,8 +1,4 @@
 page-group-member {
-    // ion-item.custom-ion-list {
-    //     background-color: #f4f4f4;
-    // }
-
     .blueBorder {
       border-color: map-get($colors, primary) !important;
       border-style: solid !important;
@@ -10,24 +6,15 @@ page-group-member {
       border-radius: 4px;
     }
     .radius{
-        border-radius: 6px;
-      }
-      .item-background.item-md {
+      border-radius: 6px;
+    }
+    .item-background.item-md {
         background-color: map-get($colors, light_gray) !important;
       }
-
-      /* new css beigns*/
-
-    //   ion-item.custom-ion-list {
-    //     background-color: cadetblue;
-    // }
 
     .radius{
         border-radius: 6px;
       }
-      //.item-background.item-md {
-        //background-color: cadetblue;
-      //}
       .bg-color-white {
         background-color: map-get($colors, light_gray) !important;
       }
@@ -53,6 +40,21 @@ page-group-member {
         .image-text {
           text-align: center;
           margin-top: 38vh;
+          background-color: map-get($colors, light-gray);
+        }
+        .image_style {
+          width: 335px;
+          height: 102px;
+          border-radius: 50%;
+        }
+        .img-container {
+          position: absolute;
+          width: 100px;
+          height: 100px;
+          top: 30%;
+          left: 60%;
+          margin-left: -97px;
+          margin-top: -144x;
         }
 }
 

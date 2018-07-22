@@ -122,11 +122,20 @@ export class AddOrRemoveGroupUserPage {
     return Boolean(this.userSelectionMap.get(this.uniqueUserList[index].uid));
   }
 
-  selectUnselectAll(isSelectAll) {
+  selectAll() {
     this.userSelectionMap.clear();
     this.zone.run(() => {
       for (var i = 0; i < this.uniqueUserList.length; i++) {
-        this.userSelectionMap.set(this.uniqueUserList[i].uid, isSelectAll);
+        this.userSelectionMap.set(this.uniqueUserList[i].uid, true);
+      }
+    });
+  }
+
+  unSelectAll() {
+    this.userSelectionMap.clear();
+    this.zone.run(() => {
+      for (var i = 0; i < this.uniqueUserList.length; i++) {
+        this.memberSelectionMap.set(this.uniqueUserList[i].uid, false);
       }
     });
   }
