@@ -5,13 +5,6 @@ import {
   NavParams
 } from 'ionic-angular';
 
-/**
- * Generated class for the GroupDetailNavPopoverPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
-
 @IonicPage()
 @Component({
   selector: 'page-group-detail-nav-popover',
@@ -19,10 +12,12 @@ import {
 })
 export class GroupDetailNavPopoverPage {
 
+  noUsers: boolean = false;
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
   ) {
+    this.noUsers = Boolean(this.navParams.get('noUsers'));
   }
 
   goToEditGroup() {

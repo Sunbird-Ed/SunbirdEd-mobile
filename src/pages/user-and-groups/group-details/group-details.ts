@@ -80,7 +80,7 @@ export class GroupDetailsPage {
           if (profiles && profiles.length) {
             this.userList = JSON.parse(profiles);
           }
-          console.log("UserList", profiles);
+          console.log("UserList", JSON.parse(profiles));
         })
       }).catch((error) => {
         console.log("Something went wrong while fetching user list", error);
@@ -168,7 +168,8 @@ export class GroupDetailsPage {
           groupMembers: this.userList
         });
         popover.dismiss();
-      }
+      },
+      noUsers: (this.userList.length) ? true : false
     },
       {
         cssClass: 'groupDetails-popover'
