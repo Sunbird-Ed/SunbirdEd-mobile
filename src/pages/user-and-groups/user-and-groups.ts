@@ -103,10 +103,12 @@ export class UserAndGroupsPage {
     this.groupService.getCurrentGroup().then(val => {
       console.log("Value : " + val);
       let group = val.result;
-      this.zone.run(() => {
-        console.log("Value : " + group.gid);
-        this.currentGroupId = group.gid
-      })
+      if (group) {
+        this.zone.run(() => {
+          console.log("Value : " + group.gid);
+          this.currentGroupId = group.gid
+        });
+      }
     }).catch(error => {
       console.log("Error : " + error);
     })
@@ -123,12 +125,16 @@ export class UserAndGroupsPage {
   }
 
   presentPopover(myEvent, index, isUser) {
+    let isCurrentUser = false;
+    if (isUser) {
+      isCurrentUser = (this.currentUserId === this.userList[index].uid) ? true : false;
+    }
     let popover = this.popOverCtrl.create(PopoverPage, {
       edit: () => {
-        if(isUser) {
+        if (isUser) {
           this.navCtrl.push(GuestEditProfilePage, {
             profile: this.userList[index],
-            isCurrentUser: (this.currentUserId === this.userList[index].uid) ? true : false
+            isCurrentUser: isCurrentUser
           });
         } else {
           this.navCtrl.push('CreateGroupPage', {
@@ -145,11 +151,12 @@ export class UserAndGroupsPage {
         }
         popover.dismiss()
       },
-      isCurrentUser: (this.currentUserId === this.userList[index].uid) ? true : false
-    },
+        isCurrentUser: isCurrentUser
+      },
       {
         cssClass: 'user-popover'
-      });
+      }
+    );
     popover.present({
       ev: myEvent
     });
@@ -357,7 +364,7 @@ export class UserAndGroupsPage {
             this.profileService.deleteUser(request,
               (result) => {
                 console.log("User Deleted Successfully", result);
-                this.userList.splice(index, 1) ;
+                this.userList.splice(index, 1);
               }, (error) => {
                 console.error("Error Occurred=", error);
               });

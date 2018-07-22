@@ -2,7 +2,7 @@ import { Component, NgZone } from '@angular/core';
 import { NavController, NavParams, LoadingController } from 'ionic-angular';
 import { GroupReportListPage } from '../group-report-list/group-report-list';
 import { TablePage } from '../../table/table';
-import { ProfileService, ReportService, ReportSummary } from "sunbird";
+import { ReportService, ReportSummary } from "sunbird";
 
 @Component({
     selector: 'group-list-page',
@@ -12,7 +12,7 @@ export class GroupListPage {
 
     isFromUsers: boolean;
     isFromGroups: boolean;
-    currentUser;
+    uids: Array<string>;
     listOfUsers;
     listOfReports: Array<ReportSummary> = [];
 
@@ -30,21 +30,17 @@ export class GroupListPage {
         loader.present();
         this.isFromUsers = this.navParams.get('isFromUsers');
         this.isFromGroups = this.navParams.get('isFromGroups');
-        if (this.isFromUsers) {
-            this.currentUser = this.navParams.get('currentUser');
-            this.reportService.getListOfReports([this.currentUser.uid])
-                .then(list => {
-                    this.ngZone.run(() => {
-                        loader.dismiss();
-                        this.listOfReports = list;
-                    });
-                })
-                .catch(err => {
-                    loader.dismiss();
-                });
-        } else if (this.isFromGroups) {
-            this.listOfUsers = this.navParams.get('users');
-        }
+        this.uids = this.navParams.get('uids');
+        this.reportService.getListOfReports(this.uids)
+        .then(list => {
+            this.ngZone.run(() => {
+                loader.dismiss();
+                this.listOfReports = list;
+            });
+        })
+        .catch(err => {
+            loader.dismiss();
+        });
     }
 
     formatTime(time: number): string {

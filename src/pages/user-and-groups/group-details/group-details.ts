@@ -162,7 +162,8 @@ export class GroupDetailsPage {
       removeUser: function () {
         self.navCtrl.push(AddOrRemoveGroupUserPage, {
           isAddUsers: false,
-          groupInfo : self.group
+          groupInfo : self.group,
+          groupMembers: self.userList
         });
         popover.dismiss();
       }

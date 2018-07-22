@@ -98,17 +98,17 @@ export class ReportsPage {
     })
   }
 
-  goToReportList(user) {
+  goToUserReportList(uid: string) {
     this.navCtrl.push(GroupListPage, {
       isFromUsers: true,
-      currentUser: user
+      uids: [uid]
     });
   }
   
-  goToGroupList() {
+  goToGroupUserReportList(uids: Array<string>) {
     this.navCtrl.push(GroupListPage, {
       isFromGroups: true,
-      users: this.otherUsers
+      uids: uids
     });
   }
 }

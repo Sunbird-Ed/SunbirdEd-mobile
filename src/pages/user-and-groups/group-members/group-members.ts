@@ -106,45 +106,43 @@ export class GroupMembersPage {
   }
 
   goTOGuestEdit() {
-    this.navCtrl.push(GuestEditProfilePage)
+    this.navCtrl.push(GuestEditProfilePage, {
+      isNewUser: true
+    });
   }
 
   /**
    * Internally call create Group
    */
   createGroup() {
-    //    this.userSelectionMap.forEach(this.logMapElements);  //Need for code optimize
     let loader = this.getLoader();
     loader.present();
+
     let selectedUids: Array<string> = [];
-    this.userList.forEach((item) => {
-      if (Boolean(this.userSelectionMap.get(item.uid))) {
-        selectedUids.push(item.uid);
-      }
+    this.userSelectionMap.forEach((value: Boolean, key: string) => {
+      if (value === true) selectedUids.push(key);
     });
+    this.group.uids = selectedUids;
     this.groupService.createGroup(this.group)
-      .then((res) => {
-        let req: AddUpdateProfilesRequest = {
-          groupId: res.result.gid,
-          uidList: selectedUids
-        }
-        this.groupService.addUpdateProfilesToGroup(req).then((success) => {
-          console.log(success);
-          loader.dismiss();
-          this.getToast(this.translateMessage('GROUP_CREATE_SUCCESS')).present();
-          this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 3));
-        }).catch((error) => {
-          loader.dismiss();
-          this.getToast(this.translateMessage('SOMETHING_WENT_WRONG')).present();
-          console.log("Error : " + error);
-          loader.dismiss();
-        });
-      }).catch((error) => {
-        loader.dismiss();
-        this.getToast(this.translateMessage('SOMETHING_WENT_WRONG')).present();
-        console.log("Error : " + error);
-        loader.dismiss();
-      });
+    .then(res => {
+      let req: AddUpdateProfilesRequest = {
+        groupId: res.result.gid,
+        uidList: selectedUids
+      }
+      return this.groupService.addUpdateProfilesToGroup(req);
+    })
+    .then(success => {
+      console.log(success);
+      loader.dismiss();
+      this.getToast(this.translateMessage('GROUP_CREATE_SUCCESS')).present();
+      this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 3));
+    })
+    .catch(error => {
+      loader.dismiss();
+      this.getToast(this.translateMessage('SOMETHING_WENT_WRONG')).present();
+      console.log("Error : " + error);
+      loader.dismiss();
+    });
   }
 
   logMapElements(value, key, map) {
