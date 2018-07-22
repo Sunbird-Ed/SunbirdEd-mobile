@@ -43,6 +43,7 @@ export class AddOrRemoveGroupUserPage {
   groupInfo: Group;
   groupMembers: Array<Profile>;
   uid: any;
+  allUsers: Array<Profile> = [];
 
   options: toastOptions = {
     message: '',
@@ -76,8 +77,8 @@ export class AddOrRemoveGroupUserPage {
 
     this.profileService.getAllUserProfile(profileRequest)
       .then(profiles => {
-        let allUsers: Array<Profile> = JSON.parse(profiles);
-        let uniqueUserList = allUsers.filter(e => {
+        this.allUsers = JSON.parse(profiles);
+        let uniqueUserList = this.allUsers.filter(e => {
           let found = this.groupMembers.find(m => {
             return m.uid === e.uid;
           });
@@ -85,6 +86,16 @@ export class AddOrRemoveGroupUserPage {
         });
         this.zone.run(() => {
           this.uniqueUserList = uniqueUserList;
+
+          if(!this.addUsers) {
+            this.uniqueUserList.forEach((element, index) => {
+              this.userSelectionMap.set(this.uniqueUserList[index].uid, true);
+            });
+
+            this.groupMembers.forEach((element, index) => {
+              this.memberSelectionMap.set(this.groupMembers[index].uid, true);
+            });
+          }
         })
       })
       .catch((error) => {
@@ -122,6 +133,10 @@ export class AddOrRemoveGroupUserPage {
     return Boolean(this.userSelectionMap.get(this.uniqueUserList[index].uid));
   }
 
+  isGroupMemberSelected(index: number) {
+    return Boolean(this.memberSelectionMap.get(this.groupMembers[index].uid));
+  }
+
   selectAll() {
     this.userSelectionMap.clear();
     this.zone.run(() => {
@@ -131,11 +146,15 @@ export class AddOrRemoveGroupUserPage {
     });
   }
 
-  unSelectAll() {
+  unselectAll() {
+    this.memberSelectionMap.clear();
     this.userSelectionMap.clear();
     this.zone.run(() => {
       for (var i = 0; i < this.uniqueUserList.length; i++) {
-        this.memberSelectionMap.set(this.uniqueUserList[i].uid, false);
+        this.memberSelectionMap.set(this.groupMembers[i].uid, false);
+      }
+      for (var i = 0; i < this.uniqueUserList.length; i++) {
+        this.userSelectionMap.set(this.uniqueUserList[i].uid, false);
       }
     });
   }
