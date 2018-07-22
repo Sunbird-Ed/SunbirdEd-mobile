@@ -480,5 +480,6 @@
   "UNSELECT_ALL": "Unselect All",
   "GROUP_MEMBER_ADD_SUCCESS": "Group members add successfully",
   "GROUP_MEMBER_DELETE_SUCCESS": "Group members deleted successfully",
-  "USER": "User"
+  "USER": "User",
+  "NO_USERS_IN_THIS_GROUP": "No Users in this group"
 }

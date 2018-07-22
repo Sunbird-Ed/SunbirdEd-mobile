@@ -2,11 +2,8 @@
   <ion-navbar>
     <ion-title>{{group?.name}}</ion-title>
     <ion-buttons end>
-      <button *ngIf="!isNoUsers" ion-button icon-only (click)="presentPopoverNav($event)">
+      <button ion-button icon-only (click)="presentPopoverNav($event)">
         <ion-icon name="more" float-end></ion-icon>
-      </button>
-      <button *ngIf="isNoUsers" ion-button icon-only (click)="navigateToAddUser()">
-        <ion-icon name="add" float-end></ion-icon>
       </button>
     </ion-buttons>
   </ion-navbar>
@@ -21,7 +18,7 @@
         <ion-col col-md-6 offset-md-3 col-lg-6 offset-lg-3>
           <div class="image-text">
             <h6>
-              <b>{{'NO_USERS_ON_THIS_DEVICE' | translate}}</b>
+              <b>{{'NO_USERS_IN_THIS_GROUP' | translate}}</b>
             </h6>
             <p>{{'NO_USERS_SUGGESTION_MESSAGE' | translate}}</p>
           </div>
