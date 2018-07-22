@@ -9,8 +9,9 @@
 <ion-content padding>
   <ion-row>
     <ion-col class="rm-padding-left" col-md-4>
-      <p *ngIf="userList?.length" text-left ion-text color="title" text-uppercase>
-        <b>{{uniqueUserList.length}}&nbsp;{{'USERS' | translate}}</b>
+      <p  text-left ion-text color="title" text-uppercase>
+        <b *ngIf="addUsers && uniqueUserList?.length">{{uniqueUserList?.length + groupMembers?.length}}&nbsp;{{'USERS' | translate}}</b>
+        <b *ngIf="!addUsers && groupMembers?.length">{{groupMembers?.length}}&nbsp;{{'USERS' | translate}}</b>
       </p>
     </ion-col>
     <ion-col col-md-4 push-md-4 class="rm-padding-right">
