@@ -24,7 +24,8 @@ import {
   ProfileType,
   TabsPage,
   ContainerService,
-  SharedPreferences
+  SharedPreferences,
+  AddUpdateProfilesRequest
 } from 'sunbird';
 import { Events } from 'ionic-angular';
 import { AppGlobalService } from '../../../service/app-global.service';
@@ -45,6 +46,7 @@ export class GroupDetailsPage {
 
   selectedUserIndex: number = -1;
   profileDetails: any;
+  userUids = [];
 
   constructor(
     private navCtrl: NavController,
@@ -80,6 +82,9 @@ export class GroupDetailsPage {
         this.zone.run(() => {
           if (profiles && profiles.length) {
             this.userList = JSON.parse(profiles);
+            this.userList.forEach((item) => {
+              this.userUids.push(item.uid);
+            })
           }
           console.log("UserList", JSON.parse(profiles));
         })
@@ -150,22 +155,22 @@ export class GroupDetailsPage {
         popover.dismiss();
       },
       deleteGroup: () => {
-       
+
         this.deleteGroupConfirmBox();
         popover.dismiss();
       },
       addUsers: () => {
         this.navCtrl.push(AddOrRemoveGroupUserPage, {
           isAddUsers: true,
-          groupInfo : this.group,
-          groupMembers:this.userList
+          groupInfo: this.group,
+          groupMembers: this.userList
         });
         popover.dismiss();
       },
       removeUser: () => {
         this.navCtrl.push(AddOrRemoveGroupUserPage, {
           isAddUsers: false,
-          groupInfo : this.group,
+          groupInfo: this.group,
           groupMembers: this.userList
         });
         popover.dismiss();
@@ -180,19 +185,22 @@ export class GroupDetailsPage {
     });
   }
 
-  presentPopover(myEvent , index) {
+  presentPopover(myEvent, index) {
     let popover = this.popOverCtrl.create(PopoverPage, {
-      
+
       edit: () => {
-        this.navCtrl.push(GuestEditProfilePage,{
+        this.navCtrl.push(GuestEditProfilePage, {
           profile: this.userList[index]
         })
         popover.dismiss();
       },
-      delete: ($event) => {
-        
-        }
-      },
+      delete: () => {
+        console.log("in delete");
+        this.userDeleteGroupConfirmBox(index);
+        popover.dismiss();
+
+      }
+    },
       {
         cssClass: 'user-popover'
       });
@@ -222,13 +230,57 @@ export class GroupDetailsPage {
           cssClass: 'alert-btn-delete',
           handler: () => {
             console.log(this.group.gid);
-            this.groupService.deleteGroup(this.group.gid).then((sucess)=>{
-                console.log(sucess);
-                this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2))
-                
-            }).catch((error)=>{
+            this.groupService.deleteGroup(this.group.gid).then((sucess) => {
+              console.log(sucess);
+              this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2))
+
+            }).catch((error) => {
               console.log(error);
             })
+          }
+        }
+      ]
+    });
+    alert.present();
+  }
+
+  /* delete confirm box for user */
+   /** Delete alert box */
+   userDeleteGroupConfirmBox(index) {
+    let alert = this.alertCtrl.create({
+      title: this.translateMessage('GROUP_DELETE_CONFIRM', name),
+      mode: 'wp',
+      message: this.translateMessage('GROUP_DELETE_CONFIRM_MESSAGE'),
+      cssClass: 'confirm-alert',
+      buttons: [
+        {
+          text: this.translateMessage('CANCEL'),
+          role: 'cancel',
+          cssClass: 'alert-btn-cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: this.translateMessage('Yes'),
+          cssClass: 'alert-btn-delete',
+          handler: () => {
+            this.userUids.forEach((item) => {
+              if (this.userList[index].uid == item) {
+                console.log(true);
+                let elementIndex = this.userUids.indexOf(item.uid);
+                let userListIndex = this.userList.indexOf(this.userList[index]);
+                this.userUids.splice(elementIndex, 1);
+                this.userList.splice(userListIndex , 1);
+                console.log(this.userUids);
+    
+                let req: AddUpdateProfilesRequest = {
+                  groupId: this.group.gid,
+                  uidList: this.userUids
+                }
+                this.groupService.addUpdateProfilesToGroup(req);
+              }
+            }) 
           }
         }
       ]
@@ -276,8 +328,5 @@ export class GroupDetailsPage {
       }).catch(error => {
         console.log("Error : " + error);
       });
-
-
   }
-
 }
