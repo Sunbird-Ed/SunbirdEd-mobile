@@ -9,7 +9,8 @@
   </ion-navbar>
 </ion-header>
 <ion-content padding>
-    <div class="firstSection" *ngIf="showEmptyGroupsMessage">
+  <ion-list>
+    <div *ngIf="!userList.length" class="firstSection">
         <div class="img-container">
           <img class="image_style" src="assets/imgs/ic_businessman.png">
         </div>
@@ -26,7 +27,8 @@
           </ion-col>
         </ion-row>
       </div>
-  <ion-list>
+    </ion-list>
+  <ion-list *ngIf="userList.length">
     <ion-item *ngFor="let user of userList; let i=index;" class="item-background radius" margin-bottom no-lines [ngClass]="i===selectedUserIndex ? 'blueBorder' : ''">
       <ion-row class="bg-color-white">
         <ion-col col-11 class="bg-color-white">
