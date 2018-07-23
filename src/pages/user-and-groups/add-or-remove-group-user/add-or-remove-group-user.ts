@@ -122,7 +122,7 @@ export class AddOrRemoveGroupUserPage {
     this.navCtrl.push(GuestEditProfilePage, {
 
     })
-  }
+  } 
 
   isUserSelected(index: number) {
     console.log("Index", index);
@@ -137,7 +137,7 @@ export class AddOrRemoveGroupUserPage {
     this.userSelectionMap.clear();
     this.zone.run(() => {
       this.uniqueUserList.forEach((element, index) => {
-        this.userSelectionMap.set(this.uniqueUserList[index].uid, false);
+        this.userSelectionMap.set(this.uniqueUserList[index].uid, true);
       });
     });
   }
@@ -151,13 +151,14 @@ export class AddOrRemoveGroupUserPage {
     });
   }
 
+
   remove() {
     let loader = this.getLoader();
     loader.present();
     let selectedUids: Array<string> = [];
 
     this.groupMembers.forEach((item) => {
-      if (Boolean(this.memberSelectionMap.get(item.uid))) {
+      if (!Boolean(this.memberSelectionMap.get(item.uid))) {
         selectedUids.push(item.uid);
       }
     });
