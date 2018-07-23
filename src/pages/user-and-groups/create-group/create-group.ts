@@ -82,6 +82,7 @@ export class CreateGroupPage {
   getSyllabusDetails() {
     this.loader = this.getLoader();
     this.loader.present();
+    
 
     this.formAndFrameworkUtilService.getSyllabusList()
       .then((result) => {
@@ -94,6 +95,7 @@ export class CreateGroupPage {
           });
 
           if (this.group && this.group.syllabus && this.group.syllabus[0] !== undefined) {
+            console.log('1', this.group.syllabus)
             this.getClassList(this.group.syllabus[0], false);
           } else {
             this.loader.dismiss();
@@ -169,7 +171,9 @@ export class CreateGroupPage {
       this.loader = this.getLoader();
       this.loader.present();
     }
-
+    
+    frameworkId = frameworkId ? frameworkId : this.groupEditForm.value.syllabus;
+    console.log('framework id',frameworkId);
     this.groupEditForm.patchValue({
       class: []
     });
