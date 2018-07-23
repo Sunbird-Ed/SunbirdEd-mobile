@@ -164,6 +164,10 @@ export class ShareUserAndGroupPage {
 
   selectAll() {
     this.zone.run(() => {
+      for (let i = 0; i < this.userList.length; i++) {
+        this.toggleUserSelected(i);
+      }
+
       for (let i = 0; i < this.groupList.length; i++) {
         this.toggleGroupSelected(i);
       }
