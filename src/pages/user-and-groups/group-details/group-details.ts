@@ -252,12 +252,12 @@ export class GroupDetailsPage {
   }
 
   /* delete confirm box for user */
-   /** Delete alert box */
-   userDeleteGroupConfirmBox(index) {
+  /** Delete alert box */
+  userDeleteGroupConfirmBox(index) {
     let alert = this.alertCtrl.create({
-      title: this.translateMessage('GROUP_DELETE_CONFIRM', name),
+      title: this.translateMessage('USER_DELETE_CONFIRM_MESSAGE_FROM_GROUP', this.userList[index].handle),
       mode: 'wp',
-      message: this.translateMessage('GROUP_DELETE_CONFIRM_MESSAGE'),
+      message: this.translateMessage('USER_DELETE_CONFIRM_SECOND_MESSAGE'),
       cssClass: 'confirm-alert',
       buttons: [
         {
@@ -274,20 +274,17 @@ export class GroupDetailsPage {
           handler: () => {
             this.userUids.forEach((item) => {
               if (this.userList[index].uid == item) {
-                console.log(true);
                 let elementIndex = this.userUids.indexOf(item.uid);
                 let userListIndex = this.userList.indexOf(this.userList[index]);
                 this.userUids.splice(elementIndex, 1);
-                this.userList.splice(userListIndex , 1);
-                console.log(this.userUids);
-    
+                this.userList.splice(userListIndex, 1);
                 let req: AddUpdateProfilesRequest = {
                   groupId: this.group.gid,
                   uidList: this.userUids
                 }
                 this.groupService.addUpdateProfilesToGroup(req);
               }
-            }) 
+            })
           }
         }
       ]

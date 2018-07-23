@@ -10,7 +10,7 @@
   <ion-row>
     <ion-col class="rm-padding-left" col-md-4>
       <p  text-left ion-text color="title" text-uppercase>
-        <b *ngIf="addUsers && uniqueUserList?.length">{{uniqueUserList?.length + groupMembers?.length}}&nbsp;{{'USERS' | translate}}</b>
+        <b *ngIf="addUsers && uniqueUserList?.length">{{uniqueUserList?.length || 0 + groupMembers?.length}}&nbsp;{{'USERS' | translate}}</b>
         <b *ngIf="!addUsers && groupMembers?.length">{{groupMembers?.length}}&nbsp;{{'USERS' | translate}}</b>
       </p>
     </ion-col>
