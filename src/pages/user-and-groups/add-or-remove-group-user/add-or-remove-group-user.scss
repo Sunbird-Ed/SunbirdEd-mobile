@@ -20,6 +20,9 @@ page-add-or-remove-group-user {
       .checkbox-ios .checkbox-checked {
           background-color: map-get($colors, primary) !important;
       }
+      .checkbox-disabled .checkbox-icon {
+        background-color: map-get($colors, dark) !important;
+    }
       .image-style{
         margin-top: 20vh;
         width: 50%;
