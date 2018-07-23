@@ -31,7 +31,7 @@
       <p>{{user?.profileType}}</p>
     </ion-label>
     <ion-checkbox item-end mode="ios"
-    checked="true"
+    checked="{{isGroupMemberSelected(i)}}"
     [disabled]="addUsers"
     (click)="toggleMemberSelect(i)"></ion-checkbox>
   </ion-item>

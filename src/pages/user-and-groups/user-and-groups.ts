@@ -200,7 +200,20 @@ export class UserAndGroupsPage {
       this.groupService.getAllGroup().then((groups) => {
         if (groups.result && groups.result.length) {
           this.showEmptyGroupsMessage = false;
-          this.groupList = groups.result;
+          this.groupList = groups.result.sort((prev: Group, next: Group) => {
+            if (prev.gid === this.currentGroupId) {
+              return -1;
+            }
+
+            if (next.gid === this.currentGroupId) {
+              return 1;
+            }
+
+
+            if (prev.name < next.name) return -1;
+            if (prev.name > next.name) return 1;
+            return 0;
+          });
         } else {
           this.showEmptyGroupsMessage = true;
         }
