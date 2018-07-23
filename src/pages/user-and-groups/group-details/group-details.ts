@@ -219,7 +219,7 @@ export class GroupDetailsPage {
   /** Delete alert box */
   deleteGroupConfirmBox() {
     let alert = this.alertCtrl.create({
-      title: this.translateMessage('GROUP_DELETE_CONFIRM', name),
+      title: this.translateMessage('GROUP_DELETE_CONFIRM', this.group.name),
       mode: 'wp',
       message: this.translateMessage('GROUP_DELETE_CONFIRM_MESSAGE'),
       cssClass: 'confirm-alert',
@@ -280,14 +280,14 @@ export class GroupDetailsPage {
                 this.userUids.splice(elementIndex, 1);
                 this.userList.splice(userListIndex , 1);
                 console.log(this.userUids);
-    
+
                 let req: AddUpdateProfilesRequest = {
                   groupId: this.group.gid,
                   uidList: this.userUids
                 }
                 this.groupService.addUpdateProfilesToGroup(req);
               }
-            }) 
+            })
           }
         }
       ]
