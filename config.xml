@@ -16,6 +16,7 @@
     <preference name="BackupWebStorage" value="none" />
     <preference name="SplashScreenDelay" value="5000" />
     <preference name="Orientation" value="portrait" />
+    <preference name="AndroidLaunchMode" value="singleInstance" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
     <hook src="scripts/copyGradleFiles.js" type="before_build" />
     <hook src="scripts/copyGradleFiles.js" type="before_run" />
