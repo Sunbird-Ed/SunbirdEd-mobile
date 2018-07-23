@@ -136,20 +136,18 @@ export class AddOrRemoveGroupUserPage {
   selectAll() {
     this.userSelectionMap.clear();
     this.zone.run(() => {
-      for (var i = 0; i < this.uniqueUserList.length; i++) {
-        this.userSelectionMap.set(this.uniqueUserList[i].uid, true);
-      }
+      this.uniqueUserList.forEach((element, index) => {
+        this.userSelectionMap.set(this.uniqueUserList[index].uid, false);
+      });
     });
   }
 
   unselectAll() {
-    this.memberSelectionMap.clear();
-    this.userSelectionMap.clear();
     this.zone.run(() => {
-      this.userSelectionMap.clear();
-      for (var i = 0; i < this.uniqueUserList.length; i++) {
-        this.memberSelectionMap.set(this.groupMembers[i].uid, false);
-      }
+      this.memberSelectionMap.clear();
+      this.groupMembers.forEach((element, index) => {
+        this.memberSelectionMap.set(this.groupMembers[index].uid, false);
+      });
     });
   }
 
