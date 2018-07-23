@@ -47,6 +47,9 @@ export class AddOrRemoveGroupUserPage {
   allUsers: Array<Profile> = [];
   selectedUids: Array<string> = [];
 
+  selectedUserLength: string = '';
+  selectedGroupMemberLength: string = '';
+
   options: toastOptions = {
     message: '',
     duration: 3000,
@@ -67,6 +70,7 @@ export class AddOrRemoveGroupUserPage {
     this.addUsers = this.navParams.get('isAddUsers');
     this.groupInfo = this.navParams.get('groupInfo');
     this.groupMembers = this.navParams.get('groupMembers');
+    console.log("length of group member" , this.groupMembers.length)
   }
 
   ionViewWillEnter() {
@@ -110,6 +114,7 @@ export class AddOrRemoveGroupUserPage {
       value = true;
     }
     this.userSelectionMap.set(this.uniqueUserList[index].uid, value);
+//    this.getSelectedUids();
   }
 
   toggleMemberSelect(index: number) {
@@ -129,10 +134,12 @@ export class AddOrRemoveGroupUserPage {
 
   isUserSelected(index: number) {
     console.log("Index", index);
+    this.getSelectedUids();
     return Boolean(this.userSelectionMap.get(this.uniqueUserList[index].uid));
   }
 
   isGroupMemberSelected(index: number) {
+    this.getSelectedGroupMemberUids();
     return Boolean(this.memberSelectionMap.get(this.groupMembers[index].uid));
   }
 
@@ -140,9 +147,10 @@ export class AddOrRemoveGroupUserPage {
     this.userSelectionMap.clear();
     this.zone.run(() => {
       this.uniqueUserList.forEach((element, index) => {
-        this.userSelectionMap.set(this.uniqueUserList[index].uid, false);
+        this.userSelectionMap.set(this.uniqueUserList[index].uid, true);
       });
     });
+    //this.getSelectedUids();
   }
 
   unselectAll() {
@@ -154,16 +162,46 @@ export class AddOrRemoveGroupUserPage {
     });
   }
 
+
   remove() {
     this.groupMembers.forEach((item) => {
-      if (Boolean(this.memberSelectionMap.get(item.uid))) {
+      if (!Boolean(this.memberSelectionMap.get(item.uid))) {
         this.selectedUids.push(item.uid);
       }
     });
-    this.deleteUsersFromGroupConfirmBox(this.selectedUids.length);
+    this.deleteUsersFromGroupConfirmBox(this.selectedGroupMemberLength);
 
     
 
+  }
+
+  getSelectedUids() {
+    let selectedUids: Array<string> = [];
+    this.uniqueUserList.forEach((item) => {
+      if (Boolean(this.userSelectionMap.get(item.uid))) {
+        selectedUids.push(item.uid);
+      }
+    });
+
+    console.log("selectedUids", selectedUids.length);
+    this.zone.run(() => {
+      this.selectedUserLength = (selectedUids.length) ? selectedUids.length.toString() : '';
+    });
+    return selectedUids;
+  }
+
+  getSelectedGroupMemberUids() {
+    let selectedUids: Array<string> = [];
+    this.groupMembers.forEach((item) => {
+      if (Boolean(this.memberSelectionMap.get(item.uid))) {
+        selectedUids.push(item.uid);
+      }
+    });
+
+    console.log("selectedUids", selectedUids.length);
+    this.zone.run(() => {
+      this.selectedGroupMemberLength = (selectedUids.length) ? selectedUids.length.toString() : '';
+    });
   }
 
   add() {
@@ -176,15 +214,15 @@ export class AddOrRemoveGroupUserPage {
       groupMembersUids.push(element.uid);
     });
 
-    this.uniqueUserList.forEach((item) => {
-      if (Boolean(this.userSelectionMap.get(item.uid))) {
-        selectedUids.push(item.uid);
-      }
-    });
+    // this.uniqueUserList.forEach((item) => {
+    //   if (Boolean(this.userSelectionMap.get(item.uid))) {
+    //     selectedUids.push(item.uid);
+    //   }
+    // });
 
     let req: AddUpdateProfilesRequest = {
       groupId: this.groupInfo.gid,
-      uidList: groupMembersUids.concat(selectedUids)
+      uidList: groupMembersUids.concat(this.getSelectedUids())
     }
     this.groupService.addUpdateProfilesToGroup(req)
     .then((success) => {
