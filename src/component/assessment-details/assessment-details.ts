@@ -21,23 +21,6 @@ export class AssessmentDetailsComponent implements OnInit {
       this.showResult = this.assessmentData['showResult']
     }
   }
-  
-  // Function to add a custom class to columns
-  getCellClass(data) {
-    let className: string;
-    switch (data.column.prop.toUpperCase()) {
-      case "QTITLE":
-        className = " datatable-body-cell-qtitle";
-        break;
-      case "TIMESPENT":
-        className = " datatable-body-cell-time";
-        break;
-      case "RESULT":
-        className = " datatable-body-cell-result";
-        break;
-    }
-    return className;
-  }
 
   onActivate(event, clickCallback) {
     let popupCallback = clickCallback || ReportAlert;

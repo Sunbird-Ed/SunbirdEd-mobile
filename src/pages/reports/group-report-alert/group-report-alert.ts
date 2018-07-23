@@ -21,16 +21,13 @@ export class GroupReportAlert{
     this.fromUserAssessment['showResult'] = false;
     this.fromUserColumns= [{
       name: 'Name',
-      prop: 'qtitle',
-      sortable: true
+      prop: 'qtitle'
     }, {
       name: 'Time',
-      prop: 'timespent',
-      sortable: true
+      prop: 'timespent'
     }, {
       name: 'Result',
-      prop: 'result',
-      sortable: false
+      prop: 'result'
     }];
   }
 

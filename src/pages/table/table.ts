@@ -12,16 +12,13 @@ export class TablePage {
   columns = [
     {
       name: 'Question (Marks)',
-      prop: 'qtitle',
-      sortable: true
+      prop: 'qtitle'
     }, {
       name: 'Time',
-      prop: 'timespent',
-      sortable: true
+      prop: 'timespent'
     }, {
       name: 'Result',
-      prop: 'result',
-      sortable: false
+      prop: 'result'
     }
   ];
 

@@ -14,29 +14,23 @@ export class GroupReportListPage {
     report: string = 'users'
     fromUserColumns = [{
         name: 'Name',
-        prop: 'qtitle',
-        sortable: true
+        prop: 'qtitle'
     }, {
         name: 'Time',
-        prop: 'timespent',
-        sortable: true
+        prop: 'timespent'
     }, {
         name: 'Score',
-        prop: 'score',
-        sortable: false
+        prop: 'score'
     }];
     fromQuestionColumns = [{
         name: 'Questions',
-        prop: 'qtitle',
-        sortable: true
+        prop: 'qtitle'
     }, {
         name: 'Marks',
-        prop: 'score',
-        sortable: true
+        prop: 'score'
     }, {
         name: 'Accuracy',
-        prop: 'score',
-        sortable: false
+        prop: 'score'
     }]
     fromUserAssessment: {};
     fromQuestionAssessment: {};
