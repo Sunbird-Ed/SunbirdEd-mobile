@@ -56,7 +56,9 @@ export class GroupListPage {
                 report: report
             });
         } else if (this.isFromGroups) {
-            // this.navCtrl.push(GroupReportListPage);
+            this.navCtrl.push(GroupReportListPage, {
+                report: report
+            });
         }
     }
 }

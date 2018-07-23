@@ -1,120 +1,36 @@
 <ion-header>
     <ion-item style="background-color:dodgerblue;color:white">
-        <span>question No. 2</span>
+        <span>{{assessmentDetails?.qtitle}}</span>
         <ion-icon (click)="cancel()" ios="ios-close" md="md-close" item-end></ion-icon>
     </ion-item>
-
-    <div style="margin-top:10px" class="twocolordiv"></div>
-    <ion-row style="height:20px" class="progress-bar">
-        <ion-col class="text-alignment" col-4>
-            CORRECT - 40%
-
-        </ion-col>
-        <ion-col col-4 class=" text-alignment">
-            INCORRECT - 20%
-
-        </ion-col>
-        <ion-col class="text-alignment" col-4>
-            SKIPPED-40%
-        </ion-col>
-    </ion-row>
-
-
-    <ion-toolbar style="border-bottom:none" no-border-top no-border-bottom>
-        <ion-segment [(ngModel)]="report">
-            <ion-segment-button value="question">
-               {{ 'QUESTION' | translate }}
-            </ion-segment-button>
-            <ion-segment-button value="user" text-uppercase>
-                 {{ 'USERS' | translate }}
-            </ion-segment-button>
-        </ion-segment>
-    </ion-toolbar>
+    <ion-segment [(ngModel)]="report">
+        <ion-segment-button value="questions">
+            {{ 'QUESTION' | translate }}
+        </ion-segment-button>
+        <ion-segment-button value="users">
+            {{ 'USER' | translate }}
+        </ion-segment-button>
+    </ion-segment>
 </ion-header>
 
-<ion-content style="margin-top:-1% !important">
+<ion-content>
     <div [ngSwitch]="report">
-        <ion-list *ngSwitchCase="'question'">
-
+        <ion-list *ngSwitchCase="'users'">
+            <assessment-details [assessmentData]="fromUserAssessment" [columns]="fromUserColumns"></assessment-details>
+        </ion-list>
+        <ion-list class="margin0" *ngSwitchCase="'questions'">
             <ion-item>
-                <p>{{'QUESTION_TYPE' | translate}}</p>
-                <h3>{{ "Multiple choice" }}</h3>
-            </ion-item>
-
-
-            <ion-item>
-                <p>{{'MARKS' | translate}}</p>
-                <h3>{{ "0/5" }}</h3>
+                <p>{{'ACCURACY' | translate}}</p>
+                <h3>{{assessmentDetails?.result}}</h3>
             </ion-item>
             <ion-item>
                 <p>{{'QUESTION' | translate}}</p>
-                <h3>{{ "what is scientific name for indian cobra" }}</h3>
+                <h3>{{assessmentDetails?.qtitle}}</h3>
             </ion-item>
-            <ion-item>
-                <p>{{'USER_ANSWER' | translate}}</p>
-                <h3>{{ "option-A Bangarus caeruleus"}}</h3>
-                <ion-icon style="color:green" ios="ios-checkmark" md="md-checkmark" item-end></ion-icon>
+            <ion-item *ngIf="assessmentDetails?.qdesc">
+                <p>{{ 'DESCRIPTIONS' | translate}}</p>
+                <h3>{{assessmentDetails?.qdesc}}</h3>
             </ion-item>
-        </ion-list>
-
-        <ion-list class="margin0" *ngSwitchCase="'user'">
-            <ion-grid *ngIf="option != 'student'" class="grid-align">
-
-                <ion-row class="report-header">
-                    <ion-col class="text-center white" col-4>
-                        {{ 'NAME' | translate }}
-                        <ion-icon name="arrow-dropdown"></ion-icon>
-                    </ion-col>
-                    <ion-col class="text-center white" col-4>
-                            {{ 'TIME' | translate }}
-                        <ion-icon name="arrow-dropdown"></ion-icon>
-                    </ion-col>
-                    <ion-col class="text-center result" col-4>
-                         {{ 'SCORE' | translate }}
-                        <ion-icon name="arrow-dropdown"></ion-icon>
-                    </ion-col>
-                </ion-row>
-                <div class="scroll">
-                <ion-row (click)='usersStudent()' class="G row-align" *ngFor="let question of questionResponse" padding>
-                    <ion-col class="text-center" col-4 style="color:dodgerblue">
-                        {{question.user}}
-                    </ion-col>
-                    <ion-col class="text-center" col-4>
-                        {{question.time}}
-                    </ion-col>
-                    <ion-col class="text-center" col-4 style="text-align:center">
-                        {{question.marks}}
-                    </ion-col>
-                </ion-row>
-                </div>
-            </ion-grid>
-            <ion-list  *ngIf="option=='student'">
-
-                <ion-item (click)="navigateToUsers()">
-                    <ion-icon style="color:dodgerblue" ios="ios-arrow-back" md="md-arrow-back"></ion-icon>
-                    <span style="color:dodgerblue;font-size:1.3rem;vertical-align: text-top;">{{ 'BACK_TO_USERS' | translate }}</span>
-                </ion-item>
-
-                <ion-item>
-                    <p>{{'QUESTION TYPE'}}</p>
-                    <h3>{{ "Multiple choice" }}</h3>
-                </ion-item>
-
-
-                <ion-item>
-                    <p>{{'MARKS'}}</p>
-                    <h3>{{ "0/5" }}</h3>
-                </ion-item>
-                <ion-item>
-                    <p>{{'QUESTION'}}</p>
-                    <h3>{{ "what is scientific name for indian cobra" }}</h3>
-                </ion-item>
-                <ion-item>
-                    <p>{{'USERS-ANSWER'}}</p>
-                    <h3>{{ "option-A Bangarus caeruleus"}}</h3>
-                    <ion-icon style="color:green" ios="ios-checkmark" md="md-checkmark" item-end></ion-icon>
-                </ion-item>
-            </ion-list>
         </ion-list>
     </div>
 </ion-content>

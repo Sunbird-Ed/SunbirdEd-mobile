@@ -7,6 +7,7 @@ import { GroupListPage } from '../reports/group-list/group-list'
 import { GroupReportListPage } from '../reports/group-report-list/group-report-list'
 import { ReportAlert } from '../reports/report-alert/report-alert'
 import { TranslateModule } from '@ngx-translate/core';
+import { ComponentsModule } from '../../component/components.module';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { TranslateModule } from '@ngx-translate/core';
     // OnboardingPageModule,
 		// LanguageSettingsPageModule,
 	//	IonicPageModule.forChild(SettingsPage),
-		TranslateModule.forChild()
+    TranslateModule.forChild(),
+    ComponentsModule
   ],
 })
 export class ReportsPageModule {}
