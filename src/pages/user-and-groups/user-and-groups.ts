@@ -24,7 +24,8 @@ import {
   ProfileType,
   TabsPage,
   SharedPreferences,
-  OAuthService
+  OAuthService,
+  GroupRequest
 } from 'sunbird';
 import { GuestEditProfilePage } from '../profile/guest-edit.profile/guest-edit.profile';
 import { IonicApp } from 'ionic-angular';
@@ -33,6 +34,7 @@ import { Events } from 'ionic-angular';
 import { AppGlobalService } from '../../service/app-global.service';
 import { initTabs, GUEST_STUDENT_TABS, GUEST_TEACHER_TABS } from '../../app/module.service';
 import { App } from 'ionic-angular';
+import { group } from '@angular/core/src/animation/dsl';
 
 
 @IonicPage()
@@ -197,7 +199,11 @@ export class UserAndGroupsPage {
 
   getAllGroup() {
     this.zone.run(() => {
-      this.groupService.getAllGroup().then((groups) => {
+      let groupRequest: GroupRequest = {
+        uid : ""
+      }
+
+      this.groupService.getAllGroup(groupRequest).then((groups) => {
         if (groups.result && groups.result.length) {
           this.showEmptyGroupsMessage = false;
           this.groupList = groups.result.sort((prev: Group, next: Group) => {
