@@ -42,11 +42,14 @@ import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edi
 export class GroupDetailsPage {
   group: Group;
   currentUserId: string;
+  currentGroupId: string;
   userList: Array<Profile> = [];
   selectedUserIndex: number = -1;
   profileDetails: any;
   userUids = [];
   isNoUsers: boolean = false;
+
+  isCurrentGroupActive: boolean = false;
 
   constructor(
     private navCtrl: NavController,
@@ -66,7 +69,12 @@ export class GroupDetailsPage {
   ) {
     this.group = this.navParams.get('groupInfo');
     this.currentUserId = this.navParams.get('currentUserId');
+    this.currentGroupId = this.navParams.get('currentGruopId');
     this.profileDetails = this.navParams.get('profile');
+
+    if (this.group.gid == this.currentGroupId) {
+      this.isCurrentGroupActive = true;
+    }
   }
 
   ionViewWillEnter() {
@@ -182,7 +190,8 @@ export class GroupDetailsPage {
         });
         popover.dismiss();
       },
-      noUsers: (this.userList.length) ? true : false
+      noUsers: (this.userList.length) ? true : false,
+      isActiveGroup: this.isCurrentGroupActive
     },
       {
         cssClass: 'groupDetails-popover'
@@ -193,6 +202,11 @@ export class GroupDetailsPage {
   }
 
   presentPopover(myEvent, index) {
+    let profile = this.userList[index]
+    let isActiveUser = false;
+    if (profile.uid == this.currentUserId && this.isCurrentGroupActive) {
+      isActiveUser = true;
+    }
     let popover = this.popOverCtrl.create(PopoverPage, {
 
       edit: () => {
@@ -206,7 +220,8 @@ export class GroupDetailsPage {
         this.userDeleteGroupConfirmBox(index);
         popover.dismiss();
 
-      }
+      },
+      isCurrentUser: isActiveUser
     },
       {
         cssClass: 'user-popover'

@@ -13,10 +13,12 @@ import {
 export class GroupDetailNavPopoverPage {
 
   noUsers: boolean = false;
+  isActiveGroup: boolean = false;
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
   ) {
+    this.isActiveGroup = this.navParams.get('isActiveGroup');
     this.noUsers = Boolean(this.navParams.get('noUsers'));
   }
 
