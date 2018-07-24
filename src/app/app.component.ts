@@ -345,10 +345,11 @@ export class MyApp {
             hierarchyInfo: hierarchyInfo
           }
 
-          this.nav.push(ContentDetailsPage, {
+          let navObj = this.app.getActiveNavs()[0];
+
+          navObj.push(ContentDetailsPage, {
             content: content
           })
-
         } else if (response.result) {
           this.showContentDetails(response.result);
         }
