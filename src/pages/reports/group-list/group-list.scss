@@ -10,6 +10,9 @@ group-list-page {
         background-color: #f7f7f7;
         border-radius: 3px;
     }
+    .bgColor.item-block.item-md {
+        margin-bottom: 2rem;
+    }
     .marginTop{
         margin-top: 15px !important
     }
@@ -20,4 +23,7 @@ group-list-page {
     .item-md.item-block .item-inner {
     border-bottom: 0 !important;
     }
+}
+.bgColor ion-label {
+    overflow: visible !important;
 }

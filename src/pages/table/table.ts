@@ -8,21 +8,17 @@ import { ReportService, ProfileService, ReportSummary } from 'sunbird';
   templateUrl: 'table.html',
 })
 export class TablePage {
-  categories: string;
   assessmentData;
   columns = [
     {
       name: 'Question (Marks)',
-      prop: 'qtitle',
-      sortable: true
+      prop: 'qtitle'
     }, {
       name: 'Time',
-      prop: 'timespent',
-      sortable: true
+      prop: 'timespent'
     }, {
       name: 'Result',
-      prop: 'result',
-      sortable: false
+      prop: 'result'
     }
   ];
 
@@ -60,13 +56,16 @@ export class TablePage {
           "qtitle": row.qtitle,
           "result": row.score + '/' + row.maxScore,
           "timespent": that.convertTotalTime(row.timespent),
-          "qdesc": row.qdesc
+          "qdesc": row.qdesc,
+          "score": row.score,
+          "maxScore": row.maxScore
         }
       })
       data['uiRows'] = rows;
       data['uiTotalTime'] = that.convertTotalTime(data['totalTime']);
       that.zone.run(() => {
         loader.dismiss();
+        data['showResult'] = true;
         that.assessmentData = data;
       });
     })
