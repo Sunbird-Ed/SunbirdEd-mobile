@@ -183,10 +183,12 @@ export class MyApp {
   private checkForUpgrade() {
     this.formAndFrameowrkUtilService.checkNewAppVersion()
       .then(result => {
-        console.log("Force Optional Upgrade - " + JSON.stringify(result));
-        setTimeout(() => {
-          this.events.publish('force_optional_upgrade', { upgrade: result });
-        }, 5000);
+        if (result != undefined) {
+          console.log("Force Optional Upgrade - " + JSON.stringify(result));
+          setTimeout(() => {
+            this.events.publish('force_optional_upgrade', { upgrade: result });
+          }, 5000);
+        }
       })
       .catch(error => {
         console.log("Error - " + error);
@@ -333,7 +335,7 @@ export class MyApp {
           this.nav.push(SearchPage, { dialCode: dialCode });
         } else if (response.type === "contentDetails") {
           let cdata = JSON.parse(response.cData);
-          
+
           let hierarchyInfo = [
             {
               contentType: cdata.contentType,
