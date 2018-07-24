@@ -28,15 +28,15 @@
           <p ion-text text-uppercase color="dark_gray" class="subTitle">{{ 'LOGGED_IN_AS' | translate}}</p>
           <ion-item class="item-background radius" margin-bottom no-lines>
             <ion-row class="bg-color-white">
-              <ion-col col-11 class="bg-color-white">
+              <ion-col col-10 class="bg-color-white">
                 <ion-item class="bg-color-white padding-left-0 rm-label-margin" no-padding>
-                  <h6 class="line-height-2" color="primary" (click)="selectUser(i, user?.name)">
+                  <h6 class="line-height-2 padding-left-2" color="primary" (click)="selectUser(i, user?.name)">
                     <b>{{profileDetails?.firstName}}&nbsp;{{profileDetails?.lastName}}</b>
                   </h6>
                   <p>{{profileDetails?.grade}}</p>
                 </ion-item>
               </ion-col>
-              <ion-col col-1 class="advanced-menu">
+              <ion-col col-2 class="advanced-menu">
               </ion-col>
             </ion-row>
           </ion-item>
@@ -53,7 +53,7 @@
           <ion-item *ngFor="let user of userList; let i=index;" class="item-background radius" margin-bottom [ngClass]="i===selectedUserIndex ? 'blueBorder' : ''"
             no-lines>
             <ion-row class="bg-color-white">
-              <ion-col col-11 class="bg-color-white" (click)="selectUser(i, user?.name)">
+              <ion-col col-10 class="bg-color-white" (click)="selectUser(i, user?.name)">
                 <ion-item class="bg-color-white padding-left-0 rm-label-margin" no-padding>
                   <h6 class="line-height-2" [ngStyle]="{'color': currentUserId === user?.uid ? 'dodgerblue' : 'black'}">
                     <b>{{user?.handle}}</b>
@@ -62,9 +62,9 @@
                     <span *ngIf="user?.grade?.length">•</span> {{user?.grade}}</p>
                 </ion-item>
               </ion-col>
-              <ion-col col-1 class="advanced-menu">
+              <ion-col col-2 class="advanced-menu">
                 <ion-item item-end class="bg-color-white">
-                  <ion-icon class="line-height-2" name="more" item-end (click)="presentPopover($event ,i, true)"></ion-icon>
+                  <ion-icon class="line-height-2 padding-left-2" name="more" item-end (click)="presentPopover($event ,i, true)"></ion-icon>
                 </ion-item>
               </ion-col>
             </ion-row>
@@ -95,7 +95,7 @@
         <div class="groupSecondSection" *ngIf="!showEmptyGroupsMessage">
           <ion-item *ngFor="let group of groupList; let i = index" class="item-background radius" margin-top margin-bottom no-lines>
             <ion-row class="bg-color-white">
-              <ion-col col-11 class="bg-color-white">
+              <ion-col col-10 class="bg-color-white">
                 <ion-item class="bg-color-white padding-left-0 rm-label-margin" no-padding (click)="goToGroupDetail(i)">
                   <h6 class="line-height-2" [ngStyle]="{'color': currentGroupId === group?.gid ? 'dodgerblue' : 'black'}">
                     <b>{{group?.name}}</b>
@@ -103,16 +103,15 @@
                   <p>
                     <span ion-text color="text_gray" *ngIf="group?.grade && group?.grade[0]">{{group?.grade[0]}}</span>
                     <span ion-text color="gray" *ngIf="group?.grade?.length">•</span>
-                    <!-- <span><figure class="circle" *ngIf="group?.grade?.length"></figure></span> -->
                     <span ion-text color="text_gray" *ngIf="group?.profilesCount > 1">{{group?.profilesCount}} {{'USERS' | translate}}</span>
                     <span ion-text color="text_gray" *ngIf="group?.profilesCount === 1">{{group?.profilesCount}} {{'USER' | translate}}</span>
                     <span ion-text color="text_gray" *ngIf=" !group?.profilesCount || group?.profilesCount === 0">{{'NO_USERS' | translate}}</span>
                   </p>
                 </ion-item>
               </ion-col>
-              <ion-col col-1 class="advanced-menu">
+              <ion-col col-2 class="advanced-menu">
                 <ion-item item-end class="bg-color-white">
-                  <ion-icon class="line-height-2" name="more" item-end (click)="presentPopover($event, i , false)"></ion-icon>
+                  <ion-icon class="line-height-2 padding-left-2" name="more" item-end (click)="presentPopover($event, i , false)"></ion-icon>
                 </ion-item>
               </ion-col>
             </ion-row>

@@ -20,9 +20,7 @@ page-user-and-groups {
         background-color: white;
         z-index: 2;
       }
-      // .groupSecondSection{
-      //   margin-top: 6vh;
-      // }
+     
       .custom {
         //background-color: white;
         color: rgba(0, 0, 0, 0.5);
@@ -73,6 +71,7 @@ page-user-and-groups {
         padding-top: 0 !important;
         padding-bottom: 0 !important;
         padding-right: 0 !important;
+        padding-left:7% !important;
       }
       .advanced-menu ion-icon[item-end] {
             margin-top: 0 !important;
@@ -95,8 +94,11 @@ page-user-and-groups {
         //.custom-margin-top{
           //margin-top: 7vh;
         //}
+      
 }
-
+.padding-left-2{
+  padding-left: 2px !important;
+}
 
 .segment-md .segment-button {
   font-weight: 700 !important;
