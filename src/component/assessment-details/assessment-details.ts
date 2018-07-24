@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { PopoverController } from 'ionic-angular';
 import { ReportAlert } from '../../pages/reports/report-alert/report-alert';
 
@@ -9,41 +9,22 @@ import { ReportAlert } from '../../pages/reports/report-alert/report-alert';
 export class AssessmentDetailsComponent implements OnInit {
   
   constructor(public popoverCtrl: PopoverController) {
+    this.showResult = true;
   }
-  categories: string;
+
+  showResult: boolean;
   @Input() assessmentData: any;
   @Input() columns: any;
 
   ngOnInit() {
-    let data = this.assessmentData;   
-  }
-
-  // Function to add a custom class to columns
-  getCellClass(data) {
-    let className: string;
-    switch (data.column.prop.toUpperCase()) {
-      case "QTITLE":
-        className = " datatable-body-cell-qtitle";
-        break;
-      case "TIMESPENT":
-        className = " datatable-body-cell-time";
-        break;
-      case "RESULT":
-        className = " datatable-body-cell-result";
-        break;
+    if(this.assessmentData && typeof(this.assessmentData['showResult']) == typeof(true)){
+      this.showResult = this.assessmentData['showResult']
     }
-    return className;
   }
 
-  onActivate(event) {
-    let popover = this.popoverCtrl.create(ReportAlert,undefined, { cssClass: 'resource-filter' });
-    popover.present({
-      ev: event
-    });
-    console.log('Activate Event', event);
-    let data = event.row;
+  onActivate(event, clickCallback) {
+    let popupCallback = clickCallback || ReportAlert;
+    let popover = this.popoverCtrl.create(popupCallback,{'callback': event}, { cssClass: 'resource-filter' });
+    popover.present();
   }
-
-
-
 }

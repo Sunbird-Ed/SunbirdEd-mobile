@@ -1,128 +1,86 @@
-import { Component } from '@angular/core';
-import { ActionSheetController } from 'ionic-angular';
-import { NavController, NavParams, PopoverController  } from 'ionic-angular';
+import { Component, NgZone } from '@angular/core';
+import { NavController, NavParams, LoadingController } from 'ionic-angular';
+import { ReportService, ProfileService, ReportSummary } from 'sunbird';
 import { GroupReportAlert } from '../group-report-alert/group-report-alert';
 
-
 @Component({
-  selector: 'group-report-list',
-  templateUrl: 'group-report-list.html'
+    selector: 'group-report-list',
+    templateUrl: 'group-report-list.html'
 })
 export class GroupReportListPage {
+    isFromUsers: boolean;
+    isFromGroups: boolean;
+    uids: Array<string>;
     report: string = 'users'
-  icons: string[];
-  pet: String = "puppies";
-  items: Array<{title: string, note: string, icon: string}>;
-  questionResponse = [
-        {
-            accuracy: '35/50',
-            user: 'Some Student',
-            qId: 'Q1',
-            marks: 5,
-            time: '5:21',
-            score: '5',
-            result: 'pass'
-        },
-        {
-            accuracy: '45/50',
-            user: 'Some Student',
-            qId: 'Q2',
-            marks: 5,
-            time: '5:21',
-            score: '5',
-            result: 'pass'
-        },
-        {
-            accuracy: '35/50',
-            user: 'Some Student',
-            qId: 'Q3',
-            marks: 5,
-            time: '5:21',
-            score: '5',
-            result: 'pass'
-        },
-        {
-            accuracy: '35/50',
-            user: 'Some Student',
-            qId: 'Q4',
-            marks: 5,
-            time: '5:21',
-            score: '5',
-            result: 'failed'
-        },
-        {
-            user: 'Some Student',
-            qId: 'Q5',
-            marks: 5,
-            time: '5:21',
-            result: 'failed'
-        },
-        {
-            accuracy: '25/50',
-            user: 'Some Student',
-            qId: 'Q6',
-            marks: 5,
-            time: '5:21',
-            result: 'pass'
-        },
-        {
-            accuracy: '49/50',
-            user: 'Some Student',
-            qId: 'Q7',
-            marks: 5,
-            time: '5:21',
-            result: 'pass'
-        },
-        {
-            accuracy: '35/50',
-            user: 'Some Student',
-            qId: 'Q8',
-            marks: 5,
-            time: '5:21',
-            result: 'failed'
-        },
-        {
-            accuracy: '35/50',
-            user: 'Some Student',
-            qId: 'Q9',
-            marks: 5,
-            time: '5:21',
-            result: 'failed'
-        },
-        {
-            accuracy: '40/50',
-            user: 'Some Student',
-            qId: 'Q10',
-            marks: 5,
-            time: '5:21',
-            result: 'pass'
-        },
-    ];
+    fromUserColumns = [{
+        name: 'Name',
+        prop: 'qtitle'
+    }, {
+        name: 'Time',
+        prop: 'timespent'
+    }, {
+        name: 'Score',
+        prop: 'score'
+    }];
+    fromQuestionColumns = [{
+        name: 'Questions',
+        prop: 'qtitle'
+    }, {
+        name: 'Marks',
+        prop: 'score'
+    }, {
+        name: 'Accuracy',
+        prop: 'score'
+    }]
+    fromUserAssessment: {};
+    fromQuestionAssessment: {};
+    listOfReports: Array<ReportSummary> = [];
+    constructor(
+        public navCtrl: NavController,
+        public navParams: NavParams,
+        private loading: LoadingController,
+        public zone: NgZone,
+        public reportService: ReportService,
+        public profileService: ProfileService) {
+    }
 
-
-  constructor(public navCtrl: NavController, public navParams: NavParams, private actionSheetCtrl: ActionSheetController, private popoverCtrl: PopoverController) {
-    this.icons = ['flask', 'wifi', 'beer', 'football', 'basketball', 'paper-plane',
-    'american-football', 'boat', 'bluetooth', 'build'];
-
-    this.items = [];
-    // for(let i = 1; i < 11; i++) {
-    //   this.items.push({
-    //     title: 'Item ' + i,
-    //     note: 'This is item #' + i,
-    //     icon: this.icons[Math.floor(Math.random() * this.icons.length)]
-    //   });
-    // }
-  }
-
-   presentPopover(myEvent) {
-
-        let popover = this.popoverCtrl.create(GroupReportAlert,{}, {
-            cssClass: 'group-report-alert'
+    ionViewWillEnter() {
+        let loader = this.loading.create({
+            spinner: "crescent"
         });
-        popover.present({
-          ev: myEvent,
+        loader.present();
+        let reportSummary: ReportSummary = this.navParams.get('report');
+        let that = this;
+        this.reportService.getDetailReport([reportSummary.uid], reportSummary.contentId).then(reportsMap => {
+            let data = reportsMap.get(reportSummary.uid);
+            let rows = data.reportDetailsList.map(row => {
+                return {
+                "qtitle": row.qtitle,
+                "result": row.score + '/' + row.maxScore,
+                "timespent": that.convertTotalTime(row.timespent),
+                "qdesc": row.qdesc,
+                "score": row.score,
+                "maxScore": row.maxScore
+                }
+            })
+            data['uiRows'] = rows;
+            data['uiTotalTime'] = that.convertTotalTime(data['totalTime']);
+            data['showResult'] = true;
+            that.zone.run(() => {
+                loader.dismiss();
+                that.fromUserAssessment = data;
+                that.fromQuestionAssessment = data;
+                that.fromQuestionAssessment['popupCallback'] = GroupReportAlert;
+            });
+        }).catch(err => {
+            console.log(err);
+            loader.dismiss();
         });
-      }
-
+    }
+    convertTotalTime(time: number): string {
+        var mm = Math.floor(time / 60);
+        var ss = Math.floor(time % 60);
+        return (mm > 9 ? mm : ("0" + mm)) + ":" + (ss > 9 ? ss : ("0" + ss));
+    }
 
 }

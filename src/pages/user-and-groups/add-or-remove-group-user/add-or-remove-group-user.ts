@@ -6,7 +6,8 @@ import {
   IonicPage,
   NavController,
   NavParams,
-  ToastController
+  ToastController,
+  AlertController
 } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import {
@@ -44,6 +45,10 @@ export class AddOrRemoveGroupUserPage {
   groupMembers: Array<Profile>;
   uid: any;
   allUsers: Array<Profile> = [];
+  selectedUids: Array<string> = [];
+
+  selectedUserLength: string = '';
+  selectedGroupMemberLength: string = '';
 
   options: toastOptions = {
     message: '',
@@ -59,11 +64,13 @@ export class AddOrRemoveGroupUserPage {
     public zone: NgZone,
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private alertCtrl: AlertController
   ) {
     this.addUsers = this.navParams.get('isAddUsers');
     this.groupInfo = this.navParams.get('groupInfo');
     this.groupMembers = this.navParams.get('groupMembers');
+    console.log("length of group member" , this.groupMembers.length)
   }
 
   ionViewWillEnter() {
@@ -107,6 +114,7 @@ export class AddOrRemoveGroupUserPage {
       value = true;
     }
     this.userSelectionMap.set(this.uniqueUserList[index].uid, value);
+//    this.getSelectedUids();
   }
 
   toggleMemberSelect(index: number) {
@@ -126,63 +134,74 @@ export class AddOrRemoveGroupUserPage {
 
   isUserSelected(index: number) {
     console.log("Index", index);
+    this.getSelectedUids();
     return Boolean(this.userSelectionMap.get(this.uniqueUserList[index].uid));
   }
 
   isGroupMemberSelected(index: number) {
+    this.getSelectedGroupMemberUids();
     return Boolean(this.memberSelectionMap.get(this.groupMembers[index].uid));
   }
 
   selectAll() {
     this.userSelectionMap.clear();
     this.zone.run(() => {
-      for (var i = 0; i < this.uniqueUserList.length; i++) {
-        this.userSelectionMap.set(this.uniqueUserList[i].uid, true);
-      }
+      this.uniqueUserList.forEach((element, index) => {
+        this.userSelectionMap.set(this.uniqueUserList[index].uid, true);
+      });
     });
+    //this.getSelectedUids();
   }
 
   unselectAll() {
-    this.memberSelectionMap.clear();
-    this.userSelectionMap.clear();
     this.zone.run(() => {
-      this.userSelectionMap.clear();
-      for (var i = 0; i < this.uniqueUserList.length; i++) {
-        this.memberSelectionMap.set(this.groupMembers[i].uid, false);
-      }
+      this.memberSelectionMap.clear();
+      this.groupMembers.forEach((element, index) => {
+        this.memberSelectionMap.set(this.groupMembers[index].uid, false);
+      });
     });
   }
 
-  remove() {
-    let loader = this.getLoader();
-    loader.present();
-    let selectedUids: Array<string> = [];
 
+  remove() {
+    this.groupMembers.forEach((item) => {
+      if (!Boolean(this.memberSelectionMap.get(item.uid))) {
+        this.selectedUids.push(item.uid);
+      }
+    });
+    this.deleteUsersFromGroupConfirmBox(this.selectedGroupMemberLength);
+
+    
+
+  }
+
+  getSelectedUids() {
+    let selectedUids: Array<string> = [];
+    this.uniqueUserList.forEach((item) => {
+      if (Boolean(this.userSelectionMap.get(item.uid))) {
+        selectedUids.push(item.uid);
+      }
+    });
+
+    console.log("selectedUids", selectedUids.length);
+    this.zone.run(() => {
+      this.selectedUserLength = (selectedUids.length) ? selectedUids.length.toString() : '';
+    });
+    return selectedUids;
+  }
+
+  getSelectedGroupMemberUids() {
+    let selectedUids: Array<string> = [];
     this.groupMembers.forEach((item) => {
       if (Boolean(this.memberSelectionMap.get(item.uid))) {
         selectedUids.push(item.uid);
       }
     });
 
-    let req: AddUpdateProfilesRequest = {
-      groupId: this.groupInfo.gid,
-      uidList: selectedUids
-    }
-
-    this.groupService.addUpdateProfilesToGroup(req)
-    .then((success) => {
-      console.log(success);
-      loader.dismiss();
-      this.getToast(this.translateMessage('GROUP_MEMBER_DELETE_SUCCESS')).present();
-      this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
-    })
-    .catch((error) => {
-      loader.dismiss();
-      this.getToast(this.translateMessage('SOMETHING_WENT_WRONG')).present();
-      console.log("Error : " + error);
-      loader.dismiss();
+    console.log("selectedUids", selectedUids.length);
+    this.zone.run(() => {
+      this.selectedGroupMemberLength = (selectedUids.length) ? selectedUids.length.toString() : '';
     });
-
   }
 
   add() {
@@ -195,15 +214,15 @@ export class AddOrRemoveGroupUserPage {
       groupMembersUids.push(element.uid);
     });
 
-    this.uniqueUserList.forEach((item) => {
-      if (Boolean(this.userSelectionMap.get(item.uid))) {
-        selectedUids.push(item.uid);
-      }
-    });
+    // this.uniqueUserList.forEach((item) => {
+    //   if (Boolean(this.userSelectionMap.get(item.uid))) {
+    //     selectedUids.push(item.uid);
+    //   }
+    // });
 
     let req: AddUpdateProfilesRequest = {
       groupId: this.groupInfo.gid,
-      uidList: groupMembersUids.concat(selectedUids)
+      uidList: groupMembersUids.concat(this.getSelectedUids())
     }
     this.groupService.addUpdateProfilesToGroup(req)
     .then((success) => {
@@ -219,6 +238,50 @@ export class AddOrRemoveGroupUserPage {
       loader.dismiss();
     });
 
+  }
+  deleteUsersFromGroupConfirmBox(length) {
+    let alert = this.alertCtrl.create({
+      title: this.translateMessage('REMOVE_MULTIPLE_USERS_FROM_GROUP', length),
+      mode: 'wp',
+      message: this.translateMessage('USER_DELETE_CONFIRM_SECOND_MESSAGE'),
+      cssClass: 'confirm-alert',
+      buttons: [
+        {
+          text: this.translateMessage('CANCEL'),
+          role: 'cancel',
+          cssClass: 'alert-btn-cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: this.translateMessage('Yes'),
+          cssClass: 'alert-btn-delete',
+          handler: () => {
+            let loader = this.getLoader();
+            let req: AddUpdateProfilesRequest = {
+              groupId: this.groupInfo.gid,
+              uidList: this.selectedUids
+            }
+        
+            this.groupService.addUpdateProfilesToGroup(req)
+            .then((success) => {
+              console.log(success);
+              loader.dismiss();
+              this.getToast(this.translateMessage('GROUP_MEMBER_DELETE_SUCCESS')).present();
+              this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
+            })
+            .catch((error) => {
+              loader.dismiss();
+              this.getToast(this.translateMessage('SOMETHING_WENT_WRONG')).present();
+              console.log("Error : " + error);
+              loader.dismiss();
+            });
+          }
+        }
+      ]
+    });
+    alert.present();
   }
 
   /**

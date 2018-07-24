@@ -2,7 +2,7 @@ import { Component, NgZone } from '@angular/core';
 //import { ReportListPage } from '../reports/report-list/report-list'
 import { NavController, LoadingController } from 'ionic-angular';
 import { GroupListPage } from './group-list/group-list';
-import { ReportService, ProfileService, GroupService, ProfileRequest } from 'sunbird';
+import { ReportService, ProfileService, GroupService, ProfileRequest, GroupRequest } from 'sunbird';
 
 @Component({
   selector: 'reports-page',
@@ -54,8 +54,14 @@ export class ReportsPage {
 
   async populateGroups() {
     let that = this;
+
     return new Promise<any>((resolve, reject) => {
-      that.groupService.getAllGroup()
+
+      let groupRequest: GroupRequest = {
+        uid : ""
+      }
+
+      that.groupService.getAllGroup(groupRequest)
       .then((groups) => {
         if (groups.result) {
           resolve(groups.result);

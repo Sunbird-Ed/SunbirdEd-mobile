@@ -183,10 +183,12 @@ export class MyApp {
   private checkForUpgrade() {
     this.formAndFrameowrkUtilService.checkNewAppVersion()
       .then(result => {
-        console.log("Force Optional Upgrade - " + JSON.stringify(result));
-        setTimeout(() => {
-          this.events.publish('force_optional_upgrade', { upgrade: result });
-        }, 5000);
+        if (result != undefined) {
+          console.log("Force Optional Upgrade - " + JSON.stringify(result));
+          setTimeout(() => {
+            this.events.publish('force_optional_upgrade', { upgrade: result });
+          }, 5000);
+        }
       })
       .catch(error => {
         console.log("Error - " + error);
@@ -322,6 +324,8 @@ export class MyApp {
   registerDeeplinks() {
     (<any>window).splashscreen.onDeepLink(deepLinkResponse => {
 
+      console.log("Deeplink : " + deepLinkResponse);
+
       setTimeout(() => {
         let response = deepLinkResponse;
 
@@ -329,6 +333,25 @@ export class MyApp {
           let results = response.code.split("/");
           let dialCode = results[results.length - 1];
           this.nav.push(SearchPage, { dialCode: dialCode });
+        } else if (response.type === "contentDetails") {
+          let cdata = JSON.parse(response.cData);
+
+          let hierarchyInfo = [
+            {
+              contentType: cdata.contentType,
+              identifier: cdata.identifier
+            }
+          ]
+          let content = {
+            identifier: response.id,
+            hierarchyInfo: hierarchyInfo
+          }
+
+          let navObj = this.app.getActiveNavs()[0];
+
+          navObj.push(ContentDetailsPage, {
+            content: content
+          })
         } else if (response.result) {
           this.showContentDetails(response.result);
         }

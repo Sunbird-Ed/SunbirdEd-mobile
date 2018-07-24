@@ -12,8 +12,9 @@
 
   <ion-list>
     <ion-item *ngFor="let report of listOfReports;let i=index" class="bgColor" (click)="goToGroupReportsList(report)">
-      <p>{{formatTime(report.lastUsedTime)}}</p>
+      <p *ngIf="report.lastUsedTime">{{formatTime(report.lastUsedTime)}}</p>
       <h2>{{report.name}}</h2>
+      <p>{{'Scored' | translate}}:{{report.correctAnswers}}/{{report.noOfQuestions}}</p>
       <ion-icon name="ios-arrow-forward" item-end></ion-icon>
     </ion-item>
 

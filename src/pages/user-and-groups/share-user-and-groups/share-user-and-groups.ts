@@ -14,7 +14,8 @@ import {
   ProfileRequest,
   ProfileService,
   ProfileExportRequest,
-  FileUtil
+  FileUtil,
+  GroupRequest
 } from 'sunbird';
 import { SocialSharing } from '@ionic-native/social-sharing';
 
@@ -67,7 +68,12 @@ export class ShareUserAndGroupPage {
 
   getAllGroup() {
     this.zone.run(() => {
-      this.groupService.getAllGroup().then((groups) => {
+
+      let groupRequest: GroupRequest = {
+        uid: ""
+      }
+
+      this.groupService.getAllGroup(groupRequest).then((groups) => {
         if (groups.result && groups.result.length) {
           this.groupList = groups.result;
         }
@@ -136,7 +142,7 @@ export class ShareUserAndGroupPage {
       this.selectedUserList.splice(index, 1);
 
       this.userGroupMap.forEach((value: Array<Profile>, gid: string) => {
-        let groupIndex = this.selectedGroupList.indexOf(gid); 
+        let groupIndex = this.selectedGroupList.indexOf(gid);
         if (groupIndex > -1) {
           for (let i = 0; i < value.length; i++) {
             if (value[i].uid == selectedUser.uid) {
@@ -164,6 +170,10 @@ export class ShareUserAndGroupPage {
 
   selectAll() {
     this.zone.run(() => {
+      for (let i = 0; i < this.userList.length; i++) {
+        this.toggleUserSelected(i);
+      }
+
       for (let i = 0; i < this.groupList.length; i++) {
         this.toggleGroupSelected(i);
       }

@@ -1,16 +1,16 @@
 @import '../../assets/styles/index.scss';
 @import '../../assets/styles/material.scss';
 @import '../../assets/styles/bootstrap.scss';
-.ngx-datatable.material .datatable-body .datatable-body-row .datatable-body-cell-qtitle {
+.ngx-datatable.material .datatable-body .datatable-body-row .datatable-body-cell-column1 {
     color: #007aff;
     font-weight: bold;
 }
 
-.ngx-datatable.material .datatable-body .datatable-body-row .datatable-body-cell-time {
+.ngx-datatable.material .datatable-body .datatable-body-row .datatable-body-cell-column2 {
     color: #9e9e9e;
 }
 
-.ngx-datatable.material .datatable-body .datatable-body-row .datatable-body-cell-result {
+.ngx-datatable.material .datatable-body .datatable-body-row .datatable-body-cell-column3 {
     color: #70706d;
 }
 
@@ -42,7 +42,7 @@
     background-color: white;
     border-radius: 5px;
     display: flex;
-    top: 20%;
+    top: 15%;
     height: 70%;
     text-transform: uppercase;
     display: table;
@@ -50,7 +50,7 @@
 
 .assessment-container {
     width: 100%;
-    height: 16%;
+    height: 20%;
     position: absolute;
     margin-top: 10%;
 }

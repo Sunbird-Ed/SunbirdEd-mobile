@@ -42,11 +42,14 @@ import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edi
 export class GroupDetailsPage {
   group: Group;
   currentUserId: string;
+  currentGroupId: string;
   userList: Array<Profile> = [];
   selectedUserIndex: number = -1;
   profileDetails: any;
   userUids = [];
   isNoUsers: boolean = false;
+
+  isCurrentGroupActive: boolean = false;
 
   constructor(
     private navCtrl: NavController,
@@ -66,7 +69,12 @@ export class GroupDetailsPage {
   ) {
     this.group = this.navParams.get('groupInfo');
     this.currentUserId = this.navParams.get('currentUserId');
+    this.currentGroupId = this.navParams.get('currentGruopId');
     this.profileDetails = this.navParams.get('profile');
+
+    if (this.group.gid == this.currentGroupId) {
+      this.isCurrentGroupActive = true;
+    }
   }
 
   ionViewWillEnter() {
@@ -182,7 +190,8 @@ export class GroupDetailsPage {
         });
         popover.dismiss();
       },
-      noUsers: (this.userList.length) ? true : false
+      noUsers: (this.userList.length) ? true : false,
+      isActiveGroup: this.isCurrentGroupActive
     },
       {
         cssClass: 'groupDetails-popover'
@@ -193,6 +202,11 @@ export class GroupDetailsPage {
   }
 
   presentPopover(myEvent, index) {
+    let profile = this.userList[index]
+    let isActiveUser = false;
+    if (profile.uid == this.currentUserId && this.isCurrentGroupActive) {
+      isActiveUser = true;
+    }
     let popover = this.popOverCtrl.create(PopoverPage, {
 
       edit: () => {
@@ -206,7 +220,8 @@ export class GroupDetailsPage {
         this.userDeleteGroupConfirmBox(index);
         popover.dismiss();
 
-      }
+      },
+      isCurrentUser: isActiveUser
     },
       {
         cssClass: 'user-popover'
@@ -219,7 +234,7 @@ export class GroupDetailsPage {
   /** Delete alert box */
   deleteGroupConfirmBox() {
     let alert = this.alertCtrl.create({
-      title: this.translateMessage('GROUP_DELETE_CONFIRM', name),
+      title: this.translateMessage('GROUP_DELETE_CONFIRM', this.group.name),
       mode: 'wp',
       message: this.translateMessage('GROUP_DELETE_CONFIRM_MESSAGE'),
       cssClass: 'confirm-alert',
@@ -252,12 +267,12 @@ export class GroupDetailsPage {
   }
 
   /* delete confirm box for user */
-   /** Delete alert box */
-   userDeleteGroupConfirmBox(index) {
+  /** Delete alert box */
+  userDeleteGroupConfirmBox(index) {
     let alert = this.alertCtrl.create({
-      title: this.translateMessage('GROUP_DELETE_CONFIRM', name),
+      title: this.translateMessage('USER_DELETE_CONFIRM_MESSAGE_FROM_GROUP', this.userList[index].handle),
       mode: 'wp',
-      message: this.translateMessage('GROUP_DELETE_CONFIRM_MESSAGE'),
+      message: this.translateMessage('USER_DELETE_CONFIRM_SECOND_MESSAGE'),
       cssClass: 'confirm-alert',
       buttons: [
         {
@@ -274,20 +289,17 @@ export class GroupDetailsPage {
           handler: () => {
             this.userUids.forEach((item) => {
               if (this.userList[index].uid == item) {
-                console.log(true);
                 let elementIndex = this.userUids.indexOf(item.uid);
                 let userListIndex = this.userList.indexOf(this.userList[index]);
                 this.userUids.splice(elementIndex, 1);
-                this.userList.splice(userListIndex , 1);
-                console.log(this.userUids);
-    
+                this.userList.splice(userListIndex, 1);
                 let req: AddUpdateProfilesRequest = {
                   groupId: this.group.gid,
                   uidList: this.userUids
                 }
                 this.groupService.addUpdateProfilesToGroup(req);
               }
-            }) 
+            })
           }
         }
       ]

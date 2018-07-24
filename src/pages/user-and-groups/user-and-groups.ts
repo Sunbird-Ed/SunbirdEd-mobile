@@ -24,7 +24,8 @@ import {
   ProfileType,
   TabsPage,
   SharedPreferences,
-  OAuthService
+  OAuthService,
+  GroupRequest
 } from 'sunbird';
 import { GuestEditProfilePage } from '../profile/guest-edit.profile/guest-edit.profile';
 import { IonicApp } from 'ionic-angular';
@@ -33,6 +34,7 @@ import { Events } from 'ionic-angular';
 import { AppGlobalService } from '../../service/app-global.service';
 import { initTabs, GUEST_STUDENT_TABS, GUEST_TEACHER_TABS } from '../../app/module.service';
 import { App } from 'ionic-angular';
+import { group } from '@angular/core/src/animation/dsl';
 
 
 @IonicPage()
@@ -128,7 +130,10 @@ export class UserAndGroupsPage {
     let isCurrentUser = false;
     if (isUser) {
       isCurrentUser = (this.currentUserId === this.userList[index].uid) ? true : false;
+    } else {
+      isCurrentUser = this.currentGroupId === this.groupList[index].gid;
     }
+    
     let popover = this.popOverCtrl.create(PopoverPage, {
       edit: () => {
         if (isUser) {
@@ -197,10 +202,27 @@ export class UserAndGroupsPage {
 
   getAllGroup() {
     this.zone.run(() => {
-      this.groupService.getAllGroup().then((groups) => {
+      let groupRequest: GroupRequest = {
+        uid : ""
+      }
+
+      this.groupService.getAllGroup(groupRequest).then((groups) => {
         if (groups.result && groups.result.length) {
           this.showEmptyGroupsMessage = false;
-          this.groupList = groups.result;
+          this.groupList = groups.result.sort((prev: Group, next: Group) => {
+            if (prev.gid === this.currentGroupId) {
+              return -1;
+            }
+
+            if (next.gid === this.currentGroupId) {
+              return 1;
+            }
+
+
+            if (prev.name < next.name) return -1;
+            if (prev.name > next.name) return 1;
+            return 0;
+          });
         } else {
           this.showEmptyGroupsMessage = true;
         }
@@ -216,6 +238,7 @@ export class UserAndGroupsPage {
     this.navCtrl.push(GroupDetailsPage, {
       groupInfo: this.groupList[index],
       currentUserId: this.currentUserId,
+      currentGruopId: this.currentGroupId,
       profile: this.profileDetails
     });
   }

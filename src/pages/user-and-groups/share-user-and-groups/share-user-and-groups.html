@@ -21,8 +21,8 @@
         <b>{{group?.name}}</b>
       </h6>
       <p>
-        <span text-lowercase ion-text color="text_gray" *ngIf="group?.profilesCount > 1">{{group?.profilesCount}} {{'USERS' | translate}}</span>
-        <span text-lowercase ion-text color="text_gray" *ngIf="group?.profilesCount === 1">{{group?.profilesCount}} {{'USER' | translate}}</span>
+        <span  ion-text color="text_gray" *ngIf="group?.profilesCount > 1">{{group?.profilesCount}} {{'USERS' | translate}}</span>
+        <span  ion-text color="text_gray" *ngIf="group?.profilesCount === 1">{{group?.profilesCount}} {{'USER' | translate}}</span>
       </p>
     </ion-label>
     <ion-checkbox item-end mode="ios" checked="{{isGroupSelected(group?.gid)}}" (click)="toggleGroupSelected(i)"></ion-checkbox>

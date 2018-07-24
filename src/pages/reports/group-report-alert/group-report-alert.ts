@@ -8,78 +8,27 @@ import { NavParams, ViewController, Platform, NavController, IonicApp } from "io
 export class GroupReportAlert{
   unregisterBackButton : any;
   callback: QRAlertCallBack
-  report: string = 'user'
-  option: string;
-  questionResponse = [
-    {
-        accuracy: '35/50',
-        user: 'Some Student',
-        qId: 'Q1',
-        marks: 5,
-        time: '5:21',
-        score: '5',
-        result: 'pass'
-    },
-    {
-        accuracy: '45/50',
-        user: 'Some Student',
-        qId: 'Q2',
-        marks: 5,
-        time: '5:21',
-        score: '5',
-        result: 'pass'
-    },
-    {
-        accuracy: '35/50',
-        user: 'Some Student',
-        qId: 'Q3',
-        marks: 5,
-        time: '5:21',
-        score: '5',
-        result: 'pass'
-    },
-    {
-        user: 'Some Student',
-        qId: 'Q8',
-        marks: 5,
-        time: '5:21',
-        result: 'failed'
-    },
-    {
-        user: 'Some Student',
-        qId: 'Q9',
-        marks: 5,
-        time: '5:21',
-        result: 'failed'
-    },
-    {
-      user: 'Some Student',
-      qId: 'Q9',
-      marks: 5,
-      time: '5:21',
-      result: 'failed'
-  },]
+  report: string = 'users'
+  fromUserColumns;
+  assessmentDetails: {};
+  fromUserAssessment: {};
+
 
   constructor(navParams: NavParams, private viewCtrl: ViewController, private navCtrl: NavController, private platform: Platform, private ionicApp: IonicApp) {
     this.callback = navParams.get('callback');
-
-    // if (navParams.get('icon')) {
-    //   this.icon = navParams.get('icon');
-    // }
-
-  }
-  navigateToUsers(){
-    this.option = 'user';
-  }
-  usersStudent() {
-
-    this.option = 'student';
-  }
-
-  tryAgain() {
-    if (this.callback) {
-      this.callback.tryAgain()
-    }
+    this.assessmentDetails = this.callback['row'];
+    this.fromUserAssessment = this.callback['row'];
+    this.fromUserAssessment['showResult'] = false;
+    this.fromUserColumns= [{
+      name: 'Name',
+      prop: 'qtitle'
+    }, {
+      name: 'Time',
+      prop: 'timespent'
+    }, {
+      name: 'Result',
+      prop: 'result'
+    }];
   }
 
   cancel() {
@@ -112,6 +61,5 @@ export class GroupReportAlert{
 }
 
 export interface QRAlertCallBack {
-  tryAgain(): any;
   cancel(): any;
 }
