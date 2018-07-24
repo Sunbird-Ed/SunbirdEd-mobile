@@ -351,6 +351,11 @@ export class ContentDetailsPage {
 
     this.content.contentAccess = data.result.contentAccess ? data.result.contentAccess : [];
 
+    if(this.cardData && this.cardData.hierarchyInfo){
+      data.result.hierarchyInfo=this.cardData.hierarchyInfo;
+      this.isChildContent = true;
+    }
+    
     this.content.playContent = JSON.stringify(data.result);
     if (this.content.gradeLevel && this.content.gradeLevel.length && typeof this.content.gradeLevel !== 'string') {
       this.content.gradeLevel = this.content.gradeLevel.join(", ");

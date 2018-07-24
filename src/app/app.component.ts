@@ -338,8 +338,8 @@ export class MyApp {
 
           let hierarchyInfo = [
             {
-              contentType: cdata.contentType,
-              identifier: cdata.identifier
+              contentType: cdata.type,
+              identifier: cdata.id
             }
           ]
           let content = {
