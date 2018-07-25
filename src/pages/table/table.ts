@@ -1,6 +1,7 @@
 import { Component, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
 import { ReportService, ProfileService, ReportSummary } from 'sunbird';
+import { ReportAlert } from '../reports/report-alert/report-alert';
 
 @IonicPage()
 @Component({
@@ -67,6 +68,7 @@ export class TablePage {
         loader.dismiss();
         data['showResult'] = true;
         that.assessmentData = data;
+        that.assessmentData['popupCallback'] = ReportAlert;
       });
     })
     .catch(err => {

@@ -36,7 +36,7 @@
         </ion-list>
 
         <ion-list *ngSwitchCase="'groups'" padding>
-            <ion-item class="bgColor" (click)="goToGroupUserReportList(group.uids)" *ngFor="let group of groups;let i=index"
+            <ion-item class="bgColor" (click)="goToGroupUserReportList(group)" *ngFor="let group of groups;let i=index"
                 margin-bottom no-lines>
                 <h2>{{group?.name}}</h2>
                 <p>{{group?.profilesCount}} {{ 'USERS' | translate}}</p>
