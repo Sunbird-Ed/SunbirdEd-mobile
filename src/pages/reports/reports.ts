@@ -66,13 +66,11 @@ export class ReportsPage {
         if (groups.result) {
           groups.result.forEach((g, gIndex) => {
             g['uids'] = [];
-            g['users'] = [];
             let profileRequest : ProfileRequest = {'local': true, gid: g.gid};
             that.profileService.getAllUserProfile(profileRequest).then((result) => {
               result = JSON.parse(result);
               result.forEach((user,uIndex)  => {
                 g['uids'].push(user.uid);
-                g['users'].push(user);
                 if ((gIndex == groups.result.length-1) && (uIndex == result.length-1)) resolve(groups.result);
               });
             })
@@ -126,8 +124,7 @@ export class ReportsPage {
   goToGroupUserReportList(groups) {
     this.navCtrl.push(GroupListPage, {
       isFromGroups: true,
-      uids: groups['uids'],
-      users: groups['users']
+      uids: groups['uids']
     });
   }
 }

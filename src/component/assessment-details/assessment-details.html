@@ -5,7 +5,7 @@
       <p>Score</p>
       <div class="assessment-stats">
         <ion-icon name="stats"></ion-icon>
-        <span>{{assessmentData?.totalScore}}/{{assessmentData?.maxTotalScore}}</span>
+        <span>{{assessmentData?.totalScore}}<span *ngIf="assessmentData?.maxTotalScore">/</span>{{assessmentData?.maxTotalScore}}</span>
       </div>
     </div>
     <div class="assessment-time">
