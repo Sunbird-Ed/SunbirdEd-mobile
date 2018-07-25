@@ -32,6 +32,8 @@ export class ShareUserAndGroupPage {
   selectedUserList: Array<string> = [];
   selectedGroupList: Array<string> = [];
 
+  private userWeightMap: Map<string, number> = new Map();
+
   private userGroupMap: Map<string, Array<Profile>> = new Map();
 
   constructor(
@@ -59,6 +61,10 @@ export class ShareUserAndGroupPage {
         if (profiles && profiles.length) {
           this.userList = JSON.parse(profiles);
         }
+
+        this.userList.forEach(profile => {
+          this.userWeightMap.set(profile.uid, 0);
+        })
         console.log("UserList", profiles);
       })
     }).catch((error) => {
@@ -111,9 +117,15 @@ export class ShareUserAndGroupPage {
       // Add User & Group
       this.selectedGroupList.push(selectedGroup.gid);
       allUser.forEach(profile => {
+        let userWeigth = this.userWeightMap.get(profile.uid);
         if (this.selectedUserList.indexOf(profile.uid) == -1) {
           this.selectedUserList.push(profile.uid);
+          userWeigth = 1;
+        } else {
+          userWeigth += 1;
         }
+       
+        this.userWeightMap.set(profile.uid, userWeigth);
       });
 
     } else {
@@ -122,8 +134,15 @@ export class ShareUserAndGroupPage {
       this.selectedGroupList.splice(index, 1);
       allUser.forEach(profile => {
         if (this.selectedUserList.indexOf(profile.uid) > -1) {
-          let userIndex = this.selectedUserList.indexOf(profile.uid);
-          this.selectedUserList.splice(userIndex, 1);
+          let userWeigth = this.userWeightMap.get(profile.uid);
+          if (userWeigth == 1) {
+            let userIndex = this.selectedUserList.indexOf(profile.uid);
+            this.selectedUserList.splice(userIndex, 1);
+            userWeigth = 0;
+          } else {
+            userWeigth -= 1;
+          }
+          this.userWeightMap.set(profile.uid, userWeigth);
         }
       });
     }
@@ -133,13 +152,17 @@ export class ShareUserAndGroupPage {
   toggleUserSelected(index: number) {
     let selectedUser = this.userList[index];
 
+    let userWeigth = this.userWeightMap.get(selectedUser.uid);
+
     if (this.selectedUserList.indexOf(selectedUser.uid) == -1) {
       // Add User
       this.selectedUserList.push(selectedUser.uid);
+      userWeigth += 1;
     } else {
       // Remove User
       let index = this.selectedUserList.indexOf(selectedUser.uid);
       this.selectedUserList.splice(index, 1);
+      userWeigth = 0;
 
       this.userGroupMap.forEach((value: Array<Profile>, gid: string) => {
         let groupIndex = this.selectedGroupList.indexOf(gid);
@@ -153,6 +176,8 @@ export class ShareUserAndGroupPage {
         }
       })
     }
+
+    this.userWeightMap.set(selectedUser.uid, userWeigth);
   }
 
 
