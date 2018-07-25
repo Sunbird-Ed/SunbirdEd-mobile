@@ -64,7 +64,19 @@ export class ReportsPage {
       that.groupService.getAllGroup(groupRequest)
       .then((groups) => {
         if (groups.result) {
-          resolve(groups.result);
+          groups.result.forEach((g, gIndex) => {
+            g['uids'] = [];
+            g['users'] = [];
+            let profileRequest : ProfileRequest = {'local': true, gid: g.gid};
+            that.profileService.getAllUserProfile(profileRequest).then((result) => {
+              result = JSON.parse(result);
+              result.forEach((user,uIndex)  => {
+                g['uids'].push(user.uid);
+                g['users'].push(user);
+                if ((gIndex == groups.result.length-1) && (uIndex == result.length-1)) resolve(groups.result);
+              });
+            })
+          });
         } else {
           reject();
         }
@@ -111,10 +123,11 @@ export class ReportsPage {
     });
   }
   
-  goToGroupUserReportList(uids: Array<string>) {
+  goToGroupUserReportList(groups) {
     this.navCtrl.push(GroupListPage, {
       isFromGroups: true,
-      uids: uids
+      uids: groups['uids'],
+      users: groups['users']
     });
   }
 }

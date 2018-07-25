@@ -56,8 +56,10 @@ export class GroupListPage {
                 report: report
             });
         } else if (this.isFromGroups) {
+            let users = this.navParams.get('users');
             this.navCtrl.push(GroupReportListPage, {
-                report: report
+                report: report,
+                users: users
             });
         }
     }

@@ -10,14 +10,15 @@ export class GroupReportAlert{
   callback: QRAlertCallBack
   report: string = 'users'
   fromUserColumns;
-  assessmentDetails: {};
-  fromUserAssessment: {};
+  assessment: {};
+  fromUserAssessment;
 
 
   constructor(navParams: NavParams, private viewCtrl: ViewController, private navCtrl: NavController, private platform: Platform, private ionicApp: IonicApp) {
     this.callback = navParams.get('callback');
-    this.assessmentDetails = this.callback['row'];
-    this.fromUserAssessment = this.callback['row'];
+    this.assessment = this.callback['row'];
+    this.fromUserAssessment = {'uiRows' : []};
+    this.fromUserAssessment['uiRows'] = this.assessment['reportDetailsList'];
     this.fromUserAssessment['showResult'] = false;
     this.fromUserColumns= [{
       name: 'Name',
@@ -27,7 +28,7 @@ export class GroupReportAlert{
       prop: 'timespent'
     }, {
       name: 'Result',
-      prop: 'result'
+      prop: 'score'
     }];
   }
 
