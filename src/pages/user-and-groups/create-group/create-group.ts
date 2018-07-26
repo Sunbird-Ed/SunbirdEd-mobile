@@ -1,10 +1,22 @@
 import { GroupMembersPage } from './../group-members/group-members';
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angular';
-import { AppGlobalService } from '../../../service/app-global.service';
+import {
+  IonicPage,
+  NavController,
+  NavParams,
+  ToastController
+} from 'ionic-angular';
 import { FormAndFrameworkUtilService } from '../../profile/formandframeworkutil.service';
-import { CategoryRequest, Group, GroupService } from 'sunbird';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  CategoryRequest,
+  Group,
+  GroupService
+} from 'sunbird';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators
+} from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { LoadingController } from 'ionic-angular';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
@@ -50,7 +62,6 @@ export class CreateGroupPage {
   constructor(
     private navCtrl: NavController,
     private fb: FormBuilder,
-    private appGlobalService: AppGlobalService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private translate: TranslateService,
     private navParams: NavParams,
@@ -82,7 +93,7 @@ export class CreateGroupPage {
   getSyllabusDetails() {
     this.loader = this.getLoader();
     this.loader.present();
-    
+
 
     this.formAndFrameworkUtilService.getSyllabusList()
       .then((result) => {
@@ -121,7 +132,6 @@ export class CreateGroupPage {
       this.group.name = formValue.name;
       this.group.grade = (!formValue.class.length) ? [] : [formValue.class];
       this.group.syllabus = (!formValue.syllabus.length) ? [] : [formValue.syllabus];
-      this.group.uids = [];
 
       this.navCtrl.push(GroupMembersPage, {
         group: this.group
@@ -146,19 +156,18 @@ export class CreateGroupPage {
       this.group.syllabus = (!formValue.syllabus.length) ? [] : [formValue.syllabus];
 
       this.groupService.updateGroup(this.group)
-      .then((val) => {
-        loader.dismiss();
-        this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
-      })
-      .catch((error) => {
-        loader.dismiss();
-        console.log("Error : " + error);
-      });
+        .then((val) => {
+          loader.dismiss();
+          this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
+        })
+        .catch((error) => {
+          loader.dismiss();
+          console.log("Error : " + error);
+        });
     }
     else {
       this.getToast(this.translateMessage('ENTER_GROUP_NAME')).present();
     }
-
   }
 
   /**
@@ -171,9 +180,9 @@ export class CreateGroupPage {
       this.loader = this.getLoader();
       this.loader.present();
     }
-    
+
     frameworkId = frameworkId ? frameworkId : this.groupEditForm.value.syllabus;
-    console.log('framework id',frameworkId);
+    console.log('framework id', frameworkId);
     this.groupEditForm.patchValue({
       class: []
     });

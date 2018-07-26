@@ -86,7 +86,7 @@ export class GroupDetailsPage {
     loader.present();
     let profileRequest: ProfileRequest = {
       local: true,
-      gid: this.group.gid
+      groupId: this.group.gid
     };
 
     this.zone.run(() => {

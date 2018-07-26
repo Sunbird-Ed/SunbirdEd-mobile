@@ -8,7 +8,11 @@ import {
     FrameworkDetailsRequest,
     FrameworkService
 } from "sunbird";
-import { Events, AlertButton, AlertController, PopoverController, PopoverOptions } from "ionic-angular";
+import {
+    Events,
+    PopoverController,
+    PopoverOptions
+} from "ionic-angular";
 import { UpgradePopover } from "../pages/upgrade/upgrade-popover";
 
 @Injectable()
@@ -35,7 +39,6 @@ export class AppGlobalService {
         private profile: ProfileService,
         private framework: FrameworkService,
         private preference: SharedPreferences,
-        private alertCtrl: AlertController,
         private popoverCtrl: PopoverController) {
         console.log("constructor");
         this.initValues();

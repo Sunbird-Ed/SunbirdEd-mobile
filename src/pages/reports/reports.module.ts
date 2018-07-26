@@ -10,16 +10,23 @@ import { ComponentsModule } from '../../component/components.module';
 
 @NgModule({
   declarations: [
-    ReportsPage,GroupReportAlert, ReportAlert, ReportListPage,GroupReportListPage
+    ReportsPage,
+    GroupReportAlert,
+    ReportAlert,
+    ReportListPage,
+    GroupReportListPage
   ],
-  entryComponents: [GroupReportAlert, ReportsPage,ReportListPage, ReportAlert,GroupReportListPage],
+  entryComponents: [
+    GroupReportAlert,
+    ReportsPage,
+    ReportListPage,
+    ReportAlert,
+    GroupReportListPage
+  ],
   imports: [
     IonicPageModule.forChild(ReportsPage),
-    // OnboardingPageModule,
-		// LanguageSettingsPageModule,
-	//	IonicPageModule.forChild(SettingsPage),
     TranslateModule.forChild(),
     ComponentsModule
   ],
 })
-export class ReportsPageModule {}
+export class ReportsPageModule { }

@@ -1,4 +1,8 @@
-import { Component, NgZone, OnInit } from '@angular/core';
+import {
+	Component,
+	NgZone,
+	OnInit
+} from '@angular/core';
 import {
 	PageAssembleService,
 	PageAssembleCriteria,
@@ -20,8 +24,7 @@ import {
 	NavController,
 	PopoverController,
 	Events,
-	ToastController,
-	AlertButton
+	ToastController
 } from 'ionic-angular';
 import * as _ from 'lodash';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
@@ -53,8 +56,6 @@ import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-c
 import { AppGlobalService } from '../../service/app-global.service';
 import Driver from 'driver.js';
 import { AppVersion } from "@ionic-native/app-version";
-import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
-import { AlertController } from 'ionic-angular';
 import { updateFilterInSearchQuery } from '../../util/filter.util';
 
 @Component({
@@ -210,7 +211,7 @@ export class ResourcesPage implements OnInit {
 			this.isOnBoardingCardCompleted = param.isOnBoardingCardCompleted;
 		});
 	}
-	
+
 	/**
 	 * Ionic life cycle hook
 	 */
@@ -273,23 +274,23 @@ export class ResourcesPage implements OnInit {
 			audience: this.audienceFilter
 		};
 		this.contentService.getAllLocalContents(requestParams)
-		.then(data => {
-			_.forEach(data, (value, key) => {
-				value.contentData.lastUpdatedOn = value.lastUpdatedTime;
-				if (value.contentData.appIcon) {
-					value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
-				}
+			.then(data => {
+				_.forEach(data, (value, key) => {
+					value.contentData.lastUpdatedOn = value.lastUpdatedTime;
+					if (value.contentData.appIcon) {
+						value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
+					}
+				});
+				this.ngZone.run(() => {
+					this.localResources = data;
+					this.showLoader = false;
+				});
+			})
+			.catch(err => {
+				this.ngZone.run(() => {
+					this.showLoader = false;
+				});
 			});
-			this.ngZone.run(() => {
-				this.localResources = data;
-				this.showLoader = false;
-			});
-		})
-		.catch(err => {
-			this.ngZone.run(() => {
-				this.showLoader = false;
-			});
-		});
 	}
 
 	/**

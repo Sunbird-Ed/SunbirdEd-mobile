@@ -122,7 +122,6 @@ export class GroupMembersPage {
     this.userSelectionMap.forEach((value: Boolean, key: string) => {
       if (value === true) selectedUids.push(key);
     });
-    this.group.uids = selectedUids;
     this.groupService.createGroup(this.group)
     .then(res => {
       let req: AddUpdateProfilesRequest = {
@@ -143,13 +142,6 @@ export class GroupMembersPage {
       console.log("Error : " + error);
       loader.dismiss();
     });
-  }
-
-  logMapElements(value, key, map) {
-    if (value) {
-      this.group.uids.push(key);
-    }
-    console.log(`m[${key}] = ${value}`);
   }
 
   /**

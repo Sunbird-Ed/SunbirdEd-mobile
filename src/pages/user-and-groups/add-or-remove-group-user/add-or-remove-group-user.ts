@@ -18,7 +18,6 @@ import {
   Group,
   AddUpdateProfilesRequest
 } from 'sunbird';
-import * as _ from 'lodash';
 import { LoadingController } from 'ionic-angular';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
 
@@ -57,11 +56,11 @@ export class AddOrRemoveGroupUserPage {
   };
 
   constructor(
-    public navCtrl: NavController,
-    public navParams: NavParams,
+    private navCtrl: NavController,
+    private navParams: NavParams,
     private groupService: GroupService,
     private profileService: ProfileService,
-    public zone: NgZone,
+    private zone: NgZone,
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController,
     private translate: TranslateService,
@@ -70,7 +69,7 @@ export class AddOrRemoveGroupUserPage {
     this.addUsers = this.navParams.get('isAddUsers');
     this.groupInfo = this.navParams.get('groupInfo');
     this.groupMembers = this.navParams.get('groupMembers');
-    console.log("length of group member" , this.groupMembers.length)
+    console.log("length of group member", this.groupMembers.length)
   }
 
   ionViewWillEnter() {
@@ -94,7 +93,7 @@ export class AddOrRemoveGroupUserPage {
         this.zone.run(() => {
           this.uniqueUserList = uniqueUserList;
 
-          if(!this.addUsers) {
+          if (!this.addUsers) {
             this.groupMembers.forEach((element, index) => {
               this.memberSelectionMap.set(this.groupMembers[index].uid, true);
             });
@@ -114,7 +113,7 @@ export class AddOrRemoveGroupUserPage {
       value = true;
     }
     this.userSelectionMap.set(this.uniqueUserList[index].uid, value);
-//    this.getSelectedUids();
+    //    this.getSelectedUids();
   }
 
   toggleMemberSelect(index: number) {
@@ -169,10 +168,8 @@ export class AddOrRemoveGroupUserPage {
         this.selectedUids.push(item.uid);
       }
     });
+
     this.deleteUsersFromGroupConfirmBox(this.selectedGroupMemberLength);
-
-    
-
   }
 
   getSelectedUids() {
@@ -225,20 +222,21 @@ export class AddOrRemoveGroupUserPage {
       uidList: groupMembersUids.concat(this.getSelectedUids())
     }
     this.groupService.addUpdateProfilesToGroup(req)
-    .then((success) => {
-      console.log(success);
-      loader.dismiss();
-      this.getToast(this.translateMessage('GROUP_MEMBER_ADD_SUCCESS')).present();
-      this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
-    })
-    .catch((error) => {
-      loader.dismiss();
-      this.getToast(this.translateMessage('SOMETHING_WENT_WRONG')).present();
-      console.log("Error : " + error);
-      loader.dismiss();
-    });
+      .then((success) => {
+        console.log(success);
+        loader.dismiss();
+        this.getToast(this.translateMessage('GROUP_MEMBER_ADD_SUCCESS')).present();
+        this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
+      })
+      .catch((error) => {
+        loader.dismiss();
+        this.getToast(this.translateMessage('SOMETHING_WENT_WRONG')).present();
+        console.log("Error : " + error);
+        loader.dismiss();
+      });
 
   }
+
   deleteUsersFromGroupConfirmBox(length) {
     let alert = this.alertCtrl.create({
       title: this.translateMessage('REMOVE_MULTIPLE_USERS_FROM_GROUP', length),
@@ -263,20 +261,20 @@ export class AddOrRemoveGroupUserPage {
               groupId: this.groupInfo.gid,
               uidList: this.selectedUids
             }
-        
+
             this.groupService.addUpdateProfilesToGroup(req)
-            .then((success) => {
-              console.log(success);
-              loader.dismiss();
-              this.getToast(this.translateMessage('GROUP_MEMBER_DELETE_SUCCESS')).present();
-              this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
-            })
-            .catch((error) => {
-              loader.dismiss();
-              this.getToast(this.translateMessage('SOMETHING_WENT_WRONG')).present();
-              console.log("Error : " + error);
-              loader.dismiss();
-            });
+              .then((success) => {
+                console.log(success);
+                loader.dismiss();
+                this.getToast(this.translateMessage('GROUP_MEMBER_DELETE_SUCCESS')).present();
+                this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
+              })
+              .catch((error) => {
+                loader.dismiss();
+                this.getToast(this.translateMessage('SOMETHING_WENT_WRONG')).present();
+                console.log("Error : " + error);
+                loader.dismiss();
+              });
           }
         }
       ]
@@ -318,4 +316,5 @@ export class AddOrRemoveGroupUserPage {
     );
     return translatedMsg;
   }
+
 }

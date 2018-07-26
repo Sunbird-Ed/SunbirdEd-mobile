@@ -3,8 +3,6 @@ import {
   NgZone
 } from '@angular/core';
 import {
-  NavController,
-  NavParams,
   LoadingController
 } from 'ionic-angular';
 import {
@@ -87,7 +85,7 @@ export class ShareUserAndGroupPage {
         this.groupList.forEach(group => {
           let gruopUserRequest: ProfileRequest = {
             local: true,
-            gid: group.gid
+            groupId: group.gid
           }
           this.profileService.getAllUserProfile(gruopUserRequest).then((profiles) => {
             this.zone.run(() => {
