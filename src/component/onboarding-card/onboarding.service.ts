@@ -15,7 +15,7 @@ import { FormAndFrameworkUtilService } from '../../pages/profile/formandframewor
 @Injectable()
 export class OnboardingService {
     userId: string;
-    profile: any = {}; //TODO: Any should be changed to Profile
+    profile: Profile = new Profile(); //TODO: Any should be changed to Profile
     onBoardingSlides: any[];
     isOnBoardingCardCompleted: boolean = false;
     currentIndex: number = 0;
@@ -399,7 +399,7 @@ export class OnboardingService {
         req.subject = (_.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode : this.profile.subject;
         req.medium = (_.find(this.onBoardingSlides, ['id', 'mediumList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'mediumList']).selectedCode : this.profile.medium;
         req.uid = this.profile.uid;
-        req.handle = this.profile.name;
+        req.handle = this.profile.handle;
         req.createdAt = this.profile.createdAt;
         req.profileType = this.profile.profileType;
         req.source = this.profile.source;
