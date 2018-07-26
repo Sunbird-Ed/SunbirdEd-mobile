@@ -130,7 +130,10 @@ export class UserAndGroupsPage {
     let isCurrentUser = false;
     if (isUser) {
       isCurrentUser = (this.currentUserId === this.userList[index].uid) ? true : false;
+    } else {
+      isCurrentUser = this.currentGroupId === this.groupList[index].gid;
     }
+    
     let popover = this.popOverCtrl.create(PopoverPage, {
       edit: () => {
         if (isUser) {
@@ -235,6 +238,7 @@ export class UserAndGroupsPage {
     this.navCtrl.push(GroupDetailsPage, {
       groupInfo: this.groupList[index],
       currentUserId: this.currentUserId,
+      currentGruopId: this.currentGroupId,
       profile: this.profileDetails
     });
   }

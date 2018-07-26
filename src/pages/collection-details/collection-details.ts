@@ -166,38 +166,38 @@ export class CollectionDetailsPage {
    * Telemetry roll up object
    */
   public objRollup: Rollup;
-  private didViewLoad: boolean;
-  private backButtonFunc = undefined;
-  private baseUrl = "";
+  public didViewLoad: boolean;
+  public backButtonFunc = undefined;
+  public baseUrl = "";
 
 
   guestUser: boolean = false;
 
   profileType: string = '';
-  private corRelationList: Array<CorrelationData>;
-  private shouldGenerateEndTelemetry: boolean = false;
-  private source : string = "";
+  public corRelationList: Array<CorrelationData>;
+  public shouldGenerateEndTelemetry: boolean = false;
+  public source : string = "";
 
   @ViewChild(Navbar) navBar: Navbar;
-  constructor(private navCtrl: NavController,
-    private navParams: NavParams,
-    private contentService: ContentService,
-    private zone: NgZone,
-    private events: Events,
-    private toastCtrl: ToastController,
-    private loadingCtrl: LoadingController,
+  constructor(public navCtrl: NavController,
+    public navParams: NavParams,
+    public contentService: ContentService,
+    public zone: NgZone,
+    public events: Events,
+    public toastCtrl: ToastController,
+    public loadingCtrl: LoadingController,
     public popoverCtrl: PopoverController,
-    private fileUtil: FileUtil,
-    private platform: Platform,
-    private telemetryService: TelemetryService,
-    private authService: AuthService,
-    private translate: TranslateService,
-    private social: SocialSharing,
-    private shareUtil: ShareUtil,
-    private buildParamService: BuildParamService,
-    private network: Network,
-    private preference: SharedPreferences,
-    private appGlobalService: AppGlobalService) {
+    public fileUtil: FileUtil,
+    public platform: Platform,
+    public telemetryService: TelemetryService,
+    public authService: AuthService,
+    public translate: TranslateService,
+    public social: SocialSharing,
+    public shareUtil: ShareUtil,
+    public buildParamService: BuildParamService,
+    public network: Network,
+    public preference: SharedPreferences,
+    public appGlobalService: AppGlobalService) {
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
     console.warn('Inside new module..........................');
@@ -412,9 +412,9 @@ export class CollectionDetailsPage {
       if (!_.isObject(this.cardData.contentTypesCount)) {
         this.contentDetail.contentTypesCount = JSON.parse(this.cardData.contentTypesCount);
       }
-    } else {
+    } /*else {
       this.contentDetail.contentTypesCount;
-    }
+    }*/
   }
 
   /**

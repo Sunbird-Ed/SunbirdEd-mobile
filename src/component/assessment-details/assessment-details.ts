@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { PopoverController } from 'ionic-angular';
-import { ReportAlert } from '../../pages/reports/report-alert/report-alert';
 
 @Component({
   selector: 'assessment-details',
@@ -23,8 +22,10 @@ export class AssessmentDetailsComponent implements OnInit {
   }
 
   onActivate(event, clickCallback) {
-    let popupCallback = clickCallback || ReportAlert;
-    let popover = this.popoverCtrl.create(popupCallback,{'callback': event}, { cssClass: 'resource-filter' });
-    popover.present();
+    if (clickCallback) {
+      let popupCallback = clickCallback;
+      let popover = this.popoverCtrl.create(popupCallback,{'callback': event}, { cssClass: 'resource-filter' });
+      popover.present();
+    }
   }
 }

@@ -1,62 +1,23 @@
 <ion-header>
     <ion-navbar>
-        <button ion-button menuToggle>
-            <ion-icon name="menu"></ion-icon>
-        </button>
-        <button style="background-color:transparent" float-end>
-            <ion-icon class="download-icon" ios="ios-download" md="md-download"></ion-icon>
-            <ion-icon class="share-icon" ios="ios-share" md="md-share"></ion-icon>
-        </button>
-
-        <ion-title class="ellipsis">
-            <span style="font-size:1.5rem"> Biology 101 Assessment Ek Step</span>
-        </ion-title>
+      <button ion-button menuToggle>
+        <ion-icon name="menu"></ion-icon>
+      </button>
+      <ion-title text-uppercase> {{ 'REPORTS' | translate }}</ion-title>
     </ion-navbar>
-</ion-header>
-
-<ion-content>
-    <div class="card">
-        <ion-row>
-            <ion-col col-6 class="column-align">
-                <p class="text-align"> {{ 'SCORE' | translate }}</p>
-                <ion-icon class="icon-align" ios="ios-stats" md="ios-stats"></ion-icon>
-                <span style="font-size:2.6rem">52/100</span>
-            </ion-col>
-
-            <ion-col col-6 class="column-align">
-                <p class="text-align"> {{ 'TOTAL_TIME' | translate }}</p>
-                <ion-icon class="icon-align" ios="ios-time" md="md-time"></ion-icon>
-                <span style="font-size:2.6rem">{{' 25:21'}}</span>
-            </ion-col>
-        </ion-row>
-    </div>
-    <ion-grid class="grid-align">
-
-        <ion-row class="report-header" padding>
-            <ion-col col-4 class="text-center white">
-                {{'Question (Marks)'}}
-                <ion-icon name="arrow-dropdown"></ion-icon>
-            </ion-col>
-            <ion-col col-4 class="text-center white">
-                {{ 'TIME' | translate }}
-                <ion-icon name="arrow-dropdown"></ion-icon>
-            </ion-col>
-            <ion-col col-4 class="text-center result">
-                {{ 'Result' | translate }}
-            </ion-col>
-        </ion-row>
-        <ion-row (click)="presentPopover($event)" class="G row-align" *ngFor="let question of questionResponse" padding>
-            <ion-col col-4 class="text-center" style="color:dodgerblue">
-                {{question.qId}} ({{question.marks}})
-            </ion-col>
-            <ion-col col-4 class="text-center">
-                {{question.time}}
-            </ion-col>
-            <ion-col col-4 class="text-center">
-                <ion-icon class="icon-tickmark" *ngIf="question.result == 'pass'" name="checkmark"></ion-icon>
-                <ion-icon class="icon-close" *ngIf="question.result == 'failed'" name="close"></ion-icon>
-            </ion-col>
-        </ion-row>
-    </ion-grid>
-
-</ion-content>
+  </ion-header>
+  
+  
+  <ion-content padding>
+  
+    <ion-list>
+      <ion-item *ngFor="let report of listOfReports;let i=index" class="bgColor" (click)="goToGroupReportsList(report)">
+        <p *ngIf="report.lastUsedTime">{{formatTime(report.lastUsedTime)}}</p>
+        <h2>{{report.name}}</h2>
+        <p>{{'Scored' | translate}}:{{report.correctAnswers}}/{{report.noOfQuestions}}</p>
+        <ion-icon name="ios-arrow-forward" item-end></ion-icon>
+      </ion-item>
+  
+    </ion-list>
+  
+  </ion-content>

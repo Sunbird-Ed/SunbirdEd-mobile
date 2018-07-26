@@ -1,6 +1,6 @@
 <ion-header>
     <ion-item style="background-color:dodgerblue;color:white">
-        <span>{{assessmentDetails?.qtitle}}</span>
+        <span>{{assessment?.qtitle}}</span>
         <ion-icon (click)="cancel()" ios="ios-close" md="md-close" item-end></ion-icon>
     </ion-item>
     <ion-segment [(ngModel)]="report">
@@ -21,15 +21,15 @@
         <ion-list class="margin0" *ngSwitchCase="'questions'">
             <ion-item>
                 <p>{{'ACCURACY' | translate}}</p>
-                <h3>{{assessmentDetails?.result}}</h3>
+                <h3>{{assessment?.result}}</h3>
             </ion-item>
             <ion-item>
                 <p>{{'QUESTION' | translate}}</p>
-                <h3>{{assessmentDetails?.qtitle}}</h3>
+                <h3>{{assessment?.qtitle}}</h3>
             </ion-item>
-            <ion-item *ngIf="assessmentDetails?.qdesc">
+            <ion-item *ngIf="assessment?.qdesc">
                 <p>{{ 'DESCRIPTIONS' | translate}}</p>
-                <h3>{{assessmentDetails?.qdesc}}</h3>
+                <h3>{{assessment?.qdesc}}</h3>
             </ion-item>
         </ion-list>
     </div>
