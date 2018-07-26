@@ -1,96 +1,29 @@
-report-list{
-    .G:nth-child(even) {background: #CCC;}
-    .G:nth-child(odd) { background: #FFF;}
-    .card{
-        background-color: white;
-        position: absolute;
-        z-index: 100;
-        height: 17%;
-        top: 6%;
-        bottom: 0;
-        left: 17px;
-        right: 17px;
-        border-radius: 5px;
+group-list-page {
+    .settings-item-style {
+        padding-top:5px;
+    }
+    ion-icon{
+        font-size: 22px !important;
+        font-weight: 550;
+    }
+    .bgColor{
+        background-color: #f7f7f7;
+        border-radius: 3px;
+    }
+    .bgColor.item-block.item-md {
+        margin-bottom: 2rem;
+    }
+    .marginTop{
+        margin-top: 15px !important
+    }
+    .header-md::after, .tabs-md[tabsPlacement="top"] > .tabbar::after, .footer-md::before, .tabs-md[tabsPlacement="bottom"] > .tabbar::before{
 
-       // background-color: white;
-        box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.2), 0 1px 5px 0 rgba(0,0,0,.12);
+        background-image: none;
     }
-    .text-center{
-        text-align: center !important;
-        font-size: 1.3rem !important;
+    .item-md.item-block .item-inner {
+    border-bottom: 0 !important;
     }
-    .row-align{
-        padding: 10px 16px !important;
-    }
-    .ellipsis{
-      max-width:100%;
-      text-overflow:ellipsis;
-      text-align: left !important;
-    }
-    .column-align{
-        color:dodgerblue;
-        text-align:center;
-        padding:0 !important;
-    }
-    .text-align{
-     color:dodgerblue;
-     font-size:1.1rem;
-    }
-    .icon-align{
-      color:dodgerblue;
-      font-size:2.6rem;
-    }
-    .result{
-        color: white;
-        text-align: center;
-    }
-    .white{
-   color:white;
-    }
-    .icon-tickmark{
-
-      color:green;
-      font-weight:600;
-    }
-    .icon-close{
-        color:red;
-        font-weight:600;
-    }
-    .grid-align{
-        margin-top: 14%;
-//padding-top:25%;
- background-color:white;
- padding-left:0 !important;
- padding-right:0 !important;
-    }
-    .report-header{
-        background-color: dodgerblue !important;
-        padding-top: 24% !important;
-        height: 37vw !important;
-    }
-    .download-icon{
-        font-size: 1.8rem;
-        padding-right: 10px;
-    }
-    .share-icon{
-        font-size: 1.8rem;
-    }
-    .action-sheets-groups-page {
-
-
-        .icon-edition {
-            color: grey;
-        }
-        .icon-close {
-            color: grey;
-            float:right;
-            background-color: turquoise
-        }
-        .action-sheet-cancel ion-icon,
-        .action-sheet-destructive {
-            color: red;
-        }
-    }
-
-
-    }
+}
+.bgColor ion-label {
+    overflow: visible !important;
+}

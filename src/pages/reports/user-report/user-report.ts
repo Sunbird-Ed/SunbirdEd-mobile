@@ -1,14 +1,14 @@
 import { Component, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
 import { ReportService, ProfileService, ReportSummary } from 'sunbird';
-import { ReportAlert } from '../reports/report-alert/report-alert';
+import { ReportAlert } from '../report-alert/report-alert';
 
 @IonicPage()
 @Component({
-  selector: 'page-table',
-  templateUrl: 'table.html',
+  selector: 'page-user-report',
+  templateUrl: 'user-report.html',
 })
-export class TablePage {
+export class UserReportPage {
   assessmentData;
   columns = [
     {

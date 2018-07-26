@@ -1,7 +1,6 @@
 import { Component, NgZone } from '@angular/core';
-//import { ReportListPage } from '../reports/report-list/report-list'
 import { NavController, LoadingController } from 'ionic-angular';
-import { GroupListPage } from './group-list/group-list';
+import { ReportListPage } from './report-list/report-list';
 import { ReportService, ProfileService, GroupService, ProfileRequest, GroupRequest } from 'sunbird';
 
 @Component({
@@ -64,19 +63,9 @@ export class ReportsPage {
       that.groupService.getAllGroup(groupRequest)
       .then((groups) => {
         if (groups.result) {
-          groups.result.forEach((g, gIndex) => {
-            g['uids'] = [];
-            let profileRequest : ProfileRequest = {'local': true, gid: g.gid};
-            that.profileService.getAllUserProfile(profileRequest).then((result) => {
-              result = JSON.parse(result);
-              result.forEach((user,uIndex)  => {
-                g['uids'].push(user.uid);
-                if ((gIndex == groups.result.length-1) && (uIndex == result.length-1)) resolve(groups.result);
-              });
-            })
-          });
+          resolve(groups.result);
         } else {
-          reject();
+          resolve();
         }
       })
     });
@@ -115,16 +104,24 @@ export class ReportsPage {
   }
 
   goToUserReportList(uid: string) {
-    this.navCtrl.push(GroupListPage, {
+    this.navCtrl.push(ReportListPage, {
       isFromUsers: true,
       uids: [uid]
     });
   }
   
-  goToGroupUserReportList(groups) {
-    this.navCtrl.push(GroupListPage, {
-      isFromGroups: true,
-      uids: groups['uids']
-    });
+  goToGroupUserReportList(group) {
+    let profileRequest : ProfileRequest = {'local': true, gid: group.gid};
+    this.profileService.getAllUserProfile(profileRequest)
+    .then(result => {
+      let users: Array<any> = JSON.parse(result);
+      let uids = users.map(user => {
+        return user.uid;
+      });
+      this.navCtrl.push(ReportListPage, {
+        isFromGroups: true,
+        uids: uids
+      });
+    })
   }
 }
