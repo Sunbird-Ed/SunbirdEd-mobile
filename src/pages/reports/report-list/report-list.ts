@@ -6,7 +6,7 @@ import { UserReportPage } from '../user-report/user-report';
 
 @Component({
     selector: 'group-list-page',
-    templateUrl: 'group-list.html'
+    templateUrl: 'report-list.html'
 })
 export class ReportListPage {
 
