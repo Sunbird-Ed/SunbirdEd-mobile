@@ -33,7 +33,7 @@
     </div>
   </div>
   <ion-item *ngFor="let user of userList; let i = index;" class="item-background" margin-bottom no-lines>
-    <ion-label>
+    <ion-label (click)="toggleSelect(i)">
       <h6 class="line-height-2">
         <b>{{user?.handle}}</b>
       </h6>
