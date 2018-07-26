@@ -1,5 +1,6 @@
 import { Component } from "@angular/core";
-import { NavParams, ViewController, Platform, NavController, IonicApp } from "ionic-angular";
+import { NavParams, ViewController, Platform, NavController, IonicApp, LoadingController } from "ionic-angular";
+import { ReportService } from 'sunbird';
 
 @Component({
   selector: 'group-report-alert',
@@ -9,27 +10,59 @@ export class GroupReportAlert{
   unregisterBackButton : any;
   callback: QRAlertCallBack
   report: string = 'users'
-  fromUserColumns;
+  fromUserColumns = [{
+    name: 'Name',
+    prop: 'uid'
+  }, {
+    name: 'Time',
+    prop: 'time'
+  }, {
+    name: 'Result',
+    prop: 'res'
+  }];;
   assessment: {};
   fromUserAssessment;
 
 
-  constructor(navParams: NavParams, private viewCtrl: ViewController, private navCtrl: NavController, private platform: Platform, private ionicApp: IonicApp) {
-    this.callback = navParams.get('callback');
-    this.assessment = this.callback['row'];
-    this.fromUserAssessment = {'uiRows' : []};
-    this.fromUserAssessment['uiRows'] = this.assessment['reportDetailsList'];
-    this.fromUserAssessment['showResult'] = false;
-    this.fromUserColumns= [{
-      name: 'Name',
-      prop: 'qtitle'
-    }, {
-      name: 'Time',
-      prop: 'timespent'
-    }, {
-      name: 'Result',
-      prop: 'score'
-    }];
+  constructor(
+    navParams: NavParams, 
+    private viewCtrl: ViewController, 
+    private navCtrl: NavController, 
+    private loading: LoadingController,
+    private platform: Platform, 
+    private ionicApp: IonicApp,
+    private reportService: ReportService) {
+      this.report = 'questions'
+      this.callback = navParams.get('callback');
+      this.assessment = this.callback['row'];
+  }
+
+  getAssessmentByUser(event) {
+    if (event == "users") {
+      let loader = this.loading.create({
+        spinner: "crescent"
+      });
+      let params = {
+        uids: this.assessment['uids'], 
+        contentId: this.assessment['content_id'],
+        hierarchyData: null,
+        qId: this.assessment['qid']
+      };
+      this.reportService.getDetailsPerQuestion(params, (data:any) => {
+        console.log(data)
+        this.fromUserAssessment = {'uiRows' : [], showResult: false};
+        if (data.length > 0) {
+          data.forEach(assessment => {
+            assessment.res = assessment.result + '/' + assessment.maxScore
+          });
+          this.fromUserAssessment['uiRows'] = data;
+        }
+      },(error: any) => {
+        let data = JSON.parse(error);
+        console.log('Error received', data);
+        loader.dismiss();
+      })
+    }
   }
 
   cancel() {

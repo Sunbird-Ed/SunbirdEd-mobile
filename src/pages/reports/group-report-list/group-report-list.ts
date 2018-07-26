@@ -62,19 +62,20 @@ export class GroupReportListPage {
         let params = {
             uids: uids, 
             contentId: reportSummary.contentId, 
-            hierarchyData: null
+            hierarchyData: null,
+            qId: ''
         };
         if (event == "users" && !this.fromUserAssessment) {
             loader.present();
             this.reportService.getReportsByUser(params, (data:any) => {
                 data = JSON.parse(data);
-                let averageScore = 0;
+                let averageScore:any = 0;
                 let averageTime = 0;
                 data.forEach(function(d){
                     averageTime += d.totalTimespent;
                     averageScore += d.score;
                 });
-                averageScore = averageScore/data.length;
+                averageScore = (averageScore/data.length).toFixed(2);
                 averageTime = averageTime/data.length;
                 let details = {'uiRows': data, totalScore: averageScore, uiTotalTime: that.convertTotalTime(averageTime)};
                 that.zone.run(() => {
@@ -94,20 +95,22 @@ export class GroupReportListPage {
             loader.present();
             this.reportService.getReportsByQuestion(params, (data:any) => {
                 data = JSON.parse(data);
+                console.log(data)
                 let averageTime = 0;
-                let averageScore = 0;
+                let averageScore:any = 0;
                 data.forEach(function(question) {
                     averageTime += question.time_spent;
                     averageScore += question.score;
-                    question.accuracy = question.marks + '/' + data.length
+                    question.accuracy = question.marks + '/' + data.length,
+                    question.uids = uids
                 })
-                averageScore = averageScore/data.length;
+                averageScore = (averageScore/data.length).toFixed(2);
                 averageTime = averageTime/data.length;
-                let details = {'uiRows': data, totalScore: averageScore, uiTotalTime: that.convertTotalTime(averageTime)};
+                let details = {'uiRows': data, totalScore: averageScore, uiTotalTime: that.convertTotalTime(averageTime), popupCallback: GroupReportAlert};
+                console.log(details)
                 that.zone.run(() => {
                     loader.dismiss();
                     that.fromQuestionAssessment = details;
-                    // that.fromQuestionAssessment['popupCallback'] = ReportAlert;
                 })
             },
             (error: any) => {

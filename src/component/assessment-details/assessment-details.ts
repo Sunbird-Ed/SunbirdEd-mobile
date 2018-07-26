@@ -23,8 +23,7 @@ export class AssessmentDetailsComponent implements OnInit {
 
   onActivate(event, clickCallback) {
     if (clickCallback) {
-      let popupCallback = clickCallback;
-      let popover = this.popoverCtrl.create(popupCallback,{'callback': event}, { cssClass: 'resource-filter' });
+      let popover = this.popoverCtrl.create(clickCallback,{'callback': event}, { cssClass: 'resource-filter' });
       popover.present();
     }
   }
