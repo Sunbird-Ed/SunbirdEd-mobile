@@ -21,7 +21,7 @@ export class GroupReportAlert{
     prop: 'res'
   }];;
   assessment: {};
-  fromUserAssessment;
+  fromUserAssessment = {'uiRows' : [], showResult: false};
 
 
   constructor(
@@ -49,8 +49,7 @@ export class GroupReportAlert{
         qId: this.assessment['qid']
       };
       this.reportService.getDetailsPerQuestion(params, (data:any) => {
-        console.log(data)
-        this.fromUserAssessment = {'uiRows' : [], showResult: false};
+        data = JSON.parse(data);
         if (data.length > 0) {
           data.forEach(assessment => {
             assessment.res = assessment.result + '/' + assessment.maxScore

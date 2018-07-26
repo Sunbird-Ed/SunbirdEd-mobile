@@ -95,7 +95,6 @@ export class GroupReportListPage {
             loader.present();
             this.reportService.getReportsByQuestion(params, (data:any) => {
                 data = JSON.parse(data);
-                console.log(data)
                 let averageTime = 0;
                 let averageScore:any = 0;
                 data.forEach(function(question) {
