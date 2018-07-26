@@ -1,6 +1,7 @@
 @import '../../assets/styles/index.scss';
 @import '../../assets/styles/material.scss';
 @import '../../assets/styles/bootstrap.scss';
+@import '../../assets/styles/icon.scss';
 .ngx-datatable.material .datatable-body .datatable-body-row .datatable-body-cell-column1 {
     color: #007aff;
     font-weight: bold;
@@ -43,7 +44,7 @@
     border-radius: 5px;
     display: flex;
     top: 15%;
-    height: 70%;
+    height: 80%;
     text-transform: uppercase;
     display: table;
 }
@@ -74,6 +75,7 @@
 .assessment-time p,
 .ngx-datatable.material .datatable-header .datatable-row-center .assessment-header {
     font-size: 0.8em;
+    font-weight: bold;
 }
 
 .assessment-score {
@@ -92,4 +94,8 @@
 .assessment-stats {
     font-size: 1.8em;
     padding-bottom: 10px;
+}
+
+.assessment-stats span, .assessment-time span {
+    font-size: 1.2em;
 }
