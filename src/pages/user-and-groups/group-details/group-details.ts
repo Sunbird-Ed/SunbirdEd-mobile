@@ -323,6 +323,22 @@ export class GroupDetailsPage {
     return translatedMsg;
   }
 
+  getGradeNameFromCode(profile: Profile): string {
+    if (profile.grade && profile.grade.length > 0) {
+      let gradeName = [];
+      profile.grade.forEach(code => {
+        gradeName.push(profile.gradeValueMap[code]);
+      });
+
+
+      return gradeName.join(",");
+    }
+
+
+    return ""
+  }
+
+
   private setAsCurrentUser(selectedUser) {
     this.groupService.setCurrentGroup(this.group.gid)
       .then(val => {

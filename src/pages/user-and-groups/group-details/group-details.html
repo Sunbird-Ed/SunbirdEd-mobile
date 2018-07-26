@@ -36,7 +36,7 @@
               <b>{{user?.handle | titlecase}}</b>
             </h6>
             <p>{{user?.profileType | titlecase}}
-              <span *ngIf="user?.grade?.length">•</span> {{user?.grade}}</p>
+              <span *ngIf="user?.grade?.length">•</span> {{ getGradeNameFromCode(user) }}</p>
           </ion-item>
         </ion-col>
         <ion-col col-2 class="advanced-menu">

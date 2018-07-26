@@ -59,7 +59,7 @@
                     <b>{{user?.handle}}</b>
                   </h6>
                   <p>{{user?.profileType | titlecase}}
-                    <span *ngIf="user?.grade?.length">•</span> {{user?.grade}}</p>
+                    <span *ngIf="user?.grade?.length">•</span> {{ getGradeNameFromCode(user) }}</p>
                 </ion-item>
               </ion-col>
               <ion-col col-2 class="advanced-menu">
@@ -101,7 +101,7 @@
                     <b>{{group?.name}}</b>
                   </h6>
                   <p>
-                    <span ion-text color="text_gray" *ngIf="group?.grade && group?.grade[0]">{{group?.grade[0]}}</span>
+                    <span ion-text color="text_gray" *ngIf="group?.grade && group?.grade[0]">{{group?.gradeValueMap[group?.grade[0]]}}</span>
                     <span ion-text color="gray" *ngIf="group?.grade?.length">•</span>
                     <span ion-text color="text_gray" *ngIf="group?.profilesCount > 1">{{group?.profilesCount}} {{'USERS' | translate}}</span>
                     <span ion-text color="text_gray" *ngIf="group?.profilesCount === 1">{{group?.profilesCount}} {{'USER' | translate}}</span>
