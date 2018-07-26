@@ -1,12 +1,12 @@
 <ion-header>
     <ion-navbar no-border-bottom>
         <ion-title ellipsis>
-            Class V Biology Assessment
+            {{contentName}}
         </ion-title>
     </ion-navbar>
 
     <ion-toolbar no-border-top>
-        <ion-segment [(ngModel)]="report">
+        <ion-segment [(ngModel)]="reportType" (ngModelChange)="fetchAssessment($event)">
             <ion-segment-button value="users">
                 {{ 'BY_USERS' | translate }}
             </ion-segment-button>

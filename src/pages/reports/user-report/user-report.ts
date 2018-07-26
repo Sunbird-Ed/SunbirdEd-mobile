@@ -22,6 +22,7 @@ export class UserReportPage {
       prop: 'result'
     }
   ];
+  contentName: string;
 
   constructor(
     public navCtrl: NavController,
@@ -48,6 +49,7 @@ export class UserReportPage {
     let that = this;
 
     let reportSummary: ReportSummary = this.navParams.get('report');
+    this.contentName = reportSummary.name;
     
     that.reportService.getDetailReport([reportSummary.uid], reportSummary.contentId)
     .then(reportsMap => {
