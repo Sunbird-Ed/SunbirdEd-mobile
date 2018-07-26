@@ -91,6 +91,7 @@ export class GroupReportListPage {
             })
         } else
         if (event == "questions" && !this.fromQuestionAssessment) {
+            loader.present();
             this.reportService.getReportsByQuestion(params, (data:any) => {
                 data = JSON.parse(data);
                 let averageTime = 0;
