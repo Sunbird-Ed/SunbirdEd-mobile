@@ -24,7 +24,7 @@ export class OnboardingService {
     categories: Array<any> = [];
     syllabusList: Array<any> = [];
     boardList: Array<string> = [];
-    gradeList: Array<string> = [];
+    gradeList: Array<any> = [];
     subjectList: Array<string> = [];
     mediumList: Array<string> = [];
     frameworkId: string = '';
@@ -420,6 +420,21 @@ export class OnboardingService {
         if (index === 3 && !_.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode.length) {
             req.subject = [];
         }
+
+
+        if (req.grade && req.grade.length > 0) {
+            req.grade.forEach(gradeCode => {
+              for (let i = 0; i < this.gradeList.length; i++) {
+                if (this.gradeList[i].value == gradeCode) {
+                  if (!req.gradeValueMap) {
+                    req.gradeValueMap = {};
+                  }
+                  req.gradeValueMap[this.gradeList[i].value] = this.gradeList[i].text
+                  break;
+                }
+              }
+            });
+          }
 
         this.profileService.updateProfile(req,
             (res: any) => {

@@ -31,7 +31,7 @@ export class GuestEditProfilePage {
   categories: Array<any> = [];
   syllabusList: Array<any> = []
   boardList: Array<any> = [];
-  gradeList: Array<string> = [];
+  gradeList: Array<any> = [];
   subjectList: Array<string> = [];
   mediumList: Array<string> = [];
   userName: string = '';
@@ -318,6 +318,20 @@ export class GuestEditProfilePage {
     req.source = this.profile.source;
     req.createdAt = this.profile.createdAt;
     req.syllabus = (!formVal.syllabus.length) ? [] : [formVal.syllabus];
+
+    if (formVal.grades && formVal.grades.length > 0) {
+      formVal.grades.forEach(gradeCode => {
+        for (let i = 0; i < this.gradeList.length; i++) {
+          if (this.gradeList[i].code == gradeCode) {
+            if (!req.gradeValueMap) {
+              req.gradeValueMap = {};
+            }
+            req.gradeValueMap[this.gradeList[i].code] = this.gradeList[i].name
+            break;
+          }
+        }
+      });
+    }
 
     this.profileService.updateProfile(req,
       (res: any) => {
