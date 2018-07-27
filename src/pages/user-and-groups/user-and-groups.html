@@ -101,7 +101,7 @@
                     <b>{{group?.name}}</b>
                   </h6>
                   <p>
-                    <span ion-text color="text_gray" *ngIf="group?.grade && group?.grade[0]">{{group?.gradeValueMap[group?.grade[0]]}}</span>
+                    <span ion-text color="text_gray" *ngIf="group?.grade && group?.grade[0]">{{ getGradeNameFromCode(group) }}</span>
                     <span ion-text color="gray" *ngIf="group?.grade?.length">•</span>
                     <span ion-text color="text_gray" *ngIf="group?.profilesCount > 1">{{group?.profilesCount}} {{'USERS' | translate}}</span>
                     <span ion-text color="text_gray" *ngIf="group?.profilesCount === 1">{{group?.profilesCount}} {{'USER' | translate}}</span>

@@ -428,17 +428,21 @@ export class UserAndGroupsPage {
     return translatedMsg;
   }
 
-  getGradeNameFromCode(profile: Profile): string {
-    if (profile.grade && profile.grade.length > 0) {
+  getGradeNameFromCode(data: Profile | Group): string {
+    if (data.grade && data.grade.length > 0) {
       let gradeName = [];
-      profile.grade.forEach(code => {
-        gradeName.push(profile.gradeValueMap[code]);
+      data.grade.forEach(code => {
+        if (data.gradeValueMap && data.gradeValueMap[code]) {
+          gradeName.push(data.gradeValueMap[code]);
+        }
       });
 
+      if (gradeName.length == 0) {
+        return data.grade.join(",");
+      }
 
       return gradeName.join(",");
     }
-
 
     return ""
   }
