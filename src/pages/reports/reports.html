@@ -36,12 +36,32 @@
         </ion-list>
 
         <ion-list *ngSwitchCase="'groups'" padding>
-            <ion-item class="bgColor" (click)="goToGroupUserReportList(group)" *ngFor="let group of groups;let i=index"
-                margin-bottom no-lines>
-                <h6><b>{{group?.name}}</b></h6>
-                <p>{{group?.profilesCount}} {{ 'USERS' | translate}}</p>
+            <ion-item *ngIf="!groups?.length">
+                <div class="img-container">
+                    <img class="image_style" src="assets/imgs/ic_businessman.png">
+                </div>
+                <ion-row padding-top>
+                    <ion-col col-md-6 offset-md-3 col-lg-6 offset-lg-3>
+                        <div class="image-text">
+                            <h6>
+                                <b>{{'NO_GROUPS_CREATED_YET' | translate}}</b>
+                            </h6>
+                            <p>{{'GROUPS_HELP_TO_ORGANIZE_THE_USER_BETTER' | translate}}.
+                                <br> {{'YOU_CAN_ALSO_USE_GROUPS_TO_MONITOR_BETTER' | translate}}
+                                <br>{{'PROGRESS_OVERALL' | translate}}</p>
+                        </div>
+                    </ion-col>
+                </ion-row>
+            </ion-item>
+            <div *ngIf="groups?.length">
+            <ion-item  class="bgColor" (click)="goToGroupUserReportList(group)" *ngFor="let group of groups;let i=index" margin-bottom
+                no-lines>
+                <h2>{{group?.name}}</h2>
+                <p *ngIf="group?.profilesCount === 1">{{group?.profilesCount}} {{ 'USER_SINGULAR' | translate}}</p>
+                <p *ngIf="group?.profilesCount > 1">{{group?.profilesCount}} {{ 'USERS' | translate}}</p>
                 <ion-icon name="ios-arrow-forward" item-end></ion-icon>
             </ion-item>
+        </div>
         </ion-list>
     </div>
 </ion-content>

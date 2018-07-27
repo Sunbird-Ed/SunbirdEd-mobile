@@ -468,6 +468,7 @@
   "USER_DELETE_CONFIRM_SECOND_MESSAGE":"This action will remove users from the Group.The User can still be found under Users Tab",
   "REMOVE_MULTIPLE_USERS_FROM_GROUP":"Confirm Removal of {{%s}} Users",
   "USERS": "Users",
+  "USER_SINGULAR" : "User",
   "OKAY": "Okay",
   "SELECT_ALL": "Select All",
   "LOGGED_IN_AS": "Logged In As",
