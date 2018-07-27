@@ -43,6 +43,8 @@ export class GuestEditProfilePage {
   unregisterBackButton: any;
   isCurrentUser: boolean = true;
 
+  isFormValid: boolean = true;
+
   options: toastOptions = {
     message: '',
     duration: 3000,
@@ -155,6 +157,7 @@ export class GuestEditProfilePage {
           if (this.profile && this.profile.syllabus && this.profile.syllabus[0] !== undefined) {
             this.formAndFrameworkUtilService.getFrameworkDetails(this.profile.syllabus[0])
               .then(catagories => {
+                this.isFormValid = true;
                 // loader.dismiss();
                 this.categories = catagories;
 
@@ -178,6 +181,10 @@ export class GuestEditProfilePage {
                   subjects: this.profile.subject || []
                 });
 
+              }).catch(error => {
+                this.isFormValid = false;
+                this.loader.dismiss();
+                this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
               });
           } else {
             this.loader.dismiss();
@@ -223,11 +230,15 @@ export class GuestEditProfilePage {
         .then(catagories => {
           this.categories = catagories;
 
+          this.isFormValid = true;
           // loader.dismiss();
           let request: CategoryRequest = {
             currentCategory: this.categories[0].code,
           }
           this.getCategoryData(request, currentField);
+        }).catch(error => {
+          this.isFormValid = false;
+          this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
         });
 
     } else {
@@ -288,6 +299,11 @@ export class GuestEditProfilePage {
    */
 
   onSubmit(): void {
+
+    if (!this.isFormValid) {
+      this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
+      return;
+    }
 
     let loader = this.getLoader();
     loader.present();
