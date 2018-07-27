@@ -10,7 +10,8 @@ import {
   NavParams,
   AlertController,
   Platform,
-  PopoverController
+  PopoverController,
+  ToastController
 } from 'ionic-angular';
 import { CreateGroupPage } from './create-group/create-group';
 import { PopoverPage } from './popover/popover';
@@ -35,6 +36,7 @@ import { AppGlobalService } from '../../service/app-global.service';
 import { initTabs, GUEST_STUDENT_TABS, GUEST_TEACHER_TABS } from '../../app/module.service';
 import { App } from 'ionic-angular';
 import { group } from '@angular/core/src/animation/dsl';
+import { Network } from '@ionic-native/network';
 
 
 @IonicPage()
@@ -78,6 +80,8 @@ export class UserAndGroupsPage {
     private preferences: SharedPreferences,
     private app: App,
     private oauth: OAuthService,
+    private network: Network,
+    private toastCtrl: ToastController
   ) {
 
     /* Check userList length and show message or list accordingly */
@@ -133,7 +137,7 @@ export class UserAndGroupsPage {
     } else {
       isCurrentUser = this.currentGroupId === this.groupList[index].gid;
     }
-    
+
     let popover = this.popOverCtrl.create(PopoverPage, {
       edit: () => {
         if (isUser) {
@@ -156,8 +160,8 @@ export class UserAndGroupsPage {
         }
         popover.dismiss()
       },
-        isCurrentUser: isCurrentUser
-      },
+      isCurrentUser: isCurrentUser
+    },
       {
         cssClass: 'user-popover'
       }
@@ -203,7 +207,7 @@ export class UserAndGroupsPage {
   getAllGroup() {
     this.zone.run(() => {
       let groupRequest: GroupRequest = {
-        uid : ""
+        uid: ""
       }
 
       this.groupService.getAllGroup(groupRequest).then((groups) => {
@@ -313,9 +317,18 @@ export class UserAndGroupsPage {
           text: this.translateMessage('OKAY'),
           cssClass: 'alert-btn-delete',
           handler: () => {
-            this.oauth.doLogOut();
-            (<any>window).splashscreen.clearPrefs();
-            this.setAsCurrentUser(selectedUser);
+            if (this.network.type === 'none') {
+              let toast = this.toastCtrl.create({
+                message: this.translateMessage("NEED_INTERNET_TO_CHANGE"),
+                duration: 2000,
+                position: 'bottom'
+              });
+              toast.present();
+            } else {
+              this.oauth.doLogOut();
+              (<any>window).splashscreen.clearPrefs();
+              this.setAsCurrentUser(selectedUser);
+            }
           }
         }
       ]

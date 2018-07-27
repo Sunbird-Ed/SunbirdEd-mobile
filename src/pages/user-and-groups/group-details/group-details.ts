@@ -33,6 +33,8 @@ import { AppGlobalService } from '../../../service/app-global.service';
 import { initTabs, GUEST_STUDENT_TABS, GUEST_TEACHER_TABS } from '../../../app/module.service';
 import { App } from 'ionic-angular';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
+import { ToastController } from 'ionic-angular';
+import { Network } from '@ionic-native/network';
 
 @IonicPage()
 @Component({
@@ -65,7 +67,9 @@ export class GroupDetailsPage {
     private preferences: SharedPreferences,
     private app: App,
     private event: Events,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private toastCtrl: ToastController,
+    private network: Network
   ) {
     this.group = this.navParams.get('groupInfo');
     this.currentUserId = this.navParams.get('currentUserId');
@@ -143,9 +147,20 @@ export class GroupDetailsPage {
           text: this.translateMessage('OKAY'),
           cssClass: 'alert-btn-delete',
           handler: () => {
-            this.oauth.doLogOut();
-            (<any>window).splashscreen.clearPrefs();
-            this.setAsCurrentUser(selectedUser);
+            if (this.network.type === 'none') {
+              let toast = this.toastCtrl.create({
+                message: this.translateMessage("NEED_INTERNET_TO_CHANGE"),
+                duration: 2000,
+                position: 'bottom'
+              });
+              toast.present();
+            } else {
+              this.oauth.doLogOut();
+              (<any>window).splashscreen.clearPrefs();
+              this.setAsCurrentUser(selectedUser);
+            }
+
+
           }
         }
       ]
