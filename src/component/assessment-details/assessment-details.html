@@ -2,14 +2,14 @@
   <div class="assessment-container"></div>
   <div class="assessment-card">
     <div class="assessment-score">
-      <p>Score</p>
+      <p>{{assessmentData?.summaryScoreLabel}}</p>
       <div class="assessment-stats">
         <ion-icon name="stats"></ion-icon>
         <span>{{assessmentData?.totalScore}}<span *ngIf="assessmentData?.maxTotalScore">/</span>{{assessmentData?.maxTotalScore}}</span>
       </div>
     </div>
     <div class="assessment-time">
-      <p>Total Time</p>
+      <p>{{assessmentData?.summaryTimeLabel}}</p>
       <div class="assessment-result">
         <ion-icon md="md-time"></ion-icon>
         <span>{{assessmentData?.uiTotalTime}}</span>
@@ -17,8 +17,8 @@
     </div>
   </div>
 </div>
-<ngx-datatable id="datatable" class="material striped" [rows]="assessmentData?.uiRows" [rowClass]="getCell" [columns]="columns" [scrollbarV]="true" columnMode="flex" [headerHeight]="'40'" [footerHeight]="0" [rowHeight]="40" (activate)="onActivate($event, assessmentData.popupCallback)">
-    <ngx-datatable-column name={{columns[0].name}} prop={{columns[0].prop}} [flexGrow]="1.75" [cellClass]="'datatable-body-cell-column1'" headerClass="assessment-header" [resizeable]="false"></ngx-datatable-column>
+<ngx-datatable id="datatable" class="material striped" [rows]="assessmentData?.uiRows" [rowClass]="getCell" [columns]="columns" [scrollbarV]="true" columnMode="flex" [headerHeight]="'40'" [footerHeight]="0" [rowHeight]="40" (activate)="onActivate($event, assessmentData.popupCallback)" [sorts]="[{prop: columns[0]?.prop, dir: 'asc'},{prop: columns[1]?.prop, dir: 'asc'},{prop: columns[2]?.prop, dir: 'asc'}]">
+    <ngx-datatable-column name={{columns[0].name}} prop={{columns[0].prop}} [flexGrow]="1.75" [cellClass]="'datatable-body-cell-column1'" headerClass="assessment-header assessment-header1" [resizeable]="false"></ngx-datatable-column>
     <ngx-datatable-column name={{columns[1].name}} prop={{columns[1].prop}} [flexGrow]="1.125" [cellClass]="'datatable-body-cell-column2'" headerClass="assessment-header" [resizeable]="false"></ngx-datatable-column>
     <ngx-datatable-column name={{columns[2].name}} prop={{columns[2].prop}} [flexGrow]="1.125" [cellClass]="'datatable-body-cell-column3'" headerClass="assessment-header" [resizeable]="false"></ngx-datatable-column>
 </ngx-datatable>

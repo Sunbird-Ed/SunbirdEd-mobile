@@ -15,6 +15,18 @@
     color: #70706d;
 }
 
+.ngx-datatable.material .datatable-body .datatable-body-row .datatable-body-cell-column1,
+.ngx-datatable.material .datatable-body .datatable-body-row .datatable-body-cell-column2,
+.ngx-datatable.material .datatable-body .datatable-body-row .datatable-body-cell-column3,
+.ngx-datatable.material .datatable-header .datatable-row-center .assessment-header1 {
+    padding-left: 20px;
+}
+
+.ngx-datatable .datatable-header .datatable-header-cell .sort-btn {
+    font-size: 2rem;
+}
+
+
 .ngx-datatable.material .datatable-header .datatable-row-center .assessment-header {
     color: white;
     text-transform: uppercase;
