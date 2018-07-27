@@ -325,9 +325,10 @@ export class UserAndGroupsPage {
               });
               toast.present();
             } else {
-              this.oauth.doLogOut();
-              (<any>window).splashscreen.clearPrefs();
-              this.setAsCurrentUser(selectedUser);
+              this.oauth.doLogOut().then(() => {
+                (<any>window).splashscreen.clearPrefs();
+                this.setAsCurrentUser(selectedUser);
+              });
             }
           }
         }
@@ -457,9 +458,6 @@ export class UserAndGroupsPage {
       });
 
     this.profileService.setCurrentUser(selectedUser.uid, (success) => {
-      this.event.publish('refresh:profile');
-      this.event.publish(AppGlobalService.USER_INFO_UPDATED);
-
       if (selectedUser.profileType == ProfileType.STUDENT) {
         initTabs(this.container, GUEST_STUDENT_TABS);
         this.preferences.putString('selected_user_type', ProfileType.STUDENT);
@@ -467,6 +465,9 @@ export class UserAndGroupsPage {
         initTabs(this.container, GUEST_TEACHER_TABS);
         this.preferences.putString('selected_user_type', ProfileType.TEACHER);
       }
+
+      this.event.publish('refresh:profile');
+      this.event.publish(AppGlobalService.USER_INFO_UPDATED);
 
       this.app.getRootNav().setRoot(TabsPage);
 
