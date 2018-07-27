@@ -117,6 +117,13 @@ group-report-list {
             color: red;
         }
     }
+    ion-content.no-scroll .scroll-content {
+        overflow: hidden
+    }
+
+    .fromGroup ngx-datatable datatable-body {
+        height: calc(100vh - 40vh) !important;
+    }
 
 }
 .segment-md .segment-button {

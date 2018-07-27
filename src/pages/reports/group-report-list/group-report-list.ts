@@ -25,10 +25,10 @@ export class GroupReportListPage {
     }];
     fromQuestionColumns = [{
         name: 'Questions',
-        prop: 'qtitle'
+        prop: 'index'
     }, {
         name: 'Marks',
-        prop: 'score'
+        prop: 'max_score'
     }, {
         name: 'Accuracy',
         prop: 'accuracy'
@@ -72,9 +72,10 @@ export class GroupReportListPage {
                 data = JSON.parse(data);
                 let averageScore:any = 0;
                 let averageTime = 0;
-                data.forEach(function(d){
-                    averageTime += d.totalTimespent;
-                    averageScore += d.score;
+                data.forEach(function(report){
+                    averageTime += report.totalTimespent;
+                    averageScore += report.score;
+                    report.totalTimespent = that.convertTotalTime(report.totalTimespent);
                 });
                 averageScore = (averageScore/data.length).toFixed(2);
                 averageTime = averageTime/data.length;
@@ -99,6 +100,7 @@ export class GroupReportListPage {
                 let averageTime = 0;
                 let averageScore:any = 0;
                 data.forEach(function(question) {
+                    question.index = 'Q' + question.qindex
                     averageTime += question.time_spent;
                     averageScore += question.score;
                     question.accuracy = question.marks + '/' + data.length,

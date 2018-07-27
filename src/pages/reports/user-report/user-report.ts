@@ -13,7 +13,7 @@ export class UserReportPage {
   columns = [
     {
       name: 'Question (Marks)',
-      prop: 'qtitle'
+      prop: 'index'
     }, {
       name: 'Time',
       prop: 'timespent'
@@ -56,7 +56,7 @@ export class UserReportPage {
       let data = reportsMap.get(reportSummary.uid);
       let rows = data.reportDetailsList.map(row => {
         return {
-          "qtitle": row.qtitle,
+          "index": 'Q' + row.qindex,
           "result": row.score + '/' + row.maxScore,
           "timespent": that.convertTotalTime(row.timespent),
           "qdesc": row.qdesc,

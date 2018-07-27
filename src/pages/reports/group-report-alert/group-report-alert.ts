@@ -6,8 +6,8 @@ import { ReportService } from 'sunbird';
   selector: 'group-report-alert',
   templateUrl: './group-report-alert.html',
 })
-export class GroupReportAlert{
-  unregisterBackButton : any;
+export class GroupReportAlert {
+  unregisterBackButton: any;
   callback: QRAlertCallBack
   report: string = 'users'
   fromUserColumns = [{
@@ -21,20 +21,19 @@ export class GroupReportAlert{
     prop: 'res'
   }];;
   assessment: {};
-  fromUserAssessment = {'uiRows' : [], showResult: false};
-
+  fromUserAssessment = { 'uiRows': [], showResult: false };
 
   constructor(
-    navParams: NavParams, 
-    private viewCtrl: ViewController, 
-    private navCtrl: NavController, 
+    navParams: NavParams,
+    private viewCtrl: ViewController,
+    private navCtrl: NavController,
     private loading: LoadingController,
-    private platform: Platform, 
+    private platform: Platform,
     private ionicApp: IonicApp,
     private reportService: ReportService) {
-      this.report = 'questions'
-      this.callback = navParams.get('callback');
-      this.assessment = this.callback['row'];
+    this.report = 'questions'
+    this.callback = navParams.get('callback');
+    this.assessment = this.callback['row'];
   }
 
   getAssessmentByUser(event) {
@@ -43,21 +42,23 @@ export class GroupReportAlert{
         spinner: "crescent"
       });
       let params = {
-        uids: this.assessment['uids'], 
+        uids: this.assessment['uids'],
         contentId: this.assessment['content_id'],
         hierarchyData: null,
         qId: this.assessment['qid']
       };
-      this.reportService.getDetailsPerQuestion(params, (data:any) => {
+      let that = this;
+      this.reportService.getDetailsPerQuestion(params, (data: any) => {
         data = JSON.parse(data);
         if (data.length > 0) {
           data.forEach(assessment => {
-            assessment.name = this.assessment['users'].get(assessment.uid)
+            assessment.time = that.convertTotalTime(assessment.time)
+            assessment.name = that.assessment['users'].get(assessment.uid)
             assessment.res = assessment.result + '/' + assessment.maxScore
           });
-          this.fromUserAssessment['uiRows'] = data;
+          that.fromUserAssessment['uiRows'] = data;
         }
-      },(error: any) => {
+      }, (error: any) => {
         let data = JSON.parse(error);
         console.log('Error received', data);
         loader.dismiss();
@@ -66,7 +67,7 @@ export class GroupReportAlert{
   }
 
   cancel() {
-      this.viewCtrl.dismiss();
+    this.viewCtrl.dismiss();
   }
 
   ionViewWillEnter() {
@@ -78,19 +79,23 @@ export class GroupReportAlert{
   ionViewWillLeave() {
     this.unregisterBackButton();
   }
-/**
+  /**
    * It will Dismiss active popup
    */
   dismissPopup() {
-   
     console.log("Fired ionViewWillLeave");
     let activePortal = this.ionicApp._modalPortal.getActive() || this.ionicApp._overlayPortal.getActive();
-
     if (activePortal) {
       activePortal.dismiss();
     } else {
       this.navCtrl.pop();
     }
+  }
+
+  convertTotalTime(time: number): string {
+    var mm = Math.floor(time / 60);
+    var ss = Math.floor(time % 60);
+    return (mm > 9 ? mm : ("0" + mm)) + ":" + (ss > 9 ? ss : ("0" + ss));
   }
 }
 

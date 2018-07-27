@@ -1,0 +1,5 @@
+page-user-report {
+    .fromUser .ngx-datatable.scroll-vertical .datatable-body {
+        height: calc(100vh - 34vh) !important;
+    }
+}
