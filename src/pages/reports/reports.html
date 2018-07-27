@@ -19,9 +19,9 @@
 
 <ion-content>
     <div [ngSwitch]="report">
-        <ion-list *ngSwitchCase="'users'" padding>
+        <ion-list class="item-background radius" *ngSwitchCase="'users'" padding>
             <ion-item class="bgColor" (click)="goToUserReportList(currentUser?.uid)" margin-bottom no-lines>
-                <h2>{{currentUser?.handle}}</h2>
+                <h6><b>{{currentUser?.handle}}</b></h6>
                 <p>{{currentUser?.profileType | titlecase}}</p>
                 <ion-icon name="ios-arrow-forward" item-end></ion-icon>
             </ion-item>
@@ -29,7 +29,7 @@
                 <p ion-text text-uppercase color="dark_gray" class="subTitle">{{ 'OTHER_USERS' | translate}}</p>
             </ion-item>
             <ion-item class="bgColor" (click)="goToUserReportList(user?.uid)" margin-bottom no-lines *ngFor="let user of otherUsers;let i=index">
-                <h2>{{user?.handle}}</h2>
+                <h6><b>{{user?.handle}}</b></h6>
                 <p>{{user?.profileType | titlecase}}</p>
                 <ion-icon name="ios-arrow-forward" item-end></ion-icon>
             </ion-item>
@@ -38,7 +38,7 @@
         <ion-list *ngSwitchCase="'groups'" padding>
             <ion-item class="bgColor" (click)="goToGroupUserReportList(group)" *ngFor="let group of groups;let i=index"
                 margin-bottom no-lines>
-                <h2>{{group?.name}}</h2>
+                <h6><b>{{group?.name}}</b></h6>
                 <p>{{group?.profilesCount}} {{ 'USERS' | translate}}</p>
                 <ion-icon name="ios-arrow-forward" item-end></ion-icon>
             </ion-item>

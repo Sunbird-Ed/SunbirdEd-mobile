@@ -7,8 +7,10 @@ reports-page {
         font-weight: 550;
     }
     .bgColor{
-        background-color: #f7f7f7;
-        border-radius: 3px;
+        background-color: map-get($colors, light_gray) !important;
+        border-radius: 6px;
+        padding-top: 5px !important;
+        padding-left: 18px !important;
     }
     .marginTop{
         margin-top: 15px !important
@@ -24,4 +26,18 @@ reports-page {
         font-size: 1.4rem;
         font-weight: 700;
       }
+      .item-background.item-md {
+        background-color: map-get($colors, light_gray) !important;
+      }
+      .subTitle {
+        font-size: 1.4rem;
+        font-weight: 700;
+      }
+      .radius{
+        border-radius: 6px;
+      }
+    //   .padding-left-2{
+    //     padding-left: 2px !important;
+    //   }
+
 }
