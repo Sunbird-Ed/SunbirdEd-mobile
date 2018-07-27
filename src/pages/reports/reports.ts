@@ -125,15 +125,19 @@ export class ReportsPage {
   goToGroupUserReportList(group) {
     let profileRequest: ProfileRequest = { local: true, groupId: group.gid };
     this.profileService.getAllUserProfile(profileRequest)
-      .then(result => {
-        let users: Array<any> = JSON.parse(result);
-        let uids = users.map(user => {
-          return user.uid;
-        });
-        this.navCtrl.push(ReportListPage, {
-          isFromGroups: true,
-          uids: uids
-        });
+    .then(result => {
+      let map = new Map<string, string>();
+      let users: Array<any> = JSON.parse(result);
+      let uids:Array<string> = [];
+      users.forEach(user => {
+        uids.push(user.uid)
+        map.set(user.uid, user.handle);
       })
+      this.navCtrl.push(ReportListPage, {
+        isFromGroups: true,
+        uids: uids,
+        users: map
+      });
+    })
   }
 }

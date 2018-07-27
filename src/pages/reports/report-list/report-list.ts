@@ -57,9 +57,11 @@ export class ReportListPage {
             });
         } else if (this.isFromGroups) {
             let uids = this.navParams.get('uids');
+            let users = this.navParams.get('users');
             this.navCtrl.push(GroupReportListPage, {
                 report: report,
-                uids: uids
+                uids: uids,
+                users: users
             });
         }
     }

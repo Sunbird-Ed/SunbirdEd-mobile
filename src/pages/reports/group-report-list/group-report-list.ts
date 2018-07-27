@@ -59,6 +59,7 @@ export class GroupReportListPage {
         this.contentName = reportSummary.name;
         let that = this;
         let uids = this.navParams.get('uids');
+        let users = this.navParams.get('users');
         let params = {
             uids: uids, 
             contentId: reportSummary.contentId, 
@@ -77,7 +78,7 @@ export class GroupReportListPage {
                 });
                 averageScore = (averageScore/data.length).toFixed(2);
                 averageTime = averageTime/data.length;
-                let details = {'uiRows': data, totalScore: averageScore, uiTotalTime: that.convertTotalTime(averageTime)};
+                let details = {'uiRows': data, totalScore: averageScore, uiTotalTime: that.convertTotalTime(averageTime), summaryScoreLabel: "Average Score", summaryTimeLabel: "Average Time"};
                 that.zone.run(() => {
                     loader.dismiss();
                     that.fromUserAssessment = details;
@@ -101,12 +102,12 @@ export class GroupReportListPage {
                     averageTime += question.time_spent;
                     averageScore += question.score;
                     question.accuracy = question.marks + '/' + data.length,
+                    question.users = users,
                     question.uids = uids
                 })
                 averageScore = (averageScore/data.length).toFixed(2);
                 averageTime = averageTime/data.length;
-                let details = {'uiRows': data, totalScore: averageScore, uiTotalTime: that.convertTotalTime(averageTime), popupCallback: GroupReportAlert};
-                console.log(details)
+                let details = {'uiRows': data, totalScore: averageScore, uiTotalTime: that.convertTotalTime(averageTime), popupCallback: GroupReportAlert, summaryScoreLabel: "Average Score", summaryTimeLabel: "Average Time"};
                 that.zone.run(() => {
                     loader.dismiss();
                     that.fromQuestionAssessment = details;

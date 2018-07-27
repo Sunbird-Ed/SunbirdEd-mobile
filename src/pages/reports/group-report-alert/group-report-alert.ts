@@ -12,7 +12,7 @@ export class GroupReportAlert{
   report: string = 'users'
   fromUserColumns = [{
     name: 'Name',
-    prop: 'uid'
+    prop: 'name'
   }, {
     name: 'Time',
     prop: 'time'
@@ -52,6 +52,7 @@ export class GroupReportAlert{
         data = JSON.parse(data);
         if (data.length > 0) {
           data.forEach(assessment => {
+            assessment.name = this.assessment['users'].get(assessment.uid)
             assessment.res = assessment.result + '/' + assessment.maxScore
           });
           this.fromUserAssessment['uiRows'] = data;

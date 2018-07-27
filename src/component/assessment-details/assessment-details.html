@@ -2,14 +2,14 @@
   <div class="assessment-container"></div>
   <div class="assessment-card">
     <div class="assessment-score">
-      <p>Score</p>
+      <p>{{assessmentData?.summaryScoreLabel}}</p>
       <div class="assessment-stats">
         <ion-icon name="stats"></ion-icon>
         <span>{{assessmentData?.totalScore}}<span *ngIf="assessmentData?.maxTotalScore">/</span>{{assessmentData?.maxTotalScore}}</span>
       </div>
     </div>
     <div class="assessment-time">
-      <p>Total Time</p>
+      <p>{{assessmentData?.summaryTimeLabel}}</p>
       <div class="assessment-result">
         <ion-icon md="md-time"></ion-icon>
         <span>{{assessmentData?.uiTotalTime}}</span>
