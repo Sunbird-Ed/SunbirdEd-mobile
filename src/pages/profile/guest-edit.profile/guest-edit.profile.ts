@@ -13,7 +13,9 @@ import {
   InteractType,
   InteractSubtype,
   Environment,
-  PageId
+  PageId,
+  ImpressionType,
+  ObjectType
 } from 'sunbird';
 import { FormAndFrameworkUtilService } from '../formandframeworkutil.service';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
@@ -119,6 +121,16 @@ export class GuestEditProfilePage {
         this.selectedLanguage = val;
       }
     });
+
+    
+  }
+
+  ionViewDidLoad(){
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.VIEW, "",
+      PageId.CREATE_USER,
+      Environment.USER, this.isNewUser ? "" : this.profile.uid, this.isNewUser ? "" : ObjectType.USER,
+    );
 
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,

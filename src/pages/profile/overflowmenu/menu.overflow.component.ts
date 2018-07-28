@@ -33,6 +33,7 @@ import { UserAndGroupsPage } from "../../user-and-groups/user-and-groups";
 import { Network } from "@ionic-native/network";
 import { TranslateService } from "@ngx-translate/core";
 import { ReportsPage } from "../../reports/reports";
+import { TelemetryGeneratorService } from "../../../service/telemetry-generator.service";
 
 @Component({
     selector: 'menu-overflow',
@@ -55,7 +56,8 @@ export class OverflowMenuComponent {
         private preferences: SharedPreferences,
         private network: Network,
         private translate: TranslateService,
-        private toastCtrl: ToastController
+        private toastCtrl: ToastController,
+        private telemetryGeneratorService: TelemetryGeneratorService
     ) {
         this.items = this.navParams.get("list");
         this.profile = this.navParams.get("profile") || {};
@@ -73,10 +75,22 @@ export class OverflowMenuComponent {
         }));
         switch (i) {
             case "USERS_AND_GROUPS":
+                this.telemetryGeneratorService.generateInteractTelemetry(
+                    InteractType.TOUCH,
+                    InteractSubtype.USER_GROUP_CLICKED,
+                    Environment.USER,
+                    PageId.PROFILE
+                );
                 this.app.getActiveNav().push(UserAndGroupsPage, { profile: this.profile });
                 break;
 
             case "REPORTS":
+                this.telemetryGeneratorService.generateInteractTelemetry(
+                    InteractType.TOUCH,
+                    InteractSubtype.REPORTS_CLICKED,
+                    Environment.USER,
+                    PageId.PROFILE
+                );
                 this.app.getActiveNav().push(ReportsPage);
                 break;
 

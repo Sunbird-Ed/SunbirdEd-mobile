@@ -18,7 +18,9 @@ import {
   InteractType,
   InteractSubtype,
   Environment,
-  PageId
+  PageId,
+  ImpressionType,
+  ObjectType
 } from 'sunbird';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
 import { TranslateService } from '@ngx-translate/core';
@@ -61,6 +63,15 @@ export class GroupMembersPage {
     private telemetryGeneratorService:TelemetryGeneratorService
   ) {
     this.group = this.navParams.get('group');
+    
+  }
+
+  ionViewDidLoad(){
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.VIEW, "",
+      PageId.CREATE_GROUP_USER_SELECTION,
+      Environment.USER, this.group.gid ? this.group.gid : "", this.group.gid ? ObjectType.GROUP : ""
+    );
   }
 
   ionViewWillEnter() {

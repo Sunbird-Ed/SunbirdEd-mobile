@@ -32,7 +32,8 @@ import {
   InteractSubtype,
   PageId,
   TelemetryObject,
-  ObjectType
+  ObjectType,
+  ImpressionType
 } from 'sunbird';
 import { GuestEditProfilePage } from '../profile/guest-edit.profile/guest-edit.profile';
 import { IonicApp } from 'ionic-angular';
@@ -102,6 +103,16 @@ export class UserAndGroupsPage {
 
     this.isLoggedInUser = this.navParams.get('isLoggedInUser');
     this.profileDetails = this.navParams.get('profile');
+    
+    
+  }
+
+  ionViewDidLoad(){
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.VIEW, "",
+      PageId.USERS,
+      Environment.USER
+    );
   }
 
   ionViewWillEnter() {
@@ -260,7 +271,7 @@ export class UserAndGroupsPage {
    * Navigates to Create group Page
    */
   createGroup() {
-    // Generate create groupa click event
+    // Generate create group click event
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.CREATE_GROUP_CLICKED,
@@ -313,7 +324,12 @@ export class UserAndGroupsPage {
     this.zone.run(() => {
       this.selectedUserIndex = -1;
     })
-    console.log("Event", event);
+    console.log("Event", event._value);
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.VIEW, "",
+      event._value,
+      Environment.USER
+    );
   }
 
   /**
