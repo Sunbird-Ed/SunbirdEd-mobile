@@ -26,7 +26,13 @@ import {
   TabsPage,
   SharedPreferences,
   OAuthService,
-  GroupRequest
+  GroupRequest,
+  InteractType,
+  Environment,
+  InteractSubtype,
+  PageId,
+  TelemetryObject,
+  ObjectType
 } from 'sunbird';
 import { GuestEditProfilePage } from '../profile/guest-edit.profile/guest-edit.profile';
 import { IonicApp } from 'ionic-angular';
@@ -37,7 +43,9 @@ import { initTabs, GUEST_STUDENT_TABS, GUEST_TEACHER_TABS } from '../../app/modu
 import { App } from 'ionic-angular';
 import { group } from '@angular/core/src/animation/dsl';
 import { Network } from '@ionic-native/network';
-
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { Map } from "../../app/telemetryutil";
+import * as _ from 'lodash';
 
 @IonicPage()
 @Component({
@@ -81,7 +89,8 @@ export class UserAndGroupsPage {
     private app: App,
     private oauth: OAuthService,
     private network: Network,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private telemetryGeneratorService: TelemetryGeneratorService
   ) {
 
     /* Check userList length and show message or list accordingly */
@@ -251,6 +260,14 @@ export class UserAndGroupsPage {
    * Navigates to Create group Page
    */
   createGroup() {
+    // Generate create groupa click event
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.CREATE_GROUP_CLICKED,
+      Environment.USER,
+      PageId.GROUPS
+    );
+
     this.navCtrl.push('CreateGroupPage');
   }
 
@@ -273,6 +290,13 @@ export class UserAndGroupsPage {
    * Navigates to Create User Page
    */
   createUser() {
+    // Generate create user click event
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.CREATE_USER_CLICKED,
+      Environment.USER,
+      PageId.USERS
+    );
     this.navCtrl.push(GuestEditProfilePage, {
       isNewUser: true
     });
@@ -296,8 +320,41 @@ export class UserAndGroupsPage {
    * Shows Prompt for switch Account
    */
   switchAccountConfirmBox() {
-    // TODO : Handle the Group switching
+    //Generate Switch User click event
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.SWITCH_USER_CLICKED,
+      Environment.USER,
+      PageId.USERS
+    );
+
     let selectedUser = this.userList[this.selectedUserIndex];
+
+    let valuesMap = new Map();
+    let fromUser = new Map();
+    fromUser["uid"] = this.currentUserId;
+    fromUser["type"] = this.profileDetails.id ? "signedin" : "guest";
+
+    let toUser = new Map();
+    toUser["uid"] = selectedUser.uid;
+    toUser["type"] = "guest";
+
+    valuesMap["from"] = fromUser;
+    valuesMap["to"] = toUser;
+
+    let telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.id = selectedUser.uid;
+    telemetryObject.type = Environment.USER;
+
+    // Generate Switch user initiate interact event
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.SWITCH_USER_INITIATE,
+      Environment.USER,
+      PageId.USERS,
+      telemetryObject,
+      valuesMap
+    );
 
     let alert = this.alertCtrl.create({
       title: this.translateMessage('ARE_YOU_SURE_YOU_WANT_TO_SWITCH_ACCOUNT'),
@@ -317,19 +374,7 @@ export class UserAndGroupsPage {
           text: this.translateMessage('OKAY'),
           cssClass: 'alert-btn-delete',
           handler: () => {
-            if (this.network.type === 'none') {
-              let toast = this.toastCtrl.create({
-                message: this.translateMessage("NEED_INTERNET_TO_CHANGE"),
-                duration: 2000,
-                position: 'bottom'
-              });
-              toast.present();
-            } else {
-              this.oauth.doLogOut().then(() => {
-                (<any>window).splashscreen.clearPrefs();
-                this.setAsCurrentUser(selectedUser);
-              });
-            }
+            this.logOut(selectedUser);
           }
         }
       ]
@@ -340,6 +385,53 @@ export class UserAndGroupsPage {
     } else {
       this.setAsCurrentUser(selectedUser);
     }
+    //Generate Switch user success event 
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.OTHER,
+      InteractSubtype.SWITCH_USER_SUCCESS,
+      Environment.USER,
+      PageId.USERS,
+      telemetryObject,
+      valuesMap
+    );
+  }
+
+  logOut(selectedUser: any) {
+    let telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.id = this.profileDetails.id;
+    telemetryObject.type = Environment.USER;
+
+    //Generate Logout success event
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.LOGOUT_INITIATE,
+      Environment.USER,
+      PageId.USERS,
+      telemetryObject
+    );
+
+    if (this.network.type === 'none') {
+      let toast = this.toastCtrl.create({
+        message: this.translateMessage("NEED_INTERNET_TO_CHANGE"),
+        duration: 2000,
+        position: 'bottom'
+      });
+      toast.present();
+    } else {
+      this.oauth.doLogOut().then(() => {
+        (<any>window).splashscreen.clearPrefs();
+        this.setAsCurrentUser(selectedUser);
+      });
+    }
+    //Generate Logout success event
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.OTHER,
+      InteractSubtype.LOGOUT_SUCCESS,
+      Environment.USER,
+      PageId.USERS,
+      telemetryObject
+    );
+
   }
 
   /** Delete alert box */
@@ -363,17 +455,35 @@ export class UserAndGroupsPage {
           text: this.translateMessage('Yes'),
           cssClass: 'alert-btn-delete',
           handler: () => {
-            self.groupService.deleteGroup(self.groupList[index].gid).then((success) => {
-              console.log(success);
-              self.groupList.splice(index, 1);
-            }).catch((error) => {
-              console.log(error);
-            })
+            this.deleteGroup(index);
           }
         }
       ]
     });
     alert.present();
+  }
+
+  deleteGroup(index: number) {
+
+    let gid = this.groupList[index].gid;
+    let telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.id = gid;
+    telemetryObject.type = ObjectType.GROUP;
+
+    //Generate Delete user event
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.DELETE_GROUP_INITIATE,
+      Environment.USER,
+      PageId.GROUPS,
+      telemetryObject
+    );
+    this.groupService.deleteGroup(gid).then((success) => {
+      console.log(success);
+      this.groupList.splice(index, 1);
+    }).catch((error) => {
+      console.log(error);
+    })
   }
 
   /** Delete alert box */
@@ -397,19 +507,36 @@ export class UserAndGroupsPage {
           text: this.translateMessage('Yes'),
           cssClass: 'alert-btn-delete',
           handler: () => {
-            let request = this.userList[index].uid;
-            this.profileService.deleteUser(request,
-              (result) => {
-                console.log("User Deleted Successfully", result);
-                this.userList.splice(index, 1);
-              }, (error) => {
-                console.error("Error Occurred=", error);
-              });
+            this.deleteUser(index);
           }
         }
       ]
     });
     alert.present();
+  }
+
+  deleteUser(index: number) {
+    let uid = this.userList[index].uid;
+
+    let telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.id = uid;
+    telemetryObject.type = ObjectType.USER;
+
+    //Generate Delete user event
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.DELETE_USER_INITIATE,
+      Environment.USER,
+      PageId.USERS,
+      telemetryObject
+    );
+    this.profileService.deleteUser(uid,
+      (result) => {
+        console.log("User Deleted Successfully", result);
+        this.userList.splice(index, 1);
+      }, (error) => {
+        console.error("Error Occurred=", error);
+      });
   }
 
 

@@ -10,7 +10,11 @@ import { FormAndFrameworkUtilService } from '../../profile/formandframeworkutil.
 import {
   CategoryRequest,
   Group,
-  GroupService
+  GroupService,
+  InteractType,
+  InteractSubtype,
+  Environment,
+  PageId
 } from 'sunbird';
 import {
   FormBuilder,
@@ -20,6 +24,7 @@ import {
 import { TranslateService } from '@ngx-translate/core';
 import { LoadingController } from 'ionic-angular';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
+import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -67,7 +72,8 @@ export class CreateGroupPage {
     private navParams: NavParams,
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController,
-    private groupService: GroupService
+    private groupService: GroupService,
+    private telemetryGeneratorService: TelemetryGeneratorService
   ) {
     this.group = this.navParams.get('groupInfo') || {};
     this.groupEditForm = this.fb.group({
@@ -79,6 +85,13 @@ export class CreateGroupPage {
 
     this.isEditGroup = this.group.hasOwnProperty('gid') ? true : false;
     this.getSyllabusDetails();
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      this.isEditGroup ? InteractSubtype.EDIT_GROUP_INITIATED : InteractSubtype.CREATE_GROUP_INITIATED,
+      Environment.USER,
+      PageId.CREATE_GROUP
+    );
+
   }
 
 
@@ -182,6 +195,12 @@ export class CreateGroupPage {
       this.groupService.updateGroup(this.group)
         .then((val) => {
           loader.dismiss();
+          this.telemetryGeneratorService.generateInteractTelemetry(
+            InteractType.OTHER,
+            InteractSubtype.EDIT_GROUP_SUCCESS,
+            Environment.USER,
+            PageId.CREATE_GROUP
+          );
           this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
         })
         .catch((error) => {

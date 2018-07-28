@@ -13,10 +13,14 @@ import {
   ProfileService,
   ProfileExportRequest,
   FileUtil,
-  GroupRequest
+  GroupRequest,
+  InteractType,
+  InteractSubtype,
+  Environment,
+  PageId
 } from 'sunbird';
 import { SocialSharing } from '@ionic-native/social-sharing';
-
+import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 @Component({
   selector: 'page-share-user-and-groups',
   templateUrl: 'share-user-and-groups.html',
@@ -40,7 +44,8 @@ export class ShareUserAndGroupPage {
     private zone: NgZone,
     private fileUtil: FileUtil,
     private socialShare: SocialSharing,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private telemetryGeneratorService:TelemetryGeneratorService
   ) {
 
   }
@@ -204,6 +209,21 @@ export class ShareUserAndGroupPage {
   }
 
   share() {
+
+    if(this.selectedUserList && this.selectedGroupList){
+      let valueMap =new Map();
+      valueMap["UIDS"]=this.selectedUserList.concat(this.selectedGroupList);
+       //Generate Share initiate
+       this.telemetryGeneratorService.generateInteractTelemetry(
+        InteractType.TOUCH,
+        InteractSubtype.SHARE_USER_GROUP_INITIATE,
+        Environment.USER,
+        PageId.SHARE_USER_GROUP,
+        undefined,
+        valueMap
+      );
+    }
+   
     let profileExportRequest: ProfileExportRequest = {
       userIds: this.selectedUserList,
       groupIds: this.selectedGroupList,
@@ -220,6 +240,19 @@ export class ShareUserAndGroupPage {
     this.profileService.exportProfile(profileExportRequest, (path) => {
       path = JSON.parse(path);
       loader.dismiss();
+      if(this.selectedUserList && this.selectedGroupList){
+        let valueMap =new Map();
+        valueMap["UIDS"]=this.selectedUserList.concat(this.selectedGroupList);
+         //Generate Share initiate
+         this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.OTHER,
+          InteractSubtype.SHARE_USER_GROUP_SUCCESS,
+          Environment.USER,
+          PageId.SHARE_USER_GROUP,
+          undefined,
+          valueMap
+        );
+      }
       this.socialShare.share("", "", "file://" + path.exportedFilePath, "");
     }, (err) => {
       loader.dismiss();

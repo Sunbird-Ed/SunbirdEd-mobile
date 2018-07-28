@@ -9,9 +9,14 @@ import {
   ProfileService,
   Profile,
   SharedPreferences,
-  UserSource
+  UserSource,
+  InteractType,
+  InteractSubtype,
+  Environment,
+  PageId
 } from 'sunbird';
 import { FormAndFrameworkUtilService } from '../formandframeworkutil.service';
+import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -88,7 +93,8 @@ export class GuestEditProfilePage {
     private preference: SharedPreferences,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private platform: Platform,
-    private ionicApp: IonicApp
+    private ionicApp: IonicApp,
+    private telemetryGeneratorService: TelemetryGeneratorService
   ) {
     this.profile = this.navParams.get('profile') || {};
     this.isNewUser = Boolean(this.navParams.get('isNewUser'));
@@ -113,6 +119,13 @@ export class GuestEditProfilePage {
         this.selectedLanguage = val;
       }
     });
+
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      this.isNewUser ? InteractSubtype.CREATE_USER_INITIATED : InteractSubtype.EDIT_USER_INITIATED,
+      Environment.USER,
+      PageId.CREATE_USER
+    );
   }
 
   ionViewWillEnter() {
@@ -355,6 +368,12 @@ export class GuestEditProfilePage {
         this.isCurrentUser && this.publishProfileEvents(formVal);
         loader.dismiss();
         this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.OTHER,
+          InteractSubtype.EDIT_USER_SUCCESS,
+          Environment.USER,
+          PageId.USERS
+        );
         this.navCtrl.pop();
       },
       (err: any) => {
@@ -391,6 +410,12 @@ export class GuestEditProfilePage {
     this.profileService.createProfile(req, (success: any) => {
       loader.dismiss();
       this.getToast(this.translateMessage("User Created successfully")).present();
+      this.telemetryGeneratorService.generateInteractTelemetry(
+        InteractType.OTHER,
+        InteractSubtype.CREATE_USER_SUCCESS,
+        Environment.USER,
+        PageId.CREATE_USER
+      );
       this.navCtrl.pop();
     },
       (error: any) => {

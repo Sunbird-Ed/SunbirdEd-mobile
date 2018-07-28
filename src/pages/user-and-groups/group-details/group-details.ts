@@ -26,7 +26,13 @@ import {
   TabsPage,
   ContainerService,
   SharedPreferences,
-  AddUpdateProfilesRequest
+  AddUpdateProfilesRequest,
+  InteractType,
+  InteractSubtype,
+  Environment,
+  PageId,
+  TelemetryObject,
+  ObjectType
 } from 'sunbird';
 import { Events } from 'ionic-angular';
 import { AppGlobalService } from '../../../service/app-global.service';
@@ -35,7 +41,8 @@ import { App } from 'ionic-angular';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
 import { ToastController } from 'ionic-angular';
 import { Network } from '@ionic-native/network';
-
+import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
+import { Map } from "../../../app/telemetryutil";
 @IonicPage()
 @Component({
   selector: 'page-group-member',
@@ -69,7 +76,8 @@ export class GroupDetailsPage {
     private event: Events,
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController,
-    private network: Network
+    private network: Network,
+    private telemetryGeneratorService: TelemetryGeneratorService
   ) {
     this.group = this.navParams.get('groupInfo');
     this.currentUserId = this.navParams.get('currentUserId');
@@ -126,8 +134,43 @@ export class GroupDetailsPage {
   * Shows Prompt for switch Account
   */
   switchAccountConfirmBox() {
-    // TODO : Handle the Group switching
+    //Generate Switch User click event
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.SWITCH_USER_CLICKED,
+      Environment.USER,
+      PageId.GROUP_DETAIL
+    );
+
     let selectedUser = this.userList[this.selectedUserIndex];
+
+    let valuesMap = new Map();
+    let fromUser = new Map();
+    fromUser["uid"] = this.currentUserId;
+    fromUser["type"] = this.profileDetails.id ? "signed-in" : "guest";
+
+    let toUser = new Map();
+    toUser["uid"] = selectedUser.uid;
+    toUser["type"] = "guest";
+
+    valuesMap["from"] = fromUser;
+    valuesMap["to"] = toUser;
+    valuesMap["gid"] = this.group.gid;
+
+    let telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.id = selectedUser.uid;
+    telemetryObject.type = Environment.USER;
+
+    // Generate Switch user initiate interact event
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.SWITCH_USER_INITIATE,
+      Environment.USER,
+      PageId.GROUP_DETAIL,
+      telemetryObject,
+      valuesMap
+    );
+
 
     let alert = this.alertCtrl.create({
       title: this.translateMessage('ARE_YOU_SURE_YOU_WANT_TO_SWITCH_ACCOUNT'),
@@ -147,21 +190,7 @@ export class GroupDetailsPage {
           text: this.translateMessage('OKAY'),
           cssClass: 'alert-btn-delete',
           handler: () => {
-            if (this.network.type === 'none') {
-              let toast = this.toastCtrl.create({
-                message: this.translateMessage("NEED_INTERNET_TO_CHANGE"),
-                duration: 2000,
-                position: 'bottom'
-              });
-              toast.present();
-            } else {
-              this.oauth.doLogOut().then(() => {
-                (<any>window).splashscreen.clearPrefs();
-                this.setAsCurrentUser(selectedUser);
-              });
-            }
-
-
+            this.logOut(selectedUser);
           }
         }
       ]
@@ -173,6 +202,53 @@ export class GroupDetailsPage {
       this.setAsCurrentUser(selectedUser);
     }
 
+    //Generate Switch user success event 
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.OTHER,
+      InteractSubtype.SWITCH_USER_SUCCESS,
+      Environment.USER,
+      PageId.GROUP_DETAIL,
+      telemetryObject,
+      valuesMap
+    );
+
+  }
+
+
+  logOut(selectedUser: any) {
+    let telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.id = this.profileDetails.id;
+    telemetryObject.type = Environment.USER;
+
+    //Generate Logout initiate event
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.LOGOUT_INITIATE,
+      Environment.USER,
+      PageId.GROUP_DETAIL,
+      telemetryObject
+    );
+    if (this.network.type === 'none') {
+      let toast = this.toastCtrl.create({
+        message: this.translateMessage("NEED_INTERNET_TO_CHANGE"),
+        duration: 2000,
+        position: 'bottom'
+      });
+      toast.present();
+    } else {
+      this.oauth.doLogOut().then(() => {
+        (<any>window).splashscreen.clearPrefs();
+        this.setAsCurrentUser(selectedUser);
+      });
+    }
+    //Generate Logout success event
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.OTHER,
+      InteractSubtype.LOGOUT_SUCCESS,
+      Environment.USER,
+      PageId.GROUP_DETAIL,
+      telemetryObject
+    );
   }
 
   presentPopoverNav(myEvent) {
@@ -267,19 +343,35 @@ export class GroupDetailsPage {
           text: this.translateMessage('Yes'),
           cssClass: 'alert-btn-delete',
           handler: () => {
-            console.log(this.group.gid);
-            this.groupService.deleteGroup(this.group.gid).then((sucess) => {
-              console.log(sucess);
-              this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2))
-
-            }).catch((error) => {
-              console.log(error);
-            })
+            this.deleteGroup();
           }
         }
       ]
     });
     alert.present();
+  }
+
+  deleteGroup(){
+    console.log(this.group.gid);
+    let telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.id = this.group.gid;
+    telemetryObject.type = ObjectType.GROUP;
+
+    //Generate Delete group event
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.DELETE_GROUP_INITIATE,
+      Environment.USER,
+      PageId.GROUP_DETAIL,
+      telemetryObject
+    );
+    this.groupService.deleteGroup(this.group.gid).then((sucess) => {
+      console.log(sucess);
+      this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2))
+
+    }).catch((error) => {
+      console.log(error);
+    })
   }
 
   /* delete confirm box for user */
@@ -303,24 +395,28 @@ export class GroupDetailsPage {
           text: this.translateMessage('Yes'),
           cssClass: 'alert-btn-delete',
           handler: () => {
-            this.userUids.forEach((item) => {
-              if (this.userList[index].uid == item) {
-                let elementIndex = this.userUids.indexOf(item.uid);
-                let userListIndex = this.userList.indexOf(this.userList[index]);
-                this.userUids.splice(elementIndex, 1);
-                this.userList.splice(userListIndex, 1);
-                let req: AddUpdateProfilesRequest = {
-                  groupId: this.group.gid,
-                  uidList: this.userUids
-                }
-                this.groupService.addUpdateProfilesToGroup(req);
-              }
-            })
+            this.deleteUsersinGroup(index);
           }
         }
       ]
     });
     alert.present();
+  }
+
+  deleteUsersinGroup(index : number){
+    this.userUids.forEach((item) => {
+      if (this.userList[index].uid == item) {
+        let elementIndex = this.userUids.indexOf(item.uid);
+        let userListIndex = this.userList.indexOf(this.userList[index]);
+        this.userUids.splice(elementIndex, 1);
+        this.userList.splice(userListIndex, 1);
+        let req: AddUpdateProfilesRequest = {
+          groupId: this.group.gid,
+          uidList: this.userUids
+        }
+        this.groupService.addUpdateProfilesToGroup(req);
+      }
+    })
   }
 
   /**
