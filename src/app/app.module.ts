@@ -18,6 +18,7 @@ import { FileOpener } from '@ionic-native/file-opener';
 import { AppGlobalService } from '../service/app-global.service';
 import { CourseUtilService } from '../service/course-util.service';
 import { UpgradePopover } from '../pages/upgrade/upgrade-popover';
+import { TelemetryGeneratorService } from '../service/telemetry-generator.service';
 
 @NgModule({
   declarations: [
@@ -61,6 +62,7 @@ import { UpgradePopover } from '../pages/upgrade/upgrade-popover';
     FileOpener,
     AppGlobalService,
     CourseUtilService,
+    TelemetryGeneratorService,
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })

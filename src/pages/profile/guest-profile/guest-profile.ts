@@ -138,14 +138,9 @@ export class GuestProfilePage {
   }
 
   editGuestProfile() {
-    if (!this.isNetworkAvailable) {
-      this.showNetworkWarning();
-    }
-    else {
-      this.navCtrl.push(GuestEditProfilePage, {
-        profile: this.profile
-      });
-    }
+    this.navCtrl.push(GuestEditProfilePage, {
+      profile: this.profile
+    });
   }
 
   showNetworkWarning() {

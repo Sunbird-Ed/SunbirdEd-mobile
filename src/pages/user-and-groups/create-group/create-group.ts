@@ -10,7 +10,13 @@ import { FormAndFrameworkUtilService } from '../../profile/formandframeworkutil.
 import {
   CategoryRequest,
   Group,
-  GroupService
+  GroupService,
+  InteractType,
+  InteractSubtype,
+  Environment,
+  PageId,
+  ImpressionType,
+  ObjectType
 } from 'sunbird';
 import {
   FormBuilder,
@@ -20,6 +26,7 @@ import {
 import { TranslateService } from '@ngx-translate/core';
 import { LoadingController } from 'ionic-angular';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
+import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -67,7 +74,8 @@ export class CreateGroupPage {
     private navParams: NavParams,
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController,
-    private groupService: GroupService
+    private groupService: GroupService,
+    private telemetryGeneratorService: TelemetryGeneratorService
   ) {
     this.group = this.navParams.get('groupInfo') || {};
     this.groupEditForm = this.fb.group({
@@ -79,8 +87,25 @@ export class CreateGroupPage {
 
     this.isEditGroup = this.group.hasOwnProperty('gid') ? true : false;
     this.getSyllabusDetails();
+
+    
   }
 
+  ionViewDidLoad(){
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.VIEW, "",
+      PageId.CREATE_GROUP_SYLLABUS_CLASS,
+      Environment.USER, this.isEditGroup ? this.group.gid : "", this.isEditGroup ? ObjectType.GROUP : ""
+    );
+    
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      this.isEditGroup ? InteractSubtype.EDIT_GROUP_INITIATED : InteractSubtype.CREATE_GROUP_INITIATED,
+      Environment.USER,
+      PageId.CREATE_GROUP
+    );
+
+  }
 
 
   ionViewWillEnter() {
@@ -132,6 +157,18 @@ export class CreateGroupPage {
       this.group.name = formValue.name;
       this.group.grade = (!formValue.class.length) ? [] : [formValue.class];
       this.group.syllabus = (!formValue.syllabus.length) ? [] : [formValue.syllabus];
+      this.group.gradeValueMap = {};
+
+      if (this.group.grade && this.group.grade.length > 0) {
+        this.group.grade.forEach(gradeCode => {
+          for (let i = 0; i < this.classList.length; i++) {
+            if (this.classList[i].code == gradeCode) {
+              this.group.gradeValueMap[this.classList[i].code] = this.classList[i].name
+              break;
+            }
+          }
+        });
+      }
 
       this.navCtrl.push(GroupMembersPage, {
         group: this.group
@@ -152,12 +189,30 @@ export class CreateGroupPage {
       loader.present();
 
       this.group.name = formValue.name;
-      this.group.grade = formValue.class;
+      this.group.grade = (!formValue.class.length) ? [] : [formValue.class];
       this.group.syllabus = (!formValue.syllabus.length) ? [] : [formValue.syllabus];
+      this.group.gradeValueMap = {};
+
+      if (this.group.grade && this.group.grade.length > 0) {
+        this.group.grade.forEach(gradeCode => {
+          for (let i = 0; i < this.classList.length; i++) {
+            if (this.classList[i].code == gradeCode) {
+              this.group.gradeValueMap[this.classList[i].code] = this.classList[i].name
+              break;
+            }
+          }
+        });
+      }
 
       this.groupService.updateGroup(this.group)
         .then((val) => {
           loader.dismiss();
+          this.telemetryGeneratorService.generateInteractTelemetry(
+            InteractType.OTHER,
+            InteractSubtype.EDIT_GROUP_SUCCESS,
+            Environment.USER,
+            PageId.CREATE_GROUP
+          );
           this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
         })
         .catch((error) => {

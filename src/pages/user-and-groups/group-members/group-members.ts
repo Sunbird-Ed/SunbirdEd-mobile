@@ -14,10 +14,17 @@ import {
   ProfileRequest,
   Profile,
   ProfileService,
-  AddUpdateProfilesRequest
+  AddUpdateProfilesRequest,
+  InteractType,
+  InteractSubtype,
+  Environment,
+  PageId,
+  ImpressionType,
+  ObjectType
 } from 'sunbird';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
 import { TranslateService } from '@ngx-translate/core';
+import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -52,9 +59,19 @@ export class GroupMembersPage {
     private zone: NgZone,
     private loadingCtrl: LoadingController,
     private toastCtrl: LoadingController,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private telemetryGeneratorService:TelemetryGeneratorService
   ) {
     this.group = this.navParams.get('group');
+    
+  }
+
+  ionViewDidLoad(){
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.VIEW, "",
+      PageId.CREATE_GROUP_USER_SELECTION,
+      Environment.USER, this.group.gid ? this.group.gid : "", this.group.gid ? ObjectType.GROUP : ""
+    );
   }
 
   ionViewWillEnter() {
@@ -124,6 +141,12 @@ export class GroupMembersPage {
     });
     this.groupService.createGroup(this.group)
     .then(res => {
+      this.telemetryGeneratorService.generateInteractTelemetry(
+        InteractType.OTHER,
+        InteractSubtype.CREATE_GROUP_SUCCESS,
+        Environment.USER,
+        PageId.CREATE_GROUP
+      );
       let req: AddUpdateProfilesRequest = {
         groupId: res.result.gid,
         uidList: selectedUids

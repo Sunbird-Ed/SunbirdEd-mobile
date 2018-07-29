@@ -15,7 +15,7 @@ import { FormAndFrameworkUtilService } from '../../pages/profile/formandframewor
 @Injectable()
 export class OnboardingService {
     userId: string;
-    profile: any = {}; //TODO: Any should be changed to Profile
+    profile: Profile = new Profile(); //TODO: Any should be changed to Profile
     onBoardingSlides: any[];
     isOnBoardingCardCompleted: boolean = false;
     currentIndex: number = 0;
@@ -24,7 +24,7 @@ export class OnboardingService {
     categories: Array<any> = [];
     syllabusList: Array<any> = [];
     boardList: Array<string> = [];
-    gradeList: Array<string> = [];
+    gradeList: Array<any> = [];
     subjectList: Array<string> = [];
     mediumList: Array<string> = [];
     frameworkId: string = '';
@@ -399,7 +399,7 @@ export class OnboardingService {
         req.subject = (_.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode : this.profile.subject;
         req.medium = (_.find(this.onBoardingSlides, ['id', 'mediumList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'mediumList']).selectedCode : this.profile.medium;
         req.uid = this.profile.uid;
-        req.handle = this.profile.name;
+        req.handle = this.profile.handle;
         req.createdAt = this.profile.createdAt;
         req.profileType = this.profile.profileType;
         req.source = this.profile.source;
@@ -420,6 +420,21 @@ export class OnboardingService {
         if (index === 3 && !_.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode.length) {
             req.subject = [];
         }
+
+
+        if (req.grade && req.grade.length > 0) {
+            req.grade.forEach(gradeCode => {
+              for (let i = 0; i < this.gradeList.length; i++) {
+                if (this.gradeList[i].value == gradeCode) {
+                  if (!req.gradeValueMap) {
+                    req.gradeValueMap = {};
+                  }
+                  req.gradeValueMap[this.gradeList[i].value] = this.gradeList[i].text
+                  break;
+                }
+              }
+            });
+          }
 
         this.profileService.updateProfile(req,
             (res: any) => {

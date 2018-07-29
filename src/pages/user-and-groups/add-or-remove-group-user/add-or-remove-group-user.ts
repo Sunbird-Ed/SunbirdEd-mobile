@@ -16,10 +16,17 @@ import {
   GroupService,
   ProfileService,
   Group,
-  AddUpdateProfilesRequest
+  AddUpdateProfilesRequest,
+  TelemetryObject,
+  InteractType,
+  InteractSubtype,
+  Environment,
+  PageId,
+  ObjectType
 } from 'sunbird';
 import { LoadingController } from 'ionic-angular';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
+import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 
 
 /* Interface for the Toast Object */
@@ -64,7 +71,8 @@ export class AddOrRemoveGroupUserPage {
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController,
     private translate: TranslateService,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private telemetryGeneratorService:TelemetryGeneratorService
   ) {
     this.addUsers = this.navParams.get('isAddUsers');
     this.groupInfo = this.navParams.get('groupInfo');
@@ -256,30 +264,50 @@ export class AddOrRemoveGroupUserPage {
           text: this.translateMessage('Yes'),
           cssClass: 'alert-btn-delete',
           handler: () => {
-            let loader = this.getLoader();
-            let req: AddUpdateProfilesRequest = {
-              groupId: this.groupInfo.gid,
-              uidList: this.selectedUids
-            }
-
-            this.groupService.addUpdateProfilesToGroup(req)
-              .then((success) => {
-                console.log(success);
-                loader.dismiss();
-                this.getToast(this.translateMessage('GROUP_MEMBER_DELETE_SUCCESS')).present();
-                this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
-              })
-              .catch((error) => {
-                loader.dismiss();
-                this.getToast(this.translateMessage('SOMETHING_WENT_WRONG')).present();
-                console.log("Error : " + error);
-                loader.dismiss();
-              });
+            this.deleteUsersFromGroup();
           }
         }
       ]
     });
     alert.present();
+  }
+
+  deleteUsersFromGroup() {
+    let telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.id = this.groupInfo.gid;
+    telemetryObject.type = ObjectType.GROUP;
+
+    let valuesMap = new Map();
+    valuesMap["UIDS"] = this.selectedUids;
+
+    //Generate Delete users from group event
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.DELETE_USER_INITIATE,
+      Environment.USER,
+      PageId.REMOVE_USERS_FROM_GROUP,
+      telemetryObject,
+      valuesMap
+    );
+    let loader = this.getLoader();
+    let req: AddUpdateProfilesRequest = {
+      groupId: this.groupInfo.gid,
+      uidList: this.selectedUids
+    }
+
+    this.groupService.addUpdateProfilesToGroup(req)
+      .then((success) => {
+        console.log(success);
+        loader.dismiss();
+        this.getToast(this.translateMessage('GROUP_MEMBER_DELETE_SUCCESS')).present();
+        this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
+      })
+      .catch((error) => {
+        loader.dismiss();
+        this.getToast(this.translateMessage('SOMETHING_WENT_WRONG')).present();
+        console.log("Error : " + error);
+        loader.dismiss();
+      });
   }
 
   /**

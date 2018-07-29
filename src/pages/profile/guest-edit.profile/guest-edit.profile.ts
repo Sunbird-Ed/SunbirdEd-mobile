@@ -9,9 +9,16 @@ import {
   ProfileService,
   Profile,
   SharedPreferences,
-  UserSource
+  UserSource,
+  InteractType,
+  InteractSubtype,
+  Environment,
+  PageId,
+  ImpressionType,
+  ObjectType
 } from 'sunbird';
 import { FormAndFrameworkUtilService } from '../formandframeworkutil.service';
+import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -31,7 +38,7 @@ export class GuestEditProfilePage {
   categories: Array<any> = [];
   syllabusList: Array<any> = []
   boardList: Array<any> = [];
-  gradeList: Array<string> = [];
+  gradeList: Array<any> = [];
   subjectList: Array<string> = [];
   mediumList: Array<string> = [];
   userName: string = '';
@@ -42,6 +49,8 @@ export class GuestEditProfilePage {
   isNewUser: boolean = false;
   unregisterBackButton: any;
   isCurrentUser: boolean = true;
+
+  isFormValid: boolean = true;
 
   options: toastOptions = {
     message: '',
@@ -86,7 +95,8 @@ export class GuestEditProfilePage {
     private preference: SharedPreferences,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private platform: Platform,
-    private ionicApp: IonicApp
+    private ionicApp: IonicApp,
+    private telemetryGeneratorService: TelemetryGeneratorService
   ) {
     this.profile = this.navParams.get('profile') || {};
     this.isNewUser = Boolean(this.navParams.get('isNewUser'));
@@ -111,6 +121,23 @@ export class GuestEditProfilePage {
         this.selectedLanguage = val;
       }
     });
+
+    
+  }
+
+  ionViewDidLoad(){
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.VIEW, "",
+      PageId.CREATE_USER,
+      Environment.USER, this.isNewUser ? "" : this.profile.uid, this.isNewUser ? "" : ObjectType.USER,
+    );
+
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      this.isNewUser ? InteractSubtype.CREATE_USER_INITIATED : InteractSubtype.EDIT_USER_INITIATED,
+      Environment.USER,
+      PageId.CREATE_USER
+    );
   }
 
   ionViewWillEnter() {
@@ -155,6 +182,7 @@ export class GuestEditProfilePage {
           if (this.profile && this.profile.syllabus && this.profile.syllabus[0] !== undefined) {
             this.formAndFrameworkUtilService.getFrameworkDetails(this.profile.syllabus[0])
               .then(catagories => {
+                this.isFormValid = true;
                 // loader.dismiss();
                 this.categories = catagories;
 
@@ -178,6 +206,10 @@ export class GuestEditProfilePage {
                   subjects: this.profile.subject || []
                 });
 
+              }).catch(error => {
+                this.isFormValid = false;
+                this.loader.dismiss();
+                this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
               });
           } else {
             this.loader.dismiss();
@@ -223,11 +255,15 @@ export class GuestEditProfilePage {
         .then(catagories => {
           this.categories = catagories;
 
+          this.isFormValid = true;
           // loader.dismiss();
           let request: CategoryRequest = {
             currentCategory: this.categories[0].code,
           }
           this.getCategoryData(request, currentField);
+        }).catch(error => {
+          this.isFormValid = false;
+          this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
         });
 
     } else {
@@ -289,6 +325,11 @@ export class GuestEditProfilePage {
 
   onSubmit(): void {
 
+    if (!this.isFormValid) {
+      this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
+      return;
+    }
+
     let loader = this.getLoader();
     loader.present();
     let formVal = this.guestEditForm.value;
@@ -319,12 +360,32 @@ export class GuestEditProfilePage {
     req.createdAt = this.profile.createdAt;
     req.syllabus = (!formVal.syllabus.length) ? [] : [formVal.syllabus];
 
+    if (formVal.grades && formVal.grades.length > 0) {
+      formVal.grades.forEach(gradeCode => {
+        for (let i = 0; i < this.gradeList.length; i++) {
+          if (this.gradeList[i].code == gradeCode) {
+            if (!req.gradeValueMap) {
+              req.gradeValueMap = {};
+            }
+            req.gradeValueMap[this.gradeList[i].code] = this.gradeList[i].name
+            break;
+          }
+        }
+      });
+    }
+
     this.profileService.updateProfile(req,
       (res: any) => {
         console.log("Update Response", res);
         this.isCurrentUser && this.publishProfileEvents(formVal);
         loader.dismiss();
         this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.OTHER,
+          InteractSubtype.EDIT_USER_SUCCESS,
+          Environment.USER,
+          PageId.USERS
+        );
         this.navCtrl.pop();
       },
       (err: any) => {
@@ -361,6 +422,12 @@ export class GuestEditProfilePage {
     this.profileService.createProfile(req, (success: any) => {
       loader.dismiss();
       this.getToast(this.translateMessage("User Created successfully")).present();
+      this.telemetryGeneratorService.generateInteractTelemetry(
+        InteractType.OTHER,
+        InteractSubtype.CREATE_USER_SUCCESS,
+        Environment.USER,
+        PageId.CREATE_USER
+      );
       this.navCtrl.pop();
     },
       (error: any) => {
