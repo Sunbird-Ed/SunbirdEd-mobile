@@ -103,7 +103,7 @@ export class GroupReportListPage {
                     question.index = 'Q' + question.qindex
                     averageTime += question.time_spent;
                     averageScore += question.score;
-                    question.accuracy = question.marks + '/' + data.length,
+                    question.accuracy = question.sum_max_score * uids.length + '/' + question.max_score * uids.length,
                     question.users = users,
                     question.uids = uids
                 })
