@@ -334,14 +334,8 @@ export class MyApp {
           let dialCode = results[results.length - 1];
           this.nav.push(SearchPage, { dialCode: dialCode });
         } else if (response.type === "contentDetails") {
-          let cdata = JSON.parse(response.cData);
+          let hierarchyInfo = JSON.parse(response.hierarchyInfo);
 
-          let hierarchyInfo = [
-            {
-              contentType: cdata.type,
-              identifier: cdata.id
-            }
-          ]
           let content = {
             identifier: response.id,
             hierarchyInfo: hierarchyInfo
