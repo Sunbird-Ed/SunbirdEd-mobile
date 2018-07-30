@@ -56,12 +56,13 @@ export class UserReportPage {
       let data = reportsMap.get(reportSummary.uid);
       let rows = data.reportDetailsList.map(row => {
         return {
-          "index": 'Q' + row.qindex,
+          "index": 'Q' + (('00' + row.qindex).slice(-3)),
           "result": row.score + '/' + row.maxScore,
           "timespent": that.convertTotalTime(row.timespent),
           "qdesc": row.qdesc,
           "score": row.score,
-          "maxScore": row.maxScore
+          "maxScore": row.maxScore,
+          "qtitle": row.qtitle
         }
       })
       data['uiRows'] = rows;
@@ -72,6 +73,7 @@ export class UserReportPage {
         loader.dismiss();
         data['showResult'] = true;
         that.assessmentData = data;
+        that.assessmentData['showPopup'] = true;
         that.assessmentData['popupCallback'] = ReportAlert;
       });
     })

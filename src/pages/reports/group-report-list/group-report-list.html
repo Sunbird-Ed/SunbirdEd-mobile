@@ -20,7 +20,7 @@
 <ion-content class="no-scroll">
     <div [ngSwitch]="reportType">
         <ion-list *ngSwitchCase="'users'" class="fromGroup">
-            <assessment-details [assessmentData]="fromUserAssessment" [columns]="fromUserColumns"></assessment-details>
+            <assessment-details [assessmentData]="fromUserAssessment" [columns]="fromUserColumns" (showQuestionFromUser)="showQuestionFromUser($event)"></assessment-details>
         </ion-list>
         <ion-list class="margin0 fromGroup" *ngSwitchCase="'questions'">
             <assessment-details [assessmentData]="fromQuestionAssessment" [columns]="fromQuestionColumns"></assessment-details>

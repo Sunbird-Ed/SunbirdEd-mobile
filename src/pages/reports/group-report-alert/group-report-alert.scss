@@ -111,6 +111,9 @@ group-report-alert {
     .G:nth-child(odd) {
         background: #FFF;
     }
+    .assessmentDetails h3 {
+        white-space: normal;
+    }
 }
 .group-report-alert .popover-content {
     margin: 0;

@@ -14,7 +14,7 @@
       <ion-item *ngFor="let report of listOfReports;let i=index" class="bgColor" (click)="goToGroupReportsList(report)">
         <p *ngIf="report.lastUsedTime">{{formatTime(report.lastUsedTime)}}</p>
         <h2>{{report.name}}</h2>
-        <p>{{'Scored' | translate}}:{{report.correctAnswers}}/{{report.noOfQuestions}}</p>
+        <p *ngIf="isFromUsers">{{'Scored' | translate}}:{{report.correctAnswers}}/{{report.noOfQuestions}}</p>
         <ion-icon name="ios-arrow-forward" item-end></ion-icon>
       </ion-item>
     </div>
@@ -22,7 +22,7 @@
       <div class="img-container">
         <img class="image_style" src="assets/imgs/ic_businessman.png">
       </div>
-      <br />
+      <br/>
       <ion-row margin-top>
         <ion-col col-md-6 offset-md-3 col-lg-6 offset-lg-3>
           <div class="image-text">
