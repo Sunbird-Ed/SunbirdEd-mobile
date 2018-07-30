@@ -173,9 +173,9 @@ export class GroupDetailsPage {
 
 
     let alert = this.alertCtrl.create({
-      title: this.translateMessage('ARE_YOU_SURE_YOU_WANT_TO_SWITCH_ACCOUNT'),
+      title: this.translateMessage('SWITCH_ACCOUNT_CONFIRMATION'),
       mode: 'wp',
-      message: this.translateMessage('YOU_WILL_BE_SIGNED_OUT_FROM_YOUR_CURRENTLY_LOGGED_IN_ACCOUNT'),
+      message: this.translateMessage('SIGNED_OUT_ACCOUNT_MESSAGE'),
       cssClass: 'confirm-alert',
       buttons: [
         {
