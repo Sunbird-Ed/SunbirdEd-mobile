@@ -2,19 +2,14 @@
 
 @font-face {
   font-family: "data-table";
-  src:url("../assets/fonts/datatable/data-table.eot");
-  src:url("../assets/fonts/datatable/data-table.eot?#iefix") format("embedded-opentype"),
-    url("../assets/fonts/datatable/data-table.woff") format("woff"),
-    url("../assets/fonts/datatable/data-table.ttf") format("truetype"),
-    url("../assets/fonts/datatable/data-table.svg#data-table") format("svg");
+  src:url("../assets/fonts/datatable/data-table.woff") format("woff");
   font-weight: normal;
   font-style: normal;
-
 }
 
+.sort-btn:before,
 [data-icon]:before {
   font-family: "data-table" !important;
-  content: attr(data-icon);
   font-style: normal !important;
   font-weight: normal !important;
   font-variant: normal !important;
@@ -23,6 +18,14 @@
   line-height: 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.sort-btn:before {
+  content: "\65";
+}
+
+[data-icon]:before {
+  content: attr(data-icon);
 }
 
 [class^="datatable-icon-"]:before,

@@ -22,6 +22,10 @@
     padding-left: 20px;
 }
 
+#datatable.ngx-datatable.material .datatable-header .datatable-header-cell .datatable-header-cell-template-wrap .datatable-header-cell-label {
+    padding: 1.5em 0;
+}
+
 .ngx-datatable .datatable-header .datatable-header-cell .sort-btn {
     font-size: 2rem;
 }
@@ -41,10 +45,6 @@
 .datatable-row-center,
 .datatable-row-center {
     margin-left: 10px;
-}
-
-.ngx-datatable.scroll-vertical .datatable-body {
-    height: calc(100vh - 36vh);
 }
 
 .assessment-card {

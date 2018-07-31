@@ -25,10 +25,10 @@ export class GroupReportListPage {
     }];
     fromQuestionColumns = [{
         name: 'Questions',
-        prop: 'qtitle'
+        prop: 'index'
     }, {
         name: 'Marks',
-        prop: 'score'
+        prop: 'max_score'
     }, {
         name: 'Accuracy',
         prop: 'accuracy'
@@ -49,9 +49,9 @@ export class GroupReportListPage {
     }
 
     ionViewWillEnter() {
-        this.fetchAssessment(this.reportType)
+        this.fetchAssessment(this.reportType, false)
     }
-    fetchAssessment(event: string) {
+    fetchAssessment(event: string, fromUserList: boolean) {
         let loader = this.loading.create({
             spinner: "crescent"
         });
@@ -66,15 +66,21 @@ export class GroupReportListPage {
             hierarchyData: null,
             qId: ''
         };
+        if (fromUserList) {
+            params.uids = [reportSummary.uid]
+        }
         if (event == "users" && !this.fromUserAssessment) {
+            this.reportType = event;
             loader.present();
             this.reportService.getReportsByUser(params, (data:any) => {
                 data = JSON.parse(data);
                 let averageScore:any = 0;
                 let averageTime = 0;
-                data.forEach(function(d){
-                    averageTime += d.totalTimespent;
-                    averageScore += d.score;
+                data.forEach(function(report){
+                    averageTime += report.totalTimespent;
+                    averageScore += report.score;
+                    report.totalTimespent = that.convertTotalTime(report.totalTimespent);
+                    report.name = reportSummary.name;
                 });
                 averageScore = (averageScore/data.length).toFixed(2);
                 averageTime = averageTime/data.length;
@@ -82,7 +88,6 @@ export class GroupReportListPage {
                 that.zone.run(() => {
                     loader.dismiss();
                     that.fromUserAssessment = details;
-                    // that.fromUserAssessment['popupCallback'] = GroupReportAlert;
                 })
                 
             },
@@ -92,22 +97,24 @@ export class GroupReportListPage {
                 loader.dismiss();
             })
         } else
-        if (event == "questions" && !this.fromQuestionAssessment) {
+        if (event == "questions") {
+            this.reportType = event;
             loader.present();
             this.reportService.getReportsByQuestion(params, (data:any) => {
                 data = JSON.parse(data);
                 let averageTime = 0;
                 let averageScore:any = 0;
                 data.forEach(function(question) {
+                    question.index = 'Q' + (('00' + question.qindex).slice(-3));
                     averageTime += question.time_spent;
                     averageScore += question.score;
-                    question.accuracy = question.marks + '/' + data.length,
+                    question.accuracy = question.sum_max_score + '/' + question.max_score * uids.length,
                     question.users = users,
                     question.uids = uids
                 })
                 averageScore = (averageScore/data.length).toFixed(2);
                 averageTime = averageTime/data.length;
-                let details = {'uiRows': data, totalScore: averageScore, uiTotalTime: that.convertTotalTime(averageTime), popupCallback: GroupReportAlert, summaryScoreLabel: "Average Score", summaryTimeLabel: "Average Time"};
+                let details = {'uiRows': data, totalScore: averageScore, uiTotalTime: that.convertTotalTime(averageTime),showPopup: true, popupCallback: GroupReportAlert, summaryScoreLabel: "Average Score", summaryTimeLabel: "Average Time"};
                 that.zone.run(() => {
                     loader.dismiss();
                     that.fromQuestionAssessment = details;
@@ -124,6 +131,9 @@ export class GroupReportListPage {
         var mm = Math.floor(time / 60);
         var ss = Math.floor(time % 60);
         return (mm > 9 ? mm : ("0" + mm)) + ":" + (ss > 9 ? ss : ("0" + ss));
+    }
+    showQuestionFromUser() {
+        this.fetchAssessment('questions', true)
     }
 
 }
