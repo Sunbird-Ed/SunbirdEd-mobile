@@ -16,7 +16,7 @@
   </ion-row>
 
   <ion-item *ngFor="let group of groupList; let i = index;" class="item-background" margin-bottom no-lines>
-    <ion-label>
+    <ion-label (click)="toggleGroupSelected(i)">
       <h6 class="padding-top">
         <b>{{group?.name}}</b>
       </h6>
@@ -32,7 +32,7 @@
     <b>{{'USERS' | translate}}</b> {{ '(' + userList?.length + ')'}}
   </p>
   <ion-item *ngFor="let user of userList; let i = index;" class="item-background" margin-bottom no-lines>
-    <ion-label>
+    <ion-label (click)="toggleUserSelected(i)">
       <h6 class="padding-top">
         <b>{{user?.handle}}</b>
       </h6>

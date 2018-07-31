@@ -8,9 +8,10 @@ page-user-and-groups {
         margin-left: -97px;
         margin-top: -144x;
       }
+      
       .image-text {
         text-align: center;
-        margin-top: 38vh;
+        margin-top: 33vh;
       }
       .secondSection {
         margin-top: 13vh;
@@ -34,6 +35,7 @@ page-user-and-groups {
         height: 102px;
         border-radius: 50%;
       }
+      
       .item-background.item-md {
         background-color: map-get($colors, light_gray) !important;
       }
@@ -109,4 +111,10 @@ page-user-and-groups {
 .segment-md .segment-button.segment-activated {
   border-color: map-get($colors, primary) !important;
   color: map-get($colors, primary) !important;
+}
+.description {
+  color: map-get($colors, dark_gray);
+  font-size: 1.5rem;
+  margin-left: 10%;
+  margin-right: 10%;
 }

@@ -36,7 +36,7 @@
         </ion-list>
 
         <ion-list *ngSwitchCase="'groups'" padding>
-            <ion-item *ngIf="!groups?.length">
+            <div *ngIf="!groups?.length">
                 <div class="img-container">
                     <img class="image_style" src="assets/imgs/ic_businessman.png">
                 </div>
@@ -45,14 +45,14 @@
                         <div class="image-text">
                             <h6>
                                 <b>{{'NO_GROUPS_CREATED_YET' | translate}}</b>
-                            </h6>
-                            <p>{{'GROUPS_ORGANIZE' | translate}}.
-                                <br> {{'GROUPS_MONITOR_BETTER_MESSAGE' | translate}}
-                                <br>{{'PROGRESS_OVERALL' | translate}}</p>
+                              </h6>
+                                <div text-center class="description">
+                                  {{ 'NO_GROUP_MESSAGE' | translate }}
+                                </div>
                         </div>
                     </ion-col>
                 </ion-row>
-            </ion-item>
+            </div>
             <div *ngIf="groups?.length">
             <ion-item  class="bgColor" (click)="goToGroupUserReportList(group)" *ngFor="let group of groups;let i=index" margin-bottom
                 no-lines>
