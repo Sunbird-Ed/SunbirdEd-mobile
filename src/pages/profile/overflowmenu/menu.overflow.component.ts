@@ -91,7 +91,7 @@ export class OverflowMenuComponent {
                     Environment.USER,
                     PageId.PROFILE
                 );
-                this.app.getActiveNav().push(ReportsPage);
+                this.app.getActiveNav().push(ReportsPage, { profile: this.profile });
                 break;
 
             case "SETTINGS": {
