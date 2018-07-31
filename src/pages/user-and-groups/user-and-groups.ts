@@ -13,7 +13,6 @@ import {
   PopoverController,
   ToastController
 } from 'ionic-angular';
-import { CreateGroupPage } from './create-group/create-group';
 import { PopoverPage } from './popover/popover';
 import {
   ProfileService,
@@ -40,7 +39,7 @@ import { IonicApp } from 'ionic-angular';
 import { ShareUserAndGroupPage } from './share-user-and-groups/share-user-and-groups';
 import { Events } from 'ionic-angular';
 import { AppGlobalService } from '../../service/app-global.service';
-import { initTabs, GUEST_STUDENT_TABS, GUEST_TEACHER_TABS } from '../../app/module.service';
+import { initTabs, GUEST_STUDENT_SWITCH_TABS, GUEST_TEACHER_SWITCH_TABS } from '../../app/module.service';
 import { App } from 'ionic-angular';
 import { group } from '@angular/core/src/animation/dsl';
 import { Network } from '@ionic-native/network';
@@ -602,10 +601,10 @@ export class UserAndGroupsPage {
 
     this.profileService.setCurrentUser(selectedUser.uid, (success) => {
       if (selectedUser.profileType == ProfileType.STUDENT) {
-        initTabs(this.container, GUEST_STUDENT_TABS);
+        initTabs(this.container, GUEST_STUDENT_SWITCH_TABS);
         this.preferences.putString('selected_user_type', ProfileType.STUDENT);
       } else {
-        initTabs(this.container, GUEST_TEACHER_TABS);
+        initTabs(this.container, GUEST_TEACHER_SWITCH_TABS);
         this.preferences.putString('selected_user_type', ProfileType.TEACHER);
       }
 
@@ -613,6 +612,13 @@ export class UserAndGroupsPage {
       this.event.publish(AppGlobalService.USER_INFO_UPDATED);
 
       this.app.getRootNav().setRoot(TabsPage);
+
+      let toast = this.toastCtrl.create({
+        message: this.translateMessage("SWITCHING_TO", selectedUser.handle),
+        duration: 2000,
+        position: 'bottom'
+      });
+      toast.present();
 
     }, (error) => {
       console.log("Error " + error);
