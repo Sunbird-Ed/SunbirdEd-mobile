@@ -58,7 +58,7 @@
                   <h6 class="line-height-2" [ngStyle]="{'color': currentUserId === user?.uid ? 'dodgerblue' : 'black'}">
                     <b>{{user?.handle}}</b>
                   </h6>
-                  <p>{{user?.profileType | titlecase}}
+                  <p>{{ user?.profileType | titlecase }}
                     <span *ngIf="user?.grade?.length">•</span> {{ getGradeNameFromCode(user) }}</p>
                 </ion-item>
               </ion-col>
@@ -81,12 +81,12 @@
         <ion-row padding-top>
           <ion-col col-md-6 offset-md-3 col-lg-6 offset-lg-3>
             <div class="image-text">
-              <h6>
+               <h6>
                 <b>{{'NO_GROUPS_CREATED_YET' | translate}}</b>
               </h6>
-              <p>{{'GROUPS_ORGANIZE' | translate}}.
-                <br> {{'GROUPS_MONITOR_BETTER_MESSAGE' | translate}}
-                <br>{{'PROGRESS_OVERALL' | translate}}</p>
+                <div text-center class="description">
+                  {{ 'NO_GROUP_MESSAGE' | translate }}
+                </div>
             </div>
           </ion-col>
         </ion-row>
