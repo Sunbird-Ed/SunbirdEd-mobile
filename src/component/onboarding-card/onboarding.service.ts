@@ -3,7 +3,7 @@ import {
     NgZone
 } from '@angular/core';
 import * as _ from 'lodash';
-import { Events } from 'ionic-angular';
+import { Events, ToastOptions } from 'ionic-angular';
 import {
     CategoryRequest,
     ProfileService,
@@ -11,6 +11,8 @@ import {
     SharedPreferences,
 } from 'sunbird';
 import { FormAndFrameworkUtilService } from '../../pages/profile/formandframeworkutil.service';
+import { ToastController } from 'ionic-angular';
+import { TranslateService } from '@ngx-translate/core';
 
 @Injectable()
 export class OnboardingService {
@@ -29,12 +31,20 @@ export class OnboardingService {
     mediumList: Array<string> = [];
     frameworkId: string = '';
 
+    private options: ToastOptions = {
+        message: '',
+        duration: 3000,
+        position: 'bottom'
+    };
+
     constructor(
         private profileService: ProfileService,
         public events: Events,
         public zone: NgZone,
         private preference: SharedPreferences,
-        private formAndFrameworkUtilService: FormAndFrameworkUtilService
+        private formAndFrameworkUtilService: FormAndFrameworkUtilService,
+        private toastCtrl: ToastController,
+        private translate: TranslateService
     ) {
 
         //fetch language code
@@ -153,6 +163,8 @@ export class OnboardingService {
                         if (_.includes(this.profile.syllabus, element.value)) {
                             element.checked = true;
                             displayValues.push(element.text);
+                        } else {
+                            element.checked = false;
                         }
                     });
                     this.onBoardingSlides[0].selectedOptions = this.arrayToString(displayValues);
@@ -424,17 +436,17 @@ export class OnboardingService {
 
         if (req.grade && req.grade.length > 0) {
             req.grade.forEach(gradeCode => {
-              for (let i = 0; i < this.gradeList.length; i++) {
-                if (this.gradeList[i].value == gradeCode) {
-                  if (!req.gradeValueMap) {
-                    req.gradeValueMap = {};
-                  }
-                  req.gradeValueMap[this.gradeList[i].value] = this.gradeList[i].text
-                  break;
+                for (let i = 0; i < this.gradeList.length; i++) {
+                    if (this.gradeList[i].value == gradeCode) {
+                        if (!req.gradeValueMap) {
+                            req.gradeValueMap = {};
+                        }
+                        req.gradeValueMap[this.gradeList[i].value] = this.gradeList[i].text
+                        break;
+                    }
                 }
-              }
             });
-          }
+        }
 
         this.profileService.updateProfile(req,
             (res: any) => {
@@ -470,15 +482,50 @@ export class OnboardingService {
   * @param {number} index         Slide index
   */
     selectedCheckboxValue(selectedSlide: any, index: number) {
-        this.onBoardingSlides[index].selectedCode = [];
-        this.onBoardingSlides[index].selectedOptions = '';
+        if (index == 0) {
+            // To Support offline support for Onboarding Card
+            for (let i = 0; i < selectedSlide.options.length; i++) {
+                if (selectedSlide.options[i].checked) {
+                    this.formAndFrameworkUtilService.getFrameworkDetails(selectedSlide.options[i].value).then((val) => {
+                        this.onBoardingSlides[index].selectedCode = [];
+                        this.onBoardingSlides[index].selectedOptions = '';
 
-        for (let i = index; i < 5; i++) {
-            this.onBoardingSlides[i].selectedCode = [];
-            this.onBoardingSlides[i].selectedOptions = '';
+                        for (let i = index; i < 5; i++) {
+                            this.onBoardingSlides[i].selectedCode = [];
+                            this.onBoardingSlides[i].selectedOptions = '';
+                        }
+
+                        this.setAndSaveDetails(selectedSlide, index);
+                    }).catch(error => {
+                        if (this.profile.syllabus && this.profile.syllabus[0] !== '') {
+                            let displayValues = [];
+        
+                            this.syllabusList.forEach(element => {
+                                if (_.includes(this.profile.syllabus, element.value)) {
+                                    element.checked = true;
+                                    displayValues.push(element.text);
+                                }
+                            });
+                            this.onBoardingSlides[0].selectedOptions = this.arrayToString(displayValues);
+                        }
+                        this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
+                    });
+                }
+            }
+        } else {
+            this.onBoardingSlides[index].selectedCode = [];
+            this.onBoardingSlides[index].selectedOptions = '';
+
+            for (let i = index; i < 5; i++) {
+                this.onBoardingSlides[i].selectedCode = [];
+                this.onBoardingSlides[i].selectedOptions = '';
+            }
+
+            this.setAndSaveDetails(selectedSlide, index);
         }
 
-        this.setAndSaveDetails(selectedSlide, index);
+
+
     }
 
 
@@ -529,5 +576,29 @@ export class OnboardingService {
             this.profile.subject = [];
             this.checkPrevValue(index + 1, this.getListName(index + 1), this.profile.grade, false);
         }
+    }
+
+    /**
+   * Used to Translate message to current Language
+   * @param {string} messageConst - Message Constant to be translated
+   * @returns {string} translatedMsg - Translated Message
+   */
+    translateMessage(messageConst: string): string {
+        let translatedMsg = '';
+        this.translate.get(messageConst).subscribe(
+            (value: any) => {
+                translatedMsg = value;
+            }
+        );
+        return translatedMsg;
+    }
+
+    /** It will returns Toast Object
+     * @param {message} string - Message for the Toast to show
+     * @returns {object} - toast Object
+     */
+    getToast(message: string = ''): any {
+        this.options.message = message;
+        if (message.length) return this.toastCtrl.create(this.options);
     }
 }

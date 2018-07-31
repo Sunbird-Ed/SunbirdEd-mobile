@@ -463,7 +463,7 @@ export class GuestEditProfilePage {
 
   getLoader(): any {
     return this.loadingCtrl.create({
-      duration: 30000,
+      duration: 3000,
       spinner: "crescent"
     });
   }
