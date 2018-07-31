@@ -488,5 +488,5 @@
   "USER": "User",
   "NO_USERS_IN_THIS_GROUP": "No Users in this group",
   "OTHER_USERS": "Other Users",
-  "SWITCHING_TO": "Switched to'{{%s}}'"
+  "SWITCHING_TO": "Switched to '{{%s}}'"
 }

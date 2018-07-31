@@ -32,7 +32,8 @@ import {
   PageId,
   TelemetryObject,
   ObjectType,
-  ImpressionType
+  ImpressionType,
+  AuthService
 } from 'sunbird';
 import { GuestEditProfilePage } from '../profile/guest-edit.profile/guest-edit.profile';
 import { IonicApp } from 'ionic-angular';
@@ -90,7 +91,8 @@ export class UserAndGroupsPage {
     private oauth: OAuthService,
     private network: Network,
     private toastCtrl: ToastController,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private authService: AuthService
   ) {
 
     /* Check userList length and show message or list accordingly */
@@ -102,11 +104,11 @@ export class UserAndGroupsPage {
 
     this.isLoggedInUser = this.navParams.get('isLoggedInUser');
     this.profileDetails = this.navParams.get('profile');
-    
-    
+
+
   }
 
-  ionViewDidLoad(){
+  ionViewDidLoad() {
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW, "",
       PageId.USERS,
@@ -426,12 +428,9 @@ export class UserAndGroupsPage {
     );
 
     if (this.network.type === 'none') {
-      let toast = this.toastCtrl.create({
-        message: this.translateMessage("NEED_INTERNET_TO_CHANGE"),
-        duration: 2000,
-        position: 'bottom'
-      });
-      toast.present();
+      this.authService.endSession();
+      (<any>window).splashscreen.clearPrefs();
+      this.setAsCurrentUser(selectedUser);
     } else {
       this.oauth.doLogOut().then(() => {
         (<any>window).splashscreen.clearPrefs();
