@@ -4,7 +4,8 @@ import {
 } from '@angular/core';
 import {
   NavController,
-  LoadingController
+  LoadingController,
+  NavParams
 } from 'ionic-angular';
 import { ReportListPage } from './report-list/report-list';
 import {
@@ -25,15 +26,17 @@ export class ReportsPage {
   currentUser: {};
   groups;
   currentGroups: {};
+  private profileDetails: any;
 
   constructor(private navCtrl: NavController,
     private reportService: ReportService,
     private profileService: ProfileService,
     private groupService: GroupService,
     private ngZone: NgZone,
-    private loading: LoadingController
+    private loading: LoadingController,
+    private navParams: NavParams,
   ) {
-
+    this.profileDetails = this.navParams.get('profile');
   }
 
   async populateUsers() {
@@ -49,6 +52,11 @@ export class ReportsPage {
 
           that.profileService.getCurrentUser(data => {
             let currentUser = JSON.parse(data);
+            if(this.profileDetails){
+              if(this.profileDetails.id ===currentUser.uid){
+                currentUser.handle=this.profileDetails.firstName;
+              }
+            }
             users = that.filterOutCurrentUser(users, currentUser);
             resolve([currentUser, users]);
           }, error => {

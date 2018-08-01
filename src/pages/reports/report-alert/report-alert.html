@@ -13,9 +13,9 @@
             <h3>{{assessmentDetails?.qtitle}}</h3>
         </ion-item>
         <ion-item class="assessmentDetails">
-            <p>{{ 'DESCRIPTIONS' | translate}}</p>
+            <p>{{ 'DESCRIPTION' | translate}}</p>
             <h3 *ngIf="assessmentDetails?.qdesc">{{assessmentDetails?.qdesc}}</h3>
-            <h3 *ngIf="!assessmentDetails?.qdesc">{{'Description not available'}}</h3>
+            <h3 *ngIf="!assessmentDetails?.qdesc">{{'NO_DESCRIPTION' | translate}}</h3>
         </ion-item>
     </ion-list>
 

@@ -2,9 +2,10 @@ import { Injectable } from "@angular/core";
 import { TranslateService } from "@ngx-translate/core";
 import { PopoverController, Popover, ToastController, Platform } from "ionic-angular";
 import { QRScannerAlert, QRAlertCallBack } from "./qrscanner_alert";
-import { Start, Environment, Mode, TelemetryService, InteractType, InteractSubtype, PageId, End, PermissionService, ImpressionType, ImpressionSubtype } from "sunbird";
+import { Start, Environment, Mode, TelemetryService, InteractType, InteractSubtype, PageId, End, PermissionService, ImpressionType, ImpressionSubtype, TelemetryObject } from "sunbird";
 import { generateInteractTelemetry, Map, generateStartTelemetry, generateEndTelemetry, generateImpressionTelemetry } from "../../app/telemetryutil";
 import { Network } from "@ionic-native/network";
+import { TelemetryGeneratorService } from "../../service/telemetry-generator.service";
 
 @Injectable()
 export class SunbirdQRScanner {
@@ -25,7 +26,8 @@ export class SunbirdQRScanner {
     private network: Network,
     private permission: PermissionService,
     private toastCtrl: ToastController,
-    private platform: Platform) {
+    private platform: Platform,
+    private telemetryGeneratorService: TelemetryGeneratorService) {
     const that = this
     this.translate.get(this.QR_SCANNER_TEXT).subscribe((data) => {
       that.mQRScannerText = data
@@ -147,28 +149,28 @@ export class SunbirdQRScanner {
 
       if (results[results.length - 2] == "dial") {
         let dialCode = results[results.length - 1];
-        this.generateQRScanSuccessInteractEvent(code, "SearchResult");
+        this.generateQRScanSuccessInteractEvent(code, "SearchResult", dialCode);
         callback.dialcode(code, dialCode);
       } else if ((results[results.length - 2] == "content" && results[results.length - 4] == "public")) {
         let contentId = results[results.length - 1];
-        this.generateQRScanSuccessInteractEvent(code, "ContentDetail");
+        this.generateQRScanSuccessInteractEvent(code, "ContentDetail", contentId);
         callback.content(code, contentId);
       } else if (results[results.length - 3] == "play" && (results[results.length - 2] == "collection" || results[results.length - 2] == "content")) {
         let contentId = results[results.length - 1];
-        this.generateQRScanSuccessInteractEvent(code, "ContentDetail");
+        this.generateQRScanSuccessInteractEvent(code, "ContentDetail", contentId);
         callback.content(code, contentId);
       } else if (results[results.length - 3] == "learn" && results[results.length - 2] == "course") {
         let contentId = results[results.length - 1];
-        this.generateQRScanSuccessInteractEvent(code, "ContentDetail");
+        this.generateQRScanSuccessInteractEvent(code, "ContentDetail", contentId);
         this.generateEndEvent(source, code);
         callback.content(code, contentId);
       } else {
-        this.generateQRScanSuccessInteractEvent(code, "UNKNOWN");
+        this.generateQRScanSuccessInteractEvent(code, "UNKNOWN", undefined);
         this.generateEndEvent(source, code);
         this.showInvalidCodeAlert(callback);
       }
 
-      this.stopScanner(null, null); 
+      this.stopScanner(null, null);
     }, () => {
       this.stopScanner(null, null);
     });
@@ -198,18 +200,25 @@ export class SunbirdQRScanner {
 
   }
 
-  generateQRScanSuccessInteractEvent(scannedData, action) {
+  generateQRScanSuccessInteractEvent(scannedData, action, dialCode) {
     let values = new Map();
     values["NetworkAvailable"] = this.network.type === 'none' ? "N" : "Y";
     values["ScannedData"] = scannedData;
     values["Action"] = action;
-    this.telemetryService.interact(
-      generateInteractTelemetry(InteractType.OTHER,
-        InteractSubtype.QRCodeScanSuccess,
-        Environment.HOME,
-        PageId.QRCodeScanner, values,
-        undefined,
-        undefined));
+
+    let telemetryObject: TelemetryObject = new TelemetryObject();
+    if (dialCode) {
+      telemetryObject.id = dialCode;
+      telemetryObject.type = "qr";
+    }
+
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.OTHER,
+      InteractSubtype.QRCodeScanSuccess,
+      Environment.HOME,
+      PageId.QRCodeScanner, telemetryObject,
+      values
+    );
   }
 
 

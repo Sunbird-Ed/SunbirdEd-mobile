@@ -109,3 +109,9 @@ export class MenuOverflow {
     public static readonly MENU_GUEST = ['USERS_AND_GROUPS', 'REPORTS', 'SETTINGS'];
     public static readonly MENU_LOGIN = ['USERS_AND_GROUPS', 'REPORTS', 'SETTINGS', 'LOGOUT'];
 }
+
+
+export class FrameworkConstant {
+    public static readonly DEFAULT_FRAMEWORK_ID = "NCF";
+    public static readonly DEFAULT_FRAMEWORK_NAME = "Common";
+}

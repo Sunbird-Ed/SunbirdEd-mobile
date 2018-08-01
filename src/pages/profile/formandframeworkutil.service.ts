@@ -14,6 +14,7 @@ import {
 } from 'sunbird';
 import { AppGlobalService } from '../../service/app-global.service';
 import { AppVersion } from "@ionic-native/app-version";
+import { FrameworkConstant } from '../../app/app.constant';
 
 @Injectable()
 export class FormAndFrameworkUtilService {
@@ -105,8 +106,8 @@ export class FormAndFrameworkUtilService {
 
                 // Adding default framework into the list
                 let defaultFramework = {
-                    name: "Common",
-                    frameworkId: "NCF"
+                    name: FrameworkConstant.DEFAULT_FRAMEWORK_NAME,
+                    frameworkId: FrameworkConstant.DEFAULT_FRAMEWORK_ID
                 }
 
                 syllabusList.push(defaultFramework);
@@ -132,7 +133,7 @@ export class FormAndFrameworkUtilService {
                 defaultFrameworkDetails: true
             };
 
-            if (frameworkId !== undefined && frameworkId.length) {
+            if (frameworkId !== undefined && frameworkId.length && frameworkId != FrameworkConstant.DEFAULT_FRAMEWORK_ID) {
                 req.defaultFrameworkDetails = false;
                 req.frameworkId = frameworkId;
             }

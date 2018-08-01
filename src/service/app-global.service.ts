@@ -14,6 +14,7 @@ import {
     PopoverOptions
 } from "ionic-angular";
 import { UpgradePopover } from "../pages/upgrade/upgrade-popover";
+import { FrameworkConstant } from "../app/app.constant";
 
 @Injectable()
 export class AppGlobalService {
@@ -180,7 +181,7 @@ export class AppGlobalService {
                 defaultFrameworkDetails: true
             };
 
-            if (frameworkId !== undefined && frameworkId.length) {
+            if (frameworkId !== undefined && frameworkId.length && frameworkId != FrameworkConstant.DEFAULT_FRAMEWORK_ID) {
                 req.defaultFrameworkDetails = false;
                 req.frameworkId = frameworkId;
             }

@@ -1,7 +1,8 @@
 import { Component, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
-import { ReportService, ProfileService, ReportSummary } from 'sunbird';
+import { ReportService, ReportSummary } from 'sunbird';
 import { ReportAlert } from '../report-alert/report-alert';
+import {TranslateService} from '@ngx-translate/core';
 
 @IonicPage()
 @Component({
@@ -12,31 +13,41 @@ export class UserReportPage {
   assessmentData;
   columns = [
     {
-      name: 'Question (Marks)',
+      name: this.translateMessage('QUESTION_MARKS'),
       prop: 'index'
     }, {
-      name: 'Time',
+      name: this.translateMessage('TIME'),
       prop: 'timespent'
     }, {
-      name: 'Result',
+      name: this.translateMessage('RESULT'),
       prop: 'result'
     }
   ];
   contentName: string;
 
   constructor(
-    public navCtrl: NavController,
-    public navParams: NavParams,
-    public reportService: ReportService,
-    public profileService: ProfileService,
-    public loading: LoadingController,
-    public zone: NgZone) {
+    private navCtrl: NavController,
+    private navParams: NavParams,
+    private reportService: ReportService,
+    private translate: TranslateService,
+    private loading: LoadingController,
+    private zone: NgZone) {
   }
 
   convertTotalTime(time: number): string {
     var mm = Math.floor(time / 60);
     var ss = Math.floor(time % 60);
     return (mm > 9 ? mm : ("0" + mm)) + ":" + (ss > 9 ? ss : ("0" + ss));
+  }
+
+  translateMessage(messageConst: string, field?: string): string {
+    let translatedMsg = '';
+    this.translate.get(messageConst, { '%s': field }).subscribe(
+      (value: any) => {
+        translatedMsg = value;
+      }
+    );
+    return translatedMsg;
   }
 
   ionViewWillEnter() {
@@ -67,8 +78,8 @@ export class UserReportPage {
       })
       data['uiRows'] = rows;
       data['uiTotalTime'] = that.convertTotalTime(data['totalTime']);
-      data['summaryScoreLabel'] = "Score";
-      data['summaryTimeLabel'] = "Total Time";
+      data['fromUser'] = true;
+      data['fromGroup'] = false;
       that.zone.run(() => {
         loader.dismiss();
         data['showResult'] = true;

@@ -13,7 +13,6 @@ import {
   PopoverController,
   ToastController
 } from 'ionic-angular';
-import { CreateGroupPage } from './create-group/create-group';
 import { PopoverPage } from './popover/popover';
 import {
   ProfileService,
@@ -34,14 +33,15 @@ import {
   PageId,
   TelemetryObject,
   ObjectType,
-  ImpressionType
+  ImpressionType,
+  AuthService
 } from 'sunbird';
 import { GuestEditProfilePage } from '../profile/guest-edit.profile/guest-edit.profile';
 import { IonicApp } from 'ionic-angular';
 import { ShareUserAndGroupPage } from './share-user-and-groups/share-user-and-groups';
 import { AppGlobalService } from '../../service/app-global.service';
-import { initTabs, GUEST_STUDENT_TABS, GUEST_TEACHER_TABS } from '../../app/module.service';
-import { App , Events } from 'ionic-angular';
+import { initTabs, GUEST_STUDENT_SWITCH_TABS, GUEST_TEACHER_SWITCH_TABS } from '../../app/module.service';
+import { App, Events } from 'ionic-angular';
 import { group } from '@angular/core/src/animation/dsl';
 import { Network } from '@ionic-native/network';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
@@ -93,7 +93,7 @@ export class UserAndGroupsPage {
     private network: Network,
     private toastCtrl: ToastController,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private telemetryService: TelemetryService
+    private authService: AuthService
   ) {
 
     /* Check userList length and show message or list accordingly */
@@ -106,11 +106,11 @@ export class UserAndGroupsPage {
 
     this.isLoggedInUser = this.navParams.get('isLoggedInUser');
     this.profileDetails = this.navParams.get('profile');
-    
-    
+
+
   }
 
-  ionViewDidLoad(){
+  ionViewDidLoad() {
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW, "",
       PageId.USERS,
@@ -432,12 +432,9 @@ export class UserAndGroupsPage {
     );
 
     if (this.network.type === 'none') {
-      let toast = this.toastCtrl.create({
-        message: this.translateMessage("NEED_INTERNET_TO_CHANGE"),
-        duration: 2000,
-        position: 'bottom'
-      });
-      toast.present();
+      this.authService.endSession();
+      (<any>window).splashscreen.clearPrefs();
+      this.setAsCurrentUser(selectedUser);
     } else {
       this.oauth.doLogOut().then(() => {
         (<any>window).splashscreen.clearPrefs();
@@ -630,10 +627,10 @@ export class UserAndGroupsPage {
 
     this.profileService.setCurrentUser(selectedUser.uid, (success) => {
       if (selectedUser.profileType == ProfileType.STUDENT) {
-        initTabs(this.container, GUEST_STUDENT_TABS);
+        initTabs(this.container, GUEST_STUDENT_SWITCH_TABS);
         this.preferences.putString('selected_user_type', ProfileType.STUDENT);
       } else {
-        initTabs(this.container, GUEST_TEACHER_TABS);
+        initTabs(this.container, GUEST_TEACHER_SWITCH_TABS);
         this.preferences.putString('selected_user_type', ProfileType.TEACHER);
       }
 
@@ -641,6 +638,13 @@ export class UserAndGroupsPage {
       this.event.publish(AppGlobalService.USER_INFO_UPDATED);
 
       this.app.getRootNav().setRoot(TabsPage);
+
+      let toast = this.toastCtrl.create({
+        message: this.translateMessage("SWITCHING_TO", selectedUser.handle),
+        duration: 2000,
+        position: 'bottom'
+      });
+      toast.present();
 
     }, (error) => {
       console.log("Error " + error);

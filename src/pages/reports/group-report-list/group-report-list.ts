@@ -1,8 +1,8 @@
 import { Component, NgZone } from '@angular/core';
-import { NavController, NavParams, LoadingController } from 'ionic-angular';
-import { ReportService, ProfileService, ReportSummary } from 'sunbird';
+import { NavParams, LoadingController } from 'ionic-angular';
+import { ReportService, ReportSummary } from 'sunbird';
 import { GroupReportAlert } from '../group-report-alert/group-report-alert';
-import { ReportAlert } from '../report-alert/report-alert';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
     selector: 'group-report-list',
@@ -14,23 +14,23 @@ export class GroupReportListPage {
     uids: Array<string>;
     reportType: string = 'users'
     fromUserColumns = [{
-        name: 'Name',
+        name: this.translateMessage('FIRST_NAME'),
         prop: 'userName'
     }, {
-        name: 'Time',
+        name: this.translateMessage('TIME'),
         prop: 'totalTimespent'
     }, {
-        name: 'Score',
+        name: this.translateMessage('SCORE'),
         prop: 'score'
     }];
     fromQuestionColumns = [{
-        name: 'Questions',
+        name: this.translateMessage('QUESTION_PLURAL'),
         prop: 'index'
     }, {
-        name: 'Marks',
+        name: this.translateMessage('MARKS'),
         prop: 'max_score'
     }, {
-        name: 'Accuracy',
+        name: this.translateMessage('ACCURACY'),
         prop: 'accuracy'
     }]
     
@@ -40,12 +40,11 @@ export class GroupReportListPage {
     listOfReports: Array<ReportSummary> = [];
     
     constructor(
-        public navCtrl: NavController,
-        public navParams: NavParams,
+        private navParams: NavParams,
         private loading: LoadingController,
-        public zone: NgZone,
-        public reportService: ReportService,
-        public profileService: ProfileService) {
+        private zone: NgZone,
+        private reportService: ReportService,
+        private translate: TranslateService) {
     }
 
     ionViewWillEnter() {
@@ -84,7 +83,7 @@ export class GroupReportListPage {
                 });
                 averageScore = (averageScore/data.length).toFixed(2);
                 averageTime = averageTime/data.length;
-                let details = {'uiRows': data, totalScore: averageScore, uiTotalTime: that.convertTotalTime(averageTime), summaryScoreLabel: "Average Score", summaryTimeLabel: "Average Time"};
+                let details = {'uiRows': data, totalScore: averageScore, uiTotalTime: that.convertTotalTime(averageTime), fromGroup: true, fromUser: false};
                 that.zone.run(() => {
                     loader.dismiss();
                     that.fromUserAssessment = details;
@@ -114,7 +113,7 @@ export class GroupReportListPage {
                 })
                 averageScore = (averageScore/data.length).toFixed(2);
                 averageTime = averageTime/data.length;
-                let details = {'uiRows': data, totalScore: averageScore, uiTotalTime: that.convertTotalTime(averageTime),showPopup: true, popupCallback: GroupReportAlert, summaryScoreLabel: "Average Score", summaryTimeLabel: "Average Time"};
+                let details = {'uiRows': data, totalScore: averageScore, uiTotalTime: that.convertTotalTime(averageTime),showPopup: true, popupCallback: GroupReportAlert, fromGroup: true, fromUser: false};
                 that.zone.run(() => {
                     loader.dismiss();
                     that.fromQuestionAssessment = details;
@@ -135,5 +134,14 @@ export class GroupReportListPage {
     showQuestionFromUser() {
         this.fetchAssessment('questions', true)
     }
+    translateMessage(messageConst: string, field?: string): string {
+        let translatedMsg = '';
+        this.translate.get(messageConst, { '%s': field }).subscribe(
+          (value: any) => {
+            translatedMsg = value;
+          }
+        );
+        return translatedMsg;
+      }
 
 }

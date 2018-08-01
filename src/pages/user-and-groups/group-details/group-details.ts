@@ -32,11 +32,12 @@ import {
   Environment,
   PageId,
   TelemetryObject,
-  ObjectType
+  ObjectType,
+  AuthService
 } from 'sunbird';
 import { Events } from 'ionic-angular';
 import { AppGlobalService } from '../../../service/app-global.service';
-import { initTabs, GUEST_STUDENT_TABS, GUEST_TEACHER_TABS } from '../../../app/module.service';
+import { initTabs, GUEST_STUDENT_SWITCH_TABS, GUEST_TEACHER_SWITCH_TABS } from '../../../app/module.service';
 import { App } from 'ionic-angular';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
 import { ToastController } from 'ionic-angular';
@@ -78,7 +79,8 @@ export class GroupDetailsPage {
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController,
     private network: Network,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private authService: AuthService
   ) {
     this.group = this.navParams.get('groupInfo');
     this.currentUserId = this.navParams.get('currentUserId');
@@ -237,12 +239,9 @@ export class GroupDetailsPage {
       telemetryObject
     );
     if (this.network.type === 'none') {
-      let toast = this.toastCtrl.create({
-        message: this.translateMessage("NEED_INTERNET_TO_CHANGE"),
-        duration: 2000,
-        position: 'bottom'
-      });
-      toast.present();
+      this.authService.endSession();
+      (<any>window).splashscreen.clearPrefs();
+      this.setAsCurrentUser(selectedUser);
     } else {
       this.oauth.doLogOut().then(() => {
         (<any>window).splashscreen.clearPrefs();
@@ -359,7 +358,7 @@ export class GroupDetailsPage {
     alert.present();
   }
 
-  deleteGroup(){
+  deleteGroup() {
     console.log(this.group.gid);
     let telemetryObject: TelemetryObject = new TelemetryObject();
     telemetryObject.id = this.group.gid;
@@ -411,7 +410,7 @@ export class GroupDetailsPage {
     alert.present();
   }
 
-  deleteUsersinGroup(index : number){
+  deleteUsersinGroup(index: number) {
     this.userUids.forEach((item) => {
       if (this.userList[index].uid == item) {
         let elementIndex = this.userUids.indexOf(item.uid);
@@ -469,10 +468,10 @@ export class GroupDetailsPage {
         console.log("Value : " + val);
         this.profileService.setCurrentUser(selectedUser.uid, (success) => {
           if (selectedUser.profileType == ProfileType.STUDENT) {
-            initTabs(this.container, GUEST_STUDENT_TABS);
+            initTabs(this.container, GUEST_STUDENT_SWITCH_TABS);
             this.preferences.putString('selected_user_type', ProfileType.STUDENT);
           } else {
-            initTabs(this.container, GUEST_TEACHER_TABS);
+            initTabs(this.container, GUEST_TEACHER_SWITCH_TABS);
             this.preferences.putString('selected_user_type', ProfileType.TEACHER);
           }
 
@@ -480,6 +479,13 @@ export class GroupDetailsPage {
           this.event.publish(AppGlobalService.USER_INFO_UPDATED);
 
           this.app.getRootNav().setRoot(TabsPage);
+
+          let toast = this.toastCtrl.create({
+            message: this.translateMessage("SWITCHING_TO", selectedUser.handle),
+            duration: 2000,
+            position: 'bottom'
+          });
+          toast.present();
 
         }, (error) => {
           console.log("Error " + error);
