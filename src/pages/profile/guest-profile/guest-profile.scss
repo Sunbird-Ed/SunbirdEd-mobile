@@ -1,11 +1,22 @@
 page-guest-profile {
   .profile-name {
+
     color: map-get($colors, dark);
-    text-align: center;
     margin: 0;
-    font-size: 2rem;
+    font-size: 1.6rem;
     padding: 5px;
     font-weight: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* display: -webkit-box; */
+    /* display: table-row; */
+    display: -ms-flexbox;
+    /* white-space: nowrap; */
+    /* display: flex; */
+  }
+  .user{
+    text-align: center !important;
+    padding-left: 1em !important;
   }
   .editIcon{
     margin-left: 5px;
@@ -16,8 +27,17 @@ page-guest-profile {
     text-align: center;
     margin-right: 10px;
     font-size: 1.2rem;
-    padding: 0;
+    padding:0 2px 2px 2px;
     font-weight: normal;
+    margin: 0;
+  }
+  .user-type {
+    color: map-get($colors, dark);
+    text-align: center;
+    margin-right: 10px;
+    font-size: 1.2rem;
+    padding: 2px;
+    font-weight: bold;
     margin: 0;
   }
   .offline-message{
