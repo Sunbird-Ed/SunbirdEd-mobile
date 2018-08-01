@@ -1,6 +1,7 @@
 import { Component } from "@angular/core";
 import { NavParams, ViewController, Platform, NavController, IonicApp, LoadingController } from "ionic-angular";
 import { ReportService } from 'sunbird';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'group-report-alert',
@@ -11,13 +12,13 @@ export class GroupReportAlert {
   callback: QRAlertCallBack
   report: string = 'users'
   fromUserColumns = [{
-    name: 'Name',
+    name: this.translateMessage('FIRST_NAME'),
     prop: 'name'
   }, {
-    name: 'Time',
+    name: this.translateMessage('TIME'),
     prop: 'time'
   }, {
-    name: 'Result',
+    name: this.translateMessage('RESULT'),
     prop: 'res'
   }];;
   assessment: {};
@@ -30,7 +31,8 @@ export class GroupReportAlert {
     private loading: LoadingController,
     private platform: Platform,
     private ionicApp: IonicApp,
-    private reportService: ReportService) {
+    private reportService: ReportService,
+    private translate: TranslateService) {
     this.report = 'questions'
     this.callback = navParams.get('callback');
     this.assessment = this.callback['row'];
@@ -96,6 +98,15 @@ export class GroupReportAlert {
     var mm = Math.floor(time / 60);
     var ss = Math.floor(time % 60);
     return (mm > 9 ? mm : ("0" + mm)) + ":" + (ss > 9 ? ss : ("0" + ss));
+  }
+  translateMessage(messageConst: string, field?: string): string {
+    let translatedMsg = '';
+    this.translate.get(messageConst, { '%s': field }).subscribe(
+      (value: any) => {
+        translatedMsg = value;
+      }
+    );
+    return translatedMsg;
   }
 }
 

@@ -331,6 +331,7 @@
   "PUBLISHED_DATE": "Published date",
   "QUIZ": "QUIZ",
   "QUESTION": "Question",
+  "QUESTION_PLURAL": "Questions",
   "QUESTION_TYPE": "QUESTION TYPE",
   "READ_LESS": "Read Less",
   "READ_MORE": "Read More",
@@ -490,5 +491,6 @@
   "USER": "User",
   "NO_USERS_IN_THIS_GROUP": "No Users in this group",
   "OTHER_USERS": "Other Users",
-  "SWITCHING_TO": "Switched to '{{%s}}'"
+  "SWITCHING_TO": "Switched to '{{%s}}'",
+  "QUESTION_MARKS": "Question (Marks)"
 }
