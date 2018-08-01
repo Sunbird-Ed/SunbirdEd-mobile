@@ -84,7 +84,7 @@ export class GroupReportListPage {
                 });
                 averageScore = (averageScore/data.length).toFixed(2);
                 averageTime = averageTime/data.length;
-                let details = {'uiRows': data, totalScore: averageScore, uiTotalTime: that.convertTotalTime(averageTime), summaryScoreLabel: "Average Score", summaryTimeLabel: "Average Time"};
+                let details = {'uiRows': data, totalScore: averageScore, uiTotalTime: that.convertTotalTime(averageTime), fromGroup: true, fromUser: false};
                 that.zone.run(() => {
                     loader.dismiss();
                     that.fromUserAssessment = details;
@@ -114,7 +114,7 @@ export class GroupReportListPage {
                 })
                 averageScore = (averageScore/data.length).toFixed(2);
                 averageTime = averageTime/data.length;
-                let details = {'uiRows': data, totalScore: averageScore, uiTotalTime: that.convertTotalTime(averageTime),showPopup: true, popupCallback: GroupReportAlert, summaryScoreLabel: "Average Score", summaryTimeLabel: "Average Time"};
+                let details = {'uiRows': data, totalScore: averageScore, uiTotalTime: that.convertTotalTime(averageTime),showPopup: true, popupCallback: GroupReportAlert, fromGroup: true, fromUser: false};
                 that.zone.run(() => {
                     loader.dismiss();
                     that.fromQuestionAssessment = details;

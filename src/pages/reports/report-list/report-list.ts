@@ -55,7 +55,9 @@ export class ReportListPage {
             this.navCtrl.push(UserReportPage, {
                 report: report
             });
-        } else if (this.isFromGroups) {
+        } else
+        /* istanbul ignore else */
+         if (this.isFromGroups) {
             let uids = this.navParams.get('uids');
             let users = this.navParams.get('users');
             this.navCtrl.push(GroupReportListPage, {

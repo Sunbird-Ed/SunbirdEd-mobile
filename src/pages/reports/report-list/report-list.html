@@ -14,7 +14,7 @@
       <ion-item *ngFor="let report of listOfReports;let i=index" class="bgColor" (click)="goToGroupReportsList(report)">
         <p *ngIf="report.lastUsedTime">{{formatTime(report.lastUsedTime)}}</p>
         <h2>{{report.name}}</h2>
-        <p *ngIf="isFromUsers">{{'Scored' | translate}}:{{report.correctAnswers}}/{{report.noOfQuestions}}</p>
+        <p *ngIf="isFromUsers">{{'SCORED' | translate}}:{{report.correctAnswers}}/{{report.noOfQuestions}}</p>
         <ion-icon name="ios-arrow-forward" item-end></ion-icon>
       </ion-item>
     </div>
@@ -27,9 +27,9 @@
         <ion-col col-md-6 offset-md-3 col-lg-6 offset-lg-3>
           <div class="image-text">
             <h6>
-              <b>{{'No Assessment available'}}</b>
+              <b>{{'NO_ASSESSMENT' | translate}}</b>
             </h6>
-            <p>{{'A User needs to give at least one assessment' | translate}}</p>
+            <p>{{'TAKE_ASSESSMENT' | translate}}</p>
           </div>
         </ion-col>
       </ion-row>
