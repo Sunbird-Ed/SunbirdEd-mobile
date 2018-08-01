@@ -2,7 +2,7 @@
   <ion-navbar>
     <ion-title>{{group?.name}}</ion-title>
     <ion-buttons end>
-      <button ion-button icon-only (click)="presentPopoverNav($event)">
+      <button *ngIf="!playContent" ion-button icon-only (click)="presentPopoverNav($event)">
         <ion-icon name="more" float-end></ion-icon>
       </button>
     </ion-buttons>
@@ -39,7 +39,7 @@
               <span *ngIf="user?.grade?.length">•</span> {{ getGradeNameFromCode(user) }}</p>
           </ion-item>
         </ion-col>
-        <ion-col col-2 class="advanced-menu">
+        <ion-col col-2 class="advanced-menu" *ngIf="!playContent">
           <ion-item item-end class="bg-color-white">
             <ion-icon class="line-height-2 padding-left-2" name="more" item-end (click)="presentPopover($event , i)"></ion-icon>
           </ion-item>
@@ -52,8 +52,11 @@
   <ion-row padding>
     <ion-col col-md-10 offset-md-1>
       <div *ngIf="selectedUserIndex !== -1;">
-        <button ion-button block center (click)="switchAccountConfirmBox()">
+        <button ion-button block center *ngIf="!playContent" (click)="switchAccountConfirmBox()">
           {{'SWITCH_ACCOUNT' | translate}}
+        </button>
+        <button ion-button block center *ngIf="playContent" (click)="play()">
+          {{'PLAY' | translate}}
         </button>
       </div>
     </ion-col>

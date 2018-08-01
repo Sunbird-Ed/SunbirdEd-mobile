@@ -12,6 +12,8 @@ import { EventTopics, ProfileConstants } from '../../app/app.constant';
 import { ShareUrl } from '../../app/app.constant';
 import { AppGlobalService } from '../../service/app-global.service';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
+import { AlertController } from 'ionic-angular';
+import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
 
 @IonicPage()
 @Component({
@@ -139,6 +141,8 @@ export class ContentDetailsPage {
 
   guestUser: boolean = false;
 
+  launchPlayer: boolean;
+
   profileType: string = '';
 
   private objId;
@@ -166,7 +170,7 @@ export class ContentDetailsPage {
     private social: SocialSharing, public platform: Platform, public translate: TranslateService,
     private buildParamService: BuildParamService, private network: Network,
     private courseService: CourseService,
-    private preference: SharedPreferences, private appGlobalService: AppGlobalService) {
+    private preference: SharedPreferences, private appGlobalService: AppGlobalService , private alertCtrl: AlertController) {
     this.getUserId();
     this.navCtrl = navCtrl;
     this.navParams = navParams;
@@ -215,6 +219,15 @@ export class ContentDetailsPage {
     this.network.onConnect().subscribe((data) => {
       this.isNetworkAvailable = true;
     });
+    this.launchPlayer = this.navParams.get('launchplayer');
+    console.log('launch Player is' , this.launchPlayer);
+    events.subscribe('launchPlayer', (status) => {
+      console.log('----------->>>>>>>>>' , status);
+      if(status){
+        this.playContent();
+      }
+    });
+
   }
 
   /**
@@ -704,6 +717,42 @@ export class ContentDetailsPage {
     })
   }
 
+
+  /**
+   * alert for playing the content
+   */
+  alertForPlayingContent(content){
+    let self = this;
+    let alert = this.alertCtrl.create({
+      title: this.translateMessage('PLAY_AS'),
+      mode: 'wp',
+      //message: this.translateMessage('GROUP_DELETE_CONFIRM_MESSAGE'),
+      message : content.name,
+      cssClass: 'confirm-alert',
+      buttons: [
+        {
+          text: this.translateMessage('Yes'),
+          role: 'cancel',
+          cssClass: 'alert-btn-delete',
+          handler: () => {
+            console.log('Cancel clicked');
+            this.playContent();
+          }
+        },
+        {
+          text: this.translateMessage('CHANGE_USER'),
+          cssClass: 'alert-btn-cancel',
+          handler: () => {
+            this.navCtrl.push(UserAndGroupsPage , {
+              playContent : this.content.playContent
+            })
+          }
+        }
+      ]
+    });
+    alert.present();
+  }
+  
   /**
    * Play content
    */
