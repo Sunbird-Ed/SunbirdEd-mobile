@@ -2,14 +2,16 @@
   <div class="assessment-container"></div>
   <div class="assessment-card">
     <div class="assessment-score">
-      <p>{{assessmentData?.summaryScoreLabel}}</p>
+      <p *ngIf="assessmentData?.fromGroup">{{'AVERAGE_SCORE' | translate}}</p>
+      <p *ngIf="assessmentData?.fromUser">{{'SCORE' | translate}}</p>
       <div class="assessment-stats">
         <ion-icon name="stats"></ion-icon>
         <span *ngIf="assessmentData?.totalScore.toString()">{{assessmentData?.totalScore}}<span *ngIf="assessmentData?.maxTotalScore">/</span>{{assessmentData?.maxTotalScore}}</span><span *ngIf="!assessmentData?.totalScore.toString()">--</span>
       </div>
     </div>
     <div class="assessment-time">
-      <p>{{assessmentData?.summaryTimeLabel}}</p>
+      <p *ngIf="assessmentData?.fromGroup">{{'AVERAGE_TIME' | translate}}</p>
+      <p *ngIf="assessmentData?.fromUser">{{'TOTAL_TIME' | translate}}</p>
       <div class="assessment-result">
         <ion-icon md="md-time"></ion-icon>
         <span *ngIf="assessmentData?.uiTotalTime">{{assessmentData?.uiTotalTime}}</span><span *ngIf="!assessmentData?.uiTotalTime">--/--</span>

@@ -67,8 +67,8 @@ export class UserReportPage {
       })
       data['uiRows'] = rows;
       data['uiTotalTime'] = that.convertTotalTime(data['totalTime']);
-      data['summaryScoreLabel'] = "Score";
-      data['summaryTimeLabel'] = "Total Time";
+      data['fromUser'] = true;
+      data['fromGroup'] = false;
       that.zone.run(() => {
         loader.dismiss();
         data['showResult'] = true;
