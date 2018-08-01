@@ -122,7 +122,7 @@ export class GuestEditProfilePage {
       }
     });
 
-    
+
   }
 
   ionViewDidLoad(){
@@ -432,7 +432,7 @@ export class GuestEditProfilePage {
     },
       (error: any) => {
         loader.dismiss();
-        this.getToast(this.translateMessage("SOMETHING_WENT_WRONG")).present();
+        this.getToast(this.translateMessage("Fill_THE_MANDATORY_FIELDS")).present();
       });
   }
 
