@@ -344,5 +344,22 @@ export class AddOrRemoveGroupUserPage {
     );
     return translatedMsg;
   }
+  getGradeNameFromCode(data: Profile | Group): string {
+    if (data.grade && data.grade.length > 0) {
+      let gradeName = [];
+      data.grade.forEach(code => {
+        if (data.gradeValueMap && data.gradeValueMap[code]) {
+          gradeName.push(data.gradeValueMap[code]);
+        }
+      });
 
+      if (gradeName.length == 0) {
+        return data.grade.join(",");
+      }
+
+      return gradeName.join(",");
+    }
+
+    return ""
+  }
 }

@@ -24,7 +24,8 @@
       <h6 class="line-height-2">
         <b>{{user?.handle}}</b>
       </h6>
-      <p>{{user?.profileType | titlecase}}</p>
+      <p>{{ user?.profileType | titlecase }}
+        <span *ngIf="user?.grade?.length">•</span> {{ getGradeNameFromCode(user) }}</p>
     </ion-label>
     <ion-checkbox item-end mode="ios" (click)="toggleMemberSelect(i)" checked="{{isGroupMemberSelected(i)}}" [disabled]="addUsers"></ion-checkbox>
   </ion-item>
@@ -35,7 +36,8 @@
         <h6 class="line-height-2">
           <b>{{user?.handle}}</b>
         </h6>
-        <p>{{user?.profileType | titlecase}}</p>
+        <p>{{ user?.profileType | titlecase }}
+          <span *ngIf="user?.grade?.length">•</span> {{ getGradeNameFromCode(user) }}</p>
       </ion-label>
       <ion-checkbox item-end mode="ios" (click)="toggleSelect(i)" checked="{{isUserSelected(i)}}"></ion-checkbox>
     </ion-item>
