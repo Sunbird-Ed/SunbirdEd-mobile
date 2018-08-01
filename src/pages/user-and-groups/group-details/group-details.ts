@@ -57,6 +57,7 @@ export class GroupDetailsPage {
   profileDetails: any;
   userUids = [];
   isNoUsers: boolean = false;
+  playContent : any;
 
   isCurrentGroupActive: boolean = false;
 
@@ -83,6 +84,8 @@ export class GroupDetailsPage {
     this.currentUserId = this.navParams.get('currentUserId');
     this.currentGroupId = this.navParams.get('currentGruopId');
     this.profileDetails = this.navParams.get('profile');
+    this.playContent = this.navParams.get('playContent') || undefined;
+    
 
     if (this.group.gid == this.currentGroupId) {
       this.isCurrentGroupActive = true;
@@ -212,6 +215,11 @@ export class GroupDetailsPage {
       valuesMap
     );
 
+  }
+  // takes to content details page and launches player
+  play(){
+    this.event.publish('launchPlayer', true);
+    this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length()-2));
   }
 
 
