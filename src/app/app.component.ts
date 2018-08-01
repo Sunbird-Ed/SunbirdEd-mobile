@@ -28,7 +28,8 @@ import {
   initTabs,
   GUEST_TEACHER_TABS,
   GUEST_STUDENT_TABS,
-  LOGIN_TEACHER_TABS
+  LOGIN_TEACHER_TABS,
+  GUEST_TEACHER_SWITCH_TABS
 } from './module.service';
 import { LanguageSettingsPage } from '../pages/language-settings/language-settings';
 import { ImageLoaderConfig } from 'ionic-image-loader';
@@ -47,6 +48,7 @@ import {
 import { EnrolledCourseDetailsPage } from '../pages/enrolled-course-details/enrolled-course-details';
 import { ProfileConstants } from './app.constant';
 import { FormAndFrameworkUtilService } from '../pages/profile/formandframeworkutil.service';
+import { AppGlobalService } from '../service/app-global.service';
 
 declare var chcp: any;
 
@@ -87,6 +89,7 @@ export class MyApp {
     private preference: SharedPreferences,
     private userProfileService: UserProfileService,
     private formAndFrameowrkUtilService: FormAndFrameworkUtilService,
+    private event: Events,
   ) {
 
     let that = this;
@@ -305,6 +308,20 @@ export class MyApp {
     this.events.subscribe('tab.change', (data) => {
       this.zone.run(() => {
         this.generateInteractEvent(data);
+      });
+    });
+
+    this.events.subscribe('generic.event', (data) => {
+      this.zone.run(() => {
+        let response = JSON.parse(data);
+        if (response && response.data.action && response.data.action === 'logout') {
+          this.authService.getSessionData((session) => {
+            if (session) {
+              this.authService.endSession();
+              (<any>window).splashscreen.clearPrefs();
+            }
+          });
+        }
       });
     });
   }
