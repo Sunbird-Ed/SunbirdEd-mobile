@@ -111,6 +111,13 @@ export class ShareUserAndGroupPage {
       });
     })
   }
+  checkUserGroups(){
+    let totalLength = this.userList.length + this.groupList.length;
+    if(totalLength > 0 ){
+      return true;
+    }
+    return false;
+  }
 
   toggleGroupSelected(index: number) {
     let selectedGroup = this.groupList[index];

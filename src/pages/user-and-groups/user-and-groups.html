@@ -40,16 +40,15 @@
               </ion-col>
             </ion-row>
           </ion-item>
-
         </div>
-        <p ion-text color="dark_gray" text-uppercase class="subTitle">{{'USERS' | translate}}</p>
-        <div *ngIf="showEmptyUsersMessage">
+      <!-- <div *ngIf="!userList?.length">
           <h6>{{'NO_USERS_CREATED_YET' | translate}}</h6>
           <p class="grey-color">{{'GUEST_USER_ACCOUNTS_MESSAGE' | translate}}
             <br> {{'YOUR_STUDENTS_OTHERS_TEACHERS' | translate}}
           </p>
-        </div>
-        <ion-list *ngIf="!showEmptyUsersMessage">
+        </div> -->
+        <ion-list *ngIf="userList?.length">
+        <ion-label ion-text color="dark_gray" text-uppercase class="subTitle">{{'USERS' | translate}}</ion-label>
           <ion-item *ngFor="let user of userList; let i=index;" class="item-background radius" margin-bottom [ngClass]="i===selectedUserIndex ? 'blueBorder' : ''"
             no-lines>
             <ion-row class="bg-color-white">
@@ -72,7 +71,6 @@
         </ion-list>
       </div>
     </ion-list>
-
     <ion-list *ngSwitchCase="'groups'">
       <div class="firstSection" *ngIf="showEmptyGroupsMessage">
         <div class="img-container">
@@ -81,12 +79,12 @@
         <ion-row padding-top>
           <ion-col col-md-6 offset-md-3 col-lg-6 offset-lg-3>
             <div class="image-text">
-               <h6>
+              <h6>
                 <b>{{'NO_GROUPS_CREATED_YET' | translate}}</b>
               </h6>
-                <div text-center class="description">
-                  {{ 'NO_GROUP_MESSAGE' | translate }}
-                </div>
+              <div text-center class="description">
+                {{ 'NO_GROUP_MESSAGE' | translate }}
+              </div>
             </div>
           </ion-col>
         </ion-row>

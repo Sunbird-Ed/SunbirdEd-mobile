@@ -4,6 +4,17 @@
   </ion-navbar>
 </ion-header>
 <ion-content padding>
+    <div *ngIf="!checkUserGroups()">
+        <div text-center>
+          <img class="rounded image-style" src="assets/imgs/ic_businessman.png" />
+          <h6>
+            <b>{{'NO_USERS_ON_THIS_DEVICE' | translate}}</b>
+          </h6>
+          <p ion-text [color]="grey">{{'NO_USERS_SUGGESTION_MESSAGE' | translate}}</p>
+          <h6 ion-text color="primary">{{'CREATE_USER' | translate}}</h6>
+        </div>
+      </div>
+  <div *ngIf ="checkUserGroups()">
   <ion-row>
     <ion-col col-md-6>
       <p *ngIf="groupList.length" text-left ion-text color="title" text-uppercase>
@@ -40,7 +51,7 @@
     </ion-label>
     <ion-checkbox item-end mode="ios" checked="{{isUserSelected(user?.uid)}}" (click)="toggleUserSelected(i)"></ion-checkbox>
   </ion-item>
-
+</div>
 </ion-content>
 <ion-footer>
   <ion-row padding>

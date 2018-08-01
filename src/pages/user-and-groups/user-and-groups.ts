@@ -57,7 +57,6 @@ export class UserAndGroupsPage {
 
   segmentType: string = "users";
   groupName: string;
-  showEmptyUsersMessage: boolean = false;
   showEmptyGroupsMessage: boolean = true;
   isLoggedInUser: boolean = false;
   currentUserId: string;
@@ -116,6 +115,7 @@ export class UserAndGroupsPage {
   }
 
   ionViewWillEnter() {
+    this.zone.run(() => {
     this.getAllProfile();
     this.getAllGroup();
     this.getCurrentGroup();
@@ -123,6 +123,7 @@ export class UserAndGroupsPage {
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
       this.dismissPopup();
     }, 11);
+    })
   }
 
   getCurrentGroup() {
@@ -199,7 +200,6 @@ export class UserAndGroupsPage {
     this.zone.run(() => {
       this.profileService.getAllUserProfile(profileRequest).then((profiles) => {
         if (profiles && profiles.length) {
-          this.showEmptyUsersMessage = false;
           let profileList: Array<Profile> = JSON.parse(profiles);
           this.userList = profileList.sort((prev: Profile, next: Profile) => {
             if (prev.uid === this.currentUserId) {
@@ -216,7 +216,6 @@ export class UserAndGroupsPage {
             return 0;
           });
         } else {
-          this.showEmptyUsersMessage = true;
         }
       }).catch((error) => {
         console.log("Something went wrong while fetching user list", error);
@@ -497,6 +496,7 @@ export class UserAndGroupsPage {
     this.groupService.deleteGroup(gid).then((success) => {
       console.log(success);
       this.groupList.splice(index, 1);
+      this.getAllGroup();
     }).catch((error) => {
       console.log(error);
     })
