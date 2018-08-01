@@ -41,7 +41,6 @@ export interface toastOptions {
 export class GroupMembersPage {
 
   group: Group;
-  noMemberSection: boolean = true;
   userList: Array<Profile> = [];
   userSelectionMap: Map<string, boolean> = new Map();
 
@@ -88,7 +87,6 @@ export class GroupMembersPage {
         this.zone.run(() => {
           if (profiles && profiles.length) {
             this.userList = JSON.parse(profiles);
-            this.noMemberSection = false;
           }
           console.log("UserList", profiles);
         })
