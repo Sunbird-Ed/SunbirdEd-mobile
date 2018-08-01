@@ -11,7 +11,8 @@
   </ion-navbar>
 </ion-header>
 <ion-content padding>
-  <ion-row *ngIf="!noMemberSection">
+  <div *ngIf="userList?.length">
+  <ion-row>
     <ion-col class="rm-padding-left" col-md-4>
       <p *ngIf="userList.length" text-left ion-text color="title" text-uppercase>
         <b>{{userList?.length}}&nbsp;{{'USERS' | translate}}</b>
@@ -21,8 +22,8 @@
       <button class="rm-padding-right" ion-button float-end clear (click)="selectAll()">{{'SELECT_ALL' | translate}}</button>
     </ion-col>
   </ion-row>
-
-  <div *ngIf="noMemberSection">
+</div>
+<div *ngIf="!userList?.length">
     <div text-center>
       <img class="rounded image-style" src="assets/imgs/ic_businessman.png" />
       <h6>
@@ -32,6 +33,7 @@
       <h6 ion-text color="primary">{{'CREATE_USER' | translate}}</h6>
     </div>
   </div>
+  <div *ngIf="userList?.length">
   <ion-item *ngFor="let user of userList; let i = index;" class="item-background" margin-bottom no-lines>
     <ion-label (click)="toggleSelect(i)">
       <h6 class="line-height-2">
@@ -41,12 +43,13 @@
     </ion-label>
     <ion-checkbox item-end mode="ios" checked="{{isUserSelected(i)}}" (click)="toggleSelect(i)"></ion-checkbox>
   </ion-item>
+</div>
 
 </ion-content>
 <ion-footer>
   <ion-row padding>
     <ion-col col-md-10 offset-md-1>
-      <button ion-button block (click)="createGroup()">{{'CREATE_GROUP' | translate }}</button>
+      <button ion-button block (click)="createGroup()" [disabled]="!userList?.length">{{'CREATE_GROUP' | translate }}</button>
     </ion-col>
   </ion-row>
 </ion-footer>

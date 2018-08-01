@@ -49,6 +49,8 @@ export class CreateGroupPage {
   categories: Array<any> = [];
   loader: any;
 
+  isFormValid: boolean = true;
+
   options: toastOptions = {
     message: '',
     duration: 3000,
@@ -152,6 +154,11 @@ export class CreateGroupPage {
    * Navigates to UsersList page
    */
   navigateToUsersList() {
+    if (!this.isFormValid) {
+      this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
+      return;
+    }
+
     let formValue = this.groupEditForm.value;
     if (formValue.name) {
       this.group.name = formValue.name;
@@ -183,6 +190,12 @@ export class CreateGroupPage {
  * Internally calls Update group API
  */
   updateGroup() {
+    if (!this.isFormValid) {
+      this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
+      return;
+    }
+
+
     let formValue = this.groupEditForm.value;
     if (formValue.name) {
       let loader = this.getLoader();
@@ -247,6 +260,7 @@ export class CreateGroupPage {
         let request: CategoryRequest = {
           currentCategory: "gradeLevel"
         }
+        this.isFormValid = true;
         return this.formAndFrameworkUtilService.getCategoryData(request);
       })
       .then((classes) => {
@@ -261,6 +275,8 @@ export class CreateGroupPage {
       })
       .catch(error => {
         this.loader.dismiss();
+        this.isFormValid = false;
+        this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
         console.log("Error : " + error);
       });
   }
