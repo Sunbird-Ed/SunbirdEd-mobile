@@ -51,7 +51,7 @@
 </div>
   <div *ngIf="playContent && selectedUserIndex === -1 && !isNoUsers " class="error-message-contentplay">
       <div><ion-icon ios="ios-information-circle" md="md-information-circle"></ion-icon>
-        Please select user</div>
+        {{ 'PLEASE_SELECT_USER' | translate }}</div>
   </div>
 </ion-content>
 

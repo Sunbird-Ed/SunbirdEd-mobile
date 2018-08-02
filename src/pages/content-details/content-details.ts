@@ -840,7 +840,6 @@ export class ContentDetailsPage {
       let alert = this.alertCtrl.create({
         title: this.translateMessage('PLAY_AS'),
         mode: 'wp',
-        //message: this.translateMessage('GROUP_DELETE_CONFIRM_MESSAGE'),
         message: profile.handle,
         cssClass: 'confirm-alert',
         buttons: [
@@ -848,10 +847,6 @@ export class ContentDetailsPage {
             text: this.translateMessage('YES'),
             cssClass: 'alert-btn-delete',
             handler: () => {
-              console.log('Cancel clicked');
-              if (!AppGlobalService.isPlayerLaunched) {
-                AppGlobalService.isPlayerLaunched = true;
-              }
               this.playContent();
             }
           },
@@ -888,6 +883,10 @@ export class ContentDetailsPage {
   playContent() {
     //set the boolean to true, so when the content player is closed, we get to know that
     //we are back from content player
+    if (!AppGlobalService.isPlayerLaunched) {
+      AppGlobalService.isPlayerLaunched = true;
+    }
+
     this.zone.run(() => {
       this.isPlayerLaunched = true;
       this.telemetryService.interact(

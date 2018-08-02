@@ -37,7 +37,7 @@ import {
 } from 'sunbird';
 import { Events } from 'ionic-angular';
 import { AppGlobalService } from '../../../service/app-global.service';
-import { initTabs, GUEST_STUDENT_SWITCH_TABS, GUEST_TEACHER_SWITCH_TABS } from '../../../app/module.service';
+import { initTabs, GUEST_STUDENT_SWITCH_TABS, GUEST_TEACHER_SWITCH_TABS, GUEST_STUDENT_TABS, GUEST_TEACHER_TABS } from '../../../app/module.service';
 import { App } from 'ionic-angular';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
 import { ToastController } from 'ionic-angular';
@@ -58,7 +58,7 @@ export class GroupDetailsPage {
   profileDetails: any;
   userUids = [];
   isNoUsers: boolean = false;
-  playContent : any;
+  playContent: any;
 
   isCurrentGroupActive: boolean = false;
 
@@ -80,7 +80,8 @@ export class GroupDetailsPage {
     private toastCtrl: ToastController,
     private network: Network,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private authService: AuthService
+    private authService: AuthService,
+    private appGlobalService: AppGlobalService
   ) {
     this.group = this.navParams.get('groupInfo');
     this.currentUserId = this.navParams.get('currentUserId');
@@ -132,7 +133,6 @@ export class GroupDetailsPage {
     this.zone.run(() => {
       this.selectedUserIndex = (this.selectedUserIndex === index) ? -1 : index;
     });
-    console.log("Clicked list name is ", name);
   }
 
   /**
@@ -195,7 +195,7 @@ export class GroupDetailsPage {
           text: this.translateMessage('OKAY'),
           cssClass: 'alert-btn-delete',
           handler: () => {
-            this.logOut(selectedUser);
+            this.logOut(selectedUser,false);
           }
         }
       ]
@@ -204,7 +204,7 @@ export class GroupDetailsPage {
     if (this.profileDetails && this.profileDetails.id) {
       alert.present();
     } else {
-      this.setAsCurrentUser(selectedUser);
+      this.setAsCurrentUser(selectedUser, false);
     }
 
     //Generate Switch user success event
@@ -219,13 +219,19 @@ export class GroupDetailsPage {
 
   }
   // takes to content details page and launches player
-  play(){
+  play() {
+    let selectedUser = this.userList[this.selectedUserIndex];
     this.event.publish('launchPlayer', true);
-    this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length()-2));
+    this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
+    if (this.appGlobalService.isUserLoggedIn) {
+      this.logOut(selectedUser, true);
+    } else {
+      this.setAsCurrentUser(selectedUser, true);
+    }
   }
 
 
-  logOut(selectedUser: any) {
+  logOut(selectedUser: any, isBeingPlayed: boolean) {
     let telemetryObject: TelemetryObject = new TelemetryObject();
     telemetryObject.id = this.profileDetails.id;
     telemetryObject.type = Environment.USER;
@@ -238,16 +244,23 @@ export class GroupDetailsPage {
       PageId.GROUP_DETAIL,
       telemetryObject
     );
-    if (this.network.type === 'none') {
+    if (isBeingPlayed) {
       this.authService.endSession();
       (<any>window).splashscreen.clearPrefs();
-      this.setAsCurrentUser(selectedUser);
+      this.setAsCurrentUser(selectedUser, true);
     } else {
-      this.oauth.doLogOut().then(() => {
+      if (this.network.type === 'none') {
+        this.authService.endSession();
         (<any>window).splashscreen.clearPrefs();
-        this.setAsCurrentUser(selectedUser);
-      });
+        this.setAsCurrentUser(selectedUser, false);
+      } else {
+        this.oauth.doLogOut().then(() => {
+          (<any>window).splashscreen.clearPrefs();
+          this.setAsCurrentUser(selectedUser, false);
+        });
+      }
     }
+
     //Generate Logout success event
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.OTHER,
@@ -462,16 +475,16 @@ export class GroupDetailsPage {
   }
 
 
-  private setAsCurrentUser(selectedUser) {
+  private setAsCurrentUser(selectedUser, isBeingPlayed: boolean) {
     this.groupService.setCurrentGroup(this.group.gid)
       .then(val => {
         console.log("Value : " + val);
         this.profileService.setCurrentUser(selectedUser.uid, (success) => {
           if (selectedUser.profileType == ProfileType.STUDENT) {
-            initTabs(this.container, GUEST_STUDENT_SWITCH_TABS);
+            initTabs(this.container, isBeingPlayed ? GUEST_STUDENT_TABS : GUEST_STUDENT_SWITCH_TABS);
             this.preferences.putString('selected_user_type', ProfileType.STUDENT);
           } else {
-            initTabs(this.container, GUEST_TEACHER_SWITCH_TABS);
+            initTabs(this.container, isBeingPlayed ? GUEST_TEACHER_TABS : GUEST_TEACHER_SWITCH_TABS);
             this.preferences.putString('selected_user_type', ProfileType.TEACHER);
           }
 

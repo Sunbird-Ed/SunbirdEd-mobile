@@ -485,5 +485,7 @@
   "NO_USERS_IN_THIS_GROUP": "No Users in this group",
   "OTHER_USERS": "Other Users",
   "SWITCHING_TO": "Switched to '{{%s}}'",
-  "QUESTION_MARKS": "Question (Marks)"
+  "QUESTION_MARKS": "Question (Marks)",
+  "PLEASE_SELECT_USER": "Please select a user"
+
 }
