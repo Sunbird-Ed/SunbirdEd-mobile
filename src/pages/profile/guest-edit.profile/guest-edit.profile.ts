@@ -1,9 +1,20 @@
 import { TranslateService } from '@ngx-translate/core';
 import { Component } from '@angular/core';
-import { NavController, NavParams, ToastController, Events, LoadingController, IonicApp, Platform } from 'ionic-angular';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  NavController,
+  NavParams,
+  ToastController,
+  Events,
+  LoadingController,
+  IonicApp,
+  Platform
+} from 'ionic-angular';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators
+} from '@angular/forms';
 import * as _ from 'lodash';
-
 import {
   CategoryRequest,
   ProfileService,
@@ -22,7 +33,11 @@ import {
 } from 'sunbird';
 import { FormAndFrameworkUtilService } from '../formandframeworkutil.service';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
-import { initTabs, GUEST_STUDENT_TABS, GUEST_TEACHER_TABS } from '../../../app/module.service';
+import {
+  initTabs,
+  GUEST_STUDENT_TABS,
+  GUEST_TEACHER_TABS
+} from '../../../app/module.service';
 import { App } from 'ionic-angular';
 
 /* Interface for the Toast Object */
@@ -36,7 +51,6 @@ export interface toastOptions {
   selector: 'page-guest-edit.profile',
   templateUrl: 'guest-edit.profile.html'
 })
-
 export class GuestEditProfilePage {
   guestEditForm: FormGroup;
   profile: any = {};
@@ -133,8 +147,6 @@ export class GuestEditProfilePage {
         this.selectedLanguage = val;
       }
     });
-
-
   }
 
   ionViewDidLoad() {
@@ -346,7 +358,6 @@ export class GuestEditProfilePage {
    */
 
   onSubmit(): void {
-
     if (!this.isFormValid) {
       this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
       return;
@@ -466,10 +477,9 @@ export class GuestEditProfilePage {
     },
       (error: any) => {
         loader.dismiss();
-        this.getToast(this.translateMessage("Fill_THE_MANDATORY_FIELDS")).present();
+        this.getToast(this.translateMessage("FILL_THE_MANDATORY_FIELDS")).present();
       });
   }
-
 
   /**
    * Used to Translate message to current Language

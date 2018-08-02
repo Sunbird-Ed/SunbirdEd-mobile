@@ -180,7 +180,7 @@
   "FETCHING_CONTENTS": "Fetching content: {{%s}}%",
   "FILE_SIZE": "Size [{{%s}}]",
   "FILTER": "Filter",
-  "Fill_THE_MANDATORY_FIELDS": "Please fill all the mandatory fields",
+  "FILL_THE_MANDATORY_FIELDS": "Please fill all the mandatory fields",
   "FILTER_ADDED": "Added",
   "FILTER_BY": "FILTER BY",
   "FIRST_NAME": "NAME",
