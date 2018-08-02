@@ -1,14 +1,55 @@
 import { ContentRatingAlertComponent } from './../../component/content-rating-alert/content-rating-alert';
 import { ContentActionsComponent } from './../../component/content-actions/content-actions';
-import { Component, NgZone, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, PopoverController, Navbar, Platform , IonicApp , ViewController } from 'ionic-angular';
-import { ContentService, CourseService, FileUtil, ImpressionType, PageId, Environment, TelemetryService, Mode, ShareUtil, InteractType, InteractSubtype, Rollup, BuildParamService, SharedPreferences, ProfileType, CorrelationData } from 'sunbird';
+import {
+  Component,
+  NgZone,
+  ViewChild
+} from '@angular/core';
+import {
+  IonicPage,
+  NavController,
+  NavParams,
+  Events,
+  ToastController,
+  LoadingController,
+  PopoverController,
+  Navbar,
+  Platform,
+  IonicApp
+} from 'ionic-angular';
+import {
+  ContentService,
+  CourseService,
+  FileUtil,
+  ImpressionType,
+  PageId,
+  Environment,
+  TelemetryService,
+  Mode,
+  ShareUtil,
+  InteractType,
+  InteractSubtype,
+  Rollup,
+  BuildParamService,
+  SharedPreferences,
+  ProfileType,
+  CorrelationData
+} from 'sunbird';
 import { SocialSharing } from "@ionic-native/social-sharing";
 import { Network } from '@ionic-native/network';
 import * as _ from 'lodash';
-import { generateInteractTelemetry, Map, generateStartTelemetry, generateImpressionTelemetry, generateEndTelemetry } from '../../app/telemetryutil';
+import {
+  generateInteractTelemetry,
+  Map,
+  generateStartTelemetry,
+  generateImpressionTelemetry,
+  generateEndTelemetry
+} from '../../app/telemetryutil';
 import { TranslateService } from '@ngx-translate/core';
-import { EventTopics, ProfileConstants } from '../../app/app.constant';
+import {
+  EventTopics,
+  ProfileConstants
+} from '../../app/app.constant';
 import { ShareUrl } from '../../app/app.constant';
 import { AppGlobalService } from '../../service/app-global.service';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
@@ -166,13 +207,28 @@ export class ContentDetailsPage {
    * @param toastCtrl
    */
   @ViewChild(Navbar) navBar: Navbar;
-  constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, private telemetryService: TelemetryService, zone: NgZone,
-    private events: Events, toastCtrl: ToastController, loadingCtrl: LoadingController,
-    private fileUtil: FileUtil, public popoverCtrl: PopoverController, private shareUtil: ShareUtil,
-    private social: SocialSharing, public platform: Platform, public translate: TranslateService,
-    private buildParamService: BuildParamService, private network: Network,
+  constructor(navCtrl: NavController,
+    navParams: NavParams,
+    contentService: ContentService,
+    private telemetryService: TelemetryService,
+    zone: NgZone,
+    private events: Events,
+    toastCtrl: ToastController,
+    loadingCtrl: LoadingController,
+    private fileUtil: FileUtil,
+    private popoverCtrl: PopoverController,
+    private shareUtil: ShareUtil,
+    private social: SocialSharing,
+    private platform: Platform,
+    private translate: TranslateService,
+    private buildParamService: BuildParamService,
+    private network: Network,
     private courseService: CourseService,
-    private preference: SharedPreferences, private appGlobalService: AppGlobalService , private alertCtrl: AlertController , private ionicApp : IonicApp) {
+    private preference: SharedPreferences,
+    private appGlobalService: AppGlobalService,
+    private alertCtrl: AlertController,
+    private ionicApp: IonicApp) {
+
     this.getUserId();
     this.navCtrl = navCtrl;
     this.navParams = navParams;
@@ -181,6 +237,7 @@ export class ContentDetailsPage {
     this.toastCtrl = toastCtrl;
     this.loadingCtrl = loadingCtrl;
     console.warn('Inside content details page');
+
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.didViewLoad = false;
 
@@ -223,10 +280,10 @@ export class ContentDetailsPage {
       this.isNetworkAvailable = true;
     });
     this.launchPlayer = this.navParams.get('launchplayer');
-    console.log('launch Player is' , this.launchPlayer);
+    console.log('launch Player is', this.launchPlayer);
     events.subscribe('launchPlayer', (status) => {
-      console.log('----------->>>>>>>>>' , status);
-      if(status){
+      console.log('----------->>>>>>>>>', status);
+      if (status) {
         this.playContent();
       }
     });
@@ -434,7 +491,6 @@ export class ContentDetailsPage {
 
   }
 
-  //
   generateTemetry() {
     console.log('Before =>', this.didViewLoad);
     console.log('is content played', this.isContentPlayed);
@@ -470,7 +526,6 @@ export class ContentDetailsPage {
   }
 
   generateImpressionEvent(objectId, objectType, objectVersion) {
-
     this.telemetryService.impression(generateImpressionTelemetry(
       ImpressionType.DETAIL, "",
       PageId.CONTENT_DETAIL,
@@ -558,7 +613,6 @@ export class ContentDetailsPage {
     }
     this.setContentDetails(this.identifier, true, false);
     this.subscribeGenieEvent();
-    
   }
 
   /**
@@ -584,9 +638,9 @@ export class ContentDetailsPage {
     }, 11);
   }
 
-    /**
-   * It will Dismiss active popup
-   */
+  /**
+ * It will Dismiss active popup
+ */
   dismissPopup() {
     let activePortal = this.ionicApp._modalPortal.getActive() || this.ionicApp._overlayPortal.getActive();
 
@@ -751,19 +805,19 @@ export class ContentDetailsPage {
   /**
    * alert for playing the content
    */
-  alertForPlayingContent(content){
+  alertForPlayingContent(content) {
     let self = this;
-    let profile = this.appGlobalService.getCurrentUser();    
+    let profile = this.appGlobalService.getCurrentUser();
 
     let alert = this.alertCtrl.create({
       title: this.translateMessage('PLAY_AS'),
       mode: 'wp',
       //message: this.translateMessage('GROUP_DELETE_CONFIRM_MESSAGE'),
-      message : profile.handle,
+      message: profile.handle,
       cssClass: 'confirm-alert',
       buttons: [
         {
-          text: this.translateMessage('Yes'),
+          text: this.translateMessage('YES'),
           cssClass: 'alert-btn-delete',
           handler: () => {
             console.log('Cancel clicked');
@@ -774,8 +828,8 @@ export class ContentDetailsPage {
           text: this.translateMessage('CHANGE_USER'),
           cssClass: 'alert-btn-cancel',
           handler: () => {
-            this.navCtrl.push(UserAndGroupsPage , {
-              playContent : this.content.playContent
+            this.navCtrl.push(UserAndGroupsPage, {
+              playContent: this.content.playContent
             })
           }
         },
@@ -789,9 +843,9 @@ export class ContentDetailsPage {
         }
       ]
     });
-      alert.present();
+    alert.present();
   }
-  
+
   /**
    * Play content
    */
