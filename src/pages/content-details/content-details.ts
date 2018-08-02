@@ -206,7 +206,7 @@ export class ContentDetailsPage {
       this.isContentPlayed = true;
       if (this.isPlayerLaunched && !this.guestUser) {
         this.isPlayerLaunched = false;
-        this.setContentDetails(this.identifier, false, true);
+        this.setContentDetails(this.identifier, false, false /* No Automatic Rating for 1.9.0 */);
       }
       this.updateContentProgress();
     });
