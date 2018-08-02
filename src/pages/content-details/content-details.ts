@@ -1,7 +1,7 @@
 import { ContentRatingAlertComponent } from './../../component/content-rating-alert/content-rating-alert';
 import { ContentActionsComponent } from './../../component/content-actions/content-actions';
 import { Component, NgZone, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, PopoverController, Navbar, Platform } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, PopoverController, Navbar, Platform , IonicApp , ViewController } from 'ionic-angular';
 import { ContentService, CourseService, FileUtil, ImpressionType, PageId, Environment, TelemetryService, Mode, ShareUtil, InteractType, InteractSubtype, Rollup, BuildParamService, SharedPreferences, ProfileType, CorrelationData } from 'sunbird';
 import { SocialSharing } from "@ionic-native/social-sharing";
 import { Network } from '@ionic-native/network';
@@ -153,6 +153,7 @@ export class ContentDetailsPage {
   private baseUrl = "";
   private shouldGenerateEndTelemetry: boolean = false;
   private source: string = "";
+  unregisterBackButton: any;
 
   /**
    *
@@ -170,7 +171,7 @@ export class ContentDetailsPage {
     private social: SocialSharing, public platform: Platform, public translate: TranslateService,
     private buildParamService: BuildParamService, private network: Network,
     private courseService: CourseService,
-    private preference: SharedPreferences, private appGlobalService: AppGlobalService , private alertCtrl: AlertController) {
+    private preference: SharedPreferences, private appGlobalService: AppGlobalService , private alertCtrl: AlertController , private ionicApp : IonicApp) {
     this.getUserId();
     this.navCtrl = navCtrl;
     this.navParams = navParams;
@@ -534,6 +535,9 @@ export class ContentDetailsPage {
    * Ionic life cycle hook
    */
   ionViewWillEnter(): void {
+    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+      this.dismissPopup();
+    }, 11);
     this.cardData = this.navParams.get('content');
     this.isChildContent = this.navParams.get('isChildContent');
     this.cardData.depth = this.navParams.get('depth') === undefined ? '' : this.navParams.get('depth');
@@ -552,6 +556,7 @@ export class ContentDetailsPage {
     }
     this.setContentDetails(this.identifier, true, false);
     this.subscribeGenieEvent();
+    
   }
 
   /**
@@ -571,6 +576,22 @@ export class ContentDetailsPage {
       }
       this.navCtrl.pop();
       this.backButtonFunc();
+    }
+    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+      this.dismissPopup();
+    }, 11);
+  }
+
+    /**
+   * It will Dismiss active popup
+   */
+  dismissPopup() {
+    let activePortal = this.ionicApp._modalPortal.getActive() || this.ionicApp._overlayPortal.getActive();
+
+    if (activePortal) {
+      activePortal.dismiss();
+    } else {
+      this.navCtrl.pop();
     }
   }
 
@@ -732,7 +753,6 @@ export class ContentDetailsPage {
       buttons: [
         {
           text: this.translateMessage('Yes'),
-          role: 'cancel',
           cssClass: 'alert-btn-delete',
           handler: () => {
             console.log('Cancel clicked');
@@ -747,10 +767,18 @@ export class ContentDetailsPage {
               playContent : this.content.playContent
             })
           }
+        },
+        {
+          text: 'x',
+          role: 'cancel',
+          cssClass: 'closeButton',
+          handler: () => {
+            console.log('close icon clicked');
+          }
         }
       ]
     });
-    alert.present();
+      alert.present();
   }
   
   /**
