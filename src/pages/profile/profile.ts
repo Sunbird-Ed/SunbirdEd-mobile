@@ -154,7 +154,10 @@ export class ProfilePage {
     this.refreshProfileData()
       .then(() => {
         setTimeout(() => {
-          if (refresher) refresher.complete();
+          if (refresher) {
+            refresher.complete();
+          }
+          this.events.publish('refresh:profile');
           loader.dismiss();
         }, 500);
       })
