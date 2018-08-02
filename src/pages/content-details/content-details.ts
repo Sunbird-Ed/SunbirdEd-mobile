@@ -127,8 +127,8 @@ export class ContentDetailsPage {
   isUpdateAvail: boolean = false;
 
   /**
-   * User Rating 
-   * 
+   * User Rating
+   *
    */
   userRating: number = 0;
   private ratingComment: string = '';
@@ -144,6 +144,7 @@ export class ContentDetailsPage {
   launchPlayer: boolean;
 
   profileType: string = '';
+  isResumedCourse: boolean;
 
   private objId;
   private objType;
@@ -181,13 +182,14 @@ export class ContentDetailsPage {
     console.warn('Inside content details page');
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.didViewLoad = false;
-      this.navCtrl.pop();
+
+      this.popToPreviousPage();
       this.generateEndEvent(this.objId, this.objType, this.objVer);
       if (this.shouldGenerateEndTelemetry) {
         this.generateQRSessionEndEvent(this.source, this.cardData.identifier);
       }
       this.backButtonFunc();
-    }, 10)
+    }, 11)
     this.objRollup = new Rollup();
     this.buildParamService.getBuildConfigParam("BASE_URL", (response: any) => {
       this.baseUrl = response
@@ -364,11 +366,11 @@ export class ContentDetailsPage {
 
     this.content.contentAccess = data.result.contentAccess ? data.result.contentAccess : [];
 
-    if(this.cardData && this.cardData.hierarchyInfo){
-      data.result.hierarchyInfo=this.cardData.hierarchyInfo;
+    if (this.cardData && this.cardData.hierarchyInfo) {
+      data.result.hierarchyInfo = this.cardData.hierarchyInfo;
       this.isChildContent = true;
     }
-    
+
     this.content.playContent = JSON.stringify(data.result);
     if (this.content.gradeLevel && this.content.gradeLevel.length && typeof this.content.gradeLevel !== 'string') {
       this.content.gradeLevel = this.content.gradeLevel.join(", ");
@@ -539,13 +541,13 @@ export class ContentDetailsPage {
     this.cardData.depth = this.navParams.get('depth') === undefined ? '' : this.navParams.get('depth');
     this.corRelationList = this.navParams.get('corRelation');
     this.identifier = this.cardData.contentId || this.cardData.identifier;
-    let isResumedCourse = this.navParams.get('isResumedCourse');
+    this.isResumedCourse = Boolean(this.navParams.get('isResumedCourse'));
     this.source = this.navParams.get('source');
     this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
-    if (!isResumedCourse) {
+    if (!this.isResumedCourse) {
       this.generateTemetry();
     }
-    if (isResumedCourse === true) {
+    if (this.isResumedCourse === true) {
       this.navCtrl.insert(this.navCtrl.length() - 1, EnrolledCourseDetailsPage, {
         content: this.navParams.get('resumedCourseCardData')
       })
@@ -569,11 +571,18 @@ export class ContentDetailsPage {
       if (this.shouldGenerateEndTelemetry) {
         this.generateQRSessionEndEvent(this.source, this.cardData.identifier);
       }
-      this.navCtrl.pop();
+      this.popToPreviousPage();
       this.backButtonFunc();
     }
   }
 
+  popToPreviousPage() {
+    if (this.isResumedCourse) {
+      this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 3));
+    } else {
+      this.navCtrl.pop();
+    }
+  }
   /**
    * Show error messages
    *
@@ -723,11 +732,13 @@ export class ContentDetailsPage {
    */
   alertForPlayingContent(content){
     let self = this;
+    let profile = this.appGlobalService.getCurrentUser();    
+
     let alert = this.alertCtrl.create({
       title: this.translateMessage('PLAY_AS'),
       mode: 'wp',
       //message: this.translateMessage('GROUP_DELETE_CONFIRM_MESSAGE'),
-      message : content.name,
+      message : profile.handle,
       cssClass: 'confirm-alert',
       buttons: [
         {
