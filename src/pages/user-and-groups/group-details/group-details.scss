@@ -57,5 +57,29 @@ page-group-member {
           margin-left: -97px;
           margin-top: -144x;
         }
+        .playcontent-label{
+          margin-top: 55.2vh;
+          background-color:#a1a1a1;
+          color: white;
+          width: 100%;
+         
+      
+        }
+
+        .error-message-contentplay{
+          width: -webkit-fill-available;
+          background-color: #a1a1a1;
+          padding: 5px 0px 5px 20px;
+          color: white;
+          position: fixed !important;
+          bottom: 12vh !important;
+        }
+        .no-padding{
+          padding: 0px !important;
+        }
+        .playcontent-label{
+          font-size: 1.4rem !important;
+          padding: 1px 0px 1px 6px !important;
+        }
 }
 

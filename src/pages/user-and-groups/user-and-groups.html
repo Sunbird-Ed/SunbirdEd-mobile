@@ -20,8 +20,9 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-<div [ngSwitch]="segmentType" padding>
+<div [ngSwitch]="segmentType">
     <ion-list *ngSwitchCase="'users'">
+      <div padding>
       <div class="custom-margin-top">
         <div *ngIf="profileDetails?.firstName">
           <p ion-text text-uppercase color="dark_gray" class="subTitle">{{ 'LOGGED_IN_AS' | translate}}</p>
@@ -47,7 +48,7 @@
           </p>
         </div>
         <ion-list *ngIf="userList?.length">
-        <ion-label ion-text color="dark_gray" text-uppercase class="subTitle">{{'USERS' | translate}}</ion-label>
+        <ion-label ion-text color="dark_gray" *ngIf="!playContent" text-uppercase class="subTitle">{{'USERS' | translate}}</ion-label>
           <ion-item *ngFor="let user of userList; let i=index;" class="item-background radius" margin-bottom [ngClass]="i===selectedUserIndex ? 'blueBorder' : ''"
             no-lines>
             <ion-row class="bg-color-white">
@@ -69,8 +70,15 @@
           </ion-item>
         </ion-list>
       </div>
+      
+    </div>
+    <div *ngIf="playContent && selectedUserIndex === -1" class="error-message-contentplay">
+        <div><ion-icon ios="ios-information-circle" md="md-information-circle"></ion-icon>
+          Please select user</div>
+    </div>
     </ion-list>
     <ion-list *ngSwitchCase="'groups'">
+      <div padding>
       <div class="firstSection" *ngIf="showEmptyGroupsMessage">
         <div class="img-container">
           <img class="image_style" src="assets/imgs/ic_businessman.png">
@@ -115,6 +123,7 @@
           </ion-item>
         </div>
       </ion-list>
+    </div>
     </ion-list>
   </div>
 </ion-content>
@@ -125,13 +134,13 @@
         <button *ngIf="!playContent" ion-button block center (click)="switchAccountConfirmBox()">
           {{'SWITCH_ACCOUNT' | translate}}
         </button>
-        <button *ngIf="playContent" ion-button block center (click)="play()">
+        <button *ngIf="playContent" ion-button block  (click)="play()">
             {{'PLAY' | translate}}
           </button>
       </div>
       <ng-template #enableCreateButton>
         <button ion-button outline block *ngIf="segmentType=='users' && !this.playContent"  (click)="createUser()">{{ 'CREATE_NEW_USER' | translate}}</button>
-        <button ion-button block *ngIf="this.playContent && segmentType=='users' " [disabled]="!userList.length" (click)="play()">{{ 'PLAY' | translate}}</button>
+        <button ion-button block *ngIf="this.playContent && segmentType=='users'"  [disabled]="true">{{ 'PLAY' | translate}}</button>
         <button ion-button outline block *ngIf="segmentType=='groups' && !this.playContent" (click)="createGroup()" >{{ 'CREATE_NEW_GROUP' | translate}}</button>
       </ng-template>
     </ion-col>

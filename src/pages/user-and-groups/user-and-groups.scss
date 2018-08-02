@@ -78,6 +78,15 @@ page-user-and-groups {
       .bg-color-white {
         background-color: map-get($colors, light_gray) !important;
       }
+
+      .error-message-contentplay{
+        width: -webkit-fill-available;
+        background-color: #a1a1a1;
+        padding: 5px 0px 5px 20px;
+        color: white;
+        position: fixed !important;
+        bottom: 12vh !important;
+      }
       .advanced-menu{
         padding: 0 !important;
         // padding-top: 0 !important;

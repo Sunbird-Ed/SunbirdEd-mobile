@@ -8,7 +8,8 @@
     </ion-buttons>
   </ion-navbar>
 </ion-header>
-<ion-content padding>
+<ion-content>
+  <div padding>
   <ion-list>
     <div *ngIf="isNoUsers" text-center>
       <div class="img-container">
@@ -47,7 +48,13 @@
       </ion-row>
     </ion-item>
   </ion-list>
+</div>
+  <div *ngIf="playContent && selectedUserIndex === -1" class="error-message-contentplay">
+      <div><ion-icon ios="ios-information-circle" md="md-information-circle"></ion-icon>
+        Please select user</div>
+  </div>
 </ion-content>
+
 <ion-footer *ngIf="selectedUserIndex !== -1;">
   <ion-row padding>
     <ion-col col-md-10 offset-md-1>
@@ -59,6 +66,16 @@
           {{'PLAY' | translate}}
         </button>
       </div>
+
+    </ion-col>
+  </ion-row>
+</ion-footer>
+<ion-footer *ngIf="playContent && selectedUserIndex === -1">
+  <ion-row padding>
+    <ion-col col-md-10 offset-md-1>
+      <button ion-button block center [disabled]="true" (click)="play()">
+        {{'PLAY' | translate}}
+      </button>
     </ion-col>
   </ion-row>
 </ion-footer>
