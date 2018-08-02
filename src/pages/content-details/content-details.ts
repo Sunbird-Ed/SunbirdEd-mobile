@@ -1,14 +1,57 @@
 import { ContentRatingAlertComponent } from './../../component/content-rating-alert/content-rating-alert';
 import { ContentActionsComponent } from './../../component/content-actions/content-actions';
-import { Component, NgZone, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, PopoverController, Navbar, Platform, IonicApp, ViewController } from 'ionic-angular';
-import { ContentService, CourseService, FileUtil, ImpressionType, PageId, Environment, TelemetryService, Mode, ShareUtil, InteractType, InteractSubtype, Rollup, BuildParamService, SharedPreferences, ProfileType, CorrelationData, ProfileService, ProfileRequest } from 'sunbird';
+import {
+  Component,
+  NgZone,
+  ViewChild
+} from '@angular/core';
+import {
+  IonicPage,
+  NavController,
+  NavParams,
+  Events,
+  ToastController,
+  LoadingController,
+  PopoverController,
+  Navbar,
+  Platform,
+  IonicApp
+} from 'ionic-angular';
+import {
+  ContentService,
+  CourseService,
+  FileUtil,
+  ImpressionType,
+  PageId,
+  Environment,
+  TelemetryService,
+  Mode,
+  ShareUtil,
+  InteractType,
+  InteractSubtype,
+  Rollup,
+  BuildParamService,
+  SharedPreferences,
+  ProfileType,
+  CorrelationData,
+  ProfileService,
+  ProfileRequest
+} from 'sunbird';
 import { SocialSharing } from "@ionic-native/social-sharing";
 import { Network } from '@ionic-native/network';
 import * as _ from 'lodash';
-import { generateInteractTelemetry, Map, generateStartTelemetry, generateImpressionTelemetry, generateEndTelemetry } from '../../app/telemetryutil';
+import {
+  generateInteractTelemetry,
+  Map,
+  generateStartTelemetry,
+  generateImpressionTelemetry,
+  generateEndTelemetry
+} from '../../app/telemetryutil';
 import { TranslateService } from '@ngx-translate/core';
-import { EventTopics, ProfileConstants } from '../../app/app.constant';
+import {
+  EventTopics,
+  ProfileConstants
+} from '../../app/app.constant';
 import { ShareUrl } from '../../app/app.constant';
 import { AppGlobalService } from '../../service/app-global.service';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
@@ -168,11 +211,22 @@ export class ContentDetailsPage {
    * @param toastCtrl
    */
   @ViewChild(Navbar) navBar: Navbar;
-  constructor(navCtrl: NavController, navParams: NavParams, contentService: ContentService, private telemetryService: TelemetryService, zone: NgZone,
-    private events: Events, toastCtrl: ToastController, loadingCtrl: LoadingController,
-    private fileUtil: FileUtil, public popoverCtrl: PopoverController, private shareUtil: ShareUtil,
-    private social: SocialSharing, public platform: Platform, public translate: TranslateService,
-    private buildParamService: BuildParamService, private network: Network,
+  constructor(navCtrl: NavController,
+    navParams: NavParams,
+    contentService: ContentService,
+    private telemetryService: TelemetryService,
+    zone: NgZone,
+    private events: Events,
+    toastCtrl: ToastController,
+    loadingCtrl: LoadingController,
+    private fileUtil: FileUtil,
+    private popoverCtrl: PopoverController,
+    private shareUtil: ShareUtil,
+    private social: SocialSharing,
+    private platform: Platform,
+    private translate: TranslateService,
+    private buildParamService: BuildParamService,
+    private network: Network,
     private courseService: CourseService,
     private preference: SharedPreferences,
     private appGlobalService: AppGlobalService,
@@ -187,6 +241,7 @@ export class ContentDetailsPage {
     this.toastCtrl = toastCtrl;
     this.loadingCtrl = loadingCtrl;
     console.warn('Inside content details page');
+
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.didViewLoad = false;
 
@@ -458,7 +513,6 @@ export class ContentDetailsPage {
 
   }
 
-  //
   generateTemetry() {
     console.log('Before =>', this.didViewLoad);
     console.log('is content played', this.isContentPlayed);
@@ -494,7 +548,6 @@ export class ContentDetailsPage {
   }
 
   generateImpressionEvent(objectId, objectType, objectVersion) {
-
     this.telemetryService.impression(generateImpressionTelemetry(
       ImpressionType.DETAIL, "",
       PageId.CONTENT_DETAIL,
@@ -582,7 +635,6 @@ export class ContentDetailsPage {
     }
     this.setContentDetails(this.identifier, true, false);
     this.subscribeGenieEvent();
-
   }
 
   /**
@@ -781,47 +833,44 @@ export class ContentDetailsPage {
    * alert for playing the content
    */
   alertForPlayingContent(content) {
-    if(!AppGlobalService.isPlayerLaunched && this.userCount > 1){
-      let self = this;
-      let profile = this.appGlobalService.getCurrentUser();
-  
-      let alert = this.alertCtrl.create({
-        title: this.translateMessage('PLAY_AS'),
-        mode: 'wp',
-        //message: this.translateMessage('GROUP_DELETE_CONFIRM_MESSAGE'),
-        message: profile.handle,
-        cssClass: 'confirm-alert',
-        buttons: [
-          {
-            text: this.translateMessage('Yes'),
-            cssClass: 'alert-btn-delete',
-            handler: () => {
-              AppGlobalService.isPlayerLaunched =true;
-              this.playContent();
-            }
-          },
-          {
-            text: this.translateMessage('CHANGE_USER'),
-            cssClass: 'alert-btn-cancel',
-            handler: () => {
-              this.navCtrl.push(UserAndGroupsPage, {
-                playContent: this.content.playContent
-              })
-            }
-          },
-          {
-            text: 'x',
-            role: 'cancel',
-            cssClass: 'closeButton',
-            handler: () => {
-              console.log('close icon clicked');
-            }
+    let self = this;
+    let profile = this.appGlobalService.getCurrentUser();
+
+    let alert = this.alertCtrl.create({
+      title: this.translateMessage('PLAY_AS'),
+      mode: 'wp',
+      //message: this.translateMessage('GROUP_DELETE_CONFIRM_MESSAGE'),
+      message: profile.handle,
+      cssClass: 'confirm-alert',
+      buttons: [
+        {
+          text: this.translateMessage('YES'),
+          cssClass: 'alert-btn-delete',
+          handler: () => {
+            console.log('Cancel clicked');
+            this.playContent();
           }
-        ]
-      });
-      alert.present();
-    }
-   
+        },
+        {
+          text: this.translateMessage('CHANGE_USER'),
+          cssClass: 'alert-btn-cancel',
+          handler: () => {
+            this.navCtrl.push(UserAndGroupsPage, {
+              playContent: this.content.playContent
+            })
+          }
+        },
+        {
+          text: 'x',
+          role: 'cancel',
+          cssClass: 'closeButton',
+          handler: () => {
+            console.log('close icon clicked');
+          }
+        }
+      ]
+    });
+    alert.present();
   }
 
   /**

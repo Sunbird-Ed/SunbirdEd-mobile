@@ -24,7 +24,7 @@ export class GroupReportListPage {
         prop: 'score'
     }];
     fromQuestionColumns = [{
-        name: this.translateMessage('QUESTION_PLURAL'),
+        name: this.translateMessage('QUESTIONS'),
         prop: 'index'
     }, {
         name: this.translateMessage('MARKS'),

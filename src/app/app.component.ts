@@ -22,7 +22,8 @@ import {
   TelemetryService,
   SharedPreferences,
   ProfileType,
-  UserProfileService
+  UserProfileService,
+  ProfileService
 } from "sunbird";
 import {
   initTabs,
@@ -90,6 +91,9 @@ export class MyApp {
     private userProfileService: UserProfileService,
     private formAndFrameowrkUtilService: FormAndFrameworkUtilService,
     private event: Events,
+    private profile: ProfileService,
+    private preferences: SharedPreferences,
+    private container: ContainerService
   ) {
 
     let that = this;
@@ -320,6 +324,25 @@ export class MyApp {
               this.authService.endSession();
               (<any>window).splashscreen.clearPrefs();
             }
+            this.profile.getCurrentUser((response) => {
+              let guestProfile = JSON.parse(response);
+
+              if (guestProfile.profileType == ProfileType.STUDENT) {
+                initTabs(this.container, GUEST_STUDENT_TABS);
+                this.preferences.putString('selected_user_type', ProfileType.STUDENT);
+              } else {
+                initTabs(this.container, GUEST_TEACHER_TABS);
+                this.preferences.putString('selected_user_type', ProfileType.TEACHER);
+              }
+
+              this.event.publish('refresh:profile');
+              this.event.publish(AppGlobalService.USER_INFO_UPDATED);
+
+              this.app.getRootNav().setRoot(TabsPage);
+
+            }, (error) => {
+            });
+
           });
         }
       });
