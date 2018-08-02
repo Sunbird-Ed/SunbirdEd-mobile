@@ -61,7 +61,7 @@
     </span>
   </ion-list-header>
 
-  <ion-item padding-horizontal *ngFor="let ed of profile?.education">
+  <ion-item padding-horizontal *ngFor="let ed of profile?.education; let last = last" no-lines="last">
     <ion-row>
       <ion-col col-2 class="padding-left-none">
         <div class="image-holder">
@@ -93,7 +93,7 @@
     </span>
   </ion-list-header>
 
-  <ion-item padding-horizontal *ngFor="let job of profile?.jobProfile">
+  <ion-item padding-horizontal *ngFor="let job of profile?.jobProfile; let last = last" no-lines="last">
     <ion-row justify-content-start>
       <ion-col col-2 class="padding-left-none">
         <div class="image-holder">
@@ -128,7 +128,7 @@
     </span>
   </ion-list-header>
 
-  <ion-item padding-horizontal *ngFor="let addr of profile?.address">
+  <ion-item padding-horizontal *ngFor="let addr of profile?.address; let last = last" no-lines="last">
     <ion-row justify-content-start>
       <ion-col col-2 class="padding-left-none">
         <div class="image-holder">

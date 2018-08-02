@@ -154,7 +154,10 @@ export class ProfilePage {
     this.refreshProfileData()
       .then(() => {
         setTimeout(() => {
-          if (refresher) refresher.complete();
+          if (refresher) {
+            refresher.complete();
+          }
+          this.events.publish('refresh:profile');
           loader.dismiss();
         }, 500);
       })
@@ -310,6 +313,9 @@ export class ProfilePage {
           break;
         case "grade":
           this.setMissingProfileDetails('ADD_CLASS');
+          break;
+        case "lastName":
+        this.setMissingProfileDetails('ADD_LAST_NAME');
           break;
       }
     }

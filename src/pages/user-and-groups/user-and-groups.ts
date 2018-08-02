@@ -23,6 +23,7 @@ import {
   ContainerService,
   ProfileType,
   TabsPage,
+  TelemetryService,
   SharedPreferences,
   OAuthService,
   GroupRequest,
@@ -38,15 +39,15 @@ import {
 import { GuestEditProfilePage } from '../profile/guest-edit.profile/guest-edit.profile';
 import { IonicApp } from 'ionic-angular';
 import { ShareUserAndGroupPage } from './share-user-and-groups/share-user-and-groups';
-import { Events } from 'ionic-angular';
 import { AppGlobalService } from '../../service/app-global.service';
 import { initTabs, GUEST_STUDENT_SWITCH_TABS, GUEST_TEACHER_SWITCH_TABS } from '../../app/module.service';
-import { App } from 'ionic-angular';
+import { App, Events } from 'ionic-angular';
 import { group } from '@angular/core/src/animation/dsl';
 import { Network } from '@ionic-native/network';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { Map } from "../../app/telemetryutil";
-import * as _ from 'lodash';
+import { ContentDetailsPage } from '../content-details/content-details';
+
 
 @IonicPage()
 @Component({
@@ -61,6 +62,7 @@ export class UserAndGroupsPage {
   isLoggedInUser: boolean = false;
   currentUserId: string;
   currentGroupId: string;
+  playContent : any;
 
   userList: Array<Profile> = [];
   groupList: Array<Group> = [];
@@ -96,6 +98,7 @@ export class UserAndGroupsPage {
 
     /* Check userList length and show message or list accordingly */
     this.currentUserId = this.navParams.get('userId');
+    this.playContent = this.navParams.get('playContent') || undefined;
 
     if (!this.currentUserId && this.appGlobalService.getCurrentUser()) {
       this.currentUserId = this.appGlobalService.getCurrentUser().uid;
@@ -263,7 +266,9 @@ export class UserAndGroupsPage {
       groupInfo: this.groupList[index],
       currentUserId: this.currentUserId,
       currentGruopId: this.currentGroupId,
-      profile: this.profileDetails
+      profile: this.profileDetails,
+      playContent: this.playContent
+
     });
   }
 
@@ -446,6 +451,21 @@ export class UserAndGroupsPage {
     );
 
   }
+  /* shows no user message when we navigate here from play content */
+  noUserMessge(){
+    if(this.playContent && !this.userList.length){
+      return true;
+      
+    }
+    return false;
+  }
+ /**condition for disabling the play button */
+  disablePlayButton(){
+    if(this.selectedUserIndex === -1 && !this.userList.length){
+      return true;
+    }
+    return false;
+  }
 
   /** Delete alert box */
   deleteGroupConfirmBox(index) {
@@ -474,6 +494,13 @@ export class UserAndGroupsPage {
       ]
     });
     alert.present();
+  }
+  /**Navigates to play content details page nd launch the player */
+  play(){
+    console.log('play is getting clicked');
+    this.event.publish('launchPlayer', true);
+    this.navCtrl.pop();
+    
   }
 
   deleteGroup(index: number) {

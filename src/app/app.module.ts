@@ -82,8 +82,13 @@ export class AppModule {
 
   registerForEvent() {
     this.eventService.register((response) => {
-      // console.log("Event : " + response);
-      this.events.publish('genie.event', response);
+      let  res = JSON.parse(response);
+      if(res && res.type === "genericEvent"){
+        this.events.publish('generic.event', response);
+      }else{
+        this.events.publish('genie.event', response);
+      }
+      
     }, (error) => {
       // console.log("Event : " + error);
     });

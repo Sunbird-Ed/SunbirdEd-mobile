@@ -62,6 +62,7 @@
   "CANCEL": "CANCEL",
   "CANCEL_DOWNLOAD": "CANCEL DOWNLOAD",
   "CHANGE": "Change",
+  "CHANGE_USER": "Change User",
   "CHANGE_LANGUAGE": "Change Language",
   "CHANGE_ROLE": "Change Role",
   "CHECK_FOR_UPDATES": "Check for Updates",
@@ -179,6 +180,7 @@
   "FETCHING_CONTENTS": "Fetching content: {{%s}}%",
   "FILE_SIZE": "Size [{{%s}}]",
   "FILTER": "Filter",
+  "FILL_THE_MANDATORY_FIELDS": "Please fill all the mandatory fields",
   "FILTER_ADDED": "Added",
   "FILTER_BY": "FILTER BY",
   "FIRST_NAME": "NAME",
@@ -315,6 +317,7 @@
   "PINCODE": "Pincode",
   "PINNED_BY_ADMIN": "Pinned by admin",
   "PLAY": "PLAY",
+  "PLAY_AS": "PLAY AS",
   "POPULAR_COURSES": "Popular Courses",
   "POSITION": "Position",
   "PREVIEWS": "PREVIEWS",
@@ -492,5 +495,6 @@
   "NO_USERS_IN_THIS_GROUP": "No Users in this group",
   "OTHER_USERS": "Other Users",
   "SWITCHING_TO": "Switched to '{{%s}}'",
-  "QUESTION_MARKS": "Question (Marks)"
+  "QUESTION_MARKS": "Question (Marks)",
+  "ADD_LAST_NAME": "Add Last name"
 }

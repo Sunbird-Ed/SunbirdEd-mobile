@@ -1,7 +1,7 @@
 import { ContentRatingAlertComponent } from './../../component/content-rating-alert/content-rating-alert';
 import { ContentActionsComponent } from './../../component/content-actions/content-actions';
 import { Component, NgZone, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, PopoverController, Navbar, Platform } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, PopoverController, Navbar, Platform , IonicApp , ViewController } from 'ionic-angular';
 import { ContentService, CourseService, FileUtil, ImpressionType, PageId, Environment, TelemetryService, Mode, ShareUtil, InteractType, InteractSubtype, Rollup, BuildParamService, SharedPreferences, ProfileType, CorrelationData } from 'sunbird';
 import { SocialSharing } from "@ionic-native/social-sharing";
 import { Network } from '@ionic-native/network';
@@ -12,6 +12,8 @@ import { EventTopics, ProfileConstants } from '../../app/app.constant';
 import { ShareUrl } from '../../app/app.constant';
 import { AppGlobalService } from '../../service/app-global.service';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
+import { AlertController } from 'ionic-angular';
+import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
 
 @IonicPage()
 @Component({
@@ -125,8 +127,8 @@ export class ContentDetailsPage {
   isUpdateAvail: boolean = false;
 
   /**
-   * User Rating 
-   * 
+   * User Rating
+   *
    */
   userRating: number = 0;
   private ratingComment: string = '';
@@ -139,7 +141,10 @@ export class ContentDetailsPage {
 
   guestUser: boolean = false;
 
+  launchPlayer: boolean;
+
   profileType: string = '';
+  isResumedCourse: boolean;
 
   private objId;
   private objType;
@@ -149,6 +154,7 @@ export class ContentDetailsPage {
   private baseUrl = "";
   private shouldGenerateEndTelemetry: boolean = false;
   private source: string = "";
+  unregisterBackButton: any;
 
   /**
    *
@@ -166,7 +172,7 @@ export class ContentDetailsPage {
     private social: SocialSharing, public platform: Platform, public translate: TranslateService,
     private buildParamService: BuildParamService, private network: Network,
     private courseService: CourseService,
-    private preference: SharedPreferences, private appGlobalService: AppGlobalService) {
+    private preference: SharedPreferences, private appGlobalService: AppGlobalService , private alertCtrl: AlertController , private ionicApp : IonicApp) {
     this.getUserId();
     this.navCtrl = navCtrl;
     this.navParams = navParams;
@@ -177,13 +183,14 @@ export class ContentDetailsPage {
     console.warn('Inside content details page');
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.didViewLoad = false;
-      this.navCtrl.pop();
+
+      this.popToPreviousPage();
       this.generateEndEvent(this.objId, this.objType, this.objVer);
       if (this.shouldGenerateEndTelemetry) {
         this.generateQRSessionEndEvent(this.source, this.cardData.identifier);
       }
       this.backButtonFunc();
-    }, 10)
+    }, 11)
     this.objRollup = new Rollup();
     this.buildParamService.getBuildConfigParam("BASE_URL", (response: any) => {
       this.baseUrl = response
@@ -215,6 +222,15 @@ export class ContentDetailsPage {
     this.network.onConnect().subscribe((data) => {
       this.isNetworkAvailable = true;
     });
+    this.launchPlayer = this.navParams.get('launchplayer');
+    console.log('launch Player is' , this.launchPlayer);
+    events.subscribe('launchPlayer', (status) => {
+      console.log('----------->>>>>>>>>' , status);
+      if(status){
+        this.playContent();
+      }
+    });
+
   }
 
   /**
@@ -351,11 +367,11 @@ export class ContentDetailsPage {
 
     this.content.contentAccess = data.result.contentAccess ? data.result.contentAccess : [];
 
-    if(this.cardData && this.cardData.hierarchyInfo){
-      data.result.hierarchyInfo=this.cardData.hierarchyInfo;
+    if (this.cardData && this.cardData.hierarchyInfo) {
+      data.result.hierarchyInfo = this.cardData.hierarchyInfo;
       this.isChildContent = true;
     }
-    
+
     this.content.playContent = JSON.stringify(data.result);
     if (this.content.gradeLevel && this.content.gradeLevel.length && typeof this.content.gradeLevel !== 'string') {
       this.content.gradeLevel = this.content.gradeLevel.join(", ");
@@ -521,24 +537,28 @@ export class ContentDetailsPage {
    * Ionic life cycle hook
    */
   ionViewWillEnter(): void {
+    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+      this.dismissPopup();
+    }, 11);
     this.cardData = this.navParams.get('content');
     this.isChildContent = this.navParams.get('isChildContent');
     this.cardData.depth = this.navParams.get('depth') === undefined ? '' : this.navParams.get('depth');
     this.corRelationList = this.navParams.get('corRelation');
     this.identifier = this.cardData.contentId || this.cardData.identifier;
-    let isResumedCourse = this.navParams.get('isResumedCourse');
+    this.isResumedCourse = Boolean(this.navParams.get('isResumedCourse'));
     this.source = this.navParams.get('source');
     this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
-    if (!isResumedCourse) {
+    if (!this.isResumedCourse) {
       this.generateTemetry();
     }
-    if (isResumedCourse === true) {
+    if (this.isResumedCourse === true) {
       this.navCtrl.insert(this.navCtrl.length() - 1, EnrolledCourseDetailsPage, {
         content: this.navParams.get('resumedCourseCardData')
       })
     }
     this.setContentDetails(this.identifier, true, false);
     this.subscribeGenieEvent();
+    
   }
 
   /**
@@ -556,11 +576,34 @@ export class ContentDetailsPage {
       if (this.shouldGenerateEndTelemetry) {
         this.generateQRSessionEndEvent(this.source, this.cardData.identifier);
       }
-      this.navCtrl.pop();
+      this.popToPreviousPage();
       this.backButtonFunc();
+    }
+    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+      this.dismissPopup();
+    }, 11);
+  }
+
+    /**
+   * It will Dismiss active popup
+   */
+  dismissPopup() {
+    let activePortal = this.ionicApp._modalPortal.getActive() || this.ionicApp._overlayPortal.getActive();
+
+    if (activePortal) {
+      activePortal.dismiss();
+    } else {
+      this.navCtrl.pop();
     }
   }
 
+  popToPreviousPage() {
+    if (this.isResumedCourse) {
+      this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 3));
+    } else {
+      this.navCtrl.pop();
+    }
+  }
   /**
    * Show error messages
    *
@@ -704,6 +747,51 @@ export class ContentDetailsPage {
     })
   }
 
+
+  /**
+   * alert for playing the content
+   */
+  alertForPlayingContent(content){
+    let self = this;
+    let profile = this.appGlobalService.getCurrentUser();    
+
+    let alert = this.alertCtrl.create({
+      title: this.translateMessage('PLAY_AS'),
+      mode: 'wp',
+      //message: this.translateMessage('GROUP_DELETE_CONFIRM_MESSAGE'),
+      message : profile.handle,
+      cssClass: 'confirm-alert',
+      buttons: [
+        {
+          text: this.translateMessage('Yes'),
+          cssClass: 'alert-btn-delete',
+          handler: () => {
+            console.log('Cancel clicked');
+            this.playContent();
+          }
+        },
+        {
+          text: this.translateMessage('CHANGE_USER'),
+          cssClass: 'alert-btn-cancel',
+          handler: () => {
+            this.navCtrl.push(UserAndGroupsPage , {
+              playContent : this.content.playContent
+            })
+          }
+        },
+        {
+          text: 'x',
+          role: 'cancel',
+          cssClass: 'closeButton',
+          handler: () => {
+            console.log('close icon clicked');
+          }
+        }
+      ]
+    });
+      alert.present();
+  }
+  
   /**
    * Play content
    */

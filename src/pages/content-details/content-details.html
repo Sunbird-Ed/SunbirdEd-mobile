@@ -122,7 +122,7 @@
 <!-- Page footer -->
 <ion-footer *ngIf="content">
 	<ion-toolbar padding>
-		<button ion-button block *ngIf="content.downloadable" (click)="playContent()" [disabled]="isDownloadStarted">{{ 'PLAY' | translate }}</button>
+		<button ion-button block *ngIf="content.downloadable" (click)="alertForPlayingContent(content)" [disabled]="isDownloadStarted">{{ 'PLAY' | translate }}</button>
 		<ion-icon *ngIf="isDownloadStarted && downloadProgress !== 100" (click)="cancelDownload()" name="ios-close-circle-outline" class="cancel-download" color="primary"></ion-icon>
 		<button ion-button *ngIf="!content.downloadable" (click)="downloadContent()" text-uppercase [ngClass]="{'text-font': isDownloadStarted && ('DOWNLOADING_1' | translate).length > 18}"
 		 [ngStyle]="{'width': isDownloadStarted === true ? '80%' : '100%'}">

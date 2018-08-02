@@ -1,9 +1,20 @@
 import { TranslateService } from '@ngx-translate/core';
 import { Component } from '@angular/core';
-import { NavController, NavParams, ToastController, Events, LoadingController, IonicApp, Platform } from 'ionic-angular';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  NavController,
+  NavParams,
+  ToastController,
+  Events,
+  LoadingController,
+  IonicApp,
+  Platform
+} from 'ionic-angular';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators
+} from '@angular/forms';
 import * as _ from 'lodash';
-
 import {
   CategoryRequest,
   ProfileService,
@@ -15,10 +26,19 @@ import {
   Environment,
   PageId,
   ImpressionType,
-  ObjectType
+  ObjectType,
+  ProfileType,
+  ContainerService,
+  TabsPage
 } from 'sunbird';
 import { FormAndFrameworkUtilService } from '../formandframeworkutil.service';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
+import {
+  initTabs,
+  GUEST_STUDENT_TABS,
+  GUEST_TEACHER_TABS
+} from '../../../app/module.service';
+import { App } from 'ionic-angular';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -31,7 +51,6 @@ export interface toastOptions {
   selector: 'page-guest-edit.profile',
   templateUrl: 'guest-edit.profile.html'
 })
-
 export class GuestEditProfilePage {
   guestEditForm: FormGroup;
   profile: any = {};
@@ -51,6 +70,8 @@ export class GuestEditProfilePage {
   isCurrentUser: boolean = true;
 
   isFormValid: boolean = true;
+
+  previousProfileType;
 
   options: toastOptions = {
     message: '',
@@ -96,7 +117,10 @@ export class GuestEditProfilePage {
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private platform: Platform,
     private ionicApp: IonicApp,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private container: ContainerService,
+    private app: App,
+    private preferences: SharedPreferences
   ) {
     this.profile = this.navParams.get('profile') || {};
     this.isNewUser = Boolean(this.navParams.get('isNewUser'));
@@ -115,17 +139,17 @@ export class GuestEditProfilePage {
       medium: [this.profile.medium || []]
     });
 
+    this.previousProfileType = this.profile.profileType
+
     //language code
     this.preference.getString('selected_language_code', (val: string) => {
       if (val && val.length) {
         this.selectedLanguage = val;
       }
     });
-
-    
   }
 
-  ionViewDidLoad(){
+  ionViewDidLoad() {
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW, "",
       PageId.CREATE_USER,
@@ -149,6 +173,16 @@ export class GuestEditProfilePage {
 
   ionViewWillLeave() {
     this.unregisterBackButton();
+  }
+
+  onProfileTypeChange() {
+    this.guestEditForm.patchValue({
+      syllabus: [],
+      boards: [],
+      grades: [],
+      subjects: [],
+      medium: []
+    });
   }
 
   /**
@@ -324,7 +358,6 @@ export class GuestEditProfilePage {
    */
 
   onSubmit(): void {
-
     if (!this.isFormValid) {
       this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
       return;
@@ -355,7 +388,7 @@ export class GuestEditProfilePage {
     req.medium = formVal.medium;
     req.uid = this.profile.uid;
     req.handle = formVal.name;
-    req.profileType = this.profile.profileType;
+    req.profileType = formVal.profileType;
     req.source = this.profile.source;
     req.createdAt = this.profile.createdAt;
     req.syllabus = (!formVal.syllabus.length) ? [] : [formVal.syllabus];
@@ -404,6 +437,18 @@ export class GuestEditProfilePage {
     }
     this.events.publish('refresh:profile');
     this.events.publish('refresh:onboardingcard');
+
+    if (this.previousProfileType && this.previousProfileType != formVal.profileType) {
+      if (formVal.profileType == ProfileType.STUDENT) {
+        this.preferences.putString('selected_user_type', ProfileType.STUDENT);
+        initTabs(this.container, GUEST_STUDENT_TABS);
+      } else {
+        this.preferences.putString('selected_user_type', ProfileType.TEACHER);
+        initTabs(this.container, GUEST_TEACHER_TABS);
+      }
+
+      this.app.getRootNav().setRoot(TabsPage);
+    }
   }
   /**
    * It will submit new user form
@@ -432,10 +477,9 @@ export class GuestEditProfilePage {
     },
       (error: any) => {
         loader.dismiss();
-        this.getToast(this.translateMessage("SOMETHING_WENT_WRONG")).present();
+        this.getToast(this.translateMessage("FILL_THE_MANDATORY_FIELDS")).present();
       });
   }
-
 
   /**
    * Used to Translate message to current Language
