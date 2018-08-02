@@ -1,8 +1,8 @@
 import { ContentRatingAlertComponent } from './../../component/content-rating-alert/content-rating-alert';
 import { ContentActionsComponent } from './../../component/content-actions/content-actions';
 import { Component, NgZone, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, PopoverController, Navbar, Platform , IonicApp , ViewController } from 'ionic-angular';
-import { ContentService, CourseService, FileUtil, ImpressionType, PageId, Environment, TelemetryService, Mode, ShareUtil, InteractType, InteractSubtype, Rollup, BuildParamService, SharedPreferences, ProfileType, CorrelationData } from 'sunbird';
+import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController, PopoverController, Navbar, Platform, IonicApp, ViewController } from 'ionic-angular';
+import { ContentService, CourseService, FileUtil, ImpressionType, PageId, Environment, TelemetryService, Mode, ShareUtil, InteractType, InteractSubtype, Rollup, BuildParamService, SharedPreferences, ProfileType, CorrelationData, ProfileService, ProfileRequest } from 'sunbird';
 import { SocialSharing } from "@ionic-native/social-sharing";
 import { Network } from '@ionic-native/network';
 import * as _ from 'lodash';
@@ -14,6 +14,7 @@ import { AppGlobalService } from '../../service/app-global.service';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 import { AlertController } from 'ionic-angular';
 import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
+import { id } from '@swimlane/ngx-datatable/release/utils';
 
 @IonicPage()
 @Component({
@@ -155,6 +156,7 @@ export class ContentDetailsPage {
   private shouldGenerateEndTelemetry: boolean = false;
   private source: string = "";
   unregisterBackButton: any;
+  private userCount: number = 0;
 
   /**
    *
@@ -172,7 +174,11 @@ export class ContentDetailsPage {
     private social: SocialSharing, public platform: Platform, public translate: TranslateService,
     private buildParamService: BuildParamService, private network: Network,
     private courseService: CourseService,
-    private preference: SharedPreferences, private appGlobalService: AppGlobalService , private alertCtrl: AlertController , private ionicApp : IonicApp) {
+    private preference: SharedPreferences,
+    private appGlobalService: AppGlobalService,
+    private alertCtrl: AlertController,
+    private ionicApp: IonicApp,
+    private profileService: ProfileService) {
     this.getUserId();
     this.navCtrl = navCtrl;
     this.navParams = navParams;
@@ -223,10 +229,10 @@ export class ContentDetailsPage {
       this.isNetworkAvailable = true;
     });
     this.launchPlayer = this.navParams.get('launchplayer');
-    console.log('launch Player is' , this.launchPlayer);
+    console.log('launch Player is', this.launchPlayer);
     events.subscribe('launchPlayer', (status) => {
-      console.log('----------->>>>>>>>>' , status);
-      if(status){
+      console.log('----------->>>>>>>>>', status);
+      if (status) {
         this.playContent();
       }
     });
@@ -239,6 +245,24 @@ export class ContentDetailsPage {
    */
   checkLoggedInOrGuestUser() {
     this.guestUser = !this.appGlobalService.isUserLoggedIn();
+  }
+
+  calculateAvailableUserCount() {
+    let profileRequest: ProfileRequest = {
+      local: true,
+      server: false
+    };
+    this.profileService.getAllUserProfile(profileRequest).then((profiles) => {
+      if (profiles) {
+        this.userCount = JSON.parse(profiles).length;
+      }
+      if (this.appGlobalService.isUserLoggedIn) {
+        this.userCount += 1;
+      }
+      console.log("User count" + this.userCount);
+    }).catch((error) => {
+
+    });
   }
 
   checkCurrentUserType() {
@@ -558,7 +582,7 @@ export class ContentDetailsPage {
     }
     this.setContentDetails(this.identifier, true, false);
     this.subscribeGenieEvent();
-    
+
   }
 
   /**
@@ -582,11 +606,16 @@ export class ContentDetailsPage {
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
       this.dismissPopup();
     }, 11);
+
+    if (!AppGlobalService.isPlayerLaunched) {
+      this.calculateAvailableUserCount();
+    }
+
   }
 
-    /**
-   * It will Dismiss active popup
-   */
+  /**
+ * It will Dismiss active popup
+ */
   dismissPopup() {
     let activePortal = this.ionicApp._modalPortal.getActive() || this.ionicApp._overlayPortal.getActive();
 
@@ -751,47 +780,50 @@ export class ContentDetailsPage {
   /**
    * alert for playing the content
    */
-  alertForPlayingContent(content){
-    let self = this;
-    let profile = this.appGlobalService.getCurrentUser();    
-
-    let alert = this.alertCtrl.create({
-      title: this.translateMessage('PLAY_AS'),
-      mode: 'wp',
-      //message: this.translateMessage('GROUP_DELETE_CONFIRM_MESSAGE'),
-      message : profile.handle,
-      cssClass: 'confirm-alert',
-      buttons: [
-        {
-          text: this.translateMessage('Yes'),
-          cssClass: 'alert-btn-delete',
-          handler: () => {
-            console.log('Cancel clicked');
-            this.playContent();
-          }
-        },
-        {
-          text: this.translateMessage('CHANGE_USER'),
-          cssClass: 'alert-btn-cancel',
-          handler: () => {
-            this.navCtrl.push(UserAndGroupsPage , {
-              playContent : this.content.playContent
-            })
-          }
-        },
-        {
-          text: 'x',
-          role: 'cancel',
-          cssClass: 'closeButton',
-          handler: () => {
-            console.log('close icon clicked');
-          }
-        }
-      ]
-    });
-      alert.present();
-  }
+  alertForPlayingContent(content) {
+    if(!AppGlobalService.isPlayerLaunched && this.userCount > 1){
+      let self = this;
+      let profile = this.appGlobalService.getCurrentUser();
   
+      let alert = this.alertCtrl.create({
+        title: this.translateMessage('PLAY_AS'),
+        mode: 'wp',
+        //message: this.translateMessage('GROUP_DELETE_CONFIRM_MESSAGE'),
+        message: profile.handle,
+        cssClass: 'confirm-alert',
+        buttons: [
+          {
+            text: this.translateMessage('Yes'),
+            cssClass: 'alert-btn-delete',
+            handler: () => {
+              AppGlobalService.isPlayerLaunched =true;
+              this.playContent();
+            }
+          },
+          {
+            text: this.translateMessage('CHANGE_USER'),
+            cssClass: 'alert-btn-cancel',
+            handler: () => {
+              this.navCtrl.push(UserAndGroupsPage, {
+                playContent: this.content.playContent
+              })
+            }
+          },
+          {
+            text: 'x',
+            role: 'cancel',
+            cssClass: 'closeButton',
+            handler: () => {
+              console.log('close icon clicked');
+            }
+          }
+        ]
+      });
+      alert.present();
+    }
+   
+  }
+
   /**
    * Play content
    */

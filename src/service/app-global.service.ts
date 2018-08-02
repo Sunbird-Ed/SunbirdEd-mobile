@@ -32,6 +32,7 @@ export class AppGlobalService {
     guestProfileType: ProfileType;
 
     session: any;
+    public static isPlayerLaunched:boolean = false;
 
     private frameworkData = [];
 
@@ -44,6 +45,7 @@ export class AppGlobalService {
         console.log("constructor");
         this.initValues();
         this.listenForEvents();
+        console.log("isPlayerLauncghed"+AppGlobalService.isPlayerLaunched);
     }
 
     isUserLoggedIn(): boolean {
