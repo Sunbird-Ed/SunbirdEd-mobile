@@ -723,11 +723,13 @@ export class ContentDetailsPage {
    */
   alertForPlayingContent(content){
     let self = this;
+    let profile = this.appGlobalService.getCurrentUser();    
+
     let alert = this.alertCtrl.create({
       title: this.translateMessage('PLAY_AS'),
       mode: 'wp',
       //message: this.translateMessage('GROUP_DELETE_CONFIRM_MESSAGE'),
-      message : content.name,
+      message : profile.handle,
       cssClass: 'confirm-alert',
       buttons: [
         {
