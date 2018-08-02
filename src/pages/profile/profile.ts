@@ -314,6 +314,9 @@ export class ProfilePage {
         case "grade":
           this.setMissingProfileDetails('ADD_CLASS');
           break;
+        case "lastName":
+        this.setMissingProfileDetails('ADD_LAST_NAME');
+          break;
       }
     }
   }
