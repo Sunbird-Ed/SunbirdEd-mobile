@@ -42,19 +42,19 @@
             </ion-row>
           </ion-item>
         </div>
-      <div *ngIf="noUserMessge()" class="nouser">
+        <div *ngIf="noUserMessge()" class="nouser">
           <h6>{{'NO_USERS_CREATED_YET' | translate}}</h6>
           <p class="grey-color">{{'GUEST_USER_ACCOUNTS_MESSAGE' | translate}}
             <br> {{'YOUR_STUDENTS_OTHERS_TEACHERS' | translate}}
           </p>
         </div>
         <ion-list *ngIf="userList?.length">
-        <ion-label ion-text color="dark_gray"  text-uppercase class="subTitle">{{'USERS' | translate}}</ion-label>
+          <ion-label ion-text color="dark_gray" text-uppercase class="subTitle">{{'USERS' | translate}}</ion-label>
           <ion-item *ngFor="let user of userList; let i=index;" class="item-background radius" margin-bottom [ngClass]="i===selectedUserIndex ? 'blueBorder' : ''"
             no-lines>
             <ion-row class="bg-color-white">
               <ion-col col-11 class="bg-color-white" (click)="selectUser(i, user?.name)">
-                <ion-item  class="bg-color-white padding-left-0 rm-label-margin" no-padding>
+                <ion-item class="bg-color-white padding-left-0 rm-label-margin" no-padding>
                   <h6 class="line-height-2 elipsis" [ngStyle]="{'color': currentUserId === user?.uid ? 'dodgerblue' : 'black'}">
                     <b>{{user?.handle}}</b>
                   </h6>
@@ -63,7 +63,7 @@
                 </ion-item>
               </ion-col>
               <ion-col col-1 class="advanced-menu" *ngIf="!playContent">
-                <ion-item item-end  class="bg-color-white">
+                <ion-item item-end class="bg-color-white">
                   <ion-icon class="line-height-2 padding-left-2" name="more" item-end (click)="presentPopover($event ,i, true)"></ion-icon>
                 </ion-item>
               </ion-col>
@@ -71,7 +71,7 @@
           </ion-item>
         </ion-list>
       </div>
-      
+
     </div>
     <div *ngIf="playContent && selectedUserIndex === -1" class="error-message-contentplay">
         <div><ion-icon ios="ios-information-circle" md="md-information-circle"></ion-icon>
@@ -101,21 +101,21 @@
         <div class="groupSecondSection" *ngIf="!showEmptyGroupsMessage">
           <ion-item *ngFor="let group of groupList; let i = index" class="item-background radius" margin-top margin-bottom no-lines>
             <ion-row class="bg-color-white">
-              <ion-col col-10 class="bg-color-white">
+              <ion-col col-11 class="bg-color-white">
                 <ion-item class="bg-color-white padding-left-0 rm-label-margin" no-padding (click)="goToGroupDetail(i)">
                   <h6 class="line-height-2" [ngStyle]="{'color': currentGroupId === group?.gid ? 'dodgerblue' : 'black'}">
                     <b>{{group?.name}}</b>
                   </h6>
                   <p>
                     <span ion-text color="text_gray" *ngIf="group?.grade && group?.grade[0]">{{ getGradeNameFromCode(group) }}</span>
-                    <span ion-text color="gray" *ngIf="group?.grade?.length">•</span>
+                    <span ion-text *ngIf="group?.grade?.length">•</span>
                     <span ion-text color="text_gray" *ngIf="group?.profilesCount > 1">{{group?.profilesCount}} {{'USERS' | translate}}</span>
                     <span ion-text color="text_gray" *ngIf="group?.profilesCount === 1">{{group?.profilesCount}} {{'USER' | translate}}</span>
                     <span ion-text color="text_gray" *ngIf=" !group?.profilesCount || group?.profilesCount === 0">{{'NO_USERS' | translate}}</span>
                   </p>
                 </ion-item>
               </ion-col>
-              <ion-col col-2 class="advanced-menu" *ngIf="!playContent">
+              <ion-col col-1 class="advanced-menu" *ngIf="!playContent">
                 <ion-item item-end class="bg-color-white">
                   <ion-icon class="line-height-2 padding-left-2" name="more" item-end (click)="presentPopover($event, i , false)"></ion-icon>
                 </ion-item>

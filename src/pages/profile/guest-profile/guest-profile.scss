@@ -109,8 +109,22 @@ page-guest-profile {
 
 /* Hide extra margin of the popover-controller */
 
-.box .list.list-md {
-  margin-bottom: 0 !important;
+.box {
+  .popover-content{
+    min-width: 96px;
+    width: auto;
+    display: inline-block;
+    height: auto !important;
+  }
+  .list.list-md {
+    margin-bottom: 0 !important;
+  }
+  .item-md {
+    padding-left: 0 !important;
+  }
+  .label-md {
+    margin-left: 16px;
+  }
 }
 
 .signin-card-bg {

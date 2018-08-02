@@ -87,7 +87,7 @@ export class GroupDetailsPage {
     this.currentGroupId = this.navParams.get('currentGruopId');
     this.profileDetails = this.navParams.get('profile');
     this.playContent = this.navParams.get('playContent') || undefined;
-    
+
 
     if (this.group.gid == this.currentGroupId) {
       this.isCurrentGroupActive = true;
@@ -207,7 +207,7 @@ export class GroupDetailsPage {
       this.setAsCurrentUser(selectedUser);
     }
 
-    //Generate Switch user success event 
+    //Generate Switch user success event
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.OTHER,
       InteractSubtype.SWITCH_USER_SUCCESS,
@@ -293,7 +293,7 @@ export class GroupDetailsPage {
       isActiveGroup: this.isCurrentGroupActive
     },
       {
-        cssClass: 'groupDetails-popover'
+        cssClass: 'user-popover'
       })
     popover.present({
       ev: myEvent

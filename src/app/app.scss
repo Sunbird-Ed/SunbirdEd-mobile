@@ -418,15 +418,15 @@ ul.rating .ion-md-star-outline:before {
     display: inline-block;
     height: auto !important;
   }
-  .list-md {
+  .list.list-md {
     margin-bottom: 0 !important;
   }
-}
-
-.groupDetails-popover .popover-content{
-  min-width: 96px;
-  width:auto;
-  display: inline-block;
+  .item-md {
+    padding-left: 0 !important;
+  }
+  .label-md {
+    margin-left: 16px;
+  }
 }
 
 .line-height-2 {

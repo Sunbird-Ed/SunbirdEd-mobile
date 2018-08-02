@@ -90,7 +90,7 @@ export class CreateGroupPage {
     this.isEditGroup = this.group.hasOwnProperty('gid') ? true : false;
     this.getSyllabusDetails();
 
-    
+
   }
 
   ionViewDidLoad(){
@@ -99,7 +99,7 @@ export class CreateGroupPage {
       PageId.CREATE_GROUP_SYLLABUS_CLASS,
       Environment.USER, this.isEditGroup ? this.group.gid : "", this.isEditGroup ? ObjectType.GROUP : ""
     );
-    
+
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       this.isEditGroup ? InteractSubtype.EDIT_GROUP_INITIATED : InteractSubtype.CREATE_GROUP_INITIATED,
