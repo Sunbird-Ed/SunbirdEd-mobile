@@ -834,43 +834,52 @@ export class ContentDetailsPage {
    */
   alertForPlayingContent(content) {
     let self = this;
-    let profile = this.appGlobalService.getCurrentUser();
+    if (!AppGlobalService.isPlayerLaunched && this.userCount > 1) {
+      let profile = this.appGlobalService.getCurrentUser();
 
-    let alert = this.alertCtrl.create({
-      title: this.translateMessage('PLAY_AS'),
-      mode: 'wp',
-      //message: this.translateMessage('GROUP_DELETE_CONFIRM_MESSAGE'),
-      message: profile.handle,
-      cssClass: 'confirm-alert',
-      buttons: [
-        {
-          text: this.translateMessage('YES'),
-          cssClass: 'alert-btn-delete',
-          handler: () => {
-            console.log('Cancel clicked');
-            this.playContent();
+      let alert = this.alertCtrl.create({
+        title: this.translateMessage('PLAY_AS'),
+        mode: 'wp',
+        //message: this.translateMessage('GROUP_DELETE_CONFIRM_MESSAGE'),
+        message: profile.handle,
+        cssClass: 'confirm-alert',
+        buttons: [
+          {
+            text: this.translateMessage('YES'),
+            cssClass: 'alert-btn-delete',
+            handler: () => {
+              console.log('Cancel clicked');
+              if (!AppGlobalService.isPlayerLaunched) {
+                AppGlobalService.isPlayerLaunched = true;
+              }
+              this.playContent();
+            }
+          },
+          {
+            text: this.translateMessage('CHANGE_USER'),
+            cssClass: 'alert-btn-cancel',
+            handler: () => {
+              this.navCtrl.push(UserAndGroupsPage, {
+                playContent: this.content.playContent
+              })
+            }
+          },
+          {
+            text: 'x',
+            role: 'cancel',
+            cssClass: 'closeButton',
+            handler: () => {
+              console.log('close icon clicked');
+            }
           }
-        },
-        {
-          text: this.translateMessage('CHANGE_USER'),
-          cssClass: 'alert-btn-cancel',
-          handler: () => {
-            this.navCtrl.push(UserAndGroupsPage, {
-              playContent: this.content.playContent
-            })
-          }
-        },
-        {
-          text: 'x',
-          role: 'cancel',
-          cssClass: 'closeButton',
-          handler: () => {
-            console.log('close icon clicked');
-          }
-        }
-      ]
-    });
-    alert.present();
+        ]
+      });
+      alert.present();
+    }
+    else{
+      this.playContent();
+    }
+
   }
 
   /**

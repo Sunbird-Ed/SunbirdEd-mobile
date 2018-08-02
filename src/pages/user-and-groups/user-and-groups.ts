@@ -40,7 +40,7 @@ import { GuestEditProfilePage } from '../profile/guest-edit.profile/guest-edit.p
 import { IonicApp } from 'ionic-angular';
 import { ShareUserAndGroupPage } from './share-user-and-groups/share-user-and-groups';
 import { AppGlobalService } from '../../service/app-global.service';
-import { initTabs, GUEST_STUDENT_SWITCH_TABS, GUEST_TEACHER_SWITCH_TABS } from '../../app/module.service';
+import { initTabs, GUEST_STUDENT_SWITCH_TABS, GUEST_TEACHER_SWITCH_TABS, GUEST_STUDENT_TABS, GUEST_TEACHER_TABS } from '../../app/module.service';
 import { App, Events } from 'ionic-angular';
 import { group } from '@angular/core/src/animation/dsl';
 import { Network } from '@ionic-native/network';
@@ -62,7 +62,7 @@ export class UserAndGroupsPage {
   isLoggedInUser: boolean = false;
   currentUserId: string;
   currentGroupId: string;
-  playContent : any;
+  playContent: any;
 
   userList: Array<Profile> = [];
   groupList: Array<Group> = [];
@@ -105,9 +105,10 @@ export class UserAndGroupsPage {
     }
 
     this.isLoggedInUser = this.navParams.get('isLoggedInUser');
-    this.profileDetails = this.navParams.get('profile');
-
-
+    // this.profileDetails = this.navParams.get('profile');
+    if (this.appGlobalService.isUserLoggedIn) {
+      this.profileDetails = this.appGlobalService.getCurrentUser();
+    }
   }
 
   ionViewDidLoad() {
@@ -120,13 +121,13 @@ export class UserAndGroupsPage {
 
   ionViewWillEnter() {
     this.zone.run(() => {
-    this.getAllProfile();
-    this.getAllGroup();
-    this.getCurrentGroup();
+      this.getAllProfile();
+      this.getAllGroup();
+      this.getCurrentGroup();
 
-    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
-      this.dismissPopup();
-    }, 11);
+      this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+        this.dismissPopup();
+      }, 11);
     })
   }
 
@@ -395,7 +396,7 @@ export class UserAndGroupsPage {
           text: this.translateMessage('OKAY'),
           cssClass: 'alert-btn-delete',
           handler: () => {
-            this.logOut(selectedUser);
+            this.logOut(selectedUser, false);
           }
         }
       ]
@@ -404,7 +405,7 @@ export class UserAndGroupsPage {
     if (this.profileDetails.id) {
       alert.present();
     } else {
-      this.setAsCurrentUser(selectedUser);
+      this.setAsCurrentUser(selectedUser, false);
     }
     //Generate Switch user success event 
     this.telemetryGeneratorService.generateInteractTelemetry(
@@ -417,7 +418,7 @@ export class UserAndGroupsPage {
     );
   }
 
-  logOut(selectedUser: any) {
+  logOut(selectedUser: any, isBeingPlayed: boolean) {
     let telemetryObject: TelemetryObject = new TelemetryObject();
     telemetryObject.id = this.profileDetails.id;
     telemetryObject.type = Environment.USER;
@@ -430,17 +431,24 @@ export class UserAndGroupsPage {
       PageId.USERS,
       telemetryObject
     );
-
-    if (this.network.type === 'none') {
+    if (isBeingPlayed) {
       this.authService.endSession();
       (<any>window).splashscreen.clearPrefs();
-      this.setAsCurrentUser(selectedUser);
-    } else {
-      this.oauth.doLogOut().then(() => {
-        (<any>window).splashscreen.clearPrefs();
-        this.setAsCurrentUser(selectedUser);
-      });
+      this.setAsCurrentUser(selectedUser, true);
     }
+    else {
+      if (this.network.type === 'none') {
+        this.authService.endSession();
+        (<any>window).splashscreen.clearPrefs();
+        this.setAsCurrentUser(selectedUser, false);
+      } else {
+        this.oauth.doLogOut().then(() => {
+          (<any>window).splashscreen.clearPrefs();
+          this.setAsCurrentUser(selectedUser, false);
+        });
+      }
+    }
+
     //Generate Logout success event
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.OTHER,
@@ -452,16 +460,16 @@ export class UserAndGroupsPage {
 
   }
   /* shows no user message when we navigate here from play content */
-  noUserMessge(){
-    if(this.playContent && !this.userList.length){
+  noUserMessge() {
+    if (this.playContent && !this.userList.length) {
       return true;
-      
+
     }
     return false;
   }
- /**condition for disabling the play button */
-  disablePlayButton(){
-    if(this.selectedUserIndex === -1 && !this.userList.length){
+  /**condition for disabling the play button */
+  disablePlayButton() {
+    if (this.selectedUserIndex === -1 && !this.userList.length) {
       return true;
     }
     return false;
@@ -496,11 +504,17 @@ export class UserAndGroupsPage {
     alert.present();
   }
   /**Navigates to play content details page nd launch the player */
-  play(){
-    console.log('play is getting clicked');
+  play() {
+    let selectedUser = this.userList[this.selectedUserIndex];
     this.event.publish('launchPlayer', true);
     this.navCtrl.pop();
-    
+    if (this.appGlobalService.isUserLoggedIn) {
+      this.logOut(selectedUser, true);
+    } else {
+      this.setAsCurrentUser(selectedUser, true);
+    }
+
+
   }
 
   deleteGroup(index: number) {
@@ -616,7 +630,7 @@ export class UserAndGroupsPage {
     return ""
   }
 
-  private setAsCurrentUser(selectedUser) {
+  private setAsCurrentUser(selectedUser, isBeingPlayed: boolean) {
     this.groupService.setCurrentGroup(null)
       .then(val => {
         console.log("Value : " + val);
@@ -627,10 +641,10 @@ export class UserAndGroupsPage {
 
     this.profileService.setCurrentUser(selectedUser.uid, (success) => {
       if (selectedUser.profileType == ProfileType.STUDENT) {
-        initTabs(this.container, GUEST_STUDENT_SWITCH_TABS);
+        initTabs(this.container, isBeingPlayed ? GUEST_STUDENT_TABS : GUEST_STUDENT_SWITCH_TABS);
         this.preferences.putString('selected_user_type', ProfileType.STUDENT);
       } else {
-        initTabs(this.container, GUEST_TEACHER_SWITCH_TABS);
+        initTabs(this.container, isBeingPlayed ? GUEST_TEACHER_TABS : GUEST_TEACHER_SWITCH_TABS);
         this.preferences.putString('selected_user_type', ProfileType.TEACHER);
       }
 
