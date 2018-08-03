@@ -355,7 +355,7 @@ export class UserAndGroupsPage {
     let valuesMap = new Map();
     let fromUser = new Map();
     fromUser["uid"] = this.currentUserId;
-    fromUser["type"] = this.profileDetails.id ? "signedin" : "guest";
+    fromUser["type"] = this.appGlobalService.isUserLoggedIn() ? "signedin" : "guest";
 
     let toUser = new Map();
     toUser["uid"] = selectedUser.uid;
@@ -402,7 +402,7 @@ export class UserAndGroupsPage {
       ]
     });
 
-    if (this.profileDetails.id) {
+    if (this.appGlobalService.isUserLoggedIn()) {
       alert.present();
     } else {
       this.setAsCurrentUser(selectedUser, false);

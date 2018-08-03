@@ -152,7 +152,7 @@ export class GroupDetailsPage {
     let valuesMap = new Map();
     let fromUser = new Map();
     fromUser["uid"] = this.currentUserId;
-    fromUser["type"] = this.profileDetails.id ? "signed-in" : "guest";
+    fromUser["type"] = this.appGlobalService.isUserLoggedIn() ? "signed-in" : "guest";
 
     let toUser = new Map();
     toUser["uid"] = selectedUser.uid;
@@ -201,7 +201,7 @@ export class GroupDetailsPage {
       ]
     });
 
-    if (this.profileDetails && this.profileDetails.id) {
+    if (this.appGlobalService.isUserLoggedIn()) {
       alert.present();
     } else {
       this.setAsCurrentUser(selectedUser, false);
