@@ -1,7 +1,8 @@
 import { Component } from "@angular/core";
 import { NavParams, ViewController, Platform, NavController, IonicApp, LoadingController } from "ionic-angular";
-import { ReportService } from 'sunbird';
+import { ReportService, InteractType, PageId, Environment, InteractSubtype } from 'sunbird';
 import {TranslateService} from '@ngx-translate/core';
+import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 
 @Component({
   selector: 'group-report-alert',
@@ -32,13 +33,21 @@ export class GroupReportAlert {
     private platform: Platform,
     private ionicApp: IonicApp,
     private reportService: ReportService,
-    private translate: TranslateService) {
+    private translate: TranslateService,
+    private telemetryGeneratorService: TelemetryGeneratorService) {
     this.report = 'questions'
     this.callback = navParams.get('callback');
     this.assessment = this.callback['row'];
   }
 
   getAssessmentByUser(event) {
+    let subType = (event == "questions") ? InteractSubtype.REPORTS_GROUP_POPUP_QUESTION_SEGMENT_CLICKED : InteractSubtype.REPORTS_GROUP_POPUP_USERS_SEGMENT_CLICKED;
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      subType,
+      Environment.USER,
+      PageId.REPORTS_GROUP_ASSESSMENT
+    );
     if (event == "users") {
       let loader = this.loading.create({
         spinner: "crescent"

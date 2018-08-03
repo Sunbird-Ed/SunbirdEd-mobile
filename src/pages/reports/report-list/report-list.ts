@@ -1,8 +1,9 @@
 import { Component, NgZone } from '@angular/core';
 import { NavController, NavParams, LoadingController } from 'ionic-angular';
 import { GroupReportListPage } from '../group-report-list/group-report-list';
-import { ReportService, ReportSummary } from "sunbird";
+import { ReportService, ReportSummary, ImpressionType, PageId, Environment, InteractType, InteractSubtype } from "sunbird";
 import { UserReportPage } from '../user-report/user-report';
+import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 
 @Component({
     selector: 'group-list-page',
@@ -20,10 +21,14 @@ export class ReportListPage {
         private navParams: NavParams,
         private loading: LoadingController,
         public reportService: ReportService,
-        public ngZone: NgZone) {
+        public ngZone: NgZone,
+        private telemetryGeneratorService: TelemetryGeneratorService) {
     }
 
     ionViewWillEnter() {
+        this.telemetryGeneratorService.generateImpressionTelemetry(
+            ImpressionType.VIEW, "", PageId.REPORTS_CONTENT_LIST, Environment.USER, "", ""
+        );
         let loader = this.loading.create({
             spinner: "crescent"
         });
@@ -51,6 +56,12 @@ export class ReportListPage {
     }
 
     goToGroupReportsList(report: ReportSummary) {
+        this.telemetryGeneratorService.generateInteractTelemetry(
+            InteractType.TOUCH,
+            InteractSubtype.REPORTS_CONTENT_CLICKED,
+            Environment.USER,
+            PageId.REPORTS_CONTENT_LIST
+        );
         if (this.isFromUsers) {
             this.navCtrl.push(UserReportPage, {
                 report: report
