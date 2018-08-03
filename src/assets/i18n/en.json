@@ -268,6 +268,7 @@
   "NO_PREVIEW": "Preview unavailable",
   "NO_RATING": "Not yet rated",
   "NO_USERS_CREATED_YET": "No Users Created Yet",
+  "NO_USERS_CREATED_YET_MSG": "You can create guest user accounts for your students/other teachers.",
   "NUMBER_OF_VOTES": "Number of votes",
   "OFF": "Off",
   "OFFLINE_WARNING": "Ensure your device is connected to the internet",
