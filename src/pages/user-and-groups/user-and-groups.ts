@@ -459,14 +459,6 @@ export class UserAndGroupsPage {
     );
 
   }
-  /* shows no user message when we navigate here from play content */
-  noUserMessge() {
-    if (this.playContent && !this.userList.length) {
-      return true;
-
-    }
-    return false;
-  }
   /**condition for disabling the play button */
   disablePlayButton() {
     if (this.selectedUserIndex === -1 && !this.userList.length) {
