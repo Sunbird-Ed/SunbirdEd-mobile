@@ -462,8 +462,6 @@
   "YES": "Yes",
   "YOUR_PROFILE_IS": "Your profile is {{%s}}% complete",
   "YOUR_PROGRESS": "Your Progress: {{%s}}%",
-  "YOUR_STUDENTS_OTHERS_TEACHERS": "your students/others teachers",
-  "GUEST_USER_ACCOUNTS_MESSAGE": "you can create guest user accounts for",
   "USER_DELETE_CONFIRM_MESSAGE_FROM_GROUP":"Confirm removal of '{{%s}}'?",
   "USER_DELETE_CONFIRM_SECOND_MESSAGE":"This action will remove users from the Group.The User can still be found under Users Tab",
   "REMOVE_MULTIPLE_USERS_FROM_GROUP":"Confirm Removal of {{%s}} Users",
@@ -488,5 +486,4 @@
   "SWITCHING_TO": "Switched to '{{%s}}'",
   "QUESTION_MARKS": "Question (Marks)",
   "PLEASE_SELECT_USER": "Please select a user"
-
 }
