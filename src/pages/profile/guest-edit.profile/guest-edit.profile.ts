@@ -464,6 +464,20 @@ export class GuestEditProfilePage {
     req.source = UserSource.LOCAL;
     req.syllabus = (!formVal.syllabus.length) ? [] : [formVal.syllabus];
 
+    if (formVal.grades && formVal.grades.length > 0) {
+      formVal.grades.forEach(gradeCode => {
+        for (let i = 0; i < this.gradeList.length; i++) {
+          if (this.gradeList[i].code == gradeCode) {
+            if (!req.gradeValueMap) {
+              req.gradeValueMap = {};
+            }
+            req.gradeValueMap[this.gradeList[i].code] = this.gradeList[i].name
+            break;
+          }
+        }
+      });
+    }
+
     this.profileService.createProfile(req, (success: any) => {
       loader.dismiss();
       this.getToast(this.translateMessage("User Created successfully")).present();
