@@ -223,7 +223,7 @@ export class GroupDetailsPage {
     let selectedUser = this.userList[this.selectedUserIndex];
     this.event.publish('launchPlayer', true);
     this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
-    if (this.appGlobalService.isUserLoggedIn) {
+    if (this.appGlobalService.isUserLoggedIn()) {
       this.logOut(selectedUser, true);
     } else {
       this.setAsCurrentUser(selectedUser, true);
