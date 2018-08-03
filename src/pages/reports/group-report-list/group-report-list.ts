@@ -1,8 +1,9 @@
 import { Component, NgZone } from '@angular/core';
 import { NavParams, LoadingController } from 'ionic-angular';
-import { ReportService, ReportSummary } from 'sunbird';
+import { ReportService, ReportSummary, ImpressionType, PageId, Environment, InteractType, InteractSubtype } from 'sunbird';
 import { GroupReportAlert } from '../group-report-alert/group-report-alert';
 import {TranslateService} from '@ngx-translate/core';
+import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 
 @Component({
     selector: 'group-report-list',
@@ -44,13 +45,24 @@ export class GroupReportListPage {
         private loading: LoadingController,
         private zone: NgZone,
         private reportService: ReportService,
-        private translate: TranslateService) {
+        private translate: TranslateService,
+        private telemetryGeneratorService: TelemetryGeneratorService) {
     }
 
     ionViewWillEnter() {
+        this.telemetryGeneratorService.generateImpressionTelemetry(
+            ImpressionType.VIEW, "", PageId.REPORTS_GROUP_ASSESSMENT, Environment.USER, "", ""
+        );
         this.fetchAssessment(this.reportType, false)
     }
     fetchAssessment(event: string, fromUserList: boolean) {
+        let subType = (event == 'users') ? InteractSubtype.REPORTS_GROUP_BYUSER_CLICKED : InteractSubtype.REPORTS_GROUP_BYQUESTION_CLICKED;
+        this.telemetryGeneratorService.generateInteractTelemetry(
+            InteractType.TOUCH,
+            subType,
+            Environment.USER,
+            PageId.REPORTS_GROUP_ASSESSMENT
+        );
         let loader = this.loading.create({
             spinner: "crescent"
         });

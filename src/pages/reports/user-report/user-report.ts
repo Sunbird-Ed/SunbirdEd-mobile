@@ -1,8 +1,9 @@
 import { Component, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
-import { ReportService, ReportSummary } from 'sunbird';
+import { ReportService, ReportSummary, ImpressionType, PageId, Environment } from 'sunbird';
 import { ReportAlert } from '../report-alert/report-alert';
 import {TranslateService} from '@ngx-translate/core';
+import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 
 @IonicPage()
 @Component({
@@ -31,7 +32,8 @@ export class UserReportPage {
     private reportService: ReportService,
     private translate: TranslateService,
     private loading: LoadingController,
-    private zone: NgZone) {
+    private zone: NgZone,
+    private telemetryGeneratorService: TelemetryGeneratorService) {
   }
 
   convertTotalTime(time: number): string {
@@ -51,17 +53,16 @@ export class UserReportPage {
   }
 
   ionViewWillEnter() {
-
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.VIEW, "", PageId.REPORTS_USER_ASSESSMENT, Environment.USER, "", ""
+    );
     let loader = this.loading.create({
         spinner: "crescent"
     });
     loader.present();
-
     let that = this;
-
     let reportSummary: ReportSummary = this.navParams.get('report');
     this.contentName = reportSummary.name;
-    
     that.reportService.getDetailReport([reportSummary.uid], reportSummary.contentId)
     .then(reportsMap => {
       let data = reportsMap.get(reportSummary.uid);

@@ -13,8 +13,14 @@ import {
   ProfileService,
   GroupService,
   ProfileRequest,
-  GroupRequest
+  GroupRequest,
+  ImpressionType,
+  InteractType,
+  InteractSubtype,
+  PageId,
+  Environment
 } from 'sunbird';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 
 @Component({
   selector: 'reports-page',
@@ -35,6 +41,7 @@ export class ReportsPage {
     private ngZone: NgZone,
     private loading: LoadingController,
     private navParams: NavParams,
+    private telemetryGeneratorService: TelemetryGeneratorService
   ) {
     this.profileDetails = this.navParams.get('profile');
   }
@@ -92,6 +99,9 @@ export class ReportsPage {
   }
 
   ionViewWillEnter() {
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.VIEW, "", PageId.REPORTS_USER_GROUP, Environment.USER, "", ""
+    );
     let loader = this.loading.create({
       spinner: "crescent"
     });
@@ -124,6 +134,12 @@ export class ReportsPage {
   }
 
   goToUserReportList(uid: string) {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.REPORTS_USER_CLICKED,
+      Environment.USER,
+      PageId.REPORTS_USER_GROUP
+    );
     this.navCtrl.push(ReportListPage, {
       isFromUsers: true,
       uids: [uid]
@@ -131,6 +147,12 @@ export class ReportsPage {
   }
 
   goToGroupUserReportList(group) {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.REPORTS_GROUP_CLICKED,
+      Environment.USER,
+      PageId.REPORTS_USER_GROUP
+    );
     let profileRequest: ProfileRequest = { local: true, groupId: group.gid };
     this.profileService.getAllUserProfile(profileRequest)
     .then(result => {
@@ -147,5 +169,14 @@ export class ReportsPage {
         users: map
       });
     })
+  }
+  onReportUserGroupChange(data) {
+    let subType = (data == 'users') ? InteractSubtype.REPORTS_USER_SEGMENT_CLICKED : InteractSubtype.REPORTS_GROUP_SEGMENT_CLICKED;
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      subType,
+      Environment.USER,
+      PageId.REPORTS_USER_GROUP
+    );
   }
 }
