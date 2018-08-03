@@ -311,7 +311,7 @@ export class ContentDetailsPage {
       if (profiles) {
         this.userCount = JSON.parse(profiles).length;
       }
-      if (this.appGlobalService.isUserLoggedIn) {
+      if (this.appGlobalService.isUserLoggedIn()) {
         this.userCount += 1;
       }
       console.log("User count" + this.userCount);

@@ -106,7 +106,7 @@ export class UserAndGroupsPage {
 
     this.isLoggedInUser = this.navParams.get('isLoggedInUser');
     // this.profileDetails = this.navParams.get('profile');
-    if (this.appGlobalService.isUserLoggedIn) {
+    if (this.appGlobalService.isUserLoggedIn()) {
       this.profileDetails = this.appGlobalService.getCurrentUser();
     }
   }
@@ -500,7 +500,7 @@ export class UserAndGroupsPage {
     let selectedUser = this.userList[this.selectedUserIndex];
     this.event.publish('launchPlayer', true);
     this.navCtrl.pop();
-    if (this.appGlobalService.isUserLoggedIn) {
+    if (this.appGlobalService.isUserLoggedIn()) {
       this.logOut(selectedUser, true);
     } else {
       this.setAsCurrentUser(selectedUser, true);
