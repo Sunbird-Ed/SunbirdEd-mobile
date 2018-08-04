@@ -91,7 +91,7 @@ export class ReportsPage {
     });
   }
 
-  ionViewWillEnter() {
+  ionViewDidLoad() {
     let loader = this.loading.create({
       spinner: "crescent"
     });

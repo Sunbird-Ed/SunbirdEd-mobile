@@ -23,40 +23,47 @@ export class ReportListPage {
         public reportService: ReportService,
         public ngZone: NgZone,
         private contentService: ContentService) {
+
     }
 
-    ionViewWillEnter() {
+    ionViewDidLoad() {
+        this.isFromUsers = this.navParams.get('isFromUsers');
+        this.isFromGroups = this.navParams.get('isFromGroups');
+        this.uids = this.navParams.get('uids');
+
         let loader = this.loading.create({
             spinner: "crescent"
         });
         loader.present();
-        this.isFromUsers = this.navParams.get('isFromUsers');
-        this.isFromGroups = this.navParams.get('isFromGroups');
-        this.uids = this.navParams.get('uids');
-        
+
+
         const requestParams: SummarizerContentFilterCriteria = {
             contentTypes: ContentType.FOR_LIBRARY_TAB,
-            uids:this.uids,
-            attachContentAccess:true,
-            attachFeedback:true
-		};
+            uids: this.uids,
+            attachContentAccess: true,
+            attachFeedback: true
+        };
         this.contentService.getLocalContents(requestParams)
-        .then(contentList => {
-            this.reportService.getListOfReports(this.uids)
-            .then(list => {
-                this.ngZone.run(() => {
-                    loader.dismiss();
-                    this.listOfReports = list;
-                });
+            .then(contentList => {
+                this.reportService.getListOfReports(this.uids)
+                    .then(list => {
+                        this.ngZone.run(() => {
+                            loader.dismiss();
+                            this.listOfReports = list;
+                        });
+                    })
+                    .catch(err => {
+                        loader.dismiss();
+                    });
             })
             .catch(err => {
                 loader.dismiss();
             });
-        })
-        .catch(err => {
-            loader.dismiss();
-        });
-        
+
+    }
+
+    ionViewWillEnter() {
+
     }
 
     formatTime(time: number): string {
