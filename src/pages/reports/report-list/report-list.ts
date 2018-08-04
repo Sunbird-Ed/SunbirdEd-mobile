@@ -1,8 +1,9 @@
 import { Component, NgZone } from '@angular/core';
 import { NavController, NavParams, LoadingController } from 'ionic-angular';
 import { GroupReportListPage } from '../group-report-list/group-report-list';
-import { ReportService, ReportSummary } from "sunbird";
+import { ReportService, ReportSummary, ContentService, ContentFilterCriteria, SummarizerContentFilterCriteria, ContentSortCriteria, SortOrder } from "sunbird";
 import { UserReportPage } from '../user-report/user-report';
+import { ContentType } from '../../../app/app.constant';
 
 @Component({
     selector: 'group-list-page',
@@ -20,7 +21,8 @@ export class ReportListPage {
         private navParams: NavParams,
         private loading: LoadingController,
         public reportService: ReportService,
-        public ngZone: NgZone) {
+        public ngZone: NgZone,
+        private contentService: ContentService) {
     }
 
     ionViewWillEnter() {
@@ -31,16 +33,30 @@ export class ReportListPage {
         this.isFromUsers = this.navParams.get('isFromUsers');
         this.isFromGroups = this.navParams.get('isFromGroups');
         this.uids = this.navParams.get('uids');
-        this.reportService.getListOfReports(this.uids)
-        .then(list => {
-            this.ngZone.run(() => {
+        
+        const requestParams: SummarizerContentFilterCriteria = {
+            contentTypes: ContentType.FOR_LIBRARY_TAB,
+            uids:this.uids,
+            attachContentAccess:true,
+            attachFeedback:true
+		};
+        this.contentService.getLocalContents(requestParams)
+        .then(contentList => {
+            this.reportService.getListOfReports(this.uids)
+            .then(list => {
+                this.ngZone.run(() => {
+                    loader.dismiss();
+                    this.listOfReports = list;
+                });
+            })
+            .catch(err => {
                 loader.dismiss();
-                this.listOfReports = list;
             });
         })
         .catch(err => {
             loader.dismiss();
         });
+        
     }
 
     formatTime(time: number): string {
@@ -56,15 +72,15 @@ export class ReportListPage {
                 report: report
             });
         } else
-        /* istanbul ignore else */
-         if (this.isFromGroups) {
-            let uids = this.navParams.get('uids');
-            let users = this.navParams.get('users');
-            this.navCtrl.push(GroupReportListPage, {
-                report: report,
-                uids: uids,
-                users: users
-            });
-        }
+            /* istanbul ignore else */
+            if (this.isFromGroups) {
+                let uids = this.navParams.get('uids');
+                let users = this.navParams.get('users');
+                this.navCtrl.push(GroupReportListPage, {
+                    report: report,
+                    uids: uids,
+                    users: users
+                });
+            }
     }
 }
