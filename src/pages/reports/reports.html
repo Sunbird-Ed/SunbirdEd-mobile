@@ -6,7 +6,7 @@
     </ion-navbar>
 
     <ion-toolbar no-border-top>
-        <ion-segment [(ngModel)]="report">
+        <ion-segment [(ngModel)]="report" (ionChange)="onSegmentChange(report)">
             <ion-segment-button value="users">
                 {{ 'USERS' | translate }}
             </ion-segment-button>

@@ -417,7 +417,7 @@ export class GuestEditProfilePage {
           InteractType.OTHER,
           InteractSubtype.EDIT_USER_SUCCESS,
           Environment.USER,
-          PageId.USERS
+          PageId.EDIT_USER
         );
         this.navCtrl.pop();
       },

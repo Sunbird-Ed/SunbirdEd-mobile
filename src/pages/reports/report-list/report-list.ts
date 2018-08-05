@@ -1,9 +1,10 @@
 import { Component, NgZone } from '@angular/core';
 import { NavController, NavParams, LoadingController } from 'ionic-angular';
 import { GroupReportListPage } from '../group-report-list/group-report-list';
-import { ReportService, ReportSummary, ContentService, ContentFilterCriteria, SummarizerContentFilterCriteria, ContentSortCriteria, SortOrder } from "sunbird";
+import { ReportService, ReportSummary, ContentService, ContentFilterCriteria, SummarizerContentFilterCriteria, ContentSortCriteria, SortOrder, ImpressionType, Environment, PageId, InteractType, InteractSubtype, ObjectType, TelemetryObject } from "sunbird";
 import { UserReportPage } from '../user-report/user-report';
 import { ContentType } from '../../../app/app.constant';
+import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 
 @Component({
     selector: 'group-list-page',
@@ -22,11 +23,17 @@ export class ReportListPage {
         private loading: LoadingController,
         public reportService: ReportService,
         public ngZone: NgZone,
-        private contentService: ContentService) {
+        private contentService: ContentService,
+        private telemetryGeneratorService: TelemetryGeneratorService) {
 
     }
 
     ionViewDidLoad() {
+        this.telemetryGeneratorService.generateImpressionTelemetry(
+            ImpressionType.VIEW, "",
+            PageId.REPORTS_ASSESMENT_CONTENT_LIST,
+            Environment.USER
+        );
         this.isFromUsers = this.navParams.get('isFromUsers');
         this.isFromGroups = this.navParams.get('isFromGroups');
         this.uids = this.navParams.get('uids');
@@ -74,12 +81,22 @@ export class ReportListPage {
     }
 
     goToGroupReportsList(report: ReportSummary) {
+        let telemetryObject: TelemetryObject = new TelemetryObject();
+        telemetryObject.id = report.contentId;
+        telemetryObject.type = ObjectType.CONTENT;
+
+        this.telemetryGeneratorService.generateInteractTelemetry(
+            InteractType.TOUCH,
+            InteractSubtype.CONTENT_CLICKED,
+            Environment.USER,
+            PageId.REPORTS_ASSESMENT_CONTENT_LIST,
+            telemetryObject
+        );
         if (this.isFromUsers) {
             this.navCtrl.push(UserReportPage, {
                 report: report
             });
         } else
-            /* istanbul ignore else */
             if (this.isFromGroups) {
                 let uids = this.navParams.get('uids');
                 let users = this.navParams.get('users');

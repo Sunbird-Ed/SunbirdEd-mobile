@@ -13,8 +13,16 @@ import {
   ProfileService,
   GroupService,
   ProfileRequest,
-  GroupRequest
+  GroupRequest,
+  InteractSubtype,
+  InteractType,
+  PageId,
+  Environment,
+  ImpressionType,
+  TelemetryObject,
+  ObjectType
 } from 'sunbird';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 
 @Component({
   selector: 'reports-page',
@@ -35,6 +43,7 @@ export class ReportsPage {
     private ngZone: NgZone,
     private loading: LoadingController,
     private navParams: NavParams,
+    private telemetryGeneratorService:TelemetryGeneratorService
   ) {
     this.profileDetails = this.navParams.get('profile');
   }
@@ -92,6 +101,13 @@ export class ReportsPage {
   }
 
   ionViewDidLoad() {
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.VIEW,
+      "",
+      Environment.USER,
+      PageId.REPORTS_USER_GROUP
+    );
+    
     let loader = this.loading.create({
       spinner: "crescent"
     });
@@ -124,6 +140,19 @@ export class ReportsPage {
   }
 
   goToUserReportList(uid: string) {
+
+    let telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.id = uid;
+    telemetryObject.type = ObjectType.USER;
+    
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.USER_CLICKED,
+      Environment.USER,
+      PageId.REPORTS_USER_GROUP,
+      telemetryObject
+    );
+
     this.navCtrl.push(ReportListPage, {
       isFromUsers: true,
       uids: [uid]
@@ -131,6 +160,17 @@ export class ReportsPage {
   }
 
   goToGroupUserReportList(group) {
+    let telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.id = group.gid;
+    telemetryObject.type = ObjectType.GROUP;
+    
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.GROUP_CLICKED,
+      Environment.USER,
+      PageId.REPORTS_USER_GROUP,
+      telemetryObject
+    );
     let profileRequest: ProfileRequest = { local: true, groupId: group.gid };
     this.profileService.getAllUserProfile(profileRequest)
     .then(result => {
@@ -148,4 +188,22 @@ export class ReportsPage {
       });
     })
   }
+
+  onSegmentChange(data) {
+    let subType = (data == 'users') ? InteractSubtype.USERS_TAB_CLICKED : InteractSubtype.GROUPS_TAB_CLICKED;
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      subType,
+      Environment.USER,
+      PageId.REPORTS_USER_GROUP
+    );
+
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.VIEW,
+      "",
+      Environment.USER,
+      PageId.REPORTS_USER_GROUP
+    );
+  }
+
 }

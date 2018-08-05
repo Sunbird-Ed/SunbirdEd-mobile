@@ -114,7 +114,7 @@ export class UserAndGroupsPage {
   ionViewDidLoad() {
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW, "",
-      PageId.USERS,
+      PageId.USERS_GROUPS,
       Environment.USER
     );
   }
@@ -282,7 +282,7 @@ export class UserAndGroupsPage {
       InteractType.TOUCH,
       InteractSubtype.CREATE_GROUP_CLICKED,
       Environment.USER,
-      PageId.GROUPS
+      PageId.USERS_GROUPS
     );
 
     this.navCtrl.push('CreateGroupPage');
@@ -312,7 +312,7 @@ export class UserAndGroupsPage {
       InteractType.TOUCH,
       InteractSubtype.CREATE_USER_CLICKED,
       Environment.USER,
-      PageId.USERS
+      PageId.USERS_GROUPS
     );
     this.navCtrl.push(GuestEditProfilePage, {
       isNewUser: true
@@ -347,7 +347,7 @@ export class UserAndGroupsPage {
       InteractType.TOUCH,
       InteractSubtype.SWITCH_USER_CLICKED,
       Environment.USER,
-      PageId.USERS
+      PageId.USERS_GROUPS
     );
 
     let selectedUser = this.userList[this.selectedUserIndex];
@@ -366,14 +366,14 @@ export class UserAndGroupsPage {
 
     let telemetryObject: TelemetryObject = new TelemetryObject();
     telemetryObject.id = selectedUser.uid;
-    telemetryObject.type = Environment.USER;
+    telemetryObject.type = ObjectType.USER;
 
     // Generate Switch user initiate interact event
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.SWITCH_USER_INITIATE,
       Environment.USER,
-      PageId.USERS,
+      PageId.USERS_GROUPS,
       telemetryObject,
       valuesMap
     );
@@ -412,7 +412,7 @@ export class UserAndGroupsPage {
       InteractType.OTHER,
       InteractSubtype.SWITCH_USER_SUCCESS,
       Environment.USER,
-      PageId.USERS,
+      PageId.USERS_GROUPS,
       telemetryObject,
       valuesMap
     );
@@ -428,7 +428,7 @@ export class UserAndGroupsPage {
       InteractType.TOUCH,
       InteractSubtype.LOGOUT_INITIATE,
       Environment.USER,
-      PageId.USERS,
+      PageId.USERS_GROUPS,
       telemetryObject
     );
     if (isBeingPlayed) {
@@ -454,7 +454,7 @@ export class UserAndGroupsPage {
       InteractType.OTHER,
       InteractSubtype.LOGOUT_SUCCESS,
       Environment.USER,
-      PageId.USERS,
+      PageId.USERS_GROUPS,
       telemetryObject
     );
 
@@ -574,7 +574,7 @@ export class UserAndGroupsPage {
       InteractType.TOUCH,
       InteractSubtype.DELETE_USER_INITIATE,
       Environment.USER,
-      PageId.USERS,
+      PageId.USERS_GROUPS,
       telemetryObject
     );
     this.profileService.deleteUser(uid,
