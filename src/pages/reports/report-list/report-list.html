@@ -13,8 +13,8 @@
     <div *ngIf="listOfReports.length > 0">
       <ion-item *ngFor="let report of listOfReports;let i=index" class="bgColor" (click)="goToGroupReportsList(report)">
         <!-- <p *ngIf="report && report.lastUsedTime">{{ report.lastUsedTime | date: 'M.dd.yyyy, h:mm a'}}</p> -->
-        <h2 *ngIf="report">{{report.name}}</h2>
-        <p *ngIf="reports && isFromUsers">{{'SCORED' | translate}}:{{report.correctAnswers}}/{{report.noOfQuestions}}</p>
+        <h2>{{report.name}}</h2>
+        <p *ngIf="isFromUsers">{{'SCORED' | translate}}:{{report.correctAnswers}}/{{report.noOfQuestions}}</p>
         <ion-icon name="ios-arrow-forward" item-end></ion-icon>
       </ion-item>
     </div>
