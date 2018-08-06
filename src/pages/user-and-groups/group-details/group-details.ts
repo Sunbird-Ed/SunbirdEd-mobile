@@ -424,19 +424,28 @@ export class GroupDetailsPage {
   }
 
   deleteUsersinGroup(index: number) {
+    let userListIndex = this.userList.indexOf(this.userList[index]);
     this.userUids.forEach((item) => {
       if (this.userList[index].uid == item) {
-        let elementIndex = this.userUids.indexOf(item.uid);
-        let userListIndex = this.userList.indexOf(this.userList[index]);
+        let elementIndex = this.userUids.indexOf(item);
         this.userUids.splice(elementIndex, 1);
-        this.userList.splice(userListIndex, 1);
-        let req: AddUpdateProfilesRequest = {
-          groupId: this.group.gid,
-          uidList: this.userUids
-        }
-        this.groupService.addUpdateProfilesToGroup(req);
+
       }
     })
+    let req: AddUpdateProfilesRequest = {
+      groupId: this.group.gid,
+      uidList: this.userUids
+    }
+    
+    this.groupService.addUpdateProfilesToGroup(req).then(
+      (success) => {
+        console.log("success", success);
+        this.userList.splice(userListIndex, 1);        
+      }
+    ).catch(error => {
+
+    });
+    console.log('request is' , req);
   }
 
   /**
