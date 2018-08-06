@@ -1,13 +1,15 @@
 import { TranslateService } from '@ngx-translate/core';
 import {
   Component,
-  NgZone
+  NgZone,
+  ViewChild
 } from '@angular/core';
 import {
   IonicPage,
   NavController,
   NavParams,
-  LoadingController
+  LoadingController,
+  Content
 } from 'ionic-angular';
 import { PopoverPage } from '../popover/popover';
 import { PopoverController } from 'ionic-angular';
@@ -50,6 +52,7 @@ import { Map } from "../../../app/telemetryutil";
   templateUrl: 'group-details.html',
 })
 export class GroupDetailsPage {
+  @ViewChild(Content) content: Content;
   group: Group;
   currentUserId: string;
   currentGroupId: string;
@@ -98,6 +101,9 @@ export class GroupDetailsPage {
   ionViewWillEnter() {
     this.getAllProfile();
   }
+  resizeContent() {
+    this.content.resize();
+  }
 
   getAllProfile() {
     let loader = this.getLoader();
@@ -132,6 +138,7 @@ export class GroupDetailsPage {
   selectUser(index: number, name: string) {
     this.zone.run(() => {
       this.selectedUserIndex = (this.selectedUserIndex === index) ? -1 : index;
+      this.resizeContent();
     });
   }
 
