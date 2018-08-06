@@ -98,7 +98,6 @@ export class CoursesPage implements OnInit {
   onBoardingProgress: number = 0;
   selectedLanguage = 'en';
   appLabel: string;
-  tabBarElement: any;
 
   courseFilter: any;
 
@@ -526,7 +525,7 @@ export class CoursesPage implements OnInit {
         this.getPopularAndLatestCourses();
       });
 
-   
+
   }
 
   /**
@@ -787,8 +786,6 @@ export class CoursesPage implements OnInit {
   }
 
   getContentDetails(content) {
-    this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
-    // this.tabBarElement.style.display = 'none';
     let identifier = content.contentId || content.identifier;
     this.contentService.getContentDetail({ contentId: identifier }, (data: any) => {
       data = JSON.parse(data);
@@ -815,7 +812,6 @@ export class CoursesPage implements OnInit {
             this.subscribeGenieEvent();
             console.log("Content locally not available. Import started... @@@");
             this.showOverlay = true;
-            this.tabBarElement.style.display = 'none';
             this.importContent([identifier], false);
             break;
           }
@@ -851,7 +847,6 @@ export class CoursesPage implements OnInit {
           });
           if (this.queuedIdentifiers.length === 0) {
             this.showOverlay = false;
-            this.tabBarElement.style.display = 'flex';
             this.showMessage(this.translateMessage('ERROR_CONTENT_NOT_AVAILABLE'));
             console.log('Content not downloaded');
           }
@@ -861,7 +856,6 @@ export class CoursesPage implements OnInit {
       (error: any) => {
         this.ngZone.run(() => {
           this.showOverlay = false;
-          this.tabBarElement.style.display = 'flex';
           this.showMessage(this.translateMessage('ERROR_CONTENT_NOT_AVAILABLE'));
         });
       });
@@ -881,7 +875,6 @@ export class CoursesPage implements OnInit {
 
         if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport' && this.downloadPercentage === 100) {
           this.showOverlay = false;
-          this.tabBarElement.style.display = 'flex';
           this.navCtrl.push(ContentDetailsPage, {
             content: { identifier: this.resumeContentData.lastReadContentId },
             depth: '1',
@@ -902,10 +895,8 @@ export class CoursesPage implements OnInit {
     this.ngZone.run(() => {
       this.contentService.cancelDownload(this.resumeContentData.contentId || this.resumeContentData.identifier, (response) => {
         this.showOverlay = false;
-        this.tabBarElement.style.display = 'flex';
       }, (error) => {
         this.showOverlay = false;
-        this.tabBarElement.style.display = 'flex';
       });
     });
   }
@@ -913,9 +904,6 @@ export class CoursesPage implements OnInit {
   ionViewCanLeave() {
     this.ngZone.run(() => {
       this.events.unsubscribe('genie.event');
-      if (this.tabBarElement) {
-        this.tabBarElement.style.display = 'flex';
-      }
-    })
+    });
   }
 }

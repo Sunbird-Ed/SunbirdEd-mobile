@@ -90,6 +90,6 @@
   </div>
 
   <div class="backdrop-footer" *ngIf="downloadPercentage !== 100">
-    <button ion-button small (click)="cancelDownload()">Cancel</button>
+    <button ion-button small (click)="cancelDownload()">{{'CANCEL' | translate}}</button>
   </div>
 </ion-backdrop>

@@ -25,11 +25,6 @@ export class CourseBatchesPage implements OnInit {
   userId: string;
 
   /**
-   * Contains tab bar element ref
-   */
-  tabBarElement: any;
-
-  /**
    * To hold course indentifier
    */
   identifier: string;
@@ -101,11 +96,11 @@ export class CourseBatchesPage implements OnInit {
 
   /**
    * Default method of class CourseBatchesComponent
-   * 
+   *
    * @param {CourseService} courseService To get batches list
    * @param {NavController} navCtrl To redirect form one page to another
    * @param {NavParams} navParams To get url params
-   * @param {NgZone} zone To bind data 
+   * @param {NgZone} zone To bind data
    * @param {AuthService} authService To get logged-in user data
    */
   constructor(courseService: CourseService, navCtrl: NavController, navParams: NavParams, zone: NgZone,
@@ -115,7 +110,6 @@ export class CourseBatchesPage implements OnInit {
     this.navParams = navParams;
     this.zone = zone;
     this.authService = authService;
-    this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
     this.toastCtrl = toastCtrl;
 
     this.filterList.ONGOING = this.translateLanguageConstant('VIEW_ONGOING_BATCHES');
@@ -125,7 +119,7 @@ export class CourseBatchesPage implements OnInit {
 
   /**
    * Enroll logged-user into selected batch
-   * 
+   *
    * @param {any} item contains details of select batch
    */
   enrollIntoBatch(item: any): void {
@@ -213,10 +207,6 @@ export class CourseBatchesPage implements OnInit {
     });
   }
 
-  ionViewWillEnter(): void {
-    this.tabBarElement.style.display = 'none';
-  }
-
   showMessage(message: string) {
     let toast = this.toastCtrl.create({
       message: message,
@@ -230,7 +220,6 @@ export class CourseBatchesPage implements OnInit {
   }
 
   ngOnInit(): void {
-    this.tabBarElement.style.display = 'none';
     this.getUserId();
   }
 
