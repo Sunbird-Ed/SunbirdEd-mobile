@@ -255,6 +255,9 @@ export class SearchPage {
 
     this.isDialCodeSearch = false;
 
+    this.dialCodeContentResult = undefined;
+    this.dialCodeResult = undefined;
+
     if (this.profile) {
 
       if (this.profile.board && this.profile.board.length) {
