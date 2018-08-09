@@ -1,6 +1,6 @@
 <ion-header>
     <ion-navbar>
-        <ion-searchbar [(ngModel)]="searchInput" #input debounce="1000" [showCancelButton]="true" (ionInput)="checkClear()" (search)="onInput($event)" (ionCancel)="onCancel($event)"
+        <ion-searchbar [(ngModel)]="searchInput" #input debounce="1000" [showCancelButton]="true" (ionInput)="checkClear()" (search)="onInput($event)"
             [spellcheck]="true" [autocomplete]="true">
         </ion-searchbar>
     </ion-navbar>
@@ -17,7 +17,7 @@
             <div>
                 <ion-badge *ngIf="user?.status" color="title" item-end>{{ 'ACTIVE' | translate }}</ion-badge>
                 <ion-badge *ngIf="!user?.status" color="title" item-end>{{ 'INACTIVE' | translate }}</ion-badge>
-            </div>        
+            </div>
         </ion-item>
     </ion-list>
     <h6 *ngIf="!userList?.length && showEmptyMessage" text-center>{{'EMPTY_SEARCH_RESULTS' | translate}}</h6>
