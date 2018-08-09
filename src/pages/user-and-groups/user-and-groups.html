@@ -28,17 +28,17 @@
           <p ion-text text-uppercase color="dark_gray" class="subTitle">{{ 'LOGGED_IN_AS' | translate}}</p>
           <ion-item class="item-background radius" margin-bottom no-lines [ngClass]="i===selectedUserIndex ? 'blueBorder' : ''">
             <ion-row class="bg-color-white">
-              <ion-col col-10 class="bg-color-white" (click)="selectUser(i, user?.name)">
+              <ion-col col-12 class="bg-color-white" (click)="selectUser(i, user?.name)">
                 <ion-item class="bg-color-white padding-left-0 rm-label-margin" no-padding>
-                  <h6 class="line-height-2 padding-left-2" color="primary" [ngStyle]="{'color': currentUserId === user?.uid ? 'dodgerblue' : 'black'}">
+                  <h6 class="line-height-2 padding-left-2 elipsis" color="primary" [ngStyle]="{'color': currentUserId === user?.uid ? 'dodgerblue' : 'black'}">
                     <b>{{profileDetails?.handle}}&nbsp;{{profileDetails?.lastName}}</b>
                   </h6>
                   <!-- <p>{{profileDetails?.grade}}</p> -->
                   <p>{{profileDetails?.profileType | titlecase}}</p>
                 </ion-item>
               </ion-col>
-              <ion-col col-2 class="advanced-menu">
-              </ion-col>
+              <!-- <ion-col col-1 class="advanced-menu">
+              </ion-col> -->
             </ion-row>
           </ion-item>
         </div>
@@ -63,7 +63,7 @@
                 </ion-item>
               </ion-col>
               <ion-col col-1 class="advanced-menu" *ngIf="!playContent">
-                <ion-item item-end class="bg-color-white">
+                <ion-item item-end class="bg-color-white item-padding-left">
                   <ion-icon class="line-height-2 padding-left-2" name="more" item-end (click)="presentPopover($event ,i, true)"></ion-icon>
                 </ion-item>
               </ion-col>
