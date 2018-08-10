@@ -26,7 +26,7 @@ allprojects {
             url "https://maven.google.com"
         }
         jcenter()
-      
+
         maven {
             url "https://platform.ekstep.in/downloads/content/repositories/releases"
         }
@@ -129,7 +129,7 @@ android {
             buildConfigField 'String', 'MOBILE_APP_SECRET', "\"${dev_mobile_app_secret}\""
             buildConfigField 'String', 'OAUTH_SESSION', '"org.genie.KeycloakOAuthSessionService"'
 
-            buildConfigField "boolean", "DISPLAY_ONBOARDING_CARDS", "\"${display_onboarding_cards}\""
+            buildConfigField "boolean", "DISPLAY_ONBOARDING_CARDS", "${display_onboarding_cards}"
         }
 
         staging {
@@ -164,7 +164,7 @@ android {
             buildConfigField 'String', 'MOBILE_APP_SECRET', "\"${staging_mobile_app_secret}\""
             buildConfigField 'String', 'OAUTH_SESSION', '"org.genie.KeycloakOAuthSessionService"'
 
-            buildConfigField "boolean", "DISPLAY_ONBOARDING_CARDS", "\"${display_onboarding_cards}\""
+            buildConfigField "boolean", "DISPLAY_ONBOARDING_CARDS", "${display_onboarding_cards}"
         }
 
         production {
@@ -199,7 +199,7 @@ android {
             buildConfigField 'String', 'MOBILE_APP_SECRET', "\"${production_mobile_app_secret}\""
             buildConfigField 'String', 'OAUTH_SESSION', '"org.genie.KeycloakOAuthSessionService"'
 
-            buildConfigField "boolean", "DISPLAY_ONBOARDING_CARDS", "\"${display_onboarding_cards}\""
+            buildConfigField "boolean", "DISPLAY_ONBOARDING_CARDS", "${display_onboarding_cards}"
         }
     }
 
