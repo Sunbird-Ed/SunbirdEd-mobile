@@ -124,7 +124,7 @@ export class AppGlobalService {
         this.buildParamService.getBuildConfigParam("DISPLAY_ONBOARDING_CARDS", (response: any) => {
             console.log(typeof response);
             console.log("DISPLAY_ONBOARDING_CARDS", response);
-            this.DISPLAY_ONBOARDING_CARDS = response;
+            this.DISPLAY_ONBOARDING_CARDS = response === 'true' ? true : false;
         }, (error) => {
             console.log("DISPLAY_ONBOARDING_CARDS Error", error);
             this.DISPLAY_ONBOARDING_CARDS = false;
