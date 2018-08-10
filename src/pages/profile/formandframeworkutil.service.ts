@@ -54,11 +54,15 @@ export class FormAndFrameworkUtilService {
             //get cached form details
             syllabusList = this.appGlobalService.getCachedSyllabusList()
 
-            if (syllabusList !== undefined && syllabusList.length > 0) {
-                resolve(syllabusList);
-            } else {
+            if ((syllabusList === undefined || syllabusList.length == 0)
+                || (syllabusList !== undefined && syllabusList.length == 1)) {
+                syllabusList = [];
                 this.callSyllabusListApi(syllabusList, resolve, reject);
+            } else {
+
+                resolve(syllabusList);
             }
+
         })
     }
 
@@ -119,7 +123,14 @@ export class FormAndFrameworkUtilService {
             resolve(syllabusList);
         }, (error: any) => {
             console.log("Error - " + error);
-            reject(syllabusList);
+            // Adding default framework into the list
+            let defaultFramework = {
+                name: FrameworkConstant.DEFAULT_FRAMEWORK_NAME,
+                frameworkId: FrameworkConstant.DEFAULT_FRAMEWORK_ID
+            }
+
+            syllabusList.push(defaultFramework);
+            resolve(syllabusList);
         });
     }
 
