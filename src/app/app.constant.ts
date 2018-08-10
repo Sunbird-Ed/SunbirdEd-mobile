@@ -110,8 +110,12 @@ export class MenuOverflow {
     public static readonly MENU_LOGIN = ['USERS_AND_GROUPS', 'REPORTS', 'SETTINGS', 'LOGOUT'];
 }
 
-
 export class FrameworkConstant {
     public static readonly DEFAULT_FRAMEWORK_ID = "NCF";
     public static readonly DEFAULT_FRAMEWORK_NAME = "Common";
+}
+
+export class GenericAppConfig {
+    public static readonly DISPLAY_ONBOARDING_CARDS = "DISPLAY_ONBOARDING_CARDS";
+    public static readonly DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE = "DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE";
 }
