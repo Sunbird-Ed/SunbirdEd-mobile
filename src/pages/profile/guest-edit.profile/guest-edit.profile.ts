@@ -39,6 +39,7 @@ import {
   GUEST_TEACHER_TABS
 } from '../../../app/module.service';
 import { App } from 'ionic-angular';
+import { AppGlobalService } from '../../../service/app-global.service';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -120,7 +121,8 @@ export class GuestEditProfilePage {
     private telemetryGeneratorService: TelemetryGeneratorService,
     private container: ContainerService,
     private app: App,
-    private preferences: SharedPreferences
+    private preferences: SharedPreferences,
+    private appGlobal: AppGlobalService,
   ) {
     this.profile = this.navParams.get('profile') || {};
     this.isNewUser = Boolean(this.navParams.get('isNewUser'));

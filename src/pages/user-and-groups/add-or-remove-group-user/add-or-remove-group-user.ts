@@ -74,7 +74,7 @@ export class AddOrRemoveGroupUserPage {
     private alertCtrl: AlertController,
     private telemetryGeneratorService:TelemetryGeneratorService
   ) {
-    this.addUsers = this.navParams.get('isAddUsers');
+    this.addUsers = Boolean(this.navParams.get('isAddUsers'));
     this.groupInfo = this.navParams.get('groupInfo');
     this.groupMembers = this.navParams.get('groupMembers');
     console.log("length of group member", this.groupMembers.length)

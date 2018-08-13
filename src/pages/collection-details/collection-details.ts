@@ -348,7 +348,7 @@ export class CollectionDetailsPage {
     switch (data.result.isAvailableLocally) {
       case true: {
         this.showLoading = false;
-        this.contentDetail.size = data.result.sizeOnDevice;
+        // this.contentDetail.size = data.result.sizeOnDevice;
         console.log("Content locally available. Looking for is update available or not...");
         // data.result.isUpdateAvailable = true;
         if (data.result.isUpdateAvailable && !this.isUpdateAvailable){

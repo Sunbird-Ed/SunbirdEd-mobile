@@ -202,7 +202,7 @@ export class CreateGroupPage {
       loader.present();
 
       this.group.name = formValue.name;
-      this.group.grade = (!formValue.class.length) ? [] : [formValue.class];
+      this.group.grade = (!formValue.class.length) ? [] :  Array.isArray(formValue.class) ? formValue.class : [formValue.class];;
       this.group.syllabus = (!formValue.syllabus.length) ? [] : [formValue.syllabus];
       this.group.gradeValueMap = {};
 

@@ -23,3 +23,6 @@ production_deeplink_base_url = PRODUCTION_DEEPLINK_BASE_URL
 // Fabric Keys
 release_fabric_api_key = RELEASE_FABRIC_API_KEY
 release_fabric_api_secret = RELEASE_FABRIC_API_SECRET
+
+display_onboarding_cards= DISPLAY_ONBOARDING_CARDS
+display_framework_categories_in_profile = DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE
