@@ -246,14 +246,9 @@ export class GuestProfilePage {
    *
    */
   goToRoles() {
-    if (!this.isNetworkAvailable) {
-      this.showNetworkWarning();
-    }
-    else {
-      this.navCtrl.push(UserTypeSelectionPage, {
-        profile: this.profile
-      })
-    }
+    this.navCtrl.push(UserTypeSelectionPage, {
+      profile: this.profile
+    });
   }
 
   buttonClick(isNetAvailable) {
