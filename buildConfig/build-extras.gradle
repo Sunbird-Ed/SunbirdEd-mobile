@@ -130,6 +130,7 @@ android {
             buildConfigField 'String', 'OAUTH_SESSION', '"org.genie.KeycloakOAuthSessionService"'
 
             buildConfigField "boolean", "DISPLAY_ONBOARDING_CARDS", "${display_onboarding_cards}"
+            buildConfigField "boolean", "DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE", "${display_framework_categories_in_profile}"
         }
 
         staging {
@@ -165,6 +166,7 @@ android {
             buildConfigField 'String', 'OAUTH_SESSION', '"org.genie.KeycloakOAuthSessionService"'
 
             buildConfigField "boolean", "DISPLAY_ONBOARDING_CARDS", "${display_onboarding_cards}"
+            buildConfigField "boolean", "DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE", "${display_framework_categories_in_profile}"
         }
 
         production {
@@ -200,6 +202,7 @@ android {
             buildConfigField 'String', 'OAUTH_SESSION', '"org.genie.KeycloakOAuthSessionService"'
 
             buildConfigField "boolean", "DISPLAY_ONBOARDING_CARDS", "${display_onboarding_cards}"
+            buildConfigField "boolean", "DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE", "${display_framework_categories_in_profile}"
         }
     }
 

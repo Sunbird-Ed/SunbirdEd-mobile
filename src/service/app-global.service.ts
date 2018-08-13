@@ -15,7 +15,7 @@ import {
     PopoverOptions
 } from "ionic-angular";
 import { UpgradePopover } from "../pages/upgrade/upgrade-popover";
-import { FrameworkConstant } from "../app/app.constant";
+import { FrameworkConstant, GenericAppConfig } from "../app/app.constant";
 
 @Injectable()
 export class AppGlobalService {
@@ -37,6 +37,7 @@ export class AppGlobalService {
 
     private frameworkData = [];
     public DISPLAY_ONBOARDING_CARDS: boolean = false;
+    public DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE: boolean = false;
 
     constructor(private event: Events,
         private authService: AuthService,
@@ -121,13 +122,22 @@ export class AppGlobalService {
     }
 
     readConfig() {
-        this.buildParamService.getBuildConfigParam("DISPLAY_ONBOARDING_CARDS", (response: any) => {
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_ONBOARDING_CARDS, (response: any) => {
             console.log(typeof response);
             console.log("DISPLAY_ONBOARDING_CARDS", response);
             this.DISPLAY_ONBOARDING_CARDS = response === 'true' ? true : false;
         }, (error) => {
             console.log("DISPLAY_ONBOARDING_CARDS Error", error);
             this.DISPLAY_ONBOARDING_CARDS = false;
+        });
+
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE, (response: any) => {
+            console.log(typeof response);
+            console.log("DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE", response);
+            this.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE = response === 'true' ? true : false;
+        }, (error) => {
+            console.log("DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE Error", error);
+            this.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE = false;
         });
     }
 

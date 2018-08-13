@@ -22,12 +22,15 @@ page-resources {
         font-weight: 500;
         font-family: 'sunbirdboldfont';
         font-size: 1.350em;
+        width: 50%;
       }
       .view-all-link {
         font-size: 1.4rem;
         padding-top: 11px;
         font-family: 'sunbirdboldfont';
         font-weight: 500;
+        width: 30%;
+        text-align: right;
       }
       .signin-card-bg {
         background-color: map-get($colors, light_gray);
@@ -46,6 +49,7 @@ page-resources {
       }
       .padding-11 {
         padding: 11px;
+        overflow: hidden;
       }
       .empty-saved-resources {
         height: 140px;
