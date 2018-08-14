@@ -13,6 +13,8 @@ import {
 } from 'sunbird';
 import { OnboardingPage } from '../onboarding/onboarding';
 import { generateImpressionTelemetry, generateInteractTelemetry, Map } from '../../app/telemetryutil';
+import { AppGlobalService } from '../../service/app-global.service';
+import { UserTypeSelectionPage } from '../user-type-selection/user-type-selection';
 
 const KEY_SELECTED_LANGUAGE_CODE = "selected_language_code";
 const KEY_SELECTED_LANGUAGE = "selected_language";
@@ -38,7 +40,8 @@ export class LanguageSettingsPage {
     private preferences: SharedPreferences,
     private telemetryService: TelemetryService,
     private events: Events,
-    private zone: NgZone
+    private zone: NgZone,
+    private appGlobal: AppGlobalService,
   ) { }
 
   init(): void {
@@ -175,8 +178,10 @@ export class LanguageSettingsPage {
     });
     if (this.isFromSettings) {
       this.navCtrl.pop();
-    } else {
+    } else if (this.appGlobal.DISPLAY_ONBOARDING_PAGE) {
       this.navCtrl.push(OnboardingPage);
+    } else {
+      this.navCtrl.push(UserTypeSelectionPage);
     }
   }
 
