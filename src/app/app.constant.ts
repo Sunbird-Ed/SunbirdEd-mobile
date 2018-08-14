@@ -115,3 +115,10 @@ export class FrameworkConstant {
     public static readonly DEFAULT_FRAMEWORK_ID = "NCF";
     public static readonly DEFAULT_FRAMEWORK_NAME = "Common";
 }
+
+export class GenericAppConfig {
+    public static readonly DISPLAY_ONBOARDING_PAGE = "DISPLAY_ONBOARDING_PAGE";
+    public static readonly DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB = "DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB";
+    public static readonly DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB = "DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB";
+    public static readonly DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB = "DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB";
+}

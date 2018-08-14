@@ -6,7 +6,8 @@ import {
     SharedPreferences,
     ProfileService,
     FrameworkDetailsRequest,
-    FrameworkService
+    FrameworkService,
+    BuildParamService
 } from "sunbird";
 import {
     Events,
@@ -14,7 +15,7 @@ import {
     PopoverOptions
 } from "ionic-angular";
 import { UpgradePopover } from "../pages/upgrade/upgrade-popover";
-import { FrameworkConstant } from "../app/app.constant";
+import { FrameworkConstant, GenericAppConfig } from "../app/app.constant";
 
 @Injectable()
 export class AppGlobalService {
@@ -32,20 +33,25 @@ export class AppGlobalService {
     guestProfileType: ProfileType;
 
     session: any;
-    public static isPlayerLaunched:boolean = false;
+    public static isPlayerLaunched: boolean = false;
 
     private frameworkData = [];
+    public DISPLAY_ONBOARDING_PAGE: boolean = false;
+    public DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB: boolean = false;
+    public DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB: boolean = false;
+    public DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB: boolean = false;
 
     constructor(private event: Events,
         private authService: AuthService,
         private profile: ProfileService,
         private framework: FrameworkService,
         private preference: SharedPreferences,
-        private popoverCtrl: PopoverController) {
+        private popoverCtrl: PopoverController,
+        private buildParamService: BuildParamService) {
         console.log("constructor");
         this.initValues();
         this.listenForEvents();
-        console.log("isPlayerLauncghed"+AppGlobalService.isPlayerLaunched);
+        console.log("isPlayerLauncghed" + AppGlobalService.isPlayerLaunched);
     }
 
     isUserLoggedIn(): boolean {
@@ -84,9 +90,9 @@ export class AppGlobalService {
 
     /**
    * This method stores the form details, for a particular session of the app
-   * 
-   * @param syllabusList 
-   * 
+   *
+   * @param syllabusList
+   *
    */
     setSyllabusList(syllabusList: Array<any>): any {
         this.syllabusList = syllabusList;
@@ -94,15 +100,16 @@ export class AppGlobalService {
 
     /**
      * This method returns the form details cached, for a particular session of the app
-     * 
-     * @param syllabusList 
-     * 
+     *
+     * @param syllabusList
+     *
      */
     getCachedSyllabusList(): Array<any> {
         return this.syllabusList;
     }
 
     private initValues() {
+        this.readConfig();
         console.log("initValues");
         this.authService.getSessionData((session) => {
             if (session === null || session === "null") {
@@ -112,8 +119,45 @@ export class AppGlobalService {
                 this.isGuestUser = false;
                 this.session = JSON.parse(session);
             }
-
             this.getCurrentUserProfile();
+        });
+    }
+
+    readConfig() {
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_ONBOARDING_PAGE, (response: any) => {
+            console.log(typeof response);
+            console.log("DISPLAY_ONBOARDING_PAGE", response);
+            this.DISPLAY_ONBOARDING_PAGE = response === 'true' ? true : false;
+        }, (error) => {
+            console.log("DISPLAY_ONBOARDING_PAGE Error", error);
+            this.DISPLAY_ONBOARDING_PAGE = false;
+        });
+
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB, (response: any) => {
+            console.log(typeof response);
+            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB", response);
+            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB = response === 'true' ? true : false;
+        }, (error) => {
+            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB Error", error);
+            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB = false;
+        });
+
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB, (response: any) => {
+            console.log(typeof response);
+            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB", response);
+            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB = response === 'true' ? true : false;
+        }, (error) => {
+            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB Error", error);
+            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB = false;
+        });
+
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB, (response: any) => {
+            console.log(typeof response);
+            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB", response);
+            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB = response === 'true' ? true : false;
+        }, (error) => {
+            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB Error", error);
+            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB = false;
         });
     }
 
