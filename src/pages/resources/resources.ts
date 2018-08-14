@@ -117,7 +117,8 @@ export class ResourcesPage implements OnInit {
 
 	private isVisible: boolean = false;
 
-	constructor(public navCtrl: NavController,
+	constructor(
+		public navCtrl: NavController,
 		private pageService: PageAssembleService,
 		private ngZone: NgZone,
 		private contentService: ContentService,
