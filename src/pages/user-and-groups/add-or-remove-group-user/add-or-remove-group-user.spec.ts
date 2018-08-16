@@ -236,6 +236,7 @@ describe("AddOrRemoveGroupUserPage", () => {
             const navControllerStub: NavController = fixture.debugElement.injector.get(NavController);
             const groupServiceStub: GroupService = fixture.debugElement.injector.get(GroupService);
             const telemetryGeneratorServiceStub: TelemetryGeneratorService = fixture.debugElement.injector.get(TelemetryGeneratorService);
+            spyOn(telemetryGeneratorServiceStub, 'generateInteractTelemetry').and.returnValue(Promise.resolve({}));
             comp.getLoader = jasmine.createSpy().and.callFake(function () {
                 return { present: function () { }, dismiss: function () { } }
             });
