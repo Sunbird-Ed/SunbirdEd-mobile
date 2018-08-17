@@ -117,7 +117,7 @@ class Toast {
             expect(sharedPreferencesStub.getString).toHaveBeenCalled();
         });
     });
-
+    
     describe("ionViewDidLoad", () => {
         it("makes expected calls", () => {
             const telemetryServiceStub: TelemetryService = fixture.debugElement.injector.get(TelemetryService);
