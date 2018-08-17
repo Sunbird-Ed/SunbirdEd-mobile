@@ -37,9 +37,12 @@ export class AppGlobalService {
 
     private frameworkData = [];
     public DISPLAY_ONBOARDING_PAGE: boolean = false;
-    public DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB: boolean = false;
-    public DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB: boolean = false;
-    public DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB: boolean = false;
+    public DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER: boolean = false;
+    public DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER: boolean = false;
+    public DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER: boolean = false;
+    public DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_STUDENT: boolean = false;
+    public DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT: boolean = false;
+    public DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT: boolean = false;
 
     constructor(private event: Events,
         private authService: AuthService,
@@ -125,7 +128,6 @@ export class AppGlobalService {
 
     readConfig() {
         this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_ONBOARDING_PAGE, (response: any) => {
-            console.log(typeof response);
             console.log("DISPLAY_ONBOARDING_PAGE", response);
             this.DISPLAY_ONBOARDING_PAGE = response === 'true' ? true : false;
         }, (error) => {
@@ -133,31 +135,52 @@ export class AppGlobalService {
             this.DISPLAY_ONBOARDING_PAGE = false;
         });
 
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB, (response: any) => {
-            console.log(typeof response);
-            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB", response);
-            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB = response === 'true' ? true : false;
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER, (response: any) => {
+            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER", response);
+            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER = response === 'true' ? true : false;
         }, (error) => {
-            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB Error", error);
-            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB = false;
+            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER Error", error);
+            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER = false;
         });
 
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB, (response: any) => {
-            console.log(typeof response);
-            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB", response);
-            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB = response === 'true' ? true : false;
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER, (response: any) => {
+            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER", response);
+            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER = response === 'true' ? true : false;
         }, (error) => {
-            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB Error", error);
-            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB = false;
+            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER Error", error);
+            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER = false;
         });
 
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB, (response: any) => {
-            console.log(typeof response);
-            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB", response);
-            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB = response === 'true' ? true : false;
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER, (response: any) => {
+            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER", response);
+            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER = response === 'true' ? true : false;
         }, (error) => {
-            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB Error", error);
-            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB = false;
+            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER Error", error);
+            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER = false;
+        });
+
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_STUDENT, (response: any) => {
+            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_STUDENT", response);
+            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_STUDENT = response === 'true' ? true : false;
+        }, (error) => {
+            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_STUDENT Error", error);
+            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_STUDENT = false;
+        });
+
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT, (response: any) => {
+            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT", response);
+            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT = response === 'true' ? true : false;
+        }, (error) => {
+            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT Error", error);
+            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT = false;
+        });
+
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT, (response: any) => {
+            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT", response);
+            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT = response === 'true' ? true : false;
+        }, (error) => {
+            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT Error", error);
+            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT = false;
         });
     }
 

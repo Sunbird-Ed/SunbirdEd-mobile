@@ -75,6 +75,14 @@ android {
         versionName "2.0.$ext.buildNumber"
         manifestPlaceholders = [fabricKey: "${release_fabric_api_key}", fabricSecret: "${release_fabric_api_secret}"]
         resValue("string", "_app_name", "${app_name}")
+
+        buildConfigField "boolean", "DISPLAY_ONBOARDING_PAGE", "${display_onboarding_page}"
+        buildConfigField "boolean", "DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER", "${display_signin_footer_card_in_course_tab_for_teacher}"
+        buildConfigField "boolean", "DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER", "${display_signin_footer_card_in_library_tab_for_teacher}"
+        buildConfigField "boolean", "DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER", "${display_signin_footer_card_in_profile_tab_for_teacher}"
+        buildConfigField "boolean", "DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_STUDENT", "${display_signin_footer_card_in_course_tab_for_student}"
+        buildConfigField "boolean", "DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT", "${display_signin_footer_card_in_library_tab_for_student}"
+        buildConfigField "boolean", "DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT", "${display_signin_footer_card_in_profile_tab_for_student}"
     }
 
     signingConfigs {
@@ -128,12 +136,6 @@ android {
              buildConfigField 'String', 'MOBILE_APP_SECRET', "\"${dev_mobile_app_secret}\""
              buildConfigField 'String', 'OAUTH_SESSION', '"org.genie.KeycloakOAuthSessionService"'
              flavorDimensions "default"
-
-             buildConfigField "boolean", "DISPLAY_ONBOARDING_PAGE", "${display_onboarding_page}"
-             buildConfigField "boolean", "DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB", "${display_signin_footer_card_in_course_tab}"
-             buildConfigField "boolean", "DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB", "${display_signin_footer_card_in_library_tab}"
-             buildConfigField "boolean", "DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB", "${display_signin_footer_card_in_profile_tab}"
-
         }
 
         staging {
@@ -167,12 +169,6 @@ android {
             buildConfigField 'String', 'MOBILE_APP_SECRET', "\"${staging_mobile_app_secret}\""
             buildConfigField 'String', 'OAUTH_SESSION', '"org.genie.KeycloakOAuthSessionService"'
             flavorDimensions "default"
-
-            buildConfigField "boolean", "DISPLAY_ONBOARDING_PAGE", "${display_onboarding_page}"
-            buildConfigField "boolean", "DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB", "${display_signin_footer_card_in_course_tab}"
-            buildConfigField "boolean", "DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB", "${display_signin_footer_card_in_library_tab}"
-            buildConfigField "boolean", "DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB", "${display_signin_footer_card_in_profile_tab}"
-
         }
 
         production {
@@ -206,11 +202,6 @@ android {
             buildConfigField 'String', 'MOBILE_APP_SECRET', "\"${production_mobile_app_secret}\""
             buildConfigField 'String', 'OAUTH_SESSION', '"org.genie.KeycloakOAuthSessionService"'
             flavorDimensions "default"
-
-            buildConfigField "boolean", "DISPLAY_ONBOARDING_PAGE", "${display_onboarding_page}"
-            buildConfigField "boolean", "DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB", "${display_signin_footer_card_in_course_tab}"
-            buildConfigField "boolean", "DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB", "${display_signin_footer_card_in_library_tab}"
-            buildConfigField "boolean", "DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB", "${display_signin_footer_card_in_profile_tab}"
         }
     }
 
