@@ -76,7 +76,7 @@
     <p color="dark_gray">{{ 'OFFLINE_WARNING' | translate }}</p>
     <b ion-text text-uppercase color="primary" (click)="checkNetworkStatus(true); buttonClick();">{{'RETRY_ACTION' | translate}}</b>
   </div>
-  <div *ngIf="showSignInCard" class="signin-card-bg">
+  <div *ngIf="showSignInCard && appGlobal.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB" class="signin-card-bg">
     <sign-in-card (valueChange)="buttonClick($event)" *ngIf="showSignInCard"></sign-in-card>
   </div>
 </ion-content>
