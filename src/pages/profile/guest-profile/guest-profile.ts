@@ -92,6 +92,7 @@ export class GuestProfilePage {
     });
 
     this.preference.getString('selected_user_type', (val) => {
+
       if (val == ProfileType.TEACHER) {
         this.showSignInCard = true;
       } else if (val == ProfileType.STUDENT) {
@@ -109,10 +110,6 @@ export class GuestProfilePage {
     this.network.onConnect().subscribe((data) => {
       this.isNetworkAvailable = true;
     });
-  }
-
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad LanguageSettingPage');
   }
 
   refreshProfileData(refresher: any = false, showLoader: boolean = true) {
@@ -238,6 +235,7 @@ export class GuestProfilePage {
    * @returns {string}
    */
   arrayToString(stringArray: Array<string>): string {
+    console.log("stringArray hererer", stringArray.join(", "));
     return stringArray.join(", ");
   }
 
@@ -246,18 +244,12 @@ export class GuestProfilePage {
    *
    */
   goToRoles() {
-    if (!this.isNetworkAvailable) {
-      this.showNetworkWarning();
-    }
-    else {
-      this.navCtrl.push(UserTypeSelectionPage, {
-        profile: this.profile
-      })
-    }
+    this.navCtrl.push(UserTypeSelectionPage, {
+      profile: this.profile
+    });
   }
 
-  buttonClick(isNetAvailable) {
-
+  buttonClick(isNetAvailable?) {
     this.showNetworkWarning();
   }
 
