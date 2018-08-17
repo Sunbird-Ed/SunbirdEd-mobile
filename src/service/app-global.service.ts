@@ -7,7 +7,11 @@ import {
     ProfileService,
     FrameworkDetailsRequest,
     FrameworkService,
-    BuildParamService
+    BuildParamService,
+    LogLevel,
+    PageId,
+    Environment,
+    ImpressionType
 } from "sunbird";
 import {
     Events,
@@ -16,6 +20,7 @@ import {
 } from "ionic-angular";
 import { UpgradePopover } from "../pages/upgrade/upgrade-popover";
 import { FrameworkConstant, GenericAppConfig } from "../app/app.constant";
+import { TelemetryGeneratorService } from "./telemetry-generator.service";
 
 @Injectable()
 export class AppGlobalService {
@@ -50,11 +55,10 @@ export class AppGlobalService {
         private framework: FrameworkService,
         private preference: SharedPreferences,
         private popoverCtrl: PopoverController,
-        private buildParamService: BuildParamService) {
-        console.log("constructor");
+        private buildParamService: BuildParamService,
+        private telemetryGeneratorService: TelemetryGeneratorService) {
         this.initValues();
         this.listenForEvents();
-        console.log("isPlayerLauncghed" + AppGlobalService.isPlayerLaunched);
     }
 
     isUserLoggedIn(): boolean {
@@ -283,4 +287,58 @@ export class AppGlobalService {
         popover.present({
         });
     }
+
+    generateConfigLogEvent(pageId: String, isOnBoardingCompleted?: boolean) {
+        if (this.isGuestUser) {
+            let params = new Array<any>();
+            let paramsMap = new Map();
+            if (pageId !== PageId.PROFILE) {
+                paramsMap["isOnBoardingCardsConfigEnabled"] = this.DISPLAY_ONBOARDING_PAGE;
+                paramsMap["isOnBoardingCompleted"] = isOnBoardingCompleted;
+            }
+            let profileType = this.getGuestUserType();
+            if (profileType === ProfileType.TEACHER) {
+                switch (pageId) {
+                    case PageId.LIBRARY: {
+                        paramsMap["isSignInCardConfigEnabled"] = this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER;
+                        break;
+                    }
+                    case PageId.COURSES: {
+                        paramsMap["isSignInCardConfigEnabled"] = this.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER;
+                        break;
+                    }
+                    case PageId.GUEST_PROFILE: {
+                        paramsMap["isSignInCardConfigEnabled"] = this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER;
+                        break;
+                    }
+                }
+
+            } else {
+                switch (pageId) {
+                    case PageId.LIBRARY: {
+                        paramsMap["isSignInCardConfigEnabled"] = this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT;
+                        break;
+                    }
+                    case PageId.COURSES: {
+                        paramsMap["isSignInCardConfigEnabled"] = this.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_STUDENT;
+                        break;
+                    }
+                    case PageId.GUEST_PROFILE: {
+                        paramsMap["isSignInCardConfigEnabled"] = this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT;
+                        break;
+                    }
+                }
+            }
+            params.push(paramsMap);
+
+            this.telemetryGeneratorService.generateLogEvent(LogLevel.INFO,
+                pageId,
+                Environment.HOME,
+                ImpressionType.VIEW,
+                params
+            );
+        }
+
+    }
+
 }

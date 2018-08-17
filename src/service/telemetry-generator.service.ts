@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { TelemetryService, Interact, Rollup, CorrelationData, TelemetryObject, Impression } from "sunbird";
+import { TelemetryService, Interact, Rollup, CorrelationData, TelemetryObject, Impression, Log, LogLevel } from "sunbird";
 import { Map } from "../app/telemetryutil";
 
 @Injectable()
@@ -57,6 +57,16 @@ export class TelemetryGeneratorService {
             impression.correlationData = corRelationList;
         }
         this.telemetryService.impression(impression);
+    }
+
+    generateLogEvent(logLevel, message, env, type, params: Array<any>) {
+        let log = new Log();
+        log.level = logLevel;
+        log.message = message;
+        log.env = env;
+        log.type = type;
+        log.params = params;
+        this.telemetryService.log(log);
     }
 
 }
