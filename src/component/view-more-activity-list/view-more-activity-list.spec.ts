@@ -7,10 +7,8 @@ import { HttpClientModule } from "@angular/common/http";
 import { Ionic2RatingModule } from "ionic2-rating";
 import { SocialSharing } from "@ionic-native/social-sharing";
 import { Network } from '@ionic-native/network';
-import { Storage } from '@ionic/storage';
 import { DirectivesModule } from '../../directives/directives.module';
 import { AppGlobalService } from '../../service/app-global.service';
-import { Observable } from 'rxjs/Observable';
 import { mockRes } from './view-more-activity-list.spec.data';
 
 import { NavController, Events, IonicModule, NavParams, ToastController, PopoverController, 
