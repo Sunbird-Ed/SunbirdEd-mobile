@@ -164,7 +164,7 @@ export class CoursesPage implements OnInit {
     //Event for optional and forceful upgrade
     this.events.subscribe('force_optional_upgrade', (upgrade) => {
       if (upgrade) {
-         this.appGlobal.openPopover(upgrade)
+        this.appGlobal.openPopover(upgrade)
       }
     });
 
@@ -319,7 +319,6 @@ export class CoursesPage implements OnInit {
     };
 
     this.courseService.getEnrolledCourses(option, (data: any) => {
-      console.log('enrolled courses' , data);
       if (data) {
         data = JSON.parse(data);
         this.ngZone.run(() => {
@@ -376,7 +375,7 @@ export class CoursesPage implements OnInit {
       }
 
       if (this.profile.board && this.profile.board.length) {
-        pageAssembleCriteria.filters.board = this.applyProfileFilter(this.profile.board, pageAssembleCriteria.filters.board,"board");
+        pageAssembleCriteria.filters.board = this.applyProfileFilter(this.profile.board, pageAssembleCriteria.filters.board, "board");
       }
 
       if (this.profile.medium && this.profile.medium.length) {
@@ -420,7 +419,7 @@ export class CoursesPage implements OnInit {
       console.log('Page assmble error', error);
       this.ngZone.run(() => {
         this.pageApiLoader = false;
-        if (JSON.parse(error).error  === 'CONNECTION_ERROR') {
+        if (JSON.parse(error).error === 'CONNECTION_ERROR') {
           this.isNetworkAvailable = false;
           this.getMessageByConst('ERROR_NO_INTERNET_MESSAGE');
         } else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
@@ -432,43 +431,43 @@ export class CoursesPage implements OnInit {
 
 
   applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>, categoryKey?: string) {
-		if (categoryKey) {
-			let nameArray = [];
-			profileFilter.forEach(filterCode => {
-				let nameForCode = this.appGlobal.getNameForCodeInFramework(categoryKey, filterCode);
+    if (categoryKey) {
+      let nameArray = [];
+      profileFilter.forEach(filterCode => {
+        let nameForCode = this.appGlobal.getNameForCodeInFramework(categoryKey, filterCode);
 
-				if (!nameForCode) {
-					nameForCode = filterCode;
-				}
+        if (!nameForCode) {
+          nameForCode = filterCode;
+        }
 
-				nameArray.push(nameForCode);
-			})
+        nameArray.push(nameForCode);
+      })
 
-			profileFilter = nameArray;
-		}
+      profileFilter = nameArray;
+    }
 
 
-		if (!assembleFilter) {
-			assembleFilter = [];
-		}
-		assembleFilter = assembleFilter.concat(profileFilter);
+    if (!assembleFilter) {
+      assembleFilter = [];
+    }
+    assembleFilter = assembleFilter.concat(profileFilter);
 
-		let unique_array = [];
+    let unique_array = [];
 
-		for (let i = 0; i < assembleFilter.length; i++) {
-			if (unique_array.indexOf(assembleFilter[i]) == -1 && assembleFilter[i].length > 0) {
-				unique_array.push(assembleFilter[i])
-			}
-		}
+    for (let i = 0; i < assembleFilter.length; i++) {
+      if (unique_array.indexOf(assembleFilter[i]) == -1 && assembleFilter[i].length > 0) {
+        unique_array.push(assembleFilter[i])
+      }
+    }
 
-		assembleFilter = unique_array;
+    assembleFilter = unique_array;
 
-		if (assembleFilter.length == 0) {
-			return undefined;
-		}
+    if (assembleFilter.length == 0) {
+      return undefined;
+    }
 
-		return assembleFilter;
-	}
+    return assembleFilter;
+  }
 
 
   /**
@@ -532,10 +531,12 @@ export class CoursesPage implements OnInit {
    * It will fetch the guest user profile details
    */
   getCurrentUser(): void {
-    let profiletype = this.appGlobal.getGuestUserType();
-    if (profiletype == ProfileType.TEACHER) {
+    let profileType = this.appGlobal.getGuestUserType();
+    if (profileType === ProfileType.TEACHER && this.appGlobal.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER) {
       this.showSignInCard = true;
-    } else if (profiletype == ProfileType.STUDENT) {
+    } else if (profileType === ProfileType.STUDENT && this.appGlobal.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_STUDENT) {
+      this.showSignInCard = true;
+    } else {
       this.showSignInCard = false;
     }
 

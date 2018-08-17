@@ -91,13 +91,15 @@ export class GuestProfilePage {
       this.refreshProfileData(false, false);
     });
 
-    this.preference.getString('selected_user_type', (val) => {
-      if (val == ProfileType.TEACHER) {
-        this.showSignInCard = true;
-      } else if (val == ProfileType.STUDENT) {
-        this.showSignInCard = false;
-      }
-    })
+    let profileType = this.appGlobal.getGuestUserType();
+    if (profileType === ProfileType.TEACHER && this.appGlobal.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER) {
+      this.showSignInCard = true;
+    } else if (profileType == ProfileType.STUDENT && this.appGlobal.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT) {
+      this.showSignInCard = false;
+    } else {
+      this.showSignInCard = false;
+    }
+
     if (this.network.type === 'none') {
       this.isNetworkAvailable = false;
     } else {

@@ -225,12 +225,13 @@ export class ResourcesPage implements OnInit {
 	 * It will fetch the guest user profile details
 	 */
 	getCurrentUser(): void {
-		let profiletype = this.appGlobal.getGuestUserType();
-		if (profiletype == ProfileType.TEACHER) {
-			this.showSignInCard = true;
+		let profileType = this.appGlobal.getGuestUserType();
+		this.showSignInCard = false;
+		if (profileType === ProfileType.TEACHER) {
+			this.showSignInCard = this.appGlobal.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER;
 			this.audienceFilter = AudienceFilter.GUEST_TEACHER;
-		} else if (profiletype == ProfileType.STUDENT) {
-			this.showSignInCard = false;
+		} else if (profileType == ProfileType.STUDENT) {
+			this.showSignInCard = this.appGlobal.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT;
 			this.audienceFilter = AudienceFilter.GUEST_STUDENT;
 		}
 

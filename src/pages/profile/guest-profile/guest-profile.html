@@ -104,7 +104,7 @@
 
     </ion-item>
   </ion-list>
-  <div *ngIf="showSignInCard && appGlobal.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB" class="signin-card-bg">
-    <sign-in-card (valueChange)="buttonClick($event)" *ngIf="showSignInCard"></sign-in-card>
+  <div *ngIf="showSignInCard" class="signin-card-bg">
+    <sign-in-card (valueChange)="buttonClick($event)"></sign-in-card>
   </div>
 </ion-content>
