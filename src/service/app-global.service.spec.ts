@@ -67,6 +67,26 @@ describe('AppGlobalService', () => {
     expect(service.DISPLAY_ONBOARDING_CARDS).toBe(false);
   });
 
+  it("DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE to be true", () => {
+    spyOn(buildService, 'getBuildConfigParam').and.callFake(function(option, success, error){
+      let data = "true";
+      return success(data);
+    });
+    service.readConfig()
+    expect(buildService.getBuildConfigParam).toHaveBeenCalled();
+    expect(service.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE).toBe(true);
+  });
+
+  it("DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE to be false", () => {
+    spyOn(buildService, 'getBuildConfigParam').and.callFake(function(option, success, error){
+      let data = "true";
+      return error(data);
+    });
+    service.readConfig()
+    expect(buildService.getBuildConfigParam).toHaveBeenCalled();
+    expect(service.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE).toBe(false);
+  });
+
   it("isUserLoggedIn returns : true", () => {
     expect(service.isUserLoggedIn()).toBe(true);
   });
