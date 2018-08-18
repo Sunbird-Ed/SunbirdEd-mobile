@@ -251,7 +251,14 @@ export class CoursesPage implements OnInit {
     } */
 
   ionViewDidLoad() {
-    //this.sharedPreferences.
+    this.telemetryService.impression(generateImpressionTelemetry(
+      ImpressionType.VIEW, "",
+      PageId.COURSES,
+      Environment.HOME, "", "", "",
+      undefined, undefined
+    ));
+
+    this.appGlobal.generateConfigLogEvent(PageId.COURSES,this.isOnBoardingCardCompleted);
     this.preference.getString('show_app_walkthrough_screen', (value) => {
       if (value === 'true') {
         const driver = new Driver({
@@ -634,16 +641,7 @@ export class CoursesPage implements OnInit {
   }
 
   ionViewDidEnter() {
-
-
     this.isVisible = true;
-
-    this.telemetryService.impression(generateImpressionTelemetry(
-      ImpressionType.VIEW, "",
-      PageId.COURSES,
-      Environment.HOME, "", "", "",
-      undefined, undefined
-    ));
   }
 
   ionViewWillLeave(): void {

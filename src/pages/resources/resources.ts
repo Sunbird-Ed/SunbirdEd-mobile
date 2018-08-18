@@ -18,7 +18,8 @@ import {
 	ContentFilterCriteria,
 	ProfileType,
 	PageAssembleFilter,
-	CorrelationData
+	CorrelationData,
+	LogLevel
 } from "sunbird";
 import {
 	NavController,
@@ -57,6 +58,7 @@ import { AppGlobalService } from '../../service/app-global.service';
 import Driver from 'driver.js';
 import { AppVersion } from "@ionic-native/app-version";
 import { updateFilterInSearchQuery } from '../../util/filter.util';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 
 @Component({
 	selector: 'page-resources',
@@ -133,6 +135,7 @@ export class ResourcesPage implements OnInit {
 		private network: Network,
 		private appGlobal: AppGlobalService,
 		private appVersion: AppVersion,
+		private telemetryGeneratorService: TelemetryGeneratorService
 	) {
 		this.preference.getString('selected_language_code', (val: string) => {
 			if (val && val.length) {
@@ -481,9 +484,14 @@ export class ResourcesPage implements OnInit {
 		});
 	}
 
+	ionViewDidLoad() {
+		this.generateImpressionEvent();
+		this.appGlobal.generateConfigLogEvent(PageId.LIBRARY, this.isOnBoardingCardCompleted);
+	}
+
 	ionViewDidEnter() {
 		this.isVisible = true;
-		this.generateImpressionEvent();
+
 		this.preference.getString('show_app_walkthrough_screen', (value) => {
 			if (value === 'true') {
 				const driver = new Driver({

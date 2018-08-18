@@ -14,6 +14,9 @@ import {
   ProfileService,
   SharedPreferences,
   ProfileType,
+  ImpressionType,
+  PageId,
+  Environment,
 } from 'sunbird';
 import { UserTypeSelectionPage } from '../../user-type-selection/user-type-selection';
 import { Network } from '@ionic-native/network';
@@ -21,6 +24,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { FormAndFrameworkUtilService } from '../formandframeworkutil.service';
 import { AppGlobalService } from '../../../service/app-global.service';
 import { MenuOverflow } from '../../../app/app.constant';
+import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -68,7 +72,8 @@ export class GuestProfilePage {
     private toastCtrl: ToastController,
     private translate: TranslateService,
     private appGlobal: AppGlobalService,
-    private formAndFrameworkUtilService: FormAndFrameworkUtilService
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
+    private telemetryGeneratorService: TelemetryGeneratorService
   ) {
 
     //language code
@@ -114,7 +119,13 @@ export class GuestProfilePage {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad LanguageSettingPage');
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.VIEW, "",
+      PageId.GUEST_PROFILE,
+      Environment.HOME
+    );
+
+    this.appGlobal.generateConfigLogEvent(PageId.GUEST_PROFILE);
   }
 
   refreshProfileData(refresher: any = false, showLoader: boolean = true) {

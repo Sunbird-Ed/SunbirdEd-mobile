@@ -15,6 +15,7 @@ import { OnboardingPage } from '../onboarding/onboarding';
 import { generateImpressionTelemetry, generateInteractTelemetry, Map } from '../../app/telemetryutil';
 import { AppGlobalService } from '../../service/app-global.service';
 import { UserTypeSelectionPage } from '../user-type-selection/user-type-selection';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 
 const KEY_SELECTED_LANGUAGE_CODE = "selected_language_code";
 const KEY_SELECTED_LANGUAGE = "selected_language";
@@ -42,6 +43,7 @@ export class LanguageSettingsPage {
     private events: Events,
     private zone: NgZone,
     private appGlobal: AppGlobalService,
+    private telemetryGeneratorService:TelemetryGeneratorService
   ) { }
 
   init(): void {
@@ -162,6 +164,16 @@ export class LanguageSettingsPage {
   continue() {
     // if language is not null, then select the checked language,
     // else set default language as english
+    let valuesMap = new Map();
+    valuesMap["destinationPageid"] = this.appGlobal.DISPLAY_ONBOARDING_PAGE ? PageId.ONBOARDING : PageId.USER_TYPE_SELECTION;
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.CONTINUE_CLICKED,
+      Environment.HOME,
+      PageId.ONBOARDING_LANGUAGE_SETTING,
+      undefined,
+      valuesMap
+    );
     this.generateInteractEvent(this.previousLanguage, this.language);
     if (this.language) {
       this.selectedLanguage = this.languages.find(i => i.code === this.language);
