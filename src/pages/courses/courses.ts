@@ -523,8 +523,6 @@ export class CoursesPage implements OnInit {
         console.log("Error while Fetching Data", error);
         this.getPopularAndLatestCourses();
       });
-
-
   }
 
   /**
@@ -533,8 +531,6 @@ export class CoursesPage implements OnInit {
   getCurrentUser(): void {
     let profileType = this.appGlobal.getGuestUserType();
     if (profileType === ProfileType.TEACHER && this.appGlobal.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER) {
-      this.showSignInCard = true;
-    } else if (profileType === ProfileType.STUDENT && this.appGlobal.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_STUDENT) {
       this.showSignInCard = true;
     } else {
       this.showSignInCard = false;

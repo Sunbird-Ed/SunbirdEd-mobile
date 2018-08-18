@@ -95,7 +95,7 @@ export class GuestProfilePage {
     if (profileType === ProfileType.TEACHER && this.appGlobal.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER) {
       this.showSignInCard = true;
     } else if (profileType == ProfileType.STUDENT && this.appGlobal.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT) {
-      this.showSignInCard = false;
+      this.showSignInCard = true;
     } else {
       this.showSignInCard = false;
     }
