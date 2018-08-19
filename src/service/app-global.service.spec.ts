@@ -11,12 +11,12 @@ import { DeepLinkerMock } from '../../test-config/mocks-ionic';
 
 describe('AppGlobalService', () => {
   let service : AppGlobalService;
-  let buildService;
+  let buildService, authService;
+
   const authServiceStub = {
     getSessionData: () => ({})
   }
 
-  
   const BuildParamServiceStub = {
     getBuildConfigParam: () => ({})
   }
@@ -32,9 +32,10 @@ describe('AppGlobalService', () => {
     });
   });
 
-  beforeEach(inject([AppGlobalService,BuildParamService], (appGlobalService: AppGlobalService, buildParamService: BuildParamService) => {
+  beforeEach(inject([AppGlobalService, BuildParamService, AuthService], (appGlobalService: AppGlobalService, buildParamService: BuildParamService, authServicecb) => {
     service = appGlobalService;
     buildService = buildParamService;
+    authService = authServicecb;
   }));
     
   it('isGuestUser defaults to: false', () => {
@@ -90,5 +91,51 @@ describe('AppGlobalService', () => {
   it("isUserLoggedIn returns : true", () => {
     expect(service.isUserLoggedIn()).toBe(true);
   });
+
+  it("getGuestUserType toBeUndefined", () => {
+    expect(service.getGuestUserType()).toBeUndefined();
+  });
+
+  it("getCurrentUser toBeUndefined", () => {
+    expect(service.getCurrentUser()).toBeUndefined();
+  });
+
+  it("getSessionData toBeUndefined", () => {
+    expect(service.getSessionData()).toBeUndefined();
+  });
+
+  // it("getNameForCodeInFramework to return name", () => {
+  //   spyOn(service, 'getNameForCodeInFramework').and.callFake(function(){
+  //     let data = "true";
+  //     return error(data);
+  //   });
+  //   service.readConfig()
+  //   expect(buildService.getBuildConfigParam).toHaveBeenCalled();
+  //   expect(service.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE).toBe(false);
+  // });
+  
+  it("should set  syllabusList to passed array", () => {
+    let arr = ['test']
+    service.setSyllabusList(arr);
+    expect (service.syllabusList).toEqual(arr);
+  });
+
+  it("should getCachedSyllabusList", () => {
+    expect(service.getCachedSyllabusList()).toBeDefined();
+  });
+
+  it("initValues to make expected calls", () => {
+    spyOn(service, 'readConfig');
+    spyOn(authService, 'getSessionData');
+    service["initValues"]();
+    expect(service.readConfig).toHaveBeenCalled();
+    expect(authService.getSessionData).toHaveBeenCalled();
+  });
+
+  // it("initValues to make expected calls", () => {
+  //   spyOn(service, 'readConfig');
+  //   service["initValues"]();
+  //   expect(service.readConfig).toHaveBeenCalled();
+  // });
 
 })
