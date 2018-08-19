@@ -1,7 +1,6 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { NavController, Events, Platform, ToastController } from 'ionic-angular';
 import { DocumentDirection } from 'ionic-angular/platform/platform';
-// import { Storage } from "@ionic/storage";
 
 import {
   CourseService,

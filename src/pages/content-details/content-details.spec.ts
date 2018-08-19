@@ -6,7 +6,6 @@ import { HttpClientModule } from "@angular/common/http";
 import { Ionic2RatingModule } from "ionic2-rating";
 import { SocialSharing } from "@ionic-native/social-sharing";
 import { Network } from '@ionic-native/network';
-import { Storage } from '@ionic/storage';
 import { mockRes } from './content-details.spec.data';
 import { ContentDetailsPage } from './content-details';
 import { DirectivesModule } from '../../directives/directives.module';
