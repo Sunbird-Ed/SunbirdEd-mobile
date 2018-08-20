@@ -145,7 +145,26 @@ export class ImageLoaderConfigMock extends ImageLoaderConfig {
 
 export class TelemetryServiceMock extends TelemetryService { }
 
-export class AppGlobalServiceMock extends AppGlobalService { }
+export class AppGlobalServiceMock extends AppGlobalService {
+  static isGuestUser: boolean;
+  static session: any;
+  isUserLoggedIn(): boolean {
+    return AppGlobalServiceMock.isGuestUser;
+  }
+  getSessionData(): any{
+    return AppGlobalServiceMock.session;
+  }
+
+  static setLoggedInStatus(status: boolean) {
+    AppGlobalServiceMock.isGuestUser = status;
+  }
+
+  static setSessionData(session: any) {
+    AppGlobalServiceMock.session = session;
+  }
+
+}
+
 
 export class CourseUtilServiceMock extends CourseUtilService { }
 
