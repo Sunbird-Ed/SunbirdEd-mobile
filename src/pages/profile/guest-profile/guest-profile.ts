@@ -125,7 +125,7 @@ export class GuestProfilePage {
       Environment.HOME
     );
 
-    this.appGlobal.generateConfigLogEvent(PageId.GUEST_PROFILE);
+    this.appGlobal.generateConfigInteractEvent(PageId.GUEST_PROFILE);
   }
 
   refreshProfileData(refresher: any = false, showLoader: boolean = true) {
