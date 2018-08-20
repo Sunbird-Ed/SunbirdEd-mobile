@@ -11,7 +11,9 @@ import {
     LogLevel,
     PageId,
     Environment,
-    ImpressionType
+    ImpressionType,
+    InteractType,
+    InteractSubtype
 } from "sunbird";
 import {
     Events,
@@ -280,9 +282,8 @@ export class AppGlobalService {
         });
     }
 
-    generateConfigLogEvent(pageId: String, isOnBoardingCompleted?: boolean) {
+    generateConfigInteractEvent(pageId: String, isOnBoardingCompleted?: boolean) {
         if (this.isGuestUser) {
-            let params = new Array<any>();
             let paramsMap = new Map();
             if (pageId !== PageId.PROFILE) {
                 paramsMap["isOnBoardingCardsConfigEnabled"] = this.DISPLAY_ONBOARDING_PAGE;
@@ -321,16 +322,14 @@ export class AppGlobalService {
                     }
                 }
             }
-            params.push(paramsMap);
 
-            this.telemetryGeneratorService.generateLogEvent(LogLevel.INFO,
-                pageId,
+            this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
+                InteractSubtype.INITIAL_CONFIG,
                 Environment.HOME,
-                ImpressionType.VIEW,
-                params
+                pageId,
+                undefined,
+                paramsMap
             );
         }
-
     }
-
 }

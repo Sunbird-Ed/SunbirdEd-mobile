@@ -12,7 +12,7 @@ import {
   InteractSubtype
 } from 'sunbird';
 import { OnboardingPage } from '../onboarding/onboarding';
-import { generateImpressionTelemetry, generateInteractTelemetry, Map } from '../../app/telemetryutil';
+import { Map } from '../../app/telemetryutil';
 import { AppGlobalService } from '../../service/app-global.service';
 import { UserTypeSelectionPage } from '../user-type-selection/user-type-selection';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
@@ -86,10 +86,8 @@ export class LanguageSettingsPage {
           this.language = val;
         }
       });
-      this.isFromSettings = this.navParams.get('isFromSettings');
+     
     });
-
-    this.generateImpressionEvent();
   }
 
   getDeviceLanguage() {
@@ -119,12 +117,12 @@ export class LanguageSettingsPage {
   }
 
   ionViewDidLoad() {
-    this.telemetryService.impression(generateImpressionTelemetry(
+    this.isFromSettings = this.navParams.get('isFromSettings');
+    this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW, "",
-      this.isFromSettings ? PageId.SETTINGS_LANGUAGE : PageId.ONBOARDING,
-      Environment.SETTINGS, "", "", "",
-      undefined, undefined
-    ));
+      this.isFromSettings ? PageId.SETTINGS_LANGUAGE : PageId.ONBOARDING_LANGUAGE_SETTING,
+      this.isFromSettings ? Environment.SETTINGS : Environment.ONBOARDING,
+    );
   }
 
   /**
@@ -141,40 +139,37 @@ export class LanguageSettingsPage {
     }
   }
 
-  generateInteractEvent(previousLanguage: string, currentLanguage: string) {
+  generateLanguageSuccessInteractEvent(previousLanguage: string, currentLanguage: string) {
     let valuesMap = new Map();
-    if (previousLanguage == undefined) {
-      valuesMap["PreviousLanguage"] = "";
-    }
-    else {
-      valuesMap["PreviousLanguage"] = previousLanguage;
-    }
-    valuesMap["CurrentLanguage"] = currentLanguage;
-    this.telemetryService.interact(generateInteractTelemetry(
-      InteractType.TOUCH,
-      InteractSubtype.LANGUAGE_SETTINGS_SUCCESS,
-      this.isFromSettings ? Environment.SETTINGS : Environment.HOME,
-      this.isFromSettings ? PageId.SETTINGS_LANGUAGE : PageId.ONBOARDING,
-      valuesMap,
-      undefined,
-      undefined
-    ));
-  }
-
-  continue() {
-    // if language is not null, then select the checked language,
-    // else set default language as english
-    let valuesMap = new Map();
-    valuesMap["destinationPageid"] = this.appGlobal.DISPLAY_ONBOARDING_PAGE ? PageId.ONBOARDING : PageId.USER_TYPE_SELECTION;
+    valuesMap["previousLanguage"] = previousLanguage ? previousLanguage : "";
+    valuesMap["currentLanguage"] = currentLanguage;
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
-      InteractSubtype.CONTINUE_CLICKED,
-      Environment.HOME,
-      PageId.ONBOARDING_LANGUAGE_SETTING,
+      InteractSubtype.LANGUAGE_SETTINGS_SUCCESS,
+      this.isFromSettings ? Environment.SETTINGS : Environment.ONBOARDING,
+      this.isFromSettings ? PageId.SETTINGS_LANGUAGE : PageId.ONBOARDING_LANGUAGE_SETTING,
       undefined,
       valuesMap
     );
-    this.generateInteractEvent(this.previousLanguage, this.language);
+  }
+
+  generateContinueClickedInterackEvent(selectedLanguage:string){
+    let valuesMap = new Map();
+    valuesMap["selectedLanguage"] = selectedLanguage;
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.CONTINUE_CLICKED,
+      this.isFromSettings ? Environment.SETTINGS : Environment.ONBOARDING,
+      this.isFromSettings ? PageId.SETTINGS : PageId.ONBOARDING_LANGUAGE_SETTING ,
+      undefined,
+      valuesMap
+    );
+  }
+  continue() {
+    // if language is not null, then select the checked language,
+    // else set default language as english
+    this.generateContinueClickedInterackEvent(this.language);
+    this.generateLanguageSuccessInteractEvent(this.previousLanguage, this.language);
     if (this.language) {
       this.selectedLanguage = this.languages.find(i => i.code === this.language);
       this.preferences.putString(KEY_SELECTED_LANGUAGE_CODE, this.selectedLanguage.code);
@@ -209,15 +204,6 @@ export class LanguageSettingsPage {
 
   //   this.platform.setDir(this.currentStyle as DocumentDirection, true);
   // }
-
-  generateImpressionEvent() {
-    this.telemetryService.impression(generateImpressionTelemetry(
-      ImpressionType.VIEW, "",
-      this.isFromSettings ? PageId.SETTINGS_LANGUAGE : PageId.ONBOARDING,
-      Environment.SETTINGS, "", "", "",
-      undefined, undefined
-    ));
-  }
 
   ionViewWillEnter() {
     this.selectedLanguage = {};

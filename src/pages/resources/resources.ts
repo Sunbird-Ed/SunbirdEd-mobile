@@ -486,7 +486,7 @@ export class ResourcesPage implements OnInit {
 
 	ionViewDidLoad() {
 		this.generateImpressionEvent();
-		this.appGlobal.generateConfigLogEvent(PageId.LIBRARY, this.isOnBoardingCardCompleted);
+		this.appGlobal.generateConfigInteractEvent(PageId.LIBRARY, this.isOnBoardingCardCompleted);
 	}
 
 	ionViewDidEnter() {

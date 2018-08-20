@@ -258,7 +258,7 @@ export class CoursesPage implements OnInit {
       undefined, undefined
     ));
 
-    this.appGlobal.generateConfigLogEvent(PageId.COURSES,this.isOnBoardingCardCompleted);
+    this.appGlobal.generateConfigInteractEvent(PageId.COURSES,this.isOnBoardingCardCompleted);
     this.preference.getString('show_app_walkthrough_screen', (value) => {
       if (value === 'true') {
         const driver = new Driver({
