@@ -9,7 +9,7 @@
   <ion-list inset mode="ios" radio-group [(ngModel)]="language" (ionChange)="onLanguageSelected()">
     <ion-item mode="ios" *ngFor="let lang of languages">
       <ion-label class="gray-color">{{ lang?.label | translate }}
-        <span *ngIf="defaultDeviceLang === lang?.code">&nbsp;&nbsp;({{ 'DETECTED' | translate }})</span>
+        <!-- <span *ngIf="defaultDeviceLang === lang?.code">&nbsp;&nbsp;({{ 'DETECTED' | translate }})</span> -->
       </ion-label>
       <ion-radio mode="ios" [value]="lang?.code"></ion-radio>
     </ion-item>
@@ -17,7 +17,7 @@
 </ion-content>
 
 <ion-footer padding no-border>
-  <button class="arrow-icon" ion-button icon-end block (click)="continue()">
+  <button class="arrow-icon"[ngStyle]="{'background-color': btnColor}" ion-button icon-end block (click)="continue()">
     {{ 'CONTINUE' | translate }}
     <ion-icon name="arrow-round-forward" role="img" class="icon icon-md ion-md-arrow-round-forward pull-right" aria-label="arrow round-forward" ng-reflect-name="arrow-round-forward"></ion-icon>
   </button>

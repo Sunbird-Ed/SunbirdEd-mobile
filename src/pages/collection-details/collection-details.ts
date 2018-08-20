@@ -744,6 +744,7 @@ export class CollectionDetailsPage {
       duration: 2000,
       position: 'bottom'
     });
+    console.log("Toast", toast);
     toast.onDidDismiss(() => {
       console.log('Dismissed toast');
       if (isPop) {
