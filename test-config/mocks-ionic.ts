@@ -224,6 +224,23 @@ export class SocialSharingMock {
 
 export class ViewControllerMock {}
 
-export class ToastControllerMock {}
+export class ToastMock {
+  public static instance(): any {
+    let instance = jasmine.createSpyObj('Toast', ['present', 'dismissAll', 'setContent', 'setSpinner', 'onDidDismiss']);
+    instance.present.and.returnValue(Promise.resolve());
+
+    return instance;
+  }
+}
+
+export class ToastControllerMock {
+  public static instance(toast?: ToastMock): any {
+
+    let instance = jasmine.createSpyObj('ToastController', ['create']);
+    instance.create.and.returnValue(toast || ToastMock.instance());
+
+    return instance;
+  }
+}
 
 export class StorageMock {}
