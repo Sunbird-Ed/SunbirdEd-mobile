@@ -21,7 +21,7 @@ export class PlatformMock {
   }
 
   public registerBackButtonAction(fn: Function, priority?: number): Function {
-    return (() => true);
+    return fn();
   }
 
   public hasFocus(ele: HTMLElement): boolean {
