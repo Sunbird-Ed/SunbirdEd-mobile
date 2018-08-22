@@ -151,7 +151,26 @@ export class TelemetryServiceMock extends TelemetryService {
   interact: () => ({});
 }
 
-export class AppGlobalServiceMock extends AppGlobalService { }
+export class AppGlobalServiceMock extends AppGlobalService {
+  static isGuestUser: boolean;
+  static session: any;
+  isUserLoggedIn(): boolean {
+    return AppGlobalServiceMock.isGuestUser;
+  }
+  getSessionData(): any{
+    return AppGlobalServiceMock.session;
+  }
+
+  static setLoggedInStatus(status: boolean) {
+    AppGlobalServiceMock.isGuestUser = status;
+  }
+
+  static setSessionData(session: any) {
+    AppGlobalServiceMock.session = session;
+  }
+
+}
+
 
 export class CourseUtilServiceMock extends CourseUtilService { }
 
@@ -259,13 +278,32 @@ export class appMock extends App {
 export class NavControllerBase {
 
 }
-export class ToastControllerMock {
+
+/*export class ToastControllerMock {
   create(options?: any) {
     return new ToastMock;
   };
+  */
+export class ToastMock {
+  public static instance(): any {
+    let instance = jasmine.createSpyObj('Toast', ['present', 'dismissAll', 'setContent', 'setSpinner', 'onDidDismiss']);
+    instance.present.and.returnValue(Promise.resolve());
+
+    return instance;
+  }
 }
 
-class ToastMock {
+export class ToastControllerMock {
+  public static instance(toast?: ToastMock): any {
+
+    let instance = jasmine.createSpyObj('ToastController', ['create']);
+    instance.create.and.returnValue(toast || ToastMock.instance());
+
+    return instance;
+  }
+}
+
+/*class ToastMock {
   present() { };
   dismissAll() { };
-}
+}*/
