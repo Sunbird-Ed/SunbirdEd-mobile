@@ -1,6 +1,13 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { NO_ERRORS_SCHEMA } from "@angular/core";
 import { AssessmentDetailsComponent } from "./assessment-details";
+import { TranslateModule } from '@ngx-translate/core';
+import { } from 'jasmine';
+import { PopoverControllerMock } from "ionic-mocks";
+import { PopoverController } from "ionic-angular";
+import { TelemetryGeneratorService } from "../../service/telemetry-generator.service";
+import { TelemetryService, GenieSDKServiceProvider, ServiceProvider } from "sunbird";
+import { GenieSDKServiceProviderMock } from "../../../test-config/mocks-ionic";
 
 describe("AssessmentDetailsComponent", () => {
     let comp: AssessmentDetailsComponent;
@@ -8,8 +15,15 @@ describe("AssessmentDetailsComponent", () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            declarations: [ AssessmentDetailsComponent ],
-            schemas: [ NO_ERRORS_SCHEMA ]
+            imports: [TranslateModule.forRoot()],
+            declarations: [AssessmentDetailsComponent],
+            schemas: [NO_ERRORS_SCHEMA],
+            providers: [
+                TelemetryGeneratorService, TelemetryService, ServiceProvider,
+                { provide: GenieSDKServiceProvider, useClass: GenieSDKServiceProviderMock },
+                { provide: PopoverController, useFactory: () => PopoverControllerMock.instance() },
+
+            ]
         });
         fixture = TestBed.createComponent(AssessmentDetailsComponent);
         comp = fixture.componentInstance;
@@ -18,21 +32,4 @@ describe("AssessmentDetailsComponent", () => {
     it("can load instance", () => {
         expect(comp).toBeTruthy();
     });
-
-    it("columns defaults to: []", () => {
-        expect(comp.columns).toEqual([]);
-    });
-
-    it("rows defaults to: []", () => {
-        expect(comp.rows).toEqual([]);
-    });
-
-    describe("ngOnInit", () => {
-        it("makes expected calls", () => {
-            spyOn(comp, "convertTotalTime");
-            comp.ngOnInit();
-            expect(comp.convertTotalTime).toHaveBeenCalled();
-        });
-    });
-
 });
