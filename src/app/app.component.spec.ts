@@ -1,9 +1,8 @@
 
 import { NavController } from 'ionic-angular';
 import { App } from 'ionic-angular';
-import { eventsMock, appMock, NavControllerMock } from './../../test-config/mocks-ionic';
+import { eventsMock, appMock, NavControllerMock, ToastControllerMock } from './../../test-config/mocks-ionic';
 import { fakeAsync, ComponentFixture } from '@angular/core/testing';
-import { ToastControllerMock } from '../../test-config/mocks-ionic';
 import { PluginModules } from './module.service';
 import { AppGlobalService } from '../service/app-global.service';
 import { async, TestBed, inject } from '@angular/core/testing';
@@ -98,7 +97,7 @@ describe('MyApp Component', () => {
     inject([TranslateService], (service) => {
       translateService = service;
       translateService.use('en');
-    })
+    });
   });
 
   it('should create a valid instance of MyApp', () => {

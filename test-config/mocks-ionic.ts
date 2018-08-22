@@ -270,6 +270,7 @@ export class eventsMock {
 }
 
 export class appMock extends App {
+  _getPortal(): any { return {} };
   getRootNav: () => ({
     setRoot: () => ({})
   });
@@ -279,12 +280,14 @@ export class NavControllerBase {
 
 }
 
-/*export class ToastControllerMock {
+export class ToastControllerMock {
+  
+  _getPortal(): any { return {} };
   create(options?: any) {
     return new ToastMock;
   };
-  */
-export class ToastMock {
+}
+/*export class ToastMock {
   public static instance(): any {
     let instance = jasmine.createSpyObj('Toast', ['present', 'dismissAll', 'setContent', 'setSpinner', 'onDidDismiss']);
     instance.present.and.returnValue(Promise.resolve());
@@ -301,9 +304,9 @@ export class ToastControllerMock {
 
     return instance;
   }
-}
+}*/
 
-/*class ToastMock {
+class ToastMock {
   present() { };
   dismissAll() { };
-}*/
+}
