@@ -437,52 +437,10 @@ export class HomePage {
   }
 
   scanQRCode() {
-    const that = this;
-    const callback: QRResultCallback = {
-      dialcode(scanResult, dialCode) {
-        that.navCtrl.push(SearchPage, { dialCode: dialCode });
-      },
-      content(scanResult, contentId) {
-        // that.navCtrl.push(SearchPage);
-        let request: ContentDetailRequest = {
-          contentId: contentId
-        }
-        that.contentService.getContentDetail(request, (response) => {
-          let data = JSON.parse(response);
-          that.showContentDetails(data.result);
-        }, (error) => {
-          console.log("Error " + error);
-          if (that.network.type === 'none') {
-            that.getMessageByConst('ERROR_NO_INTERNET_MESSAGE');
-          } else {
-            that.getMessageByConst('UNKNOWN_QR');
-          }
-        });
-      }
-    }
-
-    this.qrScanner.startScanner(undefined, undefined, undefined, callback, PageId.HOME);
+    this.qrScanner.startScanner(undefined, undefined, undefined, PageId.HOME);
   }
 
-  showContentDetails(content) {
-    if (content.contentData.contentType === ContentType.COURSE) {
-      console.log('Calling course details page');
-      this.navCtrl.push(EnrolledCourseDetailsPage, {
-        content: content
-      })
-    } else if (content.mimeType === MimeType.COLLECTION) {
-      console.log('Calling collection details page');
-      this.navCtrl.push(CollectionDetailsPage, {
-        content: content
-      })
-    } else {
-      console.log('Calling content details page');
-      this.navCtrl.push(ContentDetailsPage, {
-        content: content
-      })
-    }
-  }
-
+  
   showMessage(message) {
     let toast = this.toastCtrl.create({
       message: message,

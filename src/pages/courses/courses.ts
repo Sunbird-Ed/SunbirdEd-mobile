@@ -127,6 +127,8 @@ export class CoursesPage implements OnInit {
 
   private isFilterApplied: boolean = false;
 
+  callback: QRResultCallback;
+
 
   /**
    * Default method of class CoursesPage
@@ -420,7 +422,7 @@ export class CoursesPage implements OnInit {
       console.log('Page assmble error', error);
       this.ngZone.run(() => {
         this.pageApiLoader = false;
-        if (JSON.parse(error).error  === 'CONNECTION_ERROR') {
+        if (error  === 'CONNECTION_ERROR') {
           this.isNetworkAvailable = false;
           this.getMessageByConst('ERROR_NO_INTERNET_MESSAGE');
         } else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
@@ -551,81 +553,7 @@ export class CoursesPage implements OnInit {
   }
 
   scanQRCode() {
-    const that = this;
-    const callback: QRResultCallback = {
-      dialcode(scanResult, dialCode) {
-        that.addCorRelation(dialCode, "qr");
-        that.navCtrl.push(SearchPage, {
-          dialCode: dialCode,
-          corRelation: that.corRelationList,
-          source: PageId.COURSES,
-          shouldGenerateEndTelemetry: true
-        });
-      },
-      content(scanResult, contentId) {
-        // that.navCtrl.push(SearchPage);
-        let request: ContentDetailRequest = {
-          contentId: contentId
-        }
-
-        that.contentService.getContentDetail(request, (response) => {
-          let data = JSON.parse(response);
-          that.addCorRelation(data.result.identifier, "qr")
-          that.showContentDetails(data.result, that.corRelationList);
-        }, (error) => {
-          console.log("Error " + error);
-          if (that.network.type === 'none') {
-            that.getMessageByConst('ERROR_NO_INTERNET_MESSAGE');
-          } else {
-            that.getMessageByConst('UNKNOWN_QR');
-          }
-        });
-      }
-    }
-
-    this.qrScanner.startScanner(undefined, undefined, undefined, callback, PageId.COURSES);
-  }
-
-  addCorRelation(identifier: string, type: string) {
-    if (this.corRelationList === undefined) {
-      this.corRelationList = new Array<CorrelationData>();
-    }
-    else {
-      this.corRelationList = [];
-    }
-    let corRelation: CorrelationData = new CorrelationData();
-    corRelation.id = identifier;
-    corRelation.type = type;
-    this.corRelationList.push(corRelation);
-  }
-
-
-  showContentDetails(content, corRelationList) {
-    if (content.contentData.contentType === ContentType.COURSE) {
-      console.log('Calling course details page');
-      this.navCtrl.push(EnrolledCourseDetailsPage, {
-        content: content,
-        corRelation: corRelationList,
-        source: PageId.COURSES,
-        shouldGenerateEndTelemetry: true
-      })
-    } else if (content.mimeType === MimeType.COLLECTION) {
-      console.log('Calling collection details page');
-      this.navCtrl.push(CollectionDetailsPage, {
-        content: content,
-        corRelation: corRelationList,
-        source: PageId.COURSES,
-        shouldGenerateEndTelemetry: true
-      })
-    } else {
-      console.log('Calling content details page');
-      this.navCtrl.push(ContentDetailsPage, {
-        content: content,
-        corRelation: corRelationList,
-        source: PageId.COURSES,
-        shouldGenerateEndTelemetry: true
-      })
-    }
+    this.qrScanner.startScanner(undefined, undefined, undefined, PageId.COURSES);
   }
 
   search() {
