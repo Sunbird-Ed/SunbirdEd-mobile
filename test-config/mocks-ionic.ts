@@ -6,6 +6,7 @@ import { AuthService, ContainerService, PermissionService, TelemetryService, Gen
 import { ImageLoaderConfig } from "ionic-image-loader";
 import { TranslateLoader } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
+import { App } from 'ionic-angular';
 
 declare let readJSON: any;
 
@@ -21,7 +22,7 @@ export class PlatformMock {
   }
 
   public registerBackButtonAction(fn: Function, priority?: number): Function {
-    return (() => true);
+    return fn();
   }
 
   public hasFocus(ele: HTMLElement): boolean {
@@ -72,12 +73,14 @@ export class PlatformMock {
   public getActiveElement(): any {
     return document['activeElement'];
   }
+
+  public exitApp(): any {
+    return;
+  }
 }
 
 export class StatusBarMock extends StatusBar {
-  styleDefault() {
-    return;
-  }
+  styleDefault: () => ({})
 }
 
 export class SplashScreenMock extends SplashScreen {
@@ -125,14 +128,14 @@ export class DeepLinkerMock { }
 
 export class AuthServiceMock extends AuthService {
   public getSessionData(successCallback: any): void { }
+  public endSession: () => ({})
 }
 
 export class ContainerServiceMock extends ContainerService {
 }
-export class PermissionServiceMock extends PermissionService {
-  public requestPermission() {
-    return;
-  }
+export class PermissionServiceMock {
+
+  public requestPermission: () => ({});
 }
 export class ImageLoaderConfigMock extends ImageLoaderConfig {
   public enableDebugMode() {
@@ -143,7 +146,10 @@ export class ImageLoaderConfigMock extends ImageLoaderConfig {
   }
 }
 
-export class TelemetryServiceMock extends TelemetryService { }
+export class TelemetryServiceMock extends TelemetryService {
+  end: () => ({});
+  interact: () => ({});
+}
 
 export class AppGlobalServiceMock extends AppGlobalService { }
 
@@ -153,6 +159,10 @@ export class TranslateServiceStub {
   public get(key: any): any {
     Observable.of(key);
   }
+  use: () => ({})
+  // get: () => ({
+  //     subscribe: () => ({})
+  // })
 }
 
 export class TranslateLoaderMock implements TranslateLoader {
@@ -177,34 +187,85 @@ export class NavParamsMock {
 }
 
 export class GenieSDKServiceProviderMock extends GenieSDKServiceProvider {
-  GenieSDK = {};
+  GenieSDK = {
+    genieSdkUtil: {}
+  };
   getSharedPreference() {
     return (<any>window).GenieSDK['preferences'];
   }
 }
 
 export class SharedPreferencesMock {
-  getString(value) {
-    return ''
-  }
+  getString: (value, callback) => ({})
 }
 
-export class FileUtilMock { 
+export class FileUtilMock {
   internalStoragePath() {
     return '';
   }
- }
+}
 
 export class NavControllerMock { }
 
-export class SocialSharingMock { 
+export class SocialSharingMock {
   share(message, subject, file, url) {
     return '';
   }
 }
 
-export class ViewControllerMock {}
+export class ViewControllerMock { }
 
-export class ToastControllerMock {}
+// export class ToastControllerMock {
+//   create: () => ({
+//     present: () => ({})
+//   })
+// }
 
-export class StorageMock {}
+export class StorageMock { }
+
+export class AppVersionMock {
+
+}
+
+export class FormAndFrameworkUtilServiceMock {
+  // checkNewAppVersion: () => ({
+  //   then: () => ({
+  //     catch: () => ({})
+  //   })
+  // })
+  public checkNewAppVersion(): Promise<string> {
+    return new Promise((resolve) => {
+      resolve('');
+    });
+
+  }
+
+}
+
+export class profileServiceMock {
+  getCurrentUser: () => ({})
+}
+
+export class eventsMock {
+  publish: () => ({})
+}
+
+export class appMock extends App {
+  getRootNav: () => ({
+    setRoot: () => ({})
+  });
+}
+
+export class NavControllerBase {
+
+}
+export class ToastControllerMock {
+  create(options?: any) {
+    return new ToastMock;
+  };
+}
+
+class ToastMock {
+  present() { };
+  dismissAll() { };
+}

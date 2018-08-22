@@ -89,7 +89,7 @@ export class MyApp {
     private telemetryService: TelemetryService,
     private preference: SharedPreferences,
     private userProfileService: UserProfileService,
-    private formAndFrameowrkUtilService: FormAndFrameworkUtilService,
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private event: Events,
     private profile: ProfileService,
     private preferences: SharedPreferences,
@@ -188,7 +188,7 @@ export class MyApp {
   }
 
   private checkForUpgrade() {
-    this.formAndFrameowrkUtilService.checkNewAppVersion()
+    this.formAndFrameworkUtilService.checkNewAppVersion()
       .then(result => {
         if (result != undefined) {
           console.log("Force Optional Upgrade - " + JSON.stringify(result));

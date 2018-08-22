@@ -119,7 +119,7 @@ describe('CollectionDetailsPage Component', () => {
         expect(component.contentDetail).not.toBeUndefined();
     });
 
-    fit('should extract content details api response: content Locally not available', () => {
+    it('should extract content details api response: content Locally not available', () => {
         component.contentDetail = {};
         let data = mockRes.contentDetailsResponse;
         data.result.contentData.gradeLevel = ['Class 1', 'Class 2'];
@@ -128,7 +128,7 @@ describe('CollectionDetailsPage Component', () => {
         component.extractApiResponse(data);
         fixture.detectChanges();
         expect(component.extractApiResponse).toBeDefined();
-        expect(component.extractApiResponse).toHaveBeenCalled()
+        expect(component.extractApiResponse).toHaveBeenCalled();
         expect(component.contentDetail).not.toBeUndefined();
         expect(component.contentDetail.downloadable).toBe(false);
     });

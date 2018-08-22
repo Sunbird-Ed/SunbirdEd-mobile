@@ -30,7 +30,7 @@ export class FormAndFrameworkUtilService {
         private profileService: ProfileService,
         public events: Events,
         public zone: NgZone,
-        private preference: SharedPreferences,
+        public preference: SharedPreferences,
         private formService: FormService,
         private appGlobalService: AppGlobalService,
         private appVersion: AppVersion
