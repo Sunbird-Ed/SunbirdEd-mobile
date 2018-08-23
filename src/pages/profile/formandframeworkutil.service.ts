@@ -14,7 +14,7 @@ import {
 } from 'sunbird';
 import { AppGlobalService } from '../../service/app-global.service';
 import { AppVersion } from "@ionic-native/app-version";
-import { FrameworkConstant } from '../../app/app.constant';
+import { FrameworkConstant, FormConstant } from '../../app/app.constant';
 
 @Injectable()
 export class FormAndFrameworkUtilService {
@@ -121,6 +121,7 @@ export class FormAndFrameworkUtilService {
             type: 'user',
             subType: 'instructor',
             action: 'onboarding',
+            defaultFormPath: FormConstant.DEFAULT_SYALLABUS_PATH
         };
         //form api call
         this.formService.getForm(req, (res: any) => {
@@ -189,6 +190,7 @@ export class FormAndFrameworkUtilService {
             type: 'pageAssemble',
             subType: 'course',
             action: 'filter',
+            defaultFormPath: FormConstant.DEFAULT_PAGE_COURSE_FILTER_PATH
         };
         //form api call
         this.formService.getForm(req, (res: any) => {
@@ -215,6 +217,7 @@ export class FormAndFrameworkUtilService {
             type: 'pageAssemble',
             subType: 'library',
             action: 'filter',
+            defaultFormPath: FormConstant.DEFAULT_PAGE_LIBRARY_FILTER_PATH
         };
         //form api call
         this.formService.getForm(req, (res: any) => {
@@ -321,7 +324,7 @@ export class FormAndFrameworkUtilService {
                     let req: FormRequest = {
                         type: 'app',
                         subType: 'install',
-                        action: 'upgrade',
+                        action: 'upgrade'
                     };
                     //form api call
                     this.formService.getForm(req, (res: any) => {

@@ -97,7 +97,13 @@ export class FrameworkConstant {
     public static readonly DEFAULT_FRAMEWORK_NAME = "Common";
 }
 
+export class FormConstant {
+    public static readonly DEFAULT_SYALLABUS_PATH = 'data/form/syllabus.json';
+    public static readonly DEFAULT_PAGE_COURSE_FILTER_PATH = 'data/form/pageassemble_course_filter.json';
+    public static readonly DEFAULT_PAGE_LIBRARY_FILTER_PATH = 'data/form/pageassemble_library_filter.json';
+}
+
 export class GenericAppConfig {
-    public static readonly DISPLAY_ONBOARDING_CARDS = "DISPLAY_ONBOARDING_CARDS";
-    public static readonly DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE = "DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE";
+    public static readonly DISPLAY_ONBOARDING_CARDS = 'DISPLAY_ONBOARDING_CARDS';
+    public static readonly DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE = 'DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE';
 }

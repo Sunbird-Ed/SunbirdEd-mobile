@@ -1,0 +1,55 @@
+{
+    "id": "api.form.read",
+    "ver": "1.0",
+    "ts": "2018-08-22T19:13:16.880Z",
+    "params": {
+      "resmsgid": "6c87f500-a63f-11e8-9c60-0551469d6ba3",
+      "msgid": "6c831300-a63f-11e8-ac62-0d8d62e95a29",
+      "status": "successful",
+      "err": null,
+      "errmsg": null
+    },
+    "responseCode": "OK",
+    "result": {
+      "form": {
+        "type": "pageAssemble",
+        "subType": "course",
+        "action": "filter",
+        "rootOrgId": "null",
+        "framework": "null",
+        "data": {
+          "templateName": "defaultTemplate",
+          "action": "filter",
+          "fields": [
+            {
+              "name": "Board",
+              "translations": "{\"en\":\"Board\",\"hi\":\"बोर्ड\",,\"te\":\"బోర్డు\",,\"ta\":\"வாரியம்\",,\"mr\":\"बोर्ड\"}",
+              "code": "board",
+              "index": 1,
+              "values": [
+                
+              ]
+            },
+            {
+              "name": "Subject",
+              "translations": "{\"en\":\"Subject\",\"hi\":\"विषय\",,\"te\":\"పాఠ్యాంశము\",,\"ta\":\"பாடம்\",,\"mr\":\"विषय\"}",
+              "code": "subject",
+              "index": 2,
+              "values": [
+                
+              ]
+            },
+            {
+              "name": "Medium",
+              "translations": "{\"en\":\"Medium\",\"hi\":\"माध्यम\",,\"te\":\"మాధ్యమం\",,\"ta\":\"மொழி\",,\"mr\":\"माध्यम\"}",
+              "code": "medium",
+              "index": 3,
+              "values": [
+                
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
