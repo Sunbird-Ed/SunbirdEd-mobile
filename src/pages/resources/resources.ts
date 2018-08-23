@@ -1,3 +1,4 @@
+import { FormAndFrameworkUtilService } from './../profile/formandframeworkutil.service';
 import {
 	Component,
 	NgZone,
@@ -109,7 +110,8 @@ export class ResourcesPage implements OnInit {
 
 	private isVisible: boolean = false;
 
-	constructor(public navCtrl: NavController,
+	constructor(
+		public navCtrl: NavController,
 		private pageService: PageAssembleService,
 		private ngZone: NgZone,
 		private contentService: ContentService,
@@ -124,6 +126,7 @@ export class ResourcesPage implements OnInit {
 		private network: Network,
 		private appGlobal: AppGlobalService,
 		private appVersion: AppVersion,
+		private formAndFrameworkUtilService: FormAndFrameworkUtilService
 	) {
 		this.preference.getString('selected_language_code', (val: string) => {
 			if (val && val.length) {
@@ -643,11 +646,11 @@ export class ResourcesPage implements OnInit {
 		if (this.resourceFilter) {
 			filterOptions['filter'] = this.resourceFilter;
 		} else {
-			filterOptions['filter'] = PageFilterConstants.RESOURCE_FILTER;
+			this.formAndFrameworkUtilService.getLibraryFilterConfig().then((data) => {
+				filterOptions['filter'] = data;
+				this.popCtrl.create(PageFilter, filterOptions, { cssClass: 'resource-filter' }).present();
+			});
 		}
-
-		let filter = this.popCtrl.create(PageFilter, filterOptions, { cssClass: 'resource-filter' })
-		filter.present();
 	}
 
 	checkEmptySearchResult(isAfterLanguageChange = false) {
