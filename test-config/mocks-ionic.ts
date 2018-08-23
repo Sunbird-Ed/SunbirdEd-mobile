@@ -7,7 +7,6 @@ import { ImageLoaderConfig } from "ionic-image-loader";
 import { TranslateLoader } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 import { App } from 'ionic-angular';
-import { callbackify } from 'util';
 
 declare let readJSON: any;
 
