@@ -134,6 +134,59 @@ export class FormAndFrameworkUtilService {
         });
     }
 
+
+    /**
+     * Network call to form api
+     * 
+     * @param courseFilterConfig 
+     * @param resolve 
+     * @param reject 
+     */
+    private invokeCourseFilterConfigFormApi(courseFilterConfig: Array<any>, resolve: (value?: any) => void, reject: (reason?: any) => void) {
+        let req: FormRequest = {
+            type: 'pageAssemble',
+            subType: 'course',
+            action: 'filter',
+        };
+        //form api call
+        this.formService.getForm(req, (res: any) => {
+            let response: any = JSON.parse(res);
+            courseFilterConfig = response.result.fields;
+            this.appGlobalService.setCourseFilterConfig(courseFilterConfig);
+            resolve(courseFilterConfig);
+        }, (error: any) => {
+            console.log("Error - " + error);
+            resolve(courseFilterConfig);
+        });
+    }
+
+
+    /**
+     * Network call to form api
+     * 
+     * @param libraryFilterConfig 
+     * @param resolve 
+     * @param reject 
+     */
+    private invokeLibraryFilterConfigFormApi(libraryFilterConfig: Array<any>, resolve: (value?: any) => void, reject: (reason?: any) => void) {
+        let req: FormRequest = {
+            type: 'pageAssemble',
+            subType: 'library',
+            action: 'filter',
+        };
+        //form api call
+        this.formService.getForm(req, (res: any) => {
+            let response: any = JSON.parse(res);
+            libraryFilterConfig = response.result.fields;
+            this.appGlobalService.setLibraryFilterConfig(libraryFilterConfig);
+            resolve(libraryFilterConfig);
+        }, (error: any) => {
+            console.log("Error - " + error);
+            resolve(libraryFilterConfig);
+        });
+    }
+
+
     /**
      * Get all categories using framework api
      */
