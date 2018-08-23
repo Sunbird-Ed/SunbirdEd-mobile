@@ -13,7 +13,6 @@ import {
 	TelemetryService,
 	InteractType,
 	InteractSubtype,
-	ContentDetailRequest,
 	SharedPreferences,
 	ContentFilterCriteria,
 	ProfileType,
@@ -28,22 +27,16 @@ import {
 } from 'ionic-angular';
 import * as _ from 'lodash';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
-import {
-	QRResultCallback,
-	SunbirdQRScanner
-} from '../qrscanner/sunbirdqrscanner.service';
+import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
 import {
 	generateInteractTelemetry,
 	Map,
 	generateImpressionTelemetry
 } from '../../app/telemetryutil';
-import { CollectionDetailsPage } from '../collection-details/collection-details';
-import { ContentDetailsPage } from '../content-details/content-details';
 import { TranslateService } from '@ngx-translate/core';
 import {
 	ContentType,
-	MimeType,
 	PageFilterConstants,
 	AudienceFilter
 } from '../../app/app.constant';
@@ -52,7 +45,6 @@ import {
 	PageFilterCallback,
 	PageFilter
 } from '../page-filter/page.filter';
-import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 import { AppGlobalService } from '../../service/app-global.service';
 import Driver from 'driver.js';
 import { AppVersion } from "@ionic-native/app-version";
@@ -564,6 +556,7 @@ export class ResourcesPage implements OnInit {
 		this.checkNetworkStatus();
 	}
 
+
 	generateImpressionEvent() {
 		this.telemetryService.impression(generateImpressionTelemetry(
 			ImpressionType.VIEW, "",
@@ -583,55 +576,9 @@ export class ResourcesPage implements OnInit {
 				PageId.LIBRARY, null,
 				undefined,
 				undefined));
-		const that = this;
-
-		const callback: QRResultCallback = {
-
-			dialcode(scanResult, dialCode) {
-
-				that.addCorRelation(dialCode, "qr");
-				that.navCtrl.push(SearchPage, {
-					dialCode: dialCode,
-					corRelation: that.corRelationList,
-					source: that.source,
-					shouldGenerateEndTelemetry: true
-				});
-			},
-			content(scanResult, contentId) {
-				let request: ContentDetailRequest = {
-					contentId: contentId
-				}
-
-				that.contentService.getContentDetail(request, (response) => {
-					let data = JSON.parse(response);
-					that.addCorRelation(data.result.identifier, "qr")
-					that.showContentDetails(data.result, that.corRelationList);
-				}, (error) => {
-					console.log("Error " + error);
-					if (that.network.type === 'none') {
-						that.getMessageByConst('ERROR_NO_INTERNET_MESSAGE');
-					} else {
-						that.getMessageByConst('UNKNOWN_QR');
-					}
-				});
-			}
-		}
-
-		this.qrScanner.startScanner(undefined, undefined, undefined, callback, PageId.LIBRARY);
+		this.qrScanner.startScanner(undefined, undefined, undefined, PageId.LIBRARY);
 	}
 
-	addCorRelation(identifier: string, type: string) {
-		if (this.corRelationList === undefined) {
-			this.corRelationList = new Array<CorrelationData>();
-		}
-		else {
-			this.corRelationList = [];
-		}
-		let corRelation: CorrelationData = new CorrelationData();
-		corRelation.id = identifier;
-		corRelation.type = type;
-		this.corRelationList.push(corRelation);
-	}
 
 	search() {
 		this.telemetryService.interact(
@@ -645,34 +592,6 @@ export class ResourcesPage implements OnInit {
 		this.navCtrl.push(SearchPage, { contentType: ContentType.FOR_LIBRARY_TAB, source: PageId.LIBRARY });
 	}
 
-	showContentDetails(content, corRelationList) {
-		if (content.contentData.contentType === ContentType.COURSE) {
-			console.log('Calling course details page');
-			this.navCtrl.push(EnrolledCourseDetailsPage, {
-				content: content,
-				corRelation: corRelationList,
-				source: this.source,
-				shouldGenerateEndTelemetry: true
-			})
-		} else if (content.mimeType === MimeType.COLLECTION) {
-			console.log('Calling collection details page');
-			this.navCtrl.push(CollectionDetailsPage, {
-				content: content,
-				corRelation: corRelationList,
-				source: this.source,
-				shouldGenerateEndTelemetry: true
-
-			})
-		} else {
-			console.log('Calling content details page');
-			this.navCtrl.push(ContentDetailsPage, {
-				content: content,
-				corRelation: corRelationList,
-				source: this.source,
-				shouldGenerateEndTelemetry: true
-			})
-		}
-	}
 
 	showFilter() {
 		this.telemetryService.interact(

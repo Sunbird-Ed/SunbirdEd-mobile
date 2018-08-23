@@ -200,7 +200,6 @@ export class CollectionDetailsPage {
     public appGlobalService: AppGlobalService) {
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
-    console.warn('Inside new module..........................');
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.didViewLoad = false;
       this.generateEndEvent(this.objId, this.objType, this.objVer);
@@ -301,7 +300,7 @@ export class CollectionDetailsPage {
       this.zone.run(() => {
         data = JSON.parse(data);
         console.log('Content details ==>>>>>', data);
-        loader.dismiss().then(() => {
+        loader.onDidDismiss(() => {
           if (data && data.result) {
             this.extractApiResponse(data);
           }

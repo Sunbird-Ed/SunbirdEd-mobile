@@ -12,7 +12,7 @@ import {
   InteractSubtype
 } from 'sunbird';
 import { OnboardingPage } from '../onboarding/onboarding';
-import {Map } from '../../app/telemetryutil';
+import { Map } from '../../app/telemetryutil';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 
 const KEY_SELECTED_LANGUAGE_CODE = "selected_language_code";
@@ -87,7 +87,7 @@ export class LanguageSettingsPage {
           this.language = val;
         }
       });
-      
+
     });
 
   }
@@ -97,9 +97,7 @@ export class LanguageSettingsPage {
   //   this.globalization.getPreferredLanguage()
   //     .then(res => {
   //       this.defaultDeviceLang = res.value.split("-")[0];
-
   //       let lang = this.languages.find(i => i.code === this.defaultDeviceLang);
-
   //       if (lang != undefined && lang != null) {
   //         console.log("Language chosen - " + lang.code)
   //         lang.isApplied = true;
@@ -112,11 +110,10 @@ export class LanguageSettingsPage {
   //       this.makeDefaultLanguage();
   //     });
   // }
-
-  makeDefaultLanguage() {
-    this.language = this.languages[0].code;
-    this.languages[0].isApplied = true;
-  }
+  // makeDefaultLanguage() {
+  //   this.language = this.languages[0].code;
+  //   this.languages[0].isApplied = true;
+  // }
 
   ionViewDidLoad() {
     this.isFromSettings = this.navParams.get('isFromSettings');
@@ -160,14 +157,14 @@ export class LanguageSettingsPage {
     );
   }
 
-  generateContinueClickedInterackEvent(selectedLanguage:string){
+  generateContinueClickedInterackEvent(selectedLanguage: string) {
     let valuesMap = new Map();
     valuesMap["selectedLanguage"] = selectedLanguage;
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.CONTINUE_CLICKED,
       this.isFromSettings ? Environment.SETTINGS : Environment.ONBOARDING,
-      this.isFromSettings ? PageId.SETTINGS : PageId.ONBOARDING_LANGUAGE_SETTING ,
+      this.isFromSettings ? PageId.SETTINGS : PageId.ONBOARDING_LANGUAGE_SETTING,
       undefined,
       valuesMap
     );
@@ -176,7 +173,6 @@ export class LanguageSettingsPage {
   continue() {
     // if language is not null, then select the checked language,
     // else set default language as english
-
     if (this.isLanguageSelected) {
       this.generateContinueClickedInterackEvent(this.language);
       this.generateLanguageSuccessInteractEvent(this.previousLanguage, this.language);
@@ -185,7 +181,7 @@ export class LanguageSettingsPage {
         this.preferences.putString(KEY_SELECTED_LANGUAGE_CODE, this.selectedLanguage.code);
         this.preferences.putString(KEY_SELECTED_LANGUAGE, this.selectedLanguage.label);
         this.translateService.use(this.language);
-      } 
+      }
       this.events.publish('onAfterLanguageChange:update', {
         selectedLanguage: this.language
       });
@@ -219,13 +215,11 @@ export class LanguageSettingsPage {
   //   } else {
   //     currentStyle = "ltr";id
   //   }
-
   //   this.platform.setDir(this.currentStyle as DocumentDirection, true);
   // }
+  // generateImpressionEvent() {
 
-  generateImpressionEvent() {
-
-  }
+  // }
 
   ionViewWillEnter() {
     this.selectedLanguage = {};

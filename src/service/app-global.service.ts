@@ -21,9 +21,19 @@ import { FrameworkConstant, GenericAppConfig } from "../app/app.constant";
 export class AppGlobalService {
 
     /**
-     * This property stores the form details at the app level for a particular app sessionI
+     * This property stores the form details at the app level for a particular app session
      */
     syllabusList: Array<any> = [];
+
+    /**
+     * This property stores the course filter configuration at the app level for a particular app session
+     */
+    courseFilterConfig: Array<any> = [];
+
+    /**
+     * This property stores the library filter configuration  at the app level for a particular app session
+     */
+    libraryFilterConfig: Array<any> = [];
 
     public static readonly USER_INFO_UPDATED = 'user-profile-changed';
     public static readonly PROFILE_OBJ_CHANGED = 'app-global:profile-obj-changed';
@@ -105,6 +115,45 @@ export class AppGlobalService {
     getCachedSyllabusList(): Array<any> {
         return this.syllabusList;
     }
+
+    /**
+  * This method stores the course filter config, for a particular session of the app
+  *
+  * @param courseFilterConfig
+  *
+  */
+    setCourseFilterConfig(courseFilterConfig: Array<any>) {
+        this.courseFilterConfig = courseFilterConfig;
+    }
+
+    /**
+     * This method returns the course filter config cache, for a particular session of the app
+     *
+     * @param syllabusList
+     *
+     */
+    getCachedCourseFilterConfig(): Array<any> {
+        return this.courseFilterConfig;
+    }
+
+     /**
+  * This method stores the library filter config, for a particular session of the app
+  *
+  */
+ setLibraryFilterConfig(libraryFilterConfig: Array<any>) {
+    this.libraryFilterConfig = libraryFilterConfig;
+}
+
+/**
+ * This method returns the library filter config cache, for a particular session of the app
+ *
+ */
+getCachedLibraryFilterConfig(): Array<any> {
+    return this.libraryFilterConfig;
+}
+
+
+
 
     private initValues() {
         this.readConfig();
