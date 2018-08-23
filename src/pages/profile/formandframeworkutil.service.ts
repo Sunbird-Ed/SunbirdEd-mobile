@@ -66,6 +66,49 @@ export class FormAndFrameworkUtilService {
         })
     }
 
+
+    /**
+     * This method gets the Library filter config.
+     * 
+     */
+    getLibraryFilterConfig(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let libraryFilterConfig: Array<any> = [];
+
+            //get cached library config
+            libraryFilterConfig = this.appGlobalService.getCachedLibraryFilterConfig()
+
+            if (libraryFilterConfig === undefined || libraryFilterConfig.length == 0) {
+                libraryFilterConfig = [];
+                this.invokeLibraryFilterConfigFormApi(libraryFilterConfig, resolve, reject);
+            } else {
+                resolve(libraryFilterConfig);
+            }
+
+        })
+    }
+
+    /**
+     * This method gets the course filter config.
+     * 
+     */
+    getCourseFilterConfig(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let courseFilterConfig: Array<any> = [];
+
+            //get cached course config
+            courseFilterConfig = this.appGlobalService.getCachedCourseFilterConfig()
+
+            if (courseFilterConfig === undefined || courseFilterConfig.length == 0) {
+                courseFilterConfig = [];
+                this.invokeCourseFilterConfigFormApi(courseFilterConfig, resolve, reject);
+            } else {
+                resolve(courseFilterConfig);
+            }
+
+        })
+    }
+
     /**
      * Network call to form api
      * 
