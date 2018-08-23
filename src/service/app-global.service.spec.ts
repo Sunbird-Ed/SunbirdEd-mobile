@@ -3,7 +3,7 @@ import { Events, PopoverController } from 'ionic-angular';
 import { ComponentFixture, TestBed, inject } from "@angular/core/testing";
 import { AppGlobalService } from "./app-global.service";
 import {} from 'jasmine';
-import { AuthService, ProfileService, FrameworkService, SharedPreferences, BuildParamService, ServiceProvider } from 'sunbird';
+import { AuthService, ProfileService, FrameworkService, SharedPreferences, BuildParamService, ServiceProvider, TelemetryService } from 'sunbird';
 import { Config } from 'ionic-angular';
 import { Platform } from 'ionic-angular';
 import { DeepLinker } from 'ionic-angular';
@@ -136,6 +136,10 @@ describe('AppGlobalService', () => {
   });
 
   it("DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE to be true", () => {
+    expect(service.DISPLAY_ONBOARDING_PAGE).toBe(false);
+  });
+
+  it("DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER to be true", () => {
     spyOn(buildService, 'getBuildConfigParam').and.callFake(function(option, success, error){
       let data = "true";
       return success(data);
@@ -146,6 +150,10 @@ describe('AppGlobalService', () => {
   });
 
   it("DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE to be false", () => {
+    expect(service.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER).toBe(true);
+  });
+
+  it("DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER to be false", () => {
     spyOn(buildService, 'getBuildConfigParam').and.callFake(function(option, success, error){
       let data = "true";
       return error(data);
@@ -248,5 +256,84 @@ describe('AppGlobalService', () => {
     expect(popOverCtrl.create).toHaveBeenCalled();
   });
   
+  it("DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER to be true", () => {
+    spyOn(buildService, 'getBuildConfigParam').and.callFake(function(option, success, error){
+      let data = "true";
+      return success(data);
+    });
+    service.readConfig()
+    expect(buildService.getBuildConfigParam).toHaveBeenCalled();
+    expect(service.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER).toBe(true);
+  });
+
+  it("DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER to be false", () => {
+    spyOn(buildService, 'getBuildConfigParam').and.callFake(function(option, success, error){
+      let data = "true";
+      return error(data);
+    });
+    service.readConfig()
+    expect(buildService.getBuildConfigParam).toHaveBeenCalled();
+    expect(service.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER).toBe(false);
+  });
+
+  it("DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER to be true", () => {
+    spyOn(buildService, 'getBuildConfigParam').and.callFake(function(option, success, error){
+      let data = "true";
+      return success(data);
+    });
+    service.readConfig()
+    expect(buildService.getBuildConfigParam).toHaveBeenCalled();
+    expect(service.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER).toBe(true);
+  });
+
+  it("DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER to be false", () => {
+    spyOn(buildService, 'getBuildConfigParam').and.callFake(function(option, success, error){
+      let data = "true";
+      return error(data);
+    });
+    service.readConfig()
+    expect(buildService.getBuildConfigParam).toHaveBeenCalled();
+    expect(service.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER).toBe(false);
+  });
+
+  it("DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT to be true", () => {
+    spyOn(buildService, 'getBuildConfigParam').and.callFake(function(option, success, error){
+      let data = "true";
+      return success(data);
+    });
+    service.readConfig()
+    expect(buildService.getBuildConfigParam).toHaveBeenCalled();
+    expect(service.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT).toBe(true);
+  });
+
+  it("DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT to be false", () => {
+    spyOn(buildService, 'getBuildConfigParam').and.callFake(function(option, success, error){
+      let data = "true";
+      return error(data);
+    });
+    service.readConfig()
+    expect(buildService.getBuildConfigParam).toHaveBeenCalled();
+    expect(service.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT).toBe(false);
+  });
+
+  it("DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT to be true", () => {
+    spyOn(buildService, 'getBuildConfigParam').and.callFake(function(option, success, error){
+      let data = "true";
+      return success(data);
+    });
+    service.readConfig()
+    expect(buildService.getBuildConfigParam).toHaveBeenCalled();
+    expect(service.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT).toBe(true);
+  });
+
+  it("DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT to be false", () => {
+    spyOn(buildService, 'getBuildConfigParam').and.callFake(function(option, success, error){
+      let data = "true";
+      return error(data);
+    });
+    service.readConfig()
+    expect(buildService.getBuildConfigParam).toHaveBeenCalled();
+    expect(service.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT).toBe(false);
+  });
 
 })

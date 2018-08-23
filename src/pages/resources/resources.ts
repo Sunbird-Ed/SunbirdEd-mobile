@@ -18,7 +18,8 @@ import {
 	ContentFilterCriteria,
 	ProfileType,
 	PageAssembleFilter,
-	CorrelationData
+	CorrelationData,
+	LogLevel
 } from "sunbird";
 import {
 	NavController,
@@ -50,6 +51,7 @@ import { AppGlobalService } from '../../service/app-global.service';
 import Driver from 'driver.js';
 import { AppVersion } from "@ionic-native/app-version";
 import { updateFilterInSearchQuery } from '../../util/filter.util';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 
 @Component({
 	selector: 'page-resources',
@@ -126,7 +128,8 @@ export class ResourcesPage implements OnInit {
 		private network: Network,
 		private appGlobal: AppGlobalService,
 		private appVersion: AppVersion,
-		private formAndFrameworkUtilService: FormAndFrameworkUtilService
+		private formAndFrameworkUtilService: FormAndFrameworkUtilService,
+		private telemetryGeneratorService: TelemetryGeneratorService
 	) {
 		this.preference.getString('selected_language_code', (val: string) => {
 			if (val && val.length) {
@@ -219,12 +222,13 @@ export class ResourcesPage implements OnInit {
 	 * It will fetch the guest user profile details
 	 */
 	getCurrentUser(): void {
-		let profiletype = this.appGlobal.getGuestUserType();
-		if (profiletype == ProfileType.TEACHER) {
-			this.showSignInCard = true;
+		let profileType = this.appGlobal.getGuestUserType();
+		this.showSignInCard = false;
+		if (profileType === ProfileType.TEACHER) {
+			this.showSignInCard = this.appGlobal.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER;
 			this.audienceFilter = AudienceFilter.GUEST_TEACHER;
-		} else if (profiletype == ProfileType.STUDENT) {
-			this.showSignInCard = false;
+		} else if (profileType == ProfileType.STUDENT) {
+			this.showSignInCard = this.appGlobal.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT;
 			this.audienceFilter = AudienceFilter.GUEST_STUDENT;
 		}
 
@@ -474,9 +478,14 @@ export class ResourcesPage implements OnInit {
 		});
 	}
 
+	ionViewDidLoad() {
+		this.generateImpressionEvent();
+		this.appGlobal.generateConfigInteractEvent(PageId.LIBRARY, this.isOnBoardingCardCompleted);
+	}
+
 	ionViewDidEnter() {
 		this.isVisible = true;
-		this.generateImpressionEvent();
+
 		this.preference.getString('show_app_walkthrough_screen', (value) => {
 			if (value === 'true') {
 				const driver = new Driver({

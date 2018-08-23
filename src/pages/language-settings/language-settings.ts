@@ -13,6 +13,8 @@ import {
 } from 'sunbird';
 import { OnboardingPage } from '../onboarding/onboarding';
 import { Map } from '../../app/telemetryutil';
+import { AppGlobalService } from '../../service/app-global.service';
+import { UserTypeSelectionPage } from '../user-type-selection/user-type-selection';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 
 const KEY_SELECTED_LANGUAGE_CODE = "selected_language_code";
@@ -44,7 +46,8 @@ export class LanguageSettingsPage {
     private events: Events,
     private zone: NgZone,
     private toastCtrl: ToastController,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private appGlobal: AppGlobalService,
+    private telemetryGeneratorService:TelemetryGeneratorService
   ) { }
 
   init(): void {
@@ -87,7 +90,6 @@ export class LanguageSettingsPage {
           this.language = val;
         }
       });
-
     });
 
   }
@@ -157,24 +159,23 @@ export class LanguageSettingsPage {
     );
   }
 
-  generateContinueClickedInterackEvent(selectedLanguage: string) {
+  generateContinueClickedInteractEvent(selectedLanguage:string){
     let valuesMap = new Map();
     valuesMap["selectedLanguage"] = selectedLanguage;
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.CONTINUE_CLICKED,
       this.isFromSettings ? Environment.SETTINGS : Environment.ONBOARDING,
-      this.isFromSettings ? PageId.SETTINGS : PageId.ONBOARDING_LANGUAGE_SETTING,
+      this.isFromSettings ? PageId.SETTINGS : PageId.ONBOARDING_LANGUAGE_SETTING ,
       undefined,
       valuesMap
     );
   }
-
   continue() {
     // if language is not null, then select the checked language,
     // else set default language as english
     if (this.isLanguageSelected) {
-      this.generateContinueClickedInterackEvent(this.language);
+      this.generateContinueClickedInteractEvent(this.language);
       this.generateLanguageSuccessInteractEvent(this.previousLanguage, this.language);
       if (this.language) {
         this.selectedLanguage = this.languages.find(i => i.code === this.language);
@@ -193,7 +194,7 @@ export class LanguageSettingsPage {
 
     }
     else {
-      this.generateContinueClickedInterackEvent("n/a");
+      this.generateContinueClickedInteractEvent("n/a");
       this.btnColor = '#8FC4FF';
       let toast = this.toastCtrl.create({
         message: this.translateMessage('PLEASE_SELECT_A_LANGUAGE'),

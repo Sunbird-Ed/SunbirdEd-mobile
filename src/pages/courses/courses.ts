@@ -249,7 +249,14 @@ export class CoursesPage implements OnInit {
     } */
 
   ionViewDidLoad() {
-    //this.sharedPreferences.
+    this.telemetryService.impression(generateImpressionTelemetry(
+      ImpressionType.VIEW, "",
+      PageId.COURSES,
+      Environment.HOME, "", "", "",
+      undefined, undefined
+    ));
+
+    this.appGlobal.generateConfigInteractEvent(PageId.COURSES,this.isOnBoardingCardCompleted);
     this.preference.getString('show_app_walkthrough_screen', (value) => {
       if (value === 'true') {
         const driver = new Driver({
@@ -317,7 +324,6 @@ export class CoursesPage implements OnInit {
     };
 
     this.courseService.getEnrolledCourses(option, (data: any) => {
-      console.log('enrolled courses', data);
       if (data) {
         data = JSON.parse(data);
         this.ngZone.run(() => {
@@ -522,18 +528,16 @@ export class CoursesPage implements OnInit {
         console.log("Error while Fetching Data", error);
         this.getPopularAndLatestCourses();
       });
-
-
   }
 
   /**
    * It will fetch the guest user profile details
    */
   getCurrentUser(): void {
-    let profiletype = this.appGlobal.getGuestUserType();
-    if (profiletype == ProfileType.TEACHER) {
+    let profileType = this.appGlobal.getGuestUserType();
+    if (profileType === ProfileType.TEACHER && this.appGlobal.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER) {
       this.showSignInCard = true;
-    } else if (profiletype == ProfileType.STUDENT) {
+    } else {
       this.showSignInCard = false;
     }
 
@@ -561,16 +565,7 @@ export class CoursesPage implements OnInit {
   }
 
   ionViewDidEnter() {
-
-
     this.isVisible = true;
-
-    this.telemetryService.impression(generateImpressionTelemetry(
-      ImpressionType.VIEW, "",
-      PageId.COURSES,
-      Environment.HOME, "", "", "",
-      undefined, undefined
-    ));
   }
 
   ionViewWillLeave(): void {
