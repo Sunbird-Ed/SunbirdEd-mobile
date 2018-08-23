@@ -1,4 +1,5 @@
 # sunbird-mobile
+[![Build Status](https://travis-ci.org/project-sunbird/sunbird-mobile.svg?branch=master)](https://travis-ci.org/project-sunbird/sunbird-mobile)
 ### Sunbird mobile applicaion.
 
 #### Follow the below steps for setup in your local system.

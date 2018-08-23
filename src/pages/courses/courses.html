@@ -39,7 +39,7 @@
         <course-card *ngFor="let item of enrolledCourse" [course]="item" [layoutName]="'Inprogress'"></course-card>
       </div>
     </ion-scroll>
-    <div *ngIf="enrolledCourse && enrolledCourse.length === 0 && !showLoader">No data found</div>
+    <div *ngIf="enrolledCourse && enrolledCourse.length === 0 && !showLoader">{{ 'NO_DATA_FOUND' | translate }}</div>
     <ion-spinner *ngIf="showLoader" padding style="padding-top: 100px;"></ion-spinner>
   </div>
 
@@ -47,7 +47,7 @@
     <div *ngIf="items?.contents?.length">
       <div class="course-scroll-holder">
         <div class="item padding-11">
-          <span float-start class="scroll-heading">{{items.name}}</span>
+          <span float-start class="scroll-heading">{{items?.name}}</span>
           <span float-end class="view-all-link" (click)="viewAllCourses(items.searchQuery, items.name)">
             <a>{{ 'VIEW_ALL' | translate }}</a>
           </span>

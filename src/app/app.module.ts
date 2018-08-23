@@ -19,6 +19,8 @@ import { AppGlobalService } from '../service/app-global.service';
 import { CourseUtilService } from '../service/course-util.service';
 import { UpgradePopover } from '../pages/upgrade/upgrade-popover';
 import { TelemetryGeneratorService } from '../service/telemetry-generator.service';
+import { QRScannerResultHandler } from '../pages/qrscanner/qrscanresulthandler.service';
+import { CommonUtilService } from '../service/common-util.service';
 
 @NgModule({
   declarations: [
@@ -63,6 +65,8 @@ import { TelemetryGeneratorService } from '../service/telemetry-generator.servic
     AppGlobalService,
     CourseUtilService,
     TelemetryGeneratorService,
+    QRScannerResultHandler,
+    CommonUtilService,
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })

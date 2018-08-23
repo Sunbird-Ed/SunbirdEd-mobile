@@ -40,24 +40,6 @@ export class ProfileConstants {
 }
 
 export class PageFilterConstants {
-    public static readonly COURSE_FILTER = [
-        {
-            name: "board",
-            displayName: "BOARD",
-            values: []
-        },
-        {
-            name: "subject",
-            displayName: "SUBJECT",
-            values: []
-        },
-        {
-            name: "medium",
-            displayName: "MEDIUM",
-            values: []
-        }
-    ];
-
     public static readonly RESOURCE_FILTER = [
         {
             name: "board",

@@ -30,7 +30,7 @@ export class FormAndFrameworkUtilService {
         private profileService: ProfileService,
         public events: Events,
         public zone: NgZone,
-        private preference: SharedPreferences,
+        public preference: SharedPreferences,
         private formService: FormService,
         private appGlobalService: AppGlobalService,
         private appVersion: AppVersion
@@ -64,6 +64,48 @@ export class FormAndFrameworkUtilService {
             }
 
         })
+    }
+
+
+    /**
+     * This method gets the Library filter config.
+     * 
+     */
+    getLibraryFilterConfig(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let libraryFilterConfig: Array<any> = [];
+
+            //get cached library config
+            libraryFilterConfig = this.appGlobalService.getCachedLibraryFilterConfig()
+
+            if (libraryFilterConfig === undefined || libraryFilterConfig.length == 0) {
+                libraryFilterConfig = [];
+                this.invokeLibraryFilterConfigFormApi(libraryFilterConfig, resolve, reject);
+            } else {
+                resolve(libraryFilterConfig);
+            }
+
+        })
+    }
+
+    /**
+     * This method gets the course filter config.
+     * 
+     */
+    getCourseFilterConfig(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let courseFilterConfig: Array<any> = [];
+
+            //get cached course config
+            courseFilterConfig = this.appGlobalService.getCachedCourseFilterConfig()
+
+            if (courseFilterConfig === undefined || courseFilterConfig.length == 0) {
+                courseFilterConfig = [];
+                this.invokeCourseFilterConfigFormApi(courseFilterConfig, resolve, reject);
+            } else {
+                resolve(courseFilterConfig);
+            }
+        });
     }
 
     /**
@@ -133,6 +175,59 @@ export class FormAndFrameworkUtilService {
             resolve(syllabusList);
         });
     }
+
+
+    /**
+     * Network call to form api
+     * 
+     * @param courseFilterConfig 
+     * @param resolve 
+     * @param reject 
+     */
+    private invokeCourseFilterConfigFormApi(courseFilterConfig: Array<any>, resolve: (value?: any) => void, reject: (reason?: any) => void) {
+        let req: FormRequest = {
+            type: 'pageAssemble',
+            subType: 'course',
+            action: 'filter',
+        };
+        //form api call
+        this.formService.getForm(req, (res: any) => {
+            let response: any = JSON.parse(res);
+            courseFilterConfig = response.result.fields;
+            this.appGlobalService.setCourseFilterConfig(courseFilterConfig);
+            resolve(courseFilterConfig);
+        }, (error: any) => {
+            console.log("Error - " + error);
+            resolve(courseFilterConfig);
+        });
+    }
+
+
+    /**
+     * Network call to form api
+     * 
+     * @param libraryFilterConfig 
+     * @param resolve 
+     * @param reject 
+     */
+    private invokeLibraryFilterConfigFormApi(libraryFilterConfig: Array<any>, resolve: (value?: any) => void, reject: (reason?: any) => void) {
+        let req: FormRequest = {
+            type: 'pageAssemble',
+            subType: 'library',
+            action: 'filter',
+        };
+        //form api call
+        this.formService.getForm(req, (res: any) => {
+            let response: any = JSON.parse(res);
+            libraryFilterConfig = response.result.fields;
+            this.appGlobalService.setLibraryFilterConfig(libraryFilterConfig);
+            resolve(libraryFilterConfig);
+        }, (error: any) => {
+            console.log("Error - " + error);
+            resolve(libraryFilterConfig);
+        });
+    }
+
 
     /**
      * Get all categories using framework api

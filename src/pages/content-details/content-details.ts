@@ -774,7 +774,7 @@ export class ContentDetailsPage {
       this.zone.run(() => {
         data = JSON.parse(data);
         let res = data;
-        console.log('event bus........', res);
+        console.log('content detail event', res);
         if (res.type === 'downloadProgress' && res.data.downloadProgress) {
           this.downloadProgress = res.data.downloadProgress === -1 ? '0' : res.data.downloadProgress;
         }
@@ -785,12 +785,20 @@ export class ContentDetailsPage {
             this.isDownloadStarted = false;
             this.cancelDownloading = false;
             this.content.downloadable = true;
-            this.setContentDetails(this.identifier, true, false);
+            this.setContentDetails(this.identifier, false, false);
             this.downloadProgress = '';
             this.events.publish('savedResources:update', {
               update: true
             });
           }
+        }
+
+        //For content update available
+        if (res.data && res.type === 'contentUpdateAvailable') {
+          this.zone.run(() => {
+            console.log("Received the content update available event");
+            this.isUpdateAvail = true;
+          });
         }
       });
     });
@@ -871,7 +879,7 @@ export class ContentDetailsPage {
       });
       alert.present();
     }
-    else{
+    else {
       this.playContent();
     }
 

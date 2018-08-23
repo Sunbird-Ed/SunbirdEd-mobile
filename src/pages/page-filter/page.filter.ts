@@ -27,7 +27,7 @@ export class PageFilter {
 
   callback: PageFilterCallback;
 
-  FILTERS;
+  filters;
 
   facetsFilter;
 
@@ -54,17 +54,16 @@ export class PageFilter {
   }
 
   initFilterValues() {
-    // #SB-3708 To avoid the object reference in Javascript. (Deep Clone) 
-    this.FILTERS = JSON.parse(JSON.stringify(this.navParams.get('filter')));
+    this.filters = this.navParams.get('filter');
 
     let syllabus: Array<string> = this.appGlobalService.getCurrentUser().syllabus;
     let frameworkId = (syllabus && syllabus.length > 0) ? syllabus[0]: undefined;
 
-    this.FILTERS.forEach((element, index: number) => {
-      this.getFrameworkData(frameworkId, element.name, index);
+    this.filters.forEach((element, index: number) => {
+      this.getFrameworkData(frameworkId, element.code, index);
 
       //Framework API doesn't return domain and content Type exclude them
-      if (index === this.FILTERS.length - 1) this.facetsFilter = this.FILTERS;
+      if (index === this.filters.length - 1) this.facetsFilter = this.filters;
     });
   }
 
@@ -83,7 +82,7 @@ export class PageFilter {
       (res: any) => {
         let responseArray = JSON.parse(res);
         if (responseArray && responseArray.length > 0) {
-          this.FILTERS[index].values = (currentCategory !== 'gradeLevel') ? 
+          this.filters[index].values = (currentCategory !== 'gradeLevel') ? 
           _.map(responseArray, 'name').sort() : _.map(responseArray, 'name');
         }
       },
