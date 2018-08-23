@@ -54,14 +54,13 @@ export class PageFilter {
   }
 
   initFilterValues() {
-    // #SB-3708 To avoid the object reference in Javascript. (Deep Clone) 
-    this.filters = JSON.parse(JSON.stringify(this.navParams.get('filter')));
+    this.filters = this.navParams.get('filter');
 
     let syllabus: Array<string> = this.appGlobalService.getCurrentUser().syllabus;
     let frameworkId = (syllabus && syllabus.length > 0) ? syllabus[0]: undefined;
 
     this.filters.forEach((element, index: number) => {
-      this.getFrameworkData(frameworkId, element.name, index);
+      this.getFrameworkData(frameworkId, element.code, index);
 
       //Framework API doesn't return domain and content Type exclude them
       if (index === this.filters.length - 1) this.facetsFilter = this.filters;

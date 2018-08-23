@@ -37,7 +37,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { Network } from '@ionic-native/network';
 import { generateImpressionTelemetry } from '../../app/telemetryutil';
 import {
-  PageFilterConstants,
   ProfileConstants,
   EventTopics
 } from '../../app/app.constant';
@@ -49,6 +48,7 @@ import { AppGlobalService } from '../../service/app-global.service';
 import Driver from 'driver.js';
 import { CourseUtilService } from '../../service/course-util.service';
 import { updateFilterInSearchQuery } from '../../util/filter.util';
+import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
 
 @IonicPage()
 @Component({
@@ -149,7 +149,8 @@ export class CoursesPage implements OnInit {
     private translate: TranslateService,
     private network: Network,
     private appGlobal: AppGlobalService,
-    private courseUtilService: CourseUtilService
+    private courseUtilService: CourseUtilService,
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService
   ) {
 
     this.preference.getString('selected_language_code', (val: string) => {
@@ -623,16 +624,18 @@ export class CoursesPage implements OnInit {
     let filterOptions = {
       callback: callback
     }
-
     // Already apllied filter
     if (this.courseFilter) {
       filterOptions['filter'] = this.courseFilter;
     } else {
-      filterOptions['filter'] = PageFilterConstants.COURSE_FILTER;
+        //TODO: Need to add loader
+        this.formAndFrameworkUtilService.getCourseFilterConfig().then((data) => {
+        filterOptions['filter'] = data;
+        this.popCtrl.create(PageFilter, filterOptions, { cssClass: 'resource-filter' }).present();
+      }).catch((error) => {
+        console.error("Error Occurred!");
+      });
     }
-
-    let filter = this.popCtrl.create(PageFilter, filterOptions, { cssClass: 'resource-filter' });
-    filter.present();
   }
 
   showMessage(message) {

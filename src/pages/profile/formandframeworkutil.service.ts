@@ -105,8 +105,7 @@ export class FormAndFrameworkUtilService {
             } else {
                 resolve(courseFilterConfig);
             }
-
-        })
+        });
     }
 
     /**
