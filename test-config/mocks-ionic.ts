@@ -2,11 +2,12 @@ import { CourseUtilService } from './../src/service/course-util.service';
 import { AppGlobalService } from './../src/service/app-global.service';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
-import { AuthService, ContainerService, PermissionService, TelemetryService, GenieSDKServiceProvider } from "sunbird";
+import { AuthService, ContainerService, PermissionService, TelemetryService, GenieSDKServiceProvider, SharedPreferences } from "sunbird";
 import { ImageLoaderConfig } from "ionic-image-loader";
 import { TranslateLoader } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 import { App } from 'ionic-angular';
+import { callbackify } from 'util';
 
 declare let readJSON: any;
 
@@ -157,7 +158,7 @@ export class AppGlobalServiceMock extends AppGlobalService {
   isUserLoggedIn(): boolean {
     return AppGlobalServiceMock.isGuestUser;
   }
-  getSessionData(): any{
+  getSessionData(): any {
     return AppGlobalServiceMock.session;
   }
 
@@ -214,8 +215,12 @@ export class GenieSDKServiceProviderMock extends GenieSDKServiceProvider {
   }
 }
 
-export class SharedPreferencesMock {
-  getString: (value, callback) => ({})
+export class SharedPreferencesMock extends SharedPreferences {
+  getString(key, callback) {
+    return callback("value")
+  }
+  putString: (key, value) => ({})
+
 }
 
 export class FileUtilMock {
@@ -281,11 +286,33 @@ export class NavControllerBase {
 }
 
 export class ToastControllerMock {
-  
+
   _getPortal(): any { return {} };
   create(options?: any) {
     return new ToastMock;
   };
+}
+
+class ToastMock {
+  present() { };
+  dismissAll() { };
+}
+export class LoadingMock {
+  public static instance(): any {
+    let instance = jasmine.createSpyObj('Loading', ['present', 'onDidDismiss', 'dismissAll', 'setContent', 'setSpinner']);
+    instance.present.and.returnValue(Promise.resolve());
+   // instance.onDidDismiss.and.returnValue(Promise.resolve());
+    return instance;
+  }
+}
+export class LoadingControllerMock {
+  public static instance(loading?: LoadingMock): any {
+
+    let instance = jasmine.createSpyObj('LoadingController', ['create']);
+    instance.create.and.returnValue(loading || LoadingMock.instance());
+
+    return instance;
+  }
 }
 /*export class ToastMock {
   public static instance(): any {
@@ -305,8 +332,3 @@ export class ToastControllerMock {
     return instance;
   }
 }*/
-
-class ToastMock {
-  present() { };
-  dismissAll() { };
-}

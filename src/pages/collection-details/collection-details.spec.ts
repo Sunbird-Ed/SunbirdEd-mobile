@@ -13,22 +13,27 @@ import { AppGlobalService } from '../../service/app-global.service';
 import { Observable } from 'rxjs/Observable';
 import { mockRes } from './collection-details.spec.data';
 
-import { NavController, Events, IonicModule, NavParams, ToastController, PopoverController, 
-    LoadingController, Platform } from 'ionic-angular';
+import {
+    NavController, Events, IonicModule, NavParams, ToastController, PopoverController,
+    LoadingController, Platform
+} from 'ionic-angular';
 
-import { StorageMock, ToastControllerMock, PopoverControllerMock, LoadingControllerMock,
-    NetworkMock } from 'ionic-mocks';
+import {
+    StorageMock, ToastControllerMock, PopoverControllerMock,
+    NetworkMock
+} from 'ionic-mocks';
 
 import {
     FileUtil, AuthService, GenieSDKServiceProvider, SharedPreferences, FrameworkModule, BuildParamService,
-    ContentService, TelemetryService, CourseService, ProfileType, ShareUtil } from "sunbird";
+    ContentService, TelemetryService, CourseService, ProfileType, ShareUtil
+} from "sunbird";
 
 import {
     GenieSDKServiceProviderMock, SharedPreferencesMock, FileUtilMock, NavParamsMock,
-    SocialSharingMock, NavMock, TranslateLoaderMock, AuthServiceMock, PlatformMock
+    SocialSharingMock, NavMock, TranslateLoaderMock, AuthServiceMock, PlatformMock, LoadingControllerMock
 } from '../../../test-config/mocks-ionic';
 
-import {}  from 'jasmine';
+import { } from 'jasmine';
 
 declare let GenieSDK: any;
 
@@ -67,7 +72,7 @@ describe('CollectionDetailsPage Component', () => {
                 { provide: SharedPreferences, useClass: SharedPreferencesMock },
                 { provide: ToastController, useFactory: () => ToastControllerMock.instance() },
                 { provide: PopoverController, useFactory: () => PopoverControllerMock.instance() },
-                { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() }
+                { provide: LoadingController, useFactory: () => PopoverControllerMock.instance() }
             ]
         })
     }));
@@ -89,18 +94,28 @@ describe('CollectionDetailsPage Component', () => {
         expect(component).not.toBeFalsy();
     });
 
+    it('should return Loading object', () => {
+        const loadingCtrlStub = TestBed.get(LoadingController);
+        expect(component.getLoader).toBeDefined();
+        spyOn(component, 'getLoader').and.callThrough();
+        //spyOn(loadingCtrlStub, 'create').and.callThrough();
+        component.getLoader();
+        expect(component.getLoader).toHaveBeenCalled();
+        expect(loadingCtrlStub.create).toHaveBeenCalled();
+    });
+
     it('should set content details', () => {
         component.contentDetail = {};
         component.userRating = 0;
         const contentService = TestBed.get(ContentService);
-       // const loadingCtrl = TestBed.get(LoadingController);
+        const loadingCtrl = TestBed.get(LoadingController);
         spyOn(component, 'setContentDetails').and.callThrough();
         spyOn(component, 'extractApiResponse').and.callThrough();
-        spyOn(contentService, 'getContentDetail').and.callFake(function(option, success, error){
+        spyOn(contentService, 'getContentDetail').and.callFake(function (option, success, error) {
             let data = JSON.stringify((mockRes.contentDetailsResponse))
             return success(data);
         });
-         //spyOn(loadingCtrl, 'dismiss').and.returnValues(Promise.resolve());
+        //spyOn(loadingCtrl, 'dismiss').and.returnValues(Promise.resolve());
         component.setContentDetails(identifier, true);
         expect(component.setContentDetails).toBeDefined();
         expect(component.setContentDetails).toHaveBeenCalledWith(identifier, true);
@@ -166,7 +181,7 @@ describe('CollectionDetailsPage Component', () => {
     it('should check profile type. ProfileType should be TEACHER', () => {
         const sharedPreferences = TestBed.get(SharedPreferences);
         spyOn(component, 'checkCurrentUserType').and.callThrough();
-        spyOn(sharedPreferences, 'getString').and.callFake(function({}, success){
+        spyOn(sharedPreferences, 'getString').and.callFake(function ({ }, success) {
             return success(ProfileType.TEACHER);
         });
         component.checkCurrentUserType();
@@ -175,12 +190,12 @@ describe('CollectionDetailsPage Component', () => {
         expect(sharedPreferences.getString).toHaveBeenCalled();
         expect(component.profileType).toEqual(ProfileType.TEACHER);
         expect(component.profileType).not.toBe(ProfileType.STUDENT);
-    }); 
+    });
 
     it('should check profile type. ProfileType should be STUDENT', () => {
         const sharedPreferences = TestBed.get(SharedPreferences);
         spyOn(component, 'checkCurrentUserType').and.callThrough();
-        spyOn(sharedPreferences, 'getString').and.callFake(function({}, success){
+        spyOn(sharedPreferences, 'getString').and.callFake(function ({ }, success) {
             return success(ProfileType.STUDENT);
         });
         component.checkCurrentUserType();
@@ -206,7 +221,7 @@ describe('CollectionDetailsPage Component', () => {
         let mockData = mockRes.importContentDownloadProgressResponse
         spyOn(component, 'subscribeGenieEvent').and.callThrough();
         const event = TestBed.get(Events);
-        spyOn(event, 'subscribe').and.callFake(function({}, success){
+        spyOn(event, 'subscribe').and.callFake(function ({ }, success) {
             return success(JSON.stringify(mockData));
         });
         component.subscribeGenieEvent();
