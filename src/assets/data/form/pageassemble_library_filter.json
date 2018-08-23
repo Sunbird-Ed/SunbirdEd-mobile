@@ -33,7 +33,7 @@
             {
               "name": "Class",
               "translations": "{\"en\":\"Class\",\"hi\":\"कक्षा\",,\"te\":\"క్లాసు\",,\"ta\":\"வகுப்பு\",,\"mr\":\"इयत्ता\"}",
-              "code": "gradleLevel",
+              "code": "gradeLevel",
               "index": 2,
               "values": [
                 
