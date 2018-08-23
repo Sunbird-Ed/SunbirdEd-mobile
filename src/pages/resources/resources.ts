@@ -13,7 +13,6 @@ import {
 	TelemetryService,
 	InteractType,
 	InteractSubtype,
-	ContentDetailRequest,
 	SharedPreferences,
 	ContentFilterCriteria,
 	ProfileType,
@@ -28,22 +27,16 @@ import {
 } from 'ionic-angular';
 import * as _ from 'lodash';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
-import {
-	QRResultCallback,
-	SunbirdQRScanner
-} from '../qrscanner/sunbirdqrscanner.service';
+import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
 import {
 	generateInteractTelemetry,
 	Map,
 	generateImpressionTelemetry
 } from '../../app/telemetryutil';
-import { CollectionDetailsPage } from '../collection-details/collection-details';
-import { ContentDetailsPage } from '../content-details/content-details';
 import { TranslateService } from '@ngx-translate/core';
 import {
 	ContentType,
-	MimeType,
 	PageFilterConstants,
 	AudienceFilter
 } from '../../app/app.constant';
@@ -52,7 +45,6 @@ import {
 	PageFilterCallback,
 	PageFilter
 } from '../page-filter/page.filter';
-import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 import { AppGlobalService } from '../../service/app-global.service';
 import Driver from 'driver.js';
 import { AppVersion } from "@ionic-native/app-version";
@@ -564,7 +556,7 @@ export class ResourcesPage implements OnInit {
 		this.checkNetworkStatus();
 	}
 
-	
+
 	generateImpressionEvent() {
 		this.telemetryService.impression(generateImpressionTelemetry(
 			ImpressionType.VIEW, "",
@@ -587,7 +579,7 @@ export class ResourcesPage implements OnInit {
 		this.qrScanner.startScanner(undefined, undefined, undefined, PageId.LIBRARY);
 	}
 
-	
+
 	search() {
 		this.telemetryService.interact(
 			generateInteractTelemetry(InteractType.TOUCH,
@@ -600,7 +592,7 @@ export class ResourcesPage implements OnInit {
 		this.navCtrl.push(SearchPage, { contentType: ContentType.FOR_LIBRARY_TAB, source: PageId.LIBRARY });
 	}
 
-	
+
 	showFilter() {
 		this.telemetryService.interact(
 			generateInteractTelemetry(InteractType.TOUCH,

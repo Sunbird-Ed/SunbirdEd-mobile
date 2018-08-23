@@ -1,7 +1,6 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { NavController, Events, Platform, ToastController } from 'ionic-angular';
 import { DocumentDirection } from 'ionic-angular/platform/platform';
-
 import {
   CourseService,
   AnnouncementService,
@@ -13,15 +12,11 @@ import {
   UserProfileService,
   TenantInfoRequest,
   PageId,
-  ContentDetailRequest,
   UserProfileDetailsRequest
 } from 'sunbird';
 import { AnnouncementListComponent } from './announcement-list/announcement-list'
-import { SunbirdQRScanner, QRResultCallback } from '../qrscanner/sunbirdqrscanner.service';
+import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
-// import { CourseDetailPage } from '../course-detail/course-detail';
-import { CollectionDetailsPage } from '../collection-details/collection-details';
-import { ContentDetailsPage } from '../content-details/content-details';
 import { FormEducation } from "../profile/education/form.education";
 import { FormAddress } from "../profile/address/form.address";
 import { FormExperience } from "../profile/experience/form.experience"
@@ -30,8 +25,7 @@ import { PopoverController } from "ionic-angular/components/popover/popover-cont
 import { IncompleteProfileData } from '../../component/card/incomplete-profile/incomplete-profile-data';
 import { Network } from '@ionic-native/network';
 import { TranslateService } from '@ngx-translate/core';
-import { ProfileConstants, ContentType, MimeType } from '../../app/app.constant';
-import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
+import { ProfileConstants } from '../../app/app.constant';
 
 @Component({
   selector: 'page-home',
@@ -440,7 +434,7 @@ export class HomePage {
     this.qrScanner.startScanner(undefined, undefined, undefined, PageId.HOME);
   }
 
-  
+
   showMessage(message) {
     let toast = this.toastCtrl.create({
       message: message,

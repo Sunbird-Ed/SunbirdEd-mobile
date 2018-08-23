@@ -21,7 +21,6 @@ import {
   PageId,
   Environment,
   TelemetryService,
-  ContentDetailRequest,
   ContentService,
   ProfileType,
   PageAssembleFilter,
@@ -32,15 +31,12 @@ import {
   SunbirdQRScanner
 } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
-import { CollectionDetailsPage } from '../collection-details/collection-details';
 import { ContentDetailsPage } from '../content-details/content-details';
 import * as _ from 'lodash';
 import { TranslateService } from '@ngx-translate/core';
 import { Network } from '@ionic-native/network';
 import { generateImpressionTelemetry } from '../../app/telemetryutil';
 import {
-  ContentType,
-  MimeType,
   PageFilterConstants,
   ProfileConstants,
   EventTopics
@@ -49,7 +45,6 @@ import {
   PageFilterCallback,
   PageFilter
 } from '../page-filter/page.filter';
-import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 import { AppGlobalService } from '../../service/app-global.service';
 import Driver from 'driver.js';
 import { CourseUtilService } from '../../service/course-util.service';
@@ -166,7 +161,7 @@ export class CoursesPage implements OnInit {
     //Event for optional and forceful upgrade
     this.events.subscribe('force_optional_upgrade', (upgrade) => {
       if (upgrade) {
-         this.appGlobal.openPopover(upgrade)
+        this.appGlobal.openPopover(upgrade)
       }
     });
 
@@ -321,7 +316,7 @@ export class CoursesPage implements OnInit {
     };
 
     this.courseService.getEnrolledCourses(option, (data: any) => {
-      console.log('enrolled courses' , data);
+      console.log('enrolled courses', data);
       if (data) {
         data = JSON.parse(data);
         this.ngZone.run(() => {
@@ -378,7 +373,7 @@ export class CoursesPage implements OnInit {
       }
 
       if (this.profile.board && this.profile.board.length) {
-        pageAssembleCriteria.filters.board = this.applyProfileFilter(this.profile.board, pageAssembleCriteria.filters.board,"board");
+        pageAssembleCriteria.filters.board = this.applyProfileFilter(this.profile.board, pageAssembleCriteria.filters.board, "board");
       }
 
       if (this.profile.medium && this.profile.medium.length) {
@@ -422,7 +417,7 @@ export class CoursesPage implements OnInit {
       console.log('Page assmble error', error);
       this.ngZone.run(() => {
         this.pageApiLoader = false;
-        if (error  === 'CONNECTION_ERROR') {
+        if (error === 'CONNECTION_ERROR') {
           this.isNetworkAvailable = false;
           this.getMessageByConst('ERROR_NO_INTERNET_MESSAGE');
         } else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
@@ -434,43 +429,43 @@ export class CoursesPage implements OnInit {
 
 
   applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>, categoryKey?: string) {
-		if (categoryKey) {
-			let nameArray = [];
-			profileFilter.forEach(filterCode => {
-				let nameForCode = this.appGlobal.getNameForCodeInFramework(categoryKey, filterCode);
+    if (categoryKey) {
+      let nameArray = [];
+      profileFilter.forEach(filterCode => {
+        let nameForCode = this.appGlobal.getNameForCodeInFramework(categoryKey, filterCode);
 
-				if (!nameForCode) {
-					nameForCode = filterCode;
-				}
+        if (!nameForCode) {
+          nameForCode = filterCode;
+        }
 
-				nameArray.push(nameForCode);
-			})
+        nameArray.push(nameForCode);
+      })
 
-			profileFilter = nameArray;
-		}
+      profileFilter = nameArray;
+    }
 
 
-		if (!assembleFilter) {
-			assembleFilter = [];
-		}
-		assembleFilter = assembleFilter.concat(profileFilter);
+    if (!assembleFilter) {
+      assembleFilter = [];
+    }
+    assembleFilter = assembleFilter.concat(profileFilter);
 
-		let unique_array = [];
+    let unique_array = [];
 
-		for (let i = 0; i < assembleFilter.length; i++) {
-			if (unique_array.indexOf(assembleFilter[i]) == -1 && assembleFilter[i].length > 0) {
-				unique_array.push(assembleFilter[i])
-			}
-		}
+    for (let i = 0; i < assembleFilter.length; i++) {
+      if (unique_array.indexOf(assembleFilter[i]) == -1 && assembleFilter[i].length > 0) {
+        unique_array.push(assembleFilter[i])
+      }
+    }
 
-		assembleFilter = unique_array;
+    assembleFilter = unique_array;
 
-		if (assembleFilter.length == 0) {
-			return undefined;
-		}
+    if (assembleFilter.length == 0) {
+      return undefined;
+    }
 
-		return assembleFilter;
-	}
+    return assembleFilter;
+  }
 
 
   /**
