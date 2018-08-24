@@ -16,7 +16,8 @@ import {
   Environment,
   PageId,
   ImpressionType,
-  ObjectType
+  ObjectType,
+  SharedPreferences
 } from 'sunbird';
 import {
   FormBuilder,
@@ -27,6 +28,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { LoadingController } from 'ionic-angular';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
+import { PreferenceKey } from '../../../app/app.constant';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -48,6 +50,8 @@ export class CreateGroupPage {
   syllabusList: Array<any> = [];
   categories: Array<any> = [];
   loader: any;
+
+  selectedLanguage: string = 'en';
 
   isFormValid: boolean = true;
 
@@ -77,8 +81,15 @@ export class CreateGroupPage {
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController,
     private groupService: GroupService,
+    private preference: SharedPreferences,
     private telemetryGeneratorService: TelemetryGeneratorService
   ) {
+    this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE, (val: string) => {
+			if (val && val.length) {
+				this.selectedLanguage = val;
+			}
+    });
+    
     this.group = this.navParams.get('groupInfo') || {};
     this.groupEditForm = this.fb.group({
       name: [this.group.name || "", Validators.required],
@@ -259,7 +270,8 @@ export class CreateGroupPage {
     this.formAndFrameworkUtilService.getFrameworkDetails(frameworkId)
       .then((categories) => {
         let request: CategoryRequest = {
-          currentCategory: "gradeLevel"
+          currentCategory: "gradeLevel",
+          selectedLanguage: this.translate.currentLang
         }
         this.isFormValid = true;
         return this.formAndFrameworkUtilService.getCategoryData(request);

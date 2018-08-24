@@ -169,13 +169,15 @@ export class SearchPage {
         content: content,
         corRelation: this.corRelationList,
         source: this.source,
-        shouldGenerateEndTelemetry: this.shouldGenerateEndTelemetry
+        shouldGenerateEndTelemetry: this.shouldGenerateEndTelemetry,
+        parentContent: this.parentContent
       };
     }
     else {
       params = {
         content: content,
         corRelation: this.corRelationList,
+        parentContent: this.parentContent
       };
     }
 
@@ -199,7 +201,7 @@ export class SearchPage {
     this.showLoader = true;
     this.responseData.result.filterCriteria.mode = "hard";
 
-    this.contentService.searchContent(this.responseData.result.filterCriteria, true,false,false, (responseData) => {
+    this.contentService.searchContent(this.responseData.result.filterCriteria, true, false, false, (responseData) => {
 
       this.zone.run(() => {
         let response: GenieResponse = JSON.parse(responseData);
@@ -281,7 +283,7 @@ export class SearchPage {
       // }
     }
 
-    this.contentService.searchContent(contentSearchRequest, false,false,false, (responseData) => {
+    this.contentService.searchContent(contentSearchRequest, false, false, false, (responseData) => {
 
       this.zone.run(() => {
         let response: GenieResponse = JSON.parse(responseData);
@@ -395,7 +397,7 @@ export class SearchPage {
       offlineSearch: isOfflineSearch
     }
 
-    this.contentService.searchContent(contentSearchRequest, false,true,!this.appGlobal.isUserLoggedIn(), (responseData) => {
+    this.contentService.searchContent(contentSearchRequest, false, true, !this.appGlobal.isUserLoggedIn(), (responseData) => {
       this.zone.run(() => {
         let response: GenieResponse = JSON.parse(responseData);
         this.responseData = response;
@@ -627,7 +629,7 @@ export class SearchPage {
           this.zone.run(() => { this.showContentDetails(child); });
         } else {
           this.subscribeGenieEvent();
-          this.downloadParentContent(parent, child);
+          this.downloadParentContent(parent);
         }
       } else {
         this.zone.run(() => { this.showContentDetails(child); });
@@ -637,7 +639,7 @@ export class SearchPage {
     });
   }
 
-  private downloadParentContent(parent, child) {
+  private downloadParentContent(parent) {
     this.zone.run(() => {
       this.downloadProgress = 0;
       this.showLoading = true;
@@ -713,6 +715,13 @@ export class SearchPage {
             });
           }
         }
+
+        // if (res.data && res.type === 'contentUpdateAvailable' && this.parentContent && this.childContent) {
+        //   this.zone.run(() => {
+        //     console.log("Content Update in Search");
+        //     this.downloadParentContent(this.parentContent);
+        //   });
+        // }
 
       });
     });

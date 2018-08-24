@@ -16,9 +16,7 @@ import { Map } from '../../app/telemetryutil';
 import { AppGlobalService } from '../../service/app-global.service';
 import { UserTypeSelectionPage } from '../user-type-selection/user-type-selection';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-
-const KEY_SELECTED_LANGUAGE_CODE = "selected_language_code";
-const KEY_SELECTED_LANGUAGE = "selected_language";
+import { PreferenceKey } from '../../app/app.constant';
 
 @Component({
   selector: 'page-language-settings',
@@ -80,7 +78,7 @@ export class LanguageSettingsPage {
     ];
 
     this.zone.run(() => {
-      this.preferences.getString(KEY_SELECTED_LANGUAGE_CODE, val => {
+      this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE, val => {
         if (val === undefined || val === "" || val === null) {
           console.error("Language not set");
           //this.getDeviceLanguage();
@@ -134,8 +132,8 @@ export class LanguageSettingsPage {
     console.log("language selected : " + this.language);
     if (this.language) {
       /*       let selectedLanguage = this.languages.find(i => i.code === this.language);
-            this.preferences.putString(KEY_SELECTED_LANGUAGE_CODE, selectedLanguage.code);
-            this.preferences.putString(KEY_SELECTED_LANGUAGE, selectedLanguage.label); */
+            this.preferences.putString(PreferenceKey.SELECTED_LANGUAGE_CODE, selectedLanguage.code);
+            this.preferences.putString(PreferenceKey.SELECTED_LANGUAGE, selectedLanguage.label); */
       this.btnColor = '#488aff';
       this.isLanguageSelected = true;
       this.translateService.use(this.language);
@@ -179,8 +177,8 @@ export class LanguageSettingsPage {
       this.generateLanguageSuccessInteractEvent(this.previousLanguage, this.language);
       if (this.language) {
         this.selectedLanguage = this.languages.find(i => i.code === this.language);
-        this.preferences.putString(KEY_SELECTED_LANGUAGE_CODE, this.selectedLanguage.code);
-        this.preferences.putString(KEY_SELECTED_LANGUAGE, this.selectedLanguage.label);
+        this.preferences.putString(PreferenceKey.SELECTED_LANGUAGE_CODE, this.selectedLanguage.code);
+        this.preferences.putString(PreferenceKey.SELECTED_LANGUAGE, this.selectedLanguage.label);
         this.translateService.use(this.language);
       }
       this.events.publish('onAfterLanguageChange:update', {

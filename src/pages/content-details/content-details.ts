@@ -796,7 +796,7 @@ export class ContentDetailsPage {
         //For content update available
         if (res.data && res.type === 'contentUpdateAvailable') {
           this.zone.run(() => {
-            console.log("Received the content update available event");
+            console.log("Received the content update available event in Content Details");
             this.isUpdateAvail = true;
           });
         }

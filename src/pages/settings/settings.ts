@@ -9,8 +9,8 @@ import { AppVersion } from "@ionic-native/app-version";
 import { SharedPreferences, InteractType, InteractSubtype, ShareUtil } from "sunbird";
 import { Impression, ImpressionType, Environment, PageId, TelemetryService } from 'sunbird';
 import { generateInteractTelemetry, generateImpressionTelemetry } from '../../app/telemetryutil';
+import { PreferenceKey } from '../../app/app.constant';
 
-const KEY_SELECTED_LANGUAGE = "selected_language";
 const KEY_SUNBIRD_SUPPORT_FILE_PATH = "sunbird_support_file_path";
 
 @Component({
@@ -61,18 +61,15 @@ export class SettingsPage {
   }
 
   ionViewDidEnter() {
-
     this.translate.get('CURRENT_LANGUAGE').subscribe(
       value => {
         this.chosenLanguageString = value;
-        this.preference.getString(KEY_SELECTED_LANGUAGE, value => {
+        this.preference.getString(PreferenceKey.SELECTED_LANGUAGE, value => {
           this.selectedlanguage = this.chosenLanguageString + ': ' + value;
         });
       }
     );
   }
-
-
 
   goBack() {
     this.navCtrl.pop();
@@ -115,7 +112,6 @@ export class SettingsPage {
         });
       }
     });
-
   }
 
   shareApp() {

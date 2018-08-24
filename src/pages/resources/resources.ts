@@ -38,7 +38,8 @@ import {
 import { TranslateService } from '@ngx-translate/core';
 import {
 	ContentType,
-	AudienceFilter
+	AudienceFilter,
+	PreferenceKey
 } from '../../app/app.constant';
 import { Network } from '@ionic-native/network';
 import {
@@ -129,7 +130,7 @@ export class ResourcesPage implements OnInit {
 		private formAndFrameworkUtilService: FormAndFrameworkUtilService,
 		private telemetryGeneratorService: TelemetryGeneratorService
 	) {
-		this.preference.getString('selected_language_code', (val: string) => {
+		this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE, (val: string) => {
 			if (val && val.length) {
 				this.selectedLanguage = val;
 			}

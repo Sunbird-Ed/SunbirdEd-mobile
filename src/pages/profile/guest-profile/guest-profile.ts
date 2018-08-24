@@ -23,7 +23,7 @@ import { Network } from '@ionic-native/network';
 import { TranslateService } from '@ngx-translate/core';
 import { FormAndFrameworkUtilService } from '../formandframeworkutil.service';
 import { AppGlobalService } from '../../../service/app-global.service';
-import { MenuOverflow } from '../../../app/app.constant';
+import { MenuOverflow, PreferenceKey } from '../../../app/app.constant';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 
 /* Interface for the Toast Object */
@@ -77,7 +77,7 @@ export class GuestProfilePage {
   ) {
 
     //language code
-    this.preference.getString('selected_language_code', (val: string) => {
+    this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE, (val: string) => {
       if (val && val.length) {
         this.selectedLanguage = val;
       }

@@ -13,6 +13,7 @@ import {
 import { FormAndFrameworkUtilService } from '../../pages/profile/formandframeworkutil.service';
 import { ToastController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
+import { PreferenceKey } from '../../app/app.constant';
 
 @Injectable()
 export class OnboardingService {
@@ -22,7 +23,7 @@ export class OnboardingService {
     isOnBoardingCardCompleted: boolean = false;
     currentIndex: number = 0;
     slideIndex: number = -1;
-    selectedLanguage: string;
+    selectedLanguage: string = 'en';
     categories: Array<any> = [];
     syllabusList: Array<any> = [];
     boardList: Array<string> = [];
@@ -30,6 +31,7 @@ export class OnboardingService {
     subjectList: Array<string> = [];
     mediumList: Array<string> = [];
     frameworkId: string = '';
+    
 
     private options: ToastOptions = {
         message: '',
@@ -48,7 +50,7 @@ export class OnboardingService {
     ) {
 
         //fetch language code
-        this.preference.getString('selected_language_code', (val: string) => {
+        this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE, (val: string) => {
             if (val && val.length) {
                 this.selectedLanguage = val;
             }
@@ -341,6 +343,7 @@ export class OnboardingService {
 
                     let request: CategoryRequest = {
                         currentCategory: this.categories[0].code,
+                        selectedLanguage: this.translate.currentLang
                     }
                     this.getCategoryData(request, currentField, index, hasUserClicked);
                 });
@@ -354,7 +357,8 @@ export class OnboardingService {
             let request: CategoryRequest = {
                 currentCategory: this.categories[index - 1].code,
                 prevCategory: this.categories[index - 2].code,
-                selectedCode: prevSelectedValue
+                selectedCode: prevSelectedValue,
+                selectedLanguage: this.translate.currentLang
             }
             this.getCategoryData(request, currentField, index, hasUserClicked);
         }
