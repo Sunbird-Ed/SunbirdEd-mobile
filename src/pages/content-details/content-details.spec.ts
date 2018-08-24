@@ -28,6 +28,7 @@ import {
     SocialSharingMock, NavMock, TranslateLoaderMock, AuthServiceMock, PlatformMock, MockElementRef 
 } from '../../../test-config/mocks-ionic';
 import { ElementRef, Renderer } from '@angular/core';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 
 declare let GenieSDK: any;
 
@@ -56,7 +57,7 @@ describe('ContentDetailsPage Component', () => {
                 Ionic2RatingModule
             ],
             providers: [
-                ContentService, TelemetryService, CourseService, ShareUtil, IonicApp, Renderer,
+                ContentService, TelemetryService, CourseService, ShareUtil, IonicApp, Renderer, TelemetryGeneratorService, 
                 // { provide: Platform, useClass: PlatformMock },
                 {provide: Renderer, useValue: rendererMock},
                 {provide: ElementRef, useClass: MockElementRef},

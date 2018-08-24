@@ -44,6 +44,7 @@ import { mockRes } from "../../mock.spec.data";
 import { mockRes as CourseMock } from '../courses/courses.spec.data';
 import { QRScannerResultHandler } from "../qrscanner/qrscanresulthandler.service";
 import { CommonUtilService } from "../../service/common-util.service";
+import { FormAndFrameworkUtilService } from "../profile/formandframeworkutil.service";
 declare let GenieSDK: any;
 describe('Courses Component', () => {
     let component: CoursesPage;
@@ -79,7 +80,7 @@ describe('Courses Component', () => {
             ],
             providers: [
                 ContentService, TelemetryService, TelemetryGeneratorService, CourseService, ShareUtil, SunbirdQRScanner, QRScannerResultHandler,
-                Network, AppVersion, CourseUtilService, CommonUtilService,
+                Network, AppVersion, CourseUtilService, CommonUtilService, FormAndFrameworkUtilService,
                 { provide: FileUtil, useClass: FileUtilMock },
                 { provide: NavController, useClass: NavMock },
                 { provide: Events, useClass: Events },

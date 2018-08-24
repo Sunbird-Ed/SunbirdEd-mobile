@@ -34,6 +34,7 @@ import {
 } from '../../../test-config/mocks-ionic';
 
 import { } from 'jasmine';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 
 declare let GenieSDK: any;
 
@@ -58,7 +59,7 @@ describe('CollectionDetailsPage Component', () => {
                 Ionic2RatingModule
             ],
             providers: [
-                ContentService, TelemetryService, CourseService, ShareUtil,
+                ContentService, TelemetryService, CourseService, ShareUtil, TelemetryGeneratorService,
                 // { provide: Platform, useClass: PlatformMock },
                 { provide: FileUtil, useClass: FileUtilMock },
                 { provide: NavController, useClass: NavMock },
