@@ -160,6 +160,7 @@ export class CreateGroupPage {
     }
 
     let formValue = this.groupEditForm.value;
+    console.log('formValue',formValue);
     if (formValue.name) {
       this.group.name = formValue.name;
       this.group.grade = (!formValue.class.length) ? [] : [formValue.class];

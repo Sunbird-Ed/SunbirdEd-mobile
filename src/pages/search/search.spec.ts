@@ -34,6 +34,7 @@ import {
 
 import { } from 'jasmine';
 import { mockRes } from '../search/search.spec.data';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 declare let GenieSDK: any;
 export class NavParamsMock {
 
@@ -83,7 +84,7 @@ describe('SearchPage Component', () => {
                 // Ionic2RatingModule
             ],
             providers: [
-                ContentService, TelemetryService, CourseService, ShareUtil,
+                ContentService, TelemetryService, CourseService, ShareUtil, TelemetryGeneratorService,
                 { provide: AuthService, useValue: authServiceStub },
                 { provide: BuildParamService, useValue: buildParamServiceStub },
                 { provide: TelemetryService, useValue: telemetryServiceStub },
@@ -120,12 +121,14 @@ describe('SearchPage Component', () => {
         component.dialCode = "saaa"
         const contentService = TestBed.get(ContentService);
         let serarchRequest={};
-        spyOn(contentService, 'searchContent').and.callFake(function({}, success, error){
-            let data = JSON.stringify(mockRes.searchResultResponse)
-            return success(data);
-        });
-        component.getContentForDialCode();
-        spyOn(component, 'getContentForDialCode').and.callThrough();
+        // spyOn(contentService, 'searchContent').and.callFake(function({}, success, error){
+        //     let data = JSON.stringify(mockRes.searchResultResponse)
+        //     return success(data);
+        // });
+        spyOn(contentService, 'searchContent');
+        spyOn<any>(component, 'getContentForDialCode').and.callThrough();
+        component["getContentForDialCode"]();
+        expect(component["contentService"].searchContent).toHaveBeenCalled();
         // setTimeout(() => {
         //     expect(component.getContentForDialCode).toHaveBeenCalled();
         // }, 0);
