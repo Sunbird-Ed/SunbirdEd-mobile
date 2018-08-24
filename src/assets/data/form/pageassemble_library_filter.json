@@ -1,0 +1,97 @@
+{
+    "id": "api.form.read",
+    "ver": "1.0",
+    "ts": "2018-08-22T19:12:12.903Z",
+    "params": {
+      "resmsgid": "4665d770-a63f-11e8-94c5-6f5e259cab99",
+      "msgid": "46622df0-a63f-11e8-b890-7d5ff339c493",
+      "status": "successful",
+      "err": null,
+      "errmsg": null
+    },
+    "responseCode": "OK",
+    "result": {
+      "form": {
+        "type": "pageAssemble",
+        "subType": "library",
+        "action": "filter",
+        "rootOrgId": "null",
+        "framework": "null",
+        "data": {
+          "templateName": "defaultTemplate",
+          "action": "filter",
+          "fields": [
+            {
+              "name": "Board",
+              "translations": "{\"en\":\"Board\",\"hi\":\"बोर्ड\",,\"te\":\"బోర్డు\",,\"ta\":\"வாரியம்\",,\"mr\":\"बोर्ड\"}",
+              "code": "board",
+              "index": 1,
+              "values": [
+                
+              ]
+            },
+            {
+              "name": "Class",
+              "translations": "{\"en\":\"Class\",\"hi\":\"कक्षा\",,\"te\":\"క్లాసు\",,\"ta\":\"வகுப்பு\",,\"mr\":\"इयत्ता\"}",
+              "code": "gradeLevel",
+              "index": 2,
+              "values": [
+                
+              ]
+            },
+            {
+              "name": "Subject",
+              "translations": "{\"en\":\"Subject\",\"hi\":\"विषय\",,\"te\":\"పాఠ్యాంశము\",,\"ta\":\"பாடம்\",,\"mr\":\"विषय\"}",
+              "code": "subject",
+              "index": 3,
+              "values": [
+                
+              ]
+            },
+            {
+              "name": "Medium",
+              "translations": "{\"en\":\"Medium\",\"hi\":\"माध्यम\",,\"te\":\"మాధ్యమం\",,\"ta\":\"மொழி\",,\"mr\":\"माध्यम\"}",
+              "code": "medium",
+              "index": 4,
+              "values": [
+                
+              ]
+            },
+            {
+              "name": "Resource Type",
+              "translations": "{\"en\":\"Resource Type\",\"hi\":\"संसाधन के प्रकार\",,\"te\":\"ఎలాంటి వనరు\",,\"ta\":\"கல்வி வளம் வகை\",,\"mr\":\"संसाधन प्रकार\"}",
+              "code": "contentType",
+              "index": 5,
+              "values": [
+                {
+                  "name": "Story",
+                  "code": "Story",
+                  "translations": "{\"en\":\"Story\",\"hi\":\"Story\",,\"te\":\"Story\",,\"ta\":\"Story\",,\"mr\":\"Story\"}"
+                },
+                {
+                  "name": "Worksheet",
+                  "code": "Worksheet",
+                  "translations": "{\"en\":\"Worksheet\",\"hi\":\"Worksheet\",,\"te\":\"Worksheet\",,\"ta\":\"Worksheet\",,\"mr\":\"Worksheet\"}"
+                },
+                {
+                  "name": "Collection",
+                  "code": "Collection",
+                  "translations": "{\"en\":\"Collection\",\"hi\":\"Collection\",,\"te\":\"Collection\",,\"ta\":\"Collection\",,\"mr\":\"Collection\"}"
+                },
+                {
+                  "name": "LessonPlan",
+                  "code": "LessonPlan",
+                  "translations": "{\"en\":\"LessonPlan\",\"hi\":\"LessonPlan\",,\"te\":\"LessonPlan\",,\"ta\":\"LessonPlan\",,\"mr\":\"LessonPlan\"}"
+                },
+                {
+                  "name": "TextBook",
+                  "code": "TextBook",
+                  "translations": "{\"en\":\"TextBook\",\"hi\":\"TextBook\",,\"te\":\"TextBook\",,\"ta\":\"TextBook\",,\"mr\":\"TextBook\"}"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }

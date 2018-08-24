@@ -14,7 +14,7 @@ import {
 } from 'sunbird';
 import { AppGlobalService } from '../../service/app-global.service';
 import { AppVersion } from "@ionic-native/app-version";
-import { FrameworkConstant } from '../../app/app.constant';
+import { FrameworkConstant, FormConstant } from '../../app/app.constant';
 
 @Injectable()
 export class FormAndFrameworkUtilService {
@@ -66,6 +66,48 @@ export class FormAndFrameworkUtilService {
         })
     }
 
+
+    /**
+     * This method gets the Library filter config.
+     * 
+     */
+    getLibraryFilterConfig(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let libraryFilterConfig: Array<any> = [];
+
+            //get cached library config
+            libraryFilterConfig = this.appGlobalService.getCachedLibraryFilterConfig()
+
+            if (libraryFilterConfig === undefined || libraryFilterConfig.length == 0) {
+                libraryFilterConfig = [];
+                this.invokeLibraryFilterConfigFormApi(libraryFilterConfig, resolve, reject);
+            } else {
+                resolve(libraryFilterConfig);
+            }
+
+        })
+    }
+
+    /**
+     * This method gets the course filter config.
+     * 
+     */
+    getCourseFilterConfig(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let courseFilterConfig: Array<any> = [];
+
+            //get cached course config
+            courseFilterConfig = this.appGlobalService.getCachedCourseFilterConfig()
+
+            if (courseFilterConfig === undefined || courseFilterConfig.length == 0) {
+                courseFilterConfig = [];
+                this.invokeCourseFilterConfigFormApi(courseFilterConfig, resolve, reject);
+            } else {
+                resolve(courseFilterConfig);
+            }
+        });
+    }
+
     /**
      * Network call to form api
      * 
@@ -79,6 +121,7 @@ export class FormAndFrameworkUtilService {
             type: 'user',
             subType: 'instructor',
             action: 'onboarding',
+            defaultFormPath: FormConstant.DEFAULT_SYALLABUS_PATH
         };
         //form api call
         this.formService.getForm(req, (res: any) => {
@@ -147,6 +190,7 @@ export class FormAndFrameworkUtilService {
             type: 'pageAssemble',
             subType: 'course',
             action: 'filter',
+            defaultFormPath: FormConstant.DEFAULT_PAGE_COURSE_FILTER_PATH
         };
         //form api call
         this.formService.getForm(req, (res: any) => {
@@ -173,6 +217,7 @@ export class FormAndFrameworkUtilService {
             type: 'pageAssemble',
             subType: 'library',
             action: 'filter',
+            defaultFormPath: FormConstant.DEFAULT_PAGE_LIBRARY_FILTER_PATH
         };
         //form api call
         this.formService.getForm(req, (res: any) => {
@@ -279,7 +324,7 @@ export class FormAndFrameworkUtilService {
                     let req: FormRequest = {
                         type: 'app',
                         subType: 'install',
-                        action: 'upgrade',
+                        action: 'upgrade'
                     };
                     //form api call
                     this.formService.getForm(req, (res: any) => {

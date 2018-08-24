@@ -7,7 +7,11 @@ import {
     ProfileService,
     FrameworkDetailsRequest,
     FrameworkService,
-    BuildParamService
+    BuildParamService,
+    PageId,
+    Environment,
+    InteractType,
+    InteractSubtype
 } from "sunbird";
 import {
     Events,
@@ -16,6 +20,7 @@ import {
 } from "ionic-angular";
 import { UpgradePopover } from "../pages/upgrade/upgrade-popover";
 import { FrameworkConstant, GenericAppConfig } from "../app/app.constant";
+import { TelemetryGeneratorService } from "./telemetry-generator.service";
 
 @Injectable()
 export class AppGlobalService {
@@ -48,6 +53,12 @@ export class AppGlobalService {
     private frameworkData = [];
     public DISPLAY_ONBOARDING_CARDS: boolean = false;
     public DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE: boolean = false;
+    public DISPLAY_ONBOARDING_PAGE: boolean = false;
+    public DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER: boolean = false;
+    public DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER: boolean = false;
+    public DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER: boolean = false;
+    public DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT: boolean = false;
+    public DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT: boolean = false;
 
     constructor(private event: Events,
         private authService: AuthService,
@@ -55,11 +66,10 @@ export class AppGlobalService {
         private framework: FrameworkService,
         private preference: SharedPreferences,
         private popoverCtrl: PopoverController,
-        private buildParamService: BuildParamService) {
-        console.log("constructor");
+        private buildParamService: BuildParamService,
+        private telemetryGeneratorService: TelemetryGeneratorService) {
         this.initValues();
         this.listenForEvents();
-        console.log("isPlayerLauncghed" + AppGlobalService.isPlayerLaunched);
     }
 
     isUserLoggedIn(): boolean {
@@ -136,21 +146,21 @@ export class AppGlobalService {
         return this.courseFilterConfig;
     }
 
-     /**
-  * This method stores the library filter config, for a particular session of the app
-  *
-  */
- setLibraryFilterConfig(libraryFilterConfig: Array<any>) {
-    this.libraryFilterConfig = libraryFilterConfig;
-}
-
-/**
- * This method returns the library filter config cache, for a particular session of the app
+    /**
+ * This method stores the library filter config, for a particular session of the app
  *
  */
-getCachedLibraryFilterConfig(): Array<any> {
-    return this.libraryFilterConfig;
-}
+    setLibraryFilterConfig(libraryFilterConfig: Array<any>) {
+        this.libraryFilterConfig = libraryFilterConfig;
+    }
+
+    /**
+     * This method returns the library filter config cache, for a particular session of the app
+     *
+     */
+    getCachedLibraryFilterConfig(): Array<any> {
+        return this.libraryFilterConfig;
+    }
 
 
 
@@ -187,6 +197,54 @@ getCachedLibraryFilterConfig(): Array<any> {
         }, (error) => {
             console.log("DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE Error", error);
             this.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE = false;
+        });
+
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_ONBOARDING_PAGE, (response: any) => {
+            console.log("DISPLAY_ONBOARDING_PAGE", response);
+            this.DISPLAY_ONBOARDING_PAGE = response === 'true' ? true : false;
+        }, (error) => {
+            console.log("DISPLAY_ONBOARDING_PAGE Error", error);
+            this.DISPLAY_ONBOARDING_PAGE = false;
+        });
+
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER, (response: any) => {
+            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER", response);
+            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER = response === 'true' ? true : false;
+        }, (error) => {
+            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER Error", error);
+            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER = false;
+        });
+
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER, (response: any) => {
+            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER", response);
+            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER = response === 'true' ? true : false;
+        }, (error) => {
+            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER Error", error);
+            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER = false;
+        });
+
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER, (response: any) => {
+            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER", response);
+            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER = response === 'true' ? true : false;
+        }, (error) => {
+            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER Error", error);
+            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER = false;
+        });
+
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT, (response: any) => {
+            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT", response);
+            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT = response === 'true' ? true : false;
+        }, (error) => {
+            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT Error", error);
+            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT = false;
+        });
+
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT, (response: any) => {
+            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT", response);
+            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT = response === 'true' ? true : false;
+        }, (error) => {
+            console.log("DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT Error", error);
+            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT = false;
         });
     }
 
@@ -288,5 +346,52 @@ getCachedLibraryFilterConfig(): Array<any> {
         let popover = this.popoverCtrl.create(UpgradePopover, { type: upgradeType }, options);
         popover.present({
         });
+    }
+
+    generateConfigInteractEvent(pageId: String, isOnBoardingCompleted?: boolean) {
+        if (this.isGuestUser) {
+            let paramsMap = new Map();
+            if (pageId !== PageId.PROFILE) {
+                paramsMap["isOnBoardingPageConfigEnabled"] = this.DISPLAY_ONBOARDING_PAGE;
+                paramsMap["isOnBoardingCompleted"] = isOnBoardingCompleted;
+            }
+            let profileType = this.getGuestUserType();
+            if (profileType === ProfileType.TEACHER) {
+                switch (pageId) {
+                    case PageId.LIBRARY: {
+                        paramsMap["isSignInCardConfigEnabled"] = this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER;
+                        break;
+                    }
+                    case PageId.COURSES: {
+                        paramsMap["isSignInCardConfigEnabled"] = this.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER;
+                        break;
+                    }
+                    case PageId.GUEST_PROFILE: {
+                        paramsMap["isSignInCardConfigEnabled"] = this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER;
+                        break;
+                    }
+                }
+
+            } else {
+                switch (pageId) {
+                    case PageId.LIBRARY: {
+                        paramsMap["isSignInCardConfigEnabled"] = this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT;
+                        break;
+                    }
+                    case PageId.GUEST_PROFILE: {
+                        paramsMap["isSignInCardConfigEnabled"] = this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT;
+                        break;
+                    }
+                }
+            }
+
+            this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
+                InteractSubtype.INITIAL_CONFIG,
+                Environment.HOME,
+                pageId,
+                undefined,
+                paramsMap
+            );
+        }
     }
 }

@@ -46,7 +46,7 @@ export class PageFilter {
     this.callback = navParams.get('callback');
 
     this.initFilterValues();
-    
+
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.viewCtrl.dismiss();
       this.backButtonFunc();
@@ -54,14 +54,24 @@ export class PageFilter {
   }
 
   initFilterValues() {
-    // #SB-3708 To avoid the object reference in Javascript. (Deep Clone) 
-    this.filters = JSON.parse(JSON.stringify(this.navParams.get('filter')));
+    this.filters = this.navParams.get('filter');
+
+    this.filters.forEach(filter => {
+      if (filter.code === 'contentType') {
+        let temp = [];
+        filter.values.forEach(element => {
+          temp.push(element.name);
+        });
+        filter.values = temp;
+      }
+    });
+
 
     let syllabus: Array<string> = this.appGlobalService.getCurrentUser().syllabus;
-    let frameworkId = (syllabus && syllabus.length > 0) ? syllabus[0]: undefined;
+    let frameworkId = (syllabus && syllabus.length > 0) ? syllabus[0] : undefined;
 
     this.filters.forEach((element, index: number) => {
-      this.getFrameworkData(frameworkId, element.name, index);
+      this.getFrameworkData(frameworkId, element.code, index);
 
       //Framework API doesn't return domain and content Type exclude them
       if (index === this.filters.length - 1) this.facetsFilter = this.filters;
@@ -83,8 +93,8 @@ export class PageFilter {
       (res: any) => {
         let responseArray = JSON.parse(res);
         if (responseArray && responseArray.length > 0) {
-          this.filters[index].values = (currentCategory !== 'gradeLevel') ? 
-          _.map(responseArray, 'name').sort() : _.map(responseArray, 'name');
+          this.filters[index].values = (currentCategory !== 'gradeLevel') ?
+            _.map(responseArray, 'name').sort() : _.map(responseArray, 'name');
         }
       },
       (err: any) => {

@@ -14,6 +14,9 @@ import {
   ProfileService,
   SharedPreferences,
   ProfileType,
+  ImpressionType,
+  PageId,
+  Environment,
 } from 'sunbird';
 import { UserTypeSelectionPage } from '../../user-type-selection/user-type-selection';
 import { Network } from '@ionic-native/network';
@@ -21,6 +24,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { FormAndFrameworkUtilService } from '../formandframeworkutil.service';
 import { AppGlobalService } from '../../../service/app-global.service';
 import { MenuOverflow } from '../../../app/app.constant';
+import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -68,7 +72,8 @@ export class GuestProfilePage {
     private toastCtrl: ToastController,
     private translate: TranslateService,
     private appGlobal: AppGlobalService,
-    private formAndFrameworkUtilService: FormAndFrameworkUtilService
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
+    private telemetryGeneratorService: TelemetryGeneratorService
   ) {
 
     //language code
@@ -98,7 +103,17 @@ export class GuestProfilePage {
       } else if (val == ProfileType.STUDENT) {
         this.showSignInCard = false;
       }
-    })
+    });
+    
+    let profileType = this.appGlobal.getGuestUserType();
+    if (profileType === ProfileType.TEACHER && this.appGlobal.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER) {
+      this.showSignInCard = true;
+    } else if (profileType == ProfileType.STUDENT && this.appGlobal.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT) {
+      this.showSignInCard = true;
+    } else {
+      this.showSignInCard = false;
+    }
+
     if (this.network.type === 'none') {
       this.isNetworkAvailable = false;
     } else {
@@ -110,6 +125,16 @@ export class GuestProfilePage {
     this.network.onConnect().subscribe((data) => {
       this.isNetworkAvailable = true;
     });
+  }
+
+  ionViewDidLoad() {
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.VIEW, "",
+      PageId.GUEST_PROFILE,
+      Environment.HOME
+    );
+
+    this.appGlobal.generateConfigInteractEvent(PageId.GUEST_PROFILE);
   }
 
   refreshProfileData(refresher: any = false, showLoader: boolean = true) {

@@ -39,54 +39,6 @@ export class ProfileConstants {
     public static readonly REQUIRED_FIELDS = ['completeness', 'missingFields', 'lastLoginTime', 'topics'];
 }
 
-export class PageFilterConstants {
-    public static readonly COURSE_FILTER = [
-        {
-            name: "board",
-            displayName: "BOARD",
-            values: []
-        },
-        {
-            name: "subject",
-            displayName: "SUBJECT",
-            values: []
-        },
-        {
-            name: "medium",
-            displayName: "MEDIUM",
-            values: []
-        }
-    ];
-
-    public static readonly RESOURCE_FILTER = [
-        {
-            name: "board",
-            displayName: "BOARD",
-            values: []
-        },
-        {
-            name: "gradeLevel",
-            displayName: "CLASS",
-            values: []
-        },
-        {
-            name: "subject",
-            displayName: "SUBJECT",
-            values: []
-        },
-        {
-            name: "medium",
-            displayName: "MEDIUM",
-            values: []
-        },
-        {
-            name: "contentType",
-            displayName: "RESOURCE_TYPE",
-            values: frameworkDataList.contentTypeList.sort()
-        }
-    ];
-}
-
 export class AudienceFilter {
     // TODO : Check with Anil for TEACHER & LOGGED_IN_USER values
     public static readonly GUEST_TEACHER = ["instructor", "learner"];
@@ -115,7 +67,20 @@ export class FrameworkConstant {
     public static readonly DEFAULT_FRAMEWORK_NAME = "Common";
 }
 
+export class FormConstant {
+    public static readonly DEFAULT_SYALLABUS_PATH = 'data/form/syllabus.json';
+    public static readonly DEFAULT_PAGE_COURSE_FILTER_PATH = 'data/form/pageassemble_course_filter.json';
+    public static readonly DEFAULT_PAGE_LIBRARY_FILTER_PATH = 'data/form/pageassemble_library_filter.json';
+}
+
 export class GenericAppConfig {
-    public static readonly DISPLAY_ONBOARDING_CARDS = "DISPLAY_ONBOARDING_CARDS";
-    public static readonly DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE = "DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE";
+    public static readonly DISPLAY_ONBOARDING_CARDS = 'DISPLAY_ONBOARDING_CARDS';
+    public static readonly DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE = 'DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE';
+    public static readonly DISPLAY_ONBOARDING_PAGE = "DISPLAY_ONBOARDING_PAGE";
+    public static readonly DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER = "DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER";
+    public static readonly DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER = "DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER";
+    public static readonly DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER = "DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER";
+    public static readonly DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_STUDENT = "DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_STUDENT";
+    public static readonly DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT = "DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT";
+    public static readonly DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT = "DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT";
 }

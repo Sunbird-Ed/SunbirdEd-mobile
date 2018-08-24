@@ -37,7 +37,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { Network } from '@ionic-native/network';
 import { generateImpressionTelemetry } from '../../app/telemetryutil';
 import {
-  PageFilterConstants,
   ProfileConstants,
   EventTopics
 } from '../../app/app.constant';
@@ -49,6 +48,7 @@ import { AppGlobalService } from '../../service/app-global.service';
 import Driver from 'driver.js';
 import { CourseUtilService } from '../../service/course-util.service';
 import { updateFilterInSearchQuery } from '../../util/filter.util';
+import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
 
 @IonicPage()
 @Component({
@@ -149,7 +149,8 @@ export class CoursesPage implements OnInit {
     private translate: TranslateService,
     private network: Network,
     private appGlobal: AppGlobalService,
-    private courseUtilService: CourseUtilService
+    private courseUtilService: CourseUtilService,
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService
   ) {
 
     this.preference.getString('selected_language_code', (val: string) => {
@@ -248,7 +249,14 @@ export class CoursesPage implements OnInit {
     } */
 
   ionViewDidLoad() {
-    //this.sharedPreferences.
+    this.telemetryService.impression(generateImpressionTelemetry(
+      ImpressionType.VIEW, "",
+      PageId.COURSES,
+      Environment.HOME, "", "", "",
+      undefined, undefined
+    ));
+
+    this.appGlobal.generateConfigInteractEvent(PageId.COURSES,this.isOnBoardingCardCompleted);
     this.preference.getString('show_app_walkthrough_screen', (value) => {
       if (value === 'true') {
         const driver = new Driver({
@@ -316,7 +324,6 @@ export class CoursesPage implements OnInit {
     };
 
     this.courseService.getEnrolledCourses(option, (data: any) => {
-      console.log('enrolled courses', data);
       if (data) {
         data = JSON.parse(data);
         this.ngZone.run(() => {
@@ -521,18 +528,16 @@ export class CoursesPage implements OnInit {
         console.log("Error while Fetching Data", error);
         this.getPopularAndLatestCourses();
       });
-
-
   }
 
   /**
    * It will fetch the guest user profile details
    */
   getCurrentUser(): void {
-    let profiletype = this.appGlobal.getGuestUserType();
-    if (profiletype == ProfileType.TEACHER) {
+    let profileType = this.appGlobal.getGuestUserType();
+    if (profileType === ProfileType.TEACHER && this.appGlobal.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER) {
       this.showSignInCard = true;
-    } else if (profiletype == ProfileType.STUDENT) {
+    } else {
       this.showSignInCard = false;
     }
 
@@ -560,16 +565,7 @@ export class CoursesPage implements OnInit {
   }
 
   ionViewDidEnter() {
-
-
     this.isVisible = true;
-
-    this.telemetryService.impression(generateImpressionTelemetry(
-      ImpressionType.VIEW, "",
-      PageId.COURSES,
-      Environment.HOME, "", "", "",
-      undefined, undefined
-    ));
   }
 
   ionViewWillLeave(): void {
@@ -623,16 +619,18 @@ export class CoursesPage implements OnInit {
     let filterOptions = {
       callback: callback
     }
-
     // Already apllied filter
     if (this.courseFilter) {
       filterOptions['filter'] = this.courseFilter;
     } else {
-      filterOptions['filter'] = PageFilterConstants.COURSE_FILTER;
+        //TODO: Need to add loader
+        this.formAndFrameworkUtilService.getCourseFilterConfig().then((data) => {
+        filterOptions['filter'] = data;
+        this.popCtrl.create(PageFilter, filterOptions, { cssClass: 'resource-filter' }).present();
+      }).catch((error) => {
+        console.error("Error Occurred!");
+      });
     }
-
-    let filter = this.popCtrl.create(PageFilter, filterOptions, { cssClass: 'resource-filter' });
-    filter.present();
   }
 
   showMessage(message) {
