@@ -9,6 +9,7 @@ import { Platform } from 'ionic-angular';
 import { DeepLinker } from 'ionic-angular';
 import { DeepLinkerMock } from '../../test-config/mocks-ionic';
 import { PopoverControllerMock } from '../../node_modules/ionic-mocks';
+import { TelemetryGeneratorService } from './telemetry-generator.service';
 
 describe('AppGlobalService', () => {
   let service : AppGlobalService;
@@ -29,7 +30,8 @@ describe('AppGlobalService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [ 
-        AppGlobalService, Events, FrameworkService, SharedPreferences, ServiceProvider, App, Config, Platform,
+        AppGlobalService, Events, FrameworkService, SharedPreferences, ServiceProvider, App, Config, Platform, TelemetryGeneratorService,
+        TelemetryService,
         {provide: DeepLinker, useValue: DeepLinkerMock},
         {provide: AuthService, useValue: authServiceStub},
         {provide: BuildParamService, useValue: BuildParamServiceStub},
@@ -150,7 +152,13 @@ describe('AppGlobalService', () => {
   });
 
   it("DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE to be false", () => {
-    expect(service.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER).toBe(true);
+    spyOn(buildService, 'getBuildConfigParam').and.callFake(function(option, success, error){
+      let data = "false";
+      return success(data);
+    });
+    service.readConfig()
+    expect(buildService.getBuildConfigParam).toHaveBeenCalled();
+    expect(service.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE).toBe(false);
   });
 
   it("DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER to be false", () => {
