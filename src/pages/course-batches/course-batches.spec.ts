@@ -10,8 +10,11 @@ import {
     AuthService, FrameworkModule, CourseService} from "sunbird";
 import {
     NavParamsMock,
-    NavMock, TranslateLoaderMock, ToastControllerMock
+    NavMock, TranslateLoaderMock
 } from '../../../test-config/mocks-ionic';
+
+import { ToastControllerMock
+     } from 'ionic-mocks';
 
 import { mockRes } from '../course-batches/course-batches.spec.data';
 
