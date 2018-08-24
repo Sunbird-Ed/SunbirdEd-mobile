@@ -38,7 +38,8 @@ import { Network } from '@ionic-native/network';
 import { generateImpressionTelemetry } from '../../app/telemetryutil';
 import {
   ProfileConstants,
-  EventTopics
+  EventTopics,
+  PreferenceKey
 } from '../../app/app.constant';
 import {
   PageFilterCallback,
@@ -153,7 +154,7 @@ export class CoursesPage implements OnInit {
     private formAndFrameworkUtilService: FormAndFrameworkUtilService
   ) {
 
-    this.preference.getString('selected_language_code', (val: string) => {
+    this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE, (val: string) => {
       if (val && val.length) {
         this.selectedLanguage = val;
       }

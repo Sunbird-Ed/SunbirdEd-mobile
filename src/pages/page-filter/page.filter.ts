@@ -32,6 +32,7 @@ export class PageFilter {
   facetsFilter;
 
   backButtonFunc = undefined;
+  selectedLanguage: string = 'en';
 
   constructor(
     private popCtrl: PopoverController,
@@ -86,7 +87,10 @@ export class PageFilter {
   getFrameworkData(frameworkId: string, currentCategory: string, index: number): void {
     let req: CategoryRequest = {
       currentCategory: currentCategory,
-      frameworkId: frameworkId
+      frameworkId: frameworkId,
+      selectedLanguage: this.translate.currentLang
+      
+      
     };
 
     this.frameworkService.getCategoryData(req,
