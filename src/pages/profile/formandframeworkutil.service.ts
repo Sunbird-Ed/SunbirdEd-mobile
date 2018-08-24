@@ -14,7 +14,7 @@ import {
 } from 'sunbird';
 import { AppGlobalService } from '../../service/app-global.service';
 import { AppVersion } from "@ionic-native/app-version";
-import { FrameworkConstant, FormConstant } from '../../app/app.constant';
+import { FrameworkConstant, FormConstant, PreferenceKey } from '../../app/app.constant';
 
 @Injectable()
 export class FormAndFrameworkUtilService {
@@ -36,7 +36,7 @@ export class FormAndFrameworkUtilService {
         private appVersion: AppVersion
     ) {
         //Get language selected
-        this.preference.getString('selected_language_code', (val: string) => {
+        this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE, (val: string) => {
             if (val && val.length) {
                 this.selectedLanguage = val;
             }

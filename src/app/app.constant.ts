@@ -73,6 +73,11 @@ export class FormConstant {
     public static readonly DEFAULT_PAGE_LIBRARY_FILTER_PATH = 'data/form/pageassemble_library_filter.json';
 }
 
+export class PreferenceKey {
+    public static readonly SELECTED_LANGUAGE_CODE = 'selected_language_code';
+    public static readonly SELECTED_LANGUAGE = 'selected_language';
+}
+
 export class GenericAppConfig {
     public static readonly DISPLAY_ONBOARDING_CARDS = 'DISPLAY_ONBOARDING_CARDS';
     public static readonly DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE = 'DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE';

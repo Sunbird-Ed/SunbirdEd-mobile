@@ -40,6 +40,7 @@ import {
 } from '../../../app/module.service';
 import { App } from 'ionic-angular';
 import { AppGlobalService } from '../../../service/app-global.service';
+import { PreferenceKey } from '../../../app/app.constant';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -144,7 +145,7 @@ export class GuestEditProfilePage {
     this.previousProfileType = this.profile.profileType
 
     //language code
-    this.preference.getString('selected_language_code', (val: string) => {
+    this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE, (val: string) => {
       if (val && val.length) {
         this.selectedLanguage = val;
       }
@@ -295,6 +296,7 @@ export class GuestEditProfilePage {
           // loader.dismiss();
           let request: CategoryRequest = {
             currentCategory: this.categories[0].code,
+            selectedLanguage: this.translate.currentLang
           }
           this.getCategoryData(request, currentField);
         }).catch(error => {
@@ -306,7 +308,8 @@ export class GuestEditProfilePage {
       let request: CategoryRequest = {
         currentCategory: this.categories[index - 1].code,
         prevCategory: this.categories[index - 2].code,
-        selectedCode: prevSelectedValue
+        selectedCode: prevSelectedValue,
+        selectedLanguage: this.selectedLanguage
       }
       this.getCategoryData(request, currentField);
     }

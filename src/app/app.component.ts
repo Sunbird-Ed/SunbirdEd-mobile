@@ -44,7 +44,8 @@ import {
 } from './telemetryutil';
 import {
   MimeType,
-  ContentType
+  ContentType,
+  PreferenceKey
 } from './app.constant';
 import { EnrolledCourseDetailsPage } from '../pages/enrolled-course-details/enrolled-course-details';
 import { ProfileConstants } from './app.constant';
@@ -116,7 +117,7 @@ export class MyApp {
 
       })
 
-      this.preference.getString('selected_language_code', (val: string) => {
+      this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE, (val: string) => {
         if (val && val.length) {
           this.translate.use(val);
         }
