@@ -59,7 +59,7 @@ export class UserAndGroupsPage {
   segmentType: string = "users";
   groupName: string;
   showEmptyGroupsMessage: boolean = true;
-  isLoggedInUser: boolean = false;
+  // isLoggedInUser: boolean = false;
   currentUserId: string;
   currentGroupId: string;
   playContent: any;
@@ -104,7 +104,7 @@ export class UserAndGroupsPage {
       this.currentUserId = this.appGlobalService.getCurrentUser().uid;
     }
 
-    this.isLoggedInUser = this.navParams.get('isLoggedInUser');
+    // this.isLoggedInUser = this.navParams.get('isLoggedInUser');
     // this.profileDetails = this.navParams.get('profile');
     if (this.appGlobalService.isUserLoggedIn()) {
       this.profileDetails = this.appGlobalService.getCurrentUser();

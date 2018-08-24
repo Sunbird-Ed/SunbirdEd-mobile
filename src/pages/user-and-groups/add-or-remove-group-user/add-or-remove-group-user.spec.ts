@@ -14,6 +14,8 @@ import { TelemetryGeneratorService } from "../../../service/telemetry-generator.
 import { AddOrRemoveGroupUserPage } from "./add-or-remove-group-user";
 import 'rxjs/add/observable/of';
 import { } from 'jasmine';
+
+import { LoadingControllerMock } from 'ionic-mocks';
 export class MockToastCtrl {
     public instance: MockToast = new MockToast();
     public create ( options: any = {} ): MockToast {
@@ -96,7 +98,8 @@ describe("AddOrRemoveGroupUserPage", () => {
                 { provide: TranslateService, useValue: translateServiceStub },
                 { provide: GroupService, useValue: groupServiceStub },
                 { provide: ProfileService, useValue: profileServiceStub },
-                { provide: LoadingController, useValue: loadingControllerStub },
+                // { provide: LoadingController, useValue: loadingControllerStub },
+                { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() },
                 { provide: TelemetryGeneratorService, useValue: telemetryGeneratorServiceStub }
             ]
         });
@@ -196,11 +199,12 @@ describe("AddOrRemoveGroupUserPage", () => {
 
     describe("add", () => {
         it("makes expected calls", fakeAsync(() => {
+            const loadingCtrl = TestBed.get(LoadingController);
             const navControllerStub: NavController = fixture.debugElement.injector.get(NavController);
             const groupServiceStub: GroupService = fixture.debugElement.injector.get(GroupService);
-            comp.getLoader = jasmine.createSpy().and.callFake(function () {
-                return { present: function () { }, dismiss: function () { } }
-            });
+            // comp.getLoader = jasmine.createSpy().and.callFake(function () {
+            //     return { present: function () { }, dismiss: function () { } }
+            // });
             comp.groupMembers = [];
             spyOn(groupServiceStub, "addUpdateProfilesToGroup").and.returnValue(Promise.resolve([]));
 
@@ -218,7 +222,7 @@ describe("AddOrRemoveGroupUserPage", () => {
                 return Observable.of('Cancel');
             });
             comp.add();
-            expect(comp.getLoader).toHaveBeenCalled();
+            // expect(comp.getLoader).toHaveBeenCalled();
             expect(comp.getSelectedUids).toHaveBeenCalled();
            // expect(comp.);
             //expect(comp.translateMessage).toHaveBeenCalled();

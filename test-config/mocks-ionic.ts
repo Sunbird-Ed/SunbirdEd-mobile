@@ -123,6 +123,14 @@ export class NavMock {
     return;
   }
 
+  public length(): any{
+    return;
+  }
+
+  public insert(): any{
+    return;
+  }
+
 }
 
 export class DeepLinkerMock { }

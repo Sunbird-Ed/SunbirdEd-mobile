@@ -234,13 +234,12 @@ describe("LanguageSettingsPage", () => {
 
             expect(comp.continue).toBeDefined();
 
-            spyOn(comp, "generateContinueClickedInterackEvent");
+            spyOn<any>(comp, "generateContinueClickedInteractEvent");
             spyOn(comp, "generateLanguageSuccessInteractEvent");
             spyOn(comp, 'continue').and.callThrough();
             spyOn(navControllerStub, "pop");
             spyOn(translateServiceStub, "use");
             spyOn(sharedPreferencesStub, "putString");
-            spyOn(eventsStub, "publish").and.callThrough();
 
             comp.previousLanguage = "";
             comp.isFromSettings = true;
@@ -283,7 +282,7 @@ describe("LanguageSettingsPage", () => {
                 'isApplied': false
             });
             expect(comp.previousLanguage).not.toBeUndefined();
-            expect(comp.generateContinueClickedInterackEvent).toHaveBeenCalled();
+            expect(comp["generateContinueClickedInteractEvent"]).toHaveBeenCalled();
             expect(comp.generateLanguageSuccessInteractEvent).toHaveBeenCalled();
             expect(navControllerStub.pop).toHaveBeenCalled();
             expect(eventsStub.publish).toHaveBeenCalled();
@@ -313,7 +312,7 @@ describe("LanguageSettingsPage", () => {
 
             expect(comp.continue).toBeDefined();
 
-            spyOn(comp, "generateContinueClickedInterackEvent");
+            spyOn<any>(comp, "generateContinueClickedInteractEvent");
             spyOn(comp, "continue").and.callThrough();
             //spyOn(toastMockStub, "dismissAll");
             // spyOn(toastControllerStub, "create");
@@ -322,7 +321,7 @@ describe("LanguageSettingsPage", () => {
             comp.continue();
 
             expect(comp.btnColor).toEqual('#8FC4FF');
-            expect(comp.generateContinueClickedInterackEvent).toHaveBeenCalled();
+            expect(comp["generateContinueClickedInteractEvent"]).toHaveBeenCalled();
             // expect(toastControllerStub.config).toHaveBeenCalled();
             // expect(toastMockStub.present).toHaveBeenCalled();
             // expect(toastControllerStub.create).toHaveBeenCalled();
