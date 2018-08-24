@@ -198,7 +198,7 @@ describe("AddOrRemoveGroupUserPage", () => {
     });
 
     describe("add", () => {
-        fit("makes expected calls", fakeAsync(() => {
+        it("makes expected calls", fakeAsync(() => {
             const loadingCtrl = TestBed.get(LoadingController);
             const navControllerStub: NavController = fixture.debugElement.injector.get(NavController);
             const groupServiceStub: GroupService = fixture.debugElement.injector.get(GroupService);
