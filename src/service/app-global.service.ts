@@ -8,10 +8,8 @@ import {
     FrameworkDetailsRequest,
     FrameworkService,
     BuildParamService,
-    LogLevel,
     PageId,
     Environment,
-    ImpressionType,
     InteractType,
     InteractSubtype
 } from "sunbird";

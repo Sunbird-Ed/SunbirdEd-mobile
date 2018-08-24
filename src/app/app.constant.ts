@@ -39,36 +39,6 @@ export class ProfileConstants {
     public static readonly REQUIRED_FIELDS = ['completeness', 'missingFields', 'lastLoginTime', 'topics'];
 }
 
-export class PageFilterConstants {
-    public static readonly RESOURCE_FILTER = [
-        {
-            name: "board",
-            displayName: "BOARD",
-            values: []
-        },
-        {
-            name: "gradeLevel",
-            displayName: "CLASS",
-            values: []
-        },
-        {
-            name: "subject",
-            displayName: "SUBJECT",
-            values: []
-        },
-        {
-            name: "medium",
-            displayName: "MEDIUM",
-            values: []
-        },
-        {
-            name: "contentType",
-            displayName: "RESOURCE_TYPE",
-            values: frameworkDataList.contentTypeList.sort()
-        }
-    ];
-}
-
 export class AudienceFilter {
     // TODO : Check with Anil for TEACHER & LOGGED_IN_USER values
     public static readonly GUEST_TEACHER = ["instructor", "learner"];

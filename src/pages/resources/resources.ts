@@ -18,8 +18,7 @@ import {
 	ContentFilterCriteria,
 	ProfileType,
 	PageAssembleFilter,
-	CorrelationData,
-	LogLevel
+	CorrelationData
 } from "sunbird";
 import {
 	NavController,
@@ -39,7 +38,6 @@ import {
 import { TranslateService } from '@ngx-translate/core';
 import {
 	ContentType,
-	PageFilterConstants,
 	AudienceFilter
 } from '../../app/app.constant';
 import { Network } from '@ionic-native/network';
