@@ -7,6 +7,7 @@ import { ImageLoaderConfig } from "ionic-image-loader";
 import { TranslateLoader } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 import { App } from 'ionic-angular';
+import { ElementRef } from '@angular/core';
 
 declare let readJSON: any;
 
@@ -271,6 +272,10 @@ export class profileServiceMock {
 
 export class eventsMock {
   publish: () => ({})
+}
+
+export class MockElementRef implements ElementRef {
+  nativeElement = {};
 }
 
 export class appMock extends App {

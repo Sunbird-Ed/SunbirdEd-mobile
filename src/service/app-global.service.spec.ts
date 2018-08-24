@@ -103,7 +103,7 @@ describe('AppGlobalService', () => {
     expect(service.session).toEqual(session);
   });
 
-  it("initValues to make expected calls", () => {
+  it("initValues to call getGuestUserInfo", () => {
     spyOn(service, 'readConfig');
     spyOn<any>(service, 'getGuestUserInfo');
     spyOn(authService, 'getSessionData').and.callFake(function(success){
@@ -167,7 +167,7 @@ describe('AppGlobalService', () => {
     expect(service["getFrameworkDetails"]).toHaveBeenCalled();
   });
 
-  it("getCurrentUserProfile to make expected calls", () => {
+  it("getCurrentUserProfile to return syllabus", () => {
     spyOn(service['profile'], 'getCurrentUser').and.callFake(function(success, error){
         let data = JSON.stringify({syllabus : []});
         return success(data);
