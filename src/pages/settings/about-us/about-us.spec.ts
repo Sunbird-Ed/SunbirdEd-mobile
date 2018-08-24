@@ -79,7 +79,7 @@ describe("AboutUsPage", () => {
             });
             comp.ionViewDidLoad();
             setTimeout(() => {
-                expect(deviceInfoServiceStub.getDeviceID).toEqual(error);
+                expect(deviceInfoServiceStub.getDeviceID).toEqual({});
             }, 100);
             expect(deviceInfoServiceStub.getDeviceID).toHaveBeenCalled();
         });
