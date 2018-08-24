@@ -10,10 +10,11 @@ import { TranslateModule, TranslateService } from '../../../../node_modules/@ngx
 import {
     Events, LoadingController, NavController, PopoverController, ToastController
 } from '../../../../node_modules/ionic-angular';
-import { ProfileService, SharedPreferences } from '../../../../node_modules/sunbird';
+import { ProfileService, SharedPreferences, TelemetryService, ServiceProvider } from '../../../../node_modules/sunbird';
 import { AppGlobalService } from '../../../service/app-global.service';
 import { FormAndFrameworkUtilService } from '../formandframeworkutil.service';
 import { GuestProfilePage } from './guest-profile';
+import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 
 export class LoadingControllerMock {
     _getPortal(): any { return {} };
@@ -104,7 +105,8 @@ describe('GuestProfilePage', () => {
         }
 
         const AppGlobalServiceStub = {
-            openPopover: () => { }
+            openPopover: () => { },
+            getGuestUserType : () => ({})
         }
 
         const FormAndFrameworkUtilServiceStub = {
@@ -120,7 +122,7 @@ describe('GuestProfilePage', () => {
             imports: [TranslateModule.forRoot()],
             declarations: [GuestProfilePage],
             schemas: [NO_ERRORS_SCHEMA],
-            providers: [
+            providers: [TelemetryGeneratorService, TelemetryService, ServiceProvider, 
                 { provide: NavController, useValue: NavControllerStub },
                 { provide: Network, useValue: NetworkStub },
                 { provide: PopoverController, useValue: PopoverControllerStub },

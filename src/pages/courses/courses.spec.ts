@@ -42,8 +42,11 @@ import { TelemetryGeneratorService } from "../../service/telemetry-generator.ser
 import { CourseUtilService } from "../../service/course-util.service";
 import { mockRes } from "../../mock.spec.data";
 import { mockRes as CourseMock } from '../courses/courses.spec.data';
+import { QRScannerResultHandler } from "../qrscanner/qrscanresulthandler.service";
+import { CommonUtilService } from "../../service/common-util.service";
+import { FormAndFrameworkUtilService } from "../profile/formandframeworkutil.service";
 declare let GenieSDK: any;
-describe('ResourcesPage Component', () => {
+describe('Courses Component', () => {
     let component: CoursesPage;
     let fixture: ComponentFixture<CoursesPage>;
     let translateService: TranslateService;
@@ -76,8 +79,8 @@ describe('ResourcesPage Component', () => {
 
             ],
             providers: [
-                ContentService, TelemetryService, TelemetryGeneratorService, CourseService, ShareUtil, SunbirdQRScanner,
-                Network, AppVersion, CourseUtilService,
+                ContentService, TelemetryService, TelemetryGeneratorService, CourseService, ShareUtil, SunbirdQRScanner, QRScannerResultHandler,
+                Network, AppVersion, CourseUtilService, CommonUtilService, FormAndFrameworkUtilService,
                 { provide: FileUtil, useClass: FileUtilMock },
                 { provide: NavController, useClass: NavMock },
                 { provide: Events, useClass: Events },
