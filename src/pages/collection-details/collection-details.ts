@@ -61,6 +61,11 @@ export class CollectionDetailsPage {
   cardData: any;
 
   /**
+     * Contains Parent Content Details
+     */
+  parentContent: any;
+
+  /**
    * To hold identifier
    */
   identifier: string;
@@ -176,7 +181,7 @@ export class CollectionDetailsPage {
   profileType: string = '';
   public corRelationList: Array<CorrelationData>;
   public shouldGenerateEndTelemetry: boolean = false;
-  public source : string = "";
+  public source: string = "";
 
   @ViewChild(Navbar) navBar: Navbar;
   constructor(public navCtrl: NavController,
@@ -203,8 +208,8 @@ export class CollectionDetailsPage {
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.didViewLoad = false;
       this.generateEndEvent(this.objId, this.objType, this.objVer);
-      if(this.shouldGenerateEndTelemetry){
-        this.generateQRSessionEndEvent(this.source,this.cardData.identifier);
+      if (this.shouldGenerateEndTelemetry) {
+        this.generateQRSessionEndEvent(this.source, this.cardData.identifier);
       }
       this.navCtrl.pop();
       this.backButtonFunc();
@@ -350,7 +355,7 @@ export class CollectionDetailsPage {
         // this.contentDetail.size = data.result.sizeOnDevice;
         console.log("Content locally available. Looking for is update available or not...");
         // data.result.isUpdateAvailable = true;
-        if (data.result.isUpdateAvailable && !this.isUpdateAvailable){
+        if (data.result.isUpdateAvailable && !this.isUpdateAvailable) {
           console.log('update is available. Lets start import again...');
           this.isUpdateAvailable = true;
           this.showLoading = true;
@@ -463,7 +468,7 @@ export class CollectionDetailsPage {
           if (this.queuedIdentifiers.length === 0) {
             this.showMessage(this.translateMessage("UNABLE_TO_FETCH_CONTENT"), false);
           }
-        } else if(data.result && data.result[0].status === 'NOT_FOUND') {
+        } else if (data.result && data.result[0].status === 'NOT_FOUND') {
           this.showLoading = false;
           this.showChildrenLoader = false;
           this.childrenData.length = 0;
@@ -553,8 +558,8 @@ export class CollectionDetailsPage {
     this.navBar.backButtonClick = (e: UIEvent) => {
       this.didViewLoad = false;
       this.generateEndEvent(this.objId, this.objType, this.objVer);
-      if(this.shouldGenerateEndTelemetry){
-        this.generateQRSessionEndEvent(this.source,this.cardData.identifier);
+      if (this.shouldGenerateEndTelemetry) {
+        this.generateQRSessionEndEvent(this.source, this.cardData.identifier);
       }
       this.navCtrl.pop();
       this.backButtonFunc();
@@ -572,7 +577,10 @@ export class CollectionDetailsPage {
       let depth = this.navParams.get('depth');
       this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
       this.source = this.navParams.get('source');
-      
+
+      //check for parent content
+      this.parentContent = this.navParams.get('parentContent');
+
       if (depth !== undefined) {
         this.depth = depth;
         this.showDownloadBtn = false;
@@ -696,8 +704,12 @@ export class CollectionDetailsPage {
               this.downloadPercentage = 0;
               this.updateSavedResources();
             }
+          } else if (this.parentContent) {
+            //this condition is for when the child content update is available and we have downloaded parent content
+            // but we have to refresh only the child content.
+            this.setContentDetails(this.identifier, false);
           } else {
-            if (this.isUpdateAvailable){
+            if (this.isUpdateAvailable) {
               console.log('Done with auto import. Lets make getContentDetails api call with refreshContentDetails false');
               this.setContentDetails(this.identifier, false);
             } else {
@@ -706,6 +718,21 @@ export class CollectionDetailsPage {
               this.contentDetail.isAvailableLocally = true;
             }
           }
+        }
+
+        //For content update available
+        let hierarchyInfo = this.cardData.hierarchyInfo ? this.cardData.hierarchyInfo : null;
+
+        if (res.data && res.type === 'contentUpdateAvailable' && hierarchyInfo === null) {
+          this.zone.run(() => {
+            if (this.parentContent) {
+              let parentIdentifier = this.parentContent.contentId || this.parentContent.identifier;
+              this.showLoading = true;
+              this.importContent([parentIdentifier], false);
+            } else {
+              this.setContentDetails(this.identifier, false);
+            }
+          });
         }
       });
     });
