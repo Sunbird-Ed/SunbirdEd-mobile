@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { PopoverController, ViewController, NavParams, Platform } from "ionic-angular";
+import { PopoverController, ViewController, NavParams, Platform, Events } from "ionic-angular";
 import { AppGlobalService } from "../../service/app-global.service";
 import * as _ from 'lodash';
 import { TranslateService } from "@ngx-translate/core";
@@ -42,7 +42,8 @@ export class PageFilter {
     private platform: Platform,
     private frameworkService: FrameworkService,
     private translate: TranslateService,
-    private appGlobalService: AppGlobalService
+    private appGlobalService: AppGlobalService,
+    private events: Events
   ) {
     this.callback = navParams.get('callback');
 
@@ -52,6 +53,10 @@ export class PageFilter {
       this.viewCtrl.dismiss();
       this.backButtonFunc();
     }, 10);
+
+    this.events.subscribe('onAfterLanguageChange:update', (data) => {
+      this.onLanguageChange();
+    })
   }
 
   getTranslatedValues(translations) {
@@ -61,10 +66,32 @@ export class PageFilter {
     }
     return "";
   }
+
+  onLanguageChange() {
+    if (this.filters) {
+      this.filters.forEach(filter => {
+        if (filter.code === 'contentType' && filter.hasOwnProperty('resourceTypeValues')) {
+          let resourceTypes = [];
+          filter.resourceTypeValues.forEach(element => {
+            resourceTypes.push(this.getTranslatedValues(JSON.parse(element.translations) || element.name));
+          });
+          filter.values = resourceTypes;
+          if (filter.hasOwnProperty('selected')) {
+            let translatedSected = [];
+            filter.selectedValuesIndices.forEach(selectedIndex => {
+              translatedSected.push(filter.values[selectedIndex]);
+            });
+            filter.selected = translatedSected;
+          }
+        }
+      });
+    }
+  }
+
   initFilterValues() {
     this.filters = this.navParams.get('filter');
 
-    if(this.filters) {
+    if (this.filters) {
       this.filters.forEach(element => {
         element.name = this.getTranslatedValues(JSON.parse(element.translations || element.name));
       });
@@ -140,14 +167,14 @@ export class PageFilter {
 
       let filters = _.cloneDeep(this.facetsFilter);
       filters.forEach(element => {
-        if(element.code === 'contentType' && element.selectedValuesIndices && element.selectedValuesIndices.length) {
+        if (element.code === 'contentType' && element.selectedValuesIndices && element.selectedValuesIndices.length) {
           let resourceTypeSelectedValues = [];
           element.resourceTypeValues.forEach((item, index) => {
-            if(element.selectedValuesIndices.includes(index)) {
+            if (element.selectedValuesIndices.includes(index)) {
               resourceTypeSelectedValues.push(item.code);
             }
           });
-          this.pagetAssemblefilter[element.name] = resourceTypeSelectedValues
+          this.pagetAssemblefilter[element.name] = resourceTypeSelectedValues;
         }
       });
       this.callback.applyFilter(this.pagetAssemblefilter, this.facetsFilter);
