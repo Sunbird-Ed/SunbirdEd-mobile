@@ -627,11 +627,11 @@ export class CoursesPage implements OnInit {
         //TODO: Need to add loader
         this.formAndFrameworkUtilService.getCourseFilterConfig().then((data) => {
         filterOptions['filter'] = data;
-        this.popCtrl.create(PageFilter, filterOptions, { cssClass: 'resource-filter' }).present();
       }).catch((error) => {
         console.error("Error Occurred!");
       });
     }
+    this.popCtrl.create(PageFilter, filterOptions, { cssClass: 'resource-filter' }).present();
   }
 
   showMessage(message) {

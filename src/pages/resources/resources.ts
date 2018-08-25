@@ -656,9 +656,10 @@ export class ResourcesPage implements OnInit {
 		} else {
 			this.formAndFrameworkUtilService.getLibraryFilterConfig().then((data) => {
 				filterOptions['filter'] = data;
-				this.popCtrl.create(PageFilter, filterOptions, { cssClass: 'resource-filter' }).present();
 			});
 		}
+
+		this.popCtrl.create(PageFilter, filterOptions, { cssClass: 'resource-filter' }).present();
 	}
 
 	checkEmptySearchResult(isAfterLanguageChange = false) {

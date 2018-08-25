@@ -54,19 +54,32 @@ export class PageFilter {
     }, 10);
   }
 
+  getTranslatedValues(translations) {
+
+    if (translations.hasOwnProperty(this.translate.currentLang)) {
+      return translations[this.translate.currentLang];
+    }
+    return "";
+  }
   initFilterValues() {
     this.filters = this.navParams.get('filter');
 
+    if(this.filters) {
+      this.filters.forEach(element => {
+        element.name = this.getTranslatedValues(JSON.parse(element.translations || element.name));
+      });
+    }
+
     this.filters.forEach(filter => {
-      if (filter.code === 'contentType') {
-        let temp = [];
+      if (filter.code === 'contentType' && !filter.hasOwnProperty('resourceTypeValues')) {
+        filter.resourceTypeValues = _.cloneDeep(filter.values);
+        let resourceTypes = [];
         filter.values.forEach(element => {
-          temp.push(element.name);
+          resourceTypes.push(this.getTranslatedValues(JSON.parse(element.translations) || element.name));
         });
-        filter.values = temp;
+        filter.values = resourceTypes;
       }
     });
-
 
     let syllabus: Array<string> = this.appGlobalService.getCurrentUser().syllabus;
     let frameworkId = (syllabus && syllabus.length > 0) ? syllabus[0] : undefined;
@@ -89,8 +102,8 @@ export class PageFilter {
       currentCategory: currentCategory,
       frameworkId: frameworkId,
       selectedLanguage: this.translate.currentLang
-      
-      
+
+
     };
 
     this.frameworkService.getCategoryData(req,
@@ -115,7 +128,7 @@ export class PageFilter {
 
   getSelectedOptionCount(facet) {
     if (facet.selected && facet.selected.length > 0) {
-      this.pagetAssemblefilter[facet.name] = facet.selected
+      this.pagetAssemblefilter[facet.name] = facet.selected;
       return `${facet.selected.length} ` + this.translateMessage('FILTER_ADDED');
     }
 
@@ -124,6 +137,19 @@ export class PageFilter {
 
   apply() {
     if (this.callback) {
+
+      let filters = _.cloneDeep(this.facetsFilter);
+      filters.forEach(element => {
+        if(element.code === 'contentType' && element.selectedValuesIndices && element.selectedValuesIndices.length) {
+          let resourceTypeSelectedValues = [];
+          element.resourceTypeValues.forEach((item, index) => {
+            if(element.selectedValuesIndices.includes(index)) {
+              resourceTypeSelectedValues.push(item.code);
+            }
+          });
+          this.pagetAssemblefilter[element.name] = resourceTypeSelectedValues
+        }
+      });
       this.callback.applyFilter(this.pagetAssemblefilter, this.facetsFilter);
     }
     this.viewCtrl.dismiss();
