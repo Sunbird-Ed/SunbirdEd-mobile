@@ -30,7 +30,7 @@
       <span float-start class="scroll-heading">
         {{ 'COURSES_IN_PROGRESS' | translate }}
       </span>
-      <span float-end class="view-all-link" *ngIf="enrolledCourse && enrolledCourse.length" (click)="viewMoreEnrolledCourses()">
+      <span float-end class="view-all-link" *ngIf="enrolledCourse && enrolledCourse.length" (click)="navigateToViewMorContentsPage(true)">
         <a>{{ 'VIEW_ALL' | translate }}</a>
       </span>
     </div>
@@ -48,7 +48,7 @@
       <div class="course-scroll-holder">
         <div class="item padding-11">
           <span float-start class="scroll-heading">{{items?.name}}</span>
-          <span float-end class="view-all-link" (click)="viewAllCourses(items.searchQuery, items.name)">
+          <span float-end class="view-all-link" (click)="navigateToViewMorContentsPage(false,items.searchQuery, items.name)">
             <a>{{ 'VIEW_ALL' | translate }}</a>
           </span>
         </div>
@@ -74,10 +74,10 @@
       <b>{{ 'NO_INTERNET_TITLE' | translate }}</b>
     </h6>
     <p color="dark_gray">{{ 'OFFLINE_WARNING' | translate }}</p>
-    <b ion-text text-uppercase color="primary" (click)="checkNetworkStatus(true); buttonClick();">{{'RETRY_ACTION' | translate}}</b>
+    <b ion-text text-uppercase color="primary" (click)="retryShowingPopularCourses(true); showOfflineWarning();">{{'RETRY_ACTION' | translate}}</b>
   </div>
   <div *ngIf="showSignInCard" class="signin-card-bg">
-    <sign-in-card (valueChange)="buttonClick($event)"></sign-in-card>
+    <sign-in-card (valueChange)="showOfflineWarning($event)"></sign-in-card>
   </div>
 </ion-content>
 <ion-backdrop class="loading-backdrop" *ngIf="showOverlay" text-center>

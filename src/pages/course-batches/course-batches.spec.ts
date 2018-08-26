@@ -10,15 +10,13 @@ import {
     AuthService, FrameworkModule, CourseService} from "sunbird";
 import {
     NavParamsMock,
-    NavMock, TranslateLoaderMock
+    NavMock, TranslateLoaderMock,ToastControllerMockNew
 } from '../../../test-config/mocks-ionic';
 
-import { ToastControllerMock
-     } from 'ionic-mocks';
 
 import { mockRes } from '../course-batches/course-batches.spec.data';
 
-describe('ContentDetailsPage Component', () => {
+describe('CourseBatchPage Component', () => {
     let component: CourseBatchesPage;
     let fixture: ComponentFixture<CourseBatchesPage>;
 
@@ -37,7 +35,7 @@ describe('ContentDetailsPage Component', () => {
                 CourseService,
                 { provide: NavController, useClass: NavMock },
                 { provide: NavParams, useClass: NavParamsMock },
-                { provide: ToastController, useFactory: () => ToastControllerMock.instance() },
+                { provide: ToastController, useFactory: () => ToastControllerMockNew.instance() },
             ]
         })
     }));

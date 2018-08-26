@@ -50,6 +50,7 @@ import Driver from 'driver.js';
 import { CourseUtilService } from '../../service/course-util.service';
 import { updateFilterInSearchQuery } from '../../util/filter.util';
 import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
+import { CommonUtilService } from '../../service/common-util.service';
 
 @IonicPage()
 @Component({
@@ -151,7 +152,8 @@ export class CoursesPage implements OnInit {
     private network: Network,
     private appGlobal: AppGlobalService,
     private courseUtilService: CourseUtilService,
-    private formAndFrameworkUtilService: FormAndFrameworkUtilService
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
+    private commonUtilService: CommonUtilService
   ) {
 
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE, (val: string) => {
@@ -257,12 +259,12 @@ export class CoursesPage implements OnInit {
       undefined, undefined
     ));
 
-    this.appGlobal.generateConfigInteractEvent(PageId.COURSES,this.isOnBoardingCardCompleted);
+    this.appGlobal.generateConfigInteractEvent(PageId.COURSES, this.isOnBoardingCardCompleted);
     this.preference.getString('show_app_walkthrough_screen', (value) => {
       if (value === 'true') {
         const driver = new Driver({
           allowClose: true,
-          closeBtnText: this.translateMessage('DONE'),
+          closeBtnText: this.commonUtilService.translateMessage('DONE'),
           showButtons: true
         });
 
@@ -271,10 +273,10 @@ export class CoursesPage implements OnInit {
           driver.highlight({
             element: '#qrIcon',
             popover: {
-              title: this.translateMessage('ONBOARD_SCAN_QR_CODE'),
-              description: "<img src='assets/imgs/ic_scanqrdemo.png' /><p>" + this.translateMessage('ONBOARD_SCAN_QR_CODE_DESC', this.appLabel) + "</p>",
+              title: this.commonUtilService.translateMessage('ONBOARD_SCAN_QR_CODE'),
+              description: "<img src='assets/imgs/ic_scanqrdemo.png' /><p>" + this.commonUtilService.translateMessage('ONBOARD_SCAN_QR_CODE_DESC', this.appLabel) + "</p>",
               showButtons: true,         // Do not show control buttons in footer
-              closeBtnText: this.translateMessage('DONE'),
+              closeBtnText: this.commonUtilService.translateMessage('DONE'),
             }
           });
 
@@ -290,25 +292,6 @@ export class CoursesPage implements OnInit {
     });
   }
 
-  viewMoreEnrolledCourses() {
-    this.navCtrl.push(ViewMoreActivityPage, {
-      headerTitle: 'COURSES_IN_PROGRESS',
-      userId: this.userId,
-      pageName: 'course.EnrolledCourses'
-    })
-  }
-
-  viewAllCourses(searchQuery, headerTitle) {
-
-    searchQuery = updateFilterInSearchQuery(searchQuery, this.appliedFilter, this.profile, this.mode, this.isFilterApplied, this.appGlobal);
-
-    this.navCtrl.push(ViewMoreActivityPage, {
-      headerTitle: headerTitle,
-      pageName: 'course.PopularContent',
-      requestParams: searchQuery
-    })
-  }
-
   /**
    * To get enrolled course(s) of logged-in user.
    *
@@ -316,7 +299,6 @@ export class CoursesPage implements OnInit {
    */
   getEnrolledCourses(returnRefreshedCourses: boolean = false): void {
     this.spinner(true);
-    console.log('making api call to get enrolled courses');
 
     let option = {
       userId: this.userId,
@@ -329,7 +311,6 @@ export class CoursesPage implements OnInit {
         data = JSON.parse(data);
         this.ngZone.run(() => {
           this.enrolledCourse = data.result.courses ? data.result.courses : [];
-          console.log('enrolled courses details', data);
           this.spinner(false);
         });
       }
@@ -346,7 +327,6 @@ export class CoursesPage implements OnInit {
    */
   getPopularAndLatestCourses(pageAssembleCriteria: PageAssembleCriteria = undefined): void {
     this.pageApiLoader = true;
-
     if (pageAssembleCriteria == undefined) {
       let criteria = new PageAssembleCriteria();
       criteria.name = "Course";
@@ -354,7 +334,6 @@ export class CoursesPage implements OnInit {
 
       if (this.appliedFilter) {
         let filterApplied = false;
-
         Object.keys(this.appliedFilter).forEach(key => {
           if (this.appliedFilter[key].length > 0) {
             filterApplied = true;
@@ -364,18 +343,12 @@ export class CoursesPage implements OnInit {
         if (filterApplied) {
           criteria.mode = "hard";
         }
-
         criteria.filters = this.appliedFilter;
       }
-
       pageAssembleCriteria = criteria;
     }
-
     this.mode = pageAssembleCriteria.mode;
-
-
     if (this.profile && !this.isFilterApplied) {
-
       if (!pageAssembleCriteria.filters) {
         pageAssembleCriteria.filters = new PageAssembleFilter();
       }
@@ -427,9 +400,9 @@ export class CoursesPage implements OnInit {
         this.pageApiLoader = false;
         if (error === 'CONNECTION_ERROR') {
           this.isNetworkAvailable = false;
-          this.getMessageByConst('ERROR_NO_INTERNET_MESSAGE');
+          this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
         } else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
-          this.getMessageByConst('ERROR_FETCHING_DATA');
+          this.commonUtilService.showToast('ERROR_FETCHING_DATA');
         }
       });
     });
@@ -558,11 +531,7 @@ export class CoursesPage implements OnInit {
   }
 
   search() {
-    const contentType: Array<string> = [
-      "Course",
-    ];
-
-    this.navCtrl.push(SearchPage, { contentType: contentType, source: PageId.COURSES })
+    this.navCtrl.push(SearchPage, { contentType: ["Course"], source: PageId.COURSES })
   }
 
   ionViewDidEnter() {
@@ -624,8 +593,8 @@ export class CoursesPage implements OnInit {
     if (this.courseFilter) {
       filterOptions['filter'] = this.courseFilter;
     } else {
-        //TODO: Need to add loader
-        this.formAndFrameworkUtilService.getCourseFilterConfig().then((data) => {
+      //TODO: Need to add loader
+      this.formAndFrameworkUtilService.getCourseFilterConfig().then((data) => {
         filterOptions['filter'] = data;
       }).catch((error) => {
         console.error("Error Occurred!");
@@ -634,18 +603,6 @@ export class CoursesPage implements OnInit {
     this.popCtrl.create(PageFilter, filterOptions, { cssClass: 'resource-filter' }).present();
   }
 
-  showMessage(message) {
-    let toast = this.toastCtrl.create({
-      message: message,
-      duration: 4000,
-      position: 'bottom'
-    });
-    toast.present();
-  }
-
-  /**
-   *
-   */
   checkEmptySearchResult(isAfterLanguageChange = false) {
     let flags = [];
     _.forEach(this.popularAndLatestCourses, function (value, key) {
@@ -655,33 +612,19 @@ export class CoursesPage implements OnInit {
     });
 
     if (flags.length && _.includes(flags, true)) {
-      console.log('search result found');
     } else {
-      if (!isAfterLanguageChange) this.getMessageByConst('NO_CONTENTS_FOUND');
+      if (!isAfterLanguageChange) this.commonUtilService.showToast('NO_CONTENTS_FOUND', this.isVisible);
     }
   }
 
-  getMessageByConst(constant) {
-    if (!this.isVisible) {
-      return
-    }
-
-    this.translate.get(constant).subscribe(
-      (value: any) => {
-        this.showMessage(value);
-      }
-    );
-  }
-  showNetworkWarning() {
+  showOfflineWarning(isNetAvailable) {
     this.showWarning = true;
     setTimeout(() => {
       this.showWarning = false;
     }, 3000);
   }
-  buttonClick(isNetAvailable) {
-    this.showNetworkWarning();
-  }
-  checkNetworkStatus(showRefresh = false) {
+
+  retryShowingPopularCourses(showRefresh = false) {
     if (this.network.type === 'none') {
       this.isNetworkAvailable = false;
     } else {
@@ -692,63 +635,59 @@ export class CoursesPage implements OnInit {
     }
   }
 
-  /**
-   * Used to Translate message to current Language
-   * @param {string} messageConst - Message Constant to be translated
-   * @returns {string} translatedMsg - Translated Message
-   */
-  translateMessage(messageConst: string, field?: string): string {
-    let translatedMsg = '';
-    this.translate.get(messageConst, { '%s': field }).subscribe(
-      (value: any) => {
-        translatedMsg = value;
-      }
-    );
-    return translatedMsg;
-  }
-
   getContentDetails(content) {
     let identifier = content.contentId || content.identifier;
     this.contentService.getContentDetail({ contentId: identifier }, (data: any) => {
       data = JSON.parse(data);
-      console.log('enrolled course details: ', data);
-      if (data && data.result) {
-        switch (data.result.isAvailableLocally) {
-          case true: {
-            this.showOverlay = false;
-            console.log("Content locally available. Geting child content... @@@");
-            this.navCtrl.push(ContentDetailsPage, {
-              content: { identifier: content.lastReadContentId },
-              depth: '1',
-              contentState: {
-                batchId: content.batchId ? content.batchId : '',
-                courseId: identifier
-              },
-              isResumedCourse: true,
-              isChildContent: true,
-              resumedCourseCardData: content
-            });
-            break;
-          }
-          case false: {
-            this.subscribeGenieEvent();
-            console.log("Content locally not available. Import started... @@@");
-            this.showOverlay = true;
-            this.importContent([identifier], false);
-            break;
-          }
-          default: {
-            console.log("Invalid choice");
-            break;
-          }
-        }
+      if (data && data.result && data.result.isAvailableLocally) {
+        this.showOverlay = false;
+        this.navigateToContentDetailsPage(content);
+      }
+      else {
+        this.subscribeGenieEvent();
+        this.showOverlay = true;
+        this.importContent([identifier], false);
       }
     },
       (error: any) => {
         console.log(error);
-        console.log('Error while getting resumed course data....');
-        this.showMessage(this.translateMessage('ERROR_CONTENT_NOT_AVAILABLE'));
+        this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
       });
+  }
+
+  navigateToViewMorContentsPage(showEnrolledCourses: boolean, searchQuery?: any, headerTitle?: string) {
+    let params;
+    if (showEnrolledCourses) {
+      params = {
+        headerTitle: 'COURSES_IN_PROGRESS',
+        userId: this.userId,
+        pageName: 'course.EnrolledCourses'
+      };
+    }
+    else {
+      searchQuery = updateFilterInSearchQuery(searchQuery, this.appliedFilter, this.profile, this.mode, this.isFilterApplied, this.appGlobal);
+      params = {
+        headerTitle: headerTitle,
+        pageName: 'course.PopularContent',
+        requestParams: searchQuery
+      };
+    }
+    this.navCtrl.push(ViewMoreActivityPage, params);
+  }
+
+  navigateToContentDetailsPage(content) {
+    let identifier = content.contentId || content.identifier;
+    this.navCtrl.push(ContentDetailsPage, {
+      content: { identifier: content.lastReadContentId },
+      depth: '1',
+      contentState: {
+        batchId: content.batchId ? content.batchId : '',
+        courseId: identifier
+      },
+      isResumedCourse: true,
+      isChildContent: true,
+      resumedCourseCardData: content
+    });
   }
 
   importContent(identifiers, isChild) {
@@ -769,7 +708,7 @@ export class CoursesPage implements OnInit {
           });
           if (this.queuedIdentifiers.length === 0) {
             this.showOverlay = false;
-            this.showMessage(this.translateMessage('ERROR_CONTENT_NOT_AVAILABLE'));
+            this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
             console.log('Content not downloaded');
           }
         }
@@ -778,36 +717,23 @@ export class CoursesPage implements OnInit {
       (error: any) => {
         this.ngZone.run(() => {
           this.showOverlay = false;
-          this.showMessage(this.translateMessage('ERROR_CONTENT_NOT_AVAILABLE'));
+          this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
         });
       });
   }
 
 
   subscribeGenieEvent() {
-    let count = 0;
     this.events.subscribe('genie.event', (data) => {
       this.ngZone.run(() => {
-        data = JSON.parse(data);
-        let res = data;
-        console.log('event bus........', res);
+        let res = JSON.parse(data);
         if (res.type === 'downloadProgress' && res.data.downloadProgress) {
           this.downloadPercentage = res.data.downloadProgress === -1 ? 0 : res.data.downloadProgress;
         }
 
         if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport' && this.downloadPercentage === 100) {
           this.showOverlay = false;
-          this.navCtrl.push(ContentDetailsPage, {
-            content: { identifier: this.resumeContentData.lastReadContentId },
-            depth: '1',
-            contentState: {
-              batchId: this.resumeContentData.batchId ? this.resumeContentData.batchId : '',
-              courseId: this.resumeContentData.contentId || this.resumeContentData.identifier
-            },
-            isResumedCourse: true,
-            isChildContent: true,
-            resumedCourseCardData: this.resumeContentData
-          });
+          this.navigateToContentDetailsPage(this.resumeContentData);
         }
       });
     });

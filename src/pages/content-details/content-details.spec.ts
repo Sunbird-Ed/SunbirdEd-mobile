@@ -16,7 +16,7 @@ import { Observable } from 'rxjs/Observable';
 import { NavController, Events, IonicModule, NavParams, ToastController, PopoverController, 
     LoadingController, Platform, IonicApp } from 'ionic-angular';
 
-import { StorageMock, ToastControllerMock, PopoverControllerMock, LoadingControllerMock,
+import { StorageMock, LoadingControllerMock,
     NetworkMock } from 'ionic-mocks';
 
 import {
@@ -25,7 +25,7 @@ import {
 
 import {
     GenieSDKServiceProviderMock, SharedPreferencesMock, FileUtilMock, NavParamsMock,
-    SocialSharingMock, NavMock, TranslateLoaderMock, AuthServiceMock, PlatformMock, MockElementRef 
+    SocialSharingMock, NavMock, TranslateLoaderMock, AuthServiceMock, PopoverControllerMock, MockElementRef, ToastControllerMockNew 
 } from '../../../test-config/mocks-ionic';
 import { ElementRef, Renderer } from '@angular/core';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
@@ -72,8 +72,8 @@ describe('ContentDetailsPage Component', () => {
                 { provide: GenieSDKServiceProvider, useClass: GenieSDKServiceProviderMock },
                 { provide: SharedPreferences, useClass: SharedPreferencesMock },
                 { provide: Storage, useFactory: () => StorageMock.instance() },
-                { provide: ToastController, useFactory: () => ToastControllerMock.instance() },
-                { provide: PopoverController, useFactory: () => PopoverControllerMock.instance() },
+                { provide: ToastController, useFactory: () => ToastControllerMockNew.instance() },
+                { provide: PopoverController, useClass: PopoverControllerMock},
                 { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() }
                 // { provide: Platform, useFactory: () => PlatformMock.instance() }
             ]

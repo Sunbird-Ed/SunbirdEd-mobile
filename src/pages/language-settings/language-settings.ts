@@ -38,13 +38,10 @@ export class LanguageSettingsPage {
     public navCtrl: NavController,
     public navParams: NavParams,
     public translateService: TranslateService,
-    private globalization: Globalization,
     private preferences: SharedPreferences,
-    private telemetryService: TelemetryService,
     private events: Events,
     private zone: NgZone,
     private toastCtrl: ToastController,
-    private appGlobal: AppGlobalService,
     private telemetryGeneratorService:TelemetryGeneratorService
   ) { }
 
@@ -134,7 +131,7 @@ export class LanguageSettingsPage {
       /*       let selectedLanguage = this.languages.find(i => i.code === this.language);
             this.preferences.putString(PreferenceKey.SELECTED_LANGUAGE_CODE, selectedLanguage.code);
             this.preferences.putString(PreferenceKey.SELECTED_LANGUAGE, selectedLanguage.label); */
-      this.btnColor = '#488aff';
+      this.btnColor = '#006DE5';
       this.isLanguageSelected = true;
       this.translateService.use(this.language);
     }
