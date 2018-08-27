@@ -8,6 +8,7 @@ import { TranslateLoader } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 import { App, ViewController } from 'ionic-angular';
 import { ElementRef } from '@angular/core';
+import { CommonUtilService } from '../src/service/common-util.service';
 
 declare let readJSON: any;
 
@@ -180,7 +181,11 @@ export class AppGlobalServiceMock extends AppGlobalService {
 
 }
 
-
+export class EventsMock{
+	subscribe(){
+		return;
+	}
+}
 export class CourseUtilServiceMock extends CourseUtilService { }
 
 export class TranslateServiceStub {
@@ -308,6 +313,23 @@ export class ToastControllerMock {
 class ToastMock extends ViewController {
   present() { };
   dismissAll() { };
+  onDidDismiss() { };
+}
+
+export class ToastMockNew { 
+  public static instance(): any {
+    const instance: any = jasmine.createSpyObj('Toast', ['present', 'dismissAll', 'onDidDismiss', 'setContent', 'setSpinner']);
+    instance.present.and.returnValue(Promise.resolve());
+    return instance;
+  }
+}
+
+export class ToastControllerMockNew { 
+  public static instance(toast?: ToastMock): any {
+    const instance: any = jasmine.createSpyObj('ToastController', ['create']);
+    instance.create.and.returnValue(toast || ToastMockNew.instance());
+    return instance;
+  }
 }
 export class LoadingMock extends ViewController {
   public static instance(): any {
@@ -343,6 +365,58 @@ export class PopoverMock extends ViewController {
     return instance;
   }
 }
+// class PopoverMock {
+
+//   constructor(popoverMock: PopoverMock) {}
+
+//   public present(): void {}
+
+//   public onDismiss(): void {}
+
+//   public onDidDismiss(): void {}
+
+// }
+
+// export class PopoverControllerMock {
+
+//   public create(popoverMock: PopoverMock): PopoverMock {
+//     return new PopoverMock(popoverMock);
+//   }
+// }
+
+class LoadingMockNew {
+
+  private content: string;
+
+  constructor (loadingMock: LoadingMockNew) {
+    this.content = loadingMock.content;
+  }
+
+  public present(): void {
+    console.debug('LoadingMock : present -> ' + this.content);
+  }
+
+  public dismiss(): void {
+    console.debug('LoadingMock : dismiss');
+  }
+
+  public onDidDismiss(): void {
+    console.debug('LoadingMock : onDidDismiss');
+  }
+
+}
+
+export class LoadingControllerMockNew {
+
+  public create(loadingMock: LoadingMockNew): LoadingMockNew {
+    return new LoadingMockNew(loadingMock);
+  }
+}
+
+export class CommonUtilServiceMock extends CommonUtilService {
+  
+}
+
 /*export class ToastMock {
   public static instance(): any {
     let instance = jasmine.createSpyObj('Toast', ['present', 'dismissAll', 'setContent', 'setSpinner', 'onDidDismiss']);

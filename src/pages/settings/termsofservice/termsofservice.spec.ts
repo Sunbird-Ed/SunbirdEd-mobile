@@ -6,27 +6,27 @@ import { TermsofservicePage } from "./termsofservice";
 import { TranslateModule } from "@ngx-translate/core";
 
 describe("TermsofservicePage", () => {
-        let comp: TermsofservicePage;
-        let fixture: ComponentFixture<TermsofservicePage>;
+    let comp: TermsofservicePage;
+    let fixture: ComponentFixture<TermsofservicePage>;
 
-        beforeEach(() => {
-            const navControllerStub = {};
-            const navParamsStub = {};
-            TestBed.configureTestingModule({
-                imports: [TranslateModule.forRoot()],
-                declarations: [TermsofservicePage],
-                schemas: [NO_ERRORS_SCHEMA],
-                providers: [
-                    { provide: NavController, useValue: navControllerStub },
-                    { provide: NavParams, useValue: navParamsStub }
-                ]
-            });
-            fixture = TestBed.createComponent(TermsofservicePage);
-            comp = fixture.componentInstance;
+    beforeEach(() => {
+        const navControllerStub = {};
+        const navParamsStub = {};
+        TestBed.configureTestingModule({
+            imports: [TranslateModule.forRoot()],
+            declarations: [TermsofservicePage],
+            schemas: [NO_ERRORS_SCHEMA],
+            providers: [
+                { provide: NavController, useValue: navControllerStub },
+                { provide: NavParams, useValue: navParamsStub }
+            ]
         });
-
-        it("can load instance", () => {
-            expect(comp).toBeTruthy();
-        });
-
+        fixture = TestBed.createComponent(TermsofservicePage);
+        comp = fixture.componentInstance;
     });
+
+    it("can load instance", () => {
+        expect(comp).toBeTruthy();
+    });
+
+});

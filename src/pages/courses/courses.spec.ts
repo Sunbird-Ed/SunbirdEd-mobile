@@ -7,9 +7,8 @@ import {
 } from 'ionic-angular';
 
 import {
-    StorageMock, ToastControllerMock, PopoverControllerMock, LoadingControllerMock,
-    NetworkMock,
-    EventsMock
+    StorageMock, PopoverControllerMock, LoadingControllerMock,
+    NetworkMock
 } from 'ionic-mocks';
 
 import {
@@ -19,7 +18,7 @@ import {
 
 import {
     GenieSDKServiceProviderMock, SharedPreferencesMock, FileUtilMock, NavParamsMock,
-    SocialSharingMock, NavMock, TranslateLoaderMock, AuthServiceMock, PlatformMock, AppGlobalServiceMock
+    SocialSharingMock, NavMock, TranslateLoaderMock, AuthServiceMock, EventsMock, AppGlobalServiceMock, ToastControllerMockNew
 } from '../../../test-config/mocks-ionic';
 import { PBHorizontal } from "../../component/pbhorizontal/pb-horizontal";
 import { OnboardingCardComponent } from '../../component/onboarding-card/onboarding-card';
@@ -46,7 +45,7 @@ import { QRScannerResultHandler } from "../qrscanner/qrscanresulthandler.service
 import { CommonUtilService } from "../../service/common-util.service";
 import { FormAndFrameworkUtilService } from "../profile/formandframeworkutil.service";
 declare let GenieSDK: any;
-describe('Courses Component', () => {
+describe('CoursesPage Component', () => {
     let component: CoursesPage;
     let fixture: ComponentFixture<CoursesPage>;
     let translateService: TranslateService;
@@ -83,7 +82,7 @@ describe('Courses Component', () => {
                 Network, AppVersion, CourseUtilService, CommonUtilService, FormAndFrameworkUtilService,
                 { provide: FileUtil, useClass: FileUtilMock },
                 { provide: NavController, useClass: NavMock },
-                { provide: Events, useClass: Events },
+                { provide: Events, useClass: EventsMock },
                 { provide: NavParams, useClass: NavParamsMock },
                 { provide: SocialSharing, useClass: SocialSharingMock },
                 { provide: Network, useFactory: () => NetworkMock.instance('none') },
@@ -91,8 +90,7 @@ describe('Courses Component', () => {
                 { provide: AuthService, useClass: AuthServiceMock },
                 { provide: GenieSDKServiceProvider, useClass: GenieSDKServiceProviderMock },
                 { provide: SharedPreferences, useClass: SharedPreferencesMock },
-                { provide: Storage, useFactory: () => StorageMock.instance() },
-                { provide: ToastController, useFactory: () => ToastControllerMock.instance() },
+                { provide: ToastController, useFactory: () => ToastControllerMockNew.instance() },
                 { provide: PopoverController, useFactory: () => PopoverControllerMock.instance() },
                 { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() },
                 { provide: BuildParamService, useValue: buildParamServiceStub },
@@ -197,7 +195,8 @@ describe('Courses Component', () => {
     it('should  invoke getCourseTabData on ngOnInit for guest users in error condition', () => {
         spyOn(component, "getCourseTabData").and.callThrough();
         spyOn(component, "getPopularAndLatestCourses").and.callThrough();
-        spyOn(component, "getMessageByConst").and.callThrough();
+        const commonUtilService = TestBed.get(CommonUtilService);
+        spyOn(commonUtilService, "showToast").and.callThrough();
         const pageService = TestBed.get(PageAssembleService);
         const courseService = TestBed.get(CourseService);
         spyOn(courseService, 'getEnrolledCourses').and.callFake(function (option, success) {
@@ -212,11 +211,59 @@ describe('Courses Component', () => {
         let timeOut = setTimeout(() => {
             expect(component.getCourseTabData).toHaveBeenCalledWith();
             expect(component.isNetworkAvailable).toBe(false);
-            expect(component.getMessageByConst).toHaveBeenCalledWith('ERROR_NO_INTERNET_MESSAGE');
+            expect(commonUtilService.showToast).toHaveBeenCalledWith('ERROR_NO_INTERNET_MESSAGE');
         }, 0);
         clearTimeout(timeOut);
 
     });
 
-    
+
+
+
+    it('should  navigate to ViewMoreActivityPage with gven parameters', () => {
+        let navCtrl = fixture.debugElement.injector.get(NavController);
+        component.userId = "sample_userId";
+        spyOn(navCtrl, 'push');
+        component.navigateToViewMorContentsPage(true);
+        expect(navCtrl.push).toHaveBeenCalledWith(ViewMoreActivityPage, {
+            headerTitle: 'COURSES_IN_PROGRESS',
+            userId: component.userId,
+            pageName: 'course.EnrolledCourses'
+        });
+
+    });
+
+
+    it('should  navigate to ViewMoreActivity page with popular courses search query', () => {
+        let navCtrl = fixture.debugElement.injector.get(NavController);
+        let searchQuery = CourseMock.searchQuery;
+        let headerTitle = "headerTitle";
+        spyOn(navCtrl, 'push');
+        component.navigateToViewMorContentsPage(false, searchQuery, headerTitle);
+        expect(navCtrl.push).toHaveBeenCalledWith(ViewMoreActivityPage, {
+            headerTitle: headerTitle,
+            requestParams: CourseMock.mergedSearchQuery,
+            pageName: 'course.PopularContent'
+        });
+
+    });
+
+    it('should  start QRscanner', () => {
+        let qrScanner = TestBed.get(SunbirdQRScanner);
+        spyOn(qrScanner, 'startScanner');
+        component.scanQRCode();
+        expect(qrScanner.startScanner).toHaveBeenCalled();
+
+    });
+
+    it('should  navigate to SearchPage', () => {
+        let navCtrl = fixture.debugElement.injector.get(NavController);
+        spyOn(navCtrl, 'push');
+        component.search();
+        expect(navCtrl.push).toHaveBeenCalledWith(SearchPage, { contentType: ["Course"], source: PageId.COURSES });
+
+    });
+
+
+
 });

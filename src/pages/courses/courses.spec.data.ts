@@ -12,5 +12,11 @@ export const mockRes = {
   failurepopularCoursesResponse:
   {
     "error":"COONECTION_ERROR"
-  }
+  },
+
+  searchQuery:
+  "{\"request\":{\"filters\":{\"contentType\":[\"Collection\"],\"objectType\":[\"Content\"],\"status\":[\"Live\"]},\"sort_by\":{\"me_averageRating\":\"desc\"},\"limit\":10}}",
+
+  mergedSearchQuery:
+  "{\"request\":{\"filters\":{\"contentType\":[\"Collection\"],\"objectType\":[\"Content\"],\"status\":[\"Live\"]},\"sort_by\":{\"me_averageRating\":\"desc\"},\"limit\":10,\"mode\":\"soft\"}}"
 }

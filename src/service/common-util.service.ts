@@ -8,24 +8,37 @@ export class CommonUtilService {
     constructor(private toastCtrl: ToastController,
         private translate: TranslateService) {
     }
-    showMessage(message: string) {
-        let toast = this.toastCtrl.create({
-            message: message,
-            duration: 3000,
-            position: 'bottom'
-        });
-        toast.present();
-    }
 
-    getMessageByConst(translationKey) {
-        // if (!this.isVisible) {
-        //     return
-        // }
 
+
+    showToast(translationKey , isActive?:boolean) {
+        if (!isActive) {
+            return
+        }
         this.translate.get(translationKey).subscribe(
             (value: any) => {
-                this.showMessage(value);
+                let toast = this.toastCtrl.create({
+                    message: value,
+                    duration: 3000,
+                    position: 'bottom'
+                });
+                toast.present();
             }
         );
+    }
+
+    /**
+   * Used to Translate message to current Language
+   * @param {string} messageConst - Message Constant to be translated
+   * @returns {string} translatedMsg - Translated Message
+   */
+    translateMessage(messageConst: string, field?: string): string {
+        let translatedMsg = '';
+        this.translate.get(messageConst, { '%s': field }).subscribe(
+            (value: any) => {
+                translatedMsg = value;
+            }
+        );
+        return translatedMsg;
     }
 }

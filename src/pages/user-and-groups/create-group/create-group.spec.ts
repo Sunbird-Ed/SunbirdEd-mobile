@@ -5,7 +5,7 @@ import { NavParams } from "ionic-angular";
 import { ToastController } from "ionic-angular";
 import { AppGlobalService } from "../../../service/app-global.service";
 import { FormAndFrameworkUtilService } from "../../profile/formandframeworkutil.service";
-import { GroupService } from "sunbird";
+import { GroupService, SharedPreferences } from "sunbird";
 import { FormBuilder } from "@angular/forms";
 import { TranslateService, TranslateModule } from "@ngx-translate/core";
 import { LoadingController } from "ionic-angular";
@@ -70,6 +70,7 @@ describe("CreateGroupPage", () => {
             schemas: [NO_ERRORS_SCHEMA],
             imports: [TranslateModule.forRoot()],
             providers: [
+                SharedPreferences,
                 { provide: NavController, useValue: navControllerStub },
                 { provide: NavParams, useValue: navParamsStub },
                 // { provide: ToastController, useValue: toastControllerStub },
@@ -188,7 +189,7 @@ describe("CreateGroupPage", () => {
                 return {present: function() {}, dismiss: function() {}}
             })
 
-            comp.groupEditForm.value = {'name': 's', 'class': 'KG', 'syllabus': 'Maths'};
+            comp.groupEditForm.setValue({'name': 's', 'class': 'KG', 'syllabus': 'Maths'});
             // comp.getLoader = jasmine.createSpy().and.callFake(function() {
             //     return {present:function() {}}
             // })

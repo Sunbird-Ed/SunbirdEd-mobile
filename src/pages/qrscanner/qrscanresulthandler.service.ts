@@ -70,9 +70,9 @@ export class QRScannerResultHandler {
             this.navigateToDetailsPage(data.result, this.getCorRelationList(data.result.identifier, QRScannerResultHandler.CORRELATION_TYPE));
         }, (error) => {
             if (this.network.type === 'none') {
-                this.commonUtilService.getMessageByConst('ERROR_NO_INTERNET_MESSAGE');
+                this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
             } else {
-                this.commonUtilService.getMessageByConst('UNKNOWN_QR');
+                this.commonUtilService.showToast('UNKNOWN_QR');
             }
         });
     }

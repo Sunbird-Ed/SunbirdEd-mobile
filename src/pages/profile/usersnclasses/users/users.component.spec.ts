@@ -11,7 +11,7 @@ import {MockPopoverController, MockPopover } from "../../../../mocks";
 import { ActionMenuComponent } from '../../actionmenu/menu.action.component';
 import { TranslateModule } from '@ngx-translate/core';
 
-describe('Page1', () => {
+describe('UsersComponent', () => {
     let de: DebugElement;
     let comp: UsersComponent;
     let fixture: ComponentFixture<UsersComponent>;
@@ -36,9 +36,9 @@ describe('Page1', () => {
         comp = fixture.componentInstance;
     });
 
-    it('should create component', () => expect(comp).toBeDefined());
+    xit('should create component', () => expect(comp).toBeDefined());
 
-    it('should show OverflowMenu', () => {
+    xit('should show OverflowMenu', () => {
         spyOn(comp, 'showMenu');
         spyOn(MockPopoverController.prototype, 'create').and.callThrough();
         spyOn(MockPopover.prototype, 'present');

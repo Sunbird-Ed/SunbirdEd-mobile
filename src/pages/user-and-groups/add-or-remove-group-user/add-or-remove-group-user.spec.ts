@@ -253,7 +253,7 @@ describe("AddOrRemoveGroupUserPage", () => {
             spyOn(navControllerStub, "getByIndex");
             spyOn(navControllerStub, "length");
             //    spyOn(groupServiceStub, "addUpdateProfilesToGroup");
-            spyOn(telemetryGeneratorServiceStub, "generateInteractTelemetry");
+            //spyOn(telemetryGeneratorServiceStub, "generateInteractTelemetry");
             comp.deleteUsersFromGroup();
             expect(comp.getLoader).toHaveBeenCalled();
             expect(comp.getToast).toHaveBeenCalled();

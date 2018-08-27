@@ -201,7 +201,7 @@ describe("LanguageSettingsPage", () => {
             expect(comp.onLanguageSelected).toBeDefined();
 
             comp.language = true;
-            comp.btnColor = '#488aff';
+            comp.btnColor = '#006DE5';
             comp.isLanguageSelected = true;
 
             spyOn(translateServiceStub, "use");
@@ -209,7 +209,7 @@ describe("LanguageSettingsPage", () => {
             comp.onLanguageSelected();
 
             expect(translateServiceStub.use).toHaveBeenCalled();
-            expect(comp.btnColor).toEqual('#488aff');
+            expect(comp.btnColor).toEqual('#006DE5');
             expect(comp.language).toEqual(true);
         });
         it("if the languageSelected is false", () => {
@@ -352,8 +352,8 @@ describe("LanguageSettingsPage", () => {
             const translateServiceStub: TranslateService = fixture.debugElement.injector.get(TranslateService);
 
             comp.isLanguageSelected = true;
-            comp.selectedLanguage.code = false;
-            comp.previousLanguage = true;
+            comp.selectedLanguage.code = 'en';
+            comp.previousLanguage = 'mr';
 
             spyOn(translateServiceStub, "use");
 
@@ -365,8 +365,8 @@ describe("LanguageSettingsPage", () => {
             const translateServiceStub: TranslateService = fixture.debugElement.injector.get(TranslateService);
 
             comp.isLanguageSelected = true;
-            comp.selectedLanguage.code = false;
-            comp.previousLanguage = false;
+            comp.selectedLanguage.code = 'en';
+            comp.previousLanguage = undefined;
 
             spyOn(translateServiceStub, "use");
 
