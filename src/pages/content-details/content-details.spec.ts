@@ -13,19 +13,24 @@ import { AppGlobalService } from '../../service/app-global.service';
 import { Observable } from 'rxjs/Observable';
 
 
-import { NavController, Events, IonicModule, NavParams, ToastController, PopoverController, 
-    LoadingController, Platform, IonicApp } from 'ionic-angular';
+import {
+    NavController, Events, IonicModule, NavParams, ToastController, PopoverController,
+    LoadingController, Platform, IonicApp
+} from 'ionic-angular';
 
-import { StorageMock, ToastControllerMock, PopoverControllerMock, LoadingControllerMock,
-    NetworkMock } from 'ionic-mocks';
+import {
+    StorageMock, LoadingControllerMock,
+    NetworkMock
+} from 'ionic-mocks';
 
 import {
     FileUtil, AuthService, GenieSDKServiceProvider, SharedPreferences, FrameworkModule, BuildParamService,
-    ContentService, TelemetryService, CourseService, ProfileType, ShareUtil } from "sunbird";
+    ContentService, TelemetryService, CourseService, ProfileType, ShareUtil
+} from "sunbird";
 
 import {
-    GenieSDKServiceProviderMock, SharedPreferencesMock, FileUtilMock, NavParamsMock,
-    SocialSharingMock, NavMock, TranslateLoaderMock, AuthServiceMock, PlatformMock, MockElementRef 
+    GenieSDKServiceProviderMock, SharedPreferencesMock, FileUtilMock, NavParamsMock, ToastControllerMock, PopoverControllerMock,
+    SocialSharingMock, NavMock, TranslateLoaderMock, AuthServiceMock, PlatformMock, MockElementRef
 } from '../../../test-config/mocks-ionic';
 import { ElementRef, Renderer } from '@angular/core';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
@@ -40,7 +45,7 @@ describe('ContentDetailsPage Component', () => {
     //const mockNgZone = jasmine.createSpyObj('mockNgZone', ['run', 'runOutsideAngular']);
     //mockNgZone.run.and.callFake(fn => fn());
 
-    const rendererMock = jasmine.createSpyObj('rendererMock', ['setElementClass']); 
+    const rendererMock = jasmine.createSpyObj('rendererMock', ['setElementClass']);
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -57,10 +62,10 @@ describe('ContentDetailsPage Component', () => {
                 Ionic2RatingModule
             ],
             providers: [
-                ContentService, TelemetryService, CourseService, ShareUtil, IonicApp, Renderer, TelemetryGeneratorService, 
+                ContentService, TelemetryService, CourseService, ShareUtil, IonicApp, Renderer, TelemetryGeneratorService,
                 // { provide: Platform, useClass: PlatformMock },
-                {provide: Renderer, useValue: rendererMock},
-                {provide: ElementRef, useClass: MockElementRef},
+                { provide: Renderer, useValue: rendererMock },
+                { provide: ElementRef, useClass: MockElementRef },
                 { provide: FileUtil, useClass: FileUtilMock },
                 { provide: NavController, useClass: NavMock },
                 { provide: Events, useClass: Events },
@@ -72,7 +77,7 @@ describe('ContentDetailsPage Component', () => {
                 { provide: GenieSDKServiceProvider, useClass: GenieSDKServiceProviderMock },
                 { provide: SharedPreferences, useClass: SharedPreferencesMock },
                 { provide: Storage, useFactory: () => StorageMock.instance() },
-                { provide: ToastController, useFactory: () => ToastControllerMock.instance() },
+                { provide: ToastController, useClass: ToastControllerMock },
                 { provide: PopoverController, useFactory: () => PopoverControllerMock.instance() },
                 { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() }
                 // { provide: Platform, useFactory: () => PlatformMock.instance() }
@@ -106,7 +111,6 @@ describe('ContentDetailsPage Component', () => {
         component.showMessage('Test', false);
         fixture.detectChanges();
         expect(component.showMessage).toHaveBeenCalled();
-        expect(component.toastCtrl.create).toHaveBeenCalled();
     });
 
     it('should start content downloading', () => {
@@ -116,7 +120,7 @@ describe('ContentDetailsPage Component', () => {
         component.isChildContent = true;
         spyOn(component, 'downloadContent').and.callThrough();
         spyOn(component, 'importContent').and.callThrough();
-        spyOn(contentService, 'importContent').and.callFake(function({}, success, error){
+        spyOn(contentService, 'importContent').and.callFake(function ({ }, success, error) {
             let data = JSON.stringify((mockRes.importContentResponse))
             return success(data);
         });
@@ -131,7 +135,7 @@ describe('ContentDetailsPage Component', () => {
         const contentService = TestBed.get(ContentService);
         spyOn(component, 'importContent').and.callThrough();
         spyOn(component, 'showMessage').and.callThrough();
-        spyOn(contentService, 'importContent').and.callFake(function({}, success, error){
+        spyOn(contentService, 'importContent').and.callFake(function ({ }, success, error) {
             let data = JSON.stringify((mockRes.importContentResponse))
             return error(data);
         });
@@ -157,7 +161,7 @@ describe('ContentDetailsPage Component', () => {
         component.content = {};
         const contentService = TestBed.get(ContentService);
         spyOn(component, 'cancelDownload').and.callThrough();
-        spyOn(contentService, 'cancelDownload').and.callFake(function(identifier, success, error){
+        spyOn(contentService, 'cancelDownload').and.callFake(function (identifier, success, error) {
             return success({});
         });
         component.cancelDownload();
@@ -171,8 +175,8 @@ describe('ContentDetailsPage Component', () => {
         component.content = {};
         const contentService = TestBed.get(ContentService);
         spyOn(component, 'cancelDownload').and.callThrough();
-        spyOn(contentService, 'cancelDownload').and.callFake(function(identifier, success, error){
-            return error({status: false});
+        spyOn(contentService, 'cancelDownload').and.callFake(function (identifier, success, error) {
+            return error({ status: false });
         });
         component.cancelDownload();
         fixture.detectChanges();
@@ -225,7 +229,7 @@ describe('ContentDetailsPage Component', () => {
         const contentService = TestBed.get(ContentService);
         spyOn(component, 'setContentDetails').and.callThrough();
         spyOn(component, 'extractApiResponse').and.callThrough();
-        spyOn(contentService, 'getContentDetail').and.callFake(function(option, success, error){
+        spyOn(contentService, 'getContentDetail').and.callFake(function (option, success, error) {
             let data = JSON.stringify((mockRes.contentDetailsResponse))
             return success(data);
         });
@@ -247,7 +251,7 @@ describe('ContentDetailsPage Component', () => {
         spyOn(navParams, 'get').and.callThrough();
         spyOn(component, 'setContentDetails').and.callThrough();
         const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'getContentDetail').and.callFake(function(option, success, error){
+        spyOn(contentService, 'getContentDetail').and.callFake(function (option, success, error) {
             let data = JSON.stringify((mockRes.contentDetailsResponse))
             return success(data);
         })
@@ -278,7 +282,7 @@ describe('ContentDetailsPage Component', () => {
         navParams.data['contentState'] = stateData;
         spyOn(component, 'updateContentProgress').and.callThrough();
         spyOn(navParams, 'get').and.callThrough();
-        spyOn(courseService, 'updateContentState').and.callFake(function({}, success, error){
+        spyOn(courseService, 'updateContentState').and.callFake(function ({ }, success, error) {
             return success({});
         });
         component.updateContentProgress();
@@ -303,7 +307,7 @@ describe('ContentDetailsPage Component', () => {
         let mockData = mockRes.importContentDownloadProgressResponse
         spyOn(component, 'subscribeGenieEvent').and.callThrough();
         const event = TestBed.get(Events);
-        spyOn(event, 'subscribe').and.callFake(function({}, success){
+        spyOn(event, 'subscribe').and.callFake(function ({ }, success) {
             return success(JSON.stringify(mockData));
         });
         component.subscribeGenieEvent();
@@ -323,7 +327,7 @@ describe('ContentDetailsPage Component', () => {
         spyOn(component, 'setContentDetails').and.callThrough();
         // To update saved resources
         spyOn(event, 'publish').and.callThrough();
-        spyOn(event, 'subscribe').and.callFake(function({}, success){
+        spyOn(event, 'subscribe').and.callFake(function ({ }, success) {
             return success(JSON.stringify(mockData));
         });
         // Call component function
@@ -345,7 +349,7 @@ describe('ContentDetailsPage Component', () => {
     it('should check profile type. ProfileType should be TEACHER', () => {
         const sharedPreferences = TestBed.get(SharedPreferences);
         spyOn(component, 'checkCurrentUserType').and.callThrough();
-        spyOn(sharedPreferences, 'getString').and.callFake(function({}, success){
+        spyOn(sharedPreferences, 'getString').and.callFake(function ({ }, success) {
             return success(ProfileType.TEACHER);
         });
         component.checkCurrentUserType();
@@ -354,12 +358,12 @@ describe('ContentDetailsPage Component', () => {
         expect(sharedPreferences.getString).toHaveBeenCalled();
         expect(component.profileType).toEqual(ProfileType.TEACHER);
         expect(component.profileType).not.toBe(ProfileType.STUDENT);
-    }); 
+    });
 
     it('should check profile type. ProfileType should be STUDENT', () => {
         const sharedPreferences = TestBed.get(SharedPreferences);
         spyOn(component, 'checkCurrentUserType').and.callThrough();
-        spyOn(sharedPreferences, 'getString').and.callFake(function({}, success){
+        spyOn(sharedPreferences, 'getString').and.callFake(function ({ }, success) {
             return success(ProfileType.STUDENT);
         });
         component.checkCurrentUserType();
@@ -381,7 +385,7 @@ describe('ContentDetailsPage Component', () => {
 
         spyOn(socialShare, 'share').and.returnValues({})
         spyOn(component, 'share').and.callThrough();
-        spyOn(shareUtil, 'exportEcar').and.callFake(function(identifier, success){
+        spyOn(shareUtil, 'exportEcar').and.callFake(function (identifier, success) {
             return success(devicePath);
         })
         component.share();
@@ -401,7 +405,7 @@ describe('ContentDetailsPage Component', () => {
 
         spyOn(socialShare, 'share').and.returnValues({})
         spyOn(component, 'share').and.callThrough();
-        spyOn(shareUtil, 'exportEcar').and.callFake(function(identifier, success, error){
+        spyOn(shareUtil, 'exportEcar').and.callFake(function (identifier, success, error) {
             return error();
         })
         component.share();

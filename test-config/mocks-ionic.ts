@@ -6,7 +6,7 @@ import { AuthService, ContainerService, PermissionService, TelemetryService, Gen
 import { ImageLoaderConfig } from "ionic-image-loader";
 import { TranslateLoader } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
-import { App } from 'ionic-angular';
+import { App, ViewController } from 'ionic-angular';
 import { ElementRef } from '@angular/core';
 
 declare let readJSON: any;
@@ -123,11 +123,11 @@ export class NavMock {
     return;
   }
 
-  public length(): any{
+  public length(): any {
     return;
   }
 
-  public insert(): any{
+  public insert(): any {
     return;
   }
 
@@ -305,15 +305,15 @@ export class ToastControllerMock {
   };
 }
 
-class ToastMock {
+class ToastMock extends ViewController {
   present() { };
   dismissAll() { };
 }
-export class LoadingMock {
+export class LoadingMock extends ViewController {
   public static instance(): any {
     let instance = jasmine.createSpyObj('Loading', ['present', 'onDidDismiss', 'dismissAll', 'setContent', 'setSpinner']);
     instance.present.and.returnValue(Promise.resolve());
-   // instance.onDidDismiss.and.returnValue(Promise.resolve());
+    // instance.onDidDismiss.and.returnValue(Promise.resolve());
     return instance;
   }
 }
@@ -323,6 +323,23 @@ export class LoadingControllerMock {
     let instance = jasmine.createSpyObj('LoadingController', ['create']);
     instance.create.and.returnValue(loading || LoadingMock.instance());
 
+    return instance;
+  }
+}
+
+export class PopoverControllerMock {
+  public static instance(popOver?: PopoverMock): any {
+    let instance = jasmine.createSpyObj('LoadingController', ['create']);
+    instance.create.and.returnValue(popOver || PopoverMock.instance());
+
+    return instance;
+  }
+}
+
+export class PopoverMock extends ViewController {
+  public static instance(): any {
+    let instance = jasmine.createSpyObj('Loading', ['present', 'onDidDismiss', 'dismissAll', 'setContent', 'setSpinner']);
+    instance.present.and.returnValue(Promise.resolve());
     return instance;
   }
 }

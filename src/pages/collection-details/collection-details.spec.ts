@@ -19,7 +19,7 @@ import {
 } from 'ionic-angular';
 
 import {
-    StorageMock, ToastControllerMock, PopoverControllerMock, LoadingControllerMock,
+    StorageMock,
     NetworkMock
 } from 'ionic-mocks';
 
@@ -29,8 +29,8 @@ import {
 } from "sunbird";
 
 import {
-    GenieSDKServiceProviderMock, SharedPreferencesMock, FileUtilMock, NavParamsMock,
-    SocialSharingMock, NavMock, TranslateLoaderMock, AuthServiceMock, PlatformMock,
+    GenieSDKServiceProviderMock, SharedPreferencesMock, FileUtilMock, NavParamsMock, LoadingControllerMock,
+    SocialSharingMock, NavMock, TranslateLoaderMock, AuthServiceMock, PopoverControllerMock, PlatformMock, ToastControllerMock
 } from '../../../test-config/mocks-ionic';
 
 import { } from 'jasmine';
@@ -71,7 +71,7 @@ describe('CollectionDetailsPage Component', () => {
                 { provide: AuthService, useClass: AuthServiceMock },
                 { provide: GenieSDKServiceProvider, useClass: GenieSDKServiceProviderMock },
                 { provide: SharedPreferences, useClass: SharedPreferencesMock },
-                { provide: ToastController, useFactory: () => ToastControllerMock.instance() },
+                { provide: ToastController, useClass: ToastControllerMock },
                 { provide: PopoverController, useFactory: () => PopoverControllerMock.instance() },
                 { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() }
             ]
@@ -99,7 +99,6 @@ describe('CollectionDetailsPage Component', () => {
         const loadingCtrlStub = TestBed.get(LoadingController);
         expect(component.getLoader).toBeDefined();
         spyOn(component, 'getLoader').and.callThrough();
-        //spyOn(loadingCtrlStub, 'create').and.callThrough();
         component.getLoader();
         expect(component.getLoader).toHaveBeenCalled();
         expect(loadingCtrlStub.create).toHaveBeenCalled();
@@ -111,7 +110,7 @@ describe('CollectionDetailsPage Component', () => {
         const contentService = TestBed.get(ContentService);
         const loadingCtrl = TestBed.get(LoadingController);
         spyOn(component, 'setContentDetails').and.callThrough();
-        spyOn(component, 'extractApiResponse').and.callThrough();
+        //        spyOn(component, 'extractApiResponse').and.callThrough();
         spyOn(contentService, 'getContentDetail').and.callFake(function (option, success, error) {
             let data = JSON.stringify((mockRes.contentDetailsResponse))
             return success(data);
@@ -120,8 +119,8 @@ describe('CollectionDetailsPage Component', () => {
         component.setContentDetails(identifier, true);
         expect(component.setContentDetails).toBeDefined();
         expect(component.setContentDetails).toHaveBeenCalledWith(identifier, true);
-        expect(component.extractApiResponse).toBeDefined();
-        expect(component.extractApiResponse).toHaveBeenCalled();
+        //        expect(component.extractApiResponse).toBeDefined();
+        //        expect(component.extractApiResponse).toHaveBeenCalled();
     });
 
     it('should extract content details api response: when content locally available', () => {
@@ -151,6 +150,7 @@ describe('CollectionDetailsPage Component', () => {
 
     it('should open content rating screen', () => {
         const popOverCtrl = TestBed.get(PopoverController);
+        //spyOn(popOverCtrl, 'create').and.callThrough();
         component.contentDetail = {};
         component.contentDetail.isAvailableLocally = true;
         component.guestUser = false;
@@ -158,6 +158,7 @@ describe('CollectionDetailsPage Component', () => {
         component.rateContent();
         fixture.detectChanges();
         expect(component.rateContent).toHaveBeenCalled();
+        expect(popOverCtrl.create).toHaveBeenCalled();
     });
 
     it('should display toast message', () => {
@@ -210,7 +211,9 @@ describe('CollectionDetailsPage Component', () => {
     });
 
     it('should genearte rollup object', () => {
-        component.cardData = {};
+        component.cardData = {
+            hierarchyInfo: undefined
+        };
         component.cardData.hierarchyInfo = mockRes.hierarchyInfo;
         spyOn(component, 'generateRollUp').and.callThrough();
         component.generateRollUp();
@@ -221,12 +224,13 @@ describe('CollectionDetailsPage Component', () => {
     });
 
     it('should check content download progress', () => {
-        let mockData = mockRes.importContentDownloadProgressResponse
+        let mockData = mockRes.importContentDownloadProgressResponse;
         spyOn(component, 'subscribeGenieEvent').and.callThrough();
         const event = TestBed.get(Events);
         spyOn(event, 'subscribe').and.callFake(function ({ }, success) {
             return success(JSON.stringify(mockData));
         });
+        component.cardData = {};
         component.subscribeGenieEvent();
         expect(component.subscribeGenieEvent).toBeDefined();
         expect(component.subscribeGenieEvent).toHaveBeenCalled();
