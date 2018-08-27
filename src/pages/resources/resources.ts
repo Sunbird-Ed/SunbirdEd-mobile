@@ -653,12 +653,16 @@ export class ResourcesPage implements OnInit {
 		// Already apllied filter
 		if (this.resourceFilter) {
 			filterOptions['filter'] = this.resourceFilter;
+			this.openFilterPage(filterOptions);
 		} else {
 			this.formAndFrameworkUtilService.getLibraryFilterConfig().then((data) => {
 				filterOptions['filter'] = data;
+				this.openFilterPage(filterOptions);
 			});
 		}
+	}
 
+	openFilterPage(filterOptions) {
 		this.popCtrl.create(PageFilter, filterOptions, { cssClass: 'resource-filter' }).present();
 	}
 
