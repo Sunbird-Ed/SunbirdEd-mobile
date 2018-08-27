@@ -155,7 +155,7 @@ export class PageFilter {
 
   getSelectedOptionCount(facet) {
     if (facet.selected && facet.selected.length > 0) {
-      this.pagetAssemblefilter[facet.name] = facet.selected;
+      this.pagetAssemblefilter[facet.code] = facet.selected;
       return `${facet.selected.length} ` + this.translateMessage('FILTER_ADDED');
     }
 
@@ -174,7 +174,7 @@ export class PageFilter {
               resourceTypeSelectedValues.push(item.code);
             }
           });
-          this.pagetAssemblefilter[element.name] = resourceTypeSelectedValues;
+          this.pagetAssemblefilter[element.code] = resourceTypeSelectedValues;
         }
       });
       this.callback.applyFilter(this.pagetAssemblefilter, this.facetsFilter);
