@@ -1,7 +1,6 @@
 import { Observable } from 'rxjs/Observable';
 import { ComponentFixture, TestBed, fakeAsync, tick } from "@angular/core/testing";
 import { NO_ERRORS_SCHEMA } from "@angular/core";
-//import { NgZone } from "@angular/core";
 import { NavController, NavOptions } from "ionic-angular";
 import { NavParams } from "ionic-angular";
 import { ToastController } from "ionic-angular";
@@ -14,23 +13,21 @@ import { TelemetryGeneratorService } from "../../../service/telemetry-generator.
 import { AddOrRemoveGroupUserPage } from "./add-or-remove-group-user";
 import 'rxjs/add/observable/of';
 import { } from 'jasmine';
-
-import { LoadingControllerMock } from 'ionic-mocks';
 export class MockToastCtrl {
     public instance: MockToast = new MockToast();
-    public create ( options: any = {} ): MockToast {
+    public create(options: any = {}): MockToast {
         return this.instance;
     }
 }
 export class MockToast {
-    public present( navOptions: any = {} ): Promise<any> {
-        return Promise.resolve ( {} );
+    public present(navOptions: any = {}): Promise<any> {
+        return Promise.resolve({});
     }
-    public dismiss( data?: any, role?: string, navOptions?: NavOptions ): Promise<any> {
-        return Promise.resolve ( {} );
+    public dismiss(data?: any, role?: string, navOptions?: NavOptions): Promise<any> {
+        return Promise.resolve({});
     }
 
-    public onDidDismiss( callback: () => void ): void {
+    public onDidDismiss(callback: () => void): void {
         callback();
         return;
     }
@@ -40,9 +37,7 @@ describe("AddOrRemoveGroupUserPage", () => {
     let fixture: ComponentFixture<AddOrRemoveGroupUserPage>;
 
     beforeEach(() => {
-        // const ngZoneStub = {
-        //     run: () => ({})
-        // };
+
         const navControllerStub = {
             push: () => ({}),
             popTo: () => ({}),
@@ -93,13 +88,12 @@ describe("AddOrRemoveGroupUserPage", () => {
                 //     { provide: NgZone, useValue: ngZoneStub },
                 { provide: NavController, useValue: navControllerStub },
                 { provide: NavParams, useValue: navParamsStub },
-                { provide: ToastController, useValue: MockToastCtrl },
+                { provide: ToastController, useClass: MockToastCtrl },
                 { provide: AlertController, useValue: alertControllerStub },
                 { provide: TranslateService, useValue: translateServiceStub },
                 { provide: GroupService, useValue: groupServiceStub },
                 { provide: ProfileService, useValue: profileServiceStub },
-                // { provide: LoadingController, useValue: loadingControllerStub },
-                { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() },
+                { provide: LoadingController, useValue: loadingControllerStub },
                 { provide: TelemetryGeneratorService, useValue: telemetryGeneratorServiceStub }
             ]
         });
@@ -134,37 +128,30 @@ describe("AddOrRemoveGroupUserPage", () => {
 
     describe("getAllProfile", () => {
         it("makes expected calls", () => {
-
-            // const ngZoneStub: NgZone = fixture.debugElement.injector.get(NgZone);
             const profileServiceStub: ProfileService = fixture.debugElement.injector.get(ProfileService);
             spyOn(profileServiceStub, "getAllUserProfile").and.returnValue(Promise.resolve([]));
             comp.groupMembers = [];
             comp.uniqueUserList = [];
-            //  spyOn(ngZoneStub, "run");
-            //  spyOn(profileServiceStub, "getAllUserProfile");
             comp.getAllProfile();
-            //  expect(ngZoneStub.run).toHaveBeenCalled();
             expect(profileServiceStub.getAllUserProfile).toHaveBeenCalled();
         });
     });
 
     describe("selectAll", () => {
         it("makes expected calls", () => {
-            //const ngZoneStub: NgZone = fixture.debugElement.injector.get(NgZone);
-            // spyOn(ngZoneStub, "run");
+
             comp.uniqueUserList = [];
             comp.selectAll();
-            // expect(ngZoneStub.run).toHaveBeenCalled();
+
         });
     });
 
     describe("unselectAll", () => {
         it("makes expected calls", () => {
             comp.groupMembers = [];
-            //  const ngZoneStub: NgZone = fixture.debugElement.injector.get(NgZone);
-            //  spyOn(ngZoneStub, "run");
+
             comp.unselectAll();
-            //  expect(ngZoneStub.run).toHaveBeenCalled();
+
         });
     });
 
@@ -180,58 +167,40 @@ describe("AddOrRemoveGroupUserPage", () => {
     describe("getSelectedUids", () => {
         it("makes expected calls", () => {
             comp.uniqueUserList = [];
-            //   const ngZoneStub: NgZone = fixture.debugElement.injector.get(NgZone);
-            // spyOn(ngZoneStub, "run");
+
             comp.getSelectedUids();
-            // expect(ngZoneStub.run).toHaveBeenCalled();
+
         });
     });
 
     describe("getSelectedGroupMemberUids", () => {
         it("makes expected calls", () => {
-            // const ngZoneStub: NgZone = fixture.debugElement.injector.get(NgZone);
-            // spyOn(ngZoneStub, "run");
+
             comp.groupMembers = [];
             comp.getSelectedGroupMemberUids();
-            // expect(ngZoneStub.run).toHaveBeenCalled();
+
         });
     });
 
     describe("add", () => {
         it("makes expected calls", fakeAsync(() => {
-            const loadingCtrl = TestBed.get(LoadingController);
             const navControllerStub: NavController = fixture.debugElement.injector.get(NavController);
             const groupServiceStub: GroupService = fixture.debugElement.injector.get(GroupService);
-            // comp.getLoader = jasmine.createSpy().and.callFake(function () {
-            //     return { present: function () { }, dismiss: function () { } }
-            // });
+            comp.getLoader = jasmine.createSpy().and.callFake(function () {
+                return { present: function () { }, dismiss: function () { } }
+            });
             comp.groupMembers = [];
             spyOn(groupServiceStub, "addUpdateProfilesToGroup").and.returnValue(Promise.resolve([]));
-
-            //  spyOn(comp, "getLoader");
             spyOn(comp, "getSelectedUids");
-            spyOn(comp, "getToast");
-            spyOn(comp, "translateMessage");
-            spyOn(navControllerStub, "popTo");
-            spyOn(navControllerStub, "getByIndex");
-            spyOn(navControllerStub, "length");
-
             let translate = TestBed.get(TranslateService);
             const translateStub = TestBed.get(TranslateService);
             const spy = spyOn(translate, 'get').and.callFake((arg) => {
                 return Observable.of('Cancel');
             });
             comp.add();
-            // expect(comp.getLoader).toHaveBeenCalled();
+            expect(comp.getLoader).toHaveBeenCalled();
             expect(comp.getSelectedUids).toHaveBeenCalled();
-           // expect(comp.);
-            //expect(comp.translateMessage).toHaveBeenCalled();
-            //tick(100);
-           // expect(comp.getToast).toHaveBeenCalled();
-            // expect(navControllerStub.popTo).toHaveBeenCalled();
-            // expect(navControllerStub.getByIndex).toHaveBeenCalled();
-            // expect(navControllerStub.length).toHaveBeenCalled();
-            // expect(groupServiceStub.addUpdateProfilesToGroup).toHaveBeenCalled();
+
         }));
     });
 
@@ -244,28 +213,16 @@ describe("AddOrRemoveGroupUserPage", () => {
             comp.getLoader = jasmine.createSpy().and.callFake(function () {
                 return { present: function () { }, dismiss: function () { } }
             });
-            spyOn(console,'log').and.callThrough();
+            spyOn(console, 'log').and.callThrough();
             spyOn(groupServiceStub, "addUpdateProfilesToGroup").and.returnValue(Promise.resolve([]));
-            //  spyOn(comp, "getLoader");
-            spyOn(comp, "getToast");
-            spyOn(comp, "translateMessage");
-            spyOn(navControllerStub, "popTo");
-            spyOn(navControllerStub, "getByIndex");
-            spyOn(navControllerStub, "length");
-            //    spyOn(groupServiceStub, "addUpdateProfilesToGroup");
-            //spyOn(telemetryGeneratorServiceStub, "generateInteractTelemetry");
+
             comp.deleteUsersFromGroup();
             expect(comp.getLoader).toHaveBeenCalled();
-            expect(comp.getToast).toHaveBeenCalled();
-            expect(comp.translateMessage).toHaveBeenCalled();
-            expect(navControllerStub.popTo).toHaveBeenCalled();
-            expect(navControllerStub.getByIndex).toHaveBeenCalled();
-            expect(navControllerStub.length).toHaveBeenCalled();
+
             expect(groupServiceStub.addUpdateProfilesToGroup).toHaveBeenCalled();
             expect(telemetryGeneratorServiceStub.generateInteractTelemetry).toHaveBeenCalled();
         });
     });
-
     describe("getLoader", () => {
         it("makes expected calls", () => {
             const loadingControllerStub: LoadingController = fixture.debugElement.injector.get(LoadingController);
@@ -282,7 +239,6 @@ describe("AddOrRemoveGroupUserPage", () => {
                 return Observable.of('Cancel');
             });
             let translatedMessage = comp.translateMessage('CANCEL');
-            // fixture.detectChanges();
             expect(translatedMessage).toEqual('Cancel');
             expect(spy.calls.any()).toEqual(true);
         }));
