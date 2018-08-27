@@ -305,7 +305,7 @@ export class CollectionDetailsPage {
       this.zone.run(() => {
         data = JSON.parse(data);
         console.log('Content details ==>>>>>', data);
-        loader.onDidDismiss(() => {
+        loader.dismiss().then(() => {
           if (data && data.result) {
             this.extractApiResponse(data);
           }

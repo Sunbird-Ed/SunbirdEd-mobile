@@ -122,7 +122,9 @@ export class EnrolledCourseDetailsPage {
   /**
    * Contains child content import / download progress
    */
-  downloadProgress: any;
+  downloadProgress: number = 0;
+
+  showLoading = false;
 
   /**
    * To hold network status
@@ -358,17 +360,20 @@ export class EnrolledCourseDetailsPage {
    * @param {string} identifier
    */
   setContentDetails(identifier): void {
-    this.contentService.getContentDetail({ contentId: identifier }, (data: any) => {
+    const option = {
+      contentId: identifier,
+      refreshContentDetails: true
+    }
+
+    this.contentService.getContentDetail(option, (data: any) => {
       this.zone.run(() => {
         data = JSON.parse(data);
-        console.log('enrolled course details: ', data);
         if (data && data.result) {
           this.extractApiResponse(data);
         }
       });
     },
       (error: any) => {
-        console.log('error while loading content details', error);
         if (JSON.parse(error).error === 'CONNECTION_ERROR') {
           this.showMessage(this.translateLanguageConstant('ERROR_NO_INTERNET_MESSAGE'));
         } else {
@@ -418,7 +423,6 @@ export class EnrolledCourseDetailsPage {
       if (contentFeedback !== undefined && contentFeedback.length !== 0) {
         this.userRating = contentFeedback[0].rating;
         this.ratingComment = contentFeedback[0].comments;
-        console.log("User Rating  - " + this.userRating);
       }
       this.getCourseProgress();
     } else {
@@ -433,12 +437,11 @@ export class EnrolledCourseDetailsPage {
 
     switch (data.result.isAvailableLocally) {
       case true: {
-        console.log("Content locally available. Geting child content... @@@");
         this.setChildContents();
         break;
       }
       case false: {
-        console.log("Content locally not available. Import started... @@@");
+        this.showLoading = true;
         this.importContent([this.identifier], false);
         break;
       }
@@ -538,11 +541,11 @@ export class EnrolledCourseDetailsPage {
     // Call content service
     this.contentService.importContent(option, (data: any) => {
       data = JSON.parse(data);
-      console.log('Success: Import content =>', data);
       this.zone.run(() => {
         if (data.result && data.result[0].status === 'NOT_FOUND') {
           // this.showMessage(this.translateLanguageConstant('ERROR_FETCHING_DATA'));
           // this.showChildrenLoader = false;
+          this.showLoading = false
         }
 
         if (data.result && data.result.length && this.isDownloadStarted) {
@@ -631,21 +634,18 @@ export class EnrolledCourseDetailsPage {
     }
     this.zone.run(() => {
       if (content.contentType === ContentType.COURSE) {
-        console.warn('Inside CourseDetailPage >>>');
         this.navCtrl.push(EnrolledCourseDetailsPage, {
           content: content,
           depth: depth,
           contentState: contentState
         })
       } else if (content.mimeType === MimeType.COLLECTION) {
-        console.warn('Inside CollectionDetailsPage >>>');
         this.navCtrl.push(CollectionDetailsPage, {
           content: content,
           depth: depth,
           contentState: contentState
         })
       } else {
-        console.warn('Inside ContentDetailsPage >>>');
         this.navCtrl.push(ContentDetailsPage, {
           content: content,
           depth: depth,
@@ -665,8 +665,21 @@ export class EnrolledCourseDetailsPage {
     toast.present();
   }
 
+  cancelDownload() {
+    this.contentService.cancelDownload(this.identifier, (response) => {
+      this.zone.run(() => {
+        this.showLoading = false;
+        this.navCtrl.pop();
+      });
+    }, (error) => {
+      this.zone.run(() => {
+        this.showLoading = false;
+        this.navCtrl.pop();
+      });
+    });
+  }
+
   getContentsSize(data) {
-    console.log('downloadSize ==>>>', this.downloadSize);
     this.downloadSize = this.downloadSize;
     _.forEach(data, (value, key) => {
       if (value.children && value.children.length) {
@@ -678,7 +691,6 @@ export class EnrolledCourseDetailsPage {
         this.downloadSize += +value.contentData.size;
       }
     });
-    console.log('downloadIdentifiers =====>>>>>>>>>', this.downloadIdentifiers);
   }
 
   /**
@@ -721,7 +733,6 @@ export class EnrolledCourseDetailsPage {
   getCourseProgress() {
     if (this.courseCardData.batchId) {
       this.course.progress = this.courseUtilService.getCourseProgress(this.courseCardData.leafNodesCount, this.courseCardData.progress)
-      console.log('course progress', this.course.progress);
     }
   }
 
@@ -733,26 +744,31 @@ export class EnrolledCourseDetailsPage {
       this.zone.run(() => {
         data = JSON.parse(data);
         let res = data;
-        console.log('event bus........', res);
         // Show download percentage
         if (res.type === 'downloadProgress' && res.data.downloadProgress) {
-          this.downloadProgress = res.data.downloadProgress === -1 ? 0 : res.data.downloadProgress;
+          if (res.data.downloadProgress === -1 || res.data.downloadProgress === '-1') {
+            this.downloadProgress = 0;
+          } else {
+            this.downloadProgress = res.data.downloadProgress;
+          }
+
+          if (this.downloadProgress === 100) {
+            this.showLoading = false;
+          }
         }
 
         // Get child content
         if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
+          this.showLoading = false;
           if (this.queuedIdentifiers.length && this.isDownloadStarted) {
             if (_.includes(this.queuedIdentifiers, res.data.identifier)) {
               this.currentCount++;
-              console.log('current download count:', this.currentCount);
-              console.log('queuedIdentifiers count:', this.queuedIdentifiers.length);
             }
 
             if (this.queuedIdentifiers.length === this.currentCount) {
               this.isDownloadStarted = false;
               this.currentCount = 0;
               this.isDownlaodCompleted = true;
-              this.isDownloadStarted = false;
               this.downloadIdentifiers.length = 0;
               this.queuedIdentifiers.length = 0;
             }
@@ -764,6 +780,17 @@ export class EnrolledCourseDetailsPage {
             // });
           }
         }
+
+        //For content update available
+        let hierarchyInfo = this.courseCardData.hierarchyInfo ? this.courseCardData.hierarchyInfo : null;
+
+        if (res.data && res.type === 'contentUpdateAvailable' && hierarchyInfo === null) {
+          this.zone.run(() => {
+            this.showLoading = true;
+            this.importContent([this.identifier], false);
+          });
+        }
+
       });
     });
   }
