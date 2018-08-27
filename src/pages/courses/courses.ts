@@ -24,7 +24,9 @@ import {
   ContentService,
   ProfileType,
   PageAssembleFilter,
-  CorrelationData
+  CorrelationData,
+  InteractType,
+  InteractSubtype
 } from 'sunbird';
 import {
   QRResultCallback,
@@ -51,6 +53,7 @@ import { CourseUtilService } from '../../service/course-util.service';
 import { updateFilterInSearchQuery } from '../../util/filter.util';
 import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
 import { CommonUtilService } from '../../service/common-util.service';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 
 @IonicPage()
 @Component({
@@ -146,14 +149,13 @@ export class CoursesPage implements OnInit {
     private telemetryService: TelemetryService,
     private events: Events,
     private contentService: ContentService,
-    private toastCtrl: ToastController,
     private preference: SharedPreferences,
-    private translate: TranslateService,
     private network: Network,
     private appGlobal: AppGlobalService,
     private courseUtilService: CourseUtilService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    private telemetryGeneratorService:TelemetryGeneratorService
   ) {
 
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE, (val: string) => {
@@ -566,6 +568,17 @@ export class CoursesPage implements OnInit {
 
           that.isFilterApplied = false;
 
+          let values = new Map();
+          values["filters"] = filter;
+          that.telemetryGeneratorService.generateInteractTelemetry(
+            InteractType.OTHER,
+            InteractSubtype.APPLY_FILTER_CLICKED,
+            Environment.HOME,
+            PageId.COURSE_PAGE_FILTER,
+            undefined,
+            values
+          );
+
           Object.keys(that.appliedFilter).forEach(key => {
             if (that.appliedFilter[key].length > 0) {
               filterApplied = true;
@@ -587,19 +600,26 @@ export class CoursesPage implements OnInit {
     }
 
     let filterOptions = {
-      callback: callback
+      callback: callback,
+      pageId: PageId.COURSES
     }
     // Already apllied filter
     if (this.courseFilter) {
       filterOptions['filter'] = this.courseFilter;
+      this.showFilterPage(filterOptions);
     } else {
       //TODO: Need to add loader
       this.formAndFrameworkUtilService.getCourseFilterConfig().then((data) => {
         filterOptions['filter'] = data;
+        this.showFilterPage(filterOptions);
       }).catch((error) => {
         console.error("Error Occurred!");
       });
     }
+
+  }
+
+  showFilterPage(filterOptions) {
     this.popCtrl.create(PageFilter, filterOptions, { cssClass: 'resource-filter' }).present();
   }
 

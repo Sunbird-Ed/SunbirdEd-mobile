@@ -13,10 +13,12 @@ import {
   PageId,
   CategoryRequest,
   FrameworkService,
+  ImpressionType,
 } from "sunbird";
 import { PageFilterOptions } from "./options/filter.options";
 import { generateInteractTelemetry } from "../../app/telemetryutil";
 import * as frameworkDataList from "../../config/framework.filters";
+import { TelemetryGeneratorService } from "../../service/telemetry-generator.service";
 
 @Component({
   selector: 'page-filter',
@@ -43,10 +45,10 @@ export class PageFilter {
     private frameworkService: FrameworkService,
     private translate: TranslateService,
     private appGlobalService: AppGlobalService,
-    private events: Events
+    private events: Events,
+    private telemetryGeneratorService: TelemetryGeneratorService
   ) {
     this.callback = navParams.get('callback');
-
     this.initFilterValues();
 
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
@@ -90,11 +92,35 @@ export class PageFilter {
 
   initFilterValues() {
     this.filters = this.navParams.get('filter');
+    let pageId = this.navParams.get('pageId');
+    if (pageId === PageId.COURSES) {
+      pageId = PageId.COURSE_PAGE_FILTER;
+    } else if (pageId === PageId.LIBRARY) {
+      pageId = PageId.LIBRARY_PAGE_FILTER;
+    }
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.VIEW, "",
+      pageId,
+      Environment.HOME
+    );
 
     if (this.filters) {
+      let filterNames = [];
       this.filters.forEach(element => {
         element.name = this.getTranslatedValues(JSON.parse(element.translations || element.name));
+        filterNames.push(element.name);
       });
+
+      let values = new Map();
+      values["categories"] = filterNames;
+      this.telemetryGeneratorService.generateInteractTelemetry(
+        InteractType.OTHER,
+        InteractSubtype.FILTER_CONFIG,
+        Environment.HOME,
+        pageId,
+        undefined,
+        values
+      );
     }
 
     this.filters.forEach(filter => {
@@ -118,6 +144,8 @@ export class PageFilter {
       if (index === this.filters.length - 1) this.facetsFilter = this.filters;
     });
   }
+
+
 
   /**
  * This will internally call framework API

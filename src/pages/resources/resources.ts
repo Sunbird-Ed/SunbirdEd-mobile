@@ -627,6 +627,17 @@ export class ResourcesPage implements OnInit {
 				let filterApplied = false;
 				that.isFilterApplied = false;
 
+				let values = new Map();
+				values["filters"] = filter;
+				that.telemetryGeneratorService.generateInteractTelemetry(
+				  InteractType.OTHER,
+				  InteractSubtype.APPLY_FILTER_CLICKED,
+				  Environment.HOME,
+				  PageId.LIBRARY_PAGE_FILTER,
+				  undefined,
+				  values
+				);
+
 				Object.keys(that.appliedFilter).forEach(key => {
 					if (that.appliedFilter[key].length > 0) {
 						filterApplied = true;
@@ -647,22 +658,23 @@ export class ResourcesPage implements OnInit {
 		}
 
 		let filterOptions = {
-			callback: callback
+			callback: callback,
+			pageId:PageId.LIBRARY
 		}
 
 		// Already apllied filter
 		if (this.resourceFilter) {
 			filterOptions['filter'] = this.resourceFilter;
-			this.openFilterPage(filterOptions);
+			this.showFilterPage(filterOptions);
 		} else {
 			this.formAndFrameworkUtilService.getLibraryFilterConfig().then((data) => {
 				filterOptions['filter'] = data;
-				this.openFilterPage(filterOptions);
+				this.showFilterPage(filterOptions);
 			});
 		}
 	}
 
-	openFilterPage(filterOptions) {
+	showFilterPage(filterOptions) {
 		this.popCtrl.create(PageFilter, filterOptions, { cssClass: 'resource-filter' }).present();
 	}
 
