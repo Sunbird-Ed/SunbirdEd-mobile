@@ -53,7 +53,7 @@ before_install:
 before_script:
 - echo "Before Script"
 script:
-- ./build.sh $BUILD_BRANCH
+- 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then  ./build.sh $BUILD_BRANCH; fi'
 
 env:
   global:

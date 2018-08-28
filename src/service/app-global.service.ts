@@ -335,6 +335,7 @@ export class AppGlobalService {
             let paramsMap = new Map();
             if (pageId !== PageId.PROFILE) {
                 paramsMap["isOnBoardingPageConfigEnabled"] = this.DISPLAY_ONBOARDING_PAGE;
+                paramsMap["isOnBoardingCardsConfigEnabled"] = this.DISPLAY_ONBOARDING_CARDS;
                 paramsMap["isOnBoardingCompleted"] = isOnBoardingCompleted;
             }
             let profileType = this.getGuestUserType();
