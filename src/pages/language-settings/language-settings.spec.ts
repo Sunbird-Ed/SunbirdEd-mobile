@@ -352,7 +352,7 @@ describe("LanguageSettingsPage", () => {
             const translateServiceStub: TranslateService = fixture.debugElement.injector.get(TranslateService);
 
             comp.isLanguageSelected = true;
-            comp.selectedLanguage.code = 'en';
+            comp.selectedLanguage.code = undefined;
             comp.previousLanguage = 'mr';
 
             spyOn(translateServiceStub, "use");
@@ -365,7 +365,7 @@ describe("LanguageSettingsPage", () => {
             const translateServiceStub: TranslateService = fixture.debugElement.injector.get(TranslateService);
 
             comp.isLanguageSelected = true;
-            comp.selectedLanguage.code = 'en';
+            comp.selectedLanguage.code = undefined;
             comp.previousLanguage = undefined;
 
             spyOn(translateServiceStub, "use");

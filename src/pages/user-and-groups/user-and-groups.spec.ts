@@ -1,27 +1,21 @@
+import {
+    AlertController, App, Events, IonicApp, NavController, NavParams, Platform, PopoverController,
+    ToastController
+} from 'ionic-angular';
 import { promise } from 'selenium-webdriver';
-import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { NO_ERRORS_SCHEMA } from "@angular/core";
-import { TranslateService, TranslateModule } from "@ngx-translate/core";
-//import { NgZone } from "@angular/core";
-import { NavController } from "ionic-angular";
-import { NavParams } from "ionic-angular";
-import { AlertController } from "ionic-angular";
-import { Platform } from "ionic-angular";
-import { PopoverController } from "ionic-angular";
-import { ToastController } from "ionic-angular";
-import { ProfileService } from "sunbird";
-import { GroupService } from "sunbird";
-import { ContainerService } from "sunbird";
-import { SharedPreferences } from "sunbird";
-import { OAuthService } from "sunbird";
-import { AuthService } from "sunbird";
-import { IonicApp } from "ionic-angular";
-import { AppGlobalService } from "../../service/app-global.service";
-import { App } from "ionic-angular";
-import { Events } from "ionic-angular";
-import { Network } from "@ionic-native/network";
-import { TelemetryGeneratorService } from "../../service/telemetry-generator.service";
-import { UserAndGroupsPage } from "./user-and-groups";
+import {
+    AuthService, ContainerService, GroupService, OAuthService, ProfileService, ProfileType,
+    SharedPreferences, UserSource
+} from 'sunbird';
+
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Network } from '@ionic-native/network';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+
+import { AppGlobalService } from '../../service/app-global.service';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { UserAndGroupsPage } from './user-and-groups';
 
 describe("UserAndGroupsPage", () => {
     let comp: UserAndGroupsPage;
@@ -108,12 +102,12 @@ describe("UserAndGroupsPage", () => {
         const ionicAppStub = {
             _modalPortal: {
                 getActive: () => ({
-                    dismiss : () => {}
+                    dismiss: () => { }
                 })
             },
             _overlayPortal: {
                 getActive: () => ({
-                    dismiss : () => {}
+                    dismiss: () => { }
                 })
             }
         };
@@ -139,12 +133,12 @@ describe("UserAndGroupsPage", () => {
             generateInteractTelemetry: () => ({})
         };
         TestBed.configureTestingModule({
-            declarations: [ UserAndGroupsPage ],
-            schemas: [ NO_ERRORS_SCHEMA ],
+            declarations: [UserAndGroupsPage],
+            schemas: [NO_ERRORS_SCHEMA],
             imports: [TranslateModule.forRoot()],
             providers: [
                 { provide: TranslateService, useValue: translateServiceStub },
-              //  { provide: NgZone, useValue: ngZoneStub },
+                //  { provide: NgZone, useValue: ngZoneStub },
                 { provide: NavController, useValue: navControllerStub },
                 { provide: NavParams, useValue: navParamsStub },
                 { provide: AlertController, useValue: alertControllerStub },
@@ -204,27 +198,27 @@ describe("UserAndGroupsPage", () => {
 
     describe("ionViewWillEnter", () => {
         it("makes expected calls", () => {
-         //   const ngZoneStub: NgZone = fixture.debugElement.injector.get(NgZone);
+            //   const ngZoneStub: NgZone = fixture.debugElement.injector.get(NgZone);
             const platformStub: Platform = fixture.debugElement.injector.get(Platform);
             spyOn(comp, "getAllProfile");
             spyOn(comp, "getAllGroup");
             spyOn(comp, "getCurrentGroup");
             spyOn(comp, "dismissPopup");
-           // spyOn(ngZoneStub, "run");
+            // spyOn(ngZoneStub, "run");
             spyOn(platformStub, "registerBackButtonAction");
             comp.ionViewWillEnter();
             expect(comp.getAllProfile).toHaveBeenCalled();
             expect(comp.getAllGroup).toHaveBeenCalled();
             expect(comp.getCurrentGroup).toHaveBeenCalled();
             // expect(comp.dismissPopup).toHaveBeenCalled();
-           // expect(ngZoneStub.run).toHaveBeenCalled();
+            // expect(ngZoneStub.run).toHaveBeenCalled();
             expect(platformStub.registerBackButtonAction).toHaveBeenCalled();
         });
     });
 
     describe("getCurrentGroup", () => {
         it("makes expected calls", () => {
-           // const ngZoneStub: NgZone = fixture.debugElement.injector.get(NgZone);
+            // const ngZoneStub: NgZone = fixture.debugElement.injector.get(NgZone);
             const groupServiceStub: GroupService = fixture.debugElement.injector.get(GroupService);
             //spyOn(ngZoneStub, "run");
             spyOn(groupServiceStub, "getCurrentGroup").and.returnValue(Promise.resolve({}));
@@ -246,24 +240,24 @@ describe("UserAndGroupsPage", () => {
 
     describe("getAllProfile", () => {
         it("makes expected calls", () => {
-          //  const ngZoneStub: NgZone = fixture.debugElement.injector.get(NgZone);
+            //  const ngZoneStub: NgZone = fixture.debugElement.injector.get(NgZone);
             const profileServiceStub: ProfileService = fixture.debugElement.injector.get(ProfileService);
-          //  spyOn(ngZoneStub, "run");
+            //  spyOn(ngZoneStub, "run");
             spyOn(profileServiceStub, "getAllUserProfile").and.returnValue(Promise.resolve({}));
             comp.getAllProfile();
-          //  expect(ngZoneStub.run).toHaveBeenCalled();
+            //  expect(ngZoneStub.run).toHaveBeenCalled();
             expect(profileServiceStub.getAllUserProfile).toHaveBeenCalled();
         });
     });
 
     describe("getAllGroup", () => {
         it("makes expected calls", () => {
-           // const ngZoneStub: NgZone = fixture.debugElement.injector.get(NgZone);
+            // const ngZoneStub: NgZone = fixture.debugElement.injector.get(NgZone);
             const groupServiceStub: GroupService = fixture.debugElement.injector.get(GroupService);
-          //  spyOn(ngZoneStub, "run");
+            //  spyOn(ngZoneStub, "run");
             spyOn(groupServiceStub, "getAllGroup").and.returnValue(Promise.resolve({}));
             comp.getAllGroup();
-           // expect(ngZoneStub.run).toHaveBeenCalled();
+            // expect(ngZoneStub.run).toHaveBeenCalled();
             expect(groupServiceStub.getAllGroup).toHaveBeenCalled();
         });
     });
@@ -317,7 +311,12 @@ describe("UserAndGroupsPage", () => {
             const appGlobalServiceStub: AppGlobalService = fixture.debugElement.injector.get(AppGlobalService);
             const telemetryGeneratorServiceStub: TelemetryGeneratorService = fixture.debugElement.injector.get(TelemetryGeneratorService);
             comp.selectedUserIndex = 0;
-            comp.userList = [{uid:1}];
+            comp.userList = [{
+                uid: "user-id-1",
+                handle: 'test',
+                profileType: ProfileType.STUDENT,
+                source: UserSource.LOCAL
+            }];
             spyOn(comp, "translateMessage");
             spyOn(comp, "logOut");
             spyOn(alertControllerStub, "create");
@@ -338,7 +337,12 @@ describe("UserAndGroupsPage", () => {
             const appGlobalServiceStub: AppGlobalService = fixture.debugElement.injector.get(AppGlobalService);
             const eventsStub: Events = fixture.debugElement.injector.get(Events);
             comp.selectedUserIndex = 0;
-            comp.userList = [{uid:1}];
+            comp.userList = [{
+                uid: "user-id-1",
+                handle: 'test',
+                profileType: ProfileType.STUDENT,
+                source: UserSource.LOCAL
+            }];
             spyOn(comp, "logOut");
             spyOn(navControllerStub, "pop");
             spyOn(appGlobalServiceStub, "isUserLoggedIn");

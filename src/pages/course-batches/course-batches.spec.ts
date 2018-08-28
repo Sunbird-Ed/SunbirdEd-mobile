@@ -1,19 +1,17 @@
-import { SignInCardComponent } from './../../component/sign-in-card/sign-in-card';
-import { PipesModule } from './../../pipes/pipes.module';
-import { async, TestBed, ComponentFixture } from '@angular/core/testing';
-import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
-import { CourseBatchesPage } from './course-batches';
-import { } from 'jasmine';
-import {
-    NavController, IonicModule, NavParams, ToastController} from 'ionic-angular';
-import {
-    AuthService, FrameworkModule, CourseService} from "sunbird";
-import {
-    NavParamsMock, ToastControllerMock,
-    NavMock, TranslateLoaderMock
-} from '../../../test-config/mocks-ionic';
+import { IonicModule, NavController, NavParams, ToastController } from 'ionic-angular';
 
+import { AuthService, CourseService, FrameworkModule } from 'sunbird';
+
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+
+import {
+    NavMock, NavParamsMock, ToastControllerMock, TranslateLoaderMock
+} from '../../../test-config/mocks-ionic';
+import { SignInCardComponent } from '../../component/sign-in-card/sign-in-card';
+import { PipesModule } from '../../pipes/pipes.module';
 import { mockRes } from '../course-batches/course-batches.spec.data';
+import { CourseBatchesPage } from './course-batches';
 
 describe('CourseBatchesPage Component', () => {
     let component: CourseBatchesPage;

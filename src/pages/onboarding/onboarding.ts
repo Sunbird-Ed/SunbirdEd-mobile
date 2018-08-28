@@ -112,7 +112,6 @@ export class OnboardingPage {
       .then((appName: any) => {
         this.appName = appName;
       });
-    console.log('ionViewDidLoad OnboardingPage');
     this.navBar.backButtonClick = (e: UIEvent) => {
       this.navCtrl.setRoot(LanguageSettingsPage);
     }

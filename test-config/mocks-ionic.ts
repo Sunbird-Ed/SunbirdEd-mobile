@@ -143,9 +143,9 @@ export class AuthServiceMock extends AuthService {
 
 export class ContainerServiceMock extends ContainerService {
 }
-export class PermissionServiceMock {
+export class PermissionServiceMock extends PermissionService {
 
-  public requestPermission: () => ({});
+  //public requestPermission: () => ({});
 }
 export class ImageLoaderConfigMock extends ImageLoaderConfig {
   public enableDebugMode() {
@@ -181,10 +181,10 @@ export class AppGlobalServiceMock extends AppGlobalService {
 
 }
 
-export class EventsMock{
-	subscribe(){
-		return;
-	}
+export class EventsMock {
+  subscribe() {
+    return;
+  }
 }
 export class CourseUtilServiceMock extends CourseUtilService { }
 
@@ -316,7 +316,7 @@ class ToastMock extends ViewController {
   onDidDismiss() { };
 }
 
-export class ToastMockNew { 
+export class ToastMockNew {
   public static instance(): any {
     const instance: any = jasmine.createSpyObj('Toast', ['present', 'dismissAll', 'onDidDismiss', 'setContent', 'setSpinner']);
     instance.present.and.returnValue(Promise.resolve());
@@ -324,7 +324,7 @@ export class ToastMockNew {
   }
 }
 
-export class ToastControllerMockNew { 
+export class ToastControllerMockNew {
   public static instance(toast?: ToastMock): any {
     const instance: any = jasmine.createSpyObj('ToastController', ['create']);
     instance.create.and.returnValue(toast || ToastMockNew.instance());
@@ -333,8 +333,9 @@ export class ToastControllerMockNew {
 }
 export class LoadingMock extends ViewController {
   public static instance(): any {
-    let instance = jasmine.createSpyObj('Loading', ['present', 'onDidDismiss', 'dismissAll', 'setContent', 'setSpinner']);
+    let instance = jasmine.createSpyObj('Loading', ['present', 'dismiss', 'onDidDismiss', 'dismissAll', 'setContent', 'setSpinner']);
     instance.present.and.returnValue(Promise.resolve());
+    instance.dismiss.and.returnValue(Promise.resolve());
     // instance.onDidDismiss.and.returnValue(Promise.resolve());
     return instance;
   }
@@ -388,7 +389,7 @@ class LoadingMockNew {
 
   private content: string;
 
-  constructor (loadingMock: LoadingMockNew) {
+  constructor(loadingMock: LoadingMockNew) {
     this.content = loadingMock.content;
   }
 
@@ -414,7 +415,7 @@ export class LoadingControllerMockNew {
 }
 
 export class CommonUtilServiceMock extends CommonUtilService {
-  
+
 }
 
 /*export class ToastMock {

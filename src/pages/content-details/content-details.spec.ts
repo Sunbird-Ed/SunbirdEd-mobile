@@ -1,39 +1,34 @@
-import { PBHorizontal } from './../../component/pbhorizontal/pb-horizontal';
-import { PipesModule } from './../../pipes/pipes.module';
-import { async, TestBed, ComponentFixture, inject } from '@angular/core/testing';
-import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
-import { HttpClientModule } from "@angular/common/http";
-import { Ionic2RatingModule } from "ionic2-rating";
-import { SocialSharing } from "@ionic-native/social-sharing";
-import { Network } from '@ionic-native/network';
-import { mockRes } from './content-details.spec.data';
-import { ContentDetailsPage } from './content-details';
-import { DirectivesModule } from '../../directives/directives.module';
-import { AppGlobalService } from '../../service/app-global.service';
-import { Observable } from 'rxjs/Observable';
-
-
 import {
-    NavController, Events, IonicModule, NavParams, ToastController, PopoverController,
-    LoadingController, Platform, IonicApp
+    Events, IonicApp, IonicModule, LoadingController, NavController, NavParams, Platform,
+    PopoverController, ToastController
 } from 'ionic-angular';
-
+import { LoadingControllerMock, NetworkMock, StorageMock } from 'ionic-mocks';
+import { Ionic2RatingModule } from 'ionic2-rating';
+import { Observable } from 'rxjs/Observable';
 import {
-    StorageMock, LoadingControllerMock,
-    NetworkMock
-} from 'ionic-mocks';
+    AuthService, BuildParamService, ContentService, CourseService, FileUtil, FrameworkModule,
+    GenieSDKServiceProvider, ProfileType, SharedPreferences, ShareUtil, TelemetryService
+} from 'sunbird';
 
-import {
-    FileUtil, AuthService, GenieSDKServiceProvider, SharedPreferences, FrameworkModule, BuildParamService,
-    ContentService, TelemetryService, CourseService, ProfileType, ShareUtil
-} from "sunbird";
-
-import {
-    GenieSDKServiceProviderMock, SharedPreferencesMock, FileUtilMock, NavParamsMock, ToastControllerMock, PopoverControllerMock,
-    SocialSharingMock, NavMock, TranslateLoaderMock, AuthServiceMock, PlatformMock, MockElementRef
-} from '../../../test-config/mocks-ionic';
+import { HttpClientModule } from '@angular/common/http';
 import { ElementRef, Renderer } from '@angular/core';
+import { async, ComponentFixture, inject, TestBed } from '@angular/core/testing';
+import { Network } from '@ionic-native/network';
+import { SocialSharing } from '@ionic-native/social-sharing';
+import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
+
+import {
+    AuthServiceMock, FileUtilMock, GenieSDKServiceProviderMock, MockElementRef, NavMock,
+    NavParamsMock, PlatformMock, PopoverControllerMock, SharedPreferencesMock, SocialSharingMock,
+    ToastControllerMock, TranslateLoaderMock
+} from '../../../test-config/mocks-ionic';
+import { PBHorizontal } from '../../component/pbhorizontal/pb-horizontal';
+import { DirectivesModule } from '../../directives/directives.module';
+import { PipesModule } from '../../pipes/pipes.module';
+import { AppGlobalService } from '../../service/app-global.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { ContentDetailsPage } from './content-details';
+import { mockRes } from './content-details.spec.data';
 
 declare let GenieSDK: any;
 

@@ -5,7 +5,7 @@ import { NO_ERRORS_SCHEMA } from "@angular/core";
 import { NavController } from "ionic-angular";
 import { NavParams } from "ionic-angular";
 import { LoadingController } from "ionic-angular";
-import { GroupService } from "sunbird";
+import { GroupService, ProfileType, UserSource } from "sunbird";
 import { ProfileService } from "sunbird";
 import { TranslateService, TranslateModule } from "@ngx-translate/core";
 import { TelemetryGeneratorService } from "../../../service/telemetry-generator.service";
@@ -21,12 +21,12 @@ describe("GroupMembersPage", () => {
             "createdAt": "Aug 9, 2018 11:36:50 AM",
             "day": -1,
             "gender": "",
-            "handle": "Abdbdjdjdjdjdjdjsjdjdjdjdjdjjdjdjdjrjejrjrjrjejejejejejejejggggghhhhhhhhh",
+            "handle": "test name",
             "isGroupUser": false,
             "language": "en",
             "month": -1,
-            "profileType": "STUDENT hhh",
-            "source": "LOCAL",
+            "profileType": ProfileType.STUDENT,
+            "source": UserSource.LOCAL,
             "standard": -1,
             "uid": "3af2e8a4-003e-438d-b360-2ae922696913"
     };

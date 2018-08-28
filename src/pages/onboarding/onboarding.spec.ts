@@ -15,7 +15,7 @@ import { TelemetryService } from "sunbird";
 import { SharedPreferences } from "sunbird";
 import { AppVersion } from "@ionic-native/app-version";
 import { OnboardingPage } from "./onboarding";
-import {} from "jasmine";
+import { } from "jasmine";
 import { Observable } from "rxjs";
 import "rxjs/add/observable/of";
 
@@ -106,94 +106,90 @@ describe("OnboardingPage", () => {
     expect(comp.backButtonFunc).toEqual(undefined);
   });
 
-  describe("ionViewDidLoad", () => {
+  xdescribe("ionViewDidLoad", () => {
     it("makes expected calls", () => {
-      const navControllerStub: NavController = fixture.debugElement.injector.get(
-        NavController
-      );
-      const telemetryServiceStub: TelemetryService = fixture.debugElement.injector.get(
-        TelemetryService
-      );
-      const appVersionStub: AppVersion = fixture.debugElement.injector.get(
-        AppVersion
-      );
+      const navControllerStub: NavController = TestBed.get(NavController);
+      const telemetryServiceStub: TelemetryService = TestBed.get(TelemetryService);
+      const appVersionStub: AppVersion = TestBed.get(AppVersion);
 
-      comp.navBar = fixture.debugElement.injector.get(Navbar);
+      comp.navBar = TestBed.get(Navbar);
 
-      console.log("over", comp.navBar);
-
+      expect(comp.ionViewDidLoad).toBeDefined();
+      spyOn(comp, 'ionViewDidLoad').and.callThrough();
       spyOn(navControllerStub, "setRoot");
       spyOn(telemetryServiceStub, "impression");
-      spyOn(appVersionStub, "getAppName").and.returnValue(Promise.resolve({}));
+      spyOn(appVersionStub, "getAppName").and.returnValue(Promise.resolve('sunbird'));
 
       spyOn(comp.navBar, "backButtonClick");
       comp.ionViewDidLoad();
 
-      setTimeout(() => {
-        expect(navControllerStub.setRoot).toHaveBeenCalled();
-        expect(telemetryServiceStub.impression).toHaveBeenCalled();
-        expect(appVersionStub.getAppName).toHaveBeenCalled();
-        expect(comp.navBar.backButtonClick).toHaveBeenCalled();
-      }, 100);
+      expect(comp.ionViewDidLoad).toHaveBeenCalled();
+
+      expect(navControllerStub.setRoot).toHaveBeenCalled();
+      expect(telemetryServiceStub.impression).toHaveBeenCalled();
+      expect(appVersionStub.getAppName).toHaveBeenCalled();
+      expect(comp.navBar.backButtonClick).toHaveBeenCalled();
+      expect(comp.appName).toEqual('sunbird');
     });
   });
 
-  describe("ionViewWillEnter", () => {
+  xdescribe("ionViewWillEnter", () => {
     it("makes expected calls", () => {
-      const navControllerStub: NavController = fixture.debugElement.injector.get(
-        NavController
-      );
-      const platformStub: Platform = fixture.debugElement.injector.get(
-        Platform
-      );
+      const navControllerStub: NavController = TestBed.get(NavController);
+      const platformStub: Platform = TestBed.get(Platform);
+
+      expect(comp.ionViewWillEnter).toBeDefined();
+      spyOn(comp, 'ionViewWillEnter').and.callThrough();
       spyOn(navControllerStub, "setRoot");
       spyOn(platformStub, "registerBackButtonAction");
+
       comp.ionViewWillEnter();
-      setTimeout(() => {
-        expect(navControllerStub.setRoot).toHaveBeenCalled();
-        expect(platformStub.registerBackButtonAction).toHaveBeenCalled();
-      }, 100);
+
+      expect(comp.ionViewWillEnter).toHaveBeenCalled();
+      expect(navControllerStub.setRoot).toHaveBeenCalled();
+      expect(platformStub.registerBackButtonAction).toHaveBeenCalled();
     });
   });
 
-  describe("ionViewWillLeave", ()=>{
-   it("should be leave", ()=>{
-    expect(comp.backButtonFunc).toEqual(undefined);
-   });
+  describe("ionViewWillLeave", () => {
+    it("should be leave", () => {
+      expect(comp.backButtonFunc).toEqual(undefined);
+    });
   });
 
   describe("getLoader", () => {
     it("makes expected calls", () => {
-      const loadingControllerStub: LoadingController = fixture.debugElement.injector.get(
-        LoadingController
-      );
+      expect(comp.getLoader).toBeDefined();
+      const loadingControllerStub: LoadingController = fixture.debugElement.injector.get(LoadingController);
+      spyOn(comp, 'getLoader').and.callThrough();
       spyOn(loadingControllerStub, "create");
       comp.getLoader();
+
+      expect(comp.getLoader).toHaveBeenCalled();
       expect(loadingControllerStub.create).toHaveBeenCalled();
     });
   });
 
-  describe("signIn", () => {
+  xdescribe("signIn", () => {
     it("makes expected calls", () => {
-        const eventsStub: Events = fixture.debugElement.injector.get(Events);
-        comp.getLoader = jasmine.createSpy().and.callFake(function () {
-            return { present: function () { }, dismiss: function () { } }
-        });
-       // spyOn(comp, "getLoader");
-        spyOn(comp, "generateLoginInteractTelemetry");
-        spyOn(eventsStub, "publish");
-       // comp.signIn();
-       setTimeout(() =>{
-        expect(comp.getLoader).toHaveBeenCalled();
-        expect(comp.generateLoginInteractTelemetry).toHaveBeenCalled();
-        expect(eventsStub.publish).toHaveBeenCalled();
-       },100);
-     
+      const eventsStub: Events = fixture.debugElement.injector.get(Events);
+      comp.getLoader = jasmine.createSpy().and.callFake(function () {
+        return { present: function () { }, dismiss: function () { } }
+      });
+
+      spyOn(comp, "generateLoginInteractTelemetry");
+      spyOn(eventsStub, "publish");
+      comp.signIn();
+
+      expect(comp.getLoader).toHaveBeenCalled();
+      expect(comp.generateLoginInteractTelemetry).toHaveBeenCalled();
+      expect(eventsStub.publish).toHaveBeenCalled();
+
     });
-});
+  });
 
 
-  describe("refreshProfileData", () => {
+  xdescribe("refreshProfileData", () => {
     it("makes expected calls", () => {
       spyOn(comp, "getToast");
       spyOn(comp, "translateMessage");
@@ -205,7 +201,7 @@ describe("OnboardingPage", () => {
     });
   });
 
-  describe("browseAsGuest", () => {
+  xdescribe("browseAsGuest", () => {
     it("makes expected calls", () => {
       const navControllerStub: NavController = fixture.debugElement.injector.get(
         NavController
@@ -240,33 +236,32 @@ describe("OnboardingPage", () => {
 
   describe("getToast", () => {
     it("Should not create ToastController if not passed any message for toast", () => {
-        const toastCtrlStub: ToastController = fixture.debugElement.injector.get(ToastController);
-        spyOn(toastCtrlStub, "create");
-        comp.getToast();
-        expect(toastCtrlStub.create).not.toHaveBeenCalled();
+      const toastCtrlStub: ToastController = fixture.debugElement.injector.get(ToastController);
+      spyOn(toastCtrlStub, "create");
+      comp.getToast();
+      expect(toastCtrlStub.create).not.toHaveBeenCalled();
     });
     it("Should create ToastController", () => {
-        const toastCtrlStub: ToastController = fixture.debugElement.injector.get(ToastController);
-        spyOn(toastCtrlStub, "create");
-        comp.getToast('Some Message');
-        expect(toastCtrlStub.create).toHaveBeenCalled();
-        expect(toastCtrlStub.create).toBeTruthy();
+      const toastCtrlStub: ToastController = fixture.debugElement.injector.get(ToastController);
+      spyOn(toastCtrlStub, "create");
+      comp.getToast('Some Message');
+      expect(toastCtrlStub.create).toHaveBeenCalled();
+      expect(toastCtrlStub.create).toBeTruthy();
     });
   });
 
-   xdescribe("translateMessage", () => {
-     it('should resolve test data', () => {
-        let translate = TestBed.get(TranslateService);
-        const translateStub = TestBed.get(TranslateService);
-        const spy = spyOn(translate, 'get').and.callFake((arg) => {
-            return Observable.of('Cancel');
-        });
-        let translatedMessage = comp.translateMessage('CANCEL');
-        //fixture.detectChanges();
-        expect(translatedMessage).toEqual('Cancel');
-        expect(spy.calls.any()).toEqual(true);
+  xdescribe("translateMessage", () => {
+    it('should resolve test data', () => {
+      expect(comp.translateMessage).toBeDefined();
+      spyOn(comp, 'translateMessage').and.callThrough();
+      let translate = TestBed.get(TranslateService);
+      const spy = spyOn(translate, 'get').and.callFake((arg) => {
+        return Observable.of('Cancel');
+      });
+      let translatedMessage = comp.translateMessage('CANCEL');
+      fixture.detectChanges();
+      expect(translatedMessage).toEqual('Cancel');
+      expect(spy.calls.any()).toEqual(true);
     });
- });
-
-
+  });
 });

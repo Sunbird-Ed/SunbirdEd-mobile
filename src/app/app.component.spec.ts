@@ -62,10 +62,10 @@ describe('MyApp Component', () => {
         ...PluginModules
       ],
       providers: [
-        PermissionService,
+        //PermissionService,
         { provide: AuthService, useClass: AuthServiceMock },
         { provide: ContainerService, useClass: ContainerServiceMock },
-        //{ provide: PermissionService, useClass: PermissionServiceMock },
+        { provide: PermissionService, useClass: PermissionServiceMock },
         { provide: ImageLoaderConfig, useClass: ImageLoaderConfigMock },
         { provide: StatusBar, useClass: StatusBarMock },
         { provide: SplashScreen, useClass: SplashScreenMock },
@@ -84,11 +84,15 @@ describe('MyApp Component', () => {
   }));
 
   beforeEach(() => {
+    const permisssion: PermissionService = TestBed.get(PermissionService);
     spyOn(MyApp.prototype, 'registerDeeplinks');
     spyOn(MyApp.prototype, 'subscribeEvents');
     spyOn(MyApp.prototype, 'saveDefaultSyncSetting');
     spyOn(MyApp.prototype, 'showAppWalkThroughScreen');
-
+    spyOn(permisssion, 'requestPermission').and.callFake((permissionList, response, error) => {
+      return response({});
+    });
+    spyOn(MyApp.prototype, 'makeEntryInSupportFolder');
     fixture = TestBed.createComponent(MyApp);
     comp = fixture.componentInstance;
   });
@@ -123,9 +127,7 @@ describe('MyApp Component', () => {
         "android.permission.RECORD_AUDIO"
       ];
       spyOn(platform, 'ready').and.returnValue(Promise.resolve({}));
-      // spyOn(permisssion, 'requestPermission').and.callFake((permissionList, response, error) => {
-      //   return response({});
-      // });
+
       spyOn(formAndFrameworkUtilService, 'checkNewAppVersion').and.returnValue(Promise.resolve({}));
 
       platform.ready().
@@ -134,6 +136,8 @@ describe('MyApp Component', () => {
           expect(MyApp.prototype.subscribeEvents).toHaveBeenCalled();
           expect(MyApp.prototype.saveDefaultSyncSetting).toHaveBeenCalled();
           expect(MyApp.prototype.showAppWalkThroughScreen).toHaveBeenCalled();
+          expect(permisssion.requestPermission).toHaveBeenCalled();
+          expect(comp.makeEntryInSupportFolder).toHaveBeenCalled();
           done();
         });
     });

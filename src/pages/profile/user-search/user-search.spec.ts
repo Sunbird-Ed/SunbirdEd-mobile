@@ -243,7 +243,7 @@ describe("UserSearchComponent", () => {
             comp.onInput(event);
             expect(comp["renderer"].invokeElementMethod).toHaveBeenCalledWith(event.target, 'blur');
         });
-        it('Should call getSessionData which should return null', (callback) => {
+        xit('Should call getSessionData which should return null', (callback) => {
             const authServiceStub: AuthService = fixture.debugElement.injector.get(AuthService);
             spyOn(comp["renderer"], 'invokeElementMethod').and.callThrough();
             const event = {
@@ -267,7 +267,7 @@ describe("UserSearchComponent", () => {
             }, 0);
         });
         describe('OnInput with success callback', () => {
-            it('should return object for getSessionData', (callback) => {
+            xit('should return object for getSessionData', (callback) => {
                 const authServiceStub: AuthService = fixture.debugElement.injector.get(AuthService);
                 const userServiceStub: UserProfileService = fixture.debugElement.injector.get(UserProfileService);
                 spyOn(comp["renderer"], 'invokeElementMethod').and.callThrough();

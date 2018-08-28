@@ -12,8 +12,9 @@ import { TranslateService, TranslateModule } from "@ngx-translate/core";
 import { promise } from "selenium-webdriver";
 import { } from 'jasmine';
 
-import { LoadingControllerMock,
-     } from 'ionic-mocks';
+import {
+    LoadingControllerMock,
+} from 'ionic-mocks';
 
 describe("ShareUserAndGroupPage", () => {
     let comp: ShareUserAndGroupPage;
@@ -54,8 +55,8 @@ describe("ShareUserAndGroupPage", () => {
             generateInteractTelemetry: () => ({})
         };
         TestBed.configureTestingModule({
-            declarations: [ ShareUserAndGroupPage ],
-            schemas: [ NO_ERRORS_SCHEMA ],
+            declarations: [ShareUserAndGroupPage],
+            schemas: [NO_ERRORS_SCHEMA],
             imports: [TranslateModule.forRoot()],
             providers: [
                 //{ provide: NgZone, useValue: ngZoneStub },
@@ -66,7 +67,7 @@ describe("ShareUserAndGroupPage", () => {
                 { provide: FileUtil, useValue: fileUtilStub },
                 { provide: SocialSharing, useValue: socialSharingStub },
                 { provide: TelemetryGeneratorService, useValue: telemetryGeneratorServiceStub },
-                { provide: TranslateService},
+                { provide: TranslateService },
             ]
         });
         fixture = TestBed.createComponent(ShareUserAndGroupPage);
@@ -105,26 +106,26 @@ describe("ShareUserAndGroupPage", () => {
 
     describe("getAllProfile", () => {
         it("makes expected calls", () => {
-          //  const ngZoneStub: NgZone = fixture.debugElement.injector.get(NgZone);
+            //  const ngZoneStub: NgZone = fixture.debugElement.injector.get(NgZone);
             const profileServiceStub: ProfileService = fixture.debugElement.injector.get(ProfileService);
-          //  spyOn(ngZoneStub, "run");
+            //  spyOn(ngZoneStub, "run");
             spyOn(profileServiceStub, "getAllUserProfile").and.returnValue(Promise.resolve([]));
             comp.getAllProfile();
-          //  expect(ngZoneStub.run).toHaveBeenCalled();
+            //  expect(ngZoneStub.run).toHaveBeenCalled();
             expect(profileServiceStub.getAllUserProfile).toHaveBeenCalled();
         });
     });
 
     describe("getAllGroup", () => {
         it("makes expected calls", () => {
-           // const ngZoneStub: NgZone = fixture.debugElement.injector.get(NgZone);
+            // const ngZoneStub: NgZone = fixture.debugElement.injector.get(NgZone);
             const groupServiceStub: GroupService = fixture.debugElement.injector.get(GroupService);
             const profileServiceStub: ProfileService = fixture.debugElement.injector.get(ProfileService);
-          //  spyOn(ngZoneStub, "run");
+            //  spyOn(ngZoneStub, "run");
             spyOn(groupServiceStub, "getAllGroup").and.returnValue(Promise.resolve([]));
             spyOn(profileServiceStub, "getAllUserProfile").and.callThrough;
             comp.getAllGroup();
-          //  expect(ngZoneStub.run).toHaveBeenCalled();
+            //  expect(ngZoneStub.run).toHaveBeenCalled();
             expect(groupServiceStub.getAllGroup).toHaveBeenCalled();
             // expect(profileServiceStub.getAllUserProfile).toHaveBeenCalled();
         });
@@ -132,14 +133,14 @@ describe("ShareUserAndGroupPage", () => {
 
     describe("selectAll", () => {
         it("makes expected calls", () => {
-           const ngZoneStub: NgZone = fixture.debugElement.injector.get(NgZone);
+            const ngZoneStub: NgZone = fixture.debugElement.injector.get(NgZone);
             spyOn(comp, "toggleUserSelected");
             spyOn(comp, "toggleGroupSelected");
-           spyOn(ngZoneStub, "run");
+            spyOn(ngZoneStub, "run");
             comp.selectAll();
             // expect(comp.toggleUserSelected).toHaveBeenCalled();
             // expect(comp.toggleGroupSelected).toHaveBeenCalled();
-           expect(ngZoneStub.run).toHaveBeenCalled();
+            expect(ngZoneStub.run).toHaveBeenCalled();
         });
     });
 

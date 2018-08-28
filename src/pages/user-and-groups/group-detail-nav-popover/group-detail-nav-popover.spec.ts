@@ -12,8 +12,8 @@ describe("GroupDetailNavPopoverPage", () => {
     beforeEach(() => {
         const navControllerStub = {};
         const navParamsStub = {
-            get: function() {
-                return (function() {})
+            get: function () {
+                return (function () { })
             }
         };
         const translateServiceStub = {
@@ -22,8 +22,8 @@ describe("GroupDetailNavPopoverPage", () => {
             })
         };
         TestBed.configureTestingModule({
-            declarations: [ GroupDetailNavPopoverPage ],
-            schemas: [ NO_ERRORS_SCHEMA ],
+            declarations: [GroupDetailNavPopoverPage],
+            schemas: [NO_ERRORS_SCHEMA],
             imports: [TranslateModule.forRoot()],
             providers: [
                 { provide: NavController, useValue: navControllerStub },
@@ -69,7 +69,7 @@ describe("GroupDetailNavPopoverPage", () => {
         expect(comp.addUsers).toHaveBeenCalled();
         expect(navParamsStub.get).toHaveBeenCalled();
     });
-    it('It should read removeuser param' , function () {
+    it('It should read removeuser param', function () {
         const navParamsStub: NavParams = fixture.debugElement.injector.get(NavParams);
         spyOn(comp, 'removeUser').and.callThrough();
         spyOn(navParamsStub, 'get').and.callThrough();
@@ -77,8 +77,4 @@ describe("GroupDetailNavPopoverPage", () => {
         expect(comp.removeUser).toHaveBeenCalled();
         expect(navParamsStub.get).toHaveBeenCalled();
     });
-
-
-
-
 });
