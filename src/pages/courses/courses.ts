@@ -121,10 +121,8 @@ export class CoursesPage implements OnInit {
   showOverlay: boolean = false;
 
   resumeContentData: any;
-
-
+  tabBarElement: any;
   private mode: string = "soft";
-
   private isFilterApplied: boolean = false;
 
   callback: QRResultCallback;
@@ -155,9 +153,9 @@ export class CoursesPage implements OnInit {
     private courseUtilService: CourseUtilService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private commonUtilService: CommonUtilService,
-    private telemetryGeneratorService:TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService
   ) {
-
+    this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE, (val: string) => {
       if (val && val.length) {
         this.selectedLanguage = val;
@@ -541,6 +539,7 @@ export class CoursesPage implements OnInit {
   }
 
   ionViewWillLeave(): void {
+    this.tabBarElement.style.display = 'flex';
     this.ngZone.run(() => {
       this.events.unsubscribe('genie.event');
       this.isVisible = false;
@@ -720,6 +719,7 @@ export class CoursesPage implements OnInit {
       data = JSON.parse(data);
       console.log('Success: Import content =>', data);
       this.ngZone.run(() => {
+        this.tabBarElement.style.display = 'none';
         if (data.result && data.result.length) {
           _.forEach(data.result, (value, key) => {
             if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
@@ -727,8 +727,9 @@ export class CoursesPage implements OnInit {
             }
           });
           if (this.queuedIdentifiers.length === 0) {
-            this.showOverlay = false;
             this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
+            this.tabBarElement.style.display = 'flex';
+            this.showOverlay = false;
             console.log('Content not downloaded');
           }
         }
@@ -736,8 +737,9 @@ export class CoursesPage implements OnInit {
     },
       (error: any) => {
         this.ngZone.run(() => {
-          this.showOverlay = false;
           this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
+          this.tabBarElement.style.display = 'flex';
+          this.showOverlay = false;
         });
       });
   }
@@ -763,8 +765,10 @@ export class CoursesPage implements OnInit {
     this.ngZone.run(() => {
       this.contentService.cancelDownload(this.resumeContentData.contentId || this.resumeContentData.identifier, (response) => {
         this.showOverlay = false;
+        this.tabBarElement.style.display = 'flex';
       }, (error) => {
         this.showOverlay = false;
+        this.tabBarElement.style.display = 'flex';
       });
     });
   }
