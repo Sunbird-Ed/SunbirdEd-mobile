@@ -32,7 +32,6 @@ describe("FormAddress", () => {
             registerBackButtonAction: () => ({})
         };
         
-        // const authServiceStub = {};
        
         TestBed.configureTestingModule({
             imports : [TranslateModule.forRoot()],
@@ -40,37 +39,21 @@ describe("FormAddress", () => {
             schemas: [ NO_ERRORS_SCHEMA ],
             providers: [
                 FormBuilder, UserProfileService, AuthService, 
-                // { provide: FormBuilder, useValue: formBuilderStub },
                 { provide: NavController, useValue: navControllerStub },
                 { provide: NavParams, useClass: NavParamsMock },
                 { provide: Platform, useValue: platformStub },
-                // { provide: AlertController, useValue: alertControllerStub },
                 { provide: AlertController, useFactory: () => AlertControllerMock.instance()},
                 { provide: Alert, useFactory: () => AlertMock.instance()},
-                
                 { provide: TranslateService, useClass: TranslateServiceStub },
-                // { provide: AuthService, useValue: authServiceStub },
-                // { provide: UserProfileService, useValue: userProfileServiceStub },
                 { provide: ToastController, useFactory: () => ToastControllerMockNew.instance()},
                 { provide: PopoverController, useFactory: () => PopoverControllerMock.instance() },
                 { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() }
             ]
         });
-        // .compileComponents()
-        // .then(() => {
-        //     fixture = TestBed.createComponent(FormAddress);
-        //     comp = fixture.componentInstance;
-        // });
 
         fixture = TestBed.createComponent(FormAddress);
         comp = fixture.componentInstance;
     });
-
-    // function updateForm(addType, addressLine1, zipcode) {
-    //     comp.addressForm.controls['addType'].setValue(addType);
-    //     comp.addressForm.controls['addressLine1'].setValue(addressLine1);
-    //     comp.addressForm.controls['zipcode'].setValue(zipcode);
-    // }
 
     let getLoader = () => {
         const loadingController = TestBed.get(LoadingController);
@@ -141,7 +124,6 @@ describe("FormAddress", () => {
     });
 
     it("should handle success scenario for updateAddress", () => {
-        // const loadingController = TestBed.get(LoadingController);
         const userProfileService = TestBed.get(UserProfileService)
         getLoader();
         const toasrCtrlStub  = TestBed.get(ToastController);
@@ -163,7 +145,6 @@ describe("FormAddress", () => {
     })
 
     it("should handle error scenario for updateAddress", () => {
-        // const loadingController = TestBed.get(LoadingController);
         const userProfileService = TestBed.get(UserProfileService)
         getLoader();
         const toasrCtrlStub  = TestBed.get(ToastController);
@@ -212,23 +193,5 @@ describe("FormAddress", () => {
         expect(platformStub.registerBackButtonAction).toHaveBeenCalled();
         expect(alertController.create).toHaveBeenCalled();
     });
-
-    // describe("showDeleteConfirm", () => {
-    //     it("makes expected calls", () => {
-    //         const platformStub: Platform = fixture.debugElement.injector.get(Platform);
-    //         const alertControllerStub: AlertController = fixture.debugElement.injector.get(AlertController);
-    //         spyOn(comp, "translateMessage");
-    //         spyOn(comp, "onSubmit");
-    //         spyOn(platformStub, "registerBackButtonAction");
-    //         spyOn(alertControllerStub, "create");
-    //         comp.showDeleteConfirm();
-    //         expect(comp.translateMessage).toHaveBeenCalled();
-    //         expect(comp.onSubmit).toHaveBeenCalled();
-    //         expect(platformStub.registerBackButtonAction).toHaveBeenCalled();
-    //         expect(alertControllerStub.create).toHaveBeenCalled();
-    //     });
-    // });
-
-    
 
 });
