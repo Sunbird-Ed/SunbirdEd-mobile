@@ -64,9 +64,10 @@ export class SettingsPage {
     this.translate.get('CURRENT_LANGUAGE').subscribe(
       value => {
         this.chosenLanguageString = value;
-        this.preference.getString(PreferenceKey.SELECTED_LANGUAGE, value => {
-          this.selectedlanguage = this.chosenLanguageString + ': ' + value;
-        });
+        this.preference.getString(PreferenceKey.SELECTED_LANGUAGE)
+          .then(value => {
+            this.selectedlanguage = this.chosenLanguageString + ': ' + value;
+          });
       }
     );
   }
@@ -96,22 +97,23 @@ export class SettingsPage {
     let loader = this.getLoader();
     loader.present();
     this.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.SUPPORT_CLICKED);
-    this.preference.getString(KEY_SUNBIRD_SUPPORT_FILE_PATH, val => {
-      loader.dismiss();
-      if (val === undefined || val === "" || val === null) {
-        //do nothing
-      } else {
-        this.fileUrl = "file://" + val;
-        // Share via email
-        this.socialSharing.shareViaEmail('', '', ['dummy@example.com'], null, null, this.fileUrl).then(() => {
-          console.log("Share is possible");
-        }).catch(error => {
-          console.log("Share is not possible");
-          console.log(error);
-          // Error!
-        });
-      }
-    });
+    this.preference.getString(KEY_SUNBIRD_SUPPORT_FILE_PATH)
+      .then(val => {
+        loader.dismiss();
+        if (val === undefined || val === "" || val === null) {
+          //do nothing
+        } else {
+          this.fileUrl = "file://" + val;
+          // Share via email
+          this.socialSharing.shareViaEmail('', '', ['dummy@example.com'], null, null, this.fileUrl).then(() => {
+            console.log("Share is possible");
+          }).catch(error => {
+            console.log("Share is not possible");
+            console.log(error);
+            // Error!
+          });
+        }
+      });
   }
 
   shareApp() {

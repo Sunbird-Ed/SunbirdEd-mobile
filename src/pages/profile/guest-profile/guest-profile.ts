@@ -77,11 +77,12 @@ export class GuestProfilePage {
   ) {
 
     //language code
-    this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE, (val: string) => {
-      if (val && val.length) {
-        this.selectedLanguage = val;
-      }
-    });
+    this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
+      .then(val => {
+        if (val && val.length) {
+          this.selectedLanguage = val;
+        }
+      });
 
     //Event for optional and forceful upgrade
     this.events.subscribe('force_optional_upgrade', (upgrade) => {
@@ -96,15 +97,16 @@ export class GuestProfilePage {
       this.refreshProfileData(false, false);
     });
 
-    this.preference.getString('selected_user_type', (val) => {
+    this.preference.getString('selected_user_type')
+      .then(val => {
 
-      if (val == ProfileType.TEACHER) {
-        this.showSignInCard = true;
-      } else if (val == ProfileType.STUDENT) {
-        this.showSignInCard = false;
-      }
-    });
-    
+        if (val == ProfileType.TEACHER) {
+          this.showSignInCard = true;
+        } else if (val == ProfileType.STUDENT) {
+          this.showSignInCard = false;
+        }
+      });
+
     let profileType = this.appGlobal.getGuestUserType();
     if (profileType === ProfileType.TEACHER && this.appGlobal.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER) {
       this.showSignInCard = true;

@@ -145,11 +145,12 @@ export class GuestEditProfilePage {
     this.previousProfileType = this.profile.profileType
 
     //language code
-    this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE, (val: string) => {
-      if (val && val.length) {
-        this.selectedLanguage = val;
-      }
-    });
+    this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
+      .then(val => {
+        if (val && val.length) {
+          this.selectedLanguage = val;
+        }
+      });
   }
 
   ionViewDidLoad() {

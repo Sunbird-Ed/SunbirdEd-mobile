@@ -54,21 +54,22 @@ export class DatasyncPage {
     });
 
     //check what sync option is selected
-    that.preference.getString(KEY_DATA_SYNC_TYPE, val => {
-      if (val === undefined || val === "" || val === null) {
-        that.dataSyncType = DataSyncType.off
-      } else {
-        if (val === "OFF") {
+    that.preference.getString(KEY_DATA_SYNC_TYPE)
+      .then(val => {
+        if (val === undefined || val === "" || val === null) {
           that.dataSyncType = DataSyncType.off
+        } else {
+          if (val === "OFF") {
+            that.dataSyncType = DataSyncType.off
+          }
+          else if (val === "OVER_WIFI_ONLY") {
+            that.dataSyncType = DataSyncType.over_wifi
+          }
+          else if (val === "ALWAYS_ON") {
+            that.dataSyncType = DataSyncType.always_on
+          }
         }
-        else if (val === "OVER_WIFI_ONLY") {
-          that.dataSyncType = DataSyncType.over_wifi
-        }
-        else if (val === "ALWAYS_ON") {
-          that.dataSyncType = DataSyncType.always_on
-        }
-      }
-    });
+      });
   }
 
   ionViewDidLoad() {

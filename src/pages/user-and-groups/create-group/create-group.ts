@@ -84,12 +84,13 @@ export class CreateGroupPage {
     private preference: SharedPreferences,
     private telemetryGeneratorService: TelemetryGeneratorService
   ) {
-    this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE, (val: string) => {
-			if (val && val.length) {
-				this.selectedLanguage = val;
-			}
-    });
-    
+    this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
+      .then(val => {
+        if (val && val.length) {
+          this.selectedLanguage = val;
+        }
+      });
+
     this.group = this.navParams.get('groupInfo') || {};
     this.groupEditForm = this.fb.group({
       name: [this.group.name || "", Validators.required],
@@ -104,7 +105,7 @@ export class CreateGroupPage {
 
   }
 
-  ionViewDidLoad(){
+  ionViewDidLoad() {
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW, "",
       PageId.CREATE_GROUP_SYLLABUS_CLASS,
@@ -171,7 +172,7 @@ export class CreateGroupPage {
     }
 
     let formValue = this.groupEditForm.value;
-    console.log('formValue',formValue);
+    console.log('formValue', formValue);
     if (formValue.name) {
       this.group.name = formValue.name;
       this.group.grade = (!formValue.class.length) ? [] : [formValue.class];
@@ -214,7 +215,7 @@ export class CreateGroupPage {
       loader.present();
 
       this.group.name = formValue.name;
-      this.group.grade = (!formValue.class.length) ? [] :  Array.isArray(formValue.class) ? formValue.class : [formValue.class];;
+      this.group.grade = (!formValue.class.length) ? [] : Array.isArray(formValue.class) ? formValue.class : [formValue.class];;
       this.group.syllabus = (!formValue.syllabus.length) ? [] : [formValue.syllabus];
       this.group.gradeValueMap = {};
 

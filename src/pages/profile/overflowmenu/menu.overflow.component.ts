@@ -28,7 +28,7 @@ import {
     GUEST_STUDENT_TABS,
     GUEST_TEACHER_TABS,
     LOGIN_TEACHER_TABS
-  } from '../../../app/module.service';
+} from '../../../app/module.service';
 import { generateInteractTelemetry } from "../../../app/telemetryutil";
 import { UserAndGroupsPage } from "../../user-and-groups/user-and-groups";
 
@@ -126,30 +126,32 @@ export class OverflowMenuComponent {
                     this.oauth.doLogOut();
                     (<any>window).splashscreen.clearPrefs();
 
-                    this.preferences.getString('GUEST_USER_ID_BEFORE_LOGIN', (val) => {
-                        if (val != "") {
-                            let profile: Profile = new Profile();
-                            profile.uid = val;
-                            profile.handle = "Guest1";
-                            profile.profileType = ProfileType.TEACHER;
-                            profile.source = UserSource.LOCAL;
+                    this.preferences.getString('GUEST_USER_ID_BEFORE_LOGIN')
+                        .then(val => {
+                            if (val != "") {
+                                let profile: Profile = new Profile();
+                                profile.uid = val;
+                                profile.handle = "Guest1";
+                                profile.profileType = ProfileType.TEACHER;
+                                profile.source = UserSource.LOCAL;
 
-                            this.profileService.setCurrentProfile(true, profile, res => { }, error => { });
-                        } else {
-                            this.profileService.setAnonymousUser(success => { }, error => { });
-                        }
-                    });
+                                this.profileService.setCurrentProfile(true, profile, res => { }, error => { });
+                            } else {
+                                this.profileService.setAnonymousUser(success => { }, error => { });
+                            }
+                        });
 
                     if (this.appGlobal.DISPLAY_ONBOARDING_PAGE) {
                         this.app.getRootNav().setRoot(OnboardingPage);
                     } else {
-                        this.preferences.getString('selected_user_type', (val) => {
-                            if (val == ProfileType.STUDENT) {
-                                initTabs(this.container, GUEST_STUDENT_TABS);
-                            } else if (val == ProfileType.TEACHER) {
-                                initTabs(this.container, GUEST_TEACHER_TABS);
-                            }
-                        });
+                        this.preferences.getString('selected_user_type')
+                            .then(val => {
+                                if (val == ProfileType.STUDENT) {
+                                    initTabs(this.container, GUEST_STUDENT_TABS);
+                                } else if (val == ProfileType.TEACHER) {
+                                    initTabs(this.container, GUEST_TEACHER_TABS);
+                                }
+                            });
                         this.app.getRootNav().setRoot(TabsPage, {
                             loginMode: 'guest'
                         });

@@ -130,11 +130,12 @@ export class ResourcesPage implements OnInit {
 		private formAndFrameworkUtilService: FormAndFrameworkUtilService,
 		private telemetryGeneratorService: TelemetryGeneratorService
 	) {
-		this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE, (val: string) => {
-			if (val && val.length) {
-				this.selectedLanguage = val;
-			}
-		});
+		this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
+			.then(val => {
+				if (val && val.length) {
+					this.selectedLanguage = val;
+				}
+			});
 
 		this.events.subscribe('savedResources:update', (res) => {
 			if (res && res.update) {
@@ -485,36 +486,37 @@ export class ResourcesPage implements OnInit {
 	ionViewDidEnter() {
 		this.isVisible = true;
 
-		this.preference.getString('show_app_walkthrough_screen', (value) => {
-			if (value === 'true') {
-				const driver = new Driver({
-					allowClose: true,
-					closeBtnText: this.translateMessage('DONE'),
-					showButtons: true
-				});
-
-				console.log("Driver", driver);
-				setTimeout(() => {
-					driver.highlight({
-						element: '#qrIcon',
-						popover: {
-							title: this.translateMessage('ONBOARD_SCAN_QR_CODE'),
-							description: "<img src='assets/imgs/ic_scanqrdemo.png' /><p>" + this.translateMessage('ONBOARD_SCAN_QR_CODE_DESC', this.appLabel) + "</p>",
-							showButtons: true,         // Do not show control buttons in footer
-							closeBtnText: this.translateMessage('DONE'),
-						}
+		this.preference.getString('show_app_walkthrough_screen')
+			.then(value => {
+				if (value === 'true') {
+					const driver = new Driver({
+						allowClose: true,
+						closeBtnText: this.translateMessage('DONE'),
+						showButtons: true
 					});
 
-					let element = document.getElementById("driver-highlighted-element-stage");
-					var img = document.createElement("img");
-					img.src = "assets/imgs/ic_scan.png";
-					img.id = "qr_scanner";
-					element.appendChild(img);
-				}, 100);
+					console.log("Driver", driver);
+					setTimeout(() => {
+						driver.highlight({
+							element: '#qrIcon',
+							popover: {
+								title: this.translateMessage('ONBOARD_SCAN_QR_CODE'),
+								description: "<img src='assets/imgs/ic_scanqrdemo.png' /><p>" + this.translateMessage('ONBOARD_SCAN_QR_CODE_DESC', this.appLabel) + "</p>",
+								showButtons: true,         // Do not show control buttons in footer
+								closeBtnText: this.translateMessage('DONE'),
+							}
+						});
 
-				this.preference.putString('show_app_walkthrough_screen', 'false');
-			}
-		});
+						let element = document.getElementById("driver-highlighted-element-stage");
+						var img = document.createElement("img");
+						img.src = "assets/imgs/ic_scan.png";
+						img.id = "qr_scanner";
+						element.appendChild(img);
+					}, 100);
+
+					this.preference.putString('show_app_walkthrough_screen', 'false');
+				}
+			});
 	}
 
 	ionViewWillEnter() {
@@ -630,12 +632,12 @@ export class ResourcesPage implements OnInit {
 				let values = new Map();
 				values["filters"] = filter;
 				that.telemetryGeneratorService.generateInteractTelemetry(
-				  InteractType.OTHER,
-				  InteractSubtype.APPLY_FILTER_CLICKED,
-				  Environment.HOME,
-				  PageId.LIBRARY_PAGE_FILTER,
-				  undefined,
-				  values
+					InteractType.OTHER,
+					InteractSubtype.APPLY_FILTER_CLICKED,
+					Environment.HOME,
+					PageId.LIBRARY_PAGE_FILTER,
+					undefined,
+					values
 				);
 
 				Object.keys(that.appliedFilter).forEach(key => {
@@ -659,7 +661,7 @@ export class ResourcesPage implements OnInit {
 
 		let filterOptions = {
 			callback: callback,
-			pageId:PageId.LIBRARY
+			pageId: PageId.LIBRARY
 		}
 
 		// Already apllied filter
