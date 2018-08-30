@@ -6,7 +6,7 @@ import { NO_ERRORS_SCHEMA } from "@angular/core";
 import { NavController } from "ionic-angular";
 import { NavParams } from "ionic-angular";
 import { Events } from "ionic-angular";
-import { ToastController, PopoverController, LoadingController} from "ionic-angular";
+import { ToastController, PopoverController, LoadingController } from "ionic-angular";
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { Globalization } from "@ionic-native/globalization";
@@ -17,8 +17,10 @@ import { Observable } from "rxjs/Observable";
 import 'rxjs/add/observable/of';
 import { AppGlobalService } from "../../service/app-global.service";
 
-import { ToastControllerMock, PopoverControllerMock, LoadingControllerMock,
-    EventsMock } from 'ionic-mocks';
+import {
+    ToastControllerMock, PopoverControllerMock, LoadingControllerMock,
+    EventsMock
+} from 'ionic-mocks';
 
 describe("LanguageSettingsPage", () => {
     let comp: LanguageSettingsPage;
@@ -46,7 +48,7 @@ describe("LanguageSettingsPage", () => {
         // const eventsStub = {
         //     publish: () => ({})
         // };
-        
+
         const translateServiceStub = {
             use: () => ({}),
             get: () => ({
@@ -60,10 +62,10 @@ describe("LanguageSettingsPage", () => {
             getSessionData: () => ({})
         }
         const globalizationStub = {};
-        const sharedPreferencesStub = {
-            getString: () => ({}),
-            putString: () => ({})
-        };
+        // const sharedPreferencesStub = {
+        //     getString: () => ({}),
+        //     putString: () => ({})
+        // };
         const telemetryServiceStub = {
             impression: () => ({}),
             interact: () => ({})
@@ -74,27 +76,28 @@ describe("LanguageSettingsPage", () => {
         };
         const BuildParamServiceStub = {
             getBuildConfigParam: () => ({})
-          }
+        }
         TestBed.configureTestingModule({
             imports: [TranslateModule.forRoot()],
             declarations: [LanguageSettingsPage],
             schemas: [NO_ERRORS_SCHEMA],
-            providers: [ AppGlobalService, ProfileService, ServiceProvider, FrameworkService,
-                {provide: AuthService, useValue: authServiceStub},
-                {provide: BuildParamService, useValue: BuildParamServiceStub},
+            providers: [AppGlobalService, ProfileService, ServiceProvider, FrameworkService,
+                { provide: AuthService, useValue: authServiceStub },
+                { provide: BuildParamService, useValue: BuildParamServiceStub },
                 { provide: TelemetryGeneratorService, useValue: telemetryGeneratorServiceStub },
                 { provide: NavController, useValue: navControllerStub },
                 { provide: NavParams, useValue: navParamsStub },
                 { provide: TranslateService, useValue: translateServiceStub },
                 { provide: TranslateModule, useValue: translateModuleStub },
                 { provide: Globalization, useValue: globalizationStub },
-                { provide: SharedPreferences, useValue: sharedPreferencesStub },
+                //{ provide: SharedPreferences, useValue: sharedPreferencesStub },
                 { provide: TelemetryService, useValue: telemetryServiceStub },
                 { provide: ToastController, useFactory: () => ToastControllerMock.instance() },
                 { provide: PopoverController, useFactory: () => PopoverControllerMock.instance() },
                 { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() },
-                { provide: Events, useFactory: () => EventsMock.instance() }
-                
+                { provide: Events, useFactory: () => EventsMock.instance() },
+                SharedPreferences
+
             ]
         });
         fixture = TestBed.createComponent(LanguageSettingsPage);
@@ -124,64 +127,63 @@ describe("LanguageSettingsPage", () => {
     describe("init", () => {
         it("makes expected calls and value if undefined", (done) => {
             const navParamsStub: NavParams = fixture.debugElement.injector.get(NavParams);
-            const sharedPreferencesStub: SharedPreferences = fixture.debugElement.injector.get(SharedPreferences);
+            const sharedPreferencesStub = TestBed.get(SharedPreferences);
 
             spyOn(comp, "init").and.callThrough();
-            //spyOn(navParamsStub, "get");
-            spyOn(sharedPreferencesStub, "getString").and.callFake((key, value) => {
-                return value(undefined);
-            });
+            spyOn(sharedPreferencesStub, "getString").and.returnValue(Promise.resolve(undefined));
 
             comp.init();
 
-            expect(comp.previousLanguage).toEqual(undefined);
-            //expect(navParamsStub.get).toHaveBeenCalled();
-            expect(sharedPreferencesStub.getString).toHaveBeenCalled();
-
-            setTimeout(() => {
+            sharedPreferencesStub.getString().then((val) => {
+                expect(comp.previousLanguage).toEqual(undefined);
+                expect(sharedPreferencesStub.getString).toHaveBeenCalled();
                 expect(comp.previousLanguage).toBeUndefined();
+                expect(val).toBe(undefined);
                 done();
-            }, 100);
-        });
-        it("make expected calls if value is empty", () => {
-            const sharedPreferencesStub: SharedPreferences = fixture.debugElement.injector.get(SharedPreferences);
-
-            spyOn(sharedPreferencesStub, "getString").and.callFake((key, value) => {
-                return value("");
             });
+        });
+        it("make expected calls if value is empty", (done) => {
+            const sharedPreferencesStub = TestBed.get(SharedPreferences);
+            spyOn(comp, "init").and.callThrough();
+            spyOn(sharedPreferencesStub, "getString").and.returnValue(Promise.resolve(''));
+
             comp.init();
 
-            expect(sharedPreferencesStub.getString).toHaveBeenCalled();
-            setTimeout(() => {
-                expect(comp.previousLanguage).toBeUndefined();
-            }, 100);
-        });
-        it("make expected calls if value is null", () => {
-            const sharedPreferencesStub: SharedPreferences = fixture.debugElement.injector.get(SharedPreferences);
-
-            spyOn(sharedPreferencesStub, "getString").and.callFake((key, value) => {
-                return value(null);
+            sharedPreferencesStub.getString().then((val) => {
+                //expect(comp.previousLanguage).toEqual('');
+                expect(sharedPreferencesStub.getString).toHaveBeenCalled();
+                expect(val).toBe('');
+                done();
             });
+        });
+        it("make expected calls if value is null", (done) => {
+            const sharedPreferencesStub = TestBed.get(SharedPreferences);
+
+            spyOn(comp, "init").and.callThrough();
+            spyOn(sharedPreferencesStub, "getString").and.returnValue(Promise.resolve(null));
+
             comp.init();
 
-            expect(sharedPreferencesStub.getString).toHaveBeenCalled();
-            setTimeout(() => {
-                expect(comp.previousLanguage).toBeUndefined();
-            }, 100);
-        });
-        it("makes expected calls in else part if value is present", () => {
-            const sharedPreferencesStub: SharedPreferences = fixture.debugElement.injector.get(SharedPreferences);
-            var value;
-            spyOn(sharedPreferencesStub, "getString").and.callFake((key, value) => {
-                return value(value);
+            sharedPreferencesStub.getString().then((val) => {
+//                expect(comp.previousLanguage).toEqual(null);
+                expect(sharedPreferencesStub.getString).toHaveBeenCalled();
+                expect(val).toBe(null);
+                done();
             });
+        });
+        it("makes expected calls in else part if value is present", (done) => {
+            const sharedPreferencesStub = TestBed.get(SharedPreferences);
+            spyOn(comp, "init").and.callThrough();
+            spyOn(sharedPreferencesStub, "getString").and.returnValue(Promise.resolve('en'));
+
             comp.init();
 
-            expect(sharedPreferencesStub.getString).toHaveBeenCalled();
-            setTimeout(() => {
-                expect(comp.previousLanguage).toEqual(value);
-                expect(comp.language).toEqual(value);
-            }, 100);
+            sharedPreferencesStub.getString().then((val) => {
+                expect(comp.previousLanguage).toEqual('en');
+                expect(sharedPreferencesStub.getString).toHaveBeenCalled();
+                expect(val).toBe('en');
+                done();
+            });
         });
     });
 

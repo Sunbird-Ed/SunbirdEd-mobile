@@ -18,7 +18,7 @@ import {
 
 import {
     GenieSDKServiceProviderMock, SharedPreferencesMock, FileUtilMock, NavParamsMock,
-    SocialSharingMock, NavMock, TranslateLoaderMock, AuthServiceMock, EventsMock, AppGlobalServiceMock, ToastControllerMockNew
+    SocialSharingMock, NavMock, TranslateLoaderMock, AuthServiceMock, EventsMock, AppGlobalServiceMock, ToastControllerMockNew, BuildParamaServiceMock
 } from '../../../test-config/mocks-ionic';
 import { PBHorizontal } from "../../component/pbhorizontal/pb-horizontal";
 import { OnboardingCardComponent } from '../../component/onboarding-card/onboarding-card';
@@ -95,7 +95,7 @@ describe('CoursesPage Component', () => {
                 { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() },
                 { provide: BuildParamService, useValue: buildParamServiceStub },
                 { provide: TelemetryService, useValue: telemetryServiceStub },
-
+                { provide: BuildParamService, useClass: BuildParamaServiceMock }
             ]
         })
     }));
@@ -113,6 +113,7 @@ describe('CoursesPage Component', () => {
     });
 
     it('should not invoke getEnrolledCourses for guest users', () => {
+        
         AppGlobalServiceMock.setLoggedInStatus(false);
         spyOn(component, "getEnrolledCourses").and.callThrough();
         component.getUserId();

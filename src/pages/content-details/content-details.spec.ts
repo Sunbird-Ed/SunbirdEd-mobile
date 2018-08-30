@@ -70,12 +70,13 @@ describe('ContentDetailsPage Component', () => {
                 { provide: AppGlobalService, useClass: AppGlobalService },
                 { provide: AuthService, useClass: AuthServiceMock },
                 { provide: GenieSDKServiceProvider, useClass: GenieSDKServiceProviderMock },
-                { provide: SharedPreferences, useClass: SharedPreferencesMock },
+                //{ provide: SharedPreferences, useClass: SharedPreferencesMock },
                 { provide: Storage, useFactory: () => StorageMock.instance() },
                 { provide: ToastController, useClass: ToastControllerMock },
                 { provide: PopoverController, useFactory: () => PopoverControllerMock.instance() },
-                { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() }
+                { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() },
                 // { provide: Platform, useFactory: () => PlatformMock.instance() }
+                SharedPreferences
             ]
         })
     }));
@@ -341,32 +342,36 @@ describe('ContentDetailsPage Component', () => {
         expect(event.publish).toHaveBeenCalled();
     });
 
-    it('should check profile type. ProfileType should be TEACHER', () => {
+    it('should check profile type. ProfileType should be TEACHER', (done) => {
         const sharedPreferences = TestBed.get(SharedPreferences);
         spyOn(component, 'checkCurrentUserType').and.callThrough();
-        spyOn(sharedPreferences, 'getString').and.callFake(function ({ }, success) {
-            return success(ProfileType.TEACHER);
-        });
+        spyOn(sharedPreferences, 'getString').and.returnValue(Promise.resolve(ProfileType.TEACHER));
         component.checkCurrentUserType();
-        expect(component.checkCurrentUserType).toBeDefined();
-        expect(component.checkCurrentUserType).toHaveBeenCalled();
-        expect(sharedPreferences.getString).toHaveBeenCalled();
-        expect(component.profileType).toEqual(ProfileType.TEACHER);
-        expect(component.profileType).not.toBe(ProfileType.STUDENT);
+        sharedPreferences.getString().then((val) => {
+            expect(component.checkCurrentUserType).toBeDefined();
+            expect(component.checkCurrentUserType).toHaveBeenCalled();
+            expect(sharedPreferences.getString).toHaveBeenCalled();
+            expect(component.profileType).toEqual(ProfileType.TEACHER);
+            expect(component.profileType).not.toBe(ProfileType.STUDENT);
+            expect(val).toEqual(ProfileType.TEACHER);
+            done();
+        });
     });
 
-    it('should check profile type. ProfileType should be STUDENT', () => {
+    it('should check profile type. ProfileType should be STUDENT', (done) => {
         const sharedPreferences = TestBed.get(SharedPreferences);
         spyOn(component, 'checkCurrentUserType').and.callThrough();
-        spyOn(sharedPreferences, 'getString').and.callFake(function ({ }, success) {
-            return success(ProfileType.STUDENT);
-        });
+        spyOn(sharedPreferences, 'getString').and.returnValue(Promise.resolve(ProfileType.STUDENT));
         component.checkCurrentUserType();
-        expect(component.checkCurrentUserType).toBeDefined();
-        expect(component.checkCurrentUserType).toHaveBeenCalled();
-        expect(sharedPreferences.getString).toHaveBeenCalled();
-        expect(component.profileType).toEqual(ProfileType.STUDENT);
-        expect(component.profileType).not.toBe(ProfileType.TEACHER);
+        sharedPreferences.getString().then((val) => {
+            expect(component.checkCurrentUserType).toBeDefined();
+            expect(component.checkCurrentUserType).toHaveBeenCalled();
+            expect(sharedPreferences.getString).toHaveBeenCalled();
+            expect(component.profileType).toEqual(ProfileType.STUDENT);
+            expect(component.profileType).not.toBe(ProfileType.TEACHER);
+            expect(val).toEqual(ProfileType.STUDENT);
+            done();
+        });
     });
 
     it('should share content details: content is locally available and Ecar should get exported successfully', () => {
