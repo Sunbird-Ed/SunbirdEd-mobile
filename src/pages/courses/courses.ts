@@ -123,7 +123,7 @@ export class CoursesPage implements OnInit {
   resumeContentData: any;
   tabBarElement: any;
   private mode: string = "soft";
-  private isFilterApplied: boolean = false;
+  isFilterApplied: boolean = false;
 
   callback: QRResultCallback;
 
@@ -723,27 +723,30 @@ export class CoursesPage implements OnInit {
       this.ngZone.run(() => {
         this.tabBarElement.style.display = 'none';
         if (data.result && data.result.length) {
-          _.forEach(data.result, (value, key) => {
-            if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
-              this.queuedIdentifiers.push(value.identifier);
-            }
-          });
-          if (this.queuedIdentifiers.length === 0) {
-            this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
-            this.tabBarElement.style.display = 'flex';
-            this.showOverlay = false;
-            console.log('Content not downloaded');
+          let importStatus = data.result[0];
+
+          if (importStatus.status !== 'ENQUEUED_FOR_DOWNLOAD') {
+            this.removeOverlayAndShowError();
           }
         }
       });
     },
       (error: any) => {
         this.ngZone.run(() => {
-          this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
-          this.tabBarElement.style.display = 'flex';
-          this.showOverlay = false;
+          this.removeOverlayAndShowError();
         });
       });
+  }
+
+  /**
+   * This method removes the loading/downloading overlay and displays the error message 
+   * and also shows the bottom navigation bar
+   * 
+   */
+  removeOverlayAndShowError(): any {
+    this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
+    this.tabBarElement.style.display = 'flex';
+    this.showOverlay = false;
   }
 
 
@@ -766,11 +769,11 @@ export class CoursesPage implements OnInit {
   cancelDownload() {
     this.ngZone.run(() => {
       this.contentService.cancelDownload(this.resumeContentData.contentId || this.resumeContentData.identifier, (response) => {
-        this.showOverlay = false;
         this.tabBarElement.style.display = 'flex';
+        this.showOverlay = false;
       }, (error) => {
-        this.showOverlay = false;
         this.tabBarElement.style.display = 'flex';
+        this.showOverlay = false;
       });
     });
   }
