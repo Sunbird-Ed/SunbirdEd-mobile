@@ -13,9 +13,9 @@ import { AuthService } from "sunbird";
 import { UserProfileService } from "sunbird";
 import { FormAddress } from "./form.address";
 
-import { AlertControllerMock, AlertMock} from 'ionic-mocks';
+// import { AlertControllerMock, AlertMock} from 'ionic-mocks';
 import {
-    LoadingControllerMock, PopoverControllerMock, NavParamsMock, TranslateServiceStub, ToastControllerMockNew
+    LoadingControllerMock, PopoverControllerMock, NavParamsMock, TranslateServiceStub, ToastControllerMockNew, AlertControllerMock
 } from '../../../../test-config/mocks-ionic';
 
 describe("FormAddress", () => {
@@ -43,7 +43,7 @@ describe("FormAddress", () => {
                 { provide: NavParams, useClass: NavParamsMock },
                 { provide: Platform, useValue: platformStub },
                 { provide: AlertController, useFactory: () => AlertControllerMock.instance()},
-                { provide: Alert, useFactory: () => AlertMock.instance()},
+                // { provide: Alert, useFactory: () => AlertMock.instance()},
                 { provide: TranslateService, useClass: TranslateServiceStub },
                 { provide: ToastController, useFactory: () => ToastControllerMockNew.instance()},
                 { provide: PopoverController, useFactory: () => PopoverControllerMock.instance() },
@@ -52,6 +52,7 @@ describe("FormAddress", () => {
         });
 
         fixture = TestBed.createComponent(FormAddress);
+        // FormAddress.prototype.isNewForm = true;
         comp = fixture.componentInstance;
     });
 
@@ -59,7 +60,11 @@ describe("FormAddress", () => {
         const loadingController = TestBed.get(LoadingController);
         comp.getLoader();
     }
-   
+    
+    // it("isNewForm should be true", () => {
+    //     expect(comp.isNewForm).toBe(true);
+    // });
+
     it("can load instance", () => {
         expect(comp).toBeTruthy();
     });
@@ -69,7 +74,7 @@ describe("FormAddress", () => {
         expect(comp.addressForm.valid).toBeFalsy();
     });
 
-    it('form invalid when empty', () => {
+    it('form is invalid when required fields are not filled', () => {
         let errors = {};
         console.log('comp.addressForm',comp.addressForm);
         let addressLine1 = comp.addressForm.controls['addressLine1'];
@@ -98,14 +103,14 @@ describe("FormAddress", () => {
         expect(comp.updateAddress).toHaveBeenCalled();
     });
 
-    it("should validate addressForm and return true", () => {
+    it("should validate zipcode and return true", () => {
         let zip = "123456";
         comp.addressForm.controls['zipcode'].setValue("123456");
         let formval = comp.addressForm.value;
         expect(comp.validateForm(formval)).toBe(true);
     });
 
-    it("should validate addressForm and return false", () => {
+    it("should validate zipcode and return false", () => {
         comp.addressForm.controls['zipcode'].setValue("abcdef");
         let formval = comp.addressForm.value;
         const toasrCtrlStub  = TestBed.get(ToastController);
@@ -180,7 +185,7 @@ describe("FormAddress", () => {
 
     it("showDeleteConfirm should make expected calls", () => {
         const alertController = TestBed.get(AlertController);
-        const alert = TestBed.get(Alert);
+        // const alert = TestBed.get(Alert);
         const translateStub =  TestBed.get(TranslateService);
         const platformStub: Platform = TestBed.get(Platform);
         spyOn(platformStub, "registerBackButtonAction");
