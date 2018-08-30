@@ -19,7 +19,7 @@
     <preference name="AndroidLaunchMode" value="singleInstance" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
     <hook src="scripts/copyGradleFiles.js" type="before_build" />
-    <hook src="scripts/copyGradleFiles.js" type="before_run" />
+    <hook src="scripts/copyBundledData.js" type="before_build" />
     <platform name="android">
         <config-file parent="/manifest/application" target="AndroidManifest.xml">
             <meta-data android:name="io.fabric.ApiKey" android:value="${fabricKey}" />
