@@ -273,8 +273,8 @@ export class FormAndFrameworkUtilService {
 
             let categoryList: Array<any> = [];
 
-            this.framework.getCategoryData(req,
-                (res: any) => {
+            this.framework.getCategoryData(req)
+                .then(res => {
                     const resposneArray = JSON.parse(res);
                     let value = {};
                     resposneArray.forEach(element => {
@@ -285,8 +285,8 @@ export class FormAndFrameworkUtilService {
                     });
 
                     resolve(categoryList);
-                },
-                (err: any) => {
+                })
+                .catch(err => {
                     reject(err);
                 });
         });
@@ -294,12 +294,12 @@ export class FormAndFrameworkUtilService {
 
     fetchNextCategory(req: CategoryRequest): Promise<any> {
         return new Promise((resolve, reject) => {
-            this.framework.getCategoryData(req,
-                (res: any) => {
+            this.framework.getCategoryData(req)
+                .then(res => {
                     const resposneArray: Array<any> = JSON.parse(res);
                     resolve(resposneArray);
-                },
-                (err: any) => {
+                })
+                .catch(err => {
                     reject(err);
                 });
         });

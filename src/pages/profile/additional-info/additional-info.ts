@@ -93,7 +93,7 @@ export class AdditionalInfoComponent {
     private ionicApp: IonicApp,
     private platform: Platform
   ) {
-    
+
     /* Receive data from other component */
     this.userId = this.navParams.get('userId');
     this.profile = this.navParams.get('profile') || {};
@@ -183,12 +183,12 @@ export class AdditionalInfoComponent {
       selectedLanguage: this.translate.currentLang
     };
 
-    this.frameworkService.getCategoryData(req,
-      (res: any) => {
-        this[propertyName] = _.map(JSON.parse(res), 'name');
-      },
-      (err: any) => {
-        console.log("Subject Category Response: ", JSON.parse(err));
+    this.frameworkService.getCategoryData(req)
+      .then(category => {
+        this[propertyName] = _.map(JSON.parse(category), 'name');
+      })
+      .catch(err => {
+        console.log(currentCategory + " Category Response: ", JSON.parse(err));
       });
   }
 
