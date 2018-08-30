@@ -156,11 +156,12 @@ export class CoursesPage implements OnInit {
     private telemetryGeneratorService: TelemetryGeneratorService
   ) {
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
-    this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE, (val: string) => {
-      if (val && val.length) {
-        this.selectedLanguage = val;
-      }
-    });
+    this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
+      .then(val => {
+        if (val && val.length) {
+          this.selectedLanguage = val;
+        }
+      });
 
     //Event for optional and forceful upgrade
     this.events.subscribe('force_optional_upgrade', (upgrade) => {
@@ -260,36 +261,37 @@ export class CoursesPage implements OnInit {
     ));
 
     this.appGlobal.generateConfigInteractEvent(PageId.COURSES, this.isOnBoardingCardCompleted);
-    this.preference.getString('show_app_walkthrough_screen', (value) => {
-      if (value === 'true') {
-        const driver = new Driver({
-          allowClose: true,
-          closeBtnText: this.commonUtilService.translateMessage('DONE'),
-          showButtons: true
-        });
-
-        console.log("Driver", driver);
-        setTimeout(() => {
-          driver.highlight({
-            element: '#qrIcon',
-            popover: {
-              title: this.commonUtilService.translateMessage('ONBOARD_SCAN_QR_CODE'),
-              description: "<img src='assets/imgs/ic_scanqrdemo.png' /><p>" + this.commonUtilService.translateMessage('ONBOARD_SCAN_QR_CODE_DESC', this.appLabel) + "</p>",
-              showButtons: true,         // Do not show control buttons in footer
-              closeBtnText: this.commonUtilService.translateMessage('DONE'),
-            }
+    this.preference.getString('show_app_walkthrough_screen')
+      .then(value => {
+        if (value === 'true') {
+          const driver = new Driver({
+            allowClose: true,
+            closeBtnText: this.commonUtilService.translateMessage('DONE'),
+            showButtons: true
           });
 
-          let element = document.getElementById("driver-highlighted-element-stage");
-          var img = document.createElement("img");
-          img.src = "assets/imgs/ic_scan.png";
-          img.id = "qr_scanner";
-          element.appendChild(img);
-        }, 100);
+          console.log("Driver", driver);
+          setTimeout(() => {
+            driver.highlight({
+              element: '#qrIcon',
+              popover: {
+                title: this.commonUtilService.translateMessage('ONBOARD_SCAN_QR_CODE'),
+                description: "<img src='assets/imgs/ic_scanqrdemo.png' /><p>" + this.commonUtilService.translateMessage('ONBOARD_SCAN_QR_CODE_DESC', this.appLabel) + "</p>",
+                showButtons: true,         // Do not show control buttons in footer
+                closeBtnText: this.commonUtilService.translateMessage('DONE'),
+              }
+            });
 
-        this.preference.putString('show_app_walkthrough_screen', 'false');
-      }
-    });
+            let element = document.getElementById("driver-highlighted-element-stage");
+            var img = document.createElement("img");
+            img.src = "assets/imgs/ic_scan.png";
+            img.id = "qr_scanner";
+            element.appendChild(img);
+          }, 100);
+
+          this.preference.putString('show_app_walkthrough_screen', 'false');
+        }
+      });
   }
 
   /**

@@ -4,8 +4,16 @@ import { AboutAppPage } from '../about-app/about-app';
 import { TermsofservicePage } from '../termsofservice/termsofservice';
 import { PrivacypolicyPage } from '../privacypolicy/privacypolicy';
 import { AppVersion } from '@ionic-native/app-version';
-import { DeviceInfoService, BuildParamService } from 'sunbird';
-import { Impression, ImpressionType, PageId, Environment, TelemetryService } from 'sunbird';
+import {
+  DeviceInfoService,
+  BuildParamService
+} from 'sunbird';
+import {
+  ImpressionType,
+  PageId,
+  Environment,
+  TelemetryService
+} from 'sunbird';
 import { generateImpressionTelemetry } from '../../../app/telemetryutil';
 
 /**
@@ -14,7 +22,6 @@ import { generateImpressionTelemetry } from '../../../app/telemetryutil';
  * See https://ionicframework.com/docs/components/#navigation for more info on
  * Ionic pages and navigation.
  */
-
 @Component({
   selector: 'page-about-us',
   templateUrl: 'about-us.html',
@@ -44,9 +51,6 @@ export class AboutUsPage {
         console.log("Device Id: ", JSON.parse(err));
       });
 
-
-
-
     this.appVersion.getAppName()
       .then((appName: any) => {
         return appName;
@@ -55,7 +59,6 @@ export class AboutUsPage {
         this.getVersionName(val);
       });
   }
-
 
   aboutApp() {
     this.navCtrl.push(AboutAppPage)
@@ -76,26 +79,29 @@ export class AboutUsPage {
       Environment.SETTINGS, "", "", "",
       undefined,
       undefined
-
     ));
   }
 
   getVersionName(appName): any {
-    this.buildParamService.getBuildConfigParam("VERSION_NAME", (response: any) => {
-      this.getVersionCode(appName, response);
-      return response;
-    }, (error) => {
-      return "";
-    });
+    this.buildParamService.getBuildConfigParam("VERSION_NAME")
+      .then(response => {
+        this.getVersionCode(appName, response);
+        return response;
+      })
+      .catch(error => {
+        return "";
+      });
   }
 
   getVersionCode(appName, versionName): any {
-    this.buildParamService.getBuildConfigParam("VERSION_CODE", (response: any) => {
-      this.version = appName + " v" + versionName + "." + response;
-      return response;
-    }, (error) => {
-      return "";
-    });
+    this.buildParamService.getBuildConfigParam("VERSION_CODE")
+      .then(response => {
+        this.version = appName + " v" + versionName + "." + response;
+        return response;
+      })
+      .catch(error => {
+        return "";
+      });
   }
 
 }

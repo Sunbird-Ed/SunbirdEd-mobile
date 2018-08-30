@@ -223,10 +223,12 @@ export class EnrolledCourseDetailsPage {
     this.zone = zone;
     this.toastCtrl = toastCtrl;
 
-    this.buildParamService.getBuildConfigParam("BASE_URL", (response: any) => {
-      this.baseUrl = response
-    }, (error) => {
-    });
+    this.buildParamService.getBuildConfigParam("BASE_URL")
+      .then(response => {
+        this.baseUrl = response
+      })
+      .catch(error => {
+      });
 
     this.events.subscribe(EventTopics.ENROL_COURSE_SUCCESS, (res) => {
       if (res && res.batchId) {
@@ -277,15 +279,16 @@ export class EnrolledCourseDetailsPage {
   }
 
   checkCurrentUserType() {
-    this.preference.getString('selected_user_type', (val) => {
-      if (val != "") {
-        if (val == ProfileType.TEACHER) {
-          this.profileType = ProfileType.TEACHER;
-        } else if (val == ProfileType.STUDENT) {
-          this.profileType = ProfileType.STUDENT;
+    this.preference.getString('selected_user_type')
+      .then(val => {
+        if (val != "") {
+          if (val == ProfileType.TEACHER) {
+            this.profileType = ProfileType.TEACHER;
+          } else if (val == ProfileType.STUDENT) {
+            this.profileType = ProfileType.STUDENT;
+          }
         }
-      }
-    });
+      });
   }
 
   /**

@@ -215,11 +215,12 @@ export class CollectionDetailsPage {
       this.backButtonFunc();
     }, 10)
     this.objRollup = new Rollup();
-    this.buildParamService.getBuildConfigParam("BASE_URL", (response: any) => {
-      this.baseUrl = response
-    }, (error) => {
-      return "";
-    });
+    this.buildParamService.getBuildConfigParam("BASE_URL")
+      .then(response => {
+        this.baseUrl = response
+      })
+      .catch(error => {
+      });
 
     if (this.network.type === 'none') {
       this.isNetworkAvailable = false;
@@ -276,15 +277,16 @@ export class CollectionDetailsPage {
   }
 
   checkCurrentUserType() {
-    this.preference.getString('selected_user_type', (val) => {
-      if (val != "") {
-        if (val == ProfileType.TEACHER) {
-          this.profileType = ProfileType.TEACHER;
-        } else if (val == ProfileType.STUDENT) {
-          this.profileType = ProfileType.STUDENT;
+    this.preference.getString('selected_user_type')
+      .then(val => {
+        if (val != "") {
+          if (val == ProfileType.TEACHER) {
+            this.profileType = ProfileType.TEACHER;
+          } else if (val == ProfileType.STUDENT) {
+            this.profileType = ProfileType.STUDENT;
+          }
         }
-      }
-    });
+      });
   }
 
   /**

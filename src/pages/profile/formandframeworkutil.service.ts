@@ -7,7 +7,6 @@ import {
     FrameworkService,
     CategoryRequest,
     FrameworkDetailsRequest,
-    ProfileService,
     SharedPreferences,
     FormRequest,
     FormService
@@ -27,7 +26,6 @@ export class FormAndFrameworkUtilService {
 
     constructor(
         private framework: FrameworkService,
-        private profileService: ProfileService,
         public events: Events,
         public zone: NgZone,
         public preference: SharedPreferences,
@@ -36,11 +34,12 @@ export class FormAndFrameworkUtilService {
         private appVersion: AppVersion
     ) {
         //Get language selected
-        this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE, (val: string) => {
-            if (val && val.length) {
-                this.selectedLanguage = val;
-            }
-        });
+        this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
+            .then(val => {
+                if (val && val.length) {
+                    this.selectedLanguage = val;
+                }
+            });
     }
 
     /**
@@ -247,13 +246,12 @@ export class FormAndFrameworkUtilService {
                 req.frameworkId = frameworkId;
             }
 
-            this.framework.getFrameworkDetails(req,
-                (res: any) => {
-                    // let categories = JSON.parse(JSON.parse(res).result.framework).categories;
+            this.framework.getFrameworkDetails(req)
+                .then(res => {
                     resolve(res);
-                },
-                (err: any) => {
-                    reject(err);
+                })
+                .catch(error => {
+                    reject(error);
                 });
         });
     }

@@ -1,6 +1,5 @@
 import {
-    Injectable,
-    NgZone
+    Injectable
 } from '@angular/core';
 import * as _ from 'lodash';
 import { Events, ToastOptions } from 'ionic-angular';
@@ -31,7 +30,6 @@ export class OnboardingService {
     subjectList: Array<string> = [];
     mediumList: Array<string> = [];
     frameworkId: string = '';
-    
 
     private options: ToastOptions = {
         message: '',
@@ -41,21 +39,19 @@ export class OnboardingService {
 
     constructor(
         private profileService: ProfileService,
-        public events: Events,
-        public zone: NgZone,
+        private events: Events,
         private preference: SharedPreferences,
         private formAndFrameworkUtilService: FormAndFrameworkUtilService,
         private toastCtrl: ToastController,
         private translate: TranslateService
     ) {
-
         //fetch language code
-        this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE, (val: string) => {
-            if (val && val.length) {
-                this.selectedLanguage = val;
-            }
-        });
-
+        this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
+            .then(val => {
+                if (val && val.length) {
+                    this.selectedLanguage = val;
+                }
+            });
     }
 
     initializeCard(): Promise<any> {
@@ -152,7 +148,6 @@ export class OnboardingService {
      * Method user to fetch Current Guest User
      */
     getCurrentUser(): Promise<any> {
-
         return new Promise((resolve, reject) => {
             this.profileService.getCurrentUser((res: any) => {
                 let index = 0;
@@ -291,11 +286,9 @@ export class OnboardingService {
 
                             this.setAndSaveDetails(this.onBoardingSlides[index], index);
                         }
-
                     }
                 }
             })
-
     }
 
     getSyllabusDetails() {
@@ -362,7 +355,6 @@ export class OnboardingService {
             }
             this.getCategoryData(request, currentField, index, hasUserClicked);
         }
-
     }
 
     /**
@@ -437,7 +429,6 @@ export class OnboardingService {
             req.subject = [];
         }
 
-
         if (req.grade && req.grade.length > 0) {
             req.grade.forEach(gradeCode => {
                 for (let i = 0; i < this.gradeList.length; i++) {
@@ -479,7 +470,6 @@ export class OnboardingService {
         return stringArray.join(", ");
     }
 
-
     /**
   * It Filter out the selected value and stores in object
   * @param {object} selectedSlide Object of all Options
@@ -503,7 +493,7 @@ export class OnboardingService {
                     }).catch(error => {
                         if (this.profile.syllabus && this.profile.syllabus[0] !== '') {
                             let displayValues = [];
-        
+
                             this.syllabusList.forEach(element => {
                                 if (_.includes(this.profile.syllabus, element.value)) {
                                     element.checked = true;
@@ -527,11 +517,7 @@ export class OnboardingService {
 
             this.setAndSaveDetails(selectedSlide, index);
         }
-
-
-
     }
-
 
     private setAndSaveDetails(selectedSlide: any, index: number) {
         selectedSlide.options.forEach(options => {

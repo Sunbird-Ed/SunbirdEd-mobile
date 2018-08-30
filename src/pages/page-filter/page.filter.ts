@@ -1,9 +1,14 @@
 import { Component } from "@angular/core";
-import { PopoverController, ViewController, NavParams, Platform, Events } from "ionic-angular";
+import {
+  PopoverController,
+  ViewController,
+  NavParams,
+  Platform,
+  Events
+} from "ionic-angular";
 import { AppGlobalService } from "../../service/app-global.service";
 import * as _ from 'lodash';
 import { TranslateService } from "@ngx-translate/core";
-
 import {
   PageAssembleFilter,
   TelemetryService,
@@ -17,7 +22,6 @@ import {
 } from "sunbird";
 import { PageFilterOptions } from "./options/filter.options";
 import { generateInteractTelemetry } from "../../app/telemetryutil";
-import * as frameworkDataList from "../../config/framework.filters";
 import { TelemetryGeneratorService } from "../../service/telemetry-generator.service";
 
 @Component({
@@ -62,7 +66,6 @@ export class PageFilter {
   }
 
   getTranslatedValues(translations) {
-
     if (translations.hasOwnProperty(this.translate.currentLang)) {
       return translations[this.translate.currentLang];
     }
@@ -145,8 +148,6 @@ export class PageFilter {
     });
   }
 
-
-
   /**
  * This will internally call framework API
  * @param {string} currentCategory - request Parameter passing to the framework API
@@ -157,8 +158,6 @@ export class PageFilter {
       currentCategory: currentCategory,
       frameworkId: frameworkId,
       selectedLanguage: this.translate.currentLang
-
-
     };
 
     this.frameworkService.getCategoryData(req,
@@ -192,7 +191,6 @@ export class PageFilter {
 
   apply() {
     if (this.callback) {
-
       let filters = _.cloneDeep(this.facetsFilter);
       filters.forEach(element => {
         if (element.code === 'contentType' && element.selectedValuesIndices && element.selectedValuesIndices.length) {

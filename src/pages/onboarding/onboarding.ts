@@ -242,33 +242,35 @@ export class OnboardingPage {
         null,
         undefined,
         undefined));
-    this.preferences.getString('selected_user_type', (val) => {
-      if (val == ProfileType.STUDENT) {
-        initTabs(this.container, GUEST_STUDENT_TABS);
-      } else if (val == ProfileType.TEACHER) {
-        initTabs(this.container, GUEST_TEACHER_TABS);
-      }
-    });
-    this.preferences.getString('GUEST_USER_ID_BEFORE_LOGIN', (val) => {
-      if (val != "") {
-        let profile: Profile = new Profile();
-        profile.uid = val;
-        profile.handle = "Guest1";
-        profile.profileType = ProfileType.TEACHER;
-        profile.source = UserSource.LOCAL;
+    this.preferences.getString('selected_user_type')
+      .then(val => {
+        if (val == ProfileType.STUDENT) {
+          initTabs(this.container, GUEST_STUDENT_TABS);
+        } else if (val == ProfileType.TEACHER) {
+          initTabs(this.container, GUEST_TEACHER_TABS);
+        }
+      });
+    this.preferences.getString('GUEST_USER_ID_BEFORE_LOGIN')
+      .then(val => {
+        if (val != "") {
+          let profile: Profile = new Profile();
+          profile.uid = val;
+          profile.handle = "Guest1";
+          profile.profileType = ProfileType.TEACHER;
+          profile.source = UserSource.LOCAL;
 
-        this.profileService.setCurrentProfile(true, profile, res => {
-          this.events.publish(AppGlobalService.USER_INFO_UPDATED);
-          this.navCtrl.setRoot(TabsPage, {
-            loginMode: 'guest'
+          this.profileService.setCurrentProfile(true, profile, res => {
+            this.events.publish(AppGlobalService.USER_INFO_UPDATED);
+            this.navCtrl.setRoot(TabsPage, {
+              loginMode: 'guest'
+            });
+          }, err => {
+            this.navCtrl.push(UserTypeSelectionPage);
           });
-        }, err => {
+        } else {
           this.navCtrl.push(UserTypeSelectionPage);
-        });
-      } else {
-        this.navCtrl.push(UserTypeSelectionPage);
-      }
-    });
+        }
+      });
   }
 
   generateLoginInteractTelemetry(interactType, interactSubtype, uid) {
