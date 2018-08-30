@@ -114,6 +114,7 @@ export class FormAddress {
 
     /* Allowed only Numbers and 6 digits */
     if (formVal.zipcode != '' && !formVal.zipcode.match(/^\d{6}$/)) {
+      console.log('in zipcode');
       this.getToast(this.translateMessage('INVALID_PINCODE')).present();
       return false;
     }
@@ -189,7 +190,6 @@ export class FormAddress {
           role: 'cancel',
           cssClass: 'alert-btn-cancel',
           handler: () => {
-            console.log('Disagree clicked');
           }
         },
         {
@@ -197,7 +197,6 @@ export class FormAddress {
           cssClass: 'alert-btn-delete',
           handler: () => {
             this.onSubmit(true);
-            console.log('Agree clicked');
           }
         },
         {
@@ -205,7 +204,6 @@ export class FormAddress {
           role: 'cancel',
           cssClass: 'closeButton',
           handler: () => {
-            console.log('close icon clicked');
           }
         }
       ]

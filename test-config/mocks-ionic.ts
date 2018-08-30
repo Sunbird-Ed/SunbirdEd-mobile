@@ -366,6 +366,23 @@ export class PopoverMock extends ViewController {
     return instance;
   }
 }
+
+export class AlertControllerMock {
+  public static instance(alert?: AlertMock): any {
+    let instance = jasmine.createSpyObj('AlertController', ['create']);
+    instance.create.and.returnValue(alert || AlertMock.instance());
+
+    return instance;
+  }
+}
+
+export class AlertMock extends ViewController {
+  public static instance(): any {
+    let instance = jasmine.createSpyObj('Alert', ['present', 'onDidDismiss', 'dismissAll', 'setContent', 'setSpinner']);
+    instance.present.and.returnValue(Promise.resolve());
+    return instance;
+  }
+}
 // class PopoverMock {
 
 //   constructor(popoverMock: PopoverMock) {}
