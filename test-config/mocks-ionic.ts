@@ -228,9 +228,11 @@ export class GenieSDKServiceProviderMock extends GenieSDKServiceProvider {
   }
 }
 
-export class SharedPreferencesMock extends SharedPreferences {
-  getString(key, callback) {
-    return callback("value")
+export class SharedPreferencesMock {
+  public getString(): Promise<string> {
+    return new Promise((resolve) => {
+      resolve('value');
+    });
   }
   putString: (key, value) => ({})
 
@@ -434,6 +436,15 @@ export class LoadingControllerMockNew {
 export class CommonUtilServiceMock extends CommonUtilService {
 
 }
+
+export class BuildParamaServiceMock {
+  public getBuildConfigParam(): Promise<string> {
+    return new Promise((resolve) => {
+      resolve();
+    });
+  }
+}
+
 
 /*export class ToastMock {
   public static instance(): any {
