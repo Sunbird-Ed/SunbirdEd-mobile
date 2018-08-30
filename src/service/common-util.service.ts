@@ -11,9 +11,9 @@ export class CommonUtilService {
 
 
 
-    showToast(translationKey , isActive?:boolean) {
-        if (!isActive) {
-            return
+    showToast(translationKey, isInactive?) {
+        if (Boolean(isInactive)) {
+            return;
         }
         this.translate.get(translationKey).subscribe(
             (value: any) => {
