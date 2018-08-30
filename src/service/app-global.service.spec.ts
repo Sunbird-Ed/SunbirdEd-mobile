@@ -11,16 +11,16 @@ import { DeepLinkerMock } from '../../test-config/mocks-ionic';
 import { PopoverControllerMock } from '../../node_modules/ionic-mocks';
 import { TelemetryGeneratorService } from './telemetry-generator.service';
 
+import {
+  BuildParamaServiceMock, SharedPreferencesMock
+} from '../../test-config/mocks-ionic';
+
 describe('AppGlobalService', () => {
   let service: AppGlobalService;
   let buildService, authService, profileService;
 
   const authServiceStub = {
     getSessionData: () => ({})
-  }
-
-  const BuildParamServiceStub = {
-    getBuildConfigParam: () => ({})
   }
 
   const ProfileServiceStub = {
@@ -30,11 +30,12 @@ describe('AppGlobalService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        AppGlobalService, Events, FrameworkService, SharedPreferences, ServiceProvider, App, Config, Platform, TelemetryGeneratorService,
-        TelemetryService,
+        AppGlobalService, Events, FrameworkService, ServiceProvider, App, Config, Platform, TelemetryGeneratorService,
+        TelemetryService, SharedPreferences,
+        // { provide: SharedPreferences, useClass: SharedPreferencesMock },
         { provide: DeepLinker, useValue: DeepLinkerMock },
         { provide: AuthService, useValue: authServiceStub },
-        { provide: BuildParamService, useValue: BuildParamServiceStub },
+        { provide: BuildParamService, useClass: BuildParamaServiceMock },
         { provide: ProfileService, useValue: ProfileServiceStub },
         { provide: PopoverController, useFactory: () => PopoverControllerMock.instance() }
 
@@ -117,58 +118,38 @@ describe('AppGlobalService', () => {
     expect(service["getGuestUserInfo"]).toHaveBeenCalled();
   });
 
-  it("DISPLAY_ONBOARDING_CARDS to be true", () => {
-    spyOn(buildService, 'getBuildConfigParam').and.callFake(function (option, success, error) {
-      let data = "true";
-      return success(data);
+  it("DISPLAY_ONBOARDING_CARDS to be true", (done) => {
+    spyOn(buildService, 'getBuildConfigParam').and.returnValue(Promise.resolve('true'));
+    service.readConfig();
+    buildService.getBuildConfigParam().then(() => {
+      expect(buildService.getBuildConfigParam).toHaveBeenCalled();
+      expect(service.DISPLAY_ONBOARDING_CARDS).toBe(true);
+      expect(service.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE).toBe(true);
+      expect(service.DISPLAY_ONBOARDING_PAGE).toBe(true);
+      expect(service.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER).toBe(true);
+      expect(service.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER).toBe(true);
+      expect(service.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER).toBe(true);
+      expect(service.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT).toBe(true);
+      expect(service.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT).toBe(true);
+      done();
     });
-    service.readConfig()
-    expect(buildService.getBuildConfigParam).toHaveBeenCalled();
-    expect(service.DISPLAY_ONBOARDING_CARDS).toBe(true);
   });
 
-  it("DISPLAY_ONBOARDING_CARDS to be false", () => {
-    spyOn(buildService, 'getBuildConfigParam').and.callFake(function (option, success, error) {
-      let data = "true";
-      return error(data);
+  it("DISPLAY_ONBOARDING_CARDS to be true", (done) => {
+    spyOn(buildService, 'getBuildConfigParam').and.returnValue(Promise.reject());
+    service.readConfig();
+    buildService.getBuildConfigParam().catch(() => {
+      expect(buildService.getBuildConfigParam).toHaveBeenCalled();
+      expect(service.DISPLAY_ONBOARDING_CARDS).toBe(false);
+      expect(service.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE).toBe(false);
+      expect(service.DISPLAY_ONBOARDING_PAGE).toBe(false);
+      expect(service.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER).toBe(false);
+      expect(service.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER).toBe(false);
+      expect(service.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER).toBe(false);
+      expect(service.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT).toBe(false);
+      expect(service.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT).toBe(false);
+      done();
     });
-    service.readConfig()
-    expect(buildService.getBuildConfigParam).toHaveBeenCalled();
-    expect(service.DISPLAY_ONBOARDING_CARDS).toBe(false);
-  });
-
-  it("DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE to be true", () => {
-    expect(service.DISPLAY_ONBOARDING_PAGE).toBe(false);
-  });
-
-  it("DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER to be true", () => {
-    spyOn(buildService, 'getBuildConfigParam').and.callFake(function (option, success, error) {
-      let data = "true";
-      return success(data);
-    });
-    service.readConfig()
-    expect(buildService.getBuildConfigParam).toHaveBeenCalled();
-    expect(service.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE).toBe(true);
-  });
-
-  it("DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE to be false", () => {
-    spyOn(buildService, 'getBuildConfigParam').and.callFake(function (option, success, error) {
-      let data = "false";
-      return success(data);
-    });
-    service.readConfig()
-    expect(buildService.getBuildConfigParam).toHaveBeenCalled();
-    expect(service.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE).toBe(false);
-  });
-
-  it("DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER to be false", () => {
-    spyOn(buildService, 'getBuildConfigParam').and.callFake(function (option, success, error) {
-      let data = "true";
-      return error(data);
-    });
-    service.readConfig()
-    expect(buildService.getBuildConfigParam).toHaveBeenCalled();
-    expect(service.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE).toBe(false);
   });
 
   it("getCurrentUserProfile to make expected calls", () => {
@@ -204,49 +185,67 @@ describe('AppGlobalService', () => {
     expect(service.guestUserProfile).toBeUndefined();
   });
 
-
+  // xit('should check profile type. ProfileType should be TEACHER', (done) => {
+  //   const sharedPreferences = TestBed.get(SharedPreferences);
+  //   spyOn(component, 'checkCurrentUserType').and.callThrough();
+  //   spyOn(sharedPreferences, 'getString').and.returnValue(Promise.resolve(ProfileType.TEACHER));
+  //   component.checkCurrentUserType();
+  //   sharedPreferences.getString().then((val) => {
+  //     expect(component.checkCurrentUserType).toBeDefined();
+  //     expect(component.checkCurrentUserType).toHaveBeenCalled();
+  //     expect(sharedPreferences.getString).toHaveBeenCalled();
+  //     expect(component.profileType).toEqual(ProfileType.TEACHER);
+  //     expect(component.profileType).not.toBe(ProfileType.STUDENT);
+  //     expect(val).toEqual(ProfileType.TEACHER);
+  //     done();
+  //   });
+  // });
+  
   it("getGuestUserInfo to make expected calls", () => {
-    spyOn(service['preference'], 'getString').and.callFake(function (opts, success) {
-      let data = "TEACHER";
-      return success(data);
-    });
+    const sharedPreferences = TestBed.get(SharedPreferences)
+    spyOn(sharedPreferences, 'getString').and.returnValue(Promise.resolve("TEACHER"));
     service["getGuestUserInfo"]();
-    expect(service["preference"].getString).toHaveBeenCalled();
-    expect(service.guestProfileType).toBe("TEACHER");
-    expect(service.isGuestUser).toBe(true);
+    sharedPreferences.getString().then((val) => {
+      expect(service["preference"].getString).toHaveBeenCalled();
+      expect(service.guestProfileType).toBe("TEACHER");
+      expect(service.isGuestUser).toBe(true);
+    })
   });
 
   it("getGuestUserInfo to make expected calls", () => {
-    spyOn(service['preference'], 'getString').and.callFake(function (opts, success) {
-      let data = "teacher";
-      return success(data);
-    });
+    const sharedPreferences = TestBed.get(SharedPreferences)
+    spyOn(sharedPreferences, 'getString').and.returnValue(Promise.resolve("TEACHER"));
     service["getGuestUserInfo"]();
-    expect(service["preference"].getString).toHaveBeenCalled();
-    expect(service.guestProfileType).toBe("TEACHER");
-    expect(service.isGuestUser).toBe(true);
+    service["getGuestUserInfo"]();
+    sharedPreferences.getString().then((val) => {
+      expect(service["preference"].getString).toHaveBeenCalled();
+      expect(service.guestProfileType).toBe("TEACHER");
+      expect(service.isGuestUser).toBe(true);
+    })
   });
 
   it("getGuestUserInfo to make expected calls", () => {
-    spyOn(service['preference'], 'getString').and.callFake(function (opts, success) {
-      let data = "STUDENT";
-      return success(data);
-    });
+    const sharedPreferences = TestBed.get(SharedPreferences)
+    spyOn(sharedPreferences, 'getString').and.returnValue(Promise.resolve("STUDENT"));
     service["getGuestUserInfo"]();
-    expect(service["preference"].getString).toHaveBeenCalled();
-    expect(service.guestProfileType).toBe("STUDENT");
-    expect(service.isGuestUser).toBe(true);
+    service["getGuestUserInfo"]();
+    sharedPreferences.getString().then((val) => {
+      expect(service["preference"].getString).toHaveBeenCalled();
+      expect(service.guestProfileType).toBe("STUDENT");
+      expect(service.isGuestUser).toBe(true);
+    })
   });
 
   it("getGuestUserInfo to make expected calls", () => {
-    spyOn(service['preference'], 'getString').and.callFake(function (opts, success) {
-      let data = "student";
-      return success(data);
-    });
+    const sharedPreferences = TestBed.get(SharedPreferences)
+    spyOn(sharedPreferences, 'getString').and.returnValue(Promise.resolve("STUDENT"));
     service["getGuestUserInfo"]();
-    expect(service["preference"].getString).toHaveBeenCalled();
-    expect(service.guestProfileType).toBe("STUDENT");
-    expect(service.isGuestUser).toBe(true);
+    service["getGuestUserInfo"]();
+    sharedPreferences.getString().then((val) => {
+      expect(service["preference"].getString).toHaveBeenCalled();
+      expect(service.guestProfileType).toBe("STUDENT");
+      expect(service.isGuestUser).toBe(true);
+    })
   });
 
   it("getFrameworkDetails to make expected calls", () => {
@@ -262,86 +261,6 @@ describe('AppGlobalService', () => {
     const popOverCtrl = TestBed.get(PopoverController);
     service["openPopover"]({ upgrade: { type: "force" } });
     expect(popOverCtrl.create).toHaveBeenCalled();
-  });
-
-  it("DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER to be true", () => {
-    spyOn(buildService, 'getBuildConfigParam').and.callFake(function (option, success, error) {
-      let data = "true";
-      return success(data);
-    });
-    service.readConfig()
-    expect(buildService.getBuildConfigParam).toHaveBeenCalled();
-    expect(service.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER).toBe(true);
-  });
-
-  it("DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER to be false", () => {
-    spyOn(buildService, 'getBuildConfigParam').and.callFake(function (option, success, error) {
-      let data = "true";
-      return error(data);
-    });
-    service.readConfig()
-    expect(buildService.getBuildConfigParam).toHaveBeenCalled();
-    expect(service.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER).toBe(false);
-  });
-
-  it("DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER to be true", () => {
-    spyOn(buildService, 'getBuildConfigParam').and.callFake(function (option, success, error) {
-      let data = "true";
-      return success(data);
-    });
-    service.readConfig()
-    expect(buildService.getBuildConfigParam).toHaveBeenCalled();
-    expect(service.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER).toBe(true);
-  });
-
-  it("DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER to be false", () => {
-    spyOn(buildService, 'getBuildConfigParam').and.callFake(function (option, success, error) {
-      let data = "true";
-      return error(data);
-    });
-    service.readConfig()
-    expect(buildService.getBuildConfigParam).toHaveBeenCalled();
-    expect(service.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER).toBe(false);
-  });
-
-  it("DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT to be true", () => {
-    spyOn(buildService, 'getBuildConfigParam').and.callFake(function (option, success, error) {
-      let data = "true";
-      return success(data);
-    });
-    service.readConfig()
-    expect(buildService.getBuildConfigParam).toHaveBeenCalled();
-    expect(service.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT).toBe(true);
-  });
-
-  it("DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT to be false", () => {
-    spyOn(buildService, 'getBuildConfigParam').and.callFake(function (option, success, error) {
-      let data = "true";
-      return error(data);
-    });
-    service.readConfig()
-    expect(buildService.getBuildConfigParam).toHaveBeenCalled();
-    expect(service.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT).toBe(false);
-  });
-
-  it("DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT to be true", () => {
-    spyOn(buildService, 'getBuildConfigParam').and.callFake(function (option, success, error) {
-      let data = "true";
-      return success(data);
-    });
-    service.readConfig()
-    expect(buildService.getBuildConfigParam).toHaveBeenCalled();
-    expect(service.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT).toBe(true);
-  });
-
-  it("DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT to be false", () => {
-    spyOn(buildService, 'getBuildConfigParam').and.callFake(function (option, success, error) {
-      let data = "true";
-      return error(data);
-    });
-    service.readConfig()
-    expect(buildService.getBuildConfigParam).toHaveBeenCalled();
-    expect(service.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT).toBe(false);
   });
 
 })
