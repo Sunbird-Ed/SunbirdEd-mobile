@@ -5,8 +5,6 @@ import {
     AuthService,
     SharedPreferences,
     ProfileService,
-    FrameworkDetailsRequest,
-    FrameworkService,
     BuildParamService,
     PageId,
     Environment,
@@ -19,8 +17,9 @@ import {
     PopoverOptions
 } from "ionic-angular";
 import { UpgradePopover } from "../pages/upgrade/upgrade-popover";
-import { FrameworkConstant, GenericAppConfig } from "../app/app.constant";
+import { GenericAppConfig } from "../app/app.constant";
 import { TelemetryGeneratorService } from "./telemetry-generator.service";
+import { FormAndFrameworkUtilService } from "../pages/profile/formandframeworkutil.service";
 
 @Injectable()
 export class AppGlobalService {
@@ -63,11 +62,12 @@ export class AppGlobalService {
     constructor(private event: Events,
         private authService: AuthService,
         private profile: ProfileService,
-        private framework: FrameworkService,
         private preference: SharedPreferences,
         private popoverCtrl: PopoverController,
         private buildParamService: BuildParamService,
+        private formAndFrameworkUtilService: FormAndFrameworkUtilService,
         private telemetryGeneratorService: TelemetryGeneratorService) {
+
         this.initValues();
         this.listenForEvents();
     }
@@ -251,7 +251,7 @@ export class AppGlobalService {
         this.profile.getCurrentUser((response) => {
             this.guestUserProfile = JSON.parse(response);
             if (this.guestUserProfile.syllabus && this.guestUserProfile.syllabus.length > 0) {
-                this.getFrameworkDetails(this.guestUserProfile.syllabus[0])
+                this.formAndFrameworkUtilService.getFrameworkDetails(this.guestUserProfile.syllabus[0])
                     .then((categories) => {
                         categories.forEach(category => {
                             this.frameworkData[category.code] = category;
@@ -299,32 +299,6 @@ export class AppGlobalService {
 
         this.event.subscribe('refresh:profile', () => {
             this.initValues();
-        });
-    }
-
-    /**
-    * Get all categories using framework api
-    */
-    private getFrameworkDetails(frameworkId?: string): Promise<any> {
-
-        return new Promise((resolve, reject) => {
-            let req: FrameworkDetailsRequest = {
-                defaultFrameworkDetails: true
-            };
-
-            if (frameworkId !== undefined && frameworkId.length && frameworkId != FrameworkConstant.DEFAULT_FRAMEWORK_ID) {
-                req.defaultFrameworkDetails = false;
-                req.frameworkId = frameworkId;
-            }
-
-            this.framework.getFrameworkDetails(req)
-                .then(res => {
-                    let categories = res;
-                    resolve(categories);
-                })
-                .catch(error => {
-                    reject(error);
-                });
         });
     }
 

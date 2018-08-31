@@ -150,14 +150,6 @@ export class FormAndFrameworkUtilService {
                     syllabusList.push(value);
                 });
 
-                // Adding default framework into the list
-                let defaultFramework = {
-                    name: FrameworkConstant.DEFAULT_FRAMEWORK_NAME,
-                    frameworkId: FrameworkConstant.DEFAULT_FRAMEWORK_ID
-                }
-
-                syllabusList.push(defaultFramework);
-
                 //store the framework list in the app component, so that when getFormDetails() gets called again
                 //in the same session of app, then we can get this details, without calling the api
                 this.appGlobalService.setSyllabusList(syllabusList);
@@ -241,7 +233,7 @@ export class FormAndFrameworkUtilService {
                 defaultFrameworkDetails: true
             };
 
-            if (frameworkId !== undefined && frameworkId.length && frameworkId != FrameworkConstant.DEFAULT_FRAMEWORK_ID) {
+            if (frameworkId !== undefined && frameworkId.length) {
                 req.defaultFrameworkDetails = false;
                 req.frameworkId = frameworkId;
             }

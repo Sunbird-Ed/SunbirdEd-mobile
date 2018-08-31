@@ -1,3 +1,4 @@
+import { ProfileService, SharedPreferences, TelemetryService, ServiceProvider } from 'sunbird';
 import 'rxjs/add/observable/of';
 
 import { Observable } from 'rxjs';
@@ -10,11 +11,11 @@ import { TranslateModule, TranslateService } from '../../../../node_modules/@ngx
 import {
     Events, LoadingController, NavController, PopoverController, ToastController
 } from '../../../../node_modules/ionic-angular';
-import { ProfileService, SharedPreferences, TelemetryService, ServiceProvider } from '../../../../node_modules/sunbird';
 import { AppGlobalService } from '../../../service/app-global.service';
 import { FormAndFrameworkUtilService } from '../formandframeworkutil.service';
 import { GuestProfilePage } from './guest-profile';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
+import { SharedPreferencesMock } from '../../../../test-config/mocks-ionic';
 
 export class LoadingControllerMock {
     _getPortal(): any { return {} };
@@ -36,7 +37,7 @@ export class ToastControllerMock {
 }
 
 class ToastMock {
-    present() {}
+    present() { }
 }
 
 describe('GuestProfilePage', () => {
@@ -85,13 +86,6 @@ describe('GuestProfilePage', () => {
             subscribe: () => { }
         }
 
-        const SharedPreferencesStub = {
-            getString: (code, value) => {
-                return value('en');
-            },
-            putString: () => { }
-        }
-
         const ToastControllerStub = {
             create: () => {
                 subscribe: () => { }
@@ -106,7 +100,7 @@ describe('GuestProfilePage', () => {
 
         const AppGlobalServiceStub = {
             openPopover: () => { },
-            getGuestUserType : () => ({})
+            getGuestUserType: () => ({})
         }
 
         const FormAndFrameworkUtilServiceStub = {
@@ -122,14 +116,14 @@ describe('GuestProfilePage', () => {
             imports: [TranslateModule.forRoot()],
             declarations: [GuestProfilePage],
             schemas: [NO_ERRORS_SCHEMA],
-            providers: [TelemetryGeneratorService, TelemetryService, ServiceProvider, 
+            providers: [TelemetryGeneratorService, TelemetryService, ServiceProvider,SharedPreferences,
                 { provide: NavController, useValue: NavControllerStub },
                 { provide: Network, useValue: NetworkStub },
                 { provide: PopoverController, useValue: PopoverControllerStub },
                 { provide: ProfileService, useValue: ProfileServiceStub },
                 { provide: LoadingController, useClass: LoadingControllerMock },
                 { provide: Events, useValue: EventsStub },
-                { provide: SharedPreferences, useValue: SharedPreferencesStub },
+                //{ provide: SharedPreferences, useValue: SharedPreferencesMock },
                 { provide: ToastController, useClass: ToastControllerMock },
                 { provide: TranslateService, useValue: TranslateServiceStub },
                 { provide: AppGlobalService, useValue: AppGlobalServiceStub },
@@ -138,9 +132,14 @@ describe('GuestProfilePage', () => {
         });
 
         let code = 'selected_language_code';
-        spyOn(SharedPreferencesStub, 'getString').and.callFake((code, success) => {
-            return success('en');
-        });
+        // spyOn(SharedPreferencesStub, 'getString').and.callFake((code, success) => {
+        //     return success('en');
+        // });
+        const SharedPreferenceStub = TestBed.get(SharedPreferences);
+        spyOn(SharedPreferenceStub, 'getString').and.returnValue(Promise.resolve('en'));
+        // SharedPreferenceStub.getString().then(() => {
+
+        // });
 
         fixture = TestBed.createComponent(GuestProfilePage);
         comp = fixture.componentInstance;
@@ -218,19 +217,19 @@ describe('GuestProfilePage', () => {
 
     describe('Constructor', () => { //Need to improve
         it('should call getString to fetch selected_language_code', (done) => {
-            const SharedPreferencesStub: SharedPreferences = fixture.debugElement.injector.get(SharedPreferences);
+            const SharedPreferencesStub = TestBed.get(SharedPreferences);
 
-            setTimeout(() => {
+            SharedPreferencesStub.getString().then(() => {
                 expect(SharedPreferencesStub.getString).toHaveBeenCalled();
-                expect(comp.selectedLanguage).toBe('en');
+                expect(comp.selectedLanguage).toEqual('en');
                 done();
-            }, 100);
+            });
         });
     });
 
     describe('goToRoles', () => {
         it('should call goToRoles page', () => {
-            const navControllerStub: NavController = fixture.debugElement.injector.get(NavController);
+            const navControllerStub: NavController = TestBed.get(NavController);
             spyOn(comp, 'goToRoles');
             spyOn(navControllerStub, "push");
             comp.goToRoles();
@@ -242,7 +241,7 @@ describe('GuestProfilePage', () => {
 
     describe('editGuestProfile', () => {
         it('should call GuestEditProfile page', () => {
-            const navControllerStub: NavController = fixture.debugElement.injector.get(NavController);
+            const navControllerStub: NavController = TestBed.get(NavController);
             spyOn(comp, 'editGuestProfile');
             spyOn(navControllerStub, "push");
             comp.editGuestProfile();
@@ -259,7 +258,7 @@ describe('GuestProfilePage', () => {
 
     describe('goToRoles', () => {
         it('should call goToRoles page', () => {
-            const navControllerStub: NavController = fixture.debugElement.injector.get(NavController);
+            const navControllerStub: NavController = TestBed.get(NavController);
             spyOn(comp, 'goToRoles');
             spyOn(navControllerStub, "push");
             comp.goToRoles();
@@ -319,7 +318,7 @@ describe('GuestProfilePage', () => {
             //fixture.detectChanges();
             expect(translatedMessage).toEqual('Cancel');
             expect(spy.calls.any()).toEqual(true);
-          }));
+        }));
     });
 
     xdescribe('refreshProfileData', () => { //Need to improve
@@ -333,8 +332,8 @@ describe('GuestProfilePage', () => {
             //expect(comp.loader.present).toHaveBeenCalled();
         });
         it('should make service call to fetch CurrentUser', (done) => {
-            const ProfileServiceStub: ProfileService = fixture.debugElement.injector.get(ProfileService);
-            const FormAndFrameworkUtilServiceStub: FormAndFrameworkUtilService = fixture.debugElement.injector.get(FormAndFrameworkUtilService);
+            const ProfileServiceStub: ProfileService = TestBed.get(ProfileService);
+            const FormAndFrameworkUtilServiceStub: FormAndFrameworkUtilService = TestBed.get(FormAndFrameworkUtilService);
             let response = {
                 id: 'abcd'
             };

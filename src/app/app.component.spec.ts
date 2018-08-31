@@ -34,7 +34,6 @@ import {
   AppVersionMock,
   FormAndFrameworkUtilServiceMock,
   SharedPreferencesMock
-
 } from '../../test-config/mocks-ionic';
 import { CourseUtilService } from '../service/course-util.service';
 import { AppVersion } from '@ionic-native/app-version';
@@ -76,11 +75,12 @@ describe('MyApp Component', () => {
         { provide: CourseUtilService, useClass: CourseUtilServiceMock },
         { provide: AppVersion, useClass: AppVersionMock },
         { provide: FormAndFrameworkUtilService, useClass: FormAndFrameworkUtilServiceMock },
-        { provide: SharedPreferences, useClass: SharedPreferencesMock },
+        //{ provide: SharedPreferences, useClass: SharedPreferencesMock },
+        SharedPreferences,
         { provide: ToastController, useClass: ToastControllerMock },
         { provide: App, useClass: appMock }
       ],
-    })
+    });
   }));
 
   beforeEach(() => {
@@ -144,12 +144,13 @@ describe('MyApp Component', () => {
 
           comp.saveDefaultSyncSetting();
 
-          preferenceStub.getString().then(() => {
+          preferenceStub.getString().then((val) => {
             let title = 'sync_config';
             spyOn(preferenceStub, 'getString').and.returnValue(Promise.resolve(undefined));
             spyOn(preferenceStub, 'putString');
             expect(comp.saveDefaultSyncSetting).toHaveBeenCalled();
             expect(preferenceStub.getString).toHaveBeenCalled();
+            expect(val).toEqual(undefined);
             expect(preferenceStub.putString).toHaveBeenCalledWith('sync_config', 'ALWAYS_ON');
           });
 

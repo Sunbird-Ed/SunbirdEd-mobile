@@ -169,11 +169,17 @@ export class OnboardingCardComponent {
       }
     }
 
-    if (index === 0) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), undefined, true);
-    if (index === 1) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.syllabus, true);
-    if (index === 2) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.board, true);
-    if (index === 3) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.medium, true);
-    if (index === 4) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.grade, true);
+    if (index === 0) {
+      this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), undefined, true);
+    } else if (index === 1) {
+      this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.syllabus, true);
+    } else if (index === 2) {
+      this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.board, true);
+    } else if (index === 3) {
+      this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.medium, true);
+    } else if (index === 4) {
+      this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.grade, true);
+    }
 
     let popUp = this.popupCtrl.create(OnboardingAlert, { facet: selectedSlide, callback: callback, index: index }, {
       cssClass: 'onboarding-alert'
