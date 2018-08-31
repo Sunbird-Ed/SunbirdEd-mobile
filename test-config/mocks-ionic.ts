@@ -234,7 +234,7 @@ export class SharedPreferencesMock {
       resolve('value');
     });
   }
-  putString: (key, value) => ({})
+  public putString() {}
 
 }
 
