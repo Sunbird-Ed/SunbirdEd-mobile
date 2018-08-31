@@ -2,7 +2,7 @@ import { CourseUtilService } from './../src/service/course-util.service';
 import { AppGlobalService } from './../src/service/app-global.service';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
-import { AuthService, ContainerService, PermissionService, TelemetryService, GenieSDKServiceProvider, SharedPreferences } from "sunbird";
+import { AuthService, ContainerService, PermissionService, TelemetryService, GenieSDKServiceProvider, SharedPreferences, ShareUtil } from "sunbird";
 import { ImageLoaderConfig } from "ionic-image-loader";
 import { TranslateLoader } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
@@ -159,6 +159,8 @@ export class ImageLoaderConfigMock extends ImageLoaderConfig {
 export class TelemetryServiceMock extends TelemetryService {
   end: () => ({});
   interact: () => ({});
+  impression: () => ({});
+  getTelemetryStat: (sucess, error) => ({});
 }
 
 export class AppGlobalServiceMock extends AppGlobalService {
@@ -178,7 +180,6 @@ export class AppGlobalServiceMock extends AppGlobalService {
   static setSessionData(session: any) {
     AppGlobalServiceMock.session = session;
   }
-
 }
 
 export class EventsMock {
@@ -243,7 +244,11 @@ export class FileUtilMock {
     return '';
   }
 }
+export class ShareUtilMock extends ShareUtil {
+  exportTelemetry: (successCallback, errorCallback) => ({
 
+  });
+}
 export class NavControllerMock { }
 
 export class SocialSharingMock {

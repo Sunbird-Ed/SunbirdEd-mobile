@@ -120,7 +120,6 @@
   "ERROR_ALREADY_ADDED": "हे कौशल्य आपल्या कौशल्य यादीत उपलब्ध आहे",
   "ERROR_BATCH_NOT_STARTED": "बॅच अद्याप सुरु नाही",
   "ERROR_CANT_OPEN_EMPTY_CONTENT": "रिक्त फाइल उघडू शकत नाही",
-  "ERROR_COLLECTION_IS_EMPTY": "संग्रह रिकामा आहे",
   "ERROR_CONTENT_NOT_AVAILABLE": "साहित्य उपलब्ध नाही",
   "ERROR_CONTENT_NOT_FOUND": "साहित्य अद्याप उपलब्ध नाही",
   "ERROR_DURATION_NOT_AVAILABLE": "कालावधी उपलब्ध नाही",

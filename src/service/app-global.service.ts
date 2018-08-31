@@ -9,7 +9,9 @@ import {
     PageId,
     Environment,
     InteractType,
-    InteractSubtype
+    InteractSubtype,
+    FrameworkDetailsRequest,
+    FrameworkService
 } from "sunbird";
 import {
     Events,
@@ -19,7 +21,6 @@ import {
 import { UpgradePopover } from "../pages/upgrade/upgrade-popover";
 import { GenericAppConfig } from "../app/app.constant";
 import { TelemetryGeneratorService } from "./telemetry-generator.service";
-import { FormAndFrameworkUtilService } from "../pages/profile/formandframeworkutil.service";
 
 @Injectable()
 export class AppGlobalService {
@@ -65,7 +66,7 @@ export class AppGlobalService {
         private preference: SharedPreferences,
         private popoverCtrl: PopoverController,
         private buildParamService: BuildParamService,
-        private formAndFrameworkUtilService: FormAndFrameworkUtilService,
+        private framework: FrameworkService,
         private telemetryGeneratorService: TelemetryGeneratorService) {
 
         this.initValues();
@@ -251,7 +252,7 @@ export class AppGlobalService {
         this.profile.getCurrentUser((response) => {
             this.guestUserProfile = JSON.parse(response);
             if (this.guestUserProfile.syllabus && this.guestUserProfile.syllabus.length > 0) {
-                this.formAndFrameworkUtilService.getFrameworkDetails(this.guestUserProfile.syllabus[0])
+                this.getFrameworkDetails(this.guestUserProfile.syllabus[0])
                     .then((categories) => {
                         categories.forEach(category => {
                             this.frameworkData[category.code] = category;
@@ -269,6 +270,28 @@ export class AppGlobalService {
         }, (error) => {
             this.guestUserProfile = undefined;
             this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
+        });
+    }
+
+    // Remove this method after refactoring formandframeworkutil.service
+    private getFrameworkDetails(frameworkId: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let req: FrameworkDetailsRequest = {
+                defaultFrameworkDetails: true
+            };
+
+            if (frameworkId !== undefined && frameworkId.length) {
+                req.defaultFrameworkDetails = false;
+                req.frameworkId = frameworkId;
+            }
+
+            this.framework.getFrameworkDetails(req)
+                .then(res => {
+                    resolve(res);
+                })
+                .catch(error => {
+                    reject(error);
+                });
         });
     }
 
