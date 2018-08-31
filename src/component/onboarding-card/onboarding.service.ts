@@ -141,8 +141,6 @@ export class OnboardingService {
         this.onBoardingSlides[2].options = this.mediumList;
         this.onBoardingSlides[3].options = this.gradeList;
         this.onBoardingSlides[4].options = this.subjectList;
-
-        console.log("Initialized", this.onBoardingSlides);
     }
     /**
      * Method user to fetch Current Guest User
@@ -170,7 +168,6 @@ export class OnboardingService {
                     index = 1;
                 }
                 if (this.profile.board && this.profile.board[0] !== '') {
-                    console.log("Categories", this.categories);
                     this.onBoardingSlides[1].selectedOptions = this.getDisplayValues(0, this.profile.board);
                     this.currentIndex = 40;
                     index = 2;
@@ -250,7 +247,6 @@ export class OnboardingService {
                     }
 
                     this.getListArray(list);
-                    console.log(list + " Category Response: " + this[list]);
 
                     //End the loader here
                     this.events.publish('is-data-available', { show: true, index: index });
@@ -319,8 +315,7 @@ export class OnboardingService {
      * @param {any}    currentField
      * @param {string} prevSelectedValue
      */
-    checkPrevValue(index: number = 0, currentField, prevSelectedValue = [], hasUserClicked: boolean) {
-
+    checkPrevValue(index: number = 0, currentField, prevSelectedValue, hasUserClicked: boolean) {
         if (index === 0) {
             this[currentField] = this.syllabusList;
         } else if (index === 1) {
@@ -399,66 +394,71 @@ export class OnboardingService {
     /**
      * This will makes an API call for the current category
      */
-    saveDetails(index: number): void {
-        let req: Profile = new Profile();
-        req.syllabus = (_.find(this.onBoardingSlides, ['id', 'syllabusList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'syllabusList']).selectedCode : this.profile.syllabus
-        req.board = (_.find(this.onBoardingSlides, ['id', 'boardList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'boardList']).selectedCode : this.profile.board;
-        req.grade = (_.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode : this.profile.grade;
-        req.subject = (_.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode : this.profile.subject;
-        req.medium = (_.find(this.onBoardingSlides, ['id', 'mediumList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'mediumList']).selectedCode : this.profile.medium;
-        req.uid = this.profile.uid;
-        req.handle = this.profile.handle;
-        req.createdAt = this.profile.createdAt;
-        req.profileType = this.profile.profileType;
-        req.source = this.profile.source;
+    saveDetails(index: number): Promise<any> {
 
-        if (index === 0 && !_.find(this.onBoardingSlides, ['id', 'boardList']).selectedCode.length) {
-            req.board = [];
-            req.medium = [];
-            req.grade = [];
-            req.subject = [];
-        }
-        if (index === 1 && !_.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode.length) {
-            req.grade = [];
-        }
-        if (index === 2 && !_.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode.length) {
-            req.grade = [];
-            req.subject = [];
-        }
-        if (index === 3 && !_.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode.length) {
-            req.subject = [];
-        }
+        return new Promise((resolve, reject) => {
+            let req: Profile = new Profile();
+            req.syllabus = (_.find(this.onBoardingSlides, ['id', 'syllabusList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'syllabusList']).selectedCode : this.profile.syllabus
+            req.board = (_.find(this.onBoardingSlides, ['id', 'boardList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'boardList']).selectedCode : this.profile.board;
+            req.grade = (_.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode : this.profile.grade;
+            req.subject = (_.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode : this.profile.subject;
+            req.medium = (_.find(this.onBoardingSlides, ['id', 'mediumList']).selectedCode.length) ? _.find(this.onBoardingSlides, ['id', 'mediumList']).selectedCode : this.profile.medium;
+            req.uid = this.profile.uid;
+            req.handle = this.profile.handle;
+            req.createdAt = this.profile.createdAt;
+            req.profileType = this.profile.profileType;
+            req.source = this.profile.source;
 
-        if (req.grade && req.grade.length > 0) {
-            req.grade.forEach(gradeCode => {
-                for (let i = 0; i < this.gradeList.length; i++) {
-                    if (this.gradeList[i].value == gradeCode) {
-                        if (!req.gradeValueMap) {
-                            req.gradeValueMap = {};
+            if (index === 0 && !_.find(this.onBoardingSlides, ['id', 'boardList']).selectedCode.length) {
+                req.board = [];
+                req.medium = [];
+                req.grade = [];
+                req.subject = [];
+            }
+            if (index === 1 && !_.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode.length) {
+                req.grade = [];
+            }
+            if (index === 2 && !_.find(this.onBoardingSlides, ['id', 'gradeList']).selectedCode.length) {
+                req.grade = [];
+                req.subject = [];
+            }
+            if (index === 3 && !_.find(this.onBoardingSlides, ['id', 'subjectList']).selectedCode.length) {
+                req.subject = [];
+            }
+
+            if (req.grade && req.grade.length > 0) {
+                req.grade.forEach(gradeCode => {
+                    for (let i = 0; i < this.gradeList.length; i++) {
+                        if (this.gradeList[i].value == gradeCode) {
+                            if (!req.gradeValueMap) {
+                                req.gradeValueMap = {};
+                            }
+                            req.gradeValueMap[this.gradeList[i].value] = this.gradeList[i].text
+                            break;
                         }
-                        req.gradeValueMap[this.gradeList[i].value] = this.gradeList[i].text
-                        break;
                     }
-                }
-            });
-        }
+                });
+            }
 
-        this.profileService.updateProfile(req,
-            (res: any) => {
-                if (this.onBoardingSlides.length === (index + 1)) {
-                    this.isOnBoardingCardCompleted = true;
-                    this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
-                } else {
-                    this.isOnBoardingCardCompleted = false;
-                    this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
-                }
-                this.events.publish('refresh:profile');
+            this.profileService.updateProfile(req,
+                (res: any) => {
+                    if (this.onBoardingSlides.length === (index + 1)) {
+                        this.isOnBoardingCardCompleted = true;
+                        this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
+                    } else {
+                        this.isOnBoardingCardCompleted = false;
+                        this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
+                    }
+                    this.events.publish('refresh:profile');
 
-                this.getCurrentUser();
-            },
-            (err: any) => {
-                console.log("Err", err);
-            });
+                    this.getCurrentUser();
+
+                    resolve(res);
+                },
+                (err: any) => {
+                    reject(err);
+                });
+        });
     }
 
     /**
@@ -520,7 +520,13 @@ export class OnboardingService {
     }
 
     private setAndSaveDetails(selectedSlide: any, index: number) {
-        selectedSlide.options.forEach(options => {
+        let localSelectedSlide = selectedSlide;
+
+        //The selectedCode has to be emptied here again, because, in getCategoryDetails we are by default selecting the category, if the 
+        //category list contains only one value in list 
+        this.onBoardingSlides[index].selectedCode = [];
+
+        localSelectedSlide.options.forEach(options => {
             if (options.checked) {
                 this.onBoardingSlides[index].selectedCode.push(options.value);
             }
@@ -533,39 +539,41 @@ export class OnboardingService {
         });
         this.onBoardingSlides[index].selectedOptions = this.arrayToString(displayValues);
 
-        this.saveDetails(index);
+        this.saveDetails(index)
+            .then(res => {
+                // If user Selected Something from the list then only move the slide to next slide
+                if (this.onBoardingSlides[index].selectedOptions != '') {
+                    this.events.publish('slide-onboarding-card', { slideIndex: index });
+                }
 
-        // If user Selected Something from the list then only move the slide to next slide
-        if (this.onBoardingSlides[index].selectedOptions != '') {
-            this.events.publish('slide-onboarding-card', { slideIndex: index });
-        }
+                if (index === 0) {
+                    this.profile.board = [];
+                    this.profile.grade = [];
+                    this.profile.subject = [];
+                    this.profile.medium = [];
 
-        if (index === 0) {
-            this.profile.board = [];
-            this.profile.grade = [];
-            this.profile.subject = [];
-            this.profile.medium = [];
+                    //save the framework id here
+                    this.frameworkId = this.onBoardingSlides[index].selectedCode[0];
 
-            //save the framework id here
-            this.frameworkId = this.onBoardingSlides[index].selectedCode[0];
+                    this.checkPrevValue(index + 1, this.getListName(index + 1), this.profile.syllabus, false);
+                }
+                else if (index === 1) {
+                    this.profile.grade = [];
+                    this.profile.subject = [];
+                    this.profile.medium = [];
+                    this.checkPrevValue(index + 1, this.getListName(index + 1), this.profile.board, false);
+                }
+                else if (index === 2) {
+                    this.profile.grade = [];
+                    this.profile.subject = [];
+                    this.checkPrevValue(index + 1, this.getListName(index + 1), this.profile.medium, false);
+                }
+                else if (index === 3) {
+                    this.profile.subject = [];
+                    this.checkPrevValue(index + 1, this.getListName(index + 1), this.profile.grade, false);
+                }
 
-            this.checkPrevValue(index + 1, this.getListName(index + 1), this.profile.syllabus, false);
-        }
-        else if (index === 1) {
-            this.profile.grade = [];
-            this.profile.subject = [];
-            this.profile.medium = [];
-            this.checkPrevValue(index + 1, this.getListName(index + 1), this.profile.board, false);
-        }
-        else if (index === 2) {
-            this.profile.grade = [];
-            this.profile.subject = [];
-            this.checkPrevValue(index + 1, this.getListName(index + 1), this.profile.medium, false);
-        }
-        else if (index === 3) {
-            this.profile.subject = [];
-            this.checkPrevValue(index + 1, this.getListName(index + 1), this.profile.grade, false);
-        }
+            });
     }
 
     /**
