@@ -164,13 +164,31 @@ describe("FormExperience", () => {
         comp.updateExperience("req");
         expect(comp.getToast).toHaveBeenCalled();
         expect(comp.translateMessage).toHaveBeenCalledWith("PROFILE_UPDATE_FAILED");
-    })
+    });
+
+    it("should return formated date", () => {
+        let newDate = new Date("2018-06-15 10:33:21").toISOString().slice(0, 10);
+        expect(comp.formatDate("2018-06-15 10:33:21")).toEqual(newDate)
+    });
 
     it("getToast should make expected calls", () => {
         const toasrCtrlStub  = TestBed.get(ToastController);
         let msg = "testMessage";
         let getToast = comp.getToast(msg);
         expect(comp.options.message).toEqual(msg);
+    });
+
+    it("showDeleteConfirm should make expected calls", () => {
+        const alertController = TestBed.get(AlertController);
+        // const alert = TestBed.get(Alert);
+        const translateStub =  TestBed.get(TranslateService);
+        const platformStub: Platform = TestBed.get(Platform);
+        spyOn(platformStub, "registerBackButtonAction");
+        spyOn(comp, "translateMessage");
+       
+        comp.showDeleteConfirm();
+        expect(platformStub.registerBackButtonAction).toHaveBeenCalled();
+        expect(alertController.create).toHaveBeenCalled();
     });
 
 });
