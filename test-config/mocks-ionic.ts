@@ -257,7 +257,9 @@ export class SocialSharingMock {
   }
 }
 
-export class ViewControllerMock { }
+export class ViewControllerMock {
+  dismiss: () => {}
+}
 
 // export class ToastControllerMock {
 //   create: () => ({
