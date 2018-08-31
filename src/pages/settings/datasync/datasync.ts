@@ -6,13 +6,6 @@ import { TranslateService } from '@ngx-translate/core'
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { generateImpressionTelemetry, generateInteractTelemetry } from '../../../app/telemetryutil';
 
-/**
- * Generated class for the DatasyncPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
-
 const KEY_DATA_SYNC_TYPE = "sync_config";
 const KEY_DATA_SYNC_TIME = "data_sync_time";
 
@@ -43,7 +36,7 @@ export class DatasyncPage {
     private toastCtrl: ToastController) {
   }
 
-  private init() {
+  init() {
     let that = this;
 
     //fetch the string 
@@ -121,7 +114,6 @@ export class DatasyncPage {
 
       });
 
-
     }, (error) => {
 
     });
@@ -129,6 +121,7 @@ export class DatasyncPage {
 
   shareTelemetry() {
     let loader = this.getLoader();
+    loader.present();
     this.shareUtil.exportTelemetry(path => {
       loader.dismiss();
       this.social.share("", "", "file://" + path, "");
@@ -226,7 +219,7 @@ export class DatasyncPage {
     });
   }
 
-  presentToast(translationId) {
+  presentToast(translationId: string) {
     let toast = this.toastCtrl.create({
       message: this.translateMessage(translationId),
       duration: 3000

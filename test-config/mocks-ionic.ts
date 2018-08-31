@@ -235,7 +235,7 @@ export class SharedPreferencesMock {
       resolve('value');
     });
   }
-  public putString() {}
+  public putString() { }
 
 }
 
@@ -268,7 +268,9 @@ export class ViewControllerMock { }
 export class StorageMock { }
 
 export class AppVersionMock {
-
+  getAppName(): Promise<string> {
+    return ;
+  }
 }
 
 export class FormAndFrameworkUtilServiceMock {
