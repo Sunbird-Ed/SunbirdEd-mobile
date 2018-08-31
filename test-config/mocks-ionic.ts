@@ -452,6 +452,20 @@ export class BuildParamaServiceMock {
   }
 }
 
+export class IonicAppMock {
+
+  _modalPortal: {
+    getActive: () => ({
+        dismiss: () =>{}
+    })
+  }
+  _overlayPortal: {
+    getActive: () => ({
+        dismiss: () =>{}
+    })
+  }
+}
+
 
 /*export class ToastMock {
   public static instance(): any {
