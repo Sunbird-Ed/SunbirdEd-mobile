@@ -168,7 +168,6 @@ export class AppGlobalService {
 
     private initValues() {
         this.readConfig();
-        console.log("initValues");
         this.authService.getSessionData((session) => {
             if (session === null || session === "null") {
                 this.getGuestUserInfo();

@@ -107,7 +107,7 @@ export class CoursesPage implements OnInit {
 
   profile: any;
 
-  private isVisible: boolean = false;
+  isVisible: boolean = false;
 
   private corRelationList: Array<CorrelationData>;
 
@@ -126,6 +126,7 @@ export class CoursesPage implements OnInit {
   isFilterApplied: boolean = false;
 
   callback: QRResultCallback;
+  pageFilterCallBack: PageFilterCallback
 
 
   /**
@@ -163,8 +164,76 @@ export class CoursesPage implements OnInit {
         }
       });
 
-    //Event for optional and forceful upgrade
-    this.events.subscribe('force_optional_upgrade', (upgrade) => {
+      this.subscribeUtilityEvents();
+
+      if (this.network.type === 'none') {
+        this.isNetworkAvailable = false;
+      } else {
+        this.isNetworkAvailable = true;
+      }
+      this.network.onDisconnect().subscribe((data) => {
+        this.isNetworkAvailable = false;
+      });
+      this.network.onConnect().subscribe((data) => {
+        this.isNetworkAvailable = true;
+      });
+  
+      this.appVersion.getAppName()
+        .then((appName: any) => {
+          this.appLabel = appName;
+        });
+  }
+
+  /**
+	 * Angular life cycle hooks
+	 */
+  ngOnInit() {
+    this.getCourseTabData();
+  }
+
+  ionViewDidLoad() {
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.VIEW, "",
+      PageId.COURSES,
+      Environment.HOME
+    );
+
+    this.appGlobal.generateConfigInteractEvent(PageId.COURSES, this.isOnBoardingCardCompleted);
+    this.preference.getString('show_app_walkthrough_screen')
+      .then(value => {
+        if (value === 'true') {
+          const driver = new Driver({
+            allowClose: true,
+            closeBtnText: this.commonUtilService.translateMessage('DONE'),
+            showButtons: true
+          });
+
+          setTimeout(() => {
+            driver.highlight({
+              element: '#qrIcon',
+              popover: {
+                title: this.commonUtilService.translateMessage('ONBOARD_SCAN_QR_CODE'),
+                description: "<img src='assets/imgs/ic_scanqrdemo.png' /><p>" + this.commonUtilService.translateMessage('ONBOARD_SCAN_QR_CODE_DESC', this.appLabel) + "</p>",
+                showButtons: true,         // Do not show control buttons in footer
+                closeBtnText: this.commonUtilService.translateMessage('DONE'),
+              }
+            });
+
+            let element = document.getElementById("driver-highlighted-element-stage");
+            var img = document.createElement("img");
+            img.src = "assets/imgs/ic_scan.png";
+            img.id = "qr_scanner";
+            element.appendChild(img);
+          }, 100);
+
+          this.preference.putString('show_app_walkthrough_screen', 'false');
+        }
+      });
+  }
+
+  subscribeUtilityEvents(){
+     //Event for optional and forceful upgrade
+     this.events.subscribe('force_optional_upgrade', (upgrade) => {
       if (upgrade) {
         this.appGlobal.openPopover(upgrade)
       }
@@ -206,26 +275,9 @@ export class CoursesPage implements OnInit {
       }
     });
 
-    if (this.network.type === 'none') {
-      this.isNetworkAvailable = false;
-    } else {
-      this.isNetworkAvailable = true;
-    }
-    this.network.onDisconnect().subscribe((data) => {
-      this.isNetworkAvailable = false;
-    });
-    this.network.onConnect().subscribe((data) => {
-      this.isNetworkAvailable = true;
-    });
-
-    this.appVersion.getAppName()
-      .then((appName: any) => {
-        this.appLabel = appName;
-      });
-
     this.events.subscribe('tab.change', (data) => {
       this.ngZone.run(() => {
-        if (data === "COURSES‌") {
+        if (data === "COURSES") {
           if (this.appliedFilter) {
             this.filterIcon = "./assets/imgs/ic_action_filter.png";
             this.courseFilter = undefined;
@@ -236,62 +288,6 @@ export class CoursesPage implements OnInit {
         }
       });
     });
-  }
-
-  /**
-	 * Angular life cycle hooks
-	 */
-  ngOnInit() {
-    console.log('courses component initialized...');
-    this.getCourseTabData();
-  }
-
-  /*   ngAfterViewInit() {
-      const driver = new Driver();
-      console.log("Driver", driver);
-      driver.highlight('#qrIcon');
-    } */
-
-  ionViewDidLoad() {
-    this.telemetryService.impression(generateImpressionTelemetry(
-      ImpressionType.VIEW, "",
-      PageId.COURSES,
-      Environment.HOME, "", "", "",
-      undefined, undefined
-    ));
-
-    this.appGlobal.generateConfigInteractEvent(PageId.COURSES, this.isOnBoardingCardCompleted);
-    this.preference.getString('show_app_walkthrough_screen')
-      .then(value => {
-        if (value === 'true') {
-          const driver = new Driver({
-            allowClose: true,
-            closeBtnText: this.commonUtilService.translateMessage('DONE'),
-            showButtons: true
-          });
-
-          console.log("Driver", driver);
-          setTimeout(() => {
-            driver.highlight({
-              element: '#qrIcon',
-              popover: {
-                title: this.commonUtilService.translateMessage('ONBOARD_SCAN_QR_CODE'),
-                description: "<img src='assets/imgs/ic_scanqrdemo.png' /><p>" + this.commonUtilService.translateMessage('ONBOARD_SCAN_QR_CODE_DESC', this.appLabel) + "</p>",
-                showButtons: true,         // Do not show control buttons in footer
-                closeBtnText: this.commonUtilService.translateMessage('DONE'),
-              }
-            });
-
-            let element = document.getElementById("driver-highlighted-element-stage");
-            var img = document.createElement("img");
-            img.src = "assets/imgs/ic_scan.png";
-            img.id = "qr_scanner";
-            element.appendChild(img);
-          }, 100);
-
-          this.preference.putString('show_app_walkthrough_screen', 'false');
-        }
-      });
   }
 
   /**
@@ -392,7 +388,6 @@ export class CoursesPage implements OnInit {
         });
 
         this.popularAndLatestCourses = newSections;
-        console.log('Popular courses', this.popularAndLatestCourses);
         this.pageApiLoader = !this.pageApiLoader;
         this.checkEmptySearchResult();
       });
@@ -554,7 +549,7 @@ export class CoursesPage implements OnInit {
   showFilter() {
     const that = this;
 
-    const callback: PageFilterCallback = {
+    this.pageFilterCallBack = {
       applyFilter(filter, appliedFilter) {
         that.ngZone.run(() => {
           let criteria = new PageAssembleCriteria();
@@ -601,7 +596,7 @@ export class CoursesPage implements OnInit {
     }
 
     let filterOptions = {
-      callback: callback,
+      callback: this.pageFilterCallBack,
       pageId: PageId.COURSES
     }
     // Already apllied filter
@@ -719,7 +714,6 @@ export class CoursesPage implements OnInit {
 
     this.contentService.importContent(option, (data: any) => {
       data = JSON.parse(data);
-      console.log('Success: Import content =>', data);
       this.ngZone.run(() => {
         this.tabBarElement.style.display = 'none';
         if (data.result && data.result.length) {
