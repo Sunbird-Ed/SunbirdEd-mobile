@@ -309,6 +309,12 @@ export class appMock extends App {
   });
 }
 
+export class AppMock {
+  public getActiveNavs(): [NavMock] {
+    return [new NavMock()];
+  }
+}
+
 export class NavControllerBase {
 
 }
