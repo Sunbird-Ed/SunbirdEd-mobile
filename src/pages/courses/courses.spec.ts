@@ -58,7 +58,6 @@ describe('CoursesPage Component', () => {
         getTelemetryService: () => ({}),
         impression: () => ({}),
         interact: () => ({})
-
     }
     // let sharedPreferences ;  
 
@@ -542,7 +541,7 @@ describe('CoursesPage Component', () => {
         
     // });
 
-    it('should  call Page API if network is available ', (done) => {
+    it('should  call Page API if network is available ', () => {
         NetworkMock.instance('4G');
         spyOn(component,'getCourseTabData').and.callThrough();
         const pageService = TestBed.get(PageAssembleService);

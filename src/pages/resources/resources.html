@@ -30,7 +30,7 @@
 	 *ngIf="localResources && localResources.length">
 		<div class="item padding-11">
 			<span float-start class="scroll-heading">{{ 'SAVED_RESOURCES' | translate }}</span>
-			<span float-end class="view-all-link" *ngIf="localResources && localResources.length > 0 && !showLoader" (click)="viewAllSavedResources();">
+			<span float-end class="view-all-link" *ngIf="localResources && localResources.length > 0 && !showLoader" (click)="navigateToViewMoreContentsPage();">
 				<a>{{ 'VIEW_ALL' | translate }}</a>
 			</span>
 		</div>
@@ -55,7 +55,7 @@
 			<div class="course-scroll-holder">
 				<div class="item padding-11">
 					<span float-start class="scroll-heading">{{items.name}}</span>
-					<span float-end class="view-all-link" (click)="viewAllPopularContent(items?.searchQuery, items.name)">
+					<span float-end class="view-all-link" (click)="navigateToViewMoreContentsPageWithParams(items?.searchQuery, items.name)">
 						<a>{{ 'VIEW_ALL' | translate }}</a>
 					</span>
 				</div>
@@ -84,6 +84,6 @@
 		<b ion-text text-uppercase color="primary" (click)="checkNetworkStatus(true); buttonClick();">{{'RETRY_ACTION' | translate}}</b>
 	</div>
 	<div *ngIf="showSignInCard" class="signin-card-bg">
-		<sign-in-card (valueChange)="buttonClick($event)" [source]="source"></sign-in-card>
+		<sign-in-card (valueChange)="showOfflineNetworkWarning($event)" [source]="source"></sign-in-card>
 	</div>
 </ion-content>

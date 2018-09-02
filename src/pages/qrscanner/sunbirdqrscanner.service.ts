@@ -2,9 +2,7 @@ import { Injectable } from "@angular/core";
 import { TranslateService } from "@ngx-translate/core";
 import { PopoverController, Popover, ToastController, Platform } from "ionic-angular";
 import { QRScannerAlert, QRAlertCallBack } from "./qrscanner_alert";
-import { Start, Environment, Mode, TelemetryService, InteractType, InteractSubtype, PageId, End, PermissionService, ImpressionType, ImpressionSubtype, TelemetryObject } from "sunbird";
-import { generateInteractTelemetry, Map, generateStartTelemetry, generateEndTelemetry, generateImpressionTelemetry } from "../../app/telemetryutil";
-import { Network } from "@ionic-native/network";
+import { Environment, Mode, InteractType, InteractSubtype, PageId, PermissionService, ImpressionType, ImpressionSubtype, TelemetryObject } from "sunbird";
 import { TelemetryGeneratorService } from "../../service/telemetry-generator.service";
 import { QRScannerResultHandler } from "./qrscanresulthandler.service";
 
@@ -23,8 +21,6 @@ export class SunbirdQRScanner {
   private backButtonFunc = undefined;
   constructor(private translate: TranslateService,
     private popCtrl: PopoverController,
-    private telemetryService: TelemetryService,
-    private network: Network,
     private permission: PermissionService,
     private toastCtrl: ToastController,
     private platform: Platform,
@@ -115,7 +111,7 @@ export class SunbirdQRScanner {
 
   private startQRScanner(screenTitle: String, displayText: String,
     displayTextColor: String, source: string) {
-    (<any>window).qrScanner.startScanner(screenTitle, displayText, displayTextColor, (scannedData) => {
+    window['qrScanner'].startScanner(screenTitle, displayText, displayTextColor, (scannedData) => {
       if (scannedData === "cancel") {
         this.telemetryGeneratorService.generateInteractTelemetry(
           InteractType.OTHER,
@@ -159,40 +155,18 @@ export class SunbirdQRScanner {
 
   }
 
-  generateQRScanSuccessInteractEvent(scannedData, action, dialCode) {
-    let values = new Map();
-    values["NetworkAvailable"] = this.network.type === 'none' ? "N" : "Y";
-    values["ScannedData"] = scannedData;
-    values["Action"] = action;
-
-    let telemetryObject: TelemetryObject = new TelemetryObject();
-    if (dialCode) {
-      telemetryObject.id = dialCode;
-      telemetryObject.type = "qr";
-    }
-
-    this.telemetryGeneratorService.generateInteractTelemetry(
-      InteractType.OTHER,
-      InteractSubtype.QRCodeScanSuccess,
-      Environment.HOME,
-      PageId.QRCodeScanner, telemetryObject,
-      values
-    );
-  }
-
-
   generateEndEvent(pageId: string, qrData: string) {
-    if (pageId !== undefined) {
-      this.telemetryService.end(generateEndTelemetry(
+    if (pageId) {
+      let telemetryObject: TelemetryObject = new TelemetryObject();
+      telemetryObject.id = qrData;
+      telemetryObject.type = 'qr';
+      this.telemetryGeneratorService.generateEndTelemetry(
         "qr",
         Mode.PLAY,
         pageId,
-        qrData,
-        "qr",
-        "",
-        undefined,
-        undefined
-      ));
+        Environment.HOME,
+        telemetryObject
+      );
     }
   }
 

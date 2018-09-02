@@ -164,24 +164,24 @@ export class CoursesPage implements OnInit {
         }
       });
 
-      this.subscribeUtilityEvents();
+    this.subscribeUtilityEvents();
 
-      if (this.network.type === 'none') {
-        this.isNetworkAvailable = false;
-      } else {
-        this.isNetworkAvailable = true;
-      }
-      this.network.onDisconnect().subscribe((data) => {
-        this.isNetworkAvailable = false;
+    if (this.network.type === 'none') {
+      this.isNetworkAvailable = false;
+    } else {
+      this.isNetworkAvailable = true;
+    }
+    this.network.onDisconnect().subscribe((data) => {
+      this.isNetworkAvailable = false;
+    });
+    this.network.onConnect().subscribe((data) => {
+      this.isNetworkAvailable = true;
+    });
+
+    this.appVersion.getAppName()
+      .then((appName: any) => {
+        this.appLabel = appName;
       });
-      this.network.onConnect().subscribe((data) => {
-        this.isNetworkAvailable = true;
-      });
-  
-      this.appVersion.getAppName()
-        .then((appName: any) => {
-          this.appLabel = appName;
-        });
   }
 
   /**
@@ -231,9 +231,9 @@ export class CoursesPage implements OnInit {
       });
   }
 
-  subscribeUtilityEvents(){
-     //Event for optional and forceful upgrade
-     this.events.subscribe('force_optional_upgrade', (upgrade) => {
+  subscribeUtilityEvents() {
+    //Event for optional and forceful upgrade
+    this.events.subscribe('force_optional_upgrade', (upgrade) => {
       if (upgrade) {
         this.appGlobal.openPopover(upgrade)
       }
@@ -547,6 +547,10 @@ export class CoursesPage implements OnInit {
 
 
   showFilter() {
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.FILTER_BUTTON_CLICKED,
+      Environment.HOME,
+      PageId.COURSES, undefined);
     const that = this;
 
     this.pageFilterCallBack = {
