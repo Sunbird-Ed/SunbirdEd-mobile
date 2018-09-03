@@ -97,7 +97,7 @@ export class GuestProfilePage {
       this.refreshProfileData(false, false);
     });
 
-    this.preference.getString('selected_user_type')
+/*     this.preference.getString('selected_user_type')
       .then(val => {
 
         if (val == ProfileType.TEACHER) {
@@ -105,7 +105,7 @@ export class GuestProfilePage {
         } else if (val == ProfileType.STUDENT) {
           this.showSignInCard = false;
         }
-      });
+      }); */
 
     let profileType = this.appGlobal.getGuestUserType();
     if (profileType === ProfileType.TEACHER && this.appGlobal.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER) {

@@ -42,7 +42,8 @@ export class LanguageSettingsPage {
     private events: Events,
     private zone: NgZone,
     private toastCtrl: ToastController,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private appGlobal: AppGlobalService
   ) { }
 
   init(): void {
@@ -184,10 +185,11 @@ export class LanguageSettingsPage {
       });
       if (this.isFromSettings) {
         this.navCtrl.pop();
-      } else {
+      } else if (this.appGlobal.DISPLAY_ONBOARDING_PAGE) {
         this.navCtrl.push(OnboardingPage);
+      } else {
+        this.navCtrl.push(UserTypeSelectionPage);
       }
-
     }
     else {
       this.generateContinueClickedInteractEvent("n/a");
