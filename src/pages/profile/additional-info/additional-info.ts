@@ -185,7 +185,8 @@ export class AdditionalInfoComponent {
 
     this.frameworkService.getCategoryData(req)
       .then(category => {
-        this[propertyName] = _.map(JSON.parse(category), 'name');
+        let response = JSON.parse(category);
+        this[propertyName] = _.map(response.terms, 'name');
       })
       .catch(err => {
         console.log(currentCategory + " Category Response: ", JSON.parse(err));
