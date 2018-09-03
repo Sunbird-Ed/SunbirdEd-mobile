@@ -49,14 +49,46 @@ describe('SettingsPage', () => {
     });
 
     describe("IonViewWillEnter", () => {
-
+        it('makes expected calls', () => {
+            const transStub = TestBed.get(TranslateService);
+            const appStub = TestBed.get(AppVersion);
+            comp.shareAppLabel = 'appName';
+            spyOn(transStub, 'get').and.callFake((arg) => {
+                return Observable.of('Cancel');
+            });
+            spyOn(appStub, 'getAppName').and.returnValue(Promise.resolve('true'));
+            comp.ionViewWillEnter();
+            expect(comp.shareAppLabel).toBe('appName');
+        });
     });
 
     describe("IonViewDidLoad", () => {
-
+        it('makes expected calls', () => {
+            const telemeStub = TestBed.get(TelemetryService);
+            spyOn(telemeStub, 'impression');
+            comp.ionViewDidLoad();
+            expect(telemeStub.impression).toHaveBeenCalled();
+        });
     });
 
     describe("IonViewDidEnter", () => {
+        it("makes expected calls", () => {
+            const trasnStub = TestBed.get(TranslateService);
+            const preferStub = TestBed.get(SharedPreferences);
+
+            expect(comp.ionViewDidLoad).toBeDefined();
+            comp.selectedlanguage = 'selectedLanguage';
+            spyOn(trasnStub, 'get').and.callFake((value) => {
+                return Observable.of('Cancel');
+            });
+            spyOn(preferStub, 'getString').and.returnValue(Promise.resolve('true'));
+            comp.ionViewDidEnter();
+
+            expect(comp.chosenLanguageString).toBe('Cancel');
+            expect(comp.selectedlanguage).toBe('selectedLanguage');
+            expect(trasnStub.get).toHaveBeenCalled();
+            expect(preferStub.getString).toHaveBeenCalled();
+        });
 
     });
     describe("goBack", () => {
@@ -108,10 +140,102 @@ describe('SettingsPage', () => {
         });
     });
     describe("send Message", () => {
+        it('makes expected calls', () => {
+            const preferStub = TestBed.get(SharedPreferences);
+            const loadControllerStub = TestBed.get(LoadingController);
+            getLoader();
+            spyOn(comp, 'generateInteractTelemetry');
+            spyOn(preferStub, 'getString').and.returnValue(Promise.resolve(undefined));
 
+            comp.sendMessage();
+            expect(loadControllerStub.create).toHaveBeenCalled();
+            expect(comp.generateInteractTelemetry).toHaveBeenCalled();
+            expect(preferStub.getString).toHaveBeenCalled();
+        });
+        it('makes expected calls and checks when val is ""', () => {
+            const preferStub = TestBed.get(SharedPreferences);
+            const loadControllerStub = TestBed.get(LoadingController);
+            getLoader();
+            spyOn(comp, 'generateInteractTelemetry');
+            spyOn(preferStub, 'getString').and.returnValue(Promise.resolve(""));
+
+            comp.sendMessage();
+            expect(loadControllerStub.create).toHaveBeenCalled();
+            expect(comp.generateInteractTelemetry).toHaveBeenCalled();
+            expect(preferStub.getString).toHaveBeenCalled();
+        });
+        it('makes expected calls and checks when val is null', () => {
+            const preferStub = TestBed.get(SharedPreferences);
+            const loadControllerStub = TestBed.get(LoadingController);
+            getLoader();
+            spyOn(comp, 'generateInteractTelemetry');
+            spyOn(preferStub, 'getString').and.returnValue(Promise.resolve(null));
+
+            comp.sendMessage();
+            expect(loadControllerStub.create).toHaveBeenCalled();
+            expect(comp.generateInteractTelemetry).toHaveBeenCalled();
+            expect(preferStub.getString).toHaveBeenCalled();
+        });
+        it('makes expected calls in else part when is value is present', () => {
+            const preferStub = TestBed.get(SharedPreferences);
+            const loadControllerStub = TestBed.get(LoadingController);
+            const SocialSharingStub = TestBed.get(SocialSharing);
+            comp.fileUrl = "string";
+            getLoader();
+            spyOn(comp, 'generateInteractTelemetry');
+            spyOn(preferStub, 'getString').and.returnValue(Promise.resolve("string"));
+            spyOn(SocialSharingStub, 'shareViaEmail').and.returnValue(Promise.resolve(''));
+            comp.sendMessage();
+            expect(loadControllerStub.create).toHaveBeenCalled();
+            expect(comp.generateInteractTelemetry).toHaveBeenCalled();
+            expect(preferStub.getString).toHaveBeenCalled();
+        });
+        it('makes expected calls in social sharing catch part', () => {
+            const preferStub = TestBed.get(SharedPreferences);
+            const loadControllerStub = TestBed.get(LoadingController);
+            const SocialSharingStub = TestBed.get(SocialSharing);
+            comp.fileUrl = "string";
+            getLoader();
+            spyOn(comp, 'generateInteractTelemetry');
+            spyOn(preferStub, 'getString').and.returnValue(Promise.resolve("string"));
+            spyOn(SocialSharingStub, 'shareViaEmail').and.returnValue(Promise.reject());
+            comp.sendMessage();
+            expect(loadControllerStub.create).toHaveBeenCalled();
+            expect(comp.generateInteractTelemetry).toHaveBeenCalled();
+            expect(preferStub.getString).toHaveBeenCalled();
+        });
     });
     describe("shareApp", () => {
-
+        it('makes expected calls', () => {
+            const shareUtilStub = TestBed.get(ShareUtil);
+            const SocialSharingStub = TestBed.get(SocialSharing);
+            getLoader();
+            spyOn(comp, 'generateInteractTelemetry');
+            spyOn(shareUtilStub, 'exportApk').and.callFake((success, error) => {
+                return success('Cancel');
+            });
+            spyOn(SocialSharingStub, 'share');
+            comp.shareApp();
+            expect(comp.shareApp).toBeDefined();
+            expect(shareUtilStub.success).toBe(undefined);
+            expect(shareUtilStub.exportApk).toHaveBeenCalled();
+            expect(SocialSharingStub.share).toHaveBeenCalled();
+        });
+        it('makes expected calls in error part ', () => {
+            const shareUtilStub = TestBed.get(ShareUtil);
+            const SocialSharingStub = TestBed.get(SocialSharing);
+            getLoader();
+            spyOn(comp, 'generateInteractTelemetry');
+            spyOn(shareUtilStub, 'exportApk').and.callFake((success, error) => {
+                return error('error');
+            });
+            spyOn(SocialSharingStub, 'share');
+            comp.shareApp();
+            expect(comp.shareApp).toBeDefined();
+            expect(shareUtilStub.error).toBe(undefined);
+            expect(shareUtilStub.exportApk).toHaveBeenCalled();
+           // expect(SocialSharingStub.share).toHaveBeenCalled();
+        })
     });
     describe("getLoader", () => {
         it('makes expected calls', () => {
@@ -123,11 +247,10 @@ describe('SettingsPage', () => {
             expect(loadControllerStub.create).toHaveBeenCalled();
         });
     });
-    xdescribe("generateInteractTelemetry", () => {
-        xit('makes expected calls', () => {
+    describe("generateInteractTelemetry", () => {
+        it('makes expected calls', () => {
             const telemeStub = TestBed.get(TelemetryService);
-            spyOn(telemeStub, 'interact').and.callThrough();
-            expect(comp.generateInteractTelemetry).toBeDefined();
+            spyOn(telemeStub, 'interact');
 
             comp.generateInteractTelemetry('InteractType', 'InteractSubType');
             expect(telemeStub.interact).toHaveBeenCalled();

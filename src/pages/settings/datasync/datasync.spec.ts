@@ -12,7 +12,7 @@ import { DatasyncPage } from "./datasync";
 import { ShareUtilMock } from "../../../../test-config/mocks-ionic";
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { NO_ERRORS_SCHEMA } from "@angular/core";
-import { ServiceProvider, SharedPreferences, TelemetryService, ShareUtil } from "sunbird";
+import { ServiceProvider, SharedPreferences, TelemetryService, ShareUtil, SyncStat } from "sunbird";
 import { SocialSharing } from "@ionic-native/social-sharing";
 import { Observable } from "rxjs/Observable";
 import 'rxjs/add/observable/of';
@@ -62,12 +62,13 @@ describe("DataSyncPage", () => {
                 return Observable.of('Cancel');
             });
             comp.dataSyncType = DataSyncType.off;
-            spyOn(sharePreferStub, 'getString').and.callThrough();
+            spyOn(sharePreferStub, 'getString').and.returnValue(Promise.resolve(undefined));
 
             expect(comp.init).toBeDefined();
             comp.init();
             let translateMessage = comp.translateMessage('CANCEL');
             expect(comp.dataSyncType).toBe(DataSyncType.off);
+            expect(sharePreferStub.getString).toHaveBeenCalled();
             expect(translateMessage).toEqual('Cancel');
         });
         it("makes expected calls in preferences getString if value is empty", () => {
@@ -79,11 +80,12 @@ describe("DataSyncPage", () => {
             });
             comp.dataSyncType = DataSyncType.off;
             let value = "";
-            spyOn(sharePreferStub, 'getString').and.callThrough();
+            spyOn(sharePreferStub, 'getString').and.returnValue(Promise.resolve(""));
             comp.init();
             expect(comp.init).toBeDefined();
             expect(comp.dataSyncType).toBe(DataSyncType.off);
             expect(value).toBe("");
+            expect(sharePreferStub.getString).toHaveBeenCalled();
         });
         it("makes expected calls in preferences getString if value is null", () => {
             const sharePreferStub = TestBed.get(SharedPreferences);
@@ -94,13 +96,14 @@ describe("DataSyncPage", () => {
             });
             comp.dataSyncType = DataSyncType.off;
             let value = null;
-            spyOn(sharePreferStub, 'getString').and.callThrough();
+            spyOn(sharePreferStub, 'getString').and.returnValue(Promise.resolve(null));
             comp.init();
             expect(value).toBe(null);
             expect(comp.init).toBeDefined();
+            expect(sharePreferStub.getString).toHaveBeenCalled();
             expect(comp.dataSyncType).toBe(DataSyncType.off);
         });
-        xit("makes expected calls when val === 'OFF'", () => {
+        it("makes expected calls when val === 'OFF'", () => {
             const sharePreferStub = TestBed.get(SharedPreferences);
             const translateStub = TestBed.get(TranslateService);
             spyOn(translateStub, 'get').and.callFake((arg) => {
@@ -109,7 +112,7 @@ describe("DataSyncPage", () => {
             });
             comp.dataSyncType = DataSyncType.off;
             let value = 'OFF';
-            spyOn(sharePreferStub, 'getString').and.returnValue(Promise.resolve);
+            spyOn(sharePreferStub, 'getString').and.returnValue(Promise.resolve("OFF"));
             comp.init();
             expect(value).toBe('OFF');
             expect(comp.init).toBeDefined();
@@ -124,7 +127,7 @@ describe("DataSyncPage", () => {
             });
             comp.dataSyncType = DataSyncType.over_wifi;
             let value = 'OVER_WIFI_ONLY';
-            spyOn(sharePreferStub, 'getString').and.callThrough();
+            spyOn(sharePreferStub, 'getString').and.returnValue(Promise.resolve("OVER_WIFI_ONLY"));
             comp.init();
             expect(value).toBe('OVER_WIFI_ONLY');
             expect(comp.init).toBeDefined();
@@ -139,10 +142,11 @@ describe("DataSyncPage", () => {
             });
             comp.dataSyncType = DataSyncType.always_on;
             let value = 'ALWAYS_ON';
-            spyOn(sharePreferStub, 'getString').and.callThrough();
+            spyOn(sharePreferStub, 'getString').and.returnValue(Promise.resolve("ALWAYS_ON"));
             comp.init();
             expect(value).toBe('ALWAYS_ON');
             expect(comp.init).toBeDefined();
+            expect(sharePreferStub.getString).toHaveBeenCalled();
             expect(comp.dataSyncType).toBe(DataSyncType.always_on);
         });
     });
@@ -182,7 +186,12 @@ describe("DataSyncPage", () => {
     });
     describe("getLastSyncTime", () => {
         it("makes calls as expected", () => {
+            const telemetryServiceStub = TestBed.get(TelemetryService);
+            expect(comp.getLastSyncTime).toBeDefined();
+            spyOn(telemetryServiceStub, 'getTelemetryStat').and.callThrough();
 
+            comp.getLastSyncTime();
+            // expect(telemetryServiceStub.getTelemetryStat).toHaveBeenCalled();
         });
     });
     describe("shareTelemetry", () => {
@@ -217,7 +226,25 @@ describe("DataSyncPage", () => {
         });
     });
     describe("onSyncClick", () => {
+        it('makes expected calls', () => {
+            const telemetryServiceStub = TestBed.get(TelemetryService);
+            const sharePrefencesStub = TestBed.get(SharedPreferences);
 
+            getLoader();
+            comp.latestSync = "string";
+            spyOn(comp, 'generateInteractEvent');
+
+            spyOn(telemetryServiceStub, 'sync').and.callFake((response, error) => {
+                return Observable.of(response('any'));
+            });
+            spyOn(sharePrefencesStub, "putString");
+            spyOn(comp, 'presentToast').and.callThrough();
+            comp.onSyncClick();
+            //expect(telemetryServiceStub).toBe(undefined);
+            expect(comp.generateInteractEvent).toHaveBeenCalled();
+            // expect(sharePrefencesStub.putString.calls.any).toHaveBeenCalled();``
+            //expect(comp.presentToast).toHaveBeenCalled();
+        });
     });
     describe("getTimeIn12HourFormat", () => {
         it("makes expected calls", () => {
