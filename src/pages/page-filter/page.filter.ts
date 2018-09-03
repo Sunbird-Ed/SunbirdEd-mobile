@@ -111,7 +111,7 @@ export class PageFilter {
       let filterNames = [];
       this.filters.forEach(element => {
         element.name = this.getTranslatedValues(JSON.parse(element.translations || element.name));
-        filterNames.push(element.name);
+        filterNames.push(element.code);
       });
 
       let values = new Map();
@@ -170,7 +170,10 @@ export class PageFilter {
 
       this.frameworkService.getCategoryData(req)
         .then(res => {
-          let responseArray = JSON.parse(res);
+          let category = JSON.parse(res);
+          // this.filters[index].name = category.name;  // Assign the lable from framework
+
+          let responseArray = category.terms;
           if (responseArray && responseArray.length > 0) {
             resolve(this.filters[index].values = (currentCategory !== 'gradeLevel') ?
               _.map(responseArray, 'name').sort() : _.map(responseArray, 'name'));

@@ -429,7 +429,7 @@ export class ProfilePage {
 
     // Increase the Endorsement Count with 1 and make it as endorsed
 
-    if (this.profile.skills[num].hasOwnProperty) {
+    if (this.profile.skills[num].hasOwnProperty('endorsementCount')) {
       this.profile.skills[num].endorsementCount += 1;
     } else {
       this.profile.skills[num].endorsementcount += 1;
