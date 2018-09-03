@@ -1,9 +1,14 @@
 import { Component } from "@angular/core";
-import { PopoverController, ViewController, NavParams, Platform, Events } from "ionic-angular";
+import {
+  PopoverController,
+  ViewController,
+  NavParams,
+  Platform,
+  Events
+} from "ionic-angular";
 import { AppGlobalService } from "../../service/app-global.service";
 import * as _ from 'lodash';
 import { TranslateService } from "@ngx-translate/core";
-
 import {
   PageAssembleFilter,
   TelemetryService,
@@ -17,7 +22,6 @@ import {
 } from "sunbird";
 import { PageFilterOptions } from "./options/filter.options";
 import { generateInteractTelemetry } from "../../app/telemetryutil";
-import * as frameworkDataList from "../../config/framework.filters";
 import { TelemetryGeneratorService } from "../../service/telemetry-generator.service";
 
 @Component({
@@ -62,7 +66,6 @@ export class PageFilter {
   }
 
   getTranslatedValues(translations) {
-
     if (translations.hasOwnProperty(this.translate.currentLang)) {
       return translations[this.translate.currentLang];
     }
@@ -90,7 +93,7 @@ export class PageFilter {
     }
   }
 
-  initFilterValues() {
+  async initFilterValues() {
     this.filters = this.navParams.get('filter');
     let pageId = this.navParams.get('pageId');
     if (pageId === PageId.COURSES) {
@@ -137,41 +140,47 @@ export class PageFilter {
     let syllabus: Array<string> = this.appGlobalService.getCurrentUser().syllabus;
     let frameworkId = (syllabus && syllabus.length > 0) ? syllabus[0] : undefined;
 
-    this.filters.forEach((element, index: number) => {
-      this.getFrameworkData(frameworkId, element.code, index);
-
+    let index: number = 0;
+    for (let element of this.filters) {
+      try {
+        await this.getFrameworkData(frameworkId, element.code, index);
+      } catch (error) {
+        console.log('error: ' + error);
+      }
       //Framework API doesn't return domain and content Type exclude them
-      if (index === this.filters.length - 1) this.facetsFilter = this.filters;
-    });
+      if (index === this.filters.length - 1) {
+        this.facetsFilter = this.filters;
+      }
+      index++;
+    }
   }
-
-
 
   /**
  * This will internally call framework API
  * @param {string} currentCategory - request Parameter passing to the framework API
  * @param {number} index - Local variable name to hold the list data
  */
-  getFrameworkData(frameworkId: string, currentCategory: string, index: number): void {
-    let req: CategoryRequest = {
-      currentCategory: currentCategory,
-      frameworkId: frameworkId,
-      selectedLanguage: this.translate.currentLang
+  async getFrameworkData(frameworkId: string, currentCategory: string, index: number) {
+    return new Promise((resolve, reject) => {
+      let req: CategoryRequest = {
+        currentCategory: currentCategory,
+        frameworkId: frameworkId,
+        selectedLanguage: this.translate.currentLang
+      };
 
-
-    };
-
-    this.frameworkService.getCategoryData(req,
-      (res: any) => {
-        let responseArray = JSON.parse(res);
-        if (responseArray && responseArray.length > 0) {
-          this.filters[index].values = (currentCategory !== 'gradeLevel') ?
-            _.map(responseArray, 'name').sort() : _.map(responseArray, 'name');
-        }
-      },
-      (err: any) => {
-        console.log("Subject Category Response: ", JSON.parse(err));
-      });
+      this.frameworkService.getCategoryData(req)
+        .then(res => {
+          let responseArray = JSON.parse(res);
+          if (responseArray && responseArray.length > 0) {
+            resolve(this.filters[index].values = (currentCategory !== 'gradeLevel') ?
+              _.map(responseArray, 'name').sort() : _.map(responseArray, 'name'));
+          }
+        })
+        .catch(err => {
+          // console.log("Category Response: ", JSON.parse(err));
+          reject(err);
+        });
+    });
   }
 
   openFilterOptions(facet) {
@@ -192,7 +201,6 @@ export class PageFilter {
 
   apply() {
     if (this.callback) {
-
       let filters = _.cloneDeep(this.facetsFilter);
       filters.forEach(element => {
         if (element.code === 'contentType' && element.selectedValuesIndices && element.selectedValuesIndices.length) {

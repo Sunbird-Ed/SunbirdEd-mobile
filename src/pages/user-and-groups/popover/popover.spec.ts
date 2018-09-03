@@ -1,20 +1,21 @@
-import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { NO_ERRORS_SCHEMA } from "@angular/core";
-import { NavController } from "ionic-angular";
-import { NavParams } from "ionic-angular";
-import { TranslateService, TranslateModule } from "@ngx-translate/core";
-import { PopoverPage } from "./popover";
+import { NavController, NavParams } from 'ionic-angular';
+
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+
+import { PopoverPage } from './popover';
 
 describe("PopoverPage", () => {
     let comp: PopoverPage;
     let fixture: ComponentFixture<PopoverPage>;
 
     beforeEach(() => {
-       
+
         const navControllerStub = {};
         const navParamsStub = {
-            get: function() {
-                return (function() {})
+            get: function () {
+                return (function () { })
             }
         };
 
@@ -24,8 +25,8 @@ describe("PopoverPage", () => {
             })
         };
         TestBed.configureTestingModule({
-            declarations: [ PopoverPage ],
-            schemas: [ NO_ERRORS_SCHEMA ],
+            declarations: [PopoverPage],
+            schemas: [NO_ERRORS_SCHEMA],
             imports: [TranslateModule.forRoot()],
             providers: [
                 { provide: NavController, useValue: navControllerStub },
@@ -61,7 +62,7 @@ describe("PopoverPage", () => {
         expect(comp.edit).toHaveBeenCalled();
         expect(navParamsStub.get).toHaveBeenCalled();
     });
-    it('It should call the ionViewDidLoad method' , function () {
+    it('It should call the ionViewDidLoad method', function () {
 
         spyOn(comp, 'ionViewDidLoad').and.callThrough();
         comp.ionViewDidLoad();

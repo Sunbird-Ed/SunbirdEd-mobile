@@ -1,6 +1,8 @@
+import { ProfileType, UserSource } from "sunbird";
+
 export const mockRes = {
   getEnrolledCourses:
-  {"message":"successful","result":{"courses":[{"active":true,"addedBy":"abc","batchId":"1234","contentId":"do_123","courseId":"do_123","courseLogoUrl":"sampleurl","courseName":"LiveCourse","dateTime":"2018-04-2212: 00: 07: 304+0000","description":"Sampledescription","enrolledDate":"2018-04-2212: 00: 07: 304+0000","id":"axyz","identifier":"xyz","lastReadContentStatus":0,"leafNodesCount":4,"progress":0,"status":0,"userId":"xyz"}]}},
+    { "message": "successful", "result": { "courses": [{ "active": true, "addedBy": "abc", "batchId": "1234", "contentId": "do_123", "courseId": "do_123", "courseLogoUrl": "sampleurl", "courseName": "LiveCourse", "dateTime": "2018-04-2212: 00: 07: 304+0000", "description": "Sampledescription", "enrolledDate": "2018-04-2212: 00: 07: 304+0000", "id": "axyz", "identifier": "xyz", "lastReadContentStatus": 0, "leafNodesCount": 4, "progress": 0, "status": 0, "userId": "xyz" }] } },
 
   popularCoursesResponse:
   {
@@ -11,12 +13,76 @@ export const mockRes = {
 
   failurepopularCoursesResponse:
   {
-    "error":"COONECTION_ERROR"
+    "error": "COONECTION_ERROR"
   },
+  courseConfigFilter: [{ "name": "Board", "translations": "{\"en\":\"Board\",\"hi\":\"बोर्ड\",\"te\":\"బోర్డు\",\"ta\":\"வாரியம்\",\"mr\":\"बोर्ड\"}", "code": "board", "index": 1, "values": [] }, { "name": "Subject", "translations": "{\"en\":\"Subject\",\"hi\":\"विषय\",\"te\":\"పాఠ్యాంశము\",\"ta\":\"பாடம்\",\"mr\":\"विषय\"}", "code": "subject", "index": 2, "values": [] }, { "name": "Medium", "translations": "{\"en\":\"Medium\",\"hi\":\"माध्यम\",\"te\":\"మాధ్యమం\",\"ta\":\"மொழி\",\"mr\":\"माध्यम\"}", "code": "medium", "index": 3, "values": [] }],
+
+  appliedFilter: [{ "name": "Board", "translations": "{\"en\":\"Board\",\"hi\":\"बोर्ड\",\"te\":\"బోర్డు\",\"ta\":\"வாரியம்\",\"mr\":\"बोर्ड\"}", "code": "board", "index": 1, "values": ["CBSE", "DSERT"], "selected": ["CBSE"] }, { "name": "Subject", "translations": "{\"en\":\"Subject\",\"hi\":\"विषय\",\"te\":\"పాఠ్యాంశము\",\"ta\":\"பாடம்\",\"mr\":\"विषय\"}", "code": "subject", "index": 2, "values": ["Accountancy"] }, { "name": "Medium", "translations": "{\"en\":\"Medium\",\"hi\":\"माध्यम\",\"te\":\"మాధ్యమం\",\"ta\":\"மொழி\",\"mr\":\"माध्यम\"}", "code": "medium", "index": 3, "values": ["Assamese", "Bengali"] }],
+
+  appliedFilterCourse:{"board":["State (Andhra Pradesh)"]},
+
+  filter: { "board": ["CBSE"] },
+
+  filteredCriteria: { "name": "Course", "filters": { "board": ["CBSE"] }, "mode": "hard" },
 
   searchQuery:
-  "{\"request\":{\"filters\":{\"contentType\":[\"Collection\"],\"objectType\":[\"Content\"],\"status\":[\"Live\"]},\"sort_by\":{\"me_averageRating\":\"desc\"},\"limit\":10}}",
+    "{\"request\":{\"filters\":{\"contentType\":[\"Collection\"],\"objectType\":[\"Content\"],\"status\":[\"Live\"]},\"sort_by\":{\"me_averageRating\":\"desc\"},\"limit\":10}}",
 
   mergedSearchQuery:
-  "{\"request\":{\"filters\":{\"contentType\":[\"Collection\"],\"objectType\":[\"Content\"],\"status\":[\"Live\"]},\"sort_by\":{\"me_averageRating\":\"desc\"},\"limit\":10,\"mode\":\"soft\"}}"
+    "{\"request\":{\"filters\":{\"contentType\":[\"Collection\"],\"objectType\":[\"Content\"],\"status\":[\"Live\"]},\"sort_by\":{\"me_averageRating\":\"desc\"},\"limit\":10,\"mode\":\"soft\"}}",
+
+  sampleProfile:
+    { handle: "sample", syllabus:["NCF"],board: ["CBSE"], grade: ["KG"], subject: ["English"], medium: ["English"], profileType: ProfileType.TEACHER, source: UserSource.LOCAL },
+
+  coursePageAssembleCriteria:
+    "{\"name\":\"Course\",\"mode\":\"soft\",\"filter\":{\"board\":[\"CBSE\"],\"medium\":[\"English\"],\"gradeLevel\":[\"KG\"],\"subject\":[\"English\"]}}",
+
+  downloadProgressEventSample1:
+    "{\"data\":{\"downloadId\":18788,\"downloadProgress\":10,\"identifier\":\"do_sampele\",\"status\":1},\"type\":\"downloadProgress\"}",
+
+  downloadProgressEventSample2:
+    "{\"data\":{\"downloadId\":18788,\"downloadProgress\":-1,\"identifier\":\"do_sampele\",\"status\":1},\"type\":\"downloadProgress\"}",
+
+  importCompleteEvent:
+    "{\"data\":{\"downloadId\":18788,\"downloadProgress\":-1,\"identifier\":\"do_sample\",\"status\":\"IMPORT_COMPLETED\"},\"type\":\"contentImport\"}",
+
+  importContentResponse:
+    "{\"message\":\"successful\",\"result\":[{\"identifier\":\"do_sample\",\"status\":\"ENQUEUED_FOR_DOWNLOAD\"}]}",
+
+  importReQuest:
+    "{\"contentImportMap\":{\"0\":{\"isChildContent\":false,\"destinationFolder\":\"\",\"contentId\":\"do_sample\",\"correlationData\":[]}},\"contentStatusArray\":[]}",
+
+  failrueimportResponse:
+    "{\"message\":\"successful\",\"result\":[{\"identifier\":\"do_sample\",\"status\":\"NOT_FOUND\"}]}",
+
+  sampleContent:
+    "{\"identifier\":\"do_sample\"}",
+
+  sampleContentDetailsResponseLocal:
+    "{\"message\":\"successful\",\"result\":{\"identifier\":\"do_sample\",\"isAvailableLocally\":true}}",
+
+  sampleContentDetailsResponseNonLocal:
+    "{\"message\":\"successful\",\"result\":{\"identifier\":\"do_sample\",\"isAvailableLocally\":false}}",
+
+  upgradeAppResponse:
+    "{\"upgrade\":{\"type\":\"force\",\"title\":\"New version of the App available!\",\"desc\":\"\"}}",
+
+  onboardingCompleteResponse:
+    "{\"isOnBoardingCardCompleted\":true}",
+
+  courseUpdate:
+    "{\"update\":{\"type\":\"force\",\"title\":\"New version of the App available!\",\"desc\":\"\"}}",
+
+  onboardingCardProgress:
+    "{\"cardProgress\":10}",
+  resumeContent:
+    "{\"content\":{\"identifier\":\"do_sample\"}}",
+  enrollCourseEvent:
+    "{\"batchId\":\"1234\"}",
+
+  languageChangeEvent:
+    "{\"selectedLanguage\":\"hi\"}",
+
+
+
 }

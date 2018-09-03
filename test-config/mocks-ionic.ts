@@ -2,7 +2,7 @@ import { CourseUtilService } from './../src/service/course-util.service';
 import { AppGlobalService } from './../src/service/app-global.service';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
-import { AuthService, ContainerService, PermissionService, TelemetryService, GenieSDKServiceProvider, SharedPreferences } from "sunbird";
+import { AuthService, ContainerService, PermissionService, TelemetryService, GenieSDKServiceProvider, SharedPreferences, ShareUtil } from "sunbird";
 import { ImageLoaderConfig } from "ionic-image-loader";
 import { TranslateLoader } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
@@ -143,9 +143,9 @@ export class AuthServiceMock extends AuthService {
 
 export class ContainerServiceMock extends ContainerService {
 }
-export class PermissionServiceMock {
+export class PermissionServiceMock extends PermissionService {
 
-  public requestPermission: () => ({});
+  //public requestPermission: () => ({});
 }
 export class ImageLoaderConfigMock extends ImageLoaderConfig {
   public enableDebugMode() {
@@ -159,6 +159,8 @@ export class ImageLoaderConfigMock extends ImageLoaderConfig {
 export class TelemetryServiceMock extends TelemetryService {
   end: () => ({});
   interact: () => ({});
+  impression: () => ({});
+  getTelemetryStat: (sucess, error) => ({});
 }
 
 export class AppGlobalServiceMock extends AppGlobalService {
@@ -178,13 +180,12 @@ export class AppGlobalServiceMock extends AppGlobalService {
   static setSessionData(session: any) {
     AppGlobalServiceMock.session = session;
   }
-
 }
 
-export class EventsMock{
-	subscribe(){
-		return;
-	}
+export class EventsMock {
+  subscribe() {
+    return;
+  }
 }
 export class CourseUtilServiceMock extends CourseUtilService { }
 
@@ -228,11 +229,13 @@ export class GenieSDKServiceProviderMock extends GenieSDKServiceProvider {
   }
 }
 
-export class SharedPreferencesMock extends SharedPreferences {
-  getString(key, callback) {
-    return callback("value")
+export class SharedPreferencesMock {
+  public getString(): Promise<string> {
+    return new Promise((resolve) => {
+      resolve('value');
+    });
   }
-  putString: (key, value) => ({})
+  public putString() { }
 
 }
 
@@ -241,7 +244,11 @@ export class FileUtilMock {
     return '';
   }
 }
+export class ShareUtilMock extends ShareUtil {
+  exportTelemetry: (successCallback, errorCallback) => ({
 
+  });
+}
 export class NavControllerMock { }
 
 export class SocialSharingMock {
@@ -250,7 +257,9 @@ export class SocialSharingMock {
   }
 }
 
-export class ViewControllerMock { }
+export class ViewControllerMock {
+  dismiss: () => {}
+}
 
 // export class ToastControllerMock {
 //   create: () => ({
@@ -261,7 +270,9 @@ export class ViewControllerMock { }
 export class StorageMock { }
 
 export class AppVersionMock {
-
+  getAppName(): Promise<string> {
+    return ;
+  }
 }
 
 export class FormAndFrameworkUtilServiceMock {
@@ -298,6 +309,12 @@ export class appMock extends App {
   });
 }
 
+export class AppMock {
+  public getActiveNavs(): [NavMock] {
+    return [new NavMock()];
+  }
+}
+
 export class NavControllerBase {
 
 }
@@ -316,7 +333,7 @@ class ToastMock extends ViewController {
   onDidDismiss() { };
 }
 
-export class ToastMockNew { 
+export class ToastMockNew {
   public static instance(): any {
     const instance: any = jasmine.createSpyObj('Toast', ['present', 'dismissAll', 'onDidDismiss', 'setContent', 'setSpinner']);
     instance.present.and.returnValue(Promise.resolve());
@@ -324,7 +341,7 @@ export class ToastMockNew {
   }
 }
 
-export class ToastControllerMockNew { 
+export class ToastControllerMockNew {
   public static instance(toast?: ToastMock): any {
     const instance: any = jasmine.createSpyObj('ToastController', ['create']);
     instance.create.and.returnValue(toast || ToastMockNew.instance());
@@ -333,8 +350,9 @@ export class ToastControllerMockNew {
 }
 export class LoadingMock extends ViewController {
   public static instance(): any {
-    let instance = jasmine.createSpyObj('Loading', ['present', 'onDidDismiss', 'dismissAll', 'setContent', 'setSpinner']);
+    let instance = jasmine.createSpyObj('Loading', ['present', 'dismiss', 'onDidDismiss', 'dismissAll', 'setContent', 'setSpinner']);
     instance.present.and.returnValue(Promise.resolve());
+    instance.dismiss.and.returnValue(Promise.resolve());
     // instance.onDidDismiss.and.returnValue(Promise.resolve());
     return instance;
   }
@@ -365,6 +383,23 @@ export class PopoverMock extends ViewController {
     return instance;
   }
 }
+
+export class AlertControllerMock {
+  public static instance(alert?: AlertMock): any {
+    let instance = jasmine.createSpyObj('AlertController', ['create']);
+    instance.create.and.returnValue(alert || AlertMock.instance());
+
+    return instance;
+  }
+}
+
+export class AlertMock extends ViewController {
+  public static instance(): any {
+    let instance = jasmine.createSpyObj('Alert', ['present', 'onDidDismiss', 'dismissAll', 'setContent', 'setSpinner']);
+    instance.present.and.returnValue(Promise.resolve());
+    return instance;
+  }
+}
 // class PopoverMock {
 
 //   constructor(popoverMock: PopoverMock) {}
@@ -388,7 +423,7 @@ class LoadingMockNew {
 
   private content: string;
 
-  constructor (loadingMock: LoadingMockNew) {
+  constructor(loadingMock: LoadingMockNew) {
     this.content = loadingMock.content;
   }
 
@@ -414,8 +449,31 @@ export class LoadingControllerMockNew {
 }
 
 export class CommonUtilServiceMock extends CommonUtilService {
-  
+
 }
+
+export class BuildParamaServiceMock {
+  public getBuildConfigParam(): Promise<string> {
+    return new Promise((resolve) => {
+      resolve();
+    });
+  }
+}
+
+export class IonicAppMock {
+
+  _modalPortal: {
+    getActive: () => ({
+        dismiss: () =>{}
+    })
+  }
+  _overlayPortal: {
+    getActive: () => ({
+        dismiss: () =>{}
+    })
+  }
+}
+
 
 /*export class ToastMock {
   public static instance(): any {

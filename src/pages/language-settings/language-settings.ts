@@ -42,7 +42,8 @@ export class LanguageSettingsPage {
     private events: Events,
     private zone: NgZone,
     private toastCtrl: ToastController,
-    private telemetryGeneratorService:TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private appGlobal: AppGlobalService
   ) { }
 
   init(): void {
@@ -75,16 +76,17 @@ export class LanguageSettingsPage {
     ];
 
     this.zone.run(() => {
-      this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE, val => {
-        if (val === undefined || val === "" || val === null) {
-          console.error("Language not set");
-          //this.getDeviceLanguage();
-          this.previousLanguage = undefined;
-        } else {
-          this.previousLanguage = val;
-          this.language = val;
-        }
-      });
+      this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
+        .then(val => {
+          if (val === undefined || val === "" || val === null) {
+            console.error("Language not set");
+            //this.getDeviceLanguage();
+            this.previousLanguage = undefined;
+          } else {
+            this.previousLanguage = val;
+            this.language = val;
+          }
+        });
     });
 
   }
@@ -154,14 +156,14 @@ export class LanguageSettingsPage {
     );
   }
 
-  generateContinueClickedInteractEvent(selectedLanguage:string){
+  generateContinueClickedInteractEvent(selectedLanguage: string) {
     let valuesMap = new Map();
     valuesMap["selectedLanguage"] = selectedLanguage;
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.CONTINUE_CLICKED,
       this.isFromSettings ? Environment.SETTINGS : Environment.ONBOARDING,
-      this.isFromSettings ? PageId.SETTINGS : PageId.ONBOARDING_LANGUAGE_SETTING ,
+      this.isFromSettings ? PageId.SETTINGS : PageId.ONBOARDING_LANGUAGE_SETTING,
       undefined,
       valuesMap
     );
@@ -183,10 +185,11 @@ export class LanguageSettingsPage {
       });
       if (this.isFromSettings) {
         this.navCtrl.pop();
-      } else {
+      } else if (this.appGlobal.DISPLAY_ONBOARDING_PAGE) {
         this.navCtrl.push(OnboardingPage);
+      } else {
+        this.navCtrl.push(UserTypeSelectionPage);
       }
-
     }
     else {
       this.generateContinueClickedInteractEvent("n/a");

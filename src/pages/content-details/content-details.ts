@@ -253,11 +253,12 @@ export class ContentDetailsPage {
       this.backButtonFunc();
     }, 11)
     this.objRollup = new Rollup();
-    this.buildParamService.getBuildConfigParam("BASE_URL", (response: any) => {
-      this.baseUrl = response
-    }, (error) => {
-      return "";
-    });
+    this.buildParamService.getBuildConfigParam("BASE_URL")
+      .then(response => {
+        this.baseUrl = response
+      })
+      .catch(error => {
+      });
 
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
@@ -321,15 +322,16 @@ export class ContentDetailsPage {
   }
 
   checkCurrentUserType() {
-    this.preference.getString('selected_user_type', (val) => {
-      if (val != "") {
-        if (val == ProfileType.TEACHER) {
-          this.profileType = ProfileType.TEACHER;
-        } else if (val == ProfileType.STUDENT) {
-          this.profileType = ProfileType.STUDENT;
+    this.preference.getString('selected_user_type')
+      .then(val => {
+        if (val != "") {
+          if (val == ProfileType.TEACHER) {
+            this.profileType = ProfileType.TEACHER;
+          } else if (val == ProfileType.STUDENT) {
+            this.profileType = ProfileType.STUDENT;
+          }
         }
-      }
-    });
+      });
   }
 
 

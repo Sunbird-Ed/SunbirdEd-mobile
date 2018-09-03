@@ -5,13 +5,13 @@ import {
     AuthService,
     SharedPreferences,
     ProfileService,
-    FrameworkDetailsRequest,
-    FrameworkService,
     BuildParamService,
     PageId,
     Environment,
     InteractType,
-    InteractSubtype
+    InteractSubtype,
+    FrameworkDetailsRequest,
+    FrameworkService
 } from "sunbird";
 import {
     Events,
@@ -19,7 +19,7 @@ import {
     PopoverOptions
 } from "ionic-angular";
 import { UpgradePopover } from "../pages/upgrade/upgrade-popover";
-import { FrameworkConstant, GenericAppConfig } from "../app/app.constant";
+import { GenericAppConfig } from "../app/app.constant";
 import { TelemetryGeneratorService } from "./telemetry-generator.service";
 
 @Injectable()
@@ -63,11 +63,12 @@ export class AppGlobalService {
     constructor(private event: Events,
         private authService: AuthService,
         private profile: ProfileService,
-        private framework: FrameworkService,
         private preference: SharedPreferences,
         private popoverCtrl: PopoverController,
         private buildParamService: BuildParamService,
+        private framework: FrameworkService,
         private telemetryGeneratorService: TelemetryGeneratorService) {
+
         this.initValues();
         this.listenForEvents();
     }
@@ -167,7 +168,6 @@ export class AppGlobalService {
 
     private initValues() {
         this.readConfig();
-        console.log("initValues");
         this.authService.getSessionData((session) => {
             if (session === null || session === "null") {
                 this.getGuestUserInfo();
@@ -181,53 +181,69 @@ export class AppGlobalService {
     }
 
     readConfig() {
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_ONBOARDING_CARDS, (response: any) => {
-            this.DISPLAY_ONBOARDING_CARDS = response === 'true' ? true : false;
-        }, (error) => {
-            this.DISPLAY_ONBOARDING_CARDS = false;
-        });
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_ONBOARDING_CARDS)
+            .then(response => {
+                this.DISPLAY_ONBOARDING_CARDS = response === 'true' ? true : false;
+            })
+            .catch(error => {
+                this.DISPLAY_ONBOARDING_CARDS = false;
+            });
 
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE, (response: any) => {
-            this.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE = response === 'true' ? true : false;
-        }, (error) => {
-            this.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE = false;
-        });
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE)
+            .then(response => {
+                this.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE = response === 'true' ? true : false;
+            })
+            .catch(error => {
+                this.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE = false;
+            });
 
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_ONBOARDING_PAGE, (response: any) => {
-            this.DISPLAY_ONBOARDING_PAGE = response === 'true' ? true : false;
-        }, (error) => {
-            this.DISPLAY_ONBOARDING_PAGE = false;
-        });
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_ONBOARDING_PAGE)
+            .then(response => {
+                this.DISPLAY_ONBOARDING_PAGE = response === 'true' ? true : false;
+            })
+            .catch(error => {
+                this.DISPLAY_ONBOARDING_PAGE = false;
+            });
 
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER, (response: any) => {
-            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER = response === 'true' ? true : false;
-        }, (error) => {
-            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER = false;
-        });
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER)
+            .then(response => {
+                this.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER = response === 'true' ? true : false;
+            })
+            .catch(error => {
+                this.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER = false;
+            });
 
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER, (response: any) => {
-            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER = response === 'true' ? true : false;
-        }, (error) => {
-            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER = false;
-        });
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER)
+            .then(response => {
+                this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER = response === 'true' ? true : false;
+            })
+            .catch(error => {
+                this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER = false;
+            });
 
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER, (response: any) => {
-            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER = response === 'true' ? true : false;
-        }, (error) => {
-            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER = false;
-        });
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER)
+            .then(response => {
+                this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER = response === 'true' ? true : false;
+            })
+            .catch(error => {
+                this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER = false;
+            });
 
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT, (response: any) => {
-            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT = response === 'true' ? true : false;
-        }, (error) => {
-            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT = false;
-        });
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT)
+            .then(response => {
+                this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT = response === 'true' ? true : false;
+            })
+            .catch(error => {
+                this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT = false;
+            });
 
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT, (response: any) => {
-            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT = response === 'true' ? true : false;
-        }, (error) => {
-            this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT = false;
-        });
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT)
+            .then(response => {
+                this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT = response === 'true' ? true : false;
+            })
+            .catch(error => {
+                this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT = false;
+            });
     }
 
     private getCurrentUserProfile() {
@@ -250,30 +266,52 @@ export class AppGlobalService {
                 this.frameworkData = [];
                 this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
             }
-
         }, (error) => {
             this.guestUserProfile = undefined;
             this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
         });
     }
 
+    // Remove this method after refactoring formandframeworkutil.service
+    private getFrameworkDetails(frameworkId: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let req: FrameworkDetailsRequest = {
+                defaultFrameworkDetails: true
+            };
+
+            if (frameworkId !== undefined && frameworkId.length) {
+                req.defaultFrameworkDetails = false;
+                req.frameworkId = frameworkId;
+            }
+
+            this.framework.getFrameworkDetails(req)
+                .then(res => {
+                    resolve(res);
+                })
+                .catch(error => {
+                    reject(error);
+                });
+        });
+    }
+
     private getGuestUserInfo() {
         console.log("getGuestUserInfo");
-        this.preference.getString('selected_user_type', (val) => {
-            if (val !== undefined && val != "") {
-                if (val == ProfileType.STUDENT) {
-                    this.guestProfileType = ProfileType.STUDENT;
+        this.preference.getString('selected_user_type')
+            .then(val => {
+                if (val !== undefined && val != "") {
+                    if (val == ProfileType.STUDENT) {
+                        this.guestProfileType = ProfileType.STUDENT;
+                    }
+                    else if (val == ProfileType.TEACHER) {
+                        this.guestProfileType = ProfileType.TEACHER;
+                    } else if (val === "student") {
+                        this.guestProfileType = ProfileType.STUDENT;
+                    } else if (val === "teacher") {
+                        this.guestProfileType = ProfileType.TEACHER;
+                    }
+                    this.isGuestUser = true;
                 }
-                else if (val == ProfileType.TEACHER) {
-                    this.guestProfileType = ProfileType.TEACHER;
-                } else if (val === "student") {
-                    this.guestProfileType = ProfileType.STUDENT;
-                } else if (val === "teacher") {
-                    this.guestProfileType = ProfileType.TEACHER;
-                }
-                this.isGuestUser = true;
-            }
-        });
+            });
     }
 
     private listenForEvents() {
@@ -283,32 +321,6 @@ export class AppGlobalService {
 
         this.event.subscribe('refresh:profile', () => {
             this.initValues();
-        });
-    }
-
-    /**
-    * Get all categories using framework api
-    */
-    private getFrameworkDetails(frameworkId?: string): Promise<any> {
-
-        return new Promise((resolve, reject) => {
-            let req: FrameworkDetailsRequest = {
-                defaultFrameworkDetails: true
-            };
-
-            if (frameworkId !== undefined && frameworkId.length && frameworkId != FrameworkConstant.DEFAULT_FRAMEWORK_ID) {
-                req.defaultFrameworkDetails = false;
-                req.frameworkId = frameworkId;
-            }
-
-            this.framework.getFrameworkDetails(req,
-                (res: any) => {
-                    let categories = res;
-                    resolve(categories);
-                },
-                (err: any) => {
-                    reject(err);
-                });
         });
     }
 
@@ -335,6 +347,7 @@ export class AppGlobalService {
             let paramsMap = new Map();
             if (pageId !== PageId.PROFILE) {
                 paramsMap["isOnBoardingPageConfigEnabled"] = this.DISPLAY_ONBOARDING_PAGE;
+                paramsMap["isOnBoardingCardsConfigEnabled"] = this.DISPLAY_ONBOARDING_CARDS;
                 paramsMap["isOnBoardingCompleted"] = isOnBoardingCompleted;
             }
             let profileType = this.getGuestUserType();

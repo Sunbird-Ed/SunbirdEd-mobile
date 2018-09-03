@@ -1,8 +1,0 @@
-{
-    "id": "sunnird.plugin.group",
-    "version": "0.0.1",
-    "module": "GroupPageModule",
-    "main": "GroupPage",
-    "children": [],
-    "appVersion": "0.0.1"
-}

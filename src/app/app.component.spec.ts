@@ -1,12 +1,12 @@
+import { ContentType, MimeType } from './app.constant';
 
-import { NavController } from 'ionic-angular';
 import { App } from 'ionic-angular';
 import { eventsMock, appMock, NavControllerMock, ToastControllerMock } from './../../test-config/mocks-ionic';
 import { fakeAsync, ComponentFixture } from '@angular/core/testing';
 import { PluginModules } from './module.service';
 import { AppGlobalService } from '../service/app-global.service';
 import { async, TestBed, inject } from '@angular/core/testing';
-import { IonicModule, Platform, ToastController } from 'ionic-angular';
+import { IonicModule, Platform, ToastController, Nav } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import {
@@ -34,7 +34,6 @@ import {
   AppVersionMock,
   FormAndFrameworkUtilServiceMock,
   SharedPreferencesMock
-
 } from '../../test-config/mocks-ionic';
 import { CourseUtilService } from '../service/course-util.service';
 import { AppVersion } from '@ionic-native/app-version';
@@ -43,7 +42,8 @@ import { } from 'jasmine';
 import { Observable } from 'rxjs';
 import { Events } from 'ionic-angular';
 import { EnrolledCourseDetailsPage } from '../pages/enrolled-course-details/enrolled-course-details';
-
+import { CollectionDetailsPage } from '../pages/collection-details/collection-details';
+import { ContentDetailsPage } from '../pages/content-details/content-details';
 
 describe('MyApp Component', () => {
   let fixture: ComponentFixture<MyApp>;
@@ -62,10 +62,10 @@ describe('MyApp Component', () => {
         ...PluginModules
       ],
       providers: [
-        PermissionService,
+        //PermissionService,
         { provide: AuthService, useClass: AuthServiceMock },
         { provide: ContainerService, useClass: ContainerServiceMock },
-        //{ provide: PermissionService, useClass: PermissionServiceMock },
+        { provide: PermissionService, useClass: PermissionServiceMock },
         { provide: ImageLoaderConfig, useClass: ImageLoaderConfigMock },
         { provide: StatusBar, useClass: StatusBarMock },
         { provide: SplashScreen, useClass: SplashScreenMock },
@@ -75,20 +75,25 @@ describe('MyApp Component', () => {
         { provide: CourseUtilService, useClass: CourseUtilServiceMock },
         { provide: AppVersion, useClass: AppVersionMock },
         { provide: FormAndFrameworkUtilService, useClass: FormAndFrameworkUtilServiceMock },
-        { provide: SharedPreferences, useClass: SharedPreferencesMock },
+        //{ provide: SharedPreferences, useClass: SharedPreferencesMock },
+        SharedPreferences,
         { provide: ToastController, useClass: ToastControllerMock },
-        { provide: App, useClass: appMock },
-//        { provide: NavController, useClass: NavControllerMock }
+        { provide: App, useClass: appMock }
       ],
-    })
+    });
   }));
 
   beforeEach(() => {
+    const permisssion: PermissionService = TestBed.get(PermissionService);
+    spyOn(permisssion, 'requestPermission').and.callFake((permissionList, response, error) => {
+      return response({});
+    });
     spyOn(MyApp.prototype, 'registerDeeplinks');
     spyOn(MyApp.prototype, 'subscribeEvents');
-    spyOn(MyApp.prototype, 'saveDefaultSyncSetting');
+    spyOn(MyApp.prototype, 'saveDefaultSyncSetting').and.callThrough();
     spyOn(MyApp.prototype, 'showAppWalkThroughScreen');
 
+    spyOn(MyApp.prototype, 'makeEntryInSupportFolder').and.callThrough();
     fixture = TestBed.createComponent(MyApp);
     comp = fixture.componentInstance;
   });
@@ -115,7 +120,6 @@ describe('MyApp Component', () => {
     it("makes expected calls", (done) => {
       const platform: Platform = TestBed.get(Platform);
       const permisssion: PermissionService = TestBed.get(PermissionService);
-      const formAndFrameworkUtilService: FormAndFrameworkUtilService = TestBed.get(FormAndFrameworkUtilService);
       let permissionList = [
         "android.permission.CAMERA",
         "android.permission.WRITE_EXTERNAL_STORAGE",
@@ -123,19 +127,70 @@ describe('MyApp Component', () => {
         "android.permission.RECORD_AUDIO"
       ];
       spyOn(platform, 'ready').and.returnValue(Promise.resolve({}));
-      // spyOn(permisssion, 'requestPermission').and.callFake((permissionList, response, error) => {
-      //   return response({});
-      // });
-      spyOn(formAndFrameworkUtilService, 'checkNewAppVersion').and.returnValue(Promise.resolve({}));
 
       platform.ready().
         then((result) => {
           expect(comp.registerDeeplinks).toHaveBeenCalled();
           expect(MyApp.prototype.subscribeEvents).toHaveBeenCalled();
           expect(MyApp.prototype.saveDefaultSyncSetting).toHaveBeenCalled();
-          expect(MyApp.prototype.showAppWalkThroughScreen).toHaveBeenCalled();
+
+          expect(permisssion.requestPermission).toHaveBeenCalled();
+          expect(comp.makeEntryInSupportFolder).toHaveBeenCalled();
+
+          /* For makeEntryInSupportFolder */
+          const preferenceStub = TestBed.get(SharedPreferences);
+          expect(comp.saveDefaultSyncSetting).toBeDefined();
+
+
+          comp.saveDefaultSyncSetting();
+
+          preferenceStub.getString().then((val) => {
+            let title = 'sync_config';
+            spyOn(preferenceStub, 'getString').and.returnValue(Promise.resolve(undefined));
+            spyOn(preferenceStub, 'putString');
+            expect(comp.saveDefaultSyncSetting).toHaveBeenCalled();
+            expect(preferenceStub.getString).toHaveBeenCalled();
+            expect(val).toEqual(undefined);
+            expect(preferenceStub.putString).toHaveBeenCalledWith('sync_config', 'ALWAYS_ON');
+          });
+
+          /* For  makeEntryInSupportFolder*/
+          window['supportfile'] = {
+            makeEntryInSunbirdSupportFile: () => ({})
+          }
+          spyOn(window['supportfile'], 'makeEntryInSunbirdSupportFile').and.callFake((result, error) => {
+            return result(JSON.stringify({}));
+          });
+          //comp.makeEntryInSupportFolder();
+          //expect(preferenceStub.putString).toHaveBeenCalledWith('sunbird_support_file_path', {});
+
           done();
         });
+    });
+    it('constructor with error callbacks', () => {
+      const platform: Platform = TestBed.get(Platform);
+      platform.ready().then((res) => {
+        spyOn(window['supportfile'], 'makeEntryInSunbirdSupportFile').and.callFake((result, error) => {
+          return error({});
+        });
+        comp.makeEntryInSupportFolder();
+      });
+    });
+    xit('should get value to show app walkthrough screen and save it if not found', (done) => {
+      const platform: Platform = TestBed.get(Platform);
+      const preferenceStub = TestBed.get(SharedPreferences);
+      platform.ready().then((res) => {
+        expect(MyApp.prototype.showAppWalkThroughScreen).toHaveBeenCalled();
+        spyOn(preferenceStub, 'getString').and.callFake((title, callback) => {
+          return callback('');
+        });
+        spyOn(preferenceStub, 'putString');
+        comp.showAppWalkThroughScreen();
+        expect(comp.showAppWalkThroughScreen).toHaveBeenCalled();
+        expect(preferenceStub.getString).toHaveBeenCalled();
+        expect(preferenceStub.putString).toHaveBeenCalledWith('show_app_walkthrough_screen', 'true');
+        done();
+      });
     });
   });
 
@@ -280,49 +335,62 @@ describe('MyApp Component', () => {
     });
   });
 
-  xdescribe('showContentDetails', () => {
+  describe('showContentDetails', () => {
     it('should navigate to EnrolledCourseDetailsPage if content type is course', () => {
-      const navControllerStub = TestBed.get(NavController);
+      fixture.detectChanges();
+      const nav: Nav = fixture.componentInstance.nav;
       expect(comp.showContentDetails).toBeDefined();
+      expect(nav).toBeDefined();
+
+      spyOn(nav, 'push');
       spyOn(comp, 'showContentDetails').and.callThrough();
       let content = {
         contentData: {
-          contentType: 'Course'
+          contentType: ContentType.COURSE
         }
       }
       comp.showContentDetails(content);
 
       expect(comp.showContentDetails).toHaveBeenCalled();
-      expect(navControllerStub.push).toHaveBeenCalled();
-      expect(navControllerStub.push).toHaveBeenCalledWith(EnrolledCourseDetailsPage, { content: content });
+      expect(nav.push).toHaveBeenCalled();
+      expect(nav.push).toHaveBeenCalledWith(EnrolledCourseDetailsPage, { content: content });
     });
-    it('should navigate to CollectionDetailsPage if content type is Collection', () => {
+    it('should navigate to CollectionDetailsPage if content type is course', () => {
+      const nav: Nav = fixture.componentInstance.nav;
+      expect(comp.showContentDetails).toBeDefined();
+      expect(nav).toBeDefined();
 
+      spyOn(nav, 'push');
+      spyOn(comp, 'showContentDetails').and.callThrough();
+      let content = {
+        mimeType: MimeType.COLLECTION,
+        contentData: {
+          contentType: ContentType.COLLECTION
+        }
+      }
+      comp.showContentDetails(content);
+
+      expect(comp.showContentDetails).toHaveBeenCalled();
+      expect(nav.push).toHaveBeenCalled();
+      expect(nav.push).toHaveBeenCalledWith(CollectionDetailsPage, { content: content });
     });
     it('should navigate to ContentDetailsPage if content type is not specified', () => {
+      const nav: Nav = fixture.componentInstance.nav;
+      expect(comp.showContentDetails).toBeDefined();
+      expect(nav).toBeDefined();
 
+      spyOn(nav, 'push');
+      spyOn(comp, 'showContentDetails').and.callThrough();
+      let content = {
+        contentData: {
+          contentType: 'content'
+        }
+      }
+      comp.showContentDetails(content);
+
+      expect(comp.showContentDetails).toHaveBeenCalled();
+      expect(nav.push).toHaveBeenCalled();
+      expect(nav.push).toHaveBeenCalledWith(ContentDetailsPage, { content: content });
     });
   });
-
-  describe('saveDefaultSyncSetting', () => {
-    it('should call saveDefaultSyncSetting', (done) => {
-      const preferenceStub = TestBed.get(SharedPreferences);
-      expect(comp.saveDefaultSyncSetting).toBeDefined();
-      let title = 'sync_config';
-      // spyOn(preferenceStub, 'getString').and.callFake((title, callback) => {
-      //   return callback(undefined);
-      // });
-      // spyOn(preferenceStub, 'putString');
-      comp.saveDefaultSyncSetting();
-
-      setTimeout(() => {
-        expect(comp.saveDefaultSyncSetting).toHaveBeenCalled();
-        // expect(preferenceStub.getString).toHaveBeenCalled();
-        // expect(preferenceStub.putString).toHaveBeenCalledWith('sync_config', 'ALWAYS_ON');
-        done();
-      }, 100);
-
-    });
-  });
-
 });

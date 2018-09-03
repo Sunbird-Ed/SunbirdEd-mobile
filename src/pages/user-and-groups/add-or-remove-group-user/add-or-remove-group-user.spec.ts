@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs/Observable';
+/* import { Observable } from 'rxjs/Observable';
 import { ComponentFixture, TestBed, fakeAsync, tick } from "@angular/core/testing";
 import { NO_ERRORS_SCHEMA } from "@angular/core";
 import { NavController, NavOptions } from "ionic-angular";
@@ -243,4 +243,4 @@ describe("AddOrRemoveGroupUserPage", () => {
             expect(spy.calls.any()).toEqual(true);
         }));
     });
-});
+}); */

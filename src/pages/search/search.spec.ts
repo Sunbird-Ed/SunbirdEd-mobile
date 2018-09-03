@@ -28,7 +28,7 @@ import {
 } from "sunbird";
 
 import {
-    GenieSDKServiceProviderMock, SharedPreferencesMock, FileUtilMock, 
+    GenieSDKServiceProviderMock, SharedPreferencesMock, FileUtilMock,
     SocialSharingMock, NavMock, TranslateLoaderMock, AuthServiceMock, PlatformMock
 } from '../../../test-config/mocks-ionic';
 
@@ -107,7 +107,7 @@ describe('SearchPage Component', () => {
         buildService = buildParamService;
     }));
 
-   
+
 
 
     // it('should create component', () => expect(component).toBeDefined());
@@ -117,10 +117,10 @@ describe('SearchPage Component', () => {
     //     expect(component).not.toBeFalsy();
     // });
 
-    it('should invoke getContentDialCode', () => {
+    xit('should invoke getContentDialCode', () => {
         component.dialCode = "saaa"
         const contentService = TestBed.get(ContentService);
-        let serarchRequest={};
+        let serarchRequest = {};
         // spyOn(contentService, 'searchContent').and.callFake(function({}, success, error){
         //     let data = JSON.stringify(mockRes.searchResultResponse)
         //     return success(data);
@@ -132,7 +132,7 @@ describe('SearchPage Component', () => {
         // setTimeout(() => {
         //     expect(component.getContentForDialCode).toHaveBeenCalled();
         // }, 0);
-       
+
     });
 });
 

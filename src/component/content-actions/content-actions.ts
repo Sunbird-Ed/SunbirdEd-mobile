@@ -23,17 +23,15 @@ import { AppGlobalService } from '../../service/app-global.service';
 export class ContentActionsComponent {
 
   content: any;
-
   isChild: boolean = false;
-
   contentId: string;
   backButtonFunc = undefined;
-
   userId: string = '';
   pageName: string = '';
   showFlagMenu: boolean = true;
 
-  constructor(public viewCtrl: ViewController,
+  constructor(
+    public viewCtrl: ViewController,
     private contentService: ContentService,
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -46,6 +44,7 @@ export class ContentActionsComponent {
     private appGlobalService: AppGlobalService) {
     this.content = this.navParams.get("content");
     this.pageName = this.navParams.get('pageName');
+
     if (this.navParams.get('isChild')) {
       this.isChild = true;
     }

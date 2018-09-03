@@ -7,7 +7,6 @@ import {
     FrameworkService,
     CategoryRequest,
     FrameworkDetailsRequest,
-    ProfileService,
     SharedPreferences,
     FormRequest,
     FormService
@@ -27,7 +26,6 @@ export class FormAndFrameworkUtilService {
 
     constructor(
         private framework: FrameworkService,
-        private profileService: ProfileService,
         public events: Events,
         public zone: NgZone,
         public preference: SharedPreferences,
@@ -36,11 +34,12 @@ export class FormAndFrameworkUtilService {
         private appVersion: AppVersion
     ) {
         //Get language selected
-        this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE, (val: string) => {
-            if (val && val.length) {
-                this.selectedLanguage = val;
-            }
-        });
+        this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
+            .then(val => {
+                if (val && val.length) {
+                    this.selectedLanguage = val;
+                }
+            });
     }
 
     /**
@@ -151,14 +150,6 @@ export class FormAndFrameworkUtilService {
                     syllabusList.push(value);
                 });
 
-                // Adding default framework into the list
-                let defaultFramework = {
-                    name: FrameworkConstant.DEFAULT_FRAMEWORK_NAME,
-                    frameworkId: FrameworkConstant.DEFAULT_FRAMEWORK_ID
-                }
-
-                syllabusList.push(defaultFramework);
-
                 //store the framework list in the app component, so that when getFormDetails() gets called again
                 //in the same session of app, then we can get this details, without calling the api
                 this.appGlobalService.setSyllabusList(syllabusList);
@@ -242,18 +233,17 @@ export class FormAndFrameworkUtilService {
                 defaultFrameworkDetails: true
             };
 
-            if (frameworkId !== undefined && frameworkId.length && frameworkId != FrameworkConstant.DEFAULT_FRAMEWORK_ID) {
+            if (frameworkId !== undefined && frameworkId.length) {
                 req.defaultFrameworkDetails = false;
                 req.frameworkId = frameworkId;
             }
 
-            this.framework.getFrameworkDetails(req,
-                (res: any) => {
-                    // let categories = JSON.parse(JSON.parse(res).result.framework).categories;
+            this.framework.getFrameworkDetails(req)
+                .then(res => {
                     resolve(res);
-                },
-                (err: any) => {
-                    reject(err);
+                })
+                .catch(error => {
+                    reject(error);
                 });
         });
     }
@@ -275,8 +265,8 @@ export class FormAndFrameworkUtilService {
 
             let categoryList: Array<any> = [];
 
-            this.framework.getCategoryData(req,
-                (res: any) => {
+            this.framework.getCategoryData(req)
+                .then(res => {
                     const resposneArray = JSON.parse(res);
                     let value = {};
                     resposneArray.forEach(element => {
@@ -287,8 +277,8 @@ export class FormAndFrameworkUtilService {
                     });
 
                     resolve(categoryList);
-                },
-                (err: any) => {
+                })
+                .catch(err => {
                     reject(err);
                 });
         });
@@ -296,12 +286,12 @@ export class FormAndFrameworkUtilService {
 
     fetchNextCategory(req: CategoryRequest): Promise<any> {
         return new Promise((resolve, reject) => {
-            this.framework.getCategoryData(req,
-                (res: any) => {
+            this.framework.getCategoryData(req)
+                .then(res => {
                     const resposneArray: Array<any> = JSON.parse(res);
                     resolve(resposneArray);
-                },
-                (err: any) => {
+                })
+                .catch(err => {
                     reject(err);
                 });
         });

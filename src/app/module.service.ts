@@ -11,7 +11,6 @@ import { GuestProfilePage } from "../pages/profile/guest-profile/guest-profile";
 import { ProfilePage } from "../pages/profile/profile";
 import { ResourcesPage } from "../pages/resources/resources";
 import { CoursesPageModule } from "../pages/courses/courses.module";
-import { GroupPageModule } from "../pages/group/group.module";
 import { HomePageModule } from "../pages/home/home.module";
 import { ProfilePageModule } from "../pages/profile/profile.module";
 import { ResourcesPageModule } from "../pages/resources/resources.module";
@@ -80,7 +79,6 @@ export function initTabs(container: ContainerService, tabs: Array<TabOptions>) {
 
 export const PluginModules = [
     CoursesPageModule,
-    GroupPageModule,
     HomePageModule,
     ProfilePageModule,
     ResourcesPageModule,

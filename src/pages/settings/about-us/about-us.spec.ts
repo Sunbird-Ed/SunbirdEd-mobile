@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { ComponentFixture, TestBed, fakeAsync } from "@angular/core/testing";
 import { NO_ERRORS_SCHEMA } from "@angular/core";
 import { NavController } from "ionic-angular";
 import { NavParams } from "ionic-angular";
@@ -12,6 +12,7 @@ import { AboutUsPage } from "./about-us";
 describe("AboutUsPage", () => {
     let comp: AboutUsPage;
     let fixture: ComponentFixture<AboutUsPage>;
+    let buildService;
 
     beforeEach(() => {
         const navControllerStub = {
@@ -70,7 +71,7 @@ describe("AboutUsPage", () => {
             expect(appVersionStub.getAppName).toHaveBeenCalled();
             expect(deviceInfoServiceStub.getDeviceID).toHaveBeenCalled();
         });
-        it("checks if device id got error or not", () => {
+        xit("checks if device id got error or not", () => {
             const deviceInfoServiceStub: DeviceInfoService = fixture.debugElement.injector.get(DeviceInfoService);
             var error: any;
             error = {};
@@ -122,51 +123,44 @@ describe("AboutUsPage", () => {
     });
 
     describe("AppVersionName", () => {
-        it("makes expected calls", () => {
+        it("makes expected calls", (done) => {
             const buildParamServiceStub: BuildParamService = fixture.debugElement.injector.get(BuildParamService);
-            var res: any;
-            spyOn(buildParamServiceStub, "getBuildConfigParam").and.callFake((name, response, error) => {
-                return response(res);
-            });
+            spyOn(buildParamServiceStub, "getBuildConfigParam").and.returnValue(Promise.resolve('true'));
             spyOn(comp, "getVersionCode");
             comp.getVersionName("AppVersionName");
-            setTimeout(() => {
+            buildParamServiceStub.getBuildConfigParam('any').then(() => {
                 expect(buildParamServiceStub.getBuildConfigParam).toHaveBeenCalled();
-            }, 100);
-        });
-        it("makes expected calls in error callback", () => {
-            const buildParamServiceStub: BuildParamService = fixture.debugElement.injector.get(BuildParamService);
-            spyOn(buildParamServiceStub, "getBuildConfigParam").and.callFake((versionName, success, errorCallback) => {
-                return errorCallback("");
+                done();
             });
-            comp.getVersionName("AppVersionName");
-            setTimeout(() => {
-                expect(comp.getVersionName).toContain("done");
-            }, 100);
         });
+        it("makes expected calls in error callback", fakeAsync(() => {
+            const buildParamServiceStub: BuildParamService = fixture.debugElement.injector.get(BuildParamService);
+            spyOn(buildParamServiceStub, "getBuildConfigParam").and.returnValue(Promise.resolve('true'));
+            comp.getVersionName("AppVersionName");
+            buildParamServiceStub.getBuildConfigParam('any').catch(() => {
+                expect(buildParamServiceStub.getBuildConfigParam).toHaveBeenCalled();
+                expect(buildParamServiceStub.getBuildConfigParam).toBe("");
+            });
+        }));
     });
     describe("AppVersionCode", () => {
         it("makes expected calls", () => {
             const buildParamServiceStub: BuildParamService = fixture.debugElement.injector.get(BuildParamService);
             var res: any;
-            var version: any;
-            spyOn(buildParamServiceStub, "getBuildConfigParam").and.callFake((verCode, response, errorCallback) => {
-                expect(comp.version).toEqual(version);
-                return response(res);
-            });
+            spyOn(buildParamServiceStub, 'getBuildConfigParam').and.returnValue(Promise.resolve('true'));
             comp.getVersionCode("AppVersionName", "AppVersionCode");
-            expect(res).toBeUndefined();
-            expect(buildParamServiceStub.getBuildConfigParam).toHaveBeenCalled();
+            buildParamServiceStub.getBuildConfigParam('any').then(() => {
+                expect(res).toBeUndefined();
+                expect(buildParamServiceStub.getBuildConfigParam).toHaveBeenCalled();
+            });
         });
-        it("makes expected calls in error callback", () => {
+        it("makes expected calls in error callback", fakeAsync(() => {
             const buildParamServiceStub: BuildParamService = fixture.debugElement.injector.get(BuildParamService);
-            spyOn(buildParamServiceStub, "getBuildConfigParam").and.callFake((versionName, success, errorCallback) => {
-                return errorCallback("");
-            });
+            spyOn(buildParamServiceStub,'getBuildConfigParam').and.returnValue(Promise.resolve('true'));
             comp.getVersionCode("AppVersionName", "AppVersionCode");
-            setTimeout(() => {
+            buildParamServiceStub.getBuildConfigParam('any').catch(()=>{
                 expect(comp.getVersionCode).toContain("");
-            }, 100);
-        });
+            });
+        }));
     })
 });

@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
 import { TelemetryGeneratorService } from "../../service/telemetry-generator.service";
-import { PopoverController } from "ionic-angular";
-import { InteractType, InteractSubtype, Environment, PageId, TelemetryObject, Mode, CorrelationData, ContentDetailRequest, ContentService, QRScanner } from "sunbird";
+import { InteractType, InteractSubtype, Environment, PageId, TelemetryObject, Mode, CorrelationData, ContentDetailRequest, ContentService } from "sunbird";
 import { Network } from "@ionic-native/network";
 import { SearchPage } from "../search/search";
 import { ContentType, MimeType } from "../../app/app.constant";
@@ -9,10 +8,7 @@ import { EnrolledCourseDetailsPage } from "../enrolled-course-details/enrolled-c
 import { ContentDetailsPage } from "../content-details/content-details";
 import { CollectionDetailsPage } from "../collection-details/collection-details";
 import { CommonUtilService } from "../../service/common-util.service";
-import { Popover } from "ionic-angular";
-import { QRScannerAlert, QRAlertCallBack } from "./qrscanner_alert";
 import { App } from "ionic-angular";
-import { SunbirdQRScanner } from "./sunbirdqrscanner.service";
 
 
 @Injectable()
@@ -69,12 +65,13 @@ export class QRScannerResultHandler {
             let data = JSON.parse(response);
             this.navigateToDetailsPage(data.result, this.getCorRelationList(data.result.identifier, QRScannerResultHandler.CORRELATION_TYPE));
         }, (error) => {
-            if (this.network.type === 'none') {
-                this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
-            } else {
-                this.commonUtilService.showToast('UNKNOWN_QR');
-            }
-        });
+                if (this.network.type === 'none') {
+                    this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
+                }
+                else {
+                    this.commonUtilService.showToast('UNKNOWN_QR');
+                }
+            });
     }
 
     handleInvalidQRCode(source: string, scannedData: string) {
