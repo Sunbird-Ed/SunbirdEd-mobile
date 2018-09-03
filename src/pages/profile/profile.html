@@ -166,7 +166,8 @@
     <ion-row *ngFor="let skill of profile?.skills | slice : startLimit:paginationLimit; let i=index" class="skill-row">
       <ion-col class="ellipsis padding-left-10 skill-name-col" [attr.col-9]="isLoggedInUser ? '' : null" [attr.col-8]="!isLoggedInUser ? '' : null">{{ skill?.skillName }}</ion-col>
       <ion-col col-3 text-end class="padding-right-10 skill-count-col" [ngClass]="">
-        <span class="vertical-separator">&nbsp;&nbsp;{{ skill?.endorsementcount }}</span>
+        <span class="vertical-separator" *ngIf="skill?.endorsementCount">&nbsp;&nbsp;{{ skill?.endorsementCount }}</span>
+        <span class="vertical-separator" *ngIf="!skill?.endorsementCount">&nbsp;&nbsp;{{ skill?.endorsementcount }}</span>
       </ion-col>
 
       <ion-col *ngIf="!isLoggedInUser && skill?.canEndorse" text-end col-1 [ngClass]="{'skill-endorse-col':!isLoggedInUser && skill?.canEndorse}"

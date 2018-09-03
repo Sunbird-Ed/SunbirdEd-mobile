@@ -3,13 +3,14 @@ course-card {
     height: 166px;
     ion-card{
         height: 100%;
-        .grid{
+        .grid {
             height: 100%;
         }
     }
     ion-card {
         width: 200px !important;
-        box-shadow: none !important
+        box-shadow: none !important;
+        background-color: unset !important;
     }
 
     .img-container, img {
