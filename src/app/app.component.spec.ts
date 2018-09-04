@@ -317,7 +317,6 @@ describe('MyApp Component', () => {
       const spy = spyOn(translate, 'get').and.callFake((arg) => {
         return Observable.of('Cancel');
       });
-      console.log("SPY", spy);
       expect(comp.translateMessage('CANCEL')).toEqual('Cancel');
       expect(spy.calls.any()).toEqual(true);
     }));
