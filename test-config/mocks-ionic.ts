@@ -2,7 +2,7 @@ import { CourseUtilService } from './../src/service/course-util.service';
 import { AppGlobalService } from './../src/service/app-global.service';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
-import { AuthService, ContainerService, PermissionService, TelemetryService, GenieSDKServiceProvider, SharedPreferences, ShareUtil } from "sunbird";
+import { AuthService, ContainerService, PermissionService, TelemetryService, GenieSDKServiceProvider, SharedPreferences, ShareUtil, ContentService, ContentFeedback } from "sunbird";
 import { ImageLoaderConfig } from "ionic-image-loader";
 import { TranslateLoader } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
@@ -165,6 +165,9 @@ export class TelemetryServiceMock extends TelemetryService{
   getTelemetryStat: (sucess, error) => ({
 
   });
+}
+export class ContentServiceMock {
+  public sendFeedback: (request,successCallback,errorCallback) => ({ });
 }
 
 export class AppGlobalServiceMock extends AppGlobalService {
@@ -485,7 +488,9 @@ export class IonicAppMock {
     })
   }
 }
-
+export class ngZone {
+  run: () =>{}
+}
 
 /*export class ToastMock {
   public static instance(): any {
