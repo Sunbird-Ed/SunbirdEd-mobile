@@ -11,7 +11,7 @@ import {
   AlertController,
   Platform,
   PopoverController,
-  ToastController
+  ToastController, LoadingController
 } from 'ionic-angular';
 import { PopoverPage } from './popover/popover';
 import {
@@ -71,6 +71,7 @@ export class UserAndGroupsPage {
   profileDetails: any;
 
   userType: string;
+  noUsersPresent: Boolean;
   selectedUserIndex: number = -1;
 
   constructor(
@@ -93,7 +94,8 @@ export class UserAndGroupsPage {
     private network: Network,
     private toastCtrl: ToastController,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private authService: AuthService
+    private authService: AuthService,
+    private loadingCtrl: LoadingController
   ) {
 
     /* Check userList length and show message or list accordingly */
@@ -198,13 +200,19 @@ export class UserAndGroupsPage {
   }
 
   getAllProfile() {
+    let loader = this.getLoader();
+    loader.present();
+
     let profileRequest: ProfileRequest = {
       local: true
     };
-
+    
     this.zone.run(() => {
       this.profileService.getAllUserProfile(profileRequest).then((profiles) => {
         if (profiles && profiles.length) {
+          loader.dismiss();
+          this.noUsersPresent = false;
+
           let profileList: Array<Profile> = JSON.parse(profiles);
           this.userList = profileList.sort((prev: Profile, next: Profile) => {
             if (prev.uid === this.currentUserId) {
@@ -221,8 +229,13 @@ export class UserAndGroupsPage {
             return 0;
           });
         } else {
-        }
+          loader.dismiss();
+          this.noUsersPresent = true;
+         }
+        
       }).catch((error) => {
+        loader.dismiss();
+        this.noUsersPresent = true;
         console.log("Something went wrong while fetching user list", error);
       });
     })
@@ -654,6 +667,13 @@ export class UserAndGroupsPage {
 
     }, (error) => {
       console.log("Error " + error);
+    });
+  }
+  // code which invokes loader
+  getLoader(): any {
+    return this.loadingCtrl.create({
+      duration: 30000,
+      spinner: "crescent"
     });
   }
 }
