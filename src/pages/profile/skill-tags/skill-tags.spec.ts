@@ -9,7 +9,7 @@ import { UserProfileService } from "sunbird";
 import { SkillTagsComponent } from "./skill-tags";
 
 import {
-    LoadingControllerMock, TranslateServiceStub, ToastControllerMockNew, AuthServiceMock
+    LoadingControllerMock, TranslateServiceStub, ToastControllerMockNew, AuthServiceMock, NavMock
     } from '../../../../test-config/mocks-ionic';
 import { executionAsyncId } from 'async_hooks';
 import { TagInputModule } from 'ngx-chips';
@@ -20,26 +20,18 @@ describe("SkillTagsComponent", () => {
 
     beforeEach(() => {
        
-        const navControllerStub = {
-            setRoot: () => ({}),
-            pop: () => ({})
-        };
-        // const ngZoneStub = {
-        //     run: () => ({})
-        // };
-        const authServiceStub = {
-            getSessionData: () => ({})
-        };
+        
         const userProfileServiceStub = {
             getSkills: () => ({}),
             endorseOrAddSkill: () => ({})
         };
+        
         TestBed.configureTestingModule({
             imports: [TranslateModule.forRoot(),TagInputModule],
             declarations: [ SkillTagsComponent ],
             schemas: [ NO_ERRORS_SCHEMA ],
             providers: [
-                { provide: NavController, useValue: navControllerStub },
+                { provide: NavController, useClass: NavMock },
                 // { provide: NgZone, useValue: ngZoneStub },
                 { provide: AuthService, useClass: AuthServiceMock },
                 { provide: UserProfileService, useValue: userProfileServiceStub },
