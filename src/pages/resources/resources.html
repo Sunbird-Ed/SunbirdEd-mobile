@@ -81,7 +81,7 @@
 			<b>{{ 'NO_INTERNET_TITLE' | translate }}</b>
 		</h6>
 		<p color="dark_gray">{{ 'OFFLINE_WARNING' | translate }}</p>
-		<b ion-text text-uppercase color="primary" (click)="checkNetworkStatus(true); buttonClick();">{{'RETRY_ACTION' | translate}}</b>
+		<b ion-text text-uppercase color="primary" (click)="checkNetworkStatus(true); showOfflineNetworkWarning();">{{'RETRY_ACTION' | translate}}</b>
 	</div>
 	<div *ngIf="showSignInCard" class="signin-card-bg">
 		<sign-in-card (valueChange)="showOfflineNetworkWarning($event)" [source]="source"></sign-in-card>
