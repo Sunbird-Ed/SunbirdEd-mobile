@@ -1,5 +1,5 @@
 import { Component, NgZone, OnInit } from '@angular/core';
-import { CourseService, AuthService } from 'sunbird';
+import { CourseService, AuthService, CourseBatchesRequest, CourseBatchStatus } from 'sunbird';
 import { IonicPage, NavController, NavParams, ToastController, Events } from 'ionic-angular';
 import * as _ from 'lodash';
 import { ProfileConstants, EventTopics } from '../../app/app.constant';
@@ -114,7 +114,7 @@ export class CourseBatchesPage implements OnInit {
 
     this.filterList.ONGOING = this.translateLanguageConstant('VIEW_ONGOING_BATCHES');
     this.filterList.UPCOMING = this.translateLanguageConstant('VIEW_UPCOMING_BATCHES');
-    this.selectedFilter = this.filterList.ONGOING;
+    // this.selectedFilter = this.filterList.ONGOING;
   }
 
   /**
@@ -143,10 +143,11 @@ export class CourseBatchesPage implements OnInit {
       (error: any) => {
         console.log('error while enrolling into batch ==>', error);
         this.zone.run(() => {
-          if (error === 'CONNECTION_ERROR') {
+          error = JSON.parse(error);
+          if (error && error.error === 'CONNECTION_ERROR') {
             this.showMessage(this.translateLanguageConstant('ERROR_NO_INTERNET_MESSAGE'));
-          } else {
-            // TODO: Ask anil to add batch enrollement failed locale
+          } else if(error && error.error === "ALREADY_ENROLLED_COURSE"){
+            this.showMessage(this.translateLanguageConstant('ALREADY_ENROLLED_COURSE'));
           }
         });
       });
@@ -174,16 +175,26 @@ export class CourseBatchesPage implements OnInit {
   /**
    * To get batches by course id
    */
-  getBatchesByCourseId(): void {
+  getBatchesByCourseId(status: number = 1): void {
     console.log('getting course batches.... =>')
     this.showLoader = true;
-    const option = {
-      courseIds: [this.navParams.get('identifier')]
+    const option: CourseBatchesRequest = {
+      courseId: this.navParams.get('identifier')
     }
+
+    if (status === 1) {
+      option.status = CourseBatchStatus.IN_PROGRESS
+    } else {
+      option.status = CourseBatchStatus.NOT_STARTED
+    }
+
     this.courseService.getCourseBatches(option, (data: any) => {
       data = JSON.parse(data);
       console.log('Batches received successfully... =>', data);
       this.zone.run(() => {
+        this.ongoingBatches = [];
+        this.upcommingBatches = [];
+
         this.batches = data.result.content;
         this.spinner(false);
         _.forEach(data.result.content, (value, key) => {
@@ -193,6 +204,13 @@ export class CourseBatchesPage implements OnInit {
             this.upcommingBatches.push(value);
           }
         });
+
+        if (status === 1) {
+          this.selectedFilter = this.filterList.ONGOING;
+        } else {
+          this.selectedFilter = this.filterList.UPCOMING;
+        }
+
       });
     },
       (error: any) => {
@@ -226,8 +244,10 @@ export class CourseBatchesPage implements OnInit {
   changeFilter(filter: string) {
     if (filter === 'ONGOING') {
       this.selectedFilter = this.filterList.ONGOING;
+      this.getBatchesByCourseId(1);
     } else {
       this.selectedFilter = this.filterList.UPCOMING;
+      this.getBatchesByCourseId(0);
     }
   }
 
