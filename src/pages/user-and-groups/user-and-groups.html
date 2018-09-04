@@ -43,13 +43,13 @@
           </ion-item>
         </div>
         <ion-label ion-text color="dark_gray" text-uppercase class="subTitle">{{'USERS' | translate}}</ion-label>
-        <div *ngIf="!userList?.length" class="nouser">
+        <div *ngIf="noUsersPresent" class="nouser">
           <h6>{{'NO_USERS_CREATED_YET' | translate}}</h6>
           <div text-center class="description">
                 {{ 'NO_USERS_CREATED_YET_MSG' | translate }}
               </div>
         </div>
-        <ion-list *ngIf="userList?.length">
+        <ion-list *ngIf="!noUsersPresent">
           <ion-item *ngFor="let user of userList; let i=index;" class="item-background radius" margin-bottom [ngClass]="i===selectedUserIndex ? 'blueBorder' : ''"
             no-lines>
             <ion-row class="bg-color-white">
