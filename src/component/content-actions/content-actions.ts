@@ -112,7 +112,7 @@ export class ContentActionsComponent {
     this.contentService.deleteContent(this.getDeleteRequestBody(), (res: any) => {
       let data = JSON.parse(res);
       if (data.result && data.result.status === 'NOT_FOUND') {
-        this.showToaster('Content deleting failed');
+        this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
       } else {
         // Publish saved resources update event
         this.events.publish('savedResources:update', {
@@ -124,9 +124,9 @@ export class ContentActionsComponent {
       }
     }, (error: any) => {
       console.log('delete response: ', error);
-      this.showToaster('Content deleting failed');
+      this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
       this.viewCtrl.dismiss();
-    })
+    });
   }
 
   reportIssue() {

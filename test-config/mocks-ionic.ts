@@ -9,6 +9,7 @@ import { Observable } from 'rxjs';
 import { App, ViewController } from 'ionic-angular';
 import { ElementRef } from '@angular/core';
 import { CommonUtilService } from '../src/service/common-util.service';
+import { resolve } from 'q';
 
 declare let readJSON: any;
 
@@ -156,11 +157,14 @@ export class ImageLoaderConfigMock extends ImageLoaderConfig {
   }
 }
 
-export class TelemetryServiceMock extends TelemetryService {
+export class TelemetryServiceMock extends TelemetryService{
   end: () => ({});
-  interact: () => ({});
-  impression: () => ({});
-  getTelemetryStat: (sucess, error) => ({});
+  interact: (interact) => ({});
+  impression: (impression) => ({});
+  sync: (successCallback, errorCallback) => ({ });
+  getTelemetryStat: (sucess, error) => ({
+
+  });
 }
 
 export class AppGlobalServiceMock extends AppGlobalService {
@@ -246,6 +250,9 @@ export class FileUtilMock {
 }
 export class ShareUtilMock extends ShareUtil {
   exportTelemetry: (successCallback, errorCallback) => ({
+    
+  });
+  exportApk: (SuccessCallback, errorCallback) => ({
 
   });
 }
@@ -255,10 +262,13 @@ export class SocialSharingMock {
   share(message, subject, file, url) {
     return '';
   }
+  shareViaEmail(message, subject, to, cc, bcc, file) {
+    return '';
+  }
 }
 
 export class ViewControllerMock {
-  dismiss: () => {}
+  public dismiss: () => ({})
 }
 
 // export class ToastControllerMock {
@@ -271,7 +281,9 @@ export class StorageMock { }
 
 export class AppVersionMock {
   getAppName(): Promise<string> {
-    return ;
+    return new Promise((resolve) => {
+      resolve('value');
+    });
   }
 }
 
@@ -464,12 +476,12 @@ export class IonicAppMock {
 
   _modalPortal: {
     getActive: () => ({
-        dismiss: () =>{}
+      dismiss: () => {}
     })
   }
   _overlayPortal: {
     getActive: () => ({
-        dismiss: () =>{}
+      dismiss: () => {}
     })
   }
 }

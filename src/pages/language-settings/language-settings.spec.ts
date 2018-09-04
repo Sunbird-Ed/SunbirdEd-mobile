@@ -21,6 +21,7 @@ import {
     ToastControllerMock, PopoverControllerMock, LoadingControllerMock,
     EventsMock
 } from 'ionic-mocks';
+import { AppGlobalServiceMock, BuildParamaServiceMock } from "../../../test-config/mocks-ionic";
 
 describe("LanguageSettingsPage", () => {
     let comp: LanguageSettingsPage;
@@ -81,7 +82,8 @@ describe("LanguageSettingsPage", () => {
             imports: [TranslateModule.forRoot()],
             declarations: [LanguageSettingsPage],
             schemas: [NO_ERRORS_SCHEMA],
-            providers: [AppGlobalService, ProfileService, ServiceProvider, FrameworkService,
+            providers: [ProfileService, ServiceProvider, FrameworkService,
+                { provide: AppGlobalService, useClass: AppGlobalServiceMock },
                 { provide: AuthService, useValue: authServiceStub },
                 { provide: BuildParamService, useValue: BuildParamServiceStub },
                 { provide: TelemetryGeneratorService, useValue: telemetryGeneratorServiceStub },
@@ -96,6 +98,7 @@ describe("LanguageSettingsPage", () => {
                 { provide: PopoverController, useFactory: () => PopoverControllerMock.instance() },
                 { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() },
                 { provide: Events, useFactory: () => EventsMock.instance() },
+                { provide: BuildParamService, useClass: BuildParamaServiceMock },
                 SharedPreferences
 
             ]
@@ -165,7 +168,7 @@ describe("LanguageSettingsPage", () => {
             comp.init();
 
             sharedPreferencesStub.getString().then((val) => {
-//                expect(comp.previousLanguage).toEqual(null);
+                //                expect(comp.previousLanguage).toEqual(null);
                 expect(sharedPreferencesStub.getString).toHaveBeenCalled();
                 expect(val).toBe(null);
                 done();
@@ -290,6 +293,22 @@ describe("LanguageSettingsPage", () => {
             expect(eventsStub.publish).toHaveBeenCalled();
             expect(translateServiceStub.use).toHaveBeenCalled();
             expect(sharedPreferencesStub.putString).toHaveBeenCalled();
+        });
+        it("should navigate to the onboarding page if DISPLAY_ONBOARDING_PAGE configuration is set to true", () => {
+            comp.isLanguageSelected = true;
+            comp.isFromSettings = false;
+            const appGlobalServiceStub = TestBed.get(AppGlobalService);
+            appGlobalServiceStub.DISPLAY_ONBOARDING_PAGE = true;
+            const navControllerStub: NavController = fixture.debugElement.injector.get(NavController);
+
+            spyOn(comp, "continue").and.callThrough();
+            spyOn(navControllerStub, "push").and.callThrough();
+
+            comp.continue();
+
+            expect(comp.continue).toHaveBeenCalled();
+            expect(navControllerStub.push).toHaveBeenCalled();
+            expect(comp.continue).toBeDefined();
         });
         it("It is called for else part for from Settings", () => {
             comp.isLanguageSelected = true;

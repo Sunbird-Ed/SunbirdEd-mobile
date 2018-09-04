@@ -559,7 +559,7 @@ describe('CoursesPage Component', () => {
         let navCtrl = fixture.debugElement.injector.get(NavController);
         component.userId = "sample_userId";
         spyOn(navCtrl, 'push');
-        component.navigateToViewMorContentsPage(true);
+        component.navigateToViewMoreContentsPage(true);
         expect(navCtrl.push).toHaveBeenCalledWith(ViewMoreActivityPage, {
             headerTitle: 'COURSES_IN_PROGRESS',
             userId: component.userId,
@@ -574,7 +574,7 @@ describe('CoursesPage Component', () => {
         let searchQuery = CourseMock.searchQuery;
         let headerTitle = "headerTitle";
         spyOn(navCtrl, 'push');
-        component.navigateToViewMorContentsPage(false, searchQuery, headerTitle);
+        component.navigateToViewMoreContentsPage(false, searchQuery, headerTitle);
         expect(navCtrl.push).toHaveBeenCalledWith(ViewMoreActivityPage, {
             headerTitle: headerTitle,
             requestParams: CourseMock.mergedSearchQuery,
