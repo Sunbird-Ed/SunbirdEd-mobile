@@ -498,8 +498,6 @@ export class UserAndGroupsPage {
   /**Navigates to play content details page nd launch the player */
   play() {
     let selectedUser = this.userList[this.selectedUserIndex];
-    this.event.publish('launchPlayer', true);
-    this.navCtrl.pop();
     if (this.appGlobalService.isUserLoggedIn()) {
       this.logOut(selectedUser, true);
     } else {
@@ -632,6 +630,10 @@ export class UserAndGroupsPage {
       });
 
     this.profileService.setCurrentUser(selectedUser.uid, (success) => {
+      if (isBeingPlayed) {
+        this.event.publish('launchPlayer', true);
+        this.navCtrl.pop();
+      }
       if (selectedUser.profileType == ProfileType.STUDENT) {
         initTabs(this.container, isBeingPlayed ? GUEST_STUDENT_TABS : GUEST_STUDENT_SWITCH_TABS);
         this.preferences.putString('selected_user_type', ProfileType.STUDENT);

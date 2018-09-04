@@ -30,7 +30,7 @@
       <span float-start class="scroll-heading">
         {{ 'COURSES_IN_PROGRESS' | translate }}
       </span>
-      <span float-end class="view-all-link" *ngIf="enrolledCourse && enrolledCourse.length" (click)="navigateToViewMorContentsPage(true)">
+      <span float-end class="view-all-link" *ngIf="enrolledCourse && enrolledCourse.length" (click)="navigateToViewMoreContentsPage(true)">
         <a>{{ 'VIEW_ALL' | translate }}</a>
       </span>
     </div>
@@ -48,7 +48,7 @@
       <div class="course-scroll-holder">
         <div class="item padding-11">
           <span float-start class="scroll-heading">{{items?.name}}</span>
-          <span float-end class="view-all-link" (click)="navigateToViewMorContentsPage(false,items.searchQuery, items.name)">
+          <span float-end class="view-all-link" (click)="navigateToViewMoreContentsPage(false,items.searchQuery, items.name)">
             <a>{{ 'VIEW_ALL' | translate }}</a>
           </span>
         </div>

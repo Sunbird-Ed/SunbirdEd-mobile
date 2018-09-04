@@ -675,9 +675,11 @@ export class CoursesPage implements OnInit {
       });
   }
 
-  navigateToViewMorContentsPage(showEnrolledCourses: boolean, searchQuery?: any, headerTitle?: string) {
+  navigateToViewMoreContentsPage(showEnrolledCourses: boolean, searchQuery?: any, headerTitle?: string) {
     let params;
+    let title;
     if (showEnrolledCourses) {
+      title = this.commonUtilService.translateMessage('COURSES_IN_PROGRESS');
       params = {
         headerTitle: 'COURSES_IN_PROGRESS',
         userId: this.userId,
@@ -686,12 +688,20 @@ export class CoursesPage implements OnInit {
     }
     else {
       searchQuery = updateFilterInSearchQuery(searchQuery, this.appliedFilter, this.profile, this.mode, this.isFilterApplied, this.appGlobal);
+      title = headerTitle;
       params = {
         headerTitle: headerTitle,
         pageName: 'course.PopularContent',
         requestParams: searchQuery
       };
     }
+    let values = new Map();
+		values["SectionName"] = title;
+		this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+				InteractSubtype.VIEWALL_CLICKED,
+				Environment.HOME,
+				PageId.COURSES,undefined,
+				values);
     this.navCtrl.push(ViewMoreActivityPage, params);
   }
 
