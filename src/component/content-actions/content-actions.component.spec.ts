@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+
 import { ViewControllerMock, ToastControllerMockNew, NavParamsMock, PopoverControllerMock, TranslateServiceStub, PlatformMock, BuildParamaServiceMock, AuthServiceMock, NavMock } from './../../../test-config/mocks-ionic';
 import { ComponentFixture, TestBed, tick } from '@angular/core/testing';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
@@ -43,6 +43,7 @@ describe('Content-actions', () => {
         const platformStub = TestBed.get(Platform);
         spyOn(viewControllerMock, 'dismiss');
         spyOn(platformStub, 'registerBackButtonAction');
+        
         fixture = TestBed.createComponent(ContentActionsComponent);
         comp = fixture.componentInstance;
     });
