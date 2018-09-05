@@ -135,15 +135,15 @@ export class OverflowMenuComponent {
                             profile.source = UserSource.LOCAL;
 
                             this.profileService.setCurrentProfile(true, profile, res => { 
-                                navigateToAptPage();
+                                this.navigateToAptPage();
                             }, error => { 
-                                navigateToAptPage();
+                                this.navigateToAptPage();
                             });
                         } else {
                             this.profileService.setAnonymousUser(success => {
-                                navigateToAptPage();
+                                this.navigateToAptPage();
                              }, error => { 
-                                navigateToAptPage();
+                                this.navigateToAptPage();
                              });
                         }
                     });
