@@ -125,7 +125,7 @@ export class OverflowMenuComponent {
                         InteractSubtype.LOGOUT_INITIATE, "");
                     this.oauth.doLogOut();
                     (<any>window).splashscreen.clearPrefs();
-
+                    let profile: Profile = new Profile();
                     this.preferences.getString('GUEST_USER_ID_BEFORE_LOGIN', (val) => {
                         if (val != "") {
                             profile.uid = val;
