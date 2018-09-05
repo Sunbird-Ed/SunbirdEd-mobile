@@ -294,7 +294,7 @@ export class AppGlobalService {
         });
     }
 
-    private getGuestUserInfo() {
+    public  getGuestUserInfo() {
         console.log("getGuestUserInfo");
         this.preference.getString('selected_user_type')
             .then(val => {
