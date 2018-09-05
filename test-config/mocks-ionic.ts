@@ -158,17 +158,17 @@ export class ImageLoaderConfigMock extends ImageLoaderConfig {
   }
 }
 
-export class TelemetryServiceMock extends TelemetryService{
+export class TelemetryServiceMock extends TelemetryService {
   end: () => ({});
   interact: (interact) => ({});
   impression: (impression) => ({});
-  sync: (successCallback, errorCallback) => ({ });
+  sync: (successCallback, errorCallback) => ({});
   getTelemetryStat: (sucess, error) => ({
 
   });
 }
 export class ContentServiceMock {
-  public sendFeedback: (request,successCallback,errorCallback) => ({ });
+  public sendFeedback: (request, successCallback, errorCallback) => ({});
 }
 
 export class AppGlobalServiceMock extends AppGlobalService {
@@ -254,7 +254,7 @@ export class FileUtilMock {
 }
 export class ShareUtilMock extends ShareUtil {
   exportTelemetry: (successCallback, errorCallback) => ({
-    
+
   });
   exportApk: (SuccessCallback, errorCallback) => ({
 
@@ -272,7 +272,11 @@ export class SocialSharingMock {
 }
 
 export class ViewControllerMock {
-  public dismiss: () => ({})
+  public dismiss(): Promise<any> {
+    return new Promise((resolve) => {
+      resolve('success');
+    });
+  }
 }
 
 // export class ToastControllerMock {
@@ -495,16 +499,16 @@ export class IonicAppMock {
   public _modalPortal: {
     getActive: () => ({
       dismiss: () => {}
-    })
+    });
   }
   public _overlayPortal: {
     getActive: () => ({
       dismiss: () => {}
-    })
+    });
   }
 }
 export class ngZone {
-  run: () =>{}
+  run: () => {}
 }
 
 /*export class ToastMock {

@@ -85,7 +85,6 @@ export class GroupReportAlert {
    * It will Dismiss active popup
    */
   dismissPopup() {
-    console.log("Fired ionViewWillLeave");
     let activePortal = this.ionicApp._modalPortal.getActive() || this.ionicApp._overlayPortal.getActive();
     if (activePortal) {
       activePortal.dismiss();
