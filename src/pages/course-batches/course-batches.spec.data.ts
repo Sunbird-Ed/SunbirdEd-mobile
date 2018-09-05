@@ -11,6 +11,12 @@ export const mockRes = {
     {"message":"successful","status":true},
 
     sessionResponse:
-    {"userToken":"sample_user_token"}
+    {"userToken":"sample_user_token"},
+
+    connectionFailureResponse:
+    {"error":"CONNECTION_ERROR"},
+
+    alreadyRegisterredFailureResponse:
+    {"error":"ALREADY_ENROLLED_COURSE"}
   }
   

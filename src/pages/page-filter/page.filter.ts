@@ -23,6 +23,7 @@ import {
 import { PageFilterOptions } from "./options/filter.options";
 import { generateInteractTelemetry } from "../../app/telemetryutil";
 import { TelemetryGeneratorService } from "../../service/telemetry-generator.service";
+import { CommonUtilService } from "../../service/common-util.service";
 
 @Component({
   selector: 'page-filter',
@@ -50,7 +51,8 @@ export class PageFilter {
     private translate: TranslateService,
     private appGlobalService: AppGlobalService,
     private events: Events,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private commonUtilService: CommonUtilService
   ) {
     this.callback = navParams.get('callback');
     this.initFilterValues();
@@ -65,20 +67,13 @@ export class PageFilter {
     })
   }
 
-  getTranslatedValues(translations) {
-    if (translations.hasOwnProperty(this.translate.currentLang)) {
-      return translations[this.translate.currentLang];
-    }
-    return "";
-  }
-
   onLanguageChange() {
     if (this.filters) {
       this.filters.forEach(filter => {
         if (filter.code === 'contentType' && filter.hasOwnProperty('resourceTypeValues')) {
           let resourceTypes = [];
           filter.resourceTypeValues.forEach(element => {
-            resourceTypes.push(this.getTranslatedValues(JSON.parse(element.translations) || element.name));
+            resourceTypes.push(this.commonUtilService.getTranslatedValue(element.translations, element.name));
           });
           filter.values = resourceTypes;
           if (filter.hasOwnProperty('selected')) {
@@ -110,7 +105,7 @@ export class PageFilter {
     if (this.filters) {
       let filterNames = [];
       this.filters.forEach(element => {
-        element.name = this.getTranslatedValues(JSON.parse(element.translations || element.name));
+        element.name = this.commonUtilService.getTranslatedValue(element.translations, element.name);
         filterNames.push(element.code);
       });
 
@@ -131,7 +126,7 @@ export class PageFilter {
         filter.resourceTypeValues = _.cloneDeep(filter.values);
         let resourceTypes = [];
         filter.values.forEach(element => {
-          resourceTypes.push(this.getTranslatedValues(JSON.parse(element.translations) || element.name));
+          resourceTypes.push(this.commonUtilService.getTranslatedValue(element.translations, element.name));
         });
         filter.values = resourceTypes;
       }

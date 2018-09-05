@@ -34,7 +34,7 @@ export class OnboardingAlert {
 
     this.selectedSlide.options.forEach(element => {
       if (element.checked) {
-        this.selectedSyllabus = element.value
+        this.selectedSyllabus = element.value;
       }
     });
   }

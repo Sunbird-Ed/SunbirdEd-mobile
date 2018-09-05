@@ -486,5 +486,6 @@
   "YES": "Yes",
   "YOUR_PROFILE_IS": "Your profile is {{%s}}% complete",
   "YOUR_PROGRESS": "Your Progress: {{%s}}%",
-  "CONTENT_DELETE_FAILED": "Content deleting failed"
+  "CONTENT_DELETE_FAILED": "Content deleting failed",
+  "ALREADY_ENROLLED_COURSE": "User has already Enrolled this course."
 }

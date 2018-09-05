@@ -125,43 +125,51 @@ export class OverflowMenuComponent {
                         InteractSubtype.LOGOUT_INITIATE, "");
                     this.oauth.doLogOut();
                     (<any>window).splashscreen.clearPrefs();
-
+                    let profile: Profile = new Profile();
                     this.preferences.getString('GUEST_USER_ID_BEFORE_LOGIN')
                         .then(val => {
                             if (val != "") {
-                                let profile: Profile = new Profile();
                                 profile.uid = val;
-                                profile.handle = "Guest1";
-                                profile.profileType = ProfileType.TEACHER;
-                                profile.source = UserSource.LOCAL;
-
-                                this.profileService.setCurrentProfile(true, profile, res => { }, error => { });
                             } else {
-                                this.profileService.setAnonymousUser(success => { }, error => { });
+                                this.preferences.putString('selected_user_type', ProfileType.TEACHER)
                             }
-                        });
 
-                    if (this.appGlobal.DISPLAY_ONBOARDING_PAGE) {
-                        this.app.getRootNav().setRoot(OnboardingPage);
-                    } else {
-                        this.preferences.getString('selected_user_type')
-                            .then(val => {
-                                if (val == ProfileType.STUDENT) {
-                                    initTabs(this.container, GUEST_STUDENT_TABS);
-                                } else if (val == ProfileType.TEACHER) {
-                                    initTabs(this.container, GUEST_TEACHER_TABS);
-                                }
+                            profile.handle = "Guest1";
+                            profile.profileType = ProfileType.TEACHER;
+                            profile.source = UserSource.LOCAL;
+
+                            this.profileService.setCurrentProfile(true, profile, res => {
+                                this.navigateToAptPage();
+                            }, error => {
+                                this.navigateToAptPage();
                             });
-                        this.app.getRootNav().setRoot(TabsPage, {
-                            loginMode: 'guest'
                         });
-                    }
-                    this.generateLogoutInteractTelemetry(InteractType.OTHER, InteractSubtype.LOGOUT_SUCCESS, "");
                 }
 
                 break;
         }
     }
+
+    navigateToAptPage() {
+        if (this.appGlobal.DISPLAY_ONBOARDING_PAGE) {
+            this.app.getRootNav().setRoot(OnboardingPage);
+        } else {
+            this.preferences.getString('selected_user_type')
+                .then(val => {
+                    this.appGlobal.getGuestUserInfo();
+                    if (val == ProfileType.STUDENT) {
+                        initTabs(this.container, GUEST_STUDENT_TABS);
+                    } else if (val == ProfileType.TEACHER) {
+                        initTabs(this.container, GUEST_TEACHER_TABS);
+                    }
+                });
+            this.app.getRootNav().setRoot(TabsPage, {
+                loginMode: 'guest'
+            });
+        }
+        this.generateLogoutInteractTelemetry(InteractType.OTHER, InteractSubtype.LOGOUT_SUCCESS, "");
+    }
+
 
     /**
      * Used to Translate message to current Language

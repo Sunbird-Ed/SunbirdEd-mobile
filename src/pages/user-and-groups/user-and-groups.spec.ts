@@ -1,6 +1,6 @@
 import {
     AlertController, App, Events, IonicApp, NavController, NavParams, Platform, PopoverController,
-    ToastController
+    ToastController , LoadingController
 } from 'ionic-angular';
 import { promise } from 'selenium-webdriver';
 import {
@@ -96,6 +96,10 @@ describe("UserAndGroupsPage", () => {
                 then: () => ({})
             })
         };
+        const loadingControllerStub ={
+            present:() => ({}),
+            dismiss:() =>({})
+        }
         const authServiceStub = {
             endSession: () => ({})
         };
@@ -156,7 +160,9 @@ describe("UserAndGroupsPage", () => {
                 { provide: App, useValue: appStub },
                 { provide: Events, useValue: eventsStub },
                 { provide: Network, useValue: networkStub },
-                { provide: TelemetryGeneratorService, useValue: telemetryGeneratorServiceStub }
+                { provide: TelemetryGeneratorService, useValue: telemetryGeneratorServiceStub },
+                {provider: LoadingController , useValue:loadingControllerStub}
+                
             ]
         });
         fixture = TestBed.createComponent(UserAndGroupsPage);
