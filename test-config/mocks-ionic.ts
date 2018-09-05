@@ -496,20 +496,12 @@ export class BuildParamaServiceMock {
 
 export class IonicAppMock {
 
-<<<<<<< Updated upstream
   public _modalPortal: {
-=======
-  _modalPortal: () => {
->>>>>>> Stashed changes
     getActive: () => ({
       dismiss: () => {}
     });
   }
-<<<<<<< Updated upstream
   public _overlayPortal: {
-=======
-  _overlayPortal: () => {
->>>>>>> Stashed changes
     getActive: () => ({
       dismiss: () => {}
     });
