@@ -143,6 +143,7 @@ export class AuthServiceMock extends AuthService {
 }
 
 export class ContainerServiceMock extends ContainerService {
+  public removeAllTabs: () => {}
 }
 export class PermissionServiceMock extends PermissionService {
 
@@ -291,22 +292,36 @@ export class AppVersionMock {
 }
 
 export class FormAndFrameworkUtilServiceMock {
-  // checkNewAppVersion: () => ({
-  //   then: () => ({
-  //     catch: () => ({})
-  //   })
-  // })
+  
   public checkNewAppVersion(): Promise<string> {
     return new Promise((resolve) => {
       resolve('');
     });
-
   }
+
+  public getSyllabusList = () => ({});
+
+  public getFrameworkDetails = () => ({});
+
+  public getCategoryData = () => ({});
+  
+    
+
+  // public getFrameworkDetails(): Promise<string> {
+  //   return new Promise;
+  // }
+
 
 }
 
 export class profileServiceMock {
   getCurrentUser: () => ({})
+  updateProfile(req, res,err) {
+    return res({});
+  }
+  createProfile(req, res,err) {
+    return res({});
+  }
 }
 
 export class eventsMock {
@@ -477,12 +492,12 @@ export class BuildParamaServiceMock {
 
 export class IonicAppMock {
 
-  _modalPortal: {
+  public _modalPortal: {
     getActive: () => ({
       dismiss: () => {}
     })
   }
-  _overlayPortal: {
+  public _overlayPortal: {
     getActive: () => ({
       dismiss: () => {}
     })
