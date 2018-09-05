@@ -209,8 +209,7 @@ export class AppGlobalService {
         });
     }
 
-    private getGuestUserInfo() {
-        console.log("getGuestUserInfo");
+    public getGuestUserInfo() {
         this.preference.getString('selected_user_type', (val) => {
             if (val !== undefined && val != "") {
                 if (val == ProfileType.STUDENT) {

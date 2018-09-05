@@ -134,31 +134,44 @@ export class OverflowMenuComponent {
                             profile.profileType = ProfileType.TEACHER;
                             profile.source = UserSource.LOCAL;
 
-                            this.profileService.setCurrentProfile(true, profile, res => { }, error => { });
+                            this.profileService.setCurrentProfile(true, profile, res => { 
+                                navigateToAptPage();
+                            }, error => { 
+                                navigateToAptPage();
+                            });
                         } else {
-                            this.profileService.setAnonymousUser(success => { }, error => { });
+                            this.profileService.setAnonymousUser(success => {
+                                navigateToAptPage();
+                             }, error => { 
+                                navigateToAptPage();
+                             });
                         }
                     });
 
-                    if (this.appGlobal.DISPLAY_ONBOARDING_PAGE) {
-                        this.app.getRootNav().setRoot(OnboardingPage);
-                    } else {
-                        this.preferences.getString('selected_user_type', (val) => {
-                            if (val == ProfileType.STUDENT) {
-                                initTabs(this.container, GUEST_STUDENT_TABS);
-                            } else if (val == ProfileType.TEACHER) {
-                                initTabs(this.container, GUEST_TEACHER_TABS);
-                            }
-                        });
-                        this.app.getRootNav().setRoot(TabsPage, {
-                            loginMode: 'guest'
-                        });
-                    }
-                    this.generateLogoutInteractTelemetry(InteractType.OTHER, InteractSubtype.LOGOUT_SUCCESS, "");
+                   
                 }
 
                 break;
         }
+    }
+
+    navigateToAptPage(){
+        if (this.appGlobal.DISPLAY_ONBOARDING_PAGE) {
+            this.app.getRootNav().setRoot(OnboardingPage);
+        } else {
+            this.preferences.getString('selected_user_type', (val) => {
+                this.appGlobal.getGuestUserInfo();
+                if (val == ProfileType.STUDENT) {
+                    initTabs(this.container, GUEST_STUDENT_TABS);
+                } else if (val == ProfileType.TEACHER) {
+                    initTabs(this.container, GUEST_TEACHER_TABS);
+                }
+            });
+            this.app.getRootNav().setRoot(TabsPage, {
+                loginMode: 'guest'
+            });
+        }
+        this.generateLogoutInteractTelemetry(InteractType.OTHER, InteractSubtype.LOGOUT_SUCCESS, "");
     }
 
     /**
