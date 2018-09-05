@@ -102,13 +102,28 @@ describe('CourseBatchesPage Component', () => {
         const courseService = TestBed.get(CourseService);
         let option = {};
         spyOn(courseService, 'enrollCourse').and.callFake(function (option, success, error) {
-            return error("CONNECTION_ERROR");
+            return error(JSON.stringify(mockRes.connectionFailureResponse));
         });
         component.enrollIntoBatch(option);
         spyOn(component, 'translateLanguageConstant').and.callThrough();
         spyOn(component, 'showMessage').and.callThrough();
         let timeOut = setTimeout(() => {
             expect(component.showMessage).toHaveBeenCalledWith('ERROR_NO_INTERNET_MESSAGE');
+        }, 0);
+        clearTimeout(timeOut);
+    });
+
+    it('should show error toast message while enrolling to a batch which is already enrolled', () => {
+        const courseService = TestBed.get(CourseService);
+        let option = {};
+        spyOn(courseService, 'enrollCourse').and.callFake(function (option, success, error) {
+            return error(JSON.stringify(mockRes.alreadyRegisterredFailureResponse));
+        });
+        component.enrollIntoBatch(option);
+        spyOn(component, 'translateLanguageConstant').and.callThrough();
+        spyOn(component, 'showMessage').and.callThrough();
+        let timeOut = setTimeout(() => {
+            expect(component.showMessage).toHaveBeenCalledWith('ALREADY_ENROLLED_COURSE');
         }, 0);
         clearTimeout(timeOut);
     });
@@ -155,7 +170,11 @@ describe('CourseBatchesPage Component', () => {
     it('should  update filter', () => {
        component.changeFilter("ONGOING");
        expect(component.selectedFilter).toBe("VIEW_ONGOING_BATCHES");
-
+       const courseService = TestBed.get(CourseService);
+       spyOn(courseService, 'getCourseBatches').and.callFake(function (option, success) {
+        let data = JSON.stringify(mockRes.getOngoingBatchesResponse);
+        return success(data);
+    });
        component.changeFilter("UPCOMING");
        expect(component.selectedFilter).toBe("VIEW_UPCOMING_BATCHES");
     });

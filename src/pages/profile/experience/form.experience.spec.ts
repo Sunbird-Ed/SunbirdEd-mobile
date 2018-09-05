@@ -15,7 +15,7 @@ import { } from 'jasmine';
 // import { AlertControllerMock, AlertMock} from 'ionic-mocks';
 import {
     LoadingControllerMock, PopoverControllerMock, NavParamsMock, TranslateServiceStub, ToastControllerMockNew, AlertControllerMock,
-    PlatformMock} from '../../../../test-config/mocks-ionic';
+    PlatformMock, NavMock} from '../../../../test-config/mocks-ionic';
 
 
 
@@ -24,10 +24,6 @@ describe("FormExperience", () => {
     let fixture: ComponentFixture<FormExperience>;
 
     beforeEach(() => {
-
-        const navControllerStub = {
-            setRoot: () => ({})
-        };
 
         const IonicAppMock = {
             _modalPortal: {
@@ -42,11 +38,6 @@ describe("FormExperience", () => {
             }
         };
 
-        // const platformStub = {
-        //     registerBackButtonAction: () => ({})
-        // };
-
-
         TestBed.configureTestingModule({
             imports: [TranslateModule.forRoot()],
             declarations: [FormExperience],
@@ -54,9 +45,8 @@ describe("FormExperience", () => {
             providers: [
                 FormBuilder, UserProfileService, Platform,
                 { provide: IonicApp, useValue: IonicAppMock },
-                { provide: NavController, useValue: navControllerStub },
+                { provide: NavController, useClass: NavMock },
                 { provide: NavParams, useClass: NavParamsMock },
-                // { provide: Platform, useValue: PlatformMock },
                 { provide: AlertController, useFactory: () => AlertControllerMock.instance() },
                 { provide: TranslateService, useClass: TranslateServiceStub },
                 { provide: ToastController, useFactory: () => ToastControllerMockNew.instance() },

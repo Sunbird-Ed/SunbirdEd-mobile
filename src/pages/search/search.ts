@@ -20,6 +20,8 @@ import { EnrolledCourseDetailsPage } from "../enrolled-course-details/enrolled-c
 import { AppGlobalService } from "../../service/app-global.service";
 import { PopoverController } from "ionic-angular";
 import { QRAlertCallBack, QRScannerAlert } from "../qrscanner/qrscanner_alert";
+import { FormAndFrameworkUtilService } from "../profile/formandframeworkutil.service";
+import { CommonUtilService } from "../../service/common-util.service";
 
 @IonicPage()
 @Component({
@@ -83,7 +85,8 @@ export class SearchPage {
   private backButtonFunc = undefined;
 
   @ViewChild(Navbar) navBar: Navbar;
-  constructor(private contentService: ContentService,
+  constructor(
+    private contentService: ContentService,
     private telemetryService: TelemetryService,
     private navParams: NavParams,
     private navCtrl: NavController,
@@ -96,7 +99,10 @@ export class SearchPage {
     private events: Events,
     private appGlobal: AppGlobalService,
     private popUp: PopoverController,
-    private platform: Platform) {
+    private platform: Platform,
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
+    private commonUtilService: CommonUtilService
+  ) {
 
     this.checkUserSession();
 
@@ -192,9 +198,26 @@ export class SearchPage {
       this.navCtrl.push(ContentDetailsPage, params)
     }
   }
+  getTranslatedValue(translations) {
+    if (translations.hasOwnProperty(this.translate.currentLang)) {
+      return translations[this.translate.currentLang];
+    }
+    return "";
+  }
 
   showFilter() {
-    this.navCtrl.push(FilterPage, { filterCriteria: this.responseData.result.filterCriteria });
+    this.formAndFrameworkUtilService.getLibraryFilterConfig().then((data) => {
+      let filterCriteriaData = this.responseData.result.filterCriteria;
+      filterCriteriaData.facetFilters.forEach(element => {
+        data.forEach(item => {
+          if (element.name === item.code) {
+            element.translatedName = this.commonUtilService.getTranslatedValue(item.translations, item.name);
+            return;
+          }
+        });
+      });
+      this.navCtrl.push(FilterPage, { filterCriteria: this.responseData.result.filterCriteria });
+    });
   }
 
   applyFilter() {
