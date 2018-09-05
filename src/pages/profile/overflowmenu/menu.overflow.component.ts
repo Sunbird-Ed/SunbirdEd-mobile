@@ -128,29 +128,22 @@ export class OverflowMenuComponent {
 
                     this.preferences.getString('GUEST_USER_ID_BEFORE_LOGIN', (val) => {
                         if (val != "") {
-                            let profile: Profile = new Profile();
                             profile.uid = val;
-                            profile.handle = "Guest1";
-                            profile.profileType = ProfileType.TEACHER;
-                            profile.source = UserSource.LOCAL;
-
-                            this.profileService.setCurrentProfile(true, profile, res => { 
-                                this.navigateToAptPage();
-                            }, error => { 
-                                this.navigateToAptPage();
-                            });
                         } else {
-                            this.profileService.setAnonymousUser(success => {
-                                this.navigateToAptPage();
-                             }, error => { 
-                                this.navigateToAptPage();
-                             });
+                            this.preferences.putString('selected_user_type', ProfileType.TEACHER)
                         }
+
+                        profile.handle = "Guest1";
+                        profile.profileType = ProfileType.TEACHER;
+                        profile.source = UserSource.LOCAL;
+
+                        this.profileService.setCurrentProfile(true, profile, res => {
+                            this.navigateToAptPage();
+                        }, error => {
+                            this.navigateToAptPage();
+                        });
                     });
-
-                   
                 }
-
                 break;
         }
     }
