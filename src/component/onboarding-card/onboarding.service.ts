@@ -168,22 +168,22 @@ export class OnboardingService {
                     index = 1;
                 }
                 if (this.profile.board && this.profile.board[0] !== '') {
-                    this.onBoardingSlides[1].selectedOptions = this.getDisplayValues(0, this.profile.board);
+                    this.onBoardingSlides[1].selectedOptions = this.getSelectedOptions(0, this.profile.board);
                     this.currentIndex = 40;
                     index = 2;
                 }
                 if (this.profile.medium && this.profile.medium[0] !== '') {
-                    this.onBoardingSlides[2].selectedOptions = this.getDisplayValues(1, this.profile.medium);
+                    this.onBoardingSlides[2].selectedOptions = this.getSelectedOptions(1, this.profile.medium);
                     this.currentIndex = 60;
                     index = 3;
                 }
                 if (this.profile.grade && this.profile.grade[0] !== '') {
-                    this.onBoardingSlides[3].selectedOptions = this.getDisplayValues(2, this.profile.grade);
+                    this.onBoardingSlides[3].selectedOptions = this.getSelectedOptions(2, this.profile.grade);
                     this.currentIndex = 80;
                     index = 4;
                 }
                 if (this.profile.subject && this.profile.subject[0] !== '') {
-                    this.onBoardingSlides[4].selectedOptions = this.getDisplayValues(3, this.profile.subject);
+                    this.onBoardingSlides[4].selectedOptions = this.getSelectedOptions(3, this.profile.subject);
                     this.currentIndex = 100;
                     index = 5;
                 }
@@ -197,7 +197,7 @@ export class OnboardingService {
         });
     }
 
-    getDisplayValues(index: number, field) {
+    getSelectedOptions(index: number, field) {
         let displayValues = [];
         this.categories[index].terms.forEach(element => {
             if (_.includes(field, element.code)) {

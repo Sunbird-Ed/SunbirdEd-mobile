@@ -170,8 +170,7 @@ export class PageFilter {
 
           let responseArray = category.terms;
           if (responseArray && responseArray.length > 0) {
-            resolve(this.filters[index].values = (currentCategory !== 'gradeLevel') ?
-              _.map(responseArray, 'name').sort() : _.map(responseArray, 'name'));
+            resolve(this.filters[index].values = _.map(responseArray, 'name'));
           }
         })
         .catch(err => {
