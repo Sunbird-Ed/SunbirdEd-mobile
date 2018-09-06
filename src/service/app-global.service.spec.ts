@@ -250,9 +250,7 @@ describe('AppGlobalService', () => {
 
   it("getFrameworkDetails to make expected calls", () => {
     spyOn<any>(service, 'getFrameworkDetails').and.callThrough();
-    spyOn<any>(service["framework"], 'getFrameworkDetails').and.callFake(function (req, success, error) {
-      success("sucess");
-    });
+    spyOn<any>(service["framework"], 'getFrameworkDetails').and.returnValue(Promise.resolve("success"))
     service["getFrameworkDetails"]("10");
     expect(service["framework"].getFrameworkDetails).toHaveBeenCalled();
   });

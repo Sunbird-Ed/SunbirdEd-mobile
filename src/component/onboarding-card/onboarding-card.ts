@@ -35,7 +35,7 @@ export class OnboardingCardComponent {
   @ViewChild(Slides) mSlides: Slides;
   isOnBoardCard: boolean = true;
   loader: boolean = false;
-  isDataAvailable = false;
+  isDataAvailable: boolean = false;
 
   options: toastOptions = {
     message: '',
@@ -80,7 +80,6 @@ export class OnboardingCardComponent {
     });
 
     this.events.subscribe('slide-onboarding-card', (value) => {
-      console.log("Index value - " + value.slideIndex);
       this.mSlides.lockSwipes(false);
       this.mSlides.slideNext(500);
     });
@@ -100,16 +99,11 @@ export class OnboardingCardComponent {
 
     this.onboardingService.initializeCard()
       .then(index => {
-        console.log("reinitializeCards -  index = " + index);
-
         setTimeout(() => {
           if (index !== 0 && index !== 5) {
             this.mSlides.slideTo(index, 500);
           }
         }, 500);
-      })
-      .catch(error => {
-
       });
   }
 
@@ -138,13 +132,9 @@ export class OnboardingCardComponent {
   initializeService() {
     this.onboardingService.initializeCard()
       .then(index => {
-        console.log("initializeService -  index = " + index);
         setTimeout(() => {
           if (index !== 0 && index !== 5) this.mSlides.slideTo(index, 500);
         }, 500);
-      })
-      .catch(error => {
-
       });
   }
 
