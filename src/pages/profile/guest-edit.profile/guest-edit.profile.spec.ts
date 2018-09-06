@@ -51,19 +51,7 @@ describe("GuestEditProfilePage", () => {
         const categoryRequestStub = {};
 
         const containerServiceStub = {};
-        const formAndFrameworkUtilServiceStub = {
-            getSyllabusList: () => ({
-                then: () => ({})
-            }),
-            getFrameworkDetails: () => ({
-                then: () => ({
-                    catch: () => ({})
-                })
-            }),
-            getCategoryData: () => ({
-                then: () => ({})
-            })
-        };
+        
         const telemetryGeneratorServiceStub = {
             generateImpressionTelemetry: () => ({}),
             generateInteractTelemetry: () => ({})

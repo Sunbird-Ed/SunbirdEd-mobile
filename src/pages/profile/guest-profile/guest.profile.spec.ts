@@ -1,4 +1,4 @@
-import { ProfileService, SharedPreferences, TelemetryService, ServiceProvider } from 'sunbird';
+import { ProfileService, SharedPreferences, TelemetryService, ServiceProvider, AuthService } from 'sunbird';
 import 'rxjs/add/observable/of';
 
 import { Observable } from 'rxjs';
@@ -15,40 +15,22 @@ import { AppGlobalService } from '../../../service/app-global.service';
 import { FormAndFrameworkUtilService } from '../formandframeworkutil.service';
 import { GuestProfilePage } from './guest-profile';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
-import { SharedPreferencesMock } from '../../../../test-config/mocks-ionic';
 
-export class LoadingControllerMock {
-    _getPortal(): any { return {} };
-    create(options?: any) {
-        return new LoadingMock();
-    };
-}
+import {
+    LoadingControllerMock, TranslateServiceStub, ToastControllerMockNew, PopoverControllerMock, AuthServiceMock, AppGlobalServiceMock, NavMock, NavParamsMock, profileServiceMock,
+    SharedPreferencesMock, FormAndFrameworkUtilServiceMock, EventsMock, TelemetryServiceMock
+} from '../../../../test-config/mocks-ionic';
+import { AuthService } from 'sunbird';
+import { BuildParamService } from 'sunbird';
+import { FrameworkService } from 'sunbird';
 
-class LoadingMock {
-    present() { };
-    dismiss() { };
-    dismissAll() { };
-}
-
-export class ToastControllerMock {
-    create(options?: any) {
-        return new ToastMock();
-    }
-}
-
-class ToastMock {
-    present() { }
-}
 
 describe('GuestProfilePage', () => {
     let comp: GuestProfilePage;
     let fixture: ComponentFixture<GuestProfilePage>;
-
+    let spyObj;
     beforeEach(async(() => {
-        const NavControllerStub = {
-            push: () => ({})
-        }
-
+        
         const NetworkStub = {
             type: '',
             onConnect: () => ({
@@ -59,94 +41,83 @@ describe('GuestProfilePage', () => {
             })
         }
 
-        const PopoverControllerStub = {
-            create: () => {
-                return {
-                    data: '',
-                    opts: '',
-                    isOverlay: false,
-                    present: () => { },
-                    dismiss: () => { },
-                    onDidDismiss: () => { },
-                    onWillDismiss: () => { },
-                }
-            }
-        }
-
-        const ProfileServiceStub = {
-            getCurrentUser: () => { },
-
-        }
-
-        const LoadingControllerStub = {
-            create: () => { }
-        }
-
-        const EventsStub = {
-            subscribe: () => { }
-        }
-
-        const ToastControllerStub = {
-            create: () => {
-                subscribe: () => { }
-            }
-        }
-
-        const TranslateServiceStub = {
-            get: () => {
-                subscribe: () => { }
-            }
-        }
-
-        const AppGlobalServiceStub = {
-            openPopover: () => { },
-            getGuestUserType: () => ({})
-        }
-
-        const FormAndFrameworkUtilServiceStub = {
-            getSyllabusList: () => {
-                then: () => { }
-            },
-            getFrameworkDetails: () => {
-                then: () => { }
-            }
-        }
-
+        const telemetryGeneratorServiceStub = {
+            generateImpressionTelemetry: () => ({}),
+            generateInteractTelemetry: () => ({})
+        };
+        
         TestBed.configureTestingModule({
             imports: [TranslateModule.forRoot()],
             declarations: [GuestProfilePage],
             schemas: [NO_ERRORS_SCHEMA],
-            providers: [TelemetryGeneratorService, TelemetryService, ServiceProvider,SharedPreferences,
-                { provide: NavController, useValue: NavControllerStub },
+            providers: [TelemetryGeneratorService, TelemetryService, ServiceProvider,SharedPreferences, BuildParamService,
+                FrameworkService,
+                { provide: NavController, useClass: NavMock },
+                { provide: AuthService, useClass: AuthServiceMock },
                 { provide: Network, useValue: NetworkStub },
-                { provide: PopoverController, useValue: PopoverControllerStub },
-                { provide: ProfileService, useValue: ProfileServiceStub },
-                { provide: LoadingController, useClass: LoadingControllerMock },
-                { provide: Events, useValue: EventsStub },
+                { provide: TelemetryGeneratorService, useValue: telemetryGeneratorServiceStub },
+                { provide: ProfileService, useClass: profileServiceMock },
+                { provide: Events, useClass: EventsMock },
                 //{ provide: SharedPreferences, useValue: SharedPreferencesMock },
-                { provide: ToastController, useClass: ToastControllerMock },
-                { provide: TranslateService, useValue: TranslateServiceStub },
-                { provide: AppGlobalService, useValue: AppGlobalServiceStub },
-                { provide: FormAndFrameworkUtilService, useValue: FormAndFrameworkUtilServiceStub }
+                { provide: TranslateService, useClass: TranslateServiceStub },
+                { provide: AppGlobalService, useClass: AppGlobalServiceMock },
+                { provide: FormAndFrameworkUtilService, useClass: FormAndFrameworkUtilServiceMock },
+                { provide: ToastController, useFactory: () => ToastControllerMockNew.instance() },
+                { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() },
+                { provide: PopoverController, useFactory: () => PopoverControllerMock.instance() }
             ]
         });
+    }));
 
-        let code = 'selected_language_code';
-        // spyOn(SharedPreferencesStub, 'getString').and.callFake((code, success) => {
-        //     return success('en');
-        // });
-        const SharedPreferenceStub = TestBed.get(SharedPreferences);
-        spyOn(SharedPreferenceStub, 'getString').and.returnValue(Promise.resolve('en'));
-        // SharedPreferenceStub.getString().then(() => {
-
-        // });
-
+    it("should set showSignInCard to 'true'", () => {
+        const appGlobal = TestBed.get(AppGlobalService);
+        spyOn(appGlobal, "getGuestUserType").and.returnValue("TEACHER");
+        spyOn(appGlobal, "DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER").and.returnValue(true)
         fixture = TestBed.createComponent(GuestProfilePage);
         comp = fixture.componentInstance;
-    }));
+        expect(comp.showSignInCard).toBe(true);
+    })
+
+    it("should set showSignInCard to 'true'", () => {
+        const appGlobal = TestBed.get(AppGlobalService);
+        spyOn(appGlobal, "getGuestUserType").and.returnValue("STUDENT");
+        spyOn(appGlobal, "DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT").and.returnValue(true)
+        fixture = TestBed.createComponent(GuestProfilePage);
+        comp = fixture.componentInstance;
+        expect(comp.showSignInCard).toBe(true);
+    })
+
+    beforeEach(async() => {
+        let code = 'selected_language_code';
+        const SharedPreferenceStub = TestBed.get(SharedPreferences);
+        spyOn(SharedPreferenceStub, 'getString').and.returnValue(Promise.resolve('en'));
+
+        const profileServiceStub = TestBed.get(ProfileService)
+        spyObj = spyOn(profileServiceStub, "getCurrentUser");
+        spyObj.and.callFake((success, error) => {
+            error("error");
+        });
+        fixture = TestBed.createComponent(GuestProfilePage);
+        comp = fixture.componentInstance;
+    })
+
+    let getLoader = () => {
+        const loadingController = TestBed.get(LoadingController);
+        comp.getLoader();
+    }
 
     it('should load instance', () => {
         expect(comp).toBeTruthy();
+    });
+
+    it("ionViewDidLoad makes expected calls", () => {
+        const telemetryGeneratorServiceStub = TestBed.get(TelemetryGeneratorService);
+        const appGloabal = TestBed.get(AppGlobalService)
+        spyOn(telemetryGeneratorServiceStub, "generateImpressionTelemetry");
+        spyOn(appGloabal, "generateConfigInteractEvent");
+        comp.ionViewDidLoad();
+        expect(telemetryGeneratorServiceStub.generateImpressionTelemetry).toHaveBeenCalled();
+        expect(appGloabal.generateConfigInteractEvent).toHaveBeenCalled();
     });
 
     it('imageUri defaults to: assets/imgs/ic_profile_default.png', () => {
@@ -227,73 +198,138 @@ describe('GuestProfilePage', () => {
         });
     });
 
-    describe('goToRoles', () => {
-        it('should call goToRoles page', () => {
-            const navControllerStub: NavController = TestBed.get(NavController);
-            spyOn(comp, 'goToRoles');
-            spyOn(navControllerStub, "push");
-            comp.goToRoles();
-            expect(comp.goToRoles).toBeDefined();
-            expect(comp.goToRoles).toHaveBeenCalled();
-            //expect(navControllerStub.push).toHaveBeenCalled();
-        });
-    });
-
-    describe('editGuestProfile', () => {
-        it('should call GuestEditProfile page', () => {
-            const navControllerStub: NavController = TestBed.get(NavController);
-            spyOn(comp, 'editGuestProfile');
-            spyOn(navControllerStub, "push");
-            comp.editGuestProfile();
-            expect(comp.editGuestProfile).toBeDefined();
-            expect(comp.editGuestProfile).toHaveBeenCalled();
-            //expect(navControllerStub.push).toHaveBeenCalled();
-            // expect(navControllerStub.push).toHaveBeenCalledWith(GuestEditProfilePage, {
-            //     profile: comp.profile,
-            //     isCurrentUser: true
-            // });
-        });
-    });
-
-
-    describe('goToRoles', () => {
-        it('should call goToRoles page', () => {
-            const navControllerStub: NavController = TestBed.get(NavController);
-            spyOn(comp, 'goToRoles');
-            spyOn(navControllerStub, "push");
-            comp.goToRoles();
-            expect(comp.goToRoles).toBeDefined();
-            expect(comp.goToRoles).toHaveBeenCalled();
-            //expect(navControllerStub.push).toHaveBeenCalled();
-        });
-    });
-
-    describe('buttonClick', () => {
-        it('should call showNetworkWarning method', () => {
-            spyOn(comp, 'buttonClick');
-            spyOn(comp, 'showNetworkWarning');
-            comp.buttonClick();
-            expect(comp.buttonClick).toBeDefined();
-            expect(comp.buttonClick).toHaveBeenCalled();
-            //expect(comp.showNetworkWarning).toHaveBeenCalled();
-        });
+    it("refreshProfileData should make expected calls", () => {
+        getLoader();
+        const ProfileServiceStub = TestBed.get(ProfileService);
+        let response = {
+            id: 'abcd'
+        };
+        spyObj.and.callFake((res, err) => {
+            res(JSON.stringify(response))
+        })
+        spyOn(comp, "getSyllabusDetails")
+        comp.refreshProfileData(false, true);
+        expect(comp.profile).toEqual(response);
+        expect(comp.getSyllabusDetails).toHaveBeenCalled();
+        // setTimeout(() => {
+        //     let refresher = jasmine.createSpyObj('refresher', ['complete']);
+        //     expect(refresher.complete).toHaveBeenCalled();
+        // },500)
     })
 
-    describe('arrayToString', () => {
-        it('should convert String Array to single string', () => {
-            spyOn(comp, 'arrayToString');
-            expect(comp.arrayToString).toBeDefined();
-            let arg: Array<string> = ["abcd", "xyz"];
-            comp.arrayToString(arg);
-            expect(comp.arrayToString).toHaveBeenCalled();
-            expect(typeof arg).toBe('object');
-            expect(Array.isArray(arg)).toBe(true);
-            expect(comp.arrayToString).toHaveBeenCalledWith(arg);
-            //expect(comp.arrayToString(arg)).toEqual("abcd, xyz");
-        });
+    it('editGuestProfile should call GuestEditProfile page', () => {
+        const navControllerStub = TestBed.get(NavController);
+        spyOn(navControllerStub, "push");
+        comp.editGuestProfile();
+        expect(comp.editGuestProfile).toBeDefined();
+        expect(navControllerStub.push).toHaveBeenCalled();
+        
     });
 
-    describe('getToast', () => {
+    it("showNetworkWarning should set showWarning to true", (done) => {
+        comp.showNetworkWarning();
+        expect(comp.showWarning).toBe(true);
+        setTimeout(() => {
+            expect(comp.showWarning).toBe(false);
+            done();
+        },3500)
+    });
+
+    it("should handle success scenario for getSyllabusDetails", (done) => {
+        getLoader();
+        let data = [{ name: "sampleName", frameworkId: "sampleSyllabus" }];
+        comp.profile = {
+            syllabus: ["sampleSyllabus"]
+        }
+        const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
+        spyOn(formAndFrameworkUtilServiceStub, 'getSyllabusList').and.returnValue(Promise.resolve(data));
+        spyOn(formAndFrameworkUtilServiceStub, 'getFrameworkDetails');
+        comp.getSyllabusDetails();
+        expect(formAndFrameworkUtilServiceStub.getSyllabusList).toHaveBeenCalled();
+        setTimeout(() => {
+            expect(comp.syllabus).toEqual(data[0].name);
+            expect(formAndFrameworkUtilServiceStub.getFrameworkDetails).toHaveBeenCalledWith(data[0].frameworkId);
+            done();
+        }, 10);
+    });
+
+    it("should handle failure scenario for getSyllabusDetails", () => {
+        getLoader();
+        let data = [];
+        comp.profile = {
+            syllabus: ["sampleSyllabus"]
+        }
+        const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
+        spyOn(formAndFrameworkUtilServiceStub, 'getSyllabusList').and.returnValue(Promise.resolve(data));
+        spyOn(formAndFrameworkUtilServiceStub, 'getFrameworkDetails');
+        comp.getSyllabusDetails();
+        expect(formAndFrameworkUtilServiceStub.getSyllabusList).toHaveBeenCalled();
+        // expect(comp.syllabus).toEqual(data[0].name);
+    });
+
+    it("should handle success scenario for getFrameworkDetails", (done) => {
+        getLoader();
+        let data = ["sampleCategory"];
+        comp.profile ={
+            board  : ["sampleBoard"],
+            medium : ["sampleMedium"],
+            grade  : ["sampleGrade"],
+            subject: ["sampleSubject"]
+        };
+        const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
+        spyOn(formAndFrameworkUtilServiceStub, 'getFrameworkDetails').and.returnValue(Promise.resolve(data));
+        spyOn(comp, "getFieldDisplayValues")
+        comp.getFrameworkDetails("string");
+        setTimeout(() => {
+            expect(comp.categories).toEqual(data);
+            done();
+        }, 10);
+        
+    });
+
+    it("getFieldDisplayValues should call arrayToString", () => {
+        let data = ["sampleTerms"];
+        comp.categories = [{terms :["sampleTerms"]}];
+        comp.getFieldDisplayValues(data,0);
+        spyOn(comp, "arrayToString");
+    });
+
+    // it("arrayToString", () =>)
+
+    it("goToRoles should make expected calls", () => {
+        const navCtrl = TestBed.get(NavController)
+        spyOn(navCtrl, "push");
+        comp.goToRoles();
+        expect(navCtrl.push).toHaveBeenCalled(); 
+    })
+
+    it("getToast should make expected calls", () => {
+        const toasrCtrlStub  = TestBed.get(ToastController);
+        let msg = "testMessage";
+        let getToast = comp.getToast(msg);
+        expect(comp.options.message).toEqual(msg)
+    });
+
+    // describe('goToRoles', () => {
+    //     it('should call goToRoles page', () => {
+    //         const navControllerStub: NavController = TestBed.get(NavController);
+    //         spyOn(comp, 'goToRoles');
+    //         spyOn(navControllerStub, "push");
+    //         comp.goToRoles();
+    //         expect(comp.goToRoles).toBeDefined();
+    //         expect(comp.goToRoles).toHaveBeenCalled();
+    //         //expect(navControllerStub.push).toHaveBeenCalled();
+    //     });
+    // });
+
+    it('should call showNetworkWarning method', () => {
+        spyOn(comp, 'showNetworkWarning');
+        comp.buttonClick();
+        expect(comp.buttonClick).toBeDefined();
+        expect(comp.showNetworkWarning).toHaveBeenCalled();
+    });
+
+    describe('arrayToString', () => {
         it('should convert String Array to single string', () => {
             spyOn(comp, 'arrayToString');
             expect(comp.arrayToString).toBeDefined();
@@ -320,39 +356,5 @@ describe('GuestProfilePage', () => {
             expect(spy.calls.any()).toEqual(true);
         }));
     });
-
-    xdescribe('refreshProfileData', () => { //Need to improve
-        it('should male expected calls', () => {
-            spyOn(comp, 'refreshProfileData').and.callThrough();
-            spyOn(comp.loader, 'present').and.callThrough();
-            comp.refreshProfileData(true, true);
-            comp.loader = jasmine.createSpyObj('comp.loader', ['present']);
-            expect(comp.refreshProfileData).toBeDefined();
-            expect(comp.refreshProfileData).toHaveBeenCalled();
-            //expect(comp.loader.present).toHaveBeenCalled();
-        });
-        it('should make service call to fetch CurrentUser', (done) => {
-            const ProfileServiceStub: ProfileService = TestBed.get(ProfileService);
-            const FormAndFrameworkUtilServiceStub: FormAndFrameworkUtilService = TestBed.get(FormAndFrameworkUtilService);
-            let response = {
-                id: 'abcd'
-            };
-            spyOn(ProfileServiceStub, 'getCurrentUser').and.callFake((res, err) => {
-                return res(JSON.stringify(response));
-            });
-            spyOn(FormAndFrameworkUtilServiceStub, 'getSyllabusList').and.returnValue(Promise.resolve({}))
-            comp.refreshProfileData(true, true);
-            setTimeout(() => {
-                expect(ProfileServiceStub.getCurrentUser).toHaveBeenCalled();
-                expect(comp.profile).toEqual(response);
-                expect(comp.getSyllabusDetails).toHaveBeenCalled();
-
-                let refresher = jasmine.createSpyObj('refresher', ['complete']);
-                tick(501);
-                expect(refresher.complete).toHaveBeenCalled();
-                done();
-            }, 100);
-
-        });
-    });
+    
 });
