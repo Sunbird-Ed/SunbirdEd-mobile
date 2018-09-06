@@ -50,7 +50,8 @@ import { ImagePicker } from './imagepicker/imagepicker';
     FormExperience,
     SkillTagsComponent,
     OverflowMenuComponent,
-    ImagePicker
+    ImagePicker,
+    UserSearchComponent
     ],
 
   imports: [

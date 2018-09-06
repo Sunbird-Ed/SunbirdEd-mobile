@@ -211,7 +211,6 @@ export class UserAndGroupsPage {
         this.profileService.getAllUserProfile(profileRequest).then((profiles) => {
           let profileList: Array<Profile> = JSON.parse(profiles);
           if (profileList && profileList.length) {
-            loader.dismiss();
             this.noUsersPresent = false;
             this.userList = profileList.sort((prev: Profile, next: Profile) => {
               if (prev.uid === this.currentUserId) {
@@ -227,9 +226,11 @@ export class UserAndGroupsPage {
               return 0;
             });
           } else {
-            loader.dismiss();
             this.noUsersPresent = true;
           }
+
+          loader.dismiss();
+
         }).catch((error) => {
           loader.dismiss();
           this.noUsersPresent = true;
