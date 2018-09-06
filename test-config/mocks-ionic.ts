@@ -175,12 +175,20 @@ export class AppGlobalServiceMock extends AppGlobalService {
   static isGuestUser: boolean;
   public DISPLAY_ONBOARDING_PAGE: boolean;
   static session: any;
+  static DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER: boolean;
+  static DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT: boolean;
   isUserLoggedIn(): boolean {
     return AppGlobalServiceMock.isGuestUser;
   }
   getSessionData(): any {
     return AppGlobalServiceMock.session;
   }
+
+  getGuestUserType() : any {
+    return "TEACHER"
+  }
+
+  generateConfigInteractEvent: () => ({})
 
   static setLoggedInStatus(status: boolean) {
     AppGlobalServiceMock.isGuestUser = status;
@@ -189,6 +197,7 @@ export class AppGlobalServiceMock extends AppGlobalService {
   static setSessionData(session: any) {
     AppGlobalServiceMock.session = session;
   }
+
 }
 
 export class EventsMock {
@@ -320,8 +329,16 @@ export class FormAndFrameworkUtilServiceMock {
 }
 
 export class profileServiceMock {
+<<<<<<< HEAD
   getCurrentUser: () => ({})
   updateProfile(req, res, err) {
+=======
+  // getCurrentUser: () => ({})
+  getCurrentUser(res, err) {
+    return res({});
+  }
+  updateProfile(req, res,err) {
+>>>>>>> 1666e254c95715eb8a9d31b691dcdf711cd70af2
     return res({});
   }
   createProfile(req, res, err) {
