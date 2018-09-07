@@ -48,7 +48,7 @@ export class AboutUsPage {
         this.deviceId = res;
       },
       (err: any) => {
-        console.log("Device Id: ", JSON.parse(err));
+        // console.log("Device Id: ", JSON.parse(err));
       });
 
     this.appVersion.getAppName()

@@ -71,7 +71,7 @@ describe("AboutUsPage", () => {
             expect(appVersionStub.getAppName).toHaveBeenCalled();
             expect(deviceInfoServiceStub.getDeviceID).toHaveBeenCalled();
         });
-        xit("checks if device id got error or not", () => {
+        it("checks if device id got error or not", (done) => {
             const deviceInfoServiceStub: DeviceInfoService = fixture.debugElement.injector.get(DeviceInfoService);
             var error: any;
             error = {};
@@ -80,9 +80,9 @@ describe("AboutUsPage", () => {
             });
             comp.ionViewDidLoad();
             setTimeout(() => {
-                expect(deviceInfoServiceStub.getDeviceID).toEqual({});
-            }, 100);
-            expect(deviceInfoServiceStub.getDeviceID).toHaveBeenCalled();
+                expect(deviceInfoServiceStub.getDeviceID).toHaveBeenCalled();
+                done();
+            }, 10);
         });
     });
 
@@ -159,7 +159,7 @@ describe("AboutUsPage", () => {
             spyOn(buildParamServiceStub,'getBuildConfigParam').and.returnValue(Promise.resolve('true'));
             comp.getVersionCode("AppVersionName", "AppVersionCode");
             buildParamServiceStub.getBuildConfigParam('any').catch(()=>{
-                expect(comp.getVersionCode).toContain("");
+                expect(buildParamServiceStub.getBuildConfigParam).toHaveBeenCalled();
             });
         }));
     })
