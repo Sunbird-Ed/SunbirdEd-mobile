@@ -1,4 +1,5 @@
-/* import { NavParamsMock, ViewControllerMock, PlatformMock } from './../../../test-config/mocks-ionic';
+import { selectedSlide } from './onboarding-alert.component.data.spec';
+import { NavParamsMock, ViewControllerMock, PlatformMock } from './../../../test-config/mocks-ionic';
 import { TranslateModule } from '@ngx-translate/core';
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { NO_ERRORS_SCHEMA } from "@angular/core";
@@ -28,22 +29,18 @@ describe("OnboardingAlert", () => {
         });
         const viewControllerMock = TestBed.get(ViewController);
         const platformStub = TestBed.get(Platform);
+        const navParams = TestBed.get(NavParams);
         spyOn(viewControllerMock, 'dismiss');
         spyOn(platformStub, 'registerBackButtonAction');
-        setTimeout(() => {
-            OnboardingAlert.prototype.selectedSlide = { options: [] };    
-        }, 5);
-        
+        navParams.data = selectedSlide;
+
         fixture = TestBed.createComponent(OnboardingAlert);
         comp = fixture.componentInstance;
     });
 
     it("should load instance", () => {
         expect(comp).toBeTruthy();
-    });
-
-    it("should index defaults to: 0", () => {
-        expect(comp.index).toEqual(0);
+        expect(comp.selectedSyllabus).toBe('ap_k-12_13');
     });
 
     it("should backButtonFunc defaults to: undefined", () => {
@@ -53,10 +50,12 @@ describe("OnboardingAlert", () => {
     it("#onSaveClick should trigger callback save function and close the view", () => {
         const viewControllerStub: ViewController = fixture.debugElement.injector.get(ViewController);
         expect(comp.onSaveClick).toBeDefined();
-        spyOn(viewControllerStub, "dismiss").and.callThrough();
+        spyOn(comp, 'onSaveClick').and.callThrough();
+
         comp['callback'] = {
             save: () => { }
         }
+        spyOn(comp['callback'], 'save');
         comp.onSaveClick();
         expect(comp.onSaveClick).toHaveBeenCalled();
         expect(comp['callback'].save).toHaveBeenCalled()
@@ -65,11 +64,19 @@ describe("OnboardingAlert", () => {
 
     it("#cancel makes expected calls", () => {
         expect(comp.cancel).toBeDefined();
-        const viewControllerStub: ViewController = fixture.debugElement.injector.get(ViewController);
-        spyOn(viewControllerStub, "dismiss").and.callThrough();
+        const viewControllerStub = TestBed.get(ViewController);
+        spyOn(comp, 'cancel').and.callThrough();
         comp.cancel();
         expect(comp.cancel).toHaveBeenCalled();
         expect(viewControllerStub.dismiss).toHaveBeenCalled();
     });
+
+    it('#onSyllabusSelect should make checkmark on select of option', () => {
+        expect(comp.onSyllabusSelect).toBeDefined();
+        spyOn(comp, 'onSyllabusSelect').and.callThrough();
+        comp.onSyllabusSelect(1);
+        expect(comp.onSyllabusSelect).toHaveBeenCalled();
+        expect(comp.selectedSlide.options[1].checked).toBe(true);
+
+    });
 });
- */
