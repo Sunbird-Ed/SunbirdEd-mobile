@@ -335,10 +335,27 @@ export class profileServiceMock {
     return res({});
   }
 }
+export  class groupServiceMock  {
+      deleteGroup: () => ({
+          then: () => ({
+              catch: () => ({})
+          })
+      })
+    }
 
 export class eventsMock {
   publish: () => {};
 }
+
+export class oAuthServiceMock {
+       doLogOut: () => ({
+          then: () => ({})
+     })
+   };
+
+   export class networkMock {
+         type: {}
+     };
 
 export class MockElementRef implements ElementRef {
   nativeElement = {};
