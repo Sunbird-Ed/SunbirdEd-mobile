@@ -1,22 +1,32 @@
-import { CourseUtilService } from './../src/service/course-util.service';
-import { AppGlobalService } from './../src/service/app-global.service';
-import { StatusBar } from '@ionic-native/status-bar';
-import { SplashScreen } from '@ionic-native/splash-screen';
-import { AuthService, ContainerService, PermissionService, TelemetryService, GenieSDKServiceProvider, SharedPreferences, ShareUtil, ContentService, ContentFeedback } from "sunbird";
+import { CourseUtilService } from "./../src/service/course-util.service";
+import { AppGlobalService } from "./../src/service/app-global.service";
+import { StatusBar } from "@ionic-native/status-bar";
+import { SplashScreen } from "@ionic-native/splash-screen";
+import {
+  AuthService,
+  ContainerService,
+  PermissionService,
+  TelemetryService,
+  GenieSDKServiceProvider,
+  SharedPreferences,
+  ShareUtil,
+  ContentService,
+  ContentFeedback
+} from "sunbird";
 import { ImageLoaderConfig } from "ionic-image-loader";
-import { TranslateLoader } from '@ngx-translate/core';
-import { Observable } from 'rxjs';
-import { App, ViewController } from 'ionic-angular';
-import { ElementRef } from '@angular/core';
-import { CommonUtilService } from '../src/service/common-util.service';
-import { resolve } from 'q';
+import { TranslateLoader } from "@ngx-translate/core";
+import { Observable } from "rxjs";
+import { App, ViewController } from "ionic-angular";
+import { ElementRef } from "@angular/core";
+import { CommonUtilService } from "../src/service/common-util.service";
+import { resolve } from "q";
 
 declare let readJSON: any;
 
 export class PlatformMock {
   public ready(): Promise<string> {
-    return new Promise((resolve) => {
-      resolve('READY');
+    return new Promise(resolve => {
+      resolve("READY");
     });
   }
 
@@ -42,10 +52,10 @@ export class PlatformMock {
 
   public getElementComputedStyle(container: any): any {
     return {
-      paddingLeft: '10',
-      paddingTop: '10',
-      paddingRight: '10',
-      paddingBottom: '10',
+      paddingLeft: "10",
+      paddingTop: "10",
+      paddingRight: "10",
+      paddingBottom: "10"
     };
   }
 
@@ -53,8 +63,12 @@ export class PlatformMock {
     return callback;
   }
 
-  public registerListener(ele: any, eventName: string, callback: any): Function {
-    return (() => true);
+  public registerListener(
+    ele: any,
+    eventName: string,
+    callback: any
+  ): Function {
+    return () => true;
   }
 
   public win(): Window {
@@ -74,7 +88,7 @@ export class PlatformMock {
   }
 
   public getActiveElement(): any {
-    return document['activeElement'];
+    return document["activeElement"];
   }
 
   public exitApp(): any {
@@ -83,7 +97,7 @@ export class PlatformMock {
 }
 
 export class StatusBarMock extends StatusBar {
-  styleDefault: () => ({})
+  styleDefault: () => {};
 }
 
 export class SplashScreenMock extends SplashScreen {
@@ -96,24 +110,23 @@ export class SplashScreenMock extends SplashScreen {
 }
 
 export class NavMock {
-
   public pop(): any {
-    return new Promise(function (resolve: Function): void {
+    return new Promise(function(resolve: Function): void {
       resolve();
     });
   }
 
   public push(): any {
-    return new Promise(function (resolve: Function): void {
+    return new Promise(function(resolve: Function): void {
       resolve();
     });
   }
 
   public getActive(): any {
     return {
-      'instance': {
-        'model': 'something',
-      },
+      instance: {
+        model: "something"
+      }
     };
   }
 
@@ -132,21 +145,19 @@ export class NavMock {
   public insert(): any {
     return;
   }
-
 }
 
-export class DeepLinkerMock { }
+export class DeepLinkerMock {}
 
 export class AuthServiceMock extends AuthService {
-  public getSessionData(successCallback: any): void { }
-  public endSession: () => ({})
+  public getSessionData(successCallback: any): void {}
+  public endSession: () => {};
 }
 
 export class ContainerServiceMock extends ContainerService {
-  public removeAllTabs: () => {}
+  public removeAllTabs: () => {};
 }
 export class PermissionServiceMock extends PermissionService {
-
   //public requestPermission: () => ({});
 }
 export class ImageLoaderConfigMock extends ImageLoaderConfig {
@@ -159,16 +170,14 @@ export class ImageLoaderConfigMock extends ImageLoaderConfig {
 }
 
 export class TelemetryServiceMock extends TelemetryService {
-  end: () => ({});
-  interact: (interact) => ({});
-  impression: (impression) => ({});
-  sync: (successCallback, errorCallback) => ({});
-  getTelemetryStat: (sucess, error) => ({
-
-  });
+  end: () => {};
+  interact: (interact) => {};
+  impression: (impression) => {};
+  sync: (successCallback, errorCallback) => {};
+  getTelemetryStat: (sucess, error) => {};
 }
 export class ContentServiceMock {
-  public sendFeedback: (request, successCallback, errorCallback) => ({});
+  public sendFeedback: (request, successCallback, errorCallback) => {};
 }
 
 export class AppGlobalServiceMock extends AppGlobalService {
@@ -184,11 +193,11 @@ export class AppGlobalServiceMock extends AppGlobalService {
     return AppGlobalServiceMock.session;
   }
 
-  getGuestUserType() : any {
-    return "TEACHER"
+  getGuestUserType(): any {
+    return "TEACHER";
   }
 
-  generateConfigInteractEvent: () => ({})
+  generateConfigInteractEvent: () => {};
 
   static setLoggedInStatus(status: boolean) {
     AppGlobalServiceMock.isGuestUser = status;
@@ -197,7 +206,6 @@ export class AppGlobalServiceMock extends AppGlobalService {
   static setSessionData(session: any) {
     AppGlobalServiceMock.session = session;
   }
-
 }
 
 export class EventsMock {
@@ -205,13 +213,13 @@ export class EventsMock {
     return;
   }
 }
-export class CourseUtilServiceMock extends CourseUtilService { }
+export class CourseUtilServiceMock extends CourseUtilService {}
 
 export class TranslateServiceStub {
   public get(key: any): any {
     Observable.of(key);
   }
-  use: () => ({})
+  use: () => {};
   // get: () => ({
   //     subscribe: () => ({})
   // })
@@ -220,18 +228,16 @@ export class TranslateServiceStub {
 export class TranslateLoaderMock implements TranslateLoader {
   getTranslation(lang: string): Observable<any> {
     if (lang == "mr") {
-      let ru = readJSON('assets/i18n/mr.json');
+      let ru = readJSON("assets/i18n/mr.json");
       return Observable.of(ru);
     }
-    let en = readJSON('assets/i18n/en.json');
+    let en = readJSON("assets/i18n/en.json");
     return Observable.of(en);
   }
 }
 
-
 export class NavParamsMock {
-  data = {
-  };
+  data = {};
 
   get(param) {
     return this.data[param] ? this.data[param] : this.data;
@@ -243,48 +249,43 @@ export class GenieSDKServiceProviderMock extends GenieSDKServiceProvider {
     genieSdkUtil: {}
   };
   getSharedPreference() {
-    return (<any>window).GenieSDK['preferences'];
+    return (<any>window).GenieSDK["preferences"];
   }
 }
 
 export class SharedPreferencesMock {
   public getString(): Promise<string> {
-    return new Promise((resolve) => {
-      resolve('value');
+    return new Promise(resolve => {
+      resolve("value");
     });
   }
-  public putString() { }
-
+  public putString() {}
 }
 
 export class FileUtilMock {
   internalStoragePath() {
-    return '';
+    return "";
   }
 }
 export class ShareUtilMock extends ShareUtil {
-  exportTelemetry: (successCallback, errorCallback) => ({
-
-  });
-  exportApk: (SuccessCallback, errorCallback) => ({
-
-  });
+  exportTelemetry: (successCallback, errorCallback) => {};
+  exportApk: (SuccessCallback, errorCallback) => {};
 }
-export class NavControllerMock { }
+export class NavControllerMock {}
 
 export class SocialSharingMock {
   share(message, subject, file, url) {
-    return '';
+    return "";
   }
   shareViaEmail(message, subject, to, cc, bcc, file) {
-    return '';
+    return "";
   }
 }
 
 export class ViewControllerMock {
   public dismiss(): Promise<any> {
-    return new Promise((resolve) => {
-      resolve('success');
+    return new Promise(resolve => {
+      resolve("success");
     });
   }
 }
@@ -295,21 +296,20 @@ export class ViewControllerMock {
 //   })
 // }
 
-export class StorageMock { }
+export class StorageMock {}
 
 export class AppVersionMock {
   getAppName(): Promise<string> {
-    return new Promise((resolve) => {
-      resolve('value');
+    return new Promise(resolve => {
+      resolve("value");
     });
   }
 }
 
 export class FormAndFrameworkUtilServiceMock {
-
   public checkNewAppVersion(): Promise<string> {
-    return new Promise((resolve) => {
-      resolve('');
+    return new Promise(resolve => {
+      resolve("");
     });
   }
 
@@ -319,21 +319,16 @@ export class FormAndFrameworkUtilServiceMock {
 
   public getCategoryData = () => ({});
 
-
-
   // public getFrameworkDetails(): Promise<string> {
   //   return new Promise;
   // }
-
-
 }
 
 export class profileServiceMock {
-
   getCurrentUser(res, err) {
     return res({});
   }
-  updateProfile(req, res,err) {
+  updateProfile(req, res, err) {
     return res({});
   }
   createProfile(req, res, err) {
@@ -342,7 +337,7 @@ export class profileServiceMock {
 }
 
 export class eventsMock {
-  publish: () => ({})
+  publish: () => {};
 }
 
 export class MockElementRef implements ElementRef {
@@ -350,50 +345,59 @@ export class MockElementRef implements ElementRef {
 }
 
 export class appMock extends App {
-  _getPortal(): any { return {} };
-  getRootNav: () => ({
-    setRoot: () => ({})
-  });
+  _getPortal(): any {
+    return {};
+  }
+  getRootNav: () => {
+    setRoot: () => {};
+  };
 }
 
 export class AppMock {
+  public getActiveNav(): [NavMock] {
+    return [new NavMock()];
+  }
   public getActiveNavs(): [NavMock] {
     return [new NavMock()];
   }
 
-
-  public getRootNav():AnyNav  {
+  public getRootNav(): AnyNav {
     return new AnyNav();
   }
 }
 
-export class AnyNav{
-  public setRoot():any  {
+export class AnyNav {
+  public setRoot(): any {
     return {};
   }
 }
 
-export class NavControllerBase {
-
-}
+export class NavControllerBase {}
 
 export class ToastControllerMock {
-
-  _getPortal(): any { return {} };
+  _getPortal(): any {
+    return {};
+  }
   create(options?: any) {
-    return new ToastMock;
-  };
+    return new ToastMock();
+  }
 }
 
 class ToastMock extends ViewController {
-  present() { };
-  dismissAll() { };
-  onDidDismiss() { };
+  present() {}
+  dismissAll() {}
+  onDidDismiss() {}
 }
 
 export class ToastMockNew {
   public static instance(): any {
-    const instance: any = jasmine.createSpyObj('Toast', ['present', 'dismissAll', 'onDidDismiss', 'setContent', 'setSpinner']);
+    const instance: any = jasmine.createSpyObj("Toast", [
+      "present",
+      "dismissAll",
+      "onDidDismiss",
+      "setContent",
+      "setSpinner"
+    ]);
     instance.present.and.returnValue(Promise.resolve());
     return instance;
   }
@@ -401,14 +405,21 @@ export class ToastMockNew {
 
 export class ToastControllerMockNew {
   public static instance(toast?: ToastMock): any {
-    const instance: any = jasmine.createSpyObj('ToastController', ['create']);
+    const instance: any = jasmine.createSpyObj("ToastController", ["create"]);
     instance.create.and.returnValue(toast || ToastMockNew.instance());
     return instance;
   }
 }
 export class LoadingMock extends ViewController {
   public static instance(): any {
-    let instance = jasmine.createSpyObj('Loading', ['present', 'dismiss', 'onDidDismiss', 'dismissAll', 'setContent', 'setSpinner']);
+    let instance = jasmine.createSpyObj("Loading", [
+      "present",
+      "dismiss",
+      "onDidDismiss",
+      "dismissAll",
+      "setContent",
+      "setSpinner"
+    ]);
     instance.present.and.returnValue(Promise.resolve());
     instance.dismiss.and.returnValue(Promise.resolve());
     // instance.onDidDismiss.and.returnValue(Promise.resolve());
@@ -417,8 +428,7 @@ export class LoadingMock extends ViewController {
 }
 export class LoadingControllerMock {
   public static instance(loading?: LoadingMock): any {
-
-    let instance = jasmine.createSpyObj('LoadingController', ['create']);
+    let instance = jasmine.createSpyObj("LoadingController", ["create"]);
     instance.create.and.returnValue(loading || LoadingMock.instance());
 
     return instance;
@@ -427,7 +437,7 @@ export class LoadingControllerMock {
 
 export class PopoverControllerMock {
   public static instance(popOver?: PopoverMock): any {
-    let instance = jasmine.createSpyObj('LoadingController', ['create']);
+    let instance = jasmine.createSpyObj("LoadingController", ["create"]);
     instance.create.and.returnValue(popOver || PopoverMock.instance());
 
     return instance;
@@ -436,7 +446,13 @@ export class PopoverControllerMock {
 
 export class PopoverMock extends ViewController {
   public static instance(): any {
-    let instance = jasmine.createSpyObj('Loading', ['present', 'onDidDismiss', 'dismissAll', 'setContent', 'setSpinner']);
+    let instance = jasmine.createSpyObj("Loading", [
+      "present",
+      "onDidDismiss",
+      "dismissAll",
+      "setContent",
+      "setSpinner"
+    ]);
     instance.present.and.returnValue(Promise.resolve());
     return instance;
   }
@@ -444,7 +460,7 @@ export class PopoverMock extends ViewController {
 
 export class AlertControllerMock {
   public static instance(alert?: AlertMock): any {
-    let instance = jasmine.createSpyObj('AlertController', ['create']);
+    let instance = jasmine.createSpyObj("AlertController", ["create"]);
     instance.create.and.returnValue(alert || AlertMock.instance());
 
     return instance;
@@ -453,7 +469,13 @@ export class AlertControllerMock {
 
 export class AlertMock extends ViewController {
   public static instance(): any {
-    let instance = jasmine.createSpyObj('Alert', ['present', 'onDidDismiss', 'dismissAll', 'setContent', 'setSpinner']);
+    let instance = jasmine.createSpyObj("Alert", [
+      "present",
+      "onDidDismiss",
+      "dismissAll",
+      "setContent",
+      "setSpinner"
+    ]);
     instance.present.and.returnValue(Promise.resolve());
     return instance;
   }
@@ -478,7 +500,6 @@ export class AlertMock extends ViewController {
 // }
 
 class LoadingMockNew {
-
   private content: string;
 
   constructor(loadingMock: LoadingMockNew) {
@@ -486,55 +507,49 @@ class LoadingMockNew {
   }
 
   public present(): void {
-    console.debug('LoadingMock : present -> ' + this.content);
+    console.debug("LoadingMock : present -> " + this.content);
   }
 
   public dismiss(): void {
-    console.debug('LoadingMock : dismiss');
+    console.debug("LoadingMock : dismiss");
   }
 
   public onDidDismiss(): void {
-    console.debug('LoadingMock : onDidDismiss');
+    console.debug("LoadingMock : onDidDismiss");
   }
-
 }
 
 export class LoadingControllerMockNew {
-
   public create(loadingMock: LoadingMockNew): LoadingMockNew {
     return new LoadingMockNew(loadingMock);
   }
 }
 
-export class CommonUtilServiceMock extends CommonUtilService {
-
-}
+export class CommonUtilServiceMock extends CommonUtilService {}
 
 export class BuildParamaServiceMock {
   public getBuildConfigParam(): Promise<string> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       resolve();
     });
   }
 }
 
 export class IonicAppMock {
-
   public _modalPortal: {
-    getActive: () => ({
-      dismiss: () => {}
-    });
-  }
+    getActive: () => {
+      dismiss: () => {};
+    };
+  };
   public _overlayPortal: {
-    getActive: () => ({
-      dismiss: () => {}
-    });
-  }
+    getActive: () => {
+      dismiss: () => {};
+    };
+  };
 }
 export class ngZone {
-  run: () => {}
+  run: () => {};
 }
-
 /*export class ToastMock {
   public static instance(): any {
     let instance = jasmine.createSpyObj('Toast', ['present', 'dismissAll', 'setContent', 'setSpinner', 'onDidDismiss']);
