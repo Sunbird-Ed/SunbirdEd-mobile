@@ -184,6 +184,7 @@ export class ProfilePage {
     let that = this;
     return new Promise((resolve, reject) => {
       that.authService.getSessionData(session => {
+        console.log('session',session);
         if (session === null || session === "null") {
           reject("session is null");
         } else {
@@ -282,10 +283,10 @@ export class ProfilePage {
           }
           break;
 
-        case "avatar":
-          this.uncompletedDetails.title = 'ADD_AVATAR';
-          this.uncompletedDetails.page = "picture";
-          break;
+        // case "avatar":
+        //   this.uncompletedDetails.title = 'ADD_AVATAR';
+        //   this.uncompletedDetails.page = "picture";
+        //   break;
 
         case "address":
           this.uncompletedDetails.title = 'ADD_ADDRESS';

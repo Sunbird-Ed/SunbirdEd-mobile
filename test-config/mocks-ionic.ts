@@ -212,6 +212,9 @@ export class EventsMock {
   subscribe() {
     return;
   }
+  publish (){
+    
+  }
 }
 export class CourseUtilServiceMock extends CourseUtilService {}
 

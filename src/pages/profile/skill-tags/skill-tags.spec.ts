@@ -7,6 +7,7 @@ import { LoadingController, ToastController, NavController } from "ionic-angular
 import { AuthService } from "sunbird";
 import { UserProfileService } from "sunbird";
 import { SkillTagsComponent } from "./skill-tags";
+import { } from 'jasmine';
 
 import {
     LoadingControllerMock, TranslateServiceStub, ToastControllerMockNew, AuthServiceMock, NavMock

@@ -1,4 +1,4 @@
-import { ProfileService, SharedPreferences, TelemetryService, ServiceProvider, AuthService } from 'sunbird';
+import { ProfileService, SharedPreferences, TelemetryService, ServiceProvider, AuthService, BuildParamService, FrameworkService } from 'sunbird';
 import 'rxjs/add/observable/of';
 
 import { Observable } from 'rxjs';
@@ -20,9 +20,6 @@ import {
     LoadingControllerMock, TranslateServiceStub, ToastControllerMockNew, PopoverControllerMock, AuthServiceMock, AppGlobalServiceMock, NavMock, NavParamsMock, profileServiceMock,
     SharedPreferencesMock, FormAndFrameworkUtilServiceMock, EventsMock, TelemetryServiceMock
 } from '../../../../test-config/mocks-ionic';
-import { AuthService } from 'sunbird';
-import { BuildParamService } from 'sunbird';
-import { FrameworkService } from 'sunbird';
 
 
 describe('GuestProfilePage', () => {
