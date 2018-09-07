@@ -336,9 +336,7 @@ export class FormAndFrameworkUtilService {
                                 const forceType = "force"
 
                                 ranges.forEach(element => {
-                                    if (versionCode === element.minVersionCode ||
-                                        (versionCode > element.minVersionCode && versionCode < element.maxVersionCode) ||
-                                        versionCode === element.maxVersionCode) {
+                                    if (versionCode >= element.minVersionCode && versionCode <= element.maxVersionCode) {
                                         console.log("App needs a upgrade of type - " + element.type)
                                         type = element.type;
 
