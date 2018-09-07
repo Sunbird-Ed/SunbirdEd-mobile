@@ -173,6 +173,7 @@ export class ContentServiceMock {
 
 export class AppGlobalServiceMock extends AppGlobalService {
   static isGuestUser: boolean;
+  public DISPLAY_ONBOARDING_PAGE: boolean;
   static session: any;
   static DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER: boolean;
   static DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT: boolean;
@@ -305,7 +306,7 @@ export class AppVersionMock {
 }
 
 export class FormAndFrameworkUtilServiceMock {
-  
+
   public checkNewAppVersion(): Promise<string> {
     return new Promise((resolve) => {
       resolve('');
@@ -317,8 +318,8 @@ export class FormAndFrameworkUtilServiceMock {
   public getFrameworkDetails = () => ({});
 
   public getCategoryData = () => ({});
-  
-    
+
+
 
   // public getFrameworkDetails(): Promise<string> {
   //   return new Promise;
@@ -328,14 +329,14 @@ export class FormAndFrameworkUtilServiceMock {
 }
 
 export class profileServiceMock {
-  // getCurrentUser: () => ({})
+
   getCurrentUser(res, err) {
     return res({});
   }
   updateProfile(req, res,err) {
     return res({});
   }
-  createProfile(req, res,err) {
+  createProfile(req, res, err) {
     return res({});
   }
 }
@@ -358,6 +359,17 @@ export class appMock extends App {
 export class AppMock {
   public getActiveNavs(): [NavMock] {
     return [new NavMock()];
+  }
+
+
+  public getRootNav():AnyNav  {
+    return new AnyNav();
+  }
+}
+
+export class AnyNav{
+  public setRoot():any  {
+    return {};
   }
 }
 
