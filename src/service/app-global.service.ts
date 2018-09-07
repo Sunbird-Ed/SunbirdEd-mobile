@@ -60,14 +60,16 @@ export class AppGlobalService {
     public DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT: boolean = false;
     public DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT: boolean = false;
 
-    constructor(private event: Events,
+    constructor(
+        private event: Events,
         private authService: AuthService,
         private profile: ProfileService,
         private preference: SharedPreferences,
         private popoverCtrl: PopoverController,
         private buildParamService: BuildParamService,
         private framework: FrameworkService,
-        private telemetryGeneratorService: TelemetryGeneratorService) {
+        private telemetryGeneratorService: TelemetryGeneratorService
+    ) {
 
         this.initValues();
         this.listenForEvents();
