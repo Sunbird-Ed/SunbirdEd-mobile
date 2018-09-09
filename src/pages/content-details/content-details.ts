@@ -627,8 +627,8 @@ export class ContentDetailsPage {
   }
 
   ionViewDidLoad() {
-    this.navBar.backButtonClick = () => {
-      this.handleNavBackButton
+    this.navBar.backButtonClick = (e: UIEvent) => {
+      this.handleNavBackButton();
     }
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
       this.dismissPopup();
@@ -637,9 +637,8 @@ export class ContentDetailsPage {
     if (!AppGlobalService.isPlayerLaunched) {
       this.calculateAvailableUserCount();
     }
-
   }
-
+  
   handleNavBackButton(){
     this.didViewLoad = false;
     this.generateEndEvent(this.objId, this.objType, this.objVer);

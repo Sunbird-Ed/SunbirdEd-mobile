@@ -859,7 +859,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     component.ionViewDidLoad();
   });
 
-  it("#handleNavBackButtonClick should handle nav back button click", function () {
+  it("#handleNavBackButton should handle nav back button click", function () {
     const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
     spyOn(telemetryGeneratorService, 'generateEndTelemetry').and.callFake(() => { });
     const navCtrl = TestBed.get(NavController);
@@ -869,7 +869,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     component.source = PageId.COURSE_DETAIL;
     component.shouldGenerateEndTelemetry = true;
     component.backButtonFunc = jasmine.createSpy();
-    component.handleNavBackButtonClick();
+    component.handleNavBackButton();
     expect(component.generateQRSessionEndEvent).toHaveBeenCalled();
     expect(navCtrl.pop).toHaveBeenCalled();
   });
