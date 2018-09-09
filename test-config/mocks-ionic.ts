@@ -457,14 +457,14 @@ export class LoadingControllerMock {
 
 export class PopoverControllerMock {
   public static instance(popOver?: PopoverMock): any {
-    let instance = jasmine.createSpyObj("LoadingController", ["create"]);
+    let instance = jasmine.createSpyObj('LoadingController', ['create','onDidDismiss']);
     instance.create.and.returnValue(popOver || PopoverMock.instance());
-
     return instance;
   }
 }
 
 export class PopoverMock extends ViewController {
+  public static onDismissResponse={};
   public static instance(): any {
     let instance = jasmine.createSpyObj("Loading", [
       "present",
@@ -474,8 +474,16 @@ export class PopoverMock extends ViewController {
       "setSpinner"
     ]);
     instance.present.and.returnValue(Promise.resolve());
+    instance.onDidDismiss.and.callFake((success) => {
+      return success(this.onDismissResponse)
+    });
     return instance;
   }
+
+  public static setOnDissMissResponse(response) {
+    PopoverMock.onDismissResponse = response;
+  }
+
 }
 
 export class AlertControllerMock {
@@ -570,6 +578,16 @@ export class IonicAppMock {
 export class ngZone {
   run: () => {};
 }
+
+export class NavbarMock {
+  // public backButtonClick: Function;
+
+  public  backButtonClick() {
+    return {};
+  }
+ 
+}
+
 /*export class ToastMock {
   public static instance(): any {
     let instance = jasmine.createSpyObj('Toast', ['present', 'dismissAll', 'setContent', 'setSpinner', 'onDidDismiss']);
