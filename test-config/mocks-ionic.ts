@@ -122,6 +122,18 @@ export class NavMock {
     });
   }
 
+  public popTo(): any {
+    return new Promise(function(resolve: Function): void {
+      resolve();
+    });
+  }
+
+  public getByIndex(): any {
+    return new Promise(function(resolve: Function): void {
+      resolve();
+    });
+  }
+
   public getActive(): any {
     return {
       instance: {
@@ -457,7 +469,7 @@ export class LoadingControllerMock {
 
 export class PopoverControllerMock {
   public static instance(popOver?: PopoverMock): any {
-    let instance = jasmine.createSpyObj('LoadingController', ['create','onDidDismiss']);
+    let instance = jasmine.createSpyObj('LoadingController', ['create','onDidDismiss','present']);
     instance.create.and.returnValue(popOver || PopoverMock.instance());
     return instance;
   }

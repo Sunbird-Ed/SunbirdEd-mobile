@@ -9,7 +9,6 @@ import {
   NavController,
   NavParams,
   Events,
-  ToastController,
   PopoverController,
   LoadingController,
   Platform,
@@ -23,7 +22,6 @@ import {
   PageId,
   UserProfileService,
   InteractSubtype,
-  TelemetryService,
   Environment,
   Mode,
   InteractType,
@@ -32,7 +30,8 @@ import {
   SharedPreferences,
   ProfileType,
   ImpressionType,
-  CorrelationData
+  CorrelationData,
+  TelemetryObject
 } from 'sunbird';
 import * as _ from 'lodash';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
@@ -57,6 +56,8 @@ import {
 } from '../../app/telemetryutil';
 import { CourseUtilService } from '../../service/course-util.service';
 import { AppGlobalService } from '../../service/app-global.service';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { CommonUtilService } from '../../service/common-util.service';
 
 /**
  * Generated class for the EnrolledCourseDetailsPage page.
@@ -164,7 +165,7 @@ export class EnrolledCourseDetailsPage {
   /**
    * To hold base url
    */
-  private baseUrl = "";
+  baseUrl = "";
 
   /**
    * Contains reference of content service
@@ -176,21 +177,16 @@ export class EnrolledCourseDetailsPage {
    */
   public navCtrl: NavController;
 
-  /**
-   * Contains reference of ionic toast controller
-   */
-  public toastCtrl: ToastController;
-
   guestUser: boolean = false;
 
   profileType: string = '';
-  private objId;
-  private objType;
-  private objVer;
-  private didViewLoad: boolean;
-  private backButtonFunc = undefined;
-  private shouldGenerateEndTelemetry: boolean = false;
-  private source: string = "";
+  objId;
+  objType;
+  objVer;
+  didViewLoad: boolean;
+  backButtonFunc = undefined;
+  shouldGenerateEndTelemetry: boolean = false;
+  source: string = "";
 
   @ViewChild(Navbar) navBar: Navbar;
   constructor(navCtrl: NavController,
@@ -198,7 +194,6 @@ export class EnrolledCourseDetailsPage {
     contentService: ContentService,
     private zone: NgZone, // Contains reference of zone service
     private events: Events,
-    toastCtrl: ToastController,
     private fileUtil: FileUtil,
     public popoverCtrl: PopoverController,
     private translate: TranslateService,
@@ -207,22 +202,38 @@ export class EnrolledCourseDetailsPage {
     private buildParamService: BuildParamService,
     private shareUtil: ShareUtil,
     private social: SocialSharing,
-    private telemetryService: TelemetryService, private loadingCtrl: LoadingController,
+    private loadingCtrl: LoadingController,
     private preference: SharedPreferences,
     private network: Network,
     private courseUtilService: CourseUtilService,
     private platform: Platform,
-    private appGlobalService: AppGlobalService) {
-    this.getUserId();
-    this.checkLoggedInOrGuestUser();
-    this.checkCurrentUserType();
-
+    private appGlobalService: AppGlobalService,
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private commonUtilService: CommonUtilService) {
     this.navCtrl = navCtrl;
     this.navParams = navParams;
     this.contentService = contentService;
     this.zone = zone;
-    this.toastCtrl = toastCtrl;
 
+    this.getUserId();
+    this.checkLoggedInOrGuestUser();
+    this.checkCurrentUserType();
+    this.subscribeGenieEvent();
+
+    if (this.network.type === 'none') {
+      this.isNetworkAvailable = false;
+    } else {
+      this.isNetworkAvailable = true;
+    }
+    this.network.onDisconnect().subscribe((data) => {
+      this.isNetworkAvailable = false;
+    });
+    this.network.onConnect().subscribe((data) => {
+      this.isNetworkAvailable = true;
+    });
+  }
+
+  subscribeUtilityEvents() {
     this.buildParamService.getBuildConfigParam("BASE_URL")
       .then(response => {
         this.baseUrl = response
@@ -246,17 +257,6 @@ export class EnrolledCourseDetailsPage {
       this.backButtonFunc();
     }, 10);
 
-    if (this.network.type === 'none') {
-      this.isNetworkAvailable = false;
-    } else {
-      this.isNetworkAvailable = true;
-    }
-    this.network.onDisconnect().subscribe((data) => {
-      this.isNetworkAvailable = false;
-    });
-    this.network.onConnect().subscribe((data) => {
-      this.isNetworkAvailable = true;
-    });
   }
 
   /**
@@ -316,11 +316,11 @@ export class EnrolledCourseDetailsPage {
           }
         });
       } else {
-        this.showMessage(this.translateLanguageConstant('TRY_BEFORE_RATING'));
+        this.commonUtilService.showToast('TRY_BEFORE_RATING');
       }
     } else {
       if (this.profileType == ProfileType.TEACHER) {
-        this.showMessage(this.translateLanguageConstant('SIGNIN_TO_USE_FEATURE'));
+        this.commonUtilService.showToast('SIGNIN_TO_USE_FEATURE');
       }
     }
   }
@@ -339,22 +339,10 @@ export class EnrolledCourseDetailsPage {
     });
 
     popover.onDidDismiss(data => {
-      if (data === 'delete.success') {
-        this.navCtrl.pop();
-      } else if (data === 'flag.success') {
+      if (data === 'delete.success' || data === 'flag.success') {
         this.navCtrl.pop();
       }
     });
-  }
-
-  translateLanguageConstant(constant: string) {
-    let msg = '';
-    this.translate.get(constant).subscribe(
-      (value: any) => {
-        msg = value;
-      }
-    );
-    return msg;
   }
 
   /**
@@ -378,9 +366,9 @@ export class EnrolledCourseDetailsPage {
     },
       (error: any) => {
         if (JSON.parse(error).error === 'CONNECTION_ERROR') {
-          this.showMessage(this.translateLanguageConstant('ERROR_NO_INTERNET_MESSAGE'));
+          this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
         } else {
-          this.showMessage(this.translateLanguageConstant('ERROR_FETCHING_DATA'));
+          this.commonUtilService.showToast('ERROR_FETCHING_DATA');
         }
         this.navCtrl.pop();
       });
@@ -405,7 +393,7 @@ export class EnrolledCourseDetailsPage {
       this.didViewLoad = true;
 
       if (this.course.status !== 'Live') {
-        this.showMessage(this.translateLanguageConstant('ERROR_CONTENT_NOT_AVAILABLE'));
+        this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
         this.navCtrl.pop();
       }
       if (this.course.gradeLevel && this.course.gradeLevel.length) {
@@ -429,7 +417,7 @@ export class EnrolledCourseDetailsPage {
       }
       this.getCourseProgress();
     } else {
-      this.showMessage(this.translateLanguageConstant('ERROR_CONTENT_NOT_AVAILABLE'));
+      this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
       this.navCtrl.pop();
     }
 
@@ -438,20 +426,11 @@ export class EnrolledCourseDetailsPage {
       this.getBatchDetails();
     }
 
-    switch (data.result.isAvailableLocally) {
-      case true: {
-        this.setChildContents();
-        break;
-      }
-      case false: {
-        this.showLoading = true;
-        this.importContent([this.identifier], false);
-        break;
-      }
-      default: {
-        console.log("Invalid choice");
-        break;
-      }
+    if (Boolean(data.result.isAvailableLocally)) {
+      this.setChildContents();
+    } else {
+      this.showLoading = true;
+      this.importContent([this.identifier], false);
     }
     this.setCourseStructure();
   }
@@ -463,7 +442,6 @@ export class EnrolledCourseDetailsPage {
     this.courseService.getBatchDetails({ batchId: this.courseCardData.batchId }, (data: any) => {
       this.zone.run(() => {
         data = JSON.parse(data);
-        console.log('batch details: ', data);
         if (data.result) {
           this.batchDetails = data.result;
           this.getBatchCreatorName()
@@ -500,13 +478,6 @@ export class EnrolledCourseDetailsPage {
     } else if (this.courseCardData.contentTypesCount && !_.isObject(this.courseCardData.contentTypesCount)) {
       this.course.contentTypesCount = JSON.parse(this.courseCardData.contentTypesCount);
     }
-  }
-
-  /**
-   * Log telemetry
-   */
-  logTelemetry(): void {
-
   }
 
   /**
@@ -558,7 +529,7 @@ export class EnrolledCourseDetailsPage {
             }
           });
           if (this.queuedIdentifiers.length === 0) {
-            this.showMessage(this.translateLanguageConstant('ERROR_FETCHING_DATA'));
+            this.commonUtilService.showToast('ERROR_FETCHING_DATA');
             this.restoreDownloadState();
           }
         }
@@ -569,7 +540,7 @@ export class EnrolledCourseDetailsPage {
           if (this.isDownloadStarted) {
             this.restoreDownloadState();
           } else {
-            this.showMessage(this.translateLanguageConstant('ERROR_FETCHING_DATA'));
+            this.commonUtilService.showToast('ERROR_FETCHING_DATA');
             this.showChildrenLoader = false;
           }
         });
@@ -586,7 +557,7 @@ export class EnrolledCourseDetailsPage {
       this.downloadProgress = 0;
       this.importContent(this.downloadIdentifiers, true);
     } else {
-      this.showMessage(this.translateLanguageConstant('ERROR_NO_INTERNET_MESSAGE'));
+      this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
     }
   }
 
@@ -605,7 +576,6 @@ export class EnrolledCourseDetailsPage {
 
     this.contentService.getChildContents(option, (data: any) => {
       data = JSON.parse(data);
-      console.log('Success: child contents ===>>>', data);
       this.zone.run(() => {
         if (data && data.result && data.result.children) {
           this.childrenData = data.result.children;
@@ -659,14 +629,14 @@ export class EnrolledCourseDetailsPage {
     })
   }
 
-  showMessage(message) {
-    let toast = this.toastCtrl.create({
-      message: message,
-      duration: 2000,
-      position: 'bottom'
-    });
-    toast.present();
-  }
+  // showMessage(message) {
+  //   let toast = this.toastCtrl.create({
+  //     message: message,
+  //     duration: 2000,
+  //     position: 'bottom'
+  //   });
+  //   toast.present();
+  // }
 
   cancelDownload() {
     this.contentService.cancelDownload(this.identifier, (response) => {
@@ -778,9 +748,6 @@ export class EnrolledCourseDetailsPage {
           } else {
             this.course.isAvailableLocally = true;
             this.setChildContents();
-            // this.events.publish('savedResources:update', {
-            //   update: true
-            // });
           }
         }
 
@@ -814,7 +781,7 @@ export class EnrolledCourseDetailsPage {
     if (this.isNetworkAvailable) {
       this.navCtrl.push(CourseBatchesPage, { identifier: this.identifier });
     } else {
-      this.showMessage(this.translateLanguageConstant('ERROR_NO_INTERNET_MESSAGE'));
+      this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
     }
   }
 
@@ -850,12 +817,7 @@ export class EnrolledCourseDetailsPage {
         this.social.share("", "", "file://" + path, url);
       }, error => {
         loader.dismiss();
-        let toast = this.toastCtrl.create({
-          message: this.translateLanguageConstant('SHARE_CONTENT_FAILED'),
-          duration: 2000,
-          position: 'bottom'
-        });
-        toast.present();
+        this.commonUtilService.showToast('SHARE_CONTENT_FAILED');
       });
     } else {
       loader.dismiss();
@@ -867,72 +829,83 @@ export class EnrolledCourseDetailsPage {
   generateShareInteractEvents(interactType, subType, contentType) {
     let values = new Map();
     values["ContentType"] = contentType;
-    this.telemetryService.interact(
-      generateInteractTelemetry(interactType,
-        subType,
-        Environment.HOME,
-        PageId.CONTENT_DETAIL, values,
-        undefined,
-        this.corRelationList)
+    this.telemetryGeneratorService.generateInteractTelemetry(interactType,
+      subType,
+      Environment.HOME,
+      PageId.CONTENT_DETAIL, undefined,
+      values,
+      undefined,
+      this.corRelationList
     );
   }
 
   ionViewDidLoad() {
     this.navBar.backButtonClick = (e: UIEvent) => {
-      this.didViewLoad = false;
-      this.generateEndEvent(this.objId, this.objType, this.objVer);
-      if (this.shouldGenerateEndTelemetry) {
-        this.generateQRSessionEndEvent(this.source, this.course.identifier);
-      }
-      this.navCtrl.pop();
-      this.backButtonFunc();
+      this.handleNavBackButtonClick();
     }
+  }
+
+  handleNavBackButtonClick(){
+    this.didViewLoad = false;
+    this.generateEndEvent(this.objId, this.objType, this.objVer);
+    if (this.shouldGenerateEndTelemetry) {
+      this.generateQRSessionEndEvent(this.source, this.course.identifier);
+    }
+    this.navCtrl.pop();
+    this.backButtonFunc();
   }
 
   generateQRSessionEndEvent(pageId: string, qrData: string) {
     if (pageId !== undefined) {
-      this.telemetryService.end(generateEndTelemetry(
+      let telemetryObject: TelemetryObject = new TelemetryObject();
+      telemetryObject.id = qrData;
+      telemetryObject.type = 'qr';
+      this.telemetryGeneratorService.generateEndTelemetry(
         "qr",
         Mode.PLAY,
         pageId,
-        qrData,
-        "qr",
-        "",
+        Environment.HOME,
+        telemetryObject,
         undefined,
-        this.corRelationList
-      ));
+        this.corRelationList);
     }
   }
 
   generateImpressionEvent(objectId, objectType, objectVersion) {
-    this.telemetryService.impression(generateImpressionTelemetry(ImpressionType.DETAIL,
+    this.telemetryGeneratorService.generateImpressionTelemetry(ImpressionType.DETAIL,
       PageId.COURSE_DETAIL, "",
       Environment.HOME,
       objectId,
       objectType,
-      objectVersion, undefined, this.corRelationList));
+      objectVersion,
+      undefined,
+      this.corRelationList);
   }
 
   generateStartEvent(objectId, objectType, objectVersion) {
-    this.telemetryService.start(generateStartTelemetry(PageId.COURSE_DETAIL,
-      objectId,
-      objectType,
-      objectVersion,
+    let telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.id = objectId;
+    telemetryObject.type = objectType;
+    telemetryObject.version = objectVersion;
+    this.telemetryGeneratorService.generateStartTelemetry(PageId.COURSE_DETAIL,
+      telemetryObject,
       undefined,
       this.corRelationList
-    ));
+    );
   }
 
   generateEndEvent(objectId, objectType, objectVersion) {
-    this.telemetryService.end(generateEndTelemetry(objectType,
+    let telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.id = objectId;
+    telemetryObject.type = objectType;
+    telemetryObject.version = objectVersion;
+    this.telemetryGeneratorService.generateEndTelemetry(objectType,
       Mode.PLAY,
       PageId.COURSE_DETAIL,
-      objectId,
-      objectType,
-      objectVersion,
+      Environment.HOME,
+      telemetryObject,
       undefined,
-      this.corRelationList
-    ));
+      this.corRelationList);
   }
 
 }
