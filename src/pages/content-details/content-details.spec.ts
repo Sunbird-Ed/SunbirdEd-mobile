@@ -7,7 +7,7 @@ import { Ionic2RatingModule } from 'ionic2-rating';
 import { Observable } from 'rxjs/Observable';
 import {
     AuthService, BuildParamService, ContentService, CourseService, FileUtil, FrameworkModule,
-    GenieSDKServiceProvider, ProfileType, SharedPreferences, ShareUtil, TelemetryService
+    GenieSDKServiceProvider, ProfileType, SharedPreferences, ShareUtil, TelemetryService, TelemetryObject, Environment, Mode, PageId, Rollup, ProfileService
 } from 'sunbird';
 
 import { HttpClientModule } from '@angular/common/http';
@@ -20,7 +20,7 @@ import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-transla
 import {
     AuthServiceMock, FileUtilMock, GenieSDKServiceProviderMock, MockElementRef, NavMock,
     NavParamsMock, PlatformMock, PopoverControllerMock, SharedPreferencesMock, SocialSharingMock,
-    ToastControllerMock, TranslateLoaderMock
+    ToastControllerMock, TranslateLoaderMock, AppGlobalServiceMock, PopoverMock, NavbarMock
 } from '../../../test-config/mocks-ionic';
 import { PBHorizontal } from '../../component/pbhorizontal/pb-horizontal';
 import { DirectivesModule } from '../../directives/directives.module';
@@ -29,18 +29,31 @@ import { AppGlobalService } from '../../service/app-global.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { ContentDetailsPage } from './content-details';
 import { mockRes } from './content-details.spec.data';
-
-declare let GenieSDK: any;
+import { CommonUtilService } from '../../service/common-util.service';
+import { } from 'jasmine';
+import { Navbar } from 'ionic-angular';
 
 describe('ContentDetailsPage Component', () => {
     let component: ContentDetailsPage;
     let fixture: ComponentFixture<ContentDetailsPage>;
     let translateService: TranslateService;
     let identifier = 'do_212516141114736640146589';
-    //const mockNgZone = jasmine.createSpyObj('mockNgZone', ['run', 'runOutsideAngular']);
-    //mockNgZone.run.and.callFake(fn => fn());
+    let spyObjPreference;
+    let spyObjBuildParam;
 
     const rendererMock = jasmine.createSpyObj('rendererMock', ['setElementClass']);
+    const IonicAppMock = {
+        _modalPortal: {
+            getActive: () => ({
+                dismiss: () => { }
+            })
+        },
+        _overlayPortal: {
+            getActive: () => ({
+                dismiss: () => { }
+            })
+        }
+    };
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -58,16 +71,18 @@ describe('ContentDetailsPage Component', () => {
             ],
             providers: [
                 ContentService, TelemetryService, CourseService, ShareUtil, IonicApp, Renderer, TelemetryGeneratorService,
-                // { provide: Platform, useClass: PlatformMock },
+                CommonUtilService, Navbar,
+                { provide: IonicApp, useValue: IonicAppMock },
                 { provide: Renderer, useValue: rendererMock },
                 { provide: ElementRef, useClass: MockElementRef },
                 { provide: FileUtil, useClass: FileUtilMock },
                 { provide: NavController, useClass: NavMock },
                 { provide: Events, useClass: Events },
+                { provide: Navbar, useClass: NavbarMock },
                 { provide: NavParams, useClass: NavParamsMock },
                 { provide: SocialSharing, useClass: SocialSharingMock },
                 { provide: Network, useFactory: () => NetworkMock.instance('none') },
-                { provide: AppGlobalService, useClass: AppGlobalService },
+                { provide: AppGlobalService, useClass: AppGlobalServiceMock },
                 { provide: AuthService, useClass: AuthServiceMock },
                 { provide: GenieSDKServiceProvider, useClass: GenieSDKServiceProviderMock },
                 //{ provide: SharedPreferences, useClass: SharedPreferencesMock },
@@ -82,6 +97,12 @@ describe('ContentDetailsPage Component', () => {
     }));
 
     beforeEach(() => {
+        const buildParamService = TestBed.get(BuildParamService);
+        const prefernce = TestBed.get(SharedPreferences);
+        spyObjBuildParam = spyOn(buildParamService, 'getBuildConfigParam');
+        spyObjBuildParam.and.returnValue(Promise.resolve('SAMPLE_BASE_URL'));
+        spyObjPreference = spyOn(prefernce, 'getString');
+        spyObjPreference.and.returnValue(Promise.resolve(ProfileType.TEACHER));
         fixture = TestBed.createComponent(ContentDetailsPage);
         component = fixture.componentInstance;
     });
@@ -100,14 +121,6 @@ describe('ContentDetailsPage Component', () => {
         expect(component).not.toBeFalsy();
     });
 
-    it('should display toast message', () => {
-        component.isDownloadStarted = true;
-        component.content = {};
-        spyOn(component, 'showMessage').and.callThrough();
-        component.showMessage('Test', false);
-        fixture.detectChanges();
-        expect(component.showMessage).toHaveBeenCalled();
-    });
 
     it('should start content downloading', () => {
         const contentService = TestBed.get(ContentService);
@@ -130,27 +143,27 @@ describe('ContentDetailsPage Component', () => {
     it('should return error while importing content', () => {
         const contentService = TestBed.get(ContentService);
         spyOn(component, 'importContent').and.callThrough();
-        spyOn(component, 'showMessage').and.callThrough();
         spyOn(contentService, 'importContent').and.callFake(function ({ }, success, error) {
             let data = JSON.stringify((mockRes.importContentResponse))
             return error(data);
         });
-
+        component.isDownloadStarted = true;
+        component.content = {};
         component.importContent([identifier], false);
         fixture.detectChanges();
         expect(component.importContent).toBeDefined()
         expect(component.importContent).toHaveBeenCalledWith([identifier], false);
-        expect(component.showMessage).toHaveBeenCalled();
     });
 
     it('should show no inetrnet message when user click on download button', () => {
         component.isNetworkAvailable = false;
+        const commonUtilService = TestBed.get(CommonUtilService);
+        spyOn(commonUtilService, 'showToast').and.callThrough();
         spyOn(component, 'downloadContent').and.callThrough();
-        spyOn(component, 'translateAndDisplayMessage').and.callThrough();
         component.downloadContent();
         fixture.detectChanges();
         expect(component.downloadContent).toHaveBeenCalled();
-        expect(component.translateAndDisplayMessage).toHaveBeenCalledWith('ERROR_NO_INTERNET_MESSAGE');
+        expect(commonUtilService.showToast).toHaveBeenCalledWith('ERROR_NO_INTERNET_MESSAGE');
     });
 
     it('should cancel content downloading ', () => {
@@ -186,6 +199,10 @@ describe('ContentDetailsPage Component', () => {
         component.content.contentAccess = ['true'];
         component.guestUser = false;
         spyOn(component, 'rateContent').and.callThrough();
+        const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
+        spyOn(component, 'generateImpressionEvent').and.callThrough().and.callFake(() => { });
+        spyOn(telemetryGeneratorService, 'generateInteractTelemetry').and.callThrough().and.callFake(() => { });
+        PopoverMock.setOnDissMissResponse(mockRes.popOverOnDismissResponse);
         component.rateContent('automatic');
         fixture.detectChanges();
         expect(component.rateContent).toHaveBeenCalled();
@@ -197,8 +214,12 @@ describe('ContentDetailsPage Component', () => {
         component.cardData.pkgVersion = '';
         const navParams = TestBed.get(NavParams);
         navParams.data['isResumedCourse'] = true;
+        const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
         spyOn(component, 'extractApiResponse').and.callThrough();
         spyOn(navParams, 'get').and.callThrough();
+        spyOn(component, 'generateStartEvent').and.callThrough().and.callFake(() => { });
+        spyOn(telemetryGeneratorService, 'generateInteractTelemetry').and.callThrough().and.callFake(() => { });
+        spyOn(telemetryGeneratorService, 'generateImpressionTelemetry').and.callThrough().and.callFake(() => { });
         component.extractApiResponse(mockRes.contentDetailsResponse);
         fixture.detectChanges();
         expect(component.content).not.toBeUndefined();
@@ -209,7 +230,11 @@ describe('ContentDetailsPage Component', () => {
         component.cardData = {};
         let data = mockRes.contentDetailsResponse;
         data.result.isAvailableLocally = false;
+        const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
+        spyOn(telemetryGeneratorService, 'generateStartTelemetry').and.callThrough().and.callFake(() => { });;
         spyOn(component, 'extractApiResponse').and.callThrough();
+        spyOn(component, 'generateStartEvent').and.callThrough();
+        spyOn(component, 'generateImpressionEvent').and.callThrough().and.callFake(() => { });
         component.extractApiResponse(data);
         fixture.detectChanges();
         expect(component.extractApiResponse).toBeDefined();
@@ -229,6 +254,8 @@ describe('ContentDetailsPage Component', () => {
             let data = JSON.stringify((mockRes.contentDetailsResponse))
             return success(data);
         });
+        spyOn(component, 'generateStartEvent').and.callThrough().and.callFake(() => { });
+        spyOn(component, 'generateImpressionEvent').and.callThrough().and.callFake(() => { });
         component.setContentDetails(identifier, true, false);
         expect(component.setContentDetails).toBeDefined();
         expect(component.setContentDetails).toHaveBeenCalledWith(identifier, true, false);
@@ -240,12 +267,21 @@ describe('ContentDetailsPage Component', () => {
         component.content = {};
         component.cardData = {};
         const navParams = TestBed.get(NavParams);
-        let cardData = { identifier: identifier };
+        let cardData = { identifier: identifier, hierarchyInfo: "SAMPLEID/SAMPLE_CHILD_ID" };
         navParams.data['content'] = cardData;
         navParams.data['isResumedCourse'] = false;
+        component.isResumedCourse = false;
+        component.isUpdateAvail = false;
+        const platform = TestBed.get(Platform);
+        spyOn(platform, 'registerBackButtonAction').and.callFake(function (success) {
+            return success();
+        });
+        spyOn(component, 'dismissPopup').and.callThrough();
         spyOn(component, 'ionViewWillEnter').and.callThrough();
         spyOn(navParams, 'get').and.callThrough();
         spyOn(component, 'setContentDetails').and.callThrough();
+        spyOn(component, 'generateStartEvent').and.callThrough().and.callFake(() => { });
+        spyOn(component, 'generateImpressionEvent').and.callThrough().and.callFake(() => { });
         const contentService = TestBed.get(ContentService);
         spyOn(contentService, 'getContentDetail').and.callFake(function (option, success, error) {
             let data = JSON.stringify((mockRes.contentDetailsResponse))
@@ -278,7 +314,8 @@ describe('ContentDetailsPage Component', () => {
         navParams.data['contentState'] = stateData;
         spyOn(component, 'updateContentProgress').and.callThrough();
         spyOn(navParams, 'get').and.callThrough();
-        spyOn(courseService, 'updateContentState').and.callFake(function ({ }, success, error) {
+        let spyObj = spyOn(courseService, 'updateContentState');
+        spyObj.and.callFake(function ({ }, success, error) {
             return success({});
         });
         component.updateContentProgress();
@@ -286,17 +323,10 @@ describe('ContentDetailsPage Component', () => {
         expect(component.updateContentProgress).toBeDefined();
         expect(component.updateContentProgress).toHaveBeenCalled();
         expect(navParams.get).toHaveBeenCalledWith('contentState');
-    });
-
-    it('should translate language const', () => {
-        const noInternetMsg = mockRes.languageConstant.ERROR_NO_INTERNET_MESSAGE;
-        const languageService = TestBed.get(TranslateService);
-        spyOn(component, 'translateMessage').and.callThrough();
-        spyOn(languageService, 'get').and.callFake(() => Observable.of(noInternetMsg));
-        const message = component.translateMessage('ERROR_NO_INTERNET_MESSAGE');
-        expect(component.translateMessage).toBeDefined();
-        expect(component.translateMessage).toHaveBeenCalledWith('ERROR_NO_INTERNET_MESSAGE');
-        expect(message).toEqual(noInternetMsg);
+        spyObj.and.callFake(function ({ }, success, error) {
+            return error({});
+        });
+        component.updateContentProgress();
     });
 
     it('should check content download progress', () => {
@@ -313,67 +343,6 @@ describe('ContentDetailsPage Component', () => {
         expect(component.downloadProgress).toEqual(mockData.data.downloadProgress);
     });
 
-    it('should check content imported successfully', () => {
-        component.content = {};
-        component.isDownloadStarted = true;
-        component.identifier = identifier;
-        let mockData = mockRes.importCompleteResponse;
-        const event = TestBed.get(Events);
-        spyOn(component, 'subscribeGenieEvent').and.callThrough();
-        spyOn(component, 'setContentDetails').and.callThrough();
-        // To update saved resources
-        spyOn(event, 'publish').and.callThrough();
-        spyOn(event, 'subscribe').and.callFake(function ({ }, success) {
-            return success(JSON.stringify(mockData));
-        });
-        // Call component function
-        component.subscribeGenieEvent();
-        expect(component.subscribeGenieEvent).toBeDefined();
-        expect(component.subscribeGenieEvent).toHaveBeenCalled();
-        // Event bus 
-        expect(event.subscribe).toHaveBeenCalled();
-        // To show content delete menu
-        expect(component.content.downloadable).toBe(true);
-        // Make api call 
-        // expect(component.setContentDetails).toHaveBeenCalledWith(identifier, true, false);
-        // Reset download progress
-        expect(component.downloadProgress).toEqual('');
-        // Download successful then update saved resources
-        expect(event.publish).toHaveBeenCalled();
-    });
-
-    it('should check profile type. ProfileType should be TEACHER', (done) => {
-        const sharedPreferences = TestBed.get(SharedPreferences);
-        spyOn(component, 'checkCurrentUserType').and.callThrough();
-        spyOn(sharedPreferences, 'getString').and.returnValue(Promise.resolve(ProfileType.TEACHER));
-        component.checkCurrentUserType();
-        sharedPreferences.getString().then((val) => {
-            expect(component.checkCurrentUserType).toBeDefined();
-            expect(component.checkCurrentUserType).toHaveBeenCalled();
-            expect(sharedPreferences.getString).toHaveBeenCalled();
-            expect(component.profileType).toEqual(ProfileType.TEACHER);
-            expect(component.profileType).not.toBe(ProfileType.STUDENT);
-            expect(val).toEqual(ProfileType.TEACHER);
-            done();
-        });
-    });
-
-    it('should check profile type. ProfileType should be STUDENT', (done) => {
-        const sharedPreferences = TestBed.get(SharedPreferences);
-        spyOn(component, 'checkCurrentUserType').and.callThrough();
-        spyOn(sharedPreferences, 'getString').and.returnValue(Promise.resolve(ProfileType.STUDENT));
-        component.checkCurrentUserType();
-        sharedPreferences.getString().then((val) => {
-            expect(component.checkCurrentUserType).toBeDefined();
-            expect(component.checkCurrentUserType).toHaveBeenCalled();
-            expect(sharedPreferences.getString).toHaveBeenCalled();
-            expect(component.profileType).toEqual(ProfileType.STUDENT);
-            expect(component.profileType).not.toBe(ProfileType.TEACHER);
-            expect(val).toEqual(ProfileType.STUDENT);
-            done();
-        });
-    });
-
     it('should share content details: content is locally available and Ecar should get exported successfully', () => {
         const webUrl = 'https://staging.open-sunbird.org/play/content/do_212516141114736640146589';
         const devicePath = '/storage/emulated/0/Ecars/tmp/Untitled Content-v1.0.ecar';
@@ -381,10 +350,12 @@ describe('ContentDetailsPage Component', () => {
         component.content.contentType = 'Resource';
         component.content.downloadable = true
         const shareUtil = TestBed.get(ShareUtil);
+        const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
         const socialShare = TestBed.get(SocialSharing);
-
+        spyOn(telemetryGeneratorService, 'generateInteractTelemetry').and.callThrough().and.callFake(() => { });;
         spyOn(socialShare, 'share').and.returnValues({})
         spyOn(component, 'share').and.callThrough();
+        spyOn(component, 'generateShareInteractEvents').and.callThrough();
         spyOn(shareUtil, 'exportEcar').and.callFake(function (identifier, success) {
             return success(devicePath);
         })
@@ -408,6 +379,7 @@ describe('ContentDetailsPage Component', () => {
         spyOn(shareUtil, 'exportEcar').and.callFake(function (identifier, success, error) {
             return error();
         })
+        spyOn(component, 'generateShareInteractEvents').and.callThrough().and.callFake(() => { });
         component.share();
         expect(component.share).toBeDefined();
         expect(component.share).toHaveBeenCalled();
@@ -419,12 +391,380 @@ describe('ContentDetailsPage Component', () => {
         component.content.contentType = 'Resource';
         const shareUtil = TestBed.get(ShareUtil);
         const socialShare = TestBed.get(SocialSharing);
-
+        spyOn(component, 'generateShareInteractEvents').and.callThrough().and.callFake(() => { });
         spyOn(socialShare, 'share').and.returnValues({})
         spyOn(component, 'share').and.callThrough();
         component.share();
         expect(component.share).toBeDefined();
         expect(component.share).toHaveBeenCalled();
         expect(socialShare.share).toHaveBeenCalled();
-    })
+    });
+
+
+    it('it should share content details without locally available', () => {
+        const webUrl = 'https://staging.open-sunbird.org/play/content/do_212516141114736640146589';
+        component.content = {};
+        component.content.contentType = 'Resource';
+        const shareUtil = TestBed.get(ShareUtil);
+        const socialShare = TestBed.get(SocialSharing);
+        spyOn(component, 'generateShareInteractEvents').and.callThrough().and.callFake(() => { });
+        spyOn(socialShare, 'share').and.returnValues({})
+        spyOn(component, 'share').and.callThrough();
+        component.share();
+        expect(component.share).toBeDefined();
+        expect(component.share).toHaveBeenCalled();
+        expect(socialShare.share).toHaveBeenCalled();
+    });
+
+    it('#handleDeviceBackButton  should handle device back button click', () => {
+        const platform = TestBed.get(Platform);
+        const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
+
+        spyOn(platform, 'registerBackButtonAction').and.callFake(function (success) {
+            return success();
+        });
+        spyOn(component, 'generateEndEvent').and.callThrough();
+        spyOn(telemetryGeneratorService, 'generateEndTelemetry').and.callThrough().and.callFake(() => { });
+        component.objId = 'SAMPLE_ID';
+        component.objType = 'SAMPLE_TYPE';
+        component.objVer = 'SAMPLE_VERSION';
+        component.backButtonFunc = jasmine.createSpy();
+        component.handleDeviceBackButton();
+        expect(component.generateEndEvent).toHaveBeenCalledWith('SAMPLE_ID', 'SAMPLE_TYPE', 'SAMPLE_VERSION');
+        let telemetryObject: TelemetryObject = new TelemetryObject();
+        telemetryObject.id = 'SAMPLE_ID';
+        telemetryObject.type = 'SAMPLE_TYPE';
+        telemetryObject.version = 'SAMPLE_VERSION';
+        expect(telemetryGeneratorService.generateEndTelemetry).toHaveBeenCalledWith('SAMPLE_TYPE',
+            Mode.PLAY,
+            PageId.CONTENT_DETAIL,
+            Environment.HOME,
+            telemetryObject,
+            new Rollup(),
+            undefined);
+    });
+
+    it('#handleDeviceBackButton  should generate Qrsession end event if it came from dialcode page', () => {
+        const platform = TestBed.get(Platform);
+        const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
+        spyOn(platform, 'registerBackButtonAction').and.callFake(function (success) {
+            return success();
+        });
+        spyOn(component, 'generateEndEvent').and.callThrough();
+        spyOn(telemetryGeneratorService, 'generateEndTelemetry').and.callThrough().and.callFake(() => { });
+        component.objId = 'SAMPLE_ID';
+        component.objType = 'SAMPLE_TYPE';
+        component.objVer = 'SAMPLE_VERSION';
+        component.shouldGenerateEndTelemetry = true;
+        component.source = PageId.CONTENT_DETAIL;
+        component.cardData = { "identifier": "SAMPLE_ID" };
+        component.backButtonFunc = jasmine.createSpy();
+        spyOn(component, 'generateQRSessionEndEvent').and.callThrough();
+        component.handleDeviceBackButton();
+        expect(component.generateEndEvent).toHaveBeenCalledWith('SAMPLE_ID', 'SAMPLE_TYPE', 'SAMPLE_VERSION');
+        expect(component.generateQRSessionEndEvent).toHaveBeenCalledWith(PageId.CONTENT_DETAIL, 'SAMPLE_ID');
+        let telemetryObject: TelemetryObject = new TelemetryObject();
+        telemetryObject.id = 'SAMPLE_ID';
+        telemetryObject.type = 'SAMPLE_TYPE';
+        telemetryObject.version = 'SAMPLE_VERSION';
+        expect(telemetryGeneratorService.generateEndTelemetry).toHaveBeenCalledWith("SAMPLE_TYPE",
+            Mode.PLAY,
+            PageId.CONTENT_DETAIL,
+            Environment.HOME,
+            telemetryObject,
+            new Rollup(),
+            undefined);
+    });
+
+    it('#handlePageResume  should handle page resume', () => {
+        component.guestUser = false;
+        component.isPlayerLaunched = true;
+        const platform = TestBed.get(Platform);
+        spyOn(platform.resume, 'subscribe').and.callFake(function (success) {
+            return success();
+        });
+        spyOn(component, 'setContentDetails').and.callThrough().and.callFake(() => { });
+        component.handlePageResume();
+        expect(component.setContentDetails).toHaveBeenCalled();
+    });
+
+    xit('#handleNetworkAvailability  should handle network availability', () => {
+        const network = TestBed.get(Network);
+        spyOnProperty(network, 'type', 'set').and.returnValue("none");
+        component.handleNetworkAvailability();
+        expect(component.isNetworkAvailable).toBe(false);
+    });
+
+    it('#subscribePlayEvent  should subscribe for player launch event', () => {
+        const events = TestBed.get(Events);
+        spyObjBuildParam.and.returnValue(Promise.reject());
+        spyOn(events, 'subscribe').and.callThrough().and.callFake(({ }, success) => {
+            return success('launchPlayer');
+        });
+        spyOn(component, 'playContent').and.callThrough().and.callFake(() => { });
+        component.subscribePlayEvent();
+        expect(component.playContent).toHaveBeenCalled();
+    });
+
+    it('#calculateAvailableUserCount  should populate user count', (done) => {
+        AppGlobalServiceMock.setLoggedInStatus(true);
+        const profileService = TestBed.get(ProfileService);
+        spyOn(profileService, 'getAllUserProfile').and.returnValue(Promise.resolve(JSON.stringify([{ "uid": "1234" }])));
+        component.calculateAvailableUserCount();
+        setTimeout(() => {
+            expect(component.userCount).toBe(2);
+            done();
+        }, 500);
+
+    });
+
+    it('#calculateAvailableUserCount  should handle error scenario from the profile service API', (done) => {
+        AppGlobalServiceMock.setLoggedInStatus(true);
+        const profileService = TestBed.get(ProfileService);
+        spyOn(profileService, 'getAllUserProfile').and.returnValue(Promise.reject(JSON.stringify([{ "uid": "1234" }])));
+        component.calculateAvailableUserCount();
+        setTimeout(() => {
+            expect(component.userCount).toBe(0);
+            done();
+        }, 500);
+
+    });
+
+    it("#checkCurrentUserType should populate profileType as STUDENT", function (done) {
+        spyObjPreference.and.returnValue(Promise.resolve(ProfileType.STUDENT));
+        component.checkCurrentUserType();
+        setTimeout(() => {
+            expect(component.profileType).toBe(ProfileType.STUDENT);
+            done();
+        }, 500);
+
+    });
+
+    it("#rateContent  should show warning toast if user hasnt played the content before rating", function () {
+        component.isContentPlayed = false;
+        component.guestUser = false;
+        component.content = {};
+        const commonUtilService = TestBed.get(CommonUtilService);
+        const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
+        spyOn(commonUtilService, 'showToast');
+        spyOn(telemetryGeneratorService, 'generateInteractTelemetry').and.callThrough().and.callFake(() => { });
+
+        component.rateContent('automatic');
+        expect(commonUtilService.showToast).toHaveBeenCalledWith('TRY_BEFORE_RATING');
+    });
+
+    it("#rateContent  should show warning toast user is not signed in", function () {
+        component.guestUser = true;
+        component.content = {};
+        const commonUtilService = TestBed.get(CommonUtilService);
+        spyOn(commonUtilService, 'showToast');
+        component.profileType = ProfileType.TEACHER;
+        component.rateContent('automatic');
+        expect(commonUtilService.showToast).toHaveBeenCalledWith('SIGNIN_TO_USE_FEATURE');
+    });
+    it("#setContentDetail  should dismiss the loader if showRating parameter is false", function () {
+        component.guestUser = true;
+        component.content = {};
+        component.profileType = ProfileType.TEACHER;
+        const contentService = TestBed.get(ContentService);
+        spyOn(contentService, 'getContentDetail').and.callFake(function (option, success, error) {
+            let data = JSON.stringify({ "message": "successful" })
+            return success(data);
+        });
+        component.setContentDetails('SAMPLE_ID', false, false);
+        expect(contentService.getContentDetail).toHaveBeenCalled();
+    });
+
+    it("#setContentDetail  should show rating pop up when user comes back from content", function () {
+        component.userRating = 0;
+        component.content = {};
+        const contentService = TestBed.get(ContentService);
+        spyOn(contentService, 'getContentDetail').and.callFake(function (option, success, error) {
+            let data = JSON.stringify({ "message": "successful" })
+            return success(data);
+        });
+        spyOn(component, 'rateContent').and.callThrough().and.callFake(() => { });
+        component.setContentDetails('SAMPLE_ID', false, true);
+        expect(component.rateContent).toHaveBeenCalled();
+    });
+
+    it("#setContentDetail  should show error toast for connection error", function () {
+        component.userRating = 0;
+        component.content = {};
+        const contentService = TestBed.get(ContentService);
+        const navController = TestBed.get(NavController);
+        const commonUtilService = TestBed.get(CommonUtilService);
+        spyOn(contentService, 'getContentDetail').and.callFake(function (option, success, error) {
+            let data = JSON.stringify({ "error": "CONNECTION_ERROR" })
+            return error(data);
+        });
+        spyOn(commonUtilService, 'showToast');
+        spyOn(component, 'rateContent').and.callThrough().and.callFake(() => { });
+        spyOn(navController, 'pop');
+        component.setContentDetails('SAMPLE_ID', false, false);
+        expect(commonUtilService.showToast).toHaveBeenCalledWith('ERROR_NO_INTERNET_MESSAGE');
+        expect(navController.pop).toHaveBeenCalled();
+    });
+
+    it("#setContentDetail  should show error toast for server error", function () {
+        component.userRating = 0;
+        component.content = {};
+        const contentService = TestBed.get(ContentService);
+        const navController = TestBed.get(NavController);
+        const commonUtilService = TestBed.get(CommonUtilService);
+        spyOn(contentService, 'getContentDetail').and.callFake(function (option, success, error) {
+            let data = JSON.stringify({ "error": "SERVER_ERROR" })
+            return error(data);
+        });
+        spyOn(commonUtilService, 'showToast');
+        spyOn(component, 'rateContent').and.callThrough().and.callFake(() => { });
+        spyOn(navController, 'pop');
+        component.setContentDetails('SAMPLE_ID', false, false);
+        expect(commonUtilService.showToast).toHaveBeenCalledWith('ERROR_FETCHING_DATA');
+        expect(navController.pop).toHaveBeenCalled();
+    });
+
+    it("#setContentDetail  should show error toast for other error", function () {
+        component.userRating = 0;
+        component.content = {};
+        component.isDownloadStarted = true;
+        const contentService = TestBed.get(ContentService);
+        const navController = TestBed.get(NavController);
+        const commonUtilService = TestBed.get(CommonUtilService);
+        spyOn(contentService, 'getContentDetail').and.callFake(function (option, success, error) {
+            let data = JSON.stringify({ "error": "AUTH_ERROR" })
+            return error(data);
+        });
+        spyOn(commonUtilService, 'showToast');
+        spyOn(component, 'rateContent').and.callThrough().and.callFake(() => { });
+        spyOn(navController, 'pop');
+        component.setContentDetails('SAMPLE_ID', false, false);
+        expect(commonUtilService.showToast).toHaveBeenCalledWith('ERROR_CONTENT_NOT_AVAILABLE');
+        expect(navController.pop).toHaveBeenCalled();
+    });
+
+    it("#ionViewWillLeave  should unsubscribe all genie events", function () {
+        const events = TestBed.get(Events);
+        spyOn(events, 'unsubscribe').and.callThrough();
+        component.ionViewWillLeave();
+        expect(events.unsubscribe).toHaveBeenCalled();
+    });
+
+    it("#ionViewDidLoad  should handle nav back button", function () {
+        const platform = TestBed.get(Platform);
+        const navBar = TestBed.get(Navbar);
+        spyOn(platform, 'registerBackButtonAction').and.callFake(function (success) {
+            return success();
+        });
+        spyOn(navBar, 'backButtonClick').and.callThrough();
+        navBar.backButtonClick();
+        component.ionViewDidLoad();
+
+    });
+
+    it("#handleNavBackbutton  should handle nav back button", function () {
+        spyOn(component, 'generateEndEvent').and.callThrough().and.callFake(() => { });
+        component.handleNavBackButton();
+        expect(component.generateEndEvent).toHaveBeenCalled();
+    });
+
+    it("#handleNavBackbutton  should generate qrsession end event", function () {
+        spyOn(component, 'generateEndEvent').and.callThrough().and.callFake(() => { });
+        spyOn(component, 'generateQRSessionEndEvent').and.callThrough().and.callFake(() => { });
+        component.shouldGenerateEndTelemetry = true;
+        component.cardData = { identofier: 'SAMPLE_ID' };
+        component.source = PageId.CONTENT_DETAIL;
+        component.handleNavBackButton();
+        expect(component.generateEndEvent).toHaveBeenCalled();
+        expect(component.generateQRSessionEndEvent).toHaveBeenCalled();
+    });
+
+    it("#subscribeGenieEvent  should handle import completed event and publish local content update event", function () {
+        const events = TestBed.get(Events);
+        spyOn(events, 'subscribe').and.callThrough().and.callFake((arg, success) => {
+            return success(JSON.stringify(mockRes.importCompleteResponse));
+        });
+        spyOn(events, 'publish');
+        spyOn(component, 'setContentDetails').and.callThrough().and.callFake(() => { });
+        component.isDownloadStarted = true;
+        component.content = {};
+        component.subscribeGenieEvent();
+        expect(component.isDownloadStarted).toBe(false);
+        expect(events.publish).toHaveBeenCalledWith('savedResources:update', {
+            update: true
+        });
+
+    });
+
+    it("#subscribeGenieEvent  should update the content", function () {
+        const events = TestBed.get(Events);
+        spyOn(events, 'subscribe').and.callThrough().and.callFake((arg, success) => {
+            return success(JSON.stringify(mockRes.updateEventSample));
+        });
+        component.subscribeGenieEvent();
+        expect(component.isUpdateAvail).toBe(true);
+    });
+
+    it("#importContent  should update the content", function () {
+        const contentService = TestBed.get(ContentService);
+        const commonUtilService = TestBed.get(CommonUtilService);
+        spyOn(commonUtilService, 'showToast');
+        spyOn(contentService, 'importContent').and.callThrough().and.callFake((arg, success) => {
+            return success(JSON.stringify(mockRes.noContentFoundImportContentResponse));
+        });
+        component.importContent([''], false);
+        expect(commonUtilService.showToast).toHaveBeenCalledWith('ERROR_CONTENT_NOT_AVAILABLE');
+    });
+
+    it("#dismissPopup  should pop from the page", function () {
+        const navController = TestBed.get(NavController);
+        const ionicApp = TestBed.get(IonicApp);
+        spyOn(ionicApp._modalPortal, 'getActive').and.returnValue(false);
+        spyOn(ionicApp._overlayPortal, 'getActive').and.returnValue(false);
+        spyOn(navController, 'pop')
+        component.dismissPopup();
+        expect(navController.pop).toHaveBeenCalled();
+    });
+
+    it("#popToPreviousPage  should pop from the page if resumePage parameter is enebled", function () {
+        const navController = TestBed.get(NavController);
+        spyOn(navController, 'popTo');
+        component.isResumedCourse = true;
+        component.popToPreviousPage();
+        expect(navController.popTo).toHaveBeenCalled();
+    });
+
+    it("#showSwitchUserAlert  should show play content", function () {
+        AppGlobalService.isPlayerLaunched = false;
+        component.userCount = 1;
+        spyOn(component, 'playContent').and.callThrough().and.callFake(() => { });
+        component.showSwitchUserAlert();
+        expect(component.playContent).toHaveBeenCalled();
+    });
+
+    xit("#playContent  should show play content", function () {
+        const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
+        spyOn(telemetryGeneratorService, 'generateInteractTelemetry').and.callThrough().and.callFake(() => { });
+        
+        component.playContent();
+        expect(telemetryGeneratorService.generateInteractTelemetry).toHaveBeenCalled();
+        expect(component.isPlayerLaunched).toBe(true);
+    });
+
+    it("#getUserId  should show play content", function () {
+        const appGlobalService = TestBed.get(AppGlobalService);
+        spyOn(appGlobalService, 'getSessionData').and.callThrough().and.returnValue({userToken:'1234'});
+        PopoverMock.setOnDissMissResponse(mockRes.popOverOnDismissResponse);
+        component.getUserId();
+        expect(component.userId).toBe('1234');
+    });
+
+    it("#showOverflowMenu  should show overflow menu", function () {
+        const popOverController = TestBed.get(PopoverController);
+        component.content={};
+        PopoverMock.setOnDissMissResponse('delete.success');
+        component.showOverflowMenu(event);
+        expect(component.content.downloadable).toBe(false);
+    });
+
 });
