@@ -839,21 +839,9 @@ export class EnrolledCourseDetailsPage {
     );
   }
 
-  // ionViewDidLoad() {
-  //   this.navBar.backButtonClick = (e: UIEvent) => {
-  //     this.handleNavBackButton();
-  //   }
-  // }
-
   ionViewDidLoad() {
     this.navBar.backButtonClick = (e: UIEvent) => {
-      this.didViewLoad = false;
-      this.generateEndEvent(this.objId, this.objType, this.objVer);
-      if (this.shouldGenerateEndTelemetry) {
-        this.generateQRSessionEndEvent(this.source, this.course.identifier);
-      }
-      this.navCtrl.pop();
-      this.backButtonFunc();
+      this.handleNavBackButton();
     }
   }
 
