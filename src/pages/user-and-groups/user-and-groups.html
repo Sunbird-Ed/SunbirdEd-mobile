@@ -49,7 +49,12 @@
               {{ 'NO_USERS_CREATED_YET_MSG' | translate }}
             </div>
           </div>
-          <ion-list *ngIf="!noUsersPresent">
+          <div *ngIf="loadingUserList" class="nouser margin-bottom">
+            <div text-center class="description">
+              <b>{{'LOADING_USER_LIST' | translate}}</b>
+            </div>
+          </div>
+          <ion-list *ngIf="!noUsersPresent && !loadingUserList">
             <ion-item *ngFor="let user of userList; let i=index;" class="item-background radius" margin-bottom [ngClass]="i===selectedUserIndex ? 'blueBorder' : ''"
               no-lines>
               <ion-row class="bg-color-white">

@@ -1,6 +1,7 @@
 import { TranslateService } from '@ngx-translate/core';
 import { Component } from '@angular/core';
 import {
+  App,
   NavController,
   NavParams,
   ToastController,
@@ -38,7 +39,7 @@ import {
   GUEST_STUDENT_TABS,
   GUEST_TEACHER_TABS
 } from '../../../app/module.service';
-import { App } from 'ionic-angular';
+// import { App } from 'ionic-angular';
 import { AppGlobalService } from '../../../service/app-global.service';
 import { PreferenceKey } from '../../../app/app.constant';
 
@@ -70,6 +71,7 @@ export class GuestEditProfilePage {
   isNewUser: boolean = false;
   unregisterBackButton: any;
   isCurrentUser: boolean = true;
+  newUser: boolean = true;
 
   isFormValid: boolean = true;
 
@@ -128,8 +130,6 @@ export class GuestEditProfilePage {
     this.profile = this.navParams.get('profile') || {};
     this.isNewUser = Boolean(this.navParams.get('isNewUser'));
     this.isCurrentUser = Boolean(this.navParams.get('isCurrentUser'));
-
-    console.log(this.profile);
 
     /* Initialize form with default values */
     this.guestEditForm = this.fb.group({
@@ -277,7 +277,6 @@ export class GuestEditProfilePage {
         if (list != 'gradeList') {
           this[list] = _.orderBy(this[list], ['name'], ['asc']);
         }
-        console.log(list + " Category Response: " + this[list]);
       })
   }
 
@@ -318,7 +317,6 @@ export class GuestEditProfilePage {
   }
 
   resetForm(index: number = 0, showloader: boolean): void {
-    console.log("Reset Form Index - " + index);
     switch (index) {
       case 0:
         this.guestEditForm.patchValue({
@@ -486,7 +484,7 @@ export class GuestEditProfilePage {
 
     this.profileService.createProfile(req, (success: any) => {
       loader.dismiss();
-      this.getToast(this.translateMessage("User Created successfully")).present();
+      this.getToast(this.translateMessage('USER_CREATED_SUCESSFULLY')).present();
       this.telemetryGeneratorService.generateInteractTelemetry(
         InteractType.OTHER,
         InteractSubtype.CREATE_USER_SUCCESS,

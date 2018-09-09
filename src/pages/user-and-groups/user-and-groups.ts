@@ -68,9 +68,10 @@ export class UserAndGroupsPage {
 
   unregisterBackButton: any;
   profileDetails: any;
+  loadingUserList: boolean = false;
 
   userType: string;
-  noUsersPresent: boolean = true;
+  noUsersPresent: boolean = false;
   selectedUserIndex: number = -1;
 
   constructor(
@@ -94,7 +95,8 @@ export class UserAndGroupsPage {
     private toastCtrl: ToastController,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private authService: AuthService,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private events : Events
   ) {
 
     /* Check userList length and show message or list accordingly */
@@ -110,6 +112,9 @@ export class UserAndGroupsPage {
     if (this.appGlobalService.isUserLoggedIn()) {
       this.profileDetails = this.appGlobalService.getCurrentUser();
     }
+
+    
+
   }
 
   ionViewDidLoad() {
@@ -121,7 +126,7 @@ export class UserAndGroupsPage {
   }
 
   ionViewWillEnter() {
-    // this.zone.run(() => {
+    this.zone.run(() => {
     this.getAllProfile();
     this.getAllGroup();
     this.getCurrentGroup();
@@ -129,7 +134,12 @@ export class UserAndGroupsPage {
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
       this.dismissPopup();
     }, 11);
-    // })
+   })
+   if(this.userList){
+     this.noUsersPresent = false;
+     this.loadingUserList = true;
+   }
+
   }
 
   getCurrentGroup() {
@@ -205,13 +215,12 @@ export class UserAndGroupsPage {
     let profileRequest: ProfileRequest = {
       local: true
     };
-    this.noUsersPresent = true;
+    this.loadingUserList = true;
     setTimeout(() => {
       this.zone.run(() => {
         this.profileService.getAllUserProfile(profileRequest).then((profiles) => {
           let profileList: Array<Profile> = JSON.parse(profiles);
           if (profileList && profileList.length) {
-            this.noUsersPresent = false;
             this.userList = profileList.sort((prev: Profile, next: Profile) => {
               if (prev.uid === this.currentUserId) {
                 return -1;
@@ -225,8 +234,11 @@ export class UserAndGroupsPage {
               if (prev.handle > next.handle) return 1;
               return 0;
             });
+            this.noUsersPresent = false;
+            this.loadingUserList = false;
           } else {
             this.noUsersPresent = true;
+            this.loadingUserList = false;
           }
 
           loader.dismiss();
@@ -234,6 +246,7 @@ export class UserAndGroupsPage {
         }).catch((error) => {
           loader.dismiss();
           this.noUsersPresent = true;
+          this.loadingUserList = false;
           console.log("Something went wrong while fetching user list", error);
         });
       })
@@ -325,9 +338,11 @@ export class UserAndGroupsPage {
       Environment.USER,
       PageId.USERS_GROUPS
     );
-    this.navCtrl.push(GuestEditProfilePage, {
-      isNewUser: true
-    });
+    this.zone.run(() => {
+      this.navCtrl.push(GuestEditProfilePage, {
+        isNewUser: true
+      });
+    })
   }
 
   selectUser(index: number, name: string) {
