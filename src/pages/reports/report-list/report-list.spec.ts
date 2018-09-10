@@ -1,4 +1,3 @@
-import { ReportSummary } from './../../../../genie-sdk-wrapper/src/services/report/bean';
 import { TelemetryGeneratorService } from './../../../service/telemetry-generator.service';
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { NO_ERRORS_SCHEMA } from "@angular/core";
