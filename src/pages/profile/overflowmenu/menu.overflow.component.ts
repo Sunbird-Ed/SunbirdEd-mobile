@@ -1,22 +1,18 @@
 import {
-    Nav,
-    ToastController
-} from "ionic-angular";
-import {
     Component,
     ViewChild
 } from '@angular/core';
-import { NavController } from "ionic-angular/navigation/nav-controller";
-import { NavParams } from "ionic-angular/navigation/nav-params";
-import { ViewController } from "ionic-angular/navigation/view-controller";
-import { App } from "ionic-angular";
+import { NavParams, ViewController, App, Nav, ToastController } from "ionic-angular";
+
 import { SettingsPage } from "../../settings/settings";
 import {
     OAuthService,
     SharedPreferences,
     ProfileType,
     Profile,
-    UserSource
+    UserSource,
+    TabsPage,
+    ContainerService
 } from "sunbird";
 import { OnboardingPage } from "../../onboarding/onboarding";
 import {
@@ -27,6 +23,12 @@ import {
     TelemetryService,
     ProfileService
 } from "sunbird";
+import {
+    initTabs,
+    GUEST_STUDENT_TABS,
+    GUEST_TEACHER_TABS,
+    LOGIN_TEACHER_TABS
+} from '../../../app/module.service';
 import { generateInteractTelemetry } from "../../../app/telemetryutil";
 import { UserAndGroupsPage } from "../../user-and-groups/user-and-groups";
 
@@ -34,6 +36,7 @@ import { Network } from "@ionic-native/network";
 import { TranslateService } from "@ngx-translate/core";
 import { ReportsPage } from "../../reports/reports";
 import { TelemetryGeneratorService } from "../../../service/telemetry-generator.service";
+import { AppGlobalService } from "../../../service/app-global.service";
 
 @Component({
     selector: 'menu-overflow',
@@ -46,7 +49,6 @@ export class OverflowMenuComponent {
     profile: any = {};
 
     constructor(
-        public navCtrl: NavController,
         public navParams: NavParams,
         public viewCtrl: ViewController,
         private oauth: OAuthService,
@@ -57,7 +59,9 @@ export class OverflowMenuComponent {
         private network: Network,
         private translate: TranslateService,
         private toastCtrl: ToastController,
-        private telemetryGeneratorService: TelemetryGeneratorService
+        private telemetryGeneratorService: TelemetryGeneratorService,
+        private appGlobal: AppGlobalService,
+        private container: ContainerService
     ) {
         this.items = this.navParams.get("list");
         this.profile = this.navParams.get("profile") || {};
@@ -121,28 +125,51 @@ export class OverflowMenuComponent {
                         InteractSubtype.LOGOUT_INITIATE, "");
                     this.oauth.doLogOut();
                     (<any>window).splashscreen.clearPrefs();
+                    let profile: Profile = new Profile();
+                    this.preferences.getString('GUEST_USER_ID_BEFORE_LOGIN')
+                        .then(val => {
+                            if (val != "") {
+                                profile.uid = val;
+                            } else {
+                                this.preferences.putString('selected_user_type', ProfileType.TEACHER)
+                            }
 
-                    this.preferences.getString('GUEST_USER_ID_BEFORE_LOGIN', (val) => {
-                        if (val != "") {
-                            let profile: Profile = new Profile();
-                            profile.uid = val;
                             profile.handle = "Guest1";
                             profile.profileType = ProfileType.TEACHER;
                             profile.source = UserSource.LOCAL;
 
-                            this.profileService.setCurrentProfile(true, profile, res => { }, error => { });
-                        } else {
-                            this.profileService.setAnonymousUser(success => { }, error => { });
-                        }
-                    });
-
-                    this.app.getRootNav().setRoot(OnboardingPage);
-                    this.generateLogoutInteractTelemetry(InteractType.OTHER, InteractSubtype.LOGOUT_SUCCESS, "");
+                            this.profileService.setCurrentProfile(true, profile, res => {
+                                this.navigateToAptPage();
+                            }, error => {
+                                this.navigateToAptPage();
+                            });
+                        });
                 }
 
                 break;
         }
     }
+
+    navigateToAptPage() {
+        if (this.appGlobal.DISPLAY_ONBOARDING_PAGE) {
+            this.app.getRootNav().setRoot(OnboardingPage);
+        } else {
+            this.preferences.getString('selected_user_type')
+                .then(val => {
+                    this.appGlobal.getGuestUserInfo();
+                    if (val == ProfileType.STUDENT) {
+                        initTabs(this.container, GUEST_STUDENT_TABS);
+                    } else if (val == ProfileType.TEACHER) {
+                        initTabs(this.container, GUEST_TEACHER_TABS);
+                    }
+                });
+            this.app.getRootNav().setRoot(TabsPage, {
+                loginMode: 'guest'
+            });
+        }
+        this.generateLogoutInteractTelemetry(InteractType.OTHER, InteractSubtype.LOGOUT_SUCCESS, "");
+    }
+
 
     /**
      * Used to Translate message to current Language

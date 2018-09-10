@@ -3,7 +3,7 @@
   <div class="scroll-list">
     <ion-list *ngIf="facetsFilter && facetsFilter.length" no-lines>
       <ion-item class="filter-item" *ngFor="let facet of facetsFilter" (click)="openFilterOptions(facet)">
-        <ion-label text-capitalize>{{ facet.displayName | translate  }}</ion-label>
+        <ion-label text-capitalize>{{ facet?.name | translate  }}</ion-label>
         <ion-label text-end>{{ getSelectedOptionCount(facet) }}</ion-label>
         <ion-icon name="ios-arrow-forward" item-end></ion-icon>
       </ion-item>

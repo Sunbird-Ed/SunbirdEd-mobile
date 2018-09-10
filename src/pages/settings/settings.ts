@@ -9,8 +9,8 @@ import { AppVersion } from "@ionic-native/app-version";
 import { SharedPreferences, InteractType, InteractSubtype, ShareUtil } from "sunbird";
 import { Impression, ImpressionType, Environment, PageId, TelemetryService } from 'sunbird';
 import { generateInteractTelemetry, generateImpressionTelemetry } from '../../app/telemetryutil';
+import { PreferenceKey } from '../../app/app.constant';
 
-const KEY_SELECTED_LANGUAGE = "selected_language";
 const KEY_SUNBIRD_SUPPORT_FILE_PATH = "sunbird_support_file_path";
 
 @Component({
@@ -61,18 +61,16 @@ export class SettingsPage {
   }
 
   ionViewDidEnter() {
-
     this.translate.get('CURRENT_LANGUAGE').subscribe(
       value => {
         this.chosenLanguageString = value;
-        this.preference.getString(KEY_SELECTED_LANGUAGE, value => {
-          this.selectedlanguage = this.chosenLanguageString + ': ' + value;
-        });
+        this.preference.getString(PreferenceKey.SELECTED_LANGUAGE)
+          .then(value => {
+            this.selectedlanguage = this.chosenLanguageString + ': ' + value;
+          });
       }
     );
   }
-
-
 
   goBack() {
     this.navCtrl.pop();
@@ -99,23 +97,23 @@ export class SettingsPage {
     let loader = this.getLoader();
     loader.present();
     this.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.SUPPORT_CLICKED);
-    this.preference.getString(KEY_SUNBIRD_SUPPORT_FILE_PATH, val => {
-      loader.dismiss();
-      if (val === undefined || val === "" || val === null) {
-        //do nothing
-      } else {
-        this.fileUrl = "file://" + val;
-        // Share via email
-        this.socialSharing.shareViaEmail('', '', ['dummy@example.com'], null, null, this.fileUrl).then(() => {
-          console.log("Share is possible");
-        }).catch(error => {
-          console.log("Share is not possible");
-          console.log(error);
-          // Error!
-        });
-      }
-    });
-
+    this.preference.getString(KEY_SUNBIRD_SUPPORT_FILE_PATH)
+      .then(val => {
+        loader.dismiss();
+        if (val === undefined || val === "" || val === null) {
+          //do nothing
+        } else {
+          this.fileUrl = "file://" + val;
+          // Share via email
+          this.socialSharing.shareViaEmail('', '', ['dummy@example.com'], null, null, this.fileUrl).then(() => {
+            console.log("Share is possible");
+          }).catch(error => {
+            console.log("Share is not possible");
+            console.log(error);
+            // Error!
+          });
+        }
+      });
   }
 
   shareApp() {

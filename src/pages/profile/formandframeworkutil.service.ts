@@ -7,14 +7,17 @@ import {
     FrameworkService,
     CategoryRequest,
     FrameworkDetailsRequest,
-    ProfileService,
     SharedPreferences,
     FormRequest,
     FormService
 } from 'sunbird';
 import { AppGlobalService } from '../../service/app-global.service';
 import { AppVersion } from "@ionic-native/app-version";
-import { FrameworkConstant } from '../../app/app.constant';
+import {
+    FrameworkConstant,
+    FormConstant,
+    PreferenceKey
+} from '../../app/app.constant';
 
 @Injectable()
 export class FormAndFrameworkUtilService {
@@ -27,20 +30,20 @@ export class FormAndFrameworkUtilService {
 
     constructor(
         private framework: FrameworkService,
-        private profileService: ProfileService,
         public events: Events,
         public zone: NgZone,
-        private preference: SharedPreferences,
+        public preference: SharedPreferences,
         private formService: FormService,
         private appGlobalService: AppGlobalService,
         private appVersion: AppVersion
     ) {
         //Get language selected
-        this.preference.getString('selected_language_code', (val: string) => {
-            if (val && val.length) {
-                this.selectedLanguage = val;
-            }
-        });
+        this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
+            .then(val => {
+                if (val && val.length) {
+                    this.selectedLanguage = val;
+                }
+            });
     }
 
     /**
@@ -66,6 +69,48 @@ export class FormAndFrameworkUtilService {
         })
     }
 
+
+    /**
+     * This method gets the Library filter config.
+     * 
+     */
+    getLibraryFilterConfig(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let libraryFilterConfig: Array<any> = [];
+
+            //get cached library config
+            libraryFilterConfig = this.appGlobalService.getCachedLibraryFilterConfig()
+
+            if (libraryFilterConfig === undefined || libraryFilterConfig.length == 0) {
+                libraryFilterConfig = [];
+                this.invokeLibraryFilterConfigFormApi(libraryFilterConfig, resolve, reject);
+            } else {
+                resolve(libraryFilterConfig);
+            }
+
+        })
+    }
+
+    /**
+     * This method gets the course filter config.
+     * 
+     */
+    getCourseFilterConfig(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let courseFilterConfig: Array<any> = [];
+
+            //get cached course config
+            courseFilterConfig = this.appGlobalService.getCachedCourseFilterConfig()
+
+            if (courseFilterConfig === undefined || courseFilterConfig.length == 0) {
+                courseFilterConfig = [];
+                this.invokeCourseFilterConfigFormApi(courseFilterConfig, resolve, reject);
+            } else {
+                resolve(courseFilterConfig);
+            }
+        });
+    }
+
     /**
      * Network call to form api
      * 
@@ -79,6 +124,7 @@ export class FormAndFrameworkUtilService {
             type: 'user',
             subType: 'instructor',
             action: 'onboarding',
+            filePath: FormConstant.DEFAULT_SYALLABUS_PATH
         };
         //form api call
         this.formService.getForm(req, (res: any) => {
@@ -108,14 +154,6 @@ export class FormAndFrameworkUtilService {
                     syllabusList.push(value);
                 });
 
-                // Adding default framework into the list
-                let defaultFramework = {
-                    name: FrameworkConstant.DEFAULT_FRAMEWORK_NAME,
-                    frameworkId: FrameworkConstant.DEFAULT_FRAMEWORK_ID
-                }
-
-                syllabusList.push(defaultFramework);
-
                 //store the framework list in the app component, so that when getFormDetails() gets called again
                 //in the same session of app, then we can get this details, without calling the api
                 this.appGlobalService.setSyllabusList(syllabusList);
@@ -134,6 +172,61 @@ export class FormAndFrameworkUtilService {
         });
     }
 
+
+    /**
+     * Network call to form api
+     * 
+     * @param courseFilterConfig 
+     * @param resolve 
+     * @param reject 
+     */
+    private invokeCourseFilterConfigFormApi(courseFilterConfig: Array<any>, resolve: (value?: any) => void, reject: (reason?: any) => void) {
+        let req: FormRequest = {
+            type: 'pageAssemble',
+            subType: 'course',
+            action: 'filter',
+            filePath: FormConstant.DEFAULT_PAGE_COURSE_FILTER_PATH
+        };
+        //form api call
+        this.formService.getForm(req, (res: any) => {
+            let response: any = JSON.parse(res);
+            courseFilterConfig = response.result.fields;
+            this.appGlobalService.setCourseFilterConfig(courseFilterConfig);
+            resolve(courseFilterConfig);
+        }, (error: any) => {
+            console.log("Error - " + error);
+            resolve(courseFilterConfig);
+        });
+    }
+
+
+    /**
+     * Network call to form api
+     * 
+     * @param libraryFilterConfig 
+     * @param resolve 
+     * @param reject 
+     */
+    private invokeLibraryFilterConfigFormApi(libraryFilterConfig: Array<any>, resolve: (value?: any) => void, reject: (reason?: any) => void) {
+        let req: FormRequest = {
+            type: 'pageAssemble',
+            subType: 'library',
+            action: 'filter',
+            filePath: FormConstant.DEFAULT_PAGE_LIBRARY_FILTER_PATH
+        };
+        //form api call
+        this.formService.getForm(req, (res: any) => {
+            let response: any = JSON.parse(res);
+            libraryFilterConfig = response.result.fields;
+            this.appGlobalService.setLibraryFilterConfig(libraryFilterConfig);
+            resolve(libraryFilterConfig);
+        }, (error: any) => {
+            console.log("Error - " + error);
+            resolve(libraryFilterConfig);
+        });
+    }
+
+
     /**
      * Get all categories using framework api
      */
@@ -144,18 +237,17 @@ export class FormAndFrameworkUtilService {
                 defaultFrameworkDetails: true
             };
 
-            if (frameworkId !== undefined && frameworkId.length && frameworkId != FrameworkConstant.DEFAULT_FRAMEWORK_ID) {
+            if (frameworkId !== undefined && frameworkId.length) {
                 req.defaultFrameworkDetails = false;
                 req.frameworkId = frameworkId;
             }
 
-            this.framework.getFrameworkDetails(req,
-                (res: any) => {
-                    // let categories = JSON.parse(JSON.parse(res).result.framework).categories;
+            this.framework.getFrameworkDetails(req)
+                .then(res => {
                     resolve(res);
-                },
-                (err: any) => {
-                    reject(err);
+                })
+                .catch(error => {
+                    reject(error);
                 });
         });
     }
@@ -177,9 +269,10 @@ export class FormAndFrameworkUtilService {
 
             let categoryList: Array<any> = [];
 
-            this.framework.getCategoryData(req,
-                (res: any) => {
-                    const resposneArray = JSON.parse(res);
+            this.framework.getCategoryData(req)
+                .then(res => {
+                    const category = JSON.parse(res);
+                    const resposneArray = category.terms;
                     let value = {};
                     resposneArray.forEach(element => {
 
@@ -189,21 +282,8 @@ export class FormAndFrameworkUtilService {
                     });
 
                     resolve(categoryList);
-                },
-                (err: any) => {
-                    reject(err);
-                });
-        });
-    }
-
-    fetchNextCategory(req: CategoryRequest): Promise<any> {
-        return new Promise((resolve, reject) => {
-            this.framework.getCategoryData(req,
-                (res: any) => {
-                    const resposneArray: Array<any> = JSON.parse(res);
-                    resolve(resposneArray);
-                },
-                (err: any) => {
+                })
+                .catch(err => {
                     reject(err);
                 });
         });
@@ -226,7 +306,7 @@ export class FormAndFrameworkUtilService {
                     let req: FormRequest = {
                         type: 'app',
                         subType: 'install',
-                        action: 'upgrade',
+                        action: 'upgrade'
                     };
                     //form api call
                     this.formService.getForm(req, (res: any) => {
@@ -256,9 +336,7 @@ export class FormAndFrameworkUtilService {
                                 const forceType = "force"
 
                                 ranges.forEach(element => {
-                                    if (versionCode === element.minVersionCode ||
-                                        (versionCode > element.minVersionCode && versionCode < element.maxVersionCode) ||
-                                        versionCode === element.maxVersionCode) {
+                                    if (versionCode >= element.minVersionCode && versionCode <= element.maxVersionCode) {
                                         console.log("App needs a upgrade of type - " + element.type)
                                         type = element.type;
 

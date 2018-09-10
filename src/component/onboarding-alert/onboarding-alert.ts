@@ -20,9 +20,7 @@ export class OnboardingAlert {
 
   selectedSyllabus = '';
 
-  constructor(private navParams: NavParams,
-    private viewCtrl: ViewController,
-    private platform: Platform) {
+  constructor(private navParams: NavParams, private viewCtrl: ViewController, private platform: Platform) {
     this.selectedSlide = this.navParams.get('facet');
     this.callback = this.navParams.get('callback');
     this.index = this.navParams.get('index');
@@ -34,7 +32,7 @@ export class OnboardingAlert {
 
     this.selectedSlide.options.forEach(element => {
       if (element.checked) {
-        this.selectedSyllabus = element.value
+        this.selectedSyllabus = element.value;
       }
     });
   }

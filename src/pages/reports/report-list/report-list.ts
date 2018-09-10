@@ -69,9 +69,6 @@ export class ReportListPage {
 
     }
 
-    ionViewWillEnter() {
-
-    }
 
     formatTime(time: number): string {
         var mm = Math.floor(time / 60);

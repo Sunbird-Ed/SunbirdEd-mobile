@@ -25,7 +25,7 @@ import {
 } from 'sunbird';
 import { ProfilePage } from './../profile';
 import { languageList } from './../../../config/framework.filters';
-import { ProfileConstants } from '../../../app/app.constant';
+import { ProfileConstants, PreferenceKey } from '../../../app/app.constant';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -55,6 +55,7 @@ export class AdditionalInfoComponent {
   languageList: Array<String> = languageList;
   subjectList: Array<String> = [];
   gradeList: Array<String> = [];
+  selectedLanguage: string = 'en';
 
   options: toastOptions = {
     message: '',
@@ -92,6 +93,7 @@ export class AdditionalInfoComponent {
     private ionicApp: IonicApp,
     private platform: Platform
   ) {
+
     /* Receive data from other component */
     this.userId = this.navParams.get('userId');
     this.profile = this.navParams.get('profile') || {};
@@ -177,15 +179,17 @@ export class AdditionalInfoComponent {
    */
   getFrameworkData(currentCategory: string, propertyName: string): void {
     let req: CategoryRequest = {
-      currentCategory: currentCategory
+      currentCategory: currentCategory,
+      selectedLanguage: this.translate.currentLang
     };
 
-    this.frameworkService.getCategoryData(req,
-      (res: any) => {
-        this[propertyName] = _.map(JSON.parse(res), 'name');
-      },
-      (err: any) => {
-        console.log("Subject Category Response: ", JSON.parse(err));
+    this.frameworkService.getCategoryData(req)
+      .then(category => {
+        let response = JSON.parse(category);
+        this[propertyName] = _.map(response.terms, 'name');
+      })
+      .catch(err => {
+        console.log(currentCategory + " Category Response: ", JSON.parse(err));
       });
   }
 

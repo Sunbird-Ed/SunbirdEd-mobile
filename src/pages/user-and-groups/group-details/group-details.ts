@@ -202,7 +202,7 @@ export class GroupDetailsPage {
           text: this.translateMessage('OKAY'),
           cssClass: 'alert-btn-delete',
           handler: () => {
-            this.logOut(selectedUser,false);
+            this.logOut(selectedUser, false);
           }
         }
       ]
@@ -228,8 +228,6 @@ export class GroupDetailsPage {
   // takes to content details page and launches player
   play() {
     let selectedUser = this.userList[this.selectedUserIndex];
-    this.event.publish('launchPlayer', true);
-    this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
     if (this.appGlobalService.isUserLoggedIn()) {
       this.logOut(selectedUser, true);
     } else {
@@ -443,16 +441,16 @@ export class GroupDetailsPage {
       groupId: this.group.gid,
       uidList: this.userUids
     }
-    
+
     this.groupService.addUpdateProfilesToGroup(req).then(
       (success) => {
         console.log("success", success);
-        this.userList.splice(userListIndex, 1);        
+        this.userList.splice(userListIndex, 1);
       }
     ).catch(error => {
 
     });
-    console.log('request is' , req);
+    console.log('request is', req);
   }
 
   /**
@@ -496,6 +494,10 @@ export class GroupDetailsPage {
       .then(val => {
         console.log("Value : " + val);
         this.profileService.setCurrentUser(selectedUser.uid, (success) => {
+          if (isBeingPlayed) {
+            this.event.publish('launchPlayer', true);
+            this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
+          }
           if (selectedUser.profileType == ProfileType.STUDENT) {
             initTabs(this.container, isBeingPlayed ? GUEST_STUDENT_TABS : GUEST_STUDENT_SWITCH_TABS);
             this.preferences.putString('selected_user_type', ProfileType.STUDENT);

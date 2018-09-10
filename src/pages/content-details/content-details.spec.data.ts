@@ -1,10 +1,10 @@
 export const mockRes = {
     contentDetailsResponse: {
         "message": "successful",
-        "result": {
+        "result": {"isUpdateAvailable":"true",
             "contentData": {
-                "appIcon": "https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/content/do_212516141114736640146589/artifact/7fd95b138e3e32dc73cc6c8ce7af59cb_1527849151139.thumb.jpeg",
-                "artifactUrl": "https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/assets/do_212516141114736640146589/mp4_877_1527849257.mp4",
+                "appIcon": "sampleb_1527849151139.thumb.jpeg",
+                "artifactUrl": "sample/assets/do_212516141114736640146589/mp4_877_1527849257.mp4",
                 "attributions": [
                     ""
                 ],
@@ -20,7 +20,7 @@ export const mockRes = {
                 "createdOn": "2018-06-01T10:34:17.170+0000",
                 "creator": "Subrat Rath",
                 "description": "Swing around",
-                "downloadUrl": "https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/do_212516141114736640146589/swing_1527849415336_do_212516141114736640146589_1.0.ecar",
+                "downloadUrl": "sampleecar_files/do_212516141114736640146589/swing_1527849415336_do_212516141114736640146589_1.0.ecar",
                 "gradeLevel": [
                     "KG",
                     "Class 1"
@@ -52,7 +52,7 @@ export const mockRes = {
             "contentType": "resource",
             "identifier": "do_212516141114736640146589",
             "isAvailableLocally": true,
-            "isUpdateAvailable": false,
+            
             "lastUpdatedTime": 0,
             "mimeType": "video/mp4",
             "referenceCount": 1,
@@ -99,5 +99,14 @@ export const mockRes = {
         "data": {
             "status": "IMPORT_COMPLETED"
         }
-    }
+    },
+
+    updateEventSample:
+    {"data":{"identifier":"SAMPLE_ID"},"type":"contentUpdateAvailable"},
+    
+    noContentFoundImportContentResponse:
+    {"message":"successful","result":[{"identifier":"SAMPLE_ID","status":"NOT_FOUND"}]},
+
+    popOverOnDismissResponse:
+        { "message": "rating.success", "rating": 3.0, "comment": "Nice App" },
 }

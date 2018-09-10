@@ -26,18 +26,28 @@ export class PageFilterOptions {
     return this.facets.selected.includes(value)
   }
 
-  changeValue(value) {
+  changeValue(value, index) {
     if (!this.facets.selected) {
       this.facets.selected = [];
+      if (this.facets.code === 'contentType') {
+        this.facets.selectedValuesIndices = [];
+      }
+
     }
 
     if (this.facets.selected.includes(value)) {
       const index = this.facets.selected.indexOf(value);
       if (index > -1) {
         this.facets.selected.splice(index, 1);
+        if (this.facets.code === 'contentType') {
+          this.facets.selectedValuesIndices.splice(index, 1);
+        }
       }
     } else {
       this.facets.selected.push(value);
+      if (this.facets.code === 'contentType') {
+        this.facets.selectedValuesIndices.push(index);
+      }
     }
   }
 

@@ -35,7 +35,7 @@ export class OnboardingCardComponent {
   @ViewChild(Slides) mSlides: Slides;
   isOnBoardCard: boolean = true;
   loader: boolean = false;
-  isDataAvailable = false;
+  isDataAvailable: boolean = false;
 
   options: toastOptions = {
     message: '',
@@ -80,7 +80,6 @@ export class OnboardingCardComponent {
     });
 
     this.events.subscribe('slide-onboarding-card', (value) => {
-      console.log("Index value - " + value.slideIndex);
       this.mSlides.lockSwipes(false);
       this.mSlides.slideNext(500);
     });
@@ -100,16 +99,11 @@ export class OnboardingCardComponent {
 
     this.onboardingService.initializeCard()
       .then(index => {
-        console.log("reinitializeCards -  index = " + index);
-
         setTimeout(() => {
           if (index !== 0 && index !== 5) {
             this.mSlides.slideTo(index, 500);
           }
         }, 500);
-      })
-      .catch(error => {
-
       });
   }
 
@@ -138,13 +132,9 @@ export class OnboardingCardComponent {
   initializeService() {
     this.onboardingService.initializeCard()
       .then(index => {
-        console.log("initializeService -  index = " + index);
         setTimeout(() => {
           if (index !== 0 && index !== 5) this.mSlides.slideTo(index, 500);
         }, 500);
-      })
-      .catch(error => {
-
       });
   }
 
@@ -169,11 +159,17 @@ export class OnboardingCardComponent {
       }
     }
 
-    if (index === 0) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), undefined, true);
-    if (index === 1) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.syllabus, true);
-    if (index === 2) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.board, true);
-    if (index === 3) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.medium, true);
-    if (index === 4) this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.grade, true);
+    if (index === 0) {
+      this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), undefined, true);
+    } else if (index === 1) {
+      this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.syllabus, true);
+    } else if (index === 2) {
+      this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.board, true);
+    } else if (index === 3) {
+      this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.medium, true);
+    } else if (index === 4) {
+      this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.grade, true);
+    }
 
     let popUp = this.popupCtrl.create(OnboardingAlert, { facet: selectedSlide, callback: callback, index: index }, {
       cssClass: 'onboarding-alert'

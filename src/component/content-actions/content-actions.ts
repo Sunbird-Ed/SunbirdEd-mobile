@@ -23,17 +23,15 @@ import { AppGlobalService } from '../../service/app-global.service';
 export class ContentActionsComponent {
 
   content: any;
-
   isChild: boolean = false;
-
   contentId: string;
   backButtonFunc = undefined;
-
   userId: string = '';
   pageName: string = '';
   showFlagMenu: boolean = true;
 
-  constructor(public viewCtrl: ViewController,
+  constructor(
+    public viewCtrl: ViewController,
     private contentService: ContentService,
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -46,6 +44,7 @@ export class ContentActionsComponent {
     private appGlobalService: AppGlobalService) {
     this.content = this.navParams.get("content");
     this.pageName = this.navParams.get('pageName');
+
     if (this.navParams.get('isChild')) {
       this.isChild = true;
     }
@@ -113,7 +112,7 @@ export class ContentActionsComponent {
     this.contentService.deleteContent(this.getDeleteRequestBody(), (res: any) => {
       let data = JSON.parse(res);
       if (data.result && data.result.status === 'NOT_FOUND') {
-        this.showToaster('Content deleting failed');
+        this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
       } else {
         // Publish saved resources update event
         this.events.publish('savedResources:update', {
@@ -125,9 +124,9 @@ export class ContentActionsComponent {
       }
     }, (error: any) => {
       console.log('delete response: ', error);
-      this.showToaster('Content deleting failed');
+      this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
       this.viewCtrl.dismiss();
-    })
+    });
   }
 
   reportIssue() {

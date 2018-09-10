@@ -16,14 +16,9 @@ import { FormAddress } from './address/form.address';
 import { AdditionalInfoComponent } from './additional-info/additional-info';
 import { FormExperience } from './experience/form.experience';
 import { SkillTagsComponent } from './skill-tags/skill-tags';
-import { UsersnClassesComponent } from './usersnclasses/usersnclass.component';
-import { UsersComponent } from './usersnclasses/users/users.component';
-import { ClassesComponent } from './usersnclasses/classes/classes.component';
 import { OverflowMenuComponent } from './overflowmenu/menu.overflow.component';
 import { ContainerService } from 'sunbird';
 import { SettingsPageModule } from '../settings/settings.module';
-import { ActionMenuComponent } from './actionmenu/menu.action.component';
-import { AddUserComponent } from './usersnclasses/users/adduser.component';
 import { UserSearchComponent } from './user-search/user-search';
 import { DirectivesModule } from '../../directives/directives.module';
 import { ComponentsModule } from "../../component/components.module";
@@ -42,11 +37,6 @@ import { ImagePicker } from './imagepicker/imagepicker';
     FormExperience,
     SkillTagsComponent,
     OverflowMenuComponent,
-    UsersnClassesComponent,
-    UsersComponent,
-    ClassesComponent,
-    ActionMenuComponent,
-    AddUserComponent,
     UserSearchComponent,
     ImagePicker
   ],
@@ -60,13 +50,8 @@ import { ImagePicker } from './imagepicker/imagepicker';
     FormExperience,
     SkillTagsComponent,
     OverflowMenuComponent,
-    UsersnClassesComponent,
-    UserSearchComponent,
-    UsersComponent,
-    ClassesComponent,
-    ActionMenuComponent,
-    AddUserComponent,
-    ImagePicker
+    ImagePicker,
+    UserSearchComponent
     ],
 
   imports: [
@@ -87,10 +72,7 @@ import { ImagePicker } from './imagepicker/imagepicker';
     GuestEditProfilePage,
     FormAddress,
     AdditionalInfoComponent,
-    FormEducation,
-    UsersnClassesComponent,
-    UsersComponent,
-    ClassesComponent
+    FormEducation
   ],
   providers: [
     ContainerService,

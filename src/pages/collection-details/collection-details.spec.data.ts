@@ -1,6 +1,8 @@
 export const mockRes = {
     contentDetailsResponse: {
         "message": "successful",
+        "hierarchyInfo":"PARENT_ID",
+        "contentTypesCount":1,
         "result": {
             "contentData": {
                 "appIcon": "https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/content/do_212516141114736640146589/artifact/7fd95b138e3e32dc73cc6c8ce7af59cb_1527849151139.thumb.jpeg",
@@ -100,5 +102,100 @@ export const mockRes = {
         "data": {
             "status": "IMPORT_COMPLETED"
         }
+    },
+
+    enqueuedImportContentResponse:
+    {"message":"successful","result":[{"identifier":"SAMPLE_ID","status":"ENQUEUED_FOR_DOWNLOAD"}]},
+
+    noContentFoundImportContentResponse:
+    {"message":"successful","result":[{"identifier":"SAMPLE_ID","status":"NOT_FOUND"}]},
+
+    enqueuedOthersImportContentResponse:
+    {"message":"successful","result":[{"identifier":"SAMPLE_ID","status":"ENQUEUED_FOR_DOWNLOADS"}]},
+    getChildContentAPIResponse:
+    {
+        "message": "successful",
+        "result": {
+            "basePath": "/files/content/do_212", "children": [{
+                "children":[{"isAvailableLocally": false,"contentData":{"identifier":"SAMPLE_CHILD","size":"50723.0"}}],
+                "basePath": "files/content/do_21258", "contentData": {
+                    "audience": ["Learner"],
+                    "contentType": "CourseUnit", "createdOn": "2018-09-06T16:11:16.225+0000", "identifier": "do_212584", "language": ["English"],
+                    "lastPublishedOn": "2018-09-06T16:24:45.664+0000", "mimeType": "application/vnd.ekstep.content-collection",
+                    "name": "Untitled Course Unit", "osId": "org.ekstep.launcher", "pkgVersion": "1.0", "size": "50723.0",
+                    "status": "Live", "variants": { "spine": { "ecarUrl": "sample_url/ecar_files/do_2125849622628352001386/untitled-course-unit_spine.ecar", "size": 50723 } },
+                    "versionKey": "15365"
+                }, "contentType": "courseunit", "hierarchyInfo": [{ "contentType": "course", "identifier": "do_2125849622134620161385" }, { "contentType": "courseunit", "identifier": "do_2125849622628352001386" }], "identifier": "do_2125849622628352001386", "isAvailableLocally": true, "isUpdateAvailable": false, "lastUpdatedTime": 1536254864000, "mimeType": "application/vnd.ekstep.content-collection", "referenceCount": 1, "sizeOnDevice": 62130
+            }], "contentData": { "appIcon": "do_2125849622134620161385/1_1521559683246.thumb.png", "audience": ["Learner"], "board": "CBSE", "channel": "012315809814749184151", "contentDisposition": "inline", "contentEncoding": "gzip", "contentType": "Course", "createdBy": "659b011a-06ec-4107-84ad-955e16b0a48a", "createdOn": "2018-09-06T16:11:10.197+0000", "creator": "CREATOR123 ", "description": "Untitled Collection", "gradeLevel": ["Class 1"], "identifier": "do_2125849622134620161385", "language": ["English"], "lastPublishedOn": "2018-09-06T16:24:51.152+0000", "medium": "Hindi", "mimeType": "application/vnd.ekstep.content-collection", "name": "telemetry course", "osId": "org.ekstep.quiz.app", "pkgVersion": "1.0", "resourceType": "Course", "status": "Live", "subject": "English", "versionKey": "1536251085563" },
+            "contentType": "course", "hierarchyInfo": [{ "contentType": "course", "identifier": "do_2125849" }],
+            "identifier": "do_2125849", "isAvailableLocally": false, "isUpdateAvailable": false, "lastUpdatedTime": 1536256117000,
+            "mimeType": "application/vnd.ekstep.content-collection", "referenceCount": 1, "sizeOnDevice": 93234
+        }, "status": true
+    },
+
+    downloadProgressEventSample1:
+    {"data":{"downloadId":18788,"downloadProgress":10,"identifier":"do_sampele","status":1},"type":"downloadProgress"},
+
+    downloadProgressEventSample2:
+    {"data":{"downloadId":18788,"downloadProgress":-1,"identifier":"do_sampele","status":1},"type":"downloadProgress"},
+
+    downloadProgressEventSample3:
+    {"data":{"downloadId":18788,"downloadProgress":100,"identifier":"do_sampele","status":1},"type":"downloadProgress"},
+
+    importCompleteEventSample:
+    {"data":{"identifier":"SAMPLE_ID","status":"IMPORT_COMPLETED"},"type":"contentImport"},
+
+    updateEventSample:
+    {"data":{"identifier":"SAMPLE_ID"},"type":"contentUpdateAvailable"},
+
+    updateContentDetailsResponse: {
+        "message": "successful",
+        "hierarchyInfo":"PARENT_ID",
+        "contentTypesCount":1,
+        "result": {
+            "contentData": {
+                "identifier": "do_212516141114736640146589",
+                "status": "Live",
+                "subject": "English",
+                
+            },
+            "contentType": "resource",
+            "identifier": "do_212516141114736640146589",
+            "isAvailableLocally": true,
+            "isUpdateAvailable": true,
+            "lastUpdatedTime": 0,
+            "contentFeedback": [
+                {
+                    "rating": 1,
+                    "comments": "Test"
+                }
+            ]
+        },
+        "status": true
+    },
+    locallyNotAvailableContentDetailsResponse: {
+        "message": "successful",
+        "hierarchyInfo":"PARENT_ID",
+        "contentTypesCount":1,
+        "result": {
+            "contentData": {
+                "identifier": "do_212516141114736640146589",
+                "status": "Live",
+                "subject": "English",
+                
+            },
+            "contentType": "resource",
+            "identifier": "do_212516141114736640146589",
+            "isAvailableLocally": false,
+            "isUpdateAvailable": true,
+            "lastUpdatedTime": 0,
+            "contentFeedback": [
+                {
+                    "rating": 1,
+                    "comments": "Test"
+                }
+            ]
+        },
+        "status": true
     }
 }

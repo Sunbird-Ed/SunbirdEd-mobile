@@ -58,10 +58,6 @@ export class UserSearchComponent {
     public toastCtrl: ToastController
   ) { }
 
-  ionViewWillEnter() {
-    //this.userList = [];
-    //this.visibleItems = [];
-  }
   /**
    * Makes an search user API call
    * @param {object} scrollEvent - infinite Scroll Event
@@ -72,9 +68,7 @@ export class UserSearchComponent {
     if (!this.enableInfiniteScroll || !scrollEvent) loader.present();
     if (event) this.renderer.invokeElementMethod(event.target, 'blur');
     this.authService.getSessionData(session => {
-      if (session === undefined || session == null) {
-        console.error("session is null");
-      } else {
+      if (Boolean(session)) {
         let req = {
           query: this.searchInput,
           offset: this.apiOffset,
@@ -114,24 +108,6 @@ export class UserSearchComponent {
     });
   }
 
-  contentLoad() {
-    if (this.userList.length <= this.apiLimit) {
-      this.getVisibleElementRange();
-    }
-  }
-  /**
-   * fires on scroll end.
-   * @param {object} event
-   */
-  onScrollEnd(event: any): void {
-    console.log("end of scroll");
-    this.getVisibleElementRange();
-  }
-
-  onCancel(): void {
-    console.log("OnCancel Triggered");
-  }
-
   /**
    * Navigates to the User Profile
    * @param {string} id User ID
@@ -168,8 +144,6 @@ export class UserSearchComponent {
     }, 100);
   }
 
-
-
   getLoader(): any {
     return this.loadingCtrl.create({
       duration: 30000,
@@ -181,39 +155,57 @@ export class UserSearchComponent {
     if (this.searchInput === '') this.onInput();
   }
 
-  getVisibleElementRange() {
-    this.userList.forEach((element, index) => {
-      console.log(`Index ${index}: `, this.isElementInViewport(document.getElementById(<string>index)));
-      if (document.getElementById(<string>index)) {
-        this.generateVisitObject(element, index);
+  /*
+  //Required for list item visibility telemetry tracking
+
+      ionViewWillEnter() {
+        this.visibleItems = [];
       }
-    });
-    console.log("VisibleItemArray=", this.visibleItems);
-  }
 
-  isElementInViewport(el) {
-    var rect = el.getBoundingClientRect();
-    return (
-      rect.top >= 0 &&
-      rect.left >= 0 &&
-      rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-    );
-  }
+      onScrollEnd(event: any): void {
+        console.log("end of scroll");
+        this.getVisibleElementRange();
+      }
 
-  generateVisitObject(element, index) {
-    let visitItem = new Visit();
-    visitItem.objid = element.id;
-    visitItem.index = index;
-    visitItem.objtype = "user";
-    this.visibleItems.push(visitItem);
-  }
+      contentLoad() {
+        if (this.userList.length <= this.apiLimit) {
+          this.getVisibleElementRange();
+        }
+      }
 
-  ionViewWillLeave() {
-    this.visibleItems = _.uniq(this.visibleItems);
-    console.log("Visible Items", this.visibleItems);
+      getVisibleElementRange() {
+        this.userList.forEach((element, index) => {
+          console.log(`Index ${index}: `, this.isElementInViewport(document.getElementById(<string>index)));
+          if (document.getElementById(<string>index)) {
+            this.generateVisitObject(element, index);
+          }
+        });
+        console.log("VisibleItemArray=", this.visibleItems);
+      }
 
-  }
+      isElementInViewport(el) {
+        var rect = el.getBoundingClientRect();
+        return (
+          rect.top >= 0 &&
+          rect.left >= 0 &&
+          rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+          rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+        );
+      }
+
+      generateVisitObject(element, index) {
+        let visitItem = new Visit();
+        visitItem.objid = element.id;
+        visitItem.index = index;
+        visitItem.objtype = "user";
+        this.visibleItems.push(visitItem);
+      }
+
+      ionViewWillLeave() {
+        this.visibleItems = _.uniq(this.visibleItems);
+        console.log("Visible Items", this.visibleItems);
+      }
+  */
 
   /**
    * Used to Translate message to current Language

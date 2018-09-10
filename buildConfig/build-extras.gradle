@@ -26,7 +26,7 @@ allprojects {
             url "https://maven.google.com"
         }
         jcenter()
-      
+
         maven {
             url "https://platform.ekstep.in/downloads/content/repositories/releases"
         }
@@ -75,6 +75,15 @@ android {
         versionName "2.0.$ext.buildNumber"
         manifestPlaceholders = [fabricKey: "${release_fabric_api_key}", fabricSecret: "${release_fabric_api_secret}"]
         resValue("string", "_app_name", "${app_name}")
+
+        buildConfigField "boolean", "DISPLAY_ONBOARDING_CARDS", "${display_onboarding_cards}"
+        buildConfigField "boolean", "DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE", "${display_framework_categories_in_profile}"
+        buildConfigField "boolean", "DISPLAY_ONBOARDING_PAGE", "${display_onboarding_page}"
+        buildConfigField "boolean", "DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER", "${display_signin_footer_card_in_course_tab_for_teacher}"
+        buildConfigField "boolean", "DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER", "${display_signin_footer_card_in_library_tab_for_teacher}"
+        buildConfigField "boolean", "DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER", "${display_signin_footer_card_in_profile_tab_for_teacher}"
+        buildConfigField "boolean", "DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT", "${display_signin_footer_card_in_library_tab_for_student}"
+        buildConfigField "boolean", "DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT", "${display_signin_footer_card_in_profile_tab_for_student}"
     }
 
     signingConfigs {
@@ -127,11 +136,11 @@ android {
              buildConfigField 'String', 'MOBILE_APP_KEY', "\"${dev_mobile_app_key}\""
              buildConfigField 'String', 'MOBILE_APP_SECRET', "\"${dev_mobile_app_secret}\""
              buildConfigField 'String', 'OAUTH_SESSION', '"org.genie.KeycloakOAuthSessionService"'
-
-            flavorDimensions "default"
+             flavorDimensions "default"
         }
 
         staging {
+            flavorDimensions "default"
             resValue("string", "deeplink_base_url", "${staging_deeplink_base_url}")
             buildConfigField 'String', 'BASE_URL', "\"${staging_base_url}\""
             buildConfigField 'String', 'TELEMETRY_BASE_URL', "\"${staging_base_url+"/api/data/v1"}\""
@@ -161,10 +170,10 @@ android {
             buildConfigField 'String', 'MOBILE_APP_KEY', "\"${staging_mobile_app_key}\""
             buildConfigField 'String', 'MOBILE_APP_SECRET', "\"${staging_mobile_app_secret}\""
             buildConfigField 'String', 'OAUTH_SESSION', '"org.genie.KeycloakOAuthSessionService"'
-            flavorDimensions "default"
         }
 
         production {
+            flavorDimensions "default"
             resValue("string", "deeplink_base_url", "${production_deeplink_base_url}")
             buildConfigField 'String', 'BASE_URL', "\"${production_base_url}\""
             buildConfigField 'String', 'TELEMETRY_BASE_URL', "\"${production_base_url+"/api/data/v1"}\""
@@ -194,7 +203,6 @@ android {
             buildConfigField 'String', 'MOBILE_APP_KEY', "\"${production_mobile_app_key}\""
             buildConfigField 'String', 'MOBILE_APP_SECRET', "\"${production_mobile_app_secret}\""
             buildConfigField 'String', 'OAUTH_SESSION', '"org.genie.KeycloakOAuthSessionService"'
-            flavorDimensions "default"
         }
     }
 
@@ -219,9 +227,9 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile "org.ekstep.genieservices:genie-providers:1.0.798"
-    compile "org.ekstep.genieservices:genie-integration:1.0.798"
-    compile('com.crashlytics.sdk.android:crashlytics:2.9.3@aar') {
+    compile "org.ekstep.genieservices:genie-providers:1.0.823"
+    compile "org.ekstep.genieservices:genie-integration:1.0.823"
+    compile('com.crashlytics.sdk.android:crashlytics:2.9.4@aar') {
           transitive = true;
     }
 }

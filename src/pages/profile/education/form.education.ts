@@ -197,7 +197,6 @@ export class FormEducation {
           role: 'cancel',
           cssClass: 'alert-btn-cancel',
           handler: () => {
-            console.log('Disagree clicked');
           }
         },
         {
@@ -205,7 +204,6 @@ export class FormEducation {
           cssClass: 'alert-btn-delete',
           handler: () => {
             this.onSubmit(true);
-            console.log('Agree clicked');
           }
         },
         {
@@ -213,7 +211,6 @@ export class FormEducation {
           role: 'cancel',
           cssClass: 'closeButton',
           handler: () => {
-            console.log('close icon clicked');
           }
         }
       ]

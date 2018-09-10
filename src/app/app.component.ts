@@ -44,7 +44,8 @@ import {
 } from './telemetryutil';
 import {
   MimeType,
-  ContentType
+  ContentType,
+  PreferenceKey
 } from './app.constant';
 import { EnrolledCourseDetailsPage } from '../pages/enrolled-course-details/enrolled-course-details';
 import { ProfileConstants } from './app.constant';
@@ -89,7 +90,7 @@ export class MyApp {
     private telemetryService: TelemetryService,
     private preference: SharedPreferences,
     private userProfileService: UserProfileService,
-    private formAndFrameowrkUtilService: FormAndFrameworkUtilService,
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private event: Events,
     private profile: ProfileService,
     private preferences: SharedPreferences,
@@ -116,55 +117,57 @@ export class MyApp {
 
       })
 
-      this.preference.getString('selected_language_code', (val: string) => {
-        if (val && val.length) {
-          this.translate.use(val);
-        }
-      });
+      this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
+        .then(val => {
+          if (val && val.length) {
+            this.translate.use(val);
+          }
+        });
 
       that.authService.getSessionData((session) => {
         if (session === null || session === "null") {
-          this.preference.getString('selected_user_type', (val) => {
-            if (val !== undefined && val !== "") {
-              if (val === ProfileType.TEACHER) {
-                initTabs(this.containerService, GUEST_TEACHER_TABS);
-              } else if (val === ProfileType.STUDENT) {
-                initTabs(this.containerService, GUEST_STUDENT_TABS);
-              } else if (val === "student") {   // This additional checks are added because previous users had user type stored lower case and app would show blank screen due to mismatch in types
-                this.preference.putString('selected_user_type', ProfileType.STUDENT)
-                initTabs(this.containerService, GUEST_STUDENT_TABS);
-              } else if (val === "teacher") {
-                this.preference.putString('selected_user_type', ProfileType.TEACHER)
-                initTabs(this.containerService, GUEST_TEACHER_TABS);
-              }
+          this.preference.getString('selected_user_type')
+            .then(val => {
+              if (val !== undefined && val !== "") {
+                if (val === ProfileType.TEACHER) {
+                  initTabs(this.containerService, GUEST_TEACHER_TABS);
+                } else if (val === ProfileType.STUDENT) {
+                  initTabs(this.containerService, GUEST_STUDENT_TABS);
+                } else if (val === "student") {   // This additional checks are added because previous users had user type stored lower case and app would show blank screen due to mismatch in types
+                  this.preference.putString('selected_user_type', ProfileType.STUDENT)
+                  initTabs(this.containerService, GUEST_STUDENT_TABS);
+                } else if (val === "teacher") {
+                  this.preference.putString('selected_user_type', ProfileType.TEACHER)
+                  initTabs(this.containerService, GUEST_TEACHER_TABS);
+                }
 
-              that.rootPage = TabsPage;
-            } else {
-              that.rootPage = LanguageSettingsPage;
-            }
-          });
+                that.rootPage = TabsPage;
+              } else {
+                that.rootPage = LanguageSettingsPage;
+              }
+            });
         } else {
           initTabs(that.containerService, LOGIN_TEACHER_TABS);
           let sessionObj = JSON.parse(session);
-          this.preference.getString('SHOW_WELCOME_TOAST', (success) => {
+          this.preference.getString('SHOW_WELCOME_TOAST')
+            .then(success => {
+              if (success === "true") {
+                that.preference.putString('SHOW_WELCOME_TOAST', "false");
+                let req = {
+                  userId: sessionObj[ProfileConstants.USER_TOKEN],
+                  requiredFields: ProfileConstants.REQUIRED_FIELDS,
+                  refreshUserProfileDetails: true
+                };
 
-            if (success === "true") {
-              that.preference.putString('SHOW_WELCOME_TOAST', "false");
-              let req = {
-                userId: sessionObj[ProfileConstants.USER_TOKEN],
-                requiredFields: ProfileConstants.REQUIRED_FIELDS,
-                refreshUserProfileDetails: true
-              };
+                that.userProfileService.getUserProfileDetails(req, res => {
 
-              that.userProfileService.getUserProfileDetails(req, res => {
-
-                setTimeout(() => {
-                  that.getToast(this.translateMessage('WELCOME_BACK', JSON.parse(res).firstName)).present();
-                }, 2500);
-              }, (err: any) => {
-              });
-            }
-          });
+                  setTimeout(() => {
+                    that.getToast(this.translateMessage('WELCOME_BACK', JSON.parse(res).firstName)).present();
+                  }, 2500);
+                }, (err: any) => {
+                });
+              }
+            });
 
           that.rootPage = TabsPage;
         }
@@ -188,7 +191,7 @@ export class MyApp {
   }
 
   private checkForUpgrade() {
-    this.formAndFrameowrkUtilService.checkNewAppVersion()
+    this.formAndFrameworkUtilService.checkNewAppVersion()
       .then(result => {
         if (result != undefined) {
           console.log("Force Optional Upgrade - " + JSON.stringify(result));
@@ -212,11 +215,12 @@ export class MyApp {
   }
 
   saveDefaultSyncSetting() {
-    this.preference.getString("sync_config", val => {
-      if (val === undefined || val === "" || val === null) {
-        this.preference.putString("sync_config", "ALWAYS_ON");
-      }
-    });
+    this.preference.getString("sync_config")
+      .then(val => {
+        if (val === undefined || val === "" || val === null) {
+          this.preference.putString("sync_config", "ALWAYS_ON");
+        }
+      });
   }
 
   handleBackButton() {
@@ -413,10 +417,11 @@ export class MyApp {
   }
 
   showAppWalkThroughScreen() {
-    this.preference.getString('show_app_walkthrough_screen', (value) => {
-      let val = (value === '') ? 'true' : 'false';
-      this.preference.putString('show_app_walkthrough_screen', val);
-    });
+    this.preference.getString('show_app_walkthrough_screen')
+      .then(value => {
+        let val = (value === '') ? 'true' : 'false';
+        this.preference.putString('show_app_walkthrough_screen', val);
+      });
   }
 
   /**

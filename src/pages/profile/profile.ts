@@ -184,6 +184,7 @@ export class ProfilePage {
     let that = this;
     return new Promise((resolve, reject) => {
       that.authService.getSessionData(session => {
+        console.log('session',session);
         if (session === null || session === "null") {
           reject("session is null");
         } else {
@@ -282,10 +283,10 @@ export class ProfilePage {
           }
           break;
 
-        case "avatar":
-          this.uncompletedDetails.title = 'ADD_AVATAR';
-          this.uncompletedDetails.page = "picture";
-          break;
+        // case "avatar":
+        //   this.uncompletedDetails.title = 'ADD_AVATAR';
+        //   this.uncompletedDetails.page = "picture";
+        //   break;
 
         case "address":
           this.uncompletedDetails.title = 'ADD_ADDRESS';
@@ -315,7 +316,7 @@ export class ProfilePage {
           this.setMissingProfileDetails('ADD_CLASS');
           break;
         case "lastName":
-        this.setMissingProfileDetails('ADD_LAST_NAME');
+          this.setMissingProfileDetails('ADD_LAST_NAME');
           break;
       }
     }
@@ -428,7 +429,13 @@ export class ProfilePage {
   endorseSkill(num) {
 
     // Increase the Endorsement Count with 1 and make it as endorsed
-    this.profile.skills[num].endorsementcount += 1;
+
+    if (this.profile.skills[num].hasOwnProperty('endorsementCount')) {
+      this.profile.skills[num].endorsementCount += 1;
+    } else {
+      this.profile.skills[num].endorsementcount += 1;
+    }
+
     this.profile.skills[num].canEndorse = false;
 
     this.authService.getSessionData(session => {
@@ -448,7 +455,11 @@ export class ProfilePage {
             console.error("Error", JSON.parse(error));
 
             /* Revert Changes if API call get fails to update */
-            this.profile.skills[num].endorsementcount -= 1;
+            if (this.profile.skills[num].hasOwnProperty('endorsementCount')) {
+              this.profile.skills[num].endorsementCount -= 1;
+            } else {
+              this.profile.skills[num].endorsementcount -= 1;
+            }
             this.profile.skills[num].canEndorse = true;
           }
         );

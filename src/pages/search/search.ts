@@ -20,6 +20,8 @@ import { EnrolledCourseDetailsPage } from "../enrolled-course-details/enrolled-c
 import { AppGlobalService } from "../../service/app-global.service";
 import { PopoverController } from "ionic-angular";
 import { QRAlertCallBack, QRScannerAlert } from "../qrscanner/qrscanner_alert";
+import { FormAndFrameworkUtilService } from "../profile/formandframeworkutil.service";
+import { CommonUtilService } from "../../service/common-util.service";
 
 @IonicPage()
 @Component({
@@ -83,7 +85,8 @@ export class SearchPage {
   private backButtonFunc = undefined;
 
   @ViewChild(Navbar) navBar: Navbar;
-  constructor(private contentService: ContentService,
+  constructor(
+    private contentService: ContentService,
     private telemetryService: TelemetryService,
     private navParams: NavParams,
     private navCtrl: NavController,
@@ -96,7 +99,10 @@ export class SearchPage {
     private events: Events,
     private appGlobal: AppGlobalService,
     private popUp: PopoverController,
-    private platform: Platform) {
+    private platform: Platform,
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
+    private commonUtilService: CommonUtilService
+  ) {
 
     this.checkUserSession();
 
@@ -169,13 +175,15 @@ export class SearchPage {
         content: content,
         corRelation: this.corRelationList,
         source: this.source,
-        shouldGenerateEndTelemetry: this.shouldGenerateEndTelemetry
+        shouldGenerateEndTelemetry: this.shouldGenerateEndTelemetry,
+        parentContent: this.parentContent
       };
     }
     else {
       params = {
         content: content,
         corRelation: this.corRelationList,
+        parentContent: this.parentContent
       };
     }
 
@@ -190,16 +198,33 @@ export class SearchPage {
       this.navCtrl.push(ContentDetailsPage, params)
     }
   }
+  getTranslatedValue(translations) {
+    if (translations.hasOwnProperty(this.translate.currentLang)) {
+      return translations[this.translate.currentLang];
+    }
+    return "";
+  }
 
   showFilter() {
-    this.navCtrl.push(FilterPage, { filterCriteria: this.responseData.result.filterCriteria });
+    this.formAndFrameworkUtilService.getLibraryFilterConfig().then((data) => {
+      let filterCriteriaData = this.responseData.result.filterCriteria;
+      filterCriteriaData.facetFilters.forEach(element => {
+        data.forEach(item => {
+          if (element.name === item.code) {
+            element.translatedName = this.commonUtilService.getTranslatedValue(item.translations, item.name);
+            return;
+          }
+        });
+      });
+      this.navCtrl.push(FilterPage, { filterCriteria: this.responseData.result.filterCriteria });
+    });
   }
 
   applyFilter() {
     this.showLoader = true;
     this.responseData.result.filterCriteria.mode = "hard";
 
-    this.contentService.searchContent(this.responseData.result.filterCriteria, true,false,false, (responseData) => {
+    this.contentService.searchContent(this.responseData.result.filterCriteria, true, false, false, (responseData) => {
 
       this.zone.run(() => {
         let response: GenieResponse = JSON.parse(responseData);
@@ -255,6 +280,9 @@ export class SearchPage {
 
     this.isDialCodeSearch = false;
 
+    this.dialCodeContentResult = undefined;
+    this.dialCodeResult = undefined;
+
     if (this.profile) {
 
       if (this.profile.board && this.profile.board.length) {
@@ -278,7 +306,7 @@ export class SearchPage {
       // }
     }
 
-    this.contentService.searchContent(contentSearchRequest, false,false,false, (responseData) => {
+    this.contentService.searchContent(contentSearchRequest, false, false, false, (responseData) => {
 
       this.zone.run(() => {
         let response: GenieResponse = JSON.parse(responseData);
@@ -392,7 +420,7 @@ export class SearchPage {
       offlineSearch: isOfflineSearch
     }
 
-    this.contentService.searchContent(contentSearchRequest, false,true,!this.appGlobal.isUserLoggedIn(), (responseData) => {
+    this.contentService.searchContent(contentSearchRequest, false, true, !this.appGlobal.isUserLoggedIn(), (responseData) => {
       this.zone.run(() => {
         let response: GenieResponse = JSON.parse(responseData);
         this.responseData = response;
@@ -624,7 +652,7 @@ export class SearchPage {
           this.zone.run(() => { this.showContentDetails(child); });
         } else {
           this.subscribeGenieEvent();
-          this.downloadParentContent(parent, child);
+          this.downloadParentContent(parent);
         }
       } else {
         this.zone.run(() => { this.showContentDetails(child); });
@@ -634,7 +662,7 @@ export class SearchPage {
     });
   }
 
-  private downloadParentContent(parent, child) {
+  private downloadParentContent(parent) {
     this.zone.run(() => {
       this.downloadProgress = 0;
       this.showLoading = true;
@@ -710,6 +738,13 @@ export class SearchPage {
             });
           }
         }
+
+        // if (res.data && res.type === 'contentUpdateAvailable' && this.parentContent && this.childContent) {
+        //   this.zone.run(() => {
+        //     console.log("Content Update in Search");
+        //     this.downloadParentContent(this.parentContent);
+        //   });
+        // }
 
       });
     });

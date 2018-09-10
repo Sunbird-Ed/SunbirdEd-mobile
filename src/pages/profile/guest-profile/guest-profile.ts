@@ -14,13 +14,17 @@ import {
   ProfileService,
   SharedPreferences,
   ProfileType,
+  ImpressionType,
+  PageId,
+  Environment,
 } from 'sunbird';
 import { UserTypeSelectionPage } from '../../user-type-selection/user-type-selection';
 import { Network } from '@ionic-native/network';
 import { TranslateService } from '@ngx-translate/core';
 import { FormAndFrameworkUtilService } from '../formandframeworkutil.service';
 import { AppGlobalService } from '../../../service/app-global.service';
-import { MenuOverflow } from '../../../app/app.constant';
+import { MenuOverflow, PreferenceKey } from '../../../app/app.constant';
+import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -68,15 +72,17 @@ export class GuestProfilePage {
     private toastCtrl: ToastController,
     private translate: TranslateService,
     private appGlobal: AppGlobalService,
-    private formAndFrameworkUtilService: FormAndFrameworkUtilService
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
+    private telemetryGeneratorService: TelemetryGeneratorService
   ) {
 
     //language code
-    this.preference.getString('selected_language_code', (val: string) => {
-      if (val && val.length) {
-        this.selectedLanguage = val;
-      }
-    });
+    this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
+      .then(val => {
+        if (val && val.length) {
+          this.selectedLanguage = val;
+        }
+      });
 
     //Event for optional and forceful upgrade
     this.events.subscribe('force_optional_upgrade', (upgrade) => {
@@ -91,13 +97,25 @@ export class GuestProfilePage {
       this.refreshProfileData(false, false);
     });
 
-    this.preference.getString('selected_user_type', (val) => {
-      if (val == ProfileType.TEACHER) {
-        this.showSignInCard = true;
-      } else if (val == ProfileType.STUDENT) {
-        this.showSignInCard = false;
-      }
-    })
+/*     this.preference.getString('selected_user_type')
+      .then(val => {
+
+        if (val == ProfileType.TEACHER) {
+          this.showSignInCard = true;
+        } else if (val == ProfileType.STUDENT) {
+          this.showSignInCard = false;
+        }
+      }); */
+
+    let profileType = this.appGlobal.getGuestUserType();
+    if (profileType === ProfileType.TEACHER && this.appGlobal.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER) {
+      this.showSignInCard = true;
+    } else if (profileType == ProfileType.STUDENT && this.appGlobal.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT) {
+      this.showSignInCard = true;
+    } else {
+      this.showSignInCard = false;
+    }
+
     if (this.network.type === 'none') {
       this.isNetworkAvailable = false;
     } else {
@@ -112,7 +130,13 @@ export class GuestProfilePage {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad LanguageSettingPage');
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.VIEW, "",
+      PageId.GUEST_PROFILE,
+      Environment.HOME
+    );
+
+    this.appGlobal.generateConfigInteractEvent(PageId.GUEST_PROFILE);
   }
 
   refreshProfileData(refresher: any = false, showLoader: boolean = true) {
@@ -238,6 +262,7 @@ export class GuestProfilePage {
    * @returns {string}
    */
   arrayToString(stringArray: Array<string>): string {
+    console.log("stringArray hererer", stringArray.join(", "));
     return stringArray.join(", ");
   }
 
@@ -251,8 +276,7 @@ export class GuestProfilePage {
     });
   }
 
-  buttonClick(isNetAvailable) {
-
+  buttonClick(isNetAvailable?) {
     this.showNetworkWarning();
   }
 

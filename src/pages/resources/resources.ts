@@ -1,3 +1,4 @@
+import { FormAndFrameworkUtilService } from './../profile/formandframeworkutil.service';
 import {
 	Component,
 	NgZone,
@@ -13,7 +14,6 @@ import {
 	TelemetryService,
 	InteractType,
 	InteractSubtype,
-	ContentDetailRequest,
 	SharedPreferences,
 	ContentFilterCriteria,
 	ProfileType,
@@ -28,35 +28,30 @@ import {
 } from 'ionic-angular';
 import * as _ from 'lodash';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
-import {
-	QRResultCallback,
-	SunbirdQRScanner
-} from '../qrscanner/sunbirdqrscanner.service';
+import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
 import {
 	generateInteractTelemetry,
 	Map,
 	generateImpressionTelemetry
 } from '../../app/telemetryutil';
-import { CollectionDetailsPage } from '../collection-details/collection-details';
-import { ContentDetailsPage } from '../content-details/content-details';
 import { TranslateService } from '@ngx-translate/core';
 import {
 	ContentType,
-	MimeType,
-	PageFilterConstants,
-	AudienceFilter
+	AudienceFilter,
+	PreferenceKey
 } from '../../app/app.constant';
 import { Network } from '@ionic-native/network';
 import {
 	PageFilterCallback,
 	PageFilter
 } from '../page-filter/page.filter';
-import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 import { AppGlobalService } from '../../service/app-global.service';
 import Driver from 'driver.js';
 import { AppVersion } from "@ionic-native/app-version";
 import { updateFilterInSearchQuery } from '../../util/filter.util';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { CommonUtilService } from '../../service/common-util.service';
 
 @Component({
 	selector: 'page-resources',
@@ -110,14 +105,16 @@ export class ResourcesPage implements OnInit {
 	profile: any;
 	appLabel: string;
 
-	private mode: string = "soft";
+	mode: string = "soft";
 
-	private isFilterApplied: boolean = false;
+	isFilterApplied: boolean = false;
 
 
 	private isVisible: boolean = false;
+	pageFilterCallBack: PageFilterCallback;
 
-	constructor(public navCtrl: NavController,
+	constructor(
+		public navCtrl: NavController,
 		private pageService: PageAssembleService,
 		private ngZone: NgZone,
 		private contentService: ContentService,
@@ -132,13 +129,38 @@ export class ResourcesPage implements OnInit {
 		private network: Network,
 		private appGlobal: AppGlobalService,
 		private appVersion: AppVersion,
+		private formAndFrameworkUtilService: FormAndFrameworkUtilService,
+		private telemetryGeneratorService: TelemetryGeneratorService,
+		private commonUtilService:CommonUtilService
 	) {
-		this.preference.getString('selected_language_code', (val: string) => {
-			if (val && val.length) {
-				this.selectedLanguage = val;
-			}
+		this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
+			.then(val => {
+				if (val && val.length) {
+					this.selectedLanguage = val;
+				}
+			});
+		this.subscribeUtilityEvents();
+
+		if (this.network.type === 'none') {
+			this.isNetworkAvailable = false;
+		} else {
+			this.isNetworkAvailable = true;
+		}
+		this.network.onDisconnect().subscribe((data) => {
+			this.isNetworkAvailable = false;
+		});
+		this.network.onConnect().subscribe((data) => {
+			this.isNetworkAvailable = true;
 		});
 
+		this.appVersion.getAppName()
+			.then((appName: any) => {
+				this.appLabel = appName;
+			});
+
+	}
+
+	subscribeUtilityEvents() {
 		this.events.subscribe('savedResources:update', (res) => {
 			if (res && res.update) {
 				this.setSavedContent();
@@ -163,28 +185,9 @@ export class ResourcesPage implements OnInit {
 			}
 		});
 
-
-		if (this.network.type === 'none') {
-			this.isNetworkAvailable = false;
-		} else {
-			this.isNetworkAvailable = true;
-		}
-		this.network.onDisconnect().subscribe((data) => {
-			this.isNetworkAvailable = false;
-		});
-		this.network.onConnect().subscribe((data) => {
-			this.isNetworkAvailable = true;
-		});
-
-		this.appVersion.getAppName()
-			.then((appName: any) => {
-				this.appLabel = appName;
-			});
-
-
 		this.events.subscribe('tab.change', (data) => {
 			this.zone.run(() => {
-				if (data === "LIBRARY‌") {
+				if (data === "LIBRARY") {
 					if (this.appliedFilter) {
 						this.filterIcon = "./assets/imgs/ic_action_filter.png";
 						this.resourceFilter = undefined;
@@ -195,14 +198,13 @@ export class ResourcesPage implements OnInit {
 				}
 			});
 		});
+
 	}
 
 	/**
 	 * Angular life cycle hooks
 	 */
 	ngOnInit() {
-		console.log('courses component initialized...');
-		// this.getCourseTabData();
 		this.setSavedContent();
 	}
 
@@ -224,12 +226,13 @@ export class ResourcesPage implements OnInit {
 	 * It will fetch the guest user profile details
 	 */
 	getCurrentUser(): void {
-		let profiletype = this.appGlobal.getGuestUserType();
-		if (profiletype == ProfileType.TEACHER) {
-			this.showSignInCard = true;
+		let profileType = this.appGlobal.getGuestUserType();
+		this.showSignInCard = false;
+		if (profileType === ProfileType.TEACHER) {
+			this.showSignInCard = this.appGlobal.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER;
 			this.audienceFilter = AudienceFilter.GUEST_TEACHER;
-		} else if (profiletype == ProfileType.STUDENT) {
-			this.showSignInCard = false;
+		} else if (profileType == ProfileType.STUDENT) {
+			this.showSignInCard = this.appGlobal.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT;
 			this.audienceFilter = AudienceFilter.GUEST_STUDENT;
 		}
 
@@ -246,20 +249,41 @@ export class ResourcesPage implements OnInit {
 		}
 	}
 
-	viewAllSavedResources() {
+	navigateToViewMoreContentsPage() {
 		let values = new Map();
 		values["SectionName"] = "Saved Resources";
-		this.telemetryService.interact(
-			generateInteractTelemetry(InteractType.TOUCH,
+		this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
 				InteractSubtype.VIEWALL_CLICKED,
 				Environment.HOME,
-				this.source, values,
-				undefined,
-				undefined)
-		);
+				this.source,undefined,
+				values);
 		this.navCtrl.push(ViewMoreActivityPage, {
 			headerTitle: 'SAVED_RESOURCES',
 			pageName: 'resource.SavedResources'
+		});
+	}
+
+
+	/**
+	 * Navigate to search page
+	 *
+	 * @param {string} queryParams search query params
+	 */
+	navigateToViewMoreContentsPageWithParams(queryParams, headerTitle): void {
+		let values = new Map();
+		values["SectionName"] = headerTitle;
+		this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+				InteractSubtype.VIEWALL_CLICKED,
+				Environment.HOME,
+				this.source, 
+				undefined,
+				values);
+
+		queryParams = updateFilterInSearchQuery(queryParams, this.appliedFilter, this.profile, this.mode, this.isFilterApplied, this.appGlobal);
+
+		this.navCtrl.push(ViewMoreActivityPage, {
+			requestParams: queryParams,
+			headerTitle: headerTitle
 		});
 	}
 
@@ -353,12 +377,10 @@ export class ResourcesPage implements OnInit {
 		this.pageService.getPageAssemble(pageAssembleCriteria, res => {
 			that.ngZone.run(() => {
 				let response = JSON.parse(res);
-				console.log('Popular content, response');
 				//TODO Temporary code - should be fixed at backend
-				let a = JSON.parse(response.sections);
-				console.log('page service ==>>>>', a);
+				let sections = JSON.parse(response.sections);
 				let newSections = [];
-				a.forEach(element => {
+				sections.forEach(element => {
 					element.display = JSON.parse(element.display);
 					if (element.display.name) {
 						if (_.has(element.display.name, this.selectedLanguage)) {
@@ -373,7 +395,6 @@ export class ResourcesPage implements OnInit {
 				});
 				//END OF TEMPORARY CODE
 				that.storyAndWorksheets = newSections;
-				console.log('storyAndWorksheets', that.storyAndWorksheets);
 				this.pageLoadedSuccess = true;
 				this.pageApiLoader = false;
 				//this.noInternetConnection = false;
@@ -387,7 +408,7 @@ export class ResourcesPage implements OnInit {
 					//this.noInternetConnection = true;
 					this.isNetworkAvailable = false;
 				} else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
-					if (!isAfterLanguageChange) this.getMessageByConst('ERROR_FETCHING_DATA');
+					if (!isAfterLanguageChange) this.commonUtilService.showToast('ERROR_FETCHING_DATA');
 				}
 			});
 		});
@@ -432,86 +453,44 @@ export class ResourcesPage implements OnInit {
 		return assembleFilter;
 	}
 
-
-	showMessage(message) {
-		let toast = this.toastCtrl.create({
-			message: message,
-			duration: 4000,
-			position: 'bottom'
-		});
-		toast.present();
-	}
-
-	getMessageByConst(constant) {
-		if (!this.isVisible) {
-			return
-		}
-
-		this.translate.get(constant).subscribe(
-			(value: any) => {
-				this.showMessage(value);
-			}
-		);
-	}
-	/**
-	 * Navigate to search page
-	 *
-	 * @param {string} queryParams search query params
-	 */
-	viewAllPopularContent(queryParams, headerTitle): void {
-		console.log('Search query...', queryParams);
-		let values = new Map();
-		values["SectionName"] = headerTitle;
-		this.telemetryService.interact(
-			generateInteractTelemetry(InteractType.TOUCH,
-				InteractSubtype.VIEWALL_CLICKED,
-				Environment.HOME,
-				this.source, values,
-				undefined,
-				undefined)
-		);
-
-		queryParams = updateFilterInSearchQuery(queryParams, this.appliedFilter, this.profile, this.mode, this.isFilterApplied, this.appGlobal);
-
-		this.navCtrl.push(ViewMoreActivityPage, {
-			requestParams: queryParams,
-			headerTitle: headerTitle
-		});
+	ionViewDidLoad() {
+		this.generateImpressionEvent();
+		this.appGlobal.generateConfigInteractEvent(PageId.LIBRARY, this.isOnBoardingCardCompleted);
 	}
 
 	ionViewDidEnter() {
 		this.isVisible = true;
-		this.generateImpressionEvent();
-		this.preference.getString('show_app_walkthrough_screen', (value) => {
-			if (value === 'true') {
-				const driver = new Driver({
-					allowClose: true,
-					closeBtnText: this.translateMessage('DONE'),
-					showButtons: true
-				});
 
-				console.log("Driver", driver);
-				setTimeout(() => {
-					driver.highlight({
-						element: '#qrIcon',
-						popover: {
-							title: this.translateMessage('ONBOARD_SCAN_QR_CODE'),
-							description: "<img src='assets/imgs/ic_scanqrdemo.png' /><p>" + this.translateMessage('ONBOARD_SCAN_QR_CODE_DESC', this.appLabel) + "</p>",
-							showButtons: true,         // Do not show control buttons in footer
-							closeBtnText: this.translateMessage('DONE'),
-						}
+		this.preference.getString('show_app_walkthrough_screen')
+			.then(value => {
+				if (value === 'true') {
+					const driver = new Driver({
+						allowClose: true,
+						closeBtnText: this.commonUtilService.translateMessage('DONE'),
+						showButtons: true
 					});
 
-					let element = document.getElementById("driver-highlighted-element-stage");
-					var img = document.createElement("img");
-					img.src = "assets/imgs/ic_scan.png";
-					img.id = "qr_scanner";
-					element.appendChild(img);
-				}, 100);
+					setTimeout(() => {
+						driver.highlight({
+							element: '#qrIcon',
+							popover: {
+								title: this.commonUtilService.translateMessage('ONBOARD_SCAN_QR_CODE'),
+								description: "<img src='assets/imgs/ic_scanqrdemo.png' /><p>" + this.commonUtilService.translateMessage('ONBOARD_SCAN_QR_CODE_DESC', this.appLabel) + "</p>",
+								showButtons: true,         // Do not show control buttons in footer
+								closeBtnText: this.commonUtilService.translateMessage('DONE'),
+							}
+						});
 
-				this.preference.putString('show_app_walkthrough_screen', 'false');
-			}
-		});
+						let element = document.getElementById("driver-highlighted-element-stage");
+						var img = document.createElement("img");
+						img.src = "assets/imgs/ic_scan.png";
+						img.id = "qr_scanner";
+						element.appendChild(img);
+					}, 100);
+
+					this.preference.putString('show_app_walkthrough_screen', 'false');
+				}
+			});
 	}
 
 	ionViewWillEnter() {
@@ -564,128 +543,40 @@ export class ResourcesPage implements OnInit {
 		this.checkNetworkStatus();
 	}
 
+
 	generateImpressionEvent() {
-		this.telemetryService.impression(generateImpressionTelemetry(
+		this.telemetryGeneratorService.generateImpressionTelemetry(
 			ImpressionType.VIEW, "",
 			PageId.LIBRARY,
-			Environment.HOME, "", "", "",
-			undefined,
-			undefined
-
-		));
+			Environment.HOME);
 	}
 
 	scanQRCode() {
-		this.telemetryService.interact(
-			generateInteractTelemetry(InteractType.TOUCH,
+		this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
 				InteractSubtype.QRCodeScanClicked,
 				Environment.HOME,
-				PageId.LIBRARY, null,
-				undefined,
-				undefined));
-		const that = this;
-
-		const callback: QRResultCallback = {
-
-			dialcode(scanResult, dialCode) {
-
-				that.addCorRelation(dialCode, "qr");
-				that.navCtrl.push(SearchPage, {
-					dialCode: dialCode,
-					corRelation: that.corRelationList,
-					source: that.source,
-					shouldGenerateEndTelemetry: true
-				});
-			},
-			content(scanResult, contentId) {
-				let request: ContentDetailRequest = {
-					contentId: contentId
-				}
-
-				that.contentService.getContentDetail(request, (response) => {
-					let data = JSON.parse(response);
-					that.addCorRelation(data.result.identifier, "qr")
-					that.showContentDetails(data.result, that.corRelationList);
-				}, (error) => {
-					console.log("Error " + error);
-					if (that.network.type === 'none') {
-						that.getMessageByConst('ERROR_NO_INTERNET_MESSAGE');
-					} else {
-						that.getMessageByConst('UNKNOWN_QR');
-					}
-				});
-			}
-		}
-
-		this.qrScanner.startScanner(undefined, undefined, undefined, callback, PageId.LIBRARY);
+				PageId.LIBRARY);
+		this.qrScanner.startScanner(undefined, undefined, undefined, PageId.LIBRARY);
 	}
 
-	addCorRelation(identifier: string, type: string) {
-		if (this.corRelationList === undefined) {
-			this.corRelationList = new Array<CorrelationData>();
-		}
-		else {
-			this.corRelationList = [];
-		}
-		let corRelation: CorrelationData = new CorrelationData();
-		corRelation.id = identifier;
-		corRelation.type = type;
-		this.corRelationList.push(corRelation);
-	}
 
 	search() {
-		this.telemetryService.interact(
-			generateInteractTelemetry(InteractType.TOUCH,
+		this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
 				InteractSubtype.SEARCH_BUTTON_CLICKED,
 				Environment.HOME,
-				PageId.LIBRARY, null,
-				undefined,
-				undefined));
-
+				PageId.LIBRARY);
 		this.navCtrl.push(SearchPage, { contentType: ContentType.FOR_LIBRARY_TAB, source: PageId.LIBRARY });
 	}
 
-	showContentDetails(content, corRelationList) {
-		if (content.contentData.contentType === ContentType.COURSE) {
-			console.log('Calling course details page');
-			this.navCtrl.push(EnrolledCourseDetailsPage, {
-				content: content,
-				corRelation: corRelationList,
-				source: this.source,
-				shouldGenerateEndTelemetry: true
-			})
-		} else if (content.mimeType === MimeType.COLLECTION) {
-			console.log('Calling collection details page');
-			this.navCtrl.push(CollectionDetailsPage, {
-				content: content,
-				corRelation: corRelationList,
-				source: this.source,
-				shouldGenerateEndTelemetry: true
-
-			})
-		} else {
-			console.log('Calling content details page');
-			this.navCtrl.push(ContentDetailsPage, {
-				content: content,
-				corRelation: corRelationList,
-				source: this.source,
-				shouldGenerateEndTelemetry: true
-			})
-		}
-	}
 
 	showFilter() {
-		this.telemetryService.interact(
-			generateInteractTelemetry(InteractType.TOUCH,
+		this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
 				InteractSubtype.FILTER_BUTTON_CLICKED,
 				Environment.HOME,
-				PageId.LIBRARY, null,
-				undefined,
-				undefined));
+				PageId.LIBRARY, undefined);
 
 		const that = this;
-		//this.noInternetConnection = false;
-		const callback: PageFilterCallback = {
+		this.pageFilterCallBack = {
 			applyFilter(filter, appliedFilter) {
 				let criteria = new PageAssembleCriteria();
 				criteria.name = "Resource";
@@ -696,6 +587,17 @@ export class ResourcesPage implements OnInit {
 
 				let filterApplied = false;
 				that.isFilterApplied = false;
+
+				let values = new Map();
+				values["filters"] = filter;
+				that.telemetryGeneratorService.generateInteractTelemetry(
+					InteractType.OTHER,
+					InteractSubtype.APPLY_FILTER_CLICKED,
+					Environment.HOME,
+					PageId.LIBRARY_PAGE_FILTER,
+					undefined,
+					values
+				);
 
 				Object.keys(that.appliedFilter).forEach(key => {
 					if (that.appliedFilter[key].length > 0) {
@@ -717,18 +619,24 @@ export class ResourcesPage implements OnInit {
 		}
 
 		let filterOptions = {
-			callback: callback
+			callback: this.pageFilterCallBack,
+			pageId: PageId.LIBRARY
 		}
 
 		// Already apllied filter
 		if (this.resourceFilter) {
 			filterOptions['filter'] = this.resourceFilter;
+			this.showFilterPage(filterOptions);
 		} else {
-			filterOptions['filter'] = PageFilterConstants.RESOURCE_FILTER;
+			this.formAndFrameworkUtilService.getLibraryFilterConfig().then((data) => {
+				filterOptions['filter'] = data;
+				this.showFilterPage(filterOptions);
+			});
 		}
+	}
 
-		let filter = this.popCtrl.create(PageFilter, filterOptions, { cssClass: 'resource-filter' })
-		filter.present();
+	showFilterPage(filterOptions) {
+		this.popCtrl.create(PageFilter, filterOptions, { cssClass: 'resource-filter' }).present();
 	}
 
 	checkEmptySearchResult(isAfterLanguageChange = false) {
@@ -740,21 +648,17 @@ export class ResourcesPage implements OnInit {
 		});
 
 		if (flags.length && _.includes(flags, true)) {
-			console.log('search result found');
 		} else {
-			if (!isAfterLanguageChange) this.getMessageByConst('NO_CONTENTS_FOUND');
+			if (!isAfterLanguageChange) this.commonUtilService.showToast('NO_CONTENTS_FOUND');
 		}
 	}
 
-	showNetworkWarning() {
+
+	showOfflineNetworkWarning(isNetAvailable?) {
 		this.showWarning = true;
 		setTimeout(() => {
 			this.showWarning = false;
 		}, 3000);
-	}
-
-	buttonClick(isNetAvailable?) {
-		this.showNetworkWarning();
 	}
 
 	checkNetworkStatus(showRefresh = false) {
@@ -768,18 +672,4 @@ export class ResourcesPage implements OnInit {
 		}
 	}
 
-	/**
-	 * Used to Translate message to current Language
-	 * @param {string} messageConst - Message Constant to be translated
-	 * @returns {string} translatedMsg - Translated Message
-	 */
-	translateMessage(messageConst: string, field?: string): string {
-		let translatedMsg = '';
-		this.translate.get(messageConst, { '%s': field }).subscribe(
-			(value: any) => {
-				translatedMsg = value;
-			}
-		);
-		return translatedMsg;
-	}
 }
