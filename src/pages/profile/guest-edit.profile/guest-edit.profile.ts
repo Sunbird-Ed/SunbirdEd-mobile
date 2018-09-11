@@ -484,7 +484,7 @@ export class GuestEditProfilePage {
 
     this.profileService.createProfile(req, (success: any) => {
       loader.dismiss();
-      this.getToast(this.translateMessage('USER_CREATED_SUCESSFULLY')).present();
+      this.getToast(this.translateMessage('USER_CREATED_SUCCESSFULLY')).present();
       this.telemetryGeneratorService.generateInteractTelemetry(
         InteractType.OTHER,
         InteractSubtype.CREATE_USER_SUCCESS,

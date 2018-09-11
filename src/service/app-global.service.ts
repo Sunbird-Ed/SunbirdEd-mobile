@@ -24,7 +24,6 @@ import { TelemetryGeneratorService } from "./telemetry-generator.service";
 
 @Injectable()
 export class AppGlobalService {
-
     /**
      * This property stores the form details at the app level for a particular app session
      */
@@ -49,7 +48,8 @@ export class AppGlobalService {
 
     session: any;
     public static isPlayerLaunched: boolean = false;
-
+    public averageTime = 0;
+    public averageScore = 0;
     private frameworkData = [];
     public DISPLAY_ONBOARDING_CARDS: boolean = false;
     public DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE: boolean = false;
@@ -296,7 +296,7 @@ export class AppGlobalService {
         });
     }
 
-    public  getGuestUserInfo() {
+    public getGuestUserInfo() {
         console.log("getGuestUserInfo");
         this.preference.getString('selected_user_type')
             .then(val => {
@@ -391,4 +391,22 @@ export class AppGlobalService {
             );
         }
     }
+
+    setAverageTime(time) {
+        this.averageTime = time;
+    }
+
+    getAverageTime() {
+        return this.averageTime;
+    }
+
+    setAverageScore(averageScore: any): any {
+        this.averageScore = averageScore;
+    }
+
+    getAverageScore() {
+        return this.averageScore;
+    }
+
+
 }
