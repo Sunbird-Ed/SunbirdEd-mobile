@@ -9,7 +9,6 @@ import {
 } from 'ionic-angular';
 import { ReportListPage } from './report-list/report-list';
 import {
-  ReportService,
   ProfileService,
   GroupService,
   ProfileRequest,
@@ -37,7 +36,6 @@ export class ReportsPage {
   private profileDetails: any;
 
   constructor(private navCtrl: NavController,
-    private reportService: ReportService,
     private profileService: ProfileService,
     private groupService: GroupService,
     private ngZone: NgZone,
@@ -83,7 +81,7 @@ export class ReportsPage {
   async populateGroups() {
     let that = this;
 
-    return new Promise<any>((resolve, reject) => {
+    return new Promise<any>((resolve) => {
 
       let groupRequest: GroupRequest = {
         uid: ""
@@ -128,9 +126,9 @@ export class ReportsPage {
           loader.dismiss();
         });
       })
-      .catch(err => {
-        loader.dismiss();
-      });
+      .catch(() => {
+          loader.dismiss();
+        });
   }
 
   filterOutCurrentUser(userList, currentUser) {

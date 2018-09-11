@@ -39,8 +39,6 @@ import {
   GUEST_STUDENT_TABS,
   GUEST_TEACHER_TABS
 } from '../../../app/module.service';
-// import { App } from 'ionic-angular';
-import { AppGlobalService } from '../../../service/app-global.service';
 import { PreferenceKey } from '../../../app/app.constant';
 
 /* Interface for the Toast Object */
@@ -125,7 +123,6 @@ export class GuestEditProfilePage {
     private container: ContainerService,
     private app: App,
     private preferences: SharedPreferences,
-    private appGlobal: AppGlobalService,
   ) {
     this.profile = this.navParams.get('profile') || {};
     this.isNewUser = Boolean(this.navParams.get('isNewUser'));
@@ -244,11 +241,11 @@ export class GuestEditProfilePage {
                   subjects: this.profile.subject || []
                 });
 
-              }).catch(error => {
-                this.isFormValid = false;
-                this.loader.dismiss();
-                this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
-              });
+              }).catch(() => {
+                  this.isFormValid = false;
+                  this.loader.dismiss();
+                  this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
+                });
           } else {
             this.loader.dismiss();
           }
@@ -299,10 +296,10 @@ export class GuestEditProfilePage {
             selectedLanguage: this.translate.currentLang
           }
           this.getCategoryData(request, currentField);
-        }).catch(error => {
-          this.isFormValid = false;
-          this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
-        });
+        }).catch(() => {
+            this.isFormValid = false;
+            this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
+          });
 
     } else {
       let request: CategoryRequest = {
@@ -482,18 +479,13 @@ export class GuestEditProfilePage {
       });
     }
 
-    this.profileService.createProfile(req, (success: any) => {
+    this.profileService.createProfile(req, () => {
       loader.dismiss();
       this.getToast(this.translateMessage('USER_CREATED_SUCCESSFULLY')).present();
-      this.telemetryGeneratorService.generateInteractTelemetry(
-        InteractType.OTHER,
-        InteractSubtype.CREATE_USER_SUCCESS,
-        Environment.USER,
-        PageId.CREATE_USER
-      );
+      this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER, InteractSubtype.CREATE_USER_SUCCESS, Environment.USER, PageId.CREATE_USER);
       this.navCtrl.pop();
     },
-      (error: any) => {
+      () => {
         loader.dismiss();
         this.getToast(this.translateMessage("FILL_THE_MANDATORY_FIELDS")).present();
       });

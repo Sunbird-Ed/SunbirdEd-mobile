@@ -1,5 +1,3 @@
-import * as frameworkDataList from "../config/framework.filters";
-
 export class ContentType {
     public static readonly STORY = 'Story';
     public static readonly WORKSHEET = 'Worksheet';

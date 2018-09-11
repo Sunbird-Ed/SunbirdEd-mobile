@@ -226,9 +226,6 @@ export class FormEducation {
       deregisterBackButton();
     });
 
-    function closePopup() {
-      confirm.dismiss();
-    }
   }
 
 }

@@ -4,7 +4,6 @@ import { EnrolledCourseDetailsPage } from './../../pages/enrolled-course-details
 
 import { Input, NgZone, OnInit } from '@angular/core';
 import { Component } from '@angular/core';
-import { ImageLoader } from "ionic-image-loader";
 import { NavController, NavParams, Events } from 'ionic-angular';
 import { ContentType, MimeType } from '../../app/app.constant';
 import { CourseUtilService } from '../../service/course-util.service';
