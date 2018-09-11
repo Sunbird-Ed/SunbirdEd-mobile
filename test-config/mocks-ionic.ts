@@ -600,6 +600,10 @@ export class NavbarMock {
   }
  
 }
+export class OAuthServiceMock {
+  doOAuthStepOne: () => {};
+  doOAuthStepTwo: () => {};
+}
 
 /*export class ToastMock {
   public static instance(): any {
