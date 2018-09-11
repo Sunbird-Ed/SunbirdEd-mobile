@@ -2,7 +2,8 @@ import { GroupDetailsPage } from './group-details/group-details';
 import { TranslateService } from '@ngx-translate/core';
 import {
   Component,
-  NgZone
+  NgZone,
+  ViewChild
 } from '@angular/core';
 import {
   IonicPage,
@@ -47,6 +48,7 @@ import { Network } from '@ionic-native/network';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { Map } from "../../app/telemetryutil";
 import { ContentDetailsPage } from '../content-details/content-details';
+import { Content } from 'ionic-angular';
 
 @IonicPage()
 @Component({
@@ -54,7 +56,8 @@ import { ContentDetailsPage } from '../content-details/content-details';
   templateUrl: 'user-and-groups.html',
 })
 export class UserAndGroupsPage {
-
+  
+  @ViewChild(Content) content: Content;
   segmentType: string = "users";
   groupName: string;
   showEmptyGroupsMessage: boolean = true;
@@ -354,6 +357,7 @@ export class UserAndGroupsPage {
 
   onSegmentChange(event) {
     this.zone.run(() => {
+      this.content.resize();
       this.selectedUserIndex = -1;
     })
     console.log("Event", event._value);
