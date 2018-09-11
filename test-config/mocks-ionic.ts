@@ -235,6 +235,7 @@ export class TranslateServiceStub {
     Observable.of(key);
   }
   use: () => {};
+  currentLang: 'en'
   // get: () => ({
   //     subscribe: () => ({})
   // })
