@@ -534,6 +534,10 @@ export class IonicAppMock {
 export class ngZone {
   run: () => {}
 }
+export class OAuthServiceMock {
+  doOAuthStepOne: () => {};
+  doOAuthStepTwo: () => {};
+}
 
 /*export class ToastMock {
   public static instance(): any {
