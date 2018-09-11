@@ -36,25 +36,11 @@ export class UserReportPage {
     private telemetryGeneratorService: TelemetryGeneratorService) {
   }
 
-  convertTotalTime(milliseconds: number): string {
-    //Get hours from milliseconds
-    // var hours = milliseconds / (1000 * 60 * 60);
-    // var absoluteHours = Math.floor(hours);
-    // var h = absoluteHours > 9 ? absoluteHours : '0' + absoluteHours;
-
-    //Get remainder from hours and convert to minutes
-    var minutes = milliseconds / (1000 * 60);
-    var absoluteMinutes = Math.floor(minutes);
-    var m = absoluteMinutes > 9 ? absoluteMinutes : '0' + absoluteMinutes;
-
-    //Get remainder from minutes and convert to seconds
-    var seconds = (minutes - absoluteMinutes) * 60;
-    var absoluteSeconds = Math.floor(seconds);
-    var s = absoluteSeconds > 9 ? absoluteSeconds : '0' + absoluteSeconds;
-
-
-    return m + ':' + s;
-  }
+  formatTime(time:number):string{
+    let minutes:any = "0" + Math.floor(time / 60);
+    let seconds:any = "0" + (time - minutes * 60);
+    return minutes.substr(-2) + ":" + seconds.substr(-2);
+}
 
   translateMessage(messageConst: string, field?: string): string {
     let translatedMsg = '';
@@ -93,7 +79,7 @@ export class UserReportPage {
           return {
             "index": 'Q' + (('00' + row.qindex).slice(-3)),
             "result": row.score + '/' + row.maxScore,
-            "timespent": that.convertTotalTime(row.timespent),
+            "timespent": that.formatTime(row.timespent),
             "qdesc": row.qdesc,
             "score": row.score,
             "maxScore": row.maxScore,
@@ -102,7 +88,7 @@ export class UserReportPage {
           }
         })
         data['uiRows'] = rows;
-        data['uiTotalTime'] = that.convertTotalTime(data['totalTime']);
+        data['uiTotalTime'] = that.formatTime(data['totalTime']);
         data['fromUser'] = true;
         data['fromGroup'] = false;
         that.zone.run(() => {
