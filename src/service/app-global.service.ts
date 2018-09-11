@@ -49,7 +49,7 @@ export class AppGlobalService {
 
     session: any;
     public static isPlayerLaunched: boolean = false;
-
+    public averageTime = 0;
     private frameworkData = [];
     public DISPLAY_ONBOARDING_CARDS: boolean = false;
     public DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE: boolean = false;
@@ -390,5 +390,13 @@ export class AppGlobalService {
                 paramsMap
             );
         }
+    }
+
+    setAverageTime(time){
+        this.averageTime=time;
+    }
+
+    getAverageTime(){
+        return this.averageTime;
     }
 }
