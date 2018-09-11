@@ -4,6 +4,7 @@ import { ReportService, ReportSummary, PageId, Environment, InteractType, Intera
 import { GroupReportAlert } from '../group-report-alert/group-report-alert';
 import { TranslateService } from '@ngx-translate/core';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
+import { AppGlobalService } from '../../../service/app-global.service';
 
 @Component({
     selector: 'group-report-list',
@@ -46,7 +47,8 @@ export class GroupReportListPage {
         private zone: NgZone,
         private reportService: ReportService,
         private translate: TranslateService,
-        private telemetryGeneratorService: TelemetryGeneratorService) {
+        private telemetryGeneratorService: TelemetryGeneratorService,
+        private appGlobalService:AppGlobalService) {
     }
 
     ionViewWillEnter() {
@@ -88,12 +90,14 @@ export class GroupReportListPage {
                 data.forEach(function (report) {
                     averageTime += report.totalTimespent;
                     averageScore += report.score;
-                    report.totalTimespent = that.convertTotalTime(report.totalTimespent);
+                    report.totalTimespent = that.formatTime(report.totalTimespent);
                     report.name = reportSummary.name;
                 });
                 averageScore = (averageScore / data.length).toFixed(2);
                 averageTime = averageTime / data.length;
-                let details = { 'uiRows': data, totalScore: averageScore, uiTotalTime: that.convertTotalTime(averageTime), fromGroup: true, fromUser: false };
+                this.appGlobalService.setAverageTime(averageTime);
+                this.appGlobalService.setAverageScore(averageScore);
+                let details = { 'uiRows': data, totalScore: averageScore, uiTotalTime: that.formatTime(averageTime), fromGroup: true, fromUser: false };
                 that.zone.run(() => {
                     loader.dismiss();
                     that.fromUserAssessment = details;
@@ -123,7 +127,7 @@ export class GroupReportListPage {
                     })
                     averageScore = (averageScore / data.length).toFixed(2);
                     averageTime = averageTime / data.length;
-                    let details = { 'uiRows': data, totalScore: averageScore, uiTotalTime: that.convertTotalTime(averageTime), showPopup: true, popupCallback: GroupReportAlert, fromGroup: true, fromUser: false };
+                    let details = { 'uiRows': data, totalScore: that.appGlobalService.getAverageScore(), uiTotalTime: that.formatTime(that.appGlobalService.getAverageTime()), showPopup: true, popupCallback: GroupReportAlert, fromGroup: true, fromUser: false };
                     that.zone.run(() => {
                         loader.dismiss();
                         that.fromQuestionAssessment = details;
@@ -136,25 +140,13 @@ export class GroupReportListPage {
                     })
             }
     }
-    convertTotalTime(milliseconds: number): string {
-        //Get hours from milliseconds
-        // var hours = milliseconds / (1000 * 60 * 60);
-        // var absoluteHours = Math.floor(hours);
-        // var h = absoluteHours > 9 ? absoluteHours : '0' + absoluteHours;
-
-        //Get remainder from hours and convert to minutes
-        var minutes = milliseconds / (1000 * 60);
-        var absoluteMinutes = Math.floor(minutes);
-        var m = absoluteMinutes > 9 ? absoluteMinutes : '0' + absoluteMinutes;
-
-        //Get remainder from minutes and convert to seconds
-        var seconds = (minutes - absoluteMinutes) * 60;
-        var absoluteSeconds = Math.floor(seconds);
-        var s = absoluteSeconds > 9 ? absoluteSeconds : '0' + absoluteSeconds;
-
-
-        return m + ':' + s;
+    
+    formatTime(time:number):string{
+        let mm = Math.floor(time / 60);
+        let ss = Math.floor(time % 60);
+        return (mm > 9 ? mm : ("0" + mm)) + ":" + (ss > 9 ? ss : ("0" + ss));
     }
+
     showQuestionFromUser() {
         this.fetchAssessment('questions', true)
     }

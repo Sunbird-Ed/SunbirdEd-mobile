@@ -49,7 +49,7 @@ module.exports = function(config) {
       reports: [ 'html', 'lcovonly' ],
       fixWebpackSourcePaths: true
     },
-
+    browserNoActivityTimeout: 30000,
     reporters: config.coverage ? ['kjhtml', 'dots', 'coverage-istanbul'] : ['kjhtml', 'dots'],
     port: 9876,
     colors: true,
