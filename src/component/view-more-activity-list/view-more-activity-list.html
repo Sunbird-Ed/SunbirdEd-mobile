@@ -41,7 +41,7 @@
         <!-- Button -->
         <ion-col col-4 class="padding">
           <button ion-button outline small float-right style="white-space: normal; overflow: hidden;display: block; padding: 0 0.5em !important">
-            <span style="font-size: 12px !important" *ngIf="type === 'enrolledCourse'" (click)="resumeCourse(content);">{{ ('RESUME' | translate).length > 5 ? ('RESUME' | translate | slice:0:05) + '...' : ('RESUME' | translate) }}</span>
+            <span style="font-size: 12px !important" *ngIf="type === 'enrolledCourse'" (click)="resumeCourse(content);">{{ ('RESUME' | translate).length > 6 ? ('RESUME' | translate | slice:0:05) + '...' : ('RESUME' | translate) }}</span>
             <span style="font-size: 12px !important" *ngIf="type !== 'enrolledCourse'" (click)="navigateToDetailsPage(content, type)">{{ ('OPEN' | translate).length > 5 ? ('OPEN' | translate | slice:0:05) + '...' : ('OPEN' | translate) }}</span>
           </button>
         </ion-col>
