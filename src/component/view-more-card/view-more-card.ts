@@ -16,10 +16,10 @@ import { CourseUtilService } from '../../service/course-util.service';
  * Components.
  */
 @Component({
-  selector: 'view-more-activity-list',
-  templateUrl: 'view-more-activity-list.html'
+  selector: 'view-more-card',
+  templateUrl: 'view-more-card.html'
 })
-export class ViewMoreActivityListComponent implements OnInit {
+export class ViewMoreCardComponent implements OnInit {
 
   /**
    * Contains content details
@@ -45,24 +45,20 @@ export class ViewMoreActivityListComponent implements OnInit {
    * @param {NgZone} ngZone To bind data
    */
   constructor(public navCtrl: NavController, public navParams: NavParams, private zone: NgZone, public courseUtilService: CourseUtilService, public events: Events) {
-    console.log('View more activity Component');
     this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
 
   navigateToDetailsPage(content: any, layoutName) {
-    console.log('View more ard details... @@@', content);
     this.zone.run(() => {
       if (layoutName === 'enrolledCourse' || content.contentType === ContentType.COURSE) {
         this.navCtrl.push(EnrolledCourseDetailsPage, {
           content: content
         })
       } else if (content.mimeType === MimeType.COLLECTION) {
-        console.log('Inside collection details');
         this.navCtrl.push(CollectionDetailsPage, {
           content: content
         })
       } else {
-        console.log('Inside content details');
         this.navCtrl.push(ContentDetailsPage, {
           content: content
         })
@@ -71,13 +67,11 @@ export class ViewMoreActivityListComponent implements OnInit {
   }
 
   resumeCourse(content: any) {
-    console.log('Resume course details... @@@', content);
     if (content.lastReadContentId && content.status === 1) {
       this.events.publish('course:resume', {
         content: content
       });
     } else {
-      console.log('Inside CollectionDetailsPage');
       this.navCtrl.push(EnrolledCourseDetailsPage, {
         content: content
       })
