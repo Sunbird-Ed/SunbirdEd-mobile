@@ -96,6 +96,7 @@ export class GroupReportListPage {
                 averageScore = (averageScore / data.length).toFixed(2);
                 averageTime = averageTime / data.length;
                 this.appGlobalService.setAverageTime(averageTime);
+                this.appGlobalService.setAverageScore(averageScore);
                 let details = { 'uiRows': data, totalScore: averageScore, uiTotalTime: that.formatTime(averageTime), fromGroup: true, fromUser: false };
                 that.zone.run(() => {
                     loader.dismiss();
@@ -126,7 +127,7 @@ export class GroupReportListPage {
                     })
                     averageScore = (averageScore / data.length).toFixed(2);
                     averageTime = averageTime / data.length;
-                    let details = { 'uiRows': data, totalScore: averageScore, uiTotalTime: that.formatTime(that.appGlobalService.getAverageTime()), showPopup: true, popupCallback: GroupReportAlert, fromGroup: true, fromUser: false };
+                    let details = { 'uiRows': data, totalScore: that.appGlobalService.getAverageScore(), uiTotalTime: that.formatTime(that.appGlobalService.getAverageTime()), showPopup: true, popupCallback: GroupReportAlert, fromGroup: true, fromUser: false };
                     that.zone.run(() => {
                         loader.dismiss();
                         that.fromQuestionAssessment = details;
@@ -141,9 +142,9 @@ export class GroupReportListPage {
     }
     
     formatTime(time:number):string{
-        let minutes:any = "0" + Math.floor(time / 60);
-        let seconds:any = "0" + (time - minutes * 60);
-        return minutes.substr(-2) + ":" + seconds.substr(-2);
+        let mm = Math.floor(time / 60);
+        let ss = Math.floor(time % 60);
+        return (mm > 9 ? mm : ("0" + mm)) + ":" + (ss > 9 ? ss : ("0" + ss));
     }
 
     showQuestionFromUser() {
