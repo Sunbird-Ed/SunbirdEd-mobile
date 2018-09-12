@@ -110,7 +110,7 @@ export class AdditionalInfoComponent {
       lastName: [this.profile.lastName || ''],
       language: [this.profile.language || [], Validators.required],
       email: [this.profile.email || ''],
-      phone: [this.profile.phone, [Validators.minLength(10)]], // Need to assign phone value
+      phone: [this.profile.phone || ''], // Need to assign phone value
       profileSummary: [this.profile.profileSummary || ''],
       subject: [this.profile.subject || []],
       gender: [this.profile.gender || ''],
@@ -331,12 +331,13 @@ export class AdditionalInfoComponent {
     } else if (!formVal.language.length) {
       this.getToast(this.translateMessage('ERROR_EMPTY_LANGUAGE')).present();
       return false;
-    } else if ((this.profile && this.profile.phone && (formVal.phone !== this.profile.phone)) || (formVal.phone === '' || (formVal.phone.length !== 10))) {
-      if (!formVal.phone.match(/^\d{10}$/)) {
-        this.getToast(this.translateMessage('ERROR_SHORT_MOBILE')).present();
-        return false;
-      }
-    }
+     }
+    // else if ((this.profile && this.profile.phone && (formVal.phone !== this.profile.phone)) || (formVal.phone === '' || (formVal.phone.length !== 10))) {
+    //   if (!formVal.phone.match(/^\d{10}$/)) {
+    //     this.getToast(this.translateMessage('ERROR_SHORT_MOBILE')).present();
+    //     return false;
+    //   }
+    // }
     return true;
   }
 
