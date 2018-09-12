@@ -12,7 +12,8 @@ import {
   AlertController,
   Platform,
   PopoverController,
-  ToastController, LoadingController
+  ToastController,
+  LoadingController
 } from 'ionic-angular';
 import { PopoverPage } from './popover/popover';
 import {
@@ -40,12 +41,17 @@ import { GuestEditProfilePage } from '../profile/guest-edit.profile/guest-edit.p
 import { IonicApp } from 'ionic-angular';
 import { ShareUserAndGroupPage } from './share-user-and-groups/share-user-and-groups';
 import { AppGlobalService } from '../../service/app-global.service';
-import { initTabs, GUEST_STUDENT_SWITCH_TABS, GUEST_TEACHER_SWITCH_TABS, GUEST_STUDENT_TABS, GUEST_TEACHER_TABS } from '../../app/module.service';
+import {
+  initTabs,
+  GUEST_STUDENT_SWITCH_TABS,
+  GUEST_TEACHER_SWITCH_TABS,
+  GUEST_STUDENT_TABS,
+  GUEST_TEACHER_TABS
+} from '../../app/module.service';
 import { App, Events } from 'ionic-angular';
 import { Network } from '@ionic-native/network';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { Map } from "../../app/telemetryutil";
-import { ContentDetailsPage } from '../content-details/content-details';
 import { Content } from 'ionic-angular';
 
 @IonicPage()
@@ -54,7 +60,7 @@ import { Content } from 'ionic-angular';
   templateUrl: 'user-and-groups.html',
 })
 export class UserAndGroupsPage {
-  
+
   @ViewChild(Content) content: Content;
   segmentType: string = "users";
   groupName: string;
@@ -113,7 +119,7 @@ export class UserAndGroupsPage {
       this.profileDetails = this.appGlobalService.getCurrentUser();
     }
 
-    
+
 
   }
 
@@ -127,18 +133,18 @@ export class UserAndGroupsPage {
 
   ionViewWillEnter() {
     this.zone.run(() => {
-    this.getAllProfile();
-    this.getAllGroup();
-    this.getCurrentGroup();
+      this.getAllProfile();
+      this.getAllGroup();
+      this.getCurrentGroup();
 
-    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
-      this.dismissPopup();
-    }, 11);
-   })
-   if(this.userList){
-     this.noUsersPresent = false;
-     this.loadingUserList = true;
-   }
+      this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+        this.dismissPopup();
+      }, 11);
+    })
+    if (this.userList) {
+      this.noUsersPresent = false;
+      this.loadingUserList = true;
+    }
 
   }
 
