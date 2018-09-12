@@ -12,7 +12,12 @@ export class ReportAlert {
   assessmentDetails: {};
   report: string = 'questions'
 
-  constructor(navParams: NavParams, private viewCtrl: ViewController, private navCtrl: NavController, private platform: Platform, private ionicApp: IonicApp) {
+  constructor(
+    navParams: NavParams,
+    private viewCtrl: ViewController,
+    private navCtrl: NavController,
+    private platform: Platform,
+    private ionicApp: IonicApp) {
     this.callback = navParams.get('callback');
     this.assessmentDetails = this.callback['row'];
   }

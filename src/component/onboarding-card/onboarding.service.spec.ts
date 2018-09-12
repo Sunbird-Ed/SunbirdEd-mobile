@@ -1,4 +1,5 @@
-import { mockCurrentUserDetails, mockCategories, mockOnBoardingSlideDefaults, mockSyllabusList } from './onboarding.data.spec';
+import { fakeAsync } from '@angular/core/testing';
+import { mockCurrentUserDetails, mockCategories, mockOnBoardingSlideDefaults, mockSyllabusList, mockSyllabusDetails, mockSelectedSlide, mockGetFrameworkDetails, mockSaveDetails } from './onboarding.data.spec';
 import { AppGlobalService } from './../../service/app-global.service';
 import { ServiceProvider, FrameworkService, BuildParamService, FormService, AuthService, TelemetryService } from 'sunbird';
 import { OnboardingService } from './onboarding.service';
@@ -12,14 +13,17 @@ import {
     Profile,
     SharedPreferences,
 } from 'sunbird';
+
 import { FormAndFrameworkUtilService } from '../../pages/profile/formandframeworkutil.service';
 import { ToastController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { PreferenceKey } from '../../app/app.constant';
 import { TestBed, inject } from '@angular/core/testing';
-import { EventsMock, PopoverControllerMock } from 'ionic-mocks';
-import { TranslateServiceStub, ToastControllerMock, AppGlobalServiceMock, FormAndFrameworkUtilServiceMock } from '../../../test-config/mocks-ionic';
+import { PopoverControllerMock } from 'ionic-mocks';
+import { TranslateServiceStub, ToastControllerMock, AppGlobalServiceMock, FormAndFrameworkUtilServiceMock, EventsMock } from '../../../test-config/mocks-ionic';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { Observable } from 'rxjs';
+import { exec } from 'child_process';
 describe('OnBoarding.service', () => {
     let service: OnboardingService;
 
@@ -176,23 +180,23 @@ describe('OnBoarding.service', () => {
             //expect(service.onBoardingSlides[0].selectedOptions).toEqual('மாநிலம் (ஆந்திரப் பிரதேசம்)');
             expect(service.currentIndex).toEqual(100);
 
-/*             //board
-            expect(service.getSelectedOptions).toHaveBeenCalled();
-            expect(service.getSelectedOptions).toHaveBeenCalledWith(0, ['stateandhrapradesh']);
-            expect(service.onBoardingSlides[0].selectedOptions).toEqual('மாநிலம் (ஆந்திரப் பிரதேசம்)');
-            expect(service.currentIndex).toEqual(20);
-
-            //medium
-            expect(service.onBoardingSlides[0].selectedOptions).toEqual('மாநிலம் (ஆந்திரப் பிரதேசம்)');
-            expect(service.currentIndex).toEqual(20);
-
-            //class
-            expect(service.onBoardingSlides[0].selectedOptions).toEqual('மாநிலம் (ஆந்திரப் பிரதேசம்)');
-            expect(service.currentIndex).toEqual(20);
-
-            //subjects
-            expect(service.onBoardingSlides[0].selectedOptions).toEqual('மாநிலம் (ஆந்திரப் பிரதேசம்)');
-            expect(service.currentIndex).toEqual(20); */
+            /*             //board
+                        expect(service.getSelectedOptions).toHaveBeenCalled();
+                        expect(service.getSelectedOptions).toHaveBeenCalledWith(0, ['stateandhrapradesh']);
+                        expect(service.onBoardingSlides[0].selectedOptions).toEqual('மாநிலம் (ஆந்திரப் பிரதேசம்)');
+                        expect(service.currentIndex).toEqual(20);
+            
+                        //medium
+                        expect(service.onBoardingSlides[0].selectedOptions).toEqual('மாநிலம் (ஆந்திரப் பிரதேசம்)');
+                        expect(service.currentIndex).toEqual(20);
+            
+                        //class
+                        expect(service.onBoardingSlides[0].selectedOptions).toEqual('மாநிலம் (ஆந்திரப் பிரதேசம்)');
+                        expect(service.currentIndex).toEqual(20);
+            
+                        //subjects
+                        expect(service.onBoardingSlides[0].selectedOptions).toEqual('மாநிலம் (ஆந்திரப் பிரதேசம்)');
+                        expect(service.currentIndex).toEqual(20); */
 
             done();
         }, 20);
@@ -214,5 +218,398 @@ describe('OnBoarding.service', () => {
             expect(service.getCurrentUser).toHaveBeenCalled();
             done();
         }, 20);
+    });
+    it('#arrayToString  should return comma separated string', () => {
+        service = TestBed.get(OnboardingService);
+        expect(service.arrayToString).toBeDefined();
+        spyOn(service, 'arrayToString').and.callThrough();
+        let arr = ['syllabus', 'board',];
+        let response = service.arrayToString(arr);
+        expect(service.arrayToString).toHaveBeenCalled();
+        expect(response).toEqual('syllabus, board');
+        expect(typeof response).toBe('string')
+    });
+    xit('#translateMessage should accept language constant and return translated value of the given key for current language', fakeAsync(() => {
+        let translate = TestBed.get(TranslateService);
+        service = TestBed.get(OnboardingService);
+        const spy = spyOn(translate, 'get').and.callFake((arg) => {
+            return Observable.of('Cancel');
+        });
+        let translatedMessage = service.translateMessage('CANCEL');
+        expect(translatedMessage).toEqual('Cancel');
+        expect(typeof translatedMessage).toBe('string');
+        expect(spy.calls.any()).toEqual(true);
+    }));
+    it("#getToast should not create ToastController if not passed any message for toast", () => {
+        const toastCtrlStub = TestBed.get(ToastController);
+        service = TestBed.get(OnboardingService);
+        spyOn(toastCtrlStub, "create");
+        service.getToast();
+        expect(toastCtrlStub.create).not.toHaveBeenCalled();
+    });
+    it("#getToast should create ToastController", () => {
+        const toastCtrlStub = TestBed.get(ToastController);
+        service = TestBed.get(OnboardingService);
+        spyOn(toastCtrlStub, "create");
+        service.getToast('Some Message');
+        expect(toastCtrlStub.create).toHaveBeenCalled();
+        expect(toastCtrlStub.create).toBeTruthy();
+    });
+    it('#getListName should syllabuslist of number passed to it, is 0', () => {
+        service = TestBed.get(OnboardingService);
+        expect(service.getListName).toBeDefined();
+        spyOn(service, 'getListName').and.callThrough();
+        let res = service.getListName(0);
+        expect(service.getListName).toHaveBeenCalled();
+        expect(res).toEqual('syllabusList');
+        expect(typeof res).toBe('string');
+    });
+    it('#getListName should boardList of number passed to it, is 1', () => {
+        service = TestBed.get(OnboardingService);
+        expect(service.getListName).toBeDefined();
+        spyOn(service, 'getListName').and.callThrough();
+        let res = service.getListName(1);
+        expect(service.getListName).toHaveBeenCalled();
+        expect(res).toEqual('boardList');
+        expect(typeof res).toBe('string');
+    });
+    it('#getListName should mediumList of number passed to it, is 2', () => {
+        service = TestBed.get(OnboardingService);
+        expect(service.getListName).toBeDefined();
+        spyOn(service, 'getListName').and.callThrough();
+        let res = service.getListName(2);
+        expect(service.getListName).toHaveBeenCalled();
+        expect(res).toEqual('mediumList');
+        expect(typeof res).toBe('string');
+    });
+    it('#getListName should gradeList of number passed to it, is 3', () => {
+        service = TestBed.get(OnboardingService);
+        expect(service.getListName).toBeDefined();
+        spyOn(service, 'getListName').and.callThrough();
+        let res = service.getListName(3);
+        expect(service.getListName).toHaveBeenCalled();
+        expect(res).toEqual('gradeList');
+        expect(typeof res).toBe('string');
+    });
+    it('#getListName should subjectList of number passed to it, is 4', () => {
+        service = TestBed.get(OnboardingService);
+        expect(service.getListName).toBeDefined();
+        spyOn(service, 'getListName').and.callThrough();
+        let res = service.getListName(4);
+        expect(service.getListName).toHaveBeenCalled();
+        expect(res).toEqual('subjectList');
+        expect(typeof res).toBe('string');
+    });
+    it('#getListName should boardList of number passed to it, is 5', () => {
+        service = TestBed.get(OnboardingService);
+        expect(service.getListName).toBeDefined();
+        spyOn(service, 'getListName').and.callThrough();
+        let res = service.getListName(5);
+        expect(service.getListName).toHaveBeenCalled();
+        expect(res).toEqual('boardList');
+        expect(typeof res).toBe('string');
+    });
+    it('#getListArray should assign syllabuslist data to local variable', () => {
+        service = TestBed.get(OnboardingService);
+        expect(service.getListArray).toBeDefined();
+        spyOn(service, 'getListArray').and.callThrough();
+        service.syllabusList = ['ap_k-12_13'];
+        service.onBoardingSlides = mockOnBoardingSlideDefaults;
+        service.getListArray('syllabusList');
+        expect(service.getListArray).toHaveBeenCalled();
+        expect(service.onBoardingSlides[0].options).toEqual(['ap_k-12_13']);
+    });
+    it('#getListArray should assign boardList data to local variable', () => {
+        service = TestBed.get(OnboardingService);
+        expect(service.getListArray).toBeDefined();
+        spyOn(service, 'getListArray').and.callThrough();
+        service.boardList = ['stateandhrapradesh'];
+        service.onBoardingSlides = mockOnBoardingSlideDefaults;
+        service.getListArray('boardList');
+        expect(service.getListArray).toHaveBeenCalled();
+        expect(service.onBoardingSlides[1].options).toEqual(['stateandhrapradesh']);
+    });
+    it('#getListArray should assign mediumList data to local variable', () => {
+        service = TestBed.get(OnboardingService);
+        expect(service.getListArray).toBeDefined();
+        spyOn(service, 'getListArray').and.callThrough();
+        service.mediumList = ['english'];
+        service.onBoardingSlides = mockOnBoardingSlideDefaults;
+        service.getListArray('mediumList');
+        expect(service.getListArray).toHaveBeenCalled();
+        expect(service.onBoardingSlides[2].options).toEqual(['english']);
+    });
+    it('#getListArray should assign gradeList data to local variable', () => {
+        service = TestBed.get(OnboardingService);
+        expect(service.getListArray).toBeDefined();
+        spyOn(service, 'getListArray').and.callThrough();
+        service.gradeList = ["class10", "class9"];
+        service.onBoardingSlides = mockOnBoardingSlideDefaults;
+        service.getListArray('gradeList');
+        expect(service.getListArray).toHaveBeenCalled();
+        expect(service.onBoardingSlides[3].options).toEqual(["class10", "class9"]);
+    });
+    it('#getListArray should assign subjectList data to local variable', () => {
+        service = TestBed.get(OnboardingService);
+        expect(service.getListArray).toBeDefined();
+        spyOn(service, 'getListArray').and.callThrough();
+        service.subjectList = ['english', 'marathi'];
+        service.onBoardingSlides = mockOnBoardingSlideDefaults;
+        service.getListArray('subjectList');
+        expect(service.getListArray).toHaveBeenCalled();
+        expect(service.onBoardingSlides[4].options).toEqual(['english', 'marathi']);
+    });
+    it('#getSelectedOptions should  return sorted diplay value of given field', () => {
+        service = TestBed.get(OnboardingService);
+        expect(service.getSelectedOptions).toBeDefined();
+        spyOn(service, 'getSelectedOptions').and.callThrough();
+        service.categories = mockCategories;
+        let res = service.getSelectedOptions(0, ['statemaharashtra']);
+        expect(service.getSelectedOptions).toHaveBeenCalled();
+        expect(res).toEqual('State (Maharashtra)');
+        expect(typeof res).toBe('string');
+    });
+    it('#getSyllabusDetails should return syllaus list', (done) => {
+        service = TestBed.get(OnboardingService);
+        const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
+        expect(service.getSyllabusDetails).toBeDefined();
+        spyOn(service, 'getSyllabusDetails').and.callThrough();
+        spyOn(formAndFrameworkUtilServiceStub, 'getSyllabusList').and.returnValue(Promise.resolve(mockSyllabusDetails.syllabusDetailsAPIResponse));
+        service.getSyllabusDetails().then(() => {
+            expect(service.getSyllabusDetails).toHaveBeenCalled();
+            expect(service.syllabusList).toEqual(mockSyllabusDetails.syllabusList);
+            done();
+        });
+    });
+    it('#getSyllabusDetails should return syllaus list', (done) => {
+        service = TestBed.get(OnboardingService);
+        const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
+        expect(service.getSyllabusDetails).toBeDefined();
+        spyOn(service, 'getSyllabusDetails').and.callThrough();
+        spyOn(formAndFrameworkUtilServiceStub, 'getSyllabusList').and.returnValue(Promise.resolve([]));
+        /*         service.getSyllabusDetails();
+                
+                setTimeout(() => {
+                    expect(service.getSyllabusDetails).toHaveBeenCalled();
+                    expect();
+                    done();
+                }, 10); */
+        let promise = service.getSyllabusDetails();
+        promise.then(() => {
+            done();
+        }).catch((error) => {
+            expect(error).toEqual([]);
+            done();
+        })
+    });
+    it('#selectedCheckboxValue should filter out selected values and store in local object', (done) => {
+        service = TestBed.get(OnboardingService);
+        const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
+
+        expect(service.selectedCheckboxValue).toBeDefined();
+        spyOn(service, 'selectedCheckboxValue').and.callThrough();
+        spyOn(formAndFrameworkUtilServiceStub, 'getFrameworkDetails').and.returnValue(Promise.resolve(mockGetFrameworkDetails.getFrameworkAPIResponse));
+        spyOn<any>(service, 'setAndSaveDetails');
+        service.onBoardingSlides = mockOnBoardingSlideDefaults;
+        service.selectedCheckboxValue(mockSelectedSlide, 0);
+
+        setTimeout(() => {
+            expect(service.selectedCheckboxValue).toHaveBeenCalled();
+            expect(service.onBoardingSlides[0].selectedCode.length).toEqual(0);
+            expect(service.onBoardingSlides[0].selectedOptions).toEqual("");
+            //expect(service['setAndSaveDetails']({}, 0 )).toHaveBeenCalled();
+            done();
+        }, 10);
+    });
+    it('#selectedCheckboxValue should filter out selected values and store in local object, if internet not available', (done) => {
+        service = TestBed.get(OnboardingService);
+        const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
+
+        expect(service.selectedCheckboxValue).toBeDefined();
+        spyOn(service, 'selectedCheckboxValue').and.callThrough();
+        spyOn(formAndFrameworkUtilServiceStub, 'getFrameworkDetails').and.returnValue(Promise.reject('Error occurred'));
+        spyOn(service, 'getToast');
+        spyOn(service, 'translateMessage').and.returnValue('No internet connectivity, turn on WiFi or mobile data and try again');
+        spyOn(service, 'arrayToString').and.returnValue('State (Andhra Pradesh)');
+        service.onBoardingSlides = mockOnBoardingSlideDefaults;
+        service.profile = JSON.parse(mockCurrentUserDetails);
+        service.syllabusList = mockSyllabusDetails.syllabusListWithSelectedvalue;
+        service.selectedCheckboxValue(mockSelectedSlide, 0);
+
+        setTimeout(() => {
+            expect(service.selectedCheckboxValue).toHaveBeenCalled();
+            expect(service.onBoardingSlides[0].selectedOptions).toEqual('State (Andhra Pradesh)');
+            expect(service.arrayToString).toHaveBeenCalled();
+            expect(service.getToast).toHaveBeenCalled();
+            expect(service.translateMessage).toHaveBeenCalledWith('NEED_INTERNET_TO_CHANGE');
+            expect(service.getToast).toHaveBeenCalledWith('No internet connectivity, turn on WiFi or mobile data and try again');
+            done();
+        }, 10);
+    });
+    it('#selectedCheckboxValue should filter out selected values and store in local object', (done) => {
+        service = TestBed.get(OnboardingService);
+
+        expect(service.selectedCheckboxValue).toBeDefined();
+        spyOn(service, 'selectedCheckboxValue').and.callThrough();
+        spyOn<any>(service, 'setAndSaveDetails');
+        service.onBoardingSlides = mockOnBoardingSlideDefaults;
+        service.selectedCheckboxValue(mockSelectedSlide, 1);
+
+        setTimeout(() => {
+            expect(service.selectedCheckboxValue).toHaveBeenCalled();
+            //exec(service['setAndSaveDetails']({}, 0));
+            done();
+        }, 10);
+    });
+    it('#setAndSaveDetails should save selected details', (done) => {
+        service = TestBed.get(OnboardingService);
+        expect(service["setAndSaveDetails"]).toBeDefined();
+
+        spyOn<any>(service, 'setAndSaveDetails');
+        service.onBoardingSlides = mockOnBoardingSlideDefaults;
+        service["setAndSaveDetails"](mockSelectedSlide, 0);
+
+        setTimeout(() => {
+            expect(service["setAndSaveDetails"]).toHaveBeenCalled();
+            expect(service.onBoardingSlides[0].selectedCode).toEqual([]);
+            done();
+        }, 10);
+    });
+    it('#checkPrevValue should save the details, and when slide index is greater than 1', () => {
+        service = TestBed.get(OnboardingService);
+        expect(service.checkPrevValue).toBeDefined();
+
+
+        spyOn(service, "checkPrevValue").and.callThrough();
+        service.checkPrevValue(0, 'syllabusList', undefined, false);
+
+        expect(service.checkPrevValue).toHaveBeenCalled();
+    });
+    it('#checkPrevValue should save the details, and when slide index is 1 ', (done) => {
+        service = TestBed.get(OnboardingService);
+        expect(service.checkPrevValue).toBeDefined();
+
+        const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
+        const eventsStub = TestBed.get(Events);
+        const translateServiceStub = TestBed.get(TranslateService);
+
+        spyOn(service, "checkPrevValue").and.callThrough();
+        spyOn(formAndFrameworkUtilServiceStub, 'getFrameworkDetails').and.returnValue(Promise.resolve(mockCategories));
+        spyOn(eventsStub, 'publish');
+        spyOn(service, 'getCategoryData');
+        translateServiceStub.currentLang = 'en';
+        let catRequest = {
+            currentCategory: 'board',
+            selectedLanguage: 'en'
+        };
+        service.checkPrevValue(1, 'boardList', undefined, false);
+
+        setTimeout(() => {
+            expect(service.checkPrevValue).toHaveBeenCalled();
+            expect(eventsStub.publish).toHaveBeenCalled();
+            expect(eventsStub.publish).toHaveBeenCalledWith('is-data-available', { show: false, index: 1 });
+            expect(service.categories).toEqual(mockCategories);
+            expect(service.getCategoryData).toHaveBeenCalled();
+            expect(service.getCategoryData).toHaveBeenCalledWith(catRequest, 'boardList', 1, false);
+            done();
+        }, 10);
+    });
+    it('#checkPrevValue should save the details, and when slide index is greater than 1', (done) => {
+        service = TestBed.get(OnboardingService);
+        expect(service.checkPrevValue).toBeDefined();
+
+        const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
+        const eventsStub = TestBed.get(Events);
+        const translateServiceStub = TestBed.get(TranslateService);
+
+        spyOn(service, "checkPrevValue").and.callThrough();
+        spyOn(formAndFrameworkUtilServiceStub, 'getFrameworkDetails').and.returnValue(Promise.resolve(mockCategories));
+        spyOn(eventsStub, 'publish');
+        spyOn(service, 'getCategoryData');
+        service.categories = mockCategories;
+        translateServiceStub.currentLang = 'en';
+        let catRequest = {
+            currentCategory: 'medium',
+            prevCategory: 'board',
+            selectedCode: undefined,
+            selectedLanguage: 'en'
+        };
+        service.checkPrevValue(2, 'mediumList', undefined, false);
+
+        setTimeout(() => {
+            expect(service.checkPrevValue).toHaveBeenCalled();
+            expect(eventsStub.publish).toHaveBeenCalled();
+            expect(eventsStub.publish).toHaveBeenCalledWith('is-data-available', { show: false, index: 2 });
+            expect(service.categories).toEqual(mockCategories);
+            expect(service.getCategoryData).toHaveBeenCalled();
+            expect(service.getCategoryData).toHaveBeenCalledWith(catRequest, 'mediumList', 2, false);
+            done();
+        }, 10);
+    });
+
+    it('#saveDetails should make an API call for current category is syllabus', (done) => {
+        service = TestBed.get(OnboardingService);
+        const profileService = TestBed.get(ProfileService);
+        const eventsStub = TestBed.get(Events);
+        expect(service.saveDetails).toBeDefined();
+        spyOn(service, 'saveDetails').and.callThrough();
+        spyOn(profileService, 'updateProfile').and.callFake((req, res, error) => {
+            res(JSON.parse(mockCurrentUserDetails));
+        });
+        spyOn(eventsStub, 'publish');
+        spyOn(service, 'getCurrentUser');
+        service.onBoardingSlides = mockSaveDetails.onBoardingSlides;
+        service.profile = JSON.parse(mockCurrentUserDetails);
+        service.saveDetails(0);
+        setTimeout(() => {
+            expect(service.saveDetails).toHaveBeenCalled();
+            expect(service.isOnBoardingCardCompleted).toBe(false);
+            expect(eventsStub.publish).toHaveBeenCalled();
+            expect(eventsStub.publish).toHaveBeenCalledWith('onboarding-card:completed', { isOnBoardingCardCompleted: false });
+            expect(eventsStub.publish).toHaveBeenCalledWith('refresh:profile');
+            expect(service.getCurrentUser).toHaveBeenCalled();
+            done();
+        }, 10);
+    });
+    it('#saveDetails should make an API call for current category is syllabus but failed to update', (done) => {
+        service = TestBed.get(OnboardingService);
+        const profileService = TestBed.get(ProfileService);
+        const eventsStub = TestBed.get(Events);
+        expect(service.saveDetails).toBeDefined();
+        spyOn(service, 'saveDetails').and.callThrough();
+        spyOn(profileService, 'updateProfile').and.callFake((req, res, error) => {
+            error('Error occurred');
+        });
+        service.onBoardingSlides = mockSaveDetails.onBoardingSlides;
+        service.profile = JSON.parse(mockCurrentUserDetails);
+        service.saveDetails(0);
+        setTimeout(() => {
+            expect(service.saveDetails).toHaveBeenCalled();
+            done();
+        }, 10);
+    });
+    it('#saveDetails should make an API call for current category is board', (done) => {
+        service = TestBed.get(OnboardingService);
+        const profileService = TestBed.get(ProfileService);
+        const eventsStub = TestBed.get(Events);
+        expect(service.saveDetails).toBeDefined();
+        spyOn(service, 'saveDetails').and.callThrough();
+        spyOn(profileService, 'updateProfile').and.callFake((req, res, error) => {
+            res(JSON.parse(mockCurrentUserDetails));
+        });
+        spyOn(eventsStub, 'publish');
+        spyOn(service, 'getCurrentUser');
+        service.onBoardingSlides = mockSaveDetails.onBoardingSlides;
+        service.profile = JSON.parse(mockCurrentUserDetails);
+        service.saveDetails(0);
+        setTimeout(() => {
+            expect(service.saveDetails).toHaveBeenCalled();
+            expect(service.isOnBoardingCardCompleted).toBe(false);
+            expect(eventsStub.publish).toHaveBeenCalled();
+            expect(eventsStub.publish).toHaveBeenCalledWith('onboarding-card:completed', { isOnBoardingCardCompleted: false });
+            expect(eventsStub.publish).toHaveBeenCalledWith('refresh:profile');
+            expect(service.getCurrentUser).toHaveBeenCalled();
+            done();
+        }, 10);
     });
 });

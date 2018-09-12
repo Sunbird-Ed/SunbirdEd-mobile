@@ -24,7 +24,6 @@ import {
   ContainerService,
   ProfileType,
   TabsPage,
-  TelemetryService,
   SharedPreferences,
   OAuthService,
   GroupRequest,
@@ -43,7 +42,6 @@ import { ShareUserAndGroupPage } from './share-user-and-groups/share-user-and-gr
 import { AppGlobalService } from '../../service/app-global.service';
 import { initTabs, GUEST_STUDENT_SWITCH_TABS, GUEST_TEACHER_SWITCH_TABS, GUEST_STUDENT_TABS, GUEST_TEACHER_TABS } from '../../app/module.service';
 import { App, Events } from 'ionic-angular';
-import { group } from '@angular/core/src/animation/dsl';
 import { Network } from '@ionic-native/network';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { Map } from "../../app/telemetryutil";
@@ -99,7 +97,6 @@ export class UserAndGroupsPage {
     private telemetryGeneratorService: TelemetryGeneratorService,
     private authService: AuthService,
     private loadingCtrl: LoadingController,
-    private events : Events
   ) {
 
     /* Check userList length and show message or list accordingly */
@@ -192,13 +189,14 @@ export class UserAndGroupsPage {
         }
         popover.dismiss();
       },
-      delete: ($event) => {
+      delete: () => {
         if (isUser) {
           this.deleteUserConfirmBox(index);
-        } else {
+        }
+        else {
           this.deleteGroupConfirmBox(index);
         }
-        popover.dismiss()
+        popover.dismiss();
       },
       isCurrentUser: isCurrentUser
     },
@@ -499,7 +497,6 @@ export class UserAndGroupsPage {
 
   /** Delete alert box */
   deleteGroupConfirmBox(index) {
-    let self = this;
     let alert = this.alertCtrl.create({
       title: this.translateMessage('GROUP_DELETE_CONFIRM', this.groupList[index].name),
       mode: 'wp',
@@ -661,7 +658,7 @@ export class UserAndGroupsPage {
         console.log("Error : " + error);
       });
 
-    this.profileService.setCurrentUser(selectedUser.uid, (success) => {
+    this.profileService.setCurrentUser(selectedUser.uid, () => {
       if (isBeingPlayed) {
         this.event.publish('launchPlayer', true);
         this.navCtrl.pop();
@@ -669,23 +666,20 @@ export class UserAndGroupsPage {
       if (selectedUser.profileType == ProfileType.STUDENT) {
         initTabs(this.container, isBeingPlayed ? GUEST_STUDENT_TABS : GUEST_STUDENT_SWITCH_TABS);
         this.preferences.putString('selected_user_type', ProfileType.STUDENT);
-      } else {
+      }
+      else {
         initTabs(this.container, isBeingPlayed ? GUEST_TEACHER_TABS : GUEST_TEACHER_SWITCH_TABS);
         this.preferences.putString('selected_user_type', ProfileType.TEACHER);
       }
-
       this.event.publish('refresh:profile');
       this.event.publish(AppGlobalService.USER_INFO_UPDATED);
-
       this.app.getRootNav().setRoot(TabsPage);
-
       let toast = this.toastCtrl.create({
         message: this.translateMessage("SWITCHING_TO", selectedUser.handle),
         duration: 2000,
         position: 'bottom'
       });
       toast.present();
-
     }, (error) => {
       console.log("Error " + error);
     });

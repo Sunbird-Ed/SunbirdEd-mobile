@@ -2,7 +2,7 @@ import { Component, NgZone } from '@angular/core';
 import { NavController, NavParams, Events } from 'ionic-angular';
 import {
   TabsPage, SharedPreferences,
-  Interact, TelemetryService, InteractType, InteractSubtype,
+  TelemetryService, InteractType, InteractSubtype,
   Environment, PageId, ImpressionType,
   ContainerService,
   Profile,
@@ -156,16 +156,16 @@ export class UserTypeSelectionPage {
   }
 
   setProfile(profileRequest: any) {
-    this.profileService.setCurrentProfile(true, profileRequest, res => {
+    this.profileService.setCurrentProfile(true, profileRequest, () => {
       this.profileService.getCurrentUser(success => {
-        let userId = JSON.parse(success).uid
-        if (userId !== "null") this.preference.putString('GUEST_USER_ID_BEFORE_LOGIN', userId);
+        let userId = JSON.parse(success).uid;
+        if (userId !== "null")
+          this.preference.putString('GUEST_USER_ID_BEFORE_LOGIN', userId);
         this.gotoTabsPage();
-      },
-        error => {
-          console.error("Error", error);
-          return "null";
-        });
+      }, error => {
+        console.error("Error", error);
+        return "null";
+      });
     },
       err => {
         console.error("Error", err);

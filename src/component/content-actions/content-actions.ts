@@ -1,14 +1,12 @@
 import { TranslateService } from '@ngx-translate/core';
-import { CollectionDetailsPage } from './../../pages/collection-details/collection-details';
 import { NavParams } from 'ionic-angular/navigation/nav-params';
-import { NavController, PopoverController, Events } from 'ionic-angular/index';
+import { PopoverController, Events } from 'ionic-angular/index';
 import { ViewController } from 'ionic-angular';
 import { Component } from '@angular/core';
 import { ContentService, AuthService } from 'sunbird';
 import { ToastController, Platform } from "ionic-angular";
 import { ReportIssuesComponent } from '../report-issues/report-issues';
 import { ProfileConstants } from '../../app/app.constant';
-import { AppGlobalService } from '../../service/app-global.service';
 
 /**
  * Generated class for the ContentActionsComponent component.
@@ -33,15 +31,13 @@ export class ContentActionsComponent {
   constructor(
     public viewCtrl: ViewController,
     private contentService: ContentService,
-    private navCtrl: NavController,
     private navParams: NavParams,
     private toastCtrl: ToastController,
     public popoverCtrl: PopoverController,
     private authService: AuthService,
     private events: Events,
     private translate: TranslateService,
-    private platform: Platform,
-    private appGlobalService: AppGlobalService) {
+    private platform: Platform) {
     this.content = this.navParams.get("content");
     this.pageName = this.navParams.get('pageName');
 
@@ -94,7 +90,7 @@ export class ContentActionsComponent {
   /**
    * Close popover
    */
-  close(event, i) {
+  close(i) {
     switch (i) {
       case 0: {
         this.deleteContent();
