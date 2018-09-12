@@ -29,9 +29,7 @@ import {
   initTabs,
   GUEST_TEACHER_TABS,
   GUEST_STUDENT_TABS,
-  LOGIN_TEACHER_TABS,
-  GUEST_TEACHER_SWITCH_TABS
-} from './module.service';
+  LOGIN_TEACHER_TABS} from './module.service';
 import { LanguageSettingsPage } from '../pages/language-settings/language-settings';
 import { ImageLoaderConfig } from 'ionic-image-loader';
 import { TranslateService } from '@ngx-translate/core';
@@ -111,11 +109,10 @@ export class MyApp {
       //check if any new app version is available
       this.checkForUpgrade();
 
-      this.permission.requestPermission(this.permissionList, (response) => {
+      this.permission.requestPermission(this.permissionList, () => {
         this.makeEntryInSupportFolder();
-      }, (error) => {
-
-      })
+      }, () => {
+        })
 
       this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
         .then(val => {
@@ -164,8 +161,8 @@ export class MyApp {
                   setTimeout(() => {
                     that.getToast(this.translateMessage('WELCOME_BACK', JSON.parse(res).firstName)).present();
                   }, 2500);
-                }, (err: any) => {
-                });
+                }, () => {
+                  });
               }
             });
 
@@ -272,7 +269,7 @@ export class MyApp {
     };
     chcp.fetchUpdate(this.updateCallback, options);
   }
-  updateCallback(error, data) {
+  updateCallback(error) {
     if (error) {
       console.error(error);
     } else {
@@ -344,8 +341,8 @@ export class MyApp {
 
               this.app.getRootNav().setRoot(TabsPage);
 
-            }, (error) => {
-            });
+            }, () => {
+              });
 
           });
         }

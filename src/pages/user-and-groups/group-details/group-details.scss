@@ -1,4 +1,7 @@
 page-group-member {
+    .scroll-content {
+      z-index:11 !important;
+    }
     .blueBorder {
       border-color: map-get($colors, primary) !important;
       border-style: solid !important;
@@ -72,7 +75,7 @@ page-group-member {
           padding: 5px 0px 5px 20px;
           color: white;
           position: fixed !important;
-          bottom: 12vh !important;
+          bottom: 93px;
         }
         .no-padding{
           padding: 0px !important;

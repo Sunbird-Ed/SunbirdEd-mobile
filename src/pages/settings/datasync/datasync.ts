@@ -1,6 +1,6 @@
 import { Component, NgZone } from '@angular/core';
 import { NavController, NavParams, LoadingController, ToastController } from 'ionic-angular';
-import { TelemetryService, SyncStat, SharedPreferences, PageId, Environment, ImpressionType, Impression, Interact, InteractType, InteractSubtype, ShareUtil, TelemetryStat } from 'sunbird';
+import { TelemetryService, SyncStat, SharedPreferences, PageId, Environment, ImpressionType, Impression, InteractType, InteractSubtype, ShareUtil, TelemetryStat } from 'sunbird';
 import { DataSyncType } from "./datasynctype.enum"
 import { TranslateService } from '@ngx-translate/core'
 import { SocialSharing } from '@ionic-native/social-sharing';
@@ -114,9 +114,8 @@ export class DatasyncPage {
 
       });
 
-    }, (error) => {
-
-    });
+    }, () => {
+      });
   }
 
   shareTelemetry() {
@@ -125,15 +124,15 @@ export class DatasyncPage {
     this.shareUtil.exportTelemetry(path => {
       loader.dismiss();
       this.social.share("", "", "file://" + path, "");
-    }, error => {
-      loader.dismiss();
-      let toast = this.toastCtrl.create({
-        message: this.translateMessage("SHARE_TELEMETRY_FAILED"),
-        duration: 2000,
-        position: 'bottom'
+    }, () => {
+        loader.dismiss();
+        let toast = this.toastCtrl.create({
+          message: this.translateMessage("SHARE_TELEMETRY_FAILED"),
+          duration: 2000,
+          position: 'bottom'
+        });
+        toast.present();
       });
-      toast.present();
-    });
   }
 
   onSyncClick() {

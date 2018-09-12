@@ -2,9 +2,9 @@ import { Component, NgZone, ViewChild } from "@angular/core";
 import { IonicPage, NavParams, NavController, Events, ToastController, Popover, Navbar, Platform } from "ionic-angular";
 import {
   ContentService, ContentSearchCriteria,
-  Log, LogLevel, TelemetryService, Impression, ImpressionType, Environment,
+  Log, LogLevel, TelemetryService, ImpressionType, Environment,
   Interact, InteractType, InteractSubtype,
-  ContentDetailRequest, ContentImportRequest, FileUtil, ProfileType, CorrelationData, PageId, Mode
+  ContentDetailRequest, FileUtil, ProfileType, CorrelationData, Mode
 } from "sunbird";
 import { GenieResponse } from "../settings/datasync/genieresponse";
 import { FilterPage } from "./filters/filter";
@@ -134,7 +134,7 @@ export class SearchPage {
   }
 
   ionViewDidLoad() {
-    this.navBar.backButtonClick = (e: UIEvent) => {
+    this.navBar.backButtonClick = () => {
       if (this.shouldGenerateEndTelemetry) {
         this.generateQRSessionEndEvent(this.source, this.dialCode);
       }
@@ -257,7 +257,7 @@ export class SearchPage {
     });
   }
 
-  searchOnChange(event) {
+  searchOnChange() {
     console.log("Search keyword " + this.searchKeywords);
   }
 
@@ -432,14 +432,14 @@ export class SearchPage {
 
         this.showLoader = false;
       })
-    }, (error) => {
-      this.zone.run(() => {
-        this.showLoader = false;
-        if (this.network.type === 'none') {
-          this.showMessage('ERROR_OFFLINE_MODE');
-        }
+    }, () => {
+        this.zone.run(() => {
+          this.showLoader = false;
+          if (this.network.type === 'none') {
+            this.showMessage('ERROR_OFFLINE_MODE');
+          }
+        });
       });
-    });
   }
 
   private addCorRelation(id: string, type: string) {
@@ -632,12 +632,6 @@ export class SearchPage {
     }
   }
 
-  private getReadableFileSize(bytes) {
-    if (bytes < 1024) return (bytes / 1).toFixed(0) + " Bytes";
-    else if (bytes < 1048576) return (bytes / 1024).toFixed(0) + " KB";
-    else if (bytes < 1073741824) return (bytes / 1048576).toFixed(0) + " MB";
-    else return (bytes / 1073741824).toFixed(3) + " GB";
-  }
 
   private checkParent(parent, child) {
     let identifier = parent.identifier
@@ -657,9 +651,8 @@ export class SearchPage {
       } else {
         this.zone.run(() => { this.showContentDetails(child); });
       }
-    }, (error) => {
-
-    });
+    }, () => {
+      });
   }
 
   private downloadParentContent(parent) {
@@ -679,7 +672,7 @@ export class SearchPage {
         data = JSON.parse(data);
 
         if (data.result && data.result.length && this.isDownloadStarted) {
-          _.forEach(data.result, (value, key) => {
+          _.forEach(data.result, (value) => {
             if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
               this.queuedIdentifiers.push(value.identifier);
             }
@@ -696,9 +689,8 @@ export class SearchPage {
           }
         }
       });
-    }, (error) => {
-
-    });
+    }, () => {
+      });
   }
 
   /**
@@ -776,7 +768,7 @@ export class SearchPage {
  */
   getImportContentRequestBody(identifiers: Array<string>, isChild: boolean) {
     let requestParams = [];
-    _.forEach(identifiers, (value, key) => {
+    _.forEach(identifiers, (value) => {
       requestParams.push({
         isChildContent: isChild,
         // TODO - check with Anil for destination folder path
@@ -790,15 +782,15 @@ export class SearchPage {
   }
 
   cancelDownload() {
-    this.contentService.cancelDownload(this.parentContent.identifier, (response) => {
+    this.contentService.cancelDownload(this.parentContent.identifier, () => {
       this.zone.run(() => {
         this.showLoading = false;
       });
-    }, (error) => {
-      this.zone.run(() => {
-        this.showLoading = false;
+    }, () => {
+        this.zone.run(() => {
+          this.showLoading = false;
+        });
       });
-    });
   }
 
   private checkUserSession() {

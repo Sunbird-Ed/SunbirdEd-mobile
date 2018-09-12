@@ -37,7 +37,6 @@ import * as _ from 'lodash';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { ContentActionsComponent } from '../../component/content-actions/content-actions';
-import { TranslateService } from '@ngx-translate/core';
 import {
   ContentType,
   MimeType,
@@ -48,12 +47,6 @@ import {
 import { CourseBatchesPage } from '../course-batches/course-batches';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { Network } from '@ionic-native/network';
-import {
-  generateInteractTelemetry,
-  generateEndTelemetry,
-  generateStartTelemetry,
-  generateImpressionTelemetry
-} from '../../app/telemetryutil';
 import { CourseUtilService } from '../../service/course-util.service';
 import { AppGlobalService } from '../../service/app-global.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
@@ -190,13 +183,12 @@ export class EnrolledCourseDetailsPage {
 
   @ViewChild(Navbar) navBar: Navbar;
   constructor(navCtrl: NavController,
-    private navParams: NavParams, // Contains ref of navigation params
+    private navParams: NavParams,
     contentService: ContentService,
-    private zone: NgZone, // Contains reference of zone service
+    private zone: NgZone, 
     private events: Events,
     private fileUtil: FileUtil,
     public popoverCtrl: PopoverController,
-    private translate: TranslateService,
     private profileService: UserProfileService,
     private courseService: CourseService,
     private buildParamService: BuildParamService,
@@ -225,10 +217,10 @@ export class EnrolledCourseDetailsPage {
     } else {
       this.isNetworkAvailable = true;
     }
-    this.network.onDisconnect().subscribe((data) => {
+    this.network.onDisconnect().subscribe(() => {
       this.isNetworkAvailable = false;
     });
-    this.network.onConnect().subscribe((data) => {
+    this.network.onConnect().subscribe(() => {
       this.isNetworkAvailable = true;
     });
   }
@@ -238,8 +230,8 @@ export class EnrolledCourseDetailsPage {
       .then(response => {
         this.baseUrl = response
       })
-      .catch(error => {
-      });
+      .catch(() => {
+        });
 
     this.events.subscribe(EventTopics.ENROL_COURSE_SUCCESS, (res) => {
       if (res && res.batchId) {
@@ -464,9 +456,8 @@ export class EnrolledCourseDetailsPage {
         this.batchDetails.creatorFirstName = data.firstName ? data.firstName : '';
         this.batchDetails.creatorLastName = data.lastName ? data.lastName : '';
       }
-    }, (error: any) => {
-
-    })
+    }, () => {
+      })
   }
 
   /**
@@ -488,7 +479,7 @@ export class EnrolledCourseDetailsPage {
    */
   getImportContentRequestBody(identifiers, isChild: boolean) {
     let requestParams = [];
-    _.forEach(identifiers, (value, key) => {
+    _.forEach(identifiers, (value) => {
       requestParams.push({
         isChildContent: isChild,
         destinationFolder: this.fileUtil.internalStoragePath(),
@@ -523,7 +514,7 @@ export class EnrolledCourseDetailsPage {
         }
 
         if (data.result && data.result.length && this.isDownloadStarted) {
-          _.forEach(data.result, (value, key) => {
+          _.forEach(data.result, (value) => {
             if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
               this.queuedIdentifiers.push(value.identifier);
             }
@@ -535,11 +526,12 @@ export class EnrolledCourseDetailsPage {
         }
       });
     },
-      (error: any) => {
+      () => {
         this.zone.run(() => {
           if (this.isDownloadStarted) {
             this.restoreDownloadState();
-          } else {
+          }
+          else {
             this.commonUtilService.showToast('ERROR_FETCHING_DATA');
             this.showChildrenLoader = false;
           }
@@ -639,22 +631,22 @@ export class EnrolledCourseDetailsPage {
   // }
 
   cancelDownload() {
-    this.contentService.cancelDownload(this.identifier, (response) => {
+    this.contentService.cancelDownload(this.identifier, () => {
       this.zone.run(() => {
         this.showLoading = false;
         this.navCtrl.pop();
       });
-    }, (error) => {
-      this.zone.run(() => {
-        this.showLoading = false;
-        this.navCtrl.pop();
+    }, () => {
+        this.zone.run(() => {
+          this.showLoading = false;
+          this.navCtrl.pop();
+        });
       });
-    });
   }
 
   getContentsSize(data) {
     this.downloadSize = this.downloadSize;
-    _.forEach(data, (value, key) => {
+    _.forEach(data, (value) => {
       if (value.children && value.children.length) {
         this.getContentsSize(value.children);
       }
@@ -815,10 +807,10 @@ export class EnrolledCourseDetailsPage {
         loader.dismiss();
         this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_COURSE_SUCCESS, this.course.contentType);
         this.social.share("", "", "file://" + path, url);
-      }, error => {
-        loader.dismiss();
-        this.commonUtilService.showToast('SHARE_CONTENT_FAILED');
-      });
+      }, () => {
+          loader.dismiss();
+          this.commonUtilService.showToast('SHARE_CONTENT_FAILED');
+        });
     } else {
       loader.dismiss();
       this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_COURSE_SUCCESS, this.course.contentType);
@@ -840,7 +832,7 @@ export class EnrolledCourseDetailsPage {
   }
 
   ionViewDidLoad() {
-    this.navBar.backButtonClick = (e: UIEvent) => {
+    this.navBar.backButtonClick = () => {
       this.handleNavBackButton();
     }
   }

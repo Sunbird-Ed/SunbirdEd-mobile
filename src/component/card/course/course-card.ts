@@ -1,12 +1,9 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { NavController, Events, ToastController } from 'ionic-angular';
-import { ImageLoader } from "ionic-image-loader";
+import { NavController, Events } from 'ionic-angular';
 import { EnrolledCourseDetailsPage } from "../../../pages/enrolled-course-details/enrolled-course-details";
-// import { CourseDetailPage } from './../../../pages/course-detail/course-detail';
 import { CollectionDetailsPage } from '../../../pages/collection-details/collection-details';
 import { ContentDetailsPage } from '../../../pages/content-details/content-details';
 import { ContentType, MimeType } from "../../../app/app.constant";
-import * as _ from 'lodash';
 import { CourseUtilService } from "../../../service/course-util.service";
 
 /**
@@ -48,8 +45,7 @@ export class CourseCard implements OnInit {
    */
   constructor(public navCtrl: NavController,
     private courseUtilService: CourseUtilService,
-    private events: Events,
-    private toastCtrl: ToastController) {
+    private events: Events) {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
 
