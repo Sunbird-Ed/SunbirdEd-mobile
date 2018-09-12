@@ -404,7 +404,6 @@ export class ViewMoreActivityPage implements OnInit {
 	}
 
 	subscribeGenieEvent() {
-		let count = 0;
 		this.events.subscribe('genie.event', (data) => {
 			this.ngZone.run(() => {
 				data = JSON.parse(data);

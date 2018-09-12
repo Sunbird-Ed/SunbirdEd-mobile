@@ -262,9 +262,5 @@ export class FormExperience {
     confirm.onDidDismiss(() => {
       unregisterBackButton();
     });
-
-    function closePopup() {
-      confirm.dismiss();
-    }
   }
 }

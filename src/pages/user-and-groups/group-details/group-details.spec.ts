@@ -1,3 +1,4 @@
+
 import { ComponentFixture, TestBed, fakeAsync } from "@angular/core/testing";
 import { NO_ERRORS_SCHEMA } from "@angular/core";
 import { TranslateService, TranslateModule, TranslateLoader } from "@ngx-translate/core";
@@ -7,7 +8,7 @@ import { NavParams, IonicModule } from "ionic-angular";
 import { LoadingController } from "ionic-angular";
 import { PopoverController } from "ionic-angular";
 import { AlertController, Content } from "ionic-angular";
-import { GroupService, ProfileType, UserSource, ServiceProvider, BuildParamService, FrameworkService } from "sunbird";
+import { GroupService, ProfileType, UserSource, ServiceProvider, BuildParamService, FrameworkService, TelemetryService } from "sunbird";
 import { ProfileService } from "sunbird";
 import { OAuthService } from "sunbird";
 import { ContainerService } from "sunbird";
@@ -21,7 +22,7 @@ import { Network } from "@ionic-native/network";
 import { TelemetryGeneratorService } from "../../../service/telemetry-generator.service";
 import { GroupDetailsPage } from "./group-details";
 import { } from "jasmine";
-import { mockAllProfiles } from '../group-details/group-detail.data.spec';
+import { mockAllProfiles, userList, selectedUser } from '../group-details/group-detail.data.spec';
 import { Observable } from "rxjs";
 //import { AlertControllerMock, AlertMock } from 'ionic-mocks'
 import {
@@ -45,7 +46,7 @@ describe("GroupDetailsPage", () => {
 
             ],
             providers: [
-                ServiceProvider, BuildParamService, FrameworkService, ProfileService,
+                ServiceProvider, BuildParamService, FrameworkService, ProfileService,TelemetryGeneratorService,TelemetryService,
                 { provide: TranslateService, useClass: TranslateServiceStub },
                 { provide: NavController, useClass: NavControllerMock },
                 { provide: NavParams, useClass: NavParamsMock },
@@ -63,7 +64,7 @@ describe("GroupDetailsPage", () => {
                 { provide: App, useClass: AppMock },
                 { provide: ToastController, useClass: ToastControllerMock },
                 { provide: Network, useClass: networkMock },
-                { provide: TelemetryGeneratorService, useClass: TelemetryServiceMock }
+               // { provide: TelemetryGeneratorService, useClass: TelemetryServiceMock }
             ]
         });
 
@@ -148,4 +149,72 @@ describe("GroupDetailsPage", () => {
         comp.selectUser(23232, '242423');
         expect(comp.selectUser).toHaveBeenCalled();
     })
+    it('#switchAccountConfirmBox should call', () => {
+        let uid = '1234';
+
+        const TelemetryGeneratorServiceStub = TestBed.get(TelemetryGeneratorService);
+        //const  telemetryObject = TestBed.get(TelemetryObject)
+        expect(comp.switchAccountConfirmBox).toBeDefined();
+        spyOn(TelemetryGeneratorServiceStub, 'generateInteractTelemetry').and.callFake(()=>{ });
+        //spyOn(comp, 'switchAccountConfirmBox');
+        spyOn(comp, 'switchAccountConfirmBox').and.callThrough();
+        comp.switchAccountConfirmBox();
+        expect(TelemetryGeneratorServiceStub.generateInteractTelemetry).toHaveBeenCalled();
+        expect(comp.switchAccountConfirmBox).toHaveBeenCalled();
+        expect(comp.switchAccountConfirmBox).toHaveBeenCalled();
+    })
+
+    it('#play should call', () => {
+        expect(comp.play).toBeDefined();
+        const groupServiceStub = TestBed.get(GroupService);
+        spyOn(groupServiceStub, 'setCurrentGroup').and.returnValue(Promise.resolve({}));
+        spyOn(comp, 'play').and.callThrough();
+        comp.play();
+
+        expect(comp.play).toHaveBeenCalled();
+    })
+
+    it('#play should call', () => {
+        expect(comp.play).toBeDefined();
+        const AppGlobalServiceStub= TestBed.get(AppGlobalService);
+        AppGlobalServiceMock.isGuestUser = true;
+        spyOn(comp, 'play').and.callThrough();
+        comp.play();
+        expect(comp.play).toHaveBeenCalled();
+    })
+    it('# Logout call', () => {
+        const authService = TestBed.get(AuthService);
+        expect(comp.play).toBeDefined();
+       // spyOn(authService,'endSession');
+        spyOn(comp, 'logOut');
+        comp.logOut(selectedUser,false);
+        expect(comp.logOut).toHaveBeenCalled();
+    })
+    it('# Logout call', () => {
+        const authService = TestBed.get(AuthService);
+        window['splashscreen'] = {
+            clearPrefs: () => ({})
+          }
+          spyOn(window['splashscreen'], 'clearPrefs').and.callFake(() => {
+          });
+
+        expect(comp.logOut).toBeDefined();
+       spyOn(authService,'endSession');
+        spyOn(comp, 'logOut').and.callThrough();
+        comp.logOut(selectedUser, true);
+        expect(comp.logOut).toHaveBeenCalled();
+    })
+
+    it('# Logout call', () => {
+        const authService = TestBed.get(AuthService);
+        expect(comp.play).toBeDefined();
+       // spyOn(authService,'endSession');
+        spyOn(comp, 'logOut').and.callThrough();
+        comp.logOut(selectedUser,false);
+        expect(comp.logOut).toHaveBeenCalled();
+    })
+
+
+
+
 });

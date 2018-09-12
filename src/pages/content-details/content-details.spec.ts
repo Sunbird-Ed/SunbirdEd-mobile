@@ -4,7 +4,6 @@ import {
 } from 'ionic-angular';
 import { LoadingControllerMock, NetworkMock, StorageMock } from 'ionic-mocks';
 import { Ionic2RatingModule } from 'ionic2-rating';
-import { Observable } from 'rxjs/Observable';
 import {
     AuthService, BuildParamService, ContentService, CourseService, FileUtil, FrameworkModule,
     GenieSDKServiceProvider, ProfileType, SharedPreferences, ShareUtil, TelemetryService, TelemetryObject, Environment, Mode, PageId, Rollup, ProfileService
@@ -19,7 +18,7 @@ import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-transla
 
 import {
     AuthServiceMock, FileUtilMock, GenieSDKServiceProviderMock, MockElementRef, NavMock,
-    NavParamsMock, PlatformMock, PopoverControllerMock, SharedPreferencesMock, SocialSharingMock,
+    NavParamsMock, PopoverControllerMock, SocialSharingMock,
     ToastControllerMock, TranslateLoaderMock, AppGlobalServiceMock, PopoverMock, NavbarMock
 } from '../../../test-config/mocks-ionic';
 import { PBHorizontal } from '../../component/pbhorizontal/pb-horizontal';
@@ -129,7 +128,7 @@ describe('ContentDetailsPage Component', () => {
         component.isChildContent = true;
         spyOn(component, 'downloadContent').and.callThrough();
         spyOn(component, 'importContent').and.callThrough();
-        spyOn(contentService, 'importContent').and.callFake(function ({ }, success, error) {
+        spyOn(contentService, 'importContent').and.callFake(function ({ }, success) {
             let data = JSON.stringify((mockRes.importContentResponse))
             return success(data);
         });
@@ -170,7 +169,7 @@ describe('ContentDetailsPage Component', () => {
         component.content = {};
         const contentService = TestBed.get(ContentService);
         spyOn(component, 'cancelDownload').and.callThrough();
-        spyOn(contentService, 'cancelDownload').and.callFake(function (identifier, success, error) {
+        spyOn(contentService, 'cancelDownload').and.callFake(function (identifier, success) {
             return success({});
         });
         component.cancelDownload();
@@ -250,7 +249,7 @@ describe('ContentDetailsPage Component', () => {
         const contentService = TestBed.get(ContentService);
         spyOn(component, 'setContentDetails').and.callThrough();
         spyOn(component, 'extractApiResponse').and.callThrough();
-        spyOn(contentService, 'getContentDetail').and.callFake(function (option, success, error) {
+        spyOn(contentService, 'getContentDetail').and.callFake(function (option, success) {
             let data = JSON.stringify((mockRes.contentDetailsResponse))
             return success(data);
         });
@@ -283,7 +282,7 @@ describe('ContentDetailsPage Component', () => {
         spyOn(component, 'generateStartEvent').and.callThrough().and.callFake(() => { });
         spyOn(component, 'generateImpressionEvent').and.callThrough().and.callFake(() => { });
         const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'getContentDetail').and.callFake(function (option, success, error) {
+        spyOn(contentService, 'getContentDetail').and.callFake(function (option, success) {
             let data = JSON.stringify((mockRes.contentDetailsResponse))
             return success(data);
         })
@@ -315,7 +314,7 @@ describe('ContentDetailsPage Component', () => {
         spyOn(component, 'updateContentProgress').and.callThrough();
         spyOn(navParams, 'get').and.callThrough();
         let spyObj = spyOn(courseService, 'updateContentState');
-        spyObj.and.callFake(function ({ }, success, error) {
+        spyObj.and.callFake(function ({ }, success) {
             return success({});
         });
         component.updateContentProgress();
@@ -344,7 +343,6 @@ describe('ContentDetailsPage Component', () => {
     });
 
     it('should share content details: content is locally available and Ecar should get exported successfully', () => {
-        const webUrl = 'https://staging.open-sunbird.org/play/content/do_212516141114736640146589';
         const devicePath = '/storage/emulated/0/Ecars/tmp/Untitled Content-v1.0.ecar';
         component.content = {};
         component.content.contentType = 'Resource';
@@ -366,8 +364,6 @@ describe('ContentDetailsPage Component', () => {
     })
 
     it('it should share content details - content is locally available but exportEcar should return error', () => {
-        const webUrl = 'https://staging.open-sunbird.org/play/content/do_212516141114736640146589';
-        const devicePath = '/storage/emulated/0/Ecars/tmp/Untitled Content-v1.0.ecar';
         component.content = {};
         component.content.contentType = 'Resource';
         component.content.downloadable = true
@@ -386,10 +382,8 @@ describe('ContentDetailsPage Component', () => {
     })
 
     it('it should share content details without locally available', () => {
-        const webUrl = 'https://staging.open-sunbird.org/play/content/do_212516141114736640146589';
         component.content = {};
         component.content.contentType = 'Resource';
-        const shareUtil = TestBed.get(ShareUtil);
         const socialShare = TestBed.get(SocialSharing);
         spyOn(component, 'generateShareInteractEvents').and.callThrough().and.callFake(() => { });
         spyOn(socialShare, 'share').and.returnValues({})
@@ -402,10 +396,8 @@ describe('ContentDetailsPage Component', () => {
 
 
     it('it should share content details without locally available', () => {
-        const webUrl = 'https://staging.open-sunbird.org/play/content/do_212516141114736640146589';
         component.content = {};
         component.content.contentType = 'Resource';
-        const shareUtil = TestBed.get(ShareUtil);
         const socialShare = TestBed.get(SocialSharing);
         spyOn(component, 'generateShareInteractEvents').and.callThrough().and.callFake(() => { });
         spyOn(socialShare, 'share').and.returnValues({})
@@ -567,7 +559,7 @@ describe('ContentDetailsPage Component', () => {
         component.content = {};
         component.profileType = ProfileType.TEACHER;
         const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'getContentDetail').and.callFake(function (option, success, error) {
+        spyOn(contentService, 'getContentDetail').and.callFake(function (option, success) {
             let data = JSON.stringify({ "message": "successful" })
             return success(data);
         });
@@ -579,7 +571,7 @@ describe('ContentDetailsPage Component', () => {
         component.userRating = 0;
         component.content = {};
         const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'getContentDetail').and.callFake(function (option, success, error) {
+        spyOn(contentService, 'getContentDetail').and.callFake(function (option, success) {
             let data = JSON.stringify({ "message": "successful" })
             return success(data);
         });
@@ -760,7 +752,6 @@ describe('ContentDetailsPage Component', () => {
     });
 
     it("#showOverflowMenu  should show overflow menu", function () {
-        const popOverController = TestBed.get(PopoverController);
         component.content={};
         PopoverMock.setOnDissMissResponse('delete.success');
         component.showOverflowMenu(event);
