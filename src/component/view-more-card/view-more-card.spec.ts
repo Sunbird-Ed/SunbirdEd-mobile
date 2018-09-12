@@ -1,4 +1,3 @@
-import { ViewMoreActivityListComponent } from './view-more-activity-list';
 import { PBHorizontal } from './../../component/pbhorizontal/pb-horizontal';
 import { PipesModule } from './../../pipes/pipes.module';
 import { async, TestBed, ComponentFixture, inject } from '@angular/core/testing';
@@ -9,12 +8,11 @@ import { SocialSharing } from "@ionic-native/social-sharing";
 import { Network } from '@ionic-native/network';
 import { DirectivesModule } from '../../directives/directives.module';
 import { AppGlobalService } from '../../service/app-global.service';
-import { mockRes } from './view-more-activity-list.spec.data';
 
 import { NavController, Events, IonicModule, NavParams, ToastController, PopoverController, 
-    LoadingController, Platform } from 'ionic-angular';
+    LoadingController } from 'ionic-angular';
 
-import { StorageMock, ToastControllerMock, PopoverControllerMock, LoadingControllerMock,
+import {ToastControllerMock, PopoverControllerMock, LoadingControllerMock,
     NetworkMock } from 'ionic-mocks';
 
 import {
@@ -26,20 +24,19 @@ import {
     SocialSharingMock, NavMock, TranslateLoaderMock, AuthServiceMock, PlatformMock
 } from '../../../test-config/mocks-ionic';
 import { CourseUtilService } from '../../service/course-util.service';
+import { ViewMoreCardComponent } from './view-more-card';
+import { mockRes } from './view-more-card.spec.data';
 
-declare let GenieSDK: any;
-
-describe('ViewMoreActivityListComponent Component', () => {
-    let component: ViewMoreActivityListComponent;
-    let fixture: ComponentFixture<ViewMoreActivityListComponent>;
+describe('ViewMoreActivityCardComponent Component', () => {
+    let component: ViewMoreCardComponent;
+    let fixture: ComponentFixture<ViewMoreCardComponent>;
     let translateService: TranslateService;
-    let identifier = 'do_212516141114736640146589';
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [ViewMoreActivityListComponent, PBHorizontal],
+            declarations: [ViewMoreCardComponent, PBHorizontal],
             imports: [
-                IonicModule.forRoot(ViewMoreActivityListComponent),
+                IonicModule.forRoot(ViewMoreCardComponent),
                 TranslateModule.forRoot({
                     loader: { provide: TranslateLoader, useClass: TranslateLoaderMock },
                 }),
@@ -61,7 +58,6 @@ describe('ViewMoreActivityListComponent Component', () => {
                 { provide: AuthService, useClass: AuthServiceMock },
                 { provide: GenieSDKServiceProvider, useClass: GenieSDKServiceProviderMock },
                 { provide: SharedPreferences, useClass: SharedPreferencesMock },
-                { provide: Storage, useFactory: () => StorageMock.instance() },
                 { provide: ToastController, useFactory: () => ToastControllerMock.instance() },
                 { provide: PopoverController, useFactory: () => PopoverControllerMock.instance() },
                 { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() }
@@ -70,7 +66,7 @@ describe('ViewMoreActivityListComponent Component', () => {
     }));
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(ViewMoreActivityListComponent);
+        fixture = TestBed.createComponent(ViewMoreCardComponent);
         component = fixture.componentInstance;
     });
 
@@ -82,7 +78,7 @@ describe('ViewMoreActivityListComponent Component', () => {
     });
 
     it('should create a valid instance of ViewMoreActivityListComponent', () => {
-        expect(component instanceof ViewMoreActivityListComponent).toBe(true);
+        expect(component instanceof ViewMoreCardComponent).toBe(true);
         expect(component).not.toBeFalsy();
     });
 

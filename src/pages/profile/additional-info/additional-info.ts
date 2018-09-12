@@ -25,7 +25,7 @@ import {
 } from 'sunbird';
 import { ProfilePage } from './../profile';
 import { languageList } from './../../../config/framework.filters';
-import { ProfileConstants, PreferenceKey } from '../../../app/app.constant';
+import { ProfileConstants } from '../../../app/app.constant';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -254,7 +254,7 @@ export class AdditionalInfoComponent {
    * This will call on click of `SAVE` button
    * @param {object} event - Form event
    */
-  onSubmit(event): void {
+  onSubmit(): void {
     /* Holds form Values */
     let formVal = this.additionalInfoForm.value;
 
@@ -348,7 +348,7 @@ export class AdditionalInfoComponent {
     let loader = this.getLoader();
     loader.present();
     this.userProfileService.updateUserInfo(req,
-      (res: any) => {
+      () => {
         loader.dismiss();
         this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
         this.navCtrl.setRoot(ProfilePage, { returnRefreshedUserProfileDetails: true });

@@ -235,6 +235,7 @@ export class TranslateServiceStub {
     Observable.of(key);
   }
   use: () => {};
+  currentLang: 'en'
   // get: () => ({
   //     subscribe: () => ({})
   // })
@@ -603,6 +604,10 @@ export class NavbarMock {
     return {};
   }
 
+}
+export class OAuthServiceMock {
+  doOAuthStepOne: () => {};
+  doOAuthStepTwo: () => {};
 }
 
 /*export class ToastMock {
