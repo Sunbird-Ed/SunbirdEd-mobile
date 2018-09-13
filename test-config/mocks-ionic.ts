@@ -20,6 +20,7 @@ import { App, ViewController } from "ionic-angular";
 import { ElementRef } from "@angular/core";
 import { CommonUtilService } from "../src/service/common-util.service";
 import { resolve } from "q";
+import { NavParams } from "ionic-angular";
 
 declare let readJSON: any;
 
@@ -257,6 +258,10 @@ export class NavParamsMock {
 
   get(param) {
     return this.data[param] ? this.data[param] : this.data;
+  }
+
+  static setData(data){
+    data = data;
   }
 }
 
@@ -610,21 +615,17 @@ export class OAuthServiceMock {
   doOAuthStepTwo: () => {};
 }
 
-/*export class ToastMock {
-  public static instance(): any {
-    let instance = jasmine.createSpyObj('Toast', ['present', 'dismissAll', 'setContent', 'setSpinner', 'onDidDismiss']);
-    instance.present.and.returnValue(Promise.resolve());
+export class NavParamsMockNew{
+  static returnParams: any = {};
 
-    return instance;
+  public get(key): any {
+    if (NavParamsMockNew.returnParams[key]) {
+       return NavParamsMockNew.returnParams[key];
+    }
+    return 'No Params of ' + key + ' was supplied. Use NavParamsMock.setParams('+ key + ',value) to set it.';
+  }
+
+  static setParams(key,value){
+    NavParamsMockNew.returnParams[key] = value;
   }
 }
-
-export class ToastControllerMock {
-  public static instance(toast?: ToastMock): any {
-
-    let instance = jasmine.createSpyObj('ToastController', ['create']);
-    instance.create.and.returnValue(toast || ToastMock.instance());
-
-    return instance;
-  }
-}*/

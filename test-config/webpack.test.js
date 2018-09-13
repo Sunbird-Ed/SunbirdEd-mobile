@@ -22,7 +22,8 @@ module.exports = {
           helpers.root('src/pages/home/announcement-detail/announcement-detail.ts'),
           helpers.root('src/pages/home/announcement-list/announcement-list.ts'),
           helpers.root('src/pages/profile/imagepicker/imagepicker.ts'),
-          helpers.root('src/component/card/home/home-announcement-card.ts')],
+          helpers.root('src/component/card/home/home-announcement-card.ts'),
+          helpers.root('src/directives/read-more/read-more.ts')],
         loader: 'istanbul-instrumenter-loader',
         enforce: 'post',
         query: {
