@@ -526,7 +526,7 @@ describe('CoursesPage Component', () => {
 
 
     it('should  show Offline warning', (done) => {
-        component.showOfflineWarning(true);
+        component.showOfflineWarning();
         expect(component.showWarning).toBe(true);
         setTimeout(function () {
             expect(component.showWarning).toBe(false);
