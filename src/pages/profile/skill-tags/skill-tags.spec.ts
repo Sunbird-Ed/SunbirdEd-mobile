@@ -11,7 +11,7 @@ import { } from 'jasmine';
 
 import {
     LoadingControllerMock, TranslateServiceStub, ToastControllerMockNew, AuthServiceMock, NavMock
-    } from '../../../../test-config/mocks-ionic';
+} from '../../../../test-config/mocks-ionic';
 import { executionAsyncId } from 'async_hooks';
 import { TagInputModule } from 'ngx-chips';
 
@@ -20,17 +20,17 @@ describe("SkillTagsComponent", () => {
     let fixture: ComponentFixture<SkillTagsComponent>;
 
     beforeEach(() => {
-       
-        
+
+
         const userProfileServiceStub = {
             getSkills: () => ({}),
             endorseOrAddSkill: () => ({})
         };
-        
+
         TestBed.configureTestingModule({
-            imports: [TranslateModule.forRoot(),TagInputModule],
-            declarations: [ SkillTagsComponent ],
-            schemas: [ NO_ERRORS_SCHEMA ],
+            imports: [TranslateModule.forRoot(), TagInputModule],
+            declarations: [SkillTagsComponent],
+            schemas: [NO_ERRORS_SCHEMA],
             providers: [
                 { provide: NavController, useClass: NavMock },
                 // { provide: NgZone, useValue: ngZoneStub },
@@ -61,11 +61,11 @@ describe("SkillTagsComponent", () => {
     it("should handle success scenario for ionViewWillEnter", () => {
         const authService = TestBed.get(AuthService);
         const userProfileService = TestBed.get(UserProfileService);
-        let data = {skills : ["test"]};
-        spyOn(userProfileService, "getSkills").and.callFake((req,success,error) => {
+        let data = { skills: ["test"] };
+        spyOn(userProfileService, "getSkills").and.callFake((req, success, error) => {
             success(JSON.stringify(data));
         });
-        spyOn(authService, "getSessionData").and.callFake((success,error) => {
+        spyOn(authService, "getSessionData").and.callFake((success, error) => {
             success("success");
         });
         getLoader();
@@ -78,11 +78,11 @@ describe("SkillTagsComponent", () => {
     it("should handle error scenario for shoulsionViewWillEnter", () => {
         const authService = TestBed.get(AuthService);
         const userProfileService = TestBed.get(UserProfileService);
-        let data = {status : 401};
-        spyOn(userProfileService, "getSkills").and.callFake((req,success,error) => {
+        let data = { status: 401 };
+        spyOn(userProfileService, "getSkills").and.callFake((req, success, error) => {
             error(JSON.stringify(data));
         });
-        spyOn(authService, "getSessionData").and.callFake((success,error) => {
+        spyOn(authService, "getSessionData").and.callFake((success, error) => {
             success("success");
         });
         getLoader();
@@ -93,7 +93,7 @@ describe("SkillTagsComponent", () => {
 
     it("should handle error scenario for ionViewWillEnter", () => {
         const authService = TestBed.get(AuthService);
-        spyOn(authService, "getSessionData").and.callFake((success,error) => {
+        spyOn(authService, "getSessionData").and.callFake((success, error) => {
             success(undefined);
         });
         getLoader();
@@ -101,32 +101,35 @@ describe("SkillTagsComponent", () => {
         expect(authService.getSessionData).toHaveBeenCalled();
     });
 
-    it("should handle error scenario for addSkills", () => {
+    it("should handle error scenario for addSkills", (done) => {
         const authService = TestBed.get(AuthService);
-        spyOn(authService, "getSessionData").and.callFake((success,error) => {
+        spyOn(authService, "getSessionData").and.callFake((success, error) => {
             success(undefined);
         });
         getLoader();
         comp.addSkills();
-        expect(authService.getSessionData).toHaveBeenCalled();
+        setTimeout(() => {
+            expect(authService.getSessionData).toHaveBeenCalled();
+            done();
+        }, 10);
     });
-    
+
     it("should handle success scenario for addSkills", () => {
         const authService = TestBed.get(AuthService);
         const userProfileService = TestBed.get(UserProfileService);
         let data = {
-            skills : ["test"],
-            userToken : "sampleUserToken"
+            skills: ["test"],
+            userToken: "sampleUserToken"
         };
 
-        spyOn(authService, "getSessionData").and.callFake((success,error) => {
+        spyOn(authService, "getSessionData").and.callFake((success, error) => {
             success(JSON.stringify(data));
         });
 
         spyOn(userProfileService, "endorseOrAddSkill").and.callFake((req, success, error) => {
             success("success");
         });
-        
+
         getLoader();
         comp.addSkills();
         expect(authService.getSessionData).toHaveBeenCalled();
@@ -137,18 +140,18 @@ describe("SkillTagsComponent", () => {
         const authService = TestBed.get(AuthService);
         const userProfileService = TestBed.get(UserProfileService);
         let data = {
-            skills : ["test"],
-            userToken : "sampleUserToken"
+            skills: ["test"],
+            userToken: "sampleUserToken"
         };
 
-        spyOn(authService, "getSessionData").and.callFake((success,error) => {
+        spyOn(authService, "getSessionData").and.callFake((success, error) => {
             success(JSON.stringify(data));
         });
 
         spyOn(userProfileService, "endorseOrAddSkill").and.callFake((req, success, error) => {
             error("error");
         });
-        
+
         getLoader();
         comp.addSkills();
         expect(authService.getSessionData).toHaveBeenCalled();

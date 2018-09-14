@@ -54,7 +54,6 @@ describe("GroupDetailsPage", () => {
                 { provide: PopoverController, useClass: PopoverControllerMock },
                 { provide: AlertController, useClass: AlertControllerMock },
                 { provide: GroupService, useClass: groupServiceMock },
-                // { provide: ProfileService, useClass: profileServiceMock },
                 { provide: OAuthService, useClass: oAuthServiceMock },
                 { provide: ContainerService, useClass: ContainerServiceMock },
                 { provide: SharedPreferences, useClass: SharedPreferencesMock },
@@ -64,7 +63,6 @@ describe("GroupDetailsPage", () => {
                 { provide: App, useClass: AppMock },
                 { provide: ToastController, useClass: ToastControllerMock },
                 { provide: Network, useClass: networkMock },
-               // { provide: TelemetryGeneratorService, useClass: TelemetryServiceMock }
             ]
         });
 
@@ -212,9 +210,5 @@ describe("GroupDetailsPage", () => {
         spyOn(comp, 'logOut').and.callThrough();
         comp.logOut(selectedUser,false);
         expect(comp.logOut).toHaveBeenCalled();
-    })
-
-
-
-
+    });
 });

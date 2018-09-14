@@ -66,13 +66,11 @@ export const GUEST_STUDENT_SWITCH_TABS = [
 export function initTabs(container: ContainerService, tabs: Array<TabOptions>) {
     container.removeAllTabs();
 
+    /* istanbul ignore else  */
     if (tabs && tabs.length > 0) {
         tabs.forEach(tabOptions => {
             container.addTab(tabOptions);
         })
-    } else {
-        // TODO: through error / exception.
-        console.log("No tab is asigned.");
     }
 }
 
@@ -84,7 +82,6 @@ export const PluginModules = [
     OnboardingPageModule,
     LanguageSettingsPageModule,
     UserTypeSelectionPageModule,
-    // CourseDetailPageModule,
     CourseBatchesPageModule,
     EnrolledCourseDetailsPageModule,
     QRScannerModule,

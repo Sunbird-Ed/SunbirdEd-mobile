@@ -154,7 +154,7 @@ export class OnboardingCardComponent {
         that.onboardingService.selectedCheckboxValue(selectedSlide, index);
       }
     }
-
+    /* istanbul ignore else */
     if (index === 0) {
       this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), undefined, true);
     } else if (index === 1) {
