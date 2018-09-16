@@ -622,7 +622,7 @@ export class NavParamsMockNew{
     if (NavParamsMockNew.returnParams[key]) {
        return NavParamsMockNew.returnParams[key];
     }
-    return 'No Params of ' + key + ' was supplied. Use NavParamsMock.setParams('+ key + ',value) to set it.';
+    return undefined;
   }
 
   static setParams(key,value){

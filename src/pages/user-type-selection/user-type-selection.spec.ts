@@ -152,8 +152,11 @@ describe('UserTypeSelectionPage Component', () => {
     const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
     const navController = TestBed.get(NavController);
     const profileService = TestBed.get(ProfileService);
-    spyOn(profileService, 'setCurrentProfile').and.callThrough().and.callFake((arg, success,error) => {
-      // return success();
+    spyOn(profileService, 'setCurrentProfile').and.callThrough().and.callFake((boolean,arg, success,error) => {
+      return success();
+    });
+    spyOn(profileService, 'getCurrentUser').and.callThrough().and.callFake((success,error) => {
+      return success(JSON.stringify({uid:"SAMPLE_UID"}));
     });
     spyOn(navController, 'push').and.callThrough();
     spyOn(component, 'generateInteractEvent').and.callThrough();
@@ -162,6 +165,52 @@ describe('UserTypeSelectionPage Component', () => {
     component.profile = undefined;
     component.continue();
     expect(component.setProfile).toHaveBeenCalled();
+    expect(navController.push).toHaveBeenCalledWith(TabsPage, {
+      loginMode: 'guest'
+    });
+    
+  });
+
+  it("#continue should create a profile if profile is not available and should handle error result from getCurrntUser", function () {
+    const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
+    const navController = TestBed.get(NavController);
+    const profileService = TestBed.get(ProfileService);
+    spyOn(profileService, 'setCurrentProfile').and.callThrough().and.callFake((boolean,arg, success,error) => {
+      return success();
+    });
+    spyOn(profileService, 'getCurrentUser').and.callThrough().and.callFake((success,error) => {
+      return error();
+    });
+    spyOn(navController, 'push').and.callThrough();
+    spyOn(component, 'generateInteractEvent').and.callThrough();
+    spyOn(component, 'setProfile').and.callThrough();
+    spyOn(telemetryGeneratorService, 'generateInteractTelemetry').and.callThrough().and.callFake(() => { });
+    component.profile = undefined;
+    component.continue();
+    expect(component.setProfile).toHaveBeenCalled();
+    expect(navController.push).not.toHaveBeenCalledWith(TabsPage, {
+      loginMode: 'guest'
+    });
+    
+  });
+
+  it("#continue should create a profile if profile is not available and should handle error result from getCurrentProfile", function () {
+    const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
+    const navController = TestBed.get(NavController);
+    const profileService = TestBed.get(ProfileService);
+    spyOn(profileService, 'setCurrentProfile').and.callThrough().and.callFake((boolean,arg, success,error) => {
+      return error();
+    });
+    spyOn(navController, 'push').and.callThrough();
+    spyOn(component, 'generateInteractEvent').and.callThrough();
+    spyOn(component, 'setProfile').and.callThrough();
+    spyOn(telemetryGeneratorService, 'generateInteractTelemetry').and.callThrough().and.callFake(() => { });
+    component.profile = undefined;
+    component.continue();
+    expect(component.setProfile).toHaveBeenCalled();
+    expect(navController.push).not.toHaveBeenCalledWith(TabsPage, {
+      loginMode: 'guest'
+    });
     
   });
 
