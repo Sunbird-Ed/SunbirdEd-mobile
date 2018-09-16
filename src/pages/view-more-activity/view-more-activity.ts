@@ -167,9 +167,6 @@ export class ViewMoreActivityPage implements OnInit {
 	}
 
 	private generateLogEvent(searchResult) {
-		let log = new Log();
-		log.level = LogLevel.INFO;
-		log.type = ImpressionType.SEARCH;
 		if (searchResult != null) {
 			let contentArray: Array<any> = searchResult.contentDataList;
 			let params = new Array<any>();
@@ -177,7 +174,6 @@ export class ViewMoreActivityPage implements OnInit {
 			paramsMap["SearchResults"] = contentArray.length;
 			paramsMap["SearchCriteria"] = searchResult.request;
 			params.push(paramsMap);
-			log.params = params;
 			this.telemetryGeneratorService.generateLogEvent(LogLevel.INFO,
 				PageId.VIEW_MORE,
 				Environment.HOME,

@@ -308,21 +308,91 @@ describe('ViewMoreActivityPage Component', () => {
         expect(component.showOverlay).toBe(false);
     });
 
-    xit("#search should invoke search API successfully", function () {
+    it("#search should invoke search API successfully", function () {
         const contentService = TestBed.get(ContentService);
+        const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
+        spyOn(telemetryGeneratorService,'generateImpressionTelemetry').and.callFake(()=>{});
+        spyOn(telemetryGeneratorService,'generateLogEvent').and.callFake(()=>{});
         spyOn(contentService, 'getSearchCriteriaFromRequest').and.callFake(function (option, success) {
             return success(JSON.stringify(mockRes.searchCriteriaResponse));
         });
 
-        // spyOn(contentService, 'searchContent').and.returnValue(JSON.stringify(mockRes.searchCriteriaResponse));
-        let option={};
-       
+        spyOn(contentService, 'searchContent').and.callFake(function (reqBody, boolean1, boolean2, boolean3, success, error) {
+            return success(JSON.stringify(mockRes.searchResponse));
+        });
         component.search();
+        expect(component.searchList.length).toBe(2);
     });
+
+    it("#search should populate search list if loadMore parameter is true", function () {
+        const contentService = TestBed.get(ContentService);
+        const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
+        spyOn(telemetryGeneratorService,'generateImpressionTelemetry').and.callFake(()=>{});
+        spyOn(telemetryGeneratorService,'generateLogEvent').and.callFake(()=>{});
+        spyOn(contentService, 'getSearchCriteriaFromRequest').and.callFake(function (option, success) {
+            return success(JSON.stringify(mockRes.searchCriteriaResponse));
+        });
+
+        spyOn(contentService, 'searchContent').and.callFake(function (reqBody, boolean1, boolean2, boolean3, success, error) {
+            return success(JSON.stringify(mockRes.searchResponse));
+        });
+        component.isLoadMore = true;
+        component.searchList = [];
+        component.search();
+        expect(component.searchList.length).toBe(2);
+    });
+
+    it("#search should dismiss loader if search API didnt provide any result", function () {
+        const contentService = TestBed.get(ContentService);
+        const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
+        spyOn(telemetryGeneratorService,'generateImpressionTelemetry').and.callFake(()=>{});
+        spyOn(telemetryGeneratorService,'generateLogEvent').and.callFake(()=>{});
+        spyOn(contentService, 'getSearchCriteriaFromRequest').and.callFake(function (option, success) {
+            return success(JSON.stringify(mockRes.searchCriteriaResponse));
+        });
+
+        spyOn(contentService, 'searchContent').and.callFake(function (reqBody, boolean1, boolean2, boolean3, success, error) {
+            return success(JSON.stringify({}));
+        });
+        component.search();
+        expect(component.loadMoreBtn).toBe(false);
+    });
+
+    it("#search should not invoke search API if getSearchCriteriaFromRequest API gives error response", function () {
+        const contentService = TestBed.get(ContentService);
+        spyOn(contentService, 'getSearchCriteriaFromRequest').and.callFake(function (option, success,error) {
+            return error();
+        });
+
+        spyOn(contentService, 'searchContent').and.callFake(function (reqBody, boolean1, boolean2, boolean3, success, error) {
+            return success(JSON.stringify({}));
+        });
+        component.search();
+        expect(contentService.searchContent).not.toHaveBeenCalled();
+    });
+
+    it("#search should handle error reponse from serach API", function () {
+        const contentService = TestBed.get(ContentService);
+        const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
+        spyOn(telemetryGeneratorService,'generateImpressionTelemetry').and.callFake(()=>{});
+        spyOn(telemetryGeneratorService,'generateLogEvent').and.callFake(()=>{});
+        spyOn(contentService, 'getSearchCriteriaFromRequest').and.callFake(function (option, success) {
+            return success(JSON.stringify(mockRes.searchCriteriaResponse));
+        });
+
+        spyOn(contentService, 'searchContent').and.callFake(function (reqBody, boolean1, boolean2, boolean3, success, error) {
+            return error();
+        });
+        component.search();
+        expect(telemetryGeneratorService.generateImpressionTelemetry).not.toHaveBeenCalled();
+        expect(telemetryGeneratorService.generateLogEvent).not.toHaveBeenCalled();
+    });
+
 
     it("#ionViewWillEnter should invoke getEnrolleDCourses when pageName is 'course.EnrolledCourses'", function () {
         NavParamsMockNew.setParams('pageName', "course.EnrolledCourses");
         spyOn(component,'getEnrolledCourse').and.callThrough().and.callFake(()=>{});
+        component.headerTitle = "sampleTitle";
         component.ionViewWillEnter();
         expect(component.getEnrolledCourse).toHaveBeenCalled();
         expect(component.pageType).toBe('enrolledCourse');
@@ -331,6 +401,7 @@ describe('ViewMoreActivityPage Component', () => {
     it("#ionViewWillEnter should invoke search API'", function () {
         NavParamsMockNew.setParams('pageName', "course.PopularContent");
         spyOn(component,'search').and.callThrough().and.callFake(()=>{});
+        component.headerTitle = "sampleTitle";
         component.ionViewWillEnter();
         expect(component.search).toHaveBeenCalled();
         expect(component.pageType).toBe('popularCourses');
@@ -339,6 +410,7 @@ describe('ViewMoreActivityPage Component', () => {
     it("#ionViewWillEnter should invoke getLocalContents when pageName is 'resource.SavedResources'", function () {
         NavParamsMockNew.setParams('pageName', "resource.SavedResources");
         spyOn(component,'getLocalContents').and.callThrough().and.callFake(()=>{});
+        component.headerTitle = "sampleTitle";
         component.ionViewWillEnter();
         expect(component.getLocalContents).toHaveBeenCalled();
     });
@@ -346,6 +418,7 @@ describe('ViewMoreActivityPage Component', () => {
     it("#ionViewWillEnter should invoke search API'", function () {
         NavParamsMockNew.setParams('pageName', "resource.SavedResources1");
         spyOn(component,'search').and.callThrough().and.callFake(()=>{});
+        component.headerTitle = "sampleTitle";
         component.ionViewWillEnter();
         expect(component.search).toHaveBeenCalled();
     });
