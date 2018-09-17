@@ -1,19 +1,17 @@
 import { Component, NgZone, ViewChild } from "@angular/core";
-import { IonicPage, NavParams, NavController, Events, ToastController, Popover, Navbar, Platform } from "ionic-angular";
+import { IonicPage, NavParams, NavController, Events, Popover, Navbar, Platform } from "ionic-angular";
 import {
   ContentService, ContentSearchCriteria,
-  Log, LogLevel, TelemetryService, ImpressionType, Environment,
-  Interact, InteractType, InteractSubtype,
-  ContentDetailRequest, FileUtil, ProfileType, CorrelationData, Mode
+  LogLevel, ImpressionType, Environment,
+  InteractType, InteractSubtype,
+  ContentDetailRequest, FileUtil, ProfileType, CorrelationData, Mode, TelemetryObject
 } from "sunbird";
 import { GenieResponse } from "../settings/datasync/genieresponse";
 import { FilterPage } from "./filters/filter";
-// import { CourseDetailPage } from "../course-detail/course-detail";
 import { CollectionDetailsPage } from "../collection-details/collection-details";
 import { ContentDetailsPage } from "../content-details/content-details";
 import { Network } from "@ionic-native/network";
-import { TranslateService } from '@ngx-translate/core';
-import { Map, generateImpressionTelemetry, generateEndTelemetry } from "../../app/telemetryutil";
+import { Map } from "../../app/telemetryutil";
 import * as _ from 'lodash';
 import { ContentType, MimeType, Search, AudienceFilter } from '../../app/app.constant';
 import { EnrolledCourseDetailsPage } from "../enrolled-course-details/enrolled-course-details";
@@ -22,6 +20,7 @@ import { PopoverController } from "ionic-angular";
 import { QRAlertCallBack, QRScannerAlert } from "../qrscanner/qrscanner_alert";
 import { FormAndFrameworkUtilService } from "../profile/formandframeworkutil.service";
 import { CommonUtilService } from "../../service/common-util.service";
+import { TelemetryGeneratorService } from "../../service/telemetry-generator.service";
 
 @IonicPage()
 @Component({
@@ -81,27 +80,25 @@ export class SearchPage {
   profile: any;
 
   isFirstLaunch: boolean = false;
-  private shouldGenerateEndTelemetry: boolean = false;
-  private backButtonFunc = undefined;
+  shouldGenerateEndTelemetry: boolean = false;
+  backButtonFunc = undefined;
 
   @ViewChild(Navbar) navBar: Navbar;
   constructor(
     private contentService: ContentService,
-    private telemetryService: TelemetryService,
     private navParams: NavParams,
     private navCtrl: NavController,
     private zone: NgZone,
     private event: Events,
     private network: Network,
     private fileUtil: FileUtil,
-    private toastCtrl: ToastController,
-    private translate: TranslateService,
     private events: Events,
     private appGlobal: AppGlobalService,
     private popUp: PopoverController,
     private platform: Platform,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    private telemetryGeneratorService: TelemetryGeneratorService
   ) {
 
     this.checkUserSession();
@@ -110,17 +107,9 @@ export class SearchPage {
 
     this.init();
 
-    console.log("Network Type : " + this.network.type);
     this.defaultAppIcon = 'assets/imgs/ic_launcher.png';
-    this.backButtonFunc = this.platform.registerBackButtonAction(() => {
-      this.navCtrl.pop();
-      if (this.shouldGenerateEndTelemetry) {
-        this.generateQRSessionEndEvent(this.source, this.dialCode);
-      }
-      this.backButtonFunc();
-    }, 10)
+    this.handleDeviceBackButton();
   }
-
 
   ionViewDidEnter() {
     if (!this.dialCode && this.isFirstLaunch) {
@@ -135,12 +124,27 @@ export class SearchPage {
 
   ionViewDidLoad() {
     this.navBar.backButtonClick = () => {
+      this.handleNavBackButton();
+    }
+  }
+
+  handleNavBackButton() {
+    if (this.shouldGenerateEndTelemetry) {
+      this.generateQRSessionEndEvent(this.source, this.dialCode);
+    }
+    this.navCtrl.pop();
+    this.backButtonFunc();
+  }
+
+
+  handleDeviceBackButton() {
+    this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      this.navCtrl.pop();
       if (this.shouldGenerateEndTelemetry) {
         this.generateQRSessionEndEvent(this.source, this.dialCode);
       }
-      this.navCtrl.pop();
       this.backButtonFunc();
-    }
+    }, 10)
   }
 
   openCollection(collection) {
@@ -188,21 +192,12 @@ export class SearchPage {
     }
 
     if (content.contentType === ContentType.COURSE) {
-      console.log('Calling course details page');
       this.navCtrl.push(EnrolledCourseDetailsPage, params)
     } else if (content.mimeType === MimeType.COLLECTION) {
-      console.log('Calling collection details page');
       this.navCtrl.push(CollectionDetailsPage, params)
     } else {
-      console.log('Calling content details page');
       this.navCtrl.push(ContentDetailsPage, params)
     }
-  }
-  getTranslatedValue(translations) {
-    if (translations.hasOwnProperty(this.translate.currentLang)) {
-      return translations[this.translate.currentLang];
-    }
-    return "";
   }
 
   showFilter() {
@@ -258,7 +253,6 @@ export class SearchPage {
   }
 
   searchOnChange() {
-    console.log("Search keyword " + this.searchKeywords);
   }
 
   handleSearch() {
@@ -297,13 +291,6 @@ export class SearchPage {
         contentSearchRequest.grade = this.applyProfileFilter(this.profile.grade, contentSearchRequest.grade, "gradeLevel");
       }
 
-      // if (this.profile.subject && this.profile.subject.length) {
-      // 	pageAssembleCriteria.filters.subject = this.applyProfileFilter(this.profile.subject, pageAssembleCriteria.filters.subject, "subject");
-      // }
-
-      // if (this.profile.subject && this.profile.subject.length) {
-      // 	contentSearchRequest.subject = this.applyProfileFilter(this.profile.subject, contentSearchRequest.subject);
-      // }
     }
 
     this.contentService.searchContent(contentSearchRequest, false, false, false, (responseData) => {
@@ -314,8 +301,6 @@ export class SearchPage {
         if (response.status && response.result) {
           this.addCorRelation(response.result.responseMessageId, "API");
           this.searchContentResult = response.result.contentDataList;
-          console.log('inside search content service');
-          console.log(this.searchContentResult);
           this.updateFilterIcon();
 
           this.isEmptyResult = false;
@@ -333,7 +318,7 @@ export class SearchPage {
       this.zone.run(() => {
         this.showLoader = false;
         if (this.network.type === 'none') {
-          this.showMessage('ERROR_OFFLINE_MODE');
+          this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
         }
       })
     });
@@ -378,7 +363,7 @@ export class SearchPage {
     return assembleFilter;
   }
 
-  private init() {
+   init() {
     this.dialCode = this.navParams.get('dialCode');
     this.contentType = this.navParams.get('contentType');
     this.source = this.navParams.get('source');
@@ -396,7 +381,7 @@ export class SearchPage {
     });
   }
 
-  private getContentForDialCode() {
+  getContentForDialCode() {
     if (this.dialCode == undefined || this.dialCode.length == 0) {
       return
     }
@@ -433,13 +418,13 @@ export class SearchPage {
         this.showLoader = false;
       })
     }, () => {
-        this.zone.run(() => {
-          this.showLoader = false;
-          if (this.network.type === 'none') {
-            this.showMessage('ERROR_OFFLINE_MODE');
-          }
-        });
+      this.zone.run(() => {
+        this.showLoader = false;
+        if (this.network.type === 'none') {
+          this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
+        }
       });
+    });
   }
 
   private addCorRelation(id: string, type: string) {
@@ -452,22 +437,15 @@ export class SearchPage {
     this.corRelationList.push(corRelation);
   }
   private generateImpressionEvent() {
-    this.telemetryService.impression(generateImpressionTelemetry(
+    this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.SEARCH, "",
       this.source,
       Environment.HOME, "", "", "",
       undefined,
-      this.corRelationList
-
-    ));
+      this.corRelationList);
   }
 
   private generateLogEvent(searchResult) {
-    let log = new Log();
-    log.level = LogLevel.INFO;
-    log.message = this.source;
-    log.env = Environment.HOME;
-    log.type = ImpressionType.SEARCH;
     if (searchResult != null) {
       let contentArray: Array<any> = searchResult.contentDataList;
       let params = new Array<any>();
@@ -475,46 +453,52 @@ export class SearchPage {
       paramsMap["SearchResults"] = contentArray.length;
       paramsMap["SearchCriteria"] = searchResult.request;
       params.push(paramsMap);
-      log.params = params;
-      this.telemetryService.log(log);
+      this.telemetryGeneratorService.generateLogEvent(LogLevel.INFO,
+        this.source,
+        Environment.HOME,
+        ImpressionType.SEARCH,
+        params);
     }
   }
 
   generateInteractEvent(identifier, contentType, pkgVersion, index) {
-    let interact = new Interact();
-    interact.type = InteractType.TOUCH;
-    interact.subType = InteractSubtype.CONTENT_CLICKED;
-    interact.pageId = this.source;
-    interact.env = Environment.HOME;
-    let valuesMap = new Map();
+    let values = new Map();
+    values["SearchPhrase"] = this.searchKeywords;
+    values["PositionClicked"] = index;
 
-    valuesMap["SearchPhrase"] = this.searchKeywords;
-    valuesMap["PositionClicked"] = index;
-    interact.valueMap = valuesMap;
-    interact.id = this.source;
-    interact.objId = identifier;
-    interact.objType = contentType;
-    interact.objType = pkgVersion;
-    interact.correlationData = this.corRelationList;
-    this.telemetryService.interact(interact);
+    let telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.id = identifier;
+    telemetryObject.type = contentType;
+    telemetryObject.version = pkgVersion;
+
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.CONTENT_CLICKED,
+      Environment.HOME,
+      this.source,
+      telemetryObject,
+      values,
+      undefined,
+      this.corRelationList);
   }
 
   generateQRSessionEndEvent(pageId: string, qrData: string) {
     if (pageId !== undefined) {
-      this.telemetryService.end(generateEndTelemetry(
+      let telemetryObject: TelemetryObject = new TelemetryObject();
+      telemetryObject.id = qrData;
+      telemetryObject.type = 'qr';
+      telemetryObject.version = "";
+      this.telemetryGeneratorService.generateEndTelemetry(
         "qr",
         Mode.PLAY,
         pageId,
-        qrData,
-        "qr",
-        "",
+        Environment.HOME,
+        telemetryObject,
         undefined,
-        this.corRelationList
-      ));
+        this.corRelationList);
     }
   }
 
-  private processDialCodeResult(searchResult) {
+  processDialCodeResult(searchResult) {
     let collectionArray: Array<any> = searchResult.collectionDataList;
     let contentArray: Array<any> = searchResult.contentDataList;
 
@@ -527,16 +511,12 @@ export class SearchPage {
           if (collection.childNodes.includes(content.identifier)) {
             if (collection.content == undefined) {
               collection.content = [];
-              collection.content.push(content);
-            } else {
-              collection.content.push(content);
             }
-
+            collection.content.push(content);
             addedContent.push(content.identifier);
           }
         })
         this.dialCodeResult.push(collection);
-        console.log(this.dialCodeResult);
       })
     }
 
@@ -551,15 +531,12 @@ export class SearchPage {
       this.childContent = this.dialCodeResult[0].content[0];
       this.checkParent(this.dialCodeResult[0], this.dialCodeResult[0].content[0]);
       isParentCheckStarted = true;
-      // this.showContentDetails(this.dialCodeResult[0].content[0]);
-      // return;
     }
 
     if (contentArray && contentArray.length > 1) {
       contentArray.forEach((content) => {
         if (addedContent.indexOf(content.identifier) < 0) {
           this.dialCodeContentResult.push(content);
-          console.log(this.dialCodeContentResult);
         }
       })
     }
@@ -575,36 +552,39 @@ export class SearchPage {
       if (this.shouldGenerateEndTelemetry) {
         this.generateQRSessionEndEvent(this.source, this.dialCode);
       }
-      let popOver: Popover;
-      const callback: QRAlertCallBack = {
-        tryAgain() {
-          popOver.dismiss()
-        },
-        cancel() {
-          popOver.dismiss()
-        }
-      }
-      popOver = this.popUp.create(QRScannerAlert, {
-        callback: callback,
-        icon: "./assets/imgs/ic_coming_soon.png",
-        messageKey: "CONTENT_COMING_SOON",
-        cancelKey: "hide",
-        tryAgainKey: "DONE",
-      }, {
-          cssClass: 'qr-alert'
-        });
-
-      setTimeout(() => {
-        popOver.present();
-      }, 300)
-
-      // this.isEmptyResult = true;
+      this.showContentComingSoonAlert();
     } else {
       this.isEmptyResult = false;
     }
   }
 
-  private updateFilterIcon() {
+  showContentComingSoonAlert() {
+    let popOver: Popover;
+    const callback: QRAlertCallBack = {
+      tryAgain() {
+        popOver.dismiss()
+      },
+      cancel() {
+        popOver.dismiss()
+      }
+    }
+    popOver = this.popUp.create(QRScannerAlert, {
+      callback: callback,
+      icon: "./assets/imgs/ic_coming_soon.png",
+      messageKey: "CONTENT_COMING_SOON",
+      cancelKey: "hide",
+      tryAgainKey: "DONE",
+    }, {
+        cssClass: 'qr-alert'
+      });
+
+    setTimeout(() => {
+      popOver.present();
+    }, 300)
+
+  }
+
+  updateFilterIcon() {
     let isFilterApplied = false;
 
     if (this.isEmptyResult) {
@@ -632,8 +612,7 @@ export class SearchPage {
     }
   }
 
-
-  private checkParent(parent, child) {
+  checkParent(parent, child) {
     let identifier = parent.identifier
     let contentRequest: ContentDetailRequest = {
       contentId: identifier
@@ -652,10 +631,10 @@ export class SearchPage {
         this.zone.run(() => { this.showContentDetails(child); });
       }
     }, () => {
-      });
+    });
   }
 
-  private downloadParentContent(parent) {
+  downloadParentContent(parent) {
     this.zone.run(() => {
       this.downloadProgress = 0;
       this.showLoading = true;
@@ -683,14 +662,14 @@ export class SearchPage {
           this.showLoading = false;
           this.isDownloadStarted = false;
           if (this.network.type != 'none') {
-            this.showMessage('ERROR_CONTENT_NOT_AVAILABLE');
+            this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
           } else {
-            this.showMessage('ERROR_OFFLINE_MODE');
+            this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
           }
         }
       });
     }, () => {
-      });
+    });
   }
 
   /**
@@ -731,33 +710,8 @@ export class SearchPage {
           }
         }
 
-        // if (res.data && res.type === 'contentUpdateAvailable' && this.parentContent && this.childContent) {
-        //   this.zone.run(() => {
-        //     console.log("Content Update in Search");
-        //     this.downloadParentContent(this.parentContent);
-        //   });
-        // }
-
       });
     });
-  }
-
-  showMessage(constant) {
-    if (constant) {
-      this.translate.get(constant).subscribe(
-        (value: any) => {
-          let toast = this.toastCtrl.create({
-            message: value,
-            duration: 2000,
-            position: 'bottom'
-          });
-          toast.onDidDismiss(() => {
-          });
-
-          toast.present();
-        }
-      );
-    }
   }
 
   /**
@@ -787,13 +741,13 @@ export class SearchPage {
         this.showLoading = false;
       });
     }, () => {
-        this.zone.run(() => {
-          this.showLoading = false;
-        });
+      this.zone.run(() => {
+        this.showLoading = false;
       });
+    });
   }
 
-  private checkUserSession() {
+  checkUserSession() {
 
     let isGuestUser = !this.appGlobal.isUserLoggedIn();
 
