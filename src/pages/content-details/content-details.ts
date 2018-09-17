@@ -481,7 +481,6 @@ export class ContentDetailsPage {
 
     // Check locally available
     if (Boolean(data.result.isAvailableLocally)) {
-      this.content.size = data.result.sizeOnDevice;
       if (data.result.isUpdateAvailable && !this.isUpdateAvail) {
         this.isUpdateAvail = true;
       } else {
