@@ -211,6 +211,7 @@ export class EnrolledCourseDetailsPage {
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
     this.subscribeGenieEvent();
+    this.subscribeUtilityEvents();
 
     if (this.network.type === 'none') {
       this.isNetworkAvailable = false;
