@@ -213,7 +213,6 @@ export class AddOrRemoveGroupUserPage {
     let loader = this.getLoader();
     loader.present();
     let groupMembersUids: Array<string> = [];
-    let selectedUids: Array<string> = [];
 
     this.groupMembers.forEach(element => {
       groupMembersUids.push(element.uid);

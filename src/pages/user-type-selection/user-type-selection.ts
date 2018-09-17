@@ -2,7 +2,7 @@ import { Component, NgZone } from '@angular/core';
 import { NavController, NavParams, Events } from 'ionic-angular';
 import {
   TabsPage, SharedPreferences,
-  Interact, TelemetryService, InteractType, InteractSubtype,
+  InteractType, InteractSubtype,
   Environment, PageId, ImpressionType,
   ContainerService,
   Profile,
@@ -10,9 +10,11 @@ import {
 } from 'sunbird';
 import { TranslateService } from '@ngx-translate/core';
 import { ProfileType, ProfileService } from 'sunbird'
-import {  Map, generateImpressionTelemetry, generateInteractTelemetry } from '../../app/telemetryutil';
+import { Map } from '../../app/telemetryutil';
 import { initTabs, GUEST_TEACHER_TABS, GUEST_STUDENT_TABS } from '../../app/module.service';
 import { AppGlobalService } from '../../service/app-global.service';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { CommonUtilService } from '../../service/common-util.service';
 
 const selectedCardBorderColor = '#006DE5';
 const borderColor = '#F7F7F7';
@@ -48,10 +50,11 @@ export class UserTypeSelectionPage {
     private translate: TranslateService,
     private preference: SharedPreferences,
     private profileService: ProfileService,
-    private telemetryService: TelemetryService,
+    private telemetryGeneratorService: TelemetryGeneratorService,
     private container: ContainerService,
     private zone: NgZone,
-    private event: Events
+    private event: Events,
+    private commonUtilService:CommonUtilService
   ) {
     this.initData();
 
@@ -71,17 +74,10 @@ export class UserTypeSelectionPage {
   }
 
   ionViewDidLoad() {
-    this.telemetryService.impression(
-      generateImpressionTelemetry(ImpressionType.VIEW, "",
-        PageId.USER_TYPE_SELECTION,
-        Environment.HOME, "", "", "",
-        undefined,
-        undefined)
-    );
-  }
-
-  ionViewDidEnter() {
-
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.VIEW, "",
+      PageId.USER_TYPE_SELECTION,
+      Environment.HOME, "", "", "");
   }
 
   selectTeacherCard() {
@@ -90,7 +86,7 @@ export class UserTypeSelectionPage {
       this.teacherCardBorderColor = selectedCardBorderColor;
       this.studentCardBorderColor = borderColor;
       this.selectedUserType = ProfileType.TEACHER;
-      this.continueAs = this.translateMessage('CONTINUE_AS_ROLE', this.translateMessage('TEACHER_ROLE'));
+      this.continueAs = this.commonUtilService.translateMessage('CONTINUE_AS_ROLE', this.commonUtilService.translateMessage('TEACHER_ROLE'));
       this.preference.putString(KEY_SELECTED_USER_TYPE, this.selectedUserType);
     });
   }
@@ -101,7 +97,7 @@ export class UserTypeSelectionPage {
       this.teacherCardBorderColor = borderColor;
       this.studentCardBorderColor = selectedCardBorderColor;
       this.selectedUserType = ProfileType.STUDENT;
-      this.continueAs = this.translateMessage('CONTINUE_AS_ROLE', this.translateMessage('STUDENT_ROLE'));
+      this.continueAs = this.commonUtilService.translateMessage('CONTINUE_AS_ROLE',this.commonUtilService.translateMessage('STUDENT_ROLE'));
       this.preference.putString(KEY_SELECTED_USER_TYPE, this.selectedUserType)
     });
   }
@@ -126,10 +122,10 @@ export class UserTypeSelectionPage {
         updateRequest.source = UserSource.LOCAL;
 
         updateRequest.syllabus = [];
-        updateRequest.board =  [];
-        updateRequest.grade =  [];
-        updateRequest.subject =  [];
-        updateRequest.medium =  [];
+        updateRequest.board = [];
+        updateRequest.grade = [];
+        updateRequest.subject = [];
+        updateRequest.medium = [];
 
         this.updateProfile(updateRequest);
       }
@@ -139,15 +135,14 @@ export class UserTypeSelectionPage {
       profileRequest.handle = "Guest1";
       profileRequest.profileType = this.selectedUserType;
       profileRequest.source = UserSource.LOCAL;
-      
+
       this.setProfile(profileRequest);
     }
   }
 
   updateProfile(updateRequest: any) {
     this.profileService.updateProfile(updateRequest,
-      (res: any) => {
-        console.log("Update Response", res);
+      () => {
         this.gotoTabsPage();
       },
       (err: any) => {
@@ -156,16 +151,16 @@ export class UserTypeSelectionPage {
   }
 
   setProfile(profileRequest: any) {
-    this.profileService.setCurrentProfile(true, profileRequest, res => {
+    this.profileService.setCurrentProfile(true, profileRequest, () => {
       this.profileService.getCurrentUser(success => {
-        let userId = JSON.parse(success).uid
-        if (userId !== "null") this.preference.putString('GUEST_USER_ID_BEFORE_LOGIN', userId);
+        let userId = JSON.parse(success).uid;
+        if (userId !== "null")
+          this.preference.putString('GUEST_USER_ID_BEFORE_LOGIN', userId);
         this.gotoTabsPage();
-      },
-        error => {
-          console.error("Error", error);
-          return "null";
-        });
+      }, error => {
+        console.error("Error", error);
+        return "null";
+      });
     },
       err => {
         console.error("Error", err);
@@ -175,7 +170,6 @@ export class UserTypeSelectionPage {
   gotoTabsPage() {
     // Update the Global variable in the AppGlobalService
     this.event.publish(AppGlobalService.USER_INFO_UPDATED);
-
 
     if (this.selectedUserType == ProfileType.TEACHER) {
       initTabs(this.container, GUEST_TEACHER_TABS);
@@ -187,56 +181,17 @@ export class UserTypeSelectionPage {
       loginMode: 'guest'
     });
   }
-
-  getCurrentUserId(): any {
-    this.profileService.getCurrentUser(success => {
-      return JSON.parse(success).uid;
-    },
-      error => {
-        console.error("Error", error);
-        return "null";
-      });
-  }
-
-  setUser(uid: string) {
-    this.profileService.setCurrentUser(uid,
-      (success: any) => {
-        console.log("Set User Success - " + success);
-        this.navCtrl.push(TabsPage, {
-          loginMode: 'guest'
-        });
-      }, (error: any) => {
-        console.log("Set User Error -" + error);
-      })
-  }
-
+  
   generateInteractEvent(userType) {
     let values = new Map();
     values["UserType"] = userType;
-    this.telemetryService.interact(generateInteractTelemetry(
+    this.telemetryGeneratorService. generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.CONTINUE_CLICKED,
       Environment.HOME,
       PageId.USER_TYPE_SELECTION,
-      values,
       undefined,
-      undefined
-    ));
-  }
-
-  /**
-    * Used to Translate message to current Language
-    * @param {string} messageConst - Message Constant to be translated
-    * @returns {string} translatedMsg - Translated Message
-    */
-  translateMessage(messageConst: string, field?: string): string {
-    let translatedMsg = '';
-    this.translate.get(messageConst, { '%s': field }).subscribe(
-      (value: any) => {
-        translatedMsg = value;
-      }
-    );
-    return translatedMsg;
+      values);
   }
 
 }
