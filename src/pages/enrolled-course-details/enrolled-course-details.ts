@@ -211,7 +211,6 @@ export class EnrolledCourseDetailsPage {
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
     this.subscribeGenieEvent();
-    this.subscribeUtilityEvents();
 
     if (this.network.type === 'none') {
       this.isNetworkAvailable = false;
@@ -835,7 +834,9 @@ export class EnrolledCourseDetailsPage {
   ionViewDidLoad() {
     this.navBar.backButtonClick = () => {
       this.handleNavBackButton();
-    }
+    };
+
+    this.subscribeUtilityEvents();
   }
 
   handleNavBackButton(){
