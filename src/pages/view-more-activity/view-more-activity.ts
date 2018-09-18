@@ -1,6 +1,6 @@
 import { IonicPage, NavController, NavParams, LoadingController, Events } from 'ionic-angular';
 import { Component, NgZone, OnInit } from '@angular/core';
-import { ContentService, CourseService, PageId, Environment, ImpressionType, Log, LogLevel } from 'sunbird';
+import { ContentService, CourseService, PageId, Environment, ImpressionType, LogLevel } from 'sunbird';
 import * as _ from 'lodash';
 import { ContentType } from '../../app/app.constant';
 import { ContentDetailsPage } from '../content-details/content-details';

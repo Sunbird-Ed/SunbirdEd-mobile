@@ -834,7 +834,9 @@ export class EnrolledCourseDetailsPage {
   ionViewDidLoad() {
     this.navBar.backButtonClick = () => {
       this.handleNavBackButton();
-    }
+    };
+
+    this.subscribeUtilityEvents();
   }
 
   handleNavBackButton(){

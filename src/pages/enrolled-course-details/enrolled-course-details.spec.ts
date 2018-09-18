@@ -35,6 +35,7 @@ import { CollectionDetailsPage } from '../collection-details/collection-details'
 import { ContentDetailsPage } from '../content-details/content-details';
 import { CourseBatchesPage } from '../course-batches/course-batches';
 import { Navbar } from 'ionic-angular';
+import { MyApp } from '../../app/app.component';
 declare let GenieSDK: any;
 
 describe('EnrolledCourseDetailsPage Component', () => {
@@ -93,10 +94,6 @@ describe('EnrolledCourseDetailsPage Component', () => {
       translateService = service;
       translateService.use('en');
     })
-  });
-
-  it("should initialize the component", function () {
-    expect(component).toBeDefined();
   });
 
   it("#subscribeUtilityEvents should return the base url", function (done) {
@@ -856,6 +853,8 @@ describe('EnrolledCourseDetailsPage Component', () => {
     // spyOn(navBar, 'backButtonClick').and.callFake((success) => {
     //   return jasmine.any(Function);
     // });
+    spyOn(component,'subscribeUtilityEvents').and.callFake(()=>{});
+    component.backButtonFunc = jasmine.createSpy();
     component.ionViewDidLoad();
   });
 
