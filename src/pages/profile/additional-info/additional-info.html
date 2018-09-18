@@ -45,7 +45,7 @@
       <ion-label stacked>{{'PHONE' | translate | titlecase}}
         <span ion-text color="danger">&nbsp;*</span>
       </ion-label>
-      <ion-input formControlName="phone" placeholder="{{ profile?.phone || 'ERROR_EMPTY_MOBILE' | translate }}" type="number"></ion-input>
+      <ion-input formControlName="phone" [disabled]="true" placeholder="{{ profile?.phone || 'ERROR_EMPTY_MOBILE' | translate }}" type="number"></ion-input>
       <button ion-button item-right clear small icon-only color="dark" (click)="toggleLock('phone', 'PHONE')">
         <ion-icon name="{{ profileVisibility?.phone === 'private' ? 'lock' : 'unlock' }}" class="lock-position"></ion-icon>
       </button>

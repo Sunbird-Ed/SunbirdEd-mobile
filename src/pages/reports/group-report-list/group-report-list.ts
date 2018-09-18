@@ -1,3 +1,4 @@
+import { NavController } from 'ionic-angular/navigation/nav-controller';
 import { Component, NgZone } from '@angular/core';
 import { NavParams, LoadingController } from 'ionic-angular';
 import { ReportService, ReportSummary, PageId, Environment, InteractType, InteractSubtype } from 'sunbird';
@@ -5,6 +6,8 @@ import { GroupReportAlert } from '../group-report-alert/group-report-alert';
 import { TranslateService } from '@ngx-translate/core';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 import { AppGlobalService } from '../../../service/app-global.service';
+import { ReportListPage } from '../report-list/report-list';
+import { UserReportPage } from '../user-report/user-report';
 
 @Component({
     selector: 'group-report-list',
@@ -48,7 +51,8 @@ export class GroupReportListPage {
         private reportService: ReportService,
         private translate: TranslateService,
         private telemetryGeneratorService: TelemetryGeneratorService,
-        private appGlobalService:AppGlobalService) {
+        private appGlobalService:AppGlobalService,
+        private navCtrl: NavController) {
     }
 
     ionViewWillEnter() {
@@ -158,6 +162,11 @@ export class GroupReportListPage {
             }
         );
         return translatedMsg;
+    }
+
+    goToReportList(){
+        let reportSummary: ReportSummary = this.navParams.get('report');
+        this.navCtrl.push(UserReportPage, {'report':reportSummary});
     }
 
 }
