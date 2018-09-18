@@ -1,4 +1,31 @@
 export const mockSaveDetails = {
+  gradeList: [
+    {
+      "text": "Class 7",
+      "value": "class7",
+      "checked": false
+    },
+    {
+      "text": "Class 9",
+      "value": "class9",
+      "checked": true
+    },
+    {
+      "text": "Class 8",
+      "value": "class8",
+      "checked": true
+    },
+    {
+      "text": "Class 10",
+      "value": "class10",
+      "checked": false
+    },
+    {
+      "text": "Class 6",
+      "value": "class6",
+      "checked": false
+    }
+  ],
   onBoardingSlides: [
     {
       "id": "syllabusList",
@@ -45,33 +72,103 @@ export const mockSaveDetails = {
       "id": "boardList",
       "title": "BOARD_QUESTION",
       "desc": "BOARD_OPTION_TEXT",
-      "options": [],
-      "selectedOptions": "",
-      "selectedCode": []
+      "options": [
+        {
+          "text": "State (Andhra Pradesh)",
+          "value": "stateandhrapradesh",
+          "checked": true
+        }
+      ],
+      "selectedOptions": "State (Andhra Pradesh)",
+      "selectedCode": [
+        "stateandhrapradesh"
+      ]
     },
     {
       "id": "mediumList",
       "title": "MEDIUM_QUESTION",
       "desc": "MEDIUM_OPTION_TEXT",
-      "options": [],
-      "selectedOptions": "",
-      "selectedCode": []
+      "options": [
+        {
+          "text": "English",
+          "value": "english",
+          "checked": true
+        },
+        {
+          "text": "Telugu",
+          "value": "telugu",
+          "checked": true
+        }
+      ],
+      "selectedOptions": "English, Telugu",
+      "selectedCode": [
+        "english",
+        "telugu"
+      ]
     },
     {
       "id": "gradeList",
       "title": "GRADE_QUESTION",
       "desc": "GRADE_OPTION_TEXT",
-      "options": [],
-      "selectedOptions": "",
-      "selectedCode": []
+      "options": [
+        {
+          "text": "Class 7",
+          "value": "class7",
+          "checked": false
+        },
+        {
+          "text": "Class 9",
+          "value": "class9",
+          "checked": true
+        },
+        {
+          "text": "Class 8",
+          "value": "class8",
+          "checked": true
+        },
+        {
+          "text": "Class 10",
+          "value": "class10",
+          "checked": false
+        },
+        {
+          "text": "Class 6",
+          "value": "class6",
+          "checked": false
+        }
+      ],
+      "selectedOptions": "Class 8, Class 9",
+      "selectedCode": [
+        "class9",
+        "class8"
+      ]
     },
     {
       "id": "subjectList",
       "title": "SUBJECT_QUESTION",
       "desc": "SUBJECT_OPTION_TEXT",
-      "options": [],
-      "selectedOptions": "",
-      "selectedCode": []
+      "options": [
+        {
+          "text": "Biology",
+          "value": "biology",
+          "checked": true
+        },
+        {
+          "text": "Mathematics",
+          "value": "mathematics",
+          "checked": true
+        },
+        {
+          "text": "Physical Science",
+          "value": "physicalscience",
+          "checked": false
+        }
+      ],
+      "selectedOptions": "Biology, Mathematics",
+      "selectedCode": [
+        "biology",
+        "mathematics"
+      ]
     }
   ]
 }

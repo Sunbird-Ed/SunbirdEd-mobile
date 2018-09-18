@@ -14,7 +14,7 @@ export class FileSizePipe implements PipeTransform {
    * Takes a size and return readable size.
    */
   transform(size: any, roundOf: number = 2) {
-    if (size) {
+    if (size || size === 0) {
       if (isNaN(size))
         size = 0;
 

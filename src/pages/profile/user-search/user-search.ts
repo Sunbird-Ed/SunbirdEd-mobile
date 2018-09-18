@@ -1,8 +1,7 @@
 import { Component, NgZone, ViewChild } from "@angular/core";
-import { AuthService, UserProfileService, Impression, ImpressionType, PageId, Environment, Visit, TelemetryService } from "sunbird";
+import { AuthService, UserProfileService,   ImpressionType, PageId, Environment, Visit, TelemetryService } from "sunbird";
 import { NavController, NavParams, LoadingController, ToastController } from "ionic-angular";
 import { Renderer } from '@angular/core';
-import * as _ from 'lodash';
 import { TranslateService } from "@ngx-translate/core";
 
 import { ProfilePage } from "./../profile";

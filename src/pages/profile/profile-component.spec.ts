@@ -130,7 +130,7 @@ describe("ProfilePage", () => {
             success(JSON.stringify(mockProfileRes.sessionMock));
         });
         spyOn(userProfileService, "getUserProfileDetails").and.callFake((req, success, error) => {
-            success("success");
+            success(mockProfileRes.profileDetailsMock);
         });
         comp.refreshProfileData();
         expect(authService.getSessionData).toHaveBeenCalled();
@@ -139,6 +139,24 @@ describe("ProfilePage", () => {
             done()
         }, 10);
 
+    });
+
+    it("should handle success scenarion for refreshProfileData", (done) => {
+        const authService = TestBed.get(AuthService);
+        const userProfileService = TestBed.get(UserProfileService);
+        comp.isLoggedInUser = true;
+        spyOn(authService, "getSessionData").and.callFake((success, error) => {
+            success(JSON.stringify(mockProfileRes.sessionMock));
+        });
+        spyOn(userProfileService, "getUserProfileDetails").and.callFake((req, success, error) => {
+            error("error");
+        });
+        comp.refreshProfileData();
+        expect(authService.getSessionData).toHaveBeenCalled();
+        setTimeout(() => {
+            expect(comp.loggedInUserId).toEqual(mockProfileRes.sessionMock.userToken)
+            done()
+        }, 10);
     });
 
     it("should handle failure scenario for doRefresh", () => {
@@ -158,8 +176,6 @@ describe("ProfilePage", () => {
         expect(comp.arrayToString(["1","2","3"])).toEqual(data);
         // return stringArray.join(", ");
     })
-
-   
 
     it("formatMissingFields should handle all switch cases properly", () => {
         comp.profile.missingFields = ["education"];
@@ -253,7 +269,92 @@ describe("ProfilePage", () => {
         expect(comp.blogLink).toBe(data[3].url);
     });
 
+    it("formatProfileProgress should assign to formatProfileProgress", () => {
+        comp.profile.completeness = true;
+        comp.formatProfileProgress();
+        expect(comp.profileProgress).toBe("true");
+    });
 
+    it("editEduDetails should edit education detaisl", () => {
+        const navctrl = TestBed.get(NavController);
+        spyOn(navctrl, "push");
+        comp.editEduDetails(false,mockProfileRes.profileDetailsMock, mockProfileRes.eduDetailsMock);
+        expect(navctrl.push).toHaveBeenCalled();
+    });
+
+    it("editAddress should edit address detaisl", () => {
+        const navctrl = TestBed.get(NavController);
+        spyOn(navctrl, "push");
+        comp.editAddress(false, mockProfileRes.addressMock);
+        expect(navctrl.push).toHaveBeenCalled();
+    });
+
+    it("addSkillTags should call nav controller ", () => {
+        const navctrl = TestBed.get(NavController);
+        spyOn(navctrl, "push");
+        comp.addSkillTags();
+        expect(navctrl.push).toHaveBeenCalled();
+    });
+
+    it("endorseSkill should handle success scenario", () => {
+        comp.profile = JSON.parse(mockProfileRes.profileDetailsMock);
+        const userProfileService = TestBed.get(UserProfileService);
+        const authService = TestBed.get(AuthService);
+        spyOn(authService, "getSessionData").and.callFake((success, error) => {
+            success(JSON.stringify(mockProfileRes.sessionMock));
+        });
+        let num:number = 0;
+        spyOn(userProfileService, "endorseOrAddSkill").and.callFake((req, success,error) =>{
+            success(mockProfileRes.endorseResMock);
+        });
+        comp.endorseSkill(num);
+        expect(comp.profile.skills[num].canEndorse).toBe(false);
+    });
+
+    it("endorseSkill should handle failure scenario", () => {
+        comp.profile = JSON.parse(mockProfileRes.profileDetailsMock);
+        const userProfileService = TestBed.get(UserProfileService);
+        const authService = TestBed.get(AuthService);
+        spyOn(authService, "getSessionData").and.callFake((success, error) => {
+            success(JSON.stringify(mockProfileRes.sessionMock));
+        });
+        let num:number = 0;
+        spyOn(userProfileService, "endorseOrAddSkill").and.callFake((req, success,error) =>{
+            error('{"status":false}');
+        });
+        comp.endorseSkill(num);
+        expect(comp.profile.skills[num].canEndorse).toBe(true);
+    });
+
+    it("editPicture should create popover", () => {
+        const popoverCtrl = TestBed.get(PopoverController);
+        // spyOn()
+        comp.editPicture();
+        expect(popoverCtrl.create).toHaveBeenCalled();
+    });
+
+    it("setProfileVisibility should handle success scenario", () => {
+        comp.profile = JSON.parse(mockProfileRes.profileDetailsMock);
+        const authService = TestBed.get(AuthService);
+        const userProfileService = TestBed.get(UserProfileService);
+        spyOn(authService, "getSessionData").and.callFake((success, error) => {
+            success(JSON.stringify(mockProfileRes.sessionMock));
+        });
+        spyOn(userProfileService, "setProfileVisibility").and.callFake((req, success, error) =>{
+            success(mockProfileRes.visibilityResMock);
+        });
+        comp.setProfileVisibility("profileSummary");
+        setTimeout(() => {
+            expect(comp.isRefreshProfile).toBe(true);
+        }, 100);
+    })
+
+    it("editExperience should call nav controller ", () => {
+        const navctrl = TestBed.get(NavController);
+        spyOn(navctrl, "push");
+        comp.editExperience(true, mockProfileRes.addressMock);
+        expect(navctrl.push).toHaveBeenCalled();
+    });
 
     it("getLoader makes expected calls", () => {
         const loadingController = TestBed.get(LoadingController);

@@ -23,6 +23,12 @@ group-list-page {
     .item-md.item-block .item-inner {
     border-bottom: 0 !important;
     }
+    .report-title {
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        width: 79vw;
+    }
 }
 .bgColor ion-label {
     overflow: visible !important;

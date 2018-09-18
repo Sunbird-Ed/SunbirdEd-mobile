@@ -1,7 +1,7 @@
 import { Component, NgZone } from '@angular/core';
 import { NavController, NavParams, LoadingController } from 'ionic-angular';
 import { GroupReportListPage } from '../group-report-list/group-report-list';
-import { ReportService, ReportSummary, ContentService, ContentFilterCriteria, SummarizerContentFilterCriteria, ContentSortCriteria, SortOrder, ImpressionType, Environment, PageId, InteractType, InteractSubtype, ObjectType, TelemetryObject } from "sunbird";
+import { ReportService, ReportSummary, ContentService, SummarizerContentFilterCriteria, ImpressionType, Environment, PageId, InteractType, InteractSubtype, ObjectType, TelemetryObject } from "sunbird";
 import { UserReportPage } from '../user-report/user-report';
 import { ContentType } from '../../../app/app.constant';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';

@@ -20,6 +20,7 @@ import { App, ViewController } from "ionic-angular";
 import { ElementRef } from "@angular/core";
 import { CommonUtilService } from "../src/service/common-util.service";
 import { resolve } from "q";
+import { NavParams } from "ionic-angular";
 
 declare let readJSON: any;
 
@@ -111,25 +112,25 @@ export class SplashScreenMock extends SplashScreen {
 
 export class NavMock {
   public pop(): any {
-    return new Promise(function(resolve: Function): void {
+    return new Promise(function (resolve: Function): void {
       resolve();
     });
   }
 
   public push(): any {
-    return new Promise(function(resolve: Function): void {
+    return new Promise(function (resolve: Function): void {
       resolve();
     });
   }
 
   public popTo(): any {
-    return new Promise(function(resolve: Function): void {
+    return new Promise(function (resolve: Function): void {
       resolve();
     });
   }
 
   public getByIndex(): any {
-    return new Promise(function(resolve: Function): void {
+    return new Promise(function (resolve: Function): void {
       resolve();
     });
   }
@@ -159,10 +160,10 @@ export class NavMock {
   }
 }
 
-export class DeepLinkerMock {}
+export class DeepLinkerMock { }
 
 export class AuthServiceMock extends AuthService {
-  public getSessionData(successCallback: any): void {}
+  public getSessionData(successCallback: any): void { }
   public endSession: () => {};
 }
 
@@ -224,11 +225,11 @@ export class EventsMock {
   subscribe() {
     return;
   }
-  publish (){
-    
+  publish() {
+
   }
 }
-export class CourseUtilServiceMock extends CourseUtilService {}
+export class CourseUtilServiceMock extends CourseUtilService { }
 
 export class TranslateServiceStub {
   public get(key: any): any {
@@ -258,6 +259,10 @@ export class NavParamsMock {
   get(param) {
     return this.data[param] ? this.data[param] : this.data;
   }
+
+  static setData(data){
+    data = data;
+  }
 }
 
 export class GenieSDKServiceProviderMock extends GenieSDKServiceProvider {
@@ -275,7 +280,7 @@ export class SharedPreferencesMock {
       resolve("value");
     });
   }
-  public putString() {}
+  public putString() { }
 }
 
 export class FileUtilMock {
@@ -287,7 +292,7 @@ export class ShareUtilMock extends ShareUtil {
   exportTelemetry: (successCallback, errorCallback) => {};
   exportApk: (SuccessCallback, errorCallback) => {};
 }
-export class NavControllerMock {}
+export class NavControllerMock { }
 
 export class SocialSharingMock {
   share(message, subject, file, url) {
@@ -312,7 +317,7 @@ export class ViewControllerMock {
 //   })
 // }
 
-export class StorageMock {}
+export class StorageMock { }
 
 export class AppVersionMock {
   getAppName(): Promise<string> {
@@ -351,27 +356,32 @@ export class profileServiceMock {
     return res({});
   }
 }
-export  class groupServiceMock  {
-      deleteGroup: () => ({
-          then: () => ({
-              catch: () => ({})
-          })
-      })
-    }
+export class groupServiceMock {
+  deleteGroup: () => ({
+    then: () => ({
+      catch: () => ({})
+    })
+  });
+  public setCurrentGroup(): Promise<string> {
+    return new Promise(resolve => {
+      resolve();
+    });
+  }
+}
 
 export class eventsMock {
   publish: () => {};
 }
 
 export class oAuthServiceMock {
-       doLogOut: () => ({
-          then: () => ({})
-     })
-   };
+  doLogOut: () => ({
+    then: () => ({})
+  })
+};
 
-   export class networkMock {
-         type: {}
-     };
+export class networkMock {
+  type: {}
+};
 
 export class MockElementRef implements ElementRef {
   nativeElement = {};
@@ -405,7 +415,7 @@ export class AnyNav {
   }
 }
 
-export class NavControllerBase {}
+export class NavControllerBase { }
 
 export class ToastControllerMock {
   _getPortal(): any {
@@ -417,9 +427,9 @@ export class ToastControllerMock {
 }
 
 class ToastMock extends ViewController {
-  present() {}
-  dismissAll() {}
-  onDidDismiss() {}
+  present() { }
+  dismissAll() { }
+  onDidDismiss() { }
 }
 
 export class ToastMockNew {
@@ -470,14 +480,14 @@ export class LoadingControllerMock {
 
 export class PopoverControllerMock {
   public static instance(popOver?: PopoverMock): any {
-    let instance = jasmine.createSpyObj('LoadingController', ['create','onDidDismiss','present']);
+    let instance = jasmine.createSpyObj('LoadingController', ['create', 'onDidDismiss', 'present']);
     instance.create.and.returnValue(popOver || PopoverMock.instance());
     return instance;
   }
 }
 
 export class PopoverMock extends ViewController {
-  public static onDismissResponse={};
+  public static onDismissResponse = {};
   public static instance(): any {
     let instance = jasmine.createSpyObj("Loading", [
       "present",
@@ -566,7 +576,7 @@ export class LoadingControllerMockNew {
   }
 }
 
-export class CommonUtilServiceMock extends CommonUtilService {}
+export class CommonUtilServiceMock extends CommonUtilService { }
 
 export class BuildParamaServiceMock {
   public getBuildConfigParam(): Promise<string> {
@@ -595,31 +605,27 @@ export class ngZone {
 export class NavbarMock {
   // public backButtonClick: Function;
 
-  public  backButtonClick() {
+  public backButtonClick() {
     return {};
   }
- 
+
 }
 export class OAuthServiceMock {
   doOAuthStepOne: () => {};
   doOAuthStepTwo: () => {};
 }
 
-/*export class ToastMock {
-  public static instance(): any {
-    let instance = jasmine.createSpyObj('Toast', ['present', 'dismissAll', 'setContent', 'setSpinner', 'onDidDismiss']);
-    instance.present.and.returnValue(Promise.resolve());
+export class NavParamsMockNew{
+  static returnParams: any = {};
 
-    return instance;
+  public get(key): any {
+    if (NavParamsMockNew.returnParams[key]) {
+       return NavParamsMockNew.returnParams[key];
+    }
+    return undefined;
+  }
+
+  static setParams(key,value){
+    NavParamsMockNew.returnParams[key] = value;
   }
 }
-
-export class ToastControllerMock {
-  public static instance(toast?: ToastMock): any {
-
-    let instance = jasmine.createSpyObj('ToastController', ['create']);
-    instance.create.and.returnValue(toast || ToastMock.instance());
-
-    return instance;
-  }
-}*/

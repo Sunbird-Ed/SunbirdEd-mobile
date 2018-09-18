@@ -7,9 +7,7 @@ import {
 import {
   NavController,
   PopoverController,
-  Events,
-  ToastController
-} from 'ionic-angular';
+  Events} from 'ionic-angular';
 import { AppVersion } from "@ionic-native/app-version";
 import { IonicPage } from 'ionic-angular';
 import {
@@ -20,11 +18,9 @@ import {
   ImpressionType,
   PageId,
   Environment,
-  TelemetryService,
   ContentService,
   ProfileType,
   PageAssembleFilter,
-  CorrelationData,
   InteractType,
   InteractSubtype
 } from 'sunbird';
@@ -35,9 +31,7 @@ import {
 import { SearchPage } from '../search/search';
 import { ContentDetailsPage } from '../content-details/content-details';
 import * as _ from 'lodash';
-import { TranslateService } from '@ngx-translate/core';
 import { Network } from '@ionic-native/network';
-import { generateImpressionTelemetry } from '../../app/telemetryutil';
 import {
   ProfileConstants,
   EventTopics,
@@ -109,7 +103,6 @@ export class CoursesPage implements OnInit {
 
   isVisible: boolean = false;
 
-  private corRelationList: Array<CorrelationData>;
 
   /**
    * To queue downloaded identifier
@@ -145,7 +138,6 @@ export class CoursesPage implements OnInit {
     private ngZone: NgZone,
     private qrScanner: SunbirdQRScanner,
     private popCtrl: PopoverController,
-    private telemetryService: TelemetryService,
     private events: Events,
     private contentService: ContentService,
     private preference: SharedPreferences,
@@ -171,10 +163,10 @@ export class CoursesPage implements OnInit {
     } else {
       this.isNetworkAvailable = true;
     }
-    this.network.onDisconnect().subscribe((data) => {
+    this.network.onDisconnect().subscribe(() => {
       this.isNetworkAvailable = false;
     });
-    this.network.onConnect().subscribe((data) => {
+    this.network.onConnect().subscribe(() => {
       this.isNetworkAvailable = true;
     });
 
@@ -461,7 +453,6 @@ export class CoursesPage implements OnInit {
    * Used to get enrolled course(s) of logged-in user
    */
   getUserId() {
-    let that = this;
     return new Promise((resolve, reject) => {
       this.guestUser = !this.appGlobal.isUserLoggedIn();
 
@@ -612,9 +603,9 @@ export class CoursesPage implements OnInit {
       this.formAndFrameworkUtilService.getCourseFilterConfig().then((data) => {
         filterOptions['filter'] = data;
         this.showFilterPage(filterOptions);
-      }).catch((error) => {
-        console.error("Error Occurred!");
-      });
+      }).catch(() => {
+          console.error("Error Occurred!");
+        });
     }
 
   }
@@ -637,7 +628,7 @@ export class CoursesPage implements OnInit {
     }
   }
 
-  showOfflineWarning(isNetAvailable) {
+  showOfflineWarning() {
     this.showWarning = true;
     setTimeout(() => {
       this.showWarning = false;
@@ -739,7 +730,7 @@ export class CoursesPage implements OnInit {
         }
       });
     },
-      (error: any) => {
+      () => {
         this.ngZone.run(() => {
           this.removeOverlayAndShowError();
         });
@@ -776,13 +767,13 @@ export class CoursesPage implements OnInit {
 
   cancelDownload() {
     this.ngZone.run(() => {
-      this.contentService.cancelDownload(this.resumeContentData.contentId || this.resumeContentData.identifier, (response) => {
+      this.contentService.cancelDownload(this.resumeContentData.contentId || this.resumeContentData.identifier, () => {
         this.tabBarElement.style.display = 'flex';
         this.showOverlay = false;
-      }, (error) => {
-        this.tabBarElement.style.display = 'flex';
-        this.showOverlay = false;
-      });
+      }, () => {
+          this.tabBarElement.style.display = 'flex';
+          this.showOverlay = false;
+        });
     });
   }
 

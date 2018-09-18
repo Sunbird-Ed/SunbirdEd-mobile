@@ -24,11 +24,8 @@ import {
     ProfileService
 } from "sunbird";
 import {
-    initTabs,
-    GUEST_STUDENT_TABS,
-    GUEST_TEACHER_TABS,
-    LOGIN_TEACHER_TABS
-} from '../../../app/module.service';
+    initTabs,    GUEST_STUDENT_TABS,
+    GUEST_TEACHER_TABS} from '../../../app/module.service';
 import { generateInteractTelemetry } from "../../../app/telemetryutil";
 import { UserAndGroupsPage } from "../../user-and-groups/user-and-groups";
 
@@ -67,7 +64,7 @@ export class OverflowMenuComponent {
         this.profile = this.navParams.get("profile") || {};
     }
 
-    showToast(toastCtrl: ToastController, message: String) {
+    showToast() {
         this.items = this.navParams.get("list") || [];
 
     }
@@ -138,11 +135,11 @@ export class OverflowMenuComponent {
                             profile.profileType = ProfileType.TEACHER;
                             profile.source = UserSource.LOCAL;
 
-                            this.profileService.setCurrentProfile(true, profile, res => {
+                            this.profileService.setCurrentProfile(true, profile, () => {
                                 this.navigateToAptPage();
-                            }, error => {
-                                this.navigateToAptPage();
-                            });
+                            }, () => {
+                                    this.navigateToAptPage();
+                                });
                         });
                 }
 

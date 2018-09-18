@@ -219,9 +219,5 @@ export class FormAddress {
     confirm.onDidDismiss(() => {
       unregisterBackButton();
     });
-
-    function closePopup() {
-      confirm.dismiss();
-    }
   }
 }

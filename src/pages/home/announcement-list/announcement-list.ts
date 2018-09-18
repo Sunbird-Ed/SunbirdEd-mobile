@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { NavController, Events, Platform } from 'ionic-angular';
 import { HttpClient } from '@angular/common/http';
 import { AnnouncementService, AuthService } from 'sunbird';
@@ -108,7 +108,7 @@ export class AnnouncementListComponent  {
         this.spinner(true);
         this.getAnnouncementList();
     }
-    changeLanguage(event) {
+    changeLanguage() {
 
         if (this.currentStyle === "ltr") {
             this.currentStyle = "rtl";

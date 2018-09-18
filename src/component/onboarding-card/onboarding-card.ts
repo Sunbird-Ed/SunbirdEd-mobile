@@ -7,9 +7,7 @@ import {
 } from 'ionic-angular';
 import {
   Component,
-  ViewChild,
-  NgZone
-} from '@angular/core';
+  ViewChild} from '@angular/core';
 import { OnboardingService } from '../onboarding-card/onboarding.service';
 import {
   OnboardingAlert,
@@ -48,7 +46,6 @@ export class OnboardingCardComponent {
     private popupCtrl: PopoverController,
     private onboardingService: OnboardingService,
     private events: Events,
-    private zone: NgZone,
     private toastCtrl: ToastController,
     private translate: TranslateService
   ) {
@@ -73,13 +70,12 @@ export class OnboardingCardComponent {
 
 
     this.events.subscribe('is-data-available', (value) => {
-      let index = value.index;
       let loaderFlag = !value.show;
       this.showLoader(loaderFlag)
       this.isDataAvailable = value.show;
     });
 
-    this.events.subscribe('slide-onboarding-card', (value) => {
+    this.events.subscribe('slide-onboarding-card', () => {
       this.mSlides.lockSwipes(false);
       this.mSlides.slideNext(500);
     });
@@ -158,7 +154,7 @@ export class OnboardingCardComponent {
         that.onboardingService.selectedCheckboxValue(selectedSlide, index);
       }
     }
-
+    /* istanbul ignore else */
     if (index === 0) {
       this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), undefined, true);
     } else if (index === 1) {
