@@ -21,6 +21,7 @@ import { QRAlertCallBack, QRScannerAlert } from "../qrscanner/qrscanner_alert";
 import { FormAndFrameworkUtilService } from "../profile/formandframeworkutil.service";
 import { CommonUtilService } from "../../service/common-util.service";
 import { TelemetryGeneratorService } from "../../service/telemetry-generator.service";
+import { QrCodeResultPage } from "../qr-code-result/qr-code-result";
 
 @IonicPage()
 @Component({
@@ -182,8 +183,7 @@ export class SearchPage {
         shouldGenerateEndTelemetry: this.shouldGenerateEndTelemetry,
         parentContent: this.parentContent
       };
-    }
-    else {
+    } else {
       params = {
         content: content,
         corRelation: this.corRelationList,
@@ -194,7 +194,11 @@ export class SearchPage {
     if (content.contentType === ContentType.COURSE) {
       this.navCtrl.push(EnrolledCourseDetailsPage, params)
     } else if (content.mimeType === MimeType.COLLECTION) {
-      this.navCtrl.push(CollectionDetailsPage, params)
+      if (this.isDialCodeSearch) {
+        this.navCtrl.push(QrCodeResultPage, params);
+      } else {
+        this.navCtrl.push(CollectionDetailsPage, params);
+      }
     } else {
       this.navCtrl.push(ContentDetailsPage, params)
     }

@@ -1,0 +1,59 @@
+<!--
+  Generated template for the QrCodeResultPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Results</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+<div class="card-container" *ngFor="let content of results">
+  <ion-row class="" style="padding:10px;">
+    <ul class="breadcrumbs">
+      <li>
+        christy
+      </li>
+      <li>
+        fernandes
+      </li>
+      <li>
+        what is tghe eifd
+      </li>
+      <li>
+          asdasdaha sodahs doash 
+      </li>
+      <li>
+         doash 
+      </li>
+      <li>
+          doash 
+       </li>
+    </ul>
+  </ion-row>
+  <ion-card>
+    <ion-row class="top">
+      <img class="app-icon" src="{{ (content.basePath +'/' + content.contentData.appIcon) || defaultImg }}" />
+    </ion-row>
+    <ion-row>
+      <ion-card-content>
+        <h6 class="name font-size-20">{{content.contentData.name}}</h6>
+        <p class="author">{{content.contentData.creator}}</p>
+      </ion-card-content>
+
+    </ion-row>
+
+    <button ion-button block>Download & Play</button>
+
+    <div class="badge"> {{content.contentData.contentType}} </div>
+  </ion-card>
+</div>
+
+</ion-content>
