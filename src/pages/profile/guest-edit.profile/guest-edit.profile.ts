@@ -40,6 +40,7 @@ import {
   GUEST_TEACHER_TABS
 } from '../../../app/module.service';
 import { PreferenceKey } from '../../../app/app.constant';
+import { AppGlobalService } from '../../../service/app-global.service';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -122,6 +123,7 @@ export class GuestEditProfilePage {
     private telemetryGeneratorService: TelemetryGeneratorService,
     private container: ContainerService,
     private app: App,
+    private appGlobal: AppGlobalService,
     private preferences: SharedPreferences,
   ) {
     this.profile = this.navParams.get('profile') || {};
