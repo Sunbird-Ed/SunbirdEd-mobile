@@ -1,0 +1,67 @@
+
+<ion-header>
+
+  <ion-navbar>
+    <ion-title></ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+
+
+<ion-content>
+    <div style=" font-size:20px; text-align: center; margin-top: 20px; font-weight: bold;" class="msg-size">
+        Please fill in <br> the following details
+      </div>
+    <form novalidate (ngSubmit)="onSubmit(user)" [formGroup]="user" class="form-position">
+
+      <ion-item >
+        <ion-label>{{'Board' | translate }}
+        </ion-label>
+        <ion-select [selectOptions]="boardOptions" formControlName="boards" (ionChange)="onSelectedBoard()"
+        okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}">
+        <ion-option>a</ion-option>
+        <ion-option>b</ion-option>   
+        </ion-select>
+        
+      </ion-item>
+      
+      <ion-item >
+        <ion-label>{{'Medium' | translate }}
+        </ion-label>
+        <ion-select formControlName="medium" multiple="true" text-capitalize [selectOptions]="mediumOptions"
+        (ionChange)="onSelectMedium()"okText="{{'BTN_SUBMIT' | translate}}"
+        cancelText="{{'CANCEL' | translate}}">
+        <ion-option>a</ion-option>
+        <ion-option>b</ion-option>           
+        </ion-select>
+        
+      </ion-item>
+  
+    
+       <ion-item>
+        <ion-label>{{'Class' | translate }}
+        </ion-label>
+        <ion-select multiple="true" text-capitalize [selectOptions]="classOptions"
+        formControlName="grades" (ionChange)="onSelectClass()" okText="{{'BTN_SUBMIT' | translate}}"
+        cancelText="{{'CANCEL' | translate}}">
+        <ion-option>a</ion-option>
+        <ion-option>b</ion-option> 
+      </ion-select>
+      </ion-item> 
+  
+      
+  </form>
+   
+ 
+  
+  <!-- <ion-footer padding no-border>
+    <button ion-button block [disabled]="user.invalid" (click)="onSubmit()">{{'FINISH' | translate}}</button>
+  </ion-footer> -->
+  <ion-footer padding no-border>
+    <button  class="arrow-icon" [ngStyle]="{'background-color': btnColor}" [disabled]="user.invalid" ion-button icon-end block (click)="onSubmit()">
+      {{ 'FINISH' | translate }}
+      <ion-icon name="arrow-round-forward" role="img" class="icon icon-md ion-md-arrow-round-forward pull-right" aria-label="arrow round-forward" ng-reflect-name="arrow-round-forward"></ion-icon>
+    </button>
+  </ion-footer>
