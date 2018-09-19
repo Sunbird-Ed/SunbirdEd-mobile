@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import {  OnInit } from '@angular/core';
-import { FormControl,FormBuilder, FormGroup, Validators,ValidatorFn,AbstractControl } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import {
   IonicPage,
   NavController,
@@ -11,20 +10,11 @@ import {
 import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
 import {
   CategoryRequest,
-  Group,
-  GroupService,
-  InteractType,
-  InteractSubtype,
-  Environment,
-  PageId,
-  ImpressionType,
-  ObjectType,
-  SharedPreferences
+  SharedPreferences,
+  Profile
 } from 'sunbird';
 
 import { LoadingController } from 'ionic-angular';
-import { GuestEditProfilePage } from '../profile/guest-edit.profile/guest-edit.profile';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { PreferenceKey } from '../../app/app.constant';
 import * as _ from 'lodash';
 
@@ -38,11 +28,11 @@ export interface toastOptions {
   selector: 'page-user-onboarding-preferences',
   templateUrl: 'user-onboarding-preferences.html',
 })
-export class UserOnboardingPreferencesPage  {
+export class UserOnboardingPreferencesPage {
 
   user: FormGroup;
   classList = [];
-  group: Group;
+  group: Profile;
   selectBoard: any;
   isSelectBoard: boolean = false;
   selectMedium: any;
@@ -59,7 +49,7 @@ export class UserOnboardingPreferencesPage  {
   frameworks: Array<any> = [];
   frameworkId: string = '';
   btnColor: string = '#8FC4FF';
-  
+
 
   selectedLanguage: string = 'en';
 
@@ -95,10 +85,8 @@ export class UserOnboardingPreferencesPage  {
     private navParams: NavParams,
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController,
-    private groupService: GroupService,
-    private preference: SharedPreferences,
-    private telemetryGeneratorService: TelemetryGeneratorService
-  )  {
+    private preference: SharedPreferences
+  ) {
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
       .then(val => {
         if (val && val.length) {
@@ -108,7 +96,7 @@ export class UserOnboardingPreferencesPage  {
 
     this.group = this.navParams.get('groupInfo') || {};
     this.user = this.fb.group({
-      boards: [this.group.board|| []],
+      boards: [this.group.board || []],
       grades: [this.group.grade || []],
       medium: [this.group.medium || []]
     });
@@ -123,24 +111,24 @@ export class UserOnboardingPreferencesPage  {
   }
   onProfileTypeChange() {
     this.user.patchValue({
-      syllabus:[],
+      syllabus: [],
       boards: [],
       grades: [],
       medium: []
     });
   }
-    ionViewWillEnter() {
-    this.formAndFrameworkUtilService.getFrameworkDetails('NCF').then((categories)=>{
-       console.log('categories is',categories);
-       console.log('new',this.syllabusList[0]);
+  ionViewWillEnter() {
+    this.formAndFrameworkUtilService.getFrameworkDetails('NCF').then((categories) => {
+      console.log('categories is', categories);
+      console.log('new', this.syllabusList[0]);
 
-    }).catch((error)=>{
-        console.log(error);
+    }).catch((error) => {
+      console.log(error);
     })
 
   }
- 
- 
+
+
   getSyllabusDetails() {
     this.loader = this.getLoader();
     this.loader.present();
@@ -151,39 +139,39 @@ export class UserOnboardingPreferencesPage  {
           result.forEach(element => {
             //renaming the fields to text, value and checked
             let value = { 'name': element.name, 'code': element.frameworkId };
-          
-              this.syllabusList.push(value);
-              //this.syllabusList[0] = value;
-              console.log('the medium',value);
-            
-           
+
+            this.syllabusList.push(value);
+            //this.syllabusList[0] = value;
+            console.log('the medium', value);
+
+
           });
-        
+
           if (this.group && this.group.syllabus && this.group.syllabus[0] === undefined) {
-            console.log('value is:',this.group.syllabus[0]);
-          
+            console.log('value is:', this.group.syllabus[0]);
+
             this.formAndFrameworkUtilService.getFrameworkDetails(this.group.syllabus[0])
-            
-            .then(catagories => {
-              this.isFormValid = true;
-              // loader.dismiss();
-              this.categories = catagories;
-              this.resetForm(0, false);
-              this.user.patchValue({
-                boards: this.group.board || []
-              });
 
-              // this.resetForm(1);
-              this.user.patchValue({
-                medium: this.group.medium || []
-              });
+              .then(catagories => {
+                this.isFormValid = true;
+                // loader.dismiss();
+                this.categories = catagories;
+                this.resetForm(0, false);
+                this.user.patchValue({
+                  boards: this.group.board || []
+                });
 
-              // this.resetForm(2);
-              this.user.patchValue({
-                grades: this.group.grade || []
-              });
+                // this.resetForm(1);
+                this.user.patchValue({
+                  medium: this.group.medium || []
+                });
 
-              
+                // this.resetForm(2);
+                this.user.patchValue({
+                  grades: this.group.grade || []
+                });
+
+
 
               }).catch(error => {
                 this.isFormValid = false;
@@ -287,77 +275,77 @@ export class UserOnboardingPreferencesPage  {
         });
         this.checkPrevValue(3, 'gradeList', this.user.value.medium);
         break;
-     
+
     }
   }
 
   ngOnInit() {
-    
-    }
-    onSelectedBoard(){
-     this.isSelectBoard = true;
-    }
-    onSelectMedium(){
-      this.isSelectMedium = true;
-    }
-    onSelectClass(){
-      this.isSelectClass = true;
+
+  }
+  onSelectedBoard() {
+    this.isSelectBoard = true;
+  }
+  onSelectMedium() {
+    this.isSelectMedium = true;
+  }
+  onSelectClass() {
+    this.isSelectClass = true;
+    this.btnColor = '#006DE5';
+  }
+  showMessage(name: string) {
+    this.btnColor = '#8FC4FF';
+    let toast = this.toastCtrl.create({
+      message: this.translateMessage('Please select a ') + name,
+      duration: 2000,
+      cssClass: 'userFinishSelectBtn',
+      position: 'Bottom'
+    });
+    toast.dismissAll();
+    toast.present();
+  }
+
+  onSubmit() {
+    if (this.isSelectBoard && this.isSelectMedium && this.isSelectClass) {
       this.btnColor = '#006DE5';
+    } else if (!this.isSelectBoard) {
+      this.showMessage("board");
+      return false;
     }
-    showMessage(name: string){
-      this.btnColor = '#8FC4FF';
-      let toast = this.toastCtrl.create({
-        message: this.translateMessage('Please select a ')+name,
-        duration: 2000,
-        cssClass: 'userFinishSelectBtn',
-        position: 'Bottom'
-      });
-      toast.dismissAll();
-      toast.present();
+    else if (!this.isSelectMedium) {
+      this.showMessage("medium");
+      return false;
+    }
+    else if (!this.isSelectClass) {
+      console.log("class");
+      this.showMessage("class");
+      return false;
+    } else {
+
     }
 
-    onSubmit(){
-      if(this.isSelectBoard && this.isSelectMedium && this.isSelectClass){
-        this.btnColor = '#006DE5';
-      }else if(!this.isSelectBoard){
-        this.showMessage("board");
-        return false;
+  }
+  translateMessage(messageConst: string, field?: string): string {
+    let translatedMsg = '';
+    this.translate.get(messageConst, { '%s': field }).subscribe(
+      (value: any) => {
+        translatedMsg = value;
       }
-      else if(!this.isSelectMedium){
-        this.showMessage("medium");
-        return false;
-      }
-      else if(!this.isSelectClass){
-        console.log("class");
-        this.showMessage("class");
-        return false;
-      }else{
-        
-      }
-       
-    }
-    translateMessage(messageConst: string, field?: string): string {
-      let translatedMsg = '';
-      this.translate.get(messageConst, { '%s': field }).subscribe(
-        (value: any) => {
-          translatedMsg = value;
-        }
-      );
-      return translatedMsg;
-    }
-    getLoader(): any {
-      return this.loadingCtrl.create({
-        duration: 30000,
-        spinner: "crescent"
-      });
-    }
-  
-    /** It will returns Toast Object
-     * @param {message} string - Message for the Toast to show
-     * @returns {object} - toast Object
-     */
-    getToast(message: string = ''): any {
-      this.options.message = message;
-      if (message.length) return this.toastCtrl.create(this.options);
-    }
+    );
+    return translatedMsg;
+  }
+  getLoader(): any {
+    return this.loadingCtrl.create({
+      duration: 30000,
+      spinner: "crescent"
+    });
+  }
+
+  /** It will returns Toast Object
+   * @param {message} string - Message for the Toast to show
+   * @returns {object} - toast Object
+   */
+  getToast(message: string = ''): any {
+    this.options.message = message;
+    if (message.length) return this.toastCtrl.create(this.options);
+  }
 }
