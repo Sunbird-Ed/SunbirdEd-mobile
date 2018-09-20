@@ -1,6 +1,7 @@
 import { Component, NgZone, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { ContentService, CorrelationData, ChildContentRequest } from 'sunbird';
+import { ContentDetailsPage } from '../content-details/content-details';
 @IonicPage()
 @Component({
   selector: 'page-qr-code-result',
@@ -150,6 +151,15 @@ export class QrCodeResultPage {
         this.findContentNode(data.children[i].children);
       }
     }
+  }
+
+  navigateToDetailsPage(content) {
+    this.navCtrl.push(ContentDetailsPage, {
+      content: content,
+      depth: '1',
+      isChildContent: true,
+      downloadAndPlay: true
+    });
   }
 
 }
