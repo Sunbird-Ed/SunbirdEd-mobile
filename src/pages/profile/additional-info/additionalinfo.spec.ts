@@ -4,7 +4,7 @@ import { ServiceProvider } from 'sunbird';
 import { FormAndFrameworkUtilService } from './../formandframeworkutil.service';
 import { IonicAppMock } from './../../../../test-config/mocks-ionic';
 import { SharedPreferences, ContainerService } from 'sunbird';
-import { ProfileService } from './../../../../genie-sdk-wrapper/src/services/profile/profile.service';
+import { ProfileService } from 'sunbird';
 // import { Events } from 'ionic-angular/index';
 import { Observable } from 'rxjs';
 import {
