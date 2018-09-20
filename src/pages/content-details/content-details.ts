@@ -257,9 +257,9 @@ export class ContentDetailsPage {
    * Ionic life cycle hook
    */
   ionViewWillEnter(): void {
-    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
-      this.dismissPopup();
-    }, 11);
+    // this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+    //   this.dismissPopup();
+    // }, 11);
     this.cardData = this.navParams.get('content');
     this.isChildContent = this.navParams.get('isChildContent');
     this.cardData.depth = this.navParams.get('depth') === undefined ? '' : this.navParams.get('depth');
@@ -287,15 +287,16 @@ export class ContentDetailsPage {
   ionViewWillLeave(): void {
     this.events.unsubscribe('genie.event');
     this.resume.unsubscribe();
+    this.unregisterBackButton();
   }
 
   ionViewDidLoad() {
     this.navBar.backButtonClick = (e: UIEvent) => {
       this.handleNavBackButton();
     }
-    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
-      this.dismissPopup();
-    }, 11);
+    // this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+    //   this.dismissPopup();
+    // }, 11);
 
     if (!AppGlobalService.isPlayerLaunched) {
       this.calculateAvailableUserCount();
