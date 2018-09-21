@@ -10,9 +10,10 @@ import { QRScannerResultHandler } from "./qrscanresulthandler.service";
 export class SunbirdQRScanner {
 
   private readonly QR_SCANNER_TEXT = [
-    'SCAN_QR_CODE',
+    'NEW_SCAN_QR_CODE',
     'SCAN_QR_INSTRUCTION',
     'UNKNOWN_QR',
+    'SKIP',
     'CANCEL',
     'TRY_AGAIN',
   ]
@@ -38,9 +39,9 @@ export class SunbirdQRScanner {
     });
   }
 
-  public startScanner(screenTitle: String = this.mQRScannerText['SCAN_QR_CODE'],
-    displayText: String = this.mQRScannerText['SCAN_QR_INSTRUCTION'],
-    displayTextColor: String = "#0000ff", source: string) {
+  public startScanner(screenTitle: String = this.mQRScannerText['NEW_SCAN_QR_CODE'],
+    displayText: String = this.mQRScannerText['SKIP'],
+    displayTextColor: String = "#0b0b0b", source: string) {
 
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.backButtonFunc();

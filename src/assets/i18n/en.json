@@ -364,6 +364,8 @@
   "SAVED_RESOURCES": "Saved Resources",
   "SAVED_RESOURCES_2": "Saved Resources",
   "SCAN_QR_CODE": "Scan QR Code",
+  "NEW_SCAN_QR_CODE": "Point your phone to the QR code to scan it",
+  "SKIP": "Skip",
   "SCAN_QR_INSTRUCTION": "Scan the QR code using the phone camera  ",
   "SCORE": "Score",
   "SCORED": "Scored",
