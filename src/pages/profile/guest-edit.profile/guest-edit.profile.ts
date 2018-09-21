@@ -269,8 +269,12 @@ export class GuestEditProfilePage {
   getCategoryData(req: CategoryRequest, list): void {
     this.formAndFrameworkUtilService.getCategoryData(req, this.frameworkId).
       then((result) => {
-
-        // if (list === 'boardList')
+         if(result){
+        
+            this.guestEditForm.patchValue({
+              boards: [result[0].code]
+            });
+        }
         if (this.loader !== undefined)
           this.loader.dismiss();
 
@@ -292,6 +296,7 @@ export class GuestEditProfilePage {
       this.formAndFrameworkUtilService.getFrameworkDetails(this.frameworkId)
         .then(catagories => {
           this.categories = catagories;
+          this.mediumList= this.categories[1].terms;
 
           this.isFormValid = true;
           // loader.dismiss();
