@@ -24,6 +24,7 @@ import { PageFilterMoudule } from '../pages/page-filter/page.filter.module';
 import { UserAndGroupsPageModule } from '../pages/user-and-groups/user-and-groups.module';
 import { ReportsPageModule } from '../pages/reports/reports.module'
 import { UserReportModule } from '../pages/reports/user-report/user-report.module';
+import { QrCodeResultPageModule } from '../pages/qr-code-result/qr-code-result.module';
 
 // const HOME_TAB = { root: HomePage, icon: "home", label: "HOME_BNAV", index: 0, tabsHideOnSubPages: true };
 const COURSE_TAB = { root: CoursesPage, icon: "courses", label: "COURSES_BNAV", index: 1, tabsHideOnSubPages: true };
@@ -92,5 +93,6 @@ export const PluginModules = [
     PageFilterMoudule,
     UserAndGroupsPageModule,
     ReportsPageModule,
-    UserReportModule
+    UserReportModule,
+    QrCodeResultPageModule
 ];

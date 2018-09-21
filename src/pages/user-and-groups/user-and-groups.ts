@@ -139,6 +139,7 @@ export class UserAndGroupsPage {
 
       this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
         this.dismissPopup();
+        //this.unregisterBackButton();
       }, 11);
     })
     if (this.userList) {
