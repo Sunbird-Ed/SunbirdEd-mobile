@@ -10,7 +10,7 @@ import { QRScannerResultHandler } from "./qrscanresulthandler.service";
 export class SunbirdQRScanner {
 
   private readonly QR_SCANNER_TEXT = [
-    'NEW_SCAN_QR_CODE',
+    'SCAN_QR_CODE_DESC',
     'SCAN_QR_INSTRUCTION',
     'UNKNOWN_QR',
     'SKIP',
@@ -18,6 +18,7 @@ export class SunbirdQRScanner {
     'TRY_AGAIN',
   ]
   private mQRScannerText;
+  private buttonClicked;
   readonly permissionList = ["android.permission.CAMERA"];
   private backButtonFunc = undefined;
   constructor(private translate: TranslateService,
@@ -39,9 +40,11 @@ export class SunbirdQRScanner {
     });
   }
 
-  public startScanner(screenTitle: String = this.mQRScannerText['NEW_SCAN_QR_CODE'],
+  public startScanner(screenTitle: String = this.mQRScannerText['SCAN_QR_CODE_DESC'],
     displayText: String = this.mQRScannerText['SKIP'],
-    displayTextColor: String = "#0b0b0b", source: string) {
+    displayTextColor: String = "#0b0b0b",
+    buttonUI: boolean = this.buttonClicked = false,
+    source: string) {
 
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.backButtonFunc();
@@ -74,7 +77,7 @@ export class SunbirdQRScanner {
               })
 
               if (permissionGranted) {
-                this.startQRScanner(screenTitle, displayText, displayTextColor, source);
+                this.startQRScanner(screenTitle, displayText, displayTextColor, buttonUI, source);
               } else {
                 console.log("Permission Denied");
                 const toast = this.toastCtrl.create({
@@ -91,7 +94,7 @@ export class SunbirdQRScanner {
 
 
         } else {
-          this.startQRScanner(screenTitle, displayText, displayTextColor, source);
+          this.startQRScanner(screenTitle, displayText, displayTextColor, buttonUI, source);
         }
       }
     }, (error) => {
@@ -111,8 +114,8 @@ export class SunbirdQRScanner {
 
 
   private startQRScanner(screenTitle: String, displayText: String,
-    displayTextColor: String, source: string) {
-    window['qrScanner'].startScanner(screenTitle, displayText, displayTextColor, (scannedData) => {
+    displayTextColor: String, buttonUI: boolean, source: string) {
+    window['qrScanner'].startScanner(screenTitle, displayText, displayTextColor, buttonUI, (scannedData) => {
       if (scannedData === "cancel") {
         this.telemetryGeneratorService.generateInteractTelemetry(
           InteractType.OTHER,
@@ -177,7 +180,7 @@ export class SunbirdQRScanner {
     const callback: QRAlertCallBack = {
       tryAgain() {
         popUp.dismiss()
-        self.startScanner(undefined, undefined, undefined, this.source);
+        self.startScanner(undefined, undefined, undefined, true, this.source);
       },
       cancel() {
         popUp.dismiss()

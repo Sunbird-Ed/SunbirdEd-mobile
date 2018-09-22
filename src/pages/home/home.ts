@@ -428,7 +428,7 @@ export class HomePage {
   }
 
   scanQRCode() {
-    this.qrScanner.startScanner(undefined, undefined, undefined, PageId.HOME);
+    this.qrScanner.startScanner(undefined, undefined, undefined, false, PageId.HOME);
   }
 
 
