@@ -349,13 +349,26 @@ export class profileServiceMock {
   getCurrentUser(res, err) {
     return res({});
   }
+  setCurrentUser(res, err) {
+    return res({});
+  }
+  // getCurrentUser(res, err): Promise<any> {
+  //   return new Promise(resolve => {
+  //     resolve();
+  //   });
+  // };
   updateProfile(req, res, err) {
     return res({});
   }
   createProfile(req, res, err) {
     return res({});
   }
+  getAllUserProfile(res, err) {
+    return res({});
+  }
+
 }
+
 export class groupServiceMock {
   deleteGroup: () => ({
     then: () => ({
@@ -367,6 +380,14 @@ export class groupServiceMock {
       resolve();
     });
   }
+  public addUpdateProfilesToGroup(): Promise<string> {
+    return new Promise(resolve => {
+      resolve();
+    });
+  }
+//   (res, err) {
+//     return res({});
+//  }
 }
 
 export class eventsMock {
@@ -374,9 +395,11 @@ export class eventsMock {
 }
 
 export class oAuthServiceMock {
-  doLogOut: () => ({
-    then: () => ({})
-  })
+  doLogOut(): Promise<any> {
+    return new Promise(resolve => {
+      resolve();
+    });
+  };
 };
 
 export class networkMock {
@@ -484,6 +507,7 @@ export class PopoverControllerMock {
     instance.create.and.returnValue(popOver || PopoverMock.instance());
     return instance;
   }
+
 }
 
 export class PopoverMock extends ViewController {
