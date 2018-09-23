@@ -516,7 +516,7 @@ export class CoursesPage implements OnInit {
   }
 
   scanQRCode() {
-    this.qrScanner.startScanner(undefined, undefined, undefined, false, PageId.COURSES);
+    this.qrScanner.startScanner(PageId.COURSES);
   }
 
   search() {

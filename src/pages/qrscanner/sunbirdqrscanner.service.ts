@@ -1,8 +1,26 @@
 import { Injectable } from "@angular/core";
 import { TranslateService } from "@ngx-translate/core";
-import { PopoverController, Popover, ToastController, Platform } from "ionic-angular";
-import { QRScannerAlert, QRAlertCallBack } from "./qrscanner_alert";
-import { Environment, Mode, InteractType, InteractSubtype, PageId, PermissionService, ImpressionType, ImpressionSubtype, TelemetryObject } from "sunbird";
+import {
+  PopoverController,
+  Popover,
+  ToastController,
+  Platform
+} from "ionic-angular";
+import {
+  QRScannerAlert,
+  QRAlertCallBack
+} from "./qrscanner_alert";
+import {
+  Environment,
+  Mode,
+  InteractType,
+  InteractSubtype,
+  PageId,
+  PermissionService,
+  ImpressionType,
+  ImpressionSubtype,
+  TelemetryObject
+} from "sunbird";
 import { TelemetryGeneratorService } from "../../service/telemetry-generator.service";
 import { QRScannerResultHandler } from "./qrscanresulthandler.service";
 
@@ -10,7 +28,7 @@ import { QRScannerResultHandler } from "./qrscanresulthandler.service";
 export class SunbirdQRScanner {
 
   private readonly QR_SCANNER_TEXT = [
-    'SCAN_QR_CODE_DESC',
+    'SCAN_QR_CODE',
     'SCAN_QR_INSTRUCTION',
     'UNKNOWN_QR',
     'SKIP',
@@ -18,9 +36,9 @@ export class SunbirdQRScanner {
     'TRY_AGAIN',
   ]
   private mQRScannerText;
-  private buttonClicked;
   readonly permissionList = ["android.permission.CAMERA"];
   backButtonFunc = undefined;
+
   constructor(private translate: TranslateService,
     private popCtrl: PopoverController,
     private permission: PermissionService,
@@ -40,11 +58,12 @@ export class SunbirdQRScanner {
     });
   }
 
-  public startScanner(displayText: String = this.mQRScannerText['SCAN_QR_CODE_DESC'],
-    buttonText: String = this.mQRScannerText['SKIP'],
+  public startScanner(source: string, showButton: boolean = false,
+    screenTitle: String = this.mQRScannerText['SCAN_QR_CODE'],
+    displayText: String = this.mQRScannerText['SCAN_QR_INSTRUCTION'],
     displayTextColor: String = "#0b0b0b",
-    buttonUI: boolean = this.buttonClicked = false,
-    source: string) {
+    buttonText: String = this.mQRScannerText['SKIP']
+  ) {
 
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.backButtonFunc();
@@ -77,7 +96,7 @@ export class SunbirdQRScanner {
               })
 
               if (permissionGranted) {
-                this.startQRScanner(displayText, buttonText, displayTextColor, buttonUI, source);
+                this.startQRScanner(screenTitle, displayText, displayTextColor, buttonText, showButton, source);
               } else {
                 console.log("Permission Denied");
                 const toast = this.toastCtrl.create({
@@ -92,7 +111,7 @@ export class SunbirdQRScanner {
 
           })
         } else {
-          this.startQRScanner(displayText, buttonText, displayTextColor, buttonUI, source);
+          this.startQRScanner(screenTitle, displayText, displayTextColor, buttonText, showButton, source);
         }
       }
     }, (error) => {
@@ -106,9 +125,9 @@ export class SunbirdQRScanner {
     (<any>window).qrScanner.stopScanner(successCallback, errorCallback);
   }
 
-  private startQRScanner(displayText: String, buttonText: String,
-    displayTextColor: String, buttonUI: boolean, source: string) {
-    window['qrScanner'].startScanner(displayText, buttonText, displayTextColor, buttonUI, (scannedData) => {
+  private startQRScanner(screenTitle: String, displayText: String, displayTextColor: String,
+    buttonText: String, showButton: boolean, source: string) {
+    window['qrScanner'].startScanner(screenTitle, displayText, displayTextColor, buttonText, showButton, (scannedData) => {
       if (scannedData === "cancel") {
         this.telemetryGeneratorService.generateInteractTelemetry(
           InteractType.OTHER,
@@ -172,7 +191,7 @@ export class SunbirdQRScanner {
     const callback: QRAlertCallBack = {
       tryAgain() {
         popUp.dismiss()
-        self.startScanner(undefined, undefined, undefined, true, this.source);
+        self.startScanner(this.source, this.showButton);
       },
       cancel() {
         popUp.dismiss()

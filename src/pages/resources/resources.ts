@@ -541,7 +541,7 @@ export class ResourcesPage implements OnInit {
 			InteractSubtype.QRCodeScanClicked,
 			Environment.HOME,
 			PageId.LIBRARY);
-		this.qrScanner.startScanner(undefined, undefined, undefined, false, PageId.LIBRARY);
+		this.qrScanner.startScanner(PageId.LIBRARY);
 	}
 
 
