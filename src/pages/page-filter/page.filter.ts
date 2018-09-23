@@ -11,7 +11,6 @@ import * as _ from 'lodash';
 import { TranslateService } from "@ngx-translate/core";
 import {
   PageAssembleFilter,
-  TelemetryService,
   InteractType,
   InteractSubtype,
   Environment,
@@ -21,7 +20,6 @@ import {
   ImpressionType,
 } from "sunbird";
 import { PageFilterOptions } from "./options/filter.options";
-import { generateInteractTelemetry } from "../../app/telemetryutil";
 import { TelemetryGeneratorService } from "../../service/telemetry-generator.service";
 import { CommonUtilService } from "../../service/common-util.service";
 
@@ -45,7 +43,6 @@ export class PageFilter {
     private popCtrl: PopoverController,
     private viewCtrl: ViewController,
     private navParams: NavParams,
-    private telemetryService: TelemetryService,
     private platform: Platform,
     private frameworkService: FrameworkService,
     private translate: TranslateService,
@@ -59,10 +56,10 @@ export class PageFilter {
 
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.viewCtrl.dismiss();
-      this.backButtonFunc();
+      this.backButtonFunc =undefined;
     }, 10);
 
-    this.events.subscribe('onAfterLanguageChange:update', (data) => {
+    this.events.subscribe('onAfterLanguageChange:update', () => {
       this.onLanguageChange();
     })
   }
@@ -190,7 +187,7 @@ export class PageFilter {
   getSelectedOptionCount(facet) {
     if (facet.selected && facet.selected.length > 0) {
       this.pagetAssemblefilter[facet.code] = facet.selected;
-      return `${facet.selected.length} ` + this.translateMessage('FILTER_ADDED');
+      return `${facet.selected.length} ` + this.commonUtilService.translateMessage('FILTER_ADDED');
     }
 
     return "";
@@ -216,31 +213,11 @@ export class PageFilter {
   }
 
   cancel() {
-    this.telemetryService.interact(
-      generateInteractTelemetry(InteractType.TOUCH,
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
         InteractSubtype.CANCEL,
         Environment.HOME,
-        PageId.LIBRARY_PAGE_FILTER,
-        null,
-        undefined,
-        undefined));
+        PageId.LIBRARY_PAGE_FILTER);
     this.viewCtrl.dismiss();
-  }
-
-  /**
-   * Used to Translate message to current Language
-   * @param {string} messageConst - Message Constant to be translated
-   * @returns {string} translatedMsg - Translated Message
-   */
-  translateMessage(messageConst: string): string {
-    let translatedMsg = '';
-    this.translate.get(messageConst).subscribe(
-      (value: any) => {
-        translatedMsg = value;
-      }
-    );
-
-    return translatedMsg;
   }
 }
 
