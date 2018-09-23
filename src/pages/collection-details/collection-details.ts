@@ -206,7 +206,6 @@ export class CollectionDetailsPage {
 
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
-    this.handleDeviceBackButton();
     this.handleNetworkAvaibility();
   }
 
@@ -557,6 +556,7 @@ export class CollectionDetailsPage {
     this.navBar.backButtonClick = () => {
       this.handleNavBackButton();
     }
+    this.handleDeviceBackButton();
   }
 
   handleNavBackButton(){
