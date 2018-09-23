@@ -520,8 +520,7 @@ export class CoursesPage implements OnInit {
   }
 
   search() {
-    this.qrScanner.startScanner(undefined, undefined, undefined, true, PageId.COURSES);
-    // this.navCtrl.push(SearchPage, { contentType: ["Course"], source: PageId.COURSES })
+    this.navCtrl.push(SearchPage, { contentType: ["Course"], source: PageId.COURSES })
   }
 
   ionViewDidEnter() {

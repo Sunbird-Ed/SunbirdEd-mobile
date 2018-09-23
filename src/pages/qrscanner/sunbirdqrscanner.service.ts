@@ -40,8 +40,8 @@ export class SunbirdQRScanner {
     });
   }
 
-  public startScanner(screenTitle: String = this.mQRScannerText['SCAN_QR_CODE_DESC'],
-    displayText: String = this.mQRScannerText['SKIP'],
+  public startScanner(displayText: String = this.mQRScannerText['SCAN_QR_CODE_DESC'],
+    buttonText: String = this.mQRScannerText['SKIP'],
     displayTextColor: String = "#0b0b0b",
     buttonUI: boolean = this.buttonClicked = false,
     source: string) {
@@ -77,7 +77,7 @@ export class SunbirdQRScanner {
               })
 
               if (permissionGranted) {
-                this.startQRScanner(screenTitle, displayText, displayTextColor, buttonUI, source);
+                this.startQRScanner(displayText, buttonText, displayTextColor, buttonUI, source);
               } else {
                 console.log("Permission Denied");
                 const toast = this.toastCtrl.create({
@@ -94,7 +94,7 @@ export class SunbirdQRScanner {
 
 
         } else {
-          this.startQRScanner(screenTitle, displayText, displayTextColor, buttonUI, source);
+          this.startQRScanner(displayText, buttonText, displayTextColor, buttonUI, source);
         }
       }
     }, (error) => {
@@ -113,9 +113,9 @@ export class SunbirdQRScanner {
 
 
 
-  private startQRScanner(screenTitle: String, displayText: String,
+  private startQRScanner(displayText: String, buttonText: String,
     displayTextColor: String, buttonUI: boolean, source: string) {
-    window['qrScanner'].startScanner(screenTitle, displayText, displayTextColor, buttonUI, (scannedData) => {
+    window['qrScanner'].startScanner(displayText, buttonText, displayTextColor, buttonUI, (scannedData) => {
       if (scannedData === "cancel") {
         this.telemetryGeneratorService.generateInteractTelemetry(
           InteractType.OTHER,
