@@ -16,16 +16,18 @@ import {
 	SharedPreferences,
 	ContentFilterCriteria,
 	ProfileType,
-	PageAssembleFilter} from "sunbird";
+	PageAssembleFilter
+} from "sunbird";
 import {
 	NavController,
 	PopoverController,
-	Events} from 'ionic-angular';
+	Events
+} from 'ionic-angular';
 import * as _ from 'lodash';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
 import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
-import {Map} from '../../app/telemetryutil';
+import { Map } from '../../app/telemetryutil';
 import {
 	ContentType,
 	AudienceFilter,
@@ -116,7 +118,7 @@ export class ResourcesPage implements OnInit {
 		private appVersion: AppVersion,
 		private formAndFrameworkUtilService: FormAndFrameworkUtilService,
 		private telemetryGeneratorService: TelemetryGeneratorService,
-		private commonUtilService:CommonUtilService
+		private commonUtilService: CommonUtilService
 	) {
 		this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
 			.then(val => {
@@ -237,10 +239,10 @@ export class ResourcesPage implements OnInit {
 		let values = new Map();
 		values["SectionName"] = "Saved Resources";
 		this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-				InteractSubtype.VIEWALL_CLICKED,
-				Environment.HOME,
-				this.source,undefined,
-				values);
+			InteractSubtype.VIEWALL_CLICKED,
+			Environment.HOME,
+			this.source, undefined,
+			values);
 		this.navCtrl.push(ViewMoreActivityPage, {
 			headerTitle: 'SAVED_RESOURCES',
 			pageName: 'resource.SavedResources'
@@ -257,11 +259,11 @@ export class ResourcesPage implements OnInit {
 		let values = new Map();
 		values["SectionName"] = headerTitle;
 		this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-				InteractSubtype.VIEWALL_CLICKED,
-				Environment.HOME,
-				this.source, 
-				undefined,
-				values);
+			InteractSubtype.VIEWALL_CLICKED,
+			Environment.HOME,
+			this.source,
+			undefined,
+			values);
 
 		queryParams = updateFilterInSearchQuery(queryParams, this.appliedFilter, this.profile, this.mode, this.isFilterApplied, this.appGlobal);
 
@@ -295,10 +297,10 @@ export class ResourcesPage implements OnInit {
 				});
 			})
 			.catch(() => {
-					this.ngZone.run(() => {
-						this.showLoader = false;
-					});
+				this.ngZone.run(() => {
+					this.showLoader = false;
 				});
+			});
 	}
 
 	/**
@@ -536,27 +538,27 @@ export class ResourcesPage implements OnInit {
 
 	scanQRCode() {
 		this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-				InteractSubtype.QRCodeScanClicked,
-				Environment.HOME,
-				PageId.LIBRARY);
-		this.qrScanner.startScanner(undefined, undefined, undefined, PageId.LIBRARY);
+			InteractSubtype.QRCodeScanClicked,
+			Environment.HOME,
+			PageId.LIBRARY);
+		this.qrScanner.startScanner(undefined, undefined, undefined, false, PageId.LIBRARY);
 	}
 
 
 	search() {
 		this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-				InteractSubtype.SEARCH_BUTTON_CLICKED,
-				Environment.HOME,
-				PageId.LIBRARY);
+			InteractSubtype.SEARCH_BUTTON_CLICKED,
+			Environment.HOME,
+			PageId.LIBRARY);
 		this.navCtrl.push(SearchPage, { contentType: ContentType.FOR_LIBRARY_TAB, source: PageId.LIBRARY });
 	}
 
 
 	showFilter() {
 		this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-				InteractSubtype.FILTER_BUTTON_CLICKED,
-				Environment.HOME,
-				PageId.LIBRARY, undefined);
+			InteractSubtype.FILTER_BUTTON_CLICKED,
+			Environment.HOME,
+			PageId.LIBRARY, undefined);
 
 		const that = this;
 		this.pageFilterCallBack = {
