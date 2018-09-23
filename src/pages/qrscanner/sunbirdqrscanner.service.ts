@@ -18,7 +18,7 @@ export class SunbirdQRScanner {
   ]
   private mQRScannerText;
   readonly permissionList = ["android.permission.CAMERA"];
-  private backButtonFunc = undefined;
+  backButtonFunc = undefined;
   constructor(private translate: TranslateService,
     private popCtrl: PopoverController,
     private permission: PermissionService,
@@ -109,7 +109,7 @@ export class SunbirdQRScanner {
 
 
 
-  private startQRScanner(screenTitle: String, displayText: String,
+   startQRScanner(screenTitle: String, displayText: String,
     displayTextColor: String, source: string) {
     window['qrScanner'].startScanner(screenTitle, displayText, displayTextColor, (scannedData) => {
       if (scannedData === "cancel") {

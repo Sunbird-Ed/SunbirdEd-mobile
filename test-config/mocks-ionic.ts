@@ -260,7 +260,7 @@ export class NavParamsMock {
     return this.data[param] ? this.data[param] : this.data;
   }
 
-  static setData(data){
+  static setData(data) {
     data = data;
   }
 }
@@ -518,7 +518,8 @@ export class PopoverMock extends ViewController {
       "onDidDismiss",
       "dismissAll",
       "setContent",
-      "setSpinner"
+      "setSpinner",
+      "create"
     ]);
     instance.present.and.returnValue(Promise.resolve());
     instance.onDidDismiss.and.callFake((success) => {
@@ -639,17 +640,19 @@ export class OAuthServiceMock {
   doOAuthStepTwo: () => {};
 }
 
-export class NavParamsMockNew{
+export class NavParamsMockNew {
   static returnParams: any = {};
 
   public get(key): any {
     if (NavParamsMockNew.returnParams[key]) {
-       return NavParamsMockNew.returnParams[key];
+      return NavParamsMockNew.returnParams[key];
     }
     return undefined;
   }
 
-  static setParams(key,value){
+  static setParams(key, value) {
     NavParamsMockNew.returnParams[key] = value;
   }
 }
+
+
