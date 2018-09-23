@@ -4,7 +4,6 @@ import { ServiceProvider } from 'sunbird';
 import { FormAndFrameworkUtilService } from './../formandframeworkutil.service';
 import { IonicAppMock } from './../../../../test-config/mocks-ionic';
 import { SharedPreferences, ContainerService } from 'sunbird';
-import { ProfileService } from 'sunbird';
 // import { Events } from 'ionic-angular/index';
 import { Observable } from 'rxjs';
 import {
@@ -38,7 +37,7 @@ import {
     UserProfileService,
     AuthService,
     FrameworkService,
-    CategoryRequest
+    ProfileService
 } from 'sunbird';
 import { ProfilePage } from './../profile';
 import { languageList } from './../../../config/framework.filters';
