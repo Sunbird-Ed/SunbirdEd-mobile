@@ -20,7 +20,7 @@ export class SunbirdQRScanner {
   private mQRScannerText;
   private buttonClicked;
   readonly permissionList = ["android.permission.CAMERA"];
-  private backButtonFunc = undefined;
+  backButtonFunc = undefined;
   constructor(private translate: TranslateService,
     private popCtrl: PopoverController,
     private permission: PermissionService,
@@ -91,8 +91,6 @@ export class SunbirdQRScanner {
           }, (error) => {
 
           })
-
-
         } else {
           this.startQRScanner(displayText, buttonText, displayTextColor, buttonUI, source);
         }
@@ -100,8 +98,6 @@ export class SunbirdQRScanner {
     }, (error) => {
       console.log("Error : " + error);
     });
-
-
   }
 
   public stopScanner(successCallback: () => void = null, errorCallback: () => void = null) {
@@ -109,9 +105,6 @@ export class SunbirdQRScanner {
     this.backButtonFunc();
     (<any>window).qrScanner.stopScanner(successCallback, errorCallback);
   }
-
-
-
 
   private startQRScanner(displayText: String, buttonText: String,
     displayTextColor: String, buttonUI: boolean, source: string) {
@@ -156,7 +149,6 @@ export class SunbirdQRScanner {
         pageId,
         telemetryObject);
     }
-
   }
 
   generateEndEvent(pageId: string, qrData: string) {

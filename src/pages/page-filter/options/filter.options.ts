@@ -11,6 +11,10 @@ export class PageFilterOptions {
 
   constructor(private navParams: NavParams, private viewCtrl: ViewController, private platform: Platform) {
     this.facets = this.navParams.get('facets');
+    this.handleDeviceBackButton();
+  }
+
+  handleDeviceBackButton() {
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.viewCtrl.dismiss();
       this.backButtonFunc();

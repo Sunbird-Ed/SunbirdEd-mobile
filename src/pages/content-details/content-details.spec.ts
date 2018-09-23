@@ -645,6 +645,7 @@ describe('ContentDetailsPage Component', () => {
     it("#ionViewDidLoad  should handle nav back button", function () {
         const platform = TestBed.get(Platform);
         const navBar = TestBed.get(Navbar);
+        component.backButtonFunc = jasmine.createSpy();
         spyOn(platform, 'registerBackButtonAction').and.callFake(function (success) {
             return success();
         });
@@ -655,12 +656,14 @@ describe('ContentDetailsPage Component', () => {
     });
 
     it("#handleNavBackbutton  should handle nav back button", function () {
+       component.backButtonFunc = jasmine.createSpy();
         spyOn(component, 'generateEndEvent').and.callThrough().and.callFake(() => { });
         component.handleNavBackButton();
         expect(component.generateEndEvent).toHaveBeenCalled();
     });
 
     it("#handleNavBackbutton  should generate qrsession end event", function () {
+        component.backButtonFunc = jasmine.createSpy();
         spyOn(component, 'generateEndEvent').and.callThrough().and.callFake(() => { });
         spyOn(component, 'generateQRSessionEndEvent').and.callThrough().and.callFake(() => { });
         component.shouldGenerateEndTelemetry = true;
