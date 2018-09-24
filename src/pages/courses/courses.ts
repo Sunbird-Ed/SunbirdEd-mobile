@@ -48,6 +48,7 @@ import { updateFilterInSearchQuery } from '../../util/filter.util';
 import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
 import { CommonUtilService } from '../../service/common-util.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { UserOnboardingPreferencesPage } from '../user-onboarding-preferences/user-onboarding-preferences';
 
 @IonicPage()
 @Component({
@@ -511,6 +512,11 @@ export class CoursesPage implements OnInit {
       && this.profile.subject && this.profile.subject.length) {
       this.isOnBoardingCardCompleted = true;
       this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
+    } else {
+      console.log('in else course', this.guestUser);
+      if(this.guestUser) {
+        this.navCtrl.push(UserOnboardingPreferencesPage);
+      }
     }
   }
 
