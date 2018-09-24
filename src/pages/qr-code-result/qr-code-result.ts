@@ -48,8 +48,10 @@ export class QrCodeResultPage {
   corRelationList: Array<CorrelationData>;
   shouldGenerateEndTelemetry: boolean = false;
   source: string = "";
-  results: any;
+  results: Array<any> = [];
   defaultImg: string;
+  parents : Array<any> = [];
+  
 
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
@@ -61,6 +63,7 @@ export class QrCodeResultPage {
   /**
    * Ionic life cycle hook
    */
+
   ionViewWillEnter(): void {
     this.zone.run(() => {
       this.resetVariables();
@@ -68,13 +71,15 @@ export class QrCodeResultPage {
       this.corRelationList = this.navParams.get('corRelation');
       this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
       this.source = this.navParams.get('source');
-
+    
       //check for parent content
       this.parentContent = this.navParams.get('parentContent');
       console.log('parent content', this.parentContent);
       this.SearchIdentifier = this.content.identifier;
       console.log('search Identifier', this.SearchIdentifier);
-
+     
+      
+      
       if(this.parentContent) {
         this.isParentContentAvailable = true;
         this.identifier = this.parentContent.identifier;
@@ -86,6 +91,12 @@ export class QrCodeResultPage {
       console.log('content :: ', this.content);
       console.log('identifier :: ', this.identifier);
       this.getChildContents();
+      console.log("content for results",this.results);
+      // console.log("parents", this.parents);
+      
+     
+     // console.log("the parents is", this.parents);
+      
       // if (!this.didViewLoad) {
       //   this.generateRollUp();
       //   let contentType = this.content.contentData ? this.content.contentData.contentType : this.content.contentType;
@@ -98,6 +109,7 @@ export class QrCodeResultPage {
       // this.subscribeGenieEvent();
     })
   }
+
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad QrCodeResultPage');
@@ -118,10 +130,11 @@ export class QrCodeResultPage {
     this.contentService.getChildContents(request, (data: any) => {
       data = JSON.parse(data);
       console.log('data :: ', data);
-
       if(this.isParentContentAvailable) {
         // Find out child content node
         // Then display the list
+        this.parents.splice(0, this.parents.length);
+        this.parents.push(data.result);
         this.findContentNode(data.result);
         // this.showAllChild(data);
       } else {
@@ -138,20 +151,40 @@ export class QrCodeResultPage {
   }
 
   private showAllChild(content: any) {
-    this.results =  content;
+    if(content.children === undefined) {
+      this.results.push(content);
+      return ;
+    }
+    content.children.forEach(child => {
+      this.showAllChild(child);
+    });
   }
 
   private findContentNode(data: any) {
-    for (let i=0, len = data.children.length ; i < len; i++ )
-    {
-      if(data.children[i].identifier === this.SearchIdentifier){
-        this.showAllChild(data.children[i].children)
-        break;
-      } else {
-        this.findContentNode(data.children[i].children);
-      }
+    if(data !== undefined && data.identifier === this.SearchIdentifier) {
+      this.showAllChild(data);
+      //this.parents.reverse();
+       console.log("content for results",this.results);
+       console.log("parents array ",this.parents);
+      return true;
     }
+    if(data.children !== undefined) {
+      data.children.forEach(child => {
+        this.parents.push(child)
+        var isFound = this.findContentNode(child);
+        if(isFound === true)
+          return true;
+        this.parents.splice(-1,1);
+      });
+    }
+    return false;
   }
+
+  // [{id: "123", parentRote: "123"}, {id: "124", parentRote: "123"}]
+  // temp={
+  //   id:asd[i];
+  //   parentRoute: parent[i].id + asd[i];
+  // }
 
   navigateToDetailsPage(content) {
     this.navCtrl.push(ContentDetailsPage, {
