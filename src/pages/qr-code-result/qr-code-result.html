@@ -18,17 +18,8 @@
 <div class="card-container" *ngFor="let content of results">
   <ion-row class="" style="padding:10px;">
     <ul class="breadcrumbs">
-      <li>
-        Computer textbook
-      </li>
-      <li>
-        Unit 1
-      </li>
-      <li>
-        Chapter 1
-      </li>
-      <li>
-          Section 1 
+      <li *ngFor="let contentData of parents">
+        {{contentData.name}}
       </li>
     </ul>
   </ion-row>

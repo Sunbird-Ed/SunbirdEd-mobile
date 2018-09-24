@@ -33,6 +33,7 @@ export class QrCodeResultPage {
    * Contains card data of previous state
    */
   content: any;
+  contentData: any;
 
   /**
    * Contains Parent Content Details
@@ -134,7 +135,7 @@ export class QrCodeResultPage {
         // Find out child content node
         // Then display the list
         this.parents.splice(0, this.parents.length);
-        this.parents.push(data.result);
+        this.parents.push(data.result.contentData);
         this.findContentNode(data.result);
         // this.showAllChild(data);
       } else {
@@ -164,13 +165,13 @@ export class QrCodeResultPage {
     if(data !== undefined && data.identifier === this.SearchIdentifier) {
       this.showAllChild(data);
       //this.parents.reverse();
-       console.log("content for results",this.results);
+       //console.log("content for results",this.results);
        console.log("parents array ",this.parents);
       return true;
     }
     if(data.children !== undefined) {
       data.children.forEach(child => {
-        this.parents.push(child)
+        this.parents.push(child.contentData)
         var isFound = this.findContentNode(child);
         if(isFound === true)
           return true;
@@ -189,6 +190,7 @@ export class QrCodeResultPage {
   navigateToDetailsPage(content) {
     this.navCtrl.push(ContentDetailsPage, {
       content: content,
+      contentData: this.contentData,
       depth: '1',
       isChildContent: true,
       downloadAndPlay: true
