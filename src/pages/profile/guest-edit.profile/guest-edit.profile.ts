@@ -85,7 +85,7 @@ export class GuestEditProfilePage {
   };
 
   syllabusOptions = {
-    title: this.translateMessage('SYLLABUS').toLocaleUpperCase(),
+    title: this.translateMessage('BOARD').toLocaleUpperCase(),
     cssClass: 'select-box'
   };
 
@@ -302,7 +302,6 @@ export class GuestEditProfilePage {
       this.formAndFrameworkUtilService.getFrameworkDetails(this.frameworkId)
         .then(catagories => {
           this.categories = catagories;
-          // this.mediumList= this.categories[1].terms;
 
           this.isFormValid = true;
           // loader.dismiss();
@@ -388,16 +387,16 @@ export class GuestEditProfilePage {
         return false;
       }
       else if (formVal.boards.length === 0) {
-        this.showMessage('Board')
+        this.showMessage('BOARD')
         return false;
       }
       else if (formVal.medium.length === 0) {
 
-        this.showMessage('Medium');
+        this.showMessage('MEDIUM');
         return false;
       }
       else if (formVal.grades.length === 0) {
-        this.showMessage('Class');
+        this.showMessage('CLASS');
         return false;
       }
       else {
@@ -406,16 +405,16 @@ export class GuestEditProfilePage {
       }
     }
     else if (formVal.boards.length === 0) {
-      this.showMessage('Board')
+      this.showMessage('BOARD')
       return false;
     }
     else if (formVal.medium.length === 0) {
 
-      this.showMessage('Medium');
+      this.showMessage('MEDIUM');
       return false;
     }
     else if (formVal.grades.length === 0) {
-      this.showMessage('Class');
+      this.showMessage('CLASS');
       return false;
     }
     else {
