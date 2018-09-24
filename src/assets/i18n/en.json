@@ -341,6 +341,7 @@
   "PROFILE_UPDATE_SUCCESS": "Profile updated successfully",
   "PUBLIC": "Public",
   "PUBLISHED_DATE": "Published date",
+  "PLEASE_SELECT":"Please Select {{%s}}",
   "QUESTION": "Question",
   "QUESTIONS": "Questions",
   "QUESTION_MARKS": "Question (Marks)",
