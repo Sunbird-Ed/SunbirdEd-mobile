@@ -151,7 +151,7 @@ export class SearchPage {
   openCollection(collection) {
     // TODO: Add mimeType check
     // this.navCtrl.push(EnrolledCourseDetailsPage, {'content': collection})
-    this.showContentDetails(collection);
+    this.showContentDetails(collection, true);
   }
 
   openContent(collection, content, index) {
@@ -172,7 +172,7 @@ export class SearchPage {
     this.events.unsubscribe('genie.event');
   }
 
-  showContentDetails(content) {
+  showContentDetails(content, isRootContent: boolean = false) {
 
     let params;
     if (this.shouldGenerateEndTelemetry) {
@@ -194,7 +194,7 @@ export class SearchPage {
     if (content.contentType === ContentType.COURSE) {
       this.navCtrl.push(EnrolledCourseDetailsPage, params)
     } else if (content.mimeType === MimeType.COLLECTION) {
-      if (this.isDialCodeSearch) {
+      if (this.isDialCodeSearch && !isRootContent) {
         this.navCtrl.push(QrCodeResultPage, params);
       } else {
         this.navCtrl.push(CollectionDetailsPage, params);

@@ -74,6 +74,7 @@ export class GuestEditProfilePage {
   newUser: boolean = true;
 
   isFormValid: boolean = true;
+  isEditData: boolean = true;
 
   previousProfileType;
 
@@ -132,15 +133,19 @@ export class GuestEditProfilePage {
     this.isNewUser = Boolean(this.navParams.get('isNewUser'));
     this.isCurrentUser = Boolean(this.navParams.get('isCurrentUser'));
 
+    if (this.isNewUser) {
+      this.isEditData = false;
+    }
+
     /* Initialize form with default values */
     this.guestEditForm = this.fb.group({
       profileType: [this.profile.profileType || 'STUDENT'],
       syllabus: [this.profile.syllabus && this.profile.syllabus[0] || [], Validators.required],
       name: [this.profile.handle || '', Validators.required],
       boards: [this.profile.board || [], Validators.required],
-      grades: [this.profile.grade || [], Validators.required],
-      subjects: [this.profile.subject || []],
-      medium: [this.profile.medium || [], Validators.required]
+      medium: [this.profile.medium || []],
+      grades: [this.profile.grade || []],
+      subjects: [this.profile.subject || []]
     });
 
     this.previousProfileType = this.profile.profileType
@@ -226,24 +231,6 @@ export class GuestEditProfilePage {
                 this.categories = catagories;
 
                 this.resetForm(0, false);
-                this.guestEditForm.patchValue({
-                  boards: this.profile.board || []
-                });
-
-                // this.resetForm(1);
-                this.guestEditForm.patchValue({
-                  medium: this.profile.medium || []
-                });
-
-                // this.resetForm(2);
-                this.guestEditForm.patchValue({
-                  grades: this.profile.grade || []
-                });
-
-                // this.resetForm(3);
-                this.guestEditForm.patchValue({
-                  subjects: this.profile.subject || []
-                });
 
               }).catch(() => {
                 this.isFormValid = false;
@@ -269,18 +256,37 @@ export class GuestEditProfilePage {
   getCategoryData(req: CategoryRequest, list): void {
     this.formAndFrameworkUtilService.getCategoryData(req, this.frameworkId).
       then((result) => {
-         if(result){
-        
-            this.guestEditForm.patchValue({
-              boards: [result[0].code]
-            });
-        }
+
         if (this.loader !== undefined)
           this.loader.dismiss();
 
         this[list] = result;
+        // TODO:
         if (list != 'gradeList') {
           this[list] = _.orderBy(this[list], ['name'], ['asc']);
+        }
+
+        if (req.currentCategory === 'board') {
+          this.guestEditForm.patchValue({
+            boards: [result[0].code]
+          })
+          this.resetForm(1, false);
+        } else if (this.isEditData) {
+          this.isEditData = false;
+
+          this.guestEditForm.patchValue({
+            medium: this.profile.medium || []
+          });
+
+          // this.resetForm(2);
+          this.guestEditForm.patchValue({
+            grades: this.profile.grade || []
+          });
+
+          // this.resetForm(3);
+          this.guestEditForm.patchValue({
+            subjects: this.profile.subject || []
+          });
         }
       })
   }
@@ -296,7 +302,7 @@ export class GuestEditProfilePage {
       this.formAndFrameworkUtilService.getFrameworkDetails(this.frameworkId)
         .then(catagories => {
           this.categories = catagories;
-          this.mediumList= this.categories[1].terms;
+          // this.mediumList= this.categories[1].terms;
 
           this.isFormValid = true;
           // loader.dismiss();
@@ -384,35 +390,35 @@ export class GuestEditProfilePage {
       else if (formVal.boards.length === 0) {
         this.showMessage('Board')
         return false;
-      } 
+      }
       else if (formVal.medium.length === 0) {
-  
+
         this.showMessage('Medium');
         return false;
       }
-       else if (formVal.grades.length === 0) {
+      else if (formVal.grades.length === 0) {
         this.showMessage('Class');
-         return false;
+        return false;
       }
       else {
         loader.present();
         this.submitNewUserForm(formVal, loader);
       }
-    } 
+    }
     else if (formVal.boards.length === 0) {
       this.showMessage('Board')
       return false;
-    } 
+    }
     else if (formVal.medium.length === 0) {
 
       this.showMessage('Medium');
       return false;
     }
-     else if (formVal.grades.length === 0) {
+    else if (formVal.grades.length === 0) {
       this.showMessage('Class');
-       return false;
+      return false;
     }
-     else {
+    else {
       loader.present();
       this.submitEditForm(formVal, loader);
     }
@@ -545,7 +551,7 @@ export class GuestEditProfilePage {
     );
     return translatedMsg;
   }
-  
+
   showMessage(name: string) {
     let toast = this.toastCtrl.create({
       message: this.translateMessageWithString('PLEASE_SELECT', name),
