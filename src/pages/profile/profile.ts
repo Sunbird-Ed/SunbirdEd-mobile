@@ -150,6 +150,7 @@ export class ProfilePage {
 
   doRefresh(refresher?) {
     let loader = this.getLoader();
+    this.isRefreshProfile = true;
     loader.present();
     this.refreshProfileData()
       .then(() => {
@@ -184,7 +185,6 @@ export class ProfilePage {
     let that = this;
     return new Promise((resolve, reject) => {
       that.authService.getSessionData(session => {
-        console.log('session',session);
         if (session === null || session === "null") {
           reject("session is null");
         } else {
@@ -526,7 +526,10 @@ export class ProfilePage {
    * To Toggle the lock
    */
   toggleLock(field: string, fieldDisplayName: string, revert: boolean = false, ) {
-    this.profile.profileVisibility[field] = this.profile.profileVisibility[field] == "private" ? "public" : "private";
+    if (!this.profile.profileVisibility.hasOwnProperty(field)) {
+      this.profile.profileVisibility[field] = 'public';
+    }
+    this.profile.profileVisibility[field] = this.profile.profileVisibility[field] === "private" ? "public" : "private";
 
     if (!revert) {
       if (this.profile.profileVisibility[field] === "private") {
@@ -548,7 +551,6 @@ export class ProfilePage {
   setProfileVisibility(field: string) {
     this.authService.getSessionData(session => {
       if (session === undefined || session == null) {
-        console.error("session is null");
       } else {
         let req = {
           userId: JSON.parse(session)[ProfileConstants.USER_TOKEN],

@@ -11,27 +11,27 @@ export const mockRes = {
   getAllLocalContentsResponse:
    [
       {
-        "basePath": "/storage/emulated/0/Android/data/org.sunbird.app/files/content/do_2123349069973585921335",
+        "basePath": "/s/org.sunbird.app/files/content/do_2123349069973585921335",
         "contentData": {
-          "appIcon": "do_2123349069973585921335/5439f7eaed9a129c264489f7ec0dbd6f_1473399347878.png",
-          "artifactUrl": "do_2123349069973585921335/1505726029659_do_2123349069973585921335.zip",
+          "appIcon": "do_2123399347878.png",
+          "artifactUrl": "do_5921335.zip",
           "audience": [
             "Learner"
           ],
           "board": "State (Andhra Pradesh)",
-          "channel": "8668ff9d9571e4f31cf1b5ff633f0a8e",
+          "channel": "8668ff9]33f0a8e",
           "contentDisposition": "inline",
           "contentEncoding": "gzip",
           "contentType": "Resource",
-          "createdBy": "c1714d03-8861-41f3-86d2-f9989e218635",
+          "createdBy": "c1714d18635",
           "createdOn": "2017-09-18T09:12:31.826+0000",
           "creator": "Mentor1User",
           "description": "By KS",
-          "downloadUrl": "do_2123349069973585921335/1505726029659_do_2123349069973585921335.zip",
+          "downloadUrl": "do__do_2123349069973585921335.zip",
           "gradeLevel": [
             "Class 1"
           ],
-          "identifier": "do_2123349069973585921335",
+          "identifier": "do_212334",
           "language": [
             "English"
           ],
@@ -47,7 +47,7 @@ export const mockRes = {
           "versionKey": "1527768462513"
         },
         "contentType": "resource",
-        "identifier": "do_2123349069973585921335",
+        "identifier": "do_21",
         "isAvailableLocally": true,
         "isUpdateAvailable": false,
         "lastUpdatedTime": 1531834041000,

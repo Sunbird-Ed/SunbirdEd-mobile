@@ -1,3 +1,4 @@
+import { CommonUtilService } from './../../../service/common-util.service';
 import { TranslateService } from '@ngx-translate/core';
 import {
   Component,
@@ -25,7 +26,7 @@ import {
 } from 'sunbird';
 import { ProfilePage } from './../profile';
 import { languageList } from './../../../config/framework.filters';
-import { ProfileConstants, PreferenceKey } from '../../../app/app.constant';
+import { ProfileConstants } from '../../../app/app.constant';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -65,17 +66,17 @@ export class AdditionalInfoComponent {
 
   /* Options for ion-select box */
   languageOptions = {
-    title: this.translateMessage('LANGUAGES'),
+    title: this.commonUtilService.translateMessage('LANGUAGES'),
     cssClass: 'select-box'
   };
 
   subjectOptions = {
-    title: this.translateMessage('SUBJECTS'),
+    title: this.commonUtilService.translateMessage('SUBJECTS'),
     cssClass: 'select-box'
   };
 
   gradeOptions = {
-    title: this.translateMessage('CLASS'),
+    title: this.commonUtilService.translateMessage('CLASS'),
     cssClass: 'select-box'
   };
 
@@ -91,7 +92,8 @@ export class AdditionalInfoComponent {
     private frameworkService: FrameworkService,
     private zone: NgZone,
     private ionicApp: IonicApp,
-    private platform: Platform
+    private platform: Platform,
+    private commonUtilService:CommonUtilService
   ) {
 
     /* Receive data from other component */
@@ -110,7 +112,7 @@ export class AdditionalInfoComponent {
       lastName: [this.profile.lastName || ''],
       language: [this.profile.language || [], Validators.required],
       email: [this.profile.email || ''],
-      phone: [this.profile.phone, [Validators.minLength(10)]], // Need to assign phone value
+      phone: [this.profile.phone || ''], // Need to assign phone value
       profileSummary: [this.profile.profileSummary || ''],
       subject: [this.profile.subject || []],
       gender: [this.profile.gender || ''],
@@ -206,12 +208,12 @@ export class AdditionalInfoComponent {
 
     if (!revert) {
       if (this.profileVisibility[field] === "private") {
-        this.getToast(this.translateMessage('PRIVACY_HIDE_TEXT', this.translateMessage(fieldDisplayName).toLocaleLowerCase())).present();
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('PRIVACY_HIDE_TEXT', this.commonUtilService.translateMessage(fieldDisplayName).toLocaleLowerCase()));
       } else {
         if (fieldDisplayName === "CURRENT_LOCATION") {
-          this.getToast(this.translateMessage('PRIVACY_SHOW_TEXT', _.startCase(this.translateMessage(fieldDisplayName)))).present();
+          this.commonUtilService.showToast(this.commonUtilService.translateMessage('PRIVACY_SHOW_TEXT', _.startCase(this.commonUtilService.translateMessage(fieldDisplayName))));
         } else {
-          this.getToast(this.translateMessage('PRIVACY_SHOW_TEXT', _.capitalize(this.translateMessage(fieldDisplayName)))).present();
+          this.commonUtilService.showToast(this.commonUtilService.translateMessage('PRIVACY_SHOW_TEXT', _.capitalize(this.commonUtilService.translateMessage(fieldDisplayName))));
         }
 
       }
@@ -254,7 +256,7 @@ export class AdditionalInfoComponent {
    * This will call on click of `SAVE` button
    * @param {object} event - Form event
    */
-  onSubmit(event): void {
+  onSubmit(): void {
     /* Holds form Values */
     let formVal = this.additionalInfoForm.value;
 
@@ -317,7 +319,7 @@ export class AdditionalInfoComponent {
 
         this.updateInfo(req);
       } else {
-        this.getToast(this.translateMessage('NO_CHANGE')).present();
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('NO_CHANGE'));
       }
 
     }
@@ -326,17 +328,18 @@ export class AdditionalInfoComponent {
   validateForm(formVal): boolean {
     formVal.phone = (formVal.phone === null) ? '' : formVal.phone;
     if (!formVal.firstName.length) {
-      this.getToast(this.translateMessage('ERROR_EMPTY_FIRSTNAME')).present();
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('ERROR_EMPTY_FIRSTNAME'));
       return false;
     } else if (!formVal.language.length) {
-      this.getToast(this.translateMessage('ERROR_EMPTY_LANGUAGE')).present();
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('ERROR_EMPTY_LANGUAGE'));
       return false;
-    } else if ((this.profile && this.profile.phone && (formVal.phone !== this.profile.phone)) || (formVal.phone === '' || (formVal.phone.length !== 10))) {
-      if (!formVal.phone.match(/^\d{10}$/)) {
-        this.getToast(this.translateMessage('ERROR_SHORT_MOBILE')).present();
-        return false;
-      }
-    }
+     }
+    // else if ((this.profile && this.profile.phone && (formVal.phone !== this.profile.phone)) || (formVal.phone === '' || (formVal.phone.length !== 10))) {
+    //   if (!formVal.phone.match(/^\d{10}$/)) {
+    //     this.getToast(this.translateMessage('ERROR_SHORT_MOBILE')).present();
+    //     return false;
+    //   }
+    // }
     return true;
   }
 
@@ -348,20 +351,20 @@ export class AdditionalInfoComponent {
     let loader = this.getLoader();
     loader.present();
     this.userProfileService.updateUserInfo(req,
-      (res: any) => {
+      () => {
         loader.dismiss();
-        this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_SUCCESS'));
         this.navCtrl.setRoot(ProfilePage, { returnRefreshedUserProfileDetails: true });
       },
       (err: any) => {
         loader.dismiss();
         try {
           if (JSON.parse(err).errorMessages[0]) {
-            this.getToast(JSON.parse(err).errorMessages[0]).present();
+            this.commonUtilService.showToast(JSON.parse(err).errorMessages[0]);
           }
         }
         catch (e) {
-          this.getToast(this.translateMessage('PROFILE_UPDATE_FAILED')).present();
+          this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_FAILED'));
         }
         console.error("Error", err);
       });
@@ -377,31 +380,31 @@ export class AdditionalInfoComponent {
     return _.reduce(currentValues, (result, value, key) => _.isEqual(value, profileObj[key]) ? result : result.concat(key), [])
   }
 
-  /**
-   * It will returns Toast Object
-   * @param {message} string - Message for the Toast to show
-   * @returns {object} - toast Object
-   */
-  getToast(message: string = ''): any {
-    this.options.message = message;
-    if (message.length) return this.toastCtrl.create(this.options);
-  }
+  // /**
+  //  * It will returns Toast Object
+  //  * @param {message} string - Message for the Toast to show
+  //  * @returns {object} - toast Object
+  //  */
+  // getToast(message: string = ''): any {
+  //   this.options.message = message;
+  //   if (message.length) return this.toastCtrl.create(this.options);
+  // }
 
-  /**
-   * Used to Translate message to current Language
-   * @param {string} messageConst - Message Constant to be translated
-   * @param {string} field - The field to be added in the language constant
-   * @returns {string} translatedMsg - Translated Message
-   */
-  translateMessage(messageConst: string, field?: string): string {
-    let translatedMsg = '';
-    this.translate.get(messageConst, { '%s': field }).subscribe(
-      (value: any) => {
-        translatedMsg = value;
-      }
-    );
-    return translatedMsg;
-  }
+  // /**
+  //  * Used to Translate message to current Language
+  //  * @param {string} messageConst - Message Constant to be translated
+  //  * @param {string} field - The field to be added in the language constant
+  //  * @returns {string} translatedMsg - Translated Message
+  //  */
+  // translateMessage(messageConst: string, field?: string): string {
+  //   let translatedMsg = '';
+  //   this.translate.get(messageConst, { '%s': field }).subscribe(
+  //     (value: any) => {
+  //       translatedMsg = value;
+  //     }
+  //   );
+  //   return translatedMsg;
+  // }
 
   /**
    * Returns the object of loading controller

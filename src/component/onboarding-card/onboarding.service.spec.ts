@@ -1,3 +1,4 @@
+import { selectedSlide } from './../onboarding-alert/onboarding-alert.component.data.spec';
 import { fakeAsync } from '@angular/core/testing';
 import { mockCurrentUserDetails, mockCategories, mockOnBoardingSlideDefaults, mockSyllabusList, mockSyllabusDetails, mockSelectedSlide, mockGetFrameworkDetails, mockSaveDetails } from './onboarding.data.spec';
 import { AppGlobalService } from './../../service/app-global.service';
@@ -42,9 +43,10 @@ describe('OnBoarding.service', () => {
             ]
         });
     });
-    // beforeEach(inject([ProfileService, SharedPreferences, FormAndFrameworkUtilService, ProfileService], (onBoardingService: OnboardingService, authServicecb, ProfileService) => {
-
-    // }));
+    beforeEach(() => {
+        const preferenceStub = TestBed.get(SharedPreferences);
+        spyOn(preferenceStub, 'getString').and.returnValue(Promise.resolve('en'));
+    });
 
     it("#constructor isOnBoardingCardCompleted defaults to: false", () => {
         let service = TestBed.get(OnboardingService);
@@ -53,7 +55,6 @@ describe('OnBoarding.service', () => {
 
     it("#contructor should fetch current languge", (done) => {
         const preferenceStub = TestBed.get(SharedPreferences);
-        spyOn(preferenceStub, 'getString').and.returnValue(Promise.resolve('en'));
         service = TestBed.get(OnboardingService);
         setTimeout(() => {
             expect(service.selectedLanguage).toEqual('en');
@@ -229,7 +230,7 @@ describe('OnBoarding.service', () => {
         expect(response).toEqual('syllabus, board');
         expect(typeof response).toBe('string')
     });
-    xit('#translateMessage should accept language constant and return translated value of the given key for current language', fakeAsync(() => {
+    it('#translateMessage should accept language constant and return translated value of the given key for current language', fakeAsync(() => {
         let translate = TestBed.get(TranslateService);
         service = TestBed.get(OnboardingService);
         const spy = spyOn(translate, 'get').and.callFake((arg) => {
@@ -417,7 +418,7 @@ describe('OnBoarding.service', () => {
             expect(service.selectedCheckboxValue).toHaveBeenCalled();
             expect(service.onBoardingSlides[0].selectedCode.length).toEqual(0);
             expect(service.onBoardingSlides[0].selectedOptions).toEqual("");
-            //expect(service['setAndSaveDetails']({}, 0 )).toHaveBeenCalled();
+            expect(service['setAndSaveDetails']).toHaveBeenCalled();
             done();
         }, 10);
     });
@@ -457,15 +458,18 @@ describe('OnBoarding.service', () => {
 
         setTimeout(() => {
             expect(service.selectedCheckboxValue).toHaveBeenCalled();
-            //exec(service['setAndSaveDetails']({}, 0));
+            expect(service['setAndSaveDetails']).toHaveBeenCalled();
             done();
         }, 10);
     });
     it('#setAndSaveDetails should save selected details', (done) => {
         service = TestBed.get(OnboardingService);
+        const events = TestBed.get(Events);
         expect(service["setAndSaveDetails"]).toBeDefined();
 
         spyOn<any>(service, 'setAndSaveDetails');
+        spyOn(service, 'saveDetails').and.returnValue(Promise.resolve(mockCurrentUserDetails));
+        spyOn(events, 'publish');
         service.onBoardingSlides = mockOnBoardingSlideDefaults;
         service["setAndSaveDetails"](mockSelectedSlide, 0);
 
@@ -547,7 +551,7 @@ describe('OnBoarding.service', () => {
         }, 10);
     });
 
-    it('#saveDetails should make an API call for current category is syllabus', (done) => {
+    it('#saveDetails should make an API call for current category is subject, and it should pick selected values', (done) => {
         service = TestBed.get(OnboardingService);
         const profileService = TestBed.get(ProfileService);
         const eventsStub = TestBed.get(Events);
@@ -560,12 +564,38 @@ describe('OnBoarding.service', () => {
         spyOn(service, 'getCurrentUser');
         service.onBoardingSlides = mockSaveDetails.onBoardingSlides;
         service.profile = JSON.parse(mockCurrentUserDetails);
+        service.gradeList = mockSaveDetails.gradeList;
         service.saveDetails(0);
         setTimeout(() => {
             expect(service.saveDetails).toHaveBeenCalled();
             expect(service.isOnBoardingCardCompleted).toBe(false);
             expect(eventsStub.publish).toHaveBeenCalled();
             expect(eventsStub.publish).toHaveBeenCalledWith('onboarding-card:completed', { isOnBoardingCardCompleted: false });
+            expect(eventsStub.publish).toHaveBeenCalledWith('refresh:profile');
+            expect(service.getCurrentUser).toHaveBeenCalled();
+            done();
+        }, 10);
+    });
+    it('#saveDetails should make an API call for current category is subject, and it should pick selected values', (done) => {
+        service = TestBed.get(OnboardingService);
+        const profileService = TestBed.get(ProfileService);
+        const eventsStub = TestBed.get(Events);
+        expect(service.saveDetails).toBeDefined();
+        spyOn(service, 'saveDetails').and.callThrough();
+        spyOn(profileService, 'updateProfile').and.callFake((req, res, error) => {
+            res(JSON.parse(mockCurrentUserDetails));
+        });
+        spyOn(eventsStub, 'publish');
+        spyOn(service, 'getCurrentUser');
+        service.onBoardingSlides = mockSaveDetails.onBoardingSlides;
+        service.profile = JSON.parse(mockCurrentUserDetails);
+        service.gradeList = mockSaveDetails.gradeList;
+        service.saveDetails(4);
+        setTimeout(() => {
+            expect(service.saveDetails).toHaveBeenCalled();
+            expect(service.isOnBoardingCardCompleted).toBe(true);
+            expect(eventsStub.publish).toHaveBeenCalled();
+            expect(eventsStub.publish).toHaveBeenCalledWith('onboarding-card:completed', { isOnBoardingCardCompleted: true });
             expect(eventsStub.publish).toHaveBeenCalledWith('refresh:profile');
             expect(service.getCurrentUser).toHaveBeenCalled();
             done();
@@ -609,6 +639,223 @@ describe('OnBoarding.service', () => {
             expect(eventsStub.publish).toHaveBeenCalledWith('onboarding-card:completed', { isOnBoardingCardCompleted: false });
             expect(eventsStub.publish).toHaveBeenCalledWith('refresh:profile');
             expect(service.getCurrentUser).toHaveBeenCalled();
+            done();
+        }, 10);
+    });
+    it('#saveDetails should make an API call with old profile fallback data', (done) => {
+        service = TestBed.get(OnboardingService);
+        const profileService = TestBed.get(ProfileService);
+        expect(service.saveDetails).toBeDefined();
+        spyOn(service, 'saveDetails').and.callThrough();
+        spyOn(profileService, 'updateProfile').and.callFake((req, res, error) => {
+            res(JSON.parse(mockCurrentUserDetails));
+        });
+        service.onBoardingSlides = mockOnBoardingSlideDefaults;
+        service.profile = JSON.parse(mockCurrentUserDetails);
+        service.saveDetails(0);
+        setTimeout(() => {
+            expect(service.saveDetails).toHaveBeenCalled();
+            done();
+        }, 10);
+    });
+    it('#saveDetails should make an API call with old profile fallback data', (done) => {
+        service = TestBed.get(OnboardingService);
+        const profileService = TestBed.get(ProfileService);
+        expect(service.saveDetails).toBeDefined();
+        spyOn(service, 'saveDetails').and.callThrough();
+        spyOn(profileService, 'updateProfile').and.callFake((req, res, error) => {
+            res(JSON.parse(mockCurrentUserDetails));
+        });
+        service.onBoardingSlides = mockOnBoardingSlideDefaults;
+        service.profile = JSON.parse(mockCurrentUserDetails);
+        service.saveDetails(1);
+        setTimeout(() => {
+            expect(service.saveDetails).toHaveBeenCalled();
+            done();
+        }, 10);
+    });
+    it('#saveDetails should make an API call with old profile fallback data', (done) => {
+        service = TestBed.get(OnboardingService);
+        const profileService = TestBed.get(ProfileService);
+        expect(service.saveDetails).toBeDefined();
+        spyOn(service, 'saveDetails').and.callThrough();
+        spyOn(profileService, 'updateProfile').and.callFake((req, res, error) => {
+            res(JSON.parse(mockCurrentUserDetails));
+        });
+        service.onBoardingSlides = mockOnBoardingSlideDefaults;
+        service.profile = JSON.parse(mockCurrentUserDetails);
+        service.saveDetails(2);
+        setTimeout(() => {
+            expect(service.saveDetails).toHaveBeenCalled();
+            done();
+        }, 10);
+    });
+    it('#saveDetails should make an API call with old profile fallback data', (done) => {
+        service = TestBed.get(OnboardingService);
+        const profileService = TestBed.get(ProfileService);
+        expect(service.saveDetails).toBeDefined();
+        spyOn(service, 'saveDetails').and.callThrough();
+        spyOn(profileService, 'updateProfile').and.callFake((req, res, error) => {
+            res(JSON.parse(mockCurrentUserDetails));
+        });
+        service.onBoardingSlides = mockOnBoardingSlideDefaults;
+        service.profile = JSON.parse(mockCurrentUserDetails);
+        service.saveDetails(3);
+        setTimeout(() => {
+            expect(service.saveDetails).toHaveBeenCalled();
+            done();
+        }, 10);
+    });
+    it('#getCategoryData should call api to fetch category data for boardList', (done) => {
+        service = TestBed.get(OnboardingService);
+        const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
+        expect(service.getCategoryData).toBeDefined();
+        spyOn(service, 'getCategoryData').and.callThrough();
+        spyOn<any>(service, 'setAndSaveDetails');
+        spyOn(formAndFrameworkUtilServiceStub, 'getCategoryData').and.returnValue(Promise.resolve([{
+            code: "stateandhrapradesh",
+            name: "State (Andhra Pradesh)"
+        }]));
+        let req = {
+            currentCategory: "board",
+            selectedLanguage: "en"
+        }
+        service.frameworkId = 'ap_k-12_13';
+        service.profile = JSON.parse(mockCurrentUserDetails);
+        service.onBoardingSlides = mockOnBoardingSlideDefaults;
+        service.getCategoryData(req, 'boardList', 1, false);
+        setTimeout(() => {
+            expect(service.getCategoryData).toHaveBeenCalled();
+            expect(service.boardList.length).toEqual(1);
+            done();
+        }, 10);
+    });
+    it('#getCategoryData should call api to fetch category data for medium (and when it is manual selection)', (done) => {
+        service = TestBed.get(OnboardingService);
+        const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
+        expect(service.getCategoryData).toBeDefined();
+        spyOn(service, 'getCategoryData').and.callThrough();
+        spyOn(formAndFrameworkUtilServiceStub, 'getCategoryData').and.returnValue(Promise.resolve([
+            {
+                code: "telugu",
+                name: "Telugu"
+            }, {
+                code: "english",
+                name: "English"
+            }
+        ]));
+        let req = {
+            currentCategory: "medium",
+            prevCategory: "board",
+            selectedCode: ["stateandhrapradesh"],
+            selectedLanguage: "en"
+        }
+        service.frameworkId = 'ap_k-12_13';
+        service.profile = JSON.parse(mockCurrentUserDetails);
+        service.onBoardingSlides = mockOnBoardingSlideDefaults;
+        service.getCategoryData(req, 'mediumList', 2, true);
+        setTimeout(() => {
+            expect(service.getCategoryData).toHaveBeenCalled();
+            expect(service.mediumList.length).toBeGreaterThan(0);
+            expect(service.onBoardingSlides[2].selectedCode.length).toBeGreaterThanOrEqual(1);
+            done();
+        }, 10);
+    });
+    it('#getCategoryData should call api to fetch category data for medium (and when it is automated selection)', (done) => {
+        service = TestBed.get(OnboardingService);
+        const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
+        expect(service.getCategoryData).toBeDefined();
+        spyOn(service, 'getCategoryData').and.callThrough();
+        spyOn<any>(service, "setAndSaveDetails");
+        spyOn(formAndFrameworkUtilServiceStub, 'getCategoryData').and.returnValue(Promise.resolve([
+            {
+                code: "english",
+                name: "English"
+            }
+        ]));
+        let req = {
+            currentCategory: "medium",
+            prevCategory: "board",
+            selectedCode: ["stateandhrapradesh"],
+            selectedLanguage: "en"
+        }
+        service.frameworkId = 'ap_k-12_13';
+        service.profile = JSON.parse(mockCurrentUserDetails);
+        service.onBoardingSlides = mockOnBoardingSlideDefaults;
+        service.getCategoryData(req, 'mediumList', 2, false);
+        setTimeout(() => {
+            expect(service.getCategoryData).toHaveBeenCalled();
+            expect(service.mediumList.length).toBeGreaterThan(0);
+            expect(service.onBoardingSlides[2].selectedCode.length).toBeGreaterThanOrEqual(3);
+            expect(service['mediumList'][0].checked).toBeTruthy();
+            expect(service.onBoardingSlides[2].selectedOptions).toEqual('English');
+            expect(service.onBoardingSlides[2].selectedCode).toEqual(['english', 'english', 'english']);
+            expect(service["setAndSaveDetails"]).toHaveBeenCalled();
+            done();
+        }, 10);
+    });
+    it('#getCategoryData should call api to fetch category data for class (and when it is manual selection)', (done) => {
+        service = TestBed.get(OnboardingService);
+        const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
+        expect(service.getCategoryData).toBeDefined();
+        spyOn(service, 'getCategoryData').and.callThrough();
+        spyOn<any>(service, "setAndSaveDetails");
+        spyOn(formAndFrameworkUtilServiceStub, 'getCategoryData').and.returnValue(Promise.resolve([
+            {
+                code: "class9",
+                name: "Class 9"
+            }
+        ]));
+        let req = {
+            currentCategory: "gradeLevel",
+            prevCategory: "medium",
+            selectedCode: ["english", "telugu"],
+            selectedLanguage: "en"
+        }
+        service.frameworkId = 'ap_k-12_13';
+        service.profile = JSON.parse(mockCurrentUserDetails);
+        service.onBoardingSlides = mockOnBoardingSlideDefaults;
+        service.getCategoryData(req, 'gradeList', 3, false);
+        setTimeout(() => {
+            expect(service.getCategoryData).toHaveBeenCalled();
+            expect(service.gradeList.length).toBeGreaterThan(0);
+            expect(service['gradeList'][0].checked).toBeTruthy();
+            expect(service.onBoardingSlides[3].selectedOptions).toEqual('Class 9');
+            expect(service.onBoardingSlides[3].selectedCode).toEqual(["class9", "class9"]);
+            expect(service.onBoardingSlides[3].selectedCode.length).toBeGreaterThan(0);
+            expect(service["setAndSaveDetails"]).toHaveBeenCalled();
+            done();
+        }, 10);
+    });
+
+    it('#getCategoryData should call api to fetch category data for subject (and when it is manual selection)', (done) => {
+        service = TestBed.get(OnboardingService);
+        const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
+        expect(service.getCategoryData).toBeDefined();
+        spyOn(service, 'getCategoryData').and.callThrough();
+        spyOn<any>(service, "setAndSaveDetails");
+        spyOn(formAndFrameworkUtilServiceStub, 'getCategoryData').and.returnValue(Promise.resolve([
+            {
+                code: "mathematics",
+                name: "Mathematics"
+            }
+        ]));
+        let req = {
+            currentCategory: "subject",
+            prevCategory: "gradelevel",
+            selectedCode: ["class9", "class10"],
+            selectedLanguage: "en"
+        }
+        service.frameworkId = 'ap_k-12_13';
+        service.profile = JSON.parse(mockCurrentUserDetails);
+        service.onBoardingSlides = mockOnBoardingSlideDefaults;
+        service.getCategoryData(req, 'subjectList', 4, true);
+        setTimeout(() => {
+            expect(service.getCategoryData).toHaveBeenCalled();
+            expect(service.subjectList.length).toBeGreaterThan(0);
+            expect(service['subjectList'][0].checked).toBeTruthy();
+            expect(service.onBoardingSlides[4].selectedCode).toEqual(["mathematics"]);
+            expect(service.onBoardingSlides[3].selectedCode.length).toBeGreaterThan(0);
             done();
         }, 10);
     });

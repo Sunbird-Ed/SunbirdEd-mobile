@@ -124,7 +124,7 @@ describe('Content-actions', () => {
         expect(comp.close).toBeDefined();
         spyOn(comp, 'close').and.callThrough();
         spyOn(comp, 'deleteContent');
-        let response = comp.close({}, 0);
+        let response = comp.close(0);
         expect(comp.close).toHaveBeenCalled();
         expect(comp.deleteContent).toHaveBeenCalled();
     });
@@ -133,7 +133,7 @@ describe('Content-actions', () => {
         expect(comp.close).toBeDefined();
         spyOn(comp, 'close').and.callThrough();
         spyOn(comp, 'reportIssue');
-        let response = comp.close({}, 1);
+        let response = comp.close(1);
         expect(comp.close).toHaveBeenCalled();
         expect(comp.reportIssue).toHaveBeenCalled();
         expect(viewCtrlStub.dismiss).toHaveBeenCalled();

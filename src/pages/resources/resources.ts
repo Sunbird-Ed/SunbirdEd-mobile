@@ -11,31 +11,23 @@ import {
 	ImpressionType,
 	PageId,
 	Environment,
-	TelemetryService,
 	InteractType,
 	InteractSubtype,
 	SharedPreferences,
 	ContentFilterCriteria,
 	ProfileType,
-	PageAssembleFilter,
-	CorrelationData
+	PageAssembleFilter
 } from "sunbird";
 import {
 	NavController,
 	PopoverController,
-	Events,
-	ToastController
+	Events
 } from 'ionic-angular';
 import * as _ from 'lodash';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
 import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
-import {
-	generateInteractTelemetry,
-	Map,
-	generateImpressionTelemetry
-} from '../../app/telemetryutil';
-import { TranslateService } from '@ngx-translate/core';
+import { Map } from '../../app/telemetryutil';
 import {
 	ContentType,
 	AudienceFilter,
@@ -100,7 +92,6 @@ export class ResourcesPage implements OnInit {
 
 	//noInternetConnection: boolean = false;
 	audienceFilter = [];
-	private corRelationList: Array<CorrelationData>;
 
 	profile: any;
 	appLabel: string;
@@ -110,7 +101,6 @@ export class ResourcesPage implements OnInit {
 	isFilterApplied: boolean = false;
 
 
-	private isVisible: boolean = false;
 	pageFilterCallBack: PageFilterCallback;
 
 	constructor(
@@ -120,18 +110,15 @@ export class ResourcesPage implements OnInit {
 		private contentService: ContentService,
 		private qrScanner: SunbirdQRScanner,
 		private popCtrl: PopoverController,
-		private telemetryService: TelemetryService,
 		private events: Events,
-		private toastCtrl: ToastController,
 		private preference: SharedPreferences,
-		private translate: TranslateService,
 		private zone: NgZone,
 		private network: Network,
 		private appGlobal: AppGlobalService,
 		private appVersion: AppVersion,
 		private formAndFrameworkUtilService: FormAndFrameworkUtilService,
 		private telemetryGeneratorService: TelemetryGeneratorService,
-		private commonUtilService:CommonUtilService
+		private commonUtilService: CommonUtilService
 	) {
 		this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
 			.then(val => {
@@ -146,10 +133,10 @@ export class ResourcesPage implements OnInit {
 		} else {
 			this.isNetworkAvailable = true;
 		}
-		this.network.onDisconnect().subscribe((data) => {
+		this.network.onDisconnect().subscribe(() => {
 			this.isNetworkAvailable = false;
 		});
-		this.network.onConnect().subscribe((data) => {
+		this.network.onConnect().subscribe(() => {
 			this.isNetworkAvailable = true;
 		});
 
@@ -218,7 +205,6 @@ export class ResourcesPage implements OnInit {
 	 * Ionic life cycle hook
 	 */
 	ionViewWillLeave(): void {
-		this.isVisible = false;
 		this.events.unsubscribe('genie.event');
 	}
 
@@ -253,10 +239,10 @@ export class ResourcesPage implements OnInit {
 		let values = new Map();
 		values["SectionName"] = "Saved Resources";
 		this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-				InteractSubtype.VIEWALL_CLICKED,
-				Environment.HOME,
-				this.source,undefined,
-				values);
+			InteractSubtype.VIEWALL_CLICKED,
+			Environment.HOME,
+			this.source, undefined,
+			values);
 		this.navCtrl.push(ViewMoreActivityPage, {
 			headerTitle: 'SAVED_RESOURCES',
 			pageName: 'resource.SavedResources'
@@ -273,11 +259,11 @@ export class ResourcesPage implements OnInit {
 		let values = new Map();
 		values["SectionName"] = headerTitle;
 		this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-				InteractSubtype.VIEWALL_CLICKED,
-				Environment.HOME,
-				this.source, 
-				undefined,
-				values);
+			InteractSubtype.VIEWALL_CLICKED,
+			Environment.HOME,
+			this.source,
+			undefined,
+			values);
 
 		queryParams = updateFilterInSearchQuery(queryParams, this.appliedFilter, this.profile, this.mode, this.isFilterApplied, this.appGlobal);
 
@@ -299,7 +285,7 @@ export class ResourcesPage implements OnInit {
 		};
 		this.contentService.getAllLocalContents(requestParams)
 			.then(data => {
-				_.forEach(data, (value, key) => {
+				_.forEach(data, (value) => {
 					value.contentData.lastUpdatedOn = value.lastUpdatedTime;
 					if (value.contentData.appIcon) {
 						value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
@@ -310,7 +296,7 @@ export class ResourcesPage implements OnInit {
 					this.showLoader = false;
 				});
 			})
-			.catch(err => {
+			.catch(() => {
 				this.ngZone.run(() => {
 					this.showLoader = false;
 				});
@@ -459,7 +445,6 @@ export class ResourcesPage implements OnInit {
 	}
 
 	ionViewDidEnter() {
-		this.isVisible = true;
 
 		this.preference.getString('show_app_walkthrough_screen')
 			.then(value => {
@@ -553,27 +538,27 @@ export class ResourcesPage implements OnInit {
 
 	scanQRCode() {
 		this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-				InteractSubtype.QRCodeScanClicked,
-				Environment.HOME,
-				PageId.LIBRARY);
-		this.qrScanner.startScanner(undefined, undefined, undefined, PageId.LIBRARY);
+			InteractSubtype.QRCodeScanClicked,
+			Environment.HOME,
+			PageId.LIBRARY);
+		this.qrScanner.startScanner(PageId.LIBRARY);
 	}
 
 
 	search() {
 		this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-				InteractSubtype.SEARCH_BUTTON_CLICKED,
-				Environment.HOME,
-				PageId.LIBRARY);
+			InteractSubtype.SEARCH_BUTTON_CLICKED,
+			Environment.HOME,
+			PageId.LIBRARY);
 		this.navCtrl.push(SearchPage, { contentType: ContentType.FOR_LIBRARY_TAB, source: PageId.LIBRARY });
 	}
 
 
 	showFilter() {
 		this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-				InteractSubtype.FILTER_BUTTON_CLICKED,
-				Environment.HOME,
-				PageId.LIBRARY, undefined);
+			InteractSubtype.FILTER_BUTTON_CLICKED,
+			Environment.HOME,
+			PageId.LIBRARY, undefined);
 
 		const that = this;
 		this.pageFilterCallBack = {
@@ -654,7 +639,7 @@ export class ResourcesPage implements OnInit {
 	}
 
 
-	showOfflineNetworkWarning(isNetAvailable?) {
+	showOfflineNetworkWarning() {
 		this.showWarning = true;
 		setTimeout(() => {
 			this.showWarning = false;

@@ -13,10 +13,6 @@ import { ContentDetailsPage } from '../content-details/content-details';
 import { ContentActionsComponent } from '../../component/content-actions/content-actions';
 import { ConfirmAlertComponent } from '../../component/confirm-alert/confirm-alert';
 import { TranslateService } from '@ngx-translate/core';
-import {
-  generateStartTelemetry,
-  generateEndTelemetry, generateInteractTelemetry, generateImpressionTelemetry
-} from '../../app/telemetryutil';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { ContentRatingAlertComponent } from '../../component/content-rating-alert/content-rating-alert';
 import { ContentType, MimeType, ShareUrl } from '../../app/app.constant';
@@ -210,7 +206,6 @@ export class CollectionDetailsPage {
 
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
-    this.handleDeviceBackButton();
     this.handleNetworkAvaibility();
   }
 
@@ -561,6 +556,7 @@ export class CollectionDetailsPage {
     this.navBar.backButtonClick = () => {
       this.handleNavBackButton();
     }
+    this.handleDeviceBackButton();
   }
 
   handleNavBackButton(){

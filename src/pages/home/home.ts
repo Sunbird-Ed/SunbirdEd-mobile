@@ -23,7 +23,6 @@ import { FormExperience } from "../profile/experience/form.experience"
 import { AdditionalInfoComponent } from "../profile/additional-info/additional-info";
 import { PopoverController } from "ionic-angular/components/popover/popover-controller";
 import { IncompleteProfileData } from '../../component/card/incomplete-profile/incomplete-profile-data';
-import { Network } from '@ionic-native/network';
 import { TranslateService } from '@ngx-translate/core';
 import { ProfileConstants } from '../../app/app.constant';
 
@@ -96,8 +95,6 @@ export class HomePage {
     private qrScanner: SunbirdQRScanner,
     private toastCtrl: ToastController,
     public popoverCtrl: PopoverController,
-
-    private network: Network,
     private translate: TranslateService
     // private storage: Storage
   ) {
@@ -431,7 +428,7 @@ export class HomePage {
   }
 
   scanQRCode() {
-    this.qrScanner.startScanner(undefined, undefined, undefined, PageId.HOME);
+    this.qrScanner.startScanner(PageId.HOME);
   }
 
 
