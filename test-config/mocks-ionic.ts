@@ -260,7 +260,7 @@ export class NavParamsMock {
     return this.data[param] ? this.data[param] : this.data;
   }
 
-  static setData(data){
+  static setData(data) {
     data = data;
   }
 }
@@ -349,13 +349,26 @@ export class profileServiceMock {
   getCurrentUser(res, err) {
     return res({});
   }
+  setCurrentUser(res, err) {
+    return res({});
+  }
+  // getCurrentUser(res, err): Promise<any> {
+  //   return new Promise(resolve => {
+  //     resolve();
+  //   });
+  // };
   updateProfile(req, res, err) {
     return res({});
   }
   createProfile(req, res, err) {
     return res({});
   }
+  getAllUserProfile(res, err) {
+    return res({});
+  }
+
 }
+
 export class groupServiceMock {
   deleteGroup: () => ({
     then: () => ({
@@ -367,6 +380,14 @@ export class groupServiceMock {
       resolve();
     });
   }
+  public addUpdateProfilesToGroup(): Promise<string> {
+    return new Promise(resolve => {
+      resolve();
+    });
+  }
+//   (res, err) {
+//     return res({});
+//  }
 }
 
 export class eventsMock {
@@ -374,9 +395,11 @@ export class eventsMock {
 }
 
 export class oAuthServiceMock {
-  doLogOut: () => ({
-    then: () => ({})
-  })
+  doLogOut(): Promise<any> {
+    return new Promise(resolve => {
+      resolve();
+    });
+  };
 };
 
 export class networkMock {
@@ -484,6 +507,7 @@ export class PopoverControllerMock {
     instance.create.and.returnValue(popOver || PopoverMock.instance());
     return instance;
   }
+
 }
 
 export class PopoverMock extends ViewController {
@@ -494,7 +518,8 @@ export class PopoverMock extends ViewController {
       "onDidDismiss",
       "dismissAll",
       "setContent",
-      "setSpinner"
+      "setSpinner",
+      "create"
     ]);
     instance.present.and.returnValue(Promise.resolve());
     instance.onDidDismiss.and.callFake((success) => {
@@ -615,17 +640,19 @@ export class OAuthServiceMock {
   doOAuthStepTwo: () => {};
 }
 
-export class NavParamsMockNew{
+export class NavParamsMockNew {
   static returnParams: any = {};
 
   public get(key): any {
     if (NavParamsMockNew.returnParams[key]) {
-       return NavParamsMockNew.returnParams[key];
+      return NavParamsMockNew.returnParams[key];
     }
     return undefined;
   }
 
-  static setParams(key,value){
+  static setParams(key, value) {
     NavParamsMockNew.returnParams[key] = value;
   }
 }
+
+

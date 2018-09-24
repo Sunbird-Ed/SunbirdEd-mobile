@@ -1,4 +1,4 @@
-import {} from "jasmine";
+import { } from "jasmine";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { NO_ERRORS_SCHEMA } from "@angular/core";
 import { NavParams, Events, PopoverController, Platform } from "ionic-angular";
@@ -103,7 +103,7 @@ describe("OverflowMenuComponent", () => {
     const navStub = TestBed.get(NavParams);
     comp.items = ["list"];
     spyOn(navStub, "get");
-    comp.showToast(toastStub, "i");
+    comp.showToast();
     expect(navStub.get).toHaveBeenCalled();
   });
   describe("close function makes expected calls", () => {

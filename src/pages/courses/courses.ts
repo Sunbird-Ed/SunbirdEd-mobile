@@ -7,7 +7,8 @@ import {
 import {
   NavController,
   PopoverController,
-  Events} from 'ionic-angular';
+  Events
+} from 'ionic-angular';
 import { AppVersion } from "@ionic-native/app-version";
 import { IonicPage } from 'ionic-angular';
 import {
@@ -521,7 +522,7 @@ export class CoursesPage implements OnInit {
   }
 
   scanQRCode() {
-    this.qrScanner.startScanner(undefined, undefined, undefined, PageId.COURSES);
+    this.qrScanner.startScanner(PageId.COURSES);
   }
 
   search() {
@@ -610,8 +611,8 @@ export class CoursesPage implements OnInit {
         filterOptions['filter'] = data;
         this.showFilterPage(filterOptions);
       }).catch(() => {
-          console.error("Error Occurred!");
-        });
+        console.error("Error Occurred!");
+      });
     }
 
   }
@@ -693,12 +694,12 @@ export class CoursesPage implements OnInit {
       };
     }
     let values = new Map();
-		values["SectionName"] = title;
-		this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-				InteractSubtype.VIEWALL_CLICKED,
-				Environment.HOME,
-				PageId.COURSES,undefined,
-				values);
+    values["SectionName"] = title;
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.VIEWALL_CLICKED,
+      Environment.HOME,
+      PageId.COURSES, undefined,
+      values);
     this.navCtrl.push(ViewMoreActivityPage, params);
   }
 
@@ -777,9 +778,9 @@ export class CoursesPage implements OnInit {
         this.tabBarElement.style.display = 'flex';
         this.showOverlay = false;
       }, () => {
-          this.tabBarElement.style.display = 'flex';
-          this.showOverlay = false;
-        });
+        this.tabBarElement.style.display = 'flex';
+        this.showOverlay = false;
+      });
     });
   }
 
