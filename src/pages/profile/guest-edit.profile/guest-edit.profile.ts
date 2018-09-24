@@ -1,3 +1,4 @@
+import { CommonUtilService } from './../../../service/common-util.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Component } from '@angular/core';
 import {
@@ -73,6 +74,7 @@ export class GuestEditProfilePage {
   newUser: boolean = true;
 
   isFormValid: boolean = true;
+  isEditData: boolean = true;
 
   previousProfileType;
 
@@ -83,7 +85,7 @@ export class GuestEditProfilePage {
   };
 
   syllabusOptions = {
-    title: this.translateMessage('SYLLABUS').toLocaleUpperCase(),
+    title: this.translateMessage('BOARD').toLocaleUpperCase(),
     cssClass: 'select-box'
   };
 
@@ -125,10 +127,15 @@ export class GuestEditProfilePage {
     private app: App,
     private appGlobal: AppGlobalService,
     private preferences: SharedPreferences,
+    private commonUtilService: CommonUtilService
   ) {
     this.profile = this.navParams.get('profile') || {};
     this.isNewUser = Boolean(this.navParams.get('isNewUser'));
     this.isCurrentUser = Boolean(this.navParams.get('isCurrentUser'));
+
+    if (this.isNewUser) {
+      this.isEditData = false;
+    }
 
     /* Initialize form with default values */
     this.guestEditForm = this.fb.group({
@@ -136,9 +143,9 @@ export class GuestEditProfilePage {
       syllabus: [this.profile.syllabus && this.profile.syllabus[0] || [], Validators.required],
       name: [this.profile.handle || '', Validators.required],
       boards: [this.profile.board || [], Validators.required],
+      medium: [this.profile.medium || []],
       grades: [this.profile.grade || []],
-      subjects: [this.profile.subject || []],
-      medium: [this.profile.medium || []]
+      subjects: [this.profile.subject || []]
     });
 
     this.previousProfileType = this.profile.profileType
@@ -224,30 +231,12 @@ export class GuestEditProfilePage {
                 this.categories = catagories;
 
                 this.resetForm(0, false);
-                this.guestEditForm.patchValue({
-                  boards: this.profile.board || []
-                });
-
-                // this.resetForm(1);
-                this.guestEditForm.patchValue({
-                  medium: this.profile.medium || []
-                });
-
-                // this.resetForm(2);
-                this.guestEditForm.patchValue({
-                  grades: this.profile.grade || []
-                });
-
-                // this.resetForm(3);
-                this.guestEditForm.patchValue({
-                  subjects: this.profile.subject || []
-                });
 
               }).catch(() => {
-                  this.isFormValid = false;
-                  this.loader.dismiss();
-                  this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
-                });
+                this.isFormValid = false;
+                this.loader.dismiss();
+                this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
+              });
           } else {
             this.loader.dismiss();
           }
@@ -268,13 +257,36 @@ export class GuestEditProfilePage {
     this.formAndFrameworkUtilService.getCategoryData(req, this.frameworkId).
       then((result) => {
 
-        // if (list === 'boardList')
         if (this.loader !== undefined)
           this.loader.dismiss();
 
         this[list] = result;
+        // TODO:
         if (list != 'gradeList') {
           this[list] = _.orderBy(this[list], ['name'], ['asc']);
+        }
+
+        if (req.currentCategory === 'board') {
+          this.guestEditForm.patchValue({
+            boards: [result[0].code]
+          })
+          this.resetForm(1, false);
+        } else if (this.isEditData) {
+          this.isEditData = false;
+
+          this.guestEditForm.patchValue({
+            medium: this.profile.medium || []
+          });
+
+          // this.resetForm(2);
+          this.guestEditForm.patchValue({
+            grades: this.profile.grade || []
+          });
+
+          // this.resetForm(3);
+          this.guestEditForm.patchValue({
+            subjects: this.profile.subject || []
+          });
         }
       })
   }
@@ -299,9 +311,9 @@ export class GuestEditProfilePage {
           }
           this.getCategoryData(request, currentField);
         }).catch(() => {
-            this.isFormValid = false;
-            this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
-          });
+          this.isFormValid = false;
+          this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
+        });
 
     } else {
       let request: CategoryRequest = {
@@ -360,22 +372,53 @@ export class GuestEditProfilePage {
    * Call on Submit the form
    */
 
-  onSubmit(): void {
+  onSubmit() {
     if (!this.isFormValid) {
       this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
       return;
     }
 
     let loader = this.getLoader();
-    loader.present();
+    //loader.present();
     let formVal = this.guestEditForm.value;
     if (this.isNewUser) {
       if (formVal.userType === '') {
         this.getToast(this.translateMessage('USER_TYPE_SELECT_WARNING')).present();
-      } else {
+        return false;
+      }
+      else if (formVal.boards.length === 0) {
+        this.showMessage('BOARD')
+        return false;
+      }
+      else if (formVal.medium.length === 0) {
+
+        this.showMessage('MEDIUM');
+        return false;
+      }
+      else if (formVal.grades.length === 0) {
+        this.showMessage('CLASS');
+        return false;
+      }
+      else {
+        loader.present();
         this.submitNewUserForm(formVal, loader);
       }
-    } else {
+    }
+    else if (formVal.boards.length === 0) {
+      this.showMessage('BOARD')
+      return false;
+    }
+    else if (formVal.medium.length === 0) {
+
+      this.showMessage('MEDIUM');
+      return false;
+    }
+    else if (formVal.grades.length === 0) {
+      this.showMessage('CLASS');
+      return false;
+    }
+    else {
+      loader.present();
       this.submitEditForm(formVal, loader);
     }
   }
@@ -501,6 +544,27 @@ export class GuestEditProfilePage {
   translateMessage(messageConst: string): string {
     let translatedMsg = '';
     this.translate.get(messageConst).subscribe(
+      (value: any) => {
+        translatedMsg = value;
+      }
+    );
+    return translatedMsg;
+  }
+
+  showMessage(name: string) {
+    let toast = this.toastCtrl.create({
+      message: this.translateMessageWithString('PLEASE_SELECT', name),
+      duration: 2000,
+      cssClass: 'red-toast',
+      position: 'Bottom'
+    });
+    toast.dismissAll();
+    toast.present();
+  }
+
+  translateMessageWithString(messageConst: string, field?: string): string {
+    let translatedMsg = '';
+    this.translate.get(messageConst, { '%s': field }).subscribe(
       (value: any) => {
         translatedMsg = value;
       }

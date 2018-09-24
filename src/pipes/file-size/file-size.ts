@@ -36,6 +36,8 @@ export class FileSizePipe implements PipeTransform {
       size /= 1024;
 
       return size.toFixed(roundOf) + ' TB';
-    };
+    } else {
+      return '0 KB';
+    }
   }
 }
