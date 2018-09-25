@@ -1,11 +1,8 @@
 <ion-header>
-
   <ion-navbar>
     <ion-title>{{'RESULTS' | translate}}</ion-title>
   </ion-navbar>
-
 </ion-header>
-
 
 <ion-content padding>
 
@@ -26,7 +23,6 @@
           <h6 class="name font-size-20">{{content.contentData.name}}</h6>
           <p class="author">{{content.contentData.creator}}</p>
         </ion-card-content>
-
       </ion-row>
 
       <button ion-button block (click)="navigateToDetailsPage(content)">{{ 'DOWNLOAD_AND_PLAY' | translate}}</button>
