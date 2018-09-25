@@ -443,6 +443,7 @@
   "TOTAL_TIME": "Total Time",
   "TO_DO": "To Do",
   "TRY_AGAIN": "TRY AGAIN",
+  "TRY_DIFF_QR": "Try a different QR code ?",
   "TRY_BEFORE_RATING": "Please try the content before rating it.",
   "TWITTER": "Twitter",
   "TYPE_TO_ADD_A_SKILL": "Add your skills",
@@ -450,6 +451,7 @@
 
   "UNIT_COMING_SOON": "Coming soon!",
   "UNKNOWN_QR": "Could not find any content associated with scanned QR code",
+  "INVALID_QR_CODE": "You seem to scanned an invalid QR code",
   "UNSELECT_ALL": "Unselect All",
   "UPDATE": "Update",
   "UPDATE_APP_BTN_ACTION_NO": "Update Later",

@@ -4,7 +4,8 @@ import {
   PopoverController,
   Popover,
   ToastController,
-  Platform
+  Platform,
+  App
 } from "ionic-angular";
 import {
   QRScannerAlert,
@@ -39,13 +40,16 @@ export class SunbirdQRScanner {
   readonly permissionList = ["android.permission.CAMERA"];
   backButtonFunc = undefined;
 
-  constructor(private translate: TranslateService,
+  constructor(
     private popCtrl: PopoverController,
+    private translate: TranslateService,
     private permission: PermissionService,
     private toastCtrl: ToastController,
+    private app: App,
     private platform: Platform,
     private qrScannerResultHandler: QRScannerResultHandler,
-    private telemetryGeneratorService: TelemetryGeneratorService) {
+    private telemetryGeneratorService: TelemetryGeneratorService,
+  ) {
     const that = this
     this.translate.get(this.QR_SCANNER_TEXT).subscribe((data) => {
       that.mQRScannerText = data
@@ -198,9 +202,13 @@ export class SunbirdQRScanner {
       }
     }
     popUp = this.popCtrl.create(QRScannerAlert, {
-      callback: callback
+      callback: callback,
+      invalidContent: true,
+      messageKey: "INVALID_QR_CODE",
+      tryAgainKey: "TRY_DIFF_QR",
+
     }, {
-        cssClass: 'qr-alert'
+        cssClass: 'qr-alert-invalid'
       });
 
     popUp.present();

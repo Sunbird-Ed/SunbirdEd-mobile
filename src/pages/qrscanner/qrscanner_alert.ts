@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { NavParams } from "ionic-angular";
+import { NavParams, Platform } from "ionic-angular";
 
 @Component({
   selector: 'page-alert-qr-scanner',
@@ -8,14 +8,17 @@ import { NavParams } from "ionic-angular";
 export class QRScannerAlert{
   callback: QRAlertCallBack
 
-  icon: string = "./assets/imgs/ic_warning_grey.png";
+  icon: string = "./assets/imgs/ic_coming_soon.png";
   messageKey: string = "UNKNOWN_QR";
   cancelKey: string = "CANCEL";
   tryAgainKey: string = "TRY_AGAIN";
+  skipKey: string = "SKIP";
+  invalidContent= false;
+  unregisterBackButton = undefined;
 
   showOnlyPrimaryBtn = false;
 
-  constructor(navParams: NavParams) {
+  constructor(navParams: NavParams, public platform: Platform) {
     this.callback = navParams.get('callback');
 
     if (navParams.get('icon')) {
@@ -38,8 +41,18 @@ export class QRScannerAlert{
     if (navParams.get('tryAgainKey')) {
       this.tryAgainKey = navParams.get('tryAgainKey');
     }
+
+    if (navParams.get('invalidContent')) {
+      this.invalidContent = navParams.get('invalidContent');
+    }
   }
 
+  ionViewWillEnter() {
+    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+      this.cancel();
+      this.unregisterBackButton();
+    }, 11);
+  }
   tryAgain() {
     if (this.callback) {
       this.callback.tryAgain()
