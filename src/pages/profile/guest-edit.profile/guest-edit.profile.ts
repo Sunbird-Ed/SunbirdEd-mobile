@@ -40,6 +40,7 @@ import {
   GUEST_TEACHER_TABS
 } from '../../../app/module.service';
 import { AppGlobalService } from '../../../service/app-global.service';
+import { CommonUtilService } from '../../../service/common-util.service';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -120,7 +121,8 @@ export class GuestEditProfilePage {
     private container: ContainerService,
     private app: App,
     private appGlobal: AppGlobalService,
-    private preferences: SharedPreferences
+    private preferences: SharedPreferences,
+    private commonUtilService:CommonUtilService
   ) {
     this.profile = this.navParams.get('profile') || {};
     this.isNewUser = Boolean(this.navParams.get('isNewUser'));
@@ -521,23 +523,13 @@ export class GuestEditProfilePage {
 
   showMessage(name: string) {
     let toast = this.toastCtrl.create({
-      message: this.translateMessageWithString('PLEASE_SELECT', name),
+      message: this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService.translateMessage(name)),
       duration: 2000,
       cssClass: 'red-toast',
       position: 'Bottom'
     });
     toast.dismissAll();
     toast.present();
-  }
-
-  translateMessageWithString(messageConst: string, field?: string): string {
-    let translatedMsg = '';
-    this.translate.get(messageConst, { '%s': field }).subscribe(
-      (value: any) => {
-        translatedMsg = value;
-      }
-    );
-    return translatedMsg;
   }
 
   /** It will returns Toast Object
