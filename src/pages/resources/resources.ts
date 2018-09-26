@@ -206,13 +206,19 @@ export class ResourcesPage implements OnInit {
 	 * Ionic life cycle hook
 	 */
 	ionViewCanEnter(): boolean {
+		this.profile = this.appGlobal.getCurrentUser();
+		console.log('in ionViewCanEnter');
+		console.log('in ionViewCanEnter this.guestUser', this.guestUser);
+		console.log('in ionViewCanEnter this.profile', this.profile);
+		// this.profile.getCurrentUser((response) => {
 		if(!this.guestUser || (this.profile && this.profile.syllabus && this.profile.syllabus[0]
 			&& this.profile.board && this.profile.board.length
 			&& this.profile.grade && this.profile.grade.length
-			&& this.profile.medium && this.profile.medium.length
-			&& this.profile.subject && this.profile.subject.length) ){
+			&& this.profile.medium && this.profile.medium.length) ) {
+				console.log('ionViewCanEnter true');
 				return true;
 			}else{
+				console.log('ionViewCanEnter false');
 				return false;
 			}
 	}
@@ -241,8 +247,7 @@ export class ResourcesPage implements OnInit {
 		if (this.profile && this.profile.syllabus && this.profile.syllabus[0]
 			&& this.profile.board && this.profile.board.length
 			&& this.profile.grade && this.profile.grade.length
-			&& this.profile.medium && this.profile.medium.length
-			&& this.profile.subject && this.profile.subject.length) {
+			&& this.profile.medium && this.profile.medium.length) {
 			this.isOnBoardingCardCompleted = true;
 			this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
 		}else{
