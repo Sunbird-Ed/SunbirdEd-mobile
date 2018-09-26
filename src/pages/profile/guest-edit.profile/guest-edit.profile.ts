@@ -1,4 +1,3 @@
-import { CommonUtilService } from './../../../service/common-util.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Component } from '@angular/core';
 import {
@@ -40,8 +39,8 @@ import {
   GUEST_STUDENT_TABS,
   GUEST_TEACHER_TABS
 } from '../../../app/module.service';
-import { PreferenceKey } from '../../../app/app.constant';
 import { AppGlobalService } from '../../../service/app-global.service';
+import { CommonUtilService } from '../../../service/common-util.service';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -64,14 +63,11 @@ export class GuestEditProfilePage {
   subjectList: Array<string> = [];
   mediumList: Array<string> = [];
   userName: string = '';
-  selectedLanguage: string;
-  frameworks: Array<any> = [];
   frameworkId: string = '';
   loader: any;
   isNewUser: boolean = false;
   unregisterBackButton: any;
   isCurrentUser: boolean = true;
-  newUser: boolean = true;
 
   isFormValid: boolean = true;
   isEditData: boolean = true;
@@ -118,7 +114,6 @@ export class GuestEditProfilePage {
     private profileService: ProfileService,
     private translate: TranslateService,
     private events: Events,
-    private preference: SharedPreferences,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private platform: Platform,
     private ionicApp: IonicApp,
@@ -127,7 +122,7 @@ export class GuestEditProfilePage {
     private app: App,
     private appGlobal: AppGlobalService,
     private preferences: SharedPreferences,
-    private commonUtilService: CommonUtilService
+    private commonUtilService:CommonUtilService
   ) {
     this.profile = this.navParams.get('profile') || {};
     this.isNewUser = Boolean(this.navParams.get('isNewUser'));
@@ -149,14 +144,6 @@ export class GuestEditProfilePage {
     });
 
     this.previousProfileType = this.profile.profileType
-
-    //language code
-    this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
-      .then(val => {
-        if (val && val.length) {
-          this.selectedLanguage = val;
-        }
-      });
   }
 
   ionViewDidLoad() {
@@ -257,14 +244,11 @@ export class GuestEditProfilePage {
     this.formAndFrameworkUtilService.getCategoryData(req, this.frameworkId).
       then((result) => {
 
-        if (this.loader !== undefined)
+        if (this.loader !== undefined) {
           this.loader.dismiss();
+        }
 
         this[list] = result;
-        // TODO:
-        if (list != 'gradeList') {
-          this[list] = _.orderBy(this[list], ['name'], ['asc']);
-        }
 
         if (req.currentCategory === 'board') {
           this.guestEditForm.patchValue({
@@ -320,7 +304,7 @@ export class GuestEditProfilePage {
         currentCategory: this.categories[index - 1].code,
         prevCategory: this.categories[index - 2].code,
         selectedCode: prevSelectedValue,
-        selectedLanguage: this.selectedLanguage
+        selectedLanguage: this.translate.currentLang
       }
       this.getCategoryData(request, currentField);
     }
@@ -381,28 +365,10 @@ export class GuestEditProfilePage {
     let loader = this.getLoader();
     //loader.present();
     let formVal = this.guestEditForm.value;
-    if (this.isNewUser) {
-      if (formVal.userType === '') {
-        this.getToast(this.translateMessage('USER_TYPE_SELECT_WARNING')).present();
-        return false;
-      }
-      else if (formVal.boards.length === 0) {
-        this.showMessage('BOARD')
-        return false;
-      }
-      else if (formVal.medium.length === 0) {
 
-        this.showMessage('MEDIUM');
-        return false;
-      }
-      else if (formVal.grades.length === 0) {
-        this.showMessage('CLASS');
-        return false;
-      }
-      else {
-        loader.present();
-        this.submitNewUserForm(formVal, loader);
-      }
+    if (formVal.userType === '') {
+      this.getToast(this.translateMessage('USER_TYPE_SELECT_WARNING')).present();
+      return false;
     }
     else if (formVal.boards.length === 0) {
       this.showMessage('BOARD')
@@ -419,7 +385,11 @@ export class GuestEditProfilePage {
     }
     else {
       loader.present();
-      this.submitEditForm(formVal, loader);
+      if (this.isNewUser) {
+        this.submitNewUserForm(formVal, loader);
+      } else {
+        this.submitEditForm(formVal, loader);
+      }
     }
   }
 
@@ -553,23 +523,13 @@ export class GuestEditProfilePage {
 
   showMessage(name: string) {
     let toast = this.toastCtrl.create({
-      message: this.translateMessageWithString('PLEASE_SELECT', name),
+      message: this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService.translateMessage(name)),
       duration: 2000,
       cssClass: 'red-toast',
       position: 'Bottom'
     });
     toast.dismissAll();
     toast.present();
-  }
-
-  translateMessageWithString(messageConst: string, field?: string): string {
-    let translatedMsg = '';
-    this.translate.get(messageConst, { '%s': field }).subscribe(
-      (value: any) => {
-        translatedMsg = value;
-      }
-    );
-    return translatedMsg;
   }
 
   /** It will returns Toast Object

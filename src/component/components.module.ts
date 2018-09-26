@@ -69,7 +69,9 @@ import { ViewMoreCardComponent } from './view-more-card/view-more-card';
         ReportIssuesComponent,
         ContentRatingAlertComponent
     ],
-    providers: [OnboardingService,
-        FormAndFrameworkUtilService]
+    providers: [
+        OnboardingService,
+        FormAndFrameworkUtilService
+    ]
 })
 export class ComponentsModule { }

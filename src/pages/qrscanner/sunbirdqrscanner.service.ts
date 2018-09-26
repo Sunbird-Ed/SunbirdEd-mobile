@@ -39,13 +39,15 @@ export class SunbirdQRScanner {
   readonly permissionList = ["android.permission.CAMERA"];
   backButtonFunc = undefined;
 
-  constructor(private translate: TranslateService,
+  constructor(
     private popCtrl: PopoverController,
+    private translate: TranslateService,
     private permission: PermissionService,
     private toastCtrl: ToastController,
     private platform: Platform,
     private qrScannerResultHandler: QRScannerResultHandler,
-    private telemetryGeneratorService: TelemetryGeneratorService) {
+    private telemetryGeneratorService: TelemetryGeneratorService
+  ) {
     const that = this
     this.translate.get(this.QR_SCANNER_TEXT).subscribe((data) => {
       that.mQRScannerText = data
@@ -61,7 +63,9 @@ export class SunbirdQRScanner {
   public startScanner(source: string, showButton: boolean = false,
     screenTitle: String = this.mQRScannerText['SCAN_QR_CODE'],
     displayText: String = this.mQRScannerText['SCAN_QR_INSTRUCTION'],
+    /* istanbul ignore else  */
     displayTextColor: String = "#0b0b0b",
+    /* istanbul ignore else  */
     buttonText: String = this.mQRScannerText['SKIP']
   ) {
 
@@ -74,6 +78,7 @@ export class SunbirdQRScanner {
 
     this.permission.hasPermission(this.permissionList, (response) => {
       const result = JSON.parse(response);
+      /* istanbul ignore else  */
       if (result.status) {
         const permissionResult = result.result;
         let askPermission = [];
@@ -86,6 +91,7 @@ export class SunbirdQRScanner {
         if (askPermission.length > 0) {
           this.permission.requestPermission(askPermission, (response) => {
             const requestResult = JSON.parse(response);
+            /* istanbul ignore else  */
             if (requestResult.status) {
               let permissionGranted = true;
               const permissionRequestResult = requestResult.result;
@@ -160,6 +166,7 @@ export class SunbirdQRScanner {
   }
 
   generateStartEvent(pageId: string) {
+    /* istanbul ignore else  */
     if (pageId) {
       let telemetryObject: TelemetryObject = new TelemetryObject();
       telemetryObject.id = "";
@@ -171,6 +178,7 @@ export class SunbirdQRScanner {
   }
 
   generateEndEvent(pageId: string, qrData: string) {
+    /* istanbul ignore else  */
     if (pageId) {
       let telemetryObject: TelemetryObject = new TelemetryObject();
       telemetryObject.id = qrData;
@@ -198,9 +206,12 @@ export class SunbirdQRScanner {
       }
     }
     popUp = this.popCtrl.create(QRScannerAlert, {
-      callback: callback
+      callback: callback,
+      invalidContent: true,
+      messageKey: "UNKNOWN_QR",
+      tryAgainKey: "TRY_DIFF_QR"
     }, {
-        cssClass: 'qr-alert'
+        cssClass: 'qr-alert-invalid'
       });
 
     popUp.present();
