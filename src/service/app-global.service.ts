@@ -19,7 +19,10 @@ import {
     PopoverOptions
 } from "ionic-angular";
 import { UpgradePopover } from "../pages/upgrade/upgrade-popover";
-import { GenericAppConfig } from "../app/app.constant";
+import {
+    GenericAppConfig,
+    PreferenceKey
+} from "../app/app.constant";
 import { TelemetryGeneratorService } from "./telemetry-generator.service";
 
 @Injectable()
@@ -298,7 +301,7 @@ export class AppGlobalService {
 
     public getGuestUserInfo() {
         console.log("getGuestUserInfo");
-        this.preference.getString('selected_user_type')
+        this.preference.getString(PreferenceKey.SELECTED_USER_TYPE)
             .then(val => {
                 if (val !== undefined && val != "") {
                     if (val == ProfileType.STUDENT) {

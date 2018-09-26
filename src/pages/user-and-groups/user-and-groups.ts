@@ -53,6 +53,7 @@ import { Network } from '@ionic-native/network';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { Map } from "../../app/telemetryutil";
 import { Content } from 'ionic-angular';
+import { PreferenceKey } from '../../app/app.constant';
 
 @IonicPage()
 @Component({
@@ -672,11 +673,11 @@ export class UserAndGroupsPage {
       }
       if (selectedUser.profileType == ProfileType.STUDENT) {
         initTabs(this.container, isBeingPlayed ? GUEST_STUDENT_TABS : GUEST_STUDENT_SWITCH_TABS);
-        this.preferences.putString('selected_user_type', ProfileType.STUDENT);
+        this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT);
       }
       else {
         initTabs(this.container, isBeingPlayed ? GUEST_TEACHER_TABS : GUEST_TEACHER_SWITCH_TABS);
-        this.preferences.putString('selected_user_type', ProfileType.TEACHER);
+        this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER);
       }
       this.event.publish('refresh:profile');
       this.event.publish(AppGlobalService.USER_INFO_UPDATED);

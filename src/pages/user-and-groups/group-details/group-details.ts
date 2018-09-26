@@ -39,13 +39,20 @@ import {
 } from 'sunbird';
 import { Events } from 'ionic-angular';
 import { AppGlobalService } from '../../../service/app-global.service';
-import { initTabs, GUEST_STUDENT_SWITCH_TABS, GUEST_TEACHER_SWITCH_TABS, GUEST_STUDENT_TABS, GUEST_TEACHER_TABS } from '../../../app/module.service';
+import {
+  initTabs,
+  GUEST_STUDENT_SWITCH_TABS,
+  GUEST_TEACHER_SWITCH_TABS,
+  GUEST_STUDENT_TABS,
+  GUEST_TEACHER_TABS
+} from '../../../app/module.service';
 import { App } from 'ionic-angular';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
 import { ToastController } from 'ionic-angular';
 import { Network } from '@ionic-native/network';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 import { Map } from "../../../app/telemetryutil";
+import { PreferenceKey } from '../../../app/app.constant';
 @IonicPage()
 @Component({
   selector: 'page-group-member',
@@ -488,7 +495,6 @@ export class GroupDetailsPage {
     return ""
   }
 
-
   private setAsCurrentUser(selectedUser, isBeingPlayed: boolean) {
     this.groupService.setCurrentGroup(this.group.gid)
       .then(val => {
@@ -500,10 +506,10 @@ export class GroupDetailsPage {
           }
           if (selectedUser.profileType == ProfileType.STUDENT) {
             initTabs(this.container, isBeingPlayed ? GUEST_STUDENT_TABS : GUEST_STUDENT_SWITCH_TABS);
-            this.preferences.putString('selected_user_type', ProfileType.STUDENT);
+            this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT);
           } else {
             initTabs(this.container, isBeingPlayed ? GUEST_TEACHER_TABS : GUEST_TEACHER_SWITCH_TABS);
-            this.preferences.putString('selected_user_type', ProfileType.TEACHER);
+            this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER);
           }
 
           this.event.publish('refresh:profile');
