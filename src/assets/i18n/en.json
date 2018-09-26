@@ -494,6 +494,7 @@
   "YES": "Yes",
   "YOUR_PROFILE_IS": "Your profile is {{%s}}% complete",
   "YOUR_PROGRESS": "Your Progress: {{%s}}%",
+  "RESULTS": "Results",
   "USER_TYPE1": "Teacher",
   "USER_TYPE2": "Student"
 }
