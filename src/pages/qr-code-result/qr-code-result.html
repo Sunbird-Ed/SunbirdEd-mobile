@@ -7,10 +7,10 @@
 <ion-content padding>
 
   <div class="card-container" *ngFor="let content of results">
-    <ion-row class="" style="padding:0 10px;">
+    <ion-row class="P010" >
       <ul class="breadcrumbs">
         <li *ngFor="let result of parents" (click)="navigateToDetailsPage(result)">
-          {{ (result.contentData.name.length>20)? (result.contentData.name | slice:0:20)+'..' : (result.contentData.name) }}
+          {{ (result.contentData.name.length>20)? (result.contentData.name | slice:0:20)+'...' : (result.contentData.name) }}
         </li>
       </ul>
     </ion-row>
