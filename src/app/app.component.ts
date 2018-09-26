@@ -29,7 +29,8 @@ import {
   initTabs,
   GUEST_TEACHER_TABS,
   GUEST_STUDENT_TABS,
-  LOGIN_TEACHER_TABS} from './module.service';
+  LOGIN_TEACHER_TABS
+} from './module.service';
 import { LanguageSettingsPage } from '../pages/language-settings/language-settings';
 import { ImageLoaderConfig } from 'ionic-image-loader';
 import { TranslateService } from '@ngx-translate/core';
@@ -112,7 +113,7 @@ export class MyApp {
       this.permission.requestPermission(this.permissionList, () => {
         this.makeEntryInSupportFolder();
       }, () => {
-        })
+      })
 
       this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
         .then(val => {
@@ -123,7 +124,7 @@ export class MyApp {
 
       that.authService.getSessionData((session) => {
         if (session === null || session === "null") {
-          this.preference.getString('selected_user_type')
+          this.preference.getString(PreferenceKey.SELECTED_USER_TYPE)
             .then(val => {
               if (val !== undefined && val !== "") {
                 if (val === ProfileType.TEACHER) {
@@ -131,10 +132,10 @@ export class MyApp {
                 } else if (val === ProfileType.STUDENT) {
                   initTabs(this.containerService, GUEST_STUDENT_TABS);
                 } else if (val === "student") {   // This additional checks are added because previous users had user type stored lower case and app would show blank screen due to mismatch in types
-                  this.preference.putString('selected_user_type', ProfileType.STUDENT)
+                  this.preference.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT)
                   initTabs(this.containerService, GUEST_STUDENT_TABS);
                 } else if (val === "teacher") {
-                  this.preference.putString('selected_user_type', ProfileType.TEACHER)
+                  this.preference.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER)
                   initTabs(this.containerService, GUEST_TEACHER_TABS);
                 }
 
@@ -162,7 +163,7 @@ export class MyApp {
                     that.getToast(this.translateMessage('WELCOME_BACK', JSON.parse(res).firstName)).present();
                   }, 2500);
                 }, () => {
-                  });
+                });
               }
             });
 
@@ -330,10 +331,10 @@ export class MyApp {
 
               if (guestProfile.profileType == ProfileType.STUDENT) {
                 initTabs(this.container, GUEST_STUDENT_TABS);
-                this.preferences.putString('selected_user_type', ProfileType.STUDENT);
+                this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT);
               } else {
                 initTabs(this.container, GUEST_TEACHER_TABS);
-                this.preferences.putString('selected_user_type', ProfileType.TEACHER);
+                this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER);
               }
 
               this.event.publish('refresh:profile');
@@ -342,7 +343,7 @@ export class MyApp {
               this.app.getRootNav().setRoot(TabsPage);
 
             }, () => {
-              });
+            });
 
           });
         }

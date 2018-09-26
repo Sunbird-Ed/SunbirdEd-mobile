@@ -74,6 +74,7 @@ export class FormConstant {
 export class PreferenceKey {
     public static readonly SELECTED_LANGUAGE_CODE = 'selected_language_code';
     public static readonly SELECTED_LANGUAGE = 'selected_language';
+    public static readonly SELECTED_USER_TYPE = "selected_user_type";
 }
 
 export class GenericAppConfig {

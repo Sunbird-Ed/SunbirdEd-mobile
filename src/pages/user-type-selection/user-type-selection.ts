@@ -1,24 +1,42 @@
-import { Component, NgZone } from '@angular/core';
-import { NavController, NavParams, Events } from 'ionic-angular';
 import {
-  TabsPage, SharedPreferences,
-  InteractType, InteractSubtype,
-  Environment, PageId, ImpressionType,
+  Component,
+  NgZone
+} from '@angular/core';
+import {
+  NavController,
+  NavParams,
+  Events
+} from 'ionic-angular';
+import {
+  TabsPage,
+  SharedPreferences,
+  InteractType,
+  InteractSubtype,
+  Environment,
+  PageId,
+  ImpressionType,
   ContainerService,
   Profile,
   UserSource
 } from 'sunbird';
 import { TranslateService } from '@ngx-translate/core';
-import { ProfileType, ProfileService } from 'sunbird'
+import {
+  ProfileType,
+  ProfileService
+} from 'sunbird'
 import { Map } from '../../app/telemetryutil';
-import { initTabs, GUEST_TEACHER_TABS, GUEST_STUDENT_TABS } from '../../app/module.service';
+import {
+  initTabs,
+  GUEST_TEACHER_TABS,
+  GUEST_STUDENT_TABS
+} from '../../app/module.service';
 import { AppGlobalService } from '../../service/app-global.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../service/common-util.service';
+import { PreferenceKey } from '../../app/app.constant';
 
 const selectedCardBorderColor = '#006DE5';
 const borderColor = '#F7F7F7';
-const KEY_SELECTED_USER_TYPE = "selected_user_type";
 
 @Component({
   selector: 'page-user-type-selection',
@@ -27,16 +45,11 @@ const KEY_SELECTED_USER_TYPE = "selected_user_type";
 
 export class UserTypeSelectionPage {
 
-  userTypes: Array<string>;
-  teacherContents: Array<string>;
-  studentContents: Array<string>;
-  allContents: Array<Array<string>> = [];
   teacherCardBorderColor: string = '#F7F7F7';
   studentCardBorderColor: string = '#F7F7F7';
   userTypeSelected: boolean = false;
   selectedUserType: ProfileType;
   continueAs: string = "";
-  language: string;
   profile: Profile;
 
   /**
@@ -54,23 +67,10 @@ export class UserTypeSelectionPage {
     private container: ContainerService,
     private zone: NgZone,
     private event: Events,
-    private commonUtilService:CommonUtilService
+    private commonUtilService: CommonUtilService
   ) {
-    this.initData();
 
     this.profile = this.navParams.get('profile');
-  }
-
-  initData() {
-    let that = this;
-    this.translate.get(["ROLE.ROLE_TYPE", "ROLE.TEACHER_CONTENT", "ROLE.STUDENT_CONTENT"])
-      .subscribe(val => {
-        that.userTypes = val["ROLE.ROLE_TYPE"];
-        that.teacherContents = val["ROLE.TEACHER_CONTENT"];
-        that.studentContents = val["ROLE.STUDENT_CONTENT"];
-        that.allContents.push(that.teacherContents);
-        that.allContents.push(that.studentContents);
-      });
   }
 
   ionViewDidLoad() {
@@ -86,8 +86,8 @@ export class UserTypeSelectionPage {
       this.teacherCardBorderColor = selectedCardBorderColor;
       this.studentCardBorderColor = borderColor;
       this.selectedUserType = ProfileType.TEACHER;
-      this.continueAs = this.commonUtilService.translateMessage('CONTINUE_AS_ROLE', this.commonUtilService.translateMessage('USER_TYPE2'));
-      this.preference.putString(KEY_SELECTED_USER_TYPE, this.selectedUserType);
+      this.continueAs = this.commonUtilService.translateMessage('CONTINUE_AS_ROLE', this.commonUtilService.translateMessage('USER_TYPE_2'));
+      this.preference.putString(PreferenceKey.SELECTED_USER_TYPE, this.selectedUserType);
     });
   }
 
@@ -97,8 +97,8 @@ export class UserTypeSelectionPage {
       this.teacherCardBorderColor = borderColor;
       this.studentCardBorderColor = selectedCardBorderColor;
       this.selectedUserType = ProfileType.STUDENT;
-      this.continueAs = this.commonUtilService.translateMessage('CONTINUE_AS_ROLE',this.commonUtilService.translateMessage('USER_TYPE2'));
-      this.preference.putString(KEY_SELECTED_USER_TYPE, this.selectedUserType)
+      this.continueAs = this.commonUtilService.translateMessage('CONTINUE_AS_ROLE', this.commonUtilService.translateMessage('USER_TYPE_1'));
+      this.preference.putString(PreferenceKey.SELECTED_USER_TYPE, this.selectedUserType)
     });
   }
 
@@ -181,11 +181,11 @@ export class UserTypeSelectionPage {
       loginMode: 'guest'
     });
   }
-  
+
   generateInteractEvent(userType) {
     let values = new Map();
     values["UserType"] = userType;
-    this.telemetryGeneratorService. generateInteractTelemetry(
+    this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.CONTINUE_CLICKED,
       Environment.HOME,
