@@ -62,12 +62,12 @@ describe('SunbirdQRScanner', () => {
       return success(JSON.stringify(mockRes.hasPermissionResponse));
     });
 
-    spyOn(service, 'startQRScanner').and.callFake(() => {
+    spyOn<any>(service, 'startQRScanner').and.callFake(() => {
     });
 
-    service.startScanner('SCAN_QR_CODE', 'SCAN_QR_CODE', '#0000ff', PageId.COURSES);
+    service.startScanner('SCAN_QR_CODE', false, '#0b0b0b', PageId.COURSES);
 
-    expect(service.startQRScanner).toHaveBeenCalled();
+    expect(service['startQRScanner']).toHaveBeenCalled();
   });
 
   it('#startScanner should start the scanner after granting permission', () => {
@@ -82,12 +82,12 @@ describe('SunbirdQRScanner', () => {
       return success(JSON.stringify(mockRes.hasPermissionResponse));
     });
 
-    spyOn(service, 'startQRScanner').and.callFake(() => {
+    spyOn<any>(service, 'startQRScanner').and.callFake(() => {
     });
 
-    service.startScanner('SCAN_QR_CODE', 'SCAN_QR_CODE', '#0000ff', PageId.COURSES);
+    service.startScanner(PageId.COURSES);
 
-    expect(service.startQRScanner).toHaveBeenCalled();
+    expect(service['startQRScanner']).toHaveBeenCalled();
   });
 
   it('#startScanner should show toast if permission is not granted', () => {
@@ -103,7 +103,7 @@ describe('SunbirdQRScanner', () => {
       return success(JSON.stringify(mockRes.reqPermissionResponse));
     });
 
-    service.startScanner('SCAN_QR_CODE', 'SCAN_QR_CODE', '#0000ff', PageId.COURSES);
+    service.startScanner(PageId.COURSES);
 
     expect(toastController.create).toHaveBeenCalled();
   });
@@ -125,15 +125,15 @@ describe('SunbirdQRScanner', () => {
 
   it('#startQRScanner should generate end event if cancel event comes from QRscanner plugin', () => {
     const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
-   
+
     spyOn(telemetryGeneratorService, 'generateEndTelemetry');
     spyOn(telemetryGeneratorService, 'generateInteractTelemetry');
-    spyOn(window['qrScanner'], 'startScanner').and.callFake((arg1, arg2, arg3, success) => {
+    spyOn(window['qrScanner'], 'startScanner').and.callFake((arg1, arg2, arg3, arg4, arg5, success) => {
       return success('cancel');
     });
     spyOn(window['qrScanner'], 'stopScanner');
     service.backButtonFunc = jasmine.createSpy();
-    service.startQRScanner(",", "", "", PageId.QRCodeScanner);
+    service['startQRScanner']("", "", "", "", false, PageId.QRCodeScanner);
     expect(telemetryGeneratorService.generateInteractTelemetry).toHaveBeenCalledWith(InteractType.OTHER,
       InteractSubtype.QRCodeScanCancelled,
       Environment.HOME,
@@ -151,13 +151,13 @@ describe('SunbirdQRScanner', () => {
   it('#startQRScanner should handle dial code if QRscanner plugin returns a valid dialcode', () => {
     const qrresultHandler = TestBed.get(QRScannerResultHandler);
     spyOn(qrresultHandler, 'handleDialCode').and.callFake(() => { });
-    spyOn(window['qrScanner'], 'startScanner').and.callFake((arg1, arg2, arg3, success) => {
+    spyOn(window['qrScanner'], 'startScanner').and.callFake((arg1, arg2, arg3, arg4, arg5, success) => {
       return success(VALID_DIALCODE_LINK);
     });
     spyOn(window['qrScanner'], 'stopScanner');
     spyOn(service, 'generateEndEvent');
     service.backButtonFunc = jasmine.createSpy();
-    service.startQRScanner(",", "", "", PageId.QRCodeScanner);
+    service['startQRScanner'](",", "", "", "", false, PageId.QRCodeScanner);
     expect(qrresultHandler.handleDialCode).toHaveBeenCalled();
   });
 
@@ -169,26 +169,26 @@ describe('SunbirdQRScanner', () => {
       return success();
     });
     spyOn(qrresultHandler, 'handleContentId').and.callFake(() => { });
-    spyOn(window['qrScanner'], 'startScanner').and.callFake((arg1, arg2, arg3, success) => {
+    spyOn(window['qrScanner'], 'startScanner').and.callFake((arg1, arg2, arg3, arg4, arg5, success) => {
       return success(VALID_CONTENT_LINK);
     });
     spyOn(window['qrScanner'], 'stopScanner');
     spyOn(service, 'generateEndEvent');
     service.backButtonFunc = jasmine.createSpy();
-    service.startQRScanner(",", "", "", PageId.QRCodeScanner);
+    service['startQRScanner'](",", "", "", "", false, PageId.QRCodeScanner);
     expect(qrresultHandler.handleContentId).toHaveBeenCalled();
   });
 
   it('#startQRScanner should handle invalid code if QRscanner plugin returns a valid content qrcode', () => {
     const qrresultHandler = TestBed.get(QRScannerResultHandler);
     spyOn(qrresultHandler, 'handleInvalidQRCode').and.callFake(() => { });
-    spyOn(window['qrScanner'], 'startScanner').and.callFake((arg1, arg2, arg3, success) => {
+    spyOn(window['qrScanner'], 'startScanner').and.callFake((arg1, arg2, arg3, arg4, arg5, success) => {
       return success('INAVIDE_QR_CODE');
     });
     spyOn(window['qrScanner'], 'stopScanner');
     spyOn(service, 'showInvalidCodeAlert').and.callThrough();
     service.backButtonFunc = jasmine.createSpy();
-    service.startQRScanner(",", "", "", PageId.QRCodeScanner);
+    service['startQRScanner'](",", "", "", "", false, PageId.QRCodeScanner);
     expect(qrresultHandler.handleInvalidQRCode).toHaveBeenCalled();
     expect(service.showInvalidCodeAlert).toHaveBeenCalled();
   });
@@ -196,13 +196,13 @@ describe('SunbirdQRScanner', () => {
   it('#startQRScanner should handle error is returned from QRScanner plugin', () => {
     const qrresultHandler = TestBed.get(QRScannerResultHandler);
     spyOn(qrresultHandler, 'handleInvalidQRCode').and.callFake(() => { });
-    spyOn(window['qrScanner'], 'startScanner').and.callFake((arg1, arg2, arg3, success, error) => {
+    spyOn(window['qrScanner'], 'startScanner').and.callFake((arg1, arg2, arg3, arg4, arg5, success, error) => {
       return error('INAVIDE_QR_CODE');
     });
     spyOn(window['qrScanner'], 'stopScanner');
     spyOn(service, 'showInvalidCodeAlert');
     service.backButtonFunc = jasmine.createSpy();
-    service.startQRScanner(",", "", "", PageId.QRCodeScanner);
+    service['startQRScanner'](",", "", "", "", false, PageId.QRCodeScanner);
     expect(window['qrScanner'].stopScanner).toHaveBeenCalled();
   });
 
