@@ -195,7 +195,7 @@ export class LanguageSettingsPage {
       let toast = this.toastCtrl.create({
         message: this.translateMessage('PLEASE_SELECT_A_LANGUAGE'),
         duration: 2000,
-        cssClass: 'languageSelectBtn',
+        cssClass: 'redErrorToast',
         position: 'Bottom'
       });
       toast.dismissAll();

@@ -44,6 +44,7 @@ import { AppVersion } from "@ionic-native/app-version";
 import { updateFilterInSearchQuery } from '../../util/filter.util';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../service/common-util.service';
+import { UserOnboardingPreferencesPage } from '../user-onboarding-preferences/user-onboarding-preferences';
 
 @Component({
 	selector: 'page-resources',
@@ -204,6 +205,24 @@ export class ResourcesPage implements OnInit {
 	/**
 	 * Ionic life cycle hook
 	 */
+	ionViewCanEnter(): boolean {
+		this.profile = this.appGlobal.getCurrentUser();
+		console.log('in ionViewCanEnter');
+		console.log('in ionViewCanEnter this.guestUser', this.guestUser);
+		console.log('in ionViewCanEnter this.profile', this.profile);
+		// this.profile.getCurrentUser((response) => {
+		if(!this.guestUser || (this.profile && this.profile.syllabus && this.profile.syllabus[0]
+			&& this.profile.board && this.profile.board.length
+			&& this.profile.grade && this.profile.grade.length
+			&& this.profile.medium && this.profile.medium.length) ) {
+				console.log('ionViewCanEnter true');
+				return true;
+			}else{
+				console.log('ionViewCanEnter false');
+				return false;
+			}
+	}
+
 	ionViewWillLeave(): void {
 		this.events.unsubscribe('genie.event');
 	}
@@ -228,10 +247,15 @@ export class ResourcesPage implements OnInit {
 		if (this.profile && this.profile.syllabus && this.profile.syllabus[0]
 			&& this.profile.board && this.profile.board.length
 			&& this.profile.grade && this.profile.grade.length
-			&& this.profile.medium && this.profile.medium.length
-			&& this.profile.subject && this.profile.subject.length) {
+			&& this.profile.medium && this.profile.medium.length) {
 			this.isOnBoardingCardCompleted = true;
 			this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
+		}else{
+			console.log('in else lib', this.guestUser);
+			if(this.guestUser){
+				console.log('this.guestUser');
+				this.navCtrl.push(UserOnboardingPreferencesPage);
+			}
 		}
 	}
 
@@ -278,126 +302,132 @@ export class ResourcesPage implements OnInit {
 	 */
 	setSavedContent() {
 		// this.localResources = [];
-		this.showLoader = true;
-		const requestParams: ContentFilterCriteria = {
-			contentTypes: ContentType.FOR_LIBRARY_TAB,
-			audience: this.audienceFilter
-		};
-		this.contentService.getAllLocalContents(requestParams)
-			.then(data => {
-				_.forEach(data, (value) => {
-					value.contentData.lastUpdatedOn = value.lastUpdatedTime;
-					if (value.contentData.appIcon) {
-						value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
-					}
-				});
-				this.ngZone.run(() => {
-					this.localResources = data;
-					this.showLoader = false;
-				});
-			})
-			.catch(() => {
-				this.ngZone.run(() => {
-					this.showLoader = false;
-				});
-			});
+		console.log('in setSavedContent');
+		// if(this.isOnBoardingCardCompleted || !this.guestUser){
+			// console.log('in setSavedContent isOnBoardingCardCompleted');
+			this.showLoader = true;
+			const requestParams: ContentFilterCriteria = {
+				contentTypes: ContentType.FOR_LIBRARY_TAB,
+				audience: this.audienceFilter
+			};
+			this.contentService.getAllLocalContents(requestParams)
+				.then(data => {
+					_.forEach(data, (value) => {
+						value.contentData.lastUpdatedOn = value.lastUpdatedTime;
+						if (value.contentData.appIcon) {
+							value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
+						}
+					});
+					this.ngZone.run(() => {
+						this.localResources = data;
+						this.showLoader = false;
+					});
+				})
+				.catch(() => {
+						this.ngZone.run(() => {
+							this.showLoader = false;
+						});
+					});
+		// }
 	}
 
 	/**
 	 * Get popular content
 	 */
 	getPopularContent(isAfterLanguageChange = false, pageAssembleCriteria?: PageAssembleCriteria) {
-		this.pageApiLoader = true;
-		//this.noInternetConnection = false;
-		let that = this;
+		if(this.isOnBoardingCardCompleted || !this.guestUser){
+			this.pageApiLoader = true;
+			//this.noInternetConnection = false;
+			let that = this;
 
-		if (!pageAssembleCriteria) {
-			let criteria = new PageAssembleCriteria();
-			criteria.name = "Resource";
-			criteria.mode = "soft";
+			if (!pageAssembleCriteria) {
+				let criteria = new PageAssembleCriteria();
+				criteria.name = "Resource";
+				criteria.mode = "soft";
 
-			if (that.appliedFilter) {
-				let filterApplied = false;
+				if (that.appliedFilter) {
+					let filterApplied = false;
 
-				Object.keys(this.appliedFilter).forEach(key => {
-					if (this.appliedFilter[key].length > 0) {
-						filterApplied = true;
-					}
-				})
-
-				if (filterApplied) {
-					criteria.mode = "hard";
-				}
-
-				criteria.filters = this.appliedFilter;
-			}
-
-			pageAssembleCriteria = criteria;
-		}
-
-		this.mode = pageAssembleCriteria.mode;
-
-		if (this.profile && !this.isFilterApplied) {
-
-			if (!pageAssembleCriteria.filters) {
-				pageAssembleCriteria.filters = new PageAssembleFilter();
-			}
-
-			if (this.profile.board && this.profile.board.length) {
-				pageAssembleCriteria.filters.board = this.applyProfileFilter(this.profile.board, pageAssembleCriteria.filters.board, "board");
-			}
-
-			if (this.profile.medium && this.profile.medium.length) {
-				pageAssembleCriteria.filters.medium = this.applyProfileFilter(this.profile.medium, pageAssembleCriteria.filters.medium, "medium");
-			}
-
-			if (this.profile.grade && this.profile.grade.length) {
-				pageAssembleCriteria.filters.gradeLevel = this.applyProfileFilter(this.profile.grade, pageAssembleCriteria.filters.gradeLevel, "gradeLevel");
-			}
-
-			if (this.profile.subject && this.profile.subject.length) {
-				pageAssembleCriteria.filters.subject = this.applyProfileFilter(this.profile.subject, pageAssembleCriteria.filters.subject, "subject");
-			}
-		}
-
-		this.pageService.getPageAssemble(pageAssembleCriteria, res => {
-			that.ngZone.run(() => {
-				let response = JSON.parse(res);
-				//TODO Temporary code - should be fixed at backend
-				let sections = JSON.parse(response.sections);
-				let newSections = [];
-				sections.forEach(element => {
-					element.display = JSON.parse(element.display);
-					if (element.display.name) {
-						if (_.has(element.display.name, this.selectedLanguage)) {
-							let langs = [];
-							_.forEach(element.display.name, function (value, key) {
-								langs[key] = value;
-							});
-							element.name = langs[this.selectedLanguage];
+					Object.keys(this.appliedFilter).forEach(key => {
+						if (this.appliedFilter[key].length > 0) {
+							filterApplied = true;
 						}
+					})
+
+					if (filterApplied) {
+						criteria.mode = "hard";
 					}
-					newSections.push(element);
-				});
-				//END OF TEMPORARY CODE
-				that.storyAndWorksheets = newSections;
-				this.pageLoadedSuccess = true;
-				this.pageApiLoader = false;
-				//this.noInternetConnection = false;
-				this.checkEmptySearchResult(isAfterLanguageChange);
-			});
-		}, error => {
-			console.log('error while getting popular resources...', error);
-			that.ngZone.run(() => {
-				this.pageApiLoader = false;
-				if (error === 'CONNECTION_ERROR') {
-					//this.noInternetConnection = true;
-					this.isNetworkAvailable = false;
-				} else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
-					if (!isAfterLanguageChange) this.commonUtilService.showToast('ERROR_FETCHING_DATA');
+
+					criteria.filters = this.appliedFilter;
 				}
+
+				pageAssembleCriteria = criteria;
+			}
+
+			this.mode = pageAssembleCriteria.mode;
+
+			if (this.profile && !this.isFilterApplied) {
+
+				if (!pageAssembleCriteria.filters) {
+					pageAssembleCriteria.filters = new PageAssembleFilter();
+				}
+
+				if (this.profile.board && this.profile.board.length) {
+					pageAssembleCriteria.filters.board = this.applyProfileFilter(this.profile.board, pageAssembleCriteria.filters.board, "board");
+				}
+
+				if (this.profile.medium && this.profile.medium.length) {
+					pageAssembleCriteria.filters.medium = this.applyProfileFilter(this.profile.medium, pageAssembleCriteria.filters.medium, "medium");
+				}
+
+				if (this.profile.grade && this.profile.grade.length) {
+					pageAssembleCriteria.filters.gradeLevel = this.applyProfileFilter(this.profile.grade, pageAssembleCriteria.filters.gradeLevel, "gradeLevel");
+				}
+
+				if (this.profile.subject && this.profile.subject.length) {
+					pageAssembleCriteria.filters.subject = this.applyProfileFilter(this.profile.subject, pageAssembleCriteria.filters.subject, "subject");
+				}
+			}
+
+			this.pageService.getPageAssemble(pageAssembleCriteria, res => {
+				that.ngZone.run(() => {
+					let response = JSON.parse(res);
+					//TODO Temporary code - should be fixed at backend
+					let sections = JSON.parse(response.sections);
+					let newSections = [];
+					sections.forEach(element => {
+						element.display = JSON.parse(element.display);
+						if (element.display.name) {
+							if (_.has(element.display.name, this.selectedLanguage)) {
+								let langs = [];
+								_.forEach(element.display.name, function (value, key) {
+									langs[key] = value;
+								});
+								element.name = langs[this.selectedLanguage];
+							}
+						}
+						newSections.push(element);
+					});
+					//END OF TEMPORARY CODE
+					that.storyAndWorksheets = newSections;
+					this.pageLoadedSuccess = true;
+					this.pageApiLoader = false;
+					//this.noInternetConnection = false;
+					this.checkEmptySearchResult(isAfterLanguageChange);
+				});
+			}, error => {
+				console.log('error while getting popular resources...', error);
+				that.ngZone.run(() => {
+					this.pageApiLoader = false;
+					if (error === 'CONNECTION_ERROR') {
+						//this.noInternetConnection = true;
+						this.isNetworkAvailable = false;
+					} else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
+						if (!isAfterLanguageChange) this.commonUtilService.showToast('ERROR_FETCHING_DATA');
+					}
+				});
 			});
-		});
+		}
 	}
 
 	applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>, categoryKey?: string) {
@@ -498,6 +528,7 @@ export class ResourcesPage implements OnInit {
 
 	subscribeGenieEvents() {
 		this.events.subscribe('genie.event', (data) => {
+			console.log('subscribeGenieEvents -->', data);
 			let res = JSON.parse(data);
 			if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
 				this.setSavedContent();
