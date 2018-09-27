@@ -31,7 +31,9 @@ import {
   SharedPreferences,
   ProfileType,
   CorrelationData,
-  TelemetryObject
+  TelemetryObject,
+  ErrorCode,
+  ErrorType
 } from 'sunbird';
 import * as _ from 'lodash';
 import { ContentDetailsPage } from '../content-details/content-details';
@@ -133,6 +135,8 @@ export class CollectionDetailsPage {
    * To hold content identifiers
    */
   queuedIdentifiers: Array<any> = [];
+
+  faultyIdentifiers: Array<any> = [];
 
   /**
    * Download complete falg
@@ -453,7 +457,6 @@ export class CollectionDetailsPage {
     _.forEach(identifiers, (value) => {
       requestParams.push({
         isChildContent: isChild,
-        // TODO - check with Anil for destination folder path
         destinationFolder: this.fileUtil.internalStoragePath(),
         contentId: value,
         correlationData: this.corRelationList !== undefined ? this.corRelationList : []
@@ -484,6 +487,8 @@ export class CollectionDetailsPage {
           _.forEach(data.result, (value) => {
             if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
               this.queuedIdentifiers.push(value.identifier);
+            } else if (value.status === 'NOT_FOUND') {
+              this.faultyIdentifiers.push(value.identifier);
             }
           });
           if (this.queuedIdentifiers.length === 0) {
@@ -492,7 +497,18 @@ export class CollectionDetailsPage {
               this.isDownloadStarted = false;
               this.showLoading = false;
             }
-            this.commonUtilService.showToast('UNABLE_TO_FETCH_CONTENT');
+          }
+          if (this.faultyIdentifiers.length > 0) {
+            let stackTrace: any = {};
+            stackTrace.parentIdentifier = this.cardData.identifier;
+            stackTrace.faultyIdentifiers = this.faultyIdentifiers;
+            this.telemetryGeneratorService.generateErrorTelemetry(Environment.HOME,
+              ErrorCode.ERR_DOWNLOAD_FAILED,
+              ErrorType.SYSTEM,
+              PageId.COLLECTION_DETAIL,
+              JSON.stringify(stackTrace),
+            );
+            this.commonUtilService.showToast('UNABLE_TO_FETCH_RETIRED_CONTENT');
           }
         } else if (data.result && data.result[0].status === 'NOT_FOUND') {
           this.showLoading = false;
@@ -509,8 +525,14 @@ export class CollectionDetailsPage {
             this.isDownloadStarted = false;
             this.showLoading = false;
           }
-          this.commonUtilService.showToast('UNABLE_TO_FETCH_CONTENT');
+
           this.showChildrenLoader = false;
+          let errorRes = JSON.parse(error);
+          if (errorRes && errorRes.error === 'NETWORK_ERROR') {
+            this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
+          } else {
+            this.commonUtilService.showToast('UNABLE_TO_FETCH_CONTENT');
+          }
         })
       });
   }
@@ -553,7 +575,7 @@ export class CollectionDetailsPage {
       if (value.isAvailableLocally === false) {
         this.downloadIdentifiers.push(value.contentData.identifier);
         if (value.contentData.size && !this.isDepthChild) {
-          
+
         }
       }
     });
