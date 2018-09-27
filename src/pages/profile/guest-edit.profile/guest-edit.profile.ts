@@ -132,7 +132,7 @@ export class GuestEditProfilePage {
     this.isCurrentUser = Boolean(this.navParams.get('isCurrentUser'));
     this.previousProfileType = this.profile.profileType;
     if (this.isNewUser) {
-      this.profile = this.navParams.get('lastCreatedProfile');
+      this.profile = this.navParams.get('lastCreatedProfile') || {};
       this.isEditData = false;
       this.guestEditForm = this.fb.group({
         name: [''],
@@ -143,7 +143,7 @@ export class GuestEditProfilePage {
         grades: [this.profile.grade || []],
         subjects: [this.profile.subject || []]
       });
-      
+
     } else {
       this.profile = this.navParams.get('profile') || {}
       this.guestEditForm = this.fb.group({
@@ -171,7 +171,9 @@ export class GuestEditProfilePage {
       Environment.USER,
       PageId.CREATE_USER
     );
-    if(this.isNewUser){
+
+    // auto fill alert is called when it is new user , profile and profile.name is present 
+    if (this.isNewUser && this.profile && this.profile.handle) {
       this.showAutoFillAlert();
     }
   }
@@ -215,7 +217,7 @@ export class GuestEditProfilePage {
           text: this.commonUtilService.translateMessage('OKAY'),
           cssClass: 'alert-btn-delete',
           handler: () => {
-    
+
           }
         }
       ]
@@ -554,24 +556,8 @@ export class GuestEditProfilePage {
       () => {
         loader.dismiss();
         this.commonUtilService.showToast(this.commonUtilService.translateMessage("FILL_THE_MANDATORY_FIELDS"));
-
       });
   }
-
-  /**
-   * Used to Translate message to current Language
-   * @param {string} messageConst - Message Constant to be translated
-   * @returns {string} translatedMsg - Translated Message
-   */
-  // translateMessage(messageConst: string): string {
-  //   let translatedMsg = '';
-  //   this.translate.get(messageConst).subscribe(
-  //     (value: any) => {
-  //       translatedMsg = value;
-  //     }
-  //   );
-  //   return translatedMsg;
-  // }
 
   showMessage(name: string) {
     let toast = this.toastCtrl.create({
@@ -583,15 +569,6 @@ export class GuestEditProfilePage {
     toast.dismissAll();
     toast.present();
   }
-
-  /** It will returns Toast Object
-   * @param {message} string - Message for the Toast to show
-   * @returns {object} - toast Object
-   */
-  // getToast(message: string = ''): any {
-  //   this.options.message = message;
-  //   if (message.length) return this.toastCtrl.create(this.options);
-  // }
 
   getLoader(): any {
     return this.loadingCtrl.create({

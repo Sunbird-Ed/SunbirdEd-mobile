@@ -43,6 +43,7 @@ export class GroupMembersPage {
   group: Group;
   userList: Array<Profile> = [];
   userSelectionMap: Map<string, boolean> = new Map();
+  lastCreatedProfileData: any;
 
   options: toastOptions = {
     message: '',
@@ -59,13 +60,13 @@ export class GroupMembersPage {
     private loadingCtrl: LoadingController,
     private toastCtrl: LoadingController,
     private translate: TranslateService,
-    private telemetryGeneratorService:TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService
   ) {
     this.group = this.navParams.get('group');
 
   }
 
-  ionViewDidLoad(){
+  ionViewDidLoad() {
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW, "",
       PageId.CREATE_GROUP_USER_SELECTION,
@@ -75,6 +76,24 @@ export class GroupMembersPage {
 
   ionViewWillEnter() {
     this.getAllProfile();
+  }
+
+  // method below fetches the last created user
+  getLastCreatedProfile() {
+    return new Promise((resolve, reject) => {
+      let req = {
+        local: true,
+        latestCreatedProfile: true
+      }
+      this.profileService.getProfile(req, lastCreatedProfile => {
+        console.log("lastCreatedProfile: ", lastCreatedProfile);
+        this.lastCreatedProfileData = JSON.parse(lastCreatedProfile);
+        resolve(JSON.parse(lastCreatedProfile));
+      }, error => {
+        reject(null);
+        console.log('error in fetching last created profile data' + error);
+      });
+    });
   }
 
   getAllProfile() {
@@ -121,9 +140,16 @@ export class GroupMembersPage {
   }
 
   goTOGuestEdit() {
-    this.navCtrl.push(GuestEditProfilePage, {
-      isNewUser: true
-    });
+    this.getLastCreatedProfile().then((response) => {
+      this.navCtrl.push(GuestEditProfilePage, {
+        isNewUser: true,
+        lastCreatedProfile: this.lastCreatedProfileData
+      });
+    }).catch((error) => {
+      this.navCtrl.push(GuestEditProfilePage, {
+        isNewUser: true
+      });
+    })
   }
 
   /**
@@ -138,31 +164,31 @@ export class GroupMembersPage {
       if (value === true) selectedUids.push(key);
     });
     this.groupService.createGroup(this.group)
-    .then(res => {
-      this.telemetryGeneratorService.generateInteractTelemetry(
-        InteractType.OTHER,
-        InteractSubtype.CREATE_GROUP_SUCCESS,
-        Environment.USER,
-        PageId.CREATE_GROUP
-      );
-      let req: AddUpdateProfilesRequest = {
-        groupId: res.result.gid,
-        uidList: selectedUids
-      }
-      return this.groupService.addUpdateProfilesToGroup(req);
-    })
-    .then(success => {
-      console.log(success);
-      loader.dismiss();
-      this.getToast(this.translateMessage('GROUP_CREATE_SUCCESS')).present();
-      this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 3));
-    })
-    .catch(error => {
-      loader.dismiss();
-      this.getToast(this.translateMessage('SOMETHING_WENT_WRONG')).present();
-      console.log("Error : " + error);
-      loader.dismiss();
-    });
+      .then(res => {
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.OTHER,
+          InteractSubtype.CREATE_GROUP_SUCCESS,
+          Environment.USER,
+          PageId.CREATE_GROUP
+        );
+        let req: AddUpdateProfilesRequest = {
+          groupId: res.result.gid,
+          uidList: selectedUids
+        }
+        return this.groupService.addUpdateProfilesToGroup(req);
+      })
+      .then(success => {
+        console.log(success);
+        loader.dismiss();
+        this.getToast(this.translateMessage('GROUP_CREATE_SUCCESS')).present();
+        this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 3));
+      })
+      .catch(error => {
+        loader.dismiss();
+        this.getToast(this.translateMessage('SOMETHING_WENT_WRONG')).present();
+        console.log("Error : " + error);
+        loader.dismiss();
+      });
   }
 
   /**

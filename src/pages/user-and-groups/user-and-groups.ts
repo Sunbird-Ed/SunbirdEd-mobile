@@ -138,7 +138,7 @@ export class UserAndGroupsPage {
       this.getAllProfile();
       this.getAllGroup();
       this.getCurrentGroup();
-      this.getLastCreatedProfile();
+      //this.getLastCreatedProfile();
 
       this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
         this.dismissPopup();
@@ -319,9 +319,9 @@ export class UserAndGroupsPage {
       Environment.USER,
       PageId.USERS_GROUPS
     );
-
     this.navCtrl.push('CreateGroupPage');
   }
+
 
   goToSharePage() {
     this.navCtrl.push(ShareUserAndGroupPage, {
@@ -342,19 +342,28 @@ export class UserAndGroupsPage {
   * Navigates to Create User Page
   */
   createUser() {
-    // Generate create user click event
-    this.telemetryGeneratorService.generateInteractTelemetry(
-      InteractType.TOUCH,
-      InteractSubtype.CREATE_USER_CLICKED,
-      Environment.USER,
-      PageId.USERS_GROUPS
-    );
-    this.zone.run(() => {
-      this.navCtrl.push(GuestEditProfilePage, {
-        isNewUser: true,
-        lastCreatedProfile:this.lastCreatedProfileData
+    this.getLastCreatedProfile().then((response: any) => {
+      // Generate create user click event
+      this.telemetryGeneratorService.generateInteractTelemetry(
+        InteractType.TOUCH,
+        InteractSubtype.CREATE_USER_CLICKED,
+        Environment.USER,
+        PageId.USERS_GROUPS
+      );
+      this.zone.run(() => {
+        this.navCtrl.push(GuestEditProfilePage, {
+          isNewUser: true,
+          lastCreatedProfile: this.lastCreatedProfileData
+        });
       });
-    })
+    }).catch((error) => {
+      this.zone.run(() => {
+        this.navCtrl.push(GuestEditProfilePage, {
+          isNewUser: true
+        });
+      })
+      console.error('error occoured' + error);
+    });
   }
 
   selectUser(index: number, name: string) {
@@ -456,17 +465,21 @@ export class UserAndGroupsPage {
       valuesMap
     );
   }
- // method below fetches the last created user
+  // method below fetches the last created user
   getLastCreatedProfile() {
-    let req = {
-      local: true,
-      latestCreatedProfile: true
-    }
-    this.profileService.getProfile(req, lastCreatedProfile => {
-      console.log("lastCreatedProfile: ", lastCreatedProfile);
-      this.lastCreatedProfileData = JSON.parse(lastCreatedProfile);
-    }, error => {
-       console.log('error in fetching last created profile data' + error);
+    return new Promise((resolve, reject) => {
+      let req = {
+        local: true,
+        latestCreatedProfile: true
+      }
+      this.profileService.getProfile(req, lastCreatedProfile => {
+        console.log("lastCreatedProfile: ", lastCreatedProfile);
+        this.lastCreatedProfileData = JSON.parse(lastCreatedProfile);
+        resolve(JSON.parse(lastCreatedProfile));
+      }, error => {
+        reject(null);
+        console.log('error in fetching last created profile data' + error);
+      });
     });
   }
 
