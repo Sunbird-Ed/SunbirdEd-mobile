@@ -42,7 +42,8 @@ import {
   MimeType,
   ProfileConstants,
   EventTopics,
-  ShareUrl
+  ShareUrl,
+  PreferenceKey
 } from '../../app/app.constant';
 import { CourseBatchesPage } from '../course-batches/course-batches';
 import { SocialSharing } from '@ionic-native/social-sharing';
@@ -185,7 +186,7 @@ export class EnrolledCourseDetailsPage {
   constructor(navCtrl: NavController,
     private navParams: NavParams,
     contentService: ContentService,
-    private zone: NgZone, 
+    private zone: NgZone,
     private events: Events,
     private fileUtil: FileUtil,
     public popoverCtrl: PopoverController,
@@ -231,7 +232,7 @@ export class EnrolledCourseDetailsPage {
         this.baseUrl = response
       })
       .catch(() => {
-        });
+      });
 
     this.events.subscribe(EventTopics.ENROL_COURSE_SUCCESS, (res) => {
       if (res && res.batchId) {
@@ -271,7 +272,7 @@ export class EnrolledCourseDetailsPage {
   }
 
   checkCurrentUserType() {
-    this.preference.getString('selected_user_type')
+    this.preference.getString(PreferenceKey.SELECTED_USER_TYPE)
       .then(val => {
         if (val != "") {
           if (val == ProfileType.TEACHER) {
@@ -457,7 +458,7 @@ export class EnrolledCourseDetailsPage {
         this.batchDetails.creatorLastName = data.lastName ? data.lastName : '';
       }
     }, () => {
-      })
+    })
   }
 
   /**
@@ -637,11 +638,11 @@ export class EnrolledCourseDetailsPage {
         this.navCtrl.pop();
       });
     }, () => {
-        this.zone.run(() => {
-          this.showLoading = false;
-          this.navCtrl.pop();
-        });
+      this.zone.run(() => {
+        this.showLoading = false;
+        this.navCtrl.pop();
       });
+    });
   }
 
   getContentsSize(data) {
@@ -808,9 +809,9 @@ export class EnrolledCourseDetailsPage {
         this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_COURSE_SUCCESS, this.course.contentType);
         this.social.share("", "", "file://" + path, url);
       }, () => {
-          loader.dismiss();
-          this.commonUtilService.showToast('SHARE_CONTENT_FAILED');
-        });
+        loader.dismiss();
+        this.commonUtilService.showToast('SHARE_CONTENT_FAILED');
+      });
     } else {
       loader.dismiss();
       this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_COURSE_SUCCESS, this.course.contentType);
@@ -839,7 +840,7 @@ export class EnrolledCourseDetailsPage {
     this.subscribeUtilityEvents();
   }
 
-  handleNavBackButton(){
+  handleNavBackButton() {
     this.didViewLoad = false;
     this.generateEndEvent(this.objId, this.objType, this.objVer);
     if (this.shouldGenerateEndTelemetry) {

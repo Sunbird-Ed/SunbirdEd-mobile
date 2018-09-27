@@ -1,3 +1,4 @@
+import { UserOnboardingPreferencesPageModule } from './../pages/user-onboarding-preferences/user-onboarding-preferences.module';
 import { ContentDetailsPageModule } from './../pages/content-details/content-details.module';
 import { CollectionDetailsPageModule } from './../pages/collection-details/collection-details.module';
 import { ViewMoreActivityPageModule } from './../pages/view-more-activity/view-more-activity.module';
@@ -94,5 +95,6 @@ export const PluginModules = [
     UserAndGroupsPageModule,
     ReportsPageModule,
     UserReportModule,
+    UserOnboardingPreferencesPageModule,
     QrCodeResultPageModule
 ];

@@ -41,6 +41,7 @@ import {
 } from '../../../app/module.service';
 import { AppGlobalService } from '../../../service/app-global.service';
 import { CommonUtilService } from '../../../service/common-util.service';
+import { PreferenceKey } from '../../../app/app.constant';
 
 /* Interface for the Toast Object */
 export interface toastOptions {
@@ -122,7 +123,7 @@ export class GuestEditProfilePage {
     private app: App,
     private appGlobal: AppGlobalService,
     private preferences: SharedPreferences,
-    private commonUtilService:CommonUtilService
+    private commonUtilService: CommonUtilService
   ) {
     this.profile = this.navParams.get('profile') || {};
     this.isNewUser = Boolean(this.navParams.get('isNewUser'));
@@ -456,10 +457,10 @@ export class GuestEditProfilePage {
 
     if (this.previousProfileType && this.previousProfileType != formVal.profileType) {
       if (formVal.profileType == ProfileType.STUDENT) {
-        this.preferences.putString('selected_user_type', ProfileType.STUDENT);
+        this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT);
         initTabs(this.container, GUEST_STUDENT_TABS);
       } else {
-        this.preferences.putString('selected_user_type', ProfileType.TEACHER);
+        this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER);
         initTabs(this.container, GUEST_TEACHER_TABS);
       }
 

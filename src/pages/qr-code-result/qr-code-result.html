@@ -7,10 +7,10 @@
 <ion-content padding>
 
   <div class="card-container" *ngFor="let content of results">
-    <ion-row class="" style="padding:10px;">
+    <ion-row class="P010" >
       <ul class="breadcrumbs">
         <li *ngFor="let result of parents" (click)="navigateToDetailsPage(result)">
-          {{result.contentData.name}}
+          {{ (result.contentData.name.length>20)? (result.contentData.name | slice:0:20)+'...' : (result.contentData.name) }}
         </li>
       </ul>
     </ion-row>
@@ -25,7 +25,8 @@
         </ion-card-content>
       </ion-row>
 
-      <button ion-button block (click)="navigateToDetailsPage(content)">{{ 'DOWNLOAD_AND_PLAY' | translate}}</button>
+      <button  class="custom-btn" ion-button block (click)="navigateToDetailsPage(content)" *ngIf="!content.isAvailableLocally">{{ 'DOWNLOAD_AND_PLAY' | translate}}</button>
+      <button  class="custom-btn" ion-button block (click)="navigateToDetailsPage(content)" *ngIf="content.isAvailableLocally">{{ 'PLAY' | translate}}</button>
 
       <div class="badge"> {{content.contentData.contentType}} </div>
     </ion-card>

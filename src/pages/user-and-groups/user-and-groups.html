@@ -34,7 +34,8 @@
                       <b>{{profileDetails?.handle}}&nbsp;{{profileDetails?.lastName}}</b>
                     </h6>
                     <!-- <p>{{profileDetails?.grade}}</p> -->
-                    <p>{{profileDetails?.profileType | titlecase}}</p>
+                    <p *ngIf="profileDetails?.profileType === 'TEACHER'">{{'USER_TYPE_1' | translate | titlecase}}</p>
+                    <p *ngIf="profileDetails?.profileType === 'STUDENT'">{{'USER_TYPE_2' | translate | titlecase}}</p>
                   </ion-item>
                 </ion-col>
                 <!-- <ion-col col-1 class="advanced-menu">
@@ -63,8 +64,11 @@
                     <h6 class="line-height-2 elipsis" [ngStyle]="{'color': currentUserId === user?.uid ? 'dodgerblue' : 'black'}">
                       <b>{{user?.handle}}</b>
                     </h6>
-                    <p>{{ user?.profileType | titlecase }}
-                      <span *ngIf="user?.grade?.length">•</span> {{ getGradeNameFromCode(user) }}</p>
+                    <p>
+                      <span *ngIf="user?.profileType === 'TEACHER'">{{'USER_TYPE_1' | translate | titlecase}}</span>
+                      <span *ngIf="user?.profileType === 'STUDENT'">{{'USER_TYPE_2' | translate | titlecase}}</span>
+                      <span *ngIf="user?.grade?.length">•</span> {{ getGradeNameFromCode(user) }}
+                    </p>
                   </ion-item>
                 </ion-col>
                 <ion-col col-1 class="advanced-menu" *ngIf="!playContent">

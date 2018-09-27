@@ -49,6 +49,7 @@ import { updateFilterInSearchQuery } from '../../util/filter.util';
 import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
 import { CommonUtilService } from '../../service/common-util.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { UserOnboardingPreferencesPage } from '../user-onboarding-preferences/user-onboarding-preferences';
 
 @IonicPage()
 @Component({
@@ -508,10 +509,14 @@ export class CoursesPage implements OnInit {
     this.profile = this.appGlobal.getCurrentUser();
     if (this.profile && this.profile.syllabus && this.profile.syllabus[0] && this.profile.board && this.profile.board.length
       && this.profile.grade && this.profile.grade.length
-      && this.profile.medium && this.profile.medium.length
-      && this.profile.subject && this.profile.subject.length) {
+      && this.profile.medium && this.profile.medium.length) {
       this.isOnBoardingCardCompleted = true;
       this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
+    } else {
+      console.log('in else course', this.guestUser);
+      if(this.guestUser) {
+        this.navCtrl.push(UserOnboardingPreferencesPage);
+      }
     }
   }
 
@@ -522,6 +527,18 @@ export class CoursesPage implements OnInit {
   search() {
     this.navCtrl.push(SearchPage, { contentType: ["Course"], source: PageId.COURSES })
   }
+
+  ionViewCanEnter(): boolean {
+    this.profile = this.appGlobal.getCurrentUser();
+		if(!this.guestUser || (this.profile && this.profile.syllabus && this.profile.syllabus[0]
+			&& this.profile.board && this.profile.board.length
+			&& this.profile.grade && this.profile.grade.length
+			&& this.profile.medium && this.profile.medium.length) ) {
+				return true;
+			}else{
+				return false;
+			}
+	}
 
   ionViewDidEnter() {
     this.isVisible = true;

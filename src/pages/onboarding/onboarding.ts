@@ -43,7 +43,10 @@ import {
   generateImpressionTelemetry
 } from '../../app/telemetryutil';
 import { LanguageSettingsPage } from '../language-settings/language-settings';
-import { ProfileConstants } from '../../app/app.constant';
+import {
+  ProfileConstants,
+  PreferenceKey
+} from '../../app/app.constant';
 import { AppGlobalService } from '../../service/app-global.service';
 import { AppVersion } from '@ionic-native/app-version';
 
@@ -242,7 +245,7 @@ export class OnboardingPage {
         null,
         undefined,
         undefined));
-    this.preferences.getString('selected_user_type')
+    this.preferences.getString(PreferenceKey.SELECTED_USER_TYPE)
       .then(val => {
         if (val == ProfileType.STUDENT) {
           initTabs(this.container, GUEST_STUDENT_TABS);

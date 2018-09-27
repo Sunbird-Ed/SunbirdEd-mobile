@@ -1,5 +1,7 @@
 //App specific Properties
-app_id = APP_ID
+dev_app_id = DEV_APP_ID
+staging_app_id = STAGING_APP_ID
+production_app_id = PRODUCTION_APP_ID
 app_name = APP_NAME
 app_version_code = APP_VERSION_CODE
 // Dev Enironment properties
