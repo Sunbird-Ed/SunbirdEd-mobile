@@ -531,7 +531,6 @@ export class CollectionDetailsPage {
         if (!this.isDepthChild) {
           this.downloadSize = 0;
           this.getContentsSize(data.result.children || []);
-          console.log("download size is", this.downloadSize);
         }
         this.showChildrenLoader = false;
       });
@@ -547,7 +546,7 @@ export class CollectionDetailsPage {
   getContentsSize(data) {
     _.forEach(data, (value) => {
       if (value.children) {
-        this.downloadSize += +value.contentData.size;
+        this.downloadSize += value.contentData.size;
         this.getContentsSize(value.children);
       }
 
@@ -572,7 +571,7 @@ export class CollectionDetailsPage {
       _.forEach(data, (value) => {
         if (value.isAvailableLocally === false) {
           this.downloadIdentifiers.push(value.contentData.identifier);
-          size += +value.contentData.size;
+          size += value.contentData.size;
         }
       });
       this.downloadContentsSize = this.getReadableFileSize(+size);
