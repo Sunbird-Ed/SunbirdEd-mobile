@@ -192,7 +192,6 @@ export class CollectionDetailsPage {
    */
   ratingComment: string = '';
 
-
   /**
    * Telemetry roll up object
    */
@@ -530,7 +529,9 @@ export class CollectionDetailsPage {
         }
 
         if (!this.isDepthChild) {
+          this.downloadSize = 0;
           this.getContentsSize(data.result.children || []);
+          console.log("download size is", this.downloadSize);
         }
         this.showChildrenLoader = false;
       });
@@ -544,16 +545,16 @@ export class CollectionDetailsPage {
   }
 
   getContentsSize(data) {
-    this.downloadSize = 0;
     _.forEach(data, (value) => {
-      if (value.children && value.children.length) {
+      if (value.children) {
+        this.downloadSize += +value.contentData.size;
         this.getContentsSize(value.children);
       }
 
       if (value.isAvailableLocally === false) {
         this.downloadIdentifiers.push(value.contentData.identifier);
         if (value.contentData.size && !this.isDepthChild) {
-          this.downloadSize += +value.contentData.size;
+          
         }
       }
     });
@@ -949,5 +950,4 @@ export class CollectionDetailsPage {
       });
     });
   }
-
 }
