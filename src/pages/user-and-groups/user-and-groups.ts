@@ -81,6 +81,7 @@ export class UserAndGroupsPage {
   userType: string;
   noUsersPresent: boolean = false;
   selectedUserIndex: number = -1;
+  lastCreatedProfileData: any;
 
   constructor(
     private navCtrl: NavController,
@@ -137,6 +138,7 @@ export class UserAndGroupsPage {
       this.getAllProfile();
       this.getAllGroup();
       this.getCurrentGroup();
+      this.getLastCreatedProfile();
 
       this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
         this.dismissPopup();
@@ -349,7 +351,8 @@ export class UserAndGroupsPage {
     );
     this.zone.run(() => {
       this.navCtrl.push(GuestEditProfilePage, {
-        isNewUser: true
+        isNewUser: true,
+        lastCreatedProfile:this.lastCreatedProfileData
       });
     })
   }
@@ -452,6 +455,19 @@ export class UserAndGroupsPage {
       telemetryObject,
       valuesMap
     );
+  }
+ // method below fetches the last created user
+  getLastCreatedProfile() {
+    let req = {
+      local: true,
+      latestCreatedProfile: true
+    }
+    this.profileService.getProfile(req, lastCreatedProfile => {
+      console.log("lastCreatedProfile: ", lastCreatedProfile);
+      this.lastCreatedProfileData = JSON.parse(lastCreatedProfile);
+    }, error => {
+       console.log('error in fetching last created profile data' + error);
+    });
   }
 
   logOut(selectedUser: any, isBeingPlayed: boolean) {
