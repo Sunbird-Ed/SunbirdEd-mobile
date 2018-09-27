@@ -14,7 +14,11 @@ import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.ser
 import {
 	CategoryRequest,
 	SharedPreferences,
-	Profile
+	Profile,
+	PageId,
+	Environment,
+	InteractType,
+	InteractSubtype
 } from 'sunbird';
 
 import { LoadingController, Events } from 'ionic-angular';
@@ -251,6 +255,12 @@ export class UserOnboardingPreferencesPage {
 	 */
 	resetForm(index, showloader: boolean): void {
 		console.log('in reset form',index);
+		// this.telemetryGeneratorService.generateInteractTelemetry(
+		// 	InteractType.OTHER,
+		// 	InteractSubtype.EDIT_USER_SUCCESS,
+		// 	Environment.USER,
+		// 	PageId.EDIT_USER
+		// );
 		switch (index) {
 			case 0:
 				this.userForm.patchValue({

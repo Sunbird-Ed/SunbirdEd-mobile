@@ -496,5 +496,6 @@
   "YOUR_PROGRESS": "Your Progress: {{%s}}%",
   "RESULTS": "Results",
   "USER_TYPE_1": "Teacher",
-  "USER_TYPE_2": "Student"
+  "USER_TYPE_2": "Student",
+  "FILL_IN" : "Please fill in the following details"
 }
