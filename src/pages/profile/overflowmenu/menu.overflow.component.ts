@@ -2,8 +2,13 @@ import {
     Component,
     ViewChild
 } from '@angular/core';
-import { NavParams, ViewController, App, Nav, ToastController } from "ionic-angular";
-
+import {
+    NavParams,
+    ViewController,
+    App,
+    Nav,
+    ToastController
+} from "ionic-angular";
 import { SettingsPage } from "../../settings/settings";
 import {
     OAuthService,
@@ -24,16 +29,18 @@ import {
     ProfileService
 } from "sunbird";
 import {
-    initTabs,    GUEST_STUDENT_TABS,
-    GUEST_TEACHER_TABS} from '../../../app/module.service';
+    initTabs,
+    GUEST_STUDENT_TABS,
+    GUEST_TEACHER_TABS
+} from '../../../app/module.service';
 import { generateInteractTelemetry } from "../../../app/telemetryutil";
 import { UserAndGroupsPage } from "../../user-and-groups/user-and-groups";
-
 import { Network } from "@ionic-native/network";
 import { TranslateService } from "@ngx-translate/core";
 import { ReportsPage } from "../../reports/reports";
 import { TelemetryGeneratorService } from "../../../service/telemetry-generator.service";
 import { AppGlobalService } from "../../../service/app-global.service";
+import { PreferenceKey } from '../../../app/app.constant';
 
 @Component({
     selector: 'menu-overflow',
@@ -128,7 +135,7 @@ export class OverflowMenuComponent {
                             if (val != "") {
                                 profile.uid = val;
                             } else {
-                                this.preferences.putString('selected_user_type', ProfileType.TEACHER)
+                                this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER)
                             }
 
                             profile.handle = "Guest1";
@@ -138,8 +145,8 @@ export class OverflowMenuComponent {
                             this.profileService.setCurrentProfile(true, profile, () => {
                                 this.navigateToAptPage();
                             }, () => {
-                                    this.navigateToAptPage();
-                                });
+                                this.navigateToAptPage();
+                            });
                         });
                 }
 
@@ -151,7 +158,7 @@ export class OverflowMenuComponent {
         if (this.appGlobal.DISPLAY_ONBOARDING_PAGE) {
             this.app.getRootNav().setRoot(OnboardingPage);
         } else {
-            this.preferences.getString('selected_user_type')
+            this.preferences.getString(PreferenceKey.SELECTED_USER_TYPE)
                 .then(val => {
                     this.appGlobal.getGuestUserInfo();
                     if (val == ProfileType.STUDENT) {

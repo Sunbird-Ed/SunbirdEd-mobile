@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>{{'RESULTS' | translate}}</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+
+  <div class="card-container" *ngFor="let content of results">
+    <ion-row class="P010" >
+      <ul class="breadcrumbs">
+        <li *ngFor="let result of parents" (click)="navigateToDetailsPage(result)">
+          {{ (result.contentData.name.length>20)? (result.contentData.name | slice:0:20)+'...' : (result.contentData.name) }}
+        </li>
+      </ul>
+    </ion-row>
+    <ion-card>
+      <ion-row class="top">
+        <img class="app-icon" src="{{ (content.basePath +'/' + content.contentData.appIcon) || defaultImg }}" />
+      </ion-row>
+      <ion-row>
+        <ion-card-content>
+          <h6 class="name font-size-20">{{content.contentData.name}}</h6>
+          <p class="author">{{content.contentData.creator}}</p>
+        </ion-card-content>
+      </ion-row>
+
+      <button  class="custom-btn" ion-button block (click)="navigateToDetailsPage(content)" *ngIf="!content.isAvailableLocally">{{ 'DOWNLOAD_AND_PLAY' | translate}}</button>
+      <button  class="custom-btn" ion-button block (click)="navigateToDetailsPage(content)" *ngIf="content.isAvailableLocally">{{ 'PLAY' | translate}}</button>
+
+      <div class="badge"> {{content.contentData.contentType}} </div>
+    </ion-card>
+  </div>
+
+</ion-content>

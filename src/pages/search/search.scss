@@ -64,12 +64,15 @@ page-search {
     font-size: 10px;
     right: 0 !important;
     text-transform: none;
+    span.button-inner{
+      color:#2E92FF;
+    }
+    
   }
 
   .collection-name {
     font-size: 14px;
     color: black;
-    font-weight: bold;
   }
 
     span {

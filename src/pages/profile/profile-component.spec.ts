@@ -70,6 +70,20 @@ describe("ProfilePage", () => {
         comp = fixture.componentInstance;
     });
 
+    // it("userId should default to ''", (done) => {
+    //     const navParams = TestBed.get(NavParams);
+    //     spyOn(navParams, "get").and.callFake(function(data){
+    //         console.log('in callfake');
+    //         return undefined;
+    //     });
+    //     let fixture1 = TestBed.createComponent(ProfilePage);
+    //     let comp1 = fixture1.componentInstance;
+    //     setTimeout(() => {
+    //         expect(comp1.userId).toBe('');
+    //         done();
+    //     },10)
+    // });
+
     let getLoader = () => {
         const loadingController = TestBed.get(LoadingController);
         comp.getLoader();
@@ -333,7 +347,42 @@ describe("ProfilePage", () => {
         expect(popoverCtrl.create).toHaveBeenCalled();
     });
 
-    it("setProfileVisibility should handle success scenario", () => {
+    
+
+    it("editExperience should call nav controller ", () => {
+        const navctrl = TestBed.get(NavController);
+        spyOn(navctrl, "push");
+        comp.editExperience(true, mockProfileRes.addressMock);
+        expect(navctrl.push).toHaveBeenCalled();
+    });
+
+   it("#toggleLock should set passed field to private", () => {
+        let field = "profileSummary";
+        let displayName = "Profile_Summary";
+        const translate = TestBed.get(TranslateService);
+        spyOn(translate, 'get').and.callFake((arg) => {
+            return Observable.of('Cancel');
+        });
+        comp.profile = JSON.parse(mockProfileRes.profileDetailsMock);
+        comp.toggleLock(field, displayName, false);
+        expect(comp.profile.profileVisibility[field]).toBe("private"); 
+        
+   });
+
+   it("#toggleLock should set passed field to public", () => {
+        const translate = TestBed.get(TranslateService);
+        spyOn(translate, 'get').and.callFake((arg) => {
+            return Observable.of('Cancel');
+        });
+        comp.profile = JSON.parse(mockProfileRes.profileDetailsMock);
+        let field = "skillTags"
+        let displayName = "SKILL_TAGS";
+        comp.profile.profileVisibility[field] = "private";
+        comp.toggleLock(field, displayName, false);
+        expect(comp.profile.profileVisibility[field]).toBe("public");
+    });
+
+   it("#setProfileVisibility should handle success scenario", (done) => {
         comp.profile = JSON.parse(mockProfileRes.profileDetailsMock);
         const authService = TestBed.get(AuthService);
         const userProfileService = TestBed.get(UserProfileService);
@@ -341,19 +390,54 @@ describe("ProfilePage", () => {
             success(JSON.stringify(mockProfileRes.sessionMock));
         });
         spyOn(userProfileService, "setProfileVisibility").and.callFake((req, success, error) =>{
+            console.log('req', req);
             success(mockProfileRes.visibilityResMock);
         });
+        spyOn(comp, "refreshProfileData");
         comp.setProfileVisibility("profileSummary");
         setTimeout(() => {
-            expect(comp.isRefreshProfile).toBe(true);
+            expect(userProfileService.setProfileVisibility).toHaveBeenCalled();
+            // expect(comp.isRefreshProfile).toBe(true);
+            expect(comp.refreshProfileData).toHaveBeenCalled();
+            done();
         }, 100);
     })
 
-    it("editExperience should call nav controller ", () => {
-        const navctrl = TestBed.get(NavController);
-        spyOn(navctrl, "push");
-        comp.editExperience(true, mockProfileRes.addressMock);
-        expect(navctrl.push).toHaveBeenCalled();
+    it("#setProfileVisibility should handle failure scenario", (done) => {
+        comp.profile = JSON.parse(mockProfileRes.profileDetailsMock);
+        const authService = TestBed.get(AuthService);
+        const userProfileService = TestBed.get(UserProfileService);
+        const translate = TestBed.get(TranslateService);
+        spyOn(translate, 'get').and.callFake((arg) => {
+            return Observable.of('Cancel');
+        });
+        spyOn(authService, "getSessionData").and.callFake((success, error) => {
+            success(JSON.stringify(mockProfileRes.sessionMock));
+        });
+        spyOn(userProfileService, "setProfileVisibility").and.callFake((req, success, error) =>{
+            console.log('req', req);
+            error({status: false});
+        });
+        spyOn(comp, "toggleLock");
+        comp.setProfileVisibility("profileSummary");
+        setTimeout(() => {
+            expect(userProfileService.setProfileVisibility).toHaveBeenCalled();
+            // expect(comp.isRefreshProfile).toBe(true);
+            expect(comp.toggleLock).toHaveBeenCalled();
+            done();
+        }, 100);
+    })
+
+    
+    it("#showMoreItems should set pagination limit", () => {
+        comp.profile = JSON.parse(mockProfileRes.profileDetailsMock);
+        comp.showMoreItems();
+        expect(comp.paginationLimit).toEqual(comp.profile.skills.length);
+    });
+
+    it("#showMoreItems should set pagination limit to default", () => {
+        comp.showLessItems();
+        expect(comp.paginationLimit).toEqual(comp.DEFAULT_PAGINATION_LIMIT);
     });
 
     it("getLoader makes expected calls", () => {

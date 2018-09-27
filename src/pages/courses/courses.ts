@@ -7,7 +7,8 @@ import {
 import {
   NavController,
   PopoverController,
-  Events} from 'ionic-angular';
+  Events
+} from 'ionic-angular';
 import { AppVersion } from "@ionic-native/app-version";
 import { IonicPage } from 'ionic-angular';
 import {
@@ -48,6 +49,7 @@ import { updateFilterInSearchQuery } from '../../util/filter.util';
 import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
 import { CommonUtilService } from '../../service/common-util.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { UserOnboardingPreferencesPage } from '../user-onboarding-preferences/user-onboarding-preferences';
 
 @IonicPage()
 @Component({
@@ -507,20 +509,36 @@ export class CoursesPage implements OnInit {
     this.profile = this.appGlobal.getCurrentUser();
     if (this.profile && this.profile.syllabus && this.profile.syllabus[0] && this.profile.board && this.profile.board.length
       && this.profile.grade && this.profile.grade.length
-      && this.profile.medium && this.profile.medium.length
-      && this.profile.subject && this.profile.subject.length) {
+      && this.profile.medium && this.profile.medium.length) {
       this.isOnBoardingCardCompleted = true;
       this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
+    } else {
+      console.log('in else course', this.guestUser);
+      if(this.guestUser) {
+        this.navCtrl.push(UserOnboardingPreferencesPage);
+      }
     }
   }
 
   scanQRCode() {
-    this.qrScanner.startScanner(undefined, undefined, undefined, PageId.COURSES);
+    this.qrScanner.startScanner(PageId.COURSES);
   }
 
   search() {
     this.navCtrl.push(SearchPage, { contentType: ["Course"], source: PageId.COURSES })
   }
+
+  ionViewCanEnter(): boolean {
+    this.profile = this.appGlobal.getCurrentUser();
+		if(!this.guestUser || (this.profile && this.profile.syllabus && this.profile.syllabus[0]
+			&& this.profile.board && this.profile.board.length
+			&& this.profile.grade && this.profile.grade.length
+			&& this.profile.medium && this.profile.medium.length) ) {
+				return true;
+			}else{
+				return false;
+			}
+	}
 
   ionViewDidEnter() {
     this.isVisible = true;
@@ -604,8 +622,8 @@ export class CoursesPage implements OnInit {
         filterOptions['filter'] = data;
         this.showFilterPage(filterOptions);
       }).catch(() => {
-          console.error("Error Occurred!");
-        });
+        console.error("Error Occurred!");
+      });
     }
 
   }
@@ -687,12 +705,12 @@ export class CoursesPage implements OnInit {
       };
     }
     let values = new Map();
-		values["SectionName"] = title;
-		this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-				InteractSubtype.VIEWALL_CLICKED,
-				Environment.HOME,
-				PageId.COURSES,undefined,
-				values);
+    values["SectionName"] = title;
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.VIEWALL_CLICKED,
+      Environment.HOME,
+      PageId.COURSES, undefined,
+      values);
     this.navCtrl.push(ViewMoreActivityPage, params);
   }
 
@@ -771,9 +789,9 @@ export class CoursesPage implements OnInit {
         this.tabBarElement.style.display = 'flex';
         this.showOverlay = false;
       }, () => {
-          this.tabBarElement.style.display = 'flex';
-          this.showOverlay = false;
-        });
+        this.tabBarElement.style.display = 'flex';
+        this.showOverlay = false;
+      });
     });
   }
 

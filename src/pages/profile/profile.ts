@@ -551,7 +551,6 @@ export class ProfilePage {
   setProfileVisibility(field: string) {
     this.authService.getSessionData(session => {
       if (session === undefined || session == null) {
-        console.error("session is null");
       } else {
         let req = {
           userId: JSON.parse(session)[ProfileConstants.USER_TOKEN],

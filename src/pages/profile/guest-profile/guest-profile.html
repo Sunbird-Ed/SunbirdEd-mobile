@@ -23,9 +23,8 @@
     <p class="change-role" (click)="goToRoles()" text-uppercase>
       {{'CHANGE_ROLE' | translate }}
     </p>
-    <p class="user-type">
-      {{profile?.profileType}}
-    </p>
+    <p *ngIf="profile?.profileType === 'TEACHER'" class="user-type">{{'USER_TYPE_1' | translate }}</p>
+    <p *ngIf="profile?.profileType === 'STUDENT'" class="user-type">{{'USER_TYPE_2' | translate }}</p>
   </div>
 
   <ion-list *ngIf="appGlobal?.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE">
@@ -34,7 +33,7 @@
     </ion-list-header>
 
     <ion-item no-padding class="padding-left-10">
-      <ion-row>
+      <ion-row [hidden]="true">
         <ion-col col-6>
           <div text-uppercase class="info-title">{{'SYLLABUS' | translate}}</div>
         </ion-col>

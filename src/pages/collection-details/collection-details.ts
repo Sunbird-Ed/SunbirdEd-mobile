@@ -1,12 +1,37 @@
-import { Component, NgZone, ViewChild } from '@angular/core';
 import {
-  IonicPage, NavController, NavParams, Events, ToastController,
-  LoadingController, Platform, Navbar, PopoverController
+  Component,
+  NgZone,
+  ViewChild
+} from '@angular/core';
+import {
+  IonicPage,
+  NavController,
+  NavParams,
+  Events,
+  ToastController,
+  LoadingController,
+  Platform,
+  Navbar,
+  PopoverController
 } from 'ionic-angular';
 import {
-  ContentService, FileUtil,
-  PageId, Environment, Mode, ImpressionType, TelemetryService, Rollup, InteractType, InteractSubtype,
-  ShareUtil, BuildParamService, AuthService, SharedPreferences, ProfileType, CorrelationData, TelemetryObject
+  ContentService,
+  FileUtil,
+  PageId,
+  Environment,
+  Mode,
+  ImpressionType,
+  TelemetryService,
+  Rollup,
+  InteractType,
+  InteractSubtype,
+  ShareUtil,
+  BuildParamService,
+  AuthService,
+  SharedPreferences,
+  ProfileType,
+  CorrelationData,
+  TelemetryObject
 } from 'sunbird';
 import * as _ from 'lodash';
 import { ContentDetailsPage } from '../content-details/content-details';
@@ -15,7 +40,12 @@ import { ConfirmAlertComponent } from '../../component/confirm-alert/confirm-ale
 import { TranslateService } from '@ngx-translate/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { ContentRatingAlertComponent } from '../../component/content-rating-alert/content-rating-alert';
-import { ContentType, MimeType, ShareUrl } from '../../app/app.constant';
+import {
+  ContentType,
+  MimeType,
+  ShareUrl,
+  PreferenceKey
+} from '../../app/app.constant';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 import { Network } from '@ionic-native/network';
 import { AppGlobalService } from '../../service/app-global.service';
@@ -162,7 +192,6 @@ export class CollectionDetailsPage {
    */
   ratingComment: string = '';
 
-
   /**
    * Telemetry roll up object
    */
@@ -206,7 +235,6 @@ export class CollectionDetailsPage {
 
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
-    this.handleDeviceBackButton();
     this.handleNetworkAvaibility();
   }
 
@@ -285,7 +313,7 @@ export class CollectionDetailsPage {
   }
 
   checkCurrentUserType() {
-    this.preference.getString('selected_user_type')
+    this.preference.getString(PreferenceKey.SELECTED_USER_TYPE)
       .then(val => {
         if (val != "") {
           if (val == ProfileType.TEACHER) {
@@ -501,6 +529,7 @@ export class CollectionDetailsPage {
         }
 
         if (!this.isDepthChild) {
+          this.downloadSize = 0;
           this.getContentsSize(data.result.children || []);
         }
         this.showChildrenLoader = false;
@@ -515,16 +544,16 @@ export class CollectionDetailsPage {
   }
 
   getContentsSize(data) {
-    this.downloadSize = 0;
     _.forEach(data, (value) => {
-      if (value.children && value.children.length) {
+      if (value.children) {
+        this.downloadSize += value.contentData.size;
         this.getContentsSize(value.children);
       }
 
       if (value.isAvailableLocally === false) {
         this.downloadIdentifiers.push(value.contentData.identifier);
         if (value.contentData.size && !this.isDepthChild) {
-          this.downloadSize += +value.contentData.size;
+          
         }
       }
     });
@@ -542,7 +571,7 @@ export class CollectionDetailsPage {
       _.forEach(data, (value) => {
         if (value.isAvailableLocally === false) {
           this.downloadIdentifiers.push(value.contentData.identifier);
-          size += +value.contentData.size;
+          size += value.contentData.size;
         }
       });
       this.downloadContentsSize = this.getReadableFileSize(+size);
@@ -557,9 +586,10 @@ export class CollectionDetailsPage {
     this.navBar.backButtonClick = () => {
       this.handleNavBackButton();
     }
+    this.handleDeviceBackButton();
   }
 
-  handleNavBackButton(){
+  handleNavBackButton() {
     this.didViewLoad = false;
     this.generateEndEvent(this.objId, this.objType, this.objVer);
     if (this.shouldGenerateEndTelemetry) {
@@ -919,5 +949,4 @@ export class CollectionDetailsPage {
       });
     });
   }
-
 }

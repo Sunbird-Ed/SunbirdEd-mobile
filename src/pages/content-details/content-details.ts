@@ -45,7 +45,8 @@ import {
 } from '../../app/telemetryutil';
 import {
   EventTopics,
-  ProfileConstants
+  ProfileConstants,
+  PreferenceKey
 } from '../../app/app.constant';
 import { ShareUrl } from '../../app/app.constant';
 import { AppGlobalService } from '../../service/app-global.service';
@@ -170,6 +171,12 @@ export class ContentDetailsPage {
    *
    */
   userRating: number = 0;
+
+  /**
+   * currently used to identify that its routed from QR code results page
+   * Can be sent from any page, where after landing on details page should download or play content automatically 
+   */
+  downloadAndPlay: boolean;
   private ratingComment: string = '';
   private corRelationList: Array<CorrelationData>;
 
@@ -238,7 +245,6 @@ export class ContentDetailsPage {
     this.objRollup = new Rollup();
 
     this.getUserId();
-    this.handleDeviceBackButton();
     this.subscribePlayEvent();
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
@@ -247,10 +253,54 @@ export class ContentDetailsPage {
 
   }
 
+  /**
+   * Ionic life cycle hook
+   */
+  ionViewWillEnter(): void {
+    this.cardData = this.navParams.get('content');
+    this.isChildContent = this.navParams.get('isChildContent');
+    this.cardData.depth = this.navParams.get('depth') === undefined ? '' : this.navParams.get('depth');
+    this.corRelationList = this.navParams.get('corRelation');
+    this.identifier = this.cardData.contentId || this.cardData.identifier;
+    this.isResumedCourse = Boolean(this.navParams.get('isResumedCourse'));
+    this.source = this.navParams.get('source');
+    this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
+    this.downloadAndPlay = this.navParams.get('downloadAndPlay');
+    if (!this.isResumedCourse) {
+      this.generateTemetry();
+    }
+    if (this.isResumedCourse === true) {
+      this.navCtrl.insert(this.navCtrl.length() - 1, EnrolledCourseDetailsPage, {
+        content: this.navParams.get('resumedCourseCardData')
+      })
+    }
+    this.setContentDetails(this.identifier, true, false);
+    this.subscribeGenieEvent();
+  }
+
+  /**
+   * Ionic life cycle hook
+   */
+  ionViewWillLeave(): void {
+    this.events.unsubscribe('genie.event');
+    this.resume.unsubscribe();
+  }
+
+  ionViewDidLoad() {
+    this.navBar.backButtonClick = (e: UIEvent) => {
+      this.handleNavBackButton();
+    }
+    this.handleDeviceBackButton();
+
+    if (!AppGlobalService.isPlayerLaunched) {
+      this.calculateAvailableUserCount();
+    }
+  }
+
   handleDeviceBackButton() {
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.didViewLoad = false;
-
+      this.dismissPopup();
       this.popToPreviousPage();
       this.generateEndEvent(this.objId, this.objType, this.objVer);
       if (this.shouldGenerateEndTelemetry) {
@@ -326,7 +376,7 @@ export class ContentDetailsPage {
   }
 
   checkCurrentUserType() {
-    this.preference.getString('selected_user_type')
+    this.preference.getString(PreferenceKey.SELECTED_USER_TYPE)
       .then(val => {
         if (val != "") {
           if (val == ProfileType.TEACHER) {
@@ -501,6 +551,20 @@ export class ContentDetailsPage {
       this.generateTemetry()
     }
 
+    if (this.downloadAndPlay) {
+      if (!this.content.downloadable) {
+        /**
+         * Content is not downloaded then call the following method
+         * It will download the content and play it 
+         */
+        this.downloadContent();
+      } else {
+        /**
+         * If the content is already downloaded then just play it
+         */
+        this.showSwitchUserAlert();
+      }
+    }
   }
 
   generateTemetry() {
@@ -589,56 +653,7 @@ export class ContentDetailsPage {
     }
   }
 
-
-  /**
-   * Ionic life cycle hook
-   */
-  ionViewWillEnter(): void {
-    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
-      this.dismissPopup();
-    }, 11);
-    this.cardData = this.navParams.get('content');
-    this.isChildContent = this.navParams.get('isChildContent');
-    this.cardData.depth = this.navParams.get('depth') === undefined ? '' : this.navParams.get('depth');
-    this.corRelationList = this.navParams.get('corRelation');
-    this.identifier = this.cardData.contentId || this.cardData.identifier;
-    this.isResumedCourse = Boolean(this.navParams.get('isResumedCourse'));
-    this.source = this.navParams.get('source');
-    this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
-    if (!this.isResumedCourse) {
-      this.generateTemetry();
-    }
-    if (this.isResumedCourse === true) {
-      this.navCtrl.insert(this.navCtrl.length() - 1, EnrolledCourseDetailsPage, {
-        content: this.navParams.get('resumedCourseCardData')
-      })
-    }
-    this.setContentDetails(this.identifier, true, false);
-    this.subscribeGenieEvent();
-  }
-
-  /**
-   * Ionic life cycle hook
-   */
-  ionViewWillLeave(): void {
-    this.events.unsubscribe('genie.event');
-    this.resume.unsubscribe();
-  }
-
-  ionViewDidLoad() {
-    this.navBar.backButtonClick = (e: UIEvent) => {
-      this.handleNavBackButton();
-    }
-    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
-      this.dismissPopup();
-    }, 11);
-
-    if (!AppGlobalService.isPlayerLaunched) {
-      this.calculateAvailableUserCount();
-    }
-  }
-  
-  handleNavBackButton(){
+  handleNavBackButton() {
     this.didViewLoad = false;
     this.generateEndEvent(this.objId, this.objType, this.objVer);
     if (this.shouldGenerateEndTelemetry) {

@@ -1,0 +1,81 @@
+page-qr-code-result{
+.card-container{
+    margin-bottom: 20px;
+}
+
+.P010{
+    padding:0 10px;
+}
+
+.card.card-md {
+    box-shadow:  0px 3px 15px 0px rgba(0,0,0,0.4);
+    border-radius: 4px;
+    position: relative;;
+    .button.button-block.button-block-md {
+        margin: 0;
+        border-radius: 0;
+    }
+
+    .badge {
+        position: absolute;
+        right: 0;
+        top: 0;
+        background-color: #196D7F;
+        padding: 5px 15px;
+        border-radius: 0 4px;
+        color:#fff;
+        font-weight: bold;
+    }
+
+    .author {
+        color:#666666;
+    }
+
+    .name, .author{
+        margin-bottom: 5px;
+    }
+
+    .top {
+        min-height:15vh; 
+        background: #E9E9E9;
+
+        img {
+            height: 100%;
+            max-height: 15vh;
+            margin: 0 auto;
+            width: auto;
+        }
+    }
+}
+
+ul.breadcrumbs{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    li{
+        display: inline-block;
+        color: #047CFE;
+        font-weight: bold;
+        font-size: 12px;
+    }
+
+
+    li:after{
+        content: '\003e';
+        color: #979797;
+        height: 0;
+        width: 0;
+        margin: 0 5px;
+    }
+    li:last-child:after{
+        content: none;
+    }
+    
+}
+
+.custom-btn{
+    background-color: #0076FE;
+}
+}
+
+
