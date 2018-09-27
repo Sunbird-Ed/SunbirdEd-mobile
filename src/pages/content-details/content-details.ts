@@ -45,7 +45,8 @@ import {
 } from '../../app/telemetryutil';
 import {
   EventTopics,
-  ProfileConstants
+  ProfileConstants,
+  PreferenceKey
 } from '../../app/app.constant';
 import { ShareUrl } from '../../app/app.constant';
 import { AppGlobalService } from '../../service/app-global.service';
@@ -375,7 +376,7 @@ export class ContentDetailsPage {
   }
 
   checkCurrentUserType() {
-    this.preference.getString('selected_user_type')
+    this.preference.getString(PreferenceKey.SELECTED_USER_TYPE)
       .then(val => {
         if (val != "") {
           if (val == ProfileType.TEACHER) {
@@ -550,8 +551,8 @@ export class ContentDetailsPage {
       this.generateTemetry()
     }
 
-    if(this.downloadAndPlay) {
-      if(!this.content.downloadable) {
+    if (this.downloadAndPlay) {
+      if (!this.content.downloadable) {
         /**
          * Content is not downloaded then call the following method
          * It will download the content and play it 
@@ -651,8 +652,8 @@ export class ContentDetailsPage {
         this.corRelationList);
     }
   }
-  
-  handleNavBackButton(){
+
+  handleNavBackButton() {
     this.didViewLoad = false;
     this.generateEndEvent(this.objId, this.objType, this.objVer);
     if (this.shouldGenerateEndTelemetry) {

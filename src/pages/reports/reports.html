@@ -22,7 +22,8 @@
         <ion-list class="item-background radius" *ngSwitchCase="'users'" padding>
             <ion-item class="bgColor" (click)="goToUserReportList(currentUser?.uid)" margin-bottom no-lines>
                 <h6><b>{{currentUser?.handle}}</b></h6>
-                <p>{{currentUser?.profileType | titlecase}}</p>
+                <p *ngIf="currentUser?.profileType === 'TEACHER'">{{'USER_TYPE_1' | translate | titlecase}}</p>
+                <p *ngIf="currentUser?.profileType === 'STUDENT'">{{'USER_TYPE_2' | translate | titlecase}}</p>
                 <ion-icon name="ios-arrow-forward" item-end></ion-icon>
             </ion-item>
             <ion-item no-padding *ngIf="users?.length > 0" margin-bottom no-lines>
@@ -30,7 +31,8 @@
             </ion-item>
             <ion-item class="bgColor" (click)="goToUserReportList(user?.uid)" margin-bottom no-lines *ngFor="let user of otherUsers;let i=index">
                 <h6><b>{{user?.handle}}</b></h6>
-                <p>{{user?.profileType | titlecase}}</p>
+                <p *ngIf="user?.profileType === 'TEACHER'">{{'USER_TYPE_1' | translate | titlecase}}</p>
+                <p *ngIf="user?.profileType === 'STUDENT'">{{'USER_TYPE_2' | translate | titlecase}}</p>
                 <ion-icon name="ios-arrow-forward" item-end></ion-icon>
             </ion-item>
         </ion-list>
@@ -45,23 +47,23 @@
                         <div class="image-text">
                             <h6>
                                 <b>{{'NO_GROUPS_CREATED_YET' | translate}}</b>
-                              </h6>
-                                <div text-center class="description">
-                                  {{ 'NO_GROUP_MESSAGE' | translate }}
-                                </div>
+                            </h6>
+                            <div text-center class="description">
+                                {{ 'NO_GROUP_MESSAGE' | translate }}
+                            </div>
                         </div>
                     </ion-col>
                 </ion-row>
             </div>
             <div *ngIf="groups?.length">
-            <ion-item  class="bgColor" (click)="goToGroupUserReportList(group)" *ngFor="let group of groups;let i=index" margin-bottom
-                no-lines>
-                <h2>{{group?.name}}</h2>
-                <p *ngIf="group?.profilesCount === 1">{{group?.profilesCount}} {{ 'USER' | translate}}</p>
-                <p *ngIf="group?.profilesCount > 1">{{group?.profilesCount}} {{ 'USERS' | translate}}</p>
-                <ion-icon name="ios-arrow-forward" item-end></ion-icon>
-            </ion-item>
-        </div>
+                <ion-item class="bgColor" (click)="goToGroupUserReportList(group)" *ngFor="let group of groups;let i=index" margin-bottom
+                    no-lines>
+                    <h2>{{group?.name}}</h2>
+                    <p *ngIf="group?.profilesCount === 1">{{group?.profilesCount}} {{ 'USER' | translate}}</p>
+                    <p *ngIf="group?.profilesCount > 1">{{group?.profilesCount}} {{ 'USERS' | translate}}</p>
+                    <ion-icon name="ios-arrow-forward" item-end></ion-icon>
+                </ion-item>
+            </div>
         </ion-list>
     </div>
 </ion-content>
