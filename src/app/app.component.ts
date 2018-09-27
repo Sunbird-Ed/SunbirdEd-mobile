@@ -100,7 +100,7 @@ export class MyApp {
 
     platform.ready().then(() => {
       this.registerDeeplinks();
-
+      this.openrapDiscovery();
       this.imageLoaderConfig.enableDebugMode();
       this.imageLoaderConfig.setMaximumCacheSize(100 * 1024 * 1024);
       this.subscribeEvents();
@@ -320,6 +320,8 @@ export class MyApp {
     this.events.subscribe('generic.event', (data) => {
       this.zone.run(() => {
         let response = JSON.parse(data);
+        let action = JSON.parse(response.data.action);
+      
         if (response && response.data.action && response.data.action === 'logout') {
           this.authService.getSessionData((session) => {
             if (session) {
@@ -346,6 +348,10 @@ export class MyApp {
             });
 
           });
+        }else if(response && action && action.actionType === 'connected'){
+          console.log("connected to openrap device with the IP " + action.ip);
+        }else if(response && action && action.actionType === 'disconnected'){
+          console.log("disconnected from openrap device with the IP " + action.ip);
         }
       });
     });
@@ -431,4 +437,16 @@ export class MyApp {
     this.options.message = message;
     if (message.length) return this.toastCtrl.create(this.options);
   }
+
+  // TODO: this method will be used to communicate with the openrap device
+
+   openrapDiscovery(){
+    // (<any>window).openrap.startDiscovery(
+    //   (success) =>{
+    //     console.log(success);
+    //   }, (error) => {
+    //     console.log(error);
+    //   }
+    // );
+  } 
 }
