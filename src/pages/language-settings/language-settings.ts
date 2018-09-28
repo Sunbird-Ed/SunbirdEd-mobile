@@ -1,3 +1,4 @@
+import { Platform } from 'ionic-angular/platform/platform';
 import { Component, NgZone } from '@angular/core';
 import { NavController, NavParams, Events, ToastController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
@@ -30,6 +31,7 @@ export class LanguageSettingsPage {
   previousLanguage: any;
   selectedLanguage: any = {};
   btnColor: string = '#55acee';
+  unregisterBackButton: any;
 
 
   constructor(
@@ -41,6 +43,7 @@ export class LanguageSettingsPage {
     private zone: NgZone,
     private toastCtrl: ToastController,
     private telemetryGeneratorService: TelemetryGeneratorService,
+    private platform: Platform,
     private appGlobal: AppGlobalService
   ) { }
 
@@ -111,6 +114,15 @@ export class LanguageSettingsPage {
   //   this.language = this.languages[0].code;
   //   this.languages[0].isApplied = true;
   // }
+  ionViewDidEnter() {
+    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+      this.telemetryGeneratorService.generateImpressionTelemetry(
+        ImpressionType.VIEW, "",
+        PageId.SETTINGS_LANGUAGE ,
+        Environment.SETTINGS
+      );
+    });
+  }
 
   ionViewDidLoad() {
     this.isFromSettings = this.navParams.get('isFromSettings');
@@ -119,6 +131,7 @@ export class LanguageSettingsPage {
       this.isFromSettings ? PageId.SETTINGS_LANGUAGE : PageId.ONBOARDING_LANGUAGE_SETTING,
       this.isFromSettings ? Environment.SETTINGS : Environment.ONBOARDING,
     );
+    
   }
 
   /**
