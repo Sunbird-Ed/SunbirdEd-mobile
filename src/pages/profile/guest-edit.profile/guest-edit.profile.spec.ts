@@ -1,9 +1,10 @@
+import { AlertControllerMock } from './../../../../test-config/mocks-ionic';
 import { Observable } from 'rxjs/Observable';
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { NO_ERRORS_SCHEMA } from "@angular/core";
 import { TranslateService, TranslateModule } from "@ngx-translate/core";
 import { NavController, NavParams, Platform, IonicApp, Events, App } from "ionic-angular";
-import { ToastController, LoadingController } from "ionic-angular";
+import { ToastController, LoadingController , AlertController } from "ionic-angular";
 import { FormBuilder } from "@angular/forms";
 import { CategoryRequest, ProfileService, SharedPreferences, ContainerService } from "sunbird";
 import { FormAndFrameworkUtilService } from "../formandframeworkutil.service";
@@ -15,6 +16,8 @@ import {
     LoadingControllerMock, TranslateServiceStub, ToastControllerMockNew, AuthServiceMock, NavMock, NavParamsMock, profileServiceMock,
     SharedPreferencesMock, FormAndFrameworkUtilServiceMock, ContainerServiceMock
 } from '../../../../test-config/mocks-ionic';
+import { CommonUtilService } from '../../../service/common-util.service';
+import { isPresent } from 'ionic-angular/util/util';
 
 describe("GuestEditProfilePage", () => {
     let comp: GuestEditProfilePage;
@@ -42,7 +45,9 @@ describe("GuestEditProfilePage", () => {
                     dismiss: () => { }
                 })
             },
+           
         };
+        
 
         const platformStub = {
             registerBackButtonAction: () => ({})
@@ -67,7 +72,7 @@ describe("GuestEditProfilePage", () => {
             declarations: [GuestEditProfilePage],
             schemas: [NO_ERRORS_SCHEMA],
             providers: [
-                FormBuilder,
+                FormBuilder,CommonUtilService,
                 { provide: TranslateService, useClass: TranslateServiceStub },
                 { provide: NavController, useClass: NavMock },
                 { provide: NavParams, useClass: NavParamsMock },
@@ -82,6 +87,7 @@ describe("GuestEditProfilePage", () => {
                 { provide: TelemetryGeneratorService, useValue: telemetryGeneratorServiceStub },
                 { provide: App, useValue: appStub },
                 { provide: AppGlobalService, useValue: appGlobalServiceStub },
+                { provide: AlertController , useFactory:()=> AlertControllerMock.instance()},
                 { provide: ToastController, useFactory: () => ToastControllerMockNew.instance() },
                 { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() }
             ]
@@ -118,6 +124,24 @@ describe("GuestEditProfilePage", () => {
         expect(telemetryGeneratorServiceStub.generateImpressionTelemetry).toHaveBeenCalled();
         expect(telemetryGeneratorServiceStub.generateInteractTelemetry).toHaveBeenCalled();
     });
+    it('#ionViewDidLoad it should makes expected call', ()=>{
+        comp.isNewUser = true;
+        comp.profile = {
+            handle : true
+        }
+        //comp.profile.handle = true;
+        spyOn(comp , 'showAutoFillAlert');
+        comp.showAutoFillAlert();
+        comp.ionViewDidLoad();
+        expect(comp.showAutoFillAlert).toHaveBeenCalled()
+
+    })
+    it('#showAutoFillAlert show be called as expected', ()=>{
+       // let alertControllerMock = TestBed.get(AlertController);
+       // spyOn(comp,'showAutoFillAlert').and.callThrough().and.callFake(() => { });
+        comp.showAutoFillAlert()
+        expect(comp.showAutoFillAlert).toHaveBeenCalled();
+    })
 
     it("ionViewWillEnter makes expected calls", () => {
         spyOn(comp, "getSyllabusDetails");
