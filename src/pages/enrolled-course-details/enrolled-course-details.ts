@@ -594,6 +594,7 @@ export class EnrolledCourseDetailsPage {
           this.startData = data.result.children;
         }
         if (this.courseCardData.batchId) {
+          this.downloadSize = 0;
           this.getContentsSize(this.childrenData);
         }
         this.showChildrenLoader = false;
@@ -665,15 +666,13 @@ export class EnrolledCourseDetailsPage {
   }
 
   getContentsSize(data) {
-    this.downloadSize = this.downloadSize;
     _.forEach(data, (value) => {
-      if (value.children && value.children.length) {
-        this.getContentsSize(value.children);
+      if (value.contentData.size) {
+        this.downloadSize += Number(value.contentData.size);
       }
-
+      this.getContentsSize(value.children);
       if (value.isAvailableLocally === false) {
         this.downloadIdentifiers.push(value.contentData.identifier);
-        this.downloadSize += +value.contentData.size;
       }
     });
   }

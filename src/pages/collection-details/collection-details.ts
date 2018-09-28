@@ -567,17 +567,13 @@ export class CollectionDetailsPage {
 
   getContentsSize(data) {
     _.forEach(data, (value) => {
-      if (value.children) {
-        this.downloadSize += value.contentData.size;
-        this.getContentsSize(value.children);
+      if (value.contentData.size) {
+        this.downloadSize += Number(value.contentData.size);
       }
-
+      this.getContentsSize(value.children);
       if (value.isAvailableLocally === false) {
         this.downloadIdentifiers.push(value.contentData.identifier);
-        if (value.contentData.size && !this.isDepthChild) {
-
-        }
-      }
+       }
     });
     if (this.downloadIdentifiers.length && !this.isDownlaodCompleted) {
       this.showDownloadBtn = true;
