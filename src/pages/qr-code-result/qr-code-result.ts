@@ -1,17 +1,30 @@
 import { Component, NgZone, ViewChild } from "@angular/core";
-import { IonicPage, NavController, NavParams } from "ionic-angular";
-import { ContentService, CorrelationData, ChildContentRequest } from "sunbird";
-import { ContentDetailsPage } from "../content-details/content-details";
-import { EnrolledCourseDetailsPage } from "../enrolled-course-details/enrolled-course-details";
-import { ContentType, MimeType } from "../../app/app.constant";
-import { CollectionDetailsPage } from "../collection-details/collection-details";
-import { TranslateService } from "@ngx-translate/core";
+import { IonicPage, NavController, NavParams, Platform, Navbar } from 'ionic-angular';
+import { ContentService, CorrelationData, ChildContentRequest } from 'sunbird';
+import { ContentDetailsPage } from '../content-details/content-details';
+import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
+import { ContentType, MimeType } from '../../app/app.constant';
+import { CollectionDetailsPage } from '../collection-details/collection-details';
+import { TranslateService } from '@ngx-translate/core';
+import {
+  InteractType,
+  InteractSubtype,
+  Environment,
+  PageId,
+  ImpressionType,
+  SharedPreferences,
+  UserSource,
+  Profile
+} from 'sunbird';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+
 @IonicPage()
 @Component({
-  selector: "page-qr-code-result",
-  templateUrl: "qr-code-result.html"
+  selector: 'page-qr-code-result',
+  templateUrl: 'qr-code-result.html'
 })
 export class QrCodeResultPage {
+  unregisterBackButton: any;
   /**
    * To hold identifier
    */
@@ -49,48 +62,76 @@ export class QrCodeResultPage {
 
   corRelationList: Array<CorrelationData>;
   shouldGenerateEndTelemetry: boolean = false;
-  source: string = "";
+  source: string = '';
   results: Array<any> = [];
   defaultImg: string;
   parents: Array<any> = [];
+  @ViewChild(Navbar) navBar: Navbar;
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     public contentService: ContentService,
     public zone: NgZone,
-    public translate: TranslateService
+    public translate: TranslateService,
+    public platform: Platform,
+    private telemetryGeneratorService: TelemetryGeneratorService
   ) {
-    this.defaultImg = "assets/imgs/ic_launcher.png";
+    this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
 
   /**
    * Ionic life cycle hook
    */
   ionViewWillEnter(): void {
-    this.zone.run(() => {
-      this.content = this.navParams.get("content");
-      this.corRelationList = this.navParams.get("corRelation");
-      this.shouldGenerateEndTelemetry = this.navParams.get(
-        "shouldGenerateEndTelemetry"
-      );
-      this.source = this.navParams.get("source");
+    this.content = this.navParams.get('content');
+    this.corRelationList = this.navParams.get('corRelation');
+    this.shouldGenerateEndTelemetry = this.navParams.get(
+      'shouldGenerateEndTelemetry'
+    );
+    this.source = this.navParams.get('source');
 
-      //check for parent content
-      this.parentContent = this.navParams.get("parentContent");
-      this.searchIdentifier = this.content.identifier;
+    //check for parent content
+    this.parentContent = this.navParams.get('parentContent');
+    this.searchIdentifier = this.content.identifier;
 
-      if (this.parentContent) {
-        this.isParentContentAvailable = true;
-        this.identifier = this.parentContent.identifier;
-      } else {
-        this.isParentContentAvailable = false;
-        this.identifier = this.content.identifier;
-      }
+    if (this.parentContent) {
+      this.isParentContentAvailable = true;
+      this.identifier = this.parentContent.identifier;
+    } else {
+      this.isParentContentAvailable = false;
+      this.identifier = this.content.identifier;
+    }
 
-      this.getChildContents();
+    this.getChildContents();
 
-    });
+    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+      this.telemetryGeneratorService.generateInteractTelemetry(
+        InteractType.TOUCH,
+        'DEVICE_BACK',
+        Environment.HOME,
+        'QR_SCAN_DIAL_CODE_RESULTS');
+      this.navCtrl.pop();
+      this.unregisterBackButton();
+    }, 11);
+  }
+
+  ionViewDidLoad() {
+    this.telemetryGeneratorService.generateImpressionTelemetry(ImpressionType.VIEW, '',
+      'QR_SCAN_DIAL_CODE_RESULTS', '', '',
+      Environment.HOME);
+
+    this.navBar.backButtonClick = (e: UIEvent) => {
+      this.handleNavBackButton();
+    };
+  }
+
+  handleNavBackButton() {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      'NAV_BACK',
+      Environment.HOME,
+      'QR_SCAN_DIAL_CODE_RESULTS');
   }
 
   /**
@@ -98,7 +139,6 @@ export class QrCodeResultPage {
    */
   getChildContents() {
     const request: ChildContentRequest = { contentId: this.identifier };
-    console.log("request", request);
     this.contentService.getChildContents(
       request,
       (data: any) => {
@@ -108,7 +148,7 @@ export class QrCodeResultPage {
         this.findContentNode(data.result);
       },
       (error: string) => {
-        console.log("Error: while fetching child contents ===>>>", error);
+        console.log('Error: while fetching child contents ===>>>', error);
         this.zone.run(() => {
           this.showChildrenLoader = false;
         });
@@ -156,7 +196,7 @@ export class QrCodeResultPage {
     } else {
       this.navCtrl.push(ContentDetailsPage, {
         content: content,
-        depth: "1",
+        depth: '1',
         isChildContent: true,
         downloadAndPlay: true
       });

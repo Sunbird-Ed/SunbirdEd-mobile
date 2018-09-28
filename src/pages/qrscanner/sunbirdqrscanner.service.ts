@@ -134,13 +134,21 @@ export class SunbirdQRScanner {
   private startQRScanner(screenTitle: String, displayText: String, displayTextColor: String,
     buttonText: String, showButton: boolean, source: string) {
     window['qrScanner'].startScanner(screenTitle, displayText, displayTextColor, buttonText, showButton, (scannedData) => {
-      if (scannedData === "cancel") {
+      if (scannedData === 'cancel') {
         this.telemetryGeneratorService.generateInteractTelemetry(
           InteractType.OTHER,
           InteractSubtype.QRCodeScanCancelled,
           Environment.HOME,
           PageId.QRCodeScanner);
-        this.generateEndEvent(source, "");
+        this.generateEndEvent(source, '');
+        return;
+      } else if (scannedData === 'skipped') {
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.OTHER,
+          'skipped',
+          Environment.HOME,
+          'QR_SCAN_DIAL_CODE_RESULTS');
+        this.generateEndEvent(source, '');
         return;
       }
       if (this.qrScannerResultHandler.isDialCode(scannedData)) {
