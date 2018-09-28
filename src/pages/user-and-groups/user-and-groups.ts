@@ -81,6 +81,7 @@ export class UserAndGroupsPage {
   userType: string;
   noUsersPresent: boolean = false;
   selectedUserIndex: number = -1;
+  lastCreatedProfileData: any;
 
   constructor(
     private navCtrl: NavController,
@@ -137,6 +138,7 @@ export class UserAndGroupsPage {
       this.getAllProfile();
       this.getAllGroup();
       this.getCurrentGroup();
+      //this.getLastCreatedProfile();
 
       this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
         this.dismissPopup();
@@ -317,9 +319,9 @@ export class UserAndGroupsPage {
       Environment.USER,
       PageId.USERS_GROUPS
     );
-
     this.navCtrl.push('CreateGroupPage');
   }
+
 
   goToSharePage() {
     this.navCtrl.push(ShareUserAndGroupPage, {
@@ -340,18 +342,28 @@ export class UserAndGroupsPage {
   * Navigates to Create User Page
   */
   createUser() {
-    // Generate create user click event
-    this.telemetryGeneratorService.generateInteractTelemetry(
-      InteractType.TOUCH,
-      InteractSubtype.CREATE_USER_CLICKED,
-      Environment.USER,
-      PageId.USERS_GROUPS
-    );
-    this.zone.run(() => {
-      this.navCtrl.push(GuestEditProfilePage, {
-        isNewUser: true
+    this.getLastCreatedProfile().then((response: any) => {
+      // Generate create user click event
+      this.telemetryGeneratorService.generateInteractTelemetry(
+        InteractType.TOUCH,
+        InteractSubtype.CREATE_USER_CLICKED,
+        Environment.USER,
+        PageId.USERS_GROUPS
+      );
+      this.zone.run(() => {
+        this.navCtrl.push(GuestEditProfilePage, {
+          isNewUser: true,
+          lastCreatedProfile: this.lastCreatedProfileData
+        });
       });
-    })
+    }).catch((error) => {
+      this.zone.run(() => {
+        this.navCtrl.push(GuestEditProfilePage, {
+          isNewUser: true
+        });
+      })
+      console.error('error occoured' + error);
+    });
   }
 
   selectUser(index: number, name: string) {
@@ -452,6 +464,23 @@ export class UserAndGroupsPage {
       telemetryObject,
       valuesMap
     );
+  }
+  // method below fetches the last created user
+  getLastCreatedProfile() {
+    return new Promise((resolve, reject) => {
+      let req = {
+        local: true,
+        latestCreatedProfile: true
+      }
+      this.profileService.getProfile(req, lastCreatedProfile => {
+        console.log("lastCreatedProfile: ", lastCreatedProfile);
+        this.lastCreatedProfileData = JSON.parse(lastCreatedProfile);
+        resolve(JSON.parse(lastCreatedProfile));
+      }, error => {
+        reject(null);
+        console.log('error in fetching last created profile data' + error);
+      });
+    });
   }
 
   logOut(selectedUser: any, isBeingPlayed: boolean) {

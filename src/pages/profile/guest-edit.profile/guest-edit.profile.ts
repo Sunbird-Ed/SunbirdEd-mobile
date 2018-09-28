@@ -1,3 +1,4 @@
+import { AlertController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Component } from '@angular/core';
 import {
@@ -30,7 +31,8 @@ import {
   ObjectType,
   ProfileType,
   ContainerService,
-  TabsPage
+  TabsPage,
+  GetProfileRequest
 } from 'sunbird';
 import { FormAndFrameworkUtilService } from '../formandframeworkutil.service';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
@@ -82,27 +84,27 @@ export class GuestEditProfilePage {
   };
 
   syllabusOptions = {
-    title: this.translateMessage('BOARD').toLocaleUpperCase(),
+    title: this.commonUtilService.translateMessage('BOARD').toLocaleUpperCase(),
     cssClass: 'select-box'
   };
 
   boardOptions = {
-    title: this.translateMessage('BOARD').toLocaleUpperCase(),
+    title: this.commonUtilService.translateMessage('BOARD').toLocaleUpperCase(),
     cssClass: 'select-box'
   };
 
   mediumOptions = {
-    title: this.translateMessage('MEDIUM_OF_INSTRUCTION').toLocaleUpperCase(),
+    title: this.commonUtilService.translateMessage('MEDIUM_OF_INSTRUCTION').toLocaleUpperCase(),
     cssClass: 'select-box'
   };
 
   classOptions = {
-    title: this.translateMessage('CLASS').toLocaleUpperCase(),
+    title: this.commonUtilService.translateMessage('CLASS').toLocaleUpperCase(),
     cssClass: 'select-box'
   };
 
   subjectsOptions = {
-    title: this.translateMessage('SUBJECTS').toLocaleUpperCase(),
+    title: this.commonUtilService.translateMessage('SUBJECTS').toLocaleUpperCase(),
     cssClass: 'select-box'
   };
 
@@ -123,28 +125,37 @@ export class GuestEditProfilePage {
     private app: App,
     private appGlobal: AppGlobalService,
     private preferences: SharedPreferences,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    private alertCtrl: AlertController
   ) {
-    this.profile = this.navParams.get('profile') || {};
     this.isNewUser = Boolean(this.navParams.get('isNewUser'));
     this.isCurrentUser = Boolean(this.navParams.get('isCurrentUser'));
-
+    this.previousProfileType = this.profile.profileType;
     if (this.isNewUser) {
+      this.profile = this.navParams.get('lastCreatedProfile') || {};
       this.isEditData = false;
+      this.guestEditForm = this.fb.group({
+        name: [''],
+        profileType: [this.profile.profileType || 'STUDENT'],
+        syllabus: [this.profile.syllabus && this.profile.syllabus[0] || []],
+        boards: [this.profile.board || []],
+        medium: [this.profile.medium || []],
+        grades: [this.profile.grade || []],
+        subjects: [this.profile.subject || []]
+      });
+
+    } else {
+      this.profile = this.navParams.get('profile') || {}
+      this.guestEditForm = this.fb.group({
+        name: [this.profile.handle || ''],
+        profileType: [this.profile.profileType || 'STUDENT'],
+        syllabus: [this.profile.syllabus && this.profile.syllabus[0] || []],
+        boards: [this.profile.board || []],
+        medium: [this.profile.medium || []],
+        grades: [this.profile.grade || []],
+        subjects: [this.profile.subject || []]
+      });
     }
-
-    /* Initialize form with default values */
-    this.guestEditForm = this.fb.group({
-      profileType: [this.profile.profileType || 'STUDENT'],
-      syllabus: [this.profile.syllabus && this.profile.syllabus[0] || [], Validators.required],
-      name: [this.profile.handle || '', Validators.required],
-      boards: [this.profile.board || [], Validators.required],
-      medium: [this.profile.medium || []],
-      grades: [this.profile.grade || []],
-      subjects: [this.profile.subject || []]
-    });
-
-    this.previousProfileType = this.profile.profileType
   }
 
   ionViewDidLoad() {
@@ -160,6 +171,11 @@ export class GuestEditProfilePage {
       Environment.USER,
       PageId.CREATE_USER
     );
+
+    // auto fill alert is called when it is new user , profile and profile.name is present 
+    if (this.isNewUser && this.profile && this.profile.handle) {
+      this.showAutoFillAlert();
+    }
   }
 
   ionViewWillEnter() {
@@ -171,6 +187,42 @@ export class GuestEditProfilePage {
 
   ionViewWillLeave() {
     this.unregisterBackButton();
+  }
+  // shows auto fill alert on load 
+  showAutoFillAlert() {
+    this.isEditData = true;
+    let alert = this.alertCtrl.create({
+      title: this.commonUtilService.translateMessage('PREVIOUS_USER_SETTINGS'),
+      mode: 'wp',
+      cssClass: 'confirm-alert',
+      buttons: [
+        {
+          text: this.commonUtilService.translateMessage('CANCEL'),
+          role: 'cancel',
+          cssClass: 'alert-btn-cancel',
+          handler: () => {
+            this.guestEditForm.patchValue({
+              name: [''],
+              syllabus: undefined,
+              boards: [[]],
+              medium: [[]],
+              grades: [[]],
+              subjects: [[]]
+            });
+            this.guestEditForm.controls['profileType'].setValue('STUDENT');
+
+          }
+        },
+        {
+          text: this.commonUtilService.translateMessage('OKAY'),
+          cssClass: 'alert-btn-delete',
+          handler: () => {
+
+          }
+        }
+      ]
+    });
+    alert.present();
   }
 
   onProfileTypeChange() {
@@ -223,7 +275,7 @@ export class GuestEditProfilePage {
               }).catch(() => {
                 this.isFormValid = false;
                 this.loader.dismiss();
-                this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
+                this.commonUtilService.showToast(this.commonUtilService.translateMessage("NEED_INTERNET_TO_CHANGE"));
               });
           } else {
             this.loader.dismiss();
@@ -231,7 +283,7 @@ export class GuestEditProfilePage {
         } else {
           this.loader.dismiss();
 
-          this.getToast(this.translateMessage('NO_DATA_FOUND')).present();
+          this.commonUtilService.showToast(this.commonUtilService.translateMessage('NO_DATA_FOUND'));
         }
       });
   }
@@ -297,7 +349,7 @@ export class GuestEditProfilePage {
           this.getCategoryData(request, currentField);
         }).catch(() => {
           this.isFormValid = false;
-          this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
+          this.commonUtilService.showToast(this.commonUtilService.translateMessage("NEED_INTERNET_TO_CHANGE"));
         });
 
     } else {
@@ -359,7 +411,7 @@ export class GuestEditProfilePage {
 
   onSubmit() {
     if (!this.isFormValid) {
-      this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage("NEED_INTERNET_TO_CHANGE"));
       return;
     }
 
@@ -368,7 +420,7 @@ export class GuestEditProfilePage {
     let formVal = this.guestEditForm.value;
 
     if (formVal.userType === '') {
-      this.getToast(this.translateMessage('USER_TYPE_SELECT_WARNING')).present();
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('USER_TYPE_SELECT_WARNING'));
       return false;
     }
     else if (formVal.boards.length === 0) {
@@ -429,7 +481,7 @@ export class GuestEditProfilePage {
         console.log("Update Response", res);
         this.isCurrentUser && this.publishProfileEvents(formVal);
         loader.dismiss();
-        this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_SUCCESS'));
         this.telemetryGeneratorService.generateInteractTelemetry(
           InteractType.OTHER,
           InteractSubtype.EDIT_USER_SUCCESS,
@@ -440,7 +492,7 @@ export class GuestEditProfilePage {
       },
       (err: any) => {
         loader.dismiss();
-        this.getToast(this.translateMessage('PROFILE_UPDATE_FAILED')).present();
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_FAILED'));
         console.log("Err", err);
       });
   }
@@ -497,29 +549,14 @@ export class GuestEditProfilePage {
 
     this.profileService.createProfile(req, () => {
       loader.dismiss();
-      this.getToast(this.translateMessage('USER_CREATED_SUCCESSFULLY')).present();
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('USER_CREATED_SUCCESSFULLY'));
       this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER, InteractSubtype.CREATE_USER_SUCCESS, Environment.USER, PageId.CREATE_USER);
       this.navCtrl.pop();
     },
       () => {
         loader.dismiss();
-        this.getToast(this.translateMessage("FILL_THE_MANDATORY_FIELDS")).present();
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage("FILL_THE_MANDATORY_FIELDS"));
       });
-  }
-
-  /**
-   * Used to Translate message to current Language
-   * @param {string} messageConst - Message Constant to be translated
-   * @returns {string} translatedMsg - Translated Message
-   */
-  translateMessage(messageConst: string): string {
-    let translatedMsg = '';
-    this.translate.get(messageConst).subscribe(
-      (value: any) => {
-        translatedMsg = value;
-      }
-    );
-    return translatedMsg;
   }
 
   showMessage(name: string) {
@@ -531,15 +568,6 @@ export class GuestEditProfilePage {
     });
     toast.dismissAll();
     toast.present();
-  }
-
-  /** It will returns Toast Object
-   * @param {message} string - Message for the Toast to show
-   * @returns {object} - toast Object
-   */
-  getToast(message: string = ''): any {
-    this.options.message = message;
-    if (message.length) return this.toastCtrl.create(this.options);
   }
 
   getLoader(): any {

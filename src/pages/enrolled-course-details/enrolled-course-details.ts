@@ -31,7 +31,9 @@ import {
   ProfileType,
   ImpressionType,
   CorrelationData,
-  TelemetryObject
+  TelemetryObject,
+  ErrorCode,
+  ErrorType
 } from 'sunbird';
 import * as _ from 'lodash';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
@@ -131,6 +133,7 @@ export class EnrolledCourseDetailsPage {
   currentCount: number = 0;
   isDownloadComplete = false;
   queuedIdentifiers: Array<string> = [];
+  faultyIdentifiers: Array<any> = [];
   isDownloadStarted: boolean = false;
   isDownlaodCompleted: boolean = false;
   batchDetails: any;
@@ -504,13 +507,11 @@ export class EnrolledCourseDetailsPage {
       contentImportMap: _.extend({}, this.getImportContentRequestBody(identifiers, isChild)),
       contentStatusArray: []
     }
-    // Call content service
+
     this.contentService.importContent(option, (data: any) => {
       data = JSON.parse(data);
       this.zone.run(() => {
         if (data.result && data.result[0].status === 'NOT_FOUND') {
-          // this.showMessage(this.translateLanguageConstant('ERROR_FETCHING_DATA'));
-          // this.showChildrenLoader = false;
           this.showLoading = false
         }
 
@@ -518,23 +519,41 @@ export class EnrolledCourseDetailsPage {
           _.forEach(data.result, (value) => {
             if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
               this.queuedIdentifiers.push(value.identifier);
+            } else if (value.status === 'NOT_FOUND') {
+              this.faultyIdentifiers.push(value.identifier);
             }
           });
           if (this.queuedIdentifiers.length === 0) {
-            this.commonUtilService.showToast('ERROR_FETCHING_DATA');
             this.restoreDownloadState();
+          }
+          if (this.faultyIdentifiers.length > 0) {
+            let stackTrace: any = {};
+            stackTrace.parentIdentifier = this.course.identifier;
+            stackTrace.faultyIdentifiers = this.faultyIdentifiers;
+            this.telemetryGeneratorService.generateErrorTelemetry(Environment.HOME,
+              ErrorCode.ERR_DOWNLOAD_FAILED,
+              ErrorType.SYSTEM,
+              PageId.COURSE_DETAIL,
+              JSON.stringify(stackTrace),
+            );
+            this.commonUtilService.showToast('UNABLE_TO_FETCH_RETIRED_CONTENT');
           }
         }
       });
     },
-      () => {
+      (error) => {
         this.zone.run(() => {
           if (this.isDownloadStarted) {
             this.restoreDownloadState();
           }
           else {
-            this.commonUtilService.showToast('ERROR_FETCHING_DATA');
             this.showChildrenLoader = false;
+          }
+          let errorRes = JSON.parse(error);
+          if (errorRes && errorRes.error === 'NETWORK_ERROR') {
+            this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
+          } else {
+            this.commonUtilService.showToast('UNABLE_TO_FETCH_CONTENT');
           }
         });
       });

@@ -10,7 +10,9 @@ import {
     Start,
     Environment,
     Mode,
-    End
+    End,
+    ExData,
+    Error
 } from "sunbird";
 import { Map } from "../app/telemetryutil";
 
@@ -130,6 +132,23 @@ export class TelemetryGeneratorService {
         log.type = type;
         log.params = params;
         this.telemetryService.log(log);
+    }
+
+    generateExDataTelemetry(type, data) {
+        let exData = new ExData();
+        exData.type = type;
+        exData.data = data;
+        this.telemetryService.exdata(exData);
+    }
+
+    generateErrorTelemetry(env, errCode, errorType, pageId, stackTrace) {
+        let error = new Error();
+        error.env = env;
+        error.errorCode = errCode;
+        error.errorType = errorType;
+        error.pageId = pageId;
+        error.stacktrace = stackTrace;
+        this.telemetryService.error(error);
     }
 
 }
