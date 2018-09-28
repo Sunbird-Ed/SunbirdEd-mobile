@@ -24,7 +24,7 @@ import {
   ProfileType,
   UserProfileService,
   ProfileService
-} from "sunbird";
+} from 'sunbird';
 import {
   initTabs,
   GUEST_TEACHER_TABS,
