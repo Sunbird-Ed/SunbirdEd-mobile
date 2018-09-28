@@ -46,11 +46,11 @@ import { CommonUtilService } from '../../../service/common-util.service';
 import { PreferenceKey } from '../../../app/app.constant';
 
 /* Interface for the Toast Object */
-export interface toastOptions {
-  message: string,
-  duration: number,
-  position: string
-};
+export interface ToastOptions {
+  message: string;
+  duration: number;
+  position: string;
+}
 
 @Component({
   selector: 'page-guest-edit.profile',
@@ -60,24 +60,24 @@ export class GuestEditProfilePage {
   guestEditForm: FormGroup;
   profile: any = {};
   categories: Array<any> = [];
-  syllabusList: Array<any> = []
+  syllabusList: Array<any> = [];
   boardList: Array<any> = [];
   gradeList: Array<any> = [];
   subjectList: Array<string> = [];
   mediumList: Array<string> = [];
-  userName: string = '';
-  frameworkId: string = '';
+  userName = '';
+  frameworkId = '';
   loader: any;
-  isNewUser: boolean = false;
+  isNewUser = false;
   unregisterBackButton: any;
-  isCurrentUser: boolean = true;
+  isCurrentUser = true;
 
-  isFormValid: boolean = true;
-  isEditData: boolean = true;
+  isFormValid = true;
+  isEditData = true;
 
   previousProfileType;
 
-  options: toastOptions = {
+  options: ToastOptions = {
     message: '',
     duration: 3000,
     position: 'bottom'
@@ -160,9 +160,9 @@ export class GuestEditProfilePage {
 
   ionViewDidLoad() {
     this.telemetryGeneratorService.generateImpressionTelemetry(
-      ImpressionType.VIEW, "",
+      ImpressionType.VIEW, '',
       PageId.CREATE_USER,
-      Environment.USER, this.isNewUser ? "" : this.profile.uid, this.isNewUser ? "" : ObjectType.USER,
+      Environment.USER, this.isNewUser ? '' : this.profile.uid, this.isNewUser ? '' : ObjectType.USER,
     );
 
     this.telemetryGeneratorService.generateInteractTelemetry(
@@ -468,11 +468,11 @@ export class GuestEditProfilePage {
     if (formVal.grades && formVal.grades.length > 0) {
       formVal.grades.forEach(gradeCode => {
         for (let i = 0; i < this.gradeList.length; i++) {
-          if (this.gradeList[i].code == gradeCode) {
+          if (this.gradeList[i].code === gradeCode) {
             if (!req.gradeValueMap) {
               req.gradeValueMap = {};
             }
-            req.gradeValueMap[this.gradeList[i].code] = this.gradeList[i].name
+            req.gradeValueMap[this.gradeList[i].code] = this.gradeList[i].name;
             break;
           }
         }
@@ -481,7 +481,7 @@ export class GuestEditProfilePage {
 
     this.profileService.updateProfile(req,
       (res: any) => {
-        console.log("Update Response", res);
+        console.log('Update Response', res);
         this.isCurrentUser && this.publishProfileEvents(formVal);
         loader.dismiss();
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_SUCCESS'));
@@ -510,7 +510,7 @@ export class GuestEditProfilePage {
     this.events.publish('refresh:profile');
     this.events.publish('refresh:onboardingcard');
 
-    if (this.previousProfileType && this.previousProfileType != formVal.profileType) {
+    if (this.previousProfileType && this.previousProfileType !== formVal.profileType) {
       if (formVal.profileType == ProfileType.STUDENT) {
         this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT);
         initTabs(this.container, GUEST_STUDENT_TABS);
@@ -543,7 +543,7 @@ export class GuestEditProfilePage {
             if (!req.gradeValueMap) {
               req.gradeValueMap = {};
             }
-            req.gradeValueMap[this.gradeList[i].code] = this.gradeList[i].name
+            req.gradeValueMap[this.gradeList[i].code] = this.gradeList[i].name;
             break;
           }
         }
@@ -565,7 +565,7 @@ export class GuestEditProfilePage {
   getLoader(): any {
     return this.loadingCtrl.create({
       duration: 3000,
-      spinner: "crescent"
+      spinner: 'crescent'
     });
   }
 }
