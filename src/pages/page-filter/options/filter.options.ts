@@ -1,15 +1,21 @@
-import { Component } from "@angular/core";
-import { NavParams, Platform, ViewController } from "ionic-angular";
-
+import { Component } from '@angular/core';
+import {
+  NavParams,
+  Platform,
+  ViewController
+} from 'ionic-angular';
 @Component({
   selector: 'page-filter-options',
   templateUrl: './filter.options.html'
 })
 export class PageFilterOptions {
-  facets: any
+  facets: any;
   backButtonFunc = undefined;
 
-  constructor(private navParams: NavParams, private viewCtrl: ViewController, private platform: Platform) {
+  constructor(private navParams: NavParams,
+    private viewCtrl: ViewController,
+    private platform: Platform) {
+
     this.facets = this.navParams.get('facets');
     this.handleDeviceBackButton();
   }
@@ -21,13 +27,12 @@ export class PageFilterOptions {
     }, 20);
   }
 
-
   isSelected(value) {
     if (!this.facets.selected) {
       return false;
     }
 
-    return this.facets.selected.includes(value)
+    return this.facets.selected.includes(value);
   }
 
   changeValue(value, index) {
@@ -36,11 +41,10 @@ export class PageFilterOptions {
       if (this.facets.code === 'contentType') {
         this.facets.selectedValuesIndices = [];
       }
-
     }
 
     if (this.facets.selected.includes(value)) {
-      const index = this.facets.selected.indexOf(value);
+      index = this.facets.selected.indexOf(value);
       if (index > -1) {
         this.facets.selected.splice(index, 1);
         if (this.facets.code === 'contentType') {
