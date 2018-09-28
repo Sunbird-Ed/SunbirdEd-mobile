@@ -420,20 +420,23 @@ export class GuestEditProfilePage {
     let formVal = this.guestEditForm.value;
 
     if (formVal.userType === '') {
-      this.commonUtilService.showToast(this.commonUtilService.translateMessage('USER_TYPE_SELECT_WARNING'));
+      this.commonUtilService.showToast('USER_TYPE_SELECT_WARNING');
       return false;
     }
     else if (formVal.boards.length === 0) {
-      this.showMessage('BOARD')
+      //this.showMessage('BOARD')
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService.translateMessage('BOARD')),false , 'red-toast')
       return false;
     }
     else if (formVal.medium.length === 0) {
 
-      this.showMessage('MEDIUM');
+      //this.showMessage('MEDIUM');
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService.translateMessage('MEDIUM')),false , 'red-toast')
       return false;
     }
     else if (formVal.grades.length === 0) {
-      this.showMessage('CLASS');
+      //this.showMessage('CLASS');
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService.translateMessage('CLASS')),false , 'red-toast')
       return false;
     }
     else {
@@ -557,17 +560,6 @@ export class GuestEditProfilePage {
         loader.dismiss();
         this.commonUtilService.showToast(this.commonUtilService.translateMessage("FILL_THE_MANDATORY_FIELDS"));
       });
-  }
-
-  showMessage(name: string) {
-    let toast = this.toastCtrl.create({
-      message: this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService.translateMessage(name)),
-      duration: 2000,
-      cssClass: 'red-toast',
-      position: 'Bottom'
-    });
-    toast.dismissAll();
-    toast.present();
   }
 
   getLoader(): any {
