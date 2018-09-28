@@ -112,7 +112,8 @@ export class UserOnboardingPreferencesPage {
 		this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
 		  this.telemetryGeneratorService.generateImpressionTelemetry(
 			ImpressionType.VIEW, "",
-			PageId.ONBOARDING_PREFERENCES ,
+			// PageId.ONBOARDING_PREFERENCES ,
+			"ONBOARDING_PREFERENCES",
 			Environment.SETTINGS
 		  );
 		});
