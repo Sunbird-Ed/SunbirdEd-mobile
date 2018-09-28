@@ -28,7 +28,7 @@ import { TelemetryGeneratorService } from '../../service/telemetry-generator.ser
   templateUrl: 'reports.html'
 })
 export class ReportsPage {
-  report: string = 'users';
+  report = 'users';
   otherUsers;
   currentUser: {};
   groups;
@@ -41,51 +41,51 @@ export class ReportsPage {
     private ngZone: NgZone,
     private loading: LoadingController,
     private navParams: NavParams,
-    private telemetryGeneratorService:TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService
   ) {
     this.profileDetails = this.navParams.get('profile');
   }
 
   async populateUsers() {
-    let that = this;
+    const that = this;
 
     return new Promise<Array<any>>((resolve, reject) => {
-      let profileRequest: ProfileRequest = {
+      const profileRequest: ProfileRequest = {
         local: true
       };
       this.profileService.getAllUserProfile(profileRequest)
         .then((data) => {
-          let users = JSON.parse(data)
+          let users = JSON.parse(data);
 
-          that.profileService.getCurrentUser(data => {
-            let currentUser = JSON.parse(data);
-            if(this.profileDetails){
-              if(this.profileDetails.id ===currentUser.uid){
-                currentUser.handle=this.profileDetails.firstName;
+          that.profileService.getCurrentUser( data => {
+            const currentUser = JSON.parse(data);
+            if (this.profileDetails) {
+              if (this.profileDetails.id === currentUser.uid) {
+                currentUser.handle = this.profileDetails.firstName;
               }
             }
             users = that.filterOutCurrentUser(users, currentUser);
             resolve([currentUser, users]);
           }, error => {
-            console.error("Error", error);
+            console.error('Error', error);
             reject(error);
-          })
+          });
         })
         .catch((error) => {
-          console.log("Something went wrong while fetching user list", error);
+          console.log('Something went wrong while fetching user list', error);
           reject(error);
         });
     });
   }
 
   async populateGroups() {
-    let that = this;
+    const that = this;
 
     return new Promise<any>((resolve) => {
 
-      let groupRequest: GroupRequest = {
-        uid: ""
-      }
+      const groupRequest: GroupRequest = {
+        uid: ''
+      };
 
       that.groupService.getAllGroup(groupRequest)
         .then((groups) => {
@@ -94,20 +94,19 @@ export class ReportsPage {
           } else {
             resolve();
           }
-        })
+        });
     });
   }
 
   ionViewDidLoad() {
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW,
-      "",
+      '',
       Environment.USER,
       PageId.REPORTS_USER_GROUP
     );
-    
-    let loader = this.loading.create({
-      spinner: "crescent"
+    const loader = this.loading.create({
+      spinner: 'crescent'
     });
     loader.present();
     let users, cUser, groups;
@@ -133,16 +132,15 @@ export class ReportsPage {
 
   filterOutCurrentUser(userList, currentUser) {
     return userList.filter(user => {
-      return user.uid != currentUser.uid
-    })
+      return user.uid !== currentUser.uid;
+    });
   }
 
   goToUserReportList(uid: string) {
 
-    let telemetryObject: TelemetryObject = new TelemetryObject();
+    const telemetryObject: TelemetryObject = new TelemetryObject();
     telemetryObject.id = uid;
     telemetryObject.type = ObjectType.USER;
-    
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.USER_CLICKED,
@@ -158,10 +156,9 @@ export class ReportsPage {
   }
 
   goToGroupUserReportList(group) {
-    let telemetryObject: TelemetryObject = new TelemetryObject();
+    const telemetryObject: TelemetryObject = new TelemetryObject();
     telemetryObject.id = group.gid;
     telemetryObject.type = ObjectType.GROUP;
-    
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.GROUP_CLICKED,
@@ -169,26 +166,26 @@ export class ReportsPage {
       PageId.REPORTS_USER_GROUP,
       telemetryObject
     );
-    let profileRequest: ProfileRequest = { local: true, groupId: group.gid };
+    const profileRequest: ProfileRequest = { local: true, groupId: group.gid };
     this.profileService.getAllUserProfile(profileRequest)
     .then(result => {
-      let map = new Map<string, string>();
-      let users: Array<any> = JSON.parse(result);
-      let uids:Array<string> = [];
+      const map = new Map<string, string>();
+      const users: Array<any> = JSON.parse(result);
+      const uids: Array<string> = [];
       users.forEach(user => {
-        uids.push(user.uid)
+        uids.push(user.uid);
         map.set(user.uid, user.handle);
-      })
+      });
       this.navCtrl.push(ReportListPage, {
         isFromGroups: true,
         uids: uids,
         users: map
       });
-    })
+    });
   }
 
   onSegmentChange(data) {
-    let subType = (data == 'users') ? InteractSubtype.USERS_TAB_CLICKED : InteractSubtype.GROUPS_TAB_CLICKED;
+    const subType = (data === 'users') ? InteractSubtype.USERS_TAB_CLICKED : InteractSubtype.GROUPS_TAB_CLICKED;
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       subType,
@@ -198,7 +195,7 @@ export class ReportsPage {
 
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW,
-      "",
+      '',
       Environment.USER,
       PageId.REPORTS_USER_GROUP
     );
