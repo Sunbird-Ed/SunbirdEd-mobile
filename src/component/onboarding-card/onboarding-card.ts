@@ -16,11 +16,11 @@ import {
 import { TranslateService } from '@ngx-translate/core';
 
 /* Interface for the Toast Object */
-export interface toastOptions {
-  message: string,
-  duration: number,
-  position: string
-};
+export interface ToastOptions {
+  message: string;
+  duration: number;
+  position: string;
+}
 
 @Component({
   selector: 'onboarding-card',
@@ -35,7 +35,7 @@ export class OnboardingCardComponent {
   loader: boolean = false;
   isDataAvailable: boolean = false;
 
-  options: toastOptions = {
+  options: ToastOptions = {
     message: '',
     duration: 3000,
     position: 'bottom'
@@ -54,9 +54,9 @@ export class OnboardingCardComponent {
 
     this.onboardingService.getSyllabusDetails()
       .then((result) => {
-        this.showLoader(false)
+        this.showLoader(false);
 
-        let syllabusList = (<any[]>result)
+        let syllabusList = (<any[]>result);
 
         if (syllabusList && syllabusList !== undefined && syllabusList.length > 0) {
           this.isDataAvailable = true;
@@ -71,7 +71,7 @@ export class OnboardingCardComponent {
 
     this.events.subscribe('is-data-available', (value) => {
       let loaderFlag = !value.show;
-      this.showLoader(loaderFlag)
+      this.showLoader(loaderFlag);
       this.isDataAvailable = value.show;
     });
 
@@ -138,7 +138,7 @@ export class OnboardingCardComponent {
    * This event get triggred when user tries to swipe the slide
    */
   onSlideDrag() {
-    let currentIndex = this.mSlides.getActiveIndex();
+    const currentIndex = this.mSlides.getActiveIndex();
     this.mSlides.lockSwipeToNext(!(this.onboardingService.onBoardingSlides[currentIndex].selectedOptions.length));
   }
 
@@ -167,7 +167,7 @@ export class OnboardingCardComponent {
       this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.grade, true);
     }
 
-    let popUp = this.popupCtrl.create(OnboardingAlert, { facet: selectedSlide, callback: callback, index: index }, {
+    const popUp = this.popupCtrl.create(OnboardingAlert, { facet: selectedSlide, callback: callback, index: index }, {
       cssClass: 'onboarding-alert'
     });
     popUp.present();
