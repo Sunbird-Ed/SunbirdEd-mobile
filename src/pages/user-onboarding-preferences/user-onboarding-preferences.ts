@@ -43,7 +43,7 @@ export class UserOnboardingPreferencesPage {
 	userForm: FormGroup;
 	classList = [];
 	profile: Profile;
-	
+
 	syllabusList: Array<any> = []
 	BoardList: Array<any> = [];
 	mediumList: Array<any> = [];
@@ -117,16 +117,15 @@ export class UserOnboardingPreferencesPage {
 
 	ionViewDidEnter() {
 		this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
-		  this.telemetryGeneratorService.generateImpressionTelemetry(
-			ImpressionType.VIEW, "",
-			// PageId.ONBOARDING_PREFERENCES ,
-			"ONBOARDING_PREFERENCES",
-			Environment.SETTINGS
-		  );
+			this.telemetryGeneratorService.generateInteractTelemetry(
+				InteractType.TOUCH, InteractSubtype.DEVICE_BACK_CLICKED,
+				PageId.ONBOARDING,
+				Environment.ONBOARDING,
+			);
 		});
 	}
 
-	getGuestUser(){
+	getGuestUser() {
 		this.profileService.getCurrentUser((response) => {
 			this.profile = JSON.parse(response);
 			this.initUserForm();
@@ -165,15 +164,15 @@ export class UserOnboardingPreferencesPage {
 
 					if (this.profile && this.profile.syllabus && this.profile.syllabus[0] !== undefined) {
 						this.formAndFrameworkUtilService.getFrameworkDetails(this.profile.syllabus[0])
-						.then(catagories => {
-							console.log('this.categories',catagories);
-							this.categories = catagories;
-							this.resetForm(0, false);
-						}).catch(error => {
-							console.log('errorrrrrr',error);
-							this.loader.dismiss();
-							this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
-						});
+							.then(catagories => {
+								console.log('this.categories', catagories);
+								this.categories = catagories;
+								this.resetForm(0, false);
+							}).catch(error => {
+								console.log('errorrrrrr', error);
+								this.loader.dismiss();
+								this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
+							});
 					} else {
 						this.loader.dismiss();
 					}
@@ -335,12 +334,12 @@ export class UserOnboardingPreferencesPage {
 	}
 
 	submitEditForm(formVal, loader): void {
-/* 		if (this.profile.profileType === ProfileType.TEACHER) {
-			initTabs(this.container, GUEST_TEACHER_TABS);
-		} else if (this.profile.profileType === ProfileType.STUDENT) {
-			initTabs(this.container, GUEST_STUDENT_TABS);
-		}
- */
+		/* 		if (this.profile.profileType === ProfileType.TEACHER) {
+					initTabs(this.container, GUEST_TEACHER_TABS);
+				} else if (this.profile.profileType === ProfileType.STUDENT) {
+					initTabs(this.container, GUEST_STUDENT_TABS);
+				}
+		 */
 		let req: Profile = new Profile();
 		req.board = formVal.boards;
 		req.grade = formVal.grades;
@@ -366,21 +365,21 @@ export class UserOnboardingPreferencesPage {
 			});
 		}
 		this.profileService.updateProfile(req,
-		  (res: any) => {
-			console.log("Update Response-->", JSON.parse(res));
-			
-			this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
-			// this.telemetryGeneratorService.generateInteractTelemetry(
-			// 	InteractType.OTHER,
-			// 	InteractSubtype.EDIT_USER_SUCCESS,
-			// 	Environment.USER,
-			// 	PageId.ONBOARDING_PREFERENCES
-			// );
-			console.log('======>', this.navCtrl.canGoBack());
-			console.log('------->', this.navCtrl.getViews());
-			this.events.publish('refresh:profile');
-			this.appGlobalService.guestUserProfile =  JSON.parse(res);
-			// setTimeout(() => {
+			(res: any) => {
+				console.log("Update Response-->", JSON.parse(res));
+
+				this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
+				// this.telemetryGeneratorService.generateInteractTelemetry(
+				// 	InteractType.OTHER,
+				// 	InteractSubtype.EDIT_USER_SUCCESS,
+				// 	Environment.USER,
+				// 	PageId.ONBOARDING_PREFERENCES
+				// );
+				console.log('======>', this.navCtrl.canGoBack());
+				console.log('------->', this.navCtrl.getViews());
+				this.events.publish('refresh:profile');
+				this.appGlobalService.guestUserProfile = JSON.parse(res);
+				// setTimeout(() => {
 				// loader.dismiss();
 				//this.navCtrl.pop();
 				this.navCtrl.push(TabsPage, {
