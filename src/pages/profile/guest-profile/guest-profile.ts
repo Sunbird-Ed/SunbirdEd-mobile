@@ -272,7 +272,8 @@ export class GuestProfilePage {
    */
   goToRoles() {
     this.navCtrl.push(UserTypeSelectionPage, {
-      profile: this.profile
+      profile: this.profile,
+      isChangeRoleRequest: true
     });
   }
 

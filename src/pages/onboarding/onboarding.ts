@@ -267,11 +267,12 @@ export class OnboardingPage {
             this.navCtrl.setRoot(TabsPage, {
               loginMode: 'guest'
             });
+            //this.navCtrl.push(UserTypeSelectionPage, { showScanner: false });
           }, err => {
-            this.navCtrl.push(UserTypeSelectionPage);
+            this.navCtrl.push(UserTypeSelectionPage, { showScanner: false });
           });
         } else {
-          this.navCtrl.push(UserTypeSelectionPage);
+          this.navCtrl.push(UserTypeSelectionPage, { showScanner: false });
         }
       });
   }

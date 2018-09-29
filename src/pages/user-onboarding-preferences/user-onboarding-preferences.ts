@@ -1,9 +1,9 @@
-import { group } from '@angular/core';
+import { NgZone } from '@angular/core';
 import { AppGlobalService } from './../../service/app-global.service';
-import { UserSource, ProfileService } from 'sunbird';
+import { UserSource, ProfileService, TabsPage, PageId, ProfileType, ContainerService } from 'sunbird';
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import {
 	IonicPage,
 	NavController,
@@ -21,6 +21,7 @@ import { LoadingController, Events } from 'ionic-angular';
 import { PreferenceKey } from '../../app/app.constant';
 import * as _ from 'lodash';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 
 export interface toastOptions {
 	message: string,
@@ -37,12 +38,6 @@ export class UserOnboardingPreferencesPage {
 	userForm: FormGroup;
 	classList = [];
 	profile: Profile;
-	// selectBoard: any;
-	// isSelectBoard: boolean = false;
-	// selectMedium: any;
-	// isSelectMedium: boolean = false;
-	// selectClass: any;
-	// isSelectClass: boolean = false;
 	syllabusList: Array<any> = []
 	BoardList: Array<any> = [];
 	mediumList: Array<any> = [];
@@ -90,34 +85,39 @@ export class UserOnboardingPreferencesPage {
 		private profileService: ProfileService,
 		private telemetryGeneratorService: TelemetryGeneratorService,
 		private appGlobalService: AppGlobalService,
-		private events: Events
+		private events: Events,
+		private zone: NgZone,
+		private scanner: SunbirdQRScanner,
+		private container: ContainerService
 	) {
 		this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
-		.then(val => {
-			if (val && val.length) {
-				this.selectedLanguage = val;
-			}
-		});
+			.then(val => {
+				if (val && val.length) {
+					this.selectedLanguage = val;
+				}
+			});
 		this.initUserForm();
 		this.getGuestUser();
 	}
-	
+
+	ionViewDidLoad() {
+		this.scanner.stopScanner();
+	}
 	ionViewWillEnter() {
 		this.getSyllabusDetails();
 	}
 
-	getGuestUser(){
+	getGuestUser() {
 		this.profileService.getCurrentUser((response) => {
 			this.profile = JSON.parse(response);
-			console.log('getGuestUser profile',this.profile);
 			this.initUserForm();
-        }, (error) => {
+		}, (error) => {
 			this.profile = undefined;
 			this.initUserForm();
-        });
+		});
 	}
 
-	initUserForm(){
+	initUserForm() {
 		this.userForm = this.fb.group({
 			syllabus: [this.profile && this.profile.syllabus && this.profile.syllabus[0] || []],
 			boards: [this.profile && this.profile.board || []],
@@ -126,7 +126,7 @@ export class UserOnboardingPreferencesPage {
 		});
 		console.log('initUserForm', this.userForm);
 	}
-	
+
 	/**
 	 * It will fetch syllabus details
 	 */
@@ -142,19 +142,14 @@ export class UserOnboardingPreferencesPage {
 						let value = { 'name': element.name, 'code': element.frameworkId };
 						this.syllabusList.push(value);
 					});
-					console.log('this.syllabusList',this.syllabusList);
 					this.loader.dismiss();
-					console.log('this.profile',this.profile);
-					console.log('this.userForm',this.userForm);
 
 					if (this.profile && this.profile.syllabus && this.profile.syllabus[0] !== undefined) {
 						this.formAndFrameworkUtilService.getFrameworkDetails(this.profile.syllabus[0])
 							.then(catagories => {
-								console.log('this.categories',catagories);
 								this.categories = catagories;
 								this.resetForm(0, false);
 							}).catch(error => {
-								console.log('errorrrrrr',error);
 								this.loader.dismiss();
 								this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
 							});
@@ -175,11 +170,10 @@ export class UserOnboardingPreferencesPage {
 	 */
 	getCategoryData(req: CategoryRequest, list): void {
 		console.log('this.frameworkId', this.frameworkId);
-		if(this.frameworkId){
+		if (this.frameworkId) {
 			this.formAndFrameworkUtilService.getCategoryData(req, this.frameworkId).
 				then((result) => {
-					console.log('getCategoryData',result);
-					if (this.loader !== undefined){
+					if (this.loader !== undefined) {
 						this.loader.dismiss();
 					}
 					this[list] = result;
@@ -192,7 +186,7 @@ export class UserOnboardingPreferencesPage {
 							boards: [result[0].code]
 						})
 						this.resetForm(1, false)
-					} else if(this.isEditData){
+					} else if (this.isEditData) {
 						this.isEditData = false;
 						this.userForm.patchValue({
 							medium: this.profile.medium || []
@@ -202,7 +196,7 @@ export class UserOnboardingPreferencesPage {
 						});
 					}
 				})
-			}
+		}
 	}
 
 	/**
@@ -212,14 +206,12 @@ export class UserOnboardingPreferencesPage {
 	 * @param prevSelectedValue 
 	 */
 	checkPrevValue(index, currentField, prevSelectedValue = []) {
-		console.log('checkPrevValue====>',index, currentField, prevSelectedValue);
 		if (index === 1) {
 			let loader = this.getLoader();
 			// loader.present();
 			this.frameworkId = prevSelectedValue[0];
 			this.formAndFrameworkUtilService.getFrameworkDetails(this.frameworkId)
 				.then(catagories => {
-					console.log('checkPrevValue catagories',catagories);
 					this.categories = catagories;
 
 					// loader.dismiss();
@@ -250,7 +242,6 @@ export class UserOnboardingPreferencesPage {
 	 * @param showloader 
 	 */
 	resetForm(index, showloader: boolean): void {
-		console.log('in reset form',index);
 		switch (index) {
 			case 0:
 				this.userForm.patchValue({
@@ -261,7 +252,7 @@ export class UserOnboardingPreferencesPage {
 				if (showloader) {
 					this.loader = this.getLoader();
 					this.loader.present();
-				  }
+				}
 				this.checkPrevValue(1, 'boardList', [this.userForm.value.syllabus]);
 				break;
 
@@ -283,14 +274,14 @@ export class UserOnboardingPreferencesPage {
 		}
 	}
 
-	enableSubmit(){
-		if(this.userForm.value.grades.length){
+	enableSubmit() {
+		if (this.userForm.value.grades.length) {
 			this.btnColor = '#006DE5'
 		} else {
 			this.btnColor = '#8FC4FF';
 		}
 	}
-	
+
 	showMessage(name: string) {
 		this.btnColor = '#8FC4FF';
 		let toast = this.toastCtrl.create({
@@ -323,6 +314,12 @@ export class UserOnboardingPreferencesPage {
 	}
 
 	submitEditForm(formVal, loader): void {
+/* 		if (this.profile.profileType === ProfileType.TEACHER) {
+			initTabs(this.container, GUEST_TEACHER_TABS);
+		} else if (this.profile.profileType === ProfileType.STUDENT) {
+			initTabs(this.container, GUEST_STUDENT_TABS);
+		}
+ */
 		let req: Profile = new Profile();
 		req.board = formVal.boards;
 		req.grade = formVal.grades;
@@ -333,48 +330,51 @@ export class UserOnboardingPreferencesPage {
 		req.source = this.profile.source;
 		req.createdAt = this.profile.createdAt;
 		req.syllabus = (!formVal.syllabus.length) ? [] : [formVal.syllabus];
-	
+
 		if (formVal.grades && formVal.grades.length > 0) {
-		  formVal.grades.forEach(gradeCode => {
-			for (let i = 0; i < this.gradeList.length; i++) {
-			  if (this.gradeList[i].code == gradeCode) {
-				if (!req.gradeValueMap) {
-				  req.gradeValueMap = {};
+			formVal.grades.forEach(gradeCode => {
+				for (let i = 0; i < this.gradeList.length; i++) {
+					if (this.gradeList[i].code == gradeCode) {
+						if (!req.gradeValueMap) {
+							req.gradeValueMap = {};
+						}
+						req.gradeValueMap[this.gradeList[i].code] = this.gradeList[i].name
+						break;
+					}
 				}
-				req.gradeValueMap[this.gradeList[i].code] = this.gradeList[i].name
-				break;
-			  }
-			}
-		  });
+			});
 		}
 		this.profileService.updateProfile(req,
-		  (res: any) => {
-			console.log("Update Response-->", JSON.parse(res));
-			
-			this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
-			// this.telemetryGeneratorService.generateInteractTelemetry(
-			//   InteractType.OTHER,
-			//   InteractSubtype.EDIT_USER_SUCCESS,
-			//   Environment.USER,
-			//   PageId.EDIT_USER
-			// );
-			console.log('======>', this.navCtrl.canGoBack());
-			console.log('------->', this.navCtrl.getViews());
-			this.events.publish('refresh:profile');
-			this.appGlobalService.guestUserProfile =  JSON.parse(res);
-			// setTimeout(() => {
+			(res: any) => {
+				console.log("Update Response-->", JSON.parse(res));
+
+				this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
+				// this.telemetryGeneratorService.generateInteractTelemetry(
+				//   InteractType.OTHER,
+				//   InteractSubtype.EDIT_USER_SUCCESS,
+				//   Environment.USER,
+				//   PageId.EDIT_USER
+				// );
+				console.log('======>', this.navCtrl.canGoBack());
+				console.log('------->', this.navCtrl.getViews());
+				this.events.publish('refresh:profile');
+				this.appGlobalService.guestUserProfile = JSON.parse(res);
+				// setTimeout(() => {
 				// loader.dismiss();
-				this.navCtrl.pop();
-			// }, 100);
-			
-		  },
-		  (err: any) => {
-			loader.dismiss();
-			this.getToast(this.translateMessage('PROFILE_UPDATE_FAILED')).present();
-			console.log("Err", err);
-		  });
-	  }
-	
+				//this.navCtrl.pop();
+				this.navCtrl.push(TabsPage, {
+					loginMode: 'guest'
+				});
+				// }, 100);
+
+			},
+			(err: any) => {
+				loader.dismiss();
+				this.getToast(this.translateMessage('PROFILE_UPDATE_FAILED')).present();
+				console.log("Err", err);
+			});
+	}
+
 
 	translateMessage(messageConst: string, field?: string): string {
 		let translatedMsg = '';
