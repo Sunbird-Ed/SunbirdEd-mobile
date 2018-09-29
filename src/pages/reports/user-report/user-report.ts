@@ -36,10 +36,10 @@ export class UserReportPage {
     private telemetryGeneratorService: TelemetryGeneratorService) {
   }
 
-  formatTime(time:number):string{
-    let minutes:any = "0" + Math.floor(time / 60);
-    let seconds:any = "0" + (time - minutes * 60);
-    return minutes.substr(-2) + ":" + seconds.substr(-2);
+  formatTime(time: number): string {
+    const minutes: any = '0' + Math.floor(time / 60);
+    const seconds: any = '0' + (time - minutes * 60);
+    return minutes.substr(-2) + ':' + seconds.substr(-2);
 }
 
   translateMessage(messageConst: string, field?: string): string {
@@ -54,7 +54,7 @@ export class UserReportPage {
 
   ionViewDidLoad() {
     this.telemetryGeneratorService.generateImpressionTelemetry(
-      ImpressionType.VIEW, "",
+      ImpressionType.VIEW, '',
       PageId.REPORTS_USER_ASSESMENT_DETAILS,
       Environment.USER
     );
@@ -62,31 +62,31 @@ export class UserReportPage {
 
   ionViewWillEnter() {
 
-    let loader = this.loading.create({
-      spinner: "crescent"
+    const loader = this.loading.create({
+      spinner: 'crescent'
     });
     loader.present();
 
-    let that = this;
+    const that = this;
 
-    let reportSummary: ReportSummary = this.navParams.get('report');
+    const reportSummary: ReportSummary = this.navParams.get('report');
     this.contentName = reportSummary.name;
 
     that.reportService.getDetailReport([reportSummary.uid], reportSummary.contentId)
       .then(reportsMap => {
-        let data = reportsMap.get(reportSummary.uid);
-        let rows = data.reportDetailsList.map(row => {
+        const data = reportsMap.get(reportSummary.uid);
+        const rows = data.reportDetailsList.map(row => {
           return {
-            "index": 'Q' + (('00' + row.qindex).slice(-3)),
-            "result": row.score + '/' + row.maxScore,
-            "timespent": that.formatTime(row.timespent),
-            "qdesc": row.qdesc,
-            "score": row.score,
-            "maxScore": row.maxScore,
-            "qtitle": row.qtitle,
-            "qid": row.qid
-          }
-        })
+            'index': 'Q' + (('00' + row.qindex).slice(-3)),
+            'result': row.score + '/' + row.maxScore,
+            'timespent': that.formatTime(row.timespent),
+            'qdesc': row.qdesc,
+            'score': row.score,
+            'maxScore': row.maxScore,
+            'qtitle': row.qtitle,
+            'qid': row.qid
+          };
+        });
         data['uiRows'] = rows;
         data['uiTotalTime'] = that.formatTime(data['totalTime']);
         data['fromUser'] = true;

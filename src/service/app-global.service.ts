@@ -48,6 +48,7 @@ export class AppGlobalService {
     guestUserProfile: Profile;
     isGuestUser: boolean = false;
     guestProfileType: ProfileType;
+    isOnBoardingCompleted: boolean;
 
     session: any;
     public static isPlayerLaunched: boolean = false;
@@ -252,7 +253,6 @@ export class AppGlobalService {
     }
 
     private getCurrentUserProfile() {
-        console.log("getCurrentUserProfile");
         this.profile.getCurrentUser((response) => {
             this.guestUserProfile = JSON.parse(response);
             if (this.guestUserProfile.syllabus && this.guestUserProfile.syllabus.length > 0) {
@@ -266,7 +266,8 @@ export class AppGlobalService {
                     }).catch((error) => {
                         this.frameworkData = [];
                         this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
-                    })
+                    });
+                this.getOnboardingCompletionStatus();
             } else {
                 this.frameworkData = [];
                 this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
@@ -300,7 +301,6 @@ export class AppGlobalService {
     }
 
     public getGuestUserInfo() {
-        console.log("getGuestUserInfo");
         this.preference.getString(PreferenceKey.SELECTED_USER_TYPE)
             .then(val => {
                 if (val !== undefined && val != "") {
@@ -411,5 +411,16 @@ export class AppGlobalService {
         return this.averageScore;
     }
 
-
+    getOnboardingCompletionStatus(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let profile = this.getCurrentUser();
+            this.isOnBoardingCompleted = Boolean(this.isGuestUser
+                && profile
+                && profile.syllabus && profile.syllabus[0]
+                && profile.board && profile.board.length
+                && profile.grade && profile.grade.length
+                && profile.medium && profile.medium.length);
+            resolve(this.isOnBoardingCompleted);
+        });
+    }
 }

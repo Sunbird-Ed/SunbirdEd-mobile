@@ -7,28 +7,47 @@
 <ion-content padding>
 
   <div class="card-container" *ngFor="let content of results">
-    <ion-row class="P010" >
+    <ion-row class="P010">
       <ul class="breadcrumbs">
         <li *ngFor="let result of parents" (click)="navigateToDetailsPage(result)">
-          {{ (result.contentData.name.length>20)? (result.contentData.name | slice:0:20)+'...' : (result.contentData.name) }}
+          {{ (result.contentData.name.length>30)? (result.contentData.name | slice:0:30)+'...' :
+          (result.contentData.name) }}
         </li>
       </ul>
     </ion-row>
     <ion-card>
-      <ion-row class="top">
-        <img class="app-icon" src="{{ (content.basePath +'/' + content.contentData.appIcon) || defaultImg }}" />
-      </ion-row>
       <ion-row>
-        <ion-card-content>
-          <h6 class="name font-size-20">{{content.contentData.name}}</h6>
-          <p class="author">{{content.contentData.creator}}</p>
-        </ion-card-content>
+        <ion-col col-12>
+          <ion-card-content>
+              <ion-row class="top">
+                <ion-col col-3 class="img-container">
+                  <img class="app-icon" src="{{ (content.basePath +'/' + content.contentData.appIcon) || defaultImg }}" />
+                </ion-col>
+                <ion-col col-9 >
+                  <ion-row>
+                    <ion-col col-12 class="PT0">
+                      <h6 class="name font-size-20">{{content.contentData.name}}</h6>
+                      <p class="author">{{content.contentData.creator}}</p>
+                    </ion-col>
+                    <ion-col col-12 class="bottom-fix">
+                      <span class="badge"> {{content.contentData.contentType}} </span>
+                      <span class="size"> {{content.contentData.size | fileSize}} </span>
+                    </ion-col>
+                  </ion-row>
+                </ion-col>
+
+              </ion-row>
+          </ion-card-content>
+        </ion-col>
+
       </ion-row>
+      <button class="custom-btn" ion-button block (click)="navigateToDetailsPage(content)" *ngIf="!content.isAvailableLocally">{{
+        'DOWNLOAD_AND_PLAY' | translate}}</button>
+      <button class="custom-btn play" ion-button block (click)="navigateToDetailsPage(content)" *ngIf="content.isAvailableLocally">
+        <span class="arrow-right"></span>
+        {{'PLAY' | translate}}
+      </button>
 
-      <button  class="custom-btn" ion-button block (click)="navigateToDetailsPage(content)" *ngIf="!content.isAvailableLocally">{{ 'DOWNLOAD_AND_PLAY' | translate}}</button>
-      <button  class="custom-btn" ion-button block (click)="navigateToDetailsPage(content)" *ngIf="content.isAvailableLocally">{{ 'PLAY' | translate}}</button>
-
-      <div class="badge"> {{content.contentData.contentType}} </div>
     </ion-card>
   </div>
 

@@ -24,7 +24,7 @@ import {
   ProfileType,
   UserProfileService,
   ProfileService
-} from "sunbird";
+} from 'sunbird';
 import {
   initTabs,
   GUEST_TEACHER_TABS,
@@ -50,6 +50,7 @@ import { EnrolledCourseDetailsPage } from '../pages/enrolled-course-details/enro
 import { ProfileConstants } from './app.constant';
 import { FormAndFrameworkUtilService } from '../pages/profile/formandframeworkutil.service';
 import { AppGlobalService } from '../service/app-global.service';
+import { UserTypeSelectionPage } from '../pages/user-type-selection/user-type-selection';
 
 declare var chcp: any;
 
@@ -93,7 +94,8 @@ export class MyApp {
     private event: Events,
     private profile: ProfileService,
     private preferences: SharedPreferences,
-    private container: ContainerService
+    private container: ContainerService,
+    private appGlobal: AppGlobalService
   ) {
 
     let that = this;
@@ -139,8 +141,23 @@ export class MyApp {
                   initTabs(this.containerService, GUEST_TEACHER_TABS);
                 }
 
-                that.rootPage = TabsPage;
+                //Check if User has filled all the required information of the on boarding preferences
+                this.profile.getCurrentUser((response) => {
+                  response = JSON.parse(response);
+                  if (response
+                    && response.syllabus && response.syllabus[0]
+                    && response.board && response.board.length
+                    && response.grade && response.grade.length
+                    && response.medium && response.medium.length) {
+                    this.appGlobal.isOnBoardingCompleted = true;
+                    this.nav.setRoot(TabsPage);
+                  } else {
+                    this.appGlobal.isOnBoardingCompleted = false;
+                    this.nav.insertPages(0, [{ page: LanguageSettingsPage }, { page: UserTypeSelectionPage }]);
+                  }
+                }, error => { });
               } else {
+                this.appGlobal.isOnBoardingCompleted = false;
                 that.rootPage = LanguageSettingsPage;
               }
             });

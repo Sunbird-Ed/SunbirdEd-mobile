@@ -62,7 +62,7 @@ done
 rm -rf platforms
 
 
-ionic cordova platforms add android
+ionic cordova platforms add android@7.0.0
 
 ionic cordova build android --prod --release --buildConfig ./buildConfig/build.json
 

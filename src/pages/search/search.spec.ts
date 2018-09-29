@@ -1,38 +1,59 @@
 import { PBHorizontal } from './../../component/pbhorizontal/pb-horizontal';
 import { PipesModule } from './../../pipes/pipes.module';
-import { async, TestBed, ComponentFixture } from '@angular/core/testing';
-import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
-import { HttpClientModule } from "@angular/common/http";
+import {
+    async,
+    TestBed,
+    ComponentFixture
+} from '@angular/core/testing';
+import {
+    TranslateModule,
+    TranslateLoader
+} from '@ngx-translate/core';
+import { HttpClientModule } from '@angular/common/http';
 import { Network } from '@ionic-native/network';
 import { SearchPage } from './search';
 import { DirectivesModule } from '../../directives/directives.module';
 import { AppGlobalService } from '../../service/app-global.service';
-
-
 import {
-    NavController, Events, IonicModule, NavParams
+    NavController,
+    Events,
+    IonicModule,
+    NavParams
 } from 'ionic-angular';
-
 import {
     NetworkMock,
 } from 'ionic-mocks';
-
 import {
-    AuthService, FrameworkModule,
-    ContentService, TelemetryService, CourseService, ShareUtil, FrameworkService, SharedPreferences, ProfileType, FileUtil, PageId
-} from "sunbird";
-
+    AuthService,
+    FrameworkModule,
+    ContentService,
+    TelemetryService,
+    CourseService,
+    ShareUtil,
+    SharedPreferences,
+    ProfileType,
+    FileUtil,
+    PageId
+} from 'sunbird';
 import {
-    NavMock, TranslateLoaderMock, AuthServiceMock, FormAndFrameworkUtilServiceMock, NavParamsMockNew, AppGlobalServiceMock, PopoverControllerMock
+    NavMock,
+    TranslateLoaderMock,
+    AuthServiceMock,
+    NavParamsMockNew,
+    AppGlobalServiceMock,
+    PopoverControllerMock
 } from '../../../test-config/mocks-ionic';
-
 import { } from 'jasmine';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
 import { AppVersion } from '@ionic-native/app-version';
 import { CommonUtilService } from '../../service/common-util.service';
-import { mockRes } from "../search/search.spec.data";
-import { AudienceFilter, ContentType, MimeType } from '../../app/app.constant';
+import { mockRes } from '../search/search.spec.data';
+import {
+    AudienceFilter,
+    ContentType,
+    MimeType
+} from '../../app/app.constant';
 import { Platform } from 'ionic-angular';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
@@ -70,7 +91,7 @@ describe('SearchPage Component', () => {
                 // { provide: FormAndFrameworkUtilService, useClass: FormAndFrameworkUtilServiceMock },
                 { provide: PopoverController, useFactory: () => PopoverControllerMock.instance() }
             ]
-        })
+        });
     }));
 
     beforeEach(() => {
@@ -84,15 +105,15 @@ describe('SearchPage Component', () => {
         component = fixture.componentInstance;
     });
 
-    it("#subscribeUtilityEvents should handle device Back button", function () {
+    it('#subscribeUtilityEvents should handle device Back button', () => {
         const platform = TestBed.get(Platform);
         const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
-        spyOn(platform, 'registerBackButtonAction').and.callFake(function (success) {
+        spyOn(platform, 'registerBackButtonAction').and.callFake((success) => {
             return success();
         });
         spyOn(telemetryGeneratorService, 'generateEndTelemetry').and.callFake(() => { });
         spyOn(component, 'generateQRSessionEndEvent');
-        component.dialCode = "SAMPLE_DIAL_CODE";
+        component.dialCode = 'SAMPLE_DIAL_CODE';
         component.source = PageId.CONTENT_DETAIL;
         component.backButtonFunc = jasmine.createSpy();
         component.shouldGenerateEndTelemetry = true;
@@ -102,13 +123,13 @@ describe('SearchPage Component', () => {
     });
 
 
-    it("#handleNavBackButton should handle nav back button click", function () {
+    it('#handleNavBackButton should handle nav back button click', () => {
         const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
         spyOn(telemetryGeneratorService, 'generateEndTelemetry').and.callFake(() => { });
         const navCtrl = TestBed.get(NavController);
         spyOn(navCtrl, 'pop');
         spyOn(component, 'generateQRSessionEndEvent').and.callThrough();
-        component.dialCode = "SAMPLE_DIAL_CODE";
+        component.dialCode = 'SAMPLE_DIAL_CODE';
         component.source = PageId.CONTENT_DETAIL;
         component.shouldGenerateEndTelemetry = true;
         component.backButtonFunc = jasmine.createSpy();
@@ -117,74 +138,74 @@ describe('SearchPage Component', () => {
         expect(navCtrl.pop).toHaveBeenCalled();
     });
 
-    it("#checkParent should invoke showContentDetils if content is locally available", function () {
+    it('#checkParent should invoke showContentDetils if content is locally available', () => {
         const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'getContentDetail').and.callFake(function ({ }, success) {
+        spyOn(contentService, 'getContentDetail').and.callFake(({ }, success) => {
             return success(JSON.stringify(mockRes.contentDetailsResponse));
         });
         spyOn(component, 'showContentDetails');
-        component.checkParent({ identifier: "SAMPLE_PARENT_ID" }, { identifier: "SAMPLE_CHILD_ID" });
+        component.checkParent({ identifier: 'SAMPLE_PARENT_ID' }, { identifier: 'SAMPLE_CHILD_ID' });
         expect(component.showContentDetails).toHaveBeenCalled();
     });
 
-    it("#checkParent should download parent if content is not locally available", function () {
+    it('#checkParent should download parent if content is not locally available', () => {
         const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'getContentDetail').and.callFake(function ({ }, success) {
+        spyOn(contentService, 'getContentDetail').and.callFake(({ }, success) => {
             return success(JSON.stringify(mockRes.locallyNotAvailableContentDetailsResponse));
         });
         spyOn(component, 'subscribeGenieEvent');
         spyOn(component, 'downloadParentContent');
-        component.checkParent({ identifier: "SAMPLE_PARENT_ID" }, { identifier: "SAMPLE_CHILD_ID" });
+        component.checkParent({ identifier: 'SAMPLE_PARENT_ID' }, { identifier: 'SAMPLE_CHILD_ID' });
         expect(component.downloadParentContent).toHaveBeenCalled();
         expect(component.subscribeGenieEvent).toHaveBeenCalled();
     });
 
-    it("#checkParent should invoke showContentDetils if response is empty", function () {
+    it('#checkParent should invoke showContentDetils if response is empty', () => {
         const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'getContentDetail').and.callFake(function ({ }, success) {
+        spyOn(contentService, 'getContentDetail').and.callFake(({ }, success) => {
             return success(JSON.stringify({}));
         });
         spyOn(component, 'showContentDetails');
-        component.checkParent({ identifier: "SAMPLE_PARENT_ID" }, { identifier: "SAMPLE_CHILD_ID" });
+        component.checkParent({ identifier: 'SAMPLE_PARENT_ID' }, { identifier: 'SAMPLE_CHILD_ID' });
         expect(component.showContentDetails).toHaveBeenCalled();
     });
 
-    it("#checkParent should handle error scenarios returned from getContentDetials API", function () {
+    it('#checkParent should handle error scenarios returned from getContentDetials API', () => {
         const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'getContentDetail').and.callFake(function ({ }, success, error) {
+        spyOn(contentService, 'getContentDetail').and.callFake(({ }, success, error) => {
             return error();
         });
         spyOn(component, 'showContentDetails');
-        component.checkParent({ identifier: "SAMPLE_PARENT_ID" }, { identifier: "SAMPLE_CHILD_ID" });
+        component.checkParent({ identifier: 'SAMPLE_PARENT_ID' }, { identifier: 'SAMPLE_CHILD_ID' });
         expect(component.showContentDetails).not.toHaveBeenCalled();
     });
 
 
-    it("#subscribeGenieEvent should update the download progress when download progress event comes", function () {
+    it('#subscribeGenieEvent should update the download progress when download progress event comes', () => {
         const events = TestBed.get(Events);
-        spyOn(events, 'subscribe').and.callFake(function ({ }, success) {
+        spyOn(events, 'subscribe').and.callFake(({ }, success) => {
             return success(mockRes.downloadProgressEventSample1);
         });
         component.subscribeGenieEvent();
-        expect(component.loadingDisplayText).toBe("Loading content 10 %");
+        expect(component.loadingDisplayText).toBe('Loading content 10 %');
     });
 
-    it("#subscribeGenieEvent should update the download progress when download progress event comes and its 100", function () {
+    it('#subscribeGenieEvent should update the download progress when download progress event comes and its 100', () => {
         const events = TestBed.get(Events);
-        spyOn(events, 'subscribe').and.callFake(function ({ }, success) {
+        spyOn(events, 'subscribe').and.callFake(({ }, success) => {
             return success(mockRes.downloadProgressEventSample2);
         });
         component.subscribeGenieEvent();
-        expect(component.loadingDisplayText).toBe("Loading content ");
+        expect(component.loadingDisplayText).toBe('Loading content ');
     });
 
-    it("#subscribeGenieEvent should  invoke showContentDetails", function () {
+    it('#subscribeGenieEvent should  invoke showContentDetails', () => {
         const events = TestBed.get(Events);
         const navController = TestBed.get(NavController);
         spyOn(navController, 'push');
         spyOn(component, 'showContentDetails');
         spyOn(events, 'publish');
-        spyOn(events, 'subscribe').and.callFake(function ({ }, success) {
+        spyOn(events, 'subscribe').and.callFake(({ }, success) => {
             return success(mockRes.importCompleteEvent);
         });
         component.isDownloadStarted = true;
@@ -194,16 +215,15 @@ describe('SearchPage Component', () => {
         expect(events.publish).toHaveBeenCalledWith('savedResources:update', {
             update: true
         });
-
     });
 
-    it("#subscribeGenieEvent should  publish save resource update event", function () {
+    it('#subscribeGenieEvent should  publish save resource update event', () => {
         const events = TestBed.get(Events);
         const navController = TestBed.get(NavController);
         spyOn(navController, 'push');
         spyOn(component, 'showContentDetails');
         spyOn(events, 'publish');
-        spyOn(events, 'subscribe').and.callFake(function ({ }, success) {
+        spyOn(events, 'subscribe').and.callFake(({ }, success) => {
             return success(mockRes.importCompleteEvent);
         });
         component.queuedIdentifiers = ['SAMPLE_ID'];
@@ -212,13 +232,12 @@ describe('SearchPage Component', () => {
         expect(events.publish).toHaveBeenCalledWith('savedResources:update', {
             update: true
         });
-
     });
 
-    it("#cancelDownload should cancel the download", function () {
+    it('#cancelDownload should cancel the download', () => {
         const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'cancelDownload').and.callFake(function ({ }, success, error) {
-            let data = JSON.stringify({})
+        spyOn(contentService, 'cancelDownload').and.callFake(({ }, success, error) => {
+            const data = JSON.stringify({});
             return success(data);
         });
         component.parentContent = { identifier: 'SAMPLE_ID' };
@@ -226,10 +245,10 @@ describe('SearchPage Component', () => {
         expect(component.showLoading).toBe(false);
     });
 
-    it("#cancelDownload should handle error scenario from API", function () {
+    it('#cancelDownload should handle error scenario from API', () => {
         const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'cancelDownload').and.callFake(function ({ }, success, error) {
-            let data = JSON.stringify({})
+        spyOn(contentService, 'cancelDownload').and.callFake(({ }, success, error) => {
+            const data = JSON.stringify({});
             return error(data);
         });
         component.parentContent = { identifier: 'SAMPLE_ID' };
@@ -237,7 +256,7 @@ describe('SearchPage Component', () => {
         expect(component.showLoading).toBe(false);
     });
 
-    it("#checkUserSession should populate userType for guest(TEACHER) profiles", function () {
+    it('#checkUserSession should populate userType for guest(TEACHER) profiles', () => {
         const appGlobal = TestBed.get(AppGlobalService);
         spyOn(appGlobal, 'isUserLoggedIn').and.returnValue(false);
         spyOn(appGlobal, 'getCurrentUser');
@@ -247,7 +266,7 @@ describe('SearchPage Component', () => {
         expect(appGlobal.getCurrentUser).toHaveBeenCalled();
     });
 
-    it("#checkUserSession should populate userType for guest(STUDENT) profiles", function () {
+    it('#checkUserSession should populate userType for guest(STUDENT) profiles', () => {
         const appGlobal = TestBed.get(AppGlobalService);
         spyOn(appGlobal, 'getCurrentUser');
         spyOn(appGlobal, 'isUserLoggedIn').and.returnValue(false);
@@ -257,7 +276,7 @@ describe('SearchPage Component', () => {
         expect(appGlobal.getCurrentUser).toHaveBeenCalled();
     });
 
-    it("#checkUserSession should update the filter incase of logged in user", function () {
+    it('#checkUserSession should update the filter incase of logged in user', () => {
         const appGlobal = TestBed.get(AppGlobalService);
         spyOn(appGlobal, 'getCurrentUser');
         spyOn(appGlobal, 'isUserLoggedIn').and.returnValue(true);
@@ -266,16 +285,16 @@ describe('SearchPage Component', () => {
         expect(component.profile).toBeUndefined();
     });
 
-    it("#downloadParentContent should populate queuedIdentifier for successfull API calls", function (done) {
+    it('#downloadParentContent should populate queuedIdentifier for successfull API calls', (done) => {
         const contentService = TestBed.get(ContentService);
         const fileUtil = TestBed.get(FileUtil);
-        spyOn(fileUtil, 'internalStoragePath').and.returnValue("");
-        spyOn(contentService, 'importContent').and.callFake(function ({ }, success, error) {
-            let data = JSON.stringify((mockRes.enqueuedImportContentResponse))
+        spyOn(fileUtil, 'internalStoragePath').and.returnValue('');
+        spyOn(contentService, 'importContent').and.callFake(({ }, success, error) => {
+            const data = JSON.stringify((mockRes.enqueuedImportContentResponse));
             return success(data);
         });
         component.isDownloadStarted = true;
-        component.downloadParentContent({ identifier: "SAMPLE_ID" });
+        component.downloadParentContent({ identifier: 'SAMPLE_ID' });
         setTimeout(() => {
             expect(component.queuedIdentifiers).toEqual(['SAMPLE_ID']);
             done();
@@ -283,99 +302,99 @@ describe('SearchPage Component', () => {
 
     });
 
-    it("#downloadParentContent should show error if nothing is added in queuedIdentifiers ", function () {
+    it('#downloadParentContent should show error if nothing is added in queuedIdentifiers ', () => {
         const contentService = TestBed.get(ContentService);
         const commonUtilService = TestBed.get(CommonUtilService);
         const fileUtil = TestBed.get(FileUtil);
-        spyOn(fileUtil, 'internalStoragePath').and.returnValue("");
+        spyOn(fileUtil, 'internalStoragePath').and.returnValue('');
         spyOn(commonUtilService, 'showToast');
-        spyOn(contentService, 'importContent').and.callFake(function ({ }, success, error) {
-            let data = JSON.stringify((mockRes.enqueuedOthersImportContentResponse))
+        spyOn(contentService, 'importContent').and.callFake(({ }, success, error) => {
+            const data = JSON.stringify((mockRes.enqueuedOthersImportContentResponse));
             return success(data);
         });
 
         component.isDownloadStarted = false;
-        component.downloadParentContent({ identifier: "SAMPLE_ID" });
+        component.downloadParentContent({ identifier: 'SAMPLE_ID' });
         expect(component.queuedIdentifiers.length).toEqual(0);
         expect(commonUtilService.showToast).toHaveBeenCalledWith('ERROR_CONTENT_NOT_AVAILABLE');
     });
 
-    it("#downloadParentContent should show error if nothing is added in queuedIdentifiers  and network is not available", function () {
+    it('#downloadParentContent should show error if nothing is added in queuedIdentifiers  and network is not available', () => {
         const contentService = TestBed.get(ContentService);
         const commonUtilService = TestBed.get(CommonUtilService);
         const fileUtil = TestBed.get(FileUtil);
-        const network = TestBed.get(Network)
-        spyOn(fileUtil, 'internalStoragePath').and.returnValue("");
+        const network = TestBed.get(Network);
+        spyOn(fileUtil, 'internalStoragePath').and.returnValue('');
         spyOn(commonUtilService, 'showToast');
 
         spyOnProperty(network, 'type').and.returnValue('none');
-        spyOn(contentService, 'importContent').and.callFake(function ({ }, success, error) {
-            let data = JSON.stringify((mockRes.enqueuedOthersImportContentResponse))
+        spyOn(contentService, 'importContent').and.callFake(({ }, success, error) => {
+            const data = JSON.stringify((mockRes.enqueuedOthersImportContentResponse));
             return success(data);
         });
 
         component.isDownloadStarted = false;
-        component.downloadParentContent({ identifier: "SAMPLE_ID" });
+        component.downloadParentContent({ identifier: 'SAMPLE_ID' });
         expect(component.queuedIdentifiers.length).toEqual(0);
         expect(commonUtilService.showToast).toHaveBeenCalledWith('ERROR_OFFLINE_MODE');
     });
 
-    it("#downloadParentContent should restore the download state for error condition from importContent", function () {
+    it('#downloadParentContent should restore the download state for error condition from importContent', () => {
         const contentService = TestBed.get(ContentService);
         const commonUtilService = TestBed.get(CommonUtilService);
         const fileUtil = TestBed.get(FileUtil);
-        spyOn(fileUtil, 'internalStoragePath').and.returnValue("");
+        spyOn(fileUtil, 'internalStoragePath').and.returnValue('');
         spyOn(commonUtilService, 'showToast');
 
-        spyOn(contentService, 'importContent').and.callFake(function ({ }, success, error) {
-            let data = JSON.stringify((mockRes.enqueuedOthersImportContentResponse))
+        spyOn(contentService, 'importContent').and.callFake(({ }, success, error) => {
+            const data = JSON.stringify((mockRes.enqueuedOthersImportContentResponse));
             return error(data);
         });
 
         component.isDownloadStarted = false;
-        component.downloadParentContent({ identifier: "SAMPLE_ID" });
+        component.downloadParentContent({ identifier: 'SAMPLE_ID' });
         expect(component.queuedIdentifiers.length).toEqual(0);
     });
-    it("#downloadParentContent should show error if nothing is added in queuedIdentifiers ", function () {
+    it('#downloadParentContent should show error if nothing is added in queuedIdentifiers ', () => {
         const contentService = TestBed.get(ContentService);
         const commonUtilService = TestBed.get(CommonUtilService);
         const fileUtil = TestBed.get(FileUtil);
-        spyOn(fileUtil, 'internalStoragePath').and.returnValue("");
+        spyOn(fileUtil, 'internalStoragePath').and.returnValue('');
         spyOn(commonUtilService, 'showToast');
-        spyOn(contentService, 'importContent').and.callFake(function ({ }, success, error) {
-            let data = JSON.stringify((mockRes.enqueuedOthersImportContentResponse))
+        spyOn(contentService, 'importContent').and.callFake(({ }, success, error) => {
+            const data = JSON.stringify((mockRes.enqueuedOthersImportContentResponse));
             return success(data);
         });
 
         component.isDownloadStarted = false;
-        component.downloadParentContent({ identifier: "SAMPLE_ID" });
+        component.downloadParentContent({ identifier: 'SAMPLE_ID' });
         expect(component.queuedIdentifiers.length).toEqual(0);
         expect(commonUtilService.showToast).toHaveBeenCalledWith('ERROR_CONTENT_NOT_AVAILABLE');
     });
 
-    it("#openCollection should invoke showContentDetails", function () {
+    it('#openCollection should invoke showContentDetails', () => {
         spyOn(component, 'showContentDetails');
-        component.openCollection({ identifier: "SAMPLE_ID" });
+        component.openCollection({ identifier: 'SAMPLE_ID' });
         expect(component.showContentDetails).toHaveBeenCalled();
     });
 
-    it("#openContent should invoke checkParent", function () {
+    it('#openContent should invoke checkParent', () => {
         const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
         spyOn(telemetryGeneratorService, 'generateInteractTelemetry').and.callFake(() => { });
         spyOn(component, 'checkParent');
-        component.openContent({ identifier: "SAMPLE_COLLECTION_ID" }, { identifier: "SAMPLE_ID" }, 0);
+        component.openContent({ identifier: 'SAMPLE_COLLECTION_ID' }, { identifier: 'SAMPLE_ID' }, 0);
         expect(component.checkParent).toHaveBeenCalled();
     });
 
-    it("#openContent should invoke showContentDetails", function () {
+    it('#openContent should invoke showContentDetails', () => {
         const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
         spyOn(telemetryGeneratorService, 'generateInteractTelemetry').and.callFake(() => { });
         spyOn(component, 'showContentDetails');
-        component.openContent(undefined, { identifier: "SAMPLE_ID" }, 0);
+        component.openContent(undefined, { identifier: 'SAMPLE_ID' }, 0);
         expect(component.showContentDetails).toHaveBeenCalled();
     });
 
-    it("#ionViewWillLeave should unsubscribe genie events", function () {
+    it('#ionViewWillLeave should unsubscribe genie events', () => {
         const events = TestBed.get(Events);
         spyOn(events, 'unsubscribe').and.callFake(() => { });
         spyOn(component, 'showContentDetails');
@@ -383,14 +402,14 @@ describe('SearchPage Component', () => {
         expect(events.unsubscribe).toHaveBeenCalledWith('genie.event');
     });
 
-    it("#showContentDetails should navigate to EnrolledCourseDetails Page", function () {
+    it('#showContentDetails should navigate to EnrolledCourseDetails Page', () => {
         const navCtrl = TestBed.get(NavController);
         spyOn(navCtrl, 'push');
         component.source = PageId.CONTENT_DETAIL;
         component.shouldGenerateEndTelemetry = true;
-        component.showContentDetails({ identifier: "SAMPLE_ID", contentType: ContentType.COURSE });
+        component.showContentDetails({ identifier: 'SAMPLE_ID', contentType: ContentType.COURSE });
         expect(navCtrl.push).toHaveBeenCalledWith(EnrolledCourseDetailsPage, {
-            content: { identifier: "SAMPLE_ID", contentType: ContentType.COURSE },
+            content: { identifier: 'SAMPLE_ID', contentType: ContentType.COURSE },
             corRelation: this.corRelationList,
             source: PageId.CONTENT_DETAIL,
             shouldGenerateEndTelemetry: true,
@@ -400,10 +419,10 @@ describe('SearchPage Component', () => {
         component.searchOnChange();
     });
 
-    it("#showContentDetails should navigate to CollectionDetails Page", function () {
+    it('#showContentDetails should navigate to CollectionDetails Page', () => {
         const navCtrl = TestBed.get(NavController);
         spyOn(navCtrl, 'push');
-        let content = { identifier: "SAMPLE_ID", mimeType: MimeType.COLLECTION };
+        const content = { identifier: 'SAMPLE_ID', mimeType: MimeType.COLLECTION };
         component.showContentDetails(content);
         expect(navCtrl.push).toHaveBeenCalledWith(CollectionDetailsPage, {
             content: content,
@@ -412,10 +431,10 @@ describe('SearchPage Component', () => {
         });
     });
 
-    it("#showContentDetails should navigate to ContentDetails Page", function () {
+    it('#showContentDetails should navigate to ContentDetails Page', () => {
         const navCtrl = TestBed.get(NavController);
         spyOn(navCtrl, 'push');
-        let content = { identifier: "SAMPLE_ID", contentType: ContentType.GAME };
+        const content = { identifier: 'SAMPLE_ID', contentType: ContentType.GAME };
         component.showContentDetails(content);
         expect(navCtrl.push).toHaveBeenCalledWith(ContentDetailsPage, {
             content: content,
@@ -424,7 +443,7 @@ describe('SearchPage Component', () => {
         });
     });
 
-    it("#handleSearch should not invoke search API if searched keyword is less than 3", function () {
+    it('#handleSearch should not invoke search API if searched keyword is less than 3', () => {
         const contentService = TestBed.get(ContentService);
         spyOn(contentService, 'searchContent');
         component.searchKeywords = 'Te';
@@ -432,20 +451,20 @@ describe('SearchPage Component', () => {
         expect(contentService.searchContent).not.toHaveBeenCalled();
     });
 
-    it("#handleSearch should not invoke search API if searched keyword is greater than 3", function () {
+    it('#handleSearch should not invoke search API if searched keyword is greater than 3', () => {
         const contentService = TestBed.get(ContentService);
-        let windowObj = window['cordova'] = {};
-        let plugins = windowObj['plugins'] = {};
+        const windowObj = window['cordova'] = {};
+        const plugins = windowObj['plugins'] = {};
         plugins['Keyboard'] = {
             close: () => ({})
-        }
+        };
         spyOn(plugins['Keyboard'], 'close').and.callFake((error) => {
         });
 
         const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
         spyOn(telemetryGeneratorService, 'generateLogEvent').and.callFake(() => { });
 
-        spyOn(contentService, 'searchContent').and.callFake(function (reqBody, boolean1, boolean2, boolean3, success, error) {
+        spyOn(contentService, 'searchContent').and.callFake((reqBody, boolean1, boolean2, boolean3, success, error) => {
             return success(JSON.stringify(mockRes.searchResponse));
         });
         component.searchKeywords = 'Test';
@@ -456,20 +475,20 @@ describe('SearchPage Component', () => {
         expect(component.showLoader).toBe(false);
     });
 
-    it("#handleSearch should handle if empty response from search API", function () {
+    it('#handleSearch should handle if empty response from search API', () => {
         const contentService = TestBed.get(ContentService);
-        let windowObj = window['cordova'] = {};
-        let plugins = windowObj['plugins'] = {};
+        const windowObj = window['cordova'] = {};
+        const plugins = windowObj['plugins'] = {};
         plugins['Keyboard'] = {
             close: () => ({})
-        }
+        };
         spyOn(plugins['Keyboard'], 'close').and.callFake((error) => {
         });
 
         const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
         spyOn(telemetryGeneratorService, 'generateLogEvent').and.callFake(() => { });
 
-        spyOn(contentService, 'searchContent').and.callFake(function (reqBody, boolean1, boolean2, boolean3, success, error) {
+        spyOn(contentService, 'searchContent').and.callFake((reqBody, boolean1, boolean2, boolean3, success, error) => {
             return success(JSON.stringify({}));
         });
         component.searchKeywords = 'Test';
@@ -481,21 +500,20 @@ describe('SearchPage Component', () => {
         expect(component.isEmptyResult).toBe(true);
     });
 
-
-    it("#handleSearch should handle error response from search API", function () {
+    it('#handleSearch should handle error response from search API', () => {
         const contentService = TestBed.get(ContentService);
-        let windowObj = window['cordova'] = {};
-        let plugins = windowObj['plugins'] = {};
+        const windowObj = window['cordova'] = {};
+        const plugins = windowObj['plugins'] = {};
         plugins['Keyboard'] = {
             close: () => ({})
-        }
+        };
         spyOn(plugins['Keyboard'], 'close').and.callFake((error) => {
         });
 
         const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
         spyOn(telemetryGeneratorService, 'generateLogEvent').and.callFake(() => { });
 
-        spyOn(contentService, 'searchContent').and.callFake(function (reqBody, boolean1, boolean2, boolean3, success, error) {
+        spyOn(contentService, 'searchContent').and.callFake((reqBody, boolean1, boolean2, boolean3, success, error) => {
             return error(JSON.stringify({}));
         });
 
@@ -511,9 +529,9 @@ describe('SearchPage Component', () => {
         expect(commonUtilService.showToast).toHaveBeenCalledWith('ERROR_OFFLINE_MODE');
     });
 
-    it("#getContentForDialCode should not invoke search API for empty dialcode", function () {
+    it('#getContentForDialCode should not invoke search API for empty dialcode', () => {
         const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'searchContent').and.callFake(function (reqBody, boolean1, boolean2, boolean3, success, error) {
+        spyOn(contentService, 'searchContent').and.callFake((reqBody, boolean1, boolean2, boolean3, success, error) => {
             return success(JSON.stringify(mockRes.dialCodesearchResultResponse));
         });
 
@@ -524,10 +542,10 @@ describe('SearchPage Component', () => {
         expect(contentService.searchContent).not.toHaveBeenCalled();
     });
 
-    it("#getContentForDialCode should show error toast if there is no internet connection", function () {
+    it('#getContentForDialCode should show error toast if there is no internet connection', () => {
         const contentService = TestBed.get(ContentService);
         const commonUtilService = TestBed.get(CommonUtilService);
-        spyOn(contentService, 'searchContent').and.callFake(function (reqBody, boolean1, boolean2, boolean3, success, error) {
+        spyOn(contentService, 'searchContent').and.callFake((reqBody, boolean1, boolean2, boolean3, success, error) => {
             return error();
         });
         spyOn(commonUtilService, 'showToast');
@@ -539,11 +557,9 @@ describe('SearchPage Component', () => {
         expect(commonUtilService.showToast).toHaveBeenCalledWith('ERROR_OFFLINE_MODE');
     });
 
-
-
-    it("#getContentForDialCode should invoke serach API if it is invoked for a dialocode", function () {
+    it('#getContentForDialCode should invoke serach API if it is invoked for a dialocode', () => {
         const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'searchContent').and.callFake(function (reqBody, boolean1, boolean2, boolean3, success, error) {
+        spyOn(contentService, 'searchContent').and.callFake((reqBody, boolean1, boolean2, boolean3, success, error) => {
             return success(JSON.stringify(mockRes.dialCodesearchResultResponse));
         });
 
@@ -559,9 +575,9 @@ describe('SearchPage Component', () => {
     });
 
 
-    it("#getContentForDialCode should populate dialcodeContent Result", function () {
+    it('#getContentForDialCode should populate dialcodeContent Result', () => {
         const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'searchContent').and.callFake(function (reqBody, boolean1, boolean2, boolean3, success, error) {
+        spyOn(contentService, 'searchContent').and.callFake((reqBody, boolean1, boolean2, boolean3, success, error) => {
             return success(JSON.stringify(mockRes.dialCodesearchResultResponse4));
         });
 
@@ -576,13 +592,13 @@ describe('SearchPage Component', () => {
     });
 
 
-    it("#getContentForDialCode should navigate to collection details if it is not associated to any Textbook", function () {
+    it('#getContentForDialCode should navigate to collection details if it is not associated to any Textbook', () => {
         const contentService = TestBed.get(ContentService);
         const navController = TestBed.get(NavController);
         const network = TestBed.get(Network);
 
         spyOn(navController, 'pop');
-        spyOn(contentService, 'searchContent').and.callFake(function (reqBody, boolean1, boolean2, boolean3, success, error) {
+        spyOn(contentService, 'searchContent').and.callFake((reqBody, boolean1, boolean2, boolean3, success, error) => {
             return success(JSON.stringify(mockRes.dialCodesearchResultResponse2));
         });
         spyOnProperty(network, 'type').and.returnValue('none');
@@ -594,14 +610,14 @@ describe('SearchPage Component', () => {
         expect(component.showContentDetails).toHaveBeenCalled();
     });
 
-    it("#getContentForDialCode should show Coming soon alert when dial code is not attached to any TextbookUnit", function (done) {
+    it('#getContentForDialCode should show Coming soon alert when dial code is not attached to any TextbookUnit', (done) => {
         const contentService = TestBed.get(ContentService);
         const navController = TestBed.get(NavController);
         const network = TestBed.get(Network);
         const popOverController = TestBed.get(PopoverController);
 
         spyOn(navController, 'pop');
-        spyOn(contentService, 'searchContent').and.callFake(function (reqBody, boolean1, boolean2, boolean3, success, error) {
+        spyOn(contentService, 'searchContent').and.callFake((reqBody, boolean1, boolean2, boolean3, success, error) => {
             return success(JSON.stringify(mockRes.emptyDialCodeResponse));
         });
         spyOnProperty(network, 'type').and.returnValue('none');
@@ -622,7 +638,7 @@ describe('SearchPage Component', () => {
         }, 400);
     });
 
-    it("#showFilter should show  Filter page", function (done) {
+    it('#showFilter should show  Filter page', (done) => {
         const navController = TestBed.get(NavController);
         spyOn(navController, 'push');
         const formAndFrameworkUtilService = TestBed.get(FormAndFrameworkUtilService);
@@ -630,15 +646,15 @@ describe('SearchPage Component', () => {
         component.responseData = mockRes.dialCodesearchResultResponse2;
         component.showFilter();
         setTimeout(() => {
-            expect(navController.push).toHaveBeenCalledWith(FilterPage, { filterCriteria: mockRes.dialCodesearchResultResponse2.result.filterCriteria });
+            expect(navController.push).toHaveBeenCalledWith(FilterPage,
+                { filterCriteria: mockRes.dialCodesearchResultResponse2.result.filterCriteria });
             done();
         }, 300);
-
     });
 
-    it("#applyFilter should apply filter and update the filter icon after filter applied", function () {
+    it('#applyFilter should apply filter and update the filter icon after filter applied', () => {
         const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'searchContent').and.callFake(function (reqBody, boolean1, boolean2, boolean3, success, error) {
+        spyOn(contentService, 'searchContent').and.callFake((reqBody, boolean1, boolean2, boolean3, success, error) => {
             return success(JSON.stringify(mockRes.dialCodesearchResultResponse2));
         });
         spyOn(component, 'updateFilterIcon').and.callThrough();
@@ -649,9 +665,9 @@ describe('SearchPage Component', () => {
     });
 
 
-    it("#applyFilter should invoke processDialCode if filter is being applied on Dial code result", function () {
+    it('#applyFilter should invoke processDialCode if filter is being applied on Dial code result', () => {
         const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'searchContent').and.callFake(function (reqBody, boolean1, boolean2, boolean3, success, error) {
+        spyOn(contentService, 'searchContent').and.callFake((reqBody, boolean1, boolean2, boolean3, success, error) => {
             return success(JSON.stringify(mockRes.dialCodesearchResultResponse2));
         });
         spyOn(component, 'processDialCodeResult').and.callFake(() => { });
@@ -661,9 +677,9 @@ describe('SearchPage Component', () => {
         expect(component.processDialCodeResult).toHaveBeenCalled();
     });
 
-    it("#applyFilter should mark isEmpty parameter true", function () {
+    it('#applyFilter should mark isEmpty parameter true', () => {
         const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'searchContent').and.callFake(function (reqBody, boolean1, boolean2, boolean3, success, error) {
+        spyOn(contentService, 'searchContent').and.callFake((reqBody, boolean1, boolean2, boolean3, success, error) => {
             return success(JSON.stringify(mockRes.emptyDialCodeResponse));
         });
         spyOn(component, 'updateFilterIcon').and.callThrough();
@@ -672,9 +688,9 @@ describe('SearchPage Component', () => {
         expect(component.isEmptyResult).toBe(true);
     });
 
-    it("#applyFilter should mark isEmpty parameter true if empty response comes from API", function () {
+    it('#applyFilter should mark isEmpty parameter true if empty response comes from API', () => {
         const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'searchContent').and.callFake(function (reqBody, boolean1, boolean2, boolean3, success, error) {
+        spyOn(contentService, 'searchContent').and.callFake((reqBody, boolean1, boolean2, boolean3, success, error) => {
             return success(JSON.stringify({ status: false, result: {} }));
         });
         spyOn(component, 'updateFilterIcon').and.callThrough();
@@ -683,9 +699,9 @@ describe('SearchPage Component', () => {
         expect(component.isEmptyResult).toBe(true);
     });
 
-    it("#applyFilter should handle error response from content search API", function () {
+    it('#applyFilter should handle error response from content search API', () => {
         const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'searchContent').and.callFake(function (reqBody, boolean1, boolean2, boolean3, success, error) {
+        spyOn(contentService, 'searchContent').and.callFake((reqBody, boolean1, boolean2, boolean3, success, error) => {
             return error(JSON.stringify({ status: false, result: {} }));
         });
         component.responseData = mockRes.dialCodesearchResultResponse2;
@@ -693,22 +709,22 @@ describe('SearchPage Component', () => {
         expect(component.showLoader).toBe(false);
     });
 
-    it("#updateFilterIcon should not updateFilterIcon", function () {
+    it('#updateFilterIcon should not updateFilterIcon', () => {
         component.responseData = mockRes.dialCodesearchResultResponse3;
         component.updateFilterIcon();
         expect(component.filterIcon).toBe('./assets/imgs/ic_action_filter.png');
     });
 
-    it("#init should invoke getContentForDialCode in the constructor  for valid dialod code", function () {
+    it('#init should invoke getContentForDialCode in the constructor  for valid dialod code', () => {
         spyOn(component, 'getContentForDialCode').and.callFake(() => { });
         NavParamsMockNew.setParams('dialCode', 'SAMPLE_DIAL_CODE');
         component.init();
         expect(component.getContentForDialCode).toHaveBeenCalled();
     });
 
-    it("#init should apply filter if apply filter event comes", function () {
+    it('#init should apply filter if apply filter event comes', () => {
         const events = TestBed.get(Events);
-        spyOn(events, 'subscribe').and.callFake(function ({ }, success) {
+        spyOn(events, 'subscribe').and.callFake(({ }, success) => {
             return success(mockRes.dialCodesearchResultResponse2.result.filterCriteria);
         });
         spyOn(component, 'applyFilter').and.callFake(() => { });
@@ -717,7 +733,7 @@ describe('SearchPage Component', () => {
         expect(component.applyFilter).toHaveBeenCalled();
     });
 
-    it("#ionViewDidEnter should update the isFirstLaunch parameter", function (done) {
+    it('#ionViewDidEnter should update the isFirstLaunch parameter', (done) => {
         component.responseData = mockRes.dialCodesearchResultResponse2;
         component.ionViewDidEnter();
         spyOn(component.searchBar, 'setFocus').and.returnValue(Promise.resolve());
@@ -727,12 +743,4 @@ describe('SearchPage Component', () => {
         }, 200);
     });
 
-
 });
-
-
-
-
-
-
-

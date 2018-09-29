@@ -34,6 +34,8 @@ import { AppGlobalService } from '../../service/app-global.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../service/common-util.service';
 import { PreferenceKey } from '../../app/app.constant';
+import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
+import { UserOnboardingPreferencesPage } from '../user-onboarding-preferences/user-onboarding-preferences';
 
 const selectedCardBorderColor = '#006DE5';
 const borderColor = '#F7F7F7';
@@ -57,6 +59,8 @@ export class UserTypeSelectionPage {
    */
   studentImageUri: string = "assets/imgs/ic_student.png";
   teacherImageUri: string = "assets/imgs/ic_teacher.png";
+  isChangeRoleRequest: boolean = false;
+  showScanner: boolean = false;
 
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
@@ -67,12 +71,21 @@ export class UserTypeSelectionPage {
     private container: ContainerService,
     private zone: NgZone,
     private event: Events,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    private appGlobal: AppGlobalService,
+    private scannerService: SunbirdQRScanner
   ) {
 
     this.profile = this.navParams.get('profile');
   }
 
+  ionViewWillEnter() {
+    this.isChangeRoleRequest = Boolean(this.navParams.get('isChangeRoleRequest'));
+    this.showScanner = Boolean(this.navParams.get('showScanner'));
+    if (this.showScanner) {
+      this.scannerService.startScanner("UserTypeSelectionPage", true);
+    }
+  }
   ionViewDidLoad() {
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW, "",
@@ -177,9 +190,15 @@ export class UserTypeSelectionPage {
       initTabs(this.container, GUEST_STUDENT_TABS);
     }
 
-    this.navCtrl.push(TabsPage, {
-      loginMode: 'guest'
-    });
+    if (this.isChangeRoleRequest) {
+      this.navCtrl.push(UserOnboardingPreferencesPage);
+    } else if (this.appGlobal.isOnBoardingCompleted) {
+      this.navCtrl.push(TabsPage, {
+        loginMode: 'guest'
+      });
+    } else {
+      this.scannerService.startScanner(PageId.LIBRARY, true);
+    }
   }
 
   generateInteractEvent(userType) {

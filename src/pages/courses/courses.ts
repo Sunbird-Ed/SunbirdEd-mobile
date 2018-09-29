@@ -179,10 +179,13 @@ export class CoursesPage implements OnInit {
   }
 
   /**
-	 * Angular life cycle hooks
-	 */
+ * Angular life cycle hooks
+ */
   ngOnInit() {
     this.getCourseTabData();
+  }
+  ionViewDidEnter() {
+    this.isVisible = true;
   }
 
   ionViewDidLoad() {
@@ -224,6 +227,25 @@ export class CoursesPage implements OnInit {
         }
       });
   }
+
+  ionViewCanLeave() {
+    this.ngZone.run(() => {
+      this.events.unsubscribe('genie.event');
+    });
+  }
+
+  ionViewWillLeave(): void {
+    this.tabBarElement.style.display = 'flex';
+    this.ngZone.run(() => {
+      this.events.unsubscribe('genie.event');
+      this.isVisible = false;
+      this.showOverlay = false;
+      this.downloadPercentage = 0;
+    })
+  }
+
+
+
 
   subscribeUtilityEvents() {
     //Event for optional and forceful upgrade
@@ -506,18 +528,6 @@ export class CoursesPage implements OnInit {
     }
 
 
-    this.profile = this.appGlobal.getCurrentUser();
-    if (this.profile && this.profile.syllabus && this.profile.syllabus[0] && this.profile.board && this.profile.board.length
-      && this.profile.grade && this.profile.grade.length
-      && this.profile.medium && this.profile.medium.length) {
-      this.isOnBoardingCardCompleted = true;
-      this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
-    } else {
-      console.log('in else course', this.guestUser);
-      if(this.guestUser) {
-        this.navCtrl.push(UserOnboardingPreferencesPage);
-      }
-    }
   }
 
   scanQRCode() {
@@ -528,31 +538,7 @@ export class CoursesPage implements OnInit {
     this.navCtrl.push(SearchPage, { contentType: ["Course"], source: PageId.COURSES })
   }
 
-  ionViewCanEnter(): boolean {
-    this.profile = this.appGlobal.getCurrentUser();
-		if(!this.guestUser || (this.profile && this.profile.syllabus && this.profile.syllabus[0]
-			&& this.profile.board && this.profile.board.length
-			&& this.profile.grade && this.profile.grade.length
-			&& this.profile.medium && this.profile.medium.length) ) {
-				return true;
-			}else{
-				return false;
-			}
-	}
 
-  ionViewDidEnter() {
-    this.isVisible = true;
-  }
-
-  ionViewWillLeave(): void {
-    this.tabBarElement.style.display = 'flex';
-    this.ngZone.run(() => {
-      this.events.unsubscribe('genie.event');
-      this.isVisible = false;
-      this.showOverlay = false;
-      this.downloadPercentage = 0;
-    })
-  }
 
 
   showFilter() {
@@ -568,8 +554,6 @@ export class CoursesPage implements OnInit {
           let criteria = new PageAssembleCriteria();
           criteria.name = "Course";
           criteria.filters = filter;
-
-
           that.courseFilter = appliedFilter;
           that.appliedFilter = filter;
 
@@ -795,9 +779,5 @@ export class CoursesPage implements OnInit {
     });
   }
 
-  ionViewCanLeave() {
-    this.ngZone.run(() => {
-      this.events.unsubscribe('genie.event');
-    });
-  }
+
 }

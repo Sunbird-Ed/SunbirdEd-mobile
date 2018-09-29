@@ -27,7 +27,7 @@ import { MenuOverflow, PreferenceKey } from '../../../app/app.constant';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 
 /* Interface for the Toast Object */
-export interface toastOptions {
+export interface ToastOptions {
   message: string,
   duration: number,
   position: string
@@ -55,7 +55,7 @@ export class GuestProfilePage {
   selectedLanguage: string;
   loader: any
 
-  options: toastOptions = {
+  options: ToastOptions = {
     message: '',
     duration: 3000,
     position: 'bottom'
@@ -272,7 +272,8 @@ export class GuestProfilePage {
    */
   goToRoles() {
     this.navCtrl.push(UserTypeSelectionPage, {
-      profile: this.profile
+      profile: this.profile,
+      isChangeRoleRequest: true
     });
   }
 

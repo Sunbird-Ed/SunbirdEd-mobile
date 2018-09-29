@@ -1,5 +1,5 @@
-import { Component } from "@angular/core";
-import { NavParams, ViewController, Platform, NavController, IonicApp } from "ionic-angular";
+import { Component } from '@angular/core';
+import { NavParams, ViewController, Platform, NavController, IonicApp } from 'ionic-angular';
 
 @Component({
   selector: 'report-alert',
@@ -8,9 +8,9 @@ import { NavParams, ViewController, Platform, NavController, IonicApp } from "io
 export class ReportAlert {
 
   unregisterBackButton: any;
-  callback: QRAlertCallBack
+  callback: QRAlertCallBack;
   assessmentDetails: {};
-  report: string = 'questions'
+  report = 'questions';
 
   constructor(
     navParams: NavParams,
@@ -40,8 +40,8 @@ export class ReportAlert {
    * It will Dismiss active popup
    */
   dismissPopup() {
-    console.log("Fired ionViewWillLeave");
-    let activePortal = this.ionicApp._modalPortal.getActive() || this.ionicApp._overlayPortal.getActive();
+    console.log('Fired ionViewWillLeave');
+    const activePortal = this.ionicApp._modalPortal.getActive() || this.ionicApp._overlayPortal.getActive();
 
     if (activePortal) {
       activePortal.dismiss();

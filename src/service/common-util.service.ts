@@ -11,16 +11,18 @@ export class CommonUtilService {
 
 
 
-    showToast(translationKey, isInactive?) {
+    showToast(translationKey, isInactive?, cssToast?) {
         if (Boolean(isInactive)) {
             return;
         }
+
         this.translate.get(translationKey).subscribe(
             (value: any) => {
                 let toast = this.toastCtrl.create({
                     message: value,
                     duration: 3000,
-                    position: 'bottom'
+                    position: 'bottom',
+                    cssClass: cssToast ? cssToast : ""
                 });
                 toast.present();
             }

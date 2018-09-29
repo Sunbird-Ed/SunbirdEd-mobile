@@ -56,7 +56,7 @@ export class ShareUserAndGroupPage {
   }
 
   getAllProfile() {
-    let profileRequest: ProfileRequest = {
+    const profileRequest: ProfileRequest = {
       local: true
     };
     this.profileService.getAllUserProfile(profileRequest).then((profiles) => {
@@ -91,7 +91,7 @@ export class ShareUserAndGroupPage {
           let gruopUserRequest: ProfileRequest = {
             local: true,
             groupId: group.gid
-          }
+          };
           this.profileService.getAllUserProfile(gruopUserRequest).then((profiles) => {
             this.zone.run(() => {
               if (profiles && profiles.length) {
@@ -99,7 +99,7 @@ export class ShareUserAndGroupPage {
                 this.userGroupMap.set(group.gid, userForGroups);
               }
               console.log("UserList", profiles);
-            })
+            });
           }).catch((error) => {
             console.log("Something went wrong while fetching user list", error);
           });
@@ -123,12 +123,12 @@ export class ShareUserAndGroupPage {
     let selectedGroup = this.groupList[index];
     let allUser = this.userGroupMap.get(selectedGroup.gid);
 
-    if (this.selectedGroupList.indexOf(selectedGroup.gid) == -1) {
+    if (this.selectedGroupList.indexOf(selectedGroup.gid) === -1) {
       // Add User & Group
       this.selectedGroupList.push(selectedGroup.gid);
       allUser.forEach(profile => {
         let userWeigth = this.userWeightMap.get(profile.uid);
-        if (this.selectedUserList.indexOf(profile.uid) == -1) {
+        if (this.selectedUserList.indexOf(profile.uid) === -1) {
           this.selectedUserList.push(profile.uid);
           userWeigth = 1;
         } else {
@@ -164,7 +164,7 @@ export class ShareUserAndGroupPage {
 
     let userWeigth = this.userWeightMap.get(selectedUser.uid);
 
-    if (this.selectedUserList.indexOf(selectedUser.uid) == -1) {
+    if (this.selectedUserList.indexOf(selectedUser.uid) === -1) {
       // Add User
       this.selectedUserList.push(selectedUser.uid);
       userWeigth += 1;
@@ -178,7 +178,7 @@ export class ShareUserAndGroupPage {
         let groupIndex = this.selectedGroupList.indexOf(gid);
         if (groupIndex > -1) {
           for (let i = 0; i < value.length; i++) {
-            if (value[i].uid == selectedUser.uid) {
+            if (value[i].uid === selectedUser.uid) {
               this.selectedGroupList.splice(groupIndex, 1);
               break;
             }
@@ -192,11 +192,11 @@ export class ShareUserAndGroupPage {
 
 
   isUserSelected(uid: string) {
-    return this.selectedUserList.indexOf(uid) != -1;
+    return this.selectedUserList.indexOf(uid) !== -1;
   }
 
   isGroupSelected(gid: string) {
-    return this.selectedGroupList.indexOf(gid) != -1;
+    return this.selectedGroupList.indexOf(gid) !== -1;
   }
 
   isShareEnabled() {
@@ -235,7 +235,7 @@ export class ShareUserAndGroupPage {
       userIds: this.selectedUserList,
       groupIds: this.selectedGroupList,
       destinationFolder: this.fileUtil.internalStoragePath()
-    }
+    };
 
     let loader = this.loadingCtrl.create({
       duration: 30000,

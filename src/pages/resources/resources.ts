@@ -44,7 +44,6 @@ import { AppVersion } from "@ionic-native/app-version";
 import { updateFilterInSearchQuery } from '../../util/filter.util';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../service/common-util.service';
-import { UserOnboardingPreferencesPage } from '../user-onboarding-preferences/user-onboarding-preferences';
 
 @Component({
 	selector: 'page-resources',
@@ -202,27 +201,6 @@ export class ResourcesPage implements OnInit {
 		});
 	}
 
-	/**
-	 * Ionic life cycle hook
-	 */
-	ionViewCanEnter(): boolean {
-		this.profile = this.appGlobal.getCurrentUser();
-		console.log('in ionViewCanEnter');
-		console.log('in ionViewCanEnter this.guestUser', this.guestUser);
-		console.log('in ionViewCanEnter this.profile', this.profile);
-		// this.profile.getCurrentUser((response) => {
-		if(!this.guestUser || (this.profile && this.profile.syllabus && this.profile.syllabus[0]
-			&& this.profile.board && this.profile.board.length
-			&& this.profile.grade && this.profile.grade.length
-			&& this.profile.medium && this.profile.medium.length) ) {
-				console.log('ionViewCanEnter true');
-				return true;
-			}else{
-				console.log('ionViewCanEnter false');
-				return false;
-			}
-	}
-
 	ionViewWillLeave(): void {
 		this.events.unsubscribe('genie.event');
 	}
@@ -240,23 +218,7 @@ export class ResourcesPage implements OnInit {
 			this.showSignInCard = this.appGlobal.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT;
 			this.audienceFilter = AudienceFilter.GUEST_STUDENT;
 		}
-
 		this.setSavedContent();
-
-		this.profile = this.appGlobal.getCurrentUser();
-		if (this.profile && this.profile.syllabus && this.profile.syllabus[0]
-			&& this.profile.board && this.profile.board.length
-			&& this.profile.grade && this.profile.grade.length
-			&& this.profile.medium && this.profile.medium.length) {
-			this.isOnBoardingCardCompleted = true;
-			this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
-		}else{
-			console.log('in else lib', this.guestUser);
-			if(this.guestUser){
-				console.log('this.guestUser');
-				this.navCtrl.push(UserOnboardingPreferencesPage);
-			}
-		}
 	}
 
 	navigateToViewMoreContentsPage() {
@@ -304,30 +266,30 @@ export class ResourcesPage implements OnInit {
 		// this.localResources = [];
 		console.log('in setSavedContent');
 		// if(this.isOnBoardingCardCompleted || !this.guestUser){
-			// console.log('in setSavedContent isOnBoardingCardCompleted');
-			this.showLoader = true;
-			const requestParams: ContentFilterCriteria = {
-				contentTypes: ContentType.FOR_LIBRARY_TAB,
-				audience: this.audienceFilter
-			};
-			this.contentService.getAllLocalContents(requestParams)
-				.then(data => {
-					_.forEach(data, (value) => {
-						value.contentData.lastUpdatedOn = value.lastUpdatedTime;
-						if (value.contentData.appIcon) {
-							value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
-						}
-					});
-					this.ngZone.run(() => {
-						this.localResources = data;
-						this.showLoader = false;
-					});
-				})
-				.catch(() => {
-						this.ngZone.run(() => {
-							this.showLoader = false;
-						});
-					});
+		// console.log('in setSavedContent isOnBoardingCardCompleted');
+		this.showLoader = true;
+		const requestParams: ContentFilterCriteria = {
+			contentTypes: ContentType.FOR_LIBRARY_TAB,
+			audience: this.audienceFilter
+		};
+		this.contentService.getAllLocalContents(requestParams)
+			.then(data => {
+				_.forEach(data, (value) => {
+					value.contentData.lastUpdatedOn = value.lastUpdatedTime;
+					if (value.contentData.appIcon) {
+						value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
+					}
+				});
+				this.ngZone.run(() => {
+					this.localResources = data;
+					this.showLoader = false;
+				});
+			})
+			.catch(() => {
+				this.ngZone.run(() => {
+					this.showLoader = false;
+				});
+			});
 		// }
 	}
 
@@ -335,7 +297,7 @@ export class ResourcesPage implements OnInit {
 	 * Get popular content
 	 */
 	getPopularContent(isAfterLanguageChange = false, pageAssembleCriteria?: PageAssembleCriteria) {
-		if(this.isOnBoardingCardCompleted || !this.guestUser){
+		if (this.isOnBoardingCardCompleted || !this.guestUser) {
 			this.pageApiLoader = true;
 			//this.noInternetConnection = false;
 			let that = this;

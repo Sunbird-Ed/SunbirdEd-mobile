@@ -23,6 +23,8 @@ import {
 } from "sunbird";
 import { TelemetryGeneratorService } from "../../service/telemetry-generator.service";
 import { QRScannerResultHandler } from "./qrscanresulthandler.service";
+import { UserOnboardingPreferencesPage } from "../user-onboarding-preferences/user-onboarding-preferences";
+import { App } from "ionic-angular";
 
 @Injectable()
 export class SunbirdQRScanner {
@@ -46,7 +48,8 @@ export class SunbirdQRScanner {
     private toastCtrl: ToastController,
     private platform: Platform,
     private qrScannerResultHandler: QRScannerResultHandler,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private app: App
   ) {
     const that = this
     this.translate.get(this.QR_SCANNER_TEXT).subscribe((data) => {
@@ -63,16 +66,13 @@ export class SunbirdQRScanner {
   public startScanner(source: string, showButton: boolean = false,
     screenTitle: String = this.mQRScannerText['SCAN_QR_CODE'],
     displayText: String = this.mQRScannerText['SCAN_QR_INSTRUCTION'],
-    /* istanbul ignore else  */
     displayTextColor: String = "#0b0b0b",
-    /* istanbul ignore else  */
     buttonText: String = this.mQRScannerText['SKIP']
   ) {
 
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.backButtonFunc();
-    }, 10
-    );
+    }, 10);
 
     this.generateStartEvent(source);
 
@@ -125,35 +125,43 @@ export class SunbirdQRScanner {
     });
   }
 
-  public stopScanner(successCallback: () => void = null, errorCallback: () => void = null) {
+  public stopScanner() {
     //Unregister back button listner
     this.backButtonFunc();
-    (<any>window).qrScanner.stopScanner(successCallback, errorCallback);
+    (<any>window).qrScanner.stopScanner();
   }
 
   private startQRScanner(screenTitle: String, displayText: String, displayTextColor: String,
     buttonText: String, showButton: boolean, source: string) {
     window['qrScanner'].startScanner(screenTitle, displayText, displayTextColor, buttonText, showButton, (scannedData) => {
-      if (scannedData === "cancel") {
+      if (scannedData === "skip") {
+        this.app.getActiveNavs()[0].push(UserOnboardingPreferencesPage, { stopScanner: true });
         this.telemetryGeneratorService.generateInteractTelemetry(
           InteractType.OTHER,
-          InteractSubtype.QRCodeScanCancelled,
+          'skip',
           Environment.HOME,
-          PageId.QRCodeScanner);
-        this.generateEndEvent(source, "");
-        return;
-      }
-      if (this.qrScannerResultHandler.isDialCode(scannedData)) {
-        this.qrScannerResultHandler.handleDialCode(source, scannedData);
-      } else if (this.qrScannerResultHandler.isContentId(scannedData)) {
-        this.qrScannerResultHandler.handleContentId(source, scannedData);
+          'QR_SCAN_DIAL_CODE_RESULTS');
+        this.generateEndEvent(source, '');
       } else {
-        this.qrScannerResultHandler.handleInvalidQRCode(source, scannedData);
-        this.showInvalidCodeAlert();
+        if (scannedData === "cancel") {
+          this.telemetryGeneratorService.generateInteractTelemetry(
+            InteractType.OTHER,
+            InteractSubtype.QRCodeScanCancelled,
+            Environment.HOME,
+            PageId.QRCodeScanner);
+          this.generateEndEvent(source, "");
+        } else if (this.qrScannerResultHandler.isDialCode(scannedData)) {
+          this.qrScannerResultHandler.handleDialCode(source, scannedData);
+        } else if (this.qrScannerResultHandler.isContentId(scannedData)) {
+          this.qrScannerResultHandler.handleContentId(source, scannedData);
+        } else {
+          this.qrScannerResultHandler.handleInvalidQRCode(source, scannedData);
+          this.showInvalidCodeAlert();
+        }
+        this.stopScanner();
       }
-      this.stopScanner(null, null);
     }, () => {
-      this.stopScanner(null, null);
+      this.stopScanner();
     });
   }
 

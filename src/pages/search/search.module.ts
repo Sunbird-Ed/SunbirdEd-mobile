@@ -1,14 +1,14 @@
-import { NgModule } from "@angular/core";
-import { SearchPage } from "./search";
-import { IonicPageModule } from "ionic-angular";
-import { FrameworkModule } from "sunbird";
-import { TranslateModule } from "@ngx-translate/core";
-import { FilterPage } from "./filters/filter";
-import { FilterOptions } from "./filters/options/options";
-import { IonicImageLoader } from "ionic-image-loader";
-import { Network } from "@ionic-native/network";
-import { PipesModule } from "../../pipes/pipes.module";
-import { ComponentsModule } from "../../component/components.module";
+import { NgModule } from '@angular/core';
+import { SearchPage } from './search';
+import { IonicPageModule } from 'ionic-angular';
+import { FrameworkModule } from 'sunbird';
+import { TranslateModule } from '@ngx-translate/core';
+import { FilterPage } from './filters/filter';
+import { FilterOptions } from './filters/options/options';
+import { IonicImageLoader } from 'ionic-image-loader';
+import { Network } from '@ionic-native/network';
+import { PipesModule } from '../../pipes/pipes.module';
+import { ComponentsModule } from '../../component/components.module';
 
 @NgModule({
   declarations: [
