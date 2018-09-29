@@ -114,15 +114,7 @@ export class LanguageSettingsPage {
   //   this.language = this.languages[0].code;
   //   this.languages[0].isApplied = true;
   // }
-  ionViewDidEnter() {
-    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
-      this.telemetryGeneratorService.generateImpressionTelemetry(
-        ImpressionType.VIEW, "",
-        PageId.SETTINGS_LANGUAGE ,
-        Environment.SETTINGS
-      );
-    });
-  }
+ 
 
   ionViewDidLoad() {
     this.isFromSettings = this.navParams.get('isFromSettings');
@@ -131,6 +123,15 @@ export class LanguageSettingsPage {
       this.isFromSettings ? PageId.SETTINGS_LANGUAGE : PageId.ONBOARDING_LANGUAGE_SETTING,
       this.isFromSettings ? Environment.SETTINGS : Environment.ONBOARDING,
     );
+
+    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+      this.telemetryGeneratorService.generateInteractTelemetry(
+        InteractType.TOUCH, InteractSubtype.DEVICE_BACK_CLICKED,
+        this.isFromSettings ? PageId.SETTINGS_LANGUAGE : PageId.ONBOARDING_LANGUAGE_SETTING,
+        this.isFromSettings ? Environment.SETTINGS : Environment.ONBOARDING,
+      );
+      this.unregisterBackButton();
+    });
     
   }
 
