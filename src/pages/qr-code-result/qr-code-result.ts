@@ -1,6 +1,6 @@
 import { Component, NgZone, ViewChild } from "@angular/core";
 import { IonicPage, NavController, NavParams, Platform, Navbar } from 'ionic-angular';
-import { ContentService, CorrelationData, ChildContentRequest } from 'sunbird';
+import { ContentService, CorrelationData, ChildContentRequest, InteractSubtype, PageId } from 'sunbird';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 import { ContentType, MimeType } from '../../app/app.constant';
@@ -8,13 +8,8 @@ import { CollectionDetailsPage } from '../collection-details/collection-details'
 import { TranslateService } from '@ngx-translate/core';
 import {
   InteractType,
-  InteractSubtype,
   Environment,
-  PageId,
-  ImpressionType,
-  SharedPreferences,
-  UserSource,
-  Profile
+  ImpressionType
 } from 'sunbird';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 
@@ -66,8 +61,8 @@ export class QrCodeResultPage {
   results: Array<any> = [];
   defaultImg: string;
   parents: Array<any> = [];
-  @ViewChild(Navbar) navBar: Navbar;
 
+  @ViewChild(Navbar) navBar: Navbar;
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -86,9 +81,7 @@ export class QrCodeResultPage {
   ionViewWillEnter(): void {
     this.content = this.navParams.get('content');
     this.corRelationList = this.navParams.get('corRelation');
-    this.shouldGenerateEndTelemetry = this.navParams.get(
-      'shouldGenerateEndTelemetry'
-    );
+    this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
     this.source = this.navParams.get('source');
 
     //check for parent content
@@ -105,33 +98,35 @@ export class QrCodeResultPage {
 
     this.getChildContents();
 
+
+  }
+
+  ionViewDidLoad() {
+    this.telemetryGeneratorService.generateImpressionTelemetry(ImpressionType.VIEW, '',
+      PageId.DIAL_CODE_SCAN_RESULT,Environment.HOME);
+
+    this.navBar.backButtonClick = () => {
+      this.handleNavBackButton();
+      this.navCtrl.pop();
+    };
+
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
       this.telemetryGeneratorService.generateInteractTelemetry(
         InteractType.TOUCH,
-        'DEVICE_BACK',
+        InteractSubtype.DEVICE_BACK_CLICKED,
         Environment.HOME,
-        'QR_SCAN_DIAL_CODE_RESULTS');
+        PageId.DIAL_CODE_SCAN_RESULT);
       this.navCtrl.pop();
       this.unregisterBackButton();
     }, 11);
   }
 
-  ionViewDidLoad() {
-    this.telemetryGeneratorService.generateImpressionTelemetry(ImpressionType.VIEW, '',
-      'QR_SCAN_DIAL_CODE_RESULTS', '', '',
-      Environment.HOME);
-
-    this.navBar.backButtonClick = (e: UIEvent) => {
-      this.handleNavBackButton();
-    };
-  }
-
   handleNavBackButton() {
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
-      'NAV_BACK',
+      InteractSubtype.NAV_BACK_CLICKED,
       Environment.HOME,
-      'QR_SCAN_DIAL_CODE_RESULTS');
+      PageId.DIAL_CODE_SCAN_RESULT);
   }
 
   /**
