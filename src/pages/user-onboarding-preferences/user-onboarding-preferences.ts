@@ -14,10 +14,15 @@ import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.ser
 import {
 	CategoryRequest,
 	SharedPreferences,
-	Profile
+	Profile,
+	ImpressionType,
+	PageId,
+	Environment,
+	InteractType,
+	InteractSubtype
 } from 'sunbird';
 
-import { LoadingController, Events } from 'ionic-angular';
+import { LoadingController, Events, Platform } from 'ionic-angular';
 import { PreferenceKey } from '../../app/app.constant';
 import * as _ from 'lodash';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
@@ -37,12 +42,7 @@ export class UserOnboardingPreferencesPage {
 	userForm: FormGroup;
 	classList = [];
 	profile: Profile;
-	// selectBoard: any;
-	// isSelectBoard: boolean = false;
-	// selectMedium: any;
-	// isSelectMedium: boolean = false;
-	// selectClass: any;
-	// isSelectClass: boolean = false;
+	
 	syllabusList: Array<any> = []
 	BoardList: Array<any> = [];
 	mediumList: Array<any> = [];
@@ -53,6 +53,7 @@ export class UserOnboardingPreferencesPage {
 	frameworkId: string = '';
 	btnColor: string = '#8FC4FF';
 	isEditData: boolean = true;
+	unregisterBackButton: any;
 
 	selectedLanguage: string = 'en';
 
@@ -90,7 +91,8 @@ export class UserOnboardingPreferencesPage {
 		private profileService: ProfileService,
 		private telemetryGeneratorService: TelemetryGeneratorService,
 		private appGlobalService: AppGlobalService,
-		private events: Events
+		private events: Events,
+		private platform: Platform,
 	) {
 		this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
 		.then(val => {
@@ -104,6 +106,17 @@ export class UserOnboardingPreferencesPage {
 	
 	ionViewWillEnter() {
 		this.getSyllabusDetails();
+	}
+
+	ionViewDidEnter() {
+		this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+		  this.telemetryGeneratorService.generateImpressionTelemetry(
+			ImpressionType.VIEW, "",
+			// PageId.ONBOARDING_PREFERENCES ,
+			"ONBOARDING_PREFERENCES",
+			Environment.SETTINGS
+		  );
+		});
 	}
 
 	getGuestUser(){
@@ -149,15 +162,15 @@ export class UserOnboardingPreferencesPage {
 
 					if (this.profile && this.profile.syllabus && this.profile.syllabus[0] !== undefined) {
 						this.formAndFrameworkUtilService.getFrameworkDetails(this.profile.syllabus[0])
-							.then(catagories => {
-								console.log('this.categories',catagories);
-								this.categories = catagories;
-								this.resetForm(0, false);
-							}).catch(error => {
-								console.log('errorrrrrr',error);
-								this.loader.dismiss();
-								this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
-							});
+						.then(catagories => {
+							console.log('this.categories',catagories);
+							this.categories = catagories;
+							this.resetForm(0, false);
+						}).catch(error => {
+							console.log('errorrrrrr',error);
+							this.loader.dismiss();
+							this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
+						});
 					} else {
 						this.loader.dismiss();
 					}
@@ -251,6 +264,7 @@ export class UserOnboardingPreferencesPage {
 	 */
 	resetForm(index, showloader: boolean): void {
 		console.log('in reset form',index);
+		
 		switch (index) {
 			case 0:
 				this.userForm.patchValue({
@@ -353,10 +367,10 @@ export class UserOnboardingPreferencesPage {
 			
 			this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
 			// this.telemetryGeneratorService.generateInteractTelemetry(
-			//   InteractType.OTHER,
-			//   InteractSubtype.EDIT_USER_SUCCESS,
-			//   Environment.USER,
-			//   PageId.EDIT_USER
+			// 	InteractType.OTHER,
+			// 	InteractSubtype.EDIT_USER_SUCCESS,
+			// 	Environment.USER,
+			// 	PageId.ONBOARDING_PREFERENCES
 			// );
 			console.log('======>', this.navCtrl.canGoBack());
 			console.log('------->', this.navCtrl.getViews());
