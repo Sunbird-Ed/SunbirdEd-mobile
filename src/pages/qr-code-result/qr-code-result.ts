@@ -218,6 +218,11 @@ export class QrCodeResultPage {
 		}
 	}
 
+	/**
+	 * request with profile data to set current profile
+	 * 
+	 */
+
 	EditProfile(): void {
         let req: Profile = new Profile();
         req.board = this.profile.board;
@@ -274,7 +279,11 @@ export class QrCodeResultPage {
                 }
             }
         })
-    }
+	}
+	
+	/**
+	 * assigning board, medium, grade and subject to profile 
+	 */
 
     setCurrentProfile(index, data) {
         console.log('setCurrentProfile idx',index);
@@ -330,52 +339,58 @@ export class QrCodeResultPage {
             });
     }
 
-    
+	/**
+	 * checking current profile data with qr result data
+	 */
 
     checkProfileData(data, profile) {
-        if (data.framework == profile.syllabus[0]) {
-            if (!(profile.board.length > 1) && data.board == profile.board[0]) {
-                let existingMedium = false;
-                if(profile.medium){
-                    existingMedium = _.find(profile.medium, (medium) => {
-                        return medium.name == data.medium
-                    });
-                }
-                if (existingMedium) {
-                    
-                    let existingGrade = false;
-                    for(let i=0;i<data.gradeLevel.length;i++){
-                        let gradeExists = _.find(profile.grade, (grade) => {
-                            return grade.name == data.grade[0]
-                        });
-                        if(!gradeExists){
-                            break;
-                        }
-                        existingGrade = true;
-                    }
-                    if (existingGrade) {
-                        let existingSubject = false;
-                        if(profile.subject){
-                            existingSubject = _.find(profile.subject, (subject) => {
-                                return subject.name == data.subject
-                            });
-                        }
-                        if (existingSubject) {
+		if(profile.syllabus && profile.syllabus[0]){
+			if (data.framework == profile.syllabus[0]) {
+				if (!(profile.board.length > 1) && data.board == profile.board[0]) {
+					let existingMedium = false;
+					if(profile.medium){
+						existingMedium = _.find(profile.medium, (medium) => {
+							return medium.name == data.medium
+						});
+					}
+					if (existingMedium) {
+						
+						let existingGrade = false;
+						for(let i=0;i<data.gradeLevel.length;i++){
+							let gradeExists = _.find(profile.grade, (grade) => {
+								return grade.name == data.grade[0]
+							});
+							if(!gradeExists){
+								break;
+							}
+							existingGrade = true;
+						}
+						if (existingGrade) {
+							let existingSubject = false;
+							if(profile.subject){
+								existingSubject = _.find(profile.subject, (subject) => {
+									return subject.name == data.subject
+								});
+							}
+							if (existingSubject) {
 
-                        } else {
-                            this.setCurrentProfile(4, data)
-                        }
-                    } else {
-                        this.setCurrentProfile(3, data)
-                    }
-                } else {
-                    this.setCurrentProfile(2, data)
-                }
-            } else {
-                this.setCurrentProfile(1, data)
-            }
-        } else {
-            this.setCurrentProfile(0, data);
-        }
+							} else {
+								this.setCurrentProfile(4, data)
+							}
+						} else {
+							this.setCurrentProfile(3, data)
+						}
+					} else {
+						this.setCurrentProfile(2, data)
+					}
+				} else {
+					this.setCurrentProfile(1, data)
+				}
+			} else {
+				this.setCurrentProfile(0, data);
+			}
+		} else {
+			this.setCurrentProfile(0, data);
+		}
     }
 }
