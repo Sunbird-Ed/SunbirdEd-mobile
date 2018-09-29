@@ -1,6 +1,6 @@
 import { NgZone } from '@angular/core';
 import { AppGlobalService } from './../../service/app-global.service';
-import { UserSource, ProfileService, TabsPage, PageId, ProfileType, ContainerService } from 'sunbird';
+import { UserSource, ProfileService, TabsPage, ProfileType, ContainerService } from 'sunbird';
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
@@ -14,10 +14,15 @@ import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.ser
 import {
 	CategoryRequest,
 	SharedPreferences,
-	Profile
+	Profile,
+	ImpressionType,
+	PageId,
+	Environment,
+	InteractType,
+	InteractSubtype
 } from 'sunbird';
 
-import { LoadingController, Events } from 'ionic-angular';
+import { LoadingController, Events, Platform } from 'ionic-angular';
 import { PreferenceKey } from '../../app/app.constant';
 import * as _ from 'lodash';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
@@ -38,6 +43,7 @@ export class UserOnboardingPreferencesPage {
 	userForm: FormGroup;
 	classList = [];
 	profile: Profile;
+	
 	syllabusList: Array<any> = []
 	BoardList: Array<any> = [];
 	mediumList: Array<any> = [];
@@ -48,6 +54,7 @@ export class UserOnboardingPreferencesPage {
 	frameworkId: string = '';
 	btnColor: string = '#8FC4FF';
 	isEditData: boolean = true;
+	unregisterBackButton: any;
 
 	selectedLanguage: string = 'en';
 
@@ -88,7 +95,8 @@ export class UserOnboardingPreferencesPage {
 		private events: Events,
 		private zone: NgZone,
 		private scanner: SunbirdQRScanner,
-		private container: ContainerService
+		private container: ContainerService,
+		private platform: Platform,
 	) {
 		this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
 			.then(val => {
@@ -107,7 +115,18 @@ export class UserOnboardingPreferencesPage {
 		this.getSyllabusDetails();
 	}
 
-	getGuestUser() {
+	ionViewDidEnter() {
+		this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+		  this.telemetryGeneratorService.generateImpressionTelemetry(
+			ImpressionType.VIEW, "",
+			// PageId.ONBOARDING_PREFERENCES ,
+			"ONBOARDING_PREFERENCES",
+			Environment.SETTINGS
+		  );
+		});
+	}
+
+	getGuestUser(){
 		this.profileService.getCurrentUser((response) => {
 			this.profile = JSON.parse(response);
 			this.initUserForm();
@@ -146,13 +165,15 @@ export class UserOnboardingPreferencesPage {
 
 					if (this.profile && this.profile.syllabus && this.profile.syllabus[0] !== undefined) {
 						this.formAndFrameworkUtilService.getFrameworkDetails(this.profile.syllabus[0])
-							.then(catagories => {
-								this.categories = catagories;
-								this.resetForm(0, false);
-							}).catch(error => {
-								this.loader.dismiss();
-								this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
-							});
+						.then(catagories => {
+							console.log('this.categories',catagories);
+							this.categories = catagories;
+							this.resetForm(0, false);
+						}).catch(error => {
+							console.log('errorrrrrr',error);
+							this.loader.dismiss();
+							this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
+						});
 					} else {
 						this.loader.dismiss();
 					}
@@ -345,21 +366,21 @@ export class UserOnboardingPreferencesPage {
 			});
 		}
 		this.profileService.updateProfile(req,
-			(res: any) => {
-				console.log("Update Response-->", JSON.parse(res));
-
-				this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
-				// this.telemetryGeneratorService.generateInteractTelemetry(
-				//   InteractType.OTHER,
-				//   InteractSubtype.EDIT_USER_SUCCESS,
-				//   Environment.USER,
-				//   PageId.EDIT_USER
-				// );
-				console.log('======>', this.navCtrl.canGoBack());
-				console.log('------->', this.navCtrl.getViews());
-				this.events.publish('refresh:profile');
-				this.appGlobalService.guestUserProfile = JSON.parse(res);
-				// setTimeout(() => {
+		  (res: any) => {
+			console.log("Update Response-->", JSON.parse(res));
+			
+			this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
+			// this.telemetryGeneratorService.generateInteractTelemetry(
+			// 	InteractType.OTHER,
+			// 	InteractSubtype.EDIT_USER_SUCCESS,
+			// 	Environment.USER,
+			// 	PageId.ONBOARDING_PREFERENCES
+			// );
+			console.log('======>', this.navCtrl.canGoBack());
+			console.log('------->', this.navCtrl.getViews());
+			this.events.publish('refresh:profile');
+			this.appGlobalService.guestUserProfile =  JSON.parse(res);
+			// setTimeout(() => {
 				// loader.dismiss();
 				//this.navCtrl.pop();
 				this.navCtrl.push(TabsPage, {
