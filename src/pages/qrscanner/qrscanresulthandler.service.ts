@@ -43,7 +43,7 @@ export class QRScannerResultHandler {
         this.source = source;
         let results = scannedData.split("/");
         let dialCode = results[results.length - 1];
-        this.generateQRScanSuccessInteractEvent(scannedData, "SearchResult", dialCode);
+        // this.generateQRScanSuccessInteractEvent(scannedData, "SearchResult", dialCode);
         this.app.getActiveNavs()[0].push(SearchPage, {
             dialCode: dialCode,
             corRelation: this.getCorRelationList(dialCode, QRScannerResultHandler.CORRELATION_TYPE),
@@ -65,13 +65,13 @@ export class QRScannerResultHandler {
             let data = JSON.parse(response);
             this.navigateToDetailsPage(data.result, this.getCorRelationList(data.result.identifier, QRScannerResultHandler.CORRELATION_TYPE));
         }, (error) => {
-                if (this.network.type === 'none') {
-                    this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
-                }
-                else {
-                    this.commonUtilService.showToast('UNKNOWN_QR');
-                }
-            });
+            if (this.network.type === 'none') {
+                this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
+            }
+            else {
+                this.commonUtilService.showToast('UNKNOWN_QR');
+            }
+        });
     }
 
     handleInvalidQRCode(source: string, scannedData: string) {
@@ -118,9 +118,10 @@ export class QRScannerResultHandler {
 
     generateQRScanSuccessInteractEvent(scannedData, action, dialCode) {
         let values = new Map();
-        values["NetworkAvailable"] = this.network.type === 'none' ? "N" : "Y";
-        values["ScannedData"] = scannedData;
-        values["Action"] = action;
+        values["networkAvailable"] = this.network.type === 'none' ? "N" : "Y";
+        values["scannedData"] = scannedData;
+        values["action"] = action;
+        values["qrCodeType"] = (action === 'ContentDetail' ? 'CONTENT' : 'INVALID');
 
         let telemetryObject: TelemetryObject = new TelemetryObject();
         if (dialCode) {

@@ -197,7 +197,7 @@ export class UserTypeSelectionPage {
         loginMode: 'guest'
       });
     } else {
-      this.scannerService.startScanner(PageId.LIBRARY, true);
+      this.scannerService.startScanner(PageId.ONBOARDING_PROFILE_PREFERENCES, true);
     }
   }
 
