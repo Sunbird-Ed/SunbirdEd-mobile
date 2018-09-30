@@ -219,6 +219,7 @@ export class ResourcesPage implements OnInit {
 			this.audienceFilter = AudienceFilter.GUEST_STUDENT;
 		}
 		this.setSavedContent();
+		this.profile = this.appGlobal.getCurrentUser();
 	}
 
 	navigateToViewMoreContentsPage() {
@@ -297,7 +298,7 @@ export class ResourcesPage implements OnInit {
 	 * Get popular content
 	 */
 	getPopularContent(isAfterLanguageChange = false, pageAssembleCriteria?: PageAssembleCriteria) {
-		if (this.isOnBoardingCardCompleted || !this.guestUser) {
+		// if (this.isOnBoardingCardCompleted || !this.guestUser) {
 			this.pageApiLoader = true;
 			//this.noInternetConnection = false;
 			let that = this;
@@ -389,7 +390,7 @@ export class ResourcesPage implements OnInit {
 					}
 				});
 			});
-		}
+		// }
 	}
 
 	applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>, categoryKey?: string) {
