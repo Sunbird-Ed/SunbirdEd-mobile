@@ -63,6 +63,7 @@ export class AppGlobalService {
     public DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER: boolean = false;
     public DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT: boolean = false;
     public DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT: boolean = false;
+    public TRACK_USER_TELEMETRY: boolean = false;
 
     constructor(
         private event: Events,
@@ -250,6 +251,13 @@ export class AppGlobalService {
             .catch(error => {
                 this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT = false;
             });
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.TRACK_USER_TELEMETRY)
+            .then(response => {
+                this.TRACK_USER_TELEMETRY = response === 'true' ? true : false;
+            })
+            .catch(error => {
+                this.TRACK_USER_TELEMETRY = false;
+            });
     }
 
     private getCurrentUserProfile() {
@@ -393,6 +401,38 @@ export class AppGlobalService {
                 paramsMap
             );
         }
+    }
+
+    generateAttributeChangeTelemetry(oldAttribute, newAttribute) {
+        if (this.TRACK_USER_TELEMETRY) {
+            let values = new Map();
+            values["oldValue"] = oldAttribute;
+            values["newValue"] = newAttribute;
+
+            this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+                InteractSubtype.PROFILE_ATTRIBUTE_CHANGED,
+                Environment.USER,
+                PageId.GUEST_PROFILE,
+                undefined,
+                values);
+        }
+
+    }
+
+    generateSaveClickedTelemetry(profile, validation, pageId, interactSubtype) {
+        if (this.TRACK_USER_TELEMETRY) {
+            let values = new Map();
+            values["profile"] = profile;
+            values["validation"] = validation;
+
+            this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+                interactSubtype,
+                Environment.USER,
+                pageId,
+                undefined,
+                values);
+        }
+
     }
 
     setAverageTime(time) {

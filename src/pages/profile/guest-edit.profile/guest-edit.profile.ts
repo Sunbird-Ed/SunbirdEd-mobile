@@ -76,12 +76,7 @@ export class GuestEditProfilePage {
   isEditData = true;
 
   previousProfileType;
-
-  options: ToastOptions = {
-    message: '',
-    duration: 3000,
-    position: 'bottom'
-  };
+  profileForTelemetry: any = {};
 
   syllabusOptions = {
     title: this.commonUtilService.translateMessage('BOARD').toLocaleUpperCase(),
@@ -156,6 +151,8 @@ export class GuestEditProfilePage {
         subjects: [this.profile.subject || []]
       });
     }
+
+    this.profileForTelemetry = this.profile;
   }
 
   ionViewDidLoad() {
@@ -333,8 +330,6 @@ export class GuestEditProfilePage {
     if (index === 0) {
       this[currentField] = this.syllabusList;
     } else if (index === 1) {
-      // let loader = this.getLoader();
-      // loader.present();
       this.frameworkId = prevSelectedValue[0];
       this.formAndFrameworkUtilService.getFrameworkDetails(this.frameworkId)
         .then(catagories => {
@@ -364,7 +359,23 @@ export class GuestEditProfilePage {
 
   }
 
+  /**
+   * This method is added as we are not getting subject value in reset form method 
+   */
+  onSubjectChanged(event) {
+    let oldAttribute: any = {};
+    let newAttribute: any = {};
+    oldAttribute.subject = this.profileForTelemetry.subject ? this.profileForTelemetry.subject : "";
+    newAttribute.subject = event ? event : "";
+    if (!_.isEqual(oldAttribute, newAttribute)) {
+      this.appGlobal.generateAttributeChangeTelemetry(oldAttribute, newAttribute);
+    }
+    this.profileForTelemetry.subject = event;
+  }
+
   resetForm(index: number = 0, showloader: boolean): void {
+    let oldAttribute: any = {};
+    let newAttribute: any = {};
     switch (index) {
       case 0:
         this.guestEditForm.patchValue({
@@ -386,6 +397,13 @@ export class GuestEditProfilePage {
           subjects: [],
           medium: []
         });
+
+        oldAttribute.board = this.profileForTelemetry.board ? this.profileForTelemetry.board : "";
+        newAttribute.board = this.guestEditForm.value.boards ? this.guestEditForm.value.boards : "";
+        if (!_.isEqual(oldAttribute, newAttribute)) {
+          this.appGlobal.generateAttributeChangeTelemetry(oldAttribute, newAttribute);
+        }
+        this.profileForTelemetry.board = this.guestEditForm.value.boards;
         this.checkPrevValue(2, 'mediumList', this.guestEditForm.value.boards);
         break;
 
@@ -394,15 +412,30 @@ export class GuestEditProfilePage {
           subjects: [],
           grades: [],
         });
+        oldAttribute.medium = this.profileForTelemetry.medium ? this.profileForTelemetry.medium : "";
+        newAttribute.medium = this.guestEditForm.value.medium ? this.guestEditForm.value.medium : "";
+        if (!_.isEqual(oldAttribute, newAttribute)) {
+          this.appGlobal.generateAttributeChangeTelemetry(oldAttribute, newAttribute);
+        }
+        this.profileForTelemetry.medium = this.guestEditForm.value.medium;
         this.checkPrevValue(3, 'gradeList', this.guestEditForm.value.medium);
         break;
       case 3:
         this.guestEditForm.patchValue({
           subjects: [],
         });
+        oldAttribute.class = this.profileForTelemetry.grade ? this.profileForTelemetry.grade : "";
+        newAttribute.class = this.guestEditForm.value.grades ? this.guestEditForm.value.grades : "";
+        if (!_.isEqual(oldAttribute, newAttribute)) {
+          this.appGlobal.generateAttributeChangeTelemetry(oldAttribute, newAttribute);
+        }
+        this.profileForTelemetry.grade = this.guestEditForm.value.grades;
         this.checkPrevValue(4, 'subjectList', this.guestEditForm.value.grades);
         break;
+
     }
+
+
   }
 
   /**
@@ -416,7 +449,6 @@ export class GuestEditProfilePage {
     }
 
     let loader = this.getLoader();
-    //loader.present();
     let formVal = this.guestEditForm.value;
 
     if (formVal.userType === '') {
@@ -424,19 +456,18 @@ export class GuestEditProfilePage {
       return false;
     }
     else if (formVal.boards.length === 0) {
-      //this.showMessage('BOARD')
-      this.commonUtilService.showToast(this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService.translateMessage('BOARD')),false , 'red-toast')
+      this.appGlobal.generateSaveClickedTelemetry(this.extractProfileForTelemetry(formVal), 'failed', PageId.EDIT_USER, InteractSubtype.SAVE_CLICKED);
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService.translateMessage('BOARD')), false, 'red-toast');
       return false;
     }
     else if (formVal.medium.length === 0) {
-
-      //this.showMessage('MEDIUM');
-      this.commonUtilService.showToast(this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService.translateMessage('MEDIUM')),false , 'red-toast')
+      this.appGlobal.generateSaveClickedTelemetry(this.extractProfileForTelemetry(formVal), 'failed', PageId.EDIT_USER, InteractSubtype.SAVE_CLICKED);
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService.translateMessage('MEDIUM')), false, 'red-toast');
       return false;
     }
     else if (formVal.grades.length === 0) {
-      //this.showMessage('CLASS');
-      this.commonUtilService.showToast(this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService.translateMessage('CLASS')),false , 'red-toast')
+      this.appGlobal.generateSaveClickedTelemetry(this.extractProfileForTelemetry(formVal), 'failed', PageId.EDIT_USER, InteractSubtype.SAVE_CLICKED);
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService.translateMessage('CLASS')), false, 'red-toast');
       return false;
     }
     else {
@@ -446,8 +477,21 @@ export class GuestEditProfilePage {
       } else {
         this.submitEditForm(formVal, loader);
       }
+      this.appGlobal.generateSaveClickedTelemetry(this.extractProfileForTelemetry(formVal), 'passed', PageId.EDIT_USER, InteractSubtype.SAVE_CLICKED);
     }
   }
+  extractProfileForTelemetry(formVal): any {
+    let profileReq: any = {};
+    profileReq.board = formVal.boards;
+    profileReq.grade = formVal.grades;
+    profileReq.subject = formVal.subjects;
+    profileReq.medium = formVal.medium;
+    profileReq.profileType = formVal.profileType;
+    profileReq.syllabus = (!formVal.syllabus.length) ? [] : [formVal.syllabus];
+    return profileReq;
+  }
+
+
 
   /**
    * This will submit edit form.
