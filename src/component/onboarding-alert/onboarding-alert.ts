@@ -1,9 +1,9 @@
-import { Component } from "@angular/core";
+import { Component } from '@angular/core';
 import {
   NavParams,
   ViewController,
   Platform
-} from "ionic-angular";
+} from 'ionic-angular';
 
 @Component({
   selector: 'onboarding-alert',
@@ -14,7 +14,7 @@ export class OnboardingAlert {
 
   selectedSlide: any;
   selectedOptions: any;
-  index: number = 0;
+  index = 0;
 
   backButtonFunc = undefined;
 
@@ -38,7 +38,7 @@ export class OnboardingAlert {
   }
 
   onSyllabusSelect(selectedIndex: number) {
-    //clear all the options selected before
+    // clear all the options selected before
     this.selectedSlide.options.forEach(element => {
       element.checked = false;
     });
