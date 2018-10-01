@@ -22,13 +22,13 @@ while IFS="=" read -r key value; do
     '#'*) ;;
     'npm'*)
       NPM[$NPM_COUNTER]=$value
-      NPM_COUNTER=`expr $NPM_COUNTER + 1`;;
+      NPM_COUNTER=$(($NPM_COUNTER + 1));;
     'cordova'*)
       CORDOVA[$CORDOVA_COUNTER]=$value
-      CORDOVA_COUNTER=`expr $CORDOVA_COUNTER + 1`;;
+      CORDOVA_COUNTER=$(($CORDOVA_COUNTER + 1));;
     'sunbird-cordova'*)
       SUNBIRD_CORDOVA[$SUNBIRD_CORDOVA_COUNTER]=$value
-      SUNBIRD_CORDOVA_COUNTER=`expr $SUNBIRD_CORDOVA_COUNTER + 1`;;
+      SUNBIRD_CORDOVA_COUNTER=$(expr $SUNBIRD_CORDOVA_COUNTER + 1);
   esac
 done < "$file"
 
@@ -38,14 +38,14 @@ rm package-lock.json
 npm install
 npm run build
 
-rm `pwd`/dist/dependencies.json
+rm $(pwd)/dist/dependencies.json
 
-npm pack `pwd`/dist
+npm pack $(pwd)/dist
 
 
 cd ..
 npm install
-npm install `pwd`/genie-sdk-wrapper/*.tgz --save
+npm install $(pwd)/genie-sdk-wrapper/*.tgz --save
 
 rm -rf genie-sdk-wrapper
 
