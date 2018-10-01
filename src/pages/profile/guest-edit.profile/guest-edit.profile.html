@@ -79,7 +79,7 @@
       <ion-label stacked text-uppercase class="label-font">{{'SUBJECTS' | translate }}
       </ion-label>
       <ion-select multiple="true" [selectOptions]="subjectsOptions" text-capitalize [disabled]="!(guestEditForm.value.grades != '')"
-        formControlName="subjects" placeholder="{{'SELECT' | translate }}" okText="{{'BTN_SUBMIT' | translate}}"
+        formControlName="subjects" (ionChange)="onSubjectChanged($event)"placeholder="{{'SELECT' | translate }}" okText="{{'BTN_SUBMIT' | translate}}"
         cancelText="{{'CANCEL' | translate}}">
         <ion-option *ngFor="let subject of subjectList" text-capitalize value="{{subject?.code}}">{{subject?.name}}</ion-option>
       </ion-select>

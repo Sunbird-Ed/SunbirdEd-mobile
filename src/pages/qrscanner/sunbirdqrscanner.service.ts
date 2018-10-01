@@ -133,14 +133,15 @@ export class SunbirdQRScanner {
 
   private startQRScanner(screenTitle: String, displayText: String, displayTextColor: String,
     buttonText: String, showButton: boolean, source: string) {
+    this.generateImpressionTelemetry(source)
     window['qrScanner'].startScanner(screenTitle, displayText, displayTextColor, buttonText, showButton, (scannedData) => {
       if (scannedData === "skip") {
         this.app.getActiveNavs()[0].push(UserOnboardingPreferencesPage, { stopScanner: true });
         this.telemetryGeneratorService.generateInteractTelemetry(
-          InteractType.OTHER,
-          'skip',
-          Environment.HOME,
-          'QR_SCAN_DIAL_CODE_RESULTS');
+          InteractType.TOUCH,
+          InteractSubtype.SKIP_CLICKED,
+          Environment.ONBOARDING,
+          PageId.QRCodeScanner);
         this.generateEndEvent(source, '');
       } else {
         if (scannedData === "cancel") {
@@ -165,16 +166,15 @@ export class SunbirdQRScanner {
     });
   }
 
-  ionViewDidLoad() {
+  generateImpressionTelemetry(source) {
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW,
       ImpressionSubtype.QRCodeScanInitiate,
       PageId.QRCodeScanner,
-      Environment.HOME)
+      source === PageId.ONBOARDING_PROFILE_PREFERENCES ? Environment.ONBOARDING : Environment.HOME)
   }
 
   generateStartEvent(pageId: string) {
-    /* istanbul ignore else  */
     if (pageId) {
       let telemetryObject: TelemetryObject = new TelemetryObject();
       telemetryObject.id = "";
@@ -186,7 +186,6 @@ export class SunbirdQRScanner {
   }
 
   generateEndEvent(pageId: string, qrData: string) {
-    /* istanbul ignore else  */
     if (pageId) {
       let telemetryObject: TelemetryObject = new TelemetryObject();
       telemetryObject.id = qrData;

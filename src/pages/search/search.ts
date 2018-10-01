@@ -25,7 +25,8 @@ import {
   ProfileType,
   CorrelationData,
   Mode,
-  TelemetryObject
+  TelemetryObject,
+  PageId
 } from 'sunbird';
 import { GenieResponse } from '../settings/datasync/genieresponse';
 import { FilterPage } from './filters/filter';
@@ -564,7 +565,7 @@ export class SearchPage {
       this.checkParent(this.dialCodeResult[0], this.dialCodeResult[0].content[0]);
       isParentCheckStarted = true;
     }
-
+    this.generateQRScanSuccessInteractEvent(this.dialCodeResult,this.dialCode,'SearchResult');
     if (contentArray && contentArray.length > 1) {
       contentArray.forEach((content) => {
         if (addedContent.indexOf(content.identifier) < 0) {
@@ -589,6 +590,30 @@ export class SearchPage {
       this.isEmptyResult = false;
     }
   }
+
+  generateQRScanSuccessInteractEvent(dialCodeResult, action, dialCode) {
+    let values = new Map();
+    values["networkAvailable"] = this.network.type === 'none' ? "N" : "Y";
+    values["scannedData"] = dialCode;
+    values["action"] = action;
+    values["qrCodeType"] = 'DIAL';
+    values["dialCodeResultCount"] = dialCodeResult.length;
+
+    let telemetryObject: TelemetryObject = new TelemetryObject();
+    if (dialCode) {
+        telemetryObject.id = dialCode;
+        telemetryObject.type = "qr";
+    }
+
+    this.telemetryGeneratorService.generateInteractTelemetry(
+        InteractType.OTHER,
+        InteractSubtype.QRCodeScanSuccess,
+        Environment.HOME,
+        ImpressionType.SEARCH, telemetryObject,
+        values
+    );
+}
+
 
   showContentComingSoonAlert() {
     let popOver: Popover;
