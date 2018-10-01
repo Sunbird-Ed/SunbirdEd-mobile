@@ -18,7 +18,7 @@ import { TelemetryGeneratorService } from '../../service/telemetry-generator.ser
 import { UserAndGroupsPage } from './user-and-groups';
 import { LoadingControllerMock } from '../../../test-config/mocks-ionic';
 
-describe("UserAndGroupsPage", () => {
+describe('UserAndGroupsPage', () => {
     let comp: UserAndGroupsPage;
     let fixture: ComponentFixture<UserAndGroupsPage>;
 
@@ -100,7 +100,7 @@ describe("UserAndGroupsPage", () => {
         const loadingControllerStub = {
             present: () => ({}),
             dismiss: () => ({})
-        }
+        };
         const authServiceStub = {
             endSession: () => ({})
         };
@@ -161,56 +161,56 @@ describe("UserAndGroupsPage", () => {
                 { provide: Events, useValue: eventsStub },
                 { provide: Network, useValue: networkStub },
                 { provide: TelemetryGeneratorService, useValue: telemetryGeneratorServiceStub },
-                { provide: LoadingController, useFactory:() => LoadingControllerMock.instance() }
+                { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() }
             ]
         });
         fixture = TestBed.createComponent(UserAndGroupsPage);
         comp = fixture.componentInstance;
     });
 
-    it("can load instance", () => {
+    it ('can load instance', () => {
         expect(comp).toBeTruthy();
     });
 
-    it("segmentType defaults to: users", () => {
-        expect(comp.segmentType).toEqual("users");
+    it('segmentType defaults to: users', () => {
+        expect(comp.segmentType).toEqual('users');
     });
 
-    it("showEmptyGroupsMessage defaults to: true", () => {
+    it('showEmptyGroupsMessage defaults to: true', () => {
         expect(comp.showEmptyGroupsMessage).toEqual(true);
     });
 
-    // it("isLoggedInUser defaults to: false", () => {
+    // it('isLoggedInUser defaults to: false', () => {
     //     expect(comp.isLoggedInUser).toEqual(false);
     // });
 
-    it("userList defaults to: []", () => {
+    it('userList defaults to: []', () => {
         expect(comp.userList).toEqual([]);
     });
 
-    it("groupList defaults to: []", () => {
+    it('groupList defaults to: []', () => {
         expect(comp.groupList).toEqual([]);
     });
 
-    describe("ionViewDidLoad", () => {
-        it("makes expected calls", () => {
+    describe('ionViewDidLoad', () => {
+        it('makes expected calls', () => {
             const telemetryGeneratorServiceStub: TelemetryGeneratorService = fixture.debugElement.injector.get(TelemetryGeneratorService);
-            spyOn(telemetryGeneratorServiceStub, "generateImpressionTelemetry");
+            spyOn(telemetryGeneratorServiceStub, 'generateImpressionTelemetry');
             comp.ionViewDidLoad();
             expect(telemetryGeneratorServiceStub.generateImpressionTelemetry).toHaveBeenCalled();
         });
     });
 
-    describe("ionViewWillEnter", () => {
-        it("makes expected calls", () => {
+    describe('ionViewWillEnter', () => {
+        it('makes expected calls', () => {
             //   const ngZoneStub: NgZone = fixture.debugElement.injector.get(NgZone);
             const platformStub: Platform = fixture.debugElement.injector.get(Platform);
-            spyOn(comp, "getAllProfile");
-            spyOn(comp, "getAllGroup");
-            spyOn(comp, "getCurrentGroup");
-            spyOn(comp, "dismissPopup");
-            // spyOn(ngZoneStub, "run");
-            spyOn(platformStub, "registerBackButtonAction");
+            spyOn(comp, 'getAllProfile');
+            spyOn(comp, 'getAllGroup');
+            spyOn(comp, 'getCurrentGroup');
+            spyOn(comp, 'dismissPopup');
+            // spyOn(ngZoneStub, 'run');
+            spyOn(platformStub, 'registerBackButtonAction');
             comp.ionViewWillEnter();
             expect(comp.getAllProfile).toHaveBeenCalled();
             expect(comp.getAllGroup).toHaveBeenCalled();
@@ -221,33 +221,33 @@ describe("UserAndGroupsPage", () => {
         });
     });
 
-    describe("getCurrentGroup", () => {
-        it("makes expected calls", () => {
+    describe('getCurrentGroup', () => {
+        it('makes expected calls', () => {
             // const ngZoneStub: NgZone = fixture.debugElement.injector.get(NgZone);
             const groupServiceStub: GroupService = fixture.debugElement.injector.get(GroupService);
-            //spyOn(ngZoneStub, "run");
-            spyOn(groupServiceStub, "getCurrentGroup").and.returnValue(Promise.resolve({}));
+            // spyOn(ngZoneStub, 'run');
+            spyOn(groupServiceStub, 'getCurrentGroup').and.returnValue(Promise.resolve({}));
             comp.getCurrentGroup();
-            //expect(ngZoneStub.run).toHaveBeenCalled();
+            // expect(ngZoneStub.run).toHaveBeenCalled();
             expect(groupServiceStub.getCurrentGroup).toHaveBeenCalled();
         });
     });
 
-    describe("dismissPopup", () => {
-        it("makes expected calls", () => {
+    describe('dismissPopup', () => {
+        it('makes expected calls', () => {
             const navControllerStub: NavController = fixture.debugElement.injector.get(NavController);
             const ionicApp = TestBed.get(IonicApp);
-            spyOn(navControllerStub, "pop");
+            spyOn(navControllerStub, 'pop');
             comp.dismissPopup();
             // expect(navControllerStub.pop).toHaveBeenCalled();
         });
     });
 
-    describe("getAllProfile", () => {
-        xit("makes expected calls", () => {
+    describe('getAllProfile', () => {
+        xit('makes expected calls', () => {
             const profileServiceStub: ProfileService = fixture.debugElement.injector.get(ProfileService);
             const loadingCtrlStub = TestBed.get(LoadingController);
-            spyOn(profileServiceStub, "getAllUserProfile").and.returnValue(Promise.resolve({}));
+            spyOn(profileServiceStub, 'getAllUserProfile').and.returnValue(Promise.resolve({}));
             comp.getAllProfile();
             expect(loadingCtrlStub.create).toHaveBeenCalled();
             setTimeout(() => {
@@ -256,78 +256,78 @@ describe("UserAndGroupsPage", () => {
         });
     });
 
-    describe("getAllGroup", () => {
-        it("makes expected calls", () => {
+    describe('getAllGroup', () => {
+        it('makes expected calls', () => {
             // const ngZoneStub: NgZone = fixture.debugElement.injector.get(NgZone);
             const groupServiceStub: GroupService = fixture.debugElement.injector.get(GroupService);
-            //  spyOn(ngZoneStub, "run");
-            spyOn(groupServiceStub, "getAllGroup").and.returnValue(Promise.resolve({}));
+            //  spyOn(ngZoneStub, 'run');
+            spyOn(groupServiceStub, 'getAllGroup').and.returnValue(Promise.resolve({}));
             comp.getAllGroup();
             // expect(ngZoneStub.run).toHaveBeenCalled();
             expect(groupServiceStub.getAllGroup).toHaveBeenCalled();
         });
     });
 
-    describe("createGroup", () => {
-        it("makes expected calls", () => {
+    describe('createGroup', () => {
+        it('makes expected calls', () => {
             const navControllerStub: NavController = fixture.debugElement.injector.get(NavController);
             const telemetryGeneratorServiceStub: TelemetryGeneratorService = fixture.debugElement.injector.get(TelemetryGeneratorService);
 
-            spyOn(navControllerStub, "push");
-            spyOn(telemetryGeneratorServiceStub, "generateInteractTelemetry");
+            spyOn(navControllerStub, 'push');
+            spyOn(telemetryGeneratorServiceStub, 'generateInteractTelemetry');
             comp.createGroup();
             expect(navControllerStub.push).toHaveBeenCalled();
             expect(telemetryGeneratorServiceStub.generateInteractTelemetry).toHaveBeenCalled();
         });
     });
 
-    describe("goToSharePage", () => {
-        it("makes expected calls", () => {
+    describe('goToSharePage', () => {
+        it('makes expected calls', () => {
             const navControllerStub: NavController = fixture.debugElement.injector.get(NavController);
-            spyOn(navControllerStub, "push");
+            spyOn(navControllerStub, 'push');
             comp.goToSharePage();
             expect(navControllerStub.push).toHaveBeenCalled();
         });
     });
 
-    describe("gotToGroupDetailsPage", () => {
-        it("makes expected calls", () => {
+    describe('gotToGroupDetailsPage', () => {
+        it('makes expected calls', () => {
             const navControllerStub: NavController = fixture.debugElement.injector.get(NavController);
-            spyOn(navControllerStub, "push");
+            spyOn(navControllerStub, 'push');
             comp.gotToGroupDetailsPage();
             expect(navControllerStub.push).toHaveBeenCalled();
         });
     });
 
-    describe("createUser", () => {
-        it("makes expected calls", () => {
+    describe('createUser', () => {
+        it('makes expected calls', () => {
             const navControllerStub: NavController = fixture.debugElement.injector.get(NavController);
             const telemetryGeneratorServiceStub: TelemetryGeneratorService = fixture.debugElement.injector.get(TelemetryGeneratorService);
-            spyOn(navControllerStub, "push");
-            spyOn(telemetryGeneratorServiceStub, "generateInteractTelemetry");
+            spyOn(navControllerStub, 'push');
+            spyOn(telemetryGeneratorServiceStub, 'generateInteractTelemetry');
             comp.createUser();
             expect(navControllerStub.push).toHaveBeenCalled();
             expect(telemetryGeneratorServiceStub.generateInteractTelemetry).toHaveBeenCalled();
         });
     });
 
-    describe("switchAccountConfirmBox", () => {
-        it("makes expected calls", () => {
+    describe('switchAccountConfirmBox', () => {
+        it('makes expected calls', () => {
             const alertControllerStub: AlertController = fixture.debugElement.injector.get(AlertController);
             const appGlobalServiceStub: AppGlobalService = fixture.debugElement.injector.get(AppGlobalService);
             const telemetryGeneratorServiceStub: TelemetryGeneratorService = fixture.debugElement.injector.get(TelemetryGeneratorService);
             comp.selectedUserIndex = 0;
             comp.userList = [{
-                uid: "user-id-1",
+                uid: 'user-id-1',
                 handle: 'test',
                 profileType: ProfileType.STUDENT,
                 source: UserSource.LOCAL
             }];
-            spyOn(comp, "translateMessage");
-            spyOn(comp, "logOut");
-            spyOn(alertControllerStub, "create");
-            spyOn(appGlobalServiceStub, "isUserLoggedIn");
-            spyOn(telemetryGeneratorServiceStub, "generateInteractTelemetry");
+            spyOn(comp, 'translateMessage');
+            spyOn(comp, 'logOut');
+            spyOn(alertControllerStub, 'create');
+            spyOn(appGlobalServiceStub, 'isUserLoggedIn');
+            spyOn(telemetryGeneratorServiceStub, 'generateInteractTelemetry');
             comp.switchAccountConfirmBox();
             expect(comp.translateMessage).toHaveBeenCalled();
             // expect(comp.logOut).toHaveBeenCalled();
@@ -337,22 +337,22 @@ describe("UserAndGroupsPage", () => {
         });
     });
 
-    describe("play", () => {
-        it("makes expected calls", () => {
+    describe('play', () => {
+        it('makes expected calls', () => {
             const navControllerStub: NavController = fixture.debugElement.injector.get(NavController);
             const appGlobalServiceStub: AppGlobalService = fixture.debugElement.injector.get(AppGlobalService);
             const eventsStub: Events = fixture.debugElement.injector.get(Events);
             comp.selectedUserIndex = 0;
             comp.userList = [{
-                uid: "user-id-1",
+                uid: 'user-id-1',
                 handle: 'test',
                 profileType: ProfileType.STUDENT,
                 source: UserSource.LOCAL
             }];
-            spyOn(comp, "logOut");
-            spyOn(navControllerStub, "pop");
-            spyOn(appGlobalServiceStub, "isUserLoggedIn");
-            spyOn(eventsStub, "publish");
+            spyOn(comp, 'logOut');
+            spyOn(navControllerStub, 'pop');
+            spyOn(appGlobalServiceStub, 'isUserLoggedIn');
+            spyOn(eventsStub, 'publish');
             comp.play();
             expect(appGlobalServiceStub.isUserLoggedIn).toHaveBeenCalled();
         });
