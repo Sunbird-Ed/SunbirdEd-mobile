@@ -11,8 +11,7 @@ import { Impression, ImpressionType, Environment, PageId, TelemetryService } fro
 import { generateInteractTelemetry, generateImpressionTelemetry } from '../../app/telemetryutil';
 import { PreferenceKey } from '../../app/app.constant';
 
-const KEY_SUNBIRD_SUPPORT_FILE_PATH = "sunbird_support_file_path";
-
+const KEY_SUNBIRD_CONFIG_FILE_PATH = "sunbird_config_file_path";
 @Component({
   selector: 'settings',
   templateUrl: 'settings.html'
@@ -75,7 +74,13 @@ export class SettingsPage {
   goBack() {
     this.navCtrl.pop();
   }
-
+  ionViewDidLeave() {
+    (<any>window).supportfile.removeCertainFile((result) => {
+      console.log("File deleted -" + result);
+    }, (error) => {
+      console.log('error' + error);
+    });
+  }
   languageSetting() {
     this.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.LANGUAGE_CLICKED);
     this.navCtrl.push(LanguageSettingsPage, {
@@ -94,26 +99,32 @@ export class SettingsPage {
   }
 
   sendMessage() {
-    let loader = this.getLoader();
-    loader.present();
+    (<any>window).supportfile.makeEntryInSunbirdConfiguration((result) => {
+      let loader = this.getLoader();
+      loader.present();
+      console.log("Result - " + JSON.parse(result));
+      this.preference.putString(KEY_SUNBIRD_CONFIG_FILE_PATH, JSON.parse(result));
+      this.preference.getString(KEY_SUNBIRD_CONFIG_FILE_PATH)
+        .then(val => {
+          loader.dismiss();
+          if (val === undefined || val === "" || val === null) {
+            //do nothing
+          } else {
+            this.fileUrl = "file://" + val;
+            // Share via email
+            this.socialSharing.shareViaEmail('', '', ['dummy@example.com'], null, null, this.fileUrl).then(() => {
+              console.log("Share is possible");
+            }).catch(error => {
+              console.log("Share is not possible");
+              console.log(error);
+              // Error!
+            });
+          }
+        });
+    }, (error) => {
+      console.log('ERROR - ' + error);
+    });
     this.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.SUPPORT_CLICKED);
-    this.preference.getString(KEY_SUNBIRD_SUPPORT_FILE_PATH)
-      .then(val => {
-        loader.dismiss();
-        if (val === undefined || val === "" || val === null) {
-          //do nothing
-        } else {
-          this.fileUrl = "file://" + val;
-          // Share via email
-          this.socialSharing.shareViaEmail('', '', ['dummy@example.com'], null, null, this.fileUrl).then(() => {
-            console.log("Share is possible");
-          }).catch(error => {
-            console.log("Share is not possible");
-            console.log(error);
-            // Error!
-          });
-        }
-      });
   }
 
   shareApp() {
