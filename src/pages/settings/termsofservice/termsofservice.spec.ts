@@ -1,11 +1,11 @@
-import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { NO_ERRORS_SCHEMA } from "@angular/core";
-import { NavController } from "ionic-angular";
-import { NavParams } from "ionic-angular";
-import { TermsofservicePage } from "./termsofservice";
-import { TranslateModule } from "@ngx-translate/core";
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NavController } from 'ionic-angular';
+import { NavParams } from 'ionic-angular';
+import { TermsofservicePage } from './termsofservice';
+import { TranslateModule } from '@ngx-translate/core';
 
-describe("TermsofservicePage", () => {
+describe('TermsofservicePage', () => {
     let comp: TermsofservicePage;
     let fixture: ComponentFixture<TermsofservicePage>;
 
@@ -25,7 +25,7 @@ describe("TermsofservicePage", () => {
         comp = fixture.componentInstance;
     });
 
-    it("can load instance", () => {
+    it('can load instance', () => {
         expect(comp).toBeTruthy();
     });
 
