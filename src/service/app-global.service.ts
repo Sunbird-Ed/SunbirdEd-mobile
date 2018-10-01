@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
 import {
     Profile,
     ProfileType,
@@ -12,58 +12,21 @@ import {
     InteractSubtype,
     FrameworkDetailsRequest,
     FrameworkService
-} from "sunbird";
+} from 'sunbird';
 import {
     Events,
     PopoverController,
     PopoverOptions
-} from "ionic-angular";
-import { UpgradePopover } from "../pages/upgrade/upgrade-popover";
+} from 'ionic-angular';
+import { UpgradePopover } from '../pages/upgrade/upgrade-popover';
 import {
     GenericAppConfig,
     PreferenceKey
-} from "../app/app.constant";
-import { TelemetryGeneratorService } from "./telemetry-generator.service";
+} from '../app/app.constant';
+import { TelemetryGeneratorService } from './telemetry-generator.service';
 
 @Injectable()
 export class AppGlobalService {
-    /**
-     * This property stores the form details at the app level for a particular app session
-     */
-    syllabusList: Array<any> = [];
-
-    /**
-     * This property stores the course filter configuration at the app level for a particular app session
-     */
-    courseFilterConfig: Array<any> = [];
-
-    /**
-     * This property stores the library filter configuration  at the app level for a particular app session
-     */
-    libraryFilterConfig: Array<any> = [];
-
-    public static readonly USER_INFO_UPDATED = 'user-profile-changed';
-    public static readonly PROFILE_OBJ_CHANGED = 'app-global:profile-obj-changed';
-
-    guestUserProfile: Profile;
-    isGuestUser: boolean = false;
-    guestProfileType: ProfileType;
-    isOnBoardingCompleted: boolean;
-
-    session: any;
-    public static isPlayerLaunched: boolean = false;
-    public averageTime = 0;
-    public averageScore = 0;
-    private frameworkData = [];
-    public DISPLAY_ONBOARDING_CARDS: boolean = false;
-    public DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE: boolean = false;
-    public DISPLAY_ONBOARDING_PAGE: boolean = false;
-    public DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER: boolean = false;
-    public DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER: boolean = false;
-    public DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER: boolean = false;
-    public DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT: boolean = false;
-    public DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT: boolean = false;
-    public TRACK_USER_TELEMETRY: boolean = false;
 
     constructor(
         private event: Events,
@@ -79,6 +42,43 @@ export class AppGlobalService {
         this.initValues();
         this.listenForEvents();
     }
+
+    public static readonly USER_INFO_UPDATED = 'user-profile-changed';
+    public static readonly PROFILE_OBJ_CHANGED = 'app-global:profile-obj-changed';
+    public static isPlayerLaunched = false;
+    /**
+     * This property stores the form details at the app level for a particular app session
+     */
+    syllabusList: Array<any> = [];
+
+    /**
+     * This property stores the course filter configuration at the app level for a particular app session
+     */
+    courseFilterConfig: Array<any> = [];
+
+    /**
+     * This property stores the library filter configuration  at the app level for a particular app session
+     */
+    libraryFilterConfig: Array<any> = [];
+
+    guestUserProfile: Profile;
+    isGuestUser = false;
+    guestProfileType: ProfileType;
+    isOnBoardingCompleted: boolean;
+
+    session: any;
+    public averageTime = 0;
+    public averageScore = 0;
+    private frameworkData = [];
+    public DISPLAY_ONBOARDING_CARDS = false;
+    public DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE = false;
+    public DISPLAY_ONBOARDING_PAGE = false;
+    public DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER = false;
+    public DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER = false;
+    public DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER = false;
+    public DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT = false;
+    public DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT = false;
+    public TRACK_USER_TELEMETRY = false;
 
     isUserLoggedIn(): boolean {
         return !this.isGuestUser;
@@ -97,14 +97,14 @@ export class AppGlobalService {
     }
 
     getNameForCodeInFramework(category, code) {
-        let name = undefined;
+        let name;
 
         if (this.frameworkData[category]
             && this.frameworkData[category].terms
             && this.frameworkData[category].terms.length > 0) {
-            let matchingTerm = this.frameworkData[category].terms.find((term) => {
-                return term.code == code;
-            })
+            const matchingTerm = this.frameworkData[category].terms.find((term) => {
+                return term.code === code;
+            });
 
             if (matchingTerm) {
                 name = matchingTerm.name;
@@ -170,13 +170,10 @@ export class AppGlobalService {
         return this.libraryFilterConfig;
     }
 
-
-
-
     private initValues() {
         this.readConfig();
         this.authService.getSessionData((session) => {
-            if (session === null || session === "null") {
+            if (session === null || session === 'null') {
                 this.getGuestUserInfo();
             } else {
                 this.guestProfileType = undefined;
@@ -268,7 +265,7 @@ export class AppGlobalService {
                     .then((categories) => {
                         categories.forEach(category => {
                             this.frameworkData[category.code] = category;
-                        })
+                        });
 
                         this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
                     }).catch((error) => {
@@ -289,7 +286,7 @@ export class AppGlobalService {
     // Remove this method after refactoring formandframeworkutil.service
     private getFrameworkDetails(frameworkId: string): Promise<any> {
         return new Promise((resolve, reject) => {
-            let req: FrameworkDetailsRequest = {
+            const req: FrameworkDetailsRequest = {
                 defaultFrameworkDetails: true
             };
 
@@ -311,15 +308,14 @@ export class AppGlobalService {
     public getGuestUserInfo() {
         this.preference.getString(PreferenceKey.SELECTED_USER_TYPE)
             .then(val => {
-                if (val !== undefined && val != "") {
-                    if (val == ProfileType.STUDENT) {
+                if (val !== undefined && val !== '') {
+                    if (val === ProfileType.STUDENT) {
                         this.guestProfileType = ProfileType.STUDENT;
-                    }
-                    else if (val == ProfileType.TEACHER) {
+                    } else if (val === ProfileType.TEACHER) {
                         this.guestProfileType = ProfileType.TEACHER;
-                    } else if (val === "student") {
+                    } else if (val === 'student') {
                         this.guestProfileType = ProfileType.STUDENT;
-                    } else if (val === "teacher") {
+                    } else if (val === 'teacher') {
                         this.guestProfileType = ProfileType.TEACHER;
                     }
                     this.isGuestUser = true;
@@ -338,44 +334,44 @@ export class AppGlobalService {
     }
 
     openPopover(upgradeType: any) {
-        let shouldDismissAlert: boolean = true;
+        let shouldDismissAlert = true;
 
         if (upgradeType.upgrade.type === 'force') {
             shouldDismissAlert = false;
         }
 
-        let options: PopoverOptions = {
+        const options: PopoverOptions = {
             cssClass: 'upgradePopover',
             showBackdrop: true,
             enableBackdropDismiss: shouldDismissAlert
-        }
+        };
 
-        let popover = this.popoverCtrl.create(UpgradePopover, { type: upgradeType }, options);
+        const popover = this.popoverCtrl.create(UpgradePopover, { type: upgradeType }, options);
         popover.present({
         });
     }
 
-    generateConfigInteractEvent(pageId: String, isOnBoardingCompleted?: boolean) {
+    generateConfigInteractEvent(pageId: string, isOnBoardingCompleted?: boolean) {
         if (this.isGuestUser) {
-            let paramsMap = new Map();
+            const paramsMap = new Map();
             if (pageId !== PageId.PROFILE) {
-                paramsMap["isOnBoardingPageConfigEnabled"] = this.DISPLAY_ONBOARDING_PAGE;
-                paramsMap["isOnBoardingCardsConfigEnabled"] = this.DISPLAY_ONBOARDING_CARDS;
-                paramsMap["isOnBoardingCompleted"] = isOnBoardingCompleted;
+                paramsMap['isOnBoardingPageConfigEnabled'] = this.DISPLAY_ONBOARDING_PAGE;
+                paramsMap['isOnBoardingCardsConfigEnabled'] = this.DISPLAY_ONBOARDING_CARDS;
+                paramsMap['isOnBoardingCompleted'] = isOnBoardingCompleted;
             }
-            let profileType = this.getGuestUserType();
+            const profileType = this.getGuestUserType();
             if (profileType === ProfileType.TEACHER) {
                 switch (pageId) {
                     case PageId.LIBRARY: {
-                        paramsMap["isSignInCardConfigEnabled"] = this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER;
+                        paramsMap['isSignInCardConfigEnabled'] = this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER;
                         break;
                     }
                     case PageId.COURSES: {
-                        paramsMap["isSignInCardConfigEnabled"] = this.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER;
+                        paramsMap['isSignInCardConfigEnabled'] = this.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER;
                         break;
                     }
                     case PageId.GUEST_PROFILE: {
-                        paramsMap["isSignInCardConfigEnabled"] = this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER;
+                        paramsMap['isSignInCardConfigEnabled'] = this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER;
                         break;
                     }
                 }
@@ -383,11 +379,11 @@ export class AppGlobalService {
             } else {
                 switch (pageId) {
                     case PageId.LIBRARY: {
-                        paramsMap["isSignInCardConfigEnabled"] = this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT;
+                        paramsMap['isSignInCardConfigEnabled'] = this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT;
                         break;
                     }
                     case PageId.GUEST_PROFILE: {
-                        paramsMap["isSignInCardConfigEnabled"] = this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT;
+                        paramsMap['isSignInCardConfigEnabled'] = this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT;
                         break;
                     }
                 }
@@ -405,9 +401,9 @@ export class AppGlobalService {
 
     generateAttributeChangeTelemetry(oldAttribute, newAttribute) {
         if (this.TRACK_USER_TELEMETRY) {
-            let values = new Map();
-            values["oldValue"] = oldAttribute;
-            values["newValue"] = newAttribute;
+            const values = new Map();
+            values['oldValue'] = oldAttribute;
+            values['newValue'] = newAttribute;
 
             this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
                 InteractSubtype.PROFILE_ATTRIBUTE_CHANGED,
@@ -416,14 +412,13 @@ export class AppGlobalService {
                 undefined,
                 values);
         }
-
     }
 
     generateSaveClickedTelemetry(profile, validation, pageId, interactSubtype) {
         if (this.TRACK_USER_TELEMETRY) {
-            let values = new Map();
-            values["profile"] = profile;
-            values["validation"] = validation;
+            const values = new Map();
+            values['profile'] = profile;
+            values['validation'] = validation;
 
             this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
                 interactSubtype,
@@ -432,7 +427,6 @@ export class AppGlobalService {
                 undefined,
                 values);
         }
-
     }
 
     setAverageTime(time) {
@@ -453,7 +447,7 @@ export class AppGlobalService {
 
     getOnboardingCompletionStatus(): Promise<any> {
         return new Promise((resolve, reject) => {
-            let profile = this.getCurrentUser();
+            const profile = this.getCurrentUser();
             this.isOnBoardingCompleted = Boolean(this.isGuestUser
                 && profile
                 && profile.syllabus && profile.syllabus[0]
