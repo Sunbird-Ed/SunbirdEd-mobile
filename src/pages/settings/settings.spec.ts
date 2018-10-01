@@ -1,17 +1,18 @@
 import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
-import { NavController, LoadingController } from "ionic-angular";
+import { NavController, LoadingController } from 'ionic-angular';
 import { DatasyncPage } from './datasync/datasync';
 import { LanguageSettingsPage } from '../language-settings/language-settings';
 import { AboutUsPage } from './about-us/about-us';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
-import { AppVersion } from "@ionic-native/app-version";
-import { SharedPreferences, InteractType, InteractSubtype, ShareUtil, ServiceProvider } from "sunbird";
+import { AppVersion } from '@ionic-native/app-version';
+import { SharedPreferences, InteractType, InteractSubtype, ShareUtil, ServiceProvider } from 'sunbird';
 import { Impression, ImpressionType, Environment, PageId, TelemetryService } from 'sunbird';
 import { generateInteractTelemetry, generateImpressionTelemetry } from '../../app/telemetryutil';
 import { PreferenceKey } from '../../app/app.constant';
 import { Observable } from 'rxjs/Observable';
-import { NavMock, AppVersionMock, SocialSharingMock, LoadingControllerMock, TranslateServiceStub, SharedPreferencesMock, TelemetryServiceMock, ShareUtilMock } from '../../../test-config/mocks-ionic'
+import { NavMock, AppVersionMock, SocialSharingMock, LoadingControllerMock, TranslateServiceStub,
+         SharedPreferencesMock, TelemetryServiceMock, ShareUtilMock } from '../../../test-config/mocks-ionic';
 import { SettingsPage } from './settings';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
@@ -19,10 +20,10 @@ describe('SettingsPage', () => {
     let comp: SettingsPage;
     let fixture: ComponentFixture<SettingsPage>;
 
-    let getLoader = () => {
+    const getLoader = () => {
         const loadingController = TestBed.get(LoadingController);
         comp.getLoader();
-    }
+    };
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -44,11 +45,11 @@ describe('SettingsPage', () => {
         fixture = TestBed.createComponent(SettingsPage);
         comp = fixture.componentInstance;
     });
-    it("can load instance", () => {
+    it('can load instance', () => {
         expect(comp).toBeTruthy();
     });
 
-    describe("IonViewWillEnter", () => {
+    describe('IonViewWillEnter', () => {
         it('makes expected calls', () => {
             const transStub = TestBed.get(TranslateService);
             const appStub = TestBed.get(AppVersion);
@@ -62,7 +63,7 @@ describe('SettingsPage', () => {
         });
     });
 
-    describe("IonViewDidLoad", () => {
+    describe('IonViewDidLoad', () => {
         it('makes expected calls', () => {
             const telemeStub = TestBed.get(TelemetryService);
             spyOn(telemeStub, 'impression');
@@ -71,8 +72,8 @@ describe('SettingsPage', () => {
         });
     });
 
-    describe("IonViewDidEnter", () => {
-        it("makes expected calls", () => {
+    describe('IonViewDidEnter', () => {
+        it('makes expected calls', () => {
             const trasnStub = TestBed.get(TranslateService);
             const preferStub = TestBed.get(SharedPreferences);
 
@@ -91,21 +92,21 @@ describe('SettingsPage', () => {
         });
 
     });
-    describe("goBack", () => {
+    describe('goBack', () => {
         it('makes expected calls ', () => {
             const navStub = TestBed.get(NavController);
 
             expect(comp.goBack).toBeDefined();
-            spyOn(navStub, "pop");
+            spyOn(navStub, 'pop');
 
             comp.goBack();
             expect(navStub.pop).toHaveBeenCalled();
         });
     });
-    describe("language settings", () => {
+    describe('language settings', () => {
         it('makes expected calls', () => {
             const navCtrl = TestBed.get(NavController);
-            let isFromSettings = true;
+            const isFromSettings = true;
             expect(comp.languageSetting).toBeDefined();
             spyOn(comp, 'generateInteractTelemetry');
             spyOn(navCtrl, 'push').and.callThrough();
@@ -115,7 +116,7 @@ describe('SettingsPage', () => {
 
         });
     });
-    describe("dataSync", () => {
+    describe('dataSync', () => {
         it('makes expected calls', () => {
             const navCtrl = TestBed.get(NavController);
             expect(comp.dataSync).toBeDefined();
@@ -127,7 +128,7 @@ describe('SettingsPage', () => {
         });
     });
 
-    describe("about us", () => {
+    describe('about us', () => {
         it('makes expected calls', () => {
             const navCtrl = TestBed.get(NavController);
             expect(comp.aboutUs).toBeDefined();
@@ -139,7 +140,7 @@ describe('SettingsPage', () => {
             expect(navCtrl.push).toHaveBeenCalled();
         });
     });
-    describe("send Message", () => {
+    describe('send Message', () => {
         it('makes expected calls', () => {
             const preferStub = TestBed.get(SharedPreferences);
             const loadControllerStub = TestBed.get(LoadingController);
@@ -157,7 +158,7 @@ describe('SettingsPage', () => {
             const loadControllerStub = TestBed.get(LoadingController);
             getLoader();
             spyOn(comp, 'generateInteractTelemetry');
-            spyOn(preferStub, 'getString').and.returnValue(Promise.resolve(""));
+            spyOn(preferStub, 'getString').and.returnValue(Promise.resolve(''));
 
             comp.sendMessage();
             expect(loadControllerStub.create).toHaveBeenCalled();
@@ -180,10 +181,10 @@ describe('SettingsPage', () => {
             const preferStub = TestBed.get(SharedPreferences);
             const loadControllerStub = TestBed.get(LoadingController);
             const SocialSharingStub = TestBed.get(SocialSharing);
-            comp.fileUrl = "string";
+            comp.fileUrl = 'string';
             getLoader();
             spyOn(comp, 'generateInteractTelemetry');
-            spyOn(preferStub, 'getString').and.returnValue(Promise.resolve("string"));
+            spyOn(preferStub, 'getString').and.returnValue(Promise.resolve('string'));
             spyOn(SocialSharingStub, 'shareViaEmail').and.returnValue(Promise.resolve(''));
             comp.sendMessage();
             expect(loadControllerStub.create).toHaveBeenCalled();
@@ -194,10 +195,10 @@ describe('SettingsPage', () => {
             const preferStub = TestBed.get(SharedPreferences);
             const loadControllerStub = TestBed.get(LoadingController);
             const SocialSharingStub = TestBed.get(SocialSharing);
-            comp.fileUrl = "string";
+            comp.fileUrl = 'string';
             getLoader();
             spyOn(comp, 'generateInteractTelemetry');
-            spyOn(preferStub, 'getString').and.returnValue(Promise.resolve("string"));
+            spyOn(preferStub, 'getString').and.returnValue(Promise.resolve('string'));
             spyOn(SocialSharingStub, 'shareViaEmail').and.returnValue(Promise.reject());
             comp.sendMessage();
             expect(loadControllerStub.create).toHaveBeenCalled();
@@ -205,7 +206,7 @@ describe('SettingsPage', () => {
             expect(preferStub.getString).toHaveBeenCalled();
         });
     });
-    describe("shareApp", () => {
+    describe('shareApp', () => {
         it('makes expected calls', () => {
             const shareUtilStub = TestBed.get(ShareUtil);
             const SocialSharingStub = TestBed.get(SocialSharing);
@@ -235,9 +236,9 @@ describe('SettingsPage', () => {
             expect(shareUtilStub.error).toBe(undefined);
             expect(shareUtilStub.exportApk).toHaveBeenCalled();
            // expect(SocialSharingStub.share).toHaveBeenCalled();
-        })
+        });
     });
-    describe("getLoader", () => {
+    describe('getLoader', () => {
         it('makes expected calls', () => {
             const loadControllerStub = TestBed.get(LoadingController);
             expect(comp.getLoader).toBeDefined();
@@ -247,7 +248,7 @@ describe('SettingsPage', () => {
             expect(loadControllerStub.create).toHaveBeenCalled();
         });
     });
-    describe("generateInteractTelemetry", () => {
+    describe('generateInteractTelemetry', () => {
         it('makes expected calls', () => {
             const telemeStub = TestBed.get(TelemetryService);
             spyOn(telemeStub, 'interact');

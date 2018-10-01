@@ -1,5 +1,5 @@
 export interface GenieResponse {
-    message: String;
+    message: string;
     status: Boolean;
     result: any;
 }

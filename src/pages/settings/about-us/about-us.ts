@@ -27,8 +27,8 @@ import { generateImpressionTelemetry } from '../../../app/telemetryutil';
   templateUrl: 'about-us.html',
 })
 export class AboutUsPage {
-  deviceId: String;
-  version: String;
+  deviceId: string;
+  version: string;
 
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
@@ -40,15 +40,15 @@ export class AboutUsPage {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad AboutUsPage');
-    this.version = "app version will be shown here"
+    this.version = 'app version will be shown here'
 
     this.deviceInfoService.getDeviceID(
       (res: any) => {
-        console.log("Device Id: ", res);
+        console.log('Device Id: ', res);
         this.deviceId = res;
       },
       (err: any) => {
-        // console.log("Device Id: ", JSON.parse(err));
+        // console.log('Device Id: ', JSON.parse(err));
       });
 
     this.appVersion.getAppName()
@@ -61,46 +61,46 @@ export class AboutUsPage {
   }
 
   aboutApp() {
-    this.navCtrl.push(AboutAppPage)
+    this.navCtrl.push(AboutAppPage);
   }
 
   termsOfService() {
-    this.navCtrl.push(TermsofservicePage)
+    this.navCtrl.push(TermsofservicePage);
   }
 
   privacyPolicy() {
-    this.navCtrl.push(PrivacypolicyPage)
+    this.navCtrl.push(PrivacypolicyPage);
   }
 
   generateImpressionEvent() {
     this.telemetryService.impression(generateImpressionTelemetry(
-      ImpressionType.VIEW, "",
+      ImpressionType.VIEW, '',
       PageId.SETTINGS_ABOUT_US,
-      Environment.SETTINGS, "", "", "",
+      Environment.SETTINGS, '', '', '',
       undefined,
       undefined
     ));
   }
 
   getVersionName(appName): any {
-    this.buildParamService.getBuildConfigParam("VERSION_NAME")
+    this.buildParamService.getBuildConfigParam('VERSION_NAME')
       .then(response => {
         this.getVersionCode(appName, response);
         return response;
       })
       .catch(error => {
-        return "";
+        return '';
       });
   }
 
   getVersionCode(appName, versionName): any {
-    this.buildParamService.getBuildConfigParam("VERSION_CODE")
+    this.buildParamService.getBuildConfigParam('VERSION_CODE')
       .then(response => {
-        this.version = appName + " v" + versionName + "." + response;
+        this.version = appName + ' v' + versionName + '.' + response;
         return response;
       })
       .catch(error => {
-        return "";
+        return '';
       });
   }
 

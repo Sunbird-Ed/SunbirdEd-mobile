@@ -47,7 +47,7 @@ export class CourseBatchesPage implements OnInit {
   /**
    * Flag to check guest user
    */
-  isGuestUser: boolean = false;
+  isGuestUser = false;
 
   filterList: any = {
     'ONGOING': 'VIEW_ONGOING_BATCHES',
@@ -146,7 +146,7 @@ export class CourseBatchesPage implements OnInit {
           error = JSON.parse(error);
           if (error && error.error === 'CONNECTION_ERROR') {
             this.showMessage(this.translateLanguageConstant('ERROR_NO_INTERNET_MESSAGE'));
-          } else if(error && error.error === "ALREADY_ENROLLED_COURSE"){
+          } else if (error && error.error === 'ALREADY_ENROLLED_COURSE') {
             this.showMessage(this.translateLanguageConstant('ALREADY_ENROLLED_COURSE'));
           }
         });
@@ -158,12 +158,12 @@ export class CourseBatchesPage implements OnInit {
    */
   getUserId(): void {
     this.authService.getSessionData((session) => {
-      if (session === undefined || session == null || session === "null") {
+      if (session === undefined || session == null || session === 'null') {
         console.log('session expired');
         this.zone.run(() => { this.isGuestUser = true; });
       } else {
         this.zone.run(() => {
-          let sessionObj = JSON.parse(session);
+          const sessionObj = JSON.parse(session);
           this.isGuestUser = false;
           this.userId = sessionObj[ProfileConstants.USER_TOKEN];
           this.getBatchesByCourseId();
@@ -176,16 +176,16 @@ export class CourseBatchesPage implements OnInit {
    * To get batches by course id
    */
   getBatchesByCourseId(status: number = 1): void {
-    console.log('getting course batches.... =>')
+    console.log('getting course batches.... =>');
     this.showLoader = true;
     const option: CourseBatchesRequest = {
       courseId: this.navParams.get('identifier')
-    }
+    };
 
     if (status === 1) {
-      option.status = CourseBatchStatus.IN_PROGRESS
+      option.status = CourseBatchStatus.IN_PROGRESS;
     } else {
-      option.status = CourseBatchStatus.NOT_STARTED
+      option.status = CourseBatchStatus.NOT_STARTED;
     }
 
     this.courseService.getCourseBatches(option, (data: any) => {
@@ -226,7 +226,7 @@ export class CourseBatchesPage implements OnInit {
   }
 
   showMessage(message: string) {
-    let toast = this.toastCtrl.create({
+    const toast = this.toastCtrl.create({
       message: message,
       duration: 2000,
       position: 'bottom'

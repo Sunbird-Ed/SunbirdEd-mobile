@@ -34,7 +34,7 @@ describe('CourseBatchesPage Component', () => {
                 { provide: NavParams, useClass: NavParamsMock },
                 { provide: ToastController, useClass: ToastControllerMock },
             ]
-        })
+        });
     }));
 
     beforeEach(() => {
@@ -50,8 +50,8 @@ describe('CourseBatchesPage Component', () => {
 
     it('should invoke getBatchesByCourseId() and populate ongoingbatches list', () => {
         const courseService = TestBed.get(CourseService);
-        spyOn(courseService, 'getCourseBatches').and.callFake(function (option, success) {
-            let data = JSON.stringify(mockRes.getOngoingBatchesResponse);
+        spyOn(courseService, 'getCourseBatches').and.callFake( (option, success) => {
+            const data = JSON.stringify(mockRes.getOngoingBatchesResponse);
             return success(data);
         });
         component.getBatchesByCourseId();
@@ -61,8 +61,8 @@ describe('CourseBatchesPage Component', () => {
 
     it('should invoke getBatchesByCourseId() and populate upcomingbatches list', () => {
         const courseService = TestBed.get(CourseService);
-        spyOn(courseService, 'getCourseBatches').and.callFake(function (option, success) {
-            let data = JSON.stringify(mockRes.getUpcomingBatchesResponse);
+        spyOn(courseService, 'getCourseBatches').and.callFake( (option, success) => {
+            const data = JSON.stringify(mockRes.getUpcomingBatchesResponse);
             return success(data);
         });
         component.getBatchesByCourseId();
@@ -72,8 +72,8 @@ describe('CourseBatchesPage Component', () => {
 
     it('should show error message in case of no internet connection', () => {
         const courseService = TestBed.get(CourseService);
-        spyOn(courseService, 'getCourseBatches').and.callFake(function (option, success, error) {
-            return error("CONNECTION_ERROR");
+        spyOn(courseService, 'getCourseBatches').and.callFake( (option, success, error) => {
+            return error('CONNECTION_ERROR');
         });
         component.getBatchesByCourseId();
         expect(component.ongoingBatches.length).toBe(0);
@@ -82,15 +82,15 @@ describe('CourseBatchesPage Component', () => {
 
     it('should show toast message after successfully enrolling to a batch', () => {
         const courseService = TestBed.get(CourseService);
-        let option = {};
-        spyOn(courseService, 'enrollCourse').and.callFake(function (option, success) {
-            let data = JSON.stringify(mockRes.enrollBatchResponse);
+        const option = {};
+        spyOn(courseService, 'enrollCourse').and.callFake( (_option, success) => {
+            const data = JSON.stringify(mockRes.enrollBatchResponse);
             return success(data);
         });
         component.enrollIntoBatch(option);
-        spyOn(component, "translateLanguageConstant").and.callThrough();
-        spyOn(component, "showMessage").and.callThrough();
-        let timeOut =setTimeout(() => {
+        spyOn(component, 'translateLanguageConstant').and.callThrough();
+        spyOn(component, 'showMessage').and.callThrough();
+        const timeOut = setTimeout(() => {
             expect(component.showMessage).toHaveBeenCalledWith('COURSE_ENROLLED');
             expect(component.navCtrl.pop).toHaveBeenCalled();
         }, 0);
@@ -100,14 +100,14 @@ describe('CourseBatchesPage Component', () => {
 
     it('should show error toast message while enrolling to a batch in case of no internet connection', () => {
         const courseService = TestBed.get(CourseService);
-        let option = {};
-        spyOn(courseService, 'enrollCourse').and.callFake(function (option, success, error) {
+        const option = {};
+        spyOn(courseService, 'enrollCourse').and.callFake( (_option, success, error) => {
             return error(JSON.stringify(mockRes.connectionFailureResponse));
         });
         component.enrollIntoBatch(option);
         spyOn(component, 'translateLanguageConstant').and.callThrough();
         spyOn(component, 'showMessage').and.callThrough();
-        let timeOut = setTimeout(() => {
+        const timeOut = setTimeout(() => {
             expect(component.showMessage).toHaveBeenCalledWith('ERROR_NO_INTERNET_MESSAGE');
         }, 0);
         clearTimeout(timeOut);
@@ -115,14 +115,14 @@ describe('CourseBatchesPage Component', () => {
 
     it('should show error toast message while enrolling to a batch which is already enrolled', () => {
         const courseService = TestBed.get(CourseService);
-        let option = {};
-        spyOn(courseService, 'enrollCourse').and.callFake(function (option, success, error) {
+        const option = {};
+        spyOn(courseService, 'enrollCourse').and.callFake( (_option, success, error) => {
             return error(JSON.stringify(mockRes.alreadyRegisterredFailureResponse));
         });
         component.enrollIntoBatch(option);
         spyOn(component, 'translateLanguageConstant').and.callThrough();
         spyOn(component, 'showMessage').and.callThrough();
-        let timeOut = setTimeout(() => {
+        const timeOut = setTimeout(() => {
             expect(component.showMessage).toHaveBeenCalledWith('ALREADY_ENROLLED_COURSE');
         }, 0);
         clearTimeout(timeOut);
@@ -130,13 +130,13 @@ describe('CourseBatchesPage Component', () => {
 
     it('should not invoke getBatchesByCourseId for guestUser', () => {
         const authService = TestBed.get(AuthService);
-        spyOn(authService, 'getSessionData').and.callFake(function (success) {
+        spyOn(authService, 'getSessionData').and.callFake( (success) => {
             return success(undefined);
         });
-        spyOn(component, "getBatchesByCourseId").and.callThrough();
+        spyOn(component, 'getBatchesByCourseId').and.callThrough();
         component.ngOnInit();
         spyOn(component, 'getUserId').and.callThrough();
-        let timeOut = setTimeout(() => {
+        const timeOut = setTimeout(() => {
             expect(component.getUserId).toHaveBeenCalled();
             expect(component.isGuestUser).toBe(true);
             expect(component.getBatchesByCourseId).not.toHaveBeenCalled();
@@ -147,35 +147,35 @@ describe('CourseBatchesPage Component', () => {
     it('should  invoke getBatchesByCourseId for signedIn user', () => {
         const courseService = TestBed.get(CourseService);
         const authService = TestBed.get(AuthService);
-        spyOn(courseService, 'getCourseBatches').and.callFake(function (option, success) {
-            let data = JSON.stringify(mockRes.getOngoingBatchesResponse);
+        spyOn(courseService, 'getCourseBatches').and.callFake( (option, success) => {
+            const data = JSON.stringify(mockRes.getOngoingBatchesResponse);
             return success(data);
         });
-        spyOn(authService, 'getSessionData').and.callFake(function (success) {
-            let data = JSON.stringify(mockRes.sessionResponse);
+        spyOn(authService, 'getSessionData').and.callFake( (success) => {
+            const data = JSON.stringify(mockRes.sessionResponse);
             return success(data);
         });
-        spyOn(component, "getBatchesByCourseId").and.callThrough();
+        spyOn(component, 'getBatchesByCourseId').and.callThrough();
         component.ngOnInit();
         spyOn(component, 'getUserId').and.callThrough();
-        let timeOut = setTimeout(() => {
+        const timeOut = setTimeout(() => {
             expect(component.getUserId).toHaveBeenCalled();
             expect(component.isGuestUser).toBe(false);
-            expect(component.userId).toBe("sample_user_token");
+            expect(component.userId).toBe('sample_user_token');
             expect(component.getBatchesByCourseId).toHaveBeenCalled();
         }, 0);
         clearTimeout(timeOut);
     });
 
     it('should  update filter', () => {
-       component.changeFilter("ONGOING");
-       expect(component.selectedFilter).toBe("VIEW_ONGOING_BATCHES");
+       component.changeFilter('ONGOING');
+       expect(component.selectedFilter).toBe('VIEW_ONGOING_BATCHES');
        const courseService = TestBed.get(CourseService);
-       spyOn(courseService, 'getCourseBatches').and.callFake(function (option, success) {
-        let data = JSON.stringify(mockRes.getOngoingBatchesResponse);
+       spyOn(courseService, 'getCourseBatches').and.callFake( (option, success) => {
+        const data = JSON.stringify(mockRes.getOngoingBatchesResponse);
         return success(data);
     });
-       component.changeFilter("UPCOMING");
-       expect(component.selectedFilter).toBe("VIEW_UPCOMING_BATCHES");
+       component.changeFilter('UPCOMING');
+       expect(component.selectedFilter).toBe('VIEW_UPCOMING_BATCHES');
     });
 });
