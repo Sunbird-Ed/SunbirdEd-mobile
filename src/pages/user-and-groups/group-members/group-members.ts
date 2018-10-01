@@ -27,11 +27,11 @@ import { TranslateService } from '@ngx-translate/core';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 
 /* Interface for the Toast Object */
-export interface toastOptions {
-  message: string,
-  duration: number,
-  position: string
-};
+export interface ToastOptions {
+  message: string;
+  duration: number;
+  position: string;
+}
 
 @IonicPage()
 @Component({
@@ -45,7 +45,7 @@ export class GroupMembersPage {
   userSelectionMap: Map<string, boolean> = new Map();
   lastCreatedProfileData: any;
 
-  options: toastOptions = {
+  options: ToastOptions = {
     message: '',
     duration: 3000,
     position: 'bottom'
@@ -68,9 +68,9 @@ export class GroupMembersPage {
 
   ionViewDidLoad() {
     this.telemetryGeneratorService.generateImpressionTelemetry(
-      ImpressionType.VIEW, "",
+      ImpressionType.VIEW, '',
       PageId.CREATE_GROUP_USER_SELECTION,
-      Environment.USER, this.group.gid ? this.group.gid : "", this.group.gid ? ObjectType.GROUP : ""
+      Environment.USER, this.group.gid ? this.group.gid : '', this.group.gid ? ObjectType.GROUP : ''
     );
   }
 
@@ -81,12 +81,12 @@ export class GroupMembersPage {
   // method below fetches the last created user
   getLastCreatedProfile() {
     return new Promise((resolve, reject) => {
-      let req = {
+      const req = {
         local: true,
         latestCreatedProfile: true
-      }
+      };
       this.profileService.getProfile(req, lastCreatedProfile => {
-        console.log("lastCreatedProfile: ", lastCreatedProfile);
+        console.log('lastCreatedProfile: ', lastCreatedProfile);
         this.lastCreatedProfileData = JSON.parse(lastCreatedProfile);
         resolve(JSON.parse(lastCreatedProfile));
       }, error => {
@@ -97,7 +97,7 @@ export class GroupMembersPage {
   }
 
   getAllProfile() {
-    let profileRequest: ProfileRequest = {
+    const profileRequest: ProfileRequest = {
       local: true
     };
 
@@ -107,16 +107,16 @@ export class GroupMembersPage {
           if (profiles && profiles.length) {
             this.userList = JSON.parse(profiles);
           }
-          console.log("UserList", profiles);
-        })
+          console.log('UserList', profiles);
+        });
       }).catch((error) => {
-        console.log("Something went wrong while fetching user list", error);
+        console.log('Something went wrong while fetching user list', error);
       });
     });
   }
 
   toggleSelect(index: number) {
-    let value = this.userSelectionMap.get(this.userList[index].uid)
+    let value = this.userSelectionMap.get(this.userList[index].uid);
     if (value) {
       value = false;
     } else {
@@ -126,14 +126,14 @@ export class GroupMembersPage {
   }
 
   isUserSelected(index: number) {
-    console.log("Index", index);
+    console.log('Index', index);
     return Boolean(this.userSelectionMap.get(this.userList[index].uid));
   }
 
   selectAll() {
     this.userSelectionMap.clear();
     this.zone.run(() => {
-      for (var i = 0; i < this.userList.length; i++) {
+      for (let i = 0; i < this.userList.length; i++) {
         this.userSelectionMap.set(this.userList[i].uid, true);
       }
     });
@@ -149,19 +149,21 @@ export class GroupMembersPage {
       this.navCtrl.push(GuestEditProfilePage, {
         isNewUser: true
       });
-    })
+    });
   }
 
   /**
    * Internally call create Group
    */
   createGroup() {
-    let loader = this.getLoader();
+    const loader = this.getLoader();
     loader.present();
 
-    let selectedUids: Array<string> = [];
+    const selectedUids: Array<string> = [];
     this.userSelectionMap.forEach((value: Boolean, key: string) => {
-      if (value === true) selectedUids.push(key);
+      if (value === true) {
+        selectedUids.push(key);
+      }
     });
     this.groupService.createGroup(this.group)
       .then(res => {
@@ -171,10 +173,10 @@ export class GroupMembersPage {
           Environment.USER,
           PageId.CREATE_GROUP
         );
-        let req: AddUpdateProfilesRequest = {
+        const req: AddUpdateProfilesRequest = {
           groupId: res.result.gid,
           uidList: selectedUids
-        }
+        };
         return this.groupService.addUpdateProfilesToGroup(req);
       })
       .then(success => {
@@ -186,7 +188,7 @@ export class GroupMembersPage {
       .catch(error => {
         loader.dismiss();
         this.getToast(this.translateMessage('SOMETHING_WENT_WRONG')).present();
-        console.log("Error : " + error);
+        console.log('Error : ' + error);
         loader.dismiss();
       });
   }
@@ -197,7 +199,7 @@ export class GroupMembersPage {
   getLoader(): any {
     return this.loadingCtrl.create({
       duration: 30000,
-      spinner: "crescent"
+      spinner: 'crescent'
     });
   }
 
@@ -207,7 +209,9 @@ export class GroupMembersPage {
    */
   getToast(message: string = ''): any {
     this.options.message = message;
-    if (message.length) return this.toastCtrl.create(this.options);
+    if (message.length) {
+      return this.toastCtrl.create(this.options);
+    }
   }
 
   /**
@@ -227,20 +231,20 @@ export class GroupMembersPage {
   }
   getGradeNameFromCode(data: Profile | Group): string {
     if (data.grade && data.grade.length > 0) {
-      let gradeName = [];
+      const gradeName = [];
       data.grade.forEach(code => {
         if (data.gradeValueMap && data.gradeValueMap[code]) {
           gradeName.push(data.gradeValueMap[code]);
         }
       });
 
-      if (gradeName.length == 0) {
-        return data.grade.join(",");
+      if (gradeName.length === 0) {
+        return data.grade.join(',');
       }
 
-      return gradeName.join(",");
+      return gradeName.join(',');
     }
 
-    return ""
+    return '';
   }
 }
