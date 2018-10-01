@@ -43,38 +43,38 @@ import * as _ from 'lodash';
 export class QrCodeResultPage {
   unregisterBackButton: any;
   /**
-	   * To hold identifier
-	   */
+   * To hold identifier
+   */
   identifier: string;
 
   /**
-	   * To hold identifier
-	   */
+	 * To hold identifier
+	 */
   searchIdentifier: string;
 
   /**
-	   * Contains children content data
-	   */
+	 * Contains children content data
+	 */
   childrenData: Array<any>;
 
   /**
-	   * Show loader while importing content
-	   */
+	 * Show loader while importing content
+	 */
   showChildrenLoader: boolean;
 
   /**
-	   * Contains card data of previous state
-	   */
+	 * Contains card data of previous state
+	 */
   content: any;
 
   /**
-	   * Contains Parent Content Details
-	   */
+	 * Contains Parent Content Details
+	 */
   parentContent: any;
 
   /**
-	   * Contains
-	   */
+	 * Contains
+	 */
   isParentContentAvailable = false;
   profile: Profile;
 
@@ -109,8 +109,8 @@ export class QrCodeResultPage {
   }
 
   /**
-	   * Ionic life cycle hook
-	   */
+   * Ionic life cycle hook
+   */
   ionViewWillEnter(): void {
     this.content = this.navParams.get('content');
     this.corRelationList = this.navParams.get('corRelation');
@@ -160,9 +160,6 @@ export class QrCodeResultPage {
       PageId.DIAL_CODE_SCAN_RESULT);
   }
 
-  /**
-	   *
-	   */
   getChildContents() {
     const request: ChildContentRequest = { contentId: this.identifier };
     this.contentService.getChildContents(
@@ -171,21 +168,16 @@ export class QrCodeResultPage {
         data = JSON.parse(data);
         this.parents.splice(0, this.parents.length);
         this.parents.push(data.result);
-        console.log('qr data', data);
-
         this.profile = this.appGlobal.getCurrentUser();
-
-        console.log('this.profile', this.profile);
         this.checkProfileData(data.result.contentData, this.profile);
         this.findContentNode(data.result);
       },
       (error: string) => {
-        console.log('Error: while fetching child contents ===>>>', error);
+        console.error('Error: while fetching child contents ===>>>', error);
         this.zone.run(() => {
           this.showChildrenLoader = false;
         });
-      }
-    );
+      });
   }
 
   private showAllChild(content: any) {
@@ -199,29 +191,32 @@ export class QrCodeResultPage {
   }
 
   private findContentNode(data: any) {
-    if (data !== undefined && data.identifier === this.searchIdentifier) {
+    if (data && data !== undefined && data.identifier === this.searchIdentifier) {
       this.showAllChild(data);
       return true;
     }
-    if (data.children !== undefined) {
+
+    if (data && data.children !== undefined) {
       data.children.forEach(child => {
         this.parents.push(child);
         const isFound = this.findContentNode(child);
+
         if (isFound === true) {
           return true;
         }
         this.parents.splice(-1, 1);
       });
     }
+
     return false;
   }
 
   navigateToDetailsPage(content) {
-    if (content.contentData.contentType === ContentType.COURSE) {
+    if (content && content.contentData && content.contentData.contentType === ContentType.COURSE) {
       this.navCtrl.push(EnrolledCourseDetailsPage, {
         content: content
       });
-    } else if (content.mimeType === MimeType.COLLECTION) {
+    } else if (content && content.mimeType === MimeType.COLLECTION) {
       this.navCtrl.push(CollectionDetailsPage, {
         content: content
       });
@@ -235,10 +230,10 @@ export class QrCodeResultPage {
     }
   }
 
+
   /**
-	   * request with profile data to set current profile
-	   *
-	   */
+   * Request with profile data to set current profile
+   */
 
   EditProfile(): void {
     const req: Profile = new Profile();
@@ -264,10 +259,9 @@ export class QrCodeResultPage {
         }
       });
     }
-    console.log('EditProfile req', req);
+
     this.profileService.updateProfile(req,
       (res: any) => {
-        console.log('Update Response from qrcode-->', JSON.parse(res));
         // this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
         this.events.publish('refresh:profile');
         this.appGlobal.guestUserProfile = JSON.parse(res);
@@ -275,19 +269,18 @@ export class QrCodeResultPage {
       (err: any) => {
         // loader.dismiss();
         // this.getToast(this.translateMessage('PROFILE_UPDATE_FAILED')).present();
-        console.log('Err', err);
+        console.error('Err', err);
       });
   }
 
   setgrade(reset, grades) {
     if (reset) {
-
       this.profile.grade = [];
       this.profile.gradeValueMap = {};
-      console.log('in reset form', this.profile);
     }
     _.each(grades, (grade) => {
       const currentGradeCode = _.find(this.gradeList, (category) => category.name === grade).code;
+
       if (currentGradeCode && this.profile.grade.indexOf(currentGradeCode) === -1) {
         if (!reset && this.profile.grade && this.profile.grade.length) {
           this.profile.grade.push(currentGradeCode);
@@ -299,16 +292,14 @@ export class QrCodeResultPage {
   }
 
   /**
-	   * assigning board, medium, grade and subject to profile
-	   */
+   * Assigning board, medium, grade and subject to profile
+   */
 
   setCurrentProfile(index, data) {
-    console.log('setCurrentProfile idx', index);
     // let boardList,gradeList, mediumList, subjectList;
     this.formAndFrameworkUtilService.getFrameworkDetails(data.framework)
       .then(catagories => {
         this.categories = catagories;
-        console.log('this.categories', catagories);
         this.boardList = _.find(this.categories, (category) => category.code === 'board').terms;
         this.gradeList = _.find(this.categories, (category) => category.code === 'gradeLevel').terms;
         this.mediumList = _.find(this.categories, (category) => category.code === 'medium').terms;
@@ -347,50 +338,56 @@ export class QrCodeResultPage {
             this.profile.subject.push(_.find(this.subjectList, (category) => category.name === data.subject).code);
             break;
         }
-        console.log('this.profile', this.profile);
+
         this.EditProfile();
       }).catch(error => {
-        console.log('errorrrrrr', error);
+        console.error('Error', error);
         // this.loader.dismiss();
         // this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
       });
   }
 
   /**
-	   * checking current profile data with qr result data
-	   */
+   * checking current profile data with qr result data
+   * @param {object} data  
+   * @param {object} profile
+   */
   checkProfileData(data, profile) {
-    if (profile.syllabus && profile.syllabus[0]) {
-      if (data.framework === profile.syllabus[0]) {
-        if (!(profile.board.length > 1) && data.board === profile.board[0]) {
+    if (profile && profile.syllabus && profile.syllabus[0]) {
+      if (data && data.framework === profile.syllabus[0]) {
+        if (profile.board && !(profile.board.length > 1) && data.board === profile.board[0]) {
           let existingMedium = false;
+
           if (profile.medium) {
             existingMedium = _.find(profile.medium, (medium) => {
               return medium.name === data.medium;
             });
           }
-          if (existingMedium) {
 
+          if (existingMedium && data.gradeLevel) {
             let existingGrade = false;
             for (let i = 0; i < data.gradeLevel.length; i++) {
               const gradeExists = _.find(profile.grade, (grade) => {
                 return grade.name === data.grade[0];
               });
+
               if (!gradeExists) {
                 break;
               }
+
               existingGrade = true;
             }
+
             if (existingGrade) {
               let existingSubject = false;
+
               if (profile.subject) {
                 existingSubject = _.find(profile.subject, (subject) => {
                   return subject.name === data.subject;
                 });
               }
-              if (existingSubject) {
 
-              } else {
+              if (!existingSubject) {
                 this.setCurrentProfile(4, data);
               }
             } else {
