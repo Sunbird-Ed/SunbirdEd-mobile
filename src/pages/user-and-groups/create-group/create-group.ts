@@ -31,11 +31,11 @@ import { TelemetryGeneratorService } from '../../../service/telemetry-generator.
 import { PreferenceKey } from '../../../app/app.constant';
 
 /* Interface for the Toast Object */
-export interface toastOptions {
-  message: string,
-  duration: number,
-  position: string
-};
+export interface ToastOptions {
+  message: string;
+  duration: number;
+  position: string;
+}
 
 @IonicPage()
 @Component({
@@ -46,16 +46,16 @@ export class CreateGroupPage {
   groupEditForm: FormGroup;
   classList = [];
   group: Group;
-  isEditGroup: boolean = false;
+  isEditGroup = false;
   syllabusList: Array<any> = [];
   categories: Array<any> = [];
   loader: any;
 
-  selectedLanguage: string = 'en';
+  selectedLanguage = 'en';
 
-  isFormValid: boolean = true;
+  isFormValid = true;
 
-  options: toastOptions = {
+  options: ToastOptions = {
     message: '',
     duration: 3000,
     position: 'bottom'
@@ -93,7 +93,7 @@ export class CreateGroupPage {
 
     this.group = this.navParams.get('groupInfo') || {};
     this.groupEditForm = this.fb.group({
-      name: [this.group.name || "", Validators.required],
+      name: [this.group.name || '', Validators.required],
       syllabus: [this.group.syllabus && this.group.syllabus[0] || []],
       class: [this.group.grade || []]
     });
@@ -107,9 +107,9 @@ export class CreateGroupPage {
 
   ionViewDidLoad() {
     this.telemetryGeneratorService.generateImpressionTelemetry(
-      ImpressionType.VIEW, "",
+      ImpressionType.VIEW, '',
       PageId.CREATE_GROUP_SYLLABUS_CLASS,
-      Environment.USER, this.isEditGroup ? this.group.gid : "", this.isEditGroup ? ObjectType.GROUP : ""
+      Environment.USER, this.isEditGroup ? this.group.gid : '', this.isEditGroup ? ObjectType.GROUP : ''
     );
 
     this.telemetryGeneratorService.generateInteractTelemetry(
@@ -123,7 +123,7 @@ export class CreateGroupPage {
 
 
   ionViewWillEnter() {
-    //this.getSyllabusDetails();
+    // this.getSyllabusDetails();
   }
 
   /**
@@ -139,13 +139,13 @@ export class CreateGroupPage {
         if (result && result !== undefined && result.length > 0) {
           result.forEach(element => {
 
-            //renaming the fields to text, value and checked
-            let value = { 'name': element.name, 'code': element.frameworkId };
+            // renaming the fields to text, value and checked
+            const value = { 'name': element.name, 'code': element.frameworkId };
             this.syllabusList.push(value);
           });
 
           if (this.group && this.group.syllabus && this.group.syllabus[0] !== undefined) {
-            console.log('1', this.group.syllabus)
+            console.log('1', this.group.syllabus);
             this.getClassList(this.group.syllabus[0], false);
           } else {
             this.loader.dismiss();
@@ -167,11 +167,11 @@ export class CreateGroupPage {
    */
   navigateToUsersList() {
     if (!this.isFormValid) {
-      this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
+      this.getToast(this.translateMessage('NEED_INTERNET_TO_CHANGE')).present();
       return;
     }
 
-    let formValue = this.groupEditForm.value;
+    const formValue = this.groupEditForm.value;
     console.log('formValue', formValue);
     if (formValue.name) {
       this.group.name = formValue.name;
@@ -182,8 +182,8 @@ export class CreateGroupPage {
       if (this.group.grade && this.group.grade.length > 0) {
         this.group.grade.forEach(gradeCode => {
           for (let i = 0; i < this.classList.length; i++) {
-            if (this.classList[i].code == gradeCode) {
-              this.group.gradeValueMap[this.classList[i].code] = this.classList[i].name
+            if (this.classList[i].code === gradeCode) {
+              this.group.gradeValueMap[this.classList[i].code] = this.classList[i].name;
               break;
             }
           }
@@ -193,8 +193,7 @@ export class CreateGroupPage {
       this.navCtrl.push(GroupMembersPage, {
         group: this.group
       });
-    }
-    else {
+    } else {
       this.getToast(this.translateMessage('ENTER_GROUP_NAME')).present();
     }
   }
@@ -204,26 +203,26 @@ export class CreateGroupPage {
  */
   updateGroup() {
     if (!this.isFormValid) {
-      this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
+      this.getToast(this.translateMessage('NEED_INTERNET_TO_CHANGE')).present();
       return;
     }
 
 
-    let formValue = this.groupEditForm.value;
+    const formValue = this.groupEditForm.value;
     if (formValue.name) {
-      let loader = this.getLoader();
+      const loader = this.getLoader();
       loader.present();
 
       this.group.name = formValue.name;
-      this.group.grade = (!formValue.class.length) ? [] : Array.isArray(formValue.class) ? formValue.class : [formValue.class];;
+      this.group.grade = (!formValue.class.length) ? [] : Array.isArray(formValue.class) ? formValue.class : [formValue.class];
       this.group.syllabus = (!formValue.syllabus.length) ? [] : [formValue.syllabus];
       this.group.gradeValueMap = {};
 
       if (this.group.grade && this.group.grade.length > 0) {
         this.group.grade.forEach(gradeCode => {
           for (let i = 0; i < this.classList.length; i++) {
-            if (this.classList[i].code == gradeCode) {
-              this.group.gradeValueMap[this.classList[i].code] = this.classList[i].name
+            if (this.classList[i].code === gradeCode) {
+              this.group.gradeValueMap[this.classList[i].code] = this.classList[i].name;
               break;
             }
           }
@@ -243,10 +242,9 @@ export class CreateGroupPage {
         })
         .catch((error) => {
           loader.dismiss();
-          console.log("Error : " + error);
+          console.log('Error : ' + error);
         });
-    }
-    else {
+    } else {
       this.getToast(this.translateMessage('ENTER_GROUP_NAME')).present();
     }
   }
@@ -270,10 +268,10 @@ export class CreateGroupPage {
 
     this.formAndFrameworkUtilService.getFrameworkDetails(frameworkId)
       .then((categories) => {
-        let request: CategoryRequest = {
-          currentCategory: "gradeLevel",
+        const request: CategoryRequest = {
+          currentCategory: 'gradeLevel',
           selectedLanguage: this.translate.currentLang
-        }
+        };
         this.isFormValid = true;
         return this.formAndFrameworkUtilService.getCategoryData(request);
       })
@@ -290,8 +288,8 @@ export class CreateGroupPage {
       .catch(error => {
         this.loader.dismiss();
         this.isFormValid = false;
-        this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
-        console.log("Error : " + error);
+        this.getToast(this.translateMessage('NEED_INTERNET_TO_CHANGE')).present();
+        console.log('Error : ' + error);
       });
   }
 
@@ -317,7 +315,7 @@ export class CreateGroupPage {
   getLoader(): any {
     return this.loadingCtrl.create({
       duration: 30000,
-      spinner: "crescent"
+      spinner: 'crescent'
     });
   }
 
@@ -327,6 +325,8 @@ export class CreateGroupPage {
    */
   getToast(message: string = ''): any {
     this.options.message = message;
-    if (message.length) return this.toastCtrl.create(this.options);
+    if (message.length) {
+    return this.toastCtrl.create(this.options);
+  }
   }
 }

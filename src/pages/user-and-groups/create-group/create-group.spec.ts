@@ -114,7 +114,8 @@ describe("CreateGroupPage", () => {
     });
     describe("getSyllabusDetails", () => {
         it("makes expected calls", () => {
-            const formAndFrameworkUtilServiceStub: FormAndFrameworkUtilService = fixture.debugElement.injector.get(FormAndFrameworkUtilService);
+            const formAndFrameworkUtilServiceStub: FormAndFrameworkUtilService =
+            fixture.debugElement.injector.get(FormAndFrameworkUtilService);
             spyOn(comp, "getLoader");
             // spyOn(comp, "getClassList");
             // spyOn(comp, "getToast");
@@ -215,4 +216,5 @@ describe("CreateGroupPage", () => {
             expect(loadingControllerStub.create).toHaveBeenCalled();
         });
     });
-}); */
+});
+*/
