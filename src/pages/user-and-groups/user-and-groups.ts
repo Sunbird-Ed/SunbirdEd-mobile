@@ -51,7 +51,7 @@ import {
 import { App, Events } from 'ionic-angular';
 import { Network } from '@ionic-native/network';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { Map } from "../../app/telemetryutil";
+import { Map } from '../../app/telemetryutil';
 import { Content } from 'ionic-angular';
 import { PreferenceKey } from '../../app/app.constant';
 
@@ -63,9 +63,9 @@ import { PreferenceKey } from '../../app/app.constant';
 export class UserAndGroupsPage {
 
   @ViewChild(Content) content: Content;
-  segmentType: string = "users";
+  segmentType = 'users';
   groupName: string;
-  showEmptyGroupsMessage: boolean = true;
+  showEmptyGroupsMessage = true;
   // isLoggedInUser: boolean = false;
   currentUserId: string;
   currentGroupId: string;
@@ -76,11 +76,11 @@ export class UserAndGroupsPage {
 
   unregisterBackButton: any;
   profileDetails: any;
-  loadingUserList: boolean = false;
+  loadingUserList = false;
 
   userType: string;
-  noUsersPresent: boolean = false;
-  selectedUserIndex: number = -1;
+  noUsersPresent = false;
+  selectedUserIndex = -1;
   lastCreatedProfileData: any;
 
   constructor(
@@ -127,7 +127,7 @@ export class UserAndGroupsPage {
 
   ionViewDidLoad() {
     this.telemetryGeneratorService.generateImpressionTelemetry(
-      ImpressionType.VIEW, "",
+      ImpressionType.VIEW, '',
       PageId.USERS_GROUPS,
       Environment.USER
     );
@@ -138,13 +138,13 @@ export class UserAndGroupsPage {
       this.getAllProfile();
       this.getAllGroup();
       this.getCurrentGroup();
-      //this.getLastCreatedProfile();
+      // this.getLastCreatedProfile();
 
       this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
         this.dismissPopup();
-        //this.unregisterBackButton();
+        // this.unregisterBackButton();
       }, 11);
-    })
+    });
     if (this.userList) {
       this.noUsersPresent = false;
       this.loadingUserList = true;
@@ -154,21 +154,21 @@ export class UserAndGroupsPage {
 
   getCurrentGroup() {
     this.groupService.getCurrentGroup().then(val => {
-      console.log("Value : " + val);
-      let group = val.result;
+      console.log('Value : ' + val);
+      const group = val.result;
       if (group) {
         this.zone.run(() => {
-          console.log("Value : " + group.gid);
-          this.currentGroupId = group.gid
+          console.log('Value : ' + group.gid);
+          this.currentGroupId = group.gid;
         });
       }
     }).catch(error => {
-      console.log("Error : " + error);
-    })
+      console.log('Error : ' + error);
+    });
   }
 
   dismissPopup() {
-    let activePortal = this.ionicApp._modalPortal.getActive() || this.ionicApp._overlayPortal.getActive();
+    const activePortal = this.ionicApp._modalPortal.getActive() || this.ionicApp._overlayPortal.getActive();
 
     if (activePortal) {
       activePortal.dismiss();
@@ -185,7 +185,7 @@ export class UserAndGroupsPage {
       isCurrentUser = this.currentGroupId === this.groupList[index].gid;
     }
 
-    let popover = this.popOverCtrl.create(PopoverPage, {
+    const popover = this.popOverCtrl.create(PopoverPage, {
       edit: () => {
         if (isUser) {
           this.navCtrl.push(GuestEditProfilePage, {
@@ -202,8 +202,7 @@ export class UserAndGroupsPage {
       delete: () => {
         if (isUser) {
           this.deleteUserConfirmBox(index);
-        }
-        else {
+        } else {
           this.deleteGroupConfirmBox(index);
         }
         popover.dismiss();
@@ -220,17 +219,17 @@ export class UserAndGroupsPage {
   }
 
   getAllProfile() {
-    let loader = this.getLoader();
+    const loader = this.getLoader();
     loader.present();
 
-    let profileRequest: ProfileRequest = {
+    const profileRequest: ProfileRequest = {
       local: true
     };
     this.loadingUserList = true;
     setTimeout(() => {
       this.zone.run(() => {
         this.profileService.getAllUserProfile(profileRequest).then((profiles) => {
-          let profileList: Array<Profile> = JSON.parse(profiles);
+          const profileList: Array<Profile> = JSON.parse(profiles);
           if (profileList && profileList.length) {
             this.userList = profileList.sort((prev: Profile, next: Profile) => {
               if (prev.uid === this.currentUserId) {
@@ -241,8 +240,12 @@ export class UserAndGroupsPage {
                 return 1;
               }
 
-              if (prev.handle < next.handle) return -1;
-              if (prev.handle > next.handle) return 1;
+              if (prev.handle < next.handle) {
+                return -1;
+              }
+              if (prev.handle > next.handle) {
+                return 1;
+              }
               return 0;
             });
             this.noUsersPresent = false;
@@ -258,17 +261,17 @@ export class UserAndGroupsPage {
           loader.dismiss();
           this.noUsersPresent = true;
           this.loadingUserList = false;
-          console.log("Something went wrong while fetching user list", error);
+          console.log('Something went wrong while fetching user list', error);
         });
-      })
-    }, 1000)
+      });
+    }, 1000);
   }
 
   getAllGroup() {
     this.zone.run(() => {
-      let groupRequest: GroupRequest = {
-        uid: ""
-      }
+      const groupRequest: GroupRequest = {
+        uid: ''
+      };
 
       this.groupService.getAllGroup(groupRequest).then((groups) => {
         if (groups.result && groups.result.length) {
@@ -282,18 +285,22 @@ export class UserAndGroupsPage {
               return 1;
             }
 
-            if (prev.name < next.name) return -1;
-            if (prev.name > next.name) return 1;
+            if (prev.name < next.name) {
+              return -1;
+            }
+            if (prev.name > next.name) {
+              return 1;
+            }
             return 0;
           });
         } else {
           this.showEmptyGroupsMessage = true;
         }
-        console.log("GroupList", groups);
+        console.log('GroupList', groups);
       }).catch((error) => {
-        console.log("Something went wrong while fetching data", error);
+        console.log('Something went wrong while fetching data', error);
       });
-    })
+    });
   }
 
   /**Navigates to group details page */
@@ -335,7 +342,7 @@ export class UserAndGroupsPage {
   gotToGroupDetailsPage() {
     this.navCtrl.push(GroupDetailsPage, {
       item: this.groupList
-    })
+    });
   }
 
   /**
@@ -361,7 +368,7 @@ export class UserAndGroupsPage {
         this.navCtrl.push(GuestEditProfilePage, {
           isNewUser: true
         });
-      })
+      });
       console.error('error occoured' + error);
     });
   }
@@ -370,17 +377,17 @@ export class UserAndGroupsPage {
     this.zone.run(() => {
       this.selectedUserIndex = (this.selectedUserIndex === index) ? -1 : index;
     });
-    console.log("Clicked list name is ", name);
+    console.log('Clicked list name is ', name);
   }
 
   onSegmentChange(event) {
     this.zone.run(() => {
       this.content.resize();
       this.selectedUserIndex = -1;
-    })
-    console.log("Event", event._value);
+    });
+    console.log('Event', event._value);
     this.telemetryGeneratorService.generateImpressionTelemetry(
-      ImpressionType.VIEW, "",
+      ImpressionType.VIEW, '',
       event._value,
       Environment.USER
     );
@@ -390,7 +397,7 @@ export class UserAndGroupsPage {
   * Shows Prompt for switch Account
   */
   switchAccountConfirmBox() {
-    //Generate Switch User click event
+    // Generate Switch User click event
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.SWITCH_USER_CLICKED,
@@ -398,21 +405,21 @@ export class UserAndGroupsPage {
       PageId.USERS_GROUPS
     );
 
-    let selectedUser = this.userList[this.selectedUserIndex];
+    const selectedUser = this.userList[this.selectedUserIndex];
 
-    let valuesMap = new Map();
-    let fromUser = new Map();
-    fromUser["uid"] = this.currentUserId;
-    fromUser["type"] = this.appGlobalService.isUserLoggedIn() ? "signedin" : "guest";
+    const valuesMap = new Map();
+    const fromUser = new Map();
+    fromUser['uid'] = this.currentUserId;
+    fromUser['type'] = this.appGlobalService.isUserLoggedIn() ? 'signedin' : 'guest';
 
-    let toUser = new Map();
-    toUser["uid"] = selectedUser.uid;
-    toUser["type"] = "guest";
+    const toUser = new Map();
+    toUser['uid'] = selectedUser.uid;
+    toUser['type'] = 'guest';
 
-    valuesMap["from"] = fromUser;
-    valuesMap["to"] = toUser;
+    valuesMap['from'] = fromUser;
+    valuesMap['to'] = toUser;
 
-    let telemetryObject: TelemetryObject = new TelemetryObject();
+    const telemetryObject: TelemetryObject = new TelemetryObject();
     telemetryObject.id = selectedUser.uid;
     telemetryObject.type = ObjectType.USER;
 
@@ -426,7 +433,7 @@ export class UserAndGroupsPage {
       valuesMap
     );
 
-    let alert = this.alertCtrl.create({
+    const alert = this.alertCtrl.create({
       title: this.translateMessage('SWITCH_ACCOUNT_CONFIRMATION'),
       mode: 'wp',
       message: this.translateMessage('SIGNED_OUT_ACCOUNT_MESSAGE'),
@@ -455,7 +462,7 @@ export class UserAndGroupsPage {
     } else {
       this.setAsCurrentUser(selectedUser, false);
     }
-    //Generate Switch user success event 
+    // Generate Switch user success event
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.OTHER,
       InteractSubtype.SWITCH_USER_SUCCESS,
@@ -468,12 +475,12 @@ export class UserAndGroupsPage {
   // method below fetches the last created user
   getLastCreatedProfile() {
     return new Promise((resolve, reject) => {
-      let req = {
+      const req = {
         local: true,
         latestCreatedProfile: true
-      }
+      };
       this.profileService.getProfile(req, lastCreatedProfile => {
-        console.log("lastCreatedProfile: ", lastCreatedProfile);
+        console.log('lastCreatedProfile: ', lastCreatedProfile);
         this.lastCreatedProfileData = JSON.parse(lastCreatedProfile);
         resolve(JSON.parse(lastCreatedProfile));
       }, error => {
@@ -484,11 +491,11 @@ export class UserAndGroupsPage {
   }
 
   logOut(selectedUser: any, isBeingPlayed: boolean) {
-    let telemetryObject: TelemetryObject = new TelemetryObject();
+    const telemetryObject: TelemetryObject = new TelemetryObject();
     telemetryObject.id = this.profileDetails.id;
     telemetryObject.type = Environment.USER;
 
-    //Generate Logout success event
+    // Generate Logout success event
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.LOGOUT_INITIATE,
@@ -500,8 +507,7 @@ export class UserAndGroupsPage {
       this.authService.endSession();
       (<any>window).splashscreen.clearPrefs();
       this.setAsCurrentUser(selectedUser, true);
-    }
-    else {
+    } else {
       if (this.network.type === 'none') {
         this.authService.endSession();
         (<any>window).splashscreen.clearPrefs();
@@ -514,7 +520,7 @@ export class UserAndGroupsPage {
       }
     }
 
-    //Generate Logout success event
+    // Generate Logout success event
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.OTHER,
       InteractSubtype.LOGOUT_SUCCESS,
@@ -534,7 +540,7 @@ export class UserAndGroupsPage {
 
   /** Delete alert box */
   deleteGroupConfirmBox(index) {
-    let alert = this.alertCtrl.create({
+    const alert = this.alertCtrl.create({
       title: this.translateMessage('GROUP_DELETE_CONFIRM', this.groupList[index].name),
       mode: 'wp',
       message: this.translateMessage('GROUP_DELETE_CONFIRM_MESSAGE'),
@@ -561,7 +567,7 @@ export class UserAndGroupsPage {
   }
   /**Navigates to play content details page nd launch the player */
   play() {
-    let selectedUser = this.userList[this.selectedUserIndex];
+    const selectedUser = this.userList[this.selectedUserIndex];
     if (this.appGlobalService.isUserLoggedIn()) {
       this.logOut(selectedUser, true);
     } else {
@@ -572,12 +578,12 @@ export class UserAndGroupsPage {
 
   deleteGroup(index: number) {
 
-    let gid = this.groupList[index].gid;
-    let telemetryObject: TelemetryObject = new TelemetryObject();
+    const gid = this.groupList[index].gid;
+    const telemetryObject: TelemetryObject = new TelemetryObject();
     telemetryObject.id = gid;
     telemetryObject.type = ObjectType.GROUP;
 
-    //Generate Delete user event
+    // Generate Delete user event
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.DELETE_GROUP_INITIATE,
@@ -591,13 +597,13 @@ export class UserAndGroupsPage {
       this.getAllGroup();
     }).catch((error) => {
       console.log(error);
-    })
+    });
   }
 
   /** Delete alert box */
   deleteUserConfirmBox(index) {
-    //let self = this;
-    let alert = this.alertCtrl.create({
+    // let self = this;
+    const alert = this.alertCtrl.create({
       title: this.translateMessage('USER_DELETE_CONFIRM', this.userList[index].handle),
       mode: 'wp',
       message: this.translateMessage('USER_DELETE_CONFIRM_MESSAGE'),
@@ -624,13 +630,13 @@ export class UserAndGroupsPage {
   }
 
   deleteUser(index: number) {
-    let uid = this.userList[index].uid;
+    const uid = this.userList[index].uid;
 
-    let telemetryObject: TelemetryObject = new TelemetryObject();
+    const telemetryObject: TelemetryObject = new TelemetryObject();
     telemetryObject.id = uid;
     telemetryObject.type = ObjectType.USER;
 
-    //Generate Delete user event
+    // Generate Delete user event
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.DELETE_USER_INITIATE,
@@ -640,14 +646,14 @@ export class UserAndGroupsPage {
     );
     this.profileService.deleteUser(uid,
       (result) => {
-        console.log("User Deleted Successfully", result);
+        console.log('User Deleted Successfully', result);
         this.userList.splice(index, 1);
-        if (this.userList.length == 0) {
+        if (this.userList.length === 0) {
           this.noUsersPresent = true;
         }
 
       }, (error) => {
-        console.error("Error Occurred=", error);
+        console.error('Error Occurred=', error);
       });
   }
 
@@ -669,30 +675,30 @@ export class UserAndGroupsPage {
 
   getGradeNameFromCode(data: Profile | Group): string {
     if (data.grade && data.grade.length > 0) {
-      let gradeName = [];
+      const gradeName = [];
       data.grade.forEach(code => {
         if (data.gradeValueMap && data.gradeValueMap[code]) {
           gradeName.push(data.gradeValueMap[code]);
         }
       });
 
-      if (gradeName.length == 0) {
-        return data.grade.join(",");
+      if (gradeName.length === 0) {
+        return data.grade.join(',');
       }
 
-      return gradeName.join(",");
+      return gradeName.join(',');
     }
 
-    return ""
+    return '';
   }
 
   private setAsCurrentUser(selectedUser, isBeingPlayed: boolean) {
     this.groupService.setCurrentGroup(null)
       .then(val => {
-        console.log("Value : " + val);
+        console.log('Value : ' + val);
       })
       .catch(error => {
-        console.log("Error : " + error);
+        console.log('Error : ' + error);
       });
 
     this.profileService.setCurrentUser(selectedUser.uid, () => {
@@ -700,32 +706,31 @@ export class UserAndGroupsPage {
         this.event.publish('launchPlayer', true);
         this.navCtrl.pop();
       }
-      if (selectedUser.profileType == ProfileType.STUDENT) {
+      if (selectedUser.profileType === ProfileType.STUDENT) {
         initTabs(this.container, isBeingPlayed ? GUEST_STUDENT_TABS : GUEST_STUDENT_SWITCH_TABS);
         this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT);
-      }
-      else {
+      } else {
         initTabs(this.container, isBeingPlayed ? GUEST_TEACHER_TABS : GUEST_TEACHER_SWITCH_TABS);
         this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER);
       }
       this.event.publish('refresh:profile');
       this.event.publish(AppGlobalService.USER_INFO_UPDATED);
       this.app.getRootNav().setRoot(TabsPage);
-      let toast = this.toastCtrl.create({
-        message: this.translateMessage("SWITCHING_TO", selectedUser.handle),
+      const toast = this.toastCtrl.create({
+        message: this.translateMessage('SWITCHING_TO', selectedUser.handle),
         duration: 2000,
         position: 'bottom'
       });
       toast.present();
     }, (error) => {
-      console.log("Error " + error);
+      console.log('Error ' + error);
     });
   }
   // code which invokes loader
   getLoader(): any {
     return this.loadingCtrl.create({
       duration: 30000,
-      spinner: "crescent"
+      spinner: 'crescent'
     });
   }
 }

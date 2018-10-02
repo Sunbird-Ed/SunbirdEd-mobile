@@ -1,24 +1,24 @@
 import { Component } from '@angular/core';
-import { NavController, LoadingController } from "ionic-angular";
+import { NavController, LoadingController } from 'ionic-angular';
 import { DatasyncPage } from './datasync/datasync';
 import { LanguageSettingsPage } from '../language-settings/language-settings';
 import { AboutUsPage } from './about-us/about-us';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { TranslateService } from '@ngx-translate/core';
-import { AppVersion } from "@ionic-native/app-version";
-import { SharedPreferences, InteractType, InteractSubtype, ShareUtil } from "sunbird";
+import { AppVersion } from '@ionic-native/app-version';
+import { SharedPreferences, InteractType, InteractSubtype, ShareUtil } from 'sunbird';
 import { Impression, ImpressionType, Environment, PageId, TelemetryService } from 'sunbird';
 import { generateInteractTelemetry, generateImpressionTelemetry } from '../../app/telemetryutil';
 import { PreferenceKey } from '../../app/app.constant';
 
-const KEY_SUNBIRD_CONFIG_FILE_PATH = "sunbird_config_file_path";
+const KEY_SUNBIRD_CONFIG_FILE_PATH = 'sunbird_config_file_path';
 @Component({
   selector: 'settings',
   templateUrl: 'settings.html'
 })
 export class SettingsPage {
-  chosenLanguageString: String;
-  selectedlanguage: String;
+  chosenLanguageString: string;
+  selectedlanguage: string;
   fileUrl: string;
   shareAppLabel: string;
 
@@ -39,21 +39,21 @@ export class SettingsPage {
       value => {
         this.appVersion.getAppName()
           .then((appName: any) => {
-            //TODO: Need to add dynamic string substitution
-            this.shareAppLabel = value.replace("{{%s}}", appName);
+            // TODO: Need to add dynamic string substitution
+            this.shareAppLabel = value.replace('{{%s}}', appName);
           });
       }
     );
   }
   ionViewDidLoad() {
-    let impression = new Impression();
+    const impression = new Impression();
     impression.type = ImpressionType.VIEW;
     impression.pageId = PageId.SETTINGS;
     impression.env = Environment.SETTINGS;
     this.telemetryService.impression(generateImpressionTelemetry(
-      ImpressionType.VIEW, "",
+      ImpressionType.VIEW, '',
       PageId.SETTINGS,
-      Environment.SETTINGS, "", "", "",
+      Environment.SETTINGS, '', '', '',
       undefined,
       undefined
     ));
@@ -64,6 +64,7 @@ export class SettingsPage {
       value => {
         this.chosenLanguageString = value;
         this.preference.getString(PreferenceKey.SELECTED_LANGUAGE)
+          // tslint:disable-next-line:no-shadowed-variable
           .then(value => {
             this.selectedlanguage = this.chosenLanguageString + ': ' + value;
           });
@@ -75,8 +76,8 @@ export class SettingsPage {
     this.navCtrl.pop();
   }
   ionViewDidLeave() {
-    (<any>window).supportfile.removeCertainFile((result) => {
-      console.log("File deleted -" + result);
+    (<any>window).supportfile.removeFile((result) => {
+      console.log('File deleted -' + result);
     }, (error) => {
       console.log('error' + error);
     });
@@ -90,32 +91,32 @@ export class SettingsPage {
 
   dataSync() {
     this.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.DATA_SYNC_CLICKED);
-    this.navCtrl.push(DatasyncPage)
+    this.navCtrl.push(DatasyncPage);
   }
 
   aboutUs() {
     this.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.ABOUT_APP_CLICKED);
-    this.navCtrl.push(AboutUsPage)
+    this.navCtrl.push(AboutUsPage);
   }
 
   sendMessage() {
-    (<any>window).supportfile.makeEntryInSunbirdConfiguration((result) => {
-      let loader = this.getLoader();
+    (<any>window).supportfile.shareSunbirdConfigurations((result) => {
+      const loader = this.getLoader();
       loader.present();
-      console.log("Result - " + JSON.parse(result));
+      console.log('Result - ' + JSON.parse(result));
       this.preference.putString(KEY_SUNBIRD_CONFIG_FILE_PATH, JSON.parse(result));
       this.preference.getString(KEY_SUNBIRD_CONFIG_FILE_PATH)
         .then(val => {
           loader.dismiss();
-          if (val === undefined || val === "" || val === null) {
-            //do nothing
+          if (val === undefined || val === '' || val === null) {
+            // do nothing
           } else {
-            this.fileUrl = "file://" + val;
+            this.fileUrl = 'file://' + val;
             // Share via email
-            this.socialSharing.shareViaEmail('', '', ['dummy@example.com'], null, null, this.fileUrl).then(() => {
-              console.log("Share is possible");
+            this.socialSharing.shareViaEmail('', '', [], null, null, this.fileUrl).then(() => {
+              console.log('Share is possible');
             }).catch(error => {
-              console.log("Share is not possible");
+              console.log('Share is not possible');
               console.log(error);
               // Error!
             });
@@ -128,7 +129,7 @@ export class SettingsPage {
   }
 
   shareApp() {
-    let loader = this.getLoader();
+    const loader = this.getLoader();
     loader.present();
 
     this.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.SHARE_APP_CLICKED);
@@ -137,7 +138,7 @@ export class SettingsPage {
     this.shareUtil.exportApk(filePath => {
       this.generateInteractTelemetry(InteractType.OTHER, InteractSubtype.SHARE_APP_SUCCESS);
       loader.dismiss();
-      this.socialSharing.share("", "", "file://" + filePath, "");
+      this.socialSharing.share('', '', 'file://' + filePath, '');
     }, error => {
       loader.dismiss();
     });
@@ -146,7 +147,7 @@ export class SettingsPage {
   getLoader(): any {
     return this.loadingCtrl.create({
       duration: 30000,
-      spinner: "crescent"
+      spinner: 'crescent'
     });
   }
 

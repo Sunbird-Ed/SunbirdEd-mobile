@@ -1,34 +1,34 @@
-import { ComponentFixture, TestBed, fakeAsync } from "@angular/core/testing";
-import { NO_ERRORS_SCHEMA } from "@angular/core";
-import { TranslateService, TranslateModule, TranslateLoader } from "@ngx-translate/core";
-//import { NgZone, } from "@angular/core";
-import { NavController, Alert } from "ionic-angular";
-import { NavParams, IonicModule } from "ionic-angular";
-import { LoadingController } from "ionic-angular";
-import { PopoverController } from "ionic-angular";
-import { AlertController, Content } from "ionic-angular";
-import { GroupService, ProfileType, UserSource, ServiceProvider, BuildParamService, FrameworkService, TelemetryService } from "sunbird";
-import { ProfileService } from "sunbird";
-import { OAuthService, } from "sunbird";
-import { ContainerService } from "sunbird";
-import { SharedPreferences } from "sunbird";
-import { AuthService } from "sunbird";
-import { Events } from "ionic-angular";
-import { AppGlobalService } from "../../../service/app-global.service";
-import { App } from "ionic-angular";
-import { ToastController } from "ionic-angular";
-import { Network } from "@ionic-native/network";
-import { TelemetryGeneratorService } from "../../../service/telemetry-generator.service";
-import { GroupDetailsPage } from "./group-details";
-import { } from "jasmine";
+import { ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { TranslateService, TranslateModule, TranslateLoader } from '@ngx-translate/core';
+// import { NgZone, } from '@angular/core';
+import { NavController, Alert } from 'ionic-angular';
+import { NavParams, IonicModule } from 'ionic-angular';
+import { LoadingController } from 'ionic-angular';
+import { PopoverController } from 'ionic-angular';
+import { AlertController, Content } from 'ionic-angular';
+import { GroupService, ProfileType, UserSource, ServiceProvider, BuildParamService, FrameworkService, TelemetryService } from 'sunbird';
+import { ProfileService } from 'sunbird';
+import { OAuthService, } from 'sunbird';
+import { ContainerService } from 'sunbird';
+import { SharedPreferences } from 'sunbird';
+import { AuthService } from 'sunbird';
+import { Events } from 'ionic-angular';
+import { AppGlobalService } from '../../../service/app-global.service';
+import { App } from 'ionic-angular';
+import { ToastController } from 'ionic-angular';
+import { Network } from '@ionic-native/network';
+import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
+import { GroupDetailsPage } from './group-details';
+import { } from 'jasmine';
 import { mockAllProfiles, userList, selectedUser, userUids } from '../group-details/group-detail.data.spec';
-import { Observable } from "rxjs";
-//import { AlertControllerMock, AlertMock } from 'ionic-mocks'
+import { Observable } from 'rxjs';
+// import { AlertControllerMock, AlertMock } from 'ionic-mocks'
 import {
    NavMock, NavParamsMock, ToastControllerMock, TelemetryServiceMock, TranslateLoaderMock, TranslateServiceStub, NavControllerMock, LoadingControllerMock, PopoverControllerMock, AlertControllerMock, AlertMock, profileServiceMock, ContainerServiceMock, AuthServiceMock, SharedPreferencesMock, EventsMock, AppGlobalServiceMock, appMock, AppMock, groupServiceMock, oAuthServiceMock, networkMock, OAuthServiceMock
 } from '../../../../test-config/mocks-ionic';
 
-describe("GroupDetailsPage", () => {
+describe('GroupDetailsPage', () => {
    let comp: GroupDetailsPage;
    let fixture: ComponentFixture<GroupDetailsPage>;
 
@@ -45,7 +45,7 @@ describe("GroupDetailsPage", () => {
 
            ],
            providers: [
-               ServiceProvider, BuildParamService, FrameworkService, ProfileService,TelemetryGeneratorService,TelemetryService,Network,
+               ServiceProvider, BuildParamService, FrameworkService, ProfileService, TelemetryGeneratorService, TelemetryService, Network,
                { provide: TranslateService, useClass: TranslateServiceStub },
                { provide: NavController, useClass: NavControllerMock },
                { provide: NavParams, useClass: NavParamsMock },
@@ -84,29 +84,29 @@ describe("GroupDetailsPage", () => {
        comp = fixture.componentInstance;
 
    });
-   let getLoader = () => {
+   const getLoader = () => {
        const loadingController = TestBed.get(LoadingController);
        comp.getLoader();
-   }
+   };
 
 
-   it("#constructor can load instance", () => {
+   it('#constructor can load instance', () => {
        expect(comp).toBeTruthy();
    });
 
-   it("#constructor  userList defaults to: []", () => {
+   it('#constructor  userList defaults to: []', () => {
        expect(comp.userList).toEqual([]);
    });
 
-   it("#constructor  userUids defaults to: []", () => {
+   it('#constructor  userUids defaults to: []', () => {
        expect(comp.userUids).toEqual([]);
    });
 
-   it("#constructor isNoUsers defaults to: false", () => {
+   it('#constructor isNoUsers defaults to: false', () => {
        expect(comp.isNoUsers).toEqual(false);
    });
 
-   it("#constructor isCurrentGroupActive defaults to: true", () => {
+   it('#constructor isCurrentGroupActive defaults to: true', () => {
        expect(comp.isCurrentGroupActive).toEqual(false);
    });
 
@@ -126,7 +126,7 @@ describe("GroupDetailsPage", () => {
        comp.resizeContent();
        expect(comp.resizeContent).toHaveBeenCalled();
        expect(comp.content.resize).toHaveBeenCalled();
-   })
+   });
    it('#getAllProfile should fetch all profile details', (done) => {
        const profileServiceStub = TestBed.get(ProfileService);
 
@@ -148,21 +148,21 @@ describe("GroupDetailsPage", () => {
        spyOn(comp, 'selectUser').and.callThrough();
        comp.selectUser(23232, '242423');
        expect(comp.selectUser).toHaveBeenCalled();
-   })
+   });
    it('#switchAccountConfirmBox should call', () => {
-       let uid = '1234';
+       const uid = '1234';
 
        const TelemetryGeneratorServiceStub = TestBed.get(TelemetryGeneratorService);
-       //const  telemetryObject = TestBed.get(TelemetryObject)
+       // const  telemetryObject = TestBed.get(TelemetryObject)
        expect(comp.switchAccountConfirmBox).toBeDefined();
-       spyOn(TelemetryGeneratorServiceStub, 'generateInteractTelemetry').and.callFake(()=>{ });
-       //spyOn(comp, 'switchAccountConfirmBox');
+       spyOn(TelemetryGeneratorServiceStub, 'generateInteractTelemetry').and.callFake(() => { });
+       // spyOn(comp, 'switchAccountConfirmBox');
        spyOn(comp, 'switchAccountConfirmBox').and.callThrough();
        comp.switchAccountConfirmBox();
        expect(TelemetryGeneratorServiceStub.generateInteractTelemetry).toHaveBeenCalled();
        expect(comp.switchAccountConfirmBox).toHaveBeenCalled();
        expect(comp.switchAccountConfirmBox).toHaveBeenCalled();
-   })
+   });
 
    it('#play should call', () => {
        expect(comp.play).toBeDefined();
@@ -172,74 +172,74 @@ describe("GroupDetailsPage", () => {
        comp.play();
 
        expect(comp.play).toHaveBeenCalled();
-   })
+   });
 
    it('#play should call', () => {
        expect(comp.play).toBeDefined();
-       const AppGlobalServiceStub= TestBed.get(AppGlobalService);
+       const AppGlobalServiceStub = TestBed.get(AppGlobalService);
        AppGlobalServiceMock.isGuestUser = true;
        spyOn(comp, 'play').and.callThrough();
        comp.play();
        expect(comp.play).toHaveBeenCalled();
-   })
+   });
    it('# Logout call', () => {
        const authService = TestBed.get(AuthService);
        expect(comp.play).toBeDefined();
       // spyOn(authService,'endSession');
        spyOn(comp, 'logOut');
-       comp.logOut(selectedUser,false);
+       comp.logOut(selectedUser, false);
        expect(comp.logOut).toHaveBeenCalled();
-   })
+   });
    it('# Logout call', () => {
        const authService = TestBed.get(AuthService);
        window['splashscreen'] = {
            clearPrefs: () => ({})
-         }
+         };
          spyOn(window['splashscreen'], 'clearPrefs').and.callFake(() => {
          });
 
        expect(comp.logOut).toBeDefined();
-      spyOn(authService,'endSession');
+      spyOn(authService, 'endSession');
        spyOn(comp, 'logOut').and.callThrough();
        comp.logOut(selectedUser, true);
        expect(comp.logOut).toHaveBeenCalled();
-   })
+   });
 
    it('# Logout call', () => {
        const authService = TestBed.get(AuthService);
        expect(comp.play).toBeDefined();
       // spyOn(authService,'endSession');
        spyOn(comp, 'logOut').and.callThrough();
-       comp.logOut(selectedUser,false);
+       comp.logOut(selectedUser, false);
        expect(comp.logOut).toHaveBeenCalled();
-   })
+   });
    it('# Logout call and will do session end', () => {
        const authService = TestBed.get(AuthService);
        spyOn(comp, 'logOut').and.callThrough();
-       comp.logOut(selectedUser,false);
+       comp.logOut(selectedUser, false);
        expect(comp.logOut).toHaveBeenCalled();
-   })
+   });
    it('# Logout call and will check the network', () => {
        const authService = TestBed.get(AuthService);
-       const network =TestBed.get(Network);
-       spyOnProperty(network,'type').and.returnValue('none');
-          spyOn(authService,'endSession');
+       const network = TestBed.get(Network);
+       spyOnProperty(network, 'type').and.returnValue('none');
+          spyOn(authService, 'endSession');
        spyOn(comp, 'logOut').and.callThrough();
-       comp.logOut(selectedUser,false);
+       comp.logOut(selectedUser, false);
        expect(comp.logOut).toHaveBeenCalled();
-   })
+   });
    it('# Logout call and will check the network if its not there user ll be logout', () => {
        const oauth = TestBed.get(OAuthService);
        window['splashscreen'] = {
            clearPrefs: () => ({})
-         }
+         };
          spyOn(window['splashscreen'], 'clearPrefs').and.callFake(() => {
          });
        spyOn(comp, 'logOut').and.callThrough();
        spyOn(oauth, 'doLogOut');
-       comp.logOut(selectedUser,false);
+       comp.logOut(selectedUser, false);
        expect(comp.logOut).toHaveBeenCalled();
-   })
+   });
 
 it('# setAsCurrentUser should call', () => {
    const groupServiceStub = TestBed.get(GroupService);
@@ -249,43 +249,43 @@ it('# setAsCurrentUser should call', () => {
   // spyOn(profileServiceStub, 'setAsCurrentUser').and.callThrough();
    comp.setAsCurrentUser(selectedUser, true);
    expect(comp.setAsCurrentUser).toHaveBeenCalled();
-})
+});
 it('# setAsCurrentUser should check content is being played', () => {
    const groupServiceStub = TestBed.get(GroupService);
    const profileServiceStub = TestBed.get(ProfileService);
    spyOn(comp, 'setAsCurrentUser').and.callThrough();
 
 //   spyOn(comp, 'setCurrentUser').and.callThrough();
-   spyOn(profileServiceStub, 'setCurrentUser').and.callFake((arg, success, err)=>{
+   spyOn(profileServiceStub, 'setCurrentUser').and.callFake((arg, success, err) => {
 
        return success();
-   } )
+   });
    comp.setAsCurrentUser(selectedUser, true);
    expect(comp.setAsCurrentUser).toHaveBeenCalled();
-})
+});
 it('# setAsCurrentUser if content is not played', () => {
    const groupServiceStub = TestBed.get(GroupService);
    const profileServiceStub = TestBed.get(ProfileService);
    spyOn(comp, 'setAsCurrentUser').and.callThrough();
 
 //   spyOn(comp, 'setCurrentUser').and.callThrough();
-   spyOn(profileServiceStub, 'setCurrentUser').and.callFake((arg, success, err)=>{
+   spyOn(profileServiceStub, 'setCurrentUser').and.callFake((arg, success, err) => {
 
        return success();
-   } )
+   });
    comp.setAsCurrentUser(selectedUser[0], false);
    expect(comp.setAsCurrentUser).toHaveBeenCalled();
-})
+});
 
 it('# getAllProfile should call', () => {
 
    spyOn(comp, 'getAllProfile').and.callThrough();
    comp.getAllProfile();
-   expect(comp.getAllProfile).toHaveBeenCalled()
+   expect(comp.getAllProfile).toHaveBeenCalled();
 
-})
+});
 it('# getAllProfile should call', () => {
-   let  profileRequest = {
+   const  profileRequest = {
        local: true,
        groupId: 'id123'
    };
@@ -295,54 +295,54 @@ it('# getAllProfile should call', () => {
        comp.getAllProfile();
        expect(comp.getAllProfile).toHaveBeenCalled();
 
-   })
+   });
 
-   it('#deleteUsersinGroup should delete the group', () =>{
-    let userList= {
-       "age": -1,
-       "avatar": "avatar",
-       "createdAt": "Aug 9, 2018 11:36:50 AM",
-       "day": -1,
-       "gender": "",
-       "handle": "handle_testdata",
-       "isGroupUser": false,
-       "language": "en",
-       "month": -1,
-      // "profileType": "STUDENT",
-       "source": "LOCAL",
-       "standard": -1,
-       "uid": "sample_id1",
-       "profileType": ProfileType.STUDENT,
-       "syllabus":[]
+   it('#deleteUsersinGroup should delete the group', () => {
+    const userList = {
+       'age': -1,
+       'avatar': 'avatar',
+       'createdAt': 'Aug 9, 2018 11:36:50 AM',
+       'day': -1,
+       'gender': '',
+       'handle': 'handle_testdata',
+       'isGroupUser': false,
+       'language': 'en',
+       'month': -1,
+      // 'profileType': 'STUDENT',
+       'source': 'LOCAL',
+       'standard': -1,
+       'uid': 'sample_id1',
+       'profileType': ProfileType.STUDENT,
+       'syllabus': []
 
      };
-       comp.userUids=userUids;
-       let elementIndex = 0;
+       comp.userUids = userUids;
+       const elementIndex = 0;
 
        spyOn(comp, 'deleteUsersinGroup').and.callThrough();
        comp.deleteUsersinGroup(0);
        expect(comp.deleteUsersinGroup).toHaveBeenCalled();
-   })
+   });
 
-   it('#deleteUsersinGroup should delete the group', () =>{
+   it('#deleteUsersinGroup should delete the group', () => {
        const groupServiceStub = TestBed.get(GroupService);
-       let req = {
+       const req = {
            groupId: '123',
            uidList: 'id123'
-         }
+         };
          spyOn(groupServiceStub, 'addUpdateProfilesToGroup').and.callThrough();
        spyOn(comp, 'deleteUsersinGroup').and.callThrough();
        comp.deleteUsersinGroup(0);
        expect(comp.deleteUsersinGroup).toHaveBeenCalled();
-   })
-   it('#presentPopoverNav should pop the popover', () =>{
+   });
+   it('#presentPopoverNav should pop the popover', () => {
 
     spyOn(comp, 'presentPopoverNav').and.callThrough();
     comp.presentPopoverNav({});
     expect(comp.presentPopoverNav).toHaveBeenCalled();
-})
-it('# should display the edit group goToEditGroup content', () =>{
-    const popOverCtrl = TestBed.get(PopoverController)
+});
+it('# should display the edit group goToEditGroup content', () => {
+    const popOverCtrl = TestBed.get(PopoverController);
    // spyOn(popOverCtrl, 'create').and.callThrough();
   //  expect(comp.presentPopoverNav).toBeDefined();
 
@@ -350,9 +350,9 @@ it('# should display the edit group goToEditGroup content', () =>{
    // spyOn(comp,'goToEditGroup').and.callThrough().callFake();
     comp.presentPopoverNav({});
     expect(comp.presentPopoverNav).toHaveBeenCalled();
-})
+});
 
-it('#getGradeNameFromCode should get the grade name', () =>{
+it('#getGradeNameFromCode should get the grade name', () => {
    // const popOverCtrl = TestBed.get(PopoverController)
    // spyOn(popOverCtrl, 'create').and.callThrough();
   //  expect(comp.presentPopoverNav).toBeDefined();
@@ -360,12 +360,12 @@ it('#getGradeNameFromCode should get the grade name', () =>{
 
     spyOn(comp, 'getGradeNameFromCode').and.callThrough();
    // spyOn(comp,'goToEditGroup').and.callThrough().callFake();
-   let Profile = profileServiceMock[0];
+   const Profile = profileServiceMock[0];
     comp.getGradeNameFromCode(Profile);
     expect(comp.getGradeNameFromCode).toHaveBeenCalled();
-})
+});
 
-it('#presentPopover should pop the message', () =>{
+it('#presentPopover should pop the message', () => {
     // const popOverCtrl = TestBed.get(PopoverController)
     // spyOn(popOverCtrl, 'create').and.callThrough();
    //  expect(comp.presentPopoverNav).toBeDefined();
@@ -375,11 +375,11 @@ it('#presentPopover should pop the message', () =>{
     // spyOn(comp,'goToEditGroup').and.callThrough().callFake();
 
   //  let Profile = profileServiceMock[0];
-     comp.presentPopover({},0);
-     let profile = this.userList[0]
-     this.isCurrentGroupActive = "123";
-     let isActiveUser = false;
+     comp.presentPopover({}, 0);
+     const profile = this.userList[0];
+     this.isCurrentGroupActive = '123';
+     const isActiveUser = false;
      expect(comp.presentPopover).toHaveBeenCalled();
- })
+ });
 
 });

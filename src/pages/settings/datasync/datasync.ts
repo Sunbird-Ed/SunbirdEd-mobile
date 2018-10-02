@@ -1,13 +1,15 @@
 import { Component, NgZone } from '@angular/core';
 import { NavController, NavParams, LoadingController, ToastController } from 'ionic-angular';
-import { TelemetryService, SyncStat, SharedPreferences, PageId, Environment, ImpressionType, Impression, InteractType, InteractSubtype, ShareUtil, TelemetryStat } from 'sunbird';
-import { DataSyncType } from "./datasynctype.enum"
-import { TranslateService } from '@ngx-translate/core'
+import { TelemetryService, SyncStat, SharedPreferences, PageId,
+         Environment, ImpressionType, Impression, InteractType, InteractSubtype,
+         ShareUtil, TelemetryStat } from 'sunbird';
+import { DataSyncType } from './datasynctype.enum';
+import { TranslateService } from '@ngx-translate/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { generateImpressionTelemetry, generateInteractTelemetry } from '../../../app/telemetryutil';
 
-const KEY_DATA_SYNC_TYPE = "sync_config";
-const KEY_DATA_SYNC_TIME = "data_sync_time";
+const KEY_DATA_SYNC_TYPE = 'sync_config';
+const KEY_DATA_SYNC_TIME = 'data_sync_time';
 
 class CMap {
   [key: string]: any
@@ -19,8 +21,8 @@ class CMap {
 })
 export class DatasyncPage {
   dataSyncType: DataSyncType;
-  lastSyncedTimeString: String = "LAST_SYNC";
-  latestSync: String = "";
+  lastSyncedTimeString = 'LAST_SYNC';
+  latestSync = '';
 
   OPTIONS: typeof DataSyncType = DataSyncType;
 
@@ -37,29 +39,27 @@ export class DatasyncPage {
   }
 
   init() {
-    let that = this;
+    const that = this;
 
-    //fetch the string 
+    // fetch the string
     this.translate.get('LAST_SYNC').subscribe(value => {
       this.lastSyncedTimeString = value;
       this.getLastSyncTime();
 
     });
 
-    //check what sync option is selected
+    // check what sync option is selected
     that.preference.getString(KEY_DATA_SYNC_TYPE)
       .then(val => {
-        if (val === undefined || val === "" || val === null) {
-          that.dataSyncType = DataSyncType.off
+        if (val === undefined || val === '' || val === null) {
+          that.dataSyncType = DataSyncType.off;
         } else {
-          if (val === "OFF") {
-            that.dataSyncType = DataSyncType.off
-          }
-          else if (val === "OVER_WIFI_ONLY") {
-            that.dataSyncType = DataSyncType.over_wifi
-          }
-          else if (val === "ALWAYS_ON") {
-            that.dataSyncType = DataSyncType.always_on
+          if (val === 'OFF') {
+            that.dataSyncType = DataSyncType.off;
+          } else if (val === 'OVER_WIFI_ONLY') {
+            that.dataSyncType = DataSyncType.over_wifi;
+          } else if (val === 'ALWAYS_ON') {
+            that.dataSyncType = DataSyncType.always_on;
           }
         }
       });
@@ -67,14 +67,14 @@ export class DatasyncPage {
 
   ionViewDidLoad() {
     this.init();
-    let impression = new Impression();
+    const impression = new Impression();
     impression.type = ImpressionType.VIEW;
     impression.pageId = PageId.SETTINGS_DATASYNC;
     impression.env = Environment.SETTINGS;
     this.telemetryService.impression(generateImpressionTelemetry(
-      ImpressionType.VIEW, "",
+      ImpressionType.VIEW, '',
       PageId.SETTINGS_DATASYNC,
-      Environment.SETTINGS, "", "", "",
+      Environment.SETTINGS, '', '', '',
       undefined,
       undefined
     ));
@@ -82,7 +82,7 @@ export class DatasyncPage {
 
   onSelected() {
     if (this.dataSyncType !== undefined) {
-      this.preference.putString(KEY_DATA_SYNC_TYPE, this.dataSyncType)
+      this.preference.putString(KEY_DATA_SYNC_TYPE, this.dataSyncType);
     }
 
   }
@@ -93,23 +93,23 @@ export class DatasyncPage {
 
   getLastSyncTime() {
     this.telemetryService.getTelemetryStat((response: any) => {
-      let that = this;
+      const that = this;
       that.zone.run(() => {
-        let syncStat: TelemetryStat = JSON.parse(response).result;
-        console.log("Telemetry Data Sync Time : " + syncStat.lastSyncTime);
+        const syncStat: TelemetryStat = JSON.parse(response).result;
+        console.log('Telemetry Data Sync Time : ' + syncStat.lastSyncTime);
         if (syncStat.lastSyncTime !== 0) {
-          let milliseconds = Number(syncStat.lastSyncTime);
+          const milliseconds = Number(syncStat.lastSyncTime);
 
-          //get date
-          let date: Date = new Date(milliseconds);
+          // get date
+          const date: Date = new Date(milliseconds);
 
-          let month: Number = date.getMonth() + 1;
+          const month: Number = date.getMonth() + 1;
 
-          //complete date and time
-          let dateAndTime: string = date.getDate() + "/" + month +
-            "/" + date.getFullYear() + ", " + that.getTimeIn12HourFormat(date);
+          // complete date and time
+          const dateAndTime: string = date.getDate() + '/' + month +
+            '/' + date.getFullYear() + ', ' + that.getTimeIn12HourFormat(date);
 
-          that.latestSync = this.lastSyncedTimeString + " " + dateAndTime;
+          that.latestSync = this.lastSyncedTimeString + ' ' + dateAndTime;
         }
 
       });
@@ -119,15 +119,15 @@ export class DatasyncPage {
   }
 
   shareTelemetry() {
-    let loader = this.getLoader();
+    const loader = this.getLoader();
     loader.present();
     this.shareUtil.exportTelemetry(path => {
       loader.dismiss();
-      this.social.share("", "", "file://" + path, "");
+      this.social.share('', '', 'file://' + path, '');
     }, () => {
         loader.dismiss();
-        let toast = this.toastCtrl.create({
-          message: this.translateMessage("SHARE_TELEMETRY_FAILED"),
+        const toast = this.toastCtrl.create({
+          message: this.translateMessage('SHARE_TELEMETRY_FAILED'),
           duration: 2000,
           position: 'bottom'
         });
@@ -137,60 +137,60 @@ export class DatasyncPage {
 
   onSyncClick() {
     console.log('Sync called');
-    let that = this;
-    let loader = this.getLoader();
+    const that = this;
+    const loader = this.getLoader();
     loader.present();
     this.generateInteractEvent(InteractType.TOUCH, InteractSubtype.MANUALSYNC_INITIATED, null);
     this.telemetryService.sync((response) => {
 
       that.zone.run(() => {
-        console.log("Telemetry Data Sync : " + response);
+        console.log('Telemetry Data Sync : ' + response);
 
-        let syncStat: SyncStat = response.result;
+        const syncStat: SyncStat = response.result;
         this.generateInteractEvent(InteractType.OTHER, InteractSubtype.MANUALSYNC_SUCCESS, syncStat.syncedFileSize.toString());
-        console.log("Telemetry Data Sync Time : " + syncStat.syncTime);
-        let milliseconds = Number(syncStat.syncTime);
+        console.log('Telemetry Data Sync Time : ' + syncStat.syncTime);
+        const milliseconds = Number(syncStat.syncTime);
 
-        //get date
-        let date: Date = new Date(milliseconds);
+        // get date
+        const date: Date = new Date(milliseconds);
 
-        let month: Number = date.getMonth() + 1;
+        const month: Number = date.getMonth() + 1;
 
-        //complete date and time
-        let dateAndTime: string = date.getDate() + "/" + month +
-          "/" + date.getFullYear() + ", " + that.getTimeIn12HourFormat(date);
+        // complete date and time
+        const dateAndTime: string = date.getDate() + '/' + month +
+          '/' + date.getFullYear() + ', ' + that.getTimeIn12HourFormat(date);
 
-        that.latestSync = this.lastSyncedTimeString + " " + dateAndTime;
+        that.latestSync = this.lastSyncedTimeString + ' ' + dateAndTime;
 
-        //store the latest sync time
+        // store the latest sync time
         this.preference.putString(KEY_DATA_SYNC_TIME, dateAndTime);
 
-        console.log("Telemetry Data Sync Time : " + this.latestSync);
+        console.log('Telemetry Data Sync Time : ' + this.latestSync);
         loader.dismiss();
-        this.presentToast("DATA_SYNC_SUCCESSFUL");
+        this.presentToast('DATA_SYNC_SUCCESSFUL');
       });
 
 
     }, (error) => {
       loader.dismiss();
-      this.presentToast("DATA_SYNC_FAILURE");
-      console.log("Telemetry Data Sync Error: " + error);
+      this.presentToast('DATA_SYNC_FAILURE');
+      console.log('Telemetry Data Sync Error: ' + error);
     });
   }
 
 
 
 
-  getTimeIn12HourFormat(time: Date): String {
-    let date = new Date(time);
+  getTimeIn12HourFormat(time: Date): string {
+    const date = new Date(time);
     let hours = date.getHours();
-    let minutes: number = date.getMinutes();
+    const minutes: number = date.getMinutes();
     let newMinutes: string;
-    let ampm = hours >= 12 ? 'pm' : 'am';
+    const ampm = hours >= 12 ? 'pm' : 'am';
     hours = hours % 12;
     hours = hours ? hours : 12; // the hour '0' should be '12'
     newMinutes = minutes < 10 ? '0' + minutes : '' + minutes;
-    var strTime = hours + ':' + newMinutes + ' ' + ampm;
+    const strTime = hours + ':' + newMinutes + ' ' + ampm;
     return strTime;
   }
 
@@ -198,8 +198,8 @@ export class DatasyncPage {
 
   generateInteractEvent(interactType: string, subtype: string, size: string) {
     if (size != null) {
-      let valuesMap = new CMap();
-      valuesMap["SizeOfFileInKB"] = size;
+      const valuesMap = new CMap();
+      valuesMap['SizeOfFileInKB'] = size;
       this.telemetryService.interact(generateInteractTelemetry(
         interactType,
         subtype,
@@ -214,12 +214,12 @@ export class DatasyncPage {
 
   getLoader(): any {
     return this.loadingCtrl.create({
-      spinner: "crescent"
+      spinner: 'crescent'
     });
   }
 
   presentToast(translationId: string) {
-    let toast = this.toastCtrl.create({
+    const toast = this.toastCtrl.create({
       message: this.translateMessage(translationId),
       duration: 3000
     });

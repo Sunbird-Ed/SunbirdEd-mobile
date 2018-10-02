@@ -1,3 +1,4 @@
+import { CommonUtilService } from './../../service/common-util.service';
 import { Injectable } from "@angular/core";
 import { TranslateService } from "@ngx-translate/core";
 import {
@@ -40,6 +41,8 @@ export class SunbirdQRScanner {
   private mQRScannerText;
   readonly permissionList = ["android.permission.CAMERA"];
   backButtonFunc = undefined;
+  source: string;
+  showButton = false;
 
   constructor(
     private popCtrl: PopoverController,
@@ -49,7 +52,8 @@ export class SunbirdQRScanner {
     private platform: Platform,
     private qrScannerResultHandler: QRScannerResultHandler,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private app: App
+    private app: App,
+    private commonUtil: CommonUtilService
   ) {
     const that = this
     this.translate.get(this.QR_SCANNER_TEXT).subscribe((data) => {
@@ -69,7 +73,8 @@ export class SunbirdQRScanner {
     displayTextColor: String = "#0b0b0b",
     buttonText: String = this.mQRScannerText['SKIP']
   ) {
-
+    this.source = source;
+    this.showButton = showButton;
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.backButtonFunc();
     }, 10);
@@ -104,9 +109,8 @@ export class SunbirdQRScanner {
               if (permissionGranted) {
                 this.startQRScanner(screenTitle, displayText, displayTextColor, buttonText, showButton, source);
               } else {
-                console.log("Permission Denied");
                 const toast = this.toastCtrl.create({
-                  message: "Permission Denied",
+                  message: this.commonUtil.translateMessage('PERMISSION_DENIED'),
                   duration: 3000
                 })
 
@@ -206,12 +210,17 @@ export class SunbirdQRScanner {
     const callback: QRAlertCallBack = {
       tryAgain() {
         popUp.dismiss()
-        self.startScanner(this.source, this.showButton);
+        self.startScanner(self.source, self.showButton);
       },
       cancel() {
-        popUp.dismiss()
+        popUp.dismiss();
+
+        if(self.showButton) {
+          self.app.getActiveNavs()[0].push(UserOnboardingPreferencesPage, { stopScanner: true });
+        }
       }
     }
+
     popUp = this.popCtrl.create(QRScannerAlert, {
       callback: callback,
       invalidContent: true,
