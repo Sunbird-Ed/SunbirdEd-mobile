@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
-import { ToastController } from 'ionic-angular';
+import {
+    ToastController,
+    ToastOptions
+} from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 
 @Injectable()
@@ -15,13 +18,15 @@ export class CommonUtilService {
         }
 
         this.translate.get(translationKey).subscribe(
-            (value: any) => {
-                const toast = this.toastCtrl.create({
-                    message: value,
+            (translatedMsg: any) => {
+                const toastOptions: ToastOptions = {
+                    message: translatedMsg,
                     duration: 3000,
                     position: 'bottom',
                     cssClass: cssToast ? cssToast : ''
-                });
+                };
+
+                const toast = this.toastCtrl.create(toastOptions);
                 toast.present();
             }
         );
@@ -43,7 +48,6 @@ export class CommonUtilService {
     }
 
     /**
-     *
      * @param {string} translations Stringified object of translations
      * @param {string} defaultValue Fallback value if does not have translations
      * @returns {string} Translated values or fallback value
