@@ -17,4 +17,4 @@ export const mockRes = {
         lastReadContentId: 'do_123',
         status: 1
     }
-}
+};
