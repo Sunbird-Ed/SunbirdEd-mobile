@@ -1,11 +1,18 @@
 
-import { ViewControllerMock, ToastControllerMockNew, NavParamsMock, PopoverControllerMock, TranslateServiceStub, PlatformMock, BuildParamaServiceMock, AuthServiceMock, NavMock } from './../../../test-config/mocks-ionic';
+import {
+    ToastControllerMockNew, NavParamsMock,
+    PopoverControllerMock, TranslateServiceStub, PlatformMock,
+    BuildParamaServiceMock, AuthServiceMock, NavMock
+} from './../../../test-config/mocks-ionic';
 import { ComponentFixture, TestBed, tick } from '@angular/core/testing';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { NavController, PopoverController, Events, NavParams } from 'ionic-angular/index';
 import { ViewController, ToastController, Platform } from 'ionic-angular';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { ContentService, AuthService, ServiceProvider, ProfileService, SharedPreferences, BuildParamService, FrameworkService, TelemetryService } from 'sunbird';
+import {
+    ContentService, AuthService, ServiceProvider,
+    ProfileService, SharedPreferences, BuildParamService, FrameworkService, TelemetryService
+} from 'sunbird';
 import { AppGlobalService } from '../../service/app-global.service';
 import { ContentActionsComponent } from './content-actions';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
@@ -43,7 +50,7 @@ describe('Content-actions', () => {
         const platformStub = TestBed.get(Platform);
         spyOn(viewControllerMock, 'dismiss');
         spyOn(platformStub, 'registerBackButtonAction');
-        
+
         fixture = TestBed.createComponent(ContentActionsComponent);
         comp = fixture.componentInstance;
     });
@@ -69,10 +76,10 @@ describe('Content-actions', () => {
         expect(comp.getUserId).toBeDefined();
         spyOn(comp, 'getUserId').and.callThrough();
         const authServiceStub = TestBed.get(AuthService);
-        let res = {}
+        const res = {};
         spyOn(authServiceStub, 'getSessionData').and.callFake(success => {
             return success(JSON.stringify(res));
-        })
+        });
         comp.pageName = 'course';
         comp.content = {};
         comp.getUserId();
@@ -89,12 +96,12 @@ describe('Content-actions', () => {
         expect(comp.getUserId).toBeDefined();
         spyOn(comp, 'getUserId').and.callThrough();
         const authServiceStub = TestBed.get(AuthService);
-        let res = {
+        const res = {
             userToken: 'sample_user_token'
-        }
+        };
         spyOn(authServiceStub, 'getSessionData').and.callFake(success => {
             return success(JSON.stringify(res));
-        })
+        });
         comp.pageName = 'course';
         comp.content.batchId = 'sample_batch_id';
         comp.getUserId();
@@ -108,15 +115,15 @@ describe('Content-actions', () => {
     it('#getDeleteRequestBody should return apiParams object', () => {
         comp.contentId = 'sample_content_id';
         comp.isChild = true;
-        let apiParams = {
+        const apiParams = {
             contentDeleteList: [{
                 contentId: 'sample_content_id',
                 isChildContent: true
             }]
-        }
+        };
         expect(comp.getDeleteRequestBody).toBeDefined();
         spyOn(comp, 'getDeleteRequestBody').and.callThrough();
-        let response = comp.getDeleteRequestBody();
+        const response = comp.getDeleteRequestBody();
         expect(comp.getDeleteRequestBody).toHaveBeenCalled();
         expect(response).toEqual(apiParams);
     });
@@ -124,7 +131,7 @@ describe('Content-actions', () => {
         expect(comp.close).toBeDefined();
         spyOn(comp, 'close').and.callThrough();
         spyOn(comp, 'deleteContent');
-        let response = comp.close(0);
+        const response = comp.close(0);
         expect(comp.close).toHaveBeenCalled();
         expect(comp.deleteContent).toHaveBeenCalled();
     });
@@ -133,7 +140,7 @@ describe('Content-actions', () => {
         expect(comp.close).toBeDefined();
         spyOn(comp, 'close').and.callThrough();
         spyOn(comp, 'reportIssue');
-        let response = comp.close(1);
+        const response = comp.close(1);
         expect(comp.close).toHaveBeenCalled();
         expect(comp.reportIssue).toHaveBeenCalled();
         expect(viewCtrlStub.dismiss).toHaveBeenCalled();
@@ -152,7 +159,7 @@ describe('Content-actions', () => {
             response(JSON.stringify(responseObj));
         });
 
-        let responseObj = {
+        const responseObj = {
             result: {
                 status: 'NOT_FOUND'
             }
@@ -183,7 +190,7 @@ describe('Content-actions', () => {
             return Observable.of('Cancel');
         });
 
-        let responseObj = {
+        const responseObj = {
             result: {
                 status: 'SUCCESS'
             }
@@ -250,7 +257,7 @@ describe('Content-actions', () => {
     it('#getMessageByConstant should return string', () => {
         expect(comp.showToaster).toBeDefined();
         spyOn(comp, 'showToaster').and.callThrough();
-        let translate = TestBed.get(TranslateService);
+        const translate = TestBed.get(TranslateService);
         const spy = spyOn(translate, 'get').and.callFake((arg) => {
             return Observable.of('Cancel');
         });

@@ -1,10 +1,17 @@
-import { Component, Input, OnInit } from "@angular/core";
-import { NavController, Events } from 'ionic-angular';
-import { EnrolledCourseDetailsPage } from "../../../pages/enrolled-course-details/enrolled-course-details";
+import {
+  Component,
+  Input,
+  OnInit
+} from '@angular/core';
+import {
+  NavController,
+  Events
+} from 'ionic-angular';
+import { EnrolledCourseDetailsPage } from '../../../pages/enrolled-course-details/enrolled-course-details';
 import { CollectionDetailsPage } from '../../../pages/collection-details/collection-details';
 import { ContentDetailsPage } from '../../../pages/content-details/content-details';
-import { ContentType, MimeType } from "../../../app/app.constant";
-import { CourseUtilService } from "../../../service/course-util.service";
+import { ContentType, MimeType } from '../../../app/app.constant';
+import { CourseUtilService } from '../../../service/course-util.service';
 
 /**
  * The course card component
@@ -23,13 +30,13 @@ export class CourseCard implements OnInit {
   /**
    * Contains layout name
    *
-   * @example layoutName = Inprogress / popular 
+   * @example layoutName = Inprogress / popular
    */
   @Input() layoutName: string;
 
   @Input() pageName: string;
 
-  @Input() onProfile: boolean = false;
+  @Input() onProfile = false;
 
   /**
    * Contains default image path.
@@ -40,7 +47,7 @@ export class CourseCard implements OnInit {
 
   /**
    * Default method of class CourseCard
-   * 
+   *
    * @param navCtrl To navigate user from one page to another
    */
   constructor(public navCtrl: NavController,
@@ -51,9 +58,9 @@ export class CourseCard implements OnInit {
 
   /**
    * Navigate to the course/content details page
-   * 
-   * @param {string} layoutName 
-   * @param {object} content 
+   *
+   * @param {string} layoutName
+   * @param {object} content
    */
   navigateToCourseDetailPage(content: any, layoutName: string): void {
     console.log('Card details... @@@', content);
@@ -67,13 +74,13 @@ export class CourseCard implements OnInit {
       console.log('Inside CollectionDetailsPage');
       this.navCtrl.push(CollectionDetailsPage, {
         content: content
-      })
+      });
     } else {
       console.log('Inside ContentDetailsPage');
 
       this.navCtrl.push(ContentDetailsPage, {
         content: content
-      })
+      });
     }
   }
 
@@ -87,11 +94,9 @@ export class CourseCard implements OnInit {
       console.log('Inside CollectionDetailsPage');
       this.navCtrl.push(EnrolledCourseDetailsPage, {
         content: content
-      })
+      });
     }
   }
-
-  
 
   ngOnInit() {
     if (this.layoutName === 'Inprogress') {

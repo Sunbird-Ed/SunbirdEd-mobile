@@ -4,8 +4,7 @@ import { ViewController } from 'ionic-angular';
 import { Platform } from 'ionic-angular';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
-import { PlatformMock, ViewControllerMock } from '../../../test-config/mocks-ionic';
-// /import { ViewControllerMock } from 'ionic-mocks';
+import { PlatformMock } from '../../../test-config/mocks-ionic';
 
 describe('Confirm-alert.component', () => {
     let comp: ConfirmAlertComponent;
@@ -29,8 +28,8 @@ describe('Confirm-alert.component', () => {
         const platformStub = TestBed.get(Platform);
         spyOn(viewControllerMock, 'dismiss');
         spyOn(platformStub, 'registerBackButtonAction');
-        //ConfirmAlertComponent.prototype.backButtonFunc = jasmine.any(Function);
-        //sspyOn(ConfirmAlertComponent.prototype, 'backButtonFunc').and.returnValue(jasmine.any(Function));
+        // ConfirmAlertComponent.prototype.backButtonFunc = jasmine.any(Function);
+        // sspyOn(ConfirmAlertComponent.prototype, 'backButtonFunc').and.returnValue(jasmine.any(Function));
         fixture = TestBed.createComponent(ConfirmAlertComponent);
         comp = fixture.componentInstance;
     });
@@ -38,8 +37,8 @@ describe('Confirm-alert.component', () => {
     it('should create instance of the ConfirmAlertComponent', () => {
         expect(comp).toBeTruthy();
 
-        //expect(comp.backButtonFunc).toEqual(jasmine.any(Function));
-        //expect(comp.backButtonFunc).toBeUndefined();
+        // expect(comp.backButtonFunc).toEqual(jasmine.any(Function));
+        // expect(comp.backButtonFunc).toBeUndefined();
     });
 
     it('should dismiss this popup and it should pass argument as false by default', () => {
