@@ -6,12 +6,15 @@ export const mockRes = {
     'message': 'successful',
     'result': {
       'contentDataList': [{
-        'appIcon': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/content/do_2124142282168238081379/artifact/36a1038acc70e0fc9cdfcc637e9a2f31_1513661725312.thumb.jpeg',
-        'artifactUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/content/do_2124142282168238081379/artifact/1515482989311_do_2124142282168238081379.zip',
+        'appIcon': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/content/do_2124142282168238081379/' +
+          'artifact/36a1038acc70e0fc9cdfcc637e9a2f31_1513661725312.thumb.jpeg',
+        'artifactUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/content/do_2124142282168238081379/' +
+        'artifact/1515482989311_do_2124142282168238081379.zip',
         'attributions': [''], 'audience': ['Learner'], 'board': 'CBSE', 'channel': 'in.ekstep',
         'contentDisposition': 'inline', 'contentEncoding': 'gzip', 'contentType': 'Resource',
         'createdBy': '821', 'createdOn': '2018-01-08T10:51:57.874+0000', 'creator': 'Iphone Qualitrix', 'description': 'desc',
-        'downloadUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/do_2124142282168238081379/multiplication-horizontal_1527769064640_do_2124142282168238081379_4.0.ecar',
+        'downloadUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/do_2124142282168238081379/' +
+        'multiplication-horizontal_1527769064640_do_2124142282168238081379_4.0.ecar',
         'gradeLevel': ['Other', 'KG', 'Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5', 'Class 6',
           'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12'],
         'identifier': 'do_2124142282168238081379', 'language': ['English'],
@@ -20,7 +23,8 @@ export const mockRes = {
         'pkgVersion': '4.0', 'publisher': '', 'resourceType': 'Read', 'size': '256146.0', 'status': 'Live',
         'subject': 'English', 'variants': {
           'spine': {
-            'ecarUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/do_2124142282168238081379/multiplication-horizontal_1527769064831_do_2124142282168238081379_4.0_spine.ecar',
+            'ecarUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/do_2124142282168238081379/' +
+            'multiplication-horizontal_1527769064831_do_2124142282168238081379_4.0_spine.ecar',
             'size': 50673.0
           }
         }, 'versionKey': '1527769064440'
@@ -68,7 +72,8 @@ export const mockRes = {
   },
 
   importCompleteEvent:
-    '{\'data\':{\'downloadId\':18788,\'downloadProgress\':-1,\'identifier\':\'SAMPLE_ID\',\'status\':\'IMPORT_COMPLETED\'},\'type\':\'contentImport\'}',
+    '{\'data\':{\'downloadId\':18788,\'downloadProgress\':-1,\'identifier\':\'SAMPLE_ID\',\'status\':\'IMPORT_COMPLETED\'},' +
+    '\'type\':\'contentImport\'}',
 
   downloadProgressEventSample1:
     '{\'data\':{\'downloadId\':18788,\'downloadProgress\':10,\'identifier\':\'do_sampele\',\'status\':1},\'type\':\'downloadProgress\'}',
@@ -106,7 +111,7 @@ export const mockRes = {
         'createdOn': '2018-06-01T10:34:17.170+0000',
         'creator': 'Subrat Rath',
         'description': 'Swing around',
-        'downloadUrl': 'sample.amazonaws.com/ecar_files/do_212516141114736640146589/swing_1527849415336_do_212516141114736640146589_1.0.ecar',
+     'downloadUrl': 'sample.amazonaws.com/ecar_files/do_212516141114736640146589/swing_1527849415336_do_212516141114736640146589_1.0.ecar',
         'gradeLevel': [
           'KG',
           'Class 1'
@@ -172,7 +177,7 @@ export const mockRes = {
         'createdOn': '2018-06-01T10:34:17.170+0000',
         'creator': 'Subrat Rath',
         'description': 'Swing around',
-        'downloadUrl': 'sample.amazonaws.com/ecar_files/do_212516141114736640146589/swing_1527849415336_do_212516141114736640146589_1.0.ecar',
+     'downloadUrl': 'sample.amazonaws.com/ecar_files/do_212516141114736640146589/swing_1527849415336_do_212516141114736640146589_1.0.ecar',
         'gradeLevel': [
           'KG',
           'Class 1'
@@ -257,8 +262,10 @@ export const mockRes = {
   },
 
   sampleProfile:
-    { handle: 'sample', syllabus: ['NCF'], board: ['CBSE'], grade: ['KG'], subject: ['English'],
-     medium: ['English'], profileType: ProfileType.TEACHER, source: UserSource.LOCAL },
+  {
+    handle: 'sample', syllabus: ['NCF'], board: ['CBSE'], grade: ['KG'], subject: ['English'],
+    medium: ['English'], profileType: ProfileType.TEACHER, source: UserSource.LOCAL
+  },
 
   searchResponse:
   {
@@ -355,129 +362,212 @@ export const mockRes = {
   dialCodesearchResultResponse:
   {
     'message': 'successful',
-    'result': { 'collectionDataList': [{ 'identifier': 'do_212', 'childNodes': ['do_212'], 'size': 637311,
-    'name': 'book', 'mimeType': 'application/vnd.ekstep.content-collection', 'contentType': 'TextBook',
-    'objectType': 'Content' }], 'count': 3, 'contentDataList': [{ 'code': 'do_212', 'keywords': ['test'],
-    'mimeType': 'application/vnd.ekstep.content-collection', 'idealScreenSize': 'normal',
-    'createdOn': '2018-07-06T11:07:31.001+0000', 'conceptData': '(3) concepts selected', 'objectType': 'Content',
-    'collections': ['do_212'], 'contentDisposition': 'inline', 'contentEncoding': 'gzip', 'lastUpdatedOn': '2018-07-06T11:08:13.918+0000',
-    'SYS_INTERNAL_LAST_UPDATED_ON': '2018-07-06T11:10:10.614+0000', 'contentType': 'TextBookUnit', 'identifier': 'do_212',
-    'audience': ['Learner'], 'os': ['All'], 'visibility': 'Parent', 'mediaType': 'content', 'osId': 'org.ekstep.launcher',
-    'graph_id': 'domain', 'nodeType': 'DATA_NODE', 'pkgVersion': 1, 'versionKey': '1530875251001', 'idealScreenDensity': 'hdpi',
-    'dialcodes': ['646X5X'], 'lastPublishedOn': '2018-07-06T11:10:10.213+0000', 'size': 359155, 'compatibilityLevel': 1,
-    'name': 'book', 'status': 'Live', 'node_id': 386064 }], 'facets': [{ 'values': [], 'name': 'gradeLevel' },
-    { 'values': [], 'name': 'subject' }, { 'values': [], 'name': 'medium' }, { 'values': [{ 'name': 'textbookunit', 'count': 1 }],
-    'name': 'contentType' }, { 'values': [], 'name': 'board' }], 'collectionsCount': 1 }, 'status': true
+    'result': {
+      'collectionDataList': [{
+        'identifier': 'do_212', 'childNodes': ['do_212'], 'size': 637311,
+        'name': 'book', 'mimeType': 'application/vnd.ekstep.content-collection', 'contentType': 'TextBook',
+        'objectType': 'Content'
+      }], 'count': 3, 'contentDataList': [{
+        'code': 'do_212', 'keywords': ['test'],
+        'mimeType': 'application/vnd.ekstep.content-collection', 'idealScreenSize': 'normal',
+        'createdOn': '2018-07-06T11:07:31.001+0000', 'conceptData': '(3) concepts selected', 'objectType': 'Content',
+        'collections': ['do_212'], 'contentDisposition': 'inline', 'contentEncoding': 'gzip',
+         'lastUpdatedOn': '2018-07-06T11:08:13.918+0000',
+        'SYS_INTERNAL_LAST_UPDATED_ON': '2018-07-06T11:10:10.614+0000', 'contentType': 'TextBookUnit', 'identifier': 'do_212',
+        'audience': ['Learner'], 'os': ['All'], 'visibility': 'Parent', 'mediaType': 'content', 'osId': 'org.ekstep.launcher',
+        'graph_id': 'domain', 'nodeType': 'DATA_NODE', 'pkgVersion': 1, 'versionKey': '1530875251001', 'idealScreenDensity': 'hdpi',
+        'dialcodes': ['646X5X'], 'lastPublishedOn': '2018-07-06T11:10:10.213+0000', 'size': 359155, 'compatibilityLevel': 1,
+        'name': 'book', 'status': 'Live', 'node_id': 386064
+      }], 'facets': [{ 'values': [], 'name': 'gradeLevel' },
+      { 'values': [], 'name': 'subject' }, { 'values': [], 'name': 'medium' }, {
+        'values': [{ 'name': 'textbookunit', 'count': 1 }],
+        'name': 'contentType'
+      }, { 'values': [], 'name': 'board' }], 'collectionsCount': 1
+    }, 'status': true
   },
 
   dialCodesearchResultResponse2:
   {
     'message': 'successful',
-    'result': { 'collectionDataList': [], 'contentDataList': [{ 'audience': ['Learner'], 'channel': '0123',
-    'contentDisposition': 'inline', 'contentEncoding': 'gzip', 'contentType': 'TextBookUnit', 'createdOn': '2018-04-12T07:29:21.120+0000',
-    'description': 'cdfghjk', 'dialcodes': ['UWELJP'], 'downloadUrl': 'sample_01159_1.0_spine.ecar', 'identifier': 'do_212',
-    'language': ['English'], 'lastPublishedOn': '2018-04-12T07:31:50.114+0000', 'mimeType': 'application/vnd.ekstep.content-collection',
-    'name': 'kk', 'osId': 'org.ekstep.launcher', 'pkgVersion': '1.0', 'size': '636854.0', 'status': 'Live', 'versionKey': '1523' }],
-    'filterCriteria': { 'age': 0, 'contentTypes': ['TextBook', 'TextBookUnit'], 'facetFilters': [{ 'name': 'gradeLevel', 'values': [] },
-    { 'name': 'subject', 'values': [] }, { 'name': 'medium', 'values': [{ 'apply': true, 'count': 1, 'name': 'english' }] },
-    { 'name': 'contentType', 'values': [{ 'apply': true, 'count': 1, 'name': 'textbookunit' }] }, { 'name': 'board', 'values': [] }],
-    'facets': ['board', 'gradeLevel', 'subject', 'medium', 'contentType'], 'impliedFilters': [{ 'name': 'dialcodes',
-    'values': [{ 'apply': true, 'count': 0, 'name': 'UWELJP' }] }, { 'name': 'status',
-    'values': [{ 'apply': true, 'count': 0, 'name': 'Live' }] }, { 'name': 'objectType',
-    'values': [{ 'apply': true, 'count': 0, 'name': 'Content' }] }], 'limit': 100, 'offlineSearch': false,
-    'offset': 0, 'query': '', 'searchType': 'FILTER', 'sortCriteria': [] }, 'id': 'api.v1.search',
-    'request': { 'mode': 'collection', 'offset': 0, 'query': '', 'limit': 100, 'filters': { 'dialcodes': ['UWELJP'],
-    'compatibilityLevel': { 'min': 1, 'max': 4 }, 'status': ['Live'], 'objectType': ['Content'] },
-    'facets': ['board', 'gradeLevel', 'subject', 'medium', 'contentType'] },
-    'responseMessageId': '18ff4450-ba81-11e8-a5da-b973240ce558' },
+    'result': {
+      'collectionDataList': [], 'contentDataList': [{
+        'audience': ['Learner'], 'channel': '0123',
+        'contentDisposition': 'inline', 'contentEncoding': 'gzip', 'contentType': 'TextBookUnit',
+        'createdOn': '2018-04-12T07:29:21.120+0000',
+        'description': 'cdfghjk', 'dialcodes': ['UWELJP'], 'downloadUrl': 'sample_01159_1.0_spine.ecar', 'identifier': 'do_212',
+        'language': ['English'], 'lastPublishedOn': '2018-04-12T07:31:50.114+0000', 'mimeType': 'application/vnd.ekstep.content-collection',
+        'name': 'kk', 'osId': 'org.ekstep.launcher', 'pkgVersion': '1.0', 'size': '636854.0', 'status': 'Live', 'versionKey': '1523'
+      }],
+      'filterCriteria': {
+        'age': 0, 'contentTypes': ['TextBook', 'TextBookUnit'], 'facetFilters': [{ 'name': 'gradeLevel', 'values': [] },
+        { 'name': 'subject', 'values': [] }, { 'name': 'medium', 'values': [{ 'apply': true, 'count': 1, 'name': 'english' }] },
+        { 'name': 'contentType', 'values': [{ 'apply': true, 'count': 1, 'name': 'textbookunit' }] }, { 'name': 'board', 'values': [] }],
+        'facets': ['board', 'gradeLevel', 'subject', 'medium', 'contentType'], 'impliedFilters': [{
+          'name': 'dialcodes',
+          'values': [{ 'apply': true, 'count': 0, 'name': 'UWELJP' }]
+        }, {
+          'name': 'status',
+          'values': [{ 'apply': true, 'count': 0, 'name': 'Live' }]
+        }, {
+          'name': 'objectType',
+          'values': [{ 'apply': true, 'count': 0, 'name': 'Content' }]
+        }], 'limit': 100, 'offlineSearch': false,
+        'offset': 0, 'query': '', 'searchType': 'FILTER', 'sortCriteria': []
+      }, 'id': 'api.v1.search',
+      'request': {
+        'mode': 'collection', 'offset': 0, 'query': '', 'limit': 100, 'filters': {
+          'dialcodes': ['UWELJP'],
+          'compatibilityLevel': { 'min': 1, 'max': 4 }, 'status': ['Live'], 'objectType': ['Content']
+        },
+        'facets': ['board', 'gradeLevel', 'subject', 'medium', 'contentType']
+      },
+      'responseMessageId': '18ff4450-ba81-11e8-a5da-b973240ce558'
+    },
     'status': true
   },
 
   dialCodesearchResultResponse3:
   {
     'message': 'successful',
-    'result': { 'collectionDataList': [{ 'childNodes': ['do_2125409300562001921307'], 'contentType': 'TextBook',
-    'identifier': 'do_2125409291287838721305', 'mimeType': 'application/vnd.ekstep.content-collection',
-    'name': 'book', 'size': '637311.0' }, { 'childNodes': ['do_2124791820965806081846'], 'contentType': 'TextBook',
-    'identifier': 'do_2124791816024883201843', 'mimeType': 'application/vnd.ekstep.content-collection',
-    'name': 'Dial Code link', 'size': '593666.0' }, { 'childNodes': ['do_21250324701456793616459'], 'contentType': 'TextBook',
-    'identifier': 'do_21250324682831462416458', 'mimeType': 'application/vnd.ekstep.content-collection', 'name': 'Dial_Code_JP_Book',
-    'size': '4.4713607E7' }], 'contentDataList': [{ 'audience': ['Learner'], 'contentDisposition': 'inline', 'contentEncoding': 'gzip',
-    'contentType': 'TextBookUnit', 'createdOn': '2018-07-06T11:07:31.001+0000',
-    'description': 'ge ew oiuwef oiqjwd oiueoqe qwdg ftrqw tqwfd', 'dialcodes': ['646X5X'],
-    'downloadUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/do_2125409300562001921307/book_1530875410232_do_2125409300562001921307_1.0_spine.ecar',
-    'identifier': 'do_2125409300562001921307', 'language': ['English'], 'lastPublishedOn': '2018-07-06T11:10:10.213+0000',
-    'mimeType': 'application/vnd.ekstep.content-collection', 'name': 'book', 'osId': 'org.ekstep.launcher', 'pkgVersion': '1.0',
-    'size': '359155.0', 'status': 'Live', 'variants': { 'spine':
-    { 'ecarUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/do_2125409300562001921307/book_1530875410232_do_2125409300562001921307_1.0_spine.ecar',
-     'size': 359155.0 } }, 'versionKey': '1530875251001' }, { 'audience': ['Learner'], 'contentDisposition': 'inline',
-     'contentEncoding': 'gzip', 'contentType': 'TextBookUnit', 'createdOn': '2018-05-14T05:21:10.333+0000', 'dialcodes': ['646X5X'],
-     // tslint:disable-next-line:max-line-length
-     'downloadUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/do_21250324701456793616459/jp-1_1526992263235_do_21250324701456793616459_2.0_spine.ecar',
-     'identifier': 'do_21250324701456793616459', 'language': ['English'], 'lastPublishedOn': '2018-05-22T12:31:02.037+0000',
-     'mimeType': 'application/vnd.ekstep.content-collection', 'name': 'JP 1', 'osId': 'org.ekstep.launcher', 'pkgVersion': '2.0',
-     'size': '4.470704E7', 'status': 'Live', 'variants': { 'spine':
-     { 'ecarUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/do_21250324701456793616459/jp-1_1526992263235_do_21250324701456793616459_2.0_spine.ecar', 'size': 4.470704E7 } },
-      'versionKey': '1526275270333' }, { 'audience': ['Learner'], 'channel': '012315809814749184151', 'contentDisposition': 'inline',
-      'contentEncoding': 'gzip', 'contentType': 'TextBookUnit', 'createdOn': '2018-04-10T05:20:58.274+0000', 'dialcodes': ['646X5X'],
-      'downloadUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/do_2124791820965806081846/unit-1_1523337900939_do_2124791820965806081846_1.0_spine.ecar',
-       'identifier': 'do_2124791820965806081846', 'language': ['English'], 'lastPublishedOn': '2018-04-10T05:25:00.921+0000',
-       'mimeType': 'application/vnd.ekstep.content-collection', 'name': 'Unit 1', 'osId': 'org.ekstep.launcher', 'pkgVersion': '1.0',
-       'size': '589598.0', 'status': 'Live', 'variants': { 'spine':
-       { 'ecarUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/do_2124791820965806081846/unit-1_1523337900939_do_2124791820965806081846_1.0_spine.ecar', 'size': 589598.0 } },
-        'versionKey': '1523337658274' }], 'filterCriteria': { 'age': 0, 'contentTypes': ['TextBook', 'TextBookUnit'],
-        'facetFilters': [{ 'name': 'gradeLevel', 'values': [] }, { 'name': 'subject', 'values': [] }, { 'name': 'medium',
-        'values': [] }, { 'name': 'contentType', 'values': [{ 'apply': false, 'count': 3, 'name': 'textbookunit' }] },
+    'result': {
+      'collectionDataList': [{
+        'childNodes': ['do_2125409300562001921307'], 'contentType': 'TextBook',
+        'identifier': 'do_2125409291287838721305', 'mimeType': 'application/vnd.ekstep.content-collection',
+        'name': 'book', 'size': '637311.0'
+      }, {
+        'childNodes': ['do_2124791820965806081846'], 'contentType': 'TextBook',
+        'identifier': 'do_2124791816024883201843', 'mimeType': 'application/vnd.ekstep.content-collection',
+        'name': 'Dial Code link', 'size': '593666.0'
+      }, {
+        'childNodes': ['do_21250324701456793616459'], 'contentType': 'TextBook',
+        'identifier': 'do_21250324682831462416458', 'mimeType': 'application/vnd.ekstep.content-collection', 'name': 'Dial_Code_JP_Book',
+        'size': '4.4713607E7'
+      }], 'contentDataList': [{
+        'audience': ['Learner'], 'contentDisposition': 'inline', 'contentEncoding': 'gzip',
+        'contentType': 'TextBookUnit', 'createdOn': '2018-07-06T11:07:31.001+0000',
+        'description': 'ge ew oiuwef oiqjwd oiueoqe qwdg ftrqw tqwfd', 'dialcodes': ['646X5X'],
+        'downloadUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/do_2125409300562001921307/' +
+        'book_1530875410232_do_2125409300562001921307_1.0_spine.ecar',
+        'identifier': 'do_2125409300562001921307', 'language': ['English'], 'lastPublishedOn': '2018-07-06T11:10:10.213+0000',
+        'mimeType': 'application/vnd.ekstep.content-collection', 'name': 'book', 'osId': 'org.ekstep.launcher', 'pkgVersion': '1.0',
+        'size': '359155.0', 'status': 'Live', 'variants': {
+          'spine':
+          {
+            'ecarUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/do_2125409300562001921307/' +
+            'book_1530875410232_do_2125409300562001921307_1.0_spine.ecar',
+            'size': 359155.0
+          }
+        }, 'versionKey': '1530875251001'
+      }, {
+        'audience': ['Learner'], 'contentDisposition': 'inline',
+        'contentEncoding': 'gzip', 'contentType': 'TextBookUnit', 'createdOn': '2018-05-14T05:21:10.333+0000', 'dialcodes': ['646X5X'],
+        // tslint:disable-next-line:max-line-length
+        'downloadUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/do_21250324701456793616459/jp-1_1526992263235_do_21250324701456793616459_2.0_spine.ecar',
+        'identifier': 'do_21250324701456793616459', 'language': ['English'], 'lastPublishedOn': '2018-05-22T12:31:02.037+0000',
+        'mimeType': 'application/vnd.ekstep.content-collection', 'name': 'JP 1', 'osId': 'org.ekstep.launcher', 'pkgVersion': '2.0',
+        'size': '4.470704E7', 'status': 'Live', 'variants': {
+          'spine':
+            { 'ecarUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/do_21250324701456793616459/' +
+            'jp-1_1526992263235_do_21250324701456793616459_2.0_spine.ecar', 'size': 4.470704E7 }
+        },
+        'versionKey': '1526275270333'
+      }, {
+        'audience': ['Learner'], 'channel': '012315809814749184151', 'contentDisposition': 'inline',
+        'contentEncoding': 'gzip', 'contentType': 'TextBookUnit', 'createdOn': '2018-04-10T05:20:58.274+0000', 'dialcodes': ['646X5X'],
+        'downloadUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/do_2124791820965806081846/' +
+        'unit-1_1523337900939_do_2124791820965806081846_1.0_spine.ecar',
+        'identifier': 'do_2124791820965806081846', 'language': ['English'], 'lastPublishedOn': '2018-04-10T05:25:00.921+0000',
+        'mimeType': 'application/vnd.ekstep.content-collection', 'name': 'Unit 1', 'osId': 'org.ekstep.launcher', 'pkgVersion': '1.0',
+        'size': '589598.0', 'status': 'Live', 'variants': {
+          'spine':
+            { 'ecarUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/do_2124791820965806081846/' +
+            'unit-1_1523337900939_do_2124791820965806081846_1.0_spine.ecar', 'size': 589598.0 }
+        },
+        'versionKey': '1523337658274'
+      }], 'filterCriteria': {
+        'age': 0, 'contentTypes': ['TextBook', 'TextBookUnit'],
+        'facetFilters': [{ 'name': 'gradeLevel', 'values': [] }, { 'name': 'subject', 'values': [] }, {
+          'name': 'medium',
+          'values': []
+        }, { 'name': 'contentType', 'values': [{ 'apply': false, 'count': 3, 'name': 'textbookunit' }] },
         { 'name': 'board', 'values': [] }], 'facets': ['board', 'gradeLevel', 'subject', 'medium', 'contentType'],
         'impliedFilters': [{ 'name': 'dialcodes', 'values': [{ 'apply': true, 'count': 0, 'name': '646X5X' }] },
-        { 'name': 'status', 'values': [{ 'apply': true, 'count': 0, 'name': 'Live' }] }, { 'name': 'objectType',
-        'values': [{ 'apply': true, 'count': 0, 'name': 'Content' }] }], 'limit': 100, 'offlineSearch': false, 'offset': 0, 'query': '',
-        'searchType': 'FILTER', 'sortCriteria': [] }, 'id': 'api.v1.search', 'request': { 'mode': 'collection', 'offset': 0, 'query': '',
-         'limit': 100, 'filters': { 'dialcodes': ['646X5X'], 'compatibilityLevel': { 'min': 1, 'max': 4 }, 'status': ['Live'],
-         'objectType': ['Content'] }, 'facets': ['board', 'gradeLevel', 'subject', 'medium', 'contentType'] },
-         'responseMessageId': '98de2310-ba8d-11e8-9001-81918790455e' }, 'status': true
+        { 'name': 'status', 'values': [{ 'apply': true, 'count': 0, 'name': 'Live' }] }, {
+          'name': 'objectType',
+          'values': [{ 'apply': true, 'count': 0, 'name': 'Content' }]
+        }], 'limit': 100, 'offlineSearch': false, 'offset': 0, 'query': '',
+        'searchType': 'FILTER', 'sortCriteria': []
+      }, 'id': 'api.v1.search', 'request': {
+        'mode': 'collection', 'offset': 0, 'query': '',
+        'limit': 100, 'filters': {
+          'dialcodes': ['646X5X'], 'compatibilityLevel': { 'min': 1, 'max': 4 }, 'status': ['Live'],
+          'objectType': ['Content']
+        }, 'facets': ['board', 'gradeLevel', 'subject', 'medium', 'contentType']
+      },
+      'responseMessageId': '98de2310-ba8d-11e8-9001-81918790455e'
+    }, 'status': true
   },
 
   dialCodesearchResultResponse4:
   {
     'message': 'successful',
-    'result': { 'collectionDataList': [{ 'identifier': 'do_212', 'childNodes': ['do_212456'], 'size': 637311, 'name': 'book',
-    'mimeType': 'application/vnd.ekstep.content-collection', 'contentType': 'TextBook', 'objectType': 'Content' }], 'count': 3,
-    'contentDataList': [{ 'code': 'do_212', 'keywords': ['test'], 'mimeType': 'application/vnd.ekstep.content-collection',
-    'idealScreenSize': 'normal', 'createdOn': '2018-07-06T11:07:31.001+0000', 'conceptData': '(3) concepts selected',
-    'objectType': 'Content', 'collections': ['do_212'], 'contentDisposition': 'inline', 'contentEncoding': 'gzip',
-    'lastUpdatedOn': '2018-07-06T11:08:13.918+0000', 'SYS_INTERNAL_LAST_UPDATED_ON': '2018-07-06T11:10:10.614+0000',
-    'contentType': 'TextBookUnit', 'identifier': 'do_212', 'audience': ['Learner'], 'os': ['All'], 'visibility': 'Parent',
-    'mediaType': 'content', 'osId': 'org.ekstep.launcher', 'graph_id': 'domain', 'nodeType': 'DATA_NODE', 'pkgVersion': 1,
-    'versionKey': '1530875251001', 'idealScreenDensity': 'hdpi', 'dialcodes': ['646X5X'],
-    'lastPublishedOn': '2018-07-06T11:10:10.213+0000', 'size': 359155, 'compatibilityLevel': 1, 'name': 'book', 'status': 'Live',
-    'node_id': 386064 }, { 'code': 'do_212', 'keywords': ['test'], 'mimeType': 'application/vnd.ekstep.content-collection',
-    'idealScreenSize': 'normal', 'createdOn': '2018-07-06T11:07:31.001+0000', 'conceptData': '(3) concepts selected',
-    'objectType': 'Content', 'collections': ['do_212'], 'contentDisposition': 'inline', 'contentEncoding': 'gzip',
-    'lastUpdatedOn': '2018-07-06T11:08:13.918+0000', 'SYS_INTERNAL_LAST_UPDATED_ON': '2018-07-06T11:10:10.614+0000',
-    'contentType': 'TextBookUnit', 'identifier': 'do_212456', 'audience': ['Learner'], 'os': ['All'], 'visibility': 'Parent',
-    'mediaType': 'content', 'osId': 'org.ekstep.launcher', 'graph_id': 'domain', 'nodeType': 'DATA_NODE', 'pkgVersion': 1,
-    'versionKey': '1530875251001', 'idealScreenDensity': 'hdpi', 'dialcodes': ['646X5X'],
-    'lastPublishedOn': '2018-07-06T11:10:10.213+0000', 'size': 359155, 'compatibilityLevel': 1, 'name': 'book', 'status': 'Live',
-     'node_id': 386064 }], 'facets': [{ 'values': [], 'name': 'gradeLevel' }, { 'values': [], 'name': 'subject' },
+    'result': {
+      'collectionDataList': [{
+        'identifier': 'do_212', 'childNodes': ['do_212456'], 'size': 637311, 'name': 'book',
+        'mimeType': 'application/vnd.ekstep.content-collection', 'contentType': 'TextBook', 'objectType': 'Content'
+      }], 'count': 3,
+      'contentDataList': [{
+        'code': 'do_212', 'keywords': ['test'], 'mimeType': 'application/vnd.ekstep.content-collection',
+        'idealScreenSize': 'normal', 'createdOn': '2018-07-06T11:07:31.001+0000', 'conceptData': '(3) concepts selected',
+        'objectType': 'Content', 'collections': ['do_212'], 'contentDisposition': 'inline', 'contentEncoding': 'gzip',
+        'lastUpdatedOn': '2018-07-06T11:08:13.918+0000', 'SYS_INTERNAL_LAST_UPDATED_ON': '2018-07-06T11:10:10.614+0000',
+        'contentType': 'TextBookUnit', 'identifier': 'do_212', 'audience': ['Learner'], 'os': ['All'], 'visibility': 'Parent',
+        'mediaType': 'content', 'osId': 'org.ekstep.launcher', 'graph_id': 'domain', 'nodeType': 'DATA_NODE', 'pkgVersion': 1,
+        'versionKey': '1530875251001', 'idealScreenDensity': 'hdpi', 'dialcodes': ['646X5X'],
+        'lastPublishedOn': '2018-07-06T11:10:10.213+0000', 'size': 359155, 'compatibilityLevel': 1, 'name': 'book', 'status': 'Live',
+        'node_id': 386064
+      }, {
+        'code': 'do_212', 'keywords': ['test'], 'mimeType': 'application/vnd.ekstep.content-collection',
+        'idealScreenSize': 'normal', 'createdOn': '2018-07-06T11:07:31.001+0000', 'conceptData': '(3) concepts selected',
+        'objectType': 'Content', 'collections': ['do_212'], 'contentDisposition': 'inline', 'contentEncoding': 'gzip',
+        'lastUpdatedOn': '2018-07-06T11:08:13.918+0000', 'SYS_INTERNAL_LAST_UPDATED_ON': '2018-07-06T11:10:10.614+0000',
+        'contentType': 'TextBookUnit', 'identifier': 'do_212456', 'audience': ['Learner'], 'os': ['All'], 'visibility': 'Parent',
+        'mediaType': 'content', 'osId': 'org.ekstep.launcher', 'graph_id': 'domain', 'nodeType': 'DATA_NODE', 'pkgVersion': 1,
+        'versionKey': '1530875251001', 'idealScreenDensity': 'hdpi', 'dialcodes': ['646X5X'],
+        'lastPublishedOn': '2018-07-06T11:10:10.213+0000', 'size': 359155, 'compatibilityLevel': 1, 'name': 'book', 'status': 'Live',
+        'node_id': 386064
+      }], 'facets': [{ 'values': [], 'name': 'gradeLevel' }, { 'values': [], 'name': 'subject' },
       { 'values': [], 'name': 'medium' }, { 'values': [{ 'name': 'textbookunit', 'count': 1 }], 'name': 'contentType' },
-      { 'values': [], 'name': 'board' }, ], 'collectionsCount': 1 }, 'status': true
+      { 'values': [], 'name': 'board' }, ], 'collectionsCount': 1
+    }, 'status': true
   },
 
-  courseConfigFilter: [{ 'name': 'Board',
-  'translations': '{\'en\':\'Board\',\'hi\':\'बोर्ड\',\'te\':\'బోర్డు\',\'ta\':\'வாரியம்\',\'mr\':\'बोर्ड\'}',
-   'code': 'board', 'index': 1, 'values': [] },
-   { 'name': 'Subject', 'translations': '{\'en\':\'Subject\',\'hi\':\'विषय\',\'te\':\'పాఠ్యాంశము\',\'ta\':\'பாடம்\',\'mr\':\'विषय\'}',
-   'code': 'subject', 'index': 2, 'values': [] },
-   { 'name': 'Medium', 'translations': '{\'en\':\'Medium\',\'hi\':\'माध्यम\',\'te\':\'మాధ్యమం\',\'ta\':\'மொழி\',\'mr\':\'माध्यम\'}',
-   'code': 'medium', 'index': 3, 'values': [] }],
+  courseConfigFilter: [{
+    'name': 'Board',
+    'translations': '{\'en\':\'Board\',\'hi\':\'बोर्ड\',\'te\':\'బోర్డు\',\'ta\':\'வாரியம்\',\'mr\':\'बोर्ड\'}',
+    'code': 'board', 'index': 1, 'values': []
+  },
+  {
+    'name': 'Subject', 'translations': '{\'en\':\'Subject\',\'hi\':\'विषय\',\'te\':\'పాఠ్యాంశము\',\'ta\':\'பாடம்\',\'mr\':\'विषय\'}',
+    'code': 'subject', 'index': 2, 'values': []
+  },
+  {
+    'name': 'Medium', 'translations': '{\'en\':\'Medium\',\'hi\':\'माध्यम\',\'te\':\'మాధ్యమం\',\'ta\':\'மொழி\',\'mr\':\'माध्यम\'}',
+    'code': 'medium', 'index': 3, 'values': []
+  }],
 
   emptyDialCodeResponse:
   {
     'message': 'successful',
-    'result': { 'contentDataList': [], 'id': 'api.v1.search', 'request': { 'mode': 'collection', 'offset': 0, 'query': '', 'limit': 100,
-    'filters': { 'dialcodes': ['646X5XX'], 'compatibilityLevel': { 'min': 1, 'max': 4 }, 'contentType': ['TextBook', 'TextBookUnit'],
-    'status': ['Live'], 'objectType': ['Content'] }, 'facets': ['board', 'gradeLevel', 'subject', 'medium', 'contentType'] },
-    'responseMessageId': '66171360-ba92-11e8-9001-81918790455e' }, 'status': true
+    'result': {
+      'contentDataList': [], 'id': 'api.v1.search', 'request': {
+        'mode': 'collection', 'offset': 0, 'query': '', 'limit': 100,
+        'filters': {
+          'dialcodes': ['646X5XX'], 'compatibilityLevel': { 'min': 1, 'max': 4 }, 'contentType': ['TextBook', 'TextBookUnit'],
+          'status': ['Live'], 'objectType': ['Content']
+        }, 'facets': ['board', 'gradeLevel', 'subject', 'medium', 'contentType']
+      },
+      'responseMessageId': '66171360-ba92-11e8-9001-81918790455e'
+    }, 'status': true
   },
 };
