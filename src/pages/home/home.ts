@@ -14,14 +14,14 @@ import {
   PageId,
   UserProfileDetailsRequest
 } from 'sunbird';
-import { AnnouncementListComponent } from './announcement-list/announcement-list'
+import { AnnouncementListComponent } from './announcement-list/announcement-list';
 import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
-import { FormEducation } from "../profile/education/form.education";
-import { FormAddress } from "../profile/address/form.address";
-import { FormExperience } from "../profile/experience/form.experience"
-import { AdditionalInfoComponent } from "../profile/additional-info/additional-info";
-import { PopoverController } from "ionic-angular/components/popover/popover-controller";
+import { FormEducation } from '../profile/education/form.education';
+import { FormAddress } from '../profile/address/form.address';
+import { FormExperience } from '../profile/experience/form.experience';
+import { AdditionalInfoComponent } from '../profile/additional-info/additional-info';
+import { PopoverController } from 'ionic-angular/components/popover/popover-controller';
 import { IncompleteProfileData } from '../../component/card/incomplete-profile/incomplete-profile-data';
 import { TranslateService } from '@ngx-translate/core';
 import { ProfileConstants } from '../../app/app.constant';
@@ -53,7 +53,7 @@ export class HomePage {
    */
   showLoader: boolean;
 
-  currentStyle = "ltr";
+  currentStyle = 'ltr';
 
   /**
    * Contains Profile Object
@@ -61,15 +61,15 @@ export class HomePage {
   profile: any = {};
 
   uncompletedDetails: any = {
-    title: ""
+    title: ''
   };
 
   /**
    * Flag to check if profile is incomplete
    */
-  isProfileIncomplete: boolean = false;
+  isProfileIncomplete = false;
 
-  profileProgress: string = "";
+  profileProgress = '';
 
   incompleteProfileData: IncompleteProfileData;
 
@@ -80,7 +80,7 @@ export class HomePage {
    * @param {HttpClient} http Reference of http client service to make api call
    */
 
-  logo: string = "assets/imgs/ic_launcher.png";
+  logo = 'assets/imgs/ic_launcher.png';
 
   constructor(public navCtrl: NavController,
     private courseService: CourseService,
@@ -102,7 +102,7 @@ export class HomePage {
     // // TODO: remove this hardcodec id before pushing the code
     // this.userId = '659b011a-06ec-4107-84ad-955e16b0a48a';
     this.events.subscribe('genie.event', (response) => {
-      console.log("Result " + response);
+      console.log('Result ' + response);
     });
   }
   /**
@@ -118,7 +118,7 @@ export class HomePage {
    * It internally calls course handler of genie sdk
    */
   getEnrolledCourses(): void {
-    let option = {
+    const option = {
       userId: this.userId,
       refreshEnrolledCourses: false
     };
@@ -128,7 +128,7 @@ export class HomePage {
         this.ngZone.run(() => {
           this.enrolledCourse = data.result.courses ? data.result.courses : [];
           this.spinner(false);
-        })
+        });
       }
     }, (error: any) => {
       console.log('error while loading enrolled courses', error);
@@ -143,7 +143,7 @@ export class HomePage {
    */
   getAnnouncementList(): void {
     console.log('making api call to Announcement list');
-    let option = {
+    const option = {
       limit: 2,
       offset: 1
     };
@@ -161,7 +161,7 @@ export class HomePage {
             });
           });
           this.spinner(false);
-        })
+        });
       }
     }, (error: any) => {
       console.log('error while loading  Announcement list', error);
@@ -187,10 +187,10 @@ export class HomePage {
   }
 
   changeLanguage(event) {
-    if (this.currentStyle === "ltr") {
-      this.currentStyle = "rtl";
+    if (this.currentStyle === 'ltr') {
+      this.currentStyle = 'rtl';
     } else {
-      this.currentStyle = "ltr";
+      this.currentStyle = 'ltr';
     }
     this.platform.setDir(this.currentStyle as DocumentDirection, true);
   }
@@ -200,15 +200,15 @@ export class HomePage {
   }
 
   refreshTenantData() {
-    let request = new TenantInfoRequest();
+    const request = new TenantInfoRequest();
     request.refreshTenantInfo = true;
-    request.slug = "sunbird";
+    request.slug = 'sunbird';
     this.userProfileService.getTenantInfo(
       request,
       res => {
         this.ngZone.run(() => {
-          let r = JSON.parse(res);
-          this.logo = r["logo"];
+          const r = JSON.parse(res);
+          this.logo = r['logo'];
         });
       },
       error => {
@@ -219,45 +219,45 @@ export class HomePage {
 
   onSyncClick() {
     this.telemetryService.sync((response) => {
-      console.log("Telemetry Home : " + response);
+      console.log('Telemetry Home : ' + response);
     }, (error) => {
-      console.log("Telemetry Home : " + error);
+      console.log('Telemetry Home : ' + error);
     });
     this.downloadContent();
   }
 
   downloadContent() {
-    let contentImport = new ContentImport();
+    const contentImport = new ContentImport();
 
-    contentImport.contentId = "do_2123823398249594881455"
-    contentImport.destinationFolder = "/storage/emulated/0/Android/data/org.sunbird.app/files";
+    contentImport.contentId = 'do_2123823398249594881455';
+    contentImport.destinationFolder = '/storage/emulated/0/Android/data/org.sunbird.app/files';
 
-    let contentImportRequest = new ContentImportRequest();
+    const contentImportRequest = new ContentImportRequest();
 
     contentImportRequest.contentImportMap = {
-      "do_2123823398249594881455": contentImport
-    }
-    console.log("Hello " + JSON.stringify(contentImportRequest));
+      'do_2123823398249594881455': contentImport
+    };
+    console.log('Hello ' + JSON.stringify(contentImportRequest));
     this.contentService.importContent(contentImportRequest, (response) => {
-      console.log("Home : " + response);
+      console.log('Home : ' + response);
     }, (error) => {
-      console.log("Home : " + error);
+      console.log('Home : ' + error);
     });
   }
 
   search() {
     const contentType: Array<string> = [
-      "Story",
-      "Worksheet",
-      "Game",
-      "Collection",
-      "TextBook",
-      "Course",
-      "LessonPlan",
-      "Resource",
+      'Story',
+      'Worksheet',
+      'Game',
+      'Collection',
+      'TextBook',
+      'Course',
+      'LessonPlan',
+      'Resource',
     ];
 
-    this.navCtrl.push(SearchPage, { contentType: contentType, source: PageId.HOME })
+    this.navCtrl.push(SearchPage, { contentType: contentType, source: PageId.HOME });
   }
 
   /**
@@ -268,20 +268,20 @@ export class HomePage {
   getUserId(): void {
     this.authService.getSessionData((session) => {
       if (session === undefined || session == null) {
-        console.log('session expired')
+        console.log('session expired');
       } else {
-        this.getProfileCompletionDetails(session)
+        this.getProfileCompletionDetails(session);
       }
     });
   }
 
   getProfileCompletionDetails(session: any) {
-    let sessionObj = JSON.parse(session);
+    const sessionObj = JSON.parse(session);
     this.userId = sessionObj[ProfileConstants.USER_TOKEN];
 
-    let req: UserProfileDetailsRequest = {
+    const req: UserProfileDetailsRequest = {
       userId:
-        this.userId && this.userId != sessionObj[ProfileConstants.USER_TOKEN]
+        this.userId && this.userId !== sessionObj[ProfileConstants.USER_TOKEN]
           ? this.userId
           : sessionObj[ProfileConstants.USER_TOKEN],
       requiredFields: ProfileConstants.REQUIRED_FIELDS,
@@ -292,7 +292,7 @@ export class HomePage {
       req,
       (res: any) => {
         this.ngZone.run(() => {
-          let r = JSON.parse(res);
+          const r = JSON.parse(res);
           this.profile = r;
           this.incompleteProfileData = new IncompleteProfileData();
           this.formatProfileProgress();
@@ -315,55 +315,55 @@ export class HomePage {
     this.uncompletedDetails.title = '';
     if (this.profile.missingFields && this.profile.missingFields.length) {
       switch (this.profile.missingFields[0]) {
-        case "education":
-          this.uncompletedDetails.title = "+ Add Education";
+        case 'education':
+          this.uncompletedDetails.title = '+ Add Education';
           this.uncompletedDetails.page = FormEducation;
           this.uncompletedDetails.data = {
             addForm: true,
             profile: this.profile
-          }
+          };
           this.isProfileIncomplete = true;
-          this.incompleteProfileData.completenessRequires = "+ Add Education";
+          this.incompleteProfileData.completenessRequires = '+ Add Education';
           this.incompleteProfileData.avatar = this.profile.avatar;
           break;
-        case "jobProfile":
-          this.uncompletedDetails.title = "+ Add Experience";
+        case 'jobProfile':
+          this.uncompletedDetails.title = '+ Add Experience';
           this.uncompletedDetails.page = FormExperience;
           this.uncompletedDetails.data = {
             addForm: true,
             profile: this.profile
-          }
+          };
           this.isProfileIncomplete = true;
-          this.incompleteProfileData.completenessRequires = "+ Add Experience";
+          this.incompleteProfileData.completenessRequires = '+ Add Experience';
           this.incompleteProfileData.avatar = this.profile.avatar;
           break;
-        case "avatar":
-          this.uncompletedDetails.title = "+ Add Avatar";
-          this.uncompletedDetails.page = "picture";
+        case 'avatar':
+          this.uncompletedDetails.title = '+ Add Avatar';
+          this.uncompletedDetails.page = 'picture';
           this.isProfileIncomplete = true;
-          this.incompleteProfileData.completenessRequires = "+ Add Avatar";
-          this.incompleteProfileData.avatar = "";
+          this.incompleteProfileData.completenessRequires = '+ Add Avatar';
+          this.incompleteProfileData.avatar = '';
           break;
-        case "address":
-          this.uncompletedDetails.title = "+ Add Address";
+        case 'address':
+          this.uncompletedDetails.title = '+ Add Address';
           this.uncompletedDetails.page = FormAddress;
           this.uncompletedDetails.data = {
             addForm: true,
             profile: this.profile
           };
           this.isProfileIncomplete = true;
-          this.incompleteProfileData.completenessRequires = "+ Add Address";
+          this.incompleteProfileData.completenessRequires = '+ Add Address';
           this.incompleteProfileData.avatar = this.profile.avatar;
           break;
-        case "location":
-        case "profileSummary":
-        case "phone":
-        case "subject":
-        case "gender":
-        case "dob":
-        case "grade":
-        case "webPages":
-          let requiredProfileFields: Array<string> = [
+        case 'location':
+        case 'profileSummary':
+        case 'phone':
+        case 'subject':
+        case 'gender':
+        case 'dob':
+        case 'grade':
+        case 'webPages':
+          const requiredProfileFields: Array<string> = [
             'lastName',
             'profileSummary',
             'phone',
@@ -375,20 +375,20 @@ export class HomePage {
             'webPages'
           ];
 
-          this.uncompletedDetails.title = "+ Add " + this.profile.missingFields[0];
+          this.uncompletedDetails.title = '+ Add ' + this.profile.missingFields[0];
           this.uncompletedDetails.page = AdditionalInfoComponent;
           this.uncompletedDetails.data = {
             userId: this.userId,
             profile: this.getSubset(requiredProfileFields, this.profile),
             profileVisibility: this.profile.profileVisibility
-          }
+          };
           this.isProfileIncomplete = true;
-          this.incompleteProfileData.completenessRequires = "+ Add " + this.profile.missingFields[0];
+          this.incompleteProfileData.completenessRequires = '+ Add ' + this.profile.missingFields[0];
           this.incompleteProfileData.avatar = this.profile.avatar;
           break;
       }
 
-      console.log("Incomplete profile details - " + this.incompleteProfileData)
+      console.log('Incomplete profile details - ' + this.incompleteProfileData);
     }
   }
 
@@ -398,7 +398,7 @@ export class HomePage {
   }
 
   completeProfile() {
-    if (this.uncompletedDetails.page == "picture") {
+    if (this.uncompletedDetails.page === 'picture') {
       this.editPicture();
     } else {
       this.navCtrl.push(this.uncompletedDetails.page, this.uncompletedDetails.data);
@@ -433,7 +433,7 @@ export class HomePage {
 
 
   showMessage(message) {
-    let toast = this.toastCtrl.create({
+    const toast = this.toastCtrl.create({
       message: message,
       duration: 4000,
       position: 'bottom'

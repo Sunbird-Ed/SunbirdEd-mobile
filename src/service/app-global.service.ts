@@ -170,9 +170,6 @@ export class AppGlobalService {
         return this.libraryFilterConfig;
     }
 
-
-
-
     private initValues() {
         this.readConfig();
         this.authService.getSessionData((session) => {
@@ -415,7 +412,6 @@ export class AppGlobalService {
                 undefined,
                 values);
         }
-
     }
 
     generateSaveClickedTelemetry(profile, validation, pageId, interactSubtype) {
@@ -431,7 +427,6 @@ export class AppGlobalService {
                 undefined,
                 values);
         }
-
     }
 
     setAverageTime(time) {

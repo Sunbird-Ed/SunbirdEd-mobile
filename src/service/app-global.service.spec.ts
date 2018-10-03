@@ -1,4 +1,4 @@
-import { App, ToastController } from 'ionic-angular';
+import { App } from 'ionic-angular';
 import { Events, PopoverController } from 'ionic-angular';
 import { ComponentFixture, TestBed, inject } from '@angular/core/testing';
 import { AppGlobalService } from './app-global.service';
@@ -11,9 +11,8 @@ import { DeepLinker } from 'ionic-angular';
 import { DeepLinkerMock } from '../../test-config/mocks-ionic';
 import { PopoverControllerMock } from '../../node_modules/ionic-mocks';
 import { TelemetryGeneratorService } from './telemetry-generator.service';
-
 import {
-  BuildParamaServiceMock, SharedPreferencesMock
+  BuildParamaServiceMock
 } from '../../test-config/mocks-ionic';
 
 describe('AppGlobalService', () => {

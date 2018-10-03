@@ -6,7 +6,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { PopoverPage } from './popover';
 
-describe("PopoverPage", () => {
+describe('PopoverPage', () => {
     let comp: PopoverPage;
     let fixture: ComponentFixture<PopoverPage>;
 
@@ -14,8 +14,8 @@ describe("PopoverPage", () => {
 
         const navControllerStub = {};
         const navParamsStub = {
-            get: function () {
-                return (function () { })
+            get: () => {
+                return ( () => { } );
             }
         };
 
@@ -39,14 +39,14 @@ describe("PopoverPage", () => {
         comp = fixture.componentInstance;
     });
 
-    it("can load instance", () => {
+    it('can load instance', () => {
         expect(comp).toBeTruthy();
     });
 
-    it("isCurrentUser defaults to: false", () => {
+    it('isCurrentUser defaults to: false', () => {
         expect(comp.isCurrentUser).toEqual(true);
     });
-    it('It should fetch delete param', function () {
+    it('It should fetch delete param', () => {
         const navParamsStub: NavParams = fixture.debugElement.injector.get(NavParams);
         spyOn(comp, 'delete').and.callThrough();
         spyOn(navParamsStub, 'get').and.callThrough();
@@ -54,7 +54,7 @@ describe("PopoverPage", () => {
         expect(comp.delete).toHaveBeenCalled();
         expect(navParamsStub.get).toHaveBeenCalled();
     });
-    it('It should fetch the edit param', function () {
+    it('It should fetch the edit param', () => {
         const navParamsStub: NavParams = fixture.debugElement.injector.get(NavParams);
         spyOn(comp, 'edit').and.callThrough();
         spyOn(navParamsStub, 'get').and.callThrough();
@@ -62,7 +62,7 @@ describe("PopoverPage", () => {
         expect(comp.edit).toHaveBeenCalled();
         expect(navParamsStub.get).toHaveBeenCalled();
     });
-    it('It should call the ionViewDidLoad method', function () {
+    it('It should call the ionViewDidLoad method', () => {
 
         spyOn(comp, 'ionViewDidLoad').and.callThrough();
         comp.ionViewDidLoad();

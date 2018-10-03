@@ -1,3 +1,4 @@
+import { NavParams } from 'ionic-angular/index';
 import { AppGlobalService } from './../../service/app-global.service';
 import { ProfileService, TabsPage, InteractSubtype, PageId, InteractType } from 'sunbird';
 import { Component } from '@angular/core';
@@ -67,6 +68,7 @@ export class UserOnboardingPreferencesPage {
 
 	constructor(
 		private navCtrl: NavController,
+		private navParams: NavParams,
 		private fb: FormBuilder,
 		private formAndFrameworkUtilService: FormAndFrameworkUtilService,
 		private translate: TranslateService,
@@ -91,7 +93,10 @@ export class UserOnboardingPreferencesPage {
 	}
 
 	ionViewDidLoad() {
-		this.scanner.stopScanner();
+		if (Boolean(this.navParams.get('stopScanner'))) {
+			this.scanner.stopScanner();
+		}
+
 		this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
 			this.telemetryGeneratorService.generateInteractTelemetry(
 				InteractType.TOUCH, InteractSubtype.DEVICE_BACK_CLICKED,
@@ -99,6 +104,7 @@ export class UserOnboardingPreferencesPage {
 				Environment.ONBOARDING);
 		});
 	}
+
 	ionViewWillEnter() {
 		this.getSyllabusDetails();
 	}

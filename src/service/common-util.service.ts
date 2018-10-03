@@ -9,8 +9,6 @@ export class CommonUtilService {
         private translate: TranslateService) {
     }
 
-
-
     showToast(translationKey, isInactive?, cssToast?) {
         if (Boolean(isInactive)) {
             return;

@@ -15,23 +15,27 @@ export class FileSizePipe implements PipeTransform {
    */
   transform(size: any, roundOf: number = 2) {
     if (size || size === 0) {
-      if (isNaN(size))
+      if (isNaN(size)) {
         size = 0;
+      }
 
       size /= 1024;
 
-      if (size < 1024)
+      if (size < 1024) {
         return size.toFixed(roundOf) + ' KB';
+      }
 
       size /= 1024;
 
-      if (size < 1024)
+      if (size < 1024) {
         return size.toFixed(roundOf) + ' MB';
+      }
 
       size /= 1024;
 
-      if (size < 1024)
+      if (size < 1024) {
         return size.toFixed(roundOf) + ' GB';
+      }
 
       size /= 1024;
 

@@ -53,18 +53,18 @@ export class AnnouncementDetailComponent implements OnInit {
      */
     public navParams: NavParams;
 
-    public isAttachment: boolean = true;
+    public isAttachment = true;
 
     /**
      * Contains the progress of the attachment downloading
      */
-    public progress: number = 0;
+    public progress = 0;
 
     /**
      * Visibility of the progress bar
      *
      */
-    public showProgressBar: boolean = false;
+    public showProgressBar = false;
 
     /**
      *
@@ -79,7 +79,8 @@ export class AnnouncementDetailComponent implements OnInit {
      */
     constructor(navCtrl: NavController, private socialSharing: SocialSharing,
         navParams: NavParams, announcementService: AnnouncementService,
-        attachmentService: AttachmentService, file: File,
+        attachmentService: AttachmentService,
+        file: File,
         zone: NgZone) {
         this.navCtrl = navCtrl;
         this.navParams = navParams;
@@ -93,9 +94,9 @@ export class AnnouncementDetailComponent implements OnInit {
      * To get Announcement  details.
      */
     getAnnouncementDetails() {
-        let req = {
+        const req = {
             announcementId: this.navParams.get('id')
-        }
+        };
 
         console.log('Making api call to get Announcement details');
         this.announcementService.getAnnouncementDetails(req, (data: any) => {
@@ -117,17 +118,16 @@ export class AnnouncementDetailComponent implements OnInit {
     }
 
     updateAnnouncementReadStatus() {
-        let req = {
+        const req = {
             announcementId: this.navParams.get('id'),
             announcementStatus: AnnouncementStatus.READ
-        }
+        };
 
         this.announcementService.updateAnnouncementState(req,
             (success: any) => {
             }, (error: any) => {
-            })
+            });
     }
-
 
     /**
      * Angular life cycle hooks
@@ -139,8 +139,8 @@ export class AnnouncementDetailComponent implements OnInit {
      * SocialSharing
      */
     share(announcementDetail) {
-        let message: string = ` Type: ${announcementDetail.type}\nDescription: ${announcementDetail.description}\nTitle: ${announcementDetail.title}\n Links:  ${announcementDetail.links}`;
-        let attachmentPath: string = this.file.externalRootDirectory + 'Announcements/' + announcementDetail.id + '/' + announcementDetail.attachments[0].name;
+        const message = ` Type: ${announcementDetail.type}\nDescription: ${announcementDetail.description}\nTitle: ${announcementDetail.title}\n Links:  ${announcementDetail.links}`;
+        const attachmentPath: string = this.file.externalRootDirectory + 'Announcements/' + announcementDetail.id + '/' + announcementDetail.attachments[0].name;
         console.log(attachmentPath);
         this.socialSharing.share(message, null, attachmentPath, null).then(() => {
             console.log('inside .then function');
@@ -160,7 +160,7 @@ export class AnnouncementDetailComponent implements OnInit {
     }
 
     openLink(url: string): void {
-        let options = 'hardwareback=yes,clearcache=no,zoom=no,toolbar=yes,clearsessioncache=no,closebuttoncaption=Done,disallowoverscroll=yes';
+        const options = 'hardwareback=yes,clearcache=no,zoom=no,toolbar=yes,clearsessioncache=no,closebuttoncaption=Done,disallowoverscroll=yes';
         (<any>window).cordova.InAppBrowser.open(url, '_system', options);
     }
 
@@ -171,13 +171,13 @@ export class AnnouncementDetailComponent implements OnInit {
      * @param attachmentsLink
      */
     downloadattachment(attachmentsLink) {
-        let url = attachmentsLink;
-        let fileUrl = url.split("/");
-        let attachmentFileName = fileUrl[fileUrl.length - 1];
-        let announcementPath = this.file.externalRootDirectory + '/Announcements/';
-        let attachmentPath = this.file.externalRootDirectory + '/Announcements/' + this.announcementId + '/';
+        const url = attachmentsLink;
+        const fileUrl = url.split('/');
+        const attachmentFileName = fileUrl[fileUrl.length - 1];
+        const announcementPath = this.file.externalRootDirectory + '/Announcements/';
+        const attachmentPath = this.file.externalRootDirectory + '/Announcements/' + this.announcementId + '/';
 
-        //Check if the  announcement directory exists
+        // Check if the  announcement directory exists
         this.file.checkDir(this.file.externalRootDirectory, 'Announcements').then(
             (found) => {
                 if (found) {
@@ -185,7 +185,7 @@ export class AnnouncementDetailComponent implements OnInit {
                 }
             }
         ).catch(
-            (err) => {
+            (error) => {
                 this.file.createDir(this.file.externalRootDirectory, 'Announcements', true).then(
                     (value) => {
 
@@ -193,7 +193,7 @@ export class AnnouncementDetailComponent implements OnInit {
                     }
                 ).catch(
                     (err) => {
-                        console.log("Error in creating  Announcements directory - " + err);
+                        console.log('Error in creating  Announcements directory - ' + err);
                     }
                 );
             }
@@ -209,7 +209,7 @@ export class AnnouncementDetailComponent implements OnInit {
      * @param attachmentFileName
      */
     checkAnnouncementIdDirectory(url, announcementPath, attachmentPath, attachmentFileName) {
-        //Check if the  announcement id directory exists
+        // Check if the  announcement id directory exists
         this.file.checkDir(announcementPath, this.announcementId).then(
             (found) => {
                 if (found) {
@@ -217,18 +217,18 @@ export class AnnouncementDetailComponent implements OnInit {
                 }
             }
         ).catch(
-            (err) => {
-                console.log("Announcement ID directory not found ")
+            (error) => {
+                console.log('Announcement ID directory not found ');
                 this.file.createDir(announcementPath, this.announcementId, true).then(
                     (value) => {
-                        console.log("Announcement ID Directory created path - " + value);
+                        console.log('Announcement ID Directory created path - ' + value);
 
                         this.downloadAndSaveFile(url, attachmentPath, attachmentFileName);
 
                     }
                 ).catch(
                     (err) => {
-                        console.log("Error in creating Announcement ID directory - " + err);
+                        console.log('Error in creating Announcement ID directory - ' + err);
                     });
             }
         );
@@ -242,12 +242,12 @@ export class AnnouncementDetailComponent implements OnInit {
      * @param attachmentFileName
      */
     downloadAndSaveFile(url, attachmentPath, attachmentFileName) {
-        //check if the attachment is already downloaded and stored locally
+        // check if the attachment is already downloaded and stored locally
         this.file.checkFile(attachmentPath, attachmentFileName).then(
             (found) => {
                 if (found) {
-                    console.log("files found " + found)
-                    let path: string = attachmentPath + attachmentFileName;
+                    console.log('files found ' + found);
+                    const path: string = attachmentPath + attachmentFileName;
                     this.attachmentService.checkExtensionAndOpenFile(path);
                 } else {
                     this.showProgressBar = true;
@@ -256,22 +256,20 @@ export class AnnouncementDetailComponent implements OnInit {
 
                     this.attachmentService.listenDownloadProgress((event) => {
                         this.progress = ((event.loaded) / (event.total)) * 100;
-
-                    })
+                    });
                 }
             }
         ).catch(
             (err) => {
-                console.log("files not found ")
+                console.log('files not found ');
                 this.showProgressBar = true;
 
                 this.attachmentService.downloadAttachment(url, attachmentPath + attachmentFileName);
 
                 this.attachmentService.listenDownloadProgress((event) => {
                     this.progress = ((event.loaded) / (event.total)) * 100;
-                })
+                });
             }
         );
     }
 }
-

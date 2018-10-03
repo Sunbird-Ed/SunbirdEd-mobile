@@ -5,9 +5,6 @@ import * as _ from 'lodash';
 @Injectable()
 export class CourseUtilService {
 
-    /**
-     *
-     */
     constructor(private fileUtil: FileUtil) {
     }
 
@@ -31,12 +28,12 @@ export class CourseUtilService {
     getImportContentRequestBody(identifiers, isChild: boolean) {
         const requestParams = [];
         _.forEach(identifiers, (value, key) => {
-          requestParams.push({
-            isChildContent: isChild,
-            destinationFolder: this.fileUtil.internalStoragePath(),
-            contentId: value,
-            correlationData: []
-          });
+            requestParams.push({
+                isChildContent: isChild,
+                destinationFolder: this.fileUtil.internalStoragePath(),
+                contentId: value,
+                correlationData: []
+            });
         });
 
         return _.extend({}, requestParams);
