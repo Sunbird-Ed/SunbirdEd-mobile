@@ -1,19 +1,22 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NavController, NavParams, LoadingController, Platform, AlertController, IonicApp } from 'ionic-angular';
-import { ToastController } from 'ionic-angular';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators
+} from '@angular/forms';
+import {
+  NavController,
+  NavParams,
+  LoadingController,
+  Platform,
+  AlertController,
+  IonicApp
+} from 'ionic-angular';
 import * as _ from 'lodash';
 import { TranslateService } from '@ngx-translate/core';
 import { UserProfileService, UserEducation, UpdateUserInfoRequest } from 'sunbird';
 import { ProfilePage } from '../profile';
-
-
-/* Interface for the Toast Object */
-export interface toastOptions {
-  message: string,
-  duration: number,
-  position: string
-};
+import { CommonUtilService } from '../../../service/common-util.service';
 
 @Component({
   selector: 'page-education',
@@ -22,29 +25,23 @@ export interface toastOptions {
 
 /* This contains form for the Education where user can Add new Education Entry or can edit/delete previous one */
 export class FormEducation {
-  isNewForm: boolean = true;
+
+  isNewForm = true;
   educationForm: FormGroup;
   formDetails: any = {};
   profile: any = {};
   yopList: Array<number> = _.rangeRight(1950, new Date().getFullYear() + 1);
   unregisterBackButton: any;
 
-
-  options: toastOptions = {
-    message: '',
-    duration: 3000,
-    position: 'bottom'
-  };
-
   constructor(
-    public navCtrl: NavController,
+    private navCtrl: NavController,
     public fb: FormBuilder,
-    public navParams: NavParams,
-    public userProfileService: UserProfileService,
-    private toastCtrl: ToastController,
+    private navParams: NavParams,
+    private userProfileService: UserProfileService,
+    private commonUtilService: CommonUtilService,
     private loadingCtrl: LoadingController,
     private translate: TranslateService,
-    public alertCtrl: AlertController,
+    private alertCtrl: AlertController,
     private platform: Platform,
     private ionicApp: IonicApp
   ) {
@@ -79,8 +76,8 @@ export class FormEducation {
    * It will Dismiss active popup
    */
   dismissPopup() {
-    console.log("Fired ionViewWillLeave");
-    let activePortal = this.ionicApp._modalPortal.getActive() || this.ionicApp._overlayPortal.getActive();
+    console.log('Fired ionViewWillLeave');
+    const activePortal = this.ionicApp._modalPortal.getActive() || this.ionicApp._overlayPortal.getActive();
 
     if (activePortal) {
       activePortal.dismiss();
@@ -95,26 +92,26 @@ export class FormEducation {
    * @param {boolean} isDeleted - Flag to delete
    */
   onSubmit(isDeleted: boolean = false): void {
-    let formVal = this.educationForm.value;
+    const formVal = this.educationForm.value;
 
     if (this.validateForm(formVal)) {
-      let userEducation: UserEducation = {
+      const userEducation: UserEducation = {
         degree: formVal.degree,
         name: formVal.name,
         yearOfPassing: <number>formVal.yearOfPassing,
         percentage: <number>formVal.percentage,
         grade: formVal.grade,
         boardOrUniversity: formVal.boardOrUniversity
-      }
+      };
 
       /* Add `id` if user editing or deleting Education entry */
-      if (this.formDetails.id) userEducation['id'] = this.formDetails.id;
-      if (isDeleted) userEducation['isDeleted'] = isDeleted;
+      if (this.formDetails.id) { userEducation['id'] = this.formDetails.id; }
+      if (isDeleted) { userEducation['isDeleted'] = isDeleted; }
 
       // Remove empty object element
       Object.keys(userEducation).forEach((key) => (userEducation[key] === '') && delete userEducation[key]);
 
-      let req: UpdateUserInfoRequest = {
+      const req: UpdateUserInfoRequest = {
         userId: this.profile.userId,
         education: [userEducation]
       };
@@ -129,7 +126,7 @@ export class FormEducation {
    */
   validateForm(formVal): boolean {
     if (formVal.percentage && (formVal.percentage < 0 || formVal.percentage > 100)) {
-      this.getToast(this.translateMessage('WARNING_INVALID_PERCENTAGE')).present();
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('WARNING_INVALID_PERCENTAGE'));
       return false;
     }
     return true;
@@ -140,67 +137,44 @@ export class FormEducation {
    * @param {object} req - Request object for the User profile Service
    */
   updateEducation(req): void {
-    let loader = this.getLoader();
+    const loader = this.getLoader();
     loader.present();
     this.userProfileService.updateUserInfo(req,
       (res: any) => {
         loader.dismiss();
-        this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_SUCCESS'));
         this.navCtrl.setRoot(ProfilePage, { returnRefreshedUserProfileDetails: true });
       },
       (err: any) => {
         loader.dismiss();
-        this.getToast(this.translateMessage('PROFILE_UPDATE_FAILED')).present();
-        console.error("Error", err);
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_FAILED'));
+        console.error('Error', err);
       });
-  }
-  /**
-   *  It will returns Toast Object
-   * @param {message} string - Message for the Toast to show
-   * @returns {object} - toast Object
-   */
-  getToast(message: string = ''): any {
-    this.options.message = message;
-    if (message.length) return this.toastCtrl.create(this.options);
   }
 
   getLoader(): any {
     return this.loadingCtrl.create({
       duration: 30000,
-      spinner: "crescent"
+      spinner: 'crescent'
     });
   }
 
-  /**
-   * Used to Translate message to current Language
-   * @param {string} messageConst - Message Constant to be translated
-   * @returns {string} translatedMsg - Translated Message
-   */
-  translateMessage(messageConst: string, field?: string): string {
-    let translatedMsg = '';
-    this.translate.get(messageConst, { '%s': field }).subscribe(
-      (value: any) => {
-        translatedMsg = value;
-      }
-    );
-    return translatedMsg;
-  }
   showDeleteConfirm() {
-    let confirm = this.alertCtrl.create({
-      title: this.translateMessage('CONFIRM_DEL', this.translateMessage('TITLE_EDUCATION')),
+    const confirm = this.alertCtrl.create({
+      title: this.commonUtilService.translateMessage('CONFIRM_DEL', this.commonUtilService.translateMessage('TITLE_EDUCATION')),
 
       mode: 'wp',
       cssClass: 'confirm-alert',
       buttons: [
         {
-          text: this.translateMessage('CANCEL'),
+          text: this.commonUtilService.translateMessage('CANCEL'),
           role: 'cancel',
           cssClass: 'alert-btn-cancel',
           handler: () => {
           }
         },
         {
-          text: this.translateMessage('DELETE'),
+          text: this.commonUtilService.translateMessage('DELETE'),
           cssClass: 'alert-btn-delete',
           handler: () => {
             this.onSubmit(true);
@@ -216,7 +190,7 @@ export class FormEducation {
       ]
     });
     confirm.present();
-    let deregisterBackButton = this.platform.registerBackButtonAction(() => {
+    const deregisterBackButton = this.platform.registerBackButtonAction(() => {
       // dismiss on back press
       confirm.dismiss();
     }, 11);

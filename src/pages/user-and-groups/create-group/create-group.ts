@@ -3,8 +3,7 @@ import { Component } from '@angular/core';
 import {
   IonicPage,
   NavController,
-  NavParams,
-  ToastController
+  NavParams
 } from 'ionic-angular';
 import { FormAndFrameworkUtilService } from '../../profile/formandframeworkutil.service';
 import {
@@ -29,13 +28,7 @@ import { LoadingController } from 'ionic-angular';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 import { PreferenceKey } from '../../../app/app.constant';
-
-/* Interface for the Toast Object */
-export interface ToastOptions {
-  message: string;
-  duration: number;
-  position: string;
-}
+import { CommonUtilService } from '../../../service/common-util.service';
 
 @IonicPage()
 @Component({
@@ -55,21 +48,15 @@ export class CreateGroupPage {
 
   isFormValid = true;
 
-  options: ToastOptions = {
-    message: '',
-    duration: 3000,
-    position: 'bottom'
-  };
-
   /* Options for class ion-select box */
   classOptions = {
-    title: this.translateMessage('CLASS').toLocaleUpperCase(),
+    title: this.commonUtilService.translateMessage('CLASS').toLocaleUpperCase(),
     cssClass: 'select-box'
   };
 
   /* Options for syllabus ion-select box */
   syllabusOptions = {
-    title: this.translateMessage('SYLLABUS').toLocaleUpperCase(),
+    title: this.commonUtilService.translateMessage('SYLLABUS').toLocaleUpperCase(),
     cssClass: 'select-box'
   };
   constructor(
@@ -79,7 +66,7 @@ export class CreateGroupPage {
     private translate: TranslateService,
     private navParams: NavParams,
     private loadingCtrl: LoadingController,
-    private toastCtrl: ToastController,
+    private commonUtilService: CommonUtilService,
     private groupService: GroupService,
     private preference: SharedPreferences,
     private telemetryGeneratorService: TelemetryGeneratorService
@@ -152,7 +139,7 @@ export class CreateGroupPage {
           }
         } else {
           this.loader.dismiss();
-          this.getToast(this.translateMessage('NO_DATA_FOUND')).present();
+          this.commonUtilService.showToast(this.commonUtilService.translateMessage('NO_DATA_FOUND'));
         }
       });
   }
@@ -167,7 +154,7 @@ export class CreateGroupPage {
    */
   navigateToUsersList() {
     if (!this.isFormValid) {
-      this.getToast(this.translateMessage('NEED_INTERNET_TO_CHANGE')).present();
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
       return;
     }
 
@@ -194,7 +181,7 @@ export class CreateGroupPage {
         group: this.group
       });
     } else {
-      this.getToast(this.translateMessage('ENTER_GROUP_NAME')).present();
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('ENTER_GROUP_NAME'));
     }
   }
 
@@ -203,10 +190,9 @@ export class CreateGroupPage {
  */
   updateGroup() {
     if (!this.isFormValid) {
-      this.getToast(this.translateMessage('NEED_INTERNET_TO_CHANGE')).present();
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
       return;
     }
-
 
     const formValue = this.groupEditForm.value;
     if (formValue.name) {
@@ -245,7 +231,7 @@ export class CreateGroupPage {
           console.log('Error : ' + error);
         });
     } else {
-      this.getToast(this.translateMessage('ENTER_GROUP_NAME')).present();
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('ENTER_GROUP_NAME'));
     }
   }
 
@@ -288,25 +274,9 @@ export class CreateGroupPage {
       .catch(error => {
         this.loader.dismiss();
         this.isFormValid = false;
-        this.getToast(this.translateMessage('NEED_INTERNET_TO_CHANGE')).present();
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
         console.log('Error : ' + error);
       });
-  }
-
-  /**
-   * Used to Translate message to current Language
-   * @param {string} messageConst - Message Constant to be translated
-   * @param {string} field - The field to be added in the language constant
-   * @returns {string} translatedMsg - Translated Message
-   */
-  translateMessage(messageConst: string, field?: string): string {
-    let translatedMsg = '';
-    this.translate.get(messageConst, { '%s': field }).subscribe(
-      (value: any) => {
-        translatedMsg = value;
-      }
-    );
-    return translatedMsg;
   }
 
   /**
@@ -319,14 +289,4 @@ export class CreateGroupPage {
     });
   }
 
-  /** It will returns Toast Object
-   * @param {message} string - Message for the Toast to show
-   * @returns {object} - toast Object
-   */
-  getToast(message: string = ''): any {
-    this.options.message = message;
-    if (message.length) {
-    return this.toastCtrl.create(this.options);
-  }
-  }
 }

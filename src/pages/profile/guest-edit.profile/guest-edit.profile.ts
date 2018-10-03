@@ -31,8 +31,7 @@ import {
   ObjectType,
   ProfileType,
   ContainerService,
-  TabsPage,
-  GetProfileRequest
+  TabsPage
 } from 'sunbird';
 import { FormAndFrameworkUtilService } from '../formandframeworkutil.service';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
@@ -44,13 +43,6 @@ import {
 import { AppGlobalService } from '../../../service/app-global.service';
 import { CommonUtilService } from '../../../service/common-util.service';
 import { PreferenceKey } from '../../../app/app.constant';
-
-/* Interface for the Toast Object */
-export interface ToastOptions {
-  message: string;
-  duration: number;
-  position: string;
-}
 
 @Component({
   selector: 'page-guest-edit.profile',
@@ -106,8 +98,7 @@ export class GuestEditProfilePage {
   constructor(
     private navCtrl: NavController,
     private fb: FormBuilder,
-    public navParams: NavParams,
-    private toastCtrl: ToastController,
+    private navParams: NavParams,
     private loadingCtrl: LoadingController,
     private profileService: ProfileService,
     private translate: TranslateService,
@@ -140,7 +131,7 @@ export class GuestEditProfilePage {
       });
 
     } else {
-      this.profile = this.navParams.get('profile') || {}
+      this.profile = this.navParams.get('profile') || {};
       this.guestEditForm = this.fb.group({
         name: [this.profile.handle || ''],
         profileType: [this.profile.profileType || 'STUDENT'],
@@ -169,7 +160,7 @@ export class GuestEditProfilePage {
       PageId.CREATE_USER
     );
 
-    // auto fill alert is called when it is new user , profile and profile.name is present 
+    // auto fill alert is called when it is new user , profile and profile.name is present
     if (this.isNewUser && this.profile && this.profile.handle) {
       this.showAutoFillAlert();
     }
@@ -185,10 +176,10 @@ export class GuestEditProfilePage {
   ionViewWillLeave() {
     this.unregisterBackButton();
   }
-  // shows auto fill alert on load 
+  // shows auto fill alert on load
   showAutoFillAlert() {
     this.isEditData = true;
-    let alert = this.alertCtrl.create({
+    const alert = this.alertCtrl.create({
       title: this.commonUtilService.translateMessage('PREVIOUS_USER_SETTINGS'),
       mode: 'wp',
       cssClass: 'confirm-alert',
@@ -236,7 +227,7 @@ export class GuestEditProfilePage {
    * It will Dismiss active popup
    */
   dismissPopup() {
-    let activePortal = this.ionicApp._modalPortal.getActive() ||
+    const activePortal = this.ionicApp._modalPortal.getActive() ||
       this.ionicApp._toastPortal.getActive() ||
       this.ionicApp._overlayPortal.getActive();
 
@@ -255,8 +246,8 @@ export class GuestEditProfilePage {
       .then((result) => {
         if (result && result !== undefined && result.length > 0) {
           result.forEach(element => {
-            //renaming the fields to text, value and checked
-            let value = { 'name': element.name, 'code': element.frameworkId };
+            // renaming the fields to text, value and checked
+            const value = { 'name': element.name, 'code': element.frameworkId };
             this.syllabusList.push(value);
           });
 
@@ -272,7 +263,7 @@ export class GuestEditProfilePage {
               }).catch(() => {
                 this.isFormValid = false;
                 this.loader.dismiss();
-                this.commonUtilService.showToast(this.commonUtilService.translateMessage("NEED_INTERNET_TO_CHANGE"));
+                this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
               });
           } else {
             this.loader.dismiss();
@@ -303,7 +294,7 @@ export class GuestEditProfilePage {
         if (req.currentCategory === 'board') {
           this.guestEditForm.patchValue({
             boards: [result[0].code]
-          })
+          });
           this.resetForm(1, false);
         } else if (this.isEditData) {
           this.isEditData = false;
@@ -322,11 +313,10 @@ export class GuestEditProfilePage {
             subjects: this.profile.subject || []
           });
         }
-      })
+      });
   }
 
   checkPrevValue(index = 0, currentField, prevSelectedValue = []) {
-
     if (index === 0) {
       this[currentField] = this.syllabusList;
     } else if (index === 1) {
@@ -337,36 +327,36 @@ export class GuestEditProfilePage {
 
           this.isFormValid = true;
           // loader.dismiss();
-          let request: CategoryRequest = {
+          const request: CategoryRequest = {
             currentCategory: this.categories[0].code,
             selectedLanguage: this.translate.currentLang
-          }
+          };
           this.getCategoryData(request, currentField);
         }).catch(() => {
           this.isFormValid = false;
-          this.commonUtilService.showToast(this.commonUtilService.translateMessage("NEED_INTERNET_TO_CHANGE"));
+          this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
         });
 
     } else {
-      let request: CategoryRequest = {
+      const request: CategoryRequest = {
         currentCategory: this.categories[index - 1].code,
         prevCategory: this.categories[index - 2].code,
         selectedCode: prevSelectedValue,
         selectedLanguage: this.translate.currentLang
-      }
+      };
       this.getCategoryData(request, currentField);
     }
 
   }
 
   /**
-   * This method is added as we are not getting subject value in reset form method 
+   * This method is added as we are not getting subject value in reset form method
    */
   onSubjectChanged(event) {
-    let oldAttribute: any = {};
-    let newAttribute: any = {};
-    oldAttribute.subject = this.profileForTelemetry.subject ? this.profileForTelemetry.subject : "";
-    newAttribute.subject = event ? event : "";
+    const oldAttribute: any = {};
+    const newAttribute: any = {};
+    oldAttribute.subject = this.profileForTelemetry.subject ? this.profileForTelemetry.subject : '';
+    newAttribute.subject = event ? event : '';
     if (!_.isEqual(oldAttribute, newAttribute)) {
       this.appGlobal.generateAttributeChangeTelemetry(oldAttribute, newAttribute);
     }
@@ -374,8 +364,8 @@ export class GuestEditProfilePage {
   }
 
   resetForm(index: number = 0, showloader: boolean): void {
-    let oldAttribute: any = {};
-    let newAttribute: any = {};
+    const oldAttribute: any = {};
+    const newAttribute: any = {};
     switch (index) {
       case 0:
         this.guestEditForm.patchValue({
@@ -398,8 +388,8 @@ export class GuestEditProfilePage {
           medium: []
         });
 
-        oldAttribute.board = this.profileForTelemetry.board ? this.profileForTelemetry.board : "";
-        newAttribute.board = this.guestEditForm.value.boards ? this.guestEditForm.value.boards : "";
+        oldAttribute.board = this.profileForTelemetry.board ? this.profileForTelemetry.board : '';
+        newAttribute.board = this.guestEditForm.value.boards ? this.guestEditForm.value.boards : '';
         if (!_.isEqual(oldAttribute, newAttribute)) {
           this.appGlobal.generateAttributeChangeTelemetry(oldAttribute, newAttribute);
         }
@@ -412,8 +402,8 @@ export class GuestEditProfilePage {
           subjects: [],
           grades: [],
         });
-        oldAttribute.medium = this.profileForTelemetry.medium ? this.profileForTelemetry.medium : "";
-        newAttribute.medium = this.guestEditForm.value.medium ? this.guestEditForm.value.medium : "";
+        oldAttribute.medium = this.profileForTelemetry.medium ? this.profileForTelemetry.medium : '';
+        newAttribute.medium = this.guestEditForm.value.medium ? this.guestEditForm.value.medium : '';
         if (!_.isEqual(oldAttribute, newAttribute)) {
           this.appGlobal.generateAttributeChangeTelemetry(oldAttribute, newAttribute);
         }
@@ -424,18 +414,15 @@ export class GuestEditProfilePage {
         this.guestEditForm.patchValue({
           subjects: [],
         });
-        oldAttribute.class = this.profileForTelemetry.grade ? this.profileForTelemetry.grade : "";
-        newAttribute.class = this.guestEditForm.value.grades ? this.guestEditForm.value.grades : "";
+        oldAttribute.class = this.profileForTelemetry.grade ? this.profileForTelemetry.grade : '';
+        newAttribute.class = this.guestEditForm.value.grades ? this.guestEditForm.value.grades : '';
         if (!_.isEqual(oldAttribute, newAttribute)) {
           this.appGlobal.generateAttributeChangeTelemetry(oldAttribute, newAttribute);
         }
         this.profileForTelemetry.grade = this.guestEditForm.value.grades;
         this.checkPrevValue(4, 'subjectList', this.guestEditForm.value.grades);
         break;
-
     }
-
-
   }
 
   /**
@@ -444,44 +431,48 @@ export class GuestEditProfilePage {
 
   onSubmit() {
     if (!this.isFormValid) {
-      this.commonUtilService.showToast(this.commonUtilService.translateMessage("NEED_INTERNET_TO_CHANGE"));
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
       return;
     }
 
-    let loader = this.getLoader();
-    let formVal = this.guestEditForm.value;
+    const loader = this.getLoader();
+    const formVal = this.guestEditForm.value;
 
     if (formVal.userType === '') {
       this.commonUtilService.showToast('USER_TYPE_SELECT_WARNING');
       return false;
-    }
-    else if (formVal.boards.length === 0) {
-      this.appGlobal.generateSaveClickedTelemetry(this.extractProfileForTelemetry(formVal), 'failed', PageId.EDIT_USER, InteractSubtype.SAVE_CLICKED);
-      this.commonUtilService.showToast(this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService.translateMessage('BOARD')), false, 'red-toast');
+    } else if (formVal.boards.length === 0) {
+      this.appGlobal.generateSaveClickedTelemetry(
+        this.extractProfileForTelemetry(formVal), 'failed', PageId.EDIT_USER, InteractSubtype.SAVE_CLICKED);
+      this.commonUtilService.showToast(
+        this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService.translateMessage('BOARD')), false, 'red-toast');
       return false;
-    }
-    else if (formVal.medium.length === 0) {
-      this.appGlobal.generateSaveClickedTelemetry(this.extractProfileForTelemetry(formVal), 'failed', PageId.EDIT_USER, InteractSubtype.SAVE_CLICKED);
-      this.commonUtilService.showToast(this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService.translateMessage('MEDIUM')), false, 'red-toast');
+    } else if (formVal.medium.length === 0) {
+      this.appGlobal.generateSaveClickedTelemetry(
+        this.extractProfileForTelemetry(formVal), 'failed', PageId.EDIT_USER, InteractSubtype.SAVE_CLICKED);
+      this.commonUtilService.showToast(
+        this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService.translateMessage('MEDIUM')), false, 'red-toast');
       return false;
-    }
-    else if (formVal.grades.length === 0) {
-      this.appGlobal.generateSaveClickedTelemetry(this.extractProfileForTelemetry(formVal), 'failed', PageId.EDIT_USER, InteractSubtype.SAVE_CLICKED);
-      this.commonUtilService.showToast(this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService.translateMessage('CLASS')), false, 'red-toast');
+    } else if (formVal.grades.length === 0) {
+      this.appGlobal.generateSaveClickedTelemetry(
+        this.extractProfileForTelemetry(formVal), 'failed', PageId.EDIT_USER, InteractSubtype.SAVE_CLICKED);
+      this.commonUtilService.showToast(
+        this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService.translateMessage('CLASS')), false, 'red-toast');
       return false;
-    }
-    else {
+    } else {
       loader.present();
       if (this.isNewUser) {
         this.submitNewUserForm(formVal, loader);
       } else {
         this.submitEditForm(formVal, loader);
       }
-      this.appGlobal.generateSaveClickedTelemetry(this.extractProfileForTelemetry(formVal), 'passed', PageId.EDIT_USER, InteractSubtype.SAVE_CLICKED);
+      this.appGlobal.generateSaveClickedTelemetry(
+        this.extractProfileForTelemetry(formVal), 'passed', PageId.EDIT_USER, InteractSubtype.SAVE_CLICKED);
     }
   }
+
   extractProfileForTelemetry(formVal): any {
-    let profileReq: any = {};
+    const profileReq: any = {};
     profileReq.board = formVal.boards;
     profileReq.grade = formVal.grades;
     profileReq.subject = formVal.subjects;
@@ -491,13 +482,11 @@ export class GuestEditProfilePage {
     return profileReq;
   }
 
-
-
   /**
    * This will submit edit form.
    */
   submitEditForm(formVal, loader): void {
-    let req: Profile = new Profile();
+    const req: Profile = new Profile();
     req.board = formVal.boards;
     req.grade = formVal.grades;
     req.subject = formVal.subjects;
@@ -540,7 +529,7 @@ export class GuestEditProfilePage {
       (err: any) => {
         loader.dismiss();
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_FAILED'));
-        console.log("Err", err);
+        console.log('Err', err);
       });
   }
 
@@ -555,7 +544,7 @@ export class GuestEditProfilePage {
     this.events.publish('refresh:onboardingcard');
 
     if (this.previousProfileType && this.previousProfileType !== formVal.profileType) {
-      if (formVal.profileType == ProfileType.STUDENT) {
+      if (formVal.profileType === ProfileType.STUDENT) {
         this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT);
         initTabs(this.container, GUEST_STUDENT_TABS);
       } else {
@@ -566,11 +555,12 @@ export class GuestEditProfilePage {
       this.app.getRootNav().setRoot(TabsPage);
     }
   }
+
   /**
    * It will submit new user form
    */
   submitNewUserForm(formVal, loader): void {
-    let req: Profile = new Profile();
+    const req: Profile = new Profile();
     req.board = formVal.boards;
     req.grade = formVal.grades;
     req.subject = formVal.subjects;
@@ -583,7 +573,7 @@ export class GuestEditProfilePage {
     if (formVal.grades && formVal.grades.length > 0) {
       formVal.grades.forEach(gradeCode => {
         for (let i = 0; i < this.gradeList.length; i++) {
-          if (this.gradeList[i].code == gradeCode) {
+          if (this.gradeList[i].code === gradeCode) {
             if (!req.gradeValueMap) {
               req.gradeValueMap = {};
             }
@@ -597,12 +587,13 @@ export class GuestEditProfilePage {
     this.profileService.createProfile(req, () => {
       loader.dismiss();
       this.commonUtilService.showToast(this.commonUtilService.translateMessage('USER_CREATED_SUCCESSFULLY'));
-      this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER, InteractSubtype.CREATE_USER_SUCCESS, Environment.USER, PageId.CREATE_USER);
+      this.telemetryGeneratorService.generateInteractTelemetry(
+        InteractType.OTHER, InteractSubtype.CREATE_USER_SUCCESS, Environment.USER, PageId.CREATE_USER);
       this.navCtrl.pop();
     },
       () => {
         loader.dismiss();
-        this.commonUtilService.showToast(this.commonUtilService.translateMessage("FILL_THE_MANDATORY_FIELDS"));
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('FILL_THE_MANDATORY_FIELDS'));
       });
   }
 

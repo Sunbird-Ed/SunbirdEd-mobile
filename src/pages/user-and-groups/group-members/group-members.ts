@@ -23,15 +23,8 @@ import {
   ObjectType
 } from 'sunbird';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
-import { TranslateService } from '@ngx-translate/core';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
-
-/* Interface for the Toast Object */
-export interface ToastOptions {
-  message: string;
-  duration: number;
-  position: string;
-}
+import { CommonUtilService } from '../../../service/common-util.service';
 
 @IonicPage()
 @Component({
@@ -45,12 +38,6 @@ export class GroupMembersPage {
   userSelectionMap: Map<string, boolean> = new Map();
   lastCreatedProfileData: any;
 
-  options: ToastOptions = {
-    message: '',
-    duration: 3000,
-    position: 'bottom'
-  };
-
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -58,12 +45,10 @@ export class GroupMembersPage {
     private profileService: ProfileService,
     private zone: NgZone,
     private loadingCtrl: LoadingController,
-    private toastCtrl: LoadingController,
-    private translate: TranslateService,
+    private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService
   ) {
     this.group = this.navParams.get('group');
-
   }
 
   ionViewDidLoad() {
@@ -182,12 +167,12 @@ export class GroupMembersPage {
       .then(success => {
         console.log(success);
         loader.dismiss();
-        this.getToast(this.translateMessage('GROUP_CREATE_SUCCESS')).present();
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('GROUP_CREATE_SUCCESS'));
         this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 3));
       })
       .catch(error => {
         loader.dismiss();
-        this.getToast(this.translateMessage('SOMETHING_WENT_WRONG')).present();
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('SOMETHING_WENT_WRONG'));
         console.log('Error : ' + error);
         loader.dismiss();
       });
@@ -203,32 +188,6 @@ export class GroupMembersPage {
     });
   }
 
-  /** It will returns Toast Object
-   * @param {message} string - Message for the Toast to show
-   * @returns {object} - toast Object
-   */
-  getToast(message: string = ''): any {
-    this.options.message = message;
-    if (message.length) {
-      return this.toastCtrl.create(this.options);
-    }
-  }
-
-  /**
-   * Used to Translate message to current Language
-   * @param {string} messageConst - Message Constant to be translated
-   * @param {string} field - The field to be added in the language constant
-   * @returns {string} translatedMsg - Translated Message
-   */
-  translateMessage(messageConst: string, field?: string): string {
-    let translatedMsg = '';
-    this.translate.get(messageConst, { '%s': field }).subscribe(
-      (value: any) => {
-        translatedMsg = value;
-      }
-    );
-    return translatedMsg;
-  }
   getGradeNameFromCode(data: Profile | Group): string {
     if (data.grade && data.grade.length > 0) {
       const gradeName = [];

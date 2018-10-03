@@ -6,10 +6,8 @@ import {
   IonicPage,
   NavController,
   NavParams,
-  ToastController,
   AlertController
 } from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
 import {
   Profile,
   ProfileRequest,
@@ -27,15 +25,7 @@ import {
 import { LoadingController } from 'ionic-angular';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
-import { constants } from 'fs';
-
-
-/* Interface for the Toast Object */
-export interface ToastOptions {
-  message: string;
-  duration: number;
-  position: string;
-}
+import { CommonUtilService } from '../../../service/common-util.service';
 
 @IonicPage()
 @Component({
@@ -57,12 +47,6 @@ export class AddOrRemoveGroupUserPage {
   selectedUserLength = '';
   selectedGroupMemberLength = '';
 
-  options: ToastOptions = {
-    message: '',
-    duration: 3000,
-    position: 'bottom'
-  };
-
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -70,8 +54,7 @@ export class AddOrRemoveGroupUserPage {
     private profileService: ProfileService,
     private zone: NgZone,
     private loadingCtrl: LoadingController,
-    private toastCtrl: ToastController,
-    private translate: TranslateService,
+    private commonUtilService: CommonUtilService,
     private alertCtrl: AlertController,
     private telemetryGeneratorService: TelemetryGeneratorService
   ) {
@@ -134,9 +117,9 @@ export class AddOrRemoveGroupUserPage {
     }
     this.memberSelectionMap.set(this.groupMembers[index].uid, value);
   }
+
   goToEditGroup(index) {
     this.navCtrl.push(GuestEditProfilePage, {
-
     });
   }
 
@@ -169,7 +152,6 @@ export class AddOrRemoveGroupUserPage {
       });
     });
   }
-
 
   remove() {
     this.groupMembers.forEach((item) => {
@@ -233,27 +215,26 @@ export class AddOrRemoveGroupUserPage {
       .then((success) => {
         console.log(success);
         loader.dismiss();
-        this.getToast(this.translateMessage('GROUP_MEMBER_ADD_SUCCESS')).present();
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('GROUP_MEMBER_ADD_SUCCESS'));
         this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
       })
       .catch((error) => {
         loader.dismiss();
-        this.getToast(this.translateMessage('SOMETHING_WENT_WRONG')).present();
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('SOMETHING_WENT_WRONG'));
         console.log('Error : ' + error);
         loader.dismiss();
       });
-
   }
 
   deleteUsersFromGroupConfirmBox(length) {
     const alert = this.alertCtrl.create({
-      title: this.translateMessage('REMOVE_MULTIPLE_USERS_FROM_GROUP', length),
+      title: this.commonUtilService.translateMessage('REMOVE_MULTIPLE_USERS_FROM_GROUP', length),
       mode: 'wp',
-      message: this.translateMessage('USER_DELETE_CONFIRM_SECOND_MESSAGE'),
+      message: this.commonUtilService.translateMessage('USER_DELETE_CONFIRM_SECOND_MESSAGE'),
       cssClass: 'confirm-alert',
       buttons: [
         {
-          text: this.translateMessage('CANCEL'),
+          text: this.commonUtilService.translateMessage('CANCEL'),
           role: 'cancel',
           cssClass: 'alert-btn-cancel',
           handler: () => {
@@ -261,7 +242,7 @@ export class AddOrRemoveGroupUserPage {
           }
         },
         {
-          text: this.translateMessage('Yes'),
+          text: this.commonUtilService.translateMessage('Yes'),
           cssClass: 'alert-btn-delete',
           handler: () => {
             this.deleteUsersFromGroup();
@@ -299,12 +280,12 @@ export class AddOrRemoveGroupUserPage {
       .then((success) => {
         console.log(success);
         loader.dismiss();
-        this.getToast(this.translateMessage('GROUP_MEMBER_DELETE_SUCCESS')).present();
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('GROUP_MEMBER_DELETE_SUCCESS'));
         this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
       })
       .catch((error) => {
         loader.dismiss();
-        this.getToast(this.translateMessage('SOMETHING_WENT_WRONG')).present();
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('SOMETHING_WENT_WRONG'));
         console.log('Error : ' + error);
         loader.dismiss();
       });
@@ -320,32 +301,6 @@ export class AddOrRemoveGroupUserPage {
     });
   }
 
-  /** It will returns Toast Object
-   * @param {message} string - Message for the Toast to show
-   * @returns {object} - toast Object
-   */
-  getToast(message: string = ''): any {
-    this.options.message = message;
-    if (message.length) {
-      return this.toastCtrl.create(this.options);
-    }
-  }
-
-  /**
-   * Used to Translate message to current Language
-   * @param {string} messageConst - Message Constant to be translated
-   * @param {string} field - The field to be added in the language constant
-   * @returns {string} translatedMsg - Translated Message
-   */
-  translateMessage(messageConst: string, field?: string): string {
-    let translatedMsg = '';
-    this.translate.get(messageConst, { '%s': field }).subscribe(
-      (value: any) => {
-        translatedMsg = value;
-      }
-    );
-    return translatedMsg;
-  }
   getGradeNameFromCode(data: Profile | Group): string {
     if (data.grade && data.grade.length > 0) {
       const gradeName = [];
