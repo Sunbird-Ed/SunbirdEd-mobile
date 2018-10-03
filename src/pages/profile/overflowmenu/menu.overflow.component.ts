@@ -8,8 +8,8 @@ import {
     App,
     Nav,
     ToastController
-} from "ionic-angular";
-import { SettingsPage } from "../../settings/settings";
+} from 'ionic-angular';
+import { SettingsPage } from '../../settings/settings';
 import {
     OAuthService,
     SharedPreferences,
@@ -18,8 +18,8 @@ import {
     UserSource,
     TabsPage,
     ContainerService
-} from "sunbird";
-import { OnboardingPage } from "../../onboarding/onboarding";
+} from 'sunbird';
+import { OnboardingPage } from '../../onboarding/onboarding';
 import {
     InteractType,
     InteractSubtype,
@@ -27,19 +27,19 @@ import {
     Environment,
     TelemetryService,
     ProfileService
-} from "sunbird";
+} from 'sunbird';
 import {
     initTabs,
     GUEST_STUDENT_TABS,
     GUEST_TEACHER_TABS
 } from '../../../app/module.service';
-import { generateInteractTelemetry } from "../../../app/telemetryutil";
-import { UserAndGroupsPage } from "../../user-and-groups/user-and-groups";
-import { Network } from "@ionic-native/network";
-import { TranslateService } from "@ngx-translate/core";
-import { ReportsPage } from "../../reports/reports";
-import { TelemetryGeneratorService } from "../../../service/telemetry-generator.service";
-import { AppGlobalService } from "../../../service/app-global.service";
+import { generateInteractTelemetry } from '../../../app/telemetryutil';
+import { UserAndGroupsPage } from '../../user-and-groups/user-and-groups';
+import { Network } from '@ionic-native/network';
+import { TranslateService } from '@ngx-translate/core';
+import { ReportsPage } from '../../reports/reports';
+import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
+import { AppGlobalService } from '../../../service/app-global.service';
 import { PreferenceKey } from '../../../app/app.constant';
 
 @Component({
@@ -67,22 +67,22 @@ export class OverflowMenuComponent {
         private appGlobal: AppGlobalService,
         private container: ContainerService
     ) {
-        this.items = this.navParams.get("list");
-        this.profile = this.navParams.get("profile") || {};
+        this.items = this.navParams.get('list');
+        this.profile = this.navParams.get('profile') || {};
     }
 
     showToast() {
-        this.items = this.navParams.get("list") || [];
+        this.items = this.navParams.get('list') || [];
 
     }
 
     close(event, i) {
         this.viewCtrl.dismiss(JSON.stringify({
-            "content": event.target.innerText,
-            "index": i
+            'content': event.target.innerText,
+            'index': i
         }));
         switch (i) {
-            case "USERS_AND_GROUPS":
+            case 'USERS_AND_GROUPS':
                 this.telemetryGeneratorService.generateInteractTelemetry(
                     InteractType.TOUCH,
                     InteractSubtype.USER_GROUP_CLICKED,
@@ -92,7 +92,7 @@ export class OverflowMenuComponent {
                 this.app.getActiveNav().push(UserAndGroupsPage, { profile: this.profile });
                 break;
 
-            case "REPORTS":
+            case 'REPORTS':
                 this.telemetryGeneratorService.generateInteractTelemetry(
                     InteractType.TOUCH,
                     InteractSubtype.REPORTS_CLICKED,
@@ -102,7 +102,7 @@ export class OverflowMenuComponent {
                 this.app.getActiveNav().push(ReportsPage, { profile: this.profile });
                 break;
 
-            case "SETTINGS": {
+            case 'SETTINGS': {
                 this.telemetryService.interact(generateInteractTelemetry(
                     InteractType.TOUCH,
                     InteractSubtype.SETTINGS_CLICKED,
@@ -115,30 +115,29 @@ export class OverflowMenuComponent {
                 this.app.getActiveNav().push(SettingsPage);
                 break;
             }
-            case "LOGOUT":
+            case 'LOGOUT':
                 if (this.network.type === 'none') {
-                    let toast = this.toastCtrl.create({
-                        message: this.translateMessage("NEED_INTERNET_TO_CHANGE"),
+                    const toast = this.toastCtrl.create({
+                        message: this.translateMessage('NEED_INTERNET_TO_CHANGE'),
                         duration: 2000,
                         position: 'bottom'
                     });
                     toast.present();
-                }
-                else {
+                } else {
                     this.generateLogoutInteractTelemetry(InteractType.TOUCH,
-                        InteractSubtype.LOGOUT_INITIATE, "");
+                        InteractSubtype.LOGOUT_INITIATE, '');
                     this.oauth.doLogOut();
                     (<any>window).splashscreen.clearPrefs();
-                    let profile: Profile = new Profile();
+                    const profile: Profile = new Profile();
                     this.preferences.getString('GUEST_USER_ID_BEFORE_LOGIN')
                         .then(val => {
-                            if (val != "") {
+                            if (val !== '') {
                                 profile.uid = val;
                             } else {
-                                this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER)
+                                this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER);
                             }
 
-                            profile.handle = "Guest1";
+                            profile.handle = 'Guest1';
                             profile.profileType = ProfileType.TEACHER;
                             profile.source = UserSource.LOCAL;
 
@@ -161,9 +160,9 @@ export class OverflowMenuComponent {
             this.preferences.getString(PreferenceKey.SELECTED_USER_TYPE)
                 .then(val => {
                     this.appGlobal.getGuestUserInfo();
-                    if (val == ProfileType.STUDENT) {
+                    if (val === ProfileType.STUDENT) {
                         initTabs(this.container, GUEST_STUDENT_TABS);
-                    } else if (val == ProfileType.TEACHER) {
+                    } else if (val === ProfileType.TEACHER) {
                         initTabs(this.container, GUEST_TEACHER_TABS);
                     }
                 });
@@ -171,7 +170,7 @@ export class OverflowMenuComponent {
                 loginMode: 'guest'
             });
         }
-        this.generateLogoutInteractTelemetry(InteractType.OTHER, InteractSubtype.LOGOUT_SUCCESS, "");
+        this.generateLogoutInteractTelemetry(InteractType.OTHER, InteractSubtype.LOGOUT_SUCCESS, '');
     }
 
 
@@ -191,8 +190,8 @@ export class OverflowMenuComponent {
     }
 
     generateLogoutInteractTelemetry(interactType, interactSubtype, uid) {
-        let valuesMap = new Map();
-        valuesMap["UID"] = uid;
+        const valuesMap = new Map();
+        valuesMap['UID'] = uid;
         this.telemetryService.interact(
             generateInteractTelemetry(interactType,
                 interactSubtype,

@@ -1,8 +1,18 @@
 import { TranslateService } from '@ngx-translate/core';
-import { LoadingController, ToastController, NavController } from 'ionic-angular';
-import { Component, NgZone, ViewEncapsulation } from '@angular/core';
-import { AuthService, UserProfileService } from 'sunbird';
-
+import {
+  LoadingController,
+  ToastController,
+  NavController
+} from 'ionic-angular';
+import {
+  Component,
+  NgZone,
+  ViewEncapsulation
+} from '@angular/core';
+import {
+  AuthService,
+  UserProfileService
+} from 'sunbird';
 import { ProfilePage } from './../profile';
 import { ProfileConstants } from '../../../app/app.constant';
 
@@ -33,11 +43,11 @@ export class SkillTagsComponent {
    *  This will triggers when page started showing up, and it will internally makes an API call for Skill set
    */
   ionViewWillEnter(): void {
-    let loader = this.getLoader();
+    const loader = this.getLoader();
     loader.present();
     this.authService.getSessionData((session) => {
       if (session === undefined || session == null) {
-        console.error("session is null");
+        console.error('session is null');
         loader.dismiss();
       } else {
         this.userProfileService.getSkills({ refreshProfileSkills: true },
@@ -48,7 +58,7 @@ export class SkillTagsComponent {
             });
           },
           (error: any) => {
-            console.error("Res", error);
+            console.error('Res', error);
             loader.dismiss();
           });
       }
@@ -59,16 +69,16 @@ export class SkillTagsComponent {
    *  Makes an API call of Add Skill
    */
   addSkills(): void {
-    let loader = this.getLoader();
+    const loader = this.getLoader();
     loader.present();
     this.authService.getSessionData((session) => {
       if (session === undefined || session == null) {
-        console.error("session is null");
+        console.error('session is null');
       } else {
-        let req = {
+        const req = {
           userId: JSON.parse(session)[ProfileConstants.USER_TOKEN],
           skills: this.skillTags.map(item => {
-            return item["value"];
+            return item['value'];
           })
         };
 
@@ -80,7 +90,7 @@ export class SkillTagsComponent {
           },
           (error: any) => {
             loader.dismiss();
-            console.error("Res", error);
+            console.error('Res', error);
             this.presentToast(this.translateMessage('SKILL_NOT_ADDED'));
           });
       }
@@ -93,7 +103,7 @@ export class SkillTagsComponent {
 
   /* It returns the object of the Loader */
   getLoader(): any {
-    return this.loadingCtrl.create({ duration: 30000, spinner: "crescent" });
+    return this.loadingCtrl.create({ duration: 30000, spinner: 'crescent' });
   }
 
   /**

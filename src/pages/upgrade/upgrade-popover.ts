@@ -11,7 +11,7 @@ export class UpgradePopover {
 
     upgradeTitle: string;
     upgradeContent: string;
-    isMandatoryUpgrade: boolean = false;
+    isMandatoryUpgrade = false;
 
     constructor(private navParams: NavParams,
         private viewCtrl: ViewController) {
@@ -21,7 +21,7 @@ export class UpgradePopover {
     init() {
         this.upgradeType = this.navParams.get('type');
 
-        if (this.upgradeType.optional === "forceful") {
+        if (this.upgradeType.optional === 'forceful') {
             this.isMandatoryUpgrade = true;
         }
     }
@@ -31,7 +31,7 @@ export class UpgradePopover {
     }
 
     upgrade(link) {
-        let appId = link.substring(link.indexOf("=") + 1, link.lenght);
+        const appId = link.substring(link.indexOf('=') + 1, link.lenght);
         (<any>window).genieSdkUtil.openPlayStore(appId);
         this.viewCtrl.dismiss();
     }
