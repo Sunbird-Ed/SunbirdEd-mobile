@@ -23,7 +23,7 @@ import { TranslateService } from '@ngx-translate/core';
 import {
   ProfileType,
   ProfileService
-} from 'sunbird'
+} from 'sunbird';
 import { Map } from '../../app/telemetryutil';
 import {
   initTabs,
@@ -35,7 +35,7 @@ import { TelemetryGeneratorService } from '../../service/telemetry-generator.ser
 import { CommonUtilService } from '../../service/common-util.service';
 import { PreferenceKey } from '../../app/app.constant';
 import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
-import { UserOnboardingPreferencesPage } from '../user-onboarding-preferences/user-onboarding-preferences';
+import { ProfileSettingsPage } from '../profile-settings/profile-settings';
 
 const selectedCardBorderColor = '#006DE5';
 const borderColor = '#F7F7F7';
@@ -47,20 +47,20 @@ const borderColor = '#F7F7F7';
 
 export class UserTypeSelectionPage {
 
-  teacherCardBorderColor: string = '#F7F7F7';
-  studentCardBorderColor: string = '#F7F7F7';
-  userTypeSelected: boolean = false;
+  teacherCardBorderColor = '#F7F7F7';
+  studentCardBorderColor = '#F7F7F7';
+  userTypeSelected = false;
   selectedUserType: ProfileType;
-  continueAs: string = "";
+  continueAs = '';
   profile: Profile;
 
   /**
    * Contains paths to icons
    */
-  studentImageUri: string = "assets/imgs/ic_student.png";
-  teacherImageUri: string = "assets/imgs/ic_teacher.png";
-  isChangeRoleRequest: boolean = false;
-  showScanner: boolean = false;
+  studentImageUri = 'assets/imgs/ic_student.png';
+  teacherImageUri = 'assets/imgs/ic_teacher.png';
+  isChangeRoleRequest = false;
+  showScanner = false;
 
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
@@ -75,22 +75,21 @@ export class UserTypeSelectionPage {
     private appGlobal: AppGlobalService,
     private scannerService: SunbirdQRScanner
   ) {
-
-    this.profile = this.navParams.get('profile');
-  }
+}
 
   ionViewWillEnter() {
+    this.profile = this.appGlobal.getCurrentUser();
     this.isChangeRoleRequest = Boolean(this.navParams.get('isChangeRoleRequest'));
     this.showScanner = Boolean(this.navParams.get('showScanner'));
     if (this.showScanner) {
-      this.scannerService.startScanner("UserTypeSelectionPage", true);
+      this.scannerService.startScanner('UserTypeSelectionPage', true);
     }
   }
   ionViewDidLoad() {
     this.telemetryGeneratorService.generateImpressionTelemetry(
-      ImpressionType.VIEW, "",
+      ImpressionType.VIEW, '',
       PageId.USER_TYPE_SELECTION,
-      Environment.HOME, "", "", "");
+      Environment.HOME, '', '', '');
   }
 
   selectTeacherCard() {
@@ -111,20 +110,20 @@ export class UserTypeSelectionPage {
       this.studentCardBorderColor = selectedCardBorderColor;
       this.selectedUserType = ProfileType.STUDENT;
       this.continueAs = this.commonUtilService.translateMessage('CONTINUE_AS_ROLE', this.commonUtilService.translateMessage('USER_TYPE_2'));
-      this.preference.putString(PreferenceKey.SELECTED_USER_TYPE, this.selectedUserType)
+      this.preference.putString(PreferenceKey.SELECTED_USER_TYPE, this.selectedUserType);
     });
   }
 
   continue() {
     this.generateInteractEvent(this.selectedUserType);
 
-    //When user is changing the role via the Guest Profile screen
-    if (this.profile !== undefined) {
-      //if role types are same
+    // When user is changing the role via the Guest Profile screen
+    if (this.profile !== undefined && this.profile.handle) {
+      // if role types are same
       if (this.profile.profileType === this.selectedUserType) {
         this.gotoTabsPage();
       } else {
-        let updateRequest = new Profile();
+        const updateRequest = new Profile();
 
         updateRequest.handle = this.profile.handle;
         updateRequest.avatar = this.profile.avatar;
@@ -144,8 +143,8 @@ export class UserTypeSelectionPage {
       }
     } else {
 
-      let profileRequest = new Profile();
-      profileRequest.handle = "Guest1";
+      const profileRequest = new Profile();
+      profileRequest.handle = 'Guest1';
       profileRequest.profileType = this.selectedUserType;
       profileRequest.source = UserSource.LOCAL;
 
@@ -156,42 +155,44 @@ export class UserTypeSelectionPage {
   updateProfile(updateRequest: any) {
     this.profileService.updateProfile(updateRequest,
       () => {
-        this.gotoTabsPage();
+        this.gotoTabsPage(true);
       },
       (err: any) => {
-        console.log("Err", err);
+        console.log('Err', err);
       });
   }
-
+// TODO Remove getCurrentUser as setCurrentProfile is returning uid
   setProfile(profileRequest: any) {
     this.profileService.setCurrentProfile(true, profileRequest, () => {
       this.profileService.getCurrentUser(success => {
-        let userId = JSON.parse(success).uid;
-        if (userId !== "null")
+        const userId = JSON.parse(success).uid;
+        this.event.publish(AppGlobalService.USER_INFO_UPDATED);
+        if (userId !== 'null') {
           this.preference.putString('GUEST_USER_ID_BEFORE_LOGIN', userId);
+        }
         this.gotoTabsPage();
       }, error => {
-        console.error("Error", error);
-        return "null";
+        console.error('Error', error);
+        return 'null';
       });
     },
       err => {
-        console.error("Error", err);
+        console.error('Error', err);
       });
   }
 
-  gotoTabsPage() {
+  gotoTabsPage(isUserTypeChanged: boolean = false) {
     // Update the Global variable in the AppGlobalService
     this.event.publish(AppGlobalService.USER_INFO_UPDATED);
 
-    if (this.selectedUserType == ProfileType.TEACHER) {
+    if (this.selectedUserType === ProfileType.TEACHER) {
       initTabs(this.container, GUEST_TEACHER_TABS);
-    } else if (this.selectedUserType == ProfileType.STUDENT) {
+    } else if (this.selectedUserType === ProfileType.STUDENT) {
       initTabs(this.container, GUEST_STUDENT_TABS);
     }
 
-    if (this.isChangeRoleRequest) {
-      this.navCtrl.push(UserOnboardingPreferencesPage);
+    if (this.isChangeRoleRequest && isUserTypeChanged) {
+      this.navCtrl.push(ProfileSettingsPage);
     } else if (this.appGlobal.isOnBoardingCompleted) {
       this.navCtrl.push(TabsPage, {
         loginMode: 'guest'
@@ -202,8 +203,8 @@ export class UserTypeSelectionPage {
   }
 
   generateInteractEvent(userType) {
-    let values = new Map();
-    values["UserType"] = userType;
+    const values = new Map();
+    values['UserType'] = userType;
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.CONTINUE_CLICKED,

@@ -1,21 +1,15 @@
 import { TestBed, inject } from '@angular/core/testing';
 import { } from 'jasmine';
 import { SunbirdQRScanner } from '../pages/qrscanner/sunbirdqrscanner.service';
-import {
-  TranslateService, TranslateModule,
-  TranslateLoader, TranslateFakeLoader
-} from '@ngx-translate/core';
+import { TranslateService, TranslateModule, TranslateLoader, TranslateFakeLoader } from '@ngx-translate/core';
 import { PopoverController, DeepLinker } from 'ionic-angular';
 import { App } from 'ionic-angular';
 import { Config } from 'ionic-angular';
 import { Platform } from 'ionic-angular';
-import { ToastControllerMockNew, PopoverControllerMock } from '../../test-config/mocks-ionic';
+import { ToastControllerMockNew, TranslateLoaderMock, PopoverControllerMock } from '../../test-config/mocks-ionic';
 import { ConfigMock, NetworkMock } from 'ionic-mocks';
-import {
-  TelemetryService, ServiceProvider, PermissionService,
-  ContentService, PageId, InteractSubtype, Environment, InteractType,
-  ImpressionType, ImpressionSubtype, TelemetryObject, Mode
-} from 'sunbird';
+import { TelemetryService, ServiceProvider, PermissionService, ContentService, PageId, InteractSubtype,
+         Environment, InteractType, ImpressionType, ImpressionSubtype, TelemetryObject, Mode } from 'sunbird';
 import { Network } from '@ionic-native/network';
 import { ToastController } from 'ionic-angular';
 import { QRScannerResultHandler } from '../pages/qrscanner/qrscanresulthandler.service';

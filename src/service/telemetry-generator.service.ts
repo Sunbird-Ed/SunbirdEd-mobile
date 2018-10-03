@@ -21,9 +21,8 @@ export class TelemetryGeneratorService {
     constructor(private telemetryService: TelemetryService) {
     }
 
-    generateInteractTelemetry(interactType, subType, env, pageId, object?: TelemetryObject,
-        values?: Map, rollup?: Rollup, corRelationList?: Array<CorrelationData>) {
-
+    generateInteractTelemetry(interactType, subType, env, pageId, object?: TelemetryObject, values?: Map,
+         rollup?: Rollup, corRelationList?: Array<CorrelationData>) {
         const interact = new Interact();
         interact.type = interactType;
         interact.subType = subType;
@@ -55,8 +54,7 @@ export class TelemetryGeneratorService {
     }
 
     generateImpressionTelemetry(type, subtype, pageid, env, objectId?: string, objectType?: string,
-        objectVersion?: string, rollup?: Rollup, corRelationList?: Array<CorrelationData>) {
-
+         objectVersion?: string, rollup?: Rollup, corRelationList?: Array<CorrelationData>) {
         const impression = new Impression();
         impression.type = type;
         impression.subType = subtype;
@@ -75,9 +73,7 @@ export class TelemetryGeneratorService {
         this.telemetryService.impression(impression);
     }
 
-    generateEndTelemetry(type, mode, pageId, env, object?: TelemetryObject, rollup?: Rollup,
-        corRelationList?: Array<CorrelationData>) {
-
+    generateEndTelemetry(type, mode, pageId, env, object?: TelemetryObject, rollup?: Rollup, corRelationList?: Array<CorrelationData>) {
         const end = new End();
         end.type = type;
         end.pageId = pageId;
@@ -103,9 +99,7 @@ export class TelemetryGeneratorService {
         this.telemetryService.end(end);
     }
 
-    generateStartTelemetry(pageId, object?: TelemetryObject, rollup?: Rollup,
-        corRelationList?: Array<CorrelationData>) {
-
+    generateStartTelemetry(pageId, object?: TelemetryObject, rollup?: Rollup, corRelationList?: Array<CorrelationData>) {
         const start = new Start();
         start.type = object.type;
         start.pageId = pageId;

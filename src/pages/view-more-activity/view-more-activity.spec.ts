@@ -1,5 +1,5 @@
-import { async, TestBed, ComponentFixture, inject } from "@angular/core/testing";
-import { TranslateService, TranslateModule, TranslateLoader } from "@ngx-translate/core";
+import { async, TestBed, ComponentFixture, inject } from '@angular/core/testing';
+import { TranslateService, TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import {
     NavController, Events, IonicModule, NavParams, LoadingController
 } from 'ionic-angular';
@@ -10,32 +10,32 @@ import {
 
 import {
     SharedPreferences, FrameworkModule, ContentService, TelemetryService, CourseService, ShareUtil
-} from "sunbird";
+} from 'sunbird';
 
 import {
     SharedPreferencesMock, NavParamsMock,
     NavMock, TranslateLoaderMock, AppGlobalServiceMock, LoadingControllerMock, NavParamsMockNew
 } from '../../../test-config/mocks-ionic';
-import { PBHorizontal } from "../../component/pbhorizontal/pb-horizontal";
+import { PBHorizontal } from '../../component/pbhorizontal/pb-horizontal';
 import { OnboardingCardComponent } from '../../component/onboarding-card/onboarding-card';
-import { CourseCard } from "../../component/card/course/course-card";
+import { CourseCard } from '../../component/card/course/course-card';
 import { SignInCardComponent } from '../../component/sign-in-card/sign-in-card';
 import { Network } from '@ionic-native/network';
-import { AppGlobalService } from "../../service/app-global.service";
-import { PipesModule } from "../../pipes/pipes.module";
-import { HttpClientModule } from "@angular/common/http";
-import { DirectivesModule } from "../../directives/directives.module";
-import { Ionic2RatingModule } from "ionic2-rating";
+import { AppGlobalService } from '../../service/app-global.service';
+import { PipesModule } from '../../pipes/pipes.module';
+import { HttpClientModule } from '@angular/common/http';
+import { DirectivesModule } from '../../directives/directives.module';
+import { Ionic2RatingModule } from 'ionic2-rating';
 import { } from 'jasmine';
-import { SunbirdQRScanner } from "../qrscanner/sunbirdqrscanner.service";
-import { AppVersion } from "@ionic-native/app-version";
-import { CommonUtilService } from "../../service/common-util.service";
-import { TelemetryGeneratorService } from "../../service/telemetry-generator.service";
-import { ViewMoreActivityPage } from "./view-more-activity";
-import { NO_ERRORS_SCHEMA } from "@angular/core";
-import { CourseUtilService } from "../../service/course-util.service";
-import { mockRes } from "../view-more-activity/view-more-activity.spec.data";
-import { ContentDetailsPage } from "../content-details/content-details";
+import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
+import { AppVersion } from '@ionic-native/app-version';
+import { CommonUtilService } from '../../service/common-util.service';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { ViewMoreActivityPage } from './view-more-activity';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { CourseUtilService } from '../../service/course-util.service';
+import { mockRes } from '../view-more-activity/view-more-activity.spec.data';
+import { ContentDetailsPage } from '../content-details/content-details';
 describe('ViewMoreActivityPage Component', () => {
     let component: ViewMoreActivityPage;
     let fixture: ComponentFixture<ViewMoreActivityPage>;
@@ -71,7 +71,7 @@ describe('ViewMoreActivityPage Component', () => {
                 { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() },
 
             ]
-        })
+        });
     }));
 
     beforeEach(() => {
@@ -81,7 +81,7 @@ describe('ViewMoreActivityPage Component', () => {
         component = fixture.componentInstance;
         component.tabBarElement = {};
         component.tabBarElement.style = {};
-        component.resumeContentData = { lastReadContentId: "SAMPLE_LAST_READ_ID", batchId: "SAMPLE_BATCH_ID", contentId: "SAMPLE_ID" };
+        component.resumeContentData = { lastReadContentId: 'SAMPLE_LAST_READ_ID', batchId: 'SAMPLE_BATCH_ID', contentId: 'SAMPLE_ID' };
 
     });
 
@@ -89,13 +89,13 @@ describe('ViewMoreActivityPage Component', () => {
         inject([TranslateService], (service) => {
             translateService = service;
             translateService.use('en');
-        })
+        });
     });
 
     it('#ionViewCanLeave should unsubscribe genie events', () => {
         const events = TestBed.get(Events);
         spyOn(events, 'unsubscribe');
-        component.pageType = 'enrolledCourse'
+        component.pageType = 'enrolledCourse';
         component.ionViewCanLeave();
         expect(component.isLoadMore).toBe(false);
         expect(component.pageType).toBe('enrolledCourse');
@@ -107,29 +107,29 @@ describe('ViewMoreActivityPage Component', () => {
         expect(component.tabBarElement.style.display).toBe('none');
     });
 
-    it("#subscribeGenieEvent should update the download progress when download progress event comes", function () {
+    it('#subscribeGenieEvent should update the download progress when download progress event comes', () => {
         const events = TestBed.get(Events);
-        spyOn(events, 'subscribe').and.callFake(function ({ }, success) {
+        spyOn(events, 'subscribe').and.callFake(({ }, success) => {
             return success(mockRes.downloadProgressEventSample1);
         });
         component.subscribeGenieEvent();
         expect(component.downloadPercentage).toBe(10);
     });
 
-    it("#subscribeGenieEvent should update the progress to 0 if API gives response -1", function () {
+    it('#subscribeGenieEvent should update the progress to 0 if API gives response -1', () => {
         const events = TestBed.get(Events);
-        spyOn(events, 'subscribe').and.callFake(function ({ }, success) {
+        spyOn(events, 'subscribe').and.callFake(({ }, success) => {
             return success(mockRes.downloadProgressEventSample2);
         });
         component.subscribeGenieEvent();
         expect(component.downloadPercentage).toBe(0);
     });
 
-    it("#subscribeGenieEvent should  mark download as complete and navigate to content details page", function () {
+    it('#subscribeGenieEvent should  mark download as complete and navigate to content details page', () => {
         const events = TestBed.get(Events);
         const navController = TestBed.get(NavController);
         spyOn(navController, 'push');
-        spyOn(events, 'subscribe').and.callFake(function ({ }, success) {
+        spyOn(events, 'subscribe').and.callFake(({ }, success) => {
             return success(mockRes.importCompleteEvent);
         });
 
@@ -137,11 +137,11 @@ describe('ViewMoreActivityPage Component', () => {
         component.subscribeGenieEvent();
         expect(component.showOverlay).toBe(false);
         expect(navController.push).toHaveBeenCalledWith(ContentDetailsPage, {
-            content: { identifier: "SAMPLE_LAST_READ_ID" },
+            content: { identifier: 'SAMPLE_LAST_READ_ID' },
             depth: '1',
             contentState: {
-                batchId: "SAMPLE_BATCH_ID",
-                courseId: "SAMPLE_ID"
+                batchId: 'SAMPLE_BATCH_ID',
+                courseId: 'SAMPLE_ID'
             },
             isResumedCourse: true,
             isChildContent: true,
@@ -150,12 +150,12 @@ describe('ViewMoreActivityPage Component', () => {
         );
     });
 
-    it("#importContent should populate queuedIdentifier for successfull API calls", function (done) {
+    it('#importContent should populate queuedIdentifier for successfull API calls', (done) => {
         const contentService = TestBed.get(ContentService);
         const courseUtilService = TestBed.get(CourseUtilService);
-        spyOn(courseUtilService, 'getImportContentRequestBody').and.returnValue("");
-        spyOn(contentService, 'importContent').and.callFake(function ({ }, success) {
-            let data = JSON.stringify((mockRes.enqueuedImportContentResponse))
+        spyOn(courseUtilService, 'getImportContentRequestBody').and.returnValue('');
+        spyOn(contentService, 'importContent').and.callFake(({ }, success) => {
+            const data = JSON.stringify((mockRes.enqueuedImportContentResponse));
             return success(data);
         });
         component.importContent(['SAMPLE_ID'], false);
@@ -166,14 +166,14 @@ describe('ViewMoreActivityPage Component', () => {
 
     });
 
-    it("#importContent should show error if nothing is added in queuedIdentifiers ", function () {
+    it('#importContent should show error if nothing is added in queuedIdentifiers ', () => {
         const contentService = TestBed.get(ContentService);
         const commonUtilService = TestBed.get(CommonUtilService);
         const courseUtilService = TestBed.get(CourseUtilService);
-        spyOn(courseUtilService, 'getImportContentRequestBody').and.returnValue("");
+        spyOn(courseUtilService, 'getImportContentRequestBody').and.returnValue('');
         spyOn(commonUtilService, 'showToast');
-        spyOn(contentService, 'importContent').and.callFake(function ({ }, success) {
-            let data = JSON.stringify((mockRes.enqueuedOthersImportContentResponse))
+        spyOn(contentService, 'importContent').and.callFake(({ }, success) => {
+            const data = JSON.stringify((mockRes.enqueuedOthersImportContentResponse));
             return success(data);
         });
         component.importContent(['SAMPLE_ID'], false);
@@ -181,14 +181,14 @@ describe('ViewMoreActivityPage Component', () => {
         expect(commonUtilService.showToast).toHaveBeenCalledWith('ERROR_CONTENT_NOT_AVAILABLE');
     });
 
-    it("#importContent should show error toast if failure response from importContent API", function () {
+    it('#importContent should show error toast if failure response from importContent API', () => {
         const contentService = TestBed.get(ContentService);
         const commonUtilService = TestBed.get(CommonUtilService);
         const courseUtilService = TestBed.get(CourseUtilService);
-        spyOn(courseUtilService, 'getImportContentRequestBody').and.returnValue("");
+        spyOn(courseUtilService, 'getImportContentRequestBody').and.returnValue('');
         spyOn(commonUtilService, 'showToast');
-        spyOn(contentService, 'importContent').and.callFake(function ({ }, success, error) {
-            let data = JSON.stringify((mockRes.enqueuedOthersImportContentResponse))
+        spyOn(contentService, 'importContent').and.callFake(({ }, success, error) => {
+            const data = JSON.stringify((mockRes.enqueuedOthersImportContentResponse));
             return error(data);
         });
         component.importContent(['SAMPLE_ID'], false);
@@ -196,21 +196,21 @@ describe('ViewMoreActivityPage Component', () => {
         expect(commonUtilService.showToast).toHaveBeenCalledWith('ERROR_CONTENT_NOT_AVAILABLE');
     });
 
-    it("#getContentDetails should navigate to content details page if content is locally available", function () {
+    it('#getContentDetails should navigate to content details page if content is locally available', () => {
         const contentService = TestBed.get(ContentService);
         const navController = TestBed.get(NavController);
         spyOn(navController, 'push');
-        spyOn(contentService, 'getContentDetail').and.callFake(function ({ }, success) {
-            let data = JSON.stringify((mockRes.contentDetailsResponse))
+        spyOn(contentService, 'getContentDetail').and.callFake(({ }, success) => {
+            const data = JSON.stringify((mockRes.contentDetailsResponse));
             return success(data);
         });
         component.getContentDetails(component.resumeContentData);
         expect(navController.push).toHaveBeenCalledWith(ContentDetailsPage, {
-            content: { identifier: "SAMPLE_LAST_READ_ID" },
+            content: { identifier: 'SAMPLE_LAST_READ_ID' },
             depth: '1',
             contentState: {
-                batchId: "SAMPLE_BATCH_ID",
-                courseId: "SAMPLE_ID"
+                batchId: 'SAMPLE_BATCH_ID',
+                courseId: 'SAMPLE_ID'
             },
             isResumedCourse: true,
             isChildContent: true,
@@ -219,14 +219,14 @@ describe('ViewMoreActivityPage Component', () => {
         );
     });
 
-    it("#getContentDetails should download the content if content is locally not available", function () {
+    it('#getContentDetails should download the content if content is locally not available', () => {
         const contentService = TestBed.get(ContentService);
         const navController = TestBed.get(NavController);
         spyOn(navController, 'push');
         spyOn(component, 'subscribeGenieEvent');
         spyOn(component, 'importContent').and.callFake(() => { });
-        spyOn(contentService, 'getContentDetail').and.callFake(function ({ }, success) {
-            let data = JSON.stringify((mockRes.locallyNotAvailableContentDetailsResponse))
+        spyOn(contentService, 'getContentDetail').and.callFake(({ }, success) => {
+            const data = JSON.stringify((mockRes.locallyNotAvailableContentDetailsResponse));
             return success(data);
         });
         component.getContentDetails(component.resumeContentData);
@@ -235,13 +235,13 @@ describe('ViewMoreActivityPage Component', () => {
     });
 
 
-    it("#getContentDetails should handle error response from getContentDetails API", function () {
+    it('#getContentDetails should handle error response from getContentDetails API', () => {
         const contentService = TestBed.get(ContentService);
         const navController = TestBed.get(NavController);
         spyOn(navController, 'push');
         spyOn(component, 'subscribeGenieEvent');
         spyOn(component, 'importContent').and.callFake(() => { });
-        spyOn(contentService, 'getContentDetail').and.callFake(function ({ }, success, error) {
+        spyOn(contentService, 'getContentDetail').and.callFake(({ }, success, error) => {
             return error();
         });
         component.getContentDetails(component.resumeContentData);
@@ -270,10 +270,10 @@ describe('ViewMoreActivityPage Component', () => {
         }, 5);
     });
 
-    it("#getEnrolledCourse should invoke getEnrolled courses API successfully", function () {
+    it('#getEnrolledCourse should invoke getEnrolled courses API successfully', () => {
         const courseService = TestBed.get(CourseService);
-        spyOn(courseService, 'getEnrolledCourses').and.callFake(function (option, success) {
-            let data = JSON.stringify(mockRes.getEnrolledCourses);
+        spyOn(courseService, 'getEnrolledCourses').and.callFake((option, success) => {
+            const data = JSON.stringify(mockRes.getEnrolledCourses);
             return success(data);
         });
         component.getEnrolledCourse();
@@ -281,59 +281,59 @@ describe('ViewMoreActivityPage Component', () => {
         expect(component.loadMoreBtn).toBe(false);
     });
 
-    it("#getEnrolledCourse should handle error response from getEnrolled courses API ", function () {
+    it('#getEnrolledCourse should handle error response from getEnrolled courses API ', () => {
         const courseService = TestBed.get(CourseService);
-        spyOn(courseService, 'getEnrolledCourses').and.callFake(function (option, success,error) {
+        spyOn(courseService, 'getEnrolledCourses').and.callFake((option, success, error) => {
             return error();
         });
         component.getEnrolledCourse();
         expect(component.searchList).toBeUndefined();
     });
 
-    it("#cancelDownload should cancel the download successfully ", function () {
+    it('#cancelDownload should cancel the download successfully ', () => {
         const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'cancelDownload').and.callFake(function (option, success) {
+        spyOn(contentService, 'cancelDownload').and.callFake((option, success) => {
             return success();
         });
         component.cancelDownload();
         expect(component.showOverlay).toBe(false);
     });
 
-    it("#cancelDownload should handle the error scenarios returned from cancelDownload API", function () {
+    it('#cancelDownload should handle the error scenarios returned from cancelDownload API', () => {
         const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'cancelDownload').and.callFake(function (option, success,error) {
+        spyOn(contentService, 'cancelDownload').and.callFake((option, success, error) => {
             return error();
         });
         component.cancelDownload();
         expect(component.showOverlay).toBe(false);
     });
 
-    it("#search should invoke search API successfully", function () {
+    it('#search should invoke search API successfully', () => {
         const contentService = TestBed.get(ContentService);
         const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
-        spyOn(telemetryGeneratorService,'generateImpressionTelemetry').and.callFake(()=>{});
-        spyOn(telemetryGeneratorService,'generateLogEvent').and.callFake(()=>{});
-        spyOn(contentService, 'getSearchCriteriaFromRequest').and.callFake(function (option, success) {
+        spyOn(telemetryGeneratorService, 'generateImpressionTelemetry').and.callFake(() => {});
+        spyOn(telemetryGeneratorService, 'generateLogEvent').and.callFake(() => {});
+        spyOn(contentService, 'getSearchCriteriaFromRequest').and.callFake((option, success) => {
             return success(JSON.stringify(mockRes.searchCriteriaResponse));
         });
 
-        spyOn(contentService, 'searchContent').and.callFake(function (reqBody, boolean1, boolean2, boolean3, success, error) {
+        spyOn(contentService, 'searchContent').and.callFake((reqBody, boolean1, boolean2, boolean3, success, error) => {
             return success(JSON.stringify(mockRes.searchResponse));
         });
         component.search();
         expect(component.searchList.length).toBe(2);
     });
 
-    it("#search should populate search list if loadMore parameter is true", function () {
+    it('#search should populate search list if loadMore parameter is true', () => {
         const contentService = TestBed.get(ContentService);
         const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
-        spyOn(telemetryGeneratorService,'generateImpressionTelemetry').and.callFake(()=>{});
-        spyOn(telemetryGeneratorService,'generateLogEvent').and.callFake(()=>{});
-        spyOn(contentService, 'getSearchCriteriaFromRequest').and.callFake(function (option, success) {
+        spyOn(telemetryGeneratorService, 'generateImpressionTelemetry').and.callFake(() => {});
+        spyOn(telemetryGeneratorService, 'generateLogEvent').and.callFake(() => {});
+        spyOn(contentService, 'getSearchCriteriaFromRequest').and.callFake((option, success) => {
             return success(JSON.stringify(mockRes.searchCriteriaResponse));
         });
 
-        spyOn(contentService, 'searchContent').and.callFake(function (reqBody, boolean1, boolean2, boolean3, success, error) {
+        spyOn(contentService, 'searchContent').and.callFake((reqBody, boolean1, boolean2, boolean3, success, error) => {
             return success(JSON.stringify(mockRes.searchResponse));
         });
         component.isLoadMore = true;
@@ -342,45 +342,45 @@ describe('ViewMoreActivityPage Component', () => {
         expect(component.searchList.length).toBe(2);
     });
 
-    it("#search should dismiss loader if search API didnt provide any result", function () {
+    it('#search should dismiss loader if search API didnt provide any result', () => {
         const contentService = TestBed.get(ContentService);
         const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
-        spyOn(telemetryGeneratorService,'generateImpressionTelemetry').and.callFake(()=>{});
-        spyOn(telemetryGeneratorService,'generateLogEvent').and.callFake(()=>{});
-        spyOn(contentService, 'getSearchCriteriaFromRequest').and.callFake(function (option, success) {
+        spyOn(telemetryGeneratorService, 'generateImpressionTelemetry').and.callFake(() => {});
+        spyOn(telemetryGeneratorService, 'generateLogEvent').and.callFake(() => {});
+        spyOn(contentService, 'getSearchCriteriaFromRequest').and.callFake((option, success) => {
             return success(JSON.stringify(mockRes.searchCriteriaResponse));
         });
 
-        spyOn(contentService, 'searchContent').and.callFake(function (reqBody, boolean1, boolean2, boolean3, success, error) {
+        spyOn(contentService, 'searchContent').and.callFake((reqBody, boolean1, boolean2, boolean3, success, error) => {
             return success(JSON.stringify({}));
         });
         component.search();
         expect(component.loadMoreBtn).toBe(false);
     });
 
-    it("#search should not invoke search API if getSearchCriteriaFromRequest API gives error response", function () {
+    it('#search should not invoke search API if getSearchCriteriaFromRequest API gives error response', () => {
         const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'getSearchCriteriaFromRequest').and.callFake(function (option, success,error) {
+        spyOn(contentService, 'getSearchCriteriaFromRequest').and.callFake((option, success, error) => {
             return error();
         });
 
-        spyOn(contentService, 'searchContent').and.callFake(function (reqBody, boolean1, boolean2, boolean3, success, error) {
+        spyOn(contentService, 'searchContent').and.callFake((reqBody, boolean1, boolean2, boolean3, success, error) => {
             return success(JSON.stringify({}));
         });
         component.search();
         expect(contentService.searchContent).not.toHaveBeenCalled();
     });
 
-    it("#search should handle error reponse from serach API", function () {
+    it('#search should handle error reponse from serach API', () => {
         const contentService = TestBed.get(ContentService);
         const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
-        spyOn(telemetryGeneratorService,'generateImpressionTelemetry').and.callFake(()=>{});
-        spyOn(telemetryGeneratorService,'generateLogEvent').and.callFake(()=>{});
-        spyOn(contentService, 'getSearchCriteriaFromRequest').and.callFake(function (option, success) {
+        spyOn(telemetryGeneratorService, 'generateImpressionTelemetry').and.callFake(() => {});
+        spyOn(telemetryGeneratorService, 'generateLogEvent').and.callFake(() => {});
+        spyOn(contentService, 'getSearchCriteriaFromRequest').and.callFake((option, success) => {
             return success(JSON.stringify(mockRes.searchCriteriaResponse));
         });
 
-        spyOn(contentService, 'searchContent').and.callFake(function (reqBody, boolean1, boolean2, boolean3, success, error) {
+        spyOn(contentService, 'searchContent').and.callFake((reqBody, boolean1, boolean2, boolean3, success, error) => {
             return error();
         });
         component.search();
@@ -389,69 +389,69 @@ describe('ViewMoreActivityPage Component', () => {
     });
 
 
-    it("#ionViewWillEnter should invoke getEnrolleDCourses when pageName is 'course.EnrolledCourses'", function () {
-        NavParamsMockNew.setParams('pageName', "course.EnrolledCourses");
-        spyOn(component,'getEnrolledCourse').and.callThrough().and.callFake(()=>{});
-        component.headerTitle = "sampleTitle";
+    it('#ionViewWillEnter should invoke getEnrolleDCourses when pageName is \'course.EnrolledCourses\'', () => {
+        NavParamsMockNew.setParams('pageName', 'course.EnrolledCourses');
+        spyOn(component, 'getEnrolledCourse').and.callThrough().and.callFake(() => {});
+        component.headerTitle = 'sampleTitle';
         component.ionViewWillEnter();
         expect(component.getEnrolledCourse).toHaveBeenCalled();
         expect(component.pageType).toBe('enrolledCourse');
     });
 
-    it("#ionViewWillEnter should invoke search API'", function () {
-        NavParamsMockNew.setParams('pageName', "course.PopularContent");
-        spyOn(component,'search').and.callThrough().and.callFake(()=>{});
-        component.headerTitle = "sampleTitle";
+    it('#ionViewWillEnter should invoke search API\'', () => {
+        NavParamsMockNew.setParams('pageName', 'course.PopularContent');
+        spyOn(component, 'search').and.callThrough().and.callFake(() => {});
+        component.headerTitle = 'sampleTitle';
         component.ionViewWillEnter();
         expect(component.search).toHaveBeenCalled();
         expect(component.pageType).toBe('popularCourses');
     });
 
-    it("#ionViewWillEnter should invoke getLocalContents when pageName is 'resource.SavedResources'", function () {
-        NavParamsMockNew.setParams('pageName', "resource.SavedResources");
-        spyOn(component,'getLocalContents').and.callThrough().and.callFake(()=>{});
-        component.headerTitle = "sampleTitle";
+    it('#ionViewWillEnter should invoke getLocalContents when pageName is \'resource.SavedResources\'', () => {
+        NavParamsMockNew.setParams('pageName', 'resource.SavedResources');
+        spyOn(component, 'getLocalContents').and.callThrough().and.callFake(() => {});
+        component.headerTitle = 'sampleTitle';
         component.ionViewWillEnter();
         expect(component.getLocalContents).toHaveBeenCalled();
     });
 
-    it("#ionViewWillEnter should invoke search API'", function () {
-        NavParamsMockNew.setParams('pageName', "resource.SavedResources1");
-        spyOn(component,'search').and.callThrough().and.callFake(()=>{});
-        component.headerTitle = "sampleTitle";
+    it('#ionViewWillEnter should invoke search API\'', () => {
+        NavParamsMockNew.setParams('pageName', 'resource.SavedResources1');
+        spyOn(component, 'search').and.callThrough().and.callFake(() => {});
+        component.headerTitle = 'sampleTitle';
         component.ionViewWillEnter();
         expect(component.search).toHaveBeenCalled();
     });
 
-    it("#subscribeUtilityEvent should invoke getLoalContents API when event is fired", function () {
-        NavParamsMockNew.setParams('pageName', "resource.SavedResources");
+    it('#subscribeUtilityEvent should invoke getLoalContents API when event is fired', () => {
+        NavParamsMockNew.setParams('pageName', 'resource.SavedResources');
         const events = TestBed.get(Events);
-        spyOn(events, 'subscribe').and.callFake(function (arg, success) {
-            if(arg==='savedResources:update'){
-                return success({update:"update"}); 
+        spyOn(events, 'subscribe').and.callFake((arg, success) => {
+            if (arg === 'savedResources:update') {
+                return success({update: 'update'});
             }
-           
+
         });
-        spyOn(component,'getLocalContents').and.callThrough().and.callFake(()=>{});
+        spyOn(component, 'getLocalContents').and.callThrough().and.callFake(() => {});
         component.subscribeUtilityEvents();
         expect(component.getLocalContents).toHaveBeenCalled();
     });
 
-    it("#subscribeUtilityEvent should invoke getContentDetails API when event is fired", function () {
+    it('#subscribeUtilityEvent should invoke getContentDetails API when event is fired', () => {
         const events = TestBed.get(Events);
-        spyOn(events, 'subscribe').and.callFake(function (arg, success) {
-            if(arg==='viewMore:Courseresume'){
-                return success({content:{}}); 
+        spyOn(events, 'subscribe').and.callFake((arg, success) => {
+            if (arg === 'viewMore:Courseresume') {
+                return success({content: {}});
             }
-           
+
         });
-        spyOn(component,'getContentDetails').and.callThrough().and.callFake(()=>{});
+        spyOn(component, 'getContentDetails').and.callThrough().and.callFake(() => {});
         component.subscribeUtilityEvents();
         expect(component.getContentDetails).toHaveBeenCalled();
     });
 
-    it("#loadMore should invoke mapper method", function () {
-        spyOn(component,'mapper').and.callThrough().and.callFake(()=>{});
+    it('#loadMore should invoke mapper method', () => {
+        spyOn(component, 'mapper').and.callThrough().and.callFake(() => {});
         component.loadMore();
         expect(component.mapper).toHaveBeenCalled();
     });

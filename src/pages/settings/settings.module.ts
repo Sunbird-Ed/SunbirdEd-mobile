@@ -11,27 +11,27 @@ import { OnboardingPageModule } from '../onboarding/onboarding.module';
 import { LanguageSettingsPageModule } from '../language-settings/language-settings.module';
 
 @NgModule({
-	declarations: [
-		SettingsPage,
-		DatasyncPage,
-		AboutUsPage,
-		AboutAppPage,
-		PrivacypolicyPage,
-		TermsofservicePage
-	],
-	entryComponents: [
-		DatasyncPage,
-		AboutUsPage,
-		AboutAppPage,
-		PrivacypolicyPage,
-		TermsofservicePage
-	],
-	imports: [
-		OnboardingPageModule,
-		LanguageSettingsPageModule,
-		IonicPageModule.forChild(SettingsPage),
-		TranslateModule.forChild()
-	],
-	exports: [SettingsPage]
+ declarations: [
+    SettingsPage,
+    DatasyncPage,
+    AboutUsPage,
+    AboutAppPage,
+    PrivacypolicyPage,
+    TermsofservicePage
+  ],
+  entryComponents: [
+    DatasyncPage,
+    AboutUsPage,
+    AboutAppPage,
+    PrivacypolicyPage,
+    TermsofservicePage
+  ],
+  imports: [
+    OnboardingPageModule,
+    LanguageSettingsPageModule,
+    IonicPageModule.forChild(SettingsPage),
+    TranslateModule.forChild()
+  ],
+  exports: [SettingsPage]
 })
 export class SettingsPageModule { }
