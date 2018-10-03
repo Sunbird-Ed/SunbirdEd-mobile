@@ -80,6 +80,7 @@ export class PreferenceKey {
     public static readonly SELECTED_LANGUAGE_CODE = 'selected_language_code';
     public static readonly SELECTED_LANGUAGE = 'selected_language';
     public static readonly SELECTED_USER_TYPE = 'selected_user_type';
+    public static readonly IS_ONBOARDING_COMPLETED = 'is_onboarding_settings_completed';
 }
 
 export class GenericAppConfig {

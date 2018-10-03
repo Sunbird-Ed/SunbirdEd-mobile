@@ -64,7 +64,7 @@ export class AppGlobalService {
     guestUserProfile: Profile;
     isGuestUser = false;
     guestProfileType: ProfileType;
-    isOnBoardingCompleted: boolean;
+    isProfileSettingsCompleted: boolean;
 
     session: any;
     public averageTime = 0;
@@ -272,7 +272,7 @@ export class AppGlobalService {
                         this.frameworkData = [];
                         this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
                     });
-                this.getOnboardingCompletionStatus();
+                this.getProfileSettingsStatus();
             } else {
                 this.frameworkData = [];
                 this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
@@ -357,7 +357,7 @@ export class AppGlobalService {
             if (pageId !== PageId.PROFILE) {
                 paramsMap['isOnBoardingPageConfigEnabled'] = this.DISPLAY_ONBOARDING_PAGE;
                 paramsMap['isOnBoardingCardsConfigEnabled'] = this.DISPLAY_ONBOARDING_CARDS;
-                paramsMap['isOnBoardingCompleted'] = isOnBoardingCompleted;
+                paramsMap['isProfileSettingsCompleted'] = isOnBoardingCompleted;
             }
             const profileType = this.getGuestUserType();
             if (profileType === ProfileType.TEACHER) {
@@ -445,16 +445,16 @@ export class AppGlobalService {
         return this.averageScore;
     }
 
-    getOnboardingCompletionStatus(): Promise<any> {
+    getProfileSettingsStatus(): Promise<any> {
         return new Promise((resolve, reject) => {
             const profile = this.getCurrentUser();
-            this.isOnBoardingCompleted = Boolean(this.isGuestUser
+            this.isProfileSettingsCompleted = Boolean(this.isGuestUser
                 && profile
                 && profile.syllabus && profile.syllabus[0]
                 && profile.board && profile.board.length
                 && profile.grade && profile.grade.length
                 && profile.medium && profile.medium.length);
-            resolve(this.isOnBoardingCompleted);
+            resolve(this.isProfileSettingsCompleted);
         });
     }
 }

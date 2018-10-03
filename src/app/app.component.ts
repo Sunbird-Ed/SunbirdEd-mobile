@@ -151,15 +151,15 @@ export class MyApp {
                     && response.board && response.board.length
                     && response.grade && response.grade.length
                     && response.medium && response.medium.length) {
-                    this.appGlobal.isOnBoardingCompleted = true;
+                    this.appGlobal.isProfileSettingsCompleted = true;
                     this.nav.setRoot(TabsPage);
                   } else {
-                    this.appGlobal.isOnBoardingCompleted = false;
+                    this.appGlobal.isProfileSettingsCompleted = false;
                     this.nav.insertPages(0, [{ page: LanguageSettingsPage }, { page: UserTypeSelectionPage }]);
                   }
                 }, error => { });
               } else {
-                this.appGlobal.isOnBoardingCompleted = false;
+                this.appGlobal.isProfileSettingsCompleted = false;
                 that.rootPage = LanguageSettingsPage;
               }
             });

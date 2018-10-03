@@ -193,12 +193,12 @@ export class UserTypeSelectionPage {
 
     if (this.isChangeRoleRequest && isUserTypeChanged) {
       this.navCtrl.push(ProfileSettingsPage);
-    } else if (this.appGlobal.isOnBoardingCompleted) {
+    } else if (this.appGlobal.isProfileSettingsCompleted) {
       this.navCtrl.push(TabsPage, {
         loginMode: 'guest'
       });
     } else {
-      this.scannerService.startScanner(PageId.ONBOARDING_PROFILE_PREFERENCES, true);
+      this.scannerService.startScanner(PageId.USER_TYPE_SELECTION, true);
     }
   }
 

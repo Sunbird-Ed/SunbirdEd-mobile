@@ -26,7 +26,9 @@ import {
   CorrelationData,
   Mode,
   TelemetryObject,
-  PageId
+  PageId,
+  SharedPreferences,
+  TabsPage
 } from 'sunbird';
 import { GenieResponse } from '../settings/datasync/genieresponse';
 import { FilterPage } from './filters/filter';
@@ -39,7 +41,8 @@ import {
   ContentType,
   MimeType,
   Search,
-  AudienceFilter
+  AudienceFilter,
+  PreferenceKey
 } from '../../app/app.constant';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 import { AppGlobalService } from '../../service/app-global.service';
@@ -129,7 +132,8 @@ export class SearchPage {
     private platform: Platform,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private commonUtilService: CommonUtilService,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private preferences: SharedPreferences
   ) {
 
     this.checkUserSession();
@@ -155,28 +159,48 @@ export class SearchPage {
 
   ionViewDidLoad() {
     this.navBar.backButtonClick = () => {
-      this.handleNavBackButton();
+      this.navigateToPreviousPage();
     };
   }
 
-  handleNavBackButton() {
+  navigateToPreviousPage() {
     if (this.shouldGenerateEndTelemetry) {
       this.generateQRSessionEndEvent(this.source, this.dialCode);
     }
+
+    if (this.appGlobal.isGuestUser) {
+      console.log("isGuestUser", this.appGlobal.isGuestUser);
+      this.preferences.getString(PreferenceKey.IS_ONBOARDING_COMPLETED).then((result) => {
+        console.log("IS_ONBOARDING_COMPLETED", result);
+        console.log("this.source", this.source);
+        if (result === 'true' && this.source === PageId.USER_TYPE_SELECTION) {
+          this.navCtrl.setRoot(TabsPage, {
+            loginMode: 'guest'
+          });
+        }
+        else {
+          console.log("isGuestUser else", this.appGlobal.isGuestUser);
+          this.popCurrentPage();
+        }
+      });
+    } else {
+      console.log("isGuestUser  else else", this.appGlobal.isGuestUser);
+      this.popCurrentPage();
+    }
+  }
+
+  popCurrentPage() {
     this.navCtrl.pop();
     this.backButtonFunc();
   }
 
-
   handleDeviceBackButton() {
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
-      this.navCtrl.pop();
-      if (this.shouldGenerateEndTelemetry) {
-        this.generateQRSessionEndEvent(this.source, this.dialCode);
-      }
-      this.backButtonFunc();
+
+      this.navigateToPreviousPage();
     }, 10);
   }
+
 
   openCollection(collection) {
     // TODO: Add mimeType check
@@ -601,18 +625,18 @@ export class SearchPage {
 
     const telemetryObject: TelemetryObject = new TelemetryObject();
     if (dialCode) {
-        telemetryObject.id = dialCode;
-        telemetryObject.type = 'qr';
+      telemetryObject.id = dialCode;
+      telemetryObject.type = 'qr';
     }
 
     this.telemetryGeneratorService.generateInteractTelemetry(
-        InteractType.OTHER,
-        InteractSubtype.QRCodeScanSuccess,
-        Environment.HOME,
-        ImpressionType.SEARCH, telemetryObject,
-        values
+      InteractType.OTHER,
+      InteractSubtype.QRCodeScanSuccess,
+      Environment.HOME,
+      ImpressionType.SEARCH, telemetryObject,
+      values
     );
-}
+  }
 
 
   showContentComingSoonAlert() {
@@ -730,8 +754,8 @@ export class SearchPage {
   }
 
   /**
- * Subscribe genie event to get content download progress
- */
+  * Subscribe genie event to get content download progress
+  */
   subscribeGenieEvent() {
     this.events.subscribe('genie.event', (data) => {
       this.zone.run(() => {
@@ -772,11 +796,11 @@ export class SearchPage {
   }
 
   /**
- * Function to get import content api request params
- *
- * @param {Array<string>} identifiers contains list of content identifier(s)
- * @param {boolean} isChild
- */
+  * Function to get import content api request params
+  *
+  * @param {Array<string>} identifiers contains list of content identifier(s)
+  * @param {boolean} isChild
+  */
   getImportContentRequestBody(identifiers: Array<string>, isChild: boolean) {
     const requestParams = [];
     _.forEach(identifiers, (value) => {
