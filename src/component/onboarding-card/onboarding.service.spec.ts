@@ -1,30 +1,48 @@
-import { selectedSlide } from './../onboarding-alert/onboarding-alert.component.data.spec';
 import { fakeAsync } from '@angular/core/testing';
-import { mockCurrentUserDetails, mockCategories, mockOnBoardingSlideDefaults, mockSyllabusList, mockSyllabusDetails, mockSelectedSlide, mockGetFrameworkDetails, mockSaveDetails } from './onboarding.data.spec';
-import { AppGlobalService } from './../../service/app-global.service';
-import { ServiceProvider, FrameworkService, BuildParamService, FormService, AuthService, TelemetryService } from 'sunbird';
+import {
+    mockCurrentUserDetails,
+    mockCategories,
+    mockOnBoardingSlideDefaults,
+    mockSyllabusList,
+    mockSyllabusDetails,
+    mockSelectedSlide,
+    mockGetFrameworkDetails,
+    mockSaveDetails
+} from './onboarding.data.spec';
+import {
+    ServiceProvider,
+    FrameworkService,
+    BuildParamService,
+    FormService,
+    AuthService,
+    TelemetryService
+} from 'sunbird';
 import { OnboardingService } from './onboarding.service';
 import {
     Injectable
 } from '@angular/core';
-import { Events, ToastOptions, PopoverController } from 'ionic-angular';
 import {
-    CategoryRequest,
+    Events,
+    PopoverController
+} from 'ionic-angular';
+import {
     ProfileService,
-    Profile,
     SharedPreferences,
 } from 'sunbird';
-
 import { FormAndFrameworkUtilService } from '../../pages/profile/formandframeworkutil.service';
 import { ToastController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { PreferenceKey } from '../../app/app.constant';
-import { TestBed, inject } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { PopoverControllerMock } from 'ionic-mocks';
-import { TranslateServiceStub, ToastControllerMock, AppGlobalServiceMock, FormAndFrameworkUtilServiceMock, EventsMock } from '../../../test-config/mocks-ionic';
+import {
+    TranslateServiceStub,
+    ToastControllerMock,
+    FormAndFrameworkUtilServiceMock,
+    EventsMock
+} from '../../../test-config/mocks-ionic';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { Observable } from 'rxjs';
-import { exec } from 'child_process';
+
 describe('OnBoarding.service', () => {
     let service: OnboardingService;
 

@@ -1,13 +1,12 @@
 import { Component, NgZone } from '@angular/core';
 import {
   NavController, LoadingController,
-  NavParams, Events, ToastController
+  NavParams, Events
 } from 'ionic-angular';
 import {
   AuthService,
   UserProfileService,
   UserProfileDetailsRequest,
-  CourseService,
   ContentService,
   TelemetryService,
   ImpressionType,
@@ -31,7 +30,6 @@ import {
   generateInteractTelemetry,
   generateImpressionTelemetry
 } from '../../app/telemetryutil';
-import { TranslateService } from '@ngx-translate/core';
 import {
   ProfileConstants,
   MenuOverflow
@@ -92,20 +90,17 @@ export class ProfilePage {
   enrolledCourse: any = [];
 
   constructor(
-    public navCtrl: NavController,
-    public popoverCtrl: PopoverController,
-    public userProfileService: UserProfileService,
+    private navCtrl: NavController,
+    private popoverCtrl: PopoverController,
+    private userProfileService: UserProfileService,
     private zone: NgZone,
     private datePipe: DatePipe,
-    public authService: AuthService,
-    public courseService: CourseService,
-    public contentService: ContentService,
-    public telemetryService: TelemetryService,
+    private authService: AuthService,
+    private contentService: ContentService,
+    private telemetryService: TelemetryService,
     private loadingCtrl: LoadingController,
     private navParams: NavParams,
-    public events: Events,
-    public translate: TranslateService,
-    public toastCtrl: ToastController,
+    private events: Events,
     private appGlobal: AppGlobalService,
     private commonUtilService: CommonUtilService
   ) {
@@ -119,7 +114,6 @@ export class ProfilePage {
         this.appGlobal.openPopover(upgrade);
       }
     });
-
   }
 
   ionViewDidLoad() {

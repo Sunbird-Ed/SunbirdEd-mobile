@@ -1,26 +1,18 @@
 import {
-  NavController,
   Slides,
   PopoverController,
-  Events,
-  ToastController
+  Events
 } from 'ionic-angular';
 import {
   Component,
-  ViewChild} from '@angular/core';
+  ViewChild
+} from '@angular/core';
 import { OnboardingService } from '../onboarding-card/onboarding.service';
 import {
   OnboardingAlert,
   onBoardingSlidesCallback
 } from './../onboarding-alert/onboarding-alert';
-import { TranslateService } from '@ngx-translate/core';
-
-/* Interface for the Toast Object */
-export interface ToastOptions {
-  message: string;
-  duration: number;
-  position: string;
-}
+import { CommonUtilService } from '../../service/common-util.service';
 
 @Component({
   selector: 'onboarding-card',
@@ -31,23 +23,16 @@ export class OnboardingCardComponent {
   public static readonly USER_INFO_UPDATED = 'user-profile-changed';
 
   @ViewChild(Slides) mSlides: Slides;
-  isOnBoardCard: boolean = true;
-  loader: boolean = false;
-  isDataAvailable: boolean = false;
 
-  options: ToastOptions = {
-    message: '',
-    duration: 3000,
-    position: 'bottom'
-  };
+  isOnBoardCard = true;
+  loader = false;
+  isDataAvailable = false;
 
   constructor(
-    public navCtrl: NavController,
     private popupCtrl: PopoverController,
     private onboardingService: OnboardingService,
     private events: Events,
-    private toastCtrl: ToastController,
-    private translate: TranslateService
+    private commonUtilService: CommonUtilService
   ) {
 
     this.showLoader(true);
@@ -56,21 +41,20 @@ export class OnboardingCardComponent {
       .then((result) => {
         this.showLoader(false);
 
-        let syllabusList = (<any[]>result);
+        const syllabusList = (<any[]>result);
 
         if (syllabusList && syllabusList !== undefined && syllabusList.length > 0) {
           this.isDataAvailable = true;
         } else {
           this.isDataAvailable = false;
-          this.getToast(this.translateMessage('NO_DATA_FOUND')).present();
+          this.commonUtilService.showToast(this.commonUtilService.translateMessage('NO_DATA_FOUND'));
         }
       });
 
     this.initializeService();
 
-
     this.events.subscribe('is-data-available', (value) => {
-      let loaderFlag = !value.show;
+      const loaderFlag = !value.show;
       this.showLoader(loaderFlag);
       this.isDataAvailable = value.show;
     });
@@ -89,8 +73,14 @@ export class OnboardingCardComponent {
     });
   }
 
+  ionViewWillEnter() {
+    if (!this.onboardingService.currentIndex) {
+      this.mSlides.slideTo(0, 500);
+    }
+  }
+
   reinitializeCards() {
-    //reset slide index to -1
+    // reset slide index to -1
     this.onboardingService.slideIndex = -1;
 
     this.onboardingService.initializeCard()
@@ -104,21 +94,6 @@ export class OnboardingCardComponent {
   }
 
   /**
-   * Used to Translate message to current Language
-   * @param {string} messageConst - Message Constant to be translated
-   * @returns {string} translatedMsg - Translated Message
-   */
-  translateMessage(messageConst: string): string {
-    let translatedMsg = '';
-    this.translate.get(messageConst).subscribe(
-      (value: any) => {
-        translatedMsg = value;
-      }
-    );
-    return translatedMsg;
-  }
-
-  /**
    * To start and stop loader
    */
   showLoader(flag: boolean) {
@@ -129,7 +104,9 @@ export class OnboardingCardComponent {
     this.onboardingService.initializeCard()
       .then(index => {
         setTimeout(() => {
-          if (index !== 0 && index !== 5) this.mSlides.slideTo(index, 500);
+          if (index !== 0 && index !== 5) {
+            this.mSlides.slideTo(index, 500);
+          }
         }, 500);
       });
   }
@@ -153,12 +130,13 @@ export class OnboardingCardComponent {
       save() {
         that.onboardingService.selectedCheckboxValue(selectedSlide, index);
       }
-    }
+    };
     /* istanbul ignore else */
     if (index === 0) {
       this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), undefined, true);
     } else if (index === 1) {
-      this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.syllabus, true);
+      this.onboardingService.checkPrevValue(
+        index, this.onboardingService.getListName(index), this.onboardingService.profile.syllabus, true);
     } else if (index === 2) {
       this.onboardingService.checkPrevValue(index, this.onboardingService.getListName(index), this.onboardingService.profile.board, true);
     } else if (index === 3) {
@@ -171,21 +149,6 @@ export class OnboardingCardComponent {
       cssClass: 'onboarding-alert'
     });
     popUp.present();
-  }
-
-  ionViewWillEnter() {
-    if (!this.onboardingService.currentIndex) {
-      this.mSlides.slideTo(0, 500);
-    }
-  }
-
-  /** It will returns Toast Object
-   * @param {message} string - Message for the Toast to show
-   * @returns {object} - toast Object
-   */
-  getToast(message: string = ''): any {
-    this.options.message = message;
-    if (message.length) return this.toastCtrl.create(this.options);
   }
 
 }

@@ -341,11 +341,13 @@ export class ResourcesPage implements OnInit {
         }
 
         if (this.profile.grade && this.profile.grade.length) {
-          pageAssembleCriteria.filters.gradeLevel = this.applyProfileFilter(this.profile.grade, pageAssembleCriteria.filters.gradeLevel, 'gradeLevel');
+          pageAssembleCriteria.filters.gradeLevel = this.applyProfileFilter(this.profile.grade,
+             pageAssembleCriteria.filters.gradeLevel, 'gradeLevel');
         }
 
         if (this.profile.subject && this.profile.subject.length) {
-          pageAssembleCriteria.filters.subject = this.applyProfileFilter(this.profile.subject, pageAssembleCriteria.filters.subject, 'subject');
+          pageAssembleCriteria.filters.subject = this.applyProfileFilter(this.profile.subject,
+             pageAssembleCriteria.filters.subject, 'subject');
         }
       }
 
@@ -450,7 +452,8 @@ export class ResourcesPage implements OnInit {
               element: '#qrIcon',
               popover: {
                 title: this.commonUtilService.translateMessage('ONBOARD_SCAN_QR_CODE'),
-                description: "<img src='assets/imgs/ic_scanqrdemo.png' /><p>" + this.commonUtilService.translateMessage('ONBOARD_SCAN_QR_CODE_DESC', this.appLabel) + "</p>",
+                description: '<img src="assets/imgs/ic_scanqrdemo.png" /><p>' + this.commonUtilService
+                .translateMessage('ONBOARD_SCAN_QR_CODE_DESC', this.appLabel) + '</p>',
                 showButtons: true,         // Do not show control buttons in footer
                 closeBtnText: this.commonUtilService.translateMessage('DONE'),
               }
