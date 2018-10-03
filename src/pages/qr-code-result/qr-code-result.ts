@@ -19,7 +19,8 @@ import {
   InteractSubtype,
   PageId,
   Profile,
-  ProfileService
+  ProfileService,
+  SharedPreferences
 } from 'sunbird';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
@@ -104,6 +105,7 @@ export class QrCodeResultPage {
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private profileService: ProfileService,
     private events: Events,
+    private preferences: SharedPreferences
   ) {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
@@ -263,7 +265,9 @@ export class QrCodeResultPage {
     this.profileService.updateProfile(req,
       (res: any) => {
         // this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
-        this.events.publish('refresh:profile');
+        // this.events.publish('refresh:profile');
+        this.events.publish(AppGlobalService.USER_INFO_UPDATED);
+        this.preferences.putString('is_onboarding_settings_completed', 'true');
         this.appGlobal.guestUserProfile = JSON.parse(res);
       },
       (err: any) => {
@@ -273,7 +277,8 @@ export class QrCodeResultPage {
       });
   }
 
-  setgrade(reset, grades) {
+  setGrade(reset, grades) {
+    console.log('in set grade--', grades)
     if (reset) {
       this.profile.grade = [];
       this.profile.gradeValueMap = {};
@@ -300,10 +305,19 @@ export class QrCodeResultPage {
     this.formAndFrameworkUtilService.getFrameworkDetails(data.framework)
       .then(catagories => {
         this.categories = catagories;
-        this.boardList = _.find(this.categories, (category) => category.code === 'board').terms;
-        this.gradeList = _.find(this.categories, (category) => category.code === 'gradeLevel').terms;
-        this.mediumList = _.find(this.categories, (category) => category.code === 'medium').terms;
-        this.subjectList = _.find(this.categories, (category) => category.code === 'subject').terms;
+        console.log('categories', catagories)
+        console.log('this.categories', this.categories)
+        this.boardList = _.find(this.categories, (category) => { return category.code === 'board' }).terms;
+        this.gradeList = _.find(this.categories, (category) => { return category.code === 'gradeLevel' }).terms;
+        this.mediumList = _.find(this.categories, (category) => { return category.code === 'medium' }).terms;
+        this.subjectList = _.find(this.categories, (category) => { return category.code === 'subject' }).terms;
+
+
+
+        console.log("this.boardList", this.boardList);
+        console.log("this.gradeList", this.gradeList);
+        console.log("this.mediumList", this.mediumList);
+        console.log("this.subjectList", this.subjectList);
 
         if (!this.profile.medium || !this.profile.medium.length) {
           this.profile.medium = [];
@@ -317,22 +331,22 @@ export class QrCodeResultPage {
             this.profile.board = [_.find(this.boardList, (category) => category.name === data.board).code];
             this.profile.medium = [_.find(this.mediumList, (category) => category.name === data.medium).code];
             this.profile.subject = [_.find(this.subjectList, (category) => category.name === data.subject).code];
-            this.setgrade(true, data.gradeLevel);
+            this.setGrade(true, data.gradeLevel);
             break;
           case 1:
             this.profile.board = [_.find(this.boardList, (category) => category.name === data.board).code];
             this.profile.medium = [_.find(this.mediumList, (category) => category.name === data.medium).code];
             this.profile.subject = [_.find(this.subjectList, (category) => category.name === data.subject).code];
-            this.setgrade(true, data.gradeLevel);
+            this.setGrade(true, data.gradeLevel);
             break;
           case 2:
             this.profile.medium.push(_.find(this.mediumList, (category) => category.name === data.medium).code);
-            this.profile.subject.push(_.find(this.subjectList, (category) => category.name === data.subject).code);
-            this.setgrade(false, data.gradeLevel);
+            // this.profile.subject.push(_.find(this.subjectList, (category) => category.name === data.subject).code);
+            // this.setGrade(false, data.gradeLevel);
             break;
           case 3:
-            this.profile.subject.push(_.find(this.subjectList, (category) => category.name === data.subject).code);
-            this.setgrade(false, data.gradeLevel);
+            // this.profile.subject.push(_.find(this.subjectList, (category) => category.name === data.subject).code);
+            this.setGrade(false, data.gradeLevel);
             break;
           case 4:
             this.profile.subject.push(_.find(this.subjectList, (category) => category.name === data.subject).code);
@@ -353,57 +367,65 @@ export class QrCodeResultPage {
    * @param {object} profile
    */
   checkProfileData(data, profile) {
-    if (profile && profile.syllabus && profile.syllabus[0]) {
-      if (data && data.framework === profile.syllabus[0]) {
-        if (profile.board && !(profile.board.length > 1) && data.board === profile.board[0]) {
-          let existingMedium = false;
+    console.log('checkProfileData data', data)
+    console.log('checkProfileData profile', profile)
 
-          if (profile.medium) {
-            existingMedium = _.find(profile.medium, (medium) => {
-              return medium.name === data.medium;
-            });
-          }
+    if (data && data.framework) {
+      if (profile && profile.syllabus && profile.syllabus[0] && data.framework === profile.syllabus[0]) {
+        if (data.board) {
+          if (profile.board && !(profile.board.length > 1) && data.board === profile.board[0]) {
+            if (data.medium) {
+              let existingMedium = false;
 
-          if (existingMedium && data.gradeLevel) {
-            let existingGrade = false;
-            for (let i = 0; i < data.gradeLevel.length; i++) {
-              const gradeExists = _.find(profile.grade, (grade) => {
-                return grade.name === data.grade[0];
-              });
-
-              if (!gradeExists) {
-                break;
-              }
-
-              existingGrade = true;
-            }
-
-            if (existingGrade) {
-              let existingSubject = false;
-
-              if (profile.subject) {
-                existingSubject = _.find(profile.subject, (subject) => {
-                  return subject.name === data.subject;
+              if (profile.medium) {
+                existingMedium = _.find(profile.medium, (medium) => {
+                  return medium.name === data.medium;
                 });
               }
 
-              if (!existingSubject) {
-                this.setCurrentProfile(4, data);
+              if (!existingMedium) {
+                this.setCurrentProfile(2, data);
               }
-            } else {
-              this.setCurrentProfile(3, data);
+
+              if (data.gradeLevel && data.gradeLevel.length) {
+                let existingGrade = false;
+                for (let i = 0; i < data.gradeLevel.length; i++) {
+                  const gradeExists = _.find(profile.grade, (grade) => {
+                    return grade.name === data.grade[i];
+                  });
+
+                  if (!gradeExists) {
+                    break;
+                  }
+
+                  existingGrade = true;
+                }
+
+                if (existingGrade) {
+                  let existingSubject = false;
+
+                  if (profile.subject) {
+                    existingSubject = _.find(profile.subject, (subject) => {
+                      return subject.name === data.subject;
+                    });
+                  }
+
+                  if (!existingSubject) {
+                    this.setCurrentProfile(4, data);
+                  }
+                } else {
+                  this.setCurrentProfile(3, data);
+                }
+              }
             }
           } else {
-            this.setCurrentProfile(2, data);
+            this.setCurrentProfile(1, data);
           }
-        } else {
-          this.setCurrentProfile(1, data);
         }
       } else {
         this.setCurrentProfile(0, data);
       }
-    } else {
-      this.setCurrentProfile(0, data);
     }
   }
+
 }

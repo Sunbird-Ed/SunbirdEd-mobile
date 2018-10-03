@@ -252,7 +252,7 @@ export class OnboardingPage {
           this.profileService.setCurrentProfile(true, profile, res => {
             this.events.publish(AppGlobalService.USER_INFO_UPDATED);
 
-            if (this.appGlobalService.isOnBoardingCompleted) {
+            if (this.appGlobalService.isProfileSettingsCompleted) {
               this.navCtrl.setRoot(TabsPage, {
                 loginMode: 'guest'
               });
