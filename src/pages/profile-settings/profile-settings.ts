@@ -1,5 +1,5 @@
 import { NavParams } from 'ionic-angular/index';
-import { AppGlobalService } from './../../service/app-global.service';
+import { AppGlobalService } from '../../service/app-global.service';
 import { ProfileService, TabsPage, InteractSubtype, PageId, InteractType } from 'sunbird';
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
@@ -26,10 +26,10 @@ import { CommonUtilService } from '../../service/common-util.service';
 
 @IonicPage()
 @Component({
-	selector: 'page-user-onboarding-preferences',
-	templateUrl: 'user-onboarding-preferences.html',
+	selector: 'page-profile-settings',
+	templateUrl: 'profile-settings.html',
 })
-export class UserOnboardingPreferencesPage {
+export class ProfileSettingsPage {
 
 	userForm: FormGroup;
 	classList = [];

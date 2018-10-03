@@ -35,7 +35,7 @@ import { TelemetryGeneratorService } from '../../service/telemetry-generator.ser
 import { CommonUtilService } from '../../service/common-util.service';
 import { PreferenceKey } from '../../app/app.constant';
 import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
-import { UserOnboardingPreferencesPage } from '../user-onboarding-preferences/user-onboarding-preferences';
+import { ProfileSettingsPage } from '../profile-settings/profile-settings';
 
 const selectedCardBorderColor = '#006DE5';
 const borderColor = '#F7F7F7';
@@ -192,7 +192,7 @@ export class UserTypeSelectionPage {
     }
 
     if (this.isChangeRoleRequest && isUserTypeChanged) {
-      this.navCtrl.push(UserOnboardingPreferencesPage);
+      this.navCtrl.push(ProfileSettingsPage);
     } else if (this.appGlobal.isOnBoardingCompleted) {
       this.navCtrl.push(TabsPage, {
         loginMode: 'guest'

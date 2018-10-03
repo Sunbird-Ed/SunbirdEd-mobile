@@ -1,7 +1,8 @@
+import { ProfileSettingsPage } from './profile-settings';
 import { Observable } from 'rxjs/Observable';
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { NO_ERRORS_SCHEMA } from "@angular/core";
-import { AppGlobalService } from "./../../service/app-global.service";
+import { AppGlobalService } from "../../service/app-global.service";
 import { ProfileService, AuthService, TelemetryService, ServiceProvider, BuildParamService, FrameworkService } from "sunbird";
 import { TranslateService, TranslateModule } from "@ngx-translate/core";
 import { FormBuilder } from "@angular/forms";
@@ -14,16 +15,15 @@ import { SharedPreferences } from "sunbird";
 import { LoadingController, PopoverController } from "ionic-angular";
 import { Events } from "ionic-angular";
 import { TelemetryGeneratorService } from "../../service/telemetry-generator.service";
-import { UserOnboardingPreferencesPage } from "./user-onboarding-preferences";
 
 import {
     LoadingControllerMock, TranslateServiceStub, ToastControllerMockNew, AuthServiceMock, NavMock, NavParamsMock, profileServiceMock,
     SharedPreferencesMock, FormAndFrameworkUtilServiceMock, EventsMock, AppGlobalServiceMock, TelemetryServiceMock, PopoverControllerMock
 } from '../../../test-config/mocks-ionic';
 
-describe("UserOnboardingPreferencesPage", () => {
-    let comp: UserOnboardingPreferencesPage;
-    let fixture: ComponentFixture<UserOnboardingPreferencesPage>;
+describe("ProfileSettingsPage", () => {
+    let comp: ProfileSettingsPage;
+    let fixture: ComponentFixture<ProfileSettingsPage>;
 
     beforeEach(() => {
         
@@ -35,7 +35,7 @@ describe("UserOnboardingPreferencesPage", () => {
 
         TestBed.configureTestingModule({
             imports: [TranslateModule.forRoot()],
-            declarations: [ UserOnboardingPreferencesPage ],
+            declarations: [ ProfileSettingsPage ],
             schemas: [ NO_ERRORS_SCHEMA ],
             providers: [
                 FormBuilder, TelemetryGeneratorService, TelemetryService, ServiceProvider, SharedPreferences, BuildParamService,
@@ -56,13 +56,13 @@ describe("UserOnboardingPreferencesPage", () => {
                 { provide: PopoverController, useFactory: () => PopoverControllerMock.instance() }
             ]
         });
-        spyOn(UserOnboardingPreferencesPage.prototype, 'initUserForm');
-        spyOn(UserOnboardingPreferencesPage.prototype, 'getGuestUser');
+        spyOn(ProfileSettingsPage.prototype, 'initUserForm');
+        spyOn(ProfileSettingsPage.prototype, 'getGuestUser');
         const translate = TestBed.get(TranslateService);
         spyOn(translate, 'get').and.callFake((arg) => {
             return Observable.of('Cancel');
         });
-        fixture = TestBed.createComponent(UserOnboardingPreferencesPage);
+        fixture = TestBed.createComponent(ProfileSettingsPage);
         comp = fixture.componentInstance;
     });
 

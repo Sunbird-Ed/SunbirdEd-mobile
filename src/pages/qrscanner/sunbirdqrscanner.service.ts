@@ -24,7 +24,7 @@ import {
 } from 'sunbird';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { QRScannerResultHandler } from './qrscanresulthandler.service';
-import { UserOnboardingPreferencesPage } from '../user-onboarding-preferences/user-onboarding-preferences';
+import { ProfileSettingsPage } from '../profile-settings/profile-settings';
 import { App } from 'ionic-angular';
 
 @Injectable()
@@ -145,7 +145,7 @@ export class SunbirdQRScanner {
     this.generateImpressionTelemetry(source);
     window['qrScanner'].startScanner(screenTitle, displayText, displayTextColor, buttonText, showButton, (scannedData) => {
       if (scannedData === 'skip') {
-        this.app.getActiveNavs()[0].push(UserOnboardingPreferencesPage, { stopScanner: true });
+        this.app.getActiveNavs()[0].push(ProfileSettingsPage, { stopScanner: true });
         this.telemetryGeneratorService.generateInteractTelemetry(
           InteractType.TOUCH,
           InteractSubtype.SKIP_CLICKED,
@@ -221,7 +221,7 @@ export class SunbirdQRScanner {
         popUp.dismiss();
 
         if (self.showButton) {
-          self.app.getActiveNavs()[0].push(UserOnboardingPreferencesPage, { stopScanner: true });
+          self.app.getActiveNavs()[0].push(ProfileSettingsPage, { stopScanner: true });
         }
       }
     };
