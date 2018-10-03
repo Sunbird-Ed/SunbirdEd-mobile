@@ -1,12 +1,12 @@
-import { Injectable } from "@angular/core";
-import { FileUtil } from "sunbird";
+import { Injectable } from '@angular/core';
+import { FileUtil } from 'sunbird';
 import * as _ from 'lodash';
 
 @Injectable()
 export class CourseUtilService {
 
     /**
-     * 
+     *
      */
     constructor(private fileUtil: FileUtil) {
     }
@@ -16,27 +16,27 @@ export class CourseUtilService {
             return 0;
         }
 
-        let returnData = ((progress / leafNodeCount) * 100);
+        const returnData = ((progress / leafNodeCount) * 100);
 
         if (isNaN(returnData)) {
             return 0;
         } else if (returnData > 100) {
             return 100;
         } else {
-            let cProgress = String(returnData)
-            return cProgress.split(".")[0];
+            const cProgress = String(returnData);
+            return cProgress.split('.')[0];
         }
     }
 
     getImportContentRequestBody(identifiers, isChild: boolean) {
-        let requestParams = [];
+        const requestParams = [];
         _.forEach(identifiers, (value, key) => {
           requestParams.push({
             isChildContent: isChild,
             destinationFolder: this.fileUtil.internalStoragePath(),
             contentId: value,
             correlationData: []
-          })
+          });
         });
 
         return _.extend({}, requestParams);

@@ -1,6 +1,6 @@
-import { Injectable } from "@angular/core";
-import { ToastController } from "ionic-angular";
-import { TranslateService } from "@ngx-translate/core";
+import { Injectable } from '@angular/core';
+import { ToastController } from 'ionic-angular';
+import { TranslateService } from '@ngx-translate/core';
 
 @Injectable()
 export class CommonUtilService {
@@ -18,11 +18,11 @@ export class CommonUtilService {
 
         this.translate.get(translationKey).subscribe(
             (value: any) => {
-                let toast = this.toastCtrl.create({
+                const toast = this.toastCtrl.create({
                     message: value,
                     duration: 3000,
                     position: 'bottom',
-                    cssClass: cssToast ? cssToast : ""
+                    cssClass: cssToast ? cssToast : ''
                 });
                 toast.present();
             }
@@ -45,13 +45,13 @@ export class CommonUtilService {
     }
 
     /**
-     * 
-     * @param {string} translations Stringified object of translations 
+     *
+     * @param {string} translations Stringified object of translations
      * @param {string} defaultValue Fallback value if does not have translations
      * @returns {string} Translated values or fallback value
      */
     getTranslatedValue(translations: string, defaultValue: string) {
-        let availableTranslation = JSON.parse(translations);
+        const availableTranslation = JSON.parse(translations);
         if (availableTranslation.hasOwnProperty(this.translate.currentLang)) {
             return availableTranslation[this.translate.currentLang];
         }

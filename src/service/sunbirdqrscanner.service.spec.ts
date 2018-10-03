@@ -1,27 +1,28 @@
-import { TestBed, inject } from "@angular/core/testing";
+import { TestBed, inject } from '@angular/core/testing';
 import { } from 'jasmine';
 import { SunbirdQRScanner } from '../pages/qrscanner/sunbirdqrscanner.service';
-import { TranslateService, TranslateModule, TranslateLoader, TranslateFakeLoader } from "@ngx-translate/core";
-import { PopoverController, DeepLinker } from "ionic-angular";
-import { App } from "ionic-angular";
-import { Config } from "ionic-angular";
-import { Platform } from "ionic-angular";
-import { ToastControllerMockNew, TranslateLoaderMock, PopoverControllerMock } from "../../test-config/mocks-ionic";
-import { ConfigMock, NetworkMock } from "ionic-mocks";
-import { TelemetryService, ServiceProvider, PermissionService, ContentService, PageId, InteractSubtype, Environment, InteractType, ImpressionType, ImpressionSubtype, TelemetryObject, Mode } from "sunbird";
-import { Network } from "@ionic-native/network";
-import { ToastController } from "ionic-angular";
-import { QRScannerResultHandler } from "../pages/qrscanner/qrscanresulthandler.service";
-import { TelemetryGeneratorService } from "./telemetry-generator.service";
-import { CommonUtilService } from "./common-util.service";
-import { mockRes } from "../service/service.spec.data";
-import { SubjectSubscriber } from "rxjs/Subject";
+import { TranslateService, TranslateModule, TranslateLoader, TranslateFakeLoader } from '@ngx-translate/core';
+import { PopoverController, DeepLinker } from 'ionic-angular';
+import { App } from 'ionic-angular';
+import { Config } from 'ionic-angular';
+import { Platform } from 'ionic-angular';
+import { ToastControllerMockNew, TranslateLoaderMock, PopoverControllerMock } from '../../test-config/mocks-ionic';
+import { ConfigMock, NetworkMock } from 'ionic-mocks';
+import { TelemetryService, ServiceProvider, PermissionService, ContentService, PageId, InteractSubtype,
+         Environment, InteractType, ImpressionType, ImpressionSubtype, TelemetryObject, Mode } from 'sunbird';
+import { Network } from '@ionic-native/network';
+import { ToastController } from 'ionic-angular';
+import { QRScannerResultHandler } from '../pages/qrscanner/qrscanresulthandler.service';
+import { TelemetryGeneratorService } from './telemetry-generator.service';
+import { CommonUtilService } from './common-util.service';
+import { mockRes } from '../service/service.spec.data';
+import { SubjectSubscriber } from 'rxjs/Subject';
 describe('SunbirdQRScanner', () => {
   let service: SunbirdQRScanner;
-  let VALID_DIALCODE_LINK = 'https://staging.open-sunbird.org/dial/SAMPLE';
-  let VALID_CONTENT_LINK = 'https://staging.open-sunbird.org/play/content/SAMPLE';
-  let VALID_COLLECTION_LINK = 'https://staging.open-sunbird.org/play/collection/SAMPLE';
-  let VALID_COURSE_LINK = 'https://staging.open-sunbird.org/learn/course/SAMPLE';
+  const VALID_DIALCODE_LINK = 'https://staging.open-sunbird.org/dial/SAMPLE';
+  const VALID_CONTENT_LINK = 'https://staging.open-sunbird.org/play/content/SAMPLE';
+  const VALID_COLLECTION_LINK = 'https://staging.open-sunbird.org/play/collection/SAMPLE';
+  const VALID_COURSE_LINK = 'https://staging.open-sunbird.org/learn/course/SAMPLE';
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
@@ -45,7 +46,7 @@ describe('SunbirdQRScanner', () => {
     window['qrScanner'] = {
       startScanner: (screenTitle, displayText, displayTextColor) => ({}),
       stopScanner: ({})
-    }
+    };
     service = sunbirdqrscanner;
   }));
 
@@ -133,15 +134,15 @@ describe('SunbirdQRScanner', () => {
     });
     spyOn(window['qrScanner'], 'stopScanner');
     service.backButtonFunc = jasmine.createSpy();
-    service['startQRScanner']("", "", "", "", false, PageId.QRCodeScanner);
+    service['startQRScanner']('', '', '', '', false, PageId.QRCodeScanner);
     expect(telemetryGeneratorService.generateInteractTelemetry).toHaveBeenCalledWith(InteractType.OTHER,
       InteractSubtype.QRCodeScanCancelled,
       Environment.HOME,
       PageId.QRCodeScanner);
-    let telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = "";
+    const telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.id = '';
     telemetryObject.type = 'qr';
-    expect(telemetryGeneratorService.generateEndTelemetry).toHaveBeenCalledWith("qr",
+    expect(telemetryGeneratorService.generateEndTelemetry).toHaveBeenCalledWith('qr',
       Mode.PLAY,
       PageId.QRCodeScanner,
       Environment.HOME,
@@ -157,7 +158,7 @@ describe('SunbirdQRScanner', () => {
     spyOn(window['qrScanner'], 'stopScanner');
     spyOn(service, 'generateEndEvent');
     service.backButtonFunc = jasmine.createSpy();
-    service['startQRScanner'](",", "", "", "", false, PageId.QRCodeScanner);
+    service['startQRScanner'](',', '', '', '', false, PageId.QRCodeScanner);
     expect(qrresultHandler.handleDialCode).toHaveBeenCalled();
   });
 
@@ -165,7 +166,7 @@ describe('SunbirdQRScanner', () => {
     const qrresultHandler = TestBed.get(QRScannerResultHandler);
     const platform = TestBed.get(Platform);
     service.backButtonFunc = jasmine.createSpy();
-    spyOn(platform, 'registerBackButtonAction').and.callFake(function (success) {
+    spyOn(platform, 'registerBackButtonAction').and.callFake((success) => {
       return success();
     });
     spyOn(qrresultHandler, 'handleContentId').and.callFake(() => { });
@@ -175,7 +176,7 @@ describe('SunbirdQRScanner', () => {
     spyOn(window['qrScanner'], 'stopScanner');
     spyOn(service, 'generateEndEvent');
     service.backButtonFunc = jasmine.createSpy();
-    service['startQRScanner'](",", "", "", "", false, PageId.QRCodeScanner);
+    service['startQRScanner'](',', '', '', '', false, PageId.QRCodeScanner);
     expect(qrresultHandler.handleContentId).toHaveBeenCalled();
   });
 
@@ -188,7 +189,7 @@ describe('SunbirdQRScanner', () => {
     spyOn(window['qrScanner'], 'stopScanner');
     spyOn(service, 'showInvalidCodeAlert').and.callThrough();
     service.backButtonFunc = jasmine.createSpy();
-    service['startQRScanner'](",", "", "", "", false, PageId.QRCodeScanner);
+    service['startQRScanner'](',', '', '', '', false, PageId.QRCodeScanner);
     expect(qrresultHandler.handleInvalidQRCode).toHaveBeenCalled();
     expect(service.showInvalidCodeAlert).toHaveBeenCalled();
   });
@@ -202,7 +203,7 @@ describe('SunbirdQRScanner', () => {
     spyOn(window['qrScanner'], 'stopScanner');
     spyOn(service, 'showInvalidCodeAlert');
     service.backButtonFunc = jasmine.createSpy();
-    service['startQRScanner'](",", "", "", "", false, PageId.QRCodeScanner);
+    service['startQRScanner'](',', '', '', '', false, PageId.QRCodeScanner);
     expect(window['qrScanner'].stopScanner).toHaveBeenCalled();
   });
 
