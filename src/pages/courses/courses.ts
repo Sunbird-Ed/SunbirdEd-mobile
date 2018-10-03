@@ -209,7 +209,8 @@ export class CoursesPage implements OnInit {
               element: '#qrIcon',
               popover: {
                 title: this.commonUtilService.translateMessage('ONBOARD_SCAN_QR_CODE'),
-                description: "<img src='assets/imgs/ic_scanqrdemo.png' /><p>" + this.commonUtilService.translateMessage('ONBOARD_SCAN_QR_CODE_DESC', this.appLabel) + "</p>",
+                description: '<img src=\'assets/imgs/ic_scanqrdemo.png\' /><p>' +
+                 this.commonUtilService.translateMessage('ONBOARD_SCAN_QR_CODE_DESC', this.appLabel) + '</p>',
                 showButtons: true,         // Do not show control buttons in footer
                 closeBtnText: this.commonUtilService.translateMessage('DONE'),
               }
@@ -335,7 +336,7 @@ export class CoursesPage implements OnInit {
    *
    * It internally calls course handler of genie sdk
    */
-  getPopularAndLatestCourses(pageAssembleCriteria: PageAssembleCriteria = undefined): void {
+  getPopularAndLatestCourses(pageAssembleCriteria?: PageAssembleCriteria): void {
     this.pageApiLoader = true;
     if (pageAssembleCriteria === undefined) {
       const criteria = new PageAssembleCriteria();
