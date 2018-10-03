@@ -67,11 +67,16 @@ export class SunbirdQRScanner {
     });
   }
 
+
+  ionViewDidLoad(): any {
+    throw new Error('Method not implemented.');
+  }
+
   public startScanner(source: string, showButton: boolean = false,
-    screenTitle: string = this.mQRScannerText['SCAN_QR_CODE'],
-    displayText: string = this.mQRScannerText['SCAN_QR_INSTRUCTION'],
-    displayTextColor: string = '#0b0b0b',
-    buttonText: string = this.mQRScannerText['SKIP']
+    screenTitle = this.mQRScannerText['SCAN_QR_CODE'],
+    displayText = this.mQRScannerText['SCAN_QR_INSTRUCTION'],
+    displayTextColor = '#0b0b0b',
+    buttonText = this.mQRScannerText['SKIP']
   ) {
     this.source = source;
     this.showButton = showButton;

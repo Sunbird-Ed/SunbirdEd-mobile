@@ -1,17 +1,10 @@
 import { App } from 'ionic-angular';
 import { Events, PopoverController } from 'ionic-angular';
-import { TestBed, inject } from '@angular/core/testing';
+import { ComponentFixture, TestBed, inject } from '@angular/core/testing';
 import { AppGlobalService } from './app-global.service';
 import { } from 'jasmine';
-import {
-  AuthService,
-  ProfileService,
-  FrameworkService,
-  SharedPreferences,
-  BuildParamService,
-  ServiceProvider,
-  TelemetryService
-} from 'sunbird';
+import { AuthService, ProfileService, FrameworkService, SharedPreferences, BuildParamService,
+  ServiceProvider, TelemetryService } from 'sunbird';
 import { Config } from 'ionic-angular';
 import { Platform } from 'ionic-angular';
 import { DeepLinker } from 'ionic-angular';
@@ -51,12 +44,12 @@ describe('AppGlobalService', () => {
   });
 
   beforeEach(inject([AppGlobalService, BuildParamService, AuthService, ProfileService],
-    (appGlobalService: AppGlobalService, buildParamService: BuildParamService, authServicecb, ProfileService) => {
-      service = appGlobalService;
-      buildService = buildParamService;
-      authService = authServicecb;
-      profileService = ProfileService;
-    }));
+  (appGlobalService: AppGlobalService, buildParamService: BuildParamService, authServicecb) => {
+    service = appGlobalService;
+    buildService = buildParamService;
+    authService = authServicecb;
+    profileService = ProfileService;
+  }));
 
   it('isGuestUser defaults to: false', () => {
     // const service = TestBed.get(AppGlobalService);
