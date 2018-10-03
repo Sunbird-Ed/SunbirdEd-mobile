@@ -88,7 +88,8 @@ export class OnboardingPage {
     private translate: TranslateService,
     private toastCtrl: ToastController,
     private appVersion: AppVersion,
-    private events: Events
+    private events: Events,
+    private appGlobalService: AppGlobalService
   ) {
 
     this.slides = [
@@ -264,10 +265,14 @@ export class OnboardingPage {
 
           this.profileService.setCurrentProfile(true, profile, res => {
             this.events.publish(AppGlobalService.USER_INFO_UPDATED);
-            this.navCtrl.setRoot(TabsPage, {
-              loginMode: 'guest'
-            });
-            //this.navCtrl.push(UserTypeSelectionPage, { showScanner: false });
+
+            if (this.appGlobalService.isOnBoardingCompleted) {
+              this.navCtrl.setRoot(TabsPage, {
+                loginMode: 'guest'
+              });
+            } else {
+              this.navCtrl.push(UserTypeSelectionPage, { showScanner: false });
+            }
           }, err => {
             this.navCtrl.push(UserTypeSelectionPage, { showScanner: false });
           });
