@@ -1,6 +1,14 @@
 import { Platform } from 'ionic-angular/platform/platform';
-import { Component, NgZone } from '@angular/core';
-import { NavController, NavParams, Events, ToastController } from 'ionic-angular';
+import {
+  Component,
+  NgZone
+} from '@angular/core';
+import {
+  NavController,
+  NavParams,
+  Events,
+  ToastController
+} from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import {
   SharedPreferences,
@@ -25,12 +33,12 @@ export class LanguageSettingsPage {
 
   languages: any = [];
   language: any;
-  isLanguageSelected: boolean = false;
-  isFromSettings: boolean = false;
-  defaultDeviceLang: string = '';
+  isLanguageSelected = false;
+  isFromSettings = false;
+  defaultDeviceLang = '';
   previousLanguage: any;
   selectedLanguage: any = {};
-  btnColor: string = '#55acee';
+  btnColor = '#55acee';
   unregisterBackButton: any;
 
 
@@ -79,9 +87,9 @@ export class LanguageSettingsPage {
     this.zone.run(() => {
       this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
         .then(val => {
-          if (val === undefined || val === "" || val === null) {
-            console.error("Language not set");
-            //this.getDeviceLanguage();
+          if (val === undefined || val === '' || val === null) {
+            console.error('Language not set');
+            // this.getDeviceLanguage();
             this.previousLanguage = undefined;
           } else {
             this.previousLanguage = val;
@@ -114,12 +122,12 @@ export class LanguageSettingsPage {
   //   this.language = this.languages[0].code;
   //   this.languages[0].isApplied = true;
   // }
- 
+
 
   ionViewDidLoad() {
     this.isFromSettings = this.navParams.get('isFromSettings');
     this.telemetryGeneratorService.generateImpressionTelemetry(
-      ImpressionType.VIEW, "",
+      ImpressionType.VIEW, '',
       this.isFromSettings ? PageId.SETTINGS_LANGUAGE : PageId.ONBOARDING_LANGUAGE_SETTING,
       this.isFromSettings ? Environment.SETTINGS : Environment.ONBOARDING,
     );
@@ -132,7 +140,7 @@ export class LanguageSettingsPage {
       );
       this.unregisterBackButton();
     });
-    
+
   }
 
   /**
@@ -140,7 +148,7 @@ export class LanguageSettingsPage {
    * @param language
    */
   onLanguageSelected() {
-    console.log("language selected : " + this.language);
+    console.log('language selected : ' + this.language);
     if (this.language) {
       /*       let selectedLanguage = this.languages.find(i => i.code === this.language);
             this.preferences.putString(PreferenceKey.SELECTED_LANGUAGE_CODE, selectedLanguage.code);
@@ -148,16 +156,15 @@ export class LanguageSettingsPage {
       this.btnColor = '#006DE5';
       this.isLanguageSelected = true;
       this.translateService.use(this.language);
-    }
-    else {
+    } else {
       this.btnColor = '#8FC4FF';
     }
   }
 
   generateLanguageSuccessInteractEvent(previousLanguage: string, currentLanguage: string) {
-    let valuesMap = new Map();
-    valuesMap["previousLanguage"] = previousLanguage ? previousLanguage : "";
-    valuesMap["currentLanguage"] = currentLanguage;
+    const valuesMap = new Map();
+    valuesMap['previousLanguage'] = previousLanguage ? previousLanguage : '';
+    valuesMap['currentLanguage'] = currentLanguage;
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.LANGUAGE_SETTINGS_SUCCESS,
@@ -169,8 +176,8 @@ export class LanguageSettingsPage {
   }
 
   generateContinueClickedInteractEvent(selectedLanguage: string) {
-    let valuesMap = new Map();
-    valuesMap["selectedLanguage"] = selectedLanguage;
+    const valuesMap = new Map();
+    valuesMap['selectedLanguage'] = selectedLanguage;
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.CONTINUE_CLICKED,
@@ -202,11 +209,10 @@ export class LanguageSettingsPage {
       } else {
         this.navCtrl.push(UserTypeSelectionPage);
       }
-    }
-    else {
-      this.generateContinueClickedInteractEvent("n/a");
+    } else {
+      this.generateContinueClickedInteractEvent('n/a');
       this.btnColor = '#8FC4FF';
-      let toast = this.toastCtrl.create({
+      const toast = this.toastCtrl.create({
         message: this.translateMessage('PLEASE_SELECT_A_LANGUAGE'),
         duration: 2000,
         cssClass: 'redErrorToast',
@@ -240,10 +246,11 @@ export class LanguageSettingsPage {
   ionViewWillLeave() {
     if (this.isLanguageSelected) {
       if (!this.selectedLanguage.code) {
-        if (this.previousLanguage)
+        if (this.previousLanguage) {
           this.translateService.use(this.previousLanguage);
-        else
+        } else {
           this.translateService.use('en');
+        }
       }
     }
   }
