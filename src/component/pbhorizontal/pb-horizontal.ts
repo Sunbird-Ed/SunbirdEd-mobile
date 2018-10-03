@@ -10,7 +10,6 @@ export class PBHorizontal {
   @Input('isOnBoardCard') isOnBoardCard;
 
   constructor() {
-
   }
 
 }
