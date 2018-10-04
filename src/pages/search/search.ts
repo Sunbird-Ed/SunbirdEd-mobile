@@ -169,22 +169,18 @@ export class SearchPage {
     }
 
     if (this.appGlobal.isGuestUser) {
-      console.log("isGuestUser", this.appGlobal.isGuestUser);
-      this.preferences.getString(PreferenceKey.IS_ONBOARDING_COMPLETED).then((result) => {
-        console.log("IS_ONBOARDING_COMPLETED", result);
-        console.log("this.source", this.source);
-        if (result === 'true' && this.source === PageId.USER_TYPE_SELECTION) {
+      if (this.source === PageId.USER_TYPE_SELECTION && this.appGlobal.isOnBoardingCompleted) {
+        if (this.appGlobal.isProfileSettingsCompleted) {
           this.navCtrl.setRoot(TabsPage, {
             loginMode: 'guest'
           });
+        } else {
+          this.navCtrl.push('ProfileSettingsPage', { buildPath: true });
         }
-        else {
-          console.log("isGuestUser else", this.appGlobal.isGuestUser);
-          this.popCurrentPage();
-        }
-      });
+      } else {
+        this.popCurrentPage();
+      }
     } else {
-      console.log("isGuestUser  else else", this.appGlobal.isGuestUser);
       this.popCurrentPage();
     }
   }
@@ -242,6 +238,11 @@ export class SearchPage {
         corRelation: this.corRelationList,
         parentContent: this.parentContent
       };
+    }
+
+    if (this.isDialCodeSearch && !this.appGlobal.isOnBoardingCompleted && (this.parentContent || content)) {
+      this.preferences.putString(PreferenceKey.IS_ONBOARDING_COMPLETED, 'true');
+      this.appGlobal.isOnBoardingCompleted = true;
     }
 
     if (content.contentType === ContentType.COURSE) {
