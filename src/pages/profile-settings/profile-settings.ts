@@ -106,9 +106,15 @@ export class ProfileSettingsPage {
   }
 
   ionViewWillEnter() {
+    if (this.navParams.get('buildPath')) {
+      this.navCtrl.setPages([{ page: 'LanguageSettingsPage' }, { page: 'UserTypeSelectionPage' }, { page: 'ProfileSettingsPage' }]);
+    }
     this.getSyllabusDetails();
   }
 
+  /**
+   * Initializes guest user object
+   */
   getGuestUser() {
     this.profileService.getCurrentUser((response) => {
       this.profile = JSON.parse(response);
@@ -120,6 +126,9 @@ export class ProfileSettingsPage {
     });
   }
 
+  /**
+   * Initializes form and assigns default values from the profile object
+   */
   initUserForm() {
     this.userForm = this.fb.group({
       syllabus: [this.profile && this.profile.syllabus && this.profile.syllabus[0] || []],
@@ -152,7 +161,7 @@ export class ProfileSettingsPage {
                 this.categories = catagories;
                 this.resetForm(0, false);
               }).catch(error => {
-                console.log('errorrrrrr', error);
+                console.error('Error', error);
                 this.loader.dismiss();
                 this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
               });
@@ -236,8 +245,8 @@ export class ProfileSettingsPage {
 
   /**
 	 * It will reset user form, based on given index
-	 * @param index
-	 * @param showloader
+	 * @param {number}  index 
+	 * @param {boolean} showloader Flag for showing loader or not
 	 */
   resetForm(index, showloader: boolean): void {
     const oldAttribute: any = {};
@@ -316,28 +325,28 @@ export class ProfileSettingsPage {
     const formVal = this.userForm.value;
     if (formVal.boards.length === 0) {
       this.btnColor = '#8FC4FF';
-    this.appGlobalService.generateSaveClickedTelemetry(this.extractProfileForTelemetry(formVal), 'failed',
-    PageId.ONBOARDING_PROFILE_PREFERENCES, InteractSubtype.FINISH_CLICKED);
-    this.commonUtilService.showToast(this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService
-    .translateMessage('BOARD')), false, 'redErrorToast');
+      this.appGlobalService.generateSaveClickedTelemetry(this.extractProfileForTelemetry(formVal), 'failed',
+        PageId.ONBOARDING_PROFILE_PREFERENCES, InteractSubtype.FINISH_CLICKED);
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService
+        .translateMessage('BOARD')), false, 'redErrorToast');
       return false;
     } else if (formVal.medium.length === 0) {
       this.btnColor = '#8FC4FF';
-    this.appGlobalService.generateSaveClickedTelemetry(this.extractProfileForTelemetry(formVal), 'failed',
-    PageId.ONBOARDING_PROFILE_PREFERENCES, InteractSubtype.FINISH_CLICKED);
-    this.commonUtilService.showToast(this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService
-    .translateMessage('MEDIUM')), false, 'redErrorToast');
+      this.appGlobalService.generateSaveClickedTelemetry(this.extractProfileForTelemetry(formVal), 'failed',
+        PageId.ONBOARDING_PROFILE_PREFERENCES, InteractSubtype.FINISH_CLICKED);
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService
+        .translateMessage('MEDIUM')), false, 'redErrorToast');
       return false;
     } else if (formVal.grades.length === 0) {
       this.btnColor = '#8FC4FF';
-    this.appGlobalService.generateSaveClickedTelemetry(this.extractProfileForTelemetry(formVal), 'failed',
-    PageId.ONBOARDING_PROFILE_PREFERENCES, InteractSubtype.FINISH_CLICKED);
-    this.commonUtilService.showToast(this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService
-    .translateMessage('CLASS')), false, 'redErrorToast');
+      this.appGlobalService.generateSaveClickedTelemetry(this.extractProfileForTelemetry(formVal), 'failed',
+        PageId.ONBOARDING_PROFILE_PREFERENCES, InteractSubtype.FINISH_CLICKED);
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService
+        .translateMessage('CLASS')), false, 'redErrorToast');
       return false;
     } else {
-    this.appGlobalService.generateSaveClickedTelemetry(this.extractProfileForTelemetry(formVal), 'passed',
-    PageId.ONBOARDING_PROFILE_PREFERENCES, InteractSubtype.FINISH_CLICKED);
+      this.appGlobalService.generateSaveClickedTelemetry(this.extractProfileForTelemetry(formVal), 'passed',
+        PageId.ONBOARDING_PROFILE_PREFERENCES, InteractSubtype.FINISH_CLICKED);
       this.submitEditForm(formVal, loader);
 
     }

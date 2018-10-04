@@ -4,6 +4,7 @@ import {
   NgZone
 } from '@angular/core';
 import {
+  IonicPage,
   NavController,
   NavParams,
   Events,
@@ -25,6 +26,7 @@ import { UserTypeSelectionPage } from '../user-type-selection/user-type-selectio
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { PreferenceKey } from '../../app/app.constant';
 
+@IonicPage()
 @Component({
   selector: 'page-language-settings',
   templateUrl: 'language-settings.html',
