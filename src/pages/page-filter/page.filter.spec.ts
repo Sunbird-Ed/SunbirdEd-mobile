@@ -88,10 +88,13 @@ describe('PageFilter Component', () => {
         });
         const appGlobalService = TestBed.get(AppGlobalService);
         const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
+        const commonUtilService = TestBed.get(CommonUtilService);
         spyTelemetryGeneratorService = spyOn(telemetryGeneratorService, 'generateInteractTelemetry');
         spyOn(telemetryGeneratorService, 'generateImpressionTelemetry').and.callFake(() => { });
         spyTelemetryGeneratorService.and.callFake(() => { });
         spyOn(appGlobalService, 'getCurrentUser').and.returnValue({ syllabus: ['NCF'] });
+        // spyOn(frameworkService, "getCategoryData").and.callFake((req) =>{return Promise.reject()})
+        spyOn(commonUtilService, "getTranslatedValue");
 
         fixture = TestBed.createComponent(PageFilter);
         component = fixture.componentInstance;
