@@ -12,6 +12,7 @@ import { generateInteractTelemetry, generateImpressionTelemetry } from '../../ap
 import { PreferenceKey } from '../../app/app.constant';
 
 const KEY_SUNBIRD_CONFIG_FILE_PATH = 'sunbird_config_file_path';
+
 @Component({
   selector: 'settings',
   templateUrl: 'settings.html'
@@ -77,7 +78,7 @@ export class SettingsPage {
   }
   ionViewDidLeave() {
     (<any>window).supportfile.removeFile((result) => {
-      console.log('File deleted -' + result);
+      console.log('File deleted -' + JSON.parse(result));
     }, (error) => {
       console.log('error' + error);
     });
@@ -100,6 +101,7 @@ export class SettingsPage {
   }
 
   sendMessage() {
+    this.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.SUPPORT_CLICKED);
     (<any>window).supportfile.shareSunbirdConfigurations((result) => {
       const loader = this.getLoader();
       loader.present();
@@ -125,7 +127,6 @@ export class SettingsPage {
     }, (error) => {
       console.log('ERROR - ' + error);
     });
-    this.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.SUPPORT_CLICKED);
   }
 
   shareApp() {
