@@ -267,7 +267,6 @@ export class QrCodeResultPage {
 				// this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
 				// this.events.publish('refresh:profile');
 				this.events.publish(AppGlobalService.USER_INFO_UPDATED);
-				this.preferences.putString('is_onboarding_settings_completed', 'true');
 				this.appGlobal.guestUserProfile = JSON.parse(res);
 			},
 			(err: any) => {
