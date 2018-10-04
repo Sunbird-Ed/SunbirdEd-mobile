@@ -65,7 +65,7 @@ export class AppGlobalService {
     isGuestUser = false;
     guestProfileType: ProfileType;
     isProfileSettingsCompleted: boolean;
-
+    isOnBoardingCompleted = false;
     session: any;
     public averageTime = 0;
     public averageScore = 0;
@@ -182,6 +182,11 @@ export class AppGlobalService {
             }
             this.getCurrentUserProfile();
         });
+
+        this.preference.getString(PreferenceKey.IS_ONBOARDING_COMPLETED)
+            .then((result) => {
+                this.isOnBoardingCompleted = (result === 'true') ? true : false;
+            });
     }
 
     readConfig() {

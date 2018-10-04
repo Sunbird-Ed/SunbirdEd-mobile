@@ -11,8 +11,10 @@ import { Impression, ImpressionType, Environment, PageId, TelemetryService } fro
 import { generateInteractTelemetry, generateImpressionTelemetry } from '../../app/telemetryutil';
 import { PreferenceKey } from '../../app/app.constant';
 import { Observable } from 'rxjs/Observable';
-import { NavMock, AppVersionMock, SocialSharingMock, LoadingControllerMock, TranslateServiceStub,
-         SharedPreferencesMock, TelemetryServiceMock, ShareUtilMock } from '../../../test-config/mocks-ionic';
+import {
+    NavMock, AppVersionMock, SocialSharingMock, LoadingControllerMock, TranslateServiceStub,
+    SharedPreferencesMock, TelemetryServiceMock, ShareUtilMock
+} from '../../../test-config/mocks-ionic';
 import { SettingsPage } from './settings';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
@@ -92,6 +94,24 @@ describe('SettingsPage', () => {
         });
 
     });
+    it('#IonViewDidLeave makes expected calls in success part', () => {
+        window['supportfile'] = {
+            removeFile: () => ({})
+        };
+        spyOn(window['supportfile'], 'removeFile').and.callFake((result, error) => {
+            return result(JSON.stringify({}));
+        });
+        comp.ionViewDidLeave();
+    });
+    it('#IonViewDidLoad makes expected calls in error part', () => {
+        window['supportfile'] = {
+            removeFile: () => ({})
+        };
+        spyOn(window['supportfile'], 'removeFile').and.callFake((result, error) => {
+            return error(JSON.stringify({}));
+        });
+        comp.ionViewDidLeave();
+    });
     describe('goBack', () => {
         it('makes expected calls ', () => {
             const navStub = TestBed.get(NavController);
@@ -144,10 +164,15 @@ describe('SettingsPage', () => {
         it('makes expected calls', () => {
             const preferStub = TestBed.get(SharedPreferences);
             const loadControllerStub = TestBed.get(LoadingController);
-            getLoader();
             spyOn(comp, 'generateInteractTelemetry');
             spyOn(preferStub, 'getString').and.returnValue(Promise.resolve(undefined));
-
+            window['supportfile'] = {
+                shareSunbirdConfigurations: () => ({})
+            };
+            spyOn(window['supportfile'], 'shareSunbirdConfigurations').and.callFake((result, error) => {
+                return result(JSON.stringify({}));
+            });
+            getLoader();
             comp.sendMessage();
             expect(loadControllerStub.create).toHaveBeenCalled();
             expect(comp.generateInteractTelemetry).toHaveBeenCalled();
@@ -159,11 +184,18 @@ describe('SettingsPage', () => {
             getLoader();
             spyOn(comp, 'generateInteractTelemetry');
             spyOn(preferStub, 'getString').and.returnValue(Promise.resolve(''));
-
+            window['supportfile'] = {
+                shareSunbirdConfigurations: () => ({})
+            };
+            spyOn(window['supportfile'], 'shareSunbirdConfigurations').and.callFake((result, error) => {
+                return result(JSON.stringify({}));
+            });
+            getLoader();
             comp.sendMessage();
+            expect(preferStub.getString).toHaveBeenCalled();
             expect(loadControllerStub.create).toHaveBeenCalled();
             expect(comp.generateInteractTelemetry).toHaveBeenCalled();
-            expect(preferStub.getString).toHaveBeenCalled();
+
         });
         it('makes expected calls and checks when val is null', () => {
             const preferStub = TestBed.get(SharedPreferences);
@@ -171,7 +203,13 @@ describe('SettingsPage', () => {
             getLoader();
             spyOn(comp, 'generateInteractTelemetry');
             spyOn(preferStub, 'getString').and.returnValue(Promise.resolve(null));
-
+            window['supportfile'] = {
+                shareSunbirdConfigurations: () => ({})
+            };
+            spyOn(window['supportfile'], 'shareSunbirdConfigurations').and.callFake((result, error) => {
+                return result(JSON.stringify({}));
+            });
+            getLoader();
             comp.sendMessage();
             expect(loadControllerStub.create).toHaveBeenCalled();
             expect(comp.generateInteractTelemetry).toHaveBeenCalled();
@@ -182,6 +220,13 @@ describe('SettingsPage', () => {
             const loadControllerStub = TestBed.get(LoadingController);
             const SocialSharingStub = TestBed.get(SocialSharing);
             comp.fileUrl = 'string';
+            getLoader();
+            window['supportfile'] = {
+                shareSunbirdConfigurations: () => ({})
+            };
+            spyOn(window['supportfile'], 'shareSunbirdConfigurations').and.callFake((result, error) => {
+                return result(JSON.stringify({}));
+            });
             getLoader();
             spyOn(comp, 'generateInteractTelemetry');
             spyOn(preferStub, 'getString').and.returnValue(Promise.resolve('string'));
@@ -196,6 +241,13 @@ describe('SettingsPage', () => {
             const loadControllerStub = TestBed.get(LoadingController);
             const SocialSharingStub = TestBed.get(SocialSharing);
             comp.fileUrl = 'string';
+            getLoader();
+            window['supportfile'] = {
+                shareSunbirdConfigurations: () => ({})
+            };
+            spyOn(window['supportfile'], 'shareSunbirdConfigurations').and.callFake((result, error) => {
+                return result(JSON.stringify({}));
+            });
             getLoader();
             spyOn(comp, 'generateInteractTelemetry');
             spyOn(preferStub, 'getString').and.returnValue(Promise.resolve('string'));
@@ -235,7 +287,7 @@ describe('SettingsPage', () => {
             expect(comp.shareApp).toBeDefined();
             expect(shareUtilStub.error).toBe(undefined);
             expect(shareUtilStub.exportApk).toHaveBeenCalled();
-           // expect(SocialSharingStub.share).toHaveBeenCalled();
+            // expect(SocialSharingStub.share).toHaveBeenCalled();
         });
     });
     describe('getLoader', () => {

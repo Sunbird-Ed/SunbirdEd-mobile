@@ -3,6 +3,7 @@ import {
   NgZone
 } from '@angular/core';
 import {
+  IonicPage,
   NavController,
   NavParams,
   Events
@@ -40,6 +41,7 @@ import { ProfileSettingsPage } from '../profile-settings/profile-settings';
 const selectedCardBorderColor = '#006DE5';
 const borderColor = '#F7F7F7';
 
+@IonicPage()
 @Component({
   selector: 'page-user-type-selection',
   templateUrl: 'user-type-selection.html',
@@ -62,7 +64,8 @@ export class UserTypeSelectionPage {
   isChangeRoleRequest = false;
   showScanner = false;
 
-  constructor(public navCtrl: NavController,
+  constructor(
+    public navCtrl: NavController,
     public navParams: NavParams,
     private translate: TranslateService,
     private preference: SharedPreferences,

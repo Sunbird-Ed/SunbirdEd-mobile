@@ -1,3 +1,4 @@
+import { QRScannerAlert } from './../qrscanner/qrscanner_alert';
 import { FormAndFrameworkUtilService } from './../profile/formandframeworkutil.service';
 import {
 	Component,
@@ -35,6 +36,7 @@ import {
 } from 'sunbird';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import * as _ from 'lodash';
+import { PopoverController } from 'ionic-angular';
 
 @IonicPage()
 @Component({
@@ -105,7 +107,8 @@ export class QrCodeResultPage {
 		private formAndFrameworkUtilService: FormAndFrameworkUtilService,
 		private profileService: ProfileService,
 		private events: Events,
-		private preferences: SharedPreferences
+		private preferences: SharedPreferences,
+		private popOverCtrl: PopoverController
 	) {
 		this.defaultImg = 'assets/imgs/ic_launcher.png';
 	}
@@ -179,7 +182,23 @@ export class QrCodeResultPage {
 				this.zone.run(() => {
 					this.showChildrenLoader = false;
 				});
+				this.showContentComingSoonAlert();
+        		this.navCtrl.pop();
 			});
+	}
+
+	showContentComingSoonAlert() {
+		const popOver = this.popOverCtrl.create(QRScannerAlert, {
+		  icon: './assets/imgs/ic_coming_soon.png',
+		  messageKey: 'CONTENT_COMING_SOON',
+		  cancelKey: 'hide',
+		  tryAgainKey: 'DONE',
+		}, {
+			cssClass: 'qr-alert'
+		  });
+		 setTimeout(() => {
+		  popOver.present();
+		}, 300);
 	}
 
 	private showAllChild(content: any) {
