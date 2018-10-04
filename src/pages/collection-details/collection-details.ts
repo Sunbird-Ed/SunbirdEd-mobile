@@ -1,3 +1,4 @@
+import { contentTypeList } from './../../config/framework.filters';
 import {
   Component,
   NgZone,
@@ -346,11 +347,11 @@ export class CollectionDetailsPage {
     this.contentService.getContentDetail(option, (data: any) => {
       this.zone.run(() => {
         data = JSON.parse(data);
-        loader.dismiss().then(() => {
-          if (data && data.result) {
-            this.extractApiResponse(data);
-          }
-        });
+        if (data && data.result) {
+          loader.dismiss();
+          console.log('get content detail', data);
+          this.extractApiResponse(data);
+        }
       });
     },
       error => {
@@ -365,6 +366,7 @@ export class CollectionDetailsPage {
    * Function to extract api response.
    */
   extractApiResponse(data) {
+    console.log('extractApi', data);
     this.contentDetail = data.result.contentData ? data.result.contentData : [];
     this.contentDetail.isAvailableLocally = data.result.isAvailableLocally;
     this.objId = this.contentDetail.identifier;
@@ -441,9 +443,12 @@ export class CollectionDetailsPage {
       if (!_.isObject(this.cardData.contentTypesCount)) {
         this.contentDetail.contentTypesCount = JSON.parse(this.cardData.contentTypesCount);
       }
-    } /*else {
-      this.contentDetail.contentTypesCount;
-    }*/
+      console.log('contentTypesCount', this.contentDetail.contentTypesCount);
+    } else {
+      this.zone.run(() => {
+        //this.contentDetail.contentTypesCount;
+      });
+    }
   }
 
   /**
@@ -482,7 +487,10 @@ export class CollectionDetailsPage {
     this.contentService.importContent(option, (data: any) => {
       this.zone.run(() => {
         data = JSON.parse(data);
-
+        console.log('import content', data);
+        if (data.result && data.result.length) {
+          this.setChildContents();
+        }
         if (data.result && data.result.length && this.isDownloadStarted) {
           _.forEach(data.result, (value) => {
             if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
@@ -515,6 +523,7 @@ export class CollectionDetailsPage {
           this.showChildrenLoader = false;
           this.childrenData.length = 0;
         }
+
       });
     },
       error => {
@@ -546,6 +555,7 @@ export class CollectionDetailsPage {
     this.contentService.getChildContents(option, (data: any) => {
       data = JSON.parse(data);
       this.zone.run(() => {
+        console.log('set child contents data', data);
         if (data && data.result && data.result.children) {
           this.childrenData = data.result.children;
         }
@@ -554,7 +564,9 @@ export class CollectionDetailsPage {
           this.downloadSize = 0;
           this.getContentsSize(data.result.children || []);
         }
-        this.showChildrenLoader = false;
+        if (this.childrenData && this.childrenData.length > 0) {
+          this.showChildrenLoader = false;
+        }
       });
     },
       (error: string) => {
@@ -573,7 +585,7 @@ export class CollectionDetailsPage {
       this.getContentsSize(value.children);
       if (value.isAvailableLocally === false) {
         this.downloadIdentifiers.push(value.contentData.identifier);
-       }
+      }
     });
     if (this.downloadIdentifiers.length && !this.isDownlaodCompleted) {
       this.showDownloadBtn = true;
@@ -712,6 +724,7 @@ export class CollectionDetailsPage {
    * Subscribe genie event to get content download progress
    */
   subscribeGenieEvent() {
+    console.log('genie event');
     this.events.subscribe('genie.event', (data) => {
       this.zone.run(() => {
         data = JSON.parse(data);
@@ -720,7 +733,7 @@ export class CollectionDetailsPage {
         if (res.type === 'downloadProgress' && res.data.downloadProgress) {
           if (res.data.downloadProgress === -1 || res.data.downloadProgress === '-1') {
             this.downloadProgress = 0;
-          } else {
+          } else if (res.data.identifier === this.contentDetail.identifier) {
             this.downloadProgress = res.data.downloadProgress;
           }
 
@@ -730,7 +743,8 @@ export class CollectionDetailsPage {
           }
         }
         // Get child content
-        if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
+        if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport'
+          && res.type === 'downloadProgress' && res.data.downloadProgress) {
           this.showLoading = false;
           if (this.queuedIdentifiers.length && this.isDownloadStarted) {
             if (_.includes(this.queuedIdentifiers, res.data.identifier)) {
