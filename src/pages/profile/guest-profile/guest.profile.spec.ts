@@ -1,4 +1,5 @@
-import { ProfileService, SharedPreferences, TelemetryService, ServiceProvider, AuthService, BuildParamService, FrameworkService } from 'sunbird';
+import { ProfileService, SharedPreferences, TelemetryService, ServiceProvider,
+    AuthService, BuildParamService, FrameworkService } from 'sunbird';
 import 'rxjs/add/observable/of';
 
 import { Observable } from 'rxjs';
@@ -17,9 +18,11 @@ import { GuestProfilePage } from './guest-profile';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 
 import {
-    LoadingControllerMock, TranslateServiceStub, ToastControllerMockNew, PopoverControllerMock, AuthServiceMock, AppGlobalServiceMock, NavMock, NavParamsMock, profileServiceMock,
+    LoadingControllerMock, TranslateServiceStub, ToastControllerMockNew, PopoverControllerMock, AuthServiceMock,
+    AppGlobalServiceMock, NavMock, NavParamsMock, profileServiceMock,
     SharedPreferencesMock, FormAndFrameworkUtilServiceMock, EventsMock, TelemetryServiceMock
 } from '../../../../test-config/mocks-ionic';
+import { CommonUtilService } from '../../../service/common-util.service';
 
 
 describe('GuestProfilePage', () => {
@@ -27,7 +30,6 @@ describe('GuestProfilePage', () => {
     let fixture: ComponentFixture<GuestProfilePage>;
     let spyObj;
     beforeEach(async(() => {
-        
         const NetworkStub = {
             type: '',
             onConnect: () => ({
@@ -36,26 +38,26 @@ describe('GuestProfilePage', () => {
             onDisconnect: () => ({
                 subscribe: () => { }
             })
-        }
+        };
 
         const telemetryGeneratorServiceStub = {
             generateImpressionTelemetry: () => ({}),
             generateInteractTelemetry: () => ({})
         };
-        
+
         TestBed.configureTestingModule({
             imports: [TranslateModule.forRoot()],
             declarations: [GuestProfilePage],
             schemas: [NO_ERRORS_SCHEMA],
-            providers: [TelemetryGeneratorService, TelemetryService, ServiceProvider,SharedPreferences, BuildParamService,
-                FrameworkService,
+            providers: [TelemetryGeneratorService, TelemetryService, ServiceProvider, SharedPreferences, BuildParamService,
+                FrameworkService, CommonUtilService,
                 { provide: NavController, useClass: NavMock },
                 { provide: AuthService, useClass: AuthServiceMock },
                 { provide: Network, useValue: NetworkStub },
                 { provide: TelemetryGeneratorService, useValue: telemetryGeneratorServiceStub },
                 { provide: ProfileService, useClass: profileServiceMock },
                 { provide: Events, useClass: EventsMock },
-                //{ provide: SharedPreferences, useValue: SharedPreferencesMock },
+                // { provide: SharedPreferences, useValue: SharedPreferencesMock },
                 { provide: TranslateService, useClass: TranslateServiceStub },
                 { provide: AppGlobalService, useClass: AppGlobalServiceMock },
                 { provide: FormAndFrameworkUtilService, useClass: FormAndFrameworkUtilServiceMock },
@@ -66,52 +68,52 @@ describe('GuestProfilePage', () => {
         });
     }));
 
-    it("should set showSignInCard to 'true'", () => {
+    it('should set showSignInCard to \'true\'', () => {
         const appGlobal = TestBed.get(AppGlobalService);
-        spyOn(appGlobal, "getGuestUserType").and.returnValue("TEACHER");
-        spyOn(appGlobal, "DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER").and.returnValue(true)
+        spyOn(appGlobal, 'getGuestUserType').and.returnValue('TEACHER');
+        spyOn(appGlobal, 'DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER').and.returnValue(true);
         fixture = TestBed.createComponent(GuestProfilePage);
         comp = fixture.componentInstance;
         expect(comp.showSignInCard).toBe(true);
-    })
+    });
 
-    it("should set showSignInCard to 'true'", () => {
+    it('should set showSignInCard to \'true\'', () => {
         const appGlobal = TestBed.get(AppGlobalService);
-        spyOn(appGlobal, "getGuestUserType").and.returnValue("STUDENT");
-        spyOn(appGlobal, "DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT").and.returnValue(true)
+        spyOn(appGlobal, 'getGuestUserType').and.returnValue('STUDENT');
+        spyOn(appGlobal, 'DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT').and.returnValue(true);
         fixture = TestBed.createComponent(GuestProfilePage);
         comp = fixture.componentInstance;
         expect(comp.showSignInCard).toBe(true);
-    })
+    });
 
     beforeEach(async() => {
-        let code = 'selected_language_code';
+        const code = 'selected_language_code';
         const SharedPreferenceStub = TestBed.get(SharedPreferences);
         spyOn(SharedPreferenceStub, 'getString').and.returnValue(Promise.resolve('en'));
 
-        const profileServiceStub = TestBed.get(ProfileService)
-        spyObj = spyOn(profileServiceStub, "getCurrentUser");
+        const profileServiceStub = TestBed.get(ProfileService);
+        spyObj = spyOn(profileServiceStub, 'getCurrentUser');
         spyObj.and.callFake((success, error) => {
-            error("error");
+            error('error');
         });
         fixture = TestBed.createComponent(GuestProfilePage);
         comp = fixture.componentInstance;
-    })
+    });
 
-    let getLoader = () => {
+    const getLoader = () => {
         const loadingController = TestBed.get(LoadingController);
         comp.getLoader();
-    }
+    };
 
     it('should load instance', () => {
         expect(comp).toBeTruthy();
     });
 
-    it("ionViewDidLoad makes expected calls", () => {
+    it('ionViewDidLoad makes expected calls', () => {
         const telemetryGeneratorServiceStub = TestBed.get(TelemetryGeneratorService);
-        const appGloabal = TestBed.get(AppGlobalService)
-        spyOn(telemetryGeneratorServiceStub, "generateImpressionTelemetry");
-        spyOn(appGloabal, "generateConfigInteractEvent");
+        const appGloabal = TestBed.get(AppGlobalService);
+        spyOn(telemetryGeneratorServiceStub, 'generateImpressionTelemetry');
+        spyOn(appGloabal, 'generateConfigInteractEvent');
         comp.ionViewDidLoad();
         expect(telemetryGeneratorServiceStub.generateImpressionTelemetry).toHaveBeenCalled();
         expect(appGloabal.generateConfigInteractEvent).toHaveBeenCalled();
@@ -183,7 +185,7 @@ describe('GuestProfilePage', () => {
         expect(typeof comp.profile).toEqual('object');
     });
 
-    describe('Constructor', () => { //Need to improve
+    describe('Constructor', () => { // Need to improve
         it('should call getString to fetch selected_language_code', (done) => {
             const SharedPreferencesStub = TestBed.get(SharedPreferences);
 
@@ -195,16 +197,16 @@ describe('GuestProfilePage', () => {
         });
     });
 
-    it("refreshProfileData should make expected calls", () => {
+    it('refreshProfileData should make expected calls', () => {
         getLoader();
         const ProfileServiceStub = TestBed.get(ProfileService);
-        let response = {
+        const response = {
             id: 'abcd'
         };
         spyObj.and.callFake((res, err) => {
-            res(JSON.stringify(response))
-        })
-        spyOn(comp, "getSyllabusDetails")
+            res(JSON.stringify(response));
+        });
+        spyOn(comp, 'getSyllabusDetails');
         comp.refreshProfileData(false, true);
         expect(comp.profile).toEqual(response);
         expect(comp.getSyllabusDetails).toHaveBeenCalled();
@@ -212,32 +214,31 @@ describe('GuestProfilePage', () => {
         //     let refresher = jasmine.createSpyObj('refresher', ['complete']);
         //     expect(refresher.complete).toHaveBeenCalled();
         // },500)
-    })
+    });
 
     it('editGuestProfile should call GuestEditProfile page', () => {
         const navControllerStub = TestBed.get(NavController);
-        spyOn(navControllerStub, "push");
+        spyOn(navControllerStub, 'push');
         comp.editGuestProfile();
         expect(comp.editGuestProfile).toBeDefined();
         expect(navControllerStub.push).toHaveBeenCalled();
-        
     });
 
-    it("showNetworkWarning should set showWarning to true", (done) => {
+    it('showNetworkWarning should set showWarning to true', (done) => {
         comp.showNetworkWarning();
         expect(comp.showWarning).toBe(true);
         setTimeout(() => {
             expect(comp.showWarning).toBe(false);
             done();
-        },3500)
+        }, 3500);
     });
 
-    it("should handle success scenario for getSyllabusDetails", (done) => {
+    it('should handle success scenario for getSyllabusDetails', (done) => {
         getLoader();
-        let data = [{ name: "sampleName", frameworkId: "sampleSyllabus" }];
+        const data = [{ name: 'sampleName', frameworkId: 'sampleSyllabus' }];
         comp.profile = {
-            syllabus: ["sampleSyllabus"]
-        }
+            syllabus: ['sampleSyllabus']
+        };
         const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
         spyOn(formAndFrameworkUtilServiceStub, 'getSyllabusList').and.returnValue(Promise.resolve(data));
         spyOn(formAndFrameworkUtilServiceStub, 'getFrameworkDetails');
@@ -250,12 +251,12 @@ describe('GuestProfilePage', () => {
         }, 10);
     });
 
-    it("should handle failure scenario for getSyllabusDetails", () => {
+    it('should handle failure scenario for getSyllabusDetails', () => {
         getLoader();
-        let data = [];
+        const data = [];
         comp.profile = {
-            syllabus: ["sampleSyllabus"]
-        }
+            syllabus: ['sampleSyllabus']
+        };
         const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
         spyOn(formAndFrameworkUtilServiceStub, 'getSyllabusList').and.returnValue(Promise.resolve(data));
         spyOn(formAndFrameworkUtilServiceStub, 'getFrameworkDetails');
@@ -264,47 +265,40 @@ describe('GuestProfilePage', () => {
         // expect(comp.syllabus).toEqual(data[0].name);
     });
 
-    it("should handle success scenario for getFrameworkDetails", (done) => {
+    it('should handle success scenario for getFrameworkDetails', (done) => {
         getLoader();
-        let data = ["sampleCategory"];
-        comp.profile ={
-            board  : ["sampleBoard"],
-            medium : ["sampleMedium"],
-            grade  : ["sampleGrade"],
-            subject: ["sampleSubject"]
+        const data = ['sampleCategory'];
+        comp.profile = {
+            board  : ['sampleBoard'],
+            medium : ['sampleMedium'],
+            grade  : ['sampleGrade'],
+            subject: ['sampleSubject']
         };
         const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
         spyOn(formAndFrameworkUtilServiceStub, 'getFrameworkDetails').and.returnValue(Promise.resolve(data));
-        spyOn(comp, "getFieldDisplayValues")
-        comp.getFrameworkDetails("string");
+        spyOn(comp, 'getFieldDisplayValues');
+        comp.getFrameworkDetails('string');
         setTimeout(() => {
             expect(comp.categories).toEqual(data);
             done();
         }, 10);
-        
+
     });
 
-    it("getFieldDisplayValues should call arrayToString", () => {
-        let data = ["sampleTerms"];
-        comp.categories = [{terms :["sampleTerms"]}];
-        comp.getFieldDisplayValues(data,0);
-        spyOn(comp, "arrayToString");
+    it('getFieldDisplayValues should call arrayToString', () => {
+        const data = ['sampleTerms'];
+        comp.categories = [{terms : ['sampleTerms']}];
+        comp.getFieldDisplayValues(data, 0);
+        spyOn(comp, 'arrayToString');
     });
 
     // it("arrayToString", () =>)
 
-    it("goToRoles should make expected calls", () => {
-        const navCtrl = TestBed.get(NavController)
-        spyOn(navCtrl, "push");
+    it('goToRoles should make expected calls', () => {
+        const navCtrl = TestBed.get(NavController);
+        spyOn(navCtrl, 'push');
         comp.goToRoles();
-        expect(navCtrl.push).toHaveBeenCalled(); 
-    })
-
-    it("getToast should make expected calls", () => {
-        const toasrCtrlStub  = TestBed.get(ToastController);
-        let msg = "testMessage";
-        let getToast = comp.getToast(msg);
-        expect(comp.options.message).toEqual(msg)
+        expect(navCtrl.push).toHaveBeenCalled();
     });
 
     // describe('goToRoles', () => {
@@ -330,28 +324,28 @@ describe('GuestProfilePage', () => {
         it('should convert String Array to single string', () => {
             spyOn(comp, 'arrayToString');
             expect(comp.arrayToString).toBeDefined();
-            let arg: Array<string> = ["abcd", "xyz"];
+            const arg: Array<string> = ['abcd', 'xyz'];
             comp.arrayToString(arg);
             expect(comp.arrayToString).toHaveBeenCalled();
             expect(typeof arg).toBe('object');
             expect(Array.isArray(arg)).toBe(true);
             expect(comp.arrayToString).toHaveBeenCalledWith(arg);
-            //expect(comp.arrayToString(arg)).toEqual("abcd, xyz");
+            // expect(comp.arrayToString(arg)).toEqual("abcd, xyz");
         });
     });
 
-    describe("translateMessage", () => {
+    describe('translateMessage', () => {
         it('should resolve test data', fakeAsync(() => {
-            let translate = TestBed.get(TranslateService);
+            const translate = TestBed.get(TranslateService);
             const translateStub = TestBed.get(TranslateService);
+            const commonUtilServiceStub = TestBed.get(CommonUtilService);
             const spy = spyOn(translate, 'get').and.callFake((arg) => {
                 return Observable.of('Cancel');
             });
-            let translatedMessage = comp.translateMessage('CANCEL');
-            //fixture.detectChanges();
+            const translatedMessage = commonUtilServiceStub.translateMessage('CANCEL');
+            // fixture.detectChanges();
             expect(translatedMessage).toEqual('Cancel');
             expect(spy.calls.any()).toEqual(true);
         }));
     });
-    
 });
