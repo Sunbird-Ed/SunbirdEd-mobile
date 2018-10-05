@@ -1,4 +1,4 @@
-import { QRScannerAlert } from './../qrscanner/qrscanner_alert';
+import { QRScannerAlert, QRAlertCallBack } from './../qrscanner/qrscanner_alert';
 import { FormAndFrameworkUtilService } from './../profile/formandframeworkutil.service';
 import {
   Component,
@@ -37,6 +37,7 @@ import {
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import * as _ from 'lodash';
 import { PopoverController } from 'ionic-angular';
+import { Popover } from 'ionic-angular';
 
 @IonicPage()
 @Component({
@@ -123,6 +124,11 @@ export class QrCodeResultPage {
     this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
     this.source = this.navParams.get('source');
 
+    if (Boolean(this.navParams.get('buildPath'))) {
+        this.navCtrl.insert(0, 'LanguageSettingsPage');
+        this.navCtrl.insert(1, 'UserTypeSelectionPage');
+    }
+
     // check for parent content
     this.parentContent = this.navParams.get('parentContent');
     this.searchIdentifier = this.content.identifier;
@@ -175,7 +181,7 @@ export class QrCodeResultPage {
         this.parents.splice(0, this.parents.length);
         this.parents.push(data.result);
         this.profile = this.appGlobal.getCurrentUser();
-        let contentData = JSON.parse(JSON.stringify(data.result.contentData));
+        const contentData = JSON.parse(JSON.stringify(data.result.contentData));
         this.checkProfileData(contentData, this.profile);
         this.findContentNode(data.result);
       },
@@ -190,7 +196,16 @@ export class QrCodeResultPage {
   }
 
   showContentComingSoonAlert() {
-    const popOver = this.popOverCtrl.create(QRScannerAlert, {
+    let popOver: Popover;
+    const callback: QRAlertCallBack = {
+        tryAgain() {
+            popOver.dismiss();
+        },
+        cancel() {
+            popOver.dismiss();
+        }
+    };
+    popOver = this.popOverCtrl.create(QRScannerAlert, {
       icon: './assets/imgs/ic_coming_soon.png',
       messageKey: 'CONTENT_COMING_SOON',
       cancelKey: 'hide',

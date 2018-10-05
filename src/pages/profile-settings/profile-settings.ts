@@ -1,6 +1,7 @@
+import { GUEST_TEACHER_TABS, initTabs, GUEST_STUDENT_TABS } from './../../app/module.service';
 import { NavParams } from 'ionic-angular/index';
 import { AppGlobalService } from '../../service/app-global.service';
-import { ProfileService, TabsPage, InteractSubtype, PageId, InteractType } from 'sunbird';
+import { ProfileService, TabsPage, InteractSubtype, PageId, InteractType, ProfileType, ContainerService } from 'sunbird';
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
@@ -48,6 +49,7 @@ export class ProfileSettingsPage {
   unregisterBackButton: any;
   selectedLanguage = 'en';
   profileForTelemetry: any = {};
+  hideBackButton = false;
 
   syllabusOptions = {
     title: this.commonUtilService.translateMessage('SYLLABUS').toLocaleUpperCase(),
@@ -80,7 +82,8 @@ export class ProfileSettingsPage {
     private events: Events,
     private scanner: SunbirdQRScanner,
     private platform: Platform,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    private container: ContainerService
   ) {
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
       .then(val => {
@@ -106,6 +109,7 @@ export class ProfileSettingsPage {
   }
 
   ionViewWillEnter() {
+    this.hideBackButton = Boolean(this.navParams.get('hideBackButton'));
     if (this.navParams.get('buildPath')) {
       this.navCtrl.setPages([{ page: 'LanguageSettingsPage' }, { page: 'UserTypeSelectionPage' }, { page: 'ProfileSettingsPage' }]);
     }
@@ -379,12 +383,19 @@ export class ProfileSettingsPage {
     }
     this.profileService.updateProfile(req,
       (res: any) => {
+        if (req.profileType === ProfileType.TEACHER) {
+          initTabs(this.container, GUEST_TEACHER_TABS);
+        } else if (req.profileType === ProfileType.STUDENT) {
+          initTabs(this.container, GUEST_STUDENT_TABS);
+        }
+
         this.events.publish('refresh:profile');
         this.appGlobalService.guestUserProfile = JSON.parse(res);
         this.commonUtilService.showToast('PROFILE_UPDATE_SUCCESS');
         this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: true });
         this.events.publish('refresh:profile');
         this.appGlobalService.guestUserProfile = JSON.parse(res);
+        this.appGlobalService.setOnBoardingCompleted();
         this.navCtrl.push(TabsPage, {
           loginMode: 'guest'
         });
