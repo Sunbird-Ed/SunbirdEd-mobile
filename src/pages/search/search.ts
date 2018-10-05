@@ -27,7 +27,6 @@ import {
   Mode,
   TelemetryObject,
   PageId,
-  SharedPreferences,
   TabsPage
 } from 'sunbird';
 import { GenieResponse } from '../settings/datasync/genieresponse';
@@ -41,8 +40,7 @@ import {
   ContentType,
   MimeType,
   Search,
-  AudienceFilter,
-  PreferenceKey
+  AudienceFilter
 } from '../../app/app.constant';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 import { AppGlobalService } from '../../service/app-global.service';
@@ -132,8 +130,7 @@ export class SearchPage {
     private platform: Platform,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private commonUtilService: CommonUtilService,
-    private telemetryGeneratorService: TelemetryGeneratorService,
-    private preferences: SharedPreferences
+    private telemetryGeneratorService: TelemetryGeneratorService
   ) {
 
     this.checkUserSession();
@@ -241,14 +238,14 @@ export class SearchPage {
     }
 
     if (this.isDialCodeSearch && !this.appGlobal.isOnBoardingCompleted && (this.parentContent || content)) {
-      this.preferences.putString(PreferenceKey.IS_ONBOARDING_COMPLETED, 'true');
-      this.appGlobal.isOnBoardingCompleted = true;
+      this.appGlobal.setOnBoardingCompleted();
     }
 
     if (content.contentType === ContentType.COURSE) {
       this.navCtrl.push(EnrolledCourseDetailsPage, params);
     } else if (content.mimeType === MimeType.COLLECTION) {
       if (this.isDialCodeSearch && !isRootContent) {
+        params.buildPath = true;
         this.navCtrl.push(QrCodeResultPage, params);
       } else {
         this.navCtrl.push(CollectionDetailsPage, params);

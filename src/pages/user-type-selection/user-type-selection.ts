@@ -78,7 +78,7 @@ export class UserTypeSelectionPage {
     private appGlobal: AppGlobalService,
     private scannerService: SunbirdQRScanner
   ) {
-}
+  }
 
   ionViewWillEnter() {
     this.profile = this.appGlobal.getCurrentUser();
@@ -161,10 +161,10 @@ export class UserTypeSelectionPage {
         this.gotoTabsPage(true);
       },
       (err: any) => {
-        console.log('Err', err);
+        console.error('Err', err);
       });
   }
-// TODO Remove getCurrentUser as setCurrentProfile is returning uid
+  // TODO Remove getCurrentUser as setCurrentProfile is returning uid
   setProfile(profileRequest: any) {
     this.profileService.setCurrentProfile(true, profileRequest, () => {
       this.profileService.getCurrentUser(success => {
@@ -195,7 +195,8 @@ export class UserTypeSelectionPage {
     }
 
     if (this.isChangeRoleRequest && isUserTypeChanged) {
-      this.navCtrl.push(ProfileSettingsPage);
+      this.container.removeAllTabs();
+      this.navCtrl.push(ProfileSettingsPage, { hideBackButton: true });
     } else if (this.appGlobal.isProfileSettingsCompleted) {
       this.navCtrl.push(TabsPage, {
         loginMode: 'guest'

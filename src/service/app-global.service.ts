@@ -189,6 +189,11 @@ export class AppGlobalService {
             });
     }
 
+    setOnBoardingCompleted() {
+        this.isOnBoardingCompleted = true;
+        this.preference.putString(PreferenceKey.IS_ONBOARDING_COMPLETED, 'true');
+    }
+
     readConfig() {
         this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_ONBOARDING_CARDS)
             .then(response => {
