@@ -31,27 +31,6 @@ describe('QrCodeResultPage', () => {
         comp = fixture.componentInstance;
     });
 
-
-    it('can load instance', () => {
-        expect(comp).toBeTruthy();
-    });
-
-    it('isParentContentAvailable defaults to: false', () => {
-        expect(comp.isParentContentAvailable).toEqual(false);
-    });
-
-    it('shouldGenerateEndTelemetry defaults to: false', () => {
-        expect(comp.shouldGenerateEndTelemetry).toEqual(false);
-    });
-
-    it('results defaults to: []', () => {
-        expect(comp.results).toEqual([]);
-    });
-
-    it('parents defaults to: []', () => {
-        expect(comp.parents).toEqual([]);
-    });
-
     it('#ionViewWillEnter calls for child and parents', () => {
         const navParamsStub = TestBed.get(NavParams);
         expect(comp.ionViewWillEnter).toBeDefined();
@@ -64,7 +43,6 @@ describe('QrCodeResultPage', () => {
         expect(comp.getChildContents).toHaveBeenCalled();
         expect(navParamsStub.get).toHaveBeenCalled();
         // expect(comp.ionViewWillEnter).toHaveBeenCalled();
-
     });
 
     // it("#ionViewWillEnter should be root is undefined", () =>{
