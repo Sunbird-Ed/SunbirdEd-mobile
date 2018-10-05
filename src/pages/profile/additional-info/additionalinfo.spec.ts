@@ -44,9 +44,9 @@ import { languageList } from './../../../config/framework.filters';
 import { ProfileConstants } from '../../../app/app.constant';
 import { CommonUtilService } from '../../../service/common-util.service';
 
-describe("AdditionalInfoComponent", () => {
+describe('AdditionalInfoComponent', () => {
     let comp: AdditionalInfoComponent;
-    let fixture: ComponentFixture<AdditionalInfoComponent>
+    let fixture: ComponentFixture<AdditionalInfoComponent>;
 
     beforeEach(() => {
 
@@ -55,8 +55,8 @@ describe("AdditionalInfoComponent", () => {
         };
 
         const frameWorkServiceStub = {
-            getCategoryData:() => ({})
-        }
+            getCategoryData: () => ({})
+        };
 
 
         TestBed.configureTestingModule({
@@ -64,8 +64,8 @@ describe("AdditionalInfoComponent", () => {
             declarations: [AdditionalInfoComponent],
             schemas: [NO_ERRORS_SCHEMA],
             providers: [
-                FormBuilder, UserProfileService,AuthService,
-                FrameworkService,ServiceProvider,FormBuilder,BuildParamService,CommonUtilService,
+                FormBuilder, UserProfileService, AuthService,
+                FrameworkService, ServiceProvider, FormBuilder, BuildParamService, CommonUtilService,
                 { provide: NavController, useClass: NavMock },
                 { provide: NavParams, useClass: NavParamsMock },
                 { provide: IonicApp, useValue: IonicAppMock },
@@ -84,24 +84,23 @@ describe("AdditionalInfoComponent", () => {
         });
         const translate = TestBed.get(TranslateService);
         const frameworkService = TestBed.get(FrameworkService);
-        spyOn(frameworkService, "getCategoryData").and.returnValue(Promise.resolve(JSON.stringify(mockResponse.categoryData)));
+        spyOn(frameworkService, 'getCategoryData').and.returnValue(Promise.resolve(JSON.stringify(mockResponse.categoryData)));
         fixture = TestBed.createComponent(AdditionalInfoComponent);
         comp = fixture.componentInstance;
-    })
+    });
 
-    it("can load instance", () => {
+    it('can load instance', () => {
         expect(comp).toBeTruthy();
     });
-    it("#validateForm should validate firstname and language", ()=>{
+    it('#validateForm should validate firstname and language', () => {
         const toastCtrlStub = TestBed.get(ToastController);
         const commonUtilService = TestBed.get(CommonUtilService);
         const TranslateServiceStub = TestBed.get(TranslateService);
-        spyOn(commonUtilService,'showToast');
-        let firstName = comp.additionalInfoForm.controls['firstName'];
-        firstName.setValue("sample_firstname");
-        comp.additionalInfoForm.controls['language'].setValue("english")
+        spyOn(commonUtilService, 'showToast');
+        const firstName = comp.additionalInfoForm.controls['firstName'];
+        firstName.setValue('sample_firstname');
+        comp.additionalInfoForm.controls['language'].setValue('english');
         let formVal = comp.additionalInfoForm.value;
-         
         // spyOn(commonUtilService, 'showToast').and.returnValue({
         //     present: () => { }
         // });
@@ -110,17 +109,17 @@ describe("AdditionalInfoComponent", () => {
         // });
         expect(comp.validateForm(formVal)).toBe(true);
 
-        firstName.setValue("");
-        comp.additionalInfoForm.controls['language'].setValue("english")
+        firstName.setValue('');
+        comp.additionalInfoForm.controls['language'].setValue('english');
         formVal = comp.additionalInfoForm.value;
         expect(comp.validateForm(formVal)).toBe(false);
 
-        firstName.setValue("sample-first-name");
-        comp.additionalInfoForm.controls['language'].setValue("")
+        firstName.setValue('sample-first-name');
+        comp.additionalInfoForm.controls['language'].setValue('');
         formVal = comp.additionalInfoForm.value;
         expect(comp.validateForm(formVal)).toBe(false);
         expect(commonUtilService.showToast).toHaveBeenCalledWith('ERROR_EMPTY_LANGUAGE');
 
 
-    })
-})
+    });
+});
