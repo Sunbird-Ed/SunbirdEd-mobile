@@ -117,6 +117,10 @@ export class MyApp {
         this.makeEntryInSupportFolder();
       }, () => {
       });
+      this.permission.hasPermission(this.permissionList, () => {
+        this.makeEntryInSupportFolder();
+      }, () => {
+      });
 
       this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
         .then(val => {
