@@ -5,10 +5,10 @@ import { TranslateModule } from '@ngx-translate/core';
 // TODO: remove it before pushing the code
 import { HttpModule } from '@angular/http';
 import { GenieSDKServiceProvider } from 'sunbird';
-import { FrameworkModule } from "sunbird";
-import { IonicImageLoader } from "ionic-image-loader";
-import { ComponentsModule } from "../../component/components.module";
-import { Ionic2RatingModule } from "ionic2-rating";
+import { FrameworkModule } from 'sunbird';
+import { IonicImageLoader } from 'ionic-image-loader';
+import { ComponentsModule } from '../../component/components.module';
+import { Ionic2RatingModule } from 'ionic2-rating';
 import { DirectivesModule } from './../../directives/directives.module';
 import { ResourcesPageModule } from '../resources/resources.module';
 
