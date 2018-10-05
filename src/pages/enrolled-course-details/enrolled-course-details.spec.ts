@@ -440,7 +440,6 @@ describe('EnrolledCourseDetailsPage Component', () => {
     component.isDownloadStarted = true;
     component.importContent(['SAMPLE_ID'], false);
     expect(component.queuedIdentifiers.length).toEqual(0);
-    // expect(commonUtilService.showToast).toHaveBeenCalledWith('ERROR_FETCHING_DATA');
   });
 
   it('#importContent should restore the download state for error condition from importContent', () => {

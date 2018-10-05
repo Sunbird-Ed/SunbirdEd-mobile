@@ -93,9 +93,7 @@ describe('PageFilter Component', () => {
         spyOn(telemetryGeneratorService, 'generateImpressionTelemetry').and.callFake(() => { });
         spyTelemetryGeneratorService.and.callFake(() => { });
         spyOn(appGlobalService, 'getCurrentUser').and.returnValue({ syllabus: ['NCF'] });
-        // spyOn(frameworkService, "getCategoryData").and.callFake((req) =>{return Promise.reject()})
-        spyOn(commonUtilService, "getTranslatedValue");
-
+        spyOn(commonUtilService, 'getTranslatedValue');
         fixture = TestBed.createComponent(PageFilter);
         component = fixture.componentInstance;
     });
