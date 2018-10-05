@@ -1,7 +1,5 @@
 {
-  "rulesDirectory": [
-    "node_modules/tslint-eslint-rules/dist/rules"
-  ],
+  "extends": ["codelyzer"],
   "rules": {
     "arrow-return-shorthand": true,
     "ban-types": [true, ["Object", "Use {} instead."], ["String", "use string instead"]],
