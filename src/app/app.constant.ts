@@ -11,12 +11,32 @@ export class ContentType {
     public static readonly LESSON_PLAN_UNIT = 'LessonPlanUnit';
     public static readonly COURSE_UNIT = 'CourseUnit';
 
-    public static readonly FOR_LIBRARY_TAB = [ContentType.STORY,
-    ContentType.WORKSHEET, ContentType.GAME,
-    ContentType.RESOURCE, ContentType.COLLECTION,
-    ContentType.TEXTBOOK, ContentType.LESSON_PLAN];
-    public static readonly FOR_COURSE_TAB = [ContentType.COURSE];
-    public static readonly FOR_DIAL_CODE_SEARCH = [ContentType.TEXTBOOK, ContentType.TEXTBOOK_UNIT];
+    public static readonly FOR_COURSE_TAB = [
+        ContentType.COURSE
+    ];
+    public static readonly FOR_LIBRARY_TAB = [
+        ContentType.STORY,
+        ContentType.WORKSHEET,
+        ContentType.GAME,
+        ContentType.RESOURCE,
+        ContentType.COLLECTION,
+        ContentType.TEXTBOOK,
+        ContentType.LESSON_PLAN
+    ];
+    public static readonly FOR_PROFILE_TAB = [
+        ContentType.STORY,
+        ContentType.WORKSHEET,
+        ContentType.GAME,
+        ContentType.RESOURCE,
+        ContentType.COLLECTION,
+        ContentType.TEXTBOOK,
+        ContentType.LESSON_PLAN,
+        ContentType.COURSE
+    ];
+    public static readonly FOR_DIAL_CODE_SEARCH = [
+        ContentType.TEXTBOOK,
+        ContentType.TEXTBOOK_UNIT
+    ];
 }
 
 export class MimeType {

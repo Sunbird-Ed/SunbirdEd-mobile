@@ -13,7 +13,10 @@ import {
   PageId,
   Environment,
   InteractType,
-  InteractSubtype
+  InteractSubtype,
+  ContentSearchCriteria,
+  ContentSortCriteria,
+  SortOrder
 } from 'sunbird';
 import { PopoverController } from 'ionic-angular/components/popover/popover-controller';
 import { DatePipe } from '@angular/common';
@@ -32,7 +35,8 @@ import {
 } from '../../app/telemetryutil';
 import {
   ProfileConstants,
-  MenuOverflow
+  MenuOverflow,
+  ContentType
 } from '../../app/app.constant';
 import { AppGlobalService } from '../../service/app-global.service';
 import { CommonUtilService } from '../../service/common-util.service';
@@ -598,14 +602,18 @@ export class ProfilePage {
    * Searches contents created by the user
    */
   searchContent(): void {
-    const req = {
+    const contentSortCriteria: ContentSortCriteria = {
+      sortAttribute: 'lastUpdatedOn',
+      sortOrder: SortOrder.DESC
+    };
+    const contentSearchCriteria: ContentSearchCriteria = {
       createdBy: [this.userId || this.loggedInUserId],
       limit: 20,
-      // TODO: Removing Course for the release 1.6.0, need to add it
-      contentTypes: ['story', 'worksheet', 'game', 'collection', 'textBook', 'lessonPlan', 'resource']
+      contentTypes: ContentType.FOR_PROFILE_TAB,
+      sortCriteria: [contentSortCriteria]
     };
 
-    this.contentService.searchContent(req,
+    this.contentService.searchContent(contentSearchCriteria,
       false, false, false,
       (result: any) => {
         this.enrolledCourse = JSON.parse(result).result.contentDataList;
