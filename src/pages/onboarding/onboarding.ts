@@ -116,6 +116,7 @@ export class OnboardingPage {
 
   ionViewWillEnter() {
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      this.backButtonFunc();
       this.navCtrl.setRoot(LanguageSettingsPage);
     }, 10);
   }

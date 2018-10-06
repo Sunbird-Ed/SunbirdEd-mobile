@@ -23,7 +23,7 @@
 <ion-content overflow-scroll="true" style="background: #efeff4;">
   <ion-refresher (ionRefresh)="getCourseTabData($event)"></ion-refresher>
   <!-- onBoardingSLides starts here -->
-  <!-- <onboarding-card *ngIf="guestUser && !isOnBoardingCardCompleted && appGlobal?.DISPLAY_ONBOARDING_CARDS"></onboarding-card> -->
+  <!-- <onboarding-card *ngIf="guestUser && !isOnBoardingCardCompleted && appGlobalService?.DISPLAY_ONBOARDING_CARDS"></onboarding-card> -->
   <!-- onBoardingSLides ends here -->
   <div *ngIf="!guestUser && enrolledCourse && enrolledCourse.length" class="course-page-color" [ngClass]="{'height-130': showLoader}">
     <div class="item padding-11">

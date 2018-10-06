@@ -27,7 +27,7 @@
     <p *ngIf="profile?.profileType === 'STUDENT'" class="user-type">{{'USER_TYPE_2' | translate }}</p>
   </div>
 
-  <ion-list *ngIf="appGlobal?.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE">
+  <ion-list *ngIf="appGlobalService?.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE">
     <ion-list-header class="section-title padding-left-10" no-padding>
       {{'PROFILE_DETAILS_TITLE' | translate}}
     </ion-list-header>

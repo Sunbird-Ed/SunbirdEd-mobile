@@ -96,7 +96,7 @@ export class MyApp {
     private profileService: ProfileService,
     private preferences: SharedPreferences,
     private container: ContainerService,
-    private appGlobal: AppGlobalService
+    private appGlobalService: AppGlobalService
   ) {
 
     const that = this;
@@ -156,10 +156,10 @@ export class MyApp {
                     && profile.board && profile.board.length
                     && profile.grade && profile.grade.length
                     && profile.medium && profile.medium.length) {
-                    this.appGlobal.isProfileSettingsCompleted = true;
+                    this.appGlobalService.isProfileSettingsCompleted = true;
                     this.nav.setRoot(TabsPage);
                   } else {
-                    this.appGlobal.isProfileSettingsCompleted = false;
+                    this.appGlobalService.isProfileSettingsCompleted = false;
                     this.preference.getString(PreferenceKey.IS_ONBOARDING_COMPLETED)
                       .then((result) => {
                         if (result === 'true') {
@@ -175,7 +175,7 @@ export class MyApp {
                   }
                 }, error => { });
               } else {
-                this.appGlobal.isProfileSettingsCompleted = false;
+                this.appGlobalService.isProfileSettingsCompleted = false;
                 that.rootPage = LanguageSettingsPage;
               }
             });
