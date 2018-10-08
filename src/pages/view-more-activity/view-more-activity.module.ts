@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { ViewMoreActivityPage } from './view-more-activity';
 import { TranslateModule } from '@ngx-translate/core';
-import { ComponentsModule } from "../../component/components.module";
+import { ComponentsModule } from '../../component/components.module';
 
 @NgModule({
   declarations: [
@@ -17,4 +17,4 @@ import { ComponentsModule } from "../../component/components.module";
     ViewMoreActivityPage
   ]
 })
-export class ViewMoreActivityPageModule {}
+export class ViewMoreActivityPageModule { }

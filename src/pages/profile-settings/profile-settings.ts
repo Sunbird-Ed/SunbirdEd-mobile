@@ -1,6 +1,7 @@
-import { NavParams } from 'ionic-angular/index';
+import { GUEST_TEACHER_TABS, initTabs, GUEST_STUDENT_TABS } from './../../app/module.service';
+import { NavParams, IonicApp } from 'ionic-angular/index';
 import { AppGlobalService } from '../../service/app-global.service';
-import { ProfileService, TabsPage, InteractSubtype, PageId, InteractType } from 'sunbird';
+import { ProfileService, TabsPage, InteractSubtype, PageId, InteractType, ProfileType, ContainerService } from 'sunbird';
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
@@ -48,6 +49,7 @@ export class ProfileSettingsPage {
   unregisterBackButton: any;
   selectedLanguage = 'en';
   profileForTelemetry: any = {};
+  hideBackButton = false;
 
   syllabusOptions = {
     title: this.commonUtilService.translateMessage('SYLLABUS').toLocaleUpperCase(),
@@ -80,7 +82,9 @@ export class ProfileSettingsPage {
     private events: Events,
     private scanner: SunbirdQRScanner,
     private platform: Platform,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    private container: ContainerService,
+    private ionicApp: IonicApp
   ) {
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
       .then(val => {
@@ -98,18 +102,38 @@ export class ProfileSettingsPage {
     }
 
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+      this.dismissPopup();
       this.telemetryGeneratorService.generateInteractTelemetry(
         InteractType.TOUCH, InteractSubtype.DEVICE_BACK_CLICKED,
         PageId.ONBOARDING_PROFILE_PREFERENCES,
         Environment.ONBOARDING);
-    });
+    }, 10);
   }
 
   ionViewWillEnter() {
+    this.hideBackButton = Boolean(this.navParams.get('hideBackButton'));
     if (this.navParams.get('buildPath')) {
-      this.navCtrl.setPages([{ page: 'LanguageSettingsPage' }, { page: 'UserTypeSelectionPage' }, { page: 'ProfileSettingsPage' }]);
+      this.navCtrl.insertPages(0, [{ page: 'LanguageSettingsPage' }, { page: 'UserTypeSelectionPage' }, { page: 'ProfileSettingsPage' }]);
     }
     this.getSyllabusDetails();
+  }
+
+  ionViewWillLeave() {
+    this.unregisterBackButton();
+  }
+  /**
+ * It will Dismiss active popup
+ */
+  dismissPopup() {
+    const activePortal = this.ionicApp._modalPortal.getActive() ||
+      this.ionicApp._toastPortal.getActive() ||
+      this.ionicApp._overlayPortal.getActive();
+
+    if (activePortal) {
+      activePortal.dismiss();
+    } else if (this.navCtrl.canGoBack()) {
+      this.navCtrl.pop();
+    }
   }
 
   /**
@@ -245,7 +269,7 @@ export class ProfileSettingsPage {
 
   /**
 	 * It will reset user form, based on given index
-	 * @param {number}  index 
+	 * @param {number}  index
 	 * @param {boolean} showloader Flag for showing loader or not
 	 */
   resetForm(index, showloader: boolean): void {
@@ -379,12 +403,19 @@ export class ProfileSettingsPage {
     }
     this.profileService.updateProfile(req,
       (res: any) => {
+        if (req.profileType === ProfileType.TEACHER) {
+          initTabs(this.container, GUEST_TEACHER_TABS);
+        } else if (req.profileType === ProfileType.STUDENT) {
+          initTabs(this.container, GUEST_STUDENT_TABS);
+        }
+
         this.events.publish('refresh:profile');
         this.appGlobalService.guestUserProfile = JSON.parse(res);
         this.commonUtilService.showToast('PROFILE_UPDATE_SUCCESS');
         this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: true });
         this.events.publish('refresh:profile');
         this.appGlobalService.guestUserProfile = JSON.parse(res);
+        this.appGlobalService.setOnBoardingCompleted();
         this.navCtrl.push(TabsPage, {
           loginMode: 'guest'
         });

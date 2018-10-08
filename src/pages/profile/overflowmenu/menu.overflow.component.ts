@@ -64,7 +64,7 @@ export class OverflowMenuComponent {
         private translate: TranslateService,
         private toastCtrl: ToastController,
         private telemetryGeneratorService: TelemetryGeneratorService,
-        private appGlobal: AppGlobalService,
+        private appGlobalService: AppGlobalService,
         private container: ContainerService
     ) {
         this.items = this.navParams.get('list');
@@ -154,12 +154,12 @@ export class OverflowMenuComponent {
     }
 
     navigateToAptPage() {
-        if (this.appGlobal.DISPLAY_ONBOARDING_PAGE) {
+        if (this.appGlobalService.DISPLAY_ONBOARDING_PAGE) {
             this.app.getRootNav().setRoot(OnboardingPage);
         } else {
             this.preferences.getString(PreferenceKey.SELECTED_USER_TYPE)
                 .then(val => {
-                    this.appGlobal.getGuestUserInfo();
+                    this.appGlobalService.getGuestUserInfo();
                     if (val === ProfileType.STUDENT) {
                         initTabs(this.container, GUEST_STUDENT_TABS);
                     } else if (val === ProfileType.TEACHER) {

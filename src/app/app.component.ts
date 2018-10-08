@@ -1,3 +1,4 @@
+import { ProfileSettingsPage } from './../pages/profile-settings/profile-settings';
 import {
   Component,
   ViewChild,
@@ -92,10 +93,10 @@ export class MyApp {
     private userProfileService: UserProfileService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private event: Events,
-    private profile: ProfileService,
+    private profileService: ProfileService,
     private preferences: SharedPreferences,
     private container: ContainerService,
-    private appGlobal: AppGlobalService
+    private appGlobalService: AppGlobalService
   ) {
 
     const that = this;
@@ -113,6 +114,10 @@ export class MyApp {
       this.checkForUpgrade();
 
       this.permission.requestPermission(this.permissionList, () => {
+        this.makeEntryInSupportFolder();
+      }, () => {
+      });
+      this.permission.hasPermission(this.permissionList, () => {
         this.makeEntryInSupportFolder();
       }, () => {
       });
@@ -144,22 +149,33 @@ export class MyApp {
                 }
 
                 // Check if User has filled all the required information of the on boarding preferences
-                this.profile.getCurrentUser((response) => {
-                  response = JSON.parse(response);
-                  if (response
-                    && response.syllabus && response.syllabus[0]
-                    && response.board && response.board.length
-                    && response.grade && response.grade.length
-                    && response.medium && response.medium.length) {
-                    this.appGlobal.isProfileSettingsCompleted = true;
+                this.profileService.getCurrentUser((profile) => {
+                  profile = JSON.parse(profile);
+                  if (profile
+                    && profile.syllabus && profile.syllabus[0]
+                    && profile.board && profile.board.length
+                    && profile.grade && profile.grade.length
+                    && profile.medium && profile.medium.length) {
+                    this.appGlobalService.isProfileSettingsCompleted = true;
                     this.nav.setRoot(TabsPage);
                   } else {
-                    this.appGlobal.isProfileSettingsCompleted = false;
-                    this.nav.insertPages(0, [{ page: LanguageSettingsPage }, { page: UserTypeSelectionPage }]);
+                    this.appGlobalService.isProfileSettingsCompleted = false;
+                    this.preference.getString(PreferenceKey.IS_ONBOARDING_COMPLETED)
+                      .then((result) => {
+                        if (result === 'true') {
+                          this.nav.setRoot('ProfileSettingsPage', { hideBackButton: true });
+                        } else {
+                          this.nav.insertPages(0, [{ page: LanguageSettingsPage }, { page: UserTypeSelectionPage }]);
+                        }
+                      })
+                      .catch(error => {
+                        this.nav.setRoot('ProfileSettingsPage');
+                      });
+
                   }
                 }, error => { });
               } else {
-                this.appGlobal.isProfileSettingsCompleted = false;
+                this.appGlobalService.isProfileSettingsCompleted = false;
                 that.rootPage = LanguageSettingsPage;
               }
             });
@@ -347,7 +363,7 @@ export class MyApp {
               this.authService.endSession();
               (<any>window).splashscreen.clearPrefs();
             }
-            this.profile.getCurrentUser((currentUser) => {
+            this.profileService.getCurrentUser((currentUser) => {
               const guestProfile = JSON.parse(currentUser);
 
               if (guestProfile.profileType === ProfileType.STUDENT) {

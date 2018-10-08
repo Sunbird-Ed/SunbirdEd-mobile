@@ -23,7 +23,7 @@
 <ion-content overflow-scroll="true" class="course-scroll-holder1" style="background: #EBEBEB;">
 	<ion-refresher (ionRefresh)="swipeDownToRefresh($event)"></ion-refresher>
 	<!-- onBoardingSLides starts here -->
-	<!-- <onboarding-card *ngIf="guestUser && !isOnBoardingCardCompleted && appGlobal?.DISPLAY_ONBOARDING_CARDS"></onboarding-card> -->
+	<!-- <onboarding-card *ngIf="guestUser && !isOnBoardingCardCompleted && appGlobalService?.DISPLAY_ONBOARDING_CARDS"></onboarding-card> -->
 	<!-- onBoardingSLides ends here -->
 	<!-- <div> -->
 	<div class="course-scroll-holder" [ngClass]="{'empty-saved-resources' : (localResources && localResources.length === 0 || showLoader)}"

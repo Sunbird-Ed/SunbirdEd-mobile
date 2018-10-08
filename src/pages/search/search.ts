@@ -27,7 +27,6 @@ import {
   Mode,
   TelemetryObject,
   PageId,
-  SharedPreferences,
   TabsPage
 } from 'sunbird';
 import { GenieResponse } from '../settings/datasync/genieresponse';
@@ -41,8 +40,7 @@ import {
   ContentType,
   MimeType,
   Search,
-  AudienceFilter,
-  PreferenceKey
+  AudienceFilter
 } from '../../app/app.constant';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 import { AppGlobalService } from '../../service/app-global.service';
@@ -127,13 +125,12 @@ export class SearchPage {
     private network: Network,
     private fileUtil: FileUtil,
     private events: Events,
-    private appGlobal: AppGlobalService,
+    private appGlobalService: AppGlobalService,
     private popUp: PopoverController,
     private platform: Platform,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private commonUtilService: CommonUtilService,
-    private telemetryGeneratorService: TelemetryGeneratorService,
-    private preferences: SharedPreferences
+    private telemetryGeneratorService: TelemetryGeneratorService
   ) {
 
     this.checkUserSession();
@@ -163,14 +160,17 @@ export class SearchPage {
     };
   }
 
+  ionViewWillLeave() {
+    this.events.unsubscribe('genie.event');
+  }
   navigateToPreviousPage() {
     if (this.shouldGenerateEndTelemetry) {
       this.generateQRSessionEndEvent(this.source, this.dialCode);
     }
 
-    if (this.appGlobal.isGuestUser) {
-      if (this.source === PageId.USER_TYPE_SELECTION && this.appGlobal.isOnBoardingCompleted) {
-        if (this.appGlobal.isProfileSettingsCompleted) {
+    if (this.appGlobalService.isGuestUser) {
+      if (this.source === PageId.USER_TYPE_SELECTION && this.appGlobalService.isOnBoardingCompleted) {
+        if (this.appGlobalService.isProfileSettingsCompleted) {
           this.navCtrl.setRoot(TabsPage, {
             loginMode: 'guest'
           });
@@ -192,8 +192,8 @@ export class SearchPage {
 
   handleDeviceBackButton() {
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
-
       this.navigateToPreviousPage();
+      this.backButtonFunc();
     }, 10);
   }
 
@@ -217,10 +217,6 @@ export class SearchPage {
     }
   }
 
-  ionViewWillLeave(): void {
-    this.events.unsubscribe('genie.event');
-  }
-
   showContentDetails(content, isRootContent: boolean = false) {
 
     let params;
@@ -240,15 +236,15 @@ export class SearchPage {
       };
     }
 
-    if (this.isDialCodeSearch && !this.appGlobal.isOnBoardingCompleted && (this.parentContent || content)) {
-      this.preferences.putString(PreferenceKey.IS_ONBOARDING_COMPLETED, 'true');
-      this.appGlobal.isOnBoardingCompleted = true;
+    if (this.isDialCodeSearch && !this.appGlobalService.isOnBoardingCompleted && (this.parentContent || content)) {
+      this.appGlobalService.setOnBoardingCompleted();
     }
 
     if (content.contentType === ContentType.COURSE) {
       this.navCtrl.push(EnrolledCourseDetailsPage, params);
     } else if (content.mimeType === MimeType.COLLECTION) {
       if (this.isDialCodeSearch && !isRootContent) {
+        params.buildPath = true;
         this.navCtrl.push(QrCodeResultPage, params);
       } else {
         this.navCtrl.push(CollectionDetailsPage, params);
@@ -386,7 +382,7 @@ export class SearchPage {
     if (categoryKey) {
       const nameArray = [];
       profileFilter.forEach(filterCode => {
-        let nameForCode = this.appGlobal.getNameForCodeInFramework(categoryKey, filterCode);
+        let nameForCode = this.appGlobalService.getNameForCodeInFramework(categoryKey, filterCode);
 
         if (!nameForCode) {
           nameForCode = filterCode;
@@ -463,7 +459,7 @@ export class SearchPage {
       offlineSearch: isOfflineSearch
     };
 
-    this.contentService.searchContent(contentSearchRequest, false, true, !this.appGlobal.isUserLoggedIn(), (responseData) => {
+    this.contentService.searchContent(contentSearchRequest, false, true, !this.appGlobalService.isUserLoggedIn(), (responseData) => {
       this.zone.run(() => {
         const response: GenieResponse = JSON.parse(responseData);
         this.responseData = response;
@@ -830,17 +826,17 @@ export class SearchPage {
   }
 
   checkUserSession() {
-    const isGuestUser = !this.appGlobal.isUserLoggedIn();
+    const isGuestUser = !this.appGlobalService.isUserLoggedIn();
 
     if (isGuestUser) {
-      const userType = this.appGlobal.getGuestUserType();
+      const userType = this.appGlobalService.getGuestUserType();
       if (userType === ProfileType.STUDENT) {
         this.audienceFilter = AudienceFilter.GUEST_STUDENT;
       } else if (userType === ProfileType.TEACHER) {
         this.audienceFilter = AudienceFilter.GUEST_TEACHER;
       }
 
-      this.profile = this.appGlobal.getCurrentUser();
+      this.profile = this.appGlobalService.getCurrentUser();
     } else {
       this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
       this.profile = undefined;

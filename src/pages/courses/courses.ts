@@ -143,7 +143,7 @@ export class CoursesPage implements OnInit {
     private contentService: ContentService,
     private preference: SharedPreferences,
     private network: Network,
-    private appGlobal: AppGlobalService,
+    private appGlobalService: AppGlobalService,
     private courseUtilService: CourseUtilService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private commonUtilService: CommonUtilService,
@@ -194,7 +194,7 @@ export class CoursesPage implements OnInit {
       Environment.HOME
     );
 
-    this.appGlobal.generateConfigInteractEvent(PageId.COURSES, this.isOnBoardingCardCompleted);
+    this.appGlobalService.generateConfigInteractEvent(PageId.COURSES, this.isOnBoardingCardCompleted);
     this.preference.getString('show_app_walkthrough_screen')
       .then(value => {
         if (value === 'true') {
@@ -248,7 +248,7 @@ export class CoursesPage implements OnInit {
     // Event for optional and forceful upgrade
     this.events.subscribe('force_optional_upgrade', (upgrade) => {
       if (upgrade) {
-        this.appGlobal.openPopover(upgrade);
+        this.appGlobalService.openPopover(upgrade);
       }
     });
 
@@ -424,7 +424,7 @@ export class CoursesPage implements OnInit {
     if (categoryKey) {
       const nameArray = [];
       profileFilter.forEach(filterCode => {
-        let nameForCode = this.appGlobal.getNameForCodeInFramework(categoryKey, filterCode);
+        let nameForCode = this.appGlobalService.getNameForCodeInFramework(categoryKey, filterCode);
 
         if (!nameForCode) {
           nameForCode = filterCode;
@@ -474,13 +474,13 @@ export class CoursesPage implements OnInit {
    */
   getUserId() {
     return new Promise((resolve, reject) => {
-      this.guestUser = !this.appGlobal.isUserLoggedIn();
+      this.guestUser = !this.appGlobalService.isUserLoggedIn();
 
       if (this.guestUser) {
         this.getCurrentUser();
         reject('session expired');
       } else {
-        const sessionObj = this.appGlobal.getSessionData();
+        const sessionObj = this.appGlobalService.getSessionData();
         this.userId = sessionObj[ProfileConstants.USER_TOKEN];
         this.getEnrolledCourses();
         resolve();
@@ -516,8 +516,8 @@ export class CoursesPage implements OnInit {
    * It will fetch the guest user profile details
    */
   getCurrentUser(): void {
-    const profileType = this.appGlobal.getGuestUserType();
-    if (profileType === ProfileType.TEACHER && this.appGlobal.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER) {
+    const profileType = this.appGlobalService.getGuestUserType();
+    if (profileType === ProfileType.TEACHER && this.appGlobalService.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER) {
       this.showSignInCard = true;
     } else {
       this.showSignInCard = false;
@@ -672,7 +672,7 @@ export class CoursesPage implements OnInit {
       };
     } else {
       searchQuery = updateFilterInSearchQuery(searchQuery, this.appliedFilter, this.profile,
-        this.mode, this.isFilterApplied, this.appGlobal);
+        this.mode, this.isFilterApplied, this.appGlobalService);
       title = headerTitle;
       params = {
         headerTitle: headerTitle,
