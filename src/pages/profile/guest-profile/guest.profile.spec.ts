@@ -1,29 +1,35 @@
-import { ProfileService, SharedPreferences, TelemetryService, ServiceProvider,
-    AuthService, BuildParamService, FrameworkService } from 'sunbird';
+import {
+    ProfileService, SharedPreferences, TelemetryService, ServiceProvider,
+    AuthService, BuildParamService, FrameworkService
+} from 'sunbird';
 import 'rxjs/add/observable/of';
-
 import { Observable } from 'rxjs';
-
-import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import {
+    async, ComponentFixture,
+    fakeAsync, TestBed
+} from '@angular/core/testing';
 import { Network } from '@ionic-native/network';
 
-import { TranslateModule, TranslateService } from '../../../../node_modules/@ngx-translate/core';
 import {
-    Events, LoadingController, NavController, PopoverController, ToastController
+    TranslateModule,
+    TranslateService
+} from '../../../../node_modules/@ngx-translate/core';
+import {
+    Events, LoadingController, NavController,
+    PopoverController, ToastController
 } from '../../../../node_modules/ionic-angular';
 import { AppGlobalService } from '../../../service/app-global.service';
 import { FormAndFrameworkUtilService } from '../formandframeworkutil.service';
 import { GuestProfilePage } from './guest-profile';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
-
 import {
-    LoadingControllerMock, TranslateServiceStub, ToastControllerMockNew, PopoverControllerMock, AuthServiceMock,
-    AppGlobalServiceMock, NavMock, NavParamsMock, profileServiceMock,
-    SharedPreferencesMock, FormAndFrameworkUtilServiceMock, EventsMock, TelemetryServiceMock
+    LoadingControllerMock, TranslateServiceStub,
+    ToastControllerMockNew, PopoverControllerMock, AuthServiceMock,
+    AppGlobalServiceMock, NavMock, ProfileServiceMock,
+    FormAndFrameworkUtilServiceMock, EventsMock
 } from '../../../../test-config/mocks-ionic';
 import { CommonUtilService } from '../../../service/common-util.service';
-
 
 describe('GuestProfilePage', () => {
     let comp: GuestProfilePage;
@@ -55,7 +61,7 @@ describe('GuestProfilePage', () => {
                 { provide: AuthService, useClass: AuthServiceMock },
                 { provide: Network, useValue: NetworkStub },
                 { provide: TelemetryGeneratorService, useValue: telemetryGeneratorServiceStub },
-                { provide: ProfileService, useClass: profileServiceMock },
+                { provide: ProfileService, useClass: ProfileServiceMock },
                 { provide: Events, useClass: EventsMock },
                 // { provide: SharedPreferences, useValue: SharedPreferencesMock },
                 { provide: TranslateService, useClass: TranslateServiceStub },
@@ -86,7 +92,7 @@ describe('GuestProfilePage', () => {
         expect(comp.showSignInCard).toBe(true);
     });
 
-    beforeEach(async() => {
+    beforeEach(async () => {
         const code = 'selected_language_code';
         const SharedPreferenceStub = TestBed.get(SharedPreferences);
         spyOn(SharedPreferenceStub, 'getString').and.returnValue(Promise.resolve('en'));
@@ -269,9 +275,9 @@ describe('GuestProfilePage', () => {
         getLoader();
         const data = ['sampleCategory'];
         comp.profile = {
-            board  : ['sampleBoard'],
-            medium : ['sampleMedium'],
-            grade  : ['sampleGrade'],
+            board: ['sampleBoard'],
+            medium: ['sampleMedium'],
+            grade: ['sampleGrade'],
             subject: ['sampleSubject']
         };
         const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
@@ -287,7 +293,7 @@ describe('GuestProfilePage', () => {
 
     it('getFieldDisplayValues should call arrayToString', () => {
         const data = ['sampleTerms'];
-        comp.categories = [{terms : ['sampleTerms']}];
+        comp.categories = [{ terms: ['sampleTerms'] }];
         comp.getFieldDisplayValues(data, 0);
         spyOn(comp, 'arrayToString');
     });

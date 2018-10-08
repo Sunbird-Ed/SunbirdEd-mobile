@@ -325,7 +325,6 @@ export class QrCodeResultPage {
       this.profile.gradeValueMap = {};
     }
     _.each(grades, (grade) => {
-      // const currentGradeCode = _.find(this.gradeList, (category) => category.name === grade).code;
       if (grade && this.profile.grade.indexOf(grade) === -1) {
         if (this.profile.grade && this.profile.grade.length) {
           this.profile.grade.push(grade);
@@ -335,7 +334,12 @@ export class QrCodeResultPage {
       }
     });
   }
-
+  /**
+	 * @param categoryList
+	 * @param data
+	 * @param categoryType
+	 * return the code of board,medium and subject based on Name
+	 */
   findCode(categoryList: Array<any>, data, categoryType) {
     if (_.find(categoryList, (category) => category.name === data[categoryType])) {
       return _.find(categoryList, (category) => category.name === data[categoryType]).code;
@@ -344,15 +348,12 @@ export class QrCodeResultPage {
     }
   }
 
-
   /**
 	 * Assigning board, medium, grade and subject to profile
 	 */
 
   setCurrentProfile(index, data) {
     console.log('setCurrentProfile index', index);
-
-
     if (!this.profile.medium || !this.profile.medium.length) {
       this.profile.medium = [];
     }
@@ -364,13 +365,13 @@ export class QrCodeResultPage {
         this.profile.syllabus = [data.framework];
         this.profile.board = [data.board];
         this.profile.medium = [data.medium];
-        this.profile.subject = [data.subject];
+        this.profile.subject =  [data.subject];
         this.setGrade(true, data.gradeLevel);
         break;
       case 1:
         this.profile.board = [data.board];
         this.profile.medium = [data.medium];
-        this.profile.subject = [data.subject];
+        this.profile.subject =  [data.subject];
         this.setGrade(true, data.gradeLevel);
         break;
       case 2:
@@ -387,11 +388,13 @@ export class QrCodeResultPage {
   }
 
   /**
-	 * checking current profile data with qr result data
+	 * comparing current profile data with qr result data, If not matching then reset current profile data
 	 * @param {object} data
 	 * @param {object} profile
 	 */
   checkProfileData(data, profile) {
+    console.log('content data', data);
+    console.log('profile data', profile);
     if (data && data.framework) {
 
       this.formAndFrameworkUtilService.getSyllabusList()
