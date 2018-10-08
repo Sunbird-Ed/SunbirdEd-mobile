@@ -56,7 +56,7 @@ export class GuestProfilePage {
     private events: Events,
     private preference: SharedPreferences,
     private commonUtilService: CommonUtilService,
-    private appGlobal: AppGlobalService,
+    private appGlobalService: AppGlobalService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService
   ) {
@@ -72,7 +72,7 @@ export class GuestProfilePage {
     // Event for optional and forceful upgrade
     this.events.subscribe('force_optional_upgrade', (upgrade) => {
       if (upgrade) {
-        this.appGlobal.openPopover(upgrade);
+        this.appGlobalService.openPopover(upgrade);
       }
     });
 
@@ -91,10 +91,10 @@ export class GuestProfilePage {
             }
           }); */
 
-    const profileType = this.appGlobal.getGuestUserType();
-    if (profileType === ProfileType.TEACHER && this.appGlobal.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER) {
+    const profileType = this.appGlobalService.getGuestUserType();
+    if (profileType === ProfileType.TEACHER && this.appGlobalService.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER) {
       this.showSignInCard = true;
-    } else if (profileType === ProfileType.STUDENT && this.appGlobal.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT) {
+    } else if (profileType === ProfileType.STUDENT && this.appGlobalService.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT) {
       this.showSignInCard = true;
     } else {
       this.showSignInCard = false;
@@ -120,7 +120,7 @@ export class GuestProfilePage {
       Environment.HOME
     );
 
-    this.appGlobal.generateConfigInteractEvent(PageId.GUEST_PROFILE);
+    this.appGlobalService.generateConfigInteractEvent(PageId.GUEST_PROFILE);
   }
 
   refreshProfileData(refresher: any = false, showLoader: boolean = true) {

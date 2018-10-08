@@ -75,13 +75,13 @@ export class UserTypeSelectionPage {
     private zone: NgZone,
     private event: Events,
     private commonUtilService: CommonUtilService,
-    private appGlobal: AppGlobalService,
+    private appGlobalService: AppGlobalService,
     private scannerService: SunbirdQRScanner
   ) {
   }
 
   ionViewWillEnter() {
-    this.profile = this.appGlobal.getCurrentUser();
+    this.profile = this.appGlobalService.getCurrentUser();
     this.isChangeRoleRequest = Boolean(this.navParams.get('isChangeRoleRequest'));
     this.showScanner = Boolean(this.navParams.get('showScanner'));
     if (this.showScanner) {
@@ -197,7 +197,7 @@ export class UserTypeSelectionPage {
     if (this.isChangeRoleRequest && isUserTypeChanged) {
       this.container.removeAllTabs();
       this.navCtrl.push(ProfileSettingsPage, { hideBackButton: true });
-    } else if (this.appGlobal.isProfileSettingsCompleted) {
+    } else if (this.appGlobalService.isProfileSettingsCompleted) {
       this.navCtrl.push(TabsPage, {
         loginMode: 'guest'
       });

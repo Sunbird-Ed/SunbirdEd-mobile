@@ -1,10 +1,11 @@
 import { AppGlobalService } from '../service/app-global.service';
 
-function applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>, categoryKey: string, appGlobal: AppGlobalService) {
+function applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>,
+    categoryKey: string, appGlobalService: AppGlobalService) {
     if (categoryKey) {
         const nameArray = [];
         profileFilter.forEach(filterCode => {
-            let nameForCode = appGlobal.getNameForCodeInFramework(categoryKey, filterCode);
+            let nameForCode = appGlobalService.getNameForCodeInFramework(categoryKey, filterCode);
 
             if (!nameForCode) {
                 nameForCode = filterCode;
@@ -32,7 +33,7 @@ function applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any
     return unique_array;
 }
 
-export function updateFilterInSearchQuery(queryParams, appliedFilter, profile, mode, isFilterApplied, appGlobal: AppGlobalService) {
+export function updateFilterInSearchQuery(queryParams, appliedFilter, profile, mode, isFilterApplied, appGlobalService: AppGlobalService) {
     const queryObj = JSON.parse(queryParams);
     const filter = queryObj.request.filters;
 
@@ -60,19 +61,19 @@ export function updateFilterInSearchQuery(queryParams, appliedFilter, profile, m
 
     if (profile && !isFilterApplied) {
         if (profile.board && profile.board.length) {
-            filter['board'] = applyProfileFilter(profile.board, filter['board'], 'board', appGlobal);
+            filter['board'] = applyProfileFilter(profile.board, filter['board'], 'board', appGlobalService);
         }
 
         if (profile.medium && profile.medium.length) {
-            filter['medium'] = applyProfileFilter(profile.medium, filter['medium'], 'medium', appGlobal);
+            filter['medium'] = applyProfileFilter(profile.medium, filter['medium'], 'medium', appGlobalService);
         }
 
         if (profile.grade && profile.grade.length) {
-            filter['gradeLevel'] = applyProfileFilter(profile.grade, filter['gradeLevel'], 'gradeLevel', appGlobal);
+            filter['gradeLevel'] = applyProfileFilter(profile.grade, filter['gradeLevel'], 'gradeLevel', appGlobalService);
         }
 
         if (profile.subject && profile.subject.length) {
-            filter['subject'] = applyProfileFilter(profile.subject, filter['subject'], 'subject', appGlobal);
+            filter['subject'] = applyProfileFilter(profile.subject, filter['subject'], 'subject', appGlobalService);
         }
     }
 

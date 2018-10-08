@@ -105,7 +105,7 @@ export class ProfilePage {
     private loadingCtrl: LoadingController,
     private navParams: NavParams,
     private events: Events,
-    private appGlobal: AppGlobalService,
+    private appGlobalService: AppGlobalService,
     private commonUtilService: CommonUtilService
   ) {
     this.userId = this.navParams.get('userId') || '';
@@ -115,7 +115,7 @@ export class ProfilePage {
     // Event for optional and forceful upgrade
     this.events.subscribe('force_optional_upgrade', (upgrade) => {
       if (upgrade) {
-        this.appGlobal.openPopover(upgrade);
+        this.appGlobalService.openPopover(upgrade);
       }
     });
   }

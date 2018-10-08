@@ -54,7 +54,7 @@ export class LanguageSettingsPage {
     private toastCtrl: ToastController,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private platform: Platform,
-    private appGlobal: AppGlobalService
+    private appGlobalService: AppGlobalService
   ) { }
 
   init(): void {
@@ -141,7 +141,7 @@ export class LanguageSettingsPage {
         this.isFromSettings ? Environment.SETTINGS : Environment.ONBOARDING,
       );
       this.unregisterBackButton();
-    });
+    }, 10);
 
   }
 
@@ -206,7 +206,7 @@ export class LanguageSettingsPage {
       });
       if (this.isFromSettings) {
         this.navCtrl.pop();
-      } else if (this.appGlobal.DISPLAY_ONBOARDING_PAGE) {
+      } else if (this.appGlobalService.DISPLAY_ONBOARDING_PAGE) {
         this.navCtrl.push(OnboardingPage);
       } else {
         this.navCtrl.push(UserTypeSelectionPage);
