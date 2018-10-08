@@ -23,7 +23,7 @@ import {
   AppGlobalServiceMock,
   EventsMock,
   AuthServiceMock,
-  profileServiceMock,
+  ProfileServiceMock,
   SharedPreferencesMock,
   PopoverControllerMock,
   BuildParamaServiceMock
@@ -67,7 +67,7 @@ describe('ContentRatingAlertComponent', () => {
         { provide: AppGlobalService, useClass: AppGlobalServiceMock },
         { provide: Events, useClass: EventsMock },
         { provide: AuthService, useClass: AuthServiceMock },
-        { provide: ProfileService, useClass: profileServiceMock },
+        { provide: ProfileService, useClass: ProfileServiceMock },
         { provide: SharedPreferences, useClass: SharedPreferencesMock },
         {
           provide: PopoverController,

@@ -33,7 +33,7 @@ import {
     TranslateServiceStub,
     ToastControllerMockNew,
     AuthServiceMock,
-    NavMock, NavParamsMock, profileServiceMock,
+    NavMock, NavParamsMock, ProfileServiceMock,
     FormAndFrameworkUtilServiceMock, EventsMock,
     AppGlobalServiceMock,
     PopoverControllerMock
@@ -60,7 +60,7 @@ describe('ProfileSettingsPage', () => {
                 FrameworkService,
                 { provide: AuthService, useClass: AuthServiceMock },
                 { provide: AppGlobalService, useClass: AppGlobalServiceMock },
-                { provide: ProfileService, useClass: profileServiceMock },
+                { provide: ProfileService, useClass: ProfileServiceMock },
                 { provide: TranslateService, useClass: TranslateServiceStub },
                 { provide: NavController, useClass: NavMock },
                 { provide: NavParams, useClass: NavParamsMock },
