@@ -1,27 +1,37 @@
 import { PBHorizontal } from './../../component/pbhorizontal/pb-horizontal';
 import { PipesModule } from './../../pipes/pipes.module';
-import { async, TestBed, ComponentFixture, inject } from '@angular/core/testing';
-import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
-import { HttpClientModule } from "@angular/common/http";
-import { Ionic2RatingModule } from "ionic2-rating";
-import { SocialSharing } from "@ionic-native/social-sharing";
+import {
+    async,
+    TestBed,
+    ComponentFixture,
+    inject
+} from '@angular/core/testing';
+import {
+    TranslateModule,
+    TranslateLoader,
+    TranslateService
+} from '@ngx-translate/core';
+import { HttpClientModule } from '@angular/common/http';
+import { Ionic2RatingModule } from 'ionic2-rating';
+import { SocialSharing } from '@ionic-native/social-sharing';
 import { Network } from '@ionic-native/network';
 import { DirectivesModule } from '../../directives/directives.module';
 import { AppGlobalService } from '../../service/app-global.service';
-
-import { NavController, Events, IonicModule, NavParams, ToastController, PopoverController, 
-    LoadingController } from 'ionic-angular';
-
-import {ToastControllerMock, PopoverControllerMock, LoadingControllerMock,
-    NetworkMock } from 'ionic-mocks';
-
 import {
-    FileUtil, AuthService, GenieSDKServiceProvider, SharedPreferences, FrameworkModule, BuildParamService,
-    ContentService, TelemetryService, CourseService, ProfileType, ShareUtil } from "sunbird";
-
+    NavController, Events, IonicModule, NavParams, ToastController, PopoverController,
+    LoadingController
+} from 'ionic-angular';
+import {
+    ToastControllerMock, PopoverControllerMock, LoadingControllerMock,
+    NetworkMock
+} from 'ionic-mocks';
+import {
+    FileUtil, AuthService, GenieSDKServiceProvider, SharedPreferences, FrameworkModule,
+    ContentService, TelemetryService, CourseService, ShareUtil
+} from 'sunbird';
 import {
     GenieSDKServiceProviderMock, SharedPreferencesMock, FileUtilMock, NavParamsMock,
-    SocialSharingMock, NavMock, TranslateLoaderMock, AuthServiceMock, PlatformMock
+    SocialSharingMock, NavMock, TranslateLoaderMock, AuthServiceMock
 } from '../../../test-config/mocks-ionic';
 import { CourseUtilService } from '../../service/course-util.service';
 import { ViewMoreCardComponent } from './view-more-card';
@@ -62,7 +72,7 @@ describe('ViewMoreActivityCardComponent Component', () => {
                 { provide: PopoverController, useFactory: () => PopoverControllerMock.instance() },
                 { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() }
             ]
-        })
+        });
     }));
 
     beforeEach(() => {
@@ -74,7 +84,7 @@ describe('ViewMoreActivityCardComponent Component', () => {
         inject([TranslateService], (service) => {
             translateService = service;
             translateService.use('en');
-        })
+        });
     });
 
     it('should create a valid instance of ViewMoreActivityListComponent', () => {
@@ -129,7 +139,7 @@ describe('ViewMoreActivityCardComponent Component', () => {
         const mockData = mockRes.resumeCourse;
         const navCtrl = TestBed.get(NavController);
         const event = TestBed.get(Events);
-        spyOn(event, 'publish').and.callThrough()
+        spyOn(event, 'publish').and.callThrough();
         spyOn(component, 'resumeCourse').and.callThrough();
         spyOn(navCtrl, 'push').and.callThrough();
         component.resumeCourse(mockData);
@@ -158,12 +168,12 @@ describe('ViewMoreActivityCardComponent Component', () => {
         component.content = {};
         component.content.leafNodesCount = 6;
         component.content.progress = 7;
-        const courseUtilService = TestBed.get(CourseUtilService)
+        const courseUtilService = TestBed.get(CourseUtilService);
         spyOn(component, 'ngOnInit').and.callThrough();
         spyOn(courseUtilService, 'getCourseProgress').and.callThrough();
         fixture.detectChanges();
         expect(component).not.toBeFalsy();
         expect(component.ngOnInit).toBeDefined();
         expect(courseUtilService.getCourseProgress).toHaveBeenCalled();
-    });    
+    });
 });
