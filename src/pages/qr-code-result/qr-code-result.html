@@ -1,6 +1,15 @@
 <ion-header>
   <ion-navbar>
-    <ion-title>{{'RESULTS' | translate}}</ion-title>
+    <ion-title>{{'RESULTS' | translate}}
+     
+      
+    </ion-title>
+    <ion-buttons end>
+        <button ion-button clear (click)="skipSteps()" >
+            {{'SKIP' | translate}}
+          </button>
+    </ion-buttons>
+
   </ion-navbar>
 </ion-header>
 
@@ -15,28 +24,28 @@
         </li>
       </ul>
     </ion-row>
-    <ion-card>
+    <ion-card (click)="navigateToDetailsPage(content)">
       <ion-row>
         <ion-col col-12>
           <ion-card-content>
-              <ion-row class="top">
-                <ion-col col-3 class="img-container">
-                  <img class="app-icon" src="{{ (content.basePath +'/' + content.contentData.appIcon) || defaultImg }}" />
-                </ion-col>
-                <ion-col col-9 >
-                  <ion-row>
-                    <ion-col col-12 class="PT0">
-                      <h6 class="name font-size-20">{{content?.contentData?.name}}</h6>
-                      <p class="author">{{content?.contentData?.creator}}</p>
-                    </ion-col>
-                    <ion-col col-12 class="bottom-fix">
-                      <span class="badge"> {{content?.contentData?.contentType}} </span>
-                      <span class="size"> {{content?.contentData?.size | fileSize}} </span>
-                    </ion-col>
-                  </ion-row>
-                </ion-col>
+            <ion-row class="top">
+              <ion-col col-3 class="img-container">
+                <img class="app-icon" src="{{ (content.basePath +'/' + content.contentData.appIcon) || defaultImg }}" />
+              </ion-col>
+              <ion-col col-9>
+                <ion-row>
+                  <ion-col col-12 class="PT0">
+                    <h6 class="name font-size-20">{{content?.contentData?.name}}</h6>
+                    <p class="author">{{content?.contentData?.creator}}</p>
+                  </ion-col>
+                  <ion-col col-12 class="bottom-fix">
+                    <span class="badge"> {{content?.contentData?.resourceType}} </span>
+                    <span class="size"> {{content?.contentData?.size | fileSize}} </span>
+                  </ion-col>
+                </ion-row>
+              </ion-col>
 
-              </ion-row>
+            </ion-row>
           </ion-card-content>
         </ion-col>
 

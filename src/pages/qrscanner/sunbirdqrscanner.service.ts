@@ -80,6 +80,8 @@ export class SunbirdQRScanner {
   ) {
     this.source = source;
     this.showButton = showButton;
+
+    /* Just need to override the back button functionality other wise  on pressing back button it will take to two pages back */
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.backButtonFunc();
     }, 10);

@@ -1,5 +1,5 @@
 import { GUEST_TEACHER_TABS, initTabs, GUEST_STUDENT_TABS } from './../../app/module.service';
-import { NavParams } from 'ionic-angular/index';
+import { NavParams, IonicApp } from 'ionic-angular/index';
 import { AppGlobalService } from '../../service/app-global.service';
 import { ProfileService, TabsPage, InteractSubtype, PageId, InteractType, ProfileType, ContainerService } from 'sunbird';
 import { Component } from '@angular/core';
@@ -83,7 +83,8 @@ export class ProfileSettingsPage {
     private scanner: SunbirdQRScanner,
     private platform: Platform,
     private commonUtilService: CommonUtilService,
-    private container: ContainerService
+    private container: ContainerService,
+    private ionicApp: IonicApp
   ) {
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
       .then(val => {
@@ -101,19 +102,38 @@ export class ProfileSettingsPage {
     }
 
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+      this.dismissPopup();
       this.telemetryGeneratorService.generateInteractTelemetry(
         InteractType.TOUCH, InteractSubtype.DEVICE_BACK_CLICKED,
         PageId.ONBOARDING_PROFILE_PREFERENCES,
         Environment.ONBOARDING);
-    });
+    }, 10);
   }
 
   ionViewWillEnter() {
     this.hideBackButton = Boolean(this.navParams.get('hideBackButton'));
     if (this.navParams.get('buildPath')) {
-      this.navCtrl.setPages([{ page: 'LanguageSettingsPage' }, { page: 'UserTypeSelectionPage' }, { page: 'ProfileSettingsPage' }]);
+      this.navCtrl.insertPages(0, [{ page: 'LanguageSettingsPage' }, { page: 'UserTypeSelectionPage' }, { page: 'ProfileSettingsPage' }]);
     }
     this.getSyllabusDetails();
+  }
+
+  ionViewWillLeave() {
+    this.unregisterBackButton();
+  }
+  /**
+ * It will Dismiss active popup
+ */
+  dismissPopup() {
+    const activePortal = this.ionicApp._modalPortal.getActive() ||
+      this.ionicApp._toastPortal.getActive() ||
+      this.ionicApp._overlayPortal.getActive();
+
+    if (activePortal) {
+      activePortal.dismiss();
+    } else if (this.navCtrl.canGoBack()) {
+      this.navCtrl.pop();
+    }
   }
 
   /**
@@ -249,7 +269,7 @@ export class ProfileSettingsPage {
 
   /**
 	 * It will reset user form, based on given index
-	 * @param {number}  index 
+	 * @param {number}  index
 	 * @param {boolean} showloader Flag for showing loader or not
 	 */
   resetForm(index, showloader: boolean): void {

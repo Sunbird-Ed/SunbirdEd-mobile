@@ -21,7 +21,8 @@ import {
   PageId,
   Profile,
   ProfileService,
-  SharedPreferences
+  SharedPreferences,
+  TabsPage
 } from 'sunbird';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
@@ -105,7 +106,7 @@ export class QrCodeResultPage {
     public platform: Platform,
     private telemetryGeneratorService: TelemetryGeneratorService,
 
-    private appGlobal: AppGlobalService,
+    private appGlobalService: AppGlobalService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private profileService: ProfileService,
     private events: Events,
@@ -125,8 +126,8 @@ export class QrCodeResultPage {
     this.source = this.navParams.get('source');
 
     if (Boolean(this.navParams.get('buildPath'))) {
-        this.navCtrl.insert(0, 'LanguageSettingsPage');
-        this.navCtrl.insert(1, 'UserTypeSelectionPage');
+      this.navCtrl.insert(0, 'LanguageSettingsPage');
+      this.navCtrl.insert(1, 'UserTypeSelectionPage');
     }
 
     // check for parent content
@@ -161,7 +162,7 @@ export class QrCodeResultPage {
         PageId.DIAL_CODE_SCAN_RESULT);
       this.navCtrl.pop();
       this.unregisterBackButton();
-    }, 11);
+    }, 10);
   }
 
   handleNavBackButton() {
@@ -180,7 +181,7 @@ export class QrCodeResultPage {
         data = JSON.parse(data);
         this.parents.splice(0, this.parents.length);
         this.parents.push(data.result);
-        this.profile = this.appGlobal.getCurrentUser();
+        this.profile = this.appGlobalService.getCurrentUser();
         const contentData = JSON.parse(JSON.stringify(data.result.contentData));
         this.checkProfileData(contentData, this.profile);
         this.findContentNode(data.result);
@@ -191,29 +192,30 @@ export class QrCodeResultPage {
           this.showChildrenLoader = false;
         });
         this.showContentComingSoonAlert();
-            this.navCtrl.pop();
+        this.navCtrl.pop();
       });
   }
 
   showContentComingSoonAlert() {
     let popOver: Popover;
     const callback: QRAlertCallBack = {
-        tryAgain() {
-            popOver.dismiss();
-        },
-        cancel() {
-            popOver.dismiss();
-        }
+      tryAgain() {
+        popOver.dismiss();
+      },
+      cancel() {
+        popOver.dismiss();
+      }
     };
     popOver = this.popOverCtrl.create(QRScannerAlert, {
+      callback: callback,
       icon: './assets/imgs/ic_coming_soon.png',
       messageKey: 'CONTENT_COMING_SOON',
       cancelKey: 'hide',
       tryAgainKey: 'DONE',
     }, {
-      cssClass: 'qr-alert'
+        cssClass: 'qr-alert'
       });
-     setTimeout(() => {
+    setTimeout(() => {
       popOver.present();
     }, 300);
   }
@@ -297,16 +299,17 @@ export class QrCodeResultPage {
         }
       });
     }
-    console.log('req profile', req);
+
     this.profileService.updateProfile(req,
       (res: any) => {
         console.log('updateprofile Res', res);
         const updateProfileRes = JSON.parse(res);
-        if (updateProfileRes.syllabus &&  updateProfileRes.syllabus.length && updateProfileRes.board && updateProfileRes.board.length
+        if (updateProfileRes.syllabus && updateProfileRes.syllabus.length && updateProfileRes.board && updateProfileRes.board.length
           && updateProfileRes.grade && updateProfileRes.grade.length && updateProfileRes.medium && updateProfileRes.medium.length) {
           this.events.publish(AppGlobalService.USER_INFO_UPDATED);
+          this.events.publish('refresh:profile');
         }
-        this.appGlobal.guestUserProfile = JSON.parse(res);
+        this.appGlobalService.guestUserProfile = JSON.parse(res);
       },
       (err: any) => {
         console.error('Err', err);
@@ -356,47 +359,43 @@ export class QrCodeResultPage {
     //     this.mediumList = _.find(this.categories, (category) => category.code === 'medium').terms;
     //     this.subjectList = _.find(this.categories, (category) => category.code === 'subject').terms;
 
-        console.log('this.boardList', this.boardList);
-        console.log('this.gradeList', this.gradeList);
-        console.log('this.mediumList', this.mediumList);
-        console.log('this.subjectList', this.subjectList);
 
-        if (!this.profile.medium || !this.profile.medium.length) {
-          this.profile.medium = [];
-        }
-        if (!this.profile.subject || !this.profile.subject.length) {
-          this.profile.subject = [];
-        }
-        switch (index) {
-          case 0:
-            this.profile.syllabus = [data.framework];
-            this.profile.board = [data.board];
-            this.profile.medium = [data.medium];
-            this.profile.subject =  [data.subject];
-            this.setGrade(true, data.gradeLevel);
-            break;
-          case 1:
-            this.profile.board = [data.board];
-            this.profile.medium = [data.medium];
-            this.profile.subject =  [data.subject];
-            this.setGrade(true, data.gradeLevel);
-            break;
-          case 2:
-            this.profile.medium.push(data.medium);
-            break;
-          case 3:
-            this.setGrade(false, data.gradeLevel);
-            break;
-          case 4:
-            this.profile.subject.push(data.subject);
-            break;
-        }
-        this.editProfile();
-      // }).catch(error => {
-      //   console.error('Error', error);
-      //   // this.loader.dismiss();
-      //   // this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
-      // });
+    if (!this.profile.medium || !this.profile.medium.length) {
+      this.profile.medium = [];
+    }
+    if (!this.profile.subject || !this.profile.subject.length) {
+      this.profile.subject = [];
+    }
+    switch (index) {
+      case 0:
+        this.profile.syllabus = [data.framework];
+        this.profile.board = [data.board];
+        this.profile.medium = [data.medium];
+        this.profile.subject = [data.subject];
+        this.setGrade(true, data.gradeLevel);
+        break;
+      case 1:
+        this.profile.board = [data.board];
+        this.profile.medium = [data.medium];
+        this.profile.subject = [data.subject];
+        this.setGrade(true, data.gradeLevel);
+        break;
+      case 2:
+        this.profile.medium.push(data.medium);
+        break;
+      case 3:
+        this.setGrade(false, data.gradeLevel);
+        break;
+      case 4:
+        this.profile.subject.push(data.subject);
+        break;
+    }
+    this.editProfile();
+    // }).catch(error => {
+    //   console.error('Error', error);
+    //   // this.loader.dismiss();
+    //   // this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
+    // });
   }
 
   /**
@@ -405,38 +404,31 @@ export class QrCodeResultPage {
 	 * @param {object} profile
 	 */
   checkProfileData(data, profile) {
-    console.log('checkProfileData data', data);
-    console.log('checkProfileData profile', profile);
     if (data && data.framework) {
       this.formAndFrameworkUtilService.getFrameworkDetails(data.framework)
-      .then(catagories => {
-        this.categories = catagories;
-        console.log('categories', catagories);
-        console.log('this.categories', this.categories);
-        this.boardList = _.find(this.categories, (category) => category.code === 'board').terms;
-        this.mediumList = _.find(this.categories, (category) => category.code === 'medium').terms;
-        this.gradeList = _.find(this.categories, (category) => category.code === 'gradeLevel').terms;
-        this.subjectList = _.find(this.categories, (category) => category.code === 'subject').terms;
-        if (data.board) {
-          data.board = this.findCode(this.boardList, data, 'board');
-        }
-        if (data.medium) {
-          data.medium = this.findCode(this.mediumList, data, 'medium');
-        }
-        if (data.subject) {
-          data.subject = this.findCode(this.subjectList, data, 'subject');
-        }
-        if (data.gradeLevel && data.gradeLevel.length) {
-          console.log('data.gradeLevel before', data.gradeLevel);
-          data.gradeLevel = _.map(data.gradeLevel, (dataGrade) => {
-            return _.find(this.gradeList, (grade) => grade.name === dataGrade).code;
-          });
-          console.log('data.gradeLevel after', data.gradeLevel);
-        }
-        console.log('data after modification', data);
-        if (profile && profile.syllabus && profile.syllabus[0] && data.framework === profile.syllabus[0]) {
+        .then(catagories => {
+          this.categories = catagories;
+          this.boardList = _.find(this.categories, (category) => category.code === 'board').terms;
+          this.mediumList = _.find(this.categories, (category) => category.code === 'medium').terms;
+          this.gradeList = _.find(this.categories, (category) => category.code === 'gradeLevel').terms;
+          this.subjectList = _.find(this.categories, (category) => category.code === 'subject').terms;
           if (data.board) {
-            if (profile.board && !(profile.board.length > 1) && data.board === profile.board[0]) {
+            data.board = this.findCode(this.boardList, data, 'board');
+          }
+          if (data.medium) {
+            data.medium = this.findCode(this.mediumList, data, 'medium');
+          }
+          if (data.subject) {
+            data.subject = this.findCode(this.subjectList, data, 'subject');
+          }
+          if (data.gradeLevel && data.gradeLevel.length) {
+            data.gradeLevel = _.map(data.gradeLevel, (dataGrade) => {
+              return _.find(this.gradeList, (grade) => grade.name === dataGrade).code;
+            });
+          }
+          if (profile && profile.syllabus && profile.syllabus[0] && data.framework === profile.syllabus[0]) {
+            if (data.board) {
+              if (profile.board && !(profile.board.length > 1) && data.board === profile.board[0]) {
                 if (data.medium) {
                   let existingMedium = false;
                   existingMedium = _.find(profile.medium, (medium) => {
@@ -468,23 +460,26 @@ export class QrCodeResultPage {
                     }
                   }
                 }
-            } else {
-              this.setCurrentProfile(1, data);
+              } else {
+                this.setCurrentProfile(1, data);
+              }
             }
+          } else {
+            this.setCurrentProfile(0, data);
           }
-        } else {
-          this.setCurrentProfile(0, data);
-        }
-      }).catch(error => {
-        console.error('Error', error);
-        // this.loader.dismiss();
-        // this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
-      });
+        }).catch(error => {
+          console.error('Error', error);
+          // this.loader.dismiss();
+          // this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
+        });
     }
   }
 
-
-
-
-
+  skipSteps() {
+    if (this.appGlobalService.isOnBoardingCompleted && this.appGlobalService.isProfileSettingsCompleted) {
+      this.navCtrl.push(TabsPage, {
+        loginMode: 'guest'
+      });
+    }
+  }
 }
