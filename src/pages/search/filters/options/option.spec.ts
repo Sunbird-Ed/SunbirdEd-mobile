@@ -47,7 +47,7 @@ describe('SearchPage Component', () => {
     beforeEach(() => {
         const platform = TestBed.get(Platform);
         spyOn(platform, 'registerBackButtonAction').and.callFake((success) => {
-            return success(jasmine.anything);
+           // return success(jasmine.anything);
         });
         fixture = TestBed.createComponent(FilterOptions);
         component = fixture.componentInstance;
