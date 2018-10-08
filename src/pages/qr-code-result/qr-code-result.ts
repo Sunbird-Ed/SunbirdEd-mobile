@@ -352,20 +352,6 @@ export class QrCodeResultPage {
 
   setCurrentProfile(index, data) {
     console.log('setCurrentProfile index', index);
-<<<<<<< HEAD
-=======
-    // this.formAndFrameworkUtilService.getFrameworkDetails(data.framework)
-    //   .then(catagories => {
-    //     this.categories = catagories;
-    //     console.log('categories', catagories);
-    //     console.log('this.categories', this.categories);
-    //     this.boardList = _.find(this.categories, (category) => category.code === 'board').terms;
-    //     this.gradeList = _.find(this.categories, (category) => category.code === 'gradeLevel').terms;
-    //     this.mediumList = _.find(this.categories, (category) => category.code === 'medium').terms;
-    //     this.subjectList = _.find(this.categories, (category) => category.code === 'subject').terms;
-
-
->>>>>>> 454de9342505257a17744e57d06fa1abe576eafd
     if (!this.profile.medium || !this.profile.medium.length) {
       this.profile.medium = [];
     }
@@ -377,21 +363,13 @@ export class QrCodeResultPage {
         this.profile.syllabus = [data.framework];
         this.profile.board = [data.board];
         this.profile.medium = [data.medium];
-<<<<<<< HEAD
         this.profile.subject =  [data.subject];
-=======
-        this.profile.subject = [data.subject];
->>>>>>> 454de9342505257a17744e57d06fa1abe576eafd
         this.setGrade(true, data.gradeLevel);
         break;
       case 1:
         this.profile.board = [data.board];
         this.profile.medium = [data.medium];
-<<<<<<< HEAD
         this.profile.subject =  [data.subject];
-=======
-        this.profile.subject = [data.subject];
->>>>>>> 454de9342505257a17744e57d06fa1abe576eafd
         this.setGrade(true, data.gradeLevel);
         break;
       case 2:
@@ -405,14 +383,6 @@ export class QrCodeResultPage {
         break;
     }
     this.editProfile();
-<<<<<<< HEAD
-=======
-    // }).catch(error => {
-    //   console.error('Error', error);
-    //   // this.loader.dismiss();
-    //   // this.getToast(this.translateMessage("NEED_INTERNET_TO_CHANGE")).present();
-    // });
->>>>>>> 454de9342505257a17744e57d06fa1abe576eafd
   }
 
   /**
@@ -421,45 +391,17 @@ export class QrCodeResultPage {
 	 * @param {object} profile
 	 */
   checkProfileData(data, profile) {
+		console.log('content data', data);
+		console.log('profile data', profile);
     if (data && data.framework) {
       // Get the category data using frameworkID from the qr code result data
       this.formAndFrameworkUtilService.getFrameworkDetails(data.framework)
-<<<<<<< HEAD
-      .then(catagories => {
-        this.categories = catagories;
-        console.log('categories', catagories);
-        console.log('this.categories', this.categories);
-        this.boardList = _.find(this.categories, (category) => category.code === 'board').terms;
-        this.mediumList = _.find(this.categories, (category) => category.code === 'medium').terms;
-        this.gradeList = _.find(this.categories, (category) => category.code === 'gradeLevel').terms;
-        this.subjectList = _.find(this.categories, (category) => category.code === 'subject').terms;
-        // Replace the name of board, medium, subject and grades to code from category data
-        if (data.board) {
-          data.board = this.findCode(this.boardList, data, 'board');
-        }
-        if (data.medium) {
-          data.medium = this.findCode(this.mediumList, data, 'medium');
-        }
-        if (data.subject) {
-          data.subject = this.findCode(this.subjectList, data, 'subject');
-        }
-        if (data.gradeLevel && data.gradeLevel.length) {
-          console.log('data.gradeLevel before', data.gradeLevel);
-          data.gradeLevel = _.map(data.gradeLevel, (dataGrade) => {
-            return _.find(this.gradeList, (grade) => grade.name === dataGrade).code;
-          });
-          console.log('data.gradeLevel after', data.gradeLevel);
-        }
-        console.log('data after modification', data);
-        if (profile && profile.syllabus && profile.syllabus[0] && data.framework === profile.syllabus[0]) {
-=======
         .then(catagories => {
           this.categories = catagories;
           this.boardList = _.find(this.categories, (category) => category.code === 'board').terms;
           this.mediumList = _.find(this.categories, (category) => category.code === 'medium').terms;
           this.gradeList = _.find(this.categories, (category) => category.code === 'gradeLevel').terms;
           this.subjectList = _.find(this.categories, (category) => category.code === 'subject').terms;
->>>>>>> 454de9342505257a17744e57d06fa1abe576eafd
           if (data.board) {
             data.board = this.findCode(this.boardList, data, 'board');
           }
@@ -473,7 +415,8 @@ export class QrCodeResultPage {
             data.gradeLevel = _.map(data.gradeLevel, (dataGrade) => {
               return _.find(this.gradeList, (grade) => grade.name === dataGrade).code;
             });
-          }
+					}
+					console.log('content data after', data);
           if (profile && profile.syllabus && profile.syllabus[0] && data.framework === profile.syllabus[0]) {
             if (data.board) {
               if (profile.board && !(profile.board.length > 1) && data.board === profile.board[0]) {
