@@ -13,7 +13,7 @@
 // import { TelemetryGeneratorService } from "../../../service/telemetry-generator.service";
 // import { AddOrRemoveGroupUserPage } from "./add-or-remove-group-user";
 // import {
-//     NavMock, NavParamsMock, ToastControllerMock, TranslateLoaderMock, TelemetryServiceMock, AlertControllerMock, profileServiceMock
+//     NavMock, NavParamsMock, ToastControllerMock, TranslateLoaderMock, TelemetryServiceMock, AlertControllerMock, ProfileServiceMock
 // } from '../../../../test-config/mocks-ionic'
 // import 'rxjs/add/observable/of';
 // import { } from 'jasmine';
@@ -58,7 +58,7 @@
 //                 { provide: AlertController, useClass: AlertControllerMock },
 //                 { provide: TranslateService, useClass: TelemetryServiceMock },
 //                 { provide: GroupService, useClass: GroupService },
-//                 { provide: ProfileService, useClass: profileServiceMock },
+//                 { provide: ProfileService, useClass: ProfileServiceMock },
 //                 { provide: LoadingController, useClass: LoadingController },
 //                 { provide: TelemetryGeneratorService, useClass: TelemetryGeneratorService }
 //             ]

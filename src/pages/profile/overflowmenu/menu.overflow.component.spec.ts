@@ -39,7 +39,7 @@ import {
   SharedPreferencesMock,
   ContainerServiceMock,
   TelemetryServiceMock,
-  profileServiceMock,
+  ProfileServiceMock,
   TranslateServiceStub,
   AppGlobalServiceMock,
   AuthServiceMock,
@@ -91,7 +91,7 @@ describe('OverflowMenuComponent', () => {
         { provide: SharedPreferences, useClass: SharedPreferencesMock },
         { provide: ContainerService, useClass: ContainerServiceMock },
         { provide: TelemetryService, useClass: TelemetryServiceMock },
-        { provide: ProfileService, useClass: profileServiceMock },
+        { provide: ProfileService, useClass: ProfileServiceMock },
         { provide: TranslateService, useClass: TranslateServiceStub },
         { provide: AppGlobalService, useClass: AppGlobalServiceMock },
         {
