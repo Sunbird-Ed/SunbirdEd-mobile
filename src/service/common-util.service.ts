@@ -1,15 +1,20 @@
+import { LoadingController } from 'ionic-angular';
 import { Injectable } from '@angular/core';
 import {
     ToastController,
     ToastOptions
 } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
+import { Loading } from 'ionic-angular';
 
 @Injectable()
 export class CommonUtilService {
 
-    constructor(private toastCtrl: ToastController,
-        private translate: TranslateService) {
+    constructor(
+        private toastCtrl: ToastController,
+        private translate: TranslateService,
+        private loadingCtrl: LoadingController
+    ) {
     }
 
     showToast(translationKey, isInactive?, cssToast?) {
@@ -58,5 +63,16 @@ export class CommonUtilService {
             return availableTranslation[this.translate.currentLang];
         }
         return defaultValue;
+    }
+
+    /**
+     * Returns Loading object with default config
+     * @returns {object} Loading object
+     */
+    getLoader(): Loading {
+        return this.loadingCtrl.create({
+            duration: 30000,
+            spinner: 'crescent'
+        });
     }
 }

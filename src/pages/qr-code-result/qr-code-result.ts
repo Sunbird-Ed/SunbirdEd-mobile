@@ -288,6 +288,9 @@ export class QrCodeResultPage {
     req.createdAt = this.profile.createdAt;
     req.syllabus = this.profile.syllabus;
 
+    // Shorthand for above code
+    // req = (({board, grade, medium, subject, uid, handle, profileType, source, createdAt, syllabus}) =>
+    // ({board, grade, medium, subject, uid, handle, profileType, source, createdAt, syllabus}))(this.profile);
     if (this.profile.grade && this.profile.grade.length > 0) {
       this.profile.grade.forEach(gradeCode => {
         for (let i = 0; i < this.gradeList.length; i++) {
@@ -302,7 +305,6 @@ export class QrCodeResultPage {
 
     this.profileService.updateProfile(req,
       (res: any) => {
-        console.log('updateprofile Res', res);
         const updateProfileRes = JSON.parse(res);
         if (updateProfileRes.syllabus && updateProfileRes.syllabus.length && updateProfileRes.board && updateProfileRes.board.length
           && updateProfileRes.grade && updateProfileRes.grade.length && updateProfileRes.medium && updateProfileRes.medium.length) {
@@ -317,7 +319,6 @@ export class QrCodeResultPage {
   }
 
   setGrade(reset, grades) {
-    console.log('in set grade--', grades);
     if (reset) {
       this.profile.grade = [];
       this.profile.gradeValueMap = {};
