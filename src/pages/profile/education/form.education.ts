@@ -7,13 +7,11 @@ import {
 import {
   NavController,
   NavParams,
-  LoadingController,
   Platform,
   AlertController,
   IonicApp
 } from 'ionic-angular';
 import * as _ from 'lodash';
-import { TranslateService } from '@ngx-translate/core';
 import { UserProfileService, UserEducation, UpdateUserInfoRequest } from 'sunbird';
 import { ProfilePage } from '../profile';
 import { CommonUtilService } from '../../../service/common-util.service';
@@ -39,8 +37,6 @@ export class FormEducation {
     private navParams: NavParams,
     private userProfileService: UserProfileService,
     private commonUtilService: CommonUtilService,
-    private loadingCtrl: LoadingController,
-    private translate: TranslateService,
     private alertCtrl: AlertController,
     private platform: Platform,
     private ionicApp: IonicApp
@@ -76,7 +72,6 @@ export class FormEducation {
    * It will Dismiss active popup
    */
   dismissPopup() {
-    console.log('Fired ionViewWillLeave');
     const activePortal = this.ionicApp._modalPortal.getActive() || this.ionicApp._overlayPortal.getActive();
 
     if (activePortal) {
@@ -122,13 +117,16 @@ export class FormEducation {
 
   /**
    * This will validate a form
-   * @param {boolean}
+   * @param   {object} formVal Form values object
+   * @returns {boolean} returns form validating status
    */
   validateForm(formVal): boolean {
     if (formVal.percentage && (formVal.percentage < 0 || formVal.percentage > 100)) {
       this.commonUtilService.showToast(this.commonUtilService.translateMessage('WARNING_INVALID_PERCENTAGE'));
+
       return false;
     }
+
     return true;
   }
 
@@ -137,7 +135,7 @@ export class FormEducation {
    * @param {object} req - Request object for the User profile Service
    */
   updateEducation(req): void {
-    const loader = this.getLoader();
+    const loader = this.commonUtilService.getLoader();
     loader.present();
     this.userProfileService.updateUserInfo(req,
       (res: any) => {
@@ -152,26 +150,19 @@ export class FormEducation {
       });
   }
 
-  getLoader(): any {
-    return this.loadingCtrl.create({
-      duration: 30000,
-      spinner: 'crescent'
-    });
-  }
-
+  /**
+   * Shows Confirmation box while deleting education
+   */
   showDeleteConfirm() {
     const confirm = this.alertCtrl.create({
       title: this.commonUtilService.translateMessage('CONFIRM_DEL', this.commonUtilService.translateMessage('TITLE_EDUCATION')),
-
       mode: 'wp',
       cssClass: 'confirm-alert',
       buttons: [
         {
           text: this.commonUtilService.translateMessage('CANCEL'),
           role: 'cancel',
-          cssClass: 'alert-btn-cancel',
-          handler: () => {
-          }
+          cssClass: 'alert-btn-cancel'
         },
         {
           text: this.commonUtilService.translateMessage('DELETE'),
@@ -183,23 +174,20 @@ export class FormEducation {
         {
           text: 'x',
           role: 'cancel',
-          cssClass: 'closeButton',
-          handler: () => {
-          }
+          cssClass: 'closeButton'
         }
       ]
     });
+
     confirm.present();
-    const deregisterBackButton = this.platform.registerBackButtonAction(() => {
+    const unRegisterBackButton = this.platform.registerBackButtonAction(() => {
       // dismiss on back press
       confirm.dismiss();
     }, 11);
 
-    // deregister handler after modal closes
+    // unregister handler after modal closes
     confirm.onDidDismiss(() => {
-      deregisterBackButton();
+      unRegisterBackButton();
     });
-
   }
-
 }
