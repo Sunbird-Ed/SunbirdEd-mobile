@@ -1,18 +1,21 @@
-import { async, TestBed, ComponentFixture, inject } from "@angular/core/testing";
-import { TranslateService, TranslateModule, TranslateLoader } from "@ngx-translate/core";
+import { async, TestBed, ComponentFixture, inject } from '@angular/core/testing';
+import { TranslateService, TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import {
   IonicModule, NavController, NavParams
 } from 'ionic-angular';
 import {
   TranslateLoaderMock, NavMock, NavParamsMockNew, SharedPreferencesMock
 } from '../../../test-config/mocks-ionic';
-import { PipesModule } from "../../pipes/pipes.module";
+import { PipesModule } from '../../pipes/pipes.module';
 import { } from 'jasmine';
-import { NO_ERRORS_SCHEMA } from "@angular/core";
-import { UserTypeSelectionPage } from "./user-type-selection";
-import { SharedPreferences, ProfileService, ServiceProvider, TelemetryService, ContainerService, ImpressionType, PageId, Environment, ProfileType, UserSource, TabsPage } from "sunbird";
-import { TelemetryGeneratorService } from "../../service/telemetry-generator.service";
-import { CommonUtilService } from "../../service/common-util.service";
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { UserTypeSelectionPage } from './user-type-selection';
+import {
+  SharedPreferences, ProfileService, ServiceProvider,
+  TelemetryService, ContainerService, ImpressionType, PageId, Environment, ProfileType, UserSource, TabsPage
+} from 'sunbird';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { CommonUtilService } from '../../service/common-util.service';
 describe('UserTypeSelectionPage Component', () => {
   let component: UserTypeSelectionPage;
   let fixture: ComponentFixture<UserTypeSelectionPage>;
@@ -36,7 +39,7 @@ describe('UserTypeSelectionPage Component', () => {
         { provide: SharedPreferences, useClass: SharedPreferencesMock },
 
       ]
-    })
+    });
   }));
 
   beforeEach(() => {
@@ -48,19 +51,19 @@ describe('UserTypeSelectionPage Component', () => {
     inject([TranslateService], (service) => {
       translateService = service;
       translateService.use('en');
-    })
+    });
   });
 
-  it("#ionViewDidload should generate impression telemetry event", function () {
+  it('#ionViewDidload should generate impression telemetry event', () => {
     const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
     spyOn(telemetryGeneratorService, 'generateImpressionTelemetry').and.callThrough().and.callFake(() => { });
     component.ionViewDidLoad();
-    expect(telemetryGeneratorService.generateImpressionTelemetry).toHaveBeenCalledWith(ImpressionType.VIEW, "",
+    expect(telemetryGeneratorService.generateImpressionTelemetry).toHaveBeenCalledWith(ImpressionType.VIEW, '',
       PageId.USER_TYPE_SELECTION,
-      Environment.HOME, "", "", "");
+      Environment.HOME, '', '', '');
   });
 
-  it("#selectTeacherCard should select teacher card", function () {
+  it('#selectTeacherCard should select teacher card', () => {
     const preference = TestBed.get(SharedPreferences);
     spyOn(preference, 'putString');
     component.selectTeacherCard();
@@ -68,7 +71,7 @@ describe('UserTypeSelectionPage Component', () => {
     expect(preference.putString).toHaveBeenCalledWith('selected_user_type', ProfileType.TEACHER);
   });
 
-  it("#selectStudentCard should select student card", function () {
+  it('#selectStudentCard should select student card', () => {
     const preference = TestBed.get(SharedPreferences);
     spyOn(preference, 'putString');
     component.selectStudentCard();
@@ -76,13 +79,13 @@ describe('UserTypeSelectionPage Component', () => {
     expect(preference.putString).toHaveBeenCalledWith('selected_user_type', ProfileType.STUDENT);
   });
 
-  it("#continue should navigate to Tabs Page if profile type is same as selected profileType as TEACHER", function () {
+  it('#continue should navigate to Tabs Page if profile type is same as selected profileType as TEACHER', () => {
     const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
     const navController = TestBed.get(NavController);
     spyOn(navController, 'push').and.callThrough();
     spyOn(component, 'generateInteractEvent').and.callThrough();
     spyOn(telemetryGeneratorService, 'generateInteractTelemetry').and.callThrough().and.callFake(() => { });
-    component.profile = { handle: "SAMPLE_NAME", profileType: ProfileType.TEACHER, source: UserSource.LOCAL };
+    component.profile = { handle: 'SAMPLE_NAME', profileType: ProfileType.TEACHER, source: UserSource.LOCAL };
     component.selectedUserType = ProfileType.TEACHER;
     component.continue();
     expect(component.generateInteractEvent).toHaveBeenCalled();
@@ -91,13 +94,13 @@ describe('UserTypeSelectionPage Component', () => {
     });
   });
 
-  it("#continue should navigate to Tabs Page if profile type is same as selected profileType as STUDENT", function () {
+  it('#continue should navigate to Tabs Page if profile type is same as selected profileType as STUDENT', () => {
     const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
     const navController = TestBed.get(NavController);
     spyOn(navController, 'push').and.callThrough();
     spyOn(component, 'generateInteractEvent').and.callThrough();
     spyOn(telemetryGeneratorService, 'generateInteractTelemetry').and.callThrough().and.callFake(() => { });
-    component.profile = { handle: "SAMPLE_NAME", profileType: ProfileType.STUDENT, source: UserSource.LOCAL };
+    component.profile = { handle: 'SAMPLE_NAME', profileType: ProfileType.STUDENT, source: UserSource.LOCAL };
     component.selectedUserType = ProfileType.STUDENT;
     component.continue();
     expect(component.generateInteractEvent).toHaveBeenCalled();
@@ -106,7 +109,7 @@ describe('UserTypeSelectionPage Component', () => {
     });
   });
 
-  it("#continue should navigate to Tabs Page after updating the profile if profile type is not same as selected profileType", function () {
+  it('#continue should navigate to Tabs Page after updating the profile if profile type is not same as selected profileType', () => {
     const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
     const navController = TestBed.get(NavController);
     const profileService = TestBed.get(ProfileService);
@@ -117,7 +120,7 @@ describe('UserTypeSelectionPage Component', () => {
     spyOn(component, 'generateInteractEvent').and.callThrough();
     spyOn(component, 'updateProfile').and.callThrough();
     spyOn(telemetryGeneratorService, 'generateInteractTelemetry').and.callThrough().and.callFake(() => { });
-    component.profile = { handle: "SAMPLE_NAME", profileType: ProfileType.STUDENT, source: UserSource.LOCAL };
+    component.profile = { handle: 'SAMPLE_NAME', profileType: ProfileType.STUDENT, source: UserSource.LOCAL };
     component.selectedUserType = ProfileType.TEACHER;
     component.continue();
     expect(component.generateInteractEvent).toHaveBeenCalled();
@@ -127,18 +130,18 @@ describe('UserTypeSelectionPage Component', () => {
     });
   });
 
-  it("#continue should handle if error response comes from updateProfile API", function () {
+  it('#continue should handle if error response comes from updateProfile API', () => {
     const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
     const navController = TestBed.get(NavController);
     const profileService = TestBed.get(ProfileService);
-    spyOn(profileService, 'updateProfile').and.callThrough().and.callFake((arg, success,error) => {
+    spyOn(profileService, 'updateProfile').and.callThrough().and.callFake((arg, success, error) => {
       return error();
     });
     spyOn(navController, 'push').and.callThrough();
     spyOn(component, 'generateInteractEvent').and.callThrough();
     spyOn(component, 'updateProfile').and.callThrough();
     spyOn(telemetryGeneratorService, 'generateInteractTelemetry').and.callThrough().and.callFake(() => { });
-    component.profile = { handle: "SAMPLE_NAME", profileType: ProfileType.STUDENT, source: UserSource.LOCAL };
+    component.profile = { handle: 'SAMPLE_NAME', profileType: ProfileType.STUDENT, source: UserSource.LOCAL };
     component.selectedUserType = ProfileType.TEACHER;
     component.continue();
     expect(component.generateInteractEvent).toHaveBeenCalled();
@@ -148,15 +151,15 @@ describe('UserTypeSelectionPage Component', () => {
     });
   });
 
-  it("#continue should create a profile if profile is not available", function () {
+  it('#continue should create a profile if profile is not available', () => {
     const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
     const navController = TestBed.get(NavController);
     const profileService = TestBed.get(ProfileService);
-    spyOn(profileService, 'setCurrentProfile').and.callThrough().and.callFake((boolean,arg, success,error) => {
+    spyOn(profileService, 'setCurrentProfile').and.callThrough().and.callFake((boolean, arg, success, error) => {
       return success();
     });
-    spyOn(profileService, 'getCurrentUser').and.callThrough().and.callFake((success,error) => {
-      return success(JSON.stringify({uid:"SAMPLE_UID"}));
+    spyOn(profileService, 'getCurrentUser').and.callThrough().and.callFake((success, error) => {
+      return success(JSON.stringify({ uid: 'SAMPLE_UID' }));
     });
     spyOn(navController, 'push').and.callThrough();
     spyOn(component, 'generateInteractEvent').and.callThrough();
@@ -168,17 +171,17 @@ describe('UserTypeSelectionPage Component', () => {
     expect(navController.push).toHaveBeenCalledWith(TabsPage, {
       loginMode: 'guest'
     });
-    
+
   });
 
-  it("#continue should create a profile if profile is not available and should handle error result from getCurrntUser", function () {
+  it('#continue should create a profile if profile is not available and should handle error result from getCurrntUser', () => {
     const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
     const navController = TestBed.get(NavController);
     const profileService = TestBed.get(ProfileService);
-    spyOn(profileService, 'setCurrentProfile').and.callThrough().and.callFake((boolean,arg, success,error) => {
+    spyOn(profileService, 'setCurrentProfile').and.callThrough().and.callFake((boolean, arg, success, error) => {
       return success();
     });
-    spyOn(profileService, 'getCurrentUser').and.callThrough().and.callFake((success,error) => {
+    spyOn(profileService, 'getCurrentUser').and.callThrough().and.callFake((success, error) => {
       return error();
     });
     spyOn(navController, 'push').and.callThrough();
@@ -191,14 +194,14 @@ describe('UserTypeSelectionPage Component', () => {
     expect(navController.push).not.toHaveBeenCalledWith(TabsPage, {
       loginMode: 'guest'
     });
-    
+
   });
 
-  it("#continue should create a profile if profile is not available and should handle error result from getCurrentProfile", function () {
+  it('#continue should create a profile if profile is not available and should handle error result from getCurrentProfile', () => {
     const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
     const navController = TestBed.get(NavController);
     const profileService = TestBed.get(ProfileService);
-    spyOn(profileService, 'setCurrentProfile').and.callThrough().and.callFake((boolean,arg, success,error) => {
+    spyOn(profileService, 'setCurrentProfile').and.callThrough().and.callFake((boolean, arg, success, error) => {
       return error();
     });
     spyOn(navController, 'push').and.callThrough();
@@ -211,7 +214,7 @@ describe('UserTypeSelectionPage Component', () => {
     expect(navController.push).not.toHaveBeenCalledWith(TabsPage, {
       loginMode: 'guest'
     });
-    
+
   });
 
 });

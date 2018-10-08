@@ -70,7 +70,7 @@ export class FormExperience {
       jobName: [this.jobInfo.jobName || '', Validators.required],
       orgName: [this.jobInfo.orgName || '', Validators.required],
       role: [this.jobInfo.role || ''],
-      subject: [this.stringToArray(this.jobInfo.subject) || []],
+      subject: [this.commonUtilService.stringToArray(this.jobInfo.subject) || []],
       isCurrentJob: [<string>this.jobInfo.isCurrentJob || (this.isNewForm ? '' : 'false')],
       joiningDate: [this.jobInfo.joiningDate || ''],
       endDate: [this.jobInfo.endDate || '']
@@ -93,7 +93,6 @@ export class FormExperience {
    * It will Dismiss active popup
    */
   dismissPopup() {
-    console.log('Fired ionViewWillLeave');
     const activePortal = this.ionicApp._modalPortal.getActive() || this.ionicApp._overlayPortal.getActive();
 
     if (activePortal) {
@@ -109,16 +108,13 @@ export class FormExperience {
       endDate: ''
     });
   }
+
   /**
    * This will call on click of DELETE and SAVE button
    * @param {object} event - Form event
    * @param {boolean} isDeleted - Flag to delete
    */
   onSubmit(isDeleted: boolean = false): void {
-    // if(isDeleted == true){
-    //   this.showConfirm();
-    //  }
-
     const formVal = this.experienceForm.value;
     this.validateForm(formVal);
     const userJobProfile = {
@@ -162,7 +158,7 @@ export class FormExperience {
 
   /**
    * This will call Update User's Info API
-   * @param {object} req - Request object for the User profile Service
+   * @param {object} req Request object for the User profile Service
    */
   updateExperience(req): void {
     this.userProfileService.updateUserInfo(req,
@@ -186,13 +182,8 @@ export class FormExperience {
   }
 
   /**
-   * @param {string} str - Input String that need to convert into the Array
-   * @returns {array} - Array
+   * Shows Confirmation box while deleting education
    */
-  stringToArray(str: string = '') {
-    return _.split(str, ', ');
-  }
-
   showDeleteConfirm() {
     const confirm = this.alertCtrl.create({
       title: this.commonUtilService.translateMessage('CONFIRM_DEL', this.commonUtilService.translateMessage('TITLE_EXPERIENCE')),

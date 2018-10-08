@@ -1,10 +1,16 @@
-// import 'rxjs/add/observable/of';
 import { Observable } from 'rxjs';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+    ComponentFixture,
+    TestBed
+} from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { NgZone } from '@angular/core';
-import { LoadingController, ToastController, NavController, NavParams, Events, PopoverController } from 'ionic-angular';
-import { AuthService, UserProfileService, CourseService, ContentService, TelemetryService, ProfileService, ServiceProvider,
+import {
+    LoadingController, ToastController,
+    NavController, NavParams, Events, PopoverController
+} from 'ionic-angular';
+import {
+    AuthService, UserProfileService, CourseService,
+    ContentService, TelemetryService, ProfileService, ServiceProvider,
     SharedPreferences, BuildParamService, FrameworkService,
 } from 'sunbird';
 import { DatePipe } from '@angular/common';
@@ -14,15 +20,15 @@ import { ProfilePage } from './profile';
 import { ComponentsModule } from '../../component/components.module';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { mockProfileRes } from './profile.data.spec';
-import {} from 'jasmine';
-
+import { } from 'jasmine';
 import {
-    LoadingControllerMock, TranslateServiceStub, ToastControllerMockNew, PopoverControllerMock,
-    AuthServiceMock, AppGlobalServiceMock, NavMock, NavParamsMock, profileServiceMock,
-    SharedPreferencesMock, FormAndFrameworkUtilServiceMock, EventsMock, TelemetryServiceMock
+    LoadingControllerMock, TranslateServiceStub,
+    ToastControllerMockNew, PopoverControllerMock,
+    AuthServiceMock, AppGlobalServiceMock, NavMock,
+    NavParamsMock,
+    EventsMock, TelemetryServiceMock
 } from '../../../test-config/mocks-ionic';
 import { CommonUtilService } from '../../service/common-util.service';
-
 
 describe('ProfilePage', () => {
     let comp: ProfilePage;
@@ -33,7 +39,7 @@ describe('ProfilePage', () => {
         const userProfileServiceStub = {
             endorseOrAddSkill: () => ({}),
             setProfileVisibility: () => ({}),
-            getUserProfileDetails : () => ({})
+            getUserProfileDetails: () => ({})
         };
 
         const courseServiceStub = {};
@@ -47,8 +53,8 @@ describe('ProfilePage', () => {
 
         TestBed.configureTestingModule({
             imports: [TranslateModule.forRoot(), ComponentsModule],
-            declarations: [ ProfilePage ],
-            schemas: [ NO_ERRORS_SCHEMA ],
+            declarations: [ProfilePage],
+            schemas: [NO_ERRORS_SCHEMA],
             providers: [
                 ProfileService, ServiceProvider, SharedPreferences, BuildParamService, FrameworkService,
                 TelemetryGeneratorService, CommonUtilService,
@@ -253,7 +259,7 @@ describe('ProfilePage', () => {
     it('formatJobProfile should make expected calls', () => {
         const data = ['sample1', 'sample2'];
         comp.profile = {
-            jobProfile : [{subject : data}]
+            jobProfile: [{ subject: data }]
         };
         comp.formatJobProfile();
         expect(comp.profile.jobProfile[0].subject).toEqual(data.join(', '));
@@ -266,7 +272,7 @@ describe('ProfilePage', () => {
     it('formatSkills', () => {
         comp.loggedInUserId = 'sampleUser';
         comp.profile.skills = [
-            { endorsersList : [{userId : 'sampleUser'}] }
+            { endorsersList: [{ userId: 'sampleUser' }] }
         ];
         comp.formatSkills();
         expect(comp.profile.skills[0].canEndorse).toBe(false);
@@ -274,10 +280,10 @@ describe('ProfilePage', () => {
 
     it('formatSocialLinks', () => {
         const data = [
-            {type : 'fb', url : 'fbUrl'},
-            {type : 'twitter', url : 'twitterUrl'},
-            {type : 'in', url : 'inUrl'},
-            {url : 'blogUrl'}
+            { type: 'fb', url: 'fbUrl' },
+            { type: 'twitter', url: 'twitterUrl' },
+            { type: 'in', url: 'inUrl' },
+            { url: 'blogUrl' }
         ];
         comp.profile.webPages = data;
         comp.formatSocialLinks();
@@ -359,7 +365,7 @@ describe('ProfilePage', () => {
         expect(navctrl.push).toHaveBeenCalled();
     });
 
-   it('#toggleLock should set passed field to private', () => {
+    it('#toggleLock should set passed field to private', () => {
         const field = 'profileSummary';
         const displayName = 'Profile_Summary';
         const translate = TestBed.get(TranslateService);
@@ -370,9 +376,9 @@ describe('ProfilePage', () => {
         comp.toggleLock(field, displayName, false);
         expect(comp.profile.profileVisibility[field]).toBe('private');
 
-   });
+    });
 
-   it('#toggleLock should set passed field to public', () => {
+    it('#toggleLock should set passed field to public', () => {
         const translate = TestBed.get(TranslateService);
         spyOn(translate, 'get').and.callFake((arg) => {
             return Observable.of('Cancel');
@@ -385,7 +391,7 @@ describe('ProfilePage', () => {
         expect(comp.profile.profileVisibility[field]).toBe('public');
     });
 
-   it('#setProfileVisibility should handle success scenario', (done) => {
+    it('#setProfileVisibility should handle success scenario', (done) => {
         comp.profile = JSON.parse(mockProfileRes.profileDetailsMock);
         const authService = TestBed.get(AuthService);
         const userProfileService = TestBed.get(UserProfileService);
@@ -419,7 +425,7 @@ describe('ProfilePage', () => {
         });
         spyOn(userProfileService, 'setProfileVisibility').and.callFake((req, success, error) => {
             console.log('req', req);
-            error({status: false});
+            error({ status: false });
         });
         spyOn(comp, 'toggleLock');
         comp.setProfileVisibility('profileSummary');

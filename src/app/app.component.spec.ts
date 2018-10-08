@@ -1,7 +1,7 @@
 import { ContentType, MimeType } from './app.constant';
 
 import { App } from 'ionic-angular';
-import { appMock, ToastControllerMock } from './../../test-config/mocks-ionic';
+import { AppMock, ToastControllerMock } from './../../test-config/mocks-ionic';
 import { fakeAsync, ComponentFixture } from '@angular/core/testing';
 import { PluginModules } from './module.service';
 import { AppGlobalService } from '../service/app-global.service';
@@ -77,7 +77,7 @@ describe('MyApp Component', () => {
         // { provide: SharedPreferences, useClass: SharedPreferencesMock },
         SharedPreferences,
         { provide: ToastController, useClass: ToastControllerMock },
-        { provide: App, useClass: appMock }
+        { provide: App, useClass: AppMock }
       ],
     });
   }));
