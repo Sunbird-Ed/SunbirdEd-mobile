@@ -6,6 +6,7 @@ import {
 } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Loading } from 'ionic-angular';
+import * as _ from 'lodash';
 
 @Injectable()
 export class CommonUtilService {
@@ -74,5 +75,13 @@ export class CommonUtilService {
             duration: 30000,
             spinner: 'crescent'
         });
+    }
+
+    /**
+     * @param {string} str Input String that need to convert into the Array
+     * @returns {array} Newly created Array
+     */
+    stringToArray(str: string = '') {
+        return _.split(str, ', ');
     }
 }
