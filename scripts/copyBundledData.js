@@ -1,8 +1,5 @@
 var fs = require('fs');
 var path = require('path');
-module.exports = function (context) {
-  copyFolderRecursiveSync('buildConfig/data', 'src/assets');
-}
 
 function copyFileSync(source, target) {
   var targetFile = target;
@@ -35,4 +32,8 @@ function copyFolderRecursiveSync(source, target) {
       }
     });
   }
+}
+
+module.exports = function (context) {
+  copyFolderRecursiveSync('buildConfig/data', 'src/assets');
 }

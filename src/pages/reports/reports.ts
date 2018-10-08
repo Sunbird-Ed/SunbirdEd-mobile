@@ -57,8 +57,8 @@ export class ReportsPage {
         .then((data) => {
           let users = JSON.parse(data);
 
-          that.profileService.getCurrentUser( data => {
-            const currentUser = JSON.parse(data);
+          that.profileService.getCurrentUser(profile => {
+            const currentUser = JSON.parse(profile);
             if (this.profileDetails) {
               if (this.profileDetails.id === currentUser.uid) {
                 currentUser.handle = this.profileDetails.firstName;
@@ -126,8 +126,8 @@ export class ReportsPage {
         });
       })
       .catch(() => {
-          loader.dismiss();
-        });
+        loader.dismiss();
+      });
   }
 
   filterOutCurrentUser(userList, currentUser) {
@@ -168,20 +168,20 @@ export class ReportsPage {
     );
     const profileRequest: ProfileRequest = { local: true, groupId: group.gid };
     this.profileService.getAllUserProfile(profileRequest)
-    .then(result => {
-      const map = new Map<string, string>();
-      const users: Array<any> = JSON.parse(result);
-      const uids: Array<string> = [];
-      users.forEach(user => {
-        uids.push(user.uid);
-        map.set(user.uid, user.handle);
+      .then(result => {
+        const map = new Map<string, string>();
+        const users: Array<any> = JSON.parse(result);
+        const uids: Array<string> = [];
+        users.forEach(user => {
+          uids.push(user.uid);
+          map.set(user.uid, user.handle);
+        });
+        this.navCtrl.push(ReportListPage, {
+          isFromGroups: true,
+          uids: uids,
+          users: map
+        });
       });
-      this.navCtrl.push(ReportListPage, {
-        isFromGroups: true,
-        uids: uids,
-        users: map
-      });
-    });
   }
 
   onSegmentChange(data) {

@@ -7,7 +7,6 @@ import {
 import {
   NavController,
   NavParams,
-  LoadingController,
   Platform,
   AlertController
 } from 'ionic-angular';
@@ -36,7 +35,6 @@ export class FormAddress {
     public fb: FormBuilder,
     private navParams: NavParams,
     private userProfileService: UserProfileService,
-    private loadingCtrl: LoadingController,
     private commonUtilService: CommonUtilService,
     private alertCtrl: AlertController,
     private platform: Platform
@@ -47,6 +45,7 @@ export class FormAddress {
     if (this.isNewForm === undefined) {
       this.isNewForm = true;
     }
+
     this.addressDetails = this.navParams.get('addressDetails') || {};
     this.profile = this.navParams.get('profile') || {};
 
@@ -113,10 +112,10 @@ export class FormAddress {
 
     /* Allowed only Numbers and 6 digits */
     if (formVal.zipcode !== '' && !formVal.zipcode.match(/^\d{6}$/)) {
-      console.log('in zipcode');
       this.commonUtilService.showToast(this.commonUtilService.translateMessage('INVALID_PINCODE'));
       return false;
     }
+
     return true;
   }
 
@@ -124,30 +123,22 @@ export class FormAddress {
    * This will call Update User's Info API
    * @param {object} req - Request object for the User profile Service
    */
-  updateAddress(req): void {
-    const loader = this.getLoader();
+  updateAddress(req: UpdateUserInfoRequest): void {
+    const loader = this.commonUtilService.getLoader();
     loader.present();
     this.userProfileService.updateUserInfo(req,
       (res: any) => {
         loader.dismiss();
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_SUCCESS'));
-        this.navCtrl.setRoot(ProfilePage, { returnRefreshedUserProfileDetails: true });
+        this.navCtrl.setRoot(ProfilePage, {
+          returnRefreshedUserProfileDetails: true
+        });
       },
       (err: any) => {
         loader.dismiss();
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_FAILED'));
         console.error('Error', err);
       });
-  }
-
-  /**
-   * Returns Loading controller object with default config
-   */
-  getLoader(): any {
-    return this.loadingCtrl.create({
-      duration: 30000,
-      spinner: 'crescent'
-    });
   }
 
   /**
@@ -187,7 +178,7 @@ export class FormAddress {
     const unregisterBackButton = this.platform.registerBackButtonAction(() => {
       // dismiss on back press
       confirm.dismiss();
-    }, 11);
+    }, 10);
 
     // unregister handler after modal closes
     confirm.onDidDismiss(() => {
