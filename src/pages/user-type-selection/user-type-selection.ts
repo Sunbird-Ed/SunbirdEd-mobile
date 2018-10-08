@@ -1,12 +1,14 @@
 import {
   Component,
-  NgZone
+  NgZone,
+  ViewChild
 } from '@angular/core';
 import {
   IonicPage,
   NavController,
   NavParams,
-  Events
+  Events,
+  Platform
 } from 'ionic-angular';
 import {
   TabsPage,
@@ -37,6 +39,7 @@ import { CommonUtilService } from '../../service/common-util.service';
 import { PreferenceKey } from '../../app/app.constant';
 import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { ProfileSettingsPage } from '../profile-settings/profile-settings';
+import { Navbar } from 'ionic-angular';
 
 const selectedCardBorderColor = '#006DE5';
 const borderColor = '#F7F7F7';
@@ -48,13 +51,14 @@ const borderColor = '#F7F7F7';
 })
 
 export class UserTypeSelectionPage {
-
+  @ViewChild(Navbar) navBar: Navbar;
   teacherCardBorderColor = '#F7F7F7';
   studentCardBorderColor = '#F7F7F7';
   userTypeSelected = false;
   selectedUserType: ProfileType;
   continueAs = '';
   profile: Profile;
+  backButtonFunc = undefined;
 
   /**
    * Contains paths to icons
@@ -76,8 +80,18 @@ export class UserTypeSelectionPage {
     private event: Events,
     private commonUtilService: CommonUtilService,
     private appGlobalService: AppGlobalService,
-    private scannerService: SunbirdQRScanner
-  ) {
+    private scannerService: SunbirdQRScanner,
+    private platform: Platform
+  ) {}
+
+  ionViewDidLoad() {
+    this.navBar.backButtonClick = (e: UIEvent) => {
+      this.handleBackbutton();
+    };
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.VIEW, '',
+      PageId.USER_TYPE_SELECTION,
+      Environment.HOME, '', '', '');
   }
 
   ionViewWillEnter() {
@@ -87,12 +101,18 @@ export class UserTypeSelectionPage {
     if (this.showScanner) {
       this.scannerService.startScanner('UserTypeSelectionPage', true);
     }
+    this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      this.handleBackbutton();
+      this.backButtonFunc();
+    }, 10);
   }
-  ionViewDidLoad() {
-    this.telemetryGeneratorService.generateImpressionTelemetry(
-      ImpressionType.VIEW, '',
-      PageId.USER_TYPE_SELECTION,
-      Environment.HOME, '', '', '');
+
+  handleBackbutton() {
+    if (this.isChangeRoleRequest) {
+      this.navCtrl.pop();
+    } else {
+      this.navCtrl.setRoot('LanguageSettingsPage');
+    }
   }
 
   selectTeacherCard() {
@@ -155,7 +175,7 @@ export class UserTypeSelectionPage {
     }
   }
 
-  updateProfile(updateRequest: any) {
+  updateProfile(updateRequest: Profile) {
     this.profileService.updateProfile(updateRequest,
       () => {
         this.gotoTabsPage(true);
@@ -165,7 +185,7 @@ export class UserTypeSelectionPage {
       });
   }
   // TODO Remove getCurrentUser as setCurrentProfile is returning uid
-  setProfile(profileRequest: any) {
+  setProfile(profileRequest: Profile) {
     this.profileService.setCurrentProfile(true, profileRequest, () => {
       this.profileService.getCurrentUser(success => {
         const userId = JSON.parse(success).uid;
