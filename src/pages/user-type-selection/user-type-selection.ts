@@ -116,23 +116,23 @@ export class UserTypeSelectionPage {
   }
 
   selectTeacherCard() {
-    this.zone.run(() => {
-      this.userTypeSelected = true;
-      this.teacherCardBorderColor = selectedCardBorderColor;
-      this.studentCardBorderColor = borderColor;
-      this.selectedUserType = ProfileType.TEACHER;
-      this.continueAs = this.commonUtilService.translateMessage('CONTINUE_AS_ROLE', this.commonUtilService.translateMessage('USER_TYPE_1'));
-      this.preference.putString(PreferenceKey.SELECTED_USER_TYPE, this.selectedUserType);
-    });
+    this.selectCard('USER_TYPE_1', ProfileType.TEACHER);
   }
 
   selectStudentCard() {
+    this.selectCard('USER_TYPE_2', ProfileType.STUDENT);
+  }
+
+  selectCard(userType, profileType) {
     this.zone.run(() => {
       this.userTypeSelected = true;
-      this.teacherCardBorderColor = borderColor;
-      this.studentCardBorderColor = selectedCardBorderColor;
-      this.selectedUserType = ProfileType.STUDENT;
-      this.continueAs = this.commonUtilService.translateMessage('CONTINUE_AS_ROLE', this.commonUtilService.translateMessage('USER_TYPE_2'));
+      this.teacherCardBorderColor = (userType === 'USER_TYPE_1') ? selectedCardBorderColor : borderColor;
+      this.studentCardBorderColor = (userType === 'USER_TYPE_1') ? borderColor : selectedCardBorderColor;
+      this.selectedUserType = profileType;
+      this.continueAs = this.commonUtilService.translateMessage(
+        'CONTINUE_AS_ROLE',
+        this.commonUtilService.translateMessage(userType)
+      );
       this.preference.putString(PreferenceKey.SELECTED_USER_TYPE, this.selectedUserType);
     });
   }
@@ -165,12 +165,10 @@ export class UserTypeSelectionPage {
         this.updateProfile(updateRequest);
       }
     } else {
-
       const profileRequest = new Profile();
       profileRequest.handle = 'Guest1';
       profileRequest.profileType = this.selectedUserType;
       profileRequest.source = UserSource.LOCAL;
-
       this.setProfile(profileRequest);
     }
   }
@@ -204,6 +202,10 @@ export class UserTypeSelectionPage {
       });
   }
 
+  /**
+   * It will initializes tabs based on the user type and navigates to respective page
+   * @param {boolean} isUserTypeChanged
+   */
   gotoTabsPage(isUserTypeChanged: boolean = false) {
     // Update the Global variable in the AppGlobalService
     this.event.publish(AppGlobalService.USER_INFO_UPDATED);
