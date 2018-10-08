@@ -42,6 +42,7 @@ import {
 } from '../../../test-config/mocks-ionic';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { Observable } from 'rxjs';
+import { CommonUtilService } from '../../service/common-util.service';
 
 describe('OnBoarding.service', () => {
     let onboardingService: OnboardingService;
@@ -50,6 +51,7 @@ describe('OnBoarding.service', () => {
 
         TestBed.configureTestingModule({
             providers: [
+                CommonUtilService,
                 ProfileService, FrameworkService, BuildParamService, FormService, SharedPreferences, OnboardingService,
                 ServiceProvider, AuthService, TelemetryGeneratorService, TelemetryService,
                 { provide: FormAndFrameworkUtilService, useClass: FormAndFrameworkUtilServiceMock },
@@ -67,8 +69,8 @@ describe('OnBoarding.service', () => {
     });
 
     it('#constructor isOnBoardingCardCompleted defaults to: false', () => {
-        const service = TestBed.get(OnboardingService);
-        expect(service.isOnBoardingCardCompleted).toEqual(false);
+        const serviceStub = TestBed.get(OnboardingService);
+        expect(serviceStub.isOnBoardingCardCompleted).toEqual(false);
     });
 
     it('#contructor should fetch current languge', (done) => {
@@ -446,25 +448,27 @@ describe('OnBoarding.service', () => {
     it('#selectedCheckboxValue should filter out selected values and store in local object, if internet not available', (done) => {
         onboardingService = TestBed.get(OnboardingService);
         const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
-
-        expect(onboardingService.selectedCheckboxValue).toBeDefined();
-        spyOn(onboardingService, 'selectedCheckboxValue').and.callThrough();
+        const CommonUtilServiceStub = TestBed.get(CommonUtilService);
+        expect(service.selectedCheckboxValue).toBeDefined();
+        spyOn(service, 'selectedCheckboxValue').and.callThrough();
         spyOn(formAndFrameworkUtilServiceStub, 'getFrameworkDetails').and.returnValue(Promise.reject('Error occurred'));
-        spyOn(onboardingService, 'getToast');
-        spyOn(onboardingService, 'translateMessage').and.returnValue('No internet connectivity, turn on WiFi or mobile data and try again');
-        spyOn(onboardingService, 'arrayToString').and.returnValue('State (Andhra Pradesh)');
-        onboardingService.onBoardingSlides = mockOnBoardingSlideDefaults;
-        onboardingService.profile = JSON.parse(mockCurrentUserDetails);
-        onboardingService.syllabusList = mockSyllabusDetails.syllabusListWithSelectedvalue;
-        onboardingService.selectedCheckboxValue(mockSelectedSlide, 0);
+        spyOn(CommonUtilServiceStub, 'showToast');
+        spyOn(CommonUtilServiceStub, 'translateMessage').and
+            .returnValue('No internet connectivity, turn on WiFi or mobile data and try again');
+        spyOn(service, 'arrayToString').and.returnValue('State (Andhra Pradesh)');
+        service.onBoardingSlides = mockOnBoardingSlideDefaults;
+        service.profile = JSON.parse(mockCurrentUserDetails);
+        service.syllabusList = mockSyllabusDetails.syllabusListWithSelectedvalue;
+        service.selectedCheckboxValue(mockSelectedSlide, 0);
 
         setTimeout(() => {
-            expect(onboardingService.selectedCheckboxValue).toHaveBeenCalled();
-            expect(onboardingService.onBoardingSlides[0].selectedOptions).toEqual('State (Andhra Pradesh)');
-            expect(onboardingService.arrayToString).toHaveBeenCalled();
-            expect(onboardingService.getToast).toHaveBeenCalled();
-            expect(onboardingService.translateMessage).toHaveBeenCalledWith('NEED_INTERNET_TO_CHANGE');
-            expect(onboardingService.getToast).toHaveBeenCalledWith('No internet connectivity, turn on WiFi or mobile data and try again');
+            expect(service.selectedCheckboxValue).toHaveBeenCalled();
+            expect(service.onBoardingSlides[0].selectedOptions).toEqual('State (Andhra Pradesh)');
+            expect(service.arrayToString).toHaveBeenCalled();
+            expect(CommonUtilServiceStub.showToast).toHaveBeenCalled();
+            expect(CommonUtilServiceStub.translateMessage).toHaveBeenCalledWith('NEED_INTERNET_TO_CHANGE');
+            expect(CommonUtilServiceStub.showToast)
+                .toHaveBeenCalledWith('No internet connectivity, turn on WiFi or mobile data and try again');
             done();
         }, 10);
     });

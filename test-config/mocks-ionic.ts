@@ -107,25 +107,25 @@ export class SplashScreenMock extends SplashScreen {
 
 export class NavMock {
   public pop(): any {
-    return new Promise(function (resolve: Function): void {
+    return new Promise(() => (resolve: Function): void {
       resolve();
     });
   }
 
   public push(): any {
-    return new Promise(function (resolve: Function): void {
+    return new Promise(() => (resolve: Function): void {
       resolve();
     });
   }
 
   public popTo(): any {
-    return new Promise(function (resolve: Function): void {
+    return new Promise(() => (resolve: Function): void {
       resolve();
     });
   }
 
   public getByIndex(): any {
-    return new Promise(function (resolve: Function): void {
+    return new Promise(() => (resolve: Function): void {
       resolve();
     });
   }
@@ -649,5 +649,3 @@ export class NavParamsMockNew {
     return undefined;
   }
 }
-
-

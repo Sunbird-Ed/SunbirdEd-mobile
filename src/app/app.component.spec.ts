@@ -43,6 +43,7 @@ import { Events } from 'ionic-angular';
 import { EnrolledCourseDetailsPage } from '../pages/enrolled-course-details/enrolled-course-details';
 import { CollectionDetailsPage } from '../pages/collection-details/collection-details';
 import { ContentDetailsPage } from '../pages/content-details/content-details';
+import { TelemetryGeneratorService } from '../service/telemetry-generator.service';
 
 describe('MyApp Component', () => {
   let fixture: ComponentFixture<MyApp>;
@@ -61,6 +62,7 @@ describe('MyApp Component', () => {
         ...PluginModules
       ],
       providers: [
+        TelemetryGeneratorService,
         // PermissionService,
         { provide: AuthService, useClass: AuthServiceMock },
         { provide: ContainerService, useClass: ContainerServiceMock },
