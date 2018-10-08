@@ -332,7 +332,7 @@ export class QrCodeResultPage {
       }
     });
   }
-	/**
+  /**
 	 * @param categoryList
 	 * @param data
 	 * @param categoryType
@@ -391,8 +391,8 @@ export class QrCodeResultPage {
 	 * @param {object} profile
 	 */
   checkProfileData(data, profile) {
-		console.log('content data', data);
-		console.log('profile data', profile);
+    console.log('content data', data);
+    console.log('profile data', profile);
     if (data && data.framework) {
       // Get the category data using frameworkID from the qr code result data
       this.formAndFrameworkUtilService.getFrameworkDetails(data.framework)
@@ -415,8 +415,8 @@ export class QrCodeResultPage {
             data.gradeLevel = _.map(data.gradeLevel, (dataGrade) => {
               return _.find(this.gradeList, (grade) => grade.name === dataGrade).code;
             });
-					}
-					console.log('content data after', data);
+          }
+          console.log('content data after', data);
           if (profile && profile.syllabus && profile.syllabus[0] && data.framework === profile.syllabus[0]) {
             if (data.board) {
               if (profile.board && !(profile.board.length > 1) && data.board === profile.board[0]) {

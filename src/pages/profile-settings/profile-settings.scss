@@ -22,7 +22,7 @@ page-profile-settings {
     min-height: 5.5rem !important;
   }
   .item-select .label-md{
-    color: #000;
+    color: map-get($colors, black);
   }
   .arrow-icon {
     padding-left: 2.8em !important;
