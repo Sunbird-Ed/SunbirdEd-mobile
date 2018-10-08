@@ -120,9 +120,6 @@ export class UserAndGroupsPage {
     if (this.appGlobalService.isUserLoggedIn()) {
       this.profileDetails = this.appGlobalService.getCurrentUser();
     }
-
-
-
   }
 
   ionViewDidLoad() {
@@ -142,14 +139,14 @@ export class UserAndGroupsPage {
 
       this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
         this.dismissPopup();
-        // this.unregisterBackButton();
+        this.unregisterBackButton();
       }, 11);
     });
+
     if (this.userList) {
       this.noUsersPresent = false;
       this.loadingUserList = true;
     }
-
   }
 
   getCurrentGroup() {

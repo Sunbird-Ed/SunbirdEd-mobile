@@ -113,7 +113,7 @@ export class ResourcesPage implements OnInit {
     private preference: SharedPreferences,
     private zone: NgZone,
     private network: Network,
-    private appGlobal: AppGlobalService,
+    private appGlobalService: AppGlobalService,
     private appVersion: AppVersion,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
@@ -166,7 +166,7 @@ export class ResourcesPage implements OnInit {
     // Event for optional and forceful upgrade
     this.events.subscribe('force_optional_upgrade', (upgrade) => {
       if (upgrade) {
-        this.appGlobal.openPopover(upgrade);
+        this.appGlobalService.openPopover(upgrade);
       }
     });
 
@@ -207,17 +207,17 @@ export class ResourcesPage implements OnInit {
 	 * It will fetch the guest user profile details
 	 */
   getCurrentUser(): void {
-    const profileType = this.appGlobal.getGuestUserType();
+    const profileType = this.appGlobalService.getGuestUserType();
     this.showSignInCard = false;
     if (profileType === ProfileType.TEACHER) {
-      this.showSignInCard = this.appGlobal.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER;
+      this.showSignInCard = this.appGlobalService.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER;
       this.audienceFilter = AudienceFilter.GUEST_TEACHER;
     } else if (profileType === ProfileType.STUDENT) {
-      this.showSignInCard = this.appGlobal.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT;
+      this.showSignInCard = this.appGlobalService.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT;
       this.audienceFilter = AudienceFilter.GUEST_STUDENT;
     }
     this.setSavedContent();
-    this.profile = this.appGlobal.getCurrentUser();
+    this.profile = this.appGlobalService.getCurrentUser();
   }
 
   navigateToViewMoreContentsPage() {
@@ -249,7 +249,7 @@ export class ResourcesPage implements OnInit {
       undefined,
       values);
 
-    queryParams = updateFilterInSearchQuery(queryParams, this.appliedFilter, this.profile, this.mode, this.isFilterApplied, this.appGlobal);
+    queryParams = updateFilterInSearchQuery(queryParams, this.appliedFilter, this.profile, this.mode, this.isFilterApplied, this.appGlobalService);
 
     this.navCtrl.push(ViewMoreActivityPage, {
       requestParams: queryParams,
@@ -396,7 +396,7 @@ export class ResourcesPage implements OnInit {
     if (categoryKey) {
       const nameArray = [];
       profileFilter.forEach(filterCode => {
-        let nameForCode = this.appGlobal.getNameForCodeInFramework(categoryKey, filterCode);
+        let nameForCode = this.appGlobalService.getNameForCodeInFramework(categoryKey, filterCode);
 
         if (!nameForCode) {
           nameForCode = filterCode;
@@ -433,7 +433,7 @@ export class ResourcesPage implements OnInit {
 
   ionViewDidLoad() {
     this.generateImpressionEvent();
-    this.appGlobal.generateConfigInteractEvent(PageId.LIBRARY, this.isOnBoardingCardCompleted);
+    this.appGlobalService.generateConfigInteractEvent(PageId.LIBRARY, this.isOnBoardingCardCompleted);
   }
 
   ionViewDidEnter() {
@@ -472,7 +472,7 @@ export class ResourcesPage implements OnInit {
   }
 
   ionViewWillEnter() {
-    this.guestUser = !this.appGlobal.isUserLoggedIn();
+    this.guestUser = !this.appGlobalService.isUserLoggedIn();
     if (this.guestUser) {
       this.getCurrentUser();
     } else {
@@ -510,7 +510,7 @@ export class ResourcesPage implements OnInit {
 
     this.storyAndWorksheets = [];
     this.setSavedContent();
-    this.guestUser = !this.appGlobal.isUserLoggedIn();
+    this.guestUser = !this.appGlobalService.isUserLoggedIn();
 
     if (this.guestUser) {
       this.getCurrentUser();
