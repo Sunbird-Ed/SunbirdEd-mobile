@@ -39,6 +39,7 @@ import {
     AppGlobalServiceMock,
     BuildParamaServiceMock
 } from '../../../test-config/mocks-ionic';
+import { CommonUtilService } from '../../service/common-util.service';
 
 describe('LanguageSettingsPage', () => {
     let comp: LanguageSettingsPage;
@@ -100,6 +101,7 @@ describe('LanguageSettingsPage', () => {
             declarations: [LanguageSettingsPage],
             schemas: [NO_ERRORS_SCHEMA],
             providers: [ProfileService, ServiceProvider, FrameworkService, Platform,
+                CommonUtilService,
                 { provide: AppGlobalService, useClass: AppGlobalServiceMock },
                 { provide: AuthService, useValue: authServiceStub },
                 { provide: BuildParamService, useValue: BuildParamServiceStub },
@@ -417,12 +419,12 @@ describe('LanguageSettingsPage', () => {
     describe('translateMessage', () => {
         it('should call translateMessage', fakeAsync(() => {
             const translate = TestBed.get(TranslateService);
-
+            const commonUtilServiceStub = TestBed.get(CommonUtilService);
             const spy = spyOn(translate, 'get').and.callFake((arg) => {
                 return Observable.of('Cancel');
             });
 
-            const translateMessage = comp.translateMessage('CANCEL');
+            const translateMessage = commonUtilServiceStub.translateMessage('CANCEL');
 
             expect(translateMessage).toEqual('Cancel');
             expect(spy.calls.any()).toEqual(true);
