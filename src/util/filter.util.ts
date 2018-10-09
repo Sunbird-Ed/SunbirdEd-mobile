@@ -1,7 +1,7 @@
 import { AppGlobalService } from '../service/app-global.service';
 
-function applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>,
-    categoryKey: string, appGlobalService: AppGlobalService) {
+const applyProfileFilter = (profileFilter: Array<any>, assembleFilter: Array<any>,
+    categoryKey: string, appGlobalService: AppGlobalService) => {
     if (categoryKey) {
         const nameArray = [];
         profileFilter.forEach(filterCode => {
@@ -31,9 +31,11 @@ function applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any
     }
 
     return unique_array;
-}
+};
 
-export function updateFilterInSearchQuery(queryParams, appliedFilter, profile, mode, isFilterApplied, appGlobalService: AppGlobalService) {
+export const updateFilterInSearchQuery = (queryParams, appliedFilter, profile, mode, isFilterApplied,
+    appGlobalService: AppGlobalService) => {
+
     const queryObj = JSON.parse(queryParams);
     const filter = queryObj.request.filters;
 
@@ -82,4 +84,4 @@ export function updateFilterInSearchQuery(queryParams, appliedFilter, profile, m
 
 
     return queryParams;
-}
+};

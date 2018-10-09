@@ -139,8 +139,10 @@ export class AnnouncementDetailComponent implements OnInit {
      * SocialSharing
      */
     share(announcementDetail) {
-        const message = ` Type: ${announcementDetail.type}\nDescription: ${announcementDetail.description}\nTitle: ${announcementDetail.title}\n Links:  ${announcementDetail.links}`;
-        const attachmentPath: string = this.file.externalRootDirectory + 'Announcements/' + announcementDetail.id + '/' + announcementDetail.attachments[0].name;
+        const message = ` Type: ${announcementDetail.type}\nDescription: ${announcementDetail.description}\nTitle:
+         ${announcementDetail.title}\n Links:  ${announcementDetail.links}`;
+        const attachmentPath: string = this.file.externalRootDirectory + 'Announcements/' + announcementDetail.id +
+         '/' + announcementDetail.attachments[0].name;
         console.log(attachmentPath);
         this.socialSharing.share(message, null, attachmentPath, null).then(() => {
             console.log('inside .then function');
@@ -160,7 +162,8 @@ export class AnnouncementDetailComponent implements OnInit {
     }
 
     openLink(url: string): void {
-        const options = 'hardwareback=yes,clearcache=no,zoom=no,toolbar=yes,clearsessioncache=no,closebuttoncaption=Done,disallowoverscroll=yes';
+        const options = 'hardwareback=yes,clearcache=no,zoom=no,toolbar=yes,clearsessioncache=no,' +
+        'closebuttoncaption=Done,disallowoverscroll=yes';
         (<any>window).cordova.InAppBrowser.open(url, '_system', options);
     }
 

@@ -573,7 +573,7 @@ export class CollectionDetailsPage {
       this.getContentsSize(value.children);
       if (value.isAvailableLocally === false) {
         this.downloadIdentifiers.push(value.contentData.identifier);
-       }
+      }
     });
     if (this.downloadIdentifiers.length && !this.isDownlaodCompleted) {
       this.showDownloadBtn = true;
@@ -731,7 +731,7 @@ export class CollectionDetailsPage {
         }
         // Get child content
         if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport'
-         && res.data.identifier === this.contentDetail.identifier ) {
+          && res.data.identifier === this.contentDetail.identifier) {
           this.showLoading = false;
           if (this.queuedIdentifiers.length && this.isDownloadStarted) {
             if (_.includes(this.queuedIdentifiers, res.data.identifier)) {

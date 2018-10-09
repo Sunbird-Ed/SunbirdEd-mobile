@@ -13,11 +13,11 @@ import {
 import { ImageLoaderConfig } from 'ionic-image-loader';
 import { TranslateLoader } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
-import { App, ViewController } from 'ionic-angular';
+import { ViewController } from 'ionic-angular';
 import { ElementRef } from '@angular/core';
 import { CommonUtilService } from '../src/service/common-util.service';
 
-declare let readJSON: any;
+declare const readJSON: any;
 
 export class PlatformMock {
   public ready(): Promise<string> {
@@ -107,25 +107,25 @@ export class SplashScreenMock extends SplashScreen {
 
 export class NavMock {
   public pop(): any {
-    return new Promise(function (resolve: Function): void {
+    return new Promise((resolve: Function): void => {
       resolve();
     });
   }
 
   public push(): any {
-    return new Promise(function (resolve: Function): void {
+    return new Promise((resolve: Function): void => {
       resolve();
     });
   }
 
   public popTo(): any {
-    return new Promise(function (resolve: Function): void {
+    return new Promise((resolve: Function): void => {
       resolve();
     });
   }
 
   public getByIndex(): any {
-    return new Promise(function (resolve: Function): void {
+    return new Promise((resolve: Function): void => {
       resolve();
     });
   }
@@ -224,6 +224,7 @@ export class EventsMock {
 
   }
 }
+
 export class CourseUtilServiceMock extends CourseUtilService { }
 
 export class TranslateServiceStub {
@@ -340,7 +341,7 @@ export class FormAndFrameworkUtilServiceMock {
   // }
 }
 
-export class profileServiceMock {
+export class ProfileServiceMock {
   getCurrentUser(res, err) {
     return res({});
   }
@@ -361,10 +362,9 @@ export class profileServiceMock {
   getAllUserProfile(res, err) {
     return res({});
   }
-
 }
 
-export class groupServiceMock {
+export class GroupServiceMock {
   deleteGroup: () => ({
     then: () => ({
       catch: () => ({})
@@ -385,11 +385,11 @@ export class groupServiceMock {
   //  }
 }
 
-export class eventsMock {
-  publish: () => {};
-}
+export class OAuthServiceMock {
+  doOAuthStepOne: () => {};
 
-export class oAuthServiceMock {
+  doOAuthStepTwo: () => {};
+
   doLogOut(): Promise<any> {
     return new Promise(resolve => {
       resolve();
@@ -397,21 +397,8 @@ export class oAuthServiceMock {
   }
 }
 
-export class networkMock {
-  type: {};
-}
-
 export class MockElementRef implements ElementRef {
   nativeElement = {};
-}
-
-export class appMock extends App {
-  getRootNav: () => {
-    setRoot: () => {};
-  };
-  _getPortal(): any {
-    return {};
-  }
 }
 
 export class AppMock {
@@ -424,6 +411,13 @@ export class AppMock {
 
   public getRootNav(): AnyNav {
     return new AnyNav();
+  }
+
+  public setRoot() {
+    return {};
+  }
+  _getPortal(): any {
+    return {};
   }
 }
 
@@ -502,7 +496,6 @@ export class PopoverControllerMock {
     instance.create.and.returnValue(popOver || PopoverMock.instance());
     return instance;
   }
-
 }
 
 export class PopoverMock extends ViewController {
@@ -526,7 +519,6 @@ export class PopoverMock extends ViewController {
   public static setOnDissMissResponse(response) {
     PopoverMock.onDismissResponse = response;
   }
-
 }
 
 export class AlertControllerMock {
@@ -578,15 +570,12 @@ class LoadingMockNew {
   }
 
   public present(): void {
-    console.debug('LoadingMock : present -> ' + this.content);
   }
 
   public dismiss(): void {
-    console.debug('LoadingMock : dismiss');
   }
 
   public onDidDismiss(): void {
-    console.debug('LoadingMock : onDidDismiss');
   }
 }
 
@@ -618,9 +607,6 @@ export class IonicAppMock {
     };
   };
 }
-export class ngZone {
-  run: () => {};
-}
 
 export class NavbarMock {
   // public backButtonClick: Function;
@@ -628,11 +614,6 @@ export class NavbarMock {
   public backButtonClick() {
     return {};
   }
-
-}
-export class OAuthServiceMock {
-  doOAuthStepOne: () => {};
-  doOAuthStepTwo: () => {};
 }
 
 export class NavParamsMockNew {
@@ -649,5 +630,3 @@ export class NavParamsMockNew {
     return undefined;
   }
 }
-
-

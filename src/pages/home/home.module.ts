@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { HomePage } from './home';
-import { AnnouncementListComponent } from './announcement-list/announcement-list'
-import { AnnouncementDetailComponent } from './announcement-detail/announcement-detail'
+import { AnnouncementListComponent } from './announcement-list/announcement-list';
+import { AnnouncementDetailComponent } from './announcement-detail/announcement-detail';
 import { TranslateModule } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
 import { HttpClientModule } from '@angular/common/http';
@@ -15,7 +15,9 @@ import { SocialSharing } from '@ionic-native/social-sharing';
 
 @NgModule({
   declarations: [
-    HomePage, AnnouncementListComponent, AnnouncementDetailComponent
+    HomePage,
+    AnnouncementListComponent,
+    AnnouncementDetailComponent
   ],
   imports: [
     IonicPageModule.forChild(HomePage),
@@ -25,14 +27,19 @@ import { SocialSharing } from '@ionic-native/social-sharing';
     ComponentsModule,
     FrameworkModule,
     IonicImageLoader
-
   ],
-  providers: [HttpClient, GenieSDKServiceProvider, SocialSharing],
+  providers: [
+    HttpClient,
+    GenieSDKServiceProvider,
+    SocialSharing
+  ],
   exports: [
     HomePage
   ],
-
-  entryComponents: [AnnouncementListComponent, AnnouncementDetailComponent]
+  entryComponents: [
+    AnnouncementListComponent,
+    AnnouncementDetailComponent
+  ]
 })
 export class HomePageModule {
 

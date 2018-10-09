@@ -1,26 +1,39 @@
-import { async, TestBed, ComponentFixture, inject } from '@angular/core/testing';
+import {
+    async, TestBed,
+    ComponentFixture, inject
+} from '@angular/core/testing';
 import { ResourcesPage } from './resources';
-import { TranslateService, TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import {
-    NavController, Events, IonicModule, NavParams, ToastController, PopoverController,
-    LoadingController, Platform
+    TranslateService,
+    TranslateModule, TranslateLoader
+} from '@ngx-translate/core';
+import {
+    NavController, Events, IonicModule,
+    NavParams, ToastController, PopoverController,
+    LoadingController
 } from 'ionic-angular';
-
 import {
-    StorageMock, ToastControllerMock, PopoverControllerMock, LoadingControllerMock,
-    NetworkMock,
-    EventsMock
+    StorageMock,
+    ToastControllerMock,
+    PopoverControllerMock, LoadingControllerMock,
+    NetworkMock
 } from 'ionic-mocks';
-
 import {
-    FileUtil, AuthService, GenieSDKServiceProvider, SharedPreferences, FrameworkModule, BuildParamService,
-    ContentService, TelemetryService, CourseService, ProfileType, ShareUtil, PageAssembleService, PageId,
-     Environment, InteractSubtype, InteractType, Profile, PageAssembleCriteria, PageAssembleFilter, QRScanner, PermissionService
+    FileUtil, AuthService, GenieSDKServiceProvider,
+    SharedPreferences, FrameworkModule,
+    ContentService, TelemetryService, CourseService,
+    ProfileType, ShareUtil, PageAssembleService, PageId,
+    Environment, InteractSubtype, InteractType, Profile,
+    PageAssembleCriteria, PageAssembleFilter,
+    QRScanner, PermissionService
 } from 'sunbird';
-
 import {
-    GenieSDKServiceProviderMock, SharedPreferencesMock, FileUtilMock, NavParamsMock,
-    SocialSharingMock, NavMock, TranslateLoaderMock, AuthServiceMock, PlatformMock, AppGlobalServiceMock
+    GenieSDKServiceProviderMock,
+    SharedPreferencesMock,
+    FileUtilMock, NavParamsMock,
+    SocialSharingMock, NavMock,
+    TranslateLoaderMock, AuthServiceMock,
+    AppGlobalServiceMock
 } from '../../../test-config/mocks-ionic';
 import { PBHorizontal } from '../../component/pbhorizontal/pb-horizontal';
 import { OnboardingCardComponent } from '../../component/onboarding-card/onboarding-card';
@@ -38,13 +51,16 @@ import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { AppVersion } from '@ionic-native/app-version';
 import { mockRes } from './resources.spec.data';
 import { SearchPage } from '../search/search';
-import { ContentType, AudienceFilter } from '../../app/app.constant';
+import {
+    ContentType,
+    AudienceFilter
+} from '../../app/app.constant';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
 import { QRScannerResultHandler } from '../qrscanner/qrscanresulthandler.service';
 import { CommonUtilService } from '../../service/common-util.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
-declare let GenieSDK: any;
+
 describe('ResourcesPage Component', () => {
     let component: ResourcesPage;
     let fixture: ComponentFixture<ResourcesPage>;

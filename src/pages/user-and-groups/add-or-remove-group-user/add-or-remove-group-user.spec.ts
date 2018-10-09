@@ -202,9 +202,9 @@ describe('AddOrRemoveGroupUserPage', () => {
         describe('add', () => {
             it('makes expected calls', fakeAsync(() => {
                 const navControllerStub = TestBed.get(NavController);
-            spyOn(navControllerStub, 'popTo');
-            spyOn(navControllerStub, 'getByIndex');
-            spyOn(navControllerStub, 'length');
+                spyOn(navControllerStub, 'popTo');
+                spyOn(navControllerStub, 'getByIndex');
+                spyOn(navControllerStub, 'length');
                 comp.getLoader = jasmine.createSpy().and.callFake(() => {
                     return { present: () => { }, dismiss: () => { } };
                 });
@@ -214,12 +214,13 @@ describe('AddOrRemoveGroupUserPage', () => {
                 comp.groupMembers = [userData];
                 spyOn(comp, 'getSelectedUids');
                 spyOn(groupServiceStub, 'addUpdateProfilesToGroup').and.returnValue(Promise.resolve('resp'));
-               spyOn(commonUtilService, 'showToast').and.returnValue(Promise.resolve('GROUP_MEMBER_ADD_SUCCESS'));
-                 comp.add();
-                 expect(comp.getLoader).toHaveBeenCalled();
+                spyOn(commonUtilService, 'showToast').and.returnValue(Promise.resolve('GROUP_MEMBER_ADD_SUCCESS'));
+                comp.add();
+                expect(comp.getLoader).toHaveBeenCalled();
                 // expect(commonUtilService.showToast).toHaveBeenCalled();
                 // expect(commonUtilService.translateMessage).toHaveBeenCalledWith('PROFILE_UPDATE_SUCCESS');
             }));
+
             it('#add makes expected calls when error', fakeAsync(() => {
                 comp.getLoader = jasmine.createSpy().and.callFake(() => {
                     return { present: () => { }, dismiss: () => { } };
@@ -230,10 +231,10 @@ describe('AddOrRemoveGroupUserPage', () => {
                 spyOn(comp, 'getSelectedUids');
                 spyOn(groupServiceStub, 'addUpdateProfilesToGroup').and.returnValue(Promise.reject('error'));
                 spyOn(commonUtilService, 'showToast').and.returnValue(Promise.resolve('SOMETHING_WENT_WRONG'));
-                 comp.add();
-                   }));
+                comp.add();
+            }));
         });
-                describe('deleteUsersFromGroup', () => {
+        describe('deleteUsersFromGroup', () => {
             it('makes expected calls', () => {
                 const navControllerStub: NavController = TestBed.get(NavController);
                 const groupServiceStub: GroupService = TestBed.get(GroupService);
@@ -305,52 +306,52 @@ describe('AddOrRemoveGroupUserPage', () => {
             });
         });
 
-    describe('goToEditGroup', () => {
-        it('#goToEditGroup should be navigated', () => {
-            const navControllerStub: NavController = TestBed.get(NavController);
-            spyOn(navControllerStub, 'push').and.callThrough();
-            comp.goToEditGroup(0);
-            expect(navControllerStub.push).toHaveBeenCalled();
+        describe('goToEditGroup', () => {
+            it('#goToEditGroup should be navigated', () => {
+                const navControllerStub: NavController = TestBed.get(NavController);
+                spyOn(navControllerStub, 'push').and.callThrough();
+                comp.goToEditGroup(0);
+                expect(navControllerStub.push).toHaveBeenCalled();
             });
-});
-describe('isUserSelected', () => {
-    it('#isUserSelected should be selected', () => {
-        spyOn(comp, 'isUserSelected').and.callThrough();
-      //  spyOn(comp, 'uniqueUserList');
-        comp.uniqueUserList = [userData];
-        comp.userSelectionMap.set('3af2e8a4-003e-438d-b360-2ae922696913', true);
-        comp.isUserSelected(0);
-         expect(comp.isUserSelected).toHaveBeenCalled();
         });
-});
-describe('isGroupMemberSelected', () => {
-    it('#isGroupMemberSelected should be selected', () => {
-        spyOn(comp, 'isGroupMemberSelected').and.callThrough();
-        comp.groupMembers = [userData];
-        comp.memberSelectionMap.set('3af2e8a4-003e-438d-b360-2ae922696913', true);
-         comp.isGroupMemberSelected(0);
-         expect(comp.isGroupMemberSelected).toBeTruthy();
+        describe('isUserSelected', () => {
+            it('#isUserSelected should be selected', () => {
+                spyOn(comp, 'isUserSelected').and.callThrough();
+                //  spyOn(comp, 'uniqueUserList');
+                comp.uniqueUserList = [userData];
+                comp.userSelectionMap.set('3af2e8a4-003e-438d-b360-2ae922696913', true);
+                comp.isUserSelected(0);
+                expect(comp.isUserSelected).toHaveBeenCalled();
+            });
         });
-});
-describe('remove', () => {
-    it('#remove should be unselected uid', () => {
-        spyOn(comp, 'remove').and.callThrough();
-        comp.groupMembers = [userData];
-         comp.memberSelectionMap.get('3af2e8a4-003e-438d-b360-2ae922696913');
-         comp.selectedUids.push(userData.uid);
-          comp.remove();
-         expect(comp.isGroupMemberSelected).toBeTruthy();
-        //  expect(comp.selectedUids).toHaveBeenCalled();
+        describe('isGroupMemberSelected', () => {
+            it('#isGroupMemberSelected should be selected', () => {
+                spyOn(comp, 'isGroupMemberSelected').and.callThrough();
+                comp.groupMembers = [userData];
+                comp.memberSelectionMap.set('3af2e8a4-003e-438d-b360-2ae922696913', true);
+                comp.isGroupMemberSelected(0);
+                expect(comp.isGroupMemberSelected).toBeTruthy();
+            });
         });
-});
+        describe('remove', () => {
+            it('#remove should be unselected uid', () => {
+                spyOn(comp, 'remove').and.callThrough();
+                comp.groupMembers = [userData];
+                comp.memberSelectionMap.get('3af2e8a4-003e-438d-b360-2ae922696913');
+                comp.selectedUids.push(userData.uid);
+                comp.remove();
+                expect(comp.isGroupMemberSelected).toBeTruthy();
+                //  expect(comp.selectedUids).toHaveBeenCalled();
+            });
+        });
 
 
-describe('unselectAll', () => {
-    it('#unselectAll should be Unselected when all groupmembers removed', () => {
-        comp.groupMembers = [userData];
-         comp.memberSelectionMap.get('3af2e8a4-003e-438d-b360-2ae922696913');
-          comp.unselectAll();
+        describe('unselectAll', () => {
+            it('#unselectAll should be Unselected when all groupmembers removed', () => {
+                comp.groupMembers = [userData];
+                comp.memberSelectionMap.get('3af2e8a4-003e-438d-b360-2ae922696913');
+                comp.unselectAll();
+            });
         });
-});
-      });
     });
+});

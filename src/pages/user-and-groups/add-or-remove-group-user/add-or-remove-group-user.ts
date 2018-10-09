@@ -21,7 +21,7 @@ import {
   Environment,
   PageId,
   ObjectType
-} from 'sunbird';
+} from 'Sunbird';
 import { LoadingController } from 'ionic-angular';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
@@ -33,6 +33,7 @@ import { CommonUtilService } from '../../../service/common-util.service';
   templateUrl: 'add-or-remove-group-user.html',
 })
 export class AddOrRemoveGroupUserPage {
+  [x: string]: any;
 
   addUsers = true;
   userSelectionMap: Map<string, boolean> = new Map();
@@ -201,11 +202,7 @@ export class AddOrRemoveGroupUserPage {
       groupMembersUids.push(element.uid);
     });
 
-    // this.uniqueUserList.forEach((item) => {
-    //   if (Boolean(this.userSelectionMap.get(item.uid))) {
-    //     selectedUids.push(item.uid);
-    //   }
-    // });
+
 
     const req: AddUpdateProfilesRequest = {
       groupId: this.groupInfo.gid,

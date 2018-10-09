@@ -1,13 +1,13 @@
 <ion-header>
   <ion-navbar>
     <ion-title>{{'RESULTS' | translate}}
-     
-      
+
+
     </ion-title>
     <ion-buttons end>
-        <button ion-button clear (click)="skipSteps()" >
-            {{'SKIP' | translate}}
-          </button>
+      <button ion-button clear (click)="skipSteps()">
+        {{'SKIP' | translate}}
+      </button>
     </ion-buttons>
 
   </ion-navbar>
@@ -50,9 +50,9 @@
         </ion-col>
 
       </ion-row>
-      <button class="custom-btn" ion-button block (click)="navigateToDetailsPage(content)" *ngIf="!content?.isAvailableLocally">{{
+      <button class="custom-btn" ion-button block *ngIf="!content?.isAvailableLocally">{{
         'DOWNLOAD_AND_PLAY' | translate}}</button>
-      <button class="custom-btn play" ion-button block (click)="navigateToDetailsPage(content)" *ngIf="content?.isAvailableLocally">
+      <button class="custom-btn play" ion-button block *ngIf="content?.isAvailableLocally">
         <span class="arrow-right"></span>
         {{'PLAY' | translate}}
       </button>

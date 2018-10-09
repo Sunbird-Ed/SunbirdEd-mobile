@@ -4,13 +4,11 @@ import { ServiceProvider } from 'sunbird';
 import { FormAndFrameworkUtilService } from './../formandframeworkutil.service';
 import { IonicAppMock } from './../../../../test-config/mocks-ionic';
 import { SharedPreferences, ContainerService } from 'sunbird';
-// import { Events } from 'ionic-angular/index';
-import { Observable } from 'rxjs';
 import {
-    LoadingControllerMock, TranslateServiceStub, ToastControllerMockNew, AuthServiceMock, NavMock, NavParamsMock, profileServiceMock,
+    LoadingControllerMock, ToastControllerMockNew,
+    NavMock, NavParamsMock, ProfileServiceMock,
     SharedPreferencesMock, FormAndFrameworkUtilServiceMock, ContainerServiceMock
 } from '../../../../test-config/mocks-ionic';
-// import { TranslateServiceStub, NavParamsMock } from './../../../../genie-sdk-wrapper/test-config/mocks-ionic';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -21,9 +19,7 @@ import {
     NgZone
 } from '@angular/core';
 import {
-    FormBuilder,
-    FormGroup,
-    Validators
+    FormBuilder
 } from '@angular/forms';
 import {
     NavController,
@@ -39,9 +35,6 @@ import {
     FrameworkService,
     ProfileService
 } from 'sunbird';
-import { ProfilePage } from './../profile';
-import { languageList } from './../../../config/framework.filters';
-import { ProfileConstants } from '../../../app/app.constant';
 import { CommonUtilService } from '../../../service/common-util.service';
 
 describe('AdditionalInfoComponent', () => {
@@ -70,11 +63,11 @@ describe('AdditionalInfoComponent', () => {
                 { provide: NavParams, useClass: NavParamsMock },
                 { provide: IonicApp, useValue: IonicAppMock },
                 { provide: Platform, useValue: platformStub },
-                { provide: ProfileService, useClass: profileServiceMock },
+                { provide: ProfileService, useClass: ProfileServiceMock },
                 { provide: SharedPreferences, useClass: SharedPreferencesMock },
                 { provide: ContainerService, useValue: ContainerServiceMock },
                 { provide: FormAndFrameworkUtilService, useClass: FormAndFrameworkUtilServiceMock },
-                { provide: FrameworkService , useValue: frameWorkServiceStub},
+                { provide: FrameworkService, useValue: frameWorkServiceStub },
                 // { provide: TelemetryGeneratorService, useValue: telemetryGeneratorServiceStub },
                 // { provide: App, useValue: appStub },
                 // { provide: AppGlobalService, useValue: appGlobalServiceStub },

@@ -2,7 +2,8 @@ import { FormAndFrameworkUtilService } from './../profile/formandframeworkutil.s
 import {
   Component,
   NgZone,
-  OnInit
+  OnInit,
+  AfterViewInit
 } from '@angular/core';
 import {
   PageAssembleService,
@@ -49,7 +50,7 @@ import { CommonUtilService } from '../../service/common-util.service';
   selector: 'page-resources',
   templateUrl: 'resources.html'
 })
-export class ResourcesPage implements OnInit {
+export class ResourcesPage implements OnInit, AfterViewInit {
 
   pageLoadedSuccess = false;
 
@@ -249,7 +250,8 @@ export class ResourcesPage implements OnInit {
       undefined,
       values);
 
-    queryParams = updateFilterInSearchQuery(queryParams, this.appliedFilter, this.profile, this.mode, this.isFilterApplied, this.appGlobalService);
+    queryParams = updateFilterInSearchQuery(queryParams, this.appliedFilter, this.profile, this.mode,
+                   this.isFilterApplied, this.appGlobalService);
 
     this.navCtrl.push(ViewMoreActivityPage, {
       requestParams: queryParams,

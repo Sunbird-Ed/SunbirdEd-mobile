@@ -56,9 +56,9 @@ export class ReadMoreDirective implements AfterViewInit, OnChanges {
 
   public setText() {
     if (this.toggleState) { // Means Show Less Button
-      this.el.nativeElement.innerHTML = this.lessText + this.moreText + "<a> " + this.showLessText + "</a>";
+      this.el.nativeElement.innerHTML = this.lessText + this.moreText + '<a> ' + this.showLessText + '</a>';
     } else {  // Means Show button More
-      this.el.nativeElement.innerHTML = this.lessText + "..." + "<a>" + this.showMoreText + "</a>";
+      this.el.nativeElement.innerHTML = this.lessText + '...' + '<a>' + this.showMoreText + '</a>';
     }
   }
 

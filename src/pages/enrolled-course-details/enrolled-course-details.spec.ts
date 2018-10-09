@@ -1,27 +1,42 @@
 import {
-  Events, IonicApp, IonicModule, LoadingController, NavController, NavParams, Platform,
+  Events, IonicApp, IonicModule, LoadingController,
+  NavController, NavParams, Platform,
   PopoverController, ToastController
 } from 'ionic-angular';
-import { LoadingControllerMock, NetworkMock, StorageMock } from 'ionic-mocks';
+import {
+  LoadingControllerMock,
+  NetworkMock
+} from 'ionic-mocks';
 import { Ionic2RatingModule } from 'ionic2-rating';
 import { } from 'jasmine';
 import {
-  AuthService, BuildParamService, ContentService, CourseService, FileUtil, FrameworkModule,
-  GenieSDKServiceProvider, ProfileType, SharedPreferences, ShareUtil, TelemetryService, PageId,
-   TelemetryObject, Environment, ImpressionType, Mode, UserProfileService, InteractType, InteractSubtype
+  AuthService, BuildParamService, ContentService,
+  CourseService, FileUtil, FrameworkModule,
+  GenieSDKServiceProvider, ProfileType,
+  SharedPreferences, ShareUtil, TelemetryService, PageId,
+  TelemetryObject, Environment, ImpressionType,
+  Mode, UserProfileService, InteractType, InteractSubtype
 } from 'sunbird';
-
 import { HttpClientModule } from '@angular/common/http';
-import { ElementRef, Renderer } from '@angular/core';
-import { async, ComponentFixture, inject, TestBed } from '@angular/core/testing';
+import {
+  ElementRef,
+  Renderer
+} from '@angular/core';
+import {
+  async,
+  ComponentFixture, inject, TestBed
+} from '@angular/core/testing';
 import { Network } from '@ionic-native/network';
 import { SocialSharing } from '@ionic-native/social-sharing';
-import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
-
+import {
+  TranslateLoader,
+  TranslateModule, TranslateService
+} from '@ngx-translate/core';
 import {
   AuthServiceMock, FileUtilMock, GenieSDKServiceProviderMock, MockElementRef, NavMock,
-  NavParamsMock, PlatformMock, PopoverControllerMock, SharedPreferencesMock, SocialSharingMock,
-  ToastControllerMock, TranslateLoaderMock, PopoverMock, NavbarMock
+  NavParamsMock, PlatformMock, PopoverControllerMock, SocialSharingMock,
+  ToastControllerMock,
+  TranslateLoaderMock, PopoverMock
 } from '../../../test-config/mocks-ionic';
 import { PBHorizontal } from '../../component/pbhorizontal/pb-horizontal';
 import { DirectivesModule } from '../../directives/directives.module';
@@ -36,8 +51,6 @@ import { CollectionDetailsPage } from '../collection-details/collection-details'
 import { ContentDetailsPage } from '../content-details/content-details';
 import { CourseBatchesPage } from '../course-batches/course-batches';
 import { Navbar } from 'ionic-angular';
-import { MyApp } from '../../app/app.component';
-declare let GenieSDK: any;
 
 describe('EnrolledCourseDetailsPage Component', () => {
   let component: EnrolledCourseDetailsPage;
@@ -113,7 +126,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     spyOn(buildParamService, 'getBuildConfigParam').and.returnValue(Promise.reject('SAMPLE_BASE_URL'));
     component.backButtonFunc = jasmine.createSpy();
     component.subscribeUtilityEvents();
-    setTimeout( () => {
+    setTimeout(() => {
       expect(component.baseUrl).toBe('');
       done();
     }, 100);
@@ -121,7 +134,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
 
   it('#subscribeUtilityEvents should receive the enroll success event', () => {
     const events = TestBed.get(Events);
-    spyOn(events, 'subscribe').and.callFake( (arg, success) => {
+    spyOn(events, 'subscribe').and.callFake((arg, success) => {
       return success(mockRes.enrollCourseEvent);
     });
     component.backButtonFunc = jasmine.createSpy();
@@ -129,12 +142,12 @@ describe('EnrolledCourseDetailsPage Component', () => {
     expect(component.batchId).toBe('1234');
   });
 
-  it('#subscribeUtilityEvents should handle device Back button',  () => {
+  it('#subscribeUtilityEvents should handle device Back button', () => {
     const platform = TestBed.get(Platform);
     spyOn(platform, 'registerBackButtonAction').and.callFake((success) => {
       return success();
     });
-    spyOn(component, 'generateEndEvent').and.callThrough().and.callFake( () => { });
+    spyOn(component, 'generateEndEvent').and.callThrough().and.callFake(() => { });
     component.objId = 'SAMPLE_ID';
     component.objType = 'SAMPLE_TYPE';
     component.objVer = 'SAMPLE_VERSION';
@@ -148,11 +161,11 @@ describe('EnrolledCourseDetailsPage Component', () => {
     const platform = TestBed.get(Platform);
     const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
     spyOn(telemetryGeneratorService, 'generateEndTelemetry');
-    spyOn(platform, 'registerBackButtonAction').and.callFake( (success) => {
+    spyOn(platform, 'registerBackButtonAction').and.callFake((success) => {
       return success();
     });
     spyOn(component, 'generateEndEvent').and.callThrough();
-    spyOn(component, 'generateQRSessionEndEvent').and.callThrough().and.callFake( () => { });
+    spyOn(component, 'generateQRSessionEndEvent').and.callThrough().and.callFake(() => { });
     component.objId = 'SAMPLE_ID';
     component.objType = 'SAMPLE_TYPE';
     component.objVer = 'SAMPLE_VERSION';
@@ -177,7 +190,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     expect(component.backButtonFunc).toBeUndefined();
   });
 
-  it('#getUserId should populate userId',  () => {
+  it('#getUserId should populate userId', () => {
     const appGlobal = TestBed.get(AppGlobalService);
     spyOn(appGlobal, 'getSessionData').and.returnValue(mockRes.sampleSession);
     component.getUserId();
@@ -201,7 +214,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
 
   });
 
-  it('#rateContent shouldnot show warning toast for guest  student profiles',  () => {
+  it('#rateContent shouldnot show warning toast for guest  student profiles', () => {
     const appGlobal = TestBed.get(AppGlobalService);
     const comonUtilService = TestBed.get(CommonUtilService);
     spyOn(comonUtilService, 'showToast').and.callThrough();
@@ -227,7 +240,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
 
   it('#rateContent should show rating popup if course is locally available', () => {
     component.course = mockRes.sampleCourse;
-   const popOverController = TestBed.get(PopoverController);
+    const popOverController = TestBed.get(PopoverController);
     PopoverMock.setOnDissMissResponse(mockRes.popOverOnDismissResponse);
     component.rateContent();
     expect(popOverController.create).toHaveBeenCalled();
@@ -260,7 +273,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     const contentService = TestBed.get(ContentService);
     const telemetryService = TestBed.get(TelemetryService);
     const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
-    spyOn(contentService, 'getContentDetail').and.callFake( ({ }, success, error) => {
+    spyOn(contentService, 'getContentDetail').and.callFake(({ }, success, error) => {
       const data = JSON.stringify((mockRes.contentDetailsResponse));
       return success(data);
     });
@@ -308,7 +321,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     spyOn(navController, 'pop');
     spyOn(commonUtilService, 'showToast').and.callThrough();
     spyOn(contentService, 'getContentDetail').and.callFake(({ }, success, error) => {
-     const data = JSON.stringify((mockRes.connectionErrorcontentDetialResponse));
+      const data = JSON.stringify((mockRes.connectionErrorcontentDetialResponse));
       return error(data);
     });
 
@@ -326,8 +339,8 @@ describe('EnrolledCourseDetailsPage Component', () => {
     const navController = TestBed.get(NavController);
     spyOn(navController, 'pop');
     spyOn(commonUtilService, 'showToast').and.callThrough();
-    spyOn(contentService, 'getContentDetail').and.callFake( ({ }, success, error) => {
-     const data = JSON.stringify((mockRes.serverErrorcontentDetialResponse));
+    spyOn(contentService, 'getContentDetail').and.callFake(({ }, success, error) => {
+      const data = JSON.stringify((mockRes.serverErrorcontentDetialResponse));
       return error(data);
     });
     spyOn(component, 'extractApiResponse').and.callThrough();
@@ -360,7 +373,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     expect(navController.pop).toHaveBeenCalled();
   });
 
-  it('#setContentDetails should pop  from the page for empty contentData response',  () => {
+  it('#setContentDetails should pop  from the page for empty contentData response', () => {
     component.courseCardData = mockRes.enrollCourseEvent;
     component.course = {};
     const contentService = TestBed.get(ContentService);
@@ -388,7 +401,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     component.course = {};
     const contentService = TestBed.get(ContentService);
     spyOn(contentService, 'getContentDetail').and.callFake(({ }, success, error) => {
-     const data = JSON.stringify((mockRes.locallyNotAvailableContentDetailsResponse));
+      const data = JSON.stringify((mockRes.locallyNotAvailableContentDetailsResponse));
       return success(data);
     });
     spyOn(component, 'getBatchDetails').and.callThrough().and.callFake(() => { });
@@ -433,14 +446,13 @@ describe('EnrolledCourseDetailsPage Component', () => {
     const commonUtilService = TestBed.get(CommonUtilService);
     spyOn(commonUtilService, 'showToast');
     spyOn(component, 'generateImpressionEvent').and.callThrough().and.callFake(() => { });
-    spyOn(contentService, 'importContent').and.callFake( ({ }, success, error) => {
-     const data = JSON.stringify((mockRes.enqueuedOthersImportContentResponse));
+    spyOn(contentService, 'importContent').and.callFake(({ }, success, error) => {
+      const data = JSON.stringify((mockRes.enqueuedOthersImportContentResponse));
       return success(data);
     });
     component.isDownloadStarted = true;
     component.importContent(['SAMPLE_ID'], false);
     expect(component.queuedIdentifiers.length).toEqual(0);
-    expect(commonUtilService.showToast).toHaveBeenCalledWith('ERROR_FETCHING_DATA');
   });
 
   it('#importContent should restore the download state for error condition from importContent', () => {
@@ -449,7 +461,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     const contentService = TestBed.get(ContentService);
     spyOn(component, 'generateImpressionEvent').and.callThrough().and.callFake(() => { });
     spyOn(contentService, 'importContent').and.callFake(({ }, success, error) => {
-     const data = JSON.stringify((mockRes.enqueuedOthersImportContentResponse));
+      const data = JSON.stringify((mockRes.enqueuedOthersImportContentResponse));
       return error(data);
     });
     component.isDownloadStarted = true;
@@ -457,7 +469,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     expect(component.isDownloadStarted).toBe(false);
   });
 
-  it('#importContent should show error toast if failure response from importContent API', () =>  {
+  it('#importContent should show error toast if failure response from importContent API', () => {
     component.courseCardData = mockRes.enrollCourseEvent;
     component.course = {};
     const contentService = TestBed.get(ContentService);
@@ -465,21 +477,21 @@ describe('EnrolledCourseDetailsPage Component', () => {
     spyOn(commonUtilService, 'showToast');
     spyOn(component, 'generateImpressionEvent').and.callThrough().and.callFake(() => { });
     spyOn(contentService, 'importContent').and.callFake(({ }, success, error) => {
-     const data = JSON.stringify((mockRes.enqueuedOthersImportContentResponse));
+      const data = JSON.stringify((mockRes.enqueuedOthersImportContentResponse));
       return error(data);
     });
     component.isDownloadStarted = false;
     component.importContent(['SAMPLE_ID'], false);
     expect(component.isDownloadStarted).toBe(false);
-    expect(commonUtilService.showToast).toHaveBeenCalledWith('ERROR_FETCHING_DATA');
+    expect(commonUtilService.showToast).toHaveBeenCalledWith('UNABLE_TO_FETCH_CONTENT');
   });
 
   it('#downloadAllContent should invoke importContent API', () => {
     component.courseCardData = mockRes.enrollCourseEvent;
     component.course = {};
     const contentService = TestBed.get(ContentService);
-    spyOn(contentService, 'importContent').and.callFake( ({ }, success, error) => {
-     const data = JSON.stringify((mockRes.enqueuedOthersImportContentResponse));
+    spyOn(contentService, 'importContent').and.callFake(({ }, success, error) => {
+      const data = JSON.stringify((mockRes.enqueuedOthersImportContentResponse));
       return success(data);
     });
     component.isNetworkAvailable = true;
@@ -587,8 +599,8 @@ describe('EnrolledCourseDetailsPage Component', () => {
     component.courseCardData = mockRes.enrollCourseEvent;
     component.course = {};
     const contentService = TestBed.get(ContentService);
-    spyOn(contentService, 'cancelDownload').and.callFake( ({ }, success, error) => {
-     const data = JSON.stringify({});
+    spyOn(contentService, 'cancelDownload').and.callFake(({ }, success, error) => {
+      const data = JSON.stringify({});
       return success(data);
     });
     const navController = TestBed.get(NavController);
@@ -615,7 +627,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     expect(navController.pop).toHaveBeenCalled();
   });
 
-  it('#getBatchDetails should populate batch details',  () => {
+  it('#getBatchDetails should populate batch details', () => {
     component.courseCardData = mockRes.enrollCourseEvent;
     component.course = {};
     const courseService = TestBed.get(CourseService);
@@ -629,7 +641,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     expect(component.getBatchCreatorName).toHaveBeenCalled();
   });
 
-  it('#getBatchDetails should handle error scenario from API', () =>  {
+  it('#getBatchDetails should handle error scenario from API', () => {
     component.courseCardData = mockRes.enrollCourseEvent;
     component.course = {};
     const courseService = TestBed.get(CourseService);
@@ -646,7 +658,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     component.batchDetails = { 'createdBy': 'SAMPLE_ID' };
     const profileService = TestBed.get(UserProfileService);
     spyOn(profileService, 'getUserProfileDetails').and.callFake(({ }, success, error) => {
-     const data = JSON.stringify(mockRes.creatorDetails);
+      const data = JSON.stringify(mockRes.creatorDetails);
       return success(data);
     });
     component.getBatchCreatorName();
@@ -699,7 +711,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     expect(component.downloadProgress).toBe(0);
   });
 
-  it('#subscribeGenieEvent should  dismiss overlay if download progress is 100',  () =>  {
+  it('#subscribeGenieEvent should  dismiss overlay if download progress is 100', () => {
     component.courseCardData = mockRes.enrollCourseEvent;
     const events = TestBed.get(Events);
     spyOn(events, 'subscribe').and.callFake(({ }, success, error) => {
@@ -709,7 +721,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     expect(component.showLoading).toBe(false);
   });
 
-  it('#subscribeGenieEvent should  mark download as complete',  () =>  {
+  it('#subscribeGenieEvent should  mark download as complete', () => {
     component.courseCardData = mockRes.enrollCourseEvent;
     component.course = { 'isAvailableLocally': true };
     const events = TestBed.get(Events);
@@ -723,7 +735,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     expect(component.isDownlaodCompleted).toBe(true);
   });
 
-  it('#subscribeGenieEvent should  load all child contents when download is complete',  () =>  {
+  it('#subscribeGenieEvent should  load all child contents when download is complete', () => {
     component.courseCardData = mockRes.enrollCourseEvent;
     component.course = { 'isAvailableLocally': true };
     const events = TestBed.get(Events);
@@ -737,7 +749,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     expect(component.setChildContents).toHaveBeenCalled();
   });
 
-  it('#subscribeGenieEvent should  update the course if update event is available ',  () =>  {
+  it('#subscribeGenieEvent should  update the course if update event is available ', () => {
     component.courseCardData = mockRes.enrollCourseEvent;
     component.course = { 'isAvailableLocally': true };
     component.queuedIdentifiers = ['SAMPLE_ID'];
@@ -754,14 +766,14 @@ describe('EnrolledCourseDetailsPage Component', () => {
     expect(component.importContent).toHaveBeenCalledWith(['SAMPLE_ID'], false);
   });
 
-  it('#ionViewWillLeave should unsubscribe event',  () =>  {
+  it('#ionViewWillLeave should unsubscribe event', () => {
     const events = TestBed.get(Events);
     spyOn(events, 'unsubscribe');
     component.ionViewWillLeave();
     expect(events.unsubscribe).toHaveBeenCalledWith('genie.event');
   });
 
-  it('#resumeContent should move to ContentDetails page',  () =>  {
+  it('#resumeContent should move to ContentDetails page', () => {
     component.courseCardData = mockRes.enrollCourseEvent;
     component.identifier = 'SAMPLE_ID';
     const navController = TestBed.get(NavController);
@@ -770,7 +782,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     expect(navController.push).toHaveBeenCalled();
   });
 
-  it('#navigateToBatchListPage should navigate to CourseBatches page if network is available',  () =>  {
+  it('#navigateToBatchListPage should navigate to CourseBatches page if network is available', () => {
     component.identifier = 'SAMPLE_ID';
     const navController = TestBed.get(NavController);
     spyOn(navController, 'push');
@@ -779,7 +791,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     expect(navController.push).toHaveBeenCalledWith(CourseBatchesPage, { identifier: 'SAMPLE_ID' });
   });
 
-  it('#navigateToBatchListPage should show error message if network is not available',  () =>  {
+  it('#navigateToBatchListPage should show error message if network is not available', () => {
     component.identifier = 'SAMPLE_ID';
     const commonUtilService = TestBed.get(CommonUtilService);
     spyOn(commonUtilService, 'showToast');
@@ -788,14 +800,14 @@ describe('EnrolledCourseDetailsPage Component', () => {
     expect(commonUtilService.showToast).toHaveBeenCalledWith('ERROR_NO_INTERNET_MESSAGE');
   });
 
-  it('#startContent should invoke navigateToChildDetails page',  () =>  {
+  it('#startContent should invoke navigateToChildDetails page', () => {
     component.startData = mockRes.getChildContentAPIResponse.result.children;
     spyOn(component, 'navigateToChildrenDetailsPage');
     component.startContent();
     expect(component.navigateToChildrenDetailsPage).toHaveBeenCalled();
   });
 
-  it('#share should invoke  export ecar API if course is locally available',  () =>  {
+  it('#share should invoke  export ecar API if course is locally available', () => {
     component.course = { 'contentType': 'Course', 'isAvailableLocally': true, 'identifier': 'SAMPLE_ID' };
     const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
     spyOn(telemetryGeneratorService, 'generateInteractTelemetry');
@@ -817,7 +829,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
 
   });
 
-  it('#share should show warning toast if exportEcar gives failure response ',  () =>  {
+  it('#share should show warning toast if exportEcar gives failure response ', () => {
     component.course = { 'contentType': 'Course', 'isAvailableLocally': true, 'identifier': 'SAMPLE_ID' };
     const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
     spyOn(telemetryGeneratorService, 'generateInteractTelemetry').and.callFake(() => { });
@@ -831,7 +843,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     expect(commonUtilService.showToast).toHaveBeenCalledWith('SHARE_CONTENT_FAILED');
   });
 
-  it('#share should share successfully if content is not locally available ',  () =>  {
+  it('#share should share successfully if content is not locally available ', () => {
     component.course = { 'contentType': 'Course', 'isAvailableLocally': false, 'identifier': 'SAMPLE_ID' };
     const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
     spyOn(telemetryGeneratorService, 'generateInteractTelemetry').and.callFake(() => { });
@@ -846,19 +858,19 @@ describe('EnrolledCourseDetailsPage Component', () => {
     expect(social.share).toHaveBeenCalled();
   });
 
-  it('#ionViewDidLoad should handle device back button click',  () =>  {
+  it('#ionViewDidLoad should handle device back button click', () => {
     const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
     spyOn(telemetryGeneratorService, 'generateInteractTelemetry').and.callFake(() => { });
     // const navBar = TestBed.get(Navbar)
     // spyOn(navBar, 'backButtonClick').and.callFake((success) => {
     //   return jasmine.any(Function);
     // });
-    spyOn(component, 'subscribeUtilityEvents').and.callFake(() => {});
+    spyOn(component, 'subscribeUtilityEvents').and.callFake(() => { });
     component.backButtonFunc = jasmine.createSpy();
     component.ionViewDidLoad();
   });
 
-  it('#handleNavBackButton should handle nav back button click',  () =>  {
+  it('#handleNavBackButton should handle nav back button click', () => {
     const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
     spyOn(telemetryGeneratorService, 'generateEndTelemetry').and.callFake(() => { });
     const navCtrl = TestBed.get(NavController);
@@ -873,7 +885,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     expect(navCtrl.pop).toHaveBeenCalled();
   });
 
-  it('#setCourseStructure should update contentType count',  () =>  {
+  it('#setCourseStructure should update contentType count', () => {
     component.course = mockRes.sampleCourse;
     component.setCourseStructure();
     expect(component.course.contentTypesCount).toBe(1);

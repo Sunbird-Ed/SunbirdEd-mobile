@@ -6,7 +6,7 @@ import { FormAndFrameworkUtilService } from './../../profile/formandframeworkuti
 import { CreateGroupPage } from './create-group';
 import { async, TestBed, ComponentFixture, inject, fakeAsync, tick } from '@angular/core/testing';
 import { TranslateService, TranslateModule, TranslateLoader } from '@ngx-translate/core';
-import { mockCreateGroupRes } from './create-group.spec.data';
+import { mockCreateorremoveGroupRes } from './create-group.spec.data';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
 

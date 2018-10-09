@@ -113,7 +113,7 @@ export class ShareUserAndGroupPage {
   }
   checkUserGroups() {
     const totalLength = this.userList.length + this.groupList.length;
-    if (totalLength > 0 ) {
+    if (totalLength > 0) {
       return true;
     }
     return false;
@@ -139,8 +139,8 @@ export class ShareUserAndGroupPage {
 
     } else {
       // Remove User & Group
-      const index = this.selectedGroupList.indexOf(selectedGroup.gid);
-      this.selectedGroupList.splice(index, 1);
+      const selectedGroupIndex = this.selectedGroupList.indexOf(selectedGroup.gid);
+      this.selectedGroupList.splice(selectedGroupIndex, 1);
       allUser.forEach(profile => {
         if (this.selectedUserList.indexOf(profile.uid) > -1) {
           let userWeigth = this.userWeightMap.get(profile.uid);
@@ -169,8 +169,8 @@ export class ShareUserAndGroupPage {
       userWeigth += 1;
     } else {
       // Remove User
-      const index = this.selectedUserList.indexOf(selectedUser.uid);
-      this.selectedUserList.splice(index, 1);
+      const selectedUserIndex = this.selectedUserList.indexOf(selectedUser.uid);
+      this.selectedUserList.splice(selectedUserIndex, 1);
       userWeigth = 0;
 
       this.userGroupMap.forEach((value: Array<Profile>, gid: string) => {
@@ -219,8 +219,8 @@ export class ShareUserAndGroupPage {
     if (this.selectedUserList && this.selectedGroupList) {
       const valueMap = new Map();
       valueMap['UIDS'] = this.selectedUserList.concat(this.selectedGroupList);
-       // Generate Share initiate
-       this.telemetryGeneratorService.generateInteractTelemetry(
+      // Generate Share initiate
+      this.telemetryGeneratorService.generateInteractTelemetry(
         InteractType.TOUCH,
         InteractSubtype.SHARE_USER_GROUP_INITIATE,
         Environment.USER,
@@ -248,8 +248,8 @@ export class ShareUserAndGroupPage {
       if (this.selectedUserList && this.selectedGroupList) {
         const valueMap = new Map();
         valueMap['UIDS'] = this.selectedUserList.concat(this.selectedGroupList);
-         // Generate Share initiate
-         this.telemetryGeneratorService.generateInteractTelemetry(
+        // Generate Share initiate
+        this.telemetryGeneratorService.generateInteractTelemetry(
           InteractType.OTHER,
           InteractSubtype.SHARE_USER_GROUP_SUCCESS,
           Environment.USER,

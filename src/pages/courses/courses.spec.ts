@@ -1,25 +1,41 @@
-import { async, TestBed, ComponentFixture, inject } from '@angular/core/testing';
+import {
+    async, TestBed,
+    ComponentFixture,
+    inject
+} from '@angular/core/testing';
 import { CoursesPage } from './courses';
-import { TranslateService, TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import {
-    NavController, Events, IonicModule, NavParams, ToastController, PopoverController,
-    LoadingController, Platform
+    TranslateService,
+    TranslateModule, TranslateLoader
+} from '@ngx-translate/core';
+import {
+    NavController, Events,
+    IonicModule, NavParams,
+    ToastController, PopoverController,
+    LoadingController
 } from 'ionic-angular';
-
 import {
-    StorageMock, PopoverControllerMock, LoadingControllerMock, NetworkMock
+    PopoverControllerMock, LoadingControllerMock, NetworkMock
 } from 'ionic-mocks';
 
 import {
-    FileUtil, AuthService, GenieSDKServiceProvider, SharedPreferences, FrameworkModule, BuildParamService,
-    ContentService, TelemetryService, CourseService, ProfileType, ShareUtil, PageAssembleService, PageId,
-    Profile, PageAssembleCriteria, Environment, ImpressionType, PageAssembleFilter
+    FileUtil, AuthService, GenieSDKServiceProvider,
+    SharedPreferences, FrameworkModule, BuildParamService,
+    ContentService, TelemetryService, CourseService,
+    ProfileType, ShareUtil, PageAssembleService, PageId,
+    Profile, PageAssembleCriteria, Environment,
+    ImpressionType, PageAssembleFilter
 } from 'sunbird';
-
 import {
-    GenieSDKServiceProviderMock, SharedPreferencesMock, FileUtilMock, NavParamsMock,
-    SocialSharingMock, NavMock, TranslateLoaderMock, AuthServiceMock, AppGlobalServiceMock, ToastControllerMockNew,
-    BuildParamaServiceMock, AppVersionMock
+    GenieSDKServiceProviderMock,
+    SharedPreferencesMock,
+    FileUtilMock, NavParamsMock,
+    SocialSharingMock,
+    NavMock, TranslateLoaderMock,
+    AuthServiceMock, AppGlobalServiceMock,
+    ToastControllerMockNew,
+    BuildParamaServiceMock,
+    AppVersionMock
 } from '../../../test-config/mocks-ionic';
 import { PBHorizontal } from '../../component/pbhorizontal/pb-horizontal';
 import { OnboardingCardComponent } from '../../component/onboarding-card/onboarding-card';
@@ -36,17 +52,18 @@ import { } from 'jasmine';
 import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { AppVersion } from '@ionic-native/app-version';
 import { SearchPage } from '../search/search';
-import { ContentType, EventTopics } from '../../app/app.constant';
+import { EventTopics } from '../../app/app.constant';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { CourseUtilService } from '../../service/course-util.service';
 import { mockRes } from '../../mock.spec.data';
-import { mockRes as CourseMock } from '../courses/courses.spec.data';
+import {
+    mockRes as CourseMock
+} from '../courses/courses.spec.data';
 import { QRScannerResultHandler } from '../qrscanner/qrscanresulthandler.service';
 import { CommonUtilService } from '../../service/common-util.service';
 import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
-import Driver from 'driver.js';
-declare let GenieSDK: any;
+
 describe('CoursesPage Component', () => {
     let component: CoursesPage;
     let fixture: ComponentFixture<CoursesPage>;
@@ -61,7 +78,6 @@ describe('CoursesPage Component', () => {
         impression: () => ({}),
         interact: () => ({})
     };
-    // let sharedPreferences ;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -476,7 +492,7 @@ describe('CoursesPage Component', () => {
         expect(component.filterIcon).toBe('./assets/imgs/ic_action_filter_applied.png');
     });
 
-   it('should  apply soft filters if profile details is filled through onboarding cards', () => {
+    it('should  apply soft filters if profile details is filled through onboarding cards', () => {
         const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
         const pageService = TestBed.get(PageAssembleService);
         const formAndFrameworkUtilService = TestBed.get(FormAndFrameworkUtilService);
@@ -612,7 +628,7 @@ describe('CoursesPage Component', () => {
             spyOn(component, 'navigateToContentDetailsPage').and.callThrough();
             component.getContentDetails(sampleContent);
             expect(contentService.getContentDetail).toHaveBeenCalledWith({ 'contentId': 'do_sample' },
-             jasmine.any(Function), jasmine.any(Function));
+                jasmine.any(Function), jasmine.any(Function));
             expect(component.showOverlay).toBe(false);
             expect(component.navigateToContentDetailsPage).toHaveBeenCalledWith(sampleContent);
 
@@ -630,7 +646,7 @@ describe('CoursesPage Component', () => {
             spyOn(component, 'subscribeGenieEvent').and.callThrough();
             component.getContentDetails(sampleContent);
             expect(contentService.getContentDetail).toHaveBeenCalledWith({ 'contentId': 'do_sample' },
-            jasmine.any(Function), jasmine.any(Function));
+                jasmine.any(Function), jasmine.any(Function));
             expect(component.showOverlay).toBe(true);
             expect(component.importContent).toHaveBeenCalledWith(['do_sample'], false);
             expect(component.subscribeGenieEvent).toHaveBeenCalled();
@@ -646,7 +662,7 @@ describe('CoursesPage Component', () => {
             spyOn(commonUtilService, 'showToast').and.callThrough();
             component.getContentDetails(sampleContent);
             expect(contentService.getContentDetail).toHaveBeenCalledWith({ 'contentId': 'do_sample' },
-            jasmine.any(Function), jasmine.any(Function));
+                jasmine.any(Function), jasmine.any(Function));
             expect(commonUtilService.showToast).toHaveBeenCalledWith('ERROR_CONTENT_NOT_AVAILABLE');
 
         });
@@ -662,7 +678,7 @@ describe('CoursesPage Component', () => {
             });
             component.importContent(['do_sample'], false);
             expect(contentService.importContent).toHaveBeenCalledWith(JSON.parse(CourseMock.importReQuest),
-            jasmine.any(Function), jasmine.any(Function));
+                jasmine.any(Function), jasmine.any(Function));
 
         });
 
@@ -677,7 +693,7 @@ describe('CoursesPage Component', () => {
             });
             component.importContent(['do_sample'], false);
             expect(contentService.importContent).toHaveBeenCalledWith(JSON.parse(CourseMock.importReQuest),
-            jasmine.any(Function), jasmine.any(Function));
+                jasmine.any(Function), jasmine.any(Function));
             expect(component.removeOverlayAndShowError).toHaveBeenCalled();
             expect(commonUtilService.showToast).toHaveBeenCalledWith('ERROR_CONTENT_NOT_AVAILABLE');
             expect(component.showOverlay).toBe(false);
@@ -695,7 +711,7 @@ describe('CoursesPage Component', () => {
             });
             component.importContent(['do_sample'], false);
             expect(contentService.importContent).toHaveBeenCalledWith(JSON.parse(CourseMock.importReQuest),
-            jasmine.any(Function), jasmine.any(Function));
+                jasmine.any(Function), jasmine.any(Function));
             expect(component.removeOverlayAndShowError).toHaveBeenCalled();
             expect(commonUtilService.showToast).toHaveBeenCalledWith('ERROR_CONTENT_NOT_AVAILABLE');
             expect(component.showOverlay).toBe(false);
@@ -785,7 +801,7 @@ describe('CoursesPage Component', () => {
 
     });
 
- it('should  showSigninCard if ProfileType is teacher and config is enabled', () => {
+    it('should  showSigninCard if ProfileType is teacher and config is enabled', () => {
         const appGlobal = TestBed.get(AppGlobalService);
         spyOn(appGlobal, 'getGuestUserType').and.returnValue(ProfileType.TEACHER);
         appGlobal.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER = true;
@@ -799,10 +815,9 @@ describe('CoursesPage Component', () => {
         const events = TestBed.get(Events);
         spyOn(events, 'publish');
         spyOn(appGlobal, 'getCurrentUser').and.returnValue(CourseMock.sampleProfile);
+        appGlobal.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER = false;
         component.getCurrentUser();
-        expect(component.isOnBoardingCardCompleted).toBe(true);
-        expect(events.publish).toHaveBeenCalledWith('onboarding-card:completed', { isOnBoardingCardCompleted: true});
-
+        expect(component.showSignInCard).toBe(false);
     });
 
 });

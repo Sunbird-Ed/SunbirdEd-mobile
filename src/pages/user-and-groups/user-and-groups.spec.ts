@@ -1,3 +1,4 @@
+import { CommonUtilService } from './../../service/common-util.service';
 import {
     AlertController, App, Events, IonicApp, NavController, NavParams, Platform, PopoverController,
     ToastController, LoadingController
@@ -160,6 +161,7 @@ describe('UserAndGroupsPage', () => {
                 { provide: App, useValue: appStub },
                 { provide: Events, useValue: eventsStub },
                 { provide: Network, useValue: networkStub },
+                { provide: CommonUtilService, useValue: CommonUtilService },
                 { provide: TelemetryGeneratorService, useValue: telemetryGeneratorServiceStub },
                 { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() }
             ]
@@ -301,15 +303,34 @@ describe('UserAndGroupsPage', () => {
 
     describe('createUser', () => {
         it('makes expected calls', () => {
-            const navControllerStub: NavController = fixture.debugElement.injector.get(NavController);
+            const navController: NavController = TestBed.get(NavController);
             const telemetryGeneratorServiceStub: TelemetryGeneratorService = fixture.debugElement.injector.get(TelemetryGeneratorService);
-            spyOn(navControllerStub, 'push');
             spyOn(telemetryGeneratorServiceStub, 'generateInteractTelemetry');
+            spyOn(comp, 'getLastCreatedProfile').and.returnValue(Promise.resolve([]));
+            expect(comp.createUser).toHaveBeenCalled();
+            // const telemetryGeneratorServiceStub: TelemetryGeneratorService = fixture.debugElement.injector.
+            // get(TelemetryGeneratorService);
+            // spyOn(telemetryGeneratorServiceStub, 'generateInteractTelemetry').and.callThrough();
+            //  expect(telemetryGeneratorServiceStub.getLastCreatedProfile).toHaveBeenCalled();
+            spyOn(navController, 'push').and.callThrough();
             comp.createUser();
-            expect(navControllerStub.push).toHaveBeenCalled();
-            expect(telemetryGeneratorServiceStub.generateInteractTelemetry).toHaveBeenCalled();
-        });
+             expect(navController.push).toHaveBeenCalled();
+                        });
     });
+
+
+
+//     it('#getSyllabusDetails makes expected calls', () => {
+// 		const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
+// 		getLoader();
+// 		spyOn(formAndFrameworkUtilServiceStub, 'getSyllabusList').and.returnValue(Promise.resolve([]));
+//     component.getLoader = jasmine.createSpy().and.callFake(function () {
+//       return { present: function () { }, dismiss: function () { } }
+//     });
+//     (<jasmine.Spy>component.getSyllabusDetails).and.callThrough();
+//     component.getSyllabusDetails();
+//     expect(formAndFrameworkUtilServiceStub.getSyllabusList).toHaveBeenCalled();
+//   });
 
     describe('switchAccountConfirmBox', () => {
         it('makes expected calls', () => {
