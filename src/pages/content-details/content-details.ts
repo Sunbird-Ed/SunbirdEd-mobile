@@ -658,7 +658,7 @@ export class ContentDetailsPage {
     if (this.shouldGenerateEndTelemetry) {
       this.generateQRSessionEndEvent(this.source, this.cardData.identifier);
     }
-    this.popToPreviousPage();
+    this.popToPreviousPage(true);
     this.backButtonFunc();
   }
 
@@ -675,11 +675,13 @@ export class ContentDetailsPage {
     }
   }
 
-  popToPreviousPage() {
+  popToPreviousPage(isNavBack?) {
     if (this.isResumedCourse) {
       this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 3));
     } else {
-      this.navCtrl.pop();
+      if (isNavBack) {
+        this.navCtrl.pop();
+      }
     }
   }
 
