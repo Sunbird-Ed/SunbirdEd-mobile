@@ -21,7 +21,7 @@ import {
   Environment,
   PageId,
   ObjectType
-} from 'Sunbird';
+} from 'sunbird';
 import { LoadingController } from 'ionic-angular';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
@@ -33,7 +33,6 @@ import { CommonUtilService } from '../../../service/common-util.service';
   templateUrl: 'add-or-remove-group-user.html',
 })
 export class AddOrRemoveGroupUserPage {
-  [x: string]: any;
 
   addUsers = true;
   userSelectionMap: Map<string, boolean> = new Map();
