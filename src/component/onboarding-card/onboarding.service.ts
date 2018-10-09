@@ -1,3 +1,4 @@
+/* istanbul ignore next */
 import {
     Injectable
 } from '@angular/core';

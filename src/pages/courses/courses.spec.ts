@@ -799,10 +799,9 @@ describe('CoursesPage Component', () => {
         const events = TestBed.get(Events);
         spyOn(events, 'publish');
         spyOn(appGlobal, 'getCurrentUser').and.returnValue(CourseMock.sampleProfile);
+        appGlobal.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER = false;
         component.getCurrentUser();
-        expect(component.isOnBoardingCardCompleted).toBe(true);
-        expect(events.publish).toHaveBeenCalledWith('onboarding-card:completed', { isOnBoardingCardCompleted: true});
-
+        expect(component.showSignInCard).toBe(false);
     });
 
 });

@@ -5,7 +5,7 @@ import {
     fakeAsync
 } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, Platform } from 'ionic-angular';
 import { NavParams } from 'ionic-angular';
 import { Events } from 'ionic-angular';
 import {
@@ -99,7 +99,7 @@ describe('LanguageSettingsPage', () => {
             imports: [TranslateModule.forRoot()],
             declarations: [LanguageSettingsPage],
             schemas: [NO_ERRORS_SCHEMA],
-            providers: [ProfileService, ServiceProvider, FrameworkService,
+            providers: [ProfileService, ServiceProvider, FrameworkService, Platform,
                 { provide: AppGlobalService, useClass: AppGlobalServiceMock },
                 { provide: AuthService, useValue: authServiceStub },
                 { provide: BuildParamService, useValue: BuildParamServiceStub },

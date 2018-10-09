@@ -496,7 +496,7 @@ describe('CollectionDetailsPage Component', () => {
         spyOn(component, 'generateImpressionEvent').and.callThrough().and.callFake(() => { });
         spyOn(contentService, 'importContent').and.callFake( ({ }, success, error) => {
          const data = JSON.stringify((mockRes.enqueuedOthersImportContentResponse));
-            return success(data);
+            return error(data);
         });
         component.isDownloadStarted = true;
         component.importContent(['SAMPLE_ID'], false);

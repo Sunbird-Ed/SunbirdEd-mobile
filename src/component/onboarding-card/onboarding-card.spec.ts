@@ -19,6 +19,7 @@ import { FormAndFrameworkUtilService } from '../../pages/profile/formandframewor
 import { AppGlobalService } from '../../service/app-global.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { Observable } from 'rxjs';
+import { CommonUtilService } from '../../service/common-util.service';
 describe('OnboardingCardComponent', () => {
     let comp: OnboardingCardComponent;
     let fixture: ComponentFixture<OnboardingCardComponent>;
@@ -29,6 +30,7 @@ describe('OnboardingCardComponent', () => {
             schemas: [NO_ERRORS_SCHEMA],
             imports: [TranslateModule.forRoot()],
             providers: [
+                CommonUtilService,
                 OnboardingService, NavController, ProfileService, ServiceProvider, SharedPreferences, FrameworkService,
                 FormService, AppGlobalService, TelemetryGeneratorService, TelemetryService,
                 { provide: FormAndFrameworkUtilService, useClass: FormAndFrameworkUtilServiceMock },
@@ -57,9 +59,10 @@ describe('OnboardingCardComponent', () => {
     it('#contructor should show toast message as no data found for syllabus and message should be translated in current language',
         (done) => {
             const onboardingService = TestBed.get(OnboardingService);
+            const CommonUtilServiceStub = TestBed.get(CommonUtilService);
             spyOn(OnboardingCardComponent.prototype, 'showLoader');
-            spyOn(OnboardingCardComponent.prototype, 'getToast');
-            spyOn(OnboardingCardComponent.prototype, 'translateMessage');
+            spyOn(CommonUtilServiceStub, 'showToast');
+            spyOn(CommonUtilServiceStub, 'translateMessage');
             spyOn(OnboardingCardComponent.prototype, 'initializeService');
             spyOn(onboardingService, 'getSyllabusDetails').and.returnValue(Promise.resolve(undefined));
             fixture = TestBed.createComponent(OnboardingCardComponent);
@@ -67,8 +70,8 @@ describe('OnboardingCardComponent', () => {
             setTimeout(() => {
                 expect(OnboardingCardComponent.prototype.showLoader).toHaveBeenCalled();
                 expect(comp.isDataAvailable).toBe(false);
-                expect(OnboardingCardComponent.prototype.getToast).toHaveBeenCalled();
-                expect(OnboardingCardComponent.prototype.translateMessage).toHaveBeenCalled();
+                expect(CommonUtilServiceStub.showToast).toHaveBeenCalled();
+                expect(CommonUtilServiceStub.translateMessage).toHaveBeenCalled();
                 expect(OnboardingCardComponent.prototype.initializeService).toHaveBeenCalled();
                 done();
             }, 20);
@@ -168,18 +171,6 @@ describe('OnboardingCardComponent', () => {
         comp.reinitializeCards();
         expect(comp.reinitializeCards).toHaveBeenCalled();
     });
-
-    it('#translateMessage should return translated message', fakeAsync(() => {
-        const translate = TestBed.get(TranslateService);
-        const translateStub = TestBed.get(TranslateService);
-        const spy = spyOn(translate, 'get').and.callFake((arg) => {
-            return Observable.of('Cancel');
-        });
-        const translatedMessage = comp.translateMessage('CANCEL');
-        expect(translatedMessage).toEqual('Cancel');
-        expect(spy.calls.any()).toEqual(true);
-    }));
-
     it('#initializeService should start to show onboarding cards', () => {
         expect(comp.initializeService).toBeDefined();
         const onboardingServiceStub: OnboardingService = TestBed.get(OnboardingService);
@@ -187,20 +178,6 @@ describe('OnboardingCardComponent', () => {
         spyOn(comp, 'initializeService').and.callThrough();
         comp.initializeService();
         expect(comp.initializeService).toHaveBeenCalled();
-    });
-
-    it('#getToast should not create ToastController if not passed any message for toast', () => {
-        const toastCtrlStub: ToastController = fixture.debugElement.injector.get(ToastController);
-        spyOn(toastCtrlStub, 'create');
-        comp.getToast();
-        expect(toastCtrlStub.create).not.toHaveBeenCalled();
-    });
-    it('#getToast should create ToastController', () => {
-        const toastCtrlStub: ToastController = fixture.debugElement.injector.get(ToastController);
-        spyOn(toastCtrlStub, 'create');
-        comp.getToast('Some Message');
-        expect(toastCtrlStub.create).toHaveBeenCalled();
-        expect(toastCtrlStub.create).toBeTruthy();
     });
     /*     it('#onSlideDrag', () => {
             expect(comp.onSlideDrag).toBeDefined();
