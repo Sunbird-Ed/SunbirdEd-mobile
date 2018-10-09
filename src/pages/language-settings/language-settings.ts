@@ -1,3 +1,4 @@
+import { CommonUtilService } from './../../service/common-util.service';
 import { Platform } from 'ionic-angular/platform/platform';
 import {
   Component,
@@ -7,8 +8,7 @@ import {
   IonicPage,
   NavController,
   NavParams,
-  Events,
-  ToastController
+  Events
 } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import {
@@ -51,11 +51,47 @@ export class LanguageSettingsPage {
     private preferences: SharedPreferences,
     private events: Events,
     private zone: NgZone,
-    private toastCtrl: ToastController,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private platform: Platform,
-    private appGlobalService: AppGlobalService
+    private appGlobalService: AppGlobalService,
+    private commonUtilService: CommonUtilService
   ) { }
+
+  ionViewDidLoad() {
+    this.isFromSettings = this.navParams.get('isFromSettings');
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.VIEW, '',
+      this.isFromSettings ? PageId.SETTINGS_LANGUAGE : PageId.ONBOARDING_LANGUAGE_SETTING,
+      this.isFromSettings ? Environment.SETTINGS : Environment.ONBOARDING,
+    );
+
+    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+      this.telemetryGeneratorService.generateInteractTelemetry(
+        InteractType.TOUCH, InteractSubtype.DEVICE_BACK_CLICKED,
+        this.isFromSettings ? PageId.SETTINGS_LANGUAGE : PageId.ONBOARDING_LANGUAGE_SETTING,
+        this.isFromSettings ? Environment.SETTINGS : Environment.ONBOARDING,
+      );
+      this.unregisterBackButton();
+    }, 10);
+
+  }
+
+  ionViewWillEnter() {
+    this.selectedLanguage = {};
+    this.init();
+  }
+
+  ionViewWillLeave() {
+    if (this.isLanguageSelected) {
+      if (!this.selectedLanguage.code) {
+        if (this.previousLanguage) {
+          this.translateService.use(this.previousLanguage);
+        } else {
+          this.translateService.use('en');
+        }
+      }
+    }
+  }
 
   init(): void {
     this.languages = [
@@ -89,68 +125,49 @@ export class LanguageSettingsPage {
     this.zone.run(() => {
       this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
         .then(val => {
-          if (val === undefined || val === '' || val === null) {
+          if (Boolean(val)) {
+            this.previousLanguage = val;
+            this.language = val;
+          } else {
             console.error('Language not set');
             // this.getDeviceLanguage();
             this.previousLanguage = undefined;
-          } else {
-            this.previousLanguage = val;
-            this.language = val;
+
           }
         });
     });
 
   }
 
-  // getDeviceLanguage() {
-  //   //Get device set language
-  //   this.globalization.getPreferredLanguage()
-  //     .then(res => {
-  //       this.defaultDeviceLang = res.value.split("-")[0];
-  //       let lang = this.languages.find(i => i.code === this.defaultDeviceLang);
-  //       if (lang != undefined && lang != null) {
-  //         console.log("Language chosen - " + lang.code)
-  //         lang.isApplied = true;
-  //         this.language = lang.code;
-  //       } else {
-  //         this.makeDefaultLanguage();
-  //       }
-  //     })
-  //     .catch(e => {
-  //       this.makeDefaultLanguage();
-  //     });
-  // }
-  // makeDefaultLanguage() {
-  //   this.language = this.languages[0].code;
-  //   this.languages[0].isApplied = true;
-  // }
+  /*   getDeviceLanguage() {
+      //Get device set language
+      this.globalization.getPreferredLanguage()
+        .then(res => {
+          this.defaultDeviceLang = res.value.split("-")[0];
+          let lang = this.languages.find(i => i.code === this.defaultDeviceLang);
+          if (lang != undefined && lang != null) {
+            console.log("Language chosen - " + lang.code)
+            lang.isApplied = true;
+            this.language = lang.code;
+          } else {
+            this.makeDefaultLanguage();
+          }
+        })
+        .catch(e => {
+          this.makeDefaultLanguage();
+        });
+    }
+    makeDefaultLanguage() {
+      this.language = this.languages[0].code;
+      this.languages[0].isApplied = true;
+    } */
 
 
-  ionViewDidLoad() {
-    this.isFromSettings = this.navParams.get('isFromSettings');
-    this.telemetryGeneratorService.generateImpressionTelemetry(
-      ImpressionType.VIEW, '',
-      this.isFromSettings ? PageId.SETTINGS_LANGUAGE : PageId.ONBOARDING_LANGUAGE_SETTING,
-      this.isFromSettings ? Environment.SETTINGS : Environment.ONBOARDING,
-    );
-
-    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
-      this.telemetryGeneratorService.generateInteractTelemetry(
-        InteractType.TOUCH, InteractSubtype.DEVICE_BACK_CLICKED,
-        this.isFromSettings ? PageId.SETTINGS_LANGUAGE : PageId.ONBOARDING_LANGUAGE_SETTING,
-        this.isFromSettings ? Environment.SETTINGS : Environment.ONBOARDING,
-      );
-      this.unregisterBackButton();
-    }, 10);
-
-  }
 
   /**
-   * on language selected
-   * @param language
+   * It will set app language
    */
   onLanguageSelected() {
-    console.log('language selected : ' + this.language);
     if (this.language) {
       /*       let selectedLanguage = this.languages.find(i => i.code === this.language);
             this.preferences.putString(PreferenceKey.SELECTED_LANGUAGE_CODE, selectedLanguage.code);
@@ -189,6 +206,7 @@ export class LanguageSettingsPage {
       valuesMap
     );
   }
+
   continue() {
     // if language is not null, then select the checked language,
     // else set default language as english
@@ -214,56 +232,7 @@ export class LanguageSettingsPage {
     } else {
       this.generateContinueClickedInteractEvent('n/a');
       this.btnColor = '#8FC4FF';
-      const toast = this.toastCtrl.create({
-        message: this.translateMessage('PLEASE_SELECT_A_LANGUAGE'),
-        duration: 2000,
-        cssClass: 'redErrorToast',
-        position: 'Bottom'
-      });
-      toast.dismissAll();
-      toast.present();
+      this.commonUtilService.showToast('PLEASE_SELECT_A_LANGUAGE', false, 'redErrorToast');
     }
-  }
-
-  /**
- * Change language / direction
- */
-  // changeLanguage(event) {
-  //   if (currentStyle === "ltr") {
-  //     currentStyle = "rtl";
-  //   } else {
-  //     currentStyle = "ltr";id
-  //   }
-  //   this.platform.setDir(this.currentStyle as DocumentDirection, true);
-  // }
-  // generateImpressionEvent() {
-
-  // }
-
-  ionViewWillEnter() {
-    this.selectedLanguage = {};
-    this.init();
-  }
-
-  ionViewWillLeave() {
-    if (this.isLanguageSelected) {
-      if (!this.selectedLanguage.code) {
-        if (this.previousLanguage) {
-          this.translateService.use(this.previousLanguage);
-        } else {
-          this.translateService.use('en');
-        }
-      }
-    }
-  }
-
-  translateMessage(messageConst: string, field?: string): string {
-    let translatedMsg = '';
-    this.translateService.get(messageConst, { '%s': field }).subscribe(
-      (value: any) => {
-        translatedMsg = value;
-      }
-    );
-    return translatedMsg;
   }
 }
