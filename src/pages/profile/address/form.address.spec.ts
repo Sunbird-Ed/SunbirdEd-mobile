@@ -54,8 +54,8 @@ describe('FormAddress', () => {
     });
 
     const getLoader = () => {
-        const loadingController = TestBed.get(LoadingController);
-        comp.getLoader();
+        const commonUtilServiceStub = TestBed.get(CommonUtilService);
+        commonUtilServiceStub.getLoader();
     };
     // it("isNewForm should be true", () => {
     //     expect(comp.isNewForm).toBe(true);
@@ -167,7 +167,8 @@ describe('FormAddress', () => {
 
     it('getLoader makes expected calls', () => {
         const loadingController = TestBed.get(LoadingController);
-        comp.getLoader();
+        const commonUtilServiceStub = TestBed.get(CommonUtilService);
+        commonUtilServiceStub.getLoader();
         expect(loadingController.create).toHaveBeenCalled();
     });
 

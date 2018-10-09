@@ -162,7 +162,8 @@ describe('FormEducation', () => {
 
     it('getLoader makes expected calls', () => {
         const loadingController = TestBed.get(LoadingController);
-        comp.getLoader();
+        const commonUtilServiceStub  = TestBed.get(CommonUtilService);
+        commonUtilServiceStub.getLoader();
         expect(loadingController.create).toHaveBeenCalled();
     });
 
