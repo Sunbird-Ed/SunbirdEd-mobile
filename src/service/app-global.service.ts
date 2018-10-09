@@ -28,6 +28,7 @@ import { TelemetryGeneratorService } from './telemetry-generator.service';
 @Injectable()
 export class AppGlobalService {
 
+
     constructor(
         private event: Events,
         private authService: AuthService,
@@ -46,6 +47,11 @@ export class AppGlobalService {
     public static readonly USER_INFO_UPDATED = 'user-profile-changed';
     public static readonly PROFILE_OBJ_CHANGED = 'app-global:profile-obj-changed';
     public static isPlayerLaunched = false;
+
+    /**
+     * This property stores the courses enrolled by a user
+     */
+    courseList: Array<any>;
     /**
      * This property stores the form details at the app level for a particular app session
      */
@@ -112,6 +118,25 @@ export class AppGlobalService {
         }
 
         return name;
+    }
+
+    /**
+     * This method stores the list of courses enrolled by user, and is updated every time
+     * getEnrolledCourses is called.
+     * @param courseList
+     */
+    setEnrolledCourseList(courseList: Array<any>) {
+        this.courseList = courseList;
+    }
+
+    /**
+     * This method returns the list of enrolled courses
+     *
+     * @param courseList
+     *
+     */
+    getEnrolledCourseList(): Array<any> {
+        return this.courseList;
     }
 
     /**
