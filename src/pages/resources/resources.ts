@@ -46,7 +46,7 @@ import { TelemetryGeneratorService } from '../../service/telemetry-generator.ser
 import { CommonUtilService } from '../../service/common-util.service';
 
 @Component({
-  selector: 'app-page-resources',
+  selector: 'page-resources',
   templateUrl: 'resources.html'
 })
 export class ResourcesPage implements OnInit {

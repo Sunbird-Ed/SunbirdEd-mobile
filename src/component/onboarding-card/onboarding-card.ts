@@ -16,7 +16,7 @@ import {
 import { CommonUtilService } from '../../service/common-util.service';
 
 @Component({
-  selector: 'app-onboarding-card',
+  selector: 'onboarding-card',
   templateUrl: 'onboarding-card.html'
 })
 export class OnboardingCardComponent {
