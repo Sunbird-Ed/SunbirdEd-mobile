@@ -54,87 +54,94 @@ describe('Content-actions', () => {
         fixture = TestBed.createComponent(ContentActionsComponent);
         comp = fixture.componentInstance;
     });
-    it('#constructor should create instance', () => {
-        expect(comp).toBeTruthy();
-    });
 
-    it('#getUserId should return empty string if  user is not logged in', (done) => {
-        expect(comp.getUserId).toBeDefined();
-        spyOn(comp, 'getUserId').and.callThrough();
-        const authServiceStub = TestBed.get(AuthService);
-        spyOn(authServiceStub, 'getSessionData').and.callFake(success => {
-            return success('null');
+    it('#constructor should create instance',
+        () => {
+            expect(comp).toBeTruthy();
         });
-        comp.getUserId();
-        setTimeout(() => {
-            expect(comp.getUserId).toHaveBeenCalled();
-            expect(comp.userId).toEqual('');
-            done();
-        }, 0);
-    });
-    it('#getUserId should set userId to empty string', (done) => {
-        expect(comp.getUserId).toBeDefined();
-        spyOn(comp, 'getUserId').and.callThrough();
-        const authServiceStub = TestBed.get(AuthService);
-        const res = {};
-        spyOn(authServiceStub, 'getSessionData').and.callFake(success => {
-            return success(JSON.stringify(res));
-        });
-        comp.pageName = 'course';
-        comp.content = {};
-        comp.getUserId();
-        setTimeout(() => {
-            expect(comp.getUserId).toHaveBeenCalled();
-            expect(comp.userId).toEqual('');
-            expect(comp.showFlagMenu).toBe(true);
-            done();
-        }, 0);
-    });
 
-    it('#getUserId should set userId', (done) => {
-
-        expect(comp.getUserId).toBeDefined();
-        spyOn(comp, 'getUserId').and.callThrough();
-        const authServiceStub = TestBed.get(AuthService);
-        const res = {
-            userToken: 'sample_user_token'
-        };
-        spyOn(authServiceStub, 'getSessionData').and.callFake(success => {
-            return success(JSON.stringify(res));
+    it('#getUserId should return empty string if  user is not logged in',
+        (done) => {
+            expect(comp.getUserId).toBeDefined();
+            spyOn(comp, 'getUserId').and.callThrough();
+            const authServiceStub = TestBed.get(AuthService);
+            spyOn(authServiceStub, 'getSessionData').and.callFake(success => {
+                return success('null');
+            });
+            comp.getUserId();
+            setTimeout(() => {
+                expect(comp.getUserId).toHaveBeenCalled();
+                expect(comp.userId).toEqual('');
+                done();
+            }, 0);
         });
-        comp.pageName = 'course';
-        comp.content.batchId = 'sample_batch_id';
-        comp.getUserId();
-        setTimeout(() => {
-            expect(comp.getUserId).toHaveBeenCalled();
-            expect(comp.userId).toEqual('sample_user_token');
-            expect(comp.showFlagMenu).toBe(true);
-            done();
-        }, 10);
-    });
-    it('#getDeleteRequestBody should return apiParams object', () => {
-        comp.contentId = 'sample_content_id';
-        comp.isChild = true;
-        const apiParams = {
-            contentDeleteList: [{
-                contentId: 'sample_content_id',
-                isChildContent: true
-            }]
-        };
-        expect(comp.getDeleteRequestBody).toBeDefined();
-        spyOn(comp, 'getDeleteRequestBody').and.callThrough();
-        const response = comp.getDeleteRequestBody();
-        expect(comp.getDeleteRequestBody).toHaveBeenCalled();
-        expect(response).toEqual(apiParams);
-    });
-    it('#close should return apiParams object', () => {
-        expect(comp.close).toBeDefined();
-        spyOn(comp, 'close').and.callThrough();
-        spyOn(comp, 'deleteContent');
-        const response = comp.close(0);
-        expect(comp.close).toHaveBeenCalled();
-        expect(comp.deleteContent).toHaveBeenCalled();
-    });
+    it('#getUserId should set userId to empty string',
+        (done) => {
+            expect(comp.getUserId).toBeDefined();
+            spyOn(comp, 'getUserId').and.callThrough();
+            const authServiceStub = TestBed.get(AuthService);
+            const res = {};
+            spyOn(authServiceStub, 'getSessionData').and.callFake(success => {
+                return success(JSON.stringify(res));
+            });
+            comp.pageName = 'course';
+            comp.content = {};
+            comp.getUserId();
+            setTimeout(() => {
+                expect(comp.getUserId).toHaveBeenCalled();
+                expect(comp.userId).toEqual('');
+                expect(comp.showFlagMenu).toBe(true);
+                done();
+            }, 0);
+        });
+
+    it('#getUserId should set userId',
+        (done) => {
+
+            expect(comp.getUserId).toBeDefined();
+            spyOn(comp, 'getUserId').and.callThrough();
+            const authServiceStub = TestBed.get(AuthService);
+            const res = {
+                userToken: 'sample_user_token'
+            };
+            spyOn(authServiceStub, 'getSessionData').and.callFake(success => {
+                return success(JSON.stringify(res));
+            });
+            comp.pageName = 'course';
+            comp.content.batchId = 'sample_batch_id';
+            comp.getUserId();
+            setTimeout(() => {
+                expect(comp.getUserId).toHaveBeenCalled();
+                expect(comp.userId).toEqual('sample_user_token');
+                expect(comp.showFlagMenu).toBe(true);
+                done();
+            }, 10);
+        });
+    it('#getDeleteRequestBody should return apiParams object',
+        () => {
+            comp.contentId = 'sample_content_id';
+            comp.isChild = true;
+            const apiParams = {
+                contentDeleteList: [{
+                    contentId: 'sample_content_id',
+                    isChildContent: true
+                }]
+            };
+            expect(comp.getDeleteRequestBody).toBeDefined();
+            spyOn(comp, 'getDeleteRequestBody').and.callThrough();
+            const response = comp.getDeleteRequestBody();
+            expect(comp.getDeleteRequestBody).toHaveBeenCalled();
+            expect(response).toEqual(apiParams);
+        });
+    it('#close should return apiParams object',
+        () => {
+            expect(comp.close).toBeDefined();
+            spyOn(comp, 'close').and.callThrough();
+            spyOn(comp, 'deleteContent');
+            const response = comp.close(0);
+            expect(comp.close).toHaveBeenCalled();
+            expect(comp.deleteContent).toHaveBeenCalled();
+        });
     it('#close should return apiParams object', () => {
         const viewCtrlStub = TestBed.get(ViewController);
         expect(comp.close).toBeDefined();
@@ -145,101 +152,104 @@ describe('Content-actions', () => {
         expect(comp.reportIssue).toHaveBeenCalled();
         expect(viewCtrlStub.dismiss).toHaveBeenCalled();
     });
-    it('#deleteContent should show the proper message if fails to delete content delete the content with given' +
-     'request body and should proper toast message, on success of API call', (done) => {
-        expect(comp.deleteContent).toBeDefined();
-        const contentServiceStub = TestBed.get(ContentService);
-        const translateServiceStub = TestBed.get(TranslateService);
-        spyOn(comp, 'deleteContent').and.callThrough();
-        spyOn(comp, 'showToaster');
-        spyOn(comp, 'getMessageByConstant');
-        spyOn(translateServiceStub, 'get').and.callFake((arg) => {
-            return Observable.of('Cancel');
-        });
-        spyOn(contentServiceStub, 'deleteContent').and.callFake((req, response, error) => {
-            response(JSON.stringify(responseObj));
-        });
+    it('#deleteContent should show the proper message if fails to delete content delete the content with given'
+        + 'request body and should proper toast message, on success of API call',
+        (done) => {
+            expect(comp.deleteContent).toBeDefined();
+            const contentServiceStub = TestBed.get(ContentService);
+            const translateServiceStub = TestBed.get(TranslateService);
+            spyOn(comp, 'deleteContent').and.callThrough();
+            spyOn(comp, 'showToaster');
+            spyOn(comp, 'getMessageByConstant');
+            spyOn(translateServiceStub, 'get').and.callFake((arg) => {
+                return Observable.of('Cancel');
+            });
+            spyOn(contentServiceStub, 'deleteContent').and.callFake((req, response, error) => {
+                response(JSON.stringify(responseObj));
+            });
 
-        const responseObj = {
-            result: {
-                status: 'NOT_FOUND'
-            }
-        };
+            const responseObj = {
+                result: {
+                    status: 'NOT_FOUND'
+                }
+            };
 
-        comp.deleteContent();
-        setTimeout(() => {
-            expect(comp.deleteContent).toHaveBeenCalled();
-            expect(comp.showToaster).toHaveBeenCalled();
-            expect(comp.getMessageByConstant).toHaveBeenCalled();
-            expect(comp.getMessageByConstant).toHaveBeenCalledWith('CONTENT_DELETE_FAILED');
-            done();
-        }, 10);
-    });
-
-    it('#deleteContent should delete the content with given request body and should proper toast message,' +
-    ' on success of API call', (done) => {
-        expect(comp.deleteContent).toBeDefined();
-        const contentServiceStub = TestBed.get(ContentService);
-        const translateServiceStub = TestBed.get(TranslateService);
-        const eventsStub = TestBed.get(Events);
-        const viewCtrlStub = TestBed.get(ViewController);
-
-        spyOn(comp, 'deleteContent').and.callThrough();
-        spyOn(comp, 'showToaster');
-        spyOn(comp, 'getMessageByConstant');
-        spyOn(eventsStub, 'publish');
-        spyOn(translateServiceStub, 'get').and.callFake((arg) => {
-            return Observable.of('Cancel');
+            comp.deleteContent();
+            setTimeout(() => {
+                expect(comp.deleteContent).toHaveBeenCalled();
+                expect(comp.showToaster).toHaveBeenCalled();
+                expect(comp.getMessageByConstant).toHaveBeenCalled();
+                expect(comp.getMessageByConstant).toHaveBeenCalledWith('CONTENT_DELETE_FAILED');
+                done();
+            }, 10);
         });
 
-        const responseObj = {
-            result: {
-                status: 'SUCCESS'
-            }
-        };
-        spyOn(contentServiceStub, 'deleteContent').and.callFake((req, response, error) => {
-            response(JSON.stringify(responseObj));
-        });
-        comp.deleteContent();
-        setTimeout(() => {
-            expect(comp.deleteContent).toHaveBeenCalled();
-            expect(comp.showToaster).toHaveBeenCalled();
-            expect(comp.getMessageByConstant).toHaveBeenCalled();
-            expect(comp.getMessageByConstant).toHaveBeenCalledWith('MSG_RESOURCE_DELETED');
-            expect(eventsStub.publish).toHaveBeenCalled();
-            expect(eventsStub.publish).toHaveBeenCalledWith('savedResources:update', { update: true });
-            expect(viewCtrlStub.dismiss).toHaveBeenCalled();
-            expect(viewCtrlStub.dismiss).toHaveBeenCalledWith('delete.success');
-            done();
-        }, 10);
-    });
-    it('#deleteContent should show the proper message if fails to delete content delete the content with given request ' +
-    'body and should proper toast message, on success of API call', (done) => {
-        expect(comp.deleteContent).toBeDefined();
-        const contentServiceStub = TestBed.get(ContentService);
-        const translateServiceStub = TestBed.get(TranslateService);
-        const viewCtrlStub = TestBed.get(ViewController);
+    it('#deleteContent should delete the content with given request body and should proper toast message,'
+        + ' on success of API call',
+        (done) => {
+            expect(comp.deleteContent).toBeDefined();
+            const contentServiceStub = TestBed.get(ContentService);
+            const translateServiceStub = TestBed.get(TranslateService);
+            const eventsStub = TestBed.get(Events);
+            const viewCtrlStub = TestBed.get(ViewController);
 
-        spyOn(comp, 'deleteContent').and.callThrough();
-        spyOn(comp, 'showToaster');
-        spyOn(comp, 'getMessageByConstant');
-        spyOn(translateServiceStub, 'get').and.callFake((arg) => {
-            return Observable.of('Cancel');
-        });
-        spyOn(contentServiceStub, 'deleteContent').and.callFake((req, response, error) => {
-            error({});
-        });
+            spyOn(comp, 'deleteContent').and.callThrough();
+            spyOn(comp, 'showToaster');
+            spyOn(comp, 'getMessageByConstant');
+            spyOn(eventsStub, 'publish');
+            spyOn(translateServiceStub, 'get').and.callFake((arg) => {
+                return Observable.of('Cancel');
+            });
 
-        comp.deleteContent();
-        setTimeout(() => {
-            expect(comp.deleteContent).toHaveBeenCalled();
-            expect(comp.showToaster).toHaveBeenCalled();
-            expect(comp.getMessageByConstant).toHaveBeenCalled();
-            expect(comp.getMessageByConstant).toHaveBeenCalledWith('CONTENT_DELETE_FAILED');
-            expect(viewCtrlStub.dismiss).toHaveBeenCalled();
-            done();
-        }, 10);
-    });
+            const responseObj = {
+                result: {
+                    status: 'SUCCESS'
+                }
+            };
+            spyOn(contentServiceStub, 'deleteContent').and.callFake((req, response, error) => {
+                response(JSON.stringify(responseObj));
+            });
+            comp.deleteContent();
+            setTimeout(() => {
+                expect(comp.deleteContent).toHaveBeenCalled();
+                expect(comp.showToaster).toHaveBeenCalled();
+                expect(comp.getMessageByConstant).toHaveBeenCalled();
+                expect(comp.getMessageByConstant).toHaveBeenCalledWith('MSG_RESOURCE_DELETED');
+                expect(eventsStub.publish).toHaveBeenCalled();
+                expect(eventsStub.publish).toHaveBeenCalledWith('savedResources:update', { update: true });
+                expect(viewCtrlStub.dismiss).toHaveBeenCalled();
+                expect(viewCtrlStub.dismiss).toHaveBeenCalledWith('delete.success');
+                done();
+            }, 10);
+        });
+    it('#deleteContent should show the proper message if fails to delete content delete the content with given request '
+        + 'body and should proper toast message, on success of API call',
+        (done) => {
+            expect(comp.deleteContent).toBeDefined();
+            const contentServiceStub = TestBed.get(ContentService);
+            const translateServiceStub = TestBed.get(TranslateService);
+            const viewCtrlStub = TestBed.get(ViewController);
+
+            spyOn(comp, 'deleteContent').and.callThrough();
+            spyOn(comp, 'showToaster');
+            spyOn(comp, 'getMessageByConstant');
+            spyOn(translateServiceStub, 'get').and.callFake((arg) => {
+                return Observable.of('Cancel');
+            });
+            spyOn(contentServiceStub, 'deleteContent').and.callFake((req, response, error) => {
+                error({});
+            });
+
+            comp.deleteContent();
+            setTimeout(() => {
+                expect(comp.deleteContent).toHaveBeenCalled();
+                expect(comp.showToaster).toHaveBeenCalled();
+                expect(comp.getMessageByConstant).toHaveBeenCalled();
+                expect(comp.getMessageByConstant).toHaveBeenCalledWith('CONTENT_DELETE_FAILED');
+                expect(viewCtrlStub.dismiss).toHaveBeenCalled();
+                done();
+            }, 10);
+        });
     it('#reportIssue should show popover to report issue', () => {
         expect(comp.reportIssue).toBeDefined();
         const popOverCtrlStub = TestBed.get(PopoverController);
