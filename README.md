@@ -1,5 +1,7 @@
 ## Setup Instruction
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/0f136815c4d841a3afa9bb3ca5e1c162)](https://app.codacy.com/app/project-sunbird/sunbird-mobile?utm_source=github.com&utm_medium=referral&utm_content=project-sunbird/sunbird-mobile&utm_campaign=Badge_Grade_Settings)
+
 ### Follow the below steps for setup in your local system.
 
 #### Dependencies
