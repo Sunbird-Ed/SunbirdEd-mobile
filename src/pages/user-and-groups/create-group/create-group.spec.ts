@@ -84,15 +84,15 @@ describe('CreateGroupPage Component', () => {
   const telemetryGeneratorServiceStub = {
     generateInteractTelemetry: () => ({})
   };
-  it('can load instance', () => {
-    expect(component).toBeTruthy();
-  });
+  // it('can load instance', () => {
+  //   expect(component).toBeTruthy();
+  // });
 
-  it('classlist defaults to: []', () => {
-    expect(component).toBeTruthy();
-  });
+  // it('classlist defaults to: []', () => {
+  //   expect(component).toBeTruthy();
+  // });
 
-  it('#getSyllabusDetails makes expected calls', () => {
+  it('#getSyllabusDetails should  makes expected calls', () => {
     const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
     getLoader();
     spyOn(formAndFrameworkUtilServiceStub, 'getSyllabusList').and.returnValue(Promise.resolve([]));
@@ -107,7 +107,7 @@ describe('CreateGroupPage Component', () => {
   });
 
 
-  it('#ionViewDidLoad loads for telemetry service', () => {
+  it('#ionViewDidLoad  should loads for telemetry service', () => {
     // tslint:disable-next-line:no-shadowed-variable
     const telemetryGeneratorServiceStub: TelemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
     spyOn(telemetryGeneratorServiceStub, 'generateInteractTelemetry').and.returnValue(Promise.resolve({}));
@@ -116,7 +116,7 @@ describe('CreateGroupPage Component', () => {
   });
 
   // tslint:disable-next-line:only-arrow-functions
-  it('#getClassList makes expected calls', function () {
+  it('#getClassList should makes expected calls', function () {
     // tslint:disable-next-line:no-unused-expression
     // tslint:disable-next-line:only-arrow-functions
     component.getLoader = jasmine.createSpy().and.callFake(() => {
@@ -132,7 +132,7 @@ describe('CreateGroupPage Component', () => {
     expect(component.getClassList).toHaveBeenCalled();
   });
 
-  it('#getclassList makes form valid call', () => {
+  it('#getclassList should makes form valid call', () => {
     const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
     component.getLoader = jasmine.createSpy().and.callFake(() => {
       return { present: () => { }, dismiss: () => { } };
@@ -145,32 +145,33 @@ describe('CreateGroupPage Component', () => {
     expect(component.getClassList).toHaveBeenCalled();
   });
 
-  it('#goToGuestEdit It should navigate to GroupMembersPage page', () => {
+  it('#goToGuestEdit should navigate to GroupMembersPage page', () => {
     const navControllerStub = TestBed.get(NavController);
     spyOn(navControllerStub, 'push').and.callThrough();
     component.goToGuestEdit();
     expect(navControllerStub.push).toHaveBeenCalled();
   });
 
-  it('#goToGuestEdit getToast should make expected calls', () => {
+  it('#goToGuestEdit should be get getToast should make expected calls', () => {
     const navControllerStub = TestBed.get(NavController);
     spyOn(navControllerStub, 'push');
     component.goToGuestEdit();
     expect(navControllerStub.push).toHaveBeenCalled();
   });
 
-  it('#groupEdit Formform invalid when empty', () => {
+  it('#groupEdit should make a call when Formform invalid or empty', () => {
     expect(component.groupEditForm.valid).toBeFalsy();
   });
 
-  it('#groupEditForm form valid when required fields are filled', () => {
+  it('#groupEditForm should make a form valid when required fields are filled', () => {
     component.groupEditForm.controls['name'].setValue('Amaravathi');
     component.groupEditForm.controls['syllabus'].setValue('State (Andhra Pradesh)');
     component.groupEditForm.controls['class'].setValue('2nd class');
+    component.navigateToUsersList();
     expect(component.groupEditForm.valid).toBeTruthy();
   });
 
-  it('#navigateToUsersList for submitting a form to create a group', () => {
+  it('#navigateToUsersList should make for submitting a form to create a group', () => {
     component.isFormValid = true;
     component.classList = [{ name: '2nd class', code: '2nd class' }];
     component.groupEditForm.controls['name'].setValue('Amaravathi');
@@ -182,7 +183,7 @@ describe('CreateGroupPage Component', () => {
     spyOn(navControllerStub, 'push').and.callThrough();
   });
 
-  it('#updateGroup makes expected calls for UpdateGroup', () => {
+  it('#updateGroup should makes expected calls for UpdateGroup', () => {
     const navControllerStub = TestBed.get(NavController);
     const groupServiceStub = TestBed.get(GroupService);
     const translateStub = TestBed.get(TranslateService);
@@ -200,26 +201,13 @@ describe('CreateGroupPage Component', () => {
     expect(component.getLoader).toHaveBeenCalled();
     expect(groupServiceStub.updateGroup).toHaveBeenCalled();
   });
-
-  it('#update group that for the  form in invalid makes expected  for UpdateGroup', () => {
-    component.isFormValid = false;
-    const translateStub = TestBed.get(TranslateService);
-    const commonUtilService = TestBed.get(CommonUtilService);
-    spyOn(commonUtilService, 'showToast').and.returnValue(Promise.resolve(commonUtilService.showToast));
-    //  pyOn(translateStub, 'get').and.callFake((arg) => {
-    //   return Observable.of('NEED_INTERNET_TO_CHANGE');
-    // });s
-    component.updateGroup();
-    expect(translateStub.get).toHaveBeenCalled();
-  });
-
   // tslint:disable-next-line:indent
   it('#getSyllabusDetails should fetch syllabus details', (done) => {
     const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
-    component.group.syllabus = ['ap_k-12_13'];
+    spyOn(component, 'syllabusList');
     component.classList = [{ name: '2nd class', code: '2nd class' }];
     getLoader();
-    spyOn(formAndFrameworkUtilServiceStub, 'getSyllabusList').and.returnValue(Promise.resolve(mockCreateGroupRes.syllabusList));
+    spyOn(formAndFrameworkUtilServiceStub, 'getSyllabusList').and.returnValue(Promise.resolve([]));
     component.getLoader = jasmine.createSpy().and.callFake(() => {
       return { present: () => { }, dismiss: () => { } };
     });
@@ -230,31 +218,25 @@ describe('CreateGroupPage Component', () => {
       done();
     }, 1000);
   });
-  it('#navigateToUsersList submitting a form to create a group', () => {
+
+  it('#navigateToUsersList should show toast with some message when form is invalid', () => {
+    component.isFormValid = false;
     const translate = TestBed.get(TranslateService);
     const commonUtilService = TestBed.get(CommonUtilService);
-    spyOn(commonUtilService, 'showToast').and.returnValue({
-      present: () => { }
-    });
-    component.isFormValid = false;
+    spyOn(commonUtilService, 'showToast').and.returnValue(Promise.resolve(commonUtilService.showToast));
     component.navigateToUsersList();
+    // expect(translate.get).toHaveBeenCalledWith('ENTER_GROUP_NAME');
     expect(translate.get).toHaveBeenCalled();
   });
-  it('#navigateToUsersList submitting a form with invalid values to a group', () => {
+
+  it('#navigateToUsersList should be submitting a form with invalid values to a group', () => {
     component.isFormValid = true;
     const translateStub = TestBed.get(TranslateService);
     const commonUtilService = TestBed.get(CommonUtilService);
-    // spyOn(commonUtilService, 'showToast').and.returnValue({
-    //   present: () => { }
-    // });
     spyOn(commonUtilService, 'showToast').and.returnValue(Promise.resolve(commonUtilService.showToast));
-    component.getLoader = jasmine.createSpy().and.callFake(() => {
-      return { present: () => { }, dismiss: () => { } };
-    });
-    //   spyOn(translateStub, 'get').and.callFake((arg) => {
-    //     return Observable.of('ENTER_GROUP_NAME');
-    // });
+    getLoader();
     component.navigateToUsersList();
-    // expect(translateStub.get).toHaveBeenCalled();
+    expect(translateStub.get).toHaveBeenCalled();
+    // expect(component.navigateToUsersList).toHaveBeenCalled();
   });
 });
