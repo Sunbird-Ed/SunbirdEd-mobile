@@ -10,7 +10,7 @@
 
 		<ion-item>
 			<ion-label floating class="label-font">{{'BOARD_OPTION_TEXT' | translate }}</ion-label>
-			<ion-select multiple="false" text-capitalize formControlName="syllabus" [selectOptions]="syllabusOptions"
+			<ion-select multiple="false" text-capitalize formControlName="syllabus" [selectOptions]="boardOptions"
 			(ionChange)="resetForm(0, true)" okText="{{'BTN_SUBMIT' | translate}}"
 			 cancelText="{{'CANCEL' | translate}}">
 				<ion-option *ngFor="let eachSyllabus of syllabusList" value="{{eachSyllabus?.code}}">{{eachSyllabus?.name}}</ion-option>
