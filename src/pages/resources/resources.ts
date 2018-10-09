@@ -46,7 +46,7 @@ import { TelemetryGeneratorService } from '../../service/telemetry-generator.ser
 import { CommonUtilService } from '../../service/common-util.service';
 
 @Component({
-  selector: 'page-resources',
+  selector: 'app-page-resources',
   templateUrl: 'resources.html'
 })
 export class ResourcesPage implements OnInit {
@@ -249,7 +249,8 @@ export class ResourcesPage implements OnInit {
       undefined,
       values);
 
-    queryParams = updateFilterInSearchQuery(queryParams, this.appliedFilter, this.profile, this.mode, this.isFilterApplied, this.appGlobalService);
+    queryParams = updateFilterInSearchQuery(queryParams, this.appliedFilter, this.profile, this.mode,
+                   this.isFilterApplied, this.appGlobalService);
 
     this.navCtrl.push(ViewMoreActivityPage, {
       requestParams: queryParams,

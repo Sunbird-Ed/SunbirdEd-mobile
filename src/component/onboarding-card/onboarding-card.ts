@@ -11,12 +11,12 @@ import {
 import { OnboardingService } from '../onboarding-card/onboarding.service';
 import {
   OnboardingAlert,
-  onBoardingSlidesCallback
+  OnBoardingSlidesCallback
 } from './../onboarding-alert/onboarding-alert';
 import { CommonUtilService } from '../../service/common-util.service';
 
 @Component({
-  selector: 'onboarding-card',
+  selector: 'app-onboarding-card',
   templateUrl: 'onboarding-card.html'
 })
 export class OnboardingCardComponent {
@@ -127,7 +127,7 @@ export class OnboardingCardComponent {
    */
   openFilterOptions(selectedSlide: any, index: number) {
     const that = this;
-    const callback: onBoardingSlidesCallback = {
+    const callback: OnBoardingSlidesCallback = {
       save() {
         that.onboardingService.selectedCheckboxValue(selectedSlide, index);
       }
