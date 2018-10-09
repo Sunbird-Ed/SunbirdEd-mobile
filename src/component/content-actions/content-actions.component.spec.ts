@@ -145,7 +145,8 @@ describe('Content-actions', () => {
         expect(comp.reportIssue).toHaveBeenCalled();
         expect(viewCtrlStub.dismiss).toHaveBeenCalled();
     });
-    it('#deleteContent should show the proper message if fails to delete content delete the content with given request body and should proper toast message, on success of API call', (done) => {
+    it('#deleteContent should show the proper message if fails to delete content delete the content with given' +
+     'request body and should proper toast message, on success of API call', (done) => {
         expect(comp.deleteContent).toBeDefined();
         const contentServiceStub = TestBed.get(ContentService);
         const translateServiceStub = TestBed.get(TranslateService);
@@ -175,7 +176,8 @@ describe('Content-actions', () => {
         }, 10);
     });
 
-    it('#deleteContent should delete the content with given request body and should proper toast message, on success of API call', (done) => {
+    it('#deleteContent should delete the content with given request body and should proper toast message,' +
+    ' on success of API call', (done) => {
         expect(comp.deleteContent).toBeDefined();
         const contentServiceStub = TestBed.get(ContentService);
         const translateServiceStub = TestBed.get(TranslateService);
@@ -211,7 +213,8 @@ describe('Content-actions', () => {
             done();
         }, 10);
     });
-    it('#deleteContent should show the proper message if fails to delete content delete the content with given request body and should proper toast message, on success of API call', (done) => {
+    it('#deleteContent should show the proper message if fails to delete content delete the content with given request ' +
+    'body and should proper toast message, on success of API call', (done) => {
         expect(comp.deleteContent).toBeDefined();
         const contentServiceStub = TestBed.get(ContentService);
         const translateServiceStub = TestBed.get(TranslateService);
