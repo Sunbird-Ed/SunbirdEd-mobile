@@ -86,7 +86,7 @@ export class UserTypeSelectionPage {
 
   ionViewDidLoad() {
     this.navBar.backButtonClick = (e: UIEvent) => {
-      this.handleBackbutton();
+      this.handleBackButton();
     };
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW, '',
@@ -102,12 +102,19 @@ export class UserTypeSelectionPage {
       this.scannerService.startScanner('UserTypeSelectionPage', true);
     }
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
-      this.handleBackbutton();
+      this.handleBackButton();
       this.backButtonFunc();
     }, 10);
   }
 
-  handleBackbutton() {
+  ionViewWillLeave() {
+    // Unregister the custom back button action for this page
+    if (this.backButtonFunc) {
+      this.backButtonFunc();
+    }
+  }
+
+  handleBackButton() {
     if (this.isChangeRoleRequest) {
       this.navCtrl.pop();
     } else {

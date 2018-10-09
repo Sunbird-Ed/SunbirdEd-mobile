@@ -43,14 +43,6 @@
                             {
                                 "name": "State (Uttar Pradesh)",
                                 "frameworkId": "up_k-12_3"
-                            },
-                            {
-                                "name": "NCF-Translation-Testing",
-                                "frameworkId": "NCFCOPY"
-                            },
-                            {
-                                "name": "Common",
-                                "frameworkId": "NCF"
                             }
                         ]
                     },
@@ -76,14 +68,6 @@
                             {
                                 "name": "राज्य (उत्तर प्रदेश)",
                                 "frameworkId": "up_k-12_3"
-                            },
-                            {
-                                "name": "NCF-Translation-Testing",
-                                "frameworkId": "NCFCOPY"
-                            },
-                            {
-                                "name": "सार्वजनिक",
-                                "frameworkId": "NCF"
                             }
                         ]
                     },
@@ -105,14 +89,6 @@
                             {
                                 "name": "State (Rajasthan)",
                                 "frameworkId": "rj_k-12_1"
-                            },
-                            {
-                                "name": "State (Uttar Pradesh)",
-                                "frameworkId": "up_k-12_3"
-                            },
-                            {
-                                "name": "Common",
-                                "frameworkId": "NCF"
                             }
                         ]
                     },
@@ -138,14 +114,6 @@
                             {
                                 "name": "மாநிலம் (உத்தர பிரதேசம்)",
                                 "frameworkId": "up_k-12_3"
-                            },
-                            {
-                                "name": "NCF-Translation-Testing",
-                                "frameworkId": "NCFCOPY"
-                            },
-                            {
-                                "name": "Common",
-                                "frameworkId": "NCF"
                             }
                         ]
                     },
@@ -171,14 +139,6 @@
                             {
                                 "name": "State (Uttar Pradesh)",
                                 "frameworkId": "up_k-12_3"
-                            },
-                            {
-                                "name": "NCF-Translation-Testing",
-                                "frameworkId": "NCFCOPY"
-                            },
-                            {
-                                "name": "Common",
-                                "frameworkId": "NCF"
                             }
                         ]
                     }

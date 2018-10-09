@@ -1,7 +1,10 @@
 import { Impression, Interact, Start, Mode, Environment, End, Rollup, CorrelationData } from 'sunbird';
 
-export function generateImpressionTelemetry(type, subtype, pageid, env,
-    objectId, objectType, objectVersion, rollup: Rollup, corRelationList: Array<CorrelationData>): Impression {
+export const generateImpressionTelemetry = (type, subtype, pageid, env,
+    objectId, objectType, objectVersion,
+    rollup: Rollup,
+    corRelationList: Array<CorrelationData>): Impression => {
+
     const impression = new Impression();
     impression.type = type;
     impression.subType = subtype;
@@ -18,10 +21,10 @@ export function generateImpressionTelemetry(type, subtype, pageid, env,
         impression.correlationData = corRelationList;
     }
     return impression;
-}
+};
 
-export function generateInteractTelemetry(interactType, subType, env, pageId,
-    values: Map, rollup: Rollup, corRelationList: Array<CorrelationData>): Interact {
+export const generateInteractTelemetry = (interactType, subType, env, pageId,
+    values: Map, rollup: Rollup, corRelationList: Array<CorrelationData>): Interact => {
     const interact = new Interact();
     interact.type = interactType;
     interact.subType = subType;
@@ -38,10 +41,10 @@ export function generateInteractTelemetry(interactType, subType, env, pageId,
         interact.correlationData = corRelationList;
     }
     return interact;
-}
+};
 
-export function generateStartTelemetry(pageId, objectId,
-    objectType, objectVersion, rollup: Rollup, corRelationList: Array<CorrelationData>): Start {
+export const generateStartTelemetry = (pageId, objectId,
+    objectType, objectVersion, rollup: Rollup, corRelationList: Array<CorrelationData>): Start => {
     const start = new Start();
     start.type = objectType;
     start.pageId = pageId;
@@ -58,10 +61,10 @@ export function generateStartTelemetry(pageId, objectId,
     }
 
     return start;
-}
+};
 
-export function generateEndTelemetry(type, mode, pageId, objectId,
-    objectType, objectVersion, rollup: Rollup, corRelationList: Array<CorrelationData>): End {
+export const generateEndTelemetry = (type, mode, pageId, objectId,
+    objectType, objectVersion, rollup: Rollup, corRelationList: Array<CorrelationData>): End => {
     const end = new End();
     end.type = type;
     end.pageId = pageId;
@@ -77,7 +80,7 @@ export function generateEndTelemetry(type, mode, pageId, objectId,
         end.correlationData = corRelationList;
     }
     return end;
-}
+};
 export class Map {
     [key: string]: any
 }

@@ -17,7 +17,10 @@ import {
   TranslateService
 } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
+import {
+  HttpClientModule,
+  HttpClient
+} from '@angular/common/http';
 import { PluginModules } from './module.service';
 import {
   EventService,
@@ -44,6 +47,10 @@ import { TelemetryGeneratorService } from '../service/telemetry-generator.servic
 import { QRScannerResultHandler } from '../pages/qrscanner/qrscanresulthandler.service';
 import { CommonUtilService } from '../service/common-util.service';
 
+export const createTranslateLoader = (httpClient: HttpClient) => {
+  return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
+};
+
 @NgModule({
   declarations: [
     MyApp,
@@ -69,7 +76,9 @@ import { CommonUtilService } from '../service/common-util.service';
     IonicImageLoader.forRoot(),
     ...PluginModules
   ],
-  bootstrap: [IonicApp],
+  bootstrap: [
+    IonicApp
+  ],
   entryComponents: [
     MyApp,
     TabsPage,
@@ -94,10 +103,12 @@ import { CommonUtilService } from '../service/common-util.service';
 })
 export class AppModule {
 
-  constructor(translate: TranslateService,
+  constructor(
+    translate: TranslateService,
     private eventService: EventService,
     private events: Events,
     private imageConfig: ImageLoaderConfig) {
+
     translate.setDefaultLang('en');
 
     this.registerForEvent();
@@ -118,8 +129,4 @@ export class AppModule {
       // console.log("Event : " + error);
     });
   }
-}
-
-export function createTranslateLoader(httpClient: HttpClient) {
-  return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
 }

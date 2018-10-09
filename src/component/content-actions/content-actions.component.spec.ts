@@ -164,15 +164,15 @@ describe('Content-actions', () => {
             spyOn(translateServiceStub, 'get').and.callFake((arg) => {
                 return Observable.of('Cancel');
             });
-            spyOn(contentServiceStub, 'deleteContent').and.callFake((req, response, error) => {
-                response(JSON.stringify(responseObj));
-            });
 
             const responseObj = {
                 result: {
                     status: 'NOT_FOUND'
                 }
             };
+            spyOn(contentServiceStub, 'deleteContent').and.callFake((req, response, error) => {
+                response(JSON.stringify(responseObj));
+            });
 
             comp.deleteContent();
             setTimeout(() => {

@@ -41,7 +41,7 @@ export class LanguageSettingsPage {
   previousLanguage: any;
   selectedLanguage: any = {};
   btnColor = '#55acee';
-  unregisterBackButton: any;
+  unregisterBackButton = undefined;
 
 
   constructor(
@@ -66,6 +66,7 @@ export class LanguageSettingsPage {
     );
 
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+      console.log("in Language Setting page");
       this.telemetryGeneratorService.generateInteractTelemetry(
         InteractType.TOUCH, InteractSubtype.DEVICE_BACK_CLICKED,
         this.isFromSettings ? PageId.SETTINGS_LANGUAGE : PageId.ONBOARDING_LANGUAGE_SETTING,
@@ -90,6 +91,10 @@ export class LanguageSettingsPage {
           this.translateService.use('en');
         }
       }
+    }
+
+    if (this.unregisterBackButton) {
+      this.unregisterBackButton();
     }
   }
 

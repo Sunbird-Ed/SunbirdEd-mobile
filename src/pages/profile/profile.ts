@@ -87,7 +87,7 @@ export class ProfilePage {
   linkedInLink = '';
   blogLink = '';
 
-  readonly DEFAULT_PAGINATION_LIMIT: number = 10;
+  readonly DEFAULT_PAGINATION_LIMIT = 10;
   paginationLimit = 10;
   startLimit = 0;
 

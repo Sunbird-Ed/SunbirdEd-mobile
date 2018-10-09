@@ -67,7 +67,7 @@ export class AnnouncementListComponent {
      *
      * It internally calls Announcement List handler of genie sdk
      */
-    getAnnouncementList(scrollEvent = undefined): void {
+    getAnnouncementList(scrollEvent?): void {
         console.log('making api call to Announcement list');
 
         const option = {
