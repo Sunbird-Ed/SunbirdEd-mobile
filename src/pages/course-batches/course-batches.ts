@@ -140,7 +140,7 @@ export class CourseBatchesPage implements OnInit {
           error = JSON.parse(error);
           if (error && error.error === 'CONNECTION_ERROR') {
             this.commonUtilService.showToast(this.commonUtilService.translateMessage('ERROR_NO_INTERNET_MESSAGE'));
-          } else if (error && error.error === 'ALREADY_ENROLLED_COURSE') {
+          } else if (error && error.error === 'USER_ALREADY_ENROLLED_COURSE') {
             this.commonUtilService.showToast(this.commonUtilService.translateMessage('ALREADY_ENROLLED_COURSE'));
           }
         });
