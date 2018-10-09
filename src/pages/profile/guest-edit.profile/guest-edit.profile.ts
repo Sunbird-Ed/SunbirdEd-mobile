@@ -515,7 +515,9 @@ export class GuestEditProfilePage {
     this.profileService.updateProfile(req,
       (res: any) => {
         console.log('Update Response', res);
-        this.isCurrentUser && this.publishProfileEvents(formVal);
+        if (this.isCurrentUser) {
+          this.publishProfileEvents(formVal);
+        }
         loader.dismiss();
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_SUCCESS'));
         this.telemetryGeneratorService.generateInteractTelemetry(

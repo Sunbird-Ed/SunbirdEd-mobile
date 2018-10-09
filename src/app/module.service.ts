@@ -94,7 +94,7 @@ export const GUEST_STUDENT_SWITCH_TABS = [
     GUEST_PROFILE_SWITCH_TAB
 ];
 
-export function initTabs(container: ContainerService, tabs: Array<TabOptions>) {
+export const initTabs = (container: ContainerService, tabs: Array<TabOptions>) => {
     container.removeAllTabs();
 
     /* istanbul ignore else  */
@@ -103,7 +103,7 @@ export function initTabs(container: ContainerService, tabs: Array<TabOptions>) {
             container.addTab(tabOptions);
         });
     }
-}
+};
 
 export const PluginModules = [
     CoursesPageModule,
