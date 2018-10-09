@@ -60,7 +60,7 @@ export class CoursesPage implements OnInit {
   /**
    * Contains enrolled course
    */
-  enrolledCourse: Array<any>;
+  enrolledCourses: Array<any>;
 
   /**
    * Contains popular and latest courses ist
@@ -210,7 +210,7 @@ export class CoursesPage implements OnInit {
               popover: {
                 title: this.commonUtilService.translateMessage('ONBOARD_SCAN_QR_CODE'),
                 description: '<img src=\'assets/imgs/ic_scanqrdemo.png\' /><p>' +
-                 this.commonUtilService.translateMessage('ONBOARD_SCAN_QR_CODE_DESC', this.appLabel) + '</p>',
+                  this.commonUtilService.translateMessage('ONBOARD_SCAN_QR_CODE_DESC', this.appLabel) + '</p>',
                 showButtons: true,         // Do not show control buttons in footer
                 closeBtnText: this.commonUtilService.translateMessage('DONE'),
               }
@@ -317,11 +317,23 @@ export class CoursesPage implements OnInit {
       returnRefreshedEnrolledCourses: returnRefreshedCourses
     };
 
-    this.courseService.getEnrolledCourses(option, (data: any) => {
-      if (data) {
-        data = JSON.parse(data);
+    this.courseService.getEnrolledCourses(option, (enrolledCourses: any) => {
+      if (enrolledCourses) {
+        enrolledCourses = JSON.parse(enrolledCourses);
         this.ngZone.run(() => {
-          this.enrolledCourse = data.result.courses ? data.result.courses : [];
+          this.enrolledCourses = enrolledCourses.result.courses ? enrolledCourses.result.courses : [];
+
+          // maintain the list of courses that are enrolled, and store them in appglobal
+          if (this.enrolledCourses.length > 0) {
+            const courseList: Array<any> = [];
+
+            for (const course of this.enrolledCourses) {
+              courseList.push(course);
+            }
+
+            this.appGlobalService.setEnrolledCourseList(courseList);
+          }
+
           this.spinner(false);
         });
       }
@@ -499,7 +511,7 @@ export class CoursesPage implements OnInit {
       }
     }, 10);
 
-    this.enrolledCourse = [];
+    this.enrolledCourses = [];
     this.popularAndLatestCourses = [];
 
     this.getUserId()

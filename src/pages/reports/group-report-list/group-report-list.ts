@@ -56,7 +56,7 @@ export class GroupReportListPage {
     }
 
     ionViewWillEnter() {
-        this.fetchAssessment(this.reportType, false );
+        this.fetchAssessment(this.reportType, false);
     }
     fetchAssessment(event: string, fromUserList: boolean) {
         const subType = (event === 'users') ? InteractSubtype.REPORTS_BY_USER_CLICKED : InteractSubtype.REPORTS_BY_QUESTION_CLICKED;
@@ -101,8 +101,13 @@ export class GroupReportListPage {
                 averageTime = averageTime / data.length;
                 this.appGlobalService.setAverageTime(averageTime);
                 this.appGlobalService.setAverageScore(averageScore);
-                const details = { 'uiRows': data, totalScore: averageScore, uiTotalTime: that.formatTime(averageTime),
-                fromGroup: true, fromUser: false };
+                const details = {
+                    'uiRows': data,
+                    totalScore: averageScore,
+                    uiTotalTime: that.formatTime(averageTime),
+                    fromGroup: true,
+                    fromUser: false
+                };
                 that.zone.run(() => {
                     loader.dismiss();
                     that.fromUserAssessment = details;
@@ -126,15 +131,21 @@ export class GroupReportListPage {
                         question.index = 'Q' + (('00' + question.qindex).slice(-3));
                         averageTime += question.time_spent;
                         averageScore += question.score;
-                        question.accuracy = (question.correct_users_count || '0') + '/' + question.occurenceCount,
-                            question.users = users,
-                            question.uids = uids;
+                        question.accuracy = (question.correct_users_count || '0') + '/' + question.occurenceCount;
+                        question.users = users;
+                        question.uids = uids;
                     });
                     averageScore = (averageScore / data.length).toFixed(2);
                     averageTime = averageTime / data.length;
-                    const details = { 'uiRows': data, totalScore: that.appGlobalService.getAverageScore(),
-                     uiTotalTime: that.formatTime(that.appGlobalService.getAverageTime()),
-                    showPopup: true, popupCallback: GroupReportAlert, fromGroup: true, fromUser: false };
+                    const details = {
+                        'uiRows': data,
+                        totalScore: that.appGlobalService.getAverageScore(),
+                        uiTotalTime: that.formatTime(that.appGlobalService.getAverageTime()),
+                        showPopup: true,
+                        popupCallback: GroupReportAlert,
+                        fromGroup: true,
+                        fromUser: false
+                    };
                     that.zone.run(() => {
                         loader.dismiss();
                         that.fromQuestionAssessment = details;
@@ -169,7 +180,7 @@ export class GroupReportListPage {
 
     goToReportList() {
         const reportSummary: ReportSummary = this.navParams.get('report');
-        this.navCtrl.push(UserReportPage, {'report': reportSummary});
+        this.navCtrl.push(UserReportPage, { 'report': reportSummary });
     }
 
 }

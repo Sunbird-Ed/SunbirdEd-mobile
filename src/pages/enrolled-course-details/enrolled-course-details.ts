@@ -176,6 +176,11 @@ export class EnrolledCourseDetailsPage {
 
   guestUser = false;
 
+  /**
+   * This variable tells is the course is already enrolled by user
+   */
+  isAlreadyEnrolled = false;
+
   profileType = '';
   objId;
   objType;
@@ -548,7 +553,7 @@ export class EnrolledCourseDetailsPage {
           } else {
             this.showChildrenLoader = false;
           }
-         const errorRes = JSON.parse(error);
+          const errorRes = JSON.parse(error);
           if (errorRes && errorRes.error === 'NETWORK_ERROR') {
             this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
           } else {
@@ -703,14 +708,30 @@ export class EnrolledCourseDetailsPage {
     this.courseCardData = this.navParams.get('content');
     this.corRelationList = this.navParams.get('corRelation');
     this.source = this.navParams.get('source');
+    this.identifier = this.courseCardData.contentId || this.courseCardData.identifier;
+    // check if the course is already enrolled
+    this.isCourseEnrolled(this.identifier);
     if (this.batchId) {
       this.courseCardData.batchId = this.batchId;
     }
-    this.identifier = this.courseCardData.contentId || this.courseCardData.identifier;
     this.showResumeBtn = this.courseCardData.lastReadContentId ? true : false;
     this.setContentDetails(this.identifier);
     // If courseCardData does not have a batch id then it is not a enrolled course
     this.subscribeGenieEvent();
+  }
+
+
+  isCourseEnrolled(identifier: string) {
+    // get all the enrolled courses
+    const enrolledCourses = this.appGlobalService.getEnrolledCourseList();
+    if (enrolledCourses.length > 0) {
+      for (const course of enrolledCourses) {
+        if (course.courseId === identifier) {
+          this.isAlreadyEnrolled = true;
+          this.courseCardData = course;
+        }
+      }
+    }
   }
 
   getCourseProgress() {
@@ -726,7 +747,7 @@ export class EnrolledCourseDetailsPage {
     this.events.subscribe('genie.event', (data) => {
       this.zone.run(() => {
         data = JSON.parse(data);
-       const res = data;
+        const res = data;
         // Show download percentage
         if (res.type === 'downloadProgress' && res.data.downloadProgress) {
           if (res.data.downloadProgress === -1 || res.data.downloadProgress === '-1') {
@@ -762,7 +783,7 @@ export class EnrolledCourseDetailsPage {
         }
 
         // For content update available
-       const hierarchyInfo = this.courseCardData.hierarchyInfo ? this.courseCardData.hierarchyInfo : null;
+        const hierarchyInfo = this.courseCardData.hierarchyInfo ? this.courseCardData.hierarchyInfo : null;
 
         if (res.data && res.type === 'contentUpdateAvailable' && hierarchyInfo === null) {
           this.zone.run(() => {

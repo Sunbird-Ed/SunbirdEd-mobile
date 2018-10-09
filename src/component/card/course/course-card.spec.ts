@@ -4,11 +4,13 @@ import { PipesModule } from './../../../pipes/pipes.module';
 import { PBHorizontal } from './../../pbhorizontal/pb-horizontal';
 import {
     async, TestBed,
-    ComponentFixture, inject
+    ComponentFixture,
+    inject
 } from '@angular/core/testing';
 import {
     TranslateModule,
-    TranslateLoader, TranslateService
+    TranslateLoader,
+    TranslateService
 } from '@ngx-translate/core';
 import { HttpClientModule } from '@angular/common/http';
 import { Ionic2RatingModule } from 'ionic2-rating';
@@ -22,22 +24,19 @@ import {
     ToastControllerMock,
     NetworkMock
 } from 'ionic-mocks';
-
 import {
     FileUtil, AuthService, GenieSDKServiceProvider, SharedPreferences, FrameworkModule,
     ContentService, TelemetryService, CourseService, ShareUtil
 } from 'sunbird';
-
 import {
-    GenieSDKServiceProviderMock, SharedPreferencesMock, FileUtilMock, NavParamsMock,
-    SocialSharingMock, NavMock, TranslateLoaderMock, AuthServiceMock
+    GenieSDKServiceProviderMock,
+    SharedPreferencesMock, FileUtilMock, NavParamsMock,
+    SocialSharingMock, NavMock,
+    TranslateLoaderMock, AuthServiceMock
 } from '../../../../test-config/mocks-ionic';
 import { CourseUtilService } from '../../../service/course-util.service';
 import { CourseCard } from './course-card';
-
-declare let GenieSDK: any;
 import { mockRes } from './course-card.spec.data';
-
 
 describe('CourseCard Component', () => {
     let component: CourseCard;

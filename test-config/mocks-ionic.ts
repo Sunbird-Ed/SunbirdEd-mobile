@@ -13,11 +13,11 @@ import {
 import { ImageLoaderConfig } from 'ionic-image-loader';
 import { TranslateLoader } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
-import { App, ViewController } from 'ionic-angular';
+import { ViewController } from 'ionic-angular';
 import { ElementRef } from '@angular/core';
 import { CommonUtilService } from '../src/service/common-util.service';
 
-declare let readJSON: any;
+declare const readJSON: any;
 
 export class PlatformMock {
   public ready(): Promise<string> {

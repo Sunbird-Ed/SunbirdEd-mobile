@@ -10,7 +10,7 @@ import {
   templateUrl: 'onboarding-alert.html'
 })
 export class OnboardingAlert {
-  private callback: onBoardingSlidesCallback;
+  private callback: OnBoardingSlidesCallback;
 
   selectedSlide: any;
   selectedOptions: any;
@@ -58,6 +58,6 @@ export class OnboardingAlert {
   }
 }
 
-export interface onBoardingSlidesCallback {
+export interface OnBoardingSlidesCallback {
   save(): any;
 }
