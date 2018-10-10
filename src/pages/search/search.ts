@@ -607,7 +607,7 @@ export class SearchPage {
       if (this.shouldGenerateEndTelemetry) {
         this.generateQRSessionEndEvent(this.source, this.dialCode);
       }
-      this.showContentComingSoonAlert();
+      this.commonUtilService.showContentComingSoonAlert(this.source);
     } else {
       this.isEmptyResult = false;
     }
@@ -634,35 +634,6 @@ export class SearchPage {
       ImpressionType.SEARCH, telemetryObject,
       values
     );
-  }
-
-
-  showContentComingSoonAlert() {
-    let popOver: Popover;
-    const self = this;
-    const callback: QRAlertCallBack = {
-      tryAgain() {
-      self.events.publish('event:showScanner', { pageName: self.source });
-      popOver.dismiss();
-      },
-      cancel() {
-        popOver.dismiss();
-      }
-    };
-    popOver = this.popUp.create(QRScannerAlert, {
-      callback: callback,
-      icon: './assets/imgs/ic_coming_soon.png',
-      messageKey: 'CONTENT_IS_BEING_ADDED',
-      cancelKey: 'hide',
-      tryAgainKey: 'TRY_DIFF_QR',
-    }, {
-        cssClass: 'qr-alert-invalid'
-      });
-
-    setTimeout(() => {
-      popOver.present();
-    }, 300);
-
   }
 
   updateFilterIcon() {
