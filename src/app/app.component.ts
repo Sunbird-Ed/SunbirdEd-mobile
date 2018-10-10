@@ -24,7 +24,8 @@ import {
   SharedPreferences,
   ProfileType,
   UserProfileService,
-  ProfileService
+  ProfileService,
+  PageId
 } from 'sunbird';
 import {
   initTabs,
@@ -52,6 +53,8 @@ import { ProfileConstants } from './app.constant';
 import { FormAndFrameworkUtilService } from '../pages/profile/formandframeworkutil.service';
 import { AppGlobalService } from '../service/app-global.service';
 import { UserTypeSelectionPage } from '../pages/user-type-selection/user-type-selection';
+import { CommonUtilService } from '../service/common-util.service';
+import { TelemetryGeneratorService } from '../service/telemetry-generator.service';
 
 declare var chcp: any;
 
@@ -96,7 +99,9 @@ export class MyApp {
     private profileService: ProfileService,
     private preferences: SharedPreferences,
     private container: ContainerService,
-    private appGlobalService: AppGlobalService
+    private appGlobalService: AppGlobalService,
+    private commonUtilService: CommonUtilService,
+    private telemetryGeneratorService: TelemetryGeneratorService
   ) {
 
     const that = this;
@@ -193,9 +198,8 @@ export class MyApp {
                 };
 
                 that.userProfileService.getUserProfileDetails(req, res => {
-
                   setTimeout(() => {
-                    that.getToast(this.translateMessage('WELCOME_BACK', JSON.parse(res).firstName)).present();
+                    this.commonUtilService.showToast(this.commonUtilService.translateMessage('WELCOME_BACK', JSON.parse(res).firstName));
                   }, 2500);
                 }, () => {
                 });
@@ -261,42 +265,48 @@ export class MyApp {
     this.platform.registerBackButtonAction(() => {
 
       const navObj = self.app.getActiveNavs()[0];
+      const currentPage = navObj.getActive().name;
+      console.log("Current Page:::" + currentPage);
+
       if (navObj.canGoBack()) {
         navObj.pop();
       } else {
         if (self.counter === 0) {
           self.counter++;
-          self.presentToast();
+          this.commonUtilService.showToast('BACK_TO_EXIT');
+          this.telemetryGeneratorService.generateBackClickedTelemetry(this.computePageId(currentPage), Environment.HOME, false);
           setTimeout(() => { self.counter = 0; }, 1500);
         } else {
-          this.telemetryService.end(generateEndTelemetry('app', '', '', '', '', '', undefined, undefined));
+          this.telemetryGeneratorService.generateBackClickedTelemetry(this.computePageId(currentPage), Environment.HOME, false);
           self.platform.exitApp();
+          this.telemetryGeneratorService.generateEndTelemetry('app', '', '', Environment.HOME);
+
         }
       }
     });
   }
 
-  presentToast() {
-    const toast = this.toastCtrl.create({
-      message: this.translateMessage('BACK_TO_EXIT'),
-      duration: 3000
-    });
-    toast.present();
-  }
-
-  /**
-   * Used to Translate message to current Language
-   * @param {string} messageConst - Message Constant to be translated
-   * @returns {string} translatedMsg - Translated Message
-   */
-  translateMessage(messageConst: string, field?: string): string {
-    let translatedMsg = '';
-    this.translate.get(messageConst, { '%s': field }).subscribe(
-      (value: any) => {
-        translatedMsg = value;
+  computePageId(pageName: string): string {
+    let pageId = '';
+    switch (pageName) {
+      case 'ResourcesPage': {
+        pageId = PageId.LIBRARY;
+        break;
       }
-    );
-    return translatedMsg;
+      case 'CoursesPage': {
+        pageId = PageId.COURSES;
+        break;
+      }
+      case 'ProfilePage': {
+        pageId = PageId.PROFILE;
+        break;
+      }
+      case 'GuestProfilePage': {
+        pageId = PageId.GUEST_PROFILE;
+        break;
+      }
+    }
+    return pageId;
   }
 
   fetchUpdate() {
