@@ -22,10 +22,10 @@ import {
   FrameworkService, BuildParamService, FormService, AuthService, GroupService
 } from 'sunbird';
 import {
-  LoadingControllerMock, TranslateServiceStub, ToastControllerMockNew, AuthServiceMock, NavParamsMock, profileServiceMock,
+  LoadingControllerMock, TranslateServiceStub, ToastControllerMockNew, AuthServiceMock, NavParamsMock,
   FormAndFrameworkUtilServiceMock, ContainerServiceMock, AppGlobalServiceMock, NavMock,
   TranslateLoaderMock, NavParamsMockNew, SharedPreferencesMock
-} from '../../../../test-config/mocks-ionic'
+} from '../../../../test-config/mocks-ionic';
 import { ToastController } from 'ionic-angular';
 import { AlertController } from 'ionic-angular';
 import { request } from 'https';
@@ -84,13 +84,6 @@ describe('CreateGroupPage Component', () => {
   const telemetryGeneratorServiceStub = {
     generateInteractTelemetry: () => ({})
   };
-  // it('can load instance', () => {
-  //   expect(component).toBeTruthy();
-  // });
-
-  // it('classlist defaults to: []', () => {
-  //   expect(component).toBeTruthy();
-  // });
 
   it('#getSyllabusDetails should  makes expected calls', () => {
     const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
@@ -117,8 +110,6 @@ describe('CreateGroupPage Component', () => {
 
   // tslint:disable-next-line:only-arrow-functions
   it('#getClassList should makes expected calls', function () {
-    // tslint:disable-next-line:no-unused-expression
-    // tslint:disable-next-line:only-arrow-functions
     component.getLoader = jasmine.createSpy().and.callFake(() => {
       return { present: () => { }, dismiss: () => { } };
     });
@@ -177,10 +168,10 @@ describe('CreateGroupPage Component', () => {
     component.groupEditForm.controls['name'].setValue('Amaravathi');
     component.groupEditForm.controls['syllabus'].setValue('State (Andhra Pradesh)');
     component.groupEditForm.controls['class'].setValue('2nd class');
-    component.navigateToUsersList();
-    expect(component.groupEditForm.valid).toBeTruthy();
     const navControllerStub = TestBed.get(NavController);
     spyOn(navControllerStub, 'push').and.callThrough();
+    component.navigateToUsersList();
+    expect(component.groupEditForm.valid).toBeTruthy();
   });
 
   it('#updateGroup should makes expected calls for UpdateGroup', () => {
@@ -237,6 +228,5 @@ describe('CreateGroupPage Component', () => {
     getLoader();
     component.navigateToUsersList();
     expect(translateStub.get).toHaveBeenCalled();
-    // expect(component.navigateToUsersList).toHaveBeenCalled();
   });
 });

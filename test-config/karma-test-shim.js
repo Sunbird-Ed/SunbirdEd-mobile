@@ -14,10 +14,6 @@ require('zone.js/dist/fake-async-test');
 var appContext = require.context('../src', true, /\.spec\.ts/);
 
 appContext.keys().forEach(appContext);
-
 var testing = require('@angular/core/testing');
 var browser = require('@angular/platform-browser-dynamic/testing');
-
 testing.TestBed.initTestEnvironment(browser.BrowserDynamicTestingModule, browser.platformBrowserDynamicTesting());
-
-// D:\Tarento\sunbird-mobile\src\pages\user-and-groups\add-or-remove-group-user\add-or-remove-group-user.spec.tsadd-or-remove-group-user

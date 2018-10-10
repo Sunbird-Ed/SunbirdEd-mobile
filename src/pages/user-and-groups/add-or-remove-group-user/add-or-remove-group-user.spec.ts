@@ -1,3 +1,4 @@
+import { userList } from './../group-details/group-detail.data.spec';
 import { CommonUtilService } from './../../../service/common-util.service';
 import { Observable } from 'rxjs/Observable';
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
@@ -17,7 +18,7 @@ import { mockCreateorremoveGroupRes } from './add-remove-group-user.spec.data';
 
 
 import {
-    LoadingControllerMock, TranslateServiceStub, ToastControllerMockNew, AuthServiceMock, NavParamsMock, profileServiceMock,
+    LoadingControllerMock, TranslateServiceStub, ToastControllerMockNew, AuthServiceMock, NavParamsMock, ProfileServiceMock,
     FormAndFrameworkUtilServiceMock, ContainerServiceMock, AppGlobalServiceMock, NavMock, TranslateLoaderMock,
     NavParamsMockNew, SharedPreferencesMock, CommonUtilServiceMock
 } from '../../../../test-config/mocks-ionic';
@@ -45,31 +46,6 @@ export class MockToast {
 }
 
 describe('AddOrRemoveGroupUserPage', () => {
-    const userData = {
-        'avatar': 'avatar',
-        'createdAt': 'Aug 9, 2018 11:36:50 AM',
-        'day': -1,
-        'gender': 'MALE',
-        'handle': 'tes user',
-        'isGroupUser': false,
-        'language': 'en',
-        'month': -1,
-        'profileType': ProfileType.STUDENT,
-        'source': UserSource.LOCAL,
-        'standard': -1,
-        'uid': '3af2e8a4-003e-438d-b360-2ae922696913'
-    };
-
-    const groupMembers = {
-        'createdAt': '1537857942030',
-        'gid': 'a104c6a6-c73f-4bbb-bb1d-fe29cdbf3832',
-        'grade': ['grade1'],
-        'gradeValueMap.grade1': 'Class 1',
-        'name': 'Amaravthi',
-        'profilesCount': '1',
-        'syllabus': 'ap_k-12_13',
-        'updatedAt': '0',
-    };
     describe('AddOrRemoveGroupUserPage', () => {
         let comp: AddOrRemoveGroupUserPage;
         let fixture: ComponentFixture<AddOrRemoveGroupUserPage>;
@@ -144,25 +120,25 @@ describe('AddOrRemoveGroupUserPage', () => {
             comp = fixture.componentInstance;
         });
 
-        it('can load instance', () => {
+        it('#should load instance', () => {
             expect(comp).toBeTruthy();
         });
 
-        it('addUsers defaults to: true', () => {
+        it('#addUsers should defaults to: true', () => {
             console.log('addUsers', comp.addUsers);
             expect(comp.addUsers).toEqual(true);
         });
 
-        it('allUsers defaults to: []', () => {
+        it('#allUsers should defaults to: []', () => {
             expect(comp.allUsers).toEqual([]);
         });
 
-        it('selectedUids defaults to: []', () => {
+        it('#selectedUids should defaults to: []', () => {
             expect(comp.selectedUids).toEqual([]);
         });
 
         describe('ionViewWillEnter', () => {
-            it('makes expected calls', () => {
+            it('#ionViewWill ahould and Enter to makes expected calls', () => {
                 spyOn(comp, 'getAllProfile');
                 comp.ionViewWillEnter();
                 expect(comp.getAllProfile).toHaveBeenCalled();
@@ -172,8 +148,10 @@ describe('AddOrRemoveGroupUserPage', () => {
         describe('getAllProfile', () => {
             it('#makes expected calls', () => {
                 const profileServiceStub: ProfileService = TestBed.get(ProfileService);
-                spyOn(profileServiceStub, 'getAllUserProfile').and.returnValue(Promise.resolve(JSON.stringify([userData])));
-                comp.groupMembers = [userData];
+
+                spyOn(profileServiceStub, 'getAllUserProfile').and.returnValue(Promise.resolve(JSON.stringify
+                    (mockCreateorremoveGroupRes.UserList)));
+                comp.groupMembers = [];
                 comp.addUsers = false;
                 comp.getAllProfile();
                 expect(profileServiceStub.getAllUserProfile).toHaveBeenCalled();
@@ -181,26 +159,25 @@ describe('AddOrRemoveGroupUserPage', () => {
         });
 
         describe('selectAll', () => {
-            it('makes expected calls', () => {
-
-                comp.uniqueUserList = [userData];
-                comp.userSelectionMap.set('3af2e8a4-003e-438d-b360-2ae922696913', true);
+            it('#selectAll should makes expected calls', () => {
+                comp.uniqueUserList = mockCreateorremoveGroupRes.UserList;
+                comp.userSelectionMap.set(mockCreateorremoveGroupRes.UserList[0].uid, true);
                 comp.selectAll();
-
+                expect(comp.uniqueUserList).toBeDefined();
             });
         });
 
         describe('getSelectedGroupMemberUids', () => {
-            it('makes expected calls', () => {
+            it('getSelectedGroupMemberUids makes expected calls', () => {
 
-                comp.groupMembers = [];
+                comp.groupMembers = mockCreateorremoveGroupRes.UserList;
                 comp.getSelectedGroupMemberUids();
-
+                expect(comp.getSelectedGroupMemberUids).toBeDefined();
             });
         });
 
-        describe('add', () => {
-            it('makes expected calls', fakeAsync(() => {
+        describe('add users to group', () => {
+            it('#add should makes expected calls to add users to group', fakeAsync(() => {
                 const navControllerStub = TestBed.get(NavController);
                 spyOn(navControllerStub, 'popTo');
                 spyOn(navControllerStub, 'getByIndex');
@@ -211,31 +188,31 @@ describe('AddOrRemoveGroupUserPage', () => {
                 const groupServiceStub: GroupService = TestBed.get(GroupService);
                 const commonUtilService = TestBed.get(CommonUtilService);
                 const translate = TestBed.get(TranslateService);
-                comp.groupMembers = [userData];
+                comp.groupMembers = mockCreateorremoveGroupRes.UserList;
                 spyOn(comp, 'getSelectedUids');
                 spyOn(groupServiceStub, 'addUpdateProfilesToGroup').and.returnValue(Promise.resolve('resp'));
                 spyOn(commonUtilService, 'showToast').and.returnValue(Promise.resolve('GROUP_MEMBER_ADD_SUCCESS'));
                 comp.add();
                 expect(comp.getLoader).toHaveBeenCalled();
-                // expect(commonUtilService.showToast).toHaveBeenCalled();
-                // expect(commonUtilService.translateMessage).toHaveBeenCalledWith('PROFILE_UPDATE_SUCCESS');
+                expect(comp.getSelectedUids).toHaveBeenCalled();
             }));
 
             it('#add makes expected calls when error', fakeAsync(() => {
                 comp.getLoader = jasmine.createSpy().and.callFake(() => {
                     return { present: () => { }, dismiss: () => { } };
                 });
-                comp.groupMembers = [userData];
+                comp.groupMembers = mockCreateorremoveGroupRes.UserList;
                 const groupServiceStub: GroupService = TestBed.get(GroupService);
                 const commonUtilService = TestBed.get(CommonUtilService);
                 spyOn(comp, 'getSelectedUids');
                 spyOn(groupServiceStub, 'addUpdateProfilesToGroup').and.returnValue(Promise.reject('error'));
                 spyOn(commonUtilService, 'showToast').and.returnValue(Promise.resolve('SOMETHING_WENT_WRONG'));
                 comp.add();
+                expect(comp.getSelectedUids).toHaveBeenCalled();
             }));
         });
         describe('deleteUsersFromGroup', () => {
-            it('makes expected calls', () => {
+            it('#deleteUsersFromGroup should makes expected calls', () => {
                 const navControllerStub: NavController = TestBed.get(NavController);
                 const groupServiceStub: GroupService = TestBed.get(GroupService);
                 const telemetryGeneratorServiceStub: TelemetryGeneratorService =
@@ -246,15 +223,13 @@ describe('AddOrRemoveGroupUserPage', () => {
                 });
                 spyOn(console, 'log').and.callThrough();
                 spyOn(groupServiceStub, 'addUpdateProfilesToGroup').and.returnValue(Promise.resolve([]));
-
                 comp.deleteUsersFromGroup();
                 expect(comp.getLoader).toHaveBeenCalled();
-
                 expect(groupServiceStub.addUpdateProfilesToGroup).toHaveBeenCalled();
                 expect(telemetryGeneratorServiceStub.generateInteractTelemetry).toHaveBeenCalled();
             });
 
-            it('#deleteUsersFromGroup makes expected calls for error', () => {
+            it('#deleteUsersFromGroup should makes expected calls for error', () => {
                 const navControllerStub: NavController = TestBed.get(NavController);
                 const groupServiceStub: GroupService = TestBed.get(GroupService);
                 const telemetryGeneratorServiceStub: TelemetryGeneratorService =
@@ -272,7 +247,7 @@ describe('AddOrRemoveGroupUserPage', () => {
 
         });
         describe('getLoader', () => {
-            it('makes expected calls', () => {
+            it('#getLoader should make  expected calls', () => {
                 const loadingControllerStub: LoadingController = TestBed.get(LoadingController);
                 spyOn(loadingControllerStub, 'create');
                 comp.getLoader();
@@ -281,28 +256,28 @@ describe('AddOrRemoveGroupUserPage', () => {
         });
 
         describe('toggleSelect', () => {
-            it('It should read toggleSelect param', () => {
+            it('#toggleSelect should read toggleSelect param', () => {
                 spyOn(comp, 'toggleSelect').and.callThrough();
-                comp.uniqueUserList = [userData];
+                comp.uniqueUserList = mockCreateorremoveGroupRes.UserList;
                 comp.toggleSelect(0);
                 expect(comp.toggleSelect).toHaveBeenCalled();
             });
-            it('It should read toggleSelect param', () => {
+            it('#toggleSelect should read toggleSelect param', () => {
                 spyOn(comp, 'toggleSelect').and.callThrough();
-                comp.uniqueUserList = [userData];
-                comp.userSelectionMap.set('3af2e8a4-003e-438d-b360-2ae922696913', true);
+                comp.uniqueUserList = mockCreateorremoveGroupRes.UserList;
+                comp.userSelectionMap.set(mockCreateorremoveGroupRes.UserList[0].uid, true);
                 comp.toggleSelect(0);
                 expect(comp.toggleSelect).toHaveBeenCalled();
             });
         });
 
         describe('togglememberSelect', () => {
-            it('It should read togglememberSelect param', () => {
+            it('#togglememberSelect should read togglememberSelect param', () => {
                 spyOn(comp, 'toggleMemberSelect').and.callThrough();
-                comp.groupMembers = [userData];
-                comp.memberSelectionMap.set('3af2e8a4-003e-438d-b360-2ae922696913', true);
+                comp.groupMembers = mockCreateorremoveGroupRes.UserList;
+                comp.memberSelectionMap.set(mockCreateorremoveGroupRes.UserList[0].uid, true);
                 comp.toggleMemberSelect(0);
-                expect(comp.toggleMemberSelect).toHaveBeenCalled();
+                expect(comp.toggleMemberSelect).toBeTruthy();
             });
         });
 
@@ -317,9 +292,8 @@ describe('AddOrRemoveGroupUserPage', () => {
         describe('isUserSelected', () => {
             it('#isUserSelected should be selected', () => {
                 spyOn(comp, 'isUserSelected').and.callThrough();
-                //  spyOn(comp, 'uniqueUserList');
-                comp.uniqueUserList = [userData];
-                comp.userSelectionMap.set('3af2e8a4-003e-438d-b360-2ae922696913', true);
+                comp.uniqueUserList = mockCreateorremoveGroupRes.UserList;
+                comp.userSelectionMap.set(mockCreateorremoveGroupRes.UserList[0].uid, true);
                 comp.isUserSelected(0);
                 expect(comp.isUserSelected).toHaveBeenCalled();
             });
@@ -327,30 +301,28 @@ describe('AddOrRemoveGroupUserPage', () => {
         describe('isGroupMemberSelected', () => {
             it('#isGroupMemberSelected should be selected', () => {
                 spyOn(comp, 'isGroupMemberSelected').and.callThrough();
-                comp.groupMembers = [userData];
-                comp.memberSelectionMap.set('3af2e8a4-003e-438d-b360-2ae922696913', true);
+                comp.groupMembers = mockCreateorremoveGroupRes.UserList;
+                comp.memberSelectionMap.set(mockCreateorremoveGroupRes.UserList[0].uid, true);
                 comp.isGroupMemberSelected(0);
-                expect(comp.isGroupMemberSelected).toBeTruthy();
+                expect(comp.isGroupMemberSelected).toHaveBeenCalled();
             });
         });
         describe('remove', () => {
-            it('#remove should be unselected uid', () => {
+            it('#remove should be unselected uid from group', () => {
                 spyOn(comp, 'remove').and.callThrough();
-                comp.groupMembers = [userData];
-                comp.memberSelectionMap.get('3af2e8a4-003e-438d-b360-2ae922696913');
-                comp.selectedUids.push(userData.uid);
+                comp.groupMembers = mockCreateorremoveGroupRes.UserList;
+                comp.memberSelectionMap.get(mockCreateorremoveGroupRes.UserList[0].uid);
+                comp.selectedUids.push(mockCreateorremoveGroupRes.UserList[0].uid);
                 comp.remove();
                 expect(comp.isGroupMemberSelected).toBeTruthy();
-                //  expect(comp.selectedUids).toHaveBeenCalled();
             });
         });
-
-
         describe('unselectAll', () => {
             it('#unselectAll should be Unselected when all groupmembers removed', () => {
-                comp.groupMembers = [userData];
-                comp.memberSelectionMap.get('3af2e8a4-003e-438d-b360-2ae922696913');
+                comp.groupMembers = mockCreateorremoveGroupRes.UserList;
+                comp.memberSelectionMap.get(mockCreateorremoveGroupRes.UserList[0].uid);
                 comp.unselectAll();
+                expect(comp.unselectAll).toBeTruthy();
             });
         });
     });
