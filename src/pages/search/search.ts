@@ -53,6 +53,7 @@ import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.ser
 import { CommonUtilService } from '../../service/common-util.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { QrCodeResultPage } from '../qr-code-result/qr-code-result';
+import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 
 @IonicPage()
 @Component({
@@ -421,7 +422,6 @@ export class SearchPage {
   init() {
     this.dialCode = this.navParams.get('dialCode');
     this.contentType = this.navParams.get('contentType');
-    this.source = this.navParams.get('source');
     this.corRelationList = this.navParams.get('corRelation');
     this.source = this.navParams.get('source');
     this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
@@ -639,9 +639,11 @@ export class SearchPage {
 
   showContentComingSoonAlert() {
     let popOver: Popover;
+    const self = this;
     const callback: QRAlertCallBack = {
       tryAgain() {
-        popOver.dismiss();
+      self.events.publish('event:showScanner', { pageName: self.source });
+      popOver.dismiss();
       },
       cancel() {
         popOver.dismiss();
@@ -650,11 +652,11 @@ export class SearchPage {
     popOver = this.popUp.create(QRScannerAlert, {
       callback: callback,
       icon: './assets/imgs/ic_coming_soon.png',
-      messageKey: 'CONTENT_COMING_SOON',
+      messageKey: 'CONTENT_IS_BEING_ADDED',
       cancelKey: 'hide',
-      tryAgainKey: 'DONE',
+      tryAgainKey: 'TRY_DIFF_QR',
     }, {
-        cssClass: 'qr-alert'
+        cssClass: 'qr-alert-invalid'
       });
 
     setTimeout(() => {

@@ -82,7 +82,7 @@ export class UserTypeSelectionPage {
     private appGlobalService: AppGlobalService,
     private scannerService: SunbirdQRScanner,
     private platform: Platform
-  ) {}
+  ) { }
 
   ionViewDidLoad() {
     this.navBar.backButtonClick = (e: UIEvent) => {
@@ -92,6 +92,12 @@ export class UserTypeSelectionPage {
       ImpressionType.VIEW, '',
       PageId.USER_TYPE_SELECTION,
       Environment.HOME, '', '', '');
+
+    this.event.subscribe('event:showScanner', (data) => {
+      if (data.pageName === PageId.USER_TYPE_SELECTION) {
+        this.scannerService.startScanner(PageId.USER_TYPE_SELECTION, true);
+      }
+    });
   }
 
   ionViewWillEnter() {

@@ -203,8 +203,10 @@ export class QrCodeResultPage {
 
   showContentComingSoonAlert() {
     let popOver: Popover;
+    const self = this;
     const callback: QRAlertCallBack = {
       tryAgain() {
+        self.events.publish('event:showScanner', { pageName: PageId.LIBRARY });
         popOver.dismiss();
       },
       cancel() {
@@ -214,11 +216,11 @@ export class QrCodeResultPage {
     popOver = this.popOverCtrl.create(QRScannerAlert, {
       callback: callback,
       icon: './assets/imgs/ic_coming_soon.png',
-      messageKey: 'CONTENT_COMING_SOON',
+      messageKey: 'CONTENT_IS_BEING_ADDED',
       cancelKey: 'hide',
-      tryAgainKey: 'DONE',
+      tryAgainKey: 'TRY_DIFF_QR',
     }, {
-        cssClass: 'qr-alert'
+        cssClass: 'qr-alert-invalid'
       });
     setTimeout(() => {
       popOver.present();
@@ -495,3 +497,4 @@ export class QrCodeResultPage {
     }
   }
 }
+
