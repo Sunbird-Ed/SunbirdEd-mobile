@@ -60,7 +60,7 @@ export class UserSearchComponent {
    * Makes an search user API call
    * @param {object} scrollEvent - infinite Scroll Event
    */
-  onInput(event = undefined, scrollEvent = undefined): void {
+  onInput(event?, scrollEvent?): void {
     const loader = this.getLoader();
 
     if (!this.enableInfiniteScroll || !scrollEvent) {

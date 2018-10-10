@@ -267,7 +267,7 @@ export class ContentDetailsPage {
     this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
     this.downloadAndPlay = this.navParams.get('downloadAndPlay');
     if (!this.isResumedCourse) {
-      this.generateTemetry();
+      this.generateTelemetry();
     }
     if (this.isResumedCourse === true) {
       this.navCtrl.insert(this.navCtrl.length() - 1, EnrolledCourseDetailsPage, {
@@ -547,7 +547,7 @@ export class ContentDetailsPage {
     if (this.navParams.get('isResumedCourse')) {
       this.cardData.contentData = this.content;
       this.cardData.pkgVersion = this.content.pkgVersion;
-      this.generateTemetry();
+      this.generateTelemetry();
     }
 
     if (this.downloadAndPlay) {
@@ -566,7 +566,7 @@ export class ContentDetailsPage {
     }
   }
 
-  generateTemetry() {
+  generateTelemetry() {
     if (!this.didViewLoad && !this.isContentPlayed) {
       this.generateRollUp();
       const contentType = this.cardData.contentData ? this.cardData.contentData.contentType : this.cardData.contentType;

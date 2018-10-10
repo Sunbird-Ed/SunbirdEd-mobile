@@ -126,10 +126,6 @@ export class QrCodeResultPage {
     this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
     this.source = this.navParams.get('source');
 
-    if (Boolean(this.navParams.get('buildPath'))) {
-      this.navCtrl.insert(0, 'LanguageSettingsPage');
-      this.navCtrl.insert(1, 'UserTypeSelectionPage');
-    }
 
     // check for parent content
     this.parentContent = this.navParams.get('parentContent');
@@ -166,6 +162,13 @@ export class QrCodeResultPage {
     }, 10);
   }
 
+  ionViewWillLeave() {
+    // Unregister the custom back button action for this page
+    if (this.unregisterBackButton) {
+      this.unregisterBackButton();
+    }
+  }
+
   handleNavBackButton() {
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
@@ -182,6 +185,7 @@ export class QrCodeResultPage {
         data = JSON.parse(data);
         this.parents.splice(0, this.parents.length);
         this.parents.push(data.result);
+        this.results = [];
         this.profile = this.appGlobalService.getCurrentUser();
         const contentData = JSON.parse(JSON.stringify(data.result.contentData));
         this.checkProfileData(contentData, this.profile);
@@ -222,12 +226,14 @@ export class QrCodeResultPage {
   }
 
   private showAllChild(content: any) {
-    if (content.children === undefined) {
-      this.results.push(content);
-      return;
-    }
-    content.children.forEach(child => {
-      this.showAllChild(child);
+    this.zone.run(() => {
+      if (content.children === undefined) {
+        this.results.push(content);
+        return;
+      }
+      content.children.forEach(child => {
+        this.showAllChild(child);
+      });
     });
   }
 
@@ -365,13 +371,13 @@ export class QrCodeResultPage {
         this.profile.syllabus = [data.framework];
         this.profile.board = [data.board];
         this.profile.medium = [data.medium];
-        this.profile.subject =  [data.subject];
+        this.profile.subject = [data.subject];
         this.setGrade(true, data.gradeLevel);
         break;
       case 1:
         this.profile.board = [data.board];
         this.profile.medium = [data.medium];
-        this.profile.subject =  [data.subject];
+        this.profile.subject = [data.subject];
         this.setGrade(true, data.gradeLevel);
         break;
       case 2:
@@ -403,70 +409,70 @@ export class QrCodeResultPage {
 
             if (data.framework === element.frameworkId) {
               this.formAndFrameworkUtilService.getFrameworkDetails(data.framework)
-              .then(catagories => {
-                this.categories = catagories;
-                this.boardList = _.find(this.categories, (category) => category.code === 'board').terms;
-                this.mediumList = _.find(this.categories, (category) => category.code === 'medium').terms;
-                this.gradeList = _.find(this.categories, (category) => category.code === 'gradeLevel').terms;
-                this.subjectList = _.find(this.categories, (category) => category.code === 'subject').terms;
-                if (data.board) {
-                  data.board = this.findCode(this.boardList, data, 'board');
-                }
-                if (data.medium) {
-                  data.medium = this.findCode(this.mediumList, data, 'medium');
-                }
-                if (data.subject) {
-                  data.subject = this.findCode(this.subjectList, data, 'subject');
-                }
-                if (data.gradeLevel && data.gradeLevel.length) {
-                  data.gradeLevel = _.map(data.gradeLevel, (dataGrade) => {
-                    return _.find(this.gradeList, (grade) => grade.name === dataGrade).code;
-                  });
-                }
-                if (profile && profile.syllabus && profile.syllabus[0] && data.framework === profile.syllabus[0]) {
+                .then(catagories => {
+                  this.categories = catagories;
+                  this.boardList = _.find(this.categories, (category) => category.code === 'board').terms;
+                  this.mediumList = _.find(this.categories, (category) => category.code === 'medium').terms;
+                  this.gradeList = _.find(this.categories, (category) => category.code === 'gradeLevel').terms;
+                  this.subjectList = _.find(this.categories, (category) => category.code === 'subject').terms;
                   if (data.board) {
-                    if (profile.board && !(profile.board.length > 1) && data.board === profile.board[0]) {
-                      if (data.medium) {
-                        let existingMedium = false;
-                        existingMedium = _.find(profile.medium, (medium) => {
-                          return medium === data.medium;
-                        });
-                        if (!existingMedium) {
-                          this.setCurrentProfile(2, data);
-                        }
-                        if (data.gradeLevel && data.gradeLevel.length) {
-                          let existingGrade = false;
-                          for (let i = 0; i < data.gradeLevel.length; i++) {
-                            const gradeExists = _.find(profile.grade, (grade) => {
-                              return grade === data.gradeLevel[i];
-                            });
-                            if (!gradeExists) {
-                              break;
-                            }
-                            existingGrade = true;
-                          }
-                          if (!existingGrade) {
-                            this.setCurrentProfile(3, data);
-                          }
-                          let existingSubject = false;
-                          existingSubject = _.find(profile.subject, (subject) => {
-                            return subject === data.subject;
-                          });
-                          if (!existingSubject) {
-                            this.setCurrentProfile(4, data);
-                          }
-                        }
-                      }
-                    } else {
-                      this.setCurrentProfile(1, data);
-                    }
+                    data.board = this.findCode(this.boardList, data, 'board');
                   }
-                } else {
-                  this.setCurrentProfile(0, data);
-                }
-              }).catch(error => {
-                console.error('Error', error);
-              });
+                  if (data.medium) {
+                    data.medium = this.findCode(this.mediumList, data, 'medium');
+                  }
+                  if (data.subject) {
+                    data.subject = this.findCode(this.subjectList, data, 'subject');
+                  }
+                  if (data.gradeLevel && data.gradeLevel.length) {
+                    data.gradeLevel = _.map(data.gradeLevel, (dataGrade) => {
+                      return _.find(this.gradeList, (grade) => grade.name === dataGrade).code;
+                    });
+                  }
+                  if (profile && profile.syllabus && profile.syllabus[0] && data.framework === profile.syllabus[0]) {
+                    if (data.board) {
+                      if (profile.board && !(profile.board.length > 1) && data.board === profile.board[0]) {
+                        if (data.medium) {
+                          let existingMedium = false;
+                          existingMedium = _.find(profile.medium, (medium) => {
+                            return medium === data.medium;
+                          });
+                          if (!existingMedium) {
+                            this.setCurrentProfile(2, data);
+                          }
+                          if (data.gradeLevel && data.gradeLevel.length) {
+                            let existingGrade = false;
+                            for (let i = 0; i < data.gradeLevel.length; i++) {
+                              const gradeExists = _.find(profile.grade, (grade) => {
+                                return grade === data.gradeLevel[i];
+                              });
+                              if (!gradeExists) {
+                                break;
+                              }
+                              existingGrade = true;
+                            }
+                            if (!existingGrade) {
+                              this.setCurrentProfile(3, data);
+                            }
+                            let existingSubject = false;
+                            existingSubject = _.find(profile.subject, (subject) => {
+                              return subject === data.subject;
+                            });
+                            if (!existingSubject) {
+                              this.setCurrentProfile(4, data);
+                            }
+                          }
+                        }
+                      } else {
+                        this.setCurrentProfile(1, data);
+                      }
+                    }
+                  } else {
+                    this.setCurrentProfile(0, data);
+                  }
+                }).catch(error => {
+                  console.error('Error', error);
+                });
 
               return;
             }
@@ -481,7 +487,7 @@ export class QrCodeResultPage {
 
   skipSteps() {
     if (this.appGlobalService.isOnBoardingCompleted && this.appGlobalService.isProfileSettingsCompleted) {
-      this.navCtrl.push(TabsPage, {
+      this.navCtrl.setRoot(TabsPage, {
         loginMode: 'guest'
       });
     } else {

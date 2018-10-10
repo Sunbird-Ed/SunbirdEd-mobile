@@ -162,7 +162,11 @@ export class SearchPage {
 
   ionViewWillLeave() {
     this.events.unsubscribe('genie.event');
+    if (this.backButtonFunc) {
+      this.backButtonFunc();
+    }
   }
+
   navigateToPreviousPage() {
     if (this.shouldGenerateEndTelemetry) {
       this.generateQRSessionEndEvent(this.source, this.dialCode);
@@ -175,7 +179,7 @@ export class SearchPage {
             loginMode: 'guest'
           });
         } else {
-          this.navCtrl.push('ProfileSettingsPage', { buildPath: true });
+          this.navCtrl.setRoot('ProfileSettingsPage', { buildPath: true });
         }
       } else {
         this.popCurrentPage();
@@ -304,9 +308,6 @@ export class SearchPage {
         this.showLoader = false;
       });
     });
-  }
-
-  searchOnChange() {
   }
 
   handleSearch() {
