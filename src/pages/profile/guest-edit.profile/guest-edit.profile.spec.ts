@@ -1,3 +1,4 @@
+import { } from 'jasmine';
 import { AlertControllerMock } from './../../../../test-config/mocks-ionic';
 import { Observable } from 'rxjs/Observable';
 import {
@@ -76,7 +77,10 @@ describe('GuestEditProfilePage', () => {
                 setRoot: () => ({})
             })
         };
-        const appGlobalServiceStub = {};
+        const appGlobalServiceStub = {
+            generateAttributeChangeTelemetry: () => ({}),
+            generateSaveClickedTelemetry: () => ({})
+        };
         TestBed.configureTestingModule({
             imports: [TranslateModule.forRoot()],
             declarations: [GuestEditProfilePage],
@@ -148,8 +152,8 @@ describe('GuestEditProfilePage', () => {
     });
     it('#showAutoFillAlert show be called as expected', () => {
         // let alertControllerMock = TestBed.get(AlertController);
-        // spyOn(comp,'showAutoFillAlert').and.callThrough().and.callFake(() => { });
         spyOn(comp, 'showAutoFillAlert');
+        // spyOn(comp,'showAutoFillAlert').and.callThrough().and.callFake(() => { });
         comp.showAutoFillAlert();
         expect(comp.showAutoFillAlert).toHaveBeenCalled();
     });
@@ -250,7 +254,9 @@ describe('GuestEditProfilePage', () => {
         getLoader();
         spyOn(comp.guestEditForm, 'patchValue');
         const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
+        const appGlobalServiceStub = TestBed.get(AppGlobalService);
         spyOn(comp, 'checkPrevValue');
+        spyOn(appGlobalServiceStub, 'generateAttributeChangeTelemetry');
         spyOn(formAndFrameworkUtilServiceStub, 'getFrameworkDetails').and.returnValue(Promise.resolve('success'));
         comp.resetForm(0, true);
         expect(comp.guestEditForm.patchValue).toHaveBeenCalled();
