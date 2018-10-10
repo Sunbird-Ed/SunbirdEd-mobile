@@ -53,8 +53,6 @@ import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.ser
 import { CommonUtilService } from '../../service/common-util.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { QrCodeResultPage } from '../qr-code-result/qr-code-result';
-import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
-
 @IonicPage()
 @Component({
   selector: 'page-search',
