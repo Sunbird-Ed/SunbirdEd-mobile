@@ -183,6 +183,7 @@ export class QrCodeResultPage {
       request,
       (data: any) => {
         data = JSON.parse(data);
+        console.log('getChildContents data', data);
         this.parents.splice(0, this.parents.length);
         this.parents.push(data.result);
         this.results = [];
@@ -359,7 +360,6 @@ export class QrCodeResultPage {
 	 */
 
   setCurrentProfile(index, data) {
-    console.log('setCurrentProfile index', index);
     if (!this.profile.medium || !this.profile.medium.length) {
       this.profile.medium = [];
     }
@@ -399,15 +399,14 @@ export class QrCodeResultPage {
 	 * @param {object} profile
 	 */
   checkProfileData(data, profile) {
-    console.log('content data', data);
-    console.log('profile data', profile);
     if (data && data.framework) {
 
       this.formAndFrameworkUtilService.getSyllabusList()
         .then((res) => {
           res.forEach(element => {
-
+            // checking whether content data framework Id exists/valid in syllabuslist
             if (data.framework === element.frameworkId) {
+              // Get frameworkdetails(categories)
               this.formAndFrameworkUtilService.getFrameworkDetails(data.framework)
                 .then(catagories => {
                   this.categories = catagories;
