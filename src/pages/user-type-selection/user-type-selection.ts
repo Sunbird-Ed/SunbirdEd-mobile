@@ -105,7 +105,7 @@ export class UserTypeSelectionPage {
     this.isChangeRoleRequest = Boolean(this.navParams.get('isChangeRoleRequest'));
     this.showScanner = Boolean(this.navParams.get('showScanner'));
     if (this.showScanner) {
-      this.scannerService.startScanner('UserTypeSelectionPage', true);
+      this.scannerService.startScanner(PageId.USER_TYPE_SELECTION, true);
     }
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.handleBackButton();
