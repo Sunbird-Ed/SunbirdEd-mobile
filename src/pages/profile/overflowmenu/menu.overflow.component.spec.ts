@@ -48,6 +48,8 @@ import {
 } from '../../../../test-config/mocks-ionic';
 import { Observable } from 'rxjs';
 import { Config } from 'ionic-angular';
+import { CommonUtilService } from '../../../service/common-util.service';
+import { LoadingController } from 'ionic-angular';
 
 describe('OverflowMenuComponent', () => {
   let comp: OverflowMenuComponent;
@@ -70,6 +72,8 @@ describe('OverflowMenuComponent', () => {
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
         ServiceProvider,
+        LoadingController,
+        CommonUtilService,
         Events,
         FrameworkService,
         Config,
@@ -109,7 +113,6 @@ describe('OverflowMenuComponent', () => {
   });
 
   it('show toast method makes expected calls', () => {
-    const toastStub = TestBed.get(ToastController);
     const navStub = TestBed.get(NavParams);
     comp.items = ['list'];
     spyOn(navStub, 'get');
@@ -150,6 +153,7 @@ describe('OverflowMenuComponent', () => {
       expect(appStub.getActiveNav).toHaveBeenCalled();
     });
     it('should makes expected calls when case LOGOUT', () => {
+      const commonUtilServiceStub = TestBed.get(CommonUtilService);
       const networkStub = TestBed.get(Network);
       const toastStub = TestBed.get(ToastController);
       spyOnProperty(networkStub, 'type').and.returnValue('none');
@@ -159,7 +163,7 @@ describe('OverflowMenuComponent', () => {
         return Observable.of('Cancel');
       });
       comp.close({ target: { innerText: '' } }, 'LOGOUT');
-      comp.translateMessage(translationId);
+      commonUtilServiceStub.translateMessage(translationId);
       expect(toastStub.create).toHaveBeenCalled();
       expect(networkStub.type).toBe('none');
     });
@@ -208,11 +212,12 @@ describe('OverflowMenuComponent', () => {
     });
   });
   it('translate Message to have been called', () => {
+    const commonUtilServiceStub = TestBed.get(CommonUtilService);
     const translate = TestBed.get(TranslateService);
     spyOn(translate, 'get').and.callFake(arg => {
       return Observable.of('Cancel');
     });
-    comp.translateMessage('any');
+    commonUtilServiceStub.translateMessage('any');
     expect(translate.get).toHaveBeenCalled();
   });
 

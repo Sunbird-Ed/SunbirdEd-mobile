@@ -1,5 +1,6 @@
 import { appLanguages } from './../app/app.constant';
-import { LoadingController } from 'ionic-angular';
+import { QRScannerAlert } from './../pages/qrscanner/qrscanner_alert';
+import { LoadingController, Events, PopoverController } from 'ionic-angular';
 import { Injectable } from '@angular/core';
 import {
     ToastController,
@@ -10,6 +11,8 @@ import { Loading } from 'ionic-angular';
 import * as _ from 'lodash';
 import { SharedPreferences } from 'sunbird';
 import { PreferenceKey } from '../app/app.constant';
+import { Popover } from 'ionic-angular';
+import { QRAlertCallBack } from '../pages/qrscanner/qrscanner_alert';
 
 @Injectable()
 export class CommonUtilService {
@@ -18,7 +21,9 @@ export class CommonUtilService {
         private toastCtrl: ToastController,
         private translate: TranslateService,
         private loadingCtrl: LoadingController,
-        private preferences: SharedPreferences
+        private preferences: SharedPreferences,
+        private events: Events,
+        private popOverCtrl: PopoverController
     ) {
     }
 
@@ -104,5 +109,35 @@ export class CommonUtilService {
             this.translate.use(code);
             this.preferences.putString(PreferenceKey.SELECTED_LANGUAGE_CODE, code);
         }
+    }
+
+    /**
+     * Show popup with Try Again and Skip button.
+     * @param {string} source Page from alert got called
+     */
+    showContentComingSoonAlert(source) {
+        let popOver: Popover;
+        const self = this;
+        const callback: QRAlertCallBack = {
+            tryAgain() {
+                self.events.publish('event:showScanner', { pageName: source });
+                popOver.dismiss();
+            },
+            cancel() {
+                popOver.dismiss();
+            }
+        };
+        popOver = this.popOverCtrl.create(QRScannerAlert, {
+            callback: callback,
+            icon: './assets/imgs/ic_coming_soon.png',
+            messageKey: 'CONTENT_IS_BEING_ADDED',
+            cancelKey: 'hide',
+            tryAgainKey: 'TRY_DIFF_QR',
+        }, {
+                cssClass: 'qr-alert-invalid'
+            });
+        setTimeout(() => {
+            popOver.present();
+        }, 300);
     }
 }

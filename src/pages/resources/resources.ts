@@ -152,7 +152,11 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         this.setSavedContent();
       }
     });
-
+    this.events.subscribe('event:showScanner', (data) => {
+      if (data.pageName === PageId.LIBRARY) {
+        this.qrScanner.startScanner(PageId.LIBRARY, false);
+      }
+    });
     this.events.subscribe('onAfterLanguageChange:update', (res) => {
       if (res && res.selectedLanguage) {
         this.selectedLanguage = res.selectedLanguage;

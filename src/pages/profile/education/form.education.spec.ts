@@ -113,8 +113,6 @@ describe('FormEducation', () => {
     it('validateForm shouldreturn false', () => {
         comp.educationForm.controls['percentage'].setValue('120');
         const formval = comp.educationForm.value;
-        const toasrCtrlStub  = TestBed.get(ToastController);
-        const translateStub =  TestBed.get(TranslateService);
         const commonUtilServiceStub  = TestBed.get(CommonUtilService);
         spyOn(commonUtilServiceStub, 'showToast').and.returnValue({
             present: () => {}
@@ -126,8 +124,6 @@ describe('FormEducation', () => {
 
     it('should handle success scenario for updateEducation', () => {
         const userProfileService = TestBed.get(UserProfileService);
-        const toasrCtrlStub  = TestBed.get(ToastController);
-        const translateStub =  TestBed.get(TranslateService);
         const commonUtilServiceStub  = TestBed.get(CommonUtilService);
         spyOn(commonUtilServiceStub, 'translateMessage');
         spyOn(userProfileService, 'updateUserInfo').and.callFake((req, success, error) => {
@@ -160,16 +156,9 @@ describe('FormEducation', () => {
         expect(commonUtilServiceStub.translateMessage).toHaveBeenCalledWith('PROFILE_UPDATE_FAILED');
     });
 
-    it('getLoader makes expected calls', () => {
-        const loadingController = TestBed.get(LoadingController);
-        comp.getLoader();
-        expect(loadingController.create).toHaveBeenCalled();
-    });
-
     it('showDeleteConfirm should make expected calls', () => {
         const alertController = TestBed.get(AlertController);
         // const alert = TestBed.get(Alert);
-        const translateStub =  TestBed.get(TranslateService);
         const platformStub: Platform = TestBed.get(Platform);
         const commonUtilServiceStub  = TestBed.get(CommonUtilService);
         spyOn(platformStub, 'registerBackButtonAction');

@@ -1,3 +1,4 @@
+import { CommonUtilService } from './../../service/common-util.service';
 import { QRScannerAlert, QRAlertCallBack } from './../qrscanner/qrscanner_alert';
 import { FormAndFrameworkUtilService } from './../profile/formandframeworkutil.service';
 import {
@@ -112,7 +113,8 @@ export class QrCodeResultPage {
     private profileService: ProfileService,
     private events: Events,
     private preferences: SharedPreferences,
-    private popOverCtrl: PopoverController
+    private popOverCtrl: PopoverController,
+    private commonUtilService: CommonUtilService,
   ) {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
@@ -196,33 +198,9 @@ export class QrCodeResultPage {
         this.zone.run(() => {
           this.showChildrenLoader = false;
         });
-        this.showContentComingSoonAlert();
+        this.commonUtilService.showContentComingSoonAlert(this.source);
         this.navCtrl.pop();
       });
-  }
-
-  showContentComingSoonAlert() {
-    let popOver: Popover;
-    const callback: QRAlertCallBack = {
-      tryAgain() {
-        popOver.dismiss();
-      },
-      cancel() {
-        popOver.dismiss();
-      }
-    };
-    popOver = this.popOverCtrl.create(QRScannerAlert, {
-      callback: callback,
-      icon: './assets/imgs/ic_coming_soon.png',
-      messageKey: 'CONTENT_COMING_SOON',
-      cancelKey: 'hide',
-      tryAgainKey: 'DONE',
-    }, {
-        cssClass: 'qr-alert'
-      });
-    setTimeout(() => {
-      popOver.present();
-    }, 300);
   }
 
   private showAllChild(content: any) {
@@ -495,3 +473,4 @@ export class QrCodeResultPage {
     }
   }
 }
+

@@ -53,7 +53,6 @@ import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.ser
 import { CommonUtilService } from '../../service/common-util.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { QrCodeResultPage } from '../qr-code-result/qr-code-result';
-
 @IonicPage()
 @Component({
   selector: 'page-search',
@@ -425,7 +424,6 @@ export class SearchPage {
   init() {
     this.dialCode = this.navParams.get('dialCode');
     this.contentType = this.navParams.get('contentType');
-    this.source = this.navParams.get('source');
     this.corRelationList = this.navParams.get('corRelation');
     this.source = this.navParams.get('source');
     this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
@@ -611,7 +609,7 @@ export class SearchPage {
       if (this.shouldGenerateEndTelemetry) {
         this.generateQRSessionEndEvent(this.source, this.dialCode);
       }
-      this.showContentComingSoonAlert();
+      this.commonUtilService.showContentComingSoonAlert(this.source);
     } else {
       this.isEmptyResult = false;
     }
@@ -638,33 +636,6 @@ export class SearchPage {
       ImpressionType.SEARCH, telemetryObject,
       values
     );
-  }
-
-
-  showContentComingSoonAlert() {
-    let popOver: Popover;
-    const callback: QRAlertCallBack = {
-      tryAgain() {
-        popOver.dismiss();
-      },
-      cancel() {
-        popOver.dismiss();
-      }
-    };
-    popOver = this.popUp.create(QRScannerAlert, {
-      callback: callback,
-      icon: './assets/imgs/ic_coming_soon.png',
-      messageKey: 'CONTENT_COMING_SOON',
-      cancelKey: 'hide',
-      tryAgainKey: 'DONE',
-    }, {
-        cssClass: 'qr-alert'
-      });
-
-    setTimeout(() => {
-      popOver.present();
-    }, 300);
-
   }
 
   updateFilterIcon() {
