@@ -23,6 +23,7 @@ import {
     NavMock
 } from '../../../../test-config/mocks-ionic';
 import { TagInputModule } from 'ngx-chips';
+import { CommonUtilService } from '../../../service/common-util.service';
 
 describe('SkillTagsComponent', () => {
     let comp: SkillTagsComponent;
@@ -41,6 +42,7 @@ describe('SkillTagsComponent', () => {
             declarations: [SkillTagsComponent],
             schemas: [NO_ERRORS_SCHEMA],
             providers: [
+                CommonUtilService,
                 { provide: NavController, useClass: NavMock },
                 // { provide: NgZone, useValue: ngZoneStub },
                 { provide: AuthService, useClass: AuthServiceMock },
@@ -57,18 +59,13 @@ describe('SkillTagsComponent', () => {
         fixture = TestBed.createComponent(SkillTagsComponent);
         comp = fixture.componentInstance;
     });
-
-    const getLoader = () => {
-        const loadingController = TestBed.get(LoadingController);
-        comp.getLoader();
-    };
-
     it('can load instance', () => {
         expect(comp).toBeTruthy();
     });
 
     it('should handle success scenario for ionViewWillEnter', () => {
         const authService = TestBed.get(AuthService);
+        const commonUtilServiceStub = TestBed.get(CommonUtilService);
         const userProfileService = TestBed.get(UserProfileService);
         const data = { skills: ['test'] };
         spyOn(userProfileService, 'getSkills').and.callFake((req, success, error) => {
@@ -77,7 +74,7 @@ describe('SkillTagsComponent', () => {
         spyOn(authService, 'getSessionData').and.callFake((success, error) => {
             success('success');
         });
-        getLoader();
+        commonUtilServiceStub.getLoader();
         comp.ionViewWillEnter();
         expect(authService.getSessionData).toHaveBeenCalled();
         expect(userProfileService.getSkills).toHaveBeenCalled();
@@ -87,6 +84,7 @@ describe('SkillTagsComponent', () => {
     it('should handle error scenario for shoulsionViewWillEnter', () => {
         const authService = TestBed.get(AuthService);
         const userProfileService = TestBed.get(UserProfileService);
+        const commonUtilServiceStub = TestBed.get(CommonUtilService);
         const data = { status: 401 };
         spyOn(userProfileService, 'getSkills').and.callFake((req, success, error) => {
             error(JSON.stringify(data));
@@ -94,7 +92,7 @@ describe('SkillTagsComponent', () => {
         spyOn(authService, 'getSessionData').and.callFake((success, error) => {
             success('success');
         });
-        getLoader();
+        commonUtilServiceStub.getLoader();
         comp.ionViewWillEnter();
         expect(authService.getSessionData).toHaveBeenCalled();
         expect(userProfileService.getSkills).toHaveBeenCalled();
@@ -102,20 +100,22 @@ describe('SkillTagsComponent', () => {
 
     it('should handle error scenario for ionViewWillEnter', () => {
         const authService = TestBed.get(AuthService);
+        const commonUtilServiceStub = TestBed.get(CommonUtilService);
         spyOn(authService, 'getSessionData').and.callFake((success, error) => {
             success(undefined);
         });
-        getLoader();
+        commonUtilServiceStub.getLoader();
         comp.ionViewWillEnter();
         expect(authService.getSessionData).toHaveBeenCalled();
     });
 
     it('should handle error scenario for addSkills', (done) => {
         const authService = TestBed.get(AuthService);
+        const commonUtilServiceStub = TestBed.get(CommonUtilService);
         spyOn(authService, 'getSessionData').and.callFake((success, error) => {
             success(undefined);
         });
-        getLoader();
+        commonUtilServiceStub.getLoader();
         comp.addSkills();
         setTimeout(() => {
             expect(authService.getSessionData).toHaveBeenCalled();
@@ -125,6 +125,7 @@ describe('SkillTagsComponent', () => {
 
     it('should handle success scenario for addSkills', () => {
         const authService = TestBed.get(AuthService);
+        const commonUtilServiceStub = TestBed.get(CommonUtilService);
         const userProfileService = TestBed.get(UserProfileService);
         const data = {
             skills: ['test'],
@@ -139,7 +140,7 @@ describe('SkillTagsComponent', () => {
             success('success');
         });
 
-        getLoader();
+        commonUtilServiceStub.getLoader();
         comp.addSkills();
         expect(authService.getSessionData).toHaveBeenCalled();
         expect(userProfileService.endorseOrAddSkill).toHaveBeenCalled();
@@ -147,6 +148,7 @@ describe('SkillTagsComponent', () => {
 
     it('should handle success scenario for addSkills', () => {
         const authService = TestBed.get(AuthService);
+        const commonUtilServiceStub = TestBed.get(CommonUtilService);
         const userProfileService = TestBed.get(UserProfileService);
         const data = {
             skills: ['test'],
@@ -161,7 +163,7 @@ describe('SkillTagsComponent', () => {
             error('error');
         });
 
-        getLoader();
+        commonUtilServiceStub.getLoader();
         comp.addSkills();
         expect(authService.getSessionData).toHaveBeenCalled();
         expect(userProfileService.endorseOrAddSkill).toHaveBeenCalled();
@@ -176,20 +178,15 @@ describe('SkillTagsComponent', () => {
 
     it('presentToast makes expected calls', () => {
         const toastController = TestBed.get(ToastController);
-        comp.presentToast('msg');
+        const commonUtilServiceStub = TestBed.get(CommonUtilService);
+        commonUtilServiceStub.showToast('msg');
         expect(toastController.create).toHaveBeenCalled();
     });
 
     it('getLoader makes expected calls', () => {
         const loadingController = TestBed.get(LoadingController);
-        comp.getLoader();
+        const commonUtilServiceStub = TestBed.get(CommonUtilService);
+        commonUtilServiceStub.getLoader();
         expect(loadingController.create).toHaveBeenCalled();
     });
-
-    it('translate msg should make expected calls', () => {
-        const translate = TestBed.get(TranslateService);
-        comp.translateMessage('msg');
-        expect(translate.get).toHaveBeenCalled();
-    });
-
 });

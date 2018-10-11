@@ -2,7 +2,7 @@ import { mockSyllabusList, mockOnboardingEvents, mockSelectedSlide } from './onb
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { PopoverController, NavController } from 'ionic-angular';
+import { PopoverController, NavController, LoadingController } from 'ionic-angular';
 import { Events } from 'ionic-angular';
 import { ToastController } from 'ionic-angular';
 import { OnboardingService } from '../onboarding-card/onboarding.service';
@@ -20,6 +20,7 @@ import { AppGlobalService } from '../../service/app-global.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { Observable } from 'rxjs';
 import { CommonUtilService } from '../../service/common-util.service';
+import { App } from 'ionic-angular/components/app/app';
 describe('OnboardingCardComponent', () => {
     let comp: OnboardingCardComponent;
     let fixture: ComponentFixture<OnboardingCardComponent>;
@@ -31,6 +32,8 @@ describe('OnboardingCardComponent', () => {
             imports: [TranslateModule.forRoot()],
             providers: [
                 CommonUtilService,
+                LoadingController,
+                App,
                 OnboardingService, NavController, ProfileService, ServiceProvider, SharedPreferences, FrameworkService,
                 FormService, AppGlobalService, TelemetryGeneratorService, TelemetryService,
                 { provide: FormAndFrameworkUtilService, useClass: FormAndFrameworkUtilServiceMock },
