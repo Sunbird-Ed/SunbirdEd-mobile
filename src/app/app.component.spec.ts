@@ -1,8 +1,8 @@
 import { ContentType, MimeType } from './app.constant';
 
 import { App } from 'ionic-angular';
-import { AppMock, ToastControllerMock } from './../../test-config/mocks-ionic';
-import { fakeAsync, ComponentFixture } from '@angular/core/testing';
+import { AppMock, ToastControllerMock, NavControllerBaseMock } from './../../test-config/mocks-ionic';
+import { ComponentFixture } from '@angular/core/testing';
 import { PluginModules } from './module.service';
 import { AppGlobalService } from '../service/app-global.service';
 import { async, TestBed, inject } from '@angular/core/testing';
@@ -38,12 +38,13 @@ import { CourseUtilService } from '../service/course-util.service';
 import { AppVersion } from '@ionic-native/app-version';
 import { FormAndFrameworkUtilService } from '../pages/profile/formandframeworkutil.service';
 import { } from 'jasmine';
-import { Observable } from 'rxjs';
 import { Events } from 'ionic-angular';
 import { EnrolledCourseDetailsPage } from '../pages/enrolled-course-details/enrolled-course-details';
 import { CollectionDetailsPage } from '../pages/collection-details/collection-details';
 import { ContentDetailsPage } from '../pages/content-details/content-details';
 import { TelemetryGeneratorService } from '../service/telemetry-generator.service';
+import { CommonUtilService } from '../service/common-util.service';
+import { NavControllerBase } from 'ionic-angular';
 
 describe('MyApp Component', () => {
   let fixture: ComponentFixture<MyApp>;
@@ -62,6 +63,7 @@ describe('MyApp Component', () => {
         ...PluginModules
       ],
       providers: [
+        CommonUtilService,
         TelemetryGeneratorService,
         // PermissionService,
         { provide: AuthService, useClass: AuthServiceMock },
@@ -79,7 +81,8 @@ describe('MyApp Component', () => {
         // { provide: SharedPreferences, useClass: SharedPreferencesMock },
         SharedPreferences,
         { provide: ToastController, useClass: ToastControllerMock },
-        { provide: App, useClass: AppMock }
+        { provide: App, useClass: AppMock },
+        { provide: NavControllerBase, useClass: NavControllerBaseMock}
       ],
     });
   }));
@@ -197,18 +200,6 @@ describe('MyApp Component', () => {
     });
   });
 
-  describe('presentToast', () => {
-    it('should create toast', () => {
-      const toastCtrl: ToastController = TestBed.get(ToastController);
-      expect(comp.presentToast).toBeDefined();
-      spyOn(comp, 'presentToast').and.callThrough();
-      spyOn(toastCtrl, 'create').and.callThrough();
-      comp.presentToast();
-      expect(comp.presentToast).toHaveBeenCalled();
-      expect(toastCtrl.create).toHaveBeenCalled();
-    });
-  });
-
   describe('generateInteractEvent', () => {
     it('should call interact event', () => {
       const telemetryServiceStub = TestBed.get(TelemetryService);
@@ -226,10 +217,11 @@ describe('MyApp Component', () => {
     it('should call handleBackButton, when user is on one of the child page and can go back to home page', () => {
       const platformStub = TestBed.get(Platform);
       const app = TestBed.get(App);
+      const navControllerStub = TestBed.get(NavControllerBase);
       expect(comp.handleBackButton).toBeDefined();
       spyOn(comp, 'handleBackButton').and.callThrough();
       spyOn(platformStub, 'registerBackButtonAction').and.callThrough();
-
+      spyOn(navControllerStub.getActive, 'name').and.returnValue('CHILD_PAGE_TO_HOME_PAGE');
       spyOn(app, 'getActiveNavs').and.returnValue([{
         canGoBack: () => true,
         pop: () => ({})
@@ -238,6 +230,7 @@ describe('MyApp Component', () => {
       comp.handleBackButton();
       expect(comp.handleBackButton).toHaveBeenCalled();
       expect(platformStub.registerBackButtonAction).toHaveBeenCalled();
+      expect(navControllerStub.getActive.name).toEqual('CHILD_PAGE_TO_HOME_PAGE');
     });
     it('should call handleBackButton, when user is on home page and cannot go back', () => {
       const platformStub = TestBed.get(Platform);
@@ -250,14 +243,11 @@ describe('MyApp Component', () => {
         canGoBack: () => false,
         pop: () => ({})
       }]);
-
-      spyOn(comp, 'presentToast');
       comp.counter = 0;
       comp.handleBackButton();
       expect(comp.counter).toEqual(1);
       expect(comp.handleBackButton).toHaveBeenCalled();
       expect(platformStub.registerBackButtonAction).toHaveBeenCalled();
-      expect(comp.presentToast).toHaveBeenCalled();
       setTimeout(() => {
         // expect(comp.counter).toEqual(0);
       }, 1500);
@@ -312,17 +302,6 @@ describe('MyApp Component', () => {
         // expect(comp.generateInteractEvent).toHaveBeenCalled();
       }, 0);
     });
-  });
-
-  describe('translateMessage', () => {
-    it('should call translateMessage', fakeAsync(() => {
-      const translate = TestBed.get(TranslateService);
-      const spy = spyOn(translate, 'get').and.callFake((arg) => {
-        return Observable.of('Cancel');
-      });
-      expect(comp.translateMessage('CANCEL')).toEqual('Cancel');
-      expect(spy.calls.any()).toEqual(true);
-    }));
   });
 
   describe('ionViewWillLeave', () => {
