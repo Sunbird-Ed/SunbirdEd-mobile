@@ -1,3 +1,4 @@
+import { appLanguages } from './../../app/app.constant';
 import { CommonUtilService } from './../../service/common-util.service';
 import { Platform } from 'ionic-angular/platform/platform';
 import {
@@ -66,7 +67,6 @@ export class LanguageSettingsPage {
     );
 
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
-      console.log("in Language Setting page");
       this.telemetryGeneratorService.generateInteractTelemetry(
         InteractType.TOUCH, InteractSubtype.DEVICE_BACK_CLICKED,
         this.isFromSettings ? PageId.SETTINGS_LANGUAGE : PageId.ONBOARDING_LANGUAGE_SETTING,
@@ -99,33 +99,7 @@ export class LanguageSettingsPage {
   }
 
   init(): void {
-    this.languages = [
-      {
-        'code': 'en',
-        'label': 'English',
-        'isApplied': false
-      },
-      {
-        'label': 'हिंदी',
-        'code': 'hi',
-        'isApplied': false
-      },
-      {
-        'label': 'తెలుగు',
-        'code': 'te',
-        'isApplied': false
-      },
-      {
-        'label': 'தமிழ்',
-        'code': 'ta',
-        'isApplied': false
-      },
-      {
-        'label': 'मराठी',
-        'code': 'mr',
-        'isApplied': false
-      }
-    ];
+    this.languages = appLanguages;
 
     this.zone.run(() => {
       this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
@@ -174,12 +148,17 @@ export class LanguageSettingsPage {
    */
   onLanguageSelected() {
     if (this.language) {
-      /*       let selectedLanguage = this.languages.find(i => i.code === this.language);
-            this.preferences.putString(PreferenceKey.SELECTED_LANGUAGE_CODE, selectedLanguage.code);
-            this.preferences.putString(PreferenceKey.SELECTED_LANGUAGE, selectedLanguage.label); */
-      this.btnColor = '#006DE5';
-      this.isLanguageSelected = true;
-      this.translateService.use(this.language);
+      /*
+      let selectedLanguage = this.languages.find(i => i.code === this.language);
+      this.preferences.putString(PreferenceKey.SELECTED_LANGUAGE_CODE, selectedLanguage.code);
+      this.preferences.putString(PreferenceKey.SELECTED_LANGUAGE, selectedLanguage.label);
+      */
+
+      this.zone.run(() => {
+        this.translateService.use(this.language);
+        this.btnColor = '#006DE5';
+        this.isLanguageSelected = true;
+      });
     } else {
       this.btnColor = '#8FC4FF';
     }

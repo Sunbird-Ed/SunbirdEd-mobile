@@ -1,3 +1,4 @@
+import { appLanguages } from './../app/app.constant';
 import { LoadingController } from 'ionic-angular';
 import { Injectable } from '@angular/core';
 import {
@@ -7,6 +8,8 @@ import {
 import { TranslateService } from '@ngx-translate/core';
 import { Loading } from 'ionic-angular';
 import * as _ from 'lodash';
+import { SharedPreferences } from 'sunbird';
+import { PreferenceKey } from '../app/app.constant';
 
 @Injectable()
 export class CommonUtilService {
@@ -14,7 +17,8 @@ export class CommonUtilService {
     constructor(
         private toastCtrl: ToastController,
         private translate: TranslateService,
-        private loadingCtrl: LoadingController
+        private loadingCtrl: LoadingController,
+        private preferences: SharedPreferences
     ) {
     }
 
@@ -83,5 +87,22 @@ export class CommonUtilService {
      */
     stringToArray(str: string = '') {
         return _.split(str, ', ');
+    }
+
+    /**
+     * It will change the app language to given code/name if it available locally
+     * @param {string} name Name of the language
+     * @param {string} code language code
+     */
+    changeAppLanguage(name, code?) {
+        if (!Boolean(code)) {
+            const foundValue = appLanguages.filter(language => language.name === name);
+            code = foundValue[0].code;
+        }
+
+        if (code) {
+            this.translate.use(code);
+            this.preferences.putString(PreferenceKey.SELECTED_LANGUAGE_CODE, code);
+        }
     }
 }

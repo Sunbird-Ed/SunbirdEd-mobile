@@ -223,6 +223,10 @@ export class SearchPage {
 
   showContentDetails(content, isRootContent: boolean = false) {
 
+    if (content && content.medium) {
+      this.commonUtilService.changeAppLanguage(content.medium);
+    }
+
     let params;
     if (this.shouldGenerateEndTelemetry) {
       params = {
@@ -598,7 +602,7 @@ export class SearchPage {
 
     if (contentArray && contentArray.length === 1 && !isParentCheckStarted) {
       this.navCtrl.pop();
-      this.showContentDetails(contentArray[0]);
+      this.showContentDetails(contentArray[0], true);
       return;
     }
 
