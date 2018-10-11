@@ -1,9 +1,12 @@
+import { CorrelationData } from './../../../genie-sdk-wrapper/src/services/telemetry/bean';
+import { InteractType, InteractSubtype, PageId } from './../../../genie-sdk-wrapper/src/services/telemetry/constant';
+import { TelemetryGeneratorService } from './../../service/telemetry-generator.service';
 import { TranslateService } from '@ngx-translate/core';
 import { NavParams } from 'ionic-angular/navigation/nav-params';
 import { PopoverController, Events } from 'ionic-angular/index';
 import { ViewController } from 'ionic-angular';
 import { Component } from '@angular/core';
-import { ContentService, AuthService } from 'sunbird';
+import { ContentService, AuthService, Environment, Rollup } from 'sunbird';
 import { ToastController, Platform } from 'ionic-angular';
 import { ReportIssuesComponent } from '../report-issues/report-issues';
 import { ProfileConstants } from '../../app/app.constant';
@@ -21,6 +24,8 @@ export class ContentActionsComponent {
   userId = '';
   pageName = '';
   showFlagMenu = true;
+  public objRollup: Rollup;
+  private corRelationList: Array<CorrelationData>;
 
   constructor(
     public viewCtrl: ViewController,
@@ -31,9 +36,12 @@ export class ContentActionsComponent {
     private authService: AuthService,
     private events: Events,
     private translate: TranslateService,
-    private platform: Platform) {
+    private platform: Platform,
+    private telemetryGeneratorService: TelemetryGeneratorService) {
     this.content = this.navParams.get('content');
     this.pageName = this.navParams.get('pageName');
+    this.objRollup = this.navParams.get('objRollup');
+    this.corRelationList = this.navParams.get('corRelationList');
 
     if (this.navParams.get('isChild')) {
       this.isChild = true;
@@ -99,6 +107,17 @@ export class ContentActionsComponent {
   }
 
   deleteContent() {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.DELETE_CLICKED,
+      Environment.HOME,
+      this.pageName,
+      undefined,
+      undefined,
+      this.objRollup,
+      this.corRelationList);
+
+
     this.contentService.deleteContent(this.getDeleteRequestBody(), (res: any) => {
       const data = JSON.parse(res);
       if (data.result && data.result.status === 'NOT_FOUND') {

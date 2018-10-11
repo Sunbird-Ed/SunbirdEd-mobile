@@ -226,6 +226,11 @@ export class CoursesPage implements OnInit {
           this.preference.putString('show_app_walkthrough_screen', 'false');
         }
       });
+    this.events.subscribe('event:showScanner', (data) => {
+      if (data.pageName === PageId.COURSES) {
+        this.qrScanner.startScanner(PageId.COURSES, false);
+      }
+    });
   }
 
   ionViewCanLeave() {
