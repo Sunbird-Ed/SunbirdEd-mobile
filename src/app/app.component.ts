@@ -266,7 +266,6 @@ export class MyApp {
 
       const navObj = self.app.getActiveNavs()[0];
       const currentPage = navObj.getActive().name;
-      console.log("Current Page:::" + currentPage);
 
       if (navObj.canGoBack()) {
         navObj.pop();
