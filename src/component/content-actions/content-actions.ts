@@ -40,13 +40,8 @@ export class ContentActionsComponent {
     private telemetryGeneratorService: TelemetryGeneratorService) {
     this.content = this.navParams.get('content');
     this.pageName = this.navParams.get('pageName');
-    // objRollup: this.objRollup,
-    //   corRelationList: this.corRelationList
     this.objRollup = this.navParams.get('objRollup');
     this.corRelationList = this.navParams.get('corRelationList');
-
-    console.log('objectRollup', this.objRollup);
-    console.log('corRelationList', this.corRelationList);
 
     if (this.navParams.get('isChild')) {
       this.isChild = true;
@@ -112,8 +107,6 @@ export class ContentActionsComponent {
   }
 
   deleteContent() {
-    console.log('objectRollup', this.objRollup);
-    console.log('corRelationList', this.corRelationList);
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.DELETE_CLICKED,
