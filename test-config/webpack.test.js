@@ -23,6 +23,8 @@ module.exports = {
     {
       test: /.+\.ts$/,
       exclude: [/(index.ts|mocks.ts|\.spec\.ts$)/,
+        helpers.root('src/component/onboarding-card/onboarding-card.ts'),
+        helpers.root('src/component/onboarding-card/onboarding.service.ts'),
         helpers.root('src/pages/home/home.ts'),
         helpers.root('src/pages/home/announcement-detail/announcement-detail.ts'),
         helpers.root('src/pages/home/announcement-list/announcement-list.ts'),

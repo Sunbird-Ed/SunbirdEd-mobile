@@ -921,9 +921,19 @@ export class ContentDetailsPage {
   }
 
   showOverflowMenu(event) {
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.KEBAB_MENU_CLICKED,
+      Environment.HOME,
+      PageId.CONTENT_DETAIL,
+      undefined,
+      undefined,
+      this.objRollup,
+      this.corRelationList);
     const popover = this.popoverCtrl.create(ContentActionsComponent, {
       content: this.content,
-      isChild: this.isChildContent
+      isChild: this.isChildContent,
+      objRollup: this.objRollup,
+      corRelationList: this.corRelationList
     }, {
         cssClass: 'content-action'
       });

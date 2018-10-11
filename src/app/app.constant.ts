@@ -115,3 +115,36 @@ export class GenericAppConfig {
     public static readonly DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT = 'DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT';
     public static readonly TRACK_USER_TELEMETRY = 'TRACK_USER_TELEMETRY';
 }
+
+export const appLanguages = [
+    {
+        label: 'English',
+        code: 'en',
+        isApplied: false,
+        name: 'English'
+    },
+    {
+        label: 'हिंदी',
+        code: 'hi',
+        isApplied: false,
+        name: 'Hindi'
+    },
+    {
+        label: 'తెలుగు',
+        code: 'te',
+        isApplied: false,
+        name: 'Telugu'
+    },
+    {
+        label: 'தமிழ்',
+        code: 'ta',
+        isApplied: false,
+        name: 'Tamil'
+    },
+    {
+        label: 'मराठी',
+        code: 'mr',
+        isApplied: false,
+        name: 'Marathi'
+    }
+];

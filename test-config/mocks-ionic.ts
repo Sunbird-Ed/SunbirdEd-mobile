@@ -303,6 +303,7 @@ export class SocialSharingMock {
 }
 
 export class ViewControllerMock {
+  public name: string;
   public dismiss(): Promise<any> {
     return new Promise(resolve => {
       resolve('success');
@@ -410,7 +411,7 @@ export class MockElementRef implements ElementRef {
   nativeElement = {};
 }
 
-export class AppMock  {
+export class AppMock {
   public getActiveNav(): [NavMock] {
     return [new NavMock()];
   }
@@ -442,7 +443,11 @@ export class AnyNav {
   }
 }
 
-export class NavControllerBase { }
+export class NavControllerBaseMock {
+  public getActive(): [ViewControllerMock] {
+    return [new ViewControllerMock()];
+  }
+}
 
 export class ToastControllerMock {
   _getPortal(): any {

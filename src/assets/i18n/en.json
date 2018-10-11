@@ -90,6 +90,7 @@
   "COURSES_IN_PROGRESS_2": "CoursesInProgress",
   "COURSES_LW": "Courses",
   "COURSE_ENROLLED": "Courses enrolled in",
+  "CONTENT_IS_BEING_ADDED":"Content is being added please check back soon",
   "COURSE_PROGRESS_COMPLETED": "Completed: {{%s}} %",
   "CREATED_BY_ME": "Content created by me",
   "CREATE_GROUP": "Create Group",
