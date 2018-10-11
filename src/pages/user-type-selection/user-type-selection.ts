@@ -86,6 +86,7 @@ export class UserTypeSelectionPage {
 
   ionViewDidLoad() {
     this.navBar.backButtonClick = (e: UIEvent) => {
+      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.USER_TYPE_SELECTION, Environment.HOME, true);
       this.handleBackButton();
     };
     this.telemetryGeneratorService.generateImpressionTelemetry(
@@ -108,6 +109,7 @@ export class UserTypeSelectionPage {
       this.scannerService.startScanner(PageId.USER_TYPE_SELECTION, true);
     }
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.USER_TYPE_SELECTION, Environment.HOME, false);
       this.handleBackButton();
       this.backButtonFunc();
     }, 10);

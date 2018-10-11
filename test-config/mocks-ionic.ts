@@ -186,6 +186,7 @@ export class TelemetryServiceMock extends TelemetryService {
 }
 export class ContentServiceMock {
   public sendFeedback: (request, successCallback, errorCallback) => {};
+  public getChildContents: (request, successCallback, errorCallback) => {};
 }
 
 export class AppGlobalServiceMock extends AppGlobalService {
@@ -333,7 +334,13 @@ export class FormAndFrameworkUtilServiceMock {
     });
   }
 
-  public getSyllabusList = () => ({});
+  public getSyllabusList(): Promise<string> {
+    return new Promise(resolve => {
+      resolve('');
+    });
+  }
+
+  // public getSyllabusList = () => ({});
 
   public getFrameworkDetails = () => ({});
 
