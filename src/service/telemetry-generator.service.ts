@@ -12,7 +12,9 @@ import {
     Mode,
     End,
     ExData,
-    Error
+    Error,
+    InteractType,
+    InteractSubtype
 } from 'sunbird';
 import { Map } from '../app/telemetryutil';
 
@@ -22,7 +24,7 @@ export class TelemetryGeneratorService {
     }
 
     generateInteractTelemetry(interactType, subType, env, pageId, object?: TelemetryObject, values?: Map,
-         rollup?: Rollup, corRelationList?: Array<CorrelationData>) {
+        rollup?: Rollup, corRelationList?: Array<CorrelationData>) {
         const interact = new Interact();
         interact.type = interactType;
         interact.subType = subType;
@@ -54,7 +56,7 @@ export class TelemetryGeneratorService {
     }
 
     generateImpressionTelemetry(type, subtype, pageid, env, objectId?: string, objectType?: string,
-         objectVersion?: string, rollup?: Rollup, corRelationList?: Array<CorrelationData>) {
+        objectVersion?: string, rollup?: Rollup, corRelationList?: Array<CorrelationData>) {
         const impression = new Impression();
         impression.type = type;
         impression.subType = subtype;
@@ -151,6 +153,15 @@ export class TelemetryGeneratorService {
         error.pageId = pageId;
         error.stacktrace = stackTrace;
         this.telemetryService.error(error);
+    }
+
+    generateBackClickedTelemetry(pageId, env, isNavBack: boolean) {
+        this.generateInteractTelemetry(
+            InteractType.TOUCH,
+            isNavBack ? InteractSubtype.NAV_BACK_CLICKED : InteractSubtype.DEVICE_BACK_CLICKED,
+            env,
+            pageId);
+
     }
 
 }

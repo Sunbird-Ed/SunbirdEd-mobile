@@ -66,12 +66,17 @@ export class LanguageSettingsPage {
     );
 
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
-      console.log("in Language Setting page");
       this.telemetryGeneratorService.generateInteractTelemetry(
         InteractType.TOUCH, InteractSubtype.DEVICE_BACK_CLICKED,
-        this.isFromSettings ? PageId.SETTINGS_LANGUAGE : PageId.ONBOARDING_LANGUAGE_SETTING,
         this.isFromSettings ? Environment.SETTINGS : Environment.ONBOARDING,
+        this.isFromSettings ? PageId.SETTINGS_LANGUAGE : PageId.ONBOARDING_LANGUAGE_SETTING,
       );
+      if (this.isFromSettings) {
+        this.navCtrl.pop();
+      } else {
+        this.platform.exitApp();
+        this.telemetryGeneratorService.generateEndTelemetry('app', '', '', Environment.ONBOARDING);
+      }
       this.unregisterBackButton();
     }, 10);
 
@@ -180,6 +185,7 @@ export class LanguageSettingsPage {
       this.btnColor = '#006DE5';
       this.isLanguageSelected = true;
       this.translateService.use(this.language);
+      this.generateClickInteractEvent(this.language, InteractSubtype.LANGUAGE_SELECTED);
     } else {
       this.btnColor = '#8FC4FF';
     }
@@ -199,12 +205,12 @@ export class LanguageSettingsPage {
     );
   }
 
-  generateContinueClickedInteractEvent(selectedLanguage: string) {
+  generateClickInteractEvent(selectedLanguage: string, interactSubType) {
     const valuesMap = new Map();
     valuesMap['selectedLanguage'] = selectedLanguage;
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
-      InteractSubtype.CONTINUE_CLICKED,
+      interactSubType,
       this.isFromSettings ? Environment.SETTINGS : Environment.ONBOARDING,
       this.isFromSettings ? PageId.SETTINGS : PageId.ONBOARDING_LANGUAGE_SETTING,
       undefined,
@@ -216,7 +222,7 @@ export class LanguageSettingsPage {
     // if language is not null, then select the checked language,
     // else set default language as english
     if (this.isLanguageSelected) {
-      this.generateContinueClickedInteractEvent(this.language);
+      this.generateClickInteractEvent(this.language, InteractSubtype.CONTINUE_CLICKED);
       this.generateLanguageSuccessInteractEvent(this.previousLanguage, this.language);
       if (this.language) {
         this.selectedLanguage = this.languages.find(i => i.code === this.language);
@@ -235,7 +241,7 @@ export class LanguageSettingsPage {
         this.navCtrl.push(UserTypeSelectionPage);
       }
     } else {
-      this.generateContinueClickedInteractEvent('n/a');
+      this.generateClickInteractEvent('n/a', InteractSubtype.CONTINUE_CLICKED);
       this.btnColor = '#8FC4FF';
       this.commonUtilService.showToast('PLEASE_SELECT_A_LANGUAGE', false, 'redErrorToast');
     }

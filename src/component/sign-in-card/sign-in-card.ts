@@ -1,3 +1,4 @@
+import { CommonUtilService } from './../../service/common-util.service';
 import {
   Component,
   NgZone,
@@ -6,10 +7,7 @@ import {
   EventEmitter
 } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import {
-  NavController,
-  LoadingController
-} from 'ionic-angular';
+import { NavController } from 'ionic-angular';
 import { AppVersion } from '@ionic-native/app-version';
 import {
   OAuthService,
@@ -29,8 +27,7 @@ import {
   Profile
 } from 'sunbird';
 import {
-  initTabs,
-  LOGIN_TEACHER_TABS
+  initTabs, LOGIN_TEACHER_TABS
 } from '../../app/module.service';
 import { generateInteractTelemetry } from '../../app/telemetryutil';
 import { ProfileConstants } from '../../app/app.constant';
@@ -71,11 +68,11 @@ export class SignInCardComponent {
     private userProfileService: UserProfileService,
     private profileService: ProfileService,
     private authService: AuthService,
-    private loadingCtrl: LoadingController,
     private ngZone: NgZone,
     private telemetryService: TelemetryService,
     private appVersion: AppVersion,
-    private sharedPreferences: SharedPreferences
+    private sharedPreferences: SharedPreferences,
+    private commonUtilService: CommonUtilService
   ) {
 
     this.appVersion.getAppName()
@@ -128,7 +125,7 @@ export class SignInCardComponent {
         InteractSubtype.LOGIN_INITIATE, '');
 
       const that = this;
-      const loader = this.getLoader();
+      const loader = this.commonUtilService.getLoader();
       loader.present();
       that.auth.doOAuthStepOne()
         .then(token => {
@@ -215,12 +212,6 @@ export class SignInCardComponent {
         error => {
           resolve(); // ignore
         });
-    });
-  }
-
-  getLoader(): any {
-    return this.loadingCtrl.create({
-      spinner: 'crescent'
     });
   }
 

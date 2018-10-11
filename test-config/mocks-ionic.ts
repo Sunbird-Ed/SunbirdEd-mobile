@@ -13,7 +13,7 @@ import {
 import { ImageLoaderConfig } from 'ionic-image-loader';
 import { TranslateLoader } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
-import { ViewController } from 'ionic-angular';
+import { ViewController, App } from 'ionic-angular';
 import { ElementRef } from '@angular/core';
 import { CommonUtilService } from '../src/service/common-util.service';
 
@@ -200,7 +200,6 @@ export class AppGlobalServiceMock extends AppGlobalService {
   static setLoggedInStatus(status: boolean) {
     AppGlobalServiceMock.isGuestUser = status;
   }
-
   static setSessionData(session: any) {
     AppGlobalServiceMock.session = session;
   }
@@ -213,6 +212,9 @@ export class AppGlobalServiceMock extends AppGlobalService {
 
   getGuestUserType(): any {
     return 'TEACHER';
+  }
+  generateAttributeChangeTelemetry(oldAttribute: any, newAttribute: any) {
+    return;
   }
 }
 
@@ -401,7 +403,7 @@ export class MockElementRef implements ElementRef {
   nativeElement = {};
 }
 
-export class AppMock {
+export class AppMock  {
   public getActiveNav(): [NavMock] {
     return [new NavMock()];
   }
@@ -418,6 +420,12 @@ export class AppMock {
   }
   _getPortal(): any {
     return {};
+  }
+  getRootNavById() {
+  }
+  registerRootNav() {
+  }
+  getRootNavs() {
   }
 }
 
