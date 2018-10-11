@@ -242,15 +242,28 @@ export class CollectionDetailsPage {
     this.handleNetworkAvaibility();
   }
 
-  handleDeviceBackButton() {
+  ionViewDidLoad() {
+    this.navBar.backButtonClick = () => {
+      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.USER_TYPE_SELECTION, Environment.HOME, true);
+      this.handleBackButton();
+    };
+    this.registerDeviceBackButton();
+  }
+
+  handleBackButton() {
+    this.didViewLoad = false;
+    this.generateEndEvent(this.objId, this.objType, this.objVer);
+    if (this.shouldGenerateEndTelemetry) {
+      this.generateQRSessionEndEvent(this.source, this.cardData.identifier);
+    }
+    this.navCtrl.pop();
+    this.backButtonFunc();
+  }
+
+  registerDeviceBackButton() {
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
-      this.didViewLoad = false;
-      this.generateEndEvent(this.objId, this.objType, this.objVer);
-      if (this.shouldGenerateEndTelemetry) {
-        this.generateQRSessionEndEvent(this.source, this.cardData.identifier);
-      }
-      this.navCtrl.pop();
-      this.backButtonFunc();
+      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.COLLECTION_DETAIL, Environment.HOME, false);
+      this.handleBackButton();
     }, 10);
   }
 
@@ -600,22 +613,7 @@ export class CollectionDetailsPage {
   }
 
 
-  ionViewDidLoad() {
-    this.navBar.backButtonClick = () => {
-      this.handleNavBackButton();
-    };
-    this.handleDeviceBackButton();
-  }
-
-  handleNavBackButton() {
-    this.didViewLoad = false;
-    this.generateEndEvent(this.objId, this.objType, this.objVer);
-    if (this.shouldGenerateEndTelemetry) {
-      this.generateQRSessionEndEvent(this.source, this.cardData.identifier);
-    }
-    this.navCtrl.pop();
-    this.backButtonFunc();
-  }
+  
 
   /**
    * Ionic life cycle hook

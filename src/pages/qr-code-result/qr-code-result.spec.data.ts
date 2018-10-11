@@ -86,7 +86,7 @@ export const mockRes = {
                 'subject': 'English',
                 'variants': {
                   'spine': {
-                    'ecarUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/do_2125408197067243521145/9302_1530862067313_do_2125408197067243521145_1.0_spine.ecar',
+                    'ecarUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files//.0_spine.ecar',
                     'size': 154870
                   }
                 },
@@ -150,7 +150,7 @@ export const mockRes = {
                 'subject': 'Mathematics',
                 'variants': {
                   'spine': {
-                    'ecarUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/do_2125408292701716481152/drdds_1530863147420_do_2125408292701716481152_1.0_spine.ecar',
+                    'ecarUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files//.0_spine.ecar',
                     'size': 96867
                   }
                 },
@@ -214,7 +214,7 @@ export const mockRes = {
                 'subject': 'Mathematics',
                 'variants': {
                   'spine': {
-                    'ecarUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/do_2125408788222361601227/resource-ar_1530869051664_do_2125408788222361601227_1.0_spine.ecar',
+                    'ecarUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files//resource-.0_spine.ecar',
                     'size': 6317
                   }
                 },
@@ -271,14 +271,14 @@ export const mockRes = {
                 'name': 'Epub',
                 'osId': 'org.ekstep.quiz.app',
                 'pkgVersion': '1.0',
-                'previewUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/assets/do_2125409169472389121297/beyond-good-and-evil-galbraithcolor.epub',
+                'previewUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/assets/-good-and-evil-galbraithcolor.epub',
                 'resourceType': 'Learn',
                 'size': '1112204.0',
                 'status': 'Live',
                 'subject': 'English',
                 'variants': {
                   'spine': {
-                    'ecarUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/do_2125409169472389121297/epub_1530873940453_do_2125409169472389121297_1.0_spine.ecar',
+                    'ecarUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/.0_spine.ecar',
                     'size': 25640
                   }
                 },
@@ -342,7 +342,7 @@ export const mockRes = {
                 'subject': 'Telugu',
                 'variants': {
                   'spine': {
-                    'ecarUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/do_2125408149114388481143/9092_1530861483412_do_2125408149114388481143_2.0_spine.ecar',
+                    'ecarUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files//.0_spine.ecar',
                     'size': 79534
                   }
                 },
@@ -393,7 +393,7 @@ export const mockRes = {
             'status': 'Live',
             'variants': {
               'spine': {
-                'ecarUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/do_2125409300562001921307/book_1530875410232_do_2125409300562001921307_1.0_spine.ecar',
+                'ecarUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files//.0_spine.ecar',
                 'size': 359155
               }
             },
