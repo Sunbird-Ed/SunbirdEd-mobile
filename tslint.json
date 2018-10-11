@@ -1,7 +1,5 @@
 {
-  "rulesDirectory": [
-    "node_modules/codelyzer"
-  ],
+  "extends": ["codelyzer"],
   "rules": {
     "arrow-return-shorthand": true,
     "ban-types": [true, ["Object", "Use {} instead."], ["String", "use string instead"]],
@@ -120,13 +118,13 @@
       "check-type"
     ],
     "directive-selector": [
-      true,
+      false,
       "attribute",
       "app",
       "camelCase"
     ],
     "component-selector": [
-      true,
+      false,
       "element",
       "app",
       "kebab-case"
@@ -139,7 +137,7 @@
     "no-output-rename": true,
     "use-life-cycle-interface": true,
     "use-pipe-transform-interface": true,
-    "component-class-suffix": true,
-    "directive-class-suffix": true
+    "component-class-suffix": [false, "Component"],
+    "directive-class-suffix": [false, "Page"]
   }
 }

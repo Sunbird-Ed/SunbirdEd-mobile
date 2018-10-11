@@ -8,6 +8,11 @@
 
   <ion-navbar>
     <ion-title>{{ 'ABOUT_US' | translate }}</ion-title>
+    <ion-buttons end>
+      <button (click)="shareInformation()" ion-button icon-only>
+        <ion-icon name="share" float-end></ion-icon>
+      </button>
+    </ion-buttons>
   </ion-navbar>
 
 </ion-header>
@@ -17,7 +22,7 @@
   <ion-list>
     <!-- Device Id -->
     <ion-item text-wrap>
-      
+
       <h2>{{ 'DEVICE_ID' | translate }}</h2>
       <p class="settings-item-style">{{ deviceId | translate}}</p>
     </ion-item>
@@ -34,7 +39,7 @@
       <ion-icon name="ios-arrow-forward" item-end></ion-icon>
     </ion-item> -->
 
-    <!-- Terms of Service --> 
+    <!-- Terms of Service -->
     <!-- <ion-item (click)="termsOfService()">
       <h2>{{ 'ABOUT_US_SCREEN.TERMS_OF_SERVICE' | translate }}</h2>
       <ion-icon name="ios-arrow-forward" item-end></ion-icon>

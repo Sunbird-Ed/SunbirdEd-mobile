@@ -1,8 +1,11 @@
-import { Impression, Interact, Start, Mode, Environment, End, Rollup, CorrelationData } from "sunbird";
+import { Impression, Interact, Start, Mode, Environment, End, Rollup, CorrelationData } from 'sunbird';
 
+export const generateImpressionTelemetry = (type, subtype, pageid, env,
+    objectId, objectType, objectVersion,
+    rollup: Rollup,
+    corRelationList: Array<CorrelationData>): Impression => {
 
-export function generateImpressionTelemetry(type, subtype, pageid, env, objectId, objectType, objectVersion, rollup: Rollup, corRelationList: Array<CorrelationData>): Impression {
-    let impression = new Impression();
+    const impression = new Impression();
     impression.type = type;
     impression.subType = subtype;
     impression.pageId = pageid;
@@ -18,10 +21,11 @@ export function generateImpressionTelemetry(type, subtype, pageid, env, objectId
         impression.correlationData = corRelationList;
     }
     return impression;
-}
+};
 
-export function generateInteractTelemetry(interactType, subType, env, pageId, values: Map,rollup: Rollup, corRelationList: Array<CorrelationData>): Interact {
-    let interact = new Interact();
+export const generateInteractTelemetry = (interactType, subType, env, pageId,
+    values: Map, rollup: Rollup, corRelationList: Array<CorrelationData>): Interact => {
+    const interact = new Interact();
     interact.type = interactType;
     interact.subType = subType;
     interact.pageId = pageId;
@@ -37,10 +41,11 @@ export function generateInteractTelemetry(interactType, subType, env, pageId, va
         interact.correlationData = corRelationList;
     }
     return interact;
-}
+};
 
-export function generateStartTelemetry(pageId, objectId, objectType, objectVersion,rollup: Rollup, corRelationList: Array<CorrelationData>): Start {
-    let start = new Start();
+export const generateStartTelemetry = (pageId, objectId,
+    objectType, objectVersion, rollup: Rollup, corRelationList: Array<CorrelationData>): Start => {
+    const start = new Start();
     start.type = objectType;
     start.pageId = pageId;
     start.env = Environment.HOME;
@@ -56,10 +61,11 @@ export function generateStartTelemetry(pageId, objectId, objectType, objectVersi
     }
 
     return start;
-}
+};
 
-export function generateEndTelemetry(type, mode, pageId, objectId, objectType, objectVersion,rollup: Rollup, corRelationList: Array<CorrelationData>): End {
-    let end = new End();
+export const generateEndTelemetry = (type, mode, pageId, objectId,
+    objectType, objectVersion, rollup: Rollup, corRelationList: Array<CorrelationData>): End => {
+    const end = new End();
     end.type = type;
     end.pageId = pageId;
     end.env = Environment.HOME;
@@ -74,7 +80,7 @@ export function generateEndTelemetry(type, mode, pageId, objectId, objectType, o
         end.correlationData = corRelationList;
     }
     return end;
-}
+};
 export class Map {
     [key: string]: any
 }

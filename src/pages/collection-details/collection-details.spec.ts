@@ -7,6 +7,7 @@ import { Ionic2RatingModule } from 'ionic2-rating';
 import { Observable } from 'rxjs/Observable';
 import {
     AuthService, BuildParamService, ContentService, CourseService, FileUtil, FrameworkModule,
+    // tslint:disable-next-line:max-line-length
     GenieSDKServiceProvider, ProfileType, SharedPreferences, ShareUtil, TelemetryService, InteractSubtype, PageId, Environment, InteractType, TelemetryObject, Mode, Rollup
 } from 'sunbird';
 
@@ -37,7 +38,7 @@ describe('CollectionDetailsPage Component', () => {
     let component: CollectionDetailsPage;
     let fixture: ComponentFixture<CollectionDetailsPage>;
     let translateService: TranslateService;
-    let identifier = 'do_212516141114736640146589';
+    const identifier = 'do_212516141114736640146589';
     let spyObjPreference;
     let spyObjBuildParam;
 
@@ -74,7 +75,7 @@ describe('CollectionDetailsPage Component', () => {
                 { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() },
                 SharedPreferences
             ]
-        })
+        });
     }));
 
     beforeEach(() => {
@@ -92,7 +93,7 @@ describe('CollectionDetailsPage Component', () => {
         inject([TranslateService], (service) => {
             translateService = service;
             translateService.use('en');
-        })
+        });
     });
 
     it('should create a valid instance of CollectionDetailsPage', () => {
@@ -110,17 +111,17 @@ describe('CollectionDetailsPage Component', () => {
     });
 
     it('should set content details', () => {
-        component.contentDetail = { "contentTypesCount": 1 };
-        component.cardData = { "contentTypesCount": 1 };
+        component.contentDetail = { 'contentTypesCount': 1 };
+        component.cardData = { 'contentTypesCount': 1 };
         component.userRating = 0;
         const contentService = TestBed.get(ContentService);
         const loadingCtrl = TestBed.get(LoadingController);
         spyOn(component, 'setContentDetails').and.callThrough();
-        spyOn(contentService, 'getContentDetail').and.callFake(function (option, success, error) {
-            let data = JSON.stringify((mockRes.contentDetailsResponse))
+        spyOn(contentService, 'getContentDetail').and.callFake( (option, success, error) => {
+            const data = JSON.stringify((mockRes.contentDetailsResponse));
             return success(data);
         });
-        spyOn(component, 'setChildContents').and.callFake(function (option, success, error) {
+        spyOn(component, 'setChildContents').and.callFake( (option, success, error) => {
         });
         component.setContentDetails(identifier, true);
         expect(component.setContentDetails).toBeDefined();
@@ -135,7 +136,7 @@ describe('CollectionDetailsPage Component', () => {
         component.cardData.contentData = '';
         component.cardData.pkgVersion = '';
         spyOn(component, 'extractApiResponse').and.callThrough();
-        spyOn(component, 'setChildContents').and.callFake(function (option, success, error) {
+        spyOn(component, 'setChildContents').and.callFake((option, success, error) => {
         });
         component.extractApiResponse(mockRes.contentDetailsResponse);
         fixture.detectChanges();
@@ -144,10 +145,10 @@ describe('CollectionDetailsPage Component', () => {
 
     it('should extract content details api response: content Locally not available', () => {
         component.contentDetail = {};
-        let data = mockRes.contentDetailsResponse;
+        const data = mockRes.contentDetailsResponse;
         data.result.contentData.gradeLevel = ['Class 1', 'Class 2'];
         data.result.isAvailableLocally = false;
-        spyOn(component, 'extractApiResponse').and.callFake;
+        spyOn(component, 'extractApiResponse');
         component.extractApiResponse(data);
         fixture.detectChanges();
         expect(component.extractApiResponse).toBeDefined();
@@ -158,7 +159,7 @@ describe('CollectionDetailsPage Component', () => {
 
     it('should open content rating screen', () => {
         const popOverCtrl = TestBed.get(PopoverController);
-        //spyOn(popOverCtrl, 'create').and.callThrough();
+        // spyOn(popOverCtrl, 'create').and.callThrough();
         component.contentDetail = {};
         component.contentDetail.isAvailableLocally = true;
         component.guestUser = false;
@@ -183,10 +184,10 @@ describe('CollectionDetailsPage Component', () => {
     });
 
     it('should check content download progress', () => {
-        let mockData = mockRes.importContentDownloadProgressResponse;
+        const mockData = mockRes.importContentDownloadProgressResponse;
         spyOn(component, 'subscribeGenieEvent').and.callThrough();
         const event = TestBed.get(Events);
-        spyOn(event, 'subscribe').and.callFake(function ({ }, success) {
+        spyOn(event, 'subscribe').and.callFake(({ }, success) => {
             return success(JSON.stringify(mockData));
         });
         component.cardData = {};
@@ -197,18 +198,18 @@ describe('CollectionDetailsPage Component', () => {
         expect(component.downloadProgress).toEqual(mockData.data.downloadProgress);
     });
 
-    it("#share should invoke  export ecar API if course is locally available", function () {
-        component.contentDetail = { "contentType": "Collection", "isAvailableLocally": true, "identifier": "SAMPLE_ID" }
+    it('#share should invoke  export ecar API if course is locally available', () => {
+        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': true, 'identifier': 'SAMPLE_ID' };
         const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
         spyOn(telemetryGeneratorService, 'generateInteractTelemetry');
         spyOn(component, 'generateShareInteractEvents').and.callThrough();
         const shareUtil = TestBed.get(ShareUtil);
-        spyOn(shareUtil, 'exportEcar').and.callThrough().and.callFake((identifier, success) => {
-            return success('SAMPLE_PATH')
+        spyOn(shareUtil, 'exportEcar').and.callThrough().and.callFake((_identifier, success) => {
+            return success('SAMPLE_PATH');
         });
         component.share();
-        let values = new Map();
-        values["ContentType"] = 'Collection';
+        const values = new Map();
+        values['ContentType'] = 'Collection';
         expect(telemetryGeneratorService.generateInteractTelemetry).toHaveBeenCalledWith(InteractType.TOUCH,
             InteractSubtype.SHARE_LIBRARY_INITIATED,
             Environment.HOME,
@@ -219,27 +220,27 @@ describe('CollectionDetailsPage Component', () => {
 
     });
 
-    it("#share should show warning toast if exportEcar gives failure response ", function () {
-        component.contentDetail = { "contentType": "Collection", "isAvailableLocally": true, "identifier": "SAMPLE_ID" }
-        const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
+    it('#share should show warning toast if exportEcar gives failure response ', () => {
+        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': true, 'identifier': 'SAMPLE_ID' };
+       const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
         spyOn(telemetryGeneratorService, 'generateInteractTelemetry').and.callFake(() => { });
         const shareUtil = TestBed.get(ShareUtil);
-        spyOn(shareUtil, 'exportEcar').and.callThrough().and.callFake((identifier, success, error) => {
-            return error('SAMPLE_PATH')
+        spyOn(shareUtil, 'exportEcar').and.callThrough().and.callFake((_identifier, success, error) => {
+            return error('SAMPLE_PATH');
         });
         const commonUtilService = TestBed.get(CommonUtilService);
-        spyOn(commonUtilService, 'showToast')
+        spyOn(commonUtilService, 'showToast');
         component.share();
         expect(commonUtilService.showToast).toHaveBeenCalledWith('SHARE_CONTENT_FAILED');
     });
 
-    it("#share should share successfully if content is not locally available ", function () {
-        component.contentDetail = { "contentType": "Collection", "isAvailableLocally": false, "identifier": "SAMPLE_ID" }
+    it('#share should share successfully if content is not locally available ', () => {
+        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': false, 'identifier': 'SAMPLE_ID' };
         const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
         spyOn(telemetryGeneratorService, 'generateInteractTelemetry').and.callFake(() => { });
         const shareUtil = TestBed.get(ShareUtil);
-        spyOn(shareUtil, 'exportEcar').and.callThrough().and.callFake((identifier, success, error) => {
-            return error('SAMPLE_PATH')
+        spyOn(shareUtil, 'exportEcar').and.callThrough().and.callFake((_identifier, success, error) => {
+            return error('SAMPLE_PATH');
         });
         const social = TestBed.get(SocialSharing);
         spyOn(social, 'share').and.callThrough();
@@ -248,15 +249,15 @@ describe('CollectionDetailsPage Component', () => {
         expect(social.share).toHaveBeenCalled();
     });
 
-    it("#navigateToDetailsPage should navigate to EnrolledCourseDetails page", function () {
+    it('#navigateToDetailsPage should navigate to EnrolledCourseDetails page', () => {
 
         const navController = TestBed.get(NavController);
         spyOn(navController, 'push');
         component.identifier = 'SAMPLE_ID';
-        let content = { "contentType": "Course" };
+        const content = { 'contentType': 'Course' };
         const contentState = {
 
-        }
+        };
         component.navigateToDetailsPage(content, 1);
         expect(navController.push).toHaveBeenCalledWith(EnrolledCourseDetailsPage, {
             content: content,
@@ -266,14 +267,14 @@ describe('CollectionDetailsPage Component', () => {
         });
     });
 
-    it("#navigateToDetailsPage should navigate to CollectionDetails page", function () {
+    it('#navigateToDetailsPage should navigate to CollectionDetails page', () => {
         const navController = TestBed.get(NavController);
         spyOn(navController, 'push');
         component.identifier = 'SAMPLE_ID';
-        let content = { "mimeType": "application/vnd.ekstep.content-collection" };
+        const content = { 'mimeType': 'application/vnd.ekstep.content-collection' };
         const contentState = {
 
-        }
+        };
         component.navigateToDetailsPage(content, 1);
         expect(navController.push).toHaveBeenCalledWith(CollectionDetailsPage, {
             content: content,
@@ -283,15 +284,15 @@ describe('CollectionDetailsPage Component', () => {
         });
     });
 
-    it("#navigateToDetailsPage should navigate to ContentDetails page", function () {
+    it('#navigateToDetailsPage should navigate to ContentDetails page', () => {
 
         const navController = TestBed.get(NavController);
         spyOn(navController, 'push');
         component.identifier = 'SAMPLE_ID';
-        let content = { "contentType": "Content" };
+        const content = { 'contentType': 'Content' };
         const contentState = {
 
-        }
+        };
         component.navigateToDetailsPage(content, 1);
         expect(navController.push).toHaveBeenCalledWith(ContentDetailsPage, {
             isChildContent: true,
@@ -302,11 +303,11 @@ describe('CollectionDetailsPage Component', () => {
         });
     });
 
-    it("#cancelDownload should cancel the download", function () {
-        component.contentDetail = { "contentType": "Collection", "isAvailableLocally": false, "identifier": "SAMPLE_ID" }
+    it('#cancelDownload should cancel the download', () => {
+        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': false, 'identifier': 'SAMPLE_ID' };
         const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'cancelDownload').and.callFake(function ({ }, success, error) {
-            let data = JSON.stringify({})
+        spyOn(contentService, 'cancelDownload').and.callFake( ({ }, success, error) => {
+            const data = JSON.stringify({});
             return success(data);
         });
         const navController = TestBed.get(NavController);
@@ -317,11 +318,11 @@ describe('CollectionDetailsPage Component', () => {
         expect(navController.pop).toHaveBeenCalled();
     });
 
-    it("#cancelDownload should handle error scenario from API", function () {
-        component.contentDetail = { "contentType": "Collection", "isAvailableLocally": false, "identifier": "SAMPLE_ID" }
+    it('#cancelDownload should handle error scenario from API', () => {
+        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': false, 'identifier': 'SAMPLE_ID' };
         const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'cancelDownload').and.callFake(function ({ }, success, error) {
-            let data = JSON.stringify({})
+        spyOn(contentService, 'cancelDownload').and.callFake( ({ }, success, error) => {
+            const data = JSON.stringify({});
             return error(data);
         });
         const navController = TestBed.get(NavController);
@@ -332,8 +333,8 @@ describe('CollectionDetailsPage Component', () => {
         expect(navController.pop).toHaveBeenCalled();
     });
 
-    it("#showDownloadAlert should show confirmation alert when download all is clicked if network is available", function () {
-        component.contentDetail = { "contentType": "Collection", "isAvailableLocally": false, "identifier": "SAMPLE_ID" }
+    it('#showDownloadAlert should show confirmation alert when download all is clicked if network is available', () => {
+        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': false, 'identifier': 'SAMPLE_ID' };
         component.isNetworkAvailable = true;
         spyOn(component, 'downloadAllContent').and.callThrough().and.callFake(() => { });
         PopoverMock.setOnDissMissResponse(true);
@@ -342,8 +343,8 @@ describe('CollectionDetailsPage Component', () => {
 
     });
 
-    it("#showDownloadAlert should show error message if network is not available", function () {
-        component.contentDetail = { "contentType": "Collection", "isAvailableLocally": false, "identifier": "SAMPLE_ID" }
+    it('#showDownloadAlert should show error message if network is not available', () => {
+        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': false, 'identifier': 'SAMPLE_ID' };
         component.isNetworkAvailable = false;
         const commonUtilService = TestBed.get(CommonUtilService);
         spyOn(commonUtilService, 'showToast');
@@ -354,10 +355,10 @@ describe('CollectionDetailsPage Component', () => {
 
     });
 
-    it("#showOverflowMenu should show Overflow menu", function () {
-        component.contentDetail = { "contentType": "Collection", "isAvailableLocally": false, "identifier": "SAMPLE_ID" }
-        let popOverController = TestBed.get(PopoverController);
-        let navController = TestBed.get(NavController);
+    it('#showOverflowMenu should show Overflow menu', () => {
+        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': false, 'identifier': 'SAMPLE_ID' };
+        const popOverController = TestBed.get(PopoverController);
+        const navController = TestBed.get(NavController);
         spyOn(navController, 'pop').and.callThrough();
         PopoverMock.setOnDissMissResponse('delete.success');
         component.showOverflowMenu({});
@@ -365,11 +366,11 @@ describe('CollectionDetailsPage Component', () => {
         expect(navController.pop).toHaveBeenCalled();
     });
 
-    it("#downloadAllContent should invoke importContent API", function () {
-        component.contentDetail = { "contentType": "Collection", "isAvailableLocally": false, "identifier": "SAMPLE_ID" }
+    it('#downloadAllContent should invoke importContent API', () => {
+        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': false, 'identifier': 'SAMPLE_ID' };
         const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'importContent').and.callFake(function ({ }, success, error) {
-            let data = JSON.stringify((mockRes.enqueuedImportContentResponse))
+        spyOn(contentService, 'importContent').and.callFake( ({ }, success, error) => {
+            const data = JSON.stringify((mockRes.enqueuedImportContentResponse));
             return success(data);
         });
         component.isNetworkAvailable = true;
@@ -377,65 +378,65 @@ describe('CollectionDetailsPage Component', () => {
         expect(contentService.importContent).toHaveBeenCalled();
     });
 
-    it("#ionViewWillLeave should unsubscribe event", function () {
+    it('#ionViewWillLeave should unsubscribe event', () => {
         const events = TestBed.get(Events);
         spyOn(events, 'unsubscribe');
         component.ionViewWillLeave();
         expect(events.unsubscribe).toHaveBeenCalledWith('genie.event');
     });
 
-    it("#resetVariables should reset all variables", function () {
+    it('#resetVariables should reset all variables', () => {
         component.resetVariables();
         expect(component.cardData).toBe('');
         expect(component.contentDetail).toBe('');
     });
 
-    it("#getReadableFileSize should return proper file size", function () {
+    it('#getReadableFileSize should return proper file size', () => {
         expect(component.getReadableFileSize(1120.0)).toBe('1.1 KB');
     });
 
-    it("#rateContent shouldnot show warning toast for guest  student profiles", function () {
-        component.contentDetail = { "contentType": "Collection", "isAvailableLocally": false, "identifier": "SAMPLE_ID" }
+    it('#rateContent shouldnot show warning toast for guest  student profiles', () => {
+        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': false, 'identifier': 'SAMPLE_ID' };
         const appGlobal = TestBed.get(AppGlobalService);
         const comonUtilService = TestBed.get(CommonUtilService);
         spyOn(comonUtilService, 'showToast').and.callThrough();
         spyOn(appGlobal, 'isUserLoggedIn').and.returnValue(false);
         spyObjPreference.and.returnValue(Promise.resolve(ProfileType.STUDENT));
         component.checkLoggedInOrGuestUser();
-        component.profileType = ProfileType.STUDENT
+        component.profileType = ProfileType.STUDENT;
         component.rateContent();
         expect(comonUtilService.showToast).not.toHaveBeenCalled();
 
     });
 
-    it("#rateContent should show warning toast for guest  teacher profiles", function () {
+    it('#rateContent should show warning toast for guest  teacher profiles', () => {
         const appGlobal = TestBed.get(AppGlobalService);
         const comonUtilService = TestBed.get(CommonUtilService);
         spyOn(comonUtilService, 'showToast').and.callThrough();
         spyOn(appGlobal, 'isUserLoggedIn').and.returnValue(false);
         component.checkLoggedInOrGuestUser();
-        component.profileType = ProfileType.TEACHER
+        component.profileType = ProfileType.TEACHER;
         component.rateContent();
         expect(comonUtilService.showToast).toHaveBeenCalledWith('SIGNIN_TO_USE_FEATURE');
     });
 
-    it("#rateContent should show rating popup if collection is locally available", function () {
-        component.contentDetail = { "contentType": "Collection", "isAvailableLocally": true, "identifier": "SAMPLE_ID" }
-        let popOverController = TestBed.get(PopoverController);
+    it('#rateContent should show rating popup if collection is locally available', () => {
+        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': true, 'identifier': 'SAMPLE_ID' };
+        const popOverController = TestBed.get(PopoverController);
         PopoverMock.setOnDissMissResponse({ message: 'rating.success' });
         component.rateContent();
         expect(popOverController.create).toHaveBeenCalled();
     });
 
-    it("#rateContent should show warning toast if course is not locally available", function () {
-        component.contentDetail = { "contentType": "Collection", "isAvailableLocally": false, "identifier": "SAMPLE_ID" }
-        let commonUtilService = TestBed.get(CommonUtilService);
+    it('#rateContent should show warning toast if course is not locally available', () => {
+        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': false, 'identifier': 'SAMPLE_ID' };
+        const commonUtilService = TestBed.get(CommonUtilService);
         spyOn(commonUtilService, 'showToast').and.callThrough();
         component.rateContent();
         expect(commonUtilService.showToast).toHaveBeenCalledWith('TRY_BEFORE_RATING');
     });
 
-    it("#checkCurrentUserType should populate profileType as STUDENT", function (done) {
+    it('#checkCurrentUserType should populate profileType as STUDENT', (done) => {
         spyObjPreference.and.returnValue(Promise.resolve(ProfileType.STUDENT));
         component.checkCurrentUserType();
         setTimeout(() => {
@@ -444,34 +445,37 @@ describe('CollectionDetailsPage Component', () => {
         }, 500);
 
     });
-    it("#setChildContents should dismiss the children loader", function () {
-        component.cardData = { "contentType": "Collection", "isAvailableLocally": false, "identifier": "SAMPLE_ID", "hierarchyInfo": "PARENT_ID/CHILD_ID" };
+    it('#setChildContents should dismiss the children loader', () => {
+        component.cardData = { 'contentType': 'Collection', 'isAvailableLocally': false, 'identifier': 'SAMPLE_ID',
+         'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
         const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'getChildContents').and.callFake(function ({ }, success, error) {
-            let data = JSON.stringify((mockRes.getChildContentAPIResponse))
+        spyOn(contentService, 'getChildContents').and.callFake( ({ }, success, error) => {
+            const data = JSON.stringify((mockRes.getChildContentAPIResponse));
             return success(data);
         });
         component.setChildContents();
         expect(component.showChildrenLoader).toBe(false);
     });
 
-    it("#setChildContents should handle error scenario", function () {
-        component.cardData = { "contentType": "Collection", "isAvailableLocally": false, "identifier": "SAMPLE_ID", "hierarchyInfo": "PARENT_ID/CHILD_ID" };
+    it('#setChildContents should handle error scenario', () => {
+        component.cardData = { 'contentType': 'Collection', 'isAvailableLocally': false,
+        'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
         const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'getChildContents').and.callFake(function ({ }, success, error) {
+        spyOn(contentService, 'getChildContents').and.callFake( ({ }, success, error) => {
             return error();
         });
         component.setChildContents();
         expect(component.showChildrenLoader).toBe(false);
     });
 
-    it("#importContent should populate queuedIdentifier for successfull API calls", function (done) {
-        component.cardData = { "contentType": "Collection", "isAvailableLocally": false, "identifier": "SAMPLE_ID", "hierarchyInfo": "PARENT_ID/CHILD_ID" };
+    it('#importContent should populate queuedIdentifier for successfull API calls', (done) => {
+        component.cardData = { 'contentType': 'Collection', 'isAvailableLocally': false,
+         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
         const contentService = TestBed.get(ContentService);
 
         spyOn(component, 'generateImpressionEvent').and.callThrough().and.callFake(() => { });
-        spyOn(contentService, 'importContent').and.callFake(function ({ }, success, error) {
-            let data = JSON.stringify((mockRes.enqueuedImportContentResponse))
+        spyOn(contentService, 'importContent').and.callFake(({ }, success, error) => {
+           const data = JSON.stringify((mockRes.enqueuedImportContentResponse));
             return success(data);
         });
         component.isDownloadStarted = true;
@@ -483,15 +487,16 @@ describe('CollectionDetailsPage Component', () => {
 
     });
 
-    it("#importContent should show error if nothing is added in queuedIdentifiers ", function () {
-        component.cardData = { "contentType": "Collection", "isAvailableLocally": false, "identifier": "SAMPLE_ID", "hierarchyInfo": "PARENT_ID/CHILD_ID" };
+    it('#importContent should show error if nothing is added in queuedIdentifiers ', () => {
+        component.cardData = { 'contentType': 'Collection', 'isAvailableLocally': false,
+         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
         const contentService = TestBed.get(ContentService);
         const commonUtilService = TestBed.get(CommonUtilService);
         spyOn(commonUtilService, 'showToast');
         spyOn(component, 'generateImpressionEvent').and.callThrough().and.callFake(() => { });
-        spyOn(contentService, 'importContent').and.callFake(function ({ }, success, error) {
-            let data = JSON.stringify((mockRes.enqueuedOthersImportContentResponse))
-            return success(data);
+        spyOn(contentService, 'importContent').and.callFake( ({ }, success, error) => {
+         const data = JSON.stringify((mockRes.enqueuedOthersImportContentResponse));
+            return error(data);
         });
         component.isDownloadStarted = true;
         component.importContent(['SAMPLE_ID'], false);
@@ -499,12 +504,13 @@ describe('CollectionDetailsPage Component', () => {
         expect(commonUtilService.showToast).toHaveBeenCalledWith('UNABLE_TO_FETCH_CONTENT');
     });
 
-    it("#importContent should restore the download state for error condition from importContent", function () {
-        component.cardData = { "contentType": "Collection", "isAvailableLocally": false, "identifier": "SAMPLE_ID", "hierarchyInfo": "PARENT_ID/CHILD_ID" };
+    it('#importContent should restore the download state for error condition from importContent', () => {
+        component.cardData = { 'contentType': 'Collection', 'isAvailableLocally': false,
+         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
         const contentService = TestBed.get(ContentService);
         spyOn(component, 'generateImpressionEvent').and.callThrough().and.callFake(() => { });
-        spyOn(contentService, 'importContent').and.callFake(function ({ }, success, error) {
-            let data = JSON.stringify((mockRes.enqueuedOthersImportContentResponse))
+        spyOn(contentService, 'importContent').and.callFake(({ }, success, error) => {
+            const data = JSON.stringify((mockRes.enqueuedOthersImportContentResponse));
             return error(data);
         });
         component.isDownloadStarted = true;
@@ -512,14 +518,15 @@ describe('CollectionDetailsPage Component', () => {
         expect(component.isDownloadStarted).toBe(false);
     });
 
-    it("#importContent should show error toast if failure response from importContent API", function () {
-        component.cardData = { "contentType": "Collection", "isAvailableLocally": false, "identifier": "SAMPLE_ID", "hierarchyInfo": "PARENT_ID/CHILD_ID" };
+    it('#importContent should show error toast if failure response from importContent API', () => {
+        component.cardData = { 'contentType': 'Collection', 'isAvailableLocally': false,
+         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
         const contentService = TestBed.get(ContentService);
         const commonUtilService = TestBed.get(CommonUtilService);
         spyOn(commonUtilService, 'showToast');
         spyOn(component, 'generateImpressionEvent').and.callThrough().and.callFake(() => { });
-        spyOn(contentService, 'importContent').and.callFake(function ({ }, success, error) {
-            let data = JSON.stringify((mockRes.enqueuedOthersImportContentResponse))
+        spyOn(contentService, 'importContent').and.callFake( ({ }, success, error) => {
+           const data = JSON.stringify((mockRes.enqueuedOthersImportContentResponse));
             return error(data);
         });
         component.isDownloadStarted = false;
@@ -528,14 +535,15 @@ describe('CollectionDetailsPage Component', () => {
         expect(commonUtilService.showToast).toHaveBeenCalledWith('UNABLE_TO_FETCH_CONTENT');
     });
 
-    it("#importContent should show error toast if no content found response from importContent API", function () {
-        component.cardData = { "contentType": "Collection", "isAvailableLocally": false, "identifier": "SAMPLE_ID", "hierarchyInfo": "PARENT_ID/CHILD_ID" };
+    it('#importContent should show error toast if no content found response from importContent API', () => {
+        component.cardData = { 'contentType': 'Collection', 'isAvailableLocally': false,
+         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
         const contentService = TestBed.get(ContentService);
         const commonUtilService = TestBed.get(CommonUtilService);
         spyOn(commonUtilService, 'showToast');
         spyOn(component, 'generateImpressionEvent').and.callThrough().and.callFake(() => { });
-        spyOn(contentService, 'importContent').and.callFake(function ({ }, success, error) {
-            let data = JSON.stringify((mockRes.noContentFoundImportContentResponse))
+        spyOn(contentService, 'importContent').and.callFake( ({ }, success, error) => {
+           const data = JSON.stringify((mockRes.noContentFoundImportContentResponse));
             return success(data);
         });
         component.isDownloadStarted = false;
@@ -545,7 +553,7 @@ describe('CollectionDetailsPage Component', () => {
         expect(component.showLoading).toBe(false);
     });
 
-    it("#updateSavedResources should pulish savedresources event", function () {
+    it('#updateSavedResources should pulish savedresources event', () => {
         const events = TestBed.get(Events);
         spyOn(events, 'publish');
         component.updateSavedResources();
@@ -554,41 +562,46 @@ describe('CollectionDetailsPage Component', () => {
         });
     });
 
-    it("#subscribeGenieEvent should update the download progress when download progress event comes", function () {
-        component.cardData = { "contentType": "Collection", "isAvailableLocally": false, "identifier": "SAMPLE_ID", "hierarchyInfo": "PARENT_ID/CHILD_ID" };
+    it('#subscribeGenieEvent should update the download progress when download progress event comes', () => {
+        component.cardData = { 'contentType': 'Collection', 'isAvailableLocally': false,
+         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
         const events = TestBed.get(Events);
-        spyOn(events, 'subscribe').and.callFake(function ({ }, success, error) {
+        spyOn(events, 'subscribe').and.callFake( ({ }, success, error) => {
             return success(JSON.stringify(mockRes.downloadProgressEventSample1));
         });
         component.subscribeGenieEvent();
         expect(component.downloadProgress).toBe(10);
     });
 
-    it("#subscribeGenieEvent should update the progress to 0 if API gives response -1", function () {
-        component.cardData = component.contentDetail = { "contentType": "Collection", "isAvailableLocally": false, "identifier": "SAMPLE_ID", "hierarchyInfo": "PARENT_ID/CHILD_ID" };
+    it('#subscribeGenieEvent should update the progress to 0 if API gives response -1', () => {
+        component.cardData = component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': false,
+         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
         const events = TestBed.get(Events);
-        spyOn(events, 'subscribe').and.callFake(function ({ }, success, error) {
+        spyOn(events, 'subscribe').and.callFake( ({ }, success, error) => {
             return success(JSON.stringify(mockRes.downloadProgressEventSample2));
         });
         component.subscribeGenieEvent();
         expect(component.downloadProgress).toBe(0);
     });
 
-    it("#subscribeGenieEvent should  dismiss overlay if download progress is 100", function () {
-        component.cardData = component.contentDetail = { "contentType": "Collection", "isAvailableLocally": false, "identifier": "SAMPLE_ID", "hierarchyInfo": "PARENT_ID/CHILD_ID" };
+    it('#subscribeGenieEvent should  dismiss overlay if download progress is 100', () => {
+        component.cardData = component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': false,
+         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
         const events = TestBed.get(Events);
-        spyOn(events, 'subscribe').and.callFake(function ({ }, success, error) {
+        spyOn(events, 'subscribe').and.callFake( ({ }, success, error) => {
             return success(JSON.stringify(mockRes.downloadProgressEventSample3));
         });
         component.subscribeGenieEvent();
         expect(component.showLoading).toBe(false);
     });
 
-    it("#subscribeGenieEvent should  mark download as complete", function () {
-        component.cardData = { "contentType": "Collection", "isAvailableLocally": false, "identifier": "SAMPLE_ID", "hierarchyInfo": "PARENT_ID/CHILD_ID" };
-        component.contentDetail = { "contentType": "Collection", "isAvailableLocally": false, "identifier": "SAMPLE_ID", "hierarchyInfo": "PARENT_ID/CHILD_ID" };
+    it('#subscribeGenieEvent should  mark download as complete', () => {
+        component.cardData = { 'contentType': 'Collection', 'isAvailableLocally': false,
+         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
+        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': false,
+         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
         const events = TestBed.get(Events);
-        spyOn(events, 'subscribe').and.callFake(function ({ }, success, error) {
+        spyOn(events, 'subscribe').and.callFake( ({ }, success, error) => {
             return success(JSON.stringify(mockRes.importCompleteEventSample));
         });
         component.queuedIdentifiers = ['SAMPLE_ID'];
@@ -598,11 +611,13 @@ describe('CollectionDetailsPage Component', () => {
         expect(component.isDownlaodCompleted).toBe(true);
     });
 
-    it("#subscribeGenieEvent should  load all child contents when download is complete", function () {
-        component.contentDetail = { "contentType": "Collection", "isAvailableLocally": false, "identifier": "SAMPLE_ID", "hierarchyInfo": "PARENT_ID/CHILD_ID" };
-        component.cardData = { "contentType": "Collection", "isAvailableLocally": false, "identifier": "SAMPLE_ID", "hierarchyInfo": "PARENT_ID/CHILD_ID" };
+    it('#subscribeGenieEvent should  load all child contents when download is complete', () => {
+        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': false,
+         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
+        component.cardData = { 'contentType': 'Collection', 'isAvailableLocally': false,
+         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
         const events = TestBed.get(Events);
-        spyOn(events, 'subscribe').and.callFake(function ({ }, success, error) {
+        spyOn(events, 'subscribe').and.callFake( ({ }, success, error) => {
             return success(JSON.stringify(mockRes.importCompleteEventSample));
         });
         component.queuedIdentifiers = ['SAMPLE_ID'];
@@ -612,30 +627,30 @@ describe('CollectionDetailsPage Component', () => {
         expect(component.updateSavedResources).toHaveBeenCalled();
     });
 
-    it("#subscribeGenieEvent should  update the course if update event is available ", function () {
-        component.cardData = { "contentType": "Collection", "isAvailableLocally": false, "identifier": "SAMPLE_ID" };
+    it('#subscribeGenieEvent should  update the course if update event is available ', () => {
+        component.cardData = { 'contentType': 'Collection', 'isAvailableLocally': false, 'identifier': 'SAMPLE_ID' };
         component.queuedIdentifiers = ['SAMPLE_ID'];
         component.isDownloadStarted = false;
         component.identifier = 'SAMPLE_ID';
-        component.parentContent = { "identifier": "PARENT_ID" };
+        component.parentContent = { 'identifier': 'PARENT_ID' };
         const events = TestBed.get(Events);
-        spyOn(events, 'subscribe').and.callFake(function ({ }, success, error) {
+        spyOn(events, 'subscribe').and.callFake( ({ }, success, error) => {
             return success(JSON.stringify(mockRes.updateEventSample));
         });
 
         spyOn(component, 'importContent').and.callThrough().and.callFake(() => { });
         component.subscribeGenieEvent();
-        expect(component.showLoading).toBe(true)
+        expect(component.showLoading).toBe(true);
         expect(component.importContent).toHaveBeenCalledWith(['PARENT_ID'], false);
     });
 
-    it("#subscribeGenieEvent should  invoke setContentDetails if  update event is available ", function () {
-        component.cardData = { "contentType": "Collection", "isAvailableLocally": false, "identifier": "SAMPLE_ID" };
+    it('#subscribeGenieEvent should  invoke setContentDetails if  update event is available ', () => {
+        component.cardData = { 'contentType': 'Collection', 'isAvailableLocally': false, 'identifier': 'SAMPLE_ID' };
         component.queuedIdentifiers = ['SAMPLE_ID'];
         component.isDownloadStarted = false;
         component.identifier = 'SAMPLE_ID';
         const events = TestBed.get(Events);
-        spyOn(events, 'subscribe').and.callFake(function ({ }, success, error) {
+        spyOn(events, 'subscribe').and.callFake( ({ }, success, error) => {
             return success(JSON.stringify(mockRes.updateEventSample));
         });
 
@@ -645,26 +660,30 @@ describe('CollectionDetailsPage Component', () => {
         expect(component.setContentDetails).toHaveBeenCalled();
     });
 
-    it("#subscribeGenieEvent should  invoke setContentDetials when import is complete", function () {
-        component.cardData = { "contentType": "Collection", "isAvailableLocally": false, "identifier": "SAMPLE_ID", "hierarchyInfo": "PARENT_ID/CHILD_ID" };
-        component.contentDetail = { "contentType": "Collection", "isAvailableLocally": false, "identifier": "SAMPLE_ID", "hierarchyInfo": "PARENT_ID/CHILD_ID" };
+    it('#subscribeGenieEvent should  invoke setContentDetials when import is complete', () => {
+        component.cardData = { 'contentType': 'Collection', 'isAvailableLocally': false,
+         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
+        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': false,
+         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
         const events = TestBed.get(Events);
-        spyOn(events, 'subscribe').and.callFake(function ({ }, success, error) {
+        spyOn(events, 'subscribe').and.callFake( ({ }, success, error) => {
             return success(JSON.stringify(mockRes.importCompleteEventSample));
         });
         spyOn(component, 'setContentDetails').and.callThrough().and.callFake(() => { });
         component.queuedIdentifiers = ['SAMPLE_ID'];
         component.isDownloadStarted = false;
-        component.parentContent = { "identifier": "PARENT_ID" };
+        component.parentContent = { 'identifier': 'PARENT_ID' };
         component.subscribeGenieEvent();
-        expect(component.setContentDetails).toHaveBeenCalled()
+        expect(component.setContentDetails).toHaveBeenCalled();
     });
 
-    it("#subscribeGenieEvent should  invoke setContentDetials when import is complete", function () {
-        component.cardData = { "contentType": "Collection", "isAvailableLocally": false, "identifier": "SAMPLE_ID", "hierarchyInfo": "PARENT_ID/CHILD_ID" };
-        component.contentDetail = { "contentType": "Collection", "isAvailableLocally": false, "identifier": "SAMPLE_ID", "hierarchyInfo": "PARENT_ID/CHILD_ID" };
+    it('#subscribeGenieEvent should  invoke setContentDetials when import is complete', () => {
+        component.cardData = { 'contentType': 'Collection', 'isAvailableLocally': false,
+         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
+        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': false,
+         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
         const events = TestBed.get(Events);
-        spyOn(events, 'subscribe').and.callFake(function ({ }, success, error) {
+        spyOn(events, 'subscribe').and.callFake( ({ }, success, error) => {
             return success(JSON.stringify(mockRes.importCompleteEventSample));
         });
         spyOn(component, 'setContentDetails').and.callThrough().and.callFake(() => { });
@@ -672,30 +691,32 @@ describe('CollectionDetailsPage Component', () => {
         component.isDownloadStarted = false;
         component.isUpdateAvailable = true;
         component.subscribeGenieEvent();
-        expect(component.setContentDetails).toHaveBeenCalled()
+        expect(component.setContentDetails).toHaveBeenCalled();
     });
 
-    it("#subscribeGenieEvent should  set child contents when import is complete", function () {
-        component.cardData = { "contentType": "Collection", "isAvailableLocally": false, "identifier": "SAMPLE_ID", "hierarchyInfo": "PARENT_ID/CHILD_ID" };
-        component.contentDetail = { "contentType": "Collection", "isAvailableLocally": false, "identifier": "SAMPLE_ID", "hierarchyInfo": "PARENT_ID/CHILD_ID" };
+    it('#subscribeGenieEvent should  set child contents when import is complete', () => {
+        component.cardData = { 'contentType': 'Collection', 'isAvailableLocally': false,
+         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
+        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': false,
+         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
         const events = TestBed.get(Events);
-        spyOn(events, 'subscribe').and.callFake(function ({ }, success, error) {
+        spyOn(events, 'subscribe').and.callFake( ({ }, success, error) => {
             return success(JSON.stringify(mockRes.importCompleteEventSample));
         });
         spyOn(component, 'updateSavedResources').and.callThrough().and.callFake(() => { });
         const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'getChildContents').and.callFake(function ({ }, success, error) {
-            let data = JSON.stringify((mockRes.getChildContentAPIResponse))
+        spyOn(contentService, 'getChildContents').and.callFake( ({ }, success, error) => {
+           const data = JSON.stringify((mockRes.getChildContentAPIResponse));
             return success(data);
         });
         component.queuedIdentifiers = ['SAMPLE_ID'];
         component.isDownloadStarted = false;
         component.isUpdateAvailable = false;
         component.subscribeGenieEvent();
-        expect(component.updateSavedResources).toHaveBeenCalled()
+        expect(component.updateSavedResources).toHaveBeenCalled();
     });
 
-    it("#handleNetworkAvaibility should  handle network avaibility", function () {
+    it('#handleNetworkAvaibility should  handle network avaibility', () => {
         component.cardData = {};
         component.contentDetail = { contentTypesCount: 1 };
         spyObjBuildParam.and.returnValue(Promise.reject());
@@ -705,7 +726,7 @@ describe('CollectionDetailsPage Component', () => {
         expect(component.contentDetail.contentTypesCount).toBe(1);
     });
 
-    it("#handleNavBackButtonClick should handle nav back button click", function () {
+    it('#handleNavBackButtonClick should handle nav back button click', () => {
         const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
         spyOn(telemetryGeneratorService, 'generateEndTelemetry');
         const navCtrl = TestBed.get(NavController);
@@ -721,7 +742,7 @@ describe('CollectionDetailsPage Component', () => {
         expect(navCtrl.pop).toHaveBeenCalled();
     });
 
-    it("#handleNavBackButtonClick should generate qrsession end event if shouldGenerateEndEvents paramater is true", function () {
+    it('#handleNavBackButtonClick should generate qrsession end event if shouldGenerateEndEvents paramater is true', () => {
         const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
         spyOn(telemetryGeneratorService, 'generateEndTelemetry');
         const navCtrl = TestBed.get(NavController);
@@ -738,16 +759,17 @@ describe('CollectionDetailsPage Component', () => {
         expect(navCtrl.pop).toHaveBeenCalled();
     });
 
-    it("#ionViewDidload should handle back button click", function () {
+    it('#ionViewDidload should handle back button click', () => {
         component.ionViewDidLoad();
     });
 
-    it("#ionViewWillEnter should invoke setContentDetails when page is invoked", function () {
+    it('#ionViewWillEnter should invoke setContentDetails when page is invoked', () => {
         const navParams = TestBed.get(NavParams);
         const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
         spyOn(telemetryGeneratorService, 'generateStartTelemetry');
         spyOn(telemetryGeneratorService, 'generateImpressionTelemetry');
-        navParams.data['content'] = { "contentType": "Collection", "isAvailableLocally": false, "identifier": "SAMPLE_ID", "hierarchyInfo": "PARENT_ID/CHILD_ID" };
+        navParams.data['content'] = { 'contentType': 'Collection', 'isAvailableLocally': false,
+         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
         spyOn(component, 'setContentDetails');
         spyOn(component, 'subscribeGenieEvent');
         component.ionViewWillEnter();
@@ -761,7 +783,7 @@ describe('CollectionDetailsPage Component', () => {
         const platform = TestBed.get(Platform);
         const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
 
-        spyOn(platform, 'registerBackButtonAction').and.callFake(function (success) {
+        spyOn(platform, 'registerBackButtonAction').and.callFake( (success) => {
             return success();
         });
         spyOn(component, 'generateEndEvent').and.callThrough();
@@ -772,7 +794,7 @@ describe('CollectionDetailsPage Component', () => {
         component.backButtonFunc = jasmine.createSpy();
         component.handleDeviceBackButton();
         expect(component.generateEndEvent).toHaveBeenCalledWith('SAMPLE_ID', 'SAMPLE_TYPE', 'SAMPLE_VERSION');
-        let telemetryObject: TelemetryObject = new TelemetryObject();
+        const telemetryObject: TelemetryObject = new TelemetryObject();
         telemetryObject.id = 'SAMPLE_ID';
         telemetryObject.type = 'SAMPLE_TYPE';
         telemetryObject.version = 'SAMPLE_VERSION';
@@ -791,7 +813,7 @@ describe('CollectionDetailsPage Component', () => {
         const navController = TestBed.get(NavController);
         spyOn(navController, 'pop');
         spyOn(commonUtilService, 'showToast');
-        spyOn(contentService, 'getContentDetail').and.callFake(function (arg, success, error) {
+        spyOn(contentService, 'getContentDetail').and.callFake( (arg, success, error) => {
             return error();
         });
         component.setContentDetails('SAMPLE_ID', false);
@@ -801,9 +823,9 @@ describe('CollectionDetailsPage Component', () => {
 
     it('#extractApiResponse  should  update content if update is available', () => {
         const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'importContent').and.callFake(function (arg, success, error) {
+        spyOn(contentService, 'importContent').and.callFake( (arg, success, error) => {
         });
-        spyOn(component, 'setCollectionStructure').and.callFake(function (arg, success, error) {
+        spyOn(component, 'setCollectionStructure').and.callFake( (arg, success, error) => {
         });
         component.isUpdateAvailable = false;
         component.extractApiResponse(mockRes.updateContentDetailsResponse);
@@ -812,9 +834,9 @@ describe('CollectionDetailsPage Component', () => {
 
     it('#extractApiResponse  should  download the content of its not locally available', () => {
         const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'importContent').and.callFake(function (arg, success, error) {
+        spyOn(contentService, 'importContent').and.callFake( (arg, success, error) => {
         });
-        spyOn(component, 'setCollectionStructure').and.callFake(function (arg, success, error) {
+        spyOn(component, 'setCollectionStructure').and.callFake( (arg, success, error) => {
         });
         component.isUpdateAvailable = false;
         component.extractApiResponse(mockRes.locallyNotAvailableContentDetailsResponse);

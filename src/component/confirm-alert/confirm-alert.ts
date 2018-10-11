@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { ViewController } from 'ionic-angular/navigation/view-controller';
 import { Platform } from 'ionic-angular';
 
-
 @Component({
   selector: 'confirm-alert',
   templateUrl: 'confirm-alert.html'

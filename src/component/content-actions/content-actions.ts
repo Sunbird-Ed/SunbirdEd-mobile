@@ -4,16 +4,10 @@ import { PopoverController, Events } from 'ionic-angular/index';
 import { ViewController } from 'ionic-angular';
 import { Component } from '@angular/core';
 import { ContentService, AuthService } from 'sunbird';
-import { ToastController, Platform } from "ionic-angular";
+import { ToastController, Platform } from 'ionic-angular';
 import { ReportIssuesComponent } from '../report-issues/report-issues';
 import { ProfileConstants } from '../../app/app.constant';
 
-/**
- * Generated class for the ContentActionsComponent component.
- *
- * See https://angular.io/api/core/Component for more info on Angular
- * Components.
- */
 @Component({
   selector: 'content-actions',
   templateUrl: 'content-actions.html'
@@ -21,12 +15,12 @@ import { ProfileConstants } from '../../app/app.constant';
 export class ContentActionsComponent {
 
   content: any;
-  isChild: boolean = false;
+  isChild = false;
   contentId: string;
   backButtonFunc = undefined;
-  userId: string = '';
-  pageName: string = '';
-  showFlagMenu: boolean = true;
+  userId = '';
+  pageName = '';
+  showFlagMenu = true;
 
   constructor(
     public viewCtrl: ViewController,
@@ -38,7 +32,7 @@ export class ContentActionsComponent {
     private events: Events,
     private translate: TranslateService,
     private platform: Platform) {
-    this.content = this.navParams.get("content");
+    this.content = this.navParams.get('content');
     this.pageName = this.navParams.get('pageName');
 
     if (this.navParams.get('isChild')) {
@@ -55,14 +49,14 @@ export class ContentActionsComponent {
 
   getUserId() {
     this.authService.getSessionData((session: string) => {
-      if (session === null || session === "null") {
+      if (session === null || session === 'null') {
         this.userId = '';
       } else {
-        let res = JSON.parse(session);
+        const res = JSON.parse(session);
         this.userId = res[ProfileConstants.USER_TOKEN] ? res[ProfileConstants.USER_TOKEN] : '';
-        // Needed: this get exeuted if user is on course details page. 
+        // Needed: this get exeuted if user is on course details page.
         if (this.pageName === 'course' && this.userId) {
-          // If course is not enrolled then hide flag/report issue menu. 
+          // If course is not enrolled then hide flag/report issue menu.
           // If course has batchId then it means it is enrolled course
           if (this.content.batchId) {
             this.showFlagMenu = true;
@@ -78,12 +72,12 @@ export class ContentActionsComponent {
    * Construct content delete request body
    */
   getDeleteRequestBody() {
-    let apiParams = {
+    const apiParams = {
       contentDeleteList: [{
         contentId: this.contentId,
         isChildContent: this.isChild
       }]
-    }
+    };
     return apiParams;
   }
 
@@ -106,7 +100,7 @@ export class ContentActionsComponent {
 
   deleteContent() {
     this.contentService.deleteContent(this.getDeleteRequestBody(), (res: any) => {
-      let data = JSON.parse(res);
+      const data = JSON.parse(res);
       if (data.result && data.result.status === 'NOT_FOUND') {
         this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
       } else {
@@ -126,7 +120,7 @@ export class ContentActionsComponent {
   }
 
   reportIssue() {
-    let popUp = this.popoverCtrl.create(ReportIssuesComponent, {
+    const popUp = this.popoverCtrl.create(ReportIssuesComponent, {
       content: this.content
     }, {
         cssClass: 'report-issue-box'
@@ -135,7 +129,7 @@ export class ContentActionsComponent {
   }
 
   showToaster(message) {
-    let toast = this.toastCtrl.create({
+    const toast = this.toastCtrl.create({
       message: message,
       duration: 2000,
       position: 'bottom'

@@ -20,30 +20,30 @@ export class AssessmentDetailsComponent implements OnInit {
   @Output() showQuestionFromUser = new EventEmitter<string>();
 
   ngOnInit() {
-    if (this.assessmentData && typeof (this.assessmentData['showResult']) == typeof (true)) {
-      this.showResult = this.assessmentData['showResult']
+    if (this.assessmentData && typeof (this.assessmentData['showResult']) === typeof (true)) {
+      this.showResult = this.assessmentData['showResult'];
     }
   }
 
   onActivate(event, showPopup, callback) {
     let subType: string;
     let pageId: string;
-    let telemetryObject: TelemetryObject = new TelemetryObject();
+    const telemetryObject: TelemetryObject = new TelemetryObject();
     if (this.assessmentData && this.assessmentData.fromUser) {
       pageId = PageId.REPORTS_USER_ASSESMENT_DETAILS;
       subType = InteractSubtype.QUESTION_CLICKED;
-      telemetryObject.id = event.row.qid ? event.row.qid : "";
+      telemetryObject.id = event.row.qid ? event.row.qid : '';
       telemetryObject.type = ObjectType.QUESTION;
     } else if (this.assessmentData && this.assessmentData.fromGroup) {
       pageId = PageId.REPORTS_GROUP_ASSESMENT_DETAILS;
-      let row = event.row;
+      const row = event.row;
       if (row.userName) {
         subType = InteractSubtype.USER_CLICKED;
-        telemetryObject.id = event.row.qid ? event.row.qid : "";
+        telemetryObject.id = event.row.qid ? event.row.qid : '';
         telemetryObject.type = ObjectType.USER;
       } else if (row.qid) {
         subType = InteractSubtype.QUESTION_CLICKED;
-        telemetryObject.id = event.row.uid ? event.row.uid : "";
+        telemetryObject.id = event.row.uid ? event.row.uid : '';
         telemetryObject.type = ObjectType.QUESTION;
       }
     }
@@ -56,7 +56,7 @@ export class AssessmentDetailsComponent implements OnInit {
       telemetryObject
     );
     if (showPopup && callback) {
-      let popover = this.popoverCtrl.create(callback, { 'callback': event }, { cssClass: 'resource-filter' });
+      const popover = this.popoverCtrl.create(callback, { 'callback': event }, { cssClass: 'resource-filter' });
       popover.present();
     } else {
       this.showQuestionFromUser.emit();

@@ -11,12 +11,32 @@ export class ContentType {
     public static readonly LESSON_PLAN_UNIT = 'LessonPlanUnit';
     public static readonly COURSE_UNIT = 'CourseUnit';
 
-    public static readonly FOR_LIBRARY_TAB = [ContentType.STORY,
-    ContentType.WORKSHEET, ContentType.GAME,
-    ContentType.RESOURCE, ContentType.COLLECTION,
-    ContentType.TEXTBOOK, ContentType.LESSON_PLAN];
-    public static readonly FOR_COURSE_TAB = [ContentType.COURSE];
-    public static readonly FOR_DIAL_CODE_SEARCH = [ContentType.TEXTBOOK, ContentType.TEXTBOOK_UNIT];
+    public static readonly FOR_COURSE_TAB = [
+        ContentType.COURSE
+    ];
+    public static readonly FOR_LIBRARY_TAB = [
+        ContentType.STORY,
+        ContentType.WORKSHEET,
+        ContentType.GAME,
+        ContentType.RESOURCE,
+        ContentType.COLLECTION,
+        ContentType.TEXTBOOK,
+        ContentType.LESSON_PLAN
+    ];
+    public static readonly FOR_PROFILE_TAB = [
+        ContentType.STORY,
+        ContentType.WORKSHEET,
+        ContentType.GAME,
+        ContentType.RESOURCE,
+        ContentType.COLLECTION,
+        ContentType.TEXTBOOK,
+        ContentType.LESSON_PLAN,
+        ContentType.COURSE
+    ];
+    public static readonly FOR_DIAL_CODE_SEARCH = [
+        ContentType.TEXTBOOK,
+        ContentType.TEXTBOOK_UNIT
+    ];
 }
 
 export class MimeType {
@@ -29,7 +49,12 @@ export class Search {
 
 export class FlagContent {
     public static readonly FLAG_REASONS_VALUE = ['Copyright Violation', 'Inappropriate Content', 'Privacy Violation', 'Other'];
-    public static readonly FLAG_REASONS_LABLE = ['OPTION_COPYRIGHT_VIOLATION', 'OPTION_INAPPROPRIATE_CONTENT', 'OPTION_PRIVACY_VIOLATION', 'OPTION_OTHER'];
+    public static readonly FLAG_REASONS_LABLE = [
+        'OPTION_COPYRIGHT_VIOLATION',
+        'OPTION_INAPPROPRIATE_CONTENT',
+        'OPTION_PRIVACY_VIOLATION',
+        'OPTION_OTHER'
+    ];
 }
 
 export class ProfileConstants {
@@ -39,10 +64,10 @@ export class ProfileConstants {
 
 export class AudienceFilter {
     // TODO : Check with Anil for TEACHER & LOGGED_IN_USER values
-    public static readonly GUEST_TEACHER = ["instructor", "learner"];
-    public static readonly GUEST_STUDENT = ["learner"];
+    public static readonly GUEST_TEACHER = ['instructor', 'learner'];
+    public static readonly GUEST_STUDENT = ['learner'];
 
-    public static readonly LOGGED_IN_USER = ["instructor", "learner"];
+    public static readonly LOGGED_IN_USER = ['instructor', 'learner'];
 }
 
 export class EventTopics {
@@ -61,8 +86,8 @@ export class MenuOverflow {
 }
 
 export class FrameworkConstant {
-    public static readonly DEFAULT_FRAMEWORK_ID = "NCF";
-    public static readonly DEFAULT_FRAMEWORK_NAME = "Common";
+    public static readonly DEFAULT_FRAMEWORK_ID = 'NCF';
+    public static readonly DEFAULT_FRAMEWORK_NAME = 'Common';
 }
 
 export class FormConstant {
@@ -74,17 +99,19 @@ export class FormConstant {
 export class PreferenceKey {
     public static readonly SELECTED_LANGUAGE_CODE = 'selected_language_code';
     public static readonly SELECTED_LANGUAGE = 'selected_language';
-    public static readonly SELECTED_USER_TYPE = "selected_user_type";
+    public static readonly SELECTED_USER_TYPE = 'selected_user_type';
+    public static readonly IS_ONBOARDING_COMPLETED = 'is_onboarding_settings_completed';
 }
 
 export class GenericAppConfig {
     public static readonly DISPLAY_ONBOARDING_CARDS = 'DISPLAY_ONBOARDING_CARDS';
     public static readonly DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE = 'DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE';
-    public static readonly DISPLAY_ONBOARDING_PAGE = "DISPLAY_ONBOARDING_PAGE";
-    public static readonly DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER = "DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER";
-    public static readonly DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER = "DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER";
-    public static readonly DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER = "DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER";
-    public static readonly DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_STUDENT = "DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_STUDENT";
-    public static readonly DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT = "DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT";
-    public static readonly DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT = "DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT";
+    public static readonly DISPLAY_ONBOARDING_PAGE = 'DISPLAY_ONBOARDING_PAGE';
+    public static readonly DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER = 'DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER';
+    public static readonly DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER = 'DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER';
+    public static readonly DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER = 'DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER';
+    public static readonly DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_STUDENT = 'DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_STUDENT';
+    public static readonly DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT = 'DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT';
+    public static readonly DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT = 'DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT';
+    public static readonly TRACK_USER_TELEMETRY = 'TRACK_USER_TELEMETRY';
 }

@@ -1,27 +1,38 @@
-import { Injectable } from "@angular/core";
-import { ToastController } from "ionic-angular";
-import { TranslateService } from "@ngx-translate/core";
+import { LoadingController } from 'ionic-angular';
+import { Injectable } from '@angular/core';
+import {
+    ToastController,
+    ToastOptions
+} from 'ionic-angular';
+import { TranslateService } from '@ngx-translate/core';
+import { Loading } from 'ionic-angular';
+import * as _ from 'lodash';
 
 @Injectable()
 export class CommonUtilService {
 
-    constructor(private toastCtrl: ToastController,
-        private translate: TranslateService) {
+    constructor(
+        private toastCtrl: ToastController,
+        private translate: TranslateService,
+        private loadingCtrl: LoadingController
+    ) {
     }
 
-
-
-    showToast(translationKey, isInactive?) {
+    showToast(translationKey, isInactive?, cssToast?) {
         if (Boolean(isInactive)) {
             return;
         }
+
         this.translate.get(translationKey).subscribe(
-            (value: any) => {
-                let toast = this.toastCtrl.create({
-                    message: value,
+            (translatedMsg: any) => {
+                const toastOptions: ToastOptions = {
+                    message: translatedMsg,
                     duration: 3000,
-                    position: 'bottom'
-                });
+                    position: 'bottom',
+                    cssClass: cssToast ? cssToast : ''
+                };
+
+                const toast = this.toastCtrl.create(toastOptions);
                 toast.present();
             }
         );
@@ -43,16 +54,34 @@ export class CommonUtilService {
     }
 
     /**
-     * 
-     * @param {string} translations Stringified object of translations 
+     * @param {string} translations Stringified object of translations
      * @param {string} defaultValue Fallback value if does not have translations
      * @returns {string} Translated values or fallback value
      */
     getTranslatedValue(translations: string, defaultValue: string) {
-        let availableTranslation = JSON.parse(translations);
+        const availableTranslation = JSON.parse(translations);
         if (availableTranslation.hasOwnProperty(this.translate.currentLang)) {
             return availableTranslation[this.translate.currentLang];
         }
         return defaultValue;
+    }
+
+    /**
+     * Returns Loading object with default config
+     * @returns {object} Loading object
+     */
+    getLoader(): Loading {
+        return this.loadingCtrl.create({
+            duration: 30000,
+            spinner: 'crescent'
+        });
+    }
+
+    /**
+     * @param {string} str Input String that need to convert into the Array
+     * @returns {array} Newly created Array
+     */
+    stringToArray(str: string = '') {
+        return _.split(str, ', ');
     }
 }

@@ -43,7 +43,12 @@ export class ViewMoreCardComponent implements OnInit {
    * @param {NavParams} navParams ref of navigation params
    * @param {NgZone} ngZone To bind data
    */
-  constructor(public navCtrl: NavController, public navParams: NavParams, private zone: NgZone, public courseUtilService: CourseUtilService, public events: Events) {
+  constructor(
+    public navCtrl: NavController,
+    public navParams: NavParams,
+    private zone: NgZone,
+    public courseUtilService: CourseUtilService,
+    public events: Events) {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
 
@@ -52,17 +57,17 @@ export class ViewMoreCardComponent implements OnInit {
       if (layoutName === 'enrolledCourse' || content.contentType === ContentType.COURSE) {
         this.navCtrl.push(EnrolledCourseDetailsPage, {
           content: content
-        })
+        });
       } else if (content.mimeType === MimeType.COLLECTION) {
         this.navCtrl.push(CollectionDetailsPage, {
           content: content
-        })
+        });
       } else {
         this.navCtrl.push(ContentDetailsPage, {
           content: content
-        })
+        });
       }
-    })
+    });
   }
 
   resumeCourse(content: any) {
@@ -73,7 +78,7 @@ export class ViewMoreCardComponent implements OnInit {
     } else {
       this.navCtrl.push(EnrolledCourseDetailsPage, {
         content: content
-      })
+      });
     }
   }
 

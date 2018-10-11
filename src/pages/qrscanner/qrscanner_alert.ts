@@ -1,19 +1,22 @@
-import { Component } from "@angular/core";
-import { NavParams, Platform } from "ionic-angular";
+import { Component } from '@angular/core';
+import {
+  NavParams,
+  Platform
+} from 'ionic-angular';
 
 @Component({
   selector: 'page-alert-qr-scanner',
   templateUrl: './qrscanner_alert.html',
 })
-export class QRScannerAlert{
-  callback: QRAlertCallBack
+export class QRScannerAlert {
+  callback: QRAlertCallBack;
 
-  icon: string = "./assets/imgs/ic_coming_soon.png";
-  messageKey: string = "UNKNOWN_QR";
-  cancelKey: string = "CANCEL";
-  tryAgainKey: string = "TRY_AGAIN";
-  skipKey: string = "SKIP";
-  invalidContent= false;
+  icon = './assets/imgs/ic_coming_soon.png';
+  messageKey = 'UNKNOWN_QR';
+  cancelKey = 'CANCEL';
+  tryAgainKey = 'TRY_AGAIN';
+  skipKey = 'SKIP';
+  invalidContent = false;
   unregisterBackButton = undefined;
 
   showOnlyPrimaryBtn = false;
@@ -32,7 +35,7 @@ export class QRScannerAlert{
     if (navParams.get('cancelKey')) {
       this.cancelKey = navParams.get('cancelKey');
 
-      if (this.cancelKey == "hide") {
+      if (this.cancelKey === 'hide') {
         this.showOnlyPrimaryBtn = true;
         this.cancelKey = undefined;
       }
@@ -55,16 +58,15 @@ export class QRScannerAlert{
   }
   tryAgain() {
     if (this.callback) {
-      this.callback.tryAgain()
+      this.callback.tryAgain();
     }
   }
 
   cancel() {
     if (this.callback) {
-      this.callback.cancel()
+      this.callback.cancel();
     }
   }
-
 }
 
 export interface QRAlertCallBack {

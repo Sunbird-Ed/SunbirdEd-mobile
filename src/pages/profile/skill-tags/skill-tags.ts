@@ -1,8 +1,15 @@
+import { CommonUtilService } from './../../../service/common-util.service';
 import { TranslateService } from '@ngx-translate/core';
-import { LoadingController, ToastController, NavController } from 'ionic-angular';
-import { Component, NgZone, ViewEncapsulation } from '@angular/core';
-import { AuthService, UserProfileService } from 'sunbird';
-
+import { NavController } from 'ionic-angular';
+import {
+  Component,
+  NgZone,
+  ViewEncapsulation
+} from '@angular/core';
+import {
+  AuthService,
+  UserProfileService
+} from 'sunbird';
 import { ProfilePage } from './../profile';
 import { ProfileConstants } from '../../../app/app.constant';
 
@@ -20,26 +27,24 @@ export class SkillTagsComponent {
   suggestedSkills: Array<string> = [];
   skillTags: Array<string> = [];
 
-  constructor(private authService: AuthService,
+  constructor(
+    private authService: AuthService,
     private userProfileService: UserProfileService,
-    private loadingCtrl: LoadingController,
     private zone: NgZone,
-    private toastCtrl: ToastController,
     private translate: TranslateService,
-    private navCtrl: NavController) {
+    private navCtrl: NavController,
+    private commonUtilService: CommonUtilService
+  ) {
   }
 
   /**
    *  This will triggers when page started showing up, and it will internally makes an API call for Skill set
    */
   ionViewWillEnter(): void {
-    let loader = this.getLoader();
+    const loader = this.commonUtilService.getLoader();
     loader.present();
     this.authService.getSessionData((session) => {
-      if (session === undefined || session == null) {
-        console.error("session is null");
-        loader.dismiss();
-      } else {
+      if (Boolean(session)) {
         this.userProfileService.getSkills({ refreshProfileSkills: true },
           (res: any) => {
             this.zone.run(() => {
@@ -48,9 +53,12 @@ export class SkillTagsComponent {
             });
           },
           (error: any) => {
-            console.error("Res", error);
+            console.error('Error', error);
             loader.dismiss();
           });
+      } else {
+        console.error('session is null');
+        loader.dismiss();
       }
     });
   }
@@ -59,29 +67,27 @@ export class SkillTagsComponent {
    *  Makes an API call of Add Skill
    */
   addSkills(): void {
-    let loader = this.getLoader();
+    const loader = this.commonUtilService.getLoader();
     loader.present();
     this.authService.getSessionData((session) => {
-      if (session === undefined || session == null) {
-        console.error("session is null");
-      } else {
-        let req = {
+      if (Boolean(session)) {
+        const req = {
           userId: JSON.parse(session)[ProfileConstants.USER_TOKEN],
           skills: this.skillTags.map(item => {
-            return item["value"];
+            return item['value'];
           })
         };
 
         this.userProfileService.endorseOrAddSkill(req,
           (res: any) => {
             loader.dismiss();
-            this.presentToast(this.translateMessage('SKILLS_ADDED_SUCCESSFULLY'));
+            this.commonUtilService.showToast('SKILLS_ADDED_SUCCESSFULLY');
             this.navCtrl.setRoot(ProfilePage, { returnRefreshedUserProfileDetails: true });
           },
           (error: any) => {
             loader.dismiss();
-            console.error("Res", error);
-            this.presentToast(this.translateMessage('SKILL_NOT_ADDED'));
+            console.error('Res', error);
+            this.commonUtilService.showToast('SKILL_NOT_ADDED');
           });
       }
     });
@@ -89,36 +95,5 @@ export class SkillTagsComponent {
 
   goBack(): void {
     this.navCtrl.pop();
-  }
-
-  /* It returns the object of the Loader */
-  getLoader(): any {
-    return this.loadingCtrl.create({ duration: 30000, spinner: "crescent" });
-  }
-
-  /**
-   * It will shows the Toast Message
-   * @param {string} message - Message to be displayed on Toaster
-   */
-  presentToast(message: string): void {
-    this.toastCtrl.create({
-      message: this.translateMessage(message),
-      duration: 3000
-    }).present();
-  }
-
-  /**
-   * Used to Translate message to current Language
-   * @param {string} messageConst - Message Constant to be translated
-   * @returns {string} translatedMsg - Translated Message
-   */
-  translateMessage(messageConst): string {
-    let translatedMsg = '';
-    this.translate.get(messageConst).subscribe(
-      (value: any) => {
-        translatedMsg = value;
-      }
-    );
-    return translatedMsg;
   }
 }

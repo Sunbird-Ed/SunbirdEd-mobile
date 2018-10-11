@@ -1,18 +1,18 @@
-import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { NO_ERRORS_SCHEMA } from "@angular/core";
-import { NgZone } from "@angular/core";
-import { NavController } from "ionic-angular";
-import { NavParams } from "ionic-angular";
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NgZone } from '@angular/core';
+import { NavController } from 'ionic-angular';
+import { NavParams } from 'ionic-angular';
 import { } from 'jasmine';
-import { LoadingController } from "ionic-angular";
-import { ReportService, ServiceProvider, ContentService, TelemetryService, ReportDetailPerUser, ReportDetail } from "sunbird";
-import { TranslateService, TranslateModule } from "@ngx-translate/core";
-import { TelemetryGeneratorService } from "../../../service/telemetry-generator.service";
-import { UserReportPage } from "./user-report";
-import { NavMock, NavParamsMock, LoadingControllerMock, TranslateServiceStub } from "../../../../test-config/mocks-ionic";
-import { Observable } from "rxjs";
+import { LoadingController } from 'ionic-angular';
+import { ReportService, ServiceProvider, ContentService, TelemetryService, ReportDetailPerUser, ReportDetail } from 'sunbird';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
+import { UserReportPage } from './user-report';
+import { NavMock, NavParamsMock, LoadingControllerMock, TranslateServiceStub } from '../../../../test-config/mocks-ionic';
+import { Observable } from 'rxjs';
 
-describe("UserReportPage", () => {
+describe('UserReportPage', () => {
     let comp: UserReportPage;
     let fixture: ComponentFixture<UserReportPage>;
 
@@ -38,12 +38,12 @@ describe("UserReportPage", () => {
         fixture = TestBed.createComponent(UserReportPage);
         comp = fixture.componentInstance;
     });
-    it("can load instance", () => {
+    it('can load instance', () => {
         expect(comp).toBeTruthy();
     });
-    it("IonViewDidLoad should make expected calls", () => {
+    it('IonViewDidLoad should make expected calls', () => {
         const telemeGeneratorStub = TestBed.get(TelemetryGeneratorService);
-        spyOn(telemeGeneratorStub, "generateImpressionTelemetry");
+        spyOn(telemeGeneratorStub, 'generateImpressionTelemetry');
         comp.ionViewDidLoad();
 
         expect(telemeGeneratorStub.generateImpressionTelemetry).toHaveBeenCalled();
@@ -56,12 +56,12 @@ describe("UserReportPage", () => {
     });
     it('goBack should make expected calls', () => {
         const navStub = TestBed.get(NavController);
-        spyOn(navStub, "pop");
+        spyOn(navStub, 'pop');
         comp.goBack();
 
         expect(navStub.pop).toHaveBeenCalled();
     });
-    it("IonViewWillEnter should makes expected calls", () => {
+    it('IonViewWillEnter should makes expected calls', () => {
         const reportStub = TestBed.get(ReportService);
         // const reportDetailPerUserStub = TestBed.get(ReportDetailPerUser);
         spyOn(reportStub, 'getDetailReport').and.returnValue(Promise.resolve({}));

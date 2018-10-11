@@ -31,7 +31,7 @@
     </ion-item>
 
     <!-- Syllabus -->
-    <ion-item *ngIf="appGlobal?.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE">
+    <ion-item *ngIf="appGlobalService?.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE">
       <ion-label stacked text-uppercase class="label-font">{{'BOARD' | translate }}<span ion-text color="danger">&nbsp;*</span>
       </ion-label>
       <ion-select multiple="false" text-capitalize formControlName="syllabus" [selectOptions]="syllabusOptions"
@@ -42,7 +42,7 @@
     </ion-item>
 
     <!-- Board -->
-    <!-- <ion-item *ngIf="appGlobal?.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE">
+    <!-- <ion-item *ngIf="appGlobalService?.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE">
       <ion-label stacked text-uppercase class="label-font">{{'BOARD' | translate }}<span ion-text color="danger">&nbsp;*</span>
       </ion-label>
        <ion-select multiple="true" text-capitalize [disabled]="!(guestEditForm.value.syllabus != '')" [selectOptions]="boardOptions"
@@ -53,7 +53,7 @@
     </ion-item> -->
 
     <!-- Medium -->
-    <ion-item *ngIf="appGlobal?.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE">
+    <ion-item *ngIf="appGlobalService?.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE">
       <ion-label stacked text-uppercase class="label-font">{{'MEDIUM_OF_INSTRUCTION' | translate }}<span ion-text color="danger">&nbsp;*</span>
       </ion-label>
       <ion-select multiple="true" text-capitalize [disabled]="!(guestEditForm.value.boards != '')" [selectOptions]="mediumOptions"
@@ -64,7 +64,7 @@
     </ion-item>
 
     <!-- Grade -->
-    <ion-item *ngIf="appGlobal?.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE">
+    <ion-item *ngIf="appGlobalService?.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE">
       <ion-label stacked text-uppercase class="label-font">{{'CLASS' | translate }}<span ion-text color="danger">&nbsp;*</span>
       </ion-label>
       <ion-select multiple="true" text-capitalize [disabled]="!(guestEditForm.value.medium != '')" [selectOptions]="classOptions"
@@ -75,11 +75,11 @@
     </ion-item>
 
     <!-- Subjects -->
-    <ion-item *ngIf="appGlobal?.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE">
+    <ion-item *ngIf="appGlobalService?.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE">
       <ion-label stacked text-uppercase class="label-font">{{'SUBJECTS' | translate }}
       </ion-label>
       <ion-select multiple="true" [selectOptions]="subjectsOptions" text-capitalize [disabled]="!(guestEditForm.value.grades != '')"
-        formControlName="subjects" placeholder="{{'SELECT' | translate }}" okText="{{'BTN_SUBMIT' | translate}}"
+        formControlName="subjects" (ionChange)="onSubjectChanged($event)"placeholder="{{'SELECT' | translate }}" okText="{{'BTN_SUBMIT' | translate}}"
         cancelText="{{'CANCEL' | translate}}">
         <ion-option *ngFor="let subject of subjectList" text-capitalize value="{{subject?.code}}">{{subject?.name}}</ion-option>
       </ion-select>

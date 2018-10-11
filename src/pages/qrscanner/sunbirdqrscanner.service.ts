@@ -1,15 +1,16 @@
-import { Injectable } from "@angular/core";
-import { TranslateService } from "@ngx-translate/core";
+import { CommonUtilService } from './../../service/common-util.service';
+import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import {
   PopoverController,
   Popover,
   ToastController,
   Platform
-} from "ionic-angular";
+} from 'ionic-angular';
 import {
   QRScannerAlert,
   QRAlertCallBack
-} from "./qrscanner_alert";
+} from './qrscanner_alert';
 import {
   Environment,
   Mode,
@@ -20,9 +21,11 @@ import {
   ImpressionType,
   ImpressionSubtype,
   TelemetryObject
-} from "sunbird";
-import { TelemetryGeneratorService } from "../../service/telemetry-generator.service";
-import { QRScannerResultHandler } from "./qrscanresulthandler.service";
+} from 'sunbird';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { QRScannerResultHandler } from './qrscanresulthandler.service';
+import { ProfileSettingsPage } from '../profile-settings/profile-settings';
+import { App } from 'ionic-angular';
 
 @Injectable()
 export class SunbirdQRScanner {
@@ -34,10 +37,12 @@ export class SunbirdQRScanner {
     'SKIP',
     'CANCEL',
     'TRY_AGAIN',
-  ]
+  ];
   private mQRScannerText;
-  readonly permissionList = ["android.permission.CAMERA"];
+  readonly permissionList = ['android.permission.CAMERA'];
   backButtonFunc = undefined;
+  source: string;
+  showButton = false;
 
   constructor(
     private popCtrl: PopoverController,
@@ -46,11 +51,13 @@ export class SunbirdQRScanner {
     private toastCtrl: ToastController,
     private platform: Platform,
     private qrScannerResultHandler: QRScannerResultHandler,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private app: App,
+    private commonUtil: CommonUtilService
   ) {
-    const that = this
+    const that = this;
     this.translate.get(this.QR_SCANNER_TEXT).subscribe((data) => {
-      that.mQRScannerText = data
+      that.mQRScannerText = data;
     }, (error) => {
 
     });
@@ -60,19 +67,24 @@ export class SunbirdQRScanner {
     });
   }
 
-  public startScanner(source: string, showButton: boolean = false,
-    screenTitle: String = this.mQRScannerText['SCAN_QR_CODE'],
-    displayText: String = this.mQRScannerText['SCAN_QR_INSTRUCTION'],
-    /* istanbul ignore else  */
-    displayTextColor: String = "#0b0b0b",
-    /* istanbul ignore else  */
-    buttonText: String = this.mQRScannerText['SKIP']
-  ) {
 
+  ionViewDidLoad(): any {
+    throw new Error('Method not implemented.');
+  }
+
+  public startScanner(source: string, showButton: boolean = false,
+    screenTitle = this.mQRScannerText['SCAN_QR_CODE'],
+    displayText = this.mQRScannerText['SCAN_QR_INSTRUCTION'],
+    displayTextColor = '#0b0b0b',
+    buttonText = this.mQRScannerText['SKIP']
+  ) {
+    this.source = source;
+    this.showButton = showButton;
+
+    /* Just need to override the back button functionality other wise  on pressing back button it will take to two pages back */
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.backButtonFunc();
-    }, 10
-    );
+    }, 10);
 
     this.generateStartEvent(source);
 
@@ -81,16 +93,16 @@ export class SunbirdQRScanner {
       /* istanbul ignore else  */
       if (result.status) {
         const permissionResult = result.result;
-        let askPermission = [];
+        const askPermission = [];
         this.permissionList.forEach(element => {
           if (!permissionResult[element]) {
             askPermission.push(element);
           }
-        })
+        });
 
         if (askPermission.length > 0) {
-          this.permission.requestPermission(askPermission, (response) => {
-            const requestResult = JSON.parse(response);
+          this.permission.requestPermission(askPermission, (res) => {
+            const requestResult = JSON.parse(res);
             /* istanbul ignore else  */
             if (requestResult.status) {
               let permissionGranted = true;
@@ -99,78 +111,85 @@ export class SunbirdQRScanner {
                 if (!permissionRequestResult[element]) {
                   permissionGranted = false;
                 }
-              })
+              });
 
               if (permissionGranted) {
                 this.startQRScanner(screenTitle, displayText, displayTextColor, buttonText, showButton, source);
               } else {
-                console.log("Permission Denied");
                 const toast = this.toastCtrl.create({
-                  message: "Permission Denied",
+                  message: this.commonUtil.translateMessage('PERMISSION_DENIED'),
                   duration: 3000
-                })
+                });
 
                 toast.present();
               }
             }
           }, (error) => {
 
-          })
+          });
         } else {
           this.startQRScanner(screenTitle, displayText, displayTextColor, buttonText, showButton, source);
         }
       }
     }, (error) => {
-      console.log("Error : " + error);
+      console.log('Error : ' + error);
     });
   }
 
-  public stopScanner(successCallback: () => void = null, errorCallback: () => void = null) {
-    //Unregister back button listner
+  public stopScanner() {
+    // Unregister back button listner
     this.backButtonFunc();
-    (<any>window).qrScanner.stopScanner(successCallback, errorCallback);
+    (<any>window).qrScanner.stopScanner();
   }
 
-  private startQRScanner(screenTitle: String, displayText: String, displayTextColor: String,
-    buttonText: String, showButton: boolean, source: string) {
+  private startQRScanner(screenTitle: string, displayText: string, displayTextColor: string,
+    buttonText: string, showButton: boolean, source: string) {
+    this.generateImpressionTelemetry(source);
     window['qrScanner'].startScanner(screenTitle, displayText, displayTextColor, buttonText, showButton, (scannedData) => {
-      if (scannedData === "cancel") {
+      if (scannedData === 'skip') {
+        this.app.getActiveNavs()[0].push(ProfileSettingsPage, { stopScanner: true });
         this.telemetryGeneratorService.generateInteractTelemetry(
-          InteractType.OTHER,
-          InteractSubtype.QRCodeScanCancelled,
-          Environment.HOME,
+          InteractType.TOUCH,
+          InteractSubtype.SKIP_CLICKED,
+          Environment.ONBOARDING,
           PageId.QRCodeScanner);
-        this.generateEndEvent(source, "");
-        return;
-      }
-      if (this.qrScannerResultHandler.isDialCode(scannedData)) {
-        this.qrScannerResultHandler.handleDialCode(source, scannedData);
-      } else if (this.qrScannerResultHandler.isContentId(scannedData)) {
-        this.qrScannerResultHandler.handleContentId(source, scannedData);
+        this.generateEndEvent(source, '');
       } else {
-        this.qrScannerResultHandler.handleInvalidQRCode(source, scannedData);
-        this.showInvalidCodeAlert();
+        if (scannedData === 'cancel') {
+          this.telemetryGeneratorService.generateInteractTelemetry(
+            InteractType.OTHER,
+            InteractSubtype.QRCodeScanCancelled,
+            Environment.HOME,
+            PageId.QRCodeScanner);
+          this.generateEndEvent(source, '');
+        } else if (this.qrScannerResultHandler.isDialCode(scannedData)) {
+          this.qrScannerResultHandler.handleDialCode(source, scannedData);
+        } else if (this.qrScannerResultHandler.isContentId(scannedData)) {
+          this.qrScannerResultHandler.handleContentId(source, scannedData);
+        } else {
+          this.qrScannerResultHandler.handleInvalidQRCode(source, scannedData);
+          this.showInvalidCodeAlert();
+        }
+        this.stopScanner();
       }
-      this.stopScanner(null, null);
     }, () => {
-      this.stopScanner(null, null);
+      this.stopScanner();
     });
   }
 
-  ionViewDidLoad() {
+  generateImpressionTelemetry(source) {
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW,
       ImpressionSubtype.QRCodeScanInitiate,
       PageId.QRCodeScanner,
-      Environment.HOME)
+      source === PageId.ONBOARDING_PROFILE_PREFERENCES ? Environment.ONBOARDING : Environment.HOME);
   }
 
   generateStartEvent(pageId: string) {
-    /* istanbul ignore else  */
     if (pageId) {
-      let telemetryObject: TelemetryObject = new TelemetryObject();
-      telemetryObject.id = "";
-      telemetryObject.type = "qr";
+      const telemetryObject: TelemetryObject = new TelemetryObject();
+      telemetryObject.id = '';
+      telemetryObject.type = 'qr';
       this.telemetryGeneratorService.generateStartTelemetry(
         pageId,
         telemetryObject);
@@ -178,13 +197,12 @@ export class SunbirdQRScanner {
   }
 
   generateEndEvent(pageId: string, qrData: string) {
-    /* istanbul ignore else  */
     if (pageId) {
-      let telemetryObject: TelemetryObject = new TelemetryObject();
+      const telemetryObject: TelemetryObject = new TelemetryObject();
       telemetryObject.id = qrData;
       telemetryObject.type = 'qr';
       this.telemetryGeneratorService.generateEndTelemetry(
-        "qr",
+        'qr',
         Mode.PLAY,
         pageId,
         Environment.HOME,
@@ -195,21 +213,26 @@ export class SunbirdQRScanner {
 
   showInvalidCodeAlert() {
     let popUp: Popover;
-    let self = this;
+    const self = this;
     const callback: QRAlertCallBack = {
       tryAgain() {
-        popUp.dismiss()
-        self.startScanner(this.source, this.showButton);
+        popUp.dismiss();
+        self.startScanner(self.source, self.showButton);
       },
       cancel() {
-        popUp.dismiss()
+        popUp.dismiss();
+
+        if (self.showButton) {
+          self.app.getActiveNavs()[0].push(ProfileSettingsPage, { stopScanner: true });
+        }
       }
-    }
+    };
+
     popUp = this.popCtrl.create(QRScannerAlert, {
       callback: callback,
       invalidContent: true,
-      messageKey: "UNKNOWN_QR",
-      tryAgainKey: "TRY_DIFF_QR"
+      messageKey: 'UNKNOWN_QR',
+      tryAgainKey: 'TRY_DIFF_QR'
     }, {
         cssClass: 'qr-alert-invalid'
       });

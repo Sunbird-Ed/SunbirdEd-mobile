@@ -1,17 +1,21 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NavController, NavParams, ToastController, LoadingController, Platform, AlertController } from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
-
-import { AuthService, UserProfileService, UpdateUserInfoRequest } from 'sunbird';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators
+} from '@angular/forms';
+import {
+  NavController,
+  NavParams,
+  Platform,
+  AlertController
+} from 'ionic-angular';
+import {
+  UserProfileService,
+  UpdateUserInfoRequest
+} from 'sunbird';
 import { ProfilePage } from './../profile';
-
-/* Interface for the Toast Object */
-export interface toastOptions {
-  message: string,
-  duration: number,
-  position: string
-};
+import { CommonUtilService } from '../../../service/common-util.service';
 
 @Component({
   selector: 'page-address',
@@ -21,33 +25,27 @@ export interface toastOptions {
 /* This contains form for the Education where user can Add new Address Entry or can edit/delete previous one */
 export class FormAddress {
 
-  isNewForm: boolean = true;
+  isNewForm = true;
   addressDetails: any = {};
   addressForm: FormGroup;
   profile: any = {};
 
-  options: toastOptions = {
-    message: '',
-    duration: 3000,
-    position: 'bottom'
-  };
-
   constructor(
-    public navCtrl: NavController,
+    private navCtrl: NavController,
     public fb: FormBuilder,
-    public navParams: NavParams,
-    public authService: AuthService,
+    private navParams: NavParams,
     private userProfileService: UserProfileService,
-    private toastCtrl: ToastController,
-    private loadingCtrl: LoadingController,
-    private translate: TranslateService,
-    public alertCtrl: AlertController,
+    private commonUtilService: CommonUtilService,
+    private alertCtrl: AlertController,
     private platform: Platform
   ) {
 
     /* Receive data from other component */
     this.isNewForm = this.navParams.get('addForm');
-    if(this.isNewForm === undefined) this.isNewForm = true;
+    if (this.isNewForm === undefined) {
+      this.isNewForm = true;
+    }
+
     this.addressDetails = this.navParams.get('addressDetails') || {};
     this.profile = this.navParams.get('profile') || {};
 
@@ -70,18 +68,18 @@ export class FormAddress {
    */
   onSubmit(isDeleted: boolean = false): void {
 
-    let formVal = this.addressForm.value;
+    const formVal = this.addressForm.value;
 
     if (this.validateForm(formVal)) {
 
-      //Default Address type is `Permanent`
+      // Default Address type is `Permanent`
       if (formVal.addType === '') {
         this.addressForm.patchValue({
           addType: 'permanent'
-        })
+        });
       }
 
-      let userAddress = {
+      const userAddress = {
         addType: formVal.addType,
         addressLine1: formVal.addressLine1,
         addressLine2: formVal.addressLine2,
@@ -90,14 +88,14 @@ export class FormAddress {
         country: formVal.country,
         zipcode: formVal.zipcode,
         id: this.addressDetails.id || ''
-      }
+      };
 
-      if (isDeleted) userAddress['isDeleted'] = isDeleted;
+      if (isDeleted) { userAddress['isDeleted'] = isDeleted; }
 
       // Remove empty object element
       Object.keys(userAddress).forEach((key) => (userAddress[key] === '') && delete userAddress[key]);
 
-      let req: UpdateUserInfoRequest = {
+      const req: UpdateUserInfoRequest = {
         userId: this.profile.userId,
         address: [userAddress]
       };
@@ -113,11 +111,11 @@ export class FormAddress {
   validateForm(formVal): boolean {
 
     /* Allowed only Numbers and 6 digits */
-    if (formVal.zipcode != '' && !formVal.zipcode.match(/^\d{6}$/)) {
-      console.log('in zipcode');
-      this.getToast(this.translateMessage('INVALID_PINCODE')).present();
+    if (formVal.zipcode !== '' && !formVal.zipcode.match(/^\d{6}$/)) {
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('INVALID_PINCODE'));
       return false;
     }
+
     return true;
   }
 
@@ -125,75 +123,42 @@ export class FormAddress {
    * This will call Update User's Info API
    * @param {object} req - Request object for the User profile Service
    */
-  updateAddress(req): void {
-    let loader = this.getLoader();
+  updateAddress(req: UpdateUserInfoRequest): void {
+    const loader = this.commonUtilService.getLoader();
     loader.present();
     this.userProfileService.updateUserInfo(req,
       (res: any) => {
         loader.dismiss();
-        this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
-        this.navCtrl.setRoot(ProfilePage, { returnRefreshedUserProfileDetails: true });
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_SUCCESS'));
+        this.navCtrl.setRoot(ProfilePage, {
+          returnRefreshedUserProfileDetails: true
+        });
       },
       (err: any) => {
         loader.dismiss();
-        this.getToast(this.translateMessage('PROFILE_UPDATE_FAILED')).present();
-        console.error("Error", err);
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_FAILED'));
+        console.error('Error', err);
       });
-  }
-
-  /** It will returns Toast Object
-   * @param {message} string - Message for the Toast to show
-   * @returns {object} - toast Object
-   */
-  getToast(message: string = ''): any {
-    this.options.message = message;
-    if (message.length) return this.toastCtrl.create(this.options);
-  }
-
-  /**
-   * Returns Loading controller object with default config
-   */
-  getLoader(): any {
-    return this.loadingCtrl.create({
-      duration: 30000,
-      spinner: "crescent"
-    });
-  }
-
-  /**
-   * Used to Translate message to current Language
-   * @param {string} messageConst - Message Constant to be translated
-   * @param {string} field - Holds Language constant substitution string
-   * @returns {string} translatedMsg - Translated Message
-   */
-  translateMessage(messageConst: string, field?: string): string {
-    let translatedMsg = '';
-    this.translate.get(messageConst, { '%s': field }).subscribe(
-      (value: any) => {
-        translatedMsg = value;
-      }
-    );
-    return translatedMsg;
   }
 
   /**
    * Shows confirmation popup for delete
    */
   showDeleteConfirm() {
-    let confirm = this.alertCtrl.create({
-      title: this.translateMessage('CONFIRM_DEL',this.translateMessage('TITLE_ADDRESS')),
+    const confirm = this.alertCtrl.create({
+      title: this.commonUtilService.translateMessage('CONFIRM_DEL', this.commonUtilService.translateMessage('TITLE_ADDRESS')),
       mode: 'wp',
       cssClass: 'confirm-alert',
       buttons: [
         {
-          text: this.translateMessage('CANCEL'),
+          text: this.commonUtilService.translateMessage('CANCEL'),
           role: 'cancel',
           cssClass: 'alert-btn-cancel',
           handler: () => {
           }
         },
         {
-          text: this.translateMessage('DELETE'),
+          text: this.commonUtilService.translateMessage('DELETE'),
           cssClass: 'alert-btn-delete',
           handler: () => {
             this.onSubmit(true);
@@ -210,10 +175,10 @@ export class FormAddress {
     });
 
     confirm.present();
-    let unregisterBackButton = this.platform.registerBackButtonAction(() => {
+    const unregisterBackButton = this.platform.registerBackButtonAction(() => {
       // dismiss on back press
       confirm.dismiss();
-    }, 11);
+    }, 10);
 
     // unregister handler after modal closes
     confirm.onDidDismiss(() => {

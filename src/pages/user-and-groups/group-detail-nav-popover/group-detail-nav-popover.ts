@@ -11,8 +11,8 @@ import {
 })
 export class GroupDetailNavPopoverPage {
 
-  noUsers: boolean = false;
-  isActiveGroup: boolean = false;
+  noUsers = false;
+  isActiveGroup = false;
   constructor(
     private navParams: NavParams,
   ) {

@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { ResourcesPage } from './resources';
 import { TranslateModule } from '@ngx-translate/core';
-import { ComponentsModule } from "../../component/components.module";
+import { ComponentsModule } from '../../component/components.module';
 
 @NgModule({
   declarations: [
@@ -19,4 +19,4 @@ import { ComponentsModule } from "../../component/components.module";
   entryComponents: [
   ]
 })
-export class ResourcesPageModule {}
+export class ResourcesPageModule { }

@@ -1,21 +1,24 @@
 
 import { Component } from '@angular/core';
-import { NavController, NavParams, ToastController, Platform, AlertController, IonicApp } from 'ionic-angular';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { TranslateService } from '@ngx-translate/core';
+import {
+  NavController,
+  NavParams,
+  Platform,
+  AlertController,
+  IonicApp
+} from 'ionic-angular';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators
+} from '@angular/forms';
 import * as _ from 'lodash';
-
-import { UserProfileService, UpdateUserInfoRequest } from 'sunbird';
+import {
+  UserProfileService,
+  UpdateUserInfoRequest
+} from 'sunbird';
 import { ProfilePage } from './../profile';
-
-/**
- * Interface for the Toast Object
- */
-export interface toastOptions {
-  message: string,
-  duration: number,
-  position: string
-};
+import { CommonUtilService } from '../../../service/common-util.service';
 
 @Component({
   selector: 'page-experience',
@@ -26,39 +29,33 @@ export interface toastOptions {
  * This contains form for the Experience where user can Add new job exprience Entry or can edit/delete previous one
  */
 export class FormExperience {
-  isNewForm: boolean = true;
+
+  isNewForm = true;
   jobInfo: any = {};
   experienceForm: FormGroup;
   profile: any = {};
-  currentJob: boolean = false;
+  currentJob = false;
   todayDate: string = new Date().toISOString().slice(0, 10);
-  joiningDate: string = "1950";
+  joiningDate = '1950';
   unregisterBackButton: any;
 
   subjectOptions = {
-    title: this.translateMessage('SUBJECTS'),
+    title: this.commonUtilService.translateMessage('SUBJECTS'),
     cssClass: 'select-box'
   };
 
   /**
    * @todo Fetch languageList, SubjectList and gradeList from the framework
    */
-  subjectList: Array<String> = ["Assamese", "Bengali", "English", "Gujarati", "Hindi", "Kannada", "Marathi", "Punjabi", "Tamil", "Telugu"];
-
-  options: toastOptions = {
-    message: '',
-    duration: 3000,
-    position: 'bottom'
-  };
+  subjectList: Array<string> = ['Assamese', 'Bengali', 'English', 'Gujarati', 'Hindi', 'Kannada', 'Marathi', 'Punjabi', 'Tamil', 'Telugu'];
 
   constructor(
     public navCtrl: NavController,
     private fb: FormBuilder,
     private navParams: NavParams,
     private userProfileService: UserProfileService,
-    private toastCtrl: ToastController,
-    private translate: TranslateService,
-    public alertCtrl: AlertController,
+    private commonUtilService: CommonUtilService,
+    private alertCtrl: AlertController,
     private platform: Platform,
     private ionicApp: IonicApp
   ) {
@@ -73,13 +70,13 @@ export class FormExperience {
       jobName: [this.jobInfo.jobName || '', Validators.required],
       orgName: [this.jobInfo.orgName || '', Validators.required],
       role: [this.jobInfo.role || ''],
-      subject: [this.stringToArray(this.jobInfo.subject) || []],
+      subject: [this.commonUtilService.stringToArray(this.jobInfo.subject) || []],
       isCurrentJob: [<string>this.jobInfo.isCurrentJob || (this.isNewForm ? '' : 'false')],
       joiningDate: [this.jobInfo.joiningDate || ''],
       endDate: [this.jobInfo.endDate || '']
     });
 
-    if (this.jobInfo.isCurrentJob) this.currentJob = true;
+    if (this.jobInfo.isCurrentJob) { this.currentJob = true; }
   }
 
   ionViewWillEnter() {
@@ -96,8 +93,7 @@ export class FormExperience {
    * It will Dismiss active popup
    */
   dismissPopup() {
-    console.log("Fired ionViewWillLeave");
-    let activePortal = this.ionicApp._modalPortal.getActive() || this.ionicApp._overlayPortal.getActive();
+    const activePortal = this.ionicApp._modalPortal.getActive() || this.ionicApp._overlayPortal.getActive();
 
     if (activePortal) {
       activePortal.dismiss();
@@ -110,21 +106,18 @@ export class FormExperience {
     this.joiningDate = this.experienceForm.value.joiningDate;
     this.experienceForm.patchValue({
       endDate: ''
-    })
+    });
   }
+
   /**
    * This will call on click of DELETE and SAVE button
    * @param {object} event - Form event
    * @param {boolean} isDeleted - Flag to delete
    */
   onSubmit(isDeleted: boolean = false): void {
-    // if(isDeleted == true){
-    //   this.showConfirm();
-    //  }
-
-    let formVal = this.experienceForm.value;
+    const formVal = this.experienceForm.value;
     this.validateForm(formVal);
-    let userJobProfile = {
+    const userJobProfile = {
       jobName: formVal.jobName,
       orgName: formVal.orgName,
       role: formVal.role,
@@ -132,15 +125,15 @@ export class FormExperience {
       isCurrentJob: <boolean>formVal.isCurrentJob, // If not available must be false
       joiningDate: <string>formVal.joiningDate, //
       endDate: <string>formVal.endDate // Should be current Date if `isCurrentJob` is `true`
-    }
+    };
 
-    if (this.jobInfo.id) userJobProfile['id'] = this.jobInfo.id;
-    if (isDeleted) userJobProfile['isDeleted'] = isDeleted;
+    if (this.jobInfo.id) { userJobProfile['id'] = this.jobInfo.id; }
+    if (isDeleted) { userJobProfile['isDeleted'] = isDeleted; }
 
     // Remove empty object element
     Object.keys(userJobProfile).forEach((key) => (userJobProfile[key] === '') && delete userJobProfile[key]);
 
-    let req: UpdateUserInfoRequest = {
+    const req: UpdateUserInfoRequest = {
       userId: this.profile.userId,
       jobProfile: [userJobProfile]
     };
@@ -155,38 +148,28 @@ export class FormExperience {
     if (<boolean>formVal.isCurrentJob) {
       this.experienceForm.patchValue({
         endDate: new Date().toJSON().slice(0, 10)
-      })
+      });
     } else if (formVal.isCurrentJob === '') {
       this.experienceForm.patchValue({
         isCurrentJob: false
-      })
+      });
     }
   }
 
   /**
    * This will call Update User's Info API
-   * @param {object} req - Request object for the User profile Service
+   * @param {object} req Request object for the User profile Service
    */
   updateExperience(req): void {
     this.userProfileService.updateUserInfo(req,
       (res: any) => {
-        this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_SUCCESS'));
         this.navCtrl.setRoot(ProfilePage, { returnRefreshedUserProfileDetails: true });
       },
       (err: any) => {
-        this.getToast(this.translateMessage('PROFILE_UPDATE_FAILED')).present();
-        console.error("Error", err);
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_FAILED'));
+        console.error('Error', err);
       });
-  }
-
-  /**
-   * It will returns Toast Object
-   * @param {string} message - Message for the Toast to show
-   * @returns {object} - toast Object
-   */
-  getToast(message: string = ''): any {
-    this.options.message = message;
-    if (message.length) return this.toastCtrl.create(this.options);
   }
 
   /**
@@ -198,46 +181,25 @@ export class FormExperience {
     return new Date(date).toISOString().slice(0, 10);
   }
 
-
   /**
-   * @param {string} str - Input String that need to convert into the Array
-   * @returns {array} - Array
+   * Shows Confirmation box while deleting education
    */
-  stringToArray(str: string = '') {
-    return _.split(str, ', ');
-  }
-
-  /**
-   * Used to Translate message to current Language
-   * @param {string} messageConst - Message Constant to be translated
-   * @returns {string} translatedMsg - Translated Message
-   */
-  translateMessage(messageConst: string, field?: string): string {
-    let translatedMsg = '';
-    this.translate.get(messageConst, { '%s': field }).subscribe(
-      (value: any) => {
-        translatedMsg = value;
-      }
-    );
-    return translatedMsg;
-  }
-
   showDeleteConfirm() {
-    let confirm = this.alertCtrl.create({
-      title: this.translateMessage('CONFIRM_DEL', this.translateMessage('TITLE_EXPERIENCE')),
+    const confirm = this.alertCtrl.create({
+      title: this.commonUtilService.translateMessage('CONFIRM_DEL', this.commonUtilService.translateMessage('TITLE_EXPERIENCE')),
 
       mode: 'wp',
       cssClass: 'confirm-alert',
       buttons: [
         {
-          text: this.translateMessage('CANCEL'),
+          text: this.commonUtilService.translateMessage('CANCEL'),
           role: 'cancel',
           cssClass: 'alert-btn-cancel',
           handler: () => {
           }
         },
         {
-          text: this.translateMessage('DELETE'),
+          text: this.commonUtilService.translateMessage('DELETE'),
           cssClass: 'alert-btn-delete',
           handler: () => {
             this.onSubmit(true);
@@ -253,7 +215,7 @@ export class FormExperience {
       ]
     });
     confirm.present();
-    let unregisterBackButton = this.platform.registerBackButtonAction(() => {
+    const unregisterBackButton = this.platform.registerBackButtonAction(() => {
       // dismiss on back press
       confirm.dismiss();
     }, 11);

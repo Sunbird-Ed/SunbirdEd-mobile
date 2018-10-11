@@ -1,10 +1,8 @@
-import { Component } from "@angular/core";
-import { NavParams, PopoverController, NavController, Events } from "ionic-angular";
-import { CommonUtilService } from "../../../service/common-util.service";
+import { Component } from '@angular/core';
+import { NavParams, PopoverController, NavController, Events } from 'ionic-angular';
+import { CommonUtilService } from '../../../service/common-util.service';
 import * as _ from 'lodash';
-
-import { FilterOptions } from "./options/options";
-
+import { FilterOptions } from './options/options';
 
 @Component({
   selector: 'page-filter',
@@ -27,7 +25,7 @@ export class FilterPage {
   }
 
   openFilterOptions(facet) {
-    let popUp = this.popCtrl.create(FilterOptions, { facet: facet }, { cssClass: 'option-box' });
+    const popUp = this.popCtrl.create(FilterOptions, { facet: facet }, { cssClass: 'option-box' });
     popUp.present();
   }
 
@@ -50,14 +48,14 @@ export class FilterPage {
       return `${count} ` + this.commonUtilService.translateMessage('FILTER_ADDED');
     }
 
-    return "";
+    return '';
   }
 
   private init() {
     this.filterCriteria = this.navParams.get('filterCriteria');
-    let filters: Array<any> = [];
+    const filters: Array<any> = [];
     this.filterCriteria.facets.forEach(facet => {
-      let data = this.getFilterValues(facet)
+      const data = this.getFilterValues(facet);
       if (data) {
         filters.push(data);
       }
@@ -70,12 +68,12 @@ export class FilterPage {
 
     this.filterCriteria.facetFilters.forEach(facet => {
       if (facet.values && facet.values.length > 0) {
-        if (facet.name != 'gradeLevel') {
+        if (facet.name !== 'gradeLevel') {
           facet.values = _.orderBy(facet.values, ['name'], ['asc']);
         }
         facet.values.forEach((element, index) => {
           if (element.name.toUpperCase() === 'other'.toUpperCase()) {
-            let elementVal = element;
+            const elementVal = element;
             facet.values.splice(index, 1);
             facet.values.push(elementVal);
           }
@@ -87,7 +85,7 @@ export class FilterPage {
 
   getFilterValues(facet: string) {
     if (facet) {
-      let filterName = _.find(this.filterCriteria.facetFilters, ['name', facet]);
+      const filterName = _.find(this.filterCriteria.facetFilters, ['name', facet]);
       if (filterName && filterName.values && filterName.values.length) {
         return filterName;
       } else {
