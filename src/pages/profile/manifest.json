@@ -1,8 +1,0 @@
-{
-    "id": "sunnird.plugin.profile",
-    "version": "0.0.1",
-    "module": "ProfilePageModule",
-    "main": "ProfilePage",
-    "children": [],
-    "appVersion": "0.0.1"
-}
