@@ -5,7 +5,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { NavController } from 'ionic-angular';
 import { NavParams } from 'ionic-angular';
-import { ToastController, LoadingController, PopoverController} from 'ionic-angular';
+import { ToastController, LoadingController, PopoverController } from 'ionic-angular';
 import { Platform } from 'ionic-angular';
 import { AlertController, Alert } from 'ionic-angular';
 import { TranslateService, TranslateModule, TranslateLoader } from '@ngx-translate/core';
@@ -31,18 +31,18 @@ describe('FormAddress', () => {
             registerBackButtonAction: () => ({})
         };
         TestBed.configureTestingModule({
-            imports : [TranslateModule.forRoot()],
-            declarations: [ FormAddress ],
-            schemas: [ NO_ERRORS_SCHEMA ],
+            imports: [TranslateModule.forRoot()],
+            declarations: [FormAddress],
+            schemas: [NO_ERRORS_SCHEMA],
             providers: [
                 FormBuilder, UserProfileService, AuthService, CommonUtilService,
                 { provide: NavController, useValue: navControllerStub },
                 { provide: NavParams, useClass: NavParamsMock },
                 { provide: Platform, useValue: platformStub },
-                { provide: AlertController, useFactory: () => AlertControllerMock.instance()},
+                { provide: AlertController, useFactory: () => AlertControllerMock.instance() },
                 // { provide: Alert, useFactory: () => AlertMock.instance()},
                 { provide: TranslateService, useClass: TranslateServiceStub },
-                { provide: ToastController, useFactory: () => ToastControllerMockNew.instance()},
+                { provide: ToastController, useFactory: () => ToastControllerMockNew.instance() },
                 { provide: PopoverController, useFactory: () => PopoverControllerMock.instance() },
                 { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() }
             ]
@@ -52,11 +52,6 @@ describe('FormAddress', () => {
         // FormAddress.prototype.isNewForm = true;
         comp = fixture.componentInstance;
     });
-
-    const getLoader = () => {
-        const commonUtilServiceStub = TestBed.get(CommonUtilService);
-        commonUtilServiceStub.getLoader();
-    };
     // it("isNewForm should be true", () => {
     //     expect(comp.isNewForm).toBe(true);
     // });
@@ -108,14 +103,14 @@ describe('FormAddress', () => {
     it('should validate zipcode and return false', () => {
         comp.addressForm.controls['zipcode'].setValue('abcdef');
         const formval = comp.addressForm.value;
-        const commonUtilServiceStub  = TestBed.get(CommonUtilService);
-        const translateStub =  TestBed.get(TranslateService);
+        const commonUtilServiceStub = TestBed.get(CommonUtilService);
+        const translateStub = TestBed.get(TranslateService);
         spyOn(translateStub, 'get').and.callFake((arg) => {
             return Observable.of('Cancel');
         });
 
         spyOn(commonUtilServiceStub, 'showToast').and.returnValue({
-            present: () => {}
+            present: () => { }
         });
         expect(comp.validateForm(formval)).toBe(false);
         expect(commonUtilServiceStub.showToast).toHaveBeenCalled();
@@ -123,10 +118,9 @@ describe('FormAddress', () => {
 
     it('should handle success scenario for updateAddress', () => {
         const userProfileService = TestBed.get(UserProfileService);
-        getLoader();
-        const toasrCtrlStub  = TestBed.get(ToastController);
-        const translateStub =  TestBed.get(TranslateService);
-        const commonUtilServiceStub  = TestBed.get(CommonUtilService);
+        const translateStub = TestBed.get(TranslateService);
+        const commonUtilServiceStub = TestBed.get(CommonUtilService);
+        commonUtilServiceStub.getLoader();
         spyOn(commonUtilServiceStub, 'translateMessage');
         spyOn(userProfileService, 'updateUserInfo').and.callFake((req, success, error) => {
             success('success');
@@ -135,7 +129,7 @@ describe('FormAddress', () => {
             return Observable.of('Cancel');
         });
         spyOn(commonUtilServiceStub, 'showToast').and.returnValue({
-            present: () => {}
+            present: () => { }
         });
         comp.updateAddress('req');
         expect(commonUtilServiceStub.showToast).toHaveBeenCalled();
@@ -144,10 +138,9 @@ describe('FormAddress', () => {
 
     it('should handle error scenario for updateAddress', () => {
         const userProfileService = TestBed.get(UserProfileService);
-        const commonUtilServiceStub  = TestBed.get(CommonUtilService);
-        getLoader();
-        const toasrCtrlStub  = TestBed.get(ToastController);
-        const translateStub =  TestBed.get(TranslateService);
+        const commonUtilServiceStub = TestBed.get(CommonUtilService);
+        commonUtilServiceStub.getLoader();
+        const translateStub = TestBed.get(TranslateService);
         spyOn(commonUtilServiceStub, 'translateMessage');
         spyOn(userProfileService, 'updateUserInfo').and.callFake((req, success, error) => {
             error('error');
@@ -156,7 +149,7 @@ describe('FormAddress', () => {
             return Observable.of('Cancel');
         });
         spyOn(commonUtilServiceStub, 'showToast').and.returnValue({
-            present: () => {}
+            present: () => { }
         });
 
         comp.updateAddress('req');
@@ -166,18 +159,17 @@ describe('FormAddress', () => {
 
 
     it('getLoader makes expected calls', () => {
-        const loadingController = TestBed.get(LoadingController);
-        const commonUtilServiceStub = TestBed.get(CommonUtilService);
+        const commonUtilServiceStub = TestBed.get(CommonUtilService)
         commonUtilServiceStub.getLoader();
-        expect(loadingController.create).toHaveBeenCalled();
+        expect(commonUtilServiceStub.create).toHaveBeenCalled();
     });
 
     it('showDeleteConfirm should make expected calls', () => {
         const alertController = TestBed.get(AlertController);
         // const alert = TestBed.get(Alert);
-        const translateStub =  TestBed.get(TranslateService);
+        const translateStub = TestBed.get(TranslateService);
         const platformStub: Platform = TestBed.get(Platform);
-        const commonUtilServiceStub  = TestBed.get(CommonUtilService);
+        const commonUtilServiceStub = TestBed.get(CommonUtilService);
         spyOn(platformStub, 'registerBackButtonAction');
         spyOn(commonUtilServiceStub, 'translateMessage');
         spyOn(translateStub, 'get').and.callFake((arg) => {
