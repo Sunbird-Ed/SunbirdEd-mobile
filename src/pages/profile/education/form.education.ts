@@ -15,6 +15,7 @@ import * as _ from 'lodash';
 import { UserProfileService, UserEducation, UpdateUserInfoRequest } from 'sunbird';
 import { ProfilePage } from '../profile';
 import { CommonUtilService } from '../../../service/common-util.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'page-education',
@@ -39,7 +40,8 @@ export class FormEducation {
     private commonUtilService: CommonUtilService,
     private alertCtrl: AlertController,
     private platform: Platform,
-    private ionicApp: IonicApp
+    private ionicApp: IonicApp,
+    private translate: TranslateService
   ) {
 
     /* Receive data from other component */
