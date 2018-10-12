@@ -1,3 +1,4 @@
+import { TelemetryGeneratorService } from './../../service/telemetry-generator.service';
 import {
   Component,
   ViewChild
@@ -75,7 +76,8 @@ export class OnboardingPage {
     private commonUtilService: CommonUtilService,
     private appVersion: AppVersion,
     private events: Events,
-    private appGlobalService: AppGlobalService
+    private appGlobalService: AppGlobalService,
+    private telemetryGeneratorService: TelemetryGeneratorService,
   ) {
 
     this.slides = [
@@ -103,6 +105,7 @@ export class OnboardingPage {
         this.appName = appName;
       });
     this.navBar.backButtonClick = (e: UIEvent) => {
+      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.ONBOARDING, Environment.HOME, true);
       this.navCtrl.setRoot(LanguageSettingsPage);
     };
     this.telemetryService.impression(
@@ -116,6 +119,7 @@ export class OnboardingPage {
 
   ionViewWillEnter() {
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.ONBOARDING, Environment.HOME, false);
       this.backButtonFunc();
       this.navCtrl.setRoot(LanguageSettingsPage);
     }, 10);

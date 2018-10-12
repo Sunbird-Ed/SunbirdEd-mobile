@@ -352,7 +352,7 @@ describe('LanguageSettingsPage', () => {
 
             expect(comp.continue).toBeDefined();
 
-            spyOn<any>(comp, 'generateContinueClickedInteractEvent');
+            spyOn<any>(comp, 'generateClickInteractEvent');
             spyOn(comp, 'continue').and.callThrough();
             // spyOn(toastMockStub, "dismissAll");
             // spyOn(toastControllerStub, "create");

@@ -288,6 +288,7 @@ export class ContentDetailsPage {
 
   ionViewDidLoad() {
     this.navBar.backButtonClick = (e: UIEvent) => {
+      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME, true);
       this.handleNavBackButton();
     };
     this.handleDeviceBackButton();
@@ -297,8 +298,19 @@ export class ContentDetailsPage {
     }
   }
 
+  handleNavBackButton() {
+    this.didViewLoad = false;
+    this.generateEndEvent(this.objId, this.objType, this.objVer);
+    if (this.shouldGenerateEndTelemetry) {
+      this.generateQRSessionEndEvent(this.source, this.cardData.identifier);
+    }
+    this.popToPreviousPage(true);
+    this.backButtonFunc();
+  }
+
   handleDeviceBackButton() {
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME, false);
       this.didViewLoad = false;
       this.dismissPopup();
       this.popToPreviousPage();
@@ -652,16 +664,6 @@ export class ContentDetailsPage {
     }
   }
 
-  handleNavBackButton() {
-    this.didViewLoad = false;
-    this.generateEndEvent(this.objId, this.objType, this.objVer);
-    if (this.shouldGenerateEndTelemetry) {
-      this.generateQRSessionEndEvent(this.source, this.cardData.identifier);
-    }
-    this.popToPreviousPage(true);
-    this.backButtonFunc();
-  }
-
   /**
  * It will Dismiss active popup
  */
@@ -919,9 +921,19 @@ export class ContentDetailsPage {
   }
 
   showOverflowMenu(event) {
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.KEBAB_MENU_CLICKED,
+      Environment.HOME,
+      PageId.CONTENT_DETAIL,
+      undefined,
+      undefined,
+      this.objRollup,
+      this.corRelationList);
     const popover = this.popoverCtrl.create(ContentActionsComponent, {
       content: this.content,
-      isChild: this.isChildContent
+      isChild: this.isChildContent,
+      objRollup: this.objRollup,
+      corRelationList: this.corRelationList
     }, {
         cssClass: 'content-action'
       });
