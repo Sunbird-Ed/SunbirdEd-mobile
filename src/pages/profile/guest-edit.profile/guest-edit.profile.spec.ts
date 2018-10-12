@@ -1,5 +1,5 @@
 import { } from 'jasmine';
-import { AlertControllerMock } from './../../../../test-config/mocks-ionic';
+import { AlertControllerMock, DeepLinkerMock } from './../../../../test-config/mocks-ionic';
 import { Observable } from 'rxjs/Observable';
 import {
     ComponentFixture,
@@ -12,7 +12,7 @@ import {
 } from '@ngx-translate/core';
 import {
     NavController, NavParams, Platform,
-    IonicApp, Events, App
+    IonicApp, Events, App, PopoverController, Config
 } from 'ionic-angular';
 import {
     ToastController, LoadingController,
@@ -33,6 +33,7 @@ import {
     SharedPreferencesMock, FormAndFrameworkUtilServiceMock, ContainerServiceMock
 } from '../../../../test-config/mocks-ionic';
 import { CommonUtilService } from '../../../service/common-util.service';
+import { DeepLinker } from 'ionic-angular';
 
 describe('GuestEditProfilePage', () => {
     let comp: GuestEditProfilePage;
@@ -86,7 +87,9 @@ describe('GuestEditProfilePage', () => {
             declarations: [GuestEditProfilePage],
             schemas: [NO_ERRORS_SCHEMA],
             providers: [
-                FormBuilder, CommonUtilService,
+                FormBuilder, CommonUtilService, PopoverController,
+                Config,
+                { provide: DeepLinker, useValue: DeepLinkerMock },
                 { provide: TranslateService, useClass: TranslateServiceStub },
                 { provide: NavController, useClass: NavMock },
                 { provide: NavParams, useClass: NavParamsMock },
