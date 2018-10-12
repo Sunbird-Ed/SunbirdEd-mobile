@@ -9,14 +9,16 @@ import { ToastController, LoadingController, PopoverController } from 'ionic-ang
 import { Platform } from 'ionic-angular';
 import { AlertController, Alert } from 'ionic-angular';
 import { TranslateService, TranslateModule, TranslateLoader } from '@ngx-translate/core';
-import { UserProfileService } from 'sunbird';
+import { UserProfileService, SharedPreferences, ServiceProvider } from 'sunbird';
 import { FormExperience } from './form.experience';
 import { } from 'jasmine';
 // import { AlertControllerMock, AlertMock} from 'ionic-mocks';
 import {
     LoadingControllerMock, PopoverControllerMock, NavParamsMock, TranslateServiceStub, ToastControllerMockNew, AlertControllerMock,
-    PlatformMock, NavMock} from '../../../../test-config/mocks-ionic';
+    PlatformMock, NavMock
+} from '../../../../test-config/mocks-ionic';
 import { CommonUtilService } from '../../../service/common-util.service';
+import { Events } from 'ionic-angular';
 
 
 
@@ -29,12 +31,12 @@ describe('FormExperience', () => {
         const IonicAppMock = {
             _modalPortal: {
                 getActive: () => ({
-                    dismiss: () => {}
+                    dismiss: () => { }
                 })
             },
             _overlayPortal: {
                 getActive: () => ({
-                    dismiss: () => {}
+                    dismiss: () => { }
                 })
             }
         };
@@ -45,6 +47,7 @@ describe('FormExperience', () => {
             schemas: [NO_ERRORS_SCHEMA],
             providers: [
                 FormBuilder, UserProfileService, Platform, CommonUtilService,
+                SharedPreferences, ServiceProvider, Events,
                 { provide: IonicApp, useValue: IonicAppMock },
                 { provide: NavController, useClass: NavMock },
                 { provide: NavParams, useClass: NavParamsMock },
@@ -124,15 +127,15 @@ describe('FormExperience', () => {
 
     it('should handle success scenario for updateExperience', () => {
         const userProfileService = TestBed.get(UserProfileService);
-        const toasrCtrlStub  = TestBed.get(ToastController);
-        const translateStub =  TestBed.get(TranslateService);
+        const toasrCtrlStub = TestBed.get(ToastController);
+        const translateStub = TestBed.get(TranslateService);
         const commonUtilServiceStub = TestBed.get(CommonUtilService);
         spyOn(commonUtilServiceStub, 'translateMessage');
         spyOn(userProfileService, 'updateUserInfo').and.callFake((req, success, error) => {
             success('success');
         });
         spyOn(commonUtilServiceStub, 'showToast').and.returnValue({
-            present: () => {}
+            present: () => { }
         });
 
         comp.updateExperience('req');
@@ -142,15 +145,15 @@ describe('FormExperience', () => {
 
     it('should handle error scenario for updateExperience', () => {
         const userProfileService = TestBed.get(UserProfileService);
-        const toasrCtrlStub  = TestBed.get(ToastController);
-        const translateStub =  TestBed.get(TranslateService);
+        const toasrCtrlStub = TestBed.get(ToastController);
+        const translateStub = TestBed.get(TranslateService);
         const commonUtilServiceStub = TestBed.get(CommonUtilService);
         spyOn(commonUtilServiceStub, 'translateMessage');
         spyOn(userProfileService, 'updateUserInfo').and.callFake((req, success, error) => {
             error('error');
         });
         spyOn(commonUtilServiceStub, 'showToast').and.returnValue({
-            present: () => {}
+            present: () => { }
         });
 
         comp.updateExperience('req');
@@ -166,7 +169,7 @@ describe('FormExperience', () => {
     it('showDeleteConfirm should make expected calls', () => {
         const alertController = TestBed.get(AlertController);
         // const alert = TestBed.get(Alert);
-        const translateStub =  TestBed.get(TranslateService);
+        const translateStub = TestBed.get(TranslateService);
         const platformStub: Platform = TestBed.get(Platform);
         const commonUtilServiceStub = TestBed.get(CommonUtilService);
         spyOn(platformStub, 'registerBackButtonAction');
