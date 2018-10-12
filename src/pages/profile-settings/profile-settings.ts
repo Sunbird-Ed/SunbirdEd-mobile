@@ -51,20 +51,20 @@ export class ProfileSettingsPage {
   profileForTelemetry: any = {};
   hideBackButton = false;
 
-  syllabusOptions = {
-    title: this.commonUtilService.translateMessage('SYLLABUS').toLocaleUpperCase(),
-    cssClass: 'select-box'
-  };
+  // syllabusOptions = {
+  //   title: this.commonUtilService.translateMessage('SYLLABUS').toLocaleUpperCase(),
+  //   cssClass: 'select-box'
+  // };
   boardOptions = {
-    title: this.commonUtilService.translateMessage('BOARD').toLocaleUpperCase(),
+    title: this.commonUtilService.translateMessage('BOARD_OPTION_TEXT'),
     cssClass: 'select-box'
   };
   mediumOptions = {
-    title: this.commonUtilService.translateMessage('MEDIUM_OF_INSTRUCTION').toLocaleUpperCase(),
+    title: this.commonUtilService.translateMessage('MEDIUM_OPTION_TEXT'),
     cssClass: 'select-box'
   };
   classOptions = {
-    title: this.commonUtilService.translateMessage('CLASS').toLocaleUpperCase(),
+    title: this.commonUtilService.translateMessage('GRADE_OPTION_TEXT'),
     cssClass: 'select-box'
   };
 

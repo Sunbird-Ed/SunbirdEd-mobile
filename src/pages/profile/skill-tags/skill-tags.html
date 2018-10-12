@@ -16,10 +16,12 @@
 <ion-footer>
   <ion-row>
     <ion-col padding>
-      <button class="action-button" ion-button block outline class="text-capitalize" (click)="goBack()">{{ 'CANCEL' | translate }}</button>
+      <button class="action-button" ion-button block outline class="text-capitalize" (click)="goBack()">{{ 'CANCEL' |
+        translate }}</button>
     </ion-col>
     <ion-col padding>
-      <button class="action-button" ion-button block class="text-capitalize" [disabled]="!skillTags?.length" (click)="addSkills()">{{ 'APPLY' | translate }}</button>
+      <button class="action-button" ion-button block class="text-capitalize" [disabled]="!skillTags?.length" (click)="addSkills()">{{
+        'APPLY' | translate }}</button>
     </ion-col>
   </ion-row>
 </ion-footer>

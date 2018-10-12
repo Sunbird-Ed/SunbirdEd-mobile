@@ -249,6 +249,7 @@ export class EnrolledCourseDetailsPage {
     });
 
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME, false);
       this.didViewLoad = false;
       this.generateEndEvent(this.objId, this.objType, this.objVer);
       if (this.shouldGenerateEndTelemetry) {
@@ -872,6 +873,7 @@ export class EnrolledCourseDetailsPage {
 
   ionViewDidLoad() {
     this.navBar.backButtonClick = () => {
+      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME, true);
       this.handleNavBackButton();
     };
 

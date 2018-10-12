@@ -1,5 +1,6 @@
+import { CommonUtilService } from './../../service/common-util.service';
 import { Component } from '@angular/core';
-import { NavController, LoadingController } from 'ionic-angular';
+import { NavController } from 'ionic-angular';
 import { DatasyncPage } from './datasync/datasync';
 import { LanguageSettingsPage } from '../language-settings/language-settings';
 import { AboutUsPage } from './about-us/about-us';
@@ -19,7 +20,7 @@ const KEY_SUNBIRD_CONFIG_FILE_PATH = 'sunbird_config_file_path';
 })
 export class SettingsPage {
   chosenLanguageString: string;
-  selectedlanguage: string;
+  selectedLanguage: string;
   fileUrl: string;
   shareAppLabel: string;
 
@@ -31,21 +32,16 @@ export class SettingsPage {
     private preference: SharedPreferences,
     private telemetryService: TelemetryService,
     private shareUtil: ShareUtil,
-    private loadingCtrl: LoadingController) {
-
-  }
+    private commonUtilService: CommonUtilService
+  ) { }
 
   ionViewWillEnter() {
-    this.translate.get('SHARE_APP').subscribe(
-      value => {
-        this.appVersion.getAppName()
-          .then((appName: any) => {
-            // TODO: Need to add dynamic string substitution
-            this.shareAppLabel = value.replace('{{%s}}', appName);
-          });
-      }
-    );
+    this.appVersion.getAppName()
+      .then((appName) => {
+        this.shareAppLabel = this.commonUtilService.translateMessage('SHARE_APP', appName);
+      });
   }
+
   ionViewDidLoad() {
     const impression = new Impression();
     impression.type = ImpressionType.VIEW;
@@ -61,29 +57,24 @@ export class SettingsPage {
   }
 
   ionViewDidEnter() {
-    this.translate.get('CURRENT_LANGUAGE').subscribe(
-      value => {
-        this.chosenLanguageString = value;
-        this.preference.getString(PreferenceKey.SELECTED_LANGUAGE)
-          // tslint:disable-next-line:no-shadowed-variable
-          .then(value => {
-            this.selectedlanguage = this.chosenLanguageString + ': ' + value;
-          });
-      }
-    );
+
+
+    this.chosenLanguageString = this.commonUtilService.translateMessage('CURRENT_LANGUAGE');
+    this.preference.getString(PreferenceKey.SELECTED_LANGUAGE)
+      .then(value => {
+        this.selectedLanguage = `${this.chosenLanguageString} : ${value}`;
+      });
   }
 
-  goBack() {
-    this.navCtrl.pop();
-  }
   ionViewDidLeave() {
-    (<any>window).supportfile.removeFile((result) => {
-      console.log('File deleted -' + JSON.parse(result));
-    }, (error) => {
-      console.log('error' + error);
-    });
+    (<any>window).supportfile.removeFile(
+      result => ({}),
+      error => {
+        console.error('error' + error);
+      });
   }
-  languageSetting() {
+
+  goToLanguageSetting() {
     this.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.LANGUAGE_CLICKED);
     this.navCtrl.push(LanguageSettingsPage, {
       isFromSettings: true
@@ -103,34 +94,28 @@ export class SettingsPage {
   sendMessage() {
     this.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.SUPPORT_CLICKED);
     (<any>window).supportfile.shareSunbirdConfigurations((result) => {
-      const loader = this.getLoader();
+      const loader = this.commonUtilService.getLoader();
       loader.present();
-      console.log('Result - ' + JSON.parse(result));
+
       this.preference.putString(KEY_SUNBIRD_CONFIG_FILE_PATH, JSON.parse(result));
       this.preference.getString(KEY_SUNBIRD_CONFIG_FILE_PATH)
         .then(val => {
           loader.dismiss();
-          if (val === undefined || val === '' || val === null) {
-            // do nothing
-          } else {
+          if (Boolean(val)) {
             this.fileUrl = 'file://' + val;
-            // Share via email
-            this.socialSharing.shareViaEmail('', '', [], null, null, this.fileUrl).then(() => {
-              console.log('Share is possible');
-            }).catch(error => {
-              console.log('Share is not possible');
-              console.log(error);
-              // Error!
-            });
+            this.socialSharing.shareViaEmail('', '', [], null, null, this.fileUrl)
+              .catch(error => {
+                console.error(error);
+              });
           }
         });
     }, (error) => {
-      console.log('ERROR - ' + error);
+      console.error('ERROR - ' + error);
     });
   }
 
   shareApp() {
-    const loader = this.getLoader();
+    const loader = this.commonUtilService.getLoader();
     loader.present();
 
     this.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.SHARE_APP_CLICKED);
@@ -142,13 +127,6 @@ export class SettingsPage {
       this.socialSharing.share('', '', 'file://' + filePath, '');
     }, error => {
       loader.dismiss();
-    });
-  }
-
-  getLoader(): any {
-    return this.loadingCtrl.create({
-      duration: 30000,
-      spinner: 'crescent'
     });
   }
 

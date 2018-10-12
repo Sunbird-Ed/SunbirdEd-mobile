@@ -1,3 +1,4 @@
+import { CommonUtilService } from './../../../service/common-util.service';
 import {
     Component,
     ViewChild
@@ -7,7 +8,6 @@ import {
     ViewController,
     App,
     Nav,
-    ToastController
 } from 'ionic-angular';
 import { SettingsPage } from '../../settings/settings';
 import {
@@ -17,10 +17,7 @@ import {
     Profile,
     UserSource,
     TabsPage,
-    ContainerService
-} from 'sunbird';
-import { OnboardingPage } from '../../onboarding/onboarding';
-import {
+    ContainerService,
     InteractType,
     InteractSubtype,
     PageId,
@@ -28,6 +25,7 @@ import {
     TelemetryService,
     ProfileService
 } from 'sunbird';
+import { OnboardingPage } from '../../onboarding/onboarding';
 import {
     initTabs,
     GUEST_STUDENT_TABS,
@@ -62,10 +60,10 @@ export class OverflowMenuComponent {
         private preferences: SharedPreferences,
         private network: Network,
         private translate: TranslateService,
-        private toastCtrl: ToastController,
         private telemetryGeneratorService: TelemetryGeneratorService,
         private appGlobalService: AppGlobalService,
-        private container: ContainerService
+        private container: ContainerService,
+        private commonUtilService: CommonUtilService
     ) {
         this.items = this.navParams.get('list');
         this.profile = this.navParams.get('profile') || {};
@@ -117,12 +115,7 @@ export class OverflowMenuComponent {
             }
             case 'LOGOUT':
                 if (this.network.type === 'none') {
-                    const toast = this.toastCtrl.create({
-                        message: this.translateMessage('NEED_INTERNET_TO_CHANGE'),
-                        duration: 2000,
-                        position: 'bottom'
-                    });
-                    toast.present();
+                    this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
                 } else {
                     this.generateLogoutInteractTelemetry(InteractType.TOUCH,
                         InteractSubtype.LOGOUT_INITIATE, '');
@@ -173,22 +166,6 @@ export class OverflowMenuComponent {
         this.generateLogoutInteractTelemetry(InteractType.OTHER, InteractSubtype.LOGOUT_SUCCESS, '');
     }
 
-
-    /**
-     * Used to Translate message to current Language
-     * @param {string} messageConst - Message Constant to be translated
-     * @returns {string} translatedMsg - Translated Message
-     */
-    translateMessage(messageConst: string): string {
-        let translatedMsg = '';
-        this.translate.get(messageConst).subscribe(
-            (value: any) => {
-                translatedMsg = value;
-            }
-        );
-        return translatedMsg;
-    }
-
     generateLogoutInteractTelemetry(interactType, interactSubtype, uid) {
         const valuesMap = new Map();
         valuesMap['UID'] = uid;
@@ -203,5 +180,4 @@ export class OverflowMenuComponent {
             )
         );
     }
-
 }

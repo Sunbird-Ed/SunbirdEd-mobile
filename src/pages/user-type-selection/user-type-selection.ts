@@ -82,16 +82,23 @@ export class UserTypeSelectionPage {
     private appGlobalService: AppGlobalService,
     private scannerService: SunbirdQRScanner,
     private platform: Platform
-  ) {}
+  ) { }
 
   ionViewDidLoad() {
     this.navBar.backButtonClick = (e: UIEvent) => {
+      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.USER_TYPE_SELECTION, Environment.HOME, true);
       this.handleBackButton();
     };
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW, '',
       PageId.USER_TYPE_SELECTION,
       Environment.HOME, '', '', '');
+
+    this.event.subscribe('event:showScanner', (data) => {
+      if (data.pageName === PageId.USER_TYPE_SELECTION) {
+        this.scannerService.startScanner(PageId.USER_TYPE_SELECTION, true);
+      }
+    });
   }
 
   ionViewWillEnter() {
@@ -99,9 +106,10 @@ export class UserTypeSelectionPage {
     this.isChangeRoleRequest = Boolean(this.navParams.get('isChangeRoleRequest'));
     this.showScanner = Boolean(this.navParams.get('showScanner'));
     if (this.showScanner) {
-      this.scannerService.startScanner('UserTypeSelectionPage', true);
+      this.scannerService.startScanner(PageId.USER_TYPE_SELECTION, true);
     }
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.USER_TYPE_SELECTION, Environment.HOME, false);
       this.handleBackButton();
       this.backButtonFunc();
     }, 10);
