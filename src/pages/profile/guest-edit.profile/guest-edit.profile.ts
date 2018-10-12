@@ -5,7 +5,6 @@ import {
   App,
   NavController,
   NavParams,
-  ToastController,
   Events,
   LoadingController,
   IonicApp,
@@ -13,8 +12,7 @@ import {
 } from 'ionic-angular';
 import {
   FormBuilder,
-  FormGroup,
-  Validators
+  FormGroup
 } from '@angular/forms';
 import * as _ from 'lodash';
 import {
