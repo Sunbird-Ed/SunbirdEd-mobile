@@ -1,5 +1,5 @@
-import { CorrelationData } from './../../../genie-sdk-wrapper/src/services/telemetry/bean';
-import { InteractType, InteractSubtype, PageId } from './../../../genie-sdk-wrapper/src/services/telemetry/constant';
+import { CorrelationData } from 'sunbird';
+import { InteractType, InteractSubtype, PageId } from 'sunbird';
 import { TelemetryGeneratorService } from './../../service/telemetry-generator.service';
 import { TranslateService } from '@ngx-translate/core';
 import { NavParams } from 'ionic-angular/navigation/nav-params';
