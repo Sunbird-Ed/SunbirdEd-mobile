@@ -27,7 +27,22 @@ export const mockRes = {
   },
   profile :
     { handle: 'sample', syllabus: ['NCF'], board: ['CBSE'], grade: ['KG'], subject: ['English'], medium: ['English'],
-    profileType: ProfileType.TEACHER, source: UserSource.LOCAL }
+    profileType: ProfileType.TEACHER, source: UserSource.LOCAL },
+   userData : {
+      'age': -1,
+      'avatar': 'avatar',
+      'createdAt': 'Aug 9, 2018 11:36:50 AM',
+      'day': -1,
+      'gender': '',
+      'handle': 'test name',
+      'isGroupUser': false,
+      'language': 'en',
+      'month': -1,
+      'profileType': ProfileType.STUDENT,
+      'source': UserSource.LOCAL,
+      'standard': -1,
+      'uid': '3af2e8a4-003e-438d-b360-2ae922696913'
+  }
 
 };
 //    describe('isSelected', () => {

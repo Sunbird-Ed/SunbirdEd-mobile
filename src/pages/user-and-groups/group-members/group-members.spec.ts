@@ -28,21 +28,7 @@ import { PopoverControllerMock } from 'ionic-mocks';
 import { doesNotThrow } from 'assert';
 
 describe('GroupMembersPage', () => {
-    const userData = {
-        'age': -1,
-        'avatar': 'avatar',
-        'createdAt': 'Aug 9, 2018 11:36:50 AM',
-        'day': -1,
-        'gender': '',
-        'handle': 'test name',
-        'isGroupUser': false,
-        'language': 'en',
-        'month': -1,
-        'profileType': ProfileType.STUDENT,
-        'source': UserSource.LOCAL,
-        'standard': -1,
-        'uid': '3af2e8a4-003e-438d-b360-2ae922696913'
-    };
+
 
     let comp: GroupMembersPage;
     let fixture: ComponentFixture<GroupMembersPage>;
@@ -110,7 +96,7 @@ describe('GroupMembersPage', () => {
     it('#getAllProfile should be makes expected calls', () => {
         // const ngZoneStub: NgZone = fixture.debugElement.injector.get(NgZone);
         const profileServiceStub = TestBed.get(ProfileService);
-        spyOn(profileServiceStub, 'getAllUserProfile').and.returnValue(Promise.resolve([userData]));
+        spyOn(profileServiceStub, 'getAllUserProfile').and.returnValue(Promise.resolve([mockRes.userData]));
 
         //  spyOn(ngZoneStub, 'run');
         // spyOn(profileServiceStub, 'getAllUserProfile');
@@ -122,64 +108,64 @@ describe('GroupMembersPage', () => {
 
     it('#toggleSelect should read toggleSelect param', () => {
         spyOn(comp, 'toggleSelect').and.callThrough();
-        comp.userList = [userData];
+        comp.userList = [mockRes.userData];
         comp.toggleSelect(0);
         expect(comp.toggleSelect).toHaveBeenCalled();
     });
     it('#toggleSelect should read toggleSelect param', () => {
         spyOn(comp, 'toggleSelect').and.callThrough();
-        comp.userList = [userData];
-        comp.userSelectionMap.set('3af2e8a4-003e-438d-b360-2ae922696913', true);
+        comp.userList = [mockRes.userData];
+        comp.userSelectionMap.set('', true);
         comp.toggleSelect(0);
         expect(comp.toggleSelect).toHaveBeenCalled();
     });
     it('#isUserSelected should read toggleSelect param', () => {
         spyOn(comp, 'isUserSelected').and.callThrough();
-        comp.userList = [userData];
-        comp.userSelectionMap.set('3af2e8a4-003e-438d-b360-2ae922696913', true);
+        comp.userList = [mockRes.userData];
+        comp.userSelectionMap.set('userId', true);
         comp.isUserSelected(0);
         expect(comp.isUserSelected).toHaveBeenCalled();
     });
 
     it('#getGradeNameFromCode should read toggleSelect param', () => {
         spyOn(comp, 'getGradeNameFromCode').and.callThrough();
-        const userListData = userData;
+        const userListData = mockRes.userData;
         userListData['grade'] = ['grade1'];
         userListData['gradeValueMap'] = { 'grade1': 'class1' };
         userListData['gradeName'] = [];
         userListData['name'] = 'Name';
 
-        comp.userSelectionMap.set('3af2e8a4-003e-438d-b360-2ae922696913', true);
+        comp.userSelectionMap.set('userId', true);
         comp.getGradeNameFromCode(userListData);
         expect(comp.getGradeNameFromCode).toHaveBeenCalled();
     });
     it('#getGradeNameFromCode It should read toggleSelect param', () => {
         spyOn(comp, 'getGradeNameFromCode').and.callThrough();
-        const userListData = userData;
+        const userListData = mockRes.userData;
         userListData['grade'] = ['grade1'];
         delete userListData['gradeValueMap'];
         userListData['gradeName'] = [];
         userListData['name'] = 'Name';
 
-        comp.userSelectionMap.set('3af2e8a4-003e-438d-b360-2ae922696913', true);
+        comp.userSelectionMap.set('userId', true);
         comp.getGradeNameFromCode(userListData);
         expect(comp.getGradeNameFromCode).toHaveBeenCalled();
     });
     it('#getGradeNameFromCode should read toggleSelect param', () => {
         spyOn(comp, 'getGradeNameFromCode').and.callThrough();
-        const userListData = userData;
+        const userListData = mockRes.userData;
         delete userListData['grade'];
         delete userListData['gradeValueMap'];
         userListData['gradeName'] = [];
         userListData['name'] = 'Name';
-        comp.userSelectionMap.set('3af2e8a4-003e-438d-b360-2ae922696913', true);
+        comp.userSelectionMap.set('userId', true);
         comp.getGradeNameFromCode(userListData);
         expect(comp.getGradeNameFromCode).toHaveBeenCalled();
     });
 
     it('#selectAll should be makes expected calls', () => {
         comp.userList =
-            [userData];
+            [mockRes.userData];
         // const ngZoneStub: NgZone = fixture.debugElement.injector.get(NgZone);
         // spyOn(ngZoneStub, 'run');
         comp.selectAll();
