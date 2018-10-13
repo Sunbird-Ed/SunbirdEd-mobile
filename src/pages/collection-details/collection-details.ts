@@ -244,7 +244,8 @@ export class CollectionDetailsPage {
 
   ionViewDidLoad() {
     this.navBar.backButtonClick = () => {
-      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.USER_TYPE_SELECTION, Environment.HOME, true);
+      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.COLLECTION_DETAIL, Environment.HOME,
+        true, this.cardData.identifier, this.corRelationList);
       this.handleBackButton();
     };
     this.registerDeviceBackButton();
@@ -262,7 +263,8 @@ export class CollectionDetailsPage {
 
   registerDeviceBackButton() {
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
-      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.COLLECTION_DETAIL, Environment.HOME, false);
+      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.COLLECTION_DETAIL, Environment.HOME,
+        false, this.cardData.identifier, this.corRelationList);
       this.handleBackButton();
     }, 10);
   }
@@ -408,6 +410,7 @@ export class CollectionDetailsPage {
       if (data.result.isUpdateAvailable && !this.isUpdateAvailable) {
         this.isUpdateAvailable = true;
         this.showLoading = true;
+        this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.contentDetail, false);
         this.importContent([this.identifier], false);
       } else {
         this.isUpdateAvailable = false;
@@ -415,6 +418,7 @@ export class CollectionDetailsPage {
       }
     } else {
       this.showLoading = true;
+      this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.contentDetail, true);
       this.importContent([this.identifier], false);
     }
 
@@ -485,7 +489,7 @@ export class CollectionDetailsPage {
    * @param {Array<string>} identifiers contains list of content identifier(s)
    * @param {boolean} isChild
    */
-  importContent(identifiers: Array<string>, isChild: boolean) {
+  importContent(identifiers: Array<string>, isChild: boolean, isDownloadAllClicked?) {
     const option = {
       contentImportMap: _.extend({}, this.getImportContentRequestBody(identifiers, isChild)),
       contentStatusArray: []
@@ -504,6 +508,16 @@ export class CollectionDetailsPage {
               this.faultyIdentifiers.push(value.identifier);
             }
           });
+
+          if (isDownloadAllClicked) {
+            this.telemetryGeneratorService.generateDownloadAllClickTelemetry(
+              PageId.COLLECTION_DETAIL,
+              this.contentDetail,
+              this.queuedIdentifiers,
+              identifiers.length
+            );
+          }
+
           if (this.queuedIdentifiers.length === 0) {
             if (this.isDownloadStarted) {
               this.showDownloadBtn = true;
@@ -613,7 +627,7 @@ export class CollectionDetailsPage {
   }
 
 
-  
+
 
   /**
    * Ionic life cycle hook
@@ -767,6 +781,7 @@ export class CollectionDetailsPage {
             if (this.parentContent) {
               const parentIdentifier = this.parentContent.contentId || this.parentContent.identifier;
               this.showLoading = true;
+              this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.contentDetail, false);
               this.importContent([parentIdentifier], false);
             } else {
               this.setContentDetails(this.identifier, false);
@@ -813,7 +828,7 @@ export class CollectionDetailsPage {
     this.showLoading = true;
     this.isDownloadStarted = true;
     this.downloadPercentage = 0;
-    this.importContent(this.downloadIdentifiers, true);
+    this.importContent(this.downloadIdentifiers, true, true);
   }
 
   /**
@@ -965,6 +980,7 @@ export class CollectionDetailsPage {
   }
 
   cancelDownload() {
+    this.telemetryGeneratorService.generateCancelDownloadTelemetry(this.contentDetail);
     this.contentService.cancelDownload(this.identifier, () => {
       this.zone.run(() => {
         this.showLoading = false;
