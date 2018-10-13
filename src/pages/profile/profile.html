@@ -193,7 +193,7 @@
     <span padding-horizontal class="section-title">{{ 'CREATED_BY_ME' | translate }}</span>
     <ion-scroll scrollX="true" class="course-scroll-dimensions" no-padding>
       <div class="inner">
-        <course-card *ngFor="let courseItem of enrolledCourse" [course]="courseItem" [layoutName]="'Popular'"
+        <course-card *ngFor="let courseItem of enrolledCourse; let i=index" [course]="courseItem"  [env]="'profile'" [index]="i" [sectionName]="Contributions" [pageName]="'profile'" [layoutName]="'Popular'"
           [onProfile]="onProfile"></course-card>
       </div>
     </ion-scroll>
