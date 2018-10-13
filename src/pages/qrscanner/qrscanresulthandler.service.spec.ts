@@ -17,7 +17,8 @@ import {
   Environment,
   TelemetryObject,
   InteractType,
-  Mode
+  Mode,
+  SharedPreferences
 } from 'sunbird';
 import { Config } from 'ionic-angular';
 import { Platform } from 'ionic-angular';
@@ -33,10 +34,14 @@ import {
   TranslateFakeLoader
 } from '@ngx-translate/core';
 import {
-  AppMock, ToastControllerMockNew
+  AppMock, ToastControllerMockNew, DeepLinkerMock
 } from '../../../test-config/mocks-ionic';
 import { mockRes } from '../qrscanner/qrscanresulthandler.service.spec.data';
 import { NetworkMock } from 'ionic-mocks';
+import { LoadingController } from 'ionic-angular';
+import { Events } from 'ionic-angular';
+import { PopoverController } from 'ionic-angular';
+import { DeepLinker } from 'ionic-angular';
 
 describe('QRScannerResultHandler', () => {
   let service: QRScannerResultHandler;
@@ -53,8 +58,12 @@ describe('QRScannerResultHandler', () => {
         })
       ],
       providers: [
-        QRScannerResultHandler, ServiceProvider, Config, Platform, TelemetryGeneratorService, TelemetryService,
-        Network, QRScannerResultHandler, ContentService, CommonUtilService, ToastController, TranslateService,
+        QRScannerResultHandler, ServiceProvider, Config, LoadingController,
+        SharedPreferences, Events, PopoverController,
+        Platform, TelemetryGeneratorService, TelemetryService,
+        Network, QRScannerResultHandler, ContentService,
+        CommonUtilService, ToastController, TranslateService,
+        { provide: DeepLinker, useValue: DeepLinkerMock},
         { provide: App, useClass: AppMock },
         { provide: ToastController, useFactory: () => ToastControllerMockNew.instance() },
         { provide: Network, useFactory: () => NetworkMock.instance('none') },

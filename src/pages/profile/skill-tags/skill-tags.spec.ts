@@ -8,10 +8,12 @@ import {
 import {
     LoadingController,
     ToastController,
-    NavController
+    NavController,
+    Events,
+    App
 } from 'ionic-angular';
 // import { NgZone } from "@angular/core";
-import { AuthService } from 'sunbird';
+import { AuthService, SharedPreferences, ServiceProvider } from 'sunbird';
 import { UserProfileService } from 'sunbird';
 import { SkillTagsComponent } from './skill-tags';
 import { } from 'jasmine';
@@ -20,10 +22,15 @@ import {
     TranslateServiceStub,
     ToastControllerMockNew,
     AuthServiceMock,
-    NavMock
+    NavMock,
+    DeepLinkerMock
 } from '../../../../test-config/mocks-ionic';
 import { TagInputModule } from 'ngx-chips';
 import { CommonUtilService } from '../../../service/common-util.service';
+import { PopoverController } from 'ionic-angular';
+import { Config } from 'ionic-angular';
+import { Platform } from 'ionic-angular';
+import { DeepLinker } from 'ionic-angular';
 
 describe('SkillTagsComponent', () => {
     let comp: SkillTagsComponent;
@@ -41,8 +48,10 @@ describe('SkillTagsComponent', () => {
             imports: [TranslateModule.forRoot(), TagInputModule],
             declarations: [SkillTagsComponent],
             schemas: [NO_ERRORS_SCHEMA],
-            providers: [
-                CommonUtilService,
+            providers: [App, Config, Platform,
+                CommonUtilService, SharedPreferences,
+                Events, PopoverController, ServiceProvider,
+                { provide: DeepLinker, useValue: DeepLinkerMock },
                 { provide: NavController, useClass: NavMock },
                 // { provide: NgZone, useValue: ngZoneStub },
                 { provide: AuthService, useClass: AuthServiceMock },

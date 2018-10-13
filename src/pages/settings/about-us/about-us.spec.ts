@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { NavController, LoadingController } from 'ionic-angular';
+import { NavController, LoadingController, ToastController, Config, Platform, Events, PopoverController, DeepLinker } from 'ionic-angular';
 import { NavParams } from 'ionic-angular';
 import { AppVersion } from '@ionic-native/app-version';
 import { DeviceInfoService, SharedPreferences, ServiceProvider } from 'sunbird';
@@ -10,10 +10,12 @@ import { TelemetryService } from 'sunbird';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import {
     NavMock, AppVersionMock, LoadingControllerMock,
-    SharedPreferencesMock, TelemetryServiceMock, SocialSharingMock
+    SharedPreferencesMock, TelemetryServiceMock, SocialSharingMock, DeepLinkerMock
 } from '../../../../test-config/mocks-ionic';
 import { } from 'jasmine';
 import { AboutUsPage } from './about-us';
+import { CommonUtilService } from '../../../service/common-util.service';
+import { App } from 'ionic-angular/components/app/app';
 
 describe('AboutUsPage', () => {
     let comp: AboutUsPage;
@@ -47,7 +49,9 @@ describe('AboutUsPage', () => {
             declarations: [AboutUsPage],
             schemas: [NO_ERRORS_SCHEMA],
             providers: [
-                ServiceProvider,
+                ServiceProvider, CommonUtilService, ToastController, App,
+                Config, Platform, Events, PopoverController,
+                { provide: DeepLinker, useValue: DeepLinkerMock },
                 { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() },
                 { provide: SocialSharing, useClass: SocialSharingMock },
                 { provide: SharedPreferences, useClass: SharedPreferencesMock },
@@ -115,6 +119,7 @@ describe('AboutUsPage', () => {
         comp.ionViewDidLeave();
     });
     it('#shareInformationMethod makes expected calls if value is undefined', () => {
+        const commonUtilServiceStub = TestBed.get(CommonUtilService);
         const preferStub = TestBed.get(SharedPreferences);
         const loadControllerStub = TestBed.get(LoadingController);
         spyOn(comp, 'generateInteractTelemetry');
@@ -125,16 +130,17 @@ describe('AboutUsPage', () => {
         spyOn(window['supportfile'], 'shareSunbirdConfigurations').and.callFake((result, error) => {
             return result(JSON.stringify({}));
         });
-        getLoader();
+        commonUtilServiceStub.getLoader();
         comp.shareInformation();
         expect(loadControllerStub.create).toHaveBeenCalled();
         expect(comp.generateInteractTelemetry).toHaveBeenCalled();
         expect(preferStub.getString).toHaveBeenCalled();
     });
     it('makes expected calls and checks when val is ""', () => {
+        const commonUtilServiceStub = TestBed.get(CommonUtilService);
         const preferStub = TestBed.get(SharedPreferences);
         const loadControllerStub = TestBed.get(LoadingController);
-        getLoader();
+        commonUtilServiceStub.getLoader();
         spyOn(comp, 'generateInteractTelemetry');
         spyOn(preferStub, 'getString').and.returnValue(Promise.resolve(''));
         window['supportfile'] = {
@@ -143,7 +149,7 @@ describe('AboutUsPage', () => {
         spyOn(window['supportfile'], 'shareSunbirdConfigurations').and.callFake((result, error) => {
             return result(JSON.stringify({}));
         });
-        getLoader();
+        commonUtilServiceStub.getLoader();
         comp.shareInformation();
         expect(preferStub.getString).toHaveBeenCalled();
         expect(loadControllerStub.create).toHaveBeenCalled();
@@ -152,8 +158,9 @@ describe('AboutUsPage', () => {
     });
     it('makes expected calls and checks when val is null', () => {
         const preferStub = TestBed.get(SharedPreferences);
+        const commonUtilServiceStub = TestBed.get(CommonUtilService);
         const loadControllerStub = TestBed.get(LoadingController);
-        getLoader();
+        commonUtilServiceStub.getLoader();
         spyOn(comp, 'generateInteractTelemetry');
         spyOn(preferStub, 'getString').and.returnValue(Promise.resolve(null));
         window['supportfile'] = {
@@ -162,7 +169,7 @@ describe('AboutUsPage', () => {
         spyOn(window['supportfile'], 'shareSunbirdConfigurations').and.callFake((result, error) => {
             return result(JSON.stringify({}));
         });
-        getLoader();
+        commonUtilServiceStub.getLoader();
         comp.shareInformation();
         expect(loadControllerStub.create).toHaveBeenCalled();
         expect(comp.generateInteractTelemetry).toHaveBeenCalled();
@@ -170,17 +177,18 @@ describe('AboutUsPage', () => {
     });
     it('makes expected calls in else part when is value is present', () => {
         const preferStub = TestBed.get(SharedPreferences);
+        const commonUtilServiceStub = TestBed.get(CommonUtilService);
         const loadControllerStub = TestBed.get(LoadingController);
         const SocialSharingStub = TestBed.get(SocialSharing);
         comp.fileUrl = 'string';
-        getLoader();
+        commonUtilServiceStub.getLoader();
         window['supportfile'] = {
             shareSunbirdConfigurations: () => ({})
         };
         spyOn(window['supportfile'], 'shareSunbirdConfigurations').and.callFake((result, error) => {
             return result(JSON.stringify({}));
         });
-        getLoader();
+        commonUtilServiceStub.getLoader();
         spyOn(comp, 'generateInteractTelemetry');
         spyOn(preferStub, 'getString').and.returnValue(Promise.resolve('string'));
         spyOn(SocialSharingStub, 'shareViaEmail').and.returnValue(Promise.resolve(''));
@@ -193,15 +201,16 @@ describe('AboutUsPage', () => {
         const preferStub = TestBed.get(SharedPreferences);
         const loadControllerStub = TestBed.get(LoadingController);
         const SocialSharingStub = TestBed.get(SocialSharing);
+        const commonUtilServiceStub = TestBed.get(CommonUtilService);
         comp.fileUrl = 'string';
-        getLoader();
+        commonUtilServiceStub.getLoader();
         window['supportfile'] = {
             shareSunbirdConfigurations: () => ({})
         };
         spyOn(window['supportfile'], 'shareSunbirdConfigurations').and.callFake((result, error) => {
             return result(JSON.stringify({}));
         });
-        getLoader();
+        commonUtilServiceStub.getLoader();
         spyOn(comp, 'generateInteractTelemetry');
         spyOn(preferStub, 'getString').and.returnValue(Promise.resolve('string'));
         spyOn(SocialSharingStub, 'shareViaEmail').and.returnValue(Promise.reject());

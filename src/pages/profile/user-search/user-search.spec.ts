@@ -3,10 +3,10 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { AuthService } from 'sunbird';
+import { AuthService, SharedPreferences, ServiceProvider } from 'sunbird';
 import { UserProfileService } from 'sunbird';
 import { TelemetryService } from 'sunbird';
-import { NavController } from 'ionic-angular';
+import { NavController, Events, PopoverController, App, Config, Platform } from 'ionic-angular';
 import { NavParams } from 'ionic-angular';
 import { LoadingController } from 'ionic-angular';
 import { ToastController } from 'ionic-angular';
@@ -16,6 +16,8 @@ import { UserSearchComponent } from './user-search';
 import { TranslateModule } from '@ngx-translate/core';
 import { } from 'jasmine';
 import { CommonUtilService } from '../../../service/common-util.service';
+import { DeepLinker } from 'ionic-angular';
+import { DeepLinkerMock } from '../../../../test-config/mocks-ionic';
 
 describe('UserSearchComponent', () => {
     let comp: UserSearchComponent;
@@ -58,7 +60,9 @@ describe('UserSearchComponent', () => {
             declarations: [UserSearchComponent],
             schemas: [NO_ERRORS_SCHEMA],
             providers: [
-                CommonUtilService,
+                CommonUtilService, SharedPreferences, ServiceProvider,
+                Events, PopoverController, App, Config, Platform,
+                { provide: DeepLinker, useValue: DeepLinkerMock },
                 { provide: AuthService, useValue: authServiceStub },
                 { provide: UserProfileService, useValue: userProfileServiceStub },
                 { provide: TelemetryService, useValue: telemetryServiceStub },
@@ -123,15 +127,6 @@ describe('UserSearchComponent', () => {
         });
     });
 
-    describe('getLoader', () => {
-        it('makes expected calls', () => {
-            const loadingControllerStub: LoadingController = fixture.debugElement.injector.get(LoadingController);
-            spyOn(loadingControllerStub, 'create');
-            comp.getLoader();
-            expect(loadingControllerStub.create).toHaveBeenCalled();
-        });
-    });
-
     describe('checkClear', () => {
         it('makes expected calls', () => {
             spyOn(comp, 'onInput');
@@ -143,7 +138,7 @@ describe('UserSearchComponent', () => {
     describe('ionViewDidEnter', () => {
         xit('should make expected call after 100ms', (done) => {
             expect(comp.input).toBeDefined();
-            comp.input = jasmine.createSpy().and.returnValue( () => {
+            comp.input = jasmine.createSpy().and.returnValue(() => {
                 return { setFocus: () => ({}) };
             });
             spyOn(comp.input, 'setFocus');
@@ -158,21 +153,21 @@ describe('UserSearchComponent', () => {
         });
     });
 
-     /*describe('getToast', () => {
-        it('Should not create ToastController if not passed any message for toast', () => {
-            const toastCtrlStub: ToastController = fixture.debugElement.injector.get(ToastController);
-            spyOn(toastCtrlStub, 'create');
-            comp.getToast();
-            expect(toastCtrlStub.create).not.toHaveBeenCalled();
-        });
-        it('Should create ToastController', () => {
-            const toastCtrlStub: ToastController = fixture.debugElement.injector.get(ToastController);
-            spyOn(toastCtrlStub, 'create');
-            comp.getToast('Some Message');
-            expect(toastCtrlStub.create).toHaveBeenCalled();
-            expect(toastCtrlStub.create).toBeTruthy();
-        });
-    }); */
+    /*describe('getToast', () => {
+       it('Should not create ToastController if not passed any message for toast', () => {
+           const toastCtrlStub: ToastController = fixture.debugElement.injector.get(ToastController);
+           spyOn(toastCtrlStub, 'create');
+           comp.getToast();
+           expect(toastCtrlStub.create).not.toHaveBeenCalled();
+       });
+       it('Should create ToastController', () => {
+           const toastCtrlStub: ToastController = fixture.debugElement.injector.get(ToastController);
+           spyOn(toastCtrlStub, 'create');
+           comp.getToast('Some Message');
+           expect(toastCtrlStub.create).toHaveBeenCalled();
+           expect(toastCtrlStub.create).toBeTruthy();
+       });
+   }); */
 
     describe('translateMessage', () => {
         it('should resolve test data', fakeAsync(() => {
@@ -220,21 +215,23 @@ describe('UserSearchComponent', () => {
 
     describe('onInput', () => {
         xit('Should present loader', () => {
+            const commonUtilServiceStub = TestBed.get(CommonUtilService);
             comp.onInput(undefined, {});
             fixture.detectChanges();
-            const loader = comp.getLoader();
+            const loader = commonUtilServiceStub.getLoader();
             expect(typeof loader.present).toBe('function');
             spyOn(loader, 'present').and.callThrough();
 
         });
         it('Should call getLoader', () => {
-            comp.getLoader = jasmine.createSpy().and.callFake(() => {
+            const commonUtilServiceStub = TestBed.get(CommonUtilService);
+            commonUtilServiceStub.getLoader = jasmine.createSpy().and.callFake(() => {
                 return { present: () => { }, dismiss: () => { } };
             });
             comp.onInput(undefined, {});
             fixture.detectChanges();
-            const loader = comp.getLoader();
-            expect(comp.getLoader).toHaveBeenCalled();
+            const loader = commonUtilServiceStub.getLoader();
+            expect(commonUtilServiceStub.getLoader).toHaveBeenCalled();
         });
         it('Should call invokeElementMethod', () => {
             spyOn(comp['renderer'], 'invokeElementMethod').and.callThrough();
