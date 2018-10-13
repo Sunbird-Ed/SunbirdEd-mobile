@@ -1,121 +1,167 @@
-import { Component, NgZone } from '@angular/core';
-import { NavController, NavParams, Events } from 'ionic-angular';
 import {
-  TabsPage, SharedPreferences,
-  Interact, TelemetryService, InteractType, InteractSubtype,
-  Environment, PageId, ImpressionType,
+  Component,
+  NgZone,
+  ViewChild
+} from '@angular/core';
+import {
+  IonicPage,
+  NavController,
+  NavParams,
+  Events,
+  Platform
+} from 'ionic-angular';
+import {
+  TabsPage,
+  SharedPreferences,
+  InteractType,
+  InteractSubtype,
+  Environment,
+  PageId,
+  ImpressionType,
   ContainerService,
   Profile,
   UserSource
 } from 'sunbird';
 import { TranslateService } from '@ngx-translate/core';
-import { ProfileType, ProfileService } from 'sunbird'
-import {  Map, generateImpressionTelemetry, generateInteractTelemetry } from '../../app/telemetryutil';
-import { initTabs, GUEST_TEACHER_TABS, GUEST_STUDENT_TABS } from '../../app/module.service';
+import {
+  ProfileType,
+  ProfileService
+} from 'sunbird';
+import { Map } from '../../app/telemetryutil';
+import {
+  initTabs,
+  GUEST_TEACHER_TABS,
+  GUEST_STUDENT_TABS
+} from '../../app/module.service';
 import { AppGlobalService } from '../../service/app-global.service';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { CommonUtilService } from '../../service/common-util.service';
+import { PreferenceKey } from '../../app/app.constant';
+import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
+import { ProfileSettingsPage } from '../profile-settings/profile-settings';
+import { Navbar } from 'ionic-angular';
 
 const selectedCardBorderColor = '#006DE5';
 const borderColor = '#F7F7F7';
-const KEY_SELECTED_USER_TYPE = "selected_user_type";
 
+@IonicPage()
 @Component({
   selector: 'page-user-type-selection',
   templateUrl: 'user-type-selection.html',
 })
 
 export class UserTypeSelectionPage {
-
-  userTypes: Array<string>;
-  teacherContents: Array<string>;
-  studentContents: Array<string>;
-  allContents: Array<Array<string>> = [];
-  teacherCardBorderColor: string = '#F7F7F7';
-  studentCardBorderColor: string = '#F7F7F7';
-  userTypeSelected: boolean = false;
+  @ViewChild(Navbar) navBar: Navbar;
+  teacherCardBorderColor = '#F7F7F7';
+  studentCardBorderColor = '#F7F7F7';
+  userTypeSelected = false;
   selectedUserType: ProfileType;
-  continueAs: string = "";
-  language: string;
+  continueAs = '';
   profile: Profile;
+  backButtonFunc = undefined;
 
   /**
    * Contains paths to icons
    */
-  studentImageUri: string = "assets/imgs/ic_student.png";
-  teacherImageUri: string = "assets/imgs/ic_teacher.png";
+  studentImageUri = 'assets/imgs/ic_student.png';
+  teacherImageUri = 'assets/imgs/ic_teacher.png';
+  isChangeRoleRequest = false;
+  showScanner = false;
 
-  constructor(public navCtrl: NavController,
+  constructor(
+    public navCtrl: NavController,
     public navParams: NavParams,
     private translate: TranslateService,
     private preference: SharedPreferences,
     private profileService: ProfileService,
-    private telemetryService: TelemetryService,
+    private telemetryGeneratorService: TelemetryGeneratorService,
     private container: ContainerService,
     private zone: NgZone,
-    private event: Events
-  ) {
-    this.initData();
-
-    this.profile = this.navParams.get('profile');
-  }
-
-  initData() {
-    let that = this;
-    this.translate.get(["ROLE.ROLE_TYPE", "ROLE.TEACHER_CONTENT", "ROLE.STUDENT_CONTENT"])
-      .subscribe(val => {
-        that.userTypes = val["ROLE.ROLE_TYPE"];
-        that.teacherContents = val["ROLE.TEACHER_CONTENT"];
-        that.studentContents = val["ROLE.STUDENT_CONTENT"];
-        that.allContents.push(that.teacherContents);
-        that.allContents.push(that.studentContents);
-      });
-  }
+    private event: Events,
+    private commonUtilService: CommonUtilService,
+    private appGlobalService: AppGlobalService,
+    private scannerService: SunbirdQRScanner,
+    private platform: Platform
+  ) { }
 
   ionViewDidLoad() {
-    this.telemetryService.impression(
-      generateImpressionTelemetry(ImpressionType.VIEW, "",
-        PageId.USER_TYPE_SELECTION,
-        Environment.HOME, "", "", "",
-        undefined,
-        undefined)
-    );
-  }
+    this.navBar.backButtonClick = (e: UIEvent) => {
+      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.USER_TYPE_SELECTION, Environment.HOME, true);
+      this.handleBackButton();
+    };
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.VIEW, '',
+      PageId.USER_TYPE_SELECTION,
+      Environment.HOME, '', '', '');
 
-  ionViewDidEnter() {
-
-  }
-
-  selectTeacherCard() {
-    this.zone.run(() => {
-      this.userTypeSelected = true;
-      this.teacherCardBorderColor = selectedCardBorderColor;
-      this.studentCardBorderColor = borderColor;
-      this.selectedUserType = ProfileType.TEACHER;
-      this.continueAs = this.translateMessage('CONTINUE_AS_ROLE', this.translateMessage('TEACHER_ROLE'));
-      this.preference.putString(KEY_SELECTED_USER_TYPE, this.selectedUserType);
+    this.event.subscribe('event:showScanner', (data) => {
+      if (data.pageName === PageId.USER_TYPE_SELECTION) {
+        this.scannerService.startScanner(PageId.USER_TYPE_SELECTION, true);
+      }
     });
   }
 
+  ionViewWillEnter() {
+    this.profile = this.appGlobalService.getCurrentUser();
+    this.isChangeRoleRequest = Boolean(this.navParams.get('isChangeRoleRequest'));
+    this.showScanner = Boolean(this.navParams.get('showScanner'));
+    if (this.showScanner) {
+      this.scannerService.startScanner(PageId.USER_TYPE_SELECTION, true);
+    }
+    this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.USER_TYPE_SELECTION, Environment.HOME, false);
+      this.handleBackButton();
+      this.backButtonFunc();
+    }, 10);
+  }
+
+  ionViewWillLeave() {
+    // Unregister the custom back button action for this page
+    if (this.backButtonFunc) {
+      this.backButtonFunc();
+    }
+  }
+
+  handleBackButton() {
+    if (this.isChangeRoleRequest) {
+      this.navCtrl.pop();
+    } else {
+      this.navCtrl.setRoot('LanguageSettingsPage');
+    }
+  }
+
+  selectTeacherCard() {
+    this.selectCard('USER_TYPE_1', ProfileType.TEACHER);
+  }
+
   selectStudentCard() {
+    this.selectCard('USER_TYPE_2', ProfileType.STUDENT);
+  }
+
+  selectCard(userType, profileType) {
     this.zone.run(() => {
       this.userTypeSelected = true;
-      this.teacherCardBorderColor = borderColor;
-      this.studentCardBorderColor = selectedCardBorderColor;
-      this.selectedUserType = ProfileType.STUDENT;
-      this.continueAs = this.translateMessage('CONTINUE_AS_ROLE', this.translateMessage('STUDENT_ROLE'));
-      this.preference.putString(KEY_SELECTED_USER_TYPE, this.selectedUserType)
+      this.teacherCardBorderColor = (userType === 'USER_TYPE_1') ? selectedCardBorderColor : borderColor;
+      this.studentCardBorderColor = (userType === 'USER_TYPE_1') ? borderColor : selectedCardBorderColor;
+      this.selectedUserType = profileType;
+      this.continueAs = this.commonUtilService.translateMessage(
+        'CONTINUE_AS_ROLE',
+        this.commonUtilService.translateMessage(userType)
+      );
+      this.preference.putString(PreferenceKey.SELECTED_USER_TYPE, this.selectedUserType);
     });
   }
 
   continue() {
     this.generateInteractEvent(this.selectedUserType);
 
-    //When user is changing the role via the Guest Profile screen
-    if (this.profile !== undefined) {
-      //if role types are same
+    // When user is changing the role via the Guest Profile screen
+    if (this.profile !== undefined && this.profile.handle) {
+      // if role types are same
       if (this.profile.profileType === this.selectedUserType) {
         this.gotoTabsPage();
       } else {
-        let updateRequest = new Profile();
+        const updateRequest = new Profile();
 
         updateRequest.handle = this.profile.handle;
         updateRequest.avatar = this.profile.avatar;
@@ -126,117 +172,87 @@ export class UserTypeSelectionPage {
         updateRequest.source = UserSource.LOCAL;
 
         updateRequest.syllabus = [];
-        updateRequest.board =  [];
-        updateRequest.grade =  [];
-        updateRequest.subject =  [];
-        updateRequest.medium =  [];
+        updateRequest.board = [];
+        updateRequest.grade = [];
+        updateRequest.subject = [];
+        updateRequest.medium = [];
 
         this.updateProfile(updateRequest);
       }
     } else {
-
-      let profileRequest = new Profile();
-      profileRequest.handle = "Guest1";
+      const profileRequest = new Profile();
+      profileRequest.handle = 'Guest1';
       profileRequest.profileType = this.selectedUserType;
       profileRequest.source = UserSource.LOCAL;
-      
       this.setProfile(profileRequest);
     }
   }
 
-  updateProfile(updateRequest: any) {
+  updateProfile(updateRequest: Profile) {
     this.profileService.updateProfile(updateRequest,
-      (res: any) => {
-        console.log("Update Response", res);
-        this.gotoTabsPage();
+      () => {
+        this.gotoTabsPage(true);
       },
       (err: any) => {
-        console.log("Err", err);
+        console.error('Err', err);
       });
   }
-
-  setProfile(profileRequest: any) {
-    this.profileService.setCurrentProfile(true, profileRequest, res => {
+  // TODO Remove getCurrentUser as setCurrentProfile is returning uid
+  setProfile(profileRequest: Profile) {
+    this.profileService.setCurrentProfile(true, profileRequest, () => {
       this.profileService.getCurrentUser(success => {
-        let userId = JSON.parse(success).uid
-        if (userId !== "null") this.preference.putString('GUEST_USER_ID_BEFORE_LOGIN', userId);
+        const userId = JSON.parse(success).uid;
+        this.event.publish(AppGlobalService.USER_INFO_UPDATED);
+        if (userId !== 'null') {
+          this.preference.putString('GUEST_USER_ID_BEFORE_LOGIN', userId);
+        }
         this.gotoTabsPage();
-      },
-        error => {
-          console.error("Error", error);
-          return "null";
-        });
+      }, error => {
+        console.error('Error', error);
+        return 'null';
+      });
     },
       err => {
-        console.error("Error", err);
+        console.error('Error', err);
       });
   }
 
-  gotoTabsPage() {
+  /**
+   * It will initializes tabs based on the user type and navigates to respective page
+   * @param {boolean} isUserTypeChanged
+   */
+  gotoTabsPage(isUserTypeChanged: boolean = false) {
     // Update the Global variable in the AppGlobalService
     this.event.publish(AppGlobalService.USER_INFO_UPDATED);
 
-
-    if (this.selectedUserType == ProfileType.TEACHER) {
+    if (this.selectedUserType === ProfileType.TEACHER) {
       initTabs(this.container, GUEST_TEACHER_TABS);
-    } else if (this.selectedUserType == ProfileType.STUDENT) {
+    } else if (this.selectedUserType === ProfileType.STUDENT) {
       initTabs(this.container, GUEST_STUDENT_TABS);
     }
 
-    this.navCtrl.push(TabsPage, {
-      loginMode: 'guest'
-    });
-  }
-
-  getCurrentUserId(): any {
-    this.profileService.getCurrentUser(success => {
-      return JSON.parse(success).uid;
-    },
-      error => {
-        console.error("Error", error);
-        return "null";
+    if (this.isChangeRoleRequest && isUserTypeChanged) {
+      this.container.removeAllTabs();
+      this.navCtrl.push(ProfileSettingsPage, { hideBackButton: true });
+    } else if (this.appGlobalService.isProfileSettingsCompleted) {
+      this.navCtrl.push(TabsPage, {
+        loginMode: 'guest'
       });
-  }
-
-  setUser(uid: string) {
-    this.profileService.setCurrentUser(uid,
-      (success: any) => {
-        console.log("Set User Success - " + success);
-        this.navCtrl.push(TabsPage, {
-          loginMode: 'guest'
-        });
-      }, (error: any) => {
-        console.log("Set User Error -" + error);
-      })
+    } else {
+      this.scannerService.startScanner(PageId.USER_TYPE_SELECTION, true);
+    }
   }
 
   generateInteractEvent(userType) {
-    let values = new Map();
-    values["UserType"] = userType;
-    this.telemetryService.interact(generateInteractTelemetry(
+    const values = new Map();
+    values['UserType'] = userType;
+    this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.CONTINUE_CLICKED,
       Environment.HOME,
       PageId.USER_TYPE_SELECTION,
-      values,
       undefined,
-      undefined
-    ));
-  }
-
-  /**
-    * Used to Translate message to current Language
-    * @param {string} messageConst - Message Constant to be translated
-    * @returns {string} translatedMsg - Translated Message
-    */
-  translateMessage(messageConst: string, field?: string): string {
-    let translatedMsg = '';
-    this.translate.get(messageConst, { '%s': field }).subscribe(
-      (value: any) => {
-        translatedMsg = value;
-      }
-    );
-    return translatedMsg;
+      values);
   }
 
 }

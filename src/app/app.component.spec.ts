@@ -1,8 +1,8 @@
 import { ContentType, MimeType } from './app.constant';
 
 import { App } from 'ionic-angular';
-import { eventsMock, appMock, NavControllerMock, ToastControllerMock } from './../../test-config/mocks-ionic';
-import { fakeAsync, ComponentFixture } from '@angular/core/testing';
+import { AppMock, ToastControllerMock, NavControllerBaseMock } from './../../test-config/mocks-ionic';
+import { ComponentFixture } from '@angular/core/testing';
 import { PluginModules } from './module.service';
 import { AppGlobalService } from '../service/app-global.service';
 import { async, TestBed, inject } from '@angular/core/testing';
@@ -15,8 +15,8 @@ import {
   PermissionService,
   TelemetryService,
   SharedPreferences,
-} from "sunbird";
-import { ImageLoaderConfig } from "ionic-image-loader";
+} from 'sunbird';
+import { ImageLoaderConfig } from 'ionic-image-loader';
 import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
 import { MyApp } from './app.component';
 import {
@@ -32,18 +32,19 @@ import {
   CourseUtilServiceMock,
   AppGlobalServiceMock,
   AppVersionMock,
-  FormAndFrameworkUtilServiceMock,
-  SharedPreferencesMock
+  FormAndFrameworkUtilServiceMock
 } from '../../test-config/mocks-ionic';
 import { CourseUtilService } from '../service/course-util.service';
 import { AppVersion } from '@ionic-native/app-version';
 import { FormAndFrameworkUtilService } from '../pages/profile/formandframeworkutil.service';
 import { } from 'jasmine';
-import { Observable } from 'rxjs';
 import { Events } from 'ionic-angular';
 import { EnrolledCourseDetailsPage } from '../pages/enrolled-course-details/enrolled-course-details';
 import { CollectionDetailsPage } from '../pages/collection-details/collection-details';
 import { ContentDetailsPage } from '../pages/content-details/content-details';
+import { TelemetryGeneratorService } from '../service/telemetry-generator.service';
+import { CommonUtilService } from '../service/common-util.service';
+import { NavControllerBase } from 'ionic-angular';
 
 describe('MyApp Component', () => {
   let fixture: ComponentFixture<MyApp>;
@@ -62,7 +63,9 @@ describe('MyApp Component', () => {
         ...PluginModules
       ],
       providers: [
-        //PermissionService,
+        CommonUtilService,
+        TelemetryGeneratorService,
+        // PermissionService,
         { provide: AuthService, useClass: AuthServiceMock },
         { provide: ContainerService, useClass: ContainerServiceMock },
         { provide: PermissionService, useClass: PermissionServiceMock },
@@ -75,10 +78,11 @@ describe('MyApp Component', () => {
         { provide: CourseUtilService, useClass: CourseUtilServiceMock },
         { provide: AppVersion, useClass: AppVersionMock },
         { provide: FormAndFrameworkUtilService, useClass: FormAndFrameworkUtilServiceMock },
-        //{ provide: SharedPreferences, useClass: SharedPreferencesMock },
+        // { provide: SharedPreferences, useClass: SharedPreferencesMock },
         SharedPreferences,
         { provide: ToastController, useClass: ToastControllerMock },
-        { provide: App, useClass: appMock }
+        { provide: App, useClass: AppMock },
+        { provide: NavControllerBase, useClass: NavControllerBaseMock}
       ],
     });
   }));
@@ -108,28 +112,30 @@ describe('MyApp Component', () => {
   it('should create a valid instance of MyApp', () => {
     expect(comp instanceof MyApp).toBe(true);
   });
-  it("counter defaults to: 0", () => {
+  it('counter defaults to: 0', () => {
     expect(comp.counter).toEqual(0);
   });
 
-  it("permissionList defaults to: ['android.permission.CAMERA', 'android.permission.WRITE_EXTERNAL_STORAGE', 'android.permission.ACCESS_FINE_LOCATION', 'android.permission.RECORD_AUDIO']", () => {
-    expect(comp.permissionList).toEqual(['android.permission.CAMERA', 'android.permission.WRITE_EXTERNAL_STORAGE', 'android.permission.ACCESS_FINE_LOCATION', 'android.permission.RECORD_AUDIO']);
-  });
+  it('permissionList defaults to: [\'android.permission.CAMERA\', \'android.permission.WRITE_EXTERNAL_STORAGE\','
+    + ' \'android.permission.ACCESS_FINE_LOCATION\', \'android.permission.RECORD_AUDIO\']', () => {
+      expect(comp.permissionList).toEqual(['android.permission.CAMERA', 'android.permission.WRITE_EXTERNAL_STORAGE',
+        'android.permission.ACCESS_FINE_LOCATION', 'android.permission.RECORD_AUDIO']);
+    });
 
-  describe("constructor", () => {
-    it("makes expected calls", (done) => {
+  describe('constructor', () => {
+    it('makes expected calls', (done) => {
       const platform: Platform = TestBed.get(Platform);
       const permisssion: PermissionService = TestBed.get(PermissionService);
-      let permissionList = [
-        "android.permission.CAMERA",
-        "android.permission.WRITE_EXTERNAL_STORAGE",
-        "android.permission.ACCESS_FINE_LOCATION",
-        "android.permission.RECORD_AUDIO"
+      const permissionList = [
+        'android.permission.CAMERA',
+        'android.permission.WRITE_EXTERNAL_STORAGE',
+        'android.permission.ACCESS_FINE_LOCATION',
+        'android.permission.RECORD_AUDIO'
       ];
       spyOn(platform, 'ready').and.returnValue(Promise.resolve({}));
 
       platform.ready().
-        then((result) => {
+        then((res) => {
           expect(comp.registerDeeplinks).toHaveBeenCalled();
           expect(MyApp.prototype.subscribeEvents).toHaveBeenCalled();
           expect(MyApp.prototype.saveDefaultSyncSetting).toHaveBeenCalled();
@@ -145,7 +151,7 @@ describe('MyApp Component', () => {
           comp.saveDefaultSyncSetting();
 
           preferenceStub.getString().then((val) => {
-            let title = 'sync_config';
+            const title = 'sync_config';
             spyOn(preferenceStub, 'getString').and.returnValue(Promise.resolve(undefined));
             spyOn(preferenceStub, 'putString');
             expect(comp.saveDefaultSyncSetting).toHaveBeenCalled();
@@ -157,12 +163,12 @@ describe('MyApp Component', () => {
           /* For  makeEntryInSupportFolder*/
           window['supportfile'] = {
             makeEntryInSunbirdSupportFile: () => ({})
-          }
+          };
           spyOn(window['supportfile'], 'makeEntryInSunbirdSupportFile').and.callFake((result, error) => {
             return result(JSON.stringify({}));
           });
-          //comp.makeEntryInSupportFolder();
-          //expect(preferenceStub.putString).toHaveBeenCalledWith('sunbird_support_file_path', {});
+          // comp.makeEntryInSupportFolder();
+          // expect(preferenceStub.putString).toHaveBeenCalledWith('sunbird_support_file_path', {});
 
           done();
         });
@@ -194,18 +200,6 @@ describe('MyApp Component', () => {
     });
   });
 
-  describe('presentToast', () => {
-    it('should create toast', () => {
-      let toastCtrl: ToastController = TestBed.get(ToastController);
-      expect(comp.presentToast).toBeDefined();
-      spyOn(comp, 'presentToast').and.callThrough();
-      spyOn(toastCtrl, 'create').and.callThrough();
-      comp.presentToast();
-      expect(comp.presentToast).toHaveBeenCalled();
-      expect(toastCtrl.create).toHaveBeenCalled();
-    });
-  });
-
   describe('generateInteractEvent', () => {
     it('should call interact event', () => {
       const telemetryServiceStub = TestBed.get(TelemetryService);
@@ -223,18 +217,20 @@ describe('MyApp Component', () => {
     it('should call handleBackButton, when user is on one of the child page and can go back to home page', () => {
       const platformStub = TestBed.get(Platform);
       const app = TestBed.get(App);
+      const navControllerStub = TestBed.get(NavControllerBase);
       expect(comp.handleBackButton).toBeDefined();
       spyOn(comp, 'handleBackButton').and.callThrough();
       spyOn(platformStub, 'registerBackButtonAction').and.callThrough();
-
+      spyOn(navControllerStub.getActive, 'name').and.returnValue('CHILD_PAGE_TO_HOME_PAGE');
       spyOn(app, 'getActiveNavs').and.returnValue([{
-        canGoBack: () => { return true },
+        canGoBack: () => true,
         pop: () => ({})
       }]);
 
       comp.handleBackButton();
       expect(comp.handleBackButton).toHaveBeenCalled();
       expect(platformStub.registerBackButtonAction).toHaveBeenCalled();
+      expect(navControllerStub.getActive.name).toEqual('CHILD_PAGE_TO_HOME_PAGE');
     });
     it('should call handleBackButton, when user is on home page and cannot go back', () => {
       const platformStub = TestBed.get(Platform);
@@ -244,19 +240,16 @@ describe('MyApp Component', () => {
       spyOn(platformStub, 'registerBackButtonAction').and.callThrough();
 
       spyOn(app, 'getActiveNavs').and.returnValue([{
-        canGoBack: () => { return false },
+        canGoBack: () => false,
         pop: () => ({})
       }]);
-
-      spyOn(comp, 'presentToast');
       comp.counter = 0;
       comp.handleBackButton();
       expect(comp.counter).toEqual(1);
       expect(comp.handleBackButton).toHaveBeenCalled();
       expect(platformStub.registerBackButtonAction).toHaveBeenCalled();
-      expect(comp.presentToast).toHaveBeenCalled();
       setTimeout(() => {
-        //expect(comp.counter).toEqual(0);
+        // expect(comp.counter).toEqual(0);
       }, 1500);
     });
     it('should call handleBackButton, and should exit app if pressed back button twice', () => {
@@ -268,7 +261,7 @@ describe('MyApp Component', () => {
       spyOn(platformStub, 'registerBackButtonAction').and.callThrough();
 
       spyOn(app, 'getActiveNavs').and.returnValue([{
-        canGoBack: () => { return false },
+        canGoBack: () => false,
         pop: () => ({})
       }]);
 
@@ -306,28 +299,17 @@ describe('MyApp Component', () => {
       });
       comp.subscribeEvents();
       setTimeout(() => {
-        //expect(comp.generateInteractEvent).toHaveBeenCalled();
+        // expect(comp.generateInteractEvent).toHaveBeenCalled();
       }, 0);
-    })
+    });
   });
 
-  describe("translateMessage", () => {
-    it('should call translateMessage', fakeAsync(() => {
-      let translate = TestBed.get(TranslateService);
-      const spy = spyOn(translate, 'get').and.callFake((arg) => {
-        return Observable.of('Cancel');
-      });
-      expect(comp.translateMessage('CANCEL')).toEqual('Cancel');
-      expect(spy.calls.any()).toEqual(true);
-    }));
-  });
-
-  describe("ionViewWillLeave", () => {
+  describe('ionViewWillLeave', () => {
     it('should call ionViewWillLeave', () => {
       const eventsStub = TestBed.get(Events);
       expect(comp.ionViewWillLeave).toBeDefined();
       spyOn(comp, 'ionViewWillLeave').and.callThrough();
-      spyOn(eventsStub, 'unsubscribe').and.callFake(() => { })
+      spyOn(eventsStub, 'unsubscribe').and.callFake(() => { });
       comp.ionViewWillLeave();
       expect(comp.ionViewWillLeave).toHaveBeenCalled();
       expect(eventsStub.unsubscribe).toHaveBeenCalledWith('tab.change');
@@ -343,11 +325,11 @@ describe('MyApp Component', () => {
 
       spyOn(nav, 'push');
       spyOn(comp, 'showContentDetails').and.callThrough();
-      let content = {
+      const content = {
         contentData: {
           contentType: ContentType.COURSE
         }
-      }
+      };
       comp.showContentDetails(content);
 
       expect(comp.showContentDetails).toHaveBeenCalled();
@@ -361,12 +343,12 @@ describe('MyApp Component', () => {
 
       spyOn(nav, 'push');
       spyOn(comp, 'showContentDetails').and.callThrough();
-      let content = {
+      const content = {
         mimeType: MimeType.COLLECTION,
         contentData: {
           contentType: ContentType.COLLECTION
         }
-      }
+      };
       comp.showContentDetails(content);
 
       expect(comp.showContentDetails).toHaveBeenCalled();
@@ -380,11 +362,11 @@ describe('MyApp Component', () => {
 
       spyOn(nav, 'push');
       spyOn(comp, 'showContentDetails').and.callThrough();
-      let content = {
+      const content = {
         contentData: {
           contentType: 'content'
         }
-      }
+      };
       comp.showContentDetails(content);
 
       expect(comp.showContentDetails).toHaveBeenCalled();

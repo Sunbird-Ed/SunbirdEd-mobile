@@ -1,5 +1,5 @@
-import { Component } from "@angular/core";
-import { NavParams, ViewController, Platform } from "ionic-angular";
+import { Component } from '@angular/core';
+import { NavParams, ViewController, Platform } from 'ionic-angular';
 
 @Component({
   selector: 'page-filter-option',
@@ -7,7 +7,7 @@ import { NavParams, ViewController, Platform } from "ionic-angular";
 })
 export class FilterOptions {
 
-  facets: any
+  facets: any;
   backButtonFunc = undefined;
 
   constructor(private navParams: NavParams, private viewCtrl: ViewController, private platform: Platform) {

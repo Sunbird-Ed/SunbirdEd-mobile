@@ -7,10 +7,8 @@ import {
   LoadingController,
   Navbar,
   Platform,
-  ToastController,
   Events
 } from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
 import {
   TabsPage,
   OAuthService,
@@ -23,7 +21,6 @@ import {
   InteractType,
   InteractSubtype,
   Environment,
-  TelemetryService,
   PageId,
   ImpressionType,
   SharedPreferences,
@@ -37,22 +34,16 @@ import {
   GUEST_TEACHER_TABS,
   LOGIN_TEACHER_TABS
 } from '../../app/module.service';
-import {
-  generateInteractTelemetry,
-  Map,
-  generateImpressionTelemetry
-} from '../../app/telemetryutil';
+import { Map } from '../../app/telemetryutil';
 import { LanguageSettingsPage } from '../language-settings/language-settings';
-import { ProfileConstants } from '../../app/app.constant';
+import {
+  ProfileConstants,
+  PreferenceKey
+} from '../../app/app.constant';
 import { AppGlobalService } from '../../service/app-global.service';
 import { AppVersion } from '@ionic-native/app-version';
-
-/* Interface for the Toast Object */
-export interface toastOptions {
-  message: string,
-  duration: number,
-  position: string
-};
+import { CommonUtilService } from '../../service/common-util.service';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 
 @Component({
   selector: 'page-onboarding',
@@ -62,30 +53,25 @@ export class OnboardingPage {
   @ViewChild(Navbar) navBar: Navbar;
 
   slides: any[];
-  appName: string = "";
+  appName = '';
   orgName: string;
   backButtonFunc: any = undefined;
 
-  options: toastOptions = {
-    message: '',
-    duration: 3000,
-    position: 'bottom'
-  };
-
-  constructor(public navCtrl: NavController,
+  constructor(
+    public navCtrl: NavController,
     private auth: OAuthService,
     private container: ContainerService,
     private userProfileService: UserProfileService,
     private profileService: ProfileService,
     private authService: AuthService,
-    private telemetryService: TelemetryService,
     private loadingCtrl: LoadingController,
     private preferences: SharedPreferences,
     private platform: Platform,
-    private translate: TranslateService,
-    private toastCtrl: ToastController,
+    private commonUtilService: CommonUtilService,
     private appVersion: AppVersion,
-    private events: Events
+    private events: Events,
+    private appGlobalService: AppGlobalService,
+    private telemetryGeneratorService: TelemetryGeneratorService
   ) {
 
     this.slides = [
@@ -113,19 +99,19 @@ export class OnboardingPage {
         this.appName = appName;
       });
     this.navBar.backButtonClick = (e: UIEvent) => {
+      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.ONBOARDING, Environment.HOME, true);
       this.navCtrl.setRoot(LanguageSettingsPage);
-    }
-    this.telemetryService.impression(
-      generateImpressionTelemetry(ImpressionType.VIEW, "",
-        PageId.ONBOARDING,
-        Environment.HOME, "", "", "",
-        undefined,
-        undefined)
-    );
+    };
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.VIEW, '',
+      PageId.ONBOARDING,
+      Environment.HOME);
   }
 
   ionViewWillEnter() {
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.ONBOARDING, Environment.HOME, false);
+      this.backButtonFunc();
       this.navCtrl.setRoot(LanguageSettingsPage);
     }, 10);
   }
@@ -137,17 +123,17 @@ export class OnboardingPage {
 
   getLoader(): any {
     return this.loadingCtrl.create({
-      spinner: "crescent"
+      spinner: 'crescent'
     });
   }
 
   signIn() {
-    let that = this;
-    let loader = this.getLoader();
+    const that = this;
+    const loader = this.getLoader();
     loader.present();
 
     this.generateLoginInteractTelemetry(InteractType.TOUCH,
-      InteractSubtype.LOGIN_INITIATE, "");
+      InteractSubtype.LOGIN_INITIATE, '');
     that.auth.doOAuthStepOne()
       .then(token => {
         return that.auth.doOAuthStepTwo(token);
@@ -171,53 +157,53 @@ export class OnboardingPage {
   }
 
   refreshTenantData(slug: string) {
-    let that = this;
+    const that = this;
     return new Promise((resolve, reject) => {
-      let request = new TenantInfoRequest();
+      const request = new TenantInfoRequest();
       request.refreshTenantInfo = true;
       request.slug = slug;
       this.userProfileService.getTenantInfo(
         request,
         res => {
-          let r = JSON.parse(res);
+          const r = JSON.parse(res);
           (<any>window).splashscreen.setContent(that.orgName, r.logo);
           resolve();
         },
         error => {
-          resolve();//ignore
-        })
+          resolve(); // ignore
+        });
     });
   }
 
   refreshProfileData() {
-    let that = this;
+    const that = this;
     return new Promise<string>((resolve, reject) => {
       that.authService.getSessionData((session) => {
         if (session === undefined || session == null) {
-          reject("session is null");
+          reject('session is null');
         } else {
-          let sessionObj = JSON.parse(session);
-          let req = {
+          const sessionObj = JSON.parse(session);
+          const req = {
             userId: sessionObj[ProfileConstants.USER_TOKEN],
             requiredFields: ProfileConstants.REQUIRED_FIELDS,
             refreshUserProfileDetails: true
           };
           that.userProfileService.getUserProfileDetails(req, res => {
-            let r = JSON.parse(res);
+            const r = JSON.parse(res);
             setTimeout(() => {
-              this.getToast(this.translateMessage('WELCOME_BACK', r.firstName)).present();
+              this.commonUtilService.showToast(this.commonUtilService.translateMessage('WELCOME_BACK', r.firstName));
             }, 800);
 
             that.generateLoginInteractTelemetry(InteractType.OTHER, InteractSubtype.LOGIN_SUCCESS, r.userId);
 
-            let profile: Profile = new Profile();
+            const profile: Profile = new Profile();
             profile.uid = r.id;
             profile.handle = r.id;
             profile.profileType = ProfileType.TEACHER;
             profile.source = UserSource.SERVER;
 
             that.profileService.setCurrentProfile(false, profile,
-              (res: any) => {
+              (response: any) => {
                 that.orgName = r.rootOrg.orgName;
                 resolve(r.rootOrg.slug);
               },
@@ -234,80 +220,57 @@ export class OnboardingPage {
   }
 
   browseAsGuest() {
-    this.telemetryService.interact(
-      generateInteractTelemetry(InteractType.TOUCH,
-        InteractSubtype.BROWSE_AS_GUEST_CLICKED,
-        Environment.HOME,
-        PageId.ONBOARDING,
-        null,
-        undefined,
-        undefined));
-    this.preferences.getString('selected_user_type')
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.BROWSE_AS_GUEST_CLICKED,
+      Environment.HOME,
+      PageId.ONBOARDING);
+    this.preferences.getString(PreferenceKey.SELECTED_USER_TYPE)
       .then(val => {
-        if (val == ProfileType.STUDENT) {
+        if (val === ProfileType.STUDENT) {
           initTabs(this.container, GUEST_STUDENT_TABS);
-        } else if (val == ProfileType.TEACHER) {
+        } else if (val === ProfileType.TEACHER) {
           initTabs(this.container, GUEST_TEACHER_TABS);
         }
       });
     this.preferences.getString('GUEST_USER_ID_BEFORE_LOGIN')
       .then(val => {
-        if (val != "") {
-          let profile: Profile = new Profile();
+        if (val !== '') {
+          const profile: Profile = new Profile();
           profile.uid = val;
-          profile.handle = "Guest1";
+          profile.handle = 'Guest1';
           profile.profileType = ProfileType.TEACHER;
           profile.source = UserSource.LOCAL;
 
           this.profileService.setCurrentProfile(true, profile, res => {
             this.events.publish(AppGlobalService.USER_INFO_UPDATED);
-            this.navCtrl.setRoot(TabsPage, {
-              loginMode: 'guest'
-            });
+
+            if (this.appGlobalService.isProfileSettingsCompleted) {
+              this.navCtrl.setRoot(TabsPage, {
+                loginMode: 'guest'
+              });
+            } else {
+              this.navCtrl.push(UserTypeSelectionPage, { showScanner: false });
+            }
           }, err => {
-            this.navCtrl.push(UserTypeSelectionPage);
+            this.navCtrl.push(UserTypeSelectionPage, { showScanner: false });
           });
         } else {
-          this.navCtrl.push(UserTypeSelectionPage);
+          this.navCtrl.push(UserTypeSelectionPage, { showScanner: false });
         }
       });
   }
 
   generateLoginInteractTelemetry(interactType, interactSubtype, uid) {
-    let valuesMap = new Map();
-    valuesMap["UID"] = uid;
-    this.telemetryService.interact(
-      generateInteractTelemetry(interactType,
-        interactSubtype,
-        Environment.HOME,
-        PageId.LOGIN,
-        valuesMap,
-        undefined,
-        undefined));
+    const valuesMap = new Map();
+    valuesMap['UID'] = uid;
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      interactType,
+      interactSubtype,
+      Environment.HOME,
+      PageId.LOGIN,
+      undefined,
+      valuesMap);
   }
 
-  /**
-   * It will returns Toast Object
-   * @param {message} string - Message for the Toast to show
-   * @returns {object} - toast Object
-   */
-  getToast(message: string = ''): any {
-    this.options.message = message;
-    if (message.length) return this.toastCtrl.create(this.options);
-  }
-
-  /**
-   * Used to Translate message to current Language
-   * @param {string} messageConst - Message Constant to be translated
-   * @returns {string} translatedMsg - Translated Message
-   */
-  translateMessage(messageConst: string, field?: string): string {
-    let translatedMsg = '';
-    this.translate.get(messageConst, { '%s': field }).subscribe(
-      (value: any) => {
-        translatedMsg = value;
-      }
-    );
-    return translatedMsg;
-  }
 }

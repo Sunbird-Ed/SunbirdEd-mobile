@@ -1,29 +1,47 @@
-import { } from "jasmine";
-
-import { ComponentFixture, TestBed, fakeAsync } from "@angular/core/testing";
-import { NO_ERRORS_SCHEMA } from "@angular/core";
-
-import { NavController } from "ionic-angular";
-import { NavParams } from "ionic-angular";
-import { Events } from "ionic-angular";
-import { ToastController, PopoverController, LoadingController } from "ionic-angular";
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { TranslateService, TranslateModule } from '@ngx-translate/core';
-import { Globalization } from "@ionic-native/globalization";
-import { SharedPreferences, AuthService, ProfileService, ServiceProvider, FrameworkService, BuildParamService } from "sunbird";
-import { TelemetryService } from "sunbird";
-import { LanguageSettingsPage } from "./language-settings";
-import { Observable } from "rxjs/Observable";
-import 'rxjs/add/observable/of';
-import { AppGlobalService } from "../../service/app-global.service";
-
+import { } from 'jasmine';
 import {
-    ToastControllerMock, PopoverControllerMock, LoadingControllerMock,
+    ComponentFixture,
+    TestBed,
+    fakeAsync
+} from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NavController, Platform } from 'ionic-angular';
+import { NavParams } from 'ionic-angular';
+import { Events } from 'ionic-angular';
+import {
+    ToastController,
+    PopoverController,
+    LoadingController
+} from 'ionic-angular';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import {
+    TranslateService,
+    TranslateModule
+} from '@ngx-translate/core';
+import { Globalization } from '@ionic-native/globalization';
+import {
+    SharedPreferences, AuthService,
+    ProfileService, ServiceProvider,
+    FrameworkService, BuildParamService
+} from 'sunbird';
+import { TelemetryService } from 'sunbird';
+import { LanguageSettingsPage } from './language-settings';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/observable/of';
+import { AppGlobalService } from '../../service/app-global.service';
+import {
+    ToastControllerMock,
+    PopoverControllerMock,
+    LoadingControllerMock,
     EventsMock
 } from 'ionic-mocks';
-import { AppGlobalServiceMock, BuildParamaServiceMock } from "../../../test-config/mocks-ionic";
+import {
+    AppGlobalServiceMock,
+    BuildParamaServiceMock
+} from '../../../test-config/mocks-ionic';
+import { CommonUtilService } from '../../service/common-util.service';
 
-describe("LanguageSettingsPage", () => {
+describe('LanguageSettingsPage', () => {
     let comp: LanguageSettingsPage;
     let fixture: ComponentFixture<LanguageSettingsPage>;
 
@@ -31,8 +49,8 @@ describe("LanguageSettingsPage", () => {
     //     create() { }
     // }
     class Toast {
-        present() { };
-        dismissAll() { };
+        present() { }
+        dismissAll() { }
 
     }
     beforeEach(() => {
@@ -61,7 +79,7 @@ describe("LanguageSettingsPage", () => {
         };
         const authServiceStub = {
             getSessionData: () => ({})
-        }
+        };
         const globalizationStub = {};
         // const sharedPreferencesStub = {
         //     getString: () => ({}),
@@ -77,12 +95,13 @@ describe("LanguageSettingsPage", () => {
         };
         const BuildParamServiceStub = {
             getBuildConfigParam: () => ({})
-        }
+        };
         TestBed.configureTestingModule({
             imports: [TranslateModule.forRoot()],
             declarations: [LanguageSettingsPage],
             schemas: [NO_ERRORS_SCHEMA],
-            providers: [ProfileService, ServiceProvider, FrameworkService,
+            providers: [ProfileService, ServiceProvider, FrameworkService, Platform,
+                CommonUtilService,
                 { provide: AppGlobalService, useClass: AppGlobalServiceMock },
                 { provide: AuthService, useValue: authServiceStub },
                 { provide: BuildParamService, useValue: BuildParamServiceStub },
@@ -92,7 +111,7 @@ describe("LanguageSettingsPage", () => {
                 { provide: TranslateService, useValue: translateServiceStub },
                 { provide: TranslateModule, useValue: translateModuleStub },
                 { provide: Globalization, useValue: globalizationStub },
-                //{ provide: SharedPreferences, useValue: sharedPreferencesStub },
+                // { provide: SharedPreferences, useValue: sharedPreferencesStub },
                 { provide: TelemetryService, useValue: telemetryServiceStub },
                 { provide: ToastController, useFactory: () => ToastControllerMock.instance() },
                 { provide: PopoverController, useFactory: () => PopoverControllerMock.instance() },
@@ -107,33 +126,33 @@ describe("LanguageSettingsPage", () => {
         comp = fixture.componentInstance;
     });
 
-    it("can load instance", () => {
+    it('can load instance', () => {
         expect(comp).toBeTruthy();
     });
 
-    it("languages defaults to: []", () => {
+    it('languages defaults to: []', () => {
         expect(comp.languages).toEqual([]);
     });
 
-    it("isLanguageSelected defaults to: false", () => {
+    it('isLanguageSelected defaults to: false', () => {
         expect(comp.isLanguageSelected).toEqual(false);
     });
 
-    it("isFromSettings defaults to: false", () => {
+    it('isFromSettings defaults to: false', () => {
         expect(comp.isFromSettings).toEqual(false);
     });
 
-    it("btnColor defaults to: #55acee", () => {
-        expect(comp.btnColor).toEqual("#55acee");
+    it('btnColor defaults to: #55acee', () => {
+        expect(comp.btnColor).toEqual('#55acee');
     });
 
-    describe("init", () => {
-        it("makes expected calls and value if undefined", (done) => {
+    describe('init', () => {
+        it('makes expected calls and value if undefined', (done) => {
             const navParamsStub: NavParams = fixture.debugElement.injector.get(NavParams);
             const sharedPreferencesStub = TestBed.get(SharedPreferences);
 
-            spyOn(comp, "init").and.callThrough();
-            spyOn(sharedPreferencesStub, "getString").and.returnValue(Promise.resolve(undefined));
+            spyOn(comp, 'init').and.callThrough();
+            spyOn(sharedPreferencesStub, 'getString').and.returnValue(Promise.resolve(undefined));
 
             comp.init();
 
@@ -145,25 +164,25 @@ describe("LanguageSettingsPage", () => {
                 done();
             });
         });
-        it("make expected calls if value is empty", (done) => {
+        it('make expected calls if value is empty', (done) => {
             const sharedPreferencesStub = TestBed.get(SharedPreferences);
-            spyOn(comp, "init").and.callThrough();
-            spyOn(sharedPreferencesStub, "getString").and.returnValue(Promise.resolve(''));
+            spyOn(comp, 'init').and.callThrough();
+            spyOn(sharedPreferencesStub, 'getString').and.returnValue(Promise.resolve(''));
 
             comp.init();
 
             sharedPreferencesStub.getString().then((val) => {
-                //expect(comp.previousLanguage).toEqual('');
+                // expect(comp.previousLanguage).toEqual('');
                 expect(sharedPreferencesStub.getString).toHaveBeenCalled();
                 expect(val).toBe('');
                 done();
             });
         });
-        it("make expected calls if value is null", (done) => {
+        it('make expected calls if value is null', (done) => {
             const sharedPreferencesStub = TestBed.get(SharedPreferences);
 
-            spyOn(comp, "init").and.callThrough();
-            spyOn(sharedPreferencesStub, "getString").and.returnValue(Promise.resolve(null));
+            spyOn(comp, 'init').and.callThrough();
+            spyOn(sharedPreferencesStub, 'getString').and.returnValue(Promise.resolve(null));
 
             comp.init();
 
@@ -174,10 +193,10 @@ describe("LanguageSettingsPage", () => {
                 done();
             });
         });
-        it("makes expected calls in else part if value is present", (done) => {
+        it('makes expected calls in else part if value is present', (done) => {
             const sharedPreferencesStub = TestBed.get(SharedPreferences);
-            spyOn(comp, "init").and.callThrough();
-            spyOn(sharedPreferencesStub, "getString").and.returnValue(Promise.resolve('en'));
+            spyOn(comp, 'init').and.callThrough();
+            spyOn(sharedPreferencesStub, 'getString').and.returnValue(Promise.resolve('en'));
 
             comp.init();
 
@@ -190,17 +209,17 @@ describe("LanguageSettingsPage", () => {
         });
     });
 
-    describe("ionViewDidLoad", () => {
-        it("makes expected calls", () => {
+    describe('ionViewDidLoad', () => {
+        it('makes expected calls', () => {
             const telemetryGeneratorServiceStub: TelemetryGeneratorService = fixture.debugElement.injector.get(TelemetryGeneratorService);
-            spyOn(telemetryGeneratorServiceStub, "generateImpressionTelemetry");
+            spyOn(telemetryGeneratorServiceStub, 'generateImpressionTelemetry');
             comp.ionViewDidLoad();
             expect(telemetryGeneratorServiceStub.generateImpressionTelemetry).toHaveBeenCalled();
         });
     });
 
-    describe("onLanguageSelected", () => {
-        it("makes expected calls", () => {
+    describe('onLanguageSelected', () => {
+        it('makes expected calls', () => {
             const translateServiceStub: TranslateService = fixture.debugElement.injector.get(TranslateService);
 
             expect(comp.onLanguageSelected).toBeDefined();
@@ -209,7 +228,7 @@ describe("LanguageSettingsPage", () => {
             comp.btnColor = '#006DE5';
             comp.isLanguageSelected = true;
 
-            spyOn(translateServiceStub, "use");
+            spyOn(translateServiceStub, 'use');
 
             comp.onLanguageSelected();
 
@@ -217,7 +236,7 @@ describe("LanguageSettingsPage", () => {
             expect(comp.btnColor).toEqual('#006DE5');
             expect(comp.language).toEqual(true);
         });
-        it("if the languageSelected is false", () => {
+        it('if the languageSelected is false', () => {
             comp.language = false;
             comp.btnColor = '#8FC4FF';
 
@@ -229,8 +248,8 @@ describe("LanguageSettingsPage", () => {
         });
     });
 
-    describe("continue", () => {
-        it(" if isLanguage selected is true then makes expected calls", () => {
+    describe('continue', () => {
+        it(' if isLanguage selected is true then makes expected calls', () => {
             const navControllerStub: NavController = fixture.debugElement.injector.get(NavController);
             const eventsStub: Events = fixture.debugElement.injector.get(Events);
             const sharedPreferencesStub: SharedPreferences = fixture.debugElement.injector.get(SharedPreferences);
@@ -239,14 +258,14 @@ describe("LanguageSettingsPage", () => {
 
             expect(comp.continue).toBeDefined();
 
-            spyOn<any>(comp, "generateContinueClickedInteractEvent");
-            spyOn(comp, "generateLanguageSuccessInteractEvent");
+            spyOn<any>(comp, 'generateContinueClickedInteractEvent');
+            spyOn(comp, 'generateLanguageSuccessInteractEvent');
             spyOn(comp, 'continue').and.callThrough();
-            spyOn(navControllerStub, "pop");
-            spyOn(translateServiceStub, "use");
-            spyOn(sharedPreferencesStub, "putString");
+            spyOn(navControllerStub, 'pop');
+            spyOn(translateServiceStub, 'use');
+            spyOn(sharedPreferencesStub, 'putString');
 
-            comp.previousLanguage = "";
+            comp.previousLanguage = '';
             comp.isFromSettings = true;
             comp.isLanguageSelected = true;
             comp.language = 'en';
@@ -287,22 +306,22 @@ describe("LanguageSettingsPage", () => {
                 'isApplied': false
             });
             expect(comp.previousLanguage).not.toBeUndefined();
-            expect(comp["generateContinueClickedInteractEvent"]).toHaveBeenCalled();
+            expect(comp['generateContinueClickedInteractEvent']).toHaveBeenCalled();
             expect(comp.generateLanguageSuccessInteractEvent).toHaveBeenCalled();
             expect(navControllerStub.pop).toHaveBeenCalled();
             expect(eventsStub.publish).toHaveBeenCalled();
             expect(translateServiceStub.use).toHaveBeenCalled();
             expect(sharedPreferencesStub.putString).toHaveBeenCalled();
         });
-        it("should navigate to the onboarding page if DISPLAY_ONBOARDING_PAGE configuration is set to true", () => {
+        it('should navigate to the onboarding page if DISPLAY_ONBOARDING_PAGE configuration is set to true', () => {
             comp.isLanguageSelected = true;
             comp.isFromSettings = false;
             const appGlobalServiceStub = TestBed.get(AppGlobalService);
             appGlobalServiceStub.DISPLAY_ONBOARDING_PAGE = true;
             const navControllerStub: NavController = fixture.debugElement.injector.get(NavController);
 
-            spyOn(comp, "continue").and.callThrough();
-            spyOn(navControllerStub, "push").and.callThrough();
+            spyOn(comp, 'continue').and.callThrough();
+            spyOn(navControllerStub, 'push').and.callThrough();
 
             comp.continue();
 
@@ -310,13 +329,13 @@ describe("LanguageSettingsPage", () => {
             expect(navControllerStub.push).toHaveBeenCalled();
             expect(comp.continue).toBeDefined();
         });
-        it("It is called for else part for from Settings", () => {
+        it('It is called for else part for from Settings', () => {
             comp.isLanguageSelected = true;
             comp.isFromSettings = false;
             const navControllerStub: NavController = fixture.debugElement.injector.get(NavController);
 
-            spyOn(comp, "continue").and.callThrough();
-            spyOn(navControllerStub, "push").and.callThrough();
+            spyOn(comp, 'continue').and.callThrough();
+            spyOn(navControllerStub, 'push').and.callThrough();
 
             comp.continue();
 
@@ -324,7 +343,7 @@ describe("LanguageSettingsPage", () => {
             expect(navControllerStub.push).toHaveBeenCalled();
             expect(comp.continue).toBeDefined();
         });
-        it("It is for else part of isLanguageSelected", () => {
+        it('It is for else part of isLanguageSelected', () => {
             comp.isLanguageSelected = false;
             comp.btnColor = '#8FC4FF';
 
@@ -333,33 +352,33 @@ describe("LanguageSettingsPage", () => {
 
             expect(comp.continue).toBeDefined();
 
-            spyOn<any>(comp, "generateContinueClickedInteractEvent");
-            spyOn(comp, "continue").and.callThrough();
-            //spyOn(toastMockStub, "dismissAll");
+            spyOn<any>(comp, 'generateClickInteractEvent');
+            spyOn(comp, 'continue').and.callThrough();
+            // spyOn(toastMockStub, "dismissAll");
             // spyOn(toastControllerStub, "create");
             // spyOn(toastMockStub, "present");
 
             comp.continue();
 
             expect(comp.btnColor).toEqual('#8FC4FF');
-            expect(comp["generateContinueClickedInteractEvent"]).toHaveBeenCalled();
+            expect(comp['generateContinueClickedInteractEvent']).toHaveBeenCalled();
             // expect(toastControllerStub.config).toHaveBeenCalled();
             // expect(toastMockStub.present).toHaveBeenCalled();
             // expect(toastControllerStub.create).toHaveBeenCalled();
-            //expect(toastMockStub.dismissAll).toHaveBeenCalled();
+            // expect(toastMockStub.dismissAll).toHaveBeenCalled();
         });
 
     });
 
 
-    describe("ionViewWillEnter", () => {
-        it("makes expected calls", () => {
+    describe('ionViewWillEnter', () => {
+        it('makes expected calls', () => {
 
             comp.selectedLanguage = {};
             comp.init();
 
             expect(comp.ionViewWillEnter).toBeDefined();
-            spyOn(comp, "init").and.callThrough();
+            spyOn(comp, 'init').and.callThrough();
 
             comp.ionViewWillEnter();
 
@@ -368,28 +387,28 @@ describe("LanguageSettingsPage", () => {
         });
     });
 
-    describe("ionViewWillLeave", () => {
-        it("if previousLanguage is true", () => {
+    describe('ionViewWillLeave', () => {
+        it('if previousLanguage is true', () => {
             const translateServiceStub: TranslateService = fixture.debugElement.injector.get(TranslateService);
 
             comp.isLanguageSelected = true;
             comp.selectedLanguage.code = undefined;
             comp.previousLanguage = 'mr';
 
-            spyOn(translateServiceStub, "use");
+            spyOn(translateServiceStub, 'use');
 
             comp.ionViewWillLeave();
 
             expect(translateServiceStub.use).toHaveBeenCalled();
         });
-        it("if previousLanguage is false", () => {
+        it('if previousLanguage is false', () => {
             const translateServiceStub: TranslateService = fixture.debugElement.injector.get(TranslateService);
 
             comp.isLanguageSelected = true;
             comp.selectedLanguage.code = undefined;
             comp.previousLanguage = undefined;
 
-            spyOn(translateServiceStub, "use");
+            spyOn(translateServiceStub, 'use');
 
             comp.ionViewWillLeave();
 
@@ -397,15 +416,15 @@ describe("LanguageSettingsPage", () => {
         });
     });
 
-    describe("translateMessage", () => {
+    describe('translateMessage', () => {
         it('should call translateMessage', fakeAsync(() => {
-            let translate = TestBed.get(TranslateService);
-
+            const translate = TestBed.get(TranslateService);
+            const commonUtilServiceStub = TestBed.get(CommonUtilService);
             const spy = spyOn(translate, 'get').and.callFake((arg) => {
                 return Observable.of('Cancel');
             });
 
-            let translateMessage = comp.translateMessage('CANCEL');
+            const translateMessage = commonUtilServiceStub.translateMessage('CANCEL');
 
             expect(translateMessage).toEqual('Cancel');
             expect(spy.calls.any()).toEqual(true);

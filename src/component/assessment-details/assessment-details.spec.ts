@@ -1,15 +1,15 @@
-import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { NO_ERRORS_SCHEMA } from "@angular/core";
-import { AssessmentDetailsComponent } from "./assessment-details";
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { AssessmentDetailsComponent } from './assessment-details';
 import { TranslateModule } from '@ngx-translate/core';
 import { } from 'jasmine';
-import { PopoverControllerMock } from "ionic-mocks";
-import { PopoverController } from "ionic-angular";
-import { TelemetryGeneratorService } from "../../service/telemetry-generator.service";
-import { TelemetryService, GenieSDKServiceProvider, ServiceProvider } from "sunbird";
-import { GenieSDKServiceProviderMock } from "../../../test-config/mocks-ionic";
+import { PopoverControllerMock } from 'ionic-mocks';
+import { PopoverController } from 'ionic-angular';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { TelemetryService, GenieSDKServiceProvider, ServiceProvider } from 'sunbird';
+import { GenieSDKServiceProviderMock } from '../../../test-config/mocks-ionic';
 
-describe("AssessmentDetailsComponent", () => {
+describe('AssessmentDetailsComponent', () => {
     let comp: AssessmentDetailsComponent;
     let fixture: ComponentFixture<AssessmentDetailsComponent>;
 
@@ -30,7 +30,7 @@ describe("AssessmentDetailsComponent", () => {
         comp = fixture.componentInstance;
     });
 
-    it("can load instance", () => {
+    it('can load instance', () => {
         expect(comp).toBeTruthy();
     });
 
@@ -51,11 +51,11 @@ describe("AssessmentDetailsComponent", () => {
             showResult: true,
             fromUser: true
         };
-        let event = {
+        const event = {
             row: {
                 qid: 'sample_qustion_id'
             }
-        }
+        };
         spyOn(comp, 'onActivate').and.callThrough();
         comp.onActivate(event, {}, {});
         expect(comp.onActivate).toHaveBeenCalled();
@@ -69,9 +69,9 @@ describe("AssessmentDetailsComponent", () => {
             showResult: true,
             fromUser: true
         };
-        let event = {
+        const event = {
             row: {}
-        }
+        };
         spyOn(comp, 'onActivate').and.callThrough();
         comp.onActivate(event, {}, {});
         expect(comp.onActivate).toHaveBeenCalled();
@@ -82,12 +82,12 @@ describe("AssessmentDetailsComponent", () => {
             showResult: true,
             fromGroup: true
         };
-        let event = {
+        const event = {
             row: {
                 userName: 'sample_username',
                 qid: 'sample_question_id'
             }
-        }
+        };
         spyOn(comp, 'onActivate').and.callThrough();
         comp.onActivate(event, {}, {});
         expect(comp.onActivate).toHaveBeenCalled();
@@ -98,11 +98,11 @@ describe("AssessmentDetailsComponent", () => {
             showResult: true,
             fromGroup: true
         };
-        let event = {
+        const event = {
             row: {
                 userName: 'sample_username'
             }
-        }
+        };
         spyOn(comp, 'onActivate').and.callThrough();
         comp.onActivate(event, {}, {});
         expect(comp.onActivate).toHaveBeenCalled();
@@ -114,12 +114,12 @@ describe("AssessmentDetailsComponent", () => {
             showResult: true,
             fromGroup: true
         };
-        let event = {
+        const event = {
             row: {
                 qid: 'sample_question_id',
                 uid: 'sample_user_id'
             }
-        }
+        };
         spyOn(comp, 'onActivate').and.callThrough();
         comp.onActivate(event, {}, {});
         expect(comp.onActivate).toHaveBeenCalled();
@@ -131,12 +131,12 @@ describe("AssessmentDetailsComponent", () => {
             showResult: true,
             fromGroup: true
         };
-        let event = {
+        const event = {
             row: {
                 qid: 'sample_question_id',
                 uid: ''
             }
-        }
+        };
         spyOn(comp, 'onActivate').and.callThrough();
         comp.onActivate(event, {}, {});
         expect(comp.onActivate).toHaveBeenCalled();

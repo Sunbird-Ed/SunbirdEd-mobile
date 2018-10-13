@@ -1,28 +1,54 @@
-import { Component, NgZone, ViewChild } from "@angular/core";
-import { IonicPage, NavParams, NavController, Events, ToastController, Popover, Navbar, Platform } from "ionic-angular";
 import {
-  ContentService, ContentSearchCriteria,
-  Log, LogLevel, TelemetryService, Impression, ImpressionType, Environment,
-  Interact, InteractType, InteractSubtype,
-  ContentDetailRequest, ContentImportRequest, FileUtil, ProfileType, CorrelationData, PageId, Mode
-} from "sunbird";
-import { GenieResponse } from "../settings/datasync/genieresponse";
-import { FilterPage } from "./filters/filter";
-// import { CourseDetailPage } from "../course-detail/course-detail";
-import { CollectionDetailsPage } from "../collection-details/collection-details";
-import { ContentDetailsPage } from "../content-details/content-details";
-import { Network } from "@ionic-native/network";
-import { TranslateService } from '@ngx-translate/core';
-import { Map, generateImpressionTelemetry, generateEndTelemetry } from "../../app/telemetryutil";
+  Component,
+  NgZone,
+  ViewChild
+} from '@angular/core';
+import {
+  IonicPage,
+  NavParams,
+  NavController,
+  Events,
+  Popover,
+  Navbar,
+  Platform
+} from 'ionic-angular';
+import {
+  ContentService,
+  ContentSearchCriteria,
+  LogLevel,
+  ImpressionType,
+  Environment,
+  InteractType,
+  InteractSubtype,
+  ContentDetailRequest,
+  FileUtil,
+  ProfileType,
+  CorrelationData,
+  Mode,
+  TelemetryObject,
+  PageId,
+  TabsPage
+} from 'sunbird';
+import { GenieResponse } from '../settings/datasync/genieresponse';
+import { FilterPage } from './filters/filter';
+import { CollectionDetailsPage } from '../collection-details/collection-details';
+import { ContentDetailsPage } from '../content-details/content-details';
+import { Network } from '@ionic-native/network';
+import { Map } from '../../app/telemetryutil';
 import * as _ from 'lodash';
-import { ContentType, MimeType, Search, AudienceFilter } from '../../app/app.constant';
-import { EnrolledCourseDetailsPage } from "../enrolled-course-details/enrolled-course-details";
-import { AppGlobalService } from "../../service/app-global.service";
-import { PopoverController } from "ionic-angular";
-import { QRAlertCallBack, QRScannerAlert } from "../qrscanner/qrscanner_alert";
-import { FormAndFrameworkUtilService } from "../profile/formandframeworkutil.service";
-import { CommonUtilService } from "../../service/common-util.service";
-
+import {
+  ContentType,
+  MimeType,
+  Search,
+  AudienceFilter
+} from '../../app/app.constant';
+import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
+import { AppGlobalService } from '../../service/app-global.service';
+import { PopoverController } from 'ionic-angular';
+import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
+import { CommonUtilService } from '../../service/common-util.service';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { QrCodeResultPage } from '../qr-code-result/qr-code-result';
 @IonicPage()
 @Component({
   selector: 'page-search',
@@ -46,11 +72,11 @@ export class SearchPage {
 
   searchContentResult: Array<any> = [];
 
-  showLoader: boolean = false;
+  showLoader = false;
 
   filterIcon;
 
-  searchKeywords: string = ""
+  searchKeywords = '';
 
   responseData: any;
 
@@ -60,19 +86,19 @@ export class SearchPage {
 
   defaultAppIcon: string;
 
-  isEmptyResult: boolean = false;
+  isEmptyResult = false;
 
   queuedIdentifiers = [];
 
-  isDownloadStarted: boolean = false;
+  isDownloadStarted = false;
 
-  currentCount: number = 0;
+  currentCount = 0;
 
   parentContent: any = undefined;
 
   childContent: any = undefined;
 
-  loadingDisplayText: string = "Loading content";
+  loadingDisplayText = 'Loading content';
 
   audienceFilter = [];
 
@@ -80,28 +106,26 @@ export class SearchPage {
 
   profile: any;
 
-  isFirstLaunch: boolean = false;
-  private shouldGenerateEndTelemetry: boolean = false;
-  private backButtonFunc = undefined;
+  isFirstLaunch = false;
+  shouldGenerateEndTelemetry = false;
+  backButtonFunc = undefined;
 
   @ViewChild(Navbar) navBar: Navbar;
   constructor(
     private contentService: ContentService,
-    private telemetryService: TelemetryService,
     private navParams: NavParams,
     private navCtrl: NavController,
     private zone: NgZone,
     private event: Events,
     private network: Network,
     private fileUtil: FileUtil,
-    private toastCtrl: ToastController,
-    private translate: TranslateService,
     private events: Events,
-    private appGlobal: AppGlobalService,
+    private appGlobalService: AppGlobalService,
     private popUp: PopoverController,
     private platform: Platform,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    private telemetryGeneratorService: TelemetryGeneratorService
   ) {
 
     this.checkUserSession();
@@ -110,17 +134,9 @@ export class SearchPage {
 
     this.init();
 
-    console.log("Network Type : " + this.network.type);
     this.defaultAppIcon = 'assets/imgs/ic_launcher.png';
-    this.backButtonFunc = this.platform.registerBackButtonAction(() => {
-      this.navCtrl.pop();
-      if (this.shouldGenerateEndTelemetry) {
-        this.generateQRSessionEndEvent(this.source, this.dialCode);
-      }
-      this.backButtonFunc();
-    }, 10)
+    this.handleDeviceBackButton();
   }
-
 
   ionViewDidEnter() {
     if (!this.dialCode && this.isFirstLaunch) {
@@ -134,19 +150,61 @@ export class SearchPage {
   }
 
   ionViewDidLoad() {
-    this.navBar.backButtonClick = (e: UIEvent) => {
-      if (this.shouldGenerateEndTelemetry) {
-        this.generateQRSessionEndEvent(this.source, this.dialCode);
-      }
-      this.navCtrl.pop();
+    this.navBar.backButtonClick = () => {
+      this.telemetryGeneratorService.generateBackClickedTelemetry(ImpressionType.SEARCH,
+        Environment.HOME, true, undefined, this.corRelationList);
+      this.navigateToPreviousPage();
+    };
+  }
+
+  ionViewWillLeave() {
+    this.events.unsubscribe('genie.event');
+    if (this.backButtonFunc) {
       this.backButtonFunc();
     }
   }
 
+  navigateToPreviousPage() {
+    if (this.shouldGenerateEndTelemetry) {
+      this.generateQRSessionEndEvent(this.source, this.dialCode);
+    }
+
+    if (this.appGlobalService.isGuestUser) {
+      if (this.source === PageId.USER_TYPE_SELECTION && this.appGlobalService.isOnBoardingCompleted) {
+        if (this.appGlobalService.isProfileSettingsCompleted) {
+          this.navCtrl.setRoot(TabsPage, {
+            loginMode: 'guest'
+          });
+        } else {
+          this.navCtrl.setRoot('ProfileSettingsPage', { buildPath: true });
+        }
+      } else {
+        this.popCurrentPage();
+      }
+    } else {
+      this.popCurrentPage();
+    }
+  }
+
+  popCurrentPage() {
+    this.navCtrl.pop();
+    this.backButtonFunc();
+  }
+
+  handleDeviceBackButton() {
+    this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      this.navigateToPreviousPage();
+      this.telemetryGeneratorService.generateBackClickedTelemetry(ImpressionType.SEARCH,
+        Environment.HOME, false, undefined, this.corRelationList);
+      this.backButtonFunc();
+    }, 10);
+  }
+
+
   openCollection(collection) {
     // TODO: Add mimeType check
     // this.navCtrl.push(EnrolledCourseDetailsPage, {'content': collection})
-    this.showContentDetails(collection);
+    this.showContentDetails(collection, true);
   }
 
   openContent(collection, content, index) {
@@ -162,12 +220,11 @@ export class SearchPage {
     }
   }
 
+  showContentDetails(content, isRootContent: boolean = false) {
 
-  ionViewWillLeave(): void {
-    this.events.unsubscribe('genie.event');
-  }
-
-  showContentDetails(content) {
+    if (content && content.medium) {
+      this.commonUtilService.changeAppLanguage(content.medium);
+    }
 
     let params;
     if (this.shouldGenerateEndTelemetry) {
@@ -178,8 +235,7 @@ export class SearchPage {
         shouldGenerateEndTelemetry: this.shouldGenerateEndTelemetry,
         parentContent: this.parentContent
       };
-    }
-    else {
+    } else {
       params = {
         content: content,
         corRelation: this.corRelationList,
@@ -187,27 +243,27 @@ export class SearchPage {
       };
     }
 
+    if (this.isDialCodeSearch && !this.appGlobalService.isOnBoardingCompleted && (this.parentContent || content)) {
+      this.appGlobalService.setOnBoardingCompleted();
+    }
+
     if (content.contentType === ContentType.COURSE) {
-      console.log('Calling course details page');
-      this.navCtrl.push(EnrolledCourseDetailsPage, params)
+      this.navCtrl.push(EnrolledCourseDetailsPage, params);
     } else if (content.mimeType === MimeType.COLLECTION) {
-      console.log('Calling collection details page');
-      this.navCtrl.push(CollectionDetailsPage, params)
+      if (this.isDialCodeSearch && !isRootContent) {
+        params.buildPath = true;
+        this.navCtrl.push(QrCodeResultPage, params);
+      } else {
+        this.navCtrl.push(CollectionDetailsPage, params);
+      }
     } else {
-      console.log('Calling content details page');
-      this.navCtrl.push(ContentDetailsPage, params)
+      this.navCtrl.push(ContentDetailsPage, params);
     }
-  }
-  getTranslatedValue(translations) {
-    if (translations.hasOwnProperty(this.translate.currentLang)) {
-      return translations[this.translate.currentLang];
-    }
-    return "";
   }
 
   showFilter() {
     this.formAndFrameworkUtilService.getLibraryFilterConfig().then((data) => {
-      let filterCriteriaData = this.responseData.result.filterCriteria;
+      const filterCriteriaData = this.responseData.result.filterCriteria;
       filterCriteriaData.facetFilters.forEach(element => {
         data.forEach(item => {
           if (element.name === item.code) {
@@ -222,12 +278,12 @@ export class SearchPage {
 
   applyFilter() {
     this.showLoader = true;
-    this.responseData.result.filterCriteria.mode = "hard";
+    this.responseData.result.filterCriteria.mode = 'hard';
 
     this.contentService.searchContent(this.responseData.result.filterCriteria, true, false, false, (responseData) => {
 
       this.zone.run(() => {
-        let response: GenieResponse = JSON.parse(responseData);
+        const response: GenieResponse = JSON.parse(responseData);
         this.responseData = response;
         if (response.status && response.result) {
 
@@ -250,15 +306,11 @@ export class SearchPage {
         this.showLoader = false;
       });
     }, (error) => {
-      console.log("Error : " + JSON.stringify(error));
+      console.log('Error : ' + JSON.stringify(error));
       this.zone.run(() => {
         this.showLoader = false;
-      })
+      });
     });
-  }
-
-  searchOnChange(event) {
-    console.log("Search keyword " + this.searchKeywords);
   }
 
   handleSearch() {
@@ -268,15 +320,15 @@ export class SearchPage {
 
     this.showLoader = true;
 
-    (<any>window).cordova.plugins.Keyboard.close()
+    (<any>window).cordova.plugins.Keyboard.close();
 
-    let contentSearchRequest: ContentSearchCriteria = {
+    const contentSearchRequest: ContentSearchCriteria = {
       query: this.searchKeywords,
       contentTypes: this.contentType,
       facets: Search.FACETS,
       audience: this.audienceFilter,
-      mode: "soft"
-    }
+      mode: 'soft'
+    };
 
     this.isDialCodeSearch = false;
 
@@ -286,36 +338,27 @@ export class SearchPage {
     if (this.profile) {
 
       if (this.profile.board && this.profile.board.length) {
-        contentSearchRequest.board = this.applyProfileFilter(this.profile.board, contentSearchRequest.board, "board");
+        contentSearchRequest.board = this.applyProfileFilter(this.profile.board, contentSearchRequest.board, 'board');
       }
 
       if (this.profile.medium && this.profile.medium.length) {
-        contentSearchRequest.medium = this.applyProfileFilter(this.profile.medium, contentSearchRequest.medium, "medium");
+        contentSearchRequest.medium = this.applyProfileFilter(this.profile.medium, contentSearchRequest.medium, 'medium');
       }
 
       if (this.profile.grade && this.profile.grade.length) {
-        contentSearchRequest.grade = this.applyProfileFilter(this.profile.grade, contentSearchRequest.grade, "gradeLevel");
+        contentSearchRequest.grade = this.applyProfileFilter(this.profile.grade, contentSearchRequest.grade, 'gradeLevel');
       }
 
-      // if (this.profile.subject && this.profile.subject.length) {
-      // 	pageAssembleCriteria.filters.subject = this.applyProfileFilter(this.profile.subject, pageAssembleCriteria.filters.subject, "subject");
-      // }
-
-      // if (this.profile.subject && this.profile.subject.length) {
-      // 	contentSearchRequest.subject = this.applyProfileFilter(this.profile.subject, contentSearchRequest.subject);
-      // }
     }
 
     this.contentService.searchContent(contentSearchRequest, false, false, false, (responseData) => {
 
       this.zone.run(() => {
-        let response: GenieResponse = JSON.parse(responseData);
+        const response: GenieResponse = JSON.parse(responseData);
         this.responseData = response;
         if (response.status && response.result) {
-          this.addCorRelation(response.result.responseMessageId, "API");
+          this.addCorRelation(response.result.responseMessageId, 'API');
           this.searchContentResult = response.result.contentDataList;
-          console.log('inside search content service');
-          console.log(this.searchContentResult);
           this.updateFilterIcon();
 
           this.isEmptyResult = false;
@@ -329,28 +372,28 @@ export class SearchPage {
         this.showLoader = false;
       });
     }, (error) => {
-      console.log("Error : " + JSON.parse(error));
+      console.log('Error : ' + JSON.parse(error));
       this.zone.run(() => {
         this.showLoader = false;
         if (this.network.type === 'none') {
-          this.showMessage('ERROR_OFFLINE_MODE');
+          this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
         }
-      })
+      });
     });
   }
 
   applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>, categoryKey?: string) {
     if (categoryKey) {
-      let nameArray = [];
+      const nameArray = [];
       profileFilter.forEach(filterCode => {
-        let nameForCode = this.appGlobal.getNameForCodeInFramework(categoryKey, filterCode);
+        let nameForCode = this.appGlobalService.getNameForCodeInFramework(categoryKey, filterCode);
 
         if (!nameForCode) {
           nameForCode = filterCode;
         }
 
         nameArray.push(nameForCode);
-      })
+      });
 
       profileFilter = nameArray;
     }
@@ -361,33 +404,32 @@ export class SearchPage {
     }
     assembleFilter = assembleFilter.concat(profileFilter);
 
-    let unique_array = [];
+    const unique_array = [];
 
     for (let i = 0; i < assembleFilter.length; i++) {
-      if (unique_array.indexOf(assembleFilter[i]) == -1 && assembleFilter[i].length > 0) {
-        unique_array.push(assembleFilter[i])
+      if (unique_array.indexOf(assembleFilter[i]) === -1 && assembleFilter[i].length > 0) {
+        unique_array.push(assembleFilter[i]);
       }
     }
 
     assembleFilter = unique_array;
 
-    if (assembleFilter.length == 0) {
+    if (assembleFilter.length === 0) {
       return undefined;
     }
 
     return assembleFilter;
   }
 
-  private init() {
+  init() {
     this.dialCode = this.navParams.get('dialCode');
     this.contentType = this.navParams.get('contentType');
-    this.source = this.navParams.get('source');
     this.corRelationList = this.navParams.get('corRelation');
     this.source = this.navParams.get('source');
     this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
     this.generateImpressionEvent();
     if (this.dialCode !== undefined && this.dialCode.length > 0) {
-      this.getContentForDialCode()
+      this.getContentForDialCode();
     }
 
     this.event.subscribe('search.applyFilter', (filterCriteria) => {
@@ -396,9 +438,9 @@ export class SearchPage {
     });
   }
 
-  private getContentForDialCode() {
-    if (this.dialCode == undefined || this.dialCode.length == 0) {
-      return
+  getContentForDialCode() {
+    if (this.dialCode === undefined || this.dialCode.length === 0) {
+      return;
     }
 
     this.isDialCodeSearch = true;
@@ -412,31 +454,31 @@ export class SearchPage {
       isOfflineSearch = true;
     }
 
-    let contentSearchRequest: ContentSearchCriteria = {
+    const contentSearchRequest: ContentSearchCriteria = {
       dialCodes: [this.dialCode],
-      mode: "collection",
+      mode: 'collection',
       facets: Search.FACETS,
       contentTypes: this.contentType,
       offlineSearch: isOfflineSearch
-    }
+    };
 
-    this.contentService.searchContent(contentSearchRequest, false, true, !this.appGlobal.isUserLoggedIn(), (responseData) => {
+    this.contentService.searchContent(contentSearchRequest, false, true, !this.appGlobalService.isUserLoggedIn(), (responseData) => {
       this.zone.run(() => {
-        let response: GenieResponse = JSON.parse(responseData);
+        const response: GenieResponse = JSON.parse(responseData);
         this.responseData = response;
         if (response.status && response.result) {
-          this.addCorRelation(response.result.responseMessageId, "API");
+          this.addCorRelation(response.result.responseMessageId, 'API');
           this.processDialCodeResult(response.result);
           this.updateFilterIcon();
         }
 
         this.showLoader = false;
-      })
-    }, (error) => {
+      });
+    }, () => {
       this.zone.run(() => {
         this.showLoader = false;
         if (this.network.type === 'none') {
-          this.showMessage('ERROR_OFFLINE_MODE');
+          this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
         }
       });
     });
@@ -446,165 +488,150 @@ export class SearchPage {
     if (this.corRelationList === undefined || this.corRelationList === null) {
       this.corRelationList = new Array<CorrelationData>();
     }
-    let corRelation: CorrelationData = new CorrelationData();
+    const corRelation: CorrelationData = new CorrelationData();
     corRelation.id = id;
     corRelation.type = type;
     this.corRelationList.push(corRelation);
   }
   private generateImpressionEvent() {
-    this.telemetryService.impression(generateImpressionTelemetry(
-      ImpressionType.SEARCH, "",
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.SEARCH, '',
       this.source,
-      Environment.HOME, "", "", "",
+      Environment.HOME, '', '', '',
       undefined,
-      this.corRelationList
-
-    ));
+      this.corRelationList);
   }
 
   private generateLogEvent(searchResult) {
-    let log = new Log();
-    log.level = LogLevel.INFO;
-    log.message = this.source;
-    log.env = Environment.HOME;
-    log.type = ImpressionType.SEARCH;
     if (searchResult != null) {
-      let contentArray: Array<any> = searchResult.contentDataList;
-      let params = new Array<any>();
-      let paramsMap = new Map();
-      paramsMap["SearchResults"] = contentArray.length;
-      paramsMap["SearchCriteria"] = searchResult.request;
+      const contentArray: Array<any> = searchResult.contentDataList;
+      const params = new Array<any>();
+      const paramsMap = new Map();
+      paramsMap['SearchResults'] = contentArray.length;
+      paramsMap['SearchCriteria'] = searchResult.request;
       params.push(paramsMap);
-      log.params = params;
-      this.telemetryService.log(log);
+      this.telemetryGeneratorService.generateLogEvent(LogLevel.INFO,
+        this.source,
+        Environment.HOME,
+        ImpressionType.SEARCH,
+        params);
     }
   }
 
   generateInteractEvent(identifier, contentType, pkgVersion, index) {
-    let interact = new Interact();
-    interact.type = InteractType.TOUCH;
-    interact.subType = InteractSubtype.CONTENT_CLICKED;
-    interact.pageId = this.source;
-    interact.env = Environment.HOME;
-    let valuesMap = new Map();
+    const values = new Map();
+    values['SearchPhrase'] = this.searchKeywords;
+    values['PositionClicked'] = index;
 
-    valuesMap["SearchPhrase"] = this.searchKeywords;
-    valuesMap["PositionClicked"] = index;
-    interact.valueMap = valuesMap;
-    interact.id = this.source;
-    interact.objId = identifier;
-    interact.objType = contentType;
-    interact.objType = pkgVersion;
-    interact.correlationData = this.corRelationList;
-    this.telemetryService.interact(interact);
+    const telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.id = identifier;
+    telemetryObject.type = contentType;
+    telemetryObject.version = pkgVersion;
+
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.CONTENT_CLICKED,
+      Environment.HOME,
+      this.source,
+      telemetryObject,
+      values,
+      undefined,
+      this.corRelationList);
   }
 
   generateQRSessionEndEvent(pageId: string, qrData: string) {
     if (pageId !== undefined) {
-      this.telemetryService.end(generateEndTelemetry(
-        "qr",
+      const telemetryObject: TelemetryObject = new TelemetryObject();
+      telemetryObject.id = qrData;
+      telemetryObject.type = 'qr';
+      telemetryObject.version = '';
+      this.telemetryGeneratorService.generateEndTelemetry(
+        'qr',
         Mode.PLAY,
         pageId,
-        qrData,
-        "qr",
-        "",
+        Environment.HOME,
+        telemetryObject,
         undefined,
-        this.corRelationList
-      ));
+        this.corRelationList);
     }
   }
 
-  private processDialCodeResult(searchResult) {
-    let collectionArray: Array<any> = searchResult.collectionDataList;
-    let contentArray: Array<any> = searchResult.contentDataList;
+  processDialCodeResult(searchResult) {
+    const collectionArray: Array<any> = searchResult.collectionDataList;
+    const contentArray: Array<any> = searchResult.contentDataList;
 
     this.dialCodeResult = [];
-    let addedContent = new Array<any>();
+    const addedContent = new Array<any>();
 
     if (collectionArray && collectionArray.length > 0) {
       collectionArray.forEach((collection) => {
         contentArray.forEach((content) => {
           if (collection.childNodes.includes(content.identifier)) {
-            if (collection.content == undefined) {
+            if (collection.content === undefined) {
               collection.content = [];
-              collection.content.push(content);
-            } else {
-              collection.content.push(content);
             }
-
+            collection.content.push(content);
             addedContent.push(content.identifier);
           }
-        })
+        });
         this.dialCodeResult.push(collection);
-        console.log(this.dialCodeResult);
-      })
+      });
     }
 
     this.dialCodeContentResult = [];
 
     let isParentCheckStarted = false;
 
-    let isAllContentMappedToCollection = contentArray.length == addedContent.length;
+    const isAllContentMappedToCollection = contentArray.length === addedContent.length;
 
-    if (this.dialCodeResult.length == 1 && this.dialCodeResult[0].content.length == 1 && isAllContentMappedToCollection) {
+    if (this.dialCodeResult.length === 1 && this.dialCodeResult[0].content.length === 1 && isAllContentMappedToCollection) {
       this.parentContent = this.dialCodeResult[0];
       this.childContent = this.dialCodeResult[0].content[0];
       this.checkParent(this.dialCodeResult[0], this.dialCodeResult[0].content[0]);
       isParentCheckStarted = true;
-      // this.showContentDetails(this.dialCodeResult[0].content[0]);
-      // return;
     }
-
+    this.generateQRScanSuccessInteractEvent(this.dialCodeResult, this.dialCode);
     if (contentArray && contentArray.length > 1) {
       contentArray.forEach((content) => {
         if (addedContent.indexOf(content.identifier) < 0) {
           this.dialCodeContentResult.push(content);
-          console.log(this.dialCodeContentResult);
         }
-      })
+      });
     }
 
-    if (contentArray && contentArray.length == 1 && !isParentCheckStarted) {
+    if (contentArray && contentArray.length === 1 && !isParentCheckStarted) {
       this.navCtrl.pop();
-      this.showContentDetails(contentArray[0]);
+      this.showContentDetails(contentArray[0], true);
       return;
     }
 
-    if (this.dialCodeResult.length == 0 && this.dialCodeContentResult.length == 0) {
+    if (this.dialCodeResult.length === 0 && this.dialCodeContentResult.length === 0) {
       this.navCtrl.pop();
       if (this.shouldGenerateEndTelemetry) {
         this.generateQRSessionEndEvent(this.source, this.dialCode);
       }
-      let popOver: Popover;
-      const callback: QRAlertCallBack = {
-        tryAgain() {
-          popOver.dismiss()
-        },
-        cancel() {
-          popOver.dismiss()
-        }
-      }
-      popOver = this.popUp.create(QRScannerAlert, {
-        callback: callback,
-        icon: "./assets/imgs/ic_coming_soon.png",
-        messageKey: "CONTENT_COMING_SOON",
-        cancelKey: "hide",
-        tryAgainKey: "DONE",
-      }, {
-          cssClass: 'qr-alert'
-        });
-
-      setTimeout(() => {
-        popOver.present();
-      }, 300)
-
-      // this.isEmptyResult = true;
+      this.commonUtilService.showContentComingSoonAlert(this.source);
     } else {
       this.isEmptyResult = false;
     }
   }
 
-  private updateFilterIcon() {
+  generateQRScanSuccessInteractEvent(dialCodeResult, dialCode) {
+    const values = new Map();
+    values['networkAvailable'] = this.network.type === 'none' ? 'N' : 'Y';
+    values['scannedData'] = dialCode;
+    values['count'] = dialCodeResult.length;
+
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.OTHER,
+      InteractSubtype.DIAL_SEARCH_RESULT_FOUND,
+      Environment.HOME,
+      PageId.SEARCH,
+      undefined,
+      values
+    );
+  }
+
+  updateFilterIcon() {
     let isFilterApplied = false;
 
     if (this.isEmptyResult) {
@@ -621,29 +648,22 @@ export class SearchPage {
           if (value.apply) {
             isFilterApplied = true;
           }
-        })
+        });
       }
     });
 
     if (isFilterApplied) {
-      this.filterIcon = "./assets/imgs/ic_action_filter_applied.png";
+      this.filterIcon = './assets/imgs/ic_action_filter_applied.png';
     } else {
-      this.filterIcon = "./assets/imgs/ic_action_filter.png"
+      this.filterIcon = './assets/imgs/ic_action_filter.png';
     }
   }
 
-  private getReadableFileSize(bytes) {
-    if (bytes < 1024) return (bytes / 1).toFixed(0) + " Bytes";
-    else if (bytes < 1048576) return (bytes / 1024).toFixed(0) + " KB";
-    else if (bytes < 1073741824) return (bytes / 1048576).toFixed(0) + " MB";
-    else return (bytes / 1073741824).toFixed(3) + " GB";
-  }
-
-  private checkParent(parent, child) {
-    let identifier = parent.identifier
-    let contentRequest: ContentDetailRequest = {
+  checkParent(parent, child) {
+    const identifier = parent.identifier;
+    const contentRequest: ContentDetailRequest = {
       contentId: identifier
-    }
+    };
 
     this.contentService.getContentDetail(contentRequest, (data: any) => {
       data = JSON.parse(data);
@@ -657,12 +677,11 @@ export class SearchPage {
       } else {
         this.zone.run(() => { this.showContentDetails(child); });
       }
-    }, (error) => {
-
+    }, () => {
     });
   }
 
-  private downloadParentContent(parent) {
+  downloadParentContent(parent) {
     this.zone.run(() => {
       this.downloadProgress = 0;
       this.showLoading = true;
@@ -672,14 +691,14 @@ export class SearchPage {
     const option = {
       contentImportMap: _.extend({}, this.getImportContentRequestBody([parent.identifier], false)),
       contentStatusArray: []
-    }
+    };
     // Call content service
     this.contentService.importContent(option, (data: any) => {
       this.zone.run(() => {
         data = JSON.parse(data);
 
         if (data.result && data.result.length && this.isDownloadStarted) {
-          _.forEach(data.result, (value, key) => {
+          _.forEach(data.result, (value) => {
             if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
               this.queuedIdentifiers.push(value.identifier);
             }
@@ -689,34 +708,33 @@ export class SearchPage {
         if (this.queuedIdentifiers.length === 0) {
           this.showLoading = false;
           this.isDownloadStarted = false;
-          if (this.network.type != 'none') {
-            this.showMessage('ERROR_CONTENT_NOT_AVAILABLE');
+          if (this.network.type !== 'none') {
+            this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
           } else {
-            this.showMessage('ERROR_OFFLINE_MODE');
+            this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
           }
         }
       });
-    }, (error) => {
-
+    }, () => {
     });
   }
 
   /**
- * Subscribe genie event to get content download progress
- */
+  * Subscribe genie event to get content download progress
+  */
   subscribeGenieEvent() {
     this.events.subscribe('genie.event', (data) => {
       this.zone.run(() => {
         data = JSON.parse(data);
-        let res = data;
+        const res = data;
 
         if (res.type === 'downloadProgress' && res.data.downloadProgress) {
           this.downloadProgress = res.data.downloadProgress === -1 ? 0 : res.data.downloadProgress;
-          this.loadingDisplayText = "Loading content " + this.downloadProgress + " %";
+          this.loadingDisplayText = 'Loading content ' + this.downloadProgress + ' %';
 
           if (this.downloadProgress === 100) {
             // this.showLoading = false;
-            this.loadingDisplayText = "Loading content "
+            this.loadingDisplayText = 'Loading content ';
           }
         }
 
@@ -739,81 +757,55 @@ export class SearchPage {
           }
         }
 
-        // if (res.data && res.type === 'contentUpdateAvailable' && this.parentContent && this.childContent) {
-        //   this.zone.run(() => {
-        //     console.log("Content Update in Search");
-        //     this.downloadParentContent(this.parentContent);
-        //   });
-        // }
-
       });
     });
   }
 
-  showMessage(constant) {
-    if (constant) {
-      this.translate.get(constant).subscribe(
-        (value: any) => {
-          let toast = this.toastCtrl.create({
-            message: value,
-            duration: 2000,
-            position: 'bottom'
-          });
-          toast.onDidDismiss(() => {
-          });
-
-          toast.present();
-        }
-      );
-    }
-  }
-
   /**
- * Function to get import content api request params
- *
- * @param {Array<string>} identifiers contains list of content identifier(s)
- * @param {boolean} isChild
- */
+  * Function to get import content api request params
+  *
+  * @param {Array<string>} identifiers contains list of content identifier(s)
+  * @param {boolean} isChild
+  */
   getImportContentRequestBody(identifiers: Array<string>, isChild: boolean) {
-    let requestParams = [];
-    _.forEach(identifiers, (value, key) => {
+    const requestParams = [];
+    _.forEach(identifiers, (value) => {
       requestParams.push({
         isChildContent: isChild,
         // TODO - check with Anil for destination folder path
         destinationFolder: this.fileUtil.internalStoragePath(),
         contentId: value,
         correlationData: this.corRelationList !== undefined ? this.corRelationList : []
-      })
+      });
     });
 
     return requestParams;
   }
 
   cancelDownload() {
-    this.contentService.cancelDownload(this.parentContent.identifier, (response) => {
+    this.contentService.cancelDownload(this.parentContent.identifier, () => {
       this.zone.run(() => {
         this.showLoading = false;
       });
-    }, (error) => {
+    }, () => {
       this.zone.run(() => {
         this.showLoading = false;
       });
     });
   }
 
-  private checkUserSession() {
-
-    let isGuestUser = !this.appGlobal.isUserLoggedIn();
+  checkUserSession() {
+    const isGuestUser = !this.appGlobalService.isUserLoggedIn();
 
     if (isGuestUser) {
-      let userType = this.appGlobal.getGuestUserType();
-      if (userType == ProfileType.STUDENT) {
+      const userType = this.appGlobalService.getGuestUserType();
+      if (userType === ProfileType.STUDENT) {
         this.audienceFilter = AudienceFilter.GUEST_STUDENT;
-      } else if (userType == ProfileType.TEACHER) {
+      } else if (userType === ProfileType.TEACHER) {
         this.audienceFilter = AudienceFilter.GUEST_TEACHER;
       }
 
-      this.profile = this.appGlobal.getCurrentUser();
+      this.profile = this.appGlobalService.getCurrentUser();
     } else {
       this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
       this.profile = undefined;

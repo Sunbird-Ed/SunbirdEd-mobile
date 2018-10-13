@@ -1,7 +1,8 @@
 import { Component, NgZone } from '@angular/core';
 import { NavController, NavParams, LoadingController } from 'ionic-angular';
 import { GroupReportListPage } from '../group-report-list/group-report-list';
-import { ReportService, ReportSummary, ContentService, ContentFilterCriteria, SummarizerContentFilterCriteria, ContentSortCriteria, SortOrder, ImpressionType, Environment, PageId, InteractType, InteractSubtype, ObjectType, TelemetryObject } from "sunbird";
+import { ReportService, ReportSummary, ContentService, SummarizerContentFilterCriteria, ImpressionType, Environment,
+    PageId, InteractType, InteractSubtype, ObjectType, TelemetryObject } from 'sunbird';
 import { UserReportPage } from '../user-report/user-report';
 import { ContentType } from '../../../app/app.constant';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
@@ -30,7 +31,7 @@ export class ReportListPage {
 
     ionViewDidLoad() {
         this.telemetryGeneratorService.generateImpressionTelemetry(
-            ImpressionType.VIEW, "",
+            ImpressionType.VIEW, '',
             PageId.REPORTS_ASSESMENT_CONTENT_LIST,
             Environment.USER
         );
@@ -38,8 +39,8 @@ export class ReportListPage {
         this.isFromGroups = this.navParams.get('isFromGroups');
         this.uids = this.navParams.get('uids');
 
-        let loader = this.loading.create({
-            spinner: "crescent"
+        const loader = this.loading.create({
+            spinner: 'crescent'
         });
         loader.present();
 
@@ -71,14 +72,14 @@ export class ReportListPage {
 
 
     formatTime(time: number): string {
-        var mm = Math.floor(time / 60);
-        var ss = Math.floor(time % 60);
-        return (mm > 9 ? mm : ("0" + mm))
-            + ":" + (ss > 9 ? ss : ("0" + ss));
+        const mm = Math.floor(time / 60);
+        const ss = Math.floor(time % 60);
+        return (mm > 9 ? mm : ('0' + mm))
+            + ':' + (ss > 9 ? ss : ('0' + ss));
     }
 
     goToGroupReportsList(report: ReportSummary) {
-        let telemetryObject: TelemetryObject = new TelemetryObject();
+        const telemetryObject: TelemetryObject = new TelemetryObject();
         telemetryObject.id = report.contentId;
         telemetryObject.type = ObjectType.CONTENT;
 
@@ -95,8 +96,8 @@ export class ReportListPage {
             });
         } else
             if (this.isFromGroups) {
-                let uids = this.navParams.get('uids');
-                let users = this.navParams.get('users');
+                const uids = this.navParams.get('uids');
+                const users = this.navParams.get('users');
                 this.navCtrl.push(GroupReportListPage, {
                     report: report,
                     uids: uids,

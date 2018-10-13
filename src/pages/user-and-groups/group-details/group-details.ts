@@ -39,13 +39,20 @@ import {
 } from 'sunbird';
 import { Events } from 'ionic-angular';
 import { AppGlobalService } from '../../../service/app-global.service';
-import { initTabs, GUEST_STUDENT_SWITCH_TABS, GUEST_TEACHER_SWITCH_TABS, GUEST_STUDENT_TABS, GUEST_TEACHER_TABS } from '../../../app/module.service';
+import {
+  initTabs,
+  GUEST_STUDENT_SWITCH_TABS,
+  GUEST_TEACHER_SWITCH_TABS,
+  GUEST_STUDENT_TABS,
+  GUEST_TEACHER_TABS
+} from '../../../app/module.service';
 import { App } from 'ionic-angular';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
 import { ToastController } from 'ionic-angular';
 import { Network } from '@ionic-native/network';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
-import { Map } from "../../../app/telemetryutil";
+import { Map } from '../../../app/telemetryutil';
+import { PreferenceKey } from '../../../app/app.constant';
 @IonicPage()
 @Component({
   selector: 'page-group-member',
@@ -57,13 +64,13 @@ export class GroupDetailsPage {
   currentUserId: string;
   currentGroupId: string;
   userList: Array<Profile> = [];
-  selectedUserIndex: number = -1;
+  selectedUserIndex = -1;
   profileDetails: any;
   userUids = [];
-  isNoUsers: boolean = false;
+  isNoUsers = false;
   playContent: any;
 
-  isCurrentGroupActive: boolean = false;
+  isCurrentGroupActive = false;
 
   constructor(
     private navCtrl: NavController,
@@ -93,7 +100,7 @@ export class GroupDetailsPage {
     this.playContent = this.navParams.get('playContent') || undefined;
 
 
-    if (this.group.gid == this.currentGroupId) {
+    if (this.group.gid === this.currentGroupId) {
       this.isCurrentGroupActive = true;
     }
   }
@@ -106,9 +113,9 @@ export class GroupDetailsPage {
   }
 
   getAllProfile() {
-    let loader = this.getLoader();
+    const loader = this.getLoader();
     loader.present();
-    let profileRequest: ProfileRequest = {
+    const profileRequest: ProfileRequest = {
       local: true,
       groupId: this.group.gid
     };
@@ -120,15 +127,15 @@ export class GroupDetailsPage {
             this.userList = JSON.parse(profiles);
             this.userList.forEach((item) => {
               this.userUids.push(item.uid);
-            })
+            });
             this.isNoUsers = (this.userList.length) ? false : true;
             loader.dismiss();
           }
-          console.log("UserList", JSON.parse(profiles));
-        })
+          console.log('UserList', JSON.parse(profiles));
+        });
       }).catch((error) => {
         loader.dismiss();
-        console.log("Something went wrong while fetching user list", error);
+        console.log('Something went wrong while fetching user list', error);
       });
     });
   }
@@ -146,7 +153,7 @@ export class GroupDetailsPage {
   * Shows Prompt for switch Account
   */
   switchAccountConfirmBox() {
-    //Generate Switch User click event
+    // Generate Switch User click event
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.SWITCH_USER_CLICKED,
@@ -154,22 +161,22 @@ export class GroupDetailsPage {
       PageId.GROUP_DETAIL
     );
 
-    let selectedUser = this.userList[this.selectedUserIndex];
+    const selectedUser = this.userList[this.selectedUserIndex];
 
-    let valuesMap = new Map();
-    let fromUser = new Map();
-    fromUser["uid"] = this.currentUserId;
-    fromUser["type"] = this.appGlobalService.isUserLoggedIn() ? "signed-in" : "guest";
+    const valuesMap = new Map();
+    const fromUser = new Map();
+    fromUser['uid'] = this.currentUserId;
+    fromUser['type'] = this.appGlobalService.isUserLoggedIn() ? 'signed-in' : 'guest';
 
-    let toUser = new Map();
-    toUser["uid"] = selectedUser.uid;
-    toUser["type"] = "guest";
+    const toUser = new Map();
+    toUser['uid'] = selectedUser.uid;
+    toUser['type'] = 'guest';
 
-    valuesMap["from"] = fromUser;
-    valuesMap["to"] = toUser;
-    valuesMap["gid"] = this.group.gid;
+    valuesMap['from'] = fromUser;
+    valuesMap['to'] = toUser;
+    valuesMap['gid'] = this.group.gid;
 
-    let telemetryObject: TelemetryObject = new TelemetryObject();
+    const telemetryObject: TelemetryObject = new TelemetryObject();
     telemetryObject.id = selectedUser.uid;
     telemetryObject.type = Environment.USER;
 
@@ -184,7 +191,7 @@ export class GroupDetailsPage {
     );
 
 
-    let alert = this.alertCtrl.create({
+    const alert = this.alertCtrl.create({
       title: this.translateMessage('SWITCH_ACCOUNT_CONFIRMATION'),
       mode: 'wp',
       message: this.translateMessage('SIGNED_OUT_ACCOUNT_MESSAGE'),
@@ -214,7 +221,7 @@ export class GroupDetailsPage {
       this.setAsCurrentUser(selectedUser, false);
     }
 
-    //Generate Switch user success event
+    // Generate Switch user success event
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.OTHER,
       InteractSubtype.SWITCH_USER_SUCCESS,
@@ -227,7 +234,7 @@ export class GroupDetailsPage {
   }
   // takes to content details page and launches player
   play() {
-    let selectedUser = this.userList[this.selectedUserIndex];
+    const selectedUser = this.userList[this.selectedUserIndex];
     if (this.appGlobalService.isUserLoggedIn()) {
       this.logOut(selectedUser, true);
     } else {
@@ -237,11 +244,11 @@ export class GroupDetailsPage {
 
 
   logOut(selectedUser: any, isBeingPlayed: boolean) {
-    let telemetryObject: TelemetryObject = new TelemetryObject();
+    const telemetryObject: TelemetryObject = new TelemetryObject();
     telemetryObject.id = this.profileDetails.id;
     telemetryObject.type = Environment.USER;
 
-    //Generate Logout initiate event
+    // Generate Logout initiate event
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.LOGOUT_INITIATE,
@@ -266,7 +273,7 @@ export class GroupDetailsPage {
       }
     }
 
-    //Generate Logout success event
+    // Generate Logout success event
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.OTHER,
       InteractSubtype.LOGOUT_SUCCESS,
@@ -277,13 +284,13 @@ export class GroupDetailsPage {
   }
 
   presentPopoverNav(myEvent) {
-    console.log("clicked nav popover")
-    let popover = this.popOverCtrl.create(GroupDetailNavPopoverPage, {
+    console.log('clicked nav popover');
+    const popover = this.popOverCtrl.create(GroupDetailNavPopoverPage, {
       goToEditGroup: () => {
         console.log('go to edit group');
         this.navCtrl.push(CreateGroupPage, {
           groupInfo: this.group
-        })
+        });
         popover.dismiss();
       },
       deleteGroup: () => {
@@ -312,28 +319,28 @@ export class GroupDetailsPage {
     },
       {
         cssClass: 'user-popover'
-      })
+      });
     popover.present({
       ev: myEvent
     });
   }
 
   presentPopover(myEvent, index) {
-    let profile = this.userList[index]
+    const profile = this.userList[index];
     let isActiveUser = false;
-    if (profile.uid == this.currentUserId && this.isCurrentGroupActive) {
+    if (profile.uid === this.currentUserId && this.isCurrentGroupActive) {
       isActiveUser = true;
     }
-    let popover = this.popOverCtrl.create(PopoverPage, {
+    const popover = this.popOverCtrl.create(PopoverPage, {
 
       edit: () => {
         this.navCtrl.push(GuestEditProfilePage, {
           profile: this.userList[index]
-        })
+        });
         popover.dismiss();
       },
       delete: () => {
-        console.log("in delete");
+        console.log('in delete');
         this.userDeleteGroupConfirmBox(index);
         popover.dismiss();
 
@@ -350,7 +357,7 @@ export class GroupDetailsPage {
 
   /** Delete alert box */
   deleteGroupConfirmBox() {
-    let alert = this.alertCtrl.create({
+    const alert = this.alertCtrl.create({
       title: this.translateMessage('GROUP_DELETE_CONFIRM', this.group.name),
       mode: 'wp',
       message: this.translateMessage('GROUP_DELETE_CONFIRM_MESSAGE'),
@@ -378,11 +385,11 @@ export class GroupDetailsPage {
 
   deleteGroup() {
     console.log(this.group.gid);
-    let telemetryObject: TelemetryObject = new TelemetryObject();
+    const telemetryObject: TelemetryObject = new TelemetryObject();
     telemetryObject.id = this.group.gid;
     telemetryObject.type = ObjectType.GROUP;
 
-    //Generate Delete group event
+    // Generate Delete group event
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.DELETE_GROUP_INITIATE,
@@ -392,17 +399,17 @@ export class GroupDetailsPage {
     );
     this.groupService.deleteGroup(this.group.gid).then((sucess) => {
       console.log(sucess);
-      this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2))
+      this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
 
     }).catch((error) => {
       console.log(error);
-    })
+    });
   }
 
   /* delete confirm box for user */
   /** Delete alert box */
   userDeleteGroupConfirmBox(index) {
-    let alert = this.alertCtrl.create({
+    const alert = this.alertCtrl.create({
       title: this.translateMessage('USER_DELETE_CONFIRM_MESSAGE_FROM_GROUP', this.userList[index].handle),
       mode: 'wp',
       message: this.translateMessage('USER_DELETE_CONFIRM_SECOND_MESSAGE'),
@@ -429,22 +436,22 @@ export class GroupDetailsPage {
   }
 
   deleteUsersinGroup(index: number) {
-    let userListIndex = this.userList.indexOf(this.userList[index]);
+    const userListIndex = this.userList.indexOf(this.userList[index]);
     this.userUids.forEach((item) => {
-      if (this.userList[index].uid == item) {
-        let elementIndex = this.userUids.indexOf(item);
+      if (this.userList[index].uid === item) {
+        const elementIndex = this.userUids.indexOf(item);
         this.userUids.splice(elementIndex, 1);
 
       }
-    })
-    let req: AddUpdateProfilesRequest = {
+    });
+    const req: AddUpdateProfilesRequest = {
       groupId: this.group.gid,
       uidList: this.userUids
-    }
+    };
 
     this.groupService.addUpdateProfilesToGroup(req).then(
       (success) => {
-        console.log("success", success);
+        console.log('success', success);
         this.userList.splice(userListIndex, 1);
       }
     ).catch(error => {
@@ -471,39 +478,38 @@ export class GroupDetailsPage {
 
   getGradeNameFromCode(data: Profile | Group): string {
     if (data.grade && data.grade.length > 0) {
-      let gradeName = [];
+      const gradeName = [];
       data.grade.forEach(code => {
         if (data.gradeValueMap && data.gradeValueMap[code]) {
           gradeName.push(data.gradeValueMap[code]);
         }
       });
 
-      if (gradeName.length == 0) {
-        return data.grade.join(",");
+      if (gradeName.length === 0) {
+        return data.grade.join(',');
       }
 
-      return gradeName.join(",");
+      return gradeName.join(',');
     }
 
-    return ""
+    return '';
   }
-
 
   private setAsCurrentUser(selectedUser, isBeingPlayed: boolean) {
     this.groupService.setCurrentGroup(this.group.gid)
       .then(val => {
-        console.log("Value : " + val);
+        console.log('Value : ' + val);
         this.profileService.setCurrentUser(selectedUser.uid, (success) => {
           if (isBeingPlayed) {
             this.event.publish('launchPlayer', true);
             this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
           }
-          if (selectedUser.profileType == ProfileType.STUDENT) {
+          if (selectedUser.profileType === ProfileType.STUDENT) {
             initTabs(this.container, isBeingPlayed ? GUEST_STUDENT_TABS : GUEST_STUDENT_SWITCH_TABS);
-            this.preferences.putString('selected_user_type', ProfileType.STUDENT);
+            this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT);
           } else {
             initTabs(this.container, isBeingPlayed ? GUEST_TEACHER_TABS : GUEST_TEACHER_SWITCH_TABS);
-            this.preferences.putString('selected_user_type', ProfileType.TEACHER);
+            this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER);
           }
 
           this.event.publish('refresh:profile');
@@ -511,18 +517,18 @@ export class GroupDetailsPage {
 
           this.app.getRootNav().setRoot(TabsPage);
 
-          let toast = this.toastCtrl.create({
-            message: this.translateMessage("SWITCHING_TO", selectedUser.handle),
+          const toast = this.toastCtrl.create({
+            message: this.translateMessage('SWITCHING_TO', selectedUser.handle),
             duration: 2000,
             position: 'bottom'
           });
           toast.present();
 
         }, (error) => {
-          console.log("Error " + error);
+          console.log('Error ' + error);
         });
       }).catch(error => {
-        console.log("Error : " + error);
+        console.log('Error : ' + error);
       });
   }
 
@@ -535,7 +541,7 @@ export class GroupDetailsPage {
   getLoader(): any {
     return this.loadingCtrl.create({
       duration: 30000,
-      spinner: "crescent"
+      spinner: 'crescent'
     });
   }
 }

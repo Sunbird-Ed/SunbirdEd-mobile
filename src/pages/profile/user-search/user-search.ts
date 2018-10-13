@@ -1,82 +1,83 @@
-import { Component, NgZone, ViewChild } from "@angular/core";
-import { AuthService, UserProfileService, Impression, ImpressionType, PageId, Environment, Visit, TelemetryService } from "sunbird";
-import { NavController, NavParams, LoadingController, ToastController } from "ionic-angular";
+import {
+  Component,
+  NgZone,
+  ViewChild
+} from '@angular/core';
+import {
+  AuthService,
+  UserProfileService,
+  ImpressionType,
+  PageId,
+  Environment,
+  Visit,
+  TelemetryService
+} from 'sunbird';
+import {
+  NavController,
+  LoadingController
+} from 'ionic-angular';
 import { Renderer } from '@angular/core';
-import * as _ from 'lodash';
-import { TranslateService } from "@ngx-translate/core";
-
-import { ProfilePage } from "./../profile";
-import { generateImpressionTelemetry } from "../../../app/telemetryutil";
-
-/* Interface for the Toast Object */
-export interface toastOptions {
-  message: string,
-  duration: number,
-  position: string
-};
+import { ProfilePage } from './../profile';
+import { generateImpressionTelemetry } from '../../../app/telemetryutil';
+import { CommonUtilService } from '../../../service/common-util.service';
 
 @Component({
-  selector: "user-search",
-  templateUrl: "user-search.html"
+  selector: 'user-search',
+  templateUrl: 'user-search.html'
 })
 
 /* This component shows the list of user based on search*/
 export class UserSearchComponent {
   @ViewChild('input') input;
-  searchInput: string = "";
-  prevSearchInput: string = "";
+  searchInput = '';
+  prevSearchInput = '';
   userList: any = [];
-  fallBackImage: string = "./assets/imgs/ic_profile_default.png";
-
-  enableInfiniteScroll: boolean = false;
-  showEmptyMessage: boolean = false;
+  fallBackImage = './assets/imgs/ic_profile_default.png';
+  enableInfiniteScroll = false;
+  showEmptyMessage = false;
 
   /* Default Limits for the API */
-  apiOffset: number = 0;
-  apiLimit: number = 10;
+  apiOffset = 0;
+  apiLimit = 10;
 
   visibleItems: Array<Visit> = [];
   visits: Array<any> = [];
-  isContentLoaded: boolean = false;
-
-  options: toastOptions = {
-    message: '',
-    duration: 3000,
-    position: 'bottom'
-  };
+  isContentLoaded = false;
 
   constructor(
-    public navCtrl: NavController,
-    public navParams: NavParams,
+    private navCtrl: NavController,
     private authService: AuthService,
     private userService: UserProfileService,
     private telemetryService: TelemetryService,
     private zone: NgZone,
     private renderer: Renderer,
     private loadingCtrl: LoadingController,
-    public translate: TranslateService,
-    public toastCtrl: ToastController
+    private commonUtilService: CommonUtilService
   ) { }
 
   /**
    * Makes an search user API call
    * @param {object} scrollEvent - infinite Scroll Event
    */
-  onInput(event = undefined, scrollEvent = undefined): void {
-    let loader = this.getLoader();
+  onInput(event?, scrollEvent?): void {
+    const loader = this.commonUtilService.getLoader();
 
-    if (!this.enableInfiniteScroll || !scrollEvent) loader.present();
-    if (event) this.renderer.invokeElementMethod(event.target, 'blur');
+    if (!this.enableInfiniteScroll || !scrollEvent) {
+      loader.present();
+    }
+    if (event) {
+      this.renderer.invokeElementMethod(event.target, 'blur');
+    }
     this.authService.getSessionData(session => {
       if (Boolean(session)) {
-        let req = {
+        const req = {
           query: this.searchInput,
           offset: this.apiOffset,
           limit: this.apiLimit,
           identifiers: [],
           fields: []
         };
-        if (req.query == "") {
+        if (req.query === '') {
           this.userList = [];
           this.showEmptyMessage = false;
           loader.dismiss();
@@ -84,22 +85,28 @@ export class UserSearchComponent {
           this.userService.searchUser(req,
             (res: any) => {
               this.zone.run(() => {
-                let result = JSON.parse(JSON.parse(res).searchUser);
+                const result = JSON.parse(JSON.parse(res).searchUser);
 
-                if (this.searchInput !== this.prevSearchInput) this.userList = [];
+                if (this.searchInput !== this.prevSearchInput) {
+                  this.userList = [];
+                }
                 Array.prototype.push.apply(this.userList, result.content);
                 this.enableInfiniteScroll = (this.apiOffset + this.apiLimit) < result.count ? true : false;
 
-                if (scrollEvent) scrollEvent.complete();
+                if (scrollEvent) {
+                  scrollEvent.complete();
+                }
                 this.showEmptyMessage = result.content.length ? false : true;
                 this.prevSearchInput = this.searchInput;
                 loader.dismiss();
               });
             },
             (error: any) => {
-              console.error("Error", error);
-              if (scrollEvent) scrollEvent.complete();
-              this.getToast(this.translateMessage('SOMETHING_WENT_WRONG')).present();
+              console.error('Error', error);
+              if (scrollEvent) {
+                scrollEvent.complete();
+              }
+              this.commonUtilService.showToast(this.commonUtilService.translateMessage('SOMETHING_WENT_WRONG'));
               loader.dismiss();
             }
           );
@@ -131,9 +138,9 @@ export class UserSearchComponent {
 
   ionViewDidLoad() {
     this.telemetryService.impression(generateImpressionTelemetry(
-      ImpressionType.SEARCH, "",
+      ImpressionType.SEARCH, '',
       PageId.PROFILE,
-      Environment.USER, "", "", "",
+      Environment.USER, '', '', '',
       undefined, undefined
     ));
   }
@@ -144,15 +151,10 @@ export class UserSearchComponent {
     }, 100);
   }
 
-  getLoader(): any {
-    return this.loadingCtrl.create({
-      duration: 30000,
-      spinner: "crescent"
-    });
-  }
-
   checkClear() {
-    if (this.searchInput === '') this.onInput();
+    if (this.searchInput === '') {
+      this.onInput();
+    }
   }
 
   /*
@@ -207,28 +209,4 @@ export class UserSearchComponent {
       }
   */
 
-  /**
-   * Used to Translate message to current Language
-   * @param {string} messageConst - Message Constant to be translated
-   * @returns {string} translatedMsg - Translated Message
-   */
-  translateMessage(messageConst: string, field?: string): string {
-    let translatedMsg = '';
-    this.translate.get(messageConst, { '%s': field }).subscribe(
-      (value: any) => {
-        translatedMsg = value;
-      }
-    );
-    return translatedMsg;
-  }
-
-  /**
-   * It will returns Toast Object
-   * @param {message} string - Message for the Toast to show
-   * @returns {object} - toast Object
-   */
-  getToast(message: string = ''): any {
-    this.options.message = message;
-    if (message.length) return this.toastCtrl.create(this.options);
-  }
 }

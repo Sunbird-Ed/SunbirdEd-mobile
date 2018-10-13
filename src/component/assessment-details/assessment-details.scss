@@ -30,6 +30,10 @@
     font-size: 2rem;
 }
 
+#datatable.ngx-datatable.material .datatable-header .datatable-header-cell{
+    padding: .9rem 0 .9rem .8rem;
+}
+
 
 .ngx-datatable.material .datatable-header .datatable-row-center .assessment-header {
     color: white;
@@ -44,7 +48,7 @@
 
 .datatable-row-center,
 .datatable-row-center {
-    margin-left: 10px;
+    // margin-left: 10px;
 }
 
 .assessment-card {

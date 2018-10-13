@@ -7,7 +7,7 @@ import {
   ViewController,
   Platform,
   ToastController
-} from "ionic-angular";
+} from 'ionic-angular';
 import {
   ContentService,
   TelemetryService,
@@ -27,36 +27,30 @@ import {
 import { ProfileConstants } from '../../app/app.constant';
 import { AppGlobalService } from '../../service/app-global.service';
 
-/**
- * Generated class for the ContentRatingAlertComponent component.
- *
- * See https://angular.io/api/core/Component for more info on Angular
- * Components.
- */
 @Component({
   selector: 'content-rating-alert',
   templateUrl: 'content-rating-alert.html'
 })
 export class ContentRatingAlertComponent {
 
-  isDisable: boolean = false;
-  userId: string = '';
-  comment: string = '';
+  isDisable = false;
+  userId = '';
+  comment = '';
   backButtonFunc = undefined;
   ratingCount: any;
   content: any;
-  showCommentBox: boolean = false;
-  private pageId: string = "";
-  userRating: number = 0;
+  showCommentBox = false;
+  private pageId = '';
+  userRating = 0;
   private popupType: string;
 
   /**
    * Default function of class ContentRatingAlertComponent
-   * 
-   * @param navParams 
-   * @param viewCtrl 
-   * @param authService 
-   * @param contentService 
+   *
+   * @param navParams
+   * @param viewCtrl
+   * @param authService
+   * @param contentService
    */
   constructor(private navParams: NavParams,
     private viewCtrl: ViewController,
@@ -73,22 +67,22 @@ export class ContentRatingAlertComponent {
       this.backButtonFunc();
     }, 10);
     this.ngZone.run(() => {
-      this.content = this.navParams.get("content");
-      this.userRating = this.navParams.get("rating");
+      this.content = this.navParams.get('content');
+      this.userRating = this.navParams.get('rating');
       this.comment = this.navParams.get('comment');
       this.popupType = this.navParams.get('popupType');
       if (this.userRating) {
         this.showCommentBox = true;
       }
-    })
+    });
   }
 
   /**
   * Ionic life cycle hook
   */
   ionViewDidLoad(): void {
-    this.content = this.navParams.get("content");
-    this.pageId = this.navParams.get("pageId");
+    this.content = this.navParams.get('content');
+    this.pageId = this.navParams.get('pageId');
 
   }
 
@@ -97,19 +91,19 @@ export class ContentRatingAlertComponent {
       ImpressionType.VIEW,
       ImpressionSubtype.RATING_POPUP,
       this.pageId,
-      Environment.HOME, "", "", "",
+      Environment.HOME, '', '', '',
       undefined,
       undefined
     ));
 
-    let log = new Log();
+    const log = new Log();
     log.level = LogLevel.INFO;
     log.message = this.pageId;
     log.env = Environment.HOME;
     log.type = ImpressionType.VIEW;
-    let params = new Array<any>();
-    let paramsMap = new Map();
-    paramsMap["PopupType"] = this.popupType;
+    const params = new Array<any>();
+    const paramsMap = new Map();
+    paramsMap['PopupType'] = this.popupType;
     params.push(paramsMap);
     log.params = params;
     this.telemetryService.log(log);
@@ -127,8 +121,8 @@ export class ContentRatingAlertComponent {
   }
 
   /**
-   * 
-   * @param {number} ratingCount 
+   *
+   * @param {number} ratingCount
    */
   rateContent(ratingCount) {
     this.showCommentBox = true;
@@ -141,16 +135,16 @@ export class ContentRatingAlertComponent {
   }
 
   submit() {
-    let option = {
+    const option = {
       contentId: this.content.identifier,
       rating: this.ratingCount,
       comments: this.comment,
       contentVersion: this.content.versionKey
-    }
+    };
     this.viewCtrl.dismiss();
-    let paramsMap = new Map();
-    paramsMap["Ratings"] = this.ratingCount;
-    paramsMap["Comment"] = this.comment;
+    const paramsMap = new Map();
+    paramsMap['Ratings'] = this.ratingCount;
+    paramsMap['Comment'] = this.comment;
     this.telemetryService.interact(generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.RATING_SUBMITTED,
@@ -160,7 +154,7 @@ export class ContentRatingAlertComponent {
       undefined
     ));
 
-    let viewDismissData = {
+    const viewDismissData = {
       rating: this.ratingCount,
       comment: this.comment ? this.comment : '',
       message: ''
@@ -177,11 +171,11 @@ export class ContentRatingAlertComponent {
         viewDismissData.message = 'rating.error';
         // TODO: ask anil to show error message(s)
         this.viewCtrl.dismiss(viewDismissData);
-      })
+      });
   }
 
   showMessage(msg) {
-    let toast = this.toastCtrl.create({
+    const toast = this.toastCtrl.create({
       message: msg,
       duration: 3000,
       position: 'bottom'
@@ -190,8 +184,8 @@ export class ContentRatingAlertComponent {
   }
 
   /**
-   * 
-   * @param {string} constant 
+   *
+   * @param {string} constant
    */
   translateLangConst(constant: string) {
     let msg = '';

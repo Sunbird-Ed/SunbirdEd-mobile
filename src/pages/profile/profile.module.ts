@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { DatePipe } from "@angular/common";
+import { DatePipe } from '@angular/common';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { SuperTabsModule } from 'ionic2-super-tabs';
@@ -7,7 +7,6 @@ import { TagInputModule } from 'ngx-chips';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ExpansionPanelsModule } from 'ng2-expansion-panels';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
-
 import { ProfilePage } from './profile';
 import { GuestProfilePage } from './guest-profile/guest-profile';
 import { GuestEditProfilePage } from './guest-edit.profile/guest-edit.profile';
@@ -21,10 +20,9 @@ import { ContainerService } from 'sunbird';
 import { SettingsPageModule } from '../settings/settings.module';
 import { UserSearchComponent } from './user-search/user-search';
 import { DirectivesModule } from '../../directives/directives.module';
-import { ComponentsModule } from "../../component/components.module";
+import { ComponentsModule } from '../../component/components.module';
 import { IonicImageLoader } from 'ionic-image-loader';
 import { ImagePicker } from './imagepicker/imagepicker';
-
 
 @NgModule({
   declarations: [

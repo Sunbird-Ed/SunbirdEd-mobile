@@ -12,7 +12,6 @@ cordova-plugin=cordova-plugin-inappbrowser
 cordova-plugin=cordova-plugin-browsertab
 cordova-plugin=cordova-plugin-console
 cordova-plugin=cordova-plugin-network-information
-cordova-plugin=cordova-plugin-customconfigparameters
 sunbird-cordova-plugin=https://github.com/project-sunbird/cordova-plugin-genie-sdk.git
 sunbird-cordova-plugin=https://github.com/project-sunbird/cordova-plugin-imagechooser.git
 sunbird-cordova-plugin=https://github.com/project-sunbird/cordova-plugin-file-support.git

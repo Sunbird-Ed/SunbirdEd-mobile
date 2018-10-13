@@ -2,25 +2,24 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { ContentDetailsPage } from './content-details';
-import { FrameworkModule } from "sunbird";
-import { IonicImageLoader } from "ionic-image-loader";
-import { Ionic2RatingModule } from "ionic2-rating";
-// import { ComponentsModule } from '../../component/components.module';
+import { FrameworkModule } from 'sunbird';
+import { IonicImageLoader } from 'ionic-image-loader';
+import { Ionic2RatingModule } from 'ionic2-rating';
 import { DirectivesModule } from '../../directives/directives.module';
 import { PipesModule } from '../../pipes/pipes.module';
 import { ContentActionsComponent } from './../../component/content-actions/content-actions';
-import { SocialSharing } from "@ionic-native/social-sharing";
-
+import { SocialSharing } from '@ionic-native/social-sharing';
 
 @NgModule({
   declarations: [
     ContentDetailsPage, ContentActionsComponent
   ],
-  entryComponents: [ContentActionsComponent],                                                                                                 
+  entryComponents: [
+    ContentActionsComponent
+  ],
   imports: [
     IonicPageModule.forChild(ContentDetailsPage),
     TranslateModule.forChild(),
-    // ComponentsModule,
     FrameworkModule,
     IonicImageLoader,
     DirectivesModule,
@@ -34,4 +33,4 @@ import { SocialSharing } from "@ionic-native/social-sharing";
     ContentDetailsPage
   ]
 })
-export class ContentDetailsPageModule {}
+export class ContentDetailsPageModule { }

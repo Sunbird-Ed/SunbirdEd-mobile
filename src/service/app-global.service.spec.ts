@@ -1,18 +1,18 @@
-import { App, ToastController } from 'ionic-angular';
+import { App } from 'ionic-angular';
 import { Events, PopoverController } from 'ionic-angular';
-import { ComponentFixture, TestBed, inject } from "@angular/core/testing";
-import { AppGlobalService } from "./app-global.service";
+import { ComponentFixture, TestBed, inject } from '@angular/core/testing';
+import { AppGlobalService } from './app-global.service';
 import { } from 'jasmine';
-import { AuthService, ProfileService, FrameworkService, SharedPreferences, BuildParamService, ServiceProvider, TelemetryService } from 'sunbird';
+import { AuthService, ProfileService, FrameworkService, SharedPreferences, BuildParamService,
+  ServiceProvider, TelemetryService } from 'sunbird';
 import { Config } from 'ionic-angular';
 import { Platform } from 'ionic-angular';
 import { DeepLinker } from 'ionic-angular';
 import { DeepLinkerMock } from '../../test-config/mocks-ionic';
 import { PopoverControllerMock } from '../../node_modules/ionic-mocks';
 import { TelemetryGeneratorService } from './telemetry-generator.service';
-
 import {
-  BuildParamaServiceMock, SharedPreferencesMock
+  BuildParamaServiceMock
 } from '../../test-config/mocks-ionic';
 
 describe('AppGlobalService', () => {
@@ -21,11 +21,11 @@ describe('AppGlobalService', () => {
 
   const authServiceStub = {
     getSessionData: () => ({})
-  }
+  };
 
   const ProfileServiceStub = {
     getCurrentUser: () => ({})
-  }
+  };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -43,7 +43,8 @@ describe('AppGlobalService', () => {
     });
   });
 
-  beforeEach(inject([AppGlobalService, BuildParamService, AuthService, ProfileService], (appGlobalService: AppGlobalService, buildParamService: BuildParamService, authServicecb, ProfileService) => {
+  beforeEach(inject([AppGlobalService, BuildParamService, AuthService, ProfileService],
+  (appGlobalService: AppGlobalService, buildParamService: BuildParamService, authServicecb) => {
     service = appGlobalService;
     buildService = buildParamService;
     authService = authServicecb;
@@ -55,50 +56,50 @@ describe('AppGlobalService', () => {
     expect(service.isGuestUser).toBe(false);
   });
 
-  it("syllabusList defaults to: []", () => {
+  it('syllabusList defaults to: []', () => {
     // const service = TestBed.get(AppGlobalService);
     expect(service.syllabusList).toEqual([]);
   });
 
-  it("isUserLoggedIn returns : true", () => {
+  it('isUserLoggedIn returns : true', () => {
     expect(service.isUserLoggedIn()).toBe(true);
   });
 
-  it("getGuestUserType toBeUndefined", () => {
+  it('getGuestUserType toBeUndefined', () => {
     expect(service.getGuestUserType()).toBeUndefined();
   });
 
-  it("getCurrentUser toBeUndefined", () => {
+  it('getCurrentUser toBeUndefined', () => {
     expect(service.getCurrentUser()).toBeUndefined();
   });
 
-  it("getSessionData toBeUndefined", () => {
+  it('getSessionData toBeUndefined', () => {
     expect(service.getSessionData()).toBeUndefined();
   });
 
-  it("getNameForCodeInFramework to return name", () => {
+  it('getNameForCodeInFramework to return name', () => {
     spyOn(service, 'getNameForCodeInFramework').and.callThrough();
     expect(service.getNameForCodeInFramework('category', 1)).toBeUndefined();
   });
 
-  it("should set  syllabusList to passed array", () => {
-    let arr = ['test']
+  it('should set  syllabusList to passed array', () => {
+    const arr = ['test'];
     service.setSyllabusList(arr);
     expect(service.syllabusList).toEqual(arr);
   });
 
-  it("should getCachedSyllabusList", () => {
+  it('should getCachedSyllabusList', () => {
     expect(service.getCachedSyllabusList()).toBeDefined();
   });
 
-  it("initValues to make expected calls", () => {
-    let session = { session: "testsession" };
+  it('initValues to make expected calls', () => {
+    const session = { session: 'testsession' };
     spyOn(service, 'readConfig');
-    spyOn(authService, 'getSessionData').and.callFake(function (success) {
+    spyOn(authService, 'getSessionData').and.callFake((success) => {
       success(JSON.stringify(session));
     });
     // spyOn(authService, 'getSessionData');
-    service["initValues"]();
+    service['initValues']();
     expect(service.readConfig).toHaveBeenCalled();
     expect(authService.getSessionData).toHaveBeenCalled();
     expect(service.guestProfileType).toBeUndefined();
@@ -106,19 +107,19 @@ describe('AppGlobalService', () => {
     expect(service.session).toEqual(session);
   });
 
-  it("initValues to call getGuestUserInfo", () => {
+  it('initValues to call getGuestUserInfo', () => {
     spyOn(service, 'readConfig');
     spyOn<any>(service, 'getGuestUserInfo');
-    spyOn(authService, 'getSessionData').and.callFake(function (success) {
+    spyOn(authService, 'getSessionData').and.callFake((success) => {
       success(null);
     });
-    service["initValues"]();
+    service['initValues']();
     expect(service.readConfig).toHaveBeenCalled();
     expect(authService.getSessionData).toHaveBeenCalled();
-    expect(service["getGuestUserInfo"]).toHaveBeenCalled();
+    expect(service['getGuestUserInfo']).toHaveBeenCalled();
   });
 
-  it("DISPLAY_ONBOARDING_CARDS to be true", (done) => {
+  it('DISPLAY_ONBOARDING_CARDS to be true', (done) => {
     spyOn(buildService, 'getBuildConfigParam').and.returnValue(Promise.resolve('true'));
     service.readConfig();
     buildService.getBuildConfigParam().then(() => {
@@ -135,7 +136,7 @@ describe('AppGlobalService', () => {
     });
   });
 
-  it("DISPLAY_ONBOARDING_CARDS to be true", (done) => {
+  it('DISPLAY_ONBOARDING_CARDS to be true', (done) => {
     spyOn(buildService, 'getBuildConfigParam').and.returnValue(Promise.reject());
     service.readConfig();
     buildService.getBuildConfigParam().catch(() => {
@@ -152,36 +153,36 @@ describe('AppGlobalService', () => {
     });
   });
 
-  it("getCurrentUserProfile to make expected calls", () => {
-    spyOn(service['profile'], 'getCurrentUser').and.callFake(function (success, error) {
-      let data = JSON.stringify({ syllabus: ["response1"] });
+  it('getCurrentUserProfile to make expected calls', () => {
+    spyOn(service['profile'], 'getCurrentUser').and.callFake((success, error) => {
+      const data = JSON.stringify({ syllabus: ['response1'] });
       return success(data);
     });
-    spyOn<any>(service, "getFrameworkDetails").and.returnValue(Promise.resolve({}));
-    service["getCurrentUserProfile"]();
-    expect(service["profile"].getCurrentUser).toHaveBeenCalled();
+    spyOn<any>(service, 'getFrameworkDetails').and.returnValue(Promise.resolve({}));
+    service['getCurrentUserProfile']();
+    expect(service['profile'].getCurrentUser).toHaveBeenCalled();
     expect(service.guestUserProfile.syllabus.length).toBeGreaterThan(0);
-    expect(service["getFrameworkDetails"]).toHaveBeenCalled();
+    expect(service['getFrameworkDetails']).toHaveBeenCalled();
   });
 
-  it("getCurrentUserProfile to return syllabus", () => {
-    spyOn(service['profile'], 'getCurrentUser').and.callFake(function (success, error) {
-      let data = JSON.stringify({ syllabus: [] });
+  it('getCurrentUserProfile to return syllabus', () => {
+    spyOn(service['profile'], 'getCurrentUser').and.callFake((success, error) => {
+      const data = JSON.stringify({ syllabus: [] });
       return success(data);
     });
-    service["getCurrentUserProfile"]();
-    expect(service["profile"].getCurrentUser).toHaveBeenCalled();
+    service['getCurrentUserProfile']();
+    expect(service['profile'].getCurrentUser).toHaveBeenCalled();
     expect(service.guestUserProfile.syllabus.length).toBe(0);
-    expect(service["frameworkData"].length).toBe(0);
+    expect(service['frameworkData'].length).toBe(0);
   });
 
-  it("getCurrentUserProfile to make expected calls", () => {
-    spyOn(service['profile'], 'getCurrentUser').and.callFake(function (success, error) {
-      let data = JSON.stringify({ syllabus: ["response1"] });
+  it('getCurrentUserProfile to make expected calls', () => {
+    spyOn(service['profile'], 'getCurrentUser').and.callFake((success, error) => {
+      const data = JSON.stringify({ syllabus: ['response1'] });
       return error(data);
     });
-    service["getCurrentUserProfile"]();
-    expect(service["profile"].getCurrentUser).toHaveBeenCalled();
+    service['getCurrentUserProfile']();
+    expect(service['profile'].getCurrentUser).toHaveBeenCalled();
     expect(service.guestUserProfile).toBeUndefined();
   });
 
@@ -200,65 +201,65 @@ describe('AppGlobalService', () => {
   //     done();
   //   });
   // });
-  
-  it("getGuestUserInfo to make expected calls", () => {
-    const sharedPreferences = TestBed.get(SharedPreferences)
-    spyOn(sharedPreferences, 'getString').and.returnValue(Promise.resolve("TEACHER"));
-    service["getGuestUserInfo"]();
+
+  it('getGuestUserInfo to make expected calls', () => {
+    const sharedPreferences = TestBed.get(SharedPreferences);
+    spyOn(sharedPreferences, 'getString').and.returnValue(Promise.resolve('TEACHER'));
+    service['getGuestUserInfo']();
     sharedPreferences.getString().then((val) => {
-      expect(service["preference"].getString).toHaveBeenCalled();
-      expect(service.guestProfileType).toBe("TEACHER");
+      expect(service['preference'].getString).toHaveBeenCalled();
+      expect(service.guestProfileType).toBe('TEACHER');
       expect(service.isGuestUser).toBe(true);
-    })
+    });
   });
 
-  it("getGuestUserInfo to make expected calls", () => {
-    const sharedPreferences = TestBed.get(SharedPreferences)
-    spyOn(sharedPreferences, 'getString').and.returnValue(Promise.resolve("TEACHER"));
-    service["getGuestUserInfo"]();
-    service["getGuestUserInfo"]();
+  it('getGuestUserInfo to make expected calls', () => {
+    const sharedPreferences = TestBed.get(SharedPreferences);
+    spyOn(sharedPreferences, 'getString').and.returnValue(Promise.resolve('TEACHER'));
+    service['getGuestUserInfo']();
+    service['getGuestUserInfo']();
     sharedPreferences.getString().then((val) => {
-      expect(service["preference"].getString).toHaveBeenCalled();
-      expect(service.guestProfileType).toBe("TEACHER");
+      expect(service['preference'].getString).toHaveBeenCalled();
+      expect(service.guestProfileType).toBe('TEACHER');
       expect(service.isGuestUser).toBe(true);
-    })
+    });
   });
 
-  it("getGuestUserInfo to make expected calls", () => {
-    const sharedPreferences = TestBed.get(SharedPreferences)
-    spyOn(sharedPreferences, 'getString').and.returnValue(Promise.resolve("STUDENT"));
-    service["getGuestUserInfo"]();
-    service["getGuestUserInfo"]();
+  it('getGuestUserInfo to make expected calls', () => {
+    const sharedPreferences = TestBed.get(SharedPreferences);
+    spyOn(sharedPreferences, 'getString').and.returnValue(Promise.resolve('STUDENT'));
+    service['getGuestUserInfo']();
+    service['getGuestUserInfo']();
     sharedPreferences.getString().then((val) => {
-      expect(service["preference"].getString).toHaveBeenCalled();
-      expect(service.guestProfileType).toBe("STUDENT");
+      expect(service['preference'].getString).toHaveBeenCalled();
+      expect(service.guestProfileType).toBe('STUDENT');
       expect(service.isGuestUser).toBe(true);
-    })
+    });
   });
 
-  it("getGuestUserInfo to make expected calls", () => {
-    const sharedPreferences = TestBed.get(SharedPreferences)
-    spyOn(sharedPreferences, 'getString').and.returnValue(Promise.resolve("STUDENT"));
-    service["getGuestUserInfo"]();
-    service["getGuestUserInfo"]();
+  it('getGuestUserInfo to make expected calls', () => {
+    const sharedPreferences = TestBed.get(SharedPreferences);
+    spyOn(sharedPreferences, 'getString').and.returnValue(Promise.resolve('STUDENT'));
+    service['getGuestUserInfo']();
+    service['getGuestUserInfo']();
     sharedPreferences.getString().then((val) => {
-      expect(service["preference"].getString).toHaveBeenCalled();
-      expect(service.guestProfileType).toBe("STUDENT");
+      expect(service['preference'].getString).toHaveBeenCalled();
+      expect(service.guestProfileType).toBe('STUDENT');
       expect(service.isGuestUser).toBe(true);
-    })
+    });
   });
 
-  it("getFrameworkDetails to make expected calls", () => {
+  it('getFrameworkDetails to make expected calls', () => {
     spyOn<any>(service, 'getFrameworkDetails').and.callThrough();
-    spyOn<any>(service["framework"], 'getFrameworkDetails').and.returnValue(Promise.resolve("success"))
-    service["getFrameworkDetails"]("10");
-    expect(service["framework"].getFrameworkDetails).toHaveBeenCalled();
+    spyOn<any>(service['framework'], 'getFrameworkDetails').and.returnValue(Promise.resolve('success'));
+    service['getFrameworkDetails']('10');
+    expect(service['framework'].getFrameworkDetails).toHaveBeenCalled();
   });
 
-  it("openPopover to make expected calls", () => {
+  it('openPopover to make expected calls', () => {
     const popOverCtrl = TestBed.get(PopoverController);
-    service["openPopover"]({ upgrade: { type: "force" } });
+    service['openPopover']({ upgrade: { type: 'force' } });
     expect(popOverCtrl.create).toHaveBeenCalled();
   });
 
-})
+});

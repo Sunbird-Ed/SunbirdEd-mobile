@@ -37,7 +37,7 @@ import {
   ProfileRequest,
   TelemetryObject
 } from 'sunbird';
-import { SocialSharing } from "@ionic-native/social-sharing";
+import { SocialSharing } from '@ionic-native/social-sharing';
 import { Network } from '@ionic-native/network';
 import * as _ from 'lodash';
 import {
@@ -45,7 +45,8 @@ import {
 } from '../../app/telemetryutil';
 import {
   EventTopics,
-  ProfileConstants
+  ProfileConstants,
+  PreferenceKey
 } from '../../app/app.constant';
 import { ShareUrl } from '../../app/app.constant';
 import { AppGlobalService } from '../../service/app-global.service';
@@ -70,7 +71,7 @@ export class ContentDetailsPage {
   /**
    * is child content
    */
-  isChildContent: boolean = false;
+  isChildContent = false;
 
   /**
    * Contains content details
@@ -95,7 +96,7 @@ export class ContentDetailsPage {
   /**
    * Download started flag
    */
-  isDownloadStarted: boolean = false;
+  isDownloadStarted = false;
 
   /**
    * Contains download progress
@@ -105,7 +106,7 @@ export class ContentDetailsPage {
   /**
    *
    */
-  cancelDownloading: boolean = false;
+  cancelDownloading = false;
 
   /**
    * Contains loader instance
@@ -115,7 +116,7 @@ export class ContentDetailsPage {
   /**
    * To hold user id
    */
-  userId: string = '';
+  userId = '';
 
   /**
    * To hold network status
@@ -156,33 +157,39 @@ export class ContentDetailsPage {
 
   private resume;
 
-  isContentPlayed: boolean = false;
+  isContentPlayed = false;
 
   /**
    * User Rating
    *
    * Used to handle update content workflow
    */
-  isUpdateAvail: boolean = false;
+  isUpdateAvail = false;
 
   /**
    * User Rating
    *
    */
-  userRating: number = 0;
-  private ratingComment: string = '';
+  userRating = 0;
+
+  /**
+   * currently used to identify that its routed from QR code results page
+   * Can be sent from any page, where after landing on details page should download or play content automatically
+   */
+  downloadAndPlay: boolean;
+  private ratingComment = '';
   private corRelationList: Array<CorrelationData>;
 
   /**
    * This flag helps in knowing when the content player is closed and the user is back on content details page.
    */
-  public isPlayerLaunched: boolean = false;
+  public isPlayerLaunched = false;
 
-  guestUser: boolean = false;
+  guestUser = false;
 
   launchPlayer: boolean;
 
-  profileType: string = '';
+  profileType = '';
   isResumedCourse: boolean;
 
   objId;
@@ -190,11 +197,12 @@ export class ContentDetailsPage {
   objVer;
   didViewLoad: boolean;
   backButtonFunc = undefined;
-  baseUrl = "";
-  shouldGenerateEndTelemetry: boolean = false;
-  source: string = "";
+  baseUrl = '';
+  shouldGenerateEndTelemetry = false;
+  source = '';
   unregisterBackButton: any;
-  userCount: number = 0;
+  userCount = 0;
+  shouldGenerateTelemetry = true;
 
   /**
    *
@@ -238,7 +246,6 @@ export class ContentDetailsPage {
     this.objRollup = new Rollup();
 
     this.getUserId();
-    this.handleDeviceBackButton();
     this.subscribePlayEvent();
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
@@ -247,21 +254,79 @@ export class ContentDetailsPage {
 
   }
 
+  /**
+   * Ionic life cycle hook
+   */
+  ionViewWillEnter(): void {
+    this.cardData = this.navParams.get('content');
+    this.isChildContent = this.navParams.get('isChildContent');
+    this.cardData.depth = this.navParams.get('depth') === undefined ? '' : this.navParams.get('depth');
+    this.corRelationList = this.navParams.get('corRelation');
+    this.identifier = this.cardData.contentId || this.cardData.identifier;
+    this.isResumedCourse = Boolean(this.navParams.get('isResumedCourse'));
+    this.source = this.navParams.get('source');
+    this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
+    this.downloadAndPlay = this.navParams.get('downloadAndPlay');
+    if (!this.isResumedCourse) {
+      this.generateTelemetry();
+    }
+    if (this.isResumedCourse === true) {
+      this.navCtrl.insert(this.navCtrl.length() - 1, EnrolledCourseDetailsPage, {
+        content: this.navParams.get('resumedCourseCardData')
+      });
+    }
+    this.setContentDetails(this.identifier, true, false);
+    this.subscribeGenieEvent();
+  }
+
+  /**
+   * Ionic life cycle hook
+   */
+  ionViewWillLeave(): void {
+    this.events.unsubscribe('genie.event');
+    this.resume.unsubscribe();
+  }
+
+  ionViewDidLoad() {
+    this.navBar.backButtonClick = (e: UIEvent) => {
+      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
+        true, this.cardData.identifier, this.corRelationList);
+      this.handleNavBackButton();
+    };
+    this.handleDeviceBackButton();
+
+    if (!AppGlobalService.isPlayerLaunched) {
+      this.calculateAvailableUserCount();
+    }
+  }
+
+  handleNavBackButton() {
+    this.didViewLoad = false;
+    this.generateEndEvent(this.objId, this.objType, this.objVer);
+    if (this.shouldGenerateEndTelemetry) {
+      this.generateQRSessionEndEvent(this.source, this.cardData.identifier);
+    }
+    this.popToPreviousPage(true);
+    this.backButtonFunc();
+  }
+
   handleDeviceBackButton() {
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
+        false, this.cardData.identifier, this.corRelationList);
       this.didViewLoad = false;
-
+      this.dismissPopup();
       this.popToPreviousPage();
       this.generateEndEvent(this.objId, this.objType, this.objVer);
       if (this.shouldGenerateEndTelemetry) {
         this.generateQRSessionEndEvent(this.source, this.cardData.identifier);
       }
       this.backButtonFunc();
-    }, 11)
+    }, 11);
   }
 
   handlePageResume() {
-    //This is to know when the app has come to foreground
+    // This is to know when the app has come to foreground
     this.resume = this.platform.resume.subscribe(() => {
       this.isContentPlayed = true;
       if (this.isPlayerLaunched && !this.guestUser) {
@@ -287,9 +352,9 @@ export class ContentDetailsPage {
   }
 
   subscribePlayEvent() {
-    this.buildParamService.getBuildConfigParam("BASE_URL")
+    this.buildParamService.getBuildConfigParam('BASE_URL')
       .then(response => {
-        this.baseUrl = response
+        this.baseUrl = response;
       })
       .catch(() => {
       });
@@ -310,7 +375,7 @@ export class ContentDetailsPage {
   }
 
   calculateAvailableUserCount() {
-    let profileRequest: ProfileRequest = {
+    const profileRequest: ProfileRequest = {
       local: true,
       server: false
     };
@@ -326,12 +391,12 @@ export class ContentDetailsPage {
   }
 
   checkCurrentUserType() {
-    this.preference.getString('selected_user_type')
+    this.preference.getString(PreferenceKey.SELECTED_USER_TYPE)
       .then(val => {
-        if (val != "") {
-          if (val == ProfileType.TEACHER) {
+        if (val !== '') {
+          if (val === ProfileType.TEACHER) {
             this.profileType = ProfileType.TEACHER;
-          } else if (val == ProfileType.STUDENT) {
+          } else if (val === ProfileType.STUDENT) {
             this.profileType = ProfileType.STUDENT;
           }
         }
@@ -344,12 +409,12 @@ export class ContentDetailsPage {
    */
   rateContent(popupType: string) {
     if (!this.guestUser) {
-      let paramsMap = new Map();
+      const paramsMap = new Map();
       if (this.isContentPlayed || (this.content.downloadable
         && this.content.contentAccess.length)) {
 
-        paramsMap["IsPlayed"] = "Y";
-        let popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
+        paramsMap['IsPlayed'] = 'Y';
+        const popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
           content: this.content,
           pageId: PageId.CONTENT_DETAIL,
           rating: this.userRating,
@@ -368,7 +433,7 @@ export class ContentDetailsPage {
           }
         });
       } else {
-        paramsMap["IsPlayed"] = "N";
+        paramsMap['IsPlayed'] = 'N';
         this.commonUtilService.showToast('TRY_BEFORE_RATING');
       }
       this.telemetryGeneratorService.generateInteractTelemetry(
@@ -381,7 +446,7 @@ export class ContentDetailsPage {
         this.objRollup,
         this.corRelationList);
     } else {
-      if (this.profileType == ProfileType.TEACHER) {
+      if (this.profileType === ProfileType.TEACHER) {
         this.commonUtilService.showToast('SIGNIN_TO_USE_FEATURE');
       }
     }
@@ -403,7 +468,7 @@ export class ContentDetailsPage {
       refreshContentDetails: refreshContentDetails,
       attachFeedback: true,
       attachContentAccess: true
-    }
+    };
 
     this.contentService.getContentDetail(option, (data: any) => {
       this.zone.run(() => {
@@ -421,13 +486,13 @@ export class ContentDetailsPage {
 
         if (showRating) {
           if (this.userRating === 0) {
-            this.rateContent("automatic");
+            this.rateContent('automatic');
           }
         }
       });
     },
       (error: any) => {
-        let data = JSON.parse(error);
+        const data = JSON.parse(error);
         console.log('Error received', data);
         loader.dismiss();
         if (this.isDownloadStarted) {
@@ -458,13 +523,13 @@ export class ContentDetailsPage {
 
     this.content.playContent = JSON.stringify(data.result);
     if (this.content.gradeLevel && this.content.gradeLevel.length && typeof this.content.gradeLevel !== 'string') {
-      this.content.gradeLevel = this.content.gradeLevel.join(", ");
+      this.content.gradeLevel = this.content.gradeLevel.join(', ');
     }
     if (this.content.attributions && this.content.attributions.length) {
-      this.content.attributions = this.content.attributions.join(", ");
+      this.content.attributions = this.content.attributions.join(', ');
     }
     if (this.content.me_totalRatings) {
-      let rating = this.content.me_totalRatings.split(".");
+      const rating = this.content.me_totalRatings.split('.');
       if (rating && rating[0]) {
         this.content.me_totalRatings = rating[0];
       }
@@ -472,8 +537,8 @@ export class ContentDetailsPage {
     this.objId = this.content.identifier;
     this.objVer = this.content.pkgVersion;
 
-    //User Rating
-    let contentFeedback: any = data.result.contentFeedback;
+    // User Rating
+    const contentFeedback: any = data.result.contentFeedback;
     if (contentFeedback !== undefined && contentFeedback.length !== 0) {
       this.userRating = contentFeedback[0].rating;
       this.ratingComment = contentFeedback[0].comments;
@@ -486,8 +551,7 @@ export class ContentDetailsPage {
       } else {
         this.isUpdateAvail = false;
       }
-    }
-    else {
+    } else {
       this.content.size = this.content.size;
     }
 
@@ -497,37 +561,75 @@ export class ContentDetailsPage {
 
     if (this.navParams.get('isResumedCourse')) {
       this.cardData.contentData = this.content;
-      this.cardData.pkgVersion = this.content.pkgVersion
-      this.generateTemetry()
+      this.cardData.pkgVersion = this.content.pkgVersion;
+      this.generateTelemetry();
     }
 
+    if (this.shouldGenerateTelemetry) {
+      this.generateDetailsInteractEvent();
+      this.shouldGenerateEndTelemetry = false;
+    }
+
+    if (this.downloadAndPlay) {
+      if (!this.content.downloadable) {
+        /**
+         * Content is not downloaded then call the following method
+         * It will download the content and play it
+         */
+        this.downloadContent();
+      } else {
+        /**
+         * If the content is already downloaded then just play it
+         */
+        this.showSwitchUserAlert();
+      }
+    }
   }
 
-  generateTemetry() {
+  generateTelemetry() {
     if (!this.didViewLoad && !this.isContentPlayed) {
       this.generateRollUp();
-      let contentType = this.cardData.contentData ? this.cardData.contentData.contentType : this.cardData.contentType;
+      const contentType = this.cardData.contentData ? this.cardData.contentData.contentType : this.cardData.contentType;
       this.objType = contentType;
-      this.generateStartEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
       this.generateImpressionEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
+      this.generateStartEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
     }
     this.didViewLoad = true;
   }
 
+  generateDetailsInteractEvent() {
+    const values = new Map();
+    values['isUpdateAvailable'] = this.isUpdateAvail;
+    values['isDownloaded'] = this.content.downloadable;
+
+    const telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.id = this.content.identifier;
+    telemetryObject.type = this.content.contentType;
+    telemetryObject.version = this.content.pkgVersion;
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
+      ImpressionType.DETAIL,
+      Environment.HOME,
+      PageId.CONTENT_DETAIL,
+      telemetryObject,
+      values,
+      this.objRollup,
+      this.corRelationList);
+  }
+
   generateRollUp() {
-    let hierarchyInfo = this.cardData.hierarchyInfo ? this.cardData.hierarchyInfo : null;
+    const hierarchyInfo = this.cardData.hierarchyInfo ? this.cardData.hierarchyInfo : null;
     if (hierarchyInfo === null) {
       this.objRollup.l1 = this.identifier;
     } else {
       _.forEach(hierarchyInfo, (value, key) => {
         if (key === 0) {
-          this.objRollup.l1 = value.identifier
+          this.objRollup.l1 = value.identifier;
         } else if (key === 1) {
-          this.objRollup.l2 = value.identifier
+          this.objRollup.l2 = value.identifier;
         } else if (key === 2) {
-          this.objRollup.l3 = value.identifier
+          this.objRollup.l3 = value.identifier;
         } else if (key === 3) {
-          this.objRollup.l4 = value.identifier
+          this.objRollup.l4 = value.identifier;
         }
       });
     }
@@ -535,7 +637,7 @@ export class ContentDetailsPage {
 
   generateImpressionEvent(objectId, objectType, objectVersion) {
     this.telemetryGeneratorService.generateImpressionTelemetry(
-      ImpressionType.DETAIL, "",
+      ImpressionType.DETAIL, '',
       PageId.CONTENT_DETAIL,
       Environment.HOME,
       objectId,
@@ -546,7 +648,7 @@ export class ContentDetailsPage {
   }
 
   generateStartEvent(objectId, objectType, objectVersion) {
-    let telemetryObject: TelemetryObject = new TelemetryObject();
+    const telemetryObject: TelemetryObject = new TelemetryObject();
     telemetryObject.id = objectId;
     telemetryObject.type = objectType;
     telemetryObject.version = objectVersion;
@@ -558,7 +660,7 @@ export class ContentDetailsPage {
   }
 
   generateEndEvent(objectId, objectType, objectVersion) {
-    let telemetryObject: TelemetryObject = new TelemetryObject();
+    const telemetryObject: TelemetryObject = new TelemetryObject();
     telemetryObject.id = objectId;
     telemetryObject.type = objectType;
     telemetryObject.version = objectVersion;
@@ -574,12 +676,12 @@ export class ContentDetailsPage {
 
   generateQRSessionEndEvent(pageId: string, qrData: string) {
     if (pageId !== undefined) {
-      let telemetryObject: TelemetryObject = new TelemetryObject();
+      const telemetryObject: TelemetryObject = new TelemetryObject();
       telemetryObject.id = qrData;
-      telemetryObject.type = "qr";
-      telemetryObject.version = "";
+      telemetryObject.type = 'qr';
+      telemetryObject.version = '';
       this.telemetryGeneratorService.generateEndTelemetry(
-        "qr",
+        'qr',
         Mode.PLAY,
         pageId,
         Environment.HOME,
@@ -589,70 +691,11 @@ export class ContentDetailsPage {
     }
   }
 
-
-  /**
-   * Ionic life cycle hook
-   */
-  ionViewWillEnter(): void {
-    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
-      this.dismissPopup();
-    }, 11);
-    this.cardData = this.navParams.get('content');
-    this.isChildContent = this.navParams.get('isChildContent');
-    this.cardData.depth = this.navParams.get('depth') === undefined ? '' : this.navParams.get('depth');
-    this.corRelationList = this.navParams.get('corRelation');
-    this.identifier = this.cardData.contentId || this.cardData.identifier;
-    this.isResumedCourse = Boolean(this.navParams.get('isResumedCourse'));
-    this.source = this.navParams.get('source');
-    this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
-    if (!this.isResumedCourse) {
-      this.generateTemetry();
-    }
-    if (this.isResumedCourse === true) {
-      this.navCtrl.insert(this.navCtrl.length() - 1, EnrolledCourseDetailsPage, {
-        content: this.navParams.get('resumedCourseCardData')
-      })
-    }
-    this.setContentDetails(this.identifier, true, false);
-    this.subscribeGenieEvent();
-  }
-
-  /**
-   * Ionic life cycle hook
-   */
-  ionViewWillLeave(): void {
-    this.events.unsubscribe('genie.event');
-    this.resume.unsubscribe();
-  }
-
-  ionViewDidLoad() {
-    this.navBar.backButtonClick = (e: UIEvent) => {
-      this.handleNavBackButton();
-    }
-    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
-      this.dismissPopup();
-    }, 11);
-
-    if (!AppGlobalService.isPlayerLaunched) {
-      this.calculateAvailableUserCount();
-    }
-  }
-  
-  handleNavBackButton(){
-    this.didViewLoad = false;
-    this.generateEndEvent(this.objId, this.objType, this.objVer);
-    if (this.shouldGenerateEndTelemetry) {
-      this.generateQRSessionEndEvent(this.source, this.cardData.identifier);
-    }
-    this.popToPreviousPage();
-    this.backButtonFunc();
-  }
-
   /**
  * It will Dismiss active popup
  */
   dismissPopup() {
-    let activePortal = this.ionicApp._modalPortal.getActive() || this.ionicApp._overlayPortal.getActive();
+    const activePortal = this.ionicApp._modalPortal.getActive() || this.ionicApp._overlayPortal.getActive();
 
     if (activePortal) {
       activePortal.dismiss();
@@ -661,11 +704,13 @@ export class ContentDetailsPage {
     }
   }
 
-  popToPreviousPage() {
+  popToPreviousPage(isNavBack?) {
     if (this.isResumedCourse) {
       this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 3));
     } else {
-      this.navCtrl.pop();
+      if (isNavBack) {
+        this.navCtrl.pop();
+      }
     }
   }
 
@@ -676,14 +721,14 @@ export class ContentDetailsPage {
    * @param {boolean} isChild
    */
   getImportContentRequestBody(identifiers: Array<string>, isChild: boolean) {
-    let requestParams = [];
+    const requestParams = [];
     _.forEach(identifiers, (value) => {
       requestParams.push({
         isChildContent: isChild,
         destinationFolder: this.fileUtil.internalStoragePath(),
         contentId: value,
         correlationData: this.corRelationList !== undefined ? this.corRelationList : []
-      })
+      });
     });
 
     return requestParams;
@@ -699,13 +744,13 @@ export class ContentDetailsPage {
     const option = {
       contentImportMap: _.extend({}, this.getImportContentRequestBody(identifiers, isChild)),
       contentStatusArray: []
-    }
+    };
 
     // Call content service
     this.contentService.importContent(option, (data: any) => {
       data = JSON.parse(data);
       if (data.result && data.result[0].status === 'NOT_FOUND') {
-        this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE')
+        this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
       }
     },
       error => {
@@ -726,7 +771,7 @@ export class ContentDetailsPage {
     this.events.subscribe('genie.event', (data) => {
       this.zone.run(() => {
         data = JSON.parse(data);
-        let res = data;
+        const res = data;
         if (res.type === 'downloadProgress' && res.data.downloadProgress) {
           this.downloadProgress = res.data.downloadProgress === -1 ? '0' : res.data.downloadProgress;
         }
@@ -745,7 +790,7 @@ export class ContentDetailsPage {
           }
         }
 
-        //For content update available
+        // For content update available
         if (res.data && res.type === 'contentUpdateAvailable') {
           this.zone.run(() => {
             this.isUpdateAvail = true;
@@ -765,7 +810,7 @@ export class ContentDetailsPage {
         this.isDownloadStarted = true;
         this.importContent([this.identifier], this.isChildContent);
       } else {
-        this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE')
+        this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
       }
     });
   }
@@ -781,9 +826,9 @@ export class ContentDetailsPage {
       });
     }, (error: any) => {
       this.zone.run(() => {
-        console.log('Error: download error =>>>>>', error)
-      })
-    })
+        console.log('Error: download error =>>>>>', error);
+      });
+    });
   }
 
 
@@ -792,9 +837,9 @@ export class ContentDetailsPage {
    */
   showSwitchUserAlert() {
     if (!AppGlobalService.isPlayerLaunched && this.userCount > 1) {
-      let profile = this.appGlobalService.getCurrentUser();
+      const profile = this.appGlobalService.getCurrentUser();
 
-      let alert = this.alertCtrl.create({
+      const alert = this.alertCtrl.create({
         title: this.commonUtilService.translateMessage('PLAY_AS'),
         mode: 'wp',
         message: profile.handle,
@@ -813,7 +858,7 @@ export class ContentDetailsPage {
             handler: () => {
               this.navCtrl.push(UserAndGroupsPage, {
                 playContent: this.content.playContent
-              })
+              });
             }
           },
           {
@@ -826,8 +871,7 @@ export class ContentDetailsPage {
         ]
       });
       alert.present();
-    }
-    else {
+    } else {
       this.playContent();
     }
 
@@ -837,8 +881,8 @@ export class ContentDetailsPage {
    * Play content
    */
   playContent() {
-    //set the boolean to true, so when the content player is closed, we get to know that
-    //we are back from content player
+    // set the boolean to true, so when the content player is closed, we get to know that
+    // we are back from content player
     if (!AppGlobalService.isPlayerLaunched) {
       AppGlobalService.isPlayerLaunched = true;
     }
@@ -867,7 +911,7 @@ export class ContentDetailsPage {
   }
 
   updateContentProgress() {
-    let stateData = this.navParams.get('contentState');
+    const stateData = this.navParams.get('contentState');
     if (stateData !== undefined && stateData.batchId && stateData.courseId && this.userId) {
       const data = {
         courseId: stateData.courseId,
@@ -886,9 +930,9 @@ export class ContentDetailsPage {
         });
       }, (error: any) => {
         this.zone.run(() => {
-          console.log('Error: while updating content state =>>>>>', error)
-        })
-      })
+          console.log('Error: while updating content state =>>>>>', error);
+        });
+      });
     }
   }
 
@@ -899,14 +943,24 @@ export class ContentDetailsPage {
   getLoader(): any {
     return this.loadingCtrl.create({
       duration: 3000,
-      spinner: "crescent"
+      spinner: 'crescent'
     });
   }
 
   showOverflowMenu(event) {
-    let popover = this.popoverCtrl.create(ContentActionsComponent, {
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.KEBAB_MENU_CLICKED,
+      Environment.HOME,
+      PageId.CONTENT_DETAIL,
+      undefined,
+      undefined,
+      this.objRollup,
+      this.corRelationList);
+    const popover = this.popoverCtrl.create(ContentActionsComponent, {
       content: this.content,
-      isChild: this.isChildContent
+      isChild: this.isChildContent,
+      objRollup: this.objRollup,
+      corRelationList: this.corRelationList
     }, {
         cssClass: 'content-action'
       });
@@ -924,14 +978,14 @@ export class ContentDetailsPage {
 
   share() {
     this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_LIBRARY_INITIATED, this.content.contentType);
-    let loader = this.getLoader();
+    const loader = this.getLoader();
     loader.present();
-    let url = this.baseUrl + ShareUrl.CONTENT + this.content.identifier;
+    const url = this.baseUrl + ShareUrl.CONTENT + this.content.identifier;
     if (this.content.downloadable) {
       this.shareUtil.exportEcar(this.content.identifier, path => {
         loader.dismiss();
         this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.content.contentType);
-        this.social.share("", "", "file://" + path, url);
+        this.social.share('', '', 'file://' + path, url);
       }, () => {
         loader.dismiss();
         this.commonUtilService.showToast('SHARE_CONTENT_FAILED');
@@ -939,14 +993,14 @@ export class ContentDetailsPage {
     } else {
       loader.dismiss();
       this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.content.contentType);
-      this.social.share("", "", "", url);
+      this.social.share('', '', '', url);
     }
 
   }
 
   generateShareInteractEvents(interactType, subType, contentType) {
-    let values = new Map();
-    values["ContentType"] = contentType;
+    const values = new Map();
+    values['ContentType'] = contentType;
     this.telemetryGeneratorService.generateInteractTelemetry(interactType,
       subType,
       Environment.HOME,

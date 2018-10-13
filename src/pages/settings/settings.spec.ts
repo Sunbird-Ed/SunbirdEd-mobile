@@ -1,28 +1,35 @@
 import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
-import { NavController, LoadingController } from "ionic-angular";
+import { NavController, LoadingController, ToastController, Config, Platform, Events } from 'ionic-angular';
 import { DatasyncPage } from './datasync/datasync';
 import { LanguageSettingsPage } from '../language-settings/language-settings';
 import { AboutUsPage } from './about-us/about-us';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
-import { AppVersion } from "@ionic-native/app-version";
-import { SharedPreferences, InteractType, InteractSubtype, ShareUtil, ServiceProvider } from "sunbird";
+import { AppVersion } from '@ionic-native/app-version';
+import { SharedPreferences, InteractType, InteractSubtype, ShareUtil, ServiceProvider } from 'sunbird';
 import { Impression, ImpressionType, Environment, PageId, TelemetryService } from 'sunbird';
 import { generateInteractTelemetry, generateImpressionTelemetry } from '../../app/telemetryutil';
 import { PreferenceKey } from '../../app/app.constant';
 import { Observable } from 'rxjs/Observable';
-import { NavMock, AppVersionMock, SocialSharingMock, LoadingControllerMock, TranslateServiceStub, SharedPreferencesMock, TelemetryServiceMock, ShareUtilMock } from '../../../test-config/mocks-ionic'
+import {
+    NavMock, AppVersionMock, SocialSharingMock, LoadingControllerMock, TranslateServiceStub,
+    SharedPreferencesMock, TelemetryServiceMock, ShareUtilMock, DeepLinkerMock
+} from '../../../test-config/mocks-ionic';
 import { SettingsPage } from './settings';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { CommonUtilService } from '../../service/common-util.service';
+import { App } from 'ionic-angular';
+import { PopoverController } from 'ionic-angular';
+import { DeepLinker } from 'ionic-angular';
 
 describe('SettingsPage', () => {
     let comp: SettingsPage;
     let fixture: ComponentFixture<SettingsPage>;
 
-    let getLoader = () => {
-        const loadingController = TestBed.get(LoadingController);
-        comp.getLoader();
-    }
+    // const getLoader = () => {
+    //     const loadingController = TestBed.get(LoadingController);
+    //     comp.getLoader();
+    // };
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -30,7 +37,10 @@ describe('SettingsPage', () => {
             declarations: [SettingsPage],
             schemas: [NO_ERRORS_SCHEMA],
             providers: [
-                ServiceProvider,
+                ServiceProvider, CommonUtilService, ToastController,
+                PopoverController,
+                Events, App, Config, Platform,
+                { provide: DeepLinker, useValue: DeepLinkerMock },
                 { provide: NavController, useClass: NavMock },
                 { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() },
                 { provide: AppVersion, useClass: AppVersionMock },
@@ -44,11 +54,11 @@ describe('SettingsPage', () => {
         fixture = TestBed.createComponent(SettingsPage);
         comp = fixture.componentInstance;
     });
-    it("can load instance", () => {
+    it('can load instance', () => {
         expect(comp).toBeTruthy();
     });
 
-    describe("IonViewWillEnter", () => {
+    describe('IonViewWillEnter', () => {
         it('makes expected calls', () => {
             const transStub = TestBed.get(TranslateService);
             const appStub = TestBed.get(AppVersion);
@@ -62,7 +72,7 @@ describe('SettingsPage', () => {
         });
     });
 
-    describe("IonViewDidLoad", () => {
+    describe('IonViewDidLoad', () => {
         it('makes expected calls', () => {
             const telemeStub = TestBed.get(TelemetryService);
             spyOn(telemeStub, 'impression');
@@ -71,51 +81,53 @@ describe('SettingsPage', () => {
         });
     });
 
-    describe("IonViewDidEnter", () => {
-        it("makes expected calls", () => {
-            const trasnStub = TestBed.get(TranslateService);
+    describe('IonViewDidEnter', () => {
+        it('makes expected calls', () => {
+            const commonUtilServiceStub = TestBed.get(CommonUtilService);
             const preferStub = TestBed.get(SharedPreferences);
 
             expect(comp.ionViewDidLoad).toBeDefined();
-            comp.selectedlanguage = 'selectedLanguage';
-            spyOn(trasnStub, 'get').and.callFake((value) => {
-                return Observable.of('Cancel');
-            });
+            spyOn(commonUtilServiceStub, 'translateMessage');
             spyOn(preferStub, 'getString').and.returnValue(Promise.resolve('true'));
             comp.ionViewDidEnter();
 
-            expect(comp.chosenLanguageString).toBe('Cancel');
-            expect(comp.selectedlanguage).toBe('selectedLanguage');
-            expect(trasnStub.get).toHaveBeenCalled();
+            expect(commonUtilServiceStub.translateMessage).toHaveBeenCalled();
             expect(preferStub.getString).toHaveBeenCalled();
         });
 
     });
-    describe("goBack", () => {
-        it('makes expected calls ', () => {
-            const navStub = TestBed.get(NavController);
-
-            expect(comp.goBack).toBeDefined();
-            spyOn(navStub, "pop");
-
-            comp.goBack();
-            expect(navStub.pop).toHaveBeenCalled();
+    it('#IonViewDidLeave makes expected calls in success part', () => {
+        window['supportfile'] = {
+            removeFile: () => ({})
+        };
+        spyOn(window['supportfile'], 'removeFile').and.callFake((result, error) => {
+            return result(JSON.stringify({}));
         });
+        comp.ionViewDidLeave();
     });
-    describe("language settings", () => {
+    it('#IonViewDidLoad makes expected calls in error part', () => {
+        window['supportfile'] = {
+            removeFile: () => ({})
+        };
+        spyOn(window['supportfile'], 'removeFile').and.callFake((result, error) => {
+            return error(JSON.stringify({}));
+        });
+        comp.ionViewDidLeave();
+    });
+    describe('language settings', () => {
         it('makes expected calls', () => {
             const navCtrl = TestBed.get(NavController);
-            let isFromSettings = true;
-            expect(comp.languageSetting).toBeDefined();
+            const isFromSettings = true;
+            expect(comp.goToLanguageSetting).toBeDefined();
             spyOn(comp, 'generateInteractTelemetry');
             spyOn(navCtrl, 'push').and.callThrough();
-            comp.languageSetting();
-
+            comp.goToLanguageSetting();
+            expect(comp.generateInteractTelemetry).toHaveBeenCalled();
             expect(isFromSettings).toBe(true);
 
         });
     });
-    describe("dataSync", () => {
+    describe('dataSync', () => {
         it('makes expected calls', () => {
             const navCtrl = TestBed.get(NavController);
             expect(comp.dataSync).toBeDefined();
@@ -127,7 +139,7 @@ describe('SettingsPage', () => {
         });
     });
 
-    describe("about us", () => {
+    describe('about us', () => {
         it('makes expected calls', () => {
             const navCtrl = TestBed.get(NavController);
             expect(comp.aboutUs).toBeDefined();
@@ -139,77 +151,101 @@ describe('SettingsPage', () => {
             expect(navCtrl.push).toHaveBeenCalled();
         });
     });
-    describe("send Message", () => {
+    describe('send Message', () => {
         it('makes expected calls', () => {
             const preferStub = TestBed.get(SharedPreferences);
-            const loadControllerStub = TestBed.get(LoadingController);
-            getLoader();
+            const CommonUtilServiceStub = TestBed.get(CommonUtilService);
             spyOn(comp, 'generateInteractTelemetry');
             spyOn(preferStub, 'getString').and.returnValue(Promise.resolve(undefined));
-
+            window['supportfile'] = {
+                shareSunbirdConfigurations: () => ({})
+            };
+            spyOn(window['supportfile'], 'shareSunbirdConfigurations').and.callFake((result, error) => {
+                return result(JSON.stringify({}));
+            });
+            CommonUtilServiceStub.getLoader();
             comp.sendMessage();
-            expect(loadControllerStub.create).toHaveBeenCalled();
             expect(comp.generateInteractTelemetry).toHaveBeenCalled();
             expect(preferStub.getString).toHaveBeenCalled();
         });
         it('makes expected calls and checks when val is ""', () => {
             const preferStub = TestBed.get(SharedPreferences);
-            const loadControllerStub = TestBed.get(LoadingController);
-            getLoader();
+            const CommonUtilServiceStub = TestBed.get(CommonUtilService);
             spyOn(comp, 'generateInteractTelemetry');
-            spyOn(preferStub, 'getString').and.returnValue(Promise.resolve(""));
-
+            spyOn(preferStub, 'getString').and.returnValue(Promise.resolve(''));
+            window['supportfile'] = {
+                shareSunbirdConfigurations: () => ({})
+            };
+            spyOn(window['supportfile'], 'shareSunbirdConfigurations').and.callFake((result, error) => {
+                return result(JSON.stringify({}));
+            });
+            CommonUtilServiceStub.getLoader();
             comp.sendMessage();
-            expect(loadControllerStub.create).toHaveBeenCalled();
-            expect(comp.generateInteractTelemetry).toHaveBeenCalled();
             expect(preferStub.getString).toHaveBeenCalled();
+            expect(comp.generateInteractTelemetry).toHaveBeenCalled();
+
         });
         it('makes expected calls and checks when val is null', () => {
             const preferStub = TestBed.get(SharedPreferences);
-            const loadControllerStub = TestBed.get(LoadingController);
-            getLoader();
+            const CommonUtilServiceStub = TestBed.get(CommonUtilService);
             spyOn(comp, 'generateInteractTelemetry');
             spyOn(preferStub, 'getString').and.returnValue(Promise.resolve(null));
-
+            window['supportfile'] = {
+                shareSunbirdConfigurations: () => ({})
+            };
+            spyOn(window['supportfile'], 'shareSunbirdConfigurations').and.callFake((result, error) => {
+                return result(JSON.stringify({}));
+            });
+            CommonUtilServiceStub.getLoader();
             comp.sendMessage();
-            expect(loadControllerStub.create).toHaveBeenCalled();
             expect(comp.generateInteractTelemetry).toHaveBeenCalled();
             expect(preferStub.getString).toHaveBeenCalled();
         });
         it('makes expected calls in else part when is value is present', () => {
             const preferStub = TestBed.get(SharedPreferences);
-            const loadControllerStub = TestBed.get(LoadingController);
+            const commonUtilServiceStub = TestBed.get(CommonUtilService);
             const SocialSharingStub = TestBed.get(SocialSharing);
-            comp.fileUrl = "string";
-            getLoader();
+            comp.fileUrl = 'string';
+            window['supportfile'] = {
+                shareSunbirdConfigurations: () => ({})
+            };
+            spyOn(window['supportfile'], 'shareSunbirdConfigurations').and.callFake((result, error) => {
+                return result(JSON.stringify({}));
+            });
+            commonUtilServiceStub.getLoader();
             spyOn(comp, 'generateInteractTelemetry');
-            spyOn(preferStub, 'getString').and.returnValue(Promise.resolve("string"));
+            spyOn(preferStub, 'getString').and.returnValue(Promise.resolve('string'));
             spyOn(SocialSharingStub, 'shareViaEmail').and.returnValue(Promise.resolve(''));
             comp.sendMessage();
-            expect(loadControllerStub.create).toHaveBeenCalled();
             expect(comp.generateInteractTelemetry).toHaveBeenCalled();
             expect(preferStub.getString).toHaveBeenCalled();
         });
         it('makes expected calls in social sharing catch part', () => {
             const preferStub = TestBed.get(SharedPreferences);
-            const loadControllerStub = TestBed.get(LoadingController);
             const SocialSharingStub = TestBed.get(SocialSharing);
-            comp.fileUrl = "string";
-            getLoader();
+            const commonUtilServiceStub = TestBed.get(CommonUtilService);
+            comp.fileUrl = 'string';
+            commonUtilServiceStub.getLoader();
+            window['supportfile'] = {
+                shareSunbirdConfigurations: () => ({})
+            };
+            spyOn(window['supportfile'], 'shareSunbirdConfigurations').and.callFake((result, error) => {
+                return result(JSON.stringify({}));
+            });
             spyOn(comp, 'generateInteractTelemetry');
-            spyOn(preferStub, 'getString').and.returnValue(Promise.resolve("string"));
+            spyOn(preferStub, 'getString').and.returnValue(Promise.resolve('string'));
             spyOn(SocialSharingStub, 'shareViaEmail').and.returnValue(Promise.reject());
             comp.sendMessage();
-            expect(loadControllerStub.create).toHaveBeenCalled();
             expect(comp.generateInteractTelemetry).toHaveBeenCalled();
             expect(preferStub.getString).toHaveBeenCalled();
         });
     });
-    describe("shareApp", () => {
+    describe('shareApp', () => {
         it('makes expected calls', () => {
             const shareUtilStub = TestBed.get(ShareUtil);
             const SocialSharingStub = TestBed.get(SocialSharing);
-            getLoader();
+            const commonUtilServiceStub = TestBed.get(CommonUtilService);
+            commonUtilServiceStub.getLoader();
             spyOn(comp, 'generateInteractTelemetry');
             spyOn(shareUtilStub, 'exportApk').and.callFake((success, error) => {
                 return success('Cancel');
@@ -224,7 +260,8 @@ describe('SettingsPage', () => {
         it('makes expected calls in error part ', () => {
             const shareUtilStub = TestBed.get(ShareUtil);
             const SocialSharingStub = TestBed.get(SocialSharing);
-            getLoader();
+            const commonUtilServiceStub = TestBed.get(CommonUtilService);
+            commonUtilServiceStub.getLoader();
             spyOn(comp, 'generateInteractTelemetry');
             spyOn(shareUtilStub, 'exportApk').and.callFake((success, error) => {
                 return error('error');
@@ -234,20 +271,10 @@ describe('SettingsPage', () => {
             expect(comp.shareApp).toBeDefined();
             expect(shareUtilStub.error).toBe(undefined);
             expect(shareUtilStub.exportApk).toHaveBeenCalled();
-           // expect(SocialSharingStub.share).toHaveBeenCalled();
-        })
-    });
-    describe("getLoader", () => {
-        it('makes expected calls', () => {
-            const loadControllerStub = TestBed.get(LoadingController);
-            expect(comp.getLoader).toBeDefined();
-
-            comp.getLoader();
-
-            expect(loadControllerStub.create).toHaveBeenCalled();
+            // expect(SocialSharingStub.share).toHaveBeenCalled();
         });
     });
-    describe("generateInteractTelemetry", () => {
+    describe('generateInteractTelemetry', () => {
         it('makes expected calls', () => {
             const telemeStub = TestBed.get(TelemetryService);
             spyOn(telemeStub, 'interact');

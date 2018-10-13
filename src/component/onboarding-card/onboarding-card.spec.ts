@@ -1,20 +1,27 @@
 import { mockSyllabusList, mockOnboardingEvents, mockSelectedSlide } from './onboarding.data.spec';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { ComponentFixture, TestBed, async, fakeAsync } from "@angular/core/testing";
-import { NO_ERRORS_SCHEMA } from "@angular/core";
-import { PopoverController, NavController, Slide } from "ionic-angular";
-import { Events } from "ionic-angular";
-import { ToastController } from "ionic-angular";
-import { OnboardingService } from "../onboarding-card/onboarding.service";
-import { OnboardingCardComponent } from "./onboarding-card";
-import { PopoverControllerMock, EventsMock, ToastControllerMock, BuildParamaServiceMock, AuthServiceMock, FormAndFrameworkUtilServiceMock } from "../../../test-config/mocks-ionic";
-import { ProfileService, ServiceProvider, SharedPreferences, FrameworkService, BuildParamService, FormService, AuthService, TelemetryService } from 'sunbird';
+import { ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { PopoverController, NavController, LoadingController } from 'ionic-angular';
+import { Events } from 'ionic-angular';
+import { ToastController } from 'ionic-angular';
+import { OnboardingService } from '../onboarding-card/onboarding.service';
+import { OnboardingCardComponent } from './onboarding-card';
+import {
+    PopoverControllerMock, EventsMock, ToastControllerMock,
+    BuildParamaServiceMock, AuthServiceMock, FormAndFrameworkUtilServiceMock
+} from '../../../test-config/mocks-ionic';
+import {
+    ProfileService, ServiceProvider, SharedPreferences,
+    FrameworkService, BuildParamService, FormService, AuthService, TelemetryService
+} from 'sunbird';
 import { FormAndFrameworkUtilService } from '../../pages/profile/formandframeworkutil.service';
 import { AppGlobalService } from '../../service/app-global.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { Slides } from 'ionic-angular';
 import { Observable } from 'rxjs';
-describe("OnboardingCardComponent", () => {
+import { CommonUtilService } from '../../service/common-util.service';
+import { App } from 'ionic-angular/components/app/app';
+describe('OnboardingCardComponent', () => {
     let comp: OnboardingCardComponent;
     let fixture: ComponentFixture<OnboardingCardComponent>;
 
@@ -24,6 +31,9 @@ describe("OnboardingCardComponent", () => {
             schemas: [NO_ERRORS_SCHEMA],
             imports: [TranslateModule.forRoot()],
             providers: [
+                CommonUtilService,
+                LoadingController,
+                App,
                 OnboardingService, NavController, ProfileService, ServiceProvider, SharedPreferences, FrameworkService,
                 FormService, AppGlobalService, TelemetryGeneratorService, TelemetryService,
                 { provide: FormAndFrameworkUtilService, useClass: FormAndFrameworkUtilServiceMock },
@@ -36,7 +46,7 @@ describe("OnboardingCardComponent", () => {
         });
     });
 
-    it("#contructor hould fetch Syllabus Details and should make expected calls", (done) => {
+    it('#contructor hould fetch Syllabus Details and should make expected calls', (done) => {
         const onboardingService = TestBed.get(OnboardingService);
         spyOn(OnboardingCardComponent.prototype, 'showLoader');
         spyOn(onboardingService, 'getSyllabusDetails').and.returnValue(Promise.resolve(mockSyllabusList));
@@ -49,30 +59,32 @@ describe("OnboardingCardComponent", () => {
         }, 10);
     });
 
-    it("#contructor should show toast message as no data found for syllabus and message should be translated in current language", (done) => {
-        const onboardingService = TestBed.get(OnboardingService);
-        spyOn(OnboardingCardComponent.prototype, 'showLoader');
-        spyOn(OnboardingCardComponent.prototype, 'getToast');
-        spyOn(OnboardingCardComponent.prototype, 'translateMessage');
-        spyOn(OnboardingCardComponent.prototype, 'initializeService');
-        spyOn(onboardingService, 'getSyllabusDetails').and.returnValue(Promise.resolve(undefined));
-        fixture = TestBed.createComponent(OnboardingCardComponent);
-        comp = fixture.componentInstance;
-        setTimeout(() => {
-            expect(OnboardingCardComponent.prototype.showLoader).toHaveBeenCalled();
-            expect(comp.isDataAvailable).toBe(false);
-            expect(OnboardingCardComponent.prototype.getToast).toHaveBeenCalled();
-            expect(OnboardingCardComponent.prototype.translateMessage).toHaveBeenCalled();
-            expect(OnboardingCardComponent.prototype.initializeService).toHaveBeenCalled();
-            done();
-        }, 20);
-    });
+    it('#contructor should show toast message as no data found for syllabus and message should be translated in current language',
+        (done) => {
+            const onboardingService = TestBed.get(OnboardingService);
+            const CommonUtilServiceStub = TestBed.get(CommonUtilService);
+            spyOn(OnboardingCardComponent.prototype, 'showLoader');
+            spyOn(CommonUtilServiceStub, 'showToast');
+            spyOn(CommonUtilServiceStub, 'translateMessage');
+            spyOn(OnboardingCardComponent.prototype, 'initializeService');
+            spyOn(onboardingService, 'getSyllabusDetails').and.returnValue(Promise.resolve(undefined));
+            fixture = TestBed.createComponent(OnboardingCardComponent);
+            comp = fixture.componentInstance;
+            setTimeout(() => {
+                expect(OnboardingCardComponent.prototype.showLoader).toHaveBeenCalled();
+                expect(comp.isDataAvailable).toBe(false);
+                expect(CommonUtilServiceStub.showToast).toHaveBeenCalled();
+                expect(CommonUtilServiceStub.translateMessage).toHaveBeenCalled();
+                expect(OnboardingCardComponent.prototype.initializeService).toHaveBeenCalled();
+                done();
+            }, 20);
+        });
 
 
-    it("#contructor should set some flags based on the data aviablability and should executed once event triggered", () => {
+    it('#contructor should set some flags based on the data aviablability and should executed once event triggered', () => {
         const events = TestBed.get(Events);
         spyOn(events, 'subscribe').and.callFake((arg, success) => {
-            if (arg === "is-data-available") {
+            if (arg === 'is-data-available') {
                 return success(mockOnboardingEvents.isDataAvailable);
             }
         });
@@ -103,10 +115,10 @@ describe("OnboardingCardComponent", () => {
         })); */
 
 
-    it("#contructor should reinitiliaze the cards on user info get updated", () => {
+    it('#contructor should reinitiliaze the cards on user info get updated', () => {
         const events = TestBed.get(Events);
         spyOn(events, 'subscribe').and.callFake((arg, success) => {
-            if (arg === "user-profile-changed") {
+            if (arg === 'user-profile-changed') {
                 return success();
             }
         });
@@ -116,10 +128,10 @@ describe("OnboardingCardComponent", () => {
         expect(comp.reinitializeCards).toHaveBeenCalled();
     });
 
-    it("#contructor should set some flags based on the data aviablability and should executed once event triggered", () => {
+    it('#contructor should set some flags based on the data aviablability and should executed once event triggered', () => {
         const events = TestBed.get(Events);
         spyOn(events, 'subscribe').and.callFake((arg, success) => {
-            if (arg === "refresh:onboardingcard") {
+            if (arg === 'refresh:onboardingcard') {
                 return success();
             }
         });
@@ -134,74 +146,48 @@ describe("OnboardingCardComponent", () => {
         comp = fixture.componentInstance;
     });
 
-    it("#contructor should load instance", () => {
+    it('#contructor should load instance', () => {
         expect(comp).toBeTruthy();
     });
 
-    it("#contructor should USER_INFO_UPDATED defaults to: user-profile-changed", () => {
-        expect(OnboardingCardComponent.USER_INFO_UPDATED).toEqual("user-profile-changed");
+    it('#contructor should USER_INFO_UPDATED defaults to: user-profile-changed', () => {
+        expect(OnboardingCardComponent.USER_INFO_UPDATED).toEqual('user-profile-changed');
     });
 
-    it("#contructor should isOnBoardCard defaults to: true", () => {
+    it('#contructor should isOnBoardCard defaults to: true', () => {
         expect(comp.isOnBoardCard).toEqual(true);
     });
 
-    it("#contructor should loader defaults to: True", () => {
+    it('#contructor should loader defaults to: True', () => {
         expect(comp.loader).toEqual(true);
     });
 
-    it("#contructor should isDataAvailable defaults to: false", () => {
+    it('#contructor should isDataAvailable defaults to: false', () => {
         expect(comp.isDataAvailable).toEqual(false);
     });
 
-    it("#reinitializeCards should reinitialiaze cards flow", () => {
+    it('#reinitializeCards should reinitialiaze cards flow', () => {
         expect(comp.reinitializeCards).toBeDefined();
         const onboardingServiceStub = TestBed.get(OnboardingService);
-        spyOn(onboardingServiceStub, "initializeCard").and.returnValue(Promise.resolve(5));
+        spyOn(onboardingServiceStub, 'initializeCard').and.returnValue(Promise.resolve(5));
         spyOn(comp, 'reinitializeCards').and.callThrough();
         comp.reinitializeCards();
         expect(comp.reinitializeCards).toHaveBeenCalled();
     });
-
-    it('#translateMessage should return translated message', fakeAsync(() => {
-        let translate = TestBed.get(TranslateService);
-        const translateStub = TestBed.get(TranslateService);
-        const spy = spyOn(translate, 'get').and.callFake((arg) => {
-            return Observable.of('Cancel');
-        });
-        let translatedMessage = comp.translateMessage('CANCEL');
-        expect(translatedMessage).toEqual('Cancel');
-        expect(spy.calls.any()).toEqual(true);
-    }));
-
-    it("#initializeService should start to show onboarding cards", () => {
+    it('#initializeService should start to show onboarding cards', () => {
         expect(comp.initializeService).toBeDefined();
         const onboardingServiceStub: OnboardingService = TestBed.get(OnboardingService);
-        spyOn(onboardingServiceStub, "initializeCard").and.returnValue(Promise.resolve(0));
+        spyOn(onboardingServiceStub, 'initializeCard').and.returnValue(Promise.resolve(0));
         spyOn(comp, 'initializeService').and.callThrough();
         comp.initializeService();
         expect(comp.initializeService).toHaveBeenCalled();
     });
-
-    it("#getToast should not create ToastController if not passed any message for toast", () => {
-        const toastCtrlStub: ToastController = fixture.debugElement.injector.get(ToastController);
-        spyOn(toastCtrlStub, "create");
-        comp.getToast();
-        expect(toastCtrlStub.create).not.toHaveBeenCalled();
-    });
-    it("#getToast should create ToastController", () => {
-        const toastCtrlStub: ToastController = fixture.debugElement.injector.get(ToastController);
-        spyOn(toastCtrlStub, "create");
-        comp.getToast('Some Message');
-        expect(toastCtrlStub.create).toHaveBeenCalled();
-        expect(toastCtrlStub.create).toBeTruthy();
-    });
-/*     it('#onSlideDrag', () => {
-        expect(comp.onSlideDrag).toBeDefined();
-        spyOn(comp, 'onSlideDrag').and.callThrough();
-        comp.onSlideDrag();
-        expect(comp.onSlideDrag).toHaveBeenCalled();
-    }); */
+    /*     it('#onSlideDrag', () => {
+            expect(comp.onSlideDrag).toBeDefined();
+            spyOn(comp, 'onSlideDrag').and.callThrough();
+            comp.onSlideDrag();
+            expect(comp.onSlideDrag).toHaveBeenCalled();
+        }); */
 
     it('#ionViewWillEnter should slide to 0th index if there is no index set', () => {
         expect(comp.ionViewWillEnter).toBeDefined();
@@ -231,7 +217,7 @@ describe("OnboardingCardComponent", () => {
         spyOn(onboardingService, 'checkPrevValue');
         spyOn(onboardingService, 'getListName').and.returnValue('boardList');
         spyOn(comp, 'openFilterOptions').and.callThrough();
-        comp['onboardingService'].profile.syllabus = ["ap_k-12_13"];
+        comp['onboardingService'].profile.syllabus = ['ap_k-12_13'];
         comp.openFilterOptions(mockSelectedSlide, 1);
         expect(comp.openFilterOptions).toHaveBeenCalled();
         expect(onboardingService.checkPrevValue).toHaveBeenCalled();

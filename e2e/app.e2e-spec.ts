@@ -17,5 +17,5 @@ describe('App', () => {
         expect(title).toEqual('Page One');
       });
     });
-  })
+  });
 });

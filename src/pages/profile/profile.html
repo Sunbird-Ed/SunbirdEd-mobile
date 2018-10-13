@@ -6,7 +6,7 @@
     </ion-title>
     <ion-buttons end>
       <button ion-button icon-only (click)="gotoSearchPage()">
-        <img src="assets/imgs/ic_action_search.png" class="tool-icon" float-end/>
+        <img src="assets/imgs/ic_action_search.png" class="tool-icon" float-end />
       </button>
       <button ion-button icon-only (click)="showOverflowMenu($event)">
         <ion-icon name="more" float-end></ion-icon>
@@ -21,7 +21,8 @@
   <ion-refresher (ionRefresh)="doRefresh($event)"></ion-refresher>
 
   <!-- Logged In User Profile Pictures and Username -->
-  <p padding-horizontal *ngIf="isLoggedInUser && lastLoginTime.length" class="profile-last-login-text">{{ 'LAST_LOGIN_TIME' | translate:{'%s': lastLoginTime } }}</p>
+  <p padding-horizontal *ngIf="isLoggedInUser && lastLoginTime.length" class="profile-last-login-text">{{
+    'LAST_LOGIN_TIME' | translate:{'%s': lastLoginTime } }}</p>
   <div padding-horizontal text-center>
     <!-- <img class="custom-avatar" [src]="imageUri" (click)="isLoggedInUser && editPicture()" /> -->
     <ion-spinner *ngIf="isUploading"></ion-spinner>
@@ -34,19 +35,21 @@
   <ion-item padding-horizontal *ngIf="isLoggedInUser">
     <ion-row class="profile-completed-ion-row">
       <ion-col col-7 class="profile-completed-ion-col">
-        <p class="profile-completed-text" *ngIf="profileProgress.length">{{ 'YOUR_PROFILE_IS' | translate:{'%s': profileProgress} }}</p>
-      </ion-col>
-      <ion-col col-5 text-right class="profile-completed-ion-col">
-        <p class="profile-add-exp-text ellipsis" (click)="completeProfile()" *ngIf="profileProgress<100">+ {{ uncompletedDetails?.title | translate }}</p>
+        <p class="profile-completed-text" *ngIf="profileProgress.length">{{ 'YOUR_PROFILE_IS' | translate:{'%s':
+          profileProgress} }}</p>
       </ion-col>
     </ion-row>
     <pb-horizontal progress="{{ profileProgress }}"></pb-horizontal>
+    <ion-col col-5 class="profile-completed-ion-row">
+      <p class="profile-add-exp-text ellipsis" (click)="completeProfile()" *ngIf="profileProgress<100">+ {{
+        uncompletedDetails?.title | translate }}</p>
+    </ion-col>
   </ion-item>
-
   <!-- Profile Description/ Profile Summary -->
   <ion-item padding-horizontal text-wrap *ngIf="profile?.profileSummary">
     <p class="section-title">{{ 'DESCRIPTION' | translate }}
-      <ion-icon *ngIf="isLoggedInUser" (click)="toggleLock('profileSummary', 'DESCRIPTION')" float-end class="padding-left-5" name="{{ profile?.profileVisibility?.profileSummary == 'private' ? 'lock' : 'unlock' }}"></ion-icon>
+      <ion-icon *ngIf="isLoggedInUser" (click)="toggleLock('profileSummary', 'DESCRIPTION')" float-end class="padding-left-5"
+        name="{{ profile?.profileVisibility?.profileSummary == 'private' ? 'lock' : 'unlock' }}"></ion-icon>
     </p>
     <p [readMore]="profile?.profileSummary" [length]="100" [showMoreText]="'READ_MORE' | translate" [showLessText]="'READ_LESS' | translate">{{profile?.profileSummary}}</p>
   </ion-item>
@@ -87,8 +90,8 @@
 
   <!-- User Experience -->
   <ion-list>
-    <ion-list-header padding-horizontal *ngIf="(profile?.jobProfile?.length && !isLoggedInUser) || isLoggedInUser" class="section-title"
-      no-padding>
+    <ion-list-header padding-horizontal *ngIf="(profile?.jobProfile?.length && !isLoggedInUser) || isLoggedInUser"
+      class="section-title" no-padding>
       {{ 'TITLE_EXPERIENCE' | translate }}
       <span *ngIf="isLoggedInUser" float-end color="primary">
         <span (click)="editExperience()">{{ 'ADD' | translate }}</span>
@@ -110,7 +113,8 @@
             <p>{{ job?.orgName }}</p>
             <p *ngIf="job?.subject">{{ 'SUBJECTS' | translate }} - {{ job?.subject }}</p>
             <p *ngIf="job?.joiningDate">{{ job?.joiningDate }}
-              <span class="display-inline-block" *ngIf="job?.endDate">&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;</span>{{ job?.endDate}}
+              <span class="display-inline-block" *ngIf="job?.endDate">&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;</span>{{
+              job?.endDate}}
             </p>
           </div>
         </ion-col>
@@ -128,7 +132,7 @@
       {{ 'TITLE_ADDRESS' | translate }}
       <span *ngIf="isLoggedInUser" float-end color="primary">
         <span *ngIf="profile?.address?.length < 2 " (click)="editAddress()">{{ 'ADD' | translate }}</span>
-        <ion-icon color="dark" class="padding-left-5" (click)="toggleLock('location', 'TITLE_ADDRESS')" name="{{ profile?.profileVisibility?.location == 'private' ? 'lock' : 'unlock' }}"></ion-icon>
+        <ion-icon color="dark" class="padding-left-5" (click)="toggleLock('address', 'TITLE_ADDRESS')" name="{{ profile?.profileVisibility?.address === 'private' ? 'lock' : 'unlock' }}"></ion-icon>
       </span>
     </ion-list-header>
 
@@ -164,7 +168,8 @@
 
   <ion-list padding-horizontal>
     <ion-row *ngFor="let skill of profile?.skills | slice : startLimit:paginationLimit; let i=index" class="skill-row">
-      <ion-col class="ellipsis padding-left-10 skill-name-col" [attr.col-9]="isLoggedInUser ? '' : null" [attr.col-8]="!isLoggedInUser ? '' : null">{{ skill?.skillName }}</ion-col>
+      <ion-col class="ellipsis padding-left-10 skill-name-col" [attr.col-9]="isLoggedInUser ? '' : null" [attr.col-8]="!isLoggedInUser ? '' : null">{{
+        skill?.skillName }}</ion-col>
       <ion-col col-3 text-end class="padding-right-10 skill-count-col" [ngClass]="">
         <span class="vertical-separator" *ngIf="skill?.endorsementCount">&nbsp;&nbsp;{{ skill?.endorsementCount }}</span>
         <span class="vertical-separator" *ngIf="!skill?.endorsementCount">&nbsp;&nbsp;{{ skill?.endorsementcount }}</span>
@@ -176,8 +181,10 @@
       </ion-col>
     </ion-row>
     <div text-center>
-      <button ion-button outline *ngIf="paginationLimit < profile?.skills?.length" (click)="showMoreItems()">{{ 'SHOW_MORE' | translate }}</button>
-      <button ion-button outline *ngIf="paginationLimit > DEFAULT_PAGINATION_LIMIT" (click)="showLessItems()">{{ 'SHOW_LESS' | translate }}</button>
+      <button ion-button outline *ngIf="paginationLimit < profile?.skills?.length" (click)="showMoreItems()">{{
+        'SHOW_MORE' | translate }}</button>
+      <button ion-button outline *ngIf="paginationLimit > DEFAULT_PAGINATION_LIMIT" (click)="showLessItems()">{{
+        'SHOW_LESS' | translate }}</button>
     </div>
   </ion-list>
 
@@ -186,7 +193,8 @@
     <span padding-horizontal class="section-title">{{ 'CREATED_BY_ME' | translate }}</span>
     <ion-scroll scrollX="true" class="course-scroll-dimensions" no-padding>
       <div class="inner">
-        <course-card *ngFor="let courseItem of enrolledCourse" [course]="courseItem" [layoutName]="'Popular'" [onProfile]="onProfile"></course-card>
+        <course-card *ngFor="let courseItem of enrolledCourse; let i=index" [course]="courseItem"  [env]="'profile'" [index]="i" [sectionName]="Contributions" [pageName]="'profile'" [layoutName]="'Popular'"
+          [onProfile]="onProfile"></course-card>
       </div>
     </ion-scroll>
   </div>

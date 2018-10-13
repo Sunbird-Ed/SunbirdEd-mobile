@@ -1,21 +1,14 @@
+import { TelemetryGeneratorService } from './../../service/telemetry-generator.service';
 import { TranslateService } from '@ngx-translate/core';
-import { CollectionDetailsPage } from './../../pages/collection-details/collection-details';
 import { NavParams } from 'ionic-angular/navigation/nav-params';
-import { NavController, PopoverController, Events } from 'ionic-angular/index';
+import { PopoverController, Events } from 'ionic-angular/index';
 import { ViewController } from 'ionic-angular';
 import { Component } from '@angular/core';
-import { ContentService, AuthService } from 'sunbird';
-import { ToastController, Platform } from "ionic-angular";
+import { ContentService, AuthService, Environment, Rollup, CorrelationData, InteractType, InteractSubtype, TelemetryObject } from 'sunbird';
+import { ToastController, Platform } from 'ionic-angular';
 import { ReportIssuesComponent } from '../report-issues/report-issues';
 import { ProfileConstants } from '../../app/app.constant';
-import { AppGlobalService } from '../../service/app-global.service';
 
-/**
- * Generated class for the ContentActionsComponent component.
- *
- * See https://angular.io/api/core/Component for more info on Angular
- * Components.
- */
 @Component({
   selector: 'content-actions',
   templateUrl: 'content-actions.html'
@@ -23,17 +16,18 @@ import { AppGlobalService } from '../../service/app-global.service';
 export class ContentActionsComponent {
 
   content: any;
-  isChild: boolean = false;
+  isChild = false;
   contentId: string;
   backButtonFunc = undefined;
-  userId: string = '';
-  pageName: string = '';
-  showFlagMenu: boolean = true;
+  userId = '';
+  pageName = '';
+  showFlagMenu = true;
+  public objRollup: Rollup;
+  private corRelationList: Array<CorrelationData>;
 
   constructor(
     public viewCtrl: ViewController,
     private contentService: ContentService,
-    private navCtrl: NavController,
     private navParams: NavParams,
     private toastCtrl: ToastController,
     public popoverCtrl: PopoverController,
@@ -41,9 +35,11 @@ export class ContentActionsComponent {
     private events: Events,
     private translate: TranslateService,
     private platform: Platform,
-    private appGlobalService: AppGlobalService) {
-    this.content = this.navParams.get("content");
+    private telemetryGeneratorService: TelemetryGeneratorService) {
+    this.content = this.navParams.get('content');
     this.pageName = this.navParams.get('pageName');
+    this.objRollup = this.navParams.get('objRollup');
+    this.corRelationList = this.navParams.get('corRelationList');
 
     if (this.navParams.get('isChild')) {
       this.isChild = true;
@@ -59,14 +55,14 @@ export class ContentActionsComponent {
 
   getUserId() {
     this.authService.getSessionData((session: string) => {
-      if (session === null || session === "null") {
+      if (session === null || session === 'null') {
         this.userId = '';
       } else {
-        let res = JSON.parse(session);
+        const res = JSON.parse(session);
         this.userId = res[ProfileConstants.USER_TOKEN] ? res[ProfileConstants.USER_TOKEN] : '';
-        // Needed: this get exeuted if user is on course details page. 
+        // Needed: this get exeuted if user is on course details page.
         if (this.pageName === 'course' && this.userId) {
-          // If course is not enrolled then hide flag/report issue menu. 
+          // If course is not enrolled then hide flag/report issue menu.
           // If course has batchId then it means it is enrolled course
           if (this.content.batchId) {
             this.showFlagMenu = true;
@@ -82,19 +78,19 @@ export class ContentActionsComponent {
    * Construct content delete request body
    */
   getDeleteRequestBody() {
-    let apiParams = {
+    const apiParams = {
       contentDeleteList: [{
         contentId: this.contentId,
         isChildContent: this.isChild
       }]
-    }
+    };
     return apiParams;
   }
 
   /**
    * Close popover
    */
-  close(event, i) {
+  close(i) {
     switch (i) {
       case 0: {
         this.deleteContent();
@@ -109,8 +105,23 @@ export class ContentActionsComponent {
   }
 
   deleteContent() {
+    const telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.id = this.content.identifier;
+    telemetryObject.type = this.content.contentType;
+    telemetryObject.version = this.content.pkgVersion;
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.DELETE_CLICKED,
+      Environment.HOME,
+      this.pageName,
+      telemetryObject,
+      undefined,
+      this.objRollup,
+      this.corRelationList);
+
+
     this.contentService.deleteContent(this.getDeleteRequestBody(), (res: any) => {
-      let data = JSON.parse(res);
+      const data = JSON.parse(res);
       if (data.result && data.result.status === 'NOT_FOUND') {
         this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
       } else {
@@ -130,7 +141,7 @@ export class ContentActionsComponent {
   }
 
   reportIssue() {
-    let popUp = this.popoverCtrl.create(ReportIssuesComponent, {
+    const popUp = this.popoverCtrl.create(ReportIssuesComponent, {
       content: this.content
     }, {
         cssClass: 'report-issue-box'
@@ -139,7 +150,7 @@ export class ContentActionsComponent {
   }
 
   showToaster(message) {
-    let toast = this.toastCtrl.create({
+    const toast = this.toastCtrl.create({
       message: message,
       duration: 2000,
       position: 'bottom'

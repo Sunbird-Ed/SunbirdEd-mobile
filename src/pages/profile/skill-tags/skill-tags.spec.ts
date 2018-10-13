@@ -1,37 +1,57 @@
 import { Observable } from 'rxjs/Observable';
-import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { NO_ERRORS_SCHEMA } from "@angular/core";
-import { TranslateService, TranslateModule } from "@ngx-translate/core";
-import { LoadingController, ToastController, NavController } from "ionic-angular";
-// import { NgZone } from "@angular/core";
-import { AuthService } from "sunbird";
-import { UserProfileService } from "sunbird";
-import { SkillTagsComponent } from "./skill-tags";
-import { } from 'jasmine';
-
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import {
-    LoadingControllerMock, TranslateServiceStub, ToastControllerMockNew, AuthServiceMock, NavMock
-    } from '../../../../test-config/mocks-ionic';
-import { executionAsyncId } from 'async_hooks';
+    TranslateService,
+    TranslateModule
+} from '@ngx-translate/core';
+import {
+    LoadingController,
+    ToastController,
+    NavController,
+    Events,
+    App
+} from 'ionic-angular';
+// import { NgZone } from "@angular/core";
+import { AuthService, SharedPreferences, ServiceProvider } from 'sunbird';
+import { UserProfileService } from 'sunbird';
+import { SkillTagsComponent } from './skill-tags';
+import { } from 'jasmine';
+import {
+    LoadingControllerMock,
+    TranslateServiceStub,
+    ToastControllerMockNew,
+    AuthServiceMock,
+    NavMock,
+    DeepLinkerMock
+} from '../../../../test-config/mocks-ionic';
 import { TagInputModule } from 'ngx-chips';
+import { CommonUtilService } from '../../../service/common-util.service';
+import { PopoverController } from 'ionic-angular';
+import { Config } from 'ionic-angular';
+import { Platform } from 'ionic-angular';
+import { DeepLinker } from 'ionic-angular';
 
-describe("SkillTagsComponent", () => {
+describe('SkillTagsComponent', () => {
     let comp: SkillTagsComponent;
     let fixture: ComponentFixture<SkillTagsComponent>;
 
     beforeEach(() => {
-       
-        
+
+
         const userProfileServiceStub = {
             getSkills: () => ({}),
             endorseOrAddSkill: () => ({})
         };
-        
+
         TestBed.configureTestingModule({
-            imports: [TranslateModule.forRoot(),TagInputModule],
-            declarations: [ SkillTagsComponent ],
-            schemas: [ NO_ERRORS_SCHEMA ],
-            providers: [
+            imports: [TranslateModule.forRoot(), TagInputModule],
+            declarations: [SkillTagsComponent],
+            schemas: [NO_ERRORS_SCHEMA],
+            providers: [App, Config, Platform,
+                CommonUtilService, SharedPreferences,
+                Events, PopoverController, ServiceProvider,
+                { provide: DeepLinker, useValue: DeepLinkerMock },
                 { provide: NavController, useClass: NavMock },
                 // { provide: NgZone, useValue: ngZoneStub },
                 { provide: AuthService, useClass: AuthServiceMock },
@@ -48,136 +68,134 @@ describe("SkillTagsComponent", () => {
         fixture = TestBed.createComponent(SkillTagsComponent);
         comp = fixture.componentInstance;
     });
-
-    let getLoader = () => {
-        const loadingController = TestBed.get(LoadingController);
-        comp.getLoader();
-    }
-
-    it("can load instance", () => {
+    it('can load instance', () => {
         expect(comp).toBeTruthy();
     });
 
-    it("should handle success scenario for ionViewWillEnter", () => {
+    it('should handle success scenario for ionViewWillEnter', () => {
         const authService = TestBed.get(AuthService);
+        const commonUtilServiceStub = TestBed.get(CommonUtilService);
         const userProfileService = TestBed.get(UserProfileService);
-        let data = {skills : ["test"]};
-        spyOn(userProfileService, "getSkills").and.callFake((req,success,error) => {
+        const data = { skills: ['test'] };
+        spyOn(userProfileService, 'getSkills').and.callFake((req, success, error) => {
             success(JSON.stringify(data));
         });
-        spyOn(authService, "getSessionData").and.callFake((success,error) => {
-            success("success");
+        spyOn(authService, 'getSessionData').and.callFake((success, error) => {
+            success('success');
         });
-        getLoader();
+        commonUtilServiceStub.getLoader();
         comp.ionViewWillEnter();
         expect(authService.getSessionData).toHaveBeenCalled();
         expect(userProfileService.getSkills).toHaveBeenCalled();
         expect(comp.suggestedSkills).toEqual(data.skills);
     });
 
-    it("should handle error scenario for shoulsionViewWillEnter", () => {
+    it('should handle error scenario for shoulsionViewWillEnter', () => {
         const authService = TestBed.get(AuthService);
         const userProfileService = TestBed.get(UserProfileService);
-        let data = {status : 401};
-        spyOn(userProfileService, "getSkills").and.callFake((req,success,error) => {
+        const commonUtilServiceStub = TestBed.get(CommonUtilService);
+        const data = { status: 401 };
+        spyOn(userProfileService, 'getSkills').and.callFake((req, success, error) => {
             error(JSON.stringify(data));
         });
-        spyOn(authService, "getSessionData").and.callFake((success,error) => {
-            success("success");
+        spyOn(authService, 'getSessionData').and.callFake((success, error) => {
+            success('success');
         });
-        getLoader();
+        commonUtilServiceStub.getLoader();
         comp.ionViewWillEnter();
         expect(authService.getSessionData).toHaveBeenCalled();
         expect(userProfileService.getSkills).toHaveBeenCalled();
     });
 
-    it("should handle error scenario for ionViewWillEnter", () => {
+    it('should handle error scenario for ionViewWillEnter', () => {
         const authService = TestBed.get(AuthService);
-        spyOn(authService, "getSessionData").and.callFake((success,error) => {
+        const commonUtilServiceStub = TestBed.get(CommonUtilService);
+        spyOn(authService, 'getSessionData').and.callFake((success, error) => {
             success(undefined);
         });
-        getLoader();
+        commonUtilServiceStub.getLoader();
         comp.ionViewWillEnter();
         expect(authService.getSessionData).toHaveBeenCalled();
     });
 
-    it("should handle error scenario for addSkills", () => {
+    it('should handle error scenario for addSkills', (done) => {
         const authService = TestBed.get(AuthService);
-        spyOn(authService, "getSessionData").and.callFake((success,error) => {
+        const commonUtilServiceStub = TestBed.get(CommonUtilService);
+        spyOn(authService, 'getSessionData').and.callFake((success, error) => {
             success(undefined);
         });
-        getLoader();
+        commonUtilServiceStub.getLoader();
         comp.addSkills();
-        expect(authService.getSessionData).toHaveBeenCalled();
+        setTimeout(() => {
+            expect(authService.getSessionData).toHaveBeenCalled();
+            done();
+        }, 10);
     });
-    
-    it("should handle success scenario for addSkills", () => {
+
+    it('should handle success scenario for addSkills', () => {
         const authService = TestBed.get(AuthService);
+        const commonUtilServiceStub = TestBed.get(CommonUtilService);
         const userProfileService = TestBed.get(UserProfileService);
-        let data = {
-            skills : ["test"],
-            userToken : "sampleUserToken"
+        const data = {
+            skills: ['test'],
+            userToken: 'sampleUserToken'
         };
 
-        spyOn(authService, "getSessionData").and.callFake((success,error) => {
+        spyOn(authService, 'getSessionData').and.callFake((success, error) => {
             success(JSON.stringify(data));
         });
 
-        spyOn(userProfileService, "endorseOrAddSkill").and.callFake((req, success, error) => {
-            success("success");
+        spyOn(userProfileService, 'endorseOrAddSkill').and.callFake((req, success, error) => {
+            success('success');
         });
-        
-        getLoader();
+
+        commonUtilServiceStub.getLoader();
         comp.addSkills();
         expect(authService.getSessionData).toHaveBeenCalled();
         expect(userProfileService.endorseOrAddSkill).toHaveBeenCalled();
     });
 
-    it("should handle success scenario for addSkills", () => {
+    it('should handle success scenario for addSkills', () => {
         const authService = TestBed.get(AuthService);
+        const commonUtilServiceStub = TestBed.get(CommonUtilService);
         const userProfileService = TestBed.get(UserProfileService);
-        let data = {
-            skills : ["test"],
-            userToken : "sampleUserToken"
+        const data = {
+            skills: ['test'],
+            userToken: 'sampleUserToken'
         };
 
-        spyOn(authService, "getSessionData").and.callFake((success,error) => {
+        spyOn(authService, 'getSessionData').and.callFake((success, error) => {
             success(JSON.stringify(data));
         });
 
-        spyOn(userProfileService, "endorseOrAddSkill").and.callFake((req, success, error) => {
-            error("error");
+        spyOn(userProfileService, 'endorseOrAddSkill').and.callFake((req, success, error) => {
+            error('error');
         });
-        
-        getLoader();
+
+        commonUtilServiceStub.getLoader();
         comp.addSkills();
         expect(authService.getSessionData).toHaveBeenCalled();
         expect(userProfileService.endorseOrAddSkill).toHaveBeenCalled();
     });
 
-    it("goBack will make expected calls", () => {
+    it('goBack will make expected calls', () => {
         const navCtrl = TestBed.get(NavController);
-        spyOn(navCtrl, "pop");
+        spyOn(navCtrl, 'pop');
         comp.goBack();
         expect(navCtrl.pop).toHaveBeenCalled();
     });
 
-    it("presentToast makes expected calls", () => {
+    it('presentToast makes expected calls', () => {
         const toastController = TestBed.get(ToastController);
-        comp.presentToast("msg");
+        const commonUtilServiceStub = TestBed.get(CommonUtilService);
+        commonUtilServiceStub.showToast('msg');
         expect(toastController.create).toHaveBeenCalled();
     });
 
-    it("getLoader makes expected calls", () => {
+    it('getLoader makes expected calls', () => {
         const loadingController = TestBed.get(LoadingController);
-        comp.getLoader();
+        const commonUtilServiceStub = TestBed.get(CommonUtilService);
+        commonUtilServiceStub.getLoader();
         expect(loadingController.create).toHaveBeenCalled();
     });
-
-    it("translate msg should make expected calls", () => {
-        const translate = TestBed.get(TranslateService);
-        comp.translateMessage("msg");
-        expect(translate.get).toHaveBeenCalled();
-    });
-
 });

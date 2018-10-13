@@ -23,38 +23,38 @@
 <ion-content overflow-scroll="true" style="background: #efeff4;">
   <ion-refresher (ionRefresh)="getCourseTabData($event)"></ion-refresher>
   <!-- onBoardingSLides starts here -->
-  <onboarding-card *ngIf="guestUser && !isOnBoardingCardCompleted && appGlobal?.DISPLAY_ONBOARDING_CARDS"></onboarding-card>
+  <!-- <onboarding-card *ngIf="guestUser && !isOnBoardingCardCompleted && appGlobalService?.DISPLAY_ONBOARDING_CARDS"></onboarding-card> -->
   <!-- onBoardingSLides ends here -->
-  <div *ngIf="!guestUser && enrolledCourse && enrolledCourse.length" class="course-page-color" [ngClass]="{'height-130': showLoader}">
+  <div *ngIf="!guestUser && enrolledCourses && enrolledCourses.length" class="course-page-color" [ngClass]="{'height-130': showLoader}">
     <div class="item padding-11">
       <span float-start class="scroll-heading">
         {{ 'COURSES_IN_PROGRESS' | translate }}
       </span>
-      <span float-end class="view-all-link" *ngIf="enrolledCourse && enrolledCourse.length" (click)="navigateToViewMoreContentsPage(true)">
+      <span float-end class="view-all-link" *ngIf="enrolledCourses && enrolledCourses.length" (click)="navigateToViewMoreContentsPage(true)">
         <a>{{ 'VIEW_ALL' | translate }}</a>
       </span>
     </div>
-    <ion-scroll *ngIf="enrolledCourse && enrolledCourse.length" scrollX="true" style="width: 100%; height: 166px;" no-padding>
+    <ion-scroll *ngIf="enrolledCourses && enrolledCourses.length" scrollX="true" style="width: 100%; height: 166px;" no-padding>
       <div class="inner inprogress-courses">
-        <course-card *ngFor="let item of enrolledCourse" [course]="item" [layoutName]="'Inprogress'"></course-card>
+        <course-card *ngFor="let course of enrolledCourses; let i=index" [env]="'home'" [index]="i" [sectionName]="'InProgress'" [pageName]="'course'" [course]="course" [layoutName]="'Inprogress'"></course-card>
       </div>
     </ion-scroll>
-    <div *ngIf="enrolledCourse && enrolledCourse.length === 0 && !showLoader">{{ 'NO_DATA_FOUND' | translate }}</div>
+    <div *ngIf="enrolledCourses && enrolledCourses.length === 0 && !showLoader">{{ 'NO_DATA_FOUND' | translate }}</div>
     <ion-spinner *ngIf="showLoader" padding style="padding-top: 100px;"></ion-spinner>
   </div>
 
-  <div *ngFor="let items of popularAndLatestCourses">
-    <div *ngIf="items?.contents?.length">
+  <div *ngFor="let course of popularAndLatestCourses">
+    <div *ngIf="course?.contents?.length">
       <div class="course-scroll-holder">
         <div class="item padding-11">
-          <span float-start class="scroll-heading">{{items?.name}}</span>
-          <span float-end class="view-all-link" (click)="navigateToViewMoreContentsPage(false,items.searchQuery, items.name)">
+          <span float-start class="scroll-heading">{{course?.name}}</span>
+          <span float-end class="view-all-link" (click)="navigateToViewMoreContentsPage(false,course.searchQuery, course.name)">
             <a>{{ 'VIEW_ALL' | translate }}</a>
           </span>
         </div>
         <ion-scroll scrollX="true" style="width: 100%; height: 166px;" no-padding>
           <div class="inner">
-            <course-card *ngFor="let item of items.contents" [course]="item" [layoutName]="'Popular'">
+            <course-card *ngFor="let item of course.contents; let i=index" [env]="'home'" [index]="i" [sectionName]="course.name"  [pageName]="'course'" [course]="item" [layoutName]="'Popular'">
             </course-card>
           </div>
         </ion-scroll>

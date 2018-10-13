@@ -1,3 +1,4 @@
+import { CommonUtilService } from './../../../service/common-util.service';
 import { TranslateService } from '@ngx-translate/core';
 import {
   Component,
@@ -11,8 +12,6 @@ import {
 import {
   NavController,
   NavParams,
-  ToastController,
-  LoadingController,
   IonicApp,
   Platform
 } from 'ionic-angular';
@@ -25,23 +24,15 @@ import {
 } from 'sunbird';
 import { ProfilePage } from './../profile';
 import { languageList } from './../../../config/framework.filters';
-import { ProfileConstants, PreferenceKey } from '../../../app/app.constant';
-
-/* Interface for the Toast Object */
-export interface toastOptions {
-  message: string,
-  duration: number,
-  position: string
-};
+import { ProfileConstants } from '../../../app/app.constant';
 
 @Component({
   selector: 'additional-info',
   templateUrl: 'additional-info.html'
 })
-
 /* This contains form for the User's Additional Information where user can edit previous one */
 export class AdditionalInfoComponent {
-  isNewForm: boolean = true;
+  isNewForm = true;
   additionalInfoForm: FormGroup;
   userId: string;
   profile: any = {};
@@ -52,46 +43,39 @@ export class AdditionalInfoComponent {
   /**
    *  Fallback values for the list items
    */
-  languageList: Array<String> = languageList;
-  subjectList: Array<String> = [];
-  gradeList: Array<String> = [];
-  selectedLanguage: string = 'en';
-
-  options: toastOptions = {
-    message: '',
-    duration: 3000,
-    position: 'bottom'
-  };
+  languageList: Array<string> = languageList;
+  subjectList: Array<string> = [];
+  gradeList: Array<string> = [];
+  selectedLanguage = 'en';
 
   /* Options for ion-select box */
   languageOptions = {
-    title: this.translateMessage('LANGUAGES'),
+    title: this.commonUtilService.translateMessage('LANGUAGES'),
     cssClass: 'select-box'
   };
 
   subjectOptions = {
-    title: this.translateMessage('SUBJECTS'),
+    title: this.commonUtilService.translateMessage('SUBJECTS'),
     cssClass: 'select-box'
   };
 
   gradeOptions = {
-    title: this.translateMessage('CLASS'),
+    title: this.commonUtilService.translateMessage('CLASS'),
     cssClass: 'select-box'
   };
 
   constructor(
-    public navCtrl: NavController,
+    private navCtrl: NavController,
     public fb: FormBuilder,
-    public navParams: NavParams,
-    public userProfileService: UserProfileService,
-    private toastCtrl: ToastController,
-    private loadingCtrl: LoadingController,
+    private navParams: NavParams,
+    private userProfileService: UserProfileService,
     private authService: AuthService,
     private translate: TranslateService,
     private frameworkService: FrameworkService,
     private zone: NgZone,
     private ionicApp: IonicApp,
-    private platform: Platform
+    private platform: Platform,
+    private commonUtilService: CommonUtilService
   ) {
 
     /* Receive data from other component */
@@ -110,7 +94,7 @@ export class AdditionalInfoComponent {
       lastName: [this.profile.lastName || ''],
       language: [this.profile.language || [], Validators.required],
       email: [this.profile.email || ''],
-      phone: [this.profile.phone, [Validators.minLength(10)]], // Need to assign phone value
+      phone: [this.profile.phone || ''], // Need to assign phone value
       profileSummary: [this.profile.profileSummary || ''],
       subject: [this.profile.subject || []],
       gender: [this.profile.gender || ''],
@@ -129,19 +113,19 @@ export class AdditionalInfoComponent {
         if (element.type === 'fb') {
           this.additionalInfoForm.patchValue({
             facebookLink: element.url
-          })
-        } else if (element.type === "twitter") {
+          });
+        } else if (element.type === 'twitter') {
           this.additionalInfoForm.patchValue({
             twitterLink: element.url
-          })
-        } else if (element.type === "in") {
+          });
+        } else if (element.type === 'in') {
           this.additionalInfoForm.patchValue({
             linkedInLink: element.url
-          })
+          });
         } else {
           this.additionalInfoForm.patchValue({
             blogLink: element.url
-          })
+          });
         }
       });
     }
@@ -161,8 +145,7 @@ export class AdditionalInfoComponent {
    * It will Dismiss active popup
    */
   dismissPopup() {
-    console.log("Fired ionViewWillLeave");
-    let activePortal = this.ionicApp._modalPortal.getActive() || this.ionicApp._overlayPortal.getActive();
+    const activePortal = this.ionicApp._modalPortal.getActive() || this.ionicApp._overlayPortal.getActive();
 
     if (activePortal) {
       activePortal.dismiss();
@@ -171,25 +154,24 @@ export class AdditionalInfoComponent {
     }
   }
 
-
   /**
    * This will internally call framework API, fetches framework data and stores in local variables.
    * @param {string} currentCategory - request Parameter passing to the framework API
    * @param {string} list - Local variable name to hold the list data
    */
   getFrameworkData(currentCategory: string, propertyName: string): void {
-    let req: CategoryRequest = {
+    const req: CategoryRequest = {
       currentCategory: currentCategory,
       selectedLanguage: this.translate.currentLang
     };
 
     this.frameworkService.getCategoryData(req)
       .then(category => {
-        let response = JSON.parse(category);
+        const response = JSON.parse(category);
         this[propertyName] = _.map(response.terms, 'name');
       })
       .catch(err => {
-        console.log(currentCategory + " Category Response: ", JSON.parse(err));
+        console.error('Error', JSON.parse(err));
       });
   }
 
@@ -201,23 +183,29 @@ export class AdditionalInfoComponent {
    */
   toggleLock(field: string, fieldDisplayName: string, revert: boolean = false) {
     this.zone.run(() => {
-      this.profileVisibility[field] = this.profileVisibility[field] === "private" ? "public" : "private";
+      this.profileVisibility[field] = this.profileVisibility[field] === 'private' ? 'public' : 'private';
     });
 
     if (!revert) {
-      if (this.profileVisibility[field] === "private") {
-        this.getToast(this.translateMessage('PRIVACY_HIDE_TEXT', this.translateMessage(fieldDisplayName).toLocaleLowerCase())).present();
+      if (this.profileVisibility[field] === 'private') {
+        this.commonUtilService.showToast(
+          this.commonUtilService.translateMessage('PRIVACY_HIDE_TEXT',
+            this.commonUtilService.translateMessage(fieldDisplayName).toLocaleLowerCase()));
       } else {
-        if (fieldDisplayName === "CURRENT_LOCATION") {
-          this.getToast(this.translateMessage('PRIVACY_SHOW_TEXT', _.startCase(this.translateMessage(fieldDisplayName)))).present();
+        if (fieldDisplayName === 'CURRENT_LOCATION') {
+          this.commonUtilService.showToast(
+            this.commonUtilService.translateMessage('PRIVACY_SHOW_TEXT',
+              _.startCase(this.commonUtilService.translateMessage(fieldDisplayName))));
         } else {
-          this.getToast(this.translateMessage('PRIVACY_SHOW_TEXT', _.capitalize(this.translateMessage(fieldDisplayName)))).present();
+          this.commonUtilService.showToast(
+            this.commonUtilService.translateMessage('PRIVACY_SHOW_TEXT',
+              _.capitalize(this.commonUtilService.translateMessage(fieldDisplayName))));
         }
 
       }
+
       this.setProfileVisibility(field);
     }
-
   }
 
   /**
@@ -227,22 +215,22 @@ export class AdditionalInfoComponent {
   setProfileVisibility(field: string) {
     this.authService.getSessionData(session => {
       if (session === undefined || session == null) {
-        console.error("session is null");
+        console.error('session is null');
       } else {
-        let req = {
+        const req = {
           userId: JSON.parse(session)[ProfileConstants.USER_TOKEN],
           privateFields:
-            this.profileVisibility[field] === "private" ? [field] : [],
+            this.profileVisibility[field] === 'private' ? [field] : [],
           publicFields:
-            this.profileVisibility[field] === "public" ? [field] : []
+            this.profileVisibility[field] === 'public' ? [field] : []
         };
         this.userProfileService.setProfileVisibility(
           req,
           (res: any) => {
-            console.log("success", res);
+            console.log('success', res);
           },
           (err: any) => {
-            console.error("Unable to set profile visibility.", err);
+            console.error('Unable to set profile visibility.', err);
             this.toggleLock(field, '', true); // In-case of API fails to update, make privacy lock icon as it was.
           }
         );
@@ -254,16 +242,16 @@ export class AdditionalInfoComponent {
    * This will call on click of `SAVE` button
    * @param {object} event - Form event
    */
-  onSubmit(event): void {
+  onSubmit(): void {
     /* Holds form Values */
-    let formVal = this.additionalInfoForm.value;
+    const formVal = this.additionalInfoForm.value;
 
     if (this.profile && this.profile.phone && this.profile.phone.length && formVal.phone === '') {
       formVal.phone = this.profile.phone;
     }
 
     if (this.validateForm(formVal)) {
-      let currentValues: any = {
+      const currentValues: any = {
         userId: this.userId,
         firstName: formVal.firstName,
         language: formVal.language,
@@ -276,7 +264,7 @@ export class AdditionalInfoComponent {
         grade: formVal.grade,
         location: formVal.location,
         webPages: []
-      }
+      };
 
       if (formVal.facebookLink !== '') {
         currentValues.webPages.push({
@@ -303,40 +291,41 @@ export class AdditionalInfoComponent {
         });
       }
 
-      let modifiedFields = this.checkDifference(currentValues, this.profile);
-      let req: any = {
+      const modifiedFields = this.checkDifference(currentValues, this.profile);
+      const req: any = {
         userId: this.userId,
         firstName: formVal.firstName,
         language: formVal.language
-      }
+      };
 
       if (modifiedFields.length) {
         modifiedFields.forEach(element => {
-          req[element] = currentValues[element]
+          req[element] = currentValues[element];
         });
-
         this.updateInfo(req);
       } else {
-        this.getToast(this.translateMessage('NO_CHANGE')).present();
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('NO_CHANGE'));
       }
-
     }
   }
 
   validateForm(formVal): boolean {
     formVal.phone = (formVal.phone === null) ? '' : formVal.phone;
     if (!formVal.firstName.length) {
-      this.getToast(this.translateMessage('ERROR_EMPTY_FIRSTNAME')).present();
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('ERROR_EMPTY_FIRSTNAME'));
       return false;
     } else if (!formVal.language.length) {
-      this.getToast(this.translateMessage('ERROR_EMPTY_LANGUAGE')).present();
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('ERROR_EMPTY_LANGUAGE'));
       return false;
-    } else if ((this.profile && this.profile.phone && (formVal.phone !== this.profile.phone)) || (formVal.phone === '' || (formVal.phone.length !== 10))) {
+    }
+ /* else if ((this.profile && this.profile.phone
+    && (formVal.phone !== this.profile.phone)) || (formVal.phone === '' || (formVal.phone.length !== 10))) {
       if (!formVal.phone.match(/^\d{10}$/)) {
         this.getToast(this.translateMessage('ERROR_SHORT_MOBILE')).present();
         return false;
       }
-    }
+    } */
+
     return true;
   }
 
@@ -345,25 +334,24 @@ export class AdditionalInfoComponent {
    * @param {object} req - Request object for the User profile Service
    */
   updateInfo(req: any): void {
-    let loader = this.getLoader();
+    const loader = this.commonUtilService.getLoader();
     loader.present();
     this.userProfileService.updateUserInfo(req,
-      (res: any) => {
+      () => {
         loader.dismiss();
-        this.getToast(this.translateMessage('PROFILE_UPDATE_SUCCESS')).present();
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_SUCCESS'));
         this.navCtrl.setRoot(ProfilePage, { returnRefreshedUserProfileDetails: true });
       },
       (err: any) => {
         loader.dismiss();
         try {
           if (JSON.parse(err).errorMessages[0]) {
-            this.getToast(JSON.parse(err).errorMessages[0]).present();
+            this.commonUtilService.showToast(JSON.parse(err).errorMessages[0]);
           }
+        } catch (e) {
+          this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_FAILED'));
         }
-        catch (e) {
-          this.getToast(this.translateMessage('PROFILE_UPDATE_FAILED')).present();
-        }
-        console.error("Error", err);
+        console.error('Error', err);
       });
   }
 
@@ -374,42 +362,6 @@ export class AdditionalInfoComponent {
    * @returns {Array<string>}
    */
   checkDifference(currentValues, profileObj): Array<string> {
-    return _.reduce(currentValues, (result, value, key) => _.isEqual(value, profileObj[key]) ? result : result.concat(key), [])
-  }
-
-  /**
-   * It will returns Toast Object
-   * @param {message} string - Message for the Toast to show
-   * @returns {object} - toast Object
-   */
-  getToast(message: string = ''): any {
-    this.options.message = message;
-    if (message.length) return this.toastCtrl.create(this.options);
-  }
-
-  /**
-   * Used to Translate message to current Language
-   * @param {string} messageConst - Message Constant to be translated
-   * @param {string} field - The field to be added in the language constant
-   * @returns {string} translatedMsg - Translated Message
-   */
-  translateMessage(messageConst: string, field?: string): string {
-    let translatedMsg = '';
-    this.translate.get(messageConst, { '%s': field }).subscribe(
-      (value: any) => {
-        translatedMsg = value;
-      }
-    );
-    return translatedMsg;
-  }
-
-  /**
-   * Returns the object of loading controller
-   */
-  getLoader(): any {
-    return this.loadingCtrl.create({
-      duration: 30000,
-      spinner: "crescent"
-    });
+    return _.reduce(currentValues, (result, value, key) => _.isEqual(value, profileObj[key]) ? result : result.concat(key), []);
   }
 }

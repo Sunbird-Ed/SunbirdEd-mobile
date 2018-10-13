@@ -1,3 +1,4 @@
+import { CommonUtilService } from './../../service/common-util.service';
 import {
   Component,
   NgZone,
@@ -6,11 +7,8 @@ import {
   EventEmitter
 } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import {
-  NavController,
-  LoadingController
-} from 'ionic-angular';
-import { AppVersion } from "@ionic-native/app-version";
+import { NavController } from 'ionic-angular';
+import { AppVersion } from '@ionic-native/app-version';
 import {
   OAuthService,
   ContainerService,
@@ -29,8 +27,7 @@ import {
   Profile
 } from 'sunbird';
 import {
-  initTabs,
-  LOGIN_TEACHER_TABS
+  initTabs, LOGIN_TEACHER_TABS
 } from '../../app/module.service';
 import { generateInteractTelemetry } from '../../app/telemetryutil';
 import { ProfileConstants } from '../../app/app.constant';
@@ -46,19 +43,19 @@ export class SignInCardComponent {
   private readonly DEFAULT_TEXT = [
     'OVERLAY_LABEL_COMMON',
     'OVERLAY_INFO_TEXT_COMMON'
-  ]
+  ];
 
   private translateDisplayText;
 
-  appName: string = "";
+  appName = '';
   isNetworkAvailable: boolean;
 
 
-  @Input() source: string = "";
+  @Input() source = '';
 
-  @Input() title: string = "";
+  @Input() title = '';
 
-  @Input() description: string = "";
+  @Input() description = '';
 
   @Output() valueChange = new EventEmitter();
 
@@ -71,11 +68,11 @@ export class SignInCardComponent {
     private userProfileService: UserProfileService,
     private profileService: ProfileService,
     private authService: AuthService,
-    private loadingCtrl: LoadingController,
     private ngZone: NgZone,
     private telemetryService: TelemetryService,
     private appVersion: AppVersion,
-    private sharedPreferences: SharedPreferences
+    private sharedPreferences: SharedPreferences,
+    private commonUtilService: CommonUtilService
   ) {
 
     this.appVersion.getAppName()
@@ -113,8 +110,7 @@ export class SignInCardComponent {
 
     if (!this.isNetworkAvailable) {
       this.valueChange.emit(true);
-    }
-    else {
+    } else {
       this.telemetryService.interact(
         generateInteractTelemetry(
           InteractType.TOUCH,
@@ -126,10 +122,10 @@ export class SignInCardComponent {
       );
 
       this.generateLoginInteractTelemetry(InteractType.TOUCH,
-        InteractSubtype.LOGIN_INITIATE, "");
+        InteractSubtype.LOGIN_INITIATE, '');
 
-      let that = this;
-      let loader = this.getLoader();
+      const that = this;
+      const loader = this.commonUtilService.getLoader();
       loader.present();
       that.auth.doOAuthStepOne()
         .then(token => {
@@ -145,7 +141,7 @@ export class SignInCardComponent {
         .then(() => {
           loader.dismiss();
           that.ngZone.run(() => {
-            that.sharedPreferences.putString("SHOW_WELCOME_TOAST", "true");
+            that.sharedPreferences.putString('SHOW_WELCOME_TOAST', 'true');
             window.location.reload();
             // TabsPage.prototype.ionVieit wWillEnter();
           });
@@ -158,31 +154,31 @@ export class SignInCardComponent {
   }
 
   refreshProfileData() {
-    let that = this;
+    const that = this;
 
     return new Promise<any>((resolve, reject) => {
       that.authService.getSessionData((session) => {
         if (session === undefined || session == null) {
-          reject("session is null");
+          reject('session is null');
         } else {
-          let sessionObj = JSON.parse(session);
-          let req = {
+          const sessionObj = JSON.parse(session);
+          const req = {
             userId: sessionObj[ProfileConstants.USER_TOKEN],
             requiredFields: ProfileConstants.REQUIRED_FIELDS,
             refreshUserProfileDetails: true
           };
           that.userProfileService.getUserProfileDetails(req, res => {
-            let r = JSON.parse(res);
+            const r = JSON.parse(res);
             that.generateLoginInteractTelemetry(InteractType.OTHER, InteractSubtype.LOGIN_SUCCESS, r.id);
 
-            let profile: Profile = new Profile();
+            const profile: Profile = new Profile();
             profile.uid = r.id;
             profile.handle = r.id;
             profile.profileType = ProfileType.TEACHER;
             profile.source = UserSource.SERVER;
 
             that.profileService.setCurrentProfile(false, profile,
-              (res: any) => {
+              (currentProfile: any) => {
                 resolve({
                   slug: r.rootOrg.slug,
                   title: r.rootOrg.orgName
@@ -203,31 +199,25 @@ export class SignInCardComponent {
 
   refreshTenantData(slug: string, title: string) {
     return new Promise((resolve, reject) => {
-      let request = new TenantInfoRequest();
+      const request = new TenantInfoRequest();
       request.refreshTenantInfo = true;
       request.slug = slug;
       this.userProfileService.getTenantInfo(
         request,
         res => {
-          let r = JSON.parse(res);
+          const r = JSON.parse(res);
           (<any>window).splashscreen.setContent(title, r.logo);
           resolve();
         },
         error => {
-          resolve();//ignore
-        })
-    });
-  }
-
-  getLoader(): any {
-    return this.loadingCtrl.create({
-      spinner: "crescent"
+          resolve(); // ignore
+        });
     });
   }
 
   generateLoginInteractTelemetry(interactType, interactSubtype, uid) {
-    let valuesMap = new Map();
-    valuesMap["UID"] = uid;
+    const valuesMap = new Map();
+    valuesMap['UID'] = uid;
     this.telemetryService.interact(
       generateInteractTelemetry(interactType,
         interactSubtype,

@@ -1,15 +1,27 @@
-import { Injectable } from "@angular/core";
-import { TelemetryGeneratorService } from "../../service/telemetry-generator.service";
-import { InteractType, InteractSubtype, Environment, PageId, TelemetryObject, Mode, CorrelationData, ContentDetailRequest, ContentService } from "sunbird";
-import { Network } from "@ionic-native/network";
-import { SearchPage } from "../search/search";
-import { ContentType, MimeType } from "../../app/app.constant";
-import { EnrolledCourseDetailsPage } from "../enrolled-course-details/enrolled-course-details";
-import { ContentDetailsPage } from "../content-details/content-details";
-import { CollectionDetailsPage } from "../collection-details/collection-details";
-import { CommonUtilService } from "../../service/common-util.service";
-import { App } from "ionic-angular";
-
+import { Injectable } from '@angular/core';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import {
+    InteractType,
+    InteractSubtype,
+    Environment,
+    PageId,
+    TelemetryObject,
+    Mode,
+    CorrelationData,
+    ContentDetailRequest,
+    ContentService
+} from 'sunbird';
+import { Network } from '@ionic-native/network';
+import { SearchPage } from '../search/search';
+import {
+    ContentType,
+    MimeType
+} from '../../app/app.constant';
+import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
+import { ContentDetailsPage } from '../content-details/content-details';
+import { CollectionDetailsPage } from '../collection-details/collection-details';
+import { CommonUtilService } from '../../service/common-util.service';
+import { App } from 'ionic-angular';
 
 @Injectable()
 export class QRScannerResultHandler {
@@ -24,26 +36,26 @@ export class QRScannerResultHandler {
     }
 
     isDialCode(scannedData: string): boolean {
-        let results = scannedData.split("/");
-        let data = results[results.length - 2];
-        return data == "dial";
+        const results = scannedData.split('/');
+        const data = results[results.length - 2];
+        return data === 'dial';
     }
 
     isContentId(scannedData: string): boolean {
-        let results = scannedData.split("/");
-        let type = results[results.length - 2];
-        let action = results[results.length - 3];
-        let scope = results[results.length - 4];
-        return (type == "content" && scope == "public") ||
-            (action == "play" && (type == "collection" || type == "content")) ||
-            (action == "learn" && type == "course")
+        const results = scannedData.split('/');
+        const type = results[results.length - 2];
+        const action = results[results.length - 3];
+        const scope = results[results.length - 4];
+        return (type === 'content' && scope === 'public') ||
+            (action === 'play' && (type === 'collection' || type === 'content')) ||
+            (action === 'learn' && type === 'course');
     }
 
     handleDialCode(source: string, scannedData: string) {
         this.source = source;
-        let results = scannedData.split("/");
-        let dialCode = results[results.length - 1];
-        this.generateQRScanSuccessInteractEvent(scannedData, "SearchResult", dialCode);
+        const results = scannedData.split('/');
+        const dialCode = results[results.length - 1];
+        this.generateQRScanSuccessInteractEvent(scannedData, 'SearchResult', dialCode);
         this.app.getActiveNavs()[0].push(SearchPage, {
             dialCode: dialCode,
             corRelation: this.getCorRelationList(dialCode, QRScannerResultHandler.CORRELATION_TYPE),
@@ -54,35 +66,35 @@ export class QRScannerResultHandler {
 
     handleContentId(source: string, scannedData: string) {
         this.source = source;
-        let results = scannedData.split("/");
-        let contentId = results[results.length - 1];
-        this.generateQRScanSuccessInteractEvent(scannedData, "ContentDetail", contentId);
-        let request: ContentDetailRequest = {
+        const results = scannedData.split('/');
+        const contentId = results[results.length - 1];
+        this.generateQRScanSuccessInteractEvent(scannedData, 'ContentDetail', contentId);
+        const request: ContentDetailRequest = {
             contentId: contentId
-        }
+        };
 
         this.contentService.getContentDetail(request, (response) => {
-            let data = JSON.parse(response);
-            this.navigateToDetailsPage(data.result, this.getCorRelationList(data.result.identifier, QRScannerResultHandler.CORRELATION_TYPE));
+            const data = JSON.parse(response);
+            this.navigateToDetailsPage(data.result,
+                this.getCorRelationList(data.result.identifier, QRScannerResultHandler.CORRELATION_TYPE));
         }, (error) => {
-                if (this.network.type === 'none') {
-                    this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
-                }
-                else {
-                    this.commonUtilService.showToast('UNKNOWN_QR');
-                }
-            });
+            if (this.network.type === 'none') {
+                this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
+            } else {
+                this.commonUtilService.showToast('UNKNOWN_QR');
+            }
+        });
     }
 
     handleInvalidQRCode(source: string, scannedData: string) {
         this.source = source;
-        this.generateQRScanSuccessInteractEvent(scannedData, "UNKNOWN", undefined);
+        this.generateQRScanSuccessInteractEvent(scannedData, 'UNKNOWN', undefined);
         this.generateEndEvent(this.source, scannedData);
     }
 
     getCorRelationList(identifier: string, type: string): Array<CorrelationData> {
-        let corRelationList: Array<CorrelationData> = new Array<CorrelationData>();
-        let corRelation: CorrelationData = new CorrelationData();
+        const corRelationList: Array<CorrelationData> = new Array<CorrelationData>();
+        const corRelation: CorrelationData = new CorrelationData();
         corRelation.id = identifier;
         corRelation.type = type;
         corRelationList.push(corRelation);
@@ -96,7 +108,7 @@ export class QRScannerResultHandler {
                 corRelation: corRelationList,
                 source: this.source,
                 shouldGenerateEndTelemetry: true
-            })
+            });
         } else if (content.mimeType === MimeType.COLLECTION) {
             this.app.getActiveNavs()[0].push(CollectionDetailsPage, {
                 content: content,
@@ -104,28 +116,28 @@ export class QRScannerResultHandler {
                 source: this.source,
                 shouldGenerateEndTelemetry: true
 
-            })
+            });
         } else {
             this.app.getActiveNavs()[0].push(ContentDetailsPage, {
                 content: content,
                 corRelation: corRelationList,
                 source: this.source,
                 shouldGenerateEndTelemetry: true
-            })
+            });
         }
     }
 
-
     generateQRScanSuccessInteractEvent(scannedData, action, dialCode) {
-        let values = new Map();
-        values["NetworkAvailable"] = this.network.type === 'none' ? "N" : "Y";
-        values["ScannedData"] = scannedData;
-        values["Action"] = action;
+        const values = new Map();
+        values['networkAvailable'] = this.network.type === 'none' ? 'N' : 'Y';
+        values['scannedData'] = scannedData;
+        values['action'] = action;
+        values['compatibile'] = (action === 'SearchResult' || action === 'ContentDetail') ? 1 : 0;
 
-        let telemetryObject: TelemetryObject = new TelemetryObject();
+        const telemetryObject: TelemetryObject = new TelemetryObject();
         if (dialCode) {
             telemetryObject.id = dialCode;
-            telemetryObject.type = "qr";
+            telemetryObject.type = 'qr';
         }
 
         this.telemetryGeneratorService.generateInteractTelemetry(
@@ -137,10 +149,9 @@ export class QRScannerResultHandler {
         );
     }
 
-
     generateEndEvent(pageId: string, qrData: string) {
         if (pageId) {
-            let telemetryObject: TelemetryObject = new TelemetryObject();
+            const telemetryObject: TelemetryObject = new TelemetryObject();
             telemetryObject.id = qrData;
             telemetryObject.type = QRScannerResultHandler.CORRELATION_TYPE;
             this.telemetryGeneratorService.generateEndTelemetry(
@@ -151,10 +162,6 @@ export class QRScannerResultHandler {
                 telemetryObject
             );
         }
-
-
     }
 
 }
-
-

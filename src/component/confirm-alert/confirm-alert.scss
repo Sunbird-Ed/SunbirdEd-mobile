@@ -8,6 +8,7 @@ confirm-alert {
         opacity: 1;
         margin-top: 3px !important;
         height: 1.4em;
+
     }
     .close-button.button-outline-md .button-inner {
         padding-right: 14px;
@@ -15,12 +16,18 @@ confirm-alert {
     .close-button.button-outline-md [icon-only] ion-icon {
         font-size: 1.4em;
     }
+    .padding-left-5{
+        padding-left: 5% !important;
+    }
+    .margin-top-5{
+        margin-top: 15px !important;
+    }
 }
 
 .confirm-alert-box .popover-content {
     margin: 0;
     width: 100vw !important;
-    height: 20vh !important;
+    height: auto !important;
     box-shadow: unset;
     position: fixed;
     left: 0 !important;
@@ -34,4 +41,5 @@ confirm-alert {
     background-color: map-get($colors, dark) !important;
     opacity: 0.4 !important;
 }
+
 

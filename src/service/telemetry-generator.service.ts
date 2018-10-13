@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
 import {
     TelemetryService,
     Interact,
@@ -10,17 +10,24 @@ import {
     Start,
     Environment,
     Mode,
-    End
-} from "sunbird";
-import { Map } from "../app/telemetryutil";
+    End,
+    ExData,
+    Error,
+    InteractType,
+    InteractSubtype,
+    ImpressionType,
+    PageId
+} from 'sunbird';
+import { Map } from '../app/telemetryutil';
 
 @Injectable()
 export class TelemetryGeneratorService {
     constructor(private telemetryService: TelemetryService) {
     }
 
-    generateInteractTelemetry(interactType, subType, env, pageId, object?: TelemetryObject, values?: Map, rollup?: Rollup, corRelationList?: Array<CorrelationData>) {
-        let interact = new Interact();
+    generateInteractTelemetry(interactType, subType, env, pageId, object?: TelemetryObject, values?: Map,
+        rollup?: Rollup, corRelationList?: Array<CorrelationData>) {
+        const interact = new Interact();
         interact.type = interactType;
         interact.subType = subType;
         interact.pageId = pageId;
@@ -50,15 +57,16 @@ export class TelemetryGeneratorService {
         this.telemetryService.interact(interact);
     }
 
-    generateImpressionTelemetry(type, subtype, pageid, env, objectId?: string, objectType?: string, objectVersion?: string, rollup?: Rollup, corRelationList?: Array<CorrelationData>) {
-        let impression = new Impression();
+    generateImpressionTelemetry(type, subtype, pageid, env, objectId?: string, objectType?: string,
+        objectVersion?: string, rollup?: Rollup, corRelationList?: Array<CorrelationData>) {
+        const impression = new Impression();
         impression.type = type;
         impression.subType = subtype;
         impression.pageId = pageid;
         impression.env = env;
-        impression.objId = objectId ? objectId : "";
-        impression.objType = objectType ? objectType : "";
-        impression.objVer = objectVersion ? objectVersion : "";
+        impression.objId = objectId ? objectId : '';
+        impression.objType = objectType ? objectType : '';
+        impression.objVer = objectVersion ? objectVersion : '';
 
         if (rollup !== undefined) {
             impression.rollup = rollup;
@@ -70,7 +78,7 @@ export class TelemetryGeneratorService {
     }
 
     generateEndTelemetry(type, mode, pageId, env, object?: TelemetryObject, rollup?: Rollup, corRelationList?: Array<CorrelationData>) {
-        let end = new End();
+        const end = new End();
         end.type = type;
         end.pageId = pageId;
         end.env = env;
@@ -96,7 +104,7 @@ export class TelemetryGeneratorService {
     }
 
     generateStartTelemetry(pageId, object?: TelemetryObject, rollup?: Rollup, corRelationList?: Array<CorrelationData>) {
-        let start = new Start();
+        const start = new Start();
         start.type = object.type;
         start.pageId = pageId;
         start.env = Environment.HOME;
@@ -123,7 +131,7 @@ export class TelemetryGeneratorService {
     }
 
     generateLogEvent(logLevel, message, env, type, params: Array<any>) {
-        let log = new Log();
+        const log = new Log();
         log.level = logLevel;
         log.message = message;
         log.env = env;
@@ -131,5 +139,95 @@ export class TelemetryGeneratorService {
         log.params = params;
         this.telemetryService.log(log);
     }
+
+    generateExDataTelemetry(type, data) {
+        const exData = new ExData();
+        exData.type = type;
+        exData.data = data;
+        this.telemetryService.exdata(exData);
+    }
+
+    generateErrorTelemetry(env, errCode, errorType, pageId, stackTrace) {
+        const error = new Error();
+        error.env = env;
+        error.errorCode = errCode;
+        error.errorType = errorType;
+        error.pageId = pageId;
+        error.stacktrace = stackTrace;
+        this.telemetryService.error(error);
+    }
+
+    generateBackClickedTelemetry(pageId, env, isNavBack: boolean, identifier?: string, corRelationList?) {
+        const values = new Map();
+        if (identifier) {
+            values['identifier'] = identifier;
+        }
+        this.generateInteractTelemetry(
+            InteractType.TOUCH,
+            isNavBack ? InteractSubtype.NAV_BACK_CLICKED : InteractSubtype.DEVICE_BACK_CLICKED,
+            env,
+            pageId,
+            undefined,
+            values,
+            corRelationList);
+
+    }
+
+    generatePageViewTelemetry(pageId, env, subType?) {
+        this.generateImpressionTelemetry(ImpressionType.VIEW, subType ? subType : '',
+            pageId,
+            env);
+    }
+
+    generateSpineLoadingTelemetry(content: any, isFirstTime) {
+        const values = new Map();
+        values['isFirstTime'] = isFirstTime;
+        values['size'] = content.size;
+        const telemetryObject: TelemetryObject = new TelemetryObject();
+        telemetryObject.id = content.identifier || content.contentId;
+        telemetryObject.type = content.contentType;
+        telemetryObject.version = content.pkgVersion;
+        this.generateInteractTelemetry(
+            InteractType.OTHER,
+            InteractSubtype.LOADING_SPINE,
+            Environment.HOME,
+            PageId.DOWNLOAD_SPINE,
+            telemetryObject,
+            values);
+    }
+
+    generateCancelDownloadTelemetry(content: any) {
+        const values = new Map();
+        const telemetryObject: TelemetryObject = new TelemetryObject();
+        telemetryObject.id = content.identifier || content.contentId;
+        telemetryObject.type = content.contentType;
+        telemetryObject.version = content.pkgVersion;
+        this.generateInteractTelemetry(
+            InteractType.TOUCH,
+            InteractSubtype.CANCEL_CLICKED,
+            Environment.HOME,
+            PageId.DOWNLOAD_SPINE,
+            telemetryObject,
+            values);
+    }
+
+    generateDownloadAllClickTelemetry(pageId, content, downloadingIdentifier, childrenCount) {
+        const values = new Map();
+        values['downloadingIdentifers'] = downloadingIdentifier;
+        values['childrenCount'] = childrenCount;
+        const telemetryObject: TelemetryObject = new TelemetryObject();
+        telemetryObject.id = content.identifier || content.contentId;
+        telemetryObject.type = content.contentType;
+        telemetryObject.version = content.pkgVersion;
+        this.generateInteractTelemetry(
+            InteractType.TOUCH,
+            InteractSubtype.DOWNLOAD_ALL_CLICKED,
+            Environment.HOME,
+            pageId,
+            telemetryObject,
+            values);
+    }
+
+
 
 }
