@@ -59,7 +59,7 @@
   </div>
 </ion-content>
 
-<ion-footer class="footer" *ngIf="selectedUserIndex !== -1">
+<ion-footer class="footer" *ngIf="userList.length && selectedUserIndex !== -1">
   <ion-row padding >
     <ion-col col-md-10 offset-md-1>
        <button ion-button block center *ngIf="!playContent" (click)="switchAccountConfirmBox()">
