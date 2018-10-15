@@ -49,7 +49,6 @@ export class ProfileSettingsPage {
   unregisterBackButton: any;
   selectedLanguage = 'en';
   profileForTelemetry: any = {};
-  hideBackButton = false;
 
   // syllabusOptions = {
   //   title: this.commonUtilService.translateMessage('SYLLABUS').toLocaleUpperCase(),
@@ -111,7 +110,6 @@ export class ProfileSettingsPage {
   }
 
   ionViewWillEnter() {
-    this.hideBackButton = Boolean(this.navParams.get('hideBackButton'));
     if (this.navParams.get('buildPath')) {
       this.navCtrl.insertPages(0, [{ page: 'LanguageSettingsPage' }, { page: 'UserTypeSelectionPage' }]);
     }
@@ -142,6 +140,13 @@ export class ProfileSettingsPage {
   getGuestUser() {
     this.profileService.getCurrentUser((response) => {
       this.profile = JSON.parse(response);
+      if (this.navParams.get('isChangeRoleRequest')) {
+        this.profile.syllabus = [];
+        this.profile.board = [];
+        this.profile.grade = [];
+        this.profile.subject = [];
+        this.profile.medium = [];
+      }
       this.profileForTelemetry = this.profile;
       this.initUserForm();
     }, () => {
@@ -154,12 +159,21 @@ export class ProfileSettingsPage {
    * Initializes form and assigns default values from the profile object
    */
   initUserForm() {
-    this.userForm = this.fb.group({
-      syllabus: [this.profile && this.profile.syllabus && this.profile.syllabus[0] || []],
-      boards: [this.profile && this.profile.board || []],
-      grades: [this.profile && this.profile.grade || []],
-      medium: [this.profile && this.profile.medium || []]
-    });
+    if (this.navParams.get('isChangeRoleRequest')) {
+      this.userForm = this.fb.group({
+        syllabus: [[]],
+        boards: [[]],
+        grades: [[]],
+        medium: [[]]
+      });
+    } else {
+      this.userForm = this.fb.group({
+        syllabus: [this.profile && this.profile.syllabus && this.profile.syllabus[0] || []],
+        boards: [this.profile && this.profile.board || []],
+        grades: [this.profile && this.profile.grade || []],
+        medium: [this.profile && this.profile.medium || []]
+      });
+    }
   }
 
   /**
@@ -384,7 +398,13 @@ export class ProfileSettingsPage {
     req.medium = formVal.medium;
     req.uid = this.profile.uid;
     req.handle = this.profile.handle;
-    req.profileType = this.profile.profileType;
+
+    if (this.navParams.get('selectedUserType')) {
+      req.profileType = this.navParams.get('selectedUserType');
+    } else {
+      req.profileType = this.profile.profileType;
+    }
+
     req.source = this.profile.source;
     req.createdAt = this.profile.createdAt;
     req.syllabus = (!formVal.syllabus.length) ? [] : [formVal.syllabus];
@@ -417,6 +437,11 @@ export class ProfileSettingsPage {
         this.events.publish('refresh:profile');
         this.appGlobalService.guestUserProfile = JSON.parse(res);
         this.appGlobalService.setOnBoardingCompleted();
+
+        if (this.navParams.get('isChangeRoleRequest')) {
+          this.preference.putString(PreferenceKey.SELECTED_USER_TYPE, req.profileType);
+        }
+
         this.navCtrl.push(TabsPage, {
           loginMode: 'guest'
         });
