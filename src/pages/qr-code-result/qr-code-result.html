@@ -30,7 +30,7 @@
           <ion-card-content>
             <ion-row class="top">
               <ion-col col-3 class="img-container">
-                <img class="app-icon" src="{{ (content.basePath +'/' + content.contentData.appIcon) || defaultImg }}" />
+                <img class="app-icon" src="{{ (content.contentData.appIcon && (content.basePath +'/' + content.contentData.appIcon)) || defaultImg }}" />
               </ion-col>
               <ion-col col-9>
                 <ion-row>
@@ -39,8 +39,8 @@
                     <p class="author">{{content?.contentData?.creator}}</p>
                   </ion-col>
                   <ion-col col-12 class="bottom-fix">
-                    <span class="badge"> {{content?.contentData?.resourceType}} </span>
-                    <span class="size"> {{content?.contentData?.size | fileSize}} </span>
+                    <span class="badge" *ngIf="content?.contentData?.resourceType"> {{content?.contentData?.resourceType}} </span>
+                    <span class="size" *ngIf="content?.contentData?.size"> {{content?.contentData?.size | fileSize}} </span>
                   </ion-col>
                 </ion-row>
               </ion-col>
