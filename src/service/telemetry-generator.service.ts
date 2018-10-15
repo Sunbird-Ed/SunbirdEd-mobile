@@ -14,7 +14,9 @@ import {
     ExData,
     Error,
     InteractType,
-    InteractSubtype
+    InteractSubtype,
+    ImpressionType,
+    PageId
 } from 'sunbird';
 import { Map } from '../app/telemetryutil';
 
@@ -155,13 +157,77 @@ export class TelemetryGeneratorService {
         this.telemetryService.error(error);
     }
 
-    generateBackClickedTelemetry(pageId, env, isNavBack: boolean) {
+    generateBackClickedTelemetry(pageId, env, isNavBack: boolean, identifier?: string, corRelationList?) {
+        const values = new Map();
+        if (identifier) {
+            values['identifier'] = identifier;
+        }
         this.generateInteractTelemetry(
             InteractType.TOUCH,
             isNavBack ? InteractSubtype.NAV_BACK_CLICKED : InteractSubtype.DEVICE_BACK_CLICKED,
             env,
-            pageId);
+            pageId,
+            undefined,
+            values,
+            corRelationList);
 
     }
+
+    generatePageViewTelemetry(pageId, env, subType?) {
+        this.generateImpressionTelemetry(ImpressionType.VIEW, subType ? subType : '',
+            pageId,
+            env);
+    }
+
+    generateSpineLoadingTelemetry(content: any, isFirstTime) {
+        const values = new Map();
+        values['isFirstTime'] = isFirstTime;
+        values['size'] = content.size;
+        const telemetryObject: TelemetryObject = new TelemetryObject();
+        telemetryObject.id = content.identifier || content.contentId;
+        telemetryObject.type = content.contentType;
+        telemetryObject.version = content.pkgVersion;
+        this.generateInteractTelemetry(
+            InteractType.OTHER,
+            InteractSubtype.LOADING_SPINE,
+            Environment.HOME,
+            PageId.DOWNLOAD_SPINE,
+            telemetryObject,
+            values);
+    }
+
+    generateCancelDownloadTelemetry(content: any) {
+        const values = new Map();
+        const telemetryObject: TelemetryObject = new TelemetryObject();
+        telemetryObject.id = content.identifier || content.contentId;
+        telemetryObject.type = content.contentType;
+        telemetryObject.version = content.pkgVersion;
+        this.generateInteractTelemetry(
+            InteractType.TOUCH,
+            InteractSubtype.CANCEL_CLICKED,
+            Environment.HOME,
+            PageId.DOWNLOAD_SPINE,
+            telemetryObject,
+            values);
+    }
+
+    generateDownloadAllClickTelemetry(pageId, content, downloadingIdentifier, childrenCount) {
+        const values = new Map();
+        values['downloadingIdentifers'] = downloadingIdentifier;
+        values['childrenCount'] = childrenCount;
+        const telemetryObject: TelemetryObject = new TelemetryObject();
+        telemetryObject.id = content.identifier || content.contentId;
+        telemetryObject.type = content.contentType;
+        telemetryObject.version = content.pkgVersion;
+        this.generateInteractTelemetry(
+            InteractType.TOUCH,
+            InteractSubtype.DOWNLOAD_ALL_CLICKED,
+            Environment.HOME,
+            pageId,
+            telemetryObject,
+            values);
+    }
+
+
 
 }

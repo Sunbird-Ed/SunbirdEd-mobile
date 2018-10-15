@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import {
   FormBuilder,
   FormGroup,
@@ -37,7 +38,8 @@ export class FormAddress {
     private userProfileService: UserProfileService,
     private commonUtilService: CommonUtilService,
     private alertCtrl: AlertController,
-    private platform: Platform
+    private platform: Platform,
+    private translate: TranslateService
   ) {
 
     /* Receive data from other component */

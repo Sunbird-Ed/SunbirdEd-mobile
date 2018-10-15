@@ -202,6 +202,7 @@ export class ContentDetailsPage {
   source = '';
   unregisterBackButton: any;
   userCount = 0;
+  shouldGenerateTelemetry = true;
 
   /**
    *
@@ -288,7 +289,8 @@ export class ContentDetailsPage {
 
   ionViewDidLoad() {
     this.navBar.backButtonClick = (e: UIEvent) => {
-      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME, true);
+      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
+        true, this.cardData.identifier, this.corRelationList);
       this.handleNavBackButton();
     };
     this.handleDeviceBackButton();
@@ -310,7 +312,8 @@ export class ContentDetailsPage {
 
   handleDeviceBackButton() {
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
-      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME, false);
+      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
+        false, this.cardData.identifier, this.corRelationList);
       this.didViewLoad = false;
       this.dismissPopup();
       this.popToPreviousPage();
@@ -562,6 +565,11 @@ export class ContentDetailsPage {
       this.generateTelemetry();
     }
 
+    if (this.shouldGenerateTelemetry) {
+      this.generateDetailsInteractEvent();
+      this.shouldGenerateEndTelemetry = false;
+    }
+
     if (this.downloadAndPlay) {
       if (!this.content.downloadable) {
         /**
@@ -583,10 +591,29 @@ export class ContentDetailsPage {
       this.generateRollUp();
       const contentType = this.cardData.contentData ? this.cardData.contentData.contentType : this.cardData.contentType;
       this.objType = contentType;
-      this.generateStartEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
       this.generateImpressionEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
+      this.generateStartEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
     }
     this.didViewLoad = true;
+  }
+
+  generateDetailsInteractEvent() {
+    const values = new Map();
+    values['isUpdateAvailable'] = this.isUpdateAvail;
+    values['isDownloaded'] = this.content.downloadable;
+
+    const telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.id = this.content.identifier;
+    telemetryObject.type = this.content.contentType;
+    telemetryObject.version = this.content.pkgVersion;
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
+      ImpressionType.DETAIL,
+      Environment.HOME,
+      PageId.CONTENT_DETAIL,
+      telemetryObject,
+      values,
+      this.objRollup,
+      this.corRelationList);
   }
 
   generateRollUp() {

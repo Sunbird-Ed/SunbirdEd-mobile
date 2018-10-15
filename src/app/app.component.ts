@@ -73,12 +73,6 @@ export class MyApp {
     'android.permission.ACCESS_FINE_LOCATION',
     'android.permission.RECORD_AUDIO'];
 
-  options = {
-    message: '',
-    duration: 3000,
-    position: 'bottom'
-  };
-
   constructor(
     private platform: Platform,
     statusBar: StatusBar,
@@ -270,18 +264,18 @@ export class MyApp {
       if (navObj.canGoBack()) {
         navObj.pop();
       } else {
-        if (self.counter === 0) {
-          self.counter++;
-          this.commonUtilService.showToast('BACK_TO_EXIT');
-          this.telemetryGeneratorService.generateBackClickedTelemetry(this.computePageId(currentPage), Environment.HOME, false);
-          setTimeout(() => { self.counter = 0; }, 1500);
-        } else {
-          this.telemetryGeneratorService.generateBackClickedTelemetry(this.computePageId(currentPage), Environment.HOME, false);
-          self.platform.exitApp();
-          this.telemetryGeneratorService.generateEndTelemetry('app', '', '', Environment.HOME);
+          if (self.counter === 0) {
+            self.counter++;
+            this.commonUtilService.showToast('BACK_TO_EXIT');
+            this.telemetryGeneratorService.generateBackClickedTelemetry(this.computePageId(currentPage), Environment.HOME, false);
+            setTimeout(() => { self.counter = 0; }, 1500);
+          } else {
+            this.telemetryGeneratorService.generateBackClickedTelemetry(this.computePageId(currentPage), Environment.HOME, false);
+            self.platform.exitApp();
+            this.telemetryGeneratorService.generateEndTelemetry('app', '', '', Environment.HOME);
 
+          }
         }
-      }
     });
   }
 
@@ -472,18 +466,7 @@ export class MyApp {
       });
   }
 
-  /**
-   * It will returns Toast Object
-   * @param {message} string - Message for the Toast to show
-   * @returns {object} - toast Object
-   */
-  getToast(message: string = ''): any {
-    this.options.message = message;
-    if (message.length) { return this.toastCtrl.create(this.options); }
-  }
-
   // TODO: this method will be used to communicate with the openrap device
-
   openrapDiscovery() {
     // (<any>window).openrap.startDiscovery(
     //   (success) =>{

@@ -1,5 +1,6 @@
+import { CommonUtilService } from './../../../service/common-util.service';
 import { Component } from '@angular/core';
-import { NavController, NavParams, LoadingController } from 'ionic-angular';
+import { NavController, NavParams } from 'ionic-angular';
 import { AboutAppPage } from '../about-app/about-app';
 import { TermsofservicePage } from '../termsofservice/termsofservice';
 import { PrivacypolicyPage } from '../privacypolicy/privacypolicy';
@@ -7,9 +8,7 @@ import { AppVersion } from '@ionic-native/app-version';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import {
   DeviceInfoService,
-  BuildParamService
-} from 'sunbird';
-import {
+  BuildParamService,
   ImpressionType,
   PageId,
   Environment,
@@ -32,19 +31,19 @@ export class AboutUsPage {
   version: string;
   fileUrl: string;
 
-  constructor(public navCtrl: NavController,
+  constructor(
+    public navCtrl: NavController,
     public navParams: NavParams,
     private deviceInfoService: DeviceInfoService,
     private buildParamService: BuildParamService,
     private appVersion: AppVersion,
     private preference: SharedPreferences,
     private socialSharing: SocialSharing,
-    private loadingCtrl: LoadingController,
-    private telemetryService: TelemetryService) {
-  }
+    private telemetryService: TelemetryService,
+    private commonUtilService: CommonUtilService
+  ) { }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad AboutUsPage');
     this.version = 'app version will be shown here';
 
     this.deviceInfoService.getDeviceID(
@@ -53,7 +52,7 @@ export class AboutUsPage {
         this.deviceId = res;
       },
       (err: any) => {
-        // console.log('Device Id: ', JSON.parse(err));
+        console.error('Error', err);
       });
     this.appVersion.getAppName()
       .then((appName: any) => {
@@ -63,41 +62,41 @@ export class AboutUsPage {
         this.getVersionName(val);
       });
   }
+
   ionViewDidLeave() {
     (<any>window).supportfile.removeFile((result) => {
       console.log('File deleted -' + JSON.parse(result));
     }, (error) => {
-      console.log('error' + error);
+      console.error('error', error);
     });
   }
+
   shareInformation() {
     this.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.SUPPORT_CLICKED);
     (<any>window).supportfile.shareSunbirdConfigurations((result) => {
-      const loader = this.getLoader();
+      const loader = this.commonUtilService.getLoader();
       loader.present();
-      console.log('Result - ' + JSON.parse(result));
       this.preference.putString(KEY_SUNBIRD_CONFIG_FILE_PATH, JSON.parse(result));
       this.preference.getString(KEY_SUNBIRD_CONFIG_FILE_PATH)
         .then(val => {
           loader.dismiss();
-          if (val === undefined || val === '' || val === null) {
-            // do nothing
-          } else {
+
+          if (Boolean(val)) {
             this.fileUrl = 'file://' + val;
+
             // Share via email
             this.socialSharing.shareViaEmail('', '', [], null, null, this.fileUrl).then(() => {
-              console.log('Sharing Data is possible');
             }).catch(error => {
-              console.log('Sharing Data is not possible');
-              console.log(error);
-              // Error!
+              console.error('Sharing Data is not possible', error);
             });
           }
+
         });
     }, (error) => {
-      console.log('ERROR - ' + error);
+      console.error('ERROR - ' + error);
     });
   }
+
   aboutApp() {
     this.navCtrl.push(AboutAppPage);
   }
@@ -109,6 +108,7 @@ export class AboutUsPage {
   privacyPolicy() {
     this.navCtrl.push(PrivacypolicyPage);
   }
+
   generateInteractTelemetry(interactionType, interactSubtype) {
     this.telemetryService.interact(generateInteractTelemetry(
       interactionType, interactSubtype,
@@ -118,12 +118,7 @@ export class AboutUsPage {
       undefined
     ));
   }
-  getLoader(): any {
-    return this.loadingCtrl.create({
-      duration: 30000,
-      spinner: 'crescent'
-    });
-  }
+
   generateImpressionEvent() {
     this.telemetryService.impression(generateImpressionTelemetry(
       ImpressionType.VIEW, '',
@@ -155,5 +150,4 @@ export class AboutUsPage {
         return '';
       });
   }
-
 }

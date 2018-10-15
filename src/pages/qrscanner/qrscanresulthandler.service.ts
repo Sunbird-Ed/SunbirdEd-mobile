@@ -55,7 +55,7 @@ export class QRScannerResultHandler {
         this.source = source;
         const results = scannedData.split('/');
         const dialCode = results[results.length - 1];
-        // this.generateQRScanSuccessInteractEvent(scannedData, "SearchResult", dialCode);
+        this.generateQRScanSuccessInteractEvent(scannedData, 'SearchResult', dialCode);
         this.app.getActiveNavs()[0].push(SearchPage, {
             dialCode: dialCode,
             corRelation: this.getCorRelationList(dialCode, QRScannerResultHandler.CORRELATION_TYPE),
@@ -132,7 +132,7 @@ export class QRScannerResultHandler {
         values['networkAvailable'] = this.network.type === 'none' ? 'N' : 'Y';
         values['scannedData'] = scannedData;
         values['action'] = action;
-        values['qrCodeType'] = (action === 'ContentDetail' ? 'CONTENT' : 'INVALID');
+        values['compatibile'] = (action === 'SearchResult' || action === 'ContentDetail') ? 1 : 0;
 
         const telemetryObject: TelemetryObject = new TelemetryObject();
         if (dialCode) {

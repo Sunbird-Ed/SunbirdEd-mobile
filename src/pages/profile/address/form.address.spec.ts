@@ -1,5 +1,6 @@
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
+import { } from 'jasmine';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
@@ -9,7 +10,7 @@ import { ToastController, LoadingController, PopoverController } from 'ionic-ang
 import { Platform } from 'ionic-angular';
 import { AlertController, Alert } from 'ionic-angular';
 import { TranslateService, TranslateModule, TranslateLoader } from '@ngx-translate/core';
-import { AuthService } from 'sunbird';
+import { AuthService, SharedPreferences, ServiceProvider } from 'sunbird';
 import { UserProfileService } from 'sunbird';
 import { FormAddress } from './form.address';
 
@@ -18,6 +19,7 @@ import {
     LoadingControllerMock, PopoverControllerMock, NavParamsMock, TranslateServiceStub, ToastControllerMockNew, AlertControllerMock
 } from '../../../../test-config/mocks-ionic';
 import { CommonUtilService } from '../../../service/common-util.service';
+import { Events } from 'ionic-angular';
 
 describe('FormAddress', () => {
     let comp: FormAddress;
@@ -36,6 +38,7 @@ describe('FormAddress', () => {
             schemas: [NO_ERRORS_SCHEMA],
             providers: [
                 FormBuilder, UserProfileService, AuthService, CommonUtilService,
+                SharedPreferences, ServiceProvider, Events,
                 { provide: NavController, useValue: navControllerStub },
                 { provide: NavParams, useClass: NavParamsMock },
                 { provide: Platform, useValue: platformStub },
@@ -156,14 +159,6 @@ describe('FormAddress', () => {
         expect(commonUtilServiceStub.showToast).toHaveBeenCalled();
         expect(commonUtilServiceStub.translateMessage).toHaveBeenCalledWith('PROFILE_UPDATE_FAILED');
     });
-
-
-    it('getLoader makes expected calls', () => {
-        const commonUtilServiceStub = TestBed.get(CommonUtilService)
-        commonUtilServiceStub.getLoader();
-        expect(commonUtilServiceStub.create).toHaveBeenCalled();
-    });
-
     it('showDeleteConfirm should make expected calls', () => {
         const alertController = TestBed.get(AlertController);
         // const alert = TestBed.get(Alert);

@@ -1,8 +1,20 @@
 {
-  "extends": ["codelyzer"],
+  "extends": [
+    "codelyzer"
+  ],
   "rules": {
     "arrow-return-shorthand": true,
-    "ban-types": [true, ["Object", "Use {} instead."], ["String", "use string instead"]],
+    "ban-types": [
+      true,
+      [
+        "Object",
+        "Use {} instead."
+      ],
+      [
+        "String",
+        "use string instead"
+      ]
+    ],
     "only-arrow-functions": true,
     "callable-types": true,
     "class-name": true,
@@ -137,7 +149,13 @@
     "no-output-rename": true,
     "use-life-cycle-interface": true,
     "use-pipe-transform-interface": true,
-    "component-class-suffix": [false, "Component"],
-    "directive-class-suffix": [false, "Page"]
+    "component-class-suffix": [
+      false,
+      "Component"
+    ],
+    "directive-class-suffix": [
+      false,
+      "Page"
+    ]
   }
 }

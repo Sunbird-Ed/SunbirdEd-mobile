@@ -2,8 +2,7 @@ import { Component } from '@angular/core';
 import {
   NavController,
   PopoverController,
-  Events,
-  LoadingController
+  Events
 } from 'ionic-angular';
 import * as _ from 'lodash';
 
@@ -52,7 +51,6 @@ export class GuestProfilePage {
     private network: Network,
     private popoverCtrl: PopoverController,
     private profileService: ProfileService,
-    private loadingCtrl: LoadingController,
     private events: Events,
     private preference: SharedPreferences,
     private commonUtilService: CommonUtilService,
@@ -81,15 +79,6 @@ export class GuestProfilePage {
     this.events.subscribe('refresh:profile', () => {
       this.refreshProfileData(false, false);
     });
-
-    /*     this.preference.getString('selected_user_type')
-          .then(val => {
-            if (val == ProfileType.TEACHER) {
-              this.showSignInCard = true;
-            } else if (val == ProfileType.STUDENT) {
-              this.showSignInCard = false;
-            }
-          }); */
 
     const profileType = this.appGlobalService.getGuestUserType();
     if (profileType === ProfileType.TEACHER && this.appGlobalService.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER) {
@@ -124,7 +113,7 @@ export class GuestProfilePage {
   }
 
   refreshProfileData(refresher: any = false, showLoader: boolean = true) {
-    this.loader = this.getLoader();
+    this.loader = this.commonUtilService.getLoader();
 
     if (showLoader) {
       this.loader.present();
@@ -135,13 +124,11 @@ export class GuestProfilePage {
       this.getSyllabusDetails();
       setTimeout(() => {
         if (refresher) { refresher.complete(); }
-        // loader.dismiss();
       }, 500);
-      console.log('Response', res);
     },
       (err: any) => {
         this.loader.dismiss();
-        console.log('Err1', err);
+        console.error('Error', err);
       });
   }
 
@@ -170,13 +157,6 @@ export class GuestProfilePage {
       }).present({
         ev: event
       });
-  }
-
-  getLoader(): any {
-    return this.loadingCtrl.create({
-      duration: 30000,
-      spinner: 'crescent'
-    });
   }
 
   getSyllabusDetails() {
@@ -236,17 +216,7 @@ export class GuestProfilePage {
         displayValues.push(element.name);
       }
     });
-    return this.arrayToString(displayValues);
-  }
-
-  /**
-   * Method to convert Array to Comma separated string
-   * @param {Array<string>} stringArray
-   * @returns {string}
-   */
-  arrayToString(stringArray: Array<string>): string {
-    console.log('stringArray hererer', stringArray.join(', '));
-    return stringArray.join(', ');
+    return this.commonUtilService.arrayToString(displayValues);
   }
 
   /**

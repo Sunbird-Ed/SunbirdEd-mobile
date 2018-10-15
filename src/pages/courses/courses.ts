@@ -222,7 +222,7 @@ export class CoursesPage implements OnInit {
             img.id = 'qr_scanner';
             element.appendChild(img);
           }, 100);
-
+          this.telemetryGeneratorService.generatePageViewTelemetry(PageId.ONBOARDING_QR_SHOWCASE, Environment.ONBOARDING, PageId.COURSES);
           this.preference.putString('show_app_walkthrough_screen', 'false');
         }
       });

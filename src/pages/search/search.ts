@@ -45,10 +45,6 @@ import {
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 import { AppGlobalService } from '../../service/app-global.service';
 import { PopoverController } from 'ionic-angular';
-import {
-  QRAlertCallBack,
-  QRScannerAlert
-} from '../qrscanner/qrscanner_alert';
 import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
 import { CommonUtilService } from '../../service/common-util.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
@@ -155,6 +151,8 @@ export class SearchPage {
 
   ionViewDidLoad() {
     this.navBar.backButtonClick = () => {
+      this.telemetryGeneratorService.generateBackClickedTelemetry(ImpressionType.SEARCH,
+        Environment.HOME, true, undefined, this.corRelationList);
       this.navigateToPreviousPage();
     };
   }
@@ -196,6 +194,8 @@ export class SearchPage {
   handleDeviceBackButton() {
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.navigateToPreviousPage();
+      this.telemetryGeneratorService.generateBackClickedTelemetry(ImpressionType.SEARCH,
+        Environment.HOME, false, undefined, this.corRelationList);
       this.backButtonFunc();
     }, 10);
   }
@@ -589,7 +589,7 @@ export class SearchPage {
       this.checkParent(this.dialCodeResult[0], this.dialCodeResult[0].content[0]);
       isParentCheckStarted = true;
     }
-    this.generateQRScanSuccessInteractEvent(this.dialCodeResult, this.dialCode, 'SearchResult');
+    this.generateQRScanSuccessInteractEvent(this.dialCodeResult, this.dialCode);
     if (contentArray && contentArray.length > 1) {
       contentArray.forEach((content) => {
         if (addedContent.indexOf(content.identifier) < 0) {
@@ -615,25 +615,18 @@ export class SearchPage {
     }
   }
 
-  generateQRScanSuccessInteractEvent(dialCodeResult, action, dialCode) {
+  generateQRScanSuccessInteractEvent(dialCodeResult, dialCode) {
     const values = new Map();
     values['networkAvailable'] = this.network.type === 'none' ? 'N' : 'Y';
     values['scannedData'] = dialCode;
-    values['action'] = action;
-    values['qrCodeType'] = 'DIAL';
-    values['dialCodeResultCount'] = dialCodeResult.length;
-
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    if (dialCode) {
-      telemetryObject.id = dialCode;
-      telemetryObject.type = 'qr';
-    }
+    values['count'] = dialCodeResult.length;
 
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.OTHER,
-      InteractSubtype.QRCodeScanSuccess,
+      InteractSubtype.DIAL_SEARCH_RESULT_FOUND,
       Environment.HOME,
-      ImpressionType.SEARCH, telemetryObject,
+      PageId.SEARCH,
+      undefined,
       values
     );
   }

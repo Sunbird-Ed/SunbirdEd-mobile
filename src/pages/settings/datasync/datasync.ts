@@ -1,8 +1,19 @@
+import { CommonUtilService } from './../../../service/common-util.service';
 import { Component, NgZone } from '@angular/core';
-import { NavController, NavParams, LoadingController, ToastController } from 'ionic-angular';
-import { TelemetryService, SyncStat, SharedPreferences, PageId,
-         Environment, ImpressionType, Impression, InteractType, InteractSubtype,
-         ShareUtil, TelemetryStat } from 'sunbird';
+import { NavController, NavParams } from 'ionic-angular';
+import {
+  TelemetryService,
+  SyncStat,
+  SharedPreferences,
+  PageId,
+  Environment,
+  ImpressionType,
+  Impression,
+  InteractType,
+  InteractSubtype,
+  ShareUtil,
+  TelemetryStat
+} from 'sunbird';
 import { DataSyncType } from './datasynctype.enum';
 import { TranslateService } from '@ngx-translate/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
@@ -26,34 +37,27 @@ export class DatasyncPage {
 
   OPTIONS: typeof DataSyncType = DataSyncType;
 
-  constructor(public zone: NgZone,
+  constructor(
+    public zone: NgZone,
     public navCtrl: NavController,
     public navParams: NavParams,
     private telemetryService: TelemetryService,
     private preference: SharedPreferences,
     private translate: TranslateService,
-    private loadingCtrl: LoadingController,
     private shareUtil: ShareUtil,
     private social: SocialSharing,
-    private toastCtrl: ToastController) {
-  }
+    private commonUtilService: CommonUtilService
+  ) { }
 
   init() {
     const that = this;
-
-    // fetch the string
-    this.translate.get('LAST_SYNC').subscribe(value => {
-      this.lastSyncedTimeString = value;
-      this.getLastSyncTime();
-
-    });
+    this.lastSyncedTimeString = this.commonUtilService.translateMessage('LAST_SYNC');
+    this.getLastSyncTime();
 
     // check what sync option is selected
     that.preference.getString(KEY_DATA_SYNC_TYPE)
       .then(val => {
-        if (val === undefined || val === '' || val === null) {
-          that.dataSyncType = DataSyncType.off;
-        } else {
+        if (Boolean(val)) {
           if (val === 'OFF') {
             that.dataSyncType = DataSyncType.off;
           } else if (val === 'OVER_WIFI_ONLY') {
@@ -61,6 +65,8 @@ export class DatasyncPage {
           } else if (val === 'ALWAYS_ON') {
             that.dataSyncType = DataSyncType.always_on;
           }
+        } else {
+          that.dataSyncType = DataSyncType.off;
         }
       });
   }
@@ -81,14 +87,10 @@ export class DatasyncPage {
   }
 
   onSelected() {
+    /*istanbul ignore else */
     if (this.dataSyncType !== undefined) {
       this.preference.putString(KEY_DATA_SYNC_TYPE, this.dataSyncType);
     }
-
-  }
-
-  goBack() {
-    this.navCtrl.pop();
   }
 
   getLastSyncTime() {
@@ -96,13 +98,51 @@ export class DatasyncPage {
       const that = this;
       that.zone.run(() => {
         const syncStat: TelemetryStat = JSON.parse(response).result;
-        console.log('Telemetry Data Sync Time : ' + syncStat.lastSyncTime);
+
         if (syncStat.lastSyncTime !== 0) {
           const milliseconds = Number(syncStat.lastSyncTime);
 
           // get date
           const date: Date = new Date(milliseconds);
+          const month: Number = date.getMonth() + 1;
 
+          // complete date and time
+          const dateAndTime: string = date.getDate() + '/' + month +
+            '/' + date.getFullYear() + ', ' + that.getTimeIn12HourFormat(date);
+          that.latestSync = this.lastSyncedTimeString + ' ' + dateAndTime;
+        }
+      });
+    }, () => {
+    });
+  }
+
+  shareTelemetry() {
+    const loader = this.commonUtilService.getLoader();
+    loader.present();
+    this.shareUtil.exportTelemetry(path => {
+      loader.dismiss();
+      this.social.share('', '', 'file://' + path, '');
+    }, () => {
+      loader.dismiss();
+      this.commonUtilService.showToast('SHARE_TELEMETRY_FAILED');
+    });
+  }
+
+  onSyncClick() {
+    const that = this;
+    const loader = this.commonUtilService.getLoader();
+    loader.present();
+    this.generateInteractEvent(InteractType.TOUCH, InteractSubtype.MANUALSYNC_INITIATED, null);
+    this.telemetryService.sync(
+      (response) => {
+
+        that.zone.run(() => {
+          const syncStat: SyncStat = response.result;
+          this.generateInteractEvent(InteractType.OTHER, InteractSubtype.MANUALSYNC_SUCCESS, syncStat.syncedFileSize.toString());
+          const milliseconds = Number(syncStat.syncTime);
+
+          // get date
+          const date: Date = new Date(milliseconds);
           const month: Number = date.getMonth() + 1;
 
           // complete date and time
@@ -110,72 +150,19 @@ export class DatasyncPage {
             '/' + date.getFullYear() + ', ' + that.getTimeIn12HourFormat(date);
 
           that.latestSync = this.lastSyncedTimeString + ' ' + dateAndTime;
-        }
 
-      });
+          // store the latest sync time
+          this.preference.putString(KEY_DATA_SYNC_TIME, dateAndTime);
 
-    }, () => {
-      });
-  }
-
-  shareTelemetry() {
-    const loader = this.getLoader();
-    loader.present();
-    this.shareUtil.exportTelemetry(path => {
-      loader.dismiss();
-      this.social.share('', '', 'file://' + path, '');
-    }, () => {
-        loader.dismiss();
-        const toast = this.toastCtrl.create({
-          message: this.translateMessage('SHARE_TELEMETRY_FAILED'),
-          duration: 2000,
-          position: 'bottom'
+          loader.dismiss();
+          this.commonUtilService.showToast('DATA_SYNC_SUCCESSFUL');
         });
-        toast.present();
-      });
-  }
-
-  onSyncClick() {
-    console.log('Sync called');
-    const that = this;
-    const loader = this.getLoader();
-    loader.present();
-    this.generateInteractEvent(InteractType.TOUCH, InteractSubtype.MANUALSYNC_INITIATED, null);
-    this.telemetryService.sync((response) => {
-
-      that.zone.run(() => {
-        console.log('Telemetry Data Sync : ' + response);
-
-        const syncStat: SyncStat = response.result;
-        this.generateInteractEvent(InteractType.OTHER, InteractSubtype.MANUALSYNC_SUCCESS, syncStat.syncedFileSize.toString());
-        console.log('Telemetry Data Sync Time : ' + syncStat.syncTime);
-        const milliseconds = Number(syncStat.syncTime);
-
-        // get date
-        const date: Date = new Date(milliseconds);
-
-        const month: Number = date.getMonth() + 1;
-
-        // complete date and time
-        const dateAndTime: string = date.getDate() + '/' + month +
-          '/' + date.getFullYear() + ', ' + that.getTimeIn12HourFormat(date);
-
-        that.latestSync = this.lastSyncedTimeString + ' ' + dateAndTime;
-
-        // store the latest sync time
-        this.preference.putString(KEY_DATA_SYNC_TIME, dateAndTime);
-
-        console.log('Telemetry Data Sync Time : ' + this.latestSync);
+      },
+      (error) => {
         loader.dismiss();
-        this.presentToast('DATA_SYNC_SUCCESSFUL');
+        this.commonUtilService.showToast('DATA_SYNC_FAILURE');
+        console.error('Telemetry Data Sync Error: ' + error);
       });
-
-
-    }, (error) => {
-      loader.dismiss();
-      this.presentToast('DATA_SYNC_FAILURE');
-      console.log('Telemetry Data Sync Error: ' + error);
-    });
   }
 
 
@@ -191,12 +178,14 @@ export class DatasyncPage {
     hours = hours ? hours : 12; // the hour '0' should be '12'
     newMinutes = minutes < 10 ? '0' + minutes : '' + minutes;
     const strTime = hours + ':' + newMinutes + ' ' + ampm;
+
     return strTime;
   }
 
 
 
   generateInteractEvent(interactType: string, subtype: string, size: string) {
+    /*istanbul ignore else */
     if (size != null) {
       const valuesMap = new CMap();
       valuesMap['SizeOfFileInKB'] = size;
@@ -210,34 +199,5 @@ export class DatasyncPage {
         undefined
       ));
     }
-  }
-
-  getLoader(): any {
-    return this.loadingCtrl.create({
-      spinner: 'crescent'
-    });
-  }
-
-  presentToast(translationId: string) {
-    const toast = this.toastCtrl.create({
-      message: this.translateMessage(translationId),
-      duration: 3000
-    });
-    toast.present();
-  }
-
-  /**
-  * Used to Translate message to current Language
-  * @param {string} messageConst - Message Constant to be translated
-  * @returns {string} translatedMsg - Translated Message
-  */
-  translateMessage(messageConst: string): string {
-    let translatedMsg = '';
-    this.translate.get(messageConst).subscribe(
-      (value: any) => {
-        translatedMsg = value;
-      }
-    );
-    return translatedMsg;
   }
 }

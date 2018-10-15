@@ -20,7 +20,6 @@ import {
 // import { ComponentsModule } from '../../component/components.module';
 import { PipesModule } from '../../pipes/pipes.module';
 import { Navbar } from 'ionic-angular';
-import { doesNotThrow } from 'assert';
 import { CommonUtilService } from '../../service/common-util.service';
 import { ToastController } from 'ionic-angular';
 import { LoadingController } from 'ionic-angular';
@@ -34,7 +33,7 @@ describe('QrCodeResultPage', () => {
             imports: [TranslateModule.forRoot(), PipesModule],
             declarations: [ QrCodeResultPage ],
             schemas: [ NO_ERRORS_SCHEMA ],
-            providers: [
+            providers: [ToastController, App, LoadingController,
                 TelemetryGeneratorService, Platform, ServiceProvider, TelemetryService, BuildParamService, FrameworkService,
                 ContentService, AppGlobalService, Navbar, CommonUtilService, App,
                 { provide: FormAndFrameworkUtilService, useClass: FormAndFrameworkUtilServiceMock },
@@ -210,7 +209,7 @@ describe('QrCodeResultPage', () => {
     it('#checkProfileData should call setCurrentProfile with first argument as 1', (done) => {
         const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
         // spyOn(comp, 'showContentComingSoonAlert');
-        spyOn(comp, 'setCurrentProfile');
+            spyOn(comp, 'setCurrentProfile');
         const mockContent = JSON.parse(JSON.stringify(mockRes.getChildContentAPIResponse.result.contentData));
         const mockProfile = JSON.parse(JSON.stringify(mockRes.profile));
         // comp.profile = mockProfile;
