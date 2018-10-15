@@ -255,7 +255,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       values);
 
     queryParams = updateFilterInSearchQuery(queryParams, this.appliedFilter, this.profile, this.mode,
-                   this.isFilterApplied, this.appGlobalService);
+      this.isFilterApplied, this.appGlobalService);
 
     this.navCtrl.push(ViewMoreActivityPage, {
       requestParams: queryParams,
@@ -302,99 +302,99 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 	 */
   getPopularContent(isAfterLanguageChange = false, pageAssembleCriteria?: PageAssembleCriteria) {
     // if (this.isOnBoardingCardCompleted || !this.guestUser) {
-      this.pageApiLoader = true;
-      // this.noInternetConnection = false;
-      const that = this;
+    this.pageApiLoader = true;
+    // this.noInternetConnection = false;
+    const that = this;
 
-      if (!pageAssembleCriteria) {
-        const criteria = new PageAssembleCriteria();
-        criteria.name = 'Resource';
-        criteria.mode = 'soft';
+    if (!pageAssembleCriteria) {
+      const criteria = new PageAssembleCriteria();
+      criteria.name = 'Resource';
+      criteria.mode = 'soft';
 
-        if (that.appliedFilter) {
-          let filterApplied = false;
+      if (that.appliedFilter) {
+        let filterApplied = false;
 
-          Object.keys(this.appliedFilter).forEach(key => {
-            if (this.appliedFilter[key].length > 0) {
-              filterApplied = true;
-            }
-          });
-
-          if (filterApplied) {
-            criteria.mode = 'hard';
-          }
-
-          criteria.filters = this.appliedFilter;
-        }
-
-        pageAssembleCriteria = criteria;
-      }
-
-      this.mode = pageAssembleCriteria.mode;
-
-      if (this.profile && !this.isFilterApplied) {
-
-        if (!pageAssembleCriteria.filters) {
-          pageAssembleCriteria.filters = new PageAssembleFilter();
-        }
-
-        if (this.profile.board && this.profile.board.length) {
-          pageAssembleCriteria.filters.board = this.applyProfileFilter(this.profile.board, pageAssembleCriteria.filters.board, 'board');
-        }
-
-        if (this.profile.medium && this.profile.medium.length) {
-          pageAssembleCriteria.filters.medium = this.applyProfileFilter(this.profile.medium, pageAssembleCriteria.filters.medium, 'medium');
-        }
-
-        if (this.profile.grade && this.profile.grade.length) {
-          pageAssembleCriteria.filters.gradeLevel = this.applyProfileFilter(this.profile.grade,
-             pageAssembleCriteria.filters.gradeLevel, 'gradeLevel');
-        }
-
-        if (this.profile.subject && this.profile.subject.length) {
-          pageAssembleCriteria.filters.subject = this.applyProfileFilter(this.profile.subject,
-             pageAssembleCriteria.filters.subject, 'subject');
-        }
-      }
-
-      this.pageService.getPageAssemble(pageAssembleCriteria, res => {
-        that.ngZone.run(() => {
-          const response = JSON.parse(res);
-          // TODO Temporary code - should be fixed at backend
-          const sections = JSON.parse(response.sections);
-          const newSections = [];
-          sections.forEach(element => {
-            element.display = JSON.parse(element.display);
-            if (element.display.name) {
-              if (_.has(element.display.name, this.selectedLanguage)) {
-                const langs = [];
-                _.forEach(element.display.name, (value, key) => {
-                  langs[key] = value;
-                });
-                element.name = langs[this.selectedLanguage];
-              }
-            }
-            newSections.push(element);
-          });
-          // END OF TEMPORARY CODE
-          that.storyAndWorksheets = newSections;
-          this.pageLoadedSuccess = true;
-          this.pageApiLoader = false;
-          // this.noInternetConnection = false;
-          this.checkEmptySearchResult(isAfterLanguageChange);
-        });
-      }, error => {
-        console.log('error while getting popular resources...', error);
-        that.ngZone.run(() => {
-          this.pageApiLoader = false;
-          if (error === 'CONNECTION_ERROR') {
-            // this.noInternetConnection = true;
-            this.isNetworkAvailable = false;
-          } else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
-            if (!isAfterLanguageChange) { this.commonUtilService.showToast('ERROR_FETCHING_DATA'); }
+        Object.keys(this.appliedFilter).forEach(key => {
+          if (this.appliedFilter[key].length > 0) {
+            filterApplied = true;
           }
         });
+
+        if (filterApplied) {
+          criteria.mode = 'hard';
+        }
+
+        criteria.filters = this.appliedFilter;
+      }
+
+      pageAssembleCriteria = criteria;
+    }
+
+    this.mode = pageAssembleCriteria.mode;
+
+    if (this.profile && !this.isFilterApplied) {
+
+      if (!pageAssembleCriteria.filters) {
+        pageAssembleCriteria.filters = new PageAssembleFilter();
+      }
+
+      if (this.profile.board && this.profile.board.length) {
+        pageAssembleCriteria.filters.board = this.applyProfileFilter(this.profile.board, pageAssembleCriteria.filters.board, 'board');
+      }
+
+      if (this.profile.medium && this.profile.medium.length) {
+        pageAssembleCriteria.filters.medium = this.applyProfileFilter(this.profile.medium, pageAssembleCriteria.filters.medium, 'medium');
+      }
+
+      if (this.profile.grade && this.profile.grade.length) {
+        pageAssembleCriteria.filters.gradeLevel = this.applyProfileFilter(this.profile.grade,
+          pageAssembleCriteria.filters.gradeLevel, 'gradeLevel');
+      }
+
+      if (this.profile.subject && this.profile.subject.length) {
+        pageAssembleCriteria.filters.subject = this.applyProfileFilter(this.profile.subject,
+          pageAssembleCriteria.filters.subject, 'subject');
+      }
+    }
+
+    this.pageService.getPageAssemble(pageAssembleCriteria, res => {
+      that.ngZone.run(() => {
+        const response = JSON.parse(res);
+        // TODO Temporary code - should be fixed at backend
+        const sections = JSON.parse(response.sections);
+        const newSections = [];
+        sections.forEach(element => {
+          element.display = JSON.parse(element.display);
+          if (element.display.name) {
+            if (_.has(element.display.name, this.selectedLanguage)) {
+              const langs = [];
+              _.forEach(element.display.name, (value, key) => {
+                langs[key] = value;
+              });
+              element.name = langs[this.selectedLanguage];
+            }
+          }
+          newSections.push(element);
+        });
+        // END OF TEMPORARY CODE
+        that.storyAndWorksheets = newSections;
+        this.pageLoadedSuccess = true;
+        this.pageApiLoader = false;
+        // this.noInternetConnection = false;
+        this.checkEmptySearchResult(isAfterLanguageChange);
       });
+    }, error => {
+      console.log('error while getting popular resources...', error);
+      that.ngZone.run(() => {
+        this.pageApiLoader = false;
+        if (error === 'CONNECTION_ERROR') {
+          // this.noInternetConnection = true;
+          this.isNetworkAvailable = false;
+        } else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
+          if (!isAfterLanguageChange) { this.commonUtilService.showToast('ERROR_FETCHING_DATA'); }
+        }
+      });
+    });
     // }
   }
 
@@ -459,7 +459,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
               popover: {
                 title: this.commonUtilService.translateMessage('ONBOARD_SCAN_QR_CODE'),
                 description: '<img src="assets/imgs/ic_scanqrdemo.png" /><p>' + this.commonUtilService
-                .translateMessage('ONBOARD_SCAN_QR_CODE_DESC', this.appLabel) + '</p>',
+                  .translateMessage('ONBOARD_SCAN_QR_CODE_DESC', this.appLabel) + '</p>',
                 showButtons: true,         // Do not show control buttons in footer
                 closeBtnText: this.commonUtilService.translateMessage('DONE'),
               }
@@ -471,7 +471,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             img.id = 'qr_scanner';
             element.appendChild(img);
           }, 100);
-
+          this.telemetryGeneratorService.generatePageViewTelemetry(PageId.ONBOARDING_QR_SHOWCASE, Environment.ONBOARDING, PageId.LIBRARY);
           this.preference.putString('show_app_walkthrough_screen', 'false');
         }
       });

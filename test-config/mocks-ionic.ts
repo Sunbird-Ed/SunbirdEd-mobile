@@ -380,6 +380,11 @@ export class GroupServiceMock {
       catch: () => ({})
     })
   });
+  public createGroup(): Promise<string> {
+    return new Promise(resolve => {
+      resolve();
+    });
+  }
   public setCurrentGroup(): Promise<string> {
     return new Promise(resolve => {
       resolve();

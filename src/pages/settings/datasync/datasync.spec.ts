@@ -1,7 +1,8 @@
 import { } from 'jasmine';
 import { ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
-import { NavMock, ToastControllerMockNew } from '../../../../test-config/mocks-ionic';
-import { NavParams, NavController, LoadingController, Nav, ToastController } from 'ionic-angular';
+import { NavMock, ToastControllerMockNew, DeepLinkerMock } from '../../../../test-config/mocks-ionic';
+import { NavParams, NavController, LoadingController,
+ Nav, ToastController, Events, PopoverController, Config, DeepLinker } from 'ionic-angular';
 import { LoadingControllerMock } from '../../../../test-config/mocks-ionic';
 import { SharedPreferencesMock } from '../../../../test-config/mocks-ionic';
 import { TelemetryServiceMock } from '../../../../test-config/mocks-ionic';
@@ -16,15 +17,13 @@ import { ServiceProvider, SharedPreferences, TelemetryService, ShareUtil, SyncSt
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
+import { CommonUtilService } from '../../../service/common-util.service';
+import { App } from 'ionic-angular';
+import { Platform } from 'ionic-angular';
 
 describe('DataSyncPage', () => {
     let comp: DatasyncPage;
     let fixture: ComponentFixture<DatasyncPage>;
-
-    const getLoader = () => {
-        const loadingController = TestBed.get(LoadingController);
-        comp.getLoader();
-    };
 
     beforeEach(() => {
         const navParamStub = {};
@@ -34,7 +33,9 @@ describe('DataSyncPage', () => {
             declarations: [DatasyncPage],
             schemas: [NO_ERRORS_SCHEMA],
             providers: [
-                ServiceProvider,
+                ServiceProvider, CommonUtilService, Events, PopoverController,
+                App, Config, Platform,
+                { provide: DeepLinker, useValue: DeepLinkerMock},
                 { provide: NavController, useClass: NavMock },
                 { provide: NavParams, useValue: navParamStub },
                 { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() },
@@ -55,18 +56,12 @@ describe('DataSyncPage', () => {
 
     describe('init', () => {
         it('makes excpected calls', () => {
-            const translateStub = TestBed.get(TranslateService);
+            const commonUtilServiceStub = TestBed.get(CommonUtilService);
             const sharePreferStub = TestBed.get(SharedPreferences);
-            spyOn(translateStub, 'get').and.callFake((arg) => {
-                comp.lastSyncedTimeString = arg;
-                return Observable.of('Cancel');
-            });
             comp.dataSyncType = DataSyncType.off;
             spyOn(sharePreferStub, 'getString').and.returnValue(Promise.resolve(undefined));
-
-            expect(comp.init).toBeDefined();
             comp.init();
-           const translateMessage = comp.translateMessage('CANCEL');
+            const translateMessage = commonUtilServiceStub.translateMessage('Cancel', 'string');
             expect(comp.dataSyncType).toBe(DataSyncType.off);
             expect(sharePreferStub.getString).toHaveBeenCalled();
             expect(translateMessage).toEqual('Cancel');
@@ -173,17 +168,6 @@ describe('DataSyncPage', () => {
             expect(sharePrefencesStub.putString).toHaveBeenCalled();
         });
     });
-    describe('goBack', () => {
-        it('makes expected calls', () => {
-            const navStub = TestBed.get(NavController);
-
-            expect(comp.goBack).toBeDefined();
-            spyOn(navStub, 'pop');
-
-            comp.goBack();
-            expect(navStub.pop).toHaveBeenCalled();
-        });
-    });
     describe('getLastSyncTime', () => {
         it('makes calls as expected', () => {
             const telemetryServiceStub = TestBed.get(TelemetryService);
@@ -197,8 +181,9 @@ describe('DataSyncPage', () => {
     describe('shareTelemetry', () => {
         it('makes expected calls', () => {
             const socialSharingStub = TestBed.get(SocialSharing);
+            const commonUtilServiceStub = TestBed.get(CommonUtilService);
             const shareUtilStub = TestBed.get(ShareUtil);
-            getLoader();
+            commonUtilServiceStub.getLoader();
             spyOn(shareUtilStub, 'exportTelemetry').and.callFake((success, error) => {
                 return success('sucess');
             });
@@ -210,27 +195,23 @@ describe('DataSyncPage', () => {
             expect(socialSharingStub.share).toHaveBeenCalled();
         });
         it('makes expected calls when error call back', () => {
-            const toastControllerStub = TestBed.get(ToastController);
+            const commonUtilServiceStub = TestBed.get(CommonUtilService);
             const shareUtilStub = TestBed.get(ShareUtil);
             spyOn(shareUtilStub, 'exportTelemetry').and.callFake((success, error) => {
                 return error('error');
             });
-            const translate = TestBed.get(TranslateService);
             const translationId = 'CANCEL';
-            spyOn(translate, 'get').and.callFake((arg) => {
-                return Observable.of('Cancel');
-            });
             comp.shareTelemetry();
-            comp.translateMessage(translationId);
-            expect(toastControllerStub.create).toHaveBeenCalled();
+            commonUtilServiceStub.translateMessage(translationId);
+            expect(commonUtilServiceStub.create).toHaveBeenCalled();
         });
     });
     describe('onSyncClick', () => {
         it('makes expected calls', () => {
             const telemetryServiceStub = TestBed.get(TelemetryService);
             const sharePrefencesStub = TestBed.get(SharedPreferences);
-
-            getLoader();
+            const commonUtilServiceStub = TestBed.get(CommonUtilService);
+            commonUtilServiceStub.getLoader();
             comp.latestSync = 'string';
             spyOn(comp, 'generateInteractEvent');
 
@@ -238,12 +219,8 @@ describe('DataSyncPage', () => {
                 return Observable.of(response('any'));
             });
             spyOn(sharePrefencesStub, 'putString');
-            spyOn(comp, 'presentToast').and.callThrough();
             comp.onSyncClick();
-            // expect(telemetryServiceStub).toBe(undefined);
             expect(comp.generateInteractEvent).toHaveBeenCalled();
-            // expect(sharePrefencesStub.putString.calls.any).toHaveBeenCalled();``
-            // expect(comp.presentToast).toHaveBeenCalled();
         });
     });
     describe('getTimeIn12HourFormat', () => {
@@ -264,47 +241,6 @@ describe('DataSyncPage', () => {
 
             expect(telemetryServiceStub).toBeTruthy();
         });
-    });
-    describe('getLoader', () => {
-        it('makes calls as expected', () => {
-            const loadControllerStub = TestBed.get(LoadingController);
-            expect(comp.getLoader).toBeDefined();
-
-            comp.getLoader();
-
-            expect(loadControllerStub.create).toHaveBeenCalled();
-        });
-    });
-    describe('presentToast', () => {
-        it('should create toast', () => {
-            const toastControllerStub = TestBed.get(ToastController);
-            const translate = TestBed.get(TranslateService);
-
-            spyOn(translate, 'get').and.callFake((arg) => {
-                return Observable.of('Cancel');
-            });
-
-            expect(comp.presentToast).toBeDefined();
-            const translationId = 'CANCEL';
-            comp.presentToast(translationId);
-
-            expect(toastControllerStub.create).toHaveBeenCalled();
-
-        });
-    });
-    describe('translateMessage', () => {
-        it('should call translateMessage', fakeAsync(() => {
-            const translate = TestBed.get(TranslateService);
-
-            const spy = spyOn(translate, 'get').and.callFake((arg) => {
-                return Observable.of('Cancel');
-            });
-
-            const translateMessage = comp.translateMessage('CANCEL');
-
-            expect(translateMessage).toEqual('Cancel');
-            expect(spy.calls.any()).toEqual(true);
-        }));
     });
 });
 

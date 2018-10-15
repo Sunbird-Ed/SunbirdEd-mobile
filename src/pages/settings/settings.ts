@@ -7,8 +7,17 @@ import { AboutUsPage } from './about-us/about-us';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { TranslateService } from '@ngx-translate/core';
 import { AppVersion } from '@ionic-native/app-version';
-import { SharedPreferences, InteractType, InteractSubtype, ShareUtil } from 'sunbird';
-import { Impression, ImpressionType, Environment, PageId, TelemetryService } from 'sunbird';
+import {
+  SharedPreferences,
+  InteractType,
+  InteractSubtype,
+  ShareUtil,
+  Impression,
+  ImpressionType,
+  Environment,
+  PageId,
+  TelemetryService
+} from 'sunbird';
 import { generateInteractTelemetry, generateImpressionTelemetry } from '../../app/telemetryutil';
 import { PreferenceKey } from '../../app/app.constant';
 
@@ -57,8 +66,6 @@ export class SettingsPage {
   }
 
   ionViewDidEnter() {
-
-
     this.chosenLanguageString = this.commonUtilService.translateMessage('CURRENT_LANGUAGE');
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE)
       .then(value => {

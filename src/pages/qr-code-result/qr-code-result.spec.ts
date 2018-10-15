@@ -4,7 +4,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { FormAndFrameworkUtilService } from './../profile/formandframeworkutil.service';
 import { NgZone } from '@angular/core';
-import { NavController, NavParams, Platform, Events, PopoverController } from 'ionic-angular';
+import { NavController, NavParams, Platform, Events, PopoverController, ToastController, App } from 'ionic-angular';
 import {  ProfileService, SharedPreferences, ServiceProvider, TelemetryService, AuthService,
      BuildParamService, FrameworkService, ContentService, Profile } from 'sunbird';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
@@ -20,6 +20,9 @@ import {
 // import { ComponentsModule } from '../../component/components.module';
 import { PipesModule } from '../../pipes/pipes.module';
 import { Navbar } from 'ionic-angular';
+import { CommonUtilService } from '../../service/common-util.service';
+import { Config } from 'ionic-angular';
+import { LoadingController } from 'ionic-angular';
 
 describe('QrCodeResultPage', () => {
     let comp: QrCodeResultPage;
@@ -30,9 +33,9 @@ describe('QrCodeResultPage', () => {
             imports: [TranslateModule.forRoot(), PipesModule],
             declarations: [ QrCodeResultPage ],
             schemas: [ NO_ERRORS_SCHEMA ],
-            providers: [
+            providers: [ToastController, App, Config, LoadingController,
                 TelemetryGeneratorService, Platform, ServiceProvider, TelemetryService, BuildParamService, FrameworkService,
-                ContentService, AppGlobalService, Navbar,
+                ContentService, AppGlobalService, Navbar, CommonUtilService,
                 { provide: FormAndFrameworkUtilService, useClass: FormAndFrameworkUtilServiceMock },
                 { provide: NavController, useClass: NavMock },
                 { provide: AuthService, useClass: AuthServiceMock },
@@ -86,20 +89,18 @@ describe('QrCodeResultPage', () => {
         const contentServiceStub = TestBed.get(ContentService);
         const navcontrollerStub = TestBed.get(NavController);
         comp.identifier = 'sample identifier';
-        spyOn(comp, 'showContentComingSoonAlert');
         spyOn(navcontrollerStub, 'pop');
         spyOn(contentServiceStub, 'getChildContents').and.callFake((req, success, error) => {
             return error('error');
         });
         comp.getChildContents();
-        expect(comp.showContentComingSoonAlert).toHaveBeenCalled();
         expect(navcontrollerStub.pop).toHaveBeenCalled();
     });
 
     it('#editProfile should edit the current profile', () => {
         const profileServiceStub = TestBed.get(ProfileService);
         const eventsStub = TestBed.get(Events);
-        comp.profile = mockRes.profile;
+        // comp.profile = mockRes.profile;
         comp.gradeList = mockRes.categoryResponse[2].terms;
         spyOn(profileServiceStub, 'updateProfile').and.callFake((req, res, err) => {
             return res(JSON.stringify(mockRes.profile));
@@ -111,7 +112,7 @@ describe('QrCodeResultPage', () => {
 
     it('#setGrade should set grade property of profile', () => {
         const gradeLevel = ['grade5'];
-        comp.profile = mockRes.profile;
+        // comp.profile = mockRes.profile;
         comp.setGrade(true, gradeLevel);
         expect(comp.profile.grade.length).toEqual(1);
         expect(comp.profile.gradeValueMap).toEqual({});
@@ -131,7 +132,7 @@ describe('QrCodeResultPage', () => {
         const contentData = JSON.parse(JSON.stringify(mockRes.getChildContentAPIResponse.result.contentData));
         spyOn(comp, 'setGrade');
         spyOn(comp, 'editProfile');
-        comp.profile = mockRes.profile;
+        // comp.profile = mockRes.profile;
         comp.setCurrentProfile(0, contentData);
         expect(comp.setGrade).toHaveBeenCalledWith(true, contentData.gradeLevel);
         expect(comp.editProfile).toHaveBeenCalled();
@@ -153,7 +154,6 @@ describe('QrCodeResultPage', () => {
 
     it('#checkProfileData should not call setCurrentProfile whe all data matches', () => {
         const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
-        spyOn(comp, 'showContentComingSoonAlert');
         spyOn(comp, 'setCurrentProfile');
         const mockContent = JSON.parse(JSON.stringify(mockRes.getChildContentAPIResponse.result.contentData));
         const mockProfile = JSON.parse(JSON.stringify(mockRes.profile));
@@ -166,7 +166,6 @@ describe('QrCodeResultPage', () => {
 
     it('#checkProfileData should not call getSyllabusList if framework does not exists in contentdata' , () => {
         const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
-        spyOn(comp, 'showContentComingSoonAlert');
         spyOn(comp, 'setCurrentProfile');
         const mockContent = JSON.parse(JSON.stringify(mockRes.getChildContentAPIResponse.result.contentData));
         const mockProfile = JSON.parse(JSON.stringify(mockRes.profile));
@@ -183,7 +182,6 @@ describe('QrCodeResultPage', () => {
 
     it('#checkProfileData should call setCurrentProfile with first argument as 0', () => {
         const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
-        spyOn(comp, 'showContentComingSoonAlert');
         spyOn(comp, 'setCurrentProfile');
         const mockContent = JSON.parse(JSON.stringify(mockRes.getChildContentAPIResponse.result.contentData));
         const mockProfile = JSON.parse(JSON.stringify(mockRes.profile));
@@ -198,9 +196,8 @@ describe('QrCodeResultPage', () => {
         }, 100);
     });
 
-    xit('#checkProfileData should call setCurrentProfile with first argument as 1', () => {
+    it('#checkProfileData should call setCurrentProfile with first argument as 1', () => {
         const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
-        spyOn(comp, 'showContentComingSoonAlert');
         spyOn(comp, 'setCurrentProfile');
         const mockContent = JSON.parse(JSON.stringify(mockRes.getChildContentAPIResponse.result.contentData));
         const mockProfile = JSON.parse(JSON.stringify(mockRes.profile));
@@ -215,9 +212,8 @@ describe('QrCodeResultPage', () => {
         }, 100);
     });
 
-    xit('#checkProfileData should call setCurrentProfile with first argument as 2', () => {
+    it('#checkProfileData should call setCurrentProfile with first argument as 2', () => {
         const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
-        spyOn(comp, 'showContentComingSoonAlert');
         spyOn(comp, 'setCurrentProfile');
         const mockContent = JSON.parse(JSON.stringify(mockRes.getChildContentAPIResponse.result.contentData));
         const mockProfile = JSON.parse(JSON.stringify(mockRes.profile));
@@ -232,9 +228,8 @@ describe('QrCodeResultPage', () => {
         }, 100);
     });
 
-    xit('#checkProfileData should call setCurrentProfile with first argument as 3', () => {
+    it('#checkProfileData should call setCurrentProfile with first argument as 3', () => {
         const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
-        spyOn(comp, 'showContentComingSoonAlert');
         spyOn(comp, 'setCurrentProfile');
         const mockContent = JSON.parse(JSON.stringify(mockRes.getChildContentAPIResponse.result.contentData));
         const mockProfile = JSON.parse(JSON.stringify(mockRes.profile));
@@ -249,9 +244,8 @@ describe('QrCodeResultPage', () => {
         }, 100);
     });
 
-    xit('#checkProfileData should call setCurrentProfile with first argument as 4', () => {
+    it('#checkProfileData should call setCurrentProfile with first argument as 4', () => {
         const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
-        spyOn(comp, 'showContentComingSoonAlert');
         spyOn(comp, 'setCurrentProfile');
         const mockContent = JSON.parse(JSON.stringify(mockRes.getChildContentAPIResponse.result.contentData));
         const mockProfile = JSON.parse(JSON.stringify(mockRes.profile));

@@ -1,5 +1,5 @@
 import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
-import { NavController, LoadingController, ToastController, Config, Platform } from 'ionic-angular';
+import { NavController, LoadingController, ToastController, Config, Platform, Events } from 'ionic-angular';
 import { DatasyncPage } from './datasync/datasync';
 import { LanguageSettingsPage } from '../language-settings/language-settings';
 import { AboutUsPage } from './about-us/about-us';
@@ -13,12 +13,14 @@ import { PreferenceKey } from '../../app/app.constant';
 import { Observable } from 'rxjs/Observable';
 import {
     NavMock, AppVersionMock, SocialSharingMock, LoadingControllerMock, TranslateServiceStub,
-    SharedPreferencesMock, TelemetryServiceMock, ShareUtilMock
+    SharedPreferencesMock, TelemetryServiceMock, ShareUtilMock, DeepLinkerMock
 } from '../../../test-config/mocks-ionic';
 import { SettingsPage } from './settings';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CommonUtilService } from '../../service/common-util.service';
 import { App } from 'ionic-angular';
+import { PopoverController } from 'ionic-angular';
+import { DeepLinker } from 'ionic-angular';
 
 describe('SettingsPage', () => {
     let comp: SettingsPage;
@@ -35,7 +37,10 @@ describe('SettingsPage', () => {
             declarations: [SettingsPage],
             schemas: [NO_ERRORS_SCHEMA],
             providers: [
-                ServiceProvider, CommonUtilService, ToastController, App, Config, Platform,
+                ServiceProvider, CommonUtilService, ToastController,
+                PopoverController,
+                Events, App, Config, Platform,
+                { provide: DeepLinker, useValue: DeepLinkerMock },
                 { provide: NavController, useClass: NavMock },
                 { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() },
                 { provide: AppVersion, useClass: AppVersionMock },

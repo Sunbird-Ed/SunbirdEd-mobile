@@ -1,4 +1,3 @@
-import { TelemetryGeneratorService } from './../../service/telemetry-generator.service';
 import {
   Component,
   ViewChild
@@ -22,7 +21,6 @@ import {
   InteractType,
   InteractSubtype,
   Environment,
-  TelemetryService,
   PageId,
   ImpressionType,
   SharedPreferences,
@@ -36,11 +34,7 @@ import {
   GUEST_TEACHER_TABS,
   LOGIN_TEACHER_TABS
 } from '../../app/module.service';
-import {
-  generateInteractTelemetry,
-  Map,
-  generateImpressionTelemetry
-} from '../../app/telemetryutil';
+import { Map } from '../../app/telemetryutil';
 import { LanguageSettingsPage } from '../language-settings/language-settings';
 import {
   ProfileConstants,
@@ -49,6 +43,7 @@ import {
 import { AppGlobalService } from '../../service/app-global.service';
 import { AppVersion } from '@ionic-native/app-version';
 import { CommonUtilService } from '../../service/common-util.service';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 
 @Component({
   selector: 'page-onboarding',
@@ -69,7 +64,6 @@ export class OnboardingPage {
     private userProfileService: UserProfileService,
     private profileService: ProfileService,
     private authService: AuthService,
-    private telemetryService: TelemetryService,
     private loadingCtrl: LoadingController,
     private preferences: SharedPreferences,
     private platform: Platform,
@@ -77,7 +71,7 @@ export class OnboardingPage {
     private appVersion: AppVersion,
     private events: Events,
     private appGlobalService: AppGlobalService,
-    private telemetryGeneratorService: TelemetryGeneratorService,
+    private telemetryGeneratorService: TelemetryGeneratorService
   ) {
 
     this.slides = [
@@ -108,13 +102,10 @@ export class OnboardingPage {
       this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.ONBOARDING, Environment.HOME, true);
       this.navCtrl.setRoot(LanguageSettingsPage);
     };
-    this.telemetryService.impression(
-      generateImpressionTelemetry(ImpressionType.VIEW, '',
-        PageId.ONBOARDING,
-        Environment.HOME, '', '', '',
-        undefined,
-        undefined)
-    );
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.VIEW, '',
+      PageId.ONBOARDING,
+      Environment.HOME);
   }
 
   ionViewWillEnter() {
@@ -229,14 +220,11 @@ export class OnboardingPage {
   }
 
   browseAsGuest() {
-    this.telemetryService.interact(
-      generateInteractTelemetry(InteractType.TOUCH,
-        InteractSubtype.BROWSE_AS_GUEST_CLICKED,
-        Environment.HOME,
-        PageId.ONBOARDING,
-        null,
-        undefined,
-        undefined));
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.BROWSE_AS_GUEST_CLICKED,
+      Environment.HOME,
+      PageId.ONBOARDING);
     this.preferences.getString(PreferenceKey.SELECTED_USER_TYPE)
       .then(val => {
         if (val === ProfileType.STUDENT) {
@@ -276,14 +264,13 @@ export class OnboardingPage {
   generateLoginInteractTelemetry(interactType, interactSubtype, uid) {
     const valuesMap = new Map();
     valuesMap['UID'] = uid;
-    this.telemetryService.interact(
-      generateInteractTelemetry(interactType,
-        interactSubtype,
-        Environment.HOME,
-        PageId.LOGIN,
-        valuesMap,
-        undefined,
-        undefined));
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      interactType,
+      interactSubtype,
+      Environment.HOME,
+      PageId.LOGIN,
+      undefined,
+      valuesMap);
   }
 
 }

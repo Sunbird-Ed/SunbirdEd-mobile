@@ -4,7 +4,6 @@ import { TranslateService } from '@ngx-translate/core';
 import {
   PopoverController,
   Popover,
-  ToastController,
   Platform
 } from 'ionic-angular';
 import {
@@ -26,6 +25,7 @@ import { TelemetryGeneratorService } from '../../service/telemetry-generator.ser
 import { QRScannerResultHandler } from './qrscanresulthandler.service';
 import { ProfileSettingsPage } from '../profile-settings/profile-settings';
 import { App } from 'ionic-angular';
+import { AppGlobalService } from '../../service/app-global.service';
 
 @Injectable()
 export class SunbirdQRScanner {
@@ -48,7 +48,6 @@ export class SunbirdQRScanner {
     private popCtrl: PopoverController,
     private translate: TranslateService,
     private permission: PermissionService,
-    private toastCtrl: ToastController,
     private platform: Platform,
     private qrScannerResultHandler: QRScannerResultHandler,
     private telemetryGeneratorService: TelemetryGeneratorService,
@@ -67,11 +66,6 @@ export class SunbirdQRScanner {
     });
   }
 
-
-  ionViewDidLoad(): any {
-    throw new Error('Method not implemented.');
-  }
-
   public startScanner(source: string, showButton: boolean = false,
     screenTitle = this.mQRScannerText['SCAN_QR_CODE'],
     displayText = this.mQRScannerText['SCAN_QR_INSTRUCTION'],
@@ -85,12 +79,11 @@ export class SunbirdQRScanner {
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.backButtonFunc();
     }, 10);
-
+    this.generateImpressionTelemetry(source);
     this.generateStartEvent(source);
 
     this.permission.hasPermission(this.permissionList, (response) => {
       const result = JSON.parse(response);
-      /* istanbul ignore else  */
       if (result.status) {
         const permissionResult = result.result;
         const askPermission = [];
@@ -103,7 +96,6 @@ export class SunbirdQRScanner {
         if (askPermission.length > 0) {
           this.permission.requestPermission(askPermission, (res) => {
             const requestResult = JSON.parse(res);
-            /* istanbul ignore else  */
             if (requestResult.status) {
               let permissionGranted = true;
               const permissionRequestResult = requestResult.result;
@@ -116,12 +108,7 @@ export class SunbirdQRScanner {
               if (permissionGranted) {
                 this.startQRScanner(screenTitle, displayText, displayTextColor, buttonText, showButton, source);
               } else {
-                const toast = this.toastCtrl.create({
-                  message: this.commonUtil.translateMessage('PERMISSION_DENIED'),
-                  duration: 3000
-                });
-
-                toast.present();
+                this.commonUtil.showToast('PERMISSION_DENIED');
               }
             }
           }, (error) => {
@@ -144,7 +131,6 @@ export class SunbirdQRScanner {
 
   private startQRScanner(screenTitle: string, displayText: string, displayTextColor: string,
     buttonText: string, showButton: boolean, source: string) {
-    this.generateImpressionTelemetry(source);
     window['qrScanner'].startScanner(screenTitle, displayText, displayTextColor, buttonText, showButton, (scannedData) => {
       if (scannedData === 'skip') {
         this.app.getActiveNavs()[0].push(ProfileSettingsPage, { stopScanner: true });
@@ -155,7 +141,12 @@ export class SunbirdQRScanner {
           PageId.QRCodeScanner);
         this.generateEndEvent(source, '');
       } else {
-        if (scannedData === 'cancel') {
+        if (scannedData === 'cancel' ||
+          scannedData === 'cancel_hw_back' ||
+          scannedData === 'cancel_nav_back') {
+          this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.QRCodeScanner,
+            source === PageId.ONBOARDING_PROFILE_PREFERENCES ? Environment.ONBOARDING : Environment.HOME,
+            scannedData === 'cancel_nav_back' ? true : false);
           this.telemetryGeneratorService.generateInteractTelemetry(
             InteractType.OTHER,
             InteractSubtype.QRCodeScanCancelled,
@@ -186,14 +177,12 @@ export class SunbirdQRScanner {
   }
 
   generateStartEvent(pageId: string) {
-    if (pageId) {
-      const telemetryObject: TelemetryObject = new TelemetryObject();
-      telemetryObject.id = '';
-      telemetryObject.type = 'qr';
-      this.telemetryGeneratorService.generateStartTelemetry(
-        pageId,
-        telemetryObject);
-    }
+    const telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.id = '';
+    telemetryObject.type = 'qr';
+    this.telemetryGeneratorService.generateStartTelemetry(
+      PageId.QRCodeScanner,
+      telemetryObject);
   }
 
   generateEndEvent(pageId: string, qrData: string) {
@@ -204,7 +193,7 @@ export class SunbirdQRScanner {
       this.telemetryGeneratorService.generateEndTelemetry(
         'qr',
         Mode.PLAY,
-        pageId,
+        PageId.QRCodeScanner,
         Environment.HOME,
         telemetryObject
       );

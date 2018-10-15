@@ -1,4 +1,4 @@
-<ion-header *ngIf="!hideBackButton">
+<ion-header>
 	<ion-navbar></ion-navbar>
 </ion-header>
 
@@ -34,7 +34,7 @@
 		</ion-item>
 
 	</form>
-	
+
 	<ion-footer padding no-border>
 		<button class="arrow-icon" [ngStyle]="{'background-color': btnColor}" [disabled]="userForm.invalid" ion-button
 		 icon-end block (click)="onSubmit()">
