@@ -1,3 +1,4 @@
+import { ProfileType, UserSource } from 'sunbird';
 export const mockCreateorremoveGroupRes = {
 
     viewLoadEvent: {
@@ -13,7 +14,7 @@ export const mockCreateorremoveGroupRes = {
             'isGroupUser': false,
             'language': 'en',
             'month': -1,
-            'profileType': 'ProfileType.STUDENT',
+            'profileType': ProfileType.STUDENT,
             'source': 'UserSource.LOCAL',
             'standard': -1,
             'uid': '3af2e8a4-003e-438d-b360-2ae922696913'

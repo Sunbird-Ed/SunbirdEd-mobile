@@ -15,8 +15,6 @@ import { TelemetryGeneratorService } from '../../../service/telemetry-generator.
 import { AddOrRemoveGroupUserPage } from './add-or-remove-group-user';
 import { mockCreateorremoveGroupRes } from './add-remove-group-user.spec.data';
 
-
-
 import {
     LoadingControllerMock, TranslateServiceStub, ToastControllerMockNew, AuthServiceMock, NavParamsMock, ProfileServiceMock,
     FormAndFrameworkUtilServiceMock, ContainerServiceMock, AppGlobalServiceMock, NavMock, TranslateLoaderMock,
