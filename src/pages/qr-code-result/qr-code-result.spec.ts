@@ -225,7 +225,7 @@ describe('QrCodeResultPage', () => {
         }, 100);
     });
 
-    xit('#checkProfileData should call setCurrentProfile with first argument as 2', (done) => {
+    it('#checkProfileData should call setCurrentProfile with first argument as 2', (done) => {
         const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
         // spyOn(comp, 'showContentComingSoonAlert');
         spyOn(comp, 'setCurrentProfile');
@@ -243,7 +243,7 @@ describe('QrCodeResultPage', () => {
         }, 100);
     });
 
-    xit('#checkProfileData should call setCurrentProfile with first argument as 3', (done) => {
+    it('#checkProfileData should call setCurrentProfile with first argument as 3', (done) => {
         const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
         // spyOn(comp, 'showContentComingSoonAlert');
         spyOn(comp, 'setCurrentProfile');
@@ -261,7 +261,7 @@ describe('QrCodeResultPage', () => {
         }, 100);
     });
 
-    xit('#checkProfileData should call setCurrentProfile with first argument as 4', (done) => {
+    it('#checkProfileData should call setCurrentProfile with first argument as 4', (done) => {
         const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
         // spyOn(comp, 'showContentComingSoonAlert');
         spyOn(comp, 'setCurrentProfile');
