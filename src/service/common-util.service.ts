@@ -95,6 +95,15 @@ export class CommonUtilService {
     }
 
     /**
+     * Method to convert Array to Comma separated string
+     * @param {Array<string>} stringArray
+     * @returns {string}
+     */
+    arrayToString(stringArray: Array<string>): string {
+        return stringArray.join(', ');
+    }
+
+    /**
      * It will change the app language to given code/name if it available locally
      * @param {string} name Name of the language
      * @param {string} code language code

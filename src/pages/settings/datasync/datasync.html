@@ -1,51 +1,37 @@
-<!--
-  Generated template for the DatasyncPage page.
-
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
 <ion-header>
-
-  <ion-toolbar>
+  <ion-navbar>
     <ion-title>{{ 'DATA_SYNC' | translate }}</ion-title>
-    <ion-buttons left>
-      <button ion-button icon-only (click)="goBack()">
-        <ion-icon name="arrow-back"></ion-icon>
-      </button>
-    </ion-buttons>
-
-  </ion-toolbar>
-
+  </ion-navbar>
 </ion-header>
 
 
 <ion-content padding>
 
-<div class="label">
-  {{ 'AUTOMATIC_SYNC' | translate }}
-</div>
+  <div class="label">
+    {{ 'AUTOMATIC_SYNC' | translate }}
+  </div>
 
-<ion-list radio-group no-lines [(ngModel)]="dataSyncType" (ionChange)="onSelected()">
-  <ion-item>
-    <ion-radio  [value]="OPTIONS.off" item-left></ion-radio>
-    <ion-label>{{ 'OFF' | translate }}</ion-label>
-  </ion-item>
+  <ion-list radio-group no-lines [(ngModel)]="dataSyncType" (ionChange)="onSelected()">
+    <ion-item>
+      <ion-radio [value]="OPTIONS.off" item-left></ion-radio>
+      <ion-label>{{ 'OFF' | translate }}</ion-label>
+    </ion-item>
 
-  <ion-item>
-    <ion-radio [value]="OPTIONS.over_wifi" item-left></ion-radio>
-    <ion-label>{{ 'OVER_WIFI' | translate }}</ion-label>
-  </ion-item>
+    <ion-item>
+      <ion-radio [value]="OPTIONS.over_wifi" item-left></ion-radio>
+      <ion-label>{{ 'OVER_WIFI' | translate }}</ion-label>
+    </ion-item>
 
-  <ion-item>
-    <ion-radio [value]="OPTIONS.always_on" item-left></ion-radio>
-    <ion-label>{{ 'ALWAYS_ON' | translate }}</ion-label>
-  </ion-item>
-</ion-list>
+    <ion-item>
+      <ion-radio [value]="OPTIONS.always_on" item-left></ion-radio>
+      <ion-label>{{ 'ALWAYS_ON' | translate }}</ion-label>
+    </ion-item>
+  </ion-list>
 
-<ion-label class="last-datasync-style">{{ latestSync | translate}}</ion-label>
+  <ion-label class="last-datasync-style">{{ latestSync | translate}}</ion-label>
 
-<button ion-button block (click)="onSyncClick()">{{ 'SYNC_NOW' | translate }}</button>
-<hr>
-<button ion-button (click)="shareTelemetry()" no-padding clear>{{ 'SHARE_TELEMETRY' | translate }}</button>
+  <button ion-button block (click)="onSyncClick()">{{ 'SYNC_NOW' | translate }}</button>
+  <hr>
+  <button ion-button (click)="shareTelemetry()" no-padding clear>{{ 'SHARE_TELEMETRY' | translate }}</button>
 
 </ion-content>

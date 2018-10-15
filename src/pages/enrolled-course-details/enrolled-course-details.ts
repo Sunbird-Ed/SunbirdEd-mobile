@@ -249,7 +249,8 @@ export class EnrolledCourseDetailsPage {
     });
 
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
-      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME, false);
+      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
+        false, this.identifier, this.corRelationList);
       this.didViewLoad = false;
       this.generateEndEvent(this.objId, this.objType, this.objVer);
       if (this.shouldGenerateEndTelemetry) {
@@ -389,8 +390,8 @@ export class EnrolledCourseDetailsPage {
       this.objType = this.course.contentType;
       this.objVer = this.course.pkgVersion;
       if (!this.didViewLoad) {
-        this.generateStartEvent(this.course.identifier, this.course.contentType, this.course.pkgVersion);
         this.generateImpressionEvent(this.course.identifier, this.course.contentType, this.course.pkgVersion);
+        this.generateStartEvent(this.course.identifier, this.course.contentType, this.course.pkgVersion);
       }
       this.didViewLoad = true;
 
@@ -432,6 +433,7 @@ export class EnrolledCourseDetailsPage {
       this.setChildContents();
     } else {
       this.showLoading = true;
+      this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.course, true);
       this.importContent([this.identifier], false);
     }
     this.setCourseStructure();
@@ -507,7 +509,7 @@ export class EnrolledCourseDetailsPage {
    * @param {Array<string>} identifiers contains list of content identifier(s)
    * @param {boolean} isChild
    */
-  importContent(identifiers, isChild: boolean) {
+  importContent(identifiers, isChild: boolean, isDownloadAllClicked?) {
     this.showChildrenLoader = this.downloadIdentifiers.length === 0 ? true : false;
     const option = {
       contentImportMap: _.extend({}, this.getImportContentRequestBody(identifiers, isChild)),
@@ -529,6 +531,16 @@ export class EnrolledCourseDetailsPage {
               this.faultyIdentifiers.push(value.identifier);
             }
           });
+
+          if (isDownloadAllClicked) {
+            this.telemetryGeneratorService.generateDownloadAllClickTelemetry(
+              PageId.COURSE_DETAIL,
+              this.course,
+              this.queuedIdentifiers,
+              identifiers.length
+            );
+          }
+
           if (this.queuedIdentifiers.length === 0) {
             this.restoreDownloadState();
           }
@@ -572,7 +584,7 @@ export class EnrolledCourseDetailsPage {
     if (this.isNetworkAvailable) {
       this.isDownloadStarted = true;
       this.downloadProgress = 0;
-      this.importContent(this.downloadIdentifiers, true);
+      this.importContent(this.downloadIdentifiers, true, true);
     } else {
       this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
     }
@@ -647,16 +659,8 @@ export class EnrolledCourseDetailsPage {
     });
   }
 
-  // showMessage(message) {
-  //   let toast = this.toastCtrl.create({
-  //     message: message,
-  //     duration: 2000,
-  //     position: 'bottom'
-  //   });
-  //   toast.present();
-  // }
-
   cancelDownload() {
+    this.telemetryGeneratorService.generateCancelDownloadTelemetry(this.course);
     this.contentService.cancelDownload(this.identifier, () => {
       this.zone.run(() => {
         this.showLoading = false;
@@ -789,6 +793,7 @@ export class EnrolledCourseDetailsPage {
         if (res.data && res.type === 'contentUpdateAvailable' && hierarchyInfo === null) {
           this.zone.run(() => {
             this.showLoading = true;
+            this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.course, false);
             this.importContent([this.identifier], false);
           });
         }
@@ -873,7 +878,8 @@ export class EnrolledCourseDetailsPage {
 
   ionViewDidLoad() {
     this.navBar.backButtonClick = () => {
-      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME, true);
+      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
+        true, this.identifier, this.corRelationList);
       this.handleNavBackButton();
     };
 
@@ -908,7 +914,7 @@ export class EnrolledCourseDetailsPage {
 
   generateImpressionEvent(objectId, objectType, objectVersion) {
     this.telemetryGeneratorService.generateImpressionTelemetry(ImpressionType.DETAIL,
-      PageId.COURSE_DETAIL, '',
+      '', PageId.COURSE_DETAIL,
       Environment.HOME,
       objectId,
       objectType,

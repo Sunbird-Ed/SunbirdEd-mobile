@@ -1,12 +1,10 @@
-import { CorrelationData } from './../../../genie-sdk-wrapper/src/services/telemetry/bean';
-import { InteractType, InteractSubtype, PageId } from './../../../genie-sdk-wrapper/src/services/telemetry/constant';
 import { TelemetryGeneratorService } from './../../service/telemetry-generator.service';
 import { TranslateService } from '@ngx-translate/core';
 import { NavParams } from 'ionic-angular/navigation/nav-params';
 import { PopoverController, Events } from 'ionic-angular/index';
 import { ViewController } from 'ionic-angular';
 import { Component } from '@angular/core';
-import { ContentService, AuthService, Environment, Rollup } from 'sunbird';
+import { ContentService, AuthService, Environment, Rollup, CorrelationData, InteractType, InteractSubtype, TelemetryObject } from 'sunbird';
 import { ToastController, Platform } from 'ionic-angular';
 import { ReportIssuesComponent } from '../report-issues/report-issues';
 import { ProfileConstants } from '../../app/app.constant';
@@ -107,12 +105,16 @@ export class ContentActionsComponent {
   }
 
   deleteContent() {
+    const telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.id = this.content.identifier;
+    telemetryObject.type = this.content.contentType;
+    telemetryObject.version = this.content.pkgVersion;
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.DELETE_CLICKED,
       Environment.HOME,
       this.pageName,
-      undefined,
+      telemetryObject,
       undefined,
       this.objRollup,
       this.corRelationList);

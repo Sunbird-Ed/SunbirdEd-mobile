@@ -33,7 +33,6 @@ export class UserSearchComponent {
   prevSearchInput = '';
   userList: any = [];
   fallBackImage = './assets/imgs/ic_profile_default.png';
-
   enableInfiniteScroll = false;
   showEmptyMessage = false;
 
@@ -61,7 +60,7 @@ export class UserSearchComponent {
    * @param {object} scrollEvent - infinite Scroll Event
    */
   onInput(event?, scrollEvent?): void {
-    const loader = this.getLoader();
+    const loader = this.commonUtilService.getLoader();
 
     if (!this.enableInfiniteScroll || !scrollEvent) {
       loader.present();
@@ -150,13 +149,6 @@ export class UserSearchComponent {
     setTimeout(() => {
       this.input.setFocus();
     }, 100);
-  }
-
-  getLoader(): any {
-    return this.loadingCtrl.create({
-      duration: 30000,
-      spinner: 'crescent'
-    });
   }
 
   checkClear() {

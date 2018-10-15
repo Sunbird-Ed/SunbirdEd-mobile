@@ -12,7 +12,6 @@ import {
 import {
   NavController,
   NavParams,
-  LoadingController,
   IonicApp,
   Platform
 } from 'ionic-angular';
@@ -70,7 +69,6 @@ export class AdditionalInfoComponent {
     public fb: FormBuilder,
     private navParams: NavParams,
     private userProfileService: UserProfileService,
-    private loadingCtrl: LoadingController,
     private authService: AuthService,
     private translate: TranslateService,
     private frameworkService: FrameworkService,
@@ -147,7 +145,6 @@ export class AdditionalInfoComponent {
    * It will Dismiss active popup
    */
   dismissPopup() {
-    console.log('Fired ionViewWillLeave');
     const activePortal = this.ionicApp._modalPortal.getActive() || this.ionicApp._overlayPortal.getActive();
 
     if (activePortal) {
@@ -174,7 +171,7 @@ export class AdditionalInfoComponent {
         this[propertyName] = _.map(response.terms, 'name');
       })
       .catch(err => {
-        console.log(currentCategory + ' Category Response: ', JSON.parse(err));
+        console.error('Error', JSON.parse(err));
       });
   }
 
@@ -305,7 +302,6 @@ export class AdditionalInfoComponent {
         modifiedFields.forEach(element => {
           req[element] = currentValues[element];
         });
-
         this.updateInfo(req);
       } else {
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('NO_CHANGE'));
@@ -322,13 +318,14 @@ export class AdditionalInfoComponent {
       this.commonUtilService.showToast(this.commonUtilService.translateMessage('ERROR_EMPTY_LANGUAGE'));
       return false;
     }
-    // else if ((this.profile && this.profile.phone
-    // && (formVal.phone !== this.profile.phone)) || (formVal.phone === '' || (formVal.phone.length !== 10))) {
-    //   if (!formVal.phone.match(/^\d{10}$/)) {
-    //     this.getToast(this.translateMessage('ERROR_SHORT_MOBILE')).present();
-    //     return false;
-    //   }
-    // }
+ /* else if ((this.profile && this.profile.phone
+    && (formVal.phone !== this.profile.phone)) || (formVal.phone === '' || (formVal.phone.length !== 10))) {
+      if (!formVal.phone.match(/^\d{10}$/)) {
+        this.getToast(this.translateMessage('ERROR_SHORT_MOBILE')).present();
+        return false;
+      }
+    } */
+
     return true;
   }
 
@@ -337,7 +334,7 @@ export class AdditionalInfoComponent {
    * @param {object} req - Request object for the User profile Service
    */
   updateInfo(req: any): void {
-    const loader = this.getLoader();
+    const loader = this.commonUtilService.getLoader();
     loader.present();
     this.userProfileService.updateUserInfo(req,
       () => {
@@ -366,15 +363,5 @@ export class AdditionalInfoComponent {
    */
   checkDifference(currentValues, profileObj): Array<string> {
     return _.reduce(currentValues, (result, value, key) => _.isEqual(value, profileObj[key]) ? result : result.concat(key), []);
-  }
-
-  /**
-   * Returns the object of loading controller
-   */
-  getLoader(): any {
-    return this.loadingCtrl.create({
-      duration: 30000,
-      spinner: 'crescent'
-    });
   }
 }
