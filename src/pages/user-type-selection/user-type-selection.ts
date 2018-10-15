@@ -148,7 +148,10 @@ export class UserTypeSelectionPage {
         'CONTINUE_AS_ROLE',
         this.commonUtilService.translateMessage(userType)
       );
-      this.preference.putString(PreferenceKey.SELECTED_USER_TYPE, this.selectedUserType);
+
+      if (!this.isChangeRoleRequest) {
+        this.preference.putString(PreferenceKey.SELECTED_USER_TYPE, this.selectedUserType);
+      }
     });
   }
 
@@ -161,7 +164,8 @@ export class UserTypeSelectionPage {
       if (this.profile.profileType === this.selectedUserType) {
         this.gotoTabsPage();
       } else {
-        const updateRequest = new Profile();
+        this.gotoTabsPage(true);
+/*         const updateRequest = new Profile();
 
         updateRequest.handle = this.profile.handle;
         updateRequest.avatar = this.profile.avatar;
@@ -178,7 +182,7 @@ export class UserTypeSelectionPage {
         updateRequest.medium = [];
 
         this.updateProfile(updateRequest);
-      }
+ */      }
     } else {
       const profileRequest = new Profile();
       profileRequest.handle = 'Guest1';
@@ -233,7 +237,7 @@ export class UserTypeSelectionPage {
 
     if (this.isChangeRoleRequest && isUserTypeChanged) {
       this.container.removeAllTabs();
-      this.navCtrl.push(ProfileSettingsPage, { hideBackButton: true });
+      this.navCtrl.push(ProfileSettingsPage, { hideBackButton: true, isChangeRoleRequest: true, selectedUserType: this.selectedUserType });
     } else if (this.appGlobalService.isProfileSettingsCompleted) {
       this.navCtrl.push(TabsPage, {
         loginMode: 'guest'

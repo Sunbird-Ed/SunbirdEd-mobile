@@ -158,9 +158,7 @@ export class SignInCardComponent {
 
     return new Promise<any>((resolve, reject) => {
       that.authService.getSessionData((session) => {
-        if (session === undefined || session == null) {
-          reject('session is null');
-        } else {
+        if (Boolean(session)) {
           const sessionObj = JSON.parse(session);
           const req = {
             userId: sessionObj[ProfileConstants.USER_TOKEN],
@@ -192,6 +190,8 @@ export class SignInCardComponent {
             reject(error);
             console.error(error);
           });
+        } else {
+          reject('session is null');
         }
       });
     });

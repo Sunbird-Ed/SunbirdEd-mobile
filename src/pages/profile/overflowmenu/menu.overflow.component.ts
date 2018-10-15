@@ -8,6 +8,7 @@ import {
     ViewController,
     App,
     Nav,
+    Events
 } from 'ionic-angular';
 import { SettingsPage } from '../../settings/settings';
 import {
@@ -63,7 +64,8 @@ export class OverflowMenuComponent {
         private telemetryGeneratorService: TelemetryGeneratorService,
         private appGlobalService: AppGlobalService,
         private container: ContainerService,
-        private commonUtilService: CommonUtilService
+        private commonUtilService: CommonUtilService,
+        private events: Events
     ) {
         this.items = this.navParams.get('list');
         this.profile = this.navParams.get('profile') || {};
@@ -134,6 +136,7 @@ export class OverflowMenuComponent {
                             profile.profileType = ProfileType.TEACHER;
                             profile.source = UserSource.LOCAL;
 
+                            this.events.publish(AppGlobalService.USER_INFO_UPDATED);
                             this.profileService.setCurrentProfile(true, profile, () => {
                                 this.navigateToAptPage();
                             }, () => {
