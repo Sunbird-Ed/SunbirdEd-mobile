@@ -171,6 +171,7 @@ export class ProfileSettingsPage {
 
     this.formAndFrameworkUtilService.getSyllabusList()
       .then((result) => {
+        this.syllabusList = [];
         if (result && result !== undefined && result.length > 0) {
           result.forEach(element => {
             // renaming the fields to text, value and checked
