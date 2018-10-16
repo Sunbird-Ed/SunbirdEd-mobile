@@ -233,10 +233,7 @@ export class TelemetryGeneratorService {
             InteractType.TOUCH,
             InteractSubtype.PULL_TO_REFRESH,
             env,
-            pageId,
-            undefined,
-            undefined,
-            undefined
+            pageId
         );
     }
 
