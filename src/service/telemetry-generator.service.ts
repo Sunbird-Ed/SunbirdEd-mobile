@@ -228,6 +228,16 @@ export class TelemetryGeneratorService {
             values);
     }
 
-
+    generatePullToRefreshTelemetry(pageId, env) {
+        this.generateInteractTelemetry(
+            InteractType.TOUCH,
+            InteractSubtype.PULL_TO_REFRESH,
+            env,
+            pageId,
+            undefined,
+            undefined,
+            undefined
+        );
+    }
 
 }
