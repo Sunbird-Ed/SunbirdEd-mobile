@@ -729,7 +729,7 @@ export class EnrolledCourseDetailsPage {
   isCourseEnrolled(identifier: string) {
     // get all the enrolled courses
     const enrolledCourses = this.appGlobalService.getEnrolledCourseList();
-    if (enrolledCourses.length > 0) {
+    if (enrolledCourses && enrolledCourses.length > 0) {
       for (const course of enrolledCourses) {
         if (course.courseId === identifier) {
           this.isAlreadyEnrolled = true;
