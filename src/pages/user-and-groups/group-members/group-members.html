@@ -23,7 +23,7 @@
       </ion-col>
     </ion-row>
   </div>
-  <div *ngIf="!userList?.length">
+  <div *ngIf="!userList?.length && !loading">
     <div text-center>
       <img class="rounded image-style" src="assets/imgs/ic_businessman.png" />
       <h6>
