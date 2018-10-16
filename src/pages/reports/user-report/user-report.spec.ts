@@ -61,18 +61,18 @@ describe('UserReportPage', () => {
         expect(navStub.pop).toHaveBeenCalled();
     });
     it('IonViewWillEnter should makes expected calls', () => {
-        let data = {
-            "contentId": "domain_4083",
-            "correctAnswers": 2,
-            "hierarchyData": "",
-            "noOfQuestions": 5,
-            "totalMaxScore": 8,
-            "totalScore": 5,
-            "totalTimespent": 45,
-            "uid": "6e033070-8d74-41bc-bbe7-290ab8b6463a",
-            "name": "कुत्ता और रोटी",
-            "lastUsedTime": 1539149638412
-        }
+        const data = {
+            'contentId': 'domain_4083',
+            'correctAnswers': 2,
+            'hierarchyData': '',
+            'noOfQuestions': 5,
+            'totalMaxScore': 8,
+            'totalScore': 5,
+            'totalTimespent': 45,
+            'uid': '6e033070-8d74-41bc-bbe7-290ab8b6463a',
+            'name': 'कुत्ता और रोटी',
+            'lastUsedTime': 1539149638412
+        };
         const navParams = TestBed.get(NavParams);
         spyOn(navParams, 'get').and.returnValues(data);
         const reportData = TestBed.get(ReportService);
@@ -81,7 +81,7 @@ describe('UserReportPage', () => {
         expect(reportData.getDetailReport).toHaveBeenCalled();
         setTimeout(() => {
         }, 100);
-    })
+    });
     it('IonViewWillEnter should not make expected calls', () => {
         const reportData = TestBed.get(ReportService);
         spyOn(reportData, 'getDetailReport').and.returnValue(Promise.reject('Error Occured'));
