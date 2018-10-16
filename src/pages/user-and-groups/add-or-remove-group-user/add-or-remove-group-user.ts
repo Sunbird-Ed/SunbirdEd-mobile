@@ -201,11 +201,7 @@ export class AddOrRemoveGroupUserPage {
       groupMembersUids.push(element.uid);
     });
 
-    // this.uniqueUserList.forEach((item) => {
-    //   if (Boolean(this.userSelectionMap.get(item.uid))) {
-    //     selectedUids.push(item.uid);
-    //   }
-    // });
+
 
     const req: AddUpdateProfilesRequest = {
       groupId: this.groupInfo.gid,
