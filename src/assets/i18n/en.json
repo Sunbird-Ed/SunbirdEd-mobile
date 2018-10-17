@@ -499,5 +499,6 @@
   "YES": "Yes",
   "YOUR_PROFILE_IS": "Your profile is {{%s}}% complete",
   "YOUR_PROGRESS": "Your Progress: {{%s}}%",
-  "FILL_IN" : "Please fill in the following details"
+  "FILL_IN" : "Please fill in the following details",
+  "REMOVE_FROM_DEVICE": "Remove from Device"
 }
