@@ -7,6 +7,7 @@ import { ContentDetailsPage } from '../content-details/content-details';
 import { CourseUtilService } from '../../service/course-util.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../service/common-util.service';
+import { Network } from '@ionic-native/network';
 
 /**
  * Generated class for the ViewMoreActivityPage page.
@@ -16,30 +17,30 @@ import { CommonUtilService } from '../../service/common-util.service';
  */
 @IonicPage()
 @Component({
-    selector: 'page-view-more-activity',
-    templateUrl: 'view-more-activity.html',
+  selector: 'page-view-more-activity',
+  templateUrl: 'view-more-activity.html',
 })
 
 export class ViewMoreActivityPage implements OnInit {
 
-    /**
-	 * Contains search query
-	 */
-      searchQuery: any;
+  /**
+ * Contains search query
+ */
+  searchQuery: any;
 
-    /**
-	 * To hold search result
-	 */
-     searchList: any;
+  /**
+ * To hold search result
+ */
+  searchList: any;
 
-     /**
-	 * Contains tab bar element ref
-	 */
-    tabBarElement: any;
+  /**
+* Contains tab bar element ref
+*/
+  tabBarElement: any;
 
-    /**
-	 * Flag to show / hide button
-	 */
+  /**
+ * Flag to show / hide button
+ */
   loadMoreBtn = true;
 
   /**
@@ -92,7 +93,8 @@ export class ViewMoreActivityPage implements OnInit {
     private telemetryGeneratorService: TelemetryGeneratorService,
     private events: Events,
     private courseUtilService: CourseUtilService,
-    private commonUtilService: CommonUtilService) {
+    private commonUtilService: CommonUtilService,
+    private network: Network) {
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
     this.contentService = contentService;
     this.ngZone = ngZone;
@@ -187,7 +189,11 @@ export class ViewMoreActivityPage implements OnInit {
   loadMore() {
     this.isLoadMore = true;
     this.offset = this.offset + this.searchLimit;
-    this.mapper();
+    if (this.network.type === 'none') {
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('NO_INTERNET_TITLE'));
+    } else {
+      this.mapper();
+    }
   }
   /**
 	 * Ionic default life cycle hook

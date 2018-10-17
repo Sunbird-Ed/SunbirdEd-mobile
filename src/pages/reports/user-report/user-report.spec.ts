@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA, Component } from '@angular/core';
 import { NgZone } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { NavParams } from 'ionic-angular';
@@ -11,7 +11,7 @@ import { TelemetryGeneratorService } from '../../../service/telemetry-generator.
 import { UserReportPage } from './user-report';
 import { NavMock, NavParamsMock, LoadingControllerMock, TranslateServiceStub } from '../../../../test-config/mocks-ionic';
 import { Observable } from 'rxjs';
-
+import { myMap } from './user-report.spec.data';
 describe('UserReportPage', () => {
     let comp: UserReportPage;
     let fixture: ComponentFixture<UserReportPage>;
@@ -37,7 +37,7 @@ describe('UserReportPage', () => {
         });
         fixture = TestBed.createComponent(UserReportPage);
         comp = fixture.componentInstance;
-    });
+});
     it('can load instance', () => {
         expect(comp).toBeTruthy();
     });
@@ -58,17 +58,35 @@ describe('UserReportPage', () => {
         const navStub = TestBed.get(NavController);
         spyOn(navStub, 'pop');
         comp.goBack();
-
         expect(navStub.pop).toHaveBeenCalled();
     });
     it('IonViewWillEnter should makes expected calls', () => {
-        const reportStub = TestBed.get(ReportService);
-        // const reportDetailPerUserStub = TestBed.get(ReportDetailPerUser);
-        spyOn(reportStub, 'getDetailReport').and.returnValue(Promise.resolve({}));
-        // spyOnProperty(reportDetailPerUserStub, 'reportDetailsList', 'set').and.callThrough();
-
+        const data = {
+            'contentId': 'domain_4083',
+            'correctAnswers': 2,
+            'hierarchyData': '',
+            'noOfQuestions': 5,
+            'totalMaxScore': 8,
+            'totalScore': 5,
+            'totalTimespent': 45,
+            'uid': '6e033070-8d74-41bc-bbe7-290ab8b6463a',
+            'name': 'कुत्ता और रोटी',
+            'lastUsedTime': 1539149638412
+        };
+        const navParams = TestBed.get(NavParams);
+        spyOn(navParams, 'get').and.returnValues(data);
+        const reportData = TestBed.get(ReportService);
+        spyOn(reportData, 'getDetailReport').and.returnValue(Promise.resolve(myMap));
         comp.ionViewWillEnter();
-        expect(reportStub.getDetailReport).toHaveBeenCalled();
-        // expect(reportDetailPerUserStub.reportDetailsList).toHaveBeenCalled();
+        expect(reportData.getDetailReport).toHaveBeenCalled();
+        setTimeout(() => {
+        }, 100);
     });
+    it('IonViewWillEnter should not make expected calls', () => {
+        const reportData = TestBed.get(ReportService);
+        spyOn(reportData, 'getDetailReport').and.returnValue(Promise.reject('Error Occured'));
+        comp.ionViewWillEnter();
+        expect(reportData.getDetailReport).toHaveBeenCalled();
+        expect(comp.assessmentData).not.toBeTruthy();
+     });
 });

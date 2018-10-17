@@ -742,15 +742,15 @@ export class CollectionDetailsPage {
           }
         }
         // Get child content
-        if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport'
-          && res.data.identifier === this.contentDetail.identifier) {
-          this.showLoading = false;
+        if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
+
           if (this.queuedIdentifiers.length && this.isDownloadStarted) {
             if (_.includes(this.queuedIdentifiers, res.data.identifier)) {
               this.currentCount++;
               this.downloadPercentage = +((this.currentCount / this.queuedIdentifiers.length) * (100)).toFixed(0);
             }
             if (this.queuedIdentifiers.length === this.currentCount) {
+              this.showLoading = false;
               this.isDownloadStarted = false;
               this.showDownloadBtn = false;
               this.isDownlaodCompleted = true;
@@ -758,17 +758,23 @@ export class CollectionDetailsPage {
               this.downloadPercentage = 0;
               this.updateSavedResources();
             }
-          } else if (this.parentContent) {
+          } else if (this.parentContent && res.data.identifier === this.contentDetail.identifier) {
             // this condition is for when the child content update is available and we have downloaded parent content
             // but we have to refresh only the child content.
+            this.showLoading = false;
             this.setContentDetails(this.identifier, false);
           } else {
-            if (this.isUpdateAvailable) {
+            if (this.isUpdateAvailable && res.data.identifier === this.contentDetail.identifier) {
+              this.showLoading = false;
               this.setContentDetails(this.identifier, false);
             } else {
-              this.updateSavedResources();
-              this.setChildContents();
-              this.contentDetail.isAvailableLocally = true;
+              if (res.data.identifier === this.contentDetail.identifier) {
+                this.showLoading = false;
+                this.updateSavedResources();
+                this.setChildContents();
+                this.contentDetail.isAvailableLocally = true;
+              }
+
             }
           }
         }

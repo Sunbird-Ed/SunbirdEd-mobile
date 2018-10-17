@@ -85,6 +85,7 @@ export class AppGlobalService {
     public DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT = false;
     public DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT = false;
     public TRACK_USER_TELEMETRY = false;
+    public CONTENT_STREAMING_ENABLED = false;
 
     isUserLoggedIn(): boolean {
         return !this.isGuestUser;
@@ -289,6 +290,14 @@ export class AppGlobalService {
             })
             .catch(error => {
                 this.TRACK_USER_TELEMETRY = false;
+            });
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.CONTENT_STREAMING_ENABLED)
+            .then(response => {
+                this.CONTENT_STREAMING_ENABLED = response === 'true' ? true : false;
+                console.log('content streaming', this.CONTENT_STREAMING_ENABLED);
+            })
+            .catch(error => {
+                this.CONTENT_STREAMING_ENABLED = false;
             });
     }
 

@@ -1,3 +1,4 @@
+import { ProfileType, UserSource } from 'sunbird';
 export const mockRes = {
   data: [{
     'contentType': 'textbook',
@@ -6,7 +7,7 @@ export const mockRes = {
     'isUpdateAvailable': false,
   }],
   profile: {
-    'age': -1,
+    'age': 1,
     'avatar': 'avatar',
     'createdAt': 'Oct 8, 2018 4:29:43 PM',
     'day': -1,
@@ -15,8 +16,8 @@ export const mockRes = {
     'isGroupUser': false,
     'language': 'en',
     'month': -1,
-    'profileType': 'STUDENT',
-    'source': 'LOCAL',
+    'profileType': ProfileType.TEACHER,
+    'source': UserSource.LOCAL,
     'standard': -1,
     'uid': '1af7a5c0-a710-4e0b-99e7-de8fe02ecd92',
     'medium': [
