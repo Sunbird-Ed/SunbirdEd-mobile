@@ -37,6 +37,7 @@ export class GroupMembersPage {
   userList: Array<Profile> = [];
   userSelectionMap: Map<string, boolean> = new Map();
   lastCreatedProfileData: any;
+  loading: boolean;
 
   constructor(
     private navCtrl: NavController,
@@ -60,6 +61,7 @@ export class GroupMembersPage {
   }
 
   ionViewWillEnter() {
+    this.loading = true; // present only loader, untill users are fetched from service
     this.getAllProfile();
   }
 
@@ -88,9 +90,13 @@ export class GroupMembersPage {
 
     this.zone.run(() => {
       this.profileService.getAllUserProfile(profileRequest).then((profiles) => {
+        const loader = this.getLoader();
+        loader.present();
         this.zone.run(() => {
           if (profiles && profiles.length) {
             this.userList = JSON.parse(profiles);
+            loader.dismiss();
+            this.loading = false;
           }
           console.log('UserList', profiles);
         });
