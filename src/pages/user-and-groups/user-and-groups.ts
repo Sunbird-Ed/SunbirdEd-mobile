@@ -699,6 +699,15 @@ export class UserAndGroupsPage {
       });
 
     this.profileService.setCurrentUser(selectedUser.uid, () => {
+      const toast = this.toastCtrl.create({
+        message: this.translateMessage('SWITCHING_TO', selectedUser.handle),
+        duration: 1000,
+        position: 'bottom'
+      });
+      toast.present();
+      /* added setTimeout to run initialize below statememt  before toast dismisses,
+      as below block was taking some time to display after toast.dismiss() */
+      setTimeout(() => {
       if (isBeingPlayed) {
         this.event.publish('launchPlayer', true);
         this.navCtrl.pop();
@@ -713,13 +722,8 @@ export class UserAndGroupsPage {
       this.event.publish('refresh:profile');
       this.event.publish(AppGlobalService.USER_INFO_UPDATED);
       this.app.getRootNav().setRoot(TabsPage);
-      const toast = this.toastCtrl.create({
-        message: this.translateMessage('SWITCHING_TO', selectedUser.handle),
-        duration: 2000,
-        position: 'bottom'
-      });
-      toast.present();
-    }, (error) => {
+    }, 1100);
+  }, (error) => {
       console.log('Error ' + error);
     });
   }
