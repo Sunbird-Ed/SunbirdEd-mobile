@@ -193,6 +193,12 @@ export class QrCodeResultPage {
         const contentData = JSON.parse(JSON.stringify(data.result.contentData));
         this.checkProfileData(contentData, this.profile);
         this.findContentNode(data.result);
+
+        if (this.results && this.results.length === 0) {
+          this.commonUtilService.showContentComingSoonAlert(this.source);
+          this.navCtrl.pop();
+        }
+
       },
       (error: string) => {
         console.error('Error: while fetching child contents ===>>>', error);
