@@ -41,6 +41,7 @@ import {
 } from '../../app/app.constant';
 import { AppGlobalService } from '../../service/app-global.service';
 import { CommonUtilService } from '../../service/common-util.service';
+import { CategoriesEditPage } from '../categories-edit/categories-edit';
 
 /**
  * The Profile page
@@ -361,9 +362,9 @@ export class ProfilePage {
 
   formatRoles() {
     for (let i = 0, len = this.profile.organisations.length; i < len; i++) {
-        for (let j = 0, l = this.profile.organisations[i].roles.length; j < l; j++) {
-            this.roles.push(this.profile.organisations[i].roles[j]);
-        }
+      for (let j = 0, l = this.profile.organisations[i].roles.length; j < l; j++) {
+        this.roles.push(this.profile.organisations[i].roles[j]);
+      }
     }
   }
 
@@ -717,24 +718,28 @@ export class ProfilePage {
    * It internally calls course handler of genie sdk
    */
   getEnrolledCourses() {
-      console.log('inside getEnrolledCourses method');
+    console.log('inside getEnrolledCourses method');
     const option = {
-        userId: '659b011a-06ec-4107-84ad-955e16b0a48a',
-        refreshEnrolledCourses: true,
-        returnRefreshedEnrolledCourses: true
-      };
+      userId: '659b011a-06ec-4107-84ad-955e16b0a48a',
+      refreshEnrolledCourses: true,
+      returnRefreshedEnrolledCourses: true
+    };
     console.log('options : ', option);
     this.courseService.getEnrolledCourses(option, (res: any) => {
-        res = JSON.parse(res);
-        const enrolledCourses = res.result.courses;
-        for (let i = 0, len = enrolledCourses.length; i < len ; i++ ) {
-            if ((enrolledCourses[i].status === 2) || (enrolledCourses[i].leafNodesCount === enrolledCourses[i].progress) ) {
-                this.trainingsCompleted.push(enrolledCourses[i]);
-            }
+      res = JSON.parse(res);
+      const enrolledCourses = res.result.courses;
+      for (let i = 0, len = enrolledCourses.length; i < len; i++) {
+        if ((enrolledCourses[i].status === 2) || (enrolledCourses[i].leafNodesCount === enrolledCourses[i].progress)) {
+          this.trainingsCompleted.push(enrolledCourses[i]);
         }
+      }
     }, (error: any) => {
-        console.log('error while loading enrolled courses', error);
+      console.log('error while loading enrolled courses', error);
     });
+  }
+
+  navigateToCategoriesEditPage() {
+    this.navCtrl.push(CategoriesEditPage);
   }
 
 }
