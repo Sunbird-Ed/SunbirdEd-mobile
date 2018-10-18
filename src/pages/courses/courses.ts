@@ -202,7 +202,6 @@ export class CoursesPage implements OnInit {
             allowClose: true,
             closeBtnText: this.commonUtilService.translateMessage('DONE'),
             showButtons: true,
-            onReset: () => {console.log('reset called'); }
           });
 
           setTimeout(() => {
@@ -515,7 +514,6 @@ export class CoursesPage implements OnInit {
     setTimeout(() => {
       if (refresher) {
         refresher.complete();
-        console.log('pull down to refresh from courses');
         this.telemetryGeneratorService.generatePullToRefreshTelemetry(PageId.COURSES, Environment.HOME);
       }
     }, 10);

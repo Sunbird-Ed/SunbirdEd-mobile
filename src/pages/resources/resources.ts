@@ -451,7 +451,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             allowClose: true,
             closeBtnText: this.commonUtilService.translateMessage('DONE'),
             showButtons: true,
-            onReset: () => {console.log('reset called from resourses'); }
           });
 
           setTimeout(() => {
@@ -513,7 +512,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   swipeDownToRefresh(refresher?) {
     if (refresher) {
       refresher.complete();
-      console.log('pull down to refresh from resources');
       this.telemetryGeneratorService.generatePullToRefreshTelemetry(PageId.LIBRARY, Environment.HOME);
     }
 
