@@ -40,6 +40,7 @@ import {
 } from '../../app/app.constant';
 import { AppGlobalService } from '../../service/app-global.service';
 import { CommonUtilService } from '../../service/common-util.service';
+import { CategoriesEditPage } from '../categories-edit/categories-edit';
 
 /**
  * The Profile page
@@ -675,6 +676,10 @@ export class ProfilePage {
       = 'hardwareback=yes,clearcache=no,zoom=no,toolbar=yes,clearsessioncache=no,closebuttoncaption=Done,disallowoverscroll=yes';
 
     (<any>window).cordova.InAppBrowser.open(url, '_system', options);
+  }
+
+  navigateToCategoriesEditPage() {
+    this.navCtrl.push(CategoriesEditPage);
   }
 
 }
