@@ -41,6 +41,7 @@ import { GuestEditProfilePage } from '../profile/guest-edit.profile/guest-edit.p
 import { IonicApp } from 'ionic-angular';
 import { ShareUserAndGroupPage } from './share-user-and-groups/share-user-and-groups';
 import { AppGlobalService } from '../../service/app-global.service';
+import { CommonUtilService } from '../../service/common-util.service';
 import {
   initTabs,
   GUEST_STUDENT_SWITCH_TABS,
@@ -105,6 +106,7 @@ export class UserAndGroupsPage {
     private telemetryGeneratorService: TelemetryGeneratorService,
     private authService: AuthService,
     private loadingCtrl: LoadingController,
+    private commonUtilService: CommonUtilService
   ) {
 
     /* Check userList length and show message or list accordingly */
@@ -697,8 +699,10 @@ export class UserAndGroupsPage {
       .catch(error => {
         console.log('Error : ' + error);
       });
-
-    this.profileService.setCurrentUser(selectedUser.uid, () => {
+      this.profileService.setCurrentUser(selectedUser.uid, () => {
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('SWITCHING_TO', selectedUser.handle),
+        undefined, undefined, 1000);
+    setTimeout(() => {
       if (isBeingPlayed) {
         this.event.publish('launchPlayer', true);
         this.navCtrl.pop();
@@ -713,22 +717,17 @@ export class UserAndGroupsPage {
       this.event.publish('refresh:profile');
       this.event.publish(AppGlobalService.USER_INFO_UPDATED);
       this.app.getRootNav().setRoot(TabsPage);
-      const toast = this.toastCtrl.create({
-        message: this.translateMessage('SWITCHING_TO', selectedUser.handle),
-        duration: 2000,
-        position: 'bottom'
-      });
-      toast.present();
-    }, (error) => {
-      console.log('Error ' + error);
-    });
+    }, 1000);
+  }, (error) => {
+    console.log('Error ' + error);
+  });
   }
-  // code which invokes loader
-  getLoader(): any {
-    return this.loadingCtrl.create({
-      duration: 30000,
-      spinner: 'crescent'
-    });
-  }
+// code which invokes loader
+getLoader(): any {
+  return this.loadingCtrl.create({
+    duration: 30000,
+    spinner: 'crescent'
+  });
+}
 }
 
