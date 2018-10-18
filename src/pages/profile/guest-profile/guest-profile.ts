@@ -134,7 +134,7 @@ export class GuestProfilePage {
 
   editGuestProfile() {
     this.navCtrl.push(GuestEditProfilePage, {
-      profile: this.profile,
+      profile: JSON.parse(JSON.stringify(this.profile)),
       isCurrentUser: true
     });
   }
