@@ -171,6 +171,152 @@ page-profile {
     .spinner-md-crescent circle {
         stroke: #0288d1;
     }
+
+    .scroll-content {
+        background-color: #FAFAFA !important;
+        padding: 0 !important;
+    }
+
+
+    ion-scroll{
+        .scroll-content{
+            background-color: #fff !important;
+            min-height: 240px;
+            width: 100%;
+            padding: 0 !important;
+        }
+
+        .scroll-zoom-wrapper {
+            white-space: nowrap;
+        }
+    }
+
+   
+
+    .badges{
+        ion-avatar img, ion-thumbnail img {
+            display: block;
+            margin: 30px auto;
+        }
+    }
+
+    .card.card-md {
+        border-radius: 4px;
+        box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.16);
+        background-color: #ffffff;
+        border: solid 0.5px #cccccc;
+        width: 80vw;
+        display: inline-block;
+
+        .badge {
+            padding: 0px 20px;
+            color: #006DE5;
+            border: solid 0.5px #006DE5;
+            font-size: 11px;
+            height: 20px;
+            box-shadow: none;
+            font-weight: 100;
+            text-transform: capitalize;
+        }
+        .top {
+            min-height:100px; 
+            // background: #E9E9E9;
+            .img-container {
+                border: 1px solid #c6dbd8;
+                padding: 0 !important;
+                background: #E9E9E9;
+                min-height: 18vh;
+                max-height: 18vh;
+                border-radius: 4px;
+                img {
+                    max-height: 100%;
+                    margin: 0 auto;
+                    width: auto;
+                    transform: translateY(-56%);
+                    position: relative;
+                    top: 50%;
+                    transform: perspective(1px) translateY(-50%);
+                }
+            }
+        }
+        h6.name{
+            word-break: break-all;
+            white-space: normal;
+            min-height: 32px;
+            font-size: 14px !important;
+            color: #333333;     
+            font-size: 14px !important;
+            color: #333333;
+            width: 100%;
+            white-space: normal;
+            min-height: 32px;
+        }
+
+        .author {
+            font-size: 13px;
+            font-weight: normal;
+            font-style: normal;
+            font-stretch: normal;
+            line-height: normal;
+            letter-spacing: normal;
+            color: #666666;
+        }
+            
+    }
+
+    .roles-container{
+        color: #007AFF; 
+        margin: 5px 0px;
+    }
+    .roles{
+        border: .5px solid #007AFF;
+          padding: 4px 15px;
+          border-radius: 4px;
+          display: inline-block;
+    }
+    .school-recent {
+        margin: 0 auto;
+        padding: 0 30px 25px 30px;
+        text-align: center;
+    }
+
+    .contacts{
+        padding:15px; 
+        background-color:#196DAB;
+        text-align: center;
+
+        .container{
+            display: inline-block;
+          border-radius: 25px;
+          padding: 15px;
+          margin-bottom: 10px;
+          background-color: #fff;
+          color: #007AFF;
+        }
+
+        .email{
+            display: inline-block;
+          border-radius: 25px;
+          padding: 15px;
+          margin-bottom: 10px;
+          background-color: #fff;
+          color: #007AFF;
+          border-bottom: 0.3px solid #196DAB;
+          border-top: 0.3px solid #196DAB;
+        }
+    }
+
+    .school-details{
+        padding:15px; 
+        background-color:#E0EFFF; 
+        text-align: center; 
+        border-bottom: 0.3px solid #196DAB;
+        border-top: 0.3px solid #196DAB;
+        .container {
+            text-align: center; 
+            margin-bottom: 10px
+        }
+    }
 }
 
 .padding-right-10 {
@@ -221,4 +367,46 @@ page-profile {
         padding-left: 6px !important;
         padding-top: 6px !important;
     }
+}
+
+.bolder{
+    font-weight: bold;
+}
+
+.fw{
+    font-weight: 600;
+}
+
+.f11{
+    font-size: 11px;
+}
+
+.lighter{
+    color:#666666;
+}
+
+.MR10{
+    margin-right: 10px;
+}
+
+.MB5 {
+    margin-bottom: 5px;
+}
+
+.MB10 {
+    margin-bottom: 10px;
+}
+
+.arrow-down:before{
+    content: '\02C5';
+    height: 0;
+    width: 0;
+    margin: 0 5px;
+}
+
+.arrow-up:before{
+    content: '\02C4';
+    height: 0;
+    width: 0;
+    margin: 0 5px;
 }
