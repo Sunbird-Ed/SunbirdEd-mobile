@@ -216,7 +216,7 @@ export class SearchPage {
       this.checkParent(collection, content);
     } else {
       // this.navCtrl.push(EnrolledCourseDetailsPage, {'content': content});
-      this.showContentDetails(content);
+      this.showContentDetails(content, true);
     }
   }
 
