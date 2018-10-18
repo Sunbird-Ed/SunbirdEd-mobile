@@ -237,7 +237,7 @@ export class UserTypeSelectionPage {
 
     if (this.isChangeRoleRequest && isUserTypeChanged) {
       this.container.removeAllTabs();
-      this.navCtrl.push(ProfileSettingsPage, { hideBackButton: true, isChangeRoleRequest: true, selectedUserType: this.selectedUserType });
+      this.navCtrl.push(ProfileSettingsPage, { isChangeRoleRequest: true, selectedUserType: this.selectedUserType });
     } else if (this.appGlobalService.isProfileSettingsCompleted) {
       this.navCtrl.push(TabsPage, {
         loginMode: 'guest'

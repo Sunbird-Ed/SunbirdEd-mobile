@@ -453,6 +453,7 @@ export class GroupDetailsPage {
       (success) => {
         console.log('success', success);
         this.userList.splice(userListIndex, 1);
+        this.isNoUsers = (this.userList.length) ? false : true;
       }
     ).catch(error => {
 

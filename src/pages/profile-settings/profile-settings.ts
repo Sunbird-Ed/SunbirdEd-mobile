@@ -49,6 +49,7 @@ export class ProfileSettingsPage {
   unregisterBackButton: any;
   selectedLanguage = 'en';
   profileForTelemetry: any = {};
+  hideBackButton = true;
 
   // syllabusOptions = {
   //   title: this.commonUtilService.translateMessage('SYLLABUS').toLocaleUpperCase(),
@@ -110,6 +111,7 @@ export class ProfileSettingsPage {
   }
 
   ionViewWillEnter() {
+    this.hideBackButton = Boolean(this.navParams.get('hideBackButton'));
     if (this.navParams.get('buildPath')) {
       this.navCtrl.insertPages(0, [{ page: 'LanguageSettingsPage' }, { page: 'UserTypeSelectionPage' }]);
     }

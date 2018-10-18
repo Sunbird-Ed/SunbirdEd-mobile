@@ -495,6 +495,7 @@ export class CoursesPage implements OnInit {
 
       if (this.guestUser) {
         this.getCurrentUser();
+        this.appGlobalService.setEnrolledCourseList([]);
         reject('session expired');
       } else {
         const sessionObj = this.appGlobalService.getSessionData();
