@@ -570,4 +570,817 @@ export const mockRes = {
       'responseMessageId': '66171360-ba92-11e8-9001-81918790455e'
     }, 'status': true
   },
+
+  // https://staging.open-sunbird.org/dial/UWELJP
+  dialCodeSearchResultWithSingleContent: {
+    'collectionDataList': [],
+    'contentDataList': [
+      {
+        'audience': [
+          'Learner'
+        ],
+        'channel': '012315809814749184151',
+        'contentDisposition': 'inline',
+        'contentEncoding': 'gzip',
+        'contentType': 'TextBookUnit',
+        'createdOn': '2018-04-12T07:29:21.120+0000',
+        'description': 'cdfghjk',
+        'dialcodes': [
+          'UWELJP'
+        ],
+        'downloadUrl': `https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/do_2124806607758950401159/
+        kk_1523518310120_do_2124806607758950401159_1.0_spine.ecar`,
+        'identifier': 'do_2124806607758950401159',
+        'language': [
+          'English'
+        ],
+        'lastPublishedOn': '2018-04-12T07:31:50.114+0000',
+        'mimeType': 'application/vnd.ekstep.content-collection',
+        'name': 'kk',
+        'osId': 'org.ekstep.launcher',
+        'pkgVersion': '1.0',
+        'size': '636854.0',
+        'status': 'Live',
+        'variants': {
+          'spine': {
+            'ecarUrl': `https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/do_2124806607758950401159/
+            kk_1523518310120_do_2124806607758950401159_1.0_spine.ecar`,
+            'size': 636854
+          }
+        },
+        'versionKey': '1523518161120'
+      }
+    ],
+    'filterCriteria': {
+      'age': 0,
+      'contentTypes': [
+        'TextBook',
+        'TextBookUnit'
+      ],
+      'facetFilters': [
+        {
+          'name': 'gradeLevel',
+          'values': []
+        },
+        {
+          'name': 'subject',
+          'values': []
+        },
+        {
+          'name': 'medium',
+          'values': []
+        },
+        {
+          'name': 'contentType',
+          'values': [
+            {
+              'apply': false,
+              'count': 1,
+              'name': 'textbookunit'
+            }
+          ]
+        },
+        {
+          'name': 'board',
+          'values': []
+        }
+      ],
+      'facets': [
+        'board',
+        'gradeLevel',
+        'subject',
+        'medium',
+        'contentType'
+      ],
+      'impliedFilters': [
+        {
+          'name': 'dialcodes',
+          'values': [
+            {
+              'apply': true,
+              'count': 0,
+              'name': 'UWELJP'
+            }
+          ]
+        },
+        {
+          'name': 'objectType',
+          'values': [
+            {
+              'apply': true,
+              'count': 0,
+              'name': 'Content'
+            }
+          ]
+        },
+        {
+          'name': 'status',
+          'values': [
+            {
+              'apply': true,
+              'count': 0,
+              'name': 'Live'
+            }
+          ]
+        }
+      ],
+      'limit': 100,
+      'offlineSearch': false,
+      'offset': 0,
+      'query': '',
+      'searchType': 'FILTER',
+      'sortCriteria': []
+    },
+    'id': 'api.v1.search',
+    'request': {
+      'facets': [
+        'board',
+        'gradeLevel',
+        'subject',
+        'medium',
+        'contentType'
+      ],
+      'filters': {
+        'dialcodes': [
+          'UWELJP'
+        ],
+        'objectType': [
+          'Content'
+        ],
+        'status': [
+          'Live'
+        ],
+        'compatibilityLevel': {
+          'max': 4,
+          'min': 1
+        }
+      },
+      'mode': 'collection',
+      'query': '',
+      'limit': 100,
+      'offset': 0
+    },
+    'responseMessageId': '1b1d8150-d2a7-11e8-af34-97ead167c40e'
+  },
+  // https://staging.open-sunbird.org/dial/7V5Q3B
+  dialCodeSearchResultWithMultipleContents: {
+    'collectionDataList': [],
+    'contentDataList': [
+      {
+        'appIcon': `https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/content/
+        do_2124899901836247041294/artifact/0306022-1.jpg_1524657005308.jpg`,
+        'audience': [
+          'Learner'
+        ],
+        'board': 'CBSE',
+        'channel': '012315809814749184151',
+        'childNodes': [
+          'do_21261300684343705611310',
+          'do_21261300496072704011306',
+          'do_21261300432935321611305',
+          'do_21261300684343705611311'
+        ],
+        'contentDisposition': 'inline',
+        'contentEncoding': 'gzip',
+        'contentType': 'TextBook',
+        'contentTypesCount': '{"TextBookUnit":2,"Resource":2}',
+        'createdBy': '6de50989-0990-4bd5-b77d-f05a371f622c',
+        'createdOn': '2018-10-16T07:07:04.539+0000',
+        'creator': 'S P',
+        'description': 'Untitled Collection',
+        'dialcodes': [
+          '7V5Q3B'
+        ],
+        'downloadUrl': `https://sunbirdstaging.blob.core.windows.net/sunbird-content-staging/ecar_files/
+        do_21261300633223168011308/oct-16-dial_1539673894505_do_21261300633223168011308_1.0_spine.ecar`,
+        'framework': 'NCF',
+        'gradeLevel': [
+          'Class 1'
+        ],
+        'identifier': 'do_21261300633223168011308',
+        'language': [
+          'English'
+        ],
+        'lastPublishedOn': '2018-10-16T07:11:34.488+0000',
+        'medium': 'Marathi',
+        'mimeType': 'application/vnd.ekstep.content-collection',
+        'name': 'Oct-16-dial',
+        'osId': 'org.ekstep.quiz.app',
+        'owner': 'S P',
+        'pkgVersion': '1.0',
+        'resourceType': 'Book',
+        'size': '845158.0',
+        'status': 'Live',
+        'subject': 'English',
+        'variants': {
+          'spine': {
+            'ecarUrl': `https://sunbirdstaging.blob.core.windows.net/sunbird-content-staging/ecar_files/do_21261300633223168011308/
+            oct-16-dial_1539673894505_do_21261300633223168011308_1.0_spine.ecar`,
+            'size': 845158
+          }
+        },
+        'versionKey': '1539673893579'
+      },
+      {
+        'appIcon': `https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/content/do_2124899901836247041294/
+        artifact/0306022-1.jpg_1524657005308.jpg`,
+        'audience': [
+          'Learner'
+        ],
+        'board': 'State (Tamil Nadu)',
+        'channel': '012315809814749184151',
+        'childNodes': [
+          'domain_4048',
+          'domain_4058',
+          'domain_4083',
+          'do_21261328649459302411397',
+          'domain_3915',
+          'do_21261328649459302411398'
+        ],
+        'contentDisposition': 'inline',
+        'contentEncoding': 'gzip',
+        'contentType': 'TextBook',
+        'contentTypesCount': '{"TextBookUnit":2,"Resource":4}',
+        'createdBy': '6de50989-0990-4bd5-b77d-f05a371f622c',
+        'createdOn': '2018-10-16T16:33:48.658+0000',
+        'creator': 'S P',
+        'description': 'Untitled Collection',
+        'dialcodes': [
+          '7V5Q3B'
+        ],
+        'downloadUrl': `https://sunbirdstaging.blob.core.windows.net/sunbird-content-staging/ecar_files/
+        do_21261328489396633611396/oct-17-dialcode_1539707939959_do_21261328489396633611396_1.0_spine.ecar`,
+        'framework': 'NCF',
+        'gradeLevel': [
+          'Class 5'
+        ],
+        'identifier': 'do_21261328489396633611396',
+        'language': [
+          'English'
+        ],
+        'lastPublishedOn': '2018-10-16T16:38:59.834+0000',
+        'medium': 'Odia',
+        'mimeType': 'application/vnd.ekstep.content-collection',
+        'name': 'oct-17-dialcode',
+        'osId': 'org.ekstep.quiz.app',
+        'owner': 'S P',
+        'pkgVersion': '1.0',
+        'resourceType': 'Book',
+        'size': '1092418.0',
+        'status': 'Live',
+        'subject': 'English',
+        'variants': {
+          'spine': {
+            'ecarUrl': `https://sunbirdstaging.blob.core.windows.net/sunbird-content-staging/ecar_files/do_21261328489396633611396/
+            oct-17-dialcode_1539707939959_do_21261328489396633611396_1.0_spine.ecar`,
+            'size': 1092418
+          }
+        },
+        'versionKey': '1539707938192'
+      }
+    ],
+    'filterCriteria': {
+      'age': 0,
+      'contentTypes': [
+        'TextBook',
+        'TextBookUnit'
+      ],
+      'facetFilters': [
+        {
+          'name': 'gradeLevel',
+          'values': [
+            {
+              'apply': false,
+              'count': 1,
+              'name': 'class 1'
+            },
+            {
+              'apply': false,
+              'count': 1,
+              'name': 'class 5'
+            }
+          ]
+        },
+        {
+          'name': 'subject',
+          'values': [
+            {
+              'apply': false,
+              'count': 2,
+              'name': 'english'
+            }
+          ]
+        },
+        {
+          'name': 'medium',
+          'values': [
+            {
+              'apply': false,
+              'count': 1,
+              'name': 'marathi'
+            },
+            {
+              'apply': false,
+              'count': 1,
+              'name': 'odia'
+            }
+          ]
+        },
+        {
+          'name': 'contentType',
+          'values': [
+            {
+              'apply': false,
+              'count': 2,
+              'name': 'textbook'
+            }
+          ]
+        },
+        {
+          'name': 'board',
+          'values': [
+            {
+              'apply': false,
+              'count': 1,
+              'name': 'cbse'
+            },
+            {
+              'apply': false,
+              'count': 1,
+              'name': 'state (tamil nadu)'
+            }
+          ]
+        }
+      ],
+      'facets': [
+        'board',
+        'gradeLevel',
+        'subject',
+        'medium',
+        'contentType'
+      ],
+      'impliedFilters': [
+        {
+          'name': 'dialcodes',
+          'values': [
+            {
+              'apply': true,
+              'count': 0,
+              'name': '7V5Q3B'
+            }
+          ]
+        },
+        {
+          'name': 'objectType',
+          'values': [
+            {
+              'apply': true,
+              'count': 0,
+              'name': 'Content'
+            }
+          ]
+        },
+        {
+          'name': 'status',
+          'values': [
+            {
+              'apply': true,
+              'count': 0,
+              'name': 'Live'
+            }
+          ]
+        }
+      ],
+      'limit': 100,
+      'offlineSearch': false,
+      'offset': 0,
+      'query': '',
+      'searchType': 'FILTER',
+      'sortCriteria': []
+    },
+    'id': 'api.v1.search',
+    'request': {
+      'facets': [
+        'board',
+        'gradeLevel',
+        'subject',
+        'medium',
+        'contentType'
+      ],
+      'filters': {
+        'dialcodes': [
+          '7V5Q3B'
+        ],
+        'objectType': [
+          'Content'
+        ],
+        'status': [
+          'Live'
+        ],
+        'compatibilityLevel': {
+          'max': 4,
+          'min': 1
+        }
+      },
+      'mode': 'collection',
+      'query': '',
+      'limit': 100,
+      'offset': 0
+    },
+    'responseMessageId': 'cbbcce80-d2a7-11e8-8a94-859f0a619c07'
+  },
+
+  // https://staging.open-sunbird.org/dial/646X5X
+  dialCodeSearchResultWithMultipleCollections: {
+    'collectionDataList': [
+      {
+        'childNodes': [
+          'do_2125409300562001921307'
+        ],
+        'contentType': 'TextBook',
+        'identifier': 'do_2125409291287838721305',
+        'mimeType': 'application/vnd.ekstep.content-collection',
+        'name': 'book',
+        'size': '637311.0',
+        'content': [
+          {
+            'audience': [
+              'Learner'
+            ],
+            'contentDisposition': 'inline',
+            'contentEncoding': 'gzip',
+            'contentType': 'TextBookUnit',
+            'createdOn': '2018-07-06T11:07:31.001+0000',
+            'description': 'ge ew oiuwef oiqjwd oiueoqe qwdg ftrqw tqwfd',
+            'dialcodes': [
+              '646X5X'
+            ],
+            'downloadUrl': `https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/
+            do_2125409300562001921307/book_1530875410232_do_2125409300562001921307_1.0_spine.ecar`,
+            'identifier': 'do_2125409300562001921307',
+            'language': [
+              'English'
+            ],
+            'lastPublishedOn': '2018-07-06T11:10:10.213+0000',
+            'mimeType': 'application/vnd.ekstep.content-collection',
+            'name': 'book',
+            'osId': 'org.ekstep.launcher',
+            'pkgVersion': '1.0',
+            'size': '359155.0',
+            'status': 'Live',
+            'variants': {
+              'spine': {
+                'ecarUrl': `https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/
+                do_2125409300562001921307/book_1530875410232_do_2125409300562001921307_1.0_spine.ecar`,
+                'size': 359155
+              }
+            },
+            'versionKey': '1530875251001'
+          }
+        ]
+      },
+      {
+        'childNodes': [
+          'do_2124791820965806081846'
+        ],
+        'contentType': 'TextBook',
+        'identifier': 'do_2124791816024883201843',
+        'mimeType': 'application/vnd.ekstep.content-collection',
+        'name': 'Dial Code link',
+        'size': '593666.0',
+        'content': [
+          {
+            'audience': [
+              'Learner'
+            ],
+            'channel': '012315809814749184151',
+            'contentDisposition': 'inline',
+            'contentEncoding': 'gzip',
+            'contentType': 'TextBookUnit',
+            'createdOn': '2018-04-10T05:20:58.274+0000',
+            'dialcodes': [
+              '646X5X'
+            ],
+            'downloadUrl': `https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/
+            do_2124791820965806081846/unit-1_1523337900939_do_2124791820965806081846_1.0_spine.ecar`,
+            'identifier': 'do_2124791820965806081846',
+            'language': [
+              'English'
+            ],
+            'lastPublishedOn': '2018-04-10T05:25:00.921+0000',
+            'mimeType': 'application/vnd.ekstep.content-collection',
+            'name': 'Unit 1',
+            'osId': 'org.ekstep.launcher',
+            'pkgVersion': '1.0',
+            'size': '589598.0',
+            'status': 'Live',
+            'variants': {
+              'spine': {
+                'ecarUrl': `https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/
+                ecar_files/do_2124791820965806081846/unit-1_1523337900939_do_2124791820965806081846_1.0_spine.ecar`,
+                'size': 589598
+              }
+            },
+            'versionKey': '1523337658274'
+          }
+        ]
+      },
+      {
+        'childNodes': [
+          'do_21250324701456793616459'
+        ],
+        'contentType': 'TextBook',
+        'identifier': 'do_21250324682831462416458',
+        'mimeType': 'application/vnd.ekstep.content-collection',
+        'name': 'Dial_Code_JP_Book',
+        'size': '4.4713607E7',
+        'content': [
+          {
+            'audience': [
+              'Learner'
+            ],
+            'contentDisposition': 'inline',
+            'contentEncoding': 'gzip',
+            'contentType': 'TextBookUnit',
+            'createdOn': '2018-05-14T05:21:10.333+0000',
+            'dialcodes': [
+              '646X5X'
+            ],
+            'downloadUrl': `https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/
+            do_21250324701456793616459/jp-1_1526992263235_do_21250324701456793616459_2.0_spine.ecar`,
+            'identifier': 'do_21250324701456793616459',
+            'language': [
+              'English'
+            ],
+            'lastPublishedOn': '2018-05-22T12:31:02.037+0000',
+            'mimeType': 'application/vnd.ekstep.content-collection',
+            'name': 'JP 1',
+            'osId': 'org.ekstep.launcher',
+            'pkgVersion': '2.0',
+            'size': '4.470704E7',
+            'status': 'Live',
+            'variants': {
+              'spine': {
+                'ecarUrl': `https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/
+                do_21250324701456793616459/jp-1_1526992263235_do_21250324701456793616459_2.0_spine.ecar`,
+                'size': 44707040
+              }
+            },
+            'versionKey': '1526275270333'
+          }
+        ]
+      }
+    ],
+    'contentDataList': [
+      {
+        'audience': [
+          'Learner'
+        ],
+        'contentDisposition': 'inline',
+        'contentEncoding': 'gzip',
+        'contentType': 'TextBookUnit',
+        'createdOn': '2018-07-06T11:07:31.001+0000',
+        'description': 'ge ew oiuwef oiqjwd oiueoqe qwdg ftrqw tqwfd',
+        'dialcodes': [
+          '646X5X'
+        ],
+        'downloadUrl': `https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/
+        do_2125409300562001921307/book_1530875410232_do_2125409300562001921307_1.0_spine.ecar`,
+        'identifier': 'do_2125409300562001921307',
+        'language': [
+          'English'
+        ],
+        'lastPublishedOn': '2018-07-06T11:10:10.213+0000',
+        'mimeType': 'application/vnd.ekstep.content-collection',
+        'name': 'book',
+        'osId': 'org.ekstep.launcher',
+        'pkgVersion': '1.0',
+        'size': '359155.0',
+        'status': 'Live',
+        'variants': {
+          'spine': {
+            'ecarUrl': `https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/
+            do_2125409300562001921307/book_1530875410232_do_2125409300562001921307_1.0_spine.ecar`,
+            'size': 359155
+          }
+        },
+        'versionKey': '1530875251001'
+      },
+      {
+        'audience': [
+          'Learner'
+        ],
+        'contentDisposition': 'inline',
+        'contentEncoding': 'gzip',
+        'contentType': 'TextBookUnit',
+        'createdOn': '2018-05-14T05:21:10.333+0000',
+        'dialcodes': [
+          '646X5X'
+        ],
+        'downloadUrl': `https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/
+        do_21250324701456793616459/jp-1_1526992263235_do_21250324701456793616459_2.0_spine.ecar`,
+        'identifier': 'do_21250324701456793616459',
+        'language': [
+          'English'
+        ],
+        'lastPublishedOn': '2018-05-22T12:31:02.037+0000',
+        'mimeType': 'application/vnd.ekstep.content-collection',
+        'name': 'JP 1',
+        'osId': 'org.ekstep.launcher',
+        'pkgVersion': '2.0',
+        'size': '4.470704E7',
+        'status': 'Live',
+        'variants': {
+          'spine': {
+            'ecarUrl': `https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/
+            do_21250324701456793616459/jp-1_1526992263235_do_21250324701456793616459_2.0_spine.ecar`,
+            'size': 44707040
+          }
+        },
+        'versionKey': '1526275270333'
+      },
+      {
+        'audience': [
+          'Learner'
+        ],
+        'channel': '012315809814749184151',
+        'contentDisposition': 'inline',
+        'contentEncoding': 'gzip',
+        'contentType': 'TextBookUnit',
+        'createdOn': '2018-04-10T05:20:58.274+0000',
+        'dialcodes': [
+          '646X5X'
+        ],
+        'downloadUrl': `https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/do_2124791820965806081846/
+        unit-1_1523337900939_do_2124791820965806081846_1.0_spine.ecar`,
+        'identifier': 'do_2124791820965806081846',
+        'language': [
+          'English'
+        ],
+        'lastPublishedOn': '2018-04-10T05:25:00.921+0000',
+        'mimeType': 'application/vnd.ekstep.content-collection',
+        'name': 'Unit 1',
+        'osId': 'org.ekstep.launcher',
+        'pkgVersion': '1.0',
+        'size': '589598.0',
+        'status': 'Live',
+        'variants': {
+          'spine': {
+            'ecarUrl': `https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/
+            do_2124791820965806081846/unit-1_1523337900939_do_2124791820965806081846_1.0_spine.ecar`,
+            'size': 589598
+          }
+        },
+        'versionKey': '1523337658274'
+      }
+    ],
+    'filterCriteria': {
+      'age': 0,
+      'contentTypes': [
+        'TextBook',
+        'TextBookUnit'
+      ],
+      'facetFilters': [
+        {
+          'name': 'gradeLevel',
+          'values': []
+        },
+        {
+          'name': 'subject',
+          'values': []
+        },
+        {
+          'name': 'medium',
+          'values': []
+        },
+        {
+          'name': 'contentType',
+          'values': [
+            {
+              'apply': false,
+              'count': 3,
+              'name': 'textbookunit'
+            }
+          ]
+        },
+        {
+          'name': 'board',
+          'values': []
+        }
+      ],
+      'facets': [
+        'board',
+        'gradeLevel',
+        'subject',
+        'medium',
+        'contentType'
+      ],
+      'impliedFilters': [
+        {
+          'name': 'dialcodes',
+          'values': [
+            {
+              'apply': true,
+              'count': 0,
+              'name': '646X5X'
+            }
+          ]
+        },
+        {
+          'name': 'objectType',
+          'values': [
+            {
+              'apply': true,
+              'count': 0,
+              'name': 'Content'
+            }
+          ]
+        },
+        {
+          'name': 'status',
+          'values': [
+            {
+              'apply': true,
+              'count': 0,
+              'name': 'Live'
+            }
+          ]
+        }
+      ],
+      'limit': 100,
+      'offlineSearch': false,
+      'offset': 0,
+      'query': '',
+      'searchType': 'FILTER',
+      'sortCriteria': []
+    },
+    'id': 'api.v1.search',
+    'request': {
+      'facets': [
+        'board',
+        'gradeLevel',
+        'subject',
+        'medium',
+        'contentType'
+      ],
+      'filters': {
+        'dialcodes': [
+          '646X5X'
+        ],
+        'objectType': [
+          'Content'
+        ],
+        'status': [
+          'Live'
+        ],
+        'compatibilityLevel': {
+          'max': 4,
+          'min': 1
+        }
+      },
+      'mode': 'collection',
+      'query': '',
+      'limit': 100,
+      'offset': 0
+    },
+    'responseMessageId': '58bde9e0-d2a8-11e8-8a94-859f0a619c07'
+  },
+  // https://staging.open-sunbird.org/dial/CWLUPW
+  dialCodeSearchResultWithoutAnyContentAndCollection: {
+    'contentDataList': [],
+    'id': 'api.v1.search',
+    'request': {
+      'facets': [
+        'board',
+        'gradeLevel',
+        'subject',
+        'medium',
+        'contentType'
+      ],
+      'filters': {
+        'dialcodes': [
+          'CWLUPW'
+        ],
+        'contentType': [
+          'TextBook',
+          'TextBookUnit'
+        ],
+        'objectType': [
+          'Content'
+        ],
+        'status': [
+          'Live'
+        ],
+        'compatibilityLevel': {
+          'max': 4,
+          'min': 1
+        }
+      },
+      'mode': 'collection',
+      'query': '',
+      'limit': 100,
+      'offset': 0
+    },
+    'responseMessageId': 'f6109260-d2a8-11e8-8a94-859f0a619c07'
+  }
 };
