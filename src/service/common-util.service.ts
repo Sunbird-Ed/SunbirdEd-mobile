@@ -111,7 +111,10 @@ export class CommonUtilService {
     changeAppLanguage(name, code?) {
         if (!Boolean(code)) {
             const foundValue = appLanguages.filter(language => language.name === name);
-            code = foundValue[0].code;
+
+            if (foundValue.length) {
+                code = foundValue[0].code;
+            }
         }
 
         if (code) {
