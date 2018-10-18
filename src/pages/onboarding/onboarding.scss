@@ -3,7 +3,7 @@ page-onboarding {
     background-color: map-get($colors, white);
   }
   .action-button {
-    width:100% !important;
+    width: 100% !important;
   }
   .item-img {
     text-align: center;
@@ -41,7 +41,9 @@ page-onboarding {
   width: 10px;
   height: 10px;
 }
-.swiper-container-horizontal > .swiper-pagination-bullets .swiper-pagination-bullet {
+.swiper-container-horizontal
+  > .swiper-pagination-bullets
+  .swiper-pagination-bullet {
   margin: 0 2px !important;
 }
 /* End of slider style */
