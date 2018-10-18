@@ -883,6 +883,7 @@ export class ContentDetailsPage {
   playContent() {
     // set the boolean to true, so when the content player is closed, we get to know that
     // we are back from content player
+    this.downloadAndPlay = false;
     if (!AppGlobalService.isPlayerLaunched) {
       AppGlobalService.isPlayerLaunched = true;
     }

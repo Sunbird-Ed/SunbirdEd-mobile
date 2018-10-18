@@ -193,6 +193,12 @@ export class QrCodeResultPage {
         const contentData = JSON.parse(JSON.stringify(data.result.contentData));
         this.checkProfileData(contentData, this.profile);
         this.findContentNode(data.result);
+
+        if (this.results && this.results.length === 0) {
+          this.commonUtilService.showContentComingSoonAlert(this.source);
+          this.navCtrl.pop();
+        }
+
       },
       (error: string) => {
         console.error('Error: while fetching child contents ===>>>', error);
@@ -207,7 +213,9 @@ export class QrCodeResultPage {
   private showAllChild(content: any) {
     this.zone.run(() => {
       if (content.children === undefined) {
-        this.results.push(content);
+        if (content.mimeType !== MimeType.COLLECTION) {
+          this.results.push(content);
+        }
         return;
       }
       content.children.forEach(child => {

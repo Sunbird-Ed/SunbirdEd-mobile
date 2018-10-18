@@ -117,6 +117,7 @@ export class CommonUtilService {
         if (code) {
             this.translate.use(code);
             this.preferences.putString(PreferenceKey.SELECTED_LANGUAGE_CODE, code);
+            this.preferences.putString(PreferenceKey.SELECTED_LANGUAGE, name);
         }
     }
 
