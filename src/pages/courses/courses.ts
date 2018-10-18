@@ -201,7 +201,7 @@ export class CoursesPage implements OnInit {
           const driver = new Driver({
             allowClose: true,
             closeBtnText: this.commonUtilService.translateMessage('DONE'),
-            showButtons: true
+            showButtons: true,
           });
 
           setTimeout(() => {
@@ -514,6 +514,7 @@ export class CoursesPage implements OnInit {
     setTimeout(() => {
       if (refresher) {
         refresher.complete();
+        this.telemetryGeneratorService.generatePullToRefreshTelemetry(PageId.COURSES, Environment.HOME);
       }
     }, 10);
 
@@ -790,5 +791,9 @@ export class CoursesPage implements OnInit {
       });
     });
   }
+
+  // scrollBottomReached(event) {
+  //   console.log('scrollBottomReached courses');
+  // }
 
 }
