@@ -163,7 +163,7 @@ export class ProfilePage {
         this.getEnrolledCourses();
       })
       .catch(error => {
-        console.log('Error while Fetching Data', error);
+        console.error('Error while Fetching Data', error);
         loader.dismiss();
       });
   }
@@ -461,7 +461,6 @@ export class ProfilePage {
         this.userProfileService.endorseOrAddSkill(
           req,
           (res: any) => {
-            console.log('Success', JSON.parse(res));
           },
           (error: any) => {
             console.error('Error', JSON.parse(error));
@@ -580,7 +579,6 @@ export class ProfilePage {
         this.userProfileService.setProfileVisibility(
           req,
           (res: any) => {
-            console.log('success', res);
             this.isRefreshProfile = true;
             this.refreshProfileData();
           },
@@ -661,7 +659,7 @@ export class ProfilePage {
    * To show more Items in skills list
    */
   showMoreItems(): void {
-    this.rolesLimit = this.profile.skills.length;
+    this.rolesLimit = this.roles.length;
   }
 
   /**
@@ -718,13 +716,11 @@ export class ProfilePage {
    * It internally calls course handler of genie sdk
    */
   getEnrolledCourses() {
-    console.log('inside getEnrolledCourses method');
     const option = {
       userId: '659b011a-06ec-4107-84ad-955e16b0a48a',
       refreshEnrolledCourses: true,
       returnRefreshedEnrolledCourses: true
     };
-    console.log('options : ', option);
     this.courseService.getEnrolledCourses(option, (res: any) => {
       res = JSON.parse(res);
       const enrolledCourses = res.result.courses;
@@ -734,7 +730,7 @@ export class ProfilePage {
         }
       }
     }, (error: any) => {
-      console.log('error while loading enrolled courses', error);
+      console.error('error while loading enrolled courses', error);
     });
   }
 
