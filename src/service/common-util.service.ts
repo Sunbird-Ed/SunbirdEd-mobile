@@ -27,7 +27,7 @@ export class CommonUtilService {
     ) {
     }
 
-    showToast(translationKey, isInactive?, cssToast?) {
+    showToast(translationKey, isInactive?, cssToast?, duration?) {
         if (Boolean(isInactive)) {
             return;
         }
@@ -36,7 +36,7 @@ export class CommonUtilService {
             (translatedMsg: any) => {
                 const toastOptions: ToastOptions = {
                     message: translatedMsg,
-                    duration: 3000,
+                    duration: duration ? duration : 3000,
                     position: 'bottom',
                     cssClass: cssToast ? cssToast : ''
                 };
