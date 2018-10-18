@@ -16,7 +16,8 @@ import {
   InteractSubtype,
   ContentSearchCriteria,
   ContentSortCriteria,
-  SortOrder
+  SortOrder,
+  CourseService
 } from 'sunbird';
 import { PopoverController } from 'ionic-angular/components/popover/popover-controller';
 import { DatePipe } from '@angular/common';
@@ -69,6 +70,8 @@ export class ProfilePage {
   grades: string;
   onProfile = true;
   isUploading = false;
+  trainingsCompleted = [];
+  roles = [];
 
   /**
    * Contains paths to icons
@@ -87,8 +90,11 @@ export class ProfilePage {
   linkedInLink = '';
   blogLink = '';
 
-  readonly DEFAULT_PAGINATION_LIMIT = 10;
-  paginationLimit = 10;
+  readonly DEFAULT_PAGINATION_LIMIT = 2;
+  paginationLimit = 2;
+  rolesLimit = 2;
+  badgesLimit = 2;
+  trainingsLimit = 2;
   startLimit = 0;
 
   enrolledCourse: any = [];
@@ -106,7 +112,8 @@ export class ProfilePage {
     private navParams: NavParams,
     private events: Events,
     private appGlobalService: AppGlobalService,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    private courseService: CourseService,
   ) {
     this.userId = this.navParams.get('userId') || '';
     this.isRefreshProfile = this.navParams.get('returnRefreshedUserProfileDetails');
@@ -151,6 +158,8 @@ export class ProfilePage {
           this.events.publish('refresh:profile');
           loader.dismiss();
         }, 500);
+        // This method is used to handle trainings completed by user
+        this.getEnrolledCourses();
       })
       .catch(error => {
         console.log('Error while Fetching Data', error);
@@ -217,6 +226,7 @@ export class ProfilePage {
                 that.formatLastLoginTime();
                 that.formatProfileProgress();
                 that.formatJobProfile();
+                that.formatRoles();
                 if (!that.isLoggedInUser) { that.formatSkills(); }
                 that.subjects = that.arrayToString(that.profile.subject);
                 that.languages = that.arrayToString(that.profile.language);
@@ -347,6 +357,14 @@ export class ProfilePage {
         job.subject = this.arrayToString(job.subject);
       }
     });
+  }
+
+  formatRoles() {
+    for (let i = 0, len = this.profile.organisations.length; i < len; i++) {
+        for (let j = 0, l = this.profile.organisations[i].roles.length; j < l; j++) {
+            this.roles.push(this.profile.organisations[i].roles[j]);
+        }
+    }
   }
 
   formatLastLoginTime() {
@@ -642,7 +660,7 @@ export class ProfilePage {
    * To show more Items in skills list
    */
   showMoreItems(): void {
-    this.paginationLimit = this.profile.skills.length;
+    this.rolesLimit = this.profile.skills.length;
   }
 
   /**
@@ -650,7 +668,23 @@ export class ProfilePage {
    * DEFAULT_PAGINATION_LIMIT = 10
    */
   showLessItems(): void {
-    this.paginationLimit = this.DEFAULT_PAGINATION_LIMIT;
+    this.rolesLimit = this.DEFAULT_PAGINATION_LIMIT;
+  }
+
+  showMoreBadges(): void {
+    this.badgesLimit = this.profile.badgeAssertions.length;
+  }
+
+  showLessBadges(): void {
+    this.badgesLimit = this.DEFAULT_PAGINATION_LIMIT;
+  }
+
+  showMoreTainings(): void {
+    this.trainingsLimit = this.trainingsCompleted.length;
+  }
+
+  showLessTrainings(): void {
+    this.trainingsLimit = this.DEFAULT_PAGINATION_LIMIT;
   }
 
   getLoader(): any {
@@ -675,6 +709,32 @@ export class ProfilePage {
       = 'hardwareback=yes,clearcache=no,zoom=no,toolbar=yes,clearsessioncache=no,closebuttoncaption=Done,disallowoverscroll=yes';
 
     (<any>window).cordova.InAppBrowser.open(url, '_system', options);
+  }
+
+  /**
+   * To get enrolled course(s) of logged-in user i.e, trainings in the UI.
+   *
+   * It internally calls course handler of genie sdk
+   */
+  getEnrolledCourses() {
+      console.log('inside getEnrolledCourses method');
+    const option = {
+        userId: '659b011a-06ec-4107-84ad-955e16b0a48a',
+        refreshEnrolledCourses: true,
+        returnRefreshedEnrolledCourses: true
+      };
+    console.log('options : ', option);
+    this.courseService.getEnrolledCourses(option, (res: any) => {
+        res = JSON.parse(res);
+        const enrolledCourses = res.result.courses;
+        for (let i = 0, len = enrolledCourses.length; i < len ; i++ ) {
+            if ((enrolledCourses[i].status === 2) || (enrolledCourses[i].leafNodesCount === enrolledCourses[i].progress) ) {
+                this.trainingsCompleted.push(enrolledCourses[i]);
+            }
+        }
+    }, (error: any) => {
+        console.log('error while loading enrolled courses', error);
+    });
   }
 
 }
