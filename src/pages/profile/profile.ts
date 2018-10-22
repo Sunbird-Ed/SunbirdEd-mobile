@@ -717,7 +717,7 @@ export class ProfilePage {
    */
   getEnrolledCourses() {
     const option = {
-      userId: '659b011a-06ec-4107-84ad-955e16b0a48a',
+      userId: this.profile.userId,
       refreshEnrolledCourses: true,
       returnRefreshedEnrolledCourses: true
     };
