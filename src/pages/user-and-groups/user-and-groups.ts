@@ -84,6 +84,7 @@ export class UserAndGroupsPage {
   selectedUserIndex = -1;
   lastCreatedProfileData: any;
 
+  selectedUsername: string ;
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -372,11 +373,11 @@ export class UserAndGroupsPage {
     });
   }
 
-  selectUser(index: number, name: string) {
+  selectUser(index: number, name?: string) {
     this.zone.run(() => {
       this.selectedUserIndex = (this.selectedUserIndex === index) ? -1 : index;
     });
-    console.log('Clicked list name is ', name);
+    this.selectedUsername = name;
   }
 
   onSegmentChange(event) {
