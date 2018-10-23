@@ -87,11 +87,11 @@
   "COUNTRY": "Country",
   "COURSE": "COURSE",
   "COURSES_BNAV": "COURSES",
-  "COURSES_IN_PROGRESS": "Courses In Progress",
+  "COURSES_IN_PROGRESS": "My Courses",
   "COURSES_IN_PROGRESS_2": "CoursesInProgress",
   "COURSES_LW": "Courses",
   "COURSE_ENROLLED": "Courses enrolled in",
-  "CONTENT_IS_BEING_ADDED":"Content is being added please check back soon",
+  "CONTENT_IS_BEING_ADDED": "Content is being added please check back soon",
   "COURSE_PROGRESS_COMPLETED": "Completed: {{%s}} %",
   "CREATED_BY_ME": "Content created by me",
   "CREATE_GROUP": "Create Group",
@@ -353,7 +353,7 @@
   "PROFILE_UPDATE_SUCCESS": "Profile updated successfully",
   "PUBLIC": "Public",
   "PUBLISHED_DATE": "Published date",
-  "PREVIOUS_USER_SETTINGS":"Would you like to use the previous user's settings?",
+  "PREVIOUS_USER_SETTINGS": "Would you like to use the previous user's settings?",
   "QUESTION": "Question",
   "QUESTIONS": "Questions",
   "QUESTION_MARKS": "Question (Marks)",
@@ -508,5 +508,8 @@
   "YEAR_OF_PASSING": "Year of Passing",
   "YES": "Yes",
   "YOUR_PROFILE_IS": "Your profile is {{%s}}% complete",
-  "YOUR_PROGRESS": "Your Progress: {{%s}}%"
+  "YOUR_PROGRESS": "Your Progress: {{%s}}%",
+  "BATCH_EXPIRED": "Batch Expired",
+  "BATCH_EXPIRED_DESCRIPTION": "The Course has ended and your progress has ended. However you can use your remaining content.",
+  "BATCH_EXPIRED_BUTTON": "OK Got It!"
 }
