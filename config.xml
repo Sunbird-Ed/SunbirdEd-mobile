@@ -22,7 +22,6 @@
     <hook src="scripts/copyBundledData.js" type="before_build" />
     <hook src="scripts/copyGradleFiles.js" type="before_run" />
     <hook src="scripts/copyBundledData.js" type="before_run" />
-
     <hook src="scripts/copyBundledData.js" type="before_platform_add" />
     <platform name="android">
         <config-file parent="/manifest/application" target="AndroidManifest.xml">
@@ -109,7 +108,7 @@
     <plugin name="cordova-plugin-imagechooser" spec="https://github.com/project-sunbird/cordova-plugin-imagechooser.git" />
     <plugin name="cordova-plugin-file-support" spec="https://github.com/project-sunbird/cordova-plugin-file-support.git" />
     <plugin name="cordova-plugin-qr-scanner" spec="https://github.com/project-sunbird/cordova-plugin-qr-scanner.git" />
-    <plugin name="cordova-plugin-sunbirdsplash" spec="https://github.com/project-sunbird/cordova-plugin-sunbirdsplash.git" />
     <plugin name="cordova-plugin-geniecanvas" spec="https://github.com/project-sunbird/cordova-plugin-geniecanvas.git" />
+    <plugin name="cordova-plugin-sunbirdsplash" spec="https://github.com/project-sunbird/cordova-plugin-sunbirdsplash.git#release-1.12.0" />
     <engine name="android" spec="7.1.1" />
 </widget>
