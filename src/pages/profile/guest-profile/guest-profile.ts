@@ -59,6 +59,7 @@ export class GuestProfilePage {
     private telemetryGeneratorService: TelemetryGeneratorService
   ) {
 
+
     // language code
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
       .then(val => {

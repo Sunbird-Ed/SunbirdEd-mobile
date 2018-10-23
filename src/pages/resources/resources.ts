@@ -450,7 +450,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           const driver = new Driver({
             allowClose: true,
             closeBtnText: this.commonUtilService.translateMessage('DONE'),
-            showButtons: true
+            showButtons: true,
           });
 
           setTimeout(() => {
@@ -512,6 +512,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   swipeDownToRefresh(refresher?) {
     if (refresher) {
       refresher.complete();
+      this.telemetryGeneratorService.generatePullToRefreshTelemetry(PageId.LIBRARY, Environment.HOME);
     }
 
     this.storyAndWorksheets = [];
@@ -655,5 +656,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       }
     }
   }
+
+  // scrollBottomReached(event) {
+  //   console.log('scrollBottomReached courses');
+  // }
 
 }
