@@ -112,7 +112,7 @@
         </div>
         <div class="cards-container" style="padding:15px 5px; background-color: #fff; ">
             <ion-scroll scrollX="true" style="width: 100%" no-padding>
-                <div *ngIf="enrolledCourse && enrolledCourse.length && isLoggedInUser">
+                <div *ngIf="enrolledCourse  && isLoggedInUser">
                     <ion-card *ngFor="let courseItem of enrolledCourse; let i=index">
                         <ion-card-content>
                             <ion-row class="top">

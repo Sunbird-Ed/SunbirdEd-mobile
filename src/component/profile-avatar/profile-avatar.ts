@@ -18,14 +18,11 @@ export class ProfileAvatarComponent implements OnInit {
   initial: string;
 
   constructor() {
-    console.log('Hello ProfileAvatarComponent Component');
-    console.log('name const: ', this.username);
   }
 
   ngOnInit() {
     const initials = this.username.match(/\b\w/g) || [];
     this.initial = ((initials.shift() || '') + (initials.pop() || '')).toUpperCase();
-    console.log(this.initial);
     if (this.initial) {
       this.getBgColor(this.username);
     }

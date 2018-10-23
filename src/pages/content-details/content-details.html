@@ -127,7 +127,7 @@
 <ion-footer *ngIf="content && !appGlobalService?.CONTENT_STREAMING_ENABLED">
 	<ion-toolbar padding>
 		<button ion-button block *ngIf="content.downloadable" (click)="showSwitchUserAlert(content)" [disabled]="isDownloadStarted">{{
-			'PLAY' | translate }}</button>
+			'PLAY_FROM_DEVICE' | translate }}</button>
 		<ion-icon *ngIf="isDownloadStarted && downloadProgress !== 100" (click)="cancelDownload()" name="ios-close-circle-outline"
 		 class="cancel-download" color="primary"></ion-icon>
 		<button ion-button *ngIf="!content.downloadable" (click)="downloadContent()" text-uppercase [ngClass]="{'text-font': isDownloadStarted && ('DOWNLOADING_1' | translate).length > 18}"
