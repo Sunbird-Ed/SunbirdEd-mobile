@@ -54,6 +54,7 @@ import { CourseUtilService } from '../../service/course-util.service';
 import { AppGlobalService } from '../../service/app-global.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../service/common-util.service';
+import { ViewCreditsComponent } from '../../component/view-credits/view-credits';
 
 /**
  * Generated class for the EnrolledCourseDetailsPage page.
@@ -327,6 +328,7 @@ export class EnrolledCourseDetailsPage {
       }
     }
   }
+
 
   showOverflowMenu(event) {
     const contentData = this.course;
@@ -948,4 +950,26 @@ export class EnrolledCourseDetailsPage {
       undefined,
       this.corRelationList);
   }
+  /**
+ * Function to View Credits
+ */
+  viewCredits() {
+    const popUp = this.popoverCtrl.create(
+      ViewCreditsComponent,
+      {
+        rating: this.userRating,
+        comment: this.ratingComment,
+        pageId: PageId.COLLECTION_DETAIL
+      },
+      {
+        cssClass: 'view-credits'
+      }
+    );
+    popUp.present({
+      ev: event
+    });
+    popUp.onDidDismiss(data => {
+    });
+  }
+
 }

@@ -55,6 +55,7 @@ import { AlertController } from 'ionic-angular';
 import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../service/common-util.service';
+import { ViewCreditsComponent } from '../../component/view-credits/view-credits';
 
 @IonicPage()
 @Component({
@@ -1010,5 +1011,26 @@ export class ContentDetailsPage {
       values,
       this.objRollup,
       this.corRelationList);
+  }
+  /**
+  * Function to View Credits
+  */
+  viewCredits() {
+    const popUp = this.popoverCtrl.create(
+      ViewCreditsComponent,
+      {
+        rating: this.userRating,
+        comment: this.ratingComment,
+        pageId: PageId.CONTENT_DETAIL
+      },
+      {
+        cssClass: 'view-credits'
+      }
+    );
+    popUp.present({
+      ev: event
+    });
+    popUp.onDidDismiss(data => {
+    });
   }
 }

@@ -43,6 +43,10 @@ page-content-details {
     .read-more {
         color: rgb(17, 85, 204) !important;
     }
+    .credits {
+        color: rgb(17, 85, 204) !important;
+        font-weight : 600 !important;
+    }
     .back-button-md {
         margin-left: -1px !important;
     }
@@ -92,6 +96,7 @@ page-content-details {
         float: right;
         padding-top: 3px;
     }
+    
 }
 .content-action .list{
     margin-bottom: 0px !important;
