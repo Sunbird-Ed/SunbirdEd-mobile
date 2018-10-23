@@ -505,8 +505,6 @@
   "YES": "Yes",
   "YOUR_PROFILE_IS": "Your profile is {{%s}}% complete",
   "YOUR_PROGRESS": "Your Progress: {{%s}}%",
-  "FILL_IN": "Please fill in the following details",
-  "REMOVE_FROM_DEVICE": "Remove from Device",
   "BATCH_EXPIRED": "Batch Expired",
   "BATCH_EXPIRED_DESCRIPTION": "The Course has ended and your progress has ended. However you can use your remaining content.",
   "BATCH_EXPIRED_BUTTON": "OK Got It!"
