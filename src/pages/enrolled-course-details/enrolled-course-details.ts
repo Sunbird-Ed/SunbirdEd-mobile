@@ -97,6 +97,10 @@ export class EnrolledCourseDetailsPage {
   downloadSize = 0;
 
   /**
+   * this hold the mime type of a collection
+   */
+  enrolledCourseMimeType: string;
+  /**
    * Flag to show / hide resume button
    */
   showResumeBtn: boolean;
@@ -605,10 +609,12 @@ export class EnrolledCourseDetailsPage {
 
     this.contentService.getChildContents(option, (data: any) => {
       data = JSON.parse(data);
-      this.zone.run(() => {
+      console.log('enrolled course data' , data);
+        this.zone.run(() => {
         if (data && data.result && data.result.children) {
+          this.enrolledCourseMimeType = data.result.mimeType;
           this.childrenData = data.result.children;
-          this.startData = data.result.children;
+           this.startData = data.result.children;
         }
         if (this.courseCardData.batchId) {
           this.downloadSize = 0;
@@ -646,7 +652,9 @@ export class EnrolledCourseDetailsPage {
         this.navCtrl.push(CollectionDetailsPage, {
           content: content,
           depth: depth,
-          contentState: contentState
+          contentState: contentState,
+          fromCoursesPage: true,
+          isAlreadyEnrolled: this.isAlreadyEnrolled
         });
       } else {
         this.navCtrl.push(ContentDetailsPage, {
