@@ -27,7 +27,7 @@ export class CommonUtilService {
     ) {
     }
 
-    showToast(translationKey, isInactive?, cssToast?) {
+    showToast(translationKey, isInactive?, cssToast?, duration?) {
         if (Boolean(isInactive)) {
             return;
         }
@@ -36,7 +36,7 @@ export class CommonUtilService {
             (translatedMsg: any) => {
                 const toastOptions: ToastOptions = {
                     message: translatedMsg,
-                    duration: 3000,
+                    duration: duration ? duration : 3000,
                     position: 'bottom',
                     cssClass: cssToast ? cssToast : ''
                 };
@@ -111,7 +111,10 @@ export class CommonUtilService {
     changeAppLanguage(name, code?) {
         if (!Boolean(code)) {
             const foundValue = appLanguages.filter(language => language.name === name);
-            code = foundValue[0].code;
+
+            if (foundValue.length) {
+                code = foundValue[0].code;
+            }
         }
 
         if (code) {

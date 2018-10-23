@@ -59,6 +59,7 @@ export class GuestProfilePage {
     private telemetryGeneratorService: TelemetryGeneratorService
   ) {
 
+
     // language code
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
       .then(val => {
@@ -134,7 +135,7 @@ export class GuestProfilePage {
 
   editGuestProfile() {
     this.navCtrl.push(GuestEditProfilePage, {
-      profile: this.profile,
+      profile: JSON.parse(JSON.stringify(this.profile)),
       isCurrentUser: true
     });
   }

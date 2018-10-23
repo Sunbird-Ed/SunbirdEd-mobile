@@ -23,6 +23,7 @@ import { DirectivesModule } from '../../directives/directives.module';
 import { ComponentsModule } from '../../component/components.module';
 import { IonicImageLoader } from 'ionic-image-loader';
 import { ImagePicker } from './imagepicker/imagepicker';
+import { CategoriesEditPageModule } from '../categories-edit/categories-edit.module';
 
 @NgModule({
   declarations: [
@@ -62,7 +63,8 @@ import { ImagePicker } from './imagepicker/imagepicker';
     BrowserAnimationsModule,
     ExpansionPanelsModule,
     DirectivesModule,
-    ComponentsModule
+    ComponentsModule,
+    CategoriesEditPageModule
   ],
   exports: [
     ProfilePage,
