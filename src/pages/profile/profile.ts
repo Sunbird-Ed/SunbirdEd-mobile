@@ -37,11 +37,15 @@ import {
 import {
   ProfileConstants,
   MenuOverflow,
-  ContentType
+  ContentType,
+  MimeType
 } from '../../app/app.constant';
 import { AppGlobalService } from '../../service/app-global.service';
 import { CommonUtilService } from '../../service/common-util.service';
 import { CategoriesEditPage } from '../categories-edit/categories-edit';
+import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
+import { CollectionDetailsPage } from '../collection-details/collection-details';
+import { ContentDetailsPage } from '../content-details/content-details';
 
 /**
  * The Profile page
@@ -732,6 +736,48 @@ export class ProfilePage {
     }, (error: any) => {
       console.error('error while loading enrolled courses', error);
     });
+  }
+
+  /**
+   * Navigate to the course/content details page
+   *
+   * @param {string} layoutName
+   * @param {object} content
+   */
+  navigateToDetailPage(content: any, layoutName: string): void {
+    const identifier = content.contentId || content.identifier;
+    // const telemetryObject: TelemetryObject = new TelemetryObject();
+    // telemetryObject.id = identifier;
+    // if (layoutName === 'Inprogress') {
+    //   telemetryObject.type = ContentType.COURSE;
+    // } else {
+    //   telemetryObject.type = this.isResource(content.contentType) ? ContentType.RESOURCE : content.contentType;
+    // }
+
+
+    // const values = new Map();
+    // values['sectionName'] = this.sectionName;
+    // values['positionClicked'] = this.index;
+
+    // this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+    //   InteractSubtype.CONTENT_CLICKED,
+    //   this.env,
+    //   this.pageName ? this.pageName : this.layoutName,
+    //   telemetryObject,
+    //   values);
+    if (layoutName === 'Inprogress' || content.contentType === ContentType.COURSE) {
+      this.navCtrl.push(EnrolledCourseDetailsPage, {
+        content: content
+      });
+    } else if (content.mimeType === MimeType.COLLECTION) {
+      this.navCtrl.push(CollectionDetailsPage, {
+        content: content
+      });
+    } else {
+      this.navCtrl.push(ContentDetailsPage, {
+        content: content
+      });
+    }
   }
 
   navigateToCategoriesEditPage() {
