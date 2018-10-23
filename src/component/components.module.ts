@@ -20,6 +20,7 @@ import { AssessmentDetailsComponent } from './assessment-details/assessment-deta
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { ViewMoreCardComponent } from './view-more-card/view-more-card';
 import { ViewCreditsComponent } from './view-credits/view-credits';
+import { ProfileAvatarComponent } from './profile-avatar/profile-avatar';
 
 @NgModule({
     declarations: [
@@ -36,7 +37,8 @@ import { ViewCreditsComponent } from './view-credits/view-credits';
         ReportIssuesComponent,
         ContentRatingAlertComponent,
         AssessmentDetailsComponent,
-        ViewCreditsComponent
+        ViewCreditsComponent,
+        ProfileAvatarComponent
     ],
     imports: [
         IonicPageModule.forChild(CourseCard),
@@ -60,7 +62,8 @@ import { ViewCreditsComponent } from './view-credits/view-credits';
         ReportIssuesComponent,
         ContentRatingAlertComponent,
         AssessmentDetailsComponent,
-        ViewCreditsComponent
+        ViewCreditsComponent,
+        ProfileAvatarComponent
         // ContentActionsComponent
     ],
     entryComponents: [

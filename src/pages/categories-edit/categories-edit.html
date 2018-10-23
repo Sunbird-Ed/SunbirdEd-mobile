@@ -1,0 +1,44 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>{{'EDIT_PROFILE' | translate}}</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding-vertical>
+  <ion-item>
+    <ion-label stacked class="label-font">{{'BOARD' | translate}}<span ion-text color="danger">&nbsp;*</span></ion-label>
+    <ion-select multiple="false" [selectOptions]="syllabusOptions" placeholder="{{'BOARD_OPTION_TEXT' | translate}}" okText="{{'BTN_SUBMIT' | translate}}"
+      cancelText="{{'CANCEL' | translate}}">
+      <ion-option *ngFor="let syllabus of syllabusList" value="{{syllabus}}">{{syllabus}}</ion-option>
+    </ion-select>
+  </ion-item>
+  <ion-item>
+    <ion-label stacked class="label-font">{{'MEDIUM' | translate}}<span ion-text color="danger">&nbsp;*</span></ion-label>
+    <ion-select multiple="true" [selectOptions]="mediumOptions" placeholder="{{'MEDIUM_OPTION_TEXT' | translate}}" okText="{{'BTN_SUBMIT' | translate}}"
+      cancelText="{{'CANCEL' | translate}}">
+      <ion-option *ngFor="let medium of mediumList" value="{{medium}}">{{medium}}</ion-option>
+    </ion-select>
+  </ion-item>
+  <ion-item>
+    <ion-label stacked class="label-font">{{'CLASS' | translate}}<span ion-text color="danger">&nbsp;*</span></ion-label>
+    <ion-select multiple="true" [selectOptions]="classOptions" placeholder="{{'GRADE_OPTION_TEXT' | translate}}" okText="{{'BTN_SUBMIT' | translate}}"
+      cancelText="{{'CANCEL' | translate}}">
+      <ion-option *ngFor="let class of classList" value="{{class}}">{{class}}</ion-option>
+    </ion-select>
+  </ion-item>
+  <ion-item>
+    <ion-label stacked class="label-font">{{'SUBJECTS' | translate}}</ion-label>
+    <ion-select multiple="true" [selectOptions]="subjectOptions" placeholder="{{'SUBJECT_OPTION_TEXT' | translate}}" okText="{{'BTN_SUBMIT' | translate}}"
+      cancelText="{{'CANCEL' | translate}}">
+      <ion-option *ngFor="let subject of subjectList" value="{{subject}}">{{subject}}</ion-option>
+    </ion-select>
+  </ion-item>
+</ion-content>
+
+<ion-footer>
+  <ion-row class="padding-12">
+    <ion-col col-md-10 offset-md-1>
+      <button ion-button block>{{'SAVE' | translate}}</button>
+    </ion-col>
+  </ion-row>
+</ion-footer>
