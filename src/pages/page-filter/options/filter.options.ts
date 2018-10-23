@@ -36,7 +36,7 @@ export class PageFilterOptions {
   }
 
   changeValue(value, index) {
-    if (!this.facets.selected) {
+    if (!this.facets.selected || this.facets.code === 'board') {
       this.facets.selected = [];
       if (this.facets.code === 'contentType') {
         this.facets.selectedValuesIndices = [];

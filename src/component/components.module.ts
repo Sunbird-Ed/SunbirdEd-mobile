@@ -19,6 +19,7 @@ import { FormAndFrameworkUtilService } from '../pages/profile/formandframeworkut
 import { AssessmentDetailsComponent } from './assessment-details/assessment-details';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { ViewMoreCardComponent } from './view-more-card/view-more-card';
+import { ProfileAvatarComponent } from './profile-avatar/profile-avatar';
 
 @NgModule({
     declarations: [
@@ -34,7 +35,8 @@ import { ViewMoreCardComponent } from './view-more-card/view-more-card';
         // ContentActionsComponent,
         ReportIssuesComponent,
         ContentRatingAlertComponent,
-        AssessmentDetailsComponent
+        AssessmentDetailsComponent,
+        ProfileAvatarComponent
     ],
     imports: [
         IonicPageModule.forChild(CourseCard),
@@ -57,7 +59,8 @@ import { ViewMoreCardComponent } from './view-more-card/view-more-card';
         ConfirmAlertComponent,
         ReportIssuesComponent,
         ContentRatingAlertComponent,
-        AssessmentDetailsComponent
+        AssessmentDetailsComponent,
+        ProfileAvatarComponent
         // ContentActionsComponent
     ],
     entryComponents: [

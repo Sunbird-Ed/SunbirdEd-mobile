@@ -439,6 +439,9 @@ export class GuestEditProfilePage {
     if (formVal.userType === '') {
       this.commonUtilService.showToast('USER_TYPE_SELECT_WARNING');
       return false;
+    } else if (!formVal.name) {
+      this.commonUtilService.showToast(
+        this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService.translateMessage('FULL_NAME')), false, 'red-toast');
     } else if (formVal.boards.length === 0) {
       this.appGlobalService.generateSaveClickedTelemetry(
         this.extractProfileForTelemetry(formVal), 'failed', PageId.EDIT_USER, InteractSubtype.SAVE_CLICKED);

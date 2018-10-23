@@ -28,7 +28,7 @@
             <p ion-text text-uppercase color="dark_gray" class="subTitle">{{ 'LOGGED_IN_AS' | translate}}</p>
             <ion-item class="item-background radius" margin-bottom no-lines [ngClass]="i===selectedUserIndex ? 'blueBorder' : ''">
               <ion-row class="bg-color-white">
-                <ion-col col-12 class="bg-color-white" (click)="selectUser(i, user?.name)">
+                <ion-col col-12 class="bg-color-white" (click)="selectUser(i, user?.handle)">
                   <ion-item class="bg-color-white padding-left-0 rm-label-margin" no-padding>
                     <h6 class="line-height-2 padding-left-2 elipsis" color="primary" [ngStyle]="{'color': currentUserId === user?.uid ? 'dodgerblue' : 'black'}">
                       <b>{{profileDetails?.handle}}&nbsp;{{profileDetails?.lastName}}</b>
@@ -59,7 +59,7 @@
             <ion-item *ngFor="let user of userList; let i=index;" class="item-background radius" margin-bottom [ngClass]="i===selectedUserIndex ? 'blueBorder' : ''"
               no-lines>
               <ion-row class="bg-color-white">
-                <ion-col col-11 class="bg-color-white" (click)="selectUser(i, user?.name)">
+                <ion-col col-11 class="bg-color-white" (click)="selectUser(i, user?.handle)">
                   <ion-item class="bg-color-white padding-left-0 rm-label-margin" no-padding>
                     <h6 class="line-height-2 elipsis" [ngStyle]="{'color': currentUserId === user?.uid ? 'dodgerblue' : 'black'}">
                       <b>{{user?.handle}}</b>
@@ -148,7 +148,7 @@
   <ion-row padding>
     <ion-col col-md-10 offset-md-1>
       <div *ngIf="selectedUserIndex !== -1; else enableCreateButton">
-        <button *ngIf="!playContent" ion-button block center (click)="switchAccountConfirmBox()">
+        <button *ngIf="!playContent" ion-button block center (click)="switchAccountConfirmBox()" [disabled]="!selectedUsername">
           {{'SWITCH_ACCOUNT' | translate}}
         </button>
         <button *ngIf="playContent" ion-button block (click)="play()">
