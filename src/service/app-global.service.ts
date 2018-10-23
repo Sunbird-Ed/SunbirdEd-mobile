@@ -1,3 +1,4 @@
+
 import { Injectable } from '@angular/core';
 import {
     Profile,
@@ -28,7 +29,6 @@ import { TelemetryGeneratorService } from './telemetry-generator.service';
 @Injectable()
 export class AppGlobalService {
 
-
     constructor(
         private event: Events,
         private authService: AuthService,
@@ -49,22 +49,22 @@ export class AppGlobalService {
     public static isPlayerLaunched = false;
 
     /**
-     * This property stores the courses enrolled by a user
-     */
+    * This property stores the courses enrolled by a user
+    */
     courseList: Array<any>;
     /**
-     * This property stores the form details at the app level for a particular app session
-     */
+    * This property stores the form details at the app level for a particular app session
+    */
     syllabusList: Array<any> = [];
 
     /**
-     * This property stores the course filter configuration at the app level for a particular app session
-     */
+    * This property stores the course filter configuration at the app level for a particular app session
+    */
     courseFilterConfig: Array<any> = [];
 
     /**
-     * This property stores the library filter configuration  at the app level for a particular app session
-     */
+    * This property stores the library filter configuration at the app level for a particular app session
+    */
     libraryFilterConfig: Array<any> = [];
 
     guestUserProfile: Profile;
@@ -122,76 +122,76 @@ export class AppGlobalService {
     }
 
     /**
-     * This method stores the list of courses enrolled by user, and is updated every time
-     * getEnrolledCourses is called.
-     * @param courseList
-     */
+    * This method stores the list of courses enrolled by user, and is updated every time
+    * getEnrolledCourses is called.
+    * @param courseList
+    */
     setEnrolledCourseList(courseList: Array<any>) {
         this.courseList = courseList;
     }
 
     /**
-     * This method returns the list of enrolled courses
-     *
-     * @param courseList
-     *
-     */
+    * This method returns the list of enrolled courses
+    *
+    * @param courseList
+    *
+    */
     getEnrolledCourseList(): Array<any> {
         return this.courseList;
     }
 
     /**
-   * This method stores the form details, for a particular session of the app
-   *
-   * @param syllabusList
-   *
-   */
+    * This method stores the form details, for a particular session of the app
+    *
+    * @param syllabusList
+    *
+    */
     setSyllabusList(syllabusList: Array<any>): any {
         this.syllabusList = syllabusList;
     }
 
     /**
-     * This method returns the form details cached, for a particular session of the app
-     *
-     * @param syllabusList
-     *
-     */
+    * This method returns the form details cached, for a particular session of the app
+    *
+    * @param syllabusList
+    *
+    */
     getCachedSyllabusList(): Array<any> {
         return this.syllabusList;
     }
 
     /**
-  * This method stores the course filter config, for a particular session of the app
-  *
-  * @param courseFilterConfig
-  *
-  */
+    * This method stores the course filter config, for a particular session of the app
+    *
+    * @param courseFilterConfig
+    *
+    */
     setCourseFilterConfig(courseFilterConfig: Array<any>) {
         this.courseFilterConfig = courseFilterConfig;
     }
 
     /**
-     * This method returns the course filter config cache, for a particular session of the app
-     *
-     * @param syllabusList
-     *
-     */
+    * This method returns the course filter config cache, for a particular session of the app
+    *
+    * @param syllabusList
+    *
+    */
     getCachedCourseFilterConfig(): Array<any> {
         return this.courseFilterConfig;
     }
 
     /**
- * This method stores the library filter config, for a particular session of the app
- *
- */
+    * This method stores the library filter config, for a particular session of the app
+    *
+    */
     setLibraryFilterConfig(libraryFilterConfig: Array<any>) {
         this.libraryFilterConfig = libraryFilterConfig;
     }
 
     /**
-     * This method returns the library filter config cache, for a particular session of the app
-     *
-     */
+    * This method returns the library filter config cache, for a particular session of the app
+    *
+    */
     getCachedLibraryFilterConfig(): Array<any> {
         return this.libraryFilterConfig;
     }
@@ -294,7 +294,6 @@ export class AppGlobalService {
         this.buildParamService.getBuildConfigParam(GenericAppConfig.CONTENT_STREAMING_ENABLED)
             .then(response => {
                 this.CONTENT_STREAMING_ENABLED = response === 'true' ? true : false;
-                console.log('content streaming', this.CONTENT_STREAMING_ENABLED);
             })
             .catch(error => {
                 this.CONTENT_STREAMING_ENABLED = false;
@@ -502,3 +501,4 @@ export class AppGlobalService {
         });
     }
 }
+

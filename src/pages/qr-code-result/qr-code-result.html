@@ -5,7 +5,7 @@
 
     </ion-title>
     <ion-buttons end>
-      <button ion-button clear *ngIf="!appGlobalService?.isProfileSettingsCompleted" (click)="skipSteps()">
+      <button ion-button clear *ngIf="!appGlobalService?.isUserLoggedIn() && !appGlobalService?.isProfileSettingsCompleted" (click)="skipSteps()">
         {{'SKIP' | translate}}
       </button>
     </ion-buttons>
