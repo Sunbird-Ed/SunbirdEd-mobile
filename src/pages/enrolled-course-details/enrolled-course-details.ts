@@ -239,7 +239,6 @@ export class EnrolledCourseDetailsPage {
   }
 
   subscribeUtilityEvents() {
-    console.log('event generated');
     this.buildParamService.getBuildConfigParam('BASE_URL')
       .then(response => {
         this.baseUrl = response;
@@ -611,9 +610,9 @@ export class EnrolledCourseDetailsPage {
     this.contentService.getChildContents(option, (data: any) => {
       data = JSON.parse(data);
       console.log('enrolled course data' , data);
-        this.enrolledCourseMimeType = MimeType.COLLECTION;
         this.zone.run(() => {
         if (data && data.result && data.result.children) {
+          this.enrolledCourseMimeType = data.result.mimeType;
           this.childrenData = data.result.children;
            this.startData = data.result.children;
         }
@@ -647,7 +646,7 @@ export class EnrolledCourseDetailsPage {
         this.navCtrl.push(EnrolledCourseDetailsPage, {
           content: content,
           depth: depth,
-          contentState: contentState,
+          contentState: contentState
         });
       } else if (content.mimeType === MimeType.COLLECTION) {
         this.navCtrl.push(CollectionDetailsPage, {
@@ -662,8 +661,7 @@ export class EnrolledCourseDetailsPage {
           content: content,
           depth: depth,
           contentState: contentState,
-          isChildContent: true,
-          isCourses: true
+          isChildContent: true
         });
       }
     });
