@@ -35,9 +35,7 @@ background-color: transparent !important;
 font-size:18px !important;
 font-weight: 600 !important;
 padding-top: 12px !important;
-
 }
-
 
 .alert-btn-cancel.alert-button {
     font-weight: 600 !important;
@@ -53,7 +51,7 @@ padding-top: 12px !important;
     font-size: 1.4rem;
     font-weight: 700;
 }
-.alert-btn-delete.alert-button{
+.alert-btn-delete.alert-button, .alert-wp.confirm-alert .doneButton {
     font-weight: 600 !important;
     background:  map-get($colors, primary) !important;
     color: white !important;
@@ -66,8 +64,9 @@ padding-top: 12px !important;
     height: 4.3rem;
     font-size: 1.4rem;
     font-weight: 700;
-
+    width: 100% !important;
 }
+
 .alert-wp ion-backdrop {
     background: black !important;
 }
