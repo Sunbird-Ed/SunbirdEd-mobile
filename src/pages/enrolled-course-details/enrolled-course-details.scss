@@ -101,7 +101,18 @@ page-enrolled-course-details {
         .progress-inner-secondary {
           background-color: #7ED321 !important;
         }
+        
       }
+      .blurbackground {
+        // background-color: gray !important;
+        .progress-inner-primary{
+            background-color: gray !important;
+          }
+    
+          .progress-inner-secondary {
+            background-color: gray !important;
+          }
+    }
 
       .loading-backdrop {
         .backdrop-container {
@@ -125,4 +136,10 @@ page-enrolled-course-details {
         z-index: 1000;
         opacity: 1 !important;
     }
+
+    // .md,.ios,.wp {
+    //     page-landing {
+    //       .custom-alertDanger {
+    //         width: 100%;
+    //       }}}
 }
