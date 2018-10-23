@@ -85,6 +85,7 @@ export class ViewMoreCardComponent implements OnInit {
   ngOnInit() {
     if (this.type === 'enrolledCourse') {
       this.content.cProgress = this.courseUtilService.getCourseProgress(this.content.leafNodesCount, this.content.progress);
+      this.content.cProgress = parseInt(this.content.cProgress, 10);
     }
   }
 }
