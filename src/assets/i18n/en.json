@@ -504,14 +504,10 @@
   "YEAR_OF_PASSING": "Year of Passing",
   "YES": "Yes",
   "YOUR_PROFILE_IS": "Your profile is {{%s}}% complete",
-<<<<<<< HEAD
   "YOUR_PROGRESS": "Your Progress: {{%s}}%",
   "FILL_IN": "Please fill in the following details",
   "REMOVE_FROM_DEVICE": "Remove from Device",
   "BATCH_EXPIRED": "Batch Expired",
   "BATCH_EXPIRED_DESCRIPTION": "The Course has ended and your progress has ended. However you can use your remaining content.",
   "BATCH_EXPIRED_BUTTON": "OK Got It!"
-=======
-  "YOUR_PROGRESS": "Your Progress: {{%s}}%"
->>>>>>> 3e7d6305e63836a61c7a98744a0e7dd57510c9bf
 }
