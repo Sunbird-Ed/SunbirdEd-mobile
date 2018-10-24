@@ -12,7 +12,8 @@ import {
   PopoverController,
   LoadingController,
   Platform,
-  Navbar
+  Navbar,
+  AlertController
 } from 'ionic-angular';
 import {
   ContentService,
@@ -98,6 +99,10 @@ export class EnrolledCourseDetailsPage {
   downloadSize = 0;
 
   /**
+   * this hold the mime type of a collection
+   */
+  enrolledCourseMimeType: string;
+  /**
    * Flag to show / hide resume button
    */
   showResumeBtn: boolean;
@@ -138,6 +143,7 @@ export class EnrolledCourseDetailsPage {
   isDownloadStarted = false;
   isDownlaodCompleted = false;
   batchDetails: any;
+  batchexp: Boolean = false;
   private corRelationList: Array<CorrelationData>;
 
   /**
@@ -194,6 +200,7 @@ export class EnrolledCourseDetailsPage {
   @ViewChild(Navbar) navBar: Navbar;
   constructor(navCtrl: NavController,
     private navParams: NavParams,
+    private alertCtrl: AlertController,
     contentService: ContentService,
     private zone: NgZone,
     private events: Events,
@@ -450,6 +457,29 @@ export class EnrolledCourseDetailsPage {
         data = JSON.parse(data);
         if (data.result) {
           this.batchDetails = data.result;
+          console.log(this.batchDetails.status);
+          if (this.batchDetails.status === 2) {
+            this.batchexp = true;
+            const alert = this.alertCtrl.create({
+              title: this.commonUtilService.translateMessage('BATCH_EXPIRED'),
+              message: this.commonUtilService.translateMessage('BATCH_EXPIRED_DESCRIPTION'),
+              mode: 'wp',
+              cssClass: 'confirm-alert',
+              buttons: [
+                {
+                  text: this.commonUtilService.translateMessage('BATCH_EXPIRED_BUTTON'),
+                  role: 'cancel',
+                  cssClass: 'doneButton',
+                  handler: () => {
+                    console.log('Cancel clicked');
+                  }
+                }
+              ]
+            });
+            alert.present();
+          } else {
+            this.batchexp = false;
+          }
           this.getBatchCreatorName();
         }
       });
@@ -607,10 +637,12 @@ export class EnrolledCourseDetailsPage {
 
     this.contentService.getChildContents(option, (data: any) => {
       data = JSON.parse(data);
-      this.zone.run(() => {
+      console.log('enrolled course data' , data);
+        this.zone.run(() => {
         if (data && data.result && data.result.children) {
+          this.enrolledCourseMimeType = data.result.mimeType;
           this.childrenData = data.result.children;
-          this.startData = data.result.children;
+           this.startData = data.result.children;
         }
         if (this.courseCardData.batchId) {
           this.downloadSize = 0;
@@ -648,7 +680,9 @@ export class EnrolledCourseDetailsPage {
         this.navCtrl.push(CollectionDetailsPage, {
           content: content,
           depth: depth,
-          contentState: contentState
+          contentState: contentState,
+          fromCoursesPage: true,
+          isAlreadyEnrolled: this.isAlreadyEnrolled
         });
       } else {
         this.navCtrl.push(ContentDetailsPage, {
@@ -744,6 +778,7 @@ export class EnrolledCourseDetailsPage {
   getCourseProgress() {
     if (this.courseCardData.batchId) {
       this.course.progress = this.courseUtilService.getCourseProgress(this.courseCardData.leafNodesCount, this.courseCardData.progress);
+      this.course.progress = parseInt(this.course.progress, 10);
     }
   }
 
@@ -829,6 +864,7 @@ export class EnrolledCourseDetailsPage {
    */
   startContent() {
     if (this.startData && this.startData.length) {
+      console.log(this.startData);
       const firstChild = _.first(_.values(this.startData), 1);
       this.navigateToChildrenDetailsPage(firstChild, 1);
     }

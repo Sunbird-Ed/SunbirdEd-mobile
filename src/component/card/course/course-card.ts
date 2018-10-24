@@ -131,3 +131,4 @@ export class CourseCard implements OnInit {
     }
   }
 }
+
