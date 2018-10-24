@@ -27,8 +27,8 @@
 				<span class="text-gray-color">{{ 'CONTENT_CREATED_BY' | translate }}</span>
 				<span class="content-meta-title">{{ contentDetail.creator || contentDetail.owner }}</span>
 			</div>
-			<ion-row class="padding-top-10 credits" (click)="viewCredits()">
-				Credits
+			<ion-row class="padding-top-10 credits" (click)="viewCredits()" *ngIf="contentDetail.creator || contentDetail.attributions">
+				{{ 'CREDITS' | translate }}
 			   </ion-row>
 			<ion-row class="padding-top-10">
 				<ion-col class="padding-0">

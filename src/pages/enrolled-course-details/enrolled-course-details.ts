@@ -957,9 +957,8 @@ export class EnrolledCourseDetailsPage {
     const popUp = this.popoverCtrl.create(
       ViewCreditsComponent,
       {
-        rating: this.userRating,
-        comment: this.ratingComment,
-        pageId: PageId.COLLECTION_DETAIL
+        content: this.course,
+        pageId: PageId.CONTENT_DETAIL
       },
       {
         cssClass: 'view-credits'

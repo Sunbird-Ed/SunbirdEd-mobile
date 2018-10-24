@@ -999,26 +999,28 @@ export class CollectionDetailsPage {
       });
     });
   }
-    /**
-   * Function to View Credits
-   */
+  /**
+ * Function to View Credits
+ */
   viewCredits() {
-    const popUp = this.popoverCtrl.create(
-      ViewCreditsComponent,
-      {
-        content: this.contentDetail,
-        rating: this.userRating,
-        comment: this.ratingComment,
-        pageId: PageId.COLLECTION_DETAIL
-      },
-      {
-        cssClass: 'view-credits'
-      }
-    );
-    popUp.present({
-      ev: event
-    });
-    popUp.onDidDismiss(data => {
-    });
+    if (this.contentDetail.isAvailableLocally) {
+      const popUp = this.popoverCtrl.create(
+        ViewCreditsComponent,
+        {
+          content: this.contentDetail,
+          pageId: PageId.COLLECTION_DETAIL
+        },
+        {
+          cssClass: 'view-credits'
+        }
+      );
+      popUp.present({
+        ev: event
+      });
+      popUp.onDidDismiss(data => {
+      });
+    } else {
+      this.commonUtilService.showToast('Content is not Available, Please download it to view the details');
+    }
   }
 }

@@ -1016,21 +1016,20 @@ export class ContentDetailsPage {
   * Function to View Credits
   */
   viewCredits() {
-    const popUp = this.popoverCtrl.create(
-      ViewCreditsComponent,
-      {
-        rating: this.userRating,
-        comment: this.ratingComment,
-        pageId: PageId.CONTENT_DETAIL
-      },
-      {
-        cssClass: 'view-credits'
-      }
-    );
-    popUp.present({
-      ev: event
-    });
-    popUp.onDidDismiss(data => {
-    });
+     const popUp = this.popoverCtrl.create(
+        ViewCreditsComponent,
+        {
+          content: this.content,
+          pageId: PageId.CONTENT_DETAIL
+        },
+        {
+          cssClass: 'view-credits'
+        }
+      );
+      popUp.present({
+        ev: event
+      });
+      popUp.onDidDismiss(data => {
+      });
   }
 }

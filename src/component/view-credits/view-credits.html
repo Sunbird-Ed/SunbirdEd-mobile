@@ -11,28 +11,28 @@
 </ion-header>
 <ion-content>
   <ion-grid padding>
-    <div>
+    <div *ngIf="content?.creator">
       <ion-row class="text-gray-color">
         Creators
       </ion-row>
       <ion-row class="content">
-        Mr.Amit Mishra,Mr.Smitha Patil,Mr. Rakesh Seth , Mr. Anil Gupta, Mr.Koushik Reddy
+        {{content?.creator}}
       </ion-row>
     </div>
-    <div>
+    <!-- <div *ngIf="content?.contributors">
       <ion-row class="text-gray-color">
         Contributors
       </ion-row>
       <ion-row class="content">
-        Mr.Amit Mishra,Mr.Smitha Patil,Mr. Rakesh Seth , Mr. Anil Gupta, Mr.Koushik Reddy
+        {{content?.contributors}}
       </ion-row>
-    </div>
-    <div>
+    </div> -->
+    <div *ngIf="content?.attributions">
       <ion-row class="text-gray-color">
         Attributions
       </ion-row>
       <ion-row class="content">
-        Mr.Amit Mishra,Mr.Smitha Patil,Mr. Rakesh Seth , Mr. Anil Gupta, Mr.Koushik Reddy
+       {{content?.attributions}}
       </ion-row>
     </div>
   </ion-grid>
