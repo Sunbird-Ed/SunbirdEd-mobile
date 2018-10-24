@@ -97,8 +97,9 @@ export class ContentActionsComponent {
     switch (i) {
       case 0: {
         const confirm = this.alertctrl.create({
-          title: this.commonUtilService.translateMessage('CONFIRM_DEL', this.commonUtilService.translateMessage('MSG_RESOURCE_DELETED')),
-           mode: 'wp',
+          title:  this.commonUtilService.translateMessage('REMOVE_FROM_DEVICE'),
+          message: this.commonUtilService.translateMessage('REMOVE_FROM_DEVICE_MSG'),
+          mode: 'wp',
           cssClass: 'confirm-alert',
           buttons: [
             {
