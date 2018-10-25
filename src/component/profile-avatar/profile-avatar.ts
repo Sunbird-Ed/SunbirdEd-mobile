@@ -21,7 +21,9 @@ export class ProfileAvatarComponent implements OnInit {
   }
 
   ngOnInit() {
-    const initials = this.username.match(/\b\w/g) || [];
+    // const initials = this.username.match(/\b\w/g) || [];
+    const temp = [this.username.trim().substr(0, 1)];
+    const initials = temp || [];
     this.initial = ((initials.shift() || '') + (initials.pop() || '')).toUpperCase();
     if (this.initial) {
       this.getBgColor(this.username);
