@@ -115,6 +115,7 @@ export class GenericAppConfig {
     public static readonly DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT = 'DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT';
     public static readonly TRACK_USER_TELEMETRY = 'TRACK_USER_TELEMETRY';
     public static readonly CONTENT_STREAMING_ENABLED = 'CONTENT_STREAMING_ENABLED';
+    public static readonly OPEN_RAPDISCOVERY_ENABLED = 'OPEN_RAPDISCOVERY_ENABLED';
 }
 
 export const appLanguages = [

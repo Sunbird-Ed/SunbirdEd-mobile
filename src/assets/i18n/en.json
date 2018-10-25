@@ -363,6 +363,7 @@
   "RECOMMENDED": "Recommended",
   "REMOVE": "Remove",
   "REMOVE_FROM_DEVICE": "Remove from Device",
+  "REMOVE_FROM_DEVICE_MSG":"Are you sure you want to remove content from the device?",
   "REMOVE_MULTIPLE_USERS_FROM_GROUP": "Confirm Removal of {{%s}} Users",
   "REMOVE_USERS": "Remove Users",
   "REMOVE_USERS_FROM_GROUP": "Remove {{%s}} Users from Group",

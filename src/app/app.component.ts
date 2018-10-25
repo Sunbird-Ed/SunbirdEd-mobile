@@ -264,18 +264,18 @@ export class MyApp {
       if (navObj.canGoBack()) {
         navObj.pop();
       } else {
-          if (self.counter === 0) {
-            self.counter++;
-            this.commonUtilService.showToast('BACK_TO_EXIT');
-            this.telemetryGeneratorService.generateBackClickedTelemetry(this.computePageId(currentPage), Environment.HOME, false);
-            setTimeout(() => { self.counter = 0; }, 1500);
-          } else {
-            this.telemetryGeneratorService.generateBackClickedTelemetry(this.computePageId(currentPage), Environment.HOME, false);
-            self.platform.exitApp();
-            this.telemetryGeneratorService.generateEndTelemetry('app', '', '', Environment.HOME);
+        if (self.counter === 0) {
+          self.counter++;
+          this.commonUtilService.showToast('BACK_TO_EXIT');
+          this.telemetryGeneratorService.generateBackClickedTelemetry(this.computePageId(currentPage), Environment.HOME, false);
+          setTimeout(() => { self.counter = 0; }, 1500);
+        } else {
+          this.telemetryGeneratorService.generateBackClickedTelemetry(this.computePageId(currentPage), Environment.HOME, false);
+          self.platform.exitApp();
+          this.telemetryGeneratorService.generateEndTelemetry('app', '', '', Environment.HOME);
 
-          }
         }
+      }
     });
   }
 
@@ -464,16 +464,19 @@ export class MyApp {
         const val = (value === '') ? 'true' : 'false';
         this.preference.putString('show_app_walkthrough_screen', val);
       });
+    console.log('open rap discovery enabled', this.appGlobalService.OPEN_RAPDISCOVERY_ENABLED);
   }
-
   // TODO: this method will be used to communicate with the openrap device
   openrapDiscovery() {
-    // (<any>window).openrap.startDiscovery(
-    //   (success) =>{
-    //     console.log(success);
-    //   }, (error) => {
-    //     console.log(error);
-    //   }
-    // );
+    if (this.appGlobalService.OPEN_RAPDISCOVERY_ENABLED) {
+      console.log('openrap called' , this.appGlobalService.OPEN_RAPDISCOVERY_ENABLED);
+      (<any>window).openrap.startDiscovery(
+        (success) => {
+          console.log(success);
+        }, (error) => {
+          console.log(error);
+        }
+      );
+    }
   }
 }
