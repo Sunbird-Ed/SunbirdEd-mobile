@@ -368,6 +368,7 @@ export class ProfilePage {
   }
 
   formatRoles() {
+    this.roles = [];
     for (let i = 0, len = this.profile.organisations.length; i < len; i++) {
       for (let j = 0, l = this.profile.organisations[i].roles.length; j < l; j++) {
         this.roles.push(this.profile.organisations[i].roles[j]);
@@ -728,6 +729,7 @@ export class ProfilePage {
       refreshEnrolledCourses: true,
       returnRefreshedEnrolledCourses: true
     };
+    this.trainingsCompleted = [];
     this.courseService.getEnrolledCourses(option, (res: any) => {
       res = JSON.parse(res);
       const enrolledCourses = res.result.courses;

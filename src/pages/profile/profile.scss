@@ -238,6 +238,9 @@ page-profile {
                     transform: perspective(1px) translateY(-50%);
                 }
             }
+            .info{
+                color: #616161;
+            }
         }
         h6.name{
             word-break: break-all;
@@ -396,6 +399,10 @@ page-profile {
 
 .f11{
     font-size: 11px;
+}
+
+.f16{
+    font-size: 16px;
 }
 
 .PTB0{
