@@ -1020,7 +1020,9 @@ export class ContentDetailsPage {
         ViewCreditsComponent,
         {
           content: this.content,
-          pageId: PageId.CONTENT_DETAIL
+          pageId: PageId.CONTENT_DETAIL,
+          rollUp : this.objRollup,
+          correlation : this.corRelationList
         },
         {
           cssClass: 'view-credits'

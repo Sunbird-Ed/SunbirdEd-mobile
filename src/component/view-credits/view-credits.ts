@@ -5,8 +5,7 @@ import {
 import {
   NavParams,
   ViewController,
-  Platform,
-  ToastController
+  Platform
 } from 'ionic-angular';
 import {
   ContentService,
@@ -15,7 +14,9 @@ import {
   ImpressionType,
   ImpressionSubtype,
   Log,
-  LogLevel
+  LogLevel,
+  InteractType,
+  TelemetryObject
 } from 'sunbird';
 import { TranslateService } from '@ngx-translate/core';
 import {
@@ -23,19 +24,19 @@ import {
 } from '../../app/telemetryutil';
 import { ProfileConstants } from '../../app/app.constant';
 import { AppGlobalService } from '../../service/app-global.service';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 
 @Component({
   selector: 'view-credits',
   templateUrl: 'view-credits.html'
 })
 export class ViewCreditsComponent {
-  isDisable = false;
   userId = '';
-  comment = '';
   backButtonFunc = undefined;
   content: any;
+  rollUp: any;
+  correlation: any;
   private pageId = '';
-  userRating = 0;
   private popupType: string;
 
   /**
@@ -50,11 +51,8 @@ export class ViewCreditsComponent {
     private navParams: NavParams,
     private viewCtrl: ViewController,
     private platform: Platform,
-    private translate: TranslateService,
-    private toastCtrl: ToastController,
     private ngZone: NgZone,
-    private contentService: ContentService,
-    private telemetryService: TelemetryService,
+    private telemetrygeneratorService: TelemetryGeneratorService,
     private appGlobalService: AppGlobalService
   ) {
     this.getUserId();
@@ -73,34 +71,21 @@ export class ViewCreditsComponent {
   ionViewDidLoad(): void {
     this.content = this.navParams.get('content');
     this.pageId = this.navParams.get('pageId');
-  }
-
-  ionViewWillEnter() {
-    this.telemetryService.impression(
-      generateImpressionTelemetry(
-        ImpressionType.VIEW,
-        ImpressionSubtype.RATING_POPUP,
-        this.pageId,
-        Environment.HOME,
-        '',
-        '',
-        '',
-        undefined,
-        undefined
-      )
+    this.rollUp  = this.navParams.get('rollUp');
+    this.correlation = this.navParams.get('correlation');
+    const telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.id = this.content.identifier ;
+    telemetryObject.type = this.content.contentType;
+    telemetryObject.version = this.content.pkgVersion;
+    this.telemetrygeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      'credits-clicked',
+      Environment.HOME,
+      this.pageId,
+      telemetryObject,
+      undefined,
+      this.rollUp,
+      this.correlation
     );
-
-    const log = new Log();
-    log.level = LogLevel.INFO;
-    log.message = this.pageId;
-    log.env = Environment.HOME;
-    log.type = ImpressionType.VIEW;
-    const params = new Array<any>();
-    const paramsMap = new Map();
-    paramsMap['PopupType'] = this.popupType;
-    params.push(paramsMap);
-    log.params = params;
-    this.telemetryService.log(log);
   }
 
   /**

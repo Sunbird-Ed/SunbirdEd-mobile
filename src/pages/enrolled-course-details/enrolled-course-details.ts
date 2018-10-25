@@ -994,7 +994,9 @@ export class EnrolledCourseDetailsPage {
       ViewCreditsComponent,
       {
         content: this.course,
-        pageId: PageId.CONTENT_DETAIL
+        pageId: PageId.CONTENT_DETAIL,
+        rollup : undefined,
+        correlation : this.corRelationList
       },
       {
         cssClass: 'view-credits'

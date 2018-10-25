@@ -1,7 +1,7 @@
 <ion-header>
   <ion-row class="display-inline">
     <div float-start style="margin-left : 10px;">
-      <p class="title heading1">Credits</p>
+      <p class="title heading1">{{ 'CREDITS' | translate }}</p>
     </div>
     <div float-end (click)="cancel()">
       <img src="assets/imgs/ic_action_close.png" class="tool-icon" float-end />
@@ -13,23 +13,23 @@
   <ion-grid padding>
     <div *ngIf="content?.creator">
       <ion-row class="text-gray-color">
-        Creators
+        {{ 'CREDITS' | translate }}
       </ion-row>
       <ion-row class="content">
         {{content?.creator}}
       </ion-row>
     </div>
-    <!-- <div *ngIf="content?.contributors">
+    <div *ngIf="content?.contributors">
       <ion-row class="text-gray-color">
-        Contributors
+        {{ 'CONTRIBUTORS' | translate }}
       </ion-row>
       <ion-row class="content">
         {{content?.contributors}}
       </ion-row>
-    </div> -->
+    </div>
     <div *ngIf="content?.attributions">
       <ion-row class="text-gray-color">
-        Attributions
+        {{ 'ATTRIBUTIONS' | translate }}
       </ion-row>
       <ion-row class="content">
        {{content?.attributions}}

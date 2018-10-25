@@ -1008,24 +1008,22 @@ export class CollectionDetailsPage {
  * Function to View Credits
  */
   viewCredits() {
-    if (this.contentDetail.isAvailableLocally) {
-      const popUp = this.popoverCtrl.create(
-        ViewCreditsComponent,
-        {
-          content: this.contentDetail,
-          pageId: PageId.COLLECTION_DETAIL
-        },
-        {
-          cssClass: 'view-credits'
-        }
-      );
-      popUp.present({
-        ev: event
-      });
-      popUp.onDidDismiss(data => {
-      });
-    } else {
-      this.commonUtilService.showToast('Content is not Available, Please download it to view the details');
-    }
+    const popUp = this.popoverCtrl.create(
+      ViewCreditsComponent,
+      {
+        content: this.contentDetail,
+        pageId: PageId.COLLECTION_DETAIL,
+        rollUp : this.objRollup,
+        correlation : this.corRelationList
+      },
+      {
+        cssClass: 'view-credits'
+      }
+    );
+    popUp.present({
+      ev: event
+    });
+    popUp.onDidDismiss(data => {
+    });
   }
 }
