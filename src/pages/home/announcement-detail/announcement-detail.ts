@@ -4,12 +4,11 @@ import { NavController, NavParams } from 'ionic-angular';
 import { AnnouncementService, AttachmentService, TelemetryService, AnnouncementStatus } from 'sunbird';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { File } from '@ionic-native/file';
-import { FileTransfer } from '@ionic-native/file-transfer';
 
 @Component({
     selector: 'announcement-detail',
     templateUrl: 'announcement-detail.html',
-    providers: [TelemetryService, AnnouncementService, FileTransfer]
+    providers: [TelemetryService, AnnouncementService]
 })
 /**
  * Generated class for the AnnouncementDetailComponent component.

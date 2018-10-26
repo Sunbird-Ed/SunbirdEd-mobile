@@ -132,7 +132,7 @@ export class MyApp {
         if (session === null || session === 'null') {
           this.preference.getString(PreferenceKey.SELECTED_USER_TYPE)
             .then(val => {
-              if (val !== undefined && val !== '') {
+              if (val) {
                 if (val === ProfileType.TEACHER) {
                   initTabs(this.containerService, GUEST_TEACHER_TABS);
                 } else if (val === ProfileType.STUDENT) {

@@ -301,9 +301,7 @@ export class AppGlobalService {
             });
         this.buildParamService.getBuildConfigParam(GenericAppConfig.OPEN_RAPDISCOVERY_ENABLED)
             .then(response => {
-                console.log('open rap **1', this.OPEN_RAPDISCOVERY_ENABLED);
                 this.OPEN_RAPDISCOVERY_ENABLED = response === 'true' ? true : false;
-                console.log('open rap **2', this.OPEN_RAPDISCOVERY_ENABLED);
             })
             .catch( error => {
                this.OPEN_RAPDISCOVERY_ENABLED = false;
