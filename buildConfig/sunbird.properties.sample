@@ -37,3 +37,5 @@ display_signin_footer_card_in_profile_tab_for_student = DISPLAY_SIGNIN_FOOTER_CA
 track_user_telemetry = TRACK_USER_TELEMETRY
 content_streaming_enabled = CONTENT_STREAMING_ENABLED
 open_rapdiscovery_enabled = OPEN_RAPDISCOVERY_ENABLED
+display_onboarding_category_page = DISPLAY_ONBOARDING_CATEGORY_PAGE
+display_onboarding_scan_page = DISPLAY_ONBOARDING_SCAN_PAGE

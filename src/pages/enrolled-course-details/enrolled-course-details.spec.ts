@@ -893,4 +893,13 @@ describe('EnrolledCourseDetailsPage Component', () => {
     component.setCourseStructure();
     expect(component.course.contentTypesCount).toBe(1);
   });
+  it('#viewCredits should open view credits screen', () => {
+    const popOverCtrl = TestBed.get(PopoverController);
+    component.course = {};
+    spyOn(component, 'viewCredits').and.callThrough();
+    component.viewCredits();
+    fixture.detectChanges();
+    expect(component.viewCredits).toHaveBeenCalled();
+    expect(popOverCtrl.create).toHaveBeenCalled();
+});
 });

@@ -24,6 +24,9 @@
 				<span class="text-gray-color">{{ 'CONTENT_CREATED_BY' | translate }}</span>
 				<span class="content-meta-title">{{ content.creator || content.owner }}</span>
 			</div>
+			<ion-row class="padding-top-10 credits" (click)="viewCredits()" *ngIf="content.creator || content.attributions">
+			{{ 'CREDITS' | translate }}
+			</ion-row>
 			<ion-row class="padding-top-10">
 				<ion-col class="padding-0">
 					<div class="size_txt padding-bottom-5" no-margin>
@@ -93,14 +96,8 @@
 			</div>
 		</div>
 		<br />
-		<div class="license-section padding-10 background-gray" *ngIf="content.license || content.attributions">
+		<div class="license-section padding-10 background-gray" *ngIf="content.license">
 			<div class="row" *ngIf="showLicense">
-				<span *ngIf="content.attributions">
-					<div class="size_txt content-meta-title">{{ 'CREDITS' | translate }}</div>
-					<div class="margin-top-5 text-gray-color">{{ content.attributions }}</div>
-				</span>
-			</div>
-			<div class="row" *ngIf="showLicense" [ngClass]="{'padding-top-16': content.attributions}">
 				<span *ngIf="content.license">
 					<div class="size_txt content-meta-title">{{ 'LICENSE' | translate }}</div>
 					<div class="margin-top-5 text-gray-color">{{ content.license }}</div>
