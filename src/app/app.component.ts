@@ -1,3 +1,4 @@
+import { BuildParamService } from 'sunbird';
 import { ProfileSettingsPage } from './../pages/profile-settings/profile-settings';
 import {
   Component,
@@ -46,7 +47,8 @@ import {
 import {
   MimeType,
   ContentType,
-  PreferenceKey
+  PreferenceKey,
+  GenericAppConfig
 } from './app.constant';
 import { EnrolledCourseDetailsPage } from '../pages/enrolled-course-details/enrolled-course-details';
 import { ProfileConstants } from './app.constant';
@@ -95,7 +97,8 @@ export class MyApp {
     private container: ContainerService,
     private appGlobalService: AppGlobalService,
     private commonUtilService: CommonUtilService,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private buildParamService: BuildParamService
   ) {
 
     const that = this;
@@ -132,7 +135,7 @@ export class MyApp {
         if (session === null || session === 'null') {
           this.preference.getString(PreferenceKey.SELECTED_USER_TYPE)
             .then(val => {
-              if (val !== undefined && val !== '') {
+              if (val) {
                 if (val === ProfileType.TEACHER) {
                   initTabs(this.containerService, GUEST_TEACHER_TABS);
                 } else if (val === ProfileType.STUDENT) {
@@ -146,33 +149,43 @@ export class MyApp {
                   this.preference.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER);
                   initTabs(this.containerService, GUEST_TEACHER_TABS);
                 }
-
-                // Check if User has filled all the required information of the on boarding preferences
-                this.profileService.getCurrentUser((profile) => {
-                  profile = JSON.parse(profile);
-                  if (profile
-                    && profile.syllabus && profile.syllabus[0]
-                    && profile.board && profile.board.length
-                    && profile.grade && profile.grade.length
-                    && profile.medium && profile.medium.length) {
-                    this.appGlobalService.isProfileSettingsCompleted = true;
-                    this.nav.setRoot(TabsPage);
-                  } else {
-                    this.appGlobalService.isProfileSettingsCompleted = false;
-                    this.preference.getString(PreferenceKey.IS_ONBOARDING_COMPLETED)
-                      .then((result) => {
-                        if (result === 'true') {
-                          this.nav.setRoot('ProfileSettingsPage', { hideBackButton: true });
+                this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_ONBOARDING_CATEGORY_PAGE)
+                .then(response => {
+                    const display_cat_page = response;
+                    this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_ONBOARDING_SCAN_PAGE)
+                    .then(scanResponse => {
+                        const disp_profile_page = response;
+                        if (display_cat_page === 'false' && disp_profile_page === 'false') {
+                          this.nav.setRoot(TabsPage);
                         } else {
-                          this.nav.insertPages(0, [{ page: LanguageSettingsPage }, { page: UserTypeSelectionPage }]);
+                          this.profileService.getCurrentUser((profile) => {
+                            profile = JSON.parse(profile);
+                            if (profile
+                              && profile.syllabus && profile.syllabus[0]
+                              && profile.board && profile.board.length
+                              && profile.grade && profile.grade.length
+                              && profile.medium && profile.medium.length) {
+                              this.appGlobalService.isProfileSettingsCompleted = true;
+                              this.nav.setRoot(TabsPage);
+                            } else {
+                              this.appGlobalService.isProfileSettingsCompleted = false;
+                              this.preference.getString(PreferenceKey.IS_ONBOARDING_COMPLETED)
+                                .then((result) => {
+                                  if (result === 'true') {
+                                    this.getProfileSettingConfig(true);
+                                  } else {
+                                    this.nav.insertPages(0, [{ page: LanguageSettingsPage }, { page: UserTypeSelectionPage }]);
+                                  }
+                                })
+                                .catch(error => {
+                                  this.getProfileSettingConfig();
+                                });
+                            }
+                          }, error => { });
                         }
-                      })
-                      .catch(error => {
-                        this.nav.setRoot('ProfileSettingsPage');
-                      });
-
-                  }
-                }, error => { });
+                    });
+                });
+                // Check if User has filled all the required information of the on boarding preferences
               } else {
                 this.appGlobalService.isProfileSettingsCompleted = false;
                 that.rootPage = LanguageSettingsPage;
@@ -206,6 +219,7 @@ export class MyApp {
         (<any>window).splashscreen.hide();
       });
 
+
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
       statusBar.styleDefault();
@@ -219,6 +233,24 @@ export class MyApp {
 
       this.handleBackButton();
     });
+  }
+
+  /**
+   * It will read profile settings configuration and navigates to appropriate page
+   * @param hideBackButton To hide the navigation back button in the profile settings page
+   */
+  getProfileSettingConfig(hideBackButton = false) {
+    this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_ONBOARDING_CATEGORY_PAGE)
+      .then(response => {
+        if (response === 'true') {
+          this.nav.setRoot('ProfileSettingsPage', { hideBackButton: hideBackButton });
+        } else {
+          this.nav.setRoot(TabsPage);
+        }
+      })
+      .catch(error => {
+        this.nav.setRoot(TabsPage);
+      });
   }
 
   private checkForUpgrade() {
@@ -264,18 +296,18 @@ export class MyApp {
       if (navObj.canGoBack()) {
         navObj.pop();
       } else {
-          if (self.counter === 0) {
-            self.counter++;
-            this.commonUtilService.showToast('BACK_TO_EXIT');
-            this.telemetryGeneratorService.generateBackClickedTelemetry(this.computePageId(currentPage), Environment.HOME, false);
-            setTimeout(() => { self.counter = 0; }, 1500);
-          } else {
-            this.telemetryGeneratorService.generateBackClickedTelemetry(this.computePageId(currentPage), Environment.HOME, false);
-            self.platform.exitApp();
-            this.telemetryGeneratorService.generateEndTelemetry('app', '', '', Environment.HOME);
+        if (self.counter === 0) {
+          self.counter++;
+          this.commonUtilService.showToast('BACK_TO_EXIT');
+          this.telemetryGeneratorService.generateBackClickedTelemetry(this.computePageId(currentPage), Environment.HOME, false);
+          setTimeout(() => { self.counter = 0; }, 1500);
+        } else {
+          this.telemetryGeneratorService.generateBackClickedTelemetry(this.computePageId(currentPage), Environment.HOME, false);
+          self.platform.exitApp();
+          this.telemetryGeneratorService.generateEndTelemetry('app', '', '', Environment.HOME);
 
-          }
         }
+      }
     });
   }
 
@@ -464,16 +496,19 @@ export class MyApp {
         const val = (value === '') ? 'true' : 'false';
         this.preference.putString('show_app_walkthrough_screen', val);
       });
+    console.log('open rap discovery enabled', this.appGlobalService.OPEN_RAPDISCOVERY_ENABLED);
   }
-
   // TODO: this method will be used to communicate with the openrap device
   openrapDiscovery() {
-    // (<any>window).openrap.startDiscovery(
-    //   (success) =>{
-    //     console.log(success);
-    //   }, (error) => {
-    //     console.log(error);
-    //   }
-    // );
+    if (this.appGlobalService.OPEN_RAPDISCOVERY_ENABLED) {
+      console.log('openrap called' , this.appGlobalService.OPEN_RAPDISCOVERY_ENABLED);
+      (<any>window).openrap.startDiscovery(
+        (success) => {
+          console.log(success);
+        }, (error) => {
+          console.log(error);
+        }
+      );
+    }
   }
 }

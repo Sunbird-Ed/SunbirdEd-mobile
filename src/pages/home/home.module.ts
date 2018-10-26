@@ -6,7 +6,6 @@ import { AnnouncementDetailComponent } from './announcement-detail/announcement-
 import { TranslateModule } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
 import { HttpClientModule } from '@angular/common/http';
-import { HttpModule } from '@angular/http';
 import { GenieSDKServiceProvider } from 'sunbird';
 import { FrameworkModule } from 'sunbird';
 import { IonicImageLoader } from 'ionic-image-loader';
@@ -22,7 +21,6 @@ import { SocialSharing } from '@ionic-native/social-sharing';
   imports: [
     IonicPageModule.forChild(HomePage),
     TranslateModule.forChild(),
-    HttpModule,
     HttpClientModule,
     ComponentsModule,
     FrameworkModule,

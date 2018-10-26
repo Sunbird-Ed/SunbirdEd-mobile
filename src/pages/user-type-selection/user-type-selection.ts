@@ -66,7 +66,6 @@ export class UserTypeSelectionPage {
   studentImageUri = 'assets/imgs/ic_student.png';
   teacherImageUri = 'assets/imgs/ic_teacher.png';
   isChangeRoleRequest = false;
-  showScanner = false;
 
   constructor(
     public navCtrl: NavController,
@@ -104,10 +103,6 @@ export class UserTypeSelectionPage {
   ionViewWillEnter() {
     this.profile = this.appGlobalService.getCurrentUser();
     this.isChangeRoleRequest = Boolean(this.navParams.get('isChangeRoleRequest'));
-    this.showScanner = Boolean(this.navParams.get('showScanner'));
-    if (this.showScanner) {
-      this.scannerService.startScanner(PageId.USER_TYPE_SELECTION, true);
-    }
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.USER_TYPE_SELECTION, Environment.HOME, false);
       this.handleBackButton();
@@ -210,6 +205,7 @@ export class UserTypeSelectionPage {
         if (userId !== 'null') {
           this.preference.putString('GUEST_USER_ID_BEFORE_LOGIN', userId);
         }
+        this.profile = JSON.parse(success);
         this.gotoTabsPage();
       }, error => {
         console.error('Error', error);
@@ -234,16 +230,48 @@ export class UserTypeSelectionPage {
     } else if (this.selectedUserType === ProfileType.STUDENT) {
       initTabs(this.container, GUEST_STUDENT_TABS);
     }
-
     if (this.isChangeRoleRequest && isUserTypeChanged) {
-      this.container.removeAllTabs();
-      this.navCtrl.push(ProfileSettingsPage, { isChangeRoleRequest: true, selectedUserType: this.selectedUserType });
+      if (this.appGlobalService.DISPLAY_ONBOARDING_CATEGORY_PAGE) {
+        this.container.removeAllTabs();
+        this.navCtrl.push(ProfileSettingsPage, { isChangeRoleRequest: true, selectedUserType: this.selectedUserType });
+      } else {
+        this.profile.profileType = this.selectedUserType;
+        this.profileService.updateProfile(this.profile,
+          (res: any) => {
+            console.log('tabs page');
+            this.navCtrl.push(TabsPage, {
+              loginMode: 'guest'
+            });
+          }, error => {
+            console.error('Error=');
+          });
+        // this.navCtrl.setRoot(TabsPage);
+      }
     } else if (this.appGlobalService.isProfileSettingsCompleted) {
       this.navCtrl.push(TabsPage, {
         loginMode: 'guest'
       });
+    } else if (this.appGlobalService.DISPLAY_ONBOARDING_SCAN_PAGE) {
+      // Need to go tabspage when scan page is ON, changeRoleRequest ON and profileSetting is OFF
+      if (this.isChangeRoleRequest) {
+        this.navCtrl.push(TabsPage, {
+          loginMode: 'guest'
+        });
+      } else {
+        this.scannerService.startScanner(PageId.USER_TYPE_SELECTION, true);
+      }
+    } else if (this.appGlobalService.DISPLAY_ONBOARDING_CATEGORY_PAGE) {
+      this.navCtrl.push(ProfileSettingsPage);
     } else {
-      this.scannerService.startScanner(PageId.USER_TYPE_SELECTION, true);
+      this.profile.profileType = this.selectedUserType;
+      this.profileService.updateProfile(this.profile,
+        (res: any) => {
+          this.navCtrl.push(TabsPage, {
+            loginMode: 'guest'
+          });
+        }, error => {
+          console.error('Error=', error);
+        });
     }
   }
 

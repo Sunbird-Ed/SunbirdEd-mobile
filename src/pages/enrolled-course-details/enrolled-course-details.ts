@@ -586,7 +586,7 @@ export class EnrolledCourseDetailsPage {
               PageId.COURSE_DETAIL,
               JSON.stringify(stackTrace),
             );
-            this.commonUtilService.showToast('UNABLE_TO_FETCH_RETIRED_CONTENT');
+            this.commonUtilService.showToast('UNABLE_TO_FETCH_CONTENT');
           }
         }
       });

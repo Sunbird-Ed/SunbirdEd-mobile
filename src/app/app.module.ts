@@ -27,7 +27,6 @@ import {
   FrameworkModule,
   TabsPage
 } from 'sunbird';
-import { Globalization } from '@ionic-native/globalization';
 import { AppVersion } from '@ionic-native/app-version';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import {
@@ -35,10 +34,7 @@ import {
   ImageLoader,
   ImageLoaderConfig
 } from 'ionic-image-loader';
-import {
-  FileTransfer,
-  FileTransferObject
-} from '@ionic-native/file-transfer';
+import { FileTransferObject } from '@ionic-native/file-transfer';
 import { FileOpener } from '@ionic-native/file-opener';
 import { AppGlobalService } from '../service/app-global.service';
 import { CourseUtilService } from '../service/course-util.service';
@@ -86,11 +82,9 @@ export const createTranslateLoader = (httpClient: HttpClient) => {
   ],
   providers: [
     StatusBar,
-    Globalization,
     AppVersion,
     SocialSharing,
     ImageLoader,
-    FileTransfer,
     FileTransferObject,
     FileOpener,
     AppGlobalService,
