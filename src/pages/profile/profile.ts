@@ -17,7 +17,8 @@ import {
   ContentSearchCriteria,
   ContentSortCriteria,
   SortOrder,
-  CourseService
+  CourseService,
+  TelemetryObject
 } from 'sunbird';
 import { PopoverController } from 'ionic-angular/components/popover/popover-controller';
 import { DatePipe } from '@angular/common';
@@ -46,6 +47,7 @@ import { CategoriesEditPage } from '../categories-edit/categories-edit';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
 import { ContentDetailsPage } from '../content-details/content-details';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 
 /**
  * The Profile page
@@ -119,6 +121,7 @@ export class ProfilePage {
     private appGlobalService: AppGlobalService,
     private commonUtilService: CommonUtilService,
     private courseService: CourseService,
+    private telemetryGeneratorService: TelemetryGeneratorService
   ) {
     this.userId = this.navParams.get('userId') || '';
     this.isRefreshProfile = this.navParams.get('returnRefreshedUserProfileDetails');
@@ -365,6 +368,7 @@ export class ProfilePage {
   }
 
   formatRoles() {
+    this.roles = [];
     for (let i = 0, len = this.profile.organisations.length; i < len; i++) {
       for (let j = 0, l = this.profile.organisations[i].roles.length; j < l; j++) {
         this.roles.push(this.profile.organisations[i].roles[j]);
@@ -725,6 +729,7 @@ export class ProfilePage {
       refreshEnrolledCourses: true,
       returnRefreshedEnrolledCourses: true
     };
+    this.trainingsCompleted = [];
     this.courseService.getEnrolledCourses(option, (res: any) => {
       res = JSON.parse(res);
       const enrolledCourses = res.result.courses;
@@ -738,34 +743,39 @@ export class ProfilePage {
     });
   }
 
+  isResource(contentType) {
+    return contentType === ContentType.STORY ||
+      contentType === ContentType.WORKSHEET;
+  }
+
   /**
    * Navigate to the course/content details page
    *
    * @param {string} layoutName
    * @param {object} content
    */
-  navigateToDetailPage(content: any, layoutName: string): void {
+  navigateToDetailPage(content: any, layoutName: string, index: number): void {
     const identifier = content.contentId || content.identifier;
-    // const telemetryObject: TelemetryObject = new TelemetryObject();
-    // telemetryObject.id = identifier;
-    // if (layoutName === 'Inprogress') {
-    //   telemetryObject.type = ContentType.COURSE;
-    // } else {
-    //   telemetryObject.type = this.isResource(content.contentType) ? ContentType.RESOURCE : content.contentType;
-    // }
+    const telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.id = identifier;
+    if (layoutName === 'Inprogress') {
+      telemetryObject.type = ContentType.COURSE;
+    } else {
+      telemetryObject.type = this.isResource(content.contentType) ? ContentType.RESOURCE : content.contentType;
+    }
 
 
-    // const values = new Map();
-    // values['sectionName'] = this.sectionName;
-    // values['positionClicked'] = this.index;
+    const values = new Map();
+    values['sectionName'] = 'Contributions';
+    values['positionClicked'] = index;
 
-    // this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-    //   InteractSubtype.CONTENT_CLICKED,
-    //   this.env,
-    //   this.pageName ? this.pageName : this.layoutName,
-    //   telemetryObject,
-    //   values);
-    if (layoutName === 'Inprogress' || content.contentType === ContentType.COURSE) {
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.CONTENT_CLICKED,
+      Environment.USER, // env
+      PageId.PROFILE, // page name
+      telemetryObject,
+      values);
+    if (content.contentType === ContentType.COURSE) {
       this.navCtrl.push(EnrolledCourseDetailsPage, {
         content: content
       });

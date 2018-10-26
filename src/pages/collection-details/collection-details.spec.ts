@@ -847,7 +847,13 @@ describe('CollectionDetailsPage Component', () => {
         component.showDownloadAllBtn([mockRes.locallyNotAvailableContentDetailsResponse.result]);
         expect(component.showDownloadBtn).toBe(true);
     });
-
-
-
+    it('#viewCredits should open view credits screen', () => {
+        const popOverCtrl = TestBed.get(PopoverController);
+        component.contentDetail = {};
+        spyOn(component, 'viewCredits').and.callThrough();
+        component.viewCredits();
+        fixture.detectChanges();
+        expect(component.viewCredits).toHaveBeenCalled();
+        expect(popOverCtrl.create).toHaveBeenCalled();
+    });
 });
