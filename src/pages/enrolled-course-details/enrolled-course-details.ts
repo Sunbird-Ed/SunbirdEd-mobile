@@ -55,6 +55,7 @@ import { CourseUtilService } from '../../service/course-util.service';
 import { AppGlobalService } from '../../service/app-global.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../service/common-util.service';
+import { GUEST_TEACHER_SWITCH_TABS } from '../../app/module.service';
 
 /**
  * Generated class for the EnrolledCourseDetailsPage page.
@@ -391,6 +392,7 @@ export class EnrolledCourseDetailsPage {
    * @param data
    */
   extractApiResponse(data): void {
+    console.log('this is dataaaaa' + data);
     if (data.result.contentData) {
       this.course = data.result.contentData;
       this.objId = this.course.identifier;
@@ -430,85 +432,104 @@ export class EnrolledCourseDetailsPage {
       this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
       this.navCtrl.pop();
     }
-
-    this.course.isAvailableLocally = data.result.isAvailableLocally;
-    if (this.courseCardData.batchId) {
+    if (data.result.isAvailableLocally) {
       this.getBatchDetails();
     }
+    this.course.isAvailableLocally = data.result.isAvailableLocally;
+    if (this.courseCardData.batchId) {
+      console.log(this.courseCardData.batchId);
+      // if (this.course.isAvailableLocally === true) {
+        // this.getBatchDetails();
+      }
 
-    if (Boolean(data.result.isAvailableLocally)) {
-      this.setChildContents();
-    } else {
-      this.showLoading = true;
-      this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.course, true);
-      this.importContent([this.identifier], false);
+      if (Boolean(data.result.isAvailableLocally)) {
+        this.setChildContents();
+      } else {
+        this.showLoading = true;
+        this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.course, true);
+        this.importContent([this.identifier], false);
+      }
+      this.setCourseStructure();
     }
-    this.setCourseStructure();
-  }
 
-  /**
-   * Get batch details
-   */
-  getBatchDetails() {
-    this.courseService.getBatchDetails({ batchId: this.courseCardData.batchId }, (data: any) => {
-      this.zone.run(() => {
-        data = JSON.parse(data);
-        if (data.result) {
-          this.batchDetails = data.result;
-          console.log(this.batchDetails.status);
-          if (this.batchDetails.status === 2) {
-            this.batchexp = true;
-            const alert = this.alertCtrl.create({
-              title: this.commonUtilService.translateMessage('BATCH_EXPIRED'),
-              message: this.commonUtilService.translateMessage('BATCH_EXPIRED_DESCRIPTION'),
-              mode: 'wp',
-              cssClass: 'confirm-alert',
-              buttons: [
-                {
-                  text: this.commonUtilService.translateMessage('BATCH_EXPIRED_BUTTON'),
-                  role: 'cancel',
-                  cssClass: 'doneButton',
-                  handler: () => {
-                    console.log('Cancel clicked');
+    /**
+     * Get batch details
+     */
+    getBatchDetails() {
+      this.courseService.getBatchDetails({ batchId: this.courseCardData.batchId }, (data: any) => {
+        this.zone.run(() => {
+          data = JSON.parse(data);
+          if (data.result) {
+            this.batchDetails = data.result;
+            console.log(this.batchDetails.status);
+            console.log(this.batchDetails.identifier);
+            console.log(this.batchDetails);
+            this.preference.getString(PreferenceKey.COURSE_IDENTIFIER)
+              .then(val => {
+                console.log(val);
+                if (val === this.batchDetails.identifier) {
+                  console.log('identifer present');
+                  this.batchexp = true;
+                } else {
+                  console.log('notpresent');
+                  if (this.batchDetails.status === 2) {
+                    this.batchexp = true;
+                    const alert = this.alertCtrl.create({
+                      title: this.commonUtilService.translateMessage('BATCH_EXPIRED'),
+                      message: this.commonUtilService.translateMessage('BATCH_EXPIRED_DESCRIPTION'),
+                      mode: 'wp',
+                      cssClass: 'confirm-alert',
+                      buttons: [
+                        {
+                          text: this.commonUtilService.translateMessage('BATCH_EXPIRED_BUTTON'),
+                          role: 'cancel',
+                          cssClass: 'doneButton',
+                          handler: () => {
+                            this.preference.putString(PreferenceKey.COURSE_IDENTIFIER, this.batchDetails.identifier);
+                            console.log('Cancel clicked');
+                          }
+                        }
+                      ]
+                    });
+                    alert.present();
+                  } else {
+                    this.batchexp = false;
                   }
                 }
-              ]
-            });
-            alert.present();
-          } else {
-            this.batchexp = false;
+              }, (error) => {
+                console.error('ERROR - ' + error);
+              });
+            this.getBatchCreatorName();
           }
-          this.getBatchCreatorName();
+        });
+      },
+        (error: any) => {
+          console.log('error while loading content details', error);
+        });
+    }
+
+    getBatchCreatorName() {
+      const req = {
+        userId: this.batchDetails.createdBy,
+        requiredFields: []
+      };
+      this.profileService.getUserProfileDetails(req, (data: any) => {
+        data = JSON.parse(data);
+        if (data) {
+          this.batchDetails.creatorFirstName = data.firstName ? data.firstName : '';
+          this.batchDetails.creatorLastName = data.lastName ? data.lastName : '';
         }
+      }, () => {
       });
-    },
-      (error: any) => {
-        console.log('error while loading content details', error);
-      });
-  }
+    }
 
-  getBatchCreatorName() {
-    const req = {
-      userId: this.batchDetails.createdBy,
-      requiredFields: []
-    };
-    this.profileService.getUserProfileDetails(req, (data: any) => {
-      data = JSON.parse(data);
-      if (data) {
-        this.batchDetails.creatorFirstName = data.firstName ? data.firstName : '';
-        this.batchDetails.creatorLastName = data.lastName ? data.lastName : '';
-      }
-    }, () => {
-    });
-  }
-
-  /**
-   * Set course structure
-   */
-  setCourseStructure(): void {
-    if (this.course.contentTypesCount) {
-      this.course.contentTypesCount = JSON.parse(this.course.contentTypesCount);
-    } else if (this.courseCardData.contentTypesCount && !_.isObject(this.courseCardData.contentTypesCount)) {
+    /**
+     * Set course structure
+     */
+    setCourseStructure(): void {
+      if (this.course.contentTypesCount) {
+        this.course.contentTypesCount = JSON.parse(this.course.contentTypesCount);
+      } else if (this.courseCardData.contentTypesCount && !_.isObject(this.courseCardData.contentTypesCount)) {
       this.course.contentTypesCount = JSON.parse(this.courseCardData.contentTypesCount);
     }
   }
@@ -635,12 +656,13 @@ export class EnrolledCourseDetailsPage {
 
     this.contentService.getChildContents(option, (data: any) => {
       data = JSON.parse(data);
-      console.log('enrolled course data' , data);
-        this.zone.run(() => {
+      console.log('enrolled course data', data);
+      console.log(data.result.isAvailableLocally);
+      this.zone.run(() => {
         if (data && data.result && data.result.children) {
           this.enrolledCourseMimeType = data.result.mimeType;
           this.childrenData = data.result.children;
-           this.startData = data.result.children;
+          this.startData = data.result.children;
         }
         if (this.courseCardData.batchId) {
           this.downloadSize = 0;
@@ -797,6 +819,7 @@ export class EnrolledCourseDetailsPage {
           }
 
           if (this.downloadProgress === 100) {
+             this.getBatchDetails();
             this.showLoading = false;
           }
         }
