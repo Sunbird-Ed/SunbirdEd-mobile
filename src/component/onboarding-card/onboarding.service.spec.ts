@@ -19,9 +19,6 @@ import {
 } from 'sunbird';
 import { OnboardingService } from './onboarding.service';
 import {
-    Injectable
-} from '@angular/core';
-import {
     Events,
     PopoverController
 } from 'ionic-angular';
@@ -244,7 +241,7 @@ describe('OnBoarding.service', () => {
         onboardingService = TestBed.get(OnboardingService);
         expect(onboardingService.arrayToString).toBeDefined();
         spyOn(onboardingService, 'arrayToString').and.callThrough();
-        const arr = ['syllabus', 'board',];
+        const arr = ['syllabus', 'board'];
         const response = onboardingService.arrayToString(arr);
         expect(onboardingService.arrayToString).toHaveBeenCalled();
         expect(response).toEqual('syllabus, board');
@@ -257,7 +254,7 @@ describe('OnBoarding.service', () => {
             const spy = spyOn(translate, 'get').and.callFake((arg) => {
                 return Observable.of('Cancel');
             });
-            const translatedMessage = service.translateMessage('CANCEL');
+            const translatedMessage = onboardingService.translateMessage('CANCEL');
             expect(translatedMessage).toEqual('Cancel');
             expect(typeof translatedMessage).toBe('string');
             expect(spy.calls.any()).toEqual(true);
@@ -449,22 +446,22 @@ describe('OnBoarding.service', () => {
         onboardingService = TestBed.get(OnboardingService);
         const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
         const CommonUtilServiceStub = TestBed.get(CommonUtilService);
-        expect(service.selectedCheckboxValue).toBeDefined();
-        spyOn(service, 'selectedCheckboxValue').and.callThrough();
+        expect(onboardingService.selectedCheckboxValue).toBeDefined();
+        spyOn(onboardingService, 'selectedCheckboxValue').and.callThrough();
         spyOn(formAndFrameworkUtilServiceStub, 'getFrameworkDetails').and.returnValue(Promise.reject('Error occurred'));
         spyOn(CommonUtilServiceStub, 'showToast');
         spyOn(CommonUtilServiceStub, 'translateMessage').and
             .returnValue('No internet connectivity, turn on WiFi or mobile data and try again');
-        spyOn(service, 'arrayToString').and.returnValue('State (Andhra Pradesh)');
-        service.onBoardingSlides = mockOnBoardingSlideDefaults;
-        service.profile = JSON.parse(mockCurrentUserDetails);
-        service.syllabusList = mockSyllabusDetails.syllabusListWithSelectedvalue;
-        service.selectedCheckboxValue(mockSelectedSlide, 0);
+        spyOn(onboardingService, 'arrayToString').and.returnValue('State (Andhra Pradesh)');
+        onboardingService.onBoardingSlides = mockOnBoardingSlideDefaults;
+        onboardingService.profile = JSON.parse(mockCurrentUserDetails);
+        onboardingService.syllabusList = mockSyllabusDetails.syllabusListWithSelectedvalue;
+        onboardingService.selectedCheckboxValue(mockSelectedSlide, 0);
 
         setTimeout(() => {
-            expect(service.selectedCheckboxValue).toHaveBeenCalled();
-            expect(service.onBoardingSlides[0].selectedOptions).toEqual('State (Andhra Pradesh)');
-            expect(service.arrayToString).toHaveBeenCalled();
+            expect(onboardingService.selectedCheckboxValue).toHaveBeenCalled();
+            expect(onboardingService.onBoardingSlides[0].selectedOptions).toEqual('State (Andhra Pradesh)');
+            expect(onboardingService.arrayToString).toHaveBeenCalled();
             expect(CommonUtilServiceStub.showToast).toHaveBeenCalled();
             expect(CommonUtilServiceStub.translateMessage).toHaveBeenCalledWith('NEED_INTERNET_TO_CHANGE');
             expect(CommonUtilServiceStub.showToast)

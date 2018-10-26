@@ -117,6 +117,7 @@ export class GenericAppConfig {
     public static readonly CONTENT_STREAMING_ENABLED = 'CONTENT_STREAMING_ENABLED';
     public static readonly DISPLAY_ONBOARDING_SCAN_PAGE = 'DISPLAY_ONBOARDING_SCAN_PAGE';
     public static readonly DISPLAY_ONBOARDING_CATEGORY_PAGE = 'DISPLAY_ONBOARDING_CATEGORY_PAGE';
+    public static readonly OPEN_RAPDISCOVERY_ENABLED = 'OPEN_RAPDISCOVERY_ENABLED';
 }
 
 export const appLanguages = [

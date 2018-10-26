@@ -3,7 +3,6 @@ import { IonicPageModule } from 'ionic-angular';
 import { CoursesPage } from './courses';
 import { TranslateModule } from '@ngx-translate/core';
 // TODO: remove it before pushing the code
-import { HttpModule } from '@angular/http';
 import { GenieSDKServiceProvider } from 'sunbird';
 import { FrameworkModule } from 'sunbird';
 import { IonicImageLoader } from 'ionic-image-loader';
@@ -20,7 +19,6 @@ import { ResourcesPageModule } from '../resources/resources.module';
     IonicPageModule.forChild(CoursesPage),
     TranslateModule.forChild(),
     ResourcesPageModule,
-    HttpModule,
     ComponentsModule,
     FrameworkModule,
     IonicImageLoader,

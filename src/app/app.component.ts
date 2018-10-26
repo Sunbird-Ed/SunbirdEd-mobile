@@ -135,7 +135,7 @@ export class MyApp {
         if (session === null || session === 'null') {
           this.preference.getString(PreferenceKey.SELECTED_USER_TYPE)
             .then(val => {
-              if (val !== undefined && val !== '') {
+              if (val) {
                 if (val === ProfileType.TEACHER) {
                   initTabs(this.containerService, GUEST_TEACHER_TABS);
                 } else if (val === ProfileType.STUDENT) {
@@ -496,16 +496,19 @@ export class MyApp {
         const val = (value === '') ? 'true' : 'false';
         this.preference.putString('show_app_walkthrough_screen', val);
       });
+    console.log('open rap discovery enabled', this.appGlobalService.OPEN_RAPDISCOVERY_ENABLED);
   }
-
   // TODO: this method will be used to communicate with the openrap device
   openrapDiscovery() {
-    // (<any>window).openrap.startDiscovery(
-    //   (success) =>{
-    //     console.log(success);
-    //   }, (error) => {
-    //     console.log(error);
-    //   }
-    // );
+    if (this.appGlobalService.OPEN_RAPDISCOVERY_ENABLED) {
+      console.log('openrap called' , this.appGlobalService.OPEN_RAPDISCOVERY_ENABLED);
+      (<any>window).openrap.startDiscovery(
+        (success) => {
+          console.log(success);
+        }, (error) => {
+          console.log(error);
+        }
+      );
+    }
   }
 }
