@@ -190,7 +190,10 @@ export class CollectionDetailsPage {
    * To hold rating data
    */
   userRating = 0;
-
+  /**checks weather course is installed or not */
+  isAlreadyEnrolled = false;
+  /** sets true , if it comes from courses */
+  fromCoursesPage = false;
   /**
    * Rating comment
    */
@@ -535,7 +538,7 @@ export class CollectionDetailsPage {
               PageId.COLLECTION_DETAIL,
               JSON.stringify(stackTrace),
             );
-            this.commonUtilService.showToast('UNABLE_TO_FETCH_RETIRED_CONTENT');
+            this.commonUtilService.showToast('UNABLE_TO_FETCH_CONTENT');
           }
         } else if (data.result && data.result[0].status === 'NOT_FOUND') {
           this.showLoading = false;
@@ -640,6 +643,8 @@ export class CollectionDetailsPage {
       const depth = this.navParams.get('depth');
       this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
       this.source = this.navParams.get('source');
+      this.fromCoursesPage = this.navParams.get('fromCoursesPage');
+      this.isAlreadyEnrolled = this.navParams.get('isAlreadyEnrolled');
 
       // check for parent content
       this.parentContent = this.navParams.get('parentContent');

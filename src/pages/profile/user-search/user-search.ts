@@ -1,7 +1,8 @@
 import {
   Component,
   NgZone,
-  ViewChild
+  ViewChild,
+  Renderer2
 } from '@angular/core';
 import {
   AuthService,
@@ -16,7 +17,6 @@ import {
   NavController,
   LoadingController
 } from 'ionic-angular';
-import { Renderer } from '@angular/core';
 import { ProfilePage } from './../profile';
 import { generateImpressionTelemetry } from '../../../app/telemetryutil';
 import { CommonUtilService } from '../../../service/common-util.service';
@@ -50,7 +50,7 @@ export class UserSearchComponent {
     private userService: UserProfileService,
     private telemetryService: TelemetryService,
     private zone: NgZone,
-    private renderer: Renderer,
+    private renderer: Renderer2,
     private loadingCtrl: LoadingController,
     private commonUtilService: CommonUtilService
   ) { }
@@ -66,7 +66,8 @@ export class UserSearchComponent {
       loader.present();
     }
     if (event) {
-      this.renderer.invokeElementMethod(event.target, 'blur');
+      // this.renderer.invokeElementMethod(event.target, 'blur');
+      this.renderer.selectRootElement(event.target).blur();
     }
     this.authService.getSessionData(session => {
       if (Boolean(session)) {

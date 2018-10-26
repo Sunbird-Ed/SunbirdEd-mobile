@@ -1,10 +1,10 @@
 <ion-header>
   <ion-navbar>
-    <ion-input type="search" #searchInput placeholder="Search" [(ngModel)]="searchKeywords"
-      (keyup.enter)="handleSearch()" clearInput></ion-input>
+    <ion-input type="search" #searchInput placeholder="Search" [(ngModel)]="searchKeywords" (keyup.enter)="handleSearch()"
+      clearInput></ion-input>
     <ion-buttons end>
       <button ion-button (click)="showFilter()" *ngIf="filterIcon">
-        <img [src]="filterIcon" class="tool-icon" float-end/>
+        <img [src]="filterIcon" class="tool-icon" float-end />
       </button>
     </ion-buttons>
   </ion-navbar>
@@ -32,7 +32,9 @@
             <ion-avatar item-start>
               <img src="{{ defaultAppIcon }}" width="24px" height="24px">
             </ion-avatar>
-            <h3> {{ (content.name && content.name.length > 30) ? (content.name | slice:0:30) + '...' : (content.name) }}</h3>
+            <h3>
+              {{ (content.name && content.name.length > 30) ? (content.name | slice:0:30) + '...' : (content.name) }}
+            </h3>
             <p>
               <span>{{ content.contentType }}</span>
               <span *ngIf="content.size"> • {{ content.size | fileSize: 0}}</span>
@@ -68,7 +70,6 @@
 
   </ion-list>
 
-
   <ion-list *ngIf="searchContentResult && searchContentResult.length">
     <ion-item padding-right *ngFor="let content of searchContentResult; let i = index" (click)="openContent(undefined, content,i)">
       <ion-avatar item-start>
@@ -88,10 +89,13 @@
           </span>
         </div>
         <div *ngIf="content.subject" class="subject inline-block">
-          <span>{{ content.gradeLevel && content.gradeLevel.length ? '•' : '' }} {{ content.subject }}</span>
+          <span>
+            {{ content.gradeLevel && content.gradeLevel.length ? '•' : '' }} {{ content.subject }}
+          </span>
         </div>
         <div *ngIf="!content.subject" class="ellipsis">
-          <span *ngFor="let gradelevel of content.gradeLevel; let i= index"> {{i == 0 ? '' : ',' + ' '}} {{ gradelevel }}
+          <span *ngFor="let gradelevel of content.gradeLevel; let i= index">
+            {{i == 0 ? '' : ',' + ' '}} {{ gradelevel }}
           </span>
         </div>
       </div>
@@ -112,8 +116,8 @@
     </ion-item>
   </ion-list>
   <div class="empty-search-result" *ngIf="!showLoader && showEmptyMessage" text-center padding-top>
-    {{ 'ERROR_EMPTY_RESULT' | translate }}</div>
-
+    {{ 'EMPTY_SEARCH_RESULTS' | translate }}
+  </div>
 </ion-content>
 
 <ion-backdrop class="loading-backdrop" *ngIf="showLoading" text-center>

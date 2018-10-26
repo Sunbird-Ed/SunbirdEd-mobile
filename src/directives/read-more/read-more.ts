@@ -12,6 +12,7 @@ import {
 })
 export class ReadMoreDirective implements AfterViewInit, OnChanges {
 
+  // tslint:disable-next-line:no-input-rename
   @Input('length') private maxLength: number;
   @Input('readMore') private text: string;
   @Input() private showMoreText: string;

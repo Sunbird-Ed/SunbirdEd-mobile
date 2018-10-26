@@ -86,6 +86,7 @@ export class AppGlobalService {
     public DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT = false;
     public TRACK_USER_TELEMETRY = false;
     public CONTENT_STREAMING_ENABLED = false;
+    public OPEN_RAPDISCOVERY_ENABLED = false;
 
     isUserLoggedIn(): boolean {
         return !this.isGuestUser;
@@ -297,6 +298,13 @@ export class AppGlobalService {
             })
             .catch(error => {
                 this.CONTENT_STREAMING_ENABLED = false;
+            });
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.OPEN_RAPDISCOVERY_ENABLED)
+            .then(response => {
+                this.OPEN_RAPDISCOVERY_ENABLED = response === 'true' ? true : false;
+            })
+            .catch( error => {
+               this.OPEN_RAPDISCOVERY_ENABLED = false;
             });
     }
 
