@@ -538,7 +538,7 @@ export class CollectionDetailsPage {
               PageId.COLLECTION_DETAIL,
               JSON.stringify(stackTrace),
             );
-            this.commonUtilService.showToast('UNABLE_TO_FETCH_RETIRED_CONTENT');
+            this.commonUtilService.showToast('UNABLE_TO_FETCH_CONTENT');
           }
         } else if (data.result && data.result[0].status === 'NOT_FOUND') {
           this.showLoading = false;
