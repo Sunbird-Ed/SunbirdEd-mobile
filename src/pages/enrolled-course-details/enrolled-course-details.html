@@ -146,14 +146,8 @@
 		</div>
 		<br />
 		<br />
-		<div class="license-section padding-10 background-gray" *ngIf="course.license || course.attributions">
+		<div class="license-section padding-10 background-gray" *ngIf="course.license">
 			<div class="row" *ngIf="showLicense">
-				<span *ngIf="course.attributions">
-					<div class="size_txt content-meta-title">{{ 'CREDITS' | translate }}</div>
-					<div class="margin-top-5 text-gray-color">{{ course.attributions }}</div>
-				</span>
-			</div>
-			<div class="row" *ngIf="showLicense" [ngClass]="{'padding-top-16': course.attributions}">
 				<span *ngIf="course.license">
 					<div class="size_txt content-meta-title">{{ 'LICENSE' | translate }}</div>
 					<div class="margin-top-5 text-gray-color">{{ course.license }}</div>
