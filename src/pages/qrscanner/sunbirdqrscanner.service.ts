@@ -1,3 +1,4 @@
+import { initTabs, GUEST_TEACHER_TABS, GUEST_STUDENT_TABS } from './../../app/module.service';
 import { CommonUtilService } from './../../service/common-util.service';
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
@@ -19,7 +20,11 @@ import {
   PermissionService,
   ImpressionType,
   ImpressionSubtype,
-  TelemetryObject
+  TelemetryObject,
+  TabsPage,
+  ProfileType,
+  ContainerService,
+  Profile
 } from 'sunbird';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { QRScannerResultHandler } from './qrscanresulthandler.service';
@@ -29,7 +34,7 @@ import { AppGlobalService } from '../../service/app-global.service';
 
 @Injectable()
 export class SunbirdQRScanner {
-
+  profile: Profile;
   private readonly QR_SCANNER_TEXT = [
     'SCAN_QR_CODE',
     'SCAN_QR_INSTRUCTION',
@@ -52,7 +57,9 @@ export class SunbirdQRScanner {
     private qrScannerResultHandler: QRScannerResultHandler,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private app: App,
-    private commonUtil: CommonUtilService
+    private commonUtil: CommonUtilService,
+    private appGlobalService: AppGlobalService,
+    private container: ContainerService,
   ) {
     const that = this;
     this.translate.get(this.QR_SCANNER_TEXT).subscribe((data) => {
@@ -129,11 +136,26 @@ export class SunbirdQRScanner {
     (<any>window).qrScanner.stopScanner();
   }
 
+  getProfileSettingConfig() {
+    this.profile = this.appGlobalService.getCurrentUser();
+    if (this.profile.profileType === ProfileType.TEACHER) {
+      initTabs(this.container, GUEST_TEACHER_TABS);
+    } else if (this.profile.profileType === ProfileType.STUDENT) {
+      initTabs(this.container, GUEST_STUDENT_TABS);
+    }
+    this.stopScanner();
+    this.app.getActiveNavs()[0].push(TabsPage, { loginMode: 'guest' });
+  }
+
   private startQRScanner(screenTitle: string, displayText: string, displayTextColor: string,
     buttonText: string, showButton: boolean, source: string) {
     window['qrScanner'].startScanner(screenTitle, displayText, displayTextColor, buttonText, showButton, (scannedData) => {
       if (scannedData === 'skip') {
-        this.app.getActiveNavs()[0].push(ProfileSettingsPage, { stopScanner: true });
+        if (this.appGlobalService.DISPLAY_ONBOARDING_CATEGORY_PAGE) {
+          this.app.getActiveNavs()[0].push(ProfileSettingsPage, { stopScanner: true });
+        } else {
+          this.getProfileSettingConfig();
+        }
         this.telemetryGeneratorService.generateInteractTelemetry(
           InteractType.TOUCH,
           InteractSubtype.SKIP_CLICKED,
@@ -212,7 +234,11 @@ export class SunbirdQRScanner {
         popUp.dismiss();
 
         if (self.showButton) {
-          self.app.getActiveNavs()[0].push(ProfileSettingsPage, { stopScanner: true });
+          if (this.appGlobalService.DISPLAY_ONBOARDING_CATEGORY_PAGE) {
+            self.app.getActiveNavs()[0].push(ProfileSettingsPage, { stopScanner: true });
+          } else {
+            this.getProfileSettingConfig();
+          }
         }
       }
     };
