@@ -781,6 +781,13 @@ export class ProfilePage {
   }
 
   navigateToCategoriesEditPage() {
+    this.telemetryService.interact(
+      generateInteractTelemetry(InteractType.TOUCH,
+        InteractSubtype.EDIT_CLICKED,
+        Environment.HOME,
+        PageId.PROFILE, null,
+        undefined,
+        undefined));
     this.navCtrl.push(CategoriesEditPage);
   }
 
