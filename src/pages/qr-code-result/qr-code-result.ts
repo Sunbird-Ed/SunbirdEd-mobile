@@ -471,7 +471,8 @@ export class QrCodeResultPage {
   }
 
   skipSteps() {
-    if (this.appGlobalService.isOnBoardingCompleted && this.appGlobalService.isProfileSettingsCompleted) {
+    if ((this.appGlobalService.isOnBoardingCompleted && this.appGlobalService.isProfileSettingsCompleted)
+     || !this.appGlobalService.DISPLAY_ONBOARDING_CATEGORY_PAGE) {
       this.navCtrl.setRoot(TabsPage, {
         loginMode: 'guest'
       });

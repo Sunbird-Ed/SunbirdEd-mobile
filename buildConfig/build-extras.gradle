@@ -85,6 +85,8 @@ android {
         buildConfigField "boolean", "DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT", "${display_signin_footer_card_in_profile_tab_for_student}"
         buildConfigField "boolean", "TRACK_USER_TELEMETRY", "${track_user_telemetry}"
         buildConfigField "boolean", "CONTENT_STREAMING_ENABLED", "${content_streaming_enabled}"
+        buildConfigField "boolean", "DISPLAY_ONBOARDING_SCAN_PAGE", "${display_onboarding_scan_page}"
+        buildConfigField "boolean", "DISPLAY_ONBOARDING_CATEGORY_PAGE", "${display_onboarding_category_page}"
         
     }
 
