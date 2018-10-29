@@ -1013,8 +1013,8 @@ export class CollectionDetailsPage {
       {
         content: this.contentDetail,
         pageId: PageId.COLLECTION_DETAIL,
-        rollUp : this.objRollup,
-        correlation : this.corRelationList
+        rollUp: this.objRollup,
+        correlation: this.corRelationList
       },
       {
         cssClass: 'view-credits'
@@ -1025,5 +1025,18 @@ export class CollectionDetailsPage {
     });
     popUp.onDidDismiss(data => {
     });
+  }
+  /**
+   * method generates telemetry on click Read less or Read more
+   * @param {string} param string as read less or read more
+   * @param {object} objRollup object roll up
+   * @param corRelationList corelationList
+   */
+  readLessorReadMore(param, objRollup, corRelationList) {
+    const telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.id = this.objId;
+    telemetryObject.type = this.objType;
+    telemetryObject.version = this.objVer;
+    this.commonUtilService.readLessOrReadMore(param, objRollup, corRelationList, telemetryObject);
   }
 }
