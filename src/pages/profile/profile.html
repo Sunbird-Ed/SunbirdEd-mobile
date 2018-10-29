@@ -16,7 +16,7 @@
     <!-- Pull to Refresh -->
     <ion-refresher (ionRefresh)="doRefresh($event)"></ion-refresher>
 
-    <div padding-horizontal text-center class="MT15" *ngIf="profile?.firstName">
+    <div padding-horizontal text-center class="MT15 padding-top-5" *ngIf="profile?.firstName">
         <profile-avatar [username]="profile.firstName"></profile-avatar>
     </div>
 
@@ -25,7 +25,7 @@
         <p class="profile-name">{{ profile?.firstName }} {{ profile?.lastName }}</p>
     </div>
 
-    <div padding-horizontal text-center class="roles-container">
+    <!-- <div padding-horizontal text-center class="roles-container">
         <div class="MB5" text-center *ngFor="let role of roles | slice : startLimit:rolesLimit;">
             <div class="roles">
                 {{role}}
@@ -40,7 +40,7 @@
             </button>
         </div>
     </div>
-
+ -->
     <div class="school-recent" *ngIf="false">
         <p class="bolder">Holy Rosary Higher Primary School</p>
         <div>Block: Gandhi Nagar</div>
