@@ -155,5 +155,5 @@ export class CommonUtilService {
             popOver.present();
         }, 300);
     }
-    
+
 }

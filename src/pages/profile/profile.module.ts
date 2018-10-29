@@ -24,10 +24,12 @@ import { ComponentsModule } from '../../component/components.module';
 import { IonicImageLoader } from 'ionic-image-loader';
 import { ImagePicker } from './imagepicker/imagepicker';
 import { CategoriesEditPageModule } from '../categories-edit/categories-edit.module';
+import { OldProfilePage } from './old-profile';
 
 @NgModule({
   declarations: [
     ProfilePage,
+    OldProfilePage,
     GuestProfilePage,
     GuestEditProfilePage,
     FormEducation,
@@ -41,6 +43,7 @@ import { CategoriesEditPageModule } from '../categories-edit/categories-edit.mod
   ],
   entryComponents: [
     ProfilePage,
+    OldProfilePage,
     GuestProfilePage,
     GuestEditProfilePage,
     FormEducation,
@@ -68,6 +71,7 @@ import { CategoriesEditPageModule } from '../categories-edit/categories-edit.mod
   ],
   exports: [
     ProfilePage,
+    OldProfilePage,
     GuestProfilePage,
     GuestEditProfilePage,
     FormAddress,

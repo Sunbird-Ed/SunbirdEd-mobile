@@ -48,7 +48,7 @@ import { CommonUtilService } from '../../service/common-util.service';
   selector: 'page-profile',
   templateUrl: 'profile.html'
 })
-export class ProfilePage {
+export class OldProfilePage {
   /**
    * Contains Profile Object
    */
