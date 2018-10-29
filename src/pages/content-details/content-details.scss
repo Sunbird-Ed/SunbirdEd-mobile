@@ -72,6 +72,9 @@ page-content-details {
         color: grey;
         font-size: 1.3rem;
     }
+    .line-height{
+      line-height: 1.1;
+    }
 
     button {
         border-radius: 4px !important;
@@ -97,6 +100,9 @@ page-content-details {
         padding-top: 3px;
     }
     
+    .col-3-no-space{
+        max-width: 20%;
+    }
 }
 .content-action .list{
     margin-bottom: 0px !important;

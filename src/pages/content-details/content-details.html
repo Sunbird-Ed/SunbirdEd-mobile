@@ -86,12 +86,29 @@
 			<div class="read-more" *ngIf="content.description && content.description.length > 100 || content.gradeLevel || content.subject"
 			 (click)="showMoreFlag = !showMoreFlag">
 				<div *ngIf="showMoreFlag" class="padding-top-10">
-					{{ 'READ_LESS' | translate }}
-					<ion-icon name="ios-arrow-up"></ion-icon>
+					<ion-grid no-padding>
+						<ion-row>
+							<ion-col col-3 class="col-3-no-space" (click)="readLessorReadMore('READ_LESS')">
+								<span> {{ 'READ_LESS' | translate }} </span>
+							</ion-col>
+							<ion-col col-1>
+								<ion-icon class="line-height" name="ios-arrow-up"></ion-icon>
+							</ion-col>
+						</ion-row>
+					</ion-grid>
 				</div>
 				<div *ngIf="!showMoreFlag">
-					{{ 'READ_MORE' | translate }}
-					<ion-icon name="ios-arrow-down"></ion-icon>
+
+					<ion-grid no-padding>
+						<ion-row>
+							<ion-col col-3 class="col-3-no-space" (click)="readLessorReadMore('READ_LESS')">
+								<span> {{ 'READ_MORE' | translate }} </span>
+							</ion-col>
+							<ion-col col-1>
+								<ion-icon class="line-height" name="ios-arrow-down"></ion-icon>
+							</ion-col>
+						</ion-row>
+					</ion-grid>
 				</div>
 			</div>
 		</div>

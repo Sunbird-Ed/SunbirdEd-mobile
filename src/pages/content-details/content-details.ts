@@ -1018,22 +1018,36 @@ export class ContentDetailsPage {
   * Function to View Credits
   */
   viewCredits() {
-     const popUp = this.popoverCtrl.create(
-        ViewCreditsComponent,
-        {
-          content: this.content,
-          pageId: PageId.CONTENT_DETAIL,
-          rollUp : this.objRollup,
-          correlation : this.corRelationList
-        },
-        {
-          cssClass: 'view-credits'
-        }
-      );
-      popUp.present({
-        ev: event
-      });
-      popUp.onDidDismiss(data => {
-      });
+    const popUp = this.popoverCtrl.create(
+      ViewCreditsComponent,
+      {
+        content: this.content,
+        pageId: PageId.CONTENT_DETAIL,
+        rollUp: this.objRollup,
+        correlation: this.corRelationList
+      },
+      {
+        cssClass: 'view-credits'
+      }
+    );
+    popUp.present({
+      ev: event
+    });
+    popUp.onDidDismiss(data => {
+    });
+  }
+
+  /**
+   * method generates telemetry on click Read less or Read more
+   * @param {string} param string as read less or read more
+   * @param {object} objRollup object roll up
+   * @param corRelationList corelationList
+   */
+  readLessorReadMore(param, objRollup, corRelationList) {
+    const telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.id = this.objId;
+    telemetryObject.type = this.objType;
+    telemetryObject.version = this.objVer;
+    this.commonUtilService.readLessOrReadMore(param, objRollup, corRelationList, telemetryObject);
   }
 }
