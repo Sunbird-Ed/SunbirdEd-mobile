@@ -70,7 +70,7 @@ export class UserAndGroupsPage {
   // isLoggedInUser: boolean = false;
   currentUserId: string;
   currentGroupId: string;
-  playContent: any;
+  playConfig: any;
 
   userList: Array<Profile> = [];
   groupList: Array<Group> = [];
@@ -112,7 +112,7 @@ export class UserAndGroupsPage {
 
     /* Check userList length and show message or list accordingly */
     this.currentUserId = this.navParams.get('userId');
-    this.playContent = this.navParams.get('playContent') || undefined;
+    this.playConfig = this.navParams.get('playConfig') || undefined;
 
     if (!this.currentUserId && this.appGlobalService.getCurrentUser()) {
       this.currentUserId = this.appGlobalService.getCurrentUser().uid;
@@ -310,7 +310,7 @@ export class UserAndGroupsPage {
       currentUserId: this.currentUserId,
       currentGruopId: this.currentGroupId,
       profile: this.profileDetails,
-      playContent: this.playContent
+      playConfig: this.playConfig
 
     });
   }
@@ -705,7 +705,7 @@ export class UserAndGroupsPage {
         undefined, undefined, 1000);
     setTimeout(() => {
       if (isBeingPlayed) {
-        this.event.publish('launchPlayer', true);
+        this.event.publish('playConfig', this.playConfig);
         this.navCtrl.pop();
       }
       if (selectedUser.profileType === ProfileType.STUDENT) {

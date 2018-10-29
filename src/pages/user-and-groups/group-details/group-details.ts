@@ -68,7 +68,7 @@ export class GroupDetailsPage {
   profileDetails: any;
   userUids = [];
   isNoUsers = false;
-  playContent: any;
+  playConfig: any;
 
   isCurrentGroupActive = false;
 
@@ -97,7 +97,7 @@ export class GroupDetailsPage {
     this.currentUserId = this.navParams.get('currentUserId');
     this.currentGroupId = this.navParams.get('currentGruopId');
     this.profileDetails = this.navParams.get('profile');
-    this.playContent = this.navParams.get('playContent') || undefined;
+    this.playConfig = this.navParams.get('playConfig') || undefined;
 
 
     if (this.group.gid === this.currentGroupId) {
@@ -502,7 +502,7 @@ export class GroupDetailsPage {
         console.log('Value : ' + val);
         this.profileService.setCurrentUser(selectedUser.uid, (success) => {
           if (isBeingPlayed) {
-            this.event.publish('launchPlayer', true);
+            this.event.publish('playConfig', this.playConfig);
             this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
           }
           if (selectedUser.profileType === ProfileType.STUDENT) {

@@ -360,10 +360,8 @@ export class ContentDetailsPage {
       .catch(() => {
       });
     this.launchPlayer = this.navParams.get('launchplayer');
-    this.events.subscribe('launchPlayer', (status) => {
-      if (status) {
-        this.playContent();
-      }
+    this.events.subscribe('playConfig', (config) => {
+        this.playContent(config.streaming);
     });
   }
 
@@ -582,7 +580,7 @@ export class ContentDetailsPage {
         /**
          * If the content is already downloaded then just play it
          */
-        this.showSwitchUserAlert();
+        this.showSwitchUserAlert(false);
       }
     }
   }
@@ -836,7 +834,7 @@ export class ContentDetailsPage {
   /**
    * alert for playing the content
    */
-  showSwitchUserAlert() {
+  showSwitchUserAlert(isStreaming: boolean) {
     if (!AppGlobalService.isPlayerLaunched && this.userCount > 1) {
       const profile = this.appGlobalService.getCurrentUser();
 
@@ -850,15 +848,18 @@ export class ContentDetailsPage {
             text: this.commonUtilService.translateMessage('YES'),
             cssClass: 'alert-btn-delete',
             handler: () => {
-              this.playContent();
+              this.playContent(isStreaming);
             }
           },
           {
             text: this.commonUtilService.translateMessage('CHANGE_USER'),
             cssClass: 'alert-btn-cancel',
             handler: () => {
+              const playConfig: any = {};
+              playConfig.playContent = true;
+              playConfig.streaming = true;
               this.navCtrl.push(UserAndGroupsPage, {
-                playContent: this.content.playContent
+                playConfig: playConfig
               });
             }
           },
@@ -873,7 +874,7 @@ export class ContentDetailsPage {
       });
       alert.present();
     } else {
-      this.playContent();
+      this.playContent(isStreaming);
     }
 
   }
@@ -881,7 +882,7 @@ export class ContentDetailsPage {
   /**
    * Play content
    */
-  playContent() {
+  playContent(isStreaming: boolean) {
     // set the boolean to true, so when the content player is closed, we get to know that
     // we are back from content player
     this.downloadAndPlay = false;
@@ -900,8 +901,9 @@ export class ContentDetailsPage {
         this.objRollup,
         this.corRelationList);
     });
-
-    (<any>window).geniecanvas.play(this.content.playContent);
+    const request: any = {};
+    request.streaming = isStreaming;
+    (<any>window).geniecanvas.play(this.content.playContent, JSON.stringify(request));
   }
 
   getUserId() {
