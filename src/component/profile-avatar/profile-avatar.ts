@@ -16,15 +16,19 @@ export class ProfileAvatarComponent implements OnInit {
   bgColor: string;
   color: string;
   initial: string;
-
+  GraphemeSplitter = require('grapheme-splitter');
   constructor() {
   }
 
   ngOnInit() {
     // const initials = this.username.match(/\b\w/g) || [];
-    const temp = [this.username.trim().substr(0, 1)];
+    const splitter = new this.GraphemeSplitter();
+    const split: string[] = splitter.splitGraphemes(this.username.trim());
+    console.log('Username Array++', split);
+   const temp = [this.username.trim().substr(0, 1)];
     const initials = temp || [];
-    this.initial = ((initials.shift() || '') + (initials.pop() || '')).toUpperCase();
+   // this.initial = ((initials.shift() || '') + (initials.pop() || '')).toUpperCase();
+   this.initial = split[0];
     if (this.initial) {
       this.getBgColor(this.username);
     }
