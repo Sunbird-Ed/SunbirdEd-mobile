@@ -78,6 +78,7 @@
     "cordova-sqlite-storage": "^2.3.2",
     "driver.js": "^0.5.2",
     "es6-promise-plugin": "^4.2.2",
+    "grapheme-splitter": "^1.0.4",
     "ionic-angular": "^3.9.2",
     "ionic-image-loader": "^5.0.0",
     "ionic-native": "^2.9.0",
@@ -143,7 +144,7 @@
       "cordova-plugin-file-opener2": {},
       "cordova-plugin-sunbirdsplash": {},
       "cordova-plugin-genie-sdk": {},
-      "cordova-plugin-openrap": {}
+      "cordova-plugin-openrap": {} 
     },
     "platforms": [
       "android"
