@@ -1,4 +1,3 @@
-import { InteractType, InteractSubtype, Environment } from './../../genie-sdk-wrapper/src/services/telemetry/constant';
 import { TelemetryGeneratorService } from './telemetry-generator.service';
 import { appLanguages } from './../app/app.constant';
 import { QRScannerAlert } from './../pages/qrscanner/qrscanner_alert';
@@ -11,7 +10,7 @@ import {
 import { TranslateService } from '@ngx-translate/core';
 import { Loading } from 'ionic-angular';
 import * as _ from 'lodash';
-import { SharedPreferences, PageId } from 'sunbird';
+import { SharedPreferences, PageId, InteractSubtype, Environment, InteractType } from 'sunbird';
 import { PreferenceKey } from '../app/app.constant';
 import { Popover } from 'ionic-angular';
 import { QRAlertCallBack } from '../pages/qrscanner/qrscanner_alert';
@@ -156,21 +155,5 @@ export class CommonUtilService {
             popOver.present();
         }, 300);
     }
-    /**
-   * method generates telemetry on click Read less or Read more
-   * @param {string} param string as read less or read more
-   * @param {object} objRollup object roll up
-   * @param corRelationList corelationList
-   */
-    readLessOrReadMore(param, objRollup, corRelationList, telemetryObject) {
-        this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-            param === 'READ_MORE' ? InteractSubtype.READ_MORE_CLICKED : InteractSubtype.READ_LESS_CLICKED,
-            Environment.HOME,
-            PageId.COLLECTION_DETAIL,
-            undefined,
-            telemetryObject,
-            objRollup,
-            corRelationList);
-
-    }
+    
 }

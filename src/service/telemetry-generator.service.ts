@@ -237,4 +237,22 @@ export class TelemetryGeneratorService {
         );
     }
 
+    /**
+   * method generates telemetry on click Read less or Read more
+   * @param {string} param string as read less or read more
+   * @param {object} objRollup object roll up
+   * @param corRelationList corelationList
+   */
+  readLessOrReadMore(param, objRollup, corRelationList, telemetryObject) {
+    this.generateInteractTelemetry(InteractType.TOUCH,
+        param === 'READ_MORE' ? InteractSubtype.READ_MORE_CLICKED : InteractSubtype.READ_LESS_CLICKED,
+        Environment.HOME,
+        PageId.COLLECTION_DETAIL,
+        undefined,
+        telemetryObject,
+        objRollup,
+        corRelationList);
+
+}
+
 }

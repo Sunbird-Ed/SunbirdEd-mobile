@@ -1048,6 +1048,6 @@ export class ContentDetailsPage {
     telemetryObject.id = this.objId;
     telemetryObject.type = this.objType;
     telemetryObject.version = this.objVer;
-    this.commonUtilService.readLessOrReadMore(param, objRollup, corRelationList, telemetryObject);
+    this.telemetryGeneratorService.readLessOrReadMore(param, objRollup, corRelationList, telemetryObject);
   }
 }
