@@ -280,6 +280,7 @@ export class ProfileSettingsPage {
         selectedCode: prevSelectedValue,
         selectedLanguage: this.selectedLanguage
       };
+
       this.getCategoryData(request, currentField);
     }
   }

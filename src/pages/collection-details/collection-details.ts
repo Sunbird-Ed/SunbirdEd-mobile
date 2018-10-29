@@ -53,6 +53,7 @@ import { Network } from '@ionic-native/network';
 import { AppGlobalService } from '../../service/app-global.service';
 import { CommonUtilService } from '../../service/common-util.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { ViewCreditsComponent } from '../../component/view-credits/view-credits';
 
 /**
  * Generated class for the CollectionDetailsPage page.
@@ -325,7 +326,6 @@ export class CollectionDetailsPage {
       }
     }
   }
-
   /**
  * Get the session to know if the user is logged-in or guest
  *
@@ -538,7 +538,7 @@ export class CollectionDetailsPage {
               PageId.COLLECTION_DETAIL,
               JSON.stringify(stackTrace),
             );
-            this.commonUtilService.showToast('UNABLE_TO_FETCH_RETIRED_CONTENT');
+            this.commonUtilService.showToast('UNABLE_TO_FETCH_CONTENT');
           }
         } else if (data.result && data.result[0].status === 'NOT_FOUND') {
           this.showLoading = false;
@@ -1002,6 +1002,28 @@ export class CollectionDetailsPage {
         this.showLoading = false;
         this.navCtrl.pop();
       });
+    });
+  }
+  /**
+ * Function to View Credits
+ */
+  viewCredits() {
+    const popUp = this.popoverCtrl.create(
+      ViewCreditsComponent,
+      {
+        content: this.contentDetail,
+        pageId: PageId.COLLECTION_DETAIL,
+        rollUp : this.objRollup,
+        correlation : this.corRelationList
+      },
+      {
+        cssClass: 'view-credits'
+      }
+    );
+    popUp.present({
+      ev: event
+    });
+    popUp.onDidDismiss(data => {
     });
   }
 }

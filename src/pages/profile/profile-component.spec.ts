@@ -29,6 +29,7 @@ import {
     EventsMock, TelemetryServiceMock
 } from '../../../test-config/mocks-ionic';
 import { CommonUtilService } from '../../service/common-util.service';
+import { anchorDef } from '@angular/core/src/view';
 
 describe('ProfilePage', () => {
     let comp: ProfilePage;
@@ -42,7 +43,9 @@ describe('ProfilePage', () => {
             getUserProfileDetails: () => ({})
         };
 
-        const courseServiceStub = {};
+        const courseServiceStub = {
+            getEnrolledCourses : () => ({})
+        };
         const contentServiceStub = {
             searchContent: () => ({})
         };
@@ -56,14 +59,13 @@ describe('ProfilePage', () => {
             declarations: [ProfilePage],
             schemas: [NO_ERRORS_SCHEMA],
             providers: [
-                ProfileService, ServiceProvider, SharedPreferences, BuildParamService, FrameworkService,
+                ProfileService, ServiceProvider, SharedPreferences, BuildParamService, FrameworkService, CourseService,
                 TelemetryGeneratorService, CommonUtilService,
                 { provide: NavController, useClass: NavMock },
                 { provide: NavParams, useClass: NavParamsMock },
                 { provide: Events, useClass: EventsMock },
                 { provide: AuthService, useClass: AuthServiceMock },
                 { provide: UserProfileService, useValue: userProfileServiceStub },
-                { provide: CourseService, useValue: courseServiceStub },
                 { provide: ContentService, useValue: contentServiceStub },
                 { provide: TelemetryService, useClass: TelemetryServiceMock },
                 { provide: DatePipe, useValue: datePipeStub },
@@ -137,6 +139,7 @@ describe('ProfilePage', () => {
         const events = TestBed.get(Events);
         spyOn(events, 'publish');
         spyOn(comp, 'refreshProfileData').and.returnValue(Promise.resolve('success'));
+       // spyOn(comp,'getEnrolledCourses').and.returnValue(Promise.resolve('success'));
         comp.doRefresh();
         setTimeout(() => {
             expect(events.publish).toHaveBeenCalled();
@@ -448,6 +451,26 @@ describe('ProfilePage', () => {
         comp.showLessItems();
         expect(comp.paginationLimit).toEqual(comp.DEFAULT_PAGINATION_LIMIT);
     });
+    it('#showMoreBadges should set badgeAssertions length to default', () => {
+        comp.profile = JSON.parse(mockProfileRes.profileDetailsMock);
+        comp.showMoreBadges();
+        expect(comp.badgesLimit).toEqual(comp.profile.badgeAssertions.length);
+    });
+    it('#showLessBadges should set badgeAssertions length to default', () => {
+        comp.showLessBadges();
+        expect(comp.badgesLimit).toEqual(comp.DEFAULT_PAGINATION_LIMIT);
+    });
+    it('#showLessTrainings should set trainingsLimit length to default', () => {
+        comp.showLessTrainings();
+        expect(comp.trainingsLimit).toEqual(comp.DEFAULT_PAGINATION_LIMIT);
+    });
+
+    it('#navigate to Categories Edit Page', () => {
+        const navController = TestBed.get(NavController);
+        spyOn(navController, 'push');
+        comp.navigateToCategoriesEditPage();
+        expect(navController.push).toHaveBeenCalled();
+    });
 
     it('getLoader makes expected calls', () => {
         const loadingController = TestBed.get(LoadingController);
@@ -470,7 +493,33 @@ describe('ProfilePage', () => {
         });
         commonUtilServiceStub.translateMessage('testMessage');
     });
-
-
-
+    it('#getEnrolledCourses should not make expected calls', () => {
+        const courseService = TestBed.get(CourseService);
+        spyOn(comp, 'getEnrolledCourses').and.callThrough();
+        spyOn(courseService, 'getEnrolledCourses').and.callFake(({ }, success, error) => {
+            return error;
+        });
+        comp.getEnrolledCourses();
+        expect(courseService.getEnrolledCourses).toHaveBeenCalled();
+    });
+     it('#getEnrolledCourses should make expected calls', (done) => {
+        const courseService = TestBed.get(CourseService);
+        const option = {
+            'userId': '659b011a-06ec-4107-84ad-955e16b0a48a',
+            'refreshEnrolledCourses': true,
+            'returnRefreshedEnrolledCourses': true
+        };
+        spyOn(comp, 'getEnrolledCourses').and.callThrough();
+        spyOn(courseService, 'getEnrolledCourses').and.callFake(({ }, success, error) => {
+            const data = JSON.stringify((mockProfileRes.getEnrolledCourses));
+            return success(data);
+        });
+        comp.getEnrolledCourses();
+        setTimeout(() => {
+            expect(courseService.getEnrolledCourses).toHaveBeenCalled();
+            done();
+        }, 10);
+        comp.showMoreTainings();
+        expect(comp.trainingsLimit).toEqual(mockProfileRes.trainingsCompleted.length);
+    });
 });

@@ -56,6 +56,7 @@ import { AppGlobalService } from '../../service/app-global.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../service/common-util.service';
 import { GUEST_TEACHER_SWITCH_TABS } from '../../app/module.service';
+import { ViewCreditsComponent } from '../../component/view-credits/view-credits';
 
 /**
  * Generated class for the EnrolledCourseDetailsPage page.
@@ -336,6 +337,7 @@ export class EnrolledCourseDetailsPage {
     }
   }
 
+
   showOverflowMenu(event) {
     const contentData = this.course;
     contentData.batchId = this.courseCardData.batchId ? this.courseCardData.batchId : false;
@@ -605,7 +607,7 @@ export class EnrolledCourseDetailsPage {
               PageId.COURSE_DETAIL,
               JSON.stringify(stackTrace),
             );
-            this.commonUtilService.showToast('UNABLE_TO_FETCH_RETIRED_CONTENT');
+            this.commonUtilService.showToast('UNABLE_TO_FETCH_CONTENT');
           }
         }
       });
@@ -1007,4 +1009,27 @@ export class EnrolledCourseDetailsPage {
       undefined,
       this.corRelationList);
   }
+  /**
+ * Function to View Credits
+ */
+  viewCredits() {
+    const popUp = this.popoverCtrl.create(
+      ViewCreditsComponent,
+      {
+        content: this.course,
+        pageId: PageId.CONTENT_DETAIL,
+        rollup : undefined,
+        correlation : this.corRelationList
+      },
+      {
+        cssClass: 'view-credits'
+      }
+    );
+    popUp.present({
+      ev: event
+    });
+    popUp.onDidDismiss(data => {
+    });
+  }
+
 }

@@ -181,7 +181,7 @@ page-profile {
     ion-scroll{
         .scroll-content{
             background-color: #fff !important;
-            min-height: 240px;
+            min-height: 225px;
             width: 100%;
             padding: 0 !important;
         }
@@ -215,18 +215,18 @@ page-profile {
             font-size: 11px;
             height: 20px;
             box-shadow: none;
-            font-weight: 100;
+            font-weight: 400;
             text-transform: capitalize;
         }
         .top {
-            min-height:100px; 
+            min-height:85px; 
             // background: #E9E9E9;
             .img-container {
                 border: 1px solid #c6dbd8;
                 padding: 0 !important;
                 background: #E9E9E9;
-                min-height: 18vh;
-                max-height: 18vh;
+                min-height: 85px;
+                max-height: 85px;
                 border-radius: 4px;
                 img {
                     max-height: 100%;
@@ -237,6 +237,9 @@ page-profile {
                     top: 50%;
                     transform: perspective(1px) translateY(-50%);
                 }
+            }
+            .info{
+                color: #616161;
             }
         }
         h6.name{
@@ -285,8 +288,8 @@ page-profile {
         background-color:#196DAB;
         text-align: center;
 
-        .container{
-            display: inline-block;
+        .phone{
+          display: inline-block;
           border-radius: 25px;
           padding: 15px;
           margin-bottom: 10px;
@@ -298,7 +301,6 @@ page-profile {
             display: inline-block;
           border-radius: 25px;
           padding: 15px;
-          margin-bottom: 10px;
           background-color: #fff;
           color: #007AFF;
           border-bottom: 0.3px solid #196DAB;
@@ -317,6 +319,28 @@ page-profile {
             margin-bottom: 10px
         }
     }
+
+    .trainigs{
+        .heading {
+            padding: 15px; 
+            background-color: #fff; 
+            margin-bottom:  2px;
+        }
+        .content {
+            padding:15px; 
+            background-color: #fff;
+        }
+    }
+
+    .contributions {
+        min-height: 305px; 
+        margin-bottom:10px;
+    }
+    
+    .short-btn {
+        height: 26px;
+    }
+    
 }
 
 .padding-right-10 {
@@ -381,6 +405,15 @@ page-profile {
     font-size: 11px;
 }
 
+.f16{
+    font-size: 16px;
+}
+
+.PTB0{
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
 .lighter{
     color:#666666;
 }
@@ -397,6 +430,14 @@ page-profile {
     margin-bottom: 10px;
 }
 
+.MB15 {
+    margin-bottom: 15px;
+}
+
+.MT15 {
+    margin-top: 15px;
+}
+
 .arrow-down:before{
     content: '\02C5';
     height: 0;
@@ -409,4 +450,18 @@ page-profile {
     height: 0;
     width: 0;
     margin: 0 5px;
+}
+
+.txt-lowercase {
+    text-transform: lowercase;
+}
+
+.txt-capitalize {
+    text-transform: capitalize;
+}
+
+.ellipsis{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
