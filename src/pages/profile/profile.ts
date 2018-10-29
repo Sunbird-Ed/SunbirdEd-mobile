@@ -668,6 +668,12 @@ export class ProfilePage {
    */
   showMoreItems(): void {
     this.rolesLimit = this.roles.length;
+    generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.VIEW_MORE_CLICKED,
+      Environment.HOME,
+      PageId.PROFILE, null,
+      undefined,
+      undefined);
   }
 
   /**
@@ -680,6 +686,12 @@ export class ProfilePage {
 
   showMoreBadges(): void {
     this.badgesLimit = this.profile.badgeAssertions.length;
+    generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.VIEW_MORE_CLICKED,
+      Environment.HOME,
+      PageId.PROFILE, null,
+      undefined,
+      undefined);
   }
 
   showLessBadges(): void {
@@ -688,6 +700,12 @@ export class ProfilePage {
 
   showMoreTainings(): void {
     this.trainingsLimit = this.trainingsCompleted.length;
+    generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.VIEW_MORE_CLICKED,
+      Environment.HOME,
+      PageId.PROFILE, null,
+      undefined,
+      undefined);
   }
 
   showLessTrainings(): void {
@@ -791,6 +809,13 @@ export class ProfilePage {
   }
 
   navigateToCategoriesEditPage() {
+    this.telemetryService.interact(
+      generateInteractTelemetry(InteractType.TOUCH,
+        InteractSubtype.EDIT_CLICKED,
+        Environment.HOME,
+        PageId.PROFILE, null,
+        undefined,
+        undefined));
     this.navCtrl.push(CategoriesEditPage);
   }
 

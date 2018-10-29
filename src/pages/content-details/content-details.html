@@ -24,6 +24,9 @@
 				<span class="text-gray-color">{{ 'CONTENT_CREATED_BY' | translate }}</span>
 				<span class="content-meta-title">{{ content.creator || content.owner }}</span>
 			</div>
+			<ion-row class="padding-top-10 credits" (click)="viewCredits()" *ngIf="content.creator || content.attributions">
+			{{ 'CREDITS' | translate }}
+			</ion-row>
 			<ion-row class="padding-top-10">
 				<ion-col class="padding-0">
 					<div class="size_txt padding-bottom-5" no-margin>
@@ -83,24 +86,35 @@
 			<div class="read-more" *ngIf="content.description && content.description.length > 100 || content.gradeLevel || content.subject"
 			 (click)="showMoreFlag = !showMoreFlag">
 				<div *ngIf="showMoreFlag" class="padding-top-10">
-					{{ 'READ_LESS' | translate }}
-					<ion-icon name="ios-arrow-up"></ion-icon>
+					<ion-grid no-padding>
+						<ion-row>
+							<ion-col col-3 class="col-3-no-space" (click)="readLessorReadMore('READ_LESS')">
+								<span> {{ 'READ_LESS' | translate }} </span>
+							</ion-col>
+							<ion-col col-1>
+								<ion-icon class="line-height" name="ios-arrow-up"></ion-icon>
+							</ion-col>
+						</ion-row>
+					</ion-grid>
 				</div>
 				<div *ngIf="!showMoreFlag">
-					{{ 'READ_MORE' | translate }}
-					<ion-icon name="ios-arrow-down"></ion-icon>
+
+					<ion-grid no-padding>
+						<ion-row>
+							<ion-col col-3 class="col-3-no-space" (click)="readLessorReadMore('READ_LESS')">
+								<span> {{ 'READ_MORE' | translate }} </span>
+							</ion-col>
+							<ion-col col-1>
+								<ion-icon class="line-height" name="ios-arrow-down"></ion-icon>
+							</ion-col>
+						</ion-row>
+					</ion-grid>
 				</div>
 			</div>
 		</div>
 		<br />
-		<div class="license-section padding-10 background-gray" *ngIf="content.license || content.attributions">
+		<div class="license-section padding-10 background-gray" *ngIf="content.license">
 			<div class="row" *ngIf="showLicense">
-				<span *ngIf="content.attributions">
-					<div class="size_txt content-meta-title">{{ 'CREDITS' | translate }}</div>
-					<div class="margin-top-5 text-gray-color">{{ content.attributions }}</div>
-				</span>
-			</div>
-			<div class="row" *ngIf="showLicense" [ngClass]="{'padding-top-16': content.attributions}">
 				<span *ngIf="content.license">
 					<div class="size_txt content-meta-title">{{ 'LICENSE' | translate }}</div>
 					<div class="margin-top-5 text-gray-color">{{ content.license }}</div>
@@ -123,7 +137,7 @@
 <!-- Page footer -->
 <ion-footer *ngIf="content && !appGlobalService?.CONTENT_STREAMING_ENABLED">
 	<ion-toolbar padding>
-		<button ion-button block *ngIf="content.downloadable" (click)="showSwitchUserAlert(content)" [disabled]="isDownloadStarted">{{
+		<button ion-button block *ngIf="content.downloadable" (click)="showSwitchUserAlert(false)" [disabled]="isDownloadStarted">{{
 			'PLAY_FROM_DEVICE' | translate }}</button>
 		<ion-icon *ngIf="isDownloadStarted && downloadProgress !== 100" (click)="cancelDownload()" name="ios-close-circle-outline"
 		 class="cancel-download" color="primary"></ion-icon>
@@ -143,7 +157,7 @@
 <!--- Ion footer  displays when contnet streaming is enabled -->
 <ion-footer *ngIf="content && appGlobalService?.CONTENT_STREAMING_ENABLED">
 	<ion-toolbar padding>
-		<button ion-button block *ngIf="!content.downloadable" (click)="showSwitchUserAlert(content)" text-uppercase
+		<button ion-button block *ngIf="!content.downloadable" (click)="showSwitchUserAlert(true)" text-uppercase
 		 [disabled]="isDownloadStarted">{{'PLAY_ONLINE'
 			| translate}}</button>
 		<ion-icon *ngIf="isDownloadStarted && downloadProgress !== 100 && !content.downloadable" (click)="cancelDownload()"

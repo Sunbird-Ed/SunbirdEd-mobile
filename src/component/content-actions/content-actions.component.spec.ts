@@ -1,20 +1,25 @@
-
 import {
     ToastControllerMockNew, NavParamsMock,
     PopoverControllerMock, TranslateServiceStub, PlatformMock,
-    BuildParamaServiceMock, AuthServiceMock, NavMock
+    BuildParamaServiceMock, AuthServiceMock, NavMock, AlertControllerMock
 } from './../../../test-config/mocks-ionic';
+import { ConfigMock } from 'ionic-mocks';
 import { ComponentFixture, TestBed, tick } from '@angular/core/testing';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { NavController, PopoverController, Events, NavParams } from 'ionic-angular/index';
-import { ViewController, ToastController, Platform } from 'ionic-angular';
+import { ViewController, ToastController, Platform, LoadingController } from 'ionic-angular';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import {
     ContentService, AuthService, ServiceProvider,
     ProfileService, SharedPreferences, BuildParamService, FrameworkService, TelemetryService
 } from 'sunbird';
+import { Config } from 'ionic-angular';
+import { CommonUtilService } from '../../service/common-util.service';
+import { AlertController, Alert } from 'ionic-angular';
 import { AppGlobalService } from '../../service/app-global.service';
 import { ContentActionsComponent } from './content-actions';
+import { App } from 'ionic-angular/components/app/app';
+
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { } from 'jasmine';
 import { Observable } from 'rxjs';
@@ -32,13 +37,16 @@ describe('Content-actions', () => {
             schemas: [NO_ERRORS_SCHEMA],
             declarations: [ContentActionsComponent],
             providers: [
-                ContentService, Events, AppGlobalService, ServiceProvider, ProfileService, SharedPreferences, FrameworkService,
+                ContentService, Events, AppGlobalService, CommonUtilService, ServiceProvider, ProfileService, LoadingController,
+                SharedPreferences, FrameworkService, App, Config,
                 TelemetryGeneratorService, TelemetryService,
                 { provide: NavController, useClass: NavMock },
                 { provide: NavParams, useClass: NavParamsMock },
                 { provide: ViewController, useValue: viewControllerStub },
+                { provide: AlertController, useFactory: () => AlertControllerMock.instance() },
                 { provide: ToastController, useFactory: () => ToastControllerMockNew.instance() },
                 { provide: PopoverController, useFactory: () => PopoverControllerMock.instance() },
+                // { provide: DeepLinker, useFactory: () => ConfigMock.instance() },
                 { provide: TranslateService, useClass: TranslateServiceStub },
                 { provide: Platform, useClass: PlatformMock },
                 { provide: BuildParamService, useClass: BuildParamaServiceMock },
@@ -138,7 +146,7 @@ describe('Content-actions', () => {
             expect(comp.close).toBeDefined();
             spyOn(comp, 'close').and.callThrough();
             spyOn(comp, 'deleteContent');
-            const response = comp.close(0);
+           comp.close(0);
             expect(comp.close).toHaveBeenCalled();
             expect(comp.deleteContent).toHaveBeenCalled();
         });
@@ -155,14 +163,16 @@ describe('Content-actions', () => {
     it('#deleteContent should show the proper message if fails to delete content delete the content with given'
         + 'request body and should proper toast message, on success of API call',
         (done) => {
-            expect(comp.deleteContent).toBeDefined();
+            //    const alertController = TestBed.get(AlertController);
             const contentServiceStub = TestBed.get(ContentService);
             const translateServiceStub = TestBed.get(TranslateService);
             spyOn(comp, 'deleteContent').and.callThrough();
             spyOn(comp, 'showToaster');
+            // spyOn(alertController, 'create');
             spyOn(comp, 'getMessageByConstant');
             spyOn(translateServiceStub, 'get').and.callFake((arg) => {
                 return Observable.of('Cancel');
+                expect(comp.deleteContent).toBeDefined();
             });
 
             const responseObj = {
@@ -180,6 +190,7 @@ describe('Content-actions', () => {
                 expect(comp.showToaster).toHaveBeenCalled();
                 expect(comp.getMessageByConstant).toHaveBeenCalled();
                 expect(comp.getMessageByConstant).toHaveBeenCalledWith('CONTENT_DELETE_FAILED');
+                // expect(alertController.create).toHaveBeenCalled();
                 done();
             }, 10);
         });
@@ -222,6 +233,9 @@ describe('Content-actions', () => {
                 done();
             }, 10);
         });
+
+
+
     it('#deleteContent should show the proper message if fails to delete content delete the content with given request '
         + 'body and should proper toast message, on success of API call',
         (done) => {

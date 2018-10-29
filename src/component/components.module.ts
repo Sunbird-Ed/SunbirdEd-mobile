@@ -19,6 +19,7 @@ import { FormAndFrameworkUtilService } from '../pages/profile/formandframeworkut
 import { AssessmentDetailsComponent } from './assessment-details/assessment-details';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { ViewMoreCardComponent } from './view-more-card/view-more-card';
+import { ViewCreditsComponent } from './view-credits/view-credits';
 import { ProfileAvatarComponent } from './profile-avatar/profile-avatar';
 
 @NgModule({
@@ -36,6 +37,7 @@ import { ProfileAvatarComponent } from './profile-avatar/profile-avatar';
         ReportIssuesComponent,
         ContentRatingAlertComponent,
         AssessmentDetailsComponent,
+        ViewCreditsComponent,
         ProfileAvatarComponent
     ],
     imports: [
@@ -60,6 +62,7 @@ import { ProfileAvatarComponent } from './profile-avatar/profile-avatar';
         ReportIssuesComponent,
         ContentRatingAlertComponent,
         AssessmentDetailsComponent,
+        ViewCreditsComponent,
         ProfileAvatarComponent
         // ContentActionsComponent
     ],
@@ -67,7 +70,8 @@ import { ProfileAvatarComponent } from './profile-avatar/profile-avatar';
         OnboardingAlert,
         ConfirmAlertComponent,
         ReportIssuesComponent,
-        ContentRatingAlertComponent
+        ContentRatingAlertComponent,
+        ViewCreditsComponent
     ],
     providers: [
         OnboardingService,

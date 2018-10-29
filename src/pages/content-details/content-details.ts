@@ -55,6 +55,7 @@ import { AlertController } from 'ionic-angular';
 import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../service/common-util.service';
+import { ViewCreditsComponent } from '../../component/view-credits/view-credits';
 
 @IonicPage()
 @Component({
@@ -359,10 +360,8 @@ export class ContentDetailsPage {
       .catch(() => {
       });
     this.launchPlayer = this.navParams.get('launchplayer');
-    this.events.subscribe('launchPlayer', (status) => {
-      if (status) {
-        this.playContent();
-      }
+    this.events.subscribe('playConfig', (config) => {
+        this.playContent(config.streaming);
     });
   }
 
@@ -581,7 +580,7 @@ export class ContentDetailsPage {
         /**
          * If the content is already downloaded then just play it
          */
-        this.showSwitchUserAlert();
+        this.showSwitchUserAlert(false);
       }
     }
   }
@@ -835,7 +834,7 @@ export class ContentDetailsPage {
   /**
    * alert for playing the content
    */
-  showSwitchUserAlert() {
+  showSwitchUserAlert(isStreaming: boolean) {
     if (!AppGlobalService.isPlayerLaunched && this.userCount > 1) {
       const profile = this.appGlobalService.getCurrentUser();
 
@@ -849,15 +848,18 @@ export class ContentDetailsPage {
             text: this.commonUtilService.translateMessage('YES'),
             cssClass: 'alert-btn-delete',
             handler: () => {
-              this.playContent();
+              this.playContent(isStreaming);
             }
           },
           {
             text: this.commonUtilService.translateMessage('CHANGE_USER'),
             cssClass: 'alert-btn-cancel',
             handler: () => {
+              const playConfig: any = {};
+              playConfig.playContent = true;
+              playConfig.streaming = true;
               this.navCtrl.push(UserAndGroupsPage, {
-                playContent: this.content.playContent
+                playConfig: playConfig
               });
             }
           },
@@ -872,7 +874,7 @@ export class ContentDetailsPage {
       });
       alert.present();
     } else {
-      this.playContent();
+      this.playContent(isStreaming);
     }
 
   }
@@ -880,7 +882,7 @@ export class ContentDetailsPage {
   /**
    * Play content
    */
-  playContent() {
+  playContent(isStreaming: boolean) {
     // set the boolean to true, so when the content player is closed, we get to know that
     // we are back from content player
     this.downloadAndPlay = false;
@@ -899,8 +901,9 @@ export class ContentDetailsPage {
         this.objRollup,
         this.corRelationList);
     });
-
-    (<any>window).geniecanvas.play(this.content.playContent);
+    const request: any = {};
+    request.streaming = isStreaming;
+    (<any>window).geniecanvas.play(this.content.playContent, JSON.stringify(request));
   }
 
   getUserId() {
@@ -1010,5 +1013,41 @@ export class ContentDetailsPage {
       values,
       this.objRollup,
       this.corRelationList);
+  }
+  /**
+  * Function to View Credits
+  */
+  viewCredits() {
+    const popUp = this.popoverCtrl.create(
+      ViewCreditsComponent,
+      {
+        content: this.content,
+        pageId: PageId.CONTENT_DETAIL,
+        rollUp: this.objRollup,
+        correlation: this.corRelationList
+      },
+      {
+        cssClass: 'view-credits'
+      }
+    );
+    popUp.present({
+      ev: event
+    });
+    popUp.onDidDismiss(data => {
+    });
+  }
+
+  /**
+   * method generates telemetry on click Read less or Read more
+   * @param {string} param string as read less or read more
+   * @param {object} objRollup object roll up
+   * @param corRelationList corelationList
+   */
+  readLessorReadMore(param, objRollup, corRelationList) {
+    const telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.id = this.objId;
+    telemetryObject.type = this.objType;
+    telemetryObject.version = this.objVer;
+    this.commonUtilService.readLessOrReadMore(param, objRollup, corRelationList, telemetryObject);
   }
 }

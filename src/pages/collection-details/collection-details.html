@@ -28,6 +28,9 @@
 				<span class="text-gray-color">{{ 'CONTENT_CREATED_BY' | translate }}</span>
 				<span class="content-meta-title">{{ contentDetail.creator || contentDetail.owner }}</span>
 			</div>
+			<ion-row class="padding-top-10 credits" (click)="viewCredits()" *ngIf="contentDetail.creator || contentDetail.attributions">
+				{{ 'CREDITS' | translate }}
+			   </ion-row>
 			<ion-row class="padding-top-10">
 				<ion-col class="padding-0">
 					<div class="size_txt padding-bottom-5" no-margin>
@@ -84,13 +87,29 @@
 
 			<div class="read-more" *ngIf="contentDetail.description && contentDetail.description.length > 100 || contentDetail.gradeLevel || contentDetail.subject"
 			 (click)="showMoreFlag = !showMoreFlag">
-				<div *ngIf="showMoreFlag" class="padding-top-10">
-					{{ 'READ_LESS' | translate }}
-					<ion-icon name="ios-arrow-up"></ion-icon>
+				<div *ngIf="showMoreFlag"  class="padding-top-10">
+					<ion-grid no-padding>
+						<ion-row>
+							<ion-col col-3 class="col-3-no-space" (click)="readLessorReadMore('READ_LESS')">
+								<span> {{ 'READ_LESS' | translate }} </span>
+							</ion-col>
+							<ion-col col-1>
+								<ion-icon class="line-height" name="ios-arrow-up"></ion-icon>
+							</ion-col>
+						</ion-row>
+					</ion-grid>
 				</div>
 				<div *ngIf="!showMoreFlag">
-					{{ 'READ_MORE' | translate }}
-					<ion-icon name="ios-arrow-down"></ion-icon>
+					<ion-grid no-padding>
+						<ion-row>
+							<ion-col col-3 class="col-3-no-space" (click)="readLessorReadMore('READ_LESS')">
+								<span> {{ 'READ_MORE' | translate }} </span>
+							</ion-col>
+							<ion-col col-1>
+								<ion-icon class="line-height" name="ios-arrow-down"></ion-icon>
+							</ion-col>
+						</ion-row>
+					</ion-grid>
 				</div>
 			</div>
 		</div>
@@ -152,15 +171,8 @@
 			<!-- End import content -->
 		</div>
 		<br />
-		<div class="license-section padding-10 background-gray" *ngIf="contentDetail.license || contentDetail.attributions">
+		<div class="license-section padding-10 background-gray" *ngIf="contentDetail.license">
 			<div class="row" *ngIf="showLicense">
-				<span *ngIf="contentDetail.attributions">
-					<div class="size_txt content-meta-title">{{ 'CREDITS' | translate }}</div>
-					<div class="margin-top-5 text-gray-color">{{ contentDetail.attributions }}</div>
-				</span>
-			</div>
-
-			<div class="row" *ngIf="showLicense" [ngClass]="{'padding-top-16': contentDetail.attributions}">
 				<span *ngIf="contentDetail.license">
 					<div class="size_txt content-meta-title">{{ 'LICENSE' | translate }}</div>
 					<div class="margin-top-5 text-gray-color">{{ contentDetail.license }}</div>

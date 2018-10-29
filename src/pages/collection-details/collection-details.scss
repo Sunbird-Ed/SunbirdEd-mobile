@@ -43,6 +43,10 @@ page-collection-details {
     .read-more {
         color: rgb(17, 85, 204) !important;
     }
+    .credits {
+        color: rgb(17, 85, 204) !important;
+        font-weight : 600 !important;
+    }
 
     .back-button-md {
         margin-left: -1px !important;
@@ -115,6 +119,13 @@ page-collection-details {
     .scroll-content { 
         margin-bottom: 0px !important;
     }
+    .line-height{
+        line-height: 1.1;
+    }
+    .col-3-no-space{
+        max-width: 20%;
+    }
+    
 }
 
 .content-action .list {

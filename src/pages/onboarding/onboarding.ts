@@ -250,13 +250,13 @@ export class OnboardingPage {
                 loginMode: 'guest'
               });
             } else {
-              this.navCtrl.push(UserTypeSelectionPage, { showScanner: false });
+              this.navCtrl.push(UserTypeSelectionPage);
             }
           }, err => {
-            this.navCtrl.push(UserTypeSelectionPage, { showScanner: false });
+            this.navCtrl.push(UserTypeSelectionPage);
           });
         } else {
-          this.navCtrl.push(UserTypeSelectionPage, { showScanner: false });
+          this.navCtrl.push(UserTypeSelectionPage);
         }
       });
   }

@@ -100,6 +100,7 @@ export class PreferenceKey {
     public static readonly SELECTED_LANGUAGE_CODE = 'selected_language_code';
     public static readonly SELECTED_LANGUAGE = 'selected_language';
     public static readonly SELECTED_USER_TYPE = 'selected_user_type';
+    public static readonly COURSE_IDENTIFIER = 'course_identifier';
     public static readonly IS_ONBOARDING_COMPLETED = 'is_onboarding_settings_completed';
 }
 
@@ -115,6 +116,8 @@ export class GenericAppConfig {
     public static readonly DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT = 'DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT';
     public static readonly TRACK_USER_TELEMETRY = 'TRACK_USER_TELEMETRY';
     public static readonly CONTENT_STREAMING_ENABLED = 'CONTENT_STREAMING_ENABLED';
+    public static readonly DISPLAY_ONBOARDING_SCAN_PAGE = 'DISPLAY_ONBOARDING_SCAN_PAGE';
+    public static readonly DISPLAY_ONBOARDING_CATEGORY_PAGE = 'DISPLAY_ONBOARDING_CATEGORY_PAGE';
     public static readonly OPEN_RAPDISCOVERY_ENABLED = 'OPEN_RAPDISCOVERY_ENABLED';
 }
 
@@ -150,3 +153,9 @@ export const appLanguages = [
         name: 'Marathi'
     }
 ];
+
+export class PageName {
+    public static readonly RESOURCE = 'Resource';
+    public static readonly COURSE = 'Course';
+    public static readonly DIAL_CODE = 'DIAL Code Consumption';
+}
