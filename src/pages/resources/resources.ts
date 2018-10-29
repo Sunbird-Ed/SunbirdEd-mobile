@@ -32,7 +32,8 @@ import { Map } from '../../app/telemetryutil';
 import {
   ContentType,
   AudienceFilter,
-  PreferenceKey
+  PreferenceKey,
+  PageName
 } from '../../app/app.constant';
 import { Network } from '@ionic-native/network';
 import {
@@ -308,7 +309,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
     if (!pageAssembleCriteria) {
       const criteria = new PageAssembleCriteria();
-      criteria.name = 'Resource';
+      criteria.name = PageName.RESOURCE;
       criteria.mode = 'soft';
 
       if (that.appliedFilter) {
@@ -565,7 +566,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.pageFilterCallBack = {
       applyFilter(filter, appliedFilter) {
         const criteria = new PageAssembleCriteria();
-        criteria.name = 'Resource';
+        criteria.name = PageName.RESOURCE;
         criteria.filters = filter;
         criteria.mode = 'hard';
         that.resourceFilter = appliedFilter;

@@ -153,3 +153,9 @@ export const appLanguages = [
         name: 'Marathi'
     }
 ];
+
+export class PageName {
+    public static readonly RESOURCE = 'Resource';
+    public static readonly COURSE = 'Course';
+    public static readonly DIAL_CODE = 'DIAL Code Consumption';
+}

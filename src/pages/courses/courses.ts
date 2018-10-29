@@ -36,7 +36,9 @@ import { Network } from '@ionic-native/network';
 import {
   ProfileConstants,
   EventTopics,
-  PreferenceKey
+  PreferenceKey,
+  ContentType,
+  PageName
 } from '../../app/app.constant';
 import {
   PageFilterCallback,
@@ -357,7 +359,7 @@ export class CoursesPage implements OnInit {
     this.pageApiLoader = true;
     if (pageAssembleCriteria === undefined) {
       const criteria = new PageAssembleCriteria();
-      criteria.name = 'Course';
+      criteria.name = PageName.RESOURCE;
       criteria.mode = 'soft';
 
       if (this.appliedFilter) {
@@ -548,7 +550,7 @@ export class CoursesPage implements OnInit {
   }
 
   search() {
-    this.navCtrl.push(SearchPage, { contentType: ['Course'], source: PageId.COURSES });
+    this.navCtrl.push(SearchPage, { contentType: ContentType.FOR_COURSE_TAB, source: PageId.COURSES });
   }
 
   showFilter() {
@@ -562,7 +564,7 @@ export class CoursesPage implements OnInit {
       applyFilter(filter, appliedFilter) {
         that.ngZone.run(() => {
           const criteria = new PageAssembleCriteria();
-          criteria.name = 'Course';
+          criteria.name = PageName.RESOURCE;
           criteria.filters = filter;
           that.courseFilter = appliedFilter;
           that.appliedFilter = filter;

@@ -88,7 +88,6 @@ android {
         buildConfigField "boolean", "DISPLAY_ONBOARDING_SCAN_PAGE", "${display_onboarding_scan_page}"
         buildConfigField "boolean", "DISPLAY_ONBOARDING_CATEGORY_PAGE", "${display_onboarding_category_page}"
         buildConfigField "boolean", "OPEN_RAPDISCOVERY_ENABLED", "${open_rapdiscovery_enabled}"
-        
     }
 
     signingConfigs {
@@ -213,10 +212,6 @@ android {
             buildConfigField 'String', 'OAUTH_SESSION', '"org.genie.KeycloakOAuthSessionService"'
         }
     }
-
-  
-}
-
 
     applicationVariants.all { variant ->
         def flavor = variant.mergedFlavor
