@@ -332,7 +332,7 @@ export class CoursesPage implements OnInit {
     this.pageApiLoader = true;
     if (pageAssembleCriteria === undefined) {
       const criteria = new PageAssembleCriteria();
-      criteria.name = PageName.RESOURCE;
+      criteria.name = PageName.COURSE;
       criteria.mode = 'soft';
 
       if (this.appliedFilter) {
@@ -536,7 +536,7 @@ export class CoursesPage implements OnInit {
       applyFilter(filter, appliedFilter) {
         that.ngZone.run(() => {
           const criteria = new PageAssembleCriteria();
-          criteria.name = PageName.RESOURCE;
+          criteria.name = PageName.COURSE;
           criteria.filters = filter;
           that.courseFilter = appliedFilter;
           that.appliedFilter = filter;
