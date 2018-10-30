@@ -244,14 +244,16 @@ export class ViewMoreActivityPage implements OnInit {
       userId: this.navParams.get('userId'),
       refreshEnrolledCourses: false
     };
-    this.courseService.getEnrolledCourses(option, (data: any) => {
+    this.courseService.getEnrolledCourses(option)
+     .then((data: any) => {
       if (data) {
         data = JSON.parse(data);
         this.searchList = data.result.courses ? data.result.courses : [];
         this.loadMoreBtn = false;
       }
       loader.dismiss();
-    }, (error: any) => {
+    })
+     .catch((error: any) => {
       console.log('error while loading enrolled courses', error);
       loader.dismiss();
     });
