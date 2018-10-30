@@ -227,7 +227,7 @@ export class SearchPage {
 
   showContentDetails(content, isRootContent: boolean = false) {
 
-    if (content && content.medium) {
+    if (this.isDialCodeSearch && content && content.medium) {
       this.commonUtilService.changeAppLanguage(content.medium);
     }
 
