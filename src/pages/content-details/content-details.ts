@@ -10,7 +10,6 @@ import {
   NavController,
   NavParams,
   Events,
-  ToastController,
   LoadingController,
   PopoverController,
   Navbar,
@@ -38,7 +37,6 @@ import {
   TelemetryObject
 } from 'sunbird';
 import { SocialSharing } from '@ionic-native/social-sharing';
-import { Network } from '@ionic-native/network';
 import * as _ from 'lodash';
 import {
   Map
@@ -118,46 +116,8 @@ export class ContentDetailsPage {
    * To hold user id
    */
   userId = '';
-
-  /**
-   * To hold network status
-   */
-  isNetworkAvailable: boolean;
-
-  /**
-   * Contains reference of content service
-   */
-  public contentService: ContentService;
-
-  /**
-   * Contains ref of navigation controller
-   */
-  public navCtrl: NavController;
-
-  /**
-   * Contains ref of navigation params
-   */
-  public navParams: NavParams;
-
-  /**
-   * Contains reference of zone service
-   */
-  public zone: NgZone;
-
-  /**
-   * Contains reference of ionic toast controller
-   */
-  public toastCtrl: ToastController;
-
-  /**
-   * Contains reference of LoadingController
-   */
-  public loadingCtrl: LoadingController;
-
   public objRollup: Rollup;
-
   private resume;
-
   isContentPlayed = false;
 
   /**
@@ -205,30 +165,20 @@ export class ContentDetailsPage {
   userCount = 0;
   shouldGenerateTelemetry = true;
 
-  /**
-   *
-   * @param navCtrl
-   * @param navParams
-   * @param contentService
-   * @param zone
-   * @param events
-   * @param toastCtrl
-   */
   @ViewChild(Navbar) navBar: Navbar;
-  constructor(navCtrl: NavController,
-    navParams: NavParams,
-    contentService: ContentService,
-    zone: NgZone,
+  constructor(
+    private navCtrl: NavController,
+    private navParams: NavParams,
+    private contentService: ContentService,
+    private zone: NgZone,
     private events: Events,
-    toastCtrl: ToastController,
-    loadingCtrl: LoadingController,
+    private loadingCtrl: LoadingController,
     private fileUtil: FileUtil,
     private popoverCtrl: PopoverController,
     private shareUtil: ShareUtil,
     private social: SocialSharing,
     private platform: Platform,
     private buildParamService: BuildParamService,
-    private network: Network,
     private courseService: CourseService,
     private preference: SharedPreferences,
     private appGlobalService: AppGlobalService,
@@ -238,21 +188,13 @@ export class ContentDetailsPage {
     private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService) {
 
-    this.navCtrl = navCtrl;
-    this.navParams = navParams;
-    this.contentService = contentService;
-    this.zone = zone;
-    this.toastCtrl = toastCtrl;
-    this.loadingCtrl = loadingCtrl;
     this.objRollup = new Rollup();
 
-    this.getUserId();
+    this.appGlobalService.getUserId();
     this.subscribePlayEvent();
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
     this.handlePageResume();
-    this.handleNetworkAvailability();
-
   }
 
   /**
@@ -335,20 +277,6 @@ export class ContentDetailsPage {
         this.setContentDetails(this.identifier, false, false /* No Automatic Rating for 1.9.0 */);
       }
       this.updateContentProgress();
-    });
-  }
-
-  handleNetworkAvailability() {
-    if (this.network.type === 'none') {
-      this.isNetworkAvailable = false;
-    } else {
-      this.isNetworkAvailable = true;
-    }
-    this.network.onDisconnect().subscribe(() => {
-      this.isNetworkAvailable = false;
-    });
-    this.network.onConnect().subscribe(() => {
-      this.isNetworkAvailable = true;
     });
   }
 
@@ -804,7 +732,7 @@ export class ContentDetailsPage {
    */
   downloadContent() {
     this.zone.run(() => {
-      if (this.isNetworkAvailable) {
+      if (this.appGlobalService.networkInfo.isNetworkAvailable) {
         this.downloadProgress = '0';
         this.isDownloadStarted = true;
         this.importContent([this.identifier], this.isChildContent);
@@ -906,13 +834,6 @@ export class ContentDetailsPage {
     (<any>window).geniecanvas.play(this.content.playContent, JSON.stringify(request));
   }
 
-  getUserId() {
-    if (this.appGlobalService.getSessionData()) {
-      this.userId = this.appGlobalService.getSessionData()[ProfileConstants.USER_TOKEN];
-    } else {
-      this.userId = '';
-    }
-  }
 
   updateContentProgress() {
     const stateData = this.navParams.get('contentState');
