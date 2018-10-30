@@ -329,7 +329,7 @@
   "PINNED_BY_ADMIN": "व्यवस्थापकाद्वारे पिन केलेले ",
   "PLAY": "प्ले ",
   "PLAY_AS": "म्हणून खेळा",
-  "PLEASE_SELECT": "{{% s}} निवडा",
+  "PLEASE_SELECT": "{{%s}} निवडा",
   "PLEASE_SELECT_A_LANGUAGE": "भाषा निवडा",
   "PLEASE_SELECT_USER": "वापरकर्ता निवडा",
   "POPULAR_COURSES": "लोकप्रिय कोर्स",
