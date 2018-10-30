@@ -27,7 +27,10 @@ import {
   Mode,
   TelemetryObject,
   PageId,
-  TabsPage
+  TabsPage,
+  PageAssembleCriteria,
+  PageAssembleFilter,
+  PageAssembleService
 } from 'sunbird';
 import { GenieResponse } from '../settings/datasync/genieresponse';
 import { FilterPage } from './filters/filter';
@@ -40,7 +43,8 @@ import {
   ContentType,
   MimeType,
   Search,
-  AudienceFilter
+  AudienceFilter,
+  PageName
 } from '../../app/app.constant';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 import { AppGlobalService } from '../../service/app-global.service';
@@ -113,6 +117,7 @@ export class SearchPage {
   @ViewChild(Navbar) navBar: Navbar;
   constructor(
     private contentService: ContentService,
+    private pageService: PageAssembleService,
     private navParams: NavParams,
     private navCtrl: NavController,
     private zone: NgZone,
@@ -453,6 +458,30 @@ export class SearchPage {
     if (this.network.type === 'none') {
       isOfflineSearch = true;
     }
+
+    // Page API START
+    const pagetAssemblefilter = new PageAssembleFilter();
+    pagetAssemblefilter.dialcodes = this.dialCode;
+
+    const pageAssembleCriteria = new PageAssembleCriteria();
+    pageAssembleCriteria.name = PageName.DIAL_CODE;
+    pageAssembleCriteria.filters = pagetAssemblefilter;
+
+    this.pageService.getPageAssemble(pageAssembleCriteria, res => {
+      this.zone.run(() => {
+        const response = JSON.parse(res);
+        const sections = JSON.parse(response.sections);
+        // TODO
+      });
+    }, error => {
+      this.zone.run(() => {
+        this.showLoader = false;
+        if (this.network.type === 'none') {
+          this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
+        }
+      });
+    });
+    // Page API END
 
     const contentSearchRequest: ContentSearchCriteria = {
       dialCodes: [this.dialCode],
