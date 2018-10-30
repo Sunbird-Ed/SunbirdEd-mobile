@@ -129,12 +129,6 @@ export class EnrolledCourseDetailsPage {
   downloadProgress = 0;
 
   showLoading = false;
-
-  /**
-   * To hold network status
-   */
-  isNetworkAvailable: boolean;
-
   showDownloadProgress: boolean;
   totalDownload: number;
   currentCount = 0;
@@ -225,22 +219,10 @@ export class EnrolledCourseDetailsPage {
     this.contentService = contentService;
     this.zone = zone;
 
-    this.getUserId();
+    this.appGlobalService.getUserId();
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
     this.subscribeGenieEvent();
-
-    if (this.network.type === 'none') {
-      this.isNetworkAvailable = false;
-    } else {
-      this.isNetworkAvailable = true;
-    }
-    this.network.onDisconnect().subscribe(() => {
-      this.isNetworkAvailable = false;
-    });
-    this.network.onConnect().subscribe(() => {
-      this.isNetworkAvailable = true;
-    });
   }
 
   subscribeUtilityEvents() {
@@ -271,16 +253,6 @@ export class EnrolledCourseDetailsPage {
 
   }
 
-  /**
-   * Get user id
-   */
-  getUserId() {
-    if (this.appGlobalService.getSessionData()) {
-      this.userId = this.appGlobalService.getSessionData()[ProfileConstants.USER_TOKEN];
-    } else {
-      this.userId = '';
-    }
-  }
 
   /**
  * Get the session to know if the user is logged-in or guest
@@ -634,7 +606,7 @@ export class EnrolledCourseDetailsPage {
   }
 
   downloadAllContent() {
-    if (this.isNetworkAvailable) {
+    if (this.appGlobalService.networkInfo.isNetworkAvailable) {
       this.isDownloadStarted = true;
       this.downloadProgress = 0;
       this.importContent(this.downloadIdentifiers, true, true);
@@ -875,7 +847,7 @@ export class EnrolledCourseDetailsPage {
    * @param {string} id
    */
   navigateToBatchListPage(): void {
-    if (this.isNetworkAvailable) {
+    if (this.appGlobalService.networkInfo.isNetworkAvailable) {
       this.navCtrl.push(CourseBatchesPage, { identifier: this.identifier });
     } else {
       this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');

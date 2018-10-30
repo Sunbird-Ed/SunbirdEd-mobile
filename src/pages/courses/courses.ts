@@ -83,47 +83,31 @@ export class CoursesPage implements OnInit {
    * Flag to show latest and popular course loader
    */
   pageApiLoader = true;
-
   guestUser = false;
-
   showSignInCard = false;
-
-  isNetworkAvailable: boolean;
   showWarning = false;
-
   isOnBoardingCardCompleted = false;
   onBoardingProgress = 0;
   selectedLanguage = 'en';
   appLabel: string;
-
   courseFilter: any;
-
   appliedFilter: any;
-
   filterIcon = './assets/imgs/ic_action_filter.png';
-
   profile: any;
-
   isVisible = false;
-
 
   /**
    * To queue downloaded identifier
    */
   queuedIdentifiers: Array<any> = [];
-
   downloadPercentage = 0;
-
   showOverlay = false;
-
   resumeContentData: any;
   tabBarElement: any;
   private mode = 'soft';
   isFilterApplied = false;
-
   callback: QRResultCallback;
   pageFilterCallBack: PageFilterCallback;
-
 
   /**
    * Default method of class CoursesPage
@@ -161,17 +145,6 @@ export class CoursesPage implements OnInit {
 
     this.subscribeUtilityEvents();
 
-    if (this.network.type === 'none') {
-      this.isNetworkAvailable = false;
-    } else {
-      this.isNetworkAvailable = true;
-    }
-    this.network.onDisconnect().subscribe(() => {
-      this.isNetworkAvailable = false;
-    });
-    this.network.onConnect().subscribe(() => {
-      this.isNetworkAvailable = true;
-    });
 
     this.appVersion.getAppName()
       .then((appName: any) => {
@@ -430,7 +403,6 @@ export class CoursesPage implements OnInit {
       this.ngZone.run(() => {
         this.pageApiLoader = false;
         if (error === 'CONNECTION_ERROR') {
-          this.isNetworkAvailable = false;
           this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
         } else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
           this.commonUtilService.showToast('ERROR_FETCHING_DATA');
@@ -652,13 +624,8 @@ export class CoursesPage implements OnInit {
   }
 
   retryShowingPopularCourses(showRefresh = false) {
-    if (this.network.type === 'none') {
-      this.isNetworkAvailable = false;
-    } else {
-      this.isNetworkAvailable = true;
-      if (showRefresh) {
-        this.getCourseTabData();
-      }
+    if (this.appGlobalService.networkInfo.isNetworkAvailable && showRefresh) {
+      this.getCourseTabData();
     }
   }
 
