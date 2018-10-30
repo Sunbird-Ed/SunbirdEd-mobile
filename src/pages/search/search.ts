@@ -181,7 +181,7 @@ export class SearchPage {
             loginMode: 'guest'
           });
         } else {
-          this.navCtrl.setRoot('ProfileSettingsPage', { buildPath: true });
+          this.navCtrl.setRoot('ProfileSettingsPage', { isCreateNavigationStack: true });
         }
       } else {
         this.popCurrentPage();
@@ -256,7 +256,7 @@ export class SearchPage {
       this.navCtrl.push(EnrolledCourseDetailsPage, params);
     } else if (content.mimeType === MimeType.COLLECTION) {
       if (this.isDialCodeSearch && !isRootContent) {
-        params.buildPath = true;
+        params.isCreateNavigationStack = true;
         this.navCtrl.push(QrCodeResultPage, params);
       } else {
         this.navCtrl.push(CollectionDetailsPage, params);
