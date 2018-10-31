@@ -23,6 +23,7 @@ import { generateInteractTelemetry, generateImpressionTelemetry } from '../../ap
 import { PreferenceKey } from '../../app/app.constant';
 
 const KEY_SUNBIRD_CONFIG_FILE_PATH = 'sunbird_config_file_path';
+const SUBJECT_NAME = 'Details:';
 
 @Component({
   selector: 'settings',
@@ -106,9 +107,7 @@ export class SettingsPage {
     this.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.SUPPORT_CLICKED);
     this.deviceInfoService.getDeviceID((res: any) => {
       this.deviceId = res;
-      console.log('deviceID' + res);
     }, (error: any) => {
-      console.log('ERROR' + error);
     });
     (<any>window).supportfile.shareSunbirdConfigurations((result) => {
       const loader = this.commonUtilService.getLoader();
@@ -119,7 +118,8 @@ export class SettingsPage {
           loader.dismiss();
           if (Boolean(val)) {
             this.fileUrl = 'file://' + val;
-            this.socialSharing.shareViaEmail('', 'Details:' + this.deviceId + '_' + Date.now(), [], null, null, this.fileUrl)
+            this.subjectDetails = SUBJECT_NAME + this.deviceId + '_' + Date.now();
+            this.socialSharing.shareViaEmail('', this.subjectDetails, [], null, null, this.fileUrl)
               .catch(error => {
                 console.error(error);
               });
