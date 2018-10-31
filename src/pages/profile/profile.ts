@@ -748,7 +748,8 @@ export class ProfilePage {
       returnRefreshedEnrolledCourses: true
     };
     this.trainingsCompleted = [];
-    this.courseService.getEnrolledCourses(option, (res: any) => {
+    this.courseService.getEnrolledCourses(option)
+     .then((res: any) => {
       res = JSON.parse(res);
       const enrolledCourses = res.result.courses;
       for (let i = 0, len = enrolledCourses.length; i < len; i++) {
@@ -756,7 +757,8 @@ export class ProfilePage {
           this.trainingsCompleted.push(enrolledCourses[i]);
         }
       }
-    }, (error: any) => {
+    })
+     .catch((error: any) => {
       console.error('error while loading enrolled courses', error);
     });
   }
