@@ -16,8 +16,8 @@
     <!-- Pull to Refresh -->
     <ion-refresher (ionRefresh)="doRefresh($event)"></ion-refresher>
 
-    <div padding-horizontal text-center class="MT15 padding-top-5" *ngIf="profile?.firstName">
-        <profile-avatar [username]="profile.firstName"></profile-avatar>
+    <div padding-horizontal text-center class="MT15" *ngIf="profile?.firstName">
+        <profile-avatar [username]="profile?.firstName"></profile-avatar>
     </div>
 
     <div padding-horizontal text-center>

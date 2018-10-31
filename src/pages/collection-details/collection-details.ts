@@ -169,11 +169,6 @@ export class CollectionDetailsPage {
    */
   downloadContentsSize: string;
 
-  /**
-   * To hold network status
-   */
-  isNetworkAvailable: boolean;
-
   downloadPercentage: number;
 
   objId;
@@ -243,7 +238,7 @@ export class CollectionDetailsPage {
 
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
-    this.handleNetworkAvaibility();
+    this.handleNetworkAvailability();
   }
 
   ionViewDidLoad() {
@@ -273,25 +268,13 @@ export class CollectionDetailsPage {
     }, 10);
   }
 
-  handleNetworkAvaibility() {
+  handleNetworkAvailability() {
     this.buildParamService.getBuildConfigParam('BASE_URL')
       .then(response => {
         this.baseUrl = response;
       })
       .catch(() => {
       });
-
-    if (this.network.type === 'none') {
-      this.isNetworkAvailable = false;
-    } else {
-      this.isNetworkAvailable = true;
-    }
-    this.network.onDisconnect().subscribe(() => {
-      this.isNetworkAvailable = false;
-    });
-    this.network.onConnect().subscribe(() => {
-      this.isNetworkAvailable = true;
-    });
   }
 
   /**
@@ -973,7 +956,7 @@ export class CollectionDetailsPage {
   }
 
   showDownloadConfirmatioAlert(myEvent) {
-    if (this.isNetworkAvailable) {
+    if (this.appGlobalService.networkInfo.isNetworkAvailable) {
       const popover = this.popoverCtrl.create(ConfirmAlertComponent, {}, {
         cssClass: 'confirm-alert-box'
       });

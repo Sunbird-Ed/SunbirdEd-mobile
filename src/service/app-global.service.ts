@@ -1,3 +1,5 @@
+import { NgZone, OnDestroy } from '@angular/core';
+import { ProfileConstants } from './../app/app.constant';
 
 import { Injectable } from '@angular/core';
 import {
@@ -25,9 +27,14 @@ import {
     PreferenceKey
 } from '../app/app.constant';
 import { TelemetryGeneratorService } from './telemetry-generator.service';
+import { Network } from '@ionic-native/network';
+
+export interface NetworkInfo {
+    isNetworkAvailable: boolean;
+}
 
 @Injectable()
-export class AppGlobalService {
+export class AppGlobalService implements OnDestroy {
 
     constructor(
         private event: Events,
@@ -37,7 +44,9 @@ export class AppGlobalService {
         private popoverCtrl: PopoverController,
         private buildParamService: BuildParamService,
         private framework: FrameworkService,
-        private telemetryGeneratorService: TelemetryGeneratorService
+        private telemetryGeneratorService: TelemetryGeneratorService,
+        private network: Network,
+        private zone: NgZone
     ) {
 
         this.initValues();
@@ -73,6 +82,11 @@ export class AppGlobalService {
     isProfileSettingsCompleted: boolean;
     isOnBoardingCompleted = false;
     session: any;
+    networkInfo: NetworkInfo = {
+        isNetworkAvailable: false
+    };
+    connectSubscription: any;
+    disconnectSubscription: any;
     public averageTime = 0;
     public averageScore = 0;
     private frameworkData = [];
@@ -199,6 +213,23 @@ export class AppGlobalService {
         return this.libraryFilterConfig;
     }
 
+    /**
+     * @returns {string} UserId or empty string if not available
+     */
+    getUserId(): string {
+        if (!this.session) {
+            this.authService.getSessionData((session) => {
+                if (session && session !== 'null') {
+                    return session[ProfileConstants.USER_TOKEN];
+                }
+
+                return this.session = '';
+            });
+        }
+
+        return this.session[ProfileConstants.USER_TOKEN];
+    }
+
     private initValues() {
         this.readConfig();
         this.authService.getSessionData((session) => {
@@ -320,8 +351,8 @@ export class AppGlobalService {
             .then(response => {
                 this.OPEN_RAPDISCOVERY_ENABLED = response === 'true' ? true : false;
             })
-            .catch( error => {
-               this.OPEN_RAPDISCOVERY_ENABLED = false;
+            .catch(error => {
+                this.OPEN_RAPDISCOVERY_ENABLED = false;
             });
     }
 
@@ -376,7 +407,7 @@ export class AppGlobalService {
     public getGuestUserInfo() {
         this.preference.getString(PreferenceKey.SELECTED_USER_TYPE)
             .then(val => {
-                if (val !== undefined && val !== '') {
+                if (val) {
                     if (val === ProfileType.STUDENT) {
                         this.guestProfileType = ProfileType.STUDENT;
                     } else if (val === ProfileType.TEACHER) {
@@ -392,6 +423,8 @@ export class AppGlobalService {
     }
 
     private listenForEvents() {
+
+        this.handleNetworkAvailability();
         this.event.subscribe(AppGlobalService.USER_INFO_UPDATED, () => {
             this.initValues();
         });
@@ -525,5 +558,38 @@ export class AppGlobalService {
             resolve(this.isProfileSettingsCompleted);
         });
     }
-}
 
+    /**
+     * Its check for the network availability
+     * @returns {boolean} status of the network
+     */
+    handleNetworkAvailability(): boolean {
+        const updateNetworkAvailabilityStatus = (status: boolean) => {
+            this.zone.run(() => {
+                this.networkInfo.isNetworkAvailable = status;
+            });
+        };
+
+        if (this.network.type === 'none') {
+            updateNetworkAvailabilityStatus(false);
+        } else {
+            updateNetworkAvailabilityStatus(true);
+        }
+
+        this.connectSubscription = this.network.onDisconnect().subscribe(() => {
+            updateNetworkAvailabilityStatus(false);
+        });
+        this.disconnectSubscription = this.network.onConnect().subscribe(() => {
+            updateNetworkAvailabilityStatus(true);
+        });
+
+        return this.networkInfo.isNetworkAvailable;
+    }
+
+    ngOnDestroy() {
+        this.connectSubscription.unsubscribe();
+        this.disconnectSubscription.unsubscribe();
+        this.event.unsubscribe(AppGlobalService.USER_INFO_UPDATED);
+        this.event.unsubscribe('refresh:profile');
+    }
+}

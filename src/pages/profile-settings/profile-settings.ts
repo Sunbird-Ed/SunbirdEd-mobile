@@ -112,7 +112,7 @@ export class ProfileSettingsPage {
 
   ionViewWillEnter() {
     this.hideBackButton = Boolean(this.navParams.get('hideBackButton'));
-    if (this.navParams.get('buildPath')) {
+    if (this.navParams.get('isCreateNavigationStack')) {
       this.navCtrl.insertPages(0, [{ page: 'LanguageSettingsPage' }, { page: 'UserTypeSelectionPage' }]);
     }
     this.getSyllabusDetails();

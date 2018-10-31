@@ -75,7 +75,7 @@
 		</div>
 	</div>
 
-	<div padding text-center *ngIf="!isNetworkAvailable">
+	<div padding text-center *ngIf="!appGlobalService?.networkInfo?.isNetworkAvailable">
 		<img height="80" width="100" src="assets/imgs/ic_offline.png" />
 		<h6 ion-text color="secondary_black">
 			<b>{{ 'NO_INTERNET_TITLE' | translate }}</b>
