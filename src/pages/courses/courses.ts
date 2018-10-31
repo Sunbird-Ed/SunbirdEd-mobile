@@ -296,13 +296,12 @@ export class CoursesPage implements OnInit {
       refreshEnrolledCourses: true,
       returnRefreshedEnrolledCourses: returnRefreshedCourses
     };
-
-    this.courseService.getEnrolledCourses(option, (enrolledCourses: any) => {
+    this.courseService.getEnrolledCourses(option)
+     .then((enrolledCourses: any) => {
       if (enrolledCourses) {
         enrolledCourses = JSON.parse(enrolledCourses);
         this.ngZone.run(() => {
           this.enrolledCourses = enrolledCourses.result.courses ? enrolledCourses.result.courses : [];
-
           // maintain the list of courses that are enrolled, and store them in appglobal
           if (this.enrolledCourses.length > 0) {
             const courseList: Array<any> = [];
@@ -317,7 +316,8 @@ export class CoursesPage implements OnInit {
           this.spinner(false);
         });
       }
-    }, (error: any) => {
+    })
+    .catch((error: any) => {
       console.log('error while loading enrolled courses', error);
       this.spinner(false);
     });
