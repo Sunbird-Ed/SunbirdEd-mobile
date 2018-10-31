@@ -92,10 +92,10 @@ export class ProfilePage {
   };
 
   /* Social Media Links */
-  fbLink = '';
-  twitterLink = '';
-  linkedInLink = '';
-  blogLink = '';
+  // fbLink = '';
+  // twitterLink = '';
+  // linkedInLink = '';
+  // blogLink = '';
 
   readonly DEFAULT_PAGINATION_LIMIT = 2;
   paginationLimit = 2;
@@ -230,7 +230,7 @@ export class ProfilePage {
                 if (r && r.avatar) {
                   that.imageUri = r.avatar;
                 }
-                that.searchContent();
+                // that.searchContent();
                 that.formatLastLoginTime();
                 that.formatProfileProgress();
                 that.formatJobProfile();
@@ -240,7 +240,7 @@ export class ProfilePage {
                 that.languages = that.arrayToString(that.profile.language);
                 that.grades = that.arrayToString(that.profile.grade);
                 that.formatMissingFields();
-                that.formatSocialLinks();
+                // that.formatSocialLinks();
                 resolve();
               });
             },
@@ -391,21 +391,21 @@ export class ProfilePage {
     });
   }
 
-  formatSocialLinks() {
-    if (this.profile.webPages.length) {
-      this.profile.webPages.forEach(element => {
-        if (element.type === 'fb') {
-          this.fbLink = element.url;
-        } else if (element.type === 'twitter') {
-          this.twitterLink = element.url;
-        } else if (element.type === 'in') {
-          this.linkedInLink = element.url;
-        } else {
-          this.blogLink = element.url;
-        }
-      });
-    }
-  }
+  // formatSocialLinks() {
+  //   if (this.profile.webPages.length) {
+  //     this.profile.webPages.forEach(element => {
+  //       if (element.type === 'fb') {
+  //         this.fbLink = element.url;
+  //       } else if (element.type === 'twitter') {
+  //         this.twitterLink = element.url;
+  //       } else if (element.type === 'in') {
+  //         this.linkedInLink = element.url;
+  //       } else {
+  //         this.blogLink = element.url;
+  //       }
+  //     });
+  //   }
+  // }
 
   formatProfileProgress() {
     this.profileProgress = String(this.profile.completeness);
@@ -626,28 +626,28 @@ export class ProfilePage {
   /**
    * Searches contents created by the user
    */
-  searchContent(): void {
-    const contentSortCriteria: ContentSortCriteria = {
-      sortAttribute: 'lastUpdatedOn',
-      sortOrder: SortOrder.DESC
-    };
-    const contentSearchCriteria: ContentSearchCriteria = {
-      createdBy: [this.userId || this.loggedInUserId],
-      limit: 20,
-      contentTypes: ContentType.FOR_PROFILE_TAB,
-      sortCriteria: [contentSortCriteria]
-    };
+  // searchContent(): void {
+  //   const contentSortCriteria: ContentSortCriteria = {
+  //     sortAttribute: 'lastUpdatedOn',
+  //     sortOrder: SortOrder.DESC
+  //   };
+  //   const contentSearchCriteria: ContentSearchCriteria = {
+  //     createdBy: [this.userId || this.loggedInUserId],
+  //     limit: 20,
+  //     contentTypes: ContentType.FOR_PROFILE_TAB,
+  //     sortCriteria: [contentSortCriteria]
+  //   };
 
-    this.contentService.searchContent(contentSearchCriteria,
-      false, false, false,
-      (result: any) => {
-        this.enrolledCourse = JSON.parse(result).result.contentDataList;
-      },
-      (error: any) => {
-        console.error('Error', error);
-      }
-    );
-  }
+  //   this.contentService.searchContent(contentSearchCriteria,
+  //     false, false, false,
+  //     (result: any) => {
+  //       this.enrolledCourse = JSON.parse(result).result.contentDataList;
+  //     },
+  //     (error: any) => {
+  //       console.error('Error', error);
+  //     }
+  //   );
+  // }
 
   /**
    * Navigates to User Search Page
