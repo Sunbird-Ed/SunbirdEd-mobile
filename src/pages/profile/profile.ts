@@ -82,6 +82,11 @@ export class ProfilePage {
   startLimit = 0;
 
   enrolledCourse: any = [];
+  orgDetails: {
+    'state': '',
+    'district': '',
+    'block': ''
+  };
 
   constructor(
     private navCtrl: NavController,
@@ -201,6 +206,7 @@ export class ProfilePage {
                 }
                 that.formatRoles();
                 that.formatMissingFields();
+                that.formatOrgDetails();
                 resolve();
               });
             },
@@ -275,11 +281,41 @@ export class ProfilePage {
     };
   }
 
+  /**
+   * Method to store all roles from different organizations into single array
+   */
   formatRoles() {
     this.roles = [];
     for (let i = 0, len = this.profile.organisations.length; i < len; i++) {
       for (let j = 0, l = this.profile.organisations[i].roles.length; j < l; j++) {
         this.roles.push(this.profile.organisations[i].roles[j]);
+      }
+    }
+  }
+
+  /**
+   * Method to handle organisation details.
+   */
+  formatOrgDetails() {
+    this.orgDetails = { 'state': '', 'district': '', 'block': '' };
+    for (let i = 0, len = this.profile.organisations.length; i < len; i++) {
+      for (let j = 0, l = this.profile.organisations[i].locations.length; j < l; j++) {
+        switch (this.profile.organisations[i].locations[j].type) {
+          case 'state':
+            this.orgDetails.state = this.profile.organisations[i].locations[j];
+            break;
+
+          case 'block':
+            this.orgDetails.block = this.profile.organisations[i].locations[j];
+            break;
+
+          case 'district':
+            this.orgDetails.district = this.profile.organisations[i].locations[j];
+            break;
+
+          default:
+            break;
+        }
       }
     }
   }
@@ -402,18 +438,18 @@ export class ProfilePage {
     };
     this.trainingsCompleted = [];
     this.courseService.getEnrolledCourses(option)
-     .then((res: any) => {
-      res = JSON.parse(res);
-      const enrolledCourses = res.result.courses;
-      for (let i = 0, len = enrolledCourses.length; i < len; i++) {
-        if ((enrolledCourses[i].status === 2) || (enrolledCourses[i].leafNodesCount === enrolledCourses[i].progress)) {
-          this.trainingsCompleted.push(enrolledCourses[i]);
+      .then((res: any) => {
+        res = JSON.parse(res);
+        const enrolledCourses = res.result.courses;
+        for (let i = 0, len = enrolledCourses.length; i < len; i++) {
+          if ((enrolledCourses[i].status === 2) || (enrolledCourses[i].leafNodesCount === enrolledCourses[i].progress)) {
+            this.trainingsCompleted.push(enrolledCourses[i]);
+          }
         }
-      }
-    })
-     .catch((error: any) => {
-      console.error('error while loading enrolled courses', error);
-    });
+      })
+      .catch((error: any) => {
+        console.error('error while loading enrolled courses', error);
+      });
   }
 
   isResource(contentType) {
