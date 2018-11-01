@@ -21,7 +21,7 @@
       <div no-lines class="collection-header" margin-start>
         <div class="collection-name">
           <span>{{'FROM' | translate}} </span>{{ result.name }}</div>
-        <button ion-button clear no-padding class="view-collection" (click)="openCollection(result)">
+        <button ion-button clear no-padding class="view-collection" (click)="openContent(result,result, 0)">
           {{'VIEW' | translate}} {{ result.contentType }} &nbsp;
           <ion-icon ios="ios-arrow-forward" md="ios-arrow-forward"></ion-icon>
         </button>

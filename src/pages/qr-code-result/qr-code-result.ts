@@ -41,6 +41,7 @@ import * as _ from 'lodash';
 import { PopoverController } from 'ionic-angular';
 import { Popover } from 'ionic-angular';
 import { ProfileSettingsPage } from '../profile-settings/profile-settings';
+import { ComponentsModule } from '../../component/components.module';
 
 @IonicPage()
 @Component({
@@ -91,6 +92,7 @@ export class QrCodeResultPage {
   results: Array<any> = [];
   defaultImg: string;
   parents: Array<any> = [];
+  paths: Array<any> = [];
   categories: Array<any> = [];
   boardList: Array<any> = [];
   mediumList: Array<any> = [];
@@ -193,6 +195,11 @@ export class QrCodeResultPage {
         const contentData = JSON.parse(JSON.stringify(data.result.contentData));
         this.checkProfileData(contentData, this.profile);
         this.findContentNode(data.result);
+        this.paths.forEach(path => {
+          path.forEach(element => {
+            console.log(element.identifier);
+          });
+        });
 
         if (this.results && this.results.length === 0) {
           this.commonUtilService.showContentComingSoonAlert(this.source);
@@ -208,6 +215,7 @@ export class QrCodeResultPage {
         this.commonUtilService.showContentComingSoonAlert(this.source);
         this.navCtrl.pop();
       });
+
   }
 
   private showAllChild(content: any) {
@@ -215,11 +223,20 @@ export class QrCodeResultPage {
       if (content.children === undefined) {
         if (content.mimeType !== MimeType.COLLECTION) {
           this.results.push(content);
+
+          const path = [];
+          this.parents.forEach(ele => {
+            path.push(ele);
+          });
+          path.splice(-1, 1);
+          this.paths.push(path);
         }
         return;
       }
       content.children.forEach(child => {
+        this.parents.push(child);
         this.showAllChild(child);
+        this.parents.splice(-1, 1);
       });
     });
   }

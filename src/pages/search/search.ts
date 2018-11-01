@@ -599,8 +599,9 @@ export class SearchPage {
     }
 
     if (contentArray && contentArray.length === 1 && !isParentCheckStarted) {
-      this.navCtrl.pop();
-      this.showContentDetails(contentArray[0], true);
+      // this.navCtrl.pop();
+      // this.showContentDetails(contentArray[0], true);
+      this.openContent(contentArray[0], contentArray[0], 0);
       return;
     }
 
