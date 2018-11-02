@@ -511,5 +511,8 @@
   "YEAR_OF_PASSING": "Year of Passing",
   "YES": "Yes",
   "YOUR_PROFILE_IS": "Your profile is {{%s}}% complete",
-  "YOUR_PROGRESS": "Your Progress: {{%s}}%"
+  "YOUR_PROGRESS": "Your Progress: {{%s}}%",
+  "ANDROID_NOT_SUPPORTED": "Your android version is not supported",
+  "ALERT_BODY": "This content can’t be opened since your phone is running a very old version of Android. Based on your device model you may be able to view this content, if you have Crosswalk. If you wish to try this, click below to install it.",
+  "INSTALL_CROSSWALK": "Install Crosswalk"
 }

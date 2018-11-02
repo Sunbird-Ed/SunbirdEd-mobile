@@ -54,6 +54,7 @@ import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../service/common-util.service';
 import { ViewCreditsComponent } from '../../component/view-credits/view-credits';
+import { DialogPopupComponent } from '../../component/dialog-popup/dialog-popup';
 
 @IonicPage()
 @Component({
@@ -289,7 +290,7 @@ export class ContentDetailsPage {
       });
     this.launchPlayer = this.navParams.get('launchplayer');
     this.events.subscribe('playConfig', (config) => {
-        this.playContent(config.streaming);
+      this.playContent(config.streaming);
     });
   }
 
@@ -765,7 +766,6 @@ export class ContentDetailsPage {
   showSwitchUserAlert(isStreaming: boolean) {
     if (!AppGlobalService.isPlayerLaunched && this.userCount > 1) {
       const profile = this.appGlobalService.getCurrentUser();
-
       const alert = this.alertCtrl.create({
         title: this.commonUtilService.translateMessage('PLAY_AS'),
         mode: 'wp',
@@ -813,6 +813,11 @@ export class ContentDetailsPage {
   playContent(isStreaming: boolean) {
     // set the boolean to true, so when the content player is closed, we get to know that
     // we are back from content player
+    // if ( check for API level < 21 and crosswalk is installed or not ) {
+    //   this.showPopupDialog();
+    // } else {
+    //    put the below code here
+    // }
     this.downloadAndPlay = false;
     if (!AppGlobalService.isPlayerLaunched) {
       AppGlobalService.isPlayerLaunched = true;
@@ -848,18 +853,18 @@ export class ContentDetailsPage {
       };
 
       this.courseService.updateContentState(data)
-       .then(() => {
-        this.zone.run(() => {
-          this.events.publish(EventTopics.COURSE_STATUS_UPDATED_SUCCESSFULLY, {
-            update: true
+        .then(() => {
+          this.zone.run(() => {
+            this.events.publish(EventTopics.COURSE_STATUS_UPDATED_SUCCESSFULLY, {
+              update: true
+            });
+          });
+        })
+        .catch((error: any) => {
+          this.zone.run(() => {
+            console.log('Error: while updating content state =>>>>>', error);
           });
         });
-      })
-       .catch((error: any) => {
-        this.zone.run(() => {
-          console.log('Error: while updating content state =>>>>>', error);
-        });
-      });
     }
   }
 
@@ -972,5 +977,16 @@ export class ContentDetailsPage {
     telemetryObject.type = this.objType;
     telemetryObject.version = this.objVer;
     this.telemetryGeneratorService.readLessOrReadMore(param, objRollup, corRelationList, telemetryObject);
+  }
+
+  showPopupDialog() {
+    const popover = this.popoverCtrl.create(DialogPopupComponent, {
+      title: this.commonUtilService.translateMessage('ANDROID_NOT_SUPPORTED'),
+      body: this.commonUtilService.translateMessage('ALERT_BODY'),
+      buttonText: this.commonUtilService.translateMessage('INSTALL_CROSSWALK')
+    }, {
+        cssClass: 'popover-alert'
+      });
+    popover.present();
   }
 }
