@@ -344,7 +344,8 @@ export class CollectionDetailsPage {
       attachFeedback: true,
       attachContentAccess: true
     };
-    this.contentService.getContentDetail(option, (data: any) => {
+    this.contentService.getContentDetail(option)
+    .then((data: any) => {
       this.zone.run(() => {
         data = JSON.parse(data);
         loader.dismiss().then(() => {
@@ -353,8 +354,8 @@ export class CollectionDetailsPage {
           }
         });
       });
-    },
-      error => {
+    })
+      .catch((error: any) => {
         console.log('error while loading content details', error);
         loader.dismiss();
         this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');

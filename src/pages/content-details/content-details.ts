@@ -397,7 +397,8 @@ export class ContentDetailsPage {
       attachContentAccess: true
     };
 
-    this.contentService.getContentDetail(option, (data: any) => {
+    this.contentService.getContentDetail(option)
+     .then((data: any) => {
       this.zone.run(() => {
         data = JSON.parse(data);
         if (data && data.result) {
@@ -417,8 +418,8 @@ export class ContentDetailsPage {
           }
         }
       });
-    },
-      (error: any) => {
+    })
+      .catch((error: any) => {
         const data = JSON.parse(error);
         console.log('Error received', data);
         loader.dismiss();

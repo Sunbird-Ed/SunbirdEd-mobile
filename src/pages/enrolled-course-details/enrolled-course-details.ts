@@ -341,15 +341,16 @@ export class EnrolledCourseDetailsPage {
       refreshContentDetails: true
     };
 
-    this.contentService.getContentDetail(option, (data: any) => {
-      this.zone.run(() => {
-        data = JSON.parse(data);
-        if (data && data.result) {
-          this.extractApiResponse(data);
-        }
-      });
-    },
-      (error: any) => {
+    this.contentService.getContentDetail(option)
+      .then((data: any) => {
+        this.zone.run(() => {
+          data = JSON.parse(data);
+          if (data && data.result) {
+            this.extractApiResponse(data);
+          }
+        });
+      })
+      .catch((error: any) => {
         if (JSON.parse(error).error === 'CONNECTION_ERROR') {
           this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
         } else {
@@ -413,25 +414,25 @@ export class EnrolledCourseDetailsPage {
     if (this.courseCardData.batchId) {
       console.log(this.courseCardData.batchId);
       // if (this.course.isAvailableLocally === true) {
-        // this.getBatchDetails();
-      }
-
-      if (Boolean(data.result.isAvailableLocally)) {
-        this.setChildContents();
-      } else {
-        this.showLoading = true;
-        this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.course, true);
-        this.importContent([this.identifier], false);
-      }
-      this.setCourseStructure();
+      // this.getBatchDetails();
     }
 
-    /**
-     * Get batch details
-     */
-    getBatchDetails() {
-      this.courseService.getBatchDetails({ batchId: this.courseCardData.batchId })
-       .then((data: any) => {
+    if (Boolean(data.result.isAvailableLocally)) {
+      this.setChildContents();
+    } else {
+      this.showLoading = true;
+      this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.course, true);
+      this.importContent([this.identifier], false);
+    }
+    this.setCourseStructure();
+  }
+
+  /**
+   * Get batch details
+   */
+  getBatchDetails() {
+    this.courseService.getBatchDetails({ batchId: this.courseCardData.batchId })
+      .then((data: any) => {
         this.zone.run(() => {
           data = JSON.parse(data);
           if (data.result) {
@@ -472,40 +473,40 @@ export class EnrolledCourseDetailsPage {
                   }
                 }
               })
-               .catch((error) => {
+              .catch((error) => {
                 console.error('ERROR - ' + error);
               });
             this.getBatchCreatorName();
           }
         });
       })
-        .catch((error: any) => {
-          console.log('error while loading content details', error);
-        });
-    }
-
-    getBatchCreatorName() {
-      const req = {
-        userId: this.batchDetails.createdBy,
-        requiredFields: []
-      };
-      this.profileService.getUserProfileDetails(req, (data: any) => {
-        data = JSON.parse(data);
-        if (data) {
-          this.batchDetails.creatorFirstName = data.firstName ? data.firstName : '';
-          this.batchDetails.creatorLastName = data.lastName ? data.lastName : '';
-        }
-      }, () => {
+      .catch((error: any) => {
+        console.log('error while loading content details', error);
       });
-    }
+  }
 
-    /**
-     * Set course structure
-     */
-    setCourseStructure(): void {
-      if (this.course.contentTypesCount) {
-        this.course.contentTypesCount = JSON.parse(this.course.contentTypesCount);
-      } else if (this.courseCardData.contentTypesCount && !_.isObject(this.courseCardData.contentTypesCount)) {
+  getBatchCreatorName() {
+    const req = {
+      userId: this.batchDetails.createdBy,
+      requiredFields: []
+    };
+    this.profileService.getUserProfileDetails(req, (data: any) => {
+      data = JSON.parse(data);
+      if (data) {
+        this.batchDetails.creatorFirstName = data.firstName ? data.firstName : '';
+        this.batchDetails.creatorLastName = data.lastName ? data.lastName : '';
+      }
+    }, () => {
+    });
+  }
+
+  /**
+   * Set course structure
+   */
+  setCourseStructure(): void {
+    if (this.course.contentTypesCount) {
+      this.course.contentTypesCount = JSON.parse(this.course.contentTypesCount);
+    } else if (this.courseCardData.contentTypesCount && !_.isObject(this.courseCardData.contentTypesCount)) {
       this.course.contentTypesCount = JSON.parse(this.courseCardData.contentTypesCount);
     }
   }
@@ -795,7 +796,7 @@ export class EnrolledCourseDetailsPage {
           }
 
           if (this.downloadProgress === 100) {
-             this.getBatchDetails();
+            this.getBatchDetails();
             this.showLoading = false;
           }
         }
@@ -992,8 +993,8 @@ export class EnrolledCourseDetailsPage {
       {
         content: this.course,
         pageId: PageId.CONTENT_DETAIL,
-        rollup : undefined,
-        correlation : this.corRelationList
+        rollup: undefined,
+        correlation: this.corRelationList
       },
       {
         cssClass: 'view-credits'

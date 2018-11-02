@@ -694,7 +694,8 @@ export class SearchPage {
       contentId: identifier
     };
 
-    this.contentService.getContentDetail(contentRequest, (data: any) => {
+    this.contentService.getContentDetail(contentRequest)
+     .then((data: any) => {
       data = JSON.parse(data);
       if (data && data.result) {
         if (data.result.isAvailableLocally) {
