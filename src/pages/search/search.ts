@@ -692,7 +692,8 @@ export class SearchPage {
       contentId: identifier
     };
 
-    this.contentService.getContentDetail(contentRequest, (data: any) => {
+    this.contentService.getContentDetail(contentRequest)
+     .then((data: any) => {
       data = JSON.parse(data);
       if (data && data.result) {
         if (data.result.isAvailableLocally) {
@@ -720,7 +721,8 @@ export class SearchPage {
       contentStatusArray: []
     };
     // Call content service
-    this.contentService.importContent(option, (data: any) => {
+    this.contentService.importContent(option)
+    .then((data: any) => {
       this.zone.run(() => {
         data = JSON.parse(data);
 
@@ -742,7 +744,8 @@ export class SearchPage {
           }
         }
       });
-    }, () => {
+    })
+    .catch(() => {
     });
   }
 

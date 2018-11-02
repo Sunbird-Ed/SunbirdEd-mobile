@@ -397,7 +397,8 @@ export class ContentDetailsPage {
       attachContentAccess: true
     };
 
-    this.contentService.getContentDetail(option, (data: any) => {
+    this.contentService.getContentDetail(option)
+     .then((data: any) => {
       this.zone.run(() => {
         data = JSON.parse(data);
         if (data && data.result) {
@@ -417,8 +418,8 @@ export class ContentDetailsPage {
           }
         }
       });
-    },
-      (error: any) => {
+    })
+      .catch((error: any) => {
         const data = JSON.parse(error);
         console.log('Error received', data);
         loader.dismiss();
@@ -674,13 +675,14 @@ export class ContentDetailsPage {
     };
 
     // Call content service
-    this.contentService.importContent(option, (data: any) => {
+    this.contentService.importContent(option)
+     .then((data: any) => {
       data = JSON.parse(data);
       if (data.result && data.result[0].status === 'NOT_FOUND') {
         this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
       }
-    },
-      error => {
+    })
+      .catch((error) => {
         console.log('error while loading content details', error);
         if (this.isDownloadStarted) {
           this.content.downloadable = false;

@@ -629,7 +629,8 @@ export class CoursesPage implements OnInit {
 
   getContentDetails(content) {
     const identifier = content.contentId || content.identifier;
-    this.contentService.getContentDetail({ contentId: identifier }, (data: any) => {
+    this.contentService.getContentDetail({ contentId: identifier })
+    .then((data: any) => {
       data = JSON.parse(data);
       if (data && data.result && data.result.isAvailableLocally) {
         this.showOverlay = false;
@@ -639,8 +640,8 @@ export class CoursesPage implements OnInit {
         this.showOverlay = true;
         this.importContent([identifier], false);
       }
-    },
-      (error: any) => {
+    })
+      .catch((error: any) => {
         console.log(error);
         this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
       });
@@ -697,7 +698,8 @@ export class CoursesPage implements OnInit {
       contentStatusArray: []
     };
 
-    this.contentService.importContent(option, (data: any) => {
+    this.contentService.importContent(option)
+     .then((data: any) => {
       data = JSON.parse(data);
       this.ngZone.run(() => {
         this.tabBarElement.style.display = 'none';
@@ -709,8 +711,8 @@ export class CoursesPage implements OnInit {
           }
         }
       });
-    },
-      () => {
+    })
+      .catch(() => {
         this.ngZone.run(() => {
           this.removeOverlayAndShowError();
         });
