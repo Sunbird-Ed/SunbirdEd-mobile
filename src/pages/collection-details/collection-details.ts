@@ -475,7 +475,8 @@ export class CollectionDetailsPage {
     };
 
     // Call content service
-    this.contentService.importContent(option, (data: any) => {
+    this.contentService.importContent(option)
+    .then((data: any) => {
       this.zone.run(() => {
         data = JSON.parse(data);
 
@@ -522,8 +523,8 @@ export class CollectionDetailsPage {
           this.childrenData.length = 0;
         }
       });
-    },
-      error => {
+    })
+     .catch((error: any) => {
         this.zone.run(() => {
           console.log('error while loading content details', error);
           if (this.isDownloadStarted) {

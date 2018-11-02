@@ -721,7 +721,8 @@ export class SearchPage {
       contentStatusArray: []
     };
     // Call content service
-    this.contentService.importContent(option, (data: any) => {
+    this.contentService.importContent(option)
+    .then((data: any) => {
       this.zone.run(() => {
         data = JSON.parse(data);
 
@@ -743,7 +744,8 @@ export class SearchPage {
           }
         }
       });
-    }, () => {
+    })
+    .catch(() => {
     });
   }
 

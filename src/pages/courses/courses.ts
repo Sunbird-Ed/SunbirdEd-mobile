@@ -698,7 +698,8 @@ export class CoursesPage implements OnInit {
       contentStatusArray: []
     };
 
-    this.contentService.importContent(option, (data: any) => {
+    this.contentService.importContent(option)
+     .then((data: any) => {
       data = JSON.parse(data);
       this.ngZone.run(() => {
         this.tabBarElement.style.display = 'none';
@@ -710,8 +711,8 @@ export class CoursesPage implements OnInit {
           }
         }
       });
-    },
-      () => {
+    })
+      .catch(() => {
         this.ngZone.run(() => {
           this.removeOverlayAndShowError();
         });

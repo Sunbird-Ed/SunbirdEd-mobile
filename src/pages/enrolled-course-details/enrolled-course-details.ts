@@ -536,7 +536,8 @@ export class EnrolledCourseDetailsPage {
       contentStatusArray: []
     };
 
-    this.contentService.importContent(option, (data: any) => {
+    this.contentService.importContent(option)
+     .then((data: any) => {
       data = JSON.parse(data);
       this.zone.run(() => {
         if (data.result && data.result[0].status === 'NOT_FOUND') {
@@ -578,8 +579,8 @@ export class EnrolledCourseDetailsPage {
           }
         }
       });
-    },
-      (error) => {
+    })
+      .catch((error) => {
         this.zone.run(() => {
           if (this.isDownloadStarted) {
             this.restoreDownloadState();

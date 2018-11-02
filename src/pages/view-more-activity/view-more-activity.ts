@@ -320,7 +320,8 @@ export class ViewMoreActivityPage implements OnInit {
       contentStatusArray: []
     };
 
-    this.contentService.importContent(option, (data: any) => {
+    this.contentService.importContent(option)
+     .then((data: any) => {
       data = JSON.parse(data);
       this.ngZone.run(() => {
         if (data.result && data.result.length) {
@@ -336,8 +337,8 @@ export class ViewMoreActivityPage implements OnInit {
           }
         }
       });
-    },
-      () => {
+    })
+      .catch(() => {
         this.ngZone.run(() => {
           this.showOverlay = false;
           this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
