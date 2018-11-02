@@ -430,7 +430,8 @@ export class EnrolledCourseDetailsPage {
      * Get batch details
      */
     getBatchDetails() {
-      this.courseService.getBatchDetails({ batchId: this.courseCardData.batchId }, (data: any) => {
+      this.courseService.getBatchDetails({ batchId: this.courseCardData.batchId })
+       .then((data: any) => {
         this.zone.run(() => {
           data = JSON.parse(data);
           if (data.result) {
@@ -470,14 +471,15 @@ export class EnrolledCourseDetailsPage {
                     this.batchexp = false;
                   }
                 }
-              }, (error) => {
+              })
+               .catch((error) => {
                 console.error('ERROR - ' + error);
               });
             this.getBatchCreatorName();
           }
         });
-      },
-        (error: any) => {
+      })
+        .catch((error: any) => {
           console.log('error while loading content details', error);
         });
     }
