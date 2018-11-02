@@ -920,7 +920,7 @@ export class ContentDetailsPage {
     } else {
       loader.dismiss();
       this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.content.contentType);
-      this.social.share('', '', '', url);
+      this.social.share(null, null, null, url);
     }
 
   }
