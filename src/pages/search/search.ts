@@ -109,6 +109,7 @@ export class SearchPage {
   isFirstLaunch = false;
   shouldGenerateEndTelemetry = false;
   backButtonFunc = undefined;
+  isSingleContent = false;
 
   @ViewChild(Navbar) navBar: Navbar;
   constructor(
@@ -215,7 +216,6 @@ export class SearchPage {
       this.childContent = content;
       this.checkParent(collection, content);
     } else {
-      // this.navCtrl.push(EnrolledCourseDetailsPage, {'content': content});
       this.showContentDetails(content, true);
     }
   }
@@ -252,6 +252,10 @@ export class SearchPage {
     } else if (content.mimeType === MimeType.COLLECTION) {
       if (this.isDialCodeSearch && !isRootContent) {
         params.buildPath = true;
+        if (this.isSingleContent) {
+          this.isSingleContent = false;
+          this.navCtrl.pop();
+        }
         this.navCtrl.push(QrCodeResultPage, params);
       } else {
         this.navCtrl.push(CollectionDetailsPage, params);
@@ -601,6 +605,7 @@ export class SearchPage {
     if (contentArray && contentArray.length === 1 && !isParentCheckStarted) {
       // this.navCtrl.pop();
       // this.showContentDetails(contentArray[0], true);
+      this.isSingleContent = true;
       this.openContent(contentArray[0], contentArray[0], 0);
       return;
     }
@@ -610,6 +615,10 @@ export class SearchPage {
       if (this.shouldGenerateEndTelemetry) {
         this.generateQRSessionEndEvent(this.source, this.dialCode);
       }
+      this.telemetryGeneratorService.generateImpressionTelemetry(ImpressionType.VIEW,
+        '',
+        PageId.DIAL_NOT_LINKED,
+        Environment.HOME);
       this.commonUtilService.showContentComingSoonAlert(this.source);
     } else {
       this.isEmptyResult = false;

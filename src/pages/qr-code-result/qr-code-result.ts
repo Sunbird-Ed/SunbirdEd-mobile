@@ -148,7 +148,8 @@ export class QrCodeResultPage {
 
   ionViewDidLoad() {
     this.telemetryGeneratorService.generateImpressionTelemetry(ImpressionType.VIEW, '',
-      PageId.DIAL_CODE_SCAN_RESULT, Environment.HOME);
+      PageId.DIAL_CODE_SCAN_RESULT,
+      !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : Environment.HOME);
 
     this.navBar.backButtonClick = () => {
       this.handleNavBackButton();
@@ -159,7 +160,7 @@ export class QrCodeResultPage {
       this.telemetryGeneratorService.generateInteractTelemetry(
         InteractType.TOUCH,
         InteractSubtype.DEVICE_BACK_CLICKED,
-        Environment.HOME,
+        !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : Environment.HOME,
         PageId.DIAL_CODE_SCAN_RESULT);
       this.navCtrl.pop();
       this.unregisterBackButton();
@@ -177,7 +178,7 @@ export class QrCodeResultPage {
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.NAV_BACK_CLICKED,
-      Environment.HOME,
+      !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : Environment.HOME,
       PageId.DIAL_CODE_SCAN_RESULT);
   }
 
@@ -187,7 +188,6 @@ export class QrCodeResultPage {
       request,
       (data: any) => {
         data = JSON.parse(data);
-        console.log('getChildContents data', data);
         this.parents.splice(0, this.parents.length);
         this.parents.push(data.result);
         this.results = [];
@@ -195,13 +195,12 @@ export class QrCodeResultPage {
         const contentData = JSON.parse(JSON.stringify(data.result.contentData));
         this.checkProfileData(contentData, this.profile);
         this.findContentNode(data.result);
-        this.paths.forEach(path => {
-          path.forEach(element => {
-            console.log(element.identifier);
-          });
-        });
 
         if (this.results && this.results.length === 0) {
+          this.telemetryGeneratorService.generateImpressionTelemetry(ImpressionType.VIEW,
+            '',
+            PageId.DIAL_LINKED_NO_CONTENT,
+            Environment.HOME);
           this.commonUtilService.showContentComingSoonAlert(this.source);
           this.navCtrl.pop();
         }
@@ -272,6 +271,11 @@ export class QrCodeResultPage {
         content: content
       });
     } else {
+      this.telemetryGeneratorService.generateInteractTelemetry(
+        InteractType.TOUCH,
+        Boolean(content.isAvailableLocally) ? InteractSubtype.PLAY_CLICKED : InteractSubtype.DOWNLOAD_PLAY_CLICKED,
+        !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : Environment.HOME,
+        PageId.DIAL_CODE_SCAN_RESULT);
       this.navCtrl.push(ContentDetailsPage, {
         content: content,
         depth: '1',
@@ -488,6 +492,12 @@ export class QrCodeResultPage {
   }
 
   skipSteps() {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.SKIP_CLICKED,
+      !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : Environment.HOME,
+      PageId.DIAL_CODE_SCAN_RESULT
+    );
     if (this.appGlobalService.isOnBoardingCompleted && this.appGlobalService.isProfileSettingsCompleted) {
       this.navCtrl.setRoot(TabsPage, {
         loginMode: 'guest'
