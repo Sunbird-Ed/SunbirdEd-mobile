@@ -41,10 +41,14 @@
         </div>
     </div>
  -->
-    <div class="school-recent" *ngIf="false">
-        <p class="bolder">Holy Rosary Higher Primary School</p>
-        <div>Block: Gandhi Nagar</div>
-        <div>District: Karwar | Uttar Kannada</div>
+    <div class="school-recent" *ngIf="profile?.organisations?.length > 0 ">
+        <p class="bolder">{{profile?.organisations[0].orgName}}</p>
+        <div *ngIf="orgDetails && orgDetails?.block?.name">Block: {{orgDetails?.block?.name}}</div>
+        <div *ngIf="orgDetails">
+            <span *ngIf="orgDetails && orgDetails?.district?.name">District: {{orgDetails?.district?.name}} </span>
+            <span *ngIf="orgDetails?.district?.name"> | </span> 
+            <span *ngIf="orgDetails?.state?.name">{{orgDetails?.state?.name}}</span>
+        </div>
     </div>
 
     <div class="contacts" *ngIf="profile?.phone || profile?.email ">
