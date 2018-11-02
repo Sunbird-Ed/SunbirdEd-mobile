@@ -50,7 +50,6 @@ import {
   GUEST_TEACHER_TABS
 } from '../../app/module.service';
 import { App, Events } from 'ionic-angular';
-import { Network } from '@ionic-native/network';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { Map } from '../../app/telemetryutil';
 import { Content } from 'ionic-angular';
@@ -102,8 +101,6 @@ export class UserAndGroupsPage {
     private preferences: SharedPreferences,
     private app: App,
     private oauth: OAuthService,
-    private network: Network,
-    private toastCtrl: ToastController,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private authService: AuthService,
     private loadingCtrl: LoadingController,
@@ -508,15 +505,15 @@ export class UserAndGroupsPage {
       (<any>window).splashscreen.clearPrefs();
       this.setAsCurrentUser(selectedUser, true);
     } else {
-      if (this.network.type === 'none') {
-        this.authService.endSession();
-        (<any>window).splashscreen.clearPrefs();
-        this.setAsCurrentUser(selectedUser, false);
-      } else {
+      if (this.commonUtilService.networkInfo.isNetworkAvailable) {
         this.oauth.doLogOut().then(() => {
           (<any>window).splashscreen.clearPrefs();
           this.setAsCurrentUser(selectedUser, false);
         });
+      } else {
+        this.authService.endSession();
+        (<any>window).splashscreen.clearPrefs();
+        this.setAsCurrentUser(selectedUser, false);
       }
     }
 

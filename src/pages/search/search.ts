@@ -36,7 +36,6 @@ import { GenieResponse } from '../settings/datasync/genieresponse';
 import { FilterPage } from './filters/filter';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
 import { ContentDetailsPage } from '../content-details/content-details';
-import { Network } from '@ionic-native/network';
 import { Map } from '../../app/telemetryutil';
 import * as _ from 'lodash';
 import {
@@ -122,7 +121,6 @@ export class SearchPage {
     private navCtrl: NavController,
     private zone: NgZone,
     private event: Events,
-    private network: Network,
     private fileUtil: FileUtil,
     private events: Events,
     private appGlobalService: AppGlobalService,
@@ -380,7 +378,7 @@ export class SearchPage {
       console.log('Error : ' + JSON.parse(error));
       this.zone.run(() => {
         this.showLoader = false;
-        if (this.network.type === 'none') {
+        if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
           this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
         }
       });
@@ -455,7 +453,7 @@ export class SearchPage {
 
     let isOfflineSearch = false;
 
-    if (this.network.type === 'none') {
+    if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
       isOfflineSearch = true;
     }
 
@@ -476,7 +474,7 @@ export class SearchPage {
     }, error => {
       this.zone.run(() => {
         this.showLoader = false;
-        if (this.network.type === 'none') {
+        if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
           this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
         }
       });
@@ -506,7 +504,7 @@ export class SearchPage {
     }, () => {
       this.zone.run(() => {
         this.showLoader = false;
-        if (this.network.type === 'none') {
+        if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
           this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
         }
       });
@@ -646,7 +644,7 @@ export class SearchPage {
 
   generateQRScanSuccessInteractEvent(dialCodeResult, dialCode) {
     const values = new Map();
-    values['networkAvailable'] = this.network.type === 'none' ? 'N' : 'Y';
+    values['networkAvailable'] = this.commonUtilService.networkInfo.isNetworkAvailable ? 'Y' : 'N';
     values['scannedData'] = dialCode;
     values['count'] = dialCodeResult.length;
 
@@ -738,7 +736,7 @@ export class SearchPage {
         if (this.queuedIdentifiers.length === 0) {
           this.showLoading = false;
           this.isDownloadStarted = false;
-          if (this.network.type !== 'none') {
+          if (this.commonUtilService.networkInfo.isNetworkAvailable) {
             this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
           } else {
             this.commonUtilService.showToast('ERROR_OFFLINE_MODE');

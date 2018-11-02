@@ -32,7 +32,6 @@ import {
 import { SearchPage } from '../search/search';
 import { ContentDetailsPage } from '../content-details/content-details';
 import * as _ from 'lodash';
-import { Network } from '@ionic-native/network';
 import {
   ProfileConstants,
   EventTopics,
@@ -128,7 +127,6 @@ export class CoursesPage implements OnInit {
     private events: Events,
     private contentService: ContentService,
     private preference: SharedPreferences,
-    private network: Network,
     private appGlobalService: AppGlobalService,
     private courseUtilService: CourseUtilService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
@@ -624,7 +622,7 @@ export class CoursesPage implements OnInit {
   }
 
   retryShowingPopularCourses(showRefresh = false) {
-    if (this.appGlobalService.networkInfo.isNetworkAvailable && showRefresh) {
+    if (this.commonUtilService.networkInfo.isNetworkAvailable && showRefresh) {
       this.getCourseTabData();
     }
   }
@@ -761,9 +759,5 @@ export class CoursesPage implements OnInit {
       });
     });
   }
-
-  // scrollBottomReached(event) {
-  //   console.log('scrollBottomReached courses');
-  // }
 
 }

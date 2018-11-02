@@ -50,7 +50,6 @@ import {
 } from '../../app/app.constant';
 import { CourseBatchesPage } from '../course-batches/course-batches';
 import { SocialSharing } from '@ionic-native/social-sharing';
-import { Network } from '@ionic-native/network';
 import { CourseUtilService } from '../../service/course-util.service';
 import { AppGlobalService } from '../../service/app-global.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
@@ -58,12 +57,6 @@ import { CommonUtilService } from '../../service/common-util.service';
 import { GUEST_TEACHER_SWITCH_TABS } from '../../app/module.service';
 import { ViewCreditsComponent } from '../../component/view-credits/view-credits';
 
-/**
- * Generated class for the EnrolledCourseDetailsPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
 
 @IonicPage()
 @Component({
@@ -208,7 +201,6 @@ export class EnrolledCourseDetailsPage {
     private social: SocialSharing,
     private loadingCtrl: LoadingController,
     private preference: SharedPreferences,
-    private network: Network,
     private courseUtilService: CourseUtilService,
     private platform: Platform,
     private appGlobalService: AppGlobalService,
@@ -609,7 +601,7 @@ export class EnrolledCourseDetailsPage {
   }
 
   downloadAllContent() {
-    if (this.appGlobalService.networkInfo.isNetworkAvailable) {
+    if (this.commonUtilService.networkInfo.isNetworkAvailable) {
       this.isDownloadStarted = true;
       this.downloadProgress = 0;
       this.importContent(this.downloadIdentifiers, true, true);
@@ -850,7 +842,7 @@ export class EnrolledCourseDetailsPage {
    * @param {string} id
    */
   navigateToBatchListPage(): void {
-    if (this.appGlobalService.networkInfo.isNetworkAvailable) {
+    if (this.commonUtilService.networkInfo.isNetworkAvailable) {
       this.navCtrl.push(CourseBatchesPage, { identifier: this.identifier });
     } else {
       this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
