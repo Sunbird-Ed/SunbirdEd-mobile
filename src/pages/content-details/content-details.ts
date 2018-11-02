@@ -847,13 +847,15 @@ export class ContentDetailsPage {
         progress: 100
       };
 
-      this.courseService.updateContentState(data, () => {
+      this.courseService.updateContentState(data)
+       .then(() => {
         this.zone.run(() => {
           this.events.publish(EventTopics.COURSE_STATUS_UPDATED_SUCCESSFULLY, {
             update: true
           });
         });
-      }, (error: any) => {
+      })
+       .catch((error: any) => {
         this.zone.run(() => {
           console.log('Error: while updating content state =>>>>>', error);
         });
