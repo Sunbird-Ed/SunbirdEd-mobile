@@ -34,7 +34,6 @@ import {
 } from '../../../app/module.service';
 import { generateInteractTelemetry } from '../../../app/telemetryutil';
 import { UserAndGroupsPage } from '../../user-and-groups/user-and-groups';
-import { Network } from '@ionic-native/network';
 import { TranslateService } from '@ngx-translate/core';
 import { ReportsPage } from '../../reports/reports';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
@@ -59,7 +58,6 @@ export class OverflowMenuComponent {
         private app: App,
         private profileService: ProfileService,
         private preferences: SharedPreferences,
-        private network: Network,
         private translate: TranslateService,
         private telemetryGeneratorService: TelemetryGeneratorService,
         private appGlobalService: AppGlobalService,
@@ -116,7 +114,7 @@ export class OverflowMenuComponent {
                 break;
             }
             case 'LOGOUT':
-                if (this.network.type === 'none') {
+                if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
                     this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
                 } else {
                     this.generateLogoutInteractTelemetry(InteractType.TOUCH,

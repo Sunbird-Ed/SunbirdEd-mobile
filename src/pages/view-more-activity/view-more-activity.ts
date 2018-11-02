@@ -1,4 +1,4 @@
-import { IonicPage, NavController, NavParams, LoadingController, Events } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Events } from 'ionic-angular';
 import { Component, NgZone, OnInit } from '@angular/core';
 import { ContentService, CourseService, PageId, Environment, ImpressionType, LogLevel } from 'sunbird';
 import * as _ from 'lodash';
@@ -7,14 +7,7 @@ import { ContentDetailsPage } from '../content-details/content-details';
 import { CourseUtilService } from '../../service/course-util.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../service/common-util.service';
-import { Network } from '@ionic-native/network';
 
-/**
- * Generated class for the ViewMoreActivityPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
 @IonicPage()
 @Component({
   selector: 'page-view-more-activity',
@@ -44,7 +37,7 @@ export class ViewMoreActivityPage implements OnInit {
   loadMoreBtn = true;
 
   /**
-	 * Offcet
+	 * Offset
 	 */
   offset = 0;
 
@@ -84,26 +77,40 @@ export class ViewMoreActivityPage implements OnInit {
 
   resumeContentData: any;
 
-  constructor(private navCtrl: NavController,
+  constructor(
+    private navCtrl: NavController,
     private navParams: NavParams,
-    private contentService: ContentService,
-    private ngZone: NgZone,
-    private loadingCtrl: LoadingController,
-    private courseService: CourseService,
-    private telemetryGeneratorService: TelemetryGeneratorService,
     private events: Events,
+    private ngZone: NgZone,
+    private contentService: ContentService,
+    private courseService: CourseService,
     private courseUtilService: CourseUtilService,
     private commonUtilService: CommonUtilService,
-    private network: Network) {
+    private telemetryGeneratorService: TelemetryGeneratorService
+  ) {
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
-    this.contentService = contentService;
-    this.ngZone = ngZone;
-    this.navCtrl = navCtrl;
-    this.navParams = navParams;
-    this.loadingCtrl = loadingCtrl;
-    this.courseService = courseService;
-
     this.subscribeUtilityEvents();
+  }
+
+  /**
+	 * Angular life cycle hooks
+	 */
+  ngOnInit() {
+    this.tabBarElement.style.display = 'none';
+  }
+
+  /**
+	 * Ionic default life cycle hook
+	 */
+  ionViewWillEnter(): void {
+    this.tabBarElement.style.display = 'none';
+    this.searchQuery = this.navParams.get('requestParams');
+    if (this.headerTitle !== this.navParams.get('headerTitle')) {
+      this.headerTitle = this.navParams.get('headerTitle');
+      this.offset = 0;
+      this.loadMoreBtn = true;
+      this.mapper();
+    }
   }
 
   subscribeUtilityEvents() {
@@ -125,7 +132,7 @@ export class ViewMoreActivityPage implements OnInit {
 	 * Search content
 	 */
   search() {
-    const loader = this.getLoader();
+    const loader = this.commonUtilService.getLoader();
     loader.present();
 
     this.contentService.getSearchCriteriaFromRequest(this.searchQuery, (success: any) => {
@@ -152,11 +159,11 @@ export class ViewMoreActivityPage implements OnInit {
         this.generateImpressionEvent();
         this.generateLogEvent(data.result);
       }, () => {
-        console.log('Error: while fetchig view more content');
+        console.error('Error: while fetching view more content');
         loader.dismiss();
       });
     }, () => {
-      console.log('Error: while fetchig view more content');
+      console.error('Error: while fetching view more content');
       loader.dismiss();
     });
   }
@@ -189,25 +196,13 @@ export class ViewMoreActivityPage implements OnInit {
   loadMore() {
     this.isLoadMore = true;
     this.offset = this.offset + this.searchLimit;
-    if (this.network.type === 'none') {
+    if (this.commonUtilService.networkInfo.isNetworkAvailable) {
       this.commonUtilService.showToast(this.commonUtilService.translateMessage('NO_INTERNET_TITLE'));
     } else {
       this.mapper();
     }
   }
-  /**
-	 * Ionic default life cycle hook
-	 */
-  ionViewWillEnter(): void {
-    this.tabBarElement.style.display = 'none';
-    this.searchQuery = this.navParams.get('requestParams');
-    if (this.headerTitle !== this.navParams.get('headerTitle')) {
-      this.headerTitle = this.navParams.get('headerTitle');
-      this.offset = 0;
-      this.loadMoreBtn = true;
-      this.mapper();
-    }
-  }
+
 
   /**
 	 * Mapper to call api based on page.Layout name
@@ -237,7 +232,7 @@ export class ViewMoreActivityPage implements OnInit {
 	 * Get enrolled courses
 	 */
   getEnrolledCourse() {
-    const loader = this.getLoader();
+    const loader = this.commonUtilService.getLoader();
     loader.present();
     this.pageType = 'enrolledCourse';
     const option = {
@@ -254,7 +249,7 @@ export class ViewMoreActivityPage implements OnInit {
       loader.dismiss();
     })
      .catch((error: any) => {
-      console.log('error while loading enrolled courses', error);
+      console.error('error while loading enrolled courses', error);
       loader.dismiss();
     });
   }
@@ -263,7 +258,7 @@ export class ViewMoreActivityPage implements OnInit {
 	 * Get local content
 	 */
   getLocalContents() {
-    const loader = this.getLoader();
+    const loader = this.commonUtilService.getLoader();
     loader.present();
     const requestParams = {
       contentTypes: ContentType.FOR_LIBRARY_TAB
@@ -395,22 +390,6 @@ export class ViewMoreActivityPage implements OnInit {
       this.isLoadMore = false;
       this.pageType = this.pageType;
       this.showOverlay = false;
-    });
-  }
-
-  /**
-	 * Angular life cycle hooks
-	 */
-  ngOnInit() {
-    this.tabBarElement.style.display = 'none';
-  }
-  /**
-	 * Function to get loader instance
-	 */
-  getLoader(): any {
-    return this.loadingCtrl.create({
-      duration: 30000,
-      spinner: 'crescent'
     });
   }
 }

@@ -35,7 +35,6 @@ import {
   PreferenceKey,
   PageName
 } from '../../app/app.constant';
-import { Network } from '@ionic-native/network';
 import {
   PageFilterCallback,
   PageFilter
@@ -54,54 +53,30 @@ import { CommonUtilService } from '../../service/common-util.service';
 export class ResourcesPage implements OnInit, AfterViewInit {
 
   pageLoadedSuccess = false;
-
   storyAndWorksheets: Array<any>;
   selectedValue: Array<string> = [];
-
   guestUser = false;
-
   showSignInCard = false;
-
-  isNetworkAvailable: boolean;
   showWarning = false;
-
-  /**
-	 * Contains local resources
-	 */
   localResources: Array<any>;
-
   userId: string;
-  /**
-	 * Loader
-	 */
   showLoader = false;
 
   /**
 	 * Flag to show latest and popular course loader
 	 */
   pageApiLoader = true;
-
   isOnBoardingCardCompleted = false;
   public source = PageId.LIBRARY;
-
   resourceFilter: any;
-
   appliedFilter: any;
-
   filterIcon = './assets/imgs/ic_action_filter.png';
-
   selectedLanguage = 'en';
-
-  // noInternetConnection: boolean = false;
   audienceFilter = [];
-
   profile: any;
   appLabel: string;
-
   mode = 'soft';
-
   isFilterApplied = false;
-
   pageFilterCallBack: PageFilterCallback;
 
   constructor(
@@ -114,7 +89,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     private events: Events,
     private preference: SharedPreferences,
     private zone: NgZone,
-    private network: Network,
     private appGlobalService: AppGlobalService,
     private appVersion: AppVersion,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
@@ -128,19 +102,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         }
       });
     this.subscribeUtilityEvents();
-
-    if (this.network.type === 'none') {
-      this.isNetworkAvailable = false;
-    } else {
-      this.isNetworkAvailable = true;
-    }
-    this.network.onDisconnect().subscribe(() => {
-      this.isNetworkAvailable = false;
-    });
-    this.network.onConnect().subscribe(() => {
-      this.isNetworkAvailable = true;
-    });
-
     this.appVersion.getAppName()
       .then((appName: any) => {
         this.appLabel = appName;
@@ -389,8 +350,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       that.ngZone.run(() => {
         this.pageApiLoader = false;
         if (error === 'CONNECTION_ERROR') {
-          // this.noInternetConnection = true;
-          this.isNetworkAvailable = false;
         } else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
           if (!isAfterLanguageChange) { this.commonUtilService.showToast('ERROR_FETCHING_DATA'); }
         }
@@ -490,10 +449,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       this.getPopularContent();
     }
     this.subscribeGenieEvents();
-
-    if (this.network.type === 'none') {
-      this.isNetworkAvailable = false;
-    }
   }
 
   subscribeGenieEvents() {
@@ -527,7 +482,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     }
 
     this.getPopularContent(false);
-    this.checkNetworkStatus();
   }
 
 
@@ -646,20 +600,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       this.showWarning = false;
     }, 3000);
   }
-
   checkNetworkStatus(showRefresh = false) {
-    if (this.network.type === 'none') {
-      this.isNetworkAvailable = false;
-    } else {
-      this.isNetworkAvailable = true;
-      if (showRefresh) {
-        this.swipeDownToRefresh();
-      }
+    if (this.commonUtilService.networkInfo.isNetworkAvailable && showRefresh) {
+      this.swipeDownToRefresh();
     }
   }
-
-  // scrollBottomReached(event) {
-  //   console.log('scrollBottomReached courses');
-  // }
-
 }

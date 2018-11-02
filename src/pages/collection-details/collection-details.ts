@@ -49,18 +49,11 @@ import {
   PreferenceKey
 } from '../../app/app.constant';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
-import { Network } from '@ionic-native/network';
 import { AppGlobalService } from '../../service/app-global.service';
 import { CommonUtilService } from '../../service/common-util.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { ViewCreditsComponent } from '../../component/view-credits/view-credits';
 
-/**
- * Generated class for the CollectionDetailsPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
 
 @IonicPage()
 @Component({
@@ -228,7 +221,6 @@ export class CollectionDetailsPage {
     public social: SocialSharing,
     public shareUtil: ShareUtil,
     public buildParamService: BuildParamService,
-    public network: Network,
     public preference: SharedPreferences,
     public appGlobalService: AppGlobalService,
     private commonUtilService: CommonUtilService,
@@ -956,7 +948,7 @@ export class CollectionDetailsPage {
   }
 
   showDownloadConfirmatioAlert(myEvent) {
-    if (this.appGlobalService.networkInfo.isNetworkAvailable) {
+    if (this.commonUtilService.networkInfo.isNetworkAvailable) {
       const popover = this.popoverCtrl.create(ConfirmAlertComponent, {}, {
         cssClass: 'confirm-alert-box'
       });

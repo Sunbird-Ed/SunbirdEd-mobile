@@ -11,7 +11,6 @@ import {
     ContentDetailRequest,
     ContentService
 } from 'sunbird';
-import { Network } from '@ionic-native/network';
 import { SearchPage } from '../search/search';
 import {
     ContentType,
@@ -29,7 +28,6 @@ export class QRScannerResultHandler {
     source: string;
     constructor(
         private app: App,
-        private network: Network,
         private contentService: ContentService,
         private commonUtilService: CommonUtilService,
         private telemetryGeneratorService: TelemetryGeneratorService) {
@@ -78,7 +76,7 @@ export class QRScannerResultHandler {
             this.navigateToDetailsPage(data.result,
                 this.getCorRelationList(data.result.identifier, QRScannerResultHandler.CORRELATION_TYPE));
         }, (error) => {
-            if (this.network.type === 'none') {
+            if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
                 this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
             } else {
                 this.commonUtilService.showToast('UNKNOWN_QR');
@@ -129,7 +127,7 @@ export class QRScannerResultHandler {
 
     generateQRScanSuccessInteractEvent(scannedData, action, dialCode) {
         const values = new Map();
-        values['networkAvailable'] = this.network.type === 'none' ? 'N' : 'Y';
+        values['networkAvailable'] = this.commonUtilService.networkInfo.isNetworkAvailable ? 'Y' : 'N';
         values['scannedData'] = scannedData;
         values['action'] = action;
         values['compatibile'] = (action === 'SearchResult' || action === 'ContentDetail') ? 1 : 0;

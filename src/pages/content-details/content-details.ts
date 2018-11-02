@@ -732,7 +732,7 @@ export class ContentDetailsPage {
    */
   downloadContent() {
     this.zone.run(() => {
-      if (this.appGlobalService.networkInfo.isNetworkAvailable) {
+      if (this.commonUtilService.networkInfo.isNetworkAvailable) {
         this.downloadProgress = '0';
         this.isDownloadStarted = true;
         this.importContent([this.identifier], this.isChildContent);

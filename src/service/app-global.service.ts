@@ -27,11 +27,6 @@ import {
     PreferenceKey
 } from '../app/app.constant';
 import { TelemetryGeneratorService } from './telemetry-generator.service';
-import { Network } from '@ionic-native/network';
-
-export interface NetworkInfo {
-    isNetworkAvailable: boolean;
-}
 
 @Injectable()
 export class AppGlobalService implements OnDestroy {
@@ -44,9 +39,7 @@ export class AppGlobalService implements OnDestroy {
         private popoverCtrl: PopoverController,
         private buildParamService: BuildParamService,
         private framework: FrameworkService,
-        private telemetryGeneratorService: TelemetryGeneratorService,
-        private network: Network,
-        private zone: NgZone
+        private telemetryGeneratorService: TelemetryGeneratorService
     ) {
 
         this.initValues();
@@ -82,11 +75,6 @@ export class AppGlobalService implements OnDestroy {
     isProfileSettingsCompleted: boolean;
     isOnBoardingCompleted = false;
     session: any;
-    networkInfo: NetworkInfo = {
-        isNetworkAvailable: false
-    };
-    connectSubscription: any;
-    disconnectSubscription: any;
     public averageTime = 0;
     public averageScore = 0;
     private frameworkData = [];
@@ -423,8 +411,6 @@ export class AppGlobalService implements OnDestroy {
     }
 
     private listenForEvents() {
-
-        this.handleNetworkAvailability();
         this.event.subscribe(AppGlobalService.USER_INFO_UPDATED, () => {
             this.initValues();
         });
@@ -559,36 +545,8 @@ export class AppGlobalService implements OnDestroy {
         });
     }
 
-    /**
-     * Its check for the network availability
-     * @returns {boolean} status of the network
-     */
-    handleNetworkAvailability(): boolean {
-        const updateNetworkAvailabilityStatus = (status: boolean) => {
-            this.zone.run(() => {
-                this.networkInfo.isNetworkAvailable = status;
-            });
-        };
-
-        if (this.network.type === 'none') {
-            updateNetworkAvailabilityStatus(false);
-        } else {
-            updateNetworkAvailabilityStatus(true);
-        }
-
-        this.connectSubscription = this.network.onDisconnect().subscribe(() => {
-            updateNetworkAvailabilityStatus(false);
-        });
-        this.disconnectSubscription = this.network.onConnect().subscribe(() => {
-            updateNetworkAvailabilityStatus(true);
-        });
-
-        return this.networkInfo.isNetworkAvailable;
-    }
 
     ngOnDestroy() {
-        this.connectSubscription.unsubscribe();
-        this.disconnectSubscription.unsubscribe();
         this.event.unsubscribe(AppGlobalService.USER_INFO_UPDATED);
         this.event.unsubscribe('refresh:profile');
     }

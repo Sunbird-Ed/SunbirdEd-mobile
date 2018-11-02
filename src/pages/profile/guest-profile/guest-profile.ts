@@ -17,7 +17,6 @@ import {
   Environment,
 } from 'sunbird';
 import { UserTypeSelectionPage } from '../../user-type-selection/user-type-selection';
-import { Network } from '@ionic-native/network';
 import { FormAndFrameworkUtilService } from '../formandframeworkutil.service';
 import { AppGlobalService } from '../../../service/app-global.service';
 import { MenuOverflow, PreferenceKey } from '../../../app/app.constant';
@@ -48,7 +47,6 @@ export class GuestProfilePage {
 
   constructor(
     private navCtrl: NavController,
-    private network: Network,
     private popoverCtrl: PopoverController,
     private profileService: ProfileService,
     private events: Events,
@@ -89,18 +87,6 @@ export class GuestProfilePage {
     } else {
       this.showSignInCard = false;
     }
-
-    if (this.network.type === 'none') {
-      this.isNetworkAvailable = false;
-    } else {
-      this.isNetworkAvailable = true;
-    }
-    this.network.onDisconnect().subscribe((data) => {
-      this.isNetworkAvailable = false;
-    });
-    this.network.onConnect().subscribe((data) => {
-      this.isNetworkAvailable = true;
-    });
   }
 
   ionViewDidLoad() {
