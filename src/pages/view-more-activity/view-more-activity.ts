@@ -245,18 +245,18 @@ export class ViewMoreActivityPage implements OnInit {
       refreshEnrolledCourses: false
     };
     this.courseService.getEnrolledCourses(option)
-      .then((data: any) => {
-        if (data) {
-          data = JSON.parse(data);
-          this.searchList = data.result.courses ? data.result.courses : [];
-          this.loadMoreBtn = false;
-        }
-        loader.dismiss();
-      })
-      .catch((error: any) => {
-        console.log('error while loading enrolled courses', error);
-        loader.dismiss();
-      });
+     .then((data: any) => {
+      if (data) {
+        data = JSON.parse(data);
+        this.searchList = data.result.courses ? data.result.courses : [];
+        this.loadMoreBtn = false;
+      }
+      loader.dismiss();
+    })
+     .catch((error: any) => {
+      console.log('error while loading enrolled courses', error);
+      loader.dismiss();
+    });
   }
 
   /**
@@ -292,27 +292,27 @@ export class ViewMoreActivityPage implements OnInit {
   getContentDetails(content) {
     const identifier = content.contentId || content.identifier;
     this.contentService.getContentDetail({ contentId: identifier })
-      .then((data: any) => {
-        data = JSON.parse(data);
-        if (Boolean(data.result.isAvailableLocally)) {
-          this.navCtrl.push(ContentDetailsPage, {
-            content: { identifier: content.lastReadContentId },
-            depth: '1',
-            contentState: {
-              batchId: content.batchId ? content.batchId : '',
-              courseId: identifier
-            },
-            isResumedCourse: true,
-            isChildContent: true,
-            resumedCourseCardData: this.resumeContentData
-          });
-        } else {
-          this.subscribeGenieEvent();
-          this.showOverlay = true;
-          this.importContent([identifier], false);
-        }
+    .then((data: any) => {
+      data = JSON.parse(data);
+      if (Boolean(data.result.isAvailableLocally)) {
+        this.navCtrl.push(ContentDetailsPage, {
+          content: { identifier: content.lastReadContentId },
+          depth: '1',
+          contentState: {
+            batchId: content.batchId ? content.batchId : '',
+            courseId: identifier
+          },
+          isResumedCourse: true,
+          isChildContent: true,
+          resumedCourseCardData: this.resumeContentData
+        });
+      } else {
+        this.subscribeGenieEvent();
+        this.showOverlay = true;
+        this.importContent([identifier], false);
+      }
 
-      })
+    })
       .catch((error: any) => {
         console.log(error);
       });
