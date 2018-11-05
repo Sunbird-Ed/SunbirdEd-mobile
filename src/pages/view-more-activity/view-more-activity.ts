@@ -135,11 +135,11 @@ export class ViewMoreActivityPage implements OnInit {
     const loader = this.commonUtilService.getLoader();
     loader.present();
 
-    this.contentService.getSearchCriteriaFromRequest(this.searchQuery, (success: any) => {
+    this.contentService.getSearchCriteriaFromRequest(this.searchQuery).then((success: any) => {
       const reqBody = JSON.parse(success);
       reqBody.limit = 10;
       reqBody.offset = this.offset === 0 ? reqBody.offset : this.offset;
-      this.contentService.searchContent(reqBody, true, false, false, (data: any) => {
+      this.contentService.searchContent(reqBody, true, false, false) .then((data: any) => {
         data = JSON.parse(data);
         this.ngZone.run(() => {
           if (data.result && data.result.contentDataList) {
@@ -158,11 +158,11 @@ export class ViewMoreActivityPage implements OnInit {
         });
         this.generateImpressionEvent();
         this.generateLogEvent(data.result);
-      }, () => {
+      }) .catch(() => {
         console.error('Error: while fetching view more content');
         loader.dismiss();
       });
-    }, () => {
+    }) .catch(() => {
       console.error('Error: while fetching view more content');
       loader.dismiss();
     });
@@ -286,7 +286,8 @@ export class ViewMoreActivityPage implements OnInit {
 
   getContentDetails(content) {
     const identifier = content.contentId || content.identifier;
-    this.contentService.getContentDetail({ contentId: identifier }, (data: any) => {
+    this.contentService.getContentDetail({ contentId: identifier })
+    .then((data: any) => {
       data = JSON.parse(data);
       if (Boolean(data.result.isAvailableLocally)) {
         this.navCtrl.push(ContentDetailsPage, {
@@ -306,8 +307,8 @@ export class ViewMoreActivityPage implements OnInit {
         this.importContent([identifier], false);
       }
 
-    },
-      (error: any) => {
+    })
+      .catch((error: any) => {
         console.log(error);
       });
   }
@@ -319,7 +320,8 @@ export class ViewMoreActivityPage implements OnInit {
       contentStatusArray: []
     };
 
-    this.contentService.importContent(option, (data: any) => {
+    this.contentService.importContent(option)
+     .then((data: any) => {
       data = JSON.parse(data);
       this.ngZone.run(() => {
         if (data.result && data.result.length) {
@@ -335,8 +337,8 @@ export class ViewMoreActivityPage implements OnInit {
           }
         }
       });
-    },
-      () => {
+    })
+      .catch(() => {
         this.ngZone.run(() => {
           this.showOverlay = false;
           this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');

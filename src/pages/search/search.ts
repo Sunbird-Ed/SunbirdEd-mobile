@@ -283,7 +283,7 @@ export class SearchPage {
     this.showLoader = true;
     this.responseData.result.filterCriteria.mode = 'hard';
 
-    this.contentService.searchContent(this.responseData.result.filterCriteria, true, false, false, (responseData) => {
+    this.contentService.searchContent(this.responseData.result.filterCriteria, true, false, false) .then((responseData: any) => {
 
       this.zone.run(() => {
         const response: GenieResponse = JSON.parse(responseData);
@@ -308,7 +308,7 @@ export class SearchPage {
         }
         this.showLoader = false;
       });
-    }, (error) => {
+    }) .catch((error) => {
       console.log('Error : ' + JSON.stringify(error));
       this.zone.run(() => {
         this.showLoader = false;
@@ -354,7 +354,7 @@ export class SearchPage {
 
     }
 
-    this.contentService.searchContent(contentSearchRequest, false, false, false, (responseData) => {
+    this.contentService.searchContent(contentSearchRequest, false, false, false) .then((responseData: any) => {
 
       this.zone.run(() => {
         const response: GenieResponse = JSON.parse(responseData);
@@ -374,7 +374,7 @@ export class SearchPage {
         this.showEmptyMessage = this.searchContentResult.length === 0 ? true : false;
         this.showLoader = false;
       });
-    }, (error) => {
+    }) .catch((error) => {
       console.log('Error : ' + JSON.parse(error));
       this.zone.run(() => {
         this.showLoader = false;
@@ -489,7 +489,8 @@ export class SearchPage {
       offlineSearch: isOfflineSearch
     };
 
-    this.contentService.searchContent(contentSearchRequest, false, true, !this.appGlobalService.isUserLoggedIn(), (responseData) => {
+    this.contentService.searchContent(contentSearchRequest, false, true, !this.appGlobalService.isUserLoggedIn())
+    .then((responseData: any) => {
       this.zone.run(() => {
         const response: GenieResponse = JSON.parse(responseData);
         this.responseData = response;
@@ -501,7 +502,7 @@ export class SearchPage {
 
         this.showLoader = false;
       });
-    }, () => {
+    }) .catch(() => {
       this.zone.run(() => {
         this.showLoader = false;
         if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
@@ -692,7 +693,8 @@ export class SearchPage {
       contentId: identifier
     };
 
-    this.contentService.getContentDetail(contentRequest, (data: any) => {
+    this.contentService.getContentDetail(contentRequest)
+     .then((data: any) => {
       data = JSON.parse(data);
       if (data && data.result) {
         if (data.result.isAvailableLocally) {
@@ -720,7 +722,8 @@ export class SearchPage {
       contentStatusArray: []
     };
     // Call content service
-    this.contentService.importContent(option, (data: any) => {
+    this.contentService.importContent(option)
+    .then((data: any) => {
       this.zone.run(() => {
         data = JSON.parse(data);
 
@@ -742,7 +745,8 @@ export class SearchPage {
           }
         }
       });
-    }, () => {
+    })
+    .catch(() => {
     });
   }
 

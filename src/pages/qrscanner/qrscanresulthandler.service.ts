@@ -71,11 +71,12 @@ export class QRScannerResultHandler {
             contentId: contentId
         };
 
-        this.contentService.getContentDetail(request, (response) => {
+        this.contentService.getContentDetail(request)
+        .then((response: any) => {
             const data = JSON.parse(response);
             this.navigateToDetailsPage(data.result,
                 this.getCorRelationList(data.result.identifier, QRScannerResultHandler.CORRELATION_TYPE));
-        }, (error) => {
+        }) .catch((error) => {
             if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
                 this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
             } else {

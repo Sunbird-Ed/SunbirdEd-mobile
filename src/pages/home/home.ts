@@ -240,9 +240,10 @@ export class HomePage {
       'do_2123823398249594881455': contentImport
     };
     console.log('Hello ' + JSON.stringify(contentImportRequest));
-    this.contentService.importContent(contentImportRequest, (response) => {
+    this.contentService.importContent(contentImportRequest)
+    .then((response) => {
       console.log('Home : ' + response);
-    }, (error) => {
+    }) .then((error) => {
       console.log('Home : ' + error);
     });
   }
