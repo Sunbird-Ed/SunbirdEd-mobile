@@ -199,8 +199,9 @@
 			'DOWNLOAD_ALL_CONTENT' | translate }} ({{(downloadSize | fileSize)
 			}})
 		</button>
-		<button *ngIf="isDownloadStarted" ion-button block outline>{{ 'DOWNLOADING_2' | translate }}... {{ currentCount }} /
-			{{ queuedIdentifiers.length }}</button>
+		<button *ngIf="isDownloadStarted" ion-button block outline [ngStyle]="{'background': '-webkit-linear-gradient(left, #DBECFF '  +(currentCount/queuedIdentifiers.length)*100+ '%, white 0%)'}">
+			{{ 'DOWNLOADING_2' | translate }}... {{ currentCount }} / {{ queuedIdentifiers.length }}
+		</button>
 	</ion-toolbar>
 </ion-footer>
 
