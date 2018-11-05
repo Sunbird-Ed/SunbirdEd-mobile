@@ -99,6 +99,7 @@ export class QrCodeResultPage {
   gradeList: Array<any> = [];
   subjectList: Array<any> = [];
   profileCategories: any;
+  isSingleContent = false;
 
   @ViewChild(Navbar) navBar: Navbar;
   constructor(
@@ -129,7 +130,7 @@ export class QrCodeResultPage {
     this.corRelationList = this.navParams.get('corRelation');
     this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
     this.source = this.navParams.get('source');
-
+    this.isSingleContent = this.navParams.get('isSingleContent');
 
     // check for parent content
     this.parentContent = this.navParams.get('parentContent');
@@ -152,18 +153,11 @@ export class QrCodeResultPage {
       !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : Environment.HOME);
 
     this.navBar.backButtonClick = () => {
-      this.handleNavBackButton();
-      this.navCtrl.pop();
+      this.handleBackButton(InteractSubtype.NAV_BACK_CLICKED);
     };
 
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
-      this.telemetryGeneratorService.generateInteractTelemetry(
-        InteractType.TOUCH,
-        InteractSubtype.DEVICE_BACK_CLICKED,
-        !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : Environment.HOME,
-        PageId.DIAL_CODE_SCAN_RESULT);
-      this.navCtrl.pop();
-      this.unregisterBackButton();
+      this.handleBackButton(InteractSubtype.DEVICE_BACK_CLICKED);
     }, 10);
   }
 
@@ -174,13 +168,20 @@ export class QrCodeResultPage {
     }
   }
 
-  handleNavBackButton() {
+  handleBackButton(clickSource) {
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
-      InteractSubtype.NAV_BACK_CLICKED,
+      clickSource,
       !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : Environment.HOME,
       PageId.DIAL_CODE_SCAN_RESULT);
-  }
+      if (this.isSingleContent && this.appGlobalService.isProfileSettingsCompleted) {
+        this.navCtrl.setRoot(TabsPage, {
+          loginMode: 'guest'
+        });
+      } else {
+        this.navCtrl.pop();
+      }
+    }
 
   getChildContents() {
     const request: ChildContentRequest = { contentId: this.identifier };
@@ -370,21 +371,23 @@ export class QrCodeResultPage {
     if (!this.profile.medium || !this.profile.medium.length) {
       this.profile.medium = [];
     }
-    if (!this.profile.subject || !this.profile.subject.length) {
+/*     if (!this.profile.subject || !this.profile.subject.length) {
       this.profile.subject = [];
     }
-    switch (index) {
+ */    switch (index) {
       case 0:
         this.profile.syllabus = [data.framework];
         this.profile.board = [data.board];
         this.profile.medium = [data.medium];
-        this.profile.subject = [data.subject];
+        // this.profile.subject = [data.subject];
+        this.profile.subject = [];
         this.setGrade(true, data.gradeLevel);
         break;
       case 1:
         this.profile.board = [data.board];
         this.profile.medium = [data.medium];
-        this.profile.subject = [data.subject];
+        // this.profile.subject = [data.subject];
+        this.profile.subject = [];
         this.setGrade(true, data.gradeLevel);
         break;
       case 2:
@@ -393,10 +396,10 @@ export class QrCodeResultPage {
       case 3:
         this.setGrade(false, data.gradeLevel);
         break;
-      case 4:
+/*       case 4:
         this.profile.subject.push(data.subject);
         break;
-    }
+ */    }
     this.editProfile();
   }
 
@@ -420,16 +423,16 @@ export class QrCodeResultPage {
                   this.boardList = _.find(this.categories, (category) => category.code === 'board').terms;
                   this.mediumList = _.find(this.categories, (category) => category.code === 'medium').terms;
                   this.gradeList = _.find(this.categories, (category) => category.code === 'gradeLevel').terms;
-                  this.subjectList = _.find(this.categories, (category) => category.code === 'subject').terms;
+                  //                  this.subjectList = _.find(this.categories, (category) => category.code === 'subject').terms;
                   if (data.board) {
                     data.board = this.findCode(this.boardList, data, 'board');
                   }
                   if (data.medium) {
                     data.medium = this.findCode(this.mediumList, data, 'medium');
                   }
-                  if (data.subject) {
-                    data.subject = this.findCode(this.subjectList, data, 'subject');
-                  }
+                  /*                   if (data.subject) {
+                                      data.subject = this.findCode(this.subjectList, data, 'subject');
+                                    } */
                   if (data.gradeLevel && data.gradeLevel.length) {
                     data.gradeLevel = _.map(data.gradeLevel, (dataGrade) => {
                       return _.find(this.gradeList, (grade) => grade.name === dataGrade).code;
@@ -460,14 +463,14 @@ export class QrCodeResultPage {
                             if (!existingGrade) {
                               this.setCurrentProfile(3, data);
                             }
-                            let existingSubject = false;
+/*                             let existingSubject = false;
                             existingSubject = _.find(profile.subject, (subject) => {
                               return subject === data.subject;
                             });
                             if (!existingSubject) {
                               this.setCurrentProfile(4, data);
                             }
-                          }
+ */                          }
                         }
                       } else {
                         this.setCurrentProfile(1, data);

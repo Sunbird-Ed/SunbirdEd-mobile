@@ -233,13 +233,15 @@ export class SearchPage {
         corRelation: this.corRelationList,
         source: this.source,
         shouldGenerateEndTelemetry: this.shouldGenerateEndTelemetry,
-        parentContent: this.parentContent
+        parentContent: this.parentContent,
+        isSingleContent: this.isSingleContent
       };
     } else {
       params = {
         content: content,
         corRelation: this.corRelationList,
-        parentContent: this.parentContent
+        parentContent: this.parentContent,
+        isSingleContent: this.isSingleContent
       };
     }
 
