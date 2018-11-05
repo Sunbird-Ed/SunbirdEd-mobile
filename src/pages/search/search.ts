@@ -465,13 +465,13 @@ export class SearchPage {
     pageAssembleCriteria.name = PageName.DIAL_CODE;
     pageAssembleCriteria.filters = pagetAssemblefilter;
 
-    this.pageService.getPageAssemble(pageAssembleCriteria, res => {
+    this.pageService.getPageAssemble(pageAssembleCriteria) .then((res: any) => {
       this.zone.run(() => {
         const response = JSON.parse(res);
         const sections = JSON.parse(response.sections);
         // TODO
       });
-    }, error => {
+    }) .catch(error => {
       this.zone.run(() => {
         this.showLoader = false;
         if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
