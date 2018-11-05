@@ -751,10 +751,10 @@ export class CoursesPage implements OnInit {
 
   cancelDownload() {
     this.ngZone.run(() => {
-      this.contentService.cancelDownload(this.resumeContentData.contentId || this.resumeContentData.identifier, () => {
+      this.contentService.cancelDownload(this.resumeContentData.contentId || this.resumeContentData.identifier) .then(() => {
         this.tabBarElement.style.display = 'flex';
         this.showOverlay = false;
-      }, () => {
+      }) .catch(() => {
         this.tabBarElement.style.display = 'flex';
         this.showOverlay = false;
       });

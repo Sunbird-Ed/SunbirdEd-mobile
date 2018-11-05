@@ -745,7 +745,7 @@ export class ContentDetailsPage {
   }
 
   cancelDownload() {
-    this.contentService.cancelDownload(this.identifier, () => {
+    this.contentService.cancelDownload(this.identifier) .then(() => {
       this.zone.run(() => {
         this.isDownloadStarted = false;
         this.downloadProgress = '';
@@ -753,7 +753,7 @@ export class ContentDetailsPage {
           this.content.downloadable = false;
         }
       });
-    }, (error: any) => {
+    }) .catch((error: any) => {
       this.zone.run(() => {
         console.log('Error: download error =>>>>>', error);
       });

@@ -160,13 +160,13 @@ export class ContentRatingAlertComponent {
       message: ''
     };
 
-    this.contentService.sendFeedback(option, (res: any) => {
+    this.contentService.sendFeedback(option) .then((res: any) => {
       console.log('success:', res);
       viewDismissData.message = 'rating.success';
       this.viewCtrl.dismiss(viewDismissData);
       this.showMessage(this.translateLangConst('THANK_FOR_RATING'));
-    },
-      (data: any) => {
+    })
+      .catch((data: any) => {
         console.log('error:', data);
         viewDismissData.message = 'rating.error';
         // TODO: ask anil to show error message(s)

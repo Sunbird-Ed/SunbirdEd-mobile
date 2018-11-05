@@ -814,11 +814,11 @@ export class SearchPage {
   }
 
   cancelDownload() {
-    this.contentService.cancelDownload(this.parentContent.identifier, () => {
+    this.contentService.cancelDownload(this.parentContent.identifier) .then(() => {
       this.zone.run(() => {
         this.showLoading = false;
       });
-    }, () => {
+    }) .catch(() => {
       this.zone.run(() => {
         this.showLoading = false;
       });

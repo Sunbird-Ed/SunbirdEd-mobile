@@ -624,7 +624,8 @@ export class EnrolledCourseDetailsPage {
       option.level = 1;
     }
 
-    this.contentService.getChildContents(option, (data: any) => {
+    this.contentService.getChildContents(option)
+     .then((data: any) => {
       data = JSON.parse(data);
       console.log('enrolled course data', data);
       console.log(data.result.isAvailableLocally);
@@ -640,8 +641,8 @@ export class EnrolledCourseDetailsPage {
         }
         this.showChildrenLoader = false;
       });
-    },
-      (error: string) => {
+    })
+      .catch((error: string) => {
         console.log('Error: while fetching child contents ===>>>', error);
         this.zone.run(() => {
           this.showChildrenLoader = false;
@@ -687,12 +688,12 @@ export class EnrolledCourseDetailsPage {
 
   cancelDownload() {
     this.telemetryGeneratorService.generateCancelDownloadTelemetry(this.course);
-    this.contentService.cancelDownload(this.identifier, () => {
+    this.contentService.cancelDownload(this.identifier).then(() => {
       this.zone.run(() => {
         this.showLoading = false;
         this.navCtrl.pop();
       });
-    }, () => {
+    }) .catch(() => {
       this.zone.run(() => {
         this.showLoading = false;
         this.navCtrl.pop();

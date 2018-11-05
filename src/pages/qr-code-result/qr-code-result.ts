@@ -182,8 +182,8 @@ export class QrCodeResultPage {
   getChildContents() {
     const request: ChildContentRequest = { contentId: this.identifier };
     this.contentService.getChildContents(
-      request,
-      (data: any) => {
+      request)
+      .then((data: any) => {
         data = JSON.parse(data);
         console.log('getChildContents data', data);
         this.parents.splice(0, this.parents.length);
@@ -199,8 +199,8 @@ export class QrCodeResultPage {
           this.navCtrl.pop();
         }
 
-      },
-      (error: string) => {
+      })
+      .catch((error: string) => {
         console.error('Error: while fetching child contents ===>>>', error);
         this.zone.run(() => {
           this.showChildrenLoader = false;
