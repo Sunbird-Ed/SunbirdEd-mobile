@@ -135,11 +135,11 @@ export class ViewMoreActivityPage implements OnInit {
     const loader = this.commonUtilService.getLoader();
     loader.present();
 
-    this.contentService.getSearchCriteriaFromRequest(this.searchQuery, (success: any) => {
+    this.contentService.getSearchCriteriaFromRequest(this.searchQuery).then((success: any) => {
       const reqBody = JSON.parse(success);
       reqBody.limit = 10;
       reqBody.offset = this.offset === 0 ? reqBody.offset : this.offset;
-      this.contentService.searchContent(reqBody, true, false, false, (data: any) => {
+      this.contentService.searchContent(reqBody, true, false, false) .then((data: any) => {
         data = JSON.parse(data);
         this.ngZone.run(() => {
           if (data.result && data.result.contentDataList) {
@@ -158,11 +158,11 @@ export class ViewMoreActivityPage implements OnInit {
         });
         this.generateImpressionEvent();
         this.generateLogEvent(data.result);
-      }, () => {
+      }) .catch(() => {
         console.error('Error: while fetching view more content');
         loader.dismiss();
       });
-    }, () => {
+    }) .catch(() => {
       console.error('Error: while fetching view more content');
       loader.dismiss();
     });
