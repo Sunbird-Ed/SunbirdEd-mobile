@@ -42,7 +42,7 @@ import {
   Map
 } from '@app/app';
 import { ContentRatingAlertComponent, ContentActionsComponent } from '@app/component';
-import { AppGlobalService, CommonUtilService, TelemetryGeneratorService } from '@app/service';
+import { AppGlobalService, CommonUtilService, TelemetryGeneratorService, CourseUtilService } from '@app/service';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
 import { UserAndGroupsPage } from '@app/pages/user-and-groups';
 import { ViewCreditsComponent } from '@app/component/view-credits/view-credits';
@@ -137,11 +137,11 @@ export class ContentDetailsPage {
     private ionicApp: IonicApp,
     private profileService: ProfileService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    private courseUtilService: CourseUtilService
   ) {
 
     this.objRollup = new Rollup();
-
     this.appGlobalService.getUserId();
     this.subscribePlayEvent();
     this.checkLoggedInOrGuestUser();
@@ -335,7 +335,7 @@ export class ContentDetailsPage {
   setContentDetails(identifier, refreshContentDetails: boolean | true, showRating: boolean) {
     let loader;
     if (!showRating) {
-      loader = this.getLoader();
+      loader = this.commonUtilService.getLoader();
       loader.present();
     }
     const option = {
@@ -811,17 +811,6 @@ export class ContentDetailsPage {
     }
   }
 
-
-  /**
-   * Function to get loader instance
-   */
-  getLoader(): any {
-    return this.loadingCtrl.create({
-      duration: 3000,
-      spinner: 'crescent'
-    });
-  }
-
   showOverflowMenu(event) {
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.KEBAB_MENU_CLICKED,
@@ -853,7 +842,7 @@ export class ContentDetailsPage {
 
   share() {
     this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_LIBRARY_INITIATED, this.content.contentType);
-    const loader = this.getLoader();
+    const loader = this.commonUtilService.getLoader();
     loader.present();
     const url = this.baseUrl + ShareUrl.CONTENT + this.content.identifier;
     if (this.content.downloadable) {
@@ -887,31 +876,17 @@ export class ContentDetailsPage {
   }
 
   /**
-  * Function to View Credits
+  * To View Credits popup
   */
   viewCredits() {
-    const popUp = this.popoverCtrl.create(
-      ViewCreditsComponent,
-      {
-        content: this.content,
-        pageId: PageId.CONTENT_DETAIL,
-        rollUp: this.objRollup,
-        correlation: this.corRelationList
-      },
-      {
-        cssClass: 'view-credits'
-      }
-    );
-    popUp.present({
-      ev: event
-    });
+    this.courseUtilService.showCredits(this.content, PageId.CONTENT_DETAIL, this.objRollup, this.corRelationList);
   }
 
   /**
    * method generates telemetry on click Read less or Read more
    * @param {string} param string as read less or read more
    * @param {object} objRollup object roll up
-   * @param corRelationList corelationList
+   * @param corRelationList correlation List
    */
   readLessorReadMore(param, objRollup, corRelationList) {
     const telemetryObject: TelemetryObject = new TelemetryObject();

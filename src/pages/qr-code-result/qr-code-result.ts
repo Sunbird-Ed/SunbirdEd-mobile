@@ -390,9 +390,9 @@ export class QrCodeResultPage {
       this.formAndFrameworkUtilService.getSyllabusList()
         .then((res) => {
           res.forEach(element => {
-            // checking whether content data framework Id exists/valid in syllabuslist
+            // checking whether content data framework Id exists/valid in syllabus list
             if (data.framework === element.frameworkId) {
-              // Get frameworkdetails(categories)
+              // Get framework details(categories)
               this.formAndFrameworkUtilService.getFrameworkDetails(data.framework)
                 .then(catagories => {
                   this.categories = catagories;

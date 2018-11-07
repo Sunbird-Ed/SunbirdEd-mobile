@@ -14,7 +14,6 @@ import {
   CategoryRequest,
   SharedPreferences,
   Profile,
-  ImpressionType,
   Environment
 } from 'sunbird';
 
@@ -182,7 +181,7 @@ export class ProfileSettingsPage {
 	 * It will fetch syllabus details
 	 */
   getSyllabusDetails() {
-    this.loader = this.getLoader();
+    this.loader = this.commonUtilService.getLoader();
     this.loader.present();
 
     this.formAndFrameworkUtilService.getSyllabusList()
@@ -258,7 +257,7 @@ export class ProfileSettingsPage {
 	 */
   checkPrevValue(index, currentField, prevSelectedValue = []) {
     if (index === 1) {
-      const loader = this.getLoader();
+      const loader = this.commonUtilService.getLoader();
       this.frameworkId = prevSelectedValue[0];
       this.formAndFrameworkUtilService.getFrameworkDetails(this.frameworkId)
         .then(catagories => {
@@ -301,7 +300,7 @@ export class ProfileSettingsPage {
           medium: []
         });
         if (showloader) {
-          this.loader = this.getLoader();
+          this.loader = this.commonUtilService.getLoader();
           this.loader.present();
         }
         oldAttribute.board = this.profileForTelemetry.board ? this.profileForTelemetry.board : '';
@@ -363,7 +362,7 @@ export class ProfileSettingsPage {
   }
 
   onSubmit() {
-    const loader = this.getLoader();
+    const loader = this.commonUtilService.getLoader();
     const formVal = this.userForm.value;
     if (formVal.boards.length === 0) {
       this.btnColor = '#8FC4FF';
@@ -455,13 +454,4 @@ export class ProfileSettingsPage {
         console.log('Err', err);
       });
   }
-
-  getLoader(): any {
-    return this.loadingCtrl.create({
-      duration: 30000,
-      spinner: 'crescent'
-    });
-  }
-
-
 }

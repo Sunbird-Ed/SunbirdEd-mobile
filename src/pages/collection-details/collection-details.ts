@@ -43,7 +43,7 @@ import {
   ShareUrl
 } from '@app/app';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
-import { AppGlobalService, CommonUtilService, TelemetryGeneratorService } from '@app/service';
+import { AppGlobalService, CommonUtilService, TelemetryGeneratorService, CourseUtilService } from '@app/service';
 import { ViewCreditsComponent } from '@app/component/view-credits/view-credits';
 
 
@@ -206,7 +206,8 @@ export class CollectionDetailsPage {
     private buildParamService: BuildParamService,
     private appGlobalService: AppGlobalService,
     private commonUtilService: CommonUtilService,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private courseUtilService: CourseUtilService
   ) {
 
     this.objRollup = new Rollup();
@@ -352,7 +353,7 @@ export class CollectionDetailsPage {
    * @param {string} identifier identifier of content / course
    */
   setContentDetails(identifier, refreshContentDetails: boolean | true) {
-    const loader = this.getLoader();
+    const loader = this.commonUtilService.getLoader();
     loader.present();
     const option = {
       contentId: identifier,
@@ -610,6 +611,7 @@ export class CollectionDetailsPage {
       this.showDownloadBtn = true;
     }
   }
+
   /**
    *
    * @param {array} data
@@ -769,7 +771,7 @@ export class CollectionDetailsPage {
 
   share() {
     this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_LIBRARY_INITIATED, this.contentDetail.contentType);
-    const loader = this.getLoader();
+    const loader = this.commonUtilService.getLoader();
     loader.present();
     const url = this.baseUrl + ShareUrl.COLLECTION + this.contentDetail.identifier;
     if (this.contentDetail.isAvailableLocally) {
@@ -813,16 +815,6 @@ export class CollectionDetailsPage {
     return (n.toFixed(n >= 10 || l < 1 ? 0 : 1) + ' ' + units[l]);
   }
 
-  /**
-   * Function to get loader instance
-   */
-  getLoader(): any {
-    return this.loadingCtrl.create({
-      duration: 30000,
-      spinner: 'crescent'
-    });
-  }
-
   showOverflowMenu(event) {
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.KEBAB_MENU_CLICKED,
@@ -832,6 +824,7 @@ export class CollectionDetailsPage {
       undefined,
       this.objRollup,
       this.corRelationList);
+
     const popover = this.popoverCtrl.create(ContentActionsComponent, {
       content: this.contentDetail,
       isChild: this.isDepthChild,
@@ -956,29 +949,14 @@ export class CollectionDetailsPage {
  * Function to View Credits
  */
   viewCredits() {
-    const popUp = this.popoverCtrl.create(
-      ViewCreditsComponent,
-      {
-        content: this.contentDetail,
-        pageId: PageId.COLLECTION_DETAIL,
-        rollUp: this.objRollup,
-        correlation: this.corRelationList
-      },
-      {
-        cssClass: 'view-credits'
-      }
-    );
-    popUp.present({
-      ev: event
-    });
-    popUp.onDidDismiss(data => {
-    });
+    this.courseUtilService.showCredits(this.contentDetail, PageId.COLLECTION_DETAIL, this.objRollup, this.corRelationList);
   }
+
   /**
    * method generates telemetry on click Read less or Read more
    * @param {string} param string as read less or read more
    * @param {object} objRollup object roll up
-   * @param corRelationList corelationList
+   * @param corRelationList correlation List
    */
   readLessorReadMore(param, objRollup, corRelationList) {
     const telemetryObject: TelemetryObject = new TelemetryObject();
