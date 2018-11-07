@@ -45,7 +45,6 @@ import { ContentRatingAlertComponent, ContentActionsComponent } from '@app/compo
 import { AppGlobalService, CommonUtilService, TelemetryGeneratorService, CourseUtilService } from '@app/service';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
 import { UserAndGroupsPage } from '@app/pages/user-and-groups';
-import { ViewCreditsComponent } from '@app/component/view-credits/view-credits';
 
 @IonicPage()
 @Component({
@@ -53,17 +52,9 @@ import { ViewCreditsComponent } from '@app/component/view-credits/view-credits';
   templateUrl: 'content-details.html',
 })
 export class ContentDetailsPage {
-
-  /**
-   * To hold Content details
-   */
   content: any;
   isChildContent = false;
   contentDetails: any;
-
-  /**
-   * Contains content identifier
-   */
   identifier: string;
 
   /**
@@ -101,7 +92,7 @@ export class ContentDetailsPage {
    * This flag helps in knowing when the content player is closed and the user is back on content details page.
    */
   public isPlayerLaunched = false;
-  guestUser = false;
+  isGuestUser = false;
   launchPlayer: boolean;
   profileType = '';
   isResumedCourse: boolean;
@@ -124,7 +115,6 @@ export class ContentDetailsPage {
     private contentService: ContentService,
     private zone: NgZone,
     private events: Events,
-    private loadingCtrl: LoadingController,
     private fileUtil: FileUtil,
     private popoverCtrl: PopoverController,
     private shareUtil: ShareUtil,
@@ -225,7 +215,7 @@ export class ContentDetailsPage {
     // This is to know when the app has come to foreground
     this.resume = this.platform.resume.subscribe(() => {
       this.isContentPlayed = true;
-      if (this.isPlayerLaunched && !this.guestUser) {
+      if (this.isPlayerLaunched && !this.isGuestUser) {
         this.isPlayerLaunched = false;
         this.setContentDetails(this.identifier, false, false /* No Automatic Rating for 1.9.0 */);
       }
@@ -249,7 +239,7 @@ export class ContentDetailsPage {
    *
    */
   checkLoggedInOrGuestUser() {
-    this.guestUser = !this.appGlobalService.isUserLoggedIn();
+    this.isGuestUser = !this.appGlobalService.isUserLoggedIn();
   }
 
   calculateAvailableUserCount() {
@@ -284,7 +274,7 @@ export class ContentDetailsPage {
    * Function to rate content
    */
   rateContent(popupType: string) {
-    if (!this.guestUser) {
+    if (!this.isGuestUser) {
       const paramsMap = new Map();
       if (this.isContentPlayed || (this.content.downloadable
         && this.content.contentAccess.length)) {
@@ -478,10 +468,13 @@ export class ContentDetailsPage {
     values['isUpdateAvailable'] = this.isUpdateAvail;
     values['isDownloaded'] = this.content.downloadable;
 
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = this.content.identifier;
-    telemetryObject.type = this.content.contentType;
-    telemetryObject.version = this.content.pkgVersion;
+    const telemetryObject: TelemetryObject = {
+      id: this.content.identifier,
+      type: this.content.contentType,
+      version: this.content.pkgVersion,
+      rollup: undefined
+    };
+
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
       ImpressionType.DETAIL,
       Environment.HOME,
@@ -524,10 +517,7 @@ export class ContentDetailsPage {
   }
 
   generateStartEvent(objectId, objectType, objectVersion) {
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = objectId;
-    telemetryObject.type = objectType;
-    telemetryObject.version = objectVersion;
+    const telemetryObject: TelemetryObject = { id: objectId, type: objectType, version: objectVersion, rollup: undefined };
     this.telemetryGeneratorService.generateStartTelemetry(
       PageId.CONTENT_DETAIL,
       telemetryObject,
@@ -536,10 +526,7 @@ export class ContentDetailsPage {
   }
 
   generateEndEvent(objectId, objectType, objectVersion) {
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = objectId;
-    telemetryObject.type = objectType;
-    telemetryObject.version = objectVersion;
+    const telemetryObject: TelemetryObject = { id: objectId, type: objectType, version: objectVersion, rollup: undefined };
     this.telemetryGeneratorService.generateEndTelemetry(
       objectType,
       Mode.PLAY,
@@ -552,10 +539,7 @@ export class ContentDetailsPage {
 
   generateQRSessionEndEvent(pageId: string, qrData: string) {
     if (pageId !== undefined) {
-      const telemetryObject: TelemetryObject = new TelemetryObject();
-      telemetryObject.id = qrData;
-      telemetryObject.type = 'qr';
-      telemetryObject.version = '';
+      const telemetryObject: TelemetryObject = { id: qrData, type: 'qr', version: '', rollup: undefined };
       this.telemetryGeneratorService.generateEndTelemetry(
         'qr',
         Mode.PLAY,
@@ -840,6 +824,9 @@ export class ContentDetailsPage {
     });
   }
 
+  /**
+   * Shares content to external devices
+   */
   share() {
     this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_LIBRARY_INITIATED, this.content.contentType);
     const loader = this.commonUtilService.getLoader();
@@ -862,6 +849,12 @@ export class ContentDetailsPage {
 
   }
 
+  /**
+   * Generates Interact Events
+   * @param interactType
+   * @param subType
+   * @param contentType
+   */
   generateShareInteractEvents(interactType, subType, contentType) {
     const values = new Map();
     values['ContentType'] = contentType;
@@ -889,10 +882,7 @@ export class ContentDetailsPage {
    * @param corRelationList correlation List
    */
   readLessorReadMore(param, objRollup, corRelationList) {
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = this.objId;
-    telemetryObject.type = this.objType;
-    telemetryObject.version = this.objVer;
+    const telemetryObject: TelemetryObject = { id: this.objId, type: this.objType, version: this.objVer, rollup: undefined };
     this.telemetryGeneratorService.readLessOrReadMore(param, objRollup, corRelationList, telemetryObject);
   }
 }

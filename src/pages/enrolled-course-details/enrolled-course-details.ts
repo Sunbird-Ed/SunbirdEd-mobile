@@ -157,7 +157,6 @@ export class EnrolledCourseDetailsPage {
     private buildParamService: BuildParamService,
     private shareUtil: ShareUtil,
     private social: SocialSharing,
-    private loadingCtrl: LoadingController,
     private preference: SharedPreferences,
     private courseUtilService: CourseUtilService,
     private platform: Platform,
@@ -320,6 +319,7 @@ export class EnrolledCourseDetailsPage {
       this.objId = this.course.identifier;
       this.objType = this.course.contentType;
       this.objVer = this.course.pkgVersion;
+
       if (!this.didViewLoad) {
         this.generateImpressionEvent(this.course.identifier, this.course.contentType, this.course.pkgVersion);
         this.generateStartEvent(this.course.identifier, this.course.contentType, this.course.pkgVersion);
@@ -330,12 +330,15 @@ export class EnrolledCourseDetailsPage {
         this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
         this.navCtrl.pop();
       }
+
       if (this.course.gradeLevel && this.course.gradeLevel.length) {
         this.course.gradeLevel = this.course.gradeLevel.join(', ');
       }
+
       if (this.course.attributions && this.course.attributions.length) {
         this.course.attributions = this.course.attributions.join(', ');
       }
+
       if (this.course.me_totalRatings) {
         const rating = this.course.me_totalRatings.split('.');
         if (rating && rating[0]) {
@@ -354,12 +357,13 @@ export class EnrolledCourseDetailsPage {
       this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
       this.navCtrl.pop();
     }
+
     if (data.result.isAvailableLocally) {
       this.getBatchDetails();
     }
     this.course.isAvailableLocally = data.result.isAvailableLocally;
+
     if (this.courseCardData.batchId) {
-      console.log(this.courseCardData.batchId);
       // if (this.course.isAvailableLocally === true) {
       // this.getBatchDetails();
     }
@@ -371,6 +375,7 @@ export class EnrolledCourseDetailsPage {
       this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.course, true);
       this.importContent([this.identifier], false);
     }
+
     this.setCourseStructure();
   }
 
@@ -386,7 +391,6 @@ export class EnrolledCourseDetailsPage {
             this.batchDetails = data.result;
             this.preference.getString(PreferenceKey.COURSE_IDENTIFIER)
               .then(val => {
-                console.log(val);
                 if (val === this.batchDetails.identifier) {
                   this.batchExp = true;
                 } else {
@@ -422,7 +426,7 @@ export class EnrolledCourseDetailsPage {
         });
       })
       .catch((error: any) => {
-        console.log('error while loading content details', error);
+        console.error('error while loading content details', error);
       });
   }
 
@@ -433,6 +437,7 @@ export class EnrolledCourseDetailsPage {
     };
     this.profileService.getUserProfileDetails(req, (data: any) => {
       data = JSON.parse(data);
+
       if (data) {
         this.batchDetails.creatorFirstName = data.firstName ? data.firstName : '';
         this.batchDetails.creatorLastName = data.lastName ? data.lastName : '';
@@ -863,9 +868,7 @@ export class EnrolledCourseDetailsPage {
 
   generateQRSessionEndEvent(pageId: string, qrData: string) {
     if (pageId !== undefined) {
-      const telemetryObject: TelemetryObject = new TelemetryObject();
-      telemetryObject.id = qrData;
-      telemetryObject.type = 'qr';
+      const telemetryObject: TelemetryObject = { id: qrData, type: 'qr', version: undefined, rollup: undefined };
       this.telemetryGeneratorService.generateEndTelemetry(
         'qr',
         Mode.PLAY,
@@ -889,10 +892,7 @@ export class EnrolledCourseDetailsPage {
   }
 
   generateStartEvent(objectId, objectType, objectVersion) {
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = objectId;
-    telemetryObject.type = objectType;
-    telemetryObject.version = objectVersion;
+    const telemetryObject: TelemetryObject = { id: objectId, type: objectType, version: objectVersion, rollup: undefined };
     this.telemetryGeneratorService.generateStartTelemetry(PageId.COURSE_DETAIL,
       telemetryObject,
       undefined,
@@ -901,10 +901,7 @@ export class EnrolledCourseDetailsPage {
   }
 
   generateEndEvent(objectId, objectType, objectVersion) {
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = objectId;
-    telemetryObject.type = objectType;
-    telemetryObject.version = objectVersion;
+    const telemetryObject: TelemetryObject = { id: objectId, type: objectType, version: objectVersion, rollup: undefined };
     this.telemetryGeneratorService.generateEndTelemetry(objectType,
       Mode.PLAY,
       PageId.COURSE_DETAIL,

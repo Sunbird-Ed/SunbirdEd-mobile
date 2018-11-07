@@ -8,7 +8,6 @@ import {
   NavController,
   NavParams,
   Events,
-  LoadingController,
   Platform,
   Navbar,
   PopoverController
@@ -44,8 +43,6 @@ import {
 } from '@app/app';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
 import { AppGlobalService, CommonUtilService, TelemetryGeneratorService, CourseUtilService } from '@app/service';
-import { ViewCreditsComponent } from '@app/component/view-credits/view-credits';
-
 
 @IonicPage()
 @Component({
@@ -53,15 +50,7 @@ import { ViewCreditsComponent } from '@app/component/view-credits/view-credits';
   templateUrl: 'collection-details.html',
 })
 export class CollectionDetailsPage {
-
-  /**
-  * Contains content details
-  */
   contentDetail: any;
-
-  /**
-   * Contains children content data
-   */
   childrenData: Array<any>;
 
   /**
@@ -75,8 +64,8 @@ export class CollectionDetailsPage {
   cardData: any;
 
   /**
-     * Contains Parent Content Details
-     */
+   * Contains Parent Content Details
+   */
   parentContent: any;
 
   /**
@@ -196,7 +185,6 @@ export class CollectionDetailsPage {
     private contentService: ContentService,
     private zone: NgZone,
     private events: Events,
-    private loadingCtrl: LoadingController,
     private popoverCtrl: PopoverController,
     private fileUtil: FileUtil,
     private platform: Platform,
@@ -343,7 +331,7 @@ export class CollectionDetailsPage {
         this.profileType = userType;
       })
       .catch((error) => {
-        console.log('Error Occurred', error);
+        console.error('Error Occurred', error);
         this.profileType = '';
       });
   }
@@ -438,14 +426,15 @@ export class CollectionDetailsPage {
       this.objRollup.l1 = this.identifier;
     } else {
       _.forEach(hierarchyInfo, (value, key) => {
-        if (key === 0) {
-          this.objRollup.l1 = value.identifier;
-        } else if (key === 1) {
-          this.objRollup.l2 = value.identifier;
-        } else if (key === 2) {
-          this.objRollup.l3 = value.identifier;
-        } else if (key === 3) {
-          this.objRollup.l4 = value.identifier;
+        switch (key) {
+          case 0: this.objRollup.l1 = value.identifier;
+            break;
+          case 1: this.objRollup.l2 = value.identifier;
+            break;
+          case 2: this.objRollup.l3 = value.identifier;
+            break;
+          case 3: this.objRollup.l4 = value.identifier;
+            break;
         }
       });
     }
@@ -613,7 +602,6 @@ export class CollectionDetailsPage {
   }
 
   /**
-   *
    * @param {array} data
    */
   showDownloadAllBtn(data) {
@@ -669,7 +657,6 @@ export class CollectionDetailsPage {
   resetVariables() {
     this.isDownloadStarted = false;
     this.showLoading = false;
-    // this.downloadProgress = '';
     this.downloadProgress = 0;
     this.cardData = '';
     this.childrenData = [];
@@ -794,7 +781,6 @@ export class CollectionDetailsPage {
    * Download single content
    */
   downloadAllContent(): void {
-    // this.downloadProgress = '0 %';
     this.downloadProgress = 0;
     this.showLoading = true;
     this.isDownloadStarted = true;
@@ -856,10 +842,7 @@ export class CollectionDetailsPage {
   }
 
   generateStartEvent(objectId, objectType, objectVersion) {
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = objectId;
-    telemetryObject.type = objectType;
-    telemetryObject.version = objectVersion;
+    const telemetryObject: TelemetryObject = { id: objectId, type: objectType, version: objectVersion, rollup: undefined };
     this.telemetryGeneratorService.generateStartTelemetry(
       PageId.COLLECTION_DETAIL,
       telemetryObject,
@@ -868,10 +851,7 @@ export class CollectionDetailsPage {
   }
 
   generateEndEvent(objectId, objectType, objectVersion) {
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = objectId;
-    telemetryObject.type = objectType;
-    telemetryObject.version = objectVersion;
+    const telemetryObject: TelemetryObject = { id: objectId, type: objectType, version: objectVersion, rollup: undefined };
     this.telemetryGeneratorService.generateEndTelemetry(
       objectType,
       Mode.PLAY,
@@ -883,12 +863,8 @@ export class CollectionDetailsPage {
   }
 
   generateQRSessionEndEvent(pageId: string, qrData: string) {
-
     if (pageId !== undefined) {
-      const telemetryObject: TelemetryObject = new TelemetryObject();
-      telemetryObject.id = qrData;
-      telemetryObject.type = 'qr';
-      telemetryObject.version = '';
+      const telemetryObject: TelemetryObject = { id: qrData, type: 'qr', version: '', rollup: undefined };
       this.telemetryGeneratorService.generateEndTelemetry(
         'qr',
         Mode.PLAY,
@@ -945,9 +921,10 @@ export class CollectionDetailsPage {
       });
     });
   }
+
   /**
- * Function to View Credits
- */
+   * Function to View Credits
+   */
   viewCredits() {
     this.courseUtilService.showCredits(this.contentDetail, PageId.COLLECTION_DETAIL, this.objRollup, this.corRelationList);
   }
@@ -959,10 +936,7 @@ export class CollectionDetailsPage {
    * @param corRelationList correlation List
    */
   readLessorReadMore(param, objRollup, corRelationList) {
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = this.objId;
-    telemetryObject.type = this.objType;
-    telemetryObject.version = this.objVer;
+    const telemetryObject: TelemetryObject = { id: this.objId, type: this.objType, version: this.objVer, rollup: undefined };
     this.telemetryGeneratorService.readLessOrReadMore(param, objRollup, corRelationList, telemetryObject);
   }
 
