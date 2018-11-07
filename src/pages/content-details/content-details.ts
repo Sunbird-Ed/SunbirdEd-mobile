@@ -8,7 +8,6 @@ import {
   NavController,
   NavParams,
   Events,
-  LoadingController,
   PopoverController,
   Navbar,
   Platform,

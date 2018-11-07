@@ -579,7 +579,7 @@ export class CollectionDetailsPage {
       });
     },
       (error: string) => {
-        console.log('Error: while fetching child contents ===>>>', error);
+        console.error('Error: while fetching child contents ===>>>', error);
         this.zone.run(() => {
           this.showChildrenLoader = false;
         });
