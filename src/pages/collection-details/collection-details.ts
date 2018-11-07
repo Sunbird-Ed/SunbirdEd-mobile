@@ -14,6 +14,10 @@ import {
   Navbar,
   PopoverController
 } from 'ionic-angular';
+import { TranslateService } from '@ngx-translate/core';
+import { SocialSharing } from '@ionic-native/social-sharing';
+import * as _ from 'lodash';
+
 import {
   ContentService,
   FileUtil,
@@ -35,24 +39,17 @@ import {
   ErrorCode,
   ErrorType
 } from 'sunbird';
-import * as _ from 'lodash';
-import { ContentDetailsPage } from '../content-details/content-details';
-import { ContentActionsComponent } from '../../component/content-actions/content-actions';
-import { ConfirmAlertComponent } from '../../component/confirm-alert/confirm-alert';
-import { TranslateService } from '@ngx-translate/core';
-import { SocialSharing } from '@ionic-native/social-sharing';
-import { ContentRatingAlertComponent } from '../../component/content-rating-alert/content-rating-alert';
+import { ContentDetailsPage } from '@app/pages/content-details/content-details';
+import { ContentActionsComponent, ConfirmAlertComponent, ContentRatingAlertComponent } from '@app/component';
 import {
   ContentType,
   MimeType,
   ShareUrl,
   PreferenceKey
-} from '../../app/app.constant';
-import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
-import { AppGlobalService } from '../../service/app-global.service';
-import { CommonUtilService } from '../../service/common-util.service';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { ViewCreditsComponent } from '../../component/view-credits/view-credits';
+} from '@app/app';
+import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
+import { AppGlobalService, CommonUtilService, TelemetryGeneratorService } from '@app/service';
+import { ViewCreditsComponent } from '@app/component/view-credits/view-credits';
 
 
 @IonicPage()
@@ -135,10 +132,10 @@ export class CollectionDetailsPage {
   /**
    * Download complete falg
    */
-  isDownlaodCompleted = false;
+  isDownloadCompleted = false;
 
   /**
-   * Total downlaod count
+   * Total download count
    */
   totalDownload: number;
 
@@ -161,13 +158,10 @@ export class CollectionDetailsPage {
    * Contains total size of locally not available content(s)
    */
   downloadContentsSize: string;
-
   downloadPercentage: number;
-
   objId;
   objType;
   objVer;
-
   public showLoading = false;
 
   /**
@@ -179,7 +173,6 @@ export class CollectionDetailsPage {
    * To hold rating data
    */
   userRating = 0;
-  /**checks weather course is installed or not */
   isAlreadyEnrolled = false;
   /** sets true , if it comes from courses */
   fromCoursesPage = false;
@@ -195,34 +188,30 @@ export class CollectionDetailsPage {
   public didViewLoad: boolean;
   public backButtonFunc = undefined;
   public baseUrl = '';
-
-
   guestUser = false;
-
   profileType = '';
   public corRelationList: Array<CorrelationData>;
   public shouldGenerateEndTelemetry = false;
   public source = '';
 
   @ViewChild(Navbar) navBar: Navbar;
-  constructor(public navCtrl: NavController,
-    public navParams: NavParams,
-    public contentService: ContentService,
-    public zone: NgZone,
-    public events: Events,
-    public toastCtrl: ToastController,
-    public loadingCtrl: LoadingController,
-    public popoverCtrl: PopoverController,
-    public fileUtil: FileUtil,
-    public platform: Platform,
-    public telemetryService: TelemetryService,
-    public authService: AuthService,
-    public translate: TranslateService,
-    public social: SocialSharing,
-    public shareUtil: ShareUtil,
-    public buildParamService: BuildParamService,
-    public preference: SharedPreferences,
-    public appGlobalService: AppGlobalService,
+  constructor(
+    private navCtrl: NavController,
+    private navParams: NavParams,
+    private contentService: ContentService,
+    private zone: NgZone,
+    private events: Events,
+    private toastCtrl: ToastController,
+    private loadingCtrl: LoadingController,
+    private popoverCtrl: PopoverController,
+    private fileUtil: FileUtil,
+    private platform: Platform,
+    private translate: TranslateService,
+    private social: SocialSharing,
+    private shareUtil: ShareUtil,
+    private buildParamService: BuildParamService,
+    private preference: SharedPreferences,
+    private appGlobalService: AppGlobalService,
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService) {
 
@@ -240,6 +229,46 @@ export class CollectionDetailsPage {
       this.handleBackButton();
     };
     this.registerDeviceBackButton();
+  }
+
+  /**
+   * Ionic life cycle hook
+   */
+  ionViewWillEnter(): void {
+    this.zone.run(() => {
+      this.resetVariables();
+      this.cardData = this.navParams.get('content');
+      this.corRelationList = this.navParams.get('corRelation');
+      const depth = this.navParams.get('depth');
+      this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
+      this.source = this.navParams.get('source');
+      this.fromCoursesPage = this.navParams.get('fromCoursesPage');
+      this.isAlreadyEnrolled = this.navParams.get('isAlreadyEnrolled');
+
+      // check for parent content
+      this.parentContent = this.navParams.get('parentContent');
+
+      if (depth !== undefined) {
+        this.depth = depth;
+        this.showDownloadBtn = false;
+        this.isDepthChild = true;
+      } else {
+        this.isDepthChild = false;
+      }
+      this.identifier = this.cardData.contentId || this.cardData.identifier;
+
+
+      if (!this.didViewLoad) {
+        this.generateRollUp();
+        const contentType = this.cardData.contentData ? this.cardData.contentData.contentType : this.cardData.contentType;
+        this.objType = contentType;
+        this.generateStartEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
+        this.generateImpressionEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
+      }
+      this.didViewLoad = true;
+      this.setContentDetails(this.identifier, true);
+      this.subscribeGenieEvent();
+    });
   }
 
   handleBackButton() {
@@ -582,7 +611,7 @@ export class CollectionDetailsPage {
         this.downloadIdentifiers.push(value.contentData.identifier);
       }
     });
-    if (this.downloadIdentifiers.length && !this.isDownlaodCompleted) {
+    if (this.downloadIdentifiers.length && !this.isDownloadCompleted) {
       this.showDownloadBtn = true;
     }
   }
@@ -603,49 +632,6 @@ export class CollectionDetailsPage {
       if (this.downloadIdentifiers.length) {
         this.showDownloadBtn = true;
       }
-    });
-  }
-
-
-
-
-  /**
-   * Ionic life cycle hook
-   */
-  ionViewWillEnter(): void {
-    this.zone.run(() => {
-      this.resetVariables();
-      this.cardData = this.navParams.get('content');
-      this.corRelationList = this.navParams.get('corRelation');
-      const depth = this.navParams.get('depth');
-      this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
-      this.source = this.navParams.get('source');
-      this.fromCoursesPage = this.navParams.get('fromCoursesPage');
-      this.isAlreadyEnrolled = this.navParams.get('isAlreadyEnrolled');
-
-      // check for parent content
-      this.parentContent = this.navParams.get('parentContent');
-
-      if (depth !== undefined) {
-        this.depth = depth;
-        this.showDownloadBtn = false;
-        this.isDepthChild = true;
-      } else {
-        this.isDepthChild = false;
-      }
-      this.identifier = this.cardData.contentId || this.cardData.identifier;
-
-
-      if (!this.didViewLoad) {
-        this.generateRollUp();
-        const contentType = this.cardData.contentData ? this.cardData.contentData.contentType : this.cardData.contentType;
-        this.objType = contentType;
-        this.generateStartEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
-        this.generateImpressionEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
-      }
-      this.didViewLoad = true;
-      this.setContentDetails(this.identifier, true);
-      this.subscribeGenieEvent();
     });
   }
 
@@ -696,7 +682,7 @@ export class CollectionDetailsPage {
     this.queuedIdentifiers = [];
     this.isDepthChild = this.isDepthChild;
     this.showDownloadBtn = false;
-    this.isDownlaodCompleted = false;
+    this.isDownloadCompleted = false;
     this.currentCount = 0;
     this.downloadPercentage = 0;
     this.isUpdateAvailable = false;
@@ -735,7 +721,7 @@ export class CollectionDetailsPage {
               this.showLoading = false;
               this.isDownloadStarted = false;
               this.showDownloadBtn = false;
-              this.isDownlaodCompleted = true;
+              this.isDownloadCompleted = true;
               this.contentDetail.isAvailableLocally = true;
               this.downloadPercentage = 0;
               this.updateSavedResources();
@@ -817,15 +803,6 @@ export class CollectionDetailsPage {
     this.isDownloadStarted = true;
     this.downloadPercentage = 0;
     this.importContent(this.downloadIdentifiers, true, true);
-  }
-
-  /**
-   * Ionic life cycle hook
-   */
-  ionViewWillLeave(): void {
-    // this.downloadProgress = '';
-    this.downloadProgress = 0;
-    this.events.unsubscribe('genie.event');
   }
 
   /**
@@ -1015,5 +992,14 @@ export class CollectionDetailsPage {
     telemetryObject.type = this.objType;
     telemetryObject.version = this.objVer;
     this.telemetryGeneratorService.readLessOrReadMore(param, objRollup, corRelationList, telemetryObject);
+  }
+
+  /**
+   * Ionic life cycle hook
+   */
+  ionViewWillLeave(): void {
+    // this.downloadProgress = '';
+    this.downloadProgress = 0;
+    this.events.unsubscribe('genie.event');
   }
 }

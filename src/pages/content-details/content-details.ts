@@ -1,5 +1,3 @@
-import { ContentRatingAlertComponent } from './../../component/content-rating-alert/content-rating-alert';
-import { ContentActionsComponent } from './../../component/content-actions/content-actions';
 import {
   Component,
   NgZone,
@@ -14,8 +12,11 @@ import {
   PopoverController,
   Navbar,
   Platform,
-  IonicApp
+  IonicApp,
+  AlertController
 } from 'ionic-angular';
+import { SocialSharing } from '@ionic-native/social-sharing';
+import * as _ from 'lodash';
 import {
   ContentService,
   CourseService,
@@ -36,24 +37,17 @@ import {
   ProfileRequest,
   TelemetryObject
 } from 'sunbird';
-import { SocialSharing } from '@ionic-native/social-sharing';
-import * as _ from 'lodash';
-import {
-  Map
-} from '../../app/telemetryutil';
 import {
   EventTopics,
-  ProfileConstants,
-  PreferenceKey
-} from '../../app/app.constant';
-import { ShareUrl } from '../../app/app.constant';
-import { AppGlobalService } from '../../service/app-global.service';
-import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
-import { AlertController } from 'ionic-angular';
-import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { CommonUtilService } from '../../service/common-util.service';
-import { ViewCreditsComponent } from '../../component/view-credits/view-credits';
+  PreferenceKey,
+  ShareUrl,
+  Map
+} from '@app/app';
+import { ContentRatingAlertComponent, ContentActionsComponent } from '@app/component';
+import { AppGlobalService, CommonUtilService, TelemetryGeneratorService } from '@app/service';
+import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
+import { UserAndGroupsPage } from '@app/pages/user-and-groups';
+import { ViewCreditsComponent } from '@app/component/view-credits/view-credits';
 
 @IonicPage()
 @Component({
@@ -66,15 +60,7 @@ export class ContentDetailsPage {
    * To hold Content details
    */
   content: any;
-
-  /**
-   * is child content
-   */
   isChildContent = false;
-
-  /**
-   * Contains content details
-   */
   contentDetails: any;
 
   /**
@@ -91,46 +77,18 @@ export class ContentDetailsPage {
    * Content depth
    */
   depth: string;
-
-  /**
-   * Download started flag
-   */
   isDownloadStarted = false;
-
-  /**
-   * Contains download progress
-   */
   downloadProgress: string;
-
-  /**
-   *
-   */
   cancelDownloading = false;
-
-  /**
-   * Contains loader instance
-   */
   loader: any;
-
-  /**
-   * To hold user id
-   */
   userId = '';
   public objRollup: Rollup;
   private resume;
   isContentPlayed = false;
-
   /**
-   * User Rating
-   *
    * Used to handle update content workflow
    */
   isUpdateAvail = false;
-
-  /**
-   * User Rating
-   *
-   */
   userRating = 0;
 
   /**
@@ -145,14 +103,10 @@ export class ContentDetailsPage {
    * This flag helps in knowing when the content player is closed and the user is back on content details page.
    */
   public isPlayerLaunched = false;
-
   guestUser = false;
-
   launchPlayer: boolean;
-
   profileType = '';
   isResumedCourse: boolean;
-
   objId;
   objType;
   objVer;
@@ -197,6 +151,19 @@ export class ContentDetailsPage {
     this.handlePageResume();
   }
 
+  ionViewDidLoad() {
+    this.navBar.backButtonClick = (e: UIEvent) => {
+      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
+        true, this.cardData.identifier, this.corRelationList);
+      this.handleNavBackButton();
+    };
+    this.handleDeviceBackButton();
+
+    if (!AppGlobalService.isPlayerLaunched) {
+      this.calculateAvailableUserCount();
+    }
+  }
+
   /**
    * Ionic life cycle hook
    */
@@ -228,19 +195,6 @@ export class ContentDetailsPage {
   ionViewWillLeave(): void {
     this.events.unsubscribe('genie.event');
     this.resume.unsubscribe();
-  }
-
-  ionViewDidLoad() {
-    this.navBar.backButtonClick = (e: UIEvent) => {
-      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
-        true, this.cardData.identifier, this.corRelationList);
-      this.handleNavBackButton();
-    };
-    this.handleDeviceBackButton();
-
-    if (!AppGlobalService.isPlayerLaunched) {
-      this.calculateAvailableUserCount();
-    }
   }
 
   handleNavBackButton() {
@@ -381,7 +335,6 @@ export class ContentDetailsPage {
 
   /**
    * To set content details in local variable
-   *
    * @param {string} identifier identifier of content / course
    */
   setContentDetails(identifier, refreshContentDetails: boolean | true, showRating: boolean) {
@@ -797,8 +750,6 @@ export class ContentDetailsPage {
             text: 'x',
             role: 'cancel',
             cssClass: 'closeButton',
-            handler: () => {
-            }
           }
         ]
       });
@@ -939,6 +890,7 @@ export class ContentDetailsPage {
       this.objRollup,
       this.corRelationList);
   }
+
   /**
   * Function to View Credits
   */
@@ -957,8 +909,6 @@ export class ContentDetailsPage {
     );
     popUp.present({
       ev: event
-    });
-    popUp.onDidDismiss(data => {
     });
   }
 
