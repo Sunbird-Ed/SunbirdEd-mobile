@@ -195,7 +195,7 @@
 <!-- Page footer -->
 <ion-footer *ngIf="showDownloadBtn && !isDepthChild">
 	<ion-toolbar padding>
-		<button ion-button block *ngIf="showDownloadBtn && !isDownloadStarted" (click)="showDownloadConfirmatioAlert()"> {{
+		<button ion-button block *ngIf="showDownloadBtn && !isDownloadStarted" (click)="showDownloadConfirmationAlert()"> {{
 			'DOWNLOAD_ALL_CONTENT' | translate }} ({{(downloadSize | fileSize)
 			}})
 		</button>

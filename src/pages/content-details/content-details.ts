@@ -30,7 +30,6 @@ import {
   InteractSubtype,
   Rollup,
   BuildParamService,
-  SharedPreferences,
   ProfileType,
   CorrelationData,
   ProfileService,
@@ -39,7 +38,6 @@ import {
 } from 'sunbird';
 import {
   EventTopics,
-  PreferenceKey,
   ShareUrl,
   Map
 } from '@app/app';
@@ -134,13 +132,13 @@ export class ContentDetailsPage {
     private platform: Platform,
     private buildParamService: BuildParamService,
     private courseService: CourseService,
-    private preference: SharedPreferences,
     private appGlobalService: AppGlobalService,
     private alertCtrl: AlertController,
     private ionicApp: IonicApp,
     private profileService: ProfileService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private commonUtilService: CommonUtilService) {
+    private commonUtilService: CommonUtilService
+  ) {
 
     this.objRollup = new Rollup();
 
@@ -177,14 +175,15 @@ export class ContentDetailsPage {
     this.source = this.navParams.get('source');
     this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
     this.downloadAndPlay = this.navParams.get('downloadAndPlay');
-    if (!this.isResumedCourse) {
-      this.generateTelemetry();
-    }
-    if (this.isResumedCourse === true) {
+
+    if (this.isResumedCourse) {
       this.navCtrl.insert(this.navCtrl.length() - 1, EnrolledCourseDetailsPage, {
         content: this.navParams.get('resumedCourseCardData')
       });
+    } else {
+      this.generateTelemetry();
     }
+
     this.setContentDetails(this.identifier, true, false);
     this.subscribeGenieEvent();
   }
@@ -238,12 +237,10 @@ export class ContentDetailsPage {
     this.buildParamService.getBuildConfigParam('BASE_URL')
       .then(response => {
         this.baseUrl = response;
-      })
-      .catch(() => {
       });
     this.launchPlayer = this.navParams.get('launchplayer');
     this.events.subscribe('playConfig', (config) => {
-        this.playContent(config.streaming);
+      this.playContent(config.streaming);
     });
   }
 
@@ -267,23 +264,21 @@ export class ContentDetailsPage {
       if (this.appGlobalService.isUserLoggedIn()) {
         this.userCount += 1;
       }
-    }).catch(() => {
+    }).catch((error) => {
+      console.error('Error occurred= ', error);
     });
   }
 
   checkCurrentUserType() {
-    this.preference.getString(PreferenceKey.SELECTED_USER_TYPE)
-      .then(val => {
-        if (val !== '') {
-          if (val === ProfileType.TEACHER) {
-            this.profileType = ProfileType.TEACHER;
-          } else if (val === ProfileType.STUDENT) {
-            this.profileType = ProfileType.STUDENT;
-          }
-        }
+    this.appGlobalService.getGuestUserInfo()
+      .then((userType) => {
+        this.profileType = userType;
+      })
+      .catch((error) => {
+        console.log('Error Occurred', error);
+        this.profileType = '';
       });
   }
-
 
   /**
    * Function to rate content
@@ -351,27 +346,27 @@ export class ContentDetailsPage {
     };
 
     this.contentService.getContentDetail(option)
-     .then((data: any) => {
-      this.zone.run(() => {
-        data = JSON.parse(data);
-        if (data && data.result) {
-          this.extractApiResponse(data);
-          if (!showRating) {
-            loader.dismiss();
+      .then((data: any) => {
+        this.zone.run(() => {
+          data = JSON.parse(data);
+          if (data && data.result) {
+            this.extractApiResponse(data);
+            if (!showRating) {
+              loader.dismiss();
+            }
+          } else {
+            if (!showRating) {
+              loader.dismiss();
+            }
           }
-        } else {
-          if (!showRating) {
-            loader.dismiss();
-          }
-        }
 
-        if (showRating) {
-          if (this.userRating === 0) {
-            this.rateContent('automatic');
+          if (showRating) {
+            if (this.userRating === 0) {
+              this.rateContent('automatic');
+            }
           }
-        }
-      });
-    })
+        });
+      })
       .catch((error: any) => {
         const data = JSON.parse(error);
         console.log('Error received', data);
@@ -629,12 +624,12 @@ export class ContentDetailsPage {
 
     // Call content service
     this.contentService.importContent(option)
-     .then((data: any) => {
-      data = JSON.parse(data);
-      if (data.result && data.result[0].status === 'NOT_FOUND') {
-        this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
-      }
-    })
+      .then((data: any) => {
+        data = JSON.parse(data);
+        if (data.result && data.result[0].status === 'NOT_FOUND') {
+          this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
+        }
+      })
       .catch((error) => {
         console.log('error while loading content details', error);
         if (this.isDownloadStarted) {
@@ -801,18 +796,18 @@ export class ContentDetailsPage {
       };
 
       this.courseService.updateContentState(data)
-       .then(() => {
-        this.zone.run(() => {
-          this.events.publish(EventTopics.COURSE_STATUS_UPDATED_SUCCESSFULLY, {
-            update: true
+        .then(() => {
+          this.zone.run(() => {
+            this.events.publish(EventTopics.COURSE_STATUS_UPDATED_SUCCESSFULLY, {
+              update: true
+            });
+          });
+        })
+        .catch((error: any) => {
+          this.zone.run(() => {
+            console.log('Error: while updating content state =>>>>>', error);
           });
         });
-      })
-       .catch((error: any) => {
-        this.zone.run(() => {
-          console.log('Error: while updating content state =>>>>>', error);
-        });
-      });
     }
   }
 

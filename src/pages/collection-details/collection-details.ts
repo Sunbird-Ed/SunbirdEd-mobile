@@ -8,7 +8,6 @@ import {
   NavController,
   NavParams,
   Events,
-  ToastController,
   LoadingController,
   Platform,
   Navbar,
@@ -25,14 +24,11 @@ import {
   Environment,
   Mode,
   ImpressionType,
-  TelemetryService,
   Rollup,
   InteractType,
   InteractSubtype,
   ShareUtil,
   BuildParamService,
-  AuthService,
-  SharedPreferences,
   ProfileType,
   CorrelationData,
   TelemetryObject,
@@ -44,8 +40,7 @@ import { ContentActionsComponent, ConfirmAlertComponent, ContentRatingAlertCompo
 import {
   ContentType,
   MimeType,
-  ShareUrl,
-  PreferenceKey
+  ShareUrl
 } from '@app/app';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
 import { AppGlobalService, CommonUtilService, TelemetryGeneratorService } from '@app/service';
@@ -201,7 +196,6 @@ export class CollectionDetailsPage {
     private contentService: ContentService,
     private zone: NgZone,
     private events: Events,
-    private toastCtrl: ToastController,
     private loadingCtrl: LoadingController,
     private popoverCtrl: PopoverController,
     private fileUtil: FileUtil,
@@ -210,16 +204,15 @@ export class CollectionDetailsPage {
     private social: SocialSharing,
     private shareUtil: ShareUtil,
     private buildParamService: BuildParamService,
-    private preference: SharedPreferences,
     private appGlobalService: AppGlobalService,
     private commonUtilService: CommonUtilService,
-    private telemetryGeneratorService: TelemetryGeneratorService) {
+    private telemetryGeneratorService: TelemetryGeneratorService
+  ) {
 
     this.objRollup = new Rollup();
-
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
-    this.handleNetworkAvailability();
+    this.getBaseURL();
   }
 
   ionViewDidLoad() {
@@ -248,15 +241,15 @@ export class CollectionDetailsPage {
       // check for parent content
       this.parentContent = this.navParams.get('parentContent');
 
-      if (depth !== undefined) {
+      if (depth) {
         this.depth = depth;
         this.showDownloadBtn = false;
         this.isDepthChild = true;
       } else {
         this.isDepthChild = false;
       }
-      this.identifier = this.cardData.contentId || this.cardData.identifier;
 
+      this.identifier = this.cardData.contentId || this.cardData.identifier;
 
       if (!this.didViewLoad) {
         this.generateRollUp();
@@ -265,6 +258,7 @@ export class CollectionDetailsPage {
         this.generateStartEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
         this.generateImpressionEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
       }
+
       this.didViewLoad = true;
       this.setContentDetails(this.identifier, true);
       this.subscribeGenieEvent();
@@ -274,9 +268,11 @@ export class CollectionDetailsPage {
   handleBackButton() {
     this.didViewLoad = false;
     this.generateEndEvent(this.objId, this.objType, this.objVer);
+
     if (this.shouldGenerateEndTelemetry) {
       this.generateQRSessionEndEvent(this.source, this.cardData.identifier);
     }
+
     this.navCtrl.pop();
     this.backButtonFunc();
   }
@@ -289,12 +285,13 @@ export class CollectionDetailsPage {
     }, 10);
   }
 
-  handleNetworkAvailability() {
+  getBaseURL() {
     this.buildParamService.getBuildConfigParam('BASE_URL')
       .then(response => {
         this.baseUrl = response;
       })
-      .catch(() => {
+      .catch((error) => {
+        console.error('Error Occurred=> ', error);
       });
   }
 
@@ -334,26 +331,24 @@ export class CollectionDetailsPage {
  * Get the session to know if the user is logged-in or guest
  *
  */
+
   checkLoggedInOrGuestUser() {
     this.guestUser = !this.appGlobalService.isUserLoggedIn();
   }
 
   checkCurrentUserType() {
-    this.preference.getString(PreferenceKey.SELECTED_USER_TYPE)
-      .then(val => {
-        if (val !== '') {
-          if (val === ProfileType.TEACHER) {
-            this.profileType = ProfileType.TEACHER;
-          } else if (val === ProfileType.STUDENT) {
-            this.profileType = ProfileType.STUDENT;
-          }
-        }
+    this.appGlobalService.getGuestUserInfo()
+      .then((userType) => {
+        this.profileType = userType;
+      })
+      .catch((error) => {
+        console.log('Error Occurred', error);
+        this.profileType = '';
       });
   }
 
   /**
    * To set content details in local variable
-   *
    * @param {string} identifier identifier of content / course
    */
   setContentDetails(identifier, refreshContentDetails: boolean | true) {
@@ -366,16 +361,16 @@ export class CollectionDetailsPage {
       attachContentAccess: true
     };
     this.contentService.getContentDetail(option)
-    .then((data: any) => {
-      this.zone.run(() => {
-        data = JSON.parse(data);
-        loader.dismiss().then(() => {
-          if (data && data.result) {
-            this.extractApiResponse(data);
-          }
+      .then((data: any) => {
+        this.zone.run(() => {
+          data = JSON.parse(data);
+          loader.dismiss().then(() => {
+            if (data && data.result) {
+              this.extractApiResponse(data);
+            }
+          });
         });
-      });
-    })
+      })
       .catch((error: any) => {
         console.log('error while loading content details', error);
         loader.dismiss();
@@ -505,55 +500,55 @@ export class CollectionDetailsPage {
 
     // Call content service
     this.contentService.importContent(option)
-    .then((data: any) => {
-      this.zone.run(() => {
-        data = JSON.parse(data);
+      .then((data: any) => {
+        this.zone.run(() => {
+          data = JSON.parse(data);
 
-        if (data.result && data.result.length && this.isDownloadStarted) {
-          _.forEach(data.result, (value) => {
-            if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
-              this.queuedIdentifiers.push(value.identifier);
-            } else if (value.status === 'NOT_FOUND') {
-              this.faultyIdentifiers.push(value.identifier);
+          if (data.result && data.result.length && this.isDownloadStarted) {
+            _.forEach(data.result, (value) => {
+              if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
+                this.queuedIdentifiers.push(value.identifier);
+              } else if (value.status === 'NOT_FOUND') {
+                this.faultyIdentifiers.push(value.identifier);
+              }
+            });
+
+            if (isDownloadAllClicked) {
+              this.telemetryGeneratorService.generateDownloadAllClickTelemetry(
+                PageId.COLLECTION_DETAIL,
+                this.contentDetail,
+                this.queuedIdentifiers,
+                identifiers.length
+              );
             }
-          });
 
-          if (isDownloadAllClicked) {
-            this.telemetryGeneratorService.generateDownloadAllClickTelemetry(
-              PageId.COLLECTION_DETAIL,
-              this.contentDetail,
-              this.queuedIdentifiers,
-              identifiers.length
-            );
-          }
-
-          if (this.queuedIdentifiers.length === 0) {
-            if (this.isDownloadStarted) {
-              this.showDownloadBtn = true;
-              this.isDownloadStarted = false;
-              this.showLoading = false;
+            if (this.queuedIdentifiers.length === 0) {
+              if (this.isDownloadStarted) {
+                this.showDownloadBtn = true;
+                this.isDownloadStarted = false;
+                this.showLoading = false;
+              }
             }
+            if (this.faultyIdentifiers.length > 0) {
+              const stackTrace: any = {};
+              stackTrace.parentIdentifier = this.cardData.identifier;
+              stackTrace.faultyIdentifiers = this.faultyIdentifiers;
+              this.telemetryGeneratorService.generateErrorTelemetry(Environment.HOME,
+                ErrorCode.ERR_DOWNLOAD_FAILED,
+                ErrorType.SYSTEM,
+                PageId.COLLECTION_DETAIL,
+                JSON.stringify(stackTrace),
+              );
+              this.commonUtilService.showToast('UNABLE_TO_FETCH_CONTENT');
+            }
+          } else if (data.result && data.result[0].status === 'NOT_FOUND') {
+            this.showLoading = false;
+            this.showChildrenLoader = false;
+            this.childrenData.length = 0;
           }
-          if (this.faultyIdentifiers.length > 0) {
-            const stackTrace: any = {};
-            stackTrace.parentIdentifier = this.cardData.identifier;
-            stackTrace.faultyIdentifiers = this.faultyIdentifiers;
-            this.telemetryGeneratorService.generateErrorTelemetry(Environment.HOME,
-              ErrorCode.ERR_DOWNLOAD_FAILED,
-              ErrorType.SYSTEM,
-              PageId.COLLECTION_DETAIL,
-              JSON.stringify(stackTrace),
-            );
-            this.commonUtilService.showToast('UNABLE_TO_FETCH_CONTENT');
-          }
-        } else if (data.result && data.result[0].status === 'NOT_FOUND') {
-          this.showLoading = false;
-          this.showChildrenLoader = false;
-          this.childrenData.length = 0;
-        }
-      });
-    })
-     .catch((error: any) => {
+        });
+      })
+      .catch((error: any) => {
         this.zone.run(() => {
           console.log('error while loading content details', error);
           if (this.isDownloadStarted) {
@@ -806,8 +801,7 @@ export class CollectionDetailsPage {
   }
 
   /**
-   * To get redable file size
-   *
+   * To get readable file size
    * @param {number} size
    */
   getReadableFileSize(size): string {
@@ -926,7 +920,7 @@ export class CollectionDetailsPage {
       this.corRelationList);
   }
 
-  showDownloadConfirmatioAlert(myEvent) {
+  showDownloadConfirmationAlert(myEvent) {
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
       const popover = this.popoverCtrl.create(ConfirmAlertComponent, {}, {
         cssClass: 'confirm-alert-box'

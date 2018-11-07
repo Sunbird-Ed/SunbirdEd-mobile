@@ -12,7 +12,7 @@
 			</button>
 		</ion-buttons>
 	</ion-navbar>
-	<pb-horizontal *ngIf="course?.progress" [progress]="course?.progress" class="course-progress" [ngClass]="{'blurbackground': batchexp}"></pb-horizontal>
+	<pb-horizontal *ngIf="course?.progress" [progress]="course?.progress" class="course-progress" [ngClass]="{'blurbackground': batchExp}"></pb-horizontal>
 </ion-header>
 
 <ion-content padding [ngClass]="{'content-with-footer': (((courseCardData && courseCardData.batchId) && ( showResumeBtn || childrenData && childrenData.length || downloadIdentifiers && downloadIdentifiers.length && !isDownloadStarted )) || (courseCardData && !courseCardData.batchId && course && course.createdBy !== userId))}">

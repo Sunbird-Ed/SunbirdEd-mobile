@@ -122,9 +122,9 @@ export class EnrolledCourseDetailsPage {
   queuedIdentifiers: Array<string> = [];
   faultyIdentifiers: Array<any> = [];
   isDownloadStarted = false;
-  isDownlaodCompleted = false;
+  isDownloadCompleted = false;
   batchDetails: any;
-  batchexp: Boolean = false;
+  batchExp: Boolean = false;
   private corRelationList: Array<CorrelationData>;
   userId = '';
   userRating = 0;
@@ -164,7 +164,7 @@ export class EnrolledCourseDetailsPage {
     private appGlobalService: AppGlobalService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService
-    ) {
+  ) {
 
     this.appGlobalService.getUserId();
     this.checkLoggedInOrGuestUser();
@@ -215,15 +215,13 @@ export class EnrolledCourseDetailsPage {
   }
 
   checkCurrentUserType() {
-    this.preference.getString(PreferenceKey.SELECTED_USER_TYPE)
-      .then(val => {
-        if (val !== '') {
-          if (val === ProfileType.TEACHER) {
-            this.profileType = ProfileType.TEACHER;
-          } else if (val === ProfileType.STUDENT) {
-            this.profileType = ProfileType.STUDENT;
-          }
-        }
+    this.appGlobalService.getGuestUserInfo()
+      .then((userType) => {
+        this.profileType = userType;
+      })
+      .catch((error) => {
+        console.log('Error Occurred', error);
+        this.profileType = '';
       });
   }
 
@@ -386,19 +384,14 @@ export class EnrolledCourseDetailsPage {
           data = JSON.parse(data);
           if (data.result) {
             this.batchDetails = data.result;
-            console.log(this.batchDetails.status);
-            console.log(this.batchDetails.identifier);
-            console.log(this.batchDetails);
             this.preference.getString(PreferenceKey.COURSE_IDENTIFIER)
               .then(val => {
                 console.log(val);
                 if (val === this.batchDetails.identifier) {
-                  console.log('identifer present');
-                  this.batchexp = true;
+                  this.batchExp = true;
                 } else {
-                  console.log('notpresent');
                   if (this.batchDetails.status === 2) {
-                    this.batchexp = true;
+                    this.batchExp = true;
                     const alert = this.alertCtrl.create({
                       title: this.commonUtilService.translateMessage('BATCH_EXPIRED'),
                       message: this.commonUtilService.translateMessage('BATCH_EXPIRED_DESCRIPTION'),
@@ -417,7 +410,7 @@ export class EnrolledCourseDetailsPage {
                     });
                     alert.present();
                   } else {
-                    this.batchexp = false;
+                    this.batchExp = false;
                   }
                 }
               })
@@ -493,49 +486,49 @@ export class EnrolledCourseDetailsPage {
     };
 
     this.contentService.importContent(option)
-     .then((data: any) => {
-      data = JSON.parse(data);
-      this.zone.run(() => {
-        if (data.result && data.result[0].status === 'NOT_FOUND') {
-          this.showLoading = false;
-        }
+      .then((data: any) => {
+        data = JSON.parse(data);
+        this.zone.run(() => {
+          if (data.result && data.result[0].status === 'NOT_FOUND') {
+            this.showLoading = false;
+          }
 
-        if (data.result && data.result.length && this.isDownloadStarted) {
-          _.forEach(data.result, (value) => {
-            if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
-              this.queuedIdentifiers.push(value.identifier);
-            } else if (value.status === 'NOT_FOUND') {
-              this.faultyIdentifiers.push(value.identifier);
+          if (data.result && data.result.length && this.isDownloadStarted) {
+            _.forEach(data.result, (value) => {
+              if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
+                this.queuedIdentifiers.push(value.identifier);
+              } else if (value.status === 'NOT_FOUND') {
+                this.faultyIdentifiers.push(value.identifier);
+              }
+            });
+
+            if (isDownloadAllClicked) {
+              this.telemetryGeneratorService.generateDownloadAllClickTelemetry(
+                PageId.COURSE_DETAIL,
+                this.course,
+                this.queuedIdentifiers,
+                identifiers.length
+              );
             }
-          });
 
-          if (isDownloadAllClicked) {
-            this.telemetryGeneratorService.generateDownloadAllClickTelemetry(
-              PageId.COURSE_DETAIL,
-              this.course,
-              this.queuedIdentifiers,
-              identifiers.length
-            );
+            if (this.queuedIdentifiers.length === 0) {
+              this.restoreDownloadState();
+            }
+            if (this.faultyIdentifiers.length > 0) {
+              const stackTrace: any = {};
+              stackTrace.parentIdentifier = this.course.identifier;
+              stackTrace.faultyIdentifiers = this.faultyIdentifiers;
+              this.telemetryGeneratorService.generateErrorTelemetry(Environment.HOME,
+                ErrorCode.ERR_DOWNLOAD_FAILED,
+                ErrorType.SYSTEM,
+                PageId.COURSE_DETAIL,
+                JSON.stringify(stackTrace),
+              );
+              this.commonUtilService.showToast('UNABLE_TO_FETCH_CONTENT');
+            }
           }
-
-          if (this.queuedIdentifiers.length === 0) {
-            this.restoreDownloadState();
-          }
-          if (this.faultyIdentifiers.length > 0) {
-            const stackTrace: any = {};
-            stackTrace.parentIdentifier = this.course.identifier;
-            stackTrace.faultyIdentifiers = this.faultyIdentifiers;
-            this.telemetryGeneratorService.generateErrorTelemetry(Environment.HOME,
-              ErrorCode.ERR_DOWNLOAD_FAILED,
-              ErrorType.SYSTEM,
-              PageId.COURSE_DETAIL,
-              JSON.stringify(stackTrace),
-            );
-            this.commonUtilService.showToast('UNABLE_TO_FETCH_CONTENT');
-          }
-        }
-      });
-    })
+        });
+      })
       .catch((error) => {
         this.zone.run(() => {
           if (this.isDownloadStarted) {
@@ -758,7 +751,7 @@ export class EnrolledCourseDetailsPage {
             if (this.queuedIdentifiers.length === this.currentCount) {
               this.isDownloadStarted = false;
               this.currentCount = 0;
-              this.isDownlaodCompleted = true;
+              this.isDownloadCompleted = true;
               this.downloadIdentifiers.length = 0;
               this.queuedIdentifiers.length = 0;
             }
