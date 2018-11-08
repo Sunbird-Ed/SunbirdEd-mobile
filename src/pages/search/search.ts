@@ -8,7 +8,6 @@ import {
   NavParams,
   NavController,
   Events,
-  Popover,
   Navbar,
   Platform
 } from 'ionic-angular';
@@ -47,7 +46,6 @@ import {
 } from '../../app/app.constant';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 import { AppGlobalService } from '../../service/app-global.service';
-import { PopoverController } from 'ionic-angular';
 import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
 import { CommonUtilService } from '../../service/common-util.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
@@ -124,7 +122,6 @@ export class SearchPage {
     private fileUtil: FileUtil,
     private events: Events,
     private appGlobalService: AppGlobalService,
-    private popUp: PopoverController,
     private platform: Platform,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private commonUtilService: CommonUtilService,

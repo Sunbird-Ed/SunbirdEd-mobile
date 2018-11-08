@@ -8,12 +8,14 @@ import {
   NavController,
   NavParams,
   Events,
-  ToastController,
-  LoadingController,
   Platform,
   Navbar,
   PopoverController
 } from 'ionic-angular';
+import { TranslateService } from '@ngx-translate/core';
+import { SocialSharing } from '@ionic-native/social-sharing';
+import * as _ from 'lodash';
+
 import {
   ContentService,
   FileUtil,
@@ -21,39 +23,26 @@ import {
   Environment,
   Mode,
   ImpressionType,
-  TelemetryService,
   Rollup,
   InteractType,
   InteractSubtype,
   ShareUtil,
   BuildParamService,
-  AuthService,
-  SharedPreferences,
   ProfileType,
   CorrelationData,
   TelemetryObject,
   ErrorCode,
   ErrorType
 } from 'sunbird';
-import * as _ from 'lodash';
-import { ContentDetailsPage } from '../content-details/content-details';
-import { ContentActionsComponent } from '../../component/content-actions/content-actions';
-import { ConfirmAlertComponent } from '../../component/confirm-alert/confirm-alert';
-import { TranslateService } from '@ngx-translate/core';
-import { SocialSharing } from '@ionic-native/social-sharing';
-import { ContentRatingAlertComponent } from '../../component/content-rating-alert/content-rating-alert';
+import { ContentDetailsPage } from '@app/pages/content-details/content-details';
+import { ContentActionsComponent, ConfirmAlertComponent, ContentRatingAlertComponent } from '@app/component';
 import {
   ContentType,
   MimeType,
-  ShareUrl,
-  PreferenceKey
-} from '../../app/app.constant';
-import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
-import { AppGlobalService } from '../../service/app-global.service';
-import { CommonUtilService } from '../../service/common-util.service';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { ViewCreditsComponent } from '../../component/view-credits/view-credits';
-
+  ShareUrl
+} from '@app/app';
+import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
+import { AppGlobalService, CommonUtilService, TelemetryGeneratorService, CourseUtilService } from '@app/service';
 
 @IonicPage()
 @Component({
@@ -61,15 +50,7 @@ import { ViewCreditsComponent } from '../../component/view-credits/view-credits'
   templateUrl: 'collection-details.html',
 })
 export class CollectionDetailsPage {
-
-  /**
-  * Contains content details
-  */
   contentDetail: any;
-
-  /**
-   * Contains children content data
-   */
   childrenData: Array<any>;
 
   /**
@@ -83,8 +64,8 @@ export class CollectionDetailsPage {
   cardData: any;
 
   /**
-     * Contains Parent Content Details
-     */
+   * Contains Parent Content Details
+   */
   parentContent: any;
 
   /**
@@ -135,10 +116,10 @@ export class CollectionDetailsPage {
   /**
    * Download complete falg
    */
-  isDownlaodCompleted = false;
+  isDownloadCompleted = false;
 
   /**
-   * Total downlaod count
+   * Total download count
    */
   totalDownload: number;
 
@@ -161,13 +142,10 @@ export class CollectionDetailsPage {
    * Contains total size of locally not available content(s)
    */
   downloadContentsSize: string;
-
   downloadPercentage: number;
-
   objId;
   objType;
   objVer;
-
   public showLoading = false;
 
   /**
@@ -179,7 +157,6 @@ export class CollectionDetailsPage {
    * To hold rating data
    */
   userRating = 0;
-  /**checks weather course is installed or not */
   isAlreadyEnrolled = false;
   /** sets true , if it comes from courses */
   fromCoursesPage = false;
@@ -195,42 +172,36 @@ export class CollectionDetailsPage {
   public didViewLoad: boolean;
   public backButtonFunc = undefined;
   public baseUrl = '';
-
-
   guestUser = false;
-
   profileType = '';
   public corRelationList: Array<CorrelationData>;
   public shouldGenerateEndTelemetry = false;
   public source = '';
 
   @ViewChild(Navbar) navBar: Navbar;
-  constructor(public navCtrl: NavController,
-    public navParams: NavParams,
-    public contentService: ContentService,
-    public zone: NgZone,
-    public events: Events,
-    public toastCtrl: ToastController,
-    public loadingCtrl: LoadingController,
-    public popoverCtrl: PopoverController,
-    public fileUtil: FileUtil,
-    public platform: Platform,
-    public telemetryService: TelemetryService,
-    public authService: AuthService,
-    public translate: TranslateService,
-    public social: SocialSharing,
-    public shareUtil: ShareUtil,
-    public buildParamService: BuildParamService,
-    public preference: SharedPreferences,
-    public appGlobalService: AppGlobalService,
+  constructor(
+    private navCtrl: NavController,
+    private navParams: NavParams,
+    private contentService: ContentService,
+    private zone: NgZone,
+    private events: Events,
+    private popoverCtrl: PopoverController,
+    private fileUtil: FileUtil,
+    private platform: Platform,
+    private translate: TranslateService,
+    private social: SocialSharing,
+    private shareUtil: ShareUtil,
+    private buildParamService: BuildParamService,
+    private appGlobalService: AppGlobalService,
     private commonUtilService: CommonUtilService,
-    private telemetryGeneratorService: TelemetryGeneratorService) {
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private courseUtilService: CourseUtilService
+  ) {
 
     this.objRollup = new Rollup();
-
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
-    this.handleNetworkAvailability();
+    this.getBaseURL();
   }
 
   ionViewDidLoad() {
@@ -242,12 +213,55 @@ export class CollectionDetailsPage {
     this.registerDeviceBackButton();
   }
 
+  /**
+   * Ionic life cycle hook
+   */
+  ionViewWillEnter(): void {
+    this.zone.run(() => {
+      this.resetVariables();
+      this.cardData = this.navParams.get('content');
+      this.corRelationList = this.navParams.get('corRelation');
+      const depth = this.navParams.get('depth');
+      this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
+      this.source = this.navParams.get('source');
+      this.fromCoursesPage = this.navParams.get('fromCoursesPage');
+      this.isAlreadyEnrolled = this.navParams.get('isAlreadyEnrolled');
+
+      // check for parent content
+      this.parentContent = this.navParams.get('parentContent');
+
+      if (depth) {
+        this.depth = depth;
+        this.showDownloadBtn = false;
+        this.isDepthChild = true;
+      } else {
+        this.isDepthChild = false;
+      }
+
+      this.identifier = this.cardData.contentId || this.cardData.identifier;
+
+      if (!this.didViewLoad) {
+        this.generateRollUp();
+        const contentType = this.cardData.contentData ? this.cardData.contentData.contentType : this.cardData.contentType;
+        this.objType = contentType;
+        this.generateStartEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
+        this.generateImpressionEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
+      }
+
+      this.didViewLoad = true;
+      this.setContentDetails(this.identifier, true);
+      this.subscribeGenieEvent();
+    });
+  }
+
   handleBackButton() {
     this.didViewLoad = false;
     this.generateEndEvent(this.objId, this.objType, this.objVer);
+
     if (this.shouldGenerateEndTelemetry) {
       this.generateQRSessionEndEvent(this.source, this.cardData.identifier);
     }
+
     this.navCtrl.pop();
     this.backButtonFunc();
   }
@@ -260,12 +274,13 @@ export class CollectionDetailsPage {
     }, 10);
   }
 
-  handleNetworkAvailability() {
+  getBaseURL() {
     this.buildParamService.getBuildConfigParam('BASE_URL')
       .then(response => {
         this.baseUrl = response;
       })
-      .catch(() => {
+      .catch((error) => {
+        console.error('Error Occurred=> ', error);
       });
   }
 
@@ -305,30 +320,28 @@ export class CollectionDetailsPage {
  * Get the session to know if the user is logged-in or guest
  *
  */
+
   checkLoggedInOrGuestUser() {
     this.guestUser = !this.appGlobalService.isUserLoggedIn();
   }
 
   checkCurrentUserType() {
-    this.preference.getString(PreferenceKey.SELECTED_USER_TYPE)
-      .then(val => {
-        if (val !== '') {
-          if (val === ProfileType.TEACHER) {
-            this.profileType = ProfileType.TEACHER;
-          } else if (val === ProfileType.STUDENT) {
-            this.profileType = ProfileType.STUDENT;
-          }
-        }
+    this.appGlobalService.getGuestUserInfo()
+      .then((userType) => {
+        this.profileType = userType;
+      })
+      .catch((error) => {
+        console.error('Error Occurred', error);
+        this.profileType = '';
       });
   }
 
   /**
    * To set content details in local variable
-   *
    * @param {string} identifier identifier of content / course
    */
   setContentDetails(identifier, refreshContentDetails: boolean | true) {
-    const loader = this.getLoader();
+    const loader = this.commonUtilService.getLoader();
     loader.present();
     const option = {
       contentId: identifier,
@@ -337,16 +350,16 @@ export class CollectionDetailsPage {
       attachContentAccess: true
     };
     this.contentService.getContentDetail(option)
-    .then((data: any) => {
-      this.zone.run(() => {
-        data = JSON.parse(data);
-        loader.dismiss().then(() => {
-          if (data && data.result) {
-            this.extractApiResponse(data);
-          }
+      .then((data: any) => {
+        this.zone.run(() => {
+          data = JSON.parse(data);
+          loader.dismiss().then(() => {
+            if (data && data.result) {
+              this.extractApiResponse(data);
+            }
+          });
         });
-      });
-    })
+      })
       .catch((error: any) => {
         console.log('error while loading content details', error);
         loader.dismiss();
@@ -413,14 +426,15 @@ export class CollectionDetailsPage {
       this.objRollup.l1 = this.identifier;
     } else {
       _.forEach(hierarchyInfo, (value, key) => {
-        if (key === 0) {
-          this.objRollup.l1 = value.identifier;
-        } else if (key === 1) {
-          this.objRollup.l2 = value.identifier;
-        } else if (key === 2) {
-          this.objRollup.l3 = value.identifier;
-        } else if (key === 3) {
-          this.objRollup.l4 = value.identifier;
+        switch (key) {
+          case 0: this.objRollup.l1 = value.identifier;
+            break;
+          case 1: this.objRollup.l2 = value.identifier;
+            break;
+          case 2: this.objRollup.l3 = value.identifier;
+            break;
+          case 3: this.objRollup.l4 = value.identifier;
+            break;
         }
       });
     }
@@ -476,55 +490,55 @@ export class CollectionDetailsPage {
 
     // Call content service
     this.contentService.importContent(option)
-    .then((data: any) => {
-      this.zone.run(() => {
-        data = JSON.parse(data);
+      .then((data: any) => {
+        this.zone.run(() => {
+          data = JSON.parse(data);
 
-        if (data.result && data.result.length && this.isDownloadStarted) {
-          _.forEach(data.result, (value) => {
-            if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
-              this.queuedIdentifiers.push(value.identifier);
-            } else if (value.status === 'NOT_FOUND') {
-              this.faultyIdentifiers.push(value.identifier);
+          if (data.result && data.result.length && this.isDownloadStarted) {
+            _.forEach(data.result, (value) => {
+              if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
+                this.queuedIdentifiers.push(value.identifier);
+              } else if (value.status === 'NOT_FOUND') {
+                this.faultyIdentifiers.push(value.identifier);
+              }
+            });
+
+            if (isDownloadAllClicked) {
+              this.telemetryGeneratorService.generateDownloadAllClickTelemetry(
+                PageId.COLLECTION_DETAIL,
+                this.contentDetail,
+                this.queuedIdentifiers,
+                identifiers.length
+              );
             }
-          });
 
-          if (isDownloadAllClicked) {
-            this.telemetryGeneratorService.generateDownloadAllClickTelemetry(
-              PageId.COLLECTION_DETAIL,
-              this.contentDetail,
-              this.queuedIdentifiers,
-              identifiers.length
-            );
-          }
-
-          if (this.queuedIdentifiers.length === 0) {
-            if (this.isDownloadStarted) {
-              this.showDownloadBtn = true;
-              this.isDownloadStarted = false;
-              this.showLoading = false;
+            if (this.queuedIdentifiers.length === 0) {
+              if (this.isDownloadStarted) {
+                this.showDownloadBtn = true;
+                this.isDownloadStarted = false;
+                this.showLoading = false;
+              }
             }
+            if (this.faultyIdentifiers.length > 0) {
+              const stackTrace: any = {};
+              stackTrace.parentIdentifier = this.cardData.identifier;
+              stackTrace.faultyIdentifiers = this.faultyIdentifiers;
+              this.telemetryGeneratorService.generateErrorTelemetry(Environment.HOME,
+                ErrorCode.ERR_DOWNLOAD_FAILED,
+                ErrorType.SYSTEM,
+                PageId.COLLECTION_DETAIL,
+                JSON.stringify(stackTrace),
+              );
+              this.commonUtilService.showToast('UNABLE_TO_FETCH_CONTENT');
+            }
+          } else if (data.result && data.result[0].status === 'NOT_FOUND') {
+            this.showLoading = false;
+            this.showChildrenLoader = false;
+            this.childrenData.length = 0;
           }
-          if (this.faultyIdentifiers.length > 0) {
-            const stackTrace: any = {};
-            stackTrace.parentIdentifier = this.cardData.identifier;
-            stackTrace.faultyIdentifiers = this.faultyIdentifiers;
-            this.telemetryGeneratorService.generateErrorTelemetry(Environment.HOME,
-              ErrorCode.ERR_DOWNLOAD_FAILED,
-              ErrorType.SYSTEM,
-              PageId.COLLECTION_DETAIL,
-              JSON.stringify(stackTrace),
-            );
-            this.commonUtilService.showToast('UNABLE_TO_FETCH_CONTENT');
-          }
-        } else if (data.result && data.result[0].status === 'NOT_FOUND') {
-          this.showLoading = false;
-          this.showChildrenLoader = false;
-          this.childrenData.length = 0;
-        }
-      });
-    })
-     .catch((error: any) => {
+        });
+      })
+      .catch((error: any) => {
         this.zone.run(() => {
           console.log('error while loading content details', error);
           if (this.isDownloadStarted) {
@@ -583,12 +597,12 @@ export class CollectionDetailsPage {
         this.downloadIdentifiers.push(value.contentData.identifier);
       }
     });
-    if (this.downloadIdentifiers.length && !this.isDownlaodCompleted) {
+    if (this.downloadIdentifiers.length && !this.isDownloadCompleted) {
       this.showDownloadBtn = true;
     }
   }
+
   /**
-   *
    * @param {array} data
    */
   showDownloadAllBtn(data) {
@@ -604,49 +618,6 @@ export class CollectionDetailsPage {
       if (this.downloadIdentifiers.length) {
         this.showDownloadBtn = true;
       }
-    });
-  }
-
-
-
-
-  /**
-   * Ionic life cycle hook
-   */
-  ionViewWillEnter(): void {
-    this.zone.run(() => {
-      this.resetVariables();
-      this.cardData = this.navParams.get('content');
-      this.corRelationList = this.navParams.get('corRelation');
-      const depth = this.navParams.get('depth');
-      this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
-      this.source = this.navParams.get('source');
-      this.fromCoursesPage = this.navParams.get('fromCoursesPage');
-      this.isAlreadyEnrolled = this.navParams.get('isAlreadyEnrolled');
-
-      // check for parent content
-      this.parentContent = this.navParams.get('parentContent');
-
-      if (depth !== undefined) {
-        this.depth = depth;
-        this.showDownloadBtn = false;
-        this.isDepthChild = true;
-      } else {
-        this.isDepthChild = false;
-      }
-      this.identifier = this.cardData.contentId || this.cardData.identifier;
-
-
-      if (!this.didViewLoad) {
-        this.generateRollUp();
-        const contentType = this.cardData.contentData ? this.cardData.contentData.contentType : this.cardData.contentType;
-        this.objType = contentType;
-        this.generateStartEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
-        this.generateImpressionEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
-      }
-      this.didViewLoad = true;
-      this.setContentDetails(this.identifier, true);
-      this.subscribeGenieEvent();
     });
   }
 
@@ -687,7 +658,6 @@ export class CollectionDetailsPage {
   resetVariables() {
     this.isDownloadStarted = false;
     this.showLoading = false;
-    // this.downloadProgress = '';
     this.downloadProgress = 0;
     this.cardData = '';
     this.childrenData = [];
@@ -697,7 +667,7 @@ export class CollectionDetailsPage {
     this.queuedIdentifiers = [];
     this.isDepthChild = this.isDepthChild;
     this.showDownloadBtn = false;
-    this.isDownlaodCompleted = false;
+    this.isDownloadCompleted = false;
     this.currentCount = 0;
     this.downloadPercentage = 0;
     this.isUpdateAvailable = false;
@@ -736,7 +706,7 @@ export class CollectionDetailsPage {
               this.showLoading = false;
               this.isDownloadStarted = false;
               this.showDownloadBtn = false;
-              this.isDownlaodCompleted = true;
+              this.isDownloadCompleted = true;
               this.contentDetail.isAvailableLocally = true;
               this.downloadPercentage = 0;
               this.updateSavedResources();
@@ -789,7 +759,7 @@ export class CollectionDetailsPage {
 
   share() {
     this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_LIBRARY_INITIATED, this.contentDetail.contentType);
-    const loader = this.getLoader();
+    const loader = this.commonUtilService.getLoader();
     loader.present();
     const url = this.baseUrl + ShareUrl.COLLECTION + this.contentDetail.identifier;
     if (this.contentDetail.isAvailableLocally) {
@@ -812,7 +782,6 @@ export class CollectionDetailsPage {
    * Download single content
    */
   downloadAllContent(): void {
-    // this.downloadProgress = '0 %';
     this.downloadProgress = 0;
     this.showLoading = true;
     this.isDownloadStarted = true;
@@ -821,17 +790,7 @@ export class CollectionDetailsPage {
   }
 
   /**
-   * Ionic life cycle hook
-   */
-  ionViewWillLeave(): void {
-    // this.downloadProgress = '';
-    this.downloadProgress = 0;
-    this.events.unsubscribe('genie.event');
-  }
-
-  /**
-   * To get redable file size
-   *
+   * To get readable file size
    * @param {number} size
    */
   getReadableFileSize(size): string {
@@ -843,16 +802,6 @@ export class CollectionDetailsPage {
     return (n.toFixed(n >= 10 || l < 1 ? 0 : 1) + ' ' + units[l]);
   }
 
-  /**
-   * Function to get loader instance
-   */
-  getLoader(): any {
-    return this.loadingCtrl.create({
-      duration: 30000,
-      spinner: 'crescent'
-    });
-  }
-
   showOverflowMenu(event) {
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.KEBAB_MENU_CLICKED,
@@ -862,6 +811,7 @@ export class CollectionDetailsPage {
       undefined,
       this.objRollup,
       this.corRelationList);
+
     const popover = this.popoverCtrl.create(ContentActionsComponent, {
       content: this.contentDetail,
       isChild: this.isDepthChild,
@@ -893,10 +843,7 @@ export class CollectionDetailsPage {
   }
 
   generateStartEvent(objectId, objectType, objectVersion) {
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = objectId;
-    telemetryObject.type = objectType;
-    telemetryObject.version = objectVersion;
+    const telemetryObject: TelemetryObject = { id: objectId, type: objectType, version: objectVersion, rollup: undefined };
     this.telemetryGeneratorService.generateStartTelemetry(
       PageId.COLLECTION_DETAIL,
       telemetryObject,
@@ -905,10 +852,7 @@ export class CollectionDetailsPage {
   }
 
   generateEndEvent(objectId, objectType, objectVersion) {
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = objectId;
-    telemetryObject.type = objectType;
-    telemetryObject.version = objectVersion;
+    const telemetryObject: TelemetryObject = { id: objectId, type: objectType, version: objectVersion, rollup: undefined };
     this.telemetryGeneratorService.generateEndTelemetry(
       objectType,
       Mode.PLAY,
@@ -920,12 +864,8 @@ export class CollectionDetailsPage {
   }
 
   generateQRSessionEndEvent(pageId: string, qrData: string) {
-
     if (pageId !== undefined) {
-      const telemetryObject: TelemetryObject = new TelemetryObject();
-      telemetryObject.id = qrData;
-      telemetryObject.type = 'qr';
-      telemetryObject.version = '';
+      const telemetryObject: TelemetryObject = { id: qrData, type: 'qr', version: '', rollup: undefined };
       this.telemetryGeneratorService.generateEndTelemetry(
         'qr',
         Mode.PLAY,
@@ -950,7 +890,7 @@ export class CollectionDetailsPage {
       this.corRelationList);
   }
 
-  showDownloadConfirmatioAlert(myEvent) {
+  showDownloadConfirmationAlert(myEvent) {
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
       const popover = this.popoverCtrl.create(ConfirmAlertComponent, {}, {
         cssClass: 'confirm-alert-box'
@@ -982,39 +922,31 @@ export class CollectionDetailsPage {
       });
     });
   }
+
   /**
- * Function to View Credits
- */
+   * Function to View Credits
+   */
   viewCredits() {
-    const popUp = this.popoverCtrl.create(
-      ViewCreditsComponent,
-      {
-        content: this.contentDetail,
-        pageId: PageId.COLLECTION_DETAIL,
-        rollUp: this.objRollup,
-        correlation: this.corRelationList
-      },
-      {
-        cssClass: 'view-credits'
-      }
-    );
-    popUp.present({
-      ev: event
-    });
-    popUp.onDidDismiss(data => {
-    });
+    this.courseUtilService.showCredits(this.contentDetail, PageId.COLLECTION_DETAIL, this.objRollup, this.corRelationList);
   }
+
   /**
    * method generates telemetry on click Read less or Read more
    * @param {string} param string as read less or read more
    * @param {object} objRollup object roll up
-   * @param corRelationList corelationList
+   * @param corRelationList correlation List
    */
   readLessorReadMore(param, objRollup, corRelationList) {
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = this.objId;
-    telemetryObject.type = this.objType;
-    telemetryObject.version = this.objVer;
+    const telemetryObject: TelemetryObject = { id: this.objId, type: this.objType, version: this.objVer, rollup: undefined };
     this.telemetryGeneratorService.readLessOrReadMore(param, objRollup, corRelationList, telemetryObject);
+  }
+
+  /**
+   * Ionic life cycle hook
+   */
+  ionViewWillLeave(): void {
+    // this.downloadProgress = '';
+    this.downloadProgress = 0;
+    this.events.unsubscribe('genie.event');
   }
 }

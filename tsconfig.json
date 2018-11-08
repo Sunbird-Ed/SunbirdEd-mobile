@@ -15,7 +15,11 @@
     "typeRoots": [
       "../node_modules/@types"
     ],
-    "types": ["node"]
+    "types": ["node"],
+    "baseUrl": "./src",
+    "paths": {
+      "@app/*": ["*"]
+    }
   },
   "include": [
     "src/**/*.ts"

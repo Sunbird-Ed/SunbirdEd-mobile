@@ -56,7 +56,7 @@ import { EventTopics } from '../../app/app.constant';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { CourseUtilService } from '../../service/course-util.service';
-import { mockRes } from '../../mock.spec.data';
+import { mockRes } from './courses.spec.data';
 import {
     mockRes as CourseMock
 } from '../courses/courses.spec.data';
