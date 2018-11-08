@@ -423,6 +423,10 @@ page-profile {
     margin-right: 10px;
 }
 
+.ML10{
+    margin-left: 10px;
+}
+
 .MB5 {
     margin-bottom: 5px;
 }
@@ -439,19 +443,19 @@ page-profile {
     margin-top: 15px;
 }
 
-.arrow-down:before{
-    content: '\02C5';
-    height: 0;
-    width: 0;
-    margin: 0 5px;
-}
+// .arrow-down:before{
+//     content: '\02C5';
+//     height: 0;
+//     width: 0;
+//     margin: 0 5px;
+// }
 
-.arrow-up:before{
-    content: '\02C4';
-    height: 0;
-    width: 0;
-    margin: 0 5px;
-}
+// .arrow-up:before{
+//     content: '\02C4';
+//     height: 0;
+//     width: 0;
+//     margin: 0 5px;
+// }
 
 .txt-lowercase {
     text-transform: lowercase;
