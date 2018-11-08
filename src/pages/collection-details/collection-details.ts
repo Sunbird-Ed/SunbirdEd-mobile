@@ -564,7 +564,8 @@ export class CollectionDetailsPage {
   setChildContents() {
     const hierarchyInfo = this.cardData.hierarchyInfo ? this.cardData.hierarchyInfo : null;
     const option = { contentId: this.identifier, hierarchyInfo: hierarchyInfo }; // TODO: remove level
-    this.contentService.getChildContents(option, (data: any) => {
+    this.contentService.getChildContents(option)
+     .then((data: any) => {
       data = JSON.parse(data);
       this.zone.run(() => {
         if (data && data.result && data.result.children) {
@@ -577,9 +578,9 @@ export class CollectionDetailsPage {
         }
         this.showChildrenLoader = false;
       });
-    },
-      (error: string) => {
-        console.error('Error: while fetching child contents ===>>>', error);
+    })
+      .catch((error: string) => {
+        console.log('Error: while fetching child contents ===>>>', error);
         this.zone.run(() => {
           this.showChildrenLoader = false;
         });
@@ -909,12 +910,12 @@ export class CollectionDetailsPage {
 
   cancelDownload() {
     this.telemetryGeneratorService.generateCancelDownloadTelemetry(this.contentDetail);
-    this.contentService.cancelDownload(this.identifier, () => {
+    this.contentService.cancelDownload(this.identifier).then(() => {
       this.zone.run(() => {
         this.showLoading = false;
         this.navCtrl.pop();
       });
-    }, () => {
+    }).catch(() => {
       this.zone.run(() => {
         this.showLoading = false;
         this.navCtrl.pop();

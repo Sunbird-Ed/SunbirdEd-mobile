@@ -462,13 +462,13 @@ export class SearchPage {
     pageAssembleCriteria.name = PageName.DIAL_CODE;
     pageAssembleCriteria.filters = pagetAssemblefilter;
 
-    this.pageService.getPageAssemble(pageAssembleCriteria, res => {
+    this.pageService.getPageAssemble(pageAssembleCriteria) .then((res: any) => {
       this.zone.run(() => {
         const response = JSON.parse(res);
         const sections = JSON.parse(response.sections);
         // TODO
       });
-    }, error => {
+    }) .catch(error => {
       this.zone.run(() => {
         this.showLoader = false;
         if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
@@ -811,11 +811,11 @@ export class SearchPage {
   }
 
   cancelDownload() {
-    this.contentService.cancelDownload(this.parentContent.identifier, () => {
+    this.contentService.cancelDownload(this.parentContent.identifier) .then(() => {
       this.zone.run(() => {
         this.showLoading = false;
       });
-    }, () => {
+    }) .catch(() => {
       this.zone.run(() => {
         this.showLoading = false;
       });

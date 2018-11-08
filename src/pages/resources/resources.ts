@@ -319,7 +319,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       }
     }
 
-    this.pageService.getPageAssemble(pageAssembleCriteria, res => {
+    this.pageService.getPageAssemble(pageAssembleCriteria) .then((res: any) => {
       that.ngZone.run(() => {
         const response = JSON.parse(res);
         // TODO Temporary code - should be fixed at backend
@@ -345,7 +345,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         // this.noInternetConnection = false;
         this.checkEmptySearchResult(isAfterLanguageChange);
       });
-    }, error => {
+    }) .catch(error => {
       console.log('error while getting popular resources...', error);
       that.ngZone.run(() => {
         this.pageApiLoader = false;

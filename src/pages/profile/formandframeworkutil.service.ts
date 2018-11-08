@@ -119,7 +119,7 @@ export class FormAndFrameworkUtilService {
             filePath: FormConstant.DEFAULT_SYALLABUS_PATH
         };
         // form api call
-        this.formService.getForm(req, (res: any) => {
+        this.formService.getForm(req).then((res: any) => {
             const response: any = JSON.parse(res);
             console.log('Form Result - ' + response.result);
             let frameworks: Array<any> = [];
@@ -151,7 +151,7 @@ export class FormAndFrameworkUtilService {
                 this.appGlobalService.setSyllabusList(syllabusList);
             }
             resolve(syllabusList);
-        }, (error: any) => {
+        }) .catch((error: any) => {
             console.log('Error - ' + error);
             // Adding default framework into the list
             const defaultFramework = {
@@ -183,12 +183,12 @@ export class FormAndFrameworkUtilService {
             filePath: FormConstant.DEFAULT_PAGE_COURSE_FILTER_PATH
         };
         // form api call
-        this.formService.getForm(req, (res: any) => {
+        this.formService.getForm(req).then((res: any) => {
             const response: any = JSON.parse(res);
             courseFilterConfig = response.result.fields;
             this.appGlobalService.setCourseFilterConfig(courseFilterConfig);
             resolve(courseFilterConfig);
-        }, (error: any) => {
+        }) .catch((error: any) => {
             console.log('Error - ' + error);
             resolve(courseFilterConfig);
         });
@@ -211,12 +211,12 @@ export class FormAndFrameworkUtilService {
             filePath: FormConstant.DEFAULT_PAGE_LIBRARY_FILTER_PATH
         };
         // form api call
-        this.formService.getForm(req, (res: any) => {
+        this.formService.getForm(req).then((res: any) => {
             const response: any = JSON.parse(res);
             libraryFilterConfig = response.result.fields;
             this.appGlobalService.setLibraryFilterConfig(libraryFilterConfig);
             resolve(libraryFilterConfig);
-        }, (error: any) => {
+        }) .catch((error: any) => {
             console.log('Error - ' + error);
             resolve(libraryFilterConfig);
         });
@@ -301,7 +301,7 @@ export class FormAndFrameworkUtilService {
                         action: 'upgrade'
                     };
                     // form api call
-                    this.formService.getForm(req, (res: any) => {
+                    this.formService.getForm(req).then((res: any) => {
                         const response: any = JSON.parse(res);
 
                         let fields: Array<any> = [];
@@ -347,7 +347,7 @@ export class FormAndFrameworkUtilService {
                         }
 
                         resolve(result);
-                    }, (error: any) => {
+                    }) .catch((error: any) => {
                         reject(error);
                     });
                 });

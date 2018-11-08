@@ -345,7 +345,7 @@ export class AppGlobalService implements OnDestroy {
     }
 
     private getCurrentUserProfile() {
-        this.profile.getCurrentUser((response) => {
+        this.profile.getCurrentUser().then((response: any) => {
             this.guestUserProfile = JSON.parse(response);
             if (this.guestUserProfile.syllabus && this.guestUserProfile.syllabus.length > 0) {
                 this.getFrameworkDetails(this.guestUserProfile.syllabus[0])
@@ -364,7 +364,7 @@ export class AppGlobalService implements OnDestroy {
                 this.frameworkData = [];
                 this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
             }
-        }, (error) => {
+        }) .catch((error) => {
             this.guestUserProfile = undefined;
             this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
         });

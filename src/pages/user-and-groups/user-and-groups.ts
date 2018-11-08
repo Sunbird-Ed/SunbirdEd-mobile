@@ -476,11 +476,11 @@ export class UserAndGroupsPage {
         local: true,
         latestCreatedProfile: true
       };
-      this.profileService.getProfile(req, lastCreatedProfile => {
+      this.profileService.getProfile(req).then((lastCreatedProfile: any) => {
         console.log('lastCreatedProfile: ', lastCreatedProfile);
         this.lastCreatedProfileData = JSON.parse(lastCreatedProfile);
         resolve(JSON.parse(lastCreatedProfile));
-      }, error => {
+      }).catch(error => {
         reject(null);
         console.log('error in fetching last created profile data' + error);
       });
@@ -641,15 +641,15 @@ export class UserAndGroupsPage {
       PageId.USERS_GROUPS,
       telemetryObject
     );
-    this.profileService.deleteUser(uid,
-      (result) => {
+    this.profileService.deleteUser(uid)
+      .then((result) => {
         console.log('User Deleted Successfully', result);
         this.userList.splice(index, 1);
         if (this.userList.length === 0) {
           this.noUsersPresent = true;
         }
 
-      }, (error) => {
+      }) .catch((error) => {
         console.error('Error Occurred=', error);
       });
   }
@@ -697,7 +697,7 @@ export class UserAndGroupsPage {
       .catch(error => {
         console.log('Error : ' + error);
       });
-      this.profileService.setCurrentUser(selectedUser.uid, () => {
+      this.profileService.setCurrentUser(selectedUser.uid) .then(() => {
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('SWITCHING_TO', selectedUser.handle),
         undefined, undefined, 1000);
     setTimeout(() => {
@@ -716,7 +716,7 @@ export class UserAndGroupsPage {
       this.event.publish(AppGlobalService.USER_INFO_UPDATED);
       this.app.getRootNav().setRoot(TabsPage);
     }, 1000);
-  }, (error) => {
+  }) .catch((error) => {
     console.log('Error ' + error);
   });
   }
