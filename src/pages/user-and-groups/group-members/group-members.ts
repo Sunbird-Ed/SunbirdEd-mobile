@@ -72,11 +72,11 @@ export class GroupMembersPage {
         local: true,
         latestCreatedProfile: true
       };
-      this.profileService.getProfile(req, lastCreatedProfile => {
+      this.profileService.getProfile(req).then((lastCreatedProfile: any) => {
         console.log('lastCreatedProfile: ', lastCreatedProfile);
         this.lastCreatedProfileData = JSON.parse(lastCreatedProfile);
         resolve(JSON.parse(lastCreatedProfile));
-      }, error => {
+      }).catch(error => {
         reject(null);
         console.log('error in fetching last created profile data' + error);
       });

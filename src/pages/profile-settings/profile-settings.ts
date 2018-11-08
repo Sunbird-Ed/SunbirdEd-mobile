@@ -140,7 +140,7 @@ export class ProfileSettingsPage {
    * Initializes guest user object
    */
   getGuestUser() {
-    this.profileService.getCurrentUser((response) => {
+    this.profileService.getCurrentUser().then((response: any) => {
       this.profile = JSON.parse(response);
       if (this.navParams.get('isChangeRoleRequest')) {
         this.profile.syllabus = [];
@@ -151,7 +151,7 @@ export class ProfileSettingsPage {
       }
       this.profileForTelemetry = this.profile;
       this.initUserForm();
-    }, () => {
+    }) .catch(() => {
       this.profile = undefined;
       this.initUserForm();
     });
@@ -425,8 +425,8 @@ export class ProfileSettingsPage {
         }
       });
     }
-    this.profileService.updateProfile(req,
-      (res: any) => {
+    this.profileService.updateProfile(req)
+      .then((res: any) => {
         if (req.profileType === ProfileType.TEACHER) {
           initTabs(this.container, GUEST_TEACHER_TABS);
         } else if (req.profileType === ProfileType.STUDENT) {
@@ -448,8 +448,8 @@ export class ProfileSettingsPage {
         this.navCtrl.push(TabsPage, {
           loginMode: 'guest'
         });
-      },
-      (err: any) => {
+      })
+      .catch((err: any) => {
         loader.dismiss();
         this.commonUtilService.showToast('PROFILE_UPDATE_FAILED');
         console.log('Err', err);

@@ -297,8 +297,8 @@ export class QrCodeResultPage {
       });
     }
 
-    this.profileService.updateProfile(req,
-      (res: any) => {
+    this.profileService.updateProfile(req)
+      .then((res: any) => {
         const updateProfileRes = JSON.parse(res);
         if (updateProfileRes.syllabus && updateProfileRes.syllabus.length && updateProfileRes.board && updateProfileRes.board.length
           && updateProfileRes.grade && updateProfileRes.grade.length && updateProfileRes.medium && updateProfileRes.medium.length) {
@@ -306,8 +306,8 @@ export class QrCodeResultPage {
           this.events.publish('refresh:profile');
         }
         this.appGlobalService.guestUserProfile = JSON.parse(res);
-      },
-      (err: any) => {
+      })
+      .catch((err: any) => {
         console.error('Err', err);
       });
   }

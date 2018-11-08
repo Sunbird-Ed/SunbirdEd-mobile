@@ -98,7 +98,7 @@ export class AnnouncementDetailComponent implements OnInit {
         };
 
         console.log('Making api call to get Announcement details');
-        this.announcementService.getAnnouncementDetails(req, (data: any) => {
+        this.announcementService.getAnnouncementDetails(req).then((data: any) => {
             this.zone.run(() => {
                 data = JSON.parse(data);
                 console.log('Announcemet details response ==>', data);
@@ -110,8 +110,8 @@ export class AnnouncementDetailComponent implements OnInit {
                     this.updateAnnouncementReadStatus();
                 }
             }
-        },
-            error => {
+        })
+            .catch((error) => {
                 console.log('error while loading content details', error);
             });
     }
