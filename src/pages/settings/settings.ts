@@ -105,9 +105,9 @@ export class SettingsPage {
 
   sendMessage() {
     this.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.SUPPORT_CLICKED);
-    this.deviceInfoService.getDeviceID((res: any) => {
+    this.deviceInfoService.getDeviceID().then((res: any) => {
       this.deviceId = res;
-    }, (error: any) => {
+    }).catch((error: any) => {
     });
     (<any>window).supportfile.shareSunbirdConfigurations((result) => {
       const loader = this.commonUtilService.getLoader();

@@ -94,7 +94,7 @@ export class DatasyncPage {
   }
 
   getLastSyncTime() {
-    this.telemetryService.getTelemetryStat((response: any) => {
+    this.telemetryService.getTelemetryStat().then((response: any) => {
       const that = this;
       that.zone.run(() => {
         const syncStat: TelemetryStat = JSON.parse(response).result;
@@ -112,7 +112,7 @@ export class DatasyncPage {
           that.latestSync = this.lastSyncedTimeString + ' ' + dateAndTime;
         }
       });
-    }, () => {
+    }) .catch(() => {
     });
   }
 
@@ -133,8 +133,8 @@ export class DatasyncPage {
     const loader = this.commonUtilService.getLoader();
     loader.present();
     this.generateInteractEvent(InteractType.TOUCH, InteractSubtype.MANUALSYNC_INITIATED, null);
-    this.telemetryService.sync(
-      (response) => {
+    this.telemetryService.sync()
+      .then((response: any) => {
 
         that.zone.run(() => {
           const syncStat: SyncStat = response.result;
@@ -157,8 +157,8 @@ export class DatasyncPage {
           loader.dismiss();
           this.commonUtilService.showToast('DATA_SYNC_SUCCESSFUL');
         });
-      },
-      (error) => {
+      })
+      .catch((error) => {
         loader.dismiss();
         this.commonUtilService.showToast('DATA_SYNC_FAILURE');
         console.error('Telemetry Data Sync Error: ' + error);

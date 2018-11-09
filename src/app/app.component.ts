@@ -115,13 +115,13 @@ export class MyApp {
       // check if any new app version is available
       this.checkForUpgrade();
 
-      this.permission.requestPermission(this.permissionList, () => {
+      this.permission.requestPermission(this.permissionList).then(() => {
         this.makeEntryInSupportFolder();
-      }, () => {
+      }).catch(() => {
       });
-      this.permission.hasPermission(this.permissionList, () => {
+      this.permission.hasPermission(this.permissionList).then(() => {
         this.makeEntryInSupportFolder();
-      }, () => {
+      }).catch(() => {
       });
 
       this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)

@@ -128,9 +128,9 @@ export class AnnouncementListComponent {
         this.telemetryService.impression(impression);
     }
     onSyncClick() {
-        this.telemetryService.sync((response) => {
+        this.telemetryService.sync().then((response) => {
             console.log('Telemetry Home : ' + response);
-        }, (error) => {
+        }) .catch((error) => {
             console.log('Telemetry Home : ' + error);
         });
         this.downloadContent();
