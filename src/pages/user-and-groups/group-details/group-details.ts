@@ -500,7 +500,7 @@ export class GroupDetailsPage {
     this.groupService.setCurrentGroup(this.group.gid)
       .then(val => {
         console.log('Value : ' + val);
-        this.profileService.setCurrentUser(selectedUser.uid, (success) => {
+        this.profileService.setCurrentUser(selectedUser.uid) .then((success) => {
           if (isBeingPlayed) {
             this.event.publish('playConfig', this.playConfig);
             this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
@@ -525,7 +525,7 @@ export class GroupDetailsPage {
           });
           toast.present();
 
-        }, (error) => {
+        }) .catch((error) => {
           console.log('Error ' + error);
         });
       }).catch(error => {

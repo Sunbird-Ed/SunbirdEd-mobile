@@ -135,9 +135,9 @@ export class OverflowMenuComponent {
                             profile.source = UserSource.LOCAL;
 
                             this.events.publish(AppGlobalService.USER_INFO_UPDATED);
-                            this.profileService.setCurrentProfile(true, profile, () => {
+                            this.profileService.setCurrentProfile(true, profile).then(() => {
                                 this.navigateToAptPage();
-                            }, () => {
+                            }) .catch(() => {
                                 this.navigateToAptPage();
                             });
                         });

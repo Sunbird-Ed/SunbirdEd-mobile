@@ -373,7 +373,7 @@ export class CoursesPage implements OnInit {
       }
     }
 
-    this.pageService.getPageAssemble(pageAssembleCriteria, (res: any) => {
+    this.pageService.getPageAssemble(pageAssembleCriteria) .then((res: any) => {
       res = JSON.parse(res);
       this.ngZone.run(() => {
         const sections = JSON.parse(res.sections);
@@ -396,7 +396,7 @@ export class CoursesPage implements OnInit {
         this.pageApiLoader = !this.pageApiLoader;
         this.checkEmptySearchResult();
       });
-    }, (error: string) => {
+    }) .catch((error: string) => {
       console.log('Page assmble error', error);
       this.ngZone.run(() => {
         this.pageApiLoader = false;
@@ -751,10 +751,10 @@ export class CoursesPage implements OnInit {
 
   cancelDownload() {
     this.ngZone.run(() => {
-      this.contentService.cancelDownload(this.resumeContentData.contentId || this.resumeContentData.identifier, () => {
+      this.contentService.cancelDownload(this.resumeContentData.contentId || this.resumeContentData.identifier) .then(() => {
         this.tabBarElement.style.display = 'flex';
         this.showOverlay = false;
-      }, () => {
+      }) .catch(() => {
         this.tabBarElement.style.display = 'flex';
         this.showOverlay = false;
       });

@@ -1,5 +1,3 @@
-import { ContentRatingAlertComponent } from './../../component/content-rating-alert/content-rating-alert';
-import { ContentActionsComponent } from './../../component/content-actions/content-actions';
 import {BookmarkComponent} from './../../component/bookmark/bookmark';
 import {
   Component,
@@ -11,12 +9,14 @@ import {
   NavController,
   NavParams,
   Events,
-  LoadingController,
   PopoverController,
   Navbar,
   Platform,
-  IonicApp
+  IonicApp,
+  AlertController
 } from 'ionic-angular';
+import { SocialSharing } from '@ionic-native/social-sharing';
+import * as _ from 'lodash';
 import {
   ContentService,
   CourseService,
@@ -30,30 +30,27 @@ import {
   InteractSubtype,
   Rollup,
   BuildParamService,
-  SharedPreferences,
   ProfileType,
   CorrelationData,
   ProfileService,
   ProfileRequest,
   TelemetryObject
 } from 'sunbird';
-import { SocialSharing } from '@ionic-native/social-sharing';
-import * as _ from 'lodash';
 import {
-  Map
-} from '../../app/telemetryutil';
-import {
-  EventTopics,
   ProfileConstants,
   PreferenceKey
 } from '../../app/app.constant';
-import { ShareUrl } from '../../app/app.constant';
-import { AppGlobalService } from '../../service/app-global.service';
-import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
-import { AlertController } from 'ionic-angular';
+
+import {
+  EventTopics,
+  ShareUrl,
+  Map
+} from '@app/app';
+
+import { ContentRatingAlertComponent, ContentActionsComponent } from '@app/component';
+import { AppGlobalService, CommonUtilService, TelemetryGeneratorService, CourseUtilService } from '@app/service';
+import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
 import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { CommonUtilService } from '../../service/common-util.service';
 import { ViewCreditsComponent } from '../../component/view-credits/view-credits';
 import { Observable } from 'rxjs';
 
@@ -63,25 +60,9 @@ import { Observable } from 'rxjs';
   templateUrl: 'content-details.html',
 })
 export class ContentDetailsPage {
-
-  /**
-   * To hold Content details
-   */
   content: any;
-
-  /**
-   * is child content
-   */
   isChildContent = false;
-
-  /**
-   * Contains content details
-   */
   contentDetails: any;
-
-  /**
-   * Contains content identifier
-   */
   identifier: string;
 
   /**
@@ -93,46 +74,18 @@ export class ContentDetailsPage {
    * Content depth
    */
   depth: string;
-
-  /**
-   * Download started flag
-   */
   isDownloadStarted = false;
-
-  /**
-   * Contains download progress
-   */
   downloadProgress: string;
-
-  /**
-   *
-   */
   cancelDownloading = false;
-
-  /**
-   * Contains loader instance
-   */
   loader: any;
-
-  /**
-   * To hold user id
-   */
   userId = '';
   public objRollup: Rollup;
   private resume;
   isContentPlayed = false;
-
   /**
-   * User Rating
-   *
    * Used to handle update content workflow
    */
   isUpdateAvail = false;
-
-  /**
-   * User Rating
-   *
-   */
   userRating = 0;
 
   /**
@@ -147,14 +100,10 @@ export class ContentDetailsPage {
    * This flag helps in knowing when the content player is closed and the user is back on content details page.
    */
   public isPlayerLaunched = false;
-
-  guestUser = false;
-
+  isGuestUser = false;
   launchPlayer: boolean;
-
   profileType = '';
   isResumedCourse: boolean;
-
   objId;
   objType;
   objVer;
@@ -175,7 +124,6 @@ export class ContentDetailsPage {
     private contentService: ContentService,
     private zone: NgZone,
     private events: Events,
-    private loadingCtrl: LoadingController,
     private fileUtil: FileUtil,
     private popoverCtrl: PopoverController,
     private shareUtil: ShareUtil,
@@ -183,22 +131,35 @@ export class ContentDetailsPage {
     private platform: Platform,
     private buildParamService: BuildParamService,
     private courseService: CourseService,
-    private preference: SharedPreferences,
     private appGlobalService: AppGlobalService,
     private alertCtrl: AlertController,
     private ionicApp: IonicApp,
     private profileService: ProfileService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private commonUtilService: CommonUtilService) {
+    private commonUtilService: CommonUtilService,
+    private courseUtilService: CourseUtilService
+  ) {
 
     this.objRollup = new Rollup();
-
     this.appGlobalService.getUserId();
     this.subscribePlayEvent();
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
     this.handlePageResume();
     this.checkBookmarkStatus();
+  }
+
+  ionViewDidLoad() {
+    this.navBar.backButtonClick = (e: UIEvent) => {
+      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
+        true, this.cardData.identifier, this.corRelationList);
+      this.handleNavBackButton();
+    };
+    this.handleDeviceBackButton();
+
+    if (!AppGlobalService.isPlayerLaunched) {
+      this.calculateAvailableUserCount();
+    }
   }
 
   /**
@@ -214,14 +175,15 @@ export class ContentDetailsPage {
     this.source = this.navParams.get('source');
     this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
     this.downloadAndPlay = this.navParams.get('downloadAndPlay');
-    if (!this.isResumedCourse) {
-      this.generateTelemetry();
-    }
-    if (this.isResumedCourse === true) {
+
+    if (this.isResumedCourse) {
       this.navCtrl.insert(this.navCtrl.length() - 1, EnrolledCourseDetailsPage, {
         content: this.navParams.get('resumedCourseCardData')
       });
+    } else {
+      this.generateTelemetry();
     }
+
     this.setContentDetails(this.identifier, true, false);
     this.subscribeGenieEvent();
   }
@@ -232,19 +194,6 @@ export class ContentDetailsPage {
   ionViewWillLeave(): void {
     this.events.unsubscribe('genie.event');
     this.resume.unsubscribe();
-  }
-
-  ionViewDidLoad() {
-    this.navBar.backButtonClick = (e: UIEvent) => {
-      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
-        true, this.cardData.identifier, this.corRelationList);
-      this.handleNavBackButton();
-    };
-    this.handleDeviceBackButton();
-
-    if (!AppGlobalService.isPlayerLaunched) {
-      this.calculateAvailableUserCount();
-    }
   }
 
   handleNavBackButton() {
@@ -276,7 +225,7 @@ export class ContentDetailsPage {
     // This is to know when the app has come to foreground
     this.resume = this.platform.resume.subscribe(() => {
       this.isContentPlayed = true;
-      if (this.isPlayerLaunched && !this.guestUser) {
+      if (this.isPlayerLaunched && !this.isGuestUser) {
         this.isPlayerLaunched = false;
         this.setContentDetails(this.identifier, false, false /* No Automatic Rating for 1.9.0 */);
       }
@@ -288,12 +237,10 @@ export class ContentDetailsPage {
     this.buildParamService.getBuildConfigParam('BASE_URL')
       .then(response => {
         this.baseUrl = response;
-      })
-      .catch(() => {
       });
     this.launchPlayer = this.navParams.get('launchplayer');
     this.events.subscribe('playConfig', (config) => {
-        this.playContent(config.streaming);
+      this.playContent(config.streaming);
     });
   }
 
@@ -302,7 +249,7 @@ export class ContentDetailsPage {
    *
    */
   checkLoggedInOrGuestUser() {
-    this.guestUser = !this.appGlobalService.isUserLoggedIn();
+    this.isGuestUser = !this.appGlobalService.isUserLoggedIn();
   }
 
   calculateAvailableUserCount() {
@@ -317,20 +264,19 @@ export class ContentDetailsPage {
       if (this.appGlobalService.isUserLoggedIn()) {
         this.userCount += 1;
       }
-    }).catch(() => {
+    }).catch((error) => {
+      console.error('Error occurred= ', error);
     });
   }
 
   checkCurrentUserType() {
-    this.preference.getString(PreferenceKey.SELECTED_USER_TYPE)
-      .then(val => {
-        if (val !== '') {
-          if (val === ProfileType.TEACHER) {
-            this.profileType = ProfileType.TEACHER;
-          } else if (val === ProfileType.STUDENT) {
-            this.profileType = ProfileType.STUDENT;
-          }
-        }
+    this.appGlobalService.getGuestUserInfo()
+      .then((userType) => {
+        this.profileType = userType;
+      })
+      .catch((error) => {
+        console.log('Error Occurred', error);
+        this.profileType = '';
       });
   }
 
@@ -360,7 +306,7 @@ export class ContentDetailsPage {
    * Function to rate content
    */
   rateContent(popupType: string) {
-    if (!this.guestUser) {
+    if (!this.isGuestUser) {
       const paramsMap = new Map();
       if (this.isContentPlayed || (this.content.downloadable
         && this.content.contentAccess.length)) {
@@ -406,13 +352,12 @@ export class ContentDetailsPage {
 
   /**
    * To set content details in local variable
-   *
    * @param {string} identifier identifier of content / course
    */
   setContentDetails(identifier, refreshContentDetails: boolean | true, showRating: boolean) {
     let loader;
     if (!showRating) {
-      loader = this.getLoader();
+      loader = this.commonUtilService.getLoader();
       loader.present();
     }
     const option = {
@@ -423,27 +368,27 @@ export class ContentDetailsPage {
     };
 
     this.contentService.getContentDetail(option)
-     .then((data: any) => {
-      this.zone.run(() => {
-        data = JSON.parse(data);
-        if (data && data.result) {
-          this.extractApiResponse(data);
-          if (!showRating) {
-            loader.dismiss();
+      .then((data: any) => {
+        this.zone.run(() => {
+          data = JSON.parse(data);
+          if (data && data.result) {
+            this.extractApiResponse(data);
+            if (!showRating) {
+              loader.dismiss();
+            }
+          } else {
+            if (!showRating) {
+              loader.dismiss();
+            }
           }
-        } else {
-          if (!showRating) {
-            loader.dismiss();
-          }
-        }
 
-        if (showRating) {
-          if (this.userRating === 0) {
-            this.rateContent('automatic');
+          if (showRating) {
+            if (this.userRating === 0) {
+              this.rateContent('automatic');
+            }
           }
-        }
-      });
-    })
+        });
+      })
       .catch((error: any) => {
         const data = JSON.parse(error);
         console.log('Error received', data);
@@ -555,10 +500,13 @@ export class ContentDetailsPage {
     values['isUpdateAvailable'] = this.isUpdateAvail;
     values['isDownloaded'] = this.content.downloadable;
 
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = this.content.identifier;
-    telemetryObject.type = this.content.contentType;
-    telemetryObject.version = this.content.pkgVersion;
+    const telemetryObject: TelemetryObject = {
+      id: this.content.identifier,
+      type: this.content.contentType,
+      version: this.content.pkgVersion,
+      rollup: undefined
+    };
+
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
       ImpressionType.DETAIL,
       Environment.HOME,
@@ -601,10 +549,7 @@ export class ContentDetailsPage {
   }
 
   generateStartEvent(objectId, objectType, objectVersion) {
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = objectId;
-    telemetryObject.type = objectType;
-    telemetryObject.version = objectVersion;
+    const telemetryObject: TelemetryObject = { id: objectId, type: objectType, version: objectVersion, rollup: undefined };
     this.telemetryGeneratorService.generateStartTelemetry(
       PageId.CONTENT_DETAIL,
       telemetryObject,
@@ -613,10 +558,7 @@ export class ContentDetailsPage {
   }
 
   generateEndEvent(objectId, objectType, objectVersion) {
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = objectId;
-    telemetryObject.type = objectType;
-    telemetryObject.version = objectVersion;
+    const telemetryObject: TelemetryObject = { id: objectId, type: objectType, version: objectVersion, rollup: undefined };
     this.telemetryGeneratorService.generateEndTelemetry(
       objectType,
       Mode.PLAY,
@@ -629,10 +571,7 @@ export class ContentDetailsPage {
 
   generateQRSessionEndEvent(pageId: string, qrData: string) {
     if (pageId !== undefined) {
-      const telemetryObject: TelemetryObject = new TelemetryObject();
-      telemetryObject.id = qrData;
-      telemetryObject.type = 'qr';
-      telemetryObject.version = '';
+      const telemetryObject: TelemetryObject = { id: qrData, type: 'qr', version: '', rollup: undefined };
       this.telemetryGeneratorService.generateEndTelemetry(
         'qr',
         Mode.PLAY,
@@ -701,12 +640,12 @@ export class ContentDetailsPage {
 
     // Call content service
     this.contentService.importContent(option)
-     .then((data: any) => {
-      data = JSON.parse(data);
-      if (data.result && data.result[0].status === 'NOT_FOUND') {
-        this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
-      }
-    })
+      .then((data: any) => {
+        data = JSON.parse(data);
+        if (data.result && data.result[0].status === 'NOT_FOUND') {
+          this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
+        }
+      })
       .catch((error) => {
         console.log('error while loading content details', error);
         if (this.isDownloadStarted) {
@@ -770,7 +709,7 @@ export class ContentDetailsPage {
   }
 
   cancelDownload() {
-    this.contentService.cancelDownload(this.identifier, () => {
+    this.contentService.cancelDownload(this.identifier) .then(() => {
       this.zone.run(() => {
         this.isDownloadStarted = false;
         this.downloadProgress = '';
@@ -778,7 +717,7 @@ export class ContentDetailsPage {
           this.content.downloadable = false;
         }
       });
-    }, (error: any) => {
+    }) .catch((error: any) => {
       this.zone.run(() => {
         console.log('Error: download error =>>>>>', error);
       });
@@ -822,8 +761,6 @@ export class ContentDetailsPage {
             text: 'x',
             role: 'cancel',
             cssClass: 'closeButton',
-            handler: () => {
-            }
           }
         ]
       });
@@ -875,30 +812,19 @@ export class ContentDetailsPage {
       };
 
       this.courseService.updateContentState(data)
-       .then(() => {
-        this.zone.run(() => {
-          this.events.publish(EventTopics.COURSE_STATUS_UPDATED_SUCCESSFULLY, {
-            update: true
+        .then(() => {
+          this.zone.run(() => {
+            this.events.publish(EventTopics.COURSE_STATUS_UPDATED_SUCCESSFULLY, {
+              update: true
+            });
+          });
+        })
+        .catch((error: any) => {
+          this.zone.run(() => {
+            console.log('Error: while updating content state =>>>>>', error);
           });
         });
-      })
-       .catch((error: any) => {
-        this.zone.run(() => {
-          console.log('Error: while updating content state =>>>>>', error);
-        });
-      });
     }
-  }
-
-
-  /**
-   * Function to get loader instance
-   */
-  getLoader(): any {
-    return this.loadingCtrl.create({
-      duration: 3000,
-      spinner: 'crescent'
-    });
   }
 
   showOverflowMenu(event) {
@@ -945,9 +871,12 @@ export class ContentDetailsPage {
     });
   }
 
+  /**
+   * Shares content to external devices
+   */
   share() {
     this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_LIBRARY_INITIATED, this.content.contentType);
-    const loader = this.getLoader();
+    const loader = this.commonUtilService.getLoader();
     loader.present();
     const url = this.baseUrl + ShareUrl.CONTENT + this.content.identifier;
     if (this.content.downloadable) {
@@ -967,6 +896,12 @@ export class ContentDetailsPage {
 
   }
 
+  /**
+   * Generates Interact Events
+   * @param interactType
+   * @param subType
+   * @param contentType
+   */
   generateShareInteractEvents(interactType, subType, contentType) {
     const values = new Map();
     values['ContentType'] = contentType;
@@ -979,40 +914,22 @@ export class ContentDetailsPage {
       this.objRollup,
       this.corRelationList);
   }
+
   /**
-  * Function to View Credits
+  * To View Credits popup
   */
   viewCredits() {
-    const popUp = this.popoverCtrl.create(
-      ViewCreditsComponent,
-      {
-        content: this.content,
-        pageId: PageId.CONTENT_DETAIL,
-        rollUp: this.objRollup,
-        correlation: this.corRelationList
-      },
-      {
-        cssClass: 'view-credits'
-      }
-    );
-    popUp.present({
-      ev: event
-    });
-    popUp.onDidDismiss(data => {
-    });
+    this.courseUtilService.showCredits(this.content, PageId.CONTENT_DETAIL, this.objRollup, this.corRelationList);
   }
 
   /**
    * method generates telemetry on click Read less or Read more
    * @param {string} param string as read less or read more
    * @param {object} objRollup object roll up
-   * @param corRelationList corelationList
+   * @param corRelationList correlation List
    */
   readLessorReadMore(param, objRollup, corRelationList) {
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = this.objId;
-    telemetryObject.type = this.objType;
-    telemetryObject.version = this.objVer;
+    const telemetryObject: TelemetryObject = { id: this.objId, type: this.objType, version: this.objVer, rollup: undefined };
     this.telemetryGeneratorService.readLessOrReadMore(param, objRollup, corRelationList, telemetryObject);
   }
 }

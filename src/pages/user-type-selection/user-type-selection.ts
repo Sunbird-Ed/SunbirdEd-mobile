@@ -188,18 +188,18 @@ export class UserTypeSelectionPage {
   }
 
   updateProfile(updateRequest: Profile) {
-    this.profileService.updateProfile(updateRequest,
-      () => {
+    this.profileService.updateProfile(updateRequest)
+      .then(() => {
         this.gotoTabsPage(true);
-      },
-      (err: any) => {
+      })
+      .catch((err: any) => {
         console.error('Err', err);
       });
   }
   // TODO Remove getCurrentUser as setCurrentProfile is returning uid
   setProfile(profileRequest: Profile) {
-    this.profileService.setCurrentProfile(true, profileRequest, () => {
-      this.profileService.getCurrentUser(success => {
+    this.profileService.setCurrentProfile(true, profileRequest).then(() => {
+      this.profileService.getCurrentUser().then((success: any) => {
         const userId = JSON.parse(success).uid;
         this.event.publish(AppGlobalService.USER_INFO_UPDATED);
         if (userId !== 'null') {
@@ -207,12 +207,12 @@ export class UserTypeSelectionPage {
         }
         this.profile = JSON.parse(success);
         this.gotoTabsPage();
-      }, error => {
+      }) .catch(error => {
         console.error('Error', error);
         return 'null';
       });
-    },
-      err => {
+    })
+      .catch(err => {
         console.error('Error', err);
       });
   }
@@ -236,13 +236,13 @@ export class UserTypeSelectionPage {
         this.navCtrl.push(ProfileSettingsPage, { isChangeRoleRequest: true, selectedUserType: this.selectedUserType });
       } else {
         this.profile.profileType = this.selectedUserType;
-        this.profileService.updateProfile(this.profile,
-          (res: any) => {
+        this.profileService.updateProfile(this.profile)
+          .then((res: any) => {
             console.log('tabs page');
             this.navCtrl.push(TabsPage, {
               loginMode: 'guest'
             });
-          }, error => {
+          }) .catch(error => {
             console.error('Error=');
           });
         // this.navCtrl.setRoot(TabsPage);
@@ -264,12 +264,12 @@ export class UserTypeSelectionPage {
       this.navCtrl.push(ProfileSettingsPage);
     } else {
       this.profile.profileType = this.selectedUserType;
-      this.profileService.updateProfile(this.profile,
-        (res: any) => {
+      this.profileService.updateProfile(this.profile)
+        .then((res: any) => {
           this.navCtrl.push(TabsPage, {
             loginMode: 'guest'
           });
-        }, error => {
+        }) .catch(error => {
           console.error('Error=', error);
         });
     }

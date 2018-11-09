@@ -146,7 +146,7 @@ export class ContentActionsComponent {
       this.corRelationList);
 
 
-    this.contentService.deleteContent(this.getDeleteRequestBody(), (res: any) => {
+    this.contentService.deleteContent(this.getDeleteRequestBody()).then((res: any) => {
       const data = JSON.parse(res);
       if (data.result && data.result.status === 'NOT_FOUND') {
         this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
@@ -159,7 +159,7 @@ export class ContentActionsComponent {
         this.showToaster(this.getMessageByConstant('MSG_RESOURCE_DELETED'));
         this.viewCtrl.dismiss('delete.success');
       }
-    }, (error: any) => {
+    }) .catch((error: any) => {
       console.log('delete response: ', error);
       this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
       this.viewCtrl.dismiss();

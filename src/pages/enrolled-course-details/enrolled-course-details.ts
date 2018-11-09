@@ -1,4 +1,3 @@
-import { ContentRatingAlertComponent } from './../../component/content-rating-alert/content-rating-alert';
 import {
   Component,
   NgZone,
@@ -15,6 +14,9 @@ import {
   Navbar,
   AlertController
 } from 'ionic-angular';
+import * as _ from 'lodash';
+import { SocialSharing } from '@ionic-native/social-sharing';
+
 import {
   ContentService,
   FileUtil,
@@ -36,27 +38,18 @@ import {
   ErrorCode,
   ErrorType
 } from 'sunbird';
-import * as _ from 'lodash';
-import { CollectionDetailsPage } from '../collection-details/collection-details';
-import { ContentDetailsPage } from '../content-details/content-details';
-import { ContentActionsComponent } from '../../component/content-actions/content-actions';
+import { ContentRatingAlertComponent, ContentActionsComponent, ViewCreditsComponent } from '@app/component';
+import { CollectionDetailsPage } from '@app/pages/collection-details/collection-details';
+import { ContentDetailsPage } from '@app/pages/content-details/content-details';
 import {
   ContentType,
   MimeType,
-  ProfileConstants,
   EventTopics,
   ShareUrl,
   PreferenceKey
-} from '../../app/app.constant';
-import { CourseBatchesPage } from '../course-batches/course-batches';
-import { SocialSharing } from '@ionic-native/social-sharing';
-import { CourseUtilService } from '../../service/course-util.service';
-import { AppGlobalService } from '../../service/app-global.service';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { CommonUtilService } from '../../service/common-util.service';
-import { GUEST_TEACHER_SWITCH_TABS } from '../../app/module.service';
-import { ViewCreditsComponent } from '../../component/view-credits/view-credits';
-
+} from '@app/app';
+import { CourseBatchesPage } from '@app/pages/course-batches/course-batches';
+import { CourseUtilService, AppGlobalService, TelemetryGeneratorService, CommonUtilService } from '@app/service';
 
 @IonicPage()
 @Component({
@@ -129,53 +122,17 @@ export class EnrolledCourseDetailsPage {
   queuedIdentifiers: Array<string> = [];
   faultyIdentifiers: Array<any> = [];
   isDownloadStarted = false;
-  isDownlaodCompleted = false;
+  isDownloadCompleted = false;
   batchDetails: any;
-  batchexp: Boolean = false;
+  batchExp: Boolean = false;
   private corRelationList: Array<CorrelationData>;
-
-  /**
-   * To hold logged in user id
-   */
   userId = '';
-
-  /**
-   * To hold rating data
-   */
   userRating = 0;
-
-  /**
-   * Rating comment
-   */
   ratingComment = '';
-
-  /**
-   * To hold batch id
-   */
   batchId = '';
-
-  /**
-   * To hold base url
-   */
   baseUrl = '';
-
-  /**
-   * Contains reference of content service
-   */
-  public contentService: ContentService;
-
-  /**
-   * Contains ref of navigation controller
-   */
-  public navCtrl: NavController;
-
   guestUser = false;
-
-  /**
-   * This variable tells is the course is already enrolled by user
-   */
   isAlreadyEnrolled = false;
-
   profileType = '';
   objId;
   objType;
@@ -186,30 +143,27 @@ export class EnrolledCourseDetailsPage {
   source = '';
 
   @ViewChild(Navbar) navBar: Navbar;
-  constructor(navCtrl: NavController,
+  constructor(
+    private navCtrl: NavController,
     private navParams: NavParams,
     private alertCtrl: AlertController,
-    contentService: ContentService,
+    private contentService: ContentService,
     private zone: NgZone,
     private events: Events,
     private fileUtil: FileUtil,
-    public popoverCtrl: PopoverController,
+    private popoverCtrl: PopoverController,
     private profileService: UserProfileService,
     private courseService: CourseService,
     private buildParamService: BuildParamService,
     private shareUtil: ShareUtil,
     private social: SocialSharing,
-    private loadingCtrl: LoadingController,
     private preference: SharedPreferences,
     private courseUtilService: CourseUtilService,
     private platform: Platform,
     private appGlobalService: AppGlobalService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private commonUtilService: CommonUtilService) {
-    this.navCtrl = navCtrl;
-    this.navParams = navParams;
-    this.contentService = contentService;
-    this.zone = zone;
+    private commonUtilService: CommonUtilService
+  ) {
 
     this.appGlobalService.getUserId();
     this.checkLoggedInOrGuestUser();
@@ -222,7 +176,8 @@ export class EnrolledCourseDetailsPage {
       .then(response => {
         this.baseUrl = response;
       })
-      .catch(() => {
+      .catch((error) => {
+        console.error('Error occurred', error);
       });
 
     this.events.subscribe(EventTopics.ENROL_COURSE_SUCCESS, (res) => {
@@ -232,38 +187,40 @@ export class EnrolledCourseDetailsPage {
     });
 
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
-      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
-        false, this.identifier, this.corRelationList);
+      this.telemetryGeneratorService.generateBackClickedTelemetry(
+        PageId.CONTENT_DETAIL,
+        Environment.HOME,
+        false,
+        this.identifier,
+        this.corRelationList
+      );
       this.didViewLoad = false;
       this.generateEndEvent(this.objId, this.objType, this.objVer);
+
       if (this.shouldGenerateEndTelemetry) {
         this.generateQRSessionEndEvent(this.source, this.course.identifier);
       }
       this.navCtrl.pop();
       this.backButtonFunc();
     }, 10);
-
   }
 
-
   /**
- * Get the session to know if the user is logged-in or guest
- *
- */
+   * Get the session to know if the user is logged-in or guest
+   *
+   */
   checkLoggedInOrGuestUser() {
     this.guestUser = !this.appGlobalService.isUserLoggedIn();
   }
 
   checkCurrentUserType() {
-    this.preference.getString(PreferenceKey.SELECTED_USER_TYPE)
-      .then(val => {
-        if (val !== '') {
-          if (val === ProfileType.TEACHER) {
-            this.profileType = ProfileType.TEACHER;
-          } else if (val === ProfileType.STUDENT) {
-            this.profileType = ProfileType.STUDENT;
-          }
-        }
+    this.appGlobalService.getGuestUserInfo()
+      .then((userType) => {
+        this.profileType = userType;
+      })
+      .catch((error) => {
+        console.log('Error Occurred', error);
+        this.profileType = '';
       });
   }
 
@@ -324,7 +281,6 @@ export class EnrolledCourseDetailsPage {
 
   /**
    * Set course details by passing course identifier
-   *
    * @param {string} identifier
    */
   setContentDetails(identifier): void {
@@ -355,16 +311,15 @@ export class EnrolledCourseDetailsPage {
   /**
    * Function to extract api response. Check content is locally available or not.
    * If locally available then make childContents api call else make import content api call
-   *
    * @param data
    */
   extractApiResponse(data): void {
-    console.log('this is dataaaaa' + data);
     if (data.result.contentData) {
       this.course = data.result.contentData;
       this.objId = this.course.identifier;
       this.objType = this.course.contentType;
       this.objVer = this.course.pkgVersion;
+
       if (!this.didViewLoad) {
         this.generateImpressionEvent(this.course.identifier, this.course.contentType, this.course.pkgVersion);
         this.generateStartEvent(this.course.identifier, this.course.contentType, this.course.pkgVersion);
@@ -375,12 +330,15 @@ export class EnrolledCourseDetailsPage {
         this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
         this.navCtrl.pop();
       }
+
       if (this.course.gradeLevel && this.course.gradeLevel.length) {
         this.course.gradeLevel = this.course.gradeLevel.join(', ');
       }
+
       if (this.course.attributions && this.course.attributions.length) {
         this.course.attributions = this.course.attributions.join(', ');
       }
+
       if (this.course.me_totalRatings) {
         const rating = this.course.me_totalRatings.split('.');
         if (rating && rating[0]) {
@@ -399,12 +357,13 @@ export class EnrolledCourseDetailsPage {
       this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
       this.navCtrl.pop();
     }
+
     if (data.result.isAvailableLocally) {
       this.getBatchDetails();
     }
     this.course.isAvailableLocally = data.result.isAvailableLocally;
+
     if (this.courseCardData.batchId) {
-      console.log(this.courseCardData.batchId);
       // if (this.course.isAvailableLocally === true) {
       // this.getBatchDetails();
     }
@@ -416,6 +375,7 @@ export class EnrolledCourseDetailsPage {
       this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.course, true);
       this.importContent([this.identifier], false);
     }
+
     this.setCourseStructure();
   }
 
@@ -429,19 +389,13 @@ export class EnrolledCourseDetailsPage {
           data = JSON.parse(data);
           if (data.result) {
             this.batchDetails = data.result;
-            console.log(this.batchDetails.status);
-            console.log(this.batchDetails.identifier);
-            console.log(this.batchDetails);
             this.preference.getString(PreferenceKey.COURSE_IDENTIFIER)
               .then(val => {
-                console.log(val);
                 if (val === this.batchDetails.identifier) {
-                  console.log('identifer present');
-                  this.batchexp = true;
+                  this.batchExp = true;
                 } else {
-                  console.log('notpresent');
                   if (this.batchDetails.status === 2) {
-                    this.batchexp = true;
+                    this.batchExp = true;
                     const alert = this.alertCtrl.create({
                       title: this.commonUtilService.translateMessage('BATCH_EXPIRED'),
                       message: this.commonUtilService.translateMessage('BATCH_EXPIRED_DESCRIPTION'),
@@ -454,14 +408,13 @@ export class EnrolledCourseDetailsPage {
                           cssClass: 'doneButton',
                           handler: () => {
                             this.preference.putString(PreferenceKey.COURSE_IDENTIFIER, this.batchDetails.identifier);
-                            console.log('Cancel clicked');
                           }
                         }
                       ]
                     });
                     alert.present();
                   } else {
-                    this.batchexp = false;
+                    this.batchExp = false;
                   }
                 }
               })
@@ -473,7 +426,7 @@ export class EnrolledCourseDetailsPage {
         });
       })
       .catch((error: any) => {
-        console.log('error while loading content details', error);
+        console.error('error while loading content details', error);
       });
   }
 
@@ -484,6 +437,7 @@ export class EnrolledCourseDetailsPage {
     };
     this.profileService.getUserProfileDetails(req, (data: any) => {
       data = JSON.parse(data);
+
       if (data) {
         this.batchDetails.creatorFirstName = data.firstName ? data.firstName : '';
         this.batchDetails.creatorLastName = data.lastName ? data.lastName : '';
@@ -537,49 +491,49 @@ export class EnrolledCourseDetailsPage {
     };
 
     this.contentService.importContent(option)
-     .then((data: any) => {
-      data = JSON.parse(data);
-      this.zone.run(() => {
-        if (data.result && data.result[0].status === 'NOT_FOUND') {
-          this.showLoading = false;
-        }
+      .then((data: any) => {
+        data = JSON.parse(data);
+        this.zone.run(() => {
+          if (data.result && data.result[0].status === 'NOT_FOUND') {
+            this.showLoading = false;
+          }
 
-        if (data.result && data.result.length && this.isDownloadStarted) {
-          _.forEach(data.result, (value) => {
-            if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
-              this.queuedIdentifiers.push(value.identifier);
-            } else if (value.status === 'NOT_FOUND') {
-              this.faultyIdentifiers.push(value.identifier);
+          if (data.result && data.result.length && this.isDownloadStarted) {
+            _.forEach(data.result, (value) => {
+              if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
+                this.queuedIdentifiers.push(value.identifier);
+              } else if (value.status === 'NOT_FOUND') {
+                this.faultyIdentifiers.push(value.identifier);
+              }
+            });
+
+            if (isDownloadAllClicked) {
+              this.telemetryGeneratorService.generateDownloadAllClickTelemetry(
+                PageId.COURSE_DETAIL,
+                this.course,
+                this.queuedIdentifiers,
+                identifiers.length
+              );
             }
-          });
 
-          if (isDownloadAllClicked) {
-            this.telemetryGeneratorService.generateDownloadAllClickTelemetry(
-              PageId.COURSE_DETAIL,
-              this.course,
-              this.queuedIdentifiers,
-              identifiers.length
-            );
+            if (this.queuedIdentifiers.length === 0) {
+              this.restoreDownloadState();
+            }
+            if (this.faultyIdentifiers.length > 0) {
+              const stackTrace: any = {};
+              stackTrace.parentIdentifier = this.course.identifier;
+              stackTrace.faultyIdentifiers = this.faultyIdentifiers;
+              this.telemetryGeneratorService.generateErrorTelemetry(Environment.HOME,
+                ErrorCode.ERR_DOWNLOAD_FAILED,
+                ErrorType.SYSTEM,
+                PageId.COURSE_DETAIL,
+                JSON.stringify(stackTrace),
+              );
+              this.commonUtilService.showToast('UNABLE_TO_FETCH_CONTENT');
+            }
           }
-
-          if (this.queuedIdentifiers.length === 0) {
-            this.restoreDownloadState();
-          }
-          if (this.faultyIdentifiers.length > 0) {
-            const stackTrace: any = {};
-            stackTrace.parentIdentifier = this.course.identifier;
-            stackTrace.faultyIdentifiers = this.faultyIdentifiers;
-            this.telemetryGeneratorService.generateErrorTelemetry(Environment.HOME,
-              ErrorCode.ERR_DOWNLOAD_FAILED,
-              ErrorType.SYSTEM,
-              PageId.COURSE_DETAIL,
-              JSON.stringify(stackTrace),
-            );
-            this.commonUtilService.showToast('UNABLE_TO_FETCH_CONTENT');
-          }
-        }
-      });
-    })
+        });
+      })
       .catch((error) => {
         this.zone.run(() => {
           if (this.isDownloadStarted) {
@@ -624,10 +578,9 @@ export class EnrolledCourseDetailsPage {
       option.level = 1;
     }
 
-    this.contentService.getChildContents(option, (data: any) => {
+    this.contentService.getChildContents(option)
+     .then((data: any) => {
       data = JSON.parse(data);
-      console.log('enrolled course data', data);
-      console.log(data.result.isAvailableLocally);
       this.zone.run(() => {
         if (data && data.result && data.result.children) {
           this.enrolledCourseMimeType = data.result.mimeType;
@@ -640,8 +593,8 @@ export class EnrolledCourseDetailsPage {
         }
         this.showChildrenLoader = false;
       });
-    },
-      (error: string) => {
+    })
+      .catch((error: string) => {
         console.log('Error: while fetching child contents ===>>>', error);
         this.zone.run(() => {
           this.showChildrenLoader = false;
@@ -687,12 +640,12 @@ export class EnrolledCourseDetailsPage {
 
   cancelDownload() {
     this.telemetryGeneratorService.generateCancelDownloadTelemetry(this.course);
-    this.contentService.cancelDownload(this.identifier, () => {
+    this.contentService.cancelDownload(this.identifier).then(() => {
       this.zone.run(() => {
         this.showLoading = false;
         this.navCtrl.pop();
       });
-    }, () => {
+    }) .catch(() => {
       this.zone.run(() => {
         this.showLoading = false;
         this.navCtrl.pop();
@@ -714,7 +667,6 @@ export class EnrolledCourseDetailsPage {
 
   /**
    * Function gets executed when user click on resume course button.
-   *
    * @param {string} identifier
    */
   resumeContent(identifier): void {
@@ -805,7 +757,7 @@ export class EnrolledCourseDetailsPage {
             if (this.queuedIdentifiers.length === this.currentCount) {
               this.isDownloadStarted = false;
               this.currentCount = 0;
-              this.isDownlaodCompleted = true;
+              this.isDownloadCompleted = true;
               this.downloadIdentifiers.length = 0;
               this.queuedIdentifiers.length = 0;
             }
@@ -861,19 +813,9 @@ export class EnrolledCourseDetailsPage {
     }
   }
 
-  /**
-   * Function to get loader instance
-   */
-  getLoader(): any {
-    return this.loadingCtrl.create({
-      duration: 30000,
-      spinner: 'crescent'
-    });
-  }
-
   share() {
     this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_COURSE_INITIATED, this.course.contentType);
-    const loader = this.getLoader();
+    const loader = this.commonUtilService.getLoader();
     loader.present();
     const url = this.baseUrl + ShareUrl.COLLECTION + this.course.identifier;
     if (this.course.isAvailableLocally) {
@@ -927,9 +869,7 @@ export class EnrolledCourseDetailsPage {
 
   generateQRSessionEndEvent(pageId: string, qrData: string) {
     if (pageId !== undefined) {
-      const telemetryObject: TelemetryObject = new TelemetryObject();
-      telemetryObject.id = qrData;
-      telemetryObject.type = 'qr';
+      const telemetryObject: TelemetryObject = { id: qrData, type: 'qr', version: undefined, rollup: undefined };
       this.telemetryGeneratorService.generateEndTelemetry(
         'qr',
         Mode.PLAY,
@@ -953,10 +893,7 @@ export class EnrolledCourseDetailsPage {
   }
 
   generateStartEvent(objectId, objectType, objectVersion) {
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = objectId;
-    telemetryObject.type = objectType;
-    telemetryObject.version = objectVersion;
+    const telemetryObject: TelemetryObject = { id: objectId, type: objectType, version: objectVersion, rollup: undefined };
     this.telemetryGeneratorService.generateStartTelemetry(PageId.COURSE_DETAIL,
       telemetryObject,
       undefined,
@@ -965,10 +902,7 @@ export class EnrolledCourseDetailsPage {
   }
 
   generateEndEvent(objectId, objectType, objectVersion) {
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = objectId;
-    telemetryObject.type = objectType;
-    telemetryObject.version = objectVersion;
+    const telemetryObject: TelemetryObject = { id: objectId, type: objectType, version: objectVersion, rollup: undefined };
     this.telemetryGeneratorService.generateEndTelemetry(objectType,
       Mode.PLAY,
       PageId.COURSE_DETAIL,
@@ -977,27 +911,11 @@ export class EnrolledCourseDetailsPage {
       undefined,
       this.corRelationList);
   }
-  /**
- * Function to View Credits
- */
-  viewCredits() {
-    const popUp = this.popoverCtrl.create(
-      ViewCreditsComponent,
-      {
-        content: this.course,
-        pageId: PageId.CONTENT_DETAIL,
-        rollup: undefined,
-        correlation: this.corRelationList
-      },
-      {
-        cssClass: 'view-credits'
-      }
-    );
-    popUp.present({
-      ev: event
-    });
-    popUp.onDidDismiss(data => {
-    });
-  }
 
+  /**
+   * Opens up popup for the credits.
+   */
+  viewCredits() {
+    this.courseUtilService.showCredits(this.course, PageId.CONTENT_DETAIL, undefined, this.corRelationList);
+  }
 }

@@ -8,7 +8,6 @@ import {
   NavParams,
   NavController,
   Events,
-  Popover,
   Navbar,
   Platform
 } from 'ionic-angular';
@@ -47,7 +46,6 @@ import {
 } from '../../app/app.constant';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 import { AppGlobalService } from '../../service/app-global.service';
-import { PopoverController } from 'ionic-angular';
 import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
 import { CommonUtilService } from '../../service/common-util.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
@@ -124,7 +122,6 @@ export class SearchPage {
     private fileUtil: FileUtil,
     private events: Events,
     private appGlobalService: AppGlobalService,
-    private popUp: PopoverController,
     private platform: Platform,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private commonUtilService: CommonUtilService,
@@ -465,13 +462,13 @@ export class SearchPage {
     pageAssembleCriteria.name = PageName.DIAL_CODE;
     pageAssembleCriteria.filters = pagetAssemblefilter;
 
-    this.pageService.getPageAssemble(pageAssembleCriteria, res => {
+    this.pageService.getPageAssemble(pageAssembleCriteria) .then((res: any) => {
       this.zone.run(() => {
         const response = JSON.parse(res);
         const sections = JSON.parse(response.sections);
         // TODO
       });
-    }, error => {
+    }) .catch(error => {
       this.zone.run(() => {
         this.showLoader = false;
         if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
@@ -814,11 +811,11 @@ export class SearchPage {
   }
 
   cancelDownload() {
-    this.contentService.cancelDownload(this.parentContent.identifier, () => {
+    this.contentService.cancelDownload(this.parentContent.identifier) .then(() => {
       this.zone.run(() => {
         this.showLoading = false;
       });
-    }, () => {
+    }) .catch(() => {
       this.zone.run(() => {
         this.showLoading = false;
       });
