@@ -1,5 +1,6 @@
 import { ContentRatingAlertComponent } from './../../component/content-rating-alert/content-rating-alert';
 import { ContentActionsComponent } from './../../component/content-actions/content-actions';
+import {BookmarkComponent} from './../../component/bookmark/bookmark';
 import {
   Component,
   NgZone,
@@ -54,6 +55,7 @@ import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../service/common-util.service';
 import { ViewCreditsComponent } from '../../component/view-credits/view-credits';
+import { Observable } from 'rxjs';
 
 @IonicPage()
 @Component({
@@ -166,6 +168,7 @@ export class ContentDetailsPage {
   shouldGenerateTelemetry = true;
 
   @ViewChild(Navbar) navBar: Navbar;
+  showMessage: any;
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -195,6 +198,7 @@ export class ContentDetailsPage {
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
     this.handlePageResume();
+    this.checkBookmarkStatus();
   }
 
   /**
@@ -328,6 +332,27 @@ export class ContentDetailsPage {
           }
         }
       });
+  }
+
+  checkBookmarkStatus() {
+    this.preference.getString(PreferenceKey.IS_BOOKMARK_VIWED).then(val => {
+      if (!val) {
+        this.showBookmarkMenu();
+      }
+    });
+  }
+
+  selectBookmark() {
+    this.content.bookmarked = true;
+    this.showMessage = true;
+    const notifyTimer = Observable.timer(10000);
+    notifyTimer.subscribe(e => {
+        this.showMessage = false;
+    });
+  }
+
+  deSelectBookmark() {
+    this.content.bookmarked = false;
   }
 
 
@@ -902,6 +927,21 @@ export class ContentDetailsPage {
           this.content.downloadable = false;
         }
       });
+    });
+  }
+
+  showBookmarkMenu(event?) {
+    console.log('inside showBookmarkMenu');
+    const popover = this.popoverCtrl.create(BookmarkComponent, {
+      content: this.content,
+      isChild: this.isChildContent,
+      objRollup: this.objRollup,
+      corRelationList: this.corRelationList
+    }, {
+        cssClass: 'bookmark-menu'
+      });
+    popover.present({
+      ev: event
     });
   }
 
