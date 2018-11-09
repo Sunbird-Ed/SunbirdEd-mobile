@@ -145,9 +145,10 @@ export class AnnouncementListComponent {
         };
         console.log('Hello ' + JSON.stringify(contentImportRequest));
 
-        this.contentService.importContent(contentImportRequest, (response) => {
+        this.contentService.importContent(contentImportRequest)
+         .then((response) => {
             console.log('Home : ' + response);
-        }, (error) => {
+        }) .catch((error) => {
             console.log('Home : ' + error);
         });
     }

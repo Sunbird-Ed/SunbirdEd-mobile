@@ -15,10 +15,10 @@
 
 <ion-content padding>
 
-  <div class="card-container" *ngFor="let content of results">
+  <div class="card-container" *ngFor="let content of results; let i = index">
     <ion-row class="P010">
       <ul class="breadcrumbs">
-        <li *ngFor="let result of parents" (click)="navigateToDetailsPage(result)">
+        <li *ngFor="let result of paths[i]" (click)="navigateToDetailsPage(result)">
           {{ (result?.contentData?.name?.length>30)? (result?.contentData?.name | slice:0:30)+'...' :
           (result?.contentData?.name) }}
         </li>

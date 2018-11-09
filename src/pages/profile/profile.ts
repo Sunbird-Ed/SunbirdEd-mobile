@@ -1,53 +1,46 @@
 import { Component, NgZone } from '@angular/core';
 import {
-  NavController, LoadingController,
-  NavParams, Events
+  NavController,
+  LoadingController,
+  NavParams,
+  Events,
+  PopoverController
 } from 'ionic-angular';
 import {
   AuthService,
   UserProfileService,
   UserProfileDetailsRequest,
-  ContentService,
   TelemetryService,
   ImpressionType,
   PageId,
   Environment,
   InteractType,
   InteractSubtype,
-  ContentSearchCriteria,
-  ContentSortCriteria,
-  SortOrder,
   CourseService,
   TelemetryObject
 } from 'sunbird';
-import { PopoverController } from 'ionic-angular/components/popover/popover-controller';
-import { DatePipe } from '@angular/common';
 import * as _ from 'lodash';
-import { FormEducation } from './education/form.education';
-import { FormAddress } from './address/form.address';
-import { SkillTagsComponent } from './skill-tags/skill-tags';
-import { AdditionalInfoComponent } from './additional-info/additional-info';
-import { FormExperience } from './experience/form.experience';
-import { OverflowMenuComponent } from './overflowmenu/menu.overflow.component';
-import { UserSearchComponent } from './user-search/user-search';
-import { ImagePicker } from './imagepicker/imagepicker';
+import {
+  FormEducation,
+  FormAddress,
+  AdditionalInfoComponent,
+  OverflowMenuComponent,
+} from '@app/pages/profile';
 import {
   generateInteractTelemetry,
   generateImpressionTelemetry
-} from '../../app/telemetryutil';
+} from '@app/app/telemetryutil';
 import {
   ProfileConstants,
   MenuOverflow,
   ContentType,
   MimeType
-} from '../../app/app.constant';
-import { AppGlobalService } from '../../service/app-global.service';
-import { CommonUtilService } from '../../service/common-util.service';
-import { CategoriesEditPage } from '../categories-edit/categories-edit';
-import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
-import { CollectionDetailsPage } from '../collection-details/collection-details';
-import { ContentDetailsPage } from '../content-details/content-details';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+} from '@app/app/app.constant';
+import { CategoriesEditPage } from '@app/pages/categories-edit/categories-edit';
+import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details/enrolled-course-details';
+import { CollectionDetailsPage } from '@app/pages/collection-details/collection-details';
+import { ContentDetailsPage } from '@app/pages/content-details/content-details';
+import { AppGlobalService, TelemetryGeneratorService } from '@app/service';
 
 /**
  * The Profile page
@@ -68,15 +61,9 @@ export class ProfilePage {
   isLoggedInUser = false;
   isRefreshProfile = false;
   loggedInUserId = '';
-  lastLoginTime = '';
 
   profileName: string;
-  profileProgress = '';
-  languages: string;
-  subjects: string;
-  grades: string;
   onProfile = true;
-  isUploading = false;
   trainingsCompleted = [];
   roles = [];
 
@@ -84,42 +71,35 @@ export class ProfilePage {
    * Contains paths to icons
    */
   imageUri = 'assets/imgs/ic_profile_default.png';
-  educationIcon = 'assets/imgs/ic_businessman.png';
-  locationIcon = 'assets/imgs/ic_location.png';
 
   uncompletedDetails: any = {
     title: ''
   };
 
-  /* Social Media Links */
-  fbLink = '';
-  twitterLink = '';
-  linkedInLink = '';
-  blogLink = '';
-
   readonly DEFAULT_PAGINATION_LIMIT = 2;
-  paginationLimit = 2;
   rolesLimit = 2;
   badgesLimit = 2;
   trainingsLimit = 2;
   startLimit = 0;
 
   enrolledCourse: any = [];
+  orgDetails: {
+    'state': '',
+    'district': '',
+    'block': ''
+  };
 
   constructor(
     private navCtrl: NavController,
     private popoverCtrl: PopoverController,
     private userProfileService: UserProfileService,
     private zone: NgZone,
-    private datePipe: DatePipe,
     private authService: AuthService,
-    private contentService: ContentService,
     private telemetryService: TelemetryService,
     private loadingCtrl: LoadingController,
     private navParams: NavParams,
     private events: Events,
     private appGlobalService: AppGlobalService,
-    private commonUtilService: CommonUtilService,
     private courseService: CourseService,
     private telemetryGeneratorService: TelemetryGeneratorService
   ) {
@@ -141,8 +121,6 @@ export class ProfilePage {
       if (res.isUploading && res.url !== '') {
         this.imageUri = res.url;
       }
-
-      this.isUploading = res.isUploading;
     });
     this.telemetryService.impression(generateImpressionTelemetry(
       ImpressionType.VIEW, '',
@@ -180,9 +158,6 @@ export class ProfilePage {
    */
   resetProfile() {
     this.profile = {};
-    this.subjects = '';
-    this.grades = '';
-    this.languages = '';
   }
 
   /**
@@ -230,17 +205,9 @@ export class ProfilePage {
                 if (r && r.avatar) {
                   that.imageUri = r.avatar;
                 }
-                that.searchContent();
-                that.formatLastLoginTime();
-                that.formatProfileProgress();
-                that.formatJobProfile();
                 that.formatRoles();
-                if (!that.isLoggedInUser) { that.formatSkills(); }
-                that.subjects = that.arrayToString(that.profile.subject);
-                that.languages = that.arrayToString(that.profile.language);
-                that.grades = that.arrayToString(that.profile.grade);
                 that.formatMissingFields();
-                that.formatSocialLinks();
+                that.formatOrgDetails();
                 resolve();
               });
             },
@@ -276,55 +243,11 @@ export class ProfilePage {
       }
 
       switch (this.profile.missingFields[0]) {
-        case 'education':
-          this.uncompletedDetails.title = 'ADD_EDUCATION';
-          this.uncompletedDetails.page = FormEducation;
-          this.uncompletedDetails.data = {
-            addForm: true,
-            profile: this.profile
-          };
-          break;
-
-        case 'jobProfile':
-          this.uncompletedDetails.title = 'ADD_EXPERIENCE';
-          this.uncompletedDetails.page = FormExperience;
-          this.uncompletedDetails.data = {
-            addForm: true,
-            profile: this.profile
-          };
-          break;
-
-        // case "avatar":
-        //   this.uncompletedDetails.title = 'ADD_AVATAR';
-        //   this.uncompletedDetails.page = "picture";
-        //   break;
-
-        case 'address':
-          this.uncompletedDetails.title = 'ADD_ADDRESS';
-          this.uncompletedDetails.page = FormAddress;
-          this.uncompletedDetails.data = {
-            addForm: true,
-            profile: this.profile
-          };
-          break;
-
-        case 'location':
-          this.setMissingProfileDetails('ADD_LOCATION');
-          break;
         case 'phone':
           this.setMissingProfileDetails('ADD_PHONE_NUMBER');
           break;
         case 'profileSummary':
           this.setMissingProfileDetails('ADD_PROFILE_DESCRIPTION');
-          break;
-        case 'subject':
-          this.setMissingProfileDetails('ADD_SUBJECT');
-          break;
-        case 'dob':
-          this.setMissingProfileDetails('ADD_DATE_OF_BIRTH');
-          break;
-        case 'grade':
-          this.setMissingProfileDetails('ADD_CLASS');
           break;
         case 'lastName':
           this.setMissingProfileDetails('ADD_LAST_NAME');
@@ -359,14 +282,9 @@ export class ProfilePage {
     };
   }
 
-  formatJobProfile() {
-    this.profile.jobProfile.forEach(job => {
-      if (job.subject) {
-        job.subject = this.arrayToString(job.subject);
-      }
-    });
-  }
-
+  /**
+   * Method to store all roles from different organizations into single array
+   */
   formatRoles() {
     this.roles = [];
     for (let i = 0, len = this.profile.organisations.length; i < len; i++) {
@@ -376,39 +294,31 @@ export class ProfilePage {
     }
   }
 
-  formatLastLoginTime() {
-    this.lastLoginTime = this.datePipe.transform(new Date(this.profile.lastLoginTime), 'MMM dd, yyyy, hh:mm:ss a');
-  }
+  /**
+   * Method to handle organisation details.
+   */
+  formatOrgDetails() {
+    this.orgDetails = { 'state': '', 'district': '', 'block': '' };
+    for (let i = 0, len = this.profile.organisations.length; i < len; i++) {
+      for (let j = 0, l = this.profile.organisations[i].locations.length; j < l; j++) {
+        switch (this.profile.organisations[i].locations[j].type) {
+          case 'state':
+            this.orgDetails.state = this.profile.organisations[i].locations[j];
+            break;
 
-  /* Add new node in endorsersList as `canEndorse` */
-  formatSkills() {
-    this.profile.skills.forEach(skill => {
-      skill.canEndorse = !Boolean(_.find(skill.endorsersList,
-        (element) => {
-          return element.userId === this.loggedInUserId;
-        })
-      );
-    });
-  }
+          case 'block':
+            this.orgDetails.block = this.profile.organisations[i].locations[j];
+            break;
 
-  formatSocialLinks() {
-    if (this.profile.webPages.length) {
-      this.profile.webPages.forEach(element => {
-        if (element.type === 'fb') {
-          this.fbLink = element.url;
-        } else if (element.type === 'twitter') {
-          this.twitterLink = element.url;
-        } else if (element.type === 'in') {
-          this.linkedInLink = element.url;
-        } else {
-          this.blogLink = element.url;
+          case 'district':
+            this.orgDetails.district = this.profile.organisations[i].locations[j];
+            break;
+
+          default:
+            break;
         }
-      });
+      }
     }
-  }
-
-  formatProfileProgress() {
-    this.profileProgress = String(this.profile.completeness);
   }
 
   /**
@@ -436,171 +346,6 @@ export class ProfilePage {
   }
 
   /**
-   * Redirects to the Add Skill page
-   */
-  addSkillTags() {
-    this.navCtrl.push(SkillTagsComponent);
-  }
-
-  /**
-   * Calls Endorse skill API and update the count of Skill endorsement
-   * @param {number} num - position of the skill in the skills Array
-   */
-  endorseSkill(num) {
-
-    // Increase the Endorsement Count with 1 and make it as endorsed
-
-    if (this.profile.skills[num].hasOwnProperty('endorsementCount')) {
-      this.profile.skills[num].endorsementCount += 1;
-    } else {
-      this.profile.skills[num].endorsementcount += 1;
-    }
-
-    this.profile.skills[num].canEndorse = false;
-
-    this.authService.getSessionData(session => {
-      if (session === undefined || session == null) {
-        console.error('session is null');
-      } else {
-        const req = {
-          userId: this.profile.skills[num].addedBy,
-          skills: [this.profile.skills[num].skillName]
-        };
-        this.userProfileService.endorseOrAddSkill(
-          req,
-          (res: any) => {
-          },
-          (error: any) => {
-            console.error('Error', JSON.parse(error));
-
-            /* Revert Changes if API call get fails to update */
-            if (this.profile.skills[num].hasOwnProperty('endorsementCount')) {
-              this.profile.skills[num].endorsementCount -= 1;
-            } else {
-              this.profile.skills[num].endorsementcount -= 1;
-            }
-            this.profile.skills[num].canEndorse = true;
-          }
-        );
-      }
-    });
-  }
-
-  /**
-   * Shows the pop up with current Image or open camera instead.
-    */
-  editPicture() {
-    const popover = this.popoverCtrl.create(ImagePicker,
-      {
-        imageUri: this.imageUri,
-        profile: this.profile
-      });
-    popover.present();
-  }
-
-  /**
-   * Open up the experience form in edit mode
-   * @param {boolean} isNewForm - Tells whether user clicked on New Button or edit button
-   * @param {object} jobInfo - job object if available
-   */
-  editExperience(isNewForm: boolean = true, jobInfo: any = {}): void {
-    this.zone.run(() => {
-      this.navCtrl.push(FormExperience, {
-        addForm: isNewForm,
-        jobInfo: jobInfo,
-        profile: this.profile
-      });
-    });
-  }
-
-  /**
-   * Open up the Additional Information form in edit mode
-   */
-  editAdditionalInfo() {
-    /* Required profile fields to pass to an Additional Info page */
-    const requiredProfileFields: Array<string> = [
-      'userId',
-      'firstName',
-      'lastName',
-      'language',
-      'email',
-      'phone',
-      'profileSummary',
-      'subject',
-      'gender',
-      'dob',
-      'grade',
-      'location',
-      'webPages'
-    ];
-
-    this.navCtrl.push(AdditionalInfoComponent, {
-      userId: this.loggedInUserId,
-      profile: this.getSubset(requiredProfileFields, this.profile),
-      profileVisibility: this.profile.profileVisibility
-    });
-  }
-
-  /**
-   * To Toggle the lock
-   */
-  toggleLock(field: string, fieldDisplayName: string, revert: boolean = false, ) {
-    if (!this.profile.profileVisibility.hasOwnProperty(field)) {
-      this.profile.profileVisibility[field] = 'public';
-    }
-    this.profile.profileVisibility[field] = this.profile.profileVisibility[field] === 'private' ? 'public' : 'private';
-
-    if (!revert) {
-      if (this.profile.profileVisibility[field] === 'private') {
-        this.commonUtilService.showToast(
-          this.commonUtilService.translateMessage('PRIVACY_HIDE_TEXT',
-            this.commonUtilService.translateMessage(fieldDisplayName).toLocaleLowerCase()));
-      } else {
-        if (fieldDisplayName === 'SKILL_TAGS') {
-          this.commonUtilService.showToast(
-            this.commonUtilService.translateMessage('PRIVACY_SHOW_TEXT',
-              _.startCase(this.commonUtilService.translateMessage(fieldDisplayName))));
-        } else {
-          this.commonUtilService.showToast(
-            this.commonUtilService.translateMessage('PRIVACY_SHOW_TEXT',
-              _.capitalize(this.commonUtilService.translateMessage(fieldDisplayName))));
-        }
-      }
-      this.setProfileVisibility(field);
-    }
-  }
-
-  /**
-   * To set Profile visibility
-   */
-  setProfileVisibility(field: string) {
-    this.authService.getSessionData(session => {
-      if (session === undefined || session == null) {
-      } else {
-        const req = {
-          userId: JSON.parse(session)[ProfileConstants.USER_TOKEN],
-          privateFields:
-            this.profile.profileVisibility[field] === 'private' ? [field] : [],
-          publicFields:
-            this.profile.profileVisibility[field] === 'public' ? [field] : []
-        };
-        this.userProfileService.setProfileVisibility(
-          req,
-          (res: any) => {
-            this.isRefreshProfile = true;
-            this.refreshProfileData();
-          },
-          (err: any) => {
-            console.error('Unable to set profile visibility.', err);
-            this.commonUtilService.showToast(this.commonUtilService.translateMessage('SOMETHING_WENT_WRONG'));
-            this.toggleLock(field, '', true); // In-case of API fails to update, make privacy lock icon as it was.
-          }
-        );
-      }
-    });
-  }
-
-  /**
    * To show popover menu
    */
   showOverflowMenu(event) {
@@ -613,54 +358,6 @@ export class ProfilePage {
     popover.present({
       ev: event
     });
-  }
-
-  completeProfile() {
-    if (this.uncompletedDetails.page === 'picture') {
-      this.editPicture();
-    } else {
-      this.navCtrl.push(this.uncompletedDetails.page, this.uncompletedDetails.data);
-    }
-  }
-
-  /**
-   * Searches contents created by the user
-   */
-  searchContent(): void {
-    const contentSortCriteria: ContentSortCriteria = {
-      sortAttribute: 'lastUpdatedOn',
-      sortOrder: SortOrder.DESC
-    };
-    const contentSearchCriteria: ContentSearchCriteria = {
-      createdBy: [this.userId || this.loggedInUserId],
-      limit: 20,
-      contentTypes: ContentType.FOR_PROFILE_TAB,
-      sortCriteria: [contentSortCriteria]
-    };
-
-    this.contentService.searchContent(contentSearchCriteria,
-      false, false, false,
-      (result: any) => {
-        this.enrolledCourse = JSON.parse(result).result.contentDataList;
-      },
-      (error: any) => {
-        console.error('Error', error);
-      }
-    );
-  }
-
-  /**
-   * Navigates to User Search Page
-   */
-  gotoSearchPage(): void {
-    this.telemetryService.interact(
-      generateInteractTelemetry(InteractType.TOUCH,
-        InteractSubtype.SEARCH_BUTTON_CLICKED,
-        Environment.HOME,
-        PageId.PROFILE, null,
-        undefined,
-        undefined));
-    this.navCtrl.push(UserSearchComponent);
   }
 
   /**
@@ -729,13 +426,6 @@ export class ProfilePage {
     return keys.reduce((a, c) => ({ ...a, [c]: obj[c] }), {});
   }
 
-  openLink(url: string): void {
-    const options
-      = 'hardwareback=yes,clearcache=no,zoom=no,toolbar=yes,clearsessioncache=no,closebuttoncaption=Done,disallowoverscroll=yes';
-
-    (<any>window).cordova.InAppBrowser.open(url, '_system', options);
-  }
-
   /**
    * To get enrolled course(s) of logged-in user i.e, trainings in the UI.
    *
@@ -748,17 +438,19 @@ export class ProfilePage {
       returnRefreshedEnrolledCourses: true
     };
     this.trainingsCompleted = [];
-    this.courseService.getEnrolledCourses(option, (res: any) => {
-      res = JSON.parse(res);
-      const enrolledCourses = res.result.courses;
-      for (let i = 0, len = enrolledCourses.length; i < len; i++) {
-        if ((enrolledCourses[i].status === 2) || (enrolledCourses[i].leafNodesCount === enrolledCourses[i].progress)) {
-          this.trainingsCompleted.push(enrolledCourses[i]);
+    this.courseService.getEnrolledCourses(option)
+      .then((res: any) => {
+        res = JSON.parse(res);
+        const enrolledCourses = res.result.courses;
+        for (let i = 0, len = enrolledCourses.length; i < len; i++) {
+          if ((enrolledCourses[i].status === 2) || (enrolledCourses[i].leafNodesCount === enrolledCourses[i].progress)) {
+            this.trainingsCompleted.push(enrolledCourses[i]);
+          }
         }
-      }
-    }, (error: any) => {
-      console.error('error while loading enrolled courses', error);
-    });
+      })
+      .catch((error: any) => {
+        console.error('error while loading enrolled courses', error);
+      });
   }
 
   isResource(contentType) {

@@ -136,15 +136,15 @@ export class ReportIssuesComponent {
         Environment.HOME,
         PageId.CONTENT_DETAIL, undefined, paramsMap);
 
-      this.contentService.flagContent(option, () => {
+      this.contentService.flagContent(option).then(() => {
         const flagContentParamsMap = new Map();
         flagContentParamsMap['contentType'] = this.content.contentType;
         this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.FLAG_SUCCESS,
           Environment.HOME, PageId.CONTENT_DETAIL, undefined, flagContentParamsMap);
         this.viewCtrl.dismiss('flag.success');
         this.commonUtilService.showToast('CONTENT_FLAGGED_MSG');
-      },
-        (data: any) => {
+      })
+        .catch((data: any) => {
           console.log('error:', data);
           this.viewCtrl.dismiss();
           this.commonUtilService.showToast('CONTENT_FLAG_FAIL');

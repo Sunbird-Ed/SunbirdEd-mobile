@@ -59,7 +59,7 @@ export class FlagContent {
 
 export class ProfileConstants {
     public static readonly USER_TOKEN = 'userToken';
-    public static readonly REQUIRED_FIELDS = ['completeness', 'missingFields', 'lastLoginTime', 'topics'];
+    public static readonly REQUIRED_FIELDS = ['completeness', 'missingFields', 'lastLoginTime', 'topics', 'organisations'];
 }
 
 export class AudienceFilter {

@@ -38,8 +38,8 @@
                 <b>{{user?.handle | titlecase}}</b>
               </h6>
               <p>
-                  <span *ngIf="user?.profileType === 'TEACHER'">{{'USER_TYPE_1' | translate | titlecase}}</span>
-                  <span *ngIf="user?.profileType === 'STUDENT'">{{'USER_TYPE_2' | translate | titlecase}}</span>
+                <span *ngIf="user?.profileType === 'TEACHER'">{{'USER_TYPE_1' | translate | titlecase}}</span>
+                <span *ngIf="user?.profileType === 'STUDENT'">{{'USER_TYPE_2' | translate | titlecase}}</span>
                 <span *ngIf="user?.grade?.length">•</span> {{ getGradeNameFromCode(user) }}</p>
             </ion-item>
           </ion-col>
@@ -52,17 +52,21 @@
       </ion-item>
     </ion-list>
   </div>
-  <div *ngIf="playConfig && selectedUserIndex === -1 && !isNoUsers " class="error-message-contentplay">
-    <div>
-      <ion-icon ios="ios-information-circle" md="md-information-circle"></ion-icon>
-      {{ 'PLEASE_SELECT_USER' | translate }}</div>
-  </div>
+
 </ion-content>
 
 <ion-footer class="footer" *ngIf="userList.length && selectedUserIndex !== -1">
-  <ion-row padding >
+  <ion-row>
+    <div *ngIf="playConfig && selectedUserIndex === -1 && !isNoUsers " class="error-message-contentplay">
+      <div>
+        <ion-icon ios="ios-information-circle" md="md-information-circle"></ion-icon>
+        {{ 'PLEASE_SELECT_USER' | translate }}
+      </div>
+    </div>
+  </ion-row>
+  <ion-row padding>
     <ion-col col-md-10 offset-md-1>
-       <button ion-button block center *ngIf="!playConfig" (click)="switchAccountConfirmBox()">
+      <button ion-button block center *ngIf="!playConfig" (click)="switchAccountConfirmBox()">
         {{'SWITCH_ACCOUNT' | translate}}
       </button>
       <button ion-button block center *ngIf="playConfig" (click)="play()">
@@ -70,13 +74,21 @@
       </button>
     </ion-col>
   </ion-row>
- </ion-footer>
- <ion-footer class="footer" *ngIf="playConfig && selectedUserIndex === -1">
-    <ion-row padding>
-        <ion-col col-md-10 offset-md-1>
-           <button ion-button block center [disabled]="true" (click)="play()">
-            {{'PLAY' | translate}}
-          </button>
-       </ion-col>
-      </ion-row>
- </ion-footer>
+</ion-footer>
+<ion-footer class="footer" *ngIf="playConfig && selectedUserIndex === -1">
+  <ion-row>
+    <div *ngIf="playConfig && selectedUserIndex === -1 && !isNoUsers " class="error-message-contentplay">
+      <div>
+        <ion-icon ios="ios-information-circle" md="md-information-circle"></ion-icon>
+        {{ 'PLEASE_SELECT_USER' | translate }}
+      </div>
+    </div>
+  </ion-row>
+  <ion-row padding>
+    <ion-col col-md-10 offset-md-1>
+      <button ion-button block center [disabled]="true" (click)="play()">
+        {{'PLAY' | translate}}
+      </button>
+    </ion-col>
+  </ion-row>
+</ion-footer>

@@ -1,7 +1,9 @@
 import { Component, Input, Output, OnInit, EventEmitter } from '@angular/core';
 import { PopoverController } from 'ionic-angular';
-import { InteractSubtype, PageId, InteractType, Environment, TelemetryObject, ObjectType } from 'sunbird';
+import { InteractSubtype, PageId, InteractType, Environment, TelemetryObject, ObjectType, ReportSummary } from 'sunbird';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { UserReportPage } from '../../pages/reports/user-report/user-report';
+import { NavController } from 'ionic-angular';
 
 @Component({
   selector: 'assessment-details',
@@ -10,7 +12,8 @@ import { TelemetryGeneratorService } from '../../service/telemetry-generator.ser
 export class AssessmentDetailsComponent implements OnInit {
 
   constructor(public popoverCtrl: PopoverController,
-    private telemetryGeneratorService: TelemetryGeneratorService) {
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private navCtrl: NavController) {
     this.showResult = true;
   }
 
@@ -41,6 +44,12 @@ export class AssessmentDetailsComponent implements OnInit {
         subType = InteractSubtype.USER_CLICKED;
         telemetryObject.id = event.row.qid ? event.row.qid : '';
         telemetryObject.type = ObjectType.USER;
+
+        const reportSummary: ReportSummary = new ReportSummary();
+        reportSummary.name = row.name;
+        reportSummary.uid = row.uid;
+        reportSummary.contentId = row.contentId;
+        this.navCtrl.push(UserReportPage, { 'report': reportSummary });
       } else if (row.qid) {
         subType = InteractSubtype.QUESTION_CLICKED;
         telemetryObject.id = event.row.uid ? event.row.uid : '';

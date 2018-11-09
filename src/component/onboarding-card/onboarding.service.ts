@@ -55,7 +55,7 @@ export class OnboardingService {
 
             if (this.slideIndex === -1) {
 
-                this.profileService.getCurrentUser((res: any) => {
+                this.profileService.getCurrentUser().then((res: any) => {
                     this.profile = JSON.parse(res);
                     let syllabusFramework = '';
 
@@ -78,8 +78,8 @@ export class OnboardingService {
                                 reject(err);
                             });
                     }
-                },
-                    (err: any) => {
+                })
+                    .catch((err: any) => {
                         console.log('Err1', err);
                         reject(err);
                     });
@@ -144,7 +144,7 @@ export class OnboardingService {
      */
     getCurrentUser(): Promise<any> {
         return new Promise((resolve, reject) => {
-            this.profileService.getCurrentUser((res: any) => {
+            this.profileService.getCurrentUser().then((res: any) => {
                 let index = 0;
                 this.profile = JSON.parse(res);
                 this.currentIndex = 0;
@@ -196,8 +196,8 @@ export class OnboardingService {
                 }
 
                 resolve(index);
-            },
-                (err: any) => {
+            })
+                .catch((err: any) => {
                     console.log('Err1', err);
                     reject(err);
                 });
@@ -465,8 +465,8 @@ export class OnboardingService {
                 });
             }
 
-            this.profileService.updateProfile(req,
-                (res: any) => {
+            this.profileService.updateProfile(req)
+                .then((res: any) => {
                     if (this.onBoardingSlides.length === (index + 1)) {
                         this.isOnBoardingCardCompleted = true;
                         this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: this.isOnBoardingCardCompleted });
@@ -479,8 +479,8 @@ export class OnboardingService {
                     this.getCurrentUser();
 
                     resolve(res);
-                },
-                (err: any) => {
+                })
+                .catch((err: any) => {
                     reject(err);
                 });
         });

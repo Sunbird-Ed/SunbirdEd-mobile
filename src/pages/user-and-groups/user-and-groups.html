@@ -82,12 +82,7 @@
         </div>
 
       </div>
-      <div *ngIf="playConfig && selectedUserIndex === -1" class="error-message-contentplay">
-        <div>
-          <ion-icon ios="ios-information-circle" md="md-information-circle"></ion-icon>
-          {{ 'PLEASE_SELECT_USER' | translate }}
-        </div>
-      </div>
+      
     </ion-list>
     <ion-list *ngSwitchCase="'groups'">
       <div padding>
@@ -145,6 +140,14 @@
   </div>
 </ion-content>
 <ion-footer>
+  <ion-row *ngIf="segmentType === 'users'" >
+      <div *ngIf="playConfig && selectedUserIndex === -1" class="error-message-contentplay">
+          <div>
+            <ion-icon ios="ios-information-circle" md="md-information-circle"></ion-icon>
+            {{ 'PLEASE_SELECT_USER' | translate }}
+          </div>
+        </div>
+  </ion-row>
   <ion-row padding>
     <ion-col col-md-10 offset-md-1>
       <div *ngIf="selectedUserIndex !== -1; else enableCreateButton">

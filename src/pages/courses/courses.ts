@@ -32,7 +32,6 @@ import {
 import { SearchPage } from '../search/search';
 import { ContentDetailsPage } from '../content-details/content-details';
 import * as _ from 'lodash';
-import { Network } from '@ionic-native/network';
 import {
   ProfileConstants,
   EventTopics,
@@ -83,47 +82,31 @@ export class CoursesPage implements OnInit {
    * Flag to show latest and popular course loader
    */
   pageApiLoader = true;
-
   guestUser = false;
-
   showSignInCard = false;
-
-  isNetworkAvailable: boolean;
   showWarning = false;
-
   isOnBoardingCardCompleted = false;
   onBoardingProgress = 0;
   selectedLanguage = 'en';
   appLabel: string;
-
   courseFilter: any;
-
   appliedFilter: any;
-
   filterIcon = './assets/imgs/ic_action_filter.png';
-
   profile: any;
-
   isVisible = false;
-
 
   /**
    * To queue downloaded identifier
    */
   queuedIdentifiers: Array<any> = [];
-
   downloadPercentage = 0;
-
   showOverlay = false;
-
   resumeContentData: any;
   tabBarElement: any;
   private mode = 'soft';
   isFilterApplied = false;
-
   callback: QRResultCallback;
   pageFilterCallBack: PageFilterCallback;
-
 
   /**
    * Default method of class CoursesPage
@@ -144,7 +127,6 @@ export class CoursesPage implements OnInit {
     private events: Events,
     private contentService: ContentService,
     private preference: SharedPreferences,
-    private network: Network,
     private appGlobalService: AppGlobalService,
     private courseUtilService: CourseUtilService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
@@ -161,17 +143,6 @@ export class CoursesPage implements OnInit {
 
     this.subscribeUtilityEvents();
 
-    if (this.network.type === 'none') {
-      this.isNetworkAvailable = false;
-    } else {
-      this.isNetworkAvailable = true;
-    }
-    this.network.onDisconnect().subscribe(() => {
-      this.isNetworkAvailable = false;
-    });
-    this.network.onConnect().subscribe(() => {
-      this.isNetworkAvailable = true;
-    });
 
     this.appVersion.getAppName()
       .then((appName: any) => {
@@ -323,13 +294,12 @@ export class CoursesPage implements OnInit {
       refreshEnrolledCourses: true,
       returnRefreshedEnrolledCourses: returnRefreshedCourses
     };
-
-    this.courseService.getEnrolledCourses(option, (enrolledCourses: any) => {
+    this.courseService.getEnrolledCourses(option)
+     .then((enrolledCourses: any) => {
       if (enrolledCourses) {
         enrolledCourses = JSON.parse(enrolledCourses);
         this.ngZone.run(() => {
           this.enrolledCourses = enrolledCourses.result.courses ? enrolledCourses.result.courses : [];
-
           // maintain the list of courses that are enrolled, and store them in appglobal
           if (this.enrolledCourses.length > 0) {
             const courseList: Array<any> = [];
@@ -344,7 +314,8 @@ export class CoursesPage implements OnInit {
           this.spinner(false);
         });
       }
-    }, (error: any) => {
+    })
+    .catch((error: any) => {
       console.log('error while loading enrolled courses', error);
       this.spinner(false);
     });
@@ -359,7 +330,7 @@ export class CoursesPage implements OnInit {
     this.pageApiLoader = true;
     if (pageAssembleCriteria === undefined) {
       const criteria = new PageAssembleCriteria();
-      criteria.name = PageName.RESOURCE;
+      criteria.name = PageName.COURSE;
       criteria.mode = 'soft';
 
       if (this.appliedFilter) {
@@ -402,7 +373,7 @@ export class CoursesPage implements OnInit {
       }
     }
 
-    this.pageService.getPageAssemble(pageAssembleCriteria, (res: any) => {
+    this.pageService.getPageAssemble(pageAssembleCriteria) .then((res: any) => {
       res = JSON.parse(res);
       this.ngZone.run(() => {
         const sections = JSON.parse(res.sections);
@@ -425,12 +396,11 @@ export class CoursesPage implements OnInit {
         this.pageApiLoader = !this.pageApiLoader;
         this.checkEmptySearchResult();
       });
-    }, (error: string) => {
+    }) .catch((error: string) => {
       console.log('Page assmble error', error);
       this.ngZone.run(() => {
         this.pageApiLoader = false;
         if (error === 'CONNECTION_ERROR') {
-          this.isNetworkAvailable = false;
           this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
         } else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
           this.commonUtilService.showToast('ERROR_FETCHING_DATA');
@@ -564,7 +534,7 @@ export class CoursesPage implements OnInit {
       applyFilter(filter, appliedFilter) {
         that.ngZone.run(() => {
           const criteria = new PageAssembleCriteria();
-          criteria.name = PageName.RESOURCE;
+          criteria.name = PageName.COURSE;
           criteria.filters = filter;
           that.courseFilter = appliedFilter;
           that.appliedFilter = filter;
@@ -652,19 +622,15 @@ export class CoursesPage implements OnInit {
   }
 
   retryShowingPopularCourses(showRefresh = false) {
-    if (this.network.type === 'none') {
-      this.isNetworkAvailable = false;
-    } else {
-      this.isNetworkAvailable = true;
-      if (showRefresh) {
-        this.getCourseTabData();
-      }
+    if (this.commonUtilService.networkInfo.isNetworkAvailable && showRefresh) {
+      this.getCourseTabData();
     }
   }
 
   getContentDetails(content) {
     const identifier = content.contentId || content.identifier;
-    this.contentService.getContentDetail({ contentId: identifier }, (data: any) => {
+    this.contentService.getContentDetail({ contentId: identifier })
+    .then((data: any) => {
       data = JSON.parse(data);
       if (data && data.result && data.result.isAvailableLocally) {
         this.showOverlay = false;
@@ -674,8 +640,8 @@ export class CoursesPage implements OnInit {
         this.showOverlay = true;
         this.importContent([identifier], false);
       }
-    },
-      (error: any) => {
+    })
+      .catch((error: any) => {
         console.log(error);
         this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
       });
@@ -732,7 +698,8 @@ export class CoursesPage implements OnInit {
       contentStatusArray: []
     };
 
-    this.contentService.importContent(option, (data: any) => {
+    this.contentService.importContent(option)
+     .then((data: any) => {
       data = JSON.parse(data);
       this.ngZone.run(() => {
         this.tabBarElement.style.display = 'none';
@@ -744,8 +711,8 @@ export class CoursesPage implements OnInit {
           }
         }
       });
-    },
-      () => {
+    })
+      .catch(() => {
         this.ngZone.run(() => {
           this.removeOverlayAndShowError();
         });
@@ -784,18 +751,14 @@ export class CoursesPage implements OnInit {
 
   cancelDownload() {
     this.ngZone.run(() => {
-      this.contentService.cancelDownload(this.resumeContentData.contentId || this.resumeContentData.identifier, () => {
+      this.contentService.cancelDownload(this.resumeContentData.contentId || this.resumeContentData.identifier) .then(() => {
         this.tabBarElement.style.display = 'flex';
         this.showOverlay = false;
-      }, () => {
+      }) .catch(() => {
         this.tabBarElement.style.display = 'flex';
         this.showOverlay = false;
       });
     });
   }
-
-  // scrollBottomReached(event) {
-  //   console.log('scrollBottomReached courses');
-  // }
 
 }

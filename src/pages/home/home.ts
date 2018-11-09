@@ -122,18 +122,20 @@ export class HomePage {
       userId: this.userId,
       refreshEnrolledCourses: false
     };
-    this.courseService.getEnrolledCourses(option, (data: any) => {
-      if (data) {
-        data = JSON.parse(data);
-        this.ngZone.run(() => {
-          this.enrolledCourse = data.result.courses ? data.result.courses : [];
-          this.spinner(false);
-        });
-      }
-    }, (error: any) => {
-      console.log('error while loading enrolled courses', error);
-      this.spinner(false);
-    });
+    this.courseService.getEnrolledCourses(option)
+      .then((data: any) => {
+        if (data) {
+          data = JSON.parse(data);
+          this.ngZone.run(() => {
+            this.enrolledCourse = data.result.courses ? data.result.courses : [];
+            this.spinner(false);
+          });
+        }
+      })
+      .catch((error: any) => {
+        console.log('error while loading enrolled courses', error);
+        this.spinner(false);
+      });
   }
 
   /**
@@ -238,9 +240,10 @@ export class HomePage {
       'do_2123823398249594881455': contentImport
     };
     console.log('Hello ' + JSON.stringify(contentImportRequest));
-    this.contentService.importContent(contentImportRequest, (response) => {
+    this.contentService.importContent(contentImportRequest)
+    .then((response) => {
       console.log('Home : ' + response);
-    }, (error) => {
+    }) .then((error) => {
       console.log('Home : ' + error);
     });
   }

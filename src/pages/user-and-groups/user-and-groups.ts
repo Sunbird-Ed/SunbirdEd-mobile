@@ -50,7 +50,6 @@ import {
   GUEST_TEACHER_TABS
 } from '../../app/module.service';
 import { App, Events } from 'ionic-angular';
-import { Network } from '@ionic-native/network';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { Map } from '../../app/telemetryutil';
 import { Content } from 'ionic-angular';
@@ -102,8 +101,6 @@ export class UserAndGroupsPage {
     private preferences: SharedPreferences,
     private app: App,
     private oauth: OAuthService,
-    private network: Network,
-    private toastCtrl: ToastController,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private authService: AuthService,
     private loadingCtrl: LoadingController,
@@ -479,11 +476,11 @@ export class UserAndGroupsPage {
         local: true,
         latestCreatedProfile: true
       };
-      this.profileService.getProfile(req, lastCreatedProfile => {
+      this.profileService.getProfile(req).then((lastCreatedProfile: any) => {
         console.log('lastCreatedProfile: ', lastCreatedProfile);
         this.lastCreatedProfileData = JSON.parse(lastCreatedProfile);
         resolve(JSON.parse(lastCreatedProfile));
-      }, error => {
+      }).catch(error => {
         reject(null);
         console.log('error in fetching last created profile data' + error);
       });
@@ -508,15 +505,15 @@ export class UserAndGroupsPage {
       (<any>window).splashscreen.clearPrefs();
       this.setAsCurrentUser(selectedUser, true);
     } else {
-      if (this.network.type === 'none') {
-        this.authService.endSession();
-        (<any>window).splashscreen.clearPrefs();
-        this.setAsCurrentUser(selectedUser, false);
-      } else {
+      if (this.commonUtilService.networkInfo.isNetworkAvailable) {
         this.oauth.doLogOut().then(() => {
           (<any>window).splashscreen.clearPrefs();
           this.setAsCurrentUser(selectedUser, false);
         });
+      } else {
+        this.authService.endSession();
+        (<any>window).splashscreen.clearPrefs();
+        this.setAsCurrentUser(selectedUser, false);
       }
     }
 
@@ -644,15 +641,15 @@ export class UserAndGroupsPage {
       PageId.USERS_GROUPS,
       telemetryObject
     );
-    this.profileService.deleteUser(uid,
-      (result) => {
+    this.profileService.deleteUser(uid)
+      .then((result) => {
         console.log('User Deleted Successfully', result);
         this.userList.splice(index, 1);
         if (this.userList.length === 0) {
           this.noUsersPresent = true;
         }
 
-      }, (error) => {
+      }) .catch((error) => {
         console.error('Error Occurred=', error);
       });
   }
@@ -700,7 +697,7 @@ export class UserAndGroupsPage {
       .catch(error => {
         console.log('Error : ' + error);
       });
-      this.profileService.setCurrentUser(selectedUser.uid, () => {
+      this.profileService.setCurrentUser(selectedUser.uid) .then(() => {
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('SWITCHING_TO', selectedUser.handle),
         undefined, undefined, 1000);
     setTimeout(() => {
@@ -719,7 +716,7 @@ export class UserAndGroupsPage {
       this.event.publish(AppGlobalService.USER_INFO_UPDATED);
       this.app.getRootNav().setRoot(TabsPage);
     }, 1000);
-  }, (error) => {
+  }) .catch((error) => {
     console.log('Error ' + error);
   });
   }
