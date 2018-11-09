@@ -744,22 +744,26 @@ export class ContentDetailsPage {
   playContent(isStreaming: boolean) {
     // set the boolean to true, so when the content player is closed, we get to know that
     // we are back from content player
-    this.downloadAndPlay = false;
     if (!AppGlobalService.isPlayerLaunched) {
       AppGlobalService.isPlayerLaunched = true;
     }
 
     this.zone.run(() => {
       this.isPlayerLaunched = true;
+      const values = new Map();
+      if (Boolean(this.downloadAndPlay)) {
+        values['autoAfterDownload'] = true;
+      }
       this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
         InteractSubtype.CONTENT_PLAY,
         Environment.HOME,
         PageId.CONTENT_DETAIL,
         undefined,
-        undefined,
+        values,
         this.objRollup,
         this.corRelationList);
     });
+    this.downloadAndPlay = false;
     const request: any = {};
     request.streaming = isStreaming;
     (<any>window).geniecanvas.play(this.content.playContent, JSON.stringify(request));
