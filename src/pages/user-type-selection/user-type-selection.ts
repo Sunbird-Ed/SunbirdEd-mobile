@@ -40,6 +40,7 @@ import { PreferenceKey } from '../../app/app.constant';
 import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { ProfileSettingsPage } from '../profile-settings/profile-settings';
 import { Navbar } from 'ionic-angular';
+import { LanguageSettingsPage } from '../language-settings/language-settings';
 
 const selectedCardBorderColor = '#006DE5';
 const borderColor = '#F7F7F7';
@@ -126,7 +127,7 @@ export class UserTypeSelectionPage {
     if (this.isChangeRoleRequest) {
       this.navCtrl.pop();
     } else {
-      this.navCtrl.setRoot('LanguageSettingsPage');
+      this.navCtrl.setRoot(LanguageSettingsPage);
     }
   }
 
