@@ -179,7 +179,8 @@ export class ReportsPage {
         this.navCtrl.push(ReportListPage, {
           isFromGroups: true,
           uids: uids,
-          users: map
+          users: map,
+          group: group
         });
       });
   }
