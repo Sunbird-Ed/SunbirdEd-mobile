@@ -83,12 +83,12 @@ export class GroupReportListPage {
         this.fetchAssessment(this.reportType, false);
     }
     ionViewDidLoad() {
-        this.deviceInfoService.getDeviceID(
-            (res: any) => {
+        this.deviceInfoService.getDeviceID()
+            .then((res: any) => {
                 console.log('Device Id: ', res);
                 this.deviceId = res;
-            },
-            (err: any) => {
+            })
+            .catch((err: any) => {
                 console.error('Error', err);
             });
         this.profile = this.appGlobalService.getCurrentUser();
