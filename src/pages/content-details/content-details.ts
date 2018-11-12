@@ -34,7 +34,8 @@ import {
   CorrelationData,
   ProfileService,
   ProfileRequest,
-  TelemetryObject
+  TelemetryObject,
+  SharedPreferences
 } from 'sunbird';
 import {
   ProfileConstants,
@@ -127,6 +128,7 @@ export class ContentDetailsPage {
     private fileUtil: FileUtil,
     private popoverCtrl: PopoverController,
     private shareUtil: ShareUtil,
+    private preference: SharedPreferences,
     private social: SocialSharing,
     private platform: Platform,
     private buildParamService: BuildParamService,
