@@ -78,12 +78,12 @@ export class UserReportPage {
       PageId.REPORTS_USER_ASSESMENT_DETAILS,
       Environment.USER
     );
-    this.deviceInfoService.getDeviceID(
-      (res: any) => {
+    this.deviceInfoService.getDeviceID()
+      .then((res: any) => {
         console.log('Device Id: ', res);
         this.deviceId = res;
-      },
-      (err: any) => {
+      })
+      .catch((err: any) => {
         console.error('Error', err);
       });
     this.appVersion.getAppName()
