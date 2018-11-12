@@ -89,7 +89,7 @@ export class SunbirdQRScanner {
     this.generateImpressionTelemetry(source);
     this.generateStartEvent(source);
 
-    this.permission.hasPermission(this.permissionList, (response) => {
+    this.permission.hasPermission(this.permissionList).then((response: any) => {
       const result = JSON.parse(response);
       if (result.status) {
         const permissionResult = result.result;
@@ -101,7 +101,7 @@ export class SunbirdQRScanner {
         });
 
         if (askPermission.length > 0) {
-          this.permission.requestPermission(askPermission, (res) => {
+          this.permission.requestPermission(askPermission).then((res: any) => {
             const requestResult = JSON.parse(res);
             if (requestResult.status) {
               let permissionGranted = true;
@@ -118,14 +118,14 @@ export class SunbirdQRScanner {
                 this.commonUtil.showToast('PERMISSION_DENIED');
               }
             }
-          }, (error) => {
+          }).catch((error) => {
 
           });
         } else {
           this.startQRScanner(screenTitle, displayText, displayTextColor, buttonText, showButton, source);
         }
       }
-    }, (error) => {
+    }).catch((error) => {
       console.log('Error : ' + error);
     });
   }

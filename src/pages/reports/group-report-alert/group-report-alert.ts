@@ -50,7 +50,7 @@ export class GroupReportAlert {
         qId: this.assessment['qid']
       };
       const that = this;
-      this.reportService.getDetailsPerQuestion(params, (data: any) => {
+      this.reportService.getDetailsPerQuestion(params).then((data: any) => {
         data = JSON.parse(data);
         if (data.length > 0) {
           data.forEach(assessment => {
@@ -60,7 +60,7 @@ export class GroupReportAlert {
           });
           that.fromUserAssessment['uiRows'] = data;
         }
-      }, (error: any) => {
+      }) .catch((error: any) => {
         const data = JSON.parse(error);
         console.log('Error received', data);
         loader.dismiss();
