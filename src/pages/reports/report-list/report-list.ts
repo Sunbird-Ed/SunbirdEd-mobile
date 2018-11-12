@@ -18,6 +18,7 @@ export class ReportListPage {
     uids: Array<string>;
     listOfUsers;
     listOfReports: Array<ReportSummary> = [];
+    groupinfo: any;
 
     constructor(private navCtrl: NavController,
         private navParams: NavParams,
@@ -38,7 +39,8 @@ export class ReportListPage {
         this.isFromUsers = this.navParams.get('isFromUsers');
         this.isFromGroups = this.navParams.get('isFromGroups');
         this.uids = this.navParams.get('uids');
-
+        this.groupinfo = this.navParams.get('group');
+        console.log(this.groupinfo);
         const loader = this.loading.create({
             spinner: 'crescent'
         });
@@ -101,7 +103,8 @@ export class ReportListPage {
                 this.navCtrl.push(GroupReportListPage, {
                     report: report,
                     uids: uids,
-                    users: users
+                    users: users,
+                    group: this.groupinfo
                 });
             }
     }

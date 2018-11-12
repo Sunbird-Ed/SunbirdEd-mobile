@@ -541,18 +541,21 @@ export class CollectionDetailsPage {
       .catch((error: any) => {
         this.zone.run(() => {
           console.log('error while loading content details', error);
-          if (this.isDownloadStarted) {
-            this.showDownloadBtn = true;
-            this.isDownloadStarted = false;
-            this.showLoading = false;
-          }
-
-          this.showChildrenLoader = false;
-          const errorRes = JSON.parse(error);
-          if (errorRes && errorRes.error === 'NETWORK_ERROR') {
-            this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
+          // if (this.isDownloadStarted) {
+          this.showDownloadBtn = true;
+          this.isDownloadStarted = false;
+          this.showLoading = false;
+          if (Boolean(this.isUpdateAvailable)) {
+            this.setChildContents();
           } else {
-            this.commonUtilService.showToast('UNABLE_TO_FETCH_CONTENT');
+            const errorRes = JSON.parse(error);
+            if (errorRes && (errorRes.error === 'NETWORK_ERROR' || errorRes.error === 'CONNECTION_ERROR')) {
+              this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
+            } else {
+              this.commonUtilService.showToast('UNABLE_TO_FETCH_CONTENT');
+            }
+            this.showChildrenLoader = false;
+            this.navCtrl.pop();
           }
         });
       });

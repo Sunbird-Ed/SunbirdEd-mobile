@@ -6,7 +6,11 @@
         <ion-icon name="arrow-back"></ion-icon>
       </button>
     </ion-buttons>
-
+    <ion-buttons right>
+      <button ion-button icon-only (click)="importcsv()">
+        <ion-icon ios="ios-download" md="md-download"></ion-icon>
+      </button>
+    </ion-buttons>
   </ion-toolbar>
 
 </ion-header>
@@ -14,4 +18,3 @@
 <ion-content class="fromUser">
   <assessment-details [assessmentData]="assessmentData" [columns]="columns"></assessment-details>
 </ion-content>
-
