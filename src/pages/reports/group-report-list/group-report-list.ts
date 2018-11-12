@@ -83,12 +83,12 @@ export class GroupReportListPage {
         this.fetchAssessment(this.reportType, false);
     }
     ionViewDidLoad() {
-        this.deviceInfoService.getDeviceID(
-            (res: any) => {
+        this.deviceInfoService.getDeviceID()
+            .then((res: any) => {
                 console.log('Device Id: ', res);
                 this.deviceId = res;
-            },
-            (err: any) => {
+            })
+            .catch((err: any) => {
                 console.error('Error', err);
             });
         this.profile = this.appGlobalService.getCurrentUser();
@@ -125,7 +125,7 @@ export class GroupReportListPage {
         if (event === 'users' && !this.fromUserAssessment) {
             this.reportType = event;
             loader.present();
-            this.reportService.getReportsByUser(params, (data: any) => {
+            this.reportService.getReportsByUser(params).then((data: any) => {
                 data = JSON.parse(data);
                 let averageScore: any = 0;
                 let averageTime = 0;
@@ -153,8 +153,8 @@ export class GroupReportListPage {
                     that.fromUserAssessment = details;
                 });
 
-            },
-                (error: any) => {
+            })
+                .catch((error: any) => {
                     const data = JSON.parse(error);
                     console.log('Error received', data);
                     loader.dismiss();
@@ -163,7 +163,7 @@ export class GroupReportListPage {
             if (event === 'questions') {
                 this.reportType = event;
                 loader.present();
-                this.reportService.getReportsByQuestion(params, (data: any) => {
+                this.reportService.getReportsByQuestion(params).then((data: any) => {
                     data = JSON.parse(data);
                     this.response = data;
                     console.log(data);
@@ -192,8 +192,8 @@ export class GroupReportListPage {
                         loader.dismiss();
                         that.fromQuestionAssessment = details;
                     });
-                },
-                    (error: any) => {
+                })
+                    .catch((error: any) => {
                         const data = JSON.parse(error);
                         console.log('Error received', data);
                         loader.dismiss();

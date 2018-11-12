@@ -46,12 +46,12 @@ export class AboutUsPage {
   ionViewDidLoad() {
     this.version = 'app version will be shown here';
 
-    this.deviceInfoService.getDeviceID(
-      (res: any) => {
+    this.deviceInfoService.getDeviceID()
+      .then((res: any) => {
         console.log('Device Id: ', res);
         this.deviceId = res;
-      },
-      (err: any) => {
+      })
+      .catch((err: any) => {
         console.error('Error', err);
       });
     this.appVersion.getAppName()
