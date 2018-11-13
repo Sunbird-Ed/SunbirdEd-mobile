@@ -54,13 +54,13 @@ export class UserReportPage {
   version: string;
   fileUrl: string;
   exptime: any;
- response: any;
+  response: any;
   fileTransfer: FileTransferObject = this.transfer.create();
   formatTime(time: number): string {
     const minutes: any = '0' + Math.floor(time / 60);
     const seconds: any = '0' + (time - minutes * 60);
     return minutes.substr(-2) + ':' + seconds.substr(-2);
-}
+  }
 
   translateMessage(messageConst: string, field?: string): string {
     let translatedMsg = '';
@@ -90,8 +90,8 @@ export class UserReportPage {
       .then((appName: any) => {
         return appName;
       });
-      this.profile = this.appGlobalService.getCurrentUser();
-        console.log(this.profile);
+    this.profile = this.appGlobalService.getCurrentUser();
+    console.log(this.profile);
   }
   ionViewWillEnter() {
 
@@ -107,7 +107,7 @@ export class UserReportPage {
 
     that.reportService.getDetailReport([reportSummary.uid], reportSummary.contentId)
       .then(reportsMap => {
-          const data = reportsMap.get(reportSummary.uid);
+        const data = reportsMap.get(reportSummary.uid);
         const rows = data.reportDetailsList.map(row => {
           console.log(data.reportDetailsList);
           this.response = data.reportDetailsList;
@@ -123,12 +123,12 @@ export class UserReportPage {
           };
         });
         data['uiRows'] = rows;
-       data['uiTotalTime'] = that.formatTime(data['totalTime']);
+        data['uiTotalTime'] = that.formatTime(data['totalTime']);
         data['fromUser'] = true;
         data['fromGroup'] = false;
         that.zone.run(() => {
           loader.dismiss();
-         data['showResult'] = true;
+          data['showResult'] = true;
           that.assessmentData = data;
           that.assessmentData['showPopup'] = true;
           that.assessmentData['popupCallback'] = ReportAlert;
@@ -150,12 +150,12 @@ export class UserReportPage {
     let line: any = '';
     const that = this;
     console.log(this.response);
-    console.log(typeof(this.response));
+    console.log(typeof (this.response));
     const values = this.response;
     const anzahlTeams = values.length;
 
-   const filexptime =  this.datePipe.transform(new Date(this.exptime), 'dd-mm-yyyy hh:mm:ss a');
-   const contentstarttime = this.datePipe.transform(new Date(teams[0].timestamp), 'dd-mm-yyyy hh:mm:ss a');
+    const filexptime = this.datePipe.transform(new Date(this.exptime), 'dd-mm-yyyy hh:mm:ss a');
+    const contentstarttime = this.datePipe.transform(new Date(teams[0].timestamp), 'dd-mm-yyyy hh:mm:ss a');
     // Header
     for (let m = 0; m < anzahlTeams; m++) {
       line += 'Device ID' + '\t' + this.deviceId + '\n';
@@ -163,24 +163,24 @@ export class UserReportPage {
       line += 'Content name (Content ID)' + '\t' + teams[0].qtitle + teams[0].contentId + '\n';
       line += 'Content started time' + '\t' + contentstarttime + '\n';
       line += 'File export time' + '\t' + filexptime + '\n';
-
+      line += '\n\n';
       line += 'Question' + '\t\t';
       line += 'QuestionId' + '\t\t';
       line += 'Score' + '\t\t';
       line += 'Time' + '\n';
       break;
-    }
-
+          }
+          line += '\n';
     // Teams
     console.log(anzahlTeams);
     for (let j = 0; j < anzahlTeams - 1; j++) {
-        line += 'Q' + (('00' + values[j].qindex).slice(-3)) + '\t\t';
-        line += values[j].qtitle + '\t\t';
-        line += values[j].score + '/' + values[j].maxScore + '\t\t';
-        line += that.formatTime(values[j].timespent) + '\n';
-        }
-            csv += line + '\n';
-            return csv;
+      line += 'Q' + (('00' + values[j].qindex).slice(-3)) + '\t\t';
+      line += values[j].qtitle + '\t\t';
+      line += values[j].score + '/' + values[j].maxScore + '\t\t';
+      line += that.formatTime(values[j].timespent) + '\n';
+    }
+    csv += line + '\n';
+    return csv;
 
   }
 
@@ -193,41 +193,41 @@ export class UserReportPage {
     const combinefilename = this.deviceId + this.response[0].uid + this.response[0].contentId + this.exptime + '.csv';
 
     const fileName = combinefilename;
-    this.file.writeFile(this.file.dataDirectory , fileName, csv)
+    this.file.writeFile(this.file.dataDirectory, fileName, csv)
       .then(
-      _ => {
-        this.socialShare.share('message', '',  this.file.dataDirectory + fileName, '')
-        .then(() => {
-          console.log('shareSheetShare: Success');
-      }).catch(() => {
-          console.error('shareSheetShare: failed');
-      });
-      }
-      )
-      .catch(
-      err => {
-
-        this.file.writeExistingFile(this.file.dataDirectory, fileName, csv)
-          .then(
-          _ => {
-            this.socialShare.share('message', '',  this.file.dataDirectory + fileName, '')
+        _ => {
+          this.socialShare.share('message', '', this.file.dataDirectory + fileName, '')
             .then(() => {
               console.log('shareSheetShare: Success');
-          }).catch(() => {
+            }).catch(() => {
               console.error('shareSheetShare: failed');
-          });
+            });
+        }
+      )
+      .catch(
+        err => {
+
+          this.file.writeExistingFile(this.file.dataDirectory, fileName, csv)
+            .then(
+              _ => {
+                this.socialShare.share('message', '', this.file.dataDirectory + fileName, '')
+                  .then(() => {
+                    console.log('shareSheetShare: Success');
+                  }).catch(() => {
+                    console.error('shareSheetShare: failed');
+                  });
 
 
 
-            console.log('Success ;-)2' + this.file.dataDirectory);
-          }
-          )
-          .catch(
-            err1 => {
-            alert(err1 + 'Failure' + this.file.dataDirectory);
-          }
-          );
-      }
+                console.log('Success ;-)2' + this.file.dataDirectory);
+              }
+            )
+            .catch(
+              err1 => {
+                alert(err1 + 'Failure' + this.file.dataDirectory);
+              }
+            );
+        }
       );
   }
 }

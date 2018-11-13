@@ -34,7 +34,7 @@ import {
   ImageLoader,
   ImageLoaderConfig
 } from 'ionic-image-loader';
-import { FileTransferObject } from '@ionic-native/file-transfer';
+import { FileTransferObject, FileTransfer } from '@ionic-native/file-transfer';
 import { FileOpener } from '@ionic-native/file-opener';
 import { AppGlobalService } from '../service/app-global.service';
 import { CourseUtilService } from '../service/course-util.service';
@@ -87,6 +87,7 @@ export const createTranslateLoader = (httpClient: HttpClient) => {
     ImageLoader,
     FileTransferObject,
     FileOpener,
+    FileTransfer,
     AppGlobalService,
     CourseUtilService,
     TelemetryGeneratorService,

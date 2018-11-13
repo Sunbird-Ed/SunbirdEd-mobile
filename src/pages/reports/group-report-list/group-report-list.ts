@@ -130,13 +130,39 @@ export class GroupReportListPage {
                 let averageScore: any = 0;
                 let averageTime = 0;
                 data.forEach((report) => {
-                    console.log(report);
-                    this.response = report;
+                    // console.log(report);
                     averageTime += report.totalTimespent;
                     averageScore += report.score;
                     report.totalTimespent = that.formatTime(report.totalTimespent);
                     report.name = reportSummary.name;
+                    that.reportService.getDetailReport([report.uid], report.contentId)
+                        .then(reportsMap => {
+                            const data1 = reportsMap.get(report.uid);
+                            const rows = data1.reportDetailsList.map(row => {
+                                // console.log('krekfrlkrlkflk', rows);
+                                return {
+                                    'index': 'Q' + (('00' + row.qindex).slice(-3)),
+                                    'result': row.score + '/' + row.maxScore,
+                                    'timespent': report.totalTimespent,
+                                    'qdesc': row.qdesc,
+                                    'score': row.score,
+                                    'maxScore': row.maxScore,
+                                    'qtitle': row.qtitle,
+                                    'qid': row.qid,
+                                    'name': report.userName,
+                                    'timestamp': report.createdAt
+                                };
+                            });
+                            report.assessmentData = rows;
+                            // console.log('gfdhgfdhdhgd', report);
+                        })
+                        .catch(err => {
+                            console.log(err);
+                            loader.dismiss();
+                        });
                 });
+                this.response = data;
+                // console.log('dsmckjnjjknkjfd', this.response);
                 averageScore = (averageScore / data.length).toFixed(2);
                 averageTime = averageTime / data.length;
                 this.appGlobalService.setAverageTime(averageTime);
@@ -166,7 +192,7 @@ export class GroupReportListPage {
                 this.reportService.getReportsByQuestion(params).then((data: any) => {
                     data = JSON.parse(data);
                     this.response = data;
-                    console.log(data);
+                    // console.log(data);
                     let averageTime = 0;
                     let averageScore: any = 0;
                     data.forEach((question) => {
@@ -225,50 +251,85 @@ export class GroupReportListPage {
         const ss = Math.floor(time % 60);
         return (mm > 9 ? mm : ('0' + mm)) + ':' + (ss > 9 ? ss : ('0' + ss));
     }
-    convertToCSV(teams) {
-        // console.log(this.response);
-        console.log(teams);
+    convertToCSV() {
         let csv: any = '';
         let line: any = '';
         const that = this;
         const values = this.response;
         const anzahlTeams = values.length;
         const filexptime = this.datePipe.transform(new Date(this.exptime), 'dd-mm-yyyy hh:mm:ss a');
-        const contentstarttime = this.datePipe.transform(new Date(teams[0].timestamp), 'dd-mm-yyyy hh:mm:ss a');
-        // Header
-        for (let m = 0; m < anzahlTeams; m++) {
-            line += 'Device ID' + '\t' + this.deviceId + '\n';
-            line += 'Group name (Group ID)' + '\t' + this.groupinfo.name + '(' + this.groupinfo.gid + ')' + '\n';
-            line += 'Content name (Content ID)' + '\t' + this.response[0].qtitle + '(' + this.response[0].content_id + ')' + '\n';
-            line += 'Content started time' + '\t' + contentstarttime + '\n';
-            line += 'File export time' + '\t' + filexptime + '\n';
-            line += 'User name' + '\t\t';
-            line += 'UserID' + '\t\t';
-            line += 'Question' + '\t\t';
-            line += 'QuestionId' + '\t\t';
-            line += 'Score' + '\t\t';
-            line += 'Time' + '\n';
-            break;
-        }
-        // Teams
-        console.log(anzahlTeams);
         console.log(values);
-        for (let j = 0; j < anzahlTeams - 1; j++) {
-            line += this.response[0].userName + '\t\t';
-            line += teams[0].uid + '\t\t';
-            line += 'Q' + (('00' + values[j].qindex).slice(-3)) + '\t\t';
-            line += values[j].qtitle + '\t\t';
-            line += values[j].score + '/' + values[j].max_score + '\t\t';
-            line += that.formatTime(values[j].time_spent) + '\n';
+        if (this.response && this.response[0].hasOwnProperty('assessmentData')) {
+            const contentstarttime = this.datePipe.transform(new Date(), 'dd-mm-yyyy hh:mm:ss a');
+            // Header
+            for (let m = 0; m < anzahlTeams; m++) {
+                line += 'Device ID' + '\t' + this.deviceId + '\n';
+                line += 'Group name (Group ID)' + '\t' + this.groupinfo.name + '(' + this.groupinfo.gid + ')' + '\n';
+                line += 'Content name (Content ID)' + '\t' + values[m].name + '(' + values[m].contentId + ')' + '\n';
+                line += 'Content started time' + '\t' + contentstarttime + '\n';
+                line += 'File export time' + '\t' + filexptime + '\n';
+                line += '\n\n';
+                line += 'User name' + '\t\t';
+                line += 'UserID' + '\t\t';
+                line += 'Question' + '\t\t';
+                line += 'QuestionId' + '\t\t';
+                line += 'Score' + '\t\t';
+                line += 'Time' + '\n';
+                break;
+
+            }
+            line += '\n';
+            // Teams
+            console.log(anzahlTeams);
+            console.log(values);
+            for (let k = 0; k < values.length; k++) {
+                for (let j = 0; j < values[k].assessmentData.length; j++) {
+                    line += values[k].userName + '\t\t';
+                    line += values[k].uid + '\t\t';
+                    line += 'Q' + (('00' + values[k].assessmentData[j].qindex).slice(-3)) + '\t\t';
+                    line += values[k].assessmentData[j].qtitle + '\t\t';
+                    line += values[k].assessmentData[j].score + '/' + values[k].assessmentData[j].maxScore + '\t\t';
+                    line += values[k].assessmentData[j].timespent + '\n';
+                }
+                line += '\n\n';
+            }
+        } else {
+            const contentstarttime11 = this.datePipe.transform(new Date(values[0].timestamp), 'dd-mm-yyyy hh:mm:ss a');
+            for (let n = 0; n < anzahlTeams; n++) {
+                line += 'Device ID' + '\t' + this.deviceId + '\n';
+                line += 'Group name (Group ID)' + '\t' + this.groupinfo.name + '(' + this.groupinfo.gid + ')' + '\n';
+                line += 'Content name (Content ID)' + '\t' + values[n].qtitle + '(' + values[n].content_id + ')' + '\n';
+                line += 'Content started time' + '\t' + contentstarttime11 + '\n';
+                line += 'File export time' + '\t' + filexptime + '\n';
+                line += '\n\n';
+                line += 'User name' + '\t\t';
+                line += 'UserID' + '\t\t';
+                line += 'Question' + '\t\t';
+                line += 'QuestionId' + '\t\t';
+                line += 'Score' + '\t\t';
+                line += 'Time' + '\n';
+                break;
+            }
+            line += '\n';
+            console.log(values);
+            for (let p = 0; p < anzahlTeams - 1; p++) {
+                line += values[p].users.get(values[p].uid) + '\t\t';
+                line += values[p].uid + '\t\t';
+                line += 'Q' + (('00' + values[p].qindex).slice(-3)) + '\t\t';
+                line += values[p].qtitle + '\t\t';
+                line += values[p].score + '/' + values[p].max_score + '\t\t';
+                line += that.formatTime(values[p].time_spent) + '\n';
+            }
         }
+
         csv += line + '\n';
         return csv;
     }
     importcsv() {
         this.exptime = new Date().getTime();
-        const csv: any = this.convertToCSV(this.response);
+        const csv: any = this.convertToCSV();
         const combinefilename = this.deviceId + this.groupinfo.gid + this.response[0].content_id + this.exptime + '.csv';
-        console.log(combinefilename);
+        // console.log(combinefilename);
         const fileName = combinefilename;
         this.file.writeFile(this.file.dataDirectory, fileName, csv)
             .then(
