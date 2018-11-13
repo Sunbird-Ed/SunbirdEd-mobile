@@ -174,14 +174,20 @@ export class QrCodeResultPage {
       clickSource,
       !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : Environment.HOME,
       PageId.DIAL_CODE_SCAN_RESULT);
-      if (this.isSingleContent && this.appGlobalService.isProfileSettingsCompleted) {
-        this.navCtrl.setRoot(TabsPage, {
-          loginMode: 'guest'
-        });
-      } else {
-        this.navCtrl.pop();
-      }
+    if (this.source === PageId.LIBRARY || this.source === PageId.COURSES || !this.isSingleContent) {
+      this.navCtrl.pop();
+    } else if (this.isSingleContent && this.appGlobalService.isProfileSettingsCompleted) {
+      this.navCtrl.setRoot(TabsPage, {
+        loginMode: 'guest'
+      });
+    } else if (this.appGlobalService.isGuestUser && this.isSingleContent && !this.appGlobalService.isProfileSettingsCompleted) {
+      this.navCtrl.setRoot(ProfileSettingsPage, {
+        buildPath: true
+      });
+    } else {
+      this.navCtrl.pop();
     }
+  }
 
   getChildContents() {
     const request: ChildContentRequest = { contentId: this.identifier };
