@@ -571,7 +571,7 @@ export class SearchPage {
       const contentArray: Array<any> = searchResult.contents;
 
       const addedContent = new Array<any>();
-      const dialCodeResult = {
+      const dialCodeResultObj = {
         dialCodeResult : [],
         dialCodeContentResult : []
       };
@@ -587,11 +587,11 @@ export class SearchPage {
               addedContent.push(content.identifier);
             }
           });
-          dialCodeResult.dialCodeResult.push(collection);
-          dialCodeResult['name'] = searchResult.name;
+          dialCodeResultObj.dialCodeResult.push(collection);
+          dialCodeResultObj['name'] = searchResult.name;
         });
         // displayDialCodeResult[searchResult.name] = dialCodeResult;
-        displayDialCodeResult.push(dialCodeResult);
+        displayDialCodeResult.push(dialCodeResultObj);
       }
       const dialCodeContentResult = [];
       const isAllContentMappedToCollection = contentArray.length === addedContent.length;
@@ -602,14 +602,14 @@ export class SearchPage {
           }
         });
       }
-      dialCodeResult.dialCodeContentResult = dialCodeContentResult;
+      dialCodeResultObj.dialCodeContentResult = dialCodeContentResult;
 
       let isParentCheckStarted = false;
-      if (dialCodeResult.dialCodeResult.length === 1 && dialCodeResult.dialCodeResult[0].content.length === 1
+      if (dialCodeResultObj.dialCodeResult.length === 1 && dialCodeResultObj.dialCodeResult[0].content.length === 1
         && isAllContentMappedToCollection) {
-        this.parentContent = dialCodeResult.dialCodeResult[0];
-        this.childContent = dialCodeResult.dialCodeResult[0].content[0];
-        this.checkParent(dialCodeResult.dialCodeResult[0], dialCodeResult.dialCodeResult[0].content[0]);
+        this.parentContent = dialCodeResultObj.dialCodeResult[0];
+        this.childContent = dialCodeResultObj.dialCodeResult[0].content[0];
+        this.checkParent(dialCodeResultObj.dialCodeResult[0], dialCodeResultObj.dialCodeResult[0].content[0]);
         isParentCheckStarted = true;
       }
 
