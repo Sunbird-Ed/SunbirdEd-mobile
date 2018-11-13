@@ -419,9 +419,11 @@ export class QrCodeResultPage {
 
       this.formAndFrameworkUtilService.getSyllabusList()
         .then((res) => {
+          let isProfileUpdated = false;
           res.forEach(element => {
             // checking whether content data framework Id exists/valid in syllabuslist
             if (data.framework === element.frameworkId) {
+              isProfileUpdated = true;
               // Get frameworkdetails(categories)
               this.formAndFrameworkUtilService.getFrameworkDetails(data.framework)
                 .then(catagories => {
@@ -492,7 +494,8 @@ export class QrCodeResultPage {
               return;
             }
           });
-
+          this.telemetryGeneratorService.generateProfilePopulatedTelemetry(PageId.DIAL_CODE_SCAN_RESULT,
+            data.framework, Boolean(isProfileUpdated) ? 'auto' : 'na');
         })
         .catch((error) => {
           console.error('Error', error);

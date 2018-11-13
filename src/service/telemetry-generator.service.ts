@@ -228,6 +228,19 @@ export class TelemetryGeneratorService {
             values);
     }
 
+    generateProfilePopulatedTelemetry(pageId, frameworkId, mode) {
+        const values = new Map();
+        values['frameworkId'] = frameworkId;
+        values['mode'] = mode;
+        this.generateInteractTelemetry(
+            InteractType.OTHER,
+            InteractSubtype.PROFILE_ATTRIBUTE_POPULATION,
+            Environment.HOME,
+            pageId,
+            undefined,
+            values);
+    }
+
 
 
 }
