@@ -118,13 +118,13 @@ export class MyApp {
       // check if any new app version is available
       this.checkForUpgrade();
 
-      this.permission.requestPermission(this.permissionList, () => {
+      this.permission.requestPermission(this.permissionList).then(() => {
         this.makeEntryInSupportFolder();
-      }, () => {
+      }).catch(() => {
       });
-      this.permission.hasPermission(this.permissionList, () => {
+      this.permission.hasPermission(this.permissionList).then(() => {
         this.makeEntryInSupportFolder();
-      }, () => {
+      }).catch(() => {
       });
 
       this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
@@ -161,7 +161,7 @@ export class MyApp {
                         if (display_cat_page === 'false' && disp_profile_page === 'false') {
                           this.nav.setRoot(TabsPage);
                         } else {
-                          this.profileService.getCurrentUser((profile) => {
+                          this.profileService.getCurrentUser().then((profile: any) => {
                             profile = JSON.parse(profile);
                             if (profile
                               && profile.syllabus && profile.syllabus[0]
@@ -184,7 +184,7 @@ export class MyApp {
                                   this.getProfileSettingConfig();
                                 });
                             }
-                          }, error => { });
+                          }) .catch(error => { });
                         }
                       });
                   });
@@ -401,7 +401,7 @@ export class MyApp {
               this.authService.endSession();
               (<any>window).splashscreen.clearPrefs();
             }
-            this.profileService.getCurrentUser((currentUser) => {
+            this.profileService.getCurrentUser().then((currentUser: any) => {
               const guestProfile = JSON.parse(currentUser);
 
               if (guestProfile.profileType === ProfileType.STUDENT) {
@@ -417,7 +417,7 @@ export class MyApp {
 
               this.app.getRootNav().setRoot(TabsPage);
 
-            }, () => {
+            }).catch(() => {
             });
 
           });

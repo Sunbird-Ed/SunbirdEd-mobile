@@ -202,12 +202,12 @@ export class OnboardingPage {
             profile.profileType = ProfileType.TEACHER;
             profile.source = UserSource.SERVER;
 
-            that.profileService.setCurrentProfile(false, profile,
-              (response: any) => {
+            that.profileService.setCurrentProfile(false, profile)
+              .then((response: any) => {
                 that.orgName = r.rootOrg.orgName;
                 resolve(r.rootOrg.slug);
-              },
-              (err: any) => {
+              })
+              .catch((err: any) => {
                 reject(err);
               });
           }, error => {
@@ -242,7 +242,7 @@ export class OnboardingPage {
           profile.profileType = ProfileType.TEACHER;
           profile.source = UserSource.LOCAL;
 
-          this.profileService.setCurrentProfile(true, profile, res => {
+          this.profileService.setCurrentProfile(true, profile).then(res => {
             this.events.publish(AppGlobalService.USER_INFO_UPDATED);
 
             if (this.appGlobalService.isProfileSettingsCompleted) {
@@ -252,7 +252,7 @@ export class OnboardingPage {
             } else {
               this.navCtrl.push(UserTypeSelectionPage);
             }
-          }, err => {
+          }) .catch(err => {
             this.navCtrl.push(UserTypeSelectionPage);
           });
         } else {

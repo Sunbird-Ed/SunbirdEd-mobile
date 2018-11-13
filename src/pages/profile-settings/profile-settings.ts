@@ -14,7 +14,6 @@ import {
   CategoryRequest,
   SharedPreferences,
   Profile,
-  ImpressionType,
   Environment
 } from 'sunbird';
 
@@ -112,7 +111,7 @@ export class ProfileSettingsPage {
 
   ionViewWillEnter() {
     this.hideBackButton = Boolean(this.navParams.get('hideBackButton'));
-    if (this.navParams.get('buildPath')) {
+    if (this.navParams.get('isCreateNavigationStack')) {
       this.navCtrl.insertPages(0, [{ page: 'LanguageSettingsPage' }, { page: 'UserTypeSelectionPage' }]);
     }
     this.getSyllabusDetails();
@@ -140,7 +139,7 @@ export class ProfileSettingsPage {
    * Initializes guest user object
    */
   getGuestUser() {
-    this.profileService.getCurrentUser((response) => {
+    this.profileService.getCurrentUser().then((response: any) => {
       this.profile = JSON.parse(response);
       if (this.navParams.get('isChangeRoleRequest')) {
         this.profile.syllabus = [];
@@ -151,7 +150,7 @@ export class ProfileSettingsPage {
       }
       this.profileForTelemetry = this.profile;
       this.initUserForm();
-    }, () => {
+    }) .catch(() => {
       this.profile = undefined;
       this.initUserForm();
     });
@@ -182,7 +181,7 @@ export class ProfileSettingsPage {
 	 * It will fetch syllabus details
 	 */
   getSyllabusDetails() {
-    this.loader = this.getLoader();
+    this.loader = this.commonUtilService.getLoader();
     this.loader.present();
 
     this.formAndFrameworkUtilService.getSyllabusList()
@@ -258,7 +257,7 @@ export class ProfileSettingsPage {
 	 */
   checkPrevValue(index, currentField, prevSelectedValue = []) {
     if (index === 1) {
-      const loader = this.getLoader();
+      const loader = this.commonUtilService.getLoader();
       this.frameworkId = prevSelectedValue[0];
       this.formAndFrameworkUtilService.getFrameworkDetails(this.frameworkId)
         .then(catagories => {
@@ -301,7 +300,7 @@ export class ProfileSettingsPage {
           medium: []
         });
         if (showloader) {
-          this.loader = this.getLoader();
+          this.loader = this.commonUtilService.getLoader();
           this.loader.present();
         }
         oldAttribute.board = this.profileForTelemetry.board ? this.profileForTelemetry.board : '';
@@ -363,7 +362,7 @@ export class ProfileSettingsPage {
   }
 
   onSubmit() {
-    const loader = this.getLoader();
+    const loader = this.commonUtilService.getLoader();
     const formVal = this.userForm.value;
     if (formVal.boards.length === 0) {
       this.btnColor = '#8FC4FF';
@@ -425,8 +424,8 @@ export class ProfileSettingsPage {
         }
       });
     }
-    this.profileService.updateProfile(req,
-      (res: any) => {
+    this.profileService.updateProfile(req)
+      .then((res: any) => {
         if (req.profileType === ProfileType.TEACHER) {
           initTabs(this.container, GUEST_TEACHER_TABS);
         } else if (req.profileType === ProfileType.STUDENT) {
@@ -448,20 +447,11 @@ export class ProfileSettingsPage {
         this.navCtrl.push(TabsPage, {
           loginMode: 'guest'
         });
-      },
-      (err: any) => {
+      })
+      .catch((err: any) => {
         loader.dismiss();
         this.commonUtilService.showToast('PROFILE_UPDATE_FAILED');
         console.log('Err', err);
       });
   }
-
-  getLoader(): any {
-    return this.loadingCtrl.create({
-      duration: 30000,
-      spinner: 'crescent'
-    });
-  }
-
-
 }

@@ -122,8 +122,8 @@ export class CourseBatchesPage implements OnInit {
       contentId: item.courseId,
       batchId: item.id
     };
-    this.courseService.enrollCourse(enrollCourseRequest,
-      (data: any) => {
+    this.courseService.enrollCourse(enrollCourseRequest)
+      .then((data: any) => {
         data = JSON.parse(data);
         this.zone.run(() => {
           console.log('You have successfully enrolled...');
@@ -133,8 +133,8 @@ export class CourseBatchesPage implements OnInit {
           });
           this.navCtrl.pop();
         });
-      },
-      (error: any) => {
+      })
+      .catch((error: any) => {
         console.log('error while enrolling into batch ==>', error);
         this.zone.run(() => {
           error = JSON.parse(error);
@@ -178,8 +178,8 @@ export class CourseBatchesPage implements OnInit {
       status: status
     };
 
-    this.courseService.getCourseBatches(courseBatchesRequest,
-      (data: any) => {
+    this.courseService.getCourseBatches(courseBatchesRequest)
+      .then((data: any) => {
         data = JSON.parse(data);
         console.log('Batches received successfully... =>', data);
         this.zone.run(() => {
@@ -203,8 +203,8 @@ export class CourseBatchesPage implements OnInit {
           }
 
         });
-      },
-      (error: any) => {
+      })
+      .catch((error: any) => {
         console.log('error while fetching course batches ==>', error);
         this.spinner(false);
       });

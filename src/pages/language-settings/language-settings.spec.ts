@@ -1,3 +1,4 @@
+import { Network } from '@ionic-native/network';
 import { } from 'jasmine';
 import {
     ComponentFixture,
@@ -5,58 +6,50 @@ import {
     fakeAsync
 } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { NavController, Platform } from 'ionic-angular';
-import { NavParams } from 'ionic-angular';
-import { Events } from 'ionic-angular';
 import {
+    NavController,
+    Platform,
+    NavParams,
+    Events,
     ToastController,
     PopoverController,
     LoadingController
 } from 'ionic-angular';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import {
     TranslateService,
     TranslateModule
 } from '@ngx-translate/core';
-import { Globalization } from '@ionic-native/globalization';
 import {
-    SharedPreferences, AuthService,
-    ProfileService, ServiceProvider,
-    FrameworkService, BuildParamService
+    SharedPreferences,
+    AuthService,
+    ProfileService,
+    ServiceProvider,
+    FrameworkService,
+    BuildParamService,
+    TelemetryService
 } from 'sunbird';
-import { TelemetryService } from 'sunbird';
-import { LanguageSettingsPage } from './language-settings';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
-import { AppGlobalService } from '../../service/app-global.service';
 import {
     ToastControllerMock,
     PopoverControllerMock,
     LoadingControllerMock,
-    EventsMock
+    EventsMock,
+    NetworkMock
 } from 'ionic-mocks';
+import { TelemetryGeneratorService, AppGlobalService } from '../../service';
 import {
     AppGlobalServiceMock,
     BuildParamaServiceMock
 } from '../../../test-config/mocks-ionic';
+import { LanguageSettingsPage } from './language-settings';
 import { CommonUtilService } from '../../service/common-util.service';
 
 describe('LanguageSettingsPage', () => {
     let comp: LanguageSettingsPage;
     let fixture: ComponentFixture<LanguageSettingsPage>;
 
-    // class ToastControllerMock {
-    //     create() { }
-    // }
-    class Toast {
-        present() { }
-        dismissAll() { }
-
-    }
     beforeEach(() => {
-        const ngZoneStub = {
-            run: () => ({})
-        };
         const navControllerStub = {
             pop: () => ({}),
             push: () => ({})
@@ -64,10 +57,6 @@ describe('LanguageSettingsPage', () => {
         const navParamsStub = {
             get: () => ({})
         };
-        // const eventsStub = {
-        //     publish: () => ({})
-        // };
-
         const translateServiceStub = {
             use: () => ({}),
             get: () => ({
@@ -80,11 +69,6 @@ describe('LanguageSettingsPage', () => {
         const authServiceStub = {
             getSessionData: () => ({})
         };
-        const globalizationStub = {};
-        // const sharedPreferencesStub = {
-        //     getString: () => ({}),
-        //     putString: () => ({})
-        // };
         const telemetryServiceStub = {
             impression: () => ({}),
             interact: () => ({})
@@ -101,7 +85,7 @@ describe('LanguageSettingsPage', () => {
             declarations: [LanguageSettingsPage],
             schemas: [NO_ERRORS_SCHEMA],
             providers: [ProfileService, ServiceProvider, FrameworkService, Platform,
-                CommonUtilService,
+                CommonUtilService, Network,
                 { provide: AppGlobalService, useClass: AppGlobalServiceMock },
                 { provide: AuthService, useValue: authServiceStub },
                 { provide: BuildParamService, useValue: BuildParamServiceStub },
@@ -110,8 +94,6 @@ describe('LanguageSettingsPage', () => {
                 { provide: NavParams, useValue: navParamsStub },
                 { provide: TranslateService, useValue: translateServiceStub },
                 { provide: TranslateModule, useValue: translateModuleStub },
-                { provide: Globalization, useValue: globalizationStub },
-                // { provide: SharedPreferences, useValue: sharedPreferencesStub },
                 { provide: TelemetryService, useValue: telemetryServiceStub },
                 { provide: ToastController, useFactory: () => ToastControllerMock.instance() },
                 { provide: PopoverController, useFactory: () => PopoverControllerMock.instance() },
@@ -119,7 +101,6 @@ describe('LanguageSettingsPage', () => {
                 { provide: Events, useFactory: () => EventsMock.instance() },
                 { provide: BuildParamService, useClass: BuildParamaServiceMock },
                 SharedPreferences
-
             ]
         });
         fixture = TestBed.createComponent(LanguageSettingsPage);

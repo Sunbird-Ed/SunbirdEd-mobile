@@ -1,8 +1,0 @@
-{
-    "id": "sunnird.plugin.home",
-    "version": "0.0.1",
-    "module": "HomePageModule",
-    "main": "HomePage",
-    "children": [],
-    "appVersion": "0.0.1"
-}

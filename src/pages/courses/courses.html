@@ -22,9 +22,7 @@
 
 <ion-content overflow-scroll="true" style="background: #efeff4;">
   <ion-refresher (ionRefresh)="getCourseTabData($event)"></ion-refresher>
-  <!-- onBoardingSLides starts here -->
-  <!-- <onboarding-card *ngIf="guestUser && !isOnBoardingCardCompleted && appGlobalService?.DISPLAY_ONBOARDING_CARDS"></onboarding-card> -->
-  <!-- onBoardingSLides ends here -->
+
   <div *ngIf="!guestUser && enrolledCourses && enrolledCourses.length" class="course-page-color" [ngClass]="{'height-130': showLoader}">
     <div class="item padding-11">
       <span float-start class="scroll-heading">
@@ -68,7 +66,9 @@
     </div>
   </div>
   <!-- </div> -->
-  <div padding text-center *ngIf="!isNetworkAvailable">
+
+  <div padding text-center *ngIf="!commonUtilService?.networkInfo?.isNetworkAvailable">
+
     <img height="80" width="100" src="assets/imgs/ic_offline.png" />
     <h6 ion-text color="secondary_black">
       <b>{{ 'NO_INTERNET_TITLE' | translate }}</b>

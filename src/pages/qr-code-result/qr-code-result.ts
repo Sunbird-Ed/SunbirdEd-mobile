@@ -41,6 +41,7 @@ import * as _ from 'lodash';
 import { PopoverController } from 'ionic-angular';
 import { Popover } from 'ionic-angular';
 import { ProfileSettingsPage } from '../profile-settings/profile-settings';
+import { ComponentsModule } from '../../component/components.module';
 
 @IonicPage()
 @Component({
@@ -91,12 +92,14 @@ export class QrCodeResultPage {
   results: Array<any> = [];
   defaultImg: string;
   parents: Array<any> = [];
+  paths: Array<any> = [];
   categories: Array<any> = [];
   boardList: Array<any> = [];
   mediumList: Array<any> = [];
   gradeList: Array<any> = [];
   subjectList: Array<any> = [];
   profileCategories: any;
+  isSingleContent = false;
 
   @ViewChild(Navbar) navBar: Navbar;
   constructor(
@@ -127,7 +130,7 @@ export class QrCodeResultPage {
     this.corRelationList = this.navParams.get('corRelation');
     this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
     this.source = this.navParams.get('source');
-
+    this.isSingleContent = this.navParams.get('isSingleContent');
 
     // check for parent content
     this.parentContent = this.navParams.get('parentContent');
@@ -146,21 +149,15 @@ export class QrCodeResultPage {
 
   ionViewDidLoad() {
     this.telemetryGeneratorService.generateImpressionTelemetry(ImpressionType.VIEW, '',
-      PageId.DIAL_CODE_SCAN_RESULT, Environment.HOME);
+      PageId.DIAL_CODE_SCAN_RESULT,
+      !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : Environment.HOME);
 
     this.navBar.backButtonClick = () => {
-      this.handleNavBackButton();
-      this.navCtrl.pop();
+      this.handleBackButton(InteractSubtype.NAV_BACK_CLICKED);
     };
 
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
-      this.telemetryGeneratorService.generateInteractTelemetry(
-        InteractType.TOUCH,
-        InteractSubtype.DEVICE_BACK_CLICKED,
-        Environment.HOME,
-        PageId.DIAL_CODE_SCAN_RESULT);
-      this.navCtrl.pop();
-      this.unregisterBackButton();
+      this.handleBackButton(InteractSubtype.DEVICE_BACK_CLICKED);
     }, 10);
   }
 
@@ -171,21 +168,27 @@ export class QrCodeResultPage {
     }
   }
 
-  handleNavBackButton() {
+  handleBackButton(clickSource) {
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
-      InteractSubtype.NAV_BACK_CLICKED,
-      Environment.HOME,
+      clickSource,
+      !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : Environment.HOME,
       PageId.DIAL_CODE_SCAN_RESULT);
-  }
+      if (this.isSingleContent && this.appGlobalService.isProfileSettingsCompleted) {
+        this.navCtrl.setRoot(TabsPage, {
+          loginMode: 'guest'
+        });
+      } else {
+        this.navCtrl.pop();
+      }
+    }
 
   getChildContents() {
     const request: ChildContentRequest = { contentId: this.identifier };
     this.contentService.getChildContents(
-      request,
-      (data: any) => {
+      request)
+      .then((data: any) => {
         data = JSON.parse(data);
-        console.log('getChildContents data', data);
         this.parents.splice(0, this.parents.length);
         this.parents.push(data.result);
         this.results = [];
@@ -195,12 +198,16 @@ export class QrCodeResultPage {
         this.findContentNode(data.result);
 
         if (this.results && this.results.length === 0) {
+          this.telemetryGeneratorService.generateImpressionTelemetry(ImpressionType.VIEW,
+            '',
+            PageId.DIAL_LINKED_NO_CONTENT,
+            Environment.HOME);
           this.commonUtilService.showContentComingSoonAlert(this.source);
           this.navCtrl.pop();
         }
 
-      },
-      (error: string) => {
+      })
+      .catch((error: string) => {
         console.error('Error: while fetching child contents ===>>>', error);
         this.zone.run(() => {
           this.showChildrenLoader = false;
@@ -208,6 +215,7 @@ export class QrCodeResultPage {
         this.commonUtilService.showContentComingSoonAlert(this.source);
         this.navCtrl.pop();
       });
+
   }
 
   private showAllChild(content: any) {
@@ -215,11 +223,20 @@ export class QrCodeResultPage {
       if (content.children === undefined) {
         if (content.mimeType !== MimeType.COLLECTION) {
           this.results.push(content);
+
+          const path = [];
+          this.parents.forEach(ele => {
+            path.push(ele);
+          });
+          path.splice(-1, 1);
+          this.paths.push(path);
         }
         return;
       }
       content.children.forEach(child => {
+        this.parents.push(child);
         this.showAllChild(child);
+        this.parents.splice(-1, 1);
       });
     });
   }
@@ -255,6 +272,11 @@ export class QrCodeResultPage {
         content: content
       });
     } else {
+      this.telemetryGeneratorService.generateInteractTelemetry(
+        InteractType.TOUCH,
+        Boolean(content.isAvailableLocally) ? InteractSubtype.PLAY_CLICKED : InteractSubtype.DOWNLOAD_PLAY_CLICKED,
+        !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : Environment.HOME,
+        PageId.DIAL_CODE_SCAN_RESULT);
       this.navCtrl.push(ContentDetailsPage, {
         content: content,
         depth: '1',
@@ -297,8 +319,8 @@ export class QrCodeResultPage {
       });
     }
 
-    this.profileService.updateProfile(req,
-      (res: any) => {
+    this.profileService.updateProfile(req)
+      .then((res: any) => {
         const updateProfileRes = JSON.parse(res);
         if (updateProfileRes.syllabus && updateProfileRes.syllabus.length && updateProfileRes.board && updateProfileRes.board.length
           && updateProfileRes.grade && updateProfileRes.grade.length && updateProfileRes.medium && updateProfileRes.medium.length) {
@@ -306,8 +328,8 @@ export class QrCodeResultPage {
           this.events.publish('refresh:profile');
         }
         this.appGlobalService.guestUserProfile = JSON.parse(res);
-      },
-      (err: any) => {
+      })
+      .catch((err: any) => {
         console.error('Err', err);
       });
   }
@@ -349,21 +371,23 @@ export class QrCodeResultPage {
     if (!this.profile.medium || !this.profile.medium.length) {
       this.profile.medium = [];
     }
-    if (!this.profile.subject || !this.profile.subject.length) {
+/*     if (!this.profile.subject || !this.profile.subject.length) {
       this.profile.subject = [];
     }
-    switch (index) {
+ */    switch (index) {
       case 0:
         this.profile.syllabus = [data.framework];
         this.profile.board = [data.board];
         this.profile.medium = [data.medium];
-        this.profile.subject = [data.subject];
+        // this.profile.subject = [data.subject];
+        this.profile.subject = [];
         this.setGrade(true, data.gradeLevel);
         break;
       case 1:
         this.profile.board = [data.board];
         this.profile.medium = [data.medium];
-        this.profile.subject = [data.subject];
+        // this.profile.subject = [data.subject];
+        this.profile.subject = [];
         this.setGrade(true, data.gradeLevel);
         break;
       case 2:
@@ -372,10 +396,10 @@ export class QrCodeResultPage {
       case 3:
         this.setGrade(false, data.gradeLevel);
         break;
-      case 4:
+/*       case 4:
         this.profile.subject.push(data.subject);
         break;
-    }
+ */    }
     this.editProfile();
   }
 
@@ -390,25 +414,25 @@ export class QrCodeResultPage {
       this.formAndFrameworkUtilService.getSyllabusList()
         .then((res) => {
           res.forEach(element => {
-            // checking whether content data framework Id exists/valid in syllabuslist
+            // checking whether content data framework Id exists/valid in syllabus list
             if (data.framework === element.frameworkId) {
-              // Get frameworkdetails(categories)
+              // Get framework details(categories)
               this.formAndFrameworkUtilService.getFrameworkDetails(data.framework)
                 .then(catagories => {
                   this.categories = catagories;
                   this.boardList = _.find(this.categories, (category) => category.code === 'board').terms;
                   this.mediumList = _.find(this.categories, (category) => category.code === 'medium').terms;
                   this.gradeList = _.find(this.categories, (category) => category.code === 'gradeLevel').terms;
-                  this.subjectList = _.find(this.categories, (category) => category.code === 'subject').terms;
+                  //                  this.subjectList = _.find(this.categories, (category) => category.code === 'subject').terms;
                   if (data.board) {
                     data.board = this.findCode(this.boardList, data, 'board');
                   }
                   if (data.medium) {
                     data.medium = this.findCode(this.mediumList, data, 'medium');
                   }
-                  if (data.subject) {
-                    data.subject = this.findCode(this.subjectList, data, 'subject');
-                  }
+                  /*                   if (data.subject) {
+                                      data.subject = this.findCode(this.subjectList, data, 'subject');
+                                    } */
                   if (data.gradeLevel && data.gradeLevel.length) {
                     data.gradeLevel = _.map(data.gradeLevel, (dataGrade) => {
                       return _.find(this.gradeList, (grade) => grade.name === dataGrade).code;
@@ -439,14 +463,14 @@ export class QrCodeResultPage {
                             if (!existingGrade) {
                               this.setCurrentProfile(3, data);
                             }
-                            let existingSubject = false;
+/*                             let existingSubject = false;
                             existingSubject = _.find(profile.subject, (subject) => {
                               return subject === data.subject;
                             });
                             if (!existingSubject) {
                               this.setCurrentProfile(4, data);
                             }
-                          }
+ */                          }
                         }
                       } else {
                         this.setCurrentProfile(1, data);
@@ -471,6 +495,12 @@ export class QrCodeResultPage {
   }
 
   skipSteps() {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.SKIP_CLICKED,
+      !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : Environment.HOME,
+      PageId.DIAL_CODE_SCAN_RESULT
+    );
     if ((this.appGlobalService.isOnBoardingCompleted && this.appGlobalService.isProfileSettingsCompleted)
      || !this.appGlobalService.DISPLAY_ONBOARDING_CATEGORY_PAGE) {
       this.navCtrl.setRoot(TabsPage, {

@@ -1,3 +1,5 @@
+import { NgZone, OnDestroy } from '@angular/core';
+import { ProfileConstants } from './../app/app.constant';
 
 import { Injectable } from '@angular/core';
 import {
@@ -27,7 +29,7 @@ import {
 import { TelemetryGeneratorService } from './telemetry-generator.service';
 
 @Injectable()
-export class AppGlobalService {
+export class AppGlobalService implements OnDestroy {
 
     constructor(
         private event: Events,
@@ -199,6 +201,23 @@ export class AppGlobalService {
         return this.libraryFilterConfig;
     }
 
+    /**
+     * @returns {string} UserId or empty string if not available
+     */
+    getUserId(): string {
+        if (!this.session) {
+            this.authService.getSessionData((session) => {
+                if (session && session !== 'null') {
+                    return session[ProfileConstants.USER_TOKEN];
+                }
+
+                return this.session = '';
+            });
+        }
+
+        return this.session[ProfileConstants.USER_TOKEN];
+    }
+
     private initValues() {
         this.readConfig();
         this.authService.getSessionData((session) => {
@@ -320,13 +339,13 @@ export class AppGlobalService {
             .then(response => {
                 this.OPEN_RAPDISCOVERY_ENABLED = response === 'true' ? true : false;
             })
-            .catch( error => {
-               this.OPEN_RAPDISCOVERY_ENABLED = false;
+            .catch(error => {
+                this.OPEN_RAPDISCOVERY_ENABLED = false;
             });
     }
 
     private getCurrentUserProfile() {
-        this.profile.getCurrentUser((response) => {
+        this.profile.getCurrentUser().then((response: any) => {
             this.guestUserProfile = JSON.parse(response);
             if (this.guestUserProfile.syllabus && this.guestUserProfile.syllabus.length > 0) {
                 this.getFrameworkDetails(this.guestUserProfile.syllabus[0])
@@ -345,7 +364,7 @@ export class AppGlobalService {
                 this.frameworkData = [];
                 this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
             }
-        }, (error) => {
+        }) .catch((error) => {
             this.guestUserProfile = undefined;
             this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
         });
@@ -373,22 +392,27 @@ export class AppGlobalService {
         });
     }
 
-    public getGuestUserInfo() {
-        this.preference.getString(PreferenceKey.SELECTED_USER_TYPE)
-            .then(val => {
-                if (val !== undefined && val !== '') {
-                    if (val === ProfileType.STUDENT) {
-                        this.guestProfileType = ProfileType.STUDENT;
-                    } else if (val === ProfileType.TEACHER) {
-                        this.guestProfileType = ProfileType.TEACHER;
-                    } else if (val === 'student') {
-                        this.guestProfileType = ProfileType.STUDENT;
-                    } else if (val === 'teacher') {
-                        this.guestProfileType = ProfileType.TEACHER;
+    public getGuestUserInfo(): Promise<string> {
+        return new Promise((resolve, reject) => {
+            this.preference.getString(PreferenceKey.SELECTED_USER_TYPE)
+                .then(val => {
+                    if (val) {
+                        if (val === ProfileType.STUDENT) {
+                            this.guestProfileType = ProfileType.STUDENT;
+                        } else if (val === ProfileType.TEACHER) {
+                            this.guestProfileType = ProfileType.TEACHER;
+                        } else if (val === 'student') {
+                            this.guestProfileType = ProfileType.STUDENT;
+                        } else if (val === 'teacher') {
+                            this.guestProfileType = ProfileType.TEACHER;
+                        }
+                        this.isGuestUser = true;
+                        resolve(this.guestProfileType);
+                    } else {
+                        reject('');
                     }
-                    this.isGuestUser = true;
-                }
-            });
+                });
+        });
     }
 
     private listenForEvents() {
@@ -525,5 +549,10 @@ export class AppGlobalService {
             resolve(this.isProfileSettingsCompleted);
         });
     }
-}
 
+
+    ngOnDestroy() {
+        this.event.unsubscribe(AppGlobalService.USER_INFO_UPDATED);
+        this.event.unsubscribe('refresh:profile');
+    }
+}
