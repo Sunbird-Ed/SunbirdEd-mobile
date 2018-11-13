@@ -11,12 +11,12 @@
 </ion-header>
 <ion-content>
   <ion-grid padding>
-    <div *ngIf="content?.creator">
+    <div *ngIf="content?.creators">
       <ion-row class="text-gray-color">
         {{ 'CREATORS' | translate }}
       </ion-row>
       <ion-row class="content">
-        {{content?.creator}}
+        {{content?.creators}}
       </ion-row>
     </div>
     <div *ngIf="content?.contributors">

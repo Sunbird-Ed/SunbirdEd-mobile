@@ -8,8 +8,7 @@
 			<button ion-button icon-only (click)="share()">
 				<ion-icon md="md-share" float-right></ion-icon>
 			</button>
-			<button *ngIf="contentDetail?.isAvailableLocally" ion-button icon-only (click)="showOverflowMenu($event)"
-			 style="font-size: 1.8rem;">
+			<button *ngIf="contentDetail?.isAvailableLocally" ion-button icon-only (click)="showOverflowMenu($event)" style="font-size: 1.8rem;">
 				<ion-icon md="md-more" float-end></ion-icon>
 			</button>
 		</ion-buttons>
@@ -28,9 +27,9 @@
 				<span class="text-gray-color">{{ 'CONTENT_CREATED_BY' | translate }}</span>
 				<span class="content-meta-title">{{ contentDetail?.creator || contentDetail?.owner }}</span>
 			</div>
-			<ion-row class="padding-top-10 credits" (click)="viewCredits()" *ngIf="contentDetail?.creator || contentDetail?.attributions">
+			<ion-row class="padding-top-10 credits" (click)="viewCredits()" *ngIf="contentDetail?.creators || contentDetail?.attributions || contentDetail?.contributors">
 				{{ 'CREDITS' | translate }}
-			   </ion-row>
+			</ion-row>
 			<ion-row class="padding-top-10">
 				<ion-col class="padding-0">
 					<div class="size_txt padding-bottom-5" no-margin>
@@ -87,7 +86,7 @@
 
 			<div class="read-more" *ngIf="contentDetail?.description.length > 100 || contentDetail?.gradeLevel || contentDetail?.subject"
 			 (click)="showMoreFlag = !showMoreFlag">
-				<div *ngIf="showMoreFlag"  class="padding-top-10">
+				<div *ngIf="showMoreFlag" class="padding-top-10">
 					<ion-grid no-padding>
 						<ion-row>
 							<ion-col col-3 class="col-3-no-space" (click)="readLessorReadMore('READ_LESS')">
@@ -141,7 +140,7 @@
 					</ion-item>
 				</ion-list>
 			</div>
-			<div *ngIf= "!fromCoursesPage && !isAlreadyEnrolled">
+			<div *ngIf="!fromCoursesPage && !isAlreadyEnrolled">
 				<ion-list *ngIf="childrenData && childrenData?.length" padding-top>
 					<ion-item *ngFor="let item of childrenData; let i = index;" style="padding-left: 0px;" (click)="navigateToDetailsPage(item, depth + '.' + (i + 1))">
 						<span ion-text class="span-semibold">{{ (item?.contentData?.name && item?.contentData?.name.length > 30) ?
