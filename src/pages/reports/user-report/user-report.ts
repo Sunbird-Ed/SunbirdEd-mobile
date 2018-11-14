@@ -149,13 +149,13 @@ export class UserReportPage {
     let csv: any = '';
     let line: any = '';
     const that = this;
-    console.log(this.response);
-    console.log(typeof (this.response));
+    // console.log(this.response);
+    // console.log(typeof (this.response));
     const values = this.response;
     const anzahlTeams = values.length;
 
-    const filexptime = this.datePipe.transform(new Date(this.exptime), 'dd-mm-yyyy hh:mm:ss a');
-    const contentstarttime = this.datePipe.transform(new Date(teams[0].timestamp), 'dd-mm-yyyy hh:mm:ss a');
+    const filexptime = this.datePipe.transform(new Date(this.exptime), 'dd-MMM-yyyy hh:mm:ss a');
+    const contentstarttime = this.datePipe.transform(new Date(teams[0].timestamp), 'dd-MMM-yyyy hh:mm:ss a');
     // Header
     for (let m = 0; m < anzahlTeams; m++) {
       line += 'Device ID' + '\t' + this.deviceId + '\n';
@@ -169,13 +169,13 @@ export class UserReportPage {
       line += 'Score' + '\t\t';
       line += 'Time' + '\n';
       break;
-          }
-          line += '\n';
+    }
+    line += '\n';
     // Teams
-    console.log(anzahlTeams);
+    //  console.log(values);
     for (let j = 0; j < anzahlTeams - 1; j++) {
-      line += 'Q' + (('00' + values[j].qindex).slice(-3)) + '\t\t';
       line += values[j].qtitle + '\t\t';
+      line += values[j].qid + '\t\t';
       line += values[j].score + '/' + values[j].maxScore + '\t\t';
       line += that.formatTime(values[j].timespent) + '\n';
     }
@@ -188,7 +188,6 @@ export class UserReportPage {
     this.exptime = new Date().getTime();
     const csv: any = this.convertToCSV(this.response);
     console.log(this.exptime);
-    // this.exptime = this.datePipe.transform(new Date(this.exptime), 'MMM dd, yyyy, hh:mm:ss a');
     console.log(this.deviceId + this.response[0].uid + this.response[0].contentId);
     const combinefilename = this.deviceId + this.response[0].uid + this.response[0].contentId + this.exptime + '.csv';
 
