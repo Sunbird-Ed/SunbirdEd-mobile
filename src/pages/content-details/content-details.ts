@@ -1,4 +1,3 @@
-import {BookmarkComponent} from './../../component/bookmark/bookmark';
 import {
   Component,
   NgZone,
@@ -48,7 +47,7 @@ import {
   Map
 } from '@app/app';
 
-import { ContentRatingAlertComponent, ContentActionsComponent } from '@app/component';
+import { ContentRatingAlertComponent, ContentActionsComponent, BookmarkComponent } from '@app/component';
 import { AppGlobalService, CommonUtilService, TelemetryGeneratorService, CourseUtilService } from '@app/service';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
 import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
