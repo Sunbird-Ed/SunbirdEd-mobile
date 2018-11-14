@@ -8,9 +8,9 @@
 			<!-- <button ion-button icon-only (click)="selectBookmark()" *ngIf="!content?.bookmarked">
 				<ion-icon name="ios-bookmark-outline" ios="ios-bookmark-outline" float-right></ion-icon>
 			</button> -->
-			<button ion-button icon-only (click)="deSelectBookmark()" *ngIf="content?.bookmarked" style="color:#0079FE">
+			<!-- <button ion-button icon-only (click)="deSelectBookmark()" *ngIf="content?.bookmarked" style="color:#0079FE">
 				<ion-icon name="ios-bookmark" ios="ios-bookmark" float-right></ion-icon>
-			</button>
+			</button> -->
 			<button ion-button icon-only (click)="share()">
 				<ion-icon md="md-share" float-right></ion-icon>
 			</button>
@@ -22,7 +22,7 @@
 </ion-header>
 <!-- Page body -->
 <ion-content padding [ngClass]="{'content-with-footer': content}">
-	<div *ngIf="showMessage" style="background-color: #F2F8FF;
+	<!-- <div *ngIf="showMessage" style="background-color: #F2F8FF;
     margin: -16px;
     display: block;
     padding: 15px;
@@ -30,7 +30,7 @@
     color: gray;
 		">
 		Resource bookmarked successfully. You can find this under 'Saved Resources' on the Resources tab
-	</div>
+	</div> -->
 	<div class="content-details-holder" *ngIf="content">
 		<h6 class="font-size-20">{{content?.name}}</h6>
 		<!-- Owner and download info -->
