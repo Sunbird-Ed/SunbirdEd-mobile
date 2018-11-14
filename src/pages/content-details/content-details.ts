@@ -1,3 +1,4 @@
+import {BookmarkComponent} from './../../component/bookmark/bookmark';
 import {
   Component,
   NgZone,
@@ -33,17 +34,26 @@ import {
   CorrelationData,
   ProfileService,
   ProfileRequest,
-  TelemetryObject
+  TelemetryObject,
+  SharedPreferences
 } from 'sunbird';
+import {
+  ProfileConstants,
+  PreferenceKey
+} from '../../app/app.constant';
+
 import {
   EventTopics,
   ShareUrl,
   Map
 } from '@app/app';
+
 import { ContentRatingAlertComponent, ContentActionsComponent } from '@app/component';
 import { AppGlobalService, CommonUtilService, TelemetryGeneratorService, CourseUtilService } from '@app/service';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
-import { UserAndGroupsPage } from '@app/pages/user-and-groups';
+import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
+import { ViewCreditsComponent } from '../../component/view-credits/view-credits';
+import { Observable } from 'rxjs';
 
 @IonicPage()
 @Component({
@@ -108,6 +118,7 @@ export class ContentDetailsPage {
   shouldGenerateTelemetry = true;
 
   @ViewChild(Navbar) navBar: Navbar;
+  showMessage: any;
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -117,6 +128,7 @@ export class ContentDetailsPage {
     private fileUtil: FileUtil,
     private popoverCtrl: PopoverController,
     private shareUtil: ShareUtil,
+    private preference: SharedPreferences,
     private social: SocialSharing,
     private platform: Platform,
     private buildParamService: BuildParamService,
@@ -136,6 +148,7 @@ export class ContentDetailsPage {
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
     this.handlePageResume();
+    // this.checkBookmarkStatus();
   }
 
   ionViewDidLoad() {
@@ -268,6 +281,31 @@ export class ContentDetailsPage {
         this.profileType = '';
       });
   }
+
+  checkBookmarkStatus() {
+    this.preference.getString(PreferenceKey.IS_BOOKMARK_VIWED).then(val => {
+      if (!val) {
+        this.showBookmarkMenu();
+      }
+    });
+  }
+
+  selectBookmark() {
+    this.content.bookmarked = true;
+    this.showMessage = true;
+    const notifyTimer = Observable.timer(10000);
+    notifyTimer.subscribe(e => {
+        this.showMessage = false;
+    });
+  }
+
+  deSelectBookmark() {
+    this.content.bookmarked = false;
+    if (this.showMessage) {
+      this.showMessage = false;
+    }
+  }
+
 
   /**
    * Function to rate content
@@ -825,6 +863,27 @@ export class ContentDetailsPage {
         }
       });
     });
+  }
+
+  showBookmarkMenu(event?) {
+    const popover = this.popoverCtrl.create(BookmarkComponent, {
+      content: this.content,
+      isChild: this.isChildContent,
+      objRollup: this.objRollup,
+      corRelationList: this.corRelationList,
+      position: 'bottom'
+    }, {
+        cssClass: 'bookmark-menu'
+      });
+    popover.present({
+      ev: event
+    });
+  }
+
+  updateBookmarkPreference() {
+    // this.preference.putString(PreferenceKey.IS_BOOKMARK_VIWED, 'true');
+    // this.viewCtrl.dismiss();
+    console.log('updateBookmarkPreference');
   }
 
   /**
