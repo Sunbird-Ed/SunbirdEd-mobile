@@ -37,7 +37,6 @@ import {
   SharedPreferences
 } from 'sunbird';
 import {
-  ProfileConstants,
   PreferenceKey
 } from '../../app/app.constant';
 
@@ -51,7 +50,6 @@ import { ContentRatingAlertComponent, ContentActionsComponent, BookmarkComponent
 import { AppGlobalService, CommonUtilService, TelemetryGeneratorService, CourseUtilService } from '@app/service';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
 import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
-import { ViewCreditsComponent } from '../../component/view-credits/view-credits';
 import { Observable } from 'rxjs';
 
 @IonicPage()
@@ -294,7 +292,7 @@ export class ContentDetailsPage {
     this.showMessage = true;
     const notifyTimer = Observable.timer(10000);
     notifyTimer.subscribe(e => {
-        this.showMessage = false;
+      this.showMessage = false;
     });
   }
 
@@ -713,7 +711,7 @@ export class ContentDetailsPage {
   }
 
   cancelDownload() {
-    this.contentService.cancelDownload(this.identifier) .then(() => {
+    this.contentService.cancelDownload(this.identifier).then(() => {
       this.zone.run(() => {
         this.isDownloadStarted = false;
         this.downloadProgress = '';
@@ -721,7 +719,7 @@ export class ContentDetailsPage {
           this.content.downloadable = false;
         }
       });
-    }) .catch((error: any) => {
+    }).catch((error: any) => {
       this.zone.run(() => {
         console.log('Error: download error =>>>>>', error);
       });
