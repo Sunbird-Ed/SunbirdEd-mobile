@@ -54,6 +54,7 @@ import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
 import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
 import { ViewCreditsComponent } from '../../component/view-credits/view-credits';
 import { Observable } from 'rxjs';
+import Driver from 'driver.js';
 
 @IonicPage()
 @Component({
@@ -301,6 +302,9 @@ export class ContentDetailsPage {
 
   deSelectBookmark() {
     this.content.bookmarked = false;
+    if (this.showMessage) {
+      this.showMessage = false;
+    }
   }
 
 
@@ -863,18 +867,59 @@ export class ContentDetailsPage {
   }
 
   showBookmarkMenu(event?) {
-    console.log('inside showBookmarkMenu');
     const popover = this.popoverCtrl.create(BookmarkComponent, {
       content: this.content,
       isChild: this.isChildContent,
       objRollup: this.objRollup,
-      corRelationList: this.corRelationList
+      corRelationList: this.corRelationList,
+      position: 'bottom'
     }, {
         cssClass: 'bookmark-menu'
       });
     popover.present({
       ev: event
     });
+    // const driver = new Driver({
+    //   allowClose: true,
+    //   closeBtnText: this.commonUtilService.translateMessage('DONE'),
+    //   showButtons: true,
+    // });
+
+    // setTimeout(() => {
+    //   driver.highlight({
+    //     element: '#qrIcon',
+    //     popover: {
+    //       title: this.commonUtilService.translateMessage('ONBOARD_SCAN_QR_CODE'),
+    //       description: `<div>
+    //             <ion-grid class="padding-0">
+    //                 <ion-row >
+    //                   <ion-col col-8 class="padding-0" style="border-right: 1px solid #fff;">
+    //                       You can now bookmark a resource in the app and find it on your 'Resources' tab
+    //                   </ion-col>
+    //                   <ion-col col-4 class="padding-0" style="margin: auto;
+    //                   text-align: center;" (click)="updateBookmarkPreference()">
+    //                       Okay
+    //                     </ion-col>
+    //                 </ion-row>
+    //             </ion-grid>
+    //         </div>`,
+    //       showButtons: false,         // Do not show control buttons in footer
+    //       closeBtnText: this.commonUtilService.translateMessage('DONE'),
+    //     }
+    //   });
+
+    //   const element = document.getElementById('driver-highlighted-element-stage');
+    //   const img = document.createElement('img');
+    //   img.src = 'assets/imgs/ic_scan.png';
+    //   img.id = 'qr_scanner';
+    //   element.appendChild(img);
+    // }, 100);
+  }
+
+  updateBookmarkPreference() {
+    // this.preference.putString(PreferenceKey.IS_BOOKMARK_VIWED, 'true');
+    // this.viewCtrl.dismiss();
+    console.log('updateBookmarkPreference');
   }
 
   /**
