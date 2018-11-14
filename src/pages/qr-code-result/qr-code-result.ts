@@ -174,14 +174,20 @@ export class QrCodeResultPage {
       clickSource,
       !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : Environment.HOME,
       PageId.DIAL_CODE_SCAN_RESULT);
-      if (this.isSingleContent && this.appGlobalService.isProfileSettingsCompleted) {
-        this.navCtrl.setRoot(TabsPage, {
-          loginMode: 'guest'
-        });
-      } else {
-        this.navCtrl.pop();
-      }
+    if (this.source === PageId.LIBRARY || this.source === PageId.COURSES || !this.isSingleContent) {
+      this.navCtrl.pop();
+    } else if (this.isSingleContent && this.appGlobalService.isProfileSettingsCompleted) {
+      this.navCtrl.setRoot(TabsPage, {
+        loginMode: 'guest'
+      });
+    } else if (this.appGlobalService.isGuestUser && this.isSingleContent && !this.appGlobalService.isProfileSettingsCompleted) {
+      this.navCtrl.setRoot(ProfileSettingsPage, {
+        buildPath: true
+      });
+    } else {
+      this.navCtrl.pop();
     }
+  }
 
   getChildContents() {
     const request: ChildContentRequest = { contentId: this.identifier };
@@ -413,9 +419,11 @@ export class QrCodeResultPage {
 
       this.formAndFrameworkUtilService.getSyllabusList()
         .then((res) => {
+          let isProfileUpdated = false;
           res.forEach(element => {
             // checking whether content data framework Id exists/valid in syllabuslist
             if (data.framework === element.frameworkId) {
+              isProfileUpdated = true;
               // Get frameworkdetails(categories)
               this.formAndFrameworkUtilService.getFrameworkDetails(data.framework)
                 .then(catagories => {
@@ -486,7 +494,8 @@ export class QrCodeResultPage {
               return;
             }
           });
-
+          this.telemetryGeneratorService.generateProfilePopulatedTelemetry(PageId.DIAL_CODE_SCAN_RESULT,
+            data.framework, Boolean(isProfileUpdated) ? 'auto' : 'na');
         })
         .catch((error) => {
           console.error('Error', error);
