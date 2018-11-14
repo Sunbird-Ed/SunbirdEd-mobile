@@ -5,9 +5,6 @@
 			<!-- <ion-icon md="md-share" float-right></ion-icon> -->
 		</ion-title>
 		<ion-buttons end>
-			<button ion-button icon-only (click)="showBookmarkMenu($event)"  style="color:red">
-				<ion-icon name="ios-bookmark-outline" ios="ios-bookmark-outline" float-right></ion-icon>
-			</button>
 			<button ion-button icon-only (click)="selectBookmark()" *ngIf="!content?.bookmarked">
 				<ion-icon name="ios-bookmark-outline" ios="ios-bookmark-outline" float-right></ion-icon>
 			</button>
@@ -42,7 +39,7 @@
 				<span class="text-gray-color">{{ 'CONTENT_CREATED_BY' | translate }}</span>
 				<span class="content-meta-title">{{ content?.creator || content?.owner }}</span>
 			</div>
-			<ion-row class="padding-top-10 credits" (click)="viewCredits()" *ngIf="content?.creators || content?.attributions || content?.contributors">
+			<ion-row class="padding-top-10 credits" (click)="viewCredits()" *ngIf="content?.creator || content?.attributions">
 			{{ 'CREDITS' | translate }}
 			</ion-row>
 			<ion-row class="padding-top-10">

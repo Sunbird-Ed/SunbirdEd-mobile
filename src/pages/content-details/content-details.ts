@@ -54,7 +54,6 @@ import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
 import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
 import { ViewCreditsComponent } from '../../component/view-credits/view-credits';
 import { Observable } from 'rxjs';
-import Driver from 'driver.js';
 
 @IonicPage()
 @Component({
@@ -144,12 +143,12 @@ export class ContentDetailsPage {
   ) {
 
     this.objRollup = new Rollup();
-    this.userId = this.appGlobalService.getUserId();
+    this.appGlobalService.getUserId();
     this.subscribePlayEvent();
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
     this.handlePageResume();
-    this.checkBookmarkStatus();
+    // this.checkBookmarkStatus();
   }
 
   ionViewDidLoad() {
