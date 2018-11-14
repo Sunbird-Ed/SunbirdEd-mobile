@@ -80,8 +80,6 @@ export class EnrolledCourseDetailsPage {
    */
   downloadIdentifiers = [];
 
-  statusOfChildrenData: Array<any> = [];
-
   /**
    * Contains total size of locally not available content(s)
    */
