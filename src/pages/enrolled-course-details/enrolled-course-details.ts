@@ -9,7 +9,6 @@ import {
   NavParams,
   Events,
   PopoverController,
-  LoadingController,
   Platform,
   Navbar,
   AlertController
@@ -32,6 +31,7 @@ import {
   ShareUtil,
   SharedPreferences,
   ProfileType,
+  GetContentStateRequest,
   ImpressionType,
   CorrelationData,
   TelemetryObject,
@@ -79,6 +79,8 @@ export class EnrolledCourseDetailsPage {
    * Contains identifier(s) of locally not available content(s)
    */
   downloadIdentifiers = [];
+
+  statusOfChildrenData: Array<any> = [];
 
   /**
    * Contains total size of locally not available content(s)
@@ -141,6 +143,7 @@ export class EnrolledCourseDetailsPage {
   backButtonFunc = undefined;
   shouldGenerateEndTelemetry = false;
   source = '';
+
 
   @ViewChild(Navbar) navBar: Navbar;
   constructor(
@@ -566,7 +569,45 @@ export class EnrolledCourseDetailsPage {
       this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
     }
   }
-
+  /**
+   * Function to get status of child contents
+   */
+  getStatusOfChildContent(childrenData, contentStatusData) {
+    childrenData.forEach(childContent => {
+      let contentlen = 0;
+      childContent.children.every(eachContent => {
+        if (childContent.hasOwnProperty('status') && !childContent.status) {
+          return false;
+        } else {
+          if (contentStatusData.result.contentList.length) {
+            contentStatusData.result.contentList.every(contentData => {
+              if (eachContent.identifier === contentData.contentId) {
+                contentlen = contentlen + 1;
+                if (contentData.status === 0 || contentData.status === 1) {
+                  childContent.status = false;
+                  return false;
+                } else {
+                  childContent.status = true;
+                  return true;
+                }
+              }
+              return true;
+            });
+            return true;
+          } else {
+            childContent.status = false;
+            return false;
+          }
+        }
+      });
+      if (childContent.children.length === contentlen) {
+        return true;
+      } else {
+        childContent.status = false;
+        return true;
+      }
+    });
+  }
   /**
    * Function to set child contents
    */
@@ -583,11 +624,23 @@ export class EnrolledCourseDetailsPage {
     this.contentService.getChildContents(option)
       .then((data: any) => {
         data = JSON.parse(data);
+
+        const request: GetContentStateRequest = {
+          userId: this.appGlobalService.getUserId(),
+          courseIds: [this.identifier],
+          returnRefreshedContentStates: true
+        };
         this.zone.run(() => {
           if (data && data.result && data.result.children) {
             this.enrolledCourseMimeType = data.result.mimeType;
             this.childrenData = data.result.children;
             this.startData = data.result.children;
+            this.courseService.getContentState(request)
+              .then((success: any) => {
+                success = JSON.parse(success);
+                this.getStatusOfChildContent(this.childrenData, success);
+              }).catch((error: any) => {
+              });
           }
           if (this.courseCardData.batchId) {
             this.downloadSize = 0;
@@ -597,7 +650,6 @@ export class EnrolledCourseDetailsPage {
         });
       })
       .catch((error: string) => {
-        console.log('Error: while fetching child contents ===>>>', error);
         this.zone.run(() => {
           this.showChildrenLoader = false;
         });
@@ -699,6 +751,7 @@ export class EnrolledCourseDetailsPage {
     if (this.batchId) {
       this.courseCardData.batchId = this.batchId;
     }
+
     this.showResumeBtn = this.courseCardData.lastReadContentId ? true : false;
     this.setContentDetails(this.identifier);
     // If courseCardData does not have a batch id then it is not a enrolled course
