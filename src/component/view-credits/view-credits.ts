@@ -8,20 +8,10 @@ import {
   Platform
 } from 'ionic-angular';
 import {
-  ContentService,
-  TelemetryService,
   Environment,
-  ImpressionType,
-  ImpressionSubtype,
-  Log,
-  LogLevel,
   InteractType,
   TelemetryObject
 } from 'sunbird';
-import { TranslateService } from '@ngx-translate/core';
-import {
-  generateImpressionTelemetry
-} from '../../app/telemetryutil';
 import { ProfileConstants } from '../../app/app.constant';
 import { AppGlobalService } from '../../service/app-global.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
@@ -71,10 +61,10 @@ export class ViewCreditsComponent {
   ionViewDidLoad(): void {
     this.content = this.navParams.get('content');
     this.pageId = this.navParams.get('pageId');
-    this.rollUp  = this.navParams.get('rollUp');
+    this.rollUp = this.navParams.get('rollUp');
     this.correlation = this.navParams.get('correlation');
     const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = this.content.identifier ;
+    telemetryObject.id = this.content.identifier;
     telemetryObject.type = this.content.contentType;
     telemetryObject.version = this.content.pkgVersion;
     this.telemetrygeneratorService.generateInteractTelemetry(InteractType.TOUCH,
