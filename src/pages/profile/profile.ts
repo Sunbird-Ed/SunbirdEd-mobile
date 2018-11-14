@@ -287,8 +287,8 @@ export class ProfilePage {
    */
   formatRoles() {
     this.roles = [];
-    if (this.profile.roleList) {
-      if (this.profile.organisations && this.profile.organisations.length > 0) {
+    if (this.profile && this.profile.roleList) {
+      if (this.profile.organisations && this.profile.organisations.length) {
         for (let i = 0, len = this.profile.organisations[0].roles.length; i < len; i++ ) {
           const roleKey = this.profile.organisations[0].roles[i];
           const val = this.profile.roleList.find(role => role.id === roleKey).name;

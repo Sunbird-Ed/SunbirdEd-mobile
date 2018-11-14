@@ -143,7 +143,7 @@ export class ContentDetailsPage {
   ) {
 
     this.objRollup = new Rollup();
-    this.appGlobalService.getUserId();
+    this.userId = this.appGlobalService.getUserId();
     this.subscribePlayEvent();
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
@@ -878,41 +878,6 @@ export class ContentDetailsPage {
     popover.present({
       ev: event
     });
-    // const driver = new Driver({
-    //   allowClose: true,
-    //   closeBtnText: this.commonUtilService.translateMessage('DONE'),
-    //   showButtons: true,
-    // });
-
-    // setTimeout(() => {
-    //   driver.highlight({
-    //     element: '#qrIcon',
-    //     popover: {
-    //       title: this.commonUtilService.translateMessage('ONBOARD_SCAN_QR_CODE'),
-    //       description: `<div>
-    //             <ion-grid class="padding-0">
-    //                 <ion-row >
-    //                   <ion-col col-8 class="padding-0" style="border-right: 1px solid #fff;">
-    //                       You can now bookmark a resource in the app and find it on your 'Resources' tab
-    //                   </ion-col>
-    //                   <ion-col col-4 class="padding-0" style="margin: auto;
-    //                   text-align: center;" (click)="updateBookmarkPreference()">
-    //                       Okay
-    //                     </ion-col>
-    //                 </ion-row>
-    //             </ion-grid>
-    //         </div>`,
-    //       showButtons: false,         // Do not show control buttons in footer
-    //       closeBtnText: this.commonUtilService.translateMessage('DONE'),
-    //     }
-    //   });
-
-    //   const element = document.getElementById('driver-highlighted-element-stage');
-    //   const img = document.createElement('img');
-    //   img.src = 'assets/imgs/ic_scan.png';
-    //   img.id = 'qr_scanner';
-    //   element.appendChild(img);
-    // }, 100);
   }
 
   updateBookmarkPreference() {
