@@ -182,7 +182,7 @@ export class QrCodeResultPage {
       });
     } else if (this.appGlobalService.isGuestUser && this.isSingleContent && !this.appGlobalService.isProfileSettingsCompleted) {
       this.navCtrl.setRoot(ProfileSettingsPage, {
-        buildPath: true
+        isCreateNavigationStack: true
       });
     } else {
       this.navCtrl.pop();

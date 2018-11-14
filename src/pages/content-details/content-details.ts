@@ -269,6 +269,7 @@ export class ContentDetailsPage {
   }
 
   checkCurrentUserType() {
+    if (this.isGuestUser) {
     this.appGlobalService.getGuestUserInfo()
       .then((userType) => {
         this.profileType = userType;
@@ -277,6 +278,7 @@ export class ContentDetailsPage {
         console.log('Error Occurred', error);
         this.profileType = '';
       });
+    }
   }
 
   checkBookmarkStatus() {

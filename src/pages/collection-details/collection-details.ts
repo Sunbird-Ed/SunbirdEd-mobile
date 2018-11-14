@@ -326,14 +326,16 @@ export class CollectionDetailsPage {
   }
 
   checkCurrentUserType() {
-    this.appGlobalService.getGuestUserInfo()
-      .then((userType) => {
-        this.profileType = userType;
-      })
-      .catch((error) => {
-        console.error('Error Occurred', error);
-        this.profileType = '';
-      });
+    if (this.guestUser) {
+      this.appGlobalService.getGuestUserInfo()
+        .then((userType) => {
+          this.profileType = userType;
+        })
+        .catch((error) => {
+          console.error('Error Occurred', error);
+          this.profileType = '';
+        });
+    }
   }
 
   /**
@@ -568,20 +570,20 @@ export class CollectionDetailsPage {
     const hierarchyInfo = this.cardData.hierarchyInfo ? this.cardData.hierarchyInfo : null;
     const option = { contentId: this.identifier, hierarchyInfo: hierarchyInfo }; // TODO: remove level
     this.contentService.getChildContents(option)
-     .then((data: any) => {
-      data = JSON.parse(data);
-      this.zone.run(() => {
-        if (data && data.result && data.result.children) {
-          this.childrenData = data.result.children;
-        }
+      .then((data: any) => {
+        data = JSON.parse(data);
+        this.zone.run(() => {
+          if (data && data.result && data.result.children) {
+            this.childrenData = data.result.children;
+          }
 
-        if (!this.isDepthChild) {
-          this.downloadSize = 0;
-          this.getContentsSize(data.result.children || []);
-        }
-        this.showChildrenLoader = false;
-      });
-    })
+          if (!this.isDepthChild) {
+            this.downloadSize = 0;
+            this.getContentsSize(data.result.children || []);
+          }
+          this.showChildrenLoader = false;
+        });
+      })
       .catch((error: string) => {
         console.log('Error: while fetching child contents ===>>>', error);
         this.zone.run(() => {

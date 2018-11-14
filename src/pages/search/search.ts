@@ -256,7 +256,7 @@ export class SearchPage {
     } else if (content.mimeType === MimeType.COLLECTION) {
       if (this.isDialCodeSearch && !isRootContent) {
         params.isCreateNavigationStack = true;
-        params.buildPath = true;
+
         if (this.isSingleContent) {
           this.isSingleContent = false;
           this.navCtrl.pop();

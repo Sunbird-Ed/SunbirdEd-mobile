@@ -214,14 +214,16 @@ export class EnrolledCourseDetailsPage {
   }
 
   checkCurrentUserType() {
-    this.appGlobalService.getGuestUserInfo()
-      .then((userType) => {
-        this.profileType = userType;
-      })
-      .catch((error) => {
-        console.log('Error Occurred', error);
-        this.profileType = '';
-      });
+    if (this.guestUser) {
+      this.appGlobalService.getGuestUserInfo()
+        .then((userType) => {
+          this.profileType = userType;
+        })
+        .catch((error) => {
+          console.log('Error Occurred', error);
+          this.profileType = '';
+        });
+    }
   }
 
   /**
@@ -579,21 +581,21 @@ export class EnrolledCourseDetailsPage {
     }
 
     this.contentService.getChildContents(option)
-     .then((data: any) => {
-      data = JSON.parse(data);
-      this.zone.run(() => {
-        if (data && data.result && data.result.children) {
-          this.enrolledCourseMimeType = data.result.mimeType;
-          this.childrenData = data.result.children;
-          this.startData = data.result.children;
-        }
-        if (this.courseCardData.batchId) {
-          this.downloadSize = 0;
-          this.getContentsSize(this.childrenData);
-        }
-        this.showChildrenLoader = false;
-      });
-    })
+      .then((data: any) => {
+        data = JSON.parse(data);
+        this.zone.run(() => {
+          if (data && data.result && data.result.children) {
+            this.enrolledCourseMimeType = data.result.mimeType;
+            this.childrenData = data.result.children;
+            this.startData = data.result.children;
+          }
+          if (this.courseCardData.batchId) {
+            this.downloadSize = 0;
+            this.getContentsSize(this.childrenData);
+          }
+          this.showChildrenLoader = false;
+        });
+      })
       .catch((error: string) => {
         console.log('Error: while fetching child contents ===>>>', error);
         this.zone.run(() => {
@@ -645,7 +647,7 @@ export class EnrolledCourseDetailsPage {
         this.showLoading = false;
         this.navCtrl.pop();
       });
-    }) .catch(() => {
+    }).catch(() => {
       this.zone.run(() => {
         this.showLoading = false;
         this.navCtrl.pop();
