@@ -491,36 +491,6 @@ export class SearchPage {
       });
     });
     // Page API END
-
-    // const contentSearchRequest: ContentSearchCriteria = {
-    //   dialCodes: [this.dialCode],
-    //   mode: 'collection',
-    //   facets: Search.FACETS,
-    //   contentTypes: this.contentType,
-    //   offlineSearch: isOfflineSearch
-    // };
-    // console.log('old req', contentSearchRequest);
-    // this.contentService.searchContent(contentSearchRequest, false, true, !this.appGlobalService.isUserLoggedIn(), (responseData) => {
-    //   this.zone.run(() => {
-    //     const response: GenieResponse = JSON.parse(responseData);
-    //     console.log('old resp', response);
-    //     this.responseData = response;
-    //     if (response.status && response.result) {
-    //       this.addCorRelation(response.result.responseMessageId, 'API');
-    //       this.processDialCodeResult(response.result);
-    //       this.updateFilterIcon();
-    //     }
-
-    //     this.showLoader = false;
-    //   });
-    // }, () => {
-    //   this.zone.run(() => {
-    //     this.showLoader = false;
-    //     if (this.network.type === 'none') {
-    //       this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
-    //     }
-    //   });
-    // });
   }
 
   private addCorRelation(id: string, type: string) {
@@ -601,7 +571,7 @@ export class SearchPage {
       const contentArray: Array<any> = searchResult.contents;
 
       const addedContent = new Array<any>();
-      const dialCodeResult = {
+      const dialCodeResultObj = {
         dialCodeResult : [],
         dialCodeContentResult : []
       };
@@ -617,11 +587,11 @@ export class SearchPage {
               addedContent.push(content.identifier);
             }
           });
-          dialCodeResult.dialCodeResult.push(collection);
-          dialCodeResult['name'] = searchResult.name;
+          dialCodeResultObj.dialCodeResult.push(collection);
+          dialCodeResultObj['name'] = searchResult.name;
         });
         // displayDialCodeResult[searchResult.name] = dialCodeResult;
-        displayDialCodeResult.push(dialCodeResult);
+        displayDialCodeResult.push(dialCodeResultObj);
       }
       const dialCodeContentResult = [];
       const isAllContentMappedToCollection = contentArray.length === addedContent.length;
@@ -632,9 +602,27 @@ export class SearchPage {
           }
         });
       }
-      dialCodeResult.dialCodeContentResult = dialCodeContentResult;
+      dialCodeResultObj.dialCodeContentResult = dialCodeContentResult;
+
+      let isParentCheckStarted = false;
+      if (dialCodeResultObj.dialCodeResult.length === 1 && dialCodeResultObj.dialCodeResult[0].content.length === 1
+        && isAllContentMappedToCollection) {
+        this.parentContent = dialCodeResultObj.dialCodeResult[0];
+        this.childContent = dialCodeResultObj.dialCodeResult[0].content[0];
+        this.checkParent(dialCodeResultObj.dialCodeResult[0], dialCodeResultObj.dialCodeResult[0].content[0]);
+        isParentCheckStarted = true;
+      }
+
+      if (contentArray && contentArray.length === 1 && !isParentCheckStarted) {
+        this.isSingleContent = true;
+        this.openContent(contentArray[0], contentArray[0], 0);
+        // return;
+      }
     });
     this.displayDialCodeResult = displayDialCodeResult;
+    // if (this.displayDialCodeResult.length === 0 ) {
+    //   this.navCtrl.pop();
+    // }
   }
 
   processDialCodeResultPrev(searchResult) {
@@ -660,7 +648,6 @@ export class SearchPage {
         this.dialCodeResult.push(collection);
       });
     }
-    console.log('dialCodeResult', this.dialCodeResult);
     this.dialCodeContentResult = [];
 
     let isParentCheckStarted = false;
@@ -681,7 +668,6 @@ export class SearchPage {
         }
       });
     }
-    console.log('dialCodeContentResult', this.dialCodeContentResult);
 
     if (contentArray && contentArray.length === 1 && !isParentCheckStarted) {
       // this.navCtrl.pop();

@@ -131,7 +131,7 @@ export class ContentDetailsPage {
   ) {
 
     this.objRollup = new Rollup();
-    this.appGlobalService.getUserId();
+    this.userId = this.appGlobalService.getUserId();
     this.subscribePlayEvent();
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
