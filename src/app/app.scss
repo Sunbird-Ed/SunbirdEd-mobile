@@ -411,6 +411,38 @@ ul.rating .ion-md-star-outline:before {
   }
 }
 
+.broadcast-popover{
+  @media screen and (min-width: 401px) {
+    .popover-content{
+      top: 10vh !important;
+      width: 80% !important;
+      left: 10% !important;
+      border-radius: 10px !important; 
+    }
+    .popup-button{
+      padding-bottom: 8%;
+      margin-top: 5vh
+    }
+}
+@media screen and (min-width: 300px) and (max-width: 400px) {
+  .popover-content{
+    top: 5vh !important;
+    width: 80% !important;
+    left: 10% !important;
+    border-radius: 10px !important;
+  }
+  .popup-button{
+    padding-bottom: 5%;
+    
+  }
+  .popup-text {
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+  }
+}
+  
+}
+
 .user-popover {
   .popover-content{
     min-width: 96px;
