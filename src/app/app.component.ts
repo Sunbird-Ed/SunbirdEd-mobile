@@ -184,7 +184,7 @@ export class MyApp {
                                   this.getProfileSettingConfig();
                                 });
                             }
-                          }) .catch(error => { });
+                          }).catch(error => { });
                         }
                       });
                   });
@@ -428,6 +428,14 @@ export class MyApp {
         }
       });
     });
+
+    this.translate.onLangChange.subscribe((params) => {
+      if (params.lang === 'ur' && !this.platform.isRTL) {
+        this.platform.setDir('rtl', true);
+      } else if (this.platform.isRTL) {
+        this.platform.setDir('ltr', true);
+      }
+    });
   }
 
   generateInteractEvent(pageid: string) {
@@ -505,13 +513,13 @@ export class MyApp {
   showGreetingPopup() {
     const popover = this.popoverCtrl.create(BroadcastComponent,
       {
-        'greetings' : 'Diwali Greetings',
+        'greetings': 'Diwali Greetings',
         'imageurl': 'https://t3.ftcdn.net/jpg/01/71/29/20/240_F_171292090_liVMi9liOzZaW0gjsmCIZzwVr2Qw7g4i.jpg',
-        'customButton' : 'custom button',
+        'customButton': 'custom button',
         'greetingText': 'this diwali may enlighten your dreams'
       },
       { cssClass: 'broadcast-popover' }
-      );
+    );
     popover.present();
   }
 

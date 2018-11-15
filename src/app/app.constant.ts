@@ -170,6 +170,12 @@ export const appLanguages = [
         code: 'mr',
         isApplied: false,
         name: 'Marathi'
+    },
+    {
+        label: 'اردو',
+        code: 'ur',
+        isApplied: false,
+        name: 'Urdu'
     }
 ];
 

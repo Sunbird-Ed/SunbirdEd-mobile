@@ -7,7 +7,13 @@ page-language-settings {
     display: initial !important;
   }
   ion-icon {
-    float: right !important;
+    @include ltr() {
+      float: right !important;
+    }
+
+    @include rtl() {
+      float: left !important;
+    }
   }
   ion-list[inset] {
     margin: 0 !important;
@@ -22,13 +28,13 @@ page-language-settings {
     font-weight: 520;
   }
   .arrow-icon {
-    padding-left: 2.8em !important;
+    @include padding(null, null, null, 2.8em !important);
   }
   .back-button {
     display: block !important;
   }
   .item-radio-checked.item-ios ion-label {
-    color: map-get($colors, primary_black); /* Set Black color to the labe;l */
+    color: map-get($colors, primary_black);
     font-weight: 700;
   }
 }
@@ -38,7 +44,7 @@ page-language-settings {
 }
 
 .redErrorToast {
-  .toast-container{ 
+  .toast-container{
     background-color: #FF0000;
     #toast-hdr-6{
       padding-left: 69px !important;
