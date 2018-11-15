@@ -287,9 +287,15 @@ export class ProfilePage {
    */
   formatRoles() {
     this.roles = [];
-    for (let i = 0, len = this.profile.organisations.length; i < len; i++) {
-      for (let j = 0, l = this.profile.organisations[i].roles.length; j < l; j++) {
-        this.roles.push(this.profile.organisations[i].roles[j]);
+    if (this.profile && this.profile.roleList) {
+      if (this.profile.organisations && this.profile.organisations.length) {
+        for (let i = 0, len = this.profile.organisations[0].roles.length; i < len; i++ ) {
+          const roleKey = this.profile.organisations[0].roles[i];
+          const val = this.profile.roleList.find(role => role.id === roleKey).name;
+          if (val) {
+            this.roles.push(val);
+          }
+        }
       }
     }
   }

@@ -243,5 +243,4 @@ export class CategoriesEditPage {
     req.medium = formVal.mediums;
     req.grade = formVal.classes;
   }
-
 }

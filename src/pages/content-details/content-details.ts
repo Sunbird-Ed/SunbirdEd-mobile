@@ -33,17 +33,24 @@ import {
   CorrelationData,
   ProfileService,
   ProfileRequest,
-  TelemetryObject
+  TelemetryObject,
+  SharedPreferences
 } from 'sunbird';
+import {
+  PreferenceKey
+} from '../../app/app.constant';
+
 import {
   EventTopics,
   ShareUrl,
   Map
 } from '@app/app';
-import { ContentRatingAlertComponent, ContentActionsComponent } from '@app/component';
+
+import { ContentRatingAlertComponent, ContentActionsComponent, BookmarkComponent } from '@app/component';
 import { AppGlobalService, CommonUtilService, TelemetryGeneratorService, CourseUtilService } from '@app/service';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
-import { UserAndGroupsPage } from '@app/pages/user-and-groups';
+import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
+import { Observable } from 'rxjs';
 
 @IonicPage()
 @Component({
@@ -108,6 +115,7 @@ export class ContentDetailsPage {
   shouldGenerateTelemetry = true;
 
   @ViewChild(Navbar) navBar: Navbar;
+  showMessage: any;
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -117,6 +125,7 @@ export class ContentDetailsPage {
     private fileUtil: FileUtil,
     private popoverCtrl: PopoverController,
     private shareUtil: ShareUtil,
+    private preference: SharedPreferences,
     private social: SocialSharing,
     private platform: Platform,
     private buildParamService: BuildParamService,
@@ -136,6 +145,7 @@ export class ContentDetailsPage {
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
     this.handlePageResume();
+    // this.checkBookmarkStatus();
   }
 
   ionViewDidLoad() {
@@ -259,6 +269,7 @@ export class ContentDetailsPage {
   }
 
   checkCurrentUserType() {
+    if (this.isGuestUser) {
     this.appGlobalService.getGuestUserInfo()
       .then((userType) => {
         this.profileType = userType;
@@ -267,7 +278,33 @@ export class ContentDetailsPage {
         console.log('Error Occurred', error);
         this.profileType = '';
       });
+    }
   }
+
+  checkBookmarkStatus() {
+    this.preference.getString(PreferenceKey.IS_BOOKMARK_VIWED).then(val => {
+      if (!val) {
+        this.showBookmarkMenu();
+      }
+    });
+  }
+
+  selectBookmark() {
+    this.content.bookmarked = true;
+    this.showMessage = true;
+    const notifyTimer = Observable.timer(10000);
+    notifyTimer.subscribe(e => {
+      this.showMessage = false;
+    });
+  }
+
+  deSelectBookmark() {
+    this.content.bookmarked = false;
+    if (this.showMessage) {
+      this.showMessage = false;
+    }
+  }
+
 
   /**
    * Function to rate content
@@ -676,7 +713,7 @@ export class ContentDetailsPage {
   }
 
   cancelDownload() {
-    this.contentService.cancelDownload(this.identifier) .then(() => {
+    this.contentService.cancelDownload(this.identifier).then(() => {
       this.zone.run(() => {
         this.isDownloadStarted = false;
         this.downloadProgress = '';
@@ -684,7 +721,7 @@ export class ContentDetailsPage {
           this.content.downloadable = false;
         }
       });
-    }) .catch((error: any) => {
+    }).catch((error: any) => {
       this.zone.run(() => {
         console.log('Error: download error =>>>>>', error);
       });
@@ -825,6 +862,27 @@ export class ContentDetailsPage {
         }
       });
     });
+  }
+
+  showBookmarkMenu(event?) {
+    const popover = this.popoverCtrl.create(BookmarkComponent, {
+      content: this.content,
+      isChild: this.isChildContent,
+      objRollup: this.objRollup,
+      corRelationList: this.corRelationList,
+      position: 'bottom'
+    }, {
+        cssClass: 'bookmark-menu'
+      });
+    popover.present({
+      ev: event
+    });
+  }
+
+  updateBookmarkPreference() {
+    // this.preference.putString(PreferenceKey.IS_BOOKMARK_VIWED, 'true');
+    // this.viewCtrl.dismiss();
+    console.log('updateBookmarkPreference');
   }
 
   /**

@@ -59,7 +59,7 @@ export class FlagContent {
 
 export class ProfileConstants {
     public static readonly USER_TOKEN = 'userToken';
-    public static readonly REQUIRED_FIELDS = ['completeness', 'missingFields', 'lastLoginTime', 'topics', 'organisations'];
+    public static readonly REQUIRED_FIELDS = ['completeness', 'missingFields', 'lastLoginTime', 'topics', 'organisations', 'roles'];
 }
 
 export class AudienceFilter {
@@ -102,6 +102,7 @@ export class PreferenceKey {
     public static readonly SELECTED_USER_TYPE = 'selected_user_type';
     public static readonly COURSE_IDENTIFIER = 'course_identifier';
     public static readonly IS_ONBOARDING_COMPLETED = 'is_onboarding_settings_completed';
+    public static readonly IS_BOOKMARK_VIWED = 'false';
 }
 
 export class GenericAppConfig {

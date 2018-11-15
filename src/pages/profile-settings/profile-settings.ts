@@ -439,7 +439,7 @@ export class ProfileSettingsPage {
         this.events.publish('refresh:profile');
         this.appGlobalService.guestUserProfile = JSON.parse(res);
         this.appGlobalService.setOnBoardingCompleted();
-
+        this.telemetryGeneratorService.generateProfilePopulatedTelemetry(PageId.DIAL_CODE_SCAN_RESULT, req.syllabus[0], 'manual');
         if (this.navParams.get('isChangeRoleRequest')) {
           this.preference.putString(PreferenceKey.SELECTED_USER_TYPE, req.profileType);
         }

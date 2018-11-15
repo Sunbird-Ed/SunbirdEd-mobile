@@ -25,7 +25,7 @@
         <p class="profile-name">{{ profile?.firstName }} {{ profile?.lastName }}</p>
     </div>
 
-    <!-- <div padding-horizontal text-center class="roles-container">
+    <div padding-horizontal text-center class="roles-container">
         <div class="MB5" text-center *ngFor="let role of roles | slice : startLimit:rolesLimit;">
             <div class="roles">
                 {{role}}
@@ -33,20 +33,20 @@
         </div>
         <div class="" text-center>
             <button ion-button clear *ngIf="rolesLimit < roles?.length" (click)="showMoreItems()" class="txt-lowercase">
-                + {{roles?.length - 2}} {{'MORE' | translate}} <span class="arrow-down"></span>
+                + {{roles?.length - 2}} {{'MORE' | translate}} <ion-icon class="ML10" name="ios-arrow-down"></ion-icon>
             </button>
             <button ion-button clear *ngIf="rolesLimit > DEFAULT_PAGINATION_LIMIT" (click)="showLessItems()" class="txt-lowercase">
-                {{'SHOW_LESS' | translate }} <span class="arrow-up"></span>
+                {{'SHOW_LESS' | translate }} <ion-icon class="ML10" name="ios-arrow-up"></ion-icon>
             </button>
         </div>
     </div>
- -->
+
     <div class="school-recent" *ngIf="profile?.organisations?.length > 0 ">
         <p class="bolder">{{profile?.organisations[0].orgName}}</p>
         <div *ngIf="orgDetails && orgDetails?.block?.name">Block: {{orgDetails?.block?.name}}</div>
         <div *ngIf="orgDetails">
             <span *ngIf="orgDetails && orgDetails?.district?.name">District: {{orgDetails?.district?.name}} </span>
-            <span *ngIf="orgDetails?.district?.name"> | </span> 
+            <span *ngIf="orgDetails?.district?.name"> | </span>
             <span *ngIf="orgDetails?.state?.name">{{orgDetails?.state?.name}}</span>
         </div>
     </div>
@@ -70,28 +70,28 @@
         </div>
     </div>
 
-    <div class="school-details" *ngIf="false">
-        <div class="container">
-            <div>Board: </div>
-            <div class="bolder">State board Karnataka</div>
+    <div class="school-details" *ngIf="profile?.framework">
+        <div class="container" *ngIf="profile?.framework?.board">
+            <div>{{'BOARD' | translate }}: </div>
+            <div class="bolder">{{profile?.framework?.board}}</div>
         </div>
-        <div class="container">
-            <div>Medium: </div>
-            <div class="bolder">Kannada English</div>
+        <div class="container" *ngIf="profile?.framework?.medium">
+            <div>{{'MEDIUM' | translate }}: </div>
+            <div class="bolder">{{profile?.framework?.medium}}</div>
         </div>
-        <div class="container">
-            <div>Subjects: </div>
-            <div class="bolder">Kannada, English, Mathematics</div>
+        <div class="container" *ngIf="profile?.framework?.subject">
+            <div>{{'SUBJECTS' | translate }}: </div>
+            <div class="bolder">{{profile?.framework?.subject}}</div>
         </div>
-        <div class="container">
-            <div>Classes: </div>
-            <div class="bolder">Class 6, Class 7, Class 8</div>
+        <div class="container" *ngIf="profile?.framework?.gradeLevel">
+            <div>{{'CLASSES' | translate }}: </div>
+            <div class="bolder">{{profile?.framework?.gradeLevel}}</div>
         </div>
-        <div class="container">
+        <!-- <div class="container">
             <button ion-button round (click)="navigateToCategoriesEditPage()" class="short-btn">
                 {{'EDIT' | translate }}
             </button>
-        </div>
+        </div> -->
     </div>
 
     <div class="badges" padding-horizontal text-center *ngIf="profile?.badgeAssertions?.length > 0">
@@ -101,10 +101,10 @@
         </ion-avatar>
         <div class="" text-center>
             <button ion-button round *ngIf="badgesLimit < profile?.badgeAssertions?.length" (click)="showMoreBadges()" class="txt-capitalize">
-                + {{profile?.badgeAssertions?.length - 2}} {{'MORE' | translate}} <span class="arrow-down"></span>
+                + {{profile?.badgeAssertions?.length - 2}} {{'MORE' | translate}} <ion-icon class="ML10" name="ios-arrow-down"></ion-icon>
             </button>
             <button ion-button round *ngIf="badgesLimit > DEFAULT_PAGINATION_LIMIT" (click)="showLessBadges()" class="txt-capitalize">
-                {{'SHOW_LESS' | translate }} <span class="arrow-up"></span>
+                {{'SHOW_LESS' | translate }} <ion-icon class="ML10" name="ios-arrow-up"></ion-icon>
             </button>
         </div>
     </div>
@@ -173,10 +173,10 @@
             </div>
             <div class="" text-center>
                 <button ion-button round class="txt-capitalize" *ngIf="trainingsLimit < trainingsCompleted.length" (click)="showMoreTainings()">
-                    + {{trainingsCompleted?.length - 2}} {{'MORE' | translate}} <span class="arrow-down"></span>
+                    + {{trainingsCompleted?.length - 2}} {{'MORE' | translate}} <ion-icon class="ML10" name="ios-arrow-down"></ion-icon>
                 </button>
                 <button ion-button round class="txt-capitalize" *ngIf="trainingsLimit > DEFAULT_PAGINATION_LIMIT" (click)="showLessTrainings()">
-                    {{'SHOW_LESS' | translate }} <span class="arrow-up"></span>
+                    {{'SHOW_LESS' | translate }} <ion-icon class="ML10" name="ios-arrow-up"></ion-icon>
                 </button>
             </div>
         </div>
