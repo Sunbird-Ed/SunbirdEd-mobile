@@ -44,11 +44,22 @@ export class MimeType {
 }
 
 export class Search {
-    public static readonly FACETS = ['board', 'gradeLevel', 'subject', 'medium', 'contentType'];
+    public static readonly FACETS = [
+        'board',
+        'gradeLevel',
+        'subject',
+        'medium',
+        'contentType'
+    ];
 }
 
 export class FlagContent {
-    public static readonly FLAG_REASONS_VALUE = ['Copyright Violation', 'Inappropriate Content', 'Privacy Violation', 'Other'];
+    public static readonly FLAG_REASONS_VALUE = [
+        'Copyright Violation',
+        'Inappropriate Content',
+        'Privacy Violation',
+        'Other'
+    ];
     public static readonly FLAG_REASONS_LABLE = [
         'OPTION_COPYRIGHT_VIOLATION',
         'OPTION_INAPPROPRIATE_CONTENT',
@@ -59,11 +70,17 @@ export class FlagContent {
 
 export class ProfileConstants {
     public static readonly USER_TOKEN = 'userToken';
-    public static readonly REQUIRED_FIELDS = ['completeness', 'missingFields', 'lastLoginTime', 'topics', 'organisations', 'roles'];
+    public static readonly REQUIRED_FIELDS = [
+        'completeness',
+        'missingFields',
+        'lastLoginTime',
+        'topics',
+        'organisations',
+        'roles'
+    ];
 }
 
 export class AudienceFilter {
-    // TODO : Check with Anil for TEACHER & LOGGED_IN_USER values
     public static readonly GUEST_TEACHER = ['instructor', 'learner'];
     public static readonly GUEST_STUDENT = ['learner'];
 
@@ -153,6 +170,12 @@ export const appLanguages = [
         code: 'mr',
         isApplied: false,
         name: 'Marathi'
+    },
+    {
+        label: 'اردو',
+        code: 'ur',
+        isApplied: false,
+        name: 'Urdu'
     }
 ];
 

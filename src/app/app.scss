@@ -357,7 +357,7 @@ ul.rating .ion-md-star-outline:before {
 
 .select-box {
   .alert-head {
-    padding: 14px 14px !important;
+    @include padding(14px 14px !important);
   }
   .alert-title {
     font-size: 1.4rem !important;
@@ -372,13 +372,13 @@ ul.rating .ion-md-star-outline:before {
 .select-box.alert-md .alert-button:first-child:not(:only-child) {
   background: transparent !important;
   color: map-get($colors, primary) !important;
-  margin-right: 1%;
+  // margin-right: 1%;
 }
 
 .select-box.alert-md .alert-button:last-child:not(:only-child) {
   background: map-get($colors, primary) !important;
   color: map-get($colors, white) !important;
-  margin-left: 5%;
+  // margin-left: 5%;
 }
 
 .select-box.alert-md .alert-checkbox-group {
@@ -387,7 +387,7 @@ ul.rating .ion-md-star-outline:before {
 }
 
 .select-box.alert-md .alert-button {
-  margin-right: 1%;
+  // margin-right: 1%;
   border-color: map-get($colors, primary);
   text-transform: uppercase;
   border-style: solid;
@@ -417,7 +417,7 @@ ul.rating .ion-md-star-outline:before {
       top: 10vh !important;
       width: 80% !important;
       left: 10% !important;
-      border-radius: 10px !important; 
+      border-radius: 10px !important;
     }
     .popup-button{
       padding-bottom: 8%;
@@ -433,14 +433,14 @@ ul.rating .ion-md-star-outline:before {
   }
   .popup-button{
     padding-bottom: 5%;
-    
+
   }
   .popup-text {
     padding-top: 0px !important;
     padding-bottom: 0px !important;
   }
 }
-  
+
 }
 
 .user-popover {
