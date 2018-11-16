@@ -136,6 +136,9 @@ export class SearchPage {
     this.init();
 
     this.defaultAppIcon = 'assets/imgs/ic_launcher.png';
+  }
+
+  ionViewWillEnter() {
     this.handleDeviceBackButton();
   }
 
@@ -222,10 +225,6 @@ export class SearchPage {
 
   showContentDetails(content, isRootContent: boolean = false) {
 
-    if (!this.appGlobalService.isOnBoardingCompleted && this.isDialCodeSearch && content && content.medium) {
-      this.commonUtilService.changeAppLanguage(content.medium);
-    }
-
     let params;
     if (this.shouldGenerateEndTelemetry) {
       params = {
@@ -234,14 +233,16 @@ export class SearchPage {
         source: this.source,
         shouldGenerateEndTelemetry: this.shouldGenerateEndTelemetry,
         parentContent: this.parentContent,
-        isSingleContent: this.isSingleContent
+        isSingleContent: this.isSingleContent,
+        onboarding: this.appGlobalService.isOnBoardingCompleted
       };
     } else {
       params = {
         content: content,
         corRelation: this.corRelationList,
         parentContent: this.parentContent,
-        isSingleContent: this.isSingleContent
+        isSingleContent: this.isSingleContent,
+        onboarding: this.appGlobalService.isOnBoardingCompleted
       };
     }
 
