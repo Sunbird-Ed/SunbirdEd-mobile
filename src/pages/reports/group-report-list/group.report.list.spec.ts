@@ -18,6 +18,7 @@ import {
 } from '../../../../test-config/mocks-ionic';
 import { AppGlobalService } from '../../../service/app-global.service';
 import { UserReportPage } from '../user-report/user-report';
+import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
 describe('GroupReportListPage', () => {
     let comp: GroupReportListPage;
     let fixture: ComponentFixture<GroupReportListPage>;
@@ -32,7 +33,7 @@ describe('GroupReportListPage', () => {
                 InteractType, InteractSubtype,
                 Events, PopoverController, ServiceProvider, ContentService,
                 TelemetryService, ProfileService, SharedPreferences, Config, BuildParamService,
-                FrameworkService,
+                FrameworkService, FileTransfer, FileTransferObject,
                 { provide: App, useClass: AppMock },
                 { provide: NavController, useClass: NavMock },
                 { provide: NavParams, useClass: NavParamsMock },
@@ -60,10 +61,7 @@ describe('GroupReportListPage', () => {
             const reportService = TestBed.get(ReportService);
 
             spyOn(comp, 'fetchAssessment').and.callThrough();
-            spyOn(reportService, 'getReportsByUser').and.callFake(({ }, success, error) => {
-                const data = JSON.stringify((mockres.getReportsByUser));
-                return success(data);
-            });
+            spyOn(reportService, 'getReportsByUser').and.returnValue(Promise.resolve(JSON.stringify(mockres.getReportsByUser)));
             comp.fetchAssessment('users', false);
             expect(comp.fetchAssessment).toHaveBeenCalled();
 
@@ -81,10 +79,7 @@ describe('GroupReportListPage', () => {
             const reportService = TestBed.get(ReportService);
 
             spyOn(comp, 'fetchAssessment').and.callThrough();
-            spyOn(reportService, 'getReportsByUser').and.callFake(({ }, success, error) => {
-                const data = JSON.stringify({ error: 'error for testing ' });
-                return error(data);
-            });
+            spyOn(reportService, 'getReportsByUser').and.returnValue(Promise.reject(JSON.stringify({ error: 'error for testing ' })));
             comp.fetchAssessment('users', false);
             expect(comp.fetchAssessment).toHaveBeenCalled();
 
@@ -102,10 +97,7 @@ describe('GroupReportListPage', () => {
             const reportService = TestBed.get(ReportService);
 
             spyOn(comp, 'fetchAssessment').and.callThrough();
-            spyOn(reportService, 'getReportsByQuestion').and.callFake(({ }, success, error) => {
-                const data = JSON.stringify((mockres.getReportsByQuestion));
-                return success(data);
-            });
+            spyOn(reportService, 'getReportsByQuestion').and.returnValue(Promise.resolve(JSON.stringify(mockres.getReportsByQuestion)));
             comp.fetchAssessment('questions', false);
             expect(comp.fetchAssessment).toHaveBeenCalled();
 
@@ -124,10 +116,7 @@ describe('GroupReportListPage', () => {
             const reportService = TestBed.get(ReportService);
 
             spyOn(comp, 'fetchAssessment').and.callThrough();
-            spyOn(reportService, 'getReportsByQuestion').and.callFake(({ }, success, error) => {
-                const data = JSON.stringify({ error: 'error for testing ' });
-                return error(data);
-            });
+            spyOn(reportService, 'getReportsByQuestion').and.returnValue(Promise.resolve(JSON.stringify({ error: 'error for testing ' })));
             comp.fetchAssessment('questions', false);
             expect(comp.fetchAssessment).toHaveBeenCalled();
 

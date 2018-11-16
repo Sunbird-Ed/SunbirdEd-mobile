@@ -80,9 +80,7 @@ describe('GroupReportAlert', () => {
                 maxScore: 100,
                 time: 1000
             }];
-            spyOn(repostStub, 'getDetailsPerQuestion').and.callFake((params, data, error) => {
-                return data(JSON.stringify(responseObj));
-            });
+            spyOn(repostStub, 'getDetailsPerQuestion').and.returnValue(Promise.resolve(JSON.stringify(responseObj)));
             spyOn(comp, 'convertTotalTime').and.returnValue(10);
             comp.getAssessmentByUser('users');
             setTimeout(() => {
@@ -103,9 +101,7 @@ describe('GroupReportAlert', () => {
                 maxScore: 100,
                 time: 1000
             };
-            spyOn(repostStub, 'getDetailsPerQuestion').and.callFake((params, data, error) => {
-                return error(JSON.stringify(responseObj));
-            });
+            spyOn(repostStub, 'getDetailsPerQuestion').and.returnValue(Promise.reject(JSON.stringify(responseObj)));
 
             comp.getAssessmentByUser('users');
             setTimeout(() => {
