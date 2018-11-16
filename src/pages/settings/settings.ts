@@ -1,3 +1,4 @@
+import { AppGlobalService } from '@app/service';
 import { CommonUtilService } from './../../service/common-util.service';
 import { Component } from '@angular/core';
 import { NavController, DateTime } from 'ionic-angular';
@@ -46,7 +47,8 @@ export class SettingsPage {
     private preference: SharedPreferences,
     private telemetryService: TelemetryService,
     private shareUtil: ShareUtil,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    private appGlobalService: AppGlobalService
   ) { }
 
   ionViewWillEnter() {
@@ -119,7 +121,7 @@ export class SettingsPage {
           if (Boolean(val)) {
             this.fileUrl = 'file://' + val;
             this.subjectDetails = SUBJECT_NAME + this.deviceId + '_' + Date.now();
-            this.socialSharing.shareViaEmail('', this.subjectDetails, [], null, null, this.fileUrl)
+            this.socialSharing.shareViaEmail('', this.subjectDetails, [this.appGlobalService.SUPPORT_EMAIL], null, null, this.fileUrl)
               .catch(error => {
                 console.error(error);
               });

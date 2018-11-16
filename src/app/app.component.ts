@@ -57,6 +57,8 @@ import { AppGlobalService } from '../service/app-global.service';
 import { UserTypeSelectionPage } from '../pages/user-type-selection/user-type-selection';
 import { CommonUtilService } from '../service/common-util.service';
 import { TelemetryGeneratorService } from '../service/telemetry-generator.service';
+import { PopoverController } from 'ionic-angular';
+import { BroadcastComponent } from '../component/broadcast/broadcast';
 
 declare var chcp: any;
 
@@ -98,7 +100,8 @@ export class MyApp {
     private appGlobalService: AppGlobalService,
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private buildParamService: BuildParamService
+    private buildParamService: BuildParamService,
+    public popoverCtrl: PopoverController
   ) {
 
     const that = this;
@@ -150,10 +153,10 @@ export class MyApp {
                   initTabs(this.containerService, GUEST_TEACHER_TABS);
                 }
                 this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_ONBOARDING_CATEGORY_PAGE)
-                .then(response => {
+                  .then(response => {
                     const display_cat_page = response;
                     this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_ONBOARDING_SCAN_PAGE)
-                    .then(scanResponse => {
+                      .then(scanResponse => {
                         const disp_profile_page = response;
                         if (display_cat_page === 'false' && disp_profile_page === 'false') {
                           this.nav.setRoot(TabsPage);
@@ -181,10 +184,10 @@ export class MyApp {
                                   this.getProfileSettingConfig();
                                 });
                             }
-                          }) .catch(error => { });
+                          }).catch(error => { });
                         }
-                    });
-                });
+                      });
+                  });
                 // Check if User has filled all the required information of the on boarding preferences
               } else {
                 this.appGlobalService.isProfileSettingsCompleted = false;
@@ -425,6 +428,14 @@ export class MyApp {
         }
       });
     });
+
+    this.translate.onLangChange.subscribe((params) => {
+      if (params.lang === 'ur' && !this.platform.isRTL) {
+        this.platform.setDir('rtl', true);
+      } else if (this.platform.isRTL) {
+        this.platform.setDir('ltr', true);
+      }
+    });
   }
 
   generateInteractEvent(pageid: string) {
@@ -498,10 +509,24 @@ export class MyApp {
       });
     console.log('open rap discovery enabled', this.appGlobalService.OPEN_RAPDISCOVERY_ENABLED);
   }
+
+  showGreetingPopup() {
+    const popover = this.popoverCtrl.create(BroadcastComponent,
+      {
+        'greetings': 'Diwali Greetings',
+        'imageurl': 'https://t3.ftcdn.net/jpg/01/71/29/20/240_F_171292090_liVMi9liOzZaW0gjsmCIZzwVr2Qw7g4i.jpg',
+        'customButton': 'custom button',
+        'greetingText': 'this diwali may enlighten your dreams'
+      },
+      { cssClass: 'broadcast-popover' }
+    );
+    popover.present();
+  }
+
   // TODO: this method will be used to communicate with the openrap device
   openrapDiscovery() {
     if (this.appGlobalService.OPEN_RAPDISCOVERY_ENABLED) {
-      console.log('openrap called' , this.appGlobalService.OPEN_RAPDISCOVERY_ENABLED);
+      console.log('openrap called', this.appGlobalService.OPEN_RAPDISCOVERY_ENABLED);
       (<any>window).openrap.startDiscovery(
         (success) => {
           console.log(success);
