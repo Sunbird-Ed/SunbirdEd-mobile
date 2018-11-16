@@ -145,6 +145,9 @@ export class QrCodeResultPage {
     }
 
     this.getChildContents();
+    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+      this.handleBackButton(InteractSubtype.DEVICE_BACK_CLICKED);
+    }, 10);
   }
 
   ionViewDidLoad() {
@@ -155,10 +158,6 @@ export class QrCodeResultPage {
     this.navBar.backButtonClick = () => {
       this.handleBackButton(InteractSubtype.NAV_BACK_CLICKED);
     };
-
-    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
-      this.handleBackButton(InteractSubtype.DEVICE_BACK_CLICKED);
-    }, 10);
   }
 
   ionViewWillLeave() {
@@ -200,6 +199,9 @@ export class QrCodeResultPage {
         this.results = [];
         this.profile = this.appGlobalService.getCurrentUser();
         const contentData = JSON.parse(JSON.stringify(data.result.contentData));
+        if (!this.navParams.get('onboarding') && contentData && contentData.medium) {
+          this.commonUtilService.changeAppLanguage(contentData.medium);
+        }
         this.checkProfileData(contentData, this.profile);
         this.findContentNode(data.result);
 
