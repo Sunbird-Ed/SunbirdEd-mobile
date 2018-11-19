@@ -242,7 +242,7 @@ export class ShareUserAndGroupPage {
 
     loader.present();
 
-    this.profileService.exportProfile(profileExportRequest, (path) => {
+    this.profileService.exportProfile(profileExportRequest).then((path: any) => {
       path = JSON.parse(path);
       loader.dismiss();
       if (this.selectedUserList && this.selectedGroupList) {
@@ -259,7 +259,7 @@ export class ShareUserAndGroupPage {
         );
       }
       this.socialShare.share('', '', 'file://' + path.exportedFilePath, '');
-    }, (err) => {
+    }) .catch((err) => {
       loader.dismiss();
     });
   }

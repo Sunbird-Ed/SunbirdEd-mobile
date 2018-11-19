@@ -5,10 +5,16 @@
 			<!-- <ion-icon md="md-share" float-right></ion-icon> -->
 		</ion-title>
 		<ion-buttons end>
+			<!-- <button ion-button icon-only (click)="selectBookmark()" *ngIf="!content?.bookmarked">
+				<ion-icon name="ios-bookmark-outline" ios="ios-bookmark-outline" float-right></ion-icon>
+			</button> -->
+			<!-- <button ion-button icon-only (click)="deSelectBookmark()" *ngIf="content?.bookmarked" style="color:#0079FE">
+				<ion-icon name="ios-bookmark" ios="ios-bookmark" float-right></ion-icon>
+			</button> -->
 			<button ion-button icon-only (click)="share()">
 				<ion-icon md="md-share" float-right></ion-icon>
 			</button>
-			<button *ngIf="content && content.downloadable" ion-button icon-only (click)="showOverflowMenu($event)" style="font-size: 1.8rem;">
+			<button *ngIf="content?.downloadable" ion-button icon-only (click)="showOverflowMenu($event)" style="font-size: 1.8rem;">
 				<ion-icon md="md-more" float-end></ion-icon>
 			</button>
 		</ion-buttons>
@@ -16,23 +22,32 @@
 </ion-header>
 <!-- Page body -->
 <ion-content padding [ngClass]="{'content-with-footer': content}">
+	<!-- <div *ngIf="showMessage" style="background-color: #F2F8FF;
+    margin: -16px;
+    display: block;
+    padding: 15px;
+    margin-bottom: 16px;
+    color: gray;
+		">
+		Resource bookmarked successfully. You can find this under 'Saved Resources' on the Resources tab
+	</div> -->
 	<div class="content-details-holder" *ngIf="content">
-		<h6 class="font-size-20">{{content.name}}</h6>
+		<h6 class="font-size-20">{{content?.name}}</h6>
 		<!-- Owner and download info -->
 		<ion-grid class="padding-0">
-			<div *ngIf="content.creator || content.owner">
+			<div *ngIf="content?.creator || content?.owner">
 				<span class="text-gray-color">{{ 'CONTENT_CREATED_BY' | translate }}</span>
-				<span class="content-meta-title">{{ content.creator || content.owner }}</span>
+				<span class="content-meta-title">{{ content?.creator || content?.owner }}</span>
 			</div>
-			<ion-row class="padding-top-10 credits" (click)="viewCredits()" *ngIf="content.creator || content.attributions">
+			<ion-row class="padding-top-10 credits" (click)="viewCredits()" *ngIf="content?.creator || content?.attributions">
 			{{ 'CREDITS' | translate }}
 			</ion-row>
 			<ion-row class="padding-top-10">
 				<ion-col class="padding-0">
 					<div class="size_txt padding-bottom-5" no-margin>
-						<span class="content-size">{{ content.contentType }}</span>
+						<span class="content-size">{{ content?.contentType }}</span>
 						<!--Size 0 if not -->
-						<span class="content-size">[{{ content.size | fileSize }}]</span>
+						<span class="content-size">[{{ content?.size | fileSize }}]</span>
 					</div>
 					<ion-row>
 						<div class="col-2">
@@ -40,13 +55,13 @@
 							 max="5" no-padding></rating>
 						</div>
 						<div class="margin-top-3 text-gray-color col-1">
-							&nbsp;({{ content.me_totalRatings ? content.me_totalRatings : 0 }})
+							&nbsp;({{ content?.me_totalRatings ? content?.me_totalRatings : 0 }})
 						</div>
 					</ion-row>
 
 				</ion-col>
 				<ion-col offset-2 *ngIf="content.me_totalDownloads">
-					<div class="padding-bottom-5 text-align-end content-meta-title">{{ content.me_totalDownloads }}</div>
+					<div class="padding-bottom-5 text-align-end content-meta-title">{{ content?.me_totalDownloads }}</div>
 					<div float-right class="text-gray-color">{{ 'DOWNLOADS' | translate }}</div>
 				</ion-col>
 			</ion-row>
@@ -54,36 +69,36 @@
 		<br />
 
 		<!-- Read more / less -->
-		<div class="about-section" *ngIf="content.description || content.gradeLevel || content.subject || content.board">
+		<div class="about-section" *ngIf="content?.description || content?.gradeLevel || content?.subject || content?.board">
 			<h6 class="padding-10 background-gray font-size-20">{{ 'ABOUT' | translate }}</h6>
 			<p *ngIf="!showMoreFlag" class="text-gray-color">
-				{{ (content.description && content.description.length > 100) ? (content.description | slice:0:99) + '...' :
-				(content.description)
+				{{ (content?.description && content?.description?.length > 100) ? (content?.description | slice:0:99) + '...' :
+				(content?.description)
 				}} </p>
 			<div class="course-details" *ngIf="showMoreFlag">
-				<p *ngIf="content.description && content.description.length" class="text-gray-color">
-					{{ content.description }}
+				<p *ngIf="content?.description && content?.description?.length" class="text-gray-color">
+					{{ content?.description }}
 				</p>
-				<div *ngIf="content.gradeLevel && content.gradeLevel.length" margin-top>
+				<div *ngIf="content?.gradeLevel && content?.gradeLevel?.length" margin-top>
 					<div class="content-meta-title" text-uppercase>{{ 'CLASS' | translate }}</div>
-					<span class="text-gray-color">{{content.gradeLevel}}</span>
+					<span class="text-gray-color">{{content?.gradeLevel}}</span>
 				</div>
-				<div *ngIf="content.subject" margin-top>
+				<div *ngIf="content?.subject" margin-top>
 					<div class="content-meta-title" text-uppercase>{{ 'SUBJECT' | translate }}</div>
-					<span class="text-gray-color">{{content.subject}}</span>
+					<span class="text-gray-color">{{content?.subject}}</span>
 				</div>
-				<div *ngIf="content.board" margin-top>
+				<div *ngIf="content?.board" margin-top>
 					<div class="content-meta-title" text-uppercase>{{ 'BOARD' | translate }}</div>
-					<span class="text-gray-color">{{content.board}}</span>
+					<span class="text-gray-color">{{content?.board}}</span>
 				</div>
 
-				<div *ngIf="content.medium" margin-top>
+				<div *ngIf="content?.medium" margin-top>
 					<div class="content-meta-title" text-uppercase>{{ 'MEDIUM' | translate }}</div>
-					<span class="text-gray-color">{{content.medium}}</span>
+					<span class="text-gray-color">{{content?.medium}}</span>
 				</div>
 			</div>
 
-			<div class="read-more" *ngIf="content.description && content.description.length > 100 || content.gradeLevel || content.subject"
+			<div class="read-more" *ngIf="content?.description?.length > 100 || content?.gradeLevel || content?.subject"
 			 (click)="showMoreFlag = !showMoreFlag">
 				<div *ngIf="showMoreFlag" class="padding-top-10">
 					<ion-grid no-padding>
@@ -113,11 +128,11 @@
 			</div>
 		</div>
 		<br />
-		<div class="license-section padding-10 background-gray" *ngIf="content.license">
+		<div class="license-section padding-10 background-gray" *ngIf="content?.license">
 			<div class="row" *ngIf="showLicense">
-				<span *ngIf="content.license">
+				<span *ngIf="content?.license">
 					<div class="size_txt content-meta-title">{{ 'LICENSE' | translate }}</div>
-					<div class="margin-top-5 text-gray-color">{{ content.license }}</div>
+					<div class="margin-top-5 text-gray-color">{{ content?.license }}</div>
 				</span>
 			</div>
 			<span class="read-more text-gray-color">
@@ -137,45 +152,45 @@
 <!-- Page footer -->
 <ion-footer *ngIf="content && !appGlobalService?.CONTENT_STREAMING_ENABLED">
 	<ion-toolbar padding>
-		<button ion-button block *ngIf="content.downloadable" (click)="showSwitchUserAlert(false)" [disabled]="isDownloadStarted">{{
+		<button ion-button block *ngIf="content?.downloadable" (click)="showSwitchUserAlert(false)" [disabled]="isDownloadStarted">{{
 			'PLAY_FROM_DEVICE' | translate }}</button>
 		<ion-icon *ngIf="isDownloadStarted && downloadProgress !== 100" (click)="cancelDownload()" name="ios-close-circle-outline"
 		 class="cancel-download" color="primary"></ion-icon>
-		<button ion-button *ngIf="!content.downloadable" (click)="downloadContent()" text-uppercase [ngClass]="{'text-font': isDownloadStarted && ('DOWNLOADING_1' | translate).length > 18}"
-		 [ngStyle]="{'width': isDownloadStarted === true ? '80%' : '100%'}">
+		<button ion-button outline *ngIf="!content?.downloadable" (click)="downloadContent()" text-uppercase [ngClass]="{'text-font': isDownloadStarted && ('DOWNLOADING_1' | translate).length > 18}"
+		[ngStyle]="{'background': '-webkit-linear-gradient(left, #DBECFF '  +downloadProgress+ '%, white 0%)', 'width': isDownloadStarted === true ? '80%' : '100%'}">
 			{{ isDownloadStarted ? ('DOWNLOADING_1' | translate:{'%s': downloadProgress}) + ' %' : ('DOWNLOAD' | translate) }}
 		</button>
 		<!-- Update content -->
-		<button ion-button outline *ngIf="isUpdateAvail && content.downloadable && downloadProgress !== 100" (click)="downloadContent()"
+		<button ion-button outline *ngIf="isUpdateAvail && content?.downloadable && downloadProgress !== 100" (click)="downloadContent()"
 		 text-uppercase [ngStyle]="{'width': isDownloadStarted === true ? '80%' : '100%'}">
 			{{ isDownloadStarted ? ('UPDATING_CONTENT' | translate:{'%s': downloadProgress}): ('UPDATE_CONTENT' |
-			translate:{'%s': content.size
+			translate:{'%s': content?.size
 			| fileSize}) }}
 		</button>
 	</ion-toolbar>
 </ion-footer>
-<!--- Ion footer  displays when contnet streaming is enabled -->
+<!--- Ion footer  displays when content streaming is enabled -->
 <ion-footer *ngIf="content && appGlobalService?.CONTENT_STREAMING_ENABLED">
 	<ion-toolbar padding>
-		<button ion-button block *ngIf="!content.downloadable" (click)="showSwitchUserAlert(true)" text-uppercase
+		<button ion-button block *ngIf="!content?.downloadable" (click)="showSwitchUserAlert(true)" text-uppercase
 		 [disabled]="isDownloadStarted">{{'PLAY_ONLINE'
 			| translate}}</button>
-		<ion-icon *ngIf="isDownloadStarted && downloadProgress !== 100 && !content.downloadable" (click)="cancelDownload()"
+		<ion-icon *ngIf="isDownloadStarted && downloadProgress !== 100 && !content?.downloadable" (click)="cancelDownload()"
 		 name="ios-close-circle-outline" class="cancel-download" color="primary"></ion-icon>
-		<button ion-button outline *ngIf="!content.downloadable" (click)="downloadContent()" text-uppercase [ngClass]="{'text-font': isDownloadStarted && ('DOWNLOADING_1' | translate).length > 18}"
-		 [ngStyle]="{'width': isDownloadStarted === true ? '80%' : '100%'}">
+		<button ion-button outline *ngIf="!content?.downloadable" (click)="downloadContent()" text-uppercase [ngClass]="{'text-font': isDownloadStarted && ('DOWNLOADING_1' | translate).length > 18}"
+			[ngStyle]="{'background': '-webkit-linear-gradient(left, #DBECFF '  +downloadProgress+ '%, white 0%)', 'width': isDownloadStarted === true ? '80%' : '100%'}" style="transition: all 0s ease 0s;" [disabled]="isDownloadStarted">
 			{{ isDownloadStarted ? ('DOWNLOADING_1' | translate:{'%s': downloadProgress}) + '%' : ('DOWNLOAD_CONTENT' |
-			translate:{'%s': content.size
+			translate:{'%s': content?.size
 			| fileSize}) }}
 		</button>
 		<!-- Update content -->
-		<button ion-button outline *ngIf="isUpdateAvail && content.downloadable && downloadProgress !== 100" (click)="downloadContent()"
+		<button ion-button outline *ngIf="isUpdateAvail && content?.downloadable && downloadProgress !== 100" (click)="downloadContent()"
 		 text-uppercase [ngStyle]="{'width': isDownloadStarted === true ? '80%' : '100%'}">
 			{{ isDownloadStarted ? ('UPDATING_CONTENT' | translate:{'%s': downloadProgress}): ('UPDATE_CONTENT' |
-			translate:{'%s': content.size
+			translate:{'%s': content?.size
 			| fileSize}) }}
 		</button>
-		<button ion-button block *ngIf="content.downloadable" (click)="showSwitchUserAlert(content)" text-uppercase
+		<button ion-button block *ngIf="content?.downloadable" (click)="showSwitchUserAlert(content)" text-uppercase
 		 [disabled]="isDownloadStarted">{{'PLAY_FROM_DEVICE'| translate}}</button>
 	</ion-toolbar>
 </ion-footer>

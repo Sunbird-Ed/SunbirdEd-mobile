@@ -1,4 +1,14 @@
 page-enrolled-course-details {
+    .ion-ios-radio-button-off:before{
+        font-size: smaller;
+    }
+    .ion-ios-checkmark-circle:before{
+        font-size: smaller;
+        color:#008000;
+    }
+    .item-inner {
+        margin-left: 10px !important;
+    }
     .padding-10 {
         padding: 10px;
     }

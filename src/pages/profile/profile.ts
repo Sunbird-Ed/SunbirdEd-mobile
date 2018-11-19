@@ -1,13 +1,15 @@
 import { Component, NgZone } from '@angular/core';
 import {
-  NavController, LoadingController,
-  NavParams, Events
+  NavController,
+  LoadingController,
+  NavParams,
+  Events,
+  PopoverController
 } from 'ionic-angular';
 import {
   AuthService,
   UserProfileService,
   UserProfileDetailsRequest,
-  ContentService,
   TelemetryService,
   ImpressionType,
   PageId,
@@ -17,29 +19,28 @@ import {
   CourseService,
   TelemetryObject
 } from 'sunbird';
-import { PopoverController } from 'ionic-angular/components/popover/popover-controller';
 import * as _ from 'lodash';
-import { FormEducation } from './education/form.education';
-import { FormAddress } from './address/form.address';
-import { AdditionalInfoComponent } from './additional-info/additional-info';
-import { FormExperience } from './experience/form.experience';
-import { OverflowMenuComponent } from './overflowmenu/menu.overflow.component';
+import {
+  FormEducation,
+  FormAddress,
+  AdditionalInfoComponent,
+  OverflowMenuComponent,
+} from '@app/pages/profile';
 import {
   generateInteractTelemetry,
   generateImpressionTelemetry
-} from '../../app/telemetryutil';
+} from '@app/app/telemetryutil';
 import {
   ProfileConstants,
   MenuOverflow,
   ContentType,
   MimeType
-} from '../../app/app.constant';
-import { AppGlobalService } from '../../service/app-global.service';
-import { CategoriesEditPage } from '../categories-edit/categories-edit';
-import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
-import { CollectionDetailsPage } from '../collection-details/collection-details';
-import { ContentDetailsPage } from '../content-details/content-details';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+} from '@app/app/app.constant';
+import { CategoriesEditPage } from '@app/pages/categories-edit/categories-edit';
+import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details/enrolled-course-details';
+import { CollectionDetailsPage } from '@app/pages/collection-details/collection-details';
+import { ContentDetailsPage } from '@app/pages/content-details/content-details';
+import { AppGlobalService, TelemetryGeneratorService } from '@app/service';
 
 /**
  * The Profile page
@@ -286,9 +287,15 @@ export class ProfilePage {
    */
   formatRoles() {
     this.roles = [];
-    for (let i = 0, len = this.profile.organisations.length; i < len; i++) {
-      for (let j = 0, l = this.profile.organisations[i].roles.length; j < l; j++) {
-        this.roles.push(this.profile.organisations[i].roles[j]);
+    if (this.profile && this.profile.roleList) {
+      if (this.profile.organisations && this.profile.organisations.length) {
+        for (let i = 0, len = this.profile.organisations[0].roles.length; i < len; i++ ) {
+          const roleKey = this.profile.organisations[0].roles[i];
+          const val = this.profile.roleList.find(role => role.id === roleKey).name;
+          if (val) {
+            this.roles.push(val);
+          }
+        }
       }
     }
   }

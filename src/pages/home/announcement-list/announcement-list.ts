@@ -128,9 +128,9 @@ export class AnnouncementListComponent {
         this.telemetryService.impression(impression);
     }
     onSyncClick() {
-        this.telemetryService.sync((response) => {
+        this.telemetryService.sync().then((response) => {
             console.log('Telemetry Home : ' + response);
-        }, (error) => {
+        }) .catch((error) => {
             console.log('Telemetry Home : ' + error);
         });
         this.downloadContent();
@@ -145,9 +145,10 @@ export class AnnouncementListComponent {
         };
         console.log('Hello ' + JSON.stringify(contentImportRequest));
 
-        this.contentService.importContent(contentImportRequest, (response) => {
+        this.contentService.importContent(contentImportRequest)
+         .then((response) => {
             console.log('Home : ' + response);
-        }, (error) => {
+        }) .catch((error) => {
             console.log('Home : ' + error);
         });
     }

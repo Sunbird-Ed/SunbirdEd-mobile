@@ -513,8 +513,8 @@ export class GuestEditProfilePage {
       });
     }
 
-    this.profileService.updateProfile(req,
-      (res: any) => {
+    this.profileService.updateProfile(req)
+      .then((res: any) => {
         console.log('Update Response', res);
         if (this.isCurrentUser) {
           this.publishProfileEvents(formVal);
@@ -528,8 +528,8 @@ export class GuestEditProfilePage {
           PageId.EDIT_USER
         );
         this.navCtrl.pop();
-      },
-      (err: any) => {
+      })
+      .catch((err: any) => {
         loader.dismiss();
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_FAILED'));
         console.log('Err', err);
@@ -587,14 +587,14 @@ export class GuestEditProfilePage {
       });
     }
 
-    this.profileService.createProfile(req, () => {
+    this.profileService.createProfile(req).then((res: any) => {
       loader.dismiss();
       this.commonUtilService.showToast(this.commonUtilService.translateMessage('USER_CREATED_SUCCESSFULLY'));
       this.telemetryGeneratorService.generateInteractTelemetry(
         InteractType.OTHER, InteractSubtype.CREATE_USER_SUCCESS, Environment.USER, PageId.CREATE_USER);
       this.navCtrl.pop();
-    },
-      () => {
+    })
+      .catch((err: any) => {
         loader.dismiss();
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('FILL_THE_MANDATORY_FIELDS'));
       });

@@ -106,14 +106,14 @@ export class GuestProfilePage {
       this.loader.present();
     }
 
-    this.profileService.getCurrentUser((res: any) => {
+    this.profileService.getCurrentUser().then((res: any) => {
       this.profile = JSON.parse(res);
       this.getSyllabusDetails();
       setTimeout(() => {
         if (refresher) { refresher.complete(); }
       }, 500);
-    },
-      (err: any) => {
+    })
+      .catch((err: any) => {
         this.loader.dismiss();
         console.error('Error', err);
       });

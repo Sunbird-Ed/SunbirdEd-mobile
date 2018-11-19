@@ -34,7 +34,7 @@ import {
   ImageLoader,
   ImageLoaderConfig
 } from 'ionic-image-loader';
-import { FileTransferObject } from '@ionic-native/file-transfer';
+import { FileTransferObject, FileTransfer } from '@ionic-native/file-transfer';
 import { FileOpener } from '@ionic-native/file-opener';
 import { AppGlobalService } from '../service/app-global.service';
 import { CourseUtilService } from '../service/course-util.service';
@@ -42,6 +42,7 @@ import { UpgradePopover } from '../pages/upgrade/upgrade-popover';
 import { TelemetryGeneratorService } from '../service/telemetry-generator.service';
 import { QRScannerResultHandler } from '../pages/qrscanner/qrscanresulthandler.service';
 import { CommonUtilService } from '../service/common-util.service';
+import { BroadcastComponent } from '../component/broadcast/broadcast';
 
 export const createTranslateLoader = (httpClient: HttpClient) => {
   return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
@@ -51,7 +52,8 @@ export const createTranslateLoader = (httpClient: HttpClient) => {
   declarations: [
     MyApp,
     TabsPage,
-    UpgradePopover
+    UpgradePopover,
+    BroadcastComponent
   ],
   imports: [
     HttpClientModule,
@@ -78,7 +80,8 @@ export const createTranslateLoader = (httpClient: HttpClient) => {
   entryComponents: [
     MyApp,
     TabsPage,
-    UpgradePopover
+    UpgradePopover,
+    BroadcastComponent
   ],
   providers: [
     StatusBar,
@@ -87,12 +90,16 @@ export const createTranslateLoader = (httpClient: HttpClient) => {
     ImageLoader,
     FileTransferObject,
     FileOpener,
+    FileTransfer,
     AppGlobalService,
     CourseUtilService,
     TelemetryGeneratorService,
     QRScannerResultHandler,
     CommonUtilService,
     { provide: ErrorHandler, useClass: IonicErrorHandler }
+  ],
+  exports: [
+    BroadcastComponent
   ]
 })
 export class AppModule {

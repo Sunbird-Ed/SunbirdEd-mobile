@@ -91,6 +91,7 @@ export class AppGlobalService implements OnDestroy {
     public DISPLAY_ONBOARDING_SCAN_PAGE = false;
     public DISPLAY_ONBOARDING_CATEGORY_PAGE = false;
     public OPEN_RAPDISCOVERY_ENABLED = false;
+    public SUPPORT_EMAIL = 'support@sunbird.com';
 
     isUserLoggedIn(): boolean {
         return !this.isGuestUser;
@@ -342,10 +343,17 @@ export class AppGlobalService implements OnDestroy {
             .catch(error => {
                 this.OPEN_RAPDISCOVERY_ENABLED = false;
             });
+            this.buildParamService.getBuildConfigParam(GenericAppConfig.SUPPORT_EMAIL)
+            .then(response => {
+                this.SUPPORT_EMAIL = response;
+            })
+            .catch(error => {
+                this.SUPPORT_EMAIL = '';
+            });
     }
 
     private getCurrentUserProfile() {
-        this.profile.getCurrentUser((response) => {
+        this.profile.getCurrentUser().then((response: any) => {
             this.guestUserProfile = JSON.parse(response);
             if (this.guestUserProfile.syllabus && this.guestUserProfile.syllabus.length > 0) {
                 this.getFrameworkDetails(this.guestUserProfile.syllabus[0])
@@ -364,7 +372,7 @@ export class AppGlobalService implements OnDestroy {
                 this.frameworkData = [];
                 this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
             }
-        }, (error) => {
+        }) .catch((error) => {
             this.guestUserProfile = undefined;
             this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
         });
@@ -392,22 +400,27 @@ export class AppGlobalService implements OnDestroy {
         });
     }
 
-    public getGuestUserInfo() {
-        this.preference.getString(PreferenceKey.SELECTED_USER_TYPE)
-            .then(val => {
-                if (val) {
-                    if (val === ProfileType.STUDENT) {
-                        this.guestProfileType = ProfileType.STUDENT;
-                    } else if (val === ProfileType.TEACHER) {
-                        this.guestProfileType = ProfileType.TEACHER;
-                    } else if (val === 'student') {
-                        this.guestProfileType = ProfileType.STUDENT;
-                    } else if (val === 'teacher') {
-                        this.guestProfileType = ProfileType.TEACHER;
+    public getGuestUserInfo(): Promise<string> {
+        return new Promise((resolve, reject) => {
+            this.preference.getString(PreferenceKey.SELECTED_USER_TYPE)
+                .then(val => {
+                    if (val) {
+                        if (val === ProfileType.STUDENT) {
+                            this.guestProfileType = ProfileType.STUDENT;
+                        } else if (val === ProfileType.TEACHER) {
+                            this.guestProfileType = ProfileType.TEACHER;
+                        } else if (val === 'student') {
+                            this.guestProfileType = ProfileType.STUDENT;
+                        } else if (val === 'teacher') {
+                            this.guestProfileType = ProfileType.TEACHER;
+                        }
+                        this.isGuestUser = true;
+                        resolve(this.guestProfileType);
+                    } else {
+                        reject('');
                     }
-                    this.isGuestUser = true;
-                }
-            });
+                });
+        });
     }
 
     private listenForEvents() {

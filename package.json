@@ -113,11 +113,13 @@
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^2.0.9",
     "null-loader": "^0.1.1",
+    "path": "^0.12.7",
     "protractor": "^5.4.1",
     "shelljs": "^0.8.1",
     "ts-loader": "^3.5.0",
     "ts-node": "^4.1.0",
-    "typescript": "2.4.2"
+    "typescript": "2.4.2",
+    "webpack-merge": "^4.1.4"
   },
   "description": "An Ionic project",
   "cordova": {
@@ -144,7 +146,7 @@
       "cordova-plugin-file-opener2": {},
       "cordova-plugin-sunbirdsplash": {},
       "cordova-plugin-genie-sdk": {},
-      "cordova-plugin-openrap": {} 
+      "cordova-plugin-openrap": {}
     },
     "platforms": [
       "android"

@@ -22,6 +22,7 @@ import { ViewMoreCardComponent } from './view-more-card/view-more-card';
 import { ViewCreditsComponent } from './view-credits/view-credits';
 import { ProfileAvatarComponent } from './profile-avatar/profile-avatar';
 import { DialogPopupComponent } from './dialog-popup/dialog-popup';
+import { BookmarkComponent } from './bookmark/bookmark';
 
 @NgModule({
     declarations: [
@@ -40,7 +41,8 @@ import { DialogPopupComponent } from './dialog-popup/dialog-popup';
         AssessmentDetailsComponent,
         ViewCreditsComponent,
         ProfileAvatarComponent,
-        DialogPopupComponent
+        DialogPopupComponent,
+        BookmarkComponent
     ],
     imports: [
         IonicPageModule.forChild(CourseCard),
@@ -66,7 +68,8 @@ import { DialogPopupComponent } from './dialog-popup/dialog-popup';
         AssessmentDetailsComponent,
         ViewCreditsComponent,
         ProfileAvatarComponent,
-        DialogPopupComponent
+        DialogPopupComponent,
+        BookmarkComponent
         // ContentActionsComponent
     ],
     entryComponents: [

@@ -57,7 +57,7 @@ export class ReportsPage {
         .then((data) => {
           let users = JSON.parse(data);
 
-          that.profileService.getCurrentUser(profile => {
+          that.profileService.getCurrentUser().then((profile: any) => {
             const currentUser = JSON.parse(profile);
             if (this.profileDetails) {
               if (this.profileDetails.id === currentUser.uid) {
@@ -66,7 +66,7 @@ export class ReportsPage {
             }
             users = that.filterOutCurrentUser(users, currentUser);
             resolve([currentUser, users]);
-          }, error => {
+          }) .catch(error => {
             console.error('Error', error);
             reject(error);
           });
@@ -179,7 +179,8 @@ export class ReportsPage {
         this.navCtrl.push(ReportListPage, {
           isFromGroups: true,
           uids: uids,
-          users: map
+          users: map,
+          group: group
         });
       });
   }

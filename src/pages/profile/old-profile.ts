@@ -614,11 +614,11 @@ export class OldProfilePage {
     };
 
     this.contentService.searchContent(contentSearchCriteria,
-      false, false, false,
-      (result: any) => {
+      false, false, false)
+      .then((result: any) => {
         this.enrolledCourse = JSON.parse(result).result.contentDataList;
-      },
-      (error: any) => {
+      })
+      .catch((error: any) => {
         console.error('Error', error);
       }
     );

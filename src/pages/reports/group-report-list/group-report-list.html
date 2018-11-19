@@ -3,6 +3,11 @@
         <ion-title ellipsis>
             {{contentName}}
         </ion-title>
+        <ion-buttons right>
+            <button ion-button icon-only (click)='importcsv()'>
+              <ion-icon ios="ios-download" md="md-download"></ion-icon>
+            </button>
+          </ion-buttons>
     </ion-navbar>
 
     <ion-toolbar no-border-top>
@@ -20,7 +25,7 @@
 <ion-content class="no-scroll">
     <div [ngSwitch]="reportType">
         <ion-list *ngSwitchCase="'users'" class="fromGroup">
-            <assessment-details [assessmentData]="fromUserAssessment" [columns]="fromUserColumns"  (click)="goToReportList()"></assessment-details>
+            <assessment-details [assessmentData]="fromUserAssessment" [columns]="fromUserColumns"></assessment-details>
         </ion-list>
         <ion-list class="margin0 fromGroup" *ngSwitchCase="'questions'" (showQuestionFromUser)="showQuestionFromUser($event)">
             <assessment-details [assessmentData]="fromQuestionAssessment" [columns]="fromQuestionColumns"></assessment-details>

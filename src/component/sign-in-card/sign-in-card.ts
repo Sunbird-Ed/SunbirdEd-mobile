@@ -156,14 +156,14 @@ export class SignInCardComponent {
             profile.profileType = ProfileType.TEACHER;
             profile.source = UserSource.SERVER;
 
-            that.profileService.setCurrentProfile(false, profile,
-              (currentProfile: any) => {
+            that.profileService.setCurrentProfile(false, profile)
+              .then((currentProfile: any) => {
                 resolve({
                   slug: r.rootOrg.slug,
                   title: r.rootOrg.orgName
                 });
-              },
-              (err: any) => {
+              })
+              .catch((err: any) => {
                 reject(err);
               });
 

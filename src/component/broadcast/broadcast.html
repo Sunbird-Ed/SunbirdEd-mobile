@@ -1,0 +1,19 @@
+<ion-header>
+  <ion-navbar color="broadcast_greeting_navbar">
+    <ion-title style="color:white">
+      {{greetings}}
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content no-padding>
+<div class="popup-image">
+ <ion-img [width]="320" [height]="240" src= {{imageUrl}} ></ion-img>
+ </div>
+ <div ion-text class="popup-text" padding>
+   <p>May this diwali bring joy and wealth in your life May this diwali bring joy and wealth in your life May this diwali bring joy and wealth in your life May this diwali bring joy and wealth in your life May this diwali bring joy and wealth in your life</p>
+ </div>
+ <div class="popup-button" text-center>
+ <button ion-button round>{{customButton}}</button>
+ </div>
+</ion-content>
