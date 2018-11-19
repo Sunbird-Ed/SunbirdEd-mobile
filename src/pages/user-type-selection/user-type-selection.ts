@@ -8,8 +8,10 @@ import {
   NavController,
   NavParams,
   Events,
-  Platform
+  Platform,
+  Navbar
 } from 'ionic-angular';
+import { TranslateService } from '@ngx-translate/core';
 import {
   TabsPage,
   SharedPreferences,
@@ -20,27 +22,15 @@ import {
   ImpressionType,
   ContainerService,
   Profile,
-  UserSource
-} from 'sunbird';
-import { TranslateService } from '@ngx-translate/core';
-import {
+  UserSource,
   ProfileType,
   ProfileService
 } from 'sunbird';
-import { Map } from '../../app/telemetryutil';
-import {
-  initTabs,
-  GUEST_TEACHER_TABS,
-  GUEST_STUDENT_TABS
-} from '../../app/module.service';
-import { AppGlobalService } from '../../service/app-global.service';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { CommonUtilService } from '../../service/common-util.service';
-import { PreferenceKey } from '../../app/app.constant';
-import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
-import { ProfileSettingsPage } from '../profile-settings/profile-settings';
-import { Navbar } from 'ionic-angular';
-import { LanguageSettingsPage } from '../language-settings/language-settings';
+import { Map, initTabs, GUEST_TEACHER_TABS, GUEST_STUDENT_TABS, PreferenceKey } from '@app/app';
+import { AppGlobalService, TelemetryGeneratorService, CommonUtilService } from '@app/service';
+import { SunbirdQRScanner } from '@app/pages/qrscanner';
+import { ProfileSettingsPage } from '@app/pages/profile-settings/profile-settings';
+import { LanguageSettingsPage } from '@app/pages/language-settings/language-settings';
 
 const selectedCardBorderColor = '#006DE5';
 const borderColor = '#F7F7F7';
@@ -161,24 +151,7 @@ export class UserTypeSelectionPage {
         this.gotoTabsPage();
       } else {
         this.gotoTabsPage(true);
-/*         const updateRequest = new Profile();
-
-        updateRequest.handle = this.profile.handle;
-        updateRequest.avatar = this.profile.avatar;
-        updateRequest.language = this.profile.language;
-        updateRequest.uid = this.profile.uid;
-        updateRequest.profileType = this.selectedUserType;
-        updateRequest.createdAt = this.profile.createdAt;
-        updateRequest.source = UserSource.LOCAL;
-
-        updateRequest.syllabus = [];
-        updateRequest.board = [];
-        updateRequest.grade = [];
-        updateRequest.subject = [];
-        updateRequest.medium = [];
-
-        this.updateProfile(updateRequest);
- */      }
+      }
     } else {
       const profileRequest = new Profile();
       profileRequest.handle = 'Guest1';
@@ -197,6 +170,7 @@ export class UserTypeSelectionPage {
         console.error('Err', err);
       });
   }
+
   // TODO Remove getCurrentUser as setCurrentProfile is returning uid
   setProfile(profileRequest: Profile) {
     this.profileService.setCurrentProfile(true, profileRequest).then(() => {
@@ -208,7 +182,7 @@ export class UserTypeSelectionPage {
         }
         this.profile = JSON.parse(success);
         this.gotoTabsPage();
-      }) .catch(error => {
+      }).catch(error => {
         console.error('Error', error);
         return 'null';
       });
@@ -243,7 +217,7 @@ export class UserTypeSelectionPage {
             this.navCtrl.push(TabsPage, {
               loginMode: 'guest'
             });
-          }) .catch(error => {
+          }).catch(error => {
             console.error('Error=');
           });
         // this.navCtrl.setRoot(TabsPage);
@@ -270,7 +244,7 @@ export class UserTypeSelectionPage {
           this.navCtrl.push(TabsPage, {
             loginMode: 'guest'
           });
-        }) .catch(error => {
+        }).catch(error => {
           console.error('Error=', error);
         });
     }
@@ -287,5 +261,4 @@ export class UserTypeSelectionPage {
       undefined,
       values);
   }
-
 }
