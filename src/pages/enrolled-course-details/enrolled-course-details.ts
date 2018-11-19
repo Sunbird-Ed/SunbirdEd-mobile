@@ -289,7 +289,9 @@ export class EnrolledCourseDetailsPage {
   setContentDetails(identifier): void {
     const option = {
       contentId: identifier,
-      refreshContentDetails: true
+      refreshContentDetails: true,
+      attachFeedback: true,
+      attachContentAccess: true
     };
 
     this.contentService.getContentDetail(option)
