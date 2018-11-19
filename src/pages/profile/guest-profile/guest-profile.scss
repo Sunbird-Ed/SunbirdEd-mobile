@@ -3,7 +3,9 @@ page-guest-profile {
         color: map-get($colors, dark);
         margin: 0;
         font-size: 1.6rem;
-        padding: 5px;
+
+        @include padding(5px);
+
         font-weight: bold;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -12,20 +14,26 @@ page-guest-profile {
 
     .user {
         text-align: center !important;
-        padding-left: 1em !important;
+
+        @include padding(null, null, null, 1em !important);
     }
 
     .editIcon {
-        margin-left: 5px;
+        @include margin(null, null, null, 5px);
+
         font-size: 1.8rem !important;
     }
 
     .change-role {
         color: dodgerblue;
         text-align: center;
-        margin-right: 10px;
+
+        @include margin(null, 10px, null, null);
+
         font-size: 1.2rem;
-        padding: 0 2px 2px 2px;
+
+        @include padding(0 2px 2px 2px);
+
         font-weight: normal;
         margin: 0;
     }
@@ -33,19 +41,23 @@ page-guest-profile {
     .user-type {
         color: map-get($colors, dark);
         text-align: center;
-        margin-right: 10px;
+
+        @include margin(null, 10px, null, null);
+
         font-size: 1.2rem;
-        padding: 2px;
+
+        @include padding(2px);
+
         font-weight: bold;
         margin: 0;
     }
 
     .offline-message {
-        background-color: red !important;
+        background-color: map-get($colors, danger) !important;
         line-height: 2.5em !important;
         text-align: center !important;
-        color: white;
-        top: 0px;
+        color: map-get($colors, white);
+        top: 0;
         position: sticky;
         z-index: 11;
         display: block;
@@ -55,11 +67,11 @@ page-guest-profile {
     .custom-avatar {
         height: 22vw;
         width: 22vw;
-        border: 1px solid #fff;
+        border: 1px solid map-get($colors, white);
         border-radius: 50%;
         display: inline-block;
-        margin-left: auto;
-        margin-right: auto;
+
+        @include margin(null, auto, null, auto);
     }
 
     .info-title {
@@ -70,10 +82,14 @@ page-guest-profile {
 
     .section-title {
         color: map-get($colors, dark);
-        margin-bottom: -5px !important;
+
+        @include margin(null, null, -5px, null !important);
+
         font-size: 1.7rem;
         padding: 0;
-        margin-left: 0;
+
+        @include margin(null, null, null, 0);
+
         font-weight: 700;
     }
 
@@ -96,22 +112,23 @@ page-guest-profile {
     }
 
     .icon-align {
-        margin-left: 2px;
+        @include margin(null, null, null, 2px);
+
         size: 2px;
         display: inline-block;
     }
 }
 
 .padding-bottom-10 {
-    padding-bottom: 10px !important;
+    @include padding(null, null, 10px, null !important);
 }
 
 .padding-top-10 {
-    padding-top: 10px !important;
+    @include padding(10px, null, null, null !important);
 }
 
 .padding-left-10 {
-    padding-left: 10px !important;
+    @include padding(null, null, null, 10px !important);
 }
 
 /* Hide extra margin of the popover-controller */
@@ -125,20 +142,20 @@ page-guest-profile {
     }
 
     .list.list-md {
-        margin-bottom: 0 !important;
+        @include margin(null, null, 0, null !important);
     }
 
     .item-md {
-        padding-left: 0 !important;
+        @include padding(null, null, null, 0 !important);
     }
 
     .label-md {
-        margin-left: 16px;
+        @include margin(null, null, null, 16px);
     }
 }
 
 .signin-card-bg {
     background-color: map-get($colors, light_gray);
-    padding-top: 10px;
-    padding-bottom: 10px;
+
+    @include padding(10px, null, 10px, 0);
 }

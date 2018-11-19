@@ -223,4 +223,12 @@ export class CommonUtilService implements OnDestroy {
     getAppDirection() {
         return this.platform.dir();
     }
+
+    /**
+     * It returns whether it is RTL or not
+     * @returns {boolean}
+     */
+    isRTL() {
+        return this.platform.isRTL;
+    }
 }
