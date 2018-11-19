@@ -3,7 +3,7 @@
 </ion-header>
 
 <ion-content padding>
-  <ion-slides pager="true" centeredSlides="true" speed="50" class="ion-slides">
+  <ion-slides pager="true" dir="{{appDir}}" centeredSlides="true" speed="50" class="ion-slides">
     <ion-slide *ngFor="let slide of slides">
       <div class="title">{{ slide.title | translate:{'%s': appName} }}</div>
       <img class="item-img" [src]="slide.imageUri" />
