@@ -1,11 +1,15 @@
-import { GroupMembersPage } from './../group-members/group-members';
 import { Component } from '@angular/core';
 import {
   IonicPage,
   NavController,
   NavParams
 } from 'ionic-angular';
-import { FormAndFrameworkUtilService } from '../../profile/formandframeworkutil.service';
+import { TranslateService } from '@ngx-translate/core';
+  import {
+    FormBuilder,
+    FormGroup,
+    Validators
+  } from '@angular/forms';
 import {
   CategoryRequest,
   Group,
@@ -16,18 +20,12 @@ import {
   PageId,
   ImpressionType,
   ObjectType,
-  SharedPreferences
 } from 'sunbird';
-import {
-  FormBuilder,
-  FormGroup,
-  Validators
-} from '@angular/forms';
-import { TranslateService } from '@ngx-translate/core';
-import { LoadingController } from 'ionic-angular';
+
+import { FormAndFrameworkUtilService } from '../../profile/formandframeworkutil.service';
+import { GroupMembersPage } from './../group-members/group-members';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
-import { PreferenceKey } from '../../../app/app.constant';
 import { CommonUtilService } from '../../../service/common-util.service';
 
 @IonicPage()
@@ -43,9 +41,6 @@ export class CreateGroupPage {
   syllabusList: Array<any> = [];
   categories: Array<any> = [];
   loader: any;
-
-  selectedLanguage = 'en';
-
   isFormValid = true;
 
   /* Options for class ion-select box */
@@ -65,31 +60,19 @@ export class CreateGroupPage {
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private translate: TranslateService,
     private navParams: NavParams,
-    private loadingCtrl: LoadingController,
     private commonUtilService: CommonUtilService,
     private groupService: GroupService,
-    private preference: SharedPreferences,
     private telemetryGeneratorService: TelemetryGeneratorService
   ) {
-    this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
-      .then(val => {
-        if (val && val.length) {
-          this.selectedLanguage = val;
-        }
-      });
-
     this.group = this.navParams.get('groupInfo') || {};
     this.groupEditForm = this.fb.group({
       name: [this.group.name || '', Validators.required],
       syllabus: [this.group.syllabus && this.group.syllabus[0] || []],
       class: [this.group.grade || []]
     });
-    console.log(this.groupEditForm);
 
     this.isEditGroup = this.group.hasOwnProperty('gid') ? true : false;
     this.getSyllabusDetails();
-
-
   }
 
   ionViewDidLoad() {
@@ -108,31 +91,23 @@ export class CreateGroupPage {
 
   }
 
-
-  ionViewWillEnter() {
-    // this.getSyllabusDetails();
-  }
-
   /**
    * get Syllabus Details and store locally
    */
   getSyllabusDetails() {
-    this.loader = this.getLoader();
+    this.loader = this.commonUtilService.getLoader();
     this.loader.present();
-
 
     this.formAndFrameworkUtilService.getSyllabusList()
       .then((result) => {
-        if (result && result !== undefined && result.length > 0) {
+        if (result && result.length) {
           result.forEach(element => {
-
             // renaming the fields to text, value and checked
             const value = { 'name': element.name, 'code': element.frameworkId };
             this.syllabusList.push(value);
           });
 
           if (this.group && this.group.syllabus && this.group.syllabus[0] !== undefined) {
-            console.log('1', this.group.syllabus);
             this.getClassList(this.group.syllabus[0], false);
           } else {
             this.loader.dismiss();
@@ -159,14 +134,13 @@ export class CreateGroupPage {
     }
 
     const formValue = this.groupEditForm.value;
-    console.log('formValue', formValue);
     if (formValue.name) {
       this.group.name = formValue.name;
       this.group.grade = (!formValue.class.length) ? [] : [formValue.class];
       this.group.syllabus = (!formValue.syllabus.length) ? [] : [formValue.syllabus];
       this.group.gradeValueMap = {};
 
-      if (this.group.grade && this.group.grade.length > 0) {
+      if (this.group.grade && this.group.grade.length) {
         this.group.grade.forEach(gradeCode => {
           for (let i = 0; i < this.classList.length; i++) {
             if (this.classList[i].code === gradeCode) {
@@ -186,7 +160,7 @@ export class CreateGroupPage {
   }
 
   /**
- * Internally calls Update group API
+ * Internally calls Update group API if form is valid
  */
   updateGroup() {
     if (!this.isFormValid) {
@@ -196,7 +170,7 @@ export class CreateGroupPage {
 
     const formValue = this.groupEditForm.value;
     if (formValue.name) {
-      const loader = this.getLoader();
+      const loader = this.commonUtilService.getLoader();
       loader.present();
 
       this.group.name = formValue.name;
@@ -228,7 +202,7 @@ export class CreateGroupPage {
         })
         .catch((error) => {
           loader.dismiss();
-          console.log('Error : ' + error);
+          console.error('Error : ' + error);
         });
     } else {
       this.commonUtilService.showToast(this.commonUtilService.translateMessage('ENTER_GROUP_NAME'));
@@ -242,7 +216,7 @@ export class CreateGroupPage {
    */
   getClassList(frameworkId, isSyllabusChanged: boolean = true) {
     if (isSyllabusChanged) {
-      this.loader = this.getLoader();
+      this.loader = this.commonUtilService.getLoader();
       this.loader.present();
     }
 
@@ -259,34 +233,24 @@ export class CreateGroupPage {
           selectedLanguage: this.translate.currentLang
         };
         this.isFormValid = true;
+
         return this.formAndFrameworkUtilService.getCategoryData(request);
       })
       .then((classes) => {
         this.loader.dismiss();
         this.classList = classes;
+
         if (!isSyllabusChanged) {
           this.groupEditForm.patchValue({
             class: this.group.grade || []
           });
         }
-
       })
       .catch(error => {
         this.loader.dismiss();
         this.isFormValid = false;
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
-        console.log('Error : ' + error);
+        console.error('Error : ' + error);
       });
   }
-
-  /**
-   * Returns Loader Object
-   */
-  getLoader(): any {
-    return this.loadingCtrl.create({
-      duration: 30000,
-      spinner: 'crescent'
-    });
-  }
-
 }
