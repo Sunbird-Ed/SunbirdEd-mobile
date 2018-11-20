@@ -196,7 +196,7 @@ export class ViewMoreActivityPage implements OnInit {
   loadMore() {
     this.isLoadMore = true;
     this.offset = this.offset + this.searchLimit;
-    if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+    if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
       this.commonUtilService.showToast(this.commonUtilService.translateMessage('NO_INTERNET_TITLE'));
     } else {
       this.mapper();
