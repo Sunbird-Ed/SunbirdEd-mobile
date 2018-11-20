@@ -1,38 +1,45 @@
 page-profile-settings {
-.form-position{
-  margin-top: 50px;
+    .form-position {
+        margin-top: 50px;
+    }
+
+    /* This should be item-ios only as we are targeting mode as iOS for radio-button */
+    .item-ios {
+        background-color: map-get($colors, white_f7);
+    }
+
+    .button-inner {
+        display: initial !important;
+    }
+
+    ion-icon {
+        @include ltr {
+            float: right !important;
+        }
+
+        @include rtl {
+            float: left !important;
+        }
+    }
+
+    ion-list[inset] {
+        margin: 0 !important;
+    }
+
+    /* Change height of the ion-item*/
+    .item-block {
+        min-height: 5.5rem !important;
+    }
+
+    .item-select .label-md {
+        color: map-get($colors, black);
+    }
+
+    .arrow-icon {
+        @include padding(null, null, null, 2.8em !important);
+    }
+
+    .back-button {
+        display: block !important;
+    }
 }
-
-
-  /* This should be item-ios only as we are targeting mode as iOS for radio-button */
-  .item-ios {
-    background-color: map-get($colors, white_f7);
-  }
-  .button-inner {
-    display: initial !important;
-  }
-  ion-icon {
-    float: right !important;
-  }
-  ion-list[inset] {
-    margin: 0 !important;
-  }
-  /* Change height of the ion-item*/
-  .item-block {
-    min-height: 5.5rem !important;
-  }
-  .item-select .label-md{
-    color: map-get($colors, black);
-  }
-  .arrow-icon {
-    padding-left: 2.8em !important;
-  }
-  .back-button {
-    display: block !important;
-  }
-}
-
-
-
-
-

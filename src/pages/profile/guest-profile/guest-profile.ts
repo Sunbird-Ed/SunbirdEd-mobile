@@ -5,9 +5,6 @@ import {
   Events
 } from 'ionic-angular';
 import * as _ from 'lodash';
-
-import { GuestEditProfilePage } from './../guest-edit.profile/guest-edit.profile';
-import { OverflowMenuComponent } from './../overflowmenu/menu.overflow.component';
 import {
   ProfileService,
   SharedPreferences,
@@ -16,12 +13,11 @@ import {
   PageId,
   Environment,
 } from 'sunbird';
-import { UserTypeSelectionPage } from '../../user-type-selection/user-type-selection';
-import { FormAndFrameworkUtilService } from '../formandframeworkutil.service';
-import { AppGlobalService } from '../../../service/app-global.service';
-import { MenuOverflow, PreferenceKey } from '../../../app/app.constant';
-import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
-import { CommonUtilService } from '../../../service/common-util.service';
+
+import { GuestEditProfilePage, OverflowMenuComponent, FormAndFrameworkUtilService } from '@app/pages/profile';
+import { UserTypeSelectionPage } from '@app/pages/user-type-selection';
+import { AppGlobalService, TelemetryGeneratorService, CommonUtilService } from '@app/service';
+import { MenuOverflow, PreferenceKey } from '@app/app';
 
 @Component({
   selector: 'page-guest-profile',

@@ -1,5 +1,3 @@
-import { appLanguages } from './../app/app.constant';
-import { QRScannerAlert } from './../pages/qrscanner/qrscanner_alert';
 import { Injectable, NgZone, OnDestroy } from '@angular/core';
 import {
     ToastController,
@@ -8,14 +6,18 @@ import {
     Loading,
     LoadingController,
     Events,
-    PopoverController
+    PopoverController,
+    Platform
 } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
 import { SharedPreferences } from 'sunbird';
+import { Network } from '@ionic-native/network';
+
 import { PreferenceKey } from '../app/app.constant';
 import { QRAlertCallBack } from '../pages/qrscanner/qrscanner_alert';
-import { Network } from '@ionic-native/network';
+import { appLanguages } from './../app/app.constant';
+import { QRScannerAlert } from './../pages/qrscanner/qrscanner_alert';
 
 export interface NetworkInfo {
     isNetworkAvailable: boolean;
@@ -35,7 +37,8 @@ export class CommonUtilService implements OnDestroy {
         private events: Events,
         private popOverCtrl: PopoverController,
         private network: Network,
-        private zone: NgZone
+        private zone: NgZone,
+        private platform: Platform
     ) {
         this.listenForEvents();
     }
@@ -203,6 +206,10 @@ export class CommonUtilService implements OnDestroy {
         this.disconnectSubscription.unsubscribe();
     }
 
+    /**
+     * Opens In-app Browser
+     * @param url - URL to open in browser or system apps
+     */
     openLink(url: string): void {
         const options
             = 'hardwareback=yes,clearcache=no,zoom=no,toolbar=yes,clearsessioncache=no,closebuttoncaption=Done,disallowoverscroll=yes';
@@ -210,4 +217,18 @@ export class CommonUtilService implements OnDestroy {
         (<any>window).cordova.InAppBrowser.open(url, '_system', options);
     }
 
+    /**
+     * @returns {string} App direction 'rtl' || 'ltr'
+     */
+    getAppDirection() {
+        return this.platform.dir();
+    }
+
+    /**
+     * It returns whether it is RTL or not
+     * @returns {boolean}
+     */
+    isRTL() {
+        return this.platform.isRTL;
+    }
 }

@@ -1,6 +1,3 @@
-import { appLanguages } from './../../app/app.constant';
-import { CommonUtilService } from './../../service/common-util.service';
-import { Platform } from 'ionic-angular/platform/platform';
 import {
   Component,
   NgZone
@@ -9,7 +6,8 @@ import {
   IonicPage,
   NavController,
   NavParams,
-  Events
+  Events,
+  Platform
 } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import {
@@ -20,12 +18,11 @@ import {
   InteractType,
   InteractSubtype
 } from 'sunbird';
-import { OnboardingPage } from '../onboarding/onboarding';
-import { Map } from '../../app/telemetryutil';
-import { AppGlobalService } from '../../service/app-global.service';
-import { UserTypeSelectionPage } from '../user-type-selection/user-type-selection';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { PreferenceKey } from '../../app/app.constant';
+
+import { appLanguages, PreferenceKey, Map } from '@app/app';
+import { CommonUtilService, AppGlobalService, TelemetryGeneratorService } from '@app/service';
+import { OnboardingPage } from '@app/pages/onboarding/onboarding';
+import { UserTypeSelectionPage } from '@app/pages/user-type-selection';
 
 @IonicPage()
 @Component({
@@ -72,6 +69,7 @@ export class LanguageSettingsPage {
         this.isFromSettings ? Environment.SETTINGS : Environment.ONBOARDING,
         this.isFromSettings ? PageId.SETTINGS_LANGUAGE : PageId.ONBOARDING_LANGUAGE_SETTING,
       );
+
       if (this.isFromSettings) {
         this.navCtrl.pop();
       } else {
@@ -154,12 +152,6 @@ export class LanguageSettingsPage {
    */
   onLanguageSelected() {
     if (this.language) {
-      /*
-      let selectedLanguage = this.languages.find(i => i.code === this.language);
-      this.preferences.putString(PreferenceKey.SELECTED_LANGUAGE_CODE, selectedLanguage.code);
-      this.preferences.putString(PreferenceKey.SELECTED_LANGUAGE, selectedLanguage.label);
-      */
-
       this.zone.run(() => {
         this.translateService.use(this.language);
         this.btnColor = '#006DE5';

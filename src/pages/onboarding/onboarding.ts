@@ -10,6 +10,7 @@ import {
   Platform,
   Events
 } from 'ionic-angular';
+import { AppVersion } from '@ionic-native/app-version';
 import {
   TabsPage,
   OAuthService,
@@ -28,23 +29,19 @@ import {
   UserSource,
   Profile
 } from 'sunbird';
-import { UserTypeSelectionPage } from '../user-type-selection/user-type-selection';
+
+import { UserTypeSelectionPage } from '@app/pages/user-type-selection';
 import {
   initTabs,
   GUEST_STUDENT_TABS,
   GUEST_TEACHER_TABS,
-  LOGIN_TEACHER_TABS
-} from '../../app/module.service';
-import { Map } from '../../app/telemetryutil';
-import { LanguageSettingsPage } from '../language-settings/language-settings';
-import {
+  LOGIN_TEACHER_TABS,
+  Map,
   ProfileConstants,
   PreferenceKey
-} from '../../app/app.constant';
-import { AppGlobalService } from '../../service/app-global.service';
-import { AppVersion } from '@ionic-native/app-version';
-import { CommonUtilService } from '../../service/common-util.service';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+} from '@app/app';
+import { LanguageSettingsPage } from '@app/pages/language-settings/language-settings';
+import { AppGlobalService, TelemetryGeneratorService, CommonUtilService } from '@app/service';
 
 @Component({
   selector: 'page-onboarding',
@@ -54,6 +51,7 @@ export class OnboardingPage {
   @ViewChild(Navbar) navBar: Navbar;
 
   slides: any[];
+  appDir: string;
   appName = '';
   orgName: string;
   backButtonFunc: any = undefined;
@@ -116,6 +114,8 @@ export class OnboardingPage {
       this.backButtonFunc();
       this.navCtrl.setRoot(LanguageSettingsPage);
     }, 10);
+
+    this.appDir = this.commonUtilService.getAppDirection();
   }
 
   ionViewWillLeave() {
