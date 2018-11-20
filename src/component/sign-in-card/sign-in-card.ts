@@ -108,7 +108,7 @@ export class SignInCardComponent {
       const that = this;
       const loader = this.commonUtilService.getLoader();
       loader.present();
-      that.auth.doOAuthStepOne()
+      that.auth.doOAuthStepOne(this.commonUtilService.isRTL())
         .then(token => {
           return that.auth.doOAuthStepTwo(token);
         })

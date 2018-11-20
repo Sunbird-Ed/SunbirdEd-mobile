@@ -17,8 +17,8 @@
   <div *ngIf="checkUserGroups()">
     <ion-row>
       <ion-col col-md-6>
-        <p *ngIf="groupList.length" text-left ion-text color="title" text-uppercase>
-          <b>{{'GROUPS' | translate}}</b> {{ '(' + groupList?.length + ')'}}
+        <p *ngIf="groupList.length" item-start ion-text color="title" text-uppercase>
+          <b>{{'GROUPS' | translate}}</b> {{ '(' + groupList?.length + ')'}}&lrm;
         </p>
       </ion-col>
       <ion-col col-md-6 class="padding-right0">
@@ -39,8 +39,8 @@
       <ion-checkbox item-end mode="ios" checked="{{isGroupSelected(group?.gid)}}" (click)="toggleGroupSelected(i)"></ion-checkbox>
     </ion-item>
 
-    <p *ngIf="userList.length" text-left ion-text color="title" text-uppercase>
-      <b>{{'USERS' | translate}}</b> {{ '(' + userList?.length + ')'}}
+    <p *ngIf="userList.length" item-start ion-text color="title" text-uppercase>
+      <b>{{'USERS' | translate}}</b> {{ '(' + userList?.length + ')'}}&lrm;
     </p>
     <ion-item *ngFor="let user of userList; let i = index;" class="item-background" margin-bottom no-lines>
       <ion-label (click)="toggleUserSelected(i)">
