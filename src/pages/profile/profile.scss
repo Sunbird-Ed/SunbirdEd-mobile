@@ -2,46 +2,44 @@ page-profile {
     .profile-last-login-text {
         color: #bdbdbd;
         text-align: center;
-        margin: 0;
+        @include margin(0);
         font-size: 1.2rem;
-        padding: 0 5px 8px 5px;
+        @include padding(0, 5px, 8px, 5px);
     }
     .profile-completed-text {
         color: rgb(104, 103, 101);
         text-align: left;
-        margin-bottom: 8px !important;
+        @include margin(null, null, 8px, null !important);
         font-size: small;
-        padding: 0;
+        @include padding(0);
     }
     .profile-add-exp-text {
         color: map-get($colors, primary);
         text-align: right;
         font-size: small;
-        padding: 0;
+        @include padding(0);
         font-weight: bold;
     }
     .profile-completed-ion-row {
-        padding-bottom: 1%;
-        margin-top: 5% !important;
-        padding-top: 6%;
+        @include margin(5%, null, null, null !important);
+        @include padding(6%, null, 1%, null);
     }
     .profile-completed-ion-col {
-        padding: 0;
+        @include padding(0);
     }
     .profile-name {
         color: map-get($colors, dark);
         text-align: center;
-        margin: 0;
         font-size: 2rem;
-        padding: 5px;
         font-weight: bold;
-        padding-top: 10px;
+        @include margin(o);
+        @include padding(10px, 5px, 5px, 5px);
     }
     .grey-bg {
         background: rgba(99, 99, 99, 0.158);
         font-size: 14px;
         border-radius: 5px;
-        padding: 6px;
+        @include padding(6px);
     }
     .item-profile-img {
         max-width: 100px;
@@ -54,8 +52,7 @@ page-profile {
         border: 1px solid #fff;
         border-radius: 50%;
         display: inline-block;
-        margin-left: auto;
-        margin-right: auto;
+        @include margin(null, auto, null, auto);
     }
     .list-header {
         font-size: 12pt;
@@ -71,16 +68,13 @@ page-profile {
         font-weight: 700 !important;
     }
     ion-label {
-        margin: 0% !important;
-        margin-top: 5% !important;
+        @include margin(5%, 0, 0, 0 !important);
     }
     .section-title {
         color: map-get($colors, dark);
-        margin-bottom: 3% !important;
-        margin-top: 3px !important;
         font-size: 1.6rem;
-        padding: 0;
-        margin-left: 0;
+        @include padding(0px);
+        @include margin(3px, null, 3%, 0px !important);
         font-weight: bold;
     }
     .info-title {
@@ -93,7 +87,7 @@ page-profile {
         height: 50px;
     }
     .skill-row {
-        margin-top: 12px !important;
+        @include margin(12px, null, null, null !important);
     }
     .skill-name-col {
         border-radius: 50px 0 0 50px;
@@ -113,17 +107,17 @@ page-profile {
         }
     }
     ion-row {
-        padding: 0 !important;
+        @include padding(0px !important);
     }
     col-2 {
-        padding-left: 0 !important;
+        @include padding(null, null, null, 0px !important);
     }
     .item-md.item-block .item-inner {
-        padding-right: 0 !important;
+        @include padding(null, 0px, null, null !important);
     }
     .additional-info ion-row {
         font-size: 1.2rem;
-        padding-bottom: 10px !important;
+        @include padding(null, null, 10px, null !important);
     }
     .details-title {
         white-space: nowrap !important;
@@ -142,7 +136,7 @@ page-profile {
     }
     .social-icon-size ion-icon {
         font-size: 1.8em !important;
-        padding-left: 10px !important;
+        @include padding(null, null, null, 10px !important);
     }
     .social-icon-size a {
         color: transparent;
@@ -175,7 +169,7 @@ page-profile {
 
     .scroll-content {
         background-color: #FAFAFA !important;
-        padding: 0 !important;
+        @include padding(0px !important);
     }
 
 
@@ -184,7 +178,7 @@ page-profile {
             background-color: #fff !important;
             min-height: 225px;
             width: 100%;
-            padding: 0 !important;
+            @include padding(0px !important);
         }
 
         .scroll-zoom-wrapper {
@@ -197,7 +191,8 @@ page-profile {
     .badges{
         ion-avatar img, ion-thumbnail img {
             display: block;
-            margin: 30px auto;
+            @include margin(30px auto);
+            
         }
     }
 
@@ -210,7 +205,7 @@ page-profile {
         display: inline-block;
 
         .badge {
-            padding: 0px 20px;
+            @include padding(0px, 20px);
             color: #006DE5;
             border: solid 0.5px #006DE5;
             font-size: 11px;
@@ -224,14 +219,14 @@ page-profile {
             // background: #E9E9E9;
             .img-container {
                 border: 1px solid #c6dbd8;
-                padding: 0 !important;
+                @include padding(0px !important);
                 background: #E9E9E9;
                 min-height: 85px;
                 max-height: 85px;
                 border-radius: 4px;
                 img {
                     max-height: 100%;
-                    margin: 0 auto;
+                    @include margin(0px auto);
                     width: auto;
                     transform: translateY(-56%);
                     position: relative;
@@ -270,17 +265,17 @@ page-profile {
 
     .roles-container{
         color: #007AFF; 
-        margin: 5px 0px;
+        @include margin(5px, 0px);
     }
     .roles{
         border: .5px solid #007AFF;
-          padding: 4px 15px;
+          @include padding(4px, 15px);
           border-radius: 4px;
           display: inline-block;
     }
     .school-recent {
         margin: 0 auto;
-        padding: 0 30px 25px 30px;
+        @include padding(0, 30px, 25px, 30px);
         text-align: center;
     }
 
@@ -292,8 +287,8 @@ page-profile {
         .phone{
           display: inline-block;
           border-radius: 25px;
-          padding: 15px;
-          margin-bottom: 10px;
+          @include padding(15px);
+          @include margin(null, null, 10px, null);
           background-color: #fff;
           color: #007AFF;
         }
@@ -317,25 +312,25 @@ page-profile {
         border-top: 0.3px solid #196DAB;
         .container {
             text-align: center; 
-            margin-bottom: 10px
+            @include margin(null, null, 10px, null);
         }
     }
 
     .trainigs{
         .heading {
-            padding: 15px; 
+            @include padding(15px); 
             background-color: #fff; 
-            margin-bottom:  2px;
+            @include margin(null, null, 2px, null);
         }
         .content {
-            padding:15px; 
+            @include padding(15px ); 
             background-color: #fff;
         }
     }
 
     .contributions {
         min-height: 305px; 
-        margin-bottom:10px;
+        @include margin(null, null, 10px, null);
     }
     
     .short-btn {
@@ -345,23 +340,23 @@ page-profile {
 }
 
 .padding-right-10 {
-    padding-right: 10px !important;
+    @include padding(null, 10px, null, null);
 }
 
 .padding-left-10 {
-    padding-left: 10px !important;
+    @include padding(null, null, null, 10px);
 }
 
 .padding-left-none {
-    padding-left: 0 !important;
+    @include padding(null, null, null, 0);
 }
 
 .padding-left-5 {
-    padding-left: 5px !important;
+    @include padding(null, null, null, 5px !important);
 }
 
 .padding-5 {
-    padding: 5px !important;
+    @include padding(5px !important);
 }
 
 .loading {
@@ -370,7 +365,7 @@ page-profile {
 
 .loading-md .loading-wrapper {
     border-radius: 50% !important;
-    padding: 10px !important;
+    @include padding(10px !important);
     max-height: 48px !important;
     max-width: 48px !important;
 }
@@ -388,9 +383,7 @@ page-profile {
 .courses-holder {
     height: 46%;
     .scroll-content {
-        padding: 0 !important;
-        padding-left: 6px !important;
-        padding-top: 6px !important;
+        @include padding(6px, 0, 0, 6px !important);
     }
 }
 
@@ -411,8 +404,7 @@ page-profile {
 }
 
 .PTB0{
-    padding-top: 0;
-    padding-bottom: 0;
+    @include padding(0, null, 0, null);
 }
 
 .lighter{
@@ -420,27 +412,27 @@ page-profile {
 }
 
 .MR10{
-    margin-right: 10px;
+    @include margin(null, 10px, null, null);
 }
 
 .ML10{
-    margin-left: 10px;
+    @include margin(null, null, null, 10px);
 }
 
 .MB5 {
-    margin-bottom: 5px;
+    @include margin(null, null, 5px, null);
 }
 
 .MB10 {
-    margin-bottom: 10px;
+    @include margin(null, null, 10px, null);
 }
 
 .MB15 {
-    margin-bottom: 15px;
+    @include margin(null, null, 15px, null);
 }
 
 .MT15 {
-    margin-top: 15px;
+    @include margin(15px, null, null, null);
 }
 
 .txt-lowercase {
