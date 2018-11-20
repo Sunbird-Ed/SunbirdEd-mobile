@@ -1,3 +1,4 @@
+import { FormAndFrameworkUtilService } from './../profile/formandframeworkutil.service';
 import {
   Component,
   ViewChild
@@ -71,7 +72,8 @@ export class OnboardingPage {
     private appVersion: AppVersion,
     private events: Events,
     private appGlobalService: AppGlobalService,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService
   ) {
 
     this.slides = [
@@ -202,10 +204,13 @@ export class OnboardingPage {
             profile.profileType = ProfileType.TEACHER;
             profile.source = UserSource.SERVER;
 
+            // this.formAndFrameworkUtilService.updateLoggedInUser(r, profile);
+
             that.profileService.setCurrentProfile(false, profile)
               .then((response: any) => {
                 that.orgName = r.rootOrg.orgName;
                 resolve(r.rootOrg.slug);
+                this.formAndFrameworkUtilService.updateLoggedInUser(r, profile);
               })
               .catch((err: any) => {
                 reject(err);
@@ -252,7 +257,7 @@ export class OnboardingPage {
             } else {
               this.navCtrl.push(UserTypeSelectionPage);
             }
-          }) .catch(err => {
+          }).catch(err => {
             this.navCtrl.push(UserTypeSelectionPage);
           });
         } else {
