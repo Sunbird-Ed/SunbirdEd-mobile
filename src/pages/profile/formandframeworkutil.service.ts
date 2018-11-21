@@ -7,7 +7,9 @@ import {
     FrameworkDetailsRequest,
     SharedPreferences,
     FormRequest,
-    FormService
+    FormService,
+    Profile,
+    ProfileService
 } from 'sunbird';
 import { AppGlobalService } from '../../service/app-global.service';
 import { AppVersion } from '@ionic-native/app-version';
@@ -16,7 +18,8 @@ import {
     FormConstant,
     PreferenceKey
 } from '../../app/app.constant';
-
+import { TranslateService } from '@ngx-translate/core';
+import * as _ from 'lodash';
 @Injectable()
 export class FormAndFrameworkUtilService {
 
@@ -25,13 +28,16 @@ export class FormAndFrameworkUtilService {
      *
      */
     selectedLanguage: string;
+    profile: Profile;
 
     constructor(
         private framework: FrameworkService,
         private preference: SharedPreferences,
         private formService: FormService,
         private appGlobalService: AppGlobalService,
-        private appVersion: AppVersion
+        private appVersion: AppVersion,
+        private translate: TranslateService,
+        private profileService: ProfileService
     ) {
         // Get language selected
         this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
@@ -151,7 +157,7 @@ export class FormAndFrameworkUtilService {
                 this.appGlobalService.setSyllabusList(syllabusList);
             }
             resolve(syllabusList);
-        }) .catch((error: any) => {
+        }).catch((error: any) => {
             console.log('Error - ' + error);
             // Adding default framework into the list
             const defaultFramework = {
@@ -188,7 +194,7 @@ export class FormAndFrameworkUtilService {
             courseFilterConfig = response.result.fields;
             this.appGlobalService.setCourseFilterConfig(courseFilterConfig);
             resolve(courseFilterConfig);
-        }) .catch((error: any) => {
+        }).catch((error: any) => {
             console.log('Error - ' + error);
             resolve(courseFilterConfig);
         });
@@ -216,7 +222,7 @@ export class FormAndFrameworkUtilService {
             libraryFilterConfig = response.result.fields;
             this.appGlobalService.setLibraryFilterConfig(libraryFilterConfig);
             resolve(libraryFilterConfig);
-        }) .catch((error: any) => {
+        }).catch((error: any) => {
             console.log('Error - ' + error);
             resolve(libraryFilterConfig);
         });
@@ -347,10 +353,77 @@ export class FormAndFrameworkUtilService {
                         }
 
                         resolve(result);
-                    }) .catch((error: any) => {
+                    }).catch((error: any) => {
                         reject(error);
                     });
                 });
         });
+    }
+
+    updateLoggedInUser(profileRes, profileData) {
+        const profile = {
+            board: [],
+            grade: [],
+            medium: [],
+            subject: [],
+            gradeValueMap: {}
+        };
+        if (profileRes.framework) {
+            const categoryKeysLen = Object.keys(profileRes.framework).length;
+            let keysLength = 0;
+            for (const categoryKey in profileRes.framework) {
+                if (profileRes.framework.hasOwnProperty(categoryKey) && profileRes.framework[categoryKey].length) {
+                    const request: CategoryRequest = {
+                        selectedLanguage: this.translate.currentLang,
+                        currentCategory: categoryKey
+                    };
+                    this.getCategoryData(request)
+                        .then((categoryList) => {
+                            keysLength++;
+                            profileRes.framework[categoryKey].forEach(element => {
+                                if (categoryKey === 'gradeLevel') {
+                                    const code = _.find(categoryList, (category) => category.name === element).code;
+                                    profile['grade'].push(code);
+                                    profile['gradeValueMap'][code] = element;
+                                } else {
+                                    profile[categoryKey].push(_.find(categoryList, (category) => category.name === element).code);
+                                }
+                            });
+                            // console.log('categoryKeysLen,keysLength', categoryKeysLen, keysLength);
+                            // console.log('profile', profile);
+                            if (categoryKeysLen === keysLength) {
+                                // console.log('current frameworkid', this.framework.getCurrentFrameworkId());
+                                const req: Profile = new Profile();
+                                req.board = profile.board;
+
+                                req.grade = profile.grade;
+                                req.medium = profile.medium;
+                                req.subject = profile.subject;
+                                req.gradeValueMap = profile.gradeValueMap;
+                                req.uid = profileData.uid;
+                                req.handle = profileData.uid;
+                                req.profileType = profileData.profileType;
+                                req.source = profileData.source;
+                                req.createdAt = profileData.createdAt;
+                                this.preference.getString('current_framework_id')
+                                    .then(value => {
+                                        req.syllabus = [value];
+                                        console.log('req', req);
+                                        this.profileService.updateProfile(req)
+                                            .then((res: any) => {
+                                                const updateProfileRes = JSON.parse(res);
+                                                console.log('updateProfile resp', updateProfileRes);
+                                            })
+                                            .catch((err: any) => {
+                                                console.error('Err', err);
+                                            });
+                                    });
+
+                            }
+                        });
+                }
+            }
+        }
+
     }
 }

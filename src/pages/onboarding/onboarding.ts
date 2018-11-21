@@ -204,13 +204,12 @@ export class OnboardingPage {
             profile.profileType = ProfileType.TEACHER;
             profile.source = UserSource.SERVER;
 
-            // this.formAndFrameworkUtilService.updateLoggedInUser(r, profile);
 
             that.profileService.setCurrentProfile(false, profile)
               .then((response: any) => {
+                this.formAndFrameworkUtilService.updateLoggedInUser(r, profile);
                 that.orgName = r.rootOrg.orgName;
                 resolve(r.rootOrg.slug);
-                this.formAndFrameworkUtilService.updateLoggedInUser(r, profile);
               })
               .catch((err: any) => {
                 reject(err);
