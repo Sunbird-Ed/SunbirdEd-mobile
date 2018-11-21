@@ -51,7 +51,6 @@ export class OnboardingPage {
   @ViewChild(Navbar) navBar: Navbar;
 
   slides: any[];
-  appDir: string;
   appName = '';
   orgName: string;
   backButtonFunc: any = undefined;
@@ -114,8 +113,6 @@ export class OnboardingPage {
       this.backButtonFunc();
       this.navCtrl.setRoot(LanguageSettingsPage);
     }, 10);
-
-    this.appDir = this.commonUtilService.getAppDirection();
   }
 
   ionViewWillLeave() {
@@ -136,7 +133,7 @@ export class OnboardingPage {
 
     this.generateLoginInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.LOGIN_INITIATE, '');
-    that.auth.doOAuthStepOne()
+    that.auth.doOAuthStepOne(this.platform.isRTL)
       .then(token => {
         return that.auth.doOAuthStepTwo(token);
       })
