@@ -20,6 +20,7 @@ import {
 } from '../../app/app.constant';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
+import { Events } from 'ionic-angular';
 @Injectable()
 export class FormAndFrameworkUtilService {
 
@@ -37,7 +38,8 @@ export class FormAndFrameworkUtilService {
         private appGlobalService: AppGlobalService,
         private appVersion: AppVersion,
         private translate: TranslateService,
-        private profileService: ProfileService
+        private profileService: ProfileService,
+        private events: Events
     ) {
         // Get language selected
         this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
@@ -361,69 +363,77 @@ export class FormAndFrameworkUtilService {
     }
 
     updateLoggedInUser(profileRes, profileData) {
-        const profile = {
-            board: [],
-            grade: [],
-            medium: [],
-            subject: [],
-            gradeValueMap: {}
-        };
-        if (profileRes.framework) {
-            const categoryKeysLen = Object.keys(profileRes.framework).length;
-            let keysLength = 0;
-            for (const categoryKey in profileRes.framework) {
-                if (profileRes.framework.hasOwnProperty(categoryKey) && profileRes.framework[categoryKey].length) {
-                    const request: CategoryRequest = {
-                        selectedLanguage: this.translate.currentLang,
-                        currentCategory: categoryKey
-                    };
-                    this.getCategoryData(request)
-                        .then((categoryList) => {
-                            keysLength++;
-                            profileRes.framework[categoryKey].forEach(element => {
-                                if (categoryKey === 'gradeLevel') {
-                                    const code = _.find(categoryList, (category) => category.name === element).code;
-                                    profile['grade'].push(code);
-                                    profile['gradeValueMap'][code] = element;
-                                } else {
-                                    profile[categoryKey].push(_.find(categoryList, (category) => category.name === element).code);
+        return new Promise((resolve, reject) => {
+            const profile = {
+                board: [],
+                grade: [],
+                medium: [],
+                subject: [],
+                gradeValueMap: {}
+            };
+            if (profileRes.framework) {
+                const categoryKeysLen = Object.keys(profileRes.framework).length;
+                let keysLength = 0;
+                for (const categoryKey in profileRes.framework) {
+                    if (profileRes.framework.hasOwnProperty(categoryKey) && profileRes.framework[categoryKey].length) {
+                        const request: CategoryRequest = {
+                            selectedLanguage: this.translate.currentLang,
+                            currentCategory: categoryKey
+                        };
+                        this.getCategoryData(request)
+                            .then((categoryList) => {
+                                keysLength++;
+                                profileRes.framework[categoryKey].forEach(element => {
+                                    if (categoryKey === 'gradeLevel') {
+                                        const code = _.find(categoryList, (category) => category.name === element).code;
+                                        profile['grade'].push(code);
+                                        profile['gradeValueMap'][code] = element;
+                                    } else {
+                                        profile[categoryKey].push(_.find(categoryList, (category) => category.name === element).code);
+                                    }
+                                });
+                                if (categoryKeysLen === keysLength) {
+                                    const req: Profile = new Profile();
+                                    req.board = profile.board;
+
+                                    req.grade = profile.grade;
+                                    req.medium = profile.medium;
+                                    req.subject = profile.subject;
+                                    req.gradeValueMap = profile.gradeValueMap;
+                                    req.uid = profileData.uid;
+                                    req.handle = profileData.uid;
+                                    req.profileType = profileData.profileType;
+                                    req.source = profileData.source;
+                                    req.createdAt = profileData.createdAt || this.formatDate();
+                                    this.preference.getString('current_framework_id')
+                                        .then(value => {
+                                            req.syllabus = [value];
+                                            this.profileService.updateProfile(req)
+                                                .then((res: any) => {
+                                                    this.events.publish('refresh:profile');
+                                                    const updateProfileRes = JSON.parse(res);
+                                                    resolve();
+                                                })
+                                                .catch((err: any) => {
+                                                    console.error('Err', err);
+                                                });
+                                        });
+
                                 }
                             });
-                            // console.log('categoryKeysLen,keysLength', categoryKeysLen, keysLength);
-                            // console.log('profile', profile);
-                            if (categoryKeysLen === keysLength) {
-                                // console.log('current frameworkid', this.framework.getCurrentFrameworkId());
-                                const req: Profile = new Profile();
-                                req.board = profile.board;
-
-                                req.grade = profile.grade;
-                                req.medium = profile.medium;
-                                req.subject = profile.subject;
-                                req.gradeValueMap = profile.gradeValueMap;
-                                req.uid = profileData.uid;
-                                req.handle = profileData.uid;
-                                req.profileType = profileData.profileType;
-                                req.source = profileData.source;
-                                req.createdAt = profileData.createdAt;
-                                this.preference.getString('current_framework_id')
-                                    .then(value => {
-                                        req.syllabus = [value];
-                                        console.log('req', req);
-                                        this.profileService.updateProfile(req)
-                                            .then((res: any) => {
-                                                const updateProfileRes = JSON.parse(res);
-                                                console.log('updateProfile resp', updateProfileRes);
-                                            })
-                                            .catch((err: any) => {
-                                                console.error('Err', err);
-                                            });
-                                    });
-
-                            }
-                        });
+                    }
                 }
+            } else {
+                reject();
             }
-        }
+        });
 
+    }
+
+    formatDate() {
+        const options = { day: '2-digit', year: 'numeric', month: 'short', hour: '2-digit',
+         minute: '2-digit', second: '2-digit',  hour12: true};
+        const date = new Date().toLocaleString('en-us', options);
+        return( date.slice(0, 12) + date.slice(13, date.length));
     }
 }

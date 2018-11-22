@@ -161,10 +161,17 @@ export class SignInCardComponent {
 
             that.profileService.setCurrentProfile(false, profile)
               .then((currentProfile: any) => {
-                that.formAndFrameworkUtilService.updateLoggedInUser(r, profile);
-                resolve({
-                  slug: r.rootOrg.slug,
-                  title: r.rootOrg.orgName
+                that.formAndFrameworkUtilService.updateLoggedInUser(r, profile)
+                .then( () => {
+                  resolve({
+                    slug: r.rootOrg.slug,
+                    title: r.rootOrg.orgName
+                  });
+                }).catch( () => {
+                  resolve({
+                    slug: r.rootOrg.slug,
+                    title: r.rootOrg.orgName
+                  });
                 });
               })
               .catch((err: any) => {

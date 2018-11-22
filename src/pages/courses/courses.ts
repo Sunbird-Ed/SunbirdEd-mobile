@@ -372,7 +372,6 @@ export class CoursesPage implements OnInit {
           pageAssembleCriteria.filters.subject, 'subject');
       }
     }
-
     this.pageService.getPageAssemble(pageAssembleCriteria) .then((res: any) => {
       res = JSON.parse(res);
       this.ngZone.run(() => {
@@ -470,6 +469,7 @@ export class CoursesPage implements OnInit {
         this.appGlobalService.setEnrolledCourseList([]);
         reject('session expired');
       } else {
+        this.profile = this.appGlobalService.getCurrentUser();
         const sessionObj = this.appGlobalService.getSessionData();
         this.userId = sessionObj[ProfileConstants.USER_TOKEN];
         this.getEnrolledCourses();
