@@ -59,7 +59,7 @@
 		<div class="about-section" *ngIf="contentDetail?.description || contentDetail?.gradeLevel || contentDetail?.subject || contentDetail?.board">
 			<h6 class="padding-10 background-gray font-size-20">{{ 'ABOUT' | translate }}</h6>
 			<p *ngIf="!showMoreFlag" class="text-gray-color">
-				{{ (contentDetail?.description.length > 100) ? (contentDetail?.description | slice:0:10)
+				{{ (contentDetail?.description?.length > 100) ? (contentDetail?.description | slice:0:10)
 				+ '...'
 				: (contentDetail?.description) }} </p>
 			<div class="course-details" *ngIf="showMoreFlag">
@@ -84,7 +84,7 @@
 				</div>
 			</div>
 
-			<div class="read-more" *ngIf="contentDetail?.description.length > 100 || contentDetail?.gradeLevel || contentDetail?.subject"
+			<div class="read-more" *ngIf="contentDetail?.description?.length > 100 || contentDetail?.gradeLevel || contentDetail?.subject"
 			 (click)="showMoreFlag = !showMoreFlag">
 				<div *ngIf="showMoreFlag" class="padding-top-10">
 					<ion-grid no-padding>
