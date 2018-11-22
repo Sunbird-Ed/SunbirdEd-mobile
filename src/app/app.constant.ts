@@ -142,16 +142,22 @@ export class GenericAppConfig {
 
 export const appLanguages = [
     {
+        label: 'हिंदी',
+        code: 'hi',
+        isApplied: false,
+        name: 'Hindi'
+    },
+    {
         label: 'English',
         code: 'en',
         isApplied: false,
         name: 'English'
     },
     {
-        label: 'हिंदी',
-        code: 'hi',
+        label: 'मराठी',
+        code: 'mr',
         isApplied: false,
-        name: 'Hindi'
+        name: 'Marathi'
     },
     {
         label: 'తెలుగు',
@@ -166,12 +172,12 @@ export const appLanguages = [
         name: 'Tamil'
     },
     {
-        label: 'मराठी',
-        code: 'mr',
+        label: 'ಕನ್ನಡ',
+        code: 'kn',
         isApplied: false,
-        name: 'Marathi'
+        name: 'Kannada'
     }
-    /* ,
+    /*,
     {
         label: 'اردو',
         code: 'ur',
