@@ -482,6 +482,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     if (this.guestUser) {
       this.getCurrentUser();
     } else {
+      this.profile = this.appGlobalService.getCurrentUser();
       this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
     }
 

@@ -208,9 +208,9 @@ export class ProfilePage {
                 that.profile = r;
                 this.profileService.getCurrentUser().then((resp: any) => {
                   const profile = JSON.parse(resp);
-                  that.formAndFrameworkUtilService.updateLoggedInUser(r, profile);
+                  that.formAndFrameworkUtilService.updateLoggedInUser(r, profile)
+                  .then( () => {});
                 });
-                // that.formAndFrameworkUtilService.updateLoggedInUser(r, profile);
                 if (r && r.avatar) {
                   that.imageUri = r.avatar;
                 }
