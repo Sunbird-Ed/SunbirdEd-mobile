@@ -29,7 +29,8 @@ import {
   TabsPage,
   PageAssembleCriteria,
   PageAssembleFilter,
-  PageAssembleService
+  PageAssembleService,
+  SharedPreferences
 } from 'sunbird';
 import { GenieResponse } from '../settings/datasync/genieresponse';
 import { FilterPage } from './filters/filter';
@@ -42,7 +43,8 @@ import {
   MimeType,
   Search,
   AudienceFilter,
-  PageName
+  PageName,
+  PreferenceKey
 } from '../../app/app.constant';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 import { AppGlobalService } from '../../service/app-global.service';
@@ -113,6 +115,8 @@ export class SearchPage {
   shouldGenerateEndTelemetry = false;
   backButtonFunc = undefined;
   isSingleContent = false;
+  currentFrameworkId = '';
+  selectedLanguageCode = '';
 
   @ViewChild(Navbar) navBar: Navbar;
   constructor(
@@ -128,7 +132,8 @@ export class SearchPage {
     private platform: Platform,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private commonUtilService: CommonUtilService,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private preference: SharedPreferences
   ) {
 
     this.checkUserSession();
@@ -142,6 +147,15 @@ export class SearchPage {
 
   ionViewWillEnter() {
     this.handleDeviceBackButton();
+    this.preference.getString('current_framework_id')
+    .then(value => {
+            this.currentFrameworkId = value;
+    });
+
+    this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
+    .then(value => {
+            this.selectedLanguageCode = value;
+    });
   }
 
   ionViewDidEnter() {
@@ -337,7 +351,9 @@ export class SearchPage {
       contentTypes: this.contentType,
       facets: Search.FACETS,
       audience: this.audienceFilter,
-      mode: 'soft'
+      mode: 'soft',
+      framework: this.currentFrameworkId,
+      languageCode: this.selectedLanguageCode
     };
 
     this.isDialCodeSearch = false;
