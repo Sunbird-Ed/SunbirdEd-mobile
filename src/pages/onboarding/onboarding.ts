@@ -1,3 +1,4 @@
+import { FormAndFrameworkUtilService } from './../profile/formandframeworkutil.service';
 import {
   Component,
   ViewChild
@@ -50,7 +51,6 @@ export class OnboardingPage {
   @ViewChild(Navbar) navBar: Navbar;
 
   slides: any[];
-  appDir: string;
   appName = '';
   orgName: string;
   backButtonFunc: any = undefined;
@@ -69,7 +69,8 @@ export class OnboardingPage {
     private appVersion: AppVersion,
     private events: Events,
     private appGlobalService: AppGlobalService,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService
   ) {
 
     this.slides = [
@@ -112,8 +113,6 @@ export class OnboardingPage {
       this.backButtonFunc();
       this.navCtrl.setRoot(LanguageSettingsPage);
     }, 10);
-
-    this.appDir = this.commonUtilService.getAppDirection();
   }
 
   ionViewWillLeave() {
@@ -134,7 +133,7 @@ export class OnboardingPage {
 
     this.generateLoginInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.LOGIN_INITIATE, '');
-    that.auth.doOAuthStepOne()
+    that.auth.doOAuthStepOne(this.platform.isRTL)
       .then(token => {
         return that.auth.doOAuthStepTwo(token);
       })
@@ -202,8 +201,10 @@ export class OnboardingPage {
             profile.profileType = ProfileType.TEACHER;
             profile.source = UserSource.SERVER;
 
+
             that.profileService.setCurrentProfile(false, profile)
               .then((response: any) => {
+                this.formAndFrameworkUtilService.updateLoggedInUser(r, profile);
                 that.orgName = r.rootOrg.orgName;
                 resolve(r.rootOrg.slug);
               })

@@ -95,7 +95,7 @@
     </div>
 
     <div class="badges" padding-horizontal text-center *ngIf="profile?.badgeAssertions?.length > 0">
-        <p class="bolder f16">{{'MY_BADGES' | translate }} ({{profile?.badgeAssertions?.length}})</p>
+        <p class="bolder f16">{{'MY_BADGES' | translate }} ({{profile?.badgeAssertions?.length}})&lrm;</p>
         <ion-avatar item-center="" *ngFor="let batch of profile.badgeAssertions | slice : startLimit:badgesLimit;">
             <img height="80px" width="auto" src="{{batch.badgeClassImage}}">
         </ion-avatar>
@@ -111,7 +111,7 @@
 
     <div class="contributions"  *ngIf="enrolledCourse.length > 0">
         <div class="bolder f16" style="padding: 15px; background-color: #fff; margin-bottom:  2px;">
-            {{'CONTRIBUTIONS' | translate}} ({{enrolledCourse.length}})
+            {{'CONTRIBUTIONS' | translate}} ({{enrolledCourse.length}})&lrm;
         </div>
         <div class="cards-container" style="padding:15px 5px; background-color: #fff; ">
             <ion-scroll scrollX="true" style="width: 100%" no-padding>
@@ -157,7 +157,7 @@
 
     <div class="trainigs" *ngIf="trainingsCompleted?.length > 0">
         <div class="bolder heading f16">
-            {{'TRAININGS_ATTENDED' | translate}} ({{trainingsCompleted.length}})
+            {{'TRAININGS_ATTENDED' | translate}} ({{trainingsCompleted.length}})&lrm;
         </div>
         <div class="content">
             <div class="MB15" *ngFor="let training of trainingsCompleted | slice : startLimit:trainingsLimit;">

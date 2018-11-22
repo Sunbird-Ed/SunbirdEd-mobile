@@ -27,7 +27,7 @@
     </ion-list>
     <ion-item>
       <ion-label stacked text-uppercase class="label-font">{{ 'NAME' | translate }}<span ion-text color="danger">&nbsp;*</span></ion-label>
-      <ion-input formControlName="name" placeholder="{{'NAME_HINT' | translate }}"></ion-input>
+      <ion-input formControlName="name" dir="{{commonUtilService.getAppDirection()}}" placeholder="{{'NAME_HINT' | translate }}"></ion-input>
     </ion-item>
 
     <!-- Syllabus -->
@@ -49,7 +49,7 @@
         [selectOptions]="boardOptions" formControlName="boards" (ionChange)="resetForm(1, false)" placeholder="{{'SELECT' | translate }}"
         okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}">
         <ion-option *ngFor="let board of boardList" value="{{board?.code}}">{{board?.name}}</ion-option>
-      </ion-select> 
+      </ion-select>
     </ion-item> -->
 
     <!-- Medium -->

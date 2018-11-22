@@ -31,6 +31,7 @@ import {
 } from '../../app/module.service';
 import { generateInteractTelemetry } from '../../app/telemetryutil';
 import { ProfileConstants } from '../../app/app.constant';
+import { FormAndFrameworkUtilService } from '../../pages/profile/formandframeworkutil.service';
 
 @Component({
   selector: 'sign-in-card',
@@ -64,7 +65,8 @@ export class SignInCardComponent {
     private telemetryService: TelemetryService,
     private appVersion: AppVersion,
     private sharedPreferences: SharedPreferences,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService
   ) {
 
     this.appVersion.getAppName()
@@ -108,7 +110,7 @@ export class SignInCardComponent {
       const that = this;
       const loader = this.commonUtilService.getLoader();
       loader.present();
-      that.auth.doOAuthStepOne()
+      that.auth.doOAuthStepOne(this.commonUtilService.isRTL())
         .then(token => {
           return that.auth.doOAuthStepTwo(token);
         })
@@ -156,8 +158,10 @@ export class SignInCardComponent {
             profile.profileType = ProfileType.TEACHER;
             profile.source = UserSource.SERVER;
 
+
             that.profileService.setCurrentProfile(false, profile)
               .then((currentProfile: any) => {
+                that.formAndFrameworkUtilService.updateLoggedInUser(r, profile);
                 resolve({
                   slug: r.rootOrg.slug,
                   title: r.rootOrg.orgName
