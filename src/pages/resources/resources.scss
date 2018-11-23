@@ -30,7 +30,7 @@ page-resources {
         font-family: 'sunbirdboldfont';
         font-weight: 500;
         width: 30%;
-        text-align: right;
+        @include text-align('end');
       }
       .signin-card-bg {
         background-color: map-get($colors, light_gray);

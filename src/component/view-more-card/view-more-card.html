@@ -26,8 +26,8 @@
           <br/>
           <div class="content-meta">
             <span class="content-type" *ngIf="content.contentType">{{ content.contentType }}</span>
-            <span class="content-size1" *ngIf="content.size">[{{ content.size | fileSize }}]</span>
-            <span class="content-size1" *ngIf="content.sizeOnDevice">[{{ content.sizeOnDevice | fileSize }}]</span>
+            <span class="content-size1" *ngIf="content.size">[{{ content.size | fileSize }}] &lrm;</span>
+            <span class="content-size1" *ngIf="content.sizeOnDevice">[{{ content.sizeOnDevice | fileSize }}] &lrm;</span>
           </div>
         </ion-col>
         <!-- Popular course layout -->
@@ -40,7 +40,7 @@
         </ion-col>
         <!-- Button -->
         <ion-col col-4 class="padding">
-          <button ion-button outline small float-right style="white-space: normal; overflow: hidden;display: block; padding: 0 0.5em !important">
+          <button ion-button outline small  class="custom-btn float-end">
             <span style="font-size: 12px !important" *ngIf="type === 'enrolledCourse'" (click)="resumeCourse(content);">{{ ('RESUME' | translate).length > 6 ? ('RESUME' | translate | slice:0:05) + '...' : ('RESUME' | translate) }}</span>
             <span style="font-size: 12px !important" *ngIf="type !== 'enrolledCourse'" (click)="navigateToDetailsPage(content, type)">{{ ('OPEN' | translate).length > 5 ? ('OPEN' | translate | slice:0:05) + '...' : ('OPEN' | translate) }}</span>
           </button>

@@ -40,7 +40,13 @@ page-filter-options {
   max-height: 70% !important;
   box-shadow: unset;
   position: fixed;
-  left: 0 !important;
+  @include ltr() {
+    left: 0 !important;
+  }
+
+  @include rtl() {
+    right: 0 !important;
+  }
   top: unset !important;
   bottom: 0;
   transform-origin: bottom -100% !important;

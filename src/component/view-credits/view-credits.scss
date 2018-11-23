@@ -38,8 +38,14 @@ view-credits {
     border-top: 0px;
     // height: 50px;
     // font-size: 20px;
-    border-left: 0px;
-    border-right: 0px;
+    @include ltr() {
+      border-left: 0px;
+      border-right: 0px;
+    }
+    @include rtl() {
+      border-left: 0px;
+      border-right: 0px;
+    }
     border-bottom: 2px solid gray;
     padding-top: 12px;
   }

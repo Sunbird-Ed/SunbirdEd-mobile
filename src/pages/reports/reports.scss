@@ -9,8 +9,7 @@ reports-page {
     .bgColor{
         background-color: map-get($colors, light_gray) !important;
         border-radius: 6px;
-        padding-top: 5px !important;
-        padding-left: 18px !important;
+        @include padding(5px, null, null, 18px !important);
     }
     .marginTop{
         margin-top: 15px !important
@@ -45,9 +44,15 @@ reports-page {
         width: 100px;
         height: 100px;
         top: 27%;
-        left: 60%;
-        margin-left: -97px;
         margin-top: -144x;
+        @include ltr() {
+          left: 60%;
+          margin-left: -97px;
+        };
+        @include rtl() {
+          right: 60%;
+          margin-right: -97px;
+        };
       }
       .image-text {
         text-align: center;

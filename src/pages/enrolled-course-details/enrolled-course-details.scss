@@ -6,93 +6,6 @@ page-enrolled-course-details {
         font-size: smaller;
         color:#008000;
     }
-    .item-inner {
-        margin-left: 10px !important;
-    }
-    .padding-10 {
-        padding: 10px;
-    }
-
-    .background-gray {
-        background: #efeff4;
-        margin: 0 -26px;
-        padding-left: 25px !important;
-    }
-
-    .scroll{
-        position:absolute !important;
-        top:0 !important;
-        bottom: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        overflow:scroll !important;
-    }
-
-    .item-divider{
-        position: -webkit-sticky !important;
-        position: sticky !important;
-        top: 0px;
-        z-index: 3 !important;
-    }
-
-    ul {
-        padding: 0px;
-        margin: 0px;
-  
-        &.rating li {
-          padding: 1px 1px !important;
-          background: none;
-          color: map-get($colors, primary);
-  
-          ion-icon {
-            font-size: 16px;
-          }
-        }
-      }
-
-    .read-more {
-        color: rgb(17, 85, 204) !important;
-    }
-    .credits {
-        color: rgb(17, 85, 204) !important;
-        font-weight : 600 !important;
-    }
-
-    .back-button-md {
-        margin-left: -1px !important;
-    }
-    .scroll-content { 
-        margin-bottom: 0px !important;
-      }
-
-    .progress-inner {
-        min-width: 15%;
-        white-space: nowrap;
-        overflow: hidden;
-        padding: 5px;
-        border-radius: 20px;
-        background-color: map-get($colors, primary);
-    }
-
-    .progress-inner-primary {
-        background-color: #AED6F1;
-    }
-    .text-gray-color {
-        color: gray;
-        font-family: 'OpenSans/Regular';
-    }
-    .content-structure {
-        font-family: "OpenSans/Regular";
-        color: #808080;
-        font-size: 1.2rem;
-    }
-    .padding-0 {
-        padding-left: 0px !important;
-    }
-
-    .content-with-footer {
-        height: 90% !important;
-    }
 
     .course-progress {
         position: absolute;
@@ -150,6 +63,10 @@ page-enrolled-course-details {
         height: 100%;
         z-index: 1000;
         opacity: 1 !important;
+    }
+
+    .child-item {
+        @include padding(null, null, null, 0 !important)
     }
 
 }
