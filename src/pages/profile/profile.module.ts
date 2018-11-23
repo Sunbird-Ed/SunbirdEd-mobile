@@ -10,9 +10,6 @@ import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { ProfilePage } from './profile';
 import { GuestProfilePage } from './guest-profile/guest-profile';
 import { GuestEditProfilePage } from './guest-edit.profile/guest-edit.profile';
-import { FormEducation } from './education/form.education';
-import { FormExperience } from './experience/form.experience';
-import { SkillTagsComponent } from './skill-tags/skill-tags';
 import { OverflowMenuComponent } from './overflowmenu/menu.overflow.component';
 import { ContainerService } from 'sunbird';
 import { SettingsPageModule } from '../settings/settings.module';
@@ -28,9 +25,6 @@ import { CategoriesEditPageModule } from '../categories-edit/categories-edit.mod
     ProfilePage,
     GuestProfilePage,
     GuestEditProfilePage,
-    FormEducation,
-    FormExperience,
-    SkillTagsComponent,
     OverflowMenuComponent,
     UserSearchComponent,
     ImagePicker
@@ -39,13 +33,10 @@ import { CategoriesEditPageModule } from '../categories-edit/categories-edit.mod
     ProfilePage,
     GuestProfilePage,
     GuestEditProfilePage,
-    FormEducation,
-    FormExperience,
-    SkillTagsComponent,
     OverflowMenuComponent,
     ImagePicker,
     UserSearchComponent
-    ],
+  ],
 
   imports: [
     IonicPageModule.forChild(ProfilePage),
@@ -63,8 +54,7 @@ import { CategoriesEditPageModule } from '../categories-edit/categories-edit.mod
   exports: [
     ProfilePage,
     GuestProfilePage,
-    GuestEditProfilePage,
-    FormEducation
+    GuestEditProfilePage
   ],
   providers: [
     ContainerService,
