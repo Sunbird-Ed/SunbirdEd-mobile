@@ -29,7 +29,8 @@ import {
   TabsPage,
   PageAssembleCriteria,
   PageAssembleFilter,
-  PageAssembleService
+  PageAssembleService,
+  SharedPreferences
 } from 'sunbird';
 import { GenieResponse } from '../settings/datasync/genieresponse';
 import { FilterPage } from './filters/filter';
@@ -42,7 +43,8 @@ import {
   MimeType,
   Search,
   AudienceFilter,
-  PageName
+  PageName,
+  PreferenceKey
 } from '../../app/app.constant';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 import { AppGlobalService } from '../../service/app-global.service';
@@ -113,6 +115,8 @@ export class SearchPage {
   shouldGenerateEndTelemetry = false;
   backButtonFunc = undefined;
   isSingleContent = false;
+  currentFrameworkId = '';
+  selectedLanguageCode = '';
 
   @ViewChild(Navbar) navBar: Navbar;
   constructor(
@@ -128,7 +132,8 @@ export class SearchPage {
     private platform: Platform,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private commonUtilService: CommonUtilService,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private preference: SharedPreferences
   ) {
 
     this.checkUserSession();
@@ -142,6 +147,15 @@ export class SearchPage {
 
   ionViewWillEnter() {
     this.handleDeviceBackButton();
+    this.preference.getString('current_framework_id')
+    .then(value => {
+            this.currentFrameworkId = value;
+    });
+
+    this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
+    .then(value => {
+            this.selectedLanguageCode = value;
+    });
   }
 
   ionViewDidEnter() {
@@ -337,7 +351,9 @@ export class SearchPage {
       contentTypes: this.contentType,
       facets: Search.FACETS,
       audience: this.audienceFilter,
-      mode: 'soft'
+      mode: 'soft',
+      framework: this.currentFrameworkId,
+      languageCode: this.selectedLanguageCode
     };
 
     this.isDialCodeSearch = false;
@@ -570,13 +586,11 @@ export class SearchPage {
     dialResult.forEach(searchResult => {
       const collectionArray: Array<any> = searchResult.collections;
       const contentArray: Array<any> = searchResult.contents;
-
       const addedContent = new Array<any>();
       const dialCodeResultObj = {
         dialCodeResult : [],
         dialCodeContentResult : []
       };
-
       if (collectionArray && collectionArray.length > 0) {
         collectionArray.forEach((collection) => {
           contentArray.forEach((content) => {
@@ -595,7 +609,10 @@ export class SearchPage {
         displayDialCodeResult.push(dialCodeResultObj);
       }
       const dialCodeContentResult = [];
-      const isAllContentMappedToCollection = contentArray.length === addedContent.length;
+      let isAllContentMappedToCollection = false;
+      if (contentArray) {
+        isAllContentMappedToCollection = contentArray.length === addedContent.length;
+      }
       if (contentArray && contentArray.length > 1) {
         contentArray.forEach((content) => {
           if (addedContent.indexOf(content.identifier) < 0) {
@@ -604,7 +621,6 @@ export class SearchPage {
         });
       }
       dialCodeResultObj.dialCodeContentResult = dialCodeContentResult;
-
       let isParentCheckStarted = false;
       if (dialCodeResultObj.dialCodeResult.length === 1 && dialCodeResultObj.dialCodeResult[0].content.length === 1
         && isAllContentMappedToCollection) {
@@ -621,9 +637,17 @@ export class SearchPage {
       }
     });
     this.displayDialCodeResult = displayDialCodeResult;
-    // if (this.displayDialCodeResult.length === 0 ) {
-    //   this.navCtrl.pop();
-    // }
+    if (this.displayDialCodeResult.length === 0 && !this.isSingleContent) {
+      this.navCtrl.pop();
+      if (this.shouldGenerateEndTelemetry) {
+        this.generateQRSessionEndEvent(this.source, this.dialCode);
+      }
+      this.telemetryGeneratorService.generateImpressionTelemetry(ImpressionType.VIEW,
+        '',
+        PageId.DIAL_NOT_LINKED,
+        Environment.HOME);
+      this.commonUtilService.showContentComingSoonAlert(this.source);
+    }
   }
 
   processDialCodeResultPrev(searchResult) {

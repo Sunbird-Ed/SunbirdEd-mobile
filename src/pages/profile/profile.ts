@@ -17,7 +17,8 @@ import {
   InteractType,
   InteractSubtype,
   CourseService,
-  TelemetryObject
+  TelemetryObject,
+  ProfileService
 } from 'sunbird';
 import * as _ from 'lodash';
 import {
@@ -41,6 +42,7 @@ import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details/en
 import { CollectionDetailsPage } from '@app/pages/collection-details/collection-details';
 import { ContentDetailsPage } from '@app/pages/content-details/content-details';
 import { AppGlobalService, TelemetryGeneratorService } from '@app/service';
+import { FormAndFrameworkUtilService } from './formandframeworkutil.service';
 
 /**
  * The Profile page
@@ -101,7 +103,9 @@ export class ProfilePage {
     private events: Events,
     private appGlobalService: AppGlobalService,
     private courseService: CourseService,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private profileService: ProfileService,
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService
   ) {
     this.userId = this.navParams.get('userId') || '';
     this.isRefreshProfile = this.navParams.get('returnRefreshedUserProfileDetails');
@@ -202,6 +206,11 @@ export class ProfilePage {
                 that.resetProfile();
                 const r = JSON.parse(res);
                 that.profile = r;
+                this.profileService.getCurrentUser().then((resp: any) => {
+                  const profile = JSON.parse(resp);
+                  that.formAndFrameworkUtilService.updateLoggedInUser(r, profile)
+                  .then( () => {});
+                });
                 if (r && r.avatar) {
                   that.imageUri = r.avatar;
                 }

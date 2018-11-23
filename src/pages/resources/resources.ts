@@ -17,7 +17,8 @@ import {
   SharedPreferences,
   ContentFilterCriteria,
   ProfileType,
-  PageAssembleFilter
+  PageAssembleFilter,
+  FrameworkService
 } from 'sunbird';
 import {
   NavController,
@@ -93,7 +94,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     private appVersion: AppVersion,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    private framework: FrameworkService
   ) {
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
       .then(val => {
@@ -318,7 +320,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           pageAssembleCriteria.filters.subject, 'subject');
       }
     }
-
+    console.log('pageAssembleCriteria', pageAssembleCriteria);
     this.pageService.getPageAssemble(pageAssembleCriteria) .then((res: any) => {
       that.ngZone.run(() => {
         const response = JSON.parse(res);
@@ -404,6 +406,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   ionViewDidEnter() {
 
+
     this.preference.getString('show_app_walkthrough_screen')
       .then(value => {
         if (value === 'true') {
@@ -443,6 +446,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       this.getCurrentUser();
     } else {
       this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
+      this.profile = this.appGlobalService.getCurrentUser();
     }
 
     if (!this.pageLoadedSuccess) {
@@ -478,6 +482,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     if (this.guestUser) {
       this.getCurrentUser();
     } else {
+      this.profile = this.appGlobalService.getCurrentUser();
       this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
     }
 
