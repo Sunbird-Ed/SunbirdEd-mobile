@@ -19,7 +19,7 @@ export const mockProfileRes = {
         + '"skills":[{"skillName":"Maths","addedBy":"0b5b8cf8-a1b6-41d9-862d-ebc242f0b962"},'
         + '{"skillName":"Maths","addedBy":"0b5b8cf8-a1b6-41d9-862d-ebc242f0b962"}],'
         + '"id":"0b5b8cf8-a1b6-41d9-862d-ebc242f0b962","identifier":"0b5b8cf8-a1b6-41d9-862d-ebc242f0b962",'
-        + '"profileVisibility":{"address":"private","phone":"private","email":"private"},'
+        + '"profileVisibility":{"phone":"private","email":"private"},'
         + '"updatedBy":"0b5b8cf8-a1b6-41d9-862d-ebc242f0b962","jobProfile":[],"externalIds":[],'
         + '"rootOrgId":"0125134851644620800","firstName":"Vivek","phone":"******5680","grade":[],"status":1.0,'
         + '"lastName":"kasture","roles":["PUBLIC"],"badgeAssertions":[],"isDeleted":false,'
@@ -31,9 +31,7 @@ export const mockProfileRes = {
         + '"slug":"sunbird-staging","identifier":"0125134851644620800","orgName":"defaultRootOrg","locationIds":[],'
         + '"isRootOrg":true,"rootOrgId":"0125134851644620800","contactDetail":[],"createdDate":"2018-05-28 16:23:38:330+0000",'
         + '"createdBy":"8217108a-6931-491c-9009-1ae95cb0477f","hashTagId":"0125134851644620800","status":1.0},'
-        + '"address":[{"city":"Pune","userId":"0b5b8cf8-a1b6-41d9-862d-ebc242f0b962","zipcode":"411038","addType":"permanent",'
-        + '"createdDate":"2018-09-11 12:31:06:127+0000","createdBy":"0b5b8cf8-a1b6-41d9-862d-ebc242f0b962","addressLine1":"Kothrud",'
-        + '"id":"01258839358232166429"}],"profileSummary":"The hasOwnProperty() method returns a boolean indicating'
+        + '"profileSummary":"The hasOwnProperty() method returns a boolean indicating'
         + ' whether the object has the specified property as its own property (as opposed to inheriting it).","topics":[],'
         + '"userName":"vivek","userId":"0b5b8cf8-a1b6-41d9-862d-ebc242f0b962","emailVerified":false,'
         + '"lastLoginTime":1.536669035858E12,"createdDate":"2018-09-11 12:28:49:017+0000",'
@@ -49,16 +47,6 @@ export const mockProfileRes = {
         percentage: 0,
         userId: '0b5b8cf8-a1b6-41d9-862d-ebc242f0b962',
         yearOfPassing: 0
-    },
-
-    addressMock: {
-        city: 'Pune',
-        addressLine1: 'Kothrud',
-        addType: 'permanent',
-        createdDate: '2018-09-11 12:31:06:127+0000',
-        id: '01258839358232166429',
-        userId: '0b5b8cf8-a1b6-41d9-862d-ebc242f0b962',
-        zipcode: '411038'
     },
 
     contentReqMock: {
