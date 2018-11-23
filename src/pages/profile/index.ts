@@ -1,5 +1,3 @@
-export * from './additional-info/additional-info';
-export * from './address/form.address';
 export * from './education/form.education';
 export * from './experience/form.experience';
 export * from './guest-edit.profile/guest-edit.profile';

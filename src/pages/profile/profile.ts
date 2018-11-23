@@ -17,13 +17,12 @@ import {
   InteractType,
   InteractSubtype,
   CourseService,
-  TelemetryObject
+  TelemetryObject,
+  ProfileService
 } from 'sunbird';
 import * as _ from 'lodash';
 import {
   FormEducation,
-  FormAddress,
-  AdditionalInfoComponent,
   OverflowMenuComponent,
 } from '@app/pages/profile';
 import {
@@ -41,6 +40,7 @@ import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details/en
 import { CollectionDetailsPage } from '@app/pages/collection-details/collection-details';
 import { ContentDetailsPage } from '@app/pages/content-details/content-details';
 import { AppGlobalService, TelemetryGeneratorService } from '@app/service';
+import { FormAndFrameworkUtilService } from './formandframeworkutil.service';
 
 /**
  * The Profile page
@@ -72,10 +72,6 @@ export class ProfilePage {
    */
   imageUri = 'assets/imgs/ic_profile_default.png';
 
-  uncompletedDetails: any = {
-    title: ''
-  };
-
   readonly DEFAULT_PAGINATION_LIMIT = 2;
   rolesLimit = 2;
   badgesLimit = 2;
@@ -101,7 +97,9 @@ export class ProfilePage {
     private events: Events,
     private appGlobalService: AppGlobalService,
     private courseService: CourseService,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private profileService: ProfileService,
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService
   ) {
     this.userId = this.navParams.get('userId') || '';
     this.isRefreshProfile = this.navParams.get('returnRefreshedUserProfileDetails');
@@ -202,11 +200,15 @@ export class ProfilePage {
                 that.resetProfile();
                 const r = JSON.parse(res);
                 that.profile = r;
+                this.profileService.getCurrentUser().then((resp: any) => {
+                  const profile = JSON.parse(resp);
+                  that.formAndFrameworkUtilService.updateLoggedInUser(r, profile)
+                  .then( () => {});
+                });
                 if (r && r.avatar) {
                   that.imageUri = r.avatar;
                 }
                 that.formatRoles();
-                that.formatMissingFields();
                 that.formatOrgDetails();
                 resolve();
               });
@@ -228,58 +230,6 @@ export class ProfilePage {
    */
   arrayToString(stringArray: Array<string>): string {
     return stringArray.join(', ');
-  }
-
-  /**
-   * To Format the missing fields and gives it proper name based on missing field
-   * TODO: Need to replace following strings with the language constants
-   */
-  formatMissingFields() {
-    this.uncompletedDetails.title = '';
-    if (this.profile.missingFields && this.profile.missingFields.length) {
-      // Removing avatar from missing fields, because user can't add or edit profile image.
-      if (this.profile.missingFields[0] === 'avatar') {
-        this.profile.missingFields.splice(0, 1);
-      }
-
-      switch (this.profile.missingFields[0]) {
-        case 'phone':
-          this.setMissingProfileDetails('ADD_PHONE_NUMBER');
-          break;
-        case 'profileSummary':
-          this.setMissingProfileDetails('ADD_PROFILE_DESCRIPTION');
-          break;
-        case 'lastName':
-          this.setMissingProfileDetails('ADD_LAST_NAME');
-          break;
-      }
-    }
-  }
-
-  setMissingProfileDetails(title: string) {
-    const requiredProfileFields: Array<string> = [
-      'userId',
-      'firstName',
-      'lastName',
-      'language',
-      'email',
-      'phone',
-      'profileSummary',
-      'subject',
-      'gender',
-      'dob',
-      'grade',
-      'location',
-      'webPages'
-    ];
-
-    this.uncompletedDetails.title = title;
-    this.uncompletedDetails.page = AdditionalInfoComponent;
-    this.uncompletedDetails.data = {
-      userId: this.loggedInUserId,
-      profile: this.getSubset(requiredProfileFields, this.profile),
-      profileVisibility: this.profile.profileVisibility
-    };
   }
 
   /**
@@ -335,19 +285,6 @@ export class ProfilePage {
       addForm: isNewForm,
       formDetails: formDetails,
       profile: profile
-    });
-  }
-
-  /**
-   * Redirects to the Address form and passes current form data if available
-   */
-  editAddress(isNewForm: boolean = true, addressDetails: any = {}) {
-    this.zone.run(() => {
-      this.navCtrl.push(FormAddress, {
-        addForm: isNewForm,
-        addressDetails: addressDetails,
-        profile: this.profile
-      });
     });
   }
 

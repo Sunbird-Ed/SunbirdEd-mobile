@@ -149,7 +149,8 @@ export class SunbirdQRScanner {
 
   private startQRScanner(screenTitle: string, displayText: string, displayTextColor: string,
     buttonText: string, showButton: boolean, source: string) {
-    window['qrScanner'].startScanner(screenTitle, displayText, displayTextColor, buttonText, showButton, (scannedData) => {
+    window['qrScanner'].startScanner(screenTitle, displayText,
+     displayTextColor, buttonText, showButton, this.platform.isRTL, (scannedData) => {
       if (scannedData === 'skip') {
         if (this.appGlobalService.DISPLAY_ONBOARDING_CATEGORY_PAGE) {
           this.app.getActiveNavs()[0].push(ProfileSettingsPage, { stopScanner: true });
