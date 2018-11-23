@@ -56,6 +56,7 @@ import { CommonUtilService } from '../../service/common-util.service';
 import { ViewCreditsComponent } from '../../component/view-credits/view-credits';
 import { DialogPopupComponent } from '../../component/dialog-popup/dialog-popup';
 import { Observable } from 'rxjs';
+import {XwalkConstants} from '../../app/app.constant';
 
 @IonicPage()
 @Component({
@@ -790,7 +791,7 @@ export class ContentDetailsPage {
   playContent(isStreaming: boolean) {
     // set the boolean to true, so when the content player is closed, we get to know that
     // we are back from content player
-    if (this.apiLevel < 21 && this.appAvailability === 'not avilable') {
+    if (this.apiLevel < 21 && this.appAvailability === 'true') {
       this.showPopupDialog();
     } else {
       this.downloadAndPlay = false;
@@ -820,23 +821,21 @@ export class ContentDetailsPage {
   }
 
   checkappAvailability() {
-    this.deviceInfoService.checkAppAvailability('org.xwalk.core')
+    this.deviceInfoService.checkAppAvailability(XwalkConstants.APP_ID)
       .then((response: any) => {
-        console.log('app', response);
         this.appAvailability = response;
       })
       .catch((error: any) => {
-        console.log('Error ', error);
+        console.error('Error ', error);
       });
   }
 
   checkDeviceAPILevel() {
     this.deviceInfoService.getDeviceAPILevel()
       .then((res: any) => {
-        console.log('api level' + res);
         this.apiLevel = res;
-      }).catch((err: any) => {
-        console.log('Error ', err);
+      }).catch((error: any) => {
+        console.error('Error ', error);
       });
   }
   updateContentProgress() {

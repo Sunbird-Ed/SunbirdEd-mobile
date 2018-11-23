@@ -3,6 +3,7 @@ import { ViewController } from 'ionic-angular';
 import { NavParams } from 'ionic-angular';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { CommonUtilService } from '../../service/common-util.service';
+import {XwalkConstants} from '../../app/app.constant';
 
 
 @Component({
@@ -27,6 +28,6 @@ export class DialogPopupComponent {
     this.viewCtrl.dismiss();
   }
   redirectToPlaystore() {
-    this.commonUtilService.openLink('https://play.google.com/store/apps/details?id=org.xwalk.core');
+    this.commonUtilService.openLink(XwalkConstants.LINK);
   }
 }
