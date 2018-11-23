@@ -34,7 +34,8 @@ import {
   ProfileService,
   ProfileRequest,
   TelemetryObject,
-  SharedPreferences
+  SharedPreferences,
+  DeviceInfoService
 } from 'sunbird';
 import {
   PreferenceKey
@@ -62,6 +63,8 @@ import { Observable } from 'rxjs';
   templateUrl: 'content-details.html',
 })
 export class ContentDetailsPage {
+  apiLevel: number;
+  appAvailability: string;
   content: any;
   isChildContent = false;
   contentDetails: any;
@@ -140,7 +143,8 @@ export class ContentDetailsPage {
     private profileService: ProfileService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService,
-    private courseUtilService: CourseUtilService
+    private courseUtilService: CourseUtilService,
+    private deviceInfoService: DeviceInfoService
   ) {
 
     this.objRollup = new Rollup();
@@ -149,6 +153,8 @@ export class ContentDetailsPage {
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
     this.handlePageResume();
+    this.checkDeviceAPILevel();
+    this.checkappAvailability();
     // this.checkBookmarkStatus();
   }
 
@@ -274,14 +280,14 @@ export class ContentDetailsPage {
 
   checkCurrentUserType() {
     if (this.isGuestUser) {
-    this.appGlobalService.getGuestUserInfo()
-      .then((userType) => {
-        this.profileType = userType;
-      })
-      .catch((error) => {
-        console.log('Error Occurred', error);
-        this.profileType = '';
-      });
+      this.appGlobalService.getGuestUserInfo()
+        .then((userType) => {
+          this.profileType = userType;
+        })
+        .catch((error) => {
+          console.log('Error Occurred', error);
+          this.profileType = '';
+        });
     }
   }
 
@@ -784,38 +790,55 @@ export class ContentDetailsPage {
   playContent(isStreaming: boolean) {
     // set the boolean to true, so when the content player is closed, we get to know that
     // we are back from content player
-    // if ( check for API level < 21 and crosswalk is installed or not ) {
-    //   this.showPopupDialog();
-    // } else {
-    //    put the below code here
-    // }
-    this.downloadAndPlay = false;
-    if (!AppGlobalService.isPlayerLaunched) {
-      AppGlobalService.isPlayerLaunched = true;
-    }
-
-    this.zone.run(() => {
-      this.isPlayerLaunched = true;
-      const values = new Map();
-      if (Boolean(this.downloadAndPlay)) {
-        values['autoAfterDownload'] = true;
+    if (this.apiLevel < 21 && this.appAvailability === 'not avilable') {
+      this.showPopupDialog();
+    } else {
+      this.downloadAndPlay = false;
+      if (!AppGlobalService.isPlayerLaunched) {
+        AppGlobalService.isPlayerLaunched = true;
       }
-      this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-        InteractSubtype.CONTENT_PLAY,
-        Environment.HOME,
-        PageId.CONTENT_DETAIL,
-        undefined,
-        values,
-        this.objRollup,
-        this.corRelationList);
-    });
-    this.downloadAndPlay = false;
-    const request: any = {};
-    request.streaming = isStreaming;
-    (<any>window).geniecanvas.play(this.content.playContent, JSON.stringify(request));
+      this.zone.run(() => {
+        this.isPlayerLaunched = true;
+        const values = new Map();
+        if (Boolean(this.downloadAndPlay)) {
+          values['autoAfterDownload'] = true;
+        }
+        this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+          InteractSubtype.CONTENT_PLAY,
+          Environment.HOME,
+          PageId.CONTENT_DETAIL,
+          undefined,
+          values,
+          this.objRollup,
+          this.corRelationList);
+      });
+      this.downloadAndPlay = false;
+      const request: any = {};
+      request.streaming = isStreaming;
+      (<any>window).geniecanvas.play(this.content.playContent, JSON.stringify(request));
+    }
   }
 
+  checkappAvailability() {
+    this.deviceInfoService.checkAppAvailability('org.xwalk.core')
+      .then((response: any) => {
+        console.log('app', response);
+        this.appAvailability = response;
+      })
+      .catch((error: any) => {
+        console.log('Error ', error);
+      });
+  }
 
+  checkDeviceAPILevel() {
+    this.deviceInfoService.getDeviceAPILevel()
+      .then((res: any) => {
+        console.log('api level' + res);
+        this.apiLevel = res;
+      }).catch((err: any) => {
+        console.log('Error ', err);
+      });
+  }
   updateContentProgress() {
     const stateData = this.navParams.get('contentState');
     if (stateData !== undefined && stateData.batchId && stateData.courseId && this.userId) {
