@@ -22,8 +22,7 @@ import {
 } from 'sunbird';
 import * as _ from 'lodash';
 import {
-  FormEducation,
-  OverflowMenuComponent,
+  OverflowMenuComponent
 } from '@app/pages/profile';
 import {
   generateInteractTelemetry,
@@ -203,7 +202,7 @@ export class ProfilePage {
                 this.profileService.getCurrentUser().then((resp: any) => {
                   const profile = JSON.parse(resp);
                   that.formAndFrameworkUtilService.updateLoggedInUser(r, profile)
-                  .then( () => {});
+                    .then(() => { });
                 });
                 if (r && r.avatar) {
                   that.imageUri = r.avatar;
@@ -239,7 +238,7 @@ export class ProfilePage {
     this.roles = [];
     if (this.profile && this.profile.roleList) {
       if (this.profile.organisations && this.profile.organisations.length) {
-        for (let i = 0, len = this.profile.organisations[0].roles.length; i < len; i++ ) {
+        for (let i = 0, len = this.profile.organisations[0].roles.length; i < len; i++) {
           const roleKey = this.profile.organisations[0].roles[i];
           const val = this.profile.roleList.find(role => role.id === roleKey).name;
           if (val) {
@@ -275,17 +274,6 @@ export class ProfilePage {
         }
       }
     }
-  }
-
-  /**
-   * Redirects to the Education form and passes current form data if available
-   */
-  editEduDetails(isNewForm, profile, formDetails = {}) {
-    this.navCtrl.push(FormEducation, {
-      addForm: isNewForm,
-      formDetails: formDetails,
-      profile: profile
-    });
   }
 
   /**
