@@ -477,3 +477,88 @@ ul.rating .ion-md-star-outline:before {
   width: 0.6rem;
   margin: 0;
 }
+
+.alert-wp.confirm-alert .alert-wrapper {    
+  border: unset !important;    
+  background: white !important;    
+  bottom: 0;    
+  position: fixed;    
+}    
+.alert-wp.confirm-alert .closeButton {    
+@include text-align('end');
+position: absolute;    
+width: 5px !important;    
+top: 3px;    
+z-index:1000;    
+background-color: transparent !important;    
+font-size:18px !important;    
+font-weight: 600 !important;    
+padding-top: 12px !important;    
+}    
+.alert-btn-cancel.alert-button {    
+  font-weight: 600 !important;    
+  background: transparent;    
+  color: map-get($colors, primary) !important;    
+  border-color: map-get($colors, primary);    
+  text-transform: uppercase;    
+  border-style: solid;    
+  border-width: 1px;    
+  border-radius: 4px !important;    
+  overflow: hidden;    
+  height: 4.3rem;    
+  font-size: 1.4rem;    
+  font-weight: 700;    
+}    
+.alert-btn-delete.alert-button, .alert-wp.confirm-alert .doneButton {    
+  font-weight: 600 !important;    
+  background:  map-get($colors, primary) !important;    
+  color: white !important;    
+  border-color: map-get($colors, primary);    
+  text-transform: uppercase;    
+  border-style: solid;    
+  border-width: 1px;    
+  border-radius: 4px !important;    
+  overflow: hidden;    
+  height: 4.3rem;    
+  font-size: 1.4rem;    
+  font-weight: 700;    
+  width: 100% !important;    
+}    
+.alert-wp ion-backdrop {    
+  background: black !important;    
+}    
+  
+.alert-wp .alert-button {    
+  width: 46% !important;    
+  // font-weight: 400;    
+  // color: #000;    
+  // background: #b8b8b8;    
+}    
+.alert-wp .alert-title {    
+  font-size: 1.7rem !important;    
+  font-weight: 600 !important;    
+}    
+// h2{    
+// line-height: 0 !important;    
+// }    
+.alert-wp .alert-button-group{    
+  display: inline-block !important;    
+}    
+.alert-button{    
+  display: unset !important;    
+} 
+
+.alert-wp .alert-button:first-child:not(:only-child) {    
+  @include ltr() {
+    margin-right: 7% !important;
+  }
+  @include rtl() {
+    margin-left: 7% !important;
+  }
+}  
+
+.ng2-dropdown-menu {    
+  font-size: 1.6rem;    
+  max-width: 55vw;    
+  width: auto !important;    
+}
