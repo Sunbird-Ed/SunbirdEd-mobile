@@ -13,6 +13,8 @@
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
 @import "../assets/styles/_helper";
+@import "../assets/styles/rtl_helper";
+@import "../assets/styles/details_page";
 
 @font-face {
   font-family: 'OpenSans';
