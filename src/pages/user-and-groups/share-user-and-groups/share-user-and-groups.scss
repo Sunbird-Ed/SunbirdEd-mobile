@@ -13,7 +13,12 @@ page-share-user-and-groups {
     }
 
     .checkbox-inner {
-        left: 7px;
+        @include ltr() {
+            left: 7px;
+        }
+        @include rtl() {
+            right: 7px;
+        }
         top: 4px;
         position: absolute;
         width: 4px;

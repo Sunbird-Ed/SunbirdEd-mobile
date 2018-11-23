@@ -7,7 +7,7 @@ content-rating-alert {
     margin-bottom: 3%;
     font-size: 1.6rem;
     padding: 0;
-    margin-left: 0;
+    @include margin(null, null, null, 0);
     font-weight: bold;
   }
 .heading2{
@@ -25,12 +25,17 @@ content-rating-alert {
   color: map-get($colors, primary_black);
 }
 .feedback{
-
         border-top: 0px;
         // height: 50px;
         // font-size: 20px;
-        border-left: 0px;
-        border-right: 0px;
+        @include ltr() {
+          border-left: 0px;
+          border-right: 0px;
+        }
+        @include rtl() {
+          border-left: 0px;
+          border-right: 0px;
+        }
         border-bottom: 2px solid gray;
         padding-top: 12px;
     }
@@ -39,7 +44,7 @@ content-rating-alert {
         margin: 0px;
 
         &.rating li {
-          padding: 1px 1px !important;
+          padding: 1px !important;
           background: none;
           color: map-get($colors, primary);
           ion-icon {
@@ -56,6 +61,13 @@ content-rating-alert {
     box-shadow: unset;
     position: fixed;
     left: 0 !important;
+    @include ltr() {
+      left: 0 !important;
+    }
+
+    @include rtl() {
+      right: 0 !important;
+    }
     top: unset !important;
     bottom: 0;
     transform-origin: bottom -100% !important;

@@ -35,7 +35,7 @@
 					<div class="size_txt padding-bottom-5" no-margin>
 						<span class="content-size">{{ contentDetail?.contentType }} </span>
 						<!--  TODO: show 0 if not available-->
-						<span *ngIf="contentDetail?.size" class="content-size">[{{ contentDetail?.size | fileSize }}]</span>
+						<span *ngIf="contentDetail?.size" class="content-size">[{{ contentDetail?.size | fileSize }}] &lrm;</span>
 					</div>
 					<ion-row>
 						<div class="col-2">
@@ -123,7 +123,7 @@
 			</div>
 			<div *ngIf="fromCoursesPage && !isAlreadyEnrolled">
 				<ion-list *ngIf="childrenData?.length" padding-top>
-					<ion-item *ngFor="let item of childrenData; let i = index;" style="padding-left: 0px;">
+					<ion-item *ngFor="let item of childrenData; let i = index;" class="child-item" >
 						<span ion-text class="span-semibold">{{ (item?.contentData?.name && item?.contentData?.name.length > 30) ?
 							(item?.contentData?.name | slice:0:30) + '...'
 							: (item?.contentData?.name)}}</span>
@@ -132,7 +132,7 @@
 			</div>
 			<div *ngIf="fromCoursesPage && isAlreadyEnrolled">
 				<ion-list *ngIf="childrenData && childrenData?.length" padding-top>
-					<ion-item *ngFor="let item of childrenData; let i = index;" style="padding-left: 0px;" (click)="navigateToDetailsPage(item, depth + '.' + (i + 1))">
+					<ion-item *ngFor="let item of childrenData; let i = index;" class="child-item"  (click)="navigateToDetailsPage(item, depth + '.' + (i + 1))">
 						<span ion-text class="span-semibold">{{ (item?.contentData?.name && item?.contentData?.name.length > 30) ?
 							(item?.contentData?.name | slice:0:30) + '...'
 							: (item?.contentData?.name)}}</span>
@@ -142,7 +142,7 @@
 			</div>
 			<div *ngIf="!fromCoursesPage && !isAlreadyEnrolled">
 				<ion-list *ngIf="childrenData && childrenData?.length" padding-top>
-					<ion-item *ngFor="let item of childrenData; let i = index;" style="padding-left: 0px;" (click)="navigateToDetailsPage(item, depth + '.' + (i + 1))">
+					<ion-item *ngFor="let item of childrenData; let i = index;" class="child-item"  (click)="navigateToDetailsPage(item, depth + '.' + (i + 1))">
 						<span ion-text class="span-semibold">{{ (item?.contentData?.name && item?.contentData?.name.length > 30) ?
 							(item?.contentData?.name | slice:0:30) + '...'
 							: (item?.contentData?.name)}}</span>

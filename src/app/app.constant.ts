@@ -176,14 +176,13 @@ export const appLanguages = [
         code: 'kn',
         isApplied: false,
         name: 'Kannada'
-    }
-    /*,
+    },
     {
         label: 'اردو',
         code: 'ur',
         isApplied: false,
         name: 'Urdu'
-    } */
+    }
 ];
 
 export class PageName {

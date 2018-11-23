@@ -22,23 +22,20 @@ page-group-member {
         background-color: map-get($colors, light_gray) !important;
       }
       .advanced-menu{
-        padding-top: 0 !important;
-        padding-bottom: 0 !important;
-        padding-right: 0 !important;
-        padding-left:7% !important;
+        @include padding(0, 0, 0, 7% !important);
       }
       .advanced-menu ion-icon[item-end] {
-            margin-top: 0 !important;
-            padding-right: 8px !important;
+            @include margin(0, null, null, null !important);
+            @include padding(null, 8px, null, null !important)
         }
         .advanced-menu .item-md, .advanced-menu .item-ios {
-          margin-top: 0 !important;
+          @include margin(0, null, null, null !important);
         }
         .padding-left-0 {
-          padding-left: 0 !important;
+          @include padding(null, null, null, 0 !important);
         }
         .rm-label-margin ion-label {
-          margin-top: 0 !important;
+          @include margin(0, null, null, null !important);
           margin-bottom: 0 !important;
         }
         .image-text {
@@ -56,8 +53,13 @@ page-group-member {
           width: 100px;
           height: 100px;
           top: 30%;
-          left: 60%;
-          margin-left: -97px;
+          @include ltr() {
+            left: 60%;
+          }
+          @include rtl() {
+            right: 60%;
+          };
+          @include margin(null, null, null, -97px);
           margin-top: -144x;
         }
         .playcontent-label{
@@ -82,7 +84,7 @@ page-group-member {
         }
         .playcontent-label{
           font-size: 1.4rem !important;
-          padding: 1px 0px 1px 6px !important;
+          @include padding(1px, 0px, 1px, 6px !important);
         }
         .footer{
           background-color: white;

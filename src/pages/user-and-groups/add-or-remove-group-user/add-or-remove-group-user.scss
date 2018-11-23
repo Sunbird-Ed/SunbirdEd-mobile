@@ -3,7 +3,12 @@ page-add-or-remove-group-user {
         background-color: map-get($colors, light_gray) !important;
       }
       .checkbox-inner {
-        left: 7px;
+        @include ltr() {
+          left: 7px;
+        }
+        @include rtl() {
+          right: 7px;
+        }
         top: 4px;
         position: absolute;
         width: 4px;
@@ -28,9 +33,9 @@ page-add-or-remove-group-user {
         width: 50%;
       }
       .rm-padding-right {
-        padding-right: 0 !important;
+        @include padding(null, 0, null, null !important);
       }
       .rm-padding-left {
-        padding-left: 0 !important;
+        @include padding(null, null, null, 0 !important);
       }
 }
