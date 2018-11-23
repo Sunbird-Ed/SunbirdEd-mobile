@@ -10,11 +10,6 @@ import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { ProfilePage } from './profile';
 import { GuestProfilePage } from './guest-profile/guest-profile';
 import { GuestEditProfilePage } from './guest-edit.profile/guest-edit.profile';
-import { FormEducation } from './education/form.education';
-import { FormAddress } from './address/form.address';
-import { AdditionalInfoComponent } from './additional-info/additional-info';
-import { FormExperience } from './experience/form.experience';
-import { SkillTagsComponent } from './skill-tags/skill-tags';
 import { OverflowMenuComponent } from './overflowmenu/menu.overflow.component';
 import { ContainerService } from 'sunbird';
 import { SettingsPageModule } from '../settings/settings.module';
@@ -24,37 +19,24 @@ import { ComponentsModule } from '../../component/components.module';
 import { IonicImageLoader } from 'ionic-image-loader';
 import { ImagePicker } from './imagepicker/imagepicker';
 import { CategoriesEditPageModule } from '../categories-edit/categories-edit.module';
-import { OldProfilePage } from './old-profile';
 
 @NgModule({
   declarations: [
     ProfilePage,
-    OldProfilePage,
     GuestProfilePage,
     GuestEditProfilePage,
-    FormEducation,
-    FormAddress,
-    AdditionalInfoComponent,
-    FormExperience,
-    SkillTagsComponent,
     OverflowMenuComponent,
     UserSearchComponent,
     ImagePicker
   ],
   entryComponents: [
     ProfilePage,
-    OldProfilePage,
     GuestProfilePage,
     GuestEditProfilePage,
-    FormEducation,
-    FormAddress,
-    AdditionalInfoComponent,
-    FormExperience,
-    SkillTagsComponent,
     OverflowMenuComponent,
     ImagePicker,
     UserSearchComponent
-    ],
+  ],
 
   imports: [
     IonicPageModule.forChild(ProfilePage),
@@ -71,12 +53,8 @@ import { OldProfilePage } from './old-profile';
   ],
   exports: [
     ProfilePage,
-    OldProfilePage,
     GuestProfilePage,
-    GuestEditProfilePage,
-    FormAddress,
-    AdditionalInfoComponent,
-    FormEducation
+    GuestEditProfilePage
   ],
   providers: [
     ContainerService,

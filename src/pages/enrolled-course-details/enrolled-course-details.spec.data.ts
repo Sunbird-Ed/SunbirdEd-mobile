@@ -50,7 +50,7 @@ export const mockRes = {
             'orgName': 'Root ORG 111', 'locationIds': [], 'isRootOrg': true, 'rootOrgId': '01252', 'contactDetail': [],
             'createdDate': '2018-06-20 05:30:16:596+0000', 'createdBy': '230cb747', 'hashTagId': '01252944391512064091', 'status': 1
         }, 'identifier': '8e4cb485b',
-        'updatedBy': '230cb747', 'address': [], 'jobProfile': [], 'rootOrgId': '01252',
+        'updatedBy': '230cb747', 'jobProfile': [], 'rootOrgId': '01252',
         'emailVerified': false, 'firstName': 'John', 'createdDate': '2018-06-20 07:00:42:831+0000', 'createdBy': '230cb74',
          'grade': [], 'status': 1
     },

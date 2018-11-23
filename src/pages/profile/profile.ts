@@ -22,10 +22,7 @@ import {
 } from 'sunbird';
 import * as _ from 'lodash';
 import {
-  FormEducation,
-  FormAddress,
-  AdditionalInfoComponent,
-  OverflowMenuComponent,
+  OverflowMenuComponent
 } from '@app/pages/profile';
 import {
   generateInteractTelemetry,
@@ -73,10 +70,6 @@ export class ProfilePage {
    * Contains paths to icons
    */
   imageUri = 'assets/imgs/ic_profile_default.png';
-
-  uncompletedDetails: any = {
-    title: ''
-  };
 
   readonly DEFAULT_PAGINATION_LIMIT = 2;
   rolesLimit = 2;
@@ -209,13 +202,12 @@ export class ProfilePage {
                 this.profileService.getCurrentUser().then((resp: any) => {
                   const profile = JSON.parse(resp);
                   that.formAndFrameworkUtilService.updateLoggedInUser(r, profile)
-                  .then( () => {});
+                    .then(() => { });
                 });
                 if (r && r.avatar) {
                   that.imageUri = r.avatar;
                 }
                 that.formatRoles();
-                that.formatMissingFields();
                 that.formatOrgDetails();
                 resolve();
               });
@@ -240,65 +232,13 @@ export class ProfilePage {
   }
 
   /**
-   * To Format the missing fields and gives it proper name based on missing field
-   * TODO: Need to replace following strings with the language constants
-   */
-  formatMissingFields() {
-    this.uncompletedDetails.title = '';
-    if (this.profile.missingFields && this.profile.missingFields.length) {
-      // Removing avatar from missing fields, because user can't add or edit profile image.
-      if (this.profile.missingFields[0] === 'avatar') {
-        this.profile.missingFields.splice(0, 1);
-      }
-
-      switch (this.profile.missingFields[0]) {
-        case 'phone':
-          this.setMissingProfileDetails('ADD_PHONE_NUMBER');
-          break;
-        case 'profileSummary':
-          this.setMissingProfileDetails('ADD_PROFILE_DESCRIPTION');
-          break;
-        case 'lastName':
-          this.setMissingProfileDetails('ADD_LAST_NAME');
-          break;
-      }
-    }
-  }
-
-  setMissingProfileDetails(title: string) {
-    const requiredProfileFields: Array<string> = [
-      'userId',
-      'firstName',
-      'lastName',
-      'language',
-      'email',
-      'phone',
-      'profileSummary',
-      'subject',
-      'gender',
-      'dob',
-      'grade',
-      'location',
-      'webPages'
-    ];
-
-    this.uncompletedDetails.title = title;
-    this.uncompletedDetails.page = AdditionalInfoComponent;
-    this.uncompletedDetails.data = {
-      userId: this.loggedInUserId,
-      profile: this.getSubset(requiredProfileFields, this.profile),
-      profileVisibility: this.profile.profileVisibility
-    };
-  }
-
-  /**
    * Method to store all roles from different organizations into single array
    */
   formatRoles() {
     this.roles = [];
     if (this.profile && this.profile.roleList) {
       if (this.profile.organisations && this.profile.organisations.length) {
-        for (let i = 0, len = this.profile.organisations[0].roles.length; i < len; i++ ) {
+        for (let i = 0, len = this.profile.organisations[0].roles.length; i < len; i++) {
           const roleKey = this.profile.organisations[0].roles[i];
           const val = this.profile.roleList.find(role => role.id === roleKey).name;
           if (val) {
@@ -334,30 +274,6 @@ export class ProfilePage {
         }
       }
     }
-  }
-
-  /**
-   * Redirects to the Education form and passes current form data if available
-   */
-  editEduDetails(isNewForm, profile, formDetails = {}) {
-    this.navCtrl.push(FormEducation, {
-      addForm: isNewForm,
-      formDetails: formDetails,
-      profile: profile
-    });
-  }
-
-  /**
-   * Redirects to the Address form and passes current form data if available
-   */
-  editAddress(isNewForm: boolean = true, addressDetails: any = {}) {
-    this.zone.run(() => {
-      this.navCtrl.push(FormAddress, {
-        addForm: isNewForm,
-        addressDetails: addressDetails,
-        profile: this.profile
-      });
-    });
   }
 
   /**
