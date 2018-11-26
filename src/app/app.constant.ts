@@ -176,18 +176,22 @@ export const appLanguages = [
         code: 'kn',
         isApplied: false,
         name: 'Kannada'
-    }
-    /*,
+    },
     {
         label: 'اردو',
         code: 'ur',
         isApplied: false,
         name: 'Urdu'
-    } */
+    }
 ];
 
 export class PageName {
     public static readonly RESOURCE = 'Resource';
     public static readonly COURSE = 'Course';
     public static readonly DIAL_CODE = 'DIAL Code Consumption';
+}
+
+export class XwalkConstants {
+    public static readonly LINK = 'https://play.google.com/store/apps/details?id=org.xwalk.core';
+    public static readonly APP_ID = 'org.xwalk.core';
 }

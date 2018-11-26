@@ -1,6 +1,6 @@
 <ion-header>
   <ion-navbar>
-    <ion-input type="search" #searchInput placeholder="Search" [(ngModel)]="searchKeywords" (keyup.enter)="handleSearch()"
+    <ion-input type="search" #searchInput dir="{{commonUtilService.getAppDirection()}}" placeholder="Search" [(ngModel)]="searchKeywords" (keyup.enter)="handleSearch()"
       clearInput></ion-input>
     <ion-buttons end>
       <button ion-button (click)="showFilter()" *ngIf="filterIcon">

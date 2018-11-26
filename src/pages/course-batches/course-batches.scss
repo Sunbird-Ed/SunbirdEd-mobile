@@ -7,20 +7,26 @@ page-course-batches {
         background: rgba(255, 255, 255, 0.8);
         z-index: 20;
         top: 0;
+        @include ltr() {
         left: 0;
+        };
+    
+        @include rtl() {
+        right: 0;
+        };
         margin-top: 56px;
       }
     .batch-filter-icon {
         float: right;
-        padding-right: 25px;
+        @include padding(null, 25px, null, null);
     }
     .batch-filter-holder{
         margin-top: -10px;
     }
     .background-gray{
         background: #efeff4;
-        margin: 0 -26px;
-        padding-left: 25px !important;
+        @include margin(0, -26px);
+        @include padding(null, null, null, 25px !important);
         margin-top: -13px;
     }
     .batch-empty-msg-wrapper {
@@ -28,7 +34,8 @@ page-course-batches {
         .msg-holder {
             padding-top: 30px;
             .empty-batch-icon{
-                width: 50px; margin-left: 118px;
+                width: 50px; 
+                @include margin(null, null, null, 118px);
             }
             .text-holder{
                 font-size: 18px;
@@ -53,9 +60,9 @@ page-course-batches {
         padding-top: 30px;
     }
     .batch-list {
-        margin-left: -10px;
+        @include margin(null, null, null, -10px);
         .enroll-btn{
-            padding-right: 0 !important;
+            @include padding(null, 0, null, null !important);
         }
     }
     .padding-top-8 {
@@ -68,7 +75,7 @@ page-course-batches {
         font-weight: 500;
     }
     .back-button-md {
-        margin-left: -1px !important;
+        @include margin(null, null, null, -1px !important);
     }
     .text-gray-color {
         color: gray;

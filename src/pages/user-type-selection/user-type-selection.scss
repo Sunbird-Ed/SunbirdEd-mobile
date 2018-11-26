@@ -9,11 +9,11 @@ page-user-type-selection {
         color: map-get($colors, title);
         font-size: 1.4rem;
         font-weight: 500;
-        padding-left: 25px !important;
+        @include padding(null, null, null, 25px !important);
     }
 
     .card-title {
-        padding-left: 10px;
+        @include padding(null, null, null, 10px !important);
         font-weight: 700;
         font-size: 1.7rem;
         color: map-get($colors, secondary_black);
@@ -21,7 +21,7 @@ page-user-type-selection {
     }
 
     .continue-related-style {
-        margin: 0 20px 20px 20px;
+        @include margin(0, 20px, 20px, 20px);
     }
 
     .thumbnail {
@@ -31,11 +31,11 @@ page-user-type-selection {
     }
 
     .card-content-md {
-        padding-left: 0 !important;
+        @include padding(null, null, null, 0 !important);
     }
 
     .item-md ion-avatar {
-        padding-left: 8px;
+        @include padding(null, null, null, 8px !important);
     }
 
     ion-avatar img {
@@ -44,7 +44,7 @@ page-user-type-selection {
     }
 
     .item-md ion-avatar[item-start] {
-        margin-right: 0 !important;
+        @include margin(null, 0, null, null !important);
     }
 
     .card-md,
@@ -52,8 +52,9 @@ page-user-type-selection {
         background-color: map-get($colors, white_f7) !important;
     }
 
-    .card-md {
-        margin: 20px 0 0 0 !important;
+    .card-md {  
+        margin-top: 20px !important;
+        @include margin(null, 0, 0, 0 !important);
         width: 100% !important;
     }
 

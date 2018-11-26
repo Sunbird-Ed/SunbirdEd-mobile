@@ -5,8 +5,7 @@ upgrade-popover {
         overflow-y: visible;
     }
     ion-app.md [padding-horizontal] .scroll-content {
-        padding-left: 0 !important;
-        padding-right: 0 !important;
+        @include padding(null, 0 !important);
     }
     ion-app.md [padding-top] .scroll-content {
         padding-top: 0 !important;
@@ -17,9 +16,16 @@ upgrade-popover {
     max-height: 65vh;
     .popover-content {
         top: 20vh !important;
-        left: 10vw !important;
-        right: 10vw !important;
         width: 80vw !important;
+        @include ltr() {
+            left: 10vw !important;
+            right: 10vw !important;
+        }
+    
+        @include rtl() {
+            right: 10vw !important;
+            left: 10vw !important;
+        }
     }
     ion-backdrop {
     background-color: map-get($colors, dark) !important;
