@@ -791,7 +791,7 @@ export class ContentDetailsPage {
   playContent(isStreaming: boolean) {
     // set the boolean to true, so when the content player is closed, we get to know that
     // we are back from content player
-    if (this.apiLevel < 21 && this.appAvailability === 'true') {
+    if (this.apiLevel < 21 && this.appAvailability === 'false') {
       this.showPopupDialog();
     } else {
       this.downloadAndPlay = false;
