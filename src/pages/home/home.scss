@@ -2,13 +2,19 @@ page-home {
 	.logo {
 		width: 40px;
 		height: 40px;
-		margin-left: 10px;
+		@include margin(null, null, null, 10px);
 	}
 	.search {
 		width: 25px;
 		height: 25px;
 		margin: 10px;
-		float: right;
+		@include ltr() {
+			float: right;
+		}
+	
+		@include rtl() {
+			float: left;
+		}
 	}
 	.inner {
 		width: auto;

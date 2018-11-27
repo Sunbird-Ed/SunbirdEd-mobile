@@ -21,6 +21,7 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { ViewMoreCardComponent } from './view-more-card/view-more-card';
 import { ViewCreditsComponent } from './view-credits/view-credits';
 import { ProfileAvatarComponent } from './profile-avatar/profile-avatar';
+import { DialogPopupComponent } from './dialog-popup/dialog-popup';
 import { BookmarkComponent } from './bookmark/bookmark';
 
 @NgModule({
@@ -40,6 +41,7 @@ import { BookmarkComponent } from './bookmark/bookmark';
         AssessmentDetailsComponent,
         ViewCreditsComponent,
         ProfileAvatarComponent,
+        DialogPopupComponent,
         BookmarkComponent
     ],
     imports: [
@@ -66,6 +68,7 @@ import { BookmarkComponent } from './bookmark/bookmark';
         AssessmentDetailsComponent,
         ViewCreditsComponent,
         ProfileAvatarComponent,
+        DialogPopupComponent,
         BookmarkComponent
         // ContentActionsComponent
     ],
@@ -74,7 +77,8 @@ import { BookmarkComponent } from './bookmark/bookmark';
         ConfirmAlertComponent,
         ReportIssuesComponent,
         ContentRatingAlertComponent,
-        ViewCreditsComponent
+        ViewCreditsComponent,
+        DialogPopupComponent
     ],
     providers: [
         OnboardingService,

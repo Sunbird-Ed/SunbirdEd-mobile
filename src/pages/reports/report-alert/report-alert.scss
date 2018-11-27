@@ -5,17 +5,16 @@ report-alert {
     background-color: blue;
   }
   .input-wrapper {
-    padding-left: 16px !important;
-    padding-right: 16px !important;
+    @include padding(null, 16px !important);
   }
   .row-align {
-    padding: 10px 16px !important;
+    @include padding(10px, 16px !important);
   }
   .item-ios {
-    padding-left: 0;
+    @include padding(null, null, null, 0 !important);
   }
   .item-md {
-    padding-left: 0 !important;
+    @include padding(null, null, null, 0 !important);
   }
   .assessmentDetails h3 {
     white-space: normal;
@@ -28,7 +27,12 @@ report-alert {
   max-height: 62vh !important;
   box-shadow: unset;
   position: fixed;
-  left: 0 !important;
+  @include ltr() {
+    left: 0 !important;
+  }
+  @include rtl() {
+    right: 0 !important;
+  }
   top: unset !important;
   bottom: 0 !important;
   transform-origin: bottom -100% !important;

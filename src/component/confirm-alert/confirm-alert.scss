@@ -11,13 +11,13 @@ confirm-alert {
 
     }
     .close-button.button-outline-md .button-inner {
-        padding-right: 14px;
+        @include padding(null, 14px, null, null);
     }
     .close-button.button-outline-md [icon-only] ion-icon {
         font-size: 1.4em;
     }
     .padding-left-5{
-        padding-left: 5% !important;
+        @include padding(null, null, null, 5% !important);
     }
     .margin-top-5{
         margin-top: 15px !important;
@@ -31,6 +31,13 @@ confirm-alert {
     box-shadow: unset;
     position: fixed;
     left: 0 !important;
+    @include ltr() {
+        left: 0 !important;
+    };
+
+    @include rtl() {
+        right: 0 !important;
+    };
     top: unset !important;
     bottom: 0;
     transform-origin: bottom -100% !important;

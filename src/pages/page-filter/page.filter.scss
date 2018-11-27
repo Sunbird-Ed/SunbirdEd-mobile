@@ -27,7 +27,7 @@ page-filter {
     font-size: 2rem !important;
   }
   .item-inner {
-    padding-right: 0 !important;
+    @include padding(null, 0, null, null !important);
   }
 }
 
@@ -37,7 +37,13 @@ page-filter {
   max-height: 70% !important;
   box-shadow: unset;
   position: fixed;
-  left: 0 !important;
+  @include ltr() {
+    left: 0 !important;
+  }
+
+  @include rtl() {
+    right: 0 !important;
+  }
   top: unset !important;
   bottom: 0;
   transform-origin: bottom -100% !important;

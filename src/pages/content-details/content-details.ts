@@ -34,7 +34,8 @@ import {
   ProfileService,
   ProfileRequest,
   TelemetryObject,
-  SharedPreferences
+  SharedPreferences,
+  DeviceInfoService
 } from 'sunbird';
 import {
   PreferenceKey
@@ -47,10 +48,15 @@ import {
 } from '@app/app';
 
 import { ContentRatingAlertComponent, ContentActionsComponent, BookmarkComponent } from '@app/component';
-import { AppGlobalService, CommonUtilService, TelemetryGeneratorService, CourseUtilService } from '@app/service';
+import { AppGlobalService, CourseUtilService } from '@app/service';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
 import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { CommonUtilService } from '../../service/common-util.service';
+import { ViewCreditsComponent } from '../../component/view-credits/view-credits';
+import { DialogPopupComponent } from '../../component/dialog-popup/dialog-popup';
 import { Observable } from 'rxjs';
+import {XwalkConstants} from '../../app/app.constant';
 
 @IonicPage()
 @Component({
@@ -58,6 +64,8 @@ import { Observable } from 'rxjs';
   templateUrl: 'content-details.html',
 })
 export class ContentDetailsPage {
+  apiLevel: number;
+  appAvailability: string;
   content: any;
   isChildContent = false;
   contentDetails: any;
@@ -136,7 +144,8 @@ export class ContentDetailsPage {
     private profileService: ProfileService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService,
-    private courseUtilService: CourseUtilService
+    private courseUtilService: CourseUtilService,
+    private deviceInfoService: DeviceInfoService
   ) {
 
     this.objRollup = new Rollup();
@@ -145,6 +154,8 @@ export class ContentDetailsPage {
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
     this.handlePageResume();
+    this.checkDeviceAPILevel();
+    this.checkappAvailability();
     // this.checkBookmarkStatus();
   }
 
@@ -270,14 +281,14 @@ export class ContentDetailsPage {
 
   checkCurrentUserType() {
     if (this.isGuestUser) {
-    this.appGlobalService.getGuestUserInfo()
-      .then((userType) => {
-        this.profileType = userType;
-      })
-      .catch((error) => {
-        console.log('Error Occurred', error);
-        this.profileType = '';
-      });
+      this.appGlobalService.getGuestUserInfo()
+        .then((userType) => {
+          this.profileType = userType;
+        })
+        .catch((error) => {
+          console.log('Error Occurred', error);
+          this.profileType = '';
+        });
     }
   }
 
@@ -735,7 +746,6 @@ export class ContentDetailsPage {
   showSwitchUserAlert(isStreaming: boolean) {
     if (!AppGlobalService.isPlayerLaunched && this.userCount > 1) {
       const profile = this.appGlobalService.getCurrentUser();
-
       const alert = this.alertCtrl.create({
         title: this.commonUtilService.translateMessage('PLAY_AS'),
         mode: 'wp',
@@ -781,32 +791,53 @@ export class ContentDetailsPage {
   playContent(isStreaming: boolean) {
     // set the boolean to true, so when the content player is closed, we get to know that
     // we are back from content player
-    if (!AppGlobalService.isPlayerLaunched) {
-      AppGlobalService.isPlayerLaunched = true;
-    }
-
-    this.zone.run(() => {
-      this.isPlayerLaunched = true;
-      const values = new Map();
-      if (Boolean(this.downloadAndPlay)) {
-        values['autoAfterDownload'] = true;
+    if (this.apiLevel < 21 && this.appAvailability === 'false') {
+      this.showPopupDialog();
+    } else {
+      this.downloadAndPlay = false;
+      if (!AppGlobalService.isPlayerLaunched) {
+        AppGlobalService.isPlayerLaunched = true;
       }
-      this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-        InteractSubtype.CONTENT_PLAY,
-        Environment.HOME,
-        PageId.CONTENT_DETAIL,
-        undefined,
-        values,
-        this.objRollup,
-        this.corRelationList);
-    });
-    this.downloadAndPlay = false;
-    const request: any = {};
-    request.streaming = isStreaming;
-    (<any>window).geniecanvas.play(this.content.playContent, JSON.stringify(request));
+      this.zone.run(() => {
+        this.isPlayerLaunched = true;
+        const values = new Map();
+        if (Boolean(this.downloadAndPlay)) {
+          values['autoAfterDownload'] = true;
+        }
+        this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+          InteractSubtype.CONTENT_PLAY,
+          Environment.HOME,
+          PageId.CONTENT_DETAIL,
+          undefined,
+          values,
+          this.objRollup,
+          this.corRelationList);
+      });
+      this.downloadAndPlay = false;
+      const request: any = {};
+      request.streaming = isStreaming;
+      (<any>window).geniecanvas.play(this.content.playContent, JSON.stringify(request));
+    }
   }
 
+  checkappAvailability() {
+    this.deviceInfoService.checkAppAvailability(XwalkConstants.APP_ID)
+      .then((response: any) => {
+        this.appAvailability = response;
+      })
+      .catch((error: any) => {
+        console.error('Error ', error);
+      });
+  }
 
+  checkDeviceAPILevel() {
+    this.deviceInfoService.getDeviceAPILevel()
+      .then((res: any) => {
+        this.apiLevel = res;
+      }).catch((error: any) => {
+        console.error('Error ', error);
+      });
+  }
   updateContentProgress() {
     const stateData = this.navParams.get('contentState');
     if (stateData !== undefined && stateData.batchId && stateData.courseId && this.userId) {
@@ -945,5 +976,16 @@ export class ContentDetailsPage {
   readLessorReadMore(param, objRollup, corRelationList) {
     const telemetryObject: TelemetryObject = { id: this.objId, type: this.objType, version: this.objVer, rollup: undefined };
     this.telemetryGeneratorService.readLessOrReadMore(param, objRollup, corRelationList, telemetryObject);
+  }
+
+  showPopupDialog() {
+    const popover = this.popoverCtrl.create(DialogPopupComponent, {
+      title: this.commonUtilService.translateMessage('ANDROID_NOT_SUPPORTED'),
+      body: this.commonUtilService.translateMessage('ALERT_BODY'),
+      buttonText: this.commonUtilService.translateMessage('INSTALL_CROSSWALK')
+    }, {
+        cssClass: 'popover-alert'
+      });
+    popover.present();
   }
 }
