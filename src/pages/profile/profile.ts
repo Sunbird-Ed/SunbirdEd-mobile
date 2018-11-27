@@ -300,9 +300,9 @@ export class ProfilePage {
       if (this.profile.organisations && this.profile.organisations.length) {
         for (let i = 0, len = this.profile.organisations[0].roles.length; i < len; i++ ) {
           const roleKey = this.profile.organisations[0].roles[i];
-          const val = this.profile.roleList.find(role => role.id === roleKey).name;
+          const val = this.profile.roleList.find(role => role.id === roleKey);
           if (val) {
-            this.roles.push(val);
+            this.roles.push(val.name);
           }
         }
       }
@@ -315,22 +315,24 @@ export class ProfilePage {
   formatOrgDetails() {
     this.orgDetails = { 'state': '', 'district': '', 'block': '' };
     for (let i = 0, len = this.profile.organisations.length; i < len; i++) {
-      for (let j = 0, l = this.profile.organisations[i].locations.length; j < l; j++) {
-        switch (this.profile.organisations[i].locations[j].type) {
-          case 'state':
-            this.orgDetails.state = this.profile.organisations[i].locations[j];
-            break;
+      if (this.profile.organisations[i].locations) {
+        for (let j = 0, l = this.profile.organisations[i].locations.length; j < l; j++) {
+          switch (this.profile.organisations[i].locations[j].type) {
+            case 'state':
+              this.orgDetails.state = this.profile.organisations[i].locations[j];
+              break;
 
-          case 'block':
-            this.orgDetails.block = this.profile.organisations[i].locations[j];
-            break;
+            case 'block':
+              this.orgDetails.block = this.profile.organisations[i].locations[j];
+              break;
 
-          case 'district':
-            this.orgDetails.district = this.profile.organisations[i].locations[j];
-            break;
+            case 'district':
+              this.orgDetails.district = this.profile.organisations[i].locations[j];
+              break;
 
-          default:
-            break;
+            default:
+              break;
+          }
         }
       }
     }
