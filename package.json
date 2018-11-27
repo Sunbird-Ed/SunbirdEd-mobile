@@ -163,6 +163,11 @@
       "^.+\\.ts$": "ts-jest",
       "^.+\\.jsx?$": "babel-jest"
     },
+    "globals": {
+      "ts-jest": {
+        "tsConfigFile": "tsconfig.spec.json"
+      }
+    },
     "transformIgnorePatterns": [
       "/node_modules/(?!@ionic-native|@angular).+\\.js$"
     ],
