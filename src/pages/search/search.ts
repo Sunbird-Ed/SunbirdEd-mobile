@@ -148,14 +148,14 @@ export class SearchPage {
   ionViewWillEnter() {
     this.handleDeviceBackButton();
     this.preference.getString('current_framework_id')
-    .then(value => {
-            this.currentFrameworkId = value;
-    });
+      .then(value => {
+        this.currentFrameworkId = value;
+      });
 
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
-    .then(value => {
-            this.selectedLanguageCode = value;
-    });
+      .then(value => {
+        this.selectedLanguageCode = value;
+      });
   }
 
   ionViewDidEnter() {
@@ -454,8 +454,17 @@ export class SearchPage {
     this.source = this.navParams.get('source');
     this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
     this.generateImpressionEvent();
-    if (this.dialCode !== undefined && this.dialCode.length > 0) {
-      this.getContentForDialCode();
+    if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+      if (this.dialCode !== undefined && this.dialCode.length > 0) {
+        this.getContentForDialCode();
+      }
+    } else {
+      this.zone.run(() => {
+        this.showLoader = false;
+        if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
+          this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
+        }
+      });
     }
 
     this.event.subscribe('search.applyFilter', (filterCriteria) => {
@@ -500,12 +509,7 @@ export class SearchPage {
         this.showLoader = false;
       });
     }) .catch(error => {
-      this.zone.run(() => {
-        this.showLoader = false;
-        if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
-          this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
-        }
-      });
+
     });
     // Page API END
   }
@@ -768,20 +772,20 @@ export class SearchPage {
     };
 
     this.contentService.getContentDetail(contentRequest)
-     .then((data: any) => {
-      data = JSON.parse(data);
-      if (data && data.result) {
-        if (data.result.isAvailableLocally) {
-          this.zone.run(() => { this.showContentDetails(child); });
+      .then((data: any) => {
+        data = JSON.parse(data);
+        if (data && data.result) {
+          if (data.result.isAvailableLocally) {
+            this.zone.run(() => { this.showContentDetails(child); });
+          } else {
+            this.subscribeGenieEvent();
+            this.downloadParentContent(parent);
+          }
         } else {
-          this.subscribeGenieEvent();
-          this.downloadParentContent(parent);
+          this.zone.run(() => { this.showContentDetails(child); });
         }
-      } else {
-        this.zone.run(() => { this.showContentDetails(child); });
-      }
-    }, () => {
-    });
+      }, () => {
+      });
   }
 
   downloadParentContent(parent) {
@@ -797,31 +801,31 @@ export class SearchPage {
     };
     // Call content service
     this.contentService.importContent(option)
-    .then((data: any) => {
-      this.zone.run(() => {
-        data = JSON.parse(data);
+      .then((data: any) => {
+        this.zone.run(() => {
+          data = JSON.parse(data);
 
-        if (data.result && data.result.length && this.isDownloadStarted) {
-          _.forEach(data.result, (value) => {
-            if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
-              this.queuedIdentifiers.push(value.identifier);
-            }
-          });
-        }
-
-        if (this.queuedIdentifiers.length === 0) {
-          this.showLoading = false;
-          this.isDownloadStarted = false;
-          if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-            this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
-          } else {
-            this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
+          if (data.result && data.result.length && this.isDownloadStarted) {
+            _.forEach(data.result, (value) => {
+              if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
+                this.queuedIdentifiers.push(value.identifier);
+              }
+            });
           }
-        }
+
+          if (this.queuedIdentifiers.length === 0) {
+            this.showLoading = false;
+            this.isDownloadStarted = false;
+            if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+              this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
+            } else {
+              this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
+            }
+          }
+        });
+      })
+      .catch(() => {
       });
-    })
-    .catch(() => {
-    });
   }
 
   /**
