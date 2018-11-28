@@ -20,7 +20,7 @@ export class BookmarkComponent {
   }
 
   updateBookmarkPreference() {
-    this.preference.putString(PreferenceKey.IS_BOOKMARK_VIWED, 'true');
+    this.preference.putString(PreferenceKey.IS_BOOKMARK_VIEWED, 'true');
     this.viewCtrl.dismiss();
   }
 
