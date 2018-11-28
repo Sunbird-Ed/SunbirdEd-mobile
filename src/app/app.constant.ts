@@ -119,7 +119,7 @@ export class PreferenceKey {
     public static readonly SELECTED_USER_TYPE = 'selected_user_type';
     public static readonly COURSE_IDENTIFIER = 'course_identifier';
     public static readonly IS_ONBOARDING_COMPLETED = 'is_onboarding_settings_completed';
-    public static readonly IS_BOOKMARK_VIWED = 'false';
+    public static readonly IS_BOOKMARK_VIEWED = 'is_bookmark_viewed';
 }
 
 export class GenericAppConfig {

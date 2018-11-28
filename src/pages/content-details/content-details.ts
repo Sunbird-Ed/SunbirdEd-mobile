@@ -293,7 +293,7 @@ export class ContentDetailsPage {
   }
 
   checkBookmarkStatus() {
-    this.preference.getString(PreferenceKey.IS_BOOKMARK_VIWED).then(val => {
+    this.preference.getString(PreferenceKey.IS_BOOKMARK_VIEWED).then(val => {
       if (!val) {
         this.showBookmarkMenu();
       }
@@ -911,7 +911,7 @@ export class ContentDetailsPage {
   }
 
   updateBookmarkPreference() {
-    // this.preference.putString(PreferenceKey.IS_BOOKMARK_VIWED, 'true');
+    // this.preference.putString(PreferenceKey.IS_BOOKMARK_VIEWED, 'true');
     // this.viewCtrl.dismiss();
     console.log('updateBookmarkPreference');
   }
