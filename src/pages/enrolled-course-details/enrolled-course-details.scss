@@ -69,4 +69,8 @@ page-enrolled-course-details {
         @include padding(null, null, null, 0 !important)
     }
 
+    .scroll-content { 
+        margin-bottom: 0px !important;
+    }
+
 }

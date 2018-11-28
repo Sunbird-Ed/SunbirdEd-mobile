@@ -15,53 +15,12 @@
 @import "../assets/styles/_helper";
 @import "../assets/styles/rtl_helper";
 @import "../assets/styles/details_page";
+@import "../assets/styles/fonts";
 
-@font-face {
-  font-family: 'OpenSans';
-  font-style: normal;
-  font-weight: 400;
-  src: url('../assets/fonts/opensans/OpenSans-Regular.ttf');
-}
 
-@font-face {
-  font-family: 'OpenSans';
-  font-style: semi-bold;
-  font-weight: 600;
-  src: url('../assets/fonts/opensans/OpenSans-Semibold.ttf');
-}
-
-@font-face {
-  font-family: 'OpenSans';
-  font-style: bold;
-  font-weight: 700;
-  src: url('../assets/fonts/opensans/OpenSans-Bold.ttf');
-}
-
-@font-face {
-  font-family: 'OpenSans';
-  font-style: extra-bold;
-  font-weight: 900;
-  src: url('../assets/fonts/opensans/OpenSans-ExtraBold.ttf');
-}
-
-.font-weight-400 {
-  font-weight: 400 !important;
-}
-
-.font-weight-600 {
-  font-weight: 600 !important;
-}
-
-.font-weight-700 {
-  font-weight: 700 !important;
-}
-
-.font-weight-900 {
-  font-weight: 900 !important;
-}
 
 h6 {
-  font-family: "OpenSans/Bold" !important;
+  @extend .NotoSans-bold;
 }
 .font-size-14rem {
   font-size: 1.4rem !important;
@@ -72,12 +31,12 @@ h6 {
 }
 
 .span-semibold {
-  font-family: 'OpenSans/Semibold';
+  @extend .NotoSans-semi-bold;
 }
 
 .content-meta-title {
-  font-family: 'OpenSans/Regular' !important;
-  font-weight: 600;
+  @extend .NotoSans;
+  @extend .font-weight-600;
   color: gray;
 }
 

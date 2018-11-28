@@ -35,17 +35,16 @@ page-courses {
   }
   .scroll-heading {
     @include padding(10px, null, null, null);
-    font-weight: 700;
-    font-family: 'opensans';
+    @extend .NotoSans-bold;
+		@extend .font-weight-700;
     font-size: 1.350em;
-    font-weight: 600;
-    width: 50%;
+    width: 60%;
   }
   .view-all-link {
     font-size: 1.2rem;
     padding-top: 11px;
-    font-family: 'opensans';
-    font-weight: 700;
+    @extend .NotoSans-bold;
+		@extend .font-weight-700;
     width: 30%;
     @include text-align('end');
   }
