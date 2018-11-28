@@ -31,12 +31,12 @@ page-qr-code-result{
     }
 
     .badge {
-        padding: 5px 15px;
+        @include padding(5px, 15px);
         color: #333;
         border-radius: 100px;
         border: solid 0.5px #c6dbd8;
         font-size: 11px;
-        margin-right: 10px;
+        @include margin(null, 10px, null, null);
     }
 
     .author {
