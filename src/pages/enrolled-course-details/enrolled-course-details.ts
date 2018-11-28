@@ -669,7 +669,6 @@ export class EnrolledCourseDetailsPage {
       batchId: this.courseCardData.batchId ? this.courseCardData.batchId : '',
       courseId: this.identifier
     };
-    console.log('identifier', contentState);
     this.zone.run(() => {
       if (content.contentType === ContentType.COURSE) {
         this.navCtrl.push(EnrolledCourseDetailsPage, {
@@ -863,7 +862,6 @@ export class EnrolledCourseDetailsPage {
   /**
    * Loads first children with in the start data
    */
-<<<<<<< Updated upstream
   loadFirstChildren(data) {
     if (data && (data.children === undefined)) {
       return data;
@@ -871,18 +869,6 @@ export class EnrolledCourseDetailsPage {
       for (let i = 0; i < data.children.length; i++) {
         return this.loadFirstChildren(data.children[i]);
       }
-=======
-  loadFirstChildren() {
-    let key;
-    if (this.startData.children[0].length || this.startData.children[0].length > 0) {
-      for (key in this.startData.children[0]) {
-        if (key.mimeType = 'application/vnd.ekstep.ecml-archive') {
-            console.log('came in if', key);
-        }
-      }
-    } else {
-      console.log('else part' , this.startData.children[0]);
->>>>>>> Stashed changes
     }
   }
 
@@ -891,16 +877,8 @@ export class EnrolledCourseDetailsPage {
    */
   startContent() {
     if (this.startData && this.startData.length) {
-      console.log(this.startData);
-<<<<<<< Updated upstream
         this.firstChild = this.loadFirstChildren(this.childContentsData);
       this.navigateToChildrenDetailsPage(this.firstChild, 1);
-=======
-      this.loadFirstChildren();
-      const firstChild = _.first(_.values(this.startData), 1);
-      console.log('firstChild', firstChild);
-      this.navigateToChildrenDetailsPage(firstChild, 1);
->>>>>>> Stashed changes
     }
   }
 
