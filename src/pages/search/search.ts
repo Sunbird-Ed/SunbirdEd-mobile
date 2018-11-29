@@ -52,6 +52,7 @@ import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.ser
 import { CommonUtilService } from '../../service/common-util.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { QrCodeResultPage } from '../qr-code-result/qr-code-result';
+import { TranslateService } from '@ngx-translate/core';
 @IonicPage()
 @Component({
   selector: 'page-search',
@@ -133,7 +134,8 @@ export class SearchPage {
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private preference: SharedPreferences
+    private preference: SharedPreferences,
+    private translate: TranslateService
   ) {
 
     this.checkUserSession();
@@ -144,7 +146,7 @@ export class SearchPage {
 
     this.defaultAppIcon = 'assets/imgs/ic_launcher.png';
     this.getFrameworkId();
-    this.getSelectedLanguage();
+    this.selectedLanguageCode = this.translate.currentLang;
   }
 
   ionViewWillEnter() {
@@ -186,14 +188,6 @@ export class SearchPage {
       })
       .catch((err: any) => {
         console.error('Err', err);
-      });
-  }
-  getSelectedLanguage() {
-    this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
-      .then(val => {
-          if (val && val.length) {
-              this.selectedLanguageCode = val;
-          }
       });
   }
 
