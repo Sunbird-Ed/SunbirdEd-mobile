@@ -19,16 +19,14 @@ page-resources {
 
       .scroll-heading {
         padding-top: 10px;
-        font-weight: 500;
-        font-family: 'sunbirdboldfont';
+        @extend .NotoSans-bold;
         font-size: 1.350em;
-        width: 50%;
+        width: 60%;
       }
       .view-all-link {
-        font-size: 1.4rem;
+        font-size: 1.2rem;
         padding-top: 11px;
-        font-family: 'sunbirdboldfont';
-        font-weight: 500;
+        @extend .NotoSans-bold;
         width: 30%;
         @include text-align('end');
       }
@@ -85,7 +83,7 @@ page-resources {
         margin: 10px 2px !important;
       }
       .tab-header{
-        font-family: 'OpenSans/Regular';
+        font-family: 'NotoSans';
       }
     .no-connection{
       height: 200px;
