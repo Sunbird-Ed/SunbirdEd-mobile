@@ -173,6 +173,7 @@
   "HOBBIES": "छंद",
   "HOME_BNAV": "होम",
   "IMPORTING_COUNT": "इमपोर्ट होतआहे",
+  "IMPORT_ECAR": "Incompatible file format. You can only import .ecar , .epar and .gsa files",
   "IMPORT_ERROR": " इम्पोर्ट अयशस्वी",
   "IMPORT_PROGRESS": "इमपोर्ट होतआहे ...कृपया प्रतीक्षा करा",
   "INACTIVE": "निष्क्रिय",

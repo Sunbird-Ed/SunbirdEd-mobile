@@ -175,6 +175,7 @@
   "HOBBIES": "అభిరుచులు",
   "HOME_BNAV": "మొదటి పేజీ",
   "IMPORTING_COUNT": "దిగుమతి అవుతోంది",
+  "IMPORT_ECAR": "Incompatible file format. You can only import .ecar , .epar and .gsa files",
   "IMPORT_ERROR": "దిగుమతి జరగలేదు",
   "IMPORT_PROGRESS": "దిగుమతి అవుతోంది... దయచేసి వేచి ఉండండి",
   "INACTIVE": "ఆక్టివ్ కాదు",

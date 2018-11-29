@@ -139,6 +139,7 @@
   "HOBBIES": "مشغلے",
   "HOME_BNAV": "ہوم",
   "INACTIVE": "غیر فعال",
+  "IMPORT_ECAR": "Incompatible file format. You can only import .ecar , .epar and .gsa files",
   "INVALID_CONTENT": "مشمولات غلط ہے",
   "JOIN": "شامل هونا",
   "LANGUAGE": "زبان",

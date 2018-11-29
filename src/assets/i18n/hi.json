@@ -175,6 +175,7 @@
   "HOBBIES": "शौक",
   "HOME_BNAV": "होम",
   "IMPORTING_COUNT": "आयातित हो रहा है",
+  "IMPORT_ECAR": "Incompatible file format. You can only import .ecar , .epar and .gsa files",
   "IMPORT_ERROR": "आयातित करने में त्रुटि",
   "IMPORT_PROGRESS": "प्रतीक्षा कीजिये, आयातित हो रहा है",
   "INACTIVE": "निष्क्रिय",
