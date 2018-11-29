@@ -1,44 +1,25 @@
-import {Events, NavController, NavParams} from 'ionic-angular';
-import {AuthService, CourseBatchStatus, CourseEnrollmentType, CourseService} from 'sunbird';
-
+import {CourseBatchStatus, CourseEnrollmentType} from 'sunbird';
 import {mockRes} from '../course-batches/course-batches.spec.data';
 import {CourseBatchesPage} from './course-batches';
-import {CommonUtilService} from '../../service/common-util.service';
-import {NgZone} from "@angular/core";
+import {
+  authServiceMock,
+  commonUtilServiceMock,
+  courseServiceMock,
+  eventsMock, navCtrlMock,
+  navParamsMock,
+  zoneMock
+} from "../../__tests__/mocks";
 
-function createSpyObj (baseName: string, methodNames: string[]): { [key: string]: jest.Mock<{}> } {
-  const obj: any = {};
-  for (let i: number = 0; i < methodNames.length; i++) {
-    obj[methodNames[i]] = jest.fn(() => {})
-  }
-  return obj
-}
-
-describe('CourseBatchesPage Component', () => {
-  let courseServiceMock: CourseService;
-  let navCtrlMock: NavController;
-  let navParamsMock: NavParams;
-  let zoneMock: NgZone;
-  let authServiceMock: AuthService;
-  let commonUtilServiceMock: CommonUtilService;
-  let eventsMock: Events;
+describe('CourseBatchesPage', () => {
   let courseBatchesPage: CourseBatchesPage;
 
+  beforeAll(() => {
+    courseBatchesPage = new CourseBatchesPage(courseServiceMock as any, navCtrlMock as any,
+      navParamsMock as any, zoneMock as any, authServiceMock as any, commonUtilServiceMock as any, eventsMock as any);
+  });
+
   beforeEach(() => {
-    // dependecies
-    courseServiceMock = createSpyObj('courseServiceMock', [
-      'getEnrolledCourses', 'enrollCourse', 'updateContentState', 'getCourseBatches',
-      'getBatchDetails', 'getContentState']) as any;
-    navCtrlMock = createSpyObj('navCtrlMock', ['pop']) as any;
-    navParamsMock = createSpyObj('navParamsMock', ['get']) as any;
-    zoneMock = createSpyObj('zoneMock', [
-      'run']) as any;
-    authServiceMock = createSpyObj('authServiceMock', ['getSessionData']) as any;
-    commonUtilServiceMock = createSpyObj('commonUtilServiceMock', ['translateMessage', 'showMessage', 'showToast']) as any;
-    eventsMock = createSpyObj('eventsMock', ['publish']) as any;
-    // component to test
-    courseBatchesPage = new CourseBatchesPage(courseServiceMock, navCtrlMock,
-      navParamsMock, zoneMock, authServiceMock, commonUtilServiceMock, eventsMock);
+    jest.resetAllMocks()
   });
 
   it('can load instance', () => {
@@ -52,7 +33,7 @@ describe('CourseBatchesPage Component', () => {
 
   it('should invoke getBatchesByCourseId() and populate ongoingbatches list', (done) => {
     // arrange
-    (courseServiceMock.getCourseBatches as jest.Mock<{}>).mockReturnValue(Promise.
+    courseServiceMock.getCourseBatches.mockReturnValue(Promise.
     resolve(JSON.stringify(mockRes.getOngoingBatchesResponse)));
     // act
     courseBatchesPage.getBatchesByCourseId(CourseBatchStatus.COMPLETED);
@@ -200,7 +181,7 @@ describe('CourseBatchesPage Component', () => {
     done();
   });
 
-  it('should  update filter for upcoming', (done) => {
+  it('should update filter for upcoming', (done) => {
     // arrange
     (courseServiceMock.getCourseBatches as any).mockReturnValue(Promise.resolve(JSON.stringify(mockRes.getOngoingBatchesResponse)));
     // act
