@@ -454,17 +454,8 @@ export class SearchPage {
     this.source = this.navParams.get('source');
     this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
     this.generateImpressionEvent();
-    if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-      if (this.dialCode !== undefined && this.dialCode.length > 0) {
-        this.getContentForDialCode();
-      }
-    } else {
-      this.zone.run(() => {
-        this.showLoader = false;
-        if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
-          this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
-        }
-      });
+    if (this.dialCode !== undefined && this.dialCode.length > 0) {
+      this.getContentForDialCode();
     }
 
     this.event.subscribe('search.applyFilter', (filterCriteria) => {
@@ -509,7 +500,14 @@ export class SearchPage {
         this.showLoader = false;
       });
     }) .catch(error => {
-
+      console.log('in error part' , error);
+      this.zone.run(() => {
+        this.showLoader = false;
+        if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
+          this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
+          this.navCtrl.pop();
+        }
+      });
     });
     // Page API END
   }
@@ -920,5 +918,4 @@ export class SearchPage {
       this.profile = undefined;
     }
   }
-
 }
