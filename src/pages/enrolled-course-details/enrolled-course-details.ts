@@ -141,7 +141,9 @@ export class EnrolledCourseDetailsPage {
   backButtonFunc = undefined;
   shouldGenerateEndTelemetry = false;
   source = '';
-
+  firstChild;
+  /**Whole child content is stored and it is used to find first child */
+  childContentsData;
 
   @ViewChild(Navbar) navBar: Navbar;
   constructor(
@@ -635,6 +637,7 @@ export class EnrolledCourseDetailsPage {
             this.enrolledCourseMimeType = data.result.mimeType;
             this.childrenData = data.result.children;
             this.startData = data.result.children;
+            this.childContentsData = data.result;
             this.courseService.getContentState(request)
               .then((success: any) => {
                 success = JSON.parse(success);
@@ -856,15 +859,26 @@ export class EnrolledCourseDetailsPage {
       this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
     }
   }
+  /**
+   * Loads first children with in the start data
+   */
+  loadFirstChildren(data) {
+    if (data && (data.children === undefined)) {
+      return data;
+    } else {
+      for (let i = 0; i < data.children.length; i++) {
+        return this.loadFirstChildren(data.children[i]);
+      }
+    }
+  }
 
   /**
    * Get executed when user click on start button
    */
   startContent() {
     if (this.startData && this.startData.length) {
-      console.log(this.startData);
-      const firstChild = _.first(_.values(this.startData), 1);
-      this.navigateToChildrenDetailsPage(firstChild, 1);
+        this.firstChild = this.loadFirstChildren(this.childContentsData);
+      this.navigateToChildrenDetailsPage(this.firstChild, 1);
     }
   }
 
