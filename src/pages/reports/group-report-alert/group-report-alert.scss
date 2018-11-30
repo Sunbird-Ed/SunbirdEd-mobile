@@ -91,7 +91,7 @@ group-report-alert {
     }
     .icon-tickmark {
         color: green;
-        font-weight: 600;
+        @extend .font-weight-600;
     }
     .ellipsis {
         max-width: 100%;

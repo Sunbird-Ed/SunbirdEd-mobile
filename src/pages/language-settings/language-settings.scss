@@ -31,7 +31,7 @@ page-language-settings {
     .gray-color {
         color: map-get($colors, secondary_black);
         font-size: 1.4rem;
-        font-weight: 500;
+        @extend .font-weight-500;
     }
 
     .arrow-icon {
@@ -44,7 +44,7 @@ page-language-settings {
 
     .item-radio-checked.item-ios ion-label {
         color: map-get($colors, primary_black);
-        font-weight: 700;
+        @extend .font-weight-700;
     }
 }
 
@@ -70,7 +70,7 @@ page-language-settings {
             -webkit-font-smoothing: antialiased;
             font-style: normal;
             font-variant: normal;
-            font-weight: 400;
+            @extend .font-weight-400;
             line-height: 1;
             padding-left: 30px !important;
             padding-right: 16px !important;

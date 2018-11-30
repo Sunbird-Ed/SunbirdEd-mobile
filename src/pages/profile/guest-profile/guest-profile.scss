@@ -6,7 +6,7 @@ page-guest-profile {
 
         @include padding(5px);
 
-        font-weight: bold;
+        @extend .font-weight-bold;
         overflow: hidden;
         text-overflow: ellipsis;
         display: -ms-flexbox;
@@ -48,7 +48,7 @@ page-guest-profile {
 
         @include padding(2px);
 
-        font-weight: bold;
+        @extend .font-weight-bold;
         margin: 0;
     }
 
@@ -77,7 +77,7 @@ page-guest-profile {
     .info-title {
         color: map-get($colors, dark_gray);
         font-size: 1.2rem;
-        font-weight: 700;
+        @extend .font-weight-700;
     }
 
     .section-title {
@@ -90,11 +90,11 @@ page-guest-profile {
 
         @include margin(null, null, null, 0);
 
-        font-weight: 700;
+        @extend .font-weight-700;
     }
 
     .page-content {
-        font-weight: 600;
+        @extend .font-weight-600;
         color: map-get($colors, secondary_black);
     }
 
@@ -102,7 +102,7 @@ page-guest-profile {
         vertical-align: sub;
         color: #979797;
         font-size: 1.2rem;
-        font-weight: 700;
+        @extend .font-weight-700;
     }
 
     .text-align {

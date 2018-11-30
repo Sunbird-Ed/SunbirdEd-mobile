@@ -1,6 +1,6 @@
 page-categories-edit {
     .label-font {
-        font-weight: 700;
+        @extend .font-weight-700;
         color: #979797 !important;
         font-size: 1.4rem !important;
     }

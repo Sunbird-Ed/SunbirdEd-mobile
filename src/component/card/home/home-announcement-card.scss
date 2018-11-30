@@ -20,8 +20,8 @@ home-announcement-card {
 	}
 	.announcement-heading {
 		padding-top: 10px;
-		font-weight: 500;
-		font-family: 'NotoSans-bold';
+		@extend .NotoSans-bold;
+		@extend .font-weight-500;
 		font-size: 1.250em;
 	}
 	.display-inline {

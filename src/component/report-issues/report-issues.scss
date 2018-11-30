@@ -22,7 +22,7 @@ report-issues {
         font-size: 1.6rem;
         padding: 0;
         @include margin(null, null, null, 0);
-        font-weight: bold;
+        @extend .font-weight-bold;
       }
       .additional-comment {
         @include ltr() {

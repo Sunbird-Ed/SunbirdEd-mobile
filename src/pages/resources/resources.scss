@@ -75,7 +75,7 @@ page-resources {
         max-width: 75%;
         font-size:14px;
         color: #488aff;
-        font-weight: bold;
+        @extend .font-weight-bold;
       }
 
       /* To give some space between the icons in the header */
@@ -83,7 +83,7 @@ page-resources {
         margin: 10px 2px !important;
       }
       .tab-header{
-        font-family: 'NotoSans';
+        @extend .NotoSans;
       }
     .no-connection{
       height: 200px;
@@ -91,7 +91,8 @@ page-resources {
         width: 25%; height: 63%; background-color: white;
       }
       .offline-text {
-        font-weight: 700; color: gray
+        @extend .font-weight-700; 
+        color: gray;
       }
     }
     .offline-message{

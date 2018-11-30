@@ -4,7 +4,7 @@ reports-page {
     }
     ion-icon{
         font-size: 22px !important;
-        font-weight: 550;
+        @extend .font-weight-550;
     }
     .bgColor{
         background-color: map-get($colors, light_gray) !important;
@@ -23,14 +23,14 @@ reports-page {
     }
     .subTitle {
         font-size: 1.4rem;
-        font-weight: 700;
+        @extend .font-weight-700;
       }
       .item-background.item-md {
         background-color: map-get($colors, light_gray) !important;
       }
       .subTitle {
         font-size: 1.4rem;
-        font-weight: 700;
+        @extend .font-weight-700;
       }
       .radius{
         border-radius: 6px;
