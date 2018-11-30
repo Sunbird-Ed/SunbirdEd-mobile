@@ -37,7 +37,9 @@ import {
   EventTopics,
   PreferenceKey,
   ContentType,
-  PageName
+  PageName,
+  ContentCard,
+  ViewMore
 } from '../../app/app.constant';
 import {
   PageFilterCallback,
@@ -78,6 +80,9 @@ export class CoursesPage implements OnInit {
    */
   showLoader = true;
 
+  layoutInProgress = ContentCard.LAYOUT_INPROGRESS;
+  layoutPopular = ContentCard.LAYOUT_POPULAR;
+
   /**
    * Flag to show latest and popular course loader
    */
@@ -94,6 +99,7 @@ export class CoursesPage implements OnInit {
   filterIcon = './assets/imgs/ic_action_filter.png';
   profile: any;
   isVisible = false;
+  inProgressSection = 'In-Progress Course';
 
   /**
    * To queue downloaded identifier
@@ -655,7 +661,7 @@ export class CoursesPage implements OnInit {
       params = {
         headerTitle: 'COURSES_IN_PROGRESS',
         userId: this.userId,
-        pageName: 'course.EnrolledCourses'
+        pageName: ViewMore.PAGE_COURSE_ENROLLED
       };
     } else {
       searchQuery = updateFilterInSearchQuery(searchQuery, this.appliedFilter, this.profile,
@@ -663,7 +669,7 @@ export class CoursesPage implements OnInit {
       title = headerTitle;
       params = {
         headerTitle: headerTitle,
-        pageName: 'course.PopularContent',
+        pageName: ViewMore.PAGE_COURSE_POPULAR,
         requestParams: searchQuery
       };
     }

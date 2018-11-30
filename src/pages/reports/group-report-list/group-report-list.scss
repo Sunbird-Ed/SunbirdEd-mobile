@@ -84,11 +84,11 @@ group-report-list {
     }
     .icon-tickmark{
       color:green;
-      font-weight:600;
+      @extend .font-weight-600;
     }
     .icon-close{
         color:red;
-        font-weight:600;
+        @extend .font-weight-600;
     }
     .grid-align{
         margin-top: 11%;
@@ -133,7 +133,7 @@ group-report-list {
 
 }
 .segment-md .segment-button {
-    font-weight: 700 !important;
+    @extend .font-weight-700;
     color:black!important;
     background-color: #FFFFFF;
 }

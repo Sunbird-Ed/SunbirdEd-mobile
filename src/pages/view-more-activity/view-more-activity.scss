@@ -27,4 +27,11 @@ page-view-more-activity {
         z-index: 1000;
         opacity: 1 !important;
     }
+
+    .downloads-only {
+        background: #f8f8f8; 
+        @include margin(-16px, -16px, 16px, -16px);
+        @include padding(0, 16px);
+    }
+
 }

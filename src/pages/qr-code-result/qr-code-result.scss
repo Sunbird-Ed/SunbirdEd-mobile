@@ -109,7 +109,7 @@ ul.breadcrumbs{
     li{
         display: inline-block;
         color: #007aff;
-        font-weight: bold;
+        @extend .font-weight-bold;
         font-size: 10px;
     }
 

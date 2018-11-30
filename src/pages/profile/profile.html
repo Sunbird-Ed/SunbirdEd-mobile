@@ -73,7 +73,7 @@
     <div class="school-details" *ngIf="profile?.framework">
         <div class="container" *ngIf="profile?.framework?.board">
             <div>{{'BOARD' | translate }}: </div>
-            <div class="bolder">{{profile?.framework?.board}}</div>
+            <div class="bolder">{{profile?.framework?.board}} &lrm;</div>
         </div>
         <div class="container" *ngIf="profile?.framework?.medium">
             <div>{{'MEDIUM' | translate }}: </div>
@@ -116,7 +116,7 @@
         <div class="cards-container" style="padding:15px 5px; background-color: #fff; ">
             <ion-scroll scrollX="true" style="width: 100%" no-padding>
                 <div *ngIf="enrolledCourse  && isLoggedInUser">
-                    <ion-card *ngFor="let courseItem of enrolledCourse; let i=index" (click)="navigateToDetailPage(courseItem, 'Popular', i);">
+                    <ion-card *ngFor="let courseItem of enrolledCourse; let i=index" (click)="navigateToDetailPage(courseItem, layoutPopular, i);">
                         <ion-card-content>
                             <ion-row class="top">
                                 <ion-col col-3 class="img-container">
