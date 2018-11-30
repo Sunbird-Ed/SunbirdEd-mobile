@@ -890,6 +890,9 @@ export class ContentDetailsPage {
       this.zone.run(() => {
         if (data === 'delete.success') {
           this.content.downloadable = false;
+          const playContent = JSON.parse(this.content.playContent);
+          playContent.isAvailableLocally = false;
+          this.content.playContent = JSON.stringify(playContent);
         }
       });
     });

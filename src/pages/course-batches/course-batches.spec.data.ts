@@ -27,5 +27,5 @@ export const mockRes = {
     {'error': 'CONNECTION_ERROR'},
 
     alreadyRegisterredFailureResponse:
-    {'error': 'ALREADY_ENROLLED_COURSE'},
+    {'error': 'USER_ALREADY_ENROLLED_COURSE'},
   };
