@@ -39,7 +39,7 @@ page-course-batches {
             }
             .text-holder{
                 font-size: 18px;
-                font-weight: 300;
+                @extend .font-weight-300;
             }
         }
     }
@@ -49,12 +49,12 @@ page-course-batches {
     .batch-name {
         margin-top: 0px; 
         font-size: 1.6rem;
-        font-weight: 500;
+        @extend .font-weight-500;
     }
     .selected-filter {
         width: 88%;
         padding-top: 8px; 
-        font-weight:600;
+        @extend .font-weight-600;
     }
     .padding-top-30 {
         padding-top: 30px;
@@ -71,14 +71,12 @@ page-course-batches {
     .padding-top-9 {
         padding-top: 9px;
     }
-    .font-weight-500{
-        font-weight: 500;
-    }
+
     .back-button-md {
         @include margin(null, null, null, -1px !important);
     }
     .text-gray-color {
         color: gray;
-        font-family: 'NotoSans';
+        @extend .NotoSans;
     }
 }

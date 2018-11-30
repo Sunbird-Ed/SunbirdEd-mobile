@@ -199,9 +199,9 @@ export class QrCodeResultPage {
         this.results = [];
         this.profile = this.appGlobalService.getCurrentUser();
         const contentData = JSON.parse(JSON.stringify(data.result.contentData));
-        if (!this.navParams.get('onboarding') && contentData && contentData.medium) {
+       /* if (!this.navParams.get('onboarding') && contentData && contentData.medium) {
           this.commonUtilService.changeAppLanguage(contentData.medium);
-        }
+        } */
         this.checkProfileData(contentData, this.profile);
         this.findContentNode(data.result);
 

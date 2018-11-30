@@ -82,7 +82,7 @@ page-courses {
     max-width: 75%;
     font-size: 14px;
     color: #488aff;
-    font-weight: bold;
+    @extend .font-weight-bold;
   }
   /* To give some space between the icons in the header */
   .tool-icon {

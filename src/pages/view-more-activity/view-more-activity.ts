@@ -2,7 +2,7 @@ import { IonicPage, NavController, NavParams, Events } from 'ionic-angular';
 import { Component, NgZone, OnInit } from '@angular/core';
 import { ContentService, CourseService, PageId, Environment, ImpressionType, LogLevel } from 'sunbird';
 import * as _ from 'lodash';
-import { ContentType } from '../../app/app.constant';
+import { ContentType, ViewMore } from '../../app/app.constant';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { CourseUtilService } from '../../service/course-util.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
@@ -35,6 +35,19 @@ export class ViewMoreActivityPage implements OnInit {
  * Flag to show / hide button
  */
   loadMoreBtn = true;
+
+/**
+ * Flag to show / hide downloads only button
+ */
+showDownloadsOnlyToggle = false;
+
+/**
+ * value for downloads only toggle button, may have true/false
+ */
+downloadsOnlyToggle = false;
+
+
+
 
   /**
 	 * Offset
@@ -105,6 +118,7 @@ export class ViewMoreActivityPage implements OnInit {
   ionViewWillEnter(): void {
     this.tabBarElement.style.display = 'none';
     this.searchQuery = this.navParams.get('requestParams');
+    this.showDownloadsOnlyToggle = this.navParams.get('showDownloadOnlyToggle');
     if (this.headerTitle !== this.navParams.get('headerTitle')) {
       this.headerTitle = this.navParams.get('headerTitle');
       this.offset = 0;
@@ -116,7 +130,7 @@ export class ViewMoreActivityPage implements OnInit {
   subscribeUtilityEvents() {
     this.events.subscribe('savedResources:update', (res) => {
       if (res && res.update) {
-        if (this.navParams.get('pageName') === 'resource.SavedResources') {
+        if (this.navParams.get('pageName') === ViewMore.PAGE_RESOURCE_SAVED) {
           this.getLocalContents();
         }
       }
@@ -210,19 +224,27 @@ export class ViewMoreActivityPage implements OnInit {
   mapper() {
     const pageName = this.navParams.get('pageName');
     switch (pageName) {
-      case 'course.EnrolledCourses':
+      case ViewMore.PAGE_COURSE_ENROLLED:
         this.pageType = 'enrolledCourse';
         this.loadMoreBtn = false;
         this.getEnrolledCourse();
         break;
-      case 'course.PopularContent':
+
+      case ViewMore.PAGE_COURSE_POPULAR:
         this.pageType = 'popularCourses';
         this.search();
         break;
-      case 'resource.SavedResources':
+
+      case ViewMore.PAGE_RESOURCE_SAVED:
         this.loadMoreBtn = false;
         this.getLocalContents();
         break;
+
+      case ViewMore.PAGE_RESOURCE_RECENTLY_VIEWED:
+        this.loadMoreBtn = false;
+        this.getLocalContents();
+        break;
+
       default:
         this.search();
     }
@@ -380,6 +402,11 @@ export class ViewMoreActivityPage implements OnInit {
         this.showOverlay = false;
       });
     });
+  }
+
+  downloadsOnlyToggleChange(e) {
+    // TODO : have to implement the logic of filter
+    console.log('clicked on downloads only toggle', this.downloadsOnlyToggle);
   }
 
   /**

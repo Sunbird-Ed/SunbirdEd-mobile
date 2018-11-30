@@ -196,3 +196,16 @@ export class XwalkConstants {
     public static readonly LINK = 'https://play.google.com/store/apps/details?id=org.xwalk.core';
     public static readonly APP_ID = 'org.xwalk.core';
 }
+
+export class ContentCard {
+    public static readonly LAYOUT_INPROGRESS = 'InProgress';
+    public static readonly LAYOUT_POPULAR = 'Popular';
+    public static readonly LAYOUT_SAVED_CONTENT = 'SavedContent';
+}
+
+export class ViewMore {
+    public static readonly PAGE_COURSE_ENROLLED = 'course.EnrolledCourses';
+    public static readonly PAGE_COURSE_POPULAR = 'course.PopularContent';
+    public static readonly PAGE_RESOURCE_SAVED = 'resource.SavedResources';
+    public static readonly PAGE_RESOURCE_RECENTLY_VIEWED = 'resource.RecentlyViewed';
+}
