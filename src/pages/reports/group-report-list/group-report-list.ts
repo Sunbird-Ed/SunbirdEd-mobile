@@ -1,3 +1,4 @@
+import { CommonUtilService } from './../../../service/common-util.service';
 import { NavController } from 'ionic-angular/navigation/nav-controller';
 import { Component, NgZone } from '@angular/core';
 import { NavParams, LoadingController } from 'ionic-angular';
@@ -59,6 +60,7 @@ export class GroupReportListPage {
     listOfReports: Array<ReportSummary> = [];
     group: any;
     groupinfo: any;
+    downloadDirectory: any;
 
     constructor(
         private navParams: NavParams,
@@ -76,7 +78,14 @@ export class GroupReportListPage {
         private profileService: ProfileService,
         private deviceInfoService: DeviceInfoService,
         private socialShare: SocialSharing,
-        private navCtrl: NavController) {
+        private navCtrl: NavController,
+        private commonUtilService: CommonUtilService) {
+        this.downloadDirectory = this.file.dataDirectory;
+        this.deviceInfoService.getDownloadDirectoryPath()
+            .then((response: any) => {
+                this.downloadDirectory = response;
+            })
+            .catch();
     }
     fileTransfer: FileTransferObject = this.transfer.create();
     ionViewWillEnter() {
@@ -85,16 +94,13 @@ export class GroupReportListPage {
     ionViewDidLoad() {
         this.deviceInfoService.getDeviceID()
             .then((res: any) => {
-                console.log('Device Id: ', res);
                 this.deviceId = res;
             })
             .catch((err: any) => {
                 console.error('Error', err);
             });
         this.profile = this.appGlobalService.getCurrentUser();
-        console.log(this.profile);
         this.groupinfo = this.navParams.get('group');
-        console.log(this.groupinfo);
     }
     fetchAssessment(event: string, fromUserList: boolean) {
         const subType = (event === 'users') ? InteractSubtype.REPORTS_BY_USER_CLICKED : InteractSubtype.REPORTS_BY_QUESTION_CLICKED;
@@ -130,7 +136,6 @@ export class GroupReportListPage {
                 let averageScore: any = 0;
                 let averageTime = 0;
                 data.forEach((report) => {
-                    // console.log(report);
                     averageTime += report.totalTimespent;
                     averageScore += report.score;
                     report.totalTimespent = that.formatTime(report.totalTimespent);
@@ -139,7 +144,6 @@ export class GroupReportListPage {
                         .then(reportsMap => {
                             const data1 = reportsMap.get(report.uid);
                             const rows = data1.reportDetailsList.map(row => {
-                                console.log('krekfrlkrlkflk', rows);
                                 return {
                                     'index': 'Q' + (('00' + row.qindex).slice(-3)),
                                     'result': row.score + '/' + row.maxScore,
@@ -154,15 +158,12 @@ export class GroupReportListPage {
                                 };
                             });
                             report.assessmentData = rows;
-                            // console.log('gfdhgfdhdhgd', report);
                         })
                         .catch(err => {
-                            console.log(err);
                             loader.dismiss();
                         });
                 });
                 this.response = data;
-                // console.log('dsmckjnjjknkjfd', this.response);
                 averageScore = (averageScore / data.length).toFixed(2);
                 averageTime = averageTime / data.length;
                 this.appGlobalService.setAverageTime(averageTime);
@@ -192,7 +193,6 @@ export class GroupReportListPage {
                 this.reportService.getReportsByQuestion(params).then((data: any) => {
                     data = JSON.parse(data);
                     this.response = data;
-                    console.log(data);
                     let averageTime = 0;
                     let averageScore: any = 0;
                     data.forEach((question) => {
@@ -257,10 +257,9 @@ export class GroupReportListPage {
         const that = this;
         const values = this.response;
         const anzahlTeams = values.length;
-        const filexptime = this.datePipe.transform(new Date(this.exptime), 'dd-MMM-yyyy hh:mm:ss a');
-        console.log(values);
+        const filexptime = this.datePipe.transform(new Date(this.exptime), 'dd-MM-yyyy hh:mm:ss a');
         if (this.response && this.response[0].hasOwnProperty('assessmentData')) {
-            const contentstarttime = this.datePipe.transform(new Date(), 'dd-MMM-yyyy hh:mm:ss a');
+            const contentstarttime = this.datePipe.transform(new Date(), 'dd-MM-yyyy hh:mm:ss a');
             // Header
             for (let m = 0; m < anzahlTeams; m++) {
                 line += 'Device ID' + '\t' + this.deviceId + '\n';
@@ -271,7 +270,7 @@ export class GroupReportListPage {
                 line += '\n\n';
                 line += 'User name' + '\t\t';
                 line += 'UserID' + '\t\t';
-                line += 'Question' + '\t\t';
+                line += 'Question#' + '\t\t';
                 line += 'QuestionId' + '\t\t';
                 line += 'Score' + '\t\t';
                 line += 'Time' + '\n';
@@ -280,16 +279,14 @@ export class GroupReportListPage {
             }
             line += '\n';
             // Teams
-            console.log(anzahlTeams);
-            // console.log(values);
             for (let k = 0; k < values.length; k++) {
                 for (let j = 0; j < values[k].assessmentData.length; j++) {
-                    line += values[k].userName + '\t\t';
-                    line += values[k].uid + '\t\t';
-                    line += values[k].assessmentData[j].qtitle + '\t\t';
-                    line += values[k].assessmentData[j].qid + '\t\t';
-                    line += values[k].assessmentData[j].score + '/' + values[k].assessmentData[j].maxScore + '\t\t';
-                    line += values[k].assessmentData[j].timespent + '\n';
+                    line += '\"' + values[k].userName + '\"' + '\t\t';
+                    line += '\"' + values[k].uid + '\"' + '\t\t';
+                    line += '\"' + values[k].assessmentData[j].qtitle + '\"' + '\t\t';
+                    line += '\"' + values[k].assessmentData[j].qid + '\"' + '\t\t';
+                    line += '\"' + values[k].assessmentData[j].score + '/' + values[k].assessmentData[j].maxScore + '\"' + '\t\t';
+                    line += '\"' + values[k].assessmentData[j].timespent + '\"' + '\n';
                 }
                 line += '\n\n';
             }
@@ -311,14 +308,13 @@ export class GroupReportListPage {
                 break;
             }
             line += '\n';
-            console.log(values);
             for (let p = 0; p < anzahlTeams - 1; p++) {
                 line += values[p].users.get(values[p].uid) + '\t\t';
                 line += values[p].uid + '\t\t';
                 line += values[p].qtitle + '\t\t';
                 line += values[p].qid + '\t\t';
                 line += values[p].score + '/' + values[p].max_score + '\t\t';
-                line += that.formatTime(values[p].time_spent) + '\n';
+                line += that.formatTime(values[p].timpent) + '\n';
             }
         }
 
@@ -328,43 +324,25 @@ export class GroupReportListPage {
     importcsv() {
         this.exptime = new Date().getTime();
         const csv: any = this.convertToCSV();
-        const combinefilename = this.deviceId + this.groupinfo.gid + this.response[0].content_id + this.exptime + '.csv';
-        // console.log(combinefilename);
-        const fileName = combinefilename;
-        this.file.writeFile(this.file.dataDirectory, fileName, csv)
+        const combinefilename = this.deviceId + '_' + this.groupinfo.gid + '_' + this.response[0].content_id + '_' + this.exptime + '.csv';
+        this.file.writeFile(this.downloadDirectory, combinefilename, csv)
             .then(
                 _ => {
-                    this.socialShare.share('message', '', this.file.dataDirectory + fileName, '')
-                        .then(() => {
-                            console.log('shareSheetShare: Success');
-                        }).catch(() => {
-                            console.error('shareSheetShare: failed');
-                        });
+                    this.commonUtilService.showToast(this.translateMessage('CSV_DOWNLOAD_SUCCESS', combinefilename), false, 'custom-toast');
                 }
             )
             .catch(
                 err => {
-                    this.file.writeExistingFile(this.file.dataDirectory, fileName, csv)
+                    this.file.writeExistingFile(this.downloadDirectory, combinefilename, csv)
                         .then(
                             _ => {
-                                this.socialShare.share('message', '', this.file.dataDirectory + fileName, '')
-                                    .then(() => {
-                                        console.log('shareSheetShare: Success');
-                                    }).catch(() => {
-                                        console.error('shareSheetShare: failed');
-                                    });
+                                this.commonUtilService.showToast(this.translateMessage
+                                    ('CSV_DOWNLOAD_SUCCESS', combinefilename), false, 'custom-toast');
 
 
-
-                                console.log('Success ;-)2' + this.file.dataDirectory);
                             }
                         )
-                        .catch(
-                            err1 => {
-                                alert(err1 + 'Failure' + this.file.dataDirectory + fileName);
-                                console.log(err1 + 'Failure' + this.file.dataDirectory + fileName);
-                            }
-                        );
+                        .catch();
                 }
             );
     }

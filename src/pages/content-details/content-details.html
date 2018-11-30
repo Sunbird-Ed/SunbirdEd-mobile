@@ -175,7 +175,7 @@
 <!--- Ion footer  displays when content streaming is enabled -->
 <ion-footer *ngIf="content && appGlobalService?.CONTENT_STREAMING_ENABLED">
 	<ion-toolbar padding>
-		<button ion-button block *ngIf="!content?.downloadable" (click)="showSwitchUserAlert(true)" text-uppercase [disabled]="isDownloadStarted || !commonUtilService.networkInfo.isNetworkAvailable ? true : false">{{'PLAY_ONLINE'
+		<button ion-button block *ngIf="!content?.downloadable" (click)="showSwitchUserAlert(true)" text-uppercase [disabled]="isDownloadStarted">{{'PLAY_ONLINE'
 			| translate}}</button>
 		<ion-icon *ngIf="isDownloadStarted && downloadProgress !== 100 && !content?.downloadable" (click)="cancelDownload()"
 		 name="ios-close-circle-outline" class="cancel-download" color="primary"></ion-icon>
