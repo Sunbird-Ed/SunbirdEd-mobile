@@ -311,7 +311,7 @@ export class QrCodeResultPage {
     req.source = this.profile.source;
     req.createdAt = this.profile.createdAt;
     req.syllabus = this.profile.syllabus;
-
+    console.log('qrcode editProfile req', req);
     // Shorthand for above code
     // req = (({board, grade, medium, subject, uid, handle, profileType, source, createdAt, syllabus}) =>
     // ({board, grade, medium, subject, uid, handle, profileType, source, createdAt, syllabus}))(this.profile);
@@ -376,6 +376,7 @@ export class QrCodeResultPage {
 	 */
 
   setCurrentProfile(index, data) {
+    console.log('setCurrentProfile index', index);
     if (!this.profile.medium || !this.profile.medium.length) {
       this.profile.medium = [];
     }
@@ -417,9 +418,10 @@ export class QrCodeResultPage {
 	 * @param {object} profile
 	 */
   checkProfileData(data, profile) {
+    console.log('qr data', data);
     if (data && data.framework) {
 
-      this.formAndFrameworkUtilService.getSyllabusList()
+      this.formAndFrameworkUtilService.getSupportingBoardList()
         .then((res) => {
           let isProfileUpdated = false;
           res.forEach(element => {

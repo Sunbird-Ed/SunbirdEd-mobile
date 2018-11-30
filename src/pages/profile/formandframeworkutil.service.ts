@@ -54,7 +54,7 @@ export class FormAndFrameworkUtilService {
      * This method gets the form related details.
      *
      */
-    getSyllabusList(): Promise<any> {
+    getSupportingBoardList(): Promise<any> {
         return new Promise((resolve, reject) => {
             let syllabusList: Array<any> = [];
 
@@ -123,8 +123,8 @@ export class FormAndFrameworkUtilService {
         const req: FormRequest = {
             type: 'user',
             subType: 'instructor',
-            action: 'onboarding',
-            filePath: FormConstant.DEFAULT_SYALLABUS_PATH
+            action: 'onboarding_v2',
+            filePath: FormConstant.DEFAULT_SUPPORTED_BOARDS_PATH
         };
         // form api call
         this.formService.getForm(req).then((res: any) => {
@@ -133,9 +133,9 @@ export class FormAndFrameworkUtilService {
             let frameworks: Array<any> = [];
             const fields: Array<any> = response.result.fields;
             fields.forEach(field => {
-                if (field.language === this.selectedLanguage) {
-                    frameworks = field.range;
-                }
+                // if (field.language === this.selectedLanguage) {
+                frameworks = field.range;
+                // }
             });
 
             // this condition will be executed when selected language is not present in the frameworks
@@ -147,11 +147,10 @@ export class FormAndFrameworkUtilService {
                     }
                 });
             }
-
             if (frameworks != null && frameworks.length > 0) {
                 frameworks.forEach(frameworkDetails => {
-                    const value = { 'name': frameworkDetails.name, 'frameworkId': frameworkDetails.frameworkId };
-                    syllabusList.push(value);
+                    // const value = { 'name': frameworkDetails.name, 'frameworkId': frameworkDetails.frameworkId };
+                    syllabusList.push(frameworkDetails);
                 });
 
                 // store the framework list in the app component, so that when getFormDetails() gets called again
@@ -369,60 +368,82 @@ export class FormAndFrameworkUtilService {
                 grade: [],
                 medium: [],
                 subject: [],
+                syllabus: [],
                 gradeValueMap: {}
             };
+            let categories;
+            let supportingBoardList = [];
             if (profileRes.framework) {
                 const categoryKeysLen = Object.keys(profileRes.framework).length;
                 let keysLength = 0;
-                for (const categoryKey in profileRes.framework) {
-                    if (profileRes.framework.hasOwnProperty(categoryKey) && profileRes.framework[categoryKey].length) {
-                        const request: CategoryRequest = {
-                            selectedLanguage: this.translate.currentLang,
-                            currentCategory: categoryKey
-                        };
-                        this.getCategoryData(request)
-                            .then((categoryList) => {
-                                keysLength++;
-                                profileRes.framework[categoryKey].forEach(element => {
-                                    if (categoryKey === 'gradeLevel') {
-                                        const code = _.find(categoryList, (category) => category.name === element).code;
-                                        profile['grade'].push(code);
-                                        profile['gradeValueMap'][code] = element;
-                                    } else {
-                                        profile[categoryKey].push(_.find(categoryList, (category) => category.name === element).code);
-                                    }
-                                });
-                                if (categoryKeysLen === keysLength) {
-                                    const req: Profile = new Profile();
-                                    req.board = profile.board;
+                this.getSupportingBoardList()
+                    .then((boards) => {
+                        supportingBoardList = boards;
+                        if (profileRes.framework.hasOwnProperty('board') && profileRes.framework['board'].length) {
+                            const matchedBoard = supportingBoardList.find(board => board.name === profileRes.framework['board'][0]);
+                            if (matchedBoard) {
+                                profile['syllabus'].push(matchedBoard.frameworkId);
+                                this.getFrameworkDetails(matchedBoard.frameworkId)
+                                .then((response) => {
+                                    categories = response;
+                                    for (const categoryKey in profileRes.framework) {
+                                        if (profileRes.framework.hasOwnProperty(categoryKey) && profileRes.framework[categoryKey].length) {
+                                            const categoryList = _.find(categories, (category) => category.code === categoryKey).terms;
+                                            keysLength++;
+                                            profileRes.framework[categoryKey].forEach(element => {
+                                                if (categoryKey === 'gradeLevel') {
+                                                    const val = _.find(categoryList, (category) => category.name === element);
+                                                    if (val) {
+                                                        profile['grade'].push(val.code);
+                                                        profile['gradeValueMap'][val.code] = element;
+                                                    }
+                                                } else if (categoryKey === 'board') {
+                                                    const val = _.find(categoryList, (category) => category.name === element);
+                                                    if (val) {
+                                                        profile[categoryKey].push(val.code);
+                                                    }
+                                                } else {
+                                                    const val = _.find(categoryList, (category) => category.name === element);
+                                                    if (val) {
+                                                        profile[categoryKey].push(val.code);
+                                                    }
+                                                }
+                                            });
+                                            if (categoryKeysLen === keysLength) {
+                                                const req: Profile = new Profile();
+                                                req.board = profile.board;
 
-                                    req.grade = profile.grade;
-                                    req.medium = profile.medium;
-                                    req.subject = profile.subject;
-                                    req.gradeValueMap = profile.gradeValueMap;
-                                    req.uid = profileData.uid;
-                                    req.handle = profileData.uid;
-                                    req.profileType = profileData.profileType;
-                                    req.source = profileData.source;
-                                    req.createdAt = profileData.createdAt || this.formatDate();
-                                    this.preference.getString('current_framework_id')
-                                        .then(value => {
-                                            req.syllabus = [value];
-                                            this.profileService.updateProfile(req)
+                                                req.grade = profile.grade;
+                                                req.medium = profile.medium;
+                                                req.subject = profile.subject;
+                                                req.gradeValueMap = profile.gradeValueMap;
+                                                req.uid = profileData.uid;
+                                                req.handle = profileData.uid;
+                                                req.profileType = profileData.profileType;
+                                                req.source = profileData.source;
+                                                req.createdAt = profileData.createdAt || this.formatDate();
+
+                                                req.syllabus = profile.syllabus;
+
+                                                this.profileService.updateProfile(req)
                                                 .then((res: any) => {
-                                                    this.events.publish('refresh:profile');
-                                                    const updateProfileRes = JSON.parse(res);
+                                                    this.events.publish('refresh:loggedInProfile');
                                                     resolve();
                                                 })
                                                 .catch((err: any) => {
                                                     console.error('Err', err);
                                                 });
-                                        });
-
-                                }
-                            });
-                    }
-                }
+                                            }
+                                        }
+                                    }
+                                });
+                            } else {
+                                resolve();
+                            }
+                        } else {
+                            resolve();
+                        }
+                    });
             } else {
                 reject();
             }
@@ -431,9 +452,11 @@ export class FormAndFrameworkUtilService {
     }
 
     formatDate() {
-        const options = { day: '2-digit', year: 'numeric', month: 'short', hour: '2-digit',
-         minute: '2-digit', second: '2-digit',  hour12: true};
+        const options = {
+            day: '2-digit', year: 'numeric', month: 'short', hour: '2-digit',
+            minute: '2-digit', second: '2-digit', hour12: true
+        };
         const date = new Date().toLocaleString('en-us', options);
-        return( date.slice(0, 12) + date.slice(13, date.length));
+        return (date.slice(0, 12) + date.slice(13, date.length));
     }
 }

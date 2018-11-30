@@ -239,8 +239,7 @@ export class GuestEditProfilePage {
   getSyllabusDetails() {
     this.loader = this.getLoader();
     this.loader.present();
-
-    this.formAndFrameworkUtilService.getSyllabusList()
+    this.formAndFrameworkUtilService.getSupportingBoardList()
       .then((result) => {
         if (result && result !== undefined && result.length > 0) {
           result.forEach(element => {
