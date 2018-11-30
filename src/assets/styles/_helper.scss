@@ -255,14 +255,14 @@
     padding-top:48px;
 }
 .PL0{
-    padding-LEFT:0PX;
+    @include padding(null, null, null, 0);
 }
 .PL5{
-    padding-left: 5px;
+    @include padding(null, null, null, 5px);
 }
 
 .PL10{
-    padding-left: 10px;
+    @include padding(null, null, null, 10px);
 }
 
 .PL15{
@@ -314,4 +314,8 @@
 
 .PR1{
     padding-right:1px;
+}
+
+.bg-transparent{
+    background: transparent;
 }

@@ -34,7 +34,9 @@ import {
   ContentType,
   AudienceFilter,
   PreferenceKey,
-  PageName
+  PageName,
+  ContentCard,
+  ViewMore
 } from '../../app/app.constant';
 import {
   PageFilterCallback,
@@ -79,6 +81,11 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   mode = 'soft';
   isFilterApplied = false;
   pageFilterCallBack: PageFilterCallback;
+
+  layoutPopular = ContentCard.LAYOUT_POPULAR;
+  layoutSavedContent = ContentCard.LAYOUT_SAVED_CONTENT;
+  savedResourcesSection = 'Saved Resources';
+  recentViewedSection = 'Recently Viewed';
 
   constructor(
     public navCtrl: NavController,
@@ -189,17 +196,30 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.profile = this.appGlobalService.getCurrentUser();
   }
 
-  navigateToViewMoreContentsPage() {
+  navigateToViewMoreContentsPage(section: string) {
     const values = new Map();
-    values['SectionName'] = 'Saved Resources';
+    let headerTitle;
+    let pageName;
+    let showDownloadOnlyToggleBtn;
+    if (section === this.savedResourcesSection) {
+      values['SectionName'] = this.savedResourcesSection;
+      headerTitle = 'SAVED_RESOURCES';
+      pageName = ViewMore.PAGE_RESOURCE_SAVED;
+    } else if (section === this.recentViewedSection) {
+      values['SectionName'] = this.recentViewedSection;
+      headerTitle = 'RECENTLY_VIEWED';
+      pageName = ViewMore.PAGE_RESOURCE_RECENTLY_VIEWED;
+      showDownloadOnlyToggleBtn = true;
+    }
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.VIEWALL_CLICKED,
       Environment.HOME,
       this.source, undefined,
       values);
     this.navCtrl.push(ViewMoreActivityPage, {
-      headerTitle: 'SAVED_RESOURCES',
-      pageName: 'resource.SavedResources'
+      headerTitle: headerTitle,
+      pageName: pageName,
+      showDownloadOnlyToggle: showDownloadOnlyToggleBtn
     });
   }
 

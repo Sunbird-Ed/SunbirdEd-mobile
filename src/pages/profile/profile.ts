@@ -32,7 +32,8 @@ import {
   ProfileConstants,
   MenuOverflow,
   ContentType,
-  MimeType
+  MimeType,
+  ContentCard
 } from '@app/app/app.constant';
 import { CategoriesEditPage } from '@app/pages/categories-edit/categories-edit';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details/enrolled-course-details';
@@ -83,6 +84,8 @@ export class ProfilePage {
     'district': '',
     'block': ''
   };
+
+  layoutPopular = ContentCard.LAYOUT_POPULAR;
 
   constructor(
     private navCtrl: NavController,
@@ -401,7 +404,7 @@ export class ProfilePage {
     const identifier = content.contentId || content.identifier;
     const telemetryObject: TelemetryObject = new TelemetryObject();
     telemetryObject.id = identifier;
-    if (layoutName === 'Inprogress') {
+    if (layoutName === ContentCard.LAYOUT_INPROGRESS) {
       telemetryObject.type = ContentType.COURSE;
     } else {
       telemetryObject.type = this.isResource(content.contentType) ? ContentType.RESOURCE : content.contentType;

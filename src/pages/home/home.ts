@@ -20,7 +20,7 @@ import { SearchPage } from '../search/search';
 import { PopoverController } from 'ionic-angular/components/popover/popover-controller';
 import { IncompleteProfileData } from '../../component/card/incomplete-profile/incomplete-profile-data';
 import { TranslateService } from '@ngx-translate/core';
-import { ProfileConstants } from '../../app/app.constant';
+import { ProfileConstants, ContentCard } from '../../app/app.constant';
 
 @Component({
   selector: 'page-home',
@@ -64,6 +64,8 @@ export class HomePage {
   profileProgress = '';
 
   incompleteProfileData: IncompleteProfileData;
+
+  layoutInProgress = ContentCard.LAYOUT_INPROGRESS;
 
   /**
    * Default method of class CoursesPage

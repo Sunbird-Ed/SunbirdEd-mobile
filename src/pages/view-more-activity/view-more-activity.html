@@ -12,6 +12,15 @@
   </div>
 
   <div *ngIf="searchList && searchList.length">
+    <div class="downloads-only" *ngIf="showDownloadsOnlyToggle">
+      <ion-list class="PL5 bg-transparent">
+          <ion-item class="PL0 bg-transparent" >
+            <ion-label>{{ 'VIEW_DOWNLOADS_ONLY_MSG' | translate }}</ion-label>
+            <ion-toggle [(ngModel)]="downloadsOnlyToggle" (ngModelChange)="downloadsOnlyToggleChange($event);"></ion-toggle>
+          </ion-item>
+      </ion-list>
+    </div>
+
     <view-more-card *ngFor="let item of searchList" [content]="item" [type]="pageType"></view-more-card>
   </div>
   <!-- TODO: need good logic here -->
