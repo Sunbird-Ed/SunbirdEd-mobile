@@ -104,8 +104,7 @@ export class SignInCardComponent {
           undefined)
       );
 
-      this.generateLoginInteractTelemetry(InteractType.TOUCH,
-        InteractSubtype.LOGIN_INITIATE, '');
+      this.generateLoginInteractTelemetry(InteractType.TOUCH, InteractSubtype.LOGIN_INITIATE, '');
 
       const that = this;
       const loader = this.commonUtilService.getLoader();
@@ -162,17 +161,17 @@ export class SignInCardComponent {
             that.profileService.setCurrentProfile(false, profile)
               .then((currentProfile: any) => {
                 that.formAndFrameworkUtilService.updateLoggedInUser(r, profile)
-                .then( () => {
-                  resolve({
-                    slug: r.rootOrg.slug,
-                    title: r.rootOrg.orgName
+                  .then(() => {
+                    resolve({
+                      slug: r.rootOrg.slug,
+                      title: r.rootOrg.orgName
+                    });
+                  }).catch(() => {
+                    resolve({
+                      slug: r.rootOrg.slug,
+                      title: r.rootOrg.orgName
+                    });
                   });
-                }).catch( () => {
-                  resolve({
-                    slug: r.rootOrg.slug,
-                    title: r.rootOrg.orgName
-                  });
-                });
               })
               .catch((err: any) => {
                 reject(err);
