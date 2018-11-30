@@ -12,6 +12,7 @@ import { url } from 'inspector';
 import { error } from 'util';
 import { AppGlobalService } from '../../../service/app-global.service';
 import { DatePipe } from '@angular/common';
+import { CommonUtilService } from '@app/service';
 
 @IonicPage()
 @Component({
@@ -20,6 +21,7 @@ import { DatePipe } from '@angular/common';
 })
 export class UserReportPage {
   profile: any;
+  downloadDirectory: string;
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -34,7 +36,15 @@ export class UserReportPage {
     private appVersion: AppVersion,
     private deviceInfoService: DeviceInfoService,
     private socialShare: SocialSharing,
-    private telemetryGeneratorService: TelemetryGeneratorService) {
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private commonUtilService: CommonUtilService) {
+
+    this.downloadDirectory = this.file.dataDirectory;
+    this.deviceInfoService.getDownloadDirectoryPath()
+      .then((response: any) => {
+        this.downloadDirectory = response;
+      })
+      .catch();
   }
   assessmentData;
   columns = [
@@ -145,12 +155,9 @@ export class UserReportPage {
     this.navCtrl.pop();
   }
   convertToCSV(teams) {
-    console.log(this.exptime);
     let csv: any = '';
     let line: any = '';
     const that = this;
-    // console.log(this.response);
-    // console.log(typeof (this.response));
     const values = this.response;
     const anzahlTeams = values.length;
 
@@ -171,8 +178,6 @@ export class UserReportPage {
       break;
     }
     line += '\n';
-    // Teams
-    //  console.log(values);
     for (let j = 0; j < anzahlTeams - 1; j++) {
       line += values[j].qtitle + '\t\t';
       line += values[j].qid + '\t\t';
@@ -187,45 +192,24 @@ export class UserReportPage {
   importcsv(body) {
     this.exptime = new Date().getTime();
     const csv: any = this.convertToCSV(this.response);
-    console.log(this.exptime);
-    console.log(this.deviceId + this.response[0].uid + this.response[0].contentId);
-    const combinefilename = this.deviceId + this.response[0].uid + this.response[0].contentId + this.exptime + '.csv';
+    const combinefilename = this.deviceId + '_' + this.response[0].uid  + '_' + this.response[0].contentId + '_' + this.exptime + '.csv';
 
-    const fileName = combinefilename;
-    this.file.writeFile(this.file.dataDirectory, fileName, csv)
+    this.downloadDirectory = 'file:///storage/emulated/0/Download/';
+    this.file.writeFile(this.downloadDirectory, combinefilename, csv)
       .then(
         _ => {
-          this.socialShare.share('message', '', this.file.dataDirectory + fileName, '')
-            .then(() => {
-              console.log('shareSheetShare: Success');
-            }).catch(() => {
-              console.error('shareSheetShare: failed');
-            });
+          this.commonUtilService.showToast(this.translateMessage('CSV_DOWNLOAD_SUCCESS', combinefilename), false, 'custom-toast');
         }
       )
       .catch(
         err => {
-
-          this.file.writeExistingFile(this.file.dataDirectory, fileName, csv)
+          this.file.writeExistingFile(this.downloadDirectory, combinefilename, csv)
             .then(
               _ => {
-                this.socialShare.share('message', '', this.file.dataDirectory + fileName, '')
-                  .then(() => {
-                    console.log('shareSheetShare: Success');
-                  }).catch(() => {
-                    console.error('shareSheetShare: failed');
-                  });
-
-
-
-                console.log('Success ;-)2' + this.file.dataDirectory);
+                 this.commonUtilService.showToast(this.translateMessage('CSV_DOWNLOAD_SUCCESS', combinefilename), false, 'custom-toast');
               }
             )
-            .catch(
-              err1 => {
-                alert(err1 + 'Failure' + this.file.dataDirectory);
-              }
-            );
+            .catch();
         }
       );
   }
