@@ -8,9 +8,9 @@ import {
   eventsMock, navCtrlMock,
   navParamsMock,
   zoneMock
-} from "../../__tests__/mocks";
+} from '../../__tests__/mocks';
 
-describe('CourseBatchesPage', () => {
+describe.only('CourseBatchesPage', () => {
   let courseBatchesPage: CourseBatchesPage;
 
   beforeAll(() => {
@@ -19,7 +19,7 @@ describe('CourseBatchesPage', () => {
   });
 
   beforeEach(() => {
-    jest.resetAllMocks()
+    jest.resetAllMocks();
   });
 
   it('can load instance', () => {
