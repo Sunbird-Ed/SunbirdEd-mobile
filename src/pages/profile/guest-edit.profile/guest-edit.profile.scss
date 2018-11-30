@@ -17,19 +17,19 @@ page-guest-edit.profile {
       margin-bottom: 0 !important;
   }
   .label-md[stacked] {
-    font-weight: 700;
+    @extend .font-weight-700;
   }
   .list-md {
     margin-bottom: 0 !important;
   }
   ion-label.type-label {
     margin-bottom: 0 !important;
-    font-weight: 600;
+    @extend .font-weight-600;
     color: #999;
     font-size: 1.2rem;
   }
   .label-font{
-    font-weight: 600 !important;
+    @extend .font-weight-600;
   }
 }
 
@@ -66,7 +66,7 @@ page-guest-edit.profile {
    -webkit-font-smoothing: antialiased;
     font-style: normal;
     font-variant: normal;
-    font-weight: 400;
+    @extend .font-weight-400;
     line-height: 1;
     padding-left: 30px !important;
     padding-right: 16px !important;

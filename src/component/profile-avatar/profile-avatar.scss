@@ -1,7 +1,7 @@
 profile-avatar {
     .profile-avatar{
         font-size: 50px;
-        font-weight: bold;
+        @extend .font-weight-bold;
         line-height: 50px;
         color: #9017FF;
         border-radius: 50%;

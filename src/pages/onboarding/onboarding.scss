@@ -20,7 +20,7 @@ page-onboarding {
   }
   .title {
     color: map-get($colors, secondary_black);
-    font-weight: 700;
+    @extend .font-weight-700;
     font-size: 1.6rem;
     margin-top: 10px;
     margin-bottom: 20px;
