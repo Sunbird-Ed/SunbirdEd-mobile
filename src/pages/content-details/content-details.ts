@@ -1,3 +1,4 @@
+import { ResourcesPage } from './../resources/resources';
 import {
   Component,
   NgZone,
@@ -236,8 +237,8 @@ export class ContentDetailsPage {
     this.resume = this.platform.resume.subscribe(() => {
       this.isContentPlayed = true;
       if (this.isPlayerLaunched && !this.isGuestUser) {
-        this.isPlayerLaunched = false;
-        this.setContentDetails(this.identifier, false, false /* No Automatic Rating for 1.9.0 */);
+      this.isPlayerLaunched = false;
+        this.setContentDetails(this.identifier, false, true /* No Automatic Rating for 1.9.0 */);
       }
       this.updateContentProgress();
     });
