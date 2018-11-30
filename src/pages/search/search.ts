@@ -52,6 +52,7 @@ import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.ser
 import { CommonUtilService } from '../../service/common-util.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { QrCodeResultPage } from '../qr-code-result/qr-code-result';
+import { TranslateService } from '@ngx-translate/core';
 @IonicPage()
 @Component({
   selector: 'page-search',
@@ -133,7 +134,8 @@ export class SearchPage {
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private preference: SharedPreferences
+    private preference: SharedPreferences,
+    private translate: TranslateService
   ) {
 
     this.checkUserSession();
@@ -143,19 +145,13 @@ export class SearchPage {
     this.init();
 
     this.defaultAppIcon = 'assets/imgs/ic_launcher.png';
+    this.getFrameworkId();
+    this.selectedLanguageCode = this.translate.currentLang;
   }
 
   ionViewWillEnter() {
     this.handleDeviceBackButton();
-    this.preference.getString('current_framework_id')
-      .then(value => {
-        this.currentFrameworkId = value;
-      });
-
-    this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
-      .then(value => {
-        this.selectedLanguageCode = value;
-      });
+    const telemetryObject: TelemetryObject = new TelemetryObject();
   }
 
   ionViewDidEnter() {
@@ -182,6 +178,17 @@ export class SearchPage {
     if (this.backButtonFunc) {
       this.backButtonFunc();
     }
+  }
+
+  getFrameworkId() {
+    this.preference.getString('current_framework_id')
+      .then(value => {
+        this.currentFrameworkId = value;
+
+      })
+      .catch((err: any) => {
+        console.error('Err', err);
+      });
   }
 
   navigateToPreviousPage() {
@@ -304,7 +311,7 @@ export class SearchPage {
     this.showLoader = true;
     this.responseData.result.filterCriteria.mode = 'hard';
 
-    this.contentService.searchContent(this.responseData.result.filterCriteria, true, false, false) .then((responseData: any) => {
+    this.contentService.searchContent(this.responseData.result.filterCriteria, true, false, false).then((responseData: any) => {
 
       this.zone.run(() => {
         const response: GenieResponse = JSON.parse(responseData);
@@ -321,7 +328,11 @@ export class SearchPage {
             } else {
               this.isEmptyResult = true;
             }
-
+            const values = new Map();
+            values['from'] = this.source;
+            values['searchCount'] = this.responseData.length;
+            values['searchCriteria'] = this.responseData.result.filterCriteria;
+            this.telemetryGeneratorService.generateExtraInfoTelemetry(values, PageId.SEARCH);
           }
           this.updateFilterIcon();
         } else {
@@ -329,7 +340,7 @@ export class SearchPage {
         }
         this.showLoader = false;
       });
-    }) .catch((error) => {
+    }).catch((error) => {
       console.log('Error : ' + JSON.stringify(error));
       this.zone.run(() => {
         this.showLoader = false;
@@ -377,12 +388,13 @@ export class SearchPage {
 
     }
 
-    this.contentService.searchContent(contentSearchRequest, false, false, false) .then((responseData: any) => {
+    this.contentService.searchContent(contentSearchRequest, false, false, false).then((responseData: any) => {
 
       this.zone.run(() => {
         const response: GenieResponse = JSON.parse(responseData);
         this.responseData = response;
         if (response.status && response.result) {
+
           this.addCorRelation(response.result.responseMessageId, 'API');
           this.searchContentResult = response.result.contentDataList;
           this.updateFilterIcon();
@@ -391,13 +403,18 @@ export class SearchPage {
 
 
           this.generateLogEvent(response.result);
+          const values = new Map();
+          values['from'] = this.source;
+          values['searchCount'] = this.searchContentResult.length;
+          values['searchCriteria'] = response.result.request;
+          this.telemetryGeneratorService.generateExtraInfoTelemetry(values, PageId.SEARCH);
         } else {
           this.isEmptyResult = true;
         }
         this.showEmptyMessage = this.searchContentResult.length === 0 ? true : false;
         this.showLoader = false;
       });
-    }) .catch((error) => {
+    }).catch((error) => {
       console.log('Error : ' + JSON.parse(error));
       this.zone.run(() => {
         this.showLoader = false;
@@ -454,6 +471,9 @@ export class SearchPage {
     this.source = this.navParams.get('source');
     this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
     this.generateImpressionEvent();
+    const values = new Map();
+    values['from'] = this.source;
+    this.telemetryGeneratorService.generateExtraInfoTelemetry(values, PageId.SEARCH);
     if (this.dialCode !== undefined && this.dialCode.length > 0) {
       this.getContentForDialCode();
     }
@@ -488,7 +508,7 @@ export class SearchPage {
     pageAssembleCriteria.name = PageName.DIAL_CODE;
     pageAssembleCriteria.filters = pagetAssemblefilter;
 
-    this.pageService.getPageAssemble(pageAssembleCriteria) .then((res: any) => {
+    this.pageService.getPageAssemble(pageAssembleCriteria).then((res: any) => {
       this.zone.run(() => {
         const response = JSON.parse(res);
         const sections = JSON.parse(response.sections);
@@ -499,13 +519,11 @@ export class SearchPage {
         }
         this.showLoader = false;
       });
-    }) .catch(error => {
-      console.log('in error part' , error);
+    }).catch(error => {
       this.zone.run(() => {
         this.showLoader = false;
         if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
           this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
-          this.navCtrl.pop();
         }
       });
     });
@@ -590,8 +608,8 @@ export class SearchPage {
       const contentArray: Array<any> = searchResult.contents;
       const addedContent = new Array<any>();
       const dialCodeResultObj = {
-        dialCodeResult : [],
-        dialCodeContentResult : []
+        dialCodeResult: [],
+        dialCodeContentResult: []
       };
       if (collectionArray && collectionArray.length > 0) {
         collectionArray.forEach((collection) => {
@@ -890,11 +908,11 @@ export class SearchPage {
   }
 
   cancelDownload() {
-    this.contentService.cancelDownload(this.parentContent.identifier) .then(() => {
+    this.contentService.cancelDownload(this.parentContent.identifier).then(() => {
       this.zone.run(() => {
         this.showLoading = false;
       });
-    }) .catch(() => {
+    }).catch(() => {
       this.zone.run(() => {
         this.showLoading = false;
       });
@@ -918,4 +936,5 @@ export class SearchPage {
       this.profile = undefined;
     }
   }
+
 }
