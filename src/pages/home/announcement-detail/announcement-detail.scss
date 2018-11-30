@@ -15,8 +15,8 @@ announcement-detail {
 	}
 	.announcement-heading {
 		padding-top: 10px;
-		@extend .NotoSans-bold;
 		@extend .font-weight-500;
+		@extend .NotoSans-bold;
 		font-size: 1.250em;
 	}
 	.inline-blobk {

@@ -47,6 +47,7 @@ page-profile-settings {
         font-size:20px; 
         text-align: center; 
         margin-top: 20px; 
+        @include padding(0,5px);
         @extend .font-weight-bold;
     }
 }
