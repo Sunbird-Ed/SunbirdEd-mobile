@@ -231,6 +231,7 @@
   "INSTITUTION_NAME": "Institution name",
   "INVALID_CONTENT": "Invalid content",
   "INVALID_PINCODE": "Invalid pincode",
+  "IMPORT_ECAR": "Incompatible file format. You can only import .ecar , .epar and .gsa files",
   "IS_THIS_YOUR_CURRENT_JOB": "Is this your current job?",
   "JOB_NAME": "Job Name",
   "JOIN": "JOIN",
