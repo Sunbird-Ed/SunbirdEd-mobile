@@ -18,7 +18,8 @@ import {
   InteractSubtype,
   CourseService,
   TelemetryObject,
-  ProfileService
+  ProfileService,
+  ContainerService
 } from 'sunbird';
 import * as _ from 'lodash';
 import {
@@ -98,7 +99,8 @@ export class ProfilePage {
     private courseService: CourseService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private profileService: ProfileService,
-    private formAndFrameworkUtilService: FormAndFrameworkUtilService
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
+    private containerService: ContainerService
   ) {
     this.userId = this.navParams.get('userId') || '';
     this.isRefreshProfile = this.navParams.get('returnRefreshedUserProfileDetails');
@@ -109,6 +111,10 @@ export class ProfilePage {
       if (upgrade) {
         this.appGlobalService.openPopover(upgrade);
       }
+    });
+
+    this.events.subscribe('loggedInProfile:update', (framework) => {
+      this.updateLocalProfile(framework);
     });
   }
 
@@ -202,7 +208,15 @@ export class ProfilePage {
                 this.profileService.getCurrentUser().then((resp: any) => {
                   const profile = JSON.parse(resp);
                   that.formAndFrameworkUtilService.updateLoggedInUser(r, profile)
-                    .then(() => { });
+                    .then(() => {
+                      // if (value === 'true') {
+                        // this.containerService.removeAllTabs();
+                        // this.navCtrl.setRoot(CategoriesEditPage);
+                        // this.navCtrl.popAll().then(() => {
+                        //   this.navCtrl.setRoot(CategoriesEditPage);
+                        // });
+                      // }
+                    });
                 });
                 if (r && r.avatar) {
                   that.imageUri = r.avatar;
@@ -431,6 +445,16 @@ export class ProfilePage {
         content: content
       });
     }
+  }
+
+  updateLocalProfile(framework) {
+    this.profile.framework = framework;
+    this.profileService.getCurrentUser().then((resp: any) => {
+      const profile = JSON.parse(resp);
+      this.formAndFrameworkUtilService.updateLoggedInUser(this.profile, profile)
+        .then(() => {
+        });
+    });
   }
 
   navigateToCategoriesEditPage() {

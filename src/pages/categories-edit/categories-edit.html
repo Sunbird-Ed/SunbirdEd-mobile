@@ -9,22 +9,22 @@
     <ion-item>
       <ion-label stacked class="label-font">{{'BOARD' | translate}}<span ion-text color="danger">&nbsp;*</span></ion-label>
       <ion-select formControlName="syllabus" multiple="false" [selectOptions]="boardOptions" placeholder="{{'BOARD_OPTION_TEXT' | translate}}"
-        okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}" (ionChange)="resetForm(1)">
+        okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}" (ionChange)="resetForm(0)">
         <ion-option *ngFor="let syllabus of syllabusList" value="{{syllabus?.code}}">{{syllabus?.name}}</ion-option>
       </ion-select>
     </ion-item>
     <ion-item>
       <ion-label stacked class="label-font">{{'MEDIUM' | translate}}<span ion-text color="danger">&nbsp;*</span></ion-label>
-      <ion-select formControlName="mediums" multiple="true" [selectOptions]="mediumOptions" placeholder="{{'MEDIUM_OPTION_TEXT' | translate}}"
-        okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}" (ionChange)="resetForm(3)">
+      <ion-select formControlName="medium" multiple="true" [selectOptions]="mediumOptions" placeholder="{{'MEDIUM_OPTION_TEXT' | translate}}"
+        okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}" (ionChange)="resetForm(2)">
         <ion-option *ngFor="let medium of mediumList" value="{{medium?.code}}">{{medium?.name}}</ion-option>
       </ion-select>
     </ion-item>
     <ion-item>
       <ion-label stacked class="label-font">{{'CLASS' | translate}}<span ion-text color="danger">&nbsp;*</span></ion-label>
-      <ion-select formControlName="classes" multiple="true" [selectOptions]="classOptions" placeholder="{{'GRADE_OPTION_TEXT' | translate}}"
-        okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}" (ionChange)="resetForm(4);enableSubmitButton();">
-        <ion-option *ngFor="let class of classList" value="{{class?.code}}">{{class?.name}}</ion-option>
+      <ion-select formControlName="grades" multiple="true" [selectOptions]="classOptions" placeholder="{{'GRADE_OPTION_TEXT' | translate}}"
+        okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}" (ionChange)="resetForm(3);enableSubmitButton();">
+        <ion-option *ngFor="let grade of gradeList" text-capitalize value="{{grade?.code}}">{{grade?.name}}</ion-option>
       </ion-select>
     </ion-item>
     <ion-item>

@@ -431,6 +431,11 @@ export class AppGlobalService implements OnDestroy {
         this.event.subscribe('refresh:profile', () => {
             this.initValues();
         });
+
+        this.event.subscribe('refresh:loggedInProfile', () => {
+            this.initValues();
+        });
+
     }
 
     openPopover(upgradeType: any) {
