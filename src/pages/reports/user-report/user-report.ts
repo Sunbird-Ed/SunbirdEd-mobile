@@ -8,8 +8,6 @@ import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { AppVersion } from '@ionic-native/app-version';
-import { url } from 'inspector';
-import { error } from 'util';
 import { AppGlobalService } from '../../../service/app-global.service';
 import { DatePipe } from '@angular/common';
 import { CommonUtilService } from '@app/service';
