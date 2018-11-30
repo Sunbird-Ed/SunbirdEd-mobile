@@ -257,6 +257,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     // console.log('in setSavedContent isOnBoardingCardCompleted');
     this.showLoader = true;
     const requestParams: ContentFilterCriteria = {
+      uid: this.profile ? this.profile.uid : undefined,
       contentTypes: ContentType.FOR_LIBRARY_TAB,
       audience: this.audienceFilter
     };
@@ -341,43 +342,43 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       }
     }
     console.log('pageAssembleCriteria', pageAssembleCriteria);
-    this.pageService.getPageAssemble(pageAssembleCriteria) .then((res: any) => {
-      that.ngZone.run(() => {
-        const response = JSON.parse(res);
-        // TODO Temporary code - should be fixed at backend
-        const sections = JSON.parse(response.sections);
-        const newSections = [];
-        sections.forEach(element => {
-          element.display = JSON.parse(element.display);
-          if (element.display.name) {
-            if (_.has(element.display.name, this.selectedLanguage)) {
-              const langs = [];
-              _.forEach(element.display.name, (value, key) => {
-                langs[key] = value;
-              });
-              element.name = langs[this.selectedLanguage];
+    this.pageService.getPageAssemble(pageAssembleCriteria)
+      .then((res: any) => {
+        that.ngZone.run(() => {
+          const response = JSON.parse(res);
+          // TODO Temporary code - should be fixed at backend
+          const sections = JSON.parse(response.sections);
+          const newSections = [];
+          sections.forEach(element => {
+            element.display = JSON.parse(element.display);
+            if (element.display.name) {
+              if (_.has(element.display.name, this.selectedLanguage)) {
+                const langs = [];
+                _.forEach(element.display.name, (value, key) => {
+                  langs[key] = value;
+                });
+                element.name = langs[this.selectedLanguage];
+              }
             }
-          }
-          newSections.push(element);
+            newSections.push(element);
+          });
+          // END OF TEMPORARY CODE
+          that.storyAndWorksheets = newSections;
+          this.pageLoadedSuccess = true;
+          this.pageApiLoader = false;
+          // this.noInternetConnection = false;
+          this.checkEmptySearchResult(isAfterLanguageChange);
         });
-        // END OF TEMPORARY CODE
-        that.storyAndWorksheets = newSections;
-        this.pageLoadedSuccess = true;
-        this.pageApiLoader = false;
-        // this.noInternetConnection = false;
-        this.checkEmptySearchResult(isAfterLanguageChange);
+      }).catch(error => {
+        console.log('error while getting popular resources...', error);
+        that.ngZone.run(() => {
+          this.pageApiLoader = false;
+          if (error === 'CONNECTION_ERROR') {
+          } else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
+            if (!isAfterLanguageChange) { this.commonUtilService.showToast('ERROR_FETCHING_DATA'); }
+          }
+        });
       });
-    }) .catch(error => {
-      console.log('error while getting popular resources...', error);
-      that.ngZone.run(() => {
-        this.pageApiLoader = false;
-        if (error === 'CONNECTION_ERROR') {
-        } else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
-          if (!isAfterLanguageChange) { this.commonUtilService.showToast('ERROR_FETCHING_DATA'); }
-        }
-      });
-    });
-    // }
   }
 
   applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>, categoryKey?: string) {
@@ -425,8 +426,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   ionViewDidEnter() {
-
-
     this.preference.getString('show_app_walkthrough_screen')
       .then(value => {
         if (value === 'true') {
