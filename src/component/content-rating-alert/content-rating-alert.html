@@ -1,15 +1,19 @@
 <ion-content>
   <ion-grid padding>
-    <ion-row class="display-inline">
-      <div float-start>
-        <p class="title heading1">{{ 'ENJOYED_THIS_CONTENT' | translate }}</p>
-        <p class="text-gray-color">{{ 'HELP_US_BY_RATING' | translate }}</p>
-      </div>
-      <div style="margin-top:5px" float-end (click)="cancel()">
-        <img src="assets/imgs/ic_action_close.png" class="tool-icon" float-end/>
-      </div>
+    <ion-row>
+      <ion-col col-10>
+        <div>
+          <p class="title heading1">{{ 'ENJOYED_THIS_CONTENT' | translate }}</p>
+          <p class="text-gray-color">{{ 'HELP_US_BY_RATING' | translate }} {{content.name}}</p>
+        </div>
+      </ion-col>
+      <ion-col col-2>
+        <div style="margin-top:5px" (click)="cancel()">
+          <img src="assets/imgs/ic_action_close.png" class="tool-icon" float-end />
+        </div>
+      </ion-col>
     </ion-row>
-    <br/>
+    <br />
     <ion-row class="display-inline">
       <rating [(ngModel)]="userRating" align-items-start readOnly="false" max="5" no-padding (ngModelChange)="rateContent($event)"></rating>
       <ion-input *ngIf="showCommentBox" [(ngModel)]="comment" class="feedback" placeholder="{{ 'FEEDBACK_HINT' | translate }}"></ion-input>
