@@ -199,9 +199,9 @@ export class QrCodeResultPage {
         this.results = [];
         this.profile = this.appGlobalService.getCurrentUser();
         const contentData = JSON.parse(JSON.stringify(data.result.contentData));
-        if (!this.navParams.get('onboarding') && contentData && contentData.medium) {
+       /* if (!this.navParams.get('onboarding') && contentData && contentData.medium) {
           this.commonUtilService.changeAppLanguage(contentData.medium);
-        }
+        } */
         this.checkProfileData(contentData, this.profile);
         this.findContentNode(data.result);
 
@@ -513,7 +513,7 @@ export class QrCodeResultPage {
       PageId.DIAL_CODE_SCAN_RESULT
     );
     if ((this.appGlobalService.isOnBoardingCompleted && this.appGlobalService.isProfileSettingsCompleted)
-     || !this.appGlobalService.DISPLAY_ONBOARDING_CATEGORY_PAGE) {
+      || !this.appGlobalService.DISPLAY_ONBOARDING_CATEGORY_PAGE) {
       this.navCtrl.setRoot(TabsPage, {
         loginMode: 'guest'
       });
