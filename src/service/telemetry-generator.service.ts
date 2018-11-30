@@ -267,4 +267,14 @@ export class TelemetryGeneratorService {
             values);
     }
 
+    generateExtraInfoTelemetry(values: Map, pageId) {
+        this.generateInteractTelemetry(
+            InteractType.OTHER,
+            InteractSubtype.EXTRA_INFO,
+            Environment.HOME,
+            pageId,
+            undefined,
+            values);
+    }
+
 }
