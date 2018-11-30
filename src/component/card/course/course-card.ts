@@ -10,7 +10,7 @@ import {
 import { EnrolledCourseDetailsPage } from '../../../pages/enrolled-course-details/enrolled-course-details';
 import { CollectionDetailsPage } from '../../../pages/collection-details/collection-details';
 import { ContentDetailsPage } from '../../../pages/content-details/content-details';
-import { ContentType, MimeType } from '../../../app/app.constant';
+import { ContentType, MimeType, ContentCard } from '../../../app/app.constant';
 import { CourseUtilService } from '../../../service/course-util.service';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 import { InteractType, InteractSubtype, TelemetryObject } from 'sunbird';
@@ -53,6 +53,10 @@ export class CourseCard implements OnInit {
    */
   defaultImg: string;
 
+  layoutInProgress = ContentCard.LAYOUT_INPROGRESS;
+  layoutPopular = ContentCard.LAYOUT_POPULAR;
+  layoutSavedContent = ContentCard.LAYOUT_SAVED_CONTENT;
+
   /**
    * Default method of class CourseCard
    *
@@ -75,7 +79,7 @@ export class CourseCard implements OnInit {
     const identifier = content.contentId || content.identifier;
     const telemetryObject: TelemetryObject = new TelemetryObject();
     telemetryObject.id = identifier;
-    if (layoutName === 'Inprogress') {
+    if (layoutName === this.layoutInProgress) {
       telemetryObject.type = ContentType.COURSE;
     } else {
       telemetryObject.type = this.isResource(content.contentType) ? ContentType.RESOURCE : content.contentType;
@@ -92,7 +96,7 @@ export class CourseCard implements OnInit {
       this.pageName ? this.pageName : this.layoutName,
       telemetryObject,
       values);
-    if (layoutName === 'Inprogress' || content.contentType === ContentType.COURSE) {
+    if (layoutName === this.layoutInProgress || content.contentType === ContentType.COURSE) {
       this.navCtrl.push(EnrolledCourseDetailsPage, {
         content: content
       });
@@ -125,7 +129,7 @@ export class CourseCard implements OnInit {
   }
 
   ngOnInit() {
-    if (this.layoutName === 'Inprogress') {
+    if (this.layoutName === this.layoutInProgress) {
       this.course.cProgress = (this.courseUtilService.getCourseProgress(this.course.leafNodesCount, this.course.progress));
       this.course.cProgress = parseInt(this.course.cProgress, 10);
     }
