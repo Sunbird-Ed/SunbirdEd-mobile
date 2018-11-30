@@ -3,7 +3,7 @@ page-alert-qr-scanner {
     color: map-get($colors, black );
     font-size: medium;
     padding: 16px;
-    font-weight: bold;
+    @extend .font-weight-bold;
   }
 }
 

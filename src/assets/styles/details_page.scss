@@ -44,7 +44,7 @@ ul {
 }
 .credits {
     color: rgb(17, 85, 204) !important;
-    font-weight : 600 !important;
+    @extend .font-weight-600;
 }
 
 .back-button-md {
@@ -69,13 +69,13 @@ ul {
 }
 
 .content-size {
-    font-family: 'NotoSans' !important;
+    @extend .NotoSans;
     color: grey;
     font-size: 1.3rem;
 }
 
 .content-structure {
-    font-family: "NotoSans";
+    @extend .NotoSans;
     color: #808080;
     font-size: 1.2rem;
 }
@@ -86,7 +86,7 @@ button {
 
 .text-gray-color {
     color: gray;
-    font-family: 'NotoSans';
+    @extend .NotoSans;
 }
 
 // .scroll-content { 

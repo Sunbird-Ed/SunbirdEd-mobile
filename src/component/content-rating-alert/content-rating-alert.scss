@@ -2,26 +2,29 @@ content-rating-alert {
   .display-inline {
     display: inline;
   }
+
+
+
   .heading1{
     color: map-get($colors, dark);
     margin-bottom: 3%;
     font-size: 1.6rem;
     padding: 0;
     @include margin(null, null, null, 0);
-    font-weight: bold;
+    @extend .font-weight-bold;
   }
 .heading2{
     margin-top: 5px;
 }
 .text-gray-color {
   color: gray;
-  font-family: 'NotoSans';
+  @extend .NotoSans;
   margin-top: 6px;
 }
 .subtitle {
   text-transform: capitalize;
   font-size: 1.3em;
-  font-weight: 700;
+  @extend .font-weight-700;
   color: map-get($colors, primary_black);
 }
 .feedback{

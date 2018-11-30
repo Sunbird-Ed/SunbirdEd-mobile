@@ -4,6 +4,6 @@ page-create-group {
     }
 
     .label-font {
-        font-weight: 600 !important;
+       @extend .font-weight-600;
     }
 }

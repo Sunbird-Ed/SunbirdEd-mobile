@@ -42,4 +42,12 @@ page-profile-settings {
     .back-button {
         display: block !important;
     }
+
+    .fill-in-style {
+        font-size:20px; 
+        text-align: center; 
+        margin-top: 20px; 
+        @include padding(0,5px);
+        @extend .font-weight-bold;
+    }
 }

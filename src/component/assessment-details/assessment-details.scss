@@ -4,7 +4,7 @@
 @import '../../assets/styles/icon.scss';
 .ngx-datatable.material .datatable-body .datatable-body-row .datatable-body-cell-column1 {
     color: #007aff;
-    font-weight: bold;
+    @extend .font-weight-bold;
 }
 
 .ngx-datatable.material .datatable-body .datatable-body-row .datatable-body-cell-column2 {
@@ -91,7 +91,7 @@
 .assessment-time p,
 .ngx-datatable.material .datatable-header .datatable-row-center .assessment-header {
     font-size: 0.8em;
-    font-weight: bold;
+    @extend .font-weight-bold;
 }
 
 .assessment-score {

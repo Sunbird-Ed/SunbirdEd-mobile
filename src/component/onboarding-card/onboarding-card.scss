@@ -25,7 +25,7 @@ onboarding-card {
   .onbording-slide-title {
     color: rgb(90, 88, 88);
     font-size: 1.6rem;
-    font-weight: bold;
+    @extend .font-weight-bold;
   }
   .onbording-slide-footer {
     @include padding(2%, 3%, 0, 4% !important);
@@ -38,7 +38,7 @@ onboarding-card {
     max-width: 75%;
     font-size: 14px;
     color: map-get($colors, primary);
-    font-weight: bold;
+    @extend .font-weight-bold;
   }
   .board-select.select-md .select-placeholder {
     color: map-get($colors, primary) !important;
@@ -58,5 +58,5 @@ onboarding-card {
   font-size: 1.2rem;
 }
 .font-bold {
-  font-weight: bold;
+  @extend .font-weight-bold;
 }

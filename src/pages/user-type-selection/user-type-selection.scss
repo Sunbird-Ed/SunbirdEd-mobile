@@ -8,13 +8,13 @@ page-user-type-selection {
     .description {
         color: map-get($colors, title);
         font-size: 1.4rem;
-        font-weight: 500;
+        @extend .font-weight-500;
         @include padding(null, null, null, 25px !important);
     }
 
     .card-title {
         @include padding(null, null, null, 10px !important);
-        font-weight: 700;
+        @extend .font-weight-700;
         font-size: 1.7rem;
         color: map-get($colors, secondary_black);
         margin-top: 10px !important;
