@@ -220,7 +220,6 @@ android {
         }
     }
 
-
     task myclean(type: Delete,overwrite: true) {
         def data
         if (System.properties['os.name'].toLowerCase().contains('windows')) {
