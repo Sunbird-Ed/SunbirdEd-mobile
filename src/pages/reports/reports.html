@@ -58,7 +58,7 @@
             <div *ngIf="groups?.length">
                 <ion-item class="bgColor" (click)="goToGroupUserReportList(group)" *ngFor="let group of groups;let i=index" margin-bottom
                     no-lines>
-                    <h2>{{group?.name}}</h2>
+                    <h6><b>{{group?.name}}</b></h6>
                     <p *ngIf="group?.profilesCount === 1">{{group?.profilesCount}} {{ 'USER' | translate}}</p>
                     <p *ngIf="group?.profilesCount > 1">{{group?.profilesCount}} {{ 'USERS' | translate}}</p>
                     <ion-icon name="ios-arrow-forward" item-end></ion-icon>
