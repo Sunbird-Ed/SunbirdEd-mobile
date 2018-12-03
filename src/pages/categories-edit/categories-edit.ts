@@ -308,6 +308,7 @@ export class CategoriesEditPage {
       (res: any) => {
           this.commonUtilService.showToast('Profile data updated successfully');
           this.events.publish('loggedInProfile:update', req.framework);
+          this.navCtrl.pop();
           // this.viewCtrl.dismiss();
       },
       (err: any) => {
