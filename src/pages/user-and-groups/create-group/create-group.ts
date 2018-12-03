@@ -98,7 +98,7 @@ export class CreateGroupPage {
     this.loader = this.commonUtilService.getLoader();
     this.loader.present();
 
-    this.formAndFrameworkUtilService.getSyllabusList()
+    this.formAndFrameworkUtilService.getSupportingBoardList()
       .then((result) => {
         if (result && result.length) {
           result.forEach(element => {

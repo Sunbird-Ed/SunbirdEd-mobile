@@ -87,11 +87,11 @@
             <div>{{'CLASSES' | translate }}: </div>
             <div class="bolder">{{profile?.framework?.gradeLevel}}</div>
         </div>
-        <!-- <div class="container">
-            <button ion-button round (click)="navigateToCategoriesEditPage()" class="short-btn">
+        <div class="container">
+            <button ion-button round (click)="navigateToCategoriesEditPage()" class="short-btn custom-round">
                 {{'EDIT' | translate }}
             </button>
-        </div> -->
+        </div>
     </div>
 
     <div class="badges" padding-horizontal text-center *ngIf="profile?.badgeAssertions?.length > 0">
@@ -100,10 +100,10 @@
             <img height="80px" width="auto" src="{{batch.badgeClassImage}}">
         </ion-avatar>
         <div class="" text-center>
-            <button ion-button round *ngIf="badgesLimit < profile?.badgeAssertions?.length" (click)="showMoreBadges()" class="txt-capitalize">
+            <button ion-button round *ngIf="badgesLimit < profile?.badgeAssertions?.length" (click)="showMoreBadges()" class="txt-capitalize custom-round">
                 + {{profile?.badgeAssertions?.length - 2}} {{'MORE' | translate}} <ion-icon class="ML10" name="ios-arrow-down"></ion-icon>
             </button>
-            <button ion-button round *ngIf="badgesLimit > DEFAULT_PAGINATION_LIMIT" (click)="showLessBadges()" class="txt-capitalize">
+            <button ion-button round *ngIf="badgesLimit > DEFAULT_PAGINATION_LIMIT" (click)="showLessBadges()" class="txt-capitalize custom-round">
                 {{'SHOW_LESS' | translate }} <ion-icon class="ML10" name="ios-arrow-up"></ion-icon>
             </button>
         </div>
@@ -172,10 +172,10 @@
                 </div>
             </div>
             <div class="" text-center>
-                <button ion-button round class="txt-capitalize" *ngIf="trainingsLimit < trainingsCompleted.length" (click)="showMoreTainings()">
+                <button ion-button round class="txt-capitalize custom-round" *ngIf="trainingsLimit < trainingsCompleted.length" (click)="showMoreTainings()">
                     + {{trainingsCompleted?.length - 2}} {{'MORE' | translate}} <ion-icon class="ML10" name="ios-arrow-down"></ion-icon>
                 </button>
-                <button ion-button round class="txt-capitalize" *ngIf="trainingsLimit > DEFAULT_PAGINATION_LIMIT" (click)="showLessTrainings()">
+                <button ion-button round class="txt-capitalize custom-round" *ngIf="trainingsLimit > DEFAULT_PAGINATION_LIMIT" (click)="showLessTrainings()">
                     {{'SHOW_LESS' | translate }} <ion-icon class="ML10" name="ios-arrow-up"></ion-icon>
                 </button>
             </div>

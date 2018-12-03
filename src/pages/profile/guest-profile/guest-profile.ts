@@ -145,8 +145,9 @@ export class GuestProfilePage {
   getSyllabusDetails() {
     let selectedFrameworkId = '';
 
-    this.formAndFrameworkUtilService.getSyllabusList()
+    this.formAndFrameworkUtilService.getSupportingBoardList()
       .then((result) => {
+        console.log('getSupportingBoardList', result);
         if (result && result !== undefined && result.length > 0) {
 
           result.forEach(element => {

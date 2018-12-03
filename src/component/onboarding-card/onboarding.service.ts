@@ -309,7 +309,7 @@ export class OnboardingService {
             // clear all the syllbusList
             this.syllabusList = [];
 
-            this.formAndFrameworkUtilService.getSyllabusList()
+            this.formAndFrameworkUtilService.getSupportingBoardList()
                 .then((result) => {
                     if (result && result !== undefined && result.length > 0) {
                         result.forEach(element => {

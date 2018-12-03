@@ -184,7 +184,7 @@ export class ProfileSettingsPage {
     this.loader = this.commonUtilService.getLoader();
     this.loader.present();
 
-    this.formAndFrameworkUtilService.getSyllabusList()
+    this.formAndFrameworkUtilService.getSupportingBoardList()
       .then((result) => {
         this.syllabusList = [];
         if (result && result !== undefined && result.length > 0) {
