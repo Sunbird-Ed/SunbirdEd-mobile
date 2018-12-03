@@ -44,7 +44,7 @@ describe('CollectionDetailsPage Component', () => {
   });
 
   it('should set content details', () => {
-    //arrange
+    // arrange
     spyOn(collectionDetailsPage, 'resetVariables').and.stub();
     spyOn(collectionDetailsPage, 'subscribeGenieEvent').and.stub();
     spyOn(collectionDetailsPage, 'setContentDetails').and.stub();
@@ -53,7 +53,7 @@ describe('CollectionDetailsPage Component', () => {
       if (p === 'content') {
         return {
           identifier: 'SOME_IDENTIFIER'
-        }
+        };
       }
     });
 
@@ -203,7 +203,7 @@ describe('CollectionDetailsPage Component', () => {
 
     // assert
     expect(socialSharingMock.share).toHaveBeenCalledWith('', '', 'file://SOME_PATH',
-      collectionDetailsPage.baseUrl + ShareUrl.COLLECTION + collectionDetailsPage.contentDetail.identifier)
+      collectionDetailsPage.baseUrl + ShareUrl.COLLECTION + collectionDetailsPage.contentDetail.identifier);
   });
 
   it('should show warning toast if exportEcar gives failure response when share()', () => {
@@ -251,7 +251,7 @@ describe('CollectionDetailsPage Component', () => {
 
     // assert
     expect(socialSharingMock.share).toHaveBeenCalledWith('', '', '', collectionDetailsPage.baseUrl +
-      ShareUrl.COLLECTION + collectionDetailsPage.contentDetail.identifier)
+      ShareUrl.COLLECTION + collectionDetailsPage.contentDetail.identifier);
   });
 
   it('should navigate to EnrolledCourseDetails page when navigateToDetailsPage()', () => {
@@ -342,11 +342,11 @@ describe('CollectionDetailsPage Component', () => {
     popoverCtrlMock.create.mockReturnValue(popOver);
 
     // act
-    collectionDetailsPage.showDownloadConfirmationAlert("SOME_EVENT");
+    collectionDetailsPage.showDownloadConfirmationAlert('SOME_EVENT');
 
     // assert
     expect(popOver.present).toHaveBeenCalledWith(expect.objectContaining({
-      ev: "SOME_EVENT"
+      ev: 'SOME_EVENT'
     }));
   });
 
@@ -355,7 +355,7 @@ describe('CollectionDetailsPage Component', () => {
     commonUtilServiceMock.networkInfo = {isNetworkAvailable: false} as any;
 
     // act
-    collectionDetailsPage.showDownloadConfirmationAlert("SOME_EVENT");
+    collectionDetailsPage.showDownloadConfirmationAlert('SOME_EVENT');
 
     // assert
     expect(commonUtilServiceMock.showToast).toHaveBeenCalled();
@@ -375,7 +375,7 @@ describe('CollectionDetailsPage Component', () => {
     // assert
     expect(popOver.present).toHaveBeenCalledWith(expect.objectContaining({
       ev: 'SOME_EVENT'
-    }))
+    }));
   });
 
   it('should invoke importContent API when downloadAllContent()', () => {
@@ -416,13 +416,13 @@ describe('CollectionDetailsPage Component', () => {
   it('should show warning toast for guest  teacher profiles when rateContent()', () => {
     // arrange
     collectionDetailsPage.guestUser = true;
-    collectionDetailsPage.profileType = "TEACHER";
+    collectionDetailsPage.profileType = 'TEACHER';
 
     // act
     collectionDetailsPage.rateContent();
 
     // assert
-    expect(commonUtilServiceMock.showToast).toHaveBeenCalledWith("SIGNIN_TO_USE_FEATURE");
+    expect(commonUtilServiceMock.showToast).toHaveBeenCalledWith('SIGNIN_TO_USE_FEATURE');
   });
 
   it('should show rating popup if collection is locally available when rateContent()', () => {
@@ -453,22 +453,22 @@ describe('CollectionDetailsPage Component', () => {
     collectionDetailsPage.rateContent();
 
     // assert
-    expect(commonUtilServiceMock.showToast).toHaveBeenCalledWith("TRY_BEFORE_RATING");
+    expect(commonUtilServiceMock.showToast).toHaveBeenCalledWith('TRY_BEFORE_RATING');
   });
 
   it('should populate profileType as STUDENT when checkCurrentUserType() ', (done) => {
     // arrange
     collectionDetailsPage.guestUser = true;
-    appGlobalServiceMock.getGuestUserInfo.mockResolvedValue("STUDENT");
+    appGlobalServiceMock.getGuestUserInfo.mockResolvedValue('STUDENT');
 
     // act
     collectionDetailsPage.checkCurrentUserType();
 
     // assert
     setTimeout(() => {
-      expect(collectionDetailsPage.profileType === "STUDENT");
+      expect(collectionDetailsPage.profileType === 'STUDENT');
       done();
-    }, 0)
+    }, 0);
   });
 
   it('should dismiss the children loader when setChildContents() ', (done) => {
@@ -533,7 +533,7 @@ describe('CollectionDetailsPage Component', () => {
     setTimeout(() => {
       zoneMock.run.mock.calls[0][0].call(collectionDetailsPage, undefined);
       expect(collectionDetailsPage.queuedIdentifiers).toEqual(expect.arrayContaining([
-        "SAMPLE_ID"
+        'SAMPLE_ID'
       ]));
       done();
     });
@@ -555,7 +555,7 @@ describe('CollectionDetailsPage Component', () => {
     setTimeout(() => {
       zoneMock.run.mock.calls[0][0].call(collectionDetailsPage, undefined);
       expect(collectionDetailsPage.isDownloadStarted = false);
-      expect(commonUtilServiceMock.showToast).toHaveBeenCalledWith("UNABLE_TO_FETCH_CONTENT");
+      expect(commonUtilServiceMock.showToast).toHaveBeenCalledWith('UNABLE_TO_FETCH_CONTENT');
       done();
     });
   });
@@ -716,8 +716,11 @@ describe('CollectionDetailsPage Component', () => {
     spyOn(collectionDetailsPage, 'updateSavedResources').and.stub();
     spyOn(collectionDetailsPage, 'importContent').and.stub();
     spyOn(collectionDetailsPage, 'setContentDetails').and.stub();
-    collectionDetailsPage.cardData = collectionDetailsPage.contentDetail =
-      {'contentType': 'Collection', 'isAvailableLocally': false, 'identifier': 'SAMPLE_ID'};
+    collectionDetailsPage.cardData = collectionDetailsPage.contentDetail = {
+      'contentType': 'Collection',
+      'isAvailableLocally': false,
+      'identifier': 'SAMPLE_ID'
+    };
 
     // act
     collectionDetailsPage.isUpdateAvailable = true;
@@ -740,8 +743,7 @@ describe('CollectionDetailsPage Component', () => {
     spyOn(collectionDetailsPage, 'updateSavedResources').and.stub();
     spyOn(collectionDetailsPage, 'importContent').and.stub();
     spyOn(collectionDetailsPage, 'setContentDetails').and.stub();
-    collectionDetailsPage.cardData = collectionDetailsPage.contentDetail =
-      {
+    collectionDetailsPage.cardData = collectionDetailsPage.contentDetail = {
         'contentType': 'Collection', 'isAvailableLocally': false, 'identifier': 'SAMPLE_ID',
         'hierarchyInfo': 'PARENT_ID/CHILD_ID'
       };
@@ -883,6 +885,6 @@ describe('CollectionDetailsPage Component', () => {
 
     // assert
     expect(courseUtilServiceMock.showCredits).toHaveBeenCalledWith(collectionDetailsPage.contentDetail,
-      'collection-detail', collectionDetailsPage.objRollup, collectionDetailsPage.corRelationList)
+      'collection-detail', collectionDetailsPage.objRollup, collectionDetailsPage.corRelationList);
   });
 });
