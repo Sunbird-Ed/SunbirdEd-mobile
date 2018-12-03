@@ -21,7 +21,7 @@ export const courseServiceMock = createSpyObj<CourseService>([
   'getEnrolledCourses', 'enrollCourse', 'updateContentState', 'getCourseBatches',
   'getBatchDetails', 'getContentState']);
 
-export const navCtrlMock = createSpyObj<NavController>(['pop']);
+export const navCtrlMock = createSpyObj<NavController>(['pop', 'push']);
 
 export const navParamsMock = createSpyObj<NavParams>(['get']);
 
@@ -34,21 +34,22 @@ export const commonUtilServiceMock = createSpyObj<CommonUtilService>([
   'translateMessage', 'showMessage', 'showToast', 'getLoader'
 ]);
 
-export const eventsMock = createSpyObj<Events>(['publish']);
+export const eventsMock = createSpyObj<Events>(['publish', 'subscribe', 'unsubscribe']);
 
-export const contentServiceMock = createSpyObj<ContentService>(['getContentDetail']);
+export const contentServiceMock = createSpyObj<ContentService>(['getContentDetail',
+'cancelDownload', 'importContent', 'getChildContents']);
 
-export const popoverCtrlMock = createSpyObj<PopoverController>([]);
+export const popoverCtrlMock = createSpyObj<PopoverController>(['create']);
 
-export const fileUtilMock = createSpyObj<FileUtil>([]);
+export const fileUtilMock = createSpyObj<FileUtil>(['internalStoragePath']);
 
 export const platformMock = createSpyObj<Platform>([]);
 
 export const translateServiceMock = createSpyObj<TranslateService>([]);
 
-export const socialSharingMock = createSpyObj<SocialSharing>([]);
+export const socialSharingMock = createSpyObj<SocialSharing>(['share']);
 
-export const shareUtilMock = createSpyObj<ShareUtil>([]);
+export const shareUtilMock = createSpyObj<ShareUtil>(['exportEcar']);
 
 export const buildParamServiceMock = createSpyObj<BuildParamService>(['getBuildConfigParam']);
 
@@ -57,9 +58,10 @@ export const appGlobalServiceMock = createSpyObj<AppGlobalService>([
 ]);
 
 export const telemetryGeneratorServiceMock = createSpyObj<TelemetryGeneratorService>([
-  'generateStartTelemetry', 'generateImpressionTelemetry'
+  'generateStartTelemetry', 'generateImpressionTelemetry', 'generateSpineLoadingTelemetry',
+  'generateCancelDownloadTelemetry', 'generateInteractTelemetry', 'generateEndTelemetry'
 ]);
 
-export const courseUtilServiceMock = createSpyObj<CourseUtilService>([]);
+export const courseUtilServiceMock = createSpyObj<CourseUtilService>(['showCredits']);
 
 
