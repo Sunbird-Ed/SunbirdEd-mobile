@@ -12,7 +12,9 @@
     "noEmit": true,
     "strict": true,
     "isolatedModules": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "inlineSourceMap": true
   },
   "include": [
     "**/*.ts",
