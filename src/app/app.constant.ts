@@ -121,6 +121,7 @@ export class PreferenceKey {
     public static readonly COURSE_IDENTIFIER = 'course_identifier';
     public static readonly IS_ONBOARDING_COMPLETED = 'is_onboarding_settings_completed';
     public static readonly IS_BOOKMARK_VIEWED = 'is_bookmark_viewed';
+    public static readonly CONTENT_CONTEXT = 'content_context';
 }
 
 export class GenericAppConfig {

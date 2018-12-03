@@ -57,7 +57,7 @@ import { CommonUtilService } from '../../service/common-util.service';
 import { ViewCreditsComponent } from '../../component/view-credits/view-credits';
 import { DialogPopupComponent } from '../../component/dialog-popup/dialog-popup';
 import { Observable } from 'rxjs';
-import {XwalkConstants} from '../../app/app.constant';
+import { XwalkConstants } from '../../app/app.constant';
 
 @IonicPage()
 @Component({
@@ -157,7 +157,6 @@ export class ContentDetailsPage {
     this.handlePageResume();
     this.checkDeviceAPILevel();
     this.checkappAvailability();
-    // this.checkBookmarkStatus();
   }
 
   ionViewDidLoad() {
@@ -237,10 +236,10 @@ export class ContentDetailsPage {
     this.resume = this.platform.resume.subscribe(() => {
       this.isContentPlayed = true;
       if (this.isPlayerLaunched && !this.isGuestUser) {
-      this.isPlayerLaunched = false;
+        this.isPlayerLaunched = false;
         this.setContentDetails(this.identifier, false, true /* No Automatic Rating for 1.9.0 */);
       }
-      this.updateContentProgress();
+      // this.updateContentProgress();
     });
   }
 
@@ -838,33 +837,6 @@ export class ContentDetailsPage {
       }).catch((error: any) => {
         console.error('Error ', error);
       });
-  }
-  updateContentProgress() {
-    const stateData = this.navParams.get('contentState');
-    if (stateData !== undefined && stateData.batchId && stateData.courseId && this.userId) {
-      const data = {
-        courseId: stateData.courseId,
-        batchId: stateData.batchId,
-        contentId: this.identifier,
-        userId: this.userId,
-        status: 2,
-        progress: 100
-      };
-
-      this.courseService.updateContentState(data)
-        .then(() => {
-          this.zone.run(() => {
-            this.events.publish(EventTopics.COURSE_STATUS_UPDATED_SUCCESSFULLY, {
-              update: true
-            });
-          });
-        })
-        .catch((error: any) => {
-          this.zone.run(() => {
-            console.log('Error: while updating content state =>>>>>', error);
-          });
-        });
-    }
   }
 
   showOverflowMenu(event) {
