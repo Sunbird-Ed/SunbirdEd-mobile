@@ -22,8 +22,6 @@
     <hook src="scripts/copyBundledData.js" type="before_build" />
     <hook src="scripts/copyGradleFiles.js" type="before_run" />
     <hook src="scripts/copyBundledData.js" type="before_run" />
-
-    <hook src="scripts/copyBundledData.js" type="before_platform_add" />
     <platform name="android">
         <config-file parent="/manifest/application" target="AndroidManifest.xml">
             <meta-data android:name="io.fabric.ApiKey" android:value="${fabricKey}" />
@@ -111,5 +109,5 @@
     <plugin name="cordova-plugin-sunbirdsplash" spec="https://github.com/project-sunbird/cordova-plugin-sunbirdsplash.git" />
     <plugin name="cordova-plugin-geniecanvas" spec="https://github.com/project-sunbird/cordova-plugin-geniecanvas.git" />
     <plugin name="cordova-plugin-openrap" spec="https://github.com/project-sunbird/cordova-plugin-openrap.git" />
-    <engine name="android" spec="7.1.1" />
+    <engine name="android" spec="7.0.0" />
 </widget>

@@ -220,11 +220,86 @@ android {
         }
     }
 
+    task myclean(type: Delete,overwrite: true) {
+        def data
+        if (System.properties['os.name'].toLowerCase().contains('windows')) {
+             data = new File( "$rootDir\\app\\src\\main\\assets\\www\\sunbird\\assets\\data" )
+        } else {
+             data = new File( "$rootDir/app/src/main/assets/www/sunbird/assets/data" )
+        }
+
+        if( data.exists() ) {
+            delete data
+            printf "deleted data"
+        }
+       
+    }
+
+    task copyDirDev(type: Copy,overwrite: true) {
+         if (System.properties['os.name'].toLowerCase().contains('windows')){
+                from "$rootDir\\app\\data\\dev"
+                into "$rootDir\\app\\src\\main\\assets\\www\\sunbird\\assets\\data"
+                println "inside copydir dev windows OS"
+            } else {
+                from "$rootDir/app/data/dev"
+                into "$rootDir/app/src/main/assets/www/sunbird/assets/data"
+                println "inside copydir dev linux OS"
+            }
+    }
+
+    task copyDirStaging(type: Copy,overwrite: true) {
+            if (System.properties['os.name'].toLowerCase().contains('windows')){
+                from "$rootDir\\app\\data\\staging"
+                into "$rootDir\\app\\src\\main\\assets\\www\\sunbird\\assets\\data"
+                println "inside copydir staging windows OS"
+            } else {
+                from "$rootDir/app/data/staging"
+                into "$rootDir/app/src/main/assets/www/sunbird/assets/data"
+                println "inside copydir staging linux OS"
+            }
+       
+    }
+
+    task copyDirProd(type: Copy,overwrite: true) {
+        if (System.properties['os.name'].toLowerCase().contains('windows')){
+                from "$rootDir\\app\\data\\prod"
+                into "$rootDir\\app\\src\\main\\assets\\www\\sunbird\\assets\\data"
+                println "inside copydir prod windows OS"
+            } else {
+                from "$rootDir/app/data/prod"
+                into "$rootDir/app/src/main/assets/www/sunbird/assets/data"
+                println "inside copydir prod linux OS"
+            }
+    }
+
+    task prod(type: GradleBuild) {
+        tasks = ['myclean', 'copyDirProd']
+    }      
+    task dev(type: GradleBuild) {
+        tasks = ['myclean', 'copyDirDev']
+    }      
+    task staging(type: GradleBuild) {
+        tasks = ['myclean', 'copyDirStaging']
+    }
+
     applicationVariants.all { variant ->
         def flavor = variant.mergedFlavor
         def name = flavor.getVersionName()
         def flavorName = variant.properties.get('flavorName')
         def versionName = name
+
+        if (flavorName.equals("dev")) {
+           preBuild.dependsOn(dev)
+           println "inside dev task"
+        }
+        if (flavorName.equals("staging")) {
+            preBuild.dependsOn(staging)
+           println "inside staging task"
+        }
+        if (flavorName.equals("production")) {
+            preBuild.dependsOn(prod)
+           println "inside production task"
+        }
 
         if (!flavorName.equals("production")) {
             versionName += flavorName;
@@ -235,6 +310,7 @@ android {
         flavor.versionName = versionName;
         variant.outputs.each { output ->
             output.outputFileName = new File(output.outputFile.parent, "${app_name}-".toLowerCase() + versionName + ".apk")
+            //output.outputFileName = "${variant.name}-${variant.versionName}.apk"
         }
     }
 }
