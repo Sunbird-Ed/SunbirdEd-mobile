@@ -215,8 +215,8 @@ export class ProfilePage {
                   const profile = JSON.parse(resp);
                   that.formAndFrameworkUtilService.updateLoggedInUser(r, profile)
                     .then((value) => {
-                      if (!value) {
-                        this.app.getRootNav().setRoot(CategoriesEditPage, {showOnlyMandatoryFields: true});
+                      if (!value['status']) {
+                        this.app.getRootNav().setRoot(CategoriesEditPage, {showOnlyMandatoryFields: true, profile: value['profile']});
                       }
                     });
                 });

@@ -211,11 +211,11 @@ export class OnboardingPage {
                 this.formAndFrameworkUtilService.updateLoggedInUser(r, profile)
                 .then( (value) => {
                   that.orgName = r.rootOrg.orgName;
-                  if (value) {
+                  if (value['status']) {
                     initTabs(that.container, LOGIN_TEACHER_TABS);
                     resolve(r.rootOrg.slug);
                   } else {
-                    that.navCtrl.setRoot(CategoriesEditPage, {showOnlyMandatoryFields: true});
+                    that.navCtrl.setRoot(CategoriesEditPage, {showOnlyMandatoryFields: true, profile: value['profile']});
                     reject();
                   }
                   // that.orgName = r.rootOrg.orgName;

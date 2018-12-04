@@ -432,28 +432,28 @@ export class FormAndFrameworkUtilService {
                                                     if (updateRes.board  && updateRes.grade && updateRes.medium
                                                         && updateRes.board.length && updateRes.grade.length && updateRes.medium.length
                                                     ) {
-                                                        resolve(true);
+                                                        resolve({status: true});
                                                     } else {
-                                                        resolve(false);
+                                                        resolve({status: false, profile: updateRes});
                                                     }
                                                 })
                                                 .catch((err: any) => {
                                                     console.error('Err', err);
-                                                    resolve(false);
+                                                    resolve({status: false});
                                                 });
                                             }
                                         }
                                     }
                                 });
                             } else {
-                                resolve(false);
+                                resolve({status: false});
                             }
                         } else {
-                            resolve(false);
+                            resolve({status: false});
                         }
                     });
             } else {
-                resolve(false);
+                resolve({status: false});
             }
         });
 

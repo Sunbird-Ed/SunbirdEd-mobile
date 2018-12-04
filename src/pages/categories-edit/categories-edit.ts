@@ -71,6 +71,9 @@ export class CategoriesEditPage {
     console.log('this.navParams.getshowOnlyMandatoryFields', this.navParams.get('showOnlyMandatoryFields'));
     if (this.navParams.get('showOnlyMandatoryFields')) {
       this.showOnlyMandatoryFields = this.navParams.get('showOnlyMandatoryFields');
+      if (this.navParams.get('profile')) {
+        this.profile = this.navParams.get('profile');
+      }
     } else {
       this.showOnlyMandatoryFields = false;
     }
@@ -81,24 +84,7 @@ export class CategoriesEditPage {
    * Ionic life cycle event - Fires every time page visits
    */
   ionViewWillEnter() {
-    if (this.showOnlyMandatoryFields) {
-      this.container.removeAllTabs();
-      this.profileService.getCurrentUser().then((resp: any) => {
-        this.profile = JSON.parse(resp);
-        if (this.profile.board && this.profile.board.length > 1) {
-          this.profile.board.splice(1, this.profile.board.length);
-        }
-        this.profileEditForm = this.fb.group({
-          syllabus: [ this.profile.syllabus && this.profile.syllabus[0] || []],
-          boards: [ this.profile.board || []],
-          grades: [ this.profile.grade || []],
-          medium: [ this.profile.medium || []]
-        });
-        this.getSyllabusDetails();
-      });
-    } else {
     this.getSyllabusDetails();
-    }
   }
 
   /**
@@ -106,16 +92,16 @@ export class CategoriesEditPage {
    */
 
   initializeForm() {
-      if (this.profile.board && this.profile.board.length > 1) {
-        this.profile.board.splice(1, this.profile.board.length);
-      }
-      this.profileEditForm = this.fb.group({
-        syllabus: [ this.profile.syllabus && this.profile.syllabus[0] || []],
-        boards: [ this.profile.board || []],
-        grades: [ this.profile.grade || []],
-        medium: [ this.profile.medium || []],
-        subjects: [ this.profile.subject || []]
-      });
+    if (this.profile.board && this.profile.board.length > 1) {
+      this.profile.board.splice(1, this.profile.board.length);
+    }
+    this.profileEditForm = this.fb.group({
+      syllabus: [this.profile.syllabus && this.profile.syllabus[0] || []],
+      boards: [this.profile.board || []],
+      grades: [this.profile.grade || []],
+      medium: [this.profile.medium || []],
+      subjects: [this.profile.subject || []]
+    });
   }
 
   /**
@@ -197,9 +183,6 @@ export class CategoriesEditPage {
    * @param selectedValue selected value for the currently selected field
    */
   fetchNextCategoryOptionsValues(index: number, currentField: string, selectedValue: Array<string>) {
-    console.log('index', index);
-    console.log('currentField', currentField);
-    console.log('selectedValue', selectedValue);
     if (index === 1) {
       this.frameworkId = selectedValue[0];
       this.formAndFrameworkUtilService.getFrameworkDetails(this.frameworkId)
@@ -232,6 +215,7 @@ export class CategoriesEditPage {
    * @param currentField Variable name of the current field list
    */
   getCategoryData(request: CategoryRequest, currentField: string) {
+
     this.formAndFrameworkUtilService.getCategoryData(request, this.frameworkId)
       .then((result) => {
         this[currentField] = result;
@@ -247,15 +231,15 @@ export class CategoriesEditPage {
           this.resetForm(1);
         } else if (this.editData) {
           this.editData = false;
-            this.profileEditForm.patchValue({
-              medium: this.profile.medium || []
-            });
-            this.profileEditForm.patchValue({
-              grades: this.profile.grade || []
-            });
-            this.profileEditForm.patchValue({
-              subjects: this.profile.subject || []
-            });
+          this.profileEditForm.patchValue({
+            medium: this.profile.medium || []
+          });
+          this.profileEditForm.patchValue({
+            grades: this.profile.grade || []
+          });
+          this.profileEditForm.patchValue({
+            subjects: this.profile.subject || []
+          });
         }
       })
       .catch(error => {
@@ -337,20 +321,20 @@ export class CategoriesEditPage {
     req.framework = Framework;
     this.userProfileService.updateUserInfo(req,
       (res: any) => {
-          this.loader.dismiss();
-          this.commonUtilService.showToast('Profile data updated successfully');
-          this.events.publish('loggedInProfile:update', req.framework);
-          if (this.showOnlyMandatoryFields) {
-            initTabs(this.container, LOGIN_TEACHER_TABS);
-            this.navCtrl.setRoot(TabsPage);
-          } else {
-            this.navCtrl.pop();
-          }
+        this.loader.dismiss();
+        this.commonUtilService.showToast('Profile data updated successfully');
+        this.events.publish('loggedInProfile:update', req.framework);
+        if (this.showOnlyMandatoryFields) {
+          initTabs(this.container, LOGIN_TEACHER_TABS);
+          this.navCtrl.setRoot(TabsPage);
+        } else {
+          this.navCtrl.pop();
+        }
       },
       (err: any) => {
         this.loader.dismiss();
-          console.log('Error', err);
-          this.commonUtilService.showToast('Profile update failed');
+        console.log('Error', err);
+        this.commonUtilService.showToast('Profile update failed');
       });
   }
 
