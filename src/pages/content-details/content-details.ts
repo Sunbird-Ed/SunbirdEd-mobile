@@ -36,7 +36,9 @@ import {
   ProfileRequest,
   TelemetryObject,
   SharedPreferences,
-  DeviceInfoService
+  DeviceInfoService,
+  ContentMarkerRequest,
+  MarkerType
 } from 'sunbird';
 import {
   PreferenceKey
@@ -813,6 +815,22 @@ export class ContentDetailsPage {
           this.objRollup,
           this.corRelationList);
       });
+
+      if (isStreaming) {
+        const req: ContentMarkerRequest = {
+          uid: this.appGlobalService.getCurrentUser().uid,
+          contentId: this.identifier,
+          data: JSON.stringify(this.content),
+          marker: MarkerType.PREVIEWED,
+          isMarked: true
+        };
+        this.contentService.setContentMarker(req)
+          .then((resp) => {
+            console.log('success');
+          }).catch((err) => {
+            console.log('error');
+          });
+      }
       this.downloadAndPlay = false;
       const request: any = {};
       request.streaming = isStreaming;
@@ -957,7 +975,7 @@ export class ContentDetailsPage {
   showPopupDialog() {
     const popover = this.popoverCtrl.create(DialogPopupComponent, {
       title: this.commonUtilService.translateMessage('ANDROID_NOT_SUPPORTED'),
-      body: this.commonUtilService.translateMessage('ALERT_BODY'),
+      body: this.commonUtilService.translateMessage('ANDROID_NOT_SUPPORTED_DESC'),
       buttonText: this.commonUtilService.translateMessage('INSTALL_CROSSWALK')
     }, {
         cssClass: 'popover-alert'
