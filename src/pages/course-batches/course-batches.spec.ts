@@ -9,6 +9,7 @@ import {
   navParamsMock,
   zoneMock
 } from '../../__tests__/mocks';
+import 'jest';
 
 describe.only('CourseBatchesPage', () => {
   let courseBatchesPage: CourseBatchesPage;

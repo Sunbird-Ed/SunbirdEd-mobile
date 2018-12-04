@@ -407,8 +407,10 @@ export class MyApp {
     this.events.subscribe('generic.event', (data) => {
       this.zone.run(() => {
         const response = JSON.parse(data);
-        const action = JSON.parse(response.data.action);
-
+        let action;
+        try {
+          action = JSON.parse(response.data.action);
+        } catch (Error) {  }
         if (response && response.data.action && response.data.action === 'logout') {
           this.authService.getSessionData((session) => {
             if (session) {
@@ -439,7 +441,7 @@ export class MyApp {
           console.log('connected to openrap device with the IP ' + action.ip);
         } else if (response && action && action.actionType === 'disconnected') {
           console.log('disconnected from openrap device with the IP ' + action.ip);
-        } else if (response && action && action.actionType === EventTopics.COURSE_STATUS_UPDATED_SUCCESSFULLY) {
+        } else if (response && response.data.action && response.data.action === EventTopics.COURSE_STATUS_UPDATED_SUCCESSFULLY) {
           this.events.publish(EventTopics.COURSE_STATUS_UPDATED_SUCCESSFULLY, {
             update: true
           });

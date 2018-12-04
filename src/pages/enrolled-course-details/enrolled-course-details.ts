@@ -575,39 +575,44 @@ export class EnrolledCourseDetailsPage {
    * Function to get status of child contents
    */
   getStatusOfChildContent(childrenData, contentStatusData) {
-    childrenData.forEach(childContent => {
-      let contentlen = 0;
-      childContent.children.every(eachContent => {
-        if (childContent.hasOwnProperty('status') && !childContent.status) {
-          return false;
-        } else {
-          if (contentStatusData.result.contentList.length) {
-            contentStatusData.result.contentList.every(contentData => {
-              if (eachContent.identifier === contentData.contentId) {
-                contentlen = contentlen + 1;
-                if (contentData.status === 0 || contentData.status === 1) {
-                  childContent.status = false;
-                  return false;
-                } else {
-                  childContent.status = true;
-                  return true;
-                }
-              }
-              return true;
-            });
-            return true;
-          } else {
-            childContent.status = false;
+    this.zone.run(() => {
+      childrenData.forEach(childContent => {
+        let contentlen = 0;
+        childContent.children.every(eachContent => {
+          if (childContent.hasOwnProperty('status') && !childContent.status) {
             return false;
+          } else {
+            if (contentStatusData.result.contentList.length) {
+              contentStatusData.result.contentList.every(contentData => {
+                if (eachContent.identifier === contentData.contentId) {
+                  contentlen = contentlen + 1;
+                  if (contentData.contentId === this.courseCardData.lastReadContentId) {
+                    childContent.lastRead = true;
+                  }
+                  if (contentData.status === 0 || contentData.status === 1) {
+                    childContent.status = 4;
+                    return false;
+                  } else {
+                    childContent.status = 5;
+                    return true;
+                  }
+                }
+                return true;
+              });
+              return true;
+            } else {
+              childContent.status = false;
+              return false;
+            }
           }
+        });
+        if (childContent.children.length === contentlen) {
+          return true;
+        } else {
+          childContent.status = false;
+          return true;
         }
       });
-      if (childContent.children.length === contentlen) {
-        return true;
-      } else {
-        childContent.status = false;
-        return true;
-      }
     });
   }
   /**
@@ -877,7 +882,7 @@ export class EnrolledCourseDetailsPage {
    */
   startContent() {
     if (this.startData && this.startData.length) {
-        this.firstChild = this.loadFirstChildren(this.childContentsData);
+      this.firstChild = this.loadFirstChildren(this.childContentsData);
       this.navigateToChildrenDetailsPage(this.firstChild, 1);
     }
   }
