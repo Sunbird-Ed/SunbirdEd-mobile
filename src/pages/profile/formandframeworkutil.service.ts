@@ -439,20 +439,21 @@ export class FormAndFrameworkUtilService {
                                                 })
                                                 .catch((err: any) => {
                                                     console.error('Err', err);
+                                                    resolve(false);
                                                 });
                                             }
                                         }
                                     }
                                 });
                             } else {
-                                resolve();
+                                resolve(false);
                             }
                         } else {
-                            resolve();
+                            resolve(false);
                         }
                     });
             } else {
-                reject();
+                resolve(false);
             }
         });
 

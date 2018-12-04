@@ -454,7 +454,7 @@ export class ProfilePage {
     this.profileService.getCurrentUser().then((resp: any) => {
       const profile = JSON.parse(resp);
       this.formAndFrameworkUtilService.updateLoggedInUser(this.profile, profile)
-        .then(() => {
+        .then((value) => {
         });
     });
   }

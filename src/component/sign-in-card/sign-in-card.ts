@@ -161,7 +161,7 @@ export class SignInCardComponent {
             that.profileService.setCurrentProfile(false, profile)
               .then((currentProfile: any) => {
                 that.formAndFrameworkUtilService.updateLoggedInUser(r, profile)
-                  .then(() => {
+                  .then((value) => {
                     resolve({
                       slug: r.rootOrg.slug,
                       title: r.rootOrg.orgName
