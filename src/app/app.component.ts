@@ -48,7 +48,8 @@ import {
   MimeType,
   ContentType,
   PreferenceKey,
-  GenericAppConfig
+  GenericAppConfig,
+  EventTopics
 } from './app.constant';
 import { EnrolledCourseDetailsPage } from '../pages/enrolled-course-details/enrolled-course-details';
 import { ProfileConstants } from './app.constant';
@@ -438,6 +439,10 @@ export class MyApp {
           console.log('connected to openrap device with the IP ' + action.ip);
         } else if (response && action && action.actionType === 'disconnected') {
           console.log('disconnected from openrap device with the IP ' + action.ip);
+        } else if (response && action && action.actionType === EventTopics.COURSE_STATUS_UPDATED_SUCCESSFULLY) {
+          this.events.publish(EventTopics.COURSE_STATUS_UPDATED_SUCCESSFULLY, {
+            update: true
+          });
         }
       });
     });
