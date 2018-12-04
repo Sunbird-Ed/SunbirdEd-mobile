@@ -42,6 +42,7 @@ import {
 } from '@app/app';
 import { LanguageSettingsPage } from '@app/pages/language-settings/language-settings';
 import { AppGlobalService, TelemetryGeneratorService, CommonUtilService } from '@app/service';
+import { CategoriesEditPage } from '../categories-edit/categories-edit';
 
 @Component({
   selector: 'page-onboarding',
@@ -141,7 +142,7 @@ export class OnboardingPage {
         return that.auth.doOAuthStepTwo(token);
       })
       .then(() => {
-        initTabs(that.container, LOGIN_TEACHER_TABS);
+        // initTabs(that.container, LOGIN_TEACHER_TABS);
         return that.refreshProfileData();
       })
       .then(slug => {
@@ -208,9 +209,17 @@ export class OnboardingPage {
             that.profileService.setCurrentProfile(false, profile)
               .then((response: any) => {
                 this.formAndFrameworkUtilService.updateLoggedInUser(r, profile)
-                .then( () => {
+                .then( (value) => {
                   that.orgName = r.rootOrg.orgName;
-                  resolve(r.rootOrg.slug);
+                  if (value) {
+                    initTabs(that.container, LOGIN_TEACHER_TABS);
+                    resolve(r.rootOrg.slug);
+                  } else {
+                    that.navCtrl.setRoot(CategoriesEditPage, {showOnlyMandatoryFields: true});
+                    reject();
+                  }
+                  // that.orgName = r.rootOrg.orgName;
+                  // resolve(r.rootOrg.slug);
                 }).catch( () => {
                   that.orgName = r.rootOrg.orgName;
                   resolve(r.rootOrg.slug);

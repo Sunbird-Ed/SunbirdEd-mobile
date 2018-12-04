@@ -427,8 +427,15 @@ export class FormAndFrameworkUtilService {
 
                                                 this.profileService.updateProfile(req)
                                                 .then((res: any) => {
+                                                    const updateRes = JSON.parse(res);
                                                     this.events.publish('refresh:loggedInProfile');
-                                                    resolve();
+                                                    if (updateRes.board  && updateRes.grade && updateRes.medium
+                                                        && updateRes.board.length && updateRes.grade.length && updateRes.medium.length
+                                                    ) {
+                                                        resolve(true);
+                                                    } else {
+                                                        resolve(false);
+                                                    }
                                                 })
                                                 .catch((err: any) => {
                                                     console.error('Err', err);

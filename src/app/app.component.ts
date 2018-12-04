@@ -59,6 +59,7 @@ import { CommonUtilService } from '../service/common-util.service';
 import { TelemetryGeneratorService } from '../service/telemetry-generator.service';
 import { PopoverController } from 'ionic-angular';
 import { BroadcastComponent } from '../component/broadcast/broadcast';
+import { CategoriesEditPage } from '@app/pages/categories-edit/categories-edit';
 
 declare var chcp: any;
 
@@ -195,28 +196,40 @@ export class MyApp {
               }
             });
         } else {
-          initTabs(that.containerService, LOGIN_TEACHER_TABS);
-          const sessionObj = JSON.parse(session);
-          this.preference.getString('SHOW_WELCOME_TOAST')
-            .then(success => {
-              if (success === 'true') {
-                that.preference.putString('SHOW_WELCOME_TOAST', 'false');
-                const req = {
-                  userId: sessionObj[ProfileConstants.USER_TOKEN],
-                  requiredFields: ProfileConstants.REQUIRED_FIELDS,
-                  refreshUserProfileDetails: true
-                };
-
-                that.userProfileService.getUserProfileDetails(req, res => {
-                  setTimeout(() => {
-                    this.commonUtilService.showToast(this.commonUtilService.translateMessage('WELCOME_BACK', JSON.parse(res).firstName));
-                  }, 2500);
-                }, () => {
+          this.profileService.getCurrentUser().then((profile: any) => {
+            profile = JSON.parse(profile);
+            if (profile
+              && profile.syllabus && profile.syllabus[0]
+              && profile.board && profile.board.length
+              && profile.grade && profile.grade.length
+              && profile.medium && profile.medium.length) {
+              initTabs(that.containerService, LOGIN_TEACHER_TABS);
+              const sessionObj = JSON.parse(session);
+              this.preference.getString('SHOW_WELCOME_TOAST')
+                .then(success => {
+                  if (success === 'true') {
+                    that.preference.putString('SHOW_WELCOME_TOAST', 'false');
+                    const req = {
+                      userId: sessionObj[ProfileConstants.USER_TOKEN],
+                      requiredFields: ProfileConstants.REQUIRED_FIELDS,
+                      refreshUserProfileDetails: true
+                    };
+                    that.userProfileService.getUserProfileDetails(req, res => {
+                      setTimeout(() => {
+                        this.commonUtilService
+                        .showToast(this.commonUtilService.translateMessage('WELCOME_BACK', JSON.parse(res).firstName));
+                      }, 2500);
+                    }, () => {
+                    });
+                  }
                 });
-              }
-            });
 
-          that.rootPage = TabsPage;
+              that.rootPage = TabsPage;
+            } else {
+              that.nav.setRoot(CategoriesEditPage, {showOnlyMandatoryFields: true});
+            }
+          });
+
         }
 
         (<any>window).splashscreen.hide();

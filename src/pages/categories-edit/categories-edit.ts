@@ -2,12 +2,17 @@ import { AppGlobalService } from './../../service/app-global.service';
 import { FormAndFrameworkUtilService } from './../profile/formandframeworkutil.service';
 import { CommonUtilService } from './../../service/common-util.service';
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { CategoryRequest, Profile, UpdateUserInfoRequest, UserProfileService } from 'sunbird';
+import { CategoryRequest, Profile, UpdateUserInfoRequest, UserProfileService, ProfileService, ContainerService, TabsPage } from 'sunbird';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
 import { Events } from 'ionic-angular';
+
+import {
+  initTabs,
+  LOGIN_TEACHER_TABS
+} from '@app/app';
 
 @IonicPage()
 @Component({
@@ -26,7 +31,9 @@ export class CategoriesEditPage {
   frameworkId: string;
   categories = [];
   btnColor = '#8FC4FF';
+  showOnlyMandatoryFields: Boolean = true;
   editData: Boolean = true;
+  loader: any;
 
   /* Custom styles for the select box popup */
   boardOptions = {
@@ -48,6 +55,7 @@ export class CategoriesEditPage {
 
   constructor(
     private navCtrl: NavController,
+    private loadingCtrl: LoadingController,
     private navParams: NavParams,
     private commonUtilService: CommonUtilService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
@@ -55,9 +63,17 @@ export class CategoriesEditPage {
     private translate: TranslateService,
     private appGlobalService: AppGlobalService,
     private userProfileService: UserProfileService,
-    private events: Events
+    private profileService: ProfileService,
+    private events: Events,
+    private container: ContainerService,
   ) {
     this.profile = this.appGlobalService.getCurrentUser();
+    console.log('this.navParams.getshowOnlyMandatoryFields', this.navParams.get('showOnlyMandatoryFields'));
+    if (this.navParams.get('showOnlyMandatoryFields')) {
+      this.showOnlyMandatoryFields = this.navParams.get('showOnlyMandatoryFields');
+    } else {
+      this.showOnlyMandatoryFields = false;
+    }
     this.initializeForm();
   }
 
@@ -65,7 +81,24 @@ export class CategoriesEditPage {
    * Ionic life cycle event - Fires every time page visits
    */
   ionViewWillEnter() {
+    if (this.showOnlyMandatoryFields) {
+      this.container.removeAllTabs();
+      this.profileService.getCurrentUser().then((resp: any) => {
+        this.profile = JSON.parse(resp);
+        if (this.profile.board && this.profile.board.length > 1) {
+          this.profile.board.splice(1, this.profile.board.length);
+        }
+        this.profileEditForm = this.fb.group({
+          syllabus: [ this.profile.syllabus && this.profile.syllabus[0] || []],
+          boards: [ this.profile.board || []],
+          grades: [ this.profile.grade || []],
+          medium: [ this.profile.medium || []]
+        });
+        this.getSyllabusDetails();
+      });
+    } else {
     this.getSyllabusDetails();
+    }
   }
 
   /**
@@ -73,23 +106,23 @@ export class CategoriesEditPage {
    */
 
   initializeForm() {
-    if (this.profile.board && this.profile.board.length > 1) {
-      this.profile.board.splice(1, this.profile.board.length);
-    }
-    this.profileEditForm = this.fb.group({
-      syllabus: [ this.profile.syllabus && this.profile.syllabus[0] || []],
-      boards: [ this.profile.board || []],
-      grades: [ this.profile.grade || []],
-      medium: [ this.profile.medium || []],
-      subjects: [ this.profile.subject || []]
-    });
-
+      if (this.profile.board && this.profile.board.length > 1) {
+        this.profile.board.splice(1, this.profile.board.length);
+      }
+      this.profileEditForm = this.fb.group({
+        syllabus: [ this.profile.syllabus && this.profile.syllabus[0] || []],
+        boards: [ this.profile.board || []],
+        grades: [ this.profile.grade || []],
+        medium: [ this.profile.medium || []],
+        subjects: [ this.profile.subject || []]
+      });
   }
 
   /**
    * It will fetch the syllabus details
    */
   getSyllabusDetails() {
+    this.loader = this.getLoader();
     this.formAndFrameworkUtilService.getSupportingBoardList()
       .then((syllabus) => {
         this.syllabusList = [];
@@ -101,17 +134,13 @@ export class CategoriesEditPage {
           if (this.profile && this.profile.syllabus && this.profile.syllabus[0] !== undefined) {
             this.formAndFrameworkUtilService.getFrameworkDetails(this.profile.syllabus[0])
               .then(catagories => {
-                // this.isFormValid = true;
                 this.categories = catagories;
                 this.resetForm(0);
 
               }).catch((err) => {
-                // this.isFormValid = false;
-                // this.loader.dismiss();
                 this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
               });
           } else {
-            // this.loader.dismiss();
           }
         } else {
           this.commonUtilService.showToast('NO_DATA_FOUND');
@@ -168,6 +197,9 @@ export class CategoriesEditPage {
    * @param selectedValue selected value for the currently selected field
    */
   fetchNextCategoryOptionsValues(index: number, currentField: string, selectedValue: Array<string>) {
+    console.log('index', index);
+    console.log('currentField', currentField);
+    console.log('selectedValue', selectedValue);
     if (index === 1) {
       this.frameworkId = selectedValue[0];
       this.formAndFrameworkUtilService.getFrameworkDetails(this.frameworkId)
@@ -218,11 +250,9 @@ export class CategoriesEditPage {
             this.profileEditForm.patchValue({
               medium: this.profile.medium || []
             });
-            // this.resetForm(2);
             this.profileEditForm.patchValue({
               grades: this.profile.grade || []
             });
-            // this.resetForm(3);
             this.profileEditForm.patchValue({
               subjects: this.profile.subject || []
             });
@@ -276,6 +306,7 @@ export class CategoriesEditPage {
    */
 
   submitForm(formVal) {
+    this.loader.present();
     const req: UpdateUserInfoRequest = new UpdateUserInfoRequest();
     const Framework = {};
     if (formVal.syllabus) {
@@ -306,15 +337,27 @@ export class CategoriesEditPage {
     req.framework = Framework;
     this.userProfileService.updateUserInfo(req,
       (res: any) => {
+          this.loader.dismiss();
           this.commonUtilService.showToast('Profile data updated successfully');
           this.events.publish('loggedInProfile:update', req.framework);
-          this.navCtrl.pop();
-          // this.viewCtrl.dismiss();
+          if (this.showOnlyMandatoryFields) {
+            initTabs(this.container, LOGIN_TEACHER_TABS);
+            this.navCtrl.setRoot(TabsPage);
+          } else {
+            this.navCtrl.pop();
+          }
       },
       (err: any) => {
+        this.loader.dismiss();
           console.log('Error', err);
           this.commonUtilService.showToast('Profile update failed');
-          // this.viewCtrl.dismiss();
       });
+  }
+
+  getLoader(): any {
+    return this.loadingCtrl.create({
+      duration: 3000,
+      spinner: 'crescent'
+    });
   }
 }

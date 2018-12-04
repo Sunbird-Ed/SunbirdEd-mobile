@@ -27,7 +27,7 @@
         <ion-option *ngFor="let grade of gradeList" text-capitalize value="{{grade?.code}}">{{grade?.name}}</ion-option>
       </ion-select>
     </ion-item>
-    <ion-item>
+    <ion-item *ngIf="!showOnlyMandatoryFields">
       <ion-label stacked class="label-font">{{'SUBJECTS' | translate}}</ion-label>
       <ion-select formControlName="subjects" multiple="true" [selectOptions]="subjectOptions" placeholder="{{'SUBJECT_OPTION_TEXT' | translate}}"
         okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}">

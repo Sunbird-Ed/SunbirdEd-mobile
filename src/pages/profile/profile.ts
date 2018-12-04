@@ -4,7 +4,8 @@ import {
   LoadingController,
   NavParams,
   Events,
-  PopoverController
+  PopoverController,
+  App
 } from 'ionic-angular';
 import {
   AuthService,
@@ -40,7 +41,7 @@ import { CategoriesEditPage } from '@app/pages/categories-edit/categories-edit';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details/enrolled-course-details';
 import { CollectionDetailsPage } from '@app/pages/collection-details/collection-details';
 import { ContentDetailsPage } from '@app/pages/content-details/content-details';
-import { AppGlobalService, TelemetryGeneratorService } from '@app/service';
+import { AppGlobalService, TelemetryGeneratorService, CommonUtilService } from '@app/service';
 import { FormAndFrameworkUtilService } from './formandframeworkutil.service';
 
 /**
@@ -103,7 +104,9 @@ export class ProfilePage {
     private telemetryGeneratorService: TelemetryGeneratorService,
     private profileService: ProfileService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
-    private containerService: ContainerService
+    private containerService: ContainerService,
+    private commonUtilService: CommonUtilService,
+    private app: App
   ) {
     this.userId = this.navParams.get('userId') || '';
     this.isRefreshProfile = this.navParams.get('returnRefreshedUserProfileDetails');
@@ -211,14 +214,10 @@ export class ProfilePage {
                 this.profileService.getCurrentUser().then((resp: any) => {
                   const profile = JSON.parse(resp);
                   that.formAndFrameworkUtilService.updateLoggedInUser(r, profile)
-                    .then(() => {
-                      // if (value === 'true') {
-                        // this.containerService.removeAllTabs();
-                        // this.navCtrl.setRoot(CategoriesEditPage);
-                        // this.navCtrl.popAll().then(() => {
-                        //   this.navCtrl.setRoot(CategoriesEditPage);
-                        // });
-                      // }
+                    .then((value) => {
+                      if (!value) {
+                        this.app.getRootNav().setRoot(CategoriesEditPage, {showOnlyMandatoryFields: true});
+                      }
                     });
                 });
                 if (r && r.avatar) {
@@ -461,14 +460,18 @@ export class ProfilePage {
   }
 
   navigateToCategoriesEditPage() {
-    this.telemetryService.interact(
-      generateInteractTelemetry(InteractType.TOUCH,
-        InteractSubtype.EDIT_CLICKED,
-        Environment.HOME,
-        PageId.PROFILE, null,
-        undefined,
-        undefined));
-    this.navCtrl.push(CategoriesEditPage);
+    if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+      this.telemetryService.interact(
+        generateInteractTelemetry(InteractType.TOUCH,
+          InteractSubtype.EDIT_CLICKED,
+          Environment.HOME,
+          PageId.PROFILE, null,
+          undefined,
+          undefined));
+      this.navCtrl.push(CategoriesEditPage);
+    } else {
+      this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
+    }
   }
 
 }
