@@ -37,6 +37,12 @@ export class ContentType {
         ContentType.TEXTBOOK,
         ContentType.TEXTBOOK_UNIT
     ];
+    public static readonly FOR_RECENTLY_VIEWED = [
+        ContentType.STORY,
+        ContentType.WORKSHEET,
+        ContentType.GAME,
+        ContentType.RESOURCE
+    ];
 }
 
 export class MimeType {

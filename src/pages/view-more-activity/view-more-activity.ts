@@ -1,6 +1,6 @@
 import { IonicPage, NavController, NavParams, Events } from 'ionic-angular';
 import { Component, NgZone, OnInit } from '@angular/core';
-import { ContentService, CourseService, PageId, Environment, ImpressionType, LogLevel } from 'sunbird';
+import { ContentService, CourseService, PageId, Environment, ImpressionType, LogLevel, ContentFilterCriteria } from 'sunbird';
 import * as _ from 'lodash';
 import { ContentType, ViewMore } from '../../app/app.constant';
 import { ContentDetailsPage } from '../content-details/content-details';
@@ -36,15 +36,15 @@ export class ViewMoreActivityPage implements OnInit {
  */
   loadMoreBtn = true;
 
-/**
- * Flag to show / hide downloads only button
- */
-showDownloadsOnlyToggle = false;
+  /**
+   * Flag to show / hide downloads only button
+   */
+  showDownloadsOnlyToggle = false;
 
-/**
- * value for downloads only toggle button, may have true/false
- */
-downloadsOnlyToggle = false;
+  /**
+   * value for downloads only toggle button, may have true/false
+   */
+  downloadsOnlyToggle = false;
 
 
 
@@ -89,6 +89,8 @@ downloadsOnlyToggle = false;
   showOverlay = false;
 
   resumeContentData: any;
+  uid: any;
+  audience: any;
 
   constructor(
     private navCtrl: NavController,
@@ -119,6 +121,8 @@ downloadsOnlyToggle = false;
     this.tabBarElement.style.display = 'none';
     this.searchQuery = this.navParams.get('requestParams');
     this.showDownloadsOnlyToggle = this.navParams.get('showDownloadOnlyToggle');
+    this.uid = this.navParams.get('uid');
+    this.audience = this.navParams.get('audience');
     if (this.headerTitle !== this.navParams.get('headerTitle')) {
       this.headerTitle = this.navParams.get('headerTitle');
       this.offset = 0;
@@ -131,7 +135,9 @@ downloadsOnlyToggle = false;
     this.events.subscribe('savedResources:update', (res) => {
       if (res && res.update) {
         if (this.navParams.get('pageName') === ViewMore.PAGE_RESOURCE_SAVED) {
-          this.getLocalContents();
+          this.getLocalContents(false, this.downloadsOnlyToggle);
+        } else if (this.navParams.get('pageName') === ViewMore.PAGE_RESOURCE_RECENTLY_VIEWED) {
+          this.getLocalContents(true, this.downloadsOnlyToggle);
         }
       }
     });
@@ -153,7 +159,7 @@ downloadsOnlyToggle = false;
       const reqBody = JSON.parse(success);
       reqBody.limit = 10;
       reqBody.offset = this.offset === 0 ? reqBody.offset : this.offset;
-      this.contentService.searchContent(reqBody, true, false, false) .then((data: any) => {
+      this.contentService.searchContent(reqBody, true, false, false).then((data: any) => {
         data = JSON.parse(data);
         this.ngZone.run(() => {
           if (data.result && data.result.contentDataList) {
@@ -172,11 +178,11 @@ downloadsOnlyToggle = false;
         });
         this.generateImpressionEvent();
         this.generateLogEvent(data.result);
-      }) .catch(() => {
+      }).catch(() => {
         console.error('Error: while fetching view more content');
         loader.dismiss();
       });
-    }) .catch(() => {
+    }).catch(() => {
       console.error('Error: while fetching view more content');
       loader.dismiss();
     });
@@ -242,7 +248,7 @@ downloadsOnlyToggle = false;
 
       case ViewMore.PAGE_RESOURCE_RECENTLY_VIEWED:
         this.loadMoreBtn = false;
-        this.getLocalContents();
+        this.getLocalContents(true);
         break;
 
       default:
@@ -262,29 +268,39 @@ downloadsOnlyToggle = false;
       refreshEnrolledCourses: false
     };
     this.courseService.getEnrolledCourses(option)
-     .then((data: any) => {
-      if (data) {
-        data = JSON.parse(data);
-        this.searchList = data.result.courses ? data.result.courses : [];
-        this.loadMoreBtn = false;
-      }
-      loader.dismiss();
-    })
-     .catch((error: any) => {
-      console.error('error while loading enrolled courses', error);
-      loader.dismiss();
-    });
+      .then((data: any) => {
+        if (data) {
+          data = JSON.parse(data);
+          this.searchList = data.result.courses ? data.result.courses : [];
+          this.loadMoreBtn = false;
+        }
+        loader.dismiss();
+      })
+      .catch((error: any) => {
+        console.error('error while loading enrolled courses', error);
+        loader.dismiss();
+      });
   }
 
   /**
 	 * Get local content
 	 */
-  getLocalContents() {
+  getLocalContents(recentlyViewed?: boolean, downloaded?: boolean) {
     const loader = this.commonUtilService.getLoader();
     loader.present();
-    const requestParams = {
-      contentTypes: ContentType.FOR_LIBRARY_TAB
+
+    const requestParams: ContentFilterCriteria = {
+      uid: this.uid,
+      audience: this.audience,
+      recentlyViewed: recentlyViewed
     };
+
+    if (recentlyViewed) {
+      requestParams.contentTypes = ContentType.FOR_RECENTLY_VIEWED;
+    } else {
+      requestParams.contentTypes = ContentType.FOR_LIBRARY_TAB;
+    }
+
     this.contentService.getAllLocalContents(requestParams)
       .then(data => {
         const contentData = [];
@@ -309,27 +325,27 @@ downloadsOnlyToggle = false;
   getContentDetails(content) {
     const identifier = content.contentId || content.identifier;
     this.contentService.getContentDetail({ contentId: identifier })
-    .then((data: any) => {
-      data = JSON.parse(data);
-      if (Boolean(data.result.isAvailableLocally)) {
-        this.navCtrl.push(ContentDetailsPage, {
-          content: { identifier: content.lastReadContentId },
-          depth: '1',
-          contentState: {
-            batchId: content.batchId ? content.batchId : '',
-            courseId: identifier
-          },
-          isResumedCourse: true,
-          isChildContent: true,
-          resumedCourseCardData: this.resumeContentData
-        });
-      } else {
-        this.subscribeGenieEvent();
-        this.showOverlay = true;
-        this.importContent([identifier], false);
-      }
+      .then((data: any) => {
+        data = JSON.parse(data);
+        if (Boolean(data.result.isAvailableLocally)) {
+          this.navCtrl.push(ContentDetailsPage, {
+            content: { identifier: content.lastReadContentId },
+            depth: '1',
+            contentState: {
+              batchId: content.batchId ? content.batchId : '',
+              courseId: identifier
+            },
+            isResumedCourse: true,
+            isChildContent: true,
+            resumedCourseCardData: this.resumeContentData
+          });
+        } else {
+          this.subscribeGenieEvent();
+          this.showOverlay = true;
+          this.importContent([identifier], false);
+        }
 
-    })
+      })
       .catch((error: any) => {
         console.log(error);
       });
@@ -343,23 +359,23 @@ downloadsOnlyToggle = false;
     };
 
     this.contentService.importContent(option)
-     .then((data: any) => {
-      data = JSON.parse(data);
-      this.ngZone.run(() => {
-        if (data.result && data.result.length) {
-          _.forEach(data.result, (value) => {
-            if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
-              this.queuedIdentifiers.push(value.identifier);
+      .then((data: any) => {
+        data = JSON.parse(data);
+        this.ngZone.run(() => {
+          if (data.result && data.result.length) {
+            _.forEach(data.result, (value) => {
+              if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
+                this.queuedIdentifiers.push(value.identifier);
+              }
+            });
+            if (this.queuedIdentifiers.length === 0) {
+              this.showOverlay = false;
+              this.downloadPercentage = 0;
+              this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
             }
-          });
-          if (this.queuedIdentifiers.length === 0) {
-            this.showOverlay = false;
-            this.downloadPercentage = 0;
-            this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
           }
-        }
-      });
-    })
+        });
+      })
       .catch(() => {
         this.ngZone.run(() => {
           this.showOverlay = false;
@@ -396,17 +412,20 @@ downloadsOnlyToggle = false;
 
   cancelDownload() {
     this.ngZone.run(() => {
-      this.contentService.cancelDownload(this.resumeContentData.contentId || this.resumeContentData.identifier) .then(() => {
+      this.contentService.cancelDownload(this.resumeContentData.contentId || this.resumeContentData.identifier).then(() => {
         this.showOverlay = false;
-      }) .catch(() => {
+      }).catch(() => {
         this.showOverlay = false;
       });
     });
   }
 
   downloadsOnlyToggleChange(e) {
-    // TODO : have to implement the logic of filter
-    console.log('clicked on downloads only toggle', this.downloadsOnlyToggle);
+    if (this.navParams.get('pageName') === ViewMore.PAGE_RESOURCE_SAVED) {
+      this.getLocalContents(false, this.downloadsOnlyToggle);
+    } else if (this.navParams.get('pageName') === ViewMore.PAGE_RESOURCE_RECENTLY_VIEWED) {
+      this.getLocalContents(true, this.downloadsOnlyToggle);
+    }
   }
 
   /**
