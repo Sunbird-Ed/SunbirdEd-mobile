@@ -1,4 +1,4 @@
-import { ProfileType, UserSource } from 'sunbird';
+import {ProfileType, UserSource} from 'sunbird';
 
 export const mockRes = {
   getEnrolledCourses:
@@ -89,7 +89,7 @@ export const mockRes = {
     '{"contentImportMap":{"0":{"isChildContent":false,"destinationFolder":"","contentId":"do_sample",' +
     '"correlationData":[]}},"contentStatusArray":[]}',
 
-  failrueimportResponse:
+  failureimportResponse:
     '{"message":"successful","result":[{"identifier":"do_sample","status":"NOT_FOUND"}]}',
 
   sampleContent:
