@@ -68,7 +68,6 @@ export class CategoriesEditPage {
     private container: ContainerService,
   ) {
     this.profile = this.appGlobalService.getCurrentUser();
-    console.log('this.navParams.getshowOnlyMandatoryFields', this.navParams.get('showOnlyMandatoryFields'));
     if (this.navParams.get('showOnlyMandatoryFields')) {
       this.showOnlyMandatoryFields = this.navParams.get('showOnlyMandatoryFields');
       if (this.navParams.get('profile')) {
@@ -96,7 +95,6 @@ export class CategoriesEditPage {
       this.profile.board.splice(1, this.profile.board.length);
     }
     this.profileEditForm = this.fb.group({
-      syllabus: [this.profile.syllabus && this.profile.syllabus[0] || []],
       boards: [this.profile.board || []],
       grades: [this.profile.grade || []],
       medium: [this.profile.medium || []],
@@ -109,33 +107,16 @@ export class CategoriesEditPage {
    */
   getSyllabusDetails() {
     this.loader = this.getLoader();
-    this.formAndFrameworkUtilService.getSupportingBoardList()
-      .then((syllabus) => {
-        this.syllabusList = [];
-        if (syllabus && syllabus.length) {
-          syllabus.forEach(element => {
-            // renaming the fields to text, value and checked
-            this.syllabusList.push({ 'name': element.name, 'code': element.frameworkId });
-          });
-          if (this.profile && this.profile.syllabus && this.profile.syllabus[0] !== undefined) {
-            this.formAndFrameworkUtilService.getFrameworkDetails(this.profile.syllabus[0])
-              .then(catagories => {
-                this.categories = catagories;
-                this.resetForm(0);
+    this.frameworkId = this.profile.syllabus[0];
+    this.formAndFrameworkUtilService.getFrameworkDetails(undefined)
+    .then(catagories => {
+      this.categories = catagories;
+      this.boardList = catagories[0].terms;
+      this.resetForm(1);
+    }).catch((err) => {
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
+    });
 
-              }).catch((err) => {
-                this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
-              });
-          } else {
-          }
-        } else {
-          this.commonUtilService.showToast('NO_DATA_FOUND');
-        }
-      })
-      .catch((error) => {
-        console.error('Error Occurred = ', error);
-        this.commonUtilService.showToast('SOMETHING_WENT_WRONG');
-      });
   }
 
   /**
@@ -143,15 +124,6 @@ export class CategoriesEditPage {
    */
   resetForm(index: number) {
     switch (index) {
-      case 0: // When User changed board values, reset rest of the form to empty values and fetch options for the next category
-        this.profileEditForm.patchValue({
-          board: [],
-          grades: [],
-          medium: [],
-          subjects: []
-        });
-        this.fetchNextCategoryOptionsValues(1, 'boardList', [this.profileEditForm.value.syllabus]);
-        break;
       case 1:
         this.profileEditForm.patchValue({
           medium: [],
@@ -183,22 +155,6 @@ export class CategoriesEditPage {
    * @param selectedValue selected value for the currently selected field
    */
   fetchNextCategoryOptionsValues(index: number, currentField: string, selectedValue: Array<string>) {
-    if (index === 1) {
-      this.frameworkId = selectedValue[0];
-      this.formAndFrameworkUtilService.getFrameworkDetails(this.frameworkId)
-        .then(catagories => {
-          this.categories = catagories;
-
-          const request: CategoryRequest = {
-            currentCategory: this.categories[0].code,
-            selectedLanguage: this.translate.currentLang
-          };
-          this.getCategoryData(request, currentField);
-        }).catch((error) => {
-          console.error('Error', error);
-          this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
-        });
-    } else {
       const request: CategoryRequest = {
         currentCategory: this.categories[index - 1].code,
         prevCategory: this.categories[index - 2].code,
@@ -206,7 +162,6 @@ export class CategoriesEditPage {
         selectedLanguage: this.translate.currentLang
       };
       this.getCategoryData(request, currentField);
-    }
   }
 
   /**
@@ -219,17 +174,7 @@ export class CategoriesEditPage {
     this.formAndFrameworkUtilService.getCategoryData(request, this.frameworkId)
       .then((result) => {
         this[currentField] = result;
-
-        // if (currentField !== 'gradeList') {
-        //   this[currentField] = _.orderBy(this[currentField], ['name'], ['asc']);
-        // }
-
-        if (request.currentCategory === 'board') {
-          this.profileEditForm.patchValue({
-            boards: [result[0].code]
-          });
-          this.resetForm(1);
-        } else if (this.editData) {
+        if (this.editData) {
           this.editData = false;
           this.profileEditForm.patchValue({
             medium: this.profile.medium || []
@@ -293,8 +238,9 @@ export class CategoriesEditPage {
     this.loader.present();
     const req: UpdateUserInfoRequest = new UpdateUserInfoRequest();
     const Framework = {};
-    if (formVal.syllabus) {
-      Framework['board'] = [this.syllabusList.find(syllabus => formVal.syllabus === syllabus.code).name];
+    if (formVal.boards) {
+      const code = typeof(formVal.boards) === 'string' ? formVal.boards : formVal.boards[0];
+      Framework['board'] = [this.boardList.find(board => code === board.code).name];
     }
     if (formVal.medium && formVal.medium.length) {
       const Names = [];
@@ -322,7 +268,7 @@ export class CategoriesEditPage {
     this.userProfileService.updateUserInfo(req,
       (res: any) => {
         this.loader.dismiss();
-        this.commonUtilService.showToast('Profile data updated successfully');
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_SUCCESS'));
         this.events.publish('loggedInProfile:update', req.framework);
         if (this.showOnlyMandatoryFields) {
           initTabs(this.container, LOGIN_TEACHER_TABS);
@@ -334,7 +280,7 @@ export class CategoriesEditPage {
       (err: any) => {
         this.loader.dismiss();
         console.log('Error', err);
-        this.commonUtilService.showToast('Profile update failed');
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_FAILED'));
       });
   }
 
