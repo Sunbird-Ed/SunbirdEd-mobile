@@ -254,17 +254,19 @@ export class GroupReportListPage {
             const contentstarttime = this.datePipe.transform(new Date(), 'dd-MM-yyyy hh:mm:ss a');
             // Header
             for (let m = 0; m < anzahlTeams; m++) {
-                line += 'Device ID' + '\t' + this.deviceId + '\n';
-                line += 'Group name (Group ID)' + '\t' + this.groupinfo.name + '(' + this.groupinfo.gid + ')' + '\n';
-                line += 'Content name (Content ID)' + '\t' + values[m].name + '(' + values[m].contentId + ')' + '\n';
-                line += 'Content started time' + '\t' + contentstarttime + '\n';
-                line += 'File export time' + '\t' + filexptime + '\n';
+                line += 'Device ID' + '   ' + this.deviceId + '\n';
+                line += 'Group name (Group ID)' + '   ' + this.groupinfo.name + '(' + this.groupinfo.gid + ')' + '\n';
+                line += 'Content name (Content ID)' + '   ' + values[m].name + '(' + values[m].contentId + ')' + '\n';
+                line += 'Content started time' + '   ' + contentstarttime + '\n';
+                line +=  'Average Time' + '  ' +  this.formatTime(this.appGlobalService.getAverageTime()) + '\n';
+                line += 'Average Score' + '  ' + this.appGlobalService.getAverageScore() + '\n';
+                line += 'File export time' + '   ' + filexptime + '\n';
                 line += '\n\n';
-                line += 'User name' + '\t\t';
-                line += 'UserID' + '\t\t';
-                line += 'Question#' + '\t\t';
-                line += 'QuestionId' + '\t\t';
-                line += 'Score' + '\t\t';
+                line += 'User name' + ',';
+                line += 'UserID' + ',';
+                line += 'Question#' + ',';
+                line += 'QuestionId' + ',';
+                line += 'Score' + ',';
                 line += 'Time' + '\n';
                 break;
 
@@ -273,11 +275,11 @@ export class GroupReportListPage {
             // Teams
             for (let k = 0; k < values.length; k++) {
                 for (let j = 0; j < values[k].assessmentData.length; j++) {
-                    line += '\"' + values[k].userName + '\"' + '\t\t';
-                    line += '\"' + values[k].uid + '\"' + '\t\t';
-                    line += '\"' + values[k].assessmentData[j].qtitle + '\"' + '\t\t';
-                    line += '\"' + values[k].assessmentData[j].qid + '\"' + '\t\t';
-                    line += '\"' + values[k].assessmentData[j].score + '/' + values[k].assessmentData[j].maxScore + '\"' + '\t\t';
+                    line += '\"' + values[k].userName + '\"' + ',';
+                    line += '\"' + values[k].uid + '\"' + ',';
+                    line += '\"' + values[k].assessmentData[j].qtitle + '\"' + ',';
+                    line += '\"' + values[k].assessmentData[j].qid + '\"' + ',';
+                    line += '\"' + values[k].assessmentData[j].score + '/' + values[k].assessmentData[j].maxScore + '\"' + ',';
                     line += '\"' + values[k].assessmentData[j].timespent + '\"' + '\n';
                 }
                 line += '\n\n';
@@ -306,7 +308,7 @@ export class GroupReportListPage {
                 line += values[p].qtitle + '\t\t';
                 line += values[p].qid + '\t\t';
                 line += values[p].score + '/' + values[p].max_score + '\t\t';
-                line += that.formatTime(values[p].timpent) + '\n';
+                line += values[p].timpent + '\n';
             }
         }
 
