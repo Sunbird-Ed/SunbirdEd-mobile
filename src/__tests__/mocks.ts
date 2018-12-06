@@ -1,5 +1,5 @@
-import {AuthService, BuildParamService, ContentService, CourseService, FileUtil, ShareUtil} from 'sunbird';
-import {Events, NavController, NavParams, Platform, PopoverController} from 'ionic-angular';
+import {AuthService, BuildParamService, ContentService, CourseService, FileUtil, ShareUtil, ReportService} from 'sunbird';
+import {Events, NavController, NavParams, Platform, PopoverController, LoadingController} from 'ionic-angular';
 import {NgZone} from '@angular/core';
 import {CommonUtilService, AppGlobalService, TelemetryGeneratorService, CourseUtilService} from '@app/service';
 import {TranslateService} from '@ngx-translate/core';
@@ -34,22 +34,21 @@ export const commonUtilServiceMock = createSpyObj<CommonUtilService>([
   'translateMessage', 'showMessage', 'showToast', 'getLoader'
 ]);
 
-export const eventsMock = createSpyObj<Events>(['publish', 'subscribe', 'unsubscribe']);
+export const eventsMock = createSpyObj<Events>(['publish']);
 
-export const contentServiceMock = createSpyObj<ContentService>(['getContentDetail',
-'cancelDownload', 'importContent', 'getChildContents']);
+export const contentServiceMock = createSpyObj<ContentService>(['getContentDetail', 'getLocalContents']);
 
-export const popoverCtrlMock = createSpyObj<PopoverController>(['create']);
+export const popoverCtrlMock = createSpyObj<PopoverController>([]);
 
-export const fileUtilMock = createSpyObj<FileUtil>(['internalStoragePath']);
+export const fileUtilMock = createSpyObj<FileUtil>([]);
 
 export const platformMock = createSpyObj<Platform>([]);
 
 export const translateServiceMock = createSpyObj<TranslateService>([]);
 
-export const socialSharingMock = createSpyObj<SocialSharing>(['share']);
+export const socialSharingMock = createSpyObj<SocialSharing>([]);
 
-export const shareUtilMock = createSpyObj<ShareUtil>(['exportEcar']);
+export const shareUtilMock = createSpyObj<ShareUtil>([]);
 
 export const buildParamServiceMock = createSpyObj<BuildParamService>(['getBuildConfigParam']);
 
@@ -58,10 +57,11 @@ export const appGlobalServiceMock = createSpyObj<AppGlobalService>([
 ]);
 
 export const telemetryGeneratorServiceMock = createSpyObj<TelemetryGeneratorService>([
-  'generateStartTelemetry', 'generateImpressionTelemetry', 'generateSpineLoadingTelemetry',
-  'generateCancelDownloadTelemetry', 'generateInteractTelemetry', 'generateEndTelemetry'
+  'generateStartTelemetry', 'generateImpressionTelemetry', 'generateInteractTelemetry'
 ]);
 
-export const courseUtilServiceMock = createSpyObj<CourseUtilService>(['showCredits']);
+export const courseUtilServiceMock = createSpyObj<CourseUtilService>([]);
 
+export const loadingControllerMock = createSpyObj<LoadingController>(['create', 'present']);
 
+export const reportServiceMock = createSpyObj<ReportService>(['getListOfReports']);
