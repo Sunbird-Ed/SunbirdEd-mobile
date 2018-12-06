@@ -8,9 +8,9 @@
   <form [formGroup]="profileEditForm">
     <ion-item>
       <ion-label stacked class="label-font">{{'BOARD' | translate}}<span ion-text color="danger">&nbsp;*</span></ion-label>
-      <ion-select formControlName="syllabus" multiple="false" [selectOptions]="boardOptions" placeholder="{{'BOARD_OPTION_TEXT' | translate}}"
-        okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}" (ionChange)="resetForm(0)">
-        <ion-option *ngFor="let syllabus of syllabusList" value="{{syllabus?.code}}">{{syllabus?.name}}</ion-option>
+      <ion-select formControlName="boards" multiple="false" [selectOptions]="boardOptions" placeholder="{{'BOARD_OPTION_TEXT' | translate}}"
+        okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}" (ionChange)="resetForm(1)">
+        <ion-option *ngFor="let board of boardList" value="{{board?.code}}">{{board?.name}}</ion-option>
       </ion-select>
     </ion-item>
     <ion-item>

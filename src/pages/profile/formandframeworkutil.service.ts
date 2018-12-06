@@ -371,87 +371,72 @@ export class FormAndFrameworkUtilService {
                 syllabus: [],
                 gradeValueMap: {}
             };
-            let categories;
-            let supportingBoardList = [];
             if (profileRes.framework) {
                 const categoryKeysLen = Object.keys(profileRes.framework).length;
                 let keysLength = 0;
-                this.getSupportingBoardList()
-                    .then((boards) => {
-                        supportingBoardList = boards;
-                        if (profileRes.framework.hasOwnProperty('board') && profileRes.framework['board'].length) {
-                            const matchedBoard = supportingBoardList.find(board => board.name === profileRes.framework['board'][0]);
-                            if (matchedBoard) {
-                                profile['syllabus'].push(matchedBoard.frameworkId);
-                                this.getFrameworkDetails(matchedBoard.frameworkId)
-                                .then((response) => {
-                                    categories = response;
-                                    for (const categoryKey in profileRes.framework) {
-                                        if (profileRes.framework.hasOwnProperty(categoryKey) && profileRes.framework[categoryKey].length) {
-                                            const categoryList = _.find(categories, (category) => category.code === categoryKey).terms;
-                                            keysLength++;
-                                            profileRes.framework[categoryKey].forEach(element => {
-                                                if (categoryKey === 'gradeLevel') {
-                                                    const val = _.find(categoryList, (category) => category.name === element);
-                                                    if (val) {
-                                                        profile['grade'].push(val.code);
-                                                        profile['gradeValueMap'][val.code] = element;
-                                                    }
-                                                } else if (categoryKey === 'board') {
-                                                    const val = _.find(categoryList, (category) => category.name === element);
-                                                    if (val) {
-                                                        profile[categoryKey].push(val.code);
-                                                    }
-                                                } else {
-                                                    const val = _.find(categoryList, (category) => category.name === element);
-                                                    if (val) {
-                                                        profile[categoryKey].push(val.code);
-                                                    }
-                                                }
-                                            });
-                                            if (categoryKeysLen === keysLength) {
-                                                const req: Profile = new Profile();
-                                                req.board = profile.board;
-
-                                                req.grade = profile.grade;
-                                                req.medium = profile.medium;
-                                                req.subject = profile.subject;
-                                                req.gradeValueMap = profile.gradeValueMap;
-                                                req.uid = profileData.uid;
-                                                req.handle = profileData.uid;
-                                                req.profileType = profileData.profileType;
-                                                req.source = profileData.source;
-                                                req.createdAt = profileData.createdAt || this.formatDate();
-
-                                                req.syllabus = profile.syllabus;
-
-                                                this.profileService.updateProfile(req)
-                                                .then((res: any) => {
-                                                    const updateRes = JSON.parse(res);
-                                                    this.events.publish('refresh:loggedInProfile');
-                                                    if (updateRes.board  && updateRes.grade && updateRes.medium
-                                                        && updateRes.board.length && updateRes.grade.length && updateRes.medium.length
-                                                    ) {
-                                                        resolve({status: true});
-                                                    } else {
-                                                        resolve({status: false, profile: updateRes});
-                                                    }
-                                                })
-                                                .catch((err: any) => {
-                                                    console.error('Err', err);
-                                                    resolve({status: false});
-                                                });
-                                            }
+                for (const categoryKey in profileRes.framework) {
+                    if (profileRes.framework[categoryKey].length) {
+                        const request: CategoryRequest = {
+                            selectedLanguage: this.translate.currentLang,
+                            currentCategory: categoryKey
+                        };
+                        this.getCategoryData(request)
+                            .then((categoryList) => {
+                                console.log('categoryList in updateLoggedInUser', categoryList);
+                                keysLength++;
+                                profileRes.framework[categoryKey].forEach(element => {
+                                    if (categoryKey === 'gradeLevel') {
+                                        const codeObj = _.find(categoryList, (category) => category.name === element);
+                                        if (codeObj) {
+                                            profile['grade'].push(codeObj.code);
+                                            profile['gradeValueMap'][codeObj.code] = element;
+                                        }
+                                    } else {
+                                        const codeObj = _.find(categoryList, (category) => category.name === element);
+                                        if (codeObj) {
+                                            profile[categoryKey].push(codeObj.code);
                                         }
                                     }
                                 });
-                            } else {
-                                resolve({status: false});
-                            }
-                        } else {
-                            resolve({status: false});
-                        }
-                    });
+                                if (categoryKeysLen === keysLength) {
+                                    const req: Profile = new Profile();
+                                    req.board = profile.board;
+                                     req.grade = profile.grade;
+                                    req.medium = profile.medium;
+                                    req.subject = profile.subject;
+                                    req.gradeValueMap = profile.gradeValueMap;
+                                    req.uid = profileData.uid;
+                                    req.handle = profileData.uid;
+                                    req.profileType = profileData.profileType;
+                                    req.source = profileData.source;
+                                    req.createdAt = profileData.createdAt || this.formatDate();
+                                    this.preference.getString('current_framework_id')
+                                    .then(value => {
+                                        req.syllabus = [value];
+                                        this.profileService.updateProfile(req)
+                                        .then((res: any) => {
+                                            const updateProfileRes = JSON.parse(res);
+                                            this.events.publish('refresh:loggedInProfile');
+                                            if (updateProfileRes.board  && updateProfileRes.grade && updateProfileRes.medium &&
+                                                updateProfileRes.board.length && updateProfileRes.grade.length
+                                                && updateProfileRes.medium.length
+                                            ) {
+                                                resolve({status: true});
+                                            } else {
+                                                resolve({status: false, profile: updateProfileRes});
+                                            }
+                                        })
+                                        .catch((err: any) => {
+                                            console.error('Err', err);
+                                            resolve({status: false});
+                                        });
+                                    });
+                                }
+                            });
+                    } else {
+                        keysLength++;
+                    }
+                }
             } else {
                 resolve({status: false});
             }
