@@ -400,8 +400,11 @@ export class FormAndFrameworkUtilService {
                                 });
                                 if (categoryKeysLen === keysLength) {
                                     const req: Profile = new Profile();
+                                    if (profile.board && profile.board.length > 1) {
+                                      profile.board.splice(1, profile.board.length);
+                                    }
                                     req.board = profile.board;
-                                     req.grade = profile.grade;
+                                    req.grade = profile.grade;
                                     req.medium = profile.medium;
                                     req.subject = profile.subject;
                                     req.gradeValueMap = profile.gradeValueMap;
