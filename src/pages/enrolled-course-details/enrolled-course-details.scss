@@ -1,48 +1,41 @@
 page-enrolled-course-details {
-    .ion-ios-radio-button-off:before{
-        font-size: smaller;
+    .fontBold {
+        font-weight: bold;
     }
-    .ion-ios-checkmark-circle:before{
-        font-size: smaller;
-        color:#008000;
+    .ion-ios-radio-button-on:before {
+        color: darkgrey;
     }
-
+    .ion-ios-checkmark-circle:before {
+        color: #008000;
+    }
     .course-progress {
         position: absolute;
         width: 100%;
-        
         z-index: 10;
-  
         .progress-outer {
-          background-color: transparent !important;
+            background-color: transparent !important;
         }
-  
         .progress-inner {
-          min-width: unset !important;
-          padding: 2px !important;
+            min-width: unset !important;
+            padding: 2px !important;
         }
-  
-        .progress-inner-primary{
-          background-color: #FF9F00 !important;
+        .progress-inner-primary {
+            background-color: #FF9F00 !important;
         }
-  
         .progress-inner-secondary {
-          background-color: #7ED321 !important;
+            background-color: #7ED321 !important;
         }
-        
-      }
-      .blurbackground {
-        // background-color: gray !important;
-        .progress-inner-primary{
-            background-color: gray !important;
-          }
-    
-          .progress-inner-secondary {
-            background-color: gray !important;
-          }
     }
-
-      .loading-backdrop {
+    .blurbackground {
+        // background-color: gray !important;
+        .progress-inner-primary {
+            background-color: gray !important;
+        }
+        .progress-inner-secondary {
+            background-color: gray !important;
+        }
+    }
+    .loading-backdrop {
         .backdrop-container {
             width: 100%;
             padding: 16px;
@@ -51,26 +44,21 @@ page-enrolled-course-details {
             top: 50%;
             margin-top: -50px;
         }
-
         .backdrop-footer {
             position: absolute;
             width: 100%;
             bottom: 0;
             padding-bottom: 16px;
         }
-
         background-color: #ffffff;
         height: 100%;
         z-index: 1000;
         opacity: 1 !important;
     }
-
     .child-item {
         @include padding(null, null, null, 0 !important)
     }
-
-    .scroll-content { 
+    .scroll-content {
         margin-bottom: 0px !important;
     }
-
 }

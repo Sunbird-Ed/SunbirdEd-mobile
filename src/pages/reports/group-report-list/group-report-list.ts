@@ -3,19 +3,14 @@ import { NavController } from 'ionic-angular/navigation/nav-controller';
 import { Component, NgZone } from '@angular/core';
 import { NavParams, LoadingController } from 'ionic-angular';
 import {
-    ReportService, ReportSummary, PageId, Environment, InteractType, InteractSubtype, DeviceInfoService, ProfileType,
-    ProfileService, Profile, GroupService
-} from 'sunbird';
+    ReportService, ReportSummary, PageId, Environment, InteractType, InteractSubtype, DeviceInfoService, Profile} from 'sunbird';
 import { GroupReportAlert } from '../group-report-alert/group-report-alert';
 import { TranslateService } from '@ngx-translate/core';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 import { AppGlobalService } from '../../../service/app-global.service';
-import { ReportListPage } from '../report-list/report-list';
 import { UserReportPage } from '../user-report/user-report';
 import { File } from '@ionic-native/file';
 import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
-import { SocialSharing } from '@ionic-native/social-sharing';
-import { AppVersion } from '@ionic-native/app-version';
 import { DatePipe } from '@angular/common';
 
 
@@ -61,6 +56,7 @@ export class GroupReportListPage {
     group: any;
     groupinfo: any;
     downloadDirectory: any;
+    reportSummary: ReportSummary;
 
     constructor(
         private navParams: NavParams,
@@ -73,11 +69,7 @@ export class GroupReportListPage {
         private appGlobalService: AppGlobalService,
         private file: File,
         private datePipe: DatePipe,
-        private groupService: GroupService,
-        private appVersion: AppVersion,
-        private profileService: ProfileService,
         private deviceInfoService: DeviceInfoService,
-        private socialShare: SocialSharing,
         private navCtrl: NavController,
         private commonUtilService: CommonUtilService) {
         this.downloadDirectory = this.file.dataDirectory;
@@ -114,19 +106,19 @@ export class GroupReportListPage {
         const loader = this.loading.create({
             spinner: 'crescent'
         });
-        const reportSummary: ReportSummary = this.navParams.get('report');
-        this.contentName = reportSummary.name;
+        this.reportSummary = this.navParams.get('report');
+        this.contentName = this.reportSummary.name;
         const that = this;
         const uids = this.navParams.get('uids');
         const users = this.navParams.get('users');
         const params = {
             uids: uids,
-            contentId: reportSummary.contentId,
+            contentId: this.reportSummary.contentId,
             hierarchyData: null,
             qId: ''
         };
         if (fromUserList) {
-            params.uids = [reportSummary.uid];
+            params.uids = [this.reportSummary.uid];
         }
         if (event === 'users' && !this.fromUserAssessment) {
             this.reportType = event;
@@ -139,7 +131,7 @@ export class GroupReportListPage {
                     averageTime += report.totalTimespent;
                     averageScore += report.score;
                     report.totalTimespent = that.formatTime(report.totalTimespent);
-                    report.name = reportSummary.name;
+                    report.name = this.reportSummary.name;
                     that.reportService.getDetailReport([report.uid], report.contentId)
                         .then(reportsMap => {
                             const data1 = reportsMap.get(report.uid);
@@ -159,9 +151,9 @@ export class GroupReportListPage {
                             });
                             report.assessmentData = rows;
                         })
-                        .catch(err => {
-                            loader.dismiss();
-                        });
+                        .catch(() => {
+                                loader.dismiss();
+                            });
                 });
                 this.response = data;
                 averageScore = (averageScore / data.length).toFixed(2);
@@ -324,7 +316,7 @@ export class GroupReportListPage {
     importcsv() {
         this.exptime = new Date().getTime();
         const csv: any = this.convertToCSV();
-        const combinefilename = this.deviceId + '_' + this.groupinfo.gid + '_' + this.response[0].content_id + '_' + this.exptime + '.csv';
+        const combinefilename = this.deviceId + '_' + this.groupinfo.gid + '_' + this.reportSummary.contentId + '_' + this.exptime + '.csv';
         this.file.writeFile(this.downloadDirectory, combinefilename, csv)
             .then(
                 _ => {
@@ -332,16 +324,12 @@ export class GroupReportListPage {
                 }
             )
             .catch(
-                err => {
+                () => {
                     this.file.writeExistingFile(this.downloadDirectory, combinefilename, csv)
-                        .then(
-                            _ => {
-                                this.commonUtilService.showToast(this.translateMessage
-                                    ('CSV_DOWNLOAD_SUCCESS', combinefilename), false, 'custom-toast');
-
-
-                            }
-                        )
+                        .then(_ => {
+                            this.commonUtilService.showToast(this.translateMessage('CSV_DOWNLOAD_SUCCESS', combinefilename),
+                            false, 'custom-toast');
+                        })
                         .catch();
                 }
             );

@@ -20,6 +20,7 @@ import { CommonUtilService } from '@app/service';
 export class UserReportPage {
   profile: any;
   downloadDirectory: string;
+  reportSummary: ReportSummary;
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -108,12 +109,12 @@ export class UserReportPage {
 
     const that = this;
 
-    const reportSummary: ReportSummary = this.navParams.get('report');
-    this.contentName = reportSummary.name;
+    this.reportSummary = this.navParams.get('report');
+    this.contentName = this.reportSummary.name;
 
-    that.reportService.getDetailReport([reportSummary.uid], reportSummary.contentId)
+    that.reportService.getDetailReport([this.reportSummary.uid], this.reportSummary.contentId)
       .then(reportsMap => {
-        const data = reportsMap.get(reportSummary.uid);
+        const data = reportsMap.get(this.reportSummary.uid);
         const rows = data.reportDetailsList.map(row => {
           this.response = data.reportDetailsList;
           return {
@@ -161,7 +162,7 @@ export class UserReportPage {
     for (let m = 0; m < anzahlTeams; m++) {
       line += 'Device ID' + '\t' + this.deviceId + '\n';
       line += 'User name (User ID)' + '\t' + this.profile.handle + '(' + this.profile.uid + ')' + '\n';
-      line += 'Content name (Content ID)' + '\t' + teams[0].qtitle + teams[0].contentId + '\n';
+      line += 'Content name (Content ID)' + '\t' + this.reportSummary.name + '(' + this.reportSummary.contentId + ')' + '\n';
       line += 'Content started time' + '\t' + contentstarttime + '\n';
       line += 'File export time' + '\t' + filexptime + '\n';
       line += '\n\n';

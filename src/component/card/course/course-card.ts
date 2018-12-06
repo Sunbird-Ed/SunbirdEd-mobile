@@ -10,10 +10,10 @@ import {
 import { EnrolledCourseDetailsPage } from '../../../pages/enrolled-course-details/enrolled-course-details';
 import { CollectionDetailsPage } from '../../../pages/collection-details/collection-details';
 import { ContentDetailsPage } from '../../../pages/content-details/content-details';
-import { ContentType, MimeType, ContentCard } from '../../../app/app.constant';
+import { ContentType, MimeType, ContentCard, PreferenceKey } from '../../../app/app.constant';
 import { CourseUtilService } from '../../../service/course-util.service';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
-import { InteractType, InteractSubtype, TelemetryObject } from 'sunbird';
+import { InteractType, InteractSubtype, TelemetryObject, SharedPreferences } from 'sunbird';
 
 /**
  * The course card component
@@ -65,7 +65,8 @@ export class CourseCard implements OnInit {
   constructor(public navCtrl: NavController,
     private courseUtilService: CourseUtilService,
     private events: Events,
-    private telemetryGeneratorService: TelemetryGeneratorService) {
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private preference: SharedPreferences) {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
 
@@ -97,6 +98,7 @@ export class CourseCard implements OnInit {
       telemetryObject,
       values);
     if (layoutName === this.layoutInProgress || content.contentType === ContentType.COURSE) {
+      this.saveContentContext(content);
       this.navCtrl.push(EnrolledCourseDetailsPage, {
         content: content
       });
@@ -117,6 +119,7 @@ export class CourseCard implements OnInit {
   }
 
   resumeCourse(content: any) {
+    this.saveContentContext(content);
     if (content.lastReadContentId && content.status === 1) {
       this.events.publish('course:resume', {
         content: content
@@ -133,6 +136,18 @@ export class CourseCard implements OnInit {
       this.course.cProgress = (this.courseUtilService.getCourseProgress(this.course.leafNodesCount, this.course.progress));
       this.course.cProgress = parseInt(this.course.cProgress, 10);
     }
+  }
+
+
+  saveContentContext(content: any) {
+    const contentContextMap = new Map();
+    // store content context in the below map
+    contentContextMap['userId'] = content.userId;
+    contentContextMap['courseId'] = content.courseId;
+    contentContextMap['batchId'] = content.batchId;
+
+    // store the contentContextMap in shared preference and access it from SDK
+    this.preference.putString(PreferenceKey.CONTENT_CONTEXT, JSON.stringify(contentContextMap));
   }
 }
 

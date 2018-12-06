@@ -49,7 +49,7 @@
 			</ion-row>
 		</ion-grid>
 	</div>
-	<div class="course-scroll-holder" [ngClass]="{'empty-saved-resources' : (localResources && localResources.length === 0 || showLoader)}"
+	<!-- <div class="course-scroll-holder" [ngClass]="{'empty-saved-resources' : (localResources && localResources.length === 0 || showLoader)}"
 	 *ngIf="localResources && localResources.length">
 		<div class="item padding-11">
 			<span float-start class="scroll-heading">{{ 'RECENTLY_VIEWED' | translate }}</span>
@@ -63,7 +63,7 @@
 				<course-card *ngFor="let item of localResources; let i=index"  [env]="'home'" [index]="i"  [sectionName]="recentViewedSection" [course]="item?.contentData" [layoutName]="layoutSavedContent"></course-card>
 			</div>
 		</ion-scroll>
-	</div>
+	</div> -->
 	<div class="devider-line"></div>
 	<div *ngFor="let items of storyAndWorksheets">
 		<div *ngIf="items?.contents">

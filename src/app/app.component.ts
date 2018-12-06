@@ -48,7 +48,8 @@ import {
   MimeType,
   ContentType,
   PreferenceKey,
-  GenericAppConfig
+  GenericAppConfig,
+  EventTopics
 } from './app.constant';
 import { EnrolledCourseDetailsPage } from '../pages/enrolled-course-details/enrolled-course-details';
 import { ProfileConstants } from './app.constant';
@@ -59,6 +60,7 @@ import { CommonUtilService } from '../service/common-util.service';
 import { TelemetryGeneratorService } from '../service/telemetry-generator.service';
 import { PopoverController } from 'ionic-angular';
 import { BroadcastComponent } from '../component/broadcast/broadcast';
+import { CategoriesEditPage } from '@app/pages/categories-edit/categories-edit';
 
 declare var chcp: any;
 
@@ -195,28 +197,40 @@ export class MyApp {
               }
             });
         } else {
-          initTabs(that.containerService, LOGIN_TEACHER_TABS);
-          const sessionObj = JSON.parse(session);
-          this.preference.getString('SHOW_WELCOME_TOAST')
-            .then(success => {
-              if (success === 'true') {
-                that.preference.putString('SHOW_WELCOME_TOAST', 'false');
-                const req = {
-                  userId: sessionObj[ProfileConstants.USER_TOKEN],
-                  requiredFields: ProfileConstants.REQUIRED_FIELDS,
-                  refreshUserProfileDetails: true
-                };
-
-                that.userProfileService.getUserProfileDetails(req, res => {
-                  setTimeout(() => {
-                    this.commonUtilService.showToast(this.commonUtilService.translateMessage('WELCOME_BACK', JSON.parse(res).firstName));
-                  }, 2500);
-                }, () => {
+          this.profileService.getCurrentUser().then((profile: any) => {
+            profile = JSON.parse(profile);
+            if (profile
+              && profile.syllabus && profile.syllabus[0]
+              && profile.board && profile.board.length
+              && profile.grade && profile.grade.length
+              && profile.medium && profile.medium.length) {
+              initTabs(that.containerService, LOGIN_TEACHER_TABS);
+              const sessionObj = JSON.parse(session);
+              this.preference.getString('SHOW_WELCOME_TOAST')
+                .then(success => {
+                  if (success === 'true') {
+                    that.preference.putString('SHOW_WELCOME_TOAST', 'false');
+                    const req = {
+                      userId: sessionObj[ProfileConstants.USER_TOKEN],
+                      requiredFields: ProfileConstants.REQUIRED_FIELDS,
+                      refreshUserProfileDetails: true
+                    };
+                    that.userProfileService.getUserProfileDetails(req, res => {
+                      setTimeout(() => {
+                        this.commonUtilService
+                        .showToast(this.commonUtilService.translateMessage('WELCOME_BACK', JSON.parse(res).firstName));
+                      }, 2500);
+                    }, () => {
+                    });
+                  }
                 });
-              }
-            });
 
-          that.rootPage = TabsPage;
+              that.rootPage = TabsPage;
+            } else {
+              that.nav.setRoot(CategoriesEditPage, {showOnlyMandatoryFields: true});
+            }
+          });
+
         }
 
         (<any>window).splashscreen.hide();
@@ -393,8 +407,10 @@ export class MyApp {
     this.events.subscribe('generic.event', (data) => {
       this.zone.run(() => {
         const response = JSON.parse(data);
-        const action = JSON.parse(response.data.action);
-
+        let action;
+        try {
+          action = JSON.parse(response.data.action);
+        } catch (Error) {  }
         if (response && response.data.action && response.data.action === 'logout') {
           this.authService.getSessionData((session) => {
             if (session) {
@@ -425,6 +441,10 @@ export class MyApp {
           console.log('connected to openrap device with the IP ' + action.ip);
         } else if (response && action && action.actionType === 'disconnected') {
           console.log('disconnected from openrap device with the IP ' + action.ip);
+        } else if (response && response.data.action && response.data.action === EventTopics.COURSE_STATUS_UPDATED_SUCCESSFULLY) {
+          this.events.publish(EventTopics.COURSE_STATUS_UPDATED_SUCCESSFULLY, {
+            update: true
+          });
         }
       });
     });

@@ -140,7 +140,6 @@ export class GuestEditProfilePage {
         subjects: [this.profile.subject || []]
       });
     }
-
     this.profileForTelemetry = this.profile;
   }
 
@@ -219,7 +218,7 @@ export class GuestEditProfilePage {
       subjects: [],
       medium: []
     });
-  }
+   }
 
   /**
    * It will Dismiss active popup
@@ -318,6 +317,7 @@ export class GuestEditProfilePage {
       this[currentField] = this.syllabusList;
     } else if (index === 1) {
       this.frameworkId = prevSelectedValue[0];
+      if (this.frameworkId.length !== 0) {
       this.formAndFrameworkUtilService.getFrameworkDetails(this.frameworkId)
         .then(catagories => {
           this.categories = catagories;
@@ -333,6 +333,7 @@ export class GuestEditProfilePage {
           this.isFormValid = false;
           this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
         });
+      }
 
     } else {
       const request: CategoryRequest = {
@@ -438,7 +439,7 @@ export class GuestEditProfilePage {
     if (formVal.userType === '') {
       this.commonUtilService.showToast('USER_TYPE_SELECT_WARNING');
       return false;
-    } else if (!formVal.name) {
+    } else if (formVal.name[0] === '' || !formVal.name) {
       this.commonUtilService.showToast(
         this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService.translateMessage('FULL_NAME')), false, 'red-toast');
     } else if (formVal.boards.length === 0) {

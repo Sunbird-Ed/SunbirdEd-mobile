@@ -427,25 +427,33 @@ export class FormAndFrameworkUtilService {
 
                                                 this.profileService.updateProfile(req)
                                                 .then((res: any) => {
+                                                    const updateRes = JSON.parse(res);
                                                     this.events.publish('refresh:loggedInProfile');
-                                                    resolve();
+                                                    if (updateRes.board  && updateRes.grade && updateRes.medium
+                                                        && updateRes.board.length && updateRes.grade.length && updateRes.medium.length
+                                                    ) {
+                                                        resolve({status: true});
+                                                    } else {
+                                                        resolve({status: false, profile: updateRes});
+                                                    }
                                                 })
                                                 .catch((err: any) => {
                                                     console.error('Err', err);
+                                                    resolve({status: false});
                                                 });
                                             }
                                         }
                                     }
                                 });
                             } else {
-                                resolve();
+                                resolve({status: false});
                             }
                         } else {
-                            resolve();
+                            resolve({status: false});
                         }
                     });
             } else {
-                reject();
+                resolve({status: false});
             }
         });
 
