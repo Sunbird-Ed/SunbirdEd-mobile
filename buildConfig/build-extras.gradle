@@ -134,7 +134,7 @@ android {
             buildConfigField 'String', 'ANNOUNCEMENT_BASE_URL', "\"${dev_base_url+"/api/announcement/v1"}\""
             buildConfigField 'String', 'FORM_SERVICE_BASE_URL', "\"${dev_base_url+"/api/data/v1"}\""
             buildConfigField 'String', 'DIALCODE_SERVICE_BASE_URL', "\"${dev_base_url+"/api/dialcode/v1"}\""
-            buildConfigField 'String', 'DEVICE_REGISTER_BASE_URL', "\"${dev_base_url+"/v3/device/"}\""
+            buildConfigField 'String', 'DEVICE_REGISTER_BASE_URL', "\"${dev_device_register_base_url+"/v3/device"}\""
             buildConfigField 'String', 'PRODUCER_UNIQUE_ID', '"sunbird.app"'
             buildConfigField 'String', 'PRODUCER_ID', "\"${dev_producer_id}\""
             buildConfigField 'String', 'CHANNEL_ID', "\"${dev_channel_id}\""
@@ -171,7 +171,7 @@ android {
             buildConfigField 'String', 'ANNOUNCEMENT_BASE_URL', "\"${staging_base_url+"/api/announcement/v1"}\""
             buildConfigField 'String', 'FORM_SERVICE_BASE_URL', "\"${staging_base_url+"/api/data/v1"}\""
             buildConfigField 'String', 'DIALCODE_SERVICE_BASE_URL', "\"${staging_base_url+"/api/dialcode/v1"}\""
-            buildConfigField 'String', 'DEVICE_REGISTER_BASE_URL', "\"${staging_base_url+"/v3/device/"}\""
+            buildConfigField 'String', 'DEVICE_REGISTER_BASE_URL', "\"${staging_device_register_base_url+"/v3/device"}\""
             buildConfigField 'String', 'PRODUCER_UNIQUE_ID', '"sunbird.app"'
             buildConfigField 'String', 'PRODUCER_ID', "\"${staging_producer_id}\""
             buildConfigField 'String', 'CHANNEL_ID', "\"${staging_channel_id}\""
@@ -207,7 +207,7 @@ android {
             buildConfigField 'String', 'ANNOUNCEMENT_BASE_URL', "\"${production_base_url+"/api/announcement/v1"}\""
             buildConfigField 'String', 'FORM_SERVICE_BASE_URL', "\"${production_base_url+"/api/data/v1"}\""
             buildConfigField 'String', 'DIALCODE_SERVICE_BASE_URL', "\"${production_base_url+"/api/dialcode/v1"}\""
-            buildConfigField 'String', 'DEVICE_REGISTER_BASE_URL', "\"${production_base_url+"/v3/device/"}\""
+            buildConfigField 'String', 'DEVICE_REGISTER_BASE_URL', "\"${production_device_register_base_url+"/v3/device"}\""
             buildConfigField 'String', 'PRODUCER_UNIQUE_ID', '"sunbird.app"'
             buildConfigField 'String', 'PRODUCER_ID', "\"${production_producer_id}\""
             buildConfigField 'String', 'CHANNEL_ID', "\"${production_channel_id}\""
@@ -318,8 +318,8 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile "org.ekstep.genieservices:genie-providers:1.0.870"
-    compile "org.ekstep.genieservices:genie-integration:1.0.870"
+    compile "org.ekstep.genieservices:genie-providers:1.0.873"
+    compile "org.ekstep.genieservices:genie-integration:1.0.873"
     compile ("com.google.android.gms:play-services-analytics:9.4.0")
     compile('com.crashlytics.sdk.android:crashlytics:2.9.4@aar') {
           transitive = true;
