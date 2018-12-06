@@ -27,7 +27,7 @@
 
     <div padding-horizontal text-center class="roles-container">
         <div class="MB5" text-center *ngFor="let role of roles | slice : startLimit:rolesLimit;">
-            <div class="roles">
+            <div class="roles" *ngIf="role !== 'Public'">
                 {{role}}
             </div>
         </div>
