@@ -5,13 +5,13 @@
 		</ion-title>
 		<ion-buttons end>
 			<button ion-button icon-only (click)="scanQRCode()" id="qrIcon">
-				<img src="assets/imgs/ic_scanqr.png" class="tool-icon" float-end/>
+				<img src="assets/imgs/ic_scanqr.png" class="tool-icon" float-end />
 			</button>
 			<button ion-button icon-only (click)="search()">
-				<img src="assets/imgs/ic_action_search.png" class="tool-icon" float-end/>
+				<img src="assets/imgs/ic_action_search.png" class="tool-icon" float-end />
 			</button>
 			<button ion-button icon-only (click)="showFilter()">
-				<img [src]="filterIcon" class="tool-icon" float-end/>
+				<img [src]="filterIcon" class="tool-icon" float-end />
 			</button>
 		</ion-buttons>
 	</ion-navbar>
@@ -37,7 +37,8 @@
 		<ion-scroll *ngIf="localResources && localResources?.length && !showLoader" scrollX="true" style="width: 100%; height: 166px;"
 		 no-padding>
 			<div class="inner inprogress-courses">
-				<course-card *ngFor="let item of localResources; let i=index"  [env]="'home'" [index]="i"  [sectionName]="savedResourcesSection" [course]="item?.contentData" [layoutName]="layoutSavedContent"></course-card>
+				<course-card *ngFor="let item of localResources; let i=index" [env]="'home'" [index]="i" [sectionName]="savedResourcesSection"
+				 [course]="item?.contentData" [layoutName]="layoutSavedContent"></course-card>
 			</div>
 		</ion-scroll>
 		<ion-spinner *ngIf="showLoader" padding style="padding-top: 100px;"></ion-spinner>
@@ -49,21 +50,23 @@
 			</ion-row>
 		</ion-grid>
 	</div>
-	<!-- <div class="course-scroll-holder" [ngClass]="{'empty-saved-resources' : (localResources && localResources.length === 0 || showLoader)}"
-	 *ngIf="localResources && localResources.length">
+	<div class="course-scroll-holder" [ngClass]="{'empty-saved-resources' : (recentlyViewedResources && recentlyViewedResources.length === 0 || showLoader)}"
+	 *ngIf="recentlyViewedResources && recentlyViewedResources.length">
 		<div class="item padding-11">
 			<span float-start class="scroll-heading">{{ 'RECENTLY_VIEWED' | translate }}</span>
-			<span float-end class="view-all-link" *ngIf="localResources && localResources.length > 0 && !showLoader" (click)="navigateToViewMoreContentsPage(recentViewedSection);">
+			<span float-end class="view-all-link" *ngIf="recentlyViewedResources && recentlyViewedResources.length > 0 && !showLoader"
+			 (click)="navigateToViewMoreContentsPage(recentViewedSection);">
 				<a>{{ 'VIEW_ALL' | translate }}</a>
 			</span>
 		</div>
-		<ion-scroll *ngIf="localResources && localResources?.length && !showLoader" scrollX="true" style="width: 100%; height: 166px;"
+		<ion-scroll *ngIf="recentlyViewedResources && recentlyViewedResources?.length && !showLoader" scrollX="true" style="width: 100%; height: 166px;"
 		 no-padding>
 			<div class="inner inprogress-courses">
-				<course-card *ngFor="let item of localResources; let i=index"  [env]="'home'" [index]="i"  [sectionName]="recentViewedSection" [course]="item?.contentData" [layoutName]="layoutSavedContent"></course-card>
+				<course-card *ngFor="let item of recentlyViewedResources; let i=index" [env]="'home'" [index]="i" [sectionName]="recentViewedSection"
+				 [course]="item?.contentData" [layoutName]="layoutSavedContent"></course-card>
 			</div>
 		</ion-scroll>
-	</div> -->
+	</div>
 	<div class="devider-line"></div>
 	<div *ngFor="let items of storyAndWorksheets">
 		<div *ngIf="items?.contents">
@@ -76,7 +79,8 @@
 				</div>
 				<ion-scroll scrollX="true" style="width: 100%; height: 166px;" no-padding>
 					<div class="inner">
-						<course-card *ngFor="let item of items?.contents; let i=index" [env]="'home'" [index]="i" [sectionName]="items.name" [course]="item" [pageName]="'library'" [layoutName]="layoutPopular">
+						<course-card *ngFor="let item of items?.contents; let i=index" [env]="'home'" [index]="i" [sectionName]="items.name"
+						 [course]="item" [pageName]="'library'" [layoutName]="layoutPopular">
 						</course-card>
 					</div>
 				</ion-scroll>
@@ -96,7 +100,8 @@
 			<b>{{ 'NO_INTERNET_TITLE' | translate }}</b>
 		</h6>
 		<p color="dark_gray">{{ 'OFFLINE_WARNING' | translate }}</p>
-		<b ion-text text-uppercase color="primary" (click)="checkNetworkStatus(true); showOfflineNetworkWarning();">{{'RETRY_ACTION' | translate}}</b>
+		<b ion-text text-uppercase color="primary" (click)="checkNetworkStatus(true); showOfflineNetworkWarning();">{{'RETRY_ACTION'
+			| translate}}</b>
 	</div>
 	<div *ngIf="showSignInCard" class="signin-card-bg">
 		<sign-in-card (valueChange)="showOfflineNetworkWarning($event)" [source]="source"></sign-in-card>

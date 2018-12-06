@@ -817,10 +817,11 @@ export class ContentDetailsPage {
       });
 
       if (isStreaming) {
+        const playContent = JSON.parse(this.content.playContent);
         const req: ContentMarkerRequest = {
           uid: this.appGlobalService.getCurrentUser().uid,
           contentId: this.identifier,
-          data: JSON.stringify(this.content),
+          data: JSON.stringify(playContent.contentData),
           marker: MarkerType.PREVIEWED,
           isMarked: true
         };

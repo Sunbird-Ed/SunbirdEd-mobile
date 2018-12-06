@@ -62,6 +62,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   showSignInCard = false;
   showWarning = false;
   localResources: Array<any>;
+  recentlyViewedResources: Array<any>;
   userId: string;
   showLoader = false;
 
@@ -121,6 +122,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.events.subscribe('savedResources:update', (res) => {
       if (res && res.update) {
         this.setSavedContent();
+        this.loadRecentlyViewedContent();
       }
     });
     this.events.subscribe('event:showScanner', (data) => {
@@ -167,6 +169,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 	 */
   ngOnInit() {
     this.setSavedContent();
+    this.loadRecentlyViewedContent();
   }
 
   ngAfterViewInit() {
@@ -193,6 +196,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       this.audienceFilter = AudienceFilter.GUEST_STUDENT;
     }
     this.setSavedContent();
+    this.loadRecentlyViewedContent();
     this.profile = this.appGlobalService.getCurrentUser();
   }
 
@@ -201,6 +205,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     let headerTitle;
     let pageName;
     let showDownloadOnlyToggleBtn;
+    const uid = this.profile ? this.profile.uid : undefined;
     if (section === this.savedResourcesSection) {
       values['SectionName'] = this.savedResourcesSection;
       headerTitle = 'SAVED_RESOURCES';
@@ -219,7 +224,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.navCtrl.push(ViewMoreActivityPage, {
       headerTitle: headerTitle,
       pageName: pageName,
-      showDownloadOnlyToggle: showDownloadOnlyToggleBtn
+      showDownloadOnlyToggle: showDownloadOnlyToggleBtn,
+      uid: uid,
+      audience: this.audienceFilter,
     });
   }
 
@@ -280,6 +287,37 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         });
       });
     // }
+  }
+
+  /**
+	 * Load/get recently viewed content
+	 */
+  loadRecentlyViewedContent() {
+    this.showLoader = true;
+    const requestParams: ContentFilterCriteria = {
+      uid: this.profile ? this.profile.uid : undefined,
+      contentTypes: ContentType.FOR_RECENTLY_VIEWED,
+      audience: this.audienceFilter,
+      recentlyViewed: true
+    };
+    this.contentService.getAllLocalContents(requestParams)
+      .then(data => {
+        _.forEach(data, (value) => {
+          value.contentData.lastUpdatedOn = value.lastUpdatedTime;
+          if (value.contentData.appIcon) {
+            value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
+          }
+        });
+        this.ngZone.run(() => {
+          this.recentlyViewedResources = data;
+          this.showLoader = false;
+        });
+      })
+      .catch(() => {
+        this.ngZone.run(() => {
+          this.showLoader = false;
+        });
+      });
   }
 
   /**
@@ -480,6 +518,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       const res = JSON.parse(data);
       if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
         this.setSavedContent();
+        this.loadRecentlyViewedContent();
       }
     });
   }
@@ -496,6 +535,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
     this.storyAndWorksheets = [];
     this.setSavedContent();
+    this.loadRecentlyViewedContent();
     this.guestUser = !this.appGlobalService.isUserLoggedIn();
 
     if (this.guestUser) {
