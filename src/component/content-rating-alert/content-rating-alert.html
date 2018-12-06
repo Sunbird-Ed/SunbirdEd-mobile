@@ -4,7 +4,7 @@
       <ion-col col-10>
         <div>
           <p class="title heading1">{{ 'ENJOYED_THIS_CONTENT' | translate }}</p>
-          <p class="text-gray-color">{{ 'HELP_US_BY_RATING' | translate }} {{content.name}}</p>
+          <p class="text-gray-color">{{ 'HELP_US_BY_RATING' |  translate:{'%s': content.name} }}</p>
         </div>
       </ion-col>
       <ion-col col-2>
