@@ -45,6 +45,9 @@ export class UserReportPage {
       })
       .catch();
   }
+  totalScore;
+  maxTotalScore;
+  totalTime;
   assessmentData;
   columns = [
     {
@@ -138,6 +141,9 @@ export class UserReportPage {
           that.assessmentData = data;
           that.assessmentData['showPopup'] = true;
           that.assessmentData['popupCallback'] = ReportAlert;
+          this.totalScore = data.totalScore;
+          this.maxTotalScore = data.maxTotalScore;
+          this.totalTime = data.totalTime;
         });
       })
       .catch(err => {
@@ -156,28 +162,30 @@ export class UserReportPage {
     const that = this;
     const values = this.response;
     const anzahlTeams = values.length;
-
+    const totalTimespent =  values.totalTimespent;
     const filexptime = this.datePipe.transform(new Date(this.exptime), 'dd-MM-yyyy hh:mm:ss a');
     const contentstarttime = this.datePipe.transform(new Date(teams[0].timestamp), 'dd-MM-yyyy hh:mm:ss a');
     for (let m = 0; m < anzahlTeams; m++) {
-      line += 'Device ID' + '\t' + this.deviceId + '\n';
-      line += 'User name (User ID)' + '\t' + this.profile.handle + '(' + this.profile.uid + ')' + '\n';
-      line += 'Content name (Content ID)' + '\t' + this.reportSummary.name + '(' + this.reportSummary.contentId + ')' + '\n';
-      line += 'Content started time' + '\t' + contentstarttime + '\n';
-      line += 'File export time' + '\t' + filexptime + '\n';
+      line += 'Device ID' + '   ' + this.deviceId + '\n';
+      line += 'User name (User ID)' + '   ' + this.profile.handle + '(' + this.profile.uid + ')' + '\n';
+      line += 'Content name (Content ID)' + '   ' + this.reportSummary.name + '(' + this.reportSummary.contentId + ')' + '\n';
+      line += 'Content started time' + '   ' + contentstarttime + '\n';
+      line += 'Total Time' + '   ' + this.formatTime(this.totalTime) + '\n';
+      line += 'Total Score' + '   ' + this.totalScore + '/' + this.maxTotalScore  + '\n';
+      line += 'File export time' + '   ' + filexptime + '\n';
       line += '\n\n';
-      line += 'Question#' + '\t\t';
-      line += 'QuestionId' + '\t\t';
-      line += 'Score' + '\t\t';
+      line += 'Question#' + ',';
+      line += 'QuestionId' + ',';
+      line += 'Score' + ',';
       line += 'Time' + '\n';
       break;
     }
     line += '\n';
     for (let j = 0; j < anzahlTeams - 1; j++) {
-      line +=  '\"' + values[j].qtitle + '\"' + '\t\t';
-      line +=  '\"' + values[j].qid + '\"' + '\t\t';
-      line +=  '\"' + values[j].score + '/' + values[j].maxScore + '\"' + '\t\t';
-      line +=  '\"' + that.formatTime(values[j].timespent) + '\"' + '\n';
+      line +=  '\"' + values[j].qtitle + '\"' + ',';
+      line +=  '\"' + values[j].qid + '\"' + ',';
+      line +=  '\"' + values[j].score + '/' + values[j].maxScore + '\"' + ',';
+      line +=  '\"' + values[j].timespent + '\"' + '\n';
     }
     csv += line + '\n';
     return csv;
