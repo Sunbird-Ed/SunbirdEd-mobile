@@ -8,6 +8,7 @@ jobs:
       - run: sudo apt install curl
       - run: curl -sL https://deb.nodesource.com/setup_10.x | sudo bash -
       - run: sudo apt install nodejs
+      - run: sudo npm i node-sass
       - run: sudo npm install -g ionic cordova
       - run:
           name: run build file
