@@ -821,6 +821,7 @@ export class CollectionDetailsPage {
       content: this.contentDetail,
       isChild: this.isDepthChild,
       objRollup: this.objRollup,
+      pageName: PageId.COLLECTION_DETAIL,
       corRelationList: this.corRelationList
     }, {
         cssClass: 'content-action'

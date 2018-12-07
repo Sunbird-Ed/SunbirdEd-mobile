@@ -649,7 +649,7 @@ export class SearchPage {
         this.checkParent(dialCodeResultObj.dialCodeResult[0], dialCodeResultObj.dialCodeResult[0].content[0]);
         isParentCheckStarted = true;
       }
-
+      this.generateQRScanSuccessInteractEvent((contentArray ? contentArray.length : 0), this.dialCode);
       if (contentArray && contentArray.length === 1 && !isParentCheckStarted) {
         this.isSingleContent = true;
         this.openContent(contentArray[0], contentArray[0], 0);
@@ -737,11 +737,11 @@ export class SearchPage {
     }
   }
 
-  generateQRScanSuccessInteractEvent(dialCodeResult, dialCode) {
+  generateQRScanSuccessInteractEvent(dialCodeResultCount, dialCode) {
     const values = new Map();
     values['networkAvailable'] = this.commonUtilService.networkInfo.isNetworkAvailable ? 'Y' : 'N';
     values['scannedData'] = dialCode;
-    values['count'] = dialCodeResult.length;
+    values['count'] = dialCodeResultCount;
 
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.OTHER,
