@@ -221,7 +221,7 @@
 			translate:{'%s': content?.size
 			| fileSize}) }}
 		</button>
-		<button ion-button block *ngIf="content?.downloadable" (click)="showSwitchUserAlert(content)" text-uppercase
+		<button ion-button block *ngIf="content?.downloadable" (click)="showSwitchUserAlert(false)" text-uppercase
 		 [disabled]="isDownloadStarted">{{'PLAY_FROM_DEVICE'| translate}}</button>
 	</ion-toolbar>
 </ion-footer>

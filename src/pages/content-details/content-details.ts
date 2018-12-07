@@ -152,7 +152,7 @@ export class ContentDetailsPage {
   ) {
 
     this.objRollup = new Rollup();
-    this.userId = this.appGlobalService.getUserId();
+    // this.userId = this.appGlobalService.getUserId();
     this.subscribePlayEvent();
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
@@ -733,6 +733,7 @@ export class ContentDetailsPage {
         if (!this.isUpdateAvail) {
           this.content.downloadable = false;
         }
+        this.telemetryGeneratorService.generateContentCancelClickedTelemetry(this.content, this.downloadProgress);
       });
     }).catch((error: any) => {
       this.zone.run(() => {
@@ -767,7 +768,7 @@ export class ContentDetailsPage {
             handler: () => {
               const playConfig: any = {};
               playConfig.playContent = true;
-              playConfig.streaming = true;
+              playConfig.streaming = isStreaming;
               this.navCtrl.push(UserAndGroupsPage, {
                 playConfig: playConfig
               });
@@ -827,14 +828,15 @@ export class ContentDetailsPage {
         };
         this.contentService.setContentMarker(req)
           .then((resp) => {
-            console.log('success');
           }).catch((err) => {
-            console.log('error');
           });
       }
       this.downloadAndPlay = false;
       const request: any = {};
-      request.streaming = isStreaming;
+      if (isStreaming) {
+        request.streaming = isStreaming;
+      }
+
       (<any>window).geniecanvas.play(this.content.playContent, JSON.stringify(request));
     }
   }
@@ -871,6 +873,7 @@ export class ContentDetailsPage {
       content: this.content,
       isChild: this.isChildContent,
       objRollup: this.objRollup,
+      pageName: PageId.CONTENT_DETAIL,
       corRelationList: this.corRelationList
     }, {
         cssClass: 'content-action'

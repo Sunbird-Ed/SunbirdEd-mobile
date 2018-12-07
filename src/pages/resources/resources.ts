@@ -196,8 +196,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       this.audienceFilter = AudienceFilter.GUEST_STUDENT;
     }
     this.setSavedContent();
-    this.loadRecentlyViewedContent();
     this.profile = this.appGlobalService.getCurrentUser();
+    this.loadRecentlyViewedContent();
   }
 
   navigateToViewMoreContentsPage(section: string) {
