@@ -1,123 +1,100 @@
-import { TelemetryGeneratorService } from './../../../service/telemetry-generator.service';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { NavController } from 'ionic-angular';
-import { NavParams } from 'ionic-angular';
-import { LoadingController } from 'ionic-angular';
-import { ReportService, ContentService, ServiceProvider, TelemetryService, ImpressionType, PageId, Environment } from 'sunbird';
-import { ReportSummary } from 'sunbird';
 import { ReportListPage } from './report-list';
-import { mockres } from './reportList.spec.data';
-import { } from 'jasmine';
-import { TranslateModule } from '@ngx-translate/core';
-import { NavControllerMock, LoadingControllerMock, NavParamsMock , NavMock } from '../../../../test-config/mocks-ionic';
-describe('ReportListPage', () => {
-    let comp: ReportListPage;
-    let fixture: ComponentFixture<ReportListPage>;
+import {
+    navCtrlMock,
+    navParamsMock,
+    zoneMock,
+    contentServiceMock,
+    loadingControllerMock,
+    reportServiceMock,
+    telemetryGeneratorServiceMock
+} from '../../../__tests__/mocks';
+import { UserReportPage } from '../user-report/user-report';
+import { GroupReportListPage } from '../group-report-list/group-report-list';
+
+describe.only('CourseBatchesPage', () => {
+    let reportListPage: ReportListPage;
+
+    beforeAll(() => {
+
+    });
 
     beforeEach(() => {
+        reportListPage = new ReportListPage(
+            navCtrlMock as any, 
+            navParamsMock as any,
+            loadingControllerMock as any,
+            reportServiceMock as any,
+            zoneMock as any,
+            contentServiceMock as any,
+            telemetryGeneratorServiceMock as any
+        );
 
-        TestBed.configureTestingModule({
-            imports: [TranslateModule.forRoot()],
-            declarations: [ReportListPage],
-            schemas: [NO_ERRORS_SCHEMA],
-            providers: [ContentService, ServiceProvider, ReportService, ReportSummary, TelemetryGeneratorService, TelemetryService,
-                { provide: NavController, useClass: NavMock },
-                { provide: NavParams, useClass: NavParamsMock },
-                { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() },
-            ]
+        jest.resetAllMocks();
+    });
+
+    it('can load instance', () => {
+        expect(reportListPage).toBeTruthy();
+    });
+
+    it('date formate check', () => {
+        expect(reportListPage.formatTime(1543918834812)).toMatch(/^[0-9]*:[0-9]{2}$/);
+    });
+
+    
+    it('isFromGroups true, check push call', () => {
+        reportListPage.isFromGroups = true;
+        spyOn(navCtrlMock, 'push');
+        reportListPage.goToGroupReportsList({ contentId: 'ID1231231' } as any);
+        expect(navCtrlMock.push).toBeCalledWith(GroupReportListPage, {
+            report: { contentId: 'ID1231231' } as any
         });
-        fixture = TestBed.createComponent(ReportListPage);
-        comp = fixture.componentInstance;
     });
-    it('# should call ionViewDidLoad and resolves promise', (done) => {
-        const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
-        const contentService = TestBed.get(ContentService);
-        const reportService = TestBed.get(ReportService);
-        spyOn(telemetryGeneratorService, 'generateImpressionTelemetry').and.callFake(() => { });
-        spyOn(contentService, 'getLocalContents').and.returnValue(Promise.resolve(mockres.contentList));
-        spyOn(reportService, 'getListOfReports').and.returnValue(Promise.resolve(mockres.reportListData));
-        comp.ionViewDidLoad();
-        expect(contentService.getLocalContents).toHaveBeenCalled();
-        setTimeout(() => {
-        expect(reportService.getListOfReports).toHaveBeenCalled();
-        done();
-        }, 100);
-        expect(telemetryGeneratorService.generateImpressionTelemetry).toHaveBeenCalledWith(ImpressionType.VIEW, '',
-            PageId.REPORTS_ASSESMENT_CONTENT_LIST,
-            Environment.USER);
-
-    });
-    it('#should call ionViewDidLoad and reject content promise', () => {
-        const contentService = TestBed.get(ContentService);
-        const reportService = TestBed.get(ReportService);
-        spyOn(contentService, 'getLocalContents').and.returnValue(Promise.reject({}));
-        comp.ionViewDidLoad();
-        expect(contentService.getLocalContents).toHaveBeenCalled();
-    });
-    it('#should call ionViewDidLoad', (done) => {
-        const contentService = TestBed.get(ContentService);
-        const reportService = TestBed.get(ReportService);
-        spyOn(contentService, 'getLocalContents').and.returnValue(Promise.resolve('requestParams'));
-        spyOn(reportService, 'getListOfReports').and.returnValue(Promise.reject({}));
-        comp.ionViewDidLoad();
-        setTimeout(() => {
-        expect(reportService.getListOfReports).toHaveBeenCalled();
-        done();
-        }, 100);
-    });
-
-    it('#formatTime should call format time', () => {
-        spyOn(comp, 'formatTime').and.callThrough().and.callFake(() => {
-            return {};
+    
+    it('isFromGroups true, check push call', () => {
+        reportListPage.isFromUsers = true;
+        spyOn(navCtrlMock, 'push');
+        reportListPage.goToGroupReportsList({ contentId: "ID1231231" } as any);
+        expect(navCtrlMock.push).toBeCalledWith(UserReportPage, {
+            report: { contentId: "ID1231231" } as any
         });
-        comp.formatTime(1500);
-        expect(comp.formatTime).toHaveBeenCalled();
-
+    });
+    
+    it('isFromGroups isFromGroups false, check push not tobe call', () => {
+        spyOn(navCtrlMock, 'push');
+        reportListPage.goToGroupReportsList({ contentId: "ID1231231" } as any);
+        expect(navCtrlMock.push).not.toBeCalled();
     });
 
-    it('#it should call go to group report list', () => {
-        const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
-        spyOn(telemetryGeneratorService, 'generateInteractTelemetry');
-        const reportList = {
-            uid: 'sample_uid',
-            contentId: 'sample_content_id',
-            name: 'report_name',
-            lastUsedTime: 121,
-            noOfQuestions: 50,
-            correctAnswers: 10,
-            totalTimespent: 90,
-            hierarchyData: '',
-            totalMaxScore: 90,
-            totalScore: 0
-        };
-        comp.goToGroupReportsList(reportList);
-        expect(telemetryGeneratorService.generateInteractTelemetry).toHaveBeenCalled();
-        // expect(comp.goToGroupReportsList).toHaveBeenCalled();
-
+    it('loader should be presented', () => {
+        loadingControllerMock.create.mockReturnValue(
+            { 
+                present : function (){},
+                dismiss: function() {}
+            });
+        contentServiceMock.getLocalContents.mockResolvedValue(true);
+        spyOn(loadingControllerMock.create(), 'present');
+        reportListPage.ionViewDidLoad();
+        expect(loadingControllerMock.create().present).toBeCalled();
     });
-    it('#it should call go to group report list(isFormUsers)', () => {
-        const reportList = {
-            uid: 'sample_uid',
-            contentId: 'sample_content_id',
-            name: 'report_name',
-            lastUsedTime: 121,
-            noOfQuestions: 50,
-            correctAnswers: 10,
-            totalTimespent: 90,
-            hierarchyData: '',
-            totalMaxScore: 90,
-            totalScore: 0
-        };
-        const navMock = TestBed.get(NavController);
-        spyOn(navMock , 'push');
-        comp.isFromUsers = true;
-        comp.goToGroupReportsList(reportList);
-        expect(navMock.push).toHaveBeenCalled();
-        comp.isFromUsers = false;
-        comp.isFromGroups = true;
-        comp.goToGroupReportsList(reportList);
-        expect(navMock.push).toHaveBeenCalled();
+
+    it('loader should dismiss', (done) => {
+        loadingControllerMock.create.mockReturnValue(
+            { 
+                present : function (){},
+                dismiss: function() {}
+            });
+        contentServiceMock.getLocalContents.mockResolvedValue((Math.random() < 0.5));
+        reportServiceMock.getListOfReports.mockResolvedValue((Math.random() < 0.5));
+        spyOn(loadingControllerMock.create(), 'dismiss');
+        
+        
+        
+        setTimeout(() => {
+            zoneMock.run.mock.calls[0][0].call(reportListPage);
+            expect(loadingControllerMock.create().dismiss).toBeCalled();
+            done();
+        }, 0);
+        reportListPage.ionViewDidLoad();
     });
 
 });
