@@ -166,13 +166,13 @@ export class UserReportPage {
     const filexptime = this.datePipe.transform(new Date(this.exptime), 'dd-MM-yyyy hh:mm:ss a');
     const contentstarttime = this.datePipe.transform(new Date(teams[0].timestamp), 'dd-MM-yyyy hh:mm:ss a');
     for (let m = 0; m < anzahlTeams; m++) {
-      line += 'Device ID' + '   ' + this.deviceId + '\n';
-      line += 'User name (User ID)' + '   ' + this.profile.handle + '(' + this.profile.uid + ')' + '\n';
-      line += 'Content name (Content ID)' + '   ' + this.reportSummary.name + '(' + this.reportSummary.contentId + ')' + '\n';
-      line += 'Content started time' + '   ' + contentstarttime + '\n';
-      line += 'Total Time' + '   ' + this.formatTime(this.totalTime) + '\n';
-      line += 'Total Score' + '   ' + this.totalScore + '/' + this.maxTotalScore  + '\n';
-      line += 'File export time' + '   ' + filexptime + '\n';
+      line += 'Device ID' + ',' + this.deviceId + '\n';
+      line += 'User name (User ID)' + ',' + this.profile.handle + '(' + this.profile.uid + ')' + '\n';
+      line += 'Content name (Content ID)' + ',' + this.reportSummary.name + '(' + this.reportSummary.contentId + ')' + '\n';
+      line += 'Content started time' + ',' + contentstarttime + '\n';
+      line += 'Total Time' + ',' + this.formatTime(this.totalTime) + '\n';
+      line += 'Total Score' + ',' + this.totalScore + '/' + this.maxTotalScore  + '\n';
+      line += 'File export time' + ',' + filexptime + '\n';
       line += '\n\n';
       line += 'Question#' + ',';
       line += 'QuestionId' + ',';
@@ -185,7 +185,7 @@ export class UserReportPage {
       line +=  '\"' + values[j].qtitle + '\"' + ',';
       line +=  '\"' + values[j].qid + '\"' + ',';
       line +=  '\"' + values[j].score + '/' + values[j].maxScore + '\"' + ',';
-      line +=  '\"' + values[j].timespent + '\"' + '\n';
+      line +=  '\"' + this.formatTime(values[j].timespent) + '\"' + '\n';
     }
     csv += line + '\n';
     return csv;

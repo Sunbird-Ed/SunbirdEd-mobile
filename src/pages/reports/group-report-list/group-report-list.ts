@@ -254,13 +254,13 @@ export class GroupReportListPage {
             const contentstarttime = this.datePipe.transform(new Date(), 'dd-MM-yyyy hh:mm:ss a');
             // Header
             for (let m = 0; m < anzahlTeams; m++) {
-                line += 'Device ID' + '   ' + this.deviceId + '\n';
-                line += 'Group name (Group ID)' + '   ' + this.groupinfo.name + '(' + this.groupinfo.gid + ')' + '\n';
-                line += 'Content name (Content ID)' + '   ' + values[m].name + '(' + values[m].contentId + ')' + '\n';
-                line += 'Content started time' + '   ' + contentstarttime + '\n';
-                line +=  'Average Time' + '  ' +  this.formatTime(this.appGlobalService.getAverageTime()) + '\n';
-                line += 'Average Score' + '  ' + this.appGlobalService.getAverageScore() + '\n';
-                line += 'File export time' + '   ' + filexptime + '\n';
+                line += 'Device ID' + ',' + this.deviceId + '\n';
+                line += 'Group name (Group ID)' + ',' + this.groupinfo.name + '(' + this.groupinfo.gid + ')' + '\n';
+                line += 'Content name (Content ID)' + ',' + values[m].name + '(' + values[m].contentId + ')' + '\n';
+                line += 'Content started time' + ',' + contentstarttime + '\n';
+                line +=  'Average Time' + ',' +  this.formatTime(this.appGlobalService.getAverageTime()) + '\n';
+                line += 'Average Score' + ',' + this.appGlobalService.getAverageScore() + '\n';
+                line += 'File export time' + ',' + filexptime + '\n';
                 line += '\n\n';
                 line += 'User name' + ',';
                 line += 'UserID' + ',';
@@ -287,28 +287,30 @@ export class GroupReportListPage {
         } else {
             const contentstarttime11 = this.datePipe.transform(new Date(), 'dd-MMM-yyyy hh:mm:ss a');
             for (let n = 0; n < anzahlTeams; n++) {
-                line += 'Device ID' + '\t' + this.deviceId + '\n';
-                line += 'Group name (Group ID)' + '\t' + this.groupinfo.name + '(' + this.groupinfo.gid + ')' + '\n';
-                line += 'Content name (Content ID)' + '\t' + values[n].qtitle + '(' + values[n].content_id + ')' + '\n';
-                line += 'Content started time' + '\t' + contentstarttime11 + '\n';
-                line += 'File export time' + '\t' + filexptime + '\n';
+                line += 'Device ID' + ',' + this.deviceId + '\n';
+                line += 'Group name (Group ID)' + ',' + this.groupinfo.name + '(' + this.groupinfo.gid + ')' + '\n';
+                line += 'Content name (Content ID)' + ',' + values[n].qtitle + '(' + values[n].content_id + ')' + '\n';
+                line += 'Content started time' + ',' + contentstarttime11 + '\n';
+                line +=  'Average Time' + ',' +  this.formatTime(this.appGlobalService.getAverageTime()) + '\n';
+                line += 'Average Score' + ',' + this.appGlobalService.getAverageScore() + '\n';
+                line += 'File export time' + ',' + filexptime + '\n';
                 line += '\n\n';
-                line += 'User name' + '\t\t';
-                line += 'UserID' + '\t\t';
-                line += 'Question' + '\t\t';
-                line += 'QuestionId' + '\t\t';
-                line += 'Score' + '\t\t';
+                line += 'User name' + ',';
+                line += 'UserID' + ',';
+                line += 'Question' + ',';
+                line += 'QuestionId' + ',';
+                line += 'Score' + ',';
                 line += 'Time' + '\n';
                 break;
             }
             line += '\n';
             for (let p = 0; p < anzahlTeams - 1; p++) {
-                line += values[p].users.get(values[p].uid) + '\t\t';
-                line += values[p].uid + '\t\t';
-                line += values[p].qtitle + '\t\t';
-                line += values[p].qid + '\t\t';
-                line += values[p].score + '/' + values[p].max_score + '\t\t';
-                line += values[p].timpent + '\n';
+                line += values[p].users.get(values[p].uid) + ',';
+                line += values[p].uid + ',';
+                line += values[p].qtitle + ',';
+                line += values[p].qid + ',';
+                line += values[p].score + '/' + values[p].max_score + ',';
+                line += this.formatTime(values[p].time_spent) + '\n';
             }
         }
 
