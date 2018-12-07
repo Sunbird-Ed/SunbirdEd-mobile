@@ -65,7 +65,7 @@ export class CategoriesEditPage {
     private userProfileService: UserProfileService,
     private profileService: ProfileService,
     private events: Events,
-    private container: ContainerService,
+    private container: ContainerService
   ) {
     this.profile = this.appGlobalService.getCurrentUser();
     if (this.navParams.get('showOnlyMandatoryFields')) {
@@ -107,15 +107,17 @@ export class CategoriesEditPage {
    */
   getSyllabusDetails() {
     this.loader = this.getLoader();
-    this.frameworkId = this.profile.syllabus[0];
+    if (this.profile.syllabus && this.profile.syllabus[0]) {
+      this.frameworkId = this.profile.syllabus[0];
+    }
     this.formAndFrameworkUtilService.getFrameworkDetails(undefined)
-    .then(catagories => {
-      this.categories = catagories;
-      this.boardList = catagories[0].terms;
-      this.resetForm(1);
-    }).catch((err) => {
-      this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
-    });
+      .then(catagories => {
+        this.categories = catagories;
+        this.boardList = catagories[0].terms;
+        this.resetForm(1);
+      }).catch((err) => {
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
+      });
 
   }
 
@@ -155,13 +157,13 @@ export class CategoriesEditPage {
    * @param selectedValue selected value for the currently selected field
    */
   fetchNextCategoryOptionsValues(index: number, currentField: string, selectedValue: Array<string>) {
-      const request: CategoryRequest = {
-        currentCategory: this.categories[index - 1].code,
-        prevCategory: this.categories[index - 2].code,
-        selectedCode: selectedValue,
-        selectedLanguage: this.translate.currentLang
-      };
-      this.getCategoryData(request, currentField);
+    const request: CategoryRequest = {
+      currentCategory: this.categories[index - 1].code,
+      prevCategory: this.categories[index - 2].code,
+      selectedCode: selectedValue,
+      selectedLanguage: this.translate.currentLang
+    };
+    this.getCategoryData(request, currentField);
   }
 
   /**
@@ -170,7 +172,6 @@ export class CategoriesEditPage {
    * @param currentField Variable name of the current field list
    */
   getCategoryData(request: CategoryRequest, currentField: string) {
-
     this.formAndFrameworkUtilService.getCategoryData(request, this.frameworkId)
       .then((result) => {
         this[currentField] = result;
@@ -239,7 +240,7 @@ export class CategoriesEditPage {
     const req: UpdateUserInfoRequest = new UpdateUserInfoRequest();
     const Framework = {};
     if (formVal.boards) {
-      const code = typeof(formVal.boards) === 'string' ? formVal.boards : formVal.boards[0];
+      const code = typeof (formVal.boards) === 'string' ? formVal.boards : formVal.boards[0];
       Framework['board'] = [this.boardList.find(board => code === board.code).name];
     }
     if (formVal.medium && formVal.medium.length) {
