@@ -318,8 +318,9 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile "org.ekstep.genieservices:genie-providers:1.0.879"
-    compile "org.ekstep.genieservices:genie-integration:1.0.879"
+    compile "org.ekstep.genieservices:genie-providers:1.0.880"
+    compile "org.ekstep.genieservices:genie-integration:1.0.880"
+   
     compile ("com.google.android.gms:play-services-analytics:9.4.0")
     compile('com.crashlytics.sdk.android:crashlytics:2.9.4@aar') {
           transitive = true;
