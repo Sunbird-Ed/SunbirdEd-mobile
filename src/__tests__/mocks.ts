@@ -55,9 +55,9 @@ export const popoverCtrlMock = createSpyObj<PopoverController>(['create', 'prese
 
 export const fileUtilMock = createSpyObj<FileUtil>(['internalStoragePath']);
 
-export const platformMock = createSpyObj<Platform>([]);
+export const platformMock = createSpyObj<Platform>(['registerBackButtonAction', 'exitApp']);
 
-export const translateServiceMock = createSpyObj<TranslateService>([]);
+export const translateServiceMock = createSpyObj<TranslateService>(['use']);
 
 export const socialSharingMock = createSpyObj<SocialSharing>(['share']);
 
