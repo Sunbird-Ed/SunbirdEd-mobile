@@ -4,8 +4,7 @@ import { CommonUtilService } from './../../service/common-util.service';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { CategoryRequest, Profile, UpdateUserInfoRequest, UserProfileService, ProfileService, ContainerService,
-   TabsPage, SharedPreferences } from 'sunbird';
+import { CategoryRequest, Profile, UpdateUserInfoRequest, UserProfileService, ProfileService, ContainerService, TabsPage } from 'sunbird';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
 import { Events } from 'ionic-angular';
@@ -66,8 +65,7 @@ export class CategoriesEditPage {
     private userProfileService: UserProfileService,
     private profileService: ProfileService,
     private events: Events,
-    private container: ContainerService,
-    private preference: SharedPreferences
+    private container: ContainerService
   ) {
     this.profile = this.appGlobalService.getCurrentUser();
     if (this.navParams.get('showOnlyMandatoryFields')) {
@@ -93,9 +91,9 @@ export class CategoriesEditPage {
    */
 
   initializeForm() {
-    // if (this.profile.board && this.profile.board.length > 1) {
-    //   this.profile.board.splice(1, this.profile.board.length);
-    // }
+    if (this.profile.board && this.profile.board.length > 1) {
+      this.profile.board.splice(1, this.profile.board.length);
+    }
     this.profileEditForm = this.fb.group({
       boards: [this.profile.board || []],
       grades: [this.profile.grade || []],
@@ -113,13 +111,13 @@ export class CategoriesEditPage {
       this.frameworkId = this.profile.syllabus[0];
     }
     this.formAndFrameworkUtilService.getFrameworkDetails(undefined)
-    .then(catagories => {
-      this.categories = catagories;
-      this.boardList = catagories[0].terms;
-      this.resetForm(1);
-    }).catch((err) => {
-      this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
-    });
+      .then(catagories => {
+        this.categories = catagories;
+        this.boardList = catagories[0].terms;
+        this.resetForm(1);
+      }).catch((err) => {
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
+      });
 
   }
 
@@ -159,13 +157,13 @@ export class CategoriesEditPage {
    * @param selectedValue selected value for the currently selected field
    */
   fetchNextCategoryOptionsValues(index: number, currentField: string, selectedValue: Array<string>) {
-      const request: CategoryRequest = {
-        currentCategory: this.categories[index - 1].code,
-        prevCategory: this.categories[index - 2].code,
-        selectedCode: selectedValue,
-        selectedLanguage: this.translate.currentLang
-      };
-      this.getCategoryData(request, currentField);
+    const request: CategoryRequest = {
+      currentCategory: this.categories[index - 1].code,
+      prevCategory: this.categories[index - 2].code,
+      selectedCode: selectedValue,
+      selectedLanguage: this.translate.currentLang
+    };
+    this.getCategoryData(request, currentField);
   }
 
   /**
@@ -242,7 +240,7 @@ export class CategoriesEditPage {
     const req: UpdateUserInfoRequest = new UpdateUserInfoRequest();
     const Framework = {};
     if (formVal.boards) {
-      const code = typeof(formVal.boards) === 'string' ? formVal.boards : formVal.boards[0];
+      const code = typeof (formVal.boards) === 'string' ? formVal.boards : formVal.boards[0];
       Framework['board'] = [this.boardList.find(board => code === board.code).name];
     }
     if (formVal.medium && formVal.medium.length) {
