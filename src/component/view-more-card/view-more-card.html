@@ -1,4 +1,4 @@
-<ion-grid>
+<ion-grid [ngClass]="{'grid-disabled': cardDisabled}">
   <ion-row class="row-border">
     <ion-col class="image-align" (click)="navigateToDetailsPage(content, type)">
       <img class="app-icon" src="{{ content.courseLogoUrl || content?.appIcon || defaultImg }}" />

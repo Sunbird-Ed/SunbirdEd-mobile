@@ -1,4 +1,4 @@
-<ion-card>
+<ion-card [ngClass]="{'grid-disabled': cardDisabled}">
   <ion-grid no-padding>
     <ion-row class="top-container" no-padding (click)="navigateToDetailPage(course, layoutName);">
       <ion-col col-12>

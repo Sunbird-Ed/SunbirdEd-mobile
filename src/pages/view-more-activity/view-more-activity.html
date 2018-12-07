@@ -21,7 +21,13 @@
       </ion-list>
     </div>
 
-    <view-more-card *ngFor="let item of searchList" [content]="item" [type]="pageType"></view-more-card>
+    <ng-container *ngIf="!localContentsCard">
+      <view-more-card *ngFor="let item of searchList" [content]="item" [type]="pageType" [cardDisabled]="showDisabled(item)"></view-more-card>
+    </ng-container>
+
+    <ng-container *ngIf="localContentsCard">
+      <view-more-card *ngFor="let item of searchList" [content]="item.contentData" [type]="pageType" [cardDisabled]="showDisabled(item)"></view-more-card>
+    </ng-container>
   </div>
   <!-- TODO: need good logic here -->
   <button ion-button block *ngIf="searchList && searchList.length && loadMoreBtn" (click)="loadMore();">

@@ -63,7 +63,7 @@
 		 no-padding>
 			<div class="inner inprogress-courses">
 				<course-card *ngFor="let item of recentlyViewedResources; let i=index" [env]="'home'" [index]="i" [sectionName]="recentViewedSection"
-				 [course]="item?.contentData" [layoutName]="layoutSavedContent"></course-card>
+				 [course]="item?.contentData" [layoutName]="layoutSavedContent" [cardDisabled]="showDisabled(item)"></course-card>
 			</div>
 		</ion-scroll>
 	</div>
