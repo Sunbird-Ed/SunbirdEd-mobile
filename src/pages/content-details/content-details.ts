@@ -728,12 +728,12 @@ export class ContentDetailsPage {
   cancelDownload() {
     this.contentService.cancelDownload(this.identifier).then(() => {
       this.zone.run(() => {
+        this.telemetryGeneratorService.generateContentCancelClickedTelemetry(this.content, this.downloadProgress);
         this.isDownloadStarted = false;
         this.downloadProgress = '';
         if (!this.isUpdateAvail) {
           this.content.downloadable = false;
         }
-        this.telemetryGeneratorService.generateContentCancelClickedTelemetry(this.content, this.downloadProgress);
       });
     }).catch((error: any) => {
       this.zone.run(() => {
