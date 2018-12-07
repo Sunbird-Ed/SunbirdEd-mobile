@@ -5,6 +5,7 @@ jobs:
       - image: circleci/android:api-25-alpha
     steps:
       - checkout
+      - run: npm install
       - run:
           name: run build file
           command: ./build.sh $CIRCLE_BRANCH
