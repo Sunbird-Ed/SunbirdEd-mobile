@@ -249,6 +249,7 @@ export class MyApp {
                 });
               }, err => {
                 console.log('err', err);
+                that.nav.setRoot(CategoriesEditPage, {showOnlyMandatoryFields: true});
               });
             }
           });
