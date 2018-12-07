@@ -11,4 +11,4 @@ jobs:
       - run: sudo npm install ionic
       - run:
           name: run build file
-          command: ./build.sh $CIRCLE_BRANCH
+          command: sudo ./build.sh $CIRCLE_BRANCH
