@@ -733,7 +733,7 @@ export class ContentDetailsPage {
         if (!this.isUpdateAvail) {
           this.content.downloadable = false;
         }
-        this.telemetryGeneratorService.generateContentCancelClickedTelemetry(this.content, this.downloadProgress);
+        // this.telemetryGeneratorService.generateContentCancelClickedTelemetry(this.content, this.downloadProgress);
       });
     }).catch((error: any) => {
       this.zone.run(() => {
