@@ -38,7 +38,8 @@ import {
   SharedPreferences,
   DeviceInfoService,
   ContentMarkerRequest,
-  MarkerType
+  MarkerType,
+  ContentDetailRequest
 } from 'sunbird';
 import {
   PreferenceKey
@@ -377,14 +378,15 @@ export class ContentDetailsPage {
       loader = this.commonUtilService.getLoader();
       loader.present();
     }
-    const option = {
+    const req: ContentDetailRequest = {
       contentId: identifier,
       refreshContentDetails: refreshContentDetails,
       attachFeedback: true,
-      attachContentAccess: true
+      attachContentAccess: true,
+      attachContentMarker: true
     };
 
-    this.contentService.getContentDetail(option)
+    this.contentService.getContentDetail(req)
       .then((data: any) => {
         this.zone.run(() => {
           data = JSON.parse(data);
@@ -430,9 +432,17 @@ export class ContentDetailsPage {
     this.content.downloadable = data.result.isAvailableLocally;
 
     this.content.contentAccess = data.result.contentAccess ? data.result.contentAccess : [];
+    this.content.contentMarker = data.result.contentMarker ? data.result.contentMarker : [];
 
     if (this.cardData && this.cardData.hierarchyInfo) {
       data.result.hierarchyInfo = this.cardData.hierarchyInfo;
+      this.isChildContent = true;
+    }
+
+    if (!this.isChildContent && this.content.contentMarker.length
+      && this.content.contentMarker[0].extraInfoMap
+      && this.content.contentMarker[0].extraInfoMap.hierarchyInfo
+      && this.content.contentMarker[0].extraInfoMap.hierarchyInfo.length) {
       this.isChildContent = true;
     }
 
@@ -818,13 +828,19 @@ export class ContentDetailsPage {
       });
 
       if (isStreaming) {
+        const extraInfoMap = { hierarchyInfo: [] };
+        if (this.cardData && this.cardData.hierarchyInfo) {
+          extraInfoMap.hierarchyInfo = this.cardData.hierarchyInfo;
+        }
+
         const playContent = JSON.parse(this.content.playContent);
         const req: ContentMarkerRequest = {
           uid: this.appGlobalService.getCurrentUser().uid,
           contentId: this.identifier,
           data: JSON.stringify(playContent.contentData),
           marker: MarkerType.PREVIEWED,
-          isMarked: true
+          isMarked: true,
+          extraInfoMap: extraInfoMap
         };
         this.contentService.setContentMarker(req)
           .then((resp) => {
