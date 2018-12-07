@@ -109,6 +109,9 @@ export class CategoriesEditPage {
    */
   getSyllabusDetails() {
     this.loader = this.getLoader();
+    if (this.profile.syllabus && this.profile.syllabus[0]) {
+      this.frameworkId = this.profile.syllabus[0];
+    }
     this.formAndFrameworkUtilService.getFrameworkDetails(undefined)
     .then(catagories => {
       this.categories = catagories;
@@ -162,16 +165,7 @@ export class CategoriesEditPage {
         selectedCode: selectedValue,
         selectedLanguage: this.translate.currentLang
       };
-      if (this.profile.syllabus && this.profile.syllabus[0]) {
-        this.frameworkId = this.profile.syllabus[0];
-        this.getCategoryData(request, currentField);
-      } else {
-        this.preference.getString('current_framework_id')
-        .then(value => {
-          this.frameworkId = value;
-          this.getCategoryData(request, currentField);
-        });
-      }
+      this.getCategoryData(request, currentField);
   }
 
   /**
