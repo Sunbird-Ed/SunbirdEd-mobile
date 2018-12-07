@@ -218,7 +218,7 @@ export class MyApp {
                     that.userProfileService.getUserProfileDetails(req, res => {
                       setTimeout(() => {
                         this.commonUtilService
-                        .showToast(this.commonUtilService.translateMessage('WELCOME_BACK', JSON.parse(res).firstName));
+                          .showToast(this.commonUtilService.translateMessage('WELCOME_BACK', JSON.parse(res).firstName));
                       }, 2500);
                     }, () => {
                     });
@@ -227,7 +227,29 @@ export class MyApp {
 
               that.rootPage = TabsPage;
             } else {
-              that.nav.setRoot(CategoriesEditPage, {showOnlyMandatoryFields: true});
+              const sessionObj = JSON.parse(session);
+              const req = {
+                userId: sessionObj[ProfileConstants.USER_TOKEN],
+                requiredFields: ProfileConstants.REQUIRED_FIELDS,
+                refreshUserProfileDetails: true
+              };
+              that.userProfileService.getUserProfileDetails(req, res => {
+                const r = JSON.parse(res);
+                that.formAndFrameworkUtilService.updateLoggedInUser(r, profile)
+                .then( (value) => {
+                  if (value['status']) {
+                    this.nav.setRoot(TabsPage);
+                    initTabs(that.containerService, LOGIN_TEACHER_TABS);
+                    // that.rootPage = TabsPage;
+                  } else {
+                    that.nav.setRoot(CategoriesEditPage, {showOnlyMandatoryFields: true, profile: value['profile']});
+                  }
+                }).catch( () => {
+                  that.nav.setRoot(CategoriesEditPage, {showOnlyMandatoryFields: true});
+                });
+              }, err => {
+                console.log('err', err);
+              });
             }
           });
 
@@ -410,7 +432,7 @@ export class MyApp {
         let action;
         try {
           action = JSON.parse(response.data.action);
-        } catch (Error) {  }
+        } catch (Error) { }
         if (response && response.data.action && response.data.action === 'logout') {
           this.authService.getSessionData((session) => {
             if (session) {
