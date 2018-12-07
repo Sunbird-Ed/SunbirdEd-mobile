@@ -272,7 +272,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       .then(data => {
         _.forEach(data, (value) => {
           value.contentData.lastUpdatedOn = value.lastUpdatedTime;
-          if (value.contentData.appIcon) {
+          if (value.basePath && value.contentData.appIcon) {
             value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
           }
         });
@@ -304,7 +304,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       .then(data => {
         _.forEach(data, (value) => {
           value.contentData.lastUpdatedOn = value.lastUpdatedTime;
-          if (value.contentData.appIcon) {
+          if (value.basePath && value.contentData.appIcon) {
             value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
           }
         });
@@ -668,5 +668,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     if (this.commonUtilService.networkInfo.isNetworkAvailable && showRefresh) {
       this.swipeDownToRefresh();
     }
+  }
+
+  showDisabled(resource) {
+    return !resource.isAvailableLocally && !this.commonUtilService.networkInfo.isNetworkAvailable;
   }
 }

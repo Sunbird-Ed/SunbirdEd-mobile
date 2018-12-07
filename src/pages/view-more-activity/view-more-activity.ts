@@ -70,6 +70,11 @@ export class ViewMoreActivityPage implements OnInit {
   isLoadMore = false;
 
   /**
+   * Flag to switch between view-more-card in view
+   */
+  localContentsCard = false;
+
+  /**
 	 * Header title
 	 */
   headerTitle: string;
@@ -233,21 +238,25 @@ export class ViewMoreActivityPage implements OnInit {
       case ViewMore.PAGE_COURSE_ENROLLED:
         this.pageType = 'enrolledCourse';
         this.loadMoreBtn = false;
+        this.localContentsCard = false;
         this.getEnrolledCourse();
         break;
 
       case ViewMore.PAGE_COURSE_POPULAR:
         this.pageType = 'popularCourses';
+        this.localContentsCard = false;
         this.search();
         break;
 
       case ViewMore.PAGE_RESOURCE_SAVED:
         this.loadMoreBtn = false;
+        this.localContentsCard = true;
         this.getLocalContents();
         break;
 
       case ViewMore.PAGE_RESOURCE_RECENTLY_VIEWED:
         this.loadMoreBtn = false;
+        this.localContentsCard = true;
         this.getLocalContents(true);
         break;
 
@@ -292,7 +301,8 @@ export class ViewMoreActivityPage implements OnInit {
     const requestParams: ContentFilterCriteria = {
       uid: this.uid,
       audience: this.audience,
-      recentlyViewed: recentlyViewed
+      recentlyViewed: recentlyViewed,
+      downloadedOnly: downloaded
     };
 
     if (recentlyViewed) {
@@ -306,10 +316,10 @@ export class ViewMoreActivityPage implements OnInit {
         const contentData = [];
         _.forEach(data, (value) => {
           value.contentData.lastUpdatedOn = value.lastUpdatedTime;
-          if (value.contentData.appIcon) {
+          if (value.basePath && value.contentData.appIcon) {
             value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
           }
-          contentData.push(value.contentData);
+          contentData.push(value);
         });
         this.ngZone.run(() => {
           this.searchList = contentData;
@@ -426,6 +436,14 @@ export class ViewMoreActivityPage implements OnInit {
     } else if (this.navParams.get('pageName') === ViewMore.PAGE_RESOURCE_RECENTLY_VIEWED) {
       this.getLocalContents(true, this.downloadsOnlyToggle);
     }
+  }
+
+  showDisabled(resource) {
+    console.log("showDisabled", resource);
+    console.log('resource.isAvailableLocally', resource.isAvailableLocally);
+    console.log('this.commonUtilService.networkInfo.isNetworkAvailable', this.commonUtilService.networkInfo.isNetworkAvailable);
+    console.log(!resource.isAvailableLocally && !this.commonUtilService.networkInfo.isNetworkAvailable);
+    return !resource.isAvailableLocally && !this.commonUtilService.networkInfo.isNetworkAvailable;
   }
 
   /**

@@ -47,6 +47,11 @@ export class CourseCard implements OnInit {
   @Input() env: string;
 
   /**
+   * To show card as disbled or Greyed-out when device is offline
+   */
+  @Input() cardDisabled = false;
+
+  /**
    * Contains default image path.
    *
    * It gets used when perticular course does not have a course/content icon

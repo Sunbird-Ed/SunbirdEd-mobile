@@ -310,7 +310,7 @@ android {
         flavor.versionName = versionName;
         variant.outputs.each { output ->
             output.outputFileName = new File(output.outputFile.parent, "${app_name}-".toLowerCase() + versionName + ".apk")
-            //output.outputFileName = "${variant.name}-${variant.versionName}.apk"
+            // output.outputFileName = "${variant.name}-${variant.versionName}.apk"
         }
     }
 }
@@ -318,8 +318,8 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile "org.ekstep.genieservices:genie-providers:1.0.874"
-    compile "org.ekstep.genieservices:genie-integration:1.0.874"
+    compile "org.ekstep.genieservices:genie-providers:1.0.876"
+    compile "org.ekstep.genieservices:genie-integration:1.0.876"
     compile ("com.google.android.gms:play-services-analytics:9.4.0")
     compile('com.crashlytics.sdk.android:crashlytics:2.9.4@aar') {
           transitive = true;

@@ -31,6 +31,11 @@ export class ViewMoreCardComponent implements OnInit {
   @Input() type: string;
 
   /**
+   * To show card as disbled or Greyed-out when device is offline
+   */
+  @Input() cardDisabled = false;
+
+  /**
    * Contains default image path.
    *
    * Get used when content / course does not have appIcon or courseLogo
