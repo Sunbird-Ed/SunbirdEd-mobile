@@ -5,7 +5,9 @@ jobs:
       - image: circleci/android:api-25-alpha
     steps:
       - checkout
-      - run: npm install -g android-sdk-client
+      - run: sudo apt install curl
+      - run: curl -sL https://deb.nodesource.com/setup_10.x | sudo bash -
+      - run: sudo apt install nodejs
       - run:
           name: run build file
           command: ./build.sh $CIRCLE_BRANCH
