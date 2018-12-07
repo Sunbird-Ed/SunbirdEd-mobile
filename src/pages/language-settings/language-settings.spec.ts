@@ -1,414 +1,397 @@
-import { Network } from '@ionic-native/network';
-import { } from 'jasmine';
+import {LanguageSettingsPage} from '@app/pages/language-settings/language-settings';
 import {
-    ComponentFixture,
-    TestBed,
-    fakeAsync
-} from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import {
-    NavController,
-    Platform,
-    NavParams,
-    Events,
-    ToastController,
-    PopoverController,
-    LoadingController
-} from 'ionic-angular';
-import {
-    TranslateService,
-    TranslateModule
-} from '@ngx-translate/core';
-import {
-    SharedPreferences,
-    AuthService,
-    ProfileService,
-    ServiceProvider,
-    FrameworkService,
-    BuildParamService,
-    TelemetryService
-} from 'sunbird';
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/of';
-import {
-    ToastControllerMock,
-    PopoverControllerMock,
-    LoadingControllerMock,
-    EventsMock,
-    NetworkMock
-} from 'ionic-mocks';
-import { TelemetryGeneratorService, AppGlobalService } from '../../service';
-import {
-    AppGlobalServiceMock,
-    BuildParamaServiceMock
-} from '../../../test-config/mocks-ionic';
-import { LanguageSettingsPage } from './language-settings';
-import { CommonUtilService } from '../../service/common-util.service';
+  appGlobalServiceMock,
+  commonUtilServiceMock,
+  eventsMock,
+  navCtrlMock,
+  navParamsMock,
+  platformMock,
+  sharedPreferencesMock,
+  telemetryGeneratorServiceMock,
+  translateServiceMock,
+  zoneMock
+} from '@app/__tests__/mocks';
+import {PreferenceKey} from '@app/app';
+
+import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from 'sunbird';
+import {OnboardingPage} from '@app/pages/onboarding/onboarding';
+import {UserTypeSelectionPage} from '@app/pages/user-type-selection';
 
 describe('LanguageSettingsPage', () => {
-    let comp: LanguageSettingsPage;
-    let fixture: ComponentFixture<LanguageSettingsPage>;
+  let languageSettingsPage: LanguageSettingsPage;
 
-    beforeEach(() => {
-        const navControllerStub = {
-            pop: () => ({}),
-            push: () => ({})
-        };
-        const navParamsStub = {
-            get: () => ({})
-        };
-        const translateServiceStub = {
-            use: () => ({}),
-            get: () => ({
-                subscribe: () => ({})
-            })
-        };
-        const translateModuleStub = {
-            use: () => ({})
-        };
-        const authServiceStub = {
-            getSessionData: () => ({})
-        };
-        const telemetryServiceStub = {
-            impression: () => ({}),
-            interact: () => ({})
-        };
-        const telemetryGeneratorServiceStub = {
-            generateInteractTelemetry: () => ({}),
-            generateImpressionTelemetry: () => ({})
-        };
-        const BuildParamServiceStub = {
-            getBuildConfigParam: () => ({})
-        };
-        TestBed.configureTestingModule({
-            imports: [TranslateModule.forRoot()],
-            declarations: [LanguageSettingsPage],
-            schemas: [NO_ERRORS_SCHEMA],
-            providers: [ProfileService, ServiceProvider, FrameworkService, Platform,
-                CommonUtilService, Network,
-                { provide: AppGlobalService, useClass: AppGlobalServiceMock },
-                { provide: AuthService, useValue: authServiceStub },
-                { provide: BuildParamService, useValue: BuildParamServiceStub },
-                { provide: TelemetryGeneratorService, useValue: telemetryGeneratorServiceStub },
-                { provide: NavController, useValue: navControllerStub },
-                { provide: NavParams, useValue: navParamsStub },
-                { provide: TranslateService, useValue: translateServiceStub },
-                { provide: TranslateModule, useValue: translateModuleStub },
-                { provide: TelemetryService, useValue: telemetryServiceStub },
-                { provide: ToastController, useFactory: () => ToastControllerMock.instance() },
-                { provide: PopoverController, useFactory: () => PopoverControllerMock.instance() },
-                { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() },
-                { provide: Events, useFactory: () => EventsMock.instance() },
-                { provide: BuildParamService, useClass: BuildParamaServiceMock },
-                SharedPreferences
-            ]
-        });
-        fixture = TestBed.createComponent(LanguageSettingsPage);
-        comp = fixture.componentInstance;
+  beforeEach(() => {
+    languageSettingsPage = new LanguageSettingsPage(
+      navCtrlMock as any,
+      navParamsMock as any,
+      translateServiceMock as any,
+      sharedPreferencesMock as any,
+      eventsMock as any,
+      zoneMock as any,
+      telemetryGeneratorServiceMock as any,
+      platformMock as any,
+      appGlobalServiceMock as any,
+      commonUtilServiceMock as any
+    );
+
+    jest.resetAllMocks();
+  });
+
+  it('can load instance', () => {
+    expect(languageSettingsPage).toBeTruthy();
+  });
+
+  it('languages defaults to: []', () => {
+    expect(languageSettingsPage.languages).toEqual([]);
+  });
+
+  it('isLanguageSelected defaults to: false', () => {
+    expect(languageSettingsPage.isLanguageSelected).toEqual(false);
+  });
+
+  it('isFromSettings defaults to: false', () => {
+    expect(languageSettingsPage.isFromSettings).toEqual(false);
+  });
+
+  it('btnColor defaults to: #55acee', () => {
+    expect(languageSettingsPage.btnColor).toEqual('#55acee');
+  });
+
+  describe('init', () => {
+    it('should set language if language selected in preferences', (done) => {
+      // arrange
+      sharedPreferencesMock.getString.mockResolvedValue('SOME_LANGUAGE');
+
+      // act
+      languageSettingsPage.init();
+      zoneMock.run.mock.calls[0][0].call(languageSettingsPage);
+
+      // assert
+      expect(sharedPreferencesMock.getString).toHaveBeenCalledWith(PreferenceKey.SELECTED_LANGUAGE_CODE);
+      setTimeout(() => {
+        expect(languageSettingsPage.previousLanguage).toEqual('SOME_LANGUAGE');
+        expect(languageSettingsPage.language).toEqual('SOME_LANGUAGE');
+        done();
+      }, 0);
     });
 
-    it('can load instance', () => {
-        expect(comp).toBeTruthy();
+    it('should not set language if language selected in preferences', (done) => {
+      // arrange
+      sharedPreferencesMock.getString.mockResolvedValue(undefined);
+
+      // act
+      languageSettingsPage.init();
+      zoneMock.run.mock.calls[0][0].call(languageSettingsPage);
+
+      // assert
+      expect(sharedPreferencesMock.getString).toHaveBeenCalledWith(PreferenceKey.SELECTED_LANGUAGE_CODE);
+      setTimeout(() => {
+        expect(languageSettingsPage.previousLanguage).toEqual(undefined);
+        done();
+      }, 0);
+    });
+  });
+
+  describe('ionViewDidLoad', () => {
+    it('should generate Impresstion Telemetry on load', () => {
+      // act
+      languageSettingsPage.ionViewDidLoad();
+
+      // assert
+      expect(telemetryGeneratorServiceMock.generateImpressionTelemetry).toHaveBeenCalledWith(
+        ImpressionType.VIEW, '',
+        languageSettingsPage.isFromSettings ? PageId.SETTINGS_LANGUAGE : PageId.ONBOARDING_LANGUAGE_SETTING,
+        languageSettingsPage.isFromSettings ? Environment.SETTINGS : Environment.ONBOARDING
+      );
     });
 
-    it('languages defaults to: []', () => {
-        expect(comp.languages).toEqual([]);
+    describe('Register backButton Function', () => {
+      it('should bind backButton action with a function', () => {
+        // act
+        languageSettingsPage.ionViewDidLoad();
+
+        // assert
+        expect(platformMock.registerBackButtonAction).toHaveBeenCalledWith(expect.any(Function), 10);
+      });
+
+      it('should bind backButton action with a function that generates Interact telemetry', () => {
+        // arrange
+        platformMock.registerBackButtonAction.mockReturnValue(jest.fn());
+
+        // act
+        languageSettingsPage.ionViewDidLoad();
+        platformMock.registerBackButtonAction.mock.calls[0][0].call(languageSettingsPage);
+
+        // assert
+        expect(telemetryGeneratorServiceMock.generateInteractTelemetry).toHaveBeenCalledWith(
+          InteractType.TOUCH, InteractSubtype.DEVICE_BACK_CLICKED,
+          languageSettingsPage.isFromSettings ? Environment.SETTINGS : Environment.ONBOARDING,
+          languageSettingsPage.isFromSettings ? PageId.SETTINGS_LANGUAGE : PageId.ONBOARDING_LANGUAGE_SETTING,
+        );
+      });
+
+      it('should bind backButton action with a function that pops current page if isFromSettings', () => {
+        // arrange
+        navParamsMock.get.mockReturnValue(true);
+        platformMock.registerBackButtonAction.mockReturnValue(jest.fn());
+
+        // act
+        languageSettingsPage.ionViewDidLoad();
+        platformMock.registerBackButtonAction.mock.calls[0][0].call(languageSettingsPage);
+
+        // assert
+        expect(navCtrlMock.pop).toHaveBeenCalled();
+      });
+
+      it('should bind backButton action with a function that exits app if not isFromSettings', () => {
+        // arrange
+        platformMock.registerBackButtonAction.mockReturnValue(jest.fn());
+
+        // act
+        languageSettingsPage.ionViewDidLoad();
+        platformMock.registerBackButtonAction.mock.calls[0][0].call(languageSettingsPage);
+
+        // assert
+        expect(platformMock.exitApp).toHaveBeenCalled();
+        expect(telemetryGeneratorServiceMock.generateEndTelemetry).toHaveBeenCalledWith(
+          'app', '', '', Environment.ONBOARDING
+        );
+      });
+    });
+  });
+
+  describe('onLanguageSelected', () => {
+    it('should set button color to #8FC4FF if language not selected', () => {
+      // arrange
+      languageSettingsPage.language = false;
+
+      // act
+      languageSettingsPage.onLanguageSelected();
+
+      // assert
+      expect(languageSettingsPage.language).toEqual(false);
+      expect(languageSettingsPage.btnColor).toEqual('#8FC4FF');
     });
 
-    it('isLanguageSelected defaults to: false', () => {
-        expect(comp.isLanguageSelected).toEqual(false);
+    it('should set button color to #8FC4FF if language not selected', () => {
+      // arrange
+      languageSettingsPage.language = true;
+
+      // act
+      languageSettingsPage.onLanguageSelected();
+      zoneMock.run.mock.calls[0][0].call(languageSettingsPage);
+
+      // assert
+      expect(translateServiceMock.use).toHaveBeenCalledWith(true);
+      expect(languageSettingsPage.btnColor).toEqual('#006DE5');
+      expect(languageSettingsPage.language).toEqual(true);
+    });
+  });
+
+  describe('generateLanguageSuccessInteractEvent', () => {
+    it('should delegate to telementryGeneratorService', () => {
+      // act
+      languageSettingsPage.generateLanguageSuccessInteractEvent('en', 'de');
+
+      // assert
+      telemetryGeneratorServiceMock.generateInteractTelemetry(
+        expect.anything(),
+        expect.anything(),
+        expect.anything(),
+        expect.anything(),
+        expect.anything(),
+        expect.objectContaining({
+          previousLanguage: 'en',
+          currentLanguage: 'de'
+        })
+      );
+    });
+  });
+
+  describe('generateClickInteractEvent', () => {
+    it('should delegate to telementryGeneratorService', () => {
+      // act
+      languageSettingsPage.generateClickInteractEvent('en', InteractSubtype.CONTINUE_CLICKED);
+
+      // assert
+      telemetryGeneratorServiceMock.generateInteractTelemetry(
+        expect.anything(),
+        InteractSubtype.CONTINUE_CLICKED,
+        expect.anything(),
+        expect.anything(),
+        expect.anything(),
+        expect.objectContaining({
+          'selectedLanguage': 'en'
+        })
+      );
+    });
+  });
+
+  describe('continue', () => {
+    it('should publish event: onAfterLanguageChange:update if language selected', () => {
+      // arrange
+      languageSettingsPage.isLanguageSelected = true;
+
+      // act
+      languageSettingsPage.continue();
+
+      // assert
+      expect(eventsMock.publish).toHaveBeenCalledWith('onAfterLanguageChange:update', expect.anything());
     });
 
-    it('isFromSettings defaults to: false', () => {
-        expect(comp.isFromSettings).toEqual(false);
+    it(' if isLanguage selected is true then makes expected calls', () => {
+      // arrange
+      languageSettingsPage.previousLanguage = '';
+      languageSettingsPage.isFromSettings = true;
+      languageSettingsPage.isLanguageSelected = true;
+      languageSettingsPage.language = 'en';
+      languageSettingsPage.languages = [
+        {
+          'code': 'en',
+          'label': 'English',
+          'isApplied': false
+        },
+        {
+          'label': 'हिंदी',
+          'code': 'hi',
+          'isApplied': false
+        },
+        {
+          'label': 'తెలుగు',
+          'code': 'te',
+          'isApplied': false
+        },
+        {
+          'label': 'தமிழ்',
+          'code': 'ta',
+          'isApplied': false
+        },
+        {
+          'label': 'मराठी',
+          'code': 'mr',
+          'isApplied': false
+        }
+      ];
+
+      // act
+      languageSettingsPage.continue();
+
+      // assert
+      expect(languageSettingsPage.selectedLanguage).toEqual({
+        'code': 'en',
+        'label': 'English',
+        'isApplied': false
+      });
+      expect(sharedPreferencesMock.putString).toHaveBeenCalledWith(
+        PreferenceKey.SELECTED_LANGUAGE_CODE, 'en');
+      expect(sharedPreferencesMock.putString).toHaveBeenCalledWith(
+        PreferenceKey.SELECTED_LANGUAGE, 'English');
+      expect(translateServiceMock.use).toHaveBeenCalledWith('en');
     });
 
-    it('btnColor defaults to: #55acee', () => {
-        expect(comp.btnColor).toEqual('#55acee');
+    it('should pop page if page has come from settings page', () => {
+      // arrange
+      languageSettingsPage.isLanguageSelected = true;
+      languageSettingsPage.isFromSettings = true;
+
+      // act
+      languageSettingsPage.continue();
+
+      // assert
+      expect(navCtrlMock.pop).toHaveBeenCalled();
     });
 
-    describe('init', () => {
-        it('makes expected calls and value if undefined', (done) => {
-            const navParamsStub: NavParams = fixture.debugElement.injector.get(NavParams);
-            const sharedPreferencesStub = TestBed.get(SharedPreferences);
+    it('should navigate to the user type selection page if DISPLAY_ONBOARDING_PAGE ' +
+      'configuration is set to false', () => {
+      // arrange
+      languageSettingsPage.isLanguageSelected = true;
+      languageSettingsPage.isFromSettings = false;
+      (appGlobalServiceMock as any).DISPLAY_ONBOARDING_PAGE = false;
 
-            spyOn(comp, 'init').and.callThrough();
-            spyOn(sharedPreferencesStub, 'getString').and.returnValue(Promise.resolve(undefined));
+      // act
+      languageSettingsPage.continue();
 
-            comp.init();
-
-            sharedPreferencesStub.getString().then((val) => {
-                expect(comp.previousLanguage).toEqual(undefined);
-                expect(sharedPreferencesStub.getString).toHaveBeenCalled();
-                expect(comp.previousLanguage).toBeUndefined();
-                expect(val).toBe(undefined);
-                done();
-            });
-        });
-        it('make expected calls if value is empty', (done) => {
-            const sharedPreferencesStub = TestBed.get(SharedPreferences);
-            spyOn(comp, 'init').and.callThrough();
-            spyOn(sharedPreferencesStub, 'getString').and.returnValue(Promise.resolve(''));
-
-            comp.init();
-
-            sharedPreferencesStub.getString().then((val) => {
-                // expect(comp.previousLanguage).toEqual('');
-                expect(sharedPreferencesStub.getString).toHaveBeenCalled();
-                expect(val).toBe('');
-                done();
-            });
-        });
-        it('make expected calls if value is null', (done) => {
-            const sharedPreferencesStub = TestBed.get(SharedPreferences);
-
-            spyOn(comp, 'init').and.callThrough();
-            spyOn(sharedPreferencesStub, 'getString').and.returnValue(Promise.resolve(null));
-
-            comp.init();
-
-            sharedPreferencesStub.getString().then((val) => {
-                //                expect(comp.previousLanguage).toEqual(null);
-                expect(sharedPreferencesStub.getString).toHaveBeenCalled();
-                expect(val).toBe(null);
-                done();
-            });
-        });
-        it('makes expected calls in else part if value is present', (done) => {
-            const sharedPreferencesStub = TestBed.get(SharedPreferences);
-            spyOn(comp, 'init').and.callThrough();
-            spyOn(sharedPreferencesStub, 'getString').and.returnValue(Promise.resolve('en'));
-
-            comp.init();
-
-            sharedPreferencesStub.getString().then((val) => {
-                expect(comp.previousLanguage).toEqual('en');
-                expect(sharedPreferencesStub.getString).toHaveBeenCalled();
-                expect(val).toBe('en');
-                done();
-            });
-        });
+      // assert
+      expect(navCtrlMock.push).toHaveBeenCalledWith(UserTypeSelectionPage);
     });
 
-    describe('ionViewDidLoad', () => {
-        it('makes expected calls', () => {
-            const telemetryGeneratorServiceStub: TelemetryGeneratorService = fixture.debugElement.injector.get(TelemetryGeneratorService);
-            spyOn(telemetryGeneratorServiceStub, 'generateImpressionTelemetry');
-            comp.ionViewDidLoad();
-            expect(telemetryGeneratorServiceStub.generateImpressionTelemetry).toHaveBeenCalled();
-        });
+    it('should navigate to the onboarding page if DISPLAY_ONBOARDING_PAGE ' +
+      'configuration is set to true', () => {
+      // arrange
+      languageSettingsPage.isLanguageSelected = true;
+      languageSettingsPage.isFromSettings = false;
+      (appGlobalServiceMock as any).DISPLAY_ONBOARDING_PAGE = true;
+
+      // act
+      languageSettingsPage.continue();
+
+      // assert
+      expect(navCtrlMock.push).toHaveBeenCalledWith(OnboardingPage);
     });
 
-    describe('onLanguageSelected', () => {
-        it('makes expected calls', () => {
-            const translateServiceStub: TranslateService = fixture.debugElement.injector.get(TranslateService);
+    it('should show popup if language is not selected', () => {
+      // arrange
+      languageSettingsPage.isLanguageSelected = false;
 
-            expect(comp.onLanguageSelected).toBeDefined();
+      // act
+      languageSettingsPage.continue();
 
-            comp.language = true;
-            comp.btnColor = '#006DE5';
-            comp.isLanguageSelected = true;
+      // assert
+      expect(commonUtilServiceMock.showToast).toHaveBeenCalledWith('PLEASE_SELECT_A_LANGUAGE', false, 'redErrorToast');
+    });
+  });
 
-            spyOn(translateServiceStub, 'use');
+  describe('ionViewWillEnter', () => {
+    it('should delegate to init()', () => {
+      // arrange
+      spyOn(languageSettingsPage, 'init').and.stub();
 
-            comp.onLanguageSelected();
+      // act
+      languageSettingsPage.init();
 
-            expect(translateServiceStub.use).toHaveBeenCalled();
-            expect(comp.btnColor).toEqual('#006DE5');
-            expect(comp.language).toEqual(true);
-        });
-        it('if the languageSelected is false', () => {
-            comp.language = false;
-            comp.btnColor = '#8FC4FF';
+      // assert
+      expect(languageSettingsPage.selectedLanguage).toEqual({});
+      expect(languageSettingsPage.init).toHaveBeenCalled();
+    });
+  });
 
-            expect(comp.onLanguageSelected).toBeDefined();
+  describe('ionViewWillLeave', () => {
+    it('should call registered backButton', () => {
+      // arrange
+      (languageSettingsPage.unregisterBackButton as any) = jest.fn();
+      languageSettingsPage.isLanguageSelected = false;
 
-            comp.onLanguageSelected();
-            expect(comp.language).toEqual(false);
-            expect(comp.btnColor).toEqual('#8FC4FF');
-        });
+      // act
+      languageSettingsPage.ionViewWillLeave();
+
+      // assert
+      expect(languageSettingsPage.unregisterBackButton).toHaveBeenCalled();
     });
 
-    describe('continue', () => {
-        it(' if isLanguage selected is true then makes expected calls', () => {
-            const navControllerStub: NavController = fixture.debugElement.injector.get(NavController);
-            const eventsStub: Events = fixture.debugElement.injector.get(Events);
-            const sharedPreferencesStub: SharedPreferences = fixture.debugElement.injector.get(SharedPreferences);
-            const translateServiceStub: TranslateService = fixture.debugElement.injector.get(TranslateService);
-            const telemetryGeneratorServiceStub: TelemetryGeneratorService = fixture.debugElement.injector.get(TelemetryGeneratorService);
+    it('should use selected language if selected', () => {
+      // arrange
+      languageSettingsPage.isLanguageSelected = true;
+      languageSettingsPage.selectedLanguage.code = undefined;
+      languageSettingsPage.previousLanguage = 'SAMPLE_LANGUAGE_CODE';
 
-            expect(comp.continue).toBeDefined();
+      // act
+      languageSettingsPage.ionViewWillLeave();
 
-            spyOn<any>(comp, 'generateContinueClickedInteractEvent');
-            spyOn(comp, 'generateLanguageSuccessInteractEvent');
-            spyOn(comp, 'continue').and.callThrough();
-            spyOn(navControllerStub, 'pop');
-            spyOn(translateServiceStub, 'use');
-            spyOn(sharedPreferencesStub, 'putString');
-
-            comp.previousLanguage = '';
-            comp.isFromSettings = true;
-            comp.isLanguageSelected = true;
-            comp.language = 'en';
-            comp.languages = [
-                {
-                    'code': 'en',
-                    'label': 'English',
-                    'isApplied': false
-                },
-                {
-                    'label': 'हिंदी',
-                    'code': 'hi',
-                    'isApplied': false
-                },
-                {
-                    'label': 'తెలుగు',
-                    'code': 'te',
-                    'isApplied': false
-                },
-                {
-                    'label': 'தமிழ்',
-                    'code': 'ta',
-                    'isApplied': false
-                },
-                {
-                    'label': 'मराठी',
-                    'code': 'mr',
-                    'isApplied': false
-                }
-            ];
-
-            comp.continue();
-
-            expect(comp.continue).toHaveBeenCalled();
-            expect(comp.selectedLanguage).toEqual({
-                'code': 'en',
-                'label': 'English',
-                'isApplied': false
-            });
-            expect(comp.previousLanguage).not.toBeUndefined();
-            expect(comp['generateContinueClickedInteractEvent']).toHaveBeenCalled();
-            expect(comp.generateLanguageSuccessInteractEvent).toHaveBeenCalled();
-            expect(navControllerStub.pop).toHaveBeenCalled();
-            expect(eventsStub.publish).toHaveBeenCalled();
-            expect(translateServiceStub.use).toHaveBeenCalled();
-            expect(sharedPreferencesStub.putString).toHaveBeenCalled();
-        });
-        it('should navigate to the onboarding page if DISPLAY_ONBOARDING_PAGE configuration is set to true', () => {
-            comp.isLanguageSelected = true;
-            comp.isFromSettings = false;
-            const appGlobalServiceStub = TestBed.get(AppGlobalService);
-            appGlobalServiceStub.DISPLAY_ONBOARDING_PAGE = true;
-            const navControllerStub: NavController = fixture.debugElement.injector.get(NavController);
-
-            spyOn(comp, 'continue').and.callThrough();
-            spyOn(navControllerStub, 'push').and.callThrough();
-
-            comp.continue();
-
-            expect(comp.continue).toHaveBeenCalled();
-            expect(navControllerStub.push).toHaveBeenCalled();
-            expect(comp.continue).toBeDefined();
-        });
-        it('It is called for else part for from Settings', () => {
-            comp.isLanguageSelected = true;
-            comp.isFromSettings = false;
-            const navControllerStub: NavController = fixture.debugElement.injector.get(NavController);
-
-            spyOn(comp, 'continue').and.callThrough();
-            spyOn(navControllerStub, 'push').and.callThrough();
-
-            comp.continue();
-
-            expect(comp.continue).toHaveBeenCalled();
-            expect(navControllerStub.push).toHaveBeenCalled();
-            expect(comp.continue).toBeDefined();
-        });
-        it('It is for else part of isLanguageSelected', () => {
-            comp.isLanguageSelected = false;
-            comp.btnColor = '#8FC4FF';
-
-            // const toastMockStub: Toast = fixture.debugElement.injector.get(Toast);
-            // const toastControllerStub: ToastController = fixture.debugElement.injector.get(ToastController);
-
-            expect(comp.continue).toBeDefined();
-
-            spyOn<any>(comp, 'generateClickInteractEvent');
-            spyOn(comp, 'continue').and.callThrough();
-            // spyOn(toastMockStub, "dismissAll");
-            // spyOn(toastControllerStub, "create");
-            // spyOn(toastMockStub, "present");
-
-            comp.continue();
-
-            expect(comp.btnColor).toEqual('#8FC4FF');
-            expect(comp['generateContinueClickedInteractEvent']).toHaveBeenCalled();
-            // expect(toastControllerStub.config).toHaveBeenCalled();
-            // expect(toastMockStub.present).toHaveBeenCalled();
-            // expect(toastControllerStub.create).toHaveBeenCalled();
-            // expect(toastMockStub.dismissAll).toHaveBeenCalled();
-        });
-
+      // assert
+      expect(translateServiceMock.use).toHaveBeenCalledWith('SAMPLE_LANGUAGE_CODE');
     });
 
+    it('should use "en" when no previousLanguage and no language selected', () => {
+      // arrange
+      languageSettingsPage.isLanguageSelected = true;
+      languageSettingsPage.selectedLanguage.code = undefined;
+      languageSettingsPage.previousLanguage = undefined;
 
-    describe('ionViewWillEnter', () => {
-        it('makes expected calls', () => {
+      // act
+      languageSettingsPage.ionViewWillLeave();
 
-            comp.selectedLanguage = {};
-            comp.init();
-
-            expect(comp.ionViewWillEnter).toBeDefined();
-            spyOn(comp, 'init').and.callThrough();
-
-            comp.ionViewWillEnter();
-
-            expect(comp.selectedLanguage).toEqual({});
-            expect(comp.init).toHaveBeenCalled();
-        });
+      // assert
+      expect(translateServiceMock.use).toHaveBeenCalledWith('en');
     });
-
-    describe('ionViewWillLeave', () => {
-        it('if previousLanguage is true', () => {
-            const translateServiceStub: TranslateService = fixture.debugElement.injector.get(TranslateService);
-
-            comp.isLanguageSelected = true;
-            comp.selectedLanguage.code = undefined;
-            comp.previousLanguage = 'mr';
-
-            spyOn(translateServiceStub, 'use');
-
-            comp.ionViewWillLeave();
-
-            expect(translateServiceStub.use).toHaveBeenCalled();
-        });
-        it('if previousLanguage is false', () => {
-            const translateServiceStub: TranslateService = fixture.debugElement.injector.get(TranslateService);
-
-            comp.isLanguageSelected = true;
-            comp.selectedLanguage.code = undefined;
-            comp.previousLanguage = undefined;
-
-            spyOn(translateServiceStub, 'use');
-
-            comp.ionViewWillLeave();
-
-            expect(translateServiceStub.use).toHaveBeenCalled();
-        });
-    });
-
-    describe('translateMessage', () => {
-        it('should call translateMessage', fakeAsync(() => {
-            const translate = TestBed.get(TranslateService);
-            const commonUtilServiceStub = TestBed.get(CommonUtilService);
-            const spy = spyOn(translate, 'get').and.callFake((arg) => {
-                return Observable.of('Cancel');
-            });
-
-            const translateMessage = commonUtilServiceStub.translateMessage('CANCEL');
-
-            expect(translateMessage).toEqual('Cancel');
-            expect(spy.calls.any()).toEqual(true);
-        }));
-    });
+  });
 });
