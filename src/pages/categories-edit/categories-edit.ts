@@ -4,7 +4,8 @@ import { CommonUtilService } from './../../service/common-util.service';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { CategoryRequest, Profile, UpdateUserInfoRequest, UserProfileService, ProfileService, ContainerService, TabsPage } from 'sunbird';
+import { CategoryRequest, Profile, UpdateUserInfoRequest, UserProfileService, ProfileService, ContainerService,
+   TabsPage, SharedPreferences } from 'sunbird';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
 import { Events } from 'ionic-angular';
@@ -66,6 +67,7 @@ export class CategoriesEditPage {
     private profileService: ProfileService,
     private events: Events,
     private container: ContainerService,
+    private preference: SharedPreferences
   ) {
     this.profile = this.appGlobalService.getCurrentUser();
     if (this.navParams.get('showOnlyMandatoryFields')) {
@@ -91,9 +93,9 @@ export class CategoriesEditPage {
    */
 
   initializeForm() {
-    if (this.profile.board && this.profile.board.length > 1) {
-      this.profile.board.splice(1, this.profile.board.length);
-    }
+    // if (this.profile.board && this.profile.board.length > 1) {
+    //   this.profile.board.splice(1, this.profile.board.length);
+    // }
     this.profileEditForm = this.fb.group({
       boards: [this.profile.board || []],
       grades: [this.profile.grade || []],
@@ -107,7 +109,6 @@ export class CategoriesEditPage {
    */
   getSyllabusDetails() {
     this.loader = this.getLoader();
-    this.frameworkId = this.profile.syllabus[0];
     this.formAndFrameworkUtilService.getFrameworkDetails(undefined)
     .then(catagories => {
       this.categories = catagories;
@@ -161,7 +162,16 @@ export class CategoriesEditPage {
         selectedCode: selectedValue,
         selectedLanguage: this.translate.currentLang
       };
-      this.getCategoryData(request, currentField);
+      if (this.profile.syllabus && this.profile.syllabus[0]) {
+        this.frameworkId = this.profile.syllabus[0];
+        this.getCategoryData(request, currentField);
+      } else {
+        this.preference.getString('current_framework_id')
+        .then(value => {
+          this.frameworkId = value;
+          this.getCategoryData(request, currentField);
+        });
+      }
   }
 
   /**
@@ -170,7 +180,6 @@ export class CategoriesEditPage {
    * @param currentField Variable name of the current field list
    */
   getCategoryData(request: CategoryRequest, currentField: string) {
-
     this.formAndFrameworkUtilService.getCategoryData(request, this.frameworkId)
       .then((result) => {
         this[currentField] = result;
