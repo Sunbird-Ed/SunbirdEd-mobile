@@ -5,7 +5,7 @@ jobs:
       - image: circleci/android:api-25-alpha
     steps:
       - checkout
-      - run: apt install curl
+      - run: sudo apt install curl
       - run: curl -sL https://deb.nodesource.com/setup_10.x | sudo bash -
       - run: apt install nodejs
       - run: npm i node-sass
