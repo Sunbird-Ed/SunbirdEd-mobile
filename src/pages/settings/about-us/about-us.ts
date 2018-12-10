@@ -48,11 +48,9 @@ export class AboutUsPage {
 
     this.deviceInfoService.getDeviceID()
       .then((res: any) => {
-        console.log('Device Id: ', res);
         this.deviceId = res;
       })
       .catch((err: any) => {
-        console.error('Error', err);
       });
     this.appVersion.getAppName()
       .then((appName: any) => {
@@ -136,7 +134,7 @@ export class AboutUsPage {
         return response;
       })
       .catch(error => {
-        return '';
+        console.log('Error--', error);
       });
   }
 
@@ -147,7 +145,7 @@ export class AboutUsPage {
         return response;
       })
       .catch(error => {
-        return '';
+        console.log('Error--', error);
       });
   }
 }

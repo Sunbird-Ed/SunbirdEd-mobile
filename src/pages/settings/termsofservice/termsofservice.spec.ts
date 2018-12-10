@@ -1,32 +1,15 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { NavController } from 'ionic-angular';
-import { NavParams } from 'ionic-angular';
+import 'jest';
+import { navCtrlMock, navParamsMock } from '../../../__tests__/mocks';
 import { TermsofservicePage } from './termsofservice';
-import { TranslateModule } from '@ngx-translate/core';
 
-describe('TermsofservicePage', () => {
-    let comp: TermsofservicePage;
-    let fixture: ComponentFixture<TermsofservicePage>;
+describe.only('TermsofServicePage', () => {
+    let termsofservicePage: TermsofservicePage;
 
-    beforeEach(() => {
-        const navControllerStub = {};
-        const navParamsStub = {};
-        TestBed.configureTestingModule({
-            imports: [TranslateModule.forRoot()],
-            declarations: [TermsofservicePage],
-            schemas: [NO_ERRORS_SCHEMA],
-            providers: [
-                { provide: NavController, useValue: navControllerStub },
-                { provide: NavParams, useValue: navParamsStub }
-            ]
-        });
-        fixture = TestBed.createComponent(TermsofservicePage);
-        comp = fixture.componentInstance;
+    beforeAll(() => {
+        termsofservicePage = new TermsofservicePage(navCtrlMock as any, navParamsMock as any);
+        jest.resetAllMocks();
     });
-
     it('can load instance', () => {
-        expect(comp).toBeTruthy();
+        expect(termsofservicePage).toBeTruthy();
     });
-
 });
