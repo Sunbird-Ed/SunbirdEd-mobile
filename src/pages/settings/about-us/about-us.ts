@@ -83,7 +83,7 @@ export class AboutUsPage {
             this.fileUrl = 'file://' + val;
 
             // Share via email
-            this.socialSharing.shareViaEmail('', '', [], null, null, this.fileUrl).then(() => {
+            this.socialSharing.share('', '', this.fileUrl).then(() => {
             }).catch(error => {
               console.error('Sharing Data is not possible', error);
             });

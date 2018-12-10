@@ -130,7 +130,7 @@ describe.only('AboutUsPage', () => {
         // arrange
         commonUtilServiceMock.getLoader.mockReturnValue({ present: jest.fn(), dismiss: jest.fn() });
         sharedPreferencesMock.getString.mockResolvedValue('true');
-        socialSharingMock.shareViaEmail.mockResolvedValue('VIA_EMAIL');
+        socialSharingMock.share.mockResolvedValue('VIA_EMAIL');
         spyOn(aboutUsPage, 'generateInteractTelemetry');
         // act
         aboutUsPage.shareInformation();
@@ -138,7 +138,7 @@ describe.only('AboutUsPage', () => {
         // assert
         setTimeout(() => {
             expect(sharedPreferencesMock.putString).toHaveBeenCalledWith('sunbird_config_file_path', {});
-            expect(socialSharingMock.shareViaEmail).toHaveBeenCalled();
+            expect(socialSharingMock.share).toHaveBeenCalled();
             done();
         }, 0);
     });
