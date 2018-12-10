@@ -1,3 +1,4 @@
+import { FileTransfer } from '@ionic-native/file-transfer';
 import {
   AuthService,
   BuildParamService,
@@ -7,7 +8,8 @@ import {
   PageAssembleService,
   SharedPreferences,
   ShareUtil,
-  ReportService
+  ReportService,
+  DeviceInfoService
 } from 'sunbird';
 import {Events, NavController, NavParams, Platform, PopoverController, LoadingController} from 'ionic-angular';
 import {NgZone} from '@angular/core';
@@ -17,6 +19,8 @@ import {SocialSharing} from '@ionic-native/social-sharing';
 import {AppVersion} from '@ionic-native/app-version';
 import {SunbirdQRScanner} from '@app/pages/qrscanner';
 import {FormAndFrameworkUtilService} from '@app/pages/profile';
+import { File } from '@ionic-native/file';
+import { DatePipe } from '../../node_modules/@angular/common';
 
 export type Mockify<T> = {
   [P in keyof T]: jest.Mock<{}>;
@@ -57,7 +61,8 @@ export const fileUtilMock = createSpyObj<FileUtil>([]);
 
 export const platformMock = createSpyObj<Platform>(['registerBackButtonAction', 'exitApp']);
 
-export const translateServiceMock = createSpyObj<TranslateService>(['use']);
+export const translateServiceMock = createSpyObj<TranslateService>(['use',
+'get']);
 
 export const socialSharingMock = createSpyObj<SocialSharing>([]);
 
@@ -93,4 +98,15 @@ export const formAndFrameworkUtilServiceMock = createSpyObj<FormAndFrameworkUtil
 
 export const loadingControllerMock = createSpyObj<LoadingController>(['create', 'present']);
 
-export const reportServiceMock = createSpyObj<ReportService>(['getListOfReports']);
+export const reportServiceMock = createSpyObj<ReportService>(['getListOfReports',
+'getDetailReport']);
+
+export const transferMock = createSpyObj<FileTransfer>(['create']);
+export const fileMock = createSpyObj<File>(['writeFile']);
+export const datePipeMock = createSpyObj<DatePipe>(['transform']);
+export const loadingMock = createSpyObj<LoadingController>(['create',
+'dismiss']);
+export const deviceInfoServiceMock = createSpyObj<DeviceInfoService>(['getDeviceID',
+'getDownloadDirectoryPath',
+'getDeviceAPILevel',
+'checkAppAvailability']);
