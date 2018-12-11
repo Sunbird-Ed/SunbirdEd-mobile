@@ -1,13 +1,17 @@
 import {
   AuthService,
   BuildParamService,
+  ContainerService,
   ContentService,
   CourseService,
   FileUtil,
+  OAuthService,
   PageAssembleService,
+  ProfileService,
   ReportService,
   SharedPreferences,
-  ShareUtil
+  ShareUtil,
+  UserProfileService
 } from 'sunbird';
 import {Events, LoadingController, NavController, NavParams, Platform, PopoverController} from 'ionic-angular';
 import {NgZone} from '@angular/core';
@@ -41,7 +45,8 @@ export const courseServiceMock = createSpyObj<CourseService>([
 
 export const navCtrlMock = createSpyObj<NavController>([
   'pop',
-  'push'
+  'push',
+  'setRoot'
 ]);
 
 export const navParamsMock = createSpyObj<NavParams>([
@@ -52,11 +57,31 @@ export const zoneMock = createSpyObj<NgZone>([
   'run'
 ]);
 
+export const oAuthServiceMock = createSpyObj<OAuthService>([
+  'doOAuthStepOne',
+  'doOAuthStepTwo'
+]);
+
+export const containerServiceMock = createSpyObj<ContainerService>([
+  'removeAllTabs',
+  'addTab'
+]);
+
+export const userProfileServiceMock = createSpyObj<UserProfileService>([
+  'getUserProfileDetails',
+  'getTenantInfo'
+]);
+
+export const profileServiceMock = createSpyObj<ProfileService>([
+  'setCurrentProfile'
+]);
+
 export const authServiceMock = createSpyObj<AuthService>([
   'getSessionData'
 ]);
 
 export const commonUtilServiceMock = createSpyObj<CommonUtilService>([
+  'getAppDirection',
   'translateMessage',
   'showMessage',
   'showToast',
@@ -125,7 +150,8 @@ export const telemetryGeneratorServiceMock = createSpyObj<TelemetryGeneratorServ
   'generateCancelDownloadTelemetry',
   'generateInteractTelemetry',
   'generateEndTelemetry',
-  'generatePageViewTelemetry'
+  'generatePageViewTelemetry',
+  'generateBackClickedTelemetry'
 ]);
 
 export const courseUtilServiceMock = createSpyObj<CourseUtilService>([
@@ -151,7 +177,8 @@ export const sharedPreferencesMock = createSpyObj<SharedPreferences>([
 ]);
 
 export const formAndFrameworkUtilServiceMock = createSpyObj<FormAndFrameworkUtilService>([
-  'getCourseFilterConfig'
+  'getCourseFilterConfig',
+  'updateLoggedInUser'
 ]);
 
 export const loadingControllerMock = createSpyObj<LoadingController>([
