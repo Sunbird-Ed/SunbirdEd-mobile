@@ -38,3 +38,5 @@ Build for debug - `npm run build-debug`
 Build for release - `npm run build-rel`
 
 Run the android app - `npm run android`
+
+# comment
