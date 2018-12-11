@@ -1,476 +1,275 @@
-import {OnboardingPage} from './onboarding';
 import {
-  appGlobalServiceMock,
-  appVersionMock,
-  authServiceMock,
-  commonUtilServiceMock,
-  containerServiceMock,
-  eventsMock,
-  formAndFrameworkUtilServiceMock,
-  loadingControllerMock,
-  navCtrlMock,
-  oAuthServiceMock,
-  platformMock,
-  profileServiceMock,
-  sharedPreferencesMock,
-  telemetryGeneratorServiceMock,
-  userProfileServiceMock
-} from '@app/__tests__/mocks';
-import {ProfileType, TabsPage} from 'sunbird';
-import {LanguageSettingsPage} from '@app/pages/language-settings/language-settings';
-import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, PreferenceKey} from '@app/app';
-import {UserTypeSelectionPage} from '@app/pages/user-type-selection';
-import {CategoriesEditPage} from '@app/pages/categories-edit/categories-edit';
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import {
+  NavController,
+  Navbar
+} from 'ionic-angular';
+import { LoadingController } from 'ionic-angular';
+import { Platform } from 'ionic-angular';
+import { ToastController } from 'ionic-angular';
+import { Events } from 'ionic-angular';
+import {
+  TranslateService,
+  TranslateModule
+} from '@ngx-translate/core';
+import { OAuthService } from 'sunbird';
+import { ContainerService } from 'sunbird';
+import { UserProfileService } from 'sunbird';
+import { ProfileService } from 'sunbird';
+import { AuthService } from 'sunbird';
+import { TelemetryService } from 'sunbird';
+import { SharedPreferences } from 'sunbird';
+import { AppVersion } from '@ionic-native/app-version';
+import { OnboardingPage } from './onboarding';
+import { } from 'jasmine';
+import { Observable } from 'rxjs';
+import 'rxjs/add/observable/of';
 
 describe('OnboardingPage', () => {
-  let onboardingPage: OnboardingPage;
+  let comp: OnboardingPage;
+  let fixture: ComponentFixture<OnboardingPage>;
 
   beforeEach(() => {
-    onboardingPage = new OnboardingPage(
-      navCtrlMock as any,
-      oAuthServiceMock as any,
-      containerServiceMock as any,
-      userProfileServiceMock as any,
-      profileServiceMock as any,
-      authServiceMock as any,
-      loadingControllerMock as any,
-      sharedPreferencesMock as any,
-      platformMock as any,
-      commonUtilServiceMock as any,
-      appVersionMock as any,
-      eventsMock as any,
-      appGlobalServiceMock as any,
-      telemetryGeneratorServiceMock as any,
-      formAndFrameworkUtilServiceMock as any
-    );
+    const navControllerStub = {
+      setRoot: () => ({}),
+      push: () => ({})
+    };
+    const loadingControllerStub = {
+      create: () => ({})
+    };
+    const platformStub = {
+      registerBackButtonAction: () => ({})
+    };
+    const toastControllerStub = {
+      create: () => ({})
+    };
+    const eventsStub = {
+      publish: () => ({})
+    };
+    const translateServiceStub = {
+      get: () => ({
+        subscribe: () => ({})
+      })
+    };
+    const oAuthServiceStub = {};
+    const containerServiceStub = {};
+    const userProfileServiceStub = {
+      getTenantInfo: () => ({})
+    };
+    const profileServiceStub = {
+      setCurrentProfile: () => ({})
+    };
+    const authServiceStub = {};
+    const telemetryServiceStub = {
+      impression: () => ({}),
+      interact: () => ({})
+    };
+    const sharedPreferencesStub = {
+      getString: () => ({})
+    };
+    const appVersionStub = {
+      getAppName: () => ({
+        then: () => ({})
+      })
+    };
+    const navBarStub = {
+      backButtonClick: () => ({})
+    };
 
-    jest.resetAllMocks();
-    jest.useRealTimers();
+    TestBed.configureTestingModule({
+      declarations: [OnboardingPage],
+      schemas: [NO_ERRORS_SCHEMA],
+      imports: [TranslateModule.forRoot()],
+      providers: [
+        { provide: NavController, useValue: navControllerStub },
+        { provide: LoadingController, useValue: loadingControllerStub },
+        { provide: Platform, useValue: platformStub },
+        { provide: ToastController, useValue: toastControllerStub },
+        { provide: Events, useValue: eventsStub },
+        { provide: TranslateService, useValue: translateServiceStub },
+        { provide: OAuthService, useValue: oAuthServiceStub },
+        { provide: ContainerService, useValue: containerServiceStub },
+        { provide: UserProfileService, useValue: userProfileServiceStub },
+        { provide: ProfileService, useValue: profileServiceStub },
+        { provide: AuthService, useValue: authServiceStub },
+        { provide: TelemetryService, useValue: telemetryServiceStub },
+        { provide: SharedPreferences, useValue: sharedPreferencesStub },
+        { provide: AppVersion, useValue: appVersionStub },
+        { provide: Navbar, useValue: navBarStub },
+        { provide: ToastController, useValue: toastControllerStub },
+
+      ]
+    });
+    fixture = TestBed.createComponent(OnboardingPage);
+    comp = fixture.componentInstance;
   });
 
   it('can load instance', () => {
-    expect(onboardingPage).toBeTruthy();
+    expect(comp).toBeTruthy();
   });
 
   it('backButtonFunc defaults to: undefined', () => {
-    expect(onboardingPage.backButtonFunc).toEqual(undefined);
+    expect(comp.backButtonFunc).toEqual(undefined);
   });
 
-  describe('ionViewDidLoad', () => {
-    it('should fetch appName, set navBar back func and genereate Impression Telemetry', (done) => {
-      // arrange
-      (onboardingPage.navBar as any) = {};
-      appVersionMock.getAppName.mockResolvedValue('sunbird');
-
-      // act
-      onboardingPage.ionViewDidLoad();
-
-      // assert
-      setTimeout(() => {
-        expect(telemetryGeneratorServiceMock.generateImpressionTelemetry).toHaveBeenCalled();
-        expect(appVersionMock.getAppName).toHaveBeenCalled();
-        expect(onboardingPage.appName).toEqual('sunbird');
-        done();
-      }, 0);
-    });
-
-    it('should set navBar backButton func to generateBackClickedTelemetry and set Rooot page to ' +
-      'LanguageSettingsPage', (done) => {
-      // arrange
-      (onboardingPage.navBar as any) = {};
-      appVersionMock.getAppName.mockResolvedValue('sunbird');
-
-      // act
-      onboardingPage.ionViewDidLoad();
-      onboardingPage.navBar.backButtonClick({} as any);
-
-      // assert
-      setTimeout(() => {
-        expect(onboardingPage.navBar.backButtonClick).toBeDefined();
-        expect(navCtrlMock.setRoot).toHaveBeenCalledWith(LanguageSettingsPage);
-        expect(telemetryGeneratorServiceMock.generateBackClickedTelemetry).toHaveBeenCalled();
-        done();
-      }, 0);
-    });
-  });
-
-  describe('ionViewWillEnter', () => {
+  xdescribe('ionViewDidLoad', () => {
     it('makes expected calls', () => {
-      // arrange
-      platformMock.registerBackButtonAction.mockReturnValue(jest.fn());
+      const navControllerStub: NavController = TestBed.get(NavController);
+      const telemetryServiceStub: TelemetryService = TestBed.get(TelemetryService);
+      const appVersionStub: AppVersion = TestBed.get(AppVersion);
 
-      // act
-      onboardingPage.ionViewWillEnter();
+      comp.navBar = TestBed.get(Navbar);
 
-      // assert
-      expect(platformMock.registerBackButtonAction).toHaveBeenCalledWith(expect.anything(), 10);
-      expect(commonUtilServiceMock.getAppDirection).toHaveBeenCalled();
+      expect(comp.ionViewDidLoad).toBeDefined();
+      spyOn(comp, 'ionViewDidLoad').and.callThrough();
+      spyOn(navControllerStub, 'setRoot');
+      spyOn(telemetryServiceStub, 'impression');
+      spyOn(appVersionStub, 'getAppName').and.returnValue(Promise.resolve('sunbird'));
+
+      spyOn(comp.navBar, 'backButtonClick');
+      comp.ionViewDidLoad();
+
+      expect(comp.ionViewDidLoad).toHaveBeenCalled();
+
+      expect(navControllerStub.setRoot).toHaveBeenCalled();
+      expect(telemetryServiceStub.impression).toHaveBeenCalled();
+      expect(appVersionStub.getAppName).toHaveBeenCalled();
+      expect(comp.navBar.backButtonClick).toHaveBeenCalled();
+      expect(comp.appName).toEqual('sunbird');
     });
+  });
 
-    it('should set backButton func to generateBackClickedTelemetry and set Rooot page to ' +
-      'LanguageSettingsPage', () => {
-      // arrange
-      platformMock.registerBackButtonAction.mockReturnValue(jest.fn());
+  xdescribe('ionViewWillEnter', () => {
+    it('makes expected calls', () => {
+      const navControllerStub: NavController = TestBed.get(NavController);
+      const platformStub: Platform = TestBed.get(Platform);
 
-      // act
-      onboardingPage.ionViewWillEnter();
+      expect(comp.ionViewWillEnter).toBeDefined();
+      spyOn(comp, 'ionViewWillEnter').and.callThrough();
+      spyOn(navControllerStub, 'setRoot');
+      spyOn(platformStub, 'registerBackButtonAction');
 
-      // assert
-      platformMock.registerBackButtonAction.mock.calls[0][0].call(onboardingPage);
-      expect(telemetryGeneratorServiceMock.generateBackClickedTelemetry).toHaveBeenCalled();
-      expect(onboardingPage.backButtonFunc).toHaveBeenCalled();
-      expect(navCtrlMock.setRoot).toHaveBeenCalledWith(LanguageSettingsPage);
+      comp.ionViewWillEnter();
+
+      expect(comp.ionViewWillEnter).toHaveBeenCalled();
+      expect(navControllerStub.setRoot).toHaveBeenCalled();
+      expect(platformStub.registerBackButtonAction).toHaveBeenCalled();
     });
   });
 
   describe('ionViewWillLeave', () => {
-    it('should call registered backButton', () => {
-      // arrange
-      onboardingPage.backButtonFunc = jest.fn();
-
-      // act
-      onboardingPage.ionViewWillLeave();
-
-      // assert
-      expect(onboardingPage.backButtonFunc).toHaveBeenCalled();
+    it('should be leave', () => {
+      expect(comp.backButtonFunc).toEqual(undefined);
     });
   });
 
-  it('should return instance of loader when getLoader()', () => {
-    const SOME_LAODER = {};
-    loadingControllerMock.create.mockReturnValue(SOME_LAODER);
+  describe('getLoader', () => {
+    it('makes expected calls', () => {
+      expect(comp.getLoader).toBeDefined();
+      const loadingControllerStub: LoadingController = fixture.debugElement.injector.get(LoadingController);
+      spyOn(comp, 'getLoader').and.callThrough();
+      spyOn(loadingControllerStub, 'create');
+      comp.getLoader();
 
-    // act-assert
-    expect(onboardingPage.getLoader()).toBe(SOME_LAODER);
+      expect(comp.getLoader).toHaveBeenCalled();
+      expect(loadingControllerStub.create).toHaveBeenCalled();
+    });
   });
 
-  describe('signIn', () => {
-    it('should show loader and generateLoginInteractTelemetry', () => {
-      // arrange
-      const loader = {present: jest.fn()};
-      loadingControllerMock.create.mockReturnValue(loader);
-      oAuthServiceMock.doOAuthStepOne.mockResolvedValue(undefined);
+  xdescribe('signIn', () => {
+    it('makes expected calls', () => {
+      const eventsStub: Events = fixture.debugElement.injector.get(Events);
+      comp.getLoader = jasmine.createSpy().and.callFake(() => {
+        return { present: () => { }, dismiss: () => { } };
+      });
 
-      // act
-      onboardingPage.signIn();
+      spyOn(comp, 'generateLoginInteractTelemetry');
+      spyOn(eventsStub, 'publish');
+      comp.signIn();
 
-      // assert
-      expect(loader.present).toHaveBeenCalled();
-      expect(telemetryGeneratorServiceMock.generateInteractTelemetry).toHaveBeenCalled();
+      expect(comp.getLoader).toHaveBeenCalled();
+      expect(comp.generateLoginInteractTelemetry).toHaveBeenCalled();
+      expect(eventsStub.publish).toHaveBeenCalled();
+
     });
+  });
 
-    it('should dismiss loader when doOAuthStepOne throws error', (done) => {
-      // arrange
-      const loader = {present: jest.fn(), dismiss: jest.fn()};
-      loadingControllerMock.create.mockReturnValue(loader);
-      oAuthServiceMock.doOAuthStepOne.mockRejectedValue(undefined);
-
-      // act
-      onboardingPage.signIn();
-
-      // assert
-      expect(loader.present).toHaveBeenCalled();
-
+  xdescribe('refreshProfileData', () => {
+    it('makes expected calls', () => {
+      spyOn(comp, 'getToast');
+      spyOn(comp, 'translateMessage');
+      comp.refreshProfileData();
       setTimeout(() => {
-        expect(loader.dismiss).toHaveBeenCalled();
-        done();
-      }, 0);
-    });
-  });
-
-  describe('refreshProfileData()', () => {
-    it('should reject if getUserProfileDetails fails', (done) => {
-      // arrange
-      authServiceMock.getSessionData.mockImplementation((cb: Function) => {
-        cb(`{ "userToken": "SOME_SESSION" }`);
-      });
-      userProfileServiceMock.getUserProfileDetails.mockImplementation((req, resCb, errCb) => {
-        errCb('SAMPLE_ERROR_MESSAGE');
-      });
-      profileServiceMock.setCurrentProfile.mockResolvedValue('SOME_PROFILE');
-      formAndFrameworkUtilServiceMock.updateLoggedInUser.mockResolvedValue({
-        status: 'SOME_STATUS',
-        profile: 'SOME_PROFILE'
-      });
-
-      // act
-      onboardingPage.refreshProfileData().catch((err) => {
-        expect(err).toBe('SAMPLE_ERROR_MESSAGE');
-        done();
-      });
-    });
-
-    it('should reject if setCurrentProfile fails', (done) => {
-      // arrange
-      authServiceMock.getSessionData.mockImplementation((cb: Function) => {
-        cb(`{ "userToken": "SOME_SESSION" }`);
-      });
-      userProfileServiceMock.getUserProfileDetails.mockImplementation((req, resCb) => {
-        resCb(`{ "id": "SAMPLE_ID", "userId": "SAMPLE_USER_ID", "rootOrg": { "orgName": "SAMPLE_ORG_NAME", "slug": "SAMPLE_ORG_SLUG" } }`);
-      });
-      profileServiceMock.setCurrentProfile.mockRejectedValue('SAMPLE_ERROR_MESSAGE');
-      formAndFrameworkUtilServiceMock.updateLoggedInUser.mockResolvedValue({
-        status: 'SOME_STATUS',
-        profile: 'SOME_PROFILE'
-      });
-
-      // act
-      onboardingPage.refreshProfileData().catch((err) => {
-        expect(err).toBe('SAMPLE_ERROR_MESSAGE');
-        done();
-      });
-    });
-
-    it('should resolve with rootOrg.slug and set orgName when unable to updateLoggedInUser', (done) => {
-      // arrange
-      authServiceMock.getSessionData.mockImplementation((cb: Function) => {
-        cb(`{ "userToken": "SOME_SESSION" }`);
-      });
-      userProfileServiceMock.getUserProfileDetails.mockImplementation((req, resCb) => {
-        resCb(`{ "id": "SAMPLE_ID", "userId": "SAMPLE_USER_ID", "rootOrg": { "orgName": "SAMPLE_ORG_NAME", "slug": "SAMPLE_ORG_SLUG" } }`);
-      });
-      profileServiceMock.setCurrentProfile.mockResolvedValue('SOME_PROFILE');
-      formAndFrameworkUtilServiceMock.updateLoggedInUser.mockRejectedValue('');
-
-      // act
-      onboardingPage.refreshProfileData().then((r) => {
-        // assert
-        expect(onboardingPage.orgName).toBe('SAMPLE_ORG_NAME');
-        expect(r).toBe('SAMPLE_ORG_SLUG');
-        done();
-      });
-    });
-
-    it('should reject and navigate to CategoriesEditPage if !loggedInUser status', (done) => {
-      // arrange
-      authServiceMock.getSessionData.mockImplementation((cb: Function) => {
-        cb(`{ "userToken": "SOME_SESSION" }`);
-      });
-      userProfileServiceMock.getUserProfileDetails.mockImplementation((req, resCb) => {
-        resCb(`{ "id": "SAMPLE_ID", "userId": "SAMPLE_USER_ID", "rootOrg": { "orgName": "SAMPLE_ORG_NAME", "slug": "SAMPLE_ORG_SLUG" } }`);
-      });
-      profileServiceMock.setCurrentProfile.mockResolvedValue('SOME_PROFILE');
-      formAndFrameworkUtilServiceMock.updateLoggedInUser.mockResolvedValue({
-        status: '',
-        profile: 'SOME_PROFILE'
-      });
-
-      // act
-      onboardingPage.refreshProfileData().catch(() => {
-        // assert
-        expect(navCtrlMock.setRoot).toHaveBeenCalledWith(CategoriesEditPage, expect.anything());
-        done();
-      });
-    });
-
-    it('should initTabs with LOGIN_TEACHER_TABS on success', (done) => {
-      // arrange
-      jest.useFakeTimers();
-
-      commonUtilServiceMock.translateMessage.mockReturnValue('SAMPLE_WELCOME_BACK');
-      authServiceMock.getSessionData.mockImplementation((cb: Function) => {
-        cb(`{ "userToken": "SOME_SESSION" }`);
-      });
-      userProfileServiceMock.getUserProfileDetails.mockImplementation((req, resCb) => {
-        resCb(`{ "id": "SAMPLE_ID", "userId": "SAMPLE_USER_ID", "rootOrg": { "orgName": "SAMPLE_ORG_NAME", "slug": "SAMPLE_ORG_SLUG" } }`);
-      });
-      profileServiceMock.setCurrentProfile.mockResolvedValue('SOME_PROFILE');
-      formAndFrameworkUtilServiceMock.updateLoggedInUser.mockResolvedValue({
-        status: 'SOME_STATUS',
-        profile: 'SOME_PROFILE'
-      });
-
-      // act
-      onboardingPage.refreshProfileData().then((r) => {
-        jest.advanceTimersByTime(800);
-
-        // assert
-        expect(commonUtilServiceMock.showToast).toHaveBeenCalledWith('SAMPLE_WELCOME_BACK');
-        expect(containerServiceMock.removeAllTabs).toHaveBeenCalled();
-        expect(containerServiceMock.addTab).toHaveBeenCalledTimes(3);
-        expect(onboardingPage.orgName).toBe('SAMPLE_ORG_NAME');
-        expect(r).toBe('SAMPLE_ORG_SLUG');
-        done();
-      });
-    });
-  });
-
-  describe('browseAsGuest', () => {
-    it('makes expected calls', (done) => {
-      // arrange
-      sharedPreferencesMock.getString.mockResolvedValue('');
-
-      // act
-      onboardingPage.browseAsGuest();
-
-      // assert
-      setTimeout(() => {
-        expect(telemetryGeneratorServiceMock.generateInteractTelemetry).toHaveBeenCalled();
-        expect(sharedPreferencesMock.getString).toHaveBeenCalledWith(PreferenceKey.SELECTED_USER_TYPE);
-        expect(sharedPreferencesMock.getString).toHaveBeenCalledWith('GUEST_USER_ID_BEFORE_LOGIN');
-        done();
+        expect(comp.getToast).toHaveBeenCalled();
+        expect(comp.translateMessage).toHaveBeenCalled();
       }, 100);
     });
-
-    it('should init Guest-student tabs if user is a student', (done) => {
-      // arrange
-      sharedPreferencesMock.getString.mockImplementation((str: string) => {
-        if (str === PreferenceKey.SELECTED_USER_TYPE) {
-          return Promise.resolve(ProfileType.STUDENT);
-        } else if (str === 'GUEST_USER_ID_BEFORE_LOGIN') {
-          return Promise.resolve('');
-        }
-      });
-
-      // act
-      onboardingPage.browseAsGuest();
-
-      // assert
-      setTimeout(() => {
-        expect(containerServiceMock.removeAllTabs).toHaveBeenCalled();
-        expect(containerServiceMock.addTab.mock.calls).toEqual([
-          [GUEST_STUDENT_TABS[0]],
-          [GUEST_STUDENT_TABS[1]],
-        ]);
-        done();
-      }, 100);
-    });
-
-    it('should init Guest-teacher tabs if user is a teacher', (done) => {
-      // arrange
-      sharedPreferencesMock.getString.mockImplementation((str: string) => {
-        if (str === PreferenceKey.SELECTED_USER_TYPE) {
-          return Promise.resolve(ProfileType.TEACHER);
-        } else if (str === 'GUEST_USER_ID_BEFORE_LOGIN') {
-          return Promise.resolve('');
-        }
-      });
-
-      // act
-      onboardingPage.browseAsGuest();
-
-      // assert
-      setTimeout(() => {
-        expect(containerServiceMock.removeAllTabs).toHaveBeenCalled();
-        expect(containerServiceMock.addTab.mock.calls).toEqual([
-          [GUEST_TEACHER_TABS[0]],
-          [GUEST_TEACHER_TABS[1]],
-          [GUEST_TEACHER_TABS[2]]
-        ]);
-        done();
-      }, 100);
-    });
-
-    it('should should push UserTypeSelectionPage if no guest user id exists', (done) => {
-      // arrange
-      sharedPreferencesMock.getString.mockImplementation((str: string) => {
-        if (str === PreferenceKey.SELECTED_USER_TYPE) {
-          return Promise.resolve('');
-        } else if (str === 'GUEST_USER_ID_BEFORE_LOGIN') {
-          return Promise.resolve('');
-        }
-      });
-
-      // act
-      onboardingPage.browseAsGuest();
-
-      // assert
-      setTimeout(() => {
-        expect(navCtrlMock.push).toHaveBeenCalledWith(UserTypeSelectionPage);
-        done();
-      }, 100);
-    });
-
-    it('should should push UserTypeSelectionPage when unable to set CurrentProfile using guest id',
-      (done) => {
-        // arrange
-        sharedPreferencesMock.getString.mockImplementation((str: string) => {
-          if (str === PreferenceKey.SELECTED_USER_TYPE) {
-            return Promise.resolve('');
-          } else if (str === 'GUEST_USER_ID_BEFORE_LOGIN') {
-            return Promise.resolve('SAMPLE_GUEST_USER_ID');
-          }
-        });
-
-        profileServiceMock.setCurrentProfile.mockRejectedValue('');
-
-        // act
-        onboardingPage.browseAsGuest();
-
-        // assert
-        setTimeout(() => {
-          expect(navCtrlMock.push).toHaveBeenCalledWith(UserTypeSelectionPage);
-          done();
-        }, 100);
-      });
-
-    it('should should push UserTypeSelectionPage when appGlobalService.isProfileSettingsCompleted = false',
-      (done) => {
-        // arrange
-        sharedPreferencesMock.getString.mockImplementation((str: string) => {
-          if (str === PreferenceKey.SELECTED_USER_TYPE) {
-            return Promise.resolve('');
-          } else if (str === 'GUEST_USER_ID_BEFORE_LOGIN') {
-            return Promise.resolve('SAMPLE_GUEST_USER_ID');
-          }
-        });
-
-        (appGlobalServiceMock.isProfileSettingsCompleted as any) = false;
-        profileServiceMock.setCurrentProfile.mockResolvedValue('');
-
-        // act
-        onboardingPage.browseAsGuest();
-
-        // assert
-        setTimeout(() => {
-          expect(navCtrlMock.push).toHaveBeenCalledWith(UserTypeSelectionPage);
-          done();
-        }, 100);
-      });
-
-    it('should setRoot to TabsPage on successfully setting currentProfile',
-      (done) => {
-        // arrange
-        sharedPreferencesMock.getString.mockImplementation((str: string) => {
-          if (str === PreferenceKey.SELECTED_USER_TYPE) {
-            return Promise.resolve('');
-          } else if (str === 'GUEST_USER_ID_BEFORE_LOGIN') {
-            return Promise.resolve('SAMPLE_GUEST_USER_ID');
-          }
-        });
-
-        (appGlobalServiceMock.isProfileSettingsCompleted as any) = true;
-        profileServiceMock.setCurrentProfile.mockResolvedValue('');
-
-        // act
-        onboardingPage.browseAsGuest();
-
-        // assert
-        setTimeout(() => {
-          expect(navCtrlMock.setRoot).toHaveBeenCalledWith(TabsPage, {loginMode: 'guest'});
-          done();
-        }, 100);
-      });
   });
 
-  describe('refreshTenantData()', () => {
-    beforeEach(() => {
-      (<any>window).splashscreen = {setContent: jest.fn()};
+  xdescribe('browseAsGuest', () => {
+    it('makes expected calls', () => {
+      const navControllerStub: NavController = fixture.debugElement.injector.get(
+        NavController
+      );
+      const eventsStub: Events = fixture.debugElement.injector.get(Events);
+      const profileServiceStub: ProfileService = fixture.debugElement.injector.get(
+        ProfileService
+      );
+      const telemetryServiceStub: TelemetryService = fixture.debugElement.injector.get(
+        TelemetryService
+      );
+      const sharedPreferencesStub: SharedPreferences = fixture.debugElement.injector.get(
+        SharedPreferences
+      );
+      spyOn(navControllerStub, 'setRoot');
+      spyOn(navControllerStub, 'push');
+      spyOn(eventsStub, 'publish');
+      spyOn(profileServiceStub, 'setCurrentProfile');
+      spyOn(telemetryServiceStub, 'interact');
+      spyOn(sharedPreferencesStub, 'getString');
+      comp.browseAsGuest();
+      setTimeout(() => {
+        expect(navControllerStub.setRoot).toHaveBeenCalled();
+        expect(navControllerStub.push).toHaveBeenCalled();
+        expect(eventsStub.publish).toHaveBeenCalled();
+        expect(profileServiceStub.setCurrentProfile).toHaveBeenCalled();
+        expect(telemetryServiceStub.interact).toHaveBeenCalled();
+        expect(sharedPreferencesStub.getString).toHaveBeenCalled();
+      }, 100);
     });
+  });
 
-    it('should setContent on splashcreen on success', (done) => {
-      // arrange
-      userProfileServiceMock.getTenantInfo.mockImplementation((req, successCB) => {
-        successCB('{ "logo": "SAMPLE_LOGOG" }');
-      });
-      onboardingPage.orgName = 'SAMPLE_ORG_NAME';
+  describe('getToast', () => {
+    it('Should not create ToastController if not passed any message for toast', () => {
+      const toastCtrlStub: ToastController = fixture.debugElement.injector.get(ToastController);
+      spyOn(toastCtrlStub, 'create');
+      comp.getToast();
+      expect(toastCtrlStub.create).not.toHaveBeenCalled();
+    });
+    it('Should create ToastController', () => {
+      const toastCtrlStub: ToastController = fixture.debugElement.injector.get(ToastController);
+      spyOn(toastCtrlStub, 'create');
+      comp.getToast('Some Message');
+      expect(toastCtrlStub.create).toHaveBeenCalled();
+      expect(toastCtrlStub.create).toBeTruthy();
+    });
+  });
 
-      // act
-      onboardingPage.refreshTenantData('SAMPLE_SLUG').then(() => {
-        // assert
-        expect((<any>window).splashscreen.setContent).toHaveBeenCalledWith('SAMPLE_ORG_NAME', 'SAMPLE_LOGOG');
-        done();
+  xdescribe('translateMessage', () => {
+    it('should resolve test data', () => {
+      expect(comp.translateMessage).toBeDefined();
+      spyOn(comp, 'translateMessage').and.callThrough();
+      const translate = TestBed.get(TranslateService);
+      const spy = spyOn(translate, 'get').and.callFake((arg) => {
+        return Observable.of('Cancel');
       });
+      const translatedMessage = comp.translateMessage('CANCEL');
+      fixture.detectChanges();
+      expect(translatedMessage).toEqual('Cancel');
+      expect(spy.calls.any()).toEqual(true);
     });
   });
 });
