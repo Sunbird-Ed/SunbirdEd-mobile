@@ -1,18 +1,30 @@
 import {
   AuthService,
   BuildParamService,
+  ContainerService,
   ContentService,
-  TelemetryService,
-  DeviceInfoService,
   CourseService,
+  DeviceInfoService,
   FileUtil,
+  FrameworkService,
+  OAuthService,
   PageAssembleService,
+  ProfileService,
   ReportService,
   SharedPreferences,
   ShareUtil,
-  FrameworkService
+  TelemetryService,
+  UserProfileService
 } from 'sunbird';
-import {Events, LoadingController, NavController, NavParams, Platform, PopoverController, ViewController} from 'ionic-angular';
+import {
+  Events,
+  LoadingController,
+  NavController,
+  NavParams,
+  Platform,
+  PopoverController,
+  ViewController
+} from 'ionic-angular';
 import {NgZone} from '@angular/core';
 import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService} from '@app/service';
 import {TranslateService} from '@ngx-translate/core';
@@ -28,7 +40,8 @@ export type Mockify<T> = {
 const createSpyObj: <T extends {}>(methodNames: string[]) => Mockify<T> = (methodNames: string[]) => {
   const obj: any = {};
   for (let i = 0; i < methodNames.length; i++) {
-    obj[methodNames[i]] = jest.fn(() => { });
+    obj[methodNames[i]] = jest.fn(() => {
+    });
   }
   return obj;
 };
@@ -44,7 +57,8 @@ export const courseServiceMock = createSpyObj<CourseService>([
 
 export const navCtrlMock = createSpyObj<NavController>([
   'pop',
-  'push'
+  'push',
+  'setRoot'
 ]);
 
 export const navParamsMock = createSpyObj<NavParams>([
@@ -55,11 +69,31 @@ export const zoneMock = createSpyObj<NgZone>([
   'run'
 ]);
 
+export const oAuthServiceMock = createSpyObj<OAuthService>([
+  'doOAuthStepOne',
+  'doOAuthStepTwo'
+]);
+
+export const containerServiceMock = createSpyObj<ContainerService>([
+  'removeAllTabs',
+  'addTab'
+]);
+
+export const userProfileServiceMock = createSpyObj<UserProfileService>([
+  'getUserProfileDetails',
+  'getTenantInfo'
+]);
+
+export const profileServiceMock = createSpyObj<ProfileService>([
+  'setCurrentProfile'
+]);
+
 export const authServiceMock = createSpyObj<AuthService>([
   'getSessionData'
 ]);
 
 export const commonUtilServiceMock = createSpyObj<CommonUtilService>([
+  'getAppDirection',
   'translateMessage',
   'showMessage',
   'showToast',
@@ -132,7 +166,8 @@ export const telemetryGeneratorServiceMock = createSpyObj<TelemetryGeneratorServ
   'generateCancelDownloadTelemetry',
   'generateInteractTelemetry',
   'generateEndTelemetry',
-  'generatePageViewTelemetry'
+  'generatePageViewTelemetry',
+  'generateBackClickedTelemetry'
 ]);
 
 export const courseUtilServiceMock = createSpyObj<CourseUtilService>([
@@ -151,7 +186,8 @@ export const sunbirdQRScannerMock = createSpyObj<SunbirdQRScanner>([
 ]);
 
 export const formAndFrameworkUtilServiceMock = createSpyObj<FormAndFrameworkUtilService>([
-  'getCourseFilterConfig'
+  'getCourseFilterConfig',
+  'updateLoggedInUser'
 ]);
 
 export const loadingControllerMock = createSpyObj<LoadingController>([
