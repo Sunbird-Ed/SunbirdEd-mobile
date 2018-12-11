@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Simple script to clean install
+## Simple script to clean install
 rm -rf node_modules
 rm -rf platforms
 rm -rf plugins
