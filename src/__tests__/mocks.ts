@@ -7,18 +7,18 @@ import {
   CourseService,
   FileUtil,
   PageAssembleService,
+  ReportService,
   SharedPreferences,
-  ShareUtil,
-  ReportService
+  ShareUtil
 } from 'sunbird';
-import { SunbirdQRScanner } from '@app/pages/qrscanner';
-import { FormAndFrameworkUtilService } from '@app/pages/profile';
-import { Events, NavController, NavParams, Platform, PopoverController, LoadingController } from 'ionic-angular';
-import { NgZone } from '@angular/core';
-import { CommonUtilService, AppGlobalService, TelemetryGeneratorService, CourseUtilService } from '@app/service';
-import { TranslateService } from '@ngx-translate/core';
-import { AppVersion } from '@ionic-native/app-version';
-import { SocialSharing } from '@ionic-native/social-sharing';
+import {Events, LoadingController, NavController, NavParams, Platform, PopoverController} from 'ionic-angular';
+import {NgZone} from '@angular/core';
+import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService} from '@app/service';
+import {TranslateService} from '@ngx-translate/core';
+import {SocialSharing} from '@ionic-native/social-sharing';
+import {AppVersion} from '@ionic-native/app-version';
+import {SunbirdQRScanner} from '@app/pages/qrscanner';
+import {FormAndFrameworkUtilService} from '@app/pages/profile';
 
 export type Mockify<T> = {
   [P in keyof T]: jest.Mock<{}>;
@@ -51,7 +51,8 @@ export const navParamsMock = createSpyObj<NavParams>([
 ]);
 
 export const zoneMock = createSpyObj<NgZone>([
-  'run']);
+  'run'
+]);
 
 export const authServiceMock = createSpyObj<AuthService>([
   'getSessionData'
@@ -65,12 +66,17 @@ export const commonUtilServiceMock = createSpyObj<CommonUtilService>([
 ]);
 
 export const eventsMock = createSpyObj<Events>([
-  'publish'
+  'publish',
+  'subscribe',
+  'unsubscribe'
 ]);
 
 export const contentServiceMock = createSpyObj<ContentService>([
   'getContentDetail',
-  'getLocalContents'
+  'getLocalContents',
+  'importContent',
+  'getChildContents',
+  'cancelDownload'
 ]);
 
 export const popoverCtrlMock = createSpyObj<PopoverController>([
@@ -78,7 +84,9 @@ export const popoverCtrlMock = createSpyObj<PopoverController>([
   'present'
 ]);
 
-export const fileUtilMock = createSpyObj<FileUtil>([]);
+export const fileUtilMock = createSpyObj<FileUtil>([
+  'internalStoragePath'
+]);
 
 export const platformMock = createSpyObj<Platform>([
   'registerBackButtonAction',
@@ -96,7 +104,8 @@ export const socialSharingMock = createSpyObj<SocialSharing>([
 
 export const shareUtilMock = createSpyObj<ShareUtil>([
   'exportApk',
-  'exportTelemetry'
+  'exportTelemetry',
+  'exportEcar'
 ]);
 
 export const buildParamServiceMock = createSpyObj<BuildParamService>([
@@ -136,7 +145,8 @@ export const pageAssembleServiceMock = createSpyObj<PageAssembleService>([
 ]);
 
 export const sunbirdQRScannerMock = createSpyObj<SunbirdQRScanner>([
-  'startScanner'
+  'startScanner',
+  'getImportContentRequestBody'
 ]);
 
 export const formAndFrameworkUtilServiceMock = createSpyObj<FormAndFrameworkUtilService>([
