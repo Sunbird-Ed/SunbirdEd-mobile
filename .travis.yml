@@ -66,7 +66,7 @@ deploy:
   file: "platforms/android/app/build/outputs/apk/**/*/sunbird-*.apk"
   skip_cleanup: true
   on:
-    repo: project-sunbird/sunbird-mobile
+    repo: Sunbird-Ed/SunbirdEd-mobile
     tags: true
   api_key:
     secure: "GuVa0/8rtL41aRz5p4G1xOQVEA9TRXwCI7W15q16sVeYFatGYkTfHdDDAPGt+wR2VEdAx+hc6D/MhzpT1DQDs1I7lEBOBa89hUPJkFBfXcH0WjaxIKuPAUjF3Es3SYYrjGRrqvVOfroHjWeNrBgqyu1NC/7xiUpf9NGhzuIEOziAhav833Ixw3uGRBQShnzpPTzYJF9TF83H0aDZe5Ie9NdVxRNk5Zzm/Ai6qoups4yVaC/aUqutov2bP0pM+pq0PH1EAaNWupnR3XalmQI1nslmYrGFcrKGj1Dcic7XD1xw87/uTy5eIx5TYs0qJcof0qFZZWw9Hf3VfLhDnVTPpPBISqYQV6AWaUI1y0VAzUctjiw9wL2SV9mQpljp2D/3FrB1WHvUFyp1lUVPGPteZr3GskWnoCl5KAeIPfL9NZ0SxiJf6+jVVrqK2SkWL3f6uDcd1fy2XcS/ip0wO+fryiyWYLHG6vQao7GljF8B95kbr180DaP09SHrv63QMN8ThbJDg4/PVugKz2hG0Yxb2xqBgaGlc4xqIc+5yPetoriCc65hVIGvf/V9dAVwsi+OmOllB5JAwJOtmT4MHxzfnFpq7a6sPIUqSx2ygJvUeHEUS1nvLctLoK0Sjjdf6mt/HALWOgjnhco8abRn3W1NiXvL/DKNYLmWb6Zm0IWd9AA="
