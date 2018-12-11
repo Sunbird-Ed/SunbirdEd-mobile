@@ -1,12 +1,20 @@
-import { IonicPage, NavController, NavParams, Events } from 'ionic-angular';
-import { Component, NgZone, OnInit } from '@angular/core';
-import { ContentService, CourseService, PageId, Environment, ImpressionType, LogLevel, ContentFilterCriteria } from 'sunbird';
+import {Events, IonicPage, NavController, NavParams} from 'ionic-angular';
+import {Component, NgZone, OnInit} from '@angular/core';
+import {
+  ContentFilterCriteria,
+  ContentService,
+  CourseService,
+  Environment,
+  ImpressionType,
+  LogLevel,
+  PageId
+} from 'sunbird';
 import * as _ from 'lodash';
-import { ContentType, ViewMore } from '../../app/app.constant';
-import { ContentDetailsPage } from '../content-details/content-details';
-import { CourseUtilService } from '../../service/course-util.service';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { CommonUtilService } from '../../service/common-util.service';
+import {ContentType, ViewMore} from '../../app/app.constant';
+import {ContentDetailsPage} from '../content-details/content-details';
+import {CourseUtilService} from '../../service/course-util.service';
+import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import {CommonUtilService} from '../../service/common-util.service';
 
 @IonicPage()
 @Component({

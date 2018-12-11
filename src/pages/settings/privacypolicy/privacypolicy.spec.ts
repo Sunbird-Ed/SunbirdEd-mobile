@@ -1,16 +1,16 @@
 import 'jest';
-import { navCtrlMock, navParamsMock } from '../../../__tests__/mocks';
-import { PrivacypolicyPage } from './privacypolicy';
+import {navCtrlMock, navParamsMock} from '../../../__tests__/mocks';
+import {PrivacypolicyPage} from './privacypolicy';
 
 describe.only('PrivacyPolicyPage', () => {
-    let privacypolicy: PrivacypolicyPage;
+  let privacypolicy: PrivacypolicyPage;
 
-    beforeAll(() => {
-        privacypolicy = new PrivacypolicyPage(navCtrlMock as any, navParamsMock as any);
+  beforeAll(() => {
+    privacypolicy = new PrivacypolicyPage(navCtrlMock as any, navParamsMock as any);
 
-        jest.resetAllMocks();
+    jest.resetAllMocks();
     });
     it('can load instance', () => {
-        expect(privacypolicy).toBeTruthy();
+      expect(privacypolicy).toBeTruthy();
     });
 });

@@ -2,15 +2,15 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: circleci/android:api-25-alpha
+    - image: circleci/android:api-25-alpha
     steps:
-      - checkout
-      - run: sudo apt install curl
-      - run: curl -sL https://deb.nodesource.com/setup_10.x | sudo bash -
-      - run: sudo apt install nodejs
-      - run: npm i node-sass
-      - run: sudo npm install -g ionic cordova
-      - run:
-          name: run build file
-          command: ./build.sh $CIRCLE_BRANCH
+    - checkout
+    - run: sudo apt install curl
+    - run: curl -sL https://deb.nodesource.com/setup_10.x | sudo bash -
+    - run: sudo apt install nodejs
+    - run: npm i node-sass
+    - run: sudo npm install -g ionic cordova
+    - run:
+        name: run build file
+        command: ./build.sh $CIRCLE_BRANCH
 
