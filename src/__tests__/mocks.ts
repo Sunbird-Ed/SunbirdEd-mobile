@@ -9,9 +9,10 @@ import {
   PageAssembleService,
   ReportService,
   SharedPreferences,
-  ShareUtil
+  ShareUtil,
+  FrameworkService
 } from 'sunbird';
-import {Events, LoadingController, NavController, NavParams, Platform, PopoverController} from 'ionic-angular';
+import {Events, LoadingController, NavController, NavParams, Platform, PopoverController, ViewController} from 'ionic-angular';
 import {NgZone} from '@angular/core';
 import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService} from '@app/service';
 import {TranslateService} from '@ngx-translate/core';
@@ -166,6 +167,10 @@ export const sharedPreferencesMock = createSpyObj<SharedPreferences>([
   'putString',
   'getStringWithoutPrefix'
 ]);
+export const frameworkServiceMock = createSpyObj<FrameworkService>(['getCategoryData']);
+
+export const viewControllerMock = createSpyObj<ViewController>(['dismiss']);
+
 
 export const deviceInfoServiceMock = createSpyObj<DeviceInfoService>([
   'getDeviceID'
