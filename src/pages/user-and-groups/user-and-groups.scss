@@ -138,9 +138,9 @@ page-user-and-groups {
         vertical-align: text-bottom;
       }
 
-  h6:first-child {
-    margin-top: 0px !important;
-  }
+      h6:first-child{
+        margin-top: 0px !important;
+      }
 }
 .padding-left-2{
   @include padding(null, null, null, 2px !important);

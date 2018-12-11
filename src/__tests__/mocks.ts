@@ -3,28 +3,20 @@ import {
   BuildParamService,
   ContainerService,
   ContentService,
-  CourseService,
+  TelemetryService,
   DeviceInfoService,
+  CourseService,
   FileUtil,
-  FrameworkService,
   OAuthService,
   PageAssembleService,
   ProfileService,
   ReportService,
   SharedPreferences,
   ShareUtil,
-  TelemetryService,
-  UserProfileService
+  UserProfileService,
+  FrameworkService
 } from 'sunbird';
-import {
-  Events,
-  LoadingController,
-  NavController,
-  NavParams,
-  Platform,
-  PopoverController,
-  ViewController
-} from 'ionic-angular';
+import {Events, LoadingController, NavController, NavParams, Platform, PopoverController, ViewController} from 'ionic-angular';
 import {NgZone} from '@angular/core';
 import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService} from '@app/service';
 import {TranslateService} from '@ngx-translate/core';
@@ -40,8 +32,7 @@ export type Mockify<T> = {
 const createSpyObj: <T extends {}>(methodNames: string[]) => Mockify<T> = (methodNames: string[]) => {
   const obj: any = {};
   for (let i = 0; i < methodNames.length; i++) {
-    obj[methodNames[i]] = jest.fn(() => {
-    });
+    obj[methodNames[i]] = jest.fn(() => { });
   }
   return obj;
 };

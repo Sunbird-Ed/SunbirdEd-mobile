@@ -1,23 +1,23 @@
-import {CommonUtilService} from './../../../service/common-util.service';
-import {Component} from '@angular/core';
-import {NavController, NavParams} from 'ionic-angular';
-import {AboutAppPage} from '../about-app/about-app';
-import {TermsofservicePage} from '../termsofservice/termsofservice';
-import {PrivacypolicyPage} from '../privacypolicy/privacypolicy';
-import {AppVersion} from '@ionic-native/app-version';
-import {SocialSharing} from '@ionic-native/social-sharing';
+import { CommonUtilService } from './../../../service/common-util.service';
+import { Component } from '@angular/core';
+import { NavController, NavParams } from 'ionic-angular';
+import { AboutAppPage } from '../about-app/about-app';
+import { TermsofservicePage } from '../termsofservice/termsofservice';
+import { PrivacypolicyPage } from '../privacypolicy/privacypolicy';
+import { AppVersion } from '@ionic-native/app-version';
+import { SocialSharing } from '@ionic-native/social-sharing';
 import {
-  BuildParamService,
   DeviceInfoService,
-  Environment,
+  BuildParamService,
   ImpressionType,
-  InteractSubtype,
-  InteractType,
   PageId,
+  Environment,
+  TelemetryService,
   SharedPreferences,
-  TelemetryService
+  InteractType,
+  InteractSubtype
 } from 'sunbird';
-import {generateImpressionTelemetry, generateInteractTelemetry} from '../../../app/telemetryutil';
+import { generateImpressionTelemetry, generateInteractTelemetry } from '../../../app/telemetryutil';
 
 const KEY_SUNBIRD_CONFIG_FILE_PATH = 'sunbird_config_file_path';
 

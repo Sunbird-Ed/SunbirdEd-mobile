@@ -1,16 +1,16 @@
-import {Component, NgZone} from '@angular/core';
-import {IonicPage, LoadingController, NavController, NavParams} from 'ionic-angular';
-import {DeviceInfoService, Environment, ImpressionType, PageId, ReportService, ReportSummary} from 'sunbird';
-import {ReportAlert} from '../report-alert/report-alert';
-import {TranslateService} from '@ngx-translate/core';
-import {File} from '@ionic-native/file';
-import {FileTransfer, FileTransferObject} from '@ionic-native/file-transfer';
-import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
-import {SocialSharing} from '@ionic-native/social-sharing';
-import {AppVersion} from '@ionic-native/app-version';
-import {AppGlobalService} from '../../../service/app-global.service';
-import {DatePipe} from '@angular/common';
-import {CommonUtilService} from '@app/service';
+import { Component, NgZone } from '@angular/core';
+import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
+import { ReportService, ReportSummary, ImpressionType, PageId, Environment, DeviceInfoService } from 'sunbird';
+import { ReportAlert } from '../report-alert/report-alert';
+import { TranslateService } from '@ngx-translate/core';
+import { File } from '@ionic-native/file';
+import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
+import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
+import { SocialSharing } from '@ionic-native/social-sharing';
+import { AppVersion } from '@ionic-native/app-version';
+import { AppGlobalService } from '../../../service/app-global.service';
+import { DatePipe } from '@angular/common';
+import { CommonUtilService } from '@app/service';
 
 @IonicPage()
 @Component({
@@ -171,7 +171,7 @@ export class UserReportPage {
       line += 'Content name (Content ID)' + ',' + this.reportSummary.name + '(' + this.reportSummary.contentId + ')' + '\n';
       line += 'Content started time' + ',' + contentstarttime + '\n';
       line += 'Total Time' + ',' + this.formatTime(this.totalTime) + '\n';
-      line += 'Total Score' + ',' + ' ' + this.totalScore + '/' + this.maxTotalScore + '\n';
+      line += 'Total Score' + ',' + ' ' + this.totalScore + '/' + this.maxTotalScore  + '\n';
       line += 'File export time' + ',' + filexptime + '\n';
       line += '\n\n';
       line += 'Question#' + ',';
@@ -184,7 +184,7 @@ export class UserReportPage {
     for (let j = 0; j < anzahlTeams - 1; j++) {
       line +=  '\"' + values[j].qtitle + '\"' + ',';
       line +=  '\"' + values[j].qid + '\"' + ',';
-      line += '\"' + ' ' + values[j].score + '/' + values[j].maxScore + '\"' + ',';
+      line +=  '\"' + ' ' + values[j].score  + '/' + values[j].maxScore + '\"' + ',';
       line +=  '\"' + this.formatTime(values[j].timespent) + '\"' + '\n';
     }
     csv += line + '\n';

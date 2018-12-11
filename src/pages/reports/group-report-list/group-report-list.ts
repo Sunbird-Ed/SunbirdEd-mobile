@@ -1,25 +1,17 @@
-import {CommonUtilService} from './../../../service/common-util.service';
-import {NavController} from 'ionic-angular/navigation/nav-controller';
-import {Component, NgZone} from '@angular/core';
-import {LoadingController, NavParams} from 'ionic-angular';
+import { CommonUtilService } from './../../../service/common-util.service';
+import { NavController } from 'ionic-angular/navigation/nav-controller';
+import { Component, NgZone } from '@angular/core';
+import { NavParams, LoadingController } from 'ionic-angular';
 import {
-  DeviceInfoService,
-  Environment,
-  InteractSubtype,
-  InteractType,
-  PageId,
-  Profile,
-  ReportService,
-  ReportSummary
-} from 'sunbird';
-import {GroupReportAlert} from '../group-report-alert/group-report-alert';
-import {TranslateService} from '@ngx-translate/core';
-import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
-import {AppGlobalService} from '../../../service/app-global.service';
-import {UserReportPage} from '../user-report/user-report';
-import {File} from '@ionic-native/file';
-import {FileTransfer, FileTransferObject} from '@ionic-native/file-transfer';
-import {DatePipe} from '@angular/common';
+    ReportService, ReportSummary, PageId, Environment, InteractType, InteractSubtype, DeviceInfoService, Profile} from 'sunbird';
+import { GroupReportAlert } from '../group-report-alert/group-report-alert';
+import { TranslateService } from '@ngx-translate/core';
+import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
+import { AppGlobalService } from '../../../service/app-global.service';
+import { UserReportPage } from '../user-report/user-report';
+import { File } from '@ionic-native/file';
+import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
+import { DatePipe } from '@angular/common';
 
 
 @Component({
@@ -287,7 +279,7 @@ export class GroupReportListPage {
                     line += '\"' + values[k].uid + '\"' + ',';
                     line += '\"' + values[k].assessmentData[j].qtitle + '\"' + ',';
                     line += '\"' + values[k].assessmentData[j].qid + '\"' + ',';
-                  line += '\"' + ' ' + values[k].assessmentData[j].score + '/' + values[k].assessmentData[j].maxScore + '\"' + ',';
+                    line += '\"' + ' ' + values[k].assessmentData[j].score + '/' + values[k].assessmentData[j].maxScore + '\"' + ',';
                     line += '\"' + values[k].assessmentData[j].timespent + '\"' + '\n';
                 }
                 line += '\n\n';
@@ -317,7 +309,7 @@ export class GroupReportListPage {
                 line += values[p].uid + ',';
                 line += values[p].qtitle + ',';
                 line += values[p].qid + ',';
-              line += ' ' + values[p].score + '/' + values[p].max_score + ',';
+                line += ' ' + values[p].score + '/' + values[p].max_score + ',';
                 line += this.formatTime(values[p].time_spent) + '\n';
             }
         }

@@ -1,34 +1,53 @@
-import {FormAndFrameworkUtilService} from './../profile/formandframeworkutil.service';
-import {AfterViewInit, Component, NgZone, OnInit} from '@angular/core';
+import { FormAndFrameworkUtilService } from './../profile/formandframeworkutil.service';
 import {
-  ContentFilterCriteria,
-  ContentService,
-  Environment,
-  FrameworkService,
-  ImpressionType,
-  InteractSubtype,
-  InteractType,
-  PageAssembleCriteria,
-  PageAssembleFilter,
+  Component,
+  NgZone,
+  OnInit,
+  AfterViewInit
+} from '@angular/core';
+import {
   PageAssembleService,
+  PageAssembleCriteria,
+  ContentService,
+  ImpressionType,
   PageId,
+  Environment,
+  InteractType,
+  InteractSubtype,
+  SharedPreferences,
+  ContentFilterCriteria,
   ProfileType,
-  SharedPreferences
+  PageAssembleFilter,
+  FrameworkService
 } from 'sunbird';
-import {Events, NavController, PopoverController} from 'ionic-angular';
+import {
+  NavController,
+  PopoverController,
+  Events
+} from 'ionic-angular';
 import * as _ from 'lodash';
-import {ViewMoreActivityPage} from '../view-more-activity/view-more-activity';
-import {SunbirdQRScanner} from '../qrscanner/sunbirdqrscanner.service';
-import {SearchPage} from '../search/search';
-import {Map} from '../../app/telemetryutil';
-import {AudienceFilter, ContentCard, ContentType, PageName, PreferenceKey, ViewMore} from '../../app/app.constant';
-import {PageFilter, PageFilterCallback} from '../page-filter/page.filter';
-import {AppGlobalService} from '../../service/app-global.service';
+import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
+import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
+import { SearchPage } from '../search/search';
+import { Map } from '../../app/telemetryutil';
+import {
+  ContentType,
+  AudienceFilter,
+  PreferenceKey,
+  PageName,
+  ContentCard,
+  ViewMore
+} from '../../app/app.constant';
+import {
+  PageFilterCallback,
+  PageFilter
+} from '../page-filter/page.filter';
+import { AppGlobalService } from '../../service/app-global.service';
 import Driver from 'driver.js';
-import {AppVersion} from '@ionic-native/app-version';
-import {updateFilterInSearchQuery} from '../../util/filter.util';
-import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
-import {CommonUtilService} from '../../service/common-util.service';
+import { AppVersion } from '@ionic-native/app-version';
+import { updateFilterInSearchQuery } from '../../util/filter.util';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { CommonUtilService } from '../../service/common-util.service';
 
 @Component({
   selector: 'page-resources',
@@ -253,7 +272,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       .then(data => {
         _.forEach(data, (value) => {
           value.contentData.lastUpdatedOn = value.lastUpdatedTime;
-          if (Boolean(value.isAvailableLocally) && value.basePath && value.contentData.appIcon) {
+          if (Boolean(value.isAvailableLocally) &&  value.basePath && value.contentData.appIcon) {
             value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
           } else if (!Boolean(value.isAvailableLocally)) {
             value.contentData.appIcon = value.contentData.appIcon;

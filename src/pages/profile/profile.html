@@ -83,10 +83,10 @@
             <div>{{'CLASSES' | translate }}: </div>
             <div class="bolder">{{profile?.framework?.gradeLevel}}</div>
         </div>
-      <div class="container" *ngIf="profile?.framework?.subject">
-        <div>{{'SUBJECTS' | translate }}:</div>
-        <div class="bolder">{{profile?.framework?.subject}}</div>
-      </div>
+        <div class="container" *ngIf="profile?.framework?.subject">
+            <div>{{'SUBJECTS' | translate }}: </div>
+            <div class="bolder">{{profile?.framework?.subject}}</div>
+        </div>
         <div class="container">
             <button ion-button round (click)="navigateToCategoriesEditPage()" class="short-btn custom-round">
                 {{'EDIT' | translate }}
@@ -100,8 +100,8 @@
             <img height="80px" width="auto" src="{{batch.badgeClassImage}}">
         </ion-avatar>
         <div class="" text-center>
-          <button ion-button round *ngIf="badgesLimit < profile?.badgeAssertions?.length" (click)="showMoreBadges()"
-                  class="txt-capitalize custom-round">
+            <button ion-button round *ngIf="badgesLimit < profile?.badgeAssertions?.length" (click)="showMoreBadges()"
+                class="txt-capitalize custom-round">
                 + {{profile?.badgeAssertions?.length - 2}} {{'MORE' | translate}} <ion-icon class="ML10" name="ios-arrow-down"></ion-icon>
             </button>
             <button ion-button round *ngIf="badgesLimit > DEFAULT_PAGINATION_LIMIT" (click)="showLessBadges()" class="txt-capitalize custom-round">
@@ -110,7 +110,7 @@
         </div>
     </div>
 
-  <div class="contributions" *ngIf="enrolledCourse.length > 0">
+    <div class="contributions" *ngIf="enrolledCourse.length > 0">
         <div class="bolder f16" style="padding: 15px; background-color: #fff; margin-bottom:  2px;">
             {{'CONTRIBUTIONS' | translate}} ({{enrolledCourse.length}})&lrm;
         </div>
@@ -173,14 +173,12 @@
                 </div>
             </div>
             <div class="" text-center>
-              <button ion-button round class="txt-capitalize custom-round"
-                      *ngIf="trainingsLimit < trainingsCompleted.length"
-                      (click)="showMoreTainings()">
+                <button ion-button round class="txt-capitalize custom-round" *ngIf="trainingsLimit < trainingsCompleted.length"
+                    (click)="showMoreTainings()">
                     + {{trainingsCompleted?.length - 2}} {{'MORE' | translate}} <ion-icon class="ML10" name="ios-arrow-down"></ion-icon>
                 </button>
-              <button ion-button round class="txt-capitalize custom-round"
-                      *ngIf="trainingsLimit > DEFAULT_PAGINATION_LIMIT"
-                      (click)="showLessTrainings()">
+                <button ion-button round class="txt-capitalize custom-round" *ngIf="trainingsLimit > DEFAULT_PAGINATION_LIMIT"
+                    (click)="showLessTrainings()">
                     {{'SHOW_LESS' | translate }} <ion-icon class="ML10" name="ios-arrow-up"></ion-icon>
                 </button>
             </div>
