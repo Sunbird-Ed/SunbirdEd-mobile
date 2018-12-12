@@ -1,18 +1,17 @@
-import { ReportAlert } from "./report-alert";
-import { 
-    navCtrlMock, 
-    navParamsMock, 
+import { ReportAlert } from './report-alert';
+import {
+    navCtrlMock,
+    navParamsMock,
     viewControllerMock,
     ionicAppMock,
     platformMock
-} from "../../../__tests__/mocks";
-jest.mock
+} from '../../../__tests__/mocks';
 
 describe.only('CourseBatchesPage', () => {
     let reportAlertPage: ReportAlert;
 
     beforeEach(() => {
-        navParamsMock.get.mockReturnValue({ 'row': function() {} } as any);
+        navParamsMock.get.mockReturnValue({ 'row': () => {} } as any);
         reportAlertPage = new ReportAlert(
             navParamsMock as any,
             viewControllerMock as any,
@@ -34,13 +33,13 @@ describe.only('CourseBatchesPage', () => {
     });
 
     it('should call registerBackButtonAction() when ionViewWillEnter()', () => {
-        platformMock.registerBackButtonAction.mockReturnValue(function () {});
+        platformMock.registerBackButtonAction.mockReturnValue(() => {});
         spyOn(reportAlertPage, 'dismissPopup');
         reportAlertPage.ionViewWillEnter();
         reportAlertPage.unregisterBackButton = platformMock.registerBackButtonAction.mock.calls[0][0].call();
         expect(reportAlertPage.dismissPopup).toBeCalled();
     });
-    
+
     it('should call unregisterBackButton() when ionViewWillLeave() ', () => {
         reportAlertPage.unregisterBackButton = jest.fn();
         reportAlertPage.ionViewWillLeave();
