@@ -238,7 +238,7 @@ export class ContentDetailsPage {
     // This is to know when the app has come to foreground
     this.resume = this.platform.resume.subscribe(() => {
       this.isContentPlayed = true;
-      if (this.isPlayerLaunched && !this.isGuestUser) {
+      if (this.isPlayerLaunched) {
         this.isPlayerLaunched = false;
         this.setContentDetails(this.identifier, false, true /* No Automatic Rating for 1.9.0 */);
       }
@@ -324,7 +324,7 @@ export class ContentDetailsPage {
    * Function to rate content
    */
   rateContent(popupType: string) {
-    if (!this.isGuestUser) {
+    //if (this.isGuestUser || this.isNotGuestUser) {
       const paramsMap = new Map();
       if (this.isContentPlayed || (this.content.downloadable
         && this.content.contentAccess.length)) {
@@ -361,11 +361,11 @@ export class ContentDetailsPage {
         paramsMap,
         this.objRollup,
         this.corRelationList);
-    } else {
-      if (this.profileType === ProfileType.TEACHER) {
-        this.commonUtilService.showToast('SIGNIN_TO_USE_FEATURE');
-      }
-    }
+    // } else {
+    //   if (this.profileType === ProfileType.TEACHER) {
+    //     this.commonUtilService.showToast('SIGNIN_TO_USE_FEATURE');
+    //   }
+    // }
   }
 
   /**
