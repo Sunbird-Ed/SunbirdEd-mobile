@@ -1,853 +1,890 @@
+import {CollectionDetailsPage} from '@app/pages/collection-details/collection-details';
 import {
-    Events, IonicModule, LoadingController, NavController, NavParams, Platform, PopoverController,
-    ToastController
-} from 'ionic-angular';
-import { NetworkMock, StorageMock } from 'ionic-mocks';
-import { Ionic2RatingModule } from 'ionic2-rating';
-import { Observable } from 'rxjs/Observable';
-import {
-    AuthService, BuildParamService, ContentService, CourseService, FileUtil, FrameworkModule,
-    // tslint:disable-next-line:max-line-length
-    GenieSDKServiceProvider, ProfileType, SharedPreferences, ShareUtil, TelemetryService, InteractSubtype, PageId, Environment, InteractType, TelemetryObject, Mode, Rollup
-} from 'sunbird';
-
-import { HttpClientModule } from '@angular/common/http';
-import { async, ComponentFixture, inject, TestBed } from '@angular/core/testing';
-import { Network } from '@ionic-native/network';
-import { SocialSharing } from '@ionic-native/social-sharing';
-import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
-
-import {
-    AuthServiceMock, FileUtilMock, GenieSDKServiceProviderMock, LoadingControllerMock, NavMock,
-    NavParamsMock, PlatformMock, PopoverControllerMock, SharedPreferencesMock, SocialSharingMock,
-    ToastControllerMock, TranslateLoaderMock, PopoverMock
-} from '../../../test-config/mocks-ionic';
-import { PBHorizontal } from '../../component/pbhorizontal/pb-horizontal';
-import { DirectivesModule } from '../../directives/directives.module';
-import { PipesModule } from '../../pipes/pipes.module';
-import { AppGlobalService } from '../../service/app-global.service';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { CollectionDetailsPage } from './collection-details';
-import { mockRes } from './collection-details.spec.data';
-import { CommonUtilService } from '../../service/common-util.service';
-import { } from 'jasmine';
-import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
-import { ContentDetailsPage } from '../content-details/content-details';
+  appGlobalServiceMock,
+  buildParamServiceMock,
+  commonUtilServiceMock,
+  contentServiceMock,
+  courseUtilServiceMock,
+  eventsMock,
+  fileUtilMock,
+  navCtrlMock,
+  navParamsMock,
+  platformMock,
+  popoverCtrlMock,
+  shareUtilMock,
+  socialSharingMock,
+  telemetryGeneratorServiceMock,
+  translateServiceMock,
+  zoneMock
+} from '@app/__tests__/mocks';
+import {mockRes} from '@app/pages/collection-details/collection-details.spec.data';
+import {ShareUrl} from '@app/app';
+import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details';
+import {ContentDetailsPage} from '@app/pages/content-details/content-details';
+import 'jest';
 
 describe('CollectionDetailsPage Component', () => {
-    let component: CollectionDetailsPage;
-    let fixture: ComponentFixture<CollectionDetailsPage>;
-    let translateService: TranslateService;
-    const identifier = 'do_212516141114736640146589';
-    let spyObjPreference;
-    let spyObjBuildParam;
+  let collectionDetailsPage: CollectionDetailsPage;
 
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
-            declarations: [CollectionDetailsPage, PBHorizontal],
-            imports: [
-                IonicModule.forRoot(CollectionDetailsPage),
-                TranslateModule.forRoot({
-                    loader: { provide: TranslateLoader, useClass: TranslateLoaderMock },
-                }),
-                PipesModule,
-                HttpClientModule,
-                FrameworkModule,
-                DirectivesModule,
-                Ionic2RatingModule
-            ],
-            providers: [
-                ContentService, TelemetryService, CourseService, ShareUtil, TelemetryGeneratorService,
-                CommonUtilService,
-                // { provide: Platform, useClass: PlatformMock },
-                { provide: FileUtil, useClass: FileUtilMock },
-                { provide: NavController, useClass: NavMock },
-                { provide: Events, useClass: Events },
-                { provide: NavParams, useClass: NavParamsMock },
-                { provide: SocialSharing, useClass: SocialSharingMock },
-                { provide: Network, useFactory: () => NetworkMock.instance('none') },
-                { provide: AppGlobalService, useClass: AppGlobalService },
-                { provide: AuthService, useClass: AuthServiceMock },
-                { provide: GenieSDKServiceProvider, useClass: GenieSDKServiceProviderMock },
-                // { provide: SharedPreferences, useClass: SharedPreferencesMock },
-                { provide: ToastController, useClass: ToastControllerMock },
-                { provide: PopoverController, useFactory: () => PopoverControllerMock.instance() },
-                { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() },
-                SharedPreferences
-            ]
-        });
+  beforeEach(() => {
+    appGlobalServiceMock.isUserLoggedIn.mockReturnValue(true);
+    buildParamServiceMock.getBuildConfigParam.mockResolvedValue('SOME_URL');
+
+    collectionDetailsPage = new CollectionDetailsPage(navCtrlMock as any, navParamsMock as any,
+      contentServiceMock as any, zoneMock as any, eventsMock as any, popoverCtrlMock as any, fileUtilMock as any,
+      platformMock as any, translateServiceMock as any, socialSharingMock as any, shareUtilMock as any,
+      buildParamServiceMock as any, appGlobalServiceMock as any, commonUtilServiceMock as any,
+      telemetryGeneratorServiceMock as any, courseUtilServiceMock as any);
+
+    jest.resetAllMocks();
+  });
+
+  it('should create a valid instance of CollectionDetailsPage', () => {
+    expect(collectionDetailsPage).not.toBeFalsy();
+  });
+
+  it('should set content details', () => {
+    // arrange
+    spyOn(collectionDetailsPage, 'resetVariables').and.stub();
+    spyOn(collectionDetailsPage, 'subscribeGenieEvent').and.stub();
+    spyOn(collectionDetailsPage, 'setContentDetails').and.stub();
+
+    navParamsMock.get.mockImplementation((p: string) => {
+      if (p === 'content') {
+        return {
+          identifier: 'SOME_IDENTIFIER'
+        };
+      }
+    });
+
+    // act
+    collectionDetailsPage.ionViewWillEnter();
+    zoneMock.run.mock.calls[0][0].call(collectionDetailsPage, undefined);
+
+    // assert
+    expect(collectionDetailsPage.setContentDetails).toHaveBeenCalledWith('SOME_IDENTIFIER', true);
+  });
+
+  it('should extract content details api response: when content locally available', (done) => {
+    // arrange
+    spyOn(collectionDetailsPage, 'importContent').and.stub();
+    spyOn(collectionDetailsPage, 'setChildContents').and.stub();
+    spyOn(collectionDetailsPage, 'setCollectionStructure').and.stub();
+    commonUtilServiceMock.getLoader.mockReturnValue({
+      present: () => {
+      },
+      dismiss: () => Promise.resolve()
+    });
+    contentServiceMock.getContentDetail.mockResolvedValue(JSON.stringify(mockRes.contentDetailsResponse));
+
+    // act
+    collectionDetailsPage.setContentDetails('SOME_IDENTIFIER', true);
+
+    // assert
+    expect(contentServiceMock.getContentDetail).toBeCalledWith(expect.objectContaining({
+      contentId: 'SOME_IDENTIFIER',
+      refreshContentDetails: true
     }));
 
-    beforeEach(() => {
-        const buildParamService = TestBed.get(BuildParamService);
-        const prefernce = TestBed.get(SharedPreferences);
-        spyObjBuildParam = spyOn(buildParamService, 'getBuildConfigParam');
-        spyObjBuildParam.and.returnValue(Promise.resolve('SAMPLE_BASE_URL'));
-        spyObjPreference = spyOn(prefernce, 'getString');
-        spyObjPreference.and.returnValue(Promise.resolve(ProfileType.TEACHER));
-        fixture = TestBed.createComponent(CollectionDetailsPage);
-        component = fixture.componentInstance;
+    setTimeout(() => {
+      zoneMock.run.mock.calls[0][0].call(collectionDetailsPage, undefined);
+      setTimeout(() => {
+        expect(collectionDetailsPage.contentDetail).toBeTruthy();
+        done();
+      }, 0);
+    }, 0);
+  });
+
+  it('should extract content details api response: content Locally not available', (done) => {
+    // arrange
+    spyOn(collectionDetailsPage, 'importContent').and.stub();
+    spyOn(collectionDetailsPage, 'setChildContents').and.stub();
+    spyOn(collectionDetailsPage, 'setCollectionStructure').and.stub();
+    commonUtilServiceMock.getLoader.mockReturnValue({
+      present: () => {
+      },
+      dismiss: () => Promise.resolve()
     });
 
-    beforeEach(() => {
-        inject([TranslateService], (service) => {
-            translateService = service;
-            translateService.use('en');
-        });
+    const data = mockRes.contentDetailsResponse;
+    data.result.contentData.gradeLevel = ['Class 1', 'Class 2'];
+    data.result.isAvailableLocally = false;
+    contentServiceMock.getContentDetail.mockResolvedValue(JSON.stringify(data));
+
+    // act
+    collectionDetailsPage.setContentDetails('SOME_IDENTIFIER', true);
+
+    // assert
+    expect(contentServiceMock.getContentDetail).toBeCalledWith(expect.objectContaining({
+      contentId: 'SOME_IDENTIFIER',
+      refreshContentDetails: true
+    }));
+
+    setTimeout(() => {
+      zoneMock.run.mock.calls[0][0].call(collectionDetailsPage, undefined);
+      setTimeout(() => {
+        expect(collectionDetailsPage.contentDetail).toBeTruthy();
+        done();
+      }, 0);
+    }, 0);
+  });
+
+  it('should open content rating screen on rate event', () => {
+    // arrange
+    collectionDetailsPage.guestUser = false;
+    collectionDetailsPage.contentDetail = {isAvailableLocally: true};
+
+    const popUp = {
+      present: jest.fn(),
+      onDidDismiss: jest.fn()
+    };
+
+    popoverCtrlMock.create.mockReturnValue(popUp);
+
+    // act
+    collectionDetailsPage.rateContent();
+
+    // assert
+    expect(popUp.present).toHaveBeenCalled();
+  });
+
+  it('should generate rollup object', () => {
+    // arrange
+    collectionDetailsPage.cardData = {};
+    collectionDetailsPage.cardData.hierarchyInfo = mockRes.hierarchyInfo;
+
+    // act
+    collectionDetailsPage.generateRollUp();
+
+    // assert
+    expect(collectionDetailsPage.cardData.hierarchyInfo).toBeTruthy();
+    expect(collectionDetailsPage.objRollup).toBeTruthy();
+  });
+
+  it('should check content download progress', () => {
+    // arrange
+    collectionDetailsPage.contentDetail = {
+      identifier: undefined
+    };
+    collectionDetailsPage.cardData = {hierarchyInfo: undefined};
+
+    // act
+    collectionDetailsPage.subscribeGenieEvent();
+
+    eventsMock.subscribe.mock.calls[0][1].call(collectionDetailsPage,
+      JSON.stringify(mockRes.importContentDownloadProgressResponse));
+    zoneMock.run.mock.calls[0][0].call(collectionDetailsPage, undefined);
+
+    // assert
+    expect(eventsMock.subscribe).toHaveBeenCalled();
+    expect(collectionDetailsPage.downloadProgress).toEqual(
+      mockRes.importContentDownloadProgressResponse.data.downloadProgress);
+  });
+
+  it('share() should invoke  export ecar API if course is locally available', () => {
+    // arrange
+    commonUtilServiceMock.getLoader.mockReturnValue({
+      present: () => {
+      },
+      dismiss: () => {
+      }
+    });
+    spyOn(collectionDetailsPage, 'generateShareInteractEvents').and.stub();
+
+    collectionDetailsPage.contentDetail = {
+      'contentType': 'Collection',
+      'isAvailableLocally': true,
+      'identifier': 'SAMPLE_ID'
+    };
+
+    // act
+    collectionDetailsPage.share();
+    shareUtilMock.exportEcar.mock.calls[0][1].call(collectionDetailsPage, 'SOME_PATH');
+
+    // assert
+    expect(socialSharingMock.share).toHaveBeenCalledWith('', '', 'file://SOME_PATH',
+      collectionDetailsPage.baseUrl + ShareUrl.COLLECTION + collectionDetailsPage.contentDetail.identifier);
+  });
+
+  it('should show warning toast if exportEcar gives failure response when share()', () => {
+    // arrange
+    commonUtilServiceMock.getLoader.mockReturnValue({
+      present: () => {
+      },
+      dismiss: () => {
+      }
+    });
+    spyOn(collectionDetailsPage, 'generateShareInteractEvents').and.stub();
+
+    collectionDetailsPage.contentDetail = {
+      'contentType': 'Collection',
+      'isAvailableLocally': true,
+      'identifier': 'SAMPLE_ID'
+    };
+
+    // act
+    collectionDetailsPage.share();
+    shareUtilMock.exportEcar.mock.calls[0][2].call(collectionDetailsPage, undefined);
+
+    // assert
+    expect(commonUtilServiceMock.showToast).toHaveBeenCalledWith('SHARE_CONTENT_FAILED');
+  });
+
+  it('should share successfully if content is not locally available when share()', () => {
+    // arrange
+    commonUtilServiceMock.getLoader.mockReturnValue({
+      present: () => {
+      },
+      dismiss: () => {
+      }
+    });
+    spyOn(collectionDetailsPage, 'generateShareInteractEvents').and.stub();
+
+    collectionDetailsPage.contentDetail = {
+      'contentType': 'Collection',
+      'isAvailableLocally': false,
+      'identifier': 'SAMPLE_ID'
+    };
+
+    // act
+    collectionDetailsPage.share();
+
+    // assert
+    expect(socialSharingMock.share).toHaveBeenCalledWith('', '', '', collectionDetailsPage.baseUrl +
+      ShareUrl.COLLECTION + collectionDetailsPage.contentDetail.identifier);
+  });
+
+  it('should navigate to EnrolledCourseDetails page when navigateToDetailsPage()', () => {
+    // arrange
+    collectionDetailsPage.identifier = 'SAMPLE_ID';
+    const content = {'contentType': 'Course'};
+
+    // act
+    collectionDetailsPage.navigateToDetailsPage(content, 1);
+    zoneMock.run.mock.calls[0][0].call(collectionDetailsPage, undefined);
+
+    // assert
+    expect(navCtrlMock.push).toHaveBeenCalledWith(EnrolledCourseDetailsPage, expect.objectContaining({
+      content: content
+    }));
+  });
+
+  it('should navigate to CollectionDetails page when navigateToDetailsPage()', () => {
+    // arrange
+    collectionDetailsPage.identifier = 'SAMPLE_ID';
+    const content = {'mimeType': 'application/vnd.ekstep.content-collection'};
+
+    // act
+    collectionDetailsPage.navigateToDetailsPage(content, 1);
+    zoneMock.run.mock.calls[0][0].call(collectionDetailsPage, undefined);
+
+    // assert
+    expect(navCtrlMock.push).toHaveBeenCalledWith(CollectionDetailsPage, expect.objectContaining({
+      content: content
+    }));
+  });
+
+  it('should navigate to ContentDetails page when navigateToDetailsPage()', () => {
+    // arrange
+    collectionDetailsPage.identifier = 'SAMPLE_ID';
+    const content = {'contentType': 'Content'};
+
+    // act
+    collectionDetailsPage.navigateToDetailsPage(content, 1);
+    zoneMock.run.mock.calls[0][0].call(collectionDetailsPage, undefined);
+
+    // assert
+    expect(navCtrlMock.push).toHaveBeenCalledWith(ContentDetailsPage, expect.objectContaining({
+      content: content
+    }));
+  });
+
+  it('should cancel the download when cancelDownload()', (done) => {
+    // arrange
+    contentServiceMock.cancelDownload.mockResolvedValue(undefined);
+
+    // act
+    collectionDetailsPage.cancelDownload();
+
+    // assert
+    setTimeout(() => {
+      zoneMock.run.mock.calls[0][0].call(collectionDetailsPage, undefined);
+      expect(collectionDetailsPage.showLoading).toBe(false);
+      expect(navCtrlMock.pop).toHaveBeenCalled();
+      done();
+    }, 0);
+  });
+
+  it('should handle error scenario from API when cancelDownload()', (done) => {
+    // arrange
+    contentServiceMock.cancelDownload.mockRejectedValue(undefined);
+
+    // act
+    collectionDetailsPage.cancelDownload();
+
+    // assert
+    setTimeout(() => {
+      zoneMock.run.mock.calls[0][0].call(collectionDetailsPage, undefined);
+      expect(collectionDetailsPage.showLoading).toBe(false);
+      expect(navCtrlMock.pop).toHaveBeenCalled();
+      done();
+    }, 0);
+  });
+
+  it('should show confirmation alert when download all is clicked if network is available when ' +
+    'showDownloadConfirmationAlert()', () => {
+    // arrange
+    const popOver = {
+      present: jest.fn(),
+      onDidDismiss: jest.fn()
+    };
+    commonUtilServiceMock.networkInfo = {isNetworkAvailable: true} as any;
+    popoverCtrlMock.create.mockReturnValue(popOver);
+
+    // act
+    collectionDetailsPage.showDownloadConfirmationAlert('SOME_EVENT');
+
+    // assert
+    expect(popOver.present).toHaveBeenCalledWith(expect.objectContaining({
+      ev: 'SOME_EVENT'
+    }));
+  });
+
+  it('should show error message if network is not available when showDownloadAlert()', () => {
+    // arrange
+    commonUtilServiceMock.networkInfo = {isNetworkAvailable: false} as any;
+
+    // act
+    collectionDetailsPage.showDownloadConfirmationAlert('SOME_EVENT');
+
+    // assert
+    expect(commonUtilServiceMock.showToast).toHaveBeenCalled();
+  });
+
+  it('should show Overflow menu when showOverflowMenu() ', () => {
+    // arrange
+    const popOver = {
+      present: jest.fn(),
+      onDidDismiss: jest.fn()
+    };
+    popoverCtrlMock.create.mockReturnValue(popOver);
+
+    // act
+    collectionDetailsPage.showOverflowMenu('SOME_EVENT');
+
+    // assert
+    expect(popOver.present).toHaveBeenCalledWith(expect.objectContaining({
+      ev: 'SOME_EVENT'
+    }));
+  });
+
+  it('should invoke importContent API when downloadAllContent()', () => {
+    // arrange
+    contentServiceMock.importContent.mockResolvedValue({});
+
+    // act
+    collectionDetailsPage.downloadAllContent();
+
+    // assert
+    expect(contentServiceMock.importContent).toHaveBeenCalledWith(expect.objectContaining({
+      contentImportMap: expect.objectContaining({}),
+      contentStatusArray: expect.arrayContaining([])
+    }));
+  });
+
+  it('should unsubscribe event when ionViewWillLeave() ', () => {
+    // act
+    collectionDetailsPage.ionViewWillLeave();
+
+    // assert
+    expect(eventsMock.unsubscribe).toHaveBeenCalledWith('genie.event');
+  });
+
+  it('should reset all variables when resetVariables()', () => {
+    // act
+    collectionDetailsPage.resetVariables();
+
+    // assert
+    expect(collectionDetailsPage.cardData).toBe('');
+    expect(collectionDetailsPage.contentDetail).toBe('');
+  });
+
+  it('should return proper file size when getReadableFileSize()', () => {
+    expect(collectionDetailsPage.getReadableFileSize(1120.0)).toBe('1.1 KB');
+  });
+
+  it('should show warning toast for guest  teacher profiles when rateContent()', () => {
+    // arrange
+    collectionDetailsPage.guestUser = true;
+    collectionDetailsPage.profileType = 'TEACHER';
+
+    // act
+    collectionDetailsPage.rateContent();
+
+    // assert
+    expect(commonUtilServiceMock.showToast).toHaveBeenCalledWith('SIGNIN_TO_USE_FEATURE');
+  });
+
+  it('should show rating popup if collection is locally available when rateContent()', () => {
+    // arrange
+    collectionDetailsPage.guestUser = false;
+    collectionDetailsPage.contentDetail = {isAvailableLocally: true};
+
+    const popUp = {
+      present: jest.fn(),
+      onDidDismiss: jest.fn()
+    };
+
+    popoverCtrlMock.create.mockReturnValue(popUp);
+
+    // act
+    collectionDetailsPage.rateContent();
+
+    // assert
+    expect(popUp.present).toHaveBeenCalled();
+  });
+
+  it('should show warning toast if course is not locally available when rateContent() ', () => {
+    // arrange
+    collectionDetailsPage.guestUser = false;
+    collectionDetailsPage.contentDetail = {isAvailableLocally: false};
+
+    // act
+    collectionDetailsPage.rateContent();
+
+    // assert
+    expect(commonUtilServiceMock.showToast).toHaveBeenCalledWith('TRY_BEFORE_RATING');
+  });
+
+  it('should populate profileType as STUDENT when checkCurrentUserType() ', (done) => {
+    // arrange
+    collectionDetailsPage.guestUser = true;
+    appGlobalServiceMock.getGuestUserInfo.mockResolvedValue('STUDENT');
+
+    // act
+    collectionDetailsPage.checkCurrentUserType();
+
+    // assert
+    setTimeout(() => {
+      expect(collectionDetailsPage.profileType === 'STUDENT');
+      done();
+    }, 0);
+  });
+
+  it('should dismiss the children loader when setChildContents() ', (done) => {
+    // arrange
+    collectionDetailsPage.cardData = {
+      'contentType': 'Collection', 'isAvailableLocally': false, 'identifier': 'SAMPLE_ID',
+      'hierarchyInfo': 'PARENT_ID/CHILD_ID'
+    };
+    contentServiceMock.getChildContents.mockResolvedValue(JSON.stringify((mockRes.getChildContentAPIResponse)));
+
+    // act
+    collectionDetailsPage.setChildContents();
+
+    // assert
+    expect(contentServiceMock.getChildContents).toHaveBeenCalledWith(expect.objectContaining({
+      contentId: undefined, hierarchyInfo: 'PARENT_ID/CHILD_ID'
+    }));
+
+    setTimeout(() => {
+      zoneMock.run.mock.calls[0][0].call(collectionDetailsPage, undefined);
+
+      expect(collectionDetailsPage.showChildrenLoader).toBe(false);
+
+      done();
+    }, 0);
+  });
+
+  it('should handle error scenario when setChildContents()', (done) => {
+    // arrange
+    collectionDetailsPage.cardData = {
+      'contentType': 'Collection', 'isAvailableLocally': false, 'identifier': 'SAMPLE_ID',
+      'hierarchyInfo': 'PARENT_ID/CHILD_ID'
+    };
+    contentServiceMock.getChildContents.mockRejectedValue(undefined);
+
+    // act
+    collectionDetailsPage.setChildContents();
+
+    // assert
+    setTimeout(() => {
+      zoneMock.run.mock.calls[0][0].call(collectionDetailsPage, undefined);
+
+      expect(collectionDetailsPage.showChildrenLoader).toBe(false);
+
+      done();
+    }, 0);
+  });
+
+  it('should populate queuedIdentifier for successfull API calls when importContent()', (done) => {
+    // arrange
+    collectionDetailsPage.cardData = {
+      'contentType': 'Collection', 'isAvailableLocally': false,
+      'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID'
+    };
+    contentServiceMock.importContent.mockResolvedValue(JSON.stringify((mockRes.enqueuedImportContentResponse)));
+
+    // act
+    collectionDetailsPage.isDownloadStarted = true;
+    collectionDetailsPage.importContent(['SAMPLE_ID'], false);
+
+    // assert
+    setTimeout(() => {
+      zoneMock.run.mock.calls[0][0].call(collectionDetailsPage, undefined);
+      expect(collectionDetailsPage.queuedIdentifiers).toEqual(expect.arrayContaining([
+        'SAMPLE_ID'
+      ]));
+      done();
+    });
+  });
+
+  it('should show error if nothing is added in queuedIdentifiers when importContent() ', (done) => {
+    // arrange
+    spyOn(collectionDetailsPage, 'setChildContents').and.stub();
+    collectionDetailsPage.cardData = {
+      'contentType': 'Collection', 'isAvailableLocally': false,
+      'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID'
+    };
+    contentServiceMock.importContent.mockRejectedValue(JSON.stringify((mockRes.enqueuedOthersImportContentResponse)));
+
+    // act
+    collectionDetailsPage.importContent(['SAMPLE_ID'], false);
+
+    // assert
+    setTimeout(() => {
+      zoneMock.run.mock.calls[0][0].call(collectionDetailsPage, undefined);
+      expect(collectionDetailsPage.isDownloadStarted = false);
+      expect(commonUtilServiceMock.showToast).toHaveBeenCalledWith('UNABLE_TO_FETCH_CONTENT');
+      done();
+    });
+  });
+
+  it('should pulish savedresources event when updateSavedResources()', () => {
+    // act
+    collectionDetailsPage.updateSavedResources();
+
+    expect(eventsMock.publish).toHaveBeenCalledWith('savedResources:update', expect.objectContaining({
+      update: true
+    }));
+  });
+
+  it('should update the download progress when download progress event ' +
+    'comes when subscribeGenieEvent()', () => {
+    // arrange
+    collectionDetailsPage.cardData = collectionDetailsPage.contentDetail = {
+      'contentType': 'Collection',
+      'isAvailableLocally': false, 'identifier': 'do_sampele', 'hierarchyInfo': 'PARENT_ID/CHILD_ID'
+    };
+
+    // act
+    collectionDetailsPage.subscribeGenieEvent();
+    eventsMock.subscribe.mock.calls[0][1].call(collectionDetailsPage,
+      JSON.stringify(mockRes.downloadProgressEventSample1));
+
+    zoneMock.run.mock.calls[0][0].call(collectionDetailsPage, undefined);
+
+    // assert
+    expect(collectionDetailsPage.downloadProgress).toBe(10);
+  });
+
+  it('should update the progress to 0 if API gives response -1 when subscribeGenieEvent()', () => {
+    // arrange
+    collectionDetailsPage.cardData = collectionDetailsPage.contentDetail = {
+      'contentType': 'Collection',
+      'isAvailableLocally': false, 'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID'
+    };
+
+    // act
+    collectionDetailsPage.subscribeGenieEvent();
+    eventsMock.subscribe.mock.calls[0][1].call(collectionDetailsPage,
+      JSON.stringify(mockRes.downloadProgressEventSample2));
+
+    zoneMock.run.mock.calls[0][0].call(collectionDetailsPage, undefined);
+
+    // assert
+    expect(collectionDetailsPage.downloadProgress).toBe(0);
+  });
+
+  it('subscribeGenieEvent() should  dismiss overlay if download progress is 100', () => {
+    // arrange
+    spyOn(collectionDetailsPage, 'setChildContents').and.stub();
+    spyOn(collectionDetailsPage, 'updateSavedResources').and.stub();
+    collectionDetailsPage.cardData =
+      collectionDetailsPage.contentDetail = {
+        'contentType': 'Collection', 'isAvailableLocally': false,
+        'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID'
+      };
+
+    // act
+    collectionDetailsPage.isDownloadStarted = true;
+    collectionDetailsPage.queuedIdentifiers = ['SAMPLE_ID'];
+    collectionDetailsPage.subscribeGenieEvent();
+    eventsMock.subscribe.mock.calls[0][1].call(collectionDetailsPage,
+      JSON.stringify(mockRes.importCompleteEventSample));
+
+    zoneMock.run.mock.calls[0][0].call(collectionDetailsPage, undefined);
+
+    // assert
+    expect(collectionDetailsPage.showLoading).toBe(false);
+    expect(collectionDetailsPage.isDownloadCompleted).toBe(true);
+  });
+
+  it('#subscribeGenieEvent should  load all child contents when download is complete', () => {
+    // arrange
+    spyOn(collectionDetailsPage, 'setChildContents').and.stub();
+    spyOn(collectionDetailsPage, 'updateSavedResources').and.stub();
+    collectionDetailsPage.cardData =
+      collectionDetailsPage.contentDetail = {
+        'contentType': 'Collection', 'isAvailableLocally': false,
+        'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID'
+      };
+
+    // act
+    collectionDetailsPage.isDownloadStarted = true;
+    collectionDetailsPage.queuedIdentifiers = ['SAMPLE_ID'];
+    collectionDetailsPage.subscribeGenieEvent();
+    eventsMock.subscribe.mock.calls[0][1].call(collectionDetailsPage,
+      JSON.stringify(mockRes.importCompleteEventSample));
+
+    zoneMock.run.mock.calls[0][0].call(collectionDetailsPage, undefined);
+
+    // assert
+    expect(collectionDetailsPage.showLoading).toBe(false);
+    expect(collectionDetailsPage.isDownloadCompleted).toBe(true);
+    expect(collectionDetailsPage.updateSavedResources).toHaveBeenCalled();
+  });
+
+  it('subscribeGenieEvent() should  update the course if update event is available ', () => {
+    // arrange
+    spyOn(collectionDetailsPage, 'setChildContents').and.stub();
+    spyOn(collectionDetailsPage, 'updateSavedResources').and.stub();
+    spyOn(collectionDetailsPage, 'importContent').and.stub();
+    collectionDetailsPage.cardData = {
+      'contentType': 'Collection',
+      'isAvailableLocally': false,
+      'identifier': 'SAMPLE_ID'
+    };
+
+    // act
+    collectionDetailsPage.queuedIdentifiers = ['SAMPLE_ID'];
+    collectionDetailsPage.isDownloadStarted = false;
+    collectionDetailsPage.identifier = 'SAMPLE_ID';
+    collectionDetailsPage.parentContent = {'identifier': 'PARENT_ID'};
+    collectionDetailsPage.subscribeGenieEvent();
+    eventsMock.subscribe.mock.calls[0][1].call(collectionDetailsPage,
+      JSON.stringify(mockRes.updateEventSample));
+
+    zoneMock.run.mock.calls[0][0].call(collectionDetailsPage, undefined);
+    zoneMock.run.mock.calls[1][0].call(collectionDetailsPage, undefined);
+
+    // assert
+    expect(collectionDetailsPage.showLoading).toBe(true);
+    expect(collectionDetailsPage.importContent).toHaveBeenCalledWith(['PARENT_ID'], false);
+  });
+
+  it('subscribeGenieEvent() should  invoke setContentDetails if  update event is available ', () => {
+    // arrange
+    spyOn(collectionDetailsPage, 'setChildContents').and.stub();
+    spyOn(collectionDetailsPage, 'updateSavedResources').and.stub();
+    spyOn(collectionDetailsPage, 'importContent').and.stub();
+    spyOn(collectionDetailsPage, 'setContentDetails').and.stub();
+    collectionDetailsPage.cardData = {
+      'contentType': 'Collection',
+      'isAvailableLocally': false,
+      'identifier': 'SAMPLE_ID'
+    };
+
+    // act
+    collectionDetailsPage.queuedIdentifiers = ['SAMPLE_ID'];
+    collectionDetailsPage.isDownloadStarted = false;
+    collectionDetailsPage.identifier = 'SAMPLE_ID';
+    collectionDetailsPage.subscribeGenieEvent();
+    eventsMock.subscribe.mock.calls[0][1].call(collectionDetailsPage,
+      JSON.stringify(mockRes.updateEventSample));
+
+    zoneMock.run.mock.calls[0][0].call(collectionDetailsPage, undefined);
+    zoneMock.run.mock.calls[1][0].call(collectionDetailsPage, undefined);
+
+    // assert
+    expect(collectionDetailsPage.setContentDetails).toHaveBeenCalledWith('SAMPLE_ID', false);
+  });
+
+  it('subscribeGenieEvent() should  invoke setContentDetials when import is complete', () => {
+    // arrange
+    spyOn(collectionDetailsPage, 'setChildContents').and.stub();
+    spyOn(collectionDetailsPage, 'updateSavedResources').and.stub();
+    spyOn(collectionDetailsPage, 'importContent').and.stub();
+    spyOn(collectionDetailsPage, 'setContentDetails').and.stub();
+    collectionDetailsPage.cardData = collectionDetailsPage.contentDetail = {
+      'contentType': 'Collection',
+      'isAvailableLocally': false,
+      'identifier': 'SAMPLE_ID'
+    };
+
+    // act
+    collectionDetailsPage.isUpdateAvailable = true;
+    collectionDetailsPage.queuedIdentifiers = ['SAMPLE_ID'];
+    collectionDetailsPage.isDownloadStarted = false;
+    collectionDetailsPage.identifier = 'SAMPLE_ID';
+    collectionDetailsPage.subscribeGenieEvent();
+    eventsMock.subscribe.mock.calls[0][1].call(collectionDetailsPage,
+      JSON.stringify(mockRes.importCompleteEventSample));
+
+    zoneMock.run.mock.calls[0][0].call(collectionDetailsPage, undefined);
+
+    // assert
+    expect(collectionDetailsPage.setContentDetails).toHaveBeenCalledWith('SAMPLE_ID', false);
+  });
+
+  it('subscribeGenieEvent() should  set child contents when import is complete', () => {
+    // arrange
+    spyOn(collectionDetailsPage, 'setChildContents').and.stub();
+    spyOn(collectionDetailsPage, 'updateSavedResources').and.stub();
+    spyOn(collectionDetailsPage, 'importContent').and.stub();
+    spyOn(collectionDetailsPage, 'setContentDetails').and.stub();
+    collectionDetailsPage.cardData = collectionDetailsPage.contentDetail = {
+        'contentType': 'Collection', 'isAvailableLocally': false, 'identifier': 'SAMPLE_ID',
+        'hierarchyInfo': 'PARENT_ID/CHILD_ID'
+      };
+
+    // act
+    collectionDetailsPage.queuedIdentifiers = ['SAMPLE_ID'];
+    collectionDetailsPage.isDownloadStarted = false;
+    collectionDetailsPage.isUpdateAvailable = false;
+    collectionDetailsPage.subscribeGenieEvent();
+    eventsMock.subscribe.mock.calls[0][1].call(collectionDetailsPage,
+      JSON.stringify(mockRes.importCompleteEventSample));
+
+    zoneMock.run.mock.calls[0][0].call(collectionDetailsPage, undefined);
+
+    // assert
+    expect(collectionDetailsPage.updateSavedResources).toHaveBeenCalledWith();
+  });
+
+  it('handleBackButton() should handle nav back button click', () => {
+    // arrange
+    (collectionDetailsPage.backButtonFunc as any) = jest.fn();
+
+    // act
+    collectionDetailsPage.handleBackButton();
+
+    // assert
+    expect(navCtrlMock.pop).toHaveBeenCalled();
+    expect(collectionDetailsPage.backButtonFunc).toHaveBeenCalled();
+  });
+
+  it('#handleNavBackButtonClick should generate qrsession end event if ' +
+    'shouldGenerateEndEvents paramater is true', () => {
+    // arrange
+    collectionDetailsPage.cardData = {identifier: 'SAMPLE_IDENTIFIER'};
+    (collectionDetailsPage.backButtonFunc as any) = jest.fn();
+
+    // act
+    collectionDetailsPage.shouldGenerateEndTelemetry = true;
+    collectionDetailsPage.handleBackButton();
+
+    // assert
+    expect(navCtrlMock.pop).toHaveBeenCalled();
+    expect(collectionDetailsPage.backButtonFunc).toHaveBeenCalled();
+    expect(telemetryGeneratorServiceMock.generateEndTelemetry)
+      .toHaveBeenCalledTimes(2);
+  });
+
+  it('ionViewWillEnter() should invoke setContentDetails when page is invoked', () => {
+    // arrange
+    contentServiceMock.getContentDetail.mockResolvedValue({});
+    commonUtilServiceMock.getLoader.mockReturnValue({
+      present: () => {
+      },
+      dismiss: () => {
+      }
     });
 
-    it('should create a valid instance of CollectionDetailsPage', () => {
-        expect(component instanceof CollectionDetailsPage).toBe(true);
-        expect(component).not.toBeFalsy();
+    navParamsMock.get.mockReturnValue((param: string) => {
+      switch (param) {
+        case 'content':
+          return {
+            'contentType': 'Collection', 'isAvailableLocally': false,
+            'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID'
+          };
+      }
     });
 
-    it('should return Loading object', () => {
-        const loadingCtrlStub = TestBed.get(LoadingController);
-        expect(component.getLoader).toBeDefined();
-        spyOn(component, 'getLoader').and.callThrough();
-        component.getLoader();
-        expect(component.getLoader).toHaveBeenCalled();
-        expect(loadingCtrlStub.create).toHaveBeenCalled();
+    // act
+    collectionDetailsPage.ionViewWillEnter();
+    zoneMock.run.mock.calls[0][0].call(collectionDetailsPage, undefined);
+
+    // assert
+    expect(contentServiceMock.getContentDetail).toHaveBeenCalledWith(expect.objectContaining({
+      contentId: collectionDetailsPage.identifier
+    }));
+  });
+
+  it('setContentDetails() should show error toast if any error gets thrown from' +
+    'getContentDetails', (done) => {
+    // arrange
+    contentServiceMock.getContentDetail.mockRejectedValue('SAMPLE_ERROR');
+    commonUtilServiceMock.getLoader.mockReturnValue({
+      present: () => {
+      },
+      dismiss: () => {
+      }
     });
 
-    it('should set content details', () => {
-        component.contentDetail = { 'contentTypesCount': 1 };
-        component.cardData = { 'contentTypesCount': 1 };
-        component.userRating = 0;
-        const contentService = TestBed.get(ContentService);
-        const loadingCtrl = TestBed.get(LoadingController);
-        spyOn(component, 'setContentDetails').and.callThrough();
-        spyOn(contentService, 'getContentDetail').and.callFake( (option, success, error) => {
-            const data = JSON.stringify((mockRes.contentDetailsResponse));
-            return success(data);
-        });
-        spyOn(component, 'setChildContents').and.callFake( (option, success, error) => {
-        });
-        component.setContentDetails(identifier, true);
-        expect(component.setContentDetails).toBeDefined();
-        expect(component.setContentDetails).toHaveBeenCalledWith(identifier, true);
-        //        expect(component.extractApiResponse).toBeDefined();
-        //        expect(component.extractApiResponse).toHaveBeenCalled();
-    });
-
-    it('should extract content details api response: when content locally available', () => {
-        component.contentDetail = {};
-        component.cardData = {};
-        component.cardData.contentData = '';
-        component.cardData.pkgVersion = '';
-        spyOn(component, 'extractApiResponse').and.callThrough();
-        spyOn(component, 'setChildContents').and.callFake((option, success, error) => {
-        });
-        component.extractApiResponse(mockRes.contentDetailsResponse);
-        fixture.detectChanges();
-        expect(component.contentDetail).not.toBeUndefined();
-    });
-
-    it('should extract content details api response: content Locally not available', () => {
-        component.contentDetail = {};
-        const data = mockRes.contentDetailsResponse;
-        data.result.contentData.gradeLevel = ['Class 1', 'Class 2'];
-        data.result.isAvailableLocally = false;
-        spyOn(component, 'extractApiResponse');
-        component.extractApiResponse(data);
-        fixture.detectChanges();
-        expect(component.extractApiResponse).toBeDefined();
-        expect(component.extractApiResponse).toHaveBeenCalled();
-        expect(component.contentDetail).not.toBeUndefined();
-        // expect(component.contentDetail.downloadable).toBe(false);
-    });
-
-    it('should open content rating screen', () => {
-        const popOverCtrl = TestBed.get(PopoverController);
-        // spyOn(popOverCtrl, 'create').and.callThrough();
-        component.contentDetail = {};
-        component.contentDetail.isAvailableLocally = true;
-        component.guestUser = false;
-        spyOn(component, 'rateContent').and.callThrough();
-        component.rateContent();
-        fixture.detectChanges();
-        expect(component.rateContent).toHaveBeenCalled();
-        expect(popOverCtrl.create).toHaveBeenCalled();
-    });
-
-    it('should genearte rollup object', () => {
-        component.cardData = {
-            hierarchyInfo: undefined
-        };
-        component.cardData.hierarchyInfo = mockRes.hierarchyInfo;
-        spyOn(component, 'generateRollUp').and.callThrough();
-        component.generateRollUp();
-        expect(component.cardData.hierarchyInfo).not.toBeNull();
-        expect(component.generateRollUp).toBeDefined();
-        expect(component.generateRollUp).toHaveBeenCalled();
-        expect(component.objRollup).not.toBeUndefined();
-    });
-
-    it('should check content download progress', () => {
-        const mockData = mockRes.importContentDownloadProgressResponse;
-        spyOn(component, 'subscribeGenieEvent').and.callThrough();
-        const event = TestBed.get(Events);
-        spyOn(event, 'subscribe').and.callFake(({ }, success) => {
-            return success(JSON.stringify(mockData));
-        });
-        component.cardData = {};
-        component.subscribeGenieEvent();
-        expect(component.subscribeGenieEvent).toBeDefined();
-        expect(component.subscribeGenieEvent).toHaveBeenCalled();
-        expect(event.subscribe).toHaveBeenCalled();
-        expect(component.downloadProgress).toEqual(mockData.data.downloadProgress);
-    });
-
-    it('#share should invoke  export ecar API if course is locally available', () => {
-        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': true, 'identifier': 'SAMPLE_ID' };
-        const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
-        spyOn(telemetryGeneratorService, 'generateInteractTelemetry');
-        spyOn(component, 'generateShareInteractEvents').and.callThrough();
-        const shareUtil = TestBed.get(ShareUtil);
-        spyOn(shareUtil, 'exportEcar').and.callThrough().and.callFake((_identifier, success) => {
-            return success('SAMPLE_PATH');
-        });
-        component.share();
-        const values = new Map();
-        values['ContentType'] = 'Collection';
-        expect(telemetryGeneratorService.generateInteractTelemetry).toHaveBeenCalledWith(InteractType.TOUCH,
-            InteractSubtype.SHARE_LIBRARY_INITIATED,
-            Environment.HOME,
-            PageId.COLLECTION_DETAIL, undefined,
-            values,
-            undefined,
-            undefined);
-
-    });
-
-    it('#share should show warning toast if exportEcar gives failure response ', () => {
-        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': true, 'identifier': 'SAMPLE_ID' };
-       const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
-        spyOn(telemetryGeneratorService, 'generateInteractTelemetry').and.callFake(() => { });
-        const shareUtil = TestBed.get(ShareUtil);
-        spyOn(shareUtil, 'exportEcar').and.callThrough().and.callFake((_identifier, success, error) => {
-            return error('SAMPLE_PATH');
-        });
-        const commonUtilService = TestBed.get(CommonUtilService);
-        spyOn(commonUtilService, 'showToast');
-        component.share();
-        expect(commonUtilService.showToast).toHaveBeenCalledWith('SHARE_CONTENT_FAILED');
-    });
-
-    it('#share should share successfully if content is not locally available ', () => {
-        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': false, 'identifier': 'SAMPLE_ID' };
-        const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
-        spyOn(telemetryGeneratorService, 'generateInteractTelemetry').and.callFake(() => { });
-        const shareUtil = TestBed.get(ShareUtil);
-        spyOn(shareUtil, 'exportEcar').and.callThrough().and.callFake((_identifier, success, error) => {
-            return error('SAMPLE_PATH');
-        });
-        const social = TestBed.get(SocialSharing);
-        spyOn(social, 'share').and.callThrough();
-
-        component.share();
-        expect(social.share).toHaveBeenCalled();
-    });
-
-    it('#navigateToDetailsPage should navigate to EnrolledCourseDetails page', () => {
-
-        const navController = TestBed.get(NavController);
-        spyOn(navController, 'push');
-        component.identifier = 'SAMPLE_ID';
-        const content = { 'contentType': 'Course' };
-        const contentState = {
-
-        };
-        component.navigateToDetailsPage(content, 1);
-        expect(navController.push).toHaveBeenCalledWith(EnrolledCourseDetailsPage, {
-            content: content,
-            depth: 1,
-            contentState: contentState,
-            corRelation: undefined
-        });
-    });
-
-    it('#navigateToDetailsPage should navigate to CollectionDetails page', () => {
-        const navController = TestBed.get(NavController);
-        spyOn(navController, 'push');
-        component.identifier = 'SAMPLE_ID';
-        const content = { 'mimeType': 'application/vnd.ekstep.content-collection' };
-        const contentState = {
-
-        };
-        component.navigateToDetailsPage(content, 1);
-        expect(navController.push).toHaveBeenCalledWith(CollectionDetailsPage, {
-            content: content,
-            depth: 1,
-            contentState: contentState,
-            corRelation: undefined
-        });
-    });
-
-    it('#navigateToDetailsPage should navigate to ContentDetails page', () => {
-
-        const navController = TestBed.get(NavController);
-        spyOn(navController, 'push');
-        component.identifier = 'SAMPLE_ID';
-        const content = { 'contentType': 'Content' };
-        const contentState = {
-
-        };
-        component.navigateToDetailsPage(content, 1);
-        expect(navController.push).toHaveBeenCalledWith(ContentDetailsPage, {
-            isChildContent: true,
-            content: content,
-            depth: 1,
-            contentState: contentState,
-            corRelation: undefined
-        });
-    });
-
-    it('#cancelDownload should cancel the download', () => {
-        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': false, 'identifier': 'SAMPLE_ID' };
-        const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'cancelDownload').and.callFake( ({ }, success, error) => {
-            const data = JSON.stringify({});
-            return success(data);
-        });
-        const navController = TestBed.get(NavController);
-        spyOn(navController, 'pop');
-        component.identifier = 'SAMPLE_ID';
-        component.cancelDownload();
-        expect(component.showLoading).toBe(false);
-        expect(navController.pop).toHaveBeenCalled();
-    });
-
-    it('#cancelDownload should handle error scenario from API', () => {
-        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': false, 'identifier': 'SAMPLE_ID' };
-        const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'cancelDownload').and.callFake( ({ }, success, error) => {
-            const data = JSON.stringify({});
-            return error(data);
-        });
-        const navController = TestBed.get(NavController);
-        spyOn(navController, 'pop');
-        component.identifier = 'SAMPLE_ID';
-        component.cancelDownload();
-        expect(component.showLoading).toBe(false);
-        expect(navController.pop).toHaveBeenCalled();
-    });
-
-    it('#showDownloadAlert should show confirmation alert when download all is clicked if network is available', () => {
-        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': false, 'identifier': 'SAMPLE_ID' };
-        component.isNetworkAvailable = true;
-        spyOn(component, 'downloadAllContent').and.callThrough().and.callFake(() => { });
-        PopoverMock.setOnDissMissResponse(true);
-        component.showDownloadConfirmatioAlert({});
-        expect(component.downloadAllContent).toHaveBeenCalled();
-
-    });
-
-    it('#showDownloadAlert should show error message if network is not available', () => {
-        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': false, 'identifier': 'SAMPLE_ID' };
-        component.isNetworkAvailable = false;
-        const commonUtilService = TestBed.get(CommonUtilService);
-        spyOn(commonUtilService, 'showToast');
-        spyOn(component, 'downloadAllContent').and.callThrough().and.callFake(() => { });
-        component.showDownloadConfirmatioAlert({});
-        expect(component.downloadAllContent).not.toHaveBeenCalled();
-        expect(commonUtilService.showToast).toHaveBeenCalledWith('ERROR_NO_INTERNET_MESSAGE');
-
-    });
-
-    it('#showOverflowMenu should show Overflow menu', () => {
-        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': false, 'identifier': 'SAMPLE_ID' };
-        const popOverController = TestBed.get(PopoverController);
-        const navController = TestBed.get(NavController);
-        spyOn(navController, 'pop').and.callThrough();
-        PopoverMock.setOnDissMissResponse('delete.success');
-        component.showOverflowMenu({});
-        expect(popOverController.create).toHaveBeenCalled();
-        expect(navController.pop).toHaveBeenCalled();
-    });
-
-    it('#downloadAllContent should invoke importContent API', () => {
-        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': false, 'identifier': 'SAMPLE_ID' };
-        const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'importContent').and.callFake( ({ }, success, error) => {
-            const data = JSON.stringify((mockRes.enqueuedImportContentResponse));
-            return success(data);
-        });
-        component.isNetworkAvailable = true;
-        component.downloadAllContent();
-        expect(contentService.importContent).toHaveBeenCalled();
-    });
-
-    it('#ionViewWillLeave should unsubscribe event', () => {
-        const events = TestBed.get(Events);
-        spyOn(events, 'unsubscribe');
-        component.ionViewWillLeave();
-        expect(events.unsubscribe).toHaveBeenCalledWith('genie.event');
-    });
-
-    it('#resetVariables should reset all variables', () => {
-        component.resetVariables();
-        expect(component.cardData).toBe('');
-        expect(component.contentDetail).toBe('');
-    });
-
-    it('#getReadableFileSize should return proper file size', () => {
-        expect(component.getReadableFileSize(1120.0)).toBe('1.1 KB');
-    });
-
-    it('#rateContent shouldnot show warning toast for guest  student profiles', () => {
-        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': false, 'identifier': 'SAMPLE_ID' };
-        const appGlobal = TestBed.get(AppGlobalService);
-        const comonUtilService = TestBed.get(CommonUtilService);
-        spyOn(comonUtilService, 'showToast').and.callThrough();
-        spyOn(appGlobal, 'isUserLoggedIn').and.returnValue(false);
-        spyObjPreference.and.returnValue(Promise.resolve(ProfileType.STUDENT));
-        component.checkLoggedInOrGuestUser();
-        component.profileType = ProfileType.STUDENT;
-        component.rateContent();
-        expect(comonUtilService.showToast).not.toHaveBeenCalled();
-
-    });
-
-    it('#rateContent should show warning toast for guest  teacher profiles', () => {
-        const appGlobal = TestBed.get(AppGlobalService);
-        const comonUtilService = TestBed.get(CommonUtilService);
-        spyOn(comonUtilService, 'showToast').and.callThrough();
-        spyOn(appGlobal, 'isUserLoggedIn').and.returnValue(false);
-        component.checkLoggedInOrGuestUser();
-        component.profileType = ProfileType.TEACHER;
-        component.rateContent();
-        expect(comonUtilService.showToast).toHaveBeenCalledWith('SIGNIN_TO_USE_FEATURE');
-    });
-
-    it('#rateContent should show rating popup if collection is locally available', () => {
-        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': true, 'identifier': 'SAMPLE_ID' };
-        const popOverController = TestBed.get(PopoverController);
-        PopoverMock.setOnDissMissResponse({ message: 'rating.success' });
-        component.rateContent();
-        expect(popOverController.create).toHaveBeenCalled();
-    });
-
-    it('#rateContent should show warning toast if course is not locally available', () => {
-        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': false, 'identifier': 'SAMPLE_ID' };
-        const commonUtilService = TestBed.get(CommonUtilService);
-        spyOn(commonUtilService, 'showToast').and.callThrough();
-        component.rateContent();
-        expect(commonUtilService.showToast).toHaveBeenCalledWith('TRY_BEFORE_RATING');
-    });
-
-    it('#checkCurrentUserType should populate profileType as STUDENT', (done) => {
-        spyObjPreference.and.returnValue(Promise.resolve(ProfileType.STUDENT));
-        component.checkCurrentUserType();
-        setTimeout(() => {
-            expect(component.profileType).toBe(ProfileType.STUDENT);
-            done();
-        }, 500);
-
-    });
-    it('#setChildContents should dismiss the children loader', () => {
-        component.cardData = { 'contentType': 'Collection', 'isAvailableLocally': false, 'identifier': 'SAMPLE_ID',
-         'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
-        const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'getChildContents').and.callFake( ({ }, success, error) => {
-            const data = JSON.stringify((mockRes.getChildContentAPIResponse));
-            return success(data);
-        });
-        component.setChildContents();
-        expect(component.showChildrenLoader).toBe(false);
-    });
-
-    it('#setChildContents should handle error scenario', () => {
-        component.cardData = { 'contentType': 'Collection', 'isAvailableLocally': false,
-        'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
-        const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'getChildContents').and.callFake( ({ }, success, error) => {
-            return error();
-        });
-        component.setChildContents();
-        expect(component.showChildrenLoader).toBe(false);
-    });
-
-    it('#importContent should populate queuedIdentifier for successfull API calls', (done) => {
-        component.cardData = { 'contentType': 'Collection', 'isAvailableLocally': false,
-         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
-        const contentService = TestBed.get(ContentService);
-
-        spyOn(component, 'generateImpressionEvent').and.callThrough().and.callFake(() => { });
-        spyOn(contentService, 'importContent').and.callFake(({ }, success, error) => {
-           const data = JSON.stringify((mockRes.enqueuedImportContentResponse));
-            return success(data);
-        });
-        component.isDownloadStarted = true;
-        component.importContent(['SAMPLE_ID'], false);
-        setTimeout(() => {
-            expect(component.queuedIdentifiers).toEqual(['SAMPLE_ID']);
-            done();
-        });
-
-    });
-
-    it('#importContent should show error if nothing is added in queuedIdentifiers ', () => {
-        component.cardData = { 'contentType': 'Collection', 'isAvailableLocally': false,
-         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
-        const contentService = TestBed.get(ContentService);
-        const commonUtilService = TestBed.get(CommonUtilService);
-        spyOn(commonUtilService, 'showToast');
-        spyOn(component, 'generateImpressionEvent').and.callThrough().and.callFake(() => { });
-        spyOn(contentService, 'importContent').and.callFake( ({ }, success, error) => {
-         const data = JSON.stringify((mockRes.enqueuedOthersImportContentResponse));
-            return error(data);
-        });
-        component.isDownloadStarted = true;
-        component.importContent(['SAMPLE_ID'], false);
-        expect(component.queuedIdentifiers.length).toEqual(0);
-        expect(commonUtilService.showToast).toHaveBeenCalledWith('UNABLE_TO_FETCH_CONTENT');
-    });
-
-    it('#importContent should restore the download state for error condition from importContent', () => {
-        component.cardData = { 'contentType': 'Collection', 'isAvailableLocally': false,
-         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
-        const contentService = TestBed.get(ContentService);
-        spyOn(component, 'generateImpressionEvent').and.callThrough().and.callFake(() => { });
-        spyOn(contentService, 'importContent').and.callFake(({ }, success, error) => {
-            const data = JSON.stringify((mockRes.enqueuedOthersImportContentResponse));
-            return error(data);
-        });
-        component.isDownloadStarted = true;
-        component.importContent(['SAMPLE_ID'], false);
-        expect(component.isDownloadStarted).toBe(false);
-    });
-
-    it('#importContent should show error toast if failure response from importContent API', () => {
-        component.cardData = { 'contentType': 'Collection', 'isAvailableLocally': false,
-         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
-        const contentService = TestBed.get(ContentService);
-        const commonUtilService = TestBed.get(CommonUtilService);
-        spyOn(commonUtilService, 'showToast');
-        spyOn(component, 'generateImpressionEvent').and.callThrough().and.callFake(() => { });
-        spyOn(contentService, 'importContent').and.callFake( ({ }, success, error) => {
-           const data = JSON.stringify((mockRes.enqueuedOthersImportContentResponse));
-            return error(data);
-        });
-        component.isDownloadStarted = false;
-        component.importContent(['SAMPLE_ID'], false);
-        expect(component.isDownloadStarted).toBe(false);
-        expect(commonUtilService.showToast).toHaveBeenCalledWith('UNABLE_TO_FETCH_CONTENT');
-    });
-
-    it('#importContent should show error toast if no content found response from importContent API', () => {
-        component.cardData = { 'contentType': 'Collection', 'isAvailableLocally': false,
-         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
-        const contentService = TestBed.get(ContentService);
-        const commonUtilService = TestBed.get(CommonUtilService);
-        spyOn(commonUtilService, 'showToast');
-        spyOn(component, 'generateImpressionEvent').and.callThrough().and.callFake(() => { });
-        spyOn(contentService, 'importContent').and.callFake( ({ }, success, error) => {
-           const data = JSON.stringify((mockRes.noContentFoundImportContentResponse));
-            return success(data);
-        });
-        component.isDownloadStarted = false;
-        component.childrenData = [];
-        component.importContent(['SAMPLE_ID'], false);
-        expect(component.isDownloadStarted).toBe(false);
-        expect(component.showLoading).toBe(false);
-    });
-
-    it('#updateSavedResources should pulish savedresources event', () => {
-        const events = TestBed.get(Events);
-        spyOn(events, 'publish');
-        component.updateSavedResources();
-        expect(events.publish).toHaveBeenCalledWith('savedResources:update', {
-            update: true
-        });
-    });
-
-    it('#subscribeGenieEvent should update the download progress when download progress event comes', () => {
-        component.cardData = { 'contentType': 'Collection', 'isAvailableLocally': false,
-         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
-        const events = TestBed.get(Events);
-        spyOn(events, 'subscribe').and.callFake( ({ }, success, error) => {
-            return success(JSON.stringify(mockRes.downloadProgressEventSample1));
-        });
-        component.subscribeGenieEvent();
-        expect(component.downloadProgress).toBe(10);
-    });
-
-    it('#subscribeGenieEvent should update the progress to 0 if API gives response -1', () => {
-        component.cardData = component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': false,
-         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
-        const events = TestBed.get(Events);
-        spyOn(events, 'subscribe').and.callFake( ({ }, success, error) => {
-            return success(JSON.stringify(mockRes.downloadProgressEventSample2));
-        });
-        component.subscribeGenieEvent();
-        expect(component.downloadProgress).toBe(0);
-    });
-
-    it('#subscribeGenieEvent should  dismiss overlay if download progress is 100', () => {
-        component.cardData = component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': false,
-         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
-        const events = TestBed.get(Events);
-        spyOn(events, 'subscribe').and.callFake( ({ }, success, error) => {
-            return success(JSON.stringify(mockRes.downloadProgressEventSample3));
-        });
-        component.subscribeGenieEvent();
-        expect(component.showLoading).toBe(false);
-    });
-
-    it('#subscribeGenieEvent should  mark download as complete', () => {
-        component.cardData = { 'contentType': 'Collection', 'isAvailableLocally': false,
-         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
-        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': false,
-         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
-        const events = TestBed.get(Events);
-        spyOn(events, 'subscribe').and.callFake( ({ }, success, error) => {
-            return success(JSON.stringify(mockRes.importCompleteEventSample));
-        });
-        component.queuedIdentifiers = ['SAMPLE_ID'];
-        component.isDownloadStarted = true;
-        component.subscribeGenieEvent();
-        expect(component.showLoading).toBe(false);
-        expect(component.isDownlaodCompleted).toBe(true);
-    });
-
-    it('#subscribeGenieEvent should  load all child contents when download is complete', () => {
-        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': false,
-         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
-        component.cardData = { 'contentType': 'Collection', 'isAvailableLocally': false,
-         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
-        const events = TestBed.get(Events);
-        spyOn(events, 'subscribe').and.callFake( ({ }, success, error) => {
-            return success(JSON.stringify(mockRes.importCompleteEventSample));
-        });
-        component.queuedIdentifiers = ['SAMPLE_ID'];
-        component.isDownloadStarted = true;
-        spyOn(component, 'updateSavedResources');
-        component.subscribeGenieEvent();
-        expect(component.updateSavedResources).toHaveBeenCalled();
-    });
-
-    it('#subscribeGenieEvent should  update the course if update event is available ', () => {
-        component.cardData = { 'contentType': 'Collection', 'isAvailableLocally': false, 'identifier': 'SAMPLE_ID' };
-        component.queuedIdentifiers = ['SAMPLE_ID'];
-        component.isDownloadStarted = false;
-        component.identifier = 'SAMPLE_ID';
-        component.parentContent = { 'identifier': 'PARENT_ID' };
-        const events = TestBed.get(Events);
-        spyOn(events, 'subscribe').and.callFake( ({ }, success, error) => {
-            return success(JSON.stringify(mockRes.updateEventSample));
-        });
-
-        spyOn(component, 'importContent').and.callThrough().and.callFake(() => { });
-        component.subscribeGenieEvent();
-        expect(component.showLoading).toBe(true);
-        expect(component.importContent).toHaveBeenCalledWith(['PARENT_ID'], false);
-    });
-
-    it('#subscribeGenieEvent should  invoke setContentDetails if  update event is available ', () => {
-        component.cardData = { 'contentType': 'Collection', 'isAvailableLocally': false, 'identifier': 'SAMPLE_ID' };
-        component.queuedIdentifiers = ['SAMPLE_ID'];
-        component.isDownloadStarted = false;
-        component.identifier = 'SAMPLE_ID';
-        const events = TestBed.get(Events);
-        spyOn(events, 'subscribe').and.callFake( ({ }, success, error) => {
-            return success(JSON.stringify(mockRes.updateEventSample));
-        });
-
-        spyOn(component, 'importContent').and.callThrough().and.callFake(() => { });
-        spyOn(component, 'setContentDetails').and.callThrough().and.callFake(() => { });
-        component.subscribeGenieEvent();
-        expect(component.setContentDetails).toHaveBeenCalled();
-    });
-
-    it('#subscribeGenieEvent should  invoke setContentDetials when import is complete', () => {
-        component.cardData = { 'contentType': 'Collection', 'isAvailableLocally': false,
-         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
-        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': false,
-         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
-        const events = TestBed.get(Events);
-        spyOn(events, 'subscribe').and.callFake( ({ }, success, error) => {
-            return success(JSON.stringify(mockRes.importCompleteEventSample));
-        });
-        spyOn(component, 'setContentDetails').and.callThrough().and.callFake(() => { });
-        component.queuedIdentifiers = ['SAMPLE_ID'];
-        component.isDownloadStarted = false;
-        component.parentContent = { 'identifier': 'PARENT_ID' };
-        component.subscribeGenieEvent();
-        expect(component.setContentDetails).toHaveBeenCalled();
-    });
-
-    it('#subscribeGenieEvent should  invoke setContentDetials when import is complete', () => {
-        component.cardData = { 'contentType': 'Collection', 'isAvailableLocally': false,
-         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
-        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': false,
-         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
-        const events = TestBed.get(Events);
-        spyOn(events, 'subscribe').and.callFake( ({ }, success, error) => {
-            return success(JSON.stringify(mockRes.importCompleteEventSample));
-        });
-        spyOn(component, 'setContentDetails').and.callThrough().and.callFake(() => { });
-        component.queuedIdentifiers = ['SAMPLE_ID'];
-        component.isDownloadStarted = false;
-        component.isUpdateAvailable = true;
-        component.subscribeGenieEvent();
-        expect(component.setContentDetails).toHaveBeenCalled();
-    });
-
-    it('#subscribeGenieEvent should  set child contents when import is complete', () => {
-        component.cardData = { 'contentType': 'Collection', 'isAvailableLocally': false,
-         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
-        component.contentDetail = { 'contentType': 'Collection', 'isAvailableLocally': false,
-         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
-        const events = TestBed.get(Events);
-        spyOn(events, 'subscribe').and.callFake( ({ }, success, error) => {
-            return success(JSON.stringify(mockRes.importCompleteEventSample));
-        });
-        spyOn(component, 'updateSavedResources').and.callThrough().and.callFake(() => { });
-        const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'getChildContents').and.callFake( ({ }, success, error) => {
-           const data = JSON.stringify((mockRes.getChildContentAPIResponse));
-            return success(data);
-        });
-        component.queuedIdentifiers = ['SAMPLE_ID'];
-        component.isDownloadStarted = false;
-        component.isUpdateAvailable = false;
-        component.subscribeGenieEvent();
-        expect(component.updateSavedResources).toHaveBeenCalled();
-    });
-
-    it('#handleNetworkAvaibility should  handle network avaibility', () => {
-        component.cardData = {};
-        component.contentDetail = { contentTypesCount: 1 };
-        spyObjBuildParam.and.returnValue(Promise.reject());
-        component.handleNetworkAvaibility();
-        component.generateRollUp();
-        component.setCollectionStructure();
-        expect(component.contentDetail.contentTypesCount).toBe(1);
-    });
-
-    it('#handleNavBackButtonClick should handle nav back button click', () => {
-        const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
-        spyOn(telemetryGeneratorService, 'generateEndTelemetry');
-        const navCtrl = TestBed.get(NavController);
-        spyOn(navCtrl, 'pop');
-        spyOn(component, 'generateQRSessionEndEvent').and.callThrough();
-        spyOn(component, 'generateEndEvent').and.callThrough();
-        component.cardData = {};
-        component.contentDetail = { contentTypesCount: 1 };
-        component.backButtonFunc = jasmine.createSpy();
-        component.handleNavBackButton();
-        expect(component.generateQRSessionEndEvent).not.toHaveBeenCalled();
-        expect(component.generateEndEvent).toHaveBeenCalled();
-        expect(navCtrl.pop).toHaveBeenCalled();
-    });
-
-    it('#handleNavBackButtonClick should generate qrsession end event if shouldGenerateEndEvents paramater is true', () => {
-        const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
-        spyOn(telemetryGeneratorService, 'generateEndTelemetry');
-        const navCtrl = TestBed.get(NavController);
-        spyOn(navCtrl, 'pop');
-        spyOn(component, 'generateQRSessionEndEvent').and.callThrough();
-        spyOn(component, 'generateEndEvent').and.callThrough();
-        component.cardData = {};
-        component.contentDetail = { contentTypesCount: 1 };
-        component.shouldGenerateEndTelemetry = true;
-        component.backButtonFunc = jasmine.createSpy();
-        component.handleNavBackButton();
-        expect(component.generateQRSessionEndEvent).toHaveBeenCalled();
-        expect(component.generateEndEvent).toHaveBeenCalled();
-        expect(navCtrl.pop).toHaveBeenCalled();
-    });
-
-    it('#ionViewDidload should handle back button click', () => {
-        component.ionViewDidLoad();
-    });
-
-    it('#ionViewWillEnter should invoke setContentDetails when page is invoked', () => {
-        const navParams = TestBed.get(NavParams);
-        const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
-        spyOn(telemetryGeneratorService, 'generateStartTelemetry');
-        spyOn(telemetryGeneratorService, 'generateImpressionTelemetry');
-        navParams.data['content'] = { 'contentType': 'Collection', 'isAvailableLocally': false,
-         'identifier': 'SAMPLE_ID', 'hierarchyInfo': 'PARENT_ID/CHILD_ID' };
-        spyOn(component, 'setContentDetails');
-        spyOn(component, 'subscribeGenieEvent');
-        component.ionViewWillEnter();
-        expect(component.setContentDetails).toHaveBeenCalledWith('SAMPLE_ID', true);
-        expect(component.subscribeGenieEvent).toHaveBeenCalled();
-        expect(telemetryGeneratorService.generateStartTelemetry).toHaveBeenCalled();
-        expect(telemetryGeneratorService.generateImpressionTelemetry).toHaveBeenCalled();
-    });
-
-    it('#handleDeviceBackButton  should handle device back button click', () => {
-        const platform = TestBed.get(Platform);
-        const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
-
-        spyOn(platform, 'registerBackButtonAction').and.callFake( (success) => {
-            return success();
-        });
-        spyOn(component, 'generateEndEvent').and.callThrough();
-        spyOn(telemetryGeneratorService, 'generateEndTelemetry').and.callThrough().and.callFake(() => { });
-        component.objId = 'SAMPLE_ID';
-        component.objType = 'SAMPLE_TYPE';
-        component.objVer = 'SAMPLE_VERSION';
-        component.backButtonFunc = jasmine.createSpy();
-        component.handleDeviceBackButton();
-        expect(component.generateEndEvent).toHaveBeenCalledWith('SAMPLE_ID', 'SAMPLE_TYPE', 'SAMPLE_VERSION');
-        const telemetryObject: TelemetryObject = new TelemetryObject();
-        telemetryObject.id = 'SAMPLE_ID';
-        telemetryObject.type = 'SAMPLE_TYPE';
-        telemetryObject.version = 'SAMPLE_VERSION';
-        expect(telemetryGeneratorService.generateEndTelemetry).toHaveBeenCalledWith('SAMPLE_TYPE',
-            Mode.PLAY,
-            PageId.COLLECTION_DETAIL,
-            Environment.HOME,
-            telemetryObject,
-            new Rollup(),
-            undefined);
-    });
-
-    it('#setContentDetails  should show error toast if any error comes from getContentDetails API', () => {
-        const contentService = TestBed.get(ContentService);
-        const commonUtilService = TestBed.get(CommonUtilService);
-        const navController = TestBed.get(NavController);
-        spyOn(navController, 'pop');
-        spyOn(commonUtilService, 'showToast');
-        spyOn(contentService, 'getContentDetail').and.callFake( (arg, success, error) => {
-            return error();
-        });
-        component.setContentDetails('SAMPLE_ID', false);
-        expect(commonUtilService.showToast).toHaveBeenCalledWith('ERROR_CONTENT_NOT_AVAILABLE');
-        expect(navController.pop).toHaveBeenCalled();
-    });
-
-    it('#extractApiResponse  should  update content if update is available', () => {
-        const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'importContent').and.callFake( (arg, success, error) => {
-        });
-        spyOn(component, 'setCollectionStructure').and.callFake( (arg, success, error) => {
-        });
-        component.isUpdateAvailable = false;
-        component.extractApiResponse(mockRes.updateContentDetailsResponse);
-        expect(contentService.importContent).toHaveBeenCalled();
-    });
-
-    it('#extractApiResponse  should  download the content of its not locally available', () => {
-        const contentService = TestBed.get(ContentService);
-        spyOn(contentService, 'importContent').and.callFake( (arg, success, error) => {
-        });
-        spyOn(component, 'setCollectionStructure').and.callFake( (arg, success, error) => {
-        });
-        component.isUpdateAvailable = false;
-        component.extractApiResponse(mockRes.locallyNotAvailableContentDetailsResponse);
-        expect(contentService.importContent).toHaveBeenCalled();
-    });
-
-    it('#showDownloadAllBtn  should show the download button', () => {
-        component.showDownloadAllBtn([mockRes.locallyNotAvailableContentDetailsResponse.result]);
-        expect(component.showDownloadBtn).toBe(true);
-    });
-
-
-
+    // act
+    collectionDetailsPage.setContentDetails('SAMPLE_IDENTIFIER', true);
+
+    // assert
+    setTimeout(() => {
+      expect(commonUtilServiceMock.showToast).toHaveBeenCalledWith('ERROR_CONTENT_NOT_AVAILABLE');
+      expect(navCtrlMock.pop).toHaveBeenCalled();
+      done();
+    }, 0);
+  });
+
+  it('extractApiResponse()  should  update content if update is available', () => {
+    // arrange
+    spyOn(collectionDetailsPage, 'setChildContents').and.stub();
+    spyOn(collectionDetailsPage, 'setCollectionStructure').and.stub();
+    contentServiceMock.importContent.mockResolvedValue({});
+
+    // act
+    collectionDetailsPage.extractApiResponse(mockRes.updateContentDetailsResponse);
+
+    // assert
+    expect(collectionDetailsPage.isUpdateAvailable).toBe(true);
+    expect(contentServiceMock.importContent).toHaveBeenCalled();
+  });
+
+  it('should  download the content of its not locally available when extractApiResponse()', () => {
+    // arrange
+    spyOn(collectionDetailsPage, 'setChildContents').and.stub();
+    spyOn(collectionDetailsPage, 'setCollectionStructure').and.stub();
+    contentServiceMock.importContent.mockResolvedValue({});
+
+    // act
+    collectionDetailsPage.extractApiResponse(mockRes.locallyNotAvailableContentDetailsResponse);
+
+    // assert
+    expect(contentServiceMock.importContent).toHaveBeenCalled();
+  });
+
+  it('should show the download button when showDownloadAllBtn()', () => {
+    // act
+    collectionDetailsPage.showDownloadAllBtn([mockRes.locallyNotAvailableContentDetailsResponse.result]);
+    zoneMock.run.mock.calls[0][0].call(collectionDetailsPage, undefined);
+
+    // assert
+    expect(collectionDetailsPage.showDownloadBtn).toBe(true);
+  });
+
+  it('should open view credits screen when viewCredits()', () => {
+    // act
+    collectionDetailsPage.viewCredits();
+
+    // assert
+    expect(courseUtilServiceMock.showCredits).toHaveBeenCalledWith(collectionDetailsPage.contentDetail,
+      'collection-detail', collectionDetailsPage.objRollup, collectionDetailsPage.corRelationList);
+  });
 });

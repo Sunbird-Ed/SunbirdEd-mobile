@@ -19,6 +19,10 @@ import { FormAndFrameworkUtilService } from '../pages/profile/formandframeworkut
 import { AssessmentDetailsComponent } from './assessment-details/assessment-details';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { ViewMoreCardComponent } from './view-more-card/view-more-card';
+import { ViewCreditsComponent } from './view-credits/view-credits';
+import { ProfileAvatarComponent } from './profile-avatar/profile-avatar';
+import { DialogPopupComponent } from './dialog-popup/dialog-popup';
+import { BookmarkComponent } from './bookmark/bookmark';
 
 @NgModule({
     declarations: [
@@ -34,7 +38,11 @@ import { ViewMoreCardComponent } from './view-more-card/view-more-card';
         // ContentActionsComponent,
         ReportIssuesComponent,
         ContentRatingAlertComponent,
-        AssessmentDetailsComponent
+        AssessmentDetailsComponent,
+        ViewCreditsComponent,
+        ProfileAvatarComponent,
+        DialogPopupComponent,
+        BookmarkComponent
     ],
     imports: [
         IonicPageModule.forChild(CourseCard),
@@ -57,14 +65,20 @@ import { ViewMoreCardComponent } from './view-more-card/view-more-card';
         ConfirmAlertComponent,
         ReportIssuesComponent,
         ContentRatingAlertComponent,
-        AssessmentDetailsComponent
+        AssessmentDetailsComponent,
+        ViewCreditsComponent,
+        ProfileAvatarComponent,
+        DialogPopupComponent,
+        BookmarkComponent
         // ContentActionsComponent
     ],
     entryComponents: [
         OnboardingAlert,
         ConfirmAlertComponent,
         ReportIssuesComponent,
-        ContentRatingAlertComponent
+        ContentRatingAlertComponent,
+        ViewCreditsComponent,
+        DialogPopupComponent
     ],
     providers: [
         OnboardingService,

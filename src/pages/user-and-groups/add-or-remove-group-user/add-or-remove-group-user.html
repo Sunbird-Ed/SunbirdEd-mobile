@@ -14,7 +14,7 @@
       </p>
     </ion-col>
     <ion-col col-md-4 push-md-4 class="rm-padding-right">
-      <button class="rm-padding-right" *ngIf="addUsers" text-uppercase ion-button float-end clear (click)="selectAll()">{{'SELECT_ALL'
+      <button class="rm-padding-right" *ngIf="addUsers  && uniqueUserList?.length" text-uppercase ion-button float-end clear (click)="selectAll()">{{'SELECT_ALL'
         | translate}}</button>
       <button class="rm-padding-right" *ngIf="!addUsers" text-uppercase ion-button float-end clear (click)="unselectAll()">{{'UNSELECT_ALL'
         | translate}}</button>

@@ -1,5 +1,4 @@
-import { ContentRatingAlertComponent } from './../../component/content-rating-alert/content-rating-alert';
-import { ContentActionsComponent } from './../../component/content-actions/content-actions';
+import { ResourcesPage } from './../resources/resources';
 import {
   Component,
   NgZone,
@@ -10,13 +9,14 @@ import {
   NavController,
   NavParams,
   Events,
-  ToastController,
-  LoadingController,
   PopoverController,
   Navbar,
   Platform,
-  IonicApp
+  IonicApp,
+  AlertController
 } from 'ionic-angular';
+import { SocialSharing } from '@ionic-native/social-sharing';
+import * as _ from 'lodash';
 import {
   ContentService,
   CourseService,
@@ -30,31 +30,37 @@ import {
   InteractSubtype,
   Rollup,
   BuildParamService,
-  SharedPreferences,
   ProfileType,
   CorrelationData,
   ProfileService,
   ProfileRequest,
-  TelemetryObject
+  TelemetryObject,
+  SharedPreferences,
+  DeviceInfoService,
+  ContentMarkerRequest,
+  MarkerType,
+  ContentDetailRequest
 } from 'sunbird';
-import { SocialSharing } from '@ionic-native/social-sharing';
-import { Network } from '@ionic-native/network';
-import * as _ from 'lodash';
 import {
-  Map
-} from '../../app/telemetryutil';
-import {
-  EventTopics,
-  ProfileConstants,
   PreferenceKey
 } from '../../app/app.constant';
-import { ShareUrl } from '../../app/app.constant';
-import { AppGlobalService } from '../../service/app-global.service';
-import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
-import { AlertController } from 'ionic-angular';
+
+import {
+  EventTopics,
+  ShareUrl,
+  Map
+} from '@app/app';
+
+import { ContentRatingAlertComponent, ContentActionsComponent, BookmarkComponent } from '@app/component';
+import { AppGlobalService, CourseUtilService } from '@app/service';
+import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
 import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../service/common-util.service';
+import { ViewCreditsComponent } from '../../component/view-credits/view-credits';
+import { DialogPopupComponent } from '../../component/dialog-popup/dialog-popup';
+import { Observable } from 'rxjs';
+import { XwalkConstants } from '../../app/app.constant';
 
 @IonicPage()
 @Component({
@@ -62,25 +68,11 @@ import { CommonUtilService } from '../../service/common-util.service';
   templateUrl: 'content-details.html',
 })
 export class ContentDetailsPage {
-
-  /**
-   * To hold Content details
-   */
+  apiLevel: number;
+  appAvailability: string;
   content: any;
-
-  /**
-   * is child content
-   */
   isChildContent = false;
-
-  /**
-   * Contains content details
-   */
   contentDetails: any;
-
-  /**
-   * Contains content identifier
-   */
   identifier: string;
 
   /**
@@ -92,84 +84,18 @@ export class ContentDetailsPage {
    * Content depth
    */
   depth: string;
-
-  /**
-   * Download started flag
-   */
   isDownloadStarted = false;
-
-  /**
-   * Contains download progress
-   */
   downloadProgress: string;
-
-  /**
-   *
-   */
   cancelDownloading = false;
-
-  /**
-   * Contains loader instance
-   */
   loader: any;
-
-  /**
-   * To hold user id
-   */
   userId = '';
-
-  /**
-   * To hold network status
-   */
-  isNetworkAvailable: boolean;
-
-  /**
-   * Contains reference of content service
-   */
-  public contentService: ContentService;
-
-  /**
-   * Contains ref of navigation controller
-   */
-  public navCtrl: NavController;
-
-  /**
-   * Contains ref of navigation params
-   */
-  public navParams: NavParams;
-
-  /**
-   * Contains reference of zone service
-   */
-  public zone: NgZone;
-
-  /**
-   * Contains reference of ionic toast controller
-   */
-  public toastCtrl: ToastController;
-
-  /**
-   * Contains reference of LoadingController
-   */
-  public loadingCtrl: LoadingController;
-
   public objRollup: Rollup;
-
   private resume;
-
   isContentPlayed = false;
-
   /**
-   * User Rating
-   *
    * Used to handle update content workflow
    */
   isUpdateAvail = false;
-
-  /**
-   * User Rating
-   *
-   */
   userRating = 0;
 
   /**
@@ -184,14 +110,10 @@ export class ContentDetailsPage {
    * This flag helps in knowing when the content player is closed and the user is back on content details page.
    */
   public isPlayerLaunched = false;
-
-  guestUser = false;
-
+  isGuestUser = false;
   launchPlayer: boolean;
-
   profileType = '';
   isResumedCourse: boolean;
-
   objId;
   objType;
   objVer;
@@ -204,54 +126,53 @@ export class ContentDetailsPage {
   userCount = 0;
   shouldGenerateTelemetry = true;
 
-  /**
-   *
-   * @param navCtrl
-   * @param navParams
-   * @param contentService
-   * @param zone
-   * @param events
-   * @param toastCtrl
-   */
   @ViewChild(Navbar) navBar: Navbar;
-  constructor(navCtrl: NavController,
-    navParams: NavParams,
-    contentService: ContentService,
-    zone: NgZone,
+  showMessage: any;
+  constructor(
+    private navCtrl: NavController,
+    private navParams: NavParams,
+    private contentService: ContentService,
+    private zone: NgZone,
     private events: Events,
-    toastCtrl: ToastController,
-    loadingCtrl: LoadingController,
     private fileUtil: FileUtil,
     private popoverCtrl: PopoverController,
     private shareUtil: ShareUtil,
+    private preference: SharedPreferences,
     private social: SocialSharing,
     private platform: Platform,
     private buildParamService: BuildParamService,
-    private network: Network,
     private courseService: CourseService,
-    private preference: SharedPreferences,
     private appGlobalService: AppGlobalService,
     private alertCtrl: AlertController,
     private ionicApp: IonicApp,
     private profileService: ProfileService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private commonUtilService: CommonUtilService) {
+    private commonUtilService: CommonUtilService,
+    private courseUtilService: CourseUtilService,
+    private deviceInfoService: DeviceInfoService
+  ) {
 
-    this.navCtrl = navCtrl;
-    this.navParams = navParams;
-    this.contentService = contentService;
-    this.zone = zone;
-    this.toastCtrl = toastCtrl;
-    this.loadingCtrl = loadingCtrl;
     this.objRollup = new Rollup();
-
-    this.getUserId();
+    // this.userId = this.appGlobalService.getUserId();
     this.subscribePlayEvent();
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
     this.handlePageResume();
-    this.handleNetworkAvailability();
+    this.checkDeviceAPILevel();
+    this.checkappAvailability();
+  }
 
+  ionViewDidLoad() {
+    this.navBar.backButtonClick = (e: UIEvent) => {
+      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
+        true, this.cardData.identifier, this.corRelationList);
+      this.handleNavBackButton();
+    };
+    this.handleDeviceBackButton();
+
+    if (!AppGlobalService.isPlayerLaunched) {
+      this.calculateAvailableUserCount();
+    }
   }
 
   /**
@@ -267,14 +188,15 @@ export class ContentDetailsPage {
     this.source = this.navParams.get('source');
     this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
     this.downloadAndPlay = this.navParams.get('downloadAndPlay');
-    if (!this.isResumedCourse) {
-      this.generateTelemetry();
-    }
-    if (this.isResumedCourse === true) {
+
+    if (this.isResumedCourse) {
       this.navCtrl.insert(this.navCtrl.length() - 1, EnrolledCourseDetailsPage, {
         content: this.navParams.get('resumedCourseCardData')
       });
+    } else {
+      this.generateTelemetry();
     }
+
     this.setContentDetails(this.identifier, true, false);
     this.subscribeGenieEvent();
   }
@@ -285,19 +207,6 @@ export class ContentDetailsPage {
   ionViewWillLeave(): void {
     this.events.unsubscribe('genie.event');
     this.resume.unsubscribe();
-  }
-
-  ionViewDidLoad() {
-    this.navBar.backButtonClick = (e: UIEvent) => {
-      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
-        true, this.cardData.identifier, this.corRelationList);
-      this.handleNavBackButton();
-    };
-    this.handleDeviceBackButton();
-
-    if (!AppGlobalService.isPlayerLaunched) {
-      this.calculateAvailableUserCount();
-    }
   }
 
   handleNavBackButton() {
@@ -329,25 +238,11 @@ export class ContentDetailsPage {
     // This is to know when the app has come to foreground
     this.resume = this.platform.resume.subscribe(() => {
       this.isContentPlayed = true;
-      if (this.isPlayerLaunched && !this.guestUser) {
+      if (this.isPlayerLaunched && !this.isGuestUser) {
         this.isPlayerLaunched = false;
-        this.setContentDetails(this.identifier, false, false /* No Automatic Rating for 1.9.0 */);
+        this.setContentDetails(this.identifier, false, true /* No Automatic Rating for 1.9.0 */);
       }
-      this.updateContentProgress();
-    });
-  }
-
-  handleNetworkAvailability() {
-    if (this.network.type === 'none') {
-      this.isNetworkAvailable = false;
-    } else {
-      this.isNetworkAvailable = true;
-    }
-    this.network.onDisconnect().subscribe(() => {
-      this.isNetworkAvailable = false;
-    });
-    this.network.onConnect().subscribe(() => {
-      this.isNetworkAvailable = true;
+      // this.updateContentProgress();
     });
   }
 
@@ -355,14 +250,10 @@ export class ContentDetailsPage {
     this.buildParamService.getBuildConfigParam('BASE_URL')
       .then(response => {
         this.baseUrl = response;
-      })
-      .catch(() => {
       });
     this.launchPlayer = this.navParams.get('launchplayer');
-    this.events.subscribe('launchPlayer', (status) => {
-      if (status) {
-        this.playContent();
-      }
+    this.events.subscribe('playConfig', (config) => {
+      this.playContent(config.streaming);
     });
   }
 
@@ -371,7 +262,7 @@ export class ContentDetailsPage {
    *
    */
   checkLoggedInOrGuestUser() {
-    this.guestUser = !this.appGlobalService.isUserLoggedIn();
+    this.isGuestUser = !this.appGlobalService.isUserLoggedIn();
   }
 
   calculateAvailableUserCount() {
@@ -386,21 +277,46 @@ export class ContentDetailsPage {
       if (this.appGlobalService.isUserLoggedIn()) {
         this.userCount += 1;
       }
-    }).catch(() => {
+    }).catch((error) => {
+      console.error('Error occurred= ', error);
     });
   }
 
   checkCurrentUserType() {
-    this.preference.getString(PreferenceKey.SELECTED_USER_TYPE)
-      .then(val => {
-        if (val !== '') {
-          if (val === ProfileType.TEACHER) {
-            this.profileType = ProfileType.TEACHER;
-          } else if (val === ProfileType.STUDENT) {
-            this.profileType = ProfileType.STUDENT;
-          }
-        }
-      });
+    if (this.isGuestUser) {
+      this.appGlobalService.getGuestUserInfo()
+        .then((userType) => {
+          this.profileType = userType;
+        })
+        .catch((error) => {
+          console.log('Error Occurred', error);
+          this.profileType = '';
+        });
+    }
+  }
+
+  checkBookmarkStatus() {
+    this.preference.getString(PreferenceKey.IS_BOOKMARK_VIEWED).then(val => {
+      if (!val) {
+        this.showBookmarkMenu();
+      }
+    });
+  }
+
+  selectBookmark() {
+    this.content.bookmarked = true;
+    this.showMessage = true;
+    const notifyTimer = Observable.timer(10000);
+    notifyTimer.subscribe(e => {
+      this.showMessage = false;
+    });
+  }
+
+  deSelectBookmark() {
+    this.content.bookmarked = false;
+    if (this.showMessage) {
+      this.showMessage = false;
+    }
   }
 
 
@@ -408,7 +324,7 @@ export class ContentDetailsPage {
    * Function to rate content
    */
   rateContent(popupType: string) {
-    if (!this.guestUser) {
+    if (!this.isGuestUser) {
       const paramsMap = new Map();
       if (this.isContentPlayed || (this.content.downloadable
         && this.content.contentAccess.length)) {
@@ -454,44 +370,45 @@ export class ContentDetailsPage {
 
   /**
    * To set content details in local variable
-   *
    * @param {string} identifier identifier of content / course
    */
   setContentDetails(identifier, refreshContentDetails: boolean | true, showRating: boolean) {
     let loader;
     if (!showRating) {
-      loader = this.getLoader();
+      loader = this.commonUtilService.getLoader();
       loader.present();
     }
-    const option = {
+    const req: ContentDetailRequest = {
       contentId: identifier,
       refreshContentDetails: refreshContentDetails,
       attachFeedback: true,
-      attachContentAccess: true
+      attachContentAccess: true,
+      attachContentMarker: true
     };
 
-    this.contentService.getContentDetail(option, (data: any) => {
-      this.zone.run(() => {
-        data = JSON.parse(data);
-        if (data && data.result) {
-          this.extractApiResponse(data);
-          if (!showRating) {
-            loader.dismiss();
+    this.contentService.getContentDetail(req)
+      .then((data: any) => {
+        this.zone.run(() => {
+          data = JSON.parse(data);
+          if (data && data.result) {
+            this.extractApiResponse(data);
+            if (!showRating) {
+              loader.dismiss();
+            }
+          } else {
+            if (!showRating) {
+              loader.dismiss();
+            }
           }
-        } else {
-          if (!showRating) {
-            loader.dismiss();
-          }
-        }
 
-        if (showRating) {
-          if (this.userRating === 0) {
-            this.rateContent('automatic');
+          if (showRating) {
+            if (this.userRating === 0) {
+              this.rateContent('automatic');
+            }
           }
-        }
-      });
-    },
-      (error: any) => {
+        });
+      })
+      .catch((error: any) => {
         const data = JSON.parse(error);
         console.log('Error received', data);
         loader.dismiss();
@@ -515,9 +432,17 @@ export class ContentDetailsPage {
     this.content.downloadable = data.result.isAvailableLocally;
 
     this.content.contentAccess = data.result.contentAccess ? data.result.contentAccess : [];
+    this.content.contentMarker = data.result.contentMarker ? data.result.contentMarker : [];
 
     if (this.cardData && this.cardData.hierarchyInfo) {
       data.result.hierarchyInfo = this.cardData.hierarchyInfo;
+      this.isChildContent = true;
+    }
+
+    if (!this.isChildContent && this.content.contentMarker.length
+      && this.content.contentMarker[0].extraInfoMap
+      && this.content.contentMarker[0].extraInfoMap.hierarchyInfo
+      && this.content.contentMarker[0].extraInfoMap.hierarchyInfo.length) {
       this.isChildContent = true;
     }
 
@@ -581,7 +506,7 @@ export class ContentDetailsPage {
         /**
          * If the content is already downloaded then just play it
          */
-        this.showSwitchUserAlert();
+        this.showSwitchUserAlert(false);
       }
     }
   }
@@ -602,10 +527,13 @@ export class ContentDetailsPage {
     values['isUpdateAvailable'] = this.isUpdateAvail;
     values['isDownloaded'] = this.content.downloadable;
 
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = this.content.identifier;
-    telemetryObject.type = this.content.contentType;
-    telemetryObject.version = this.content.pkgVersion;
+    const telemetryObject: TelemetryObject = {
+      id: this.content.identifier,
+      type: this.content.contentType,
+      version: this.content.pkgVersion,
+      rollup: undefined
+    };
+
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
       ImpressionType.DETAIL,
       Environment.HOME,
@@ -648,10 +576,7 @@ export class ContentDetailsPage {
   }
 
   generateStartEvent(objectId, objectType, objectVersion) {
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = objectId;
-    telemetryObject.type = objectType;
-    telemetryObject.version = objectVersion;
+    const telemetryObject: TelemetryObject = { id: objectId, type: objectType, version: objectVersion, rollup: undefined };
     this.telemetryGeneratorService.generateStartTelemetry(
       PageId.CONTENT_DETAIL,
       telemetryObject,
@@ -660,10 +585,7 @@ export class ContentDetailsPage {
   }
 
   generateEndEvent(objectId, objectType, objectVersion) {
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = objectId;
-    telemetryObject.type = objectType;
-    telemetryObject.version = objectVersion;
+    const telemetryObject: TelemetryObject = { id: objectId, type: objectType, version: objectVersion, rollup: undefined };
     this.telemetryGeneratorService.generateEndTelemetry(
       objectType,
       Mode.PLAY,
@@ -676,10 +598,7 @@ export class ContentDetailsPage {
 
   generateQRSessionEndEvent(pageId: string, qrData: string) {
     if (pageId !== undefined) {
-      const telemetryObject: TelemetryObject = new TelemetryObject();
-      telemetryObject.id = qrData;
-      telemetryObject.type = 'qr';
-      telemetryObject.version = '';
+      const telemetryObject: TelemetryObject = { id: qrData, type: 'qr', version: '', rollup: undefined };
       this.telemetryGeneratorService.generateEndTelemetry(
         'qr',
         Mode.PLAY,
@@ -747,13 +666,14 @@ export class ContentDetailsPage {
     };
 
     // Call content service
-    this.contentService.importContent(option, (data: any) => {
-      data = JSON.parse(data);
-      if (data.result && data.result[0].status === 'NOT_FOUND') {
-        this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
-      }
-    },
-      error => {
+    this.contentService.importContent(option)
+      .then((data: any) => {
+        data = JSON.parse(data);
+        if (data.result && data.result[0].status === 'NOT_FOUND') {
+          this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
+        }
+      })
+      .catch((error) => {
         console.log('error while loading content details', error);
         if (this.isDownloadStarted) {
           this.content.downloadable = false;
@@ -805,7 +725,7 @@ export class ContentDetailsPage {
    */
   downloadContent() {
     this.zone.run(() => {
-      if (this.isNetworkAvailable) {
+      if (this.commonUtilService.networkInfo.isNetworkAvailable) {
         this.downloadProgress = '0';
         this.isDownloadStarted = true;
         this.importContent([this.identifier], this.isChildContent);
@@ -816,15 +736,16 @@ export class ContentDetailsPage {
   }
 
   cancelDownload() {
-    this.contentService.cancelDownload(this.identifier, () => {
+    this.contentService.cancelDownload(this.identifier).then(() => {
       this.zone.run(() => {
+        this.telemetryGeneratorService.generateContentCancelClickedTelemetry(this.content, this.downloadProgress);
         this.isDownloadStarted = false;
         this.downloadProgress = '';
         if (!this.isUpdateAvail) {
           this.content.downloadable = false;
         }
       });
-    }, (error: any) => {
+    }).catch((error: any) => {
       this.zone.run(() => {
         console.log('Error: download error =>>>>>', error);
       });
@@ -835,10 +756,9 @@ export class ContentDetailsPage {
   /**
    * alert for playing the content
    */
-  showSwitchUserAlert() {
+  showSwitchUserAlert(isStreaming: boolean) {
     if (!AppGlobalService.isPlayerLaunched && this.userCount > 1) {
       const profile = this.appGlobalService.getCurrentUser();
-
       const alert = this.alertCtrl.create({
         title: this.commonUtilService.translateMessage('PLAY_AS'),
         mode: 'wp',
@@ -849,15 +769,18 @@ export class ContentDetailsPage {
             text: this.commonUtilService.translateMessage('YES'),
             cssClass: 'alert-btn-delete',
             handler: () => {
-              this.playContent();
+              this.playContent(isStreaming);
             }
           },
           {
             text: this.commonUtilService.translateMessage('CHANGE_USER'),
             cssClass: 'alert-btn-cancel',
             handler: () => {
+              const playConfig: any = {};
+              playConfig.playContent = true;
+              playConfig.streaming = isStreaming;
               this.navCtrl.push(UserAndGroupsPage, {
-                playContent: this.content.playContent
+                playConfig: playConfig
               });
             }
           },
@@ -865,14 +788,12 @@ export class ContentDetailsPage {
             text: 'x',
             role: 'cancel',
             cssClass: 'closeButton',
-            handler: () => {
-            }
           }
         ]
       });
       alert.present();
     } else {
-      this.playContent();
+      this.playContent(isStreaming);
     }
 
   }
@@ -880,75 +801,79 @@ export class ContentDetailsPage {
   /**
    * Play content
    */
-  playContent() {
+  playContent(isStreaming: boolean) {
     // set the boolean to true, so when the content player is closed, we get to know that
     // we are back from content player
-    if (!AppGlobalService.isPlayerLaunched) {
-      AppGlobalService.isPlayerLaunched = true;
-    }
-
-    this.zone.run(() => {
-      this.isPlayerLaunched = true;
-      const values = new Map();
-      if (Boolean(this.downloadAndPlay)) {
-        values['autoAfterDownload'] = true;
-      }
-      this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-        InteractSubtype.CONTENT_PLAY,
-        Environment.HOME,
-        PageId.CONTENT_DETAIL,
-        undefined,
-        values,
-        this.objRollup,
-        this.corRelationList);
-    });
-    this.downloadAndPlay = false;
-    (<any>window).geniecanvas.play(this.content.playContent);
-  }
-
-  getUserId() {
-    if (this.appGlobalService.getSessionData()) {
-      this.userId = this.appGlobalService.getSessionData()[ProfileConstants.USER_TOKEN];
+    if (this.apiLevel < 21 && this.appAvailability === 'false') {
+      this.showPopupDialog();
     } else {
-      this.userId = '';
-    }
-  }
-
-  updateContentProgress() {
-    const stateData = this.navParams.get('contentState');
-    if (stateData !== undefined && stateData.batchId && stateData.courseId && this.userId) {
-      const data = {
-        courseId: stateData.courseId,
-        batchId: stateData.batchId,
-        contentId: this.identifier,
-        userId: this.userId,
-        status: 2,
-        progress: 100
-      };
-
-      this.courseService.updateContentState(data, () => {
-        this.zone.run(() => {
-          this.events.publish(EventTopics.COURSE_STATUS_UPDATED_SUCCESSFULLY, {
-            update: true
-          });
-        });
-      }, (error: any) => {
-        this.zone.run(() => {
-          console.log('Error: while updating content state =>>>>>', error);
-        });
+      this.downloadAndPlay = false;
+      if (!AppGlobalService.isPlayerLaunched) {
+        AppGlobalService.isPlayerLaunched = true;
+      }
+      this.zone.run(() => {
+        this.isPlayerLaunched = true;
+        const values = new Map();
+        if (Boolean(this.downloadAndPlay)) {
+          values['autoAfterDownload'] = true;
+        }
+        this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+          InteractSubtype.CONTENT_PLAY,
+          Environment.HOME,
+          PageId.CONTENT_DETAIL,
+          undefined,
+          values,
+          this.objRollup,
+          this.corRelationList);
       });
+
+      if (isStreaming) {
+        const extraInfoMap = { hierarchyInfo: [] };
+        if (this.cardData && this.cardData.hierarchyInfo) {
+          extraInfoMap.hierarchyInfo = this.cardData.hierarchyInfo;
+        }
+
+        const playContent = JSON.parse(this.content.playContent);
+        const req: ContentMarkerRequest = {
+          uid: this.appGlobalService.getCurrentUser().uid,
+          contentId: this.identifier,
+          data: JSON.stringify(playContent.contentData),
+          marker: MarkerType.PREVIEWED,
+          isMarked: true,
+          extraInfoMap: extraInfoMap
+        };
+        this.contentService.setContentMarker(req)
+          .then((resp) => {
+          }).catch((err) => {
+          });
+      }
+      this.downloadAndPlay = false;
+      const request: any = {};
+      if (isStreaming) {
+        request.streaming = isStreaming;
+      }
+
+      (<any>window).geniecanvas.play(this.content.playContent, JSON.stringify(request));
     }
   }
 
+  checkappAvailability() {
+    this.deviceInfoService.checkAppAvailability(XwalkConstants.APP_ID)
+      .then((response: any) => {
+        this.appAvailability = response;
+      })
+      .catch((error: any) => {
+        console.error('Error ', error);
+      });
+  }
 
-  /**
-   * Function to get loader instance
-   */
-  getLoader(): any {
-    return this.loadingCtrl.create({
-      duration: 3000,
-      spinner: 'crescent'
-    });
+  checkDeviceAPILevel() {
+    this.deviceInfoService.getDeviceAPILevel()
+      .then((res: any) => {
+        this.apiLevel = res;
+      }).catch((error: any) => {
+        console.error('Error ', error);
+      });
   }
 
   showOverflowMenu(event) {
@@ -964,6 +889,7 @@ export class ContentDetailsPage {
       content: this.content,
       isChild: this.isChildContent,
       objRollup: this.objRollup,
+      pageName: PageId.CONTENT_DETAIL,
       corRelationList: this.corRelationList
     }, {
         cssClass: 'content-action'
@@ -975,14 +901,41 @@ export class ContentDetailsPage {
       this.zone.run(() => {
         if (data === 'delete.success') {
           this.content.downloadable = false;
+          const playContent = JSON.parse(this.content.playContent);
+          playContent.isAvailableLocally = false;
+          this.content.playContent = JSON.stringify(playContent);
         }
       });
     });
   }
 
+  showBookmarkMenu(event?) {
+    const popover = this.popoverCtrl.create(BookmarkComponent, {
+      content: this.content,
+      isChild: this.isChildContent,
+      objRollup: this.objRollup,
+      corRelationList: this.corRelationList,
+      position: 'bottom'
+    }, {
+        cssClass: 'bookmark-menu'
+      });
+    popover.present({
+      ev: event
+    });
+  }
+
+  updateBookmarkPreference() {
+    // this.preference.putString(PreferenceKey.IS_BOOKMARK_VIEWED, 'true');
+    // this.viewCtrl.dismiss();
+    console.log('updateBookmarkPreference');
+  }
+
+  /**
+   * Shares content to external devices
+   */
   share() {
     this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_LIBRARY_INITIATED, this.content.contentType);
-    const loader = this.getLoader();
+    const loader = this.commonUtilService.getLoader();
     loader.present();
     const url = this.baseUrl + ShareUrl.CONTENT + this.content.identifier;
     if (this.content.downloadable) {
@@ -997,11 +950,17 @@ export class ContentDetailsPage {
     } else {
       loader.dismiss();
       this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.content.contentType);
-      this.social.share('', '', '', url);
+      this.social.share(null, null, null, url);
     }
 
   }
 
+  /**
+   * Generates Interact Events
+   * @param interactType
+   * @param subType
+   * @param contentType
+   */
   generateShareInteractEvents(interactType, subType, contentType) {
     const values = new Map();
     values['ContentType'] = contentType;
@@ -1013,5 +972,34 @@ export class ContentDetailsPage {
       values,
       this.objRollup,
       this.corRelationList);
+  }
+
+  /**
+  * To View Credits popup
+  */
+  viewCredits() {
+    this.courseUtilService.showCredits(this.content, PageId.CONTENT_DETAIL, this.objRollup, this.corRelationList);
+  }
+
+  /**
+   * method generates telemetry on click Read less or Read more
+   * @param {string} param string as read less or read more
+   * @param {object} objRollup object roll up
+   * @param corRelationList correlation List
+   */
+  readLessorReadMore(param, objRollup, corRelationList) {
+    const telemetryObject: TelemetryObject = { id: this.objId, type: this.objType, version: this.objVer, rollup: undefined };
+    this.telemetryGeneratorService.readLessOrReadMore(param, objRollup, corRelationList, telemetryObject);
+  }
+
+  showPopupDialog() {
+    const popover = this.popoverCtrl.create(DialogPopupComponent, {
+      title: this.commonUtilService.translateMessage('ANDROID_NOT_SUPPORTED'),
+      body: this.commonUtilService.translateMessage('ANDROID_NOT_SUPPORTED_DESC'),
+      buttonText: this.commonUtilService.translateMessage('INSTALL_CROSSWALK')
+    }, {
+        cssClass: 'popover-alert'
+      });
+    popover.present();
   }
 }

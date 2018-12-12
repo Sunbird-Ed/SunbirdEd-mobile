@@ -31,9 +31,16 @@ page-search {
 
   .divider {
     width: 100%;
-    height: 4px;
+    height: 6px;
     background-color: #f3f3f3;
     margin: 20px 0 0 0;
+  }
+
+  .inner-divider{
+    width: 90%;
+    height: 3px;
+    background-color: #f3f3f3;
+    margin:  0 5%;
   }
 
 
@@ -57,6 +64,13 @@ page-search {
       margin-right: 0 !important;
     }
   }
+  .dial-section-header{
+    @extend .NotoSans-bold;
+    font-size: 1.350em;
+    padding: 11px;
+    margin: 0;
+    background-color: #f3f3f3;
+  }
 
   .view-collection {
     margin: 0 !important;
@@ -77,7 +91,7 @@ page-search {
 
     span {
       color: grey;
-      font-weight: 600;
+      @extend .font-weight-600;
       font-size: 1.3rem;
     }
     .cancel-btn span {
@@ -88,11 +102,11 @@ page-search {
   }
   .item-md p {
     font-size: 1.3rem !important;
-    font-weight: 600 !important;
+    @extend .font-weight-600;
 }
 .item-md h3, {
   font-size: 1.5rem !important;
-  font-weight: 600 !important;
+  @extend .font-weight-600;
 }
 .ellipsis{
 
@@ -105,7 +119,7 @@ page-search {
 .subject{
 
   color: grey;
-  font-weight: 600;
+  @extend .font-weight-600;
   font-size: 1.3rem;
 
 }

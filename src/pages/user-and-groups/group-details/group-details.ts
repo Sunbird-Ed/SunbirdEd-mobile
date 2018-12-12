@@ -1,3 +1,4 @@
+import { CommonUtilService } from './../../../service/common-util.service';
 import { TranslateService } from '@ngx-translate/core';
 import {
   Component,
@@ -49,7 +50,6 @@ import {
 import { App } from 'ionic-angular';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
 import { ToastController } from 'ionic-angular';
-import { Network } from '@ionic-native/network';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 import { Map } from '../../../app/telemetryutil';
 import { PreferenceKey } from '../../../app/app.constant';
@@ -68,7 +68,7 @@ export class GroupDetailsPage {
   profileDetails: any;
   userUids = [];
   isNoUsers = false;
-  playContent: any;
+  playConfig: any;
 
   isCurrentGroupActive = false;
 
@@ -88,16 +88,16 @@ export class GroupDetailsPage {
     private event: Events,
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController,
-    private network: Network,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private authService: AuthService,
-    private appGlobalService: AppGlobalService
+    private appGlobalService: AppGlobalService,
+    private commonUtilService: CommonUtilService
   ) {
     this.group = this.navParams.get('groupInfo');
     this.currentUserId = this.navParams.get('currentUserId');
     this.currentGroupId = this.navParams.get('currentGruopId');
     this.profileDetails = this.navParams.get('profile');
-    this.playContent = this.navParams.get('playContent') || undefined;
+    this.playConfig = this.navParams.get('playConfig') || undefined;
 
 
     if (this.group.gid === this.currentGroupId) {
@@ -261,15 +261,15 @@ export class GroupDetailsPage {
       (<any>window).splashscreen.clearPrefs();
       this.setAsCurrentUser(selectedUser, true);
     } else {
-      if (this.network.type === 'none') {
-        this.authService.endSession();
-        (<any>window).splashscreen.clearPrefs();
-        this.setAsCurrentUser(selectedUser, false);
-      } else {
+      if (this.commonUtilService.networkInfo.isNetworkAvailable) {
         this.oauth.doLogOut().then(() => {
           (<any>window).splashscreen.clearPrefs();
           this.setAsCurrentUser(selectedUser, false);
         });
+      } else {
+        this.authService.endSession();
+        (<any>window).splashscreen.clearPrefs();
+        this.setAsCurrentUser(selectedUser, false);
       }
     }
 
@@ -453,6 +453,7 @@ export class GroupDetailsPage {
       (success) => {
         console.log('success', success);
         this.userList.splice(userListIndex, 1);
+        this.isNoUsers = (this.userList.length) ? false : true;
       }
     ).catch(error => {
 
@@ -499,9 +500,9 @@ export class GroupDetailsPage {
     this.groupService.setCurrentGroup(this.group.gid)
       .then(val => {
         console.log('Value : ' + val);
-        this.profileService.setCurrentUser(selectedUser.uid, (success) => {
+        this.profileService.setCurrentUser(selectedUser.uid) .then((success) => {
           if (isBeingPlayed) {
-            this.event.publish('launchPlayer', true);
+            this.event.publish('playConfig', this.playConfig);
             this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
           }
           if (selectedUser.profileType === ProfileType.STUDENT) {
@@ -524,7 +525,7 @@ export class GroupDetailsPage {
           });
           toast.present();
 
-        }, (error) => {
+        }) .catch((error) => {
           console.log('Error ' + error);
         });
       }).catch(error => {

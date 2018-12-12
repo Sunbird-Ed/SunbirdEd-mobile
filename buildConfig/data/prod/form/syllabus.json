@@ -1,0 +1,149 @@
+{
+    "id": "api.form.read",
+    "ver": "1.0",
+    "ts": "2018-09-03T09:59:21.957Z",
+    "params": {
+        "resmsgid": "07ee2950-af60-11e8-bbb0-3d8e1a5fdce6",
+        "msgid": "07e17f20-af60-11e8-8059-23509f214276",
+        "status": "successful",
+        "err": null,
+        "errmsg": null
+    },
+    "responseCode": "OK",
+    "result": {
+        "form": {
+            "type": "user",
+            "subType": "instructor",
+            "action": "onboarding",
+            "rootOrgId": "null",
+            "framework": "null",
+            "data": {
+                "templateName": "defaultTemplate",
+                "action": "onboarding",
+                "fields": [
+                    {
+                        "code": "syllabus",
+                        "name": "What syllabus do you follow?",
+                        "selectLabel": "Select Syllabus",
+                        "loadingLabel": "Loading Syllabus",
+                        "language": "en",
+                        "range": [
+                            {
+                                "name": "State (Andhra Pradesh)",
+                                "frameworkId": "ap_k-12_13"
+                            },
+                            {
+                                "name": "State (Maharashtra)",
+                                "frameworkId": "mh_k-12_15"
+                            },
+                            {
+                                "name": "State (Rajasthan)",
+                                "frameworkId": "rj_k-12_1"
+                            },
+                            {
+                                "name": "State (Uttar Pradesh)",
+                                "frameworkId": "up_k-12_3"
+                            }
+                        ]
+                    },
+                    {
+                        "code": "syllabus",
+                        "name": "What syllabus do you follow?",
+                        "selectLabel": "Select Syllabus",
+                        "loadingLabel": "Loading Syllabus",
+                        "language": "hi",
+                        "range": [
+                            {
+                                "name": "राज्य (आंध्र प्रदेश)",
+                                "frameworkId": "ap_k-12_13"
+                            },
+                            {
+                                "name": "राज्य (महाराष्ट्र)",
+                                "frameworkId": "mh_k-12_15"
+                            },
+                            {
+                                "name": "राज्य (राजस्थान)",
+                                "frameworkId": "rj_k-12_1"
+                            },
+                            {
+                                "name": "राज्य (उत्तर प्रदेश)",
+                                "frameworkId": "up_k-12_3"
+                            }
+                        ]
+                    },
+                    {
+                        "code": "syllabus",
+                        "name": "What syllabus do you follow?",
+                        "selectLabel": "Select Syllabus",
+                        "loadingLabel": "Loading Syllabus",
+                        "language": "te",
+                        "range": [
+                            {
+                                "name": "State (Andhra Pradesh)",
+                                "frameworkId": "ap_k-12_13"
+                            },
+                            {
+                                "name": "State (Maharashtra)",
+                                "frameworkId": "mh_k-12_15"
+                            },
+                            {
+                                "name": "State (Rajasthan)",
+                                "frameworkId": "rj_k-12_1"
+                            }
+                        ]
+                    },
+                    {
+                        "code": "syllabus",
+                        "name": "What syllabus do you follow?",
+                        "selectLabel": "Select Syllabus",
+                        "loadingLabel": "Loading Syllabus",
+                        "language": "ta",
+                        "range": [
+                            {
+                                "name": "மாநிலம் (ஆந்திரப் பிரதேசம்)",
+                                "frameworkId": "ap_k-12_13"
+                            },
+                            {
+                                "name": "மாநிலம் (மகாராஷ்டிரா)",
+                                "frameworkId": "mh_k-12_15"
+                            },
+                            {
+                                "name": "மாநிலம் (ராஜஸ்தான்)",
+                                "frameworkId": "rj_k-12_1"
+                            },
+                            {
+                                "name": "மாநிலம் (உத்தர பிரதேசம்)",
+                                "frameworkId": "up_k-12_3"
+                            }
+                        ]
+                    },
+                    {
+                        "code": "syllabus",
+                        "name": "What syllabus do you follow?",
+                        "selectLabel": "Select Syllabus",
+                        "loadingLabel": "Loading Syllabus",
+                        "language": "mr",
+                        "range": [
+                            {
+                                "name": "State (Andhra Pradesh)",
+                                "frameworkId": "ap_k-12_13"
+                            },
+                            {
+                                "name": "State (Maharashtra)",
+                                "frameworkId": "mh_k-12_15"
+                            },
+                            {
+                                "name": "State (Rajasthan)",
+                                "frameworkId": "rj_k-12_1"
+                            },
+                            {
+                                "name": "State (Uttar Pradesh)",
+                                "frameworkId": "up_k-12_3"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}

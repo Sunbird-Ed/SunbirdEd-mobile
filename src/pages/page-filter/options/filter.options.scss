@@ -2,7 +2,7 @@ page-filter-options {
   .subtitle {
     text-transform: capitalize;
     font-size: 1.3em;
-    font-weight: 700;
+    @extend .font-weight-700;
     color: map-get($colors, primary_black);
   }
   ion-item {
@@ -25,7 +25,7 @@ page-filter-options {
   }
   .item-md {
     font-size: 1.3rem !important;
-    font-weight: 600 !important;
+    @extend .font-weight-600;
   }
 
   ion-footer {
@@ -40,7 +40,13 @@ page-filter-options {
   max-height: 70% !important;
   box-shadow: unset;
   position: fixed;
-  left: 0 !important;
+  @include ltr() {
+    left: 0 !important;
+  }
+
+  @include rtl() {
+    right: 0 !important;
+  }
   top: unset !important;
   bottom: 0;
   transform-origin: bottom -100% !important;

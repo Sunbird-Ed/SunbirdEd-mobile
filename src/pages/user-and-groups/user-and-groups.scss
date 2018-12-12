@@ -4,8 +4,14 @@ page-user-and-groups {
         width: 100px;
         height: 100px;
         top: 30%;
-        left: 60%;
-        margin-left: -97px;
+        
+        @include ltr() {
+          left: 60%;
+        }
+        @include rtl() {
+          right: 60%;
+        }
+        @include margin(null, null, null, -97px);
         margin-top: -144x;
       }
 
@@ -41,7 +47,7 @@ page-user-and-groups {
       }
       .subTitle {
         font-size: 1.4rem;
-        font-weight: 700;
+        @extend .font-weight-700;
       }
       .radius{
         border-radius: 6px;
@@ -56,7 +62,12 @@ page-user-and-groups {
         position: relative;
         width: 20px;
         bottom: 16px;
-        right: 6px;
+        @include ltr() {
+          right: 6px;
+        }
+        @include rtl() {
+          left: 6px;
+        }
         height: 20px;
       }
       .elipsis{
@@ -84,10 +95,10 @@ page-user-and-groups {
       .error-message-contentplay{
         width: -webkit-fill-available;
         background-color: #a1a1a1;
-        padding: 1% 0% 1% 5%;
+        @include padding(1%, 0%, 1%, 5%);
         color: white;
-        position: fixed !important;
-        bottom: 93px;
+        // position: fixed !important;
+        // bottom: 32px;
         }
         
       .advanced-menu{
@@ -99,13 +110,13 @@ page-user-and-groups {
       }
       .advanced-menu ion-icon[item-end] {
             margin-top: 0 !important;
-            padding-right: 8px !important;
+            @include padding(null, 8px, null, null !important);
         }
         .advanced-menu .item-md, .advanced-menu .item-ios {
           margin-top: 0 !important;
         }
         .padding-left-0 {
-          padding-left: 0 !important;
+          @include padding(null, null, null, 0 !important);
         }
         .rm-label-margin ion-label {
           margin-top: 0 !important;
@@ -117,19 +128,26 @@ page-user-and-groups {
       }
 
       .item-padding-left.item-md {
-        padding-left: 14px !important;
+        @include padding(null, null, null, 14px !important);
       }
         //.custom-margin-top{
           //margin-top: 7vh;
         //}
 
+      .icon.ion-md-information-circle{
+        vertical-align: text-bottom;
+      }
+
+      h6:first-child{
+        margin-top: 0px !important;
+      }
 }
 .padding-left-2{
-  padding-left: 2px !important;
+  @include padding(null, null, null, 2px !important);
 }
 
 .segment-md .segment-button {
-  font-weight: 700 !important;
+ @extend .font-weight-700;
   color: map-get($colors, dark_gray) !important;
   background-color: map-get($colors, white);
 }
@@ -141,6 +159,5 @@ page-user-and-groups {
 .description {
   color: map-get($colors, dark_gray);
   font-size: 1.5rem;
-  margin-left: 10%;
-  margin-right: 10%;
+  @include margin(null, 10%, null, 10%);
 }

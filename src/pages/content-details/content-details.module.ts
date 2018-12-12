@@ -9,6 +9,7 @@ import { DirectivesModule } from '../../directives/directives.module';
 import { PipesModule } from '../../pipes/pipes.module';
 import { ContentActionsComponent } from './../../component/content-actions/content-actions';
 import { SocialSharing } from '@ionic-native/social-sharing';
+import { ComponentsModule } from '../../component/components.module';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { SocialSharing } from '@ionic-native/social-sharing';
     DirectivesModule,
     Ionic2RatingModule,
     PipesModule,
+    ComponentsModule
   ],
   providers: [
     SocialSharing

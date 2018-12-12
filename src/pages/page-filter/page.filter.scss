@@ -2,7 +2,7 @@ page-filter {
   .subtitle {
     text-transform: capitalize;
     font-size: 1.3em;
-    font-weight: 700;
+    @extend .font-weight-700;
     color: map-get($colors, primary_black);
   }
   .filter-item {
@@ -11,7 +11,7 @@ page-filter {
     background-color: map-get($colors, white_f0);
     color: map-get($colors, dark_gray);
     font-size: 1em;
-    font-weight: 600;
+    @extend .font-weight-600;
     height: 2em;
     ion-icon {
       color: map-get($colors, dark_gray);
@@ -27,7 +27,7 @@ page-filter {
     font-size: 2rem !important;
   }
   .item-inner {
-    padding-right: 0 !important;
+    @include padding(null, 0, null, null !important);
   }
 }
 
@@ -37,7 +37,13 @@ page-filter {
   max-height: 70% !important;
   box-shadow: unset;
   position: fixed;
-  left: 0 !important;
+  @include ltr() {
+    left: 0 !important;
+  }
+
+  @include rtl() {
+    right: 0 !important;
+  }
   top: unset !important;
   bottom: 0;
   transform-origin: bottom -100% !important;

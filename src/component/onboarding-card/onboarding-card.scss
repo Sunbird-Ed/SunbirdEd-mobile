@@ -15,12 +15,8 @@ onboarding-card {
   .onbording-slide-div {
     height: 120px;
     background: white;
-    margin-left: 10px;
-    margin-right: 10px;
-    margin-top: -4%;
-    padding-top: 2%;
-    padding-left: 4%;
-    padding-right: 3%;
+    @include margin(-4%, 10px, null, 10px);
+    @include padding(2%, 3%, null, 4%);
     text-align: left;
     position: relative;
     border-radius: 0.4rem;
@@ -29,14 +25,10 @@ onboarding-card {
   .onbording-slide-title {
     color: rgb(90, 88, 88);
     font-size: 1.6rem;
-    font-weight: bold;
+    @extend .font-weight-bold;
   }
   .onbording-slide-footer {
-    padding-top: 2%;
-    padding-left: 4%;
-    padding-right: 3%;
-    padding-bottom: 0 !important;
-
+    @include padding(2%, 3%, 0, 4% !important);
   }
   .board-select .select-icon .select-icon-inner {
     border: none !important;
@@ -46,7 +38,7 @@ onboarding-card {
     max-width: 75%;
     font-size: 14px;
     color: map-get($colors, primary);
-    font-weight: bold;
+    @extend .font-weight-bold;
   }
   .board-select.select-md .select-placeholder {
     color: map-get($colors, primary) !important;
@@ -66,5 +58,5 @@ onboarding-card {
   font-size: 1.2rem;
 }
 .font-bold {
-  font-weight: bold;
+  @extend .font-weight-bold;
 }

@@ -4,12 +4,11 @@ import { NavController, NavParams } from 'ionic-angular';
 import { AnnouncementService, AttachmentService, TelemetryService, AnnouncementStatus } from 'sunbird';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { File } from '@ionic-native/file';
-import { FileTransfer } from '@ionic-native/file-transfer';
 
 @Component({
     selector: 'announcement-detail',
     templateUrl: 'announcement-detail.html',
-    providers: [TelemetryService, AnnouncementService, FileTransfer]
+    providers: [TelemetryService, AnnouncementService]
 })
 /**
  * Generated class for the AnnouncementDetailComponent component.
@@ -99,7 +98,7 @@ export class AnnouncementDetailComponent implements OnInit {
         };
 
         console.log('Making api call to get Announcement details');
-        this.announcementService.getAnnouncementDetails(req, (data: any) => {
+        this.announcementService.getAnnouncementDetails(req).then((data: any) => {
             this.zone.run(() => {
                 data = JSON.parse(data);
                 console.log('Announcemet details response ==>', data);
@@ -111,8 +110,8 @@ export class AnnouncementDetailComponent implements OnInit {
                     this.updateAnnouncementReadStatus();
                 }
             }
-        },
-            error => {
+        })
+            .catch((error) => {
                 console.log('error while loading content details', error);
             });
     }

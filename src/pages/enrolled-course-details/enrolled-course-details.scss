@@ -1,109 +1,41 @@
 page-enrolled-course-details {
-    .padding-10 {
-        padding: 10px;
+    .fontBold {
+        font-weight: bold;
     }
-
-    .background-gray {
-        background: #efeff4;
-        margin: 0 -26px;
-        padding-left: 25px !important;
+    .ion-ios-radio-button-on:before {
+        color: darkgrey;
     }
-
-    .scroll{
-        position:absolute !important;
-        top:0 !important;
-        bottom: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        overflow:scroll !important;
+    .ion-ios-checkmark-circle:before {
+        color: #008000;
     }
-
-    .item-divider{
-        position: -webkit-sticky !important;
-        position: sticky !important;
-        top: 0px;
-        z-index: 3 !important;
-    }
-
-    ul {
-        padding: 0px;
-        margin: 0px;
-  
-        &.rating li {
-          padding: 1px 1px !important;
-          background: none;
-          color: map-get($colors, primary);
-  
-          ion-icon {
-            font-size: 16px;
-          }
-        }
-      }
-
-    .read-more {
-        color: rgb(17, 85, 204) !important;
-    }
-    .back-button-md {
-        margin-left: -1px !important;
-    }
-    .scroll-content { 
-        margin-bottom: 0px !important;
-      }
-
-    .progress-inner {
-        min-width: 15%;
-        white-space: nowrap;
-        overflow: hidden;
-        padding: 5px;
-        border-radius: 20px;
-        background-color: map-get($colors, primary);
-    }
-
-    .progress-inner-primary {
-        background-color: #AED6F1;
-    }
-    .text-gray-color {
-        color: gray;
-        font-family: 'OpenSans/Regular';
-    }
-    .content-structure {
-        font-family: "OpenSans/Regular";
-        color: #808080;
-        font-size: 1.2rem;
-    }
-    .padding-0 {
-        padding-left: 0px !important;
-    }
-
-    .content-with-footer {
-        height: 90% !important;
-    }
-
     .course-progress {
         position: absolute;
         width: 100%;
-        
         z-index: 10;
-  
         .progress-outer {
-          background-color: transparent !important;
+            background-color: transparent !important;
         }
-  
         .progress-inner {
-          min-width: unset !important;
-          padding: 2px !important;
+            min-width: unset !important;
+            padding: 2px !important;
         }
-  
-        .progress-inner-primary{
-          background-color: #FF9F00 !important;
+        .progress-inner-primary {
+            background-color: #FF9F00 !important;
         }
-  
         .progress-inner-secondary {
-          background-color: #7ED321 !important;
+            background-color: #7ED321 !important;
         }
-      }
-
-      .loading-backdrop {
+    }
+    .blurbackground {
+        // background-color: gray !important;
+        .progress-inner-primary {
+            background-color: gray !important;
+        }
+        .progress-inner-secondary {
+            background-color: gray !important;
+        }
+    }
+    .loading-backdrop {
         .backdrop-container {
             width: 100%;
             padding: 16px;
@@ -112,17 +44,21 @@ page-enrolled-course-details {
             top: 50%;
             margin-top: -50px;
         }
-
         .backdrop-footer {
             position: absolute;
             width: 100%;
             bottom: 0;
             padding-bottom: 16px;
         }
-
         background-color: #ffffff;
         height: 100%;
         z-index: 1000;
         opacity: 1 !important;
+    }
+    .child-item {
+        @include padding(null, null, null, 0 !important)
+    }
+    .scroll-content {
+        margin-bottom: 0px !important;
     }
 }

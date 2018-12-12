@@ -3,7 +3,7 @@ page-alert-qr-scanner {
     color: map-get($colors, black );
     font-size: medium;
     padding: 16px;
-    font-weight: bold;
+    @extend .font-weight-bold;
   }
 }
 
@@ -13,7 +13,14 @@ page-alert-qr-scanner {
   height: auto;
   box-shadow: unset;
   position: fixed;
-  left: 0 !important;
+  
+  @include ltr() {
+    left: 0 !important;
+  }
+
+  @include rtl() {
+    right: 0 !important;
+  }
   top: unset !important;
   bottom: 0;
   transform-origin: bottom -100% !important;
@@ -32,7 +39,13 @@ page-alert-qr-scanner {
     height: 100%;
     box-shadow: unset;
     position: fixed;
-    left: 0 !important;
+    @include ltr() {
+      left: 0 !important;
+    }
+  
+    @include rtl() {
+      right: 0 !important;
+    }
     top: unset !important;
     bottom: 0;
     transform-origin: bottom -100% !important;
@@ -59,11 +72,18 @@ page-alert-qr-scanner {
     display: initial !important;
   }
 .arrow-icon {
-    padding-left: 2.8em !important;
+    @include padding(null, null, null, 2.8em !important);
 }
 
 ion-icon {
-    float: right !important;
+    
+    @include ltr() {
+      float: right !important;
+    }
+
+    @include rtl() {
+      float: left !important;
+    }
 }
 
 .footer-md::before {

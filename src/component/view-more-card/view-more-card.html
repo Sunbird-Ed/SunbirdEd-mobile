@@ -1,4 +1,4 @@
-<ion-grid>
+<ion-grid [ngClass]="{'grid-disabled': cardDisabled}">
   <ion-row class="row-border">
     <ion-col class="image-align" (click)="navigateToDetailsPage(content, type)">
       <img class="app-icon" src="{{ content.courseLogoUrl || content?.appIcon || defaultImg }}" />
@@ -16,9 +16,9 @@
         <!--  Enrolled courses -->
         <ion-col col-8 *ngSwitchCase="'enrolledCourse'" col-sm>
           <span class="content-size1"> {{ 'COURSE_PROGRESS_COMPLETED' | translate: {'%s': content.cProgress? content.cProgress : 0} }}</span>
-          <div class="content-meta">
+          <!-- <div class="content-meta">
             <span class="content-size1">{{ 'ERROR_DURATION_NOT_AVAILABLE' | translate | slice:0:14 }}...</span>
-          </div>
+          </div> -->
         </ion-col>
         <!-- Library layout -->
         <ion-col col-8 *ngSwitchCase="'library'" col-sm>
@@ -26,21 +26,21 @@
           <br/>
           <div class="content-meta">
             <span class="content-type" *ngIf="content.contentType">{{ content.contentType }}</span>
-            <span class="content-size1" *ngIf="content.size">[{{ content.size | fileSize }}]</span>
-            <span class="content-size1" *ngIf="content.sizeOnDevice">[{{ content.sizeOnDevice | fileSize }}]</span>
+            <span class="content-size1" *ngIf="content.size">[{{ content.size | fileSize }}] &lrm;</span>
+            <span class="content-size1" *ngIf="content.sizeOnDevice">[{{ content.sizeOnDevice | fileSize }}] &lrm;</span>
           </div>
         </ion-col>
         <!-- Popular course layout -->
         <ion-col col-8 *ngSwitchCase="'popularCourses'" col-sm>
           <span class="content-size1" *ngIf="content.size">{{ 'FILE_SIZE' | translate: {'%s': content.size | fileSize | slice:0:07} }}</span>
           <br/>
-          <div class="content-meta">
+          <!-- <div class="content-meta">
             <span class="content-size1">{{ 'ERROR_DURATION_NOT_AVAILABLE' | translate }}</span>
-          </div>
+          </div> -->
         </ion-col>
         <!-- Button -->
         <ion-col col-4 class="padding">
-          <button ion-button outline small float-right style="white-space: normal; overflow: hidden;display: block; padding: 0 0.5em !important">
+          <button ion-button outline small  class="custom-btn float-end">
             <span style="font-size: 12px !important" *ngIf="type === 'enrolledCourse'" (click)="resumeCourse(content);">{{ ('RESUME' | translate).length > 6 ? ('RESUME' | translate | slice:0:05) + '...' : ('RESUME' | translate) }}</span>
             <span style="font-size: 12px !important" *ngIf="type !== 'enrolledCourse'" (click)="navigateToDetailsPage(content, type)">{{ ('OPEN' | translate).length > 5 ? ('OPEN' | translate | slice:0:05) + '...' : ('OPEN' | translate) }}</span>
           </button>

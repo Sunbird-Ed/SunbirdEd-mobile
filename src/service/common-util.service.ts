@@ -1,33 +1,53 @@
-import { appLanguages } from './../app/app.constant';
-import { QRScannerAlert } from './../pages/qrscanner/qrscanner_alert';
-import { LoadingController, Events, PopoverController } from 'ionic-angular';
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone, OnDestroy } from '@angular/core';
 import {
     ToastController,
-    ToastOptions
+    ToastOptions,
+    Popover,
+    Loading,
+    LoadingController,
+    Events,
+    PopoverController,
+    Platform
 } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { Loading } from 'ionic-angular';
 import * as _ from 'lodash';
 import { SharedPreferences } from 'sunbird';
+import { Network } from '@ionic-native/network';
+
 import { PreferenceKey } from '../app/app.constant';
-import { Popover } from 'ionic-angular';
 import { QRAlertCallBack } from '../pages/qrscanner/qrscanner_alert';
+import { appLanguages } from './../app/app.constant';
+import { QRScannerAlert } from './../pages/qrscanner/qrscanner_alert';
 
+export interface NetworkInfo {
+    isNetworkAvailable: boolean;
+}
 @Injectable()
-export class CommonUtilService {
-
+export class CommonUtilService implements OnDestroy {
+    networkInfo: NetworkInfo = {
+        isNetworkAvailable: false
+    };
+    connectSubscription: any;
+    disconnectSubscription: any;
     constructor(
         private toastCtrl: ToastController,
         private translate: TranslateService,
         private loadingCtrl: LoadingController,
         private preferences: SharedPreferences,
         private events: Events,
-        private popOverCtrl: PopoverController
+        private popOverCtrl: PopoverController,
+        private network: Network,
+        private zone: NgZone,
+        private platform: Platform
     ) {
+        this.listenForEvents();
     }
 
-    showToast(translationKey, isInactive?, cssToast?) {
+    listenForEvents() {
+        this.handleNetworkAvailability();
+    }
+
+    showToast(translationKey, isInactive?, cssToast?, duration?) {
         if (Boolean(isInactive)) {
             return;
         }
@@ -36,7 +56,7 @@ export class CommonUtilService {
             (translatedMsg: any) => {
                 const toastOptions: ToastOptions = {
                     message: translatedMsg,
-                    duration: 3000,
+                    duration: duration ? duration : 3000,
                     position: 'bottom',
                     cssClass: cssToast ? cssToast : ''
                 };
@@ -152,5 +172,63 @@ export class CommonUtilService {
         setTimeout(() => {
             popOver.present();
         }, 300);
+    }
+
+    /**
+     * Its check for the network availability
+     * @returns {boolean} status of the network
+     */
+    handleNetworkAvailability(): boolean {
+        const updateNetworkAvailabilityStatus = (status: boolean) => {
+            this.zone.run(() => {
+                this.networkInfo.isNetworkAvailable = status;
+            });
+        };
+
+        if (this.network.type === 'none') {
+            updateNetworkAvailabilityStatus(false);
+        } else {
+            updateNetworkAvailabilityStatus(true);
+        }
+
+        this.connectSubscription = this.network.onDisconnect().subscribe(() => {
+            updateNetworkAvailabilityStatus(false);
+        });
+        this.disconnectSubscription = this.network.onConnect().subscribe(() => {
+            updateNetworkAvailabilityStatus(true);
+        });
+
+        return this.networkInfo.isNetworkAvailable;
+    }
+
+    ngOnDestroy() {
+        this.connectSubscription.unsubscribe();
+        this.disconnectSubscription.unsubscribe();
+    }
+
+    /**
+     * Opens In-app Browser
+     * @param url - URL to open in browser or system apps
+     */
+    openLink(url: string): void {
+        const options
+            = 'hardwareback=yes,clearcache=no,zoom=no,toolbar=yes,clearsessioncache=no,closebuttoncaption=Done,disallowoverscroll=yes';
+
+        (<any>window).cordova.InAppBrowser.open(url, '_system', options);
+    }
+
+    /**
+     * @returns {string} App direction 'rtl' || 'ltr'
+     */
+    getAppDirection() {
+        return this.platform.dir();
+    }
+
+    /**
+     * It returns whether it is RTL or not
+     * @returns {boolean}
+     */
+    isRTL() {
+        return this.platform.isRTL;
     }
 }

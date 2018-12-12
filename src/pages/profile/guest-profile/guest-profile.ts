@@ -5,9 +5,6 @@ import {
   Events
 } from 'ionic-angular';
 import * as _ from 'lodash';
-
-import { GuestEditProfilePage } from './../guest-edit.profile/guest-edit.profile';
-import { OverflowMenuComponent } from './../overflowmenu/menu.overflow.component';
 import {
   ProfileService,
   SharedPreferences,
@@ -16,13 +13,11 @@ import {
   PageId,
   Environment,
 } from 'sunbird';
-import { UserTypeSelectionPage } from '../../user-type-selection/user-type-selection';
-import { Network } from '@ionic-native/network';
-import { FormAndFrameworkUtilService } from '../formandframeworkutil.service';
-import { AppGlobalService } from '../../../service/app-global.service';
-import { MenuOverflow, PreferenceKey } from '../../../app/app.constant';
-import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
-import { CommonUtilService } from '../../../service/common-util.service';
+
+import { GuestEditProfilePage, OverflowMenuComponent, FormAndFrameworkUtilService } from '@app/pages/profile';
+import { UserTypeSelectionPage } from '@app/pages/user-type-selection';
+import { AppGlobalService, TelemetryGeneratorService, CommonUtilService } from '@app/service';
+import { MenuOverflow, PreferenceKey } from '@app/app';
 
 @Component({
   selector: 'page-guest-profile',
@@ -48,7 +43,6 @@ export class GuestProfilePage {
 
   constructor(
     private navCtrl: NavController,
-    private network: Network,
     private popoverCtrl: PopoverController,
     private profileService: ProfileService,
     private events: Events,
@@ -58,6 +52,7 @@ export class GuestProfilePage {
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService
   ) {
+
 
     // language code
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
@@ -88,18 +83,6 @@ export class GuestProfilePage {
     } else {
       this.showSignInCard = false;
     }
-
-    if (this.network.type === 'none') {
-      this.isNetworkAvailable = false;
-    } else {
-      this.isNetworkAvailable = true;
-    }
-    this.network.onDisconnect().subscribe((data) => {
-      this.isNetworkAvailable = false;
-    });
-    this.network.onConnect().subscribe((data) => {
-      this.isNetworkAvailable = true;
-    });
   }
 
   ionViewDidLoad() {
@@ -119,14 +102,14 @@ export class GuestProfilePage {
       this.loader.present();
     }
 
-    this.profileService.getCurrentUser((res: any) => {
+    this.profileService.getCurrentUser().then((res: any) => {
       this.profile = JSON.parse(res);
       this.getSyllabusDetails();
       setTimeout(() => {
         if (refresher) { refresher.complete(); }
       }, 500);
-    },
-      (err: any) => {
+    })
+      .catch((err: any) => {
         this.loader.dismiss();
         console.error('Error', err);
       });
@@ -162,8 +145,9 @@ export class GuestProfilePage {
   getSyllabusDetails() {
     let selectedFrameworkId = '';
 
-    this.formAndFrameworkUtilService.getSyllabusList()
+    this.formAndFrameworkUtilService.getSupportingBoardList()
       .then((result) => {
+        console.log('getSupportingBoardList', result);
         if (result && result !== undefined && result.length > 0) {
 
           result.forEach(element => {

@@ -1,4 +1,3 @@
-import { userList } from './../group-details/group-detail.data.spec';
 import { CommonUtilService } from './../../../service/common-util.service';
 import { Observable } from 'rxjs/Observable';
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
@@ -167,7 +166,6 @@ describe('AddOrRemoveGroupUserPage', () => {
 
         describe('getSelectedGroupMemberUids', () => {
             it('getSelectedGroupMemberUids makes expected calls', () => {
-
                 comp.groupMembers = mockCreateorremoveGroupRes.UserList;
                 comp.getSelectedGroupMemberUids();
                 expect(comp.getSelectedGroupMemberUids).toBeDefined();

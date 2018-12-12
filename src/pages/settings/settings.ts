@@ -1,6 +1,7 @@
+import { AppGlobalService } from '@app/service';
 import { CommonUtilService } from './../../service/common-util.service';
 import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, DateTime } from 'ionic-angular';
 import { DatasyncPage } from './datasync/datasync';
 import { LanguageSettingsPage } from '../language-settings/language-settings';
 import { AboutUsPage } from './about-us/about-us';
@@ -16,12 +17,14 @@ import {
   ImpressionType,
   Environment,
   PageId,
+  DeviceInfoService,
   TelemetryService
 } from 'sunbird';
 import { generateInteractTelemetry, generateImpressionTelemetry } from '../../app/telemetryutil';
 import { PreferenceKey } from '../../app/app.constant';
 
 const KEY_SUNBIRD_CONFIG_FILE_PATH = 'sunbird_config_file_path';
+const SUBJECT_NAME = 'Details:';
 
 @Component({
   selector: 'settings',
@@ -31,6 +34,8 @@ export class SettingsPage {
   chosenLanguageString: string;
   selectedLanguage: string;
   fileUrl: string;
+  deviceId: string;
+  subjectDetails: string;
   shareAppLabel: string;
 
   constructor(
@@ -38,10 +43,12 @@ export class SettingsPage {
     private appVersion: AppVersion,
     private socialSharing: SocialSharing,
     private translate: TranslateService,
+    private deviceInfoService: DeviceInfoService,
     private preference: SharedPreferences,
     private telemetryService: TelemetryService,
     private shareUtil: ShareUtil,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    private appGlobalService: AppGlobalService
   ) { }
 
   ionViewWillEnter() {
@@ -100,17 +107,21 @@ export class SettingsPage {
 
   sendMessage() {
     this.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.SUPPORT_CLICKED);
+    this.deviceInfoService.getDeviceID().then((res: any) => {
+      this.deviceId = res;
+    }).catch((error: any) => {
+    });
     (<any>window).supportfile.shareSunbirdConfigurations((result) => {
       const loader = this.commonUtilService.getLoader();
       loader.present();
-
       this.preference.putString(KEY_SUNBIRD_CONFIG_FILE_PATH, JSON.parse(result));
       this.preference.getString(KEY_SUNBIRD_CONFIG_FILE_PATH)
         .then(val => {
           loader.dismiss();
           if (Boolean(val)) {
             this.fileUrl = 'file://' + val;
-            this.socialSharing.shareViaEmail('', '', [], null, null, this.fileUrl)
+            this.subjectDetails = SUBJECT_NAME + this.deviceId + '_' + Date.now();
+            this.socialSharing.shareViaEmail('', this.subjectDetails, [this.appGlobalService.SUPPORT_EMAIL], null, null, this.fileUrl)
               .catch(error => {
                 console.error(error);
               });

@@ -140,7 +140,6 @@ export class GuestEditProfilePage {
         subjects: [this.profile.subject || []]
       });
     }
-
     this.profileForTelemetry = this.profile;
   }
 
@@ -219,7 +218,7 @@ export class GuestEditProfilePage {
       subjects: [],
       medium: []
     });
-  }
+   }
 
   /**
    * It will Dismiss active popup
@@ -239,8 +238,7 @@ export class GuestEditProfilePage {
   getSyllabusDetails() {
     this.loader = this.getLoader();
     this.loader.present();
-
-    this.formAndFrameworkUtilService.getSyllabusList()
+    this.formAndFrameworkUtilService.getSupportingBoardList()
       .then((result) => {
         if (result && result !== undefined && result.length > 0) {
           result.forEach(element => {
@@ -319,6 +317,7 @@ export class GuestEditProfilePage {
       this[currentField] = this.syllabusList;
     } else if (index === 1) {
       this.frameworkId = prevSelectedValue[0];
+      if (this.frameworkId.length !== 0) {
       this.formAndFrameworkUtilService.getFrameworkDetails(this.frameworkId)
         .then(catagories => {
           this.categories = catagories;
@@ -334,6 +333,7 @@ export class GuestEditProfilePage {
           this.isFormValid = false;
           this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
         });
+      }
 
     } else {
       const request: CategoryRequest = {
@@ -439,6 +439,9 @@ export class GuestEditProfilePage {
     if (formVal.userType === '') {
       this.commonUtilService.showToast('USER_TYPE_SELECT_WARNING');
       return false;
+    } else if (formVal.name[0] === '' || !formVal.name) {
+      this.commonUtilService.showToast(
+        this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService.translateMessage('FULL_NAME')), false, 'red-toast');
     } else if (formVal.boards.length === 0) {
       this.appGlobalService.generateSaveClickedTelemetry(
         this.extractProfileForTelemetry(formVal), 'failed', PageId.EDIT_USER, InteractSubtype.SAVE_CLICKED);
@@ -510,8 +513,8 @@ export class GuestEditProfilePage {
       });
     }
 
-    this.profileService.updateProfile(req,
-      (res: any) => {
+    this.profileService.updateProfile(req)
+      .then((res: any) => {
         console.log('Update Response', res);
         if (this.isCurrentUser) {
           this.publishProfileEvents(formVal);
@@ -525,8 +528,8 @@ export class GuestEditProfilePage {
           PageId.EDIT_USER
         );
         this.navCtrl.pop();
-      },
-      (err: any) => {
+      })
+      .catch((err: any) => {
         loader.dismiss();
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_FAILED'));
         console.log('Err', err);
@@ -584,14 +587,14 @@ export class GuestEditProfilePage {
       });
     }
 
-    this.profileService.createProfile(req, () => {
+    this.profileService.createProfile(req).then((res: any) => {
       loader.dismiss();
       this.commonUtilService.showToast(this.commonUtilService.translateMessage('USER_CREATED_SUCCESSFULLY'));
       this.telemetryGeneratorService.generateInteractTelemetry(
         InteractType.OTHER, InteractSubtype.CREATE_USER_SUCCESS, Environment.USER, PageId.CREATE_USER);
       this.navCtrl.pop();
-    },
-      () => {
+    })
+      .catch((err: any) => {
         loader.dismiss();
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('FILL_THE_MANDATORY_FIELDS'));
       });

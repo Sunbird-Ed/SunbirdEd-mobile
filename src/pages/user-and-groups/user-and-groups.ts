@@ -41,6 +41,7 @@ import { GuestEditProfilePage } from '../profile/guest-edit.profile/guest-edit.p
 import { IonicApp } from 'ionic-angular';
 import { ShareUserAndGroupPage } from './share-user-and-groups/share-user-and-groups';
 import { AppGlobalService } from '../../service/app-global.service';
+import { CommonUtilService } from '../../service/common-util.service';
 import {
   initTabs,
   GUEST_STUDENT_SWITCH_TABS,
@@ -49,7 +50,6 @@ import {
   GUEST_TEACHER_TABS
 } from '../../app/module.service';
 import { App, Events } from 'ionic-angular';
-import { Network } from '@ionic-native/network';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { Map } from '../../app/telemetryutil';
 import { Content } from 'ionic-angular';
@@ -69,7 +69,7 @@ export class UserAndGroupsPage {
   // isLoggedInUser: boolean = false;
   currentUserId: string;
   currentGroupId: string;
-  playContent: any;
+  playConfig: any;
 
   userList: Array<Profile> = [];
   groupList: Array<Group> = [];
@@ -83,6 +83,7 @@ export class UserAndGroupsPage {
   selectedUserIndex = -1;
   lastCreatedProfileData: any;
 
+  selectedUsername: string ;
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -100,16 +101,15 @@ export class UserAndGroupsPage {
     private preferences: SharedPreferences,
     private app: App,
     private oauth: OAuthService,
-    private network: Network,
-    private toastCtrl: ToastController,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private authService: AuthService,
     private loadingCtrl: LoadingController,
+    private commonUtilService: CommonUtilService
   ) {
 
     /* Check userList length and show message or list accordingly */
     this.currentUserId = this.navParams.get('userId');
-    this.playContent = this.navParams.get('playContent') || undefined;
+    this.playConfig = this.navParams.get('playConfig') || undefined;
 
     if (!this.currentUserId && this.appGlobalService.getCurrentUser()) {
       this.currentUserId = this.appGlobalService.getCurrentUser().uid;
@@ -307,7 +307,7 @@ export class UserAndGroupsPage {
       currentUserId: this.currentUserId,
       currentGruopId: this.currentGroupId,
       profile: this.profileDetails,
-      playContent: this.playContent
+      playConfig: this.playConfig
 
     });
   }
@@ -370,11 +370,11 @@ export class UserAndGroupsPage {
     });
   }
 
-  selectUser(index: number, name: string) {
+  selectUser(index: number, name?: string) {
     this.zone.run(() => {
       this.selectedUserIndex = (this.selectedUserIndex === index) ? -1 : index;
     });
-    console.log('Clicked list name is ', name);
+    this.selectedUsername = name;
   }
 
   onSegmentChange(event) {
@@ -476,11 +476,11 @@ export class UserAndGroupsPage {
         local: true,
         latestCreatedProfile: true
       };
-      this.profileService.getProfile(req, lastCreatedProfile => {
+      this.profileService.getProfile(req).then((lastCreatedProfile: any) => {
         console.log('lastCreatedProfile: ', lastCreatedProfile);
         this.lastCreatedProfileData = JSON.parse(lastCreatedProfile);
         resolve(JSON.parse(lastCreatedProfile));
-      }, error => {
+      }).catch(error => {
         reject(null);
         console.log('error in fetching last created profile data' + error);
       });
@@ -505,15 +505,15 @@ export class UserAndGroupsPage {
       (<any>window).splashscreen.clearPrefs();
       this.setAsCurrentUser(selectedUser, true);
     } else {
-      if (this.network.type === 'none') {
-        this.authService.endSession();
-        (<any>window).splashscreen.clearPrefs();
-        this.setAsCurrentUser(selectedUser, false);
-      } else {
+      if (this.commonUtilService.networkInfo.isNetworkAvailable) {
         this.oauth.doLogOut().then(() => {
           (<any>window).splashscreen.clearPrefs();
           this.setAsCurrentUser(selectedUser, false);
         });
+      } else {
+        this.authService.endSession();
+        (<any>window).splashscreen.clearPrefs();
+        this.setAsCurrentUser(selectedUser, false);
       }
     }
 
@@ -641,15 +641,15 @@ export class UserAndGroupsPage {
       PageId.USERS_GROUPS,
       telemetryObject
     );
-    this.profileService.deleteUser(uid,
-      (result) => {
+    this.profileService.deleteUser(uid)
+      .then((result) => {
         console.log('User Deleted Successfully', result);
         this.userList.splice(index, 1);
         if (this.userList.length === 0) {
           this.noUsersPresent = true;
         }
 
-      }, (error) => {
+      }) .catch((error) => {
         console.error('Error Occurred=', error);
       });
   }
@@ -697,10 +697,12 @@ export class UserAndGroupsPage {
       .catch(error => {
         console.log('Error : ' + error);
       });
-
-    this.profileService.setCurrentUser(selectedUser.uid, () => {
+      this.profileService.setCurrentUser(selectedUser.uid) .then(() => {
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('SWITCHING_TO', selectedUser.handle),
+        undefined, undefined, 1000);
+    setTimeout(() => {
       if (isBeingPlayed) {
-        this.event.publish('launchPlayer', true);
+        this.event.publish('playConfig', this.playConfig);
         this.navCtrl.pop();
       }
       if (selectedUser.profileType === ProfileType.STUDENT) {
@@ -713,22 +715,17 @@ export class UserAndGroupsPage {
       this.event.publish('refresh:profile');
       this.event.publish(AppGlobalService.USER_INFO_UPDATED);
       this.app.getRootNav().setRoot(TabsPage);
-      const toast = this.toastCtrl.create({
-        message: this.translateMessage('SWITCHING_TO', selectedUser.handle),
-        duration: 2000,
-        position: 'bottom'
-      });
-      toast.present();
-    }, (error) => {
-      console.log('Error ' + error);
-    });
+    }, 1000);
+  }) .catch((error) => {
+    console.log('Error ' + error);
+  });
   }
-  // code which invokes loader
-  getLoader(): any {
-    return this.loadingCtrl.create({
-      duration: 30000,
-      spinner: 'crescent'
-    });
-  }
+// code which invokes loader
+getLoader(): any {
+  return this.loadingCtrl.create({
+    duration: 30000,
+    spinner: 'crescent'
+  });
+}
 }
 

@@ -17,14 +17,10 @@ import {
 import { AnnouncementListComponent } from './announcement-list/announcement-list';
 import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
-import { FormEducation } from '../profile/education/form.education';
-import { FormAddress } from '../profile/address/form.address';
-import { FormExperience } from '../profile/experience/form.experience';
-import { AdditionalInfoComponent } from '../profile/additional-info/additional-info';
 import { PopoverController } from 'ionic-angular/components/popover/popover-controller';
 import { IncompleteProfileData } from '../../component/card/incomplete-profile/incomplete-profile-data';
 import { TranslateService } from '@ngx-translate/core';
-import { ProfileConstants } from '../../app/app.constant';
+import { ProfileConstants, ContentCard } from '../../app/app.constant';
 
 @Component({
   selector: 'page-home',
@@ -60,10 +56,6 @@ export class HomePage {
    */
   profile: any = {};
 
-  uncompletedDetails: any = {
-    title: ''
-  };
-
   /**
    * Flag to check if profile is incomplete
    */
@@ -72,6 +64,8 @@ export class HomePage {
   profileProgress = '';
 
   incompleteProfileData: IncompleteProfileData;
+
+  layoutInProgress = ContentCard.LAYOUT_INPROGRESS;
 
   /**
    * Default method of class CoursesPage
@@ -122,18 +116,20 @@ export class HomePage {
       userId: this.userId,
       refreshEnrolledCourses: false
     };
-    this.courseService.getEnrolledCourses(option, (data: any) => {
-      if (data) {
-        data = JSON.parse(data);
-        this.ngZone.run(() => {
-          this.enrolledCourse = data.result.courses ? data.result.courses : [];
-          this.spinner(false);
-        });
-      }
-    }, (error: any) => {
-      console.log('error while loading enrolled courses', error);
-      this.spinner(false);
-    });
+    this.courseService.getEnrolledCourses(option)
+      .then((data: any) => {
+        if (data) {
+          data = JSON.parse(data);
+          this.ngZone.run(() => {
+            this.enrolledCourse = data.result.courses ? data.result.courses : [];
+            this.spinner(false);
+          });
+        }
+      })
+      .catch((error: any) => {
+        console.log('error while loading enrolled courses', error);
+        this.spinner(false);
+      });
   }
 
   /**
@@ -218,9 +214,9 @@ export class HomePage {
   }
 
   onSyncClick() {
-    this.telemetryService.sync((response) => {
+    this.telemetryService.sync().then((response) => {
       console.log('Telemetry Home : ' + response);
-    }, (error) => {
+    }).catch((error) => {
       console.log('Telemetry Home : ' + error);
     });
     this.downloadContent();
@@ -238,9 +234,10 @@ export class HomePage {
       'do_2123823398249594881455': contentImport
     };
     console.log('Hello ' + JSON.stringify(contentImportRequest));
-    this.contentService.importContent(contentImportRequest, (response) => {
+    this.contentService.importContent(contentImportRequest)
+    .then((response) => {
       console.log('Home : ' + response);
-    }, (error) => {
+    }) .then((error) => {
       console.log('Home : ' + error);
     });
   }
@@ -296,7 +293,6 @@ export class HomePage {
           this.profile = r;
           this.incompleteProfileData = new IncompleteProfileData();
           this.formatProfileProgress();
-          this.formatMissingFields();
           this.getEnrolledCourses();
         });
       },
@@ -307,102 +303,17 @@ export class HomePage {
     );
   }
 
-  /**
-   * To Format the missing fields and gives it proper name based on missing field
-   * TODO: Need to replace following strings with the language constants
-   */
-  formatMissingFields() {
-    this.uncompletedDetails.title = '';
-    if (this.profile.missingFields && this.profile.missingFields.length) {
-      switch (this.profile.missingFields[0]) {
-        case 'education':
-          this.uncompletedDetails.title = '+ Add Education';
-          this.uncompletedDetails.page = FormEducation;
-          this.uncompletedDetails.data = {
-            addForm: true,
-            profile: this.profile
-          };
-          this.isProfileIncomplete = true;
-          this.incompleteProfileData.completenessRequires = '+ Add Education';
-          this.incompleteProfileData.avatar = this.profile.avatar;
-          break;
-        case 'jobProfile':
-          this.uncompletedDetails.title = '+ Add Experience';
-          this.uncompletedDetails.page = FormExperience;
-          this.uncompletedDetails.data = {
-            addForm: true,
-            profile: this.profile
-          };
-          this.isProfileIncomplete = true;
-          this.incompleteProfileData.completenessRequires = '+ Add Experience';
-          this.incompleteProfileData.avatar = this.profile.avatar;
-          break;
-        case 'avatar':
-          this.uncompletedDetails.title = '+ Add Avatar';
-          this.uncompletedDetails.page = 'picture';
-          this.isProfileIncomplete = true;
-          this.incompleteProfileData.completenessRequires = '+ Add Avatar';
-          this.incompleteProfileData.avatar = '';
-          break;
-        case 'address':
-          this.uncompletedDetails.title = '+ Add Address';
-          this.uncompletedDetails.page = FormAddress;
-          this.uncompletedDetails.data = {
-            addForm: true,
-            profile: this.profile
-          };
-          this.isProfileIncomplete = true;
-          this.incompleteProfileData.completenessRequires = '+ Add Address';
-          this.incompleteProfileData.avatar = this.profile.avatar;
-          break;
-        case 'location':
-        case 'profileSummary':
-        case 'phone':
-        case 'subject':
-        case 'gender':
-        case 'dob':
-        case 'grade':
-        case 'webPages':
-          const requiredProfileFields: Array<string> = [
-            'lastName',
-            'profileSummary',
-            'phone',
-            'subject',
-            'gender',
-            'dob',
-            'grade',
-            'location',
-            'webPages'
-          ];
-
-          this.uncompletedDetails.title = '+ Add ' + this.profile.missingFields[0];
-          this.uncompletedDetails.page = AdditionalInfoComponent;
-          this.uncompletedDetails.data = {
-            userId: this.userId,
-            profile: this.getSubset(requiredProfileFields, this.profile),
-            profileVisibility: this.profile.profileVisibility
-          };
-          this.isProfileIncomplete = true;
-          this.incompleteProfileData.completenessRequires = '+ Add ' + this.profile.missingFields[0];
-          this.incompleteProfileData.avatar = this.profile.avatar;
-          break;
-      }
-
-      console.log('Incomplete profile details - ' + this.incompleteProfileData);
-    }
-  }
-
   formatProfileProgress() {
     this.profileProgress = String(this.profile.completeness);
     this.incompleteProfileData.profileCompleteness = this.profileProgress;
   }
 
   completeProfile() {
-    if (this.uncompletedDetails.page === 'picture') {
-      this.editPicture();
-    } else {
-      this.navCtrl.push(this.uncompletedDetails.page, this.uncompletedDetails.data);
-    }
+    // if (this.uncompletedDetails.page === 'picture') {
+    //   this.editPicture();
+    // } else {
+    //   this.navCtrl.push(this.uncompletedDetails.page, this.uncompletedDetails.data);
+    // }
   }
 
   /**

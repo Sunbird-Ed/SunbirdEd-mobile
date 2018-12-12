@@ -10,10 +10,10 @@ import {
 import { EnrolledCourseDetailsPage } from '../../../pages/enrolled-course-details/enrolled-course-details';
 import { CollectionDetailsPage } from '../../../pages/collection-details/collection-details';
 import { ContentDetailsPage } from '../../../pages/content-details/content-details';
-import { ContentType, MimeType } from '../../../app/app.constant';
+import { ContentType, MimeType, ContentCard, PreferenceKey } from '../../../app/app.constant';
 import { CourseUtilService } from '../../../service/course-util.service';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
-import { InteractType, InteractSubtype, TelemetryObject } from 'sunbird';
+import { InteractType, InteractSubtype, TelemetryObject, SharedPreferences } from 'sunbird';
 
 /**
  * The course card component
@@ -47,11 +47,20 @@ export class CourseCard implements OnInit {
   @Input() env: string;
 
   /**
+   * To show card as disbled or Greyed-out when device is offline
+   */
+  @Input() cardDisabled = false;
+
+  /**
    * Contains default image path.
    *
    * It gets used when perticular course does not have a course/content icon
    */
   defaultImg: string;
+
+  layoutInProgress = ContentCard.LAYOUT_INPROGRESS;
+  layoutPopular = ContentCard.LAYOUT_POPULAR;
+  layoutSavedContent = ContentCard.LAYOUT_SAVED_CONTENT;
 
   /**
    * Default method of class CourseCard
@@ -61,7 +70,8 @@ export class CourseCard implements OnInit {
   constructor(public navCtrl: NavController,
     private courseUtilService: CourseUtilService,
     private events: Events,
-    private telemetryGeneratorService: TelemetryGeneratorService) {
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private preference: SharedPreferences) {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
 
@@ -75,7 +85,7 @@ export class CourseCard implements OnInit {
     const identifier = content.contentId || content.identifier;
     const telemetryObject: TelemetryObject = new TelemetryObject();
     telemetryObject.id = identifier;
-    if (layoutName === 'Inprogress') {
+    if (layoutName === this.layoutInProgress) {
       telemetryObject.type = ContentType.COURSE;
     } else {
       telemetryObject.type = this.isResource(content.contentType) ? ContentType.RESOURCE : content.contentType;
@@ -92,7 +102,8 @@ export class CourseCard implements OnInit {
       this.pageName ? this.pageName : this.layoutName,
       telemetryObject,
       values);
-    if (layoutName === 'Inprogress' || content.contentType === ContentType.COURSE) {
+    if (layoutName === this.layoutInProgress || content.contentType === ContentType.COURSE) {
+      this.saveContentContext(content);
       this.navCtrl.push(EnrolledCourseDetailsPage, {
         content: content
       });
@@ -113,6 +124,7 @@ export class CourseCard implements OnInit {
   }
 
   resumeCourse(content: any) {
+    this.saveContentContext(content);
     if (content.lastReadContentId && content.status === 1) {
       this.events.publish('course:resume', {
         content: content
@@ -125,8 +137,22 @@ export class CourseCard implements OnInit {
   }
 
   ngOnInit() {
-    if (this.layoutName === 'Inprogress') {
-      this.course.cProgress = this.courseUtilService.getCourseProgress(this.course.leafNodesCount, this.course.progress);
+    if (this.layoutName === this.layoutInProgress) {
+      this.course.cProgress = (this.courseUtilService.getCourseProgress(this.course.leafNodesCount, this.course.progress));
+      this.course.cProgress = parseInt(this.course.cProgress, 10);
     }
   }
+
+
+  saveContentContext(content: any) {
+    const contentContextMap = new Map();
+    // store content context in the below map
+    contentContextMap['userId'] = content.userId;
+    contentContextMap['courseId'] = content.courseId;
+    contentContextMap['batchId'] = content.batchId;
+
+    // store the contentContextMap in shared preference and access it from SDK
+    this.preference.putString(PreferenceKey.CONTENT_CONTEXT, JSON.stringify(contentContextMap));
+  }
 }
+

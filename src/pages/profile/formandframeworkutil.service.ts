@@ -7,7 +7,9 @@ import {
     FrameworkDetailsRequest,
     SharedPreferences,
     FormRequest,
-    FormService
+    FormService,
+    Profile,
+    ProfileService
 } from 'sunbird';
 import { AppGlobalService } from '../../service/app-global.service';
 import { AppVersion } from '@ionic-native/app-version';
@@ -16,7 +18,9 @@ import {
     FormConstant,
     PreferenceKey
 } from '../../app/app.constant';
-
+import { TranslateService } from '@ngx-translate/core';
+import * as _ from 'lodash';
+import { Events } from 'ionic-angular';
 @Injectable()
 export class FormAndFrameworkUtilService {
 
@@ -25,13 +29,17 @@ export class FormAndFrameworkUtilService {
      *
      */
     selectedLanguage: string;
+    profile: Profile;
 
     constructor(
         private framework: FrameworkService,
         private preference: SharedPreferences,
         private formService: FormService,
         private appGlobalService: AppGlobalService,
-        private appVersion: AppVersion
+        private appVersion: AppVersion,
+        private translate: TranslateService,
+        private profileService: ProfileService,
+        private events: Events
     ) {
         // Get language selected
         this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
@@ -46,7 +54,7 @@ export class FormAndFrameworkUtilService {
      * This method gets the form related details.
      *
      */
-    getSyllabusList(): Promise<any> {
+    getSupportingBoardList(): Promise<any> {
         return new Promise((resolve, reject) => {
             let syllabusList: Array<any> = [];
 
@@ -115,19 +123,19 @@ export class FormAndFrameworkUtilService {
         const req: FormRequest = {
             type: 'user',
             subType: 'instructor',
-            action: 'onboarding',
-            filePath: FormConstant.DEFAULT_SYALLABUS_PATH
+            action: 'onboarding_v2',
+            filePath: FormConstant.DEFAULT_SUPPORTED_BOARDS_PATH
         };
         // form api call
-        this.formService.getForm(req, (res: any) => {
+        this.formService.getForm(req).then((res: any) => {
             const response: any = JSON.parse(res);
             console.log('Form Result - ' + response.result);
             let frameworks: Array<any> = [];
             const fields: Array<any> = response.result.fields;
             fields.forEach(field => {
-                if (field.language === this.selectedLanguage) {
-                    frameworks = field.range;
-                }
+                // if (field.language === this.selectedLanguage) {
+                frameworks = field.range;
+                // }
             });
 
             // this condition will be executed when selected language is not present in the frameworks
@@ -139,11 +147,10 @@ export class FormAndFrameworkUtilService {
                     }
                 });
             }
-
             if (frameworks != null && frameworks.length > 0) {
                 frameworks.forEach(frameworkDetails => {
-                    const value = { 'name': frameworkDetails.name, 'frameworkId': frameworkDetails.frameworkId };
-                    syllabusList.push(value);
+                    // const value = { 'name': frameworkDetails.name, 'frameworkId': frameworkDetails.frameworkId };
+                    syllabusList.push(frameworkDetails);
                 });
 
                 // store the framework list in the app component, so that when getFormDetails() gets called again
@@ -151,7 +158,7 @@ export class FormAndFrameworkUtilService {
                 this.appGlobalService.setSyllabusList(syllabusList);
             }
             resolve(syllabusList);
-        }, (error: any) => {
+        }).catch((error: any) => {
             console.log('Error - ' + error);
             // Adding default framework into the list
             const defaultFramework = {
@@ -183,12 +190,12 @@ export class FormAndFrameworkUtilService {
             filePath: FormConstant.DEFAULT_PAGE_COURSE_FILTER_PATH
         };
         // form api call
-        this.formService.getForm(req, (res: any) => {
+        this.formService.getForm(req).then((res: any) => {
             const response: any = JSON.parse(res);
             courseFilterConfig = response.result.fields;
             this.appGlobalService.setCourseFilterConfig(courseFilterConfig);
             resolve(courseFilterConfig);
-        }, (error: any) => {
+        }).catch((error: any) => {
             console.log('Error - ' + error);
             resolve(courseFilterConfig);
         });
@@ -211,12 +218,12 @@ export class FormAndFrameworkUtilService {
             filePath: FormConstant.DEFAULT_PAGE_LIBRARY_FILTER_PATH
         };
         // form api call
-        this.formService.getForm(req, (res: any) => {
+        this.formService.getForm(req).then((res: any) => {
             const response: any = JSON.parse(res);
             libraryFilterConfig = response.result.fields;
             this.appGlobalService.setLibraryFilterConfig(libraryFilterConfig);
             resolve(libraryFilterConfig);
-        }, (error: any) => {
+        }).catch((error: any) => {
             console.log('Error - ' + error);
             resolve(libraryFilterConfig);
         });
@@ -301,7 +308,7 @@ export class FormAndFrameworkUtilService {
                         action: 'upgrade'
                     };
                     // form api call
-                    this.formService.getForm(req, (res: any) => {
+                    this.formService.getForm(req).then((res: any) => {
                         const response: any = JSON.parse(res);
 
                         let fields: Array<any> = [];
@@ -347,10 +354,105 @@ export class FormAndFrameworkUtilService {
                         }
 
                         resolve(result);
-                    }, (error: any) => {
+                    }).catch((error: any) => {
                         reject(error);
                     });
                 });
         });
+    }
+
+    updateLoggedInUser(profileRes, profileData) {
+        return new Promise((resolve, reject) => {
+            const profile = {
+                board: [],
+                grade: [],
+                medium: [],
+                subject: [],
+                syllabus: [],
+                gradeValueMap: {}
+            };
+            if (profileRes.framework) {
+                const categoryKeysLen = Object.keys(profileRes.framework).length;
+                let keysLength = 0;
+                for (const categoryKey in profileRes.framework) {
+                    if (profileRes.framework[categoryKey].length) {
+                        const request: CategoryRequest = {
+                            selectedLanguage: this.translate.currentLang,
+                            currentCategory: categoryKey
+                        };
+                        this.getCategoryData(request)
+                            .then((categoryList) => {
+                                console.log('categoryList in updateLoggedInUser', categoryList);
+                                keysLength++;
+                                profileRes.framework[categoryKey].forEach(element => {
+                                    if (categoryKey === 'gradeLevel') {
+                                        const codeObj = _.find(categoryList, (category) => category.name === element);
+                                        if (codeObj) {
+                                            profile['grade'].push(codeObj.code);
+                                            profile['gradeValueMap'][codeObj.code] = element;
+                                        }
+                                    } else {
+                                        const codeObj = _.find(categoryList, (category) => category.name === element);
+                                        if (codeObj) {
+                                            profile[categoryKey].push(codeObj.code);
+                                        }
+                                    }
+                                });
+                                if (categoryKeysLen === keysLength) {
+                                    const req: Profile = new Profile();
+                                    if (profile.board && profile.board.length > 1) {
+                                      profile.board.splice(1, profile.board.length);
+                                    }
+                                    req.board = profile.board;
+                                    req.grade = profile.grade;
+                                    req.medium = profile.medium;
+                                    req.subject = profile.subject;
+                                    req.gradeValueMap = profile.gradeValueMap;
+                                    req.uid = profileData.uid;
+                                    req.handle = profileData.uid;
+                                    req.profileType = profileData.profileType;
+                                    req.source = profileData.source;
+                                    req.createdAt = profileData.createdAt || this.formatDate();
+                                    this.preference.getString('current_framework_id')
+                                    .then(value => {
+                                        req.syllabus = [value];
+                                        this.profileService.updateProfile(req)
+                                        .then((res: any) => {
+                                            const updateProfileRes = JSON.parse(res);
+                                            this.events.publish('refresh:loggedInProfile');
+                                            if (updateProfileRes.board  && updateProfileRes.grade && updateProfileRes.medium &&
+                                                updateProfileRes.board.length && updateProfileRes.grade.length
+                                                && updateProfileRes.medium.length
+                                            ) {
+                                                resolve({status: true});
+                                            } else {
+                                                resolve({status: false, profile: updateProfileRes});
+                                            }
+                                        })
+                                        .catch((err: any) => {
+                                            console.error('Err', err);
+                                            resolve({status: false});
+                                        });
+                                    });
+                                }
+                            });
+                    } else {
+                        keysLength++;
+                    }
+                }
+            } else {
+                resolve({status: false});
+            }
+        });
+
+    }
+
+    formatDate() {
+        const options = {
+            day: '2-digit', year: 'numeric', month: 'short', hour: '2-digit',
+            minute: '2-digit', second: '2-digit', hour12: true
+        };
+        const date = new Date().toLocaleString('en-us', options);
+        return (date.slice(0, 12) + date.slice(13, date.length));
     }
 }

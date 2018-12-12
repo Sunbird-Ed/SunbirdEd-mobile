@@ -17,7 +17,8 @@ import {
   SharedPreferences,
   ContentFilterCriteria,
   ProfileType,
-  PageAssembleFilter
+  PageAssembleFilter,
+  FrameworkService
 } from 'sunbird';
 import {
   NavController,
@@ -32,9 +33,11 @@ import { Map } from '../../app/telemetryutil';
 import {
   ContentType,
   AudienceFilter,
-  PreferenceKey
+  PreferenceKey,
+  PageName,
+  ContentCard,
+  ViewMore
 } from '../../app/app.constant';
-import { Network } from '@ionic-native/network';
 import {
   PageFilterCallback,
   PageFilter
@@ -53,55 +56,37 @@ import { CommonUtilService } from '../../service/common-util.service';
 export class ResourcesPage implements OnInit, AfterViewInit {
 
   pageLoadedSuccess = false;
-
   storyAndWorksheets: Array<any>;
   selectedValue: Array<string> = [];
-
   guestUser = false;
-
   showSignInCard = false;
-
-  isNetworkAvailable: boolean;
   showWarning = false;
-
-  /**
-	 * Contains local resources
-	 */
   localResources: Array<any>;
-
+  recentlyViewedResources: Array<any>;
   userId: string;
-  /**
-	 * Loader
-	 */
   showLoader = false;
 
   /**
 	 * Flag to show latest and popular course loader
 	 */
   pageApiLoader = true;
-
   isOnBoardingCardCompleted = false;
   public source = PageId.LIBRARY;
-
   resourceFilter: any;
-
   appliedFilter: any;
-
   filterIcon = './assets/imgs/ic_action_filter.png';
-
   selectedLanguage = 'en';
-
-  // noInternetConnection: boolean = false;
   audienceFilter = [];
-
   profile: any;
   appLabel: string;
-
   mode = 'soft';
-
   isFilterApplied = false;
-
   pageFilterCallBack: PageFilterCallback;
+
+  layoutPopular = ContentCard.LAYOUT_POPULAR;
+  layoutSavedContent = ContentCard.LAYOUT_SAVED_CONTENT;
+  savedResourcesSection = 'Saved Resources';
+  recentViewedSection = 'Recently Viewed';
 
   constructor(
     public navCtrl: NavController,
@@ -113,12 +98,12 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     private events: Events,
     private preference: SharedPreferences,
     private zone: NgZone,
-    private network: Network,
     private appGlobalService: AppGlobalService,
     private appVersion: AppVersion,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    private framework: FrameworkService
   ) {
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
       .then(val => {
@@ -127,19 +112,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         }
       });
     this.subscribeUtilityEvents();
-
-    if (this.network.type === 'none') {
-      this.isNetworkAvailable = false;
-    } else {
-      this.isNetworkAvailable = true;
-    }
-    this.network.onDisconnect().subscribe(() => {
-      this.isNetworkAvailable = false;
-    });
-    this.network.onConnect().subscribe(() => {
-      this.isNetworkAvailable = true;
-    });
-
     this.appVersion.getAppName()
       .then((appName: any) => {
         this.appLabel = appName;
@@ -150,6 +122,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.events.subscribe('savedResources:update', (res) => {
       if (res && res.update) {
         this.setSavedContent();
+        this.loadRecentlyViewedContent();
       }
     });
     this.events.subscribe('event:showScanner', (data) => {
@@ -196,6 +169,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 	 */
   ngOnInit() {
     this.setSavedContent();
+    this.loadRecentlyViewedContent();
   }
 
   ngAfterViewInit() {
@@ -223,19 +197,36 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     }
     this.setSavedContent();
     this.profile = this.appGlobalService.getCurrentUser();
+    this.loadRecentlyViewedContent();
   }
 
-  navigateToViewMoreContentsPage() {
+  navigateToViewMoreContentsPage(section: string) {
     const values = new Map();
-    values['SectionName'] = 'Saved Resources';
+    let headerTitle;
+    let pageName;
+    let showDownloadOnlyToggleBtn;
+    const uid = this.profile ? this.profile.uid : undefined;
+    if (section === this.savedResourcesSection) {
+      values['SectionName'] = this.savedResourcesSection;
+      headerTitle = 'SAVED_RESOURCES';
+      pageName = ViewMore.PAGE_RESOURCE_SAVED;
+    } else if (section === this.recentViewedSection) {
+      values['SectionName'] = this.recentViewedSection;
+      headerTitle = 'RECENTLY_VIEWED';
+      pageName = ViewMore.PAGE_RESOURCE_RECENTLY_VIEWED;
+      showDownloadOnlyToggleBtn = true;
+    }
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.VIEWALL_CLICKED,
       Environment.HOME,
       this.source, undefined,
       values);
     this.navCtrl.push(ViewMoreActivityPage, {
-      headerTitle: 'SAVED_RESOURCES',
-      pageName: 'resource.SavedResources'
+      headerTitle: headerTitle,
+      pageName: pageName,
+      showDownloadOnlyToggle: showDownloadOnlyToggleBtn,
+      uid: uid,
+      audience: this.audienceFilter,
     });
   }
 
@@ -273,6 +264,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     // console.log('in setSavedContent isOnBoardingCardCompleted');
     this.showLoader = true;
     const requestParams: ContentFilterCriteria = {
+      uid: this.profile ? this.profile.uid : undefined,
       contentTypes: ContentType.FOR_LIBRARY_TAB,
       audience: this.audienceFilter
     };
@@ -280,8 +272,10 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       .then(data => {
         _.forEach(data, (value) => {
           value.contentData.lastUpdatedOn = value.lastUpdatedTime;
-          if (value.contentData.appIcon) {
+          if (Boolean(value.isAvailableLocally) &&  value.basePath && value.contentData.appIcon) {
             value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
+          } else if (!Boolean(value.isAvailableLocally)) {
+            value.contentData.appIcon = value.contentData.appIcon;
           }
         });
         this.ngZone.run(() => {
@@ -298,6 +292,39 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   /**
+	 * Load/get recently viewed content
+	 */
+  loadRecentlyViewedContent() {
+    this.showLoader = true;
+    const requestParams: ContentFilterCriteria = {
+      uid: this.profile ? this.profile.uid : undefined,
+      contentTypes: ContentType.FOR_RECENTLY_VIEWED,
+      audience: this.audienceFilter,
+      recentlyViewed: true
+    };
+    this.contentService.getAllLocalContents(requestParams)
+      .then(data => {
+        _.forEach(data, (value) => {
+          value.contentData.lastUpdatedOn = value.lastUpdatedTime;
+          if (Boolean(value.isAvailableLocally) && value.basePath && value.contentData.appIcon) {
+            value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
+          } else if (!Boolean(value.isAvailableLocally)) {
+            value.contentData.appIcon = value.contentData.appIcon;
+          }
+        });
+        this.ngZone.run(() => {
+          this.recentlyViewedResources = data;
+          this.showLoader = false;
+        });
+      })
+      .catch(() => {
+        this.ngZone.run(() => {
+          this.showLoader = false;
+        });
+      });
+  }
+
+  /**
 	 * Get popular content
 	 */
   getPopularContent(isAfterLanguageChange = false, pageAssembleCriteria?: PageAssembleCriteria) {
@@ -308,7 +335,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
     if (!pageAssembleCriteria) {
       const criteria = new PageAssembleCriteria();
-      criteria.name = 'Resource';
+      criteria.name = PageName.RESOURCE;
       criteria.mode = 'soft';
 
       if (that.appliedFilter) {
@@ -356,46 +383,44 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           pageAssembleCriteria.filters.subject, 'subject');
       }
     }
-
-    this.pageService.getPageAssemble(pageAssembleCriteria, res => {
-      that.ngZone.run(() => {
-        const response = JSON.parse(res);
-        // TODO Temporary code - should be fixed at backend
-        const sections = JSON.parse(response.sections);
-        const newSections = [];
-        sections.forEach(element => {
-          element.display = JSON.parse(element.display);
-          if (element.display.name) {
-            if (_.has(element.display.name, this.selectedLanguage)) {
-              const langs = [];
-              _.forEach(element.display.name, (value, key) => {
-                langs[key] = value;
-              });
-              element.name = langs[this.selectedLanguage];
+    console.log('pageAssembleCriteria', pageAssembleCriteria);
+    this.pageService.getPageAssemble(pageAssembleCriteria)
+      .then((res: any) => {
+        that.ngZone.run(() => {
+          const response = JSON.parse(res);
+          // TODO Temporary code - should be fixed at backend
+          const sections = JSON.parse(response.sections);
+          const newSections = [];
+          sections.forEach(element => {
+            element.display = JSON.parse(element.display);
+            if (element.display.name) {
+              if (_.has(element.display.name, this.selectedLanguage)) {
+                const langs = [];
+                _.forEach(element.display.name, (value, key) => {
+                  langs[key] = value;
+                });
+                element.name = langs[this.selectedLanguage];
+              }
             }
-          }
-          newSections.push(element);
+            newSections.push(element);
+          });
+          // END OF TEMPORARY CODE
+          that.storyAndWorksheets = newSections;
+          this.pageLoadedSuccess = true;
+          this.pageApiLoader = false;
+          // this.noInternetConnection = false;
+          this.checkEmptySearchResult(isAfterLanguageChange);
         });
-        // END OF TEMPORARY CODE
-        that.storyAndWorksheets = newSections;
-        this.pageLoadedSuccess = true;
-        this.pageApiLoader = false;
-        // this.noInternetConnection = false;
-        this.checkEmptySearchResult(isAfterLanguageChange);
+      }).catch(error => {
+        console.log('error while getting popular resources...', error);
+        that.ngZone.run(() => {
+          this.pageApiLoader = false;
+          if (error === 'CONNECTION_ERROR') {
+          } else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
+            if (!isAfterLanguageChange) { this.commonUtilService.showToast('ERROR_FETCHING_DATA'); }
+          }
+        });
       });
-    }, error => {
-      console.log('error while getting popular resources...', error);
-      that.ngZone.run(() => {
-        this.pageApiLoader = false;
-        if (error === 'CONNECTION_ERROR') {
-          // this.noInternetConnection = true;
-          this.isNetworkAvailable = false;
-        } else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
-          if (!isAfterLanguageChange) { this.commonUtilService.showToast('ERROR_FETCHING_DATA'); }
-        }
-      });
-    });
-    // }
   }
 
   applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>, categoryKey?: string) {
@@ -443,14 +468,13 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   ionViewDidEnter() {
-
     this.preference.getString('show_app_walkthrough_screen')
       .then(value => {
         if (value === 'true') {
           const driver = new Driver({
             allowClose: true,
             closeBtnText: this.commonUtilService.translateMessage('DONE'),
-            showButtons: true
+            showButtons: true,
           });
 
           setTimeout(() => {
@@ -483,16 +507,13 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       this.getCurrentUser();
     } else {
       this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
+      this.profile = this.appGlobalService.getCurrentUser();
     }
 
     if (!this.pageLoadedSuccess) {
       this.getPopularContent();
     }
     this.subscribeGenieEvents();
-
-    if (this.network.type === 'none') {
-      this.isNetworkAvailable = false;
-    }
   }
 
   subscribeGenieEvents() {
@@ -501,6 +522,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       const res = JSON.parse(data);
       if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
         this.setSavedContent();
+        this.loadRecentlyViewedContent();
       }
     });
   }
@@ -512,20 +534,22 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   swipeDownToRefresh(refresher?) {
     if (refresher) {
       refresher.complete();
+      this.telemetryGeneratorService.generatePullToRefreshTelemetry(PageId.LIBRARY, Environment.HOME);
     }
 
     this.storyAndWorksheets = [];
     this.setSavedContent();
+    this.loadRecentlyViewedContent();
     this.guestUser = !this.appGlobalService.isUserLoggedIn();
 
     if (this.guestUser) {
       this.getCurrentUser();
     } else {
+      this.profile = this.appGlobalService.getCurrentUser();
       this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
     }
 
     this.getPopularContent(false);
-    this.checkNetworkStatus();
   }
 
 
@@ -564,7 +588,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.pageFilterCallBack = {
       applyFilter(filter, appliedFilter) {
         const criteria = new PageAssembleCriteria();
-        criteria.name = 'Resource';
+        criteria.name = PageName.RESOURCE;
         criteria.filters = filter;
         criteria.mode = 'hard';
         that.resourceFilter = appliedFilter;
@@ -644,16 +668,13 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       this.showWarning = false;
     }, 3000);
   }
-
   checkNetworkStatus(showRefresh = false) {
-    if (this.network.type === 'none') {
-      this.isNetworkAvailable = false;
-    } else {
-      this.isNetworkAvailable = true;
-      if (showRefresh) {
-        this.swipeDownToRefresh();
-      }
+    if (this.commonUtilService.networkInfo.isNetworkAvailable && showRefresh) {
+      this.swipeDownToRefresh();
     }
   }
 
+  showDisabled(resource) {
+    return !resource.isAvailableLocally && !this.commonUtilService.networkInfo.isNetworkAvailable;
+  }
 }

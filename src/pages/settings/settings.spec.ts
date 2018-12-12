@@ -1,288 +1,140 @@
-import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
-import { NavController, LoadingController, ToastController, Config, Platform, Events } from 'ionic-angular';
-import { DatasyncPage } from './datasync/datasync';
-import { LanguageSettingsPage } from '../language-settings/language-settings';
-import { AboutUsPage } from './about-us/about-us';
-import { SocialSharing } from '@ionic-native/social-sharing';
-import { TranslateService, TranslateModule } from '@ngx-translate/core';
-import { AppVersion } from '@ionic-native/app-version';
-import { SharedPreferences, InteractType, InteractSubtype, ShareUtil, ServiceProvider } from 'sunbird';
-import { Impression, ImpressionType, Environment, PageId, TelemetryService } from 'sunbird';
-import { generateInteractTelemetry, generateImpressionTelemetry } from '../../app/telemetryutil';
-import { PreferenceKey } from '../../app/app.constant';
-import { Observable } from 'rxjs/Observable';
-import {
-    NavMock, AppVersionMock, SocialSharingMock, LoadingControllerMock, TranslateServiceStub,
-    SharedPreferencesMock, TelemetryServiceMock, ShareUtilMock, DeepLinkerMock
-} from '../../../test-config/mocks-ionic';
+import 'jest';
 import { SettingsPage } from './settings';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { CommonUtilService } from '../../service/common-util.service';
-import { App } from 'ionic-angular';
-import { PopoverController } from 'ionic-angular';
-import { DeepLinker } from 'ionic-angular';
-
-describe('SettingsPage', () => {
-    let comp: SettingsPage;
-    let fixture: ComponentFixture<SettingsPage>;
-
-    // const getLoader = () => {
-    //     const loadingController = TestBed.get(LoadingController);
-    //     comp.getLoader();
-    // };
+import {
+    navCtrlMock, appVersionMock, socialSharingMock,
+    deviceInfoServiceMock, sharedPreferencesMock, telemetryServiceMock,
+    shareUtilMock, commonUtilServiceMock, appGlobalServiceMock, translateServiceMock, supportfileMock,
+} from '../../__tests__/mocks';
+import { ImpressionType, PageId, Environment, InteractType, InteractSubtype } from 'sunbird';
+import { LanguageSettingsPage } from '../language-settings/language-settings';
+import { DatasyncPage } from './datasync/datasync';
+import { AboutUsPage } from './about-us/about-us';
+describe.only('SettingsPage', () => {
+    let settingsPage: SettingsPage;
 
     beforeEach(() => {
-        TestBed.configureTestingModule({
-            imports: [TranslateModule.forRoot()],
-            declarations: [SettingsPage],
-            schemas: [NO_ERRORS_SCHEMA],
-            providers: [
-                ServiceProvider, CommonUtilService, ToastController,
-                PopoverController,
-                Events, App, Config, Platform,
-                { provide: DeepLinker, useValue: DeepLinkerMock },
-                { provide: NavController, useClass: NavMock },
-                { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() },
-                { provide: AppVersion, useClass: AppVersionMock },
-                { provide: SocialSharing, useClass: SocialSharingMock },
-                { provide: TranslateService, useClass: TranslateServiceStub },
-                { provide: SharedPreferences, useClass: SharedPreferencesMock },
-                { provide: TelemetryService, useClass: TelemetryServiceMock },
-                { provide: ShareUtil, useClass: ShareUtilMock }
-            ]
-        });
-        fixture = TestBed.createComponent(SettingsPage);
-        comp = fixture.componentInstance;
+        deviceInfoServiceMock.getDeviceID.mockResolvedValue('DEVICE_ID');
+        settingsPage = new SettingsPage(navCtrlMock as any, appVersionMock as any,
+            socialSharingMock as any, translateServiceMock as any, deviceInfoServiceMock as any,
+            sharedPreferencesMock as any, telemetryServiceMock as any, shareUtilMock as any,
+            commonUtilServiceMock as any, appGlobalServiceMock as any
+        );
+        (window as any).supportfile = supportfileMock;
+        jest.resetAllMocks();
     });
     it('can load instance', () => {
-        expect(comp).toBeTruthy();
+        expect(settingsPage).toBeTruthy();
     });
-
-    describe('IonViewWillEnter', () => {
-        it('makes expected calls', () => {
-            const transStub = TestBed.get(TranslateService);
-            const appStub = TestBed.get(AppVersion);
-            comp.shareAppLabel = 'appName';
-            spyOn(transStub, 'get').and.callFake((arg) => {
-                return Observable.of('Cancel');
-            });
-            spyOn(appStub, 'getAppName').and.returnValue(Promise.resolve('true'));
-            comp.ionViewWillEnter();
-            expect(comp.shareAppLabel).toBe('appName');
-        });
+    it('should get the AppName in ionViewWillEnter calls', (done) => {
+        // arrange
+        appVersionMock.getAppName.mockResolvedValue('SHARE_APP');
+        // act
+        settingsPage.ionViewWillEnter();
+        // assert
+        setTimeout(() => {
+            expect(settingsPage.shareAppLabel = 'SHARE_APP');
+            done();
+        }, 0);
     });
-
-    describe('IonViewDidLoad', () => {
-        it('makes expected calls', () => {
-            const telemeStub = TestBed.get(TelemetryService);
-            spyOn(telemeStub, 'impression');
-            comp.ionViewDidLoad();
-            expect(telemeStub.impression).toHaveBeenCalled();
-        });
+    it('should load the impressionEvent in ionViewDidLoad', () => {
+        // arrange
+        // act
+        settingsPage.ionViewDidLoad();
+        // assert
+        expect(telemetryServiceMock.impression).toHaveBeenCalledWith(
+            expect.objectContaining({ type: ImpressionType.VIEW, pageId: PageId.SETTINGS, env: Environment.SETTINGS }));
     });
-
-    describe('IonViewDidEnter', () => {
-        it('makes expected calls', () => {
-            const commonUtilServiceStub = TestBed.get(CommonUtilService);
-            const preferStub = TestBed.get(SharedPreferences);
-
-            expect(comp.ionViewDidLoad).toBeDefined();
-            spyOn(commonUtilServiceStub, 'translateMessage');
-            spyOn(preferStub, 'getString').and.returnValue(Promise.resolve('true'));
-            comp.ionViewDidEnter();
-
-            expect(commonUtilServiceStub.translateMessage).toHaveBeenCalled();
-            expect(preferStub.getString).toHaveBeenCalled();
-        });
-
+    it('should handle the current Language when ionViewDidEnter hits', (done) => {
+        // arrange
+        sharedPreferencesMock.getString.mockResolvedValue('en');
+        // act
+        settingsPage.ionViewDidEnter();
+        // assert
+        expect(settingsPage.chosenLanguageString = 'CURRENT_LANGUAGE');
+        setTimeout(() => {
+            expect(settingsPage.selectedLanguage = 'en');
+            done();
+        }, 0);
     });
-    it('#IonViewDidLeave makes expected calls in success part', () => {
-        window['supportfile'] = {
-            removeFile: () => ({})
-        };
-        spyOn(window['supportfile'], 'removeFile').and.callFake((result, error) => {
-            return result(JSON.stringify({}));
-        });
-        comp.ionViewDidLeave();
+    it('should handle ionViewDidLeave when page leaves', () => {
+        // arrange
+        // act
+        settingsPage.ionViewDidLeave();
+        supportfileMock.removeFile.mock.calls[0][0].call(settingsPage, '{}');
+        // assert
+        expect(supportfileMock.removeFile).toHaveBeenCalled();
     });
-    it('#IonViewDidLoad makes expected calls in error part', () => {
-        window['supportfile'] = {
-            removeFile: () => ({})
-        };
-        spyOn(window['supportfile'], 'removeFile').and.callFake((result, error) => {
-            return error(JSON.stringify({}));
-        });
-        comp.ionViewDidLeave();
-    });
-    describe('language settings', () => {
-        it('makes expected calls', () => {
-            const navCtrl = TestBed.get(NavController);
-            const isFromSettings = true;
-            expect(comp.goToLanguageSetting).toBeDefined();
-            spyOn(comp, 'generateInteractTelemetry');
-            spyOn(navCtrl, 'push').and.callThrough();
-            comp.goToLanguageSetting();
-            expect(comp.generateInteractTelemetry).toHaveBeenCalled();
-            expect(isFromSettings).toBe(true);
-
+    it('should go to languageSettings page', () => {
+        // arrange
+        spyOn(settingsPage, 'generateInteractTelemetry').and.stub();
+        // act
+        settingsPage.goToLanguageSetting();
+        // assert
+        expect(settingsPage.generateInteractTelemetry).toHaveBeenCalledWith('TOUCH', 'language-clicked');
+        expect(navCtrlMock.push).toHaveBeenCalledWith(LanguageSettingsPage, {
+            isFromSettings: true
         });
     });
-    describe('dataSync', () => {
-        it('makes expected calls', () => {
-            const navCtrl = TestBed.get(NavController);
-            expect(comp.dataSync).toBeDefined();
-            spyOn(comp, 'generateInteractTelemetry');
-            spyOn(navCtrl, 'push');
-            comp.dataSync();
-
-            expect(navCtrl.push).toHaveBeenCalled();
-        });
+    it('should go to dataSync page when clicked', () => {
+        // arrange
+        spyOn(settingsPage, 'generateInteractTelemetry').and.stub();
+        // act
+        settingsPage.dataSync();
+        expect(settingsPage.generateInteractTelemetry).toHaveBeenCalledWith('TOUCH', 'data-sync-clicked');
+        expect(navCtrlMock.push).toHaveBeenCalledWith(DatasyncPage);
     });
-
-    describe('about us', () => {
-        it('makes expected calls', () => {
-            const navCtrl = TestBed.get(NavController);
-            expect(comp.aboutUs).toBeDefined();
-            spyOn(comp, 'generateInteractTelemetry');
-            spyOn(navCtrl, 'push').and.callThrough();
-
-            comp.aboutUs();
-
-            expect(navCtrl.push).toHaveBeenCalled();
-        });
+    it('should go to aboutUsPage when clicked', () => {
+        // arrange
+        spyOn(settingsPage, 'generateInteractTelemetry').and.stub();
+        // act
+        settingsPage.aboutUs();
+        // assert
+        expect(settingsPage.generateInteractTelemetry).toHaveBeenCalledWith('TOUCH', 'about-app-clicked');
+        expect(navCtrlMock.push).toHaveBeenCalledWith(AboutUsPage);
     });
-    describe('send Message', () => {
-        it('makes expected calls', () => {
-            const preferStub = TestBed.get(SharedPreferences);
-            const CommonUtilServiceStub = TestBed.get(CommonUtilService);
-            spyOn(comp, 'generateInteractTelemetry');
-            spyOn(preferStub, 'getString').and.returnValue(Promise.resolve(undefined));
-            window['supportfile'] = {
-                shareSunbirdConfigurations: () => ({})
-            };
-            spyOn(window['supportfile'], 'shareSunbirdConfigurations').and.callFake((result, error) => {
-                return result(JSON.stringify({}));
-            });
-            CommonUtilServiceStub.getLoader();
-            comp.sendMessage();
-            expect(comp.generateInteractTelemetry).toHaveBeenCalled();
-            expect(preferStub.getString).toHaveBeenCalled();
-        });
-        it('makes expected calls and checks when val is ""', () => {
-            const preferStub = TestBed.get(SharedPreferences);
-            const CommonUtilServiceStub = TestBed.get(CommonUtilService);
-            spyOn(comp, 'generateInteractTelemetry');
-            spyOn(preferStub, 'getString').and.returnValue(Promise.resolve(''));
-            window['supportfile'] = {
-                shareSunbirdConfigurations: () => ({})
-            };
-            spyOn(window['supportfile'], 'shareSunbirdConfigurations').and.callFake((result, error) => {
-                return result(JSON.stringify({}));
-            });
-            CommonUtilServiceStub.getLoader();
-            comp.sendMessage();
-            expect(preferStub.getString).toHaveBeenCalled();
-            expect(comp.generateInteractTelemetry).toHaveBeenCalled();
-
-        });
-        it('makes expected calls and checks when val is null', () => {
-            const preferStub = TestBed.get(SharedPreferences);
-            const CommonUtilServiceStub = TestBed.get(CommonUtilService);
-            spyOn(comp, 'generateInteractTelemetry');
-            spyOn(preferStub, 'getString').and.returnValue(Promise.resolve(null));
-            window['supportfile'] = {
-                shareSunbirdConfigurations: () => ({})
-            };
-            spyOn(window['supportfile'], 'shareSunbirdConfigurations').and.callFake((result, error) => {
-                return result(JSON.stringify({}));
-            });
-            CommonUtilServiceStub.getLoader();
-            comp.sendMessage();
-            expect(comp.generateInteractTelemetry).toHaveBeenCalled();
-            expect(preferStub.getString).toHaveBeenCalled();
-        });
-        it('makes expected calls in else part when is value is present', () => {
-            const preferStub = TestBed.get(SharedPreferences);
-            const commonUtilServiceStub = TestBed.get(CommonUtilService);
-            const SocialSharingStub = TestBed.get(SocialSharing);
-            comp.fileUrl = 'string';
-            window['supportfile'] = {
-                shareSunbirdConfigurations: () => ({})
-            };
-            spyOn(window['supportfile'], 'shareSunbirdConfigurations').and.callFake((result, error) => {
-                return result(JSON.stringify({}));
-            });
-            commonUtilServiceStub.getLoader();
-            spyOn(comp, 'generateInteractTelemetry');
-            spyOn(preferStub, 'getString').and.returnValue(Promise.resolve('string'));
-            spyOn(SocialSharingStub, 'shareViaEmail').and.returnValue(Promise.resolve(''));
-            comp.sendMessage();
-            expect(comp.generateInteractTelemetry).toHaveBeenCalled();
-            expect(preferStub.getString).toHaveBeenCalled();
-        });
-        it('makes expected calls in social sharing catch part', () => {
-            const preferStub = TestBed.get(SharedPreferences);
-            const SocialSharingStub = TestBed.get(SocialSharing);
-            const commonUtilServiceStub = TestBed.get(CommonUtilService);
-            comp.fileUrl = 'string';
-            commonUtilServiceStub.getLoader();
-            window['supportfile'] = {
-                shareSunbirdConfigurations: () => ({})
-            };
-            spyOn(window['supportfile'], 'shareSunbirdConfigurations').and.callFake((result, error) => {
-                return result(JSON.stringify({}));
-            });
-            spyOn(comp, 'generateInteractTelemetry');
-            spyOn(preferStub, 'getString').and.returnValue(Promise.resolve('string'));
-            spyOn(SocialSharingStub, 'shareViaEmail').and.returnValue(Promise.reject());
-            comp.sendMessage();
-            expect(comp.generateInteractTelemetry).toHaveBeenCalled();
-            expect(preferStub.getString).toHaveBeenCalled();
-        });
+    it('should send message with attachedFile when support clicked', (done) => {
+        // arrange
+        commonUtilServiceMock.getLoader.mockReturnValue({ present: jest.fn(), dismiss: jest.fn() });
+        sharedPreferencesMock.getString.mockResolvedValue('true');
+        deviceInfoServiceMock.getDeviceID.mockResolvedValue('DEVICE_ID');
+        socialSharingMock.shareViaEmail.mockResolvedValue('VIA_EMAIL');
+        spyOn(settingsPage, 'generateInteractTelemetry').and.stub();
+        // act
+        settingsPage.sendMessage();
+        supportfileMock.shareSunbirdConfigurations.mock.calls[0][0].call(settingsPage, '{}');
+        // assert
+        setTimeout(() => {
+            expect(settingsPage.deviceId = 'DEVICE_ID');
+            expect(settingsPage.generateInteractTelemetry).toHaveBeenCalledWith('TOUCH', 'support-clicked');
+            expect(sharedPreferencesMock.putString).toHaveBeenCalledWith('sunbird_config_file_path', {});
+            expect(socialSharingMock.shareViaEmail).toHaveBeenCalled();
+            done();
+        }, 0);
     });
-    describe('shareApp', () => {
-        it('makes expected calls', () => {
-            const shareUtilStub = TestBed.get(ShareUtil);
-            const SocialSharingStub = TestBed.get(SocialSharing);
-            const commonUtilServiceStub = TestBed.get(CommonUtilService);
-            commonUtilServiceStub.getLoader();
-            spyOn(comp, 'generateInteractTelemetry');
-            spyOn(shareUtilStub, 'exportApk').and.callFake((success, error) => {
-                return success('Cancel');
-            });
-            spyOn(SocialSharingStub, 'share');
-            comp.shareApp();
-            expect(comp.shareApp).toBeDefined();
-            expect(shareUtilStub.success).toBe(undefined);
-            expect(shareUtilStub.exportApk).toHaveBeenCalled();
-            expect(SocialSharingStub.share).toHaveBeenCalled();
-        });
-        it('makes expected calls in error part ', () => {
-            const shareUtilStub = TestBed.get(ShareUtil);
-            const SocialSharingStub = TestBed.get(SocialSharing);
-            const commonUtilServiceStub = TestBed.get(CommonUtilService);
-            commonUtilServiceStub.getLoader();
-            spyOn(comp, 'generateInteractTelemetry');
-            spyOn(shareUtilStub, 'exportApk').and.callFake((success, error) => {
-                return error('error');
-            });
-            spyOn(SocialSharingStub, 'share');
-            comp.shareApp();
-            expect(comp.shareApp).toBeDefined();
-            expect(shareUtilStub.error).toBe(undefined);
-            expect(shareUtilStub.exportApk).toHaveBeenCalled();
-            // expect(SocialSharingStub.share).toHaveBeenCalled();
-        });
+    it('should share the app when clicked', (done) => {
+        // arrange
+        commonUtilServiceMock.getLoader.mockReturnValue({ present: jest.fn(), dismiss: jest.fn() });
+        spyOn(settingsPage, 'generateInteractTelemetry').and.stub();
+        socialSharingMock.share.mockResolvedValue('SHARE');
+        // act
+        settingsPage.shareApp();
+        shareUtilMock.exportApk.mock.calls[0][0].call(settingsPage, 'SOME_PATH');
+        // assert
+        expect(settingsPage.generateInteractTelemetry).toHaveBeenCalledWith('TOUCH', 'share-app-clicked');
+        expect(settingsPage.generateInteractTelemetry).toHaveBeenCalledWith('TOUCH', 'share-app-initiated');
+        setTimeout(() => {
+            expect(socialSharingMock.share).toHaveBeenCalledWith('', '', 'file://SOME_PATH', '');
+            done();
+        }, 0);
     });
-    describe('generateInteractTelemetry', () => {
-        it('makes expected calls', () => {
-            const telemeStub = TestBed.get(TelemetryService);
-            spyOn(telemeStub, 'interact');
-
-            comp.generateInteractTelemetry('InteractType', 'InteractSubType');
-            expect(telemeStub.interact).toHaveBeenCalled();
-
-        });
+    it('should generate Interacet Telemetry', () => {
+        // arrange
+        // act
+        settingsPage.generateInteractTelemetry('InteractType', 'InteractSubType');
+        // assert
+        expect(telemetryServiceMock.interact).toHaveBeenCalledWith(expect.objectContaining({
+            env: Environment.SETTINGS, id: PageId.SETTINGS,
+             subType: 'InteractSubType', 'type': 'InteractType', 'values': []
+        }));
     });
 });
-

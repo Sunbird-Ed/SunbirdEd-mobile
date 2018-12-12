@@ -27,12 +27,6 @@ import { AppGlobalService } from '../../service/app-global.service';
 import { CommonUtilService } from '../../service/common-util.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 
-/**
- * Generated class for the ReportIssuesComponent component.
- *
- * See https://angular.io/api/core/Component for more info on Angular
- * Components.
- */
 @Component({
   selector: 'report-issues',
   templateUrl: 'report-issues.html'
@@ -53,14 +47,16 @@ export class ReportIssuesComponent {
     ]
   };
 
-  constructor(private fb: FormBuilder,
+  constructor(
+    private fb: FormBuilder,
     private platform: Platform,
     private viewCtrl: ViewController,
     private contentService: ContentService,
     private navParams: NavParams,
     private appGlobalService: AppGlobalService,
     private commonUtilService: CommonUtilService,
-    private telemetryGeneratorService: TelemetryGeneratorService) {
+    private telemetryGeneratorService: TelemetryGeneratorService
+    ) {
     this.handleDeviceBackButton();
     this.createForm();
     this.content = this.navParams.get('content');
@@ -136,15 +132,15 @@ export class ReportIssuesComponent {
         Environment.HOME,
         PageId.CONTENT_DETAIL, undefined, paramsMap);
 
-      this.contentService.flagContent(option, () => {
+      this.contentService.flagContent(option).then(() => {
         const flagContentParamsMap = new Map();
         flagContentParamsMap['contentType'] = this.content.contentType;
         this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.FLAG_SUCCESS,
           Environment.HOME, PageId.CONTENT_DETAIL, undefined, flagContentParamsMap);
         this.viewCtrl.dismiss('flag.success');
         this.commonUtilService.showToast('CONTENT_FLAGGED_MSG');
-      },
-        (data: any) => {
+      })
+        .catch((data: any) => {
           console.log('error:', data);
           this.viewCtrl.dismiss();
           this.commonUtilService.showToast('CONTENT_FLAG_FAIL');

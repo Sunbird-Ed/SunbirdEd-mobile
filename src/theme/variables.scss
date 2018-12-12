@@ -13,7 +13,6 @@ $font-path: "../assets/fonts";
 // http://ionicframework.com/docs/theming/rtl-support/
 $app-direction: multi;
 
-
 @import "ionic.globals";
 
 
@@ -82,7 +81,8 @@ $colors: (
 
   thick_blue:      #006DE5,
   primary_blue:    #007AFF,
-  fade_blue:       #F2F8FF
+  fade_blue:       #F2F8FF,
+  broadcast_greeting_navbar : #0b75fa,
 );
 
 $button-md-height: 4.3rem;
@@ -145,7 +145,7 @@ $segment-button-md-line-height: 5rem;
 @import "roboto";
 @import "noto-sans";
 
-$font-family-base: 'OpenSans';
-$font-family-ios-base: 'OpenSans';
-$font-family-md-base: 'OpenSans';
-$font-family-wp-base: 'OpenSans';
+$font-family-base: 'NotoSans';
+$font-family-ios-base: 'NotoSans';
+$font-family-md-base: 'NotoSans';
+$font-family-wp-base: 'NotoSans';

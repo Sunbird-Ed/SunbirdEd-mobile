@@ -23,22 +23,19 @@ announcement-list {
 		}
 		.announcement-heading {
 			padding-top: 10px;
-			font-weight: 500;
-			font-family: 'sunbirdboldfont';
+			@extend .NotoSans-bold;
 			font-size: 1.250em;
 		}
 	}
 	.scroll-heading {
 		padding-top: 10px;
-		font-weight: 500;
-		font-family: 'sunbirdboldfont';
+		@extend .NotoSans-bold;
 		font-size: 1.250em;
 	}
 	.view-all-link {
 		font-size: 1.2rem;
 		padding-top: 11px;
-		font-family: 'sunbirdboldfont';
-		font-weight: 500;
+		@extend .NotoSans-bold;
 	}
 	.course-scroll-holder {
 		background-color: #FDFEFE;

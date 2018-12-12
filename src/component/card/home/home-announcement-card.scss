@@ -15,13 +15,13 @@ home-announcement-card {
 	.view-all-link {
 		font-size: 1.2rem;
 		padding-top: 11px;
-		font-family: 'sunbirdboldfont';
-		font-weight: 500;
+		@extend .NotoSans-bold;
+		@extend .font-weight-500;
 	}
 	.announcement-heading {
 		padding-top: 10px;
-		font-weight: 500;
-		font-family: 'sunbirdboldfont';
+		@extend .font-weight-500;
+		@extend .NotoSans-bold;
 		font-size: 1.250em;
 	}
 	.display-inline {
@@ -43,7 +43,7 @@ home-announcement-card {
 		cursor: pointer;
 		vertical-align: middle;
 		max-width: 100px;
-		padding: 1px 4px;
+		@include padding(1px, 4px !important);
 		text-align: center;
 		border-radius: 2px;
 		font-size: 6px;
@@ -69,17 +69,21 @@ home-announcement-card {
 	}
 	.announcementDate{
 		padding-bottom: 10px;
-		padding-left: 16px;
-		padding-right: 16px;
+		@include padding(null, 16px, null, 16px);
 	}
 	.card-padding{
-padding: 16px 16px 0 16px;
+		@include padding(16px, 16px, 0, 16px);
 	}
-.list-md {
+	.list-md {
 		margin:0px;
 	}
 	.borderLeft{
-    border-left: 4px solid #006DE5 !important;
+		@include ltr() {
+		border-left: 4px solid #006DE5 !important;
+		}
+		@include rtl() {
+		border-right: 4px solid #006DE5 !important;
+		}
 	}
 	.verticle-align{
 		vertical-align: top;

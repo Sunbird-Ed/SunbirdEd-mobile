@@ -42,7 +42,9 @@ describe('ProfilePage', () => {
             getUserProfileDetails: () => ({})
         };
 
-        const courseServiceStub = {};
+        const courseServiceStub = {
+            getEnrolledCourses: () => ({})
+        };
         const contentServiceStub = {
             searchContent: () => ({})
         };
@@ -56,14 +58,13 @@ describe('ProfilePage', () => {
             declarations: [ProfilePage],
             schemas: [NO_ERRORS_SCHEMA],
             providers: [
-                ProfileService, ServiceProvider, SharedPreferences, BuildParamService, FrameworkService,
+                ProfileService, ServiceProvider, SharedPreferences, BuildParamService, FrameworkService, CourseService,
                 TelemetryGeneratorService, CommonUtilService,
                 { provide: NavController, useClass: NavMock },
                 { provide: NavParams, useClass: NavParamsMock },
                 { provide: Events, useClass: EventsMock },
                 { provide: AuthService, useClass: AuthServiceMock },
                 { provide: UserProfileService, useValue: userProfileServiceStub },
-                { provide: CourseService, useValue: courseServiceStub },
                 { provide: ContentService, useValue: contentServiceStub },
                 { provide: TelemetryService, useClass: TelemetryServiceMock },
                 { provide: DatePipe, useValue: datePipeStub },
@@ -137,6 +138,7 @@ describe('ProfilePage', () => {
         const events = TestBed.get(Events);
         spyOn(events, 'publish');
         spyOn(comp, 'refreshProfileData').and.returnValue(Promise.resolve('success'));
+        // spyOn(comp,'getEnrolledCourses').and.returnValue(Promise.resolve('success'));
         comp.doRefresh();
         setTimeout(() => {
             expect(events.publish).toHaveBeenCalled();
@@ -188,265 +190,31 @@ describe('ProfilePage', () => {
         comp.doRefresh();
     });
 
-    it('should reset Profile variables', () => {
-        comp.subjects = 'sampleSubj';
-        comp.resetProfile();
-        expect(comp.subjects).toBe('');
-    });
-
     it('arrayToString should convert array to string', () => {
         const data = ['1', '2', '3'].join(', ');
         expect(comp.arrayToString(['1', '2', '3'])).toEqual(data);
         // return stringArray.join(", ");
     });
 
-    it('formatMissingFields should handle all switch cases properly', () => {
-        comp.profile.missingFields = ['education'];
-        spyOn(comp, 'setMissingProfileDetails');
-        // comp.uncompletedDetails = {
-        //     title : ''
-        // }
-        comp.formatMissingFields();
-        expect(comp.uncompletedDetails.title).toBe('ADD_EDUCATION');
-
-        comp.profile.missingFields = ['jobProfile'];
-        comp.formatMissingFields();
-        expect(comp.uncompletedDetails.title).toBe('ADD_EXPERIENCE');
-
-        comp.profile.missingFields = ['avatar'];
-        comp.formatMissingFields();
-
-        comp.profile.missingFields = ['address'];
-        comp.formatMissingFields();
-        expect(comp.uncompletedDetails.title).toBe('ADD_ADDRESS');
-
-        comp.profile.missingFields = ['location'];
-        comp.formatMissingFields();
-        expect(comp.setMissingProfileDetails).toHaveBeenCalledWith('ADD_LOCATION');
-
-        comp.profile.missingFields = ['phone'];
-        comp.formatMissingFields();
-        expect(comp.setMissingProfileDetails).toHaveBeenCalledWith('ADD_PHONE_NUMBER');
-
-        comp.profile.missingFields = ['profileSummary'];
-        comp.formatMissingFields();
-        expect(comp.setMissingProfileDetails).toHaveBeenCalledWith('ADD_PROFILE_DESCRIPTION');
-
-        comp.profile.missingFields = ['subject'];
-        comp.formatMissingFields();
-        expect(comp.setMissingProfileDetails).toHaveBeenCalledWith('ADD_SUBJECT');
-
-        comp.profile.missingFields = ['dob'];
-        comp.formatMissingFields();
-        expect(comp.setMissingProfileDetails).toHaveBeenCalledWith('ADD_DATE_OF_BIRTH');
-
-        comp.profile.missingFields = ['grade'];
-        comp.formatMissingFields();
-        expect(comp.setMissingProfileDetails).toHaveBeenCalledWith('ADD_CLASS');
-
-        comp.profile.missingFields = ['lastName'];
-        comp.formatMissingFields();
-        expect(comp.setMissingProfileDetails).toHaveBeenCalledWith('ADD_LAST_NAME');
-
-    });
-
-    it('setMissingProfileDetails should set title', () => {
-        const title = 'sampleTitile';
-        comp.setMissingProfileDetails(title);
-        expect(comp.uncompletedDetails.title).toBe(title);
-    });
-
-    it('formatJobProfile should make expected calls', () => {
-        const data = ['sample1', 'sample2'];
-        comp.profile = {
-            jobProfile: [{ subject: data }]
-        };
-        comp.formatJobProfile();
-        expect(comp.profile.jobProfile[0].subject).toEqual(data.join(', '));
-    });
-
-    it('formatLastLoginTime should call datePipe', () => {
-        comp.formatLastLoginTime();
-    });
-
-    it('formatSkills', () => {
-        comp.loggedInUserId = 'sampleUser';
-        comp.profile.skills = [
-            { endorsersList: [{ userId: 'sampleUser' }] }
-        ];
-        comp.formatSkills();
-        expect(comp.profile.skills[0].canEndorse).toBe(false);
-    });
-
-    it('formatSocialLinks', () => {
-        const data = [
-            { type: 'fb', url: 'fbUrl' },
-            { type: 'twitter', url: 'twitterUrl' },
-            { type: 'in', url: 'inUrl' },
-            { url: 'blogUrl' }
-        ];
-        comp.profile.webPages = data;
-        comp.formatSocialLinks();
-        expect(comp.fbLink).toBe(data[0].url);
-        expect(comp.twitterLink).toBe(data[1].url);
-        expect(comp.blogLink).toBe(data[3].url);
-    });
-
-    it('formatProfileProgress should assign to formatProfileProgress', () => {
-        comp.profile.completeness = true;
-        comp.formatProfileProgress();
-        expect(comp.profileProgress).toBe('true');
-    });
-
-    it('editEduDetails should edit education detaisl', () => {
-        const navctrl = TestBed.get(NavController);
-        spyOn(navctrl, 'push');
-        comp.editEduDetails(false, mockProfileRes.profileDetailsMock, mockProfileRes.eduDetailsMock);
-        expect(navctrl.push).toHaveBeenCalled();
-    });
-
-    it('editAddress should edit address detaisl', () => {
-        const navctrl = TestBed.get(NavController);
-        spyOn(navctrl, 'push');
-        comp.editAddress(false, mockProfileRes.addressMock);
-        expect(navctrl.push).toHaveBeenCalled();
-    });
-
-    it('addSkillTags should call nav controller ', () => {
-        const navctrl = TestBed.get(NavController);
-        spyOn(navctrl, 'push');
-        comp.addSkillTags();
-        expect(navctrl.push).toHaveBeenCalled();
-    });
-
-    it('endorseSkill should handle success scenario', () => {
+    it('#showMoreBadges should set badgeAssertions length to default', () => {
         comp.profile = JSON.parse(mockProfileRes.profileDetailsMock);
-        const userProfileService = TestBed.get(UserProfileService);
-        const authService = TestBed.get(AuthService);
-        spyOn(authService, 'getSessionData').and.callFake((success, error) => {
-            success(JSON.stringify(mockProfileRes.sessionMock));
-        });
-        const num = 0;
-        spyOn(userProfileService, 'endorseOrAddSkill').and.callFake((req, success, error) => {
-            success(mockProfileRes.endorseResMock);
-        });
-        comp.endorseSkill(num);
-        expect(comp.profile.skills[num].canEndorse).toBe(false);
+        comp.showMoreBadges();
+        expect(comp.badgesLimit).toEqual(comp.profile.badgeAssertions.length);
+    });
+    it('#showLessBadges should set badgeAssertions length to default', () => {
+        comp.showLessBadges();
+        expect(comp.badgesLimit).toEqual(comp.DEFAULT_PAGINATION_LIMIT);
+    });
+    it('#showLessTrainings should set trainingsLimit length to default', () => {
+        comp.showLessTrainings();
+        expect(comp.trainingsLimit).toEqual(comp.DEFAULT_PAGINATION_LIMIT);
     });
 
-    it('endorseSkill should handle failure scenario', () => {
-        comp.profile = JSON.parse(mockProfileRes.profileDetailsMock);
-        const userProfileService = TestBed.get(UserProfileService);
-        const authService = TestBed.get(AuthService);
-        spyOn(authService, 'getSessionData').and.callFake((success, error) => {
-            success(JSON.stringify(mockProfileRes.sessionMock));
-        });
-        const num = 0;
-        spyOn(userProfileService, 'endorseOrAddSkill').and.callFake((req, success, error) => {
-            error('{"status":false}');
-        });
-        comp.endorseSkill(num);
-        expect(comp.profile.skills[num].canEndorse).toBe(true);
-    });
-
-    it('editPicture should create popover', () => {
-        const popoverCtrl = TestBed.get(PopoverController);
-        // spyOn()
-        comp.editPicture();
-        expect(popoverCtrl.create).toHaveBeenCalled();
-    });
-
-
-
-    it('editExperience should call nav controller ', () => {
-        const navctrl = TestBed.get(NavController);
-        spyOn(navctrl, 'push');
-        comp.editExperience(true, mockProfileRes.addressMock);
-        expect(navctrl.push).toHaveBeenCalled();
-    });
-
-    it('#toggleLock should set passed field to private', () => {
-        const field = 'profileSummary';
-        const displayName = 'Profile_Summary';
-        const translate = TestBed.get(TranslateService);
-        spyOn(translate, 'get').and.callFake((arg) => {
-            return Observable.of('Cancel');
-        });
-        comp.profile = JSON.parse(mockProfileRes.profileDetailsMock);
-        comp.toggleLock(field, displayName, false);
-        expect(comp.profile.profileVisibility[field]).toBe('private');
-
-    });
-
-    it('#toggleLock should set passed field to public', () => {
-        const translate = TestBed.get(TranslateService);
-        spyOn(translate, 'get').and.callFake((arg) => {
-            return Observable.of('Cancel');
-        });
-        comp.profile = JSON.parse(mockProfileRes.profileDetailsMock);
-        const field = 'skillTags';
-        const displayName = 'SKILL_TAGS';
-        comp.profile.profileVisibility[field] = 'private';
-        comp.toggleLock(field, displayName, false);
-        expect(comp.profile.profileVisibility[field]).toBe('public');
-    });
-
-    it('#setProfileVisibility should handle success scenario', (done) => {
-        comp.profile = JSON.parse(mockProfileRes.profileDetailsMock);
-        const authService = TestBed.get(AuthService);
-        const userProfileService = TestBed.get(UserProfileService);
-        spyOn(authService, 'getSessionData').and.callFake((success, error) => {
-            success(JSON.stringify(mockProfileRes.sessionMock));
-        });
-        spyOn(userProfileService, 'setProfileVisibility').and.callFake((req, success, error) => {
-            console.log('req', req);
-            success(mockProfileRes.visibilityResMock);
-        });
-        spyOn(comp, 'refreshProfileData');
-        comp.setProfileVisibility('profileSummary');
-        setTimeout(() => {
-            expect(userProfileService.setProfileVisibility).toHaveBeenCalled();
-            // expect(comp.isRefreshProfile).toBe(true);
-            expect(comp.refreshProfileData).toHaveBeenCalled();
-            done();
-        }, 100);
-    });
-
-    it('#setProfileVisibility should handle failure scenario', (done) => {
-        comp.profile = JSON.parse(mockProfileRes.profileDetailsMock);
-        const authService = TestBed.get(AuthService);
-        const userProfileService = TestBed.get(UserProfileService);
-        const translate = TestBed.get(TranslateService);
-        spyOn(translate, 'get').and.callFake((arg) => {
-            return Observable.of('Cancel');
-        });
-        spyOn(authService, 'getSessionData').and.callFake((success, error) => {
-            success(JSON.stringify(mockProfileRes.sessionMock));
-        });
-        spyOn(userProfileService, 'setProfileVisibility').and.callFake((req, success, error) => {
-            console.log('req', req);
-            error({ status: false });
-        });
-        spyOn(comp, 'toggleLock');
-        comp.setProfileVisibility('profileSummary');
-        setTimeout(() => {
-            expect(userProfileService.setProfileVisibility).toHaveBeenCalled();
-            // expect(comp.isRefreshProfile).toBe(true);
-            expect(comp.toggleLock).toHaveBeenCalled();
-            done();
-        }, 100);
-    });
-
-
-    it('#showMoreItems should set pagination limit', () => {
-        comp.profile = JSON.parse(mockProfileRes.profileDetailsMock);
-        comp.showMoreItems();
-        expect(comp.paginationLimit).toEqual(comp.profile.skills.length);
-    });
-
-    it('#showMoreItems should set pagination limit to default', () => {
-        comp.showLessItems();
-        expect(comp.paginationLimit).toEqual(comp.DEFAULT_PAGINATION_LIMIT);
+    it('#navigate to Categories Edit Page', () => {
+        const navController = TestBed.get(NavController);
+        spyOn(navController, 'push');
+        comp.navigateToCategoriesEditPage();
+        expect(navController.push).toHaveBeenCalled();
     });
 
     it('getLoader makes expected calls', () => {
@@ -470,7 +238,33 @@ describe('ProfilePage', () => {
         });
         commonUtilServiceStub.translateMessage('testMessage');
     });
-
-
-
+    it('#getEnrolledCourses should not make expected calls', () => {
+        const courseService = TestBed.get(CourseService);
+        spyOn(comp, 'getEnrolledCourses').and.callThrough();
+        spyOn(courseService, 'getEnrolledCourses').and.callFake(({ }, success, error) => {
+            return error;
+        });
+        comp.getEnrolledCourses();
+        expect(courseService.getEnrolledCourses).toHaveBeenCalled();
+    });
+    it('#getEnrolledCourses should make expected calls', (done) => {
+        const courseService = TestBed.get(CourseService);
+        const option = {
+            'userId': '659b011a-06ec-4107-84ad-955e16b0a48a',
+            'refreshEnrolledCourses': true,
+            'returnRefreshedEnrolledCourses': true
+        };
+        spyOn(comp, 'getEnrolledCourses').and.callThrough();
+        spyOn(courseService, 'getEnrolledCourses').and.callFake(({ }, success, error) => {
+            const data = JSON.stringify((mockProfileRes.getEnrolledCourses));
+            return success(data);
+        });
+        comp.getEnrolledCourses();
+        setTimeout(() => {
+            expect(courseService.getEnrolledCourses).toHaveBeenCalled();
+            done();
+        }, 10);
+        comp.showMoreTainings();
+        expect(comp.trainingsLimit).toEqual(mockProfileRes.trainingsCompleted.length);
+    });
 });

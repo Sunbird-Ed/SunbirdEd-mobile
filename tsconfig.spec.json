@@ -1,0 +1,26 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "types": [
+      "node",
+      "jest"
+    ],
+    "target": "es2015",
+    "moduleResolution": "node",
+    "allowJs": true,
+    "noEmit": true,
+    "strict": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "inlineSourceMap": true
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.spec.ts"
+  ],
+  "exclude": [
+    "./node_modules"
+  ]
+}

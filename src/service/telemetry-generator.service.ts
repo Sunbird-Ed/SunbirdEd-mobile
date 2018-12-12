@@ -228,6 +228,32 @@ export class TelemetryGeneratorService {
             values);
     }
 
+    generatePullToRefreshTelemetry(pageId, env) {
+        this.generateInteractTelemetry(
+            InteractType.TOUCH,
+            InteractSubtype.PULL_TO_REFRESH,
+            env,
+            pageId
+        );
+    }
+
+    /**
+   * method generates telemetry on click Read less or Read more
+   * @param {string} param string as read less or read more
+   * @param {object} objRollup object roll up
+   * @param corRelationList corelationList
+   */
+  readLessOrReadMore(param, objRollup, corRelationList, telemetryObject) {
+    this.generateInteractTelemetry(InteractType.TOUCH,
+        param === 'READ_MORE' ? InteractSubtype.READ_MORE_CLICKED : InteractSubtype.READ_LESS_CLICKED,
+        Environment.HOME,
+        PageId.COLLECTION_DETAIL,
+        undefined,
+        telemetryObject,
+        objRollup,
+        corRelationList);
+    }
+
     generateProfilePopulatedTelemetry(pageId, frameworkId, mode) {
         const values = new Map();
         values['frameworkId'] = frameworkId;
@@ -241,6 +267,58 @@ export class TelemetryGeneratorService {
             values);
     }
 
+    generateExtraInfoTelemetry(values: Map, pageId) {
+        this.generateInteractTelemetry(
+            InteractType.OTHER,
+            InteractSubtype.EXTRA_INFO,
+            Environment.HOME,
+            pageId,
+            undefined,
+            values);
+    }
 
+    generateContentCancelClickedTelemetry(content: any, downloadProgress) {
+        const values = new Map();
+        values['size'] = this.transform(content.size);
+        if (content.size && downloadProgress) {
+            const kbsofar = (content.size / 100) * Number(downloadProgress);
+            values['downloadedSoFar'] = this.transform(kbsofar);
+        }
+        const telemetryObject: TelemetryObject = new TelemetryObject();
+        telemetryObject.id = content.identifier || content.contentId;
+        telemetryObject.type = content.contentType;
+        telemetryObject.version = content.pkgVersion;
+        this.generateInteractTelemetry(
+            InteractType.TOUCH,
+            InteractSubtype.CANCEL_CLICKED,
+            Environment.HOME,
+            PageId.CONTENT_DETAIL,
+            telemetryObject,
+            values);
+    }
+
+    transform(size: any, roundOf: number = 2) {
+        if (size || size === 0) {
+          if (isNaN(size)) {
+            size = 0;
+          }
+          size /= 1024;
+          if (size < 1024) {
+            return size.toFixed(roundOf) + ' KB';
+          }
+          size /= 1024;
+          if (size < 1024) {
+            return size.toFixed(roundOf) + ' MB';
+          }
+          size /= 1024;
+          if (size < 1024) {
+            return size.toFixed(roundOf) + ' GB';
+          }
+          size /= 1024;
+          return size.toFixed(roundOf) + ' TB';
+        } else {
+          return '0 KB';
+        }
+      }
 
 }

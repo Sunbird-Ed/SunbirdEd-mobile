@@ -1,3 +1,4 @@
+import { AppGlobalService } from './../../../service/app-global.service';
 import { Component } from '@angular/core';
 import {
   NavParams,
@@ -14,6 +15,7 @@ export class PageFilterOptions {
 
   constructor(private navParams: NavParams,
     private viewCtrl: ViewController,
+    private appGlobalService: AppGlobalService,
     private platform: Platform) {
 
     this.facets = this.navParams.get('facets');
@@ -42,7 +44,6 @@ export class PageFilterOptions {
         this.facets.selectedValuesIndices = [];
       }
     }
-
     if (this.facets.selected.includes(value)) {
       index = this.facets.selected.indexOf(value);
       if (index > -1) {
@@ -52,11 +53,15 @@ export class PageFilterOptions {
         }
       }
     } else {
+      if (!this.appGlobalService.isUserLoggedIn() && this.facets.code === 'board') {
+        this.facets.selected = [];
+      }
       this.facets.selected.push(value);
       if (this.facets.code === 'contentType') {
         this.facets.selectedValuesIndices.push(index);
       }
     }
+
   }
 
   confirm() {

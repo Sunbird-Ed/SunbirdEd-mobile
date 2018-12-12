@@ -22,7 +22,7 @@ incomplete-profile-card {
       position: absolute;
       bottom: 0%;
       color: #fff;
-      font-weight: 600;
+      @extend .font-weight-600;
       font-size: 1.5rem;
       width: 100%;
       padding-left:10px;
@@ -46,9 +46,8 @@ incomplete-profile-card {
     }
 
     .info-container {
-      padding-left: 8px !important;
+      @include padding(null, null, null 8px !important);
       padding-top: 1px !important;
-//padding-right: 0px !important;
     }
 
     ul {
@@ -56,7 +55,7 @@ incomplete-profile-card {
       margin: 0px;
 
       &.rating li {
-        padding: 1px 1px !important;
+        padding: 1px !important;
         background: none;
         color: map-get($colors, primary);
 
@@ -69,12 +68,19 @@ incomplete-profile-card {
     .badge {
       position: absolute;
       right: 5px;
+      @include ltr() {
+          right: 5px;
+      };
+
+      @include rtl() {
+          left: 5px;
+      };
       top: 5px;
     }
     .badge-md-light{
       color: map-get($colors, light);;
       background-color: #1c1c1c;
-      font-weight: 400;
+      @extend .font-weight-400;
       font-size: xx-small;
     }
     .padding-top-8 {
@@ -87,7 +93,6 @@ incomplete-profile-card {
       background-size: cover;
       background-repeat: no-repeat;
       background-position: center;
-      margin-left: auto;
-      margin-right: auto;
+      @include margin(null, auto, null, auto);
     }
 }

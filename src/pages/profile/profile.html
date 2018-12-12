@@ -1,300 +1,187 @@
 <!-- Header Bar -->
 <ion-header>
-  <ion-navbar>
-    <ion-title>
-      {{ 'PROFILE_LW' | translate }}
-    </ion-title>
-    <ion-buttons end>
-      <button ion-button icon-only (click)="gotoSearchPage()">
-        <img src="assets/imgs/ic_action_search.png" class="tool-icon" float-end />
-      </button>
-      <button ion-button icon-only (click)="showOverflowMenu($event)">
-        <ion-icon name="more" float-end></ion-icon>
-      </button>
-    </ion-buttons>
-  </ion-navbar>
+    <ion-navbar>
+        <ion-title>
+            {{ 'PROFILE_LW' | translate }}
+        </ion-title>
+        <ion-buttons end>
+            <button ion-button icon-only (click)="showOverflowMenu($event)">
+                <ion-icon name="more" float-end></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
 </ion-header>
 
-<!-- Main Page Body -->
 <ion-content padding-vertical>
-  <!-- Pull to Refresh -->
-  <ion-refresher (ionRefresh)="doRefresh($event)"></ion-refresher>
+    <!-- Pull to Refresh -->
+    <ion-refresher (ionRefresh)="doRefresh($event)"></ion-refresher>
 
-  <!-- Logged In User Profile Pictures and Username -->
-  <p padding-horizontal *ngIf="isLoggedInUser && lastLoginTime.length" class="profile-last-login-text">{{
-    'LAST_LOGIN_TIME' | translate:{'%s': lastLoginTime } }}</p>
-  <div padding-horizontal text-center>
-    <!-- <img class="custom-avatar" [src]="imageUri" (click)="isLoggedInUser && editPicture()" /> -->
-    <ion-spinner *ngIf="isUploading"></ion-spinner>
-    <p class="profile-name">{{ profile?.firstName }} {{ profile?.lastName }}</p>
-    <div class="padding-5 ellipsis" col-12>
-      <span class="grey-bg" *ngIf="profile?.userName">{{ 'USER_NAME_PROFILE' | translate }} - {{ profile?.userName }}</span>
+    <div padding-horizontal text-center class="MT15" *ngIf="profile?.firstName">
+        <profile-avatar [username]="profile?.firstName"></profile-avatar>
     </div>
-  </div>
 
-  <ion-item padding-horizontal *ngIf="isLoggedInUser">
-    <ion-row class="profile-completed-ion-row">
-      <ion-col col-7 class="profile-completed-ion-col">
-        <p class="profile-completed-text" *ngIf="profileProgress.length">{{ 'YOUR_PROFILE_IS' | translate:{'%s':
-          profileProgress} }}</p>
-      </ion-col>
-    </ion-row>
-    <pb-horizontal progress="{{ profileProgress }}"></pb-horizontal>
-    <ion-col col-5 class="profile-completed-ion-row">
-      <p class="profile-add-exp-text ellipsis" (click)="completeProfile()" *ngIf="profileProgress<100">+ {{
-        uncompletedDetails?.title | translate }}</p>
-    </ion-col>
-  </ion-item>
-  <!-- Profile Description/ Profile Summary -->
-  <ion-item padding-horizontal text-wrap *ngIf="profile?.profileSummary">
-    <p class="section-title">{{ 'DESCRIPTION' | translate }}
-      <ion-icon *ngIf="isLoggedInUser" (click)="toggleLock('profileSummary', 'DESCRIPTION')" float-end class="padding-left-5"
-        name="{{ profile?.profileVisibility?.profileSummary == 'private' ? 'lock' : 'unlock' }}"></ion-icon>
-    </p>
-    <p [readMore]="profile?.profileSummary" [length]="100" [showMoreText]="'READ_MORE' | translate" [showLessText]="'READ_LESS' | translate">{{profile?.profileSummary}}</p>
-  </ion-item>
-
-  <!-- Profile Education -->
-  <ion-list>
-    <ion-list-header padding-horizontal *ngIf="(profile?.education?.length && !isLoggedInUser) || isLoggedInUser" class="section-title"
-      no-lines no-padding>
-      {{ 'TITLE_EDUCATION' | translate }}
-      <span *ngIf="isLoggedInUser" float-right color="primary">
-        <span (click)="editEduDetails(true, profile)">{{ 'ADD' | translate }}</span>
-        <ion-icon color="dark" class="padding-left-5" (click)="toggleLock('education', 'TITLE_EDUCATION')" name="{{ profile?.profileVisibility?.education == 'private' ? 'lock' : 'unlock' }}"></ion-icon>
-      </span>
-    </ion-list-header>
-
-    <ion-item padding-horizontal *ngFor="let ed of profile?.education">
-      <ion-row>
-        <ion-col col-2 class="padding-left-none">
-          <div class="image-holder">
-            <img [src]="educationIcon" />
-          </div>
-        </ion-col>
-        <ion-col col-9>
-          <span class="details-title">{{ ed?.name }}</span>
-          <div class="details ellipsis">
-            <p>{{ ed?.degree }}</p>
-            <p *ngIf="ed?.yearOfPassing">{{ 'YEAR_OF_PASSING' | translate }} : {{ ed?.yearOfPassing }}</p>
-            <p *ngIf="ed?.grade">{{ 'GRADE' | translate }}: {{ ed?.grade }}({{ ed?.percentage }}%)</p>
-            <p>{{ ed?.boardOrUniversity }}</p>
-          </div>
-        </ion-col>
-        <ion-col col-1 *ngIf="isLoggedInUser" text-end>
-          <ion-icon name="md-create" color="primary" (click)="editEduDetails(false, profile, ed)"></ion-icon>
-        </ion-col>
-      </ion-row>
-    </ion-item>
-  </ion-list>
-
-  <!-- User Experience -->
-  <ion-list>
-    <ion-list-header padding-horizontal *ngIf="(profile?.jobProfile?.length && !isLoggedInUser) || isLoggedInUser"
-      class="section-title" no-padding>
-      {{ 'TITLE_EXPERIENCE' | translate }}
-      <span *ngIf="isLoggedInUser" float-end color="primary">
-        <span (click)="editExperience()">{{ 'ADD' | translate }}</span>
-        <ion-icon color="dark" (click)="toggleLock('jobProfile', 'TITLE_EXPERIENCE')" class="padding-left-5" name="{{ profile?.profileVisibility?.jobProfile == 'private' ? 'lock' : 'unlock' }}"></ion-icon>
-      </span>
-    </ion-list-header>
-
-    <ion-item padding-horizontal *ngFor="let job of profile?.jobProfile">
-      <ion-row justify-content-start>
-        <ion-col col-2 class="padding-left-none">
-          <div class="image-holder">
-            <img [src]="educationIcon" />
-          </div>
-        </ion-col>
-        <ion-col col-9>
-          <span class="details-title">{{ job?.jobName }}</span>
-          <div class="details ellipsis">
-            <p>{{ job?.role }}</p>
-            <p>{{ job?.orgName }}</p>
-            <p *ngIf="job?.subject">{{ 'SUBJECTS' | translate }} - {{ job?.subject }}</p>
-            <p *ngIf="job?.joiningDate">{{ job?.joiningDate }}
-              <span class="display-inline-block" *ngIf="job?.endDate">&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;</span>{{
-              job?.endDate}}
-            </p>
-          </div>
-        </ion-col>
-        <ion-col *ngIf="isLoggedInUser" col-1 text-end>
-          <ion-icon name="md-create" color="primary" (click)="editExperience(false, job)"></ion-icon>
-        </ion-col>
-      </ion-row>
-    </ion-item>
-  </ion-list>
-
-  <!-- User Address Current/Permanent -->
-  <ion-list>
-    <ion-list-header padding-horizontal *ngIf="(profile?.address?.length && !isLoggedInUser) || isLoggedInUser" class="section-title"
-      no-padding>
-      {{ 'TITLE_ADDRESS' | translate }}
-      <span *ngIf="isLoggedInUser" float-end color="primary">
-        <span *ngIf="profile?.address?.length < 2 " (click)="editAddress()">{{ 'ADD' | translate }}</span>
-        <ion-icon color="dark" class="padding-left-5" (click)="toggleLock('address', 'TITLE_ADDRESS')" name="{{ profile?.profileVisibility?.address === 'private' ? 'lock' : 'unlock' }}"></ion-icon>
-      </span>
-    </ion-list-header>
-
-    <ion-item padding-horizontal *ngFor="let addr of profile?.address">
-      <ion-row justify-content-start>
-        <ion-col col-2 class="padding-left-none">
-          <div class="image-holder">
-            <img [src]="locationIcon" />
-          </div>
-        </ion-col>
-        <ion-col col-9>
-          <span text-capitalize class="details-title">{{ addr?.addType }}</span>
-          <div class="details ellipsis">
-            <p>{{ addr?.addressLine1 }}</p>
-            <p text-capitalize>{{ addr?.city }}</p>
-          </div>
-        </ion-col>
-        <ion-col *ngIf="isLoggedInUser" col-1 text-end>
-          <ion-icon name="md-create" color="primary" (click)="editAddress(false, addr)"></ion-icon>
-        </ion-col>
-      </ion-row>
-    </ion-item>
-  </ion-list>
-  <!-- User's Skills -->
-  <ion-list-header padding-horizontal *ngIf="(profile?.skills?.length && !isLoggedInUser) || isLoggedInUser" class="section-title"
-    no-padding>
-    {{ 'SKILL_TAGS' | translate }}
-    <span *ngIf="isLoggedInUser" float-right color="primary">
-      <span (click)="addSkillTags()">{{ 'ADD' | translate }}</span>
-      <ion-icon color="dark" class="padding-left-5" (click)="toggleLock('skills', 'SKILL_TAGS')" name="{{ profile?.profileVisibility?.skills == 'private' ? 'lock' : 'unlock' }}"></ion-icon>
-    </span>
-  </ion-list-header>
-
-  <ion-list padding-horizontal>
-    <ion-row *ngFor="let skill of profile?.skills | slice : startLimit:paginationLimit; let i=index" class="skill-row">
-      <ion-col class="ellipsis padding-left-10 skill-name-col" [attr.col-9]="isLoggedInUser ? '' : null" [attr.col-8]="!isLoggedInUser ? '' : null">{{
-        skill?.skillName }}</ion-col>
-      <ion-col col-3 text-end class="padding-right-10 skill-count-col" [ngClass]="">
-        <span class="vertical-separator" *ngIf="skill?.endorsementCount">&nbsp;&nbsp;{{ skill?.endorsementCount }}</span>
-        <span class="vertical-separator" *ngIf="!skill?.endorsementCount">&nbsp;&nbsp;{{ skill?.endorsementcount }}</span>
-      </ion-col>
-
-      <ion-col *ngIf="!isLoggedInUser && skill?.canEndorse" text-end col-1 [ngClass]="{'skill-endorse-col':!isLoggedInUser && skill?.canEndorse}"
-        (click)="endorseSkill(i)">
-        <span *ngIf="skill?.canEndorse">+1</span>
-      </ion-col>
-    </ion-row>
-    <div text-center>
-      <button ion-button outline *ngIf="paginationLimit < profile?.skills?.length" (click)="showMoreItems()">{{
-        'SHOW_MORE' | translate }}</button>
-      <button ion-button outline *ngIf="paginationLimit > DEFAULT_PAGINATION_LIMIT" (click)="showLessItems()">{{
-        'SHOW_LESS' | translate }}</button>
+    <div padding-horizontal text-center>
+        <ion-spinner *ngIf="isUploading"></ion-spinner>
+        <p class="profile-name">{{ profile?.firstName }} {{ profile?.lastName }}</p>
     </div>
-  </ion-list>
 
-  <!-- User's Creations -->
-  <div *ngIf="enrolledCourse && enrolledCourse.length && isLoggedInUser" class="courses-holder">
-    <span padding-horizontal class="section-title">{{ 'CREATED_BY_ME' | translate }}</span>
-    <ion-scroll scrollX="true" class="course-scroll-dimensions" no-padding>
-      <div class="inner">
-        <course-card *ngFor="let courseItem of enrolledCourse; let i=index" [course]="courseItem"  [env]="'profile'" [index]="i" [sectionName]="Contributions" [pageName]="'profile'" [layoutName]="'Popular'"
-          [onProfile]="onProfile"></course-card>
-      </div>
-    </ion-scroll>
-  </div>
+    <div padding-horizontal text-center class="roles-container">
+        <div class="MB5" text-center *ngFor="let role of roles | slice : startLimit:rolesLimit;">
+            <div class="roles" *ngIf="role !== 'Public'">
+                {{role}}
+            </div>
+        </div>
+        <div class="" text-center>
+            <button ion-button clear *ngIf="rolesLimit < roles?.length" (click)="showMoreItems()" class="txt-lowercase">
+                + {{roles?.length - 2}} {{'MORE' | translate}} <ion-icon class="ML10" name="ios-arrow-down"></ion-icon>
+            </button>
+            <button ion-button clear *ngIf="rolesLimit > DEFAULT_PAGINATION_LIMIT" (click)="showLessItems()" class="txt-lowercase">
+                {{'SHOW_LESS' | translate }} <ion-icon class="ML10" name="ios-arrow-up"></ion-icon>
+            </button>
+        </div>
+    </div>
 
-  <!-- User's Additional Information -->
-  <ion-list-header padding-horizontal class="section-title">
-    {{ 'ADDITIONAL_INFORMATION' | translate }}
-    <ion-icon *ngIf="isLoggedInUser" float-end name="md-create" color="primary" (click)="editAdditionalInfo()"></ion-icon>
-  </ion-list-header>
+    <div class="school-recent" *ngIf="profile?.organisations?.length > 0 ">
+        <p class="bolder">{{profile?.organisations[0].orgName}}</p>
+        <div *ngIf="orgDetails && orgDetails?.block?.name">Block: {{orgDetails?.block?.name}}</div>
+        <div *ngIf="orgDetails">
+            <span *ngIf="orgDetails && orgDetails?.district?.name">District: {{orgDetails?.district?.name}} </span>
+            <span *ngIf="orgDetails?.district?.name"> | </span>
+            <span *ngIf="orgDetails?.state?.name">{{orgDetails?.state?.name}}</span>
+        </div>
+    </div>
 
-  <ion-item padding-horizontal class="additional-info" no-lines>
-    <ion-row *ngIf="profile?.language && profile?.language[0]">
-      <ion-col col-5>
-        <span text-uppercase class="info-title">{{ 'LANGUAGES' | translate }}</span>
-      </ion-col>
-      <ion-col col-7 text-right>
-        <span class="ellipsis">{{ languages }}</span>
-      </ion-col>
-    </ion-row>
+    <div class="contacts" *ngIf="profile?.phone || profile?.email ">
+        <div *ngIf="profile?.phone">
+            <div class="phone">
+                <span class="icon MR10">
+                    <ion-icon name="md-call"></ion-icon>
+                </span>
+                <span class="value">{{ profile?.phone }}</span>
+            </div>
+        </div>
+        <div *ngIf="profile?.email">
+            <div class="email">
+                <span class="icon MR10">
+                    <ion-icon name="md-mail"></ion-icon>
+                </span>
+                <span class="value">{{ profile?.email }}</span>
+            </div>
+        </div>
+    </div>
 
-    <ion-row *ngIf="profile?.email">
-      <ion-col col-5>
-        <span text-uppercase class="info-title">{{ 'EMAIL_ID' | translate }}</span>
-      </ion-col>
-      <ion-col col-7 text-end>
-        <span class="ellipsis">{{ profile?.email }}</span>
-      </ion-col>
-    </ion-row>
+    <div class="school-details" *ngIf="profile?.framework">
+        <div class="container" *ngIf="profile?.framework?.board">
+            <div>{{'BOARD' | translate }}: </div>
+            <div class="bolder">{{profile?.framework?.board}} &lrm;</div>
+        </div>
+        <div class="container" *ngIf="profile?.framework?.medium">
+            <div>{{'MEDIUM' | translate }}: </div>
+            <div class="bolder">{{profile?.framework?.medium}}</div>
+        </div>
+        <div class="container" *ngIf="profile?.framework?.gradeLevel">
+            <div>{{'CLASSES' | translate }}: </div>
+            <div class="bolder">{{profile?.framework?.gradeLevel}}</div>
+        </div>
+        <div class="container" *ngIf="profile?.framework?.subject">
+            <div>{{'SUBJECTS' | translate }}: </div>
+            <div class="bolder">{{profile?.framework?.subject}}</div>
+        </div>
+        <div class="container">
+            <button ion-button round (click)="navigateToCategoriesEditPage()" class="short-btn custom-round">
+                {{'EDIT' | translate }}
+            </button>
+        </div>
+    </div>
 
-    <ion-row *ngIf="profile?.phone">
-      <ion-col col-5>
-        <span text-uppercase class="info-title">{{ 'PHONE' | translate }}</span>
-      </ion-col>
-      <ion-col col-7 text-end>
-        <span class="ellipsis">{{ profile?.phone }}</span>
-      </ion-col>
-    </ion-row>
+    <div class="badges" padding-horizontal text-center *ngIf="profile?.badgeAssertions?.length > 0">
+        <p class="bolder f16">{{'MY_BADGES' | translate }} ({{profile?.badgeAssertions?.length}})&lrm;</p>
+        <ion-avatar item-center="" *ngFor="let batch of profile.badgeAssertions | slice : startLimit:badgesLimit;">
+            <img height="80px" width="auto" src="{{batch.badgeClassImage}}">
+        </ion-avatar>
+        <div class="" text-center>
+            <button ion-button round *ngIf="badgesLimit < profile?.badgeAssertions?.length" (click)="showMoreBadges()"
+                class="txt-capitalize custom-round">
+                + {{profile?.badgeAssertions?.length - 2}} {{'MORE' | translate}} <ion-icon class="ML10" name="ios-arrow-down"></ion-icon>
+            </button>
+            <button ion-button round *ngIf="badgesLimit > DEFAULT_PAGINATION_LIMIT" (click)="showLessBadges()" class="txt-capitalize custom-round">
+                {{'SHOW_LESS' | translate }} <ion-icon class="ML10" name="ios-arrow-up"></ion-icon>
+            </button>
+        </div>
+    </div>
 
-    <ion-row *ngIf="profile?.gender">
-      <ion-col col-5>
-        <span text-uppercase class="info-title">{{ 'GENDER' | translate }}</span>
-      </ion-col>
-      <ion-col col-7 text-end>
-        <span text-capitalize class="ellipsis">{{ profile?.gender }}</span>
-      </ion-col>
-    </ion-row>
+    <div class="contributions" *ngIf="enrolledCourse.length > 0">
+        <div class="bolder f16" style="padding: 15px; background-color: #fff; margin-bottom:  2px;">
+            {{'CONTRIBUTIONS' | translate}} ({{enrolledCourse.length}})&lrm;
+        </div>
+        <div class="cards-container" style="padding:15px 5px; background-color: #fff; ">
+            <ion-scroll scrollX="true" style="width: 100%" no-padding>
+                <div *ngIf="enrolledCourse  && isLoggedInUser">
+                    <ion-card *ngFor="let courseItem of enrolledCourse; let i=index" (click)="navigateToDetailPage(courseItem, layoutPopular, i);">
+                        <ion-card-content>
+                            <ion-row class="top">
+                                <ion-col col-3 class="img-container">
+                                    <img class="app-icon" src="{{courseItem?.appIcon}}" />
+                                </ion-col>
+                                <ion-col col-9 style="margin-bottom: 5px; padding-left: 15px; padding: 0 0 0 15px;">
+                                    <div style="margin-left: -3px; margin-bottom: 5px;" *ngIf="courseItem.resourceType">
+                                        <button ion-button outline class="badge">
+                                            {{courseItem?.resourceType}}
+                                        </button>
+                                    </div>
+                                    <div class="f11 ellipsis info" *ngIf="courseItem.subject">
+                                        {{'SUBJECT'| translate}}: {{courseItem?.subject}}
+                                    </div>
+                                    <div class="f11 ellipsis info" *ngIf="courseItem.gradeLevel && courseItem.gradeLevel.length">
+                                        {{'CLASS' | translate}}: {{courseItem?.gradeLevel}}
+                                    </div>
+                                    <div class="f11 ellipsis info" *ngIf="courseItem.medium">
+                                        {{'MEDIUM' | translate}}: {{courseItem?.medium}}
+                                    </div>
+                                </ion-col>
 
-    <ion-row *ngIf="subjects">
-      <ion-col col-5>
-        <span text-uppercase class="info-title">{{ 'SUBJECTS' | translate }}</span>
-      </ion-col>
-      <ion-col col-7 text-end>
-        <span class="ellipsis">{{ subjects }}</span>
-      </ion-col>
-    </ion-row>
+                            </ion-row>
+                            <ion-row>
+                                <ion-col col-12 class="PTB0">
+                                    <h6 class="name ">{{courseItem?.name}}</h6>
+                                </ion-col>
+                                <ion-col col-12 class="PTB0">
+                                    <p class="author">{{courseItem?.creator}}</p>
+                                </ion-col>
+                            </ion-row>
+                        </ion-card-content>
+                    </ion-card>
+                </div>
+            </ion-scroll>
+        </div>
+    </div>
 
-    <ion-row *ngIf="profile?.dob">
-      <ion-col col-5>
-        <span text-uppercase class="info-title">{{ 'DATE_OF_BIRTH' | translate }}</span>
-      </ion-col>
-      <ion-col col-7 text-end>
-        <span class="ellipsis">{{ profile?.dob }}</span>
-      </ion-col>
-    </ion-row>
-
-    <ion-row *ngIf="grades">
-      <ion-col col-5>
-        <span text-uppercase class="info-title">{{ 'CLASS' | translate }}</span>
-      </ion-col>
-      <ion-col col-7 text-end>
-        <span class="ellipsis">{{ grades }}</span>
-      </ion-col>
-    </ion-row>
-
-    <ion-row *ngIf="profile?.location">
-      <ion-col col-5>
-        <span text-uppercase class="info-title">{{ 'CURRENT_LOCATION' | translate }}</span>
-      </ion-col>
-      <ion-col col-7 text-end>
-        <span class="ellipsis">{{ profile?.location }}</span>
-      </ion-col>
-    </ion-row>
-    <ion-row *ngIf="fbLink || twitterLink || linkedInLink || blogLink">
-      <ion-col col-5>
-        <span text-uppercase class="info-title">{{ 'SOCIAL_MEDIA_LINKS' | translate }}</span>
-      </ion-col>
-      <ion-col col-7 text-end class="social-icon-size">
-        <a (click)="openLink(fbLink)" *ngIf="fbLink">
-          <ion-icon color="facebook" name="logo-facebook"></ion-icon>
-        </a>
-        <a (click)="openLink(twitterLink)" *ngIf="twitterLink">
-          <ion-icon color="twitter" name="logo-twitter"></ion-icon>
-        </a>
-        <a (click)="openLink(linkedInLink)" *ngIf="linkedInLink">
-          <ion-icon *ngIf="linkedInLink" color="linkedIn" name="logo-linkedin"></ion-icon>
-        </a>
-        <a (click)="openLink(blogLink)" *ngIf="blogLink">
-          <ion-icon name="create"></ion-icon>
-        </a>
-      </ion-col>
-    </ion-row>
-  </ion-item>
+    <div class="trainigs" *ngIf="trainingsCompleted?.length > 0">
+        <div class="bolder heading f16">
+            {{'TRAININGS_ATTENDED' | translate}} ({{trainingsCompleted.length}})&lrm;
+        </div>
+        <div class="content">
+            <div class="MB15" *ngFor="let training of trainingsCompleted | slice : startLimit:trainingsLimit;">
+                <div class="fw" *ngIf="training?.courseName">
+                    {{training?.courseName}}
+                </div>
+                <!-- <div class="lighter">
+                    Awarded by president Christopher Fernandes
+                </div> -->
+                <div class="lighter" *ngIf="training?.dateTime">
+                    {{training?.dateTime | date:'MMMM yyyy'}}
+                </div>
+            </div>
+            <div class="" text-center>
+                <button ion-button round class="txt-capitalize custom-round" *ngIf="trainingsLimit < trainingsCompleted.length"
+                    (click)="showMoreTainings()">
+                    + {{trainingsCompleted?.length - 2}} {{'MORE' | translate}} <ion-icon class="ML10" name="ios-arrow-down"></ion-icon>
+                </button>
+                <button ion-button round class="txt-capitalize custom-round" *ngIf="trainingsLimit > DEFAULT_PAGINATION_LIMIT"
+                    (click)="showLessTrainings()">
+                    {{'SHOW_LESS' | translate }} <ion-icon class="ML10" name="ios-arrow-up"></ion-icon>
+                </button>
+            </div>
+        </div>
+    </div>
 </ion-content>

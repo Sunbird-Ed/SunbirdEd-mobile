@@ -30,7 +30,7 @@ course-card {
       position: absolute;
       bottom: 0%;
       color: #fff;
-      font-weight: 600;
+      @extend .font-weight-600;
       font-size: 1.5rem;
       width: 100%;
       padding-left:10px;
@@ -82,7 +82,7 @@ course-card {
     .badge-md-light{
       color: map-get($colors, light);;
       background-color: #1c1c1c;
-      font-weight: 400;
+      @extend .font-weight-400;
       font-size: xx-small;
     }
     .padding-top-8 {
@@ -120,6 +120,17 @@ course-card {
 
       .progress-inner-secondary {
         background-color: #7ED321 !important;
+      }
+    }
+
+    .custom-small {
+      font-size: 1.2rem;
+    }
+
+    .grid-disabled {
+      opacity: 0.7;
+      ion-row{
+        opacity: 0.7;
       }
     }
 }

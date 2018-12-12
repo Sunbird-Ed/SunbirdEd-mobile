@@ -181,7 +181,7 @@ export class QrCodeResultPage {
       });
     } else if (this.appGlobalService.isGuestUser && this.isSingleContent && !this.appGlobalService.isProfileSettingsCompleted) {
       this.navCtrl.setRoot(ProfileSettingsPage, {
-        buildPath: true
+        isCreateNavigationStack: true
       });
     } else {
       this.navCtrl.pop();
@@ -191,17 +191,17 @@ export class QrCodeResultPage {
   getChildContents() {
     const request: ChildContentRequest = { contentId: this.identifier };
     this.contentService.getChildContents(
-      request,
-      (data: any) => {
+      request)
+      .then((data: any) => {
         data = JSON.parse(data);
         this.parents.splice(0, this.parents.length);
         this.parents.push(data.result);
         this.results = [];
         this.profile = this.appGlobalService.getCurrentUser();
         const contentData = JSON.parse(JSON.stringify(data.result.contentData));
-        if (!this.navParams.get('onboarding') && contentData && contentData.medium) {
+       /* if (!this.navParams.get('onboarding') && contentData && contentData.medium) {
           this.commonUtilService.changeAppLanguage(contentData.medium);
-        }
+        } */
         this.checkProfileData(contentData, this.profile);
         this.findContentNode(data.result);
 
@@ -214,8 +214,8 @@ export class QrCodeResultPage {
           this.navCtrl.pop();
         }
 
-      },
-      (error: string) => {
+      })
+      .catch((error: string) => {
         console.error('Error: while fetching child contents ===>>>', error);
         this.zone.run(() => {
           this.showChildrenLoader = false;
@@ -311,7 +311,7 @@ export class QrCodeResultPage {
     req.source = this.profile.source;
     req.createdAt = this.profile.createdAt;
     req.syllabus = this.profile.syllabus;
-
+    console.log('qrcode editProfile req', req);
     // Shorthand for above code
     // req = (({board, grade, medium, subject, uid, handle, profileType, source, createdAt, syllabus}) =>
     // ({board, grade, medium, subject, uid, handle, profileType, source, createdAt, syllabus}))(this.profile);
@@ -327,8 +327,8 @@ export class QrCodeResultPage {
       });
     }
 
-    this.profileService.updateProfile(req,
-      (res: any) => {
+    this.profileService.updateProfile(req)
+      .then((res: any) => {
         const updateProfileRes = JSON.parse(res);
         if (updateProfileRes.syllabus && updateProfileRes.syllabus.length && updateProfileRes.board && updateProfileRes.board.length
           && updateProfileRes.grade && updateProfileRes.grade.length && updateProfileRes.medium && updateProfileRes.medium.length) {
@@ -336,8 +336,8 @@ export class QrCodeResultPage {
           this.events.publish('refresh:profile');
         }
         this.appGlobalService.guestUserProfile = JSON.parse(res);
-      },
-      (err: any) => {
+      })
+      .catch((err: any) => {
         console.error('Err', err);
       });
   }
@@ -376,6 +376,7 @@ export class QrCodeResultPage {
 	 */
 
   setCurrentProfile(index, data) {
+    console.log('setCurrentProfile index', index);
     if (!this.profile.medium || !this.profile.medium.length) {
       this.profile.medium = [];
     }
@@ -417,13 +418,14 @@ export class QrCodeResultPage {
 	 * @param {object} profile
 	 */
   checkProfileData(data, profile) {
+    console.log('qr data', data);
     if (data && data.framework) {
 
-      this.formAndFrameworkUtilService.getSyllabusList()
+      this.formAndFrameworkUtilService.getSupportingBoardList()
         .then((res) => {
           let isProfileUpdated = false;
           res.forEach(element => {
-            // checking whether content data framework Id exists/valid in syllabuslist
+            // checking whether content data framework Id exists/valid in syllabus list
             if (data.framework === element.frameworkId) {
               isProfileUpdated = true;
               // Get frameworkdetails(categories)
@@ -512,7 +514,8 @@ export class QrCodeResultPage {
       !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : Environment.HOME,
       PageId.DIAL_CODE_SCAN_RESULT
     );
-    if (this.appGlobalService.isOnBoardingCompleted && this.appGlobalService.isProfileSettingsCompleted) {
+    if ((this.appGlobalService.isOnBoardingCompleted && this.appGlobalService.isProfileSettingsCompleted)
+      || !this.appGlobalService.DISPLAY_ONBOARDING_CATEGORY_PAGE) {
       this.navCtrl.setRoot(TabsPage, {
         loginMode: 'guest'
       });

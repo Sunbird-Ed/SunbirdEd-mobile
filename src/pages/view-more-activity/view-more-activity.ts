@@ -1,49 +1,56 @@
-import { IonicPage, NavController, NavParams, LoadingController, Events } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Events } from 'ionic-angular';
 import { Component, NgZone, OnInit } from '@angular/core';
-import { ContentService, CourseService, PageId, Environment, ImpressionType, LogLevel } from 'sunbird';
+import { ContentService, CourseService, PageId, Environment, ImpressionType, LogLevel, ContentFilterCriteria } from 'sunbird';
 import * as _ from 'lodash';
-import { ContentType } from '../../app/app.constant';
+import { ContentType, ViewMore } from '../../app/app.constant';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { CourseUtilService } from '../../service/course-util.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../service/common-util.service';
 
-/**
- * Generated class for the ViewMoreActivityPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
 @IonicPage()
 @Component({
-    selector: 'page-view-more-activity',
-    templateUrl: 'view-more-activity.html',
+  selector: 'page-view-more-activity',
+  templateUrl: 'view-more-activity.html',
 })
 
 export class ViewMoreActivityPage implements OnInit {
 
-    /**
-	 * Contains search query
-	 */
-      searchQuery: any;
+  /**
+ * Contains search query
+ */
+  searchQuery: any;
 
-    /**
-	 * To hold search result
-	 */
-     searchList: any;
+  /**
+ * To hold search result
+ */
+  searchList: any;
 
-     /**
-	 * Contains tab bar element ref
-	 */
-    tabBarElement: any;
+  /**
+* Contains tab bar element ref
+*/
+  tabBarElement: any;
 
-    /**
-	 * Flag to show / hide button
-	 */
+  /**
+ * Flag to show / hide button
+ */
   loadMoreBtn = true;
 
   /**
-	 * Offcet
+   * Flag to show / hide downloads only button
+   */
+  showDownloadsOnlyToggle = false;
+
+  /**
+   * value for downloads only toggle button, may have true/false
+   */
+  downloadsOnlyToggle = false;
+
+
+
+
+  /**
+	 * Offset
 	 */
   offset = 0;
 
@@ -61,6 +68,11 @@ export class ViewMoreActivityPage implements OnInit {
 	 * Load more flag
 	 */
   isLoadMore = false;
+
+  /**
+   * Flag to switch between view-more-card in view
+   */
+  localContentsCard = false;
 
   /**
 	 * Header title
@@ -82,33 +94,55 @@ export class ViewMoreActivityPage implements OnInit {
   showOverlay = false;
 
   resumeContentData: any;
+  uid: any;
+  audience: any;
 
-  constructor(private navCtrl: NavController,
+  constructor(
+    private navCtrl: NavController,
     private navParams: NavParams,
-    private contentService: ContentService,
-    private ngZone: NgZone,
-    private loadingCtrl: LoadingController,
-    private courseService: CourseService,
-    private telemetryGeneratorService: TelemetryGeneratorService,
     private events: Events,
+    private ngZone: NgZone,
+    private contentService: ContentService,
+    private courseService: CourseService,
     private courseUtilService: CourseUtilService,
-    private commonUtilService: CommonUtilService) {
+    private commonUtilService: CommonUtilService,
+    private telemetryGeneratorService: TelemetryGeneratorService
+  ) {
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
-    this.contentService = contentService;
-    this.ngZone = ngZone;
-    this.navCtrl = navCtrl;
-    this.navParams = navParams;
-    this.loadingCtrl = loadingCtrl;
-    this.courseService = courseService;
-
     this.subscribeUtilityEvents();
+  }
+
+  /**
+	 * Angular life cycle hooks
+	 */
+  ngOnInit() {
+    this.tabBarElement.style.display = 'none';
+  }
+
+  /**
+	 * Ionic default life cycle hook
+	 */
+  ionViewWillEnter(): void {
+    this.tabBarElement.style.display = 'none';
+    this.searchQuery = this.navParams.get('requestParams');
+    this.showDownloadsOnlyToggle = this.navParams.get('showDownloadOnlyToggle');
+    this.uid = this.navParams.get('uid');
+    this.audience = this.navParams.get('audience');
+    if (this.headerTitle !== this.navParams.get('headerTitle')) {
+      this.headerTitle = this.navParams.get('headerTitle');
+      this.offset = 0;
+      this.loadMoreBtn = true;
+      this.mapper();
+    }
   }
 
   subscribeUtilityEvents() {
     this.events.subscribe('savedResources:update', (res) => {
       if (res && res.update) {
-        if (this.navParams.get('pageName') === 'resource.SavedResources') {
-          this.getLocalContents();
+        if (this.navParams.get('pageName') === ViewMore.PAGE_RESOURCE_SAVED) {
+          this.getLocalContents(false, this.downloadsOnlyToggle);
+        } else if (this.navParams.get('pageName') === ViewMore.PAGE_RESOURCE_RECENTLY_VIEWED) {
+          this.getLocalContents(true, this.downloadsOnlyToggle);
         }
       }
     });
@@ -123,14 +157,14 @@ export class ViewMoreActivityPage implements OnInit {
 	 * Search content
 	 */
   search() {
-    const loader = this.getLoader();
+    const loader = this.commonUtilService.getLoader();
     loader.present();
 
-    this.contentService.getSearchCriteriaFromRequest(this.searchQuery, (success: any) => {
+    this.contentService.getSearchCriteriaFromRequest(this.searchQuery).then((success: any) => {
       const reqBody = JSON.parse(success);
       reqBody.limit = 10;
       reqBody.offset = this.offset === 0 ? reqBody.offset : this.offset;
-      this.contentService.searchContent(reqBody, true, false, false, (data: any) => {
+      this.contentService.searchContent(reqBody, true, false, false).then((data: any) => {
         data = JSON.parse(data);
         this.ngZone.run(() => {
           if (data.result && data.result.contentDataList) {
@@ -149,12 +183,12 @@ export class ViewMoreActivityPage implements OnInit {
         });
         this.generateImpressionEvent();
         this.generateLogEvent(data.result);
-      }, () => {
-        console.log('Error: while fetchig view more content');
+      }).catch(() => {
+        console.error('Error: while fetching view more content');
         loader.dismiss();
       });
-    }, () => {
-      console.log('Error: while fetchig view more content');
+    }).catch(() => {
+      console.error('Error: while fetching view more content');
       loader.dismiss();
     });
   }
@@ -187,21 +221,13 @@ export class ViewMoreActivityPage implements OnInit {
   loadMore() {
     this.isLoadMore = true;
     this.offset = this.offset + this.searchLimit;
-    this.mapper();
-  }
-  /**
-	 * Ionic default life cycle hook
-	 */
-  ionViewWillEnter(): void {
-    this.tabBarElement.style.display = 'none';
-    this.searchQuery = this.navParams.get('requestParams');
-    if (this.headerTitle !== this.navParams.get('headerTitle')) {
-      this.headerTitle = this.navParams.get('headerTitle');
-      this.offset = 0;
-      this.loadMoreBtn = true;
+    if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('NO_INTERNET_TITLE'));
+    } else {
       this.mapper();
     }
   }
+
 
   /**
 	 * Mapper to call api based on page.Layout name
@@ -209,19 +235,31 @@ export class ViewMoreActivityPage implements OnInit {
   mapper() {
     const pageName = this.navParams.get('pageName');
     switch (pageName) {
-      case 'course.EnrolledCourses':
+      case ViewMore.PAGE_COURSE_ENROLLED:
         this.pageType = 'enrolledCourse';
         this.loadMoreBtn = false;
+        this.localContentsCard = false;
         this.getEnrolledCourse();
         break;
-      case 'course.PopularContent':
+
+      case ViewMore.PAGE_COURSE_POPULAR:
         this.pageType = 'popularCourses';
+        this.localContentsCard = false;
         this.search();
         break;
-      case 'resource.SavedResources':
+
+      case ViewMore.PAGE_RESOURCE_SAVED:
         this.loadMoreBtn = false;
+        this.localContentsCard = true;
         this.getLocalContents();
         break;
+
+      case ViewMore.PAGE_RESOURCE_RECENTLY_VIEWED:
+        this.loadMoreBtn = false;
+        this.localContentsCard = true;
+        this.getLocalContents(true);
+        break;
+
       default:
         this.search();
     }
@@ -231,44 +269,59 @@ export class ViewMoreActivityPage implements OnInit {
 	 * Get enrolled courses
 	 */
   getEnrolledCourse() {
-    const loader = this.getLoader();
+    const loader = this.commonUtilService.getLoader();
     loader.present();
     this.pageType = 'enrolledCourse';
     const option = {
       userId: this.navParams.get('userId'),
       refreshEnrolledCourses: false
     };
-    this.courseService.getEnrolledCourses(option, (data: any) => {
-      if (data) {
-        data = JSON.parse(data);
-        this.searchList = data.result.courses ? data.result.courses : [];
-        this.loadMoreBtn = false;
-      }
-      loader.dismiss();
-    }, (error: any) => {
-      console.log('error while loading enrolled courses', error);
-      loader.dismiss();
-    });
+    this.courseService.getEnrolledCourses(option)
+      .then((data: any) => {
+        if (data) {
+          data = JSON.parse(data);
+          this.searchList = data.result.courses ? data.result.courses : [];
+          this.loadMoreBtn = false;
+        }
+        loader.dismiss();
+      })
+      .catch((error: any) => {
+        console.error('error while loading enrolled courses', error);
+        loader.dismiss();
+      });
   }
 
   /**
 	 * Get local content
 	 */
-  getLocalContents() {
-    const loader = this.getLoader();
+  getLocalContents(recentlyViewed?: boolean, downloaded?: boolean) {
+    const loader = this.commonUtilService.getLoader();
     loader.present();
-    const requestParams = {
-      contentTypes: ContentType.FOR_LIBRARY_TAB
+
+    const requestParams: ContentFilterCriteria = {
+      uid: this.uid,
+      audience: this.audience,
+      recentlyViewed: recentlyViewed,
+      downloadedOnly: downloaded
     };
+
+    if (recentlyViewed) {
+      requestParams.contentTypes = ContentType.FOR_RECENTLY_VIEWED;
+    } else {
+      requestParams.contentTypes = ContentType.FOR_LIBRARY_TAB;
+    }
+
     this.contentService.getAllLocalContents(requestParams)
       .then(data => {
         const contentData = [];
         _.forEach(data, (value) => {
           value.contentData.lastUpdatedOn = value.lastUpdatedTime;
-          if (value.contentData.appIcon) {
+          if (Boolean(value.isAvailableLocally) && value.basePath && value.contentData.appIcon) {
             value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
+          } else if (!Boolean(value.isAvailableLocally)) {
+            value.contentData.appIcon = value.contentData.appIcon;
           }
-          contentData.push(value.contentData);
+          contentData.push(value);
         });
         this.ngZone.run(() => {
           this.searchList = contentData;
@@ -283,28 +336,29 @@ export class ViewMoreActivityPage implements OnInit {
 
   getContentDetails(content) {
     const identifier = content.contentId || content.identifier;
-    this.contentService.getContentDetail({ contentId: identifier }, (data: any) => {
-      data = JSON.parse(data);
-      if (Boolean(data.result.isAvailableLocally)) {
-        this.navCtrl.push(ContentDetailsPage, {
-          content: { identifier: content.lastReadContentId },
-          depth: '1',
-          contentState: {
-            batchId: content.batchId ? content.batchId : '',
-            courseId: identifier
-          },
-          isResumedCourse: true,
-          isChildContent: true,
-          resumedCourseCardData: this.resumeContentData
-        });
-      } else {
-        this.subscribeGenieEvent();
-        this.showOverlay = true;
-        this.importContent([identifier], false);
-      }
+    this.contentService.getContentDetail({ contentId: identifier })
+      .then((data: any) => {
+        data = JSON.parse(data);
+        if (Boolean(data.result.isAvailableLocally)) {
+          this.navCtrl.push(ContentDetailsPage, {
+            content: { identifier: content.lastReadContentId },
+            depth: '1',
+            contentState: {
+              batchId: content.batchId ? content.batchId : '',
+              courseId: identifier
+            },
+            isResumedCourse: true,
+            isChildContent: true,
+            resumedCourseCardData: this.resumeContentData
+          });
+        } else {
+          this.subscribeGenieEvent();
+          this.showOverlay = true;
+          this.importContent([identifier], false);
+        }
 
-    },
-      (error: any) => {
+      })
+      .catch((error: any) => {
         console.log(error);
       });
   }
@@ -316,24 +370,25 @@ export class ViewMoreActivityPage implements OnInit {
       contentStatusArray: []
     };
 
-    this.contentService.importContent(option, (data: any) => {
-      data = JSON.parse(data);
-      this.ngZone.run(() => {
-        if (data.result && data.result.length) {
-          _.forEach(data.result, (value) => {
-            if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
-              this.queuedIdentifiers.push(value.identifier);
+    this.contentService.importContent(option)
+      .then((data: any) => {
+        data = JSON.parse(data);
+        this.ngZone.run(() => {
+          if (data.result && data.result.length) {
+            _.forEach(data.result, (value) => {
+              if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
+                this.queuedIdentifiers.push(value.identifier);
+              }
+            });
+            if (this.queuedIdentifiers.length === 0) {
+              this.showOverlay = false;
+              this.downloadPercentage = 0;
+              this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
             }
-          });
-          if (this.queuedIdentifiers.length === 0) {
-            this.showOverlay = false;
-            this.downloadPercentage = 0;
-            this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
           }
-        }
-      });
-    },
-      () => {
+        });
+      })
+      .catch(() => {
         this.ngZone.run(() => {
           this.showOverlay = false;
           this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
@@ -369,12 +424,28 @@ export class ViewMoreActivityPage implements OnInit {
 
   cancelDownload() {
     this.ngZone.run(() => {
-      this.contentService.cancelDownload(this.resumeContentData.contentId || this.resumeContentData.identifier, () => {
+      this.contentService.cancelDownload(this.resumeContentData.contentId || this.resumeContentData.identifier).then(() => {
         this.showOverlay = false;
-      }, () => {
+      }).catch(() => {
         this.showOverlay = false;
       });
     });
+  }
+
+  downloadsOnlyToggleChange(e) {
+    if (this.navParams.get('pageName') === ViewMore.PAGE_RESOURCE_SAVED) {
+      this.getLocalContents(false, this.downloadsOnlyToggle);
+    } else if (this.navParams.get('pageName') === ViewMore.PAGE_RESOURCE_RECENTLY_VIEWED) {
+      this.getLocalContents(true, this.downloadsOnlyToggle);
+    }
+  }
+
+  showDisabled(resource) {
+    console.log("showDisabled", resource);
+    console.log('resource.isAvailableLocally', resource.isAvailableLocally);
+    console.log('this.commonUtilService.networkInfo.isNetworkAvailable', this.commonUtilService.networkInfo.isNetworkAvailable);
+    console.log(!resource.isAvailableLocally && !this.commonUtilService.networkInfo.isNetworkAvailable);
+    return !resource.isAvailableLocally && !this.commonUtilService.networkInfo.isNetworkAvailable;
   }
 
   /**
@@ -387,22 +458,6 @@ export class ViewMoreActivityPage implements OnInit {
       this.isLoadMore = false;
       this.pageType = this.pageType;
       this.showOverlay = false;
-    });
-  }
-
-  /**
-	 * Angular life cycle hooks
-	 */
-  ngOnInit() {
-    this.tabBarElement.style.display = 'none';
-  }
-  /**
-	 * Function to get loader instance
-	 */
-  getLoader(): any {
-    return this.loadingCtrl.create({
-      duration: 30000,
-      spinner: 'crescent'
     });
   }
 }

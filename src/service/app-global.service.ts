@@ -1,3 +1,6 @@
+import { NgZone, OnDestroy } from '@angular/core';
+import { ProfileConstants } from './../app/app.constant';
+
 import { Injectable } from '@angular/core';
 import {
     Profile,
@@ -26,8 +29,7 @@ import {
 import { TelemetryGeneratorService } from './telemetry-generator.service';
 
 @Injectable()
-export class AppGlobalService {
-
+export class AppGlobalService implements OnDestroy {
 
     constructor(
         private event: Events,
@@ -49,22 +51,22 @@ export class AppGlobalService {
     public static isPlayerLaunched = false;
 
     /**
-     * This property stores the courses enrolled by a user
-     */
+    * This property stores the courses enrolled by a user
+    */
     courseList: Array<any>;
     /**
-     * This property stores the form details at the app level for a particular app session
-     */
+    * This property stores the form details at the app level for a particular app session
+    */
     syllabusList: Array<any> = [];
 
     /**
-     * This property stores the course filter configuration at the app level for a particular app session
-     */
+    * This property stores the course filter configuration at the app level for a particular app session
+    */
     courseFilterConfig: Array<any> = [];
 
     /**
-     * This property stores the library filter configuration  at the app level for a particular app session
-     */
+    * This property stores the library filter configuration at the app level for a particular app session
+    */
     libraryFilterConfig: Array<any> = [];
 
     guestUserProfile: Profile;
@@ -85,6 +87,11 @@ export class AppGlobalService {
     public DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT = false;
     public DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT = false;
     public TRACK_USER_TELEMETRY = false;
+    public CONTENT_STREAMING_ENABLED = false;
+    public DISPLAY_ONBOARDING_SCAN_PAGE = false;
+    public DISPLAY_ONBOARDING_CATEGORY_PAGE = false;
+    public OPEN_RAPDISCOVERY_ENABLED = false;
+    public SUPPORT_EMAIL = 'support@sunbird.com';
 
     isUserLoggedIn(): boolean {
         return !this.isGuestUser;
@@ -121,78 +128,95 @@ export class AppGlobalService {
     }
 
     /**
-     * This method stores the list of courses enrolled by user, and is updated every time
-     * getEnrolledCourses is called.
-     * @param courseList
-     */
+    * This method stores the list of courses enrolled by user, and is updated every time
+    * getEnrolledCourses is called.
+    * @param courseList
+    */
     setEnrolledCourseList(courseList: Array<any>) {
         this.courseList = courseList;
     }
 
     /**
-     * This method returns the list of enrolled courses
-     *
-     * @param courseList
-     *
-     */
+    * This method returns the list of enrolled courses
+    *
+    * @param courseList
+    *
+    */
     getEnrolledCourseList(): Array<any> {
         return this.courseList;
     }
 
     /**
-   * This method stores the form details, for a particular session of the app
-   *
-   * @param syllabusList
-   *
-   */
+    * This method stores the form details, for a particular session of the app
+    *
+    * @param syllabusList
+    *
+    */
     setSyllabusList(syllabusList: Array<any>): any {
         this.syllabusList = syllabusList;
     }
 
     /**
-     * This method returns the form details cached, for a particular session of the app
-     *
-     * @param syllabusList
-     *
-     */
+    * This method returns the form details cached, for a particular session of the app
+    *
+    * @param syllabusList
+    *
+    */
     getCachedSyllabusList(): Array<any> {
         return this.syllabusList;
     }
 
     /**
-  * This method stores the course filter config, for a particular session of the app
-  *
-  * @param courseFilterConfig
-  *
-  */
+    * This method stores the course filter config, for a particular session of the app
+    *
+    * @param courseFilterConfig
+    *
+    */
     setCourseFilterConfig(courseFilterConfig: Array<any>) {
         this.courseFilterConfig = courseFilterConfig;
     }
 
     /**
-     * This method returns the course filter config cache, for a particular session of the app
-     *
-     * @param syllabusList
-     *
-     */
+    * This method returns the course filter config cache, for a particular session of the app
+    *
+    * @param syllabusList
+    *
+    */
     getCachedCourseFilterConfig(): Array<any> {
         return this.courseFilterConfig;
     }
 
     /**
- * This method stores the library filter config, for a particular session of the app
- *
- */
+    * This method stores the library filter config, for a particular session of the app
+    *
+    */
     setLibraryFilterConfig(libraryFilterConfig: Array<any>) {
         this.libraryFilterConfig = libraryFilterConfig;
     }
 
     /**
-     * This method returns the library filter config cache, for a particular session of the app
-     *
-     */
+    * This method returns the library filter config cache, for a particular session of the app
+    *
+    */
     getCachedLibraryFilterConfig(): Array<any> {
         return this.libraryFilterConfig;
+    }
+
+    /**
+     * @returns {string} UserId or empty string if not available
+     */
+    getUserId(): string {
+        if (!this.session) {
+            this.authService.getSessionData((session) => {
+                if (session && session !== 'null') {
+                    return session[ProfileConstants.USER_TOKEN];
+                }
+
+                return this.session = '';
+            });
+        }
+
+        return this.session[ProfileConstants.USER_TOKEN];
     }
 
     private initValues() {
@@ -290,10 +314,46 @@ export class AppGlobalService {
             .catch(error => {
                 this.TRACK_USER_TELEMETRY = false;
             });
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.CONTENT_STREAMING_ENABLED)
+            .then(response => {
+                this.CONTENT_STREAMING_ENABLED = response === 'true' ? true : false;
+            })
+            .catch(error => {
+                this.CONTENT_STREAMING_ENABLED = false;
+            });
+
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_ONBOARDING_SCAN_PAGE)
+            .then(response => {
+                this.DISPLAY_ONBOARDING_SCAN_PAGE = response === 'true' ? true : false;
+            })
+            .catch(error => {
+                this.DISPLAY_ONBOARDING_SCAN_PAGE = false;
+            });
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_ONBOARDING_CATEGORY_PAGE)
+            .then(response => {
+                this.DISPLAY_ONBOARDING_CATEGORY_PAGE = response === 'true' ? true : false;
+            })
+            .catch(error => {
+                this.DISPLAY_ONBOARDING_CATEGORY_PAGE = false;
+            });
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.OPEN_RAPDISCOVERY_ENABLED)
+            .then(response => {
+                this.OPEN_RAPDISCOVERY_ENABLED = response === 'true' ? true : false;
+            })
+            .catch(error => {
+                this.OPEN_RAPDISCOVERY_ENABLED = false;
+            });
+            this.buildParamService.getBuildConfigParam(GenericAppConfig.SUPPORT_EMAIL)
+            .then(response => {
+                this.SUPPORT_EMAIL = response;
+            })
+            .catch(error => {
+                this.SUPPORT_EMAIL = '';
+            });
     }
 
     private getCurrentUserProfile() {
-        this.profile.getCurrentUser((response) => {
+        this.profile.getCurrentUser().then((response: any) => {
             this.guestUserProfile = JSON.parse(response);
             if (this.guestUserProfile.syllabus && this.guestUserProfile.syllabus.length > 0) {
                 this.getFrameworkDetails(this.guestUserProfile.syllabus[0])
@@ -312,7 +372,7 @@ export class AppGlobalService {
                 this.frameworkData = [];
                 this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
             }
-        }, (error) => {
+        }) .catch((error) => {
             this.guestUserProfile = undefined;
             this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
         });
@@ -340,22 +400,27 @@ export class AppGlobalService {
         });
     }
 
-    public getGuestUserInfo() {
-        this.preference.getString(PreferenceKey.SELECTED_USER_TYPE)
-            .then(val => {
-                if (val !== undefined && val !== '') {
-                    if (val === ProfileType.STUDENT) {
-                        this.guestProfileType = ProfileType.STUDENT;
-                    } else if (val === ProfileType.TEACHER) {
-                        this.guestProfileType = ProfileType.TEACHER;
-                    } else if (val === 'student') {
-                        this.guestProfileType = ProfileType.STUDENT;
-                    } else if (val === 'teacher') {
-                        this.guestProfileType = ProfileType.TEACHER;
+    public getGuestUserInfo(): Promise<string> {
+        return new Promise((resolve, reject) => {
+            this.preference.getString(PreferenceKey.SELECTED_USER_TYPE)
+                .then(val => {
+                    if (val) {
+                        if (val === ProfileType.STUDENT) {
+                            this.guestProfileType = ProfileType.STUDENT;
+                        } else if (val === ProfileType.TEACHER) {
+                            this.guestProfileType = ProfileType.TEACHER;
+                        } else if (val === 'student') {
+                            this.guestProfileType = ProfileType.STUDENT;
+                        } else if (val === 'teacher') {
+                            this.guestProfileType = ProfileType.TEACHER;
+                        }
+                        this.isGuestUser = true;
+                        resolve(this.guestProfileType);
+                    } else {
+                        reject('');
                     }
-                    this.isGuestUser = true;
-                }
-            });
+                });
+        });
     }
 
     private listenForEvents() {
@@ -366,6 +431,11 @@ export class AppGlobalService {
         this.event.subscribe('refresh:profile', () => {
             this.initValues();
         });
+
+        this.event.subscribe('refresh:loggedInProfile', () => {
+            this.initValues();
+        });
+
     }
 
     openPopover(upgradeType: any) {
@@ -491,5 +561,11 @@ export class AppGlobalService {
                 && profile.medium && profile.medium.length);
             resolve(this.isProfileSettingsCompleted);
         });
+    }
+
+
+    ngOnDestroy() {
+        this.event.unsubscribe(AppGlobalService.USER_INFO_UPDATED);
+        this.event.unsubscribe('refresh:profile');
     }
 }

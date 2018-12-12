@@ -31,7 +31,7 @@ import {
 } from '../../app/module.service';
 import { generateInteractTelemetry } from '../../app/telemetryutil';
 import { ProfileConstants } from '../../app/app.constant';
-import { Network } from '@ionic-native/network';
+import { FormAndFrameworkUtilService } from '../../pages/profile/formandframeworkutil.service';
 
 @Component({
   selector: 'sign-in-card',
@@ -48,20 +48,13 @@ export class SignInCardComponent {
   private translateDisplayText;
 
   appName = '';
-  isNetworkAvailable: boolean;
-
-
   @Input() source = '';
-
   @Input() title = '';
-
   @Input() description = '';
-
   @Output() valueChange = new EventEmitter();
 
   constructor(
     public translate: TranslateService,
-    public network: Network,
     public navCtrl: NavController,
     private auth: OAuthService,
     private container: ContainerService,
@@ -72,7 +65,8 @@ export class SignInCardComponent {
     private telemetryService: TelemetryService,
     private appVersion: AppVersion,
     private sharedPreferences: SharedPreferences,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService
   ) {
 
     this.appVersion.getAppName()
@@ -80,17 +74,6 @@ export class SignInCardComponent {
         this.appName = appName;
         this.initText();
       });
-    if (this.network.type === 'none') {
-      this.isNetworkAvailable = false;
-    } else {
-      this.isNetworkAvailable = true;
-    }
-    this.network.onDisconnect().subscribe((data) => {
-      this.isNetworkAvailable = false;
-    });
-    this.network.onConnect().subscribe((data) => {
-      this.isNetworkAvailable = true;
-    });
   }
 
   initText() {
@@ -108,7 +91,7 @@ export class SignInCardComponent {
 
   singIn() {
 
-    if (!this.isNetworkAvailable) {
+    if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
       this.valueChange.emit(true);
     } else {
       this.telemetryService.interact(
@@ -121,13 +104,12 @@ export class SignInCardComponent {
           undefined)
       );
 
-      this.generateLoginInteractTelemetry(InteractType.TOUCH,
-        InteractSubtype.LOGIN_INITIATE, '');
+      this.generateLoginInteractTelemetry(InteractType.TOUCH, InteractSubtype.LOGIN_INITIATE, '');
 
       const that = this;
       const loader = this.commonUtilService.getLoader();
       loader.present();
-      that.auth.doOAuthStepOne()
+      that.auth.doOAuthStepOne(this.commonUtilService.isRTL())
         .then(token => {
           return that.auth.doOAuthStepTwo(token);
         })
@@ -175,14 +157,23 @@ export class SignInCardComponent {
             profile.profileType = ProfileType.TEACHER;
             profile.source = UserSource.SERVER;
 
-            that.profileService.setCurrentProfile(false, profile,
-              (currentProfile: any) => {
-                resolve({
-                  slug: r.rootOrg.slug,
-                  title: r.rootOrg.orgName
-                });
-              },
-              (err: any) => {
+
+            that.profileService.setCurrentProfile(false, profile)
+              .then((currentProfile: any) => {
+                that.formAndFrameworkUtilService.updateLoggedInUser(r, profile)
+                  .then((value) => {
+                    resolve({
+                      slug: r.rootOrg.slug,
+                      title: r.rootOrg.orgName
+                    });
+                  }).catch(() => {
+                    resolve({
+                      slug: r.rootOrg.slug,
+                      title: r.rootOrg.orgName
+                    });
+                  });
+              })
+              .catch((err: any) => {
                 reject(err);
               });
 

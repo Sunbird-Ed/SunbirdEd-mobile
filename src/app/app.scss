@@ -12,52 +12,15 @@
 // To declare rules for a specific mode, create a child rule
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
-@font-face {
-  font-family: 'OpenSans';
-  font-style: normal;
-  font-weight: 400;
-  src: url('../assets/fonts/opensans/OpenSans-Regular.ttf');
-}
+@import "../assets/styles/_helper";
+@import "../assets/styles/rtl_helper";
+@import "../assets/styles/details_page";
+@import "../assets/styles/fonts";
 
-@font-face {
-  font-family: 'OpenSans';
-  font-style: semi-bold;
-  font-weight: 600;
-  src: url('../assets/fonts/opensans/OpenSans-Semibold.ttf');
-}
 
-@font-face {
-  font-family: 'OpenSans';
-  font-style: bold;
-  font-weight: 700;
-  src: url('../assets/fonts/opensans/OpenSans-Bold.ttf');
-}
-
-@font-face {
-  font-family: 'OpenSans';
-  font-style: extra-bold;
-  font-weight: 900;
-  src: url('../assets/fonts/opensans/OpenSans-ExtraBold.ttf');
-}
-
-.font-weight-400 {
-  font-weight: 400 !important;
-}
-
-.font-weight-600 {
-  font-weight: 600 !important;
-}
-
-.font-weight-700 {
-  font-weight: 700 !important;
-}
-
-.font-weight-900 {
-  font-weight: 900 !important;
-}
 
 h6 {
-  font-family: "OpenSans/Bold" !important;
+  @extend .NotoSans-bold;
 }
 .font-size-14rem {
   font-size: 1.4rem !important;
@@ -68,12 +31,12 @@ h6 {
 }
 
 .span-semibold {
-  font-family: 'OpenSans/Semibold';
+  @extend .NotoSans;
 }
 
 .content-meta-title {
-  font-family: 'OpenSans/Regular' !important;
-  font-weight: 600;
+  @extend .NotoSans;
+  @extend .font-weight-600;
   color: gray;
 }
 
@@ -357,7 +320,7 @@ ul.rating .ion-md-star-outline:before {
 
 .select-box {
   .alert-head {
-    padding: 14px 14px !important;
+    @include padding(14px 14px !important);
   }
   .alert-title {
     font-size: 1.4rem !important;
@@ -372,13 +335,13 @@ ul.rating .ion-md-star-outline:before {
 .select-box.alert-md .alert-button:first-child:not(:only-child) {
   background: transparent !important;
   color: map-get($colors, primary) !important;
-  margin-right: 1%;
+  // margin-right: 1%;
 }
 
 .select-box.alert-md .alert-button:last-child:not(:only-child) {
   background: map-get($colors, primary) !important;
   color: map-get($colors, white) !important;
-  margin-left: 5%;
+  // margin-left: 5%;
 }
 
 .select-box.alert-md .alert-checkbox-group {
@@ -387,7 +350,7 @@ ul.rating .ion-md-star-outline:before {
 }
 
 .select-box.alert-md .alert-button {
-  margin-right: 1%;
+  // margin-right: 1%;
   border-color: map-get($colors, primary);
   text-transform: uppercase;
   border-style: solid;
@@ -409,6 +372,38 @@ ul.rating .ion-md-star-outline:before {
   .button-inner {
     justify-content: center;
   }
+}
+
+.broadcast-popover{
+  @media screen and (min-width: 401px) {
+    .popover-content{
+      top: 10vh !important;
+      width: 80% !important;
+      left: 10% !important;
+      border-radius: 10px !important;
+    }
+    .popup-button{
+      padding-bottom: 8%;
+      margin-top: 5vh
+    }
+}
+@media screen and (min-width: 300px) and (max-width: 400px) {
+  .popover-content{
+    top: 5vh !important;
+    width: 80% !important;
+    left: 10% !important;
+    border-radius: 10px !important;
+  }
+  .popup-button{
+    padding-bottom: 5%;
+
+  }
+  .popup-text {
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+  }
+}
+
 }
 
 .user-popover {
@@ -440,4 +435,89 @@ ul.rating .ion-md-star-outline:before {
   height: 0.6rem;
   width: 0.6rem;
   margin: 0;
+}
+
+.alert-wp.confirm-alert .alert-wrapper {    
+  border: unset !important;    
+  background: white !important;    
+  bottom: 0;    
+  position: fixed;    
+}    
+.alert-wp.confirm-alert .closeButton {    
+@include text-align('end');
+position: absolute;    
+width: 5px !important;    
+top: 3px;    
+z-index:1000;    
+background-color: transparent !important;    
+font-size:18px !important;    
+font-weight: 600 !important;    
+padding-top: 12px !important;    
+}    
+.alert-btn-cancel.alert-button {    
+  font-weight: 600 !important;    
+  background: transparent;    
+  color: map-get($colors, primary) !important;    
+  border-color: map-get($colors, primary);    
+  text-transform: uppercase;    
+  border-style: solid;    
+  border-width: 1px;    
+  border-radius: 4px !important;    
+  overflow: hidden;    
+  height: 4.3rem;    
+  font-size: 1.4rem;    
+  font-weight: 700;    
+}    
+.alert-btn-delete.alert-button, .alert-wp.confirm-alert .doneButton {    
+  font-weight: 600 !important;    
+  background:  map-get($colors, primary) !important;    
+  color: white !important;    
+  border-color: map-get($colors, primary);    
+  text-transform: uppercase;    
+  border-style: solid;    
+  border-width: 1px;    
+  border-radius: 4px !important;    
+  overflow: hidden;    
+  height: 4.3rem;    
+  font-size: 1.4rem;    
+  font-weight: 700;    
+  width: 100% !important;    
+}    
+.alert-wp ion-backdrop {    
+  background: black !important;    
+}    
+  
+.alert-wp .alert-button {    
+  width: 46% !important;    
+  // font-weight: 400;    
+  // color: #000;    
+  // background: #b8b8b8;    
+}    
+.alert-wp .alert-title {    
+  font-size: 1.7rem !important;    
+  font-weight: 600 !important;    
+}    
+// h2{    
+// line-height: 0 !important;    
+// }    
+.alert-wp .alert-button-group{    
+  display: inline-block !important;    
+}    
+.alert-button{    
+  display: unset !important;    
+} 
+
+.alert-wp .alert-button:first-child:not(:only-child) {    
+  @include ltr() {
+    margin-right: 7% !important;
+  }
+  @include rtl() {
+    margin-left: 7% !important;
+  }
+}  
+
+.ng2-dropdown-menu {    
+  font-size: 1.6rem;    
+  max-width: 55vw;    
+  width: auto !important;    
 }

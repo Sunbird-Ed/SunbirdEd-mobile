@@ -8,8 +8,10 @@ import {
   NavController,
   NavParams,
   Events,
-  Platform
+  Platform,
+  Navbar
 } from 'ionic-angular';
+import { TranslateService } from '@ngx-translate/core';
 import {
   TabsPage,
   SharedPreferences,
@@ -20,27 +22,15 @@ import {
   ImpressionType,
   ContainerService,
   Profile,
-  UserSource
-} from 'sunbird';
-import { TranslateService } from '@ngx-translate/core';
-import {
+  UserSource,
   ProfileType,
   ProfileService
 } from 'sunbird';
-import { Map } from '../../app/telemetryutil';
-import {
-  initTabs,
-  GUEST_TEACHER_TABS,
-  GUEST_STUDENT_TABS
-} from '../../app/module.service';
-import { AppGlobalService } from '../../service/app-global.service';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { CommonUtilService } from '../../service/common-util.service';
-import { PreferenceKey } from '../../app/app.constant';
-import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
-import { ProfileSettingsPage } from '../profile-settings/profile-settings';
-import { Navbar } from 'ionic-angular';
-import { LanguageSettingsPage } from '../language-settings/language-settings';
+import { Map, initTabs, GUEST_TEACHER_TABS, GUEST_STUDENT_TABS, PreferenceKey } from '@app/app';
+import { AppGlobalService, TelemetryGeneratorService, CommonUtilService } from '@app/service';
+import { SunbirdQRScanner } from '@app/pages/qrscanner';
+import { ProfileSettingsPage } from '@app/pages/profile-settings/profile-settings';
+import { LanguageSettingsPage } from '@app/pages/language-settings/language-settings';
 
 const selectedCardBorderColor = '#006DE5';
 const borderColor = '#F7F7F7';
@@ -67,7 +57,6 @@ export class UserTypeSelectionPage {
   studentImageUri = 'assets/imgs/ic_student.png';
   teacherImageUri = 'assets/imgs/ic_teacher.png';
   isChangeRoleRequest = false;
-  showScanner = false;
 
   constructor(
     public navCtrl: NavController,
@@ -105,10 +94,6 @@ export class UserTypeSelectionPage {
   ionViewWillEnter() {
     this.profile = this.appGlobalService.getCurrentUser();
     this.isChangeRoleRequest = Boolean(this.navParams.get('isChangeRoleRequest'));
-    this.showScanner = Boolean(this.navParams.get('showScanner'));
-    if (this.showScanner) {
-      this.scannerService.startScanner(PageId.USER_TYPE_SELECTION, true);
-    }
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.USER_TYPE_SELECTION, Environment.HOME, false);
       this.handleBackButton();
@@ -166,24 +151,7 @@ export class UserTypeSelectionPage {
         this.gotoTabsPage();
       } else {
         this.gotoTabsPage(true);
-/*         const updateRequest = new Profile();
-
-        updateRequest.handle = this.profile.handle;
-        updateRequest.avatar = this.profile.avatar;
-        updateRequest.language = this.profile.language;
-        updateRequest.uid = this.profile.uid;
-        updateRequest.profileType = this.selectedUserType;
-        updateRequest.createdAt = this.profile.createdAt;
-        updateRequest.source = UserSource.LOCAL;
-
-        updateRequest.syllabus = [];
-        updateRequest.board = [];
-        updateRequest.grade = [];
-        updateRequest.subject = [];
-        updateRequest.medium = [];
-
-        this.updateProfile(updateRequest);
- */      }
+      }
     } else {
       const profileRequest = new Profile();
       profileRequest.handle = 'Guest1';
@@ -194,30 +162,32 @@ export class UserTypeSelectionPage {
   }
 
   updateProfile(updateRequest: Profile) {
-    this.profileService.updateProfile(updateRequest,
-      () => {
+    this.profileService.updateProfile(updateRequest)
+      .then(() => {
         this.gotoTabsPage(true);
-      },
-      (err: any) => {
+      })
+      .catch((err: any) => {
         console.error('Err', err);
       });
   }
+
   // TODO Remove getCurrentUser as setCurrentProfile is returning uid
   setProfile(profileRequest: Profile) {
-    this.profileService.setCurrentProfile(true, profileRequest, () => {
-      this.profileService.getCurrentUser(success => {
+    this.profileService.setCurrentProfile(true, profileRequest).then(() => {
+      this.profileService.getCurrentUser().then((success: any) => {
         const userId = JSON.parse(success).uid;
         this.event.publish(AppGlobalService.USER_INFO_UPDATED);
         if (userId !== 'null') {
           this.preference.putString('GUEST_USER_ID_BEFORE_LOGIN', userId);
         }
+        this.profile = JSON.parse(success);
         this.gotoTabsPage();
-      }, error => {
+      }).catch(error => {
         console.error('Error', error);
         return 'null';
       });
-    },
-      err => {
+    })
+      .catch(err => {
         console.error('Error', err);
       });
   }
@@ -235,16 +205,48 @@ export class UserTypeSelectionPage {
     } else if (this.selectedUserType === ProfileType.STUDENT) {
       initTabs(this.container, GUEST_STUDENT_TABS);
     }
-
     if (this.isChangeRoleRequest && isUserTypeChanged) {
-      this.container.removeAllTabs();
-      this.navCtrl.push(ProfileSettingsPage, { isChangeRoleRequest: true, selectedUserType: this.selectedUserType });
+      if (this.appGlobalService.DISPLAY_ONBOARDING_CATEGORY_PAGE) {
+        this.container.removeAllTabs();
+        this.navCtrl.push(ProfileSettingsPage, { isChangeRoleRequest: true, selectedUserType: this.selectedUserType });
+      } else {
+        this.profile.profileType = this.selectedUserType;
+        this.profileService.updateProfile(this.profile)
+          .then((res: any) => {
+            console.log('tabs page');
+            this.navCtrl.push(TabsPage, {
+              loginMode: 'guest'
+            });
+          }).catch(error => {
+            console.error('Error=');
+          });
+        // this.navCtrl.setRoot(TabsPage);
+      }
     } else if (this.appGlobalService.isProfileSettingsCompleted) {
       this.navCtrl.push(TabsPage, {
         loginMode: 'guest'
       });
+    } else if (this.appGlobalService.DISPLAY_ONBOARDING_SCAN_PAGE) {
+      // Need to go tabspage when scan page is ON, changeRoleRequest ON and profileSetting is OFF
+      if (this.isChangeRoleRequest) {
+        this.navCtrl.push(TabsPage, {
+          loginMode: 'guest'
+        });
+      } else {
+        this.scannerService.startScanner(PageId.USER_TYPE_SELECTION, true);
+      }
+    } else if (this.appGlobalService.DISPLAY_ONBOARDING_CATEGORY_PAGE) {
+      this.navCtrl.push(ProfileSettingsPage);
     } else {
-      this.scannerService.startScanner(PageId.USER_TYPE_SELECTION, true);
+      this.profile.profileType = this.selectedUserType;
+      this.profileService.updateProfile(this.profile)
+        .then((res: any) => {
+          this.navCtrl.push(TabsPage, {
+            loginMode: 'guest'
+          });
+        }).catch(error => {
+          console.error('Error=', error);
+        });
     }
   }
 
@@ -259,5 +261,4 @@ export class UserTypeSelectionPage {
       undefined,
       values);
   }
-
 }

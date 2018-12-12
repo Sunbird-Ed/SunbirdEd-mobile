@@ -1,47 +1,64 @@
 page-onboarding {
-    ion-slide {
-        background-color: map-get($colors, white);
-    }
-    .action-button {
-        width:100% !important;
-    }
-    .item-img {
-        text-align: center;
-        padding-top: 20px;
-        padding-bottom: 25px;
-    }
-    .swiper-slide {
-        height: 75% !important;
-        padding-top: 30px;
-    }
-    .swiper-slide img {
-        width: 70vw;
-        height: 30vh;
-    }
-    .title {
-        color: map-get($colors, secondary_black);
-        font-weight: 700;
-        font-size: 1.6rem;
-        margin-top: 10px;
-        margin-bottom: 20px;
-    }
-    .description {
-        color: map-get($colors, dark_gray);
-        font-size: 1.5rem;
-        margin-left: 10%;
-        margin-right: 10%;
-    }
+  ion-slide {
+    background-color: map-get($colors, white);
+  }
+  .action-button {
+    width: 100% !important;
+  }
+  .item-img {
+    text-align: center;
+    padding-top: 20px;
+    padding-bottom: 25px;
+  }
+  .swiper-slide {
+    height: 75% !important;
+    padding-top: 30px;
+  }
+  .swiper-slide img {
+    width: 70vw;
+    height: 30vh;
+  }
+  .title {
+    color: map-get($colors, secondary_black);
+    @extend .font-weight-700;
+    font-size: 1.6rem;
+    margin-top: 10px;
+    margin-bottom: 20px;
+  }
+  .description {
+    color: map-get($colors, dark_gray);
+    font-size: 1.5rem;
+    @include margin(null, 10%, null, 10%);
+  }
 }
 
 /* Slider Active bullet color, Size, and spacing */
 .swiper-pagination-bullet-active {
-    background: map-get($colors, dark_gray);
+  background: map-get($colors, dark_gray);
 }
 .swiper-pagination-bullet {
-    width: 10px;
-    height: 10px;
+  width: 10px;
+  height: 10px;
 }
-.swiper-container-horizontal > .swiper-pagination-bullets .swiper-pagination-bullet {
-    margin: 0 2px !important;
+.swiper-container-horizontal
+  > .swiper-pagination-bullets
+  .swiper-pagination-bullet {
+  @include margin(0, 2px !important);
 }
 /* End of slider style */
+
+/* For Devices lesser than 4.5' width*/
+@media (min-width: 320px) and (max-width: 400px) {
+  page-onboarding {
+    .item-img {
+      padding-bottom: unset;
+    }
+    .swiper-slide img {
+      width: unset;
+      height: 15vh;
+    }
+    .title {
+      margin-bottom: unset;
+    }
+  }
+}

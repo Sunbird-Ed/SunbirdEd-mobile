@@ -1,11 +1,9 @@
 page-create-group {
-    .mandatory{
+    .mandatory {
         color: map-get($colors, red);
     }
-    .multiple-select-alert .alert-head {
-        padding: 8px 20px 8px !important;
-      }
-      .label-font{
-          font-weight: 600 !important;
-      }
+
+    .label-font {
+       @extend .font-weight-600;
+    }
 }

@@ -16,13 +16,19 @@ group-report-alert {
         position: absolute;
         z-index: -1;
         top: 0;
-        right: 30%;
-        bottom: 0;
-        left: 0;
+        @include ltr() {
+            right: 30%;
+            left: 0;
+        }
+    
+        @include rtl() {
+            left: 30%;
+            right: 0;
+        }
         background: green;
     }
     .row-align {
-        padding: 10px 16px !important;
+        @include padding(10px, 16px !important);
     }
     .margin0 {
         margin: 0 !important;
@@ -51,14 +57,13 @@ group-report-alert {
         margin-top: 12px !important;
     }
     .input-wrapper {
-        padding-left: 16px !important;
-        padding-right: 16px !important;
+        @include padding(null, 16px !important);
     }
     .item-ios {
-        padding-left: 0;
+        @include padding(null, null, null, 0);
     }
     .item-md {
-        padding-left: 0 !important;
+        @include padding(null, null, null, 0 !important);
     }
     .text-center {
         text-align: center !important;
@@ -86,7 +91,7 @@ group-report-alert {
     }
     .icon-tickmark {
         color: green;
-        font-weight: 600;
+        @extend .font-weight-600;
     }
     .ellipsis {
         max-width: 100%;
@@ -122,6 +127,13 @@ group-report-alert {
     box-shadow: unset;
     position: fixed;
     left: 0 !important;
+    @include ltr() {
+        left: 0 !important;
+    }
+
+    @include rtl() {
+        right: 0 !important;
+    }
     top: unset !important;
     bottom: 0 !important;
     transform-origin: bottom -100% !important;

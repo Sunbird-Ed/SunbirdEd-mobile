@@ -1,11 +1,12 @@
 import { TelemetryGeneratorService } from './../../service/telemetry-generator.service';
 import { TranslateService } from '@ngx-translate/core';
 import { NavParams } from 'ionic-angular/navigation/nav-params';
-import { PopoverController, Events } from 'ionic-angular/index';
+ import { PopoverController, Events, AlertController } from 'ionic-angular/index';
 import { ViewController } from 'ionic-angular';
 import { Component } from '@angular/core';
 import { ContentService, AuthService, Environment, Rollup, CorrelationData, InteractType, InteractSubtype, TelemetryObject } from 'sunbird';
 import { ToastController, Platform } from 'ionic-angular';
+import { CommonUtilService } from '../../service/common-util.service';
 import { ReportIssuesComponent } from '../report-issues/report-issues';
 import { ProfileConstants } from '../../app/app.constant';
 
@@ -32,9 +33,11 @@ export class ContentActionsComponent {
     private toastCtrl: ToastController,
     public popoverCtrl: PopoverController,
     private authService: AuthService,
+    private alertctrl: AlertController,
     private events: Events,
     private translate: TranslateService,
     private platform: Platform,
+    private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService) {
     this.content = this.navParams.get('content');
     this.pageName = this.navParams.get('pageName');
@@ -93,7 +96,30 @@ export class ContentActionsComponent {
   close(i) {
     switch (i) {
       case 0: {
-        this.deleteContent();
+        const confirm = this.alertctrl.create({
+          title:  this.commonUtilService.translateMessage('REMOVE_FROM_DEVICE'),
+          message: this.commonUtilService.translateMessage('REMOVE_FROM_DEVICE_MSG'),
+          mode: 'wp',
+          cssClass: 'confirm-alert',
+          buttons: [
+            {
+              text: this.commonUtilService.translateMessage('CANCEL'),
+              role: 'cancel',
+              cssClass: 'alert-btn-cancel',
+              handler: () => {
+                this.viewCtrl.dismiss();
+              }
+            },
+            {
+              text: this.commonUtilService.translateMessage('REMOVE'),
+              cssClass: 'alert-btn-delete',
+              handler: () => {
+                 this.deleteContent();
+              },
+            }
+          ]
+        });
+        confirm.present();
         break;
       }
       case 1: {
@@ -120,7 +146,7 @@ export class ContentActionsComponent {
       this.corRelationList);
 
 
-    this.contentService.deleteContent(this.getDeleteRequestBody(), (res: any) => {
+    this.contentService.deleteContent(this.getDeleteRequestBody()).then((res: any) => {
       const data = JSON.parse(res);
       if (data.result && data.result.status === 'NOT_FOUND') {
         this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
@@ -133,7 +159,7 @@ export class ContentActionsComponent {
         this.showToaster(this.getMessageByConstant('MSG_RESOURCE_DELETED'));
         this.viewCtrl.dismiss('delete.success');
       }
-    }, (error: any) => {
+    }) .catch((error: any) => {
       console.log('delete response: ', error);
       this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
       this.viewCtrl.dismiss();

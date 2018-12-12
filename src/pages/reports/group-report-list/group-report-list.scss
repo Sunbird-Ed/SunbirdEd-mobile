@@ -9,8 +9,15 @@ group-report-list {
         height: 25%;
         top: 3%;
         bottom: 0;
-        left: 17px;
-        right: 17px;
+        @include ltr() {
+            right: 17px;
+            left: 17px;
+        }
+    
+        @include rtl() {
+            left: 17px;
+            right: 17px;
+        }
         border-radius: 5px;
         box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.2), 0 1px 5px 0 rgba(0,0,0,.12);
     }
@@ -24,7 +31,7 @@ group-report-list {
     .ellipsis{
         max-width:100%;
         text-overflow:ellipsis;
-        text-align: left !important;
+        @include text-align('start' !important);
         font-size: 1.5rem !important;
       }
     .text-center{
@@ -38,7 +45,7 @@ group-report-list {
         padding: 0 !important;
     }
     .row-align{
-        padding: 10px 16px !important;
+        @include padding(10px, 16px !important);
     }
     .header-md::after, .tabs-md[tabsPlacement="top"] > .tabbar::after, .footer-md::before, .tabs-md[tabsPlacement="bottom"] > .tabbar::before{
 
@@ -77,17 +84,16 @@ group-report-list {
     }
     .icon-tickmark{
       color:green;
-      font-weight:600;
+      @extend .font-weight-600;
     }
     .icon-close{
         color:red;
-        font-weight:600;
+        @extend .font-weight-600;
     }
     .grid-align{
         margin-top: 11%;
         background-color:white;
-        padding-left:0 !important;
-        padding-right:0 !important;
+        @include padding(null, 0 !important);
     }
     .report-header{
         background-color: dodgerblue !important;
@@ -96,7 +102,7 @@ group-report-list {
     }
     .download-icon{
         font-size: 1.8rem;
-        padding-right: 10px;
+        @include padding(null, 10px, null, null);
     }
     .share-icon{
         font-size: 1.8rem;
@@ -127,7 +133,7 @@ group-report-list {
 
 }
 .segment-md .segment-button {
-    font-weight: 700 !important;
+    @extend .font-weight-700;
     color:black!important;
     background-color: #FFFFFF;
 }

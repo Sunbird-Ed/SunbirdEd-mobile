@@ -7,7 +7,7 @@ import { Ionic2RatingModule } from 'ionic2-rating';
 import {
     AuthService, BuildParamService, ContentService, CourseService, FileUtil, FrameworkModule,
     GenieSDKServiceProvider, ProfileType, SharedPreferences, ShareUtil, TelemetryService, TelemetryObject,
-     Environment, Mode, PageId, Rollup, ProfileService
+    Environment, Mode, PageId, Rollup, ProfileService
 } from 'sunbird';
 
 import { HttpClientModule } from '@angular/common/http';
@@ -130,7 +130,7 @@ describe('ContentDetailsPage Component', () => {
         spyOn(component, 'downloadContent').and.callThrough();
         spyOn(component, 'importContent').and.callThrough();
         spyOn(contentService, 'importContent').and.callFake( ({ }, success) => {
-           const data = JSON.stringify((mockRes.importContentResponse));
+            const data = JSON.stringify((mockRes.importContentResponse));
             return success(data);
         });
         component.downloadContent();
@@ -267,7 +267,7 @@ describe('ContentDetailsPage Component', () => {
         component.content = {};
         component.cardData = {};
         const navParams = TestBed.get(NavParams);
-       const cardData = { identifier: identifier, hierarchyInfo: 'SAMPLEID/SAMPLE_CHILD_ID' };
+        const cardData = { identifier: identifier, hierarchyInfo: 'SAMPLEID/SAMPLE_CHILD_ID' };
         navParams.data['content'] = cardData;
         navParams.data['isResumedCourse'] = false;
         component.isResumedCourse = false;
@@ -657,7 +657,7 @@ describe('ContentDetailsPage Component', () => {
     });
 
     it('#handleNavBackbutton  should handle nav back button', () => {
-       component.backButtonFunc = jasmine.createSpy();
+        component.backButtonFunc = jasmine.createSpy();
         spyOn(component, 'generateEndEvent').and.callThrough().and.callFake(() => { });
         component.handleNavBackButton();
         expect(component.generateEndEvent).toHaveBeenCalled();
@@ -760,5 +760,13 @@ describe('ContentDetailsPage Component', () => {
         component.showOverflowMenu(event);
         expect(component.content.downloadable).toBe(false);
     });
-
+    it('#viewCredits should open view credits screen', () => {
+        const popOverCtrl = TestBed.get(PopoverController);
+        component.content = {};
+        spyOn(component, 'viewCredits').and.callThrough();
+        component.viewCredits();
+        fixture.detectChanges();
+        expect(component.viewCredits).toHaveBeenCalled();
+        expect(popOverCtrl.create).toHaveBeenCalled();
+    });
 });

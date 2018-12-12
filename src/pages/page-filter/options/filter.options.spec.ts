@@ -1,117 +1,104 @@
-import { async, TestBed, ComponentFixture } from '@angular/core/testing';
-import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
-import { HttpClientModule } from '@angular/common/http';
-import { PipesModule } from './../../../pipes/pipes.module';
-import {
-  NavController,
-  IonicModule,
-  NavParams,
-  PopoverController,
-  Platform
-} from 'ionic-angular';
-import {
-  NetworkMock,
-} from 'ionic-mocks';
-import {
-  FrameworkModule,
-} from 'sunbird';
-import {
-  NavMock, TranslateLoaderMock,
-  NavParamsMockNew,
-  PopoverControllerMock
-} from '../../../../test-config/mocks-ionic';
-import { } from 'jasmine';
-import { CommonUtilService } from '../../../service/common-util.service';
-import { mockRes } from './../../page-filter/options/filter.spec.data';
-import { PageFilterOptions } from './../../page-filter/options/filter.options';
-import { mockView } from 'ionic-angular/util/mock-providers';
-import { ViewController } from 'ionic-angular/navigation/view-controller';
+import 'jest';
+import { PageFilterOptions } from './filter.options';
+import { mockRes } from '../options/filter.spec.data';
+import { navParamsMock, appGlobalServiceMock, platformMock, viewControllerMock, popoverCtrlMock } from '../../../__tests__/mocks';
 
-describe('PageFilterOption Component', () => {
-  let component: PageFilterOptions;
-  let fixture: ComponentFixture<PageFilterOptions>;
-  let spyHandleBackButton;
-  const viewControllerMock = mockView();
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [PageFilterOptions],
-      imports: [
-        IonicModule.forRoot(PageFilterOptions),
-        TranslateModule.forRoot({
-          loader: { provide: TranslateLoader, useClass: TranslateLoaderMock },
-        }),
-        PipesModule,
-        HttpClientModule,
-        FrameworkModule
-      ],
-      providers: [
-        CommonUtilService,
-        { provide: NavParams, useClass: NavParamsMockNew },
-        { provide: NavController, useClass: NavMock },
-        { provide: PopoverController, useFactory: () => PopoverControllerMock.instance() },
-        { provide: ViewController, useValue: viewControllerMock }
-      ]
+describe('PageFilterOptions component', () => {
+
+    let pageFilterOptions: PageFilterOptions;
+    beforeEach(() => {
+        pageFilterOptions = new PageFilterOptions(navParamsMock as any, viewControllerMock as any,
+            appGlobalServiceMock as any, platformMock as any);
+        jest.resetAllMocks();
     });
-  }));
 
-  beforeEach(() => {
-    PageFilterOptions.prototype.backButtonFunc = jasmine.createSpy();
-    spyHandleBackButton = spyOn(PageFilterOptions.prototype, 'handleDeviceBackButton');
-    spyHandleBackButton.and.callFake(() => { });
-    NavParamsMockNew.setParams('facets', mockRes.sampleFacetWithGradeValues);
-
-    fixture = TestBed.createComponent(PageFilterOptions);
-    component = fixture.componentInstance;
-  });
-
-  it('#handleDeviceBackButton should dissmiss the View contoller', () => {
-    const platform = TestBed.get(Platform);
-    spyOn(platform, 'registerBackButtonAction').and.callFake((success) => {
-      return success();
+    it('should ctreate a valid instance of pageFilterOptions', () => {
+        expect(pageFilterOptions).toBeTruthy();
     });
-    const viewController = TestBed.get(ViewController);
-    spyOn(viewController, 'dismiss');
-    spyHandleBackButton.and.callThrough();
-    component.backButtonFunc = jasmine.createSpy();
-    component.handleDeviceBackButton();
-    expect(viewController.dismiss).toHaveBeenCalled();
-  });
 
-  it('#confirm should dissmiss the View contoller', () => {
-    const viewController = TestBed.get(ViewController);
-    spyOn(viewController, 'dismiss');
-    component.confirm();
-    expect(viewController.dismiss).toHaveBeenCalled();
-  });
+    it('handleDeviceBackButton() should dissmiss the View contoller', () => {
+        // arrange
+        const backButtonFunc = jest.fn();
+        platformMock.registerBackButtonAction.mockReturnValue(backButtonFunc);
 
-  it('#changeValue should add to the facets in facetFilter', () => {
-    component.changeValue('Class 2', 2);
-    expect(component.facets.selected).toEqual(['Class 2']);
-  });
+        // act
+        pageFilterOptions.handleDeviceBackButton();
+        platformMock.registerBackButtonAction.mock.calls[0][0].call(pageFilterOptions);
 
-  it('#changeValue should remove value from the  facets filter', () => {
-    component.changeValue('Class 2', 2);
-    component.changeValue('Class 2', 2);
-    expect(component.facets.selected).toEqual(['Class 2']);
-  });
+        // assert
+        expect(viewControllerMock.dismiss).toHaveBeenCalled();
+        expect(backButtonFunc).toHaveBeenCalled();
+    });
 
-  it('#changeValue should add value to the selectedValuesIndices', () => {
-    component.facets = mockRes.sampleFacetWithContentType;
-    component.changeValue('Story', 0);
-    expect(component.facets.selectedValuesIndices).toEqual([0]);
-  });
+    it('confirm() should dissmiss the View contoller', () => {
+        // act
+        pageFilterOptions.confirm();
+        // assert
+        expect(viewControllerMock.dismiss).toHaveBeenCalled();
+    });
 
-  it('#changeValue should remove the indicies if the same value is selected again', () => {
-    component.facets = mockRes.sampleFacetWithContentType;
-    component.changeValue('Story', 0);
-    component.changeValue('Story', 0);
-    expect(component.facets.selectedValuesIndices).toEqual([0]);
-  });
+    it('should return true if facet is selected when isSelected()', () => {
+        // arramge
+        pageFilterOptions.facets = { selected: ['SAMPLE_FACETS']};
+        expect(pageFilterOptions.isSelected('SAMPLE_FACETS')).toBeTruthy();
+    });
 
-  it('#isSelected should return if facet is selected or not', () => {
-    component.facets = mockRes.sampleFacetWithGradeValues;
-    expect(component.isSelected('Class 2')).toBeTruthy();
-    component.changeValue('Class 1', 1);
-    expect(component.isSelected('Class 2')).toBeTruthy();
-  });
+    it('should return false if facet is selected when isSelected()', () => {
+        // arramge
+        pageFilterOptions.facets = {};
+        expect(pageFilterOptions.isSelected('SAMPLE_FACETS')).toBeFalsy();
+    });
+
+    describe('changeValue(value)', () => {
+        describe('when no facets are selected and code is not "contenType"', () => {
+            it('should add value to selected facets', () => {
+                pageFilterOptions.facets = {};
+                // act
+                pageFilterOptions.changeValue('SAMPLE_VALUE', 2);
+                // asser
+                expect(pageFilterOptions.facets.selected).toEqual(expect.arrayContaining(['SAMPLE_VALUE']));
+            });
+
+            it('should add value to selected facets', () => {
+                pageFilterOptions.facets = { code: 'board' };
+                // act
+                pageFilterOptions.changeValue('SAMPLE_VALUE', 2);
+                // asser
+                expect(pageFilterOptions.facets.selected).toEqual(expect.arrayContaining(['SAMPLE_VALUE']));
+            });
+        });
+
+        describe('when no facets are selected and code is "contenType"', () => {
+            // arrange
+            beforeEach(() => {
+                pageFilterOptions.facets = { code: 'contentType' };
+            });
+
+            it('should add value to selected facets', () => {
+                // act
+                pageFilterOptions.changeValue('SAMPLE_VALUE', 2);
+                // asser
+                expect(pageFilterOptions.facets.selected).toEqual(expect.arrayContaining(['SAMPLE_VALUE']));
+                expect(pageFilterOptions.facets.selectedValuesIndices).toEqual(expect.arrayContaining([2]));
+            });
+        });
+
+        describe('when facets are selected', () => {
+            it('should remove value from selected facets if code not "contentType"', () => {
+                // act
+                pageFilterOptions.facets = { selected: ['SAMPLE_VALUE', 'SAMPLE_VALUE_1'] };
+                pageFilterOptions.changeValue('SAMPLE_VALUE', 2);
+                // asser
+                expect(pageFilterOptions.facets.selected).not.toEqual(expect.arrayContaining(['SAMPLE_VALUE']));
+            });
+
+            it('should remove value from selectedValuesIndices if code is "contentType"', () => {
+                // act
+                pageFilterOptions.facets = { selected: ['SAMPLE_VALUE'], selectedValuesIndices: [1, 2, 3], code: 'contentType' };
+                pageFilterOptions.changeValue('SAMPLE_VALUE', 2);
+                // asser
+                expect(pageFilterOptions.facets.selected).not.toEqual(expect.arrayContaining([2]));
+            });
+        });
+    });
 });

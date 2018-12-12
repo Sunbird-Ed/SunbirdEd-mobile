@@ -6,6 +6,9 @@ settings{
 
     ion-icon{
         font-size: 22px !important;
-        font-weight: 550;
+        @extend .font-weight-550;
+    }
+    .item-ios h2 {
+        line-height: 1.7;
     }
     }

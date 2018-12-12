@@ -37,6 +37,12 @@ export class ContentType {
         ContentType.TEXTBOOK,
         ContentType.TEXTBOOK_UNIT
     ];
+    public static readonly FOR_RECENTLY_VIEWED = [
+        ContentType.STORY,
+        ContentType.WORKSHEET,
+        ContentType.GAME,
+        ContentType.RESOURCE
+    ];
 }
 
 export class MimeType {
@@ -44,11 +50,22 @@ export class MimeType {
 }
 
 export class Search {
-    public static readonly FACETS = ['board', 'gradeLevel', 'subject', 'medium', 'contentType'];
+    public static readonly FACETS = [
+        'board',
+        'gradeLevel',
+        'subject',
+        'medium',
+        'contentType'
+    ];
 }
 
 export class FlagContent {
-    public static readonly FLAG_REASONS_VALUE = ['Copyright Violation', 'Inappropriate Content', 'Privacy Violation', 'Other'];
+    public static readonly FLAG_REASONS_VALUE = [
+        'Copyright Violation',
+        'Inappropriate Content',
+        'Privacy Violation',
+        'Other'
+    ];
     public static readonly FLAG_REASONS_LABLE = [
         'OPTION_COPYRIGHT_VIOLATION',
         'OPTION_INAPPROPRIATE_CONTENT',
@@ -59,11 +76,17 @@ export class FlagContent {
 
 export class ProfileConstants {
     public static readonly USER_TOKEN = 'userToken';
-    public static readonly REQUIRED_FIELDS = ['completeness', 'missingFields', 'lastLoginTime', 'topics'];
+    public static readonly REQUIRED_FIELDS = [
+        'completeness',
+        'missingFields',
+        'lastLoginTime',
+        'topics',
+        'organisations',
+        'roles'
+    ];
 }
 
 export class AudienceFilter {
-    // TODO : Check with Anil for TEACHER & LOGGED_IN_USER values
     public static readonly GUEST_TEACHER = ['instructor', 'learner'];
     public static readonly GUEST_STUDENT = ['learner'];
 
@@ -92,6 +115,7 @@ export class FrameworkConstant {
 
 export class FormConstant {
     public static readonly DEFAULT_SYALLABUS_PATH = 'data/form/syllabus.json';
+    public static readonly DEFAULT_SUPPORTED_BOARDS_PATH = 'data/form/supported_boards.json';
     public static readonly DEFAULT_PAGE_COURSE_FILTER_PATH = 'data/form/pageassemble_course_filter.json';
     public static readonly DEFAULT_PAGE_LIBRARY_FILTER_PATH = 'data/form/pageassemble_library_filter.json';
 }
@@ -100,7 +124,10 @@ export class PreferenceKey {
     public static readonly SELECTED_LANGUAGE_CODE = 'selected_language_code';
     public static readonly SELECTED_LANGUAGE = 'selected_language';
     public static readonly SELECTED_USER_TYPE = 'selected_user_type';
+    public static readonly COURSE_IDENTIFIER = 'course_identifier';
     public static readonly IS_ONBOARDING_COMPLETED = 'is_onboarding_settings_completed';
+    public static readonly IS_BOOKMARK_VIEWED = 'is_bookmark_viewed';
+    public static readonly CONTENT_CONTEXT = 'content_context';
 }
 
 export class GenericAppConfig {
@@ -114,9 +141,20 @@ export class GenericAppConfig {
     public static readonly DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT = 'DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT';
     public static readonly DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT = 'DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT';
     public static readonly TRACK_USER_TELEMETRY = 'TRACK_USER_TELEMETRY';
+    public static readonly CONTENT_STREAMING_ENABLED = 'CONTENT_STREAMING_ENABLED';
+    public static readonly DISPLAY_ONBOARDING_SCAN_PAGE = 'DISPLAY_ONBOARDING_SCAN_PAGE';
+    public static readonly DISPLAY_ONBOARDING_CATEGORY_PAGE = 'DISPLAY_ONBOARDING_CATEGORY_PAGE';
+    public static readonly OPEN_RAPDISCOVERY_ENABLED = 'OPEN_RAPDISCOVERY_ENABLED';
+    public static readonly SUPPORT_EMAIL = 'SUPPORT_EMAIL';
 }
 
 export const appLanguages = [
+    {
+        label: 'हिंदी',
+        code: 'hi',
+        isApplied: false,
+        name: 'Hindi'
+    },
     {
         label: 'English',
         code: 'en',
@@ -124,10 +162,10 @@ export const appLanguages = [
         name: 'English'
     },
     {
-        label: 'हिंदी',
-        code: 'hi',
+        label: 'मराठी',
+        code: 'mr',
         isApplied: false,
-        name: 'Hindi'
+        name: 'Marathi'
     },
     {
         label: 'తెలుగు',
@@ -142,9 +180,39 @@ export const appLanguages = [
         name: 'Tamil'
     },
     {
-        label: 'मराठी',
-        code: 'mr',
+        label: 'ಕನ್ನಡ',
+        code: 'kn',
         isApplied: false,
-        name: 'Marathi'
+        name: 'Kannada'
+    },
+    {
+        label: 'اردو',
+        code: 'ur',
+        isApplied: false,
+        name: 'Urdu'
     }
 ];
+
+export class PageName {
+    public static readonly RESOURCE = 'Resource';
+    public static readonly COURSE = 'Course';
+    public static readonly DIAL_CODE = 'DIAL Code Consumption';
+}
+
+export class XwalkConstants {
+    public static readonly LINK = 'https://play.google.com/store/apps/details?id=org.xwalk.core';
+    public static readonly APP_ID = 'org.xwalk.core';
+}
+
+export class ContentCard {
+    public static readonly LAYOUT_INPROGRESS = 'InProgress';
+    public static readonly LAYOUT_POPULAR = 'Popular';
+    public static readonly LAYOUT_SAVED_CONTENT = 'SavedContent';
+}
+
+export class ViewMore {
+    public static readonly PAGE_COURSE_ENROLLED = 'course.EnrolledCourses';
+    public static readonly PAGE_COURSE_POPULAR = 'course.PopularContent';
+    public static readonly PAGE_RESOURCE_SAVED = 'resource.SavedResources';
+    public static readonly PAGE_RESOURCE_RECENTLY_VIEWED = 'resource.RecentlyViewed';
+}

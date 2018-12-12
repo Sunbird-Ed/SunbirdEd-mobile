@@ -3,6 +3,11 @@
         <ion-title ellipsis>
             {{contentName}}
         </ion-title>
+        <ion-buttons right>
+            <button ion-button icon-only (click)='importcsv()'>
+              <ion-icon ios="ios-download" md="md-download"></ion-icon>
+            </button>
+          </ion-buttons>
     </ion-navbar>
 
     <ion-toolbar no-border-top>
