@@ -9,7 +9,7 @@ rm -rf www
 CORDOVA_COUNTER=0
 SUNBIRD_CORDOVA_COUNTER=0
 
-# Pass build branch as input
+## Pass build branch as input
 buildBranch="$1"
 
 file="./build_config"
