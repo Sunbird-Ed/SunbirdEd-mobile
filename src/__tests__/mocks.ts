@@ -16,15 +16,7 @@ import {
   TelemetryService,
   UserProfileService
 } from 'sunbird';
-import {
-  Events,
-  LoadingController,
-  NavController,
-  NavParams,
-  Platform,
-  PopoverController,
-  ViewController
-} from 'ionic-angular';
+import {Events, NavController, NavParams, Platform, PopoverController, LoadingController, ViewController} from 'ionic-angular';
 import {NgZone} from '@angular/core';
 import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService} from '@app/service';
 import {TranslateService} from '@ngx-translate/core';
@@ -85,7 +77,8 @@ export const userProfileServiceMock = createSpyObj<UserProfileService>([
 ]);
 
 export const profileServiceMock = createSpyObj<ProfileService>([
-  'setCurrentProfile'
+  'setCurrentProfile',
+  'doOAuthStepOne'
 ]);
 
 export const authServiceMock = createSpyObj<AuthService>([
@@ -97,7 +90,9 @@ export const commonUtilServiceMock = createSpyObj<CommonUtilService>([
   'translateMessage',
   'showMessage',
   'showToast',
-  'getLoader'
+  'getLoader',
+  'getTranslatedValue',
+  'showContentComingSoonAlert'
 ]);
 
 export const eventsMock = createSpyObj<Events>([
@@ -111,7 +106,8 @@ export const contentServiceMock = createSpyObj<ContentService>([
   'getLocalContents',
   'importContent',
   'getChildContents',
-  'cancelDownload'
+  'cancelDownload',
+  'searchContent'
 ]);
 
 export const popoverCtrlMock = createSpyObj<PopoverController>([
@@ -167,7 +163,9 @@ export const telemetryGeneratorServiceMock = createSpyObj<TelemetryGeneratorServ
   'generateInteractTelemetry',
   'generateEndTelemetry',
   'generatePageViewTelemetry',
-  'generateBackClickedTelemetry'
+  'generateBackClickedTelemetry',
+  'generateLogEvent',
+  'generateExtraInfoTelemetry',
 ]);
 
 export const courseUtilServiceMock = createSpyObj<CourseUtilService>([
@@ -182,12 +180,14 @@ export const pageAssembleServiceMock = createSpyObj<PageAssembleService>([
 
 export const sunbirdQRScannerMock = createSpyObj<SunbirdQRScanner>([
   'startScanner',
-  'getImportContentRequestBody'
+  'getImportContentRequestBody',
+  'getLibraryFilterConfig'
 ]);
 
 export const formAndFrameworkUtilServiceMock = createSpyObj<FormAndFrameworkUtilService>([
   'getCourseFilterConfig',
-  'updateLoggedInUser'
+  'updateLoggedInUser',
+  'getLibraryFilterConfig'
 ]);
 
 export const loadingControllerMock = createSpyObj<LoadingController>([
@@ -196,17 +196,26 @@ export const loadingControllerMock = createSpyObj<LoadingController>([
 ]);
 
 export const reportServiceMock = createSpyObj<ReportService>([
-  'getListOfReports'
+  'getListOfReports',
+  'getImportContentRequestBody'
 ]);
+
+export const appVersionMock = createSpyObj<AppVersion>([
+  'getAppName'
+]);
+
 export const sharedPreferencesMock = createSpyObj<SharedPreferences>([
   'getString',
   'putString',
   'getStringWithoutPrefix'
 ]);
-export const frameworkServiceMock = createSpyObj<FrameworkService>(['getCategoryData']);
+export const frameworkServiceMock = createSpyObj<FrameworkService>([
+  'getCategoryData'
+]);
 
-export const viewControllerMock = createSpyObj<ViewController>(['dismiss']);
-
+export const viewControllerMock = createSpyObj<ViewController>([
+  'dismiss'
+]);
 
 export const deviceInfoServiceMock = createSpyObj<DeviceInfoService>([
   'getDeviceID'
@@ -217,10 +226,6 @@ export const telemetryServiceMock = createSpyObj<TelemetryService>([
   'interact',
   'getTelemetryStat',
   'sync'
-]);
-
-export const appVersionMock = createSpyObj<AppVersion>([
-  'getAppName'
 ]);
 
 export const supportfileMock = createSpyObj<any>([
