@@ -324,7 +324,6 @@ export class ContentDetailsPage {
    * Function to rate content
    */
   rateContent(popupType: string) {
-    //if (this.isGuestUser || this.isNotGuestUser) {
     const paramsMap = new Map();
     if (this.isContentPlayed || (this.content.downloadable
       && this.content.contentAccess.length)) {
@@ -361,11 +360,6 @@ export class ContentDetailsPage {
       paramsMap,
       this.objRollup,
       this.corRelationList);
-    // } else {
-    //   if (this.profileType === ProfileType.TEACHER) {
-    //     this.commonUtilService.showToast('SIGNIN_TO_USE_FEATURE');
-    //   }
-    // }
   }
 
   /**
