@@ -304,7 +304,7 @@ export class GroupReportListPage {
                 break;
             }
             line += '\n';
-            for (let p = 0; p < anzahlTeams - 1; p++) {
+            for (let p = 0; p < anzahlTeams; p++) {
                 line += values[p].users.get(values[p].uid) + ',';
                 line += values[p].uid + ',';
                 line += values[p].qtitle + ',';

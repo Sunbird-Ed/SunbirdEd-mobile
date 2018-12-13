@@ -181,7 +181,7 @@ export class UserReportPage {
       break;
     }
     line += '\n';
-    for (let j = 0; j < anzahlTeams - 1; j++) {
+    for (let j = 0; j < anzahlTeams; j++) {
       line +=  '\"' + values[j].qtitle + '\"' + ',';
       line +=  '\"' + values[j].qid + '\"' + ',';
       line +=  '\"' + ' ' + values[j].score  + '/' + values[j].maxScore + '\"' + ',';
