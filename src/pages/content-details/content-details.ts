@@ -325,42 +325,42 @@ export class ContentDetailsPage {
    */
   rateContent(popupType: string) {
     //if (this.isGuestUser || this.isNotGuestUser) {
-      const paramsMap = new Map();
-      if (this.isContentPlayed || (this.content.downloadable
-        && this.content.contentAccess.length)) {
+    const paramsMap = new Map();
+    if (this.isContentPlayed || (this.content.downloadable
+      && this.content.contentAccess.length)) {
 
-        paramsMap['IsPlayed'] = 'Y';
-        const popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
-          content: this.content,
-          pageId: PageId.CONTENT_DETAIL,
-          rating: this.userRating,
-          comment: this.ratingComment,
-          popupType: popupType
-        }, {
-            cssClass: 'content-rating-alert'
-          });
-        popUp.present({
-          ev: event
+      paramsMap['IsPlayed'] = 'Y';
+      const popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
+        content: this.content,
+        pageId: PageId.CONTENT_DETAIL,
+        rating: this.userRating,
+        comment: this.ratingComment,
+        popupType: popupType
+      }, {
+          cssClass: 'content-rating-alert'
         });
-        popUp.onDidDismiss(data => {
-          if (data && data.message === 'rating.success') {
-            this.userRating = data.rating;
-            this.ratingComment = data.comment;
-          }
-        });
-      } else {
-        paramsMap['IsPlayed'] = 'N';
-        this.commonUtilService.showToast('TRY_BEFORE_RATING');
-      }
-      this.telemetryGeneratorService.generateInteractTelemetry(
-        InteractType.TOUCH,
-        InteractSubtype.RATING_CLICKED,
-        Environment.HOME,
-        PageId.CONTENT_DETAIL,
-        undefined,
-        paramsMap,
-        this.objRollup,
-        this.corRelationList);
+      popUp.present({
+        ev: event
+      });
+      popUp.onDidDismiss(data => {
+        if (data && data.message === 'rating.success') {
+          this.userRating = data.rating;
+          this.ratingComment = data.comment;
+        }
+      });
+    } else {
+      paramsMap['IsPlayed'] = 'N';
+      this.commonUtilService.showToast('TRY_BEFORE_RATING');
+    }
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.RATING_CLICKED,
+      Environment.HOME,
+      PageId.CONTENT_DETAIL,
+      undefined,
+      paramsMap,
+      this.objRollup,
+      this.corRelationList);
     // } else {
     //   if (this.profileType === ProfileType.TEACHER) {
     //     this.commonUtilService.showToast('SIGNIN_TO_USE_FEATURE');
@@ -751,7 +751,14 @@ export class ContentDetailsPage {
       });
     });
   }
-
+  /** funtion add elipses to the texts**/
+  addElipsesInLongText(msg: string) {
+    if (this.commonUtilService.translateMessage(msg).length >= 12) {
+      return this.commonUtilService.translateMessage(msg).slice(0, 8) + '....';
+    } else {
+      return this.commonUtilService.translateMessage(msg);
+    }
+  }
 
   /**
    * alert for playing the content
@@ -773,7 +780,7 @@ export class ContentDetailsPage {
             }
           },
           {
-            text: this.commonUtilService.translateMessage('CHANGE_USER'),
+            text: this.addElipsesInLongText('CHANGE_USER'),
             cssClass: 'alert-btn-cancel',
             handler: () => {
               const playConfig: any = {};
