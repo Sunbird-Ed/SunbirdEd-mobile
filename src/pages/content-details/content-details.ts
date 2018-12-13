@@ -976,8 +976,17 @@ export class ContentDetailsPage {
 
   /**
   * To View Credits popup
+  * check if non of these properties exist, then return false
+  * else show ViewCreditsComponent
   */
   viewCredits() {
+    if (!this.content.creator && !this.content.creators) {
+      if (!this.content.contributors && !this.content.owner) {
+        if (!this.content.attributions) {
+          return false;
+        }
+      }
+    }
     this.courseUtilService.showCredits(this.content, PageId.CONTENT_DETAIL, this.objRollup, this.corRelationList);
   }
 
@@ -1003,3 +1012,4 @@ export class ContentDetailsPage {
     popover.present();
   }
 }
+
