@@ -4,6 +4,7 @@ jobs:
     docker:
       - image: sunbird/build:android
     steps:
+      - run: ssh-keyscan github.com >> ~/.ssh/known_hosts
       - checkout
       - run:
           name: run build file
