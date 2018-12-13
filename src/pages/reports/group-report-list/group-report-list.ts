@@ -279,7 +279,7 @@ export class GroupReportListPage {
                     line += '\"' + values[k].uid + '\"' + ',';
                     line += '\"' + values[k].assessmentData[j].qtitle + '\"' + ',';
                     line += '\"' + values[k].assessmentData[j].qid + '\"' + ',';
-                    line += '\"' + values[k].assessmentData[j].score + '/' + values[k].assessmentData[j].maxScore + '\"' + ',';
+                    line += '\"' + ' ' + values[k].assessmentData[j].score + '/' + values[k].assessmentData[j].maxScore + '\"' + ',';
                     line += '\"' + values[k].assessmentData[j].timespent + '\"' + '\n';
                 }
                 line += '\n\n';
@@ -304,12 +304,12 @@ export class GroupReportListPage {
                 break;
             }
             line += '\n';
-            for (let p = 0; p < anzahlTeams - 1; p++) {
+            for (let p = 0; p < anzahlTeams; p++) {
                 line += values[p].users.get(values[p].uid) + ',';
                 line += values[p].uid + ',';
                 line += values[p].qtitle + ',';
                 line += values[p].qid + ',';
-                line += values[p].score + '/' + values[p].max_score + ',';
+                line += ' ' + values[p].score + '/' + values[p].max_score + ',';
                 line += this.formatTime(values[p].time_spent) + '\n';
             }
         }

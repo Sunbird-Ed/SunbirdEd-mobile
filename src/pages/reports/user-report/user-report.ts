@@ -171,7 +171,7 @@ export class UserReportPage {
       line += 'Content name (Content ID)' + ',' + this.reportSummary.name + '(' + this.reportSummary.contentId + ')' + '\n';
       line += 'Content started time' + ',' + contentstarttime + '\n';
       line += 'Total Time' + ',' + this.formatTime(this.totalTime) + '\n';
-      line += 'Total Score' + ',' + this.totalScore + '/' + this.maxTotalScore  + '\n';
+      line += 'Total Score' + ',' + ' ' + this.totalScore + '/' + this.maxTotalScore  + '\n';
       line += 'File export time' + ',' + filexptime + '\n';
       line += '\n\n';
       line += 'Question#' + ',';
@@ -181,10 +181,10 @@ export class UserReportPage {
       break;
     }
     line += '\n';
-    for (let j = 0; j < anzahlTeams - 1; j++) {
+    for (let j = 0; j < anzahlTeams; j++) {
       line +=  '\"' + values[j].qtitle + '\"' + ',';
       line +=  '\"' + values[j].qid + '\"' + ',';
-      line +=  '\"' + values[j].score + '/' + values[j].maxScore + '\"' + ',';
+      line +=  '\"' + ' ' + values[j].score  + '/' + values[j].maxScore + '\"' + ',';
       line +=  '\"' + this.formatTime(values[j].timespent) + '\"' + '\n';
     }
     csv += line + '\n';
