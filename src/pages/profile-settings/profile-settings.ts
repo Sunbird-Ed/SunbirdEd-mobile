@@ -105,13 +105,6 @@ export class ProfileSettingsPage {
       this.scanner.stopScanner();
     }
     this.handleBackButton();
-    // this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
-    //   this.dismissPopup();
-    //   this.telemetryGeneratorService.generateInteractTelemetry(
-    //     InteractType.TOUCH, InteractSubtype.DEVICE_BACK_CLICKED,
-    //     PageId.ONBOARDING_PROFILE_PREFERENCES,
-    //     Environment.ONBOARDING);
-    // }, 10);
   }
 
   ionViewWillEnter() {
@@ -123,7 +116,6 @@ export class ProfileSettingsPage {
   }
 
   ionViewWillLeave() {
-    console.log('ionViewWillLeave');
     // this.unregisterBackButton();
   }
   /**
@@ -465,6 +457,7 @@ export class ProfileSettingsPage {
   }
 
   handleBackButton() {
+    this.dismissPopup();
     const self = this;
     this.platform.registerBackButtonAction(() => {
 
@@ -487,6 +480,10 @@ export class ProfileSettingsPage {
         }
       }
     });
+    this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.TOUCH, InteractSubtype.DEVICE_BACK_CLICKED,
+          PageId.ONBOARDING_PROFILE_PREFERENCES,
+          Environment.ONBOARDING);
   }
 
 
