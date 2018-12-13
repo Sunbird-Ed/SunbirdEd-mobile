@@ -17,4 +17,10 @@ page-categories-edit {
     .padding-12 {
         padding: 12px !important;
     }
+    .item-select-disabled {
+        .label-md {
+            color: map-get($colors, medium_gray);
+            opacity: 1;
+        }
+    }
 }
