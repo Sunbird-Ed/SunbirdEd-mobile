@@ -151,7 +151,8 @@
     "browser": false,
     "rootDir": "./",
     "roots": [
-      "<rootDir>/src/pages"
+      "<rootDir>/src/pages",
+      "<rootDir>/src/component"
     ],
     "moduleDirectories": [
       "node_modules"
