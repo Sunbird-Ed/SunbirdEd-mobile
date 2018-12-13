@@ -178,6 +178,7 @@ export const telemetryGeneratorServiceMock = createSpyObj<TelemetryGeneratorServ
 
 export const courseUtilServiceMock = createSpyObj<CourseUtilService>([
   'showCredits',
+  'showToast',
   'getImportContentRequestBody'
 ]);
 

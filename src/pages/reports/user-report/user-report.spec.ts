@@ -1,4 +1,3 @@
-
 import { mockRes } from './../../courses/courses.spec.data';
 import {UserReportPage} from '../user-report/user-report';
 
