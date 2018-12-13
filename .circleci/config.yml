@@ -4,7 +4,7 @@ jobs:
     docker:
       - image: sunbird/build:android
     steps:
-      - run: mkdir -p ~/.ssh && touch ~/.ssh/known_hosts && ssh-keyscan github.com >> ~/.ssh/known_hosts
+      - run: sudo echo '    StrictHostKeyChecking no' >> /etc/ssh/ssh_config && /etc/init.d
       - checkout
       - run:
           name: run build file
