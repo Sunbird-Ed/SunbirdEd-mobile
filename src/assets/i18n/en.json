@@ -120,7 +120,7 @@
   "EMPTY_SEARCH_RESULTS": "No Search Results Found",
   "ENDORSE": "Endorse",
   "ENJOYED_THIS_CONTENT": "Enjoyed this content?",
-  "ENROLL": "ENROLL",
+  "ENROLL": "Enroll",
   "ENROLL_COURSE": "ENROLL IN COURSE",
   "ENTER_GROUP_NAME": "Enter group name",
   "ERROR_BATCH_NOT_STARTED": "Batch not started",
@@ -411,13 +411,14 @@
   "VIEW_CREDITS_INFO": "View licensing information",
   "VIEW_DOWNLOADS_ONLY_MSG": "View Downloads Only",
   "VIEW_MORE": "VIEW MORE",
-  "VIEW_ONGOING_BATCHES": "View ongoing batches",
-  "VIEW_UPCOMING_BATCHES": "View upcoming batches",
+  "ONGOING_BATCHES": "Ongoing Batches",
+  "UPCOMING_BATCHES": "Upcoming Batches",
   "WAIT_REQUEST": "Fetching content ...",
   "WARNING_PLEASE_MAKE_SOME_CHANGES": "Make changes",
   "WELCOME_BACK": "WELCOME BACK {{%s}}",
   "WHAT_WENT_WRONG": "What went wrong?",
   "YES": "Yes",
   "YOUR_PROGRESS": "Your Progress: {{%s}}%",
-  "CSV_DOWNLOAD_SUCCESS": " {{%s}} saved in ‘Downloads’"
+  "CSV_DOWNLOAD_SUCCESS": " {{%s}} saved in ‘Downloads’",
+  "NO_BATCHES_AVAILABLE": "No batches avilable"
 }
