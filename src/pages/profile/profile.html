@@ -110,14 +110,14 @@
         </div>
     </div>
 
-    <div class="contributions" *ngIf="enrolledCourse.length > 0">
+    <div class="contributions" *ngIf="contentCreatedByMe.length > 0">
         <div class="bolder f16" style="padding: 15px; background-color: #fff; margin-bottom:  2px;">
-            {{'CONTRIBUTIONS' | translate}} ({{enrolledCourse.length}})&lrm;
+            {{'CONTRIBUTIONS' | translate}} ({{contentCreatedByMe.length}})&lrm;
         </div>
         <div class="cards-container" style="padding:15px 5px; background-color: #fff; ">
             <ion-scroll scrollX="true" style="width: 100%" no-padding>
-                <div *ngIf="enrolledCourse  && isLoggedInUser">
-                    <ion-card *ngFor="let courseItem of enrolledCourse; let i=index" (click)="navigateToDetailPage(courseItem, layoutPopular, i);">
+                <div *ngIf="contentCreatedByMe  && isLoggedInUser">
+                    <ion-card *ngFor="let courseItem of contentCreatedByMe; let i=index" (click)="navigateToDetailPage(courseItem, layoutPopular, i);">
                         <ion-card-content>
                             <ion-row class="top">
                                 <ion-col col-3 class="img-container">
@@ -143,7 +143,7 @@
                             </ion-row>
                             <ion-row>
                                 <ion-col col-12 class="PTB0">
-                                    <h6 class="name ">{{courseItem?.name}}</h6>
+                                    <h6 class="name second-line-ellipsis">{{courseItem?.name}}</h6>
                                 </ion-col>
                                 <ion-col col-12 class="PTB0">
                                     <p class="author">{{courseItem?.creator}}</p>
