@@ -1,3 +1,4 @@
+import { FileTransfer } from '@ionic-native/file-transfer';
 import {
   AuthService,
   BuildParamService,
@@ -16,14 +17,26 @@ import {
   TelemetryService,
   UserProfileService
 } from 'sunbird';
-import {Events, NavController, NavParams, Platform, PopoverController, LoadingController, ViewController} from 'ionic-angular';
-import {NgZone} from '@angular/core';
-import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService} from '@app/service';
-import {TranslateService} from '@ngx-translate/core';
-import {SocialSharing} from '@ionic-native/social-sharing';
-import {AppVersion} from '@ionic-native/app-version';
-import {SunbirdQRScanner} from '@app/pages/qrscanner';
-import {FormAndFrameworkUtilService} from '@app/pages/profile';
+import {
+  Events,
+  LoadingController,
+  NavController,
+  NavParams,
+  Platform,
+  PopoverController,
+  ViewController,
+  IonicApp
+} from 'ionic-angular';
+import { NgZone } from '@angular/core';
+import { AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService } from '@app/service';
+import { TranslateService } from '@ngx-translate/core';
+import { SocialSharing } from '@ionic-native/social-sharing';
+import { AppVersion } from '@ionic-native/app-version';
+import { SunbirdQRScanner } from '@app/pages/qrscanner';
+import { FormAndFrameworkUtilService } from '@app/pages/profile';
+import { File } from '@ionic-native/file';
+import { DatePipe } from '../../node_modules/@angular/common';
+import { NavControllerBase } from 'ionic-angular/navigation/nav-controller-base';
 
 export type Mockify<T> = {
   [P in keyof T]: jest.Mock<{}>;
@@ -125,12 +138,15 @@ export const platformMock = createSpyObj<Platform>([
 ]);
 
 export const translateServiceMock = createSpyObj<TranslateService>([
-  'use'
+  'use',
+  'get'
 ]);
+
 
 export const socialSharingMock = createSpyObj<SocialSharing>([
   'shareViaEmail',
-  'share'
+  'share',
+  'use'
 ]);
 
 export const shareUtilMock = createSpyObj<ShareUtil>([
@@ -166,17 +182,32 @@ export const telemetryGeneratorServiceMock = createSpyObj<TelemetryGeneratorServ
   'generateBackClickedTelemetry',
   'generateLogEvent',
   'generateExtraInfoTelemetry',
+  'generateExtraInfoTelemetry'
 ]);
 
 export const courseUtilServiceMock = createSpyObj<CourseUtilService>([
   'showCredits',
-  'getImportContentRequestBody',
-  'showToast'
+  'showToast',
+  'getImportContentRequestBody'
+]);
+
+export const appVersionMock = createSpyObj<AppVersion>([
+  'getAppName'
 ]);
 
 export const pageAssembleServiceMock = createSpyObj<PageAssembleService>([
   'getPageAssemble'
 ]);
+
+export const sharedPreferencesMock = createSpyObj<SharedPreferences>([
+  'getString',
+  'putString',
+  'getImportContentRequestBody',
+  'showToast',
+  'getStringWithoutPrefix',
+]);
+
+
 
 export const sunbirdQRScannerMock = createSpyObj<SunbirdQRScanner>([
   'startScanner',
@@ -197,29 +228,44 @@ export const loadingControllerMock = createSpyObj<LoadingController>([
 
 export const reportServiceMock = createSpyObj<ReportService>([
   'getListOfReports',
-  'getImportContentRequestBody'
+  'getImportContentRequestBody',
+  'getDetailReport'
 ]);
 
-export const appVersionMock = createSpyObj<AppVersion>([
-  'getAppName'
+export const transferMock = createSpyObj<FileTransfer>([
+  'create'
 ]);
 
-export const sharedPreferencesMock = createSpyObj<SharedPreferences>([
-  'getString',
-  'putString',
-  'getStringWithoutPrefix'
+export const fileMock = createSpyObj<File>([
+  'writeFile'
 ]);
-export const frameworkServiceMock = createSpyObj<FrameworkService>([
-  'getCategoryData'
+
+export const datePipeMock = createSpyObj<DatePipe>([
+  'transform'
+]);
+
+export const loadingMock = createSpyObj<LoadingController>([
+  'create',
+  'dismiss'
+]);
+
+export const deviceInfoServiceMock = createSpyObj<DeviceInfoService>([
+  'getDeviceID',
+  'getDownloadDirectoryPath',
+  'getDeviceAPILevel',
+  'checkAppAvailability',
+  'getDeviceID'
 ]);
 
 export const viewControllerMock = createSpyObj<ViewController>([
   'dismiss'
 ]);
 
-export const deviceInfoServiceMock = createSpyObj<DeviceInfoService>([
-  'getDeviceID'
+
+export const frameworkServiceMock = createSpyObj<FrameworkService>([
+  'getCategoryData'
 ]);
+
 
 export const telemetryServiceMock = createSpyObj<TelemetryService>([
   'impression',
@@ -228,7 +274,12 @@ export const telemetryServiceMock = createSpyObj<TelemetryService>([
   'sync'
 ]);
 
+
 export const supportfileMock = createSpyObj<any>([
   'removeFile',
   'shareSunbirdConfigurations'
+]);
+
+
+export const ionicAppMock = createSpyObj<IonicApp>([
 ]);
