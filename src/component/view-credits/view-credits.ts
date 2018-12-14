@@ -78,6 +78,27 @@ export class ViewCreditsComponent {
     );
   }
 
+  /* SUDO
+    if firstprperty is there and secondprperty is not there, then return firstprperty value
+    else if firstprperty is not there and secondprperty is there, then return secondprperty value
+    else do the merger of firstprperty and secondprperty value and return merged value
+  */
+  mergeProperties(firstProp, secondProp) {
+    if (this.content[firstProp] && !this.content[secondProp]) {
+      return this.content[firstProp];
+    } else if (!this.content[firstProp] && this.content[secondProp]) {
+      return this.content[secondProp];
+    } else {
+      let first: any;
+      let second: any;
+      first = this.content[firstProp].split(', ');
+      second = this.content[secondProp].split(', ');
+      first = second.concat(first);
+      first = Array.from(new Set(first));
+      return first.join(', ');
+    }
+  }
+
   /**
    * Get user id
    */
