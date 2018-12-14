@@ -156,17 +156,17 @@
 			'PLAY_FROM_DEVICE' | translate }}</button>
 		<ion-icon *ngIf="isDownloadStarted && downloadProgress !== 100" (click)="cancelDownload()" name="ios-close-circle-outline"
 		 class="cancel-download" color="primary"></ion-icon>
-		<button ion-button block *ngIf="!content?.downloadable && !isDownloadStarted" (click)="downloadContent()">
+		<!-- <button ion-button block *ngIf="!content?.downloadable && !isDownloadStarted" (click)="downloadContent()">
 			{{ isDownloadStarted ? ('DOWNLOADING_1' | translate:{'%s': downloadProgress}) + ' %' : ('DOWNLOAD' | translate) }}
-		</button>
-		<button ion-button *ngIf="isDownloadStarted" text-uppercase [ngClass]="{'text-font': isDownloadStarted && ('DOWNLOADING_1' | translate).length > 18}"
+		</button> -->
+		<button ion-button *ngIf="!content?.downloadable" (click)="downloadContent()" text-uppercase [ngClass]="{'text-font': isDownloadStarted && ('DOWNLOADING_1' | translate).length > 18}"
 		 [ngStyle]="{'background': '-webkit-linear-gradient(left, rgba(0,73,153, 0.86) '  +downloadProgress+ '%, #006DE5 0%)', 'width': isDownloadStarted === true ? '80%' : '100%'}"
 		 style="transition: all 0s ease 0s;">
 			{{ isDownloadStarted ? ('DOWNLOADING_1' | translate:{'%s': downloadProgress}) + ' %' : ('DOWNLOAD' | translate) }}
 		</button>
 		<!-- Update content -->
 		<button ion-button outline *ngIf="isUpdateAvail && content?.downloadable && downloadProgress !== 100" (click)="downloadContent()"
-		 text-uppercase [ngStyle]="{'width': isDownloadStarted === true ? '80%' : '100%'}">
+		 text-uppercase [ngStyle]="{'background': '-webkit-linear-gradient(left, #DBECFF '  +downloadProgress+ '%, white 0%)' , 'width': isDownloadStarted === true ? '80%' : '100%' , 'pointer-events': isDownloadStarted === true ? 'none': 'auto'}">
 			{{ isDownloadStarted ? ('UPDATING_CONTENT' | translate:{'%s': downloadProgress}): ('UPDATE_CONTENT' |
 			translate:{'%s': content?.size
 			| fileSize}) }}
@@ -181,31 +181,30 @@
 
 <ion-footer *ngIf="content && appGlobalService?.CONTENT_STREAMING_ENABLED">
 	<ion-toolbar padding *ngIf="!content?.streamingUrl">
-		<button ion-button block *ngIf="content?.downloadable" (click)="showSwitchUserAlert(false)" [disabled]="isDownloadStarted">{{
+		<button ion-button block *ngIf="content?.downloadable" (click)="showSwitchUserAlert(false)"  [disabled]="isDownloadStarted">{{
 			'PLAY_FROM_DEVICE' | translate }}</button>
 		<ion-icon *ngIf="isDownloadStarted && downloadProgress !== 100" (click)="cancelDownload()" name="ios-close-circle-outline"
 		 class="cancel-download" color="primary"></ion-icon>
-		<button ion-button block *ngIf="!content?.downloadable && !isDownloadStarted" (click)="downloadContent()">
+		<!-- <button ion-button block *ngIf="!content?.downloadable && !isDownloadStarted" (click)="downloadContent()">
 			{{ isDownloadStarted ? ('DOWNLOADING_1' | translate:{'%s': downloadProgress}) + ' %' : ('DOWNLOAD' | translate) }}
-		</button>
-		<button ion-button *ngIf="isDownloadStarted" text-uppercase [ngClass]="{'text-font': isDownloadStarted && ('DOWNLOADING_1' | translate).length > 18}"
+		 -->
+		<button ion-button *ngIf="isDownloadStarted" (click)="downloadContent()" text-uppercase [ngClass]="{'text-font': isDownloadStarted && ('DOWNLOADING_1' | translate).length > 18}"
 		 [ngStyle]="{'background': '-webkit-linear-gradient(left, rgba(0,73,153, 0.86) '  +downloadProgress+ '%, #006DE5 0%)', 'width': isDownloadStarted === true ? '80%' : '100%'}"
 		 style="transition: all 0s ease 0s;">
 			{{ isDownloadStarted ? ('DOWNLOADING_1' | translate:{'%s': downloadProgress}) + ' %' : ('DOWNLOAD' | translate) }}
 		</button>
 		<!-- Update content -->
 		<button ion-button outline *ngIf="isUpdateAvail && content?.downloadable && downloadProgress !== 100" (click)="downloadContent()"
-		 text-uppercase [ngStyle]="{'width': isDownloadStarted === true ? '80%' : '100%'}">
+		 text-uppercase [ngStyle]="{'background': '-webkit-linear-gradient(left, #DBECFF '  +downloadProgress+ '%, white 0%)' , 'width': isDownloadStarted === true ? '80%' : '100%' , 'pointer-events': isDownloadStarted === true ? 'none': 'auto'}">
 			{{ isDownloadStarted ? ('UPDATING_CONTENT' | translate:{'%s': downloadProgress}): ('UPDATE_CONTENT' |
 			translate:{'%s': content?.size
 			| fileSize}) }}
 		</button>
-
-	</ion-toolbar>
+</ion-toolbar>
 	<ion-toolbar padding *ngIf="content?.streamingUrl">
 		<button ion-button block *ngIf="!content?.downloadable" (click)="showSwitchUserAlert(true)" text-uppercase [disabled]="isDownloadStarted || !commonUtilService.networkInfo.isNetworkAvailable ? true : false">{{'PLAY_ONLINE'
 			| translate}}</button>
-		<ion-icon *ngIf="isDownloadStarted && downloadProgress !== 100 && !content?.downloadable" (click)="cancelDownload()"
+		<ion-icon *ngIf="isDownloadStarted && downloadProgress !== 100" (click)="cancelDownload()"
 		 name="ios-close-circle-outline" class="cancel-download" color="primary"></ion-icon>
 		<button ion-button outline *ngIf="!content?.downloadable" (click)="downloadContent()" text-uppercase [ngClass]="{'text-font': isDownloadStarted && ('DOWNLOADING_1' | translate).length > 18}"
 		 [ngStyle]="{'background': '-webkit-linear-gradient(left, #DBECFF '  +downloadProgress+ '%, white 0%)', 'width': isDownloadStarted === true ? '80%' : '100%'}"
@@ -216,7 +215,7 @@
 		</button>
 		<!-- Update content -->
 		<button ion-button outline *ngIf="isUpdateAvail && content?.downloadable && downloadProgress !== 100" (click)="downloadContent()"
-		 text-uppercase [ngStyle]="{'width': isDownloadStarted === true ? '80%' : '100%'}">
+		 text-uppercase [ngStyle]="{'background': '-webkit-linear-gradient(left, #DBECFF '  +downloadProgress+ '%, white 0%)' , 'width': isDownloadStarted === true ? '80%' : '100%' , 'pointer-events': isDownloadStarted === true ? 'none': 'auto'}">
 			{{ isDownloadStarted ? ('UPDATING_CONTENT' | translate:{'%s': downloadProgress}): ('UPDATE_CONTENT' |
 			translate:{'%s': content?.size
 			| fileSize}) }}

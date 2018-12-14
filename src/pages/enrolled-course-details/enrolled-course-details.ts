@@ -186,6 +186,9 @@ export class EnrolledCourseDetailsPage {
     this.events.subscribe(EventTopics.ENROL_COURSE_SUCCESS, (res) => {
       if (res && res.batchId) {
         this.batchId = res.batchId;
+        if (this.identifier && res.courseId && this.identifier === res.courseId) {
+          this.isAlreadyEnrolled = true;
+       }
       }
     });
 

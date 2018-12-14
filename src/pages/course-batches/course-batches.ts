@@ -129,7 +129,8 @@ export class CourseBatchesPage implements OnInit {
           console.log('You have successfully enrolled...');
           this.commonUtilService.showToast(this.commonUtilService.translateMessage('COURSE_ENROLLED'));
           this.events.publish(EventTopics.ENROL_COURSE_SUCCESS, {
-            batchId: item.id
+            batchId: item.id,
+            courseId: item.courseId
           });
           this.navCtrl.pop();
         });
