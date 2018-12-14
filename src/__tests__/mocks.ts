@@ -23,7 +23,8 @@ import {
   NavParams,
   Platform,
   PopoverController,
-  ViewController
+  ViewController,
+  IonicApp
 } from 'ionic-angular';
 import {NgZone} from '@angular/core';
 import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService} from '@app/service';
@@ -32,6 +33,7 @@ import {SocialSharing} from '@ionic-native/social-sharing';
 import {AppVersion} from '@ionic-native/app-version';
 import {SunbirdQRScanner} from '@app/pages/qrscanner';
 import {FormAndFrameworkUtilService} from '@app/pages/profile';
+import { NavControllerBase } from 'ionic-angular/navigation/nav-controller-base';
 
 export type Mockify<T> = {
   [P in keyof T]: jest.Mock<{}>;
@@ -198,15 +200,16 @@ export const loadingControllerMock = createSpyObj<LoadingController>([
 export const reportServiceMock = createSpyObj<ReportService>([
   'getListOfReports'
 ]);
+
 export const sharedPreferencesMock = createSpyObj<SharedPreferences>([
   'getString',
   'putString',
   'getStringWithoutPrefix'
 ]);
-export const frameworkServiceMock = createSpyObj<FrameworkService>(['getCategoryData']);
 
-export const viewControllerMock = createSpyObj<ViewController>(['dismiss']);
-
+export const frameworkServiceMock = createSpyObj<FrameworkService>([
+  'getCategoryData'
+]);
 
 export const deviceInfoServiceMock = createSpyObj<DeviceInfoService>([
   'getDeviceID'
@@ -226,4 +229,11 @@ export const appVersionMock = createSpyObj<AppVersion>([
 export const supportfileMock = createSpyObj<any>([
   'removeFile',
   'shareSunbirdConfigurations'
+]);
+
+export const viewControllerMock = createSpyObj<ViewController>([
+  'dismiss'
+]);
+
+export const ionicAppMock = createSpyObj<IonicApp>([
 ]);

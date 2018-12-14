@@ -11,20 +11,20 @@
 </ion-header>
 <ion-content>
   <ion-grid padding>
-    <div *ngIf="content?.creators">
+    <div *ngIf="content?.creators || content?.creator">
       <ion-row class="text-gray-color">
         {{ 'CREATORS' | translate }}
       </ion-row>
       <ion-row class="content">
-        {{content?.creators}}
+        {{mergeProperties('creators', 'creator')}}
       </ion-row>
     </div>
-    <div *ngIf="content?.contributors">
+    <div *ngIf="content?.contributors || content?.owner">
       <ion-row class="text-gray-color">
         {{ 'CONTRIBUTORS' | translate }}
       </ion-row>
       <ion-row class="content">
-        {{content?.contributors}}
+        {{mergeProperties('contributors', 'owner')}}
       </ion-row>
     </div>
     <div *ngIf="content?.attributions">
