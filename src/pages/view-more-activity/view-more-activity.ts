@@ -316,8 +316,10 @@ export class ViewMoreActivityPage implements OnInit {
         const contentData = [];
         _.forEach(data, (value) => {
           value.contentData.lastUpdatedOn = value.lastUpdatedTime;
-          if (value.basePath && value.contentData.appIcon) {
+          if (Boolean(value.isAvailableLocally) && value.basePath && value.contentData.appIcon) {
             value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
+          } else if (!Boolean(value.isAvailableLocally)) {
+            value.contentData.appIcon = value.contentData.appIcon;
           }
           contentData.push(value);
         });

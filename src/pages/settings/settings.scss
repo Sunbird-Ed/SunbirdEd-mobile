@@ -8,4 +8,7 @@ settings{
         font-size: 22px !important;
         @extend .font-weight-550;
     }
+    .item-ios h2 {
+        line-height: 1.7;
+    }
     }

@@ -1,308 +1,168 @@
-import { ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { NavController, LoadingController, ToastController, Config, Platform, Events, PopoverController, DeepLinker } from 'ionic-angular';
-import { NavParams } from 'ionic-angular';
-import { AppVersion } from '@ionic-native/app-version';
-import { DeviceInfoService, SharedPreferences, ServiceProvider } from 'sunbird';
-import { TranslateModule } from '@ngx-translate/core';
-import { BuildParamService } from 'sunbird';
-import { TelemetryService } from 'sunbird';
-import { SocialSharing } from '@ionic-native/social-sharing';
-import {
-    NavMock, AppVersionMock, LoadingControllerMock,
-    SharedPreferencesMock, TelemetryServiceMock, SocialSharingMock, DeepLinkerMock
-} from '../../../../test-config/mocks-ionic';
-import { } from 'jasmine';
+import 'jest';
 import { AboutUsPage } from './about-us';
-import { CommonUtilService } from '../../../service/common-util.service';
-import { App } from 'ionic-angular/components/app/app';
+import {
+    navCtrlMock, navParamsMock, buildParamServiceMock,
+    sharedPreferencesMock, socialSharingMock,
+    commonUtilServiceMock, deviceInfoServiceMock, telemetryServiceMock, appVersionMock, supportfileMock
+} from '../../../__tests__/mocks';
+import { PrivacypolicyPage } from '../privacypolicy/privacypolicy';
+import { TermsofservicePage } from '../termsofservice/termsofservice';
+import { AboutAppPage } from '../about-app/about-app';
 
-describe('AboutUsPage', () => {
-    let comp: AboutUsPage;
-    let fixture: ComponentFixture<AboutUsPage>;
-
-    const getLoader = () => {
-        const loadingController = TestBed.get(LoadingController);
-        comp.getLoader();
-    };
+describe.only('AboutUsPage', () => {
+    let aboutUsPage: AboutUsPage;
 
     beforeEach(() => {
-        const navControllerStub = {
-            push: () => ({})
-        };
-        const navParamsStub = {};
-        const appVersionStub = {
-            getAppName: () => ({
-                then: () => ({
-                    then: () => ({})
-                })
-            })
-        };
-        const deviceInfoServiceStub = {
-            getDeviceID: () => ({})
-        };
-        const buildParamServiceStub = {
-            getBuildConfigParam: () => ({})
-        };
-        TestBed.configureTestingModule({
-            imports: [TranslateModule.forRoot()],
-            declarations: [AboutUsPage],
-            schemas: [NO_ERRORS_SCHEMA],
-            providers: [
-                ServiceProvider, CommonUtilService, ToastController, App,
-                Config, Platform, Events, PopoverController,
-                { provide: DeepLinker, useValue: DeepLinkerMock },
-                { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() },
-                { provide: SocialSharing, useClass: SocialSharingMock },
-                { provide: SharedPreferences, useClass: SharedPreferencesMock },
-                { provide: NavController, useValue: navControllerStub },
-                { provide: NavParams, useValue: navParamsStub },
-                { provide: AppVersion, useValue: appVersionStub },
-                { provide: DeviceInfoService, useValue: deviceInfoServiceStub },
-                { provide: BuildParamService, useValue: buildParamServiceStub },
-                { provide: TelemetryService, useClass: TelemetryServiceMock }
-            ]
-        });
-        fixture = TestBed.createComponent(AboutUsPage);
-        comp = fixture.componentInstance;
+        aboutUsPage = new AboutUsPage(navCtrlMock as any, navParamsMock as any,
+            deviceInfoServiceMock as any, buildParamServiceMock as any, appVersionMock as any,
+            sharedPreferencesMock as any, socialSharingMock as any, telemetryServiceMock as any,
+            commonUtilServiceMock as any);
+
+        (window as any).supportfile = supportfileMock;
+        jest.resetAllMocks();
+    });
+
+    afterEach(() => {
+        (window as any).supportfile = undefined;
     });
 
     it('can load instance', () => {
-        expect(comp).toBeTruthy();
+        expect(aboutUsPage).toBeTruthy();
     });
-
-    describe('ionViewDidLoad', () => {
-        it('makes expected calls', () => {
-            const appVersionStub: AppVersion = TestBed.get(AppVersion);
-            const deviceInfoServiceStub: DeviceInfoService = fixture.debugElement.injector.get(DeviceInfoService);
-            spyOn(comp, 'getVersionName');
-            spyOn(deviceInfoServiceStub, 'getDeviceID').and.callFake((res, err) => {
-                return res('app Name');
-            });
-            spyOn(appVersionStub, 'getAppName').and.returnValue(Promise.resolve(Promise.resolve({})));
-            comp.ionViewDidLoad();
-            expect(comp.deviceId).toBe('app Name');
-            expect(comp.getVersionName).toBeDefined();
-            expect(appVersionStub.getAppName).toHaveBeenCalled();
-            expect(deviceInfoServiceStub.getDeviceID).toHaveBeenCalled();
-        });
-        it('checks if device id got error or not', (done) => {
-            const deviceInfoServiceStub: DeviceInfoService = fixture.debugElement.injector.get(DeviceInfoService);
-            let error: any;
-            error = {};
-            spyOn(deviceInfoServiceStub, 'getDeviceID').and.callFake((res, err) => {
-                return err(JSON.stringify(error));
-            });
-            comp.ionViewDidLoad();
-            setTimeout(() => {
-                expect(deviceInfoServiceStub.getDeviceID).toHaveBeenCalled();
-                done();
-            }, 10);
-        });
+    it('should create a valid instance of AboutUsPage', () => {
+        expect(aboutUsPage instanceof AboutUsPage).toBe(true);
+        expect(aboutUsPage).not.toBeFalsy();
     });
-    it('#IonViewDidLeave makes expected calls in success part', () => {
-        window['supportfile'] = {
-            removeFile: () => ({})
-        };
-        spyOn(window['supportfile'], 'removeFile').and.callFake((result, error) => {
-            return result(JSON.stringify({}));
-        });
-        comp.ionViewDidLeave();
+    it('should handle all resolved paramters when ionViewDidLoad() called', (done) => {
+        // arrange
+        (deviceInfoServiceMock.getDeviceID as any).mockResolvedValue('SAMPLE_DEVICE_ID');
+        appVersionMock.getAppName.mockResolvedValue('APP_NAME');
+        spyOn(aboutUsPage, 'getVersionName');
+        // act
+        aboutUsPage.ionViewDidLoad();
+        // assert
+        expect(aboutUsPage.version).toEqual('app version will be shown here');
+        setTimeout(() => {
+            expect(aboutUsPage.deviceId).toEqual('SAMPLE_DEVICE_ID');
+            expect(appVersionMock.getAppName).toHaveBeenCalled();
+            done();
+        }, 0);
     });
-    it('#IonViewDidLoad makes expected calls in error part', () => {
-        window['supportfile'] = {
-            removeFile: () => ({})
-        };
-        spyOn(window['supportfile'], 'removeFile').and.callFake((result, error) => {
-            return error(JSON.stringify({}));
-        });
-        comp.ionViewDidLeave();
+    it('should handle that method when getVersionName() is called', (done) => {
+        // arrange
+        buildParamServiceMock.getBuildConfigParam.mockResolvedValue('VERSION_NAME');
+        spyOn(aboutUsPage, 'getVersionCode');
+        // act
+        aboutUsPage.getVersionName('APP_NAME');
+        // assert
+        setTimeout(() => {
+            expect(buildParamServiceMock.getBuildConfigParam).toHaveBeenCalledWith('VERSION_NAME');
+            done();
+        }, 0);
     });
-    it('#shareInformationMethod makes expected calls if value is undefined', () => {
-        const commonUtilServiceStub = TestBed.get(CommonUtilService);
-        const preferStub = TestBed.get(SharedPreferences);
-        const loadControllerStub = TestBed.get(LoadingController);
-        spyOn(comp, 'generateInteractTelemetry');
-        spyOn(preferStub, 'getString').and.returnValue(Promise.resolve(undefined));
-        window['supportfile'] = {
-            shareSunbirdConfigurations: () => ({})
-        };
-        spyOn(window['supportfile'], 'shareSunbirdConfigurations').and.callFake((result, error) => {
-            return result(JSON.stringify({}));
-        });
-        commonUtilServiceStub.getLoader();
-        comp.shareInformation();
-        expect(loadControllerStub.create).toHaveBeenCalled();
-        expect(comp.generateInteractTelemetry).toHaveBeenCalled();
-        expect(preferStub.getString).toHaveBeenCalled();
+    it('should handle that method when getVersionCode() is called', (done) => {
+        // arrange
+        buildParamServiceMock.getBuildConfigParam.mockResolvedValue('VERSION_CODE');
+        // act
+        aboutUsPage.getVersionCode('APP_NAME', 'VERSION_NAME');
+        // assert
+        setTimeout(() => {
+            expect(buildParamServiceMock.getBuildConfigParam).toHaveBeenCalledWith('VERSION_CODE');
+            done();
+        }, 0);
     });
-    it('makes expected calls and checks when val is ""', () => {
-        const commonUtilServiceStub = TestBed.get(CommonUtilService);
-        const preferStub = TestBed.get(SharedPreferences);
-        const loadControllerStub = TestBed.get(LoadingController);
-        commonUtilServiceStub.getLoader();
-        spyOn(comp, 'generateInteractTelemetry');
-        spyOn(preferStub, 'getString').and.returnValue(Promise.resolve(''));
-        window['supportfile'] = {
-            shareSunbirdConfigurations: () => ({})
-        };
-        spyOn(window['supportfile'], 'shareSunbirdConfigurations').and.callFake((result, error) => {
-            return result(JSON.stringify({}));
-        });
-        commonUtilServiceStub.getLoader();
-        comp.shareInformation();
-        expect(preferStub.getString).toHaveBeenCalled();
-        expect(loadControllerStub.create).toHaveBeenCalled();
-        expect(comp.generateInteractTelemetry).toHaveBeenCalled();
-
+    it('should generate Interacet Telemetry', () => {
+        // arrange
+        spyOn(aboutUsPage, 'generateInteractTelemetry');
+        // act
+        aboutUsPage.generateInteractTelemetry('InteractType', 'InteractSubType');
+        // assert
+        expect(aboutUsPage.generateInteractTelemetry).toHaveBeenCalled();
     });
-    it('makes expected calls and checks when val is null', () => {
-        const preferStub = TestBed.get(SharedPreferences);
-        const commonUtilServiceStub = TestBed.get(CommonUtilService);
-        const loadControllerStub = TestBed.get(LoadingController);
-        commonUtilServiceStub.getLoader();
-        spyOn(comp, 'generateInteractTelemetry');
-        spyOn(preferStub, 'getString').and.returnValue(Promise.resolve(null));
-        window['supportfile'] = {
-            shareSunbirdConfigurations: () => ({})
-        };
-        spyOn(window['supportfile'], 'shareSunbirdConfigurations').and.callFake((result, error) => {
-            return result(JSON.stringify({}));
-        });
-        commonUtilServiceStub.getLoader();
-        comp.shareInformation();
-        expect(loadControllerStub.create).toHaveBeenCalled();
-        expect(comp.generateInteractTelemetry).toHaveBeenCalled();
-        expect(preferStub.getString).toHaveBeenCalled();
+    it('should handle generateImpressionEvent when called', () => {
+        // arrange
+        spyOn(aboutUsPage, 'generateImpressionEvent');
+        // act
+        aboutUsPage.generateImpressionEvent();
+        // assert
+        expect(aboutUsPage.generateImpressionEvent).toHaveBeenCalled();
     });
-    it('makes expected calls in else part when is value is present', () => {
-        const preferStub = TestBed.get(SharedPreferences);
-        const commonUtilServiceStub = TestBed.get(CommonUtilService);
-        const loadControllerStub = TestBed.get(LoadingController);
-        const SocialSharingStub = TestBed.get(SocialSharing);
-        comp.fileUrl = 'string';
-        commonUtilServiceStub.getLoader();
-        window['supportfile'] = {
-            shareSunbirdConfigurations: () => ({})
-        };
-        spyOn(window['supportfile'], 'shareSunbirdConfigurations').and.callFake((result, error) => {
-            return result(JSON.stringify({}));
-        });
-        commonUtilServiceStub.getLoader();
-        spyOn(comp, 'generateInteractTelemetry');
-        spyOn(preferStub, 'getString').and.returnValue(Promise.resolve('string'));
-        spyOn(SocialSharingStub, 'shareViaEmail').and.returnValue(Promise.resolve(''));
-        comp.shareInformation();
-        expect(loadControllerStub.create).toHaveBeenCalled();
-        expect(comp.generateInteractTelemetry).toHaveBeenCalled();
-        expect(preferStub.getString).toHaveBeenCalled();
+    it('should handle when page is leaving', () => {
+        // arrange
+        spyOn(console, 'log').and.callThrough();
+        // act
+        aboutUsPage.ionViewDidLeave();
+        supportfileMock.removeFile.mock.calls[0][0].call(aboutUsPage, '{}');
+        // assert
+        expect(console.log).toHaveBeenCalledWith('File deleted -' + JSON.parse('{}'));
     });
-    it('makes expected calls in social sharing catch part', () => {
-        const preferStub = TestBed.get(SharedPreferences);
-        const loadControllerStub = TestBed.get(LoadingController);
-        const SocialSharingStub = TestBed.get(SocialSharing);
-        const commonUtilServiceStub = TestBed.get(CommonUtilService);
-        comp.fileUrl = 'string';
-        commonUtilServiceStub.getLoader();
-        window['supportfile'] = {
-            shareSunbirdConfigurations: () => ({})
-        };
-        spyOn(window['supportfile'], 'shareSunbirdConfigurations').and.callFake((result, error) => {
-            return result(JSON.stringify({}));
-        });
-        commonUtilServiceStub.getLoader();
-        spyOn(comp, 'generateInteractTelemetry');
-        spyOn(preferStub, 'getString').and.returnValue(Promise.resolve('string'));
-        spyOn(SocialSharingStub, 'shareViaEmail').and.returnValue(Promise.reject());
-        comp.shareInformation();
-        expect(loadControllerStub.create).toHaveBeenCalled();
-        expect(comp.generateInteractTelemetry).toHaveBeenCalled();
-        expect(preferStub.getString).toHaveBeenCalled();
+    it('should go to aboutApp page, when clicked', (done) => {
+        // arrange
+        // act
+        aboutUsPage.aboutApp();
+        // assert
+        setTimeout(() => {
+            expect(navCtrlMock.push).toHaveBeenCalledWith(AboutAppPage);
+            done();
+        }, 0);
     });
-    it('#generateInteractTelemetry makes expected calls', () => {
-        const telemeStub = TestBed.get(TelemetryService);
-        spyOn(telemeStub, 'interact');
-
-        comp.generateInteractTelemetry('InteractType', 'InteractSubType');
-        expect(telemeStub.interact).toHaveBeenCalled();
-
+    it('should go to termsOfService page, when clicked', (done) => {
+        // arrange
+        // act
+        aboutUsPage.termsOfService();
+        // assert
+        setTimeout(() => {
+            expect(navCtrlMock.push).toHaveBeenCalledWith(TermsofservicePage);
+            done();
+        }, 0);
     });
-    describe('aboutApp', () => {
-        it('makes expected calls', () => {
-            const navControllerStub: NavController = fixture.debugElement.injector.get(NavController);
-            spyOn(navControllerStub, 'push');
-            comp.aboutApp();
-            expect(navControllerStub.push).toHaveBeenCalled();
-        });
+    it('should go to privacyPolicy page, when clicked', (done) => {
+        // arrange
+        // act
+        aboutUsPage.privacyPolicy();
+        // assert
+        setTimeout(() => {
+            expect(navCtrlMock.push).toHaveBeenCalledWith(PrivacypolicyPage);
+            done();
+        }, 0);
     });
-
-    describe('termsOfService', () => {
-        it('makes expected calls', () => {
-            const navControllerStub: NavController = fixture.debugElement.injector.get(NavController);
-            spyOn(navControllerStub, 'push');
-            comp.termsOfService();
-            expect(navControllerStub.push).toHaveBeenCalled();
-        });
+    it('share shareInformation when support Clicked', (done) => {
+        // arrange
+        commonUtilServiceMock.getLoader.mockReturnValue({ present: jest.fn(), dismiss: jest.fn() });
+        sharedPreferencesMock.getString.mockResolvedValue('true');
+        socialSharingMock.share.mockResolvedValue('VIA_EMAIL');
+        spyOn(aboutUsPage, 'generateInteractTelemetry');
+        // act
+        aboutUsPage.shareInformation();
+        supportfileMock.shareSunbirdConfigurations.mock.calls[0][0].call(aboutUsPage, '{}');
+        // assert
+        setTimeout(() => {
+            expect(sharedPreferencesMock.putString).toHaveBeenCalledWith('sunbird_config_file_path', {});
+            expect(socialSharingMock.share).toHaveBeenCalled();
+            done();
+        }, 0);
     });
-
-    describe('privacyPolicy', () => {
-        it('makes expected calls', () => {
-            const navControllerStub: NavController = fixture.debugElement.injector.get(NavController);
-            spyOn(navControllerStub, 'push');
-            comp.privacyPolicy();
-            expect(navControllerStub.push).toHaveBeenCalled();
-        });
+    it('should handle catch part in getVersionName--', (done) => {
+        // arrange
+        buildParamServiceMock.getBuildConfigParam.mockRejectedValue('Error');
+        spyOn(aboutUsPage, 'getVersionCode');
+        // act
+        aboutUsPage.getVersionName('APP_NAME');
+        // assert
+        setTimeout(() => {
+            expect(buildParamServiceMock.getBuildConfigParam).not.toHaveBeenCalledWith('Error');
+            done();
+        }, 0);
     });
-    it('ShareInformation Button makes expected calls', () => {
-    });
-    describe('generateImpressionEvent', () => {
-        it('makes expected calls', () => {
-            const telemetryServiceStub: TelemetryService = fixture.debugElement.injector.get(TelemetryService);
-            spyOn(telemetryServiceStub, 'impression');
-            comp.generateImpressionEvent();
-            expect(telemetryServiceStub.impression).toHaveBeenCalled();
-        });
-    });
-
-    describe('AppVersionName', () => {
-        it('makes expected calls', (done) => {
-            const buildParamServiceStub: BuildParamService = fixture.debugElement.injector.get(BuildParamService);
-            spyOn(buildParamServiceStub, 'getBuildConfigParam').and.returnValue(Promise.resolve('true'));
-            spyOn(comp, 'getVersionCode');
-            comp.getVersionName('AppVersionName');
-            buildParamServiceStub.getBuildConfigParam('any').then(() => {
-                expect(buildParamServiceStub.getBuildConfigParam).toHaveBeenCalled();
-                done();
-            });
-        });
-        it('makes expected calls in error callback', fakeAsync(() => {
-            const buildParamServiceStub: BuildParamService = fixture.debugElement.injector.get(BuildParamService);
-            spyOn(buildParamServiceStub, 'getBuildConfigParam').and.returnValue(Promise.resolve('true'));
-            comp.getVersionName('AppVersionName');
-            buildParamServiceStub.getBuildConfigParam('any').catch(() => {
-                expect(buildParamServiceStub.getBuildConfigParam).toHaveBeenCalled();
-                expect(buildParamServiceStub.getBuildConfigParam).toBe('');
-            });
-        }));
-    });
-    describe('AppVersionCode', () => {
-        it('makes expected calls', () => {
-            const buildParamServiceStub: BuildParamService = fixture.debugElement.injector.get(BuildParamService);
-            const res: any;
-            spyOn(buildParamServiceStub, 'getBuildConfigParam').and.returnValue(Promise.resolve('true'));
-            comp.getVersionCode('AppVersionName', 'AppVersionCode');
-            buildParamServiceStub.getBuildConfigParam('any').then(() => {
-                expect(res).toBeUndefined();
-                expect(buildParamServiceStub.getBuildConfigParam).toHaveBeenCalled();
-            });
-        });
-        it('makes expected calls in error callback', fakeAsync(() => {
-            const buildParamServiceStub: BuildParamService = fixture.debugElement.injector.get(BuildParamService);
-            spyOn(buildParamServiceStub, 'getBuildConfigParam').and.returnValue(Promise.resolve('true'));
-            comp.getVersionCode('AppVersionName', 'AppVersionCode');
-            buildParamServiceStub.getBuildConfigParam('any').catch(() => {
-                expect(buildParamServiceStub.getBuildConfigParam).toHaveBeenCalled();
-            });
-        }));
+    it('should hancle with catch part in getVersionCode--', (done) => {
+        // arrange
+        buildParamServiceMock.getBuildConfigParam.mockRejectedValue('Error');
+        // act
+        aboutUsPage.getVersionCode('APP_NAME', 'VERSION_NAME');
+        // assert
+        setTimeout(() => {
+            expect(buildParamServiceMock.getBuildConfigParam).not.toHaveBeenCalledWith('Error');
+            done();
+        }, 0);
     });
 });

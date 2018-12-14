@@ -371,7 +371,7 @@ export class FormAndFrameworkUtilService {
                 syllabus: [],
                 gradeValueMap: {}
             };
-            if (profileRes.framework) {
+            if (profileRes.framework && Object.keys(profileRes.framework).length) {
                 const categoryKeysLen = Object.keys(profileRes.framework).length;
                 let keysLength = 0;
                 for (const categoryKey in profileRes.framework) {
