@@ -23,7 +23,8 @@ import {
   NavParams,
   Platform,
   PopoverController,
-  ViewController
+  ViewController,
+  App
 } from 'ionic-angular';
 import {NgZone} from '@angular/core';
 import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService} from '@app/service';
@@ -32,6 +33,8 @@ import {SocialSharing} from '@ionic-native/social-sharing';
 import {AppVersion} from '@ionic-native/app-version';
 import {SunbirdQRScanner} from '@app/pages/qrscanner';
 import {FormAndFrameworkUtilService} from '@app/pages/profile';
+import { FormBuilder } from '@angular/forms';
+import { IonicApp } from 'ionic-angular';
 
 export type Mockify<T> = {
   [P in keyof T]: jest.Mock<{}>;
@@ -85,7 +88,8 @@ export const userProfileServiceMock = createSpyObj<UserProfileService>([
 ]);
 
 export const profileServiceMock = createSpyObj<ProfileService>([
-  'setCurrentProfile'
+  'setCurrentProfile',
+  'getCurrentUser'
 ]);
 
 export const authServiceMock = createSpyObj<AuthService>([
@@ -226,4 +230,15 @@ export const appVersionMock = createSpyObj<AppVersion>([
 export const supportfileMock = createSpyObj<any>([
   'removeFile',
   'shareSunbirdConfigurations'
+]);
+
+export const formBuilderMock = createSpyObj<FormBuilder>([
+  'group',
+]);
+
+export const ionicAppMock = createSpyObj<IonicApp>([
+]);
+
+export const appMock = createSpyObj<App>([
+  'group',
 ]);
