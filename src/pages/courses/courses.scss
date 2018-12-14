@@ -117,6 +117,7 @@ ion-nav .driver-fix-stacking {
 } */
 
 #driver-popover-item {
+  left: auto !important;
   left: unset !important;
   right: 10vw !important;
   width: 70vw !important;
