@@ -34,12 +34,9 @@ import {SocialSharing} from '@ionic-native/social-sharing';
 import {AppVersion} from '@ionic-native/app-version';
 import {SunbirdQRScanner} from '@app/pages/qrscanner';
 import {FormAndFrameworkUtilService} from '@app/pages/profile';
-<<<<<<< HEAD
 import { File } from '@ionic-native/file';
 import { DatePipe } from '../../node_modules/@angular/common';
-=======
 import { NavControllerBase } from 'ionic-angular/navigation/nav-controller-base';
->>>>>>> d339a5a4bec9169723a4a1278ab56539f0f0f7ab
 
 export type Mockify<T> = {
   [P in keyof T]: jest.Mock<{}>;
