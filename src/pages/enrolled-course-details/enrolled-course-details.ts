@@ -1037,7 +1037,6 @@ export class EnrolledCourseDetailsPage {
     this.courseService.getCourseBatches(courseBatchesRequest)
       .then((data: any) => {
         data = JSON.parse(data);
-        console.log('api result ', data);
         this.zone.run(() => {
           this.batches = data.result.content;
           _.forEach(data.result.content, (value, key) => {
