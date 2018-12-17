@@ -36,7 +36,10 @@ import {
   CorrelationData,
   TelemetryObject,
   ErrorCode,
-  ErrorType
+  ErrorType,
+  CourseBatchesRequest,
+  CourseEnrollmentType,
+  CourseBatchStatus
 } from 'sunbird';
 import { ContentRatingAlertComponent, ContentActionsComponent, ViewCreditsComponent } from '@app/component';
 import { CollectionDetailsPage } from '@app/pages/collection-details/collection-details';
@@ -108,11 +111,25 @@ export class EnrolledCourseDetailsPage {
    * To hold identifier
    */
   identifier: string;
-
   /**
    * Contains child content import / download progress
    */
   downloadProgress = 0;
+
+  /**
+   * Contains upcomming batch list
+   */
+  upcommingBatches: Array<any> = [];
+
+  /**
+   * Contains ongoing batch list
+   */
+  ongoingBatches: Array<any> = [];
+
+  /**
+   * To check batches available or not
+   */
+  public batches: Array<any>;
 
   showLoading = false;
   showDownloadProgress: boolean;
@@ -186,6 +203,9 @@ export class EnrolledCourseDetailsPage {
     this.events.subscribe(EventTopics.ENROL_COURSE_SUCCESS, (res) => {
       if (res && res.batchId) {
         this.batchId = res.batchId;
+        if (this.identifier && res.courseId && this.identifier === res.courseId) {
+          this.isAlreadyEnrolled = true;
+        }
       }
     });
 
@@ -764,6 +784,7 @@ export class EnrolledCourseDetailsPage {
     this.setContentDetails(this.identifier);
     // If courseCardData does not have a batch id then it is not a enrolled course
     this.subscribeGenieEvent();
+    this.checkBatchAvailability();
   }
 
 
@@ -859,7 +880,18 @@ export class EnrolledCourseDetailsPage {
    */
   navigateToBatchListPage(): void {
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-      this.navCtrl.push(CourseBatchesPage, { identifier: this.identifier });
+      if (!this.guestUser) {
+        if (this.batches.length) {
+          this.navCtrl.push( CourseBatchesPage, {
+            ongoingBatches: this.ongoingBatches,
+            upcommingBatches: this.upcommingBatches
+          });
+        } else {
+          this.commonUtilService.showToast('NO_BATCHES_AVAILABLE');
+        }
+      } else {
+        this.navCtrl.push(CourseBatchesPage);
+      }
     } else {
       this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
     }
@@ -991,5 +1023,33 @@ export class EnrolledCourseDetailsPage {
    */
   viewCredits() {
     this.courseUtilService.showCredits(this.course, PageId.CONTENT_DETAIL, undefined, this.corRelationList);
+  }
+
+  /**
+   * checks whether batches are available or not
+   */
+  checkBatchAvailability(): void {
+    const courseBatchesRequest: CourseBatchesRequest = {
+      courseId: this.identifier,
+      enrollmentType: CourseEnrollmentType.OPEN,
+      status: [CourseBatchStatus.NOT_STARTED, CourseBatchStatus.IN_PROGRESS]
+    };
+    this.courseService.getCourseBatches(courseBatchesRequest)
+      .then((data: any) => {
+        data = JSON.parse(data);
+        this.zone.run(() => {
+          this.batches = data.result.content;
+          _.forEach(data.result.content, (value, key) => {
+            if (value.status === 1) {
+              this.ongoingBatches.push(value);
+            } else {
+              this.upcommingBatches.push(value);
+            }
+          });
+        });
+      })
+      .catch((error: any) => {
+        console.log('error while fetching course batches ==>', error);
+      });
   }
 }
