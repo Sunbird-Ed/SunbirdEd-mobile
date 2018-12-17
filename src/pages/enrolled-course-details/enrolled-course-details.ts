@@ -111,7 +111,6 @@ export class EnrolledCourseDetailsPage {
    * To hold identifier
    */
   identifier: string;
-  
   /**
    * Contains child content import / download progress
    */
@@ -206,7 +205,7 @@ export class EnrolledCourseDetailsPage {
         this.batchId = res.batchId;
         if (this.identifier && res.courseId && this.identifier === res.courseId) {
           this.isAlreadyEnrolled = true;
-       }
+        }
       }
     });
 
@@ -1027,7 +1026,7 @@ export class EnrolledCourseDetailsPage {
   }
 
   /**
-   * checks whether batches are available or not 
+   * checks whether batches are available or not
    */
   checkBatchAvailability(): void {
     const courseBatchesRequest: CourseBatchesRequest = {
@@ -1041,7 +1040,7 @@ export class EnrolledCourseDetailsPage {
         console.log('api result ', data);
         this.zone.run(() => {
           this.batches = data.result.content;
-           _.forEach(data.result.content, (value, key) => {
+          _.forEach(data.result.content, (value, key) => {
             if (value.status === 1) {
               this.ongoingBatches.push(value);
             } else {
