@@ -1,8 +1,8 @@
 import { GUEST_TEACHER_TABS, initTabs, GUEST_STUDENT_TABS } from './../../app/module.service';
-import { NavParams, IonicApp } from 'ionic-angular/index';
+import { NavParams, IonicApp, Select, App } from 'ionic-angular/index';
 import { AppGlobalService } from '../../service/app-global.service';
 import { ProfileService, TabsPage, InteractSubtype, PageId, InteractType, ProfileType, ContainerService } from 'sunbird';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import {
@@ -30,7 +30,11 @@ import { CommonUtilService } from '../../service/common-util.service';
   templateUrl: 'profile-settings.html',
 })
 export class ProfileSettingsPage {
+  @ViewChild('boardSelect') boardSelect: Select;
+  @ViewChild('mediumSelect') mediumSelect: Select;
+  @ViewChild('gradeSelect') gradeSelect: Select;
 
+  counter = 0;
   userForm: FormGroup;
   classList = [];
   profile: Profile;
@@ -83,7 +87,8 @@ export class ProfileSettingsPage {
     private platform: Platform,
     private commonUtilService: CommonUtilService,
     private container: ContainerService,
-    private ionicApp: IonicApp
+    private ionicApp: IonicApp,
+    private app: App
   ) {
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
       .then(val => {
@@ -99,14 +104,7 @@ export class ProfileSettingsPage {
     if (Boolean(this.navParams.get('stopScanner'))) {
       this.scanner.stopScanner();
     }
-
-    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
-      this.dismissPopup();
-      this.telemetryGeneratorService.generateInteractTelemetry(
-        InteractType.TOUCH, InteractSubtype.DEVICE_BACK_CLICKED,
-        PageId.ONBOARDING_PROFILE_PREFERENCES,
-        Environment.ONBOARDING);
-    }, 10);
+    this.handleBackButton();
   }
 
   ionViewWillEnter() {
@@ -118,7 +116,7 @@ export class ProfileSettingsPage {
   }
 
   ionViewWillLeave() {
-    this.unregisterBackButton();
+    // this.unregisterBackButton();
   }
   /**
  * It will Dismiss active popup
@@ -368,22 +366,25 @@ export class ProfileSettingsPage {
       this.btnColor = '#8FC4FF';
       this.appGlobalService.generateSaveClickedTelemetry(this.extractProfileForTelemetry(formVal), 'failed',
         PageId.ONBOARDING_PROFILE_PREFERENCES, InteractSubtype.FINISH_CLICKED);
-      this.commonUtilService.showToast(this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService
-        .translateMessage('BOARD')), false, 'redErrorToast');
+      // this.commonUtilService.showToast(this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService
+      //   .translateMessage('BOARD')), false, 'redErrorToast');
+      this.boardSelect.open();
       return false;
     } else if (formVal.medium.length === 0) {
       this.btnColor = '#8FC4FF';
       this.appGlobalService.generateSaveClickedTelemetry(this.extractProfileForTelemetry(formVal), 'failed',
         PageId.ONBOARDING_PROFILE_PREFERENCES, InteractSubtype.FINISH_CLICKED);
-      this.commonUtilService.showToast(this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService
-        .translateMessage('MEDIUM')), false, 'redErrorToast');
+      // this.commonUtilService.showToast(this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService
+      //   .translateMessage('MEDIUM')), false, 'redErrorToast');
+      this.mediumSelect.open();
       return false;
     } else if (formVal.grades.length === 0) {
       this.btnColor = '#8FC4FF';
       this.appGlobalService.generateSaveClickedTelemetry(this.extractProfileForTelemetry(formVal), 'failed',
         PageId.ONBOARDING_PROFILE_PREFERENCES, InteractSubtype.FINISH_CLICKED);
-      this.commonUtilService.showToast(this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService
-        .translateMessage('CLASS')), false, 'redErrorToast');
+      // this.commonUtilService.showToast(this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService
+      //   .translateMessage('CLASS')), false, 'redErrorToast');
+      this.gradeSelect.open();
       return false;
     } else {
       this.appGlobalService.generateSaveClickedTelemetry(this.extractProfileForTelemetry(formVal), 'passed',
@@ -454,4 +455,36 @@ export class ProfileSettingsPage {
         console.log('Err', err);
       });
   }
+
+  handleBackButton() {
+    this.dismissPopup();
+    const self = this;
+    this.platform.registerBackButtonAction(() => {
+
+      const navObj = self.app.getActiveNavs()[0];
+      const currentPage = navObj.getActive().name;
+
+      if (navObj.canGoBack()) {
+        navObj.pop();
+      } else {
+        if (self.counter === 0) {
+          self.counter++;
+          this.commonUtilService.showToast('BACK_TO_EXIT');
+          // this.telemetryGeneratorService.generateBackClickedTelemetry(this.computePageId(currentPage), Environment.HOME, false);
+          setTimeout(() => { self.counter = 0; }, 1500);
+        } else {
+          // this.telemetryGeneratorService.generateBackClickedTelemetry(this.computePageId(currentPage), Environment.HOME, false);
+          self.platform.exitApp();
+          // this.telemetryGeneratorService.generateEndTelemetry('app', '', '', Environment.HOME);
+
+        }
+      }
+    });
+    this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.TOUCH, InteractSubtype.DEVICE_BACK_CLICKED,
+          PageId.ONBOARDING_PROFILE_PREFERENCES,
+          Environment.ONBOARDING);
+  }
+
+
 }

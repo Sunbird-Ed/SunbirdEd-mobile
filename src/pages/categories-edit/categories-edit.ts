@@ -1,7 +1,7 @@
 import { AppGlobalService } from './../../service/app-global.service';
 import { FormAndFrameworkUtilService } from './../profile/formandframeworkutil.service';
 import { CommonUtilService } from './../../service/common-util.service';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { CategoryRequest, Profile, UpdateUserInfoRequest, UserProfileService, ProfileService, ContainerService, TabsPage } from 'sunbird';
@@ -13,6 +13,7 @@ import {
   initTabs,
   LOGIN_TEACHER_TABS
 } from '@app/app';
+import { Select } from 'ionic-angular';
 
 @IonicPage()
 @Component({
@@ -20,6 +21,10 @@ import {
   templateUrl: 'categories-edit.html',
 })
 export class CategoriesEditPage {
+  @ViewChild('boardSelect') boardSelect: Select;
+  @ViewChild('mediumSelect') mediumSelect: Select;
+  @ViewChild('gradeSelect') gradeSelect: Select;
+
   syllabusList = [];
   boardList = [];
   subjectList = [];
@@ -199,11 +204,23 @@ export class CategoriesEditPage {
   onSubmit() {
     const formVal = this.profileEditForm.value;
     if (!formVal.boards.length) {
-      this.showErrorToastMessage('BOARD');
+      if (this.showOnlyMandatoryFields) {
+        this.boardSelect.open();
+      } else {
+        this.showErrorToastMessage('BOARD');
+      }
     } else if (!formVal.medium.length) {
-      this.showErrorToastMessage('MEDIUM');
+      if (this.showOnlyMandatoryFields) {
+        this.mediumSelect.open();
+      } else {
+        this.showErrorToastMessage('MEDIUM');
+      }
     } else if (!formVal.grades.length) {
-      this.showErrorToastMessage('GRADE');
+      if (this.showOnlyMandatoryFields) {
+        this.gradeSelect.open();
+      } else {
+        this.showErrorToastMessage('GRADE');
+      }
     } else {
       this.submitForm(formVal);
     }

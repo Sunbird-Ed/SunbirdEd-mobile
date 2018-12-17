@@ -50,4 +50,10 @@ page-profile-settings {
         @include padding(0,5px);
         @extend .font-weight-bold;
     }
+    .item-select-disabled {
+        .label-md {
+            color: map-get($colors, medium_gray);
+            opacity: 1;
+        }
+    }
 }
