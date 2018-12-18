@@ -136,7 +136,7 @@ export class ReportsPage {
     });
   }
 
-  goToUserReportList(uid: string) {
+  goToUserReportList(uid: string , handle: string) {
 
     const telemetryObject: TelemetryObject = new TelemetryObject();
     telemetryObject.id = uid;
@@ -151,7 +151,8 @@ export class ReportsPage {
 
     this.navCtrl.push(ReportListPage, {
       isFromUsers: true,
-      uids: [uid]
+      uids: [uid],
+      handle: handle
     });
   }
 
