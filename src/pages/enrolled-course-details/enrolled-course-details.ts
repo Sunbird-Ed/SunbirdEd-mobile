@@ -882,14 +882,14 @@ export class EnrolledCourseDetailsPage {
             data = JSON.parse(data);
             this.zone.run(() => {
               this.batches = data.result.content;
-              _.forEach(data.result.content, (value, key) => {
-                if (value.status === 1) {
-                  ongoingBatches.push(value);
-                } else {
-                  upcommingBatches.push(value);
-                }
-              });
               if (this.batches.length) {
+                _.forEach(this.batches, (batch, key) => {
+                  if (batch.status === 1) {
+                    ongoingBatches.push(batch);
+                  } else {
+                    upcommingBatches.push(batch);
+                  }
+                });
                 loader.dismiss();
                 this.navCtrl.push(CourseBatchesPage, {
                   ongoingBatches: ongoingBatches,
