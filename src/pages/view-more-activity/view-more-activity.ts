@@ -1,8 +1,28 @@
-import { IonicPage, NavController, NavParams, Events } from 'ionic-angular';
-import { Component, NgZone, OnInit } from '@angular/core';
-import { ContentService, CourseService, PageId, Environment, ImpressionType, LogLevel, ContentFilterCriteria } from 'sunbird';
+import {
+  IonicPage,
+  NavController,
+  NavParams,
+  Events
+} from 'ionic-angular';
+import {
+  Component,
+  NgZone,
+  OnInit
+} from '@angular/core';
+import {
+  ContentService,
+  CourseService,
+  PageId,
+  Environment,
+  ImpressionType,
+  LogLevel,
+  ContentFilterCriteria
+} from 'sunbird';
 import * as _ from 'lodash';
-import { ContentType, ViewMore } from '../../app/app.constant';
+import {
+  ContentType,
+  ViewMore
+} from '../../app/app.constant';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { CourseUtilService } from '../../service/course-util.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
@@ -160,37 +180,41 @@ export class ViewMoreActivityPage implements OnInit {
     const loader = this.commonUtilService.getLoader();
     loader.present();
 
-    this.contentService.getSearchCriteriaFromRequest(this.searchQuery).then((success: any) => {
-      const reqBody = JSON.parse(success);
-      reqBody.limit = 10;
-      reqBody.offset = this.offset === 0 ? reqBody.offset : this.offset;
-      this.contentService.searchContent(reqBody, true, false, false).then((data: any) => {
-        data = JSON.parse(data);
-        this.ngZone.run(() => {
-          if (data.result && data.result.contentDataList) {
-            this.loadMoreBtn = data.result.contentDataList.length < this.searchLimit ? false : true;
-            if (this.isLoadMore) {
-              _.forEach(data.result.contentDataList, (value) => {
-                this.searchList.push(value);
-              });
-            } else {
-              this.searchList = data.result.contentDataList;
-            }
-          } else {
-            this.loadMoreBtn = false;
-          }
-          loader.dismiss();
-        });
-        this.generateImpressionEvent();
-        this.generateLogEvent(data.result);
+    this.contentService.getSearchCriteriaFromRequest(this.searchQuery)
+      .then((criteria: any) => {
+        const contentSearchCriteria = JSON.parse(criteria);
+        contentSearchCriteria.limit = 10;
+        contentSearchCriteria.offset = this.offset === 0 ? contentSearchCriteria.offset : this.offset;
+
+        this.contentService.searchContent(contentSearchCriteria, true, false, false)
+          .then((data: any) => {
+            data = JSON.parse(data);
+            this.ngZone.run(() => {
+              if (data.result && data.result.contentDataList) {
+                this.loadMoreBtn = data.result.contentDataList.length < this.searchLimit ? false : true;
+                if (this.isLoadMore) {
+                  _.forEach(data.result.contentDataList, (value) => {
+                    this.searchList.push(value);
+                  });
+                } else {
+                  this.searchList = data.result.contentDataList;
+                }
+              } else {
+                this.loadMoreBtn = false;
+              }
+              loader.dismiss();
+            });
+            this.generateImpressionEvent();
+            this.generateLogEvent(data.result);
+          })
+          .catch(() => {
+            console.error('Error: while fetching view more content');
+            loader.dismiss();
+          });
       }).catch(() => {
         console.error('Error: while fetching view more content');
         loader.dismiss();
       });
-    }).catch(() => {
-      console.error('Error: while fetching view more content');
-      loader.dismiss();
-    });
   }
 
   private generateImpressionEvent() {
@@ -307,6 +331,7 @@ export class ViewMoreActivityPage implements OnInit {
 
     if (recentlyViewed) {
       requestParams.contentTypes = ContentType.FOR_RECENTLY_VIEWED;
+      requestParams.limit = 20;
     } else {
       requestParams.contentTypes = ContentType.FOR_LIBRARY_TAB;
     }
