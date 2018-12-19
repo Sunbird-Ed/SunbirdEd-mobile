@@ -68,8 +68,8 @@ export class CourseBatchesPage implements OnInit {
   isGuestUser = false;
 
   filterList: any = {
-    'ONGOING': 'ONGOING_BATCHES',
-    'UPCOMING': 'UPCOMING_BATCHES'
+    'ONGOING': 'VIEW_ONGOING_BATCHES',
+    'UPCOMING': 'VIEW_UPCOMING_BATCHES'
   };
 
   /**
@@ -101,8 +101,8 @@ export class CourseBatchesPage implements OnInit {
     private events: Events
   ) {
 
-    this.filterList.ONGOING = this.commonUtilService.translateMessage('ONGOING_BATCHES');
-    this.filterList.UPCOMING = this.commonUtilService.translateMessage('UPCOMING_BATCHES');
+    this.filterList.ONGOING = this.commonUtilService.translateMessage('VIEW_ONGOING_BATCHES');
+    this.filterList.UPCOMING = this.commonUtilService.translateMessage('VIEW_UPCOMING_BATCHES');
     // this.selectedFilter = this.filterList.ONGOING;
   }
 
