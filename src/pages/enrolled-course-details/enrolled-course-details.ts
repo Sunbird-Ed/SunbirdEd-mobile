@@ -211,8 +211,8 @@ export class EnrolledCourseDetailsPage {
     });
 
     this.events.subscribe(EventTopics.UNENROL_COURSE_SUCCESS, () => {
-      delete this.courseCardData;
-      this.isAlreadyEnrolled = false;
+      delete this.courseCardData; // to show 'Enroll in Course' button courseCardData should be undefined/null
+      this.isAlreadyEnrolled = false; // and isAlreadyEnrolled should be false
     });
 
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
@@ -309,6 +309,10 @@ export class EnrolledCourseDetailsPage {
     });
   }
 
+  /*
+   * check for user confirmation
+   * if confirmed then unenrolls the user from the course
+   */
   handleUnenrollment(unenroll): void {
     if (unenroll) {
       const unenrolCourseRequest: UnenrolCourseRequest = {
