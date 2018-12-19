@@ -456,16 +456,13 @@ export class ProfileSettingsPage {
   }
 
   handleBackButton() {
-    this.dismissPopup();
     const self = this;
     this.platform.registerBackButtonAction(() => {
-
+      this.dismissPopup();
       const navObj = self.app.getActiveNavs()[0];
       const currentPage = navObj.getActive().name;
 
-      if (navObj.canGoBack()) {
-        navObj.pop();
-      } else {
+      if (!navObj.canGoBack()) {
         if (self.counter === 0) {
           self.counter++;
           this.commonUtilService.showToast('BACK_TO_EXIT');
