@@ -104,7 +104,6 @@ export class ProfileSettingsPage {
     if (Boolean(this.navParams.get('stopScanner'))) {
       this.scanner.stopScanner();
     }
-    this.handleBackButton();
   }
 
   ionViewWillEnter() {

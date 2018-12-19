@@ -68,8 +68,8 @@ export class CourseBatchesPage implements OnInit {
   isGuestUser = false;
 
   filterList: any = {
-    'ONGOING': 'VIEW_ONGOING_BATCHES',
-    'UPCOMING': 'VIEW_UPCOMING_BATCHES'
+    'ONGOING': 'ONGOING_BATCHES',
+    'UPCOMING': 'UPCOMING_BATCHES'
   };
 
   /**
@@ -101,8 +101,8 @@ export class CourseBatchesPage implements OnInit {
     private events: Events
   ) {
 
-    this.filterList.ONGOING = this.commonUtilService.translateMessage('VIEW_ONGOING_BATCHES');
-    this.filterList.UPCOMING = this.commonUtilService.translateMessage('VIEW_UPCOMING_BATCHES');
+    this.filterList.ONGOING = this.commonUtilService.translateMessage('ONGOING_BATCHES');
+    this.filterList.UPCOMING = this.commonUtilService.translateMessage('UPCOMING_BATCHES');
     // this.selectedFilter = this.filterList.ONGOING;
   }
 
@@ -129,7 +129,8 @@ export class CourseBatchesPage implements OnInit {
           console.log('You have successfully enrolled...');
           this.commonUtilService.showToast(this.commonUtilService.translateMessage('COURSE_ENROLLED'));
           this.events.publish(EventTopics.ENROL_COURSE_SUCCESS, {
-            batchId: item.id
+            batchId: item.id,
+            courseId: item.courseId
           });
           this.navCtrl.pop();
         });
@@ -167,47 +168,11 @@ export class CourseBatchesPage implements OnInit {
   }
 
   /**
-   * To get batches by course id
+   * To get batches, passed from enrolled-course-details page via navParams
    */
-  getBatchesByCourseId(status: CourseBatchStatus = CourseBatchStatus.IN_PROGRESS): void {
-    console.log('getting course batches.... =>');
-    this.showLoader = true;
-    const courseBatchesRequest: CourseBatchesRequest = {
-      courseId: this.navParams.get('identifier'),
-      enrollmentType: CourseEnrollmentType.OPEN,
-      status: status
-    };
-
-    this.courseService.getCourseBatches(courseBatchesRequest)
-      .then((data: any) => {
-        data = JSON.parse(data);
-        console.log('Batches received successfully... =>', data);
-        this.zone.run(() => {
-          this.ongoingBatches = [];
-          this.upcommingBatches = [];
-
-          this.batches = data.result.content;
-          this.spinner(false);
-          _.forEach(data.result.content, (value, key) => {
-            if (value.status === 1) {
-              this.ongoingBatches.push(value);
-            } else {
-              this.upcommingBatches.push(value);
-            }
-          });
-
-          if (status === CourseBatchStatus.IN_PROGRESS) {
-            this.selectedFilter = this.filterList.ONGOING;
-          } else {
-            this.selectedFilter = this.filterList.UPCOMING;
-          }
-
-        });
-      })
-      .catch((error: any) => {
-        console.log('error while fetching course batches ==>', error);
-        this.spinner(false);
-      });
+  getBatchesByCourseId(): void {
+    this.ongoingBatches = this.navParams.get('ongoingBatches');
+    this.upcommingBatches = this.navParams.get('upcommingBatches');
   }
 
   spinner(flag) {
@@ -215,15 +180,4 @@ export class CourseBatchesPage implements OnInit {
       this.showLoader = false;
     });
   }
-
-  changeFilter(filter: string) {
-    if (filter === 'ONGOING') {
-      this.selectedFilter = this.filterList.ONGOING;
-      this.getBatchesByCourseId(CourseBatchStatus.IN_PROGRESS);
-    } else {
-      this.selectedFilter = this.filterList.UPCOMING;
-      this.getBatchesByCourseId(CourseBatchStatus.NOT_STARTED);
-    }
-  }
-
 }
