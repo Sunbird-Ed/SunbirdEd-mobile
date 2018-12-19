@@ -117,16 +117,6 @@ export class EnrolledCourseDetailsPage {
   downloadProgress = 0;
 
   /**
-   * Contains upcomming batch list
-   */
-  upcommingBatches: Array<any> = [];
-
-  /**
-   * Contains ongoing batch list
-   */
-  ongoingBatches: Array<any> = [];
-
-  /**
    * To check batches available or not
    */
   public batches: Array<any>;
@@ -876,6 +866,8 @@ export class EnrolledCourseDetailsPage {
    * checks whether batches are available or not and then Navigate user to batch list page
    */
   navigateToBatchListPage(): void {
+    const ongoingBatches = [];
+    const upcommingBatches = [];
     const loader = this.commonUtilService.getLoader();
     const courseBatchesRequest: CourseBatchesRequest = {
       courseId: this.identifier,
@@ -892,16 +884,16 @@ export class EnrolledCourseDetailsPage {
               this.batches = data.result.content;
               _.forEach(data.result.content, (value, key) => {
                 if (value.status === 1) {
-                  this.ongoingBatches.push(value);
+                  ongoingBatches.push(value);
                 } else {
-                  this.upcommingBatches.push(value);
+                  upcommingBatches.push(value);
                 }
               });
               if (this.batches.length) {
                 loader.dismiss();
                 this.navCtrl.push(CourseBatchesPage, {
-                  ongoingBatches: this.ongoingBatches,
-                  upcommingBatches: this.upcommingBatches
+                  ongoingBatches: ongoingBatches,
+                  upcommingBatches: upcommingBatches
                 });
               } else {
                 loader.dismiss();

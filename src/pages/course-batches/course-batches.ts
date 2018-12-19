@@ -67,11 +67,6 @@ export class CourseBatchesPage implements OnInit {
    */
   isGuestUser = false;
 
-  filterList: any = {
-    'ONGOING': 'VIEW_ONGOING_BATCHES',
-    'UPCOMING': 'VIEW_UPCOMING_BATCHES'
-  };
-
   /**
    * Contains batches list
    */
@@ -99,12 +94,7 @@ export class CourseBatchesPage implements OnInit {
     private authService: AuthService,
     private commonUtilService: CommonUtilService,
     private events: Events
-  ) {
-
-    this.filterList.ONGOING = this.commonUtilService.translateMessage('VIEW_ONGOING_BATCHES');
-    this.filterList.UPCOMING = this.commonUtilService.translateMessage('VIEW_UPCOMING_BATCHES');
-    // this.selectedFilter = this.filterList.ONGOING;
-  }
+  ) {  }
 
   ngOnInit(): void {
     this.getUserId();
