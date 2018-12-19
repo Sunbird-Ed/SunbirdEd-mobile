@@ -37,9 +37,10 @@ import {
   TelemetryObject,
   ErrorCode,
   ErrorType,
+  UnenrolCourseRequest,
+  CourseBatchStatus,
   CourseBatchesRequest,
-  CourseEnrollmentType,
-  CourseBatchStatus
+  CourseEnrollmentType
 } from 'sunbird';
 import { ContentRatingAlertComponent, ContentActionsComponent, ViewCreditsComponent } from '@app/component';
 import { CollectionDetailsPage } from '@app/pages/collection-details/collection-details';
@@ -209,6 +210,11 @@ export class EnrolledCourseDetailsPage {
       }
     });
 
+    this.events.subscribe(EventTopics.UNENROL_COURSE_SUCCESS, () => {
+      delete this.courseCardData;
+      this.isAlreadyEnrolled = false;
+    });
+
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.telemetryGeneratorService.generateBackClickedTelemetry(
         PageId.CONTENT_DETAIL,
@@ -287,6 +293,7 @@ export class EnrolledCourseDetailsPage {
   showOverflowMenu(event) {
     const contentData = this.course;
     contentData.batchId = this.courseCardData.batchId ? this.courseCardData.batchId : false;
+    contentData.status = this.batchDetails ? this.batchDetails : 2;
     const popover = this.popoverCtrl.create(ContentActionsComponent, {
       content: contentData,
       pageName: 'course'
@@ -297,11 +304,37 @@ export class EnrolledCourseDetailsPage {
       ev: event
     });
 
-    popover.onDidDismiss(data => {
-      if (data === 'delete.success' || data === 'flag.success') {
-        this.navCtrl.pop();
-      }
+    popover.onDidDismiss(unenroll => {
+      this.handleUnenrollment(unenroll);
     });
+  }
+
+  handleUnenrollment(unenroll): void {
+    if (unenroll) {
+      const unenrolCourseRequest: UnenrolCourseRequest = {
+        userId: this.appGlobalService.getUserId(),
+        courseId: this.batchDetails.courseId,
+        batchId: this.batchDetails.id
+      };
+      this.courseService.unenrolCourse(unenrolCourseRequest)
+        .then((data: any) => {
+          this.zone.run(() => {
+            this.commonUtilService.showToast(this.commonUtilService.translateMessage('COURSE_UNENROLLED'));
+            this.events.publish(EventTopics.UNENROL_COURSE_SUCCESS, {
+            });
+          });
+        })
+        .catch((error: any) => {
+          this.zone.run(() => {
+            error = JSON.parse(error);
+              if (error && error.error === 'CONNECTION_ERROR') {
+                this.commonUtilService.showToast(this.commonUtilService.translateMessage('ERROR_NO_INTERNET_MESSAGE'));
+              } else if (error && error.error === 'USER_ALREADY_ENROLLED_COURSE') {
+                this.commonUtilService.showToast(this.commonUtilService.translateMessage('ALREADY_ENROLLED_COURSE'));
+              }
+          });
+        });
+    }
   }
 
   /**

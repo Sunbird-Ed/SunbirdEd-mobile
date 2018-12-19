@@ -9,6 +9,7 @@ import { ToastController, Platform } from 'ionic-angular';
 import { CommonUtilService } from '../../service/common-util.service';
 import { ReportIssuesComponent } from '../report-issues/report-issues';
 import { ProfileConstants } from '../../app/app.constant';
+import { UnenrollAlertComponent } from '../unenroll-alert/unenroll-alert';
 
 @Component({
   selector: 'content-actions',
@@ -128,6 +129,18 @@ export class ContentActionsComponent {
         break;
       }
     }
+  }
+
+  /*
+   * shows alert to confirm unenroll send back user selection */
+  unenroll() {
+    const popover = this.popoverCtrl.create(UnenrollAlertComponent, {}, {
+      cssClass: 'confirm-alert-box'
+    });
+    popover.present();
+    popover.onDidDismiss((unenroll: boolean = false) => {
+        this.viewCtrl.dismiss(unenroll);
+    });
   }
 
   deleteContent() {
