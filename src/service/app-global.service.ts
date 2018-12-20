@@ -343,7 +343,7 @@ export class AppGlobalService implements OnDestroy {
             .catch(error => {
                 this.OPEN_RAPDISCOVERY_ENABLED = false;
             });
-            this.buildParamService.getBuildConfigParam(GenericAppConfig.SUPPORT_EMAIL)
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.SUPPORT_EMAIL)
             .then(response => {
                 this.SUPPORT_EMAIL = response;
             })
@@ -353,29 +353,31 @@ export class AppGlobalService implements OnDestroy {
     }
 
     private getCurrentUserProfile() {
-        this.profile.getCurrentUser().then((response: any) => {
-            this.guestUserProfile = JSON.parse(response);
-            if (this.guestUserProfile.syllabus && this.guestUserProfile.syllabus.length > 0) {
-                this.getFrameworkDetails(this.guestUserProfile.syllabus[0])
-                    .then((categories) => {
-                        categories.forEach(category => {
-                            this.frameworkData[category.code] = category;
-                        });
+        this.profile.getCurrentUser()
+            .then((response: any) => {
+                this.guestUserProfile = JSON.parse(response);
+                if (this.guestUserProfile.syllabus && this.guestUserProfile.syllabus.length > 0) {
+                    this.getFrameworkDetails(this.guestUserProfile.syllabus[0])
+                        .then((categories) => {
+                            categories.forEach(category => {
+                                this.frameworkData[category.code] = category;
+                            });
 
-                        this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
-                    }).catch((error) => {
-                        this.frameworkData = [];
-                        this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
-                    });
-                this.getProfileSettingsStatus();
-            } else {
-                this.frameworkData = [];
+                            this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
+                        }).catch((error) => {
+                            this.frameworkData = [];
+                            this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
+                        });
+                    this.getProfileSettingsStatus();
+                } else {
+                    this.frameworkData = [];
+                    this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
+                }
+            })
+            .catch((error) => {
+                this.guestUserProfile = undefined;
                 this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
-            }
-        }) .catch((error) => {
-            this.guestUserProfile = undefined;
-            this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
-        });
+            });
     }
 
     // Remove this method after refactoring formandframeworkutil.service
@@ -390,7 +392,7 @@ export class AppGlobalService implements OnDestroy {
                 req.frameworkId = frameworkId;
             }
 
-            this.framework.getFrameworkDetails(req)
+            this.framework.getAllCategories(req)
                 .then(res => {
                     resolve(res);
                 })

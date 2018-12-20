@@ -252,7 +252,6 @@ export class ViewMoreActivityPage implements OnInit {
     }
   }
 
-
   /**
 	 * Mapper to call api based on page.Layout name
 	 */
@@ -466,10 +465,6 @@ export class ViewMoreActivityPage implements OnInit {
   }
 
   showDisabled(resource) {
-    console.log("showDisabled", resource);
-    console.log('resource.isAvailableLocally', resource.isAvailableLocally);
-    console.log('this.commonUtilService.networkInfo.isNetworkAvailable', this.commonUtilService.networkInfo.isNetworkAvailable);
-    console.log(!resource.isAvailableLocally && !this.commonUtilService.networkInfo.isNetworkAvailable);
     return !resource.isAvailableLocally && !this.commonUtilService.networkInfo.isNetworkAvailable;
   }
 
