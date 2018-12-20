@@ -23,6 +23,7 @@ import { ViewCreditsComponent } from './view-credits/view-credits';
 import { ProfileAvatarComponent } from './profile-avatar/profile-avatar';
 import { DialogPopupComponent } from './dialog-popup/dialog-popup';
 import { BookmarkComponent } from './bookmark/bookmark';
+import { UnenrollAlertComponent } from './unenroll-alert/unenroll-alert';
 
 @NgModule({
     declarations: [
@@ -42,7 +43,8 @@ import { BookmarkComponent } from './bookmark/bookmark';
         ViewCreditsComponent,
         ProfileAvatarComponent,
         DialogPopupComponent,
-        BookmarkComponent
+        BookmarkComponent,
+        UnenrollAlertComponent
     ],
     imports: [
         IonicPageModule.forChild(CourseCard),
@@ -69,7 +71,8 @@ import { BookmarkComponent } from './bookmark/bookmark';
         ViewCreditsComponent,
         ProfileAvatarComponent,
         DialogPopupComponent,
-        BookmarkComponent
+        BookmarkComponent,
+        UnenrollAlertComponent
         // ContentActionsComponent
     ],
     entryComponents: [
@@ -78,7 +81,8 @@ import { BookmarkComponent } from './bookmark/bookmark';
         ReportIssuesComponent,
         ContentRatingAlertComponent,
         ViewCreditsComponent,
-        DialogPopupComponent
+        DialogPopupComponent,
+        UnenrollAlertComponent
     ],
     providers: [
         OnboardingService,

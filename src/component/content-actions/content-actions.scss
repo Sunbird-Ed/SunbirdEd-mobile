@@ -2,4 +2,15 @@ content-actions {
 /*     .popover-content{
         height:85px !important;
     } */
+
+    .item.item-block {
+        border-bottom: 2px solid #dedede;
+        &:last-child {
+            border-bottom: 0px;
+        }
+    }
+
+    .list-md .item-block .item-inner {
+        border-bottom: 0px;
+    }
 }

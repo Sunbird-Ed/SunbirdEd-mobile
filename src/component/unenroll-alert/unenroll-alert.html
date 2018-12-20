@@ -1,0 +1,25 @@
+<ion-content>
+    <!-- <h5 class="font-weight-700 padding-left-custom">{{'DOWNLOAD_ALL' | translate}}
+      <button class="close-button" ion-button icon-only float-end outline (click)="selectOption(false)"><ion-icon class="icon-size" name="close"></ion-icon></button>
+    </h5> -->
+    <ion-grid>
+        <ion-row>
+            <ion-col col-10 no-padding>
+                <h5 class="font-weight-700 padding-left-5">{{ 'UNENROLL_CONFIRMATION_MESSAGE' | translate }}</h5>
+            </ion-col>
+            <ion-col col-2 no-padding class="margin-top-5">
+                <button class="close-button" ion-button icon-only float-end outline (click)="selectOption(false)">
+                    <ion-icon class="icon-size" name="close"></ion-icon>
+                </button>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+    <ion-row>
+        <ion-col padding>
+            <button (click)="selectOption(false)" ion-button block outline>{{ 'CANCEL' | translate }}</button>
+        </ion-col>
+        <ion-col padding>
+            <button (click)="selectOption(true)" ion-button block>{{ 'CONFIRM' | translate }}</button>
+        </ion-col>
+    </ion-row>
+</ion-content>

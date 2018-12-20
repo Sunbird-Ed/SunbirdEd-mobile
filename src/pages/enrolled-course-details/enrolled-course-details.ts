@@ -37,9 +37,10 @@ import {
   TelemetryObject,
   ErrorCode,
   ErrorType,
+  UnenrolCourseRequest,
+  CourseBatchStatus,
   CourseBatchesRequest,
-  CourseEnrollmentType,
-  CourseBatchStatus
+  CourseEnrollmentType
 } from 'sunbird';
 import { ContentRatingAlertComponent, ContentActionsComponent, ViewCreditsComponent } from '@app/component';
 import { CollectionDetailsPage } from '@app/pages/collection-details/collection-details';
@@ -115,16 +116,6 @@ export class EnrolledCourseDetailsPage {
    * Contains child content import / download progress
    */
   downloadProgress = 0;
-
-  /**
-   * Contains upcomming batch list
-   */
-  upcommingBatches: Array<any> = [];
-
-  /**
-   * Contains ongoing batch list
-   */
-  ongoingBatches: Array<any> = [];
 
   /**
    * To check batches available or not
@@ -209,6 +200,11 @@ export class EnrolledCourseDetailsPage {
       }
     });
 
+    this.events.subscribe(EventTopics.UNENROL_COURSE_SUCCESS, () => {
+      delete this.courseCardData; // to show 'Enroll in Course' button courseCardData should be undefined/null
+      this.isAlreadyEnrolled = false; // and isAlreadyEnrolled should be false
+    });
+
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.telemetryGeneratorService.generateBackClickedTelemetry(
         PageId.CONTENT_DETAIL,
@@ -285,9 +281,14 @@ export class EnrolledCourseDetailsPage {
 
 
   showOverflowMenu(event) {
+    const data = {
+      batchStatus: this.batchDetails ? this.batchDetails.status : 2,
+      contentStatus: this.courseCardData.status
+    };
     const contentData = this.course;
     contentData.batchId = this.courseCardData.batchId ? this.courseCardData.batchId : false;
     const popover = this.popoverCtrl.create(ContentActionsComponent, {
+      data: data,
       content: contentData,
       pageName: 'course'
     }, {
@@ -297,11 +298,41 @@ export class EnrolledCourseDetailsPage {
       ev: event
     });
 
-    popover.onDidDismiss(data => {
-      if (data === 'delete.success' || data === 'flag.success') {
-        this.navCtrl.pop();
-      }
+    popover.onDidDismiss(unenroll => {
+      this.handleUnenrollment(unenroll);
     });
+  }
+
+  /*
+   * check for user confirmation
+   * if confirmed then unenrolls the user from the course
+   */
+  handleUnenrollment(unenroll): void {
+    if (unenroll) {
+      const unenrolCourseRequest: UnenrolCourseRequest = {
+        userId: this.appGlobalService.getUserId(),
+        courseId: this.batchDetails.courseId,
+        batchId: this.batchDetails.id
+      };
+      this.courseService.unenrolCourse(unenrolCourseRequest)
+        .then((data: any) => {
+          this.zone.run(() => {
+            this.commonUtilService.showToast(this.commonUtilService.translateMessage('COURSE_UNENROLLED'));
+            this.events.publish(EventTopics.UNENROL_COURSE_SUCCESS, {
+            });
+          });
+        })
+        .catch((error: any) => {
+          this.zone.run(() => {
+            error = JSON.parse(error);
+              if (error && error.error === 'CONNECTION_ERROR') {
+                this.commonUtilService.showToast(this.commonUtilService.translateMessage('ERROR_NO_INTERNET_MESSAGE'));
+              } else if (error && error.error === 'USER_ALREADY_ENROLLED_COURSE') {
+                this.commonUtilService.showToast(this.commonUtilService.translateMessage('ALREADY_ENROLLED_COURSE'));
+              }
+          });
+        });
+    }
   }
 
   /**
@@ -784,7 +815,6 @@ export class EnrolledCourseDetailsPage {
     this.setContentDetails(this.identifier);
     // If courseCardData does not have a batch id then it is not a enrolled course
     this.subscribeGenieEvent();
-    this.checkBatchAvailability();
   }
 
 
@@ -874,21 +904,47 @@ export class EnrolledCourseDetailsPage {
   }
 
   /**
-   * Navigate user to batch list page
-   *
-   * @param {string} id
+   * checks whether batches are available or not and then Navigate user to batch list page
    */
   navigateToBatchListPage(): void {
+    const ongoingBatches = [];
+    const upcommingBatches = [];
+    const loader = this.commonUtilService.getLoader();
+    const courseBatchesRequest: CourseBatchesRequest = {
+      courseId: this.identifier,
+      enrollmentType: CourseEnrollmentType.OPEN,
+      status: [CourseBatchStatus.NOT_STARTED, CourseBatchStatus.IN_PROGRESS]
+    };
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
       if (!this.guestUser) {
-        if (this.batches.length) {
-          this.navCtrl.push( CourseBatchesPage, {
-            ongoingBatches: this.ongoingBatches,
-            upcommingBatches: this.upcommingBatches
+        loader.present();
+        this.courseService.getCourseBatches(courseBatchesRequest)
+          .then((data: any) => {
+            data = JSON.parse(data);
+            this.zone.run(() => {
+              this.batches = data.result.content;
+              if (this.batches.length) {
+                _.forEach(this.batches, (batch, key) => {
+                  if (batch.status === 1) {
+                    ongoingBatches.push(batch);
+                  } else {
+                    upcommingBatches.push(batch);
+                  }
+                });
+                loader.dismiss();
+                this.navCtrl.push(CourseBatchesPage, {
+                  ongoingBatches: ongoingBatches,
+                  upcommingBatches: upcommingBatches
+                });
+              } else {
+                loader.dismiss();
+                this.commonUtilService.showToast('NO_BATCHES_AVAILABLE');
+              }
+            });
+          })
+          .catch((error: any) => {
+            console.log('error while fetching course batches ==>', error);
           });
-        } else {
-          this.commonUtilService.showToast('NO_BATCHES_AVAILABLE');
-        }
       } else {
         this.navCtrl.push(CourseBatchesPage);
       }
@@ -1023,33 +1079,5 @@ export class EnrolledCourseDetailsPage {
    */
   viewCredits() {
     this.courseUtilService.showCredits(this.course, PageId.CONTENT_DETAIL, undefined, this.corRelationList);
-  }
-
-  /**
-   * checks whether batches are available or not
-   */
-  checkBatchAvailability(): void {
-    const courseBatchesRequest: CourseBatchesRequest = {
-      courseId: this.identifier,
-      enrollmentType: CourseEnrollmentType.OPEN,
-      status: [CourseBatchStatus.NOT_STARTED, CourseBatchStatus.IN_PROGRESS]
-    };
-    this.courseService.getCourseBatches(courseBatchesRequest)
-      .then((data: any) => {
-        data = JSON.parse(data);
-        this.zone.run(() => {
-          this.batches = data.result.content;
-          _.forEach(data.result.content, (value, key) => {
-            if (value.status === 1) {
-              this.ongoingBatches.push(value);
-            } else {
-              this.upcommingBatches.push(value);
-            }
-          });
-        });
-      })
-      .catch((error: any) => {
-        console.log('error while fetching course batches ==>', error);
-      });
   }
 }

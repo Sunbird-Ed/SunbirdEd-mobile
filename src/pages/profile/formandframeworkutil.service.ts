@@ -410,7 +410,7 @@ export class FormAndFrameworkUtilService {
                                 if (categoryKeysLen === keysLength) {
                                     const req: Profile = new Profile();
                                     if (profile.board && profile.board.length > 1) {
-                                      profile.board.splice(1, profile.board.length);
+                                        profile.board.splice(1, profile.board.length);
                                     }
                                     req.board = profile.board;
                                     req.grade = profile.grade;
@@ -423,26 +423,26 @@ export class FormAndFrameworkUtilService {
                                     req.source = profileData.source;
                                     req.createdAt = profileData.createdAt || this.formatDate();
                                     this.preference.getString('current_framework_id')
-                                    .then(value => {
-                                        req.syllabus = [value];
-                                        this.profileService.updateProfile(req)
-                                        .then((res: any) => {
-                                            const updateProfileRes = JSON.parse(res);
-                                            this.events.publish('refresh:loggedInProfile');
-                                            if (updateProfileRes.board  && updateProfileRes.grade && updateProfileRes.medium &&
-                                                updateProfileRes.board.length && updateProfileRes.grade.length
-                                                && updateProfileRes.medium.length
-                                            ) {
-                                                resolve({status: true});
-                                            } else {
-                                                resolve({status: false, profile: updateProfileRes});
-                                            }
-                                        })
-                                        .catch((err: any) => {
-                                            console.error('Err', err);
-                                            resolve({status: false});
+                                        .then(value => {
+                                            req.syllabus = [value];
+                                            this.profileService.updateProfile(req)
+                                                .then((res: any) => {
+                                                    const updateProfileRes = JSON.parse(res);
+                                                    this.events.publish('refresh:loggedInProfile');
+                                                    if (updateProfileRes.board && updateProfileRes.grade && updateProfileRes.medium &&
+                                                        updateProfileRes.board.length && updateProfileRes.grade.length
+                                                        && updateProfileRes.medium.length
+                                                    ) {
+                                                        resolve({ status: true });
+                                                    } else {
+                                                        resolve({ status: false, profile: updateProfileRes });
+                                                    }
+                                                })
+                                                .catch((err: any) => {
+                                                    console.error('Err', err);
+                                                    resolve({ status: false });
+                                                });
                                         });
-                                    });
                                 }
                             });
                     } else {
@@ -450,7 +450,7 @@ export class FormAndFrameworkUtilService {
                     }
                 }
             } else {
-                resolve({status: false});
+                resolve({ status: false });
             }
         });
     }
