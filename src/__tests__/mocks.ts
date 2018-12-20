@@ -25,6 +25,7 @@ import {
   Platform,
   PopoverController,
   ViewController,
+  App,
   IonicApp
 } from 'ionic-angular';
 import { NgZone } from '@angular/core';
@@ -37,6 +38,7 @@ import { FormAndFrameworkUtilService } from '@app/pages/profile';
 import { File } from '@ionic-native/file';
 import { DatePipe } from '../../node_modules/@angular/common';
 import { NavControllerBase } from 'ionic-angular/navigation/nav-controller-base';
+import { FormBuilder } from '@angular/forms';
 
 export type Mockify<T> = {
   [P in keyof T]: jest.Mock<{}>;
@@ -91,6 +93,7 @@ export const userProfileServiceMock = createSpyObj<UserProfileService>([
 
 export const profileServiceMock = createSpyObj<ProfileService>([
   'setCurrentProfile',
+  'getCurrentUser',
   'doOAuthStepOne'
 ]);
 
@@ -280,6 +283,13 @@ export const supportfileMock = createSpyObj<any>([
   'shareSunbirdConfigurations'
 ]);
 
+export const formBuilderMock = createSpyObj<FormBuilder>([
+  'group',
+]);
 
 export const ionicAppMock = createSpyObj<IonicApp>([
+]);
+
+export const appMock = createSpyObj<App>([
+  'group',
 ]);

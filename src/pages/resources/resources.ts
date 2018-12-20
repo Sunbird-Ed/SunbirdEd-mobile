@@ -272,7 +272,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       .then(data => {
         _.forEach(data, (value) => {
           value.contentData.lastUpdatedOn = value.lastUpdatedTime;
-          if (Boolean(value.isAvailableLocally) &&  value.basePath && value.contentData.appIcon) {
+          if (Boolean(value.isAvailableLocally) && value.basePath && value.contentData.appIcon) {
             value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
           } else if (!Boolean(value.isAvailableLocally)) {
             value.contentData.appIcon = value.contentData.appIcon;
@@ -300,7 +300,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       uid: this.profile ? this.profile.uid : undefined,
       contentTypes: ContentType.FOR_RECENTLY_VIEWED,
       audience: this.audienceFilter,
-      recentlyViewed: true
+      recentlyViewed: true,
+      limit: 20
     };
     this.contentService.getAllLocalContents(requestParams)
       .then(data => {
@@ -411,7 +412,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           // this.noInternetConnection = false;
           this.checkEmptySearchResult(isAfterLanguageChange);
         });
-      }).catch(error => {
+      })
+      .catch(error => {
         console.log('error while getting popular resources...', error);
         that.ngZone.run(() => {
           this.pageApiLoader = false;

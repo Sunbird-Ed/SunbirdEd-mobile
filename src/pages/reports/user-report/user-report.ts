@@ -34,7 +34,6 @@ export class UserReportPage {
     private appGlobalService: AppGlobalService,
     private appVersion: AppVersion,
     private deviceInfoService: DeviceInfoService,
-    private socialShare: SocialSharing,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService) {
 
@@ -67,6 +66,7 @@ export class UserReportPage {
   fileUrl: string;
   exptime: any;
   response: any;
+  handle: string;
   fileTransfer: FileTransferObject = this.transfer.create();
   formatTime(time: number): string {
     const minutes: any = '0' + Math.floor(time / 60);
@@ -114,6 +114,7 @@ export class UserReportPage {
 
     this.reportSummary = this.navParams.get('report');
     this.contentName = this.reportSummary.name;
+    this.handle =  this.navParams.get('handle');
 
     that.reportService.getDetailReport([this.reportSummary.uid], this.reportSummary.contentId)
       .then(reportsMap => {
@@ -167,7 +168,7 @@ export class UserReportPage {
     const contentstarttime = this.datePipe.transform(new Date(teams[0].timestamp), 'dd-MM-yyyy hh:mm:ss a');
     for (let m = 0; m < anzahlTeams; m++) {
       line += 'Device ID' + ',' + this.deviceId + '\n';
-      line += 'User name (User ID)' + ',' + this.profile.handle + '(' + this.profile.uid + ')' + '\n';
+      line += 'User name (User ID)' + ',' + this.handle + '(' + this.reportSummary.uid + ')' + '\n';
       line += 'Content name (Content ID)' + ',' + this.reportSummary.name + '(' + this.reportSummary.contentId + ')' + '\n';
       line += 'Content started time' + ',' + contentstarttime + '\n';
       line += 'Total Time' + ',' + this.formatTime(this.totalTime) + '\n';

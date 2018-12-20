@@ -360,7 +360,12 @@ export class FormAndFrameworkUtilService {
                 });
         });
     }
-
+    /**
+     * update local profile for logged in user and return promise with a status saying,
+     *  whether user has to be redirected to categoryedit page or library page
+     * @param profileRes : profile details of logged in user which can be obtained using userProfileService.getUserProfileDetails
+     * @param profileData : Local profile of current user
+     */
     updateLoggedInUser(profileRes, profileData) {
         return new Promise((resolve, reject) => {
             const profile = {
