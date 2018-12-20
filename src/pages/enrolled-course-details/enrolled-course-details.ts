@@ -118,16 +118,6 @@ export class EnrolledCourseDetailsPage {
   downloadProgress = 0;
 
   /**
-   * Contains upcomming batch list
-   */
-  upcommingBatches: Array<any> = [];
-
-  /**
-   * Contains ongoing batch list
-   */
-  ongoingBatches: Array<any> = [];
-
-  /**
    * To check batches available or not
    */
   public batches: Array<any>;
@@ -821,7 +811,6 @@ export class EnrolledCourseDetailsPage {
     this.setContentDetails(this.identifier);
     // If courseCardData does not have a batch id then it is not a enrolled course
     this.subscribeGenieEvent();
-    this.checkBatchAvailability();
   }
 
 
@@ -911,21 +900,47 @@ export class EnrolledCourseDetailsPage {
   }
 
   /**
-   * Navigate user to batch list page
-   *
-   * @param {string} id
+   * checks whether batches are available or not and then Navigate user to batch list page
    */
   navigateToBatchListPage(): void {
+    const ongoingBatches = [];
+    const upcommingBatches = [];
+    const loader = this.commonUtilService.getLoader();
+    const courseBatchesRequest: CourseBatchesRequest = {
+      courseId: this.identifier,
+      enrollmentType: CourseEnrollmentType.OPEN,
+      status: [CourseBatchStatus.NOT_STARTED, CourseBatchStatus.IN_PROGRESS]
+    };
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
       if (!this.guestUser) {
-        if (this.batches.length) {
-          this.navCtrl.push( CourseBatchesPage, {
-            ongoingBatches: this.ongoingBatches,
-            upcommingBatches: this.upcommingBatches
+        loader.present();
+        this.courseService.getCourseBatches(courseBatchesRequest)
+          .then((data: any) => {
+            data = JSON.parse(data);
+            this.zone.run(() => {
+              this.batches = data.result.content;
+              if (this.batches.length) {
+                _.forEach(this.batches, (batch, key) => {
+                  if (batch.status === 1) {
+                    ongoingBatches.push(batch);
+                  } else {
+                    upcommingBatches.push(batch);
+                  }
+                });
+                loader.dismiss();
+                this.navCtrl.push(CourseBatchesPage, {
+                  ongoingBatches: ongoingBatches,
+                  upcommingBatches: upcommingBatches
+                });
+              } else {
+                loader.dismiss();
+                this.commonUtilService.showToast('NO_BATCHES_AVAILABLE');
+              }
+            });
+          })
+          .catch((error: any) => {
+            console.log('error while fetching course batches ==>', error);
           });
-        } else {
-          this.commonUtilService.showToast('NO_BATCHES_AVAILABLE');
-        }
       } else {
         this.navCtrl.push(CourseBatchesPage);
       }
@@ -1060,33 +1075,5 @@ export class EnrolledCourseDetailsPage {
    */
   viewCredits() {
     this.courseUtilService.showCredits(this.course, PageId.CONTENT_DETAIL, undefined, this.corRelationList);
-  }
-
-  /**
-   * checks whether batches are available or not
-   */
-  checkBatchAvailability(): void {
-    const courseBatchesRequest: CourseBatchesRequest = {
-      courseId: this.identifier,
-      enrollmentType: CourseEnrollmentType.OPEN,
-      status: [CourseBatchStatus.NOT_STARTED, CourseBatchStatus.IN_PROGRESS]
-    };
-    this.courseService.getCourseBatches(courseBatchesRequest)
-      .then((data: any) => {
-        data = JSON.parse(data);
-        this.zone.run(() => {
-          this.batches = data.result.content;
-          _.forEach(data.result.content, (value, key) => {
-            if (value.status === 1) {
-              this.ongoingBatches.push(value);
-            } else {
-              this.upcommingBatches.push(value);
-            }
-          });
-        });
-      })
-      .catch((error: any) => {
-        console.log('error while fetching course batches ==>', error);
-      });
   }
 }
