@@ -281,10 +281,14 @@ export class EnrolledCourseDetailsPage {
 
 
   showOverflowMenu(event) {
+    const data = {
+      batchStatus: this.batchDetails ? this.batchDetails.status : 2,
+      contentStatus: this.courseCardData.status
+    };
     const contentData = this.course;
     contentData.batchId = this.courseCardData.batchId ? this.courseCardData.batchId : false;
-    contentData.status = this.batchDetails ? this.batchDetails : 2;
     const popover = this.popoverCtrl.create(ContentActionsComponent, {
+      data: data,
       content: contentData,
       pageName: 'course'
     }, {

@@ -18,6 +18,7 @@ import { UnenrollAlertComponent } from '../unenroll-alert/unenroll-alert';
 export class ContentActionsComponent {
 
   content: any;
+  data: any;
   isChild = false;
   contentId: string;
   backButtonFunc = undefined;
@@ -41,6 +42,7 @@ export class ContentActionsComponent {
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService) {
     this.content = this.navParams.get('content');
+    this.data = this.navParams.get('data');
     this.pageName = this.navParams.get('pageName');
     this.objRollup = this.navParams.get('objRollup');
     this.corRelationList = this.navParams.get('corRelationList');
