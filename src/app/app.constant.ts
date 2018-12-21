@@ -95,6 +95,7 @@ export class AudienceFilter {
 
 export class EventTopics {
     public static readonly ENROL_COURSE_SUCCESS = 'ENROL_COURSE_SUCCESS';
+    public static readonly UNENROL_COURSE_SUCCESS = 'UNENROL_COURSE_SUCCESS';
     public static readonly COURSE_STATUS_UPDATED_SUCCESSFULLY = 'COURSE_STATUS_UPDATED_SUCCESSFULLY';
 }
 
