@@ -3,7 +3,8 @@ import { NavController } from 'ionic-angular/navigation/nav-controller';
 import { Component, NgZone } from '@angular/core';
 import { NavParams, LoadingController } from 'ionic-angular';
 import {
-    ReportService, ReportSummary, PageId, Environment, InteractType, InteractSubtype, DeviceInfoService, Profile} from 'sunbird';
+    ReportService, ReportSummary, PageId, Environment, InteractType, InteractSubtype, DeviceInfoService, Profile
+} from 'sunbird';
 import { GroupReportAlert } from '../group-report-alert/group-report-alert';
 import { TranslateService } from '@ngx-translate/core';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
@@ -27,6 +28,8 @@ export class GroupReportListPage {
     deviceId: string;
     response: any;
     responseByUser: any;
+    // Below variable stores group Report
+    groupReport: any;
     profile: Profile;
     currentGroupId: string;
     fromUserColumns = [{
@@ -126,6 +129,7 @@ export class GroupReportListPage {
             loader.present();
             this.reportService.getReportsByUser(params).then((data: any) => {
                 data = JSON.parse(data);
+                this.groupReport = data;
                 let averageScore: any = 0;
                 let averageTime = 0;
                 data.forEach((report) => {
@@ -140,7 +144,7 @@ export class GroupReportListPage {
                                 return {
                                     'index': 'Q' + (('00' + row.qindex).slice(-3)),
                                     'result': row.score + '/' + row.maxScore,
-                                    'timespent': report.totalTimespent,
+                                    'timespent': this.formatTime(row.timespent),
                                     'qdesc': row.qdesc,
                                     'score': row.score,
                                     'maxScore': row.maxScore,
@@ -153,8 +157,8 @@ export class GroupReportListPage {
                             report.assessmentData = rows;
                         })
                         .catch(() => {
-                                loader.dismiss();
-                            });
+                            loader.dismiss();
+                        });
                 });
                 this.response = data;
                 this.responseByUser = data;
@@ -334,7 +338,7 @@ export class GroupReportListPage {
                     this.file.writeExistingFile(this.downloadDirectory, combinefilename, csv)
                         .then(_ => {
                             this.commonUtilService.showToast(this.translateMessage('CSV_DOWNLOAD_SUCCESS', combinefilename),
-                            false, 'custom-toast');
+                                false, 'custom-toast');
                         })
                         .catch();
                 }
