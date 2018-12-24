@@ -263,7 +263,7 @@ export class ProfilePage {
         for (let i = 0, len = this.profile.organisations[0].roles.length; i < len; i++) {
           const roleKey = this.profile.organisations[0].roles[i];
           const val = this.profile.roleList.find(role => role.id === roleKey);
-          if (val) {
+          if (val && val.name.toLowerCase() !== 'public') {
             this.roles.push(val.name);
           }
         }
