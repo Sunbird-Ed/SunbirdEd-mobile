@@ -1,173 +1,118 @@
-// import { ComponentFixture, TestBed } from '@angular/core/testing';
-// import { NO_ERRORS_SCHEMA } from '@angular/core';
-// import { NavParams } from 'ionic-angular';
-// import { ViewController } from 'ionic-angular';
-// import { Platform } from 'ionic-angular';
-// import { NavController } from 'ionic-angular';
-// import { IonicApp } from 'ionic-angular';
-// import { LoadingController } from 'ionic-angular';
-// import { ReportService, ServiceProvider, ContentService } from 'sunbird';
-// import { TranslateService, TranslateModule } from '@ngx-translate/core';
-// import { GroupReportAlert } from './group-report-alert';
-// import { NavParamsMock, ViewControllerMock, LoadingControllerMock, PlatformMock,
-//     TranslateServiceStub, NavControllerMock, NavMock } from '../../../../test-config/mocks-ionic';
-// import { Observable } from 'rxjs';
 
-// describe('GroupReportAlert', () => {
-//     let comp: GroupReportAlert;
-//     let fixture: ComponentFixture<GroupReportAlert>;
-//     beforeEach(() => {
 
-//         const IonicAppMock = {
-//             _modalPortal: {
-//                 getActive: () => ({
-//                     dismiss: () => { }
-//                 })
-//             },
-//             _overlayPortal: {
-//                 getActive: () => ({
-//                     dismiss: () => { }
-//                 })
-//             },
-//             _toastPortal: {
-//                 getActive: () => ({
-//                     dismiss: () => { }
-//                 })
-//             },
-//         };
+import { mockRes } from './../../search/search.spec.data';
+import { GroupReportAlert } from './group-report-alert';
 
-//         TestBed.configureTestingModule({
-//             imports: [TranslateModule.forRoot()],
-//             declarations: [GroupReportAlert],
-//             schemas: [NO_ERRORS_SCHEMA],
-//             providers: [
-//                 ReportService, ServiceProvider, ContentService,
-//                 { provide: NavController, useClass: NavMock },
-//                 { provide: NavParams, useClass: NavParamsMock },
-//                 { provide: ViewController, useClass: ViewControllerMock },
-//                 { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() },
-//                 { provide: Platform, useClass: PlatformMock },
-//                 { provide: IonicApp, useValue: IonicAppMock },
-//                 { provide: TranslateService, useClass: TranslateServiceStub }
-//             ]
-//         });
-//         const translate = TestBed.get(TranslateService);
-//         spyOn(translate, 'get').and.callFake((arg) => {
-//             return Observable.of('Cancel');
-//         });
-//         fixture = TestBed.createComponent(GroupReportAlert);
-//         comp = fixture.componentInstance;
-//     });
-//     it('can load instance', () => {
-//         expect(comp).toBeTruthy();
-//     });
-//     describe('getAssessmentByUser', () => {
-//         it('makes expected calls', (done) => {
+import {
+    navParamsMock,
+    viewControllerMock,
+    navCtrlMock,
+    loadingControllerMock,
+    platformMock,
+    ionicAppMock,
+    reportServiceMock,
+    translateServiceMock
+} from '../../../__tests__/mocks';
 
-//             const repostStub = TestBed.get(ReportService);
-//             comp.assessment = {
-//                 uids: [],
-//                 content_id: 'sample_string',
-//                 qid: 'sample_question_id',
-//                 users: {
-//                     get: () => {
-//                         return 'sample_assessment_uid';
-//                     }
-//                 }
-//             };
-//             const responseObj = [{
-//                 result: 50,
-//                 maxScore: 100,
-//                 time: 1000
-//             }];
-//             spyOn(repostStub, 'getDetailsPerQuestion').and.callFake((params, data, error) => {
-//                 return data(JSON.stringify(responseObj));
-//             });
-//             spyOn(comp, 'convertTotalTime').and.returnValue(10);
-//             comp.getAssessmentByUser('users');
-//             setTimeout(() => {
-//                 expect(repostStub.getDetailsPerQuestion).toHaveBeenCalled();
-//                 done();
-//             }, 10);
-//         });
-//         it('makes expected calls', (done) => {
-//             const repostStub = TestBed.get(ReportService);
-//             comp.assessment = {
-//                 uids: [],
-//                 content_id: 'sample_string',
-//                 qid: 'sample_question_id',
-//                 users: {}
-//             };
-//             const responseObj = {
-//                 result: 50,
-//                 maxScore: 100,
-//                 time: 1000
-//             };
-//             spyOn(repostStub, 'getDetailsPerQuestion').and.callFake((params, data, error) => {
-//                 return error(JSON.stringify(responseObj));
-//             });
+describe.only('GroupReportAlertPage Component', () => {
+    let groupReportAlert: GroupReportAlert;
 
-//             comp.getAssessmentByUser('users');
-//             setTimeout(() => {
-//                 expect(repostStub.getDetailsPerQuestion).toHaveBeenCalled();
-//                 done();
-//             }, 10);
-//         });
+    beforeEach(() => {
+    translateServiceMock.get.mockReturnValue( { subscribe: jest.fn() } );
+    navParamsMock.get.mockReturnValue({ 'row': () => {} } as any);
+      // appGlobalServiceMock.isUserLoggedIn.mockReturnValue(true);
+      // buildParamServiceMock.getBuildConfigParam.mockResolvedValue('SOME_URL');
+      groupReportAlert = new GroupReportAlert(navParamsMock as any, viewControllerMock as any,
+        navCtrlMock as any, loadingControllerMock as any, platformMock as any, ionicAppMock as any,
+        reportServiceMock as any, translateServiceMock as any);
 
-//     });
-//     describe('cancel', () => {
-//         it('makes expected calls', () => {
-//             const viewCtrlStub = TestBed.get(ViewController);
-//             spyOn(viewCtrlStub, 'dismiss').and.returnValue(Promise.resolve('success'));
-//             comp.cancel();
+      jest.resetAllMocks();
+    });
 
-//             expect(comp.cancel).toBeDefined();
-//             expect(viewCtrlStub.dismiss).toHaveBeenCalled();
-//         });
-//     });
-//     it('ionViewWillEnter', () => {
-//         const platformStub = TestBed.get(Platform);
-//         spyOn(platformStub, 'registerBackButtonAction').and.callFake((fun: Function, num) => {
-//             return fun();
-//         });
-//         comp.ionViewWillEnter();
-//         // expect(platformStub.registerBackButtonAction).toHaveBeenCalled();
+    it('can load instance the instance of userReportPage', () => {
+        expect(groupReportAlert).toBeTruthy();
+      });
 
-//     });
-//     it('ionViewWillLeave', () => {
-//         comp.unregisterBackButton = spyOn(comp, 'ionViewWillEnter');
-//         comp.ionViewWillLeave();
-//         expect(comp.unregisterBackButton).toHaveBeenCalled();
-//     });
-//     describe('dismissPopUp', () => {
-//         it('makes expected calls when ionic app is in _modal portal', () => {
-//             const ionicAppStub = fixture.debugElement.injector.get(IonicApp);
+      it('getAssessmentByUser can make expected call', (done) => {
+        groupReportAlert.assessment = {
+            uids: [],
+            content_id: 'sample_string',
+            qid: 'sample_question_id',
+            users: {
+                get: () => {
+                    return 'sample_assessment_uid';
+                }
+            }
+        };
+        const responseObj = [{
+            result: 50,
+            maxScore: 100,
+            time: 1000
+        }];
+      reportServiceMock.getDetailsPerQuestion.mockResolvedValue(JSON.stringify(responseObj));
+        groupReportAlert.getAssessmentByUser('users');
+        setTimeout(() => {
+            expect(reportServiceMock.getDetailsPerQuestion).toHaveBeenCalled();
+            expect(groupReportAlert.fromUserAssessment).toBeTruthy();
+            done();
+        }, 10);
+      });
+   it('getAssessmentByUser can not make expected call', (done) => {
+        groupReportAlert.assessment = {
+            uids: [],
+            content_id: 'sample_string',
+            qid: 'sample_question_id',
+            users: {
+                get: () => {
+                    return 'sample_assessment_uid';
+                }
+            }
+        };
+        const errorObj = [{
+            error : 'testing error'
+        }];
+        const loadingMock = { dismiss: jest.fn() };
+        loadingControllerMock.create.mockReturnValue( loadingMock );
+        reportServiceMock.getDetailsPerQuestion.mockRejectedValue(JSON.stringify(errorObj)) ;
+        groupReportAlert.getAssessmentByUser('users');
 
-//             spyOn(ionicAppStub._modalPortal, 'getActive');
-//             comp.dismissPopup();
+        setTimeout(() =>{
+        expect(loadingMock.dismiss).toHaveBeenCalled();
+        done();
+        }, 0 );
+      });
 
-//             expect(ionicAppStub._modalPortal.getActive).toHaveBeenCalled();
+      it('should call registerBackButtonAction() when ionViewWillEnter()', () => {
+        platformMock.registerBackButtonAction.mockReturnValue(() => {});
+        spyOn(groupReportAlert, 'dismissPopup');
+        groupReportAlert.ionViewWillEnter();
+        groupReportAlert.unregisterBackButton = platformMock.registerBackButtonAction.mock.calls[0][0].call();
+        expect(groupReportAlert.dismissPopup).toBeCalled();
+    });
 
-//         });
-//         it('makes expected calls when ionic app is in _overalay portal', () => {
-//             const ionicAppStub = fixture.debugElement.injector.get(IonicApp);
-//             const navStub = TestBed.get(NavController);
+    it('should call unregisterBackButton() when ionViewWillLeave() ', () => {
+        groupReportAlert.unregisterBackButton = jest.fn();
+        groupReportAlert.ionViewWillLeave();
+        expect(groupReportAlert.unregisterBackButton).toBeCalled();
+    });
 
-//             spyOn(ionicAppStub._overlayPortal, 'getActive').and.returnValue(false);
-//             spyOn(ionicAppStub._modalPortal, 'getActive').and.returnValue(false);
-//             spyOn(navStub, 'pop');
-//             comp.dismissPopup();
+      it(' should call dismissPopup() when activePortal is not null when dismissPopup()', () => {
+        const obj = { dismiss: jest.fn() };
+        (ionicAppMock._modalPortal as any) = { getActive: jest.fn(() => obj) };
+        groupReportAlert.dismissPopup();
+        expect(ionicAppMock._modalPortal.getActive().dismiss).toBeCalled();
+    });
 
-//             expect(ionicAppStub._overlayPortal.getActive).toHaveBeenCalled();
-//             expect(navStub.pop).toHaveBeenCalled();
-//         });
-//     });
+      it('convertTotalTime should give desired formatted output', () => {
+          expect(groupReportAlert.convertTotalTime(1543918834812)).toEqual('25731980580:12');
+      });
 
-//     describe('convertTotalTime', () => {
-//         it('makes expected calls', () => {
-//             spyOn(Math, 'floor');
-//             comp.convertTotalTime(1);
-//             expect(comp.convertTotalTime(1)).toBeDefined();
-//         });
-//     });
-// });
+      it('translateMessage should give desired desired translated message', (done) => {
+        translateServiceMock.get.mockReturnValue( { subscribe: jest.fn() } );
+        groupReportAlert.translateMessage('TIME', 'en');
+        setTimeout( () => {
+            expect(translateServiceMock.get).toHaveBeenCalledWith('TIME', { '%s': 'en' });
+            done();
+        }, 0 );
+    });
+});
