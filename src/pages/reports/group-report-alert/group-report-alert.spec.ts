@@ -1,6 +1,3 @@
-
-
-import { mockRes } from './../../search/search.spec.data';
 import { GroupReportAlert } from './group-report-alert';
 
 import {
