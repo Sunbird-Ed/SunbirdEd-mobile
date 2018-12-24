@@ -99,7 +99,6 @@
     <plugin name="cordova-plugin-device" spec="1.1.7" />
     <plugin name="cordova-plugin-file" spec="6.0.1" />
     <plugin name="cordova-plugin-file-transfer" spec="1.7.1" />
-    <plugin name="cordova-plugin-inappbrowser" spec="2.0.2" />
     <plugin name="cordova-plugin-browsertab" spec="0.2.0" />
     <plugin name="cordova-plugin-console" spec="1.1.0" />
     <plugin name="cordova-plugin-network-information" spec="2.0.1" />
@@ -110,12 +109,13 @@
     <plugin name="cordova-plugin-sunbirdsplash" spec="https://github.com/project-sunbird/cordova-plugin-sunbirdsplash.git" />
     <plugin name="cordova-plugin-openrap" spec="https://github.com/project-sunbird/cordova-plugin-openrap.git" />
     <plugin name="cordova-plugin-geniecanvas" spec="https://github.com/project-sunbird/cordova-plugin-geniecanvas.git" />
+    <plugin name="cordova-plugin-sunbirdinappbrowser" spec="https://github.com/subranil/cordova-plugin-inappbrowser" />
     <plugin name="cordova-android-support-gradle-release" spec="^2.0.1">
-       <variable name="ANDROID_SUPPORT_VERSION" value="27.1.0" />
-   </plugin>
-   <plugin name="cordova-plugin-customtabs" spec="https://github.com/souvikmondal/cordova-plugin-customtabs.git">
-       <variable name="URL_SCHEME" value="org.sunbird" />
-       <variable name="URL_HOST" value="android" />
-   </plugin>
+        <variable name="ANDROID_SUPPORT_VERSION" value="27.1.0" />
+    </plugin>
+    <plugin name="cordova-plugin-customtabs" spec="https://github.com/souvikmondal/cordova-plugin-customtabs.git">
+        <variable name="URL_SCHEME" value="org.sunbird" />
+        <variable name="URL_HOST" value="android" />
+    </plugin>
     <engine name="android" spec="7.0.0" />
 </widget>
