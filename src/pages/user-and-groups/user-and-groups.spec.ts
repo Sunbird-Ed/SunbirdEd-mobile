@@ -205,7 +205,8 @@
 
 //     describe('ionViewDidLoad', () => {
 //         it('makes expected calls', () => {
-//             const telemetryGeneratorServiceStub: TelemetryGeneratorService = fixture.debugElement.injector.get(TelemetryGeneratorService);
+//             const telemetryGeneratorServiceStub: TelemetryGeneratorService =
+// fixture.debugElement.injector.get(TelemetryGeneratorService);
 //             spyOn(telemetryGeneratorServiceStub, 'generateImpressionTelemetry');
 //             comp.ionViewDidLoad();
 //             expect(telemetryGeneratorServiceStub.generateImpressionTelemetry).toHaveBeenCalled();
@@ -356,7 +357,8 @@
 //     describe('createGroup', () => {
 //         it('makes expected calls', () => {
 //             const navControllerStub: NavController = fixture.debugElement.injector.get(NavController);
-//             const telemetryGeneratorServiceStub: TelemetryGeneratorService = fixture.debugElement.injector.get(TelemetryGeneratorService);
+//             const telemetryGeneratorServiceStub: TelemetryGeneratorService =
+// fixture.debugElement.injector.get(TelemetryGeneratorService);
 
 //             spyOn(navControllerStub, 'push');
 //             spyOn(telemetryGeneratorServiceStub, 'generateInteractTelemetry');
@@ -417,7 +419,8 @@
 //         it('makes expected calls', () => {
 //             const alertControllerStub: AlertController = TestBed.get(AlertController);
 //             const appGlobalServiceStub: AppGlobalService = fixture.debugElement.injector.get(AppGlobalService);
-//             const telemetryGeneratorServiceStub: TelemetryGeneratorService = fixture.debugElement.injector.get(TelemetryGeneratorService);
+//             const telemetryGeneratorServiceStub: TelemetryGeneratorService =
+// fixture.debugElement.injector.get(TelemetryGeneratorService);
 //             comp.selectedUserIndex = 0;
 //             comp.userList = [{
 //                 uid: 'user-id-1',

@@ -1,6 +1,9 @@
 import 'jest';
 import { EnrolledCourseDetailsPage } from './enrolled-course-details';
-import { navCtrlMock, navParamsMock, alertCtrlMock, contentServiceMock, zoneMock, fileUtilMock, popoverCtrlMock, profileServiceMock, courseServiceMock, buildParamServiceMock, shareUtilMock, socialSharingMock, sharedPreferencesMock, courseUtilServiceMock, platformMock, appGlobalServiceMock, telemetryGeneratorServiceMock, commonUtilServiceMock, eventsMock } from '../../__tests__/mocks';
+import { navCtrlMock, navParamsMock, alertCtrlMock, contentServiceMock, zoneMock, fileUtilMock,
+   popoverCtrlMock, profileServiceMock, courseServiceMock, buildParamServiceMock, shareUtilMock,
+    socialSharingMock, sharedPreferencesMock, courseUtilServiceMock, platformMock, appGlobalServiceMock,
+     telemetryGeneratorServiceMock, commonUtilServiceMock, eventsMock } from '../../__tests__/mocks';
 
 describe('EnrolledCourseDetailsPage component', () => {
   let enrolledCourseDetailsPage: EnrolledCourseDetailsPage;
@@ -34,10 +37,10 @@ describe('EnrolledCourseDetailsPage component', () => {
 
     jest.resetAllMocks();
 
-  })
+  });
 
   it('should create a valid instance of EnrolledCourseDetailsPage', () => {
     expect(enrolledCourseDetailsPage).not.toBeFalsy();
   });
 
-})
+});

@@ -54,7 +54,8 @@
 //                 }),
 //             ],
 //             providers: [
-//                 ServiceProvider, BuildParamService, FrameworkService, ProfileService, TelemetryGeneratorService, TelemetryService, Network,
+//                 ServiceProvider, BuildParamService, FrameworkService, ProfileService,
+// TelemetryGeneratorService, TelemetryService, Network,
 //                 { provide: TranslateService, useClass: TranslateServiceStub },
 //                 { provide: NavController, useClass: NavControllerMock },
 //                 { provide: NavParams, useClass: NavParamsMock },

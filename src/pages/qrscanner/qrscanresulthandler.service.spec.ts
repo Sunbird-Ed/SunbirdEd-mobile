@@ -156,7 +156,8 @@
 //     corRelation.type = 'qr';
 //     corRelationList.push(corRelation);
 //     expect(service.generateQRScanSuccessInteractEvent).toHaveBeenCalledWith(VALID_CONTENT_LINK, 'ContentDetail', 'SAMPLE');
-//     expect(service.navigateToDetailsPage).toHaveBeenCalledWith(JSON.parse(mockRes.sampleCollectionDetailsResponse).result, corRelationList);
+//     expect(service.navigateToDetailsPage).toHaveBeenCalledWith(JSON.parse(mockRes.sampleCollectionDetailsResponse).result,
+// corRelationList);
 //   });
 
 //   it('#handleContentId should handle valid  contentId  and navigate to ContentDetails page', () => {
@@ -212,7 +213,8 @@
 //     const telemetryObject: TelemetryObject = new TelemetryObject();
 //     telemetryObject.id = 'SAMPLE';
 //     telemetryObject.type = 'qr';
-//     expect(telemetryGeneratorService.generateInteractTelemetry).toHaveBeenCalledWith(InteractType.OTHER, InteractSubtype.QRCodeScanSuccess,
+//     expect(telemetryGeneratorService.generateInteractTelemetry).toHaveBeenCalledWith(InteractType.OTHER,
+// InteractSubtype.QRCodeScanSuccess,
 //       Environment.HOME,
 //       PageId.QRCodeScanner, telemetryObject,
 //       values);
@@ -228,7 +230,8 @@
 //     values['Action'] = 'ContentDetail';
 
 //     const telemetryObject: TelemetryObject = new TelemetryObject();
-//     expect(telemetryGeneratorService.generateInteractTelemetry).toHaveBeenCalledWith(InteractType.OTHER, InteractSubtype.QRCodeScanSuccess,
+//     expect(telemetryGeneratorService.generateInteractTelemetry).toHaveBeenCalledWith(InteractType.OTHER,
+// InteractSubtype.QRCodeScanSuccess,
 //       Environment.HOME,
 //       PageId.QRCodeScanner, telemetryObject,
 //       values);
