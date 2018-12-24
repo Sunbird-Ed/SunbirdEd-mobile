@@ -31,10 +31,20 @@ describe.only('UserReportPage Component', () => {
     // appGlobalServiceMock.isUserLoggedIn.mockReturnValue(true);
     // buildParamServiceMock.getBuildConfigParam.mockResolvedValue('SOME_URL');
 
-    userReportPage = new UserReportPage(navCtrlMock as any, navParamsMock as any,
-        reportServiceMock as any, transferMock as any, translateServiceMock as any, fileMock as any,
-         datePipeMock as any, loadingMock as any, zoneMock as any, appGlobalServiceMock as any, appVersionMock as any,
-         deviceInfoServiceMock as any, socialSharingMock as any, telemetryGeneratorServiceMock as any,
+    userReportPage = new UserReportPage(
+      navCtrlMock as any, 
+      navParamsMock as any,
+        reportServiceMock as any, 
+        transferMock as any, 
+        translateServiceMock as any, 
+        fileMock as any,
+         datePipeMock as any, 
+         loadingMock as any, 
+         zoneMock as any, 
+         appGlobalServiceMock as any, 
+         appVersionMock as any,
+         deviceInfoServiceMock as any,
+         telemetryGeneratorServiceMock as any,
          commonUtilServiceMock as any);
 
     jest.resetAllMocks();
