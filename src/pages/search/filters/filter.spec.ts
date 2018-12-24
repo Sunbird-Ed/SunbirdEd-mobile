@@ -32,7 +32,6 @@ describe.only('FilterPage', () => {
         filterPage = new FilterPage(navParamsMock as any, popoverCtrlMock as any, navCtrlMock as any,
             eventsMock as any, commonUtilServiceMock as any);
         // assert
-        expect(filterPage.fil)
     });
 
     it('can load instance', () => {

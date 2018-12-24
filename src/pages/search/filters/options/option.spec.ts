@@ -45,6 +45,7 @@ describe.only('FilterOptions', () => {
         spyOn(viewControllerMock, 'dismiss').and.stub();
         // act
         filterOptions.confirm();
+
         // assert
         expect(viewControllerMock.dismiss).toHaveBeenCalled();
     });
