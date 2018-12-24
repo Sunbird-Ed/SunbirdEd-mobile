@@ -115,24 +115,13 @@ export class CategoriesEditPage {
    * It will fetch the syllabus details
    */
   getSyllabusDetails() {
-    // if(rootOrgid === custodianFramework) {
-    // call getsuggested framework with rootorgid
-    // } else {
-    // // call getsuggested framework with undefined
-    // }
     this.loader = this.getLoader();
     if (this.profile.syllabus && this.profile.syllabus[0]) {
       this.frameworkId = this.profile.syllabus[0];
     }
-    // this.formAndFrameworkUtilService.getFrameworkDetails(undefined)
-    //   .then(catagories => {
-    //     this.categories = catagories;
-    //     this.boardList = catagories[0].terms;
-    //     this.resetForm(1);
-    //   }).catch((err) => {
-    //     this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
-    //   });
-    const suggestedFrameworkRequest: SuggestedFrameworkRequest = {};
+    const suggestedFrameworkRequest: SuggestedFrameworkRequest = {
+      selectedLanguage: this.translate.currentLang
+    };
     this.framework.getSuggestedFrameworkList(suggestedFrameworkRequest)
       .then((result) => {
         console.log('this.getSuggestedFrameworkList', result);
@@ -347,37 +336,37 @@ export class CategoriesEditPage {
   submitForm(formVal) {
     this.loader.present();
     const req: UpdateUserInfoRequest = new UpdateUserInfoRequest();
-    const Framework = {};
+    const framework = {};
     if (formVal.syllabus) {
-      Framework['id'] = formVal.syllabus;
+      framework['id'] = formVal.syllabus;
     }
     if (formVal.boards) {
       const code = typeof (formVal.boards) === 'string' ? formVal.boards : formVal.boards[0];
-      Framework['board'] = [this.boardList.find(board => code === board.code).name];
+      framework['board'] = [this.boardList.find(board => code === board.code).name];
     }
     if (formVal.medium && formVal.medium.length) {
       const Names = [];
       formVal.medium.forEach(element => {
         Names.push(this.mediumList.find(medium => element === medium.code).name);
       });
-      Framework['medium'] = Names;
+      framework['medium'] = Names;
     }
     if (formVal.grades && formVal.grades.length) {
       const Names = [];
       formVal.grades.forEach(element => {
         Names.push(this.gradeList.find(grade => element === grade.code).name);
       });
-      Framework['gradeLevel'] = Names;
+      framework['gradeLevel'] = Names;
     }
     if (formVal.subjects && formVal.subjects.length) {
       const Names = [];
       formVal.subjects.forEach(element => {
         Names.push(this.subjectList.find(subject => element === subject.code).name);
       });
-      Framework['subject'] = Names;
+      framework['subject'] = Names;
     }
     req.userId = this.profile.uid;
-    req.framework = Framework;
+    req.framework = framework;
     console.log('updateinfo req', req);
     this.userProfileService.updateUserInfo(req,
       (res: any) => {
