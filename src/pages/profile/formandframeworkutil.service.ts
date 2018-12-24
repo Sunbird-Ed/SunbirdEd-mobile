@@ -455,19 +455,6 @@ export class FormAndFrameworkUtilService {
         });
     }
 
-    // fetchSuggestedFramework(profile) {
-    //     const suggestedFrameworkRequest: SuggestedFrameworkRequest = {
-    //         channelId : profile.rootOrgId,
-    //         isDefaultFrameWork: false
-    //     };
-    //     this.framework.getSuggestedFrameworkList(suggestedFrameworkRequest)
-    //     .then( (res) => {
-    //         console.log('getSuggestedFrameworkList', res);
-    //     }).catch( (err) => {
-    //         console.log('err', err);
-    //     });
-    // }
-
     formatDate() {
         const options = {
             day: '2-digit', year: 'numeric', month: 'short', hour: '2-digit',
