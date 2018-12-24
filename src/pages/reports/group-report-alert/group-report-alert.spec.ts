@@ -73,7 +73,7 @@ describe.only('GroupReportAlertPage Component', () => {
         reportServiceMock.getDetailsPerQuestion.mockRejectedValue(JSON.stringify(errorObj)) ;
         groupReportAlert.getAssessmentByUser('users');
 
-        setTimeout(() =>{
+        setTimeout(() => {
         expect(loadingMock.dismiss).toHaveBeenCalled();
         done();
         }, 0 );
