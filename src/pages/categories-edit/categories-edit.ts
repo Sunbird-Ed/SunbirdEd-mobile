@@ -252,7 +252,6 @@ export class CategoriesEditPage {
     this.formAndFrameworkUtilService.getCategoryData(request, this.frameworkId)
       .then((result) => {
         this[currentField] = result;
-        this.addTranslations(this[currentField]);
         if (request.currentCategory === 'board') {
           const boardName = this.syllabusList.find(framework => this.frameworkId === framework.code);
           if (boardName) {
@@ -288,16 +287,6 @@ export class CategoriesEditPage {
       .catch(error => {
         console.error('Error=', error);
       });
-  }
-
-  addTranslations(list) {
-    list.forEach(element => {
-      if (element.translations) {
-        element['displayName'] = this.commonUtilService.getTranslatedValue(element.translations, element.name);
-      } else {
-        element['displayName'] = element.name;
-      }
-    });
   }
 
   /**
