@@ -1,62 +1,52 @@
-// import {
-//     async,
-//     TestBed,
-//     ComponentFixture
-// } from '@angular/core/testing';
-// import {
-//     TranslateModule,
-//     TranslateLoader
-// } from '@ngx-translate/core';
-// import { HttpClientModule } from '@angular/common/http';
-// import { PipesModule } from './../../../../pipes/pipes.module';
-// import {
-//     IonicModule, NavParams, ViewController, Platform
-// } from 'ionic-angular';
-// import {
-//     FrameworkModule
-// } from 'sunbird';
-// import {
-//     TranslateLoaderMock, NavParamsMockNew
-// } from '../../../../../test-config/mocks-ionic';
-// import { } from 'jasmine';
-// import { FilterOptions } from './../../filters/options/options';
-// import { mockView } from 'ionic-angular/util/mock-providers';
-// describe('SearchPage Component', () => {
-//     let component: FilterOptions;
-//     let fixture: ComponentFixture<FilterOptions>;
-//     const viewControllerMock = mockView();
-//     beforeEach(async(() => {
-//         TestBed.configureTestingModule({
-//             declarations: [FilterOptions],
-//             imports: [
-//                 IonicModule.forRoot(FilterOptions),
-//                 TranslateModule.forRoot({
-//                     loader: { provide: TranslateLoader, useClass: TranslateLoaderMock },
-//                 }),
-//                 PipesModule,
-//                 HttpClientModule,
-//                 FrameworkModule
-//             ],
-//             providers: [
-//                 { provide: NavParams, useClass: NavParamsMockNew },
-//                 { provide: ViewController, useValue: viewControllerMock },
-//             ]
-//         });
-//     }));
+import {
+    navParamsMock,
+    viewControllerMock,
+    platformMock
+} from '../../../../__tests__/mocks';
+import { FilterOptions } from './options';
 
-//     beforeEach(() => {
-//         const platform = TestBed.get(Platform);
-//         spyOn(platform, 'registerBackButtonAction').and.callFake((success) => {
-//            // return success(jasmine.anything);
-//         });
-//         fixture = TestBed.createComponent(FilterOptions);
-//         component = fixture.componentInstance;
-//     });
+describe.only('FilterOptions', () => {
 
-//     it('#confirm should dissmiss the View contoller',  () => {
-//         const viewController = TestBed.get(ViewController);
-//         spyOn(viewController, 'dismiss');
-//         component.confirm();
-//         expect(viewController.dismiss).toHaveBeenCalled();
-//     });
-// });
+    let filterOptions: FilterOptions;
+
+    beforeEach(() => {
+        jest.resetAllMocks();
+
+        filterOptions = new FilterOptions(navParamsMock as any, viewControllerMock as any, platformMock as any);
+
+        jest.resetAllMocks();
+    });
+    it('can load instance', () => {
+        expect(filterOptions).toBeTruthy();
+    });
+
+    it('should deregister backbutton function on backbutton call', (done) => {
+        // arrange
+        const deRegisterBackFuncMock = jest.fn();
+        platformMock.registerBackButtonAction.mockImplementation((cb: Function) => {
+            setTimeout(() => {
+                cb();
+            });
+            return deRegisterBackFuncMock;
+        });
+
+        // act
+        filterOptions = new FilterOptions(navParamsMock as any, viewControllerMock as any, platformMock as any);
+
+        // assert
+        setTimeout(() => {
+            expect(deRegisterBackFuncMock).toHaveBeenCalled();
+            done();
+        });
+    });
+
+    it('#confirm should dissmiss the View contoller', () => {
+        // arranhe
+        spyOn(viewControllerMock, 'dismiss').and.stub();
+        // act
+        filterOptions.confirm();
+
+        // assert
+        expect(viewControllerMock.dismiss).toHaveBeenCalled();
+    });
+});
