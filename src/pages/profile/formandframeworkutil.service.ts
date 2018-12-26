@@ -367,6 +367,8 @@ export class FormAndFrameworkUtilService {
      * @param profileData : Local profile of current user
      */
     updateLoggedInUser(profileRes, profileData) {
+        console.log('profileRes', profileRes);
+        // this.fetchSuggestedFramework(profileRes);
         return new Promise((resolve, reject) => {
             const profile = {
                 board: [],
@@ -383,8 +385,10 @@ export class FormAndFrameworkUtilService {
                     if (profileRes.framework[categoryKey].length) {
                         const request: CategoryRequest = {
                             selectedLanguage: this.translate.currentLang,
-                            currentCategory: categoryKey
+                            currentCategory: categoryKey,
+                            frameworkId: profileRes.framework.id ? profileRes.framework.id : undefined
                         };
+                        console.log('CategoryRequest', request);
                         this.getCategoryData(request)
                             .then((categoryList) => {
                                 console.log('categoryList in updateLoggedInUser', categoryList);
@@ -449,7 +453,6 @@ export class FormAndFrameworkUtilService {
                 resolve({ status: false });
             }
         });
-
     }
 
     formatDate() {
