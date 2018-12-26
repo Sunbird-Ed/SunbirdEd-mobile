@@ -25,9 +25,8 @@ page-course-batches {
     }
     .background-gray{
         background: #efeff4;
-        @include margin(0, -26px);
+        @include margin(-16px, -26px, 0, -26px);
         @include padding(null, null, null, 25px !important);
-        margin-top: -13px;
     }
     .batch-empty-msg-wrapper {
         padding-top: 100px;
@@ -48,8 +47,8 @@ page-course-batches {
     }
     .batch-name {
         margin-top: 0px; 
-        font-size: 1.6rem;
-        @extend .font-weight-500;
+        font-size: 1.4rem;
+        @extend .NotoSans-semi-bold;
     }
     .selected-filter {
         width: 88%;
@@ -63,6 +62,8 @@ page-course-batches {
         @include margin(null, null, null, -10px);
         .enroll-btn{
             @include padding(null, 0, null, null !important);
+            text-transform: none;
+            font-size: 1.5rem;
         }
     }
     .padding-top-8 {
@@ -78,5 +79,14 @@ page-course-batches {
     .text-gray-color {
         color: gray;
         @extend .NotoSans;
+    }
+
+    .header-md::after { 
+        background-image: none; 
+    }
+    .batch-font{
+        @extend .NotoSans-bold;
+        padding: 15px 0 12px 7px;
+        font-size: 1.6rem;
     }
 }

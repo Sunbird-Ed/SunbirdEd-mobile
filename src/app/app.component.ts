@@ -1,66 +1,41 @@
-import { BuildParamService } from 'sunbird';
-import { ProfileSettingsPage } from './../pages/profile-settings/profile-settings';
 import {
-  Component,
-  ViewChild,
-  NgZone
-} from '@angular/core';
-import {
-  Platform,
-  Nav,
-  App,
-  ToastController,
-  Events
-} from 'ionic-angular';
-import { StatusBar } from '@ionic-native/status-bar';
-import {
-  TabsPage,
   AuthService,
+  BuildParamService,
   ContainerService,
-  PermissionService,
-  InteractType,
-  InteractSubtype,
   Environment,
-  TelemetryService,
-  SharedPreferences,
-  ProfileType,
-  UserProfileService,
+  InteractSubtype,
+  InteractType,
+  PageId,
+  PermissionService,
   ProfileService,
-  PageId
+  ProfileType,
+  SharedPreferences,
+  TabsPage,
+  TelemetryService,
+  UserProfileService
 } from 'sunbird';
-import {
-  initTabs,
-  GUEST_TEACHER_TABS,
-  GUEST_STUDENT_TABS,
-  LOGIN_TEACHER_TABS
-} from './module.service';
-import { LanguageSettingsPage } from '../pages/language-settings/language-settings';
-import { ImageLoaderConfig } from 'ionic-image-loader';
-import { TranslateService } from '@ngx-translate/core';
-import { SearchPage } from '../pages/search/search';
-import { CollectionDetailsPage } from '../pages/collection-details/collection-details';
-import { ContentDetailsPage } from '../pages/content-details/content-details';
-import {
-  generateEndTelemetry,
-  generateInteractTelemetry
-} from './telemetryutil';
-import {
-  MimeType,
-  ContentType,
-  PreferenceKey,
-  GenericAppConfig,
-  EventTopics
-} from './app.constant';
-import { EnrolledCourseDetailsPage } from '../pages/enrolled-course-details/enrolled-course-details';
-import { ProfileConstants } from './app.constant';
-import { FormAndFrameworkUtilService } from '../pages/profile/formandframeworkutil.service';
-import { AppGlobalService } from '../service/app-global.service';
-import { UserTypeSelectionPage } from '../pages/user-type-selection/user-type-selection';
-import { CommonUtilService } from '../service/common-util.service';
-import { TelemetryGeneratorService } from '../service/telemetry-generator.service';
-import { PopoverController } from 'ionic-angular';
-import { BroadcastComponent } from '../component/broadcast/broadcast';
-import { CategoriesEditPage } from '@app/pages/categories-edit/categories-edit';
+import {ProfileSettingsPage} from './../pages/profile-settings/profile-settings';
+import {Component, NgZone, ViewChild} from '@angular/core';
+import {App, Events, Nav, Platform, PopoverController, ToastController} from 'ionic-angular';
+import {StatusBar} from '@ionic-native/status-bar';
+import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, LOGIN_TEACHER_TABS} from './module.service';
+import {LanguageSettingsPage} from '../pages/language-settings/language-settings';
+import {ImageLoaderConfig} from 'ionic-image-loader';
+import {TranslateService} from '@ngx-translate/core';
+import {SearchPage} from '../pages/search/search';
+import {CollectionDetailsPage} from '../pages/collection-details/collection-details';
+import {ContentDetailsPage} from '../pages/content-details/content-details';
+import {generateInteractTelemetry} from './telemetryutil';
+import {ContentType, EventTopics, GenericAppConfig, MimeType, PreferenceKey, ProfileConstants} from './app.constant';
+import {EnrolledCourseDetailsPage} from '../pages/enrolled-course-details/enrolled-course-details';
+import {FormAndFrameworkUtilService} from '../pages/profile/formandframeworkutil.service';
+import {AppGlobalService} from '../service/app-global.service';
+import {UserTypeSelectionPage} from '../pages/user-type-selection/user-type-selection';
+import {CommonUtilService} from '../service/common-util.service';
+import {TelemetryGeneratorService} from '../service/telemetry-generator.service';
+import {BroadcastComponent} from '../component/broadcast/broadcast';
+import {CategoriesEditPage} from '@app/pages/categories-edit/categories-edit';
+import {TncUpdateHandlerService} from '@app/service/handlers/tnc-update-handler.service';
 
 declare var chcp: any;
 
@@ -103,7 +78,8 @@ export class MyApp {
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private buildParamService: BuildParamService,
-    public popoverCtrl: PopoverController
+    public popoverCtrl: PopoverController,
+    private tncUpdateHandlerService: TncUpdateHandlerService
   ) {
 
     const that = this;
@@ -135,6 +111,8 @@ export class MyApp {
             this.translate.use(val);
           }
         });
+
+      this.checkForTncUpdate();
 
       that.authService.getSessionData((session) => {
         if (session === null || session === 'null') {
@@ -272,6 +250,30 @@ export class MyApp {
       }
 
       this.handleBackButton();
+    });
+  }
+
+  private checkForTncUpdate() {
+    this.authService.getSessionData((session) => {
+      if (!session || session === 'null') {
+        return;
+      }
+
+      const sessionObj = JSON.parse(session);
+
+      const reqObj = {
+        userId: sessionObj[ProfileConstants.USER_TOKEN],
+        requiredFields: ProfileConstants.REQUIRED_FIELDS,
+        refreshUserProfileDetails: true
+      };
+
+      this.userProfileService.getUserProfileDetails(reqObj, res => {
+        const userProfileDetails = JSON.parse(res);
+        if (TncUpdateHandlerService.hasProfileTncUpdated(userProfileDetails)) {
+          this.tncUpdateHandlerService.presentTncPage({userProfileDetails});
+        }
+      }, () => {
+      });
     });
   }
 

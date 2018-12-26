@@ -246,7 +246,7 @@ export class CoursesPage implements OnInit {
 
     this.events.subscribe(EventTopics.COURSE_STATUS_UPDATED_SUCCESSFULLY, (data) => {
       if (data.update) {
-        this.getEnrolledCourses(true);
+        this.getEnrolledCourses(true, true);
       }
     });
 
@@ -261,7 +261,7 @@ export class CoursesPage implements OnInit {
 
     this.events.subscribe(EventTopics.ENROL_COURSE_SUCCESS, (res) => {
       if (res && res.batchId) {
-        this.getEnrolledCourses(true);
+        this.getEnrolledCourses(false, false);
       }
     });
 
@@ -292,39 +292,39 @@ export class CoursesPage implements OnInit {
    *
    * It internally calls course handler of genie sdk
    */
-  getEnrolledCourses(returnRefreshedCourses: boolean = false): void {
+  getEnrolledCourses(refreshEnrolledCourses: boolean = true, returnRefreshedCourses: boolean = false): void {
     this.spinner(true);
 
     const option = {
       userId: this.userId,
-      refreshEnrolledCourses: true,
+      refreshEnrolledCourses: refreshEnrolledCourses,
       returnRefreshedEnrolledCourses: returnRefreshedCourses
     };
     this.courseService.getEnrolledCourses(option)
-     .then((enrolledCourses: any) => {
-      if (enrolledCourses) {
-        enrolledCourses = JSON.parse(enrolledCourses);
-        this.ngZone.run(() => {
-          this.enrolledCourses = enrolledCourses.result.courses ? enrolledCourses.result.courses : [];
-          // maintain the list of courses that are enrolled, and store them in appglobal
-          if (this.enrolledCourses.length > 0) {
-            const courseList: Array<any> = [];
+      .then((enrolledCourses: any) => {
+        if (enrolledCourses) {
+          enrolledCourses = JSON.parse(enrolledCourses);
+          this.ngZone.run(() => {
+            this.enrolledCourses = enrolledCourses.result.courses ? enrolledCourses.result.courses : [];
+            // maintain the list of courses that are enrolled, and store them in appglobal
+            if (this.enrolledCourses.length > 0) {
+              const courseList: Array<any> = [];
 
-            for (const course of this.enrolledCourses) {
-              courseList.push(course);
+              for (const course of this.enrolledCourses) {
+                courseList.push(course);
+              }
+
+              this.appGlobalService.setEnrolledCourseList(courseList);
             }
 
-            this.appGlobalService.setEnrolledCourseList(courseList);
-          }
-
-          this.spinner(false);
-        });
-      }
-    })
-    .catch((error: any) => {
-      console.log('error while loading enrolled courses', error);
-      this.spinner(false);
-    });
+            this.spinner(false);
+          });
+        }
+      })
+      .catch((error: any) => {
+        console.log('error while loading enrolled courses', error);
+        this.spinner(false);
+      });
   }
 
   /**
@@ -378,7 +378,7 @@ export class CoursesPage implements OnInit {
           pageAssembleCriteria.filters.subject, 'subject');
       }
     }
-    this.pageService.getPageAssemble(pageAssembleCriteria) .then((res: any) => {
+    this.pageService.getPageAssemble(pageAssembleCriteria).then((res: any) => {
       res = JSON.parse(res);
       this.ngZone.run(() => {
         const sections = JSON.parse(res.sections);
@@ -401,7 +401,7 @@ export class CoursesPage implements OnInit {
         this.pageApiLoader = !this.pageApiLoader;
         this.checkEmptySearchResult();
       });
-    }) .catch((error: string) => {
+    }).catch((error: string) => {
       console.log('Page assmble error', error);
       this.ngZone.run(() => {
         this.pageApiLoader = false;
@@ -478,7 +478,7 @@ export class CoursesPage implements OnInit {
         this.profile = this.appGlobalService.getCurrentUser();
         const sessionObj = this.appGlobalService.getSessionData();
         this.userId = sessionObj[ProfileConstants.USER_TOKEN];
-        this.getEnrolledCourses();
+        this.getEnrolledCourses(true, false);
         resolve();
       }
     });
@@ -636,17 +636,17 @@ export class CoursesPage implements OnInit {
   getContentDetails(content) {
     const identifier = content.contentId || content.identifier;
     this.contentService.getContentDetail({ contentId: identifier })
-    .then((data: any) => {
-      data = JSON.parse(data);
-      if (data && data.result && data.result.isAvailableLocally) {
-        this.showOverlay = false;
-        this.navigateToContentDetailsPage(content);
-      } else {
-        this.subscribeGenieEvent();
-        this.showOverlay = true;
-        this.importContent([identifier], false);
-      }
-    })
+      .then((data: any) => {
+        data = JSON.parse(data);
+        if (data && data.result && data.result.isAvailableLocally) {
+          this.showOverlay = false;
+          this.navigateToContentDetailsPage(content);
+        } else {
+          this.subscribeGenieEvent();
+          this.showOverlay = true;
+          this.importContent([identifier], false);
+        }
+      })
       .catch((error: any) => {
         console.log(error);
         this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
@@ -705,19 +705,19 @@ export class CoursesPage implements OnInit {
     };
 
     this.contentService.importContent(option)
-     .then((data: any) => {
-      data = JSON.parse(data);
-      this.ngZone.run(() => {
-        this.tabBarElement.style.display = 'none';
-        if (data.result && data.result.length) {
-          const importStatus = data.result[0];
+      .then((data: any) => {
+        data = JSON.parse(data);
+        this.ngZone.run(() => {
+          this.tabBarElement.style.display = 'none';
+          if (data.result && data.result.length) {
+            const importStatus = data.result[0];
 
-          if (importStatus.status !== 'ENQUEUED_FOR_DOWNLOAD') {
-            this.removeOverlayAndShowError();
+            if (importStatus.status !== 'ENQUEUED_FOR_DOWNLOAD') {
+              this.removeOverlayAndShowError();
+            }
           }
-        }
-      });
-    })
+        });
+      })
       .catch(() => {
         this.ngZone.run(() => {
           this.removeOverlayAndShowError();
@@ -757,10 +757,10 @@ export class CoursesPage implements OnInit {
 
   cancelDownload() {
     this.ngZone.run(() => {
-      this.contentService.cancelDownload(this.resumeContentData.contentId || this.resumeContentData.identifier) .then(() => {
+      this.contentService.cancelDownload(this.resumeContentData.contentId || this.resumeContentData.identifier).then(() => {
         this.tabBarElement.style.display = 'flex';
         this.showOverlay = false;
-      }) .catch(() => {
+      }).catch(() => {
         this.tabBarElement.style.display = 'flex';
         this.showOverlay = false;
       });

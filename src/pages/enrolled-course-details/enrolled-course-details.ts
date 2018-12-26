@@ -36,7 +36,11 @@ import {
   CorrelationData,
   TelemetryObject,
   ErrorCode,
-  ErrorType
+  ErrorType,
+  UnenrolCourseRequest,
+  CourseBatchStatus,
+  CourseBatchesRequest,
+  CourseEnrollmentType
 } from 'sunbird';
 import { ContentRatingAlertComponent, ContentActionsComponent, ViewCreditsComponent } from '@app/component';
 import { CollectionDetailsPage } from '@app/pages/collection-details/collection-details';
@@ -108,11 +112,15 @@ export class EnrolledCourseDetailsPage {
    * To hold identifier
    */
   identifier: string;
-
   /**
    * Contains child content import / download progress
    */
   downloadProgress = 0;
+
+  /**
+   * To check batches available or not
+   */
+  public batches: Array<any>;
 
   showLoading = false;
   showDownloadProgress: boolean;
@@ -188,8 +196,13 @@ export class EnrolledCourseDetailsPage {
         this.batchId = res.batchId;
         if (this.identifier && res.courseId && this.identifier === res.courseId) {
           this.isAlreadyEnrolled = true;
-       }
+        }
       }
+    });
+
+    this.events.subscribe(EventTopics.UNENROL_COURSE_SUCCESS, () => {
+      delete this.courseCardData; // to show 'Enroll in Course' button courseCardData should be undefined/null
+      this.isAlreadyEnrolled = false; // and isAlreadyEnrolled should be false
     });
 
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
@@ -268,9 +281,14 @@ export class EnrolledCourseDetailsPage {
 
 
   showOverflowMenu(event) {
+    const data = {
+      batchStatus: this.batchDetails ? this.batchDetails.status : 2,
+      contentStatus: this.courseCardData.status
+    };
     const contentData = this.course;
     contentData.batchId = this.courseCardData.batchId ? this.courseCardData.batchId : false;
     const popover = this.popoverCtrl.create(ContentActionsComponent, {
+      data: data,
       content: contentData,
       pageName: 'course'
     }, {
@@ -280,11 +298,41 @@ export class EnrolledCourseDetailsPage {
       ev: event
     });
 
-    popover.onDidDismiss(data => {
-      if (data === 'delete.success' || data === 'flag.success') {
-        this.navCtrl.pop();
-      }
+    popover.onDidDismiss(unenroll => {
+      this.handleUnenrollment(unenroll);
     });
+  }
+
+  /*
+   * check for user confirmation
+   * if confirmed then unenrolls the user from the course
+   */
+  handleUnenrollment(unenroll): void {
+    if (unenroll) {
+      const unenrolCourseRequest: UnenrolCourseRequest = {
+        userId: this.appGlobalService.getUserId(),
+        courseId: this.batchDetails.courseId,
+        batchId: this.batchDetails.id
+      };
+      this.courseService.unenrolCourse(unenrolCourseRequest)
+        .then((data: any) => {
+          this.zone.run(() => {
+            this.commonUtilService.showToast(this.commonUtilService.translateMessage('COURSE_UNENROLLED'));
+            this.events.publish(EventTopics.UNENROL_COURSE_SUCCESS, {
+            });
+          });
+        })
+        .catch((error: any) => {
+          this.zone.run(() => {
+            error = JSON.parse(error);
+              if (error && error.error === 'CONNECTION_ERROR') {
+                this.commonUtilService.showToast(this.commonUtilService.translateMessage('ERROR_NO_INTERNET_MESSAGE'));
+              } else if (error && error.error === 'USER_ALREADY_ENROLLED_COURSE') {
+                this.commonUtilService.showToast(this.commonUtilService.translateMessage('ALREADY_ENROLLED_COURSE'));
+              }
+          });
+        });
+    }
   }
 
   /**
@@ -856,13 +904,50 @@ export class EnrolledCourseDetailsPage {
   }
 
   /**
-   * Navigate user to batch list page
-   *
-   * @param {string} id
+   * checks whether batches are available or not and then Navigate user to batch list page
    */
   navigateToBatchListPage(): void {
+    const ongoingBatches = [];
+    const upcommingBatches = [];
+    const loader = this.commonUtilService.getLoader();
+    const courseBatchesRequest: CourseBatchesRequest = {
+      courseId: this.identifier,
+      enrollmentType: CourseEnrollmentType.OPEN,
+      status: [CourseBatchStatus.NOT_STARTED, CourseBatchStatus.IN_PROGRESS]
+    };
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-      this.navCtrl.push(CourseBatchesPage, { identifier: this.identifier });
+      if (!this.guestUser) {
+        loader.present();
+        this.courseService.getCourseBatches(courseBatchesRequest)
+          .then((data: any) => {
+            data = JSON.parse(data);
+            this.zone.run(() => {
+              this.batches = data.result.content;
+              if (this.batches.length) {
+                _.forEach(this.batches, (batch, key) => {
+                  if (batch.status === 1) {
+                    ongoingBatches.push(batch);
+                  } else {
+                    upcommingBatches.push(batch);
+                  }
+                });
+                loader.dismiss();
+                this.navCtrl.push(CourseBatchesPage, {
+                  ongoingBatches: ongoingBatches,
+                  upcommingBatches: upcommingBatches
+                });
+              } else {
+                loader.dismiss();
+                this.commonUtilService.showToast('NO_BATCHES_AVAILABLE');
+              }
+            });
+          })
+          .catch((error: any) => {
+            console.log('error while fetching course batches ==>', error);
+          });
+      } else {
+        this.navCtrl.push(CourseBatchesPage);
+      }
     } else {
       this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
     }
