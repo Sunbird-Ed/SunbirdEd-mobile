@@ -26,7 +26,8 @@ import {
   PopoverController,
   ViewController,
   App,
-  IonicApp
+  IonicApp,
+  AlertController, Popover
 } from 'ionic-angular';
 import { NgZone } from '@angular/core';
 import { AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService } from '@app/service';
@@ -36,8 +37,7 @@ import { AppVersion } from '@ionic-native/app-version';
 import { SunbirdQRScanner } from '@app/pages/qrscanner';
 import { FormAndFrameworkUtilService } from '@app/pages/profile';
 import { File } from '@ionic-native/file';
-import { DatePipe } from '../../node_modules/@angular/common';
-import { NavControllerBase } from 'ionic-angular/navigation/nav-controller-base';
+import { DatePipe } from '@angular/common';
 import { FormBuilder } from '@angular/forms';
 
 export type Mockify<T> = {
@@ -59,7 +59,8 @@ export const courseServiceMock = createSpyObj<CourseService>([
   'updateContentState',
   'getCourseBatches',
   'getBatchDetails',
-  'getContentState'
+  'getContentState',
+  'unenrolCourse'
 ]);
 
 export const navCtrlMock = createSpyObj<NavController>([
@@ -117,18 +118,25 @@ export const eventsMock = createSpyObj<Events>([
   'unsubscribe'
 ]);
 
+export const popOverMock = createSpyObj<Popover>([
+  'present',
+  'onDidiDismiss'
+]);
+
 export const contentServiceMock = createSpyObj<ContentService>([
   'getContentDetail',
   'getLocalContents',
   'importContent',
   'getChildContents',
   'cancelDownload',
-  'searchContent'
+  'searchContent',
+  'getChildContents'
 ]);
 
 export const popoverCtrlMock = createSpyObj<PopoverController>([
   'create',
-  'present'
+  'present',
+  'onDidDismiss'
 ]);
 
 export const fileUtilMock = createSpyObj<FileUtil>([
@@ -171,7 +179,9 @@ export const appGlobalServiceMock = createSpyObj<AppGlobalService>([
   'getSessionData',
   'getCurrentUser',
   'getNameForCodeInFramework',
-  'getGuestUserType'
+  'getGuestUserType',
+  'getUserId',
+  'getGuestUserInfo'
 ]);
 
 export const telemetryGeneratorServiceMock = createSpyObj<TelemetryGeneratorService>([
@@ -191,7 +201,8 @@ export const telemetryGeneratorServiceMock = createSpyObj<TelemetryGeneratorServ
 export const courseUtilServiceMock = createSpyObj<CourseUtilService>([
   'showCredits',
   'showToast',
-  'getImportContentRequestBody'
+  'getImportContentRequestBody',
+  'getCourseProgress'
 ]);
 
 export const appVersionMock = createSpyObj<AppVersion>([
@@ -292,4 +303,7 @@ export const ionicAppMock = createSpyObj<IonicApp>([
 
 export const appMock = createSpyObj<App>([
   'group',
+]);
+
+export const alertCtrlMock = createSpyObj<AlertController>([
 ]);

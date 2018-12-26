@@ -293,7 +293,7 @@ export class EnrolledCourseDetailsPage {
       pageName: 'course'
     }, {
         cssClass: 'content-action'
-      });
+    });
     popover.present({
       ev: event
     });
