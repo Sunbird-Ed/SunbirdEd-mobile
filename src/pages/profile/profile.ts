@@ -20,7 +20,11 @@ import {
   CourseService,
   TelemetryObject,
   ProfileService,
-  ContainerService
+  ContainerService,
+  ContentSortCriteria,
+  ContentSearchCriteria,
+  ContentService,
+  SortOrder
 } from 'sunbird';
 import * as _ from 'lodash';
 import {
@@ -80,7 +84,7 @@ export class ProfilePage {
   trainingsLimit = 2;
   startLimit = 0;
 
-  enrolledCourse: any = [];
+  contentCreatedByMe: any = [];
   orgDetails: {
     'state': '',
     'district': '',
@@ -106,7 +110,8 @@ export class ProfilePage {
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private containerService: ContainerService,
     private commonUtilService: CommonUtilService,
-    private app: App
+    private app: App,
+    private contentService: ContentService
   ) {
     this.userId = this.navParams.get('userId') || '';
     this.isRefreshProfile = this.navParams.get('returnRefreshedUserProfileDetails');
@@ -155,6 +160,7 @@ export class ProfilePage {
         }, 500);
         // This method is used to handle trainings completed by user
         this.getEnrolledCourses();
+        this.searchContent();
       })
       .catch(error => {
         console.error('Error while Fetching Data', error);
@@ -472,6 +478,30 @@ export class ProfilePage {
     } else {
       this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
     }
+  }
+
+  /**
+   * Searches contents created by the user
+   */
+  searchContent(): void {
+    const contentSortCriteria: ContentSortCriteria = {
+      sortAttribute: 'lastUpdatedOn',
+      sortOrder: SortOrder.DESC
+    };
+    const contentSearchCriteria: ContentSearchCriteria = {
+      createdBy: [this.userId || this.loggedInUserId],
+      limit: 100,
+      contentTypes: ContentType.FOR_PROFILE_TAB,
+      sortCriteria: [contentSortCriteria]
+    };
+
+    this.contentService.searchContent(contentSearchCriteria, false, false, false)
+      .then((result: any) => {
+        this.contentCreatedByMe = JSON.parse(result).result.contentDataList;
+      })
+      .catch((error: any) => {
+        console.error('Error', error);
+      });
   }
 
 }

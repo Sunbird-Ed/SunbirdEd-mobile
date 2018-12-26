@@ -26,6 +26,7 @@ export class GroupReportListPage {
     exptime: any;
     deviceId: string;
     response: any;
+    responseByUser: any;
     profile: Profile;
     currentGroupId: string;
     fromUserColumns = [{
@@ -156,6 +157,7 @@ export class GroupReportListPage {
                             });
                 });
                 this.response = data;
+                this.responseByUser = data;
                 averageScore = (averageScore / data.length).toFixed(2);
                 averageTime = averageTime / data.length;
                 this.appGlobalService.setAverageTime(averageTime);
@@ -247,10 +249,10 @@ export class GroupReportListPage {
         let csv: any = '';
         let line: any = '';
         const that = this;
-        const values = this.response;
+        const values = this.responseByUser;
         const anzahlTeams = values.length;
         const filexptime = this.datePipe.transform(new Date(this.exptime), 'dd-MM-yyyy hh:mm:ss a');
-        if (this.response && this.response[0].hasOwnProperty('assessmentData')) {
+        // if (this.response && this.response[0].hasOwnProperty('assessmentData')) {
             const contentstarttime = this.datePipe.transform(new Date(), 'dd-MM-yyyy hh:mm:ss a');
             // Header
             for (let m = 0; m < anzahlTeams; m++) {
@@ -284,35 +286,35 @@ export class GroupReportListPage {
                 }
                 line += '\n\n';
             }
-        } else {
-            const contentstarttime11 = this.datePipe.transform(new Date(), 'dd-MMM-yyyy hh:mm:ss a');
-            for (let n = 0; n < anzahlTeams; n++) {
-                line += 'Device ID' + ',' + this.deviceId + '\n';
-                line += 'Group name (Group ID)' + ',' + this.groupinfo.name + '(' + this.groupinfo.gid + ')' + '\n';
-                line += 'Content name (Content ID)' + ',' + values[n].qtitle + '(' + values[n].content_id + ')' + '\n';
-                line += 'Content started time' + ',' + contentstarttime11 + '\n';
-                line +=  'Average Time' + ',' +  this.formatTime(this.appGlobalService.getAverageTime()) + '\n';
-                line += 'Average Score' + ',' + this.appGlobalService.getAverageScore() + '\n';
-                line += 'File export time' + ',' + filexptime + '\n';
-                line += '\n\n';
-                line += 'User name' + ',';
-                line += 'UserID' + ',';
-                line += 'Question' + ',';
-                line += 'QuestionId' + ',';
-                line += 'Score' + ',';
-                line += 'Time' + '\n';
-                break;
-            }
-            line += '\n';
-            for (let p = 0; p < anzahlTeams; p++) {
-                line += values[p].users.get(values[p].uid) + ',';
-                line += values[p].uid + ',';
-                line += values[p].qtitle + ',';
-                line += values[p].qid + ',';
-                line += ' ' + values[p].score + '/' + values[p].max_score + ',';
-                line += this.formatTime(values[p].time_spent) + '\n';
-            }
-        }
+        // } else {
+        //     const contentstarttime11 = this.datePipe.transform(new Date(), 'dd-MMM-yyyy hh:mm:ss a');
+        //     for (let n = 0; n < anzahlTeams; n++) {
+        //         line += 'Device ID' + ',' + this.deviceId + '\n';
+        //         line += 'Group name (Group ID)' + ',' + this.groupinfo.name + '(' + this.groupinfo.gid + ')' + '\n';
+        //         line += 'Content name (Content ID)' + ',' + values[n].qtitle + '(' + values[n].content_id + ')' + '\n';
+        //         line += 'Content started time' + ',' + contentstarttime11 + '\n';
+        //         line +=  'Average Time' + ',' +  this.formatTime(this.appGlobalService.getAverageTime()) + '\n';
+        //         line += 'Average Score' + ',' + this.appGlobalService.getAverageScore() + '\n';
+        //         line += 'File export time' + ',' + filexptime + '\n';
+        //         line += '\n\n';
+        //         line += 'User name' + ',';
+        //         line += 'UserID' + ',';
+        //         line += 'Question' + ',';
+        //         line += 'QuestionId' + ',';
+        //         line += 'Score' + ',';
+        //         line += 'Time' + '\n';
+        //         break;
+        //     }
+        //     line += '\n';
+        //     for (let p = 0; p < anzahlTeams; p++) {
+        //         line += values[p].users.get(values[p].uid) + ',';
+        //         line += values[p].uid + ',';
+        //         line += values[p].qtitle + ',';
+        //         line += values[p].qid + ',';
+        //         line += ' ' + values[p].score + '/' + values[p].max_score + ',';
+        //         line += this.formatTime(values[p].time_spent) + '\n';
+        //     }
+        // }
 
         csv += line + '\n';
         return csv;
