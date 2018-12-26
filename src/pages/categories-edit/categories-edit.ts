@@ -338,7 +338,7 @@ export class CategoriesEditPage {
     const req: UpdateUserInfoRequest = new UpdateUserInfoRequest();
     const framework = {};
     if (formVal.syllabus) {
-      framework['id'] = formVal.syllabus;
+      framework['id'] = [formVal.syllabus];
     }
     if (formVal.boards) {
       const code = typeof (formVal.boards) === 'string' ? formVal.boards : formVal.boards[0];
