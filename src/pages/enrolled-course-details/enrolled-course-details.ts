@@ -122,6 +122,8 @@ export class EnrolledCourseDetailsPage {
    */
   public batches: Array<any>;
 
+  isNavigatingWithinCourse = false;
+
   showLoading = false;
   showDownloadProgress: boolean;
   totalDownload: number;
@@ -325,11 +327,11 @@ export class EnrolledCourseDetailsPage {
         .catch((error: any) => {
           this.zone.run(() => {
             error = JSON.parse(error);
-              if (error && error.error === 'CONNECTION_ERROR') {
-                this.commonUtilService.showToast(this.commonUtilService.translateMessage('ERROR_NO_INTERNET_MESSAGE'));
-              } else if (error && error.error === 'USER_ALREADY_ENROLLED_COURSE') {
-                this.commonUtilService.showToast(this.commonUtilService.translateMessage('ALREADY_ENROLLED_COURSE'));
-              }
+            if (error && error.error === 'CONNECTION_ERROR') {
+              this.commonUtilService.showToast(this.commonUtilService.translateMessage('ERROR_NO_INTERNET_MESSAGE'));
+            } else if (error && error.error === 'USER_ALREADY_ENROLLED_COURSE') {
+              this.commonUtilService.showToast(this.commonUtilService.translateMessage('ALREADY_ENROLLED_COURSE'));
+            }
           });
         });
     }
@@ -682,24 +684,13 @@ export class EnrolledCourseDetailsPage {
     this.contentService.getChildContents(option)
       .then((data: any) => {
         data = JSON.parse(data);
-
-        const request: GetContentStateRequest = {
-          userId: this.appGlobalService.getUserId(),
-          courseIds: [this.identifier],
-          returnRefreshedContentStates: true
-        };
         this.zone.run(() => {
           if (data && data.result && data.result.children) {
             this.enrolledCourseMimeType = data.result.mimeType;
             this.childrenData = data.result.children;
             this.startData = data.result.children;
             this.childContentsData = data.result;
-            this.courseService.getContentState(request)
-              .then((success: any) => {
-                success = JSON.parse(success);
-                this.getStatusOfChildContent(this.childrenData, success);
-              }).catch((error: any) => {
-              });
+            this.getContentState(!this.isNavigatingWithinCourse);
           }
           if (this.courseCardData.batchId) {
             this.downloadSize = 0;
@@ -900,6 +891,7 @@ export class EnrolledCourseDetailsPage {
    * Ionic life cycle hook
    */
   ionViewWillLeave(): void {
+    this.isNavigatingWithinCourse = true;
     this.events.unsubscribe('genie.event');
   }
 
@@ -1080,4 +1072,25 @@ export class EnrolledCourseDetailsPage {
   viewCredits() {
     this.courseUtilService.showCredits(this.course, PageId.CONTENT_DETAIL, undefined, this.corRelationList);
   }
+
+  getContentState(returnRefresh: boolean) {
+    if (this.courseCardData.batchId) {
+      const request: GetContentStateRequest = {
+        userId: this.appGlobalService.getUserId(),
+        courseIds: [this.identifier],
+        returnRefreshedContentStates: returnRefresh,
+        batchId: this.batchId
+      };
+      this.courseService.getContentState(request).then((success: any) => {
+        if (this.childrenData) {
+          this.getStatusOfChildContent(this.childrenData, success);
+        }
+      }).catch((error: any) => {
+
+      });
+    } else {
+      // to be handled when there won't be any batchId
+    }
+  }
+
 }
