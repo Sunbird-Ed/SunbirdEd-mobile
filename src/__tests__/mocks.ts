@@ -1,4 +1,4 @@
-import { FileTransfer } from '@ionic-native/file-transfer';
+import {FileTransfer} from '@ionic-native/file-transfer';
 import {
   AuthService,
   BuildParamService,
@@ -17,18 +17,20 @@ import {
   TelemetryService,
   UserProfileService
 } from 'sunbird';
+
 import {
+  App,
   Events,
+  IonicApp,
   LoadingController,
   NavController,
   NavParams,
   Platform,
   PopoverController,
   ViewController,
-  App,
-  IonicApp,
-  AlertController, Popover
+  AlertController
 } from 'ionic-angular';
+
 import { NgZone } from '@angular/core';
 import { AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService } from '@app/service';
 import { TranslateService } from '@ngx-translate/core';
@@ -39,6 +41,9 @@ import { FormAndFrameworkUtilService } from '@app/pages/profile';
 import { File } from '@ionic-native/file';
 import { DatePipe } from '@angular/common';
 import { FormBuilder } from '@angular/forms';
+import { TncUpdateHandlerService } from '@app/service/handlers/tnc-update-handler.service';
+import { LogoutHandlerService } from '@app/service/handlers/logout-handler.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 export type Mockify<T> = {
   [P in keyof T]: jest.Mock<{}>;
@@ -116,11 +121,6 @@ export const eventsMock = createSpyObj<Events>([
   'publish',
   'subscribe',
   'unsubscribe'
-]);
-
-export const popOverMock = createSpyObj<Popover>([
-  'present',
-  'onDidiDismiss'
 ]);
 
 export const contentServiceMock = createSpyObj<ContentService>([
@@ -222,7 +222,6 @@ export const sharedPreferencesMock = createSpyObj<SharedPreferences>([
 ]);
 
 
-
 export const sunbirdQRScannerMock = createSpyObj<SunbirdQRScanner>([
   'startScanner',
   'getImportContentRequestBody',
@@ -298,12 +297,25 @@ export const formBuilderMock = createSpyObj<FormBuilder>([
   'group',
 ]);
 
-export const ionicAppMock = createSpyObj<IonicApp>([
-]);
+export const ionicAppMock = createSpyObj<IonicApp>([]);
 
 export const appMock = createSpyObj<App>([
   'group',
 ]);
 
 export const alertCtrlMock = createSpyObj<AlertController>([
+]);
+
+export const tncUpdateHandlerServiceMock = createSpyObj<TncUpdateHandlerService>([
+  'presentTncPage',
+  'onAcceptTnc',
+  'dismissTncPage'
+]);
+
+export const logoutHandlerServiceMock = createSpyObj<LogoutHandlerService>([
+  'onLogout'
+]);
+
+export const domSanitizerMock = createSpyObj<DomSanitizer>([
+  'bypassSecurityTrustResourceUrl'
 ]);
