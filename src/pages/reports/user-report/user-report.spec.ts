@@ -1,51 +1,49 @@
 import { mockRes } from './../../courses/courses.spec.data';
-import {UserReportPage} from '../user-report/user-report';
-
+import { UserReportPage } from '../user-report/user-report';
 import {
-    navCtrlMock,
-    navParamsMock,
-    reportServiceMock,
-    transferMock,
-    translateServiceMock,
-    fileMock,
-    datePipeMock,
-    loadingMock,
-    zoneMock,
-    appGlobalServiceMock,
-    appVersionMock,
-    deviceInfoServiceMock,
-    socialSharingMock,
-    telemetryGeneratorServiceMock,
-    commonUtilServiceMock
+  navCtrlMock,
+  navParamsMock,
+  reportServiceMock,
+  transferMock,
+  translateServiceMock,
+  fileMock,
+  datePipeMock,
+  loadingControllerMock,
+  zoneMock,
+  appGlobalServiceMock,
+  appVersionMock,
+  deviceInfoServiceMock,
+  telemetryGeneratorServiceMock,
+  commonUtilServiceMock
 } from '../../../__tests__/mocks';
-import myMap, {csvdata} from './user-report.spec.data';
+import myMap, { csvdata } from './user-report.spec.data';
 import 'jest';
 
 describe.only('UserReportPage Component', () => {
   let userReportPage: UserReportPage;
 
   beforeEach(() => {
-    translateServiceMock.get.mockReturnValue( { subscribe: jest.fn() } );
+    translateServiceMock.get.mockReturnValue({ subscribe: jest.fn() });
     deviceInfoServiceMock.getDownloadDirectoryPath.mockResolvedValue('default');
 
     // appGlobalServiceMock.isUserLoggedIn.mockReturnValue(true);
     // buildParamServiceMock.getBuildConfigParam.mockResolvedValue('SOME_URL');
 
     userReportPage = new UserReportPage(
-      navCtrlMock as any, 
+      navCtrlMock as any,
       navParamsMock as any,
-        reportServiceMock as any, 
-        transferMock as any, 
-        translateServiceMock as any, 
-        fileMock as any,
-         datePipeMock as any, 
-         loadingMock as any, 
-         zoneMock as any, 
-         appGlobalServiceMock as any, 
-         appVersionMock as any,
-         deviceInfoServiceMock as any,
-         telemetryGeneratorServiceMock as any,
-         commonUtilServiceMock as any);
+      reportServiceMock as any,
+      transferMock as any,
+      translateServiceMock as any,
+      fileMock as any,
+      datePipeMock as any,
+      loadingControllerMock as any,
+      zoneMock as any,
+      appGlobalServiceMock as any,
+      appVersionMock as any,
+      deviceInfoServiceMock as any,
+      telemetryGeneratorServiceMock as any,
+      commonUtilServiceMock as any);
 
     jest.resetAllMocks();
   });
@@ -73,11 +71,11 @@ describe.only('UserReportPage Component', () => {
       'uid': '6e033070-8d74-41bc-bbe7-290ab8b6463a',
       'name': 'कुत्ता और रोटी',
       'lastUsedTime': 1539149638412
-  };
+    };
     navParamsMock.get.mockReturnValue(data);
     reportServiceMock.getDetailReport.mockResolvedValue(myMap);
-    loadingMock.create.mockReturnValue( { present: jest.fn() } );
-    loadingMock.create.mockReturnValue({
+    loadingControllerMock.create.mockReturnValue({ present: jest.fn() });
+    loadingControllerMock.create.mockReturnValue({
       present: () => {
       },
       dismiss: () => Promise.resolve()
@@ -87,15 +85,15 @@ describe.only('UserReportPage Component', () => {
     expect(reportServiceMock.getDetailReport).toHaveBeenCalled();
 
     setTimeout(() => {
-           zoneMock.run.mock.calls[0][0].call(userReportPage, undefined);
-        expect(userReportPage.assessmentData).toBeTruthy();
-        done();
+      zoneMock.run.mock.calls[0][0].call(userReportPage, undefined);
+      expect(userReportPage.assessmentData).toBeTruthy();
+      done();
       // expect(userReportPage.assessmentData).toBeTruthy();
     }, 0);
   });
 
   it('importcsv should make expected calls', () => {
-    userReportPage.response = [{uid : '30c6de21-d184-446a-b9d8-edfedff910ef', contentId: 'domain_4083'}];
+    userReportPage.response = [{ uid: '30c6de21-d184-446a-b9d8-edfedff910ef', contentId: 'domain_4083' }];
     userReportPage.deviceId = '96360f6fb9f309691ce1ea41dcfa12ab40b61af3';
     const body = {};
     fileMock.writeFile.mockResolvedValue('test val');
@@ -104,8 +102,9 @@ describe.only('UserReportPage Component', () => {
     expect(userReportPage.convertToCSV).toHaveBeenCalled();
   });
   it('convertToCSV should give csv', () => {
-    userReportPage.profile = [{uid : '30c6de21-d184-446a-b9d8-edfedff910ef', handle: 'domain_4083'}];
-    userReportPage.reportSummary = {uid: '30c6de21-d184-446a-b9d8-edfedff910ef',
+    userReportPage.profile = [{ uid: '30c6de21-d184-446a-b9d8-edfedff910ef', handle: 'domain_4083' }];
+    userReportPage.reportSummary = {
+      uid: '30c6de21-d184-446a-b9d8-edfedff910ef',
       contentId: 'test',
       name: 'test',
       lastUsedTime: 10,
@@ -114,7 +113,8 @@ describe.only('UserReportPage Component', () => {
       totalTimespent: 5,
       hierarchyData: 'test',
       totalMaxScore: 5,
-      totalScore: 4};
+      totalScore: 4
+    };
     userReportPage.response = csvdata;
     const csv = userReportPage.convertToCSV(csvdata);
     datePipeMock.transform.mockReturnValue('');
