@@ -155,8 +155,8 @@
 //         const events = TestBed.get(Events);
 //         const contentService = TestBed.get(ContentService);
 //         spyOn(component, 'setSavedContent').and.callThrough();
-//         spyOn(contentService, 'getAllLocalContents')
-// .and.returnValues(Promise.resolve(JSON.stringify(mockRes.getAllLocalContentsResponse)));
+//         spyOn(contentService, 'getAllLocalContents').and.returnValues(Promise.resolve(JSON.stringify(mockRes.getAllLocalContentsResponse)));
+
 //         spyOn(events, 'subscribe').and.callFake((arg, success) => {
 //             if (arg === 'savedResources:update') {
 //                 return success(JSON.parse(mockRes.updateLocalContents));
@@ -246,8 +246,7 @@
 //     it('#ngOnInit should invoke setSavedContent()', () => {
 //         const contentService = TestBed.get(ContentService);
 //         spyOn(component, 'setSavedContent').and.callThrough();
-//         spyOn(contentService, 'getAllLocalContents')
-// .and.returnValues(Promise.resolve(JSON.stringify(mockRes.getAllLocalContentsResponse)));
+//         spyOn(contentService, 'getAllLocalContents').and.returnValues(Promise.resolve(JSON.stringify(mockRes.getAllLocalContentsResponse)));
 //         component.ngOnInit();
 //         expect(component.setSavedContent).toHaveBeenCalled();
 //     });
@@ -316,8 +315,7 @@
 //         });
 //     });
 
-//     it('#navigateToViewMoreContentPageWithParams should navigate to ViewMoreList page with search params if filter is not applied',
-// () => {
+//     it('#navigateToViewMoreContentPageWithParams should navigate to ViewMoreList page with search params if filter is not applied', () => {
 //         const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
 //         spyOn(telemetryGeneratorService, 'generateInteractTelemetry').and.callThrough().and.callFake(({ }, success) => {
 //         });
@@ -551,8 +549,7 @@
 //         const events = TestBed.get(Events);
 //         const contentService = TestBed.get(ContentService);
 //         spyOn(component, 'setSavedContent').and.callThrough();
-//         spyOn(contentService, 'getAllLocalContents')
-// .and.returnValues(Promise.resolve(JSON.stringify(mockRes.getAllLocalContentsResponse)));
+//         spyOn(contentService, 'getAllLocalContents').and.returnValues(Promise.resolve(JSON.stringify(mockRes.getAllLocalContentsResponse)));
 
 //         spyOn(events, 'subscribe').and.callFake((arg, success) => {
 //             if (arg === 'genie.event') {

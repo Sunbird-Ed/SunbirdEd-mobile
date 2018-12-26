@@ -55,8 +55,7 @@
 
 //     describe('fetchAssessment should be executed,', () => {
 
-//         it('#when called with users event and false args with fromUserAssessment object undefined,
-// if block should be invoked', (done) => {
+//         it('#when called with users event and false args with fromUserAssessment object undefined, if block should be invoked', (done) => {
 //             // TODO call fetchAssessment check if statement to be truthy block invoked
 //             const reportService = TestBed.get(ReportService);
 

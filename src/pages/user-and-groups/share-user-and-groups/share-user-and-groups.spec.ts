@@ -150,8 +150,7 @@
 //             const profileServiceStub: ProfileService = fixture.debugElement.injector.get(ProfileService);
 //             const fileUtilStub: FileUtil = fixture.debugElement.injector.get(FileUtil);
 //             const socialSharingStub: SocialSharing = fixture.debugElement.injector.get(SocialSharing);
-//             const telemetryGeneratorServiceStub: TelemetryGeneratorService =
-// fixture.debugElement.injector.get(TelemetryGeneratorService);
+//             const telemetryGeneratorServiceStub: TelemetryGeneratorService = fixture.debugElement.injector.get(TelemetryGeneratorService);
 //             const loader = jasmine.createSpy().and.callFake( () => {
 //                 return { present: () => { }, dismiss: () => { } };
 //             });
