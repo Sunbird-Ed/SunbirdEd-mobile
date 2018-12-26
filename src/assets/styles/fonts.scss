@@ -4,23 +4,29 @@
     font-weight: normal;
     font-style: normal;
   }
+  @font-face {
+    font-family: 'NotoSans Bengali';
+    src: url('../assets/fonts/notosansbengali/NotoSansBengali-Regular.ttf');
+    font-weight: normal;
+    font-style: normal;
+  }
     .NotoSans {
-        font-family: 'NotoSans' !important;
+        font-family: 'NotoSans','NotoSans Bengali' !important;
         font-weight: normal;
         font-style: normal;
     }
   
     .NotoSans-semi-bold {
-      font-family: 'NotoSans' !important;
+      font-family: 'NotoSans','NotoSans Bengali' !important;
       font-weight: 600 !important;
     };
 
     .NotoSans-bold {
-        font-family: 'NotoSans' !important;
+        font-family: 'NotoSans','NotoSans Bengali' !important;
         font-weight: 700 !important;
     }
     .NotoSans-extra-bold {
-        font-family: 'NotoSans' !important;
+        font-family: 'NotoSans','NotoSans Bengali' !important;
         font-weight: 900 !important;
     }
 
