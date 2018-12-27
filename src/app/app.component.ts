@@ -84,7 +84,7 @@ export class MyApp {
 
     const that = this;
 
-    platform.ready().then(() => {
+    platform.ready().then(async () => {
       this.registerDeeplinks();
       this.openrapDiscovery();
       this.imageLoaderConfig.enableDebugMode();
@@ -112,7 +112,7 @@ export class MyApp {
           }
         });
 
-      this.checkForTncUpdate();
+      await this.tncUpdateHandlerService.checkForTncUpdate();
 
       that.authService.getSessionData((session) => {
         if (session === null || session === 'null') {
@@ -243,37 +243,13 @@ export class MyApp {
       statusBar.styleDefault();
 
       window['thisRef'] = this;
-      try {
-        this.fetchUpdate();
-      } catch (error) {
-        console.log(error);
-      }
+      // try {
+      //   this.fetchUpdate();
+      // } catch (error) {
+      //   console.log(error);
+      // }
 
       this.handleBackButton();
-    });
-  }
-
-  private checkForTncUpdate() {
-    this.authService.getSessionData((session) => {
-      if (!session || session === 'null') {
-        return;
-      }
-
-      const sessionObj = JSON.parse(session);
-
-      const reqObj = {
-        userId: sessionObj[ProfileConstants.USER_TOKEN],
-        requiredFields: ProfileConstants.REQUIRED_FIELDS,
-        refreshUserProfileDetails: true
-      };
-
-      this.userProfileService.getUserProfileDetails(reqObj, res => {
-        const userProfileDetails = JSON.parse(res);
-        if (TncUpdateHandlerService.hasProfileTncUpdated(userProfileDetails)) {
-          this.tncUpdateHandlerService.presentTncPage({userProfileDetails});
-        }
-      }, () => {
-      });
     });
   }
 

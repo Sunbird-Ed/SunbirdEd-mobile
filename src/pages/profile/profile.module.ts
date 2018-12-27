@@ -6,7 +6,6 @@ import { SuperTabsModule } from 'ionic2-super-tabs';
 import { TagInputModule } from 'ngx-chips';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ExpansionPanelsModule } from 'ng2-expansion-panels';
-import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { ProfilePage } from './profile';
 import { GuestProfilePage } from './guest-profile/guest-profile';
 import { GuestEditProfilePage } from './guest-edit.profile/guest-edit.profile';
@@ -58,8 +57,7 @@ import { CategoriesEditPageModule } from '../categories-edit/categories-edit.mod
   ],
   providers: [
     ContainerService,
-    DatePipe,
-    InAppBrowser
+    DatePipe
   ]
 })
 export class ProfilePageModule { }

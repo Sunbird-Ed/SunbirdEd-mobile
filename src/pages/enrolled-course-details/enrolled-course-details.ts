@@ -1083,7 +1083,7 @@ export class EnrolledCourseDetailsPage {
       };
       this.courseService.getContentState(request).then((success: any) => {
         if (this.childrenData) {
-          this.getStatusOfChildContent(this.childrenData, success);
+          this.getStatusOfChildContent(this.childrenData, JSON.parse(success));
         }
       }).catch((error: any) => {
 

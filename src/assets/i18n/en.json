@@ -377,6 +377,7 @@
   "THIS_IS_A_RESTRICTED_COMMUNITY": "This is a restricted community",
   "TIME": "Time",
   "TIME_OUT": "Server timed out. Try again later",
+  "TNC_BACK_NAVIGATION_MESSAGE": "You need to accept the Terms and Conditions to login to {{app_name}}. If you would like to continue browsing as a guest, please press the back button.",
   "TO": "To",
   "TOPIC_YOU_MIGHT_LIKE": "Explore topics of interest",
   "TOTAL_TIME": "Total Time",
