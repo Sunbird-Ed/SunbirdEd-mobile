@@ -367,6 +367,8 @@ export class FormAndFrameworkUtilService {
      * @param profileData : Local profile of current user
      */
     updateLoggedInUser(profileRes, profileData) {
+        console.log('profileRes', profileRes);
+        // this.fetchSuggestedFramework(profileRes);
         return new Promise((resolve, reject) => {
             const profile = {
                 board: [],
@@ -383,8 +385,10 @@ export class FormAndFrameworkUtilService {
                     if (profileRes.framework[categoryKey].length) {
                         const request: CategoryRequest = {
                             selectedLanguage: this.translate.currentLang,
-                            currentCategory: categoryKey
+                            currentCategory: categoryKey,
+                            frameworkId: profileRes.framework.id ? profileRes.framework.id[0] : undefined
                         };
+                        console.log('CategoryRequest', request);
                         this.getCategoryData(request)
                             .then((categoryList) => {
                                 console.log('categoryList in updateLoggedInUser', categoryList);
@@ -404,41 +408,19 @@ export class FormAndFrameworkUtilService {
                                     }
                                 });
                                 if (categoryKeysLen === keysLength) {
-                                    const req: Profile = new Profile();
-                                    if (profile.board && profile.board.length > 1) {
-                                        profile.board.splice(1, profile.board.length);
-                                    }
-                                    req.board = profile.board;
-                                    req.grade = profile.grade;
-                                    req.medium = profile.medium;
-                                    req.subject = profile.subject;
-                                    req.gradeValueMap = profile.gradeValueMap;
-                                    req.uid = profileData.uid;
-                                    req.handle = profileData.uid;
-                                    req.profileType = profileData.profileType;
-                                    req.source = profileData.source;
-                                    req.createdAt = profileData.createdAt || this.formatDate();
-                                    this.preference.getString('current_framework_id')
-                                        .then(value => {
-                                            req.syllabus = [value];
-                                            this.profileService.updateProfile(req)
-                                                .then((res: any) => {
-                                                    const updateProfileRes = JSON.parse(res);
-                                                    this.events.publish('refresh:loggedInProfile');
-                                                    if (updateProfileRes.board && updateProfileRes.grade && updateProfileRes.medium &&
-                                                        updateProfileRes.board.length && updateProfileRes.grade.length
-                                                        && updateProfileRes.medium.length
-                                                    ) {
-                                                        resolve({ status: true });
-                                                    } else {
-                                                        resolve({ status: false, profile: updateProfileRes });
-                                                    }
-                                                })
-                                                .catch((err: any) => {
-                                                    console.error('Err', err);
-                                                    resolve({ status: false });
-                                                });
-                                        });
+                                    this.updateProfileInfo(profile, profileData)
+                                    .then( (response) => {
+                                        resolve(response);
+                                    });
+                                }
+                            })
+                            .catch(err => {
+                                keysLength++;
+                                if (categoryKeysLen === keysLength) {
+                                    this.updateProfileInfo(profile, profileData)
+                                    .then( (response) => {
+                                        resolve(response);
+                                    });
                                 }
                             });
                     } else {
@@ -449,7 +431,47 @@ export class FormAndFrameworkUtilService {
                 resolve({ status: false });
             }
         });
+    }
 
+    updateProfileInfo(profile, profileData) {
+        return new Promise((resolve, reject) => {
+            const req: Profile = new Profile();
+            if (profile.board && profile.board.length > 1) {
+                profile.board.splice(1, profile.board.length);
+            }
+            req.board = profile.board;
+            req.grade = profile.grade;
+            req.medium = profile.medium;
+            req.subject = profile.subject;
+            req.gradeValueMap = profile.gradeValueMap;
+            req.uid = profileData.uid;
+            req.handle = profileData.uid;
+            req.profileType = profileData.profileType;
+            req.source = profileData.source;
+            req.createdAt = profileData.createdAt || this.formatDate();
+            this.preference.getString('current_framework_id')
+                .then(value => {
+                    req.syllabus = [value];
+                    this.profileService.updateProfile(req)
+                        .then((res: any) => {
+                            const updateProfileRes = JSON.parse(res);
+                            console.log('updateProfileRes', updateProfileRes);
+                            this.events.publish('refresh:loggedInProfile');
+                            if (updateProfileRes.board && updateProfileRes.grade && updateProfileRes.medium &&
+                                updateProfileRes.board.length && updateProfileRes.grade.length
+                                && updateProfileRes.medium.length
+                            ) {
+                                resolve({ status: true });
+                            } else {
+                                resolve({ status: false, profile: updateProfileRes });
+                            }
+                        })
+                        .catch((err: any) => {
+                            console.error('Err', err);
+                            resolve({ status: false });
+                        });
+                });
+            });
     }
 
     formatDate() {

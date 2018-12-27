@@ -4,7 +4,8 @@ import { CommonUtilService } from './../../service/common-util.service';
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { CategoryRequest, Profile, UpdateUserInfoRequest, UserProfileService, ProfileService, ContainerService, TabsPage } from 'sunbird';
+import { CategoryRequest, Profile, UpdateUserInfoRequest, UserProfileService, ProfileService, ContainerService,
+  TabsPage, FrameworkService, SuggestedFrameworkRequest } from 'sunbird';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
 import { Events } from 'ionic-angular';
@@ -70,7 +71,8 @@ export class CategoriesEditPage {
     private userProfileService: UserProfileService,
     private profileService: ProfileService,
     private events: Events,
-    private container: ContainerService
+    private container: ContainerService,
+    private framework: FrameworkService
   ) {
     this.profile = this.appGlobalService.getCurrentUser();
     if (this.navParams.get('showOnlyMandatoryFields')) {
@@ -96,10 +98,12 @@ export class CategoriesEditPage {
    */
 
   initializeForm() {
+    console.log('this.profile', this.profile);
     if (this.profile.board && this.profile.board.length > 1) {
       this.profile.board.splice(1, this.profile.board.length);
     }
     this.profileEditForm = this.fb.group({
+      syllabus: [this.profile.syllabus && this.profile.syllabus[0] || []],
       boards: [this.profile.board || []],
       grades: [this.profile.grade || []],
       medium: [this.profile.medium || []],
@@ -115,13 +119,37 @@ export class CategoriesEditPage {
     if (this.profile.syllabus && this.profile.syllabus[0]) {
       this.frameworkId = this.profile.syllabus[0];
     }
-    this.formAndFrameworkUtilService.getFrameworkDetails(undefined)
-      .then(catagories => {
-        this.categories = catagories;
-        this.boardList = catagories[0].terms;
-        this.resetForm(1);
-      }).catch((err) => {
-        this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
+    const suggestedFrameworkRequest: SuggestedFrameworkRequest = {
+      selectedLanguage: this.translate.currentLang
+    };
+    this.framework.getSuggestedFrameworkList(suggestedFrameworkRequest)
+      .then((result) => {
+        console.log('this.getSuggestedFrameworkList', result);
+        if (result && result.length) {
+          result.forEach(element => {
+            // renaming the fields to text, value and checked
+            const value = { 'name': element.name, 'code': element.identifier };
+            this.syllabusList.push(value);
+          });
+          console.log('this.syllabusList', this.syllabusList);
+
+          if (this.profile && this.profile.syllabus && this.profile.syllabus[0] !== undefined) {
+            this.formAndFrameworkUtilService.getFrameworkDetails(this.profile.syllabus[0])
+              .then(catagories => {
+                this.categories = catagories;
+                this.resetForm(0);
+              }).catch(() => {
+                this.loader.dismiss();
+                this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
+              });
+          } else {
+            this.loader.dismiss();
+          }
+        } else {
+          this.loader.dismiss();
+
+          this.commonUtilService.showToast(this.commonUtilService.translateMessage('NO_DATA_FOUND'));
+        }
       });
 
   }
@@ -130,14 +158,24 @@ export class CategoriesEditPage {
    * It will resets the form to empty values
    */
   resetForm(index: number) {
+    console.log('in resetForm idx', index);
     switch (index) {
+      case 0:
+        this.profileEditForm.patchValue({
+          boards: [],
+          grades: [],
+          subjects: [],
+          medium: []
+        });
+        this.fetchNextCategoryOptionsValues(1, 'boardList', [this.profileEditForm.value.syllabus]);
+        break;
       case 1:
         this.profileEditForm.patchValue({
           medium: [],
           grades: [],
           subjects: []
         });
-        this.fetchNextCategoryOptionsValues(2, 'mediumList', this.profileEditForm.value.board);
+        this.fetchNextCategoryOptionsValues(2, 'mediumList', this.profileEditForm.value.boards);
         break;
       case 2:
         this.profileEditForm.patchValue({
@@ -162,13 +200,36 @@ export class CategoriesEditPage {
    * @param selectedValue selected value for the currently selected field
    */
   fetchNextCategoryOptionsValues(index: number, currentField: string, selectedValue: Array<string>) {
-    const request: CategoryRequest = {
-      currentCategory: this.categories[index - 1].code,
-      prevCategory: this.categories[index - 2].code,
-      selectedCode: selectedValue,
-      selectedLanguage: this.translate.currentLang
-    };
-    this.getCategoryData(request, currentField);
+    if (index === 1) {
+      this.frameworkId = selectedValue[0];
+      if (this.frameworkId.length !== 0) {
+        console.log('this.frameworkId', this.frameworkId);
+        this.formAndFrameworkUtilService.getFrameworkDetails(this.frameworkId)
+          .then(catagories => {
+            this.categories = catagories;
+            console.log('this.categories', this.categories);
+            // loader.dismiss();
+            const request: CategoryRequest = {
+              currentCategory: this.categories[0].code,
+              selectedLanguage: this.translate.currentLang
+            };
+            console.log('1 request', request);
+            console.log('1 currentField', currentField);
+            this.getCategoryData(request, currentField);
+          }).catch(() => {
+            this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
+          });
+      }
+    } else {
+      const request: CategoryRequest = {
+        currentCategory: this.categories[index - 1].code,
+        prevCategory: this.categories[index - 2].code,
+        selectedCode: selectedValue,
+        selectedLanguage: this.translate.currentLang
+      };
+      console.log('else request', request);
+      this.getCategoryData(request, currentField);
+    }
   }
 
   /**
@@ -180,7 +241,25 @@ export class CategoriesEditPage {
     this.formAndFrameworkUtilService.getCategoryData(request, this.frameworkId)
       .then((result) => {
         this[currentField] = result;
-        if (this.editData) {
+        if (request.currentCategory === 'board') {
+          const boardName = this.syllabusList.find(framework => this.frameworkId === framework.code);
+          if (boardName) {
+            const boardCode = result.find(board => boardName.name === board.name);
+            console.log('boardCode', boardCode);
+            if (boardCode) {
+              this.profileEditForm.patchValue({
+                boards: boardCode.code
+              });
+              this.resetForm(1);
+            } else {
+              console.log('board name not matching with framework name');
+              this.profileEditForm.patchValue({
+                boards: [result[0].code]
+              });
+              this.resetForm(1);
+            }
+          }
+        } else if (this.editData) {
           this.editData = false;
           this.profileEditForm.patchValue({
             medium: this.profile.medium || []
@@ -192,6 +271,7 @@ export class CategoriesEditPage {
             subjects: this.profile.subject || []
           });
         }
+
       })
       .catch(error => {
         console.error('Error=', error);
@@ -223,6 +303,7 @@ export class CategoriesEditPage {
       }
     } else {
       this.submitForm(formVal);
+      console.log('formVal', formVal);
     }
   }
 
@@ -255,34 +336,38 @@ export class CategoriesEditPage {
   submitForm(formVal) {
     this.loader.present();
     const req: UpdateUserInfoRequest = new UpdateUserInfoRequest();
-    const Framework = {};
+    const framework = {};
+    if (formVal.syllabus) {
+      framework['id'] = [formVal.syllabus];
+    }
     if (formVal.boards) {
       const code = typeof (formVal.boards) === 'string' ? formVal.boards : formVal.boards[0];
-      Framework['board'] = [this.boardList.find(board => code === board.code).name];
+      framework['board'] = [this.boardList.find(board => code === board.code).name];
     }
     if (formVal.medium && formVal.medium.length) {
       const Names = [];
       formVal.medium.forEach(element => {
         Names.push(this.mediumList.find(medium => element === medium.code).name);
       });
-      Framework['medium'] = Names;
+      framework['medium'] = Names;
     }
     if (formVal.grades && formVal.grades.length) {
       const Names = [];
       formVal.grades.forEach(element => {
         Names.push(this.gradeList.find(grade => element === grade.code).name);
       });
-      Framework['gradeLevel'] = Names;
+      framework['gradeLevel'] = Names;
     }
     if (formVal.subjects && formVal.subjects.length) {
       const Names = [];
       formVal.subjects.forEach(element => {
         Names.push(this.subjectList.find(subject => element === subject.code).name);
       });
-      Framework['subject'] = Names;
+      framework['subject'] = Names;
     }
     req.userId = this.profile.uid;
-    req.framework = Framework;
+    req.framework = framework;
+    console.log('updateinfo req', req);
     this.userProfileService.updateUserInfo(req,
       (res: any) => {
         this.loader.dismiss();
