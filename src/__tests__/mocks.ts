@@ -173,7 +173,11 @@ export const appGlobalServiceMock = createSpyObj<AppGlobalService>([
   'getSessionData',
   'getCurrentUser',
   'getNameForCodeInFramework',
-  'getGuestUserType'
+  'getGuestUserType',
+  'setAverageTime',
+  'setAverageScore',
+  'getAverageScore',
+  'getAverageTime'
 ]);
 
 export const telemetryGeneratorServiceMock = createSpyObj<TelemetryGeneratorService>([
@@ -233,7 +237,9 @@ export const reportServiceMock = createSpyObj<ReportService>([
   'getListOfReports',
   'getImportContentRequestBody',
   'getDetailReport',
-  'getDetailsPerQuestion'
+  'getDetailsPerQuestion',
+  'getReportsByUser',
+  'getReportsByQuestion'
 ]);
 
 export const transferMock = createSpyObj<FileTransfer>([
@@ -241,7 +247,8 @@ export const transferMock = createSpyObj<FileTransfer>([
 ]);
 
 export const fileMock = createSpyObj<File>([
-  'writeFile'
+  'writeFile',
+  'dataDirectory'
 ]);
 
 export const datePipeMock = createSpyObj<DatePipe>([
