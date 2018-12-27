@@ -99,6 +99,9 @@ export class ContentDetailsPage {
   isUpdateAvail = false;
   userRating = 0;
 
+  /*stores streaming url*/
+  streamingUrl: any;
+
   /**
    * currently used to identify that its routed from QR code results page
    * Can be sent from any page, where after landing on details page should download or play content automatically
@@ -432,6 +435,9 @@ export class ContentDetailsPage {
     if (this.cardData && this.cardData.hierarchyInfo) {
       data.result.hierarchyInfo = this.cardData.hierarchyInfo;
       this.isChildContent = true;
+    }
+    if (this.content.streamingUrl) {
+        this.streamingUrl = this.content.streamingUrl;
     }
 
     if (!this.isChildContent && this.content.contentMarker.length
@@ -902,6 +908,7 @@ export class ContentDetailsPage {
     popover.onDidDismiss(data => {
       this.zone.run(() => {
         if (data === 'delete.success') {
+          this.content.streamingUrl = this.streamingUrl;
           this.content.downloadable = false;
           const playContent = JSON.parse(this.content.playContent);
           playContent.isAvailableLocally = false;
