@@ -115,7 +115,7 @@
 			<ion-list *ngIf="childrenData && childrenData.length" padding-top>
 				<span *ngIf="courseCardData && enrolledCourseMimeType === 'application/vnd.ekstep.content-collection'">
 					<ion-item *ngFor="let item of childrenData; let i = index;" class="child-item" (click)="navigateToChildrenDetailsPage(item, depth + '.' + (i + 1))">
-						<ion-icon [name]="item.status === 5 ? 'ios-checkmark-circle': (item.lastRead? 'ios-radio-button-on': 'ios-radio-button-off')"></ion-icon>
+						<ion-icon [name]="item.status? 'ios-checkmark-circle': (item.lastRead? 'ios-radio-button-on': 'ios-radio-button-off')"></ion-icon>
 						<span ion-text class="span-semibold" [ngClass]="{'fontBold': item.lastRead}">{{ (item?.contentData?.name &&
 							item?.contentData?.name.length > 30) ?
 							(item?.contentData?.name | slice:0:30) + '...'

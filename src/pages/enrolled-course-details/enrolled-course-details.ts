@@ -647,23 +647,31 @@ export class EnrolledCourseDetailsPage {
   getStatusOfChildContent(childrenData, contentStatusData) {
     this.zone.run(() => {
       childrenData.forEach(childContent => {
+        // Inside First level
         let contentlen = 0;
         childContent.children.every(eachContent => {
+          // Inside resource level
           if (childContent.hasOwnProperty('status') && !childContent.status) {
+            // checking for property status
             return false;
           } else {
+            // checking for getContentState result length
             if (contentStatusData.result.contentList.length) {
               contentStatusData.result.contentList.every(contentData => {
+                // checking for each content status
                 if (eachContent.identifier === contentData.contentId) {
                   contentlen = contentlen + 1;
+                  // checking for contentId from getContentState and lastReadContentId
                   if (contentData.contentId === this.courseCardData.lastReadContentId) {
                     childContent.lastRead = true;
                   }
                   if (contentData.status === 0 || contentData.status === 1) {
-                    childContent.status = 4;
+                    // manupulating the status
+                    childContent.status = false;
                     return false;
                   } else {
-                    childContent.status = 5;
+                    // if content played completely
+                    childContent.status = true;
                     return true;
                   }
                 }
@@ -676,6 +684,7 @@ export class EnrolledCourseDetailsPage {
             }
           }
         });
+
         if (childContent.children.length === contentlen) {
           return true;
         } else {
@@ -823,7 +832,6 @@ export class EnrolledCourseDetailsPage {
     if (this.batchId) {
       this.courseCardData.batchId = this.batchId;
     }
-
     this.showResumeBtn = this.courseCardData.lastReadContentId ? true : false;
     this.setContentDetails(this.identifier);
     // If courseCardData does not have a batch id then it is not a enrolled course
@@ -1107,8 +1115,9 @@ export class EnrolledCourseDetailsPage {
         batchId: this.batchId
       };
       this.courseService.getContentState(request).then((success: any) => {
+        success = JSON.parse(success);
         if (this.childrenData) {
-          this.getStatusOfChildContent(this.childrenData, JSON.parse(success));
+          this.getStatusOfChildContent(this.childrenData, success);
         }
       }).catch((error: any) => {
 
