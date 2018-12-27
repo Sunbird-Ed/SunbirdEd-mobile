@@ -367,8 +367,6 @@ export class FormAndFrameworkUtilService {
      * @param profileData : Local profile of current user
      */
     updateLoggedInUser(profileRes, profileData) {
-        console.log('profileRes', profileRes);
-        // this.fetchSuggestedFramework(profileRes);
         return new Promise((resolve, reject) => {
             const profile = {
                 board: [],
@@ -388,10 +386,8 @@ export class FormAndFrameworkUtilService {
                             currentCategory: categoryKey,
                             frameworkId: profileRes.framework.id ? profileRes.framework.id[0] : undefined
                         };
-                        console.log('CategoryRequest', request);
                         this.getCategoryData(request)
                             .then((categoryList) => {
-                                console.log('categoryList in updateLoggedInUser', categoryList);
                                 keysLength++;
                                 profileRes.framework[categoryKey].forEach(element => {
                                     if (categoryKey === 'gradeLevel') {
@@ -455,7 +451,6 @@ export class FormAndFrameworkUtilService {
                     this.profileService.updateProfile(req)
                         .then((res: any) => {
                             const updateProfileRes = JSON.parse(res);
-                            console.log('updateProfileRes', updateProfileRes);
                             this.events.publish('refresh:loggedInProfile');
                             if (updateProfileRes.board && updateProfileRes.grade && updateProfileRes.medium &&
                                 updateProfileRes.board.length && updateProfileRes.grade.length
