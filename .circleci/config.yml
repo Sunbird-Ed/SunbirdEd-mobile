@@ -2,13 +2,9 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: sunbird/build:android
-    steps:
-      - run: echo "skipping build"
-  test:
-    docker:
       - image: circleci/node
     steps:
       - checkout
       - run: npm install
       - run: npm run test:ci
+
