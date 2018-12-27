@@ -39,9 +39,7 @@ export class TermsAndConditionsPage {
   }
 
   public onIFrameLoad() {
-    if (this.loading) {
-      this.loading.dismissAll();
-    }
+    this.loading.dismissAll();
   }
 
   public onConfirmationChange(change: boolean) {

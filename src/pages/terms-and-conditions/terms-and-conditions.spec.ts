@@ -1,7 +1,7 @@
 import {TermsAndConditionsPage} from '@app/pages/terms-and-conditions/terms-and-conditions';
 import {
   domSanitizerMock,
-  loadingMock,
+  loadingControllerMock,
   logoutHandlerServiceMock,
   navParamsMock,
   platformMock,
@@ -15,7 +15,7 @@ describe('TermsAndConditionsPage', () => {
     termsAndConditionsPage = new TermsAndConditionsPage(
       navParamsMock as any,
       platformMock as any,
-      loadingMock as any,
+      loadingControllerMock as any,
       logoutHandlerServiceMock as any,
       tncUpdateHandlerServiceMock as any,
       domSanitizerMock as any
@@ -35,7 +35,7 @@ describe('TermsAndConditionsPage', () => {
     };
 
     beforeEach(() => {
-      loadingMock.create.mockReturnValue(loading);
+      loadingControllerMock.create.mockReturnValue(loading);
     });
 
     it('should show loadingSpinner on page load', async () => {
@@ -46,7 +46,7 @@ describe('TermsAndConditionsPage', () => {
       await termsAndConditionsPage.ionViewDidLoad();
 
       // assert
-      expect(loadingMock.create).toHaveBeenCalled();
+      expect(loadingControllerMock.create).toHaveBeenCalled();
       expect(loading.present).toHaveBeenCalled();
     });
 
