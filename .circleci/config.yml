@@ -10,6 +10,8 @@ jobs:
           name: run build file
           command: ./build.sh release-1.13.0
   test:
+    docker:
+    - image: sunbird/build:android
     steps:
     - checkout
     - run: npm install
