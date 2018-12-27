@@ -3,6 +3,9 @@ import {Loading, LoadingController, NavParams, Platform} from 'ionic-angular';
 import {TncUpdateHandlerService} from '@app/service/handlers/tnc-update-handler.service';
 import {LogoutHandlerService} from '@app/service/handlers/logout-handler.service';
 import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
+import {CommonUtilService} from '@app/service';
+import {TranslateService} from '@ngx-translate/core';
+import {AppVersion} from '@ionic-native/app-version';
 
 @Component({
   selector: 'page-terms-and-conditions',
@@ -22,18 +25,21 @@ export class TermsAndConditionsPage {
     private loadingCtrl: LoadingController,
     private logoutHandlerService: LogoutHandlerService,
     private tncUpdateHandlerService: TncUpdateHandlerService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private commonUtilService: CommonUtilService,
+    private translateService: TranslateService,
+    private appVersion: AppVersion
   ) {
   }
 
   public async ionViewDidLoad() {
     this.userProfileDetails = this.navParams.get('userProfileDetails');
 
-    this.tncLatestVersionUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.userProfileDetails.tncLatestVersionUrl);
+    this.tncLatestVersionUrl = this.sanitizer
+      .bypassSecurityTrustResourceUrl(this.userProfileDetails.tncLatestVersionUrl);
 
-    this.unregisterBackButtonAction = this.platform.registerBackButtonAction(async () => {
-      await this.logout();
-    }, 10);
+    this.unregisterBackButtonAction = this.platform
+      .registerBackButtonAction(async () => await this.showToastOnFirstBackNavigation(), 10);
 
     await this.createAndPresentLoadingSpinner();
   }
@@ -51,7 +57,7 @@ export class TermsAndConditionsPage {
       await this.tncUpdateHandlerService.onAcceptTnc(this.userProfileDetails);
       await this.tncUpdateHandlerService.dismissTncPage();
     } catch (e) {
-      await this.logout();
+      await this.logoutOnSecondBackNavigation();
     }
   }
 
@@ -65,11 +71,26 @@ export class TermsAndConditionsPage {
     await this.loading.present();
   }
 
-  private async logout() {
+  private async logoutOnSecondBackNavigation() {
     if (this.unregisterBackButtonAction) {
       this.unregisterBackButtonAction();
     }
     this.logoutHandlerService.onLogout();
     await this.tncUpdateHandlerService.dismissTncPage();
+  }
+
+  private async showToastOnFirstBackNavigation() {
+    this.commonUtilService.showToast(await this.translateService
+      .get('TNC_BACK_NAVIGATION_MESSAGE',
+        {app_name: await this.appVersion.getAppName()}
+      ).toPromise<string>());
+
+    if (this.unregisterBackButtonAction) {
+      this.unregisterBackButtonAction();
+    }
+
+    this.unregisterBackButtonAction = this.platform.registerBackButtonAction(async () => {
+      await this.logoutOnSecondBackNavigation();
+    }, 10);
   }
 }

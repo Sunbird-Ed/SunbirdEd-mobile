@@ -1,12 +1,16 @@
 import {TermsAndConditionsPage} from '@app/pages/terms-and-conditions/terms-and-conditions';
 import {
+  appVersionMock,
+  commonUtilServiceMock,
   domSanitizerMock,
   loadingControllerMock,
   logoutHandlerServiceMock,
   navParamsMock,
   platformMock,
-  tncUpdateHandlerServiceMock
+  tncUpdateHandlerServiceMock,
+  translateServiceMock
 } from '@app/__tests__/mocks';
+import {of} from 'rxjs/observable/of';
 
 describe('TermsAndConditionsPage', () => {
   let termsAndConditionsPage: TermsAndConditionsPage;
@@ -18,7 +22,10 @@ describe('TermsAndConditionsPage', () => {
       loadingControllerMock as any,
       logoutHandlerServiceMock as any,
       tncUpdateHandlerServiceMock as any,
-      domSanitizerMock as any
+      domSanitizerMock as any,
+      commonUtilServiceMock as any,
+      translateServiceMock as any,
+      appVersionMock as any
     );
 
     jest.resetAllMocks();
@@ -80,30 +87,50 @@ describe('TermsAndConditionsPage', () => {
     });
 
     describe('BackButtonAction', () => {
-      it('should register logout function on back navigation', async () => {
-        // arrange
-        navParamsMock.get.mockReturnValue({tncLatestVersionUrl: 'SAMPLE_URL'});
-
-        // act
-        await termsAndConditionsPage.ionViewDidLoad();
-
-        // assert
-        expect(platformMock.registerBackButtonAction).toHaveBeenCalledWith(expect.any(Function), 10);
-      });
-
-      it('should call logout function on back navigation and unregister logout function', async () => {
-        // arrange
-        navParamsMock.get.mockReturnValue({tncLatestVersionUrl: 'SAMPLE_URL'});
+      it('should register showWarningToast on first back navigation', async (done) => {
+        //   // arrange
         const mockBackButtonFunction = jest.fn();
         platformMock.registerBackButtonAction.mockReturnValue(mockBackButtonFunction);
+        navParamsMock.get.mockReturnValue({tncLatestVersionUrl: 'SAMPLE_URL'});
+        translateServiceMock.get.mockReturnValue(of('SAMPLE_MESSAGE'));
+        appVersionMock.getAppName.mockResolvedValue('SOME_APP_NAME');
 
         // act
         await termsAndConditionsPage.ionViewDidLoad();
         platformMock.registerBackButtonAction.mock.calls[0][0].call(termsAndConditionsPage);
 
         // assert
-        expect(mockBackButtonFunction).toHaveBeenCalled();
-        expect(logoutHandlerServiceMock.onLogout).toHaveBeenCalled();
+        setTimeout(() => {
+          expect(platformMock.registerBackButtonAction).toHaveBeenCalledWith(expect.any(Function), 10);
+          expect(mockBackButtonFunction).toHaveBeenCalledTimes(1);
+          expect(commonUtilServiceMock.showToast).toHaveBeenCalledWith(expect.any(String));
+          done();
+        });
+      });
+
+      it('should register logout function on second back navigation', async (done) => {
+        // arrange
+        const mockBackButtonFunction = jest.fn();
+        platformMock.registerBackButtonAction.mockReturnValue(mockBackButtonFunction);
+        navParamsMock.get.mockReturnValue({tncLatestVersionUrl: 'SAMPLE_URL'});
+        translateServiceMock.get.mockReturnValue(of('SAMPLE_MESSAGE'));
+        appVersionMock.getAppName.mockResolvedValue('SOME_APP_NAME');
+
+        // act
+        await termsAndConditionsPage.ionViewDidLoad();
+        platformMock.registerBackButtonAction.mock.calls[0][0].call(termsAndConditionsPage);
+
+        // assert
+        setTimeout(() => {
+          platformMock.registerBackButtonAction.mock.calls[1][0].call(termsAndConditionsPage);
+
+          setTimeout(() => {
+            expect(platformMock.registerBackButtonAction).toHaveBeenCalledTimes(2);
+            expect(mockBackButtonFunction).toHaveBeenCalledTimes(2);
+            expect(logoutHandlerServiceMock.onLogout).toHaveBeenCalled();
+            done();
+          });
+        });
       });
     });
   });

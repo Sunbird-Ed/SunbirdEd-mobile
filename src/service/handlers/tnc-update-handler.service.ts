@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {AuthService, UserProfileService} from 'sunbird';
+import {AuthService, UserProfileDetailsRequest, UserProfileService} from 'sunbird';
 import {Modal, ModalController} from 'ionic-angular';
 import {TermsAndConditionsPage} from '@app/pages/terms-and-conditions/terms-and-conditions';
 import {ProfileConstants} from '@app/app';
@@ -31,10 +31,10 @@ export class TncUpdateHandlerService {
         }
 
         const sessionObj = JSON.parse(session);
-        const reqObj = {
+        const reqObj: UserProfileDetailsRequest = {
           userId: sessionObj[ProfileConstants.USER_TOKEN],
           requiredFields: ProfileConstants.REQUIRED_FIELDS,
-          refreshUserProfileDetails: true
+          returnRefreshedUserProfileDetails: true
         };
 
         this.userProfileService.getUserProfileDetails(reqObj, res => {
