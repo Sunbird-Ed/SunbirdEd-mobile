@@ -1,7 +1,8 @@
 import { GUEST_TEACHER_TABS, initTabs, GUEST_STUDENT_TABS } from './../../app/module.service';
 import { NavParams, IonicApp, Select, App } from 'ionic-angular/index';
 import { AppGlobalService } from '../../service/app-global.service';
-import { ProfileService, TabsPage, InteractSubtype, PageId, InteractType, ProfileType, ContainerService } from 'sunbird';
+import { ProfileService, TabsPage, InteractSubtype, PageId, InteractType, ProfileType, ContainerService,
+   FrameworkService, SuggestedFrameworkRequest } from 'sunbird';
 import { Component, ViewChild } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
@@ -88,7 +89,8 @@ export class ProfileSettingsPage {
     private commonUtilService: CommonUtilService,
     private container: ContainerService,
     private ionicApp: IonicApp,
-    private app: App
+    private app: App,
+    private framework: FrameworkService
   ) {
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
       .then(val => {
@@ -181,13 +183,17 @@ export class ProfileSettingsPage {
     this.loader = this.commonUtilService.getLoader();
     this.loader.present();
 
-    this.formAndFrameworkUtilService.getSupportingBoardList()
+    const suggestedFrameworkRequest: SuggestedFrameworkRequest = {
+      isGuestUser: true,
+      selectedLanguage: this.translate.currentLang
+    };
+    this.framework.getSuggestedFrameworkList(suggestedFrameworkRequest)
       .then((result) => {
         this.syllabusList = [];
         if (result && result !== undefined && result.length > 0) {
           result.forEach(element => {
             // renaming the fields to text, value and checked
-            const value = { 'name': element.name, 'code': element.frameworkId };
+            const value = { 'name': element.name, 'code': element.identifier };
             this.syllabusList.push(value);
           });
           this.loader.dismiss();
@@ -229,10 +235,21 @@ export class ProfileSettingsPage {
             this[list] = _.orderBy(this[list], ['name'], ['asc']);
           }
           if (req.currentCategory === 'board') {
-            this.userForm.patchValue({
-              boards: [result[0].code]
-            });
-            this.resetForm(1, false);
+            const boardName = this.syllabusList.find(framework => this.frameworkId === framework.code);
+            if (boardName) {
+              const boardCode = result.find(board => boardName.name === board.name);
+              if (boardCode) {
+                this.userForm.patchValue({
+                  boards: boardCode.code
+                });
+                this.resetForm(1, false);
+              } else {
+                this.userForm.patchValue({
+                  boards: [result[0].code]
+                });
+                this.resetForm(1, false);
+              }
+            }
           } else if (this.isEditData) {
             this.isEditData = false;
             this.userForm.patchValue({
@@ -259,6 +276,7 @@ export class ProfileSettingsPage {
       this.formAndFrameworkUtilService.getFrameworkDetails(this.frameworkId)
         .then(catagories => {
           this.categories = catagories;
+          console.log('this.categories', this.categories);
           const request: CategoryRequest = {
             currentCategory: this.categories[0].code,
             selectedLanguage: this.translate.currentLang
@@ -276,7 +294,7 @@ export class ProfileSettingsPage {
         selectedCode: prevSelectedValue,
         selectedLanguage: this.selectedLanguage
       };
-
+      console.log('else getCategoryData', request);
       this.getCategoryData(request, currentField);
     }
   }
@@ -287,6 +305,7 @@ export class ProfileSettingsPage {
 	 * @param {boolean} showloader Flag for showing loader or not
 	 */
   resetForm(index, showloader: boolean): void {
+    console.log('resetForm index', index);
     const oldAttribute: any = {};
     const newAttribute: any = {};
     switch (index) {
