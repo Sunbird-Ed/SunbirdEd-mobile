@@ -8,4 +8,9 @@ jobs:
       - checkout
       - run:
           name: run build file
-          command: ./build.sh $CIRCLE_BRANCH
+          command: ./build.sh release-1.13.0
+  test:
+    steps:
+    - checkout
+    - run: npm install
+    - run: npm run test:ci

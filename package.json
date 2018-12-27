@@ -14,7 +14,8 @@
     "android": "ionic cordova run android --debug --device",
     "build-rel": "ionic cordova build android --release --prod --device --generateSourceMap=false",
     "test": "jest",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "test:ci": "JEST_JUNIT_OUTPUT=reports/junit/js-test-results.xml jest --ci --reporters=default --reporters=jest-junit"
   },
   "config": {
     "ionic_source_map_type": "inline-source-map",
@@ -94,6 +95,7 @@
     "zone.js": "0.8.18"
   },
   "devDependencies": {
+    "jest-junit": "^5.2.0",
     "@babel/plugin-proposal-class-properties": "^7.1.0",
     "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
     "@babel/plugin-proposal-decorators": "^7.0.0",
