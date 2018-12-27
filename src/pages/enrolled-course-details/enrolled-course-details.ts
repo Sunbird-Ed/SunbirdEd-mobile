@@ -54,6 +54,7 @@ import {
 } from '@app/app';
 import { CourseBatchesPage } from '@app/pages/course-batches/course-batches';
 import { CourseUtilService, AppGlobalService, TelemetryGeneratorService, CommonUtilService } from '@app/service';
+import { DatePipe } from '@angular/common';
 
 @IonicPage()
 @Component({
@@ -124,6 +125,11 @@ export class EnrolledCourseDetailsPage {
 
   isNavigatingWithinCourse = false;
 
+  /**
+   * To hold start date of a course
+   */
+  courseStartDate;
+
   showLoading = false;
   showDownloadProgress: boolean;
   totalDownload: number;
@@ -154,6 +160,7 @@ export class EnrolledCourseDetailsPage {
   firstChild;
   /**Whole child content is stored and it is used to find first child */
   childContentsData;
+  isBatchNotStarted = false;
 
   @ViewChild(Navbar) navBar: Navbar;
   constructor(
@@ -175,7 +182,8 @@ export class EnrolledCourseDetailsPage {
     private platform: Platform,
     private appGlobalService: AppGlobalService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    private datePipe: DatePipe
   ) {
 
     this.appGlobalService.getUserId();
@@ -473,6 +481,9 @@ export class EnrolledCourseDetailsPage {
                       ]
                     });
                     alert.present();
+                  } else if (this.batchDetails.status === 0) {
+                    this.isBatchNotStarted = true;
+                    this.courseStartDate = this.batchDetails.startDate;
                   } else {
                     this.batchExp = false;
                   }
@@ -617,9 +628,15 @@ export class EnrolledCourseDetailsPage {
 
   downloadAllContent() {
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-      this.isDownloadStarted = true;
-      this.downloadProgress = 0;
-      this.importContent(this.downloadIdentifiers, true, true);
+      if (!this.isBatchNotStarted) {
+        this.isDownloadStarted = true;
+        this.downloadProgress = 0;
+        this.importContent(this.downloadIdentifiers, true, true);
+      } else {
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('COURSE_WILL_BE_AVAILABLE',
+            this.datePipe.transform(this.courseStartDate, 'mediumDate')));
+      }
+
     } else {
       this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
     }
@@ -724,12 +741,17 @@ export class EnrolledCourseDetailsPage {
           contentState: contentState
         });
       } else if (content.mimeType === MimeType.COLLECTION) {
+        let isChildClickable = true;
+        if (this.isAlreadyEnrolled && this.isBatchNotStarted) {
+          isChildClickable = false;
+        }
         this.navCtrl.push(CollectionDetailsPage, {
           content: content,
           depth: depth,
           contentState: contentState,
           fromCoursesPage: true,
-          isAlreadyEnrolled: this.isAlreadyEnrolled
+          isAlreadyEnrolled: this.isAlreadyEnrolled,
+          isChildClickable: isChildClickable
         });
       } else {
         this.navCtrl.push(ContentDetailsPage, {
@@ -961,9 +983,12 @@ export class EnrolledCourseDetailsPage {
    * Get executed when user click on start button
    */
   startContent() {
-    if (this.startData && this.startData.length) {
+    if (this.startData && this.startData.length && !this.isBatchNotStarted) {
       this.firstChild = this.loadFirstChildren(this.childContentsData);
       this.navigateToChildrenDetailsPage(this.firstChild, 1);
+    } else {
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('COURSE_WILL_BE_AVAILABLE',
+        this.datePipe.transform(this.courseStartDate, 'mediumDate')));
     }
   }
 

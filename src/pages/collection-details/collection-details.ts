@@ -177,6 +177,7 @@ export class CollectionDetailsPage {
   public corRelationList: Array<CorrelationData>;
   public shouldGenerateEndTelemetry = false;
   public source = '';
+  isChildClickable = false;
 
   @ViewChild(Navbar) navBar: Navbar;
   constructor(
@@ -226,6 +227,7 @@ export class CollectionDetailsPage {
       this.source = this.navParams.get('source');
       this.fromCoursesPage = this.navParams.get('fromCoursesPage');
       this.isAlreadyEnrolled = this.navParams.get('isAlreadyEnrolled');
+      this.isChildClickable = this.navParams.get('isChildClickable');
 
       // check for parent content
       this.parentContent = this.navParams.get('parentContent');

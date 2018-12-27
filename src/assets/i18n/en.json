@@ -425,5 +425,6 @@
   "WELCOME_BACK": "WELCOME BACK {{%s}}",
   "WHAT_WENT_WRONG": "What went wrong?",
   "YES": "Yes",
-  "YOUR_PROGRESS": "Your Progress: {{%s}}%"
+  "YOUR_PROGRESS": "Your Progress: {{%s}}%",
+  "COURSE_WILL_BE_AVAILABLE": "Course will be available from  {{%s}}"
 }
