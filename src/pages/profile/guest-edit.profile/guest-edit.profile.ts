@@ -533,7 +533,6 @@ export class GuestEditProfilePage {
 
     this.profileService.updateProfile(req)
       .then((res: any) => {
-        console.log('Update Response', res);
         if (this.isCurrentUser) {
           this.publishProfileEvents(formVal);
         }

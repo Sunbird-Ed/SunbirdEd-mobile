@@ -98,7 +98,6 @@ export class CategoriesEditPage {
    */
 
   initializeForm() {
-    console.log('this.profile', this.profile);
     if (this.profile.board && this.profile.board.length > 1) {
       this.profile.board.splice(1, this.profile.board.length);
     }
@@ -124,14 +123,12 @@ export class CategoriesEditPage {
     };
     this.framework.getSuggestedFrameworkList(suggestedFrameworkRequest)
       .then((result) => {
-        console.log('this.getSuggestedFrameworkList', result);
         if (result && result.length) {
           result.forEach(element => {
             // renaming the fields to text, value and checked
             const value = { 'name': element.name, 'code': element.identifier };
             this.syllabusList.push(value);
           });
-          console.log('this.syllabusList', this.syllabusList);
 
           if (this.profile && this.profile.syllabus && this.profile.syllabus[0] !== undefined) {
             this.formAndFrameworkUtilService.getFrameworkDetails(this.profile.syllabus[0])
@@ -158,7 +155,6 @@ export class CategoriesEditPage {
    * It will resets the form to empty values
    */
   resetForm(index: number) {
-    console.log('in resetForm idx', index);
     switch (index) {
       case 0:
         this.profileEditForm.patchValue({
@@ -203,18 +199,14 @@ export class CategoriesEditPage {
     if (index === 1) {
       this.frameworkId = selectedValue[0];
       if (this.frameworkId.length !== 0) {
-        console.log('this.frameworkId', this.frameworkId);
         this.formAndFrameworkUtilService.getFrameworkDetails(this.frameworkId)
           .then(catagories => {
             this.categories = catagories;
-            console.log('this.categories', this.categories);
             // loader.dismiss();
             const request: CategoryRequest = {
               currentCategory: this.categories[0].code,
               selectedLanguage: this.translate.currentLang
             };
-            console.log('1 request', request);
-            console.log('1 currentField', currentField);
             this.getCategoryData(request, currentField);
           }).catch(() => {
             this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
@@ -227,7 +219,6 @@ export class CategoriesEditPage {
         selectedCode: selectedValue,
         selectedLanguage: this.translate.currentLang
       };
-      console.log('else request', request);
       this.getCategoryData(request, currentField);
     }
   }
@@ -245,14 +236,12 @@ export class CategoriesEditPage {
           const boardName = this.syllabusList.find(framework => this.frameworkId === framework.code);
           if (boardName) {
             const boardCode = result.find(board => boardName.name === board.name);
-            console.log('boardCode', boardCode);
             if (boardCode) {
               this.profileEditForm.patchValue({
                 boards: boardCode.code
               });
               this.resetForm(1);
             } else {
-              console.log('board name not matching with framework name');
               this.profileEditForm.patchValue({
                 boards: [result[0].code]
               });
@@ -303,7 +292,6 @@ export class CategoriesEditPage {
       }
     } else {
       this.submitForm(formVal);
-      console.log('formVal', formVal);
     }
   }
 
@@ -367,7 +355,6 @@ export class CategoriesEditPage {
     }
     req.userId = this.profile.uid;
     req.framework = framework;
-    console.log('updateinfo req', req);
     this.userProfileService.updateUserInfo(req,
       (res: any) => {
         this.loader.dismiss();
