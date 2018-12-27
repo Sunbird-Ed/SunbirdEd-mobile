@@ -9,21 +9,16 @@ jobs:
       - run:
         name: Installing genie-sdk-wrapper
         command: |
-          git clone -b $buildBranch https://github.com/project-sunbird/genie-sdk-wrapper.git
-          cd genie-sdk-wrapper
-          rm package-lock.json
-          npm install
-          npm run build
-
-          rm $(pwd)/dist/dependencies.json
-
-          npm pack $(pwd)/dist
-
-
-          cd ..
-          npm install
-          npm install $(pwd)/genie-sdk-wrapper/*.tgz --save
-
+          git clone -b $buildBranch https://github.com/project-sunbird/genie-sdk-wrapper.git |
+          cd genie-sdk-wrapper |
+          rm package-lock.json |
+          npm install |
+          npm run build |
+          rm $(pwd)/dist/dependencies.json |
+          npm pack $(pwd)/dist |
+          cd .. |
+          npm install |
+          npm install $(pwd)/genie-sdk-wrapper/*.tgz --save |
           rm -rf genie-sdk-wrapper
       - run: npm run test:ci
 
