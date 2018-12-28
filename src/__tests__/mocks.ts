@@ -28,7 +28,8 @@ import {
   PopoverController,
   ViewController,
   IonicApp,
-  AlertController
+  AlertController,
+  ToastController
 } from 'ionic-angular';
 import {NgZone} from '@angular/core';
 import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService} from '@app/service';
@@ -83,7 +84,8 @@ export const zoneMock = createSpyObj<NgZone>([
 
 export const oAuthServiceMock = createSpyObj<OAuthService>([
   'doOAuthStepOne',
-  'doOAuthStepTwo'
+  'doOAuthStepTwo',
+  'doLogOut'
 ]);
 
 export const containerServiceMock = createSpyObj<ContainerService>([
@@ -98,11 +100,14 @@ export const userProfileServiceMock = createSpyObj<UserProfileService>([
 
 export const profileServiceMock = createSpyObj<ProfileService>([
   'setCurrentProfile',
+  'getCurrentUser',
+  'doOAuthStepOne',
   'getAllUserProfile'
 ]);
 
 export const authServiceMock = createSpyObj<AuthService>([
-  'getSessionData'
+  'getSessionData',
+  'endSession'
 ]);
 
 export const commonUtilServiceMock = createSpyObj<CommonUtilService>([
@@ -309,12 +314,25 @@ export const domSanitizerMock = createSpyObj<DomSanitizer>([
   'bypassSecurityTrustResourceUrl'
 ]);
 
-export const groupServiceMock = createSpyObj<GroupService>([
-  'addUpdateProfilesToGroup',
-  'updateGroup'
-]);
+
 export const alertCtrlMock = createSpyObj<AlertController>([
   'present',
   'dismiss',
   'create'
+]);
+
+export const groupServiceMock = createSpyObj<GroupService>([
+  'setCurrentGroup',
+  'deleteGroup',
+  'addUpdateProfilesToGroup',
+  'updateGroup',
+  'addUpdateProfilesToGroup'
+]);
+
+export const alertControllerMock = createSpyObj<AlertController>([
+  'create'
+]);
+
+export const toastControllerMock = createSpyObj<ToastController>([
+
 ]);
