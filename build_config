@@ -13,7 +13,7 @@ cordova-plugin=cordova-plugin-browsertab
 cordova-plugin=cordova-plugin-console
 cordova-plugin=cordova-plugin-network-information
 cordova-plugin=cordova-android-support-gradle-release --variable ANDROID_SUPPORT_VERSION=27.1.0
-cordova-plugin=https://github.com/souvikmondal/cordova-plugin-customtabs.git --variable URL_SCHEME=org.sunbird --variable URL_HOST=android
+cordova-plugin=https://github.com/souvikmondal/cordova-plugin-customtabs.git --variable URL_SCHEME=org.sunbird.app.dev --variable URL_HOST=mobile
 sunbird-cordova-plugin=https://github.com/project-sunbird/cordova-plugin-genie-sdk.git
 sunbird-cordova-plugin=https://github.com/project-sunbird/cordova-plugin-imagechooser.git
 sunbird-cordova-plugin=https://github.com/project-sunbird/cordova-plugin-file-support.git

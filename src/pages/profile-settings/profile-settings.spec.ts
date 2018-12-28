@@ -16,7 +16,8 @@ import {
   commonUtilServiceMock,
   containerServiceMock,
   ionicAppMock,
-  appMock
+  appMock,
+  frameworkServiceMock
 } from '@app/__tests__/mocks';
 
 
@@ -31,7 +32,7 @@ describe('ProfileSettingsPage', () => {
     formAndFrameworkUtilServiceMock as any, translateServiceMock as any, loadingControllerMock as any,
     sharedPreferencesMock as any, profileServiceMock as any, telemetryGeneratorServiceMock as any,
     appGlobalServiceMock as any, eventsMock as any, sunbirdQRScannerMock as any, platformMock as any,
-    commonUtilServiceMock as any, containerServiceMock as any, ionicAppMock as any, appMock as any);
+    commonUtilServiceMock as any, containerServiceMock as any, ionicAppMock as any, appMock as any, frameworkServiceMock as any);
 
     jest.resetAllMocks();
     jest.clearAllTimers();

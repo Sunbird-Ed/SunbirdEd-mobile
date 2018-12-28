@@ -20,6 +20,8 @@ import {
   PageId,
   ImpressionType,
   ObjectType,
+  SuggestedFrameworkRequest,
+  FrameworkService,
 } from 'sunbird';
 
 import { FormAndFrameworkUtilService } from '../../profile/formandframeworkutil.service';
@@ -62,7 +64,8 @@ export class CreateGroupPage {
     private navParams: NavParams,
     private commonUtilService: CommonUtilService,
     private groupService: GroupService,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private framework: FrameworkService
   ) {
     this.group = this.navParams.get('groupInfo') || {};
     this.groupEditForm = this.fb.group({
@@ -98,12 +101,16 @@ export class CreateGroupPage {
     this.loader = this.commonUtilService.getLoader();
     this.loader.present();
 
-    this.formAndFrameworkUtilService.getSupportingBoardList()
+    const suggestedFrameworkRequest: SuggestedFrameworkRequest = {
+      isGuestUser: true,
+      selectedLanguage: this.translate.currentLang
+    };
+    this.framework.getSuggestedFrameworkList(suggestedFrameworkRequest)
       .then((result) => {
         if (result && result.length) {
           result.forEach(element => {
             // renaming the fields to text, value and checked
-            const value = { 'name': element.name, 'code': element.frameworkId };
+            const value = { 'name': element.name, 'code': element.identifier };
             this.syllabusList.push(value);
           });
 

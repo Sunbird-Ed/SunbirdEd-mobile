@@ -20,7 +20,7 @@ describe.only('CourseBatchesPage', () => {
 
     beforeEach(() => {
         reportListPage = new ReportListPage(
-            navCtrlMock as any, 
+            navCtrlMock as any,
             navParamsMock as any,
             loadingControllerMock as any,
             reportServiceMock as any,
@@ -40,7 +40,7 @@ describe.only('CourseBatchesPage', () => {
         expect(reportListPage.formatTime(1543918834812)).toMatch(/^[0-9]*:[0-9]{2}$/);
     });
 
-    
+
     it('isFromGroups true, check push call', () => {
         reportListPage.isFromGroups = true;
         spyOn(navCtrlMock, 'push');
@@ -49,27 +49,27 @@ describe.only('CourseBatchesPage', () => {
             report: { contentId: 'ID1231231' } as any
         });
     });
-    
+
     it('isFromGroups true, check push call', () => {
         reportListPage.isFromUsers = true;
         spyOn(navCtrlMock, 'push');
-        reportListPage.goToGroupReportsList({ contentId: "ID1231231" } as any);
+        reportListPage.goToGroupReportsList({ contentId: 'ID1231231' } as any);
         expect(navCtrlMock.push).toBeCalledWith(UserReportPage, {
-            report: { contentId: "ID1231231" } as any
+            report: { contentId: 'ID1231231' } as any
         });
     });
-    
+
     it('isFromGroups isFromGroups false, check push not tobe call', () => {
         spyOn(navCtrlMock, 'push');
-        reportListPage.goToGroupReportsList({ contentId: "ID1231231" } as any);
+        reportListPage.goToGroupReportsList({ contentId: 'ID1231231' } as any);
         expect(navCtrlMock.push).not.toBeCalled();
     });
 
     it('loader should be presented', () => {
         loadingControllerMock.create.mockReturnValue(
-            { 
-                present : function (){},
-                dismiss: function() {}
+            {
+                present: () => { },
+                dismiss: () => { }
             });
         contentServiceMock.getLocalContents.mockResolvedValue(true);
         spyOn(loadingControllerMock.create(), 'present');
@@ -79,16 +79,14 @@ describe.only('CourseBatchesPage', () => {
 
     it('loader should dismiss', (done) => {
         loadingControllerMock.create.mockReturnValue(
-            { 
-                present : function (){},
-                dismiss: function() {}
+            {
+                present: () => { },
+                dismiss: () => { }
             });
         contentServiceMock.getLocalContents.mockResolvedValue((Math.random() < 0.5));
         reportServiceMock.getListOfReports.mockResolvedValue((Math.random() < 0.5));
         spyOn(loadingControllerMock.create(), 'dismiss');
-        
-        
-        
+
         setTimeout(() => {
             zoneMock.run.mock.calls[0][0].call(reportListPage);
             expect(loadingControllerMock.create().dismiss).toBeCalled();

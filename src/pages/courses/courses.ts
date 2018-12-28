@@ -246,7 +246,7 @@ export class CoursesPage implements OnInit {
 
     this.events.subscribe(EventTopics.COURSE_STATUS_UPDATED_SUCCESSFULLY, (data) => {
       if (data.update) {
-        this.getEnrolledCourses(true, true);
+        this.getEnrolledCourses(false, false);
       }
     });
 
@@ -478,7 +478,7 @@ export class CoursesPage implements OnInit {
         this.profile = this.appGlobalService.getCurrentUser();
         const sessionObj = this.appGlobalService.getSessionData();
         this.userId = sessionObj[ProfileConstants.USER_TOKEN];
-        this.getEnrolledCourses(true, false);
+        this.getEnrolledCourses();
         resolve();
       }
     });
