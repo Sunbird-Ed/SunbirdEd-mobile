@@ -1,232 +1,233 @@
-// import { CommonUtilService } from './../../../service/common-util.service';
-// import { AppVersion } from '@ionic-native/app-version';
-// import { TelemetryGeneratorService } from './../../../service/telemetry-generator.service';
-// import { AppGlobalService } from './../../../service/app-global.service';
-// import { FormAndFrameworkUtilService } from './../../profile/formandframeworkutil.service';
-// import { CreateGroupPage } from './create-group';
-// import { async, TestBed, ComponentFixture, inject, fakeAsync, tick } from '@angular/core/testing';
-// import { TranslateService, TranslateModule, TranslateLoader } from '@ngx-translate/core';
-// import { mockCreateorremoveGroupRes } from './create-group.spec.data';
-// import { Observable } from 'rxjs/Observable';
-// import 'rxjs/add/observable/of';
+import { CreateGroupPage } from './create-group';
+import { mockCreateorremoveGroupRes } from './create-group.spec.data';
+import {
+    navCtrlMock, formBuilderMock, formAndFrameworkUtilServiceMock, translateServiceMock, loadingControllerMock,
+    navParamsMock, commonUtilServiceMock, groupServiceMock, telemetryGeneratorServiceMock, appGlobalServiceMock, sharedPreferencesMock
+} from '../../../__tests__/mocks';
+import { FormGroup, FormControl } from '@angular/forms';
+// import { GroupMembersPage } from '../group-members/group-members';
+const GuestEditProfilePage = {} as any;
+const GroupMembersPage = {} as any;
+describe('CreateGroupPage', () => {
+    let createGroupPage: CreateGroupPage;
+    beforeEach(() => {
 
-// import {
-//   IonicModule, NavController, NavParams, LoadingController,
-// } from 'ionic-angular';
+        navParamsMock.get.mockImplementation((arg: string) => {
+            if (arg === 'groupInfo') {
+                return {
+                    name: 'group_name'
+                };
+            } else {
+                return;
+            }
+        });
+        appGlobalServiceMock.isUserLoggedIn.mockResolvedValue(true);
+        sharedPreferencesMock.getString.mockResolvedValue('SAMPLE');
+        commonUtilServiceMock.translateMessage.mockReturnValue('CLASS_SAMPLE');
+        loadingControllerMock.create.mockReturnValue({ present: jest.fn(), dismiss: jest.fn() });
+        commonUtilServiceMock.getLoader.mockReturnValue({ present: jest.fn(), dismiss: jest.fn() });
+        formAndFrameworkUtilServiceMock.getSupportingBoardList.mockResolvedValue([]);
 
-// import { PipesModule } from '../../../pipes/pipes.module';
-// import { } from 'jasmine';
-// import { NO_ERRORS_SCHEMA } from '@angular/core';
-// import {
-//   SharedPreferences, ProfileService, ServiceProvider, TelemetryService, ContainerService,
-//   FrameworkService, BuildParamService, FormService, AuthService, GroupService
-// } from 'sunbird';
-// import {
-//   LoadingControllerMock, TranslateServiceStub, ToastControllerMockNew, AuthServiceMock, NavParamsMock,
-//   FormAndFrameworkUtilServiceMock, ContainerServiceMock, AppGlobalServiceMock, NavMock,
-//   TranslateLoaderMock, NavParamsMockNew, SharedPreferencesMock
-// } from '../../../../test-config/mocks-ionic';
-// import { ToastController } from 'ionic-angular';
-// import { AlertController } from 'ionic-angular';
-// import { request } from 'https';
+        createGroupPage = new CreateGroupPage(
+            navCtrlMock as any,
+            formBuilderMock as any,
+            formAndFrameworkUtilServiceMock as any,
+            translateServiceMock as any,
+            navParamsMock as any,
+            commonUtilServiceMock as any,
+            groupServiceMock as any,
+            telemetryGeneratorServiceMock as any
+        );
 
-// describe('CreateGroupPage Component', () => {
-//   let component: CreateGroupPage;
-//   let fixture: ComponentFixture<CreateGroupPage>;
-//   // tslint:disable-next-line:prefer-const
-//   let translateService: TranslateService;
-//   beforeEach(async(() => {
-//     TestBed.configureTestingModule({
-//       declarations: [CreateGroupPage],
-//       schemas: [NO_ERRORS_SCHEMA],
-//       imports: [
-//         IonicModule.forRoot(CreateGroupPage),
-//         TranslateModule.forRoot({
-//           loader: { provide: TranslateLoader, useClass: TranslateLoaderMock },
-//         }),
-//         PipesModule,
-//       ],
-//       providers: [
-//         ProfileService, ServiceProvider, TelemetryService,
-//         ContainerService, AppVersion, GroupService, CommonUtilService,
-//         { provide: NavController, useClass: NavMock },
-//         { provide: ToastController, useClass: ToastControllerMockNew },
-//         { provide: NavParams, useClass: NavParamsMockNew },
-//         { provide: SharedPreferences, useClass: SharedPreferencesMock },
-//         { provide: FormAndFrameworkUtilService, useClass: FormAndFrameworkUtilService },
-//         { provide: FrameworkService, useClass: FrameworkService },
-//         { provide: BuildParamService, useClass: BuildParamService },
-//         { provide: FormService, useClass: FormService },
-//         { provide: AppGlobalService, useClass: AppGlobalService },
-//         { provide: AuthService, useClass: AuthServiceMock },
-//         { provide: TelemetryGeneratorService, useClass: TelemetryGeneratorService },
-//         { provide: AppGlobalServiceMock, useClass: AppGlobalServiceMock },
-//         { provide: LoadingControllerMock, useFactory: () => LoadingControllerMock.instance() },
-//         { provide: NavMock, useClass: NavMock },
-//         { provide: TranslateService, useClass: TranslateServiceStub }
-//       ]
+        jest.resetAllMocks();
+    });
+    it('can load instance', () => {
+        expect(createGroupPage).toBeTruthy();
+        spyOn(createGroupPage, 'getSyllabusDetails').and.stub();
+    });
 
-//     });
-//     const translate = TestBed.get(TranslateService);
-//     spyOn(translate, 'get').and.callFake((arg) => {
-//       return Observable.of('Cancel');
-//     });
+    it('to get syallubusdetails() for create group page ', (done) => {
+        // arrange
 
-//     spyOn(CreateGroupPage.prototype, 'getSyllabusDetails');
-//     fixture = TestBed.createComponent(CreateGroupPage);
-//     component = fixture.componentInstance;
-//   }));
+        commonUtilServiceMock.getLoader.mockReturnValue({
+            present: () => {
+            },
+            dismiss: () => Promise.resolve()
+        });
+        formAndFrameworkUtilServiceMock.getSupportingBoardList.mockResolvedValue(
+            mockCreateorremoveGroupRes.syllabusListMock);
 
-//   const getLoader = () => {
-//     const loadingController = TestBed.get(LoadingController);
-//     component.getLoader();
-//   };
-//   const telemetryGeneratorServiceStub = {
-//     generateInteractTelemetry: () => ({})
-//   };
+        // act
+        createGroupPage.getSyllabusDetails();
+        // assert
+        setTimeout(() => {
 
-//   it('#getSyllabusDetails should  makes expected calls', () => {
-//     const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
-//     getLoader();
-//     spyOn(formAndFrameworkUtilServiceStub, 'getSyllabusList').and.returnValue(Promise.resolve([]));
-//     // tslint:disable-next-line:only-arrow-functions
-//     component.getLoader = jasmine.createSpy().and.callFake(function () {
-//       // tslint:disable-next-line:only-arrow-functions
-//       return { present: function () { }, dismiss: function () { } };
-//     });
-//     (<jasmine.Spy>component.getSyllabusDetails).and.callThrough();
-//     component.getSyllabusDetails();
-//     expect(formAndFrameworkUtilServiceStub.getSyllabusList).toHaveBeenCalled();
-//   });
+            expect(formAndFrameworkUtilServiceMock.getSupportingBoardList).toHaveBeenCalled();
+            done();
+        }, 0);
+    });
+    it('to naviagate to the guest edit page ', () => {
+        // arrange
+        // act
+        createGroupPage.goToGuestEdit();
+        // assert
+        expect(navCtrlMock.push).toHaveBeenCalledWith(GuestEditProfilePage);
+    });
 
+    it('to naviagate to the userlist that when form is invalid ', () => {
+        // arrange
+        createGroupPage.isFormValid = false;
+        commonUtilServiceMock.translateMessage.mockReturnValue('GROUP_MEMBER_ADD_SUCCESS');
+        // act
+        createGroupPage.navigateToUsersList();
+        // assert
+        expect(commonUtilServiceMock.showToast).toBeCalledWith('GROUP_MEMBER_ADD_SUCCESS');
+    });
 
-//   it('#ionViewDidLoad  should loads for telemetry service', () => {
-//     // tslint:disable-next-line:no-shadowed-variable
-//     const telemetryGeneratorServiceStub: TelemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
-//     spyOn(telemetryGeneratorServiceStub, 'generateInteractTelemetry').and.returnValue(Promise.resolve({}));
-//     component.ionViewDidLoad();
-//     expect(telemetryGeneratorServiceStub.generateInteractTelemetry).toHaveBeenCalled();
-//   });
+    it('submitting a form values to a group to create a group', () => {
+        // arrange
+        createGroupPage.classList = [{ name: '2nd class', code: '2nd class' }];
+        createGroupPage.isFormValid = false;
+        createGroupPage.group = { name: 'Amaravathi' } as any;
+        createGroupPage.group = { syllabus: 'State (Andhra Pradesh)' } as any;
+        createGroupPage.group = { class: '2nd class' } as any;
+        // act
+        createGroupPage.navigateToUsersList();
+        // assert
+        expect(createGroupPage.group).toBeTruthy();
+    });
 
-//   // tslint:disable-next-line:only-arrow-functions
-//   it('#getClassList should makes expected calls', function () {
-//     component.getLoader = jasmine.createSpy().and.callFake(() => {
-//       return { present: () => { }, dismiss: () => { } };
-//     });
+    it('submitting a form values with GroupEditForm values groupMembers page', () => {
+        // arrange
+        createGroupPage.groupEditForm = new FormGroup({
+            'name': new FormControl('Amarvati'),
+            'syllabus': new FormControl('sda'),
+            'class': new FormControl('asd')
+            // 'gradeValueMap': new FormControl([])
+        });
+        // act
+        createGroupPage.navigateToUsersList();
 
-//     spyOn(component, 'getClassList').and.callThrough();
-//     component.getLoader = jasmine.createSpy().and.callFake(() => {
-//       return { present: () => { }, dismiss: () => { } };
-//     });
-//     component.groupEditForm.patchValue = () => ({});
-//     component.getClassList('abcd', true);
-//     expect(component.getClassList).toHaveBeenCalled();
-//   });
+        // assert
+        expect(createGroupPage.group.name).toBe('Amarvati');
+    });
 
-//   it('#getclassList should makes form valid call', () => {
-//     const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
-//     component.getLoader = jasmine.createSpy().and.callFake(() => {
-//       return { present: () => { }, dismiss: () => { } };
-//     });
-//     spyOn(component, 'getClassList').and.callThrough();
-//     component.getLoader = jasmine.createSpy().and.callFake(() => {
-//       return { present: () => { }, dismiss: () => { } };
-//     });
-//     component.getClassList('abcd', true);
-//     expect(component.getClassList).toHaveBeenCalled();
-//   });
+    it('submitting a form values with empty values should show toast warning', () => {
+        createGroupPage.isFormValid = true;
+        createGroupPage.groupEditForm = new FormGroup({
+            'syllabus': new FormControl('sda'),
+            'class': new FormControl('asd')
+        });
+        commonUtilServiceMock.translateMessage.mockReturnValue('NEED_INTERNET_TO_CHANGE');
+        // act
+        createGroupPage.navigateToUsersList();
+        // assert
+        expect(commonUtilServiceMock.showToast).toBeCalledWith('NEED_INTERNET_TO_CHANGE');
+    });
 
-//   it('#goToGuestEdit should navigate to GroupMembersPage page', () => {
-//     const navControllerStub = TestBed.get(NavController);
-//     spyOn(navControllerStub, 'push').and.callThrough();
-//     component.goToGuestEdit();
-//     expect(navControllerStub.push).toHaveBeenCalled();
-//   });
+    it('its calls form is Invalid show toast message', () => {
+        createGroupPage.isFormValid = false;
 
-//   it('#goToGuestEdit should be get getToast should make expected calls', () => {
-//     const navControllerStub = TestBed.get(NavController);
-//     spyOn(navControllerStub, 'push');
-//     component.goToGuestEdit();
-//     expect(navControllerStub.push).toHaveBeenCalled();
-//   });
+        commonUtilServiceMock.translateMessage.mockReturnValue('ENTER_GROUP_NAME');
+        // act
+        createGroupPage.updateGroup();
 
-//   it('#groupEdit should make a call when Formform invalid or empty', () => {
-//     expect(component.groupEditForm.valid).toBeFalsy();
-//   });
+        // assert
 
-//   it('#groupEditForm should make a form valid when required fields are filled', () => {
-//     component.groupEditForm.controls['name'].setValue('Amaravathi');
-//     component.groupEditForm.controls['syllabus'].setValue('State (Andhra Pradesh)');
-//     component.groupEditForm.controls['class'].setValue('2nd class');
-//     component.navigateToUsersList();
-//     expect(component.groupEditForm.valid).toBeTruthy();
-//   });
+        expect(commonUtilServiceMock.showToast).toBeCalledWith('ENTER_GROUP_NAME');
+    });
+     it('calls Update group API if form is valid', (done) => {
+        createGroupPage.groupEditForm = new FormGroup({
+            'name': new FormControl('Amarvati'),
+            'syllabus': new FormControl(['sda']),
+            'class': new FormControl(['asd'])
+        });
+        groupServiceMock.updateGroup.mockResolvedValue(createGroupPage.groupEditForm);
+        commonUtilServiceMock.getLoader.mockReturnValue({
+            present: () => {
+            },
+            dismiss: () => Promise.resolve()
+          });
+            // act
+        createGroupPage.updateGroup();
+      // assert
+        setTimeout(() => {
+            expect(navCtrlMock.popTo((-2)));
+            done();
+        });
+    }, 0);
+    it('calls Update group API if form is invalid and show toast message', (done) => {
+    // arrange
+        createGroupPage.groupEditForm = new FormGroup({
+            'syllabus': new FormControl(['sda']),
+            'class': new FormControl(['asd'])
+        });
+        groupServiceMock.updateGroup.mockResolvedValue(createGroupPage.groupEditForm);
+         commonUtilServiceMock.translateMessage.mockReturnValue('ENTER_GROUP_NAME');
+        commonUtilServiceMock.getLoader.mockReturnValue({
+            present: () => {
+            },
+            dismiss: () => Promise.resolve()
+          });
+            // act
+        createGroupPage.updateGroup();
+      // assert
+        setTimeout(() => {
+            expect(commonUtilServiceMock.showToast).toHaveBeenCalledWith('ENTER_GROUP_NAME');
+            done();
+        });
+    }, 0);
 
-//   it('#navigateToUsersList should make for submitting a form to create a group', () => {
-//     component.isFormValid = true;
-//     component.classList = [{ name: '2nd class', code: '2nd class' }];
-//     component.groupEditForm.controls['name'].setValue('Amaravathi');
-//     component.groupEditForm.controls['syllabus'].setValue('State (Andhra Pradesh)');
-//     component.groupEditForm.controls['class'].setValue('2nd class');
-//     const navControllerStub = TestBed.get(NavController);
-//     spyOn(navControllerStub, 'push').and.callThrough();
-//     component.navigateToUsersList();
-//     expect(component.groupEditForm.valid).toBeTruthy();
-//   });
+    it('to get the getclasslist()', (done) => {
+        // arrange
+        spyOn(formAndFrameworkUtilServiceMock, 'getCategoryData').and.stub();
+            createGroupPage.isFormValid = true;
+        createGroupPage.groupEditForm = new FormGroup({
+            'name': new FormControl('Amarvati'),
+            'syllabus': new FormControl('sda'),
+            'class': new FormControl(['asd'])
+        });
+        const data = ['sampleCategory'];
 
-//   it('#updateGroup should makes expected calls for UpdateGroup', () => {
-//     const navControllerStub = TestBed.get(NavController);
-//     const groupServiceStub = TestBed.get(GroupService);
-//     const translateStub = TestBed.get(TranslateService);
-//     const commonutilservice = TestBed.get(CommonUtilService);
-//     spyOn(navControllerStub, 'popTo');
-//     spyOn(navControllerStub, 'getByIndex');
-//     spyOn(navControllerStub, 'length');
-//     spyOn(groupServiceStub, 'updateGroup').and.returnValue(Promise.resolve([]));
-//     component.classList = [{ name: '2nd class', code: '2nd class' }];
-//     component.groupEditForm.setValue({ 'name': 'Amaravathi', 'class': '2nd class', 'syllabus': 'State (Andhra Pradesh)' });
-//     component.getLoader = jasmine.createSpy().and.callFake(() => {
-//       return { present: () => { } };
-//     });
-//     component.updateGroup();
-//     expect(component.getLoader).toHaveBeenCalled();
-//     expect(groupServiceStub.updateGroup).toHaveBeenCalled();
-//   });
-//   // tslint:disable-next-line:indent
-//   it('#getSyllabusDetails should fetch syllabus details', (done) => {
-//     const formAndFrameworkUtilServiceStub = TestBed.get(FormAndFrameworkUtilService);
-//     spyOn(component, 'syllabusList');
-//     component.classList = [{ name: '2nd class', code: '2nd class' }];
-//     getLoader();
-//     spyOn(formAndFrameworkUtilServiceStub, 'getSyllabusList').and.returnValue(Promise.resolve([]));
-//     component.getLoader = jasmine.createSpy().and.callFake(() => {
-//       return { present: () => { }, dismiss: () => { } };
-//     });
-//     (<jasmine.Spy>component.getSyllabusDetails).and.callThrough();
-//     component.getSyllabusDetails();
-//     setTimeout(() => {
-//       expect(formAndFrameworkUtilServiceStub.getSyllabusList).toHaveBeenCalled();
-//       done();
-//     }, 1000);
-//   });
+            commonUtilServiceMock.getLoader.mockReturnValue({
+                present: () => {
+                },
+                dismiss: () => Promise.resolve()
+              });
+             formAndFrameworkUtilServiceMock.getFrameworkDetails.mockResolvedValue(data);
+                // act
+            createGroupPage.getClassList('abcd', true);
+          // assert
+            setTimeout(() => {
+                expect(formAndFrameworkUtilServiceMock.getFrameworkDetails).toHaveBeenCalled();
+                done();
+            });
+        }, 0);
 
-//   it('#navigateToUsersList should show toast with some message when form is invalid', () => {
-//     component.isFormValid = false;
-//     const translate = TestBed.get(TranslateService);
-//     const commonUtilService = TestBed.get(CommonUtilService);
-//     spyOn(commonUtilService, 'showToast').and.returnValue(Promise.resolve(commonUtilService.showToast));
-//     component.navigateToUsersList();
-//     // expect(translate.get).toHaveBeenCalledWith('ENTER_GROUP_NAME');
-//     expect(translate.get).toHaveBeenCalled();
-//   });
+        it('to get the getclasslist() when form is invalid or error cause', (done) => {
+            // arrange
+                createGroupPage.isFormValid = false;
+            createGroupPage.groupEditForm = new FormGroup({
+                'name': new FormControl('Amarvati'),
+                'syllabus': new FormControl('sda'),
+                'class': new FormControl(['asd'])
+            });
+            const data = ['sampleCategory'];
+         commonUtilServiceMock.getLoader.mockReturnValue({
+                    present: () => {
+                    },
+                    dismiss: () => Promise.resolve()
+                  });
+                 formAndFrameworkUtilServiceMock.getFrameworkDetails.mockRejectedValue(data);
+                 commonUtilServiceMock.translateMessage.mockReturnValue('NEED_INTERNET_TO_CHANGE');
+                 // act
+                createGroupPage.getClassList('abcd', true);
+              // assert
+                setTimeout(() => {
+                    expect(commonUtilServiceMock.showToast).toHaveBeenCalledWith('NEED_INTERNET_TO_CHANGE');
+                    done();
+                });
+            }, 0);
 
-//   it('#navigateToUsersList should be submitting a form with invalid values to a group', () => {
-//     component.isFormValid = true;
-//     const translateStub = TestBed.get(TranslateService);
-//     const commonUtilService = TestBed.get(CommonUtilService);
-//     spyOn(commonUtilService, 'showToast').and.returnValue(Promise.resolve(commonUtilService.showToast));
-//     getLoader();
-//     component.navigateToUsersList();
-//     expect(translateStub.get).toHaveBeenCalled();
-//   });
-// });
+            
+    });
