@@ -202,6 +202,7 @@ export class EnrolledCourseDetailsPage {
       });
 
     this.events.subscribe(EventTopics.ENROL_COURSE_SUCCESS, (res) => {
+      console.log('came here to you place!');
       if (res && res.batchId) {
         this.batchId = res.batchId;
         if (this.identifier && res.courseId && this.identifier === res.courseId) {
@@ -211,7 +212,13 @@ export class EnrolledCourseDetailsPage {
     });
 
     this.events.subscribe(EventTopics.UNENROL_COURSE_SUCCESS, () => {
-      delete this.courseCardData; // to show 'Enroll in Course' button courseCardData should be undefined/null
+      // to show 'Enroll in Course' button courseCardData.batchId should be undefined/null
+      this.updateEnrolledCourseList(this.courseCardData); // enrolled course list updated
+      if (this.courseCardData) {
+        delete this.courseCardData.batchId;
+      }
+      delete this.batchDetails;
+      // delete this.batchDetails; // to show 'Enroll in Course' button courseCardData should be undefined/null
       this.isAlreadyEnrolled = false; // and isAlreadyEnrolled should be false
     });
 
@@ -232,6 +239,21 @@ export class EnrolledCourseDetailsPage {
       this.navCtrl.pop();
       this.backButtonFunc();
     }, 10);
+  }
+
+  updateEnrolledCourseList(unenrolledCourse) {
+    const enrolledCourses = this.appGlobalService.getEnrolledCourseList();
+    const found = enrolledCourses.find((ele) => {
+      return ele.courseId === unenrolledCourse.courseId;
+    });
+    let indx = -1;
+    if (found) {
+       indx = enrolledCourses.indexOf(found);
+    }
+    if (indx !== -1) {
+      enrolledCourses.splice(indx, 1);
+    }
+    this.appGlobalService.setEnrolledCourseList(enrolledCourses);
   }
 
   /**
@@ -300,16 +322,19 @@ export class EnrolledCourseDetailsPage {
     const popover = this.popoverCtrl.create(ContentActionsComponent, {
       data: data,
       content: contentData,
+      batchDetails: this.batchDetails,
       pageName: 'course'
     }, {
         cssClass: 'content-action'
-      });
+    });
     popover.present({
       ev: event
     });
 
-    popover.onDidDismiss(unenroll => {
-      this.handleUnenrollment(unenroll);
+    popover.onDidDismiss(unenrollData => {
+      if (unenrollData && unenrollData.caller === 'unenroll') {
+        this.handleUnenrollment(unenrollData.unenroll);
+      }
     });
   }
 
@@ -319,6 +344,8 @@ export class EnrolledCourseDetailsPage {
    */
   handleUnenrollment(unenroll): void {
     if (unenroll) {
+      const loader = this.commonUtilService.getLoader();
+      loader.present();
       const unenrolCourseRequest: UnenrolCourseRequest = {
         userId: this.appGlobalService.getUserId(),
         courseId: this.batchDetails.courseId,
@@ -330,6 +357,7 @@ export class EnrolledCourseDetailsPage {
             this.commonUtilService.showToast(this.commonUtilService.translateMessage('COURSE_UNENROLLED'));
             this.events.publish(EventTopics.UNENROL_COURSE_SUCCESS, {
             });
+            loader.dismiss();
           });
         })
         .catch((error: any) => {
@@ -340,6 +368,7 @@ export class EnrolledCourseDetailsPage {
             } else if (error && error.error === 'USER_ALREADY_ENROLLED_COURSE') {
               this.commonUtilService.showToast(this.commonUtilService.translateMessage('ALREADY_ENROLLED_COURSE'));
             }
+            loader.dismiss();
           });
         });
     }

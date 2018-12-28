@@ -17,6 +17,7 @@ import {
   TelemetryService,
   UserProfileService
 } from 'sunbird';
+
 import {
   App,
   Events,
@@ -26,21 +27,23 @@ import {
   NavParams,
   Platform,
   PopoverController,
-  ViewController
+  ViewController,
+  AlertController
 } from 'ionic-angular';
-import {NgZone} from '@angular/core';
-import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService} from '@app/service';
-import {TranslateService} from '@ngx-translate/core';
-import {SocialSharing} from '@ionic-native/social-sharing';
-import {AppVersion} from '@ionic-native/app-version';
-import {SunbirdQRScanner} from '@app/pages/qrscanner';
-import {FormAndFrameworkUtilService} from '@app/pages/profile';
-import {File} from '@ionic-native/file';
-import {DatePipe} from '../../node_modules/@angular/common';
-import {FormBuilder} from '@angular/forms';
-import {TncUpdateHandlerService} from '@app/service/handlers/tnc-update-handler.service';
-import {LogoutHandlerService} from '@app/service/handlers/logout-handler.service';
-import {DomSanitizer} from '@angular/platform-browser';
+
+import { NgZone } from '@angular/core';
+import { AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService } from '@app/service';
+import { TranslateService } from '@ngx-translate/core';
+import { SocialSharing } from '@ionic-native/social-sharing';
+import { AppVersion } from '@ionic-native/app-version';
+import { SunbirdQRScanner } from '@app/pages/qrscanner';
+import { FormAndFrameworkUtilService } from '@app/pages/profile';
+import { File } from '@ionic-native/file';
+import { DatePipe } from '@angular/common';
+import { FormBuilder } from '@angular/forms';
+import { TncUpdateHandlerService } from '@app/service/handlers/tnc-update-handler.service';
+import { LogoutHandlerService } from '@app/service/handlers/logout-handler.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 export type Mockify<T> = {
   [P in keyof T]: jest.Mock<{}>;
@@ -61,7 +64,8 @@ export const courseServiceMock = createSpyObj<CourseService>([
   'updateContentState',
   'getCourseBatches',
   'getBatchDetails',
-  'getContentState'
+  'getContentState',
+  'unenrolCourse'
 ]);
 
 export const navCtrlMock = createSpyObj<NavController>([
@@ -125,12 +129,14 @@ export const contentServiceMock = createSpyObj<ContentService>([
   'importContent',
   'getChildContents',
   'cancelDownload',
-  'searchContent'
+  'searchContent',
+  'getChildContents'
 ]);
 
 export const popoverCtrlMock = createSpyObj<PopoverController>([
   'create',
-  'present'
+  'present',
+  'onDidDismiss'
 ]);
 
 export const fileUtilMock = createSpyObj<FileUtil>([
@@ -173,7 +179,10 @@ export const appGlobalServiceMock = createSpyObj<AppGlobalService>([
   'getSessionData',
   'getCurrentUser',
   'getNameForCodeInFramework',
-  'getGuestUserType'
+  'getGuestUserType',
+  'getUserId',
+  'getGuestUserInfo',
+  'getEnrolledCourseList'
 ]);
 
 export const telemetryGeneratorServiceMock = createSpyObj<TelemetryGeneratorService>([
@@ -193,7 +202,8 @@ export const telemetryGeneratorServiceMock = createSpyObj<TelemetryGeneratorServ
 export const courseUtilServiceMock = createSpyObj<CourseUtilService>([
   'showCredits',
   'showToast',
-  'getImportContentRequestBody'
+  'getImportContentRequestBody',
+  'getCourseProgress'
 ]);
 
 export const appVersionMock = createSpyObj<AppVersion>([
@@ -226,7 +236,8 @@ export const formAndFrameworkUtilServiceMock = createSpyObj<FormAndFrameworkUtil
 ]);
 
 export const loadingControllerMock = createSpyObj<LoadingController>([
-  'create'
+  'create',
+  'present'
 ]);
 
 export const reportServiceMock = createSpyObj<ReportService>([
@@ -246,6 +257,11 @@ export const fileMock = createSpyObj<File>([
 
 export const datePipeMock = createSpyObj<DatePipe>([
   'transform'
+]);
+
+export const loadingMock = createSpyObj<LoadingController>([
+  'create',
+  'dismiss'
 ]);
 
 export const deviceInfoServiceMock = createSpyObj<DeviceInfoService>([
@@ -287,6 +303,9 @@ export const ionicAppMock = createSpyObj<IonicApp>([]);
 
 export const appMock = createSpyObj<App>([
   'group',
+]);
+
+export const alertCtrlMock = createSpyObj<AlertController>([
 ]);
 
 export const tncUpdateHandlerServiceMock = createSpyObj<TncUpdateHandlerService>([
