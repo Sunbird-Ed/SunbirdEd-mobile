@@ -2,7 +2,8 @@ import { CreateGroupPage } from './create-group';
 import { mockCreateorremoveGroupRes } from './create-group.spec.data';
 import {
     navCtrlMock, formBuilderMock, formAndFrameworkUtilServiceMock, translateServiceMock, loadingControllerMock,
-    navParamsMock, commonUtilServiceMock, groupServiceMock, telemetryGeneratorServiceMock, appGlobalServiceMock, sharedPreferencesMock
+    navParamsMock, commonUtilServiceMock, groupServiceMock, telemetryGeneratorServiceMock,
+     appGlobalServiceMock, sharedPreferencesMock, frameworkServiceMock
 } from '../../../__tests__/mocks';
 import { FormGroup, FormControl } from '@angular/forms';
 // import { GroupMembersPage } from '../group-members/group-members';
@@ -36,15 +37,16 @@ describe('CreateGroupPage', () => {
             navParamsMock as any,
             commonUtilServiceMock as any,
             groupServiceMock as any,
-            telemetryGeneratorServiceMock as any
+            telemetryGeneratorServiceMock as any,
+            frameworkServiceMock as any
         );
+      
 
         jest.resetAllMocks();
     });
     it('can load instance', () => {
         expect(createGroupPage).toBeTruthy();
         spyOn(createGroupPage, 'getSyllabusDetails').and.stub();
-    });
 
     it('to get syallubusdetails() for create group page ', (done) => {
         // arrange
