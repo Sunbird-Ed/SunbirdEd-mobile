@@ -231,14 +231,14 @@ export const formAndFrameworkUtilServiceMock = createSpyObj<FormAndFrameworkUtil
 ]);
 
 export const loadingControllerMock = createSpyObj<LoadingController>([
-  'create',
-  'present'
+  'create'
 ]);
 
 export const reportServiceMock = createSpyObj<ReportService>([
   'getListOfReports',
   'getImportContentRequestBody',
-  'getDetailReport'
+  'getDetailReport',
+  'getDetailsPerQuestion'
 ]);
 
 export const transferMock = createSpyObj<FileTransfer>([
@@ -251,11 +251,6 @@ export const fileMock = createSpyObj<File>([
 
 export const datePipeMock = createSpyObj<DatePipe>([
   'transform'
-]);
-
-export const loadingMock = createSpyObj<LoadingController>([
-  'create',
-  'dismiss'
 ]);
 
 export const deviceInfoServiceMock = createSpyObj<DeviceInfoService>([

@@ -201,7 +201,6 @@ export class PageName {
 }
 
 export class XwalkConstants {
-    public static readonly LINK = 'https://play.google.com/store/apps/details?id=org.xwalk.core';
     public static readonly APP_ID = 'org.xwalk.core';
 }
 

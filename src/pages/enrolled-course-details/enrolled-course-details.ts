@@ -54,6 +54,7 @@ import {
 } from '@app/app';
 import { CourseBatchesPage } from '@app/pages/course-batches/course-batches';
 import { CourseUtilService, AppGlobalService, TelemetryGeneratorService, CommonUtilService } from '@app/service';
+import { DatePipe } from '@angular/common';
 
 @IonicPage()
 @Component({
@@ -122,6 +123,13 @@ export class EnrolledCourseDetailsPage {
    */
   public batches: Array<any>;
 
+  isNavigatingWithinCourse = false;
+
+  /**
+   * To hold start date of a course
+   */
+  courseStartDate;
+
   showLoading = false;
   showDownloadProgress: boolean;
   totalDownload: number;
@@ -152,6 +160,7 @@ export class EnrolledCourseDetailsPage {
   firstChild;
   /**Whole child content is stored and it is used to find first child */
   childContentsData;
+  isBatchNotStarted = false;
 
   @ViewChild(Navbar) navBar: Navbar;
   constructor(
@@ -173,7 +182,8 @@ export class EnrolledCourseDetailsPage {
     private platform: Platform,
     private appGlobalService: AppGlobalService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    private datePipe: DatePipe
   ) {
 
     this.appGlobalService.getUserId();
@@ -325,11 +335,11 @@ export class EnrolledCourseDetailsPage {
         .catch((error: any) => {
           this.zone.run(() => {
             error = JSON.parse(error);
-              if (error && error.error === 'CONNECTION_ERROR') {
-                this.commonUtilService.showToast(this.commonUtilService.translateMessage('ERROR_NO_INTERNET_MESSAGE'));
-              } else if (error && error.error === 'USER_ALREADY_ENROLLED_COURSE') {
-                this.commonUtilService.showToast(this.commonUtilService.translateMessage('ALREADY_ENROLLED_COURSE'));
-              }
+            if (error && error.error === 'CONNECTION_ERROR') {
+              this.commonUtilService.showToast(this.commonUtilService.translateMessage('ERROR_NO_INTERNET_MESSAGE'));
+            } else if (error && error.error === 'USER_ALREADY_ENROLLED_COURSE') {
+              this.commonUtilService.showToast(this.commonUtilService.translateMessage('ALREADY_ENROLLED_COURSE'));
+            }
           });
         });
     }
@@ -471,6 +481,9 @@ export class EnrolledCourseDetailsPage {
                       ]
                     });
                     alert.present();
+                  } else if (this.batchDetails.status === 0) {
+                    this.isBatchNotStarted = true;
+                    this.courseStartDate = this.batchDetails.startDate;
                   } else {
                     this.batchExp = false;
                   }
@@ -615,9 +628,15 @@ export class EnrolledCourseDetailsPage {
 
   downloadAllContent() {
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-      this.isDownloadStarted = true;
-      this.downloadProgress = 0;
-      this.importContent(this.downloadIdentifiers, true, true);
+      if (!this.isBatchNotStarted) {
+        this.isDownloadStarted = true;
+        this.downloadProgress = 0;
+        this.importContent(this.downloadIdentifiers, true, true);
+      } else {
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('COURSE_WILL_BE_AVAILABLE',
+            this.datePipe.transform(this.courseStartDate, 'mediumDate')));
+      }
+
     } else {
       this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
     }
@@ -628,23 +647,31 @@ export class EnrolledCourseDetailsPage {
   getStatusOfChildContent(childrenData, contentStatusData) {
     this.zone.run(() => {
       childrenData.forEach(childContent => {
+        // Inside First level
         let contentlen = 0;
         childContent.children.every(eachContent => {
+          // Inside resource level
           if (childContent.hasOwnProperty('status') && !childContent.status) {
+            // checking for property status
             return false;
           } else {
+            // checking for getContentState result length
             if (contentStatusData.result.contentList.length) {
               contentStatusData.result.contentList.every(contentData => {
+                // checking for each content status
                 if (eachContent.identifier === contentData.contentId) {
                   contentlen = contentlen + 1;
+                  // checking for contentId from getContentState and lastReadContentId
                   if (contentData.contentId === this.courseCardData.lastReadContentId) {
                     childContent.lastRead = true;
                   }
                   if (contentData.status === 0 || contentData.status === 1) {
-                    childContent.status = 4;
+                    // manupulating the status
+                    childContent.status = false;
                     return false;
                   } else {
-                    childContent.status = 5;
+                    // if content played completely
+                    childContent.status = true;
                     return true;
                   }
                 }
@@ -657,6 +684,7 @@ export class EnrolledCourseDetailsPage {
             }
           }
         });
+
         if (childContent.children.length === contentlen) {
           return true;
         } else {
@@ -682,24 +710,13 @@ export class EnrolledCourseDetailsPage {
     this.contentService.getChildContents(option)
       .then((data: any) => {
         data = JSON.parse(data);
-
-        const request: GetContentStateRequest = {
-          userId: this.appGlobalService.getUserId(),
-          courseIds: [this.identifier],
-          returnRefreshedContentStates: true
-        };
         this.zone.run(() => {
           if (data && data.result && data.result.children) {
             this.enrolledCourseMimeType = data.result.mimeType;
             this.childrenData = data.result.children;
             this.startData = data.result.children;
             this.childContentsData = data.result;
-            this.courseService.getContentState(request)
-              .then((success: any) => {
-                success = JSON.parse(success);
-                this.getStatusOfChildContent(this.childrenData, success);
-              }).catch((error: any) => {
-              });
+            this.getContentState(!this.isNavigatingWithinCourse);
           }
           if (this.courseCardData.batchId) {
             this.downloadSize = 0;
@@ -733,12 +750,17 @@ export class EnrolledCourseDetailsPage {
           contentState: contentState
         });
       } else if (content.mimeType === MimeType.COLLECTION) {
+        let isChildClickable = true;
+        if (this.isAlreadyEnrolled && this.isBatchNotStarted) {
+          isChildClickable = false;
+        }
         this.navCtrl.push(CollectionDetailsPage, {
           content: content,
           depth: depth,
           contentState: contentState,
           fromCoursesPage: true,
-          isAlreadyEnrolled: this.isAlreadyEnrolled
+          isAlreadyEnrolled: this.isAlreadyEnrolled,
+          isChildClickable: isChildClickable
         });
       } else {
         this.navCtrl.push(ContentDetailsPage, {
@@ -810,7 +832,6 @@ export class EnrolledCourseDetailsPage {
     if (this.batchId) {
       this.courseCardData.batchId = this.batchId;
     }
-
     this.showResumeBtn = this.courseCardData.lastReadContentId ? true : false;
     this.setContentDetails(this.identifier);
     // If courseCardData does not have a batch id then it is not a enrolled course
@@ -900,6 +921,7 @@ export class EnrolledCourseDetailsPage {
    * Ionic life cycle hook
    */
   ionViewWillLeave(): void {
+    this.isNavigatingWithinCourse = true;
     this.events.unsubscribe('genie.event');
   }
 
@@ -969,9 +991,12 @@ export class EnrolledCourseDetailsPage {
    * Get executed when user click on start button
    */
   startContent() {
-    if (this.startData && this.startData.length) {
+    if (this.startData && this.startData.length && !this.isBatchNotStarted) {
       this.firstChild = this.loadFirstChildren(this.childContentsData);
       this.navigateToChildrenDetailsPage(this.firstChild, 1);
+    } else {
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('COURSE_WILL_BE_AVAILABLE',
+        this.datePipe.transform(this.courseStartDate, 'mediumDate')));
     }
   }
 
@@ -1080,4 +1105,26 @@ export class EnrolledCourseDetailsPage {
   viewCredits() {
     this.courseUtilService.showCredits(this.course, PageId.CONTENT_DETAIL, undefined, this.corRelationList);
   }
+
+  getContentState(returnRefresh: boolean) {
+    if (this.courseCardData.batchId) {
+      const request: GetContentStateRequest = {
+        userId: this.appGlobalService.getUserId(),
+        courseIds: [this.identifier],
+        returnRefreshedContentStates: returnRefresh,
+        batchId: this.batchId
+      };
+      this.courseService.getContentState(request).then((success: any) => {
+        success = JSON.parse(success);
+        if (this.childrenData) {
+          this.getStatusOfChildContent(this.childrenData, success);
+        }
+      }).catch((error: any) => {
+
+      });
+    } else {
+      // to be handled when there won't be any batchId
+    }
+  }
+
 }
