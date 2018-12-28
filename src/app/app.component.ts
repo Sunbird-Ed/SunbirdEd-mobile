@@ -243,11 +243,11 @@ export class MyApp {
       statusBar.styleDefault();
 
       window['thisRef'] = this;
-      try {
-        this.fetchUpdate();
-      } catch (error) {
-        console.log(error);
-      }
+      // try {
+      //   this.fetchUpdate();
+      // } catch (error) {
+      //   console.log(error);
+      // }
 
       this.handleBackButton();
     });
