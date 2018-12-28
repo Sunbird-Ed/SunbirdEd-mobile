@@ -1,393 +1,348 @@
-// import { ComponentFixture, TestBed } from '@angular/core/testing';
-// import { NO_ERRORS_SCHEMA } from '@angular/core';
-// import {
-//     TranslateService, TranslateModule,
-//     TranslateLoader
-// } from '@ngx-translate/core';
-// import { NavController } from 'ionic-angular';
-// import { NavParams, IonicModule } from 'ionic-angular';
-// import { LoadingController } from 'ionic-angular';
-// import { PopoverController } from 'ionic-angular';
-// import { AlertController } from 'ionic-angular';
-// import {
-//     GroupService, ProfileType, ServiceProvider,
-//     BuildParamService, FrameworkService, TelemetryService
-// } from 'sunbird';
-// import { ProfileService } from 'sunbird';
-// import { OAuthService, } from 'sunbird';
-// import { ContainerService } from 'sunbird';
-// import { SharedPreferences } from 'sunbird';
-// import { AuthService } from 'sunbird';
-// import { Events } from 'ionic-angular';
-// import { AppGlobalService } from '../../../service/app-global.service';
-// import { App } from 'ionic-angular';
-// import { ToastController } from 'ionic-angular';
-// import { Network } from '@ionic-native/network';
-// import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
-// import { GroupDetailsPage } from './group-details';
-// import { } from 'jasmine';
-// import {
-//     mockAllProfiles,
-//     selectedUser, userUids
-// } from '../group-details/group-detail.data.spec';
-// import {
-//     NavParamsMock, ToastControllerMock,
-//     TranslateLoaderMock, TranslateServiceStub, NavControllerMock, LoadingControllerMock,
-//     PopoverControllerMock, AlertControllerMock,
-//     ProfileServiceMock, ContainerServiceMock, AuthServiceMock, SharedPreferencesMock, EventsMock,
-//     AppGlobalServiceMock, AppMock, GroupServiceMock, OAuthServiceMock
-// } from '../../../../test-config/mocks-ionic';
+import { mockAllProfiles, userList } from './group-detail.data.spec';
+import {
+    navCtrlMock, navParamsMock, groupServiceMock,
+    profileServiceMock, zoneMock, translateServiceMock,
+    popoverCtrlMock, alertControllerMock, oAuthServiceMock,
+    containerServiceMock, sharedPreferencesMock, appMock,
+    eventsMock, loadingControllerMock, toastControllerMock,
+    telemetryGeneratorServiceMock, authServiceMock,
+    appGlobalServiceMock, commonUtilServiceMock
 
-// describe('GroupDetailsPage', () => {
-//     let comp: GroupDetailsPage;
-//     let fixture: ComponentFixture<GroupDetailsPage>;
+} from '../../../__tests__/mocks';
+import { GroupDetailsPage } from './group-details';
+import { Content } from 'ionic-angular';
+import { userUids } from './group-detail.data.spec';
+import { doesNotThrow } from 'assert';
+import { JSONP_ERR_NO_CALLBACK } from '@angular/common/http/src/jsonp';
+import { CreateGroupPage } from '../create-group/create-group';
+import { GroupDetailNavPopoverPage } from '../group-detail-nav-popover/group-detail-nav-popover';
+import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
+import { group } from '@angular/core';
+import { PopoverPage } from '../popover/popover';
 
-//     beforeEach(() => {
+describe.only('GroupDetailsPage', () => {
 
-//         TestBed.configureTestingModule({
-//             declarations: [GroupDetailsPage],
-//             schemas: [NO_ERRORS_SCHEMA],
-//             imports: [
-//                 IonicModule.forRoot(GroupDetailsPage),
-//                 TranslateModule.forRoot({
-//                     loader: { provide: TranslateLoader, useClass: TranslateLoaderMock },
-//                 }),
-//             ],
-//             providers: [
-//                 ServiceProvider, BuildParamService, FrameworkService, ProfileService, TelemetryGeneratorService, TelemetryService, Network,
-//                 { provide: TranslateService, useClass: TranslateServiceStub },
-//                 { provide: NavController, useClass: NavControllerMock },
-//                 { provide: NavParams, useClass: NavParamsMock },
-//                 { provide: LoadingController, useClass: LoadingControllerMock },
-//                 { provide: PopoverController, useClass: PopoverControllerMock },
-//                 { provide: AlertController, useClass: AlertControllerMock },
-//                 { provide: GroupService, useClass: GroupServiceMock },
-//                 { provide: OAuthService, useClass: OAuthServiceMock },
-//                 { provide: ContainerService, useClass: ContainerServiceMock },
-//                 { provide: SharedPreferences, useClass: SharedPreferencesMock },
-//                 { provide: AuthService, useClass: AuthServiceMock },
-//                 { provide: Events, useClass: EventsMock },
-//                 { provide: AppGlobalService, useClass: AppGlobalServiceMock },
-//                 { provide: App, useClass: AppMock },
-//                 { provide: ToastController, useClass: ToastControllerMock },
-//                 { provide: ProfileService, useClass: ProfileServiceMock },
-//                 { provide: PopoverController, useFactory: () => PopoverControllerMock.instance() },
-//                 // { provide: TelemetryGeneratorService, useClass: TelemetryServiceMock }
-//             ]
-//         });
+    let groupDetailsPage: GroupDetailsPage;
 
-//         // GroupDetailsPage.prototype.group = {
-//         //     name: 'group_name'
-//         // };
-//         // GroupDetailsPage.prototype.group.gid = 'sample_group_id';
-//         // GroupDetailsPage.prototype.currentGroupId = 'sample_group_id';
+    beforeEach(() => {
+        jest.resetAllMocks();
 
-//         // const navParamsStub = TestBed.get(NavParams);
-//         // navParamsStub.data = {
-//         //     name: 'sample_group_name',
-//         //     gid: 'sample_group_id'
-//         // }
+        navParamsMock.get.mockImplementation((data: any) => {
+            if (data === 'groupInfo') {
+                return ({
+                    name: 'group_name'
+                });
+            } else if (data.gid === 'currentUserId') {
+                return 'sample_group_id';
+            } else {
+                return 'OTHER';
+            }
+        });
 
-//         fixture = TestBed.createComponent(GroupDetailsPage);
-//         comp = fixture.componentInstance;
+        groupDetailsPage = new GroupDetailsPage(navCtrlMock as any, navParamsMock as any, groupServiceMock as any,
+            profileServiceMock as any, zoneMock as any, translateServiceMock as any, popoverCtrlMock as any,
+            alertControllerMock as any, oAuthServiceMock as any, containerServiceMock as any, sharedPreferencesMock as any,
+            appMock as any, eventsMock as any, loadingControllerMock as any, toastControllerMock as any,
+            telemetryGeneratorServiceMock as any, authServiceMock as any, appGlobalServiceMock as any,
+            commonUtilServiceMock as any);
 
-//     });
-//     const getLoader = () => {
-//         const loadingController = TestBed.get(LoadingController);
-//         comp.getLoader();
-//     };
+        jest.resetAllMocks();
+    });
+    it('can load instance', () => {
+        expect(groupDetailsPage).toBeTruthy();
+    });
+    it('should be called ionViewWillEnter', () => {
 
+        // arrange
+        spyOn(groupDetailsPage, 'getAllProfile').and.stub();
+        // act
+        groupDetailsPage.ionViewWillEnter();
+        // assert
+    });
+    it('should be resizeContent()', () => {
+        // arrange
+        // groupDetailsPage.content= userUids;
+        // act
+        //  groupDetailsPage.resizeContent();
+        // assert
+    });
+    it('should fetch all profile details for getAllProfile()', (done) => {
+        // arrange
+        const loader = { present: jest.fn(), dismiss: jest.fn() };
+        spyOn(groupDetailsPage, 'getLoader').and.returnValue({ present: () => { }, dismiss: jest.fn() });
+        profileServiceMock.getAllUserProfile.mockResolvedValue(JSON.stringify(mockAllProfiles));
+        // act
+        groupDetailsPage.getAllProfile();
+        zoneMock.run.mock.calls[0][0].call(groupDetailsPage);
+        // assert
+        setTimeout(() => {
+            zoneMock.run.mock.calls[1][0].call(groupDetailsPage);
+            expect(groupDetailsPage.getLoader).toHaveBeenCalled();
+            done();
+        }, 0);
+    });
+    it('should call getAllProfile()', (done) => {
+        // arrange
+        const loader = { present: jest.fn(), dismiss: jest.fn() };
+        spyOn(groupDetailsPage, 'getLoader').and.returnValue({ present: () => { }, dismiss: jest.fn() });
+        profileServiceMock.getAllUserProfile.mockRejectedValue(mockAllProfiles);
+        // act
+        groupDetailsPage.getAllProfile();
+        zoneMock.run.mock.calls[0][0].call(groupDetailsPage);
+        // assert
+        setTimeout(() => {
+            expect(groupDetailsPage.getLoader).toHaveBeenCalled();
+            done();
+        }, 0);
+    });
+    it('should call selectUser', () => {
+        // arrange
+        spyOn(groupDetailsPage, 'resizeContent').and.stub();
+        // act
+        groupDetailsPage.selectUser(23232, '242423');
+        zoneMock.run.mock.calls[0][0].call(groupDetailsPage);
+        // assert
+    });
+    it('should call play()', () => {
+        // arrange
+        const userData = ['er'];
+        spyOn(groupDetailsPage, 'logOut');
+        appGlobalServiceMock.isUserLoggedIn.mockReturnValue(true);
+        // act
+        groupDetailsPage.play();
+        // assert
+        expect(appGlobalServiceMock.isUserLoggedIn).toHaveBeenCalled();
+    });
+    it('should call falsely play()', () => {
+        // arrange
+        const userData = userList[0];
+        (groupServiceMock.setCurrentGroup as any).mockResolvedValue();
+        // act
+        groupDetailsPage.play();
+        // assert
+        expect(appGlobalServiceMock.isUserLoggedIn).toHaveBeenCalled();
+    });
 
-//     it('#constructor can load instance', () => {
-//         expect(comp).toBeTruthy();
-//     });
+    it('should call endSession Logout()', () => {
+        // arrange
+        const selectedUser = JSON.stringify(userList);
+        spyOn(groupDetailsPage, 'logOut');
+        // act
+        groupDetailsPage.logOut(selectedUser, false);
+        // assert
+        expect(groupDetailsPage.logOut).toHaveBeenCalled();
+    });
+    it('#should call isBeingPlayed when logout()', () => {
+        // arrange
+        window['splashscreen'] = {
+            clearPrefs: jest.fn()
+        };
+        window['splashscreen'].clearPrefs.mockReturnValue(jest.fn());
+        const selectedUser = JSON.stringify(userList);
+        (groupServiceMock.setCurrentGroup as any).mockResolvedValue();
+        (authServiceMock.endSession as any).mockReturnValue();
+        spyOn(groupDetailsPage, 'logOut').and.callThrough();
+        // act
+        groupDetailsPage.logOut(selectedUser, true);
+        // assert
+        expect(window['splashscreen'].clearPrefs).toHaveBeenCalled();
+    });
 
-//     it('#constructor  userList defaults to: []', () => {
-//         expect(comp.userList).toEqual([]);
-//     });
+    it('should call when network is available for logout()', (done) => {
+        // arrange
+        window['splashscreen'] = {
+            clearPrefs: jest.fn()
+        };
+        window['splashscreen'].clearPrefs.mockReturnValue(jest.fn());
+        const selectedUser = JSON.stringify(userList);
+        commonUtilServiceMock.networkInfo = { isNetworkAvailable: true } as any;
+        (groupServiceMock.setCurrentGroup as any).mockResolvedValue();
+        (oAuthServiceMock.doLogOut as any).mockResolvedValue(JSON.stringify(mockAllProfiles));
+        spyOn(groupDetailsPage, 'logOut').and.callThrough();
+        // act
+        groupDetailsPage.logOut(selectedUser, false);
+        // assert
+        setTimeout(() => {
+            expect(groupServiceMock.setCurrentGroup).toHaveBeenCalled();
+            done();
+        }, 0);
+    });
 
-//     it('#constructor  userUids defaults to: []', () => {
-//         expect(comp.userUids).toEqual([]);
-//     });
+    it('should call when network is not available for logout()', (done) => {
+        // arrange
+        commonUtilServiceMock.networkInfo = { isNetworkAvailable: false } as any;
+        window['splashscreen'] = {
+            clearPrefs: jest.fn()
+        };
+        window['splashscreen'].clearPrefs.mockReturnValue(jest.fn());
+        const selectedUser = JSON.stringify(userList);
+        (groupServiceMock.setCurrentGroup as any).mockResolvedValue();
+        (authServiceMock.endSession as any).mockReturnValue();
+        spyOn(groupDetailsPage, 'logOut').and.callThrough();
+        // act
+        groupDetailsPage.logOut(selectedUser, false);
+        // assert
+        setTimeout(() => {
+            expect(groupServiceMock.setCurrentGroup).toHaveBeenCalled();
+            done();
+        }, 0);
+    });
+    it('should call and will check the network if its not there user ll be logout', () => {
+        // arrange
+        const selectedUser = JSON.stringify(userList);
+        window['splashscreen'] = {
+            clearPrefs: jest.fn()
+        };
+        window['splashscreen'].clearPrefs.mockReturnValue(jest.fn());
+        (groupServiceMock.setCurrentGroup as any).mockResolvedValue();
+        spyOn(groupDetailsPage, 'logOut').and.callThrough();
+        // oAuthServiceMock.doLogOut.mockResolvedValue(JSON.stringify(mockAllProfiles));
+        // act
+        groupDetailsPage.logOut(selectedUser, false);
+        // assert
+        expect(groupDetailsPage.logOut).toHaveBeenCalled();
+    });
+    it('should pop the message presentPopoverNav()', () => {
+        // arrange
+        const popover = { present: jest.fn() };
+        popoverCtrlMock.create.mockReturnValue(popover);
 
-//     it('#constructor isNoUsers defaults to: false', () => {
-//         expect(comp.isNoUsers).toEqual(false);
-//     });
+        // act
+        groupDetailsPage.presentPopoverNav({});
 
-//     it('#constructor isCurrentGroupActive defaults to: true', () => {
-//         expect(comp.isCurrentGroupActive).toEqual(false);
-//     });
+        // assert
+        expect(popoverCtrlMock.create).toHaveBeenCalledWith(GroupDetailNavPopoverPage, expect.anything(), expect.anything());
+        expect(popover.present).toHaveBeenCalled();
+    });
+    it('should call navigateToAddUser()', () => {
+        // arrange
+        // act
+        groupDetailsPage.navigateToAddUser();
+        // assert
+        expect(navCtrlMock.push).toHaveBeenCalledWith(GuestEditProfilePage, expect.objectContaining({}));
+    });
+    it('should call getLoader', () => {
+        // arrange
+        loadingControllerMock.create.mockReturnValue({ duration: 30000, spinner: 'crescent' })
+        // act
+        groupDetailsPage.getLoader();
+        // assert
+        expect(loadingControllerMock.create).toHaveBeenCalled();
+    });
+    it('should call translateMessage()', () => {
+        // arrange
+        const msg = 'group';
+        translateServiceMock.get.mockReturnValue({ subscribe: jest.fn() });
 
-//     it('#ionViewWillEnter should call getAllProfile', () => {
-//         expect(comp.ionViewWillEnter).toBeDefined();
-//         spyOn(comp, 'ionViewWillEnter').and.callThrough();
-//         spyOn(comp, 'getAllProfile');
-//         comp.ionViewWillEnter();
-//         expect(comp.ionViewWillEnter).toHaveBeenCalled();
-//         expect(comp.getAllProfile).toHaveBeenCalled();
-//     });
+        // act
+        groupDetailsPage.translateMessage(msg);
+        // assert
+    });
+    it('should call grade value for getGradeNameFromCode()', () => {
+        // arrange
+        const data = { grade: ['code1'], gradeValueMap: { 'code1': 'value_0' } };
+        // act
+        groupDetailsPage.getGradeNameFromCode(data);
+        // assert
+        expect(data.grade.length).toBeGreaterThan(0);
+        expect(data.gradeValueMap).toBeTruthy();
+    });
+    it('should call grade value for getGradeNameFromCode()', () => {
+        // arrange
+        const data = { grade: [], gradeValueMap: { 'code': 'code' } };
 
-//     it('#resizeContent should call', () => {
-//         expect(comp.resizeContent).toBeDefined();
-//         spyOn(comp.content, 'resize');
-//         spyOn(comp, 'resizeContent').and.callThrough();
-//         comp.resizeContent();
-//         expect(comp.resizeContent).toHaveBeenCalled();
-//         expect(comp.content.resize).toHaveBeenCalled();
-//     });
-//     it('#getAllProfile should fetch all profile details', (done) => {
-//         const profileServiceStub = TestBed.get(ProfileService);
+        // act
+        groupDetailsPage.getGradeNameFromCode(data);
+        // assert
+        expect(data.grade.length).toBe(0);
 
-//         expect(comp.getAllProfile).toBeDefined();
-//         spyOn(comp, 'getAllProfile').and.callThrough();
-//         spyOn(comp, 'getLoader').and.returnValue({ present: () => { } });
-//         spyOn(profileServiceStub, 'getAllUserProfile').and.returnValue(Promise.resolve(JSON.stringify(mockAllProfiles)));
-//         comp.getAllProfile();
+    });
+    it('should pop the message presentPopover()', () => {
+        // arrange
+        const popover = { present: jest.fn() };
+        const profile = JSON.stringify(userList[1]);
+        console.log(userList[1]);
+        popoverCtrlMock.create.mockReturnValue(popover);
+        // act
+        groupDetailsPage.userList = userList;
+        groupDetailsPage.presentPopover({}, 1);
+        // assert
+        expect(popoverCtrlMock.create).toHaveBeenCalledWith(PopoverPage, expect.anything(), expect.anything());
+        expect(popover.present).toHaveBeenCalled();
+    });
 
-//         setTimeout(() => {
-//             expect(comp.getAllProfile).toHaveBeenCalled();
-//             expect(comp.getLoader).toHaveBeenCalled();
-//             done();
-//         }, 10);
-//     });
+    it('should be alert when deleteGroupConfirmBox()', () => {
+        // arrange
+        const alert = { present: jest.fn() };
+        spyOn(groupDetailsPage, 'translateMessage').and.stub();
+        alertControllerMock.create.mockReturnValue(alert);
+        // act
+        groupDetailsPage.deleteGroupConfirmBox();
+        // assert
+        expect(alertControllerMock.create).toHaveBeenCalled();
+        expect(alert.present).toHaveBeenCalled();
+    });
+    it('should call deleteGroup()', (done) => {
+        // arrange
+        groupServiceMock.deleteGroup.mockResolvedValue(mockAllProfiles);
+        // act
+        groupDetailsPage.deleteGroup();
+        // assert
+        setTimeout(() => {
+            //  expect(navCtrlMock.popTo(navCtrlMock.getByIndex(-2)));
+            done();
+        }, 0);
+    });
+    it('should call for error deleteGroup()', (done) => {
+        // arrange
+        groupServiceMock.deleteGroup.mockRejectedValue(mockAllProfiles);
+        // act
+        groupDetailsPage.deleteGroup();
+        // assert
+        setTimeout(() => {
+            //  expect(navCtrlMock.popTo(navCtrlMock.getByIndex(-2)));
+            done();
+        }, 0);
+    });
+    it('should be alert when userDeleteGroupConfirmBox()', () => {
+        // arrange
+        const alert = { present: jest.fn() };
+        groupDetailsPage.userList = userList;
+        spyOn(groupDetailsPage, 'translateMessage').and.stub();
+        alertControllerMock.create.mockReturnValue(alert);
+        console.log(userList[1].handle);
+        // act
+        groupDetailsPage.userDeleteGroupConfirmBox(0);
+        // assert
+        expect(alertControllerMock.create).toHaveBeenCalled();
+        expect(alert.present).toHaveBeenCalled();
+    });
+        it('should delete the group error deleteUsersinGroup()', (done) => {
+            const req = {
+                groupId: '123',
+                uidList: 'id123'
+            };
+            groupServiceMock.addUpdateProfilesToGroup.mockRejectedValue(req);
+            spyOn(groupDetailsPage, 'deleteUsersinGroup').and.callThrough();
+            groupDetailsPage.deleteUsersinGroup(0);
+            setTimeout(() => {
+                expect(groupDetailsPage.deleteUsersinGroup).toHaveBeenCalled();
+                done();
+            }, 0);
+    });
 
-//     it('#selectUser should call', () => {
-//         expect(comp.selectUser).toBeDefined();
-//         spyOn(comp, 'selectUser').and.callThrough();
-//         comp.selectUser(23232, '242423');
-//         expect(comp.selectUser).toHaveBeenCalled();
-//     });
-//     it('#switchAccountConfirmBox should call', () => {
-//         const uid = '1234';
+    it('should delete the group deleteUsersinGroup()', (done) => {
+        const req = {
+            groupId: '123',
+            uidList: 'id123'
+        };
+        groupServiceMock.addUpdateProfilesToGroup.mockResolvedValue(req);
+        spyOn(groupDetailsPage, 'deleteUsersinGroup').and.callThrough();
+        groupDetailsPage.deleteUsersinGroup(0);
+        setTimeout(() => {
+            expect(groupDetailsPage.deleteUsersinGroup).toHaveBeenCalled();
+            done();
+        }, 0);
+    });
 
-//         const TelemetryGeneratorServiceStub = TestBed.get(TelemetryGeneratorService);
-//         // const  telemetryObject = TestBed.get(TelemetryObject)
-//         expect(comp.switchAccountConfirmBox).toBeDefined();
-//         spyOn(TelemetryGeneratorServiceStub, 'generateInteractTelemetry').and.callFake(() => { });
-//         // spyOn(comp, 'switchAccountConfirmBox');
-//         spyOn(comp, 'switchAccountConfirmBox').and.callThrough();
-//         comp.switchAccountConfirmBox();
-//         expect(TelemetryGeneratorServiceStub.generateInteractTelemetry).toHaveBeenCalled();
-//         expect(comp.switchAccountConfirmBox).toHaveBeenCalled();
-//         expect(comp.switchAccountConfirmBox).toHaveBeenCalled();
-//     });
-
-//     it('#play should call', () => {
-//         expect(comp.play).toBeDefined();
-//         const groupServiceStub = TestBed.get(GroupService);
-//         spyOn(groupServiceStub, 'setCurrentGroup').and.returnValue(Promise.resolve({}));
-//         spyOn(comp, 'play').and.callThrough();
-//         comp.play();
-
-//         expect(comp.play).toHaveBeenCalled();
-//     });
-
-//     it('#play should call', () => {
-//         expect(comp.play).toBeDefined();
-//         const AppGlobalServiceStub = TestBed.get(AppGlobalService);
-//         AppGlobalServiceMock.isGuestUser = true;
-//         spyOn(comp, 'play').and.callThrough();
-//         comp.play();
-//         expect(comp.play).toHaveBeenCalled();
-//     });
-//     it('# Logout call', () => {
-//         const authService = TestBed.get(AuthService);
-//         expect(comp.play).toBeDefined();
-//         // spyOn(authService,'endSession');
-//         spyOn(comp, 'logOut');
-//         comp.logOut(selectedUser, false);
-//         expect(comp.logOut).toHaveBeenCalled();
-//     });
-//     it('# Logout call', () => {
-//         const authService = TestBed.get(AuthService);
-//         window['splashscreen'] = {
-//             clearPrefs: () => ({})
-//         };
-//         spyOn(window['splashscreen'], 'clearPrefs').and.callFake(() => {
-//         });
-
-//         expect(comp.logOut).toBeDefined();
-//         spyOn(authService, 'endSession');
-//         spyOn(comp, 'logOut').and.callThrough();
-//         comp.logOut(selectedUser, true);
-//         expect(comp.logOut).toHaveBeenCalled();
-//     });
-
-//     it('# Logout call', () => {
-//         const authService = TestBed.get(AuthService);
-//         expect(comp.play).toBeDefined();
-//         // spyOn(authService,'endSession');
-//         spyOn(comp, 'logOut').and.callThrough();
-//         comp.logOut(selectedUser, false);
-//         expect(comp.logOut).toHaveBeenCalled();
-//     });
-//     it('# Logout call and will do session end', () => {
-//         const authService = TestBed.get(AuthService);
-//         spyOn(comp, 'logOut').and.callThrough();
-//         comp.logOut(selectedUser, false);
-//         expect(comp.logOut).toHaveBeenCalled();
-//     });
-//     it('# Logout call and will check the network', () => {
-//         const authService = TestBed.get(AuthService);
-//         const network = TestBed.get(Network);
-//         spyOnProperty(network, 'type').and.returnValue('none');
-//         spyOn(authService, 'endSession');
-//         spyOn(comp, 'logOut').and.callThrough();
-//         comp.logOut(selectedUser, false);
-//         expect(comp.logOut).toHaveBeenCalled();
-//     });
-//     it('# Logout call and will check the network if its not there user ll be logout', () => {
-//         const oauth = TestBed.get(OAuthService);
-//         window['splashscreen'] = {
-//             clearPrefs: () => ({})
-//         };
-//         spyOn(window['splashscreen'], 'clearPrefs').and.callFake(() => {
-//         });
-//         spyOn(comp, 'logOut').and.callThrough();
-//         spyOn(oauth, 'doLogOut');
-//         comp.logOut(selectedUser, false);
-//         expect(comp.logOut).toHaveBeenCalled();
-//     });
-
-//     it('# setAsCurrentUser should call', () => {
-//         const groupServiceStub = TestBed.get(GroupService);
-//         const profileServiceStub = TestBed.get(ProfileService);
-
-//         spyOn(comp, 'setAsCurrentUser').and.callThrough();
-//         // spyOn(profileServiceStub, 'setAsCurrentUser').and.callThrough();
-//         comp.setAsCurrentUser(selectedUser, true);
-//         expect(comp.setAsCurrentUser).toHaveBeenCalled();
-//     });
-//     it('# setAsCurrentUser should check content is being played', () => {
-//         const groupServiceStub = TestBed.get(GroupService);
-//         const profileServiceStub = TestBed.get(ProfileService);
-//         spyOn(comp, 'setAsCurrentUser').and.callThrough();
-
-//         //   spyOn(comp, 'setCurrentUser').and.callThrough();
-//         spyOn(profileServiceStub, 'setCurrentUser').and.callFake((arg, success, err) => {
-
-//             return success();
-//         });
-//         comp.setAsCurrentUser(selectedUser, true);
-//         expect(comp.setAsCurrentUser).toHaveBeenCalled();
-//     });
-//     it('# setAsCurrentUser if content is not played', () => {
-//         const groupServiceStub = TestBed.get(GroupService);
-//         const profileServiceStub = TestBed.get(ProfileService);
-//         spyOn(comp, 'setAsCurrentUser').and.callThrough();
-
-//         //   spyOn(comp, 'setCurrentUser').and.callThrough();
-//         spyOn(profileServiceStub, 'setCurrentUser').and.callFake((arg, success, err) => {
-
-//             return success();
-//         });
-//         comp.setAsCurrentUser(selectedUser[0], false);
-//         expect(comp.setAsCurrentUser).toHaveBeenCalled();
-//     });
-
-//     it('# getAllProfile should call', () => {
-
-//         spyOn(comp, 'getAllProfile').and.callThrough();
-//         comp.getAllProfile();
-//         expect(comp.getAllProfile).toHaveBeenCalled();
-
-//     });
-//     it('# getAllProfile should call', () => {
-//         const profileRequest = {
-//             local: true,
-//             groupId: 'id123'
-//         };
-//         const profileServiceStub = TestBed.get(ProfileService);
-//         spyOn(comp, 'getAllProfile').and.callThrough();
-//         spyOn(profileServiceStub, 'getAllUserProfile').and.callThrough();
-//         comp.getAllProfile();
-//         expect(comp.getAllProfile).toHaveBeenCalled();
-
-//     });
-
-//     it('#deleteUsersinGroup should delete the group', () => {
-//         const userList = {
-//             'age': -1,
-//             'avatar': 'avatar',
-//             'createdAt': 'Aug 9, 2018 11:36:50 AM',
-//             'day': -1,
-//             'gender': '',
-//             'handle': 'handle_testdata',
-//             'isGroupUser': false,
-//             'language': 'en',
-//             'month': -1,
-//             // 'profileType': 'STUDENT',
-//             'source': 'LOCAL',
-//             'standard': -1,
-//             'uid': 'sample_id1',
-//             'profileType': ProfileType.STUDENT,
-//             'syllabus': []
-
-//         };
-//         comp.userUids = userUids;
-//         const elementIndex = 0;
-
-//         spyOn(comp, 'deleteUsersinGroup').and.callThrough();
-//         comp.deleteUsersinGroup(0);
-//         expect(comp.deleteUsersinGroup).toHaveBeenCalled();
-//     });
-
-//     it('#deleteUsersinGroup should delete the group', () => {
-//         const groupServiceStub = TestBed.get(GroupService);
-//         const req = {
-//             groupId: '123',
-//             uidList: 'id123'
-//         };
-//         spyOn(groupServiceStub, 'addUpdateProfilesToGroup').and.callThrough();
-//         spyOn(comp, 'deleteUsersinGroup').and.callThrough();
-//         comp.deleteUsersinGroup(0);
-//         expect(comp.deleteUsersinGroup).toHaveBeenCalled();
-//     });
-//     it('#presentPopoverNav should pop the popover', () => {
-
-//         spyOn(comp, 'presentPopoverNav').and.callThrough();
-//         comp.presentPopoverNav({});
-//         expect(comp.presentPopoverNav).toHaveBeenCalled();
-//     });
-//     it('# should display the edit group goToEditGroup content', () => {
-//         const popOverCtrl = TestBed.get(PopoverController);
-//         // spyOn(popOverCtrl, 'create').and.callThrough();
-//         //  expect(comp.presentPopoverNav).toBeDefined();
-
-//         spyOn(comp, 'presentPopoverNav').and.callThrough();
-//         // spyOn(comp,'goToEditGroup').and.callThrough().callFake();
-//         comp.presentPopoverNav({});
-//         expect(comp.presentPopoverNav).toHaveBeenCalled();
-//     });
-
-//     it('#getGradeNameFromCode should get the grade name', () => {
-//         // const popOverCtrl = TestBed.get(PopoverController)
-//         // spyOn(popOverCtrl, 'create').and.callThrough();
-//         //  expect(comp.presentPopoverNav).toBeDefined();
-
-
-//         spyOn(comp, 'getGradeNameFromCode').and.callThrough();
-//         // spyOn(comp,'goToEditGroup').and.callThrough().callFake();
-//         const Profile = ProfileServiceMock[0];
-//         comp.getGradeNameFromCode(Profile);
-//         expect(comp.getGradeNameFromCode).toHaveBeenCalled();
-//     });
-
-//     it('#presentPopover should pop the message', () => {
-//         // const popOverCtrl = TestBed.get(PopoverController)
-//         // spyOn(popOverCtrl, 'create').and.callThrough();
-//         //  expect(comp.presentPopoverNav).toBeDefined();
-
-
-//         spyOn(comp, 'presentPopover').and.callThrough();
-//         // spyOn(comp,'goToEditGroup').and.callThrough().callFake();
-
-//         //  let Profile = ProfileServiceMock[0];
-//         comp.presentPopover({}, 0);
-//         const profile = this.userList[0];
-//         this.isCurrentGroupActive = '123';
-//         const isActiveUser = false;
-//         expect(comp.presentPopover).toHaveBeenCalled();
-//     });
-
-// });
+});

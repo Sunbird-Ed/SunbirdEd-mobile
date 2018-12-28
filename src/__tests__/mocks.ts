@@ -27,7 +27,9 @@ import {
   NavParams,
   Platform,
   PopoverController,
-  ViewController
+  ViewController,
+  AlertController,
+  ToastController
 } from 'ionic-angular';
 import {NgZone} from '@angular/core';
 import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService} from '@app/service';
@@ -81,7 +83,8 @@ export const zoneMock = createSpyObj<NgZone>([
 
 export const oAuthServiceMock = createSpyObj<OAuthService>([
   'doOAuthStepOne',
-  'doOAuthStepTwo'
+  'doOAuthStepTwo',
+  'doLogOut'
 ]);
 
 export const containerServiceMock = createSpyObj<ContainerService>([
@@ -103,7 +106,8 @@ export const profileServiceMock = createSpyObj<ProfileService>([
 ]);
 
 export const authServiceMock = createSpyObj<AuthService>([
-  'getSessionData'
+  'getSessionData',
+  'endSession'
 ]);
 
 export const commonUtilServiceMock = createSpyObj<CommonUtilService>([
@@ -314,5 +318,15 @@ export const domSanitizerMock = createSpyObj<DomSanitizer>([
 ]);
 
 export const groupServiceMock = createSpyObj<GroupService>([
+  'setCurrentGroup',
+  'deleteGroup',
+  'addUpdateProfilesToGroup'
+]);
+
+export const alertControllerMock = createSpyObj<AlertController>([
+  'create'
+]);
+
+export const toastControllerMock = createSpyObj<ToastController>([
 
 ]);
