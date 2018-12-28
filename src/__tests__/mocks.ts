@@ -15,18 +15,20 @@ import {
   SharedPreferences,
   ShareUtil,
   TelemetryService,
-  UserProfileService
+  UserProfileService,
+  GroupService
 } from 'sunbird';
 import {
   App,
   Events,
-  IonicApp,
   LoadingController,
   NavController,
   NavParams,
   Platform,
   PopoverController,
-  ViewController
+  ViewController,
+  IonicApp,
+  AlertController
 } from 'ionic-angular';
 import {NgZone} from '@angular/core';
 import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService} from '@app/service';
@@ -67,7 +69,8 @@ export const courseServiceMock = createSpyObj<CourseService>([
 export const navCtrlMock = createSpyObj<NavController>([
   'pop',
   'push',
-  'setRoot'
+  'setRoot',
+  'popTo'
 ]);
 
 export const navParamsMock = createSpyObj<NavParams>([
@@ -95,8 +98,7 @@ export const userProfileServiceMock = createSpyObj<UserProfileService>([
 
 export const profileServiceMock = createSpyObj<ProfileService>([
   'setCurrentProfile',
-  'getCurrentUser',
-  'doOAuthStepOne'
+  'getAllUserProfile'
 ]);
 
 export const authServiceMock = createSpyObj<AuthService>([
@@ -222,7 +224,10 @@ export const sunbirdQRScannerMock = createSpyObj<SunbirdQRScanner>([
 export const formAndFrameworkUtilServiceMock = createSpyObj<FormAndFrameworkUtilService>([
   'getCourseFilterConfig',
   'updateLoggedInUser',
-  'getLibraryFilterConfig'
+  'getLibraryFilterConfig',
+  'getSupportingBoardList',
+  'getFrameworkDetails',
+  'getCategoryData'
 ]);
 
 export const loadingControllerMock = createSpyObj<LoadingController>([
@@ -286,6 +291,7 @@ export const supportfileMock = createSpyObj<any>([
 
 export const formBuilderMock = createSpyObj<FormBuilder>([
   'group',
+  'fb'
 ]);
 
 export const ionicAppMock = createSpyObj<IonicApp>([]);
@@ -306,4 +312,14 @@ export const logoutHandlerServiceMock = createSpyObj<LogoutHandlerService>([
 
 export const domSanitizerMock = createSpyObj<DomSanitizer>([
   'bypassSecurityTrustResourceUrl'
+]);
+
+export const groupServiceMock = createSpyObj<GroupService>([
+  'addUpdateProfilesToGroup',
+  'updateGroup'
+]);
+export const alertCtrlMock = createSpyObj<AlertController>([
+  'present',
+  'dismiss',
+  'create'
 ]);
