@@ -29,7 +29,9 @@ import {
   ObjectType,
   ProfileType,
   ContainerService,
-  TabsPage
+  TabsPage,
+  SuggestedFrameworkRequest,
+  FrameworkService
 } from 'sunbird';
 import { FormAndFrameworkUtilService } from '../formandframeworkutil.service';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
@@ -110,7 +112,8 @@ export class GuestEditProfilePage {
     private appGlobalService: AppGlobalService,
     private preferences: SharedPreferences,
     private commonUtilService: CommonUtilService,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private framework: FrameworkService
   ) {
     this.isNewUser = Boolean(this.navParams.get('isNewUser'));
     this.isCurrentUser = Boolean(this.navParams.get('isCurrentUser'));
@@ -238,12 +241,16 @@ export class GuestEditProfilePage {
   getSyllabusDetails() {
     this.loader = this.getLoader();
     this.loader.present();
-    this.formAndFrameworkUtilService.getSupportingBoardList()
+    const suggestedFrameworkRequest: SuggestedFrameworkRequest = {
+      isGuestUser: true,
+      selectedLanguage: this.translate.currentLang
+    };
+    this.framework.getSuggestedFrameworkList(suggestedFrameworkRequest)
       .then((result) => {
         if (result && result !== undefined && result.length > 0) {
           result.forEach(element => {
             // renaming the fields to text, value and checked
-            const value = { 'name': element.name, 'code': element.frameworkId };
+            const value = { 'name': element.name, 'code': element.identifier };
             this.syllabusList.push(value);
           });
 
@@ -288,10 +295,21 @@ export class GuestEditProfilePage {
         this[list] = result;
 
         if (req.currentCategory === 'board') {
-          this.guestEditForm.patchValue({
-            boards: [result[0].code]
-          });
-          this.resetForm(1, false);
+          const boardName = this.syllabusList.find(framework => this.frameworkId === framework.code);
+          if (boardName) {
+            const boardCode = result.find(board => boardName.name === board.name);
+            if (boardCode) {
+              this.guestEditForm.patchValue({
+                boards: boardCode.code
+              });
+              this.resetForm(1, false);
+            } else {
+              this.guestEditForm.patchValue({
+                boards: [result[0].code]
+              });
+              this.resetForm(1, false);
+            }
+          }
         } else if (this.isEditData) {
           this.isEditData = false;
 
@@ -515,7 +533,6 @@ export class GuestEditProfilePage {
 
     this.profileService.updateProfile(req)
       .then((res: any) => {
-        console.log('Update Response', res);
         if (this.isCurrentUser) {
           this.publishProfileEvents(formVal);
         }

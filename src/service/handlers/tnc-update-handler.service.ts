@@ -1,8 +1,12 @@
-import {Injectable} from '@angular/core';
-import {AuthService, UserProfileDetailsRequest, UserProfileService} from 'sunbird';
-import {Modal, ModalController} from 'ionic-angular';
-import {TermsAndConditionsPage} from '@app/pages/terms-and-conditions/terms-and-conditions';
-import {ProfileConstants} from '@app/app';
+import { Injectable } from '@angular/core';
+import {
+  AuthService,
+  UserProfileDetailsRequest,
+  UserProfileService
+} from 'sunbird';
+import { Modal, ModalController } from 'ionic-angular';
+import { TermsAndConditionsPage } from '@app/pages/terms-and-conditions/terms-and-conditions';
+import { ProfileConstants } from '@app/app';
 
 interface UserProfile {
   tncAcceptedVersion: string;
@@ -41,11 +45,11 @@ export class TncUpdateHandlerService {
           const userProfileDetails = JSON.parse(res);
           if (!this.hasProfileTncUpdated(userProfileDetails)) {
             resolve(false);
+          } else {
+            this.presentTncPage({ userProfileDetails }).then(() => {
+              resolve(true);
+            });
           }
-
-          this.presentTncPage({userProfileDetails}).then(() => {
-            resolve(true);
-          });
         }, (e) => {
           reject(e);
         });

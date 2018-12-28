@@ -1,4 +1,3 @@
-import { ResourcesPage } from './../resources/resources';
 import {
   Component,
   NgZone,
@@ -30,7 +29,6 @@ import {
   InteractSubtype,
   Rollup,
   BuildParamService,
-  ProfileType,
   CorrelationData,
   ProfileService,
   ProfileRequest,
@@ -44,20 +42,23 @@ import {
 import {
   PreferenceKey
 } from '../../app/app.constant';
-
 import {
-  EventTopics,
   ShareUrl,
   Map
 } from '@app/app';
-
-import { ContentRatingAlertComponent, ContentActionsComponent, BookmarkComponent } from '@app/component';
-import { AppGlobalService, CourseUtilService } from '@app/service';
+import {
+  ContentRatingAlertComponent,
+  ContentActionsComponent,
+  BookmarkComponent
+} from '@app/component';
+import {
+  AppGlobalService,
+  CourseUtilService
+} from '@app/service';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
 import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../service/common-util.service';
-import { ViewCreditsComponent } from '../../component/view-credits/view-credits';
 import { DialogPopupComponent } from '../../component/dialog-popup/dialog-popup';
 import { Observable } from 'rxjs';
 import { XwalkConstants } from '../../app/app.constant';
@@ -97,6 +98,9 @@ export class ContentDetailsPage {
    */
   isUpdateAvail = false;
   userRating = 0;
+
+  /*stores streaming url*/
+  streamingUrl: any;
 
   /**
    * currently used to identify that its routed from QR code results page
@@ -431,6 +435,9 @@ export class ContentDetailsPage {
     if (this.cardData && this.cardData.hierarchyInfo) {
       data.result.hierarchyInfo = this.cardData.hierarchyInfo;
       this.isChildContent = true;
+    }
+    if (this.content.streamingUrl) {
+        this.streamingUrl = this.content.streamingUrl;
     }
 
     if (!this.isChildContent && this.content.contentMarker.length
@@ -901,6 +908,7 @@ export class ContentDetailsPage {
     popover.onDidDismiss(data => {
       this.zone.run(() => {
         if (data === 'delete.success') {
+          this.content.streamingUrl = this.streamingUrl;
           this.content.downloadable = false;
           const playContent = JSON.parse(this.content.playContent);
           playContent.isAvailableLocally = false;
