@@ -300,9 +300,7 @@ export class CollectionDetailsPage {
         }, {
             cssClass: 'content-rating-alert'
           });
-        popUp.present({
-          ev: event
-        });
+        popUp.present();
         popUp.onDidDismiss(data => {
           if (data && data.message === 'rating.success') {
             this.userRating = data.rating;

@@ -133,7 +133,7 @@ describe('CoursesPage', () => {
     eventsMock.subscribe.mock.calls[3][1].call(coursesPage, JSON.parse(CourseMock.courseUpdate));
 
     // assert
-    expect(coursesPage.getEnrolledCourses).toHaveBeenCalledWith(true);
+    expect(coursesPage.getEnrolledCourses).toHaveBeenCalledWith(false, false);
   });
 
   it('should update the progress when onboarding progess event comes', () => {
@@ -171,7 +171,7 @@ describe('CoursesPage', () => {
     eventsMock.subscribe.mock.calls[6][1].call(coursesPage, JSON.parse(CourseMock.enrollCourseEvent));
 
     // assert
-    expect(coursesPage.getEnrolledCourses).toHaveBeenCalledWith(true);
+    expect(coursesPage.getEnrolledCourses).toHaveBeenCalledWith(false, false);
   });
 
   it('should invoke getPopular Courses when language is changed', () => {
