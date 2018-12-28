@@ -15,7 +15,8 @@ import {
   SharedPreferences,
   ShareUtil,
   TelemetryService,
-  UserProfileService
+  UserProfileService,
+  GroupService
 } from 'sunbird';
 import {
   App,
@@ -96,7 +97,9 @@ export const userProfileServiceMock = createSpyObj<UserProfileService>([
 export const profileServiceMock = createSpyObj<ProfileService>([
   'setCurrentProfile',
   'getCurrentUser',
-  'doOAuthStepOne'
+  'doOAuthStepOne',
+  'getProfile',
+  'getAllUserProfile'
 ]);
 
 export const authServiceMock = createSpyObj<AuthService>([
@@ -308,4 +311,8 @@ export const logoutHandlerServiceMock = createSpyObj<LogoutHandlerService>([
 
 export const domSanitizerMock = createSpyObj<DomSanitizer>([
   'bypassSecurityTrustResourceUrl'
+]);
+
+export const groupServiceMock = createSpyObj<GroupService>([
+
 ]);
