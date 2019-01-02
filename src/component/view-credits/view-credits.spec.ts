@@ -1,115 +1,150 @@
-// import {
-//   ComponentFixture, TestBed,
-//   fakeAsync
-// } from '@angular/core/testing';
-// import { NO_ERRORS_SCHEMA } from '@angular/core';
-// import { ViewCreditsComponent } from './view-credits';
-// import {
-//   ContentService,
-//   TelemetryService,
-//   AuthService,
-//   ProfileService,
-//   BuildParamService
-// } from 'sunbird';
-// import { ServiceProvider, SharedPreferences, FrameworkService } from 'sunbird';
-// import { TranslateModule, TranslateService } from '@ngx-translate/core';
-// import { PopoverController } from 'ionic-angular';
-// import {
-//   NavParamsMock,
-//   PlatformMock,
-//   ToastControllerMockNew,
-//   TelemetryServiceMock,
-//   TranslateServiceStub,
-//   AppGlobalServiceMock,
-//   EventsMock,
-//   AuthServiceMock,
-//   ProfileServiceMock,
-//   SharedPreferencesMock,
-//   PopoverControllerMock,
-//   BuildParamaServiceMock
-// } from '../../../test-config/mocks-ionic';
-// import { } from 'jasmine';
-// import { ViewController } from 'ionic-angular/navigation/view-controller';
-// import {
-//   ToastController,
-//   NavParams, Platform, Events
-// } from 'ionic-angular';
-// import { AppGlobalService } from '../../service/app-global.service';
-// import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-// import { Observable } from 'rxjs/Observable';
-// import 'rxjs/add/observable/of';
+import { ViewCreditsComponent } from './view-credits';
+import {
+  navParamsMock,
+  platformMock,
+  appGlobalServiceMock,
+  zoneMock,
+  telemetryGeneratorServiceMock,
+  viewControllerMock
+} from '@app/__tests__/mocks';
+import 'jest';
+import { Environment, InteractType, PageId } from 'sunbird';
+describe('ViewCreditsComponent', () => {
+  let viewCreditsComponent: ViewCreditsComponent;
+  beforeEach(() => {
+    navParamsMock.get.mockImplementation((param: string) => {
+      if (param === 'filter') {
+        return [];
+      } else {
+        return 'pageId';
+      }
+    });
 
-// describe('ViewCreditsComponent', () => {
-//   let comp: ViewCreditsComponent;
-//   let fixture: ComponentFixture<ViewCreditsComponent>;
+    appGlobalServiceMock.getSessionData.mockReturnValue('1278273');
+    viewCreditsComponent = new ViewCreditsComponent(navParamsMock as any, viewControllerMock as any,
+      platformMock as any, zoneMock as any, telemetryGeneratorServiceMock as any, appGlobalServiceMock as any);
+    jest.resetAllMocks();
+  });
+  it('should create instance of the ConfirmAlertComponent', () => {
+    expect(viewCreditsComponent).toBeTruthy();
+  });
+  it('#ionViewDidLoad should be called', () => {
+    // arrange
+    navParamsMock.get.mockImplementation((arg: string) => {
+      switch (arg) {
+        case 'content': {
+          return {
+            identifier: 'SOME_IDENTIFIER'
+          };
+        }
+        case 'pageId': {
+          return { pageId: 'SOME_PAGE_ID' };
+        }
+        case 'rollUp': {
+          return { rollUp: 'SOME_ROLL_UP' };
+        }
+        case 'correlation': {
+          return { correlation: 'SOME_CORRELATION' };
+        }
 
-//   beforeEach(() => {
-//     const viewControllerStub = {
-//       dismiss: () => ({})
-//     };
-//     const FrameworkServiceStub = {};
-//     TestBed.configureTestingModule({
-//       imports: [TranslateModule.forRoot()],
-//       declarations: [ViewCreditsComponent],
-//       schemas: [NO_ERRORS_SCHEMA],
-//       providers: [
-//         ServiceProvider,
-//         TelemetryGeneratorService, ContentService,
-//         { provide: NavParams, useClass: NavParamsMock },
-//         { provide: ViewController, useValue: viewControllerStub },
-//         { provide: Platform, useClass: PlatformMock },
-//         {
-//           provide: ToastController,
-//           useFactory: () => ToastControllerMockNew.instance()
-//         },
-//         { provide: TelemetryService, useClass: TelemetryServiceMock },
-//         { provide: TranslateService, useClass: TranslateServiceStub },
-//         { provide: AppGlobalService, useClass: AppGlobalServiceMock },
-//         { provide: Events, useClass: EventsMock },
-//         { provide: AuthService, useClass: AuthServiceMock },
-//         { provide: ProfileService, useClass: ProfileServiceMock },
-//         { provide: SharedPreferences, useClass: SharedPreferencesMock },
-//         {
-//           provide: PopoverController,
-//           useFactory: () => PopoverControllerMock.instance()
-//         },
-//         { provide: BuildParamService, useClass: BuildParamaServiceMock },
-//         { provide: FrameworkService, useValue: FrameworkServiceStub }
-//       ]
-//     });
-//     const ViewControllerMock = TestBed.get(ViewController);
-//     const platformStub = TestBed.get(Platform);
-//     spyOn(ViewControllerMock, 'dismiss');
-//     spyOn(platformStub, 'registerBackButtonAction');
-//     spyOn(ViewCreditsComponent.prototype, 'getUserId');
-//     // spyOn(ViewControllerMock,'backButtonfunc');
+      }
+    });
+    // act
+    viewCreditsComponent.ionViewDidLoad();
+    // assert
+    expect(telemetryGeneratorServiceMock.generateInteractTelemetry).toHaveBeenCalledWith(InteractType.TOUCH,
+      'credits-clicked',
+      Environment.HOME,
+      { 'pageId': 'SOME_PAGE_ID' },
+      expect.objectContaining({
+        'id': 'SOME_IDENTIFIER',
+        'type': undefined,
+        'version': undefined,
+      }),
+      undefined,
+      { 'rollUp': 'SOME_ROLL_UP' },
+      { 'correlation': 'SOME_CORRELATION' });
+  });
+  it('#getUserId should return empty string if  user is not logged in', () => {
+    // arrange
+    appGlobalServiceMock.getSessionData.mockResolvedValue('SOME_VALUE');
+    // act
+    viewCreditsComponent.getUserId();
+    // assert
+    expect(viewCreditsComponent.userId = 'SOME_VALUE');
 
-//     fixture = TestBed.createComponent(ViewCreditsComponent);
-//     comp = fixture.componentInstance;
-//   });
-//   it('can load instance', () => {
-//     expect(comp).toBeTruthy();
-//   });
+  });
+  it('#getUserId should return User_token string if  user is logged in', () => {
+    // arrange
+    appGlobalServiceMock.getSessionData.mockResolvedValue('');
+    // act
+    viewCreditsComponent.getUserId();
+    // assert
+    expect(viewCreditsComponent.userId = '');
+  });
+  it('should dismiss the popup on cancel()', () => {
+    // arrange
+    viewControllerMock.dismiss();
+    // act
+    viewCreditsComponent.cancel();
+    // assert
+    expect(viewCreditsComponent.cancel).toBeTruthy();
+  });
+  it('#should call backbuttonFunc to dismiss the popup', () => {
+    // // arrange
+    appGlobalServiceMock.getSessionData.mockReturnValue('');
+    platformMock.registerBackButtonAction.mockReturnValue(jest.fn());
+    viewCreditsComponent = new ViewCreditsComponent(navParamsMock as any, viewControllerMock as any,
+      platformMock as any, zoneMock as any, telemetryGeneratorServiceMock as any, appGlobalServiceMock as any);
 
-//   it('#ionViewDidLoad should be called', () => {
-//     comp.ionViewDidLoad();
-//   });
+    // // act
+    platformMock.registerBackButtonAction.mock.calls[0][0].call(viewCreditsComponent);
 
+    // // assert
+     expect(viewControllerMock.dismiss).toHaveBeenCalled();
+     expect(viewCreditsComponent.backButtonFunc).toHaveBeenCalled();
+  });
 
-//   it('#getUserId should return empty string if  user is not logged in', () => {
-//     const appGlobalServiceStub = TestBed.get(AppGlobalService);
-//     spyOn(appGlobalServiceStub, 'getSessionData');
-//     (<jasmine.Spy>comp.getUserId).and.callThrough();
-//     comp.getUserId();
-//     expect(appGlobalServiceStub.getSessionData).toHaveBeenCalled();
-//   });
+  describe('mergeProperties()', () => {
+    it('shoud return firstProp if secondProp empty', () => {
+      // arrange
+      viewCreditsComponent.content = {
+        'SAMPLE_PROP_1': 'SAMPLE_VALUE_1',
+        'SAMPLE_PROP_2': 'SAMPLE_VALUE_2'
+      };
 
-//   it('#cancel should hide popup', () => {
-//     expect(comp.cancel).toBeDefined();
-//     const viewControllerStub = TestBed.get(ViewController);
-//     spyOn(comp, 'cancel').and.callThrough();
-//     comp.cancel();
-//     expect(comp.cancel).toHaveBeenCalled();
-//     expect(viewControllerStub.dismiss).toHaveBeenCalled();
-//   });
-// });
+      // act
+      const val = viewCreditsComponent.mergeProperties('SAMPLE_PROP_1', 'INVALID_PROP');
+
+      // assert
+      expect(val).toEqual('SAMPLE_VALUE_1');
+    });
+    it('shoud return secondProp if firstProp empty', () => {
+      // arrange
+      viewCreditsComponent.content = {
+        'SAMPLE_PROP_1': 'SAMPLE_VALUE_1',
+        'SAMPLE_PROP_2': 'SAMPLE_VALUE_2'
+      };
+
+      // act
+      const val = viewCreditsComponent.mergeProperties('INVALID_PROP', 'SAMPLE_PROP_2');
+
+      // assert
+      expect(val).toEqual('SAMPLE_VALUE_2');
+    });
+
+    it('shoud return mergedArray if firstProp and secondProp is not empty', () => {
+      // arrange
+      viewCreditsComponent.content = {
+        'SAMPLE_PROP_1': 'SAMPLE_VALUE_1_1, SAMPLE_VALUE_1_2, SAMPLE_VALUE_1_2',
+        'SAMPLE_PROP_2': 'SAMPLE_VALUE_2_1, SAMPLE_VALUE_2_2'
+      };
+
+      // act
+      const val = viewCreditsComponent.mergeProperties('SAMPLE_PROP_1', 'SAMPLE_PROP_2');
+
+      // assert
+      expect(val).toEqual('SAMPLE_VALUE_2_1, SAMPLE_VALUE_2_2, SAMPLE_VALUE_1_1, SAMPLE_VALUE_1_2');
+    });
+  });
+});
