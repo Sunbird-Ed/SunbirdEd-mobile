@@ -32,6 +32,7 @@ export class TncUpdateHandlerService {
       this.authService.getSessionData((session) => {
         if (!session || session === 'null') {
           resolve(false);
+          return;
         }
 
         const sessionObj = JSON.parse(session);
@@ -45,11 +46,13 @@ export class TncUpdateHandlerService {
           const userProfileDetails = JSON.parse(res);
           if (!this.hasProfileTncUpdated(userProfileDetails)) {
             resolve(false);
-          } else {
-            this.presentTncPage({ userProfileDetails }).then(() => {
-              resolve(true);
-            });
+            return;
           }
+
+          this.presentTncPage({ userProfileDetails }).then(() => {
+            resolve(true);
+            return;
+          });
         }, (e) => {
           reject(e);
         });

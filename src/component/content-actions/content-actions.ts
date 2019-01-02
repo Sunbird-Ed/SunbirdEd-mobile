@@ -1,10 +1,19 @@
 import { TelemetryGeneratorService } from './../../service/telemetry-generator.service';
 import { TranslateService } from '@ngx-translate/core';
 import { NavParams } from 'ionic-angular/navigation/nav-params';
- import { PopoverController, Events, AlertController } from 'ionic-angular/index';
+import { PopoverController, Events, AlertController } from 'ionic-angular/index';
 import { ViewController } from 'ionic-angular';
 import { Component } from '@angular/core';
-import { ContentService, AuthService, Environment, Rollup, CorrelationData, InteractType, InteractSubtype, TelemetryObject } from 'sunbird';
+import {
+  ContentService,
+  AuthService,
+  Environment,
+  Rollup,
+  CorrelationData,
+  InteractType,
+  InteractSubtype,
+  TelemetryObject
+} from 'sunbird';
 import { ToastController, Platform } from 'ionic-angular';
 import { CommonUtilService } from '../../service/common-util.service';
 import { ReportIssuesComponent } from '../report-issues/report-issues';
@@ -21,6 +30,7 @@ export class ContentActionsComponent {
   data: any;
   isChild = false;
   contentId: string;
+  batchDetails: any;
   backButtonFunc = undefined;
   userId = '';
   pageName = '';
@@ -40,9 +50,11 @@ export class ContentActionsComponent {
     private translate: TranslateService,
     private platform: Platform,
     private commonUtilService: CommonUtilService,
-    private telemetryGeneratorService: TelemetryGeneratorService) {
+    private telemetryGeneratorService: TelemetryGeneratorService
+  ) {
     this.content = this.navParams.get('content');
     this.data = this.navParams.get('data');
+    this.batchDetails = this.navParams.get('batchDetails');
     this.pageName = this.navParams.get('pageName');
     this.objRollup = this.navParams.get('objRollup');
     this.corRelationList = this.navParams.get('corRelationList');
@@ -100,7 +112,7 @@ export class ContentActionsComponent {
     switch (i) {
       case 0: {
         const confirm = this.alertctrl.create({
-          title:  this.commonUtilService.translateMessage('REMOVE_FROM_DEVICE'),
+          title: this.commonUtilService.translateMessage('REMOVE_FROM_DEVICE'),
           message: this.commonUtilService.translateMessage('REMOVE_FROM_DEVICE_MSG'),
           mode: 'wp',
           cssClass: 'confirm-alert',
@@ -117,7 +129,7 @@ export class ContentActionsComponent {
               text: this.commonUtilService.translateMessage('REMOVE'),
               cssClass: 'alert-btn-delete',
               handler: () => {
-                 this.deleteContent();
+                this.deleteContent();
               },
             }
           ]
@@ -141,7 +153,10 @@ export class ContentActionsComponent {
     });
     popover.present();
     popover.onDidDismiss((unenroll: boolean = false) => {
-        this.viewCtrl.dismiss(unenroll);
+      this.viewCtrl.dismiss({
+        caller: 'unenroll',
+        unenroll: unenroll
+      });
     });
   }
 
@@ -174,7 +189,7 @@ export class ContentActionsComponent {
         this.showToaster(this.getMessageByConstant('MSG_RESOURCE_DELETED'));
         this.viewCtrl.dismiss('delete.success');
       }
-    }) .catch((error: any) => {
+    }).catch((error: any) => {
       console.log('delete response: ', error);
       this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
       this.viewCtrl.dismiss();

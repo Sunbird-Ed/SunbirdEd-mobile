@@ -14,7 +14,8 @@
     "android": "ionic cordova run android --debug --device",
     "build-rel": "ionic cordova build android --release --prod --device --generateSourceMap=false",
     "test": "jest",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "test:ci": "JEST_JUNIT_OUTPUT=reports/junit/js-test-results.xml jest --ci --reporters=default --reporters=jest-junit"
   },
   "config": {
     "ionic_source_map_type": "inline-source-map",
@@ -94,6 +95,7 @@
     "zone.js": "0.8.18"
   },
   "devDependencies": {
+    "jest-junit": "^5.2.0",
     "@babel/plugin-proposal-class-properties": "^7.1.0",
     "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
     "@babel/plugin-proposal-decorators": "^7.0.0",
@@ -167,7 +169,50 @@
       "node_modules"
     ],
     "testPathIgnorePatterns": [
-      "/node_modules/"
+      "/node_modules/",
+      "src/component/card/course/course-card.spec.ts",
+      "src/component/content-actions/content-actions.component.spec.ts",
+      "src/component/content-rating-alert/content-rating-alert.spec.ts",
+      "src/component/onboarding-alert/onboarding-alert.component.spec.ts",
+      "src/component/onboarding-card/onboarding-card.spec.ts",
+      "src/component/onboarding-card/onboarding.service.spec.ts",
+      "src/component/profile-avatar/profile-avatar.spec.ts",
+      "src/component/report-issues/report-issues.spec.ts",
+      "src/component/sign-in-card/sign-in-card.spec.ts",
+      "src/component/view-credits/view-credits.spec.ts",
+      "src/component/view-more-card/view-more-card.spec.ts",
+      "src/pages/content-details/content-details.spec.ts",
+      "src/pages/enrolled-course-details/enrolled-course-details.spec.ts",
+      "src/pages/profile/guest-edit.profile/guest-edit.profile.spec.ts",
+      "src/pages/profile/guest-profile/guest.profile.spec.ts",
+      "src/pages/profile/overflowmenu/menu.overflow.component.spec.ts",
+      "src/pages/profile/profile-component.spec.ts",
+      "src/pages/profile/user-search/user-search.spec.ts",
+      "src/pages/qr-code-result/qr-code-result.spec.ts",
+      "src/pages/qrscanner/qrscanresulthandler.service.spec.ts",
+      "src/pages/reports/group-report-alert/group-report-alert.spec.ts",
+      "src/pages/reports/group-report-list/group.report.list.spec.ts",
+      "src/pages/reports/reports.spec.ts",
+      "src/pages/resources/resources.spec.ts",
+      "src/pages/search/filters/filter.spec.ts",
+      "src/pages/search/filters/options/option.spec.ts",
+      "src/pages/upgrade/upgrade-popover.spec.ts",
+      "src/pages/user-and-groups/add-or-remove-group-user/add-or-remove-group-user.spec.ts",
+      "src/pages/user-and-groups/create-group/create-group.spec.ts",
+      "src/pages/user-and-groups/group-detail-nav-popover/group-detail-nav-popover.spec.ts",
+      "src/pages/user-and-groups/group-details/group-details.spec.ts",
+      "src/pages/user-and-groups/group-members/group-members.spec.ts",
+      "src/pages/user-and-groups/popover/popover.spec.ts",
+      "src/pages/user-and-groups/share-user-and-groups/share-user-and-groups.spec.ts",
+      "src/pages/user-and-groups/user-and-groups.spec.ts",
+      "src/pages/user-type-selection/user-type-selection.spec.ts",
+      "src/pages/view-more-activity/view-more-activity.spec.ts",
+      "src/component/onboarding-card/onboarding.data.spec.ts",
+      "src/component/onboarding-alert/onboarding-alert.component.data.spec.ts",
+      "src/pages/user-and-groups/group-details/group-detail.data.spec.ts",
+      "src/pages/profile/profile.data.spec.ts",
+      "src/pages/user-and-groups/group-members/group-members.data.spec.ts",
+      "src/pages/user-and-groups/user-and-groups-data.spec.ts"
     ],
     "testMatch": [
       "**/?(*.)(spec).ts"
