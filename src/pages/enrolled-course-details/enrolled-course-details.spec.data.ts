@@ -285,5 +285,50 @@ export const mockRes = {
     {'data': {'identifier': 'SAMPLE_ID', 'status': 'IMPORT_COMPLETED'}, 'type': 'contentImport'},
 
     updateEventSample:
-    {'data': {'identifier': 'SAMPLE_ID'}, 'type': 'contentUpdateAvailable'}
+    {'data': {'identifier': 'SAMPLE_ID'}, 'type': 'contentUpdateAvailable'},
+    courseBatchesRequest:
+    {
+      'message': 'successful',
+      'result': {
+        'content': [
+          {
+            'courseAdditionalInfo': {
+              'courseName': 'tc_242',
+              'leafNodesCount': '2',
+              'description': 'Enter description for Course',
+              'courseLogoUrl': 'artifact/crowd_1536735489063.thumb.jpg',
+              'tocUrl': 'content/do_11264557997213286411377/artifact/do_11264557997213286411377toc.json',
+              'status': 'Live'
+            },
+            'courseCreator': 'bf622d07-ca95-4cc1-9a49-a4518925a4d8',
+            'courseId': 'do_11264557997213286411377',
+            'createdBy': 'bf622d07-ca95-4cc1-9a49-a4518925a4d8',
+            'createdDate': '2018-12-01 07:42:07:408+0000',
+            'createdFor': [
+              '012451141730410496558',
+              '0124511325012951040'
+            ],
+            'creatorFirstName': 'JP Mentor ORg1',
+            'creatorLastName': 'user',
+            'description': '',
+            'enrollmentType': 'open',
+            'hashTagId': '01264558852132864096',
+            'id': '01264558852132864096',
+            'identifier': '01264558852132864096',
+            'mentors': [],
+            'name': 'xaddw',
+            'participant': {
+              '9ac4ea92-fea7-45e6-93f3-02aa3172ea58': true,
+              '6773fab9-a89e-4056-885f-6226b866e8c0': true,
+              '230cb747-6ce9-4e1c-91a8-1067ae291cb9': true
+            },
+            'startDate': '2018-12-01',
+            'status': 1,
+            'updatedDate': '2018-12-01 08:00:00:255+0000'
+          }
+        ],
+        'count': 1
+      },
+      'status': true
+    }
 };
