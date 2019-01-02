@@ -1,11 +1,12 @@
-import {Component} from '@angular/core';
-import {Loading, LoadingController, NavParams, Platform} from 'ionic-angular';
-import {TncUpdateHandlerService} from '@app/service/handlers/tnc-update-handler.service';
-import {LogoutHandlerService} from '@app/service/handlers/logout-handler.service';
-import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
-import {CommonUtilService} from '@app/service';
-import {TranslateService} from '@ngx-translate/core';
-import {AppVersion} from '@ionic-native/app-version';
+import { Component } from '@angular/core';
+import { Loading, LoadingController, NavParams, Platform } from 'ionic-angular';
+import { TncUpdateHandlerService } from '@app/service/handlers/tnc-update-handler.service';
+import { LogoutHandlerService } from '@app/service/handlers/logout-handler.service';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { CommonUtilService, TelemetryGeneratorService } from '@app/service';
+import { TranslateService } from '@ngx-translate/core';
+import { AppVersion } from '@ionic-native/app-version';
+import { ImpressionType, PageId, Environment, InteractType, InteractSubtype } from 'sunbird';
 
 @Component({
   selector: 'page-terms-and-conditions',
@@ -28,7 +29,8 @@ export class TermsAndConditionsPage {
     private sanitizer: DomSanitizer,
     private commonUtilService: CommonUtilService,
     private translateService: TranslateService,
-    private appVersion: AppVersion
+    private appVersion: AppVersion,
+    private telemetryGeneratorService: TelemetryGeneratorService
   ) {
   }
 
@@ -41,19 +43,47 @@ export class TermsAndConditionsPage {
     this.unregisterBackButtonAction = this.platform
       .registerBackButtonAction(async () => await this.showToastOnFirstBackNavigation(), 10);
 
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.VIEW, '',
+      PageId.TERMS_N_CONDITIONS,
+      Environment.HOME
+    );
     await this.createAndPresentLoadingSpinner();
   }
 
   public onIFrameLoad() {
-    this.loading.dismissAll();
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.VIEW, '',
+      PageId.TERMS_N_CONDITIONS_STATIC_PAGE,
+      Environment.HOME
+    );
+    if (this.loading) {
+      this.loading.dismissAll();
+    }
   }
 
   public onConfirmationChange(change: boolean) {
+    const valuesMap = new Map();
+    valuesMap['isChecked'] = change;
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.ACCEPTANCE_CHECKBOX_CLICKED,
+      Environment.HOME,
+      PageId.TERMS_N_CONDITIONS,
+      undefined,
+      valuesMap
+    );
     this.shouldAcceptanceButtonEnabled = change;
   }
 
   public async onAcceptanceClick(): Promise<void> {
     try {
+      this.telemetryGeneratorService.generateInteractTelemetry(
+        InteractType.TOUCH,
+        InteractSubtype.CONTINUE_CLICKED,
+        Environment.HOME,
+        PageId.TERMS_N_CONDITIONS
+      );
       await this.tncUpdateHandlerService.onAcceptTnc(this.userProfileDetails);
       await this.tncUpdateHandlerService.dismissTncPage();
     } catch (e) {
@@ -72,6 +102,7 @@ export class TermsAndConditionsPage {
   }
 
   private async logoutOnSecondBackNavigation() {
+    this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.TERMS_N_CONDITIONS, Environment.HOME, false);
     if (this.unregisterBackButtonAction) {
       this.unregisterBackButtonAction();
     }
@@ -80,9 +111,10 @@ export class TermsAndConditionsPage {
   }
 
   private async showToastOnFirstBackNavigation() {
+    this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.TERMS_N_CONDITIONS, Environment.HOME, false);
     this.commonUtilService.showToast(await this.translateService
       .get('TNC_BACK_NAVIGATION_MESSAGE',
-        {app_name: await this.appVersion.getAppName()}
+        { app_name: await this.appVersion.getAppName() }
       ).toPromise<string>());
 
     if (this.unregisterBackButtonAction) {
