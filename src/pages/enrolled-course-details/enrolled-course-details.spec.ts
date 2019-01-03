@@ -1,5 +1,5 @@
 import {
-  alertCtrlMock,
+  alertControllerMock,
   appGlobalServiceMock,
   buildParamServiceMock,
   commonUtilServiceMock,
@@ -34,7 +34,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     enrolled = new EnrolledCourseDetailsPage(
       navCtrlMock as any,
       navParamsMock as any,
-      alertCtrlMock as any,
+      alertControllerMock as any,
       contentServiceMock as any,
       zoneMock as any,
       eventsMock as any,
