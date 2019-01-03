@@ -42,7 +42,7 @@ import {
   CourseBatchesRequest,
   CourseEnrollmentType
 } from 'sunbird';
-import { ContentRatingAlertComponent, ContentActionsComponent, ViewCreditsComponent } from '@app/component';
+import { ContentRatingAlertComponent, ContentActionsComponent } from '@app/component';
 import { CollectionDetailsPage } from '@app/pages/collection-details/collection-details';
 import { ContentDetailsPage } from '@app/pages/content-details/content-details';
 import {
@@ -202,7 +202,6 @@ export class EnrolledCourseDetailsPage {
       });
 
     this.events.subscribe(EventTopics.ENROL_COURSE_SUCCESS, (res) => {
-      console.log('came here to you place!');
       if (res && res.batchId) {
         this.batchId = res.batchId;
         if (this.identifier && res.courseId && this.identifier === res.courseId) {
@@ -896,6 +895,7 @@ export class EnrolledCourseDetailsPage {
       this.zone.run(() => {
         data = JSON.parse(data);
         const res = data;
+
         // Show download percentage
         if (res.type === 'downloadProgress' && res.data.downloadProgress) {
           if (res.data.downloadProgress === -1 || res.data.downloadProgress === '-1') {

@@ -135,7 +135,7 @@ export const contentServiceMock = createSpyObj<ContentService>([
   'getChildContents',
   'cancelDownload',
   'searchContent',
-  'getChildContents'
+  'deleteContent'
 ]);
 
 export const popoverCtrlMock = createSpyObj<PopoverController>([
@@ -310,9 +310,6 @@ export const appMock = createSpyObj<App>([
   'group',
 ]);
 
-export const alertCtrlMock = createSpyObj<AlertController>([
-]);
-
 export const tncUpdateHandlerServiceMock = createSpyObj<TncUpdateHandlerService>([
   'presentTncPage',
   'onAcceptTnc',
@@ -337,5 +334,5 @@ export const alertControllerMock = createSpyObj<AlertController>([
 ]);
 
 export const toastControllerMock = createSpyObj<ToastController>([
-
+  'create'
 ]);
