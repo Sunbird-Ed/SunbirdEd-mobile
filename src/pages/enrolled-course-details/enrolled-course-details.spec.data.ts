@@ -17,6 +17,12 @@ export const mockRes = {
     popOverOnDismissResponseMenu:
         'delete.success',
 
+    popOverOnDismissUnenrollResponse:
+      {
+        caller: 'unenroll',
+        unenroll: true
+      },
+
     batchDetailsResponse:
     {
         'message': 'successful',
