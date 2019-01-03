@@ -12,7 +12,6 @@ export class UnenrollAlertComponent {
     constructor(public viewCtrl: ViewController, public platform: Platform) {
         // TBD
         this.backButtonFunc = this.platform.registerBackButtonAction(() => {
-            console.log('sdsds');
             this.viewCtrl.dismiss();
             this.backButtonFunc();
           }, 10);
