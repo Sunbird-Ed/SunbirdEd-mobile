@@ -135,7 +135,8 @@ export const contentServiceMock = createSpyObj<ContentService>([
   'getChildContents',
   'cancelDownload',
   'searchContent',
-  'getChildContents'
+  'getChildContents',
+  'sendFeedback'
 ]);
 
 export const popoverCtrlMock = createSpyObj<PopoverController>([
@@ -337,5 +338,5 @@ export const alertControllerMock = createSpyObj<AlertController>([
 ]);
 
 export const toastControllerMock = createSpyObj<ToastController>([
-
+'create'
 ]);
