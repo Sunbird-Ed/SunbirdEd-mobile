@@ -87,9 +87,9 @@ describe('ShareUserAndGroupPage', () => {
         const profile = [{ uid: 'SAMPLE_GID' } as any];
         groupServiceMock.getAllGroup.mockResolvedValue((JSON.stringify(mockAllProfiles)));
         profileServiceMock.getAllUserProfile.mockRejectedValue('error');
-        shareUserAndGroupPage.userGroupMap = new Map();
-        shareUserAndGroupPage.userGroupMap.set('SAMPLE_UID', profile);
-        spyOn(shareUserAndGroupPage.userGroupMap, 'set').and.callThrough();
+        shareUserAndGroupPage['userGroupMap'] = new Map();
+        shareUserAndGroupPage['userGroupMap'].set('SAMPLE_UID', profile);
+        spyOn(shareUserAndGroupPage['userGroupMap'], 'set').and.callThrough();
         // act
         shareUserAndGroupPage.getAllGroup();
         // assert
@@ -128,8 +128,8 @@ describe('ShareUserAndGroupPage', () => {
         shareUserAndGroupPage.selectedGroupList = [];
         shareUserAndGroupPage.groupList = groupList;
         // shareUserAndGroupPage.userGroupMap.get(groupList[0].gid);
-        shareUserAndGroupPage.userGroupMap = new Map();
-        shareUserAndGroupPage.userGroupMap.set('781e5927-29d3-48e2-bbfd-ba883d0a905f', usergroupmap as any);
+        shareUserAndGroupPage['userGroupMap'] = new Map();
+        shareUserAndGroupPage['userGroupMap'].set('781e5927-29d3-48e2-bbfd-ba883d0a905f', usergroupmap as any);
         // act
         shareUserAndGroupPage.toggleGroupSelected(0);
         // assert
@@ -144,8 +144,8 @@ describe('ShareUserAndGroupPage', () => {
         shareUserAndGroupPage.selectedGroupList = ['781e5927-29d3-48e2-bbfd-ba883d0a905f'];
         shareUserAndGroupPage.groupList = groupList;
         // shareUserAndGroupPage.userGroupMap.get(groupList[0].gid);
-        shareUserAndGroupPage.userGroupMap = new Map();
-        shareUserAndGroupPage.userGroupMap.set('781e5927-29d3-48e2-bbfd-ba883d0a905f', usergroupmap as any);
+        shareUserAndGroupPage['userGroupMap'] = new Map();
+        shareUserAndGroupPage['userGroupMap'].set('781e5927-29d3-48e2-bbfd-ba883d0a905f', usergroupmap as any);
         // act
         shareUserAndGroupPage.toggleGroupSelected(0);
         // assert
@@ -159,8 +159,8 @@ describe('ShareUserAndGroupPage', () => {
         shareUserAndGroupPage.selectedUserList = [];
         shareUserAndGroupPage.userList = usergroupmap as any;
         // shareUserAndGroupPage.userGroupMap.get(groupList[0].gid);
-        shareUserAndGroupPage.userGroupMap = new Map();
-        shareUserAndGroupPage.userWeightMap.get('781e5927-29d3-48e2-bbfd-ba883d0a905f');
+        shareUserAndGroupPage['userGroupMap'] = new Map();
+        shareUserAndGroupPage['userWeightMap'].get('781e5927-29d3-48e2-bbfd-ba883d0a905f');
         // act
         shareUserAndGroupPage.toggleUserSelected(0);
         // assert
