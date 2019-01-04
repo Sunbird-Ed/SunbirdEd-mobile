@@ -253,6 +253,7 @@ export class EnrolledCourseDetailsPage {
       enrolledCourses.splice(indx, 1);
     }
     this.appGlobalService.setEnrolledCourseList(enrolledCourses);
+    this.events.publish(EventTopics.REFRESH_ENROLL_COURSE_LIST, {});
   }
 
   /**
@@ -312,7 +313,7 @@ export class EnrolledCourseDetailsPage {
 
 
   showOverflowMenu(event) {
-    const data = {
+       const data = {
       batchStatus: this.batchDetails ? this.batchDetails.status : 2,
       contentStatus: this.courseCardData.status
     };
