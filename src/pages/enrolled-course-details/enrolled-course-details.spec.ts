@@ -12,7 +12,6 @@ import {
   navParamsMock,
   platformMock,
   popoverCtrlMock,
-  profileServiceMock,
   sharedPreferencesMock,
   shareUtilMock,
   socialSharingMock,
@@ -27,8 +26,6 @@ import { CollectionDetailsPage } from '@app/pages/collection-details/collection-
 import { ContentDetailsPage } from '@app/pages/content-details/content-details';
 import { CourseBatchesPage } from '@app/pages/course-batches/course-batches';
 import { datePipeMock } from '../../__tests__/mocks';
-
-
 
 describe('EnrolledCourseDetailsPage Component', () => {
   let enrolled: EnrolledCourseDetailsPage;
@@ -60,23 +57,6 @@ describe('EnrolledCourseDetailsPage Component', () => {
     jest.resetAllMocks();
   }));
 
-  beforeEach(() => {
-    // TBD new declarations
-    // spyObj = spyOn(prefernce, 'getString');
-    // spyObj.and.returnValue(Promise.resolve(ProfileType.TEACHER));
-    // fixture = TestBed.createComponent(EnrolledCourseDetailsPage);
-    // component = fixture.componentInstance;
-  });
-
-
-
-  // beforeEach(() => {
-  //   inject([TranslateService], (service) => {
-  //     translateService = service;
-  //     translateService.use('en');
-  //   });
-  // });
-
   it('should ', () => {
     expect(enrolled).toBeTruthy();
   });
@@ -101,10 +81,8 @@ describe('EnrolledCourseDetailsPage Component', () => {
 
   it('#subscribeUtilityEvents should receive the enroll success event', () => {
     buildParamServiceMock.getBuildConfigParam.mockRejectedValue(true);
-    eventsMock.subscribe.mockImplementation((arg, success) => {
-      return success(mockRes.enrollCourseEvent);
-    });
     enrolled.subscribeUtilityEvents();
+    eventsMock.subscribe.mock.calls[0][1].call(enrolled, mockRes.enrollCourseEvent);
     expect(enrolled.batchId).toBe('1234');
   });
 
@@ -222,7 +200,6 @@ describe('EnrolledCourseDetailsPage Component', () => {
     expect(popUpMock.present).toHaveBeenCalled();
   });
 
-  // test case moved to
   it('#showOverflowMenu should call handleUnenrollment()', () => {
     const popUpMock = {
       present: jest.fn(),
@@ -233,12 +210,17 @@ describe('EnrolledCourseDetailsPage Component', () => {
     popoverCtrlMock.create.mockReturnValue(popUpMock);
     spyOn(enrolled, 'handleUnenrollment');
     enrolled.showOverflowMenu({});
-    popUpMock.onDidDismiss.mock.calls[0][0].call(enrolled, mockRes.popOverOnDismissResponseMenu);
+    popUpMock.onDidDismiss.mock.calls[0][0].call(enrolled, mockRes.popOverOnDismissUnenrollResponse);
     expect(popoverCtrlMock.create).toHaveBeenCalled();
     expect(enrolled.handleUnenrollment).toHaveBeenCalled();
   });
 
   it('#handleUnenrollment should call unenrolCourse()', () => {
+    const loader = {
+      present: jest.fn(),
+      dismiss: jest.fn()
+    }
+    commonUtilServiceMock.getLoader.mockReturnValue(loader);
     enrolled.course = mockRes.sampleCourse;
     enrolled.courseCardData = mockRes.enrollCourseEvent;
     enrolled.batchDetails = mockRes.batchDetailsResponse;
@@ -248,6 +230,11 @@ describe('EnrolledCourseDetailsPage Component', () => {
   });
 
   it('#handleUnenrollment should call showToast() with COURSE_UNENROLLED', (done) => {
+    const loader = {
+      present: jest.fn(),
+      dismiss: jest.fn()
+    }
+    commonUtilServiceMock.getLoader.mockReturnValue(loader);
     enrolled.course = mockRes.sampleCourse;
     enrolled.courseCardData = mockRes.enrollCourseEvent;
     enrolled.batchDetails = mockRes.batchDetailsResponse;
@@ -262,6 +249,11 @@ describe('EnrolledCourseDetailsPage Component', () => {
   });
 
   it('#handleUnenrollment should call showToast() with ERROR_NO_INTERNET_MESSAGE', (done) => {
+    const loader = {
+      present: jest.fn(),
+      dismiss: jest.fn()
+    }
+    commonUtilServiceMock.getLoader.mockReturnValue(loader);
     enrolled.course = mockRes.sampleCourse;
     enrolled.courseCardData = mockRes.enrollCourseEvent;
     enrolled.batchDetails = mockRes.batchDetailsResponse;
@@ -352,7 +344,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     }, 200);
   });
 
-  it('#getBatchDetails should ', () => {
+  it('#getBatchDetails should not call getBatchCreatorName()', () => {
     enrolled.courseCardData = mockRes.enrollCourseEvent;
     courseServiceMock.getBatchDetails.mockRejectedValue(true);
     enrolled.getBatchDetails();
@@ -381,8 +373,6 @@ describe('EnrolledCourseDetailsPage Component', () => {
 
   it('#setCourseStructure should update contentType count', () => {
     enrolled.course = mockRes.sampleCourse;
-    enrolled.setCourseStructure();
-    expect(enrolled.course.contentTypesCount).toBe(1);
     enrolled.courseCardData = mockRes.sampleCourse;
     enrolled.setCourseStructure();
     expect(enrolled.course.contentTypesCount).toBe(1);
@@ -535,7 +525,8 @@ describe('EnrolledCourseDetailsPage Component', () => {
       depth: 1,
       contentState: contentState,
       fromCoursesPage: true,
-      isAlreadyEnrolled: false
+      isAlreadyEnrolled: false,
+      isChildClickable: true
     });
   });
 
@@ -607,13 +598,81 @@ describe('EnrolledCourseDetailsPage Component', () => {
   it('#subscribeGenieEvent should update the download progress when download progress event comes', (done) => {
     enrolled.courseCardData = mockRes.enrollCourseEvent;
     const data = JSON.stringify(mockRes.downloadProgressEventSample1);
-    eventsMock.subscribe.mockResolvedValue(data);
     enrolled.subscribeGenieEvent();
+    eventsMock.subscribe.mock.calls[0][1].call(enrolled, data);
     setTimeout(() => {
       zoneMock.run.mock.calls[0][0].call();
       expect(enrolled.downloadProgress).toBe(10);
       done();
     }, 200);
+  });
+
+  it('#subscribeGenieEvent should update the progress to 0 if API gives response -1', (done) => {
+    enrolled.courseCardData = mockRes.enrollCourseEvent;
+    const data = JSON.stringify(mockRes.downloadProgressEventSample2);
+    enrolled.subscribeGenieEvent();
+    eventsMock.subscribe.mock.calls[0][1].call(enrolled, data);
+    setTimeout(() => {
+      zoneMock.run.mock.calls[0][0].call();
+      expect(enrolled.downloadProgress).toBe(0);
+      done();
+    }, 200);
+  });
+
+  it('#subscribeGenieEvent should call getBaatchDetails() if download progress is 100', () => {
+    enrolled.courseCardData = mockRes.enrollCourseEvent;
+    const data = JSON.stringify(mockRes.downloadProgressEventSample3);
+    spyOn(enrolled, 'getBatchDetails');
+    enrolled.subscribeGenieEvent();
+    courseServiceMock.getBatchDetails.mockResolvedValue(true);
+    eventsMock.subscribe.mock.calls[0][1].call(enrolled, data);
+    zoneMock.run.mock.calls[0][0].call();
+    expect(enrolled.getBatchDetails).toBeCalled();
+  });
+
+  it('#subscribeGenieEvent should  mark download as complete', (done) => {
+    enrolled.courseCardData = mockRes.enrollCourseEvent;
+    enrolled.course = { 'isAvailableLocally': true };
+    const data = JSON.stringify(mockRes.importCompleteEventSample);
+    enrolled.queuedIdentifiers = ['SAMPLE_ID'];
+    enrolled.isDownloadStarted = true;
+    enrolled.subscribeGenieEvent();
+    eventsMock.subscribe.mock.calls[0][1].call(enrolled, data);
+    setTimeout(() => {
+      zoneMock.run.mock.calls[0][0].call();
+      expect(enrolled.showLoading).toBe(false);
+      expect(enrolled.isDownloadCompleted).toBe(true);
+      done();
+    }, 200);
+  });
+
+  it('#subscribeGenieEvent should  load all child contents when download is complete', () => {
+    enrolled.courseCardData = mockRes.enrollCourseEvent;
+    enrolled.course = { 'isAvailableLocally': true };
+    const data = JSON.stringify(mockRes.importCompleteEventSample);
+    enrolled.queuedIdentifiers = ['SAMPLE_ID'];
+    enrolled.isDownloadStarted = false;
+    spyOn(enrolled, 'setChildContents');
+    enrolled.subscribeGenieEvent();
+    eventsMock.subscribe.mock.calls[0][1].call(enrolled, data);
+    zoneMock.run.mock.calls[0][0].call();
+    expect(enrolled.setChildContents).toHaveBeenCalled();
+  });
+
+  it('#subscribeGenieEvent should  update the course if update event is available ', () => {
+    enrolled.courseCardData = mockRes.enrollCourseEvent;
+    enrolled.course = { 'isAvailableLocally': true };
+    const data = JSON.stringify(mockRes.updateEventSample);
+    enrolled.queuedIdentifiers = ['SAMPLE_ID'];
+    enrolled.isDownloadStarted = false;
+    enrolled.identifier = 'SAMPLE_ID';
+    spyOn(enrolled, 'importContent');
+    enrolled.subscribeGenieEvent();
+    eventsMock.subscribe.mock.calls[0][1].call(enrolled, data);
+    zoneMock.run.mock.calls[0][0].call();
+    zoneMock.run.mock.calls[1][0].call();
+    expect(enrolled.showLoading).toBe(true);
+    expect(enrolled.importContent).toHaveBeenCalledWith(['SAMPLE_ID'], false);
   });
 
   it('#ionViewWillLeave should unsubscribe event', () => {
@@ -692,6 +751,27 @@ describe('EnrolledCourseDetailsPage Component', () => {
     // spyOn(social, 'share').and.callThrough();
     enrolled.share();
     expect(socialSharingMock.share).toHaveBeenCalled();
+  });
+
+  it('#handleNavBackButton should handle nav back button click', () => {
+    spyOn(enrolled, 'generateQRSessionEndEvent');
+    enrolled.course = mockRes.sampleCourse;
+    enrolled.source = PageId.COURSE_DETAIL;
+    enrolled.shouldGenerateEndTelemetry = true;
+    enrolled.backButtonFunc = jasmine.createSpy();
+    enrolled.handleNavBackButton();
+    expect(enrolled.generateQRSessionEndEvent).toHaveBeenCalled();
+    expect(navCtrlMock.pop).toHaveBeenCalled();
+  });
+
+  it('#viewCredits should open view credits screen', () => {
+    enrolled.viewCredits();
+    expect(courseUtilServiceMock.showCredits).toHaveBeenCalled();
+  });
+
+  it('#generateShareInteractEvents should call generateInteractTelemetry()', () => {
+    enrolled.generateShareInteractEvents({}, {}, {});
+    expect(telemetryGeneratorServiceMock.generateInteractTelemetry).toBeCalled();
   });
 
 });

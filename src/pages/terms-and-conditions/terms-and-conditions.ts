@@ -57,7 +57,9 @@ export class TermsAndConditionsPage {
       PageId.TERMS_N_CONDITIONS_STATIC_PAGE,
       Environment.HOME
     );
-    this.loading.dismissAll();
+    if (this.loading) {
+      this.loading.dismissAll();
+    }
   }
 
   public onConfirmationChange(change: boolean) {
