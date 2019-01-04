@@ -105,7 +105,9 @@ export const profileServiceMock = createSpyObj<ProfileService>([
   'setCurrentProfile',
   'getCurrentUser',
   'doOAuthStepOne',
-  'getAllUserProfile'
+  'getAllUserProfile',
+  'getAllProfile',
+  'exportProfile'
 ]);
 
 export const authServiceMock = createSpyObj<AuthService>([
@@ -315,8 +317,6 @@ export const appMock = createSpyObj<App>([
   'group',
 ]);
 
-export const alertCtrlMock = createSpyObj<AlertController>([
-]);
 
 export const tncUpdateHandlerServiceMock = createSpyObj<TncUpdateHandlerService>([
   'presentTncPage',
@@ -344,11 +344,12 @@ export const groupServiceMock = createSpyObj<GroupService>([
   'deleteGroup',
   'addUpdateProfilesToGroup',
   'updateGroup',
-  'addUpdateProfilesToGroup'
+  'addUpdateProfilesToGroup',
+  'getAllGroup'
 ]);
 
 export const alertControllerMock = createSpyObj<AlertController>([
-  'create'
+  'create',
 ]);
 
 export const toastControllerMock = createSpyObj<ToastController>([
