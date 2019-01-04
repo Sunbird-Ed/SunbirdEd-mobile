@@ -247,7 +247,7 @@ export class EnrolledCourseDetailsPage {
     });
     let indx = -1;
     if (found) {
-       indx = enrolledCourses.indexOf(found);
+      indx = enrolledCourses.indexOf(found);
     }
     if (indx !== -1) {
       enrolledCourses.splice(indx, 1);
@@ -313,7 +313,7 @@ export class EnrolledCourseDetailsPage {
 
 
   showOverflowMenu(event) {
-       const data = {
+    const data = {
       batchStatus: this.batchDetails ? this.batchDetails.status : 2,
       contentStatus: this.courseCardData.status
     };
@@ -326,7 +326,7 @@ export class EnrolledCourseDetailsPage {
       pageName: 'course'
     }, {
         cssClass: 'content-action'
-    });
+      });
     popover.present({
       ev: event
     });
@@ -663,7 +663,7 @@ export class EnrolledCourseDetailsPage {
         this.importContent(this.downloadIdentifiers, true, true);
       } else {
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('COURSE_WILL_BE_AVAILABLE',
-            this.datePipe.transform(this.courseStartDate, 'mediumDate')));
+          this.datePipe.transform(this.courseStartDate, 'mediumDate')));
       }
 
     } else {
