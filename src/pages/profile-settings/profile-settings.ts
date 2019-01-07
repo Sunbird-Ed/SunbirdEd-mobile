@@ -240,7 +240,7 @@ export class ProfileSettingsPage {
               const boardCode = result.find(board => boardName.name === board.name);
               if (boardCode) {
                 this.userForm.patchValue({
-                  boards: boardCode.code
+                  boards: [boardCode.code]
                 });
                 this.resetForm(1, false);
               } else {
