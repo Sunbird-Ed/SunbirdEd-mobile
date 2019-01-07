@@ -300,7 +300,7 @@ export class GuestEditProfilePage {
             const boardCode = result.find(board => boardName.name === board.name);
             if (boardCode) {
               this.guestEditForm.patchValue({
-                boards: boardCode.code
+                boards: [boardCode.code]
               });
               this.resetForm(1, false);
             } else {
