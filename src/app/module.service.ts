@@ -1,28 +1,29 @@
-import { ProfileSettingsPageModule } from '../pages/profile-settings/profile-settings.module';
-import { ContentDetailsPageModule } from './../pages/content-details/content-details.module';
-import { CollectionDetailsPageModule } from './../pages/collection-details/collection-details.module';
-import { ViewMoreActivityPageModule } from './../pages/view-more-activity/view-more-activity.module';
-import { EnrolledCourseDetailsPageModule } from './../pages/enrolled-course-details/enrolled-course-details.module';
-import { CourseBatchesPageModule } from './../pages/course-batches/course-batches.module';
-import { ContainerService, TabOptions } from 'sunbird';
-import { GuestProfilePage } from '../pages/profile/guest-profile/guest-profile';
-import { ProfilePage } from '../pages/profile/profile';
-import { ResourcesPage } from '../pages/resources/resources';
-import { CoursesPageModule } from '../pages/courses/courses.module';
-import { HomePageModule } from '../pages/home/home.module';
-import { ProfilePageModule } from '../pages/profile/profile.module';
-import { ResourcesPageModule } from '../pages/resources/resources.module';
-import { OnboardingPageModule } from '../pages/onboarding/onboarding.module';
-import { LanguageSettingsPageModule } from '../pages/language-settings/language-settings.module';
-import { UserTypeSelectionPageModule } from '../pages/user-type-selection/user-type-selection.module';
-import { QRScannerModule } from '../pages/qrscanner/qrscanner.module';
-import { SearchModule } from '../pages/search/search.module';
-import { CoursesPage } from '../pages/courses/courses';
-import { PageFilterMoudule } from '../pages/page-filter/page.filter.module';
-import { UserAndGroupsPageModule } from '../pages/user-and-groups/user-and-groups.module';
-import { ReportsPageModule } from '../pages/reports/reports.module';
-import { UserReportModule } from '../pages/reports/user-report/user-report.module';
-import { QrCodeResultPageModule } from '../pages/qr-code-result/qr-code-result.module';
+import {ProfileSettingsPageModule} from '../pages/profile-settings/profile-settings.module';
+import {ContentDetailsPageModule} from './../pages/content-details/content-details.module';
+import {CollectionDetailsPageModule} from './../pages/collection-details/collection-details.module';
+import {ViewMoreActivityPageModule} from './../pages/view-more-activity/view-more-activity.module';
+import {EnrolledCourseDetailsPageModule} from './../pages/enrolled-course-details/enrolled-course-details.module';
+import {CourseBatchesPageModule} from './../pages/course-batches/course-batches.module';
+import {ContainerService, TabOptions} from 'sunbird';
+import {GuestProfilePage} from '../pages/profile/guest-profile/guest-profile';
+import {ProfilePage} from '../pages/profile/profile';
+import {ResourcesPage} from '../pages/resources/resources';
+import {CoursesPageModule} from '../pages/courses/courses.module';
+import {HomePageModule} from '../pages/home/home.module';
+import {ProfilePageModule} from '../pages/profile/profile.module';
+import {ResourcesPageModule} from '../pages/resources/resources.module';
+import {OnboardingPageModule} from '../pages/onboarding/onboarding.module';
+import {LanguageSettingsPageModule} from '../pages/language-settings/language-settings.module';
+import {UserTypeSelectionPageModule} from '../pages/user-type-selection/user-type-selection.module';
+import {QRScannerModule} from '../pages/qrscanner/qrscanner.module';
+import {SearchModule} from '../pages/search/search.module';
+import {CoursesPage} from '../pages/courses/courses';
+import {PageFilterMoudule} from '../pages/page-filter/page.filter.module';
+import {UserAndGroupsPageModule} from '../pages/user-and-groups/user-and-groups.module';
+import {ReportsPageModule} from '../pages/reports/reports.module';
+import {UserReportModule} from '../pages/reports/user-report/user-report.module';
+import {QrCodeResultPageModule} from '../pages/qr-code-result/qr-code-result.module';
+import {TermsAndConditionsPageModule} from '@app/pages/terms-and-conditions/terms-and-conditions.module';
 
 // const HOME_TAB = { root: HomePage, icon: "home", label: "HOME_BNAV", index: 0, tabsHideOnSubPages: true };
 const COURSE_TAB = {
@@ -125,5 +126,6 @@ export const PluginModules = [
     ReportsPageModule,
     UserReportModule,
     ProfileSettingsPageModule,
-    QrCodeResultPageModule
+  QrCodeResultPageModule,
+  TermsAndConditionsPageModule
 ];

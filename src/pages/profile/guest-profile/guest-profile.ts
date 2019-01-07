@@ -1,3 +1,4 @@
+import { TranslateService } from '@ngx-translate/core';
 import { Component } from '@angular/core';
 import {
   NavController,
@@ -12,6 +13,8 @@ import {
   ImpressionType,
   PageId,
   Environment,
+  SuggestedFrameworkRequest,
+  FrameworkService,
 } from 'sunbird';
 
 import { GuestEditProfilePage, OverflowMenuComponent, FormAndFrameworkUtilService } from '@app/pages/profile';
@@ -50,7 +53,9 @@ export class GuestProfilePage {
     private commonUtilService: CommonUtilService,
     private appGlobalService: AppGlobalService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private framework: FrameworkService,
+    private translate: TranslateService
   ) {
 
 
@@ -145,16 +150,19 @@ export class GuestProfilePage {
   getSyllabusDetails() {
     let selectedFrameworkId = '';
 
-    this.formAndFrameworkUtilService.getSupportingBoardList()
+    const suggestedFrameworkRequest: SuggestedFrameworkRequest = {
+      isGuestUser: true,
+      selectedLanguage: this.translate.currentLang
+    };
+    this.framework.getSuggestedFrameworkList(suggestedFrameworkRequest)
       .then((result) => {
-        console.log('getSupportingBoardList', result);
         if (result && result !== undefined && result.length > 0) {
 
           result.forEach(element => {
 
-            if (this.profile.syllabus && this.profile.syllabus.length && this.profile.syllabus[0] === element.frameworkId) {
+            if (this.profile.syllabus && this.profile.syllabus.length && this.profile.syllabus[0] === element.identifier) {
               this.syllabus = element.name;
-              selectedFrameworkId = element.frameworkId;
+              selectedFrameworkId = element.identifier;
             }
           });
 

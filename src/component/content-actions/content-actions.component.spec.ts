@@ -1,299 +1,209 @@
+import {ContentActionsComponent} from '@app/component';
 import {
-    ToastControllerMockNew, NavParamsMock,
-    PopoverControllerMock, TranslateServiceStub, PlatformMock,
-    BuildParamaServiceMock, AuthServiceMock, NavMock, AlertControllerMock
-} from './../../../test-config/mocks-ionic';
-import { ConfigMock } from 'ionic-mocks';
-import { ComponentFixture, TestBed, tick } from '@angular/core/testing';
-import { TranslateService, TranslateModule } from '@ngx-translate/core';
-import { NavController, PopoverController, Events, NavParams } from 'ionic-angular/index';
-import { ViewController, ToastController, Platform, LoadingController } from 'ionic-angular';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import {
-    ContentService, AuthService, ServiceProvider,
-    ProfileService, SharedPreferences, BuildParamService, FrameworkService, TelemetryService
-} from 'sunbird';
-import { Config } from 'ionic-angular';
-import { CommonUtilService } from '../../service/common-util.service';
-import { AlertController, Alert } from 'ionic-angular';
-import { AppGlobalService } from '../../service/app-global.service';
-import { ContentActionsComponent } from './content-actions';
-import { App } from 'ionic-angular/components/app/app';
+  alertControllerMock,
+  authServiceMock,
+  commonUtilServiceMock,
+  contentServiceMock,
+  eventsMock,
+  navParamsMock,
+  platformMock,
+  popoverCtrlMock,
+  telemetryGeneratorServiceMock,
+  toastControllerMock,
+  translateServiceMock,
+  viewControllerMock
+} from '@app/__tests__/mocks';
 
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { } from 'jasmine';
-import { Observable } from 'rxjs';
+import { mockRes } from '@app/pages/enrolled-course-details/enrolled-course-details.spec.data';
+import {Observable} from 'rxjs';
 
-describe('Content-actions', () => {
-    let comp: ContentActionsComponent;
-    let fixture: ComponentFixture<ContentActionsComponent>;
+describe('ContentActionPage Component', () => {
+  let contentActions: ContentActionsComponent;
 
-    beforeEach(() => {
-        const viewControllerStub = {
-            dismiss: () => ({})
-        };
-        TestBed.configureTestingModule({
-            imports: [TranslateModule.forRoot()],
-            schemas: [NO_ERRORS_SCHEMA],
-            declarations: [ContentActionsComponent],
-            providers: [
-                ContentService, Events, AppGlobalService, CommonUtilService, ServiceProvider, ProfileService, LoadingController,
-                SharedPreferences, FrameworkService, App, Config,
-                TelemetryGeneratorService, TelemetryService,
-                { provide: NavController, useClass: NavMock },
-                { provide: NavParams, useClass: NavParamsMock },
-                { provide: ViewController, useValue: viewControllerStub },
-                { provide: AlertController, useFactory: () => AlertControllerMock.instance() },
-                { provide: ToastController, useFactory: () => ToastControllerMockNew.instance() },
-                { provide: PopoverController, useFactory: () => PopoverControllerMock.instance() },
-                // { provide: DeepLinker, useFactory: () => ConfigMock.instance() },
-                { provide: TranslateService, useClass: TranslateServiceStub },
-                { provide: Platform, useClass: PlatformMock },
-                { provide: BuildParamService, useClass: BuildParamaServiceMock },
-                { provide: AuthService, useClass: AuthServiceMock }
-            ]
-        });
+  beforeEach(() => {
+    contentActions = new ContentActionsComponent(
+      viewControllerMock as any,
+      contentServiceMock as any,
+      navParamsMock as any,
+      toastControllerMock as any,
+      popoverCtrlMock as any,
+      authServiceMock as any,
+      alertControllerMock as any,
+      eventsMock as any,
+      translateServiceMock as any,
+      platformMock as any,
+      commonUtilServiceMock as any,
+      telemetryGeneratorServiceMock as any
+    );
 
-        const viewControllerMock = TestBed.get(ViewController);
-        const platformStub = TestBed.get(Platform);
-        spyOn(viewControllerMock, 'dismiss');
-        spyOn(platformStub, 'registerBackButtonAction');
+    jest.resetAllMocks();
+  });
 
-        fixture = TestBed.createComponent(ContentActionsComponent);
-        comp = fixture.componentInstance;
+  it('instance exist', () => {
+    expect(contentActions).toBeTruthy();
+  });
+
+  it('#getUserId should return empty string if user is not logged in', (done) => {
+    expect(contentActions.getUserId).toBeDefined();
+    contentActions.getUserId();
+    authServiceMock.getSessionData.mock.calls[0][0].call(contentActions, 'null');
+    setTimeout(() => {
+      expect(contentActions.getUserId).toHaveBeenCalled();
+      expect(contentActions.userId).toEqual('');
+      done();
+    }, 0);
+  });
+
+  it('#getUserId should set userId to empty string', (done) => {
+    const data = JSON.stringify({});
+    contentActions.pageName = 'course';
+    contentActions.content = {};
+    contentActions.getUserId();
+    authServiceMock.getSessionData.mock.calls[0][0].call(contentActions, data);
+    setTimeout(() => {
+      expect(contentActions.userId).toEqual('');
+      expect(contentActions.showFlagMenu).toBe(true);
+      done();
+    }, 0);
+  });
+
+  it('#getDeleteRequestBody should return apiParams object', () => {
+    contentActions.contentId = 'sample_content_id';
+    contentActions.isChild = true;
+    const apiParams = {
+      contentDeleteList: [{
+        contentId: 'sample_content_id',
+        isChildContent: true
+      }]
+    };
+    const response = contentActions.getDeleteRequestBody();
+    expect(response).toEqual(apiParams);
+  });
+
+  it('#close should call present()', () => {
+    const confirm = {
+      dismiss: jest.fn(),
+      present: jest.fn()
+    };
+    alertControllerMock.create.mockReturnValue(confirm);
+    contentActions.close(0);
+    expect(confirm.present).toHaveBeenCalled();
+  });
+
+  it('#close should call dismiss() and reportIssue()', () => {
+    const confirm = {
+      dismiss: jest.fn(),
+      present: jest.fn()
+    };
+    spyOn(contentActions, 'reportIssue');
+    alertControllerMock.create.mockReturnValue(confirm);
+    contentActions.close(1);
+    expect(contentActions.reportIssue).toHaveBeenCalled();
+    expect(viewControllerMock.dismiss).toHaveBeenCalled();
+  });
+
+  it('#deleteContent should call getMessageByConstant() with CONTENT_DELETE_FAILED', (done) => {
+    const data = {
+      result: {
+        status: 'NOT_FOUND'
+      }
+    };
+    contentActions.content = mockRes.enrollCourseEvent;
+    contentServiceMock.deleteContent.mockResolvedValue(JSON.stringify(data));
+    spyOn(contentActions, 'getMessageByConstant');
+    spyOn(contentActions, 'showToaster');
+    contentActions.deleteContent();
+    setTimeout(() => {
+      expect(contentServiceMock.deleteContent).toHaveBeenCalled();
+      expect(contentActions.getMessageByConstant).toHaveBeenCalledWith('CONTENT_DELETE_FAILED');
+      expect(contentActions.showToaster).toHaveBeenCalled();
+      done();
+    }, 200);
+  });
+
+  it('#deleteContent should call getMessageByConstant() with MSG_RESOURCE_DELETED', (done) => {
+    contentActions.content = mockRes.enrollCourseEvent;
+    contentServiceMock.deleteContent.mockResolvedValue(true);
+    spyOn(contentActions, 'getMessageByConstant');
+    spyOn(contentActions, 'showToaster');
+    contentActions.deleteContent();
+    setTimeout(() => {
+      expect(contentServiceMock.deleteContent).toHaveBeenCalled();
+      expect(contentActions.getMessageByConstant).toHaveBeenCalledWith('MSG_RESOURCE_DELETED');
+      expect(contentActions.showToaster).toHaveBeenCalled();
+      expect(viewControllerMock.dismiss).toHaveBeenCalled();
+      expect(eventsMock.publish).toBeCalled();
+      done();
+    }, 200);
+  });
+
+  it('#deleteContent should go to catch block', (done) => {
+    contentActions.content = mockRes.enrollCourseEvent;
+    contentServiceMock.deleteContent.mockRejectedValue(true);
+    spyOn(contentActions, 'getMessageByConstant');
+    spyOn(contentActions, 'showToaster');
+    contentActions.deleteContent();
+    setTimeout(() => {
+      expect(contentServiceMock.deleteContent).toHaveBeenCalled();
+      expect(contentActions.getMessageByConstant).toHaveBeenCalledWith('CONTENT_DELETE_FAILED');
+      expect(contentActions.showToaster).toHaveBeenCalled();
+      expect(viewControllerMock.dismiss).toHaveBeenCalled();
+      done();
+    }, 200);
+  });
+
+  it('#reportIssue should show popover to report issue', () => {
+    const popUp = {
+      dismiss: jest.fn(),
+      present: jest.fn()
+    };
+    popoverCtrlMock.create.mockReturnValue(popUp);
+    contentActions.reportIssue();
+    expect(popUp.present).toBeCalled();
+  });
+
+  it('#showToaster should return toast object', () => {
+    const toast = {
+      dismiss: jest.fn(),
+      present: jest.fn()
+    };
+    toastControllerMock.create.mockReturnValue(toast);
+    contentActions.showToaster('SAMPLE_STRING');
+    expect(toastControllerMock.create).toHaveBeenCalled();
+  });
+
+  it('#getMessageByConstant should return string', () => {
+    const spy = spyOn(translateServiceMock, 'get').and.callFake((arg) => {
+      return Observable.of('Cancel');
     });
+    contentActions.getMessageByConstant('SAMPLE_STRING');
+    expect(translateServiceMock.get).toHaveBeenCalled();
+    expect(contentActions.getMessageByConstant('CANCEL')).toEqual('Cancel');
+    expect(spy.calls.any()).toEqual(true);
+  });
 
-    it('#constructor should create instance',
-        () => {
-            expect(comp).toBeTruthy();
-        });
+  it('#unenroll should call present', () => {
+    const popUp = {
+      onDidDismiss: jest.fn(),
+      present: jest.fn()
+    };
+    popoverCtrlMock.create.mockReturnValue(popUp);
+    contentActions.unenroll();
+    expect(popUp.present).toBeCalled();
+  });
 
-    it('#getUserId should return empty string if  user is not logged in',
-        (done) => {
-            expect(comp.getUserId).toBeDefined();
-            spyOn(comp, 'getUserId').and.callThrough();
-            const authServiceStub = TestBed.get(AuthService);
-            spyOn(authServiceStub, 'getSessionData').and.callFake(success => {
-                return success('null');
-            });
-            comp.getUserId();
-            setTimeout(() => {
-                expect(comp.getUserId).toHaveBeenCalled();
-                expect(comp.userId).toEqual('');
-                done();
-            }, 0);
-        });
-    it('#getUserId should set userId to empty string',
-        (done) => {
-            expect(comp.getUserId).toBeDefined();
-            spyOn(comp, 'getUserId').and.callThrough();
-            const authServiceStub = TestBed.get(AuthService);
-            const res = {};
-            spyOn(authServiceStub, 'getSessionData').and.callFake(success => {
-                return success(JSON.stringify(res));
-            });
-            comp.pageName = 'course';
-            comp.content = {};
-            comp.getUserId();
-            setTimeout(() => {
-                expect(comp.getUserId).toHaveBeenCalled();
-                expect(comp.userId).toEqual('');
-                expect(comp.showFlagMenu).toBe(true);
-                done();
-            }, 0);
-        });
-
-    it('#getUserId should set userId',
-        (done) => {
-
-            expect(comp.getUserId).toBeDefined();
-            spyOn(comp, 'getUserId').and.callThrough();
-            const authServiceStub = TestBed.get(AuthService);
-            const res = {
-                userToken: 'sample_user_token'
-            };
-            spyOn(authServiceStub, 'getSessionData').and.callFake(success => {
-                return success(JSON.stringify(res));
-            });
-            comp.pageName = 'course';
-            comp.content.batchId = 'sample_batch_id';
-            comp.getUserId();
-            setTimeout(() => {
-                expect(comp.getUserId).toHaveBeenCalled();
-                expect(comp.userId).toEqual('sample_user_token');
-                expect(comp.showFlagMenu).toBe(true);
-                done();
-            }, 10);
-        });
-    it('#getDeleteRequestBody should return apiParams object',
-        () => {
-            comp.contentId = 'sample_content_id';
-            comp.isChild = true;
-            const apiParams = {
-                contentDeleteList: [{
-                    contentId: 'sample_content_id',
-                    isChildContent: true
-                }]
-            };
-            expect(comp.getDeleteRequestBody).toBeDefined();
-            spyOn(comp, 'getDeleteRequestBody').and.callThrough();
-            const response = comp.getDeleteRequestBody();
-            expect(comp.getDeleteRequestBody).toHaveBeenCalled();
-            expect(response).toEqual(apiParams);
-        });
-    it('#close should return apiParams object',
-        () => {
-            expect(comp.close).toBeDefined();
-            spyOn(comp, 'close').and.callThrough();
-            spyOn(comp, 'deleteContent');
-           comp.close(0);
-            expect(comp.close).toHaveBeenCalled();
-            expect(comp.deleteContent).toHaveBeenCalled();
-        });
-    it('#close should return apiParams object', () => {
-        const viewCtrlStub = TestBed.get(ViewController);
-        expect(comp.close).toBeDefined();
-        spyOn(comp, 'close').and.callThrough();
-        spyOn(comp, 'reportIssue');
-        const response = comp.close(1);
-        expect(comp.close).toHaveBeenCalled();
-        expect(comp.reportIssue).toHaveBeenCalled();
-        expect(viewCtrlStub.dismiss).toHaveBeenCalled();
-    });
-    it('#deleteContent should show the proper message if fails to delete content delete the content with given'
-        + 'request body and should proper toast message, on success of API call',
-        (done) => {
-            //    const alertController = TestBed.get(AlertController);
-            const contentServiceStub = TestBed.get(ContentService);
-            const translateServiceStub = TestBed.get(TranslateService);
-            spyOn(comp, 'deleteContent').and.callThrough();
-            spyOn(comp, 'showToaster');
-            // spyOn(alertController, 'create');
-            spyOn(comp, 'getMessageByConstant');
-            spyOn(translateServiceStub, 'get').and.callFake((arg) => {
-                return Observable.of('Cancel');
-                expect(comp.deleteContent).toBeDefined();
-            });
-
-            const responseObj = {
-                result: {
-                    status: 'NOT_FOUND'
-                }
-            };
-            spyOn(contentServiceStub, 'deleteContent').and.callFake((req, response, error) => {
-                response(JSON.stringify(responseObj));
-            });
-
-            comp.deleteContent();
-            setTimeout(() => {
-                expect(comp.deleteContent).toHaveBeenCalled();
-                expect(comp.showToaster).toHaveBeenCalled();
-                expect(comp.getMessageByConstant).toHaveBeenCalled();
-                expect(comp.getMessageByConstant).toHaveBeenCalledWith('CONTENT_DELETE_FAILED');
-                // expect(alertController.create).toHaveBeenCalled();
-                done();
-            }, 10);
-        });
-
-    it('#deleteContent should delete the content with given request body and should proper toast message,'
-        + ' on success of API call',
-        (done) => {
-            expect(comp.deleteContent).toBeDefined();
-            const contentServiceStub = TestBed.get(ContentService);
-            const translateServiceStub = TestBed.get(TranslateService);
-            const eventsStub = TestBed.get(Events);
-            const viewCtrlStub = TestBed.get(ViewController);
-
-            spyOn(comp, 'deleteContent').and.callThrough();
-            spyOn(comp, 'showToaster');
-            spyOn(comp, 'getMessageByConstant');
-            spyOn(eventsStub, 'publish');
-            spyOn(translateServiceStub, 'get').and.callFake((arg) => {
-                return Observable.of('Cancel');
-            });
-
-            const responseObj = {
-                result: {
-                    status: 'SUCCESS'
-                }
-            };
-            spyOn(contentServiceStub, 'deleteContent').and.callFake((req, response, error) => {
-                response(JSON.stringify(responseObj));
-            });
-            comp.deleteContent();
-            setTimeout(() => {
-                expect(comp.deleteContent).toHaveBeenCalled();
-                expect(comp.showToaster).toHaveBeenCalled();
-                expect(comp.getMessageByConstant).toHaveBeenCalled();
-                expect(comp.getMessageByConstant).toHaveBeenCalledWith('MSG_RESOURCE_DELETED');
-                expect(eventsStub.publish).toHaveBeenCalled();
-                expect(eventsStub.publish).toHaveBeenCalledWith('savedResources:update', { update: true });
-                expect(viewCtrlStub.dismiss).toHaveBeenCalled();
-                expect(viewCtrlStub.dismiss).toHaveBeenCalledWith('delete.success');
-                done();
-            }, 10);
-        });
-
-
-
-    it('#deleteContent should show the proper message if fails to delete content delete the content with given request '
-        + 'body and should proper toast message, on success of API call',
-        (done) => {
-            expect(comp.deleteContent).toBeDefined();
-            const contentServiceStub = TestBed.get(ContentService);
-            const translateServiceStub = TestBed.get(TranslateService);
-            const viewCtrlStub = TestBed.get(ViewController);
-
-            spyOn(comp, 'deleteContent').and.callThrough();
-            spyOn(comp, 'showToaster');
-            spyOn(comp, 'getMessageByConstant');
-            spyOn(translateServiceStub, 'get').and.callFake((arg) => {
-                return Observable.of('Cancel');
-            });
-            spyOn(contentServiceStub, 'deleteContent').and.callFake((req, response, error) => {
-                error({});
-            });
-
-            comp.deleteContent();
-            setTimeout(() => {
-                expect(comp.deleteContent).toHaveBeenCalled();
-                expect(comp.showToaster).toHaveBeenCalled();
-                expect(comp.getMessageByConstant).toHaveBeenCalled();
-                expect(comp.getMessageByConstant).toHaveBeenCalledWith('CONTENT_DELETE_FAILED');
-                expect(viewCtrlStub.dismiss).toHaveBeenCalled();
-                done();
-            }, 10);
-        });
-    it('#reportIssue should show popover to report issue', () => {
-        expect(comp.reportIssue).toBeDefined();
-        const popOverCtrlStub = TestBed.get(PopoverController);
-        // /spyOn(popOverCtrlStub, 'create');
-        spyOn(comp, 'reportIssue').and.callThrough();
-        comp.reportIssue();
-        expect(comp.reportIssue).toHaveBeenCalled();
-        expect(popOverCtrlStub.create).toHaveBeenCalled();
-    });
-    it('#showToaster should return toast object', () => {
-        expect(comp.showToaster).toBeDefined();
-        const toastCtrlStub = TestBed.get(ToastController);
-        spyOn(comp, 'showToaster').and.callThrough();
-
-        comp.showToaster('SAMPLE_STRING');
-        expect(toastCtrlStub.create).toHaveBeenCalled();
-    });
-    it('#getMessageByConstant should return string', () => {
-        expect(comp.showToaster).toBeDefined();
-        spyOn(comp, 'showToaster').and.callThrough();
-        const translate = TestBed.get(TranslateService);
-        const spy = spyOn(translate, 'get').and.callFake((arg) => {
-            return Observable.of('Cancel');
-        });
-
-        comp.getMessageByConstant('SAMPLE_STRING');
-        expect(translate.get).toHaveBeenCalled();
-
-        expect(comp.getMessageByConstant('CANCEL')).toEqual('Cancel');
-        expect(spy.calls.any()).toEqual(true);
-    });
+  it('#unenroll should call dismiss()', (done) => {
+    const popUp = {
+      onDidDismiss: jest.fn(),
+      present: jest.fn()
+    };
+    popoverCtrlMock.create.mockReturnValue(popUp);
+    contentActions.unenroll();
+    popUp.onDidDismiss.mock.calls[0][0](contentActions, true);
+    setTimeout(() => {
+      expect(viewControllerMock.dismiss).toHaveBeenCalled();
+      done();
+    }, 0);
+  });
 
 });

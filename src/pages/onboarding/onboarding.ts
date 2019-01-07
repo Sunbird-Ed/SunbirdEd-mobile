@@ -123,7 +123,6 @@ export class OnboardingPage {
     this.backButtonFunc();
   }
 
-
   getLoader(): any {
     return this.loadingCtrl.create({
       spinner: 'crescent'
@@ -133,12 +132,12 @@ export class OnboardingPage {
   signIn() {
     const that = this;
     const loader = this.getLoader();
-    loader.present();
 
     this.generateLoginInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.LOGIN_INITIATE, '');
     that.auth.doOAuthStepOne()
       .then(token => {
+        loader.present();
         return that.auth.doOAuthStepTwo(token);
       })
       .then(() => {

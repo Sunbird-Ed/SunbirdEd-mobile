@@ -301,6 +301,7 @@ ul.rating .ion-md-star-outline:before {
 .select-box .alert-wrapper {
   margin: 0;
   width: 100vw !important;
+  max-width: 100% !important;
   max-width: unset !important;
   max-height: 65vh;
   height: auto !important;
@@ -368,6 +369,7 @@ ul.rating .ion-md-star-outline:before {
 }
 
 .select-box .alert-button {
+  display: inline-block !important;
   display: unset !important;
   .button-inner {
     justify-content: center;

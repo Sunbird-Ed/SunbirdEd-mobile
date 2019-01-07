@@ -47,6 +47,7 @@ import { CollectionDetailsPage } from '@app/pages/collection-details/collection-
 import { ContentDetailsPage } from '@app/pages/content-details/content-details';
 import { AppGlobalService, TelemetryGeneratorService, CommonUtilService } from '@app/service';
 import { FormAndFrameworkUtilService } from './formandframeworkutil.service';
+import { ImageLoader } from 'ionic-image-loader';
 
 /**
  * The Profile page
@@ -111,7 +112,8 @@ export class ProfilePage {
     private containerService: ContainerService,
     private commonUtilService: CommonUtilService,
     private app: App,
-    private contentService: ContentService
+    private contentService: ContentService,
+    private imageLoader: ImageLoader
   ) {
     this.userId = this.navParams.get('userId') || '';
     this.isRefreshProfile = this.navParams.get('returnRefreshedUserProfileDetails');
@@ -263,7 +265,7 @@ export class ProfilePage {
         for (let i = 0, len = this.profile.organisations[0].roles.length; i < len; i++) {
           const roleKey = this.profile.organisations[0].roles[i];
           const val = this.profile.roleList.find(role => role.id === roleKey);
-          if (val) {
+          if (val && val.name.toLowerCase() !== 'public') {
             this.roles.push(val.name);
           }
         }

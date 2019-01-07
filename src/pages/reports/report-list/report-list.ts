@@ -19,6 +19,7 @@ export class ReportListPage {
     listOfUsers;
     listOfReports: Array<ReportSummary> = [];
     groupinfo: any;
+    handle: string;
 
     constructor(private navCtrl: NavController,
         private navParams: NavParams,
@@ -39,6 +40,7 @@ export class ReportListPage {
         this.isFromUsers = this.navParams.get('isFromUsers');
         this.isFromGroups = this.navParams.get('isFromGroups');
         this.uids = this.navParams.get('uids');
+        this.handle = this.navParams.get('handle');
         this.groupinfo = this.navParams.get('group');
         console.log(this.groupinfo);
         const loader = this.loading.create({
@@ -94,7 +96,8 @@ export class ReportListPage {
         );
         if (this.isFromUsers) {
             this.navCtrl.push(UserReportPage, {
-                report: report
+                report: report,
+                handle: this.handle
             });
         } else
             if (this.isFromGroups) {

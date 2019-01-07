@@ -20,7 +20,7 @@
 <ion-content>
     <div [ngSwitch]="report">
         <ion-list class="item-background radius" *ngSwitchCase="'users'" padding>
-            <ion-item class="bgColor" (click)="goToUserReportList(currentUser?.uid)" margin-bottom no-lines>
+            <ion-item class="bgColor" (click)="goToUserReportList(currentUser?.uid,currentUser?.handle)" margin-bottom no-lines>
                 <h6><b>{{currentUser?.handle}}</b></h6>
                 <p *ngIf="currentUser?.profileType === 'TEACHER'">{{'USER_TYPE_1' | translate | titlecase}}</p>
                 <p *ngIf="currentUser?.profileType === 'STUDENT'">{{'USER_TYPE_2' | translate | titlecase}}</p>
@@ -29,7 +29,7 @@
             <ion-item no-padding *ngIf="users?.length > 0" margin-bottom no-lines>
                 <p ion-text text-uppercase color="dark_gray" class="subTitle">{{ 'OTHER_USERS' | translate}}</p>
             </ion-item>
-            <ion-item class="bgColor" (click)="goToUserReportList(user?.uid)" margin-bottom no-lines *ngFor="let user of otherUsers;let i=index">
+            <ion-item class="bgColor" (click)="goToUserReportList(user?.uid,user?.handle)" margin-bottom no-lines *ngFor="let user of otherUsers;let i=index">
                 <h6><b>{{user?.handle}}</b></h6>
                 <p *ngIf="user?.profileType === 'TEACHER'">{{'USER_TYPE_1' | translate | titlecase}}</p>
                 <p *ngIf="user?.profileType === 'STUDENT'">{{'USER_TYPE_2' | translate | titlecase}}</p>

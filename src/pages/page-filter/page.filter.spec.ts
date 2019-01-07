@@ -36,14 +36,14 @@ describe('PageFilter component', () => {
         jest.resetAllMocks();
     });
 
-    it('sets default language to en', () => {
+    it('should set default language to en', () => {
         expect(pageFilter.selectedLanguage).toBe('en');
     });
     it('should ctreate a valid instance of PageFilter', () => {
         expect(pageFilter).toBeTruthy();
     });
 
-    it(' cancel() should dismiss the viewcontroller', () => {
+    it('should dismiss the viewcontroller when cancel()', () => {
         // arrange
         spyOn(telemetryGeneratorServiceMock, 'generateInteractTelemetry').and.stub();
         // act
@@ -53,7 +53,7 @@ describe('PageFilter component', () => {
 
     });
 
-    it('apply should dismiss the viewcontroller after applying the filter', () => {
+    it('should dismiss the viewcontroller after applying the filter when apply()', () => {
 
         // arrange
         pageFilter.callback = {
@@ -68,7 +68,7 @@ describe('PageFilter component', () => {
     });
 
     describe('initFilterValues()', () => {
-        it('initFilterValues() should initiate the filters', () => {
+        it('should initiate the filters initFilterValues()', () => {
             // arrange
             navParamsMock.get.mockImplementation((param: string) => {
                 if (param === 'filter') {
@@ -84,7 +84,7 @@ describe('PageFilter component', () => {
             expect(pageFilter.filters).toBeDefined();
         });
 
-        it('initFilterValues() should initiate the filters', () => {
+        it('should initiate the filters when initFilterValues()', () => {
             // arrange
             navParamsMock.get.mockImplementation((param: string) => {
                 if (param === 'filter') {
@@ -101,7 +101,7 @@ describe('PageFilter component', () => {
         });
     });
 
-    it('openFilterOptions() should open the filter option popup', () => {
+    it('should open the filter option popup openFilterOptions()', () => {
         // arrange
         popoverCtrlMock.create.mockReturnValue({ present: jest.fn() });
         // act
@@ -110,14 +110,14 @@ describe('PageFilter component', () => {
         expect(popoverCtrlMock.create).toHaveBeenCalled();
     });
 
-    it('getSelectedOptionCount() should give the count of added filter option', () => {
+    it(' should give the count of added filter option when getSelectedOptionCount()', () => {
         // arrange
         commonUtilServiceMock.translateMessage.mockReturnValue('FILTER_ADDED');
         // act-assert
         expect(pageFilter.getSelectedOptionCount(mockRes.filters[0])).toBe('1 FILTER_ADDED');
     });
 
-    it('getSelectedOptionCount() should give nothing when no filter is selected', () => {
+    it(' should give nothing when no filter is selected when getSelectedOptionCount()', () => {
         // act-assert
         expect(pageFilter.getSelectedOptionCount({})).toBe('');
     });

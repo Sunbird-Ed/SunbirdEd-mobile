@@ -185,10 +185,10 @@
 			'PLAY_FROM_DEVICE' | translate }}</button>
 		<ion-icon *ngIf="isDownloadStarted && downloadProgress !== 100" (click)="cancelDownload()" name="ios-close-circle-outline"
 		 class="cancel-download" color="primary"></ion-icon>
-		<!-- <button ion-button block *ngIf="!content?.downloadable && !isDownloadStarted" (click)="downloadContent()">
+		<button ion-button block *ngIf="!content?.downloadable && !isDownloadStarted" (click)="downloadContent()">
 			{{ isDownloadStarted ? ('DOWNLOADING_1' | translate:{'%s': downloadProgress}) + ' %' : ('DOWNLOAD' | translate) }}
-		 -->
-		<button ion-button *ngIf="isDownloadStarted" (click)="downloadContent()" text-uppercase [ngClass]="{'text-font': isDownloadStarted && ('DOWNLOADING_1' | translate).length > 18}"
+		</button>
+		<button ion-button *ngIf="isDownloadStarted" text-uppercase [ngClass]="{'text-font': isDownloadStarted && ('DOWNLOADING_1' | translate).length > 18}"
 		 [ngStyle]="{'background': '-webkit-linear-gradient(left, rgba(0,73,153, 0.86) '  +downloadProgress+ '%, #006DE5 0%)', 'width': isDownloadStarted === true ? '80%' : '100%'}"
 		 style="transition: all 0s ease 0s;">
 			{{ isDownloadStarted ? ('DOWNLOADING_1' | translate:{'%s': downloadProgress}) + ' %' : ('DOWNLOAD' | translate) }}

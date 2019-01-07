@@ -23,7 +23,9 @@ import {
   Profile,
   ProfileService,
   SharedPreferences,
-  TabsPage
+  TabsPage,
+  SuggestedFrameworkRequest,
+  FrameworkService
 } from 'sunbird';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
@@ -118,6 +120,7 @@ export class QrCodeResultPage {
     private preferences: SharedPreferences,
     private popOverCtrl: PopoverController,
     private commonUtilService: CommonUtilService,
+    private framework: FrameworkService
   ) {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
@@ -181,7 +184,8 @@ export class QrCodeResultPage {
       });
     } else if (this.appGlobalService.isGuestUser && this.isSingleContent && !this.appGlobalService.isProfileSettingsCompleted) {
       this.navCtrl.setRoot(ProfileSettingsPage, {
-        isCreateNavigationStack: true
+        isCreateNavigationStack: false,
+        hideBackButton: true
       });
     } else {
       this.navCtrl.pop();
@@ -418,15 +422,18 @@ export class QrCodeResultPage {
 	 * @param {object} profile
 	 */
   checkProfileData(data, profile) {
-    console.log('qr data', data);
     if (data && data.framework) {
 
-      this.formAndFrameworkUtilService.getSupportingBoardList()
+      const suggestedFrameworkRequest: SuggestedFrameworkRequest = {
+        isGuestUser: true,
+        selectedLanguage: this.translate.currentLang
+      };
+      this.framework.getSuggestedFrameworkList(suggestedFrameworkRequest)
         .then((res) => {
           let isProfileUpdated = false;
           res.forEach(element => {
             // checking whether content data framework Id exists/valid in syllabus list
-            if (data.framework === element.frameworkId) {
+            if (data.framework === element.identifier) {
               isProfileUpdated = true;
               // Get frameworkdetails(categories)
               this.formAndFrameworkUtilService.getFrameworkDetails(data.framework)

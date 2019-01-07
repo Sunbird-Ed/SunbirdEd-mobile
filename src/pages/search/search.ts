@@ -203,7 +203,7 @@ export class SearchPage {
             loginMode: 'guest'
           });
         } else {
-          this.navCtrl.setRoot('ProfileSettingsPage', { isCreateNavigationStack: true });
+          this.navCtrl.setRoot('ProfileSettingsPage', { isCreateNavigationStack: false, hideBackButton: true });
         }
       } else {
         this.popCurrentPage();

@@ -95,7 +95,9 @@ export class AudienceFilter {
 
 export class EventTopics {
     public static readonly ENROL_COURSE_SUCCESS = 'ENROL_COURSE_SUCCESS';
+    public static readonly UNENROL_COURSE_SUCCESS = 'UNENROL_COURSE_SUCCESS';
     public static readonly COURSE_STATUS_UPDATED_SUCCESSFULLY = 'COURSE_STATUS_UPDATED_SUCCESSFULLY';
+    public static readonly REFRESH_ENROLL_COURSE_LIST = 'REFRESH_ENROLL_COURSE_LIST';
 }
 
 export class ShareUrl {
@@ -200,7 +202,6 @@ export class PageName {
 }
 
 export class XwalkConstants {
-    public static readonly LINK = 'https://play.google.com/store/apps/details?id=org.xwalk.core';
     public static readonly APP_ID = 'org.xwalk.core';
 }
 

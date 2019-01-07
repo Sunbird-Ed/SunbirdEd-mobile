@@ -1,6 +1,6 @@
-import {CourseBatchStatus, CourseEnrollmentType} from 'sunbird';
-import {mockRes} from '../course-batches/course-batches.spec.data';
-import {CourseBatchesPage} from './course-batches';
+import { CourseBatchStatus, CourseEnrollmentType } from 'sunbird';
+import { mockRes } from '../course-batches/course-batches.spec.data';
+import { CourseBatchesPage } from './course-batches';
 import {
   authServiceMock,
   commonUtilServiceMock,
@@ -32,55 +32,14 @@ describe.only('CourseBatchesPage', () => {
     expect(courseBatchesPage).not.toBeFalsy();
   });
 
-  it('should invoke getBatchesByCourseId() and populate ongoingbatches list', (done) => {
-    // arrange
-    courseServiceMock.getCourseBatches.mockReturnValue(Promise.
-    resolve(JSON.stringify(mockRes.getOngoingBatchesResponse)));
-    // act
-    courseBatchesPage.getBatchesByCourseId(CourseBatchStatus.COMPLETED);
-    // assert
-    expect(courseServiceMock.getCourseBatches).toHaveBeenCalledWith(expect.objectContaining({
-      enrollmentType: CourseEnrollmentType.OPEN,
-      status: CourseBatchStatus.COMPLETED
-    }));
-    setTimeout(() => {
-      expect(courseBatchesPage.ongoingBatches.length).toBe(0);
-      expect(courseBatchesPage.upcommingBatches.length).toBe(0);
-      done();
-    }, 0);
-  });
-
-  it('should invoke getBatchesByCourseId() and populate upcomingbatches list', (done) => {
-    // arrange
-    (courseServiceMock.getCourseBatches as any).mockReturnValue(Promise.resolve(JSON.stringify(mockRes.getUpcomingBatchesResponse)));
-    // act
-    courseBatchesPage.getBatchesByCourseId(CourseBatchStatus.COMPLETED);
-    // assert
-    expect(courseServiceMock.getCourseBatches).toHaveBeenCalledWith(expect.objectContaining({
-      enrollmentType: CourseEnrollmentType.OPEN,
-      status: CourseBatchStatus.COMPLETED
-    }));
-    setTimeout(() => {
-      expect(courseBatchesPage.ongoingBatches.length).toBe(0);
-      expect(courseBatchesPage.upcommingBatches.length).toBe(0);
-      done();
-    }, 0);
-  });
-
-  it('should show error message in case of no internet connection', (done) => {
-    // arrange
-    (courseServiceMock.getCourseBatches as any).mockReturnValue(Promise.reject('CONNECTION_ERROR'));
+  it('should invoke getBatchesByCourseId() and initialize upcomingbatches & ongoingbatches list', () => {
+    navParamsMock.get.mockImplementation((param: string) => {
+      if (param === 'ongoingBatch' || param === 'upcommingBatch') {
+        return [];
+      }
+    });
     // act
     courseBatchesPage.getBatchesByCourseId();
-    // assert
-    expect(navParamsMock.get).toHaveBeenCalledWith('identifier');
-    expect(courseServiceMock.getCourseBatches).toHaveBeenCalled();
-    setTimeout(() => {
-      (zoneMock.run as jest.Mock).mock.calls[0][0].call(courseBatchesPage, undefined);
-      expect(zoneMock.run).toHaveBeenCalled();
-      expect(courseBatchesPage.showLoader).toBe(false);
-      done();
-    }, 0);
   });
 
   it('should show toast message after successfully enrolling to a batch', (done) => {
@@ -95,16 +54,6 @@ describe.only('CourseBatchesPage', () => {
       expect(navCtrlMock.pop).toHaveBeenCalled();
       done();
     }, 0);
-  });
-
-  it('should show error message in case of no internet connection', () => {
-    // arrange
-    (courseServiceMock.getCourseBatches as any).mockReturnValue(Promise.reject('USER_ALREADY_ENROLLED_COURSE'));
-    // act
-    courseBatchesPage.getBatchesByCourseId();
-    // assert
-    expect(courseBatchesPage.ongoingBatches.length).toBe(0);
-    expect(courseBatchesPage.upcommingBatches.length).toBe(0);
   });
 
   it('should show error toast message while enrolling to a batch in case of no internet connection', (done) => {
@@ -140,7 +89,7 @@ describe.only('CourseBatchesPage', () => {
     // arrange
     courseBatchesPage.ngOnInit();
     // act
-    (authServiceMock.getSessionData  as jest.Mock).mock.calls[0][0].call(courseBatchesPage, undefined);
+    (authServiceMock.getSessionData as jest.Mock).mock.calls[0][0].call(courseBatchesPage, undefined);
     (zoneMock.run as jest.Mock).mock.calls[0][0].call(courseBatchesPage, undefined);
     // assert
     setTimeout(() => {
@@ -150,49 +99,16 @@ describe.only('CourseBatchesPage', () => {
   });
 
   it('should  invoke getBatchesByCourseId for signedIn user', (done) => {
-    // arrange
-    (courseServiceMock.getCourseBatches as any).mockReturnValue(Promise.resolve(JSON.stringify(mockRes.getOngoingBatchesResponse)));
-    courseBatchesPage.getBatchesByCourseId(CourseBatchStatus.COMPLETED);
-    expect(courseServiceMock.getCourseBatches).toHaveBeenCalledWith(expect.objectContaining({
-      enrollmentType: CourseEnrollmentType.OPEN,
-      status: CourseBatchStatus.COMPLETED
-    }));
+    // act
     courseBatchesPage.ngOnInit();
-    (authServiceMock.getSessionData  as jest.Mock).mock.calls[0][0].call(courseBatchesPage,
+    (authServiceMock.getSessionData as jest.Mock).mock.calls[0][0].call(courseBatchesPage,
       JSON.stringify(mockRes.sessionResponse));
+      // expect
     setTimeout(() => {
       (zoneMock.run as jest.Mock).mock.calls[0][0].call(courseBatchesPage, undefined);
       expect(zoneMock.run).toHaveBeenCalled();
       expect(courseBatchesPage.isGuestUser).toBe(false);
       expect(courseBatchesPage.userId).toBe('sample_user_token');
-      done();
-    }, 0);
-  });
-
-  it('should  update filter for ongoing', (done) => {
-    // arrange
-    (courseServiceMock.getCourseBatches as any).mockReturnValue(Promise.resolve(JSON.stringify(mockRes.getOngoingBatchesResponse)));
-    // act
-    courseBatchesPage.changeFilter('ONGOING');
-    // assert
-    expect(courseServiceMock.getCourseBatches).toHaveBeenCalledWith(expect.objectContaining({
-      status: CourseBatchStatus.IN_PROGRESS
-    }));
-    expect(courseBatchesPage.selectedFilter).toBe(courseBatchesPage.filterList.ONGOING);
-    done();
-  });
-
-  it('should update filter for upcoming', (done) => {
-    // arrange
-    (courseServiceMock.getCourseBatches as any).mockReturnValue(Promise.resolve(JSON.stringify(mockRes.getOngoingBatchesResponse)));
-    // act
-    courseBatchesPage.changeFilter('UPCOMING');
-    // assert
-    setTimeout(() => {
-      expect(courseServiceMock.getCourseBatches).toHaveBeenCalledWith(expect.objectContaining({
-        status: CourseBatchStatus.NOT_STARTED
-      }));
-      expect(courseBatchesPage.selectedFilter).toBe(courseBatchesPage.filterList.UPCOMING);
       done();
     }, 0);
   });
