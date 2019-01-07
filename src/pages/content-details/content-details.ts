@@ -329,8 +329,7 @@ export class ContentDetailsPage {
    */
   rateContent(popupType: string) {
     const paramsMap = new Map();
-    if (this.isContentPlayed || (this.content.downloadable
-      && this.content.contentAccess.length)) {
+    if (this.isContentPlayed || this.content.contentAccess.length) {
 
       paramsMap['IsPlayed'] = 'Y';
       const popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
