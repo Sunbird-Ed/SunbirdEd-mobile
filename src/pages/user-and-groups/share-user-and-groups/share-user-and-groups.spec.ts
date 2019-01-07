@@ -1,170 +1,224 @@
-// import { ComponentFixture, TestBed } from '@angular/core/testing';
-// import { NO_ERRORS_SCHEMA } from '@angular/core';
-// import { NgZone } from '@angular/core';
-// import { LoadingController } from 'ionic-angular';
-// import { GroupService } from 'sunbird';
-// import { ProfileService } from 'sunbird';
-// import { FileUtil } from 'sunbird';
-// import { SocialSharing } from '@ionic-native/social-sharing';
-// import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
-// import { ShareUserAndGroupPage } from './share-user-and-groups';
-// import { TranslateService, TranslateModule } from '@ngx-translate/core';
-// import { promise } from 'selenium-webdriver';
-// import { } from 'jasmine';
+import { ShareUserAndGroupPage } from './share-user-and-groups';
+import { mockAllProfiles, userList, groupList, usergroupmap } from './share-user-and-group.spec.data';
+import {
+    groupServiceMock, profileServiceMock, zoneMock, fileUtilMock, socialSharingMock, loadingControllerMock,
+    telemetryGeneratorServiceMock, navParamsMock
+} from '../../../__tests__/mocks';
 
-// import {
-//     LoadingControllerMock,
-// } from 'ionic-mocks';
+describe('ShareUserAndGroupPage', () => {
+    let shareUserAndGroupPage: ShareUserAndGroupPage;
 
-// describe('ShareUserAndGroupPage', () => {
-//     let comp: ShareUserAndGroupPage;
-//     let fixture: ComponentFixture<ShareUserAndGroupPage>;
+    beforeEach(() => {
+        navParamsMock.get.mockImplementation((data: any) => {
+            if (data === 'groupInfo') {
+                return ({
+                    name: 'group_name'
+                });
+            } else if (data.gid === 'currentUserId') {
+                return 'sample_group_id';
+            } else {
+                return 'OTHER';
+            }
+        });
+        shareUserAndGroupPage = new ShareUserAndGroupPage(
+            groupServiceMock as any,
+            profileServiceMock as any,
+            zoneMock as any,
+            fileUtilMock as any,
+            socialSharingMock as any,
+            loadingControllerMock as any,
+            telemetryGeneratorServiceMock as any
+        );
+        // addOrRemoveUserGroup.uniqueUserList = [];
+        jest.resetAllMocks();
+    });
+    it('can load instance', () => {
+        expect(shareUserAndGroupPage).toBeTruthy();
+    });
 
-//     beforeEach(() => {
-//         const ngZoneStub = {
-//             run: () => ({})
-//         };
-//         const loadingControllerStub = {
-//             create: () => ({
-//                 present: () => ({}),
-//                 dismiss: () => ({})
-//             })
-//         };
-//         const groupServiceStub = {
-//             getAllGroup: () => ({
-//                 then: () => ({
-//                     catch: () => ({})
-//                 })
-//             })
-//         };
-//         const profileServiceStub = {
-//             getAllUserProfile: () => ({
-//                 then: () => ({
-//                     catch: () => ({})
-//                 })
-//             }),
-//             exportProfile: () => ({})
-//         };
-//         const fileUtilStub = {
-//             internalStoragePath: () => ({})
-//         };
-//         const socialSharingStub = {
-//             share: () => ({})
-//         };
-//         const telemetryGeneratorServiceStub = {
-//             generateInteractTelemetry: () => ({})
-//         };
-//         TestBed.configureTestingModule({
-//             declarations: [ShareUserAndGroupPage],
-//             schemas: [NO_ERRORS_SCHEMA],
-//             imports: [TranslateModule.forRoot()],
-//             providers: [
-//                 // { provide: NgZone, useValue: ngZoneStub },
-//                 // { provide: LoadingController, useValue: loadingControllerStub },
-//                 { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() },
-//                 { provide: GroupService, useValue: groupServiceStub },
-//                 { provide: ProfileService, useValue: profileServiceStub },
-//                 { provide: FileUtil, useValue: fileUtilStub },
-//                 { provide: SocialSharing, useValue: socialSharingStub },
-//                 { provide: TelemetryGeneratorService, useValue: telemetryGeneratorServiceStub },
-//                 { provide: TranslateService },
-//             ]
-//         });
-//         fixture = TestBed.createComponent(ShareUserAndGroupPage);
-//         comp = fixture.componentInstance;
-//     });
+    it('should be called ionViewWillEnter', () => {
 
-//     it('can load instance', () => {
-//         expect(comp).toBeTruthy();
-//     });
+        // arrange
+        spyOn(shareUserAndGroupPage, 'getAllProfile').and.stub();
+        spyOn(shareUserAndGroupPage, 'getAllGroup').and.stub();
+        // act
+        shareUserAndGroupPage.ionViewWillEnter();
+        // assert
+    });
 
-//     it('userList defaults to: []', () => {
-//         expect(comp.userList).toEqual([]);
-//     });
+    it('should fetch all profile details for getAllProfile()', (done) => {
+        // arrange
+        profileServiceMock.getAllUserProfile.mockResolvedValue(JSON.stringify(mockAllProfiles));
+        // act
+        shareUserAndGroupPage.getAllProfile();
+        // assert
+        setTimeout(() => {
+            zoneMock.run.mock.calls[0][0].call(shareUserAndGroupPage);
+            done();
+        }, 0);
+    });
+    it('to test error scenerio of the profile', (done) => {
+        // arrange
+        profileServiceMock.getAllUserProfile.mockRejectedValue(undefined);
+        // act
+        shareUserAndGroupPage.getAllProfile();
+        // assert
+        setTimeout(() => {
+            expect(profileServiceMock.getAllUserProfile).toHaveBeenCalled();
+            done();
+        }, 0);
+    });
 
-//     it('groupList defaults to: []', () => {
-//         expect(comp.groupList).toEqual([]);
-//     });
+    it('to get the group info', (done) => {
+        // arrange
+        groupServiceMock.getAllGroup.mockResolvedValue((JSON.stringify(mockAllProfiles)));
+        profileServiceMock.getAllUserProfile.mockResolvedValue((JSON.stringify(userList)));
+        // act
+        shareUserAndGroupPage.getAllGroup();
+        // assert
+        setTimeout(() => {
+            zoneMock.run.mock.calls[0][0].call(shareUserAndGroupPage);
+            done();
+        }, 0);
+    });
 
-//     it('selectedUserList defaults to: []', () => {
-//         expect(comp.selectedUserList).toEqual([]);
-//     });
+    it('to get the error info inside all User profiles', (done) => {
+        // arrange
+        const profile = [{ uid: 'SAMPLE_GID' } as any];
+        groupServiceMock.getAllGroup.mockResolvedValue((JSON.stringify(mockAllProfiles)));
+        profileServiceMock.getAllUserProfile.mockRejectedValue('error');
+        shareUserAndGroupPage['userGroupMap'] = new Map();
+        shareUserAndGroupPage['userGroupMap'].set('SAMPLE_UID', profile);
+        spyOn(shareUserAndGroupPage['userGroupMap'], 'set').and.callThrough();
+        // act
+        shareUserAndGroupPage.getAllGroup();
+        // assert
+        setTimeout(() => {
+            zoneMock.run.mock.calls[0][0].call(shareUserAndGroupPage);
+            done();
+        }, 0);
+    });
 
-//     it('selectedGroupList defaults to: []', () => {
-//         expect(comp.selectedGroupList).toEqual([]);
-//     });
+    it('to get the error info inside all group error cause', (done) => {
+        // arrange
+        // zoneMock.run.mock.calls.call(shareUserAndGroupPage);
+        const profile = [{ uid: 'SAMPLE_GID' } as any];
+        groupServiceMock.getAllGroup.mockRejectedValue(undefined);
+        // act
+        shareUserAndGroupPage.getAllGroup();
+        // assert
+        setTimeout(() => {
+            done();
+        }, 0);
+    });
 
-//     describe('ionViewWillEnter', () => {
-//         it('makes expected calls', () => {
-//             spyOn(comp, 'getAllProfile');
-//             spyOn(comp, 'getAllGroup');
-//             comp.ionViewWillEnter();
-//             expect(comp.getAllProfile).toHaveBeenCalled();
-//             expect(comp.getAllGroup).toHaveBeenCalled();
-//         });
-//     });
+    it('to get the check user groups', () => {
+        // arrange
+        const totalLength = 2;
+        // act
+        shareUserAndGroupPage.checkUserGroups();
+        // assert
+        expect(totalLength).toBeGreaterThan(0);
+        // return true;
+    });
 
-//     describe('getAllProfile', () => {
-//         it('makes expected calls', () => {
-//             //  const ngZoneStub: NgZone = fixture.debugElement.injector.get(NgZone);
-//             const profileServiceStub: ProfileService = fixture.debugElement.injector.get(ProfileService);
-//             //  spyOn(ngZoneStub, 'run');
-//             spyOn(profileServiceStub, 'getAllUserProfile').and.returnValue(Promise.resolve([]));
-//             comp.getAllProfile();
-//             //  expect(ngZoneStub.run).toHaveBeenCalled();
-//             expect(profileServiceStub.getAllUserProfile).toHaveBeenCalled();
-//         });
-//     });
 
-//     describe('getAllGroup', () => {
-//         it('makes expected calls', () => {
-//             // const ngZoneStub: NgZone = fixture.debugElement.injector.get(NgZone);
-//             const groupServiceStub: GroupService = fixture.debugElement.injector.get(GroupService);
-//             const profileServiceStub: ProfileService = fixture.debugElement.injector.get(ProfileService);
-//             //  spyOn(ngZoneStub, 'run');
-//             spyOn(groupServiceStub, 'getAllGroup').and.returnValue(Promise.resolve([]));
-//             spyOn(profileServiceStub, 'getAllUserProfile').and.callThrough;
-//             comp.getAllGroup();
-//             //  expect(ngZoneStub.run).toHaveBeenCalled();
-//             expect(groupServiceStub.getAllGroup).toHaveBeenCalled();
-//             // expect(profileServiceStub.getAllUserProfile).toHaveBeenCalled();
-//         });
-//     });
+    it('to get the check user groups', (done) => {
+        // arrange
+        shareUserAndGroupPage.selectedGroupList = [];
+        shareUserAndGroupPage.groupList = groupList;
+        // shareUserAndGroupPage.userGroupMap.get(groupList[0].gid);
+        shareUserAndGroupPage['userGroupMap'] = new Map();
+        shareUserAndGroupPage['userGroupMap'].set('781e5927-29d3-48e2-bbfd-ba883d0a905f', usergroupmap as any);
+        // act
+        shareUserAndGroupPage.toggleGroupSelected(0);
+        // assert
+        setTimeout(() => {
+            expect(shareUserAndGroupPage.selectedGroupList.length).toEqual(1);
+            done();
+        }, 0);
+    });
 
-//     describe('selectAll', () => {
-//         it('makes expected calls', () => {
-//             const ngZoneStub: NgZone = fixture.debugElement.injector.get(NgZone);
-//             spyOn(comp, 'toggleUserSelected');
-//             spyOn(comp, 'toggleGroupSelected');
-//             spyOn(ngZoneStub, 'run');
-//             comp.selectAll();
-//             // expect(comp.toggleUserSelected).toHaveBeenCalled();
-//             // expect(comp.toggleGroupSelected).toHaveBeenCalled();
-//             expect(ngZoneStub.run).toHaveBeenCalled();
-//         });
-//     });
+    it('to get the check user groups if exists then delete', (done) => {
+        // arrange
+        shareUserAndGroupPage.selectedGroupList = ['781e5927-29d3-48e2-bbfd-ba883d0a905f'];
+        shareUserAndGroupPage.groupList = groupList;
+        // shareUserAndGroupPage.userGroupMap.get(groupList[0].gid);
+        shareUserAndGroupPage['userGroupMap'] = new Map();
+        shareUserAndGroupPage['userGroupMap'].set('781e5927-29d3-48e2-bbfd-ba883d0a905f', usergroupmap as any);
+        // act
+        shareUserAndGroupPage.toggleGroupSelected(0);
+        // assert
+        setTimeout(() => {
+            expect(shareUserAndGroupPage.selectedGroupList.length).toEqual(0);
+            done();
+        }, 0);
+    });
+    it('to get the check user selected to add', (done) => {
+        // arrange
+        shareUserAndGroupPage.selectedUserList = [];
+        shareUserAndGroupPage.userList = usergroupmap as any;
+        // shareUserAndGroupPage.userGroupMap.get(groupList[0].gid);
+        shareUserAndGroupPage['userGroupMap'] = new Map();
+        shareUserAndGroupPage['userWeightMap'].get('781e5927-29d3-48e2-bbfd-ba883d0a905f');
+        // act
+        shareUserAndGroupPage.toggleUserSelected(0);
+        // assert
+        setTimeout(() => {
+            expect(shareUserAndGroupPage.selectedUserList.length).toEqual(1);
+            done();
+        }, 0);
+    });
 
-//     describe('share', () => {
-//         it('makes expected calls', () => {
-//             const loadingController = TestBed.get(LoadingController);
-//             const profileServiceStub: ProfileService = fixture.debugElement.injector.get(ProfileService);
-//             const fileUtilStub: FileUtil = fixture.debugElement.injector.get(FileUtil);
-//             const socialSharingStub: SocialSharing = fixture.debugElement.injector.get(SocialSharing);
-//             const telemetryGeneratorServiceStub: TelemetryGeneratorService = fixture.debugElement.injector.get(TelemetryGeneratorService);
-//             const loader = jasmine.createSpy().and.callFake( () => {
-//                 return { present: () => { }, dismiss: () => { } };
-//             });
-//             spyOn(profileServiceStub, 'exportProfile');
-//             spyOn(fileUtilStub, 'internalStoragePath');
-//             spyOn(socialSharingStub, 'share');
-//             spyOn(telemetryGeneratorServiceStub, 'generateInteractTelemetry');
-//             comp.share();
-//             expect(loadingController.create).toHaveBeenCalled();
-//             expect(profileServiceStub.exportProfile).toHaveBeenCalled();
-//             expect(fileUtilStub.internalStoragePath).toHaveBeenCalled();
-//             // expect(socialSharingStub.share).toHaveBeenCalled();
-//             expect(telemetryGeneratorServiceStub.generateInteractTelemetry).toHaveBeenCalled();
-//         });
-//     });
+    it('to check the isuser selected ', () => {
+        // arrange
+        shareUserAndGroupPage.selectedUserList = ['SAMPLE_UID'];
+        // act
+        expect(shareUserAndGroupPage.isUserSelected('SAMPLE_UID')).toBe(true);
+    });
 
-// });
+    it('to check the Is Group Is selected ', () => {
+        // arrange
+        shareUserAndGroupPage.selectedGroupList = ['SAMPLE_UID'];
+        // act
+        expect(shareUserAndGroupPage.isGroupSelected('SAMPLE_UID')).toBe(true);
+        // assert
+        // expect(shareUserAndGroupPage.selectedUserList).toBeTruthy();
+    });
+    it('to check the is isShareEnabled or not ', () => {
+        // arrange
+        shareUserAndGroupPage.selectedUserList = [userList as any];
+        // act
+        expect(shareUserAndGroupPage.isShareEnabled()).toEqual(true);
+        // assert
+    });
+
+    it('to check the share user and groups', (done) => {
+        // arrange
+        shareUserAndGroupPage.selectedUserList = [userList as any];
+        shareUserAndGroupPage.selectedGroupList = [groupList as any];
+        (fileUtilMock.internalStoragePath as any).mockReturnValue('SAMPLE_CODE');
+        profileServiceMock.exportProfile.mockResolvedValue((mockAllProfiles as any));
+        spyOn(socialSharingMock, 'share').and.stub();
+        loadingControllerMock.create.mockReturnValue({
+            present: () => {
+            },
+            dismiss: () => {
+            }
+        });
+        // act
+        shareUserAndGroupPage.share();
+        // assert
+        setTimeout(() => {
+            expect(fileUtilMock.internalStoragePath).toHaveBeenCalled();
+            expect(profileServiceMock.exportProfile).toHaveBeenCalled();
+            expect(loadingControllerMock.create).toHaveBeenCalled();
+            done();
+        }, 1000);
+    });
+
+
+});
+
+
+

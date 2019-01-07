@@ -34,9 +34,9 @@ export class ShareUserAndGroupPage {
   selectedUserList: Array<string> = [];
   selectedGroupList: Array<string> = [];
 
-  private userWeightMap: Map<string, number> = new Map();
+   private userWeightMap: Map<string, number> = new Map();
 
-  private userGroupMap: Map<string, Array<Profile>> = new Map();
+   private userGroupMap: Map<string, Array<Profile>> = new Map();
 
   constructor(
     private groupService: GroupService,
@@ -68,7 +68,6 @@ export class ShareUserAndGroupPage {
         this.userList.forEach(profile => {
           this.userWeightMap.set(profile.uid, 0);
         });
-        console.log('UserList', profiles);
       });
     }).catch((error) => {
       console.log('Something went wrong while fetching user list', error);
@@ -122,7 +121,7 @@ export class ShareUserAndGroupPage {
   toggleGroupSelected(index: number) {
     const selectedGroup = this.groupList[index];
     const allUser = this.userGroupMap.get(selectedGroup.gid);
-
+    console.log(selectedGroup , allUser);
     if (this.selectedGroupList.indexOf(selectedGroup.gid) === -1) {
       // Add User & Group
       this.selectedGroupList.push(selectedGroup.gid);
@@ -241,7 +240,6 @@ export class ShareUserAndGroupPage {
     });
 
     loader.present();
-
     this.profileService.exportProfile(profileExportRequest).then((path: any) => {
       path = JSON.parse(path);
       loader.dismiss();
