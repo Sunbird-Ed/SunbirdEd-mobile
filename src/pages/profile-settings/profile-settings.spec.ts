@@ -20,7 +20,7 @@ import {
   frameworkServiceMock
 } from '@app/__tests__/mocks';
 
-
+import { profileSettingDataMock } from './profile-settings.spec.data';
 describe('ProfileSettingsPage', () => {
   let profileSettingsPage: ProfileSettingsPage;
 
@@ -47,4 +47,38 @@ describe('ProfileSettingsPage', () => {
       done();
     }, 0);
   });
+
+  it('should get guestuser profile : success scenario', (done) => {
+    // arrange
+    spyOn(profileSettingsPage, 'initUserForm').and.stub();
+    profileServiceMock.getCurrentUser.mockResolvedValue(JSON.stringify(profileSettingDataMock.profile));
+    navParamsMock.get.mockImplementation((param: string) => {
+      if (param === 'isChangeRoleRequest') {
+        return true;
+      }
+    });
+    // act
+    profileSettingsPage.getGuestUser();
+    // assert
+    setTimeout(() => {
+      expect(profileSettingsPage.initUserForm).toBeCalled();
+      expect(profileSettingsPage.profile.syllabus).toEqual([]);
+      expect(profileSettingsPage.profile.board).toEqual([]);
+      done();
+    }, 0);
+  });
+
+  it('should get guestuser profile: error scenario', (done) => {
+    // arrange
+    spyOn(profileSettingsPage, 'initUserForm').and.stub();
+    profileServiceMock.getCurrentUser.mockRejectedValue('error');
+    // act
+    profileSettingsPage.getGuestUser();
+    // assert
+    setTimeout(() => {
+      expect(profileSettingsPage.initUserForm).toBeCalled();
+      done();
+    }, 0);
+  });
+
 });

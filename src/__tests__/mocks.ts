@@ -18,32 +18,34 @@ import {
   UserProfileService,
   GroupService
 } from 'sunbird';
+
 import {
   App,
   Events,
-  IonicApp,
   LoadingController,
   NavController,
   NavParams,
   Platform,
   PopoverController,
   ViewController,
+  IonicApp,
   AlertController,
   ToastController
 } from 'ionic-angular';
-import {NgZone} from '@angular/core';
-import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService} from '@app/service';
-import {TranslateService} from '@ngx-translate/core';
-import {SocialSharing} from '@ionic-native/social-sharing';
-import {AppVersion} from '@ionic-native/app-version';
-import {SunbirdQRScanner} from '@app/pages/qrscanner';
-import {FormAndFrameworkUtilService} from '@app/pages/profile';
-import {File} from '@ionic-native/file';
-import {DatePipe} from '../../node_modules/@angular/common';
-import {FormBuilder} from '@angular/forms';
-import {TncUpdateHandlerService} from '@app/service/handlers/tnc-update-handler.service';
-import {LogoutHandlerService} from '@app/service/handlers/logout-handler.service';
-import {DomSanitizer} from '@angular/platform-browser';
+
+import { NgZone } from '@angular/core';
+import { AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService } from '@app/service';
+import { TranslateService } from '@ngx-translate/core';
+import { SocialSharing } from '@ionic-native/social-sharing';
+import { AppVersion } from '@ionic-native/app-version';
+import { SunbirdQRScanner } from '@app/pages/qrscanner';
+import { FormAndFrameworkUtilService } from '@app/pages/profile';
+import { File } from '@ionic-native/file';
+import { DatePipe } from '@angular/common';
+import { FormBuilder } from '@angular/forms';
+import { TncUpdateHandlerService } from '@app/service/handlers/tnc-update-handler.service';
+import { LogoutHandlerService } from '@app/service/handlers/logout-handler.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 export type Mockify<T> = {
   [P in keyof T]: jest.Mock<{}>;
@@ -64,13 +66,15 @@ export const courseServiceMock = createSpyObj<CourseService>([
   'updateContentState',
   'getCourseBatches',
   'getBatchDetails',
-  'getContentState'
+  'getContentState',
+  'unenrolCourse'
 ]);
 
 export const navCtrlMock = createSpyObj<NavController>([
   'pop',
   'push',
-  'setRoot'
+  'setRoot',
+  'popTo'
 ]);
 
 export const navParamsMock = createSpyObj<NavParams>([
@@ -102,7 +106,9 @@ export const profileServiceMock = createSpyObj<ProfileService>([
   'getCurrentUser',
   'doOAuthStepOne',
   'getProfile',
-  'getAllUserProfile'
+  'getAllUserProfile',
+  'getAllProfile',
+  'exportProfile'
 ]);
 
 export const authServiceMock = createSpyObj<AuthService>([
@@ -132,12 +138,14 @@ export const contentServiceMock = createSpyObj<ContentService>([
   'importContent',
   'getChildContents',
   'cancelDownload',
-  'searchContent'
+  'searchContent',
+  'deleteContent'
 ]);
 
 export const popoverCtrlMock = createSpyObj<PopoverController>([
   'create',
-  'present'
+  'present',
+  'onDidDismiss'
 ]);
 
 export const fileUtilMock = createSpyObj<FileUtil>([
@@ -184,7 +192,10 @@ export const appGlobalServiceMock = createSpyObj<AppGlobalService>([
   'setAverageTime',
   'setAverageScore',
   'getAverageScore',
-  'getAverageTime'
+  'getAverageTime',
+  'getUserId',
+  'getGuestUserInfo',
+  'getEnrolledCourseList'
 ]);
 
 export const telemetryGeneratorServiceMock = createSpyObj<TelemetryGeneratorService>([
@@ -204,7 +215,8 @@ export const telemetryGeneratorServiceMock = createSpyObj<TelemetryGeneratorServ
 export const courseUtilServiceMock = createSpyObj<CourseUtilService>([
   'showCredits',
   'showToast',
-  'getImportContentRequestBody'
+  'getImportContentRequestBody',
+  'getCourseProgress'
 ]);
 
 export const appVersionMock = createSpyObj<AppVersion>([
@@ -233,11 +245,15 @@ export const sunbirdQRScannerMock = createSpyObj<SunbirdQRScanner>([
 export const formAndFrameworkUtilServiceMock = createSpyObj<FormAndFrameworkUtilService>([
   'getCourseFilterConfig',
   'updateLoggedInUser',
-  'getLibraryFilterConfig'
+  'getLibraryFilterConfig',
+  'getSupportingBoardList',
+  'getFrameworkDetails',
+  'getCategoryData'
 ]);
 
 export const loadingControllerMock = createSpyObj<LoadingController>([
-  'create'
+  'create',
+  'present'
 ]);
 
 export const reportServiceMock = createSpyObj<ReportService>([
@@ -260,6 +276,11 @@ export const fileMock = createSpyObj<File>([
 
 export const datePipeMock = createSpyObj<DatePipe>([
   'transform'
+]);
+
+export const loadingMock = createSpyObj<LoadingController>([
+  'create',
+  'dismiss'
 ]);
 
 export const deviceInfoServiceMock = createSpyObj<DeviceInfoService>([
@@ -295,6 +316,7 @@ export const supportfileMock = createSpyObj<any>([
 
 export const formBuilderMock = createSpyObj<FormBuilder>([
   'group',
+  'fb'
 ]);
 
 export const ionicAppMock = createSpyObj<IonicApp>([]);
@@ -317,16 +339,26 @@ export const domSanitizerMock = createSpyObj<DomSanitizer>([
   'bypassSecurityTrustResourceUrl'
 ]);
 
-export const groupServiceMock = createSpyObj<GroupService>([
-  'setCurrentGroup',
-  'deleteGroup',
-  'addUpdateProfilesToGroup'
-]);
 
-export const alertControllerMock = createSpyObj<AlertController>([
+export const alertCtrlMock = createSpyObj<AlertController>([
+  'present',
+  'dismiss',
   'create'
 ]);
 
-export const toastControllerMock = createSpyObj<ToastController>([
+export const groupServiceMock = createSpyObj<GroupService>([
+  'setCurrentGroup',
+  'deleteGroup',
+  'addUpdateProfilesToGroup',
+  'updateGroup',
+  'addUpdateProfilesToGroup',
+  'getAllGroup'
+]);
 
+export const alertControllerMock = createSpyObj<AlertController>([
+  'create',
+]);
+
+export const toastControllerMock = createSpyObj<ToastController>([
+  'create'
 ]);

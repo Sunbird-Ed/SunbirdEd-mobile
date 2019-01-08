@@ -7,6 +7,7 @@ import {
   logoutHandlerServiceMock,
   navParamsMock,
   platformMock,
+  telemetryGeneratorServiceMock,
   tncUpdateHandlerServiceMock,
   translateServiceMock
 } from '@app/__tests__/mocks';
@@ -25,7 +26,8 @@ describe('TermsAndConditionsPage', () => {
       domSanitizerMock as any,
       commonUtilServiceMock as any,
       translateServiceMock as any,
-      appVersionMock as any
+      appVersionMock as any,
+      telemetryGeneratorServiceMock as any
     );
 
     jest.resetAllMocks();
