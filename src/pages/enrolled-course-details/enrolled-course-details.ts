@@ -316,7 +316,7 @@ export class EnrolledCourseDetailsPage {
     const data = {
       batchStatus: this.batchDetails ? this.batchDetails.status : 2,
       contentStatus: this.courseCardData.status,
-      enrollmentType: this.batchDetails.enrollmentType,
+      enrollmentType: this.batchDetails ? this.batchDetails.enrollmentType : '',
       courseProgress: this.course.progress
     };
     const contentData = this.course;
@@ -975,6 +975,7 @@ export class EnrolledCourseDetailsPage {
         this.courseService.getCourseBatches(courseBatchesRequest)
           .then((data: any) => {
             data = JSON.parse(data);
+            console.log('data is ', data);
             this.zone.run(() => {
               this.batches = data.result.content;
               if (this.batches.length) {
