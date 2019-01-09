@@ -48,8 +48,7 @@
 		<div class="about-section" *ngIf="course?.description || course?.gradeLevel || course?.subject || course?.board">
 			<h6 class="padding-10 background-gray font-size-20">{{ 'ABOUT' | translate }}</h6>
 			<p *ngIf="!showMoreFlag" class="text-gray-color">
-				{{ (course && course.description && course.description.length > 100) ? (course?.description | slice:0:100) + '...'
-				: (course?.description)
+				{{ (course && course.description && course.description.length > 100) ? (course?.description | slice:0:100) + '...' : (course?.description)
 				}} </p>
 			<div class="course-details" *ngIf="showMoreFlag">
 				<p *ngIf="course?.description?.length" class="text-gray-color">
@@ -92,8 +91,7 @@
 
 			</div>
 
-			<div class="read-more" *ngIf="course && course.description && course.description.length > 100 || course?.gradeLevel || course?.subject"
-			 (click)="showMoreFlag = !showMoreFlag">
+			<div class="read-more" *ngIf="course && course.description && course.description.length > 100 || course?.gradeLevel || course?.subject" (click)="showMoreFlag = !showMoreFlag">
 				<div *ngIf="showMoreFlag" class="padding-top-10">
 					{{ 'READ_LESS' | translate }}
 					<ion-icon name="ios-arrow-up"></ion-icon>
