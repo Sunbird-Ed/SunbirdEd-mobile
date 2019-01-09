@@ -975,7 +975,6 @@ export class EnrolledCourseDetailsPage {
         this.courseService.getCourseBatches(courseBatchesRequest)
           .then((data: any) => {
             data = JSON.parse(data);
-            console.log('data is ', data);
             this.zone.run(() => {
               this.batches = data.result.content;
               if (this.batches.length) {
