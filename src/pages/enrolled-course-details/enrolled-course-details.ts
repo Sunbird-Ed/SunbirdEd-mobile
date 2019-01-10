@@ -316,7 +316,7 @@ export class EnrolledCourseDetailsPage {
     const data = {
       batchStatus: this.batchDetails ? this.batchDetails.status : 2,
       contentStatus: this.courseCardData.status,
-      enrollmentType: this.batchDetails.enrollmentType,
+      enrollmentType: this.batchDetails ? this.batchDetails.enrollmentType : '',
       courseProgress: this.course.progress
     };
     const contentData = this.course;
