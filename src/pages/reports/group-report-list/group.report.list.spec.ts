@@ -1,189 +1,275 @@
-// import { TelemetryGeneratorService } from './../../../service/telemetry-generator.service';
-// import { ComponentFixture, TestBed } from '@angular/core/testing';
-// import { NO_ERRORS_SCHEMA } from '@angular/core';
-// import { NavController, Events, PopoverController, Config, DeepLinker } from 'ionic-angular';
-// import { NavParams, App, LoadingController } from 'ionic-angular';
-// import {
-//     ReportService, ServiceProvider, ContentService,
-//     TelemetryService, AuthService, ProfileService, SharedPreferences, BuildParamService, FrameworkService
-// } from 'sunbird';
-// import { ReportSummary, PageId, Environment, InteractType, InteractSubtype } from 'sunbird';
-// import { GroupReportListPage } from './group-report-list';
-// import { mockres } from './reportList.spec.data';
-// import { } from 'jasmine';
-// import { TranslateModule } from '@ngx-translate/core';
-// import {
-//     LoadingControllerMock, NavParamsMock, NavMock, AppMock,
-//     DeepLinkerMock, AuthServiceMock
-// } from '../../../../test-config/mocks-ionic';
-// import { AppGlobalService } from '../../../service/app-global.service';
-// import { UserReportPage } from '../user-report/user-report';
-// describe('GroupReportListPage', () => {
-//     let comp: GroupReportListPage;
-//     let fixture: ComponentFixture<GroupReportListPage>;
+import { setTimeout } from 'timers';
+import { GroupReportListPage } from './group-report-list';
 
-//     beforeEach(() => {
+import { mockres } from './group.report.list.spec.data';
+import {
+    navParamsMock,
+    loadingControllerMock,
+    zoneMock,
+    transferMock,
+    reportServiceMock,
+    translateServiceMock,
+    telemetryGeneratorServiceMock,
+    appGlobalServiceMock,
+    fileMock,
+    datePipeMock,
+    deviceInfoServiceMock,
+    navCtrlMock,
+    commonUtilServiceMock
+} from '../../../__tests__/mocks';
+import { UserReportPage } from '../user-report/user-report';
 
-//         TestBed.configureTestingModule({
-//             imports: [TranslateModule.forRoot()],
-//             declarations: [GroupReportListPage],
-//             schemas: [NO_ERRORS_SCHEMA],
-//             providers: [AppGlobalService, ReportService, TelemetryGeneratorService, ReportSummary, PageId, Environment,
-//                 InteractType, InteractSubtype,
-//                 Events, PopoverController, ServiceProvider, ContentService,
-//                 TelemetryService, ProfileService, SharedPreferences, Config, BuildParamService,
-//                 FrameworkService,
-//                 { provide: App, useClass: AppMock },
-//                 { provide: NavController, useClass: NavMock },
-//                 { provide: NavParams, useClass: NavParamsMock },
-//                 { provide: LoadingController, useFactory: () => LoadingControllerMock.instance() },
-//                 { provide: DeepLinker, useClass: DeepLinkerMock },
-//                 { provide: AuthService, useClass: AuthServiceMock },
-//             ]
-//         });
-//         fixture = TestBed.createComponent(GroupReportListPage);
-//         comp = fixture.componentInstance;
-//     });
+describe.only('GroupReportListPage Component', () => {
+    let groupReportList: GroupReportListPage;
 
-//     it('#ionViewWillEnter should call fetchAssessment with static args ', () => {
-//         spyOn(comp, 'fetchAssessment').and.returnValue(true);
-//         // comp.fetchAssessment('users',false);
-//         comp.ionViewWillEnter();
-//         expect(comp.fetchAssessment).toHaveBeenCalledWith('users', false);
-//     });
+    beforeEach(() => {
+    deviceInfoServiceMock.getDownloadDirectoryPath.mockResolvedValue( 'SOME_PATH' );
+    fileMock.dataDirectory.mockReturnValue('SOME_DIR');
+    translateServiceMock.get.mockReturnValue( { subscribe: jest.fn() } );
+      groupReportList = new GroupReportListPage(navParamsMock as any, loadingControllerMock as any,
+        zoneMock as any, transferMock as any, reportServiceMock as any, translateServiceMock as any,
+        telemetryGeneratorServiceMock as any, appGlobalServiceMock as any, fileMock as any
+        , datePipeMock as any, deviceInfoServiceMock as any, navCtrlMock as any
+        , commonUtilServiceMock as any);
 
+      jest.resetAllMocks();
+    });
 
-//     describe('fetchAssessment should be executed,', () => {
+    it('can load instance the instance of userReportPage', () => {
+        expect(groupReportList).toBeTruthy();
+      });
+    it('ionViewWillEnter should call fetchAssessment with static args ', () => {
+        const data = {
+                        'contentId': 'domain_4083',
+                        'correctAnswers': 4,
+                        'hierarchyData': '',
+                        'noOfQuestions': 5,
+                        'totalMaxScore': 8,
+                        'totalScore': 4,
+                        'totalTimespent': 24,
+                        'uid': 'ed0a5346-6d68-4860-a2d3-566642fb7438',
+                        'name': 'कुत्ता और रोटी',
+                        'lastUsedTime': 1539153195484
+                    };
+         navParamsMock.get.mockReturnValue({'report': data });
+         loadingControllerMock.create.mockReturnValue( { present: jest.fn() } );
+         loadingControllerMock.create.mockReturnValue({
+           present: () => {
+           },
+           dismiss: () => Promise.resolve()
+         });
+         reportServiceMock.getReportsByUser.mockResolvedValue(mockres.getReportsByUser);
+         spyOn(groupReportList, 'fetchAssessment');
+        groupReportList.ionViewWillEnter();
+        expect(groupReportList.fetchAssessment).toHaveBeenCalledWith('users', false);
+    });
 
-//         it('#when called with users event and false args with fromUserAssessment object undefined, if block should be invoked', (done) => {
-//             // TODO call fetchAssessment check if statement to be truthy block invoked
-//             const reportService = TestBed.get(ReportService);
+    it('fetchAssessment if block should be called and invoke getReportsByUser', (done) => {
+      const data = {
+        'contentId': 'domain_4083',
+        'correctAnswers': 4,
+        'hierarchyData': '',
+        'noOfQuestions': 5,
+        'totalMaxScore': 8,
+        'totalScore': 4,
+        'totalTimespent': 24,
+        'uid': 'ed0a5346-6d68-4860-a2d3-566642fb7438',
+        'name': 'कुत्ता और रोटी',
+        'lastUsedTime': 1539153195484
+    };
+    navParamsMock.get.mockReturnValue({'report': data });
+    loadingControllerMock.create.mockReturnValue( { present: jest.fn() } );
+    loadingControllerMock.create.mockReturnValue({
+    present: () => {
+    },
+    dismiss: () => Promise.resolve()
+    });
+    reportServiceMock.getReportsByUser.mockResolvedValue(JSON.stringify(mockres.getReportsByUser));
 
-//             spyOn(comp, 'fetchAssessment').and.callThrough();
-//             spyOn(reportService, 'getReportsByUser').and.callFake(({ }, success, error) => {
-//                 const data = JSON.stringify((mockres.getReportsByUser));
-//                 return success(data);
-//             });
-//             comp.fetchAssessment('users', false);
-//             expect(comp.fetchAssessment).toHaveBeenCalled();
+    reportServiceMock.getDetailReport.mockReturnValue( { then: jest.fn(() => ({ catch: jest.fn() })) } );
 
+    // act
+    groupReportList.fetchAssessment('users', false);
 
-//             setTimeout(() => {
-//                 expect(reportService.getReportsByUser).toHaveBeenCalled();
-//                 done();
-//             }, 100);
+    setTimeout(() => {
+          zoneMock.run.mock.calls[0][0].call(groupReportList);
+          expect(reportServiceMock.getReportsByUser).toHaveBeenCalled();
+          expect(groupReportList.fromUserAssessment).toBeTruthy();
+          done();
+      }, 500);
+     });
+     it('fetchAssessment if block loader should dismiss on error response', (done) => {
+      const data = {
+        'contentId': 'domain_4083',
+        'correctAnswers': 4,
+        'hierarchyData': '',
+        'noOfQuestions': 5,
+        'totalMaxScore': 8,
+        'totalScore': 4,
+        'totalTimespent': 24,
+        'uid': 'ed0a5346-6d68-4860-a2d3-566642fb7438',
+        'name': 'कुत्ता और रोटी',
+        'lastUsedTime': 1539153195484
+    };
+    navParamsMock.get.mockReturnValue({'report': data });
+    loadingControllerMock.create.mockReturnValue( { present: jest.fn() } );
 
-//             expect(comp.fromUserAssessment).toBeTruthy();
+    const errorObj = { 'error': 'test case error'};
+    reportServiceMock.getReportsByUser.mockRejectedValue(JSON.stringify(errorObj));
 
-//         });
-//         it('#fromUserAssessment should remain undefined', (done) => {
+    const loadingMock = { dismiss: jest.fn(), present: jest.fn() };
+          loadingControllerMock.create.mockReturnValue( loadingMock );
+    // act
+    groupReportList.fetchAssessment('users', false);
 
-//             const reportService = TestBed.get(ReportService);
-
-//             spyOn(comp, 'fetchAssessment').and.callThrough();
-//             spyOn(reportService, 'getReportsByUser').and.callFake(({ }, success, error) => {
-//                 const data = JSON.stringify({ error: 'error for testing ' });
-//                 return error(data);
-//             });
-//             comp.fetchAssessment('users', false);
-//             expect(comp.fetchAssessment).toHaveBeenCalled();
-
-
-//             setTimeout(() => {
-//                 expect(reportService.getReportsByUser).toHaveBeenCalled();
-//                 done();
-//             }, 100);
-
-//             expect(comp.fromUserAssessment).not.toBeTruthy();
-
-//         });
-//         it('#when called with questions event and false args, else block should be invoked', (done) => {
-//             // TODO call fetchAssessment check if block invoked
-//             const reportService = TestBed.get(ReportService);
-
-//             spyOn(comp, 'fetchAssessment').and.callThrough();
-//             spyOn(reportService, 'getReportsByQuestion').and.callFake(({ }, success, error) => {
-//                 const data = JSON.stringify((mockres.getReportsByQuestion));
-//                 return success(data);
-//             });
-//             comp.fetchAssessment('questions', false);
-//             expect(comp.fetchAssessment).toHaveBeenCalled();
-
-
-//             setTimeout(() => {
-//                 expect(reportService.getReportsByQuestion).toHaveBeenCalled();
-//                 done();
-//             }, 100);
-
-//             expect(comp.fromQuestionAssessment).toBeTruthy();
-
-//         });
-
-//         it('#when called with questions event property getReportsByQuestion should remain undefined', (done) => {
-//             // TODO call fetchAssessment check if block invoked
-//             const reportService = TestBed.get(ReportService);
-
-//             spyOn(comp, 'fetchAssessment').and.callThrough();
-//             spyOn(reportService, 'getReportsByQuestion').and.callFake(({ }, success, error) => {
-//                 const data = JSON.stringify({ error: 'error for testing ' });
-//                 return error(data);
-//             });
-//             comp.fetchAssessment('questions', false);
-//             expect(comp.fetchAssessment).toHaveBeenCalled();
-
-
-//             setTimeout(() => {
-//                 expect(reportService.getReportsByQuestion).toHaveBeenCalled();
-//                 done();
-//             }, 100);
-
-//             expect(comp.fromQuestionAssessment).not.toBeTruthy();
-
-//         });
-
-//     });
-
-
-
-//     it('#formatTime should give time in desired format', () => {
-//         // TODO call with number argument and get time in proper format
-//         const test = comp.formatTime(61);
-//         expect(test).toBe('01:01');
-//     });
-
-//     it('#showQuestionFromUser should invoke fetchAssessment', () => {
-//         // TODO mock call to  showQuestionFromUser should invoke fetchAssessment
-//         spyOn(comp, 'fetchAssessment');
-//         comp.showQuestionFromUser();
-//         expect(comp.fetchAssessment).toHaveBeenCalled();
-//     });
-
-//     it('#translateMessage should translate to desired lang', () => {
-//         // TODO call to  translateMessage should do desired translation
-//     });
+    setTimeout(() => {
+      expect(loadingMock.dismiss).toHaveBeenCalled();
+          done();
+      }, 500);
+     });
+     it('#fetchAssessment called with questions event and false args, else block should be invoked', (done) => {
+      const data = {
+        'contentId': 'domain_4083',
+        'correctAnswers': 4,
+        'hierarchyData': '',
+        'noOfQuestions': 5,
+        'totalMaxScore': 8,
+        'totalScore': 4,
+        'totalTimespent': 24,
+        'uid': 'ed0a5346-6d68-4860-a2d3-566642fb7438',
+        'name': 'कुत्ता और रोटी',
+        'lastUsedTime': 1539153195484
+    };
+    navParamsMock.get.mockReturnValue({'report': data });
+    loadingControllerMock.create.mockReturnValue( { present: jest.fn() } );
+    loadingControllerMock.create.mockReturnValue({
+    present: () => {
+    },
+    dismiss: () => Promise.resolve()
+    });
+    reportServiceMock.getReportsByQuestion.mockResolvedValue(JSON.stringify(mockres.getReportsByQuestion));
+    groupReportList.fetchAssessment('questions', false);
 
 
-//     it('#goToReportList should push UserReportPage', () => {
-//         // TODO call to  goToReportList mock navpush to UserReportPage
-//         const data = {
-//             'contentId': 'domain_4083',
-//             'correctAnswers': 4,
-//             'hierarchyData': '',
-//             'noOfQuestions': 5,
-//             'totalMaxScore': 8,
-//             'totalScore': 4,
-//             'totalTimespent': 24,
-//             'uid': 'ed0a5346-6d68-4860-a2d3-566642fb7438',
-//             'name': 'कुत्ता और रोटी',
-//             'lastUsedTime': 1539153195484
-//         };
-//         const navController = TestBed.get(NavController);
-//         const navParams = TestBed.get(NavParams);
-//         spyOn(navParams, 'get').and.returnValue(data);
+            setTimeout(() => {
+                zoneMock.run.mock.calls[0][0].call(groupReportList);
+                expect(reportServiceMock.getReportsByQuestion).toHaveBeenCalled();
+                expect(groupReportList.fromQuestionAssessment).toBeTruthy();
+                done();
+            }, 0);
 
-//         spyOn(navController, 'push');
-//         comp.goToReportList();
-//         expect(navController.push).toHaveBeenCalledWith(UserReportPage, { 'report': data });
-//     });
+     });
 
-// });
+     it('#fetchAssessment else block loader should dismiss on error response', (done) => {
+      const data = {
+        'contentId': 'domain_4083',
+        'correctAnswers': 4,
+        'hierarchyData': '',
+        'noOfQuestions': 5,
+        'totalMaxScore': 8,
+        'totalScore': 4,
+        'totalTimespent': 24,
+        'uid': 'ed0a5346-6d68-4860-a2d3-566642fb7438',
+        'name': 'कुत्ता और रोटी',
+        'lastUsedTime': 1539153195484
+    };
+    navParamsMock.get.mockReturnValue({'report': data });
+    loadingControllerMock.create.mockReturnValue( { present: jest.fn() } );
+    loadingControllerMock.create.mockReturnValue({
+    present: () => {
+    },
+    dismiss: () => Promise.resolve()
+    });
+    const errorObj = { 'error': 'test case error'};
+    reportServiceMock.getReportsByQuestion.mockRejectedValue(JSON.stringify(errorObj));
+    const loadingMock = { dismiss: jest.fn(), present: jest.fn() };
+          loadingControllerMock.create.mockReturnValue( loadingMock );
+    groupReportList.fetchAssessment('questions', false);
+
+            setTimeout(() => {
+              expect(loadingMock.dismiss).toHaveBeenCalled();
+                done();
+            }, 0);
+
+     });
+
+     it('#formatTime should give time in desired format', () => {
+              const test = groupReportList.formatTime(61);
+              expect(test).toBe('01:01');
+          });
+
+      it('#showQuestionFromUser should invoke fetchAssessment', () => {
+                spyOn(groupReportList, 'fetchAssessment');
+                groupReportList.showQuestionFromUser();
+                expect(groupReportList.fetchAssessment).toHaveBeenCalled();
+            });
+
+      it('#goToReportList should push UserReportPage', () => {
+          // TODO call to  goToReportList mock navpush to UserReportPage
+          const data = {
+              'contentId': 'domain_4083',
+              'correctAnswers': 4,
+              'hierarchyData': '',
+              'noOfQuestions': 5,
+              'totalMaxScore': 8,
+              'totalScore': 4,
+              'totalTimespent': 24,
+              'uid': 'ed0a5346-6d68-4860-a2d3-566642fb7438',
+              'name': 'कुत्ता और रोटी',
+              'lastUsedTime': 1539153195484
+          };
+          navParamsMock.get.mockReturnValue(data);
+          spyOn(navCtrlMock, 'push');
+          groupReportList.goToReportList();
+          expect(navCtrlMock.push).toHaveBeenCalledWith(UserReportPage, { 'report': data });
+      });
+      it('translateMessage should give desired desired translated message', (done) => {
+        translateServiceMock.get.mockReturnValue( { subscribe: jest.fn() } );
+        groupReportList.translateMessage('TIME', 'en');
+        setTimeout( () => {
+            expect(translateServiceMock.get).toHaveBeenCalledWith('TIME', { '%s': 'en' });
+            done();
+        }, 0 );
+      });
+
+    it('importcsv should make expected calls', () => {
+      groupReportList.response = [{uid : '30c6de21-d184-446a-b9d8-edfedff910ef', contentId: 'domain_4083'}];
+      groupReportList.deviceId = '96360f6fb9f309691ce1ea41dcfa12ab40b61af3';
+      groupReportList.groupinfo = {gid: 'testing_id'};
+      groupReportList.reportSummary = {uid: '30c6de21-d184-446a-b9d8-edfedff910ef',
+      contentId: 'test',
+      name: 'test',
+      lastUsedTime: 10,
+      noOfQuestions: 20,
+      correctAnswers: 4,
+      totalTimespent: 5,
+      hierarchyData: 'test',
+      totalMaxScore: 5,
+      totalScore: 4};
+      fileMock.writeFile.mockResolvedValue('test val');
+      spyOn(groupReportList, 'convertToCSV').and.returnValue(mockres.csvdata);
+      groupReportList.importcsv();
+      expect(groupReportList.convertToCSV).toHaveBeenCalled();
+    });
+    it('convertToCSV should give csv', () => {
+      groupReportList.groupinfo = [{uid : '30c6de21-d184-446a-b9d8-edfedff910ef', handle: 'domain_4083'}];
+      groupReportList.reportSummary = {uid: '30c6de21-d184-446a-b9d8-edfedff910ef',
+        contentId: 'test',
+        name: 'test',
+        lastUsedTime: 10,
+        noOfQuestions: 20,
+        correctAnswers: 4,
+        totalTimespent: 5,
+        hierarchyData: 'test',
+        totalMaxScore: 5,
+        totalScore: 4};
+      groupReportList.response = mockres.csvdata;
+      groupReportList.responseByUser = mockres.getReportsByUser;
+      groupReportList.groupReport = mockres.getReportsByUser;
+      const csv = groupReportList.convertToCSV();
+      datePipeMock.transform.mockReturnValue('');
+      expect(csv).toBeTruthy();
+    });
+
+});
+

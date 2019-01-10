@@ -22,13 +22,13 @@ import {
 import {
   App,
   Events,
-  IonicApp,
   LoadingController,
   NavController,
   NavParams,
   Platform,
   PopoverController,
   ViewController,
+  IonicApp,
   AlertController,
   ToastController
 } from 'ionic-angular';
@@ -73,7 +73,8 @@ export const courseServiceMock = createSpyObj<CourseService>([
 export const navCtrlMock = createSpyObj<NavController>([
   'pop',
   'push',
-  'setRoot'
+  'setRoot',
+  'popTo'
 ]);
 
 export const navParamsMock = createSpyObj<NavParams>([
@@ -104,7 +105,10 @@ export const profileServiceMock = createSpyObj<ProfileService>([
   'setCurrentProfile',
   'getCurrentUser',
   'doOAuthStepOne',
-  'getAllUserProfile'
+  'getProfile',
+  'getAllUserProfile',
+  'getAllProfile',
+  'exportProfile'
 ]);
 
 export const authServiceMock = createSpyObj<AuthService>([
@@ -185,6 +189,10 @@ export const appGlobalServiceMock = createSpyObj<AppGlobalService>([
   'getCurrentUser',
   'getNameForCodeInFramework',
   'getGuestUserType',
+  'setAverageTime',
+  'setAverageScore',
+  'getAverageScore',
+  'getAverageTime',
   'getUserId',
   'getGuestUserInfo',
   'getEnrolledCourseList'
@@ -237,7 +245,10 @@ export const sunbirdQRScannerMock = createSpyObj<SunbirdQRScanner>([
 export const formAndFrameworkUtilServiceMock = createSpyObj<FormAndFrameworkUtilService>([
   'getCourseFilterConfig',
   'updateLoggedInUser',
-  'getLibraryFilterConfig'
+  'getLibraryFilterConfig',
+  'getSupportingBoardList',
+  'getFrameworkDetails',
+  'getCategoryData'
 ]);
 
 export const loadingControllerMock = createSpyObj<LoadingController>([
@@ -249,7 +260,9 @@ export const reportServiceMock = createSpyObj<ReportService>([
   'getListOfReports',
   'getImportContentRequestBody',
   'getDetailReport',
-  'getDetailsPerQuestion'
+  'getDetailsPerQuestion',
+  'getReportsByUser',
+  'getReportsByQuestion'
 ]);
 
 export const transferMock = createSpyObj<FileTransfer>([
@@ -257,7 +270,8 @@ export const transferMock = createSpyObj<FileTransfer>([
 ]);
 
 export const fileMock = createSpyObj<File>([
-  'writeFile'
+  'writeFile',
+  'dataDirectory'
 ]);
 
 export const datePipeMock = createSpyObj<DatePipe>([
@@ -302,6 +316,7 @@ export const supportfileMock = createSpyObj<any>([
 
 export const formBuilderMock = createSpyObj<FormBuilder>([
   'group',
+  'fb'
 ]);
 
 export const ionicAppMock = createSpyObj<IonicApp>([]);
@@ -323,14 +338,25 @@ export const logoutHandlerServiceMock = createSpyObj<LogoutHandlerService>([
 export const domSanitizerMock = createSpyObj<DomSanitizer>([
   'bypassSecurityTrustResourceUrl'
 ]);
+
+
+export const alertCtrlMock = createSpyObj<AlertController>([
+  'present',
+  'dismiss',
+  'create'
+]);
+
 export const groupServiceMock = createSpyObj<GroupService>([
   'setCurrentGroup',
   'deleteGroup',
-  'addUpdateProfilesToGroup'
+  'addUpdateProfilesToGroup',
+  'updateGroup',
+  'addUpdateProfilesToGroup',
+  'getAllGroup'
 ]);
 
 export const alertControllerMock = createSpyObj<AlertController>([
-  'create'
+  'create',
 ]);
 
 export const toastControllerMock = createSpyObj<ToastController>([

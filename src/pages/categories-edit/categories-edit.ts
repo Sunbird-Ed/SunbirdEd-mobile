@@ -238,7 +238,7 @@ export class CategoriesEditPage {
             const boardCode = result.find(board => boardName.name === board.name);
             if (boardCode) {
               this.profileEditForm.patchValue({
-                boards: boardCode.code
+                boards: [boardCode.code]
               });
               this.resetForm(1);
             } else {

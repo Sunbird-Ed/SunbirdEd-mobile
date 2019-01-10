@@ -329,8 +329,7 @@ export class ContentDetailsPage {
    */
   rateContent(popupType: string) {
     const paramsMap = new Map();
-    if (this.isContentPlayed || (this.content.downloadable
-      && this.content.contentAccess.length)) {
+    if (this.isContentPlayed || this.content.contentAccess.length) {
 
       paramsMap['IsPlayed'] = 'Y';
       const popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
@@ -765,6 +764,11 @@ export class ContentDetailsPage {
    * alert for playing the content
    */
   showSwitchUserAlert(isStreaming: boolean) {
+    if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
+      this.commonUtilService.showToast('INTERNET_CONNECTIVITY_NEEDED');
+
+      return false;
+    }
     if (!AppGlobalService.isPlayerLaunched && this.userCount > 1) {
       const profile = this.appGlobalService.getCurrentUser();
       const alert = this.alertCtrl.create({

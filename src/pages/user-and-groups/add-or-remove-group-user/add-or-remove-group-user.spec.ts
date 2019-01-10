@@ -1,325 +1,266 @@
-// import { CommonUtilService } from './../../../service/common-util.service';
-// import { Observable } from 'rxjs/Observable';
-// import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-// import { NO_ERRORS_SCHEMA } from '@angular/core';
-// import { NavController, NavOptions } from 'ionic-angular';
-// import { NavParams } from 'ionic-angular';
-// import { ToastController } from 'ionic-angular';
-// import { AlertController } from 'ionic-angular';
-// import { TranslateService, TranslateModule } from '@ngx-translate/core';
-// import { GroupService, ProfileType, UserSource } from 'sunbird';
-// import { ProfileService } from 'sunbird';
-// import { LoadingController } from 'ionic-angular';
-// import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
-// import { AddOrRemoveGroupUserPage } from './add-or-remove-group-user';
-// import { mockCreateorremoveGroupRes } from './add-remove-group-user.spec.data';
+import { AddOrRemoveGroupUserPage } from './add-or-remove-group-user';
+import { mockCreateorremoveGroupRes } from './add-remove-group-user.spec.data';
+import {
+    navCtrlMock, navParamsMock, groupServiceMock, profileServiceMock, zoneMock, loadingControllerMock,
+    commonUtilServiceMock, alertCtrlMock, telemetryGeneratorServiceMock
+} from '../../../__tests__/mocks';
+import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
+// const GuestEditProfilePage = {} as any;
+describe('AddOrRemoveGroupUserPage', () => {
+    let addOrRemoveUserGroup: AddOrRemoveGroupUserPage;
 
-// import {
-//     LoadingControllerMock, TranslateServiceStub, ToastControllerMockNew, AuthServiceMock, NavParamsMock, ProfileServiceMock,
-//     FormAndFrameworkUtilServiceMock, ContainerServiceMock, AppGlobalServiceMock, NavMock, TranslateLoaderMock,
-//     NavParamsMockNew, SharedPreferencesMock, CommonUtilServiceMock
-// } from '../../../../test-config/mocks-ionic';
-// import 'rxjs/add/observable/of';
-// import { } from 'jasmine';
+    beforeEach(() => {
+        navParamsMock.get.mockImplementation((arg: string) => {
+            if (arg === 'isAddUsers') {
+                return true;
+            } else if (arg === 'groupMembers') {
+                return [];
+            }
+        });
+        addOrRemoveUserGroup = new AddOrRemoveGroupUserPage(
+            navCtrlMock as any,
+            navParamsMock as any,
+            groupServiceMock as any,
+            profileServiceMock as any,
+            zoneMock as any,
+            loadingControllerMock as any,
+            commonUtilServiceMock as any,
+            alertCtrlMock as any,
+            telemetryGeneratorServiceMock as any
+        );
+        // addOrRemoveUserGroup.uniqueUserList = [];
+        jest.resetAllMocks();
+    });
+    it('can load instance', () => {
+        expect(addOrRemoveUserGroup).toBeTruthy();
+    });
+    it('to get the profile info', () => {
+        // arrange
+        profileServiceMock.getAllUserProfile.mockResolvedValue((JSON.stringify(mockCreateorremoveGroupRes.UserList)));
+        // act
+        addOrRemoveUserGroup.getAllProfile();
+        // assert
+        expect(profileServiceMock.getAllUserProfile).toHaveBeenCalled();
+    });
 
-// export class MockToastCtrl {
-//     public instance: MockToast = new MockToast();
-//     public create(options: any = {}): MockToast {
-//         return this.instance;
-//     }
-// }
-// export class MockToast {
-//     public present(navOptions: any = {}): Promise<any> {
-//         return Promise.resolve({});
-//     }
-//     public dismiss(data?: any, role?: string, navOptions?: NavOptions): Promise<any> {
-//         return Promise.resolve({});
-//     }
 
-//     public onDidDismiss(callback: () => void): void {
-//         callback();
-//         return;
-//     }
-// }
+    it('to test error scenerio of the profile', () => {
+        // arrange
+        profileServiceMock.getAllUserProfile.mockRejectedValue('error');
+        // act
+        addOrRemoveUserGroup.getAllProfile();
+        // assert
+        expect(profileServiceMock.getAllUserProfile).toHaveBeenCalled();
+    });
 
-// describe('AddOrRemoveGroupUserPage', () => {
-//     describe('AddOrRemoveGroupUserPage', () => {
-//         let comp: AddOrRemoveGroupUserPage;
-//         let fixture: ComponentFixture<AddOrRemoveGroupUserPage>;
+    it('to call the  toggle method for user selection map', () => {
+        // arrange
+        addOrRemoveUserGroup.uniqueUserList = [{ uid: 'SAMPLE_UID' } as any];
+        addOrRemoveUserGroup.userSelectionMap = new Map();
+        addOrRemoveUserGroup.userSelectionMap.set('SAMPLE_UID', true);
+        spyOn(addOrRemoveUserGroup.userSelectionMap, 'set').and.callThrough();
 
-//         beforeEach(() => {
+        // act
+        addOrRemoveUserGroup.toggleSelect(0);
 
-//             const navControllerStub = {
-//                 push: () => ({}),
-//                 popTo: () => ({}),
-//                 getByIndex: () => ({}),
-//                 length: () => ({})
-//             };
-//             const navParamsStub = {
-//                 get: () => ({})
-//             };
-//             const toastControllerStub = {
-//                 create: () => ({})
-//             };
-//             const alertControllerStub = {
-//                 create: () => ({
-//                     present: () => ({})
-//                 })
-//             };
-//             const translateServiceStub = {
-//                 get: () => ({
-//                     subscribe: () => ({})
-//                 })
-//             };
-//             const groupServiceStub = {
-//                 addUpdateProfilesToGroup: () => ({
-//                     then: () => ({
-//                         catch: () => ({})
-//                     })
-//                 })
-//             };
-//             const profileServiceStub = {
-//                 getAllUserProfile: () => ({
-//                     then: () => ({
-//                         catch: () => ({})
-//                     })
-//                 })
-//             };
-//             const loadingControllerStub = {
-//                 create: () => ({})
-//             };
-//             const getLoader = () => {
-//                 const loadingController = TestBed.get(LoadingController);
-//                 comp.getLoader();
-//             };
-//             const telemetryGeneratorServiceStub = {
-//                 generateInteractTelemetry: () => ({})
-//             };
-//             TestBed.configureTestingModule({
-//                 declarations: [AddOrRemoveGroupUserPage],
-//                 schemas: [NO_ERRORS_SCHEMA],
-//                 imports: [TranslateModule.forRoot()],
-//                 providers: [
-//                     CommonUtilService,
-//                     //     { provide: NgZone, useValue: ngZoneStub },
-//                     { provide: NavController, useValue: navControllerStub },
-//                     { provide: NavParams, useValue: navParamsStub },
-//                     { provide: ToastController, useClass: MockToastCtrl },
-//                     { provide: AlertController, useValue: alertControllerStub },
-//                     { provide: TranslateService, useValue: translateServiceStub },
-//                     { provide: GroupService, useValue: groupServiceStub },
-//                     { provide: ProfileService, useValue: profileServiceStub },
-//                     { provide: LoadingController, useValue: loadingControllerStub },
-//                     { provide: TelemetryGeneratorService, useValue: telemetryGeneratorServiceStub }
-//                 ]
-//             });
-//             fixture = TestBed.createComponent(AddOrRemoveGroupUserPage);
-//             comp = fixture.componentInstance;
-//         });
+        // assert
+        expect(addOrRemoveUserGroup.userSelectionMap).toBeTruthy();
+    });
+    it('to call the  toggle method for MemberSelection map', () => {
+        // arrange
+        addOrRemoveUserGroup.groupMembers = [{ uid: 'SAMPLE_UID' } as any];
+        addOrRemoveUserGroup.memberSelectionMap = new Map();
+        addOrRemoveUserGroup.memberSelectionMap.set('SAMPLE_UID', true);
+        spyOn(addOrRemoveUserGroup.memberSelectionMap, 'set').and.callThrough();
 
-//         it('#should load instance', () => {
-//             expect(comp).toBeTruthy();
-//         });
+        // act
+        addOrRemoveUserGroup.toggleMemberSelect(0);
 
-//         it('#addUsers should defaults to: true', () => {
-//             console.log('addUsers', comp.addUsers);
-//             expect(comp.addUsers).toEqual(true);
-//         });
+        // assert
+        expect(addOrRemoveUserGroup.memberSelectionMap).toBeTruthy();
+    });
 
-//         it('#allUsers should defaults to: []', () => {
-//             expect(comp.allUsers).toEqual([]);
-//         });
+    it('to naviagte to the guesteditprofile page ', () => {
+        // arrange
 
-//         it('#selectedUids should defaults to: []', () => {
-//             expect(comp.selectedUids).toEqual([]);
-//         });
+        // act
+        addOrRemoveUserGroup.goToEditGroup(0);
 
-//         describe('ionViewWillEnter', () => {
-//             it('#ionViewWill ahould and Enter to makes expected calls', () => {
-//                 spyOn(comp, 'getAllProfile');
-//                 comp.ionViewWillEnter();
-//                 expect(comp.getAllProfile).toHaveBeenCalled();
-//             });
-//         });
+        // assert
+        expect(navCtrlMock.push).toHaveBeenCalledWith(GuestEditProfilePage, {});
+    });
 
-//         describe('getAllProfile', () => {
-//             it('#makes expected calls', () => {
-//                 const profileServiceStub: ProfileService = TestBed.get(ProfileService);
+    it('to check the isuser selected ', () => {
+        // arrange
+        spyOn(addOrRemoveUserGroup, 'getSelectedUids').and.stub();
+        addOrRemoveUserGroup.uniqueUserList = [{ uid: 'SAMPLE_UID' } as any];
+        addOrRemoveUserGroup.userSelectionMap = new Map();
+        addOrRemoveUserGroup.userSelectionMap.get('SAMPLE_UID');
+        // act
+        addOrRemoveUserGroup.isUserSelected(0);
+        expect(addOrRemoveUserGroup.userSelectionMap.get).toBeTruthy();
+    });
+    it('to check the isGroupMember selected ', () => {
+        // arrange
+        spyOn(addOrRemoveUserGroup, 'getSelectedGroupMemberUids').and.stub();
+        addOrRemoveUserGroup.groupMembers = [{ uid: 'SAMPLE_GID' } as any];
+        addOrRemoveUserGroup.memberSelectionMap = new Map();
+        addOrRemoveUserGroup.memberSelectionMap.get('SAMPLE_GID');
+        // act
+        addOrRemoveUserGroup.isGroupMemberSelected(0);
+        // assert
+        expect(addOrRemoveUserGroup.memberSelectionMap.get).toBeTruthy();
+    });
 
-//                 spyOn(profileServiceStub, 'getAllUserProfile').and.returnValue(Promise.resolve(JSON.stringify
-//                     (mockCreateorremoveGroupRes.UserList)));
-//                 comp.groupMembers = [];
-//                 comp.addUsers = false;
-//                 comp.getAllProfile();
-//                 expect(profileServiceStub.getAllUserProfile).toHaveBeenCalled();
-//             });
-//         });
+    it('to Select all users to group', () => {
+        // arrange
+        addOrRemoveUserGroup.userSelectionMap = new Map();
+        addOrRemoveUserGroup.uniqueUserList = [{ uid: 'SAMPLE_UID' } as any];
+        addOrRemoveUserGroup.userSelectionMap.set('SAMPLE_UID', true);
+        // act
+        addOrRemoveUserGroup.selectAll();
+        zoneMock.run.mock.calls[0][0].call(addOrRemoveUserGroup);
+        // addOrRemoveUserGroup.uniqueUserList.mock.calls[0][0].call();
+        // assert
+        expect(addOrRemoveUserGroup.userSelectionMap.set).toBeTruthy();
+    });
 
-//         describe('selectAll', () => {
-//             it('#selectAll should makes expected calls', () => {
-//                 comp.uniqueUserList = mockCreateorremoveGroupRes.UserList;
-//                 comp.userSelectionMap.set(mockCreateorremoveGroupRes.UserList[0].uid, true);
-//                 comp.selectAll();
-//                 expect(comp.uniqueUserList).toBeDefined();
-//             });
-//         });
+    it('to UnSelect all users from group', () => {
+        // arrange
+        addOrRemoveUserGroup.memberSelectionMap = new Map();
+        addOrRemoveUserGroup.groupMembers = [{ uid: 'SAMPLE_UID' } as any];
+        addOrRemoveUserGroup.memberSelectionMap.set('SAMPLE_UID', true);
+        // act
+        addOrRemoveUserGroup.unselectAll();
+        zoneMock.run.mock.calls[0][0].call(addOrRemoveUserGroup);
+        // assert
+        expect(addOrRemoveUserGroup.memberSelectionMap.set).toBeTruthy();
+    });
 
-//         describe('getSelectedGroupMemberUids', () => {
-//             it('getSelectedGroupMemberUids makes expected calls', () => {
-//                 comp.groupMembers = mockCreateorremoveGroupRes.UserList;
-//                 comp.getSelectedGroupMemberUids();
-//                 expect(comp.getSelectedGroupMemberUids).toBeDefined();
-//             });
-//         });
+    it('to remove user from group', () => {
+        // arrange
+        spyOn(addOrRemoveUserGroup, 'deleteUsersFromGroupConfirmBox').and.stub();
+        spyOn(addOrRemoveUserGroup, 'remove').and.callThrough();
+        addOrRemoveUserGroup.memberSelectionMap = new Map();
+        addOrRemoveUserGroup.groupMembers = [{ uid: 'SAMPLE_UID' } as any];
+        addOrRemoveUserGroup.memberSelectionMap.get('SAMPLE_UID');
+        addOrRemoveUserGroup.selectedUids.push('SAMPLE_UID');
+        // act
+        addOrRemoveUserGroup.remove();
+        // assert
+        expect(addOrRemoveUserGroup.memberSelectionMap).toBeTruthy();
+    });
+    it('to add user to group', (done) => {
+        // arrange
+        addOrRemoveUserGroup.groupInfo = { gid: 'SAMPLE_GID' } as any;
+        spyOn(addOrRemoveUserGroup, 'getSelectedUids').and.returnValue([]);
+        commonUtilServiceMock.translateMessage.mockReturnValue('GROUP_MEMBER_ADD_SUCCESS');
+        loadingControllerMock.create.mockReturnValue({
+            present: () => {
+            },
+            dismiss: () => {
+            }
+        });
+        (groupServiceMock.addUpdateProfilesToGroup as any).mockReturnValue
+            (Promise.resolve(JSON.stringify(mockCreateorremoveGroupRes.UserList)));
+        // act
+        addOrRemoveUserGroup.add();
+        // assert
+        setTimeout(() => {
+            expect(commonUtilServiceMock.showToast).toBeCalledWith('GROUP_MEMBER_ADD_SUCCESS');
+            expect(navCtrlMock.popTo((-2)));
+            done();
+        }, 0);
+    });
 
-//         describe('add users to group', () => {
-//             it('#add should makes expected calls to add users to group', fakeAsync(() => {
-//                 const navControllerStub = TestBed.get(NavController);
-//                 spyOn(navControllerStub, 'popTo');
-//                 spyOn(navControllerStub, 'getByIndex');
-//                 spyOn(navControllerStub, 'length');
-//                 comp.getLoader = jasmine.createSpy().and.callFake(() => {
-//                     return { present: () => { }, dismiss: () => { } };
-//                 });
-//                 const groupServiceStub: GroupService = TestBed.get(GroupService);
-//                 const commonUtilService = TestBed.get(CommonUtilService);
-//                 const translate = TestBed.get(TranslateService);
-//                 comp.groupMembers = mockCreateorremoveGroupRes.UserList;
-//                 spyOn(comp, 'getSelectedUids');
-//                 spyOn(groupServiceStub, 'addUpdateProfilesToGroup').and.returnValue(Promise.resolve('resp'));
-//                 spyOn(commonUtilService, 'showToast').and.returnValue(Promise.resolve('GROUP_MEMBER_ADD_SUCCESS'));
-//                 comp.add();
-//                 expect(comp.getLoader).toHaveBeenCalled();
-//                 expect(comp.getSelectedUids).toHaveBeenCalled();
-//             }));
+    it('to add() user to group should show error when something went wrong error cause', (done) => {
+        // arrange
+        addOrRemoveUserGroup.groupInfo = { gid: 'SAMPLE_GID' } as any;
+        spyOn(addOrRemoveUserGroup, 'getSelectedUids').and.returnValue([]);
+        loadingControllerMock.create.mockReturnValue({
+            present: () => {
+            },
+            dismiss: () => {
+            }
+        });
+        (groupServiceMock.addUpdateProfilesToGroup as any).mockRejectedValue
+            (Promise.resolve(JSON.stringify(mockCreateorremoveGroupRes.UserList)));
+        commonUtilServiceMock.translateMessage.mockReturnValue('SOMETHING_WENT_WRONG');
+        // act
+        addOrRemoveUserGroup.add();
+        // assert
+        setTimeout(() => {
+            expect(commonUtilServiceMock.showToast).toBeCalledWith('SOMETHING_WENT_WRONG');
+            expect(navCtrlMock.popTo((-2)));
+            done();
+        }, 0);
+    });
+    it('to add user to group when error cause', (done) => {
+        // arrange
+        addOrRemoveUserGroup.groupInfo = { gid: 'SAMPLE_GID' } as any;
+        spyOn(addOrRemoveUserGroup, 'getSelectedUids').and.returnValue([]);
+        commonUtilServiceMock.translateMessage.mockReturnValue('GROUP_MEMBER_DELETE_SUCCESS');
+        loadingControllerMock.create.mockReturnValue({
+            present: () => {
+            },
+            dismiss: () => {
+            }
+        });
+        (groupServiceMock.addUpdateProfilesToGroup as any).mockReturnValue
+            (Promise.resolve(JSON.stringify(mockCreateorremoveGroupRes.UserList)));
+        // act
+        addOrRemoveUserGroup.deleteUsersFromGroup();
+        // assert
+        setTimeout(() => {
+            expect(commonUtilServiceMock.showToast).toBeCalledWith('GROUP_MEMBER_DELETE_SUCCESS');
+            expect(navCtrlMock.popTo((-2)));
+            done();
+        }, 0);
+    });
+    it('to deleteUsersFromGroup() delete user to group when error cause', (done) => {
+        // arrange
+        addOrRemoveUserGroup.groupInfo = { gid: 'SOME_ERROR' } as any;
+        spyOn(addOrRemoveUserGroup, 'getSelectedUids').and.returnValue([]);
 
-//             it('#add makes expected calls when error', fakeAsync(() => {
-//                 comp.getLoader = jasmine.createSpy().and.callFake(() => {
-//                     return { present: () => { }, dismiss: () => { } };
-//                 });
-//                 comp.groupMembers = mockCreateorremoveGroupRes.UserList;
-//                 const groupServiceStub: GroupService = TestBed.get(GroupService);
-//                 const commonUtilService = TestBed.get(CommonUtilService);
-//                 spyOn(comp, 'getSelectedUids');
-//                 spyOn(groupServiceStub, 'addUpdateProfilesToGroup').and.returnValue(Promise.reject('error'));
-//                 spyOn(commonUtilService, 'showToast').and.returnValue(Promise.resolve('SOMETHING_WENT_WRONG'));
-//                 comp.add();
-//                 expect(comp.getSelectedUids).toHaveBeenCalled();
-//             }));
-//         });
-//         describe('deleteUsersFromGroup', () => {
-//             it('#deleteUsersFromGroup should makes expected calls', () => {
-//                 const navControllerStub: NavController = TestBed.get(NavController);
-//                 const groupServiceStub: GroupService = TestBed.get(GroupService);
-//                 const telemetryGeneratorServiceStub: TelemetryGeneratorService =
-//                     TestBed.get(TelemetryGeneratorService);
-//                 spyOn(telemetryGeneratorServiceStub, 'generateInteractTelemetry').and.returnValue(Promise.resolve({}));
-//                 comp.getLoader = jasmine.createSpy().and.callFake(() => {
-//                     return { present: () => { }, dismiss: () => { } };
-//                 });
-//                 spyOn(console, 'log').and.callThrough();
-//                 spyOn(groupServiceStub, 'addUpdateProfilesToGroup').and.returnValue(Promise.resolve([]));
-//                 comp.deleteUsersFromGroup();
-//                 expect(comp.getLoader).toHaveBeenCalled();
-//                 expect(groupServiceStub.addUpdateProfilesToGroup).toHaveBeenCalled();
-//                 expect(telemetryGeneratorServiceStub.generateInteractTelemetry).toHaveBeenCalled();
-//             });
+        (groupServiceMock.addUpdateProfilesToGroup as any).mockRejectedValue
+            (JSON.stringify(mockCreateorremoveGroupRes.UserList));
+        loadingControllerMock.create.mockReturnValue({
+            present: () => {
+            },
+            dismiss: () => {
+            }
+        });
+        commonUtilServiceMock.translateMessage.mockReturnValue('SOMETHING_WENT_WRONG');
+        // act
+        addOrRemoveUserGroup.deleteUsersFromGroup();
+        // assert
+        setTimeout(() => {
 
-//             it('#deleteUsersFromGroup should makes expected calls for error', () => {
-//                 const navControllerStub: NavController = TestBed.get(NavController);
-//                 const groupServiceStub: GroupService = TestBed.get(GroupService);
-//                 const telemetryGeneratorServiceStub: TelemetryGeneratorService =
-//                     TestBed.get(TelemetryGeneratorService);
-//                 spyOn(telemetryGeneratorServiceStub, 'generateInteractTelemetry').and.returnValue(Promise.reject({}));
-//                 comp.getLoader = jasmine.createSpy().and.callFake(() => {
-//                     return { present: () => { }, dismiss: () => { } };
-//                 });
-//                 spyOn(console, 'log').and.callThrough();
-//                 spyOn(groupServiceStub, 'addUpdateProfilesToGroup').and.returnValue(Promise.reject([]));
+            expect(commonUtilServiceMock.showToast).toBeCalledWith('SOMETHING_WENT_WRONG');
+            done();
+        }, 0);
+    });
 
-//                 comp.deleteUsersFromGroup();
-//                 expect(comp.getLoader).toHaveBeenCalled();
-//             });
+    it('should be alert when userDeleteGroupConfirmBox()', () => {
+        // arrange
+        const alert = { present: jest.fn() };
+        spyOn(commonUtilServiceMock, 'translateMessage').and.stub();
+        alertCtrlMock.create.mockReturnValue(alert);
+        // act
+        addOrRemoveUserGroup.deleteUsersFromGroupConfirmBox(0);
+        // assert
+        expect(alertCtrlMock.create).toHaveBeenCalled();
+        expect(alert.present).toHaveBeenCalled();
+    });
 
-//         });
-//         describe('getLoader', () => {
-//             it('#getLoader should make  expected calls', () => {
-//                 const loadingControllerStub: LoadingController = TestBed.get(LoadingController);
-//                 spyOn(loadingControllerStub, 'create');
-//                 comp.getLoader();
-//                 expect(loadingControllerStub.create).toHaveBeenCalled();
-//             });
-//         });
-
-//         describe('toggleSelect', () => {
-//             it('#toggleSelect should read toggleSelect param', () => {
-//                 spyOn(comp, 'toggleSelect').and.callThrough();
-//                 comp.uniqueUserList = mockCreateorremoveGroupRes.UserList;
-//                 comp.toggleSelect(0);
-//                 expect(comp.toggleSelect).toHaveBeenCalled();
-//             });
-//             it('#toggleSelect should read toggleSelect param', () => {
-//                 spyOn(comp, 'toggleSelect').and.callThrough();
-//                 comp.uniqueUserList = mockCreateorremoveGroupRes.UserList;
-//                 comp.userSelectionMap.set(mockCreateorremoveGroupRes.UserList[0].uid, true);
-//                 comp.toggleSelect(0);
-//                 expect(comp.toggleSelect).toHaveBeenCalled();
-//             });
-//         });
-
-//         describe('togglememberSelect', () => {
-//             it('#togglememberSelect should read togglememberSelect param', () => {
-//                 spyOn(comp, 'toggleMemberSelect').and.callThrough();
-//                 comp.groupMembers = mockCreateorremoveGroupRes.UserList;
-//                 comp.memberSelectionMap.set(mockCreateorremoveGroupRes.UserList[0].uid, true);
-//                 comp.toggleMemberSelect(0);
-//                 expect(comp.toggleMemberSelect).toBeTruthy();
-//             });
-//         });
-
-//         describe('goToEditGroup', () => {
-//             it('#goToEditGroup should be navigated', () => {
-//                 const navControllerStub: NavController = TestBed.get(NavController);
-//                 spyOn(navControllerStub, 'push').and.callThrough();
-//                 comp.goToEditGroup(0);
-//                 expect(navControllerStub.push).toHaveBeenCalled();
-//             });
-//         });
-//         describe('isUserSelected', () => {
-//             it('#isUserSelected should be selected', () => {
-//                 spyOn(comp, 'isUserSelected').and.callThrough();
-//                 comp.uniqueUserList = mockCreateorremoveGroupRes.UserList;
-//                 comp.userSelectionMap.set(mockCreateorremoveGroupRes.UserList[0].uid, true);
-//                 comp.isUserSelected(0);
-//                 expect(comp.isUserSelected).toHaveBeenCalled();
-//             });
-//         });
-//         describe('isGroupMemberSelected', () => {
-//             it('#isGroupMemberSelected should be selected', () => {
-//                 spyOn(comp, 'isGroupMemberSelected').and.callThrough();
-//                 comp.groupMembers = mockCreateorremoveGroupRes.UserList;
-//                 comp.memberSelectionMap.set(mockCreateorremoveGroupRes.UserList[0].uid, true);
-//                 comp.isGroupMemberSelected(0);
-//                 expect(comp.isGroupMemberSelected).toHaveBeenCalled();
-//             });
-//         });
-//         describe('remove', () => {
-//             it('#remove should be unselected uid from group', () => {
-//                 spyOn(comp, 'remove').and.callThrough();
-//                 comp.groupMembers = mockCreateorremoveGroupRes.UserList;
-//                 comp.memberSelectionMap.get(mockCreateorremoveGroupRes.UserList[0].uid);
-//                 comp.selectedUids.push(mockCreateorremoveGroupRes.UserList[0].uid);
-//                 comp.remove();
-//                 expect(comp.isGroupMemberSelected).toBeTruthy();
-//             });
-//         });
-//         describe('unselectAll', () => {
-//             it('#unselectAll should be Unselected when all groupmembers removed', () => {
-//                 comp.groupMembers = mockCreateorremoveGroupRes.UserList;
-//                 comp.memberSelectionMap.get(mockCreateorremoveGroupRes.UserList[0].uid);
-//                 comp.unselectAll();
-//                 expect(comp.unselectAll).toBeTruthy();
-//             });
-//         });
-//     });
-// });
+    it('toget GradeName from profile| group', () => {
+        // arrange
+        profileServiceMock.getAllUserProfile.mockResolvedValue(JSON.parse(mockCreateorremoveGroupRes.profileDetailsMock));
+        const alert = { present: jest.fn() };
+        alertCtrlMock.create.mockReturnValue(alert);
+        // act
+        addOrRemoveUserGroup.getGradeNameFromCode(JSON.parse(mockCreateorremoveGroupRes.profileDetailsMock));
+        // assert
+        expect(addOrRemoveUserGroup.getGradeNameFromCode).toBeTruthy();
+    });
+});
