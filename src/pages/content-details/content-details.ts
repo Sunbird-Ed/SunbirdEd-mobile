@@ -764,6 +764,10 @@ export class ContentDetailsPage {
    * alert for playing the content
    */
   showSwitchUserAlert(isStreaming: boolean) {
+    if (isStreaming && !this.commonUtilService.networkInfo.isNetworkAvailable) {
+      this.commonUtilService.showToast('INTERNET_CONNECTIVITY_NEEDED');
+      return false;
+    }
     if (!AppGlobalService.isPlayerLaunched && this.userCount > 1) {
       const profile = this.appGlobalService.getCurrentUser();
       const alert = this.alertCtrl.create({

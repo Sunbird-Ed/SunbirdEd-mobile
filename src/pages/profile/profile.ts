@@ -391,7 +391,7 @@ export class ProfilePage {
   getEnrolledCourses() {
     const option = {
       userId: this.profile.userId,
-      refreshEnrolledCourses: true,
+      refreshEnrolledCourses: false,
       returnRefreshedEnrolledCourses: true
     };
     this.trainingsCompleted = [];
