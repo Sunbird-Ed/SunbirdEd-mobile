@@ -261,7 +261,7 @@ export class CoursesPage implements OnInit {
 
     this.events.subscribe(EventTopics.ENROL_COURSE_SUCCESS, (res) => {
       if (res && res.batchId) {
-        this.getEnrolledCourses(false, true);
+        this.getEnrolledCourses(false, false);
       }
     });
 
@@ -287,6 +287,7 @@ export class CoursesPage implements OnInit {
     });
     this.events.subscribe(EventTopics.REFRESH_ENROLL_COURSE_LIST, () => {
       this.enrolledCourses = this.appGlobalService.getEnrolledCourseList();
+      this.getEnrolledCourses(false, true);
     });
   }
 
