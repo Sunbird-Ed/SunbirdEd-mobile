@@ -297,7 +297,8 @@ export class ViewMoreActivityPage implements OnInit {
     this.pageType = 'enrolledCourse';
     const option = {
       userId: this.navParams.get('userId'),
-      refreshEnrolledCourses: false
+      refreshEnrolledCourses: false,
+      returnRefreshedEnrolledCourses: true
     };
     this.courseService.getEnrolledCourses(option)
       .then((data: any) => {
