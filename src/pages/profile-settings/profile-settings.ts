@@ -392,7 +392,7 @@ export class ProfileSettingsPage {
       values['board'] = 'na';
       this.telemetryService.generateInteractTelemetry(
         InteractType.TOUCH,
-        InteractSubtype.SUBMIT_CLICKED,
+        'submit-clicked',
         Environment.HOME,
         PageId.ONBOARDING_PROFILE_PREFERENCES,
         undefined,
@@ -412,7 +412,7 @@ export class ProfileSettingsPage {
       values['medium'] = 'na';
       this.telemetryService.generateInteractTelemetry(
         InteractType.TOUCH,
-        InteractSubtype.SUBMIT_CLICKED,
+        'submit-clicked',
         Environment.HOME,
         PageId.ONBOARDING_PROFILE_PREFERENCES,
         undefined,
@@ -433,7 +433,7 @@ export class ProfileSettingsPage {
       values['grades'] = 'na';
       this.telemetryService.generateInteractTelemetry(
         InteractType.TOUCH,
-        InteractSubtype.SUBMIT_CLICKED,
+        'submit-clicked',
         Environment.HOME,
         PageId.ONBOARDING_PROFILE_PREFERENCES,
         undefined,
