@@ -436,7 +436,7 @@ export class ContentDetailsPage {
       this.isChildContent = true;
     }
     if (this.content.streamingUrl) {
-        this.streamingUrl = this.content.streamingUrl;
+      this.streamingUrl = this.content.streamingUrl;
     }
 
     if (!this.isChildContent && this.content.contentMarker.length
@@ -526,6 +526,7 @@ export class ContentDetailsPage {
     const values = new Map();
     values['isUpdateAvailable'] = this.isUpdateAvail;
     values['isDownloaded'] = this.content.downloadable;
+    values['autoAfterDownload'] = this.downloadAndPlay;
 
     const telemetryObject: TelemetryObject = {
       id: this.content.identifier,
@@ -825,9 +826,9 @@ export class ContentDetailsPage {
       this.zone.run(() => {
         this.isPlayerLaunched = true;
         const values = new Map();
-        if (Boolean(this.downloadAndPlay)) {
-          values['autoAfterDownload'] = true;
-        }
+
+        values['autoAfterDownload'] = this.downloadAndPlay;
+
         this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
           InteractSubtype.CONTENT_PLAY,
           Environment.HOME,
