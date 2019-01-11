@@ -6,7 +6,15 @@ export const mockres = {
             'contentId': 'domain_4083',
             'score': 4,
             'hData': '',
-            'totalTimespent': 57
+            'totalTimespent': 57,
+            'assessmentData': [
+            {
+                'qid': 'ed0a5346-6d68-4860-a2d3-566642fb7438',
+                'qtitle': 'Story5Q1',
+                'score': 4,
+                'timespent': 57
+            }
+        ]
         }
     ],
     getReportsByQuestion: [
@@ -104,6 +112,83 @@ export const mockres = {
         'max_score': 1.0,
         'correct': 1,
         'correct_users_count': 1
+    }
+    ],
+    csvdata: [
+        {contentId: 'domain_4083',
+            correct: 0,
+            id: -1,
+            maxScore: 1,
+            qdesc: '',
+            qid: 'domain_4533',
+            qindex: 1,
+            qtitle: 'Story5Q1',
+            res: '[]',
+            score: 0,
+            timespent: 1,
+            timestamp: 1544165605586,
+            total_ts: 26,
+            uid: '30c6de21-d184-446a-b9d8-edfedff910ef'
+        },
+        {contentId: 'domain_4083',
+            correct: 0,
+            id: -1,
+            maxScore: 1,
+            qdesc: '',
+            qid: 'domain_4544',
+            qindex: 1,
+            qtitle: 'Story5Q2',
+            res: '[]',
+            score: 0,
+            timespent: 1,
+            timestamp: 1544165608603,
+            total_ts: 26,
+            uid: '30c6de21-d184-446a-b9d8-edfedff910ef'
+        },
+        {contentId: 'domain_4083',
+            correct: 0,
+            id: -1,
+            maxScore: 1,
+            qdesc: '',
+            qid: 'domain_4562',
+            qindex: 1,
+            qtitle: 'Story5Q3',
+            res: '[]',
+            score: 0,
+            timespent: 1,
+            timestamp: 1544165611756,
+            total_ts: 26,
+            uid: '30c6de21-d184-446a-b9d8-edfedff910ef'
+        },
+        {contentId: 'domain_4083',
+        correct: 0,
+        id: -1,
+        maxScore: 1,
+        qdesc: '',
+        qid: 'domain_4564',
+        qindex: 1,
+        qtitle: 'Story5Q4',
+        res: '[]',
+        score: 0,
+        timespent: 1,
+        timestamp: 1544165615360,
+        total_ts: 26,
+        uid: '30c6de21-d184-446a-b9d8-edfedff910ef'
+        },
+        {contentId: 'domain_4083',
+        correct: 0,
+        id: -1,
+        maxScore: 4,
+        qdesc: '',
+        qid: 'do_30020381',
+        qindex: 1,
+        qtitle: 'Story5Q7',
+        res: '[]',
+        score: 0,
+        timespent: 1,
+        timestamp: 1544165618831,
+        total_ts: 26,
+        uid: '30c6de21-d184-446a-b9d8-edfedff910ef'
     }
     ]
 };

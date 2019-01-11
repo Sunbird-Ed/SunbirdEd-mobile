@@ -105,6 +105,7 @@ export const profileServiceMock = createSpyObj<ProfileService>([
   'setCurrentProfile',
   'getCurrentUser',
   'doOAuthStepOne',
+  'getProfile',
   'getAllUserProfile',
   'getAllProfile',
   'exportProfile'
@@ -188,6 +189,10 @@ export const appGlobalServiceMock = createSpyObj<AppGlobalService>([
   'getCurrentUser',
   'getNameForCodeInFramework',
   'getGuestUserType',
+  'setAverageTime',
+  'setAverageScore',
+  'getAverageScore',
+  'getAverageTime',
   'getUserId',
   'getGuestUserInfo',
   'getEnrolledCourseList'
@@ -255,7 +260,9 @@ export const reportServiceMock = createSpyObj<ReportService>([
   'getListOfReports',
   'getImportContentRequestBody',
   'getDetailReport',
-  'getDetailsPerQuestion'
+  'getDetailsPerQuestion',
+  'getReportsByUser',
+  'getReportsByQuestion'
 ]);
 
 export const transferMock = createSpyObj<FileTransfer>([
@@ -263,7 +270,8 @@ export const transferMock = createSpyObj<FileTransfer>([
 ]);
 
 export const fileMock = createSpyObj<File>([
-  'writeFile'
+  'writeFile',
+  'dataDirectory'
 ]);
 
 export const datePipeMock = createSpyObj<DatePipe>([
