@@ -90,7 +90,9 @@ export class ProfileSettingsPage {
     private container: ContainerService,
     private ionicApp: IonicApp,
     private app: App,
-    private framework: FrameworkService
+    private framework: FrameworkService,
+    private telemetryService: TelemetryGeneratorService
+
   ) {
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
       .then(val => {
@@ -386,6 +388,18 @@ export class ProfileSettingsPage {
         PageId.ONBOARDING_PROFILE_PREFERENCES, InteractSubtype.FINISH_CLICKED);
       // this.commonUtilService.showToast(this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService
       //   .translateMessage('BOARD')), false, 'redErrorToast');
+      const values = new Map();
+      values['board'] = 'na';
+      this.telemetryService.generateInteractTelemetry(
+        InteractType.TOUCH,
+        'submit-clicked',
+        Environment.HOME,
+        PageId.ONBOARDING_PROFILE_PREFERENCES,
+        undefined,
+        values,
+        undefined,
+        undefined,
+      );
       this.boardSelect.open();
       return false;
     } else if (formVal.medium.length === 0) {
@@ -394,6 +408,18 @@ export class ProfileSettingsPage {
         PageId.ONBOARDING_PROFILE_PREFERENCES, InteractSubtype.FINISH_CLICKED);
       // this.commonUtilService.showToast(this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService
       //   .translateMessage('MEDIUM')), false, 'redErrorToast');
+      const values = new Map();
+      values['medium'] = 'na';
+      this.telemetryService.generateInteractTelemetry(
+        InteractType.TOUCH,
+        'submit-clicked',
+        Environment.HOME,
+        PageId.ONBOARDING_PROFILE_PREFERENCES,
+        undefined,
+        values,
+        undefined,
+        undefined,
+      );
       this.mediumSelect.open();
       return false;
     } else if (formVal.grades.length === 0) {
@@ -403,6 +429,18 @@ export class ProfileSettingsPage {
       // this.commonUtilService.showToast(this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService
       //   .translateMessage('CLASS')), false, 'redErrorToast');
       this.gradeSelect.open();
+      const values = new Map();
+      values['grades'] = 'na';
+      this.telemetryService.generateInteractTelemetry(
+        InteractType.TOUCH,
+        'submit-clicked',
+        Environment.HOME,
+        PageId.ONBOARDING_PROFILE_PREFERENCES,
+        undefined,
+        values,
+        undefined,
+        undefined,
+      );
       return false;
     } else {
       this.appGlobalService.generateSaveClickedTelemetry(this.extractProfileForTelemetry(formVal), 'passed',

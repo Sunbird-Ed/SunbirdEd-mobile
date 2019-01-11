@@ -282,6 +282,7 @@
   "PLAY_FROM_DEVICE": "Play From Device",
   "PLAY_ONLINE": "Play online",
   "PLEASE_SELECT": "Select {{%s}}",
+  "INTERNET_CONNECTIVITY_NEEDED":"Internet connectivity needed",
   "PLEASE_SELECT_A_LANGUAGE": "Select a language",
   "PLEASE_SELECT_USER": "Select a user",
   "POPULAR_COURSES": "Popular Courses",
