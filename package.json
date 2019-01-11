@@ -186,7 +186,6 @@
       "src/pages/profile/guest-edit.profile/guest-edit.profile.spec.ts",
       "src/pages/profile/guest-profile/guest.profile.spec.ts",
       "src/pages/profile/overflowmenu/menu.overflow.component.spec.ts",
-      "src/pages/profile/profile-component.spec.ts",
       "src/pages/profile/user-search/user-search.spec.ts",
       "src/pages/qr-code-result/qr-code-result.spec.ts",
       "src/pages/qrscanner/qrscanresulthandler.service.spec.ts",
