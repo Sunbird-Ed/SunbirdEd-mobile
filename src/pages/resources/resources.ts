@@ -410,6 +410,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           this.pageLoadedSuccess = true;
           this.pageApiLoader = false;
           // this.noInternetConnection = false;
+          this.generateExtraInfoTelemetry(newSections.length);
           this.checkEmptySearchResult(isAfterLanguageChange);
         });
       })
@@ -423,6 +424,17 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           }
         });
       });
+  }
+
+  generateExtraInfoTelemetry(sectionsCount) {
+    const values = new Map();
+    values['savedItemVisible'] = (this.localResources && this.localResources.length) ? 'Y' : 'N';
+    values['pageSectionCount'] = sectionsCount;
+    values['networkAvailable'] = this.commonUtilService.networkInfo.isNetworkAvailable ? 'Y' : 'N';
+    this.telemetryGeneratorService.generateExtraInfoTelemetry(
+      values,
+      PageId.LIBRARY
+    );
   }
 
   applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>, categoryKey?: string) {
