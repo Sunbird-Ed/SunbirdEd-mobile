@@ -36,7 +36,8 @@ import {PersonalDetailsEditPage} from './personal-details-edit.profile/personal-
     GuestEditProfilePage,
     OverflowMenuComponent,
     ImagePicker,
-    UserSearchComponent
+    UserSearchComponent,
+    PersonalDetailsEditPage
   ],
 
   imports: [
