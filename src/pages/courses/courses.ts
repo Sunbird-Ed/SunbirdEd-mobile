@@ -261,7 +261,7 @@ export class CoursesPage implements OnInit {
 
     this.events.subscribe(EventTopics.ENROL_COURSE_SUCCESS, (res) => {
       if (res && res.batchId) {
-        this.getEnrolledCourses(false, true);
+        this.getEnrolledCourses(false, false);
       }
     });
 
@@ -287,6 +287,7 @@ export class CoursesPage implements OnInit {
     });
     this.events.subscribe(EventTopics.REFRESH_ENROLL_COURSE_LIST, () => {
       this.enrolledCourses = this.appGlobalService.getEnrolledCourseList();
+      this.getEnrolledCourses(false, true);
     });
   }
 
@@ -402,6 +403,7 @@ export class CoursesPage implements OnInit {
 
         this.popularAndLatestCourses = newSections;
         this.pageApiLoader = !this.pageApiLoader;
+        this.generateExtraInfoTelemetry(newSections.length);
         this.checkEmptySearchResult();
       });
     }).catch((error: string) => {
@@ -415,6 +417,16 @@ export class CoursesPage implements OnInit {
         }
       });
     });
+  }
+
+  generateExtraInfoTelemetry(sectionsCount) {
+    const values = new Map();
+    values['pageSectionCount'] = sectionsCount;
+    values['networkAvailable'] = this.commonUtilService.networkInfo.isNetworkAvailable ? 'Y' : 'N';
+    this.telemetryGeneratorService.generateExtraInfoTelemetry(
+      values,
+      PageId.COURSES
+    );
   }
 
   applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>, categoryKey?: string) {
