@@ -1,5 +1,4 @@
 import { CommonUtilService } from './../../service/common-util.service';
-import { QRScannerAlert, QRAlertCallBack } from './../qrscanner/qrscanner_alert';
 import { FormAndFrameworkUtilService } from './../profile/formandframeworkutil.service';
 import {
   Component,
@@ -29,7 +28,11 @@ import {
 } from 'sunbird';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
-import { ContentType, MimeType } from '../../app/app.constant';
+import {
+  ContentType,
+  MimeType,
+  FrameworkCategory
+} from '../../app/app.constant';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
 import { TranslateService } from '@ngx-translate/core';
 import { AppGlobalService } from '../../service/app-global.service';
@@ -41,9 +44,7 @@ import {
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import * as _ from 'lodash';
 import { PopoverController } from 'ionic-angular';
-import { Popover } from 'ionic-angular';
 import { ProfileSettingsPage } from '../profile-settings/profile-settings';
-import { ComponentsModule } from '../../component/components.module';
 
 @IonicPage()
 @Component({
@@ -203,9 +204,9 @@ export class QrCodeResultPage {
         this.results = [];
         this.profile = this.appGlobalService.getCurrentUser();
         const contentData = JSON.parse(JSON.stringify(data.result.contentData));
-       /* if (!this.navParams.get('onboarding') && contentData && contentData.medium) {
-          this.commonUtilService.changeAppLanguage(contentData.medium);
-        } */
+        /* if (!this.navParams.get('onboarding') && contentData && contentData.medium) {
+           this.commonUtilService.changeAppLanguage(contentData.medium);
+         } */
         this.checkProfileData(contentData, this.profile);
         this.findContentNode(data.result);
 
@@ -426,7 +427,8 @@ export class QrCodeResultPage {
 
       const suggestedFrameworkRequest: SuggestedFrameworkRequest = {
         isGuestUser: true,
-        selectedLanguage: this.translate.currentLang
+        selectedLanguage: this.translate.currentLang,
+        categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
       };
       this.framework.getSuggestedFrameworkList(suggestedFrameworkRequest)
         .then((res) => {

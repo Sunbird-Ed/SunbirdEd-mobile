@@ -22,6 +22,7 @@ import {
 import { PageFilterOptions } from './options/filter.options';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../service/common-util.service';
+import { FrameworkCategory } from '@app/app';
 
 @Component({
   selector: 'page-filter',
@@ -88,8 +89,10 @@ export class PageFilter {
   async initFilterValues() {
     this.filters = this.navParams.get('filter');
     let pageId = this.navParams.get('pageId');
+    let categories: Array<string> = FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES;
     if (pageId === PageId.COURSES) {
       pageId = PageId.COURSE_PAGE_FILTER;
+      categories = FrameworkCategory.COURSE_FRAMEWORK_CATEGORIES;
     } else if (pageId === PageId.LIBRARY) {
       pageId = PageId.LIBRARY_PAGE_FILTER;
     }
@@ -135,7 +138,7 @@ export class PageFilter {
     let index = 0;
     for (const element of this.filters) {
       try {
-        await this.getFrameworkData(frameworkId, element.code, index);
+        await this.getFrameworkData(frameworkId, categories, element.code, index);
       } catch (error) {
         console.log('error: ' + error);
       }
@@ -152,12 +155,13 @@ export class PageFilter {
  * @param {string} currentCategory - request Parameter passing to the framework API
  * @param {number} index - Local variable name to hold the list data
  */
-  async getFrameworkData(frameworkId: string, currentCategory: string, index: number) {
+  async getFrameworkData(frameworkId: string, categories: Array<string>, currentCategory: string, index: number) {
     return new Promise((resolve, reject) => {
       const req: CategoryRequest = {
         currentCategory: currentCategory,
         frameworkId: frameworkId,
-        selectedLanguage: this.translate.currentLang
+        selectedLanguage: this.translate.currentLang,
+        categories: categories
       };
 
       this.frameworkService.getCategoryData(req)
