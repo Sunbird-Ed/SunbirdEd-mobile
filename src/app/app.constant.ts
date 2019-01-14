@@ -217,3 +217,8 @@ export class ViewMore {
     public static readonly PAGE_RESOURCE_SAVED = 'resource.SavedResources';
     public static readonly PAGE_RESOURCE_RECENTLY_VIEWED = 'resource.RecentlyViewed';
 }
+
+export class Location {
+    public static readonly TYPE_STATE = 'state';
+    public static readonly TYPE_DISTRICT = 'district';
+}

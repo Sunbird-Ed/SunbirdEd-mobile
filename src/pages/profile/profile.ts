@@ -42,12 +42,14 @@ import {
   ContentCard
 } from '@app/app/app.constant';
 import { CategoriesEditPage } from '@app/pages/categories-edit/categories-edit';
+import { PersonalDetailsEditPage } from '@app/pages/profile/personal-details-edit.profile/personal-details-edit.profile';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details/enrolled-course-details';
 import { CollectionDetailsPage } from '@app/pages/collection-details/collection-details';
 import { ContentDetailsPage } from '@app/pages/content-details/content-details';
 import { AppGlobalService, TelemetryGeneratorService, CommonUtilService } from '@app/service';
 import { FormAndFrameworkUtilService } from './formandframeworkutil.service';
 import { ImageLoader } from 'ionic-image-loader';
+import { EditContactDetailsPopupComponent } from '@app/component/edit-contact-details-popup/edit-contact-details-popup';
 
 /**
  * The Profile page
@@ -482,6 +484,23 @@ export class ProfilePage {
     }
   }
 
+  navigateToEditPersonalDetails() {
+    if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+      this.telemetryService.interact(
+        generateInteractTelemetry(InteractType.TOUCH,
+          InteractSubtype.EDIT_CLICKED,
+          Environment.HOME,
+          PageId.PROFILE, null,
+          undefined,
+          undefined));
+      this.navCtrl.push(PersonalDetailsEditPage, {
+        profile: this.profile
+      });
+    } else {
+      this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
+    }
+  }
+
   /**
    * Searches contents created by the user
    */
@@ -504,6 +523,23 @@ export class ProfilePage {
       .catch((error: any) => {
         console.error('Error', error);
       });
+  }
+
+  editMobileNumber() {
+      console.log('editMobileNumber');
+      const popover = this.popoverCtrl.create(EditContactDetailsPopupComponent, {
+        phone: this.profile.phone,
+        pageName: 'phoneEdit'
+      }, {
+          cssClass: 'content-action'
+        });
+      popover.present({
+        ev: event
+      });
+  }
+
+  editEmail() {
+    console.log('editEmail');
   }
 
 }
