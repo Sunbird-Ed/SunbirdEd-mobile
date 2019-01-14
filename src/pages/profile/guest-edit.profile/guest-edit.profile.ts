@@ -190,7 +190,7 @@ export class GuestEditProfilePage {
           cssClass: 'alert-btn-cancel',
           handler: () => {
             this.guestEditForm.patchValue({
-              name: [''],
+              name: undefined,
               syllabus: undefined,
               boards: [[]],
               medium: [[]],
@@ -221,7 +221,7 @@ export class GuestEditProfilePage {
       subjects: [],
       medium: []
     });
-   }
+  }
 
   /**
    * It will Dismiss active popup
@@ -336,21 +336,21 @@ export class GuestEditProfilePage {
     } else if (index === 1) {
       this.frameworkId = prevSelectedValue[0];
       if (this.frameworkId.length !== 0) {
-      this.formAndFrameworkUtilService.getFrameworkDetails(this.frameworkId)
-        .then(catagories => {
-          this.categories = catagories;
+        this.formAndFrameworkUtilService.getFrameworkDetails(this.frameworkId)
+          .then(catagories => {
+            this.categories = catagories;
 
-          this.isFormValid = true;
-          // loader.dismiss();
-          const request: CategoryRequest = {
-            currentCategory: this.categories[0].code,
-            selectedLanguage: this.translate.currentLang
-          };
-          this.getCategoryData(request, currentField);
-        }).catch(() => {
-          this.isFormValid = false;
-          this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
-        });
+            this.isFormValid = true;
+            // loader.dismiss();
+            const request: CategoryRequest = {
+              currentCategory: this.categories[0].code,
+              selectedLanguage: this.translate.currentLang
+            };
+            this.getCategoryData(request, currentField);
+          }).catch(() => {
+            this.isFormValid = false;
+            this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
+          });
       }
 
     } else {
@@ -457,9 +457,10 @@ export class GuestEditProfilePage {
     if (formVal.userType === '') {
       this.commonUtilService.showToast('USER_TYPE_SELECT_WARNING');
       return false;
-    } else if (formVal.name[0] === '' || !formVal.name) {
+    } else if (!this.validateName()) {
       this.commonUtilService.showToast(
         this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService.translateMessage('FULL_NAME')), false, 'red-toast');
+      return false;
     } else if (formVal.boards.length === 0) {
       this.appGlobalService.generateSaveClickedTelemetry(
         this.extractProfileForTelemetry(formVal), 'failed', PageId.EDIT_USER, InteractSubtype.SAVE_CLICKED);
@@ -502,6 +503,17 @@ export class GuestEditProfilePage {
   }
 
   /**
+   *  It will validate the name field.
+   */
+  validateName() {
+    const name = this.guestEditForm.getRawValue().name;
+    if (name) {
+      return name.trim().length ? true : false;
+    } else {
+      return false;
+    }
+  }
+  /**
    * This will submit edit form.
    */
   submitEditForm(formVal, loader): void {
@@ -511,7 +523,7 @@ export class GuestEditProfilePage {
     req.subject = formVal.subjects;
     req.medium = formVal.medium;
     req.uid = this.profile.uid;
-    req.handle = formVal.name;
+    req.handle = formVal.name.trim();
     req.profileType = formVal.profileType;
     req.source = this.profile.source;
     req.createdAt = this.profile.createdAt;
@@ -585,7 +597,7 @@ export class GuestEditProfilePage {
     req.grade = formVal.grades;
     req.subject = formVal.subjects;
     req.medium = formVal.medium;
-    req.handle = formVal.name;
+    req.handle = formVal.name.trim();
     req.profileType = formVal.profileType;
     req.source = UserSource.LOCAL;
     req.syllabus = (!formVal.syllabus.length) ? [] : [formVal.syllabus];
