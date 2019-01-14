@@ -42,7 +42,10 @@ import {
 } from '../../../app/module.service';
 import { AppGlobalService } from '../../../service/app-global.service';
 import { CommonUtilService } from '../../../service/common-util.service';
-import { PreferenceKey } from '../../../app/app.constant';
+import {
+  PreferenceKey,
+  FrameworkCategory
+} from '../../../app/app.constant';
 
 @Component({
   selector: 'page-guest-edit.profile',
@@ -221,7 +224,7 @@ export class GuestEditProfilePage {
       subjects: [],
       medium: []
     });
-   }
+  }
 
   /**
    * It will Dismiss active popup
@@ -243,7 +246,8 @@ export class GuestEditProfilePage {
     this.loader.present();
     const suggestedFrameworkRequest: SuggestedFrameworkRequest = {
       isGuestUser: true,
-      selectedLanguage: this.translate.currentLang
+      selectedLanguage: this.translate.currentLang,
+      categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
     };
     this.framework.getSuggestedFrameworkList(suggestedFrameworkRequest)
       .then((result) => {
@@ -336,21 +340,22 @@ export class GuestEditProfilePage {
     } else if (index === 1) {
       this.frameworkId = prevSelectedValue[0];
       if (this.frameworkId.length !== 0) {
-      this.formAndFrameworkUtilService.getFrameworkDetails(this.frameworkId)
-        .then(catagories => {
-          this.categories = catagories;
+        this.formAndFrameworkUtilService.getFrameworkDetails(this.frameworkId)
+          .then(catagories => {
+            this.categories = catagories;
 
-          this.isFormValid = true;
-          // loader.dismiss();
-          const request: CategoryRequest = {
-            currentCategory: this.categories[0].code,
-            selectedLanguage: this.translate.currentLang
-          };
-          this.getCategoryData(request, currentField);
-        }).catch(() => {
-          this.isFormValid = false;
-          this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
-        });
+            this.isFormValid = true;
+            // loader.dismiss();
+            const request: CategoryRequest = {
+              currentCategory: this.categories[0].code,
+              selectedLanguage: this.translate.currentLang,
+              categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
+            };
+            this.getCategoryData(request, currentField);
+          }).catch(() => {
+            this.isFormValid = false;
+            this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
+          });
       }
 
     } else {
@@ -358,7 +363,8 @@ export class GuestEditProfilePage {
         currentCategory: this.categories[index - 1].code,
         prevCategory: this.categories[index - 2].code,
         selectedCode: prevSelectedValue,
-        selectedLanguage: this.translate.currentLang
+        selectedLanguage: this.translate.currentLang,
+        categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
       };
       this.getCategoryData(request, currentField);
     }
