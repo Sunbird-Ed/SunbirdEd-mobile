@@ -223,4 +223,11 @@ export class ContentActionsComponent {
     );
     return msg;
   }
+  // check wheather to show Unenroll button in overflow menu or not
+  showUnenrollButton(): boolean {
+    return (this.data &&
+      (this.data.batchStatus !== 2 &&
+        (this.data.contentStatus === 0 || this.data.contentStatus === 1 || this.data.courseProgress < 100) &&
+        this.data.enrollmentType !== 'invite-only'));
+  }
 }

@@ -246,7 +246,7 @@ export class CoursesPage implements OnInit {
 
     this.events.subscribe(EventTopics.COURSE_STATUS_UPDATED_SUCCESSFULLY, (data) => {
       if (data.update) {
-        this.getEnrolledCourses(false, false);
+        this.getEnrolledCourses(false, true);
       }
     });
 
@@ -287,6 +287,7 @@ export class CoursesPage implements OnInit {
     });
     this.events.subscribe(EventTopics.REFRESH_ENROLL_COURSE_LIST, () => {
       this.enrolledCourses = this.appGlobalService.getEnrolledCourseList();
+      this.getEnrolledCourses(false, true);
     });
   }
 

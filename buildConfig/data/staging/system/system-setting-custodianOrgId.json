@@ -1,0 +1,1 @@
+{"id":"api.system.settings.get.custodianOrgId","ver":"v1","ts":"2019-01-08 11:35:24:785+0000","params":{"resmsgid":null,"msgid":"bdd098cb-0a64-427a-b619-d51150d0ecce","err":null,"status":"success","errmsg":null},"responseCode":"OK","result":{"response":{"id":"custodianOrgId","field":"custodianOrgId","value":"0126632859575746566"}}}
