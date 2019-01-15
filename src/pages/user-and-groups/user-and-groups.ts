@@ -54,6 +54,7 @@ import { TelemetryGeneratorService } from '../../service/telemetry-generator.ser
 import { Map } from '../../app/telemetryutil';
 import { Content } from 'ionic-angular';
 import { PreferenceKey } from '../../app/app.constant';
+import { CreateGroupPage } from './create-group/create-group';
 
 @IonicPage()
 @Component({
@@ -190,6 +191,7 @@ export class UserAndGroupsPage {
             isCurrentUser: isCurrentUser
           });
         } else {
+          console.log('193');
           this.navCtrl.push('CreateGroupPage', {
             groupInfo: this.groupList[index]
           });
@@ -323,7 +325,9 @@ export class UserAndGroupsPage {
       Environment.USER,
       PageId.USERS_GROUPS
     );
-    this.navCtrl.push('CreateGroupPage');
+    console.log('327');
+    this.navCtrl.push(CreateGroupPage);
+    console.log('329');
   }
 
 
