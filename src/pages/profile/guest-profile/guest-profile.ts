@@ -16,11 +16,22 @@ import {
   SuggestedFrameworkRequest,
   FrameworkService,
 } from 'sunbird';
-
-import { GuestEditProfilePage, OverflowMenuComponent, FormAndFrameworkUtilService } from '@app/pages/profile';
+import {
+  GuestEditProfilePage,
+  OverflowMenuComponent,
+  FormAndFrameworkUtilService
+} from '@app/pages/profile';
 import { UserTypeSelectionPage } from '@app/pages/user-type-selection';
-import { AppGlobalService, TelemetryGeneratorService, CommonUtilService } from '@app/service';
-import { MenuOverflow, PreferenceKey } from '@app/app';
+import {
+  AppGlobalService,
+  TelemetryGeneratorService,
+  CommonUtilService
+} from '@app/service';
+import {
+  MenuOverflow,
+  PreferenceKey,
+  FrameworkCategory
+} from '@app/app';
 
 @Component({
   selector: 'page-guest-profile',
@@ -152,7 +163,8 @@ export class GuestProfilePage {
 
     const suggestedFrameworkRequest: SuggestedFrameworkRequest = {
       isGuestUser: true,
-      selectedLanguage: this.translate.currentLang
+      selectedLanguage: this.translate.currentLang,
+      categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
     };
     this.framework.getSuggestedFrameworkList(suggestedFrameworkRequest)
       .then((result) => {
