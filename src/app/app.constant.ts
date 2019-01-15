@@ -57,6 +57,16 @@ export class Search {
         'medium',
         'contentType'
     ];
+
+    public static readonly FACETS_COURSE = [
+        'topic',
+        'purpose',
+        'gradeLevel',
+        'subject',
+        'medium',
+        'contentType',
+        'channel'
+    ];
 }
 
 export class FlagContent {
