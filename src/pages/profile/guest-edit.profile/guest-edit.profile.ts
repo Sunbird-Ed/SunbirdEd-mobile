@@ -193,7 +193,7 @@ export class GuestEditProfilePage {
           cssClass: 'alert-btn-cancel',
           handler: () => {
             this.guestEditForm.patchValue({
-              name: [''],
+              name: undefined,
               syllabus: undefined,
               boards: [[]],
               medium: [[]],
@@ -463,7 +463,7 @@ export class GuestEditProfilePage {
     if (formVal.userType === '') {
       this.commonUtilService.showToast('USER_TYPE_SELECT_WARNING');
       return false;
-    } else if (formVal.name[0] === '' || !formVal.name) {
+    } else if (!this.validateName()) {
       this.commonUtilService.showToast(
         this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService.translateMessage('FULL_NAME')), false, 'red-toast');
     } else if (formVal.boards.length === 0) {
@@ -496,6 +496,18 @@ export class GuestEditProfilePage {
     }
   }
 
+   /**
+   *  It will validate the name field.
+   */
+  validateName() {
+    const name = this.guestEditForm.getRawValue().name;
+    if (name) {
+      return name.trim().length ? true : false;
+    } else {
+      return false;
+    }
+  }
+
   extractProfileForTelemetry(formVal): any {
     const profileReq: any = {};
     profileReq.board = formVal.boards;
@@ -517,7 +529,7 @@ export class GuestEditProfilePage {
     req.subject = formVal.subjects;
     req.medium = formVal.medium;
     req.uid = this.profile.uid;
-    req.handle = formVal.name;
+    req.handle = formVal.name.trim();
     req.profileType = formVal.profileType;
     req.source = this.profile.source;
     req.createdAt = this.profile.createdAt;
@@ -591,7 +603,7 @@ export class GuestEditProfilePage {
     req.grade = formVal.grades;
     req.subject = formVal.subjects;
     req.medium = formVal.medium;
-    req.handle = formVal.name;
+    req.handle = formVal.name.trim();
     req.profileType = formVal.profileType;
     req.source = UserSource.LOCAL;
     req.syllabus = (!formVal.syllabus.length) ? [] : [formVal.syllabus];
