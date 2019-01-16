@@ -18,6 +18,7 @@ import {
   CategoryRequest,
   FrameworkService,
   ImpressionType,
+  FrameworkDetailsRequest
 } from 'sunbird';
 import { PageFilterOptions } from './options/filter.options';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
@@ -33,7 +34,7 @@ export class PageFilter {
   callback: PageFilterCallback;
 
   filters;
-
+  pageId;
   facetsFilter;
 
   backButtonFunc = undefined;
@@ -87,15 +88,16 @@ export class PageFilter {
 
   async initFilterValues() {
     this.filters = this.navParams.get('filter');
-    let pageId = this.navParams.get('pageId');
-    if (pageId === PageId.COURSES) {
-      pageId = PageId.COURSE_PAGE_FILTER;
-    } else if (pageId === PageId.LIBRARY) {
-      pageId = PageId.LIBRARY_PAGE_FILTER;
+    this.pageId = this.navParams.get('pageId');
+
+    if (this.pageId === PageId.COURSES) {
+      this.pageId = PageId.COURSE_PAGE_FILTER;
+    } else if (this.pageId === PageId.LIBRARY) {
+      this.pageId = PageId.LIBRARY_PAGE_FILTER;
     }
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW, '',
-      pageId,
+      this.pageId,
       Environment.HOME
     );
 
@@ -112,7 +114,7 @@ export class PageFilter {
         InteractType.OTHER,
         InteractSubtype.FILTER_CONFIG,
         Environment.HOME,
-        pageId,
+        this.pageId,
         undefined,
         values
       );
@@ -130,18 +132,28 @@ export class PageFilter {
     });
 
     const syllabus: Array<string> = this.appGlobalService.getCurrentUser().syllabus;
-    const frameworkId = (syllabus && syllabus.length > 0) ? syllabus[0] : undefined;
+    let frameworkId ;
 
+    if (this.pageId === PageId.COURSE_PAGE_FILTER ) {
+      frameworkId = 'TPD';
+    } else {
+      frameworkId = (syllabus && syllabus.length > 0) ? syllabus[0] : undefined;
+    }
     let index = 0;
     for (const element of this.filters) {
       try {
-        await this.getFrameworkData(frameworkId, element.code, index);
+        if ( element.code === 'organization' && frameworkId === 'TPD') {
+          await this.getRootOrganizations(index);
+         } else {
+          await this.getFrameworkData(frameworkId, element.code, index);
+      }
       } catch (error) {
         console.log('error: ' + error);
       }
       // Framework API doesn't return domain and content Type exclude them
       if (index === this.filters.length - 1) {
         this.facetsFilter = this.filters;
+        console.log(this.facetsFilter);
       }
       index++;
     }
@@ -159,7 +171,8 @@ export class PageFilter {
         frameworkId: frameworkId,
         selectedLanguage: this.translate.currentLang
       };
-
+     //
+     //
       this.frameworkService.getCategoryData(req)
         .then(res => {
           const category = JSON.parse(res);
@@ -167,7 +180,18 @@ export class PageFilter {
 
           const responseArray = category.terms;
           if (responseArray && responseArray.length > 0) {
+            if ( req.currentCategory === 'topic' && req.frameworkId === 'TPD')  {
+              // this.filters[index].values = _.map(responseArray, 'name');
+              for ( let i = 0 ; i < responseArray.length; i++) {
+                const name = responseArray[i].name ;
+                this.filters[index].values[i] = {};
+                // this.filters[index].values[i][name] = _.map(responseArray[i].children, 'name');
+                this.filters[index].values[i][name] = responseArray[i].children;
+              }
+              resolve();
+            } else {
             resolve(this.filters[index].values = _.map(responseArray, 'name'));
+           }
           }
         })
         .catch(err => {
@@ -218,8 +242,21 @@ export class PageFilter {
       PageId.LIBRARY_PAGE_FILTER);
     this.viewCtrl.dismiss();
   }
+
+  getRootOrganizations(index) {
+    this.frameworkService.getRootOrganizations()
+         .then(res => {
+            const organization = res.toString();
+            this.filters[index].values = JSON.parse(JSON.parse(organization).result.orgSearchResult).content;
+         })
+         .catch(error => {
+           console.log(error, 'index', index);
+         });
+        }
 }
+
 
 export interface PageFilterCallback {
   applyFilter(filter: PageAssembleFilter, appliedFilter: any);
 }
+

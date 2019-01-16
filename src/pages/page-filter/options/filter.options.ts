@@ -12,13 +12,30 @@ import {
 export class PageFilterOptions {
   facets: any;
   backButtonFunc = undefined;
+  selected: boolean;
+  topicsSelected: any[];
+  items: any[];
 
+  shownGroup = null;
+  topicsArr = [];
+  topicsVal = [];
+  filteredTopicArr = [];
+  showTopicFilterList = false;
   constructor(private navParams: NavParams,
     private viewCtrl: ViewController,
     private appGlobalService: AppGlobalService,
     private platform: Platform) {
 
     this.facets = this.navParams.get('facets');
+    if ( this.facets.name === 'Topic') {
+
+        // tslint:disable-next-line:forin
+        for ( let i = 0; i < this.facets.values.length; i++) {
+          this.topicsArr.push(Object.keys(this.facets.values[i])[0]);
+          this.topicsVal.push(this.facets.values[i][ this.topicsArr[i]]);
+        }
+
+    }
     this.handleDeviceBackButton();
   }
 
@@ -67,4 +84,47 @@ export class PageFilterOptions {
   confirm() {
     this.viewCtrl.dismiss();
   }
+  toggleGroup(group) {
+    if (this.isGroupShown(group)) {
+      this.shownGroup = null;
+    } else {
+      this.shownGroup = group;
+    }
+  }
+  isGroupShown(group) {
+    return this.shownGroup === group;
+  }
+
+  getItems(ev: any) {
+    this.filteredTopicArr = [];
+    let val = ev.srcElement.value;
+    if (val && val.trim() !== '') {
+      val = val.toLowerCase();
+      this.showTopicFilterList = true;
+    for ( let i = 0; i < this.topicsVal.length; i++) {
+      let filtered = [];
+      filtered = this.topicsVal[i].filter((item) => {
+        return (item.name.toString().toLowerCase().match(val));
+      });
+      if (filtered.length > 0) {
+        for (let j = 0; j < filtered.length; j++) {
+          this.filteredTopicArr.push(filtered[j]);
+      }
+        filtered = [];
+      }
+    }
+  } else {
+    this.showTopicFilterList = false;
+    this.filteredTopicArr = [];
+  }
+  }
+
+  cancel() {
+    this.viewCtrl.dismiss();
+  }
+
+  apply() {
+    this.viewCtrl.dismiss();
+  }
+
 }
