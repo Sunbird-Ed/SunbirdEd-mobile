@@ -30,74 +30,95 @@ describe('course-card component', () => {
     });
 
     it('should get course progress', () => {
+        // arrange
         courseCard.layoutName = 'InProgress';
         courseCard.course = {};
         courseCard.course.leafNodesCount = 6;
         courseCard.course.progress = 7;
+        // act
         courseCard.ngOnInit();
+        // assert
         expect(courseUtilServiceMock.getCourseProgress).toBeCalled();
     });
 
     it('should initialize batchExp with true', () => {
+        // arrange
         courseCard.layoutName = courseCard.layoutInProgress = 'SAMPLE_LAYOUT';
         courseCard.course = {
             batch: {
                 status: 2
             }
         };
+        // act
         courseCard.ngOnInit();
+        // assert
         expect(courseCard.batchExp).toBe(true);
     });
 
     it('should initialize batchExp with false', () => {
+        // arrange
         courseCard.layoutName = courseCard.layoutInProgress = 'SAMPLE_LAYOUT';
         courseCard.course = {
             batch: {
                 status: 1
             }
         };
+        // act
         courseCard.ngOnInit();
+        // assert
         expect(courseCard.batchExp).toBe(false);
     });
 
     it('should return true if content type is Story', () => {
+        // arrange
         const contentType = 'Story';
         const ret = courseCard.isResource(contentType);
+        // assert
         expect(ret).toBe(true);
 
     });
 
     it('should return true if content type is Worksheet', () => {
+        // arrange
         const contentType = 'Worksheet';
         const ret = courseCard.isResource(contentType);
+        // assert
         expect(ret).toBe(true);
 
     });
 
-    it('should return true if content type is Worksheet', () => {
+    it('should return false if content type is anything', () => {
+        // arrange
         const contentType = 'OTHERS';
         const ret = courseCard.isResource(contentType);
+        // assert
         expect(ret).toBe(false);
 
     });
 
     it('should resume course', () => {
+        // arrange
         const content = mockRes.resumeCourse;
         spyOn(courseCard, 'saveContentContext').and.stub();
+        // act
         courseCard.resumeCourse(content);
+        // assert
         expect(eventsMock.publish).toHaveBeenCalledWith('course:resume', expect.objectContaining({ content: content }));
     });
 
     it('should resume course', () => {
+        // arrange
         const content = mockRes.resumeCourseFalsy;
         spyOn(courseCard, 'saveContentContext').and.stub();
+        // act
         courseCard.resumeCourse(content);
+        // assert
         expect(navCtrlMock.push).toHaveBeenCalledWith(EnrolledCourseDetailsPage, expect.objectContaining({
             content: content
         }));
     });
 
-    it('should navigate to details page respectively', () => {
+    it('should navigate to EnrolledCourseDetailsPage', () => {
         const content = mockRes.navigationContent;
         courseCard.layoutInProgress = courseCard.layoutName = 'InProgress';
         content.mimeType = mockRes.navigationContent.mimeType;
@@ -112,25 +133,28 @@ describe('course-card component', () => {
         })));
     });
 
-    it('should navigate to details page respectively', () => {
+    it('should navigate to CollectionDetailsPage', () => {
+        // arrange
         const content = mockRes.navigationContent;
         courseCard.layoutInProgress = courseCard.layoutName = 'InProgress';
-        spyOn(courseCard, 'isResource').and.stub();
         content.mimeType = mockRes.navigationContent.mimeType;
+        spyOn(courseCard, 'isResource').and.stub();
         // act
         courseCard.navigateToDetailPage(content, 'InProgress');
+        // assert
         expect(navCtrlMock.push(CollectionDetailsPage, expect.objectContaining({
             content: content
         })));
     });
 
-    it('should navigate to details page respectively', () => {
+    it('should navigate to ContentDetailsPage', () => {
+        // arrange
         const content = mockRes.navigationContent;
-        spyOn(courseCard, 'isResource').and.stub();
         courseCard.layoutInProgress = courseCard.layoutName = 'sample';
+        spyOn(courseCard, 'isResource').and.stub();
         // act
         courseCard.navigateToDetailPage(content, 'InProgress');
-
+        // assert
         expect(navCtrlMock.push(ContentDetailsPage, expect.objectContaining({
             content: content
         })));
