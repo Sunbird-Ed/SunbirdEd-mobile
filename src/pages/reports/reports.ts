@@ -109,17 +109,13 @@ export class ReportsPage {
     });
     loader.present();
     let users, cUser, groups;
-    console.log('uyriuiioq!!!!!');
     this.populateUsers()
       .then(array => {
-        console.log('first');
-        console.log('first!');
         cUser = array[0];
         users = array[1];
         return this.populateGroups();
       })
       .then(data => {
-        console.log('second');
         groups = data;
         this.ngZone.run(() => {
           this.groups = groups;
@@ -127,10 +123,8 @@ export class ReportsPage {
           this.currentUser = cUser;
           loader.dismiss();
         });
-        console.log('oiuteew****');
       })
       .catch(() => {
-        console.log('asdasda');
         loader.dismiss();
       });
   }
@@ -175,11 +169,9 @@ export class ReportsPage {
     const profileRequest: ProfileRequest = { local: true, groupId: group.gid };
     this.profileService.getAllUserProfile(profileRequest)
       .then(result => {
-        console.log('asdasda! asd ada! ');
         const map = new Map<string, string>();
         const users: Array<any> = JSON.parse(result);
         const uids: Array<string> = [];
-        console.log(users);
         users.forEach(user => {
           uids.push(user.uid);
           map.set(user.uid, user.handle);
