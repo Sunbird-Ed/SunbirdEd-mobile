@@ -1,3 +1,4 @@
+import { ProfileType, UserSource } from 'sunbird';
 export const mockProfileRes = {
 
     viewLoadEvent: {
@@ -165,5 +166,108 @@ export const mockProfileRes = {
         'progress' : 1,
         'status' : 2,
         'userId' : '659b011a-06ec-4107-84ad-955e16b0a48a'
-     }]
+     }],
+
+     profile: {
+        'age': 1,
+        'avatar': 'avatar',
+        'createdAt': 'Oct 8, 2018 4:29:43 PM',
+        'day': -1,
+        'gender': '',
+        'handle': 'Guest1',
+        'isGroupUser': false,
+        'language': 'en',
+        'month': -1,
+        'profileType': ProfileType.TEACHER,
+        'source': UserSource.LOCAL,
+        'standard': -1,
+        'uid': '1af7a5c0-a710-4e0b-99e7-de8fe02ecd92',
+        'medium': [
+          'english'
+        ],
+        'subject': [
+          'english'
+        ],
+        'syllabus': [
+          'NCF'
+        ],
+        'board': [
+          'icse'
+        ],
+        'grade': [
+          'grade5'
+        ],
+        'gradeValueMap': {
+          'grade5': 'Class 5'
+        }
+      },
+      searchResultResponse:
+      {
+        'message': 'successful',
+        'result': {
+          'contentDataList': [{
+            'appIcon': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/content/do_2124142282168238081379/' +
+              'artifact/36a1038acc70e0fc9cdfcc637e9a2f31_1513661725312.thumb.jpeg',
+            'artifactUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/content/do_2124142282168238081379/' +
+            'artifact/1515482989311_do_2124142282168238081379.zip',
+            'attributions': [''], 'audience': ['Learner'], 'board': 'CBSE', 'channel': 'in.ekstep',
+            'contentDisposition': 'inline', 'contentEncoding': 'gzip', 'contentType': 'Resource',
+            'createdBy': '821', 'createdOn': '2018-01-08T10:51:57.874+0000', 'creator': 'Iphone Qualitrix', 'description': 'desc',
+            'downloadUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/do_2124142282168238081379/' +
+            'multiplication-horizontal_1527769064640_do_2124142282168238081379_4.0.ecar',
+            'gradeLevel': ['Other', 'KG', 'Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5', 'Class 6',
+              'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12'],
+            'identifier': 'do_2124142282168238081379', 'language': ['English'],
+            'lastPublishedOn': '2018-05-31T12:17:44.640+0000', 'mimeType': 'application/vnd.ekstep.ecml-archive',
+            'name': 'Multiplication horizontal', 'osId': 'org.ekstep.quiz.app', 'owner': 'iphone',
+            'pkgVersion': '4.0', 'publisher': '', 'resourceType': 'Read', 'size': '256146.0', 'status': 'Live',
+            'subject': 'English', 'variants': {
+              'spine': {
+                'ecarUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/do_2124142282168238081379/' +
+                'multiplication-horizontal_1527769064831_do_2124142282168238081379_4.0_spine.ecar',
+                'size': 50673.0
+              }
+            }, 'versionKey': '1527769064440'
+          }], 'filterCriteria': {
+            'age': 0,
+            'contentTypes': ['Story', 'Worksheet', 'Game', 'Resource', 'Collection', 'TextBook', 'LessonPlan'],
+            'facetFilters': [{
+              'name': 'gradeLevel', 'values': [{ 'apply': false, 'count': 1, 'name': 'other' },
+              { 'apply': false, 'count': 1, 'name': 'class 10' }, { 'apply': false, 'count': 1, 'name': 'class 1' },
+              { 'apply': false, 'count': 1, 'name': 'class 3' }, { 'apply': false, 'count': 1, 'name': 'class 2' },
+              { 'apply': false, 'count': 1, 'name': 'class 11' }, { 'apply': false, 'count': 1, 'name': 'class 5' },
+              { 'apply': false, 'count': 1, 'name': 'class 12' }, { 'apply': false, 'count': 1, 'name': 'class 4' },
+              { 'apply': false, 'count': 1, 'name': 'class 7' }, { 'apply': false, 'count': 1, 'name': 'class 6' },
+              { 'apply': false, 'count': 1, 'name': 'class 9' }, { 'apply': false, 'count': 1, 'name': 'class 8' },
+              { 'apply': false, 'count': 1, 'name': 'kg' }]
+            }, {
+              'name': 'subject', 'values': [{
+                'apply': false,
+                'count': 1, 'name': 'english'
+              }]
+            }, { 'name': 'medium', 'values': [] }, {
+              'name': 'contentType',
+              'values': [{ 'apply': false, 'count': 1, 'name': 'resource' }]
+            },
+            { 'name': 'board', 'values': [{ 'apply': false, 'count': 1, 'name': 'cbse' }] }],
+            'facets': ['board', 'gradeLevel', 'subject', 'medium', 'contentType'],
+            'impliedFilters': [{
+              'name': 'audience', 'values': [{ 'apply': true, 'count': 0, 'name': 'instructor' },
+              { 'apply': true, 'count': 0, 'name': 'learner' }]
+            },
+            { 'name': 'status', 'values': [{ 'apply': true, 'count': 0, 'name': 'Live' }] },
+            { 'name': 'objectType', 'values': [{ 'apply': true, 'count': 0, 'name': 'Content' }] }],
+            'limit': 100, 'mode': 'soft', 'offlineSearch': false, 'offset': 0, 'query': 'Multiplication horizontal',
+            'searchType': 'FILTER', 'sortCriteria': []
+          }, 'id': 'api.v1.search',
+          'request': {
+            'mode': 'soft', 'offset': 0, 'query': 'Multiplication horizontal', 'limit': 100,
+            'filters': {
+              'audience': ['instructor', 'learner'], 'compatibilityLevel': { 'min': 1, 'max': 4 },
+              'status': ['Live'], 'objectType': ['Content']
+            }, 'facets': ['board', 'gradeLevel', 'subject', 'medium', 'contentType']
+          },
+          'responseMessageId': '831b5030-a2d1-11e8-bf54-d5ada8edb61b'
+        }, 'status': true
+      }
 };
