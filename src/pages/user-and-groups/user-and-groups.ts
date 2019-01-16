@@ -191,8 +191,7 @@ export class UserAndGroupsPage {
             isCurrentUser: isCurrentUser
           });
         } else {
-          console.log('193');
-          this.navCtrl.push('CreateGroupPage', {
+          this.navCtrl.push(CreateGroupPage, {
             groupInfo: this.groupList[index]
           });
         }
@@ -325,9 +324,7 @@ export class UserAndGroupsPage {
       Environment.USER,
       PageId.USERS_GROUPS
     );
-    console.log('327');
     this.navCtrl.push(CreateGroupPage);
-    console.log('329');
   }
 
 
