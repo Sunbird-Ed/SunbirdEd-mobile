@@ -23,6 +23,7 @@ import {
 import { PageFilterOptions } from './options/filter.options';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../service/common-util.service';
+import { FrameworkCategory } from '@app/app';
 
 @Component({
   selector: 'page-filter',
@@ -39,6 +40,7 @@ export class PageFilter {
 
   backButtonFunc = undefined;
   selectedLanguage = 'en';
+  categories: Array<string> = FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES;
 
   constructor(
     private popCtrl: PopoverController,
@@ -89,9 +91,9 @@ export class PageFilter {
   async initFilterValues() {
     this.filters = this.navParams.get('filter');
     this.pageId = this.navParams.get('pageId');
-
     if (this.pageId === PageId.COURSES) {
       this.pageId = PageId.COURSE_PAGE_FILTER;
+      this.categories = FrameworkCategory.COURSE_FRAMEWORK_CATEGORIES;
     } else if (this.pageId === PageId.LIBRARY) {
       this.pageId = PageId.LIBRARY_PAGE_FILTER;
     }
@@ -145,8 +147,9 @@ export class PageFilter {
         if ( element.code === 'organization' && frameworkId === 'TPD') {
           await this.getRootOrganizations(index);
          } else {
-          await this.getFrameworkData(frameworkId, element.code, index);
+          await this.getFrameworkData(frameworkId, this.categories, element.code, index);
       }
+        await this.getFrameworkData(frameworkId, this.categories, element.code, index);
       } catch (error) {
         console.log('error: ' + error);
       }
@@ -164,12 +167,13 @@ export class PageFilter {
  * @param {string} currentCategory - request Parameter passing to the framework API
  * @param {number} index - Local variable name to hold the list data
  */
-  async getFrameworkData(frameworkId: string, currentCategory: string, index: number) {
+  async getFrameworkData(frameworkId: string, categories: Array<string>, currentCategory: string, index: number) {
     return new Promise((resolve, reject) => {
       const req: CategoryRequest = {
         currentCategory: currentCategory,
         frameworkId: frameworkId,
-        selectedLanguage: this.translate.currentLang
+        selectedLanguage: this.translate.currentLang,
+        categories: categories
       };
      //
      //

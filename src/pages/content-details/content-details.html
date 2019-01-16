@@ -203,7 +203,8 @@
 	</ion-toolbar>
 	<ion-toolbar padding *ngIf="content?.streamingUrl">
 		<!--- play online -->
-		<button ion-button block *ngIf="!content?.downloadable" (click)="showSwitchUserAlert(true)" text-uppercase [disabled]="isDownloadStarted || !commonUtilService.networkInfo.isNetworkAvailable ? true : false">{{'PLAY_ONLINE'
+		<button ion-button block *ngIf="!content?.downloadable" (click)="showSwitchUserAlert(true)" text-uppercase [disabled]= "isDownloadStarted"
+		  [ngStyle]= "{'opacity':!commonUtilService.networkInfo.isNetworkAvailable  || isDownloadStarted ? '0.4': '1' }">{{'PLAY_ONLINE'
 			| translate}}</button>
 		<!--- play from device -->
 		<button ion-button block *ngIf="content?.downloadable" (click)="showSwitchUserAlert(false)" text-uppercase [disabled]="isDownloadStarted">{{'PLAY_FROM_DEVICE'|

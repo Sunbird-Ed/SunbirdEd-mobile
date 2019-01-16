@@ -70,7 +70,7 @@
     "cordova-plugin-openrap": "git+https://github.com/project-sunbird/cordova-plugin-openrap.git",
     "cordova-plugin-qr-scanner": "git+https://github.com/project-sunbird/cordova-plugin-qr-scanner.git",
     "cordova-plugin-sunbirdsplash": "git+https://github.com/project-sunbird/cordova-plugin-sunbirdsplash.git",
-    "cordova-plugin-customtabs": "git+https://github.com/souvikmondal/cordova-plugin-customtabs.git",
+    "sb-cordova-plugin-customtabs": "git+https://github.com/Sunbird-Ed/sb-cordova-plugin-customtabs.git",
     "cordova-android-support-gradle-release": "^2.0.1",
     "cordova-plugin-uniquedeviceid": "1.3.2",
     "cordova-plugin-whitelist": "1.3.3",
@@ -149,9 +149,9 @@
       "cordova-android-support-gradle-release": {
         "ANDROID_SUPPORT_VERSION": "27.1.0"
       },
-      "cordova-plugin-customtabs": {
-        "URL_SCHEME": "org.sunbird",
-        "URL_HOST": "android"
+      "sb-cordova-plugin-customtabs": {
+        "URL_SCHEME": "org.sunbird.app.dev",
+        "URL_HOST": "mobile"
       }
     },
     "platforms": [
@@ -186,7 +186,6 @@
       "src/pages/profile/guest-edit.profile/guest-edit.profile.spec.ts",
       "src/pages/profile/guest-profile/guest.profile.spec.ts",
       "src/pages/profile/overflowmenu/menu.overflow.component.spec.ts",
-      "src/pages/profile/profile-component.spec.ts",
       "src/pages/profile/user-search/user-search.spec.ts",
       "src/pages/qr-code-result/qr-code-result.spec.ts",
       "src/pages/qrscanner/qrscanresulthandler.service.spec.ts",
@@ -207,7 +206,6 @@
       "src/component/onboarding-card/onboarding.data.spec.ts",
       "src/component/onboarding-alert/onboarding-alert.component.data.spec.ts",
       "src/pages/user-and-groups/group-details/group-detail.data.spec.ts",
-      "src/pages/profile/profile.data.spec.ts",
       "src/pages/user-and-groups/group-members/group-members.data.spec.ts",
       "src/pages/user-and-groups/user-and-groups-data.spec.ts"
     ],

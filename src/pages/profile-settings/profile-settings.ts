@@ -1,11 +1,35 @@
-import { GUEST_TEACHER_TABS, initTabs, GUEST_STUDENT_TABS } from './../../app/module.service';
-import { NavParams, IonicApp, Select, App } from 'ionic-angular/index';
+import {
+  GUEST_TEACHER_TABS,
+  initTabs,
+  GUEST_STUDENT_TABS
+} from './../../app/module.service';
+import {
+  NavParams,
+  IonicApp,
+  Select,
+  App
+} from 'ionic-angular/index';
 import { AppGlobalService } from '../../service/app-global.service';
-import { ProfileService, TabsPage, InteractSubtype, PageId, InteractType, ProfileType, ContainerService,
-   FrameworkService, SuggestedFrameworkRequest } from 'sunbird';
-import { Component, ViewChild } from '@angular/core';
+import {
+  ProfileService,
+  TabsPage,
+  InteractSubtype,
+  PageId,
+  InteractType,
+  ProfileType,
+  ContainerService,
+  FrameworkService,
+  SuggestedFrameworkRequest
+} from 'sunbird';
+import {
+  Component,
+  ViewChild
+} from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup
+} from '@angular/forms';
 import {
   IonicPage,
   NavController
@@ -17,9 +41,15 @@ import {
   Profile,
   Environment
 } from 'sunbird';
-
-import { LoadingController, Events, Platform } from 'ionic-angular';
-import { PreferenceKey } from '../../app/app.constant';
+import {
+  LoadingController,
+  Events,
+  Platform
+} from 'ionic-angular';
+import {
+  PreferenceKey,
+  FrameworkCategory
+} from '../../app/app.constant';
 import * as _ from 'lodash';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
@@ -90,7 +120,9 @@ export class ProfileSettingsPage {
     private container: ContainerService,
     private ionicApp: IonicApp,
     private app: App,
-    private framework: FrameworkService
+    private framework: FrameworkService,
+    private telemetryService: TelemetryGeneratorService
+
   ) {
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
       .then(val => {
@@ -149,7 +181,7 @@ export class ProfileSettingsPage {
       }
       this.profileForTelemetry = this.profile;
       this.initUserForm();
-    }) .catch(() => {
+    }).catch(() => {
       this.profile = undefined;
       this.initUserForm();
     });
@@ -185,7 +217,8 @@ export class ProfileSettingsPage {
 
     const suggestedFrameworkRequest: SuggestedFrameworkRequest = {
       isGuestUser: true,
-      selectedLanguage: this.translate.currentLang
+      selectedLanguage: this.translate.currentLang,
+      categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
     };
     this.framework.getSuggestedFrameworkList(suggestedFrameworkRequest)
       .then((result) => {
@@ -279,7 +312,8 @@ export class ProfileSettingsPage {
           console.log('this.categories', this.categories);
           const request: CategoryRequest = {
             currentCategory: this.categories[0].code,
-            selectedLanguage: this.translate.currentLang
+            selectedLanguage: this.translate.currentLang,
+            categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
           };
           this.getCategoryData(request, currentField);
         }).catch(() => {
@@ -292,7 +326,8 @@ export class ProfileSettingsPage {
         currentCategory: this.categories[index - 1].code,
         prevCategory: this.categories[index - 2].code,
         selectedCode: prevSelectedValue,
-        selectedLanguage: this.selectedLanguage
+        selectedLanguage: this.selectedLanguage,
+        categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
       };
       console.log('else getCategoryData', request);
       this.getCategoryData(request, currentField);
@@ -386,6 +421,18 @@ export class ProfileSettingsPage {
         PageId.ONBOARDING_PROFILE_PREFERENCES, InteractSubtype.FINISH_CLICKED);
       // this.commonUtilService.showToast(this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService
       //   .translateMessage('BOARD')), false, 'redErrorToast');
+      const values = new Map();
+      values['board'] = 'na';
+      this.telemetryService.generateInteractTelemetry(
+        InteractType.TOUCH,
+        'submit-clicked',
+        Environment.HOME,
+        PageId.ONBOARDING_PROFILE_PREFERENCES,
+        undefined,
+        values,
+        undefined,
+        undefined,
+      );
       this.boardSelect.open();
       return false;
     } else if (formVal.medium.length === 0) {
@@ -394,6 +441,18 @@ export class ProfileSettingsPage {
         PageId.ONBOARDING_PROFILE_PREFERENCES, InteractSubtype.FINISH_CLICKED);
       // this.commonUtilService.showToast(this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService
       //   .translateMessage('MEDIUM')), false, 'redErrorToast');
+      const values = new Map();
+      values['medium'] = 'na';
+      this.telemetryService.generateInteractTelemetry(
+        InteractType.TOUCH,
+        'submit-clicked',
+        Environment.HOME,
+        PageId.ONBOARDING_PROFILE_PREFERENCES,
+        undefined,
+        values,
+        undefined,
+        undefined,
+      );
       this.mediumSelect.open();
       return false;
     } else if (formVal.grades.length === 0) {
@@ -403,6 +462,18 @@ export class ProfileSettingsPage {
       // this.commonUtilService.showToast(this.commonUtilService.translateMessage('PLEASE_SELECT', this.commonUtilService
       //   .translateMessage('CLASS')), false, 'redErrorToast');
       this.gradeSelect.open();
+      const values = new Map();
+      values['grades'] = 'na';
+      this.telemetryService.generateInteractTelemetry(
+        InteractType.TOUCH,
+        'submit-clicked',
+        Environment.HOME,
+        PageId.ONBOARDING_PROFILE_PREFERENCES,
+        undefined,
+        values,
+        undefined,
+        undefined,
+      );
       return false;
     } else {
       this.appGlobalService.generateSaveClickedTelemetry(this.extractProfileForTelemetry(formVal), 'passed',
@@ -496,9 +567,9 @@ export class ProfileSettingsPage {
       }
     });
     this.telemetryGeneratorService.generateInteractTelemetry(
-          InteractType.TOUCH, InteractSubtype.DEVICE_BACK_CLICKED,
-          PageId.ONBOARDING_PROFILE_PREFERENCES,
-          Environment.ONBOARDING);
+      InteractType.TOUCH, InteractSubtype.DEVICE_BACK_CLICKED,
+      PageId.ONBOARDING_PROFILE_PREFERENCES,
+      Environment.ONBOARDING);
   }
 
 
