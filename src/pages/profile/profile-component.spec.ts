@@ -14,7 +14,7 @@ const CollectionDetailsPage = {} as any;
 const EnrolledCourseDetailsPage = {} as any;
 const ContentDetailsPage = {} as any;
 const OverflowMenuComponent = {} as any;
-describe('ProfilePage', () => {
+describe('ProfilePage', () => { 
     let profilePage: ProfilePage;
     beforeEach(() => {
         navParamsMock.get.mockImplementation((arg: string) => {
