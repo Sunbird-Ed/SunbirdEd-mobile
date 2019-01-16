@@ -1,8 +1,6 @@
 import { ProfilePage } from './profile';
 import { Profile } from 'sunbird';
 import { mockProfileRes } from './profile.data.spec';
-
-
 import {
     navCtrlMock, popoverCtrlMock, userProfileServiceMock, zoneMock, authServiceMock,
     telemetryServiceMock, loadingControllerMock, navParamsMock, eventsMock, appGlobalServiceMock,
@@ -14,7 +12,7 @@ const CollectionDetailsPage = {} as any;
 const EnrolledCourseDetailsPage = {} as any;
 const ContentDetailsPage = {} as any;
 const OverflowMenuComponent = {} as any;
-describe('ProfilePage', () => { 
+describe('ProfilePage', () => {
     let profilePage: ProfilePage;
     beforeEach(() => {
         navParamsMock.get.mockImplementation((arg: string) => {
