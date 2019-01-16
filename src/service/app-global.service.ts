@@ -1,5 +1,5 @@
 import { NgZone, OnDestroy } from '@angular/core';
-import { ProfileConstants } from './../app/app.constant';
+import { ProfileConstants, FrameworkCategory } from './../app/app.constant';
 
 import { Injectable } from '@angular/core';
 import {
@@ -384,7 +384,8 @@ export class AppGlobalService implements OnDestroy {
     private getFrameworkDetails(frameworkId: string): Promise<any> {
         return new Promise((resolve, reject) => {
             const req: FrameworkDetailsRequest = {
-                defaultFrameworkDetails: true
+                defaultFrameworkDetails: true,
+                categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
             };
 
             if (frameworkId !== undefined && frameworkId.length) {
