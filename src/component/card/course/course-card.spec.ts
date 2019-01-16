@@ -1,178 +1,140 @@
-// import { AppGlobalService } from './../../../service/app-global.service';
-// import { DirectivesModule } from './../../../directives/directives.module';
-// import { PipesModule } from './../../../pipes/pipes.module';
-// import { PBHorizontal } from './../../pbhorizontal/pb-horizontal';
-// import {
-//     async, TestBed,
-//     ComponentFixture,
-//     inject
-// } from '@angular/core/testing';
-// import {
-//     TranslateModule,
-//     TranslateLoader,
-//     TranslateService
-// } from '@ngx-translate/core';
-// import { HttpClientModule } from '@angular/common/http';
-// import { Ionic2RatingModule } from 'ionic2-rating';
-// import { SocialSharing } from '@ionic-native/social-sharing';
-// import { Network } from '@ionic-native/network';
-// import {
-//     NavController,
-//     Events, IonicModule, NavParams, ToastController
-// } from 'ionic-angular';
-// import {
-//     ToastControllerMock,
-//     NetworkMock
-// } from 'ionic-mocks';
-// import {
-//     FileUtil, AuthService, GenieSDKServiceProvider, SharedPreferences, FrameworkModule,
-//     ContentService, TelemetryService, CourseService, ShareUtil
-// } from 'sunbird';
-// import {
-//     GenieSDKServiceProviderMock,
-//     SharedPreferencesMock, FileUtilMock, NavParamsMock,
-//     SocialSharingMock, NavMock,
-//     TranslateLoaderMock, AuthServiceMock
-// } from '../../../../test-config/mocks-ionic';
-// import { CourseUtilService } from '../../../service/course-util.service';
-// import { CourseCard } from './course-card';
-// import { mockRes } from './course-card.spec.data';
+import 'jest';
+import { CourseCard } from './course-card';
+import { mockRes } from './course-card.spec.data';
+import {
+    navCtrlMock,
+    courseUtilServiceMock,
+    eventsMock,
+    telemetryGeneratorServiceMock,
+    sharedPreferencesMock
+} from '../../../__tests__/mocks';
 
-// describe('CourseCard Component', () => {
-//     let component: CourseCard;
-//     let fixture: ComponentFixture<CourseCard>;
-//     let translateService: TranslateService;
+import { EnrolledCourseDetailsPage } from '../../../pages/enrolled-course-details/enrolled-course-details';
+import { CollectionDetailsPage } from '../../../pages/collection-details/collection-details';
+import { ContentDetailsPage } from '../../../pages/content-details/content-details';
 
-//     beforeEach(async(() => {
-//         TestBed.configureTestingModule({
-//             declarations: [CourseCard, PBHorizontal],
-//             imports: [
-//                 IonicModule.forRoot(CourseCard),
-//                 TranslateModule.forRoot({
-//                     loader: { provide: TranslateLoader, useClass: TranslateLoaderMock },
-//                 }),
-//                 PipesModule,
-//                 HttpClientModule,
-//                 FrameworkModule,
-//                 DirectivesModule,
-//                 Ionic2RatingModule
-//             ],
-//             providers: [
-//                 ContentService, TelemetryService, CourseService, ShareUtil, CourseUtilService,
-//                 { provide: FileUtil, useClass: FileUtilMock },
-//                 { provide: NavController, useClass: NavMock },
-//                 { provide: Events, useClass: Events },
-//                 { provide: NavParams, useClass: NavParamsMock },
-//                 { provide: SocialSharing, useClass: SocialSharingMock },
-//                 { provide: Network, useFactory: () => NetworkMock.instance('none') },
-//                 { provide: AppGlobalService, useClass: AppGlobalService },
-//                 { provide: AuthService, useClass: AuthServiceMock },
-//                 { provide: GenieSDKServiceProvider, useClass: GenieSDKServiceProviderMock },
-//                 { provide: SharedPreferences, useClass: SharedPreferencesMock },
-//                 { provide: ToastController, useFactory: () => ToastControllerMock.instance() }
-//             ]
-//         });
-//     }));
+describe('course-card component', () => {
+    let courseCard: CourseCard;
+    beforeEach(() => {
+        courseCard = new CourseCard(
+            navCtrlMock as any,
+            courseUtilServiceMock as any,
+            eventsMock as any,
+            telemetryGeneratorServiceMock as any,
+            sharedPreferencesMock as any
+        );
+        jest.resetAllMocks();
+    });
+    it('should ctreate a valid instance of PageFilter', () => {
+        expect(courseCard).toBeTruthy();
+    });
 
-//     beforeEach(() => {
-//         fixture = TestBed.createComponent(CourseCard);
-//         component = fixture.componentInstance;
-//     });
+    it('should get course progress', () => {
+        courseCard.layoutName = 'InProgress';
+        courseCard.course = {};
+        courseCard.course.leafNodesCount = 6;
+        courseCard.course.progress = 7;
+        courseCard.ngOnInit();
+        expect(courseUtilServiceMock.getCourseProgress).toBeCalled();
+    });
 
-//     beforeEach(() => {
-//         inject([TranslateService], (service) => {
-//             translateService = service;
-//             translateService.use('en');
-//         });
-//     });
+    it('should initialize batchExp with true', () => {
+        courseCard.layoutName = courseCard.layoutInProgress = 'SAMPLE_LAYOUT';
+        courseCard.course = {
+            batch: {
+                status: 2
+            }
+        };
+        courseCard.ngOnInit();
+        expect(courseCard.batchExp).toBe(true);
+    });
 
-//     it('should create a valid instance of CourseCard', () => {
-//         expect(component instanceof CourseCard).toBe(true);
-//         expect(component).not.toBeFalsy();
-//     });
+    it('should initialize batchExp with false', () => {
+        courseCard.layoutName = courseCard.layoutInProgress = 'SAMPLE_LAYOUT';
+        courseCard.course = {
+            batch: {
+                status: 1
+            }
+        };
+        courseCard.ngOnInit();
+        expect(courseCard.batchExp).toBe(false);
+    });
 
-//     it('should redirect to enrolled course details page', () => {
-//         component.course = {};
-//         const mockData = mockRes.contentCardDetails;
-//         const navCtrl = TestBed.get(NavController);
-//         spyOn(component, 'navigateToCourseDetailPage').and.callThrough();
-//         spyOn(navCtrl, 'push').and.callThrough();
-//         component.navigateToCourseDetailPage(mockData, 'Inprogress');
-//         fixture.detectChanges();
-//         expect(component).not.toBeFalsy();
-//         expect(component.navigateToCourseDetailPage).toBeDefined();
-//         expect(component.navigateToCourseDetailPage).toHaveBeenCalledWith(mockData, 'Inprogress');
-//         expect(navCtrl.push).toHaveBeenCalled();
-//     });
+    it('should return true if content type is Story', () => {
+        const contentType = 'Story';
+        const ret = courseCard.isResource(contentType);
+        expect(ret).toBe(true);
 
-//     it('should redirect to collection details page', () => {
-//         component.course = {};
-//         const mockData = mockRes.collectionDetails;
-//         const navCtrl = TestBed.get(NavController);
-//         spyOn(component, 'navigateToCourseDetailPage').and.callThrough();
-//         spyOn(navCtrl, 'push').and.callThrough();
-//         component.navigateToCourseDetailPage(mockData, undefined);
-//         fixture.detectChanges();
-//         expect(component).not.toBeFalsy();
-//         expect(component.navigateToCourseDetailPage).toBeDefined();
-//         expect(component.navigateToCourseDetailPage).toHaveBeenCalledWith(mockData, undefined);
-//         expect(navCtrl.push).toHaveBeenCalled();
-//     });
+    });
 
-//     it('should redirect to content details page', () => {
-//         component.course = {};
-//         const mockData = mockRes.contentDetails;
-//         const navCtrl = TestBed.get(NavController);
-//         spyOn(component, 'navigateToCourseDetailPage').and.callThrough();
-//         spyOn(navCtrl, 'push').and.callThrough();
-//         component.navigateToCourseDetailPage(mockData, undefined);
-//         fixture.detectChanges();
-//         expect(component).not.toBeFalsy();
-//         expect(component.navigateToCourseDetailPage).toBeDefined();
-//         expect(component.navigateToCourseDetailPage).toHaveBeenCalledWith(mockData, undefined);
-//         expect(navCtrl.push).toHaveBeenCalled();
-//     });
+    it('should return true if content type is Worksheet', () => {
+        const contentType = 'Worksheet';
+        const ret = courseCard.isResource(contentType);
+        expect(ret).toBe(true);
 
-//     it('should resume course', () => {
-//         component.course = {};
-//         const mockData = mockRes.resumeCourse;
-//         const navCtrl = TestBed.get(NavController);
-//         const event = TestBed.get(Events);
-//         spyOn(event, 'publish').and.callThrough();
-//         spyOn(component, 'resumeCourse').and.callThrough();
-//         spyOn(navCtrl, 'push').and.callThrough();
-//         component.resumeCourse(mockData);
-//         fixture.detectChanges();
-//         expect(component).not.toBeFalsy();
-//         expect(component.resumeCourse).toBeDefined();
-//         expect(component.resumeCourse).toHaveBeenCalledWith(mockData);
-//     });
+    });
 
-//     it('should redirect to enrolled course details page', () => {
-//         component.course = {};
-//         const mockData = mockRes.contentCardDetails;
-//         const navCtrl = TestBed.get(NavController);
-//         spyOn(component, 'resumeCourse').and.callThrough();
-//         spyOn(navCtrl, 'push').and.callThrough();
-//         component.resumeCourse(mockData);
-//         fixture.detectChanges();
-//         expect(component).not.toBeFalsy();
-//         expect(component.resumeCourse).toBeDefined();
-//         expect(component.resumeCourse).toHaveBeenCalledWith(mockData);
-//         expect(navCtrl.push).toHaveBeenCalled();
-//     });
+    it('should return true if content type is Worksheet', () => {
+        const contentType = 'OTHERS';
+        const ret = courseCard.isResource(contentType);
+        expect(ret).toBe(false);
 
-//     it('should get course progress', () => {
-//         component.layoutName = 'Inprogress';
-//         component.course = {};
-//         component.course.leafNodesCount = 6;
-//         component.course.progress = 7;
-//         const courseUtilService = TestBed.get(CourseUtilService);
-//         spyOn(component, 'ngOnInit').and.callThrough();
-//         spyOn(courseUtilService, 'getCourseProgress').and.callThrough();
-//         fixture.detectChanges();
-//         expect(component).not.toBeFalsy();
-//         expect(component.ngOnInit).toBeDefined();
-//         expect(courseUtilService.getCourseProgress).toHaveBeenCalled();
-//     });
-// });
+    });
+
+    it('should resume course', () => {
+        const content = mockRes.resumeCourse;
+        spyOn(courseCard, 'saveContentContext').and.stub();
+        courseCard.resumeCourse(content);
+        expect(eventsMock.publish).toHaveBeenCalledWith('course:resume', expect.objectContaining({ content: content }));
+    });
+
+    it('should resume course', () => {
+        const content = mockRes.resumeCourseFalsy;
+        spyOn(courseCard, 'saveContentContext').and.stub();
+        courseCard.resumeCourse(content);
+        expect(navCtrlMock.push).toHaveBeenCalledWith(EnrolledCourseDetailsPage, expect.objectContaining({
+            content: content
+        }));
+    });
+
+    it('should navigate to details page respectively', () => {
+        const content = mockRes.navigationContent;
+        courseCard.layoutInProgress = courseCard.layoutName = 'InProgress';
+        content.mimeType = mockRes.navigationContent.mimeType;
+        spyOn(courseCard, 'isResource').and.stub();
+        spyOn(courseCard, 'saveContentContext');
+        // act
+        courseCard.navigateToDetailPage(content, 'InProgress');
+
+        expect(courseCard.saveContentContext).toHaveBeenCalledWith(content);
+        expect(navCtrlMock.push(EnrolledCourseDetailsPage, expect.objectContaining({
+            content: content
+        })));
+    });
+
+    it('should navigate to details page respectively', () => {
+        const content = mockRes.navigationContent;
+        courseCard.layoutInProgress = courseCard.layoutName = 'InProgress';
+        spyOn(courseCard, 'isResource').and.stub();
+        content.mimeType = mockRes.navigationContent.mimeType;
+        // act
+        courseCard.navigateToDetailPage(content, 'InProgress');
+        expect(navCtrlMock.push(CollectionDetailsPage, expect.objectContaining({
+            content: content
+        })));
+    });
+
+    it('should navigate to details page respectively', () => {
+        const content = mockRes.navigationContent;
+        spyOn(courseCard, 'isResource').and.stub();
+        courseCard.layoutInProgress = courseCard.layoutName = 'sample';
+        // act
+        courseCard.navigateToDetailPage(content, 'InProgress');
+
+        expect(navCtrlMock.push(ContentDetailsPage, expect.objectContaining({
+            content: content
+        })));
+    });
+
+
+});
