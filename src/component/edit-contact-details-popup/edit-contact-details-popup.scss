@@ -1,4 +1,6 @@
 edit-contact-details-popup {
+
+
     .close-button.button-outline-md {
         border-color: transparent;
         color: #2e3f51;
@@ -45,5 +47,11 @@ edit-contact-details-popup {
     ion-backdrop {
         background-color: map-get($colors, dark) !important;
         opacity: 0.4 !important;
+    }
+
+    custom-input {
+        border: 1px solid #4a90e2;
+        padding: 5px;
+        border-radius: 4px;
     }
 }

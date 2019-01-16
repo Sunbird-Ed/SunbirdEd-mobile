@@ -5,7 +5,8 @@ import {
   NavParams,
   Events,
   PopoverController,
-  App
+  App,
+  ViewController
 } from 'ionic-angular';
 import {
   AuthService,
@@ -24,7 +25,8 @@ import {
   ContentSortCriteria,
   ContentSearchCriteria,
   ContentService,
-  SortOrder
+  SortOrder,
+  UpdateUserInfoRequest
 } from 'sunbird';
 import * as _ from 'lodash';
 import {
@@ -50,6 +52,7 @@ import { AppGlobalService, TelemetryGeneratorService, CommonUtilService } from '
 import { FormAndFrameworkUtilService } from './formandframeworkutil.service';
 import { ImageLoader } from 'ionic-image-loader';
 import { EditContactDetailsPopupComponent } from '@app/component/edit-contact-details-popup/edit-contact-details-popup';
+import { EditContactVerifyPopupComponent } from '@app/component';
 
 /**
  * The Profile page
@@ -115,7 +118,8 @@ export class ProfilePage {
     private commonUtilService: CommonUtilService,
     private app: App,
     private contentService: ContentService,
-    private imageLoader: ImageLoader
+    private imageLoader: ImageLoader,
+    public viewCtrl: ViewController
   ) {
     this.userId = this.navParams.get('userId') || '';
     this.isRefreshProfile = this.navParams.get('returnRefreshedUserProfileDetails');
@@ -213,7 +217,6 @@ export class ProfilePage {
             req.returnRefreshedUserProfileDetails = true;
             that.isRefreshProfile = false;
           }
-
           that.userProfileService.getUserProfileDetails(
             req,
             (res: any) => {
@@ -526,20 +529,122 @@ export class ProfilePage {
   }
 
   editMobileNumber() {
-      console.log('editMobileNumber');
       const popover = this.popoverCtrl.create(EditContactDetailsPopupComponent, {
         phone: this.profile.phone,
-        pageName: 'phoneEdit'
+        title: 'Edit Mobile Number',
+        description: '',
+        type: 'phone',
+        userId: this.profile.userId
       }, {
-          cssClass: 'content-action'
+          cssClass: 'popover-alert'
         });
       popover.present({
         ev: event
       });
+      popover.onDidDismiss((edited: boolean = false, key?: any) => {
+        if (edited) {
+          this.callOTPPopover(ProfileConstants.CONTACT_TYPE_PHONE, key);
+        }
+      });
   }
 
   editEmail() {
-    console.log('editEmail');
+    const popover = this.popoverCtrl.create(EditContactDetailsPopupComponent, {
+      email: this.profile.email,
+      title: 'Edit Email ID',
+      description: '',
+      type: 'email'
+    }, {
+        cssClass: 'popover-alert'
+    });
+    popover.present({
+      ev: event
+    });
+    popover.onDidDismiss((edited: boolean = false, key?: any) => {
+      this.callOTPPopover(ProfileConstants.CONTACT_TYPE_EMAIL, key);
+    });
+  }
+
+  callOTPPopover(type: string, key?: any) {
+    if (type === ProfileConstants.CONTACT_TYPE_PHONE) {
+      const popover = this.popoverCtrl.create(EditContactVerifyPopupComponent, {
+        key: key,
+        phone: this.profile.phone,
+        title: 'Verify Mobile Number',
+        description: 'You will receive an SMS with the OTP for mobile number verification',
+        type: ProfileConstants.CONTACT_TYPE_PHONE
+      }, {
+          cssClass: 'popover-alert'
+        });
+      popover.present({
+        ev: event
+      });
+      popover.onDidDismiss((OTPSuccess: boolean = false, phone: any) => {
+        if (OTPSuccess) {
+          this.viewCtrl.dismiss();
+          this.updatePhoneInfo(phone);
+        }
+      });
+    } else {
+      const popover = this.popoverCtrl.create(EditContactVerifyPopupComponent, {
+        key: key,
+        phone: this.profile.email,
+        title: 'Verify Email ID',
+        description: ' You will receive an email with the OTP for Email ID verification',
+        type: ProfileConstants.CONTACT_TYPE_EMAIL
+      }, {
+          cssClass: 'popover-alert'
+        });
+      popover.present({
+        ev: event
+      });
+      popover.onDidDismiss((OTPSuccess: boolean = false, email: any) => {
+        if (OTPSuccess) {
+          this.viewCtrl.dismiss();
+          this.updateEmailInfo(email);
+        }
+      });
+    }
+  }
+
+  updatePhoneInfo(phone) {
+    const loader = this.getLoader();
+    const req: UpdateUserInfoRequest = {
+      userId: this.profile.userId,
+      phone: phone,
+      phoneVerified: true
+    };
+    this.userProfileService.updateUserInfo(req, (res) => {
+      res = JSON.parse(res);
+      loader.dismiss();
+      // setTimeout(() => {
+        this.doRefresh();
+      // }, 1000);
+      this.commonUtilService.showToast('Mobile number updated successfully');
+    }, (err) => {
+      loader.dismiss();
+      this.commonUtilService.showToast('Something went wrong, Please try again later');
+    });
+  }
+
+  updateEmailInfo(email) {
+    const loader = this.getLoader();
+    const req: UpdateUserInfoRequest = {
+      userId: this.profile.userId,
+      email: email,
+      emailVerified: true
+    };
+    this.userProfileService.updateUserInfo(req, (res) => {
+      res = JSON.parse(res);
+      loader.dismiss();
+      // setTimeout(() => {
+        this.doRefresh();
+      // }, 1000);
+      this.commonUtilService.showToast('Email ID updated successfully');
+    }, (err) => {
+      loader.dismiss();
+      this.commonUtilService.showToast('Something went wrong, Please try again later');
+    });
   }
 
 }

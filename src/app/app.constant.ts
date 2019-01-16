@@ -94,6 +94,9 @@ export class ProfileConstants {
         'organisations',
         'roles'
     ];
+
+    public static readonly CONTACT_TYPE_PHONE = 'phone';
+    public static readonly CONTACT_TYPE_EMAIL = 'email';
 }
 
 export class AudienceFilter {
@@ -232,6 +235,7 @@ export class Location {
     public static readonly TYPE_STATE = 'state';
     public static readonly TYPE_DISTRICT = 'district';
 }
+
 export class FrameworkCategory {
     public static readonly BOARD = 'board';
     public static readonly MEDIUM = 'medium';
