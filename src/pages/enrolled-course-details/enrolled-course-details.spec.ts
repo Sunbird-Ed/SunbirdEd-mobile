@@ -219,7 +219,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     const loader = {
       present: jest.fn(),
       dismiss: jest.fn()
-    }
+    };
     commonUtilServiceMock.getLoader.mockReturnValue(loader);
     enrolled.course = mockRes.sampleCourse;
     enrolled.courseCardData = mockRes.enrollCourseEvent;
@@ -233,7 +233,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     const loader = {
       present: jest.fn(),
       dismiss: jest.fn()
-    }
+    };
     commonUtilServiceMock.getLoader.mockReturnValue(loader);
     enrolled.course = mockRes.sampleCourse;
     enrolled.courseCardData = mockRes.enrollCourseEvent;
@@ -252,7 +252,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     const loader = {
       present: jest.fn(),
       dismiss: jest.fn()
-    }
+    };
     commonUtilServiceMock.getLoader.mockReturnValue(loader);
     enrolled.course = mockRes.sampleCourse;
     enrolled.courseCardData = mockRes.enrollCourseEvent;
