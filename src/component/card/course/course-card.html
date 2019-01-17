@@ -2,7 +2,7 @@
   <ion-grid no-padding>
     <ion-row class="top-container" no-padding (click)="navigateToDetailPage(course, layoutName);">
       <ion-col col-12>
-        <pb-horizontal *ngIf="course.cProgress" [progress]="course.cProgress" class="course-progress"></pb-horizontal>
+        <pb-horizontal *ngIf="course?.cProgress" [progress]="course?.cProgress" class="course-progress" [ngClass]="{'blurbackground': batchExp}"></pb-horizontal>
         <div class="img-container">
         </div>
         <ion-badge class="badge" *ngIf="onProfile" color="light" item-end>{{course?.contentType}}</ion-badge>

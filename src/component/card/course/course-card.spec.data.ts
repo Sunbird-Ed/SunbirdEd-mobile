@@ -16,5 +16,14 @@ export const mockRes = {
     resumeCourse: {
         lastReadContentId: 'do_123',
         status: 1
+    },
+    resumeCourseFalsy: {
+        lastReadContentId: 'do_12345',
+        status: 5
+    },
+    navigationContent: {
+        contentId: 5,
+        contentType: ContentType.COURSE,
+        mimeType: MimeType.COLLECTION
     }
 };

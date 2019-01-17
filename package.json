@@ -170,7 +170,6 @@
     ],
     "testPathIgnorePatterns": [
       "/node_modules/",
-      "src/component/card/course/course-card.spec.ts",
       "src/component/content-actions/content-actions.component.spec.ts",
       "src/component/content-rating-alert/content-rating-alert.spec.ts",
       "src/component/onboarding-alert/onboarding-alert.component.spec.ts",
@@ -186,7 +185,6 @@
       "src/pages/profile/guest-edit.profile/guest-edit.profile.spec.ts",
       "src/pages/profile/guest-profile/guest.profile.spec.ts",
       "src/pages/profile/overflowmenu/menu.overflow.component.spec.ts",
-      "src/pages/profile/profile-component.spec.ts",
       "src/pages/profile/user-search/user-search.spec.ts",
       "src/pages/qr-code-result/qr-code-result.spec.ts",
       "src/pages/qrscanner/qrscanresulthandler.service.spec.ts",
@@ -207,7 +205,6 @@
       "src/component/onboarding-card/onboarding.data.spec.ts",
       "src/component/onboarding-alert/onboarding-alert.component.data.spec.ts",
       "src/pages/user-and-groups/group-details/group-detail.data.spec.ts",
-      "src/pages/profile/profile.data.spec.ts",
       "src/pages/user-and-groups/group-members/group-members.data.spec.ts",
       "src/pages/user-and-groups/user-and-groups-data.spec.ts"
     ],

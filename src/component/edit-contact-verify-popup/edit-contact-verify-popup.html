@@ -1,0 +1,41 @@
+<ion-content>
+    <ion-spinner *ngIf="loader" padding></ion-spinner>
+    <ion-grid>
+      <ion-row>
+        <ion-col col-12 no-padding class="text-center">
+          <p class="f18 padding-left-5">{{title}}</p>
+          <p class="font-weight-bold f14">{{description}}</p>
+        </ion-col>
+        <section class="W100" *ngIf="type== 'mobile'">
+          <ion-col col-12 no-padding class="text-center">
+            <b>Enter OTP</b>
+          </ion-col>
+          <ion-col col-12 no-padding class="text-center">
+            <ion-input type="tel" placeholder="Tel Input" class="form-control" [(ngModel)]="otp"></ion-input>
+          </ion-col>
+        </section>
+        <section class="W100" *ngIf="type== 'email'">
+          <ion-col col-12 no-padding class="text-center">
+            <b>Enter OTP</b>
+          </ion-col>
+          <ion-col col-12 no-padding class="text-center" *ngIf="invalidOtp">
+            <p class="error">The OTP is invalid. Please enter the correct OTP.</p>
+          </ion-col>
+          <ion-col col-12 no-padding class="text-center">
+            <ion-input type="tel" placeholder="Tel Input" class="form-control" [(ngModel)]="otp"></ion-input>
+          </ion-col>
+        </section>
+        <ion-col col-12 no-padding class="text-center" >
+            <button ion-button clear (click)="resendOTP(true);" [disabled]="!enableResend">Resend OTP</button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+    <ion-row>
+      <ion-col padding>
+        <button  ion-button block outline (click)="cancel(false)">{{ 'CANCEL' | translate }} </button>
+      </ion-col>
+      <ion-col padding>
+        <button  ion-button block (click)="verify(true)">{{ 'SUBMIT' | translate }} </button>
+      </ion-col>
+    </ion-row>
+  </ion-content>
