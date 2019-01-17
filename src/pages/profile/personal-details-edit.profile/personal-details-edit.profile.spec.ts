@@ -21,7 +21,7 @@ describe('PersonalDetailsEditPage', () => {
         commonUtilServiceMock.translateMessage.mockReturnValue('DISTRICT');
         formBuilderMock.group.mockReturnValue(new FormGroup({
             'name': new FormControl('', [])
-        }))
+        }));
         // personalDetailsEditPage.profile = mockProfileRes.profile;
             personalDetailsEditPage = new PersonalDetailsEditPage(
             navCtrlMock as any,

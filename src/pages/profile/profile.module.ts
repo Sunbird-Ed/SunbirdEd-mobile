@@ -18,6 +18,7 @@ import { ComponentsModule } from '../../component/components.module';
 import { IonicImageLoader } from 'ionic-image-loader';
 import { ImagePicker } from './imagepicker/imagepicker';
 import { CategoriesEditPageModule } from '../categories-edit/categories-edit.module';
+import {PersonalDetailsEditPage} from './personal-details-edit.profile/personal-details-edit.profile';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { CategoriesEditPageModule } from '../categories-edit/categories-edit.mod
     GuestEditProfilePage,
     OverflowMenuComponent,
     UserSearchComponent,
-    ImagePicker
+    ImagePicker,
+    PersonalDetailsEditPage
   ],
   entryComponents: [
     ProfilePage,
@@ -34,7 +36,8 @@ import { CategoriesEditPageModule } from '../categories-edit/categories-edit.mod
     GuestEditProfilePage,
     OverflowMenuComponent,
     ImagePicker,
-    UserSearchComponent
+    UserSearchComponent,
+    PersonalDetailsEditPage
   ],
 
   imports: [

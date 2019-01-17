@@ -24,6 +24,8 @@ import { ProfileAvatarComponent } from './profile-avatar/profile-avatar';
 import { DialogPopupComponent } from './dialog-popup/dialog-popup';
 import { BookmarkComponent } from './bookmark/bookmark';
 import { UnenrollAlertComponent } from './unenroll-alert/unenroll-alert';
+import { EditContactVerifyPopupComponent } from './edit-contact-verify-popup/edit-contact-verify-popup';
+import { EditContactDetailsPopupComponent } from './edit-contact-details-popup/edit-contact-details-popup';
 
 @NgModule({
     declarations: [
@@ -44,7 +46,9 @@ import { UnenrollAlertComponent } from './unenroll-alert/unenroll-alert';
         ProfileAvatarComponent,
         DialogPopupComponent,
         BookmarkComponent,
-        UnenrollAlertComponent
+        UnenrollAlertComponent,
+        EditContactDetailsPopupComponent,
+        EditContactVerifyPopupComponent
     ],
     imports: [
         IonicPageModule.forChild(CourseCard),
@@ -72,7 +76,9 @@ import { UnenrollAlertComponent } from './unenroll-alert/unenroll-alert';
         ProfileAvatarComponent,
         DialogPopupComponent,
         BookmarkComponent,
-        UnenrollAlertComponent
+        UnenrollAlertComponent,
+        EditContactDetailsPopupComponent,
+        EditContactVerifyPopupComponent
         // ContentActionsComponent
     ],
     entryComponents: [
@@ -82,7 +88,9 @@ import { UnenrollAlertComponent } from './unenroll-alert/unenroll-alert';
         ContentRatingAlertComponent,
         ViewCreditsComponent,
         DialogPopupComponent,
-        UnenrollAlertComponent
+        UnenrollAlertComponent,
+        EditContactDetailsPopupComponent,
+        EditContactVerifyPopupComponent
     ],
     providers: [
         OnboardingService,
