@@ -170,7 +170,6 @@
     ],
     "testPathIgnorePatterns": [
       "/node_modules/",
-      "src/component/card/course/course-card.spec.ts",
       "src/component/content-actions/content-actions.component.spec.ts",
       "src/component/content-rating-alert/content-rating-alert.spec.ts",
       "src/component/onboarding-alert/onboarding-alert.component.spec.ts",
