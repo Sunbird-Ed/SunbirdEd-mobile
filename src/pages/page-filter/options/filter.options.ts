@@ -65,15 +65,10 @@ export class PageFilterOptions {
     }
     if (this.facets.selected.includes(value)) {
       index = this.facets.selected.indexOf(value);
-      console.log('filter options index', index);
       if (index > -1) {
         this.facets.selected.splice(index, 1);
-        console.log('filter options array', this.facets.selected);
-        console.log('filter contentType', this.facets.code);
         if (this.facets.code === 'contentType') {
           this.facets.selectedValuesIndices.splice(index, 1);
-        console.log('filter contentType arr', this.facets.selectedValuesIndices);
-
         }
       }
     } else {
