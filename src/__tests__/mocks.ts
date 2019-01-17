@@ -154,7 +154,8 @@ export const fileUtilMock = createSpyObj<FileUtil>([
 
 export const platformMock = createSpyObj<Platform>([
   'registerBackButtonAction',
-  'exitApp'
+  'exitApp',
+  'resume'
 ]);
 
 export const translateServiceMock = createSpyObj<TranslateService>([
