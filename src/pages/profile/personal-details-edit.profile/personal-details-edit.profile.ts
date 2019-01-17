@@ -44,7 +44,6 @@ export class PersonalDetailsEditPage {
   showOnlyMandatoryFields: Boolean = true;
   editData: Boolean = true;
   loader: any;
-  profilename: any;
 
   /* Custom styles for the select box popup */
   stateOptions = {
@@ -88,14 +87,14 @@ export class PersonalDetailsEditPage {
    */
 
   initializeForm() {
+    let profilename = this.profile.firstName;
     if (this.profile.lastName) {
-      this.profilename  = this.profile.firstName + this.profile.lastName || '';
+      profilename  = this.profile.firstName + this.profile.lastName;
     }
-    this.profilename = this.profile.firstName,
     this.profileEditForm = this.fb.group({
       states: [],
       districts: [],
-      name: new FormControl(this.profilename || '')
+      name: new FormControl(profilename)
     });
     console.log('profileeditform', this.profileEditForm);
     this.enableSubmitButton();
