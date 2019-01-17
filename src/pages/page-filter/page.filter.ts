@@ -91,6 +91,7 @@ export class PageFilter {
   async initFilterValues() {
     this.filters = this.navParams.get('filter');
     this.pageId = this.navParams.get('pageId');
+
     if (this.pageId === PageId.COURSES) {
       this.pageId = PageId.COURSE_PAGE_FILTER;
       this.categories = FrameworkCategory.COURSE_FRAMEWORK_CATEGORIES;
@@ -147,16 +148,15 @@ export class PageFilter {
         if ( element.code === 'organization' && frameworkId === 'TPD') {
           await this.getRootOrganizations(index);
          } else {
-          await this.getFrameworkData(frameworkId, this.categories, element.code, index);
+          await this.getFrameworkData(frameworkId, element.code, index);
       }
-        await this.getFrameworkData(frameworkId, this.categories, element.code, index);
+        await this.getFrameworkData(frameworkId, element.code, index);
       } catch (error) {
         console.log('error: ' + error);
       }
       // Framework API doesn't return domain and content Type exclude them
       if (index === this.filters.length - 1) {
         this.facetsFilter = this.filters;
-        console.log(this.facetsFilter);
       }
       index++;
     }
@@ -167,16 +167,15 @@ export class PageFilter {
  * @param {string} currentCategory - request Parameter passing to the framework API
  * @param {number} index - Local variable name to hold the list data
  */
-  async getFrameworkData(frameworkId: string, categories: Array<string>, currentCategory: string, index: number) {
+  async getFrameworkData(frameworkId: string, currentCategory: string, index: number) {
     return new Promise((resolve, reject) => {
       const req: CategoryRequest = {
         currentCategory: currentCategory,
         frameworkId: frameworkId,
         selectedLanguage: this.translate.currentLang,
-        categories: categories
+        categories: this.categories
       };
-     //
-     //
+     
       this.frameworkService.getCategoryData(req)
         .then(res => {
           const category = JSON.parse(res);

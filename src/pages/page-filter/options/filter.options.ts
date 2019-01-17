@@ -5,11 +5,13 @@ import {
   Platform,
   ViewController
 } from 'ionic-angular';
+import { PageAssembleFilter } from 'sunbird';
 @Component({
   selector: 'page-filter-options',
   templateUrl: './filter.options.html'
 })
 export class PageFilterOptions {
+  pagetAssemblefilter = new PageAssembleFilter();
   facets: any;
   backButtonFunc = undefined;
   selected: boolean;
@@ -119,12 +121,19 @@ export class PageFilterOptions {
   }
   }
 
+  getSelectedOptionCount(facet) {
+    if (facet.selected && facet.selected.length > 0) {
+      this.pagetAssemblefilter[facet.code] = facet.selected;
+      return `${facet.selected.length}`;
+    }
+
+    return '';
+  }
+
   cancel() {
     this.viewCtrl.dismiss();
   }
-
   apply() {
     this.viewCtrl.dismiss();
   }
-
 }
