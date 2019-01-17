@@ -26,6 +26,7 @@ import {
 } from '../../app/telemetryutil';
 import { ProfileConstants } from '../../app/app.constant';
 import { AppGlobalService } from '../../service/app-global.service';
+import { CommonUtilService } from '../../service/common-util.service';
 
 @Component({
   selector: 'content-rating-alert',
@@ -60,7 +61,8 @@ export class ContentRatingAlertComponent {
     private ngZone: NgZone,
     private contentService: ContentService,
     private telemetryService: TelemetryService,
-    private appGlobalService: AppGlobalService) {
+    private appGlobalService: AppGlobalService,
+    private commonUtilService: CommonUtilService) {
     this.getUserId();
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.viewCtrl.dismiss();
@@ -160,11 +162,11 @@ export class ContentRatingAlertComponent {
       message: ''
     };
 
-    this.contentService.sendFeedback(option) .then((res: any) => {
+    this.contentService.sendFeedback(option).then((res: any) => {
       console.log('success:', res);
       viewDismissData.message = 'rating.success';
       this.viewCtrl.dismiss(viewDismissData);
-      this.showMessage(this.translateLangConst('THANK_FOR_RATING'));
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('THANK_FOR_RATING'));
     })
       .catch((data: any) => {
         console.log('error:', data);
@@ -175,25 +177,27 @@ export class ContentRatingAlertComponent {
   }
 
   showMessage(msg) {
-    const toast = this.toastCtrl.create({
-      message: msg,
-      duration: 3000,
-      position: 'bottom'
-    });
-    toast.present();
+    // const toast = this.toastCtrl.create({
+    //   message: msg,
+    //   duration: 3000,
+    //   position: 'bottom'
+    // });
+    // toast.present();
+    this.commonUtilService.showToast(this.commonUtilService.translateMessage(msg));
   }
 
   /**
    *
    * @param {string} constant
    */
-  translateLangConst(constant: string) {
-    let msg = '';
-    this.translate.get(constant).subscribe(
-      (value: any) => {
-        msg = value;
-      }
-    );
-    return msg;
-  }
+  // translateLangConst(constant: string) {
+  //   // let msg = '';
+  //   // this.translate.get(constant).subscribe(
+  //   //   (value: any) => {
+  //   //     msg = value;
+  //   //   }
+  //   // );
+  //   // return msg;
+  //   this.commonUtilService.translateMessage(constant: string);
+  // }
 }
