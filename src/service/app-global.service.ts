@@ -69,6 +69,11 @@ export class AppGlobalService implements OnDestroy {
     */
     libraryFilterConfig: Array<any> = [];
 
+    /**
+    * This property stores the organization at the app level for a particular app session
+    */
+     rootOrganizations: Array<any>;
+
     guestUserProfile: Profile;
     isGuestUser = false;
     guestProfileType: ProfileType;
@@ -200,6 +205,22 @@ export class AppGlobalService implements OnDestroy {
     */
     getCachedLibraryFilterConfig(): Array<any> {
         return this.libraryFilterConfig;
+    }
+
+    /**
+    * This method stores the rootOrganizations, for a particular session of the app
+    *
+    */
+   setRootOrganizations(rootOrganizations: Array<any>) {
+        this.rootOrganizations = rootOrganizations;
+    }
+
+    /**
+    * This method returns the rootOrganizations cache, for a particular session of the app
+    *
+    */
+    getCachedRootOrganizations(): Array<any> {
+        return this.rootOrganizations;
     }
 
     /**
