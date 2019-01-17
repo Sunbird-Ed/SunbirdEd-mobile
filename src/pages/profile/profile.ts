@@ -78,6 +78,10 @@ export class ProfilePage {
   onProfile = true;
   trainingsCompleted = [];
   roles = [];
+  userLocation = {
+    state: {},
+    district: {}
+  };
 
   /**
    * Contains paths to icons
@@ -238,6 +242,7 @@ export class ProfilePage {
                 }
                 that.formatRoles();
                 that.formatOrgDetails();
+                that.formatUserLocation();
                 resolve();
               });
             },
@@ -273,6 +278,21 @@ export class ProfilePage {
           if (val && val.name.toLowerCase() !== 'public') {
             this.roles.push(val.name);
           }
+        }
+      }
+    }
+  }
+
+  /**
+   * 
+   */
+  formatUserLocation() {
+    if (this.profile && this.profile.userLocations && this.profile.userLocations.length ) {
+      for (let i = 0, len = this.profile.userLocations.length; i < len; i++) {
+        if (this.profile.userLocations[i].type === 'state') {
+          this.userLocation.state = this.profile.userLocations[i];
+        } else {
+          this.userLocation.district = this.profile.userLocations[i];
         }
       }
     }
@@ -531,7 +551,7 @@ export class ProfilePage {
   editMobileNumber() {
       const popover = this.popoverCtrl.create(EditContactDetailsPopupComponent, {
         phone: this.profile.phone,
-        title: 'Edit Mobile Number',
+        title: this.commonUtilService.translateMessage('EDIT_PHONE_POPUP_TITLE'),
         description: '',
         type: 'phone',
         userId: this.profile.userId
@@ -551,7 +571,7 @@ export class ProfilePage {
   editEmail() {
     const popover = this.popoverCtrl.create(EditContactDetailsPopupComponent, {
       email: this.profile.email,
-      title: 'Edit Email ID',
+      title: this.commonUtilService.translateMessage('EDIT_EMAIL_POPUP_TITLE'),
       description: '',
       type: 'email'
     }, {
@@ -561,7 +581,9 @@ export class ProfilePage {
       ev: event
     });
     popover.onDidDismiss((edited: boolean = false, key?: any) => {
-      this.callOTPPopover(ProfileConstants.CONTACT_TYPE_EMAIL, key);
+      if (edited) {
+        this.callOTPPopover(ProfileConstants.CONTACT_TYPE_EMAIL, key);
+      }
     });
   }
 
@@ -570,8 +592,8 @@ export class ProfilePage {
       const popover = this.popoverCtrl.create(EditContactVerifyPopupComponent, {
         key: key,
         phone: this.profile.phone,
-        title: 'Verify Mobile Number',
-        description: 'You will receive an SMS with the OTP for mobile number verification',
+        title: this.commonUtilService.translateMessage('VERIFY_PHONE_OTP_TITLE'),
+        description: this.commonUtilService.translateMessage('VERIFY_PHONE_OTP_DESCRIPTION'),
         type: ProfileConstants.CONTACT_TYPE_PHONE
       }, {
           cssClass: 'popover-alert'
@@ -589,8 +611,8 @@ export class ProfilePage {
       const popover = this.popoverCtrl.create(EditContactVerifyPopupComponent, {
         key: key,
         phone: this.profile.email,
-        title: 'Verify Email ID',
-        description: ' You will receive an email with the OTP for Email ID verification',
+        title: this.commonUtilService.translateMessage('VERIFY_EMAIL_OTP_TITLE'),
+        description: this.commonUtilService.translateMessage('VERIFY_EMAIL_OTP_DESCRIPTION'),
         type: ProfileConstants.CONTACT_TYPE_EMAIL
       }, {
           cssClass: 'popover-alert'
@@ -620,10 +642,10 @@ export class ProfilePage {
       // setTimeout(() => {
         this.doRefresh();
       // }, 1000);
-      this.commonUtilService.showToast('Mobile number updated successfully');
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('PHONE_EDIT_SUCCESS'));
     }, (err) => {
       loader.dismiss();
-      this.commonUtilService.showToast('Something went wrong, Please try again later');
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('SOMETHING_WENT_WRONG'));
     });
   }
 
@@ -640,10 +662,10 @@ export class ProfilePage {
       // setTimeout(() => {
         this.doRefresh();
       // }, 1000);
-      this.commonUtilService.showToast('Email ID updated successfully');
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('EMAIL_EDIT_SUCCESS'));
     }, (err) => {
       loader.dismiss();
-      this.commonUtilService.showToast('Something went wrong, Please try again later');
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('SOMETHING_WENT_WRONG'));
     });
   }
 

@@ -36,7 +36,7 @@ export class EditContactVerifyPopupComponent {
   }
 
 
-  verify(edited: boolean = false) {
+  verify() {
     let req: VerifyOTPRequest;
     if (this.type === ProfileConstants.CONTACT_TYPE_PHONE) {
       req = {
@@ -53,19 +53,17 @@ export class EditContactVerifyPopupComponent {
     }
     this.userProfileService.verifyOTP(req)
       .then(res => {
-        console.log('------success response----------', res);
-        this.viewCtrl.dismiss(edited, this.key);
+        this.viewCtrl.dismiss(true, this.key);
       })
       .catch(err => {
         err = JSON.parse(err);
-        console.log('------Error response----------', err);
         if (err.error === 'ERROR_INVALID_OTP') {
           this.invalidOtp = true;
         }
       });
   }
 
-  resendOTP(edited: boolean = false) {
+  resendOTP() {
     this.enableResend = !this.enableResend;
     let req: GenerateOTPRequest;
     if (this.type === ProfileConstants.CONTACT_TYPE_PHONE) {
@@ -85,11 +83,9 @@ export class EditContactVerifyPopupComponent {
       .then((res: any) => {
         res = JSON.parse(res);
         loader.dismiss();
-        console.log('------re-generateOTP success response----------', res);
       })
       .catch(err => {
         loader.dismiss();
-        console.log('------re-generateOTP Error response----------', err);
       });
   }
 
