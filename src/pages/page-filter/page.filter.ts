@@ -24,6 +24,7 @@ import { PageFilterOptions } from './options/filter.options';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../service/common-util.service';
 import { FrameworkCategory } from '@app/app';
+import { FormAndFrameworkUtilService } from '../profile';
 
 @Component({
   selector: 'page-filter',
@@ -52,7 +53,8 @@ export class PageFilter {
     private appGlobalService: AppGlobalService,
     private events: Events,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    private frameworkUtilService: FormAndFrameworkUtilService
   ) {
     this.callback = navParams.get('callback');
     this.initFilterValues();
@@ -247,10 +249,9 @@ export class PageFilter {
   }
 
   getRootOrganizations(index) {
-    this.frameworkService.getRootOrganizations()
+    this.frameworkUtilService.getRootOrganizations()
          .then(res => {
-            const organization = res.toString();
-            this.filters[index].values = JSON.parse(JSON.parse(organization).result.orgSearchResult).content;
+            this.filters[index].values = res;
          })
          .catch(error => {
            console.log(error, 'index', index);
