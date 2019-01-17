@@ -44,6 +44,7 @@ export class PersonalDetailsEditPage {
   showOnlyMandatoryFields: Boolean = true;
   editData: Boolean = true;
   loader: any;
+  profilename: any;
 
   /* Custom styles for the select box popup */
   stateOptions = {
@@ -89,11 +90,16 @@ export class PersonalDetailsEditPage {
    */
 
   initializeForm() {
+    if (this.profile.lastName) {
+      this.profilename  = this.profile.firstName + this.profile.lastName || '';
+    }
+    this.profilename = this.profile.firstName,
     this.profileEditForm = this.fb.group({
       states: [],
       districts: [],
-      name: new FormControl(this.profile.firstName + this.profile.lastName || '')
+      name: new FormControl(this.profilename || '')
     });
+    console.log('profileeditform', this.profileEditForm);
     this.enableSubmitButton();
   }
 
@@ -333,7 +339,7 @@ export class PersonalDetailsEditPage {
    */
 
   submitForm(formVal) {
-    console.log("formVal ", formVal);
+    console.log('formVal ', formVal);
     this.loader.present();
     const req = {
       userId: this.profile.userId,

@@ -6,6 +6,7 @@ import {
 } from 'sunbird';
 import { ProfileConstants } from '@app/app';
 import { CommonUtilService } from '@app/service';
+import { Validators, FormControl, FormGroup, FormBuilder } from '@angular/forms';
 
 @Component({
   selector: 'edit-contact-details-popup',
@@ -21,9 +22,12 @@ export class EditContactDetailsPopupComponent {
   type: string;
   backButtonFunc = undefined;
   err: boolean;
+  personEditForm: any;
 
   constructor(private navParams: NavParams, public viewCtrl: ViewController, public platform: Platform,
-    private userProfileService: UserProfileService, private loadingCtrl: LoadingController, private commonUtilService: CommonUtilService,) {
+    private userProfileService: UserProfileService, private loadingCtrl: LoadingController,
+    private commonUtilService: CommonUtilService,
+    private fb: FormBuilder ) {
     // this.phoneNumber = this.navParams.get('phoneNumber');
     this.userId = this.navParams.get('userId');
     this.title = this.navParams.get('title');
@@ -34,28 +38,34 @@ export class EditContactDetailsPopupComponent {
       this.viewCtrl.dismiss();
       this.backButtonFunc();
     }, 10);
+    this.initEditForm();
   }
-
-
+  initEditForm() {
+    this.personEditForm = this.fb.group({
+      email: ['', Validators.pattern('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$')],
+      phone: ['']
+    });
+  }
   validate(edited: boolean = false) {
     const loader = this.getLoader();
+    const formVal = this.personEditForm.value;
     loader.present();
     let req: UserExistRequest;
-    if ( this.type === ProfileConstants.CONTACT_TYPE_PHONE) {
+    if (this.type === ProfileConstants.CONTACT_TYPE_PHONE) {
       req = {
-        key: this.phone,
+        key: formVal.phone,
         type: ProfileConstants.CONTACT_TYPE_PHONE
       };
     } else {
       req = {
-        key: this.email,
+        key: formVal.email,
         type: ProfileConstants.CONTACT_TYPE_EMAIL
       };
     }
 
     this.userProfileService.isAlreadyInUse(req)
       .then((res: any) => {
-        res  = JSON.parse(res);
+        res = JSON.parse(res);
         console.log('------success response----------', res);
         loader.dismiss();
         if (res && res.result) {
@@ -82,7 +92,7 @@ export class EditContactDetailsPopupComponent {
 
   generateOTP(edited: boolean = false) {
     let req: GenerateOTPRequest;
-    if ( this.type === ProfileConstants.CONTACT_TYPE_PHONE) {
+    if (this.type === ProfileConstants.CONTACT_TYPE_PHONE) {
       req = {
         key: this.phone,
         type: ProfileConstants.CONTACT_TYPE_PHONE
@@ -103,11 +113,11 @@ export class EditContactDetailsPopupComponent {
         console.log('------generateOTP success response----------', res);
       })
       .catch(err => {
-        err  = JSON.parse(err);
+        err = JSON.parse(err);
         loader.dismiss();
         this.viewCtrl.dismiss(edited);
         console.log('------generateOTP Error response----------', err);
-        if (err.error === 'ERROR_RATE_LIMIT_EXCEEDED' ) {
+        if (err.error === 'ERROR_RATE_LIMIT_EXCEEDED') {
           this.commonUtilService.showToast('You have exceeded the maximum limit for OTP, Please try after some time');
         }
       });

@@ -3,7 +3,9 @@
     <button class="close-button" ion-button icon-only float-end outline (click)="selectOption(false)"><ion-icon class="icon-size" name="close"></ion-icon></button>
   </h5> -->
   <ion-spinner *ngIf="loader" padding></ion-spinner>
+
   <ion-grid class="P0">
+      <form [formGroup]="personEditForm">
     <ion-row>
       <ion-col col-12 no-padding class="text-center">
         <p class="f18 padding-left-5">{{title}}</p>
@@ -17,29 +19,35 @@
           <p class="error">Phone number already exists, please enter another phone number</p>
         </ion-col>
         <ion-col col-12 no-padding class="text-center">
-          <ion-input type="tel" placeholder="Phone Number" class="form-control" [(ngModel)]="phone"></ion-input>
+          <ion-input type="tel" placeholder="Phone Number" maxlength="10" required class="form-control" formControlName="phone"></ion-input>
+          <ion-col col-12 no-padding class="text-center" *ngIf="!personEditForm.controls.phone.valid && personEditForm.controls.phone.dirty">
+              <p class="danger">Enter a valid phone number</p>
+            </ion-col>
         </ion-col>
+        
       </section>
-      <section *ngIf="type== 'email'" class="W100">
+      <section *ngIf="type=='email'" class="W100">
         <ion-col col-12 no-padding class="text-center">
           <b>Enter your Email ID</b>
         </ion-col>
-        <ion-col col-12 no-padding class="text-center" >
+        <ion-col col-12 no-padding class="text-center" *ngIf="!personEditForm.controls.email.valid && personEditForm.controls.email.dirty">
           <p class="danger">Enter a valid Email ID</p>
         </ion-col>
         <ion-col col-12 no-padding class="text-center">
-          <ion-input type="text" placeholder="Enter Email ID" class="form-control" [(ngModel)]="email" ></ion-input>
+          <ion-input type="text" placeholder="Enter Email ID" class="form-control" 
+          formControlName="email"></ion-input>         
         </ion-col>
       </section>
-      
+
     </ion-row>
+    </form>
   </ion-grid>
   <ion-row>
     <ion-col padding>
-      <button  ion-button block outline (click)="cancel()">{{ 'CANCEL' | translate }} </button>
+      <button ion-button block outline (click)="cancel()">{{ 'CANCEL' | translate }} </button>
     </ion-col>
     <ion-col padding>
-      <button  ion-button block (click)="validate(true)">{{ 'SUBMIT' | translate }} </button>
+      <button ion-button block (click)="validate(true)">{{ 'SUBMIT' | translate }} </button>
     </ion-col>
   </ion-row>
 </ion-content>
