@@ -33,7 +33,7 @@ page-profile {
         font-size: 2rem;
         @extend .font-weight-bold;
         @include margin(0);
-        @include padding(10px, 5px, 5px, 5px);
+        @include padding(10px, 5px, 0, 5px);
     }
     .grey-bg {
         background: rgba(99, 99, 99, 0.158);
@@ -272,6 +272,7 @@ page-profile {
             line-height: normal;
             letter-spacing: normal;
             color: #666666;
+            min-height: 20px;
         }
             
     }
@@ -304,6 +305,10 @@ page-profile {
           @include margin(null, null, 10px, null);
           background-color: #fff;
           color: #007AFF;
+
+          &.light{
+            color: #9b9b9b;
+          }
         }
 
         .email{
@@ -314,6 +319,9 @@ page-profile {
           color: #007AFF;
           border-bottom: 0.3px solid #196DAB;
           border-top: 0.3px solid #196DAB;
+          &.light{
+            color: #9b9b9b;
+          }
         }
     }
 
@@ -432,6 +440,10 @@ page-profile {
     @include margin(null, 10px, null, null);
 }
 
+.MT0{
+    margin-top: 0;
+}
+
 .ML10{
     @include margin(null, null, null, 10px);
 }
@@ -446,6 +458,10 @@ page-profile {
 
 .MB15 {
     @include margin(null, null, 15px, null);
+}
+
+.MB30{
+    @include margin(null, null, 30px, null);
 }
 
 .MT15 {
