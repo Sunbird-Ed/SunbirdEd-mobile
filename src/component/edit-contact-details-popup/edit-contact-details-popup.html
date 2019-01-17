@@ -19,7 +19,7 @@
             <ion-input type="tel" placeholder="{{'PHONE_PLACEHOLDER' | translate }}" maxlength="10" required class="form-control custom"
               formControlName="phone" [(ngModel)]="phone"></ion-input>
             <ion-col col-12 no-padding class="text-center" *ngIf="!personEditForm.controls.phone.valid && personEditForm.controls.phone.dirty">
-              <p class="danger">Enter a valid phone number</p>
+              <p class="danger">{{'ERROR_PHONE_INVALID' | translate}}</p>
             </ion-col>
           </ion-col>
 
@@ -29,7 +29,7 @@
             <b>{{'ENTER_EMAIL' | translate}}</b>
           </ion-col>
           <ion-col col-12 no-padding class="text-center" *ngIf="!personEditForm.controls.email.valid && personEditForm.controls.email.dirty">
-            <p class="danger">Enter a valid Email ID</p>
+            <p class="error">{{'ERROR_EMAIL_INVALID' | translate}}</p>
           </ion-col>
           <ion-col col-12 no-padding class="text-center" *ngIf="err">
               <p class="error">{{'ERROR_EMAIL_EXISTS' | translate}}</p>
