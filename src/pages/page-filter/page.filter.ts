@@ -177,7 +177,7 @@ export class PageFilter {
         selectedLanguage: this.translate.currentLang,
         categories: this.categories
       };
-     
+
       this.frameworkService.getCategoryData(req)
         .then(res => {
           const category = JSON.parse(res);
@@ -249,9 +249,12 @@ export class PageFilter {
   }
 
   getRootOrganizations(index) {
+    const loader = this.commonUtilService.getLoader();
+    loader.present();
     this.frameworkUtilService.getRootOrganizations()
          .then(res => {
             this.filters[index].values = res;
+            loader.dismiss();
          })
          .catch(error => {
            console.log(error, 'index', index);
