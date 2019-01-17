@@ -1,18 +1,38 @@
 import { AppGlobalService } from './../../service/app-global.service';
 import { FormAndFrameworkUtilService } from './../profile/formandframeworkutil.service';
 import { CommonUtilService } from './../../service/common-util.service';
-import { Component, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { CategoryRequest, Profile, UpdateUserInfoRequest, UserProfileService, ProfileService, ContainerService,
-  TabsPage, FrameworkService, SuggestedFrameworkRequest } from 'sunbird';
+import {
+  Component,
+  ViewChild
+} from '@angular/core';
+import {
+  IonicPage,
+  NavController,
+  NavParams,
+  LoadingController
+} from 'ionic-angular';
+import {
+  FormBuilder,
+  FormGroup
+} from '@angular/forms';
+import {
+  CategoryRequest,
+  Profile,
+  UpdateUserInfoRequest,
+  UserProfileService,
+  ProfileService,
+  ContainerService,
+  TabsPage,
+  FrameworkService,
+  SuggestedFrameworkRequest
+} from 'sunbird';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
 import { Events } from 'ionic-angular';
-
 import {
   initTabs,
-  LOGIN_TEACHER_TABS
+  LOGIN_TEACHER_TABS,
+  FrameworkCategory
 } from '@app/app';
 import { Select } from 'ionic-angular';
 
@@ -119,7 +139,8 @@ export class CategoriesEditPage {
       this.frameworkId = this.profile.syllabus[0];
     }
     const suggestedFrameworkRequest: SuggestedFrameworkRequest = {
-      selectedLanguage: this.translate.currentLang
+      selectedLanguage: this.translate.currentLang,
+      categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
     };
     this.framework.getSuggestedFrameworkList(suggestedFrameworkRequest)
       .then((result) => {
@@ -205,7 +226,8 @@ export class CategoriesEditPage {
             // loader.dismiss();
             const request: CategoryRequest = {
               currentCategory: this.categories[0].code,
-              selectedLanguage: this.translate.currentLang
+              selectedLanguage: this.translate.currentLang,
+              categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
             };
             this.getCategoryData(request, currentField);
           }).catch(() => {
@@ -217,7 +239,8 @@ export class CategoriesEditPage {
         currentCategory: this.categories[index - 1].code,
         prevCategory: this.categories[index - 2].code,
         selectedCode: selectedValue,
-        selectedLanguage: this.translate.currentLang
+        selectedLanguage: this.translate.currentLang,
+        categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
       };
       this.getCategoryData(request, currentField);
     }
@@ -238,7 +261,7 @@ export class CategoriesEditPage {
             const boardCode = result.find(board => boardName.name === board.name);
             if (boardCode) {
               this.profileEditForm.patchValue({
-                boards: boardCode.code
+                boards: [boardCode.code]
               });
               this.resetForm(1);
             } else {

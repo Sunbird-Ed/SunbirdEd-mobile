@@ -5,11 +5,11 @@ import {
   NavParams
 } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-  import {
-    FormBuilder,
-    FormGroup,
-    Validators
-  } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators
+} from '@angular/forms';
 import {
   CategoryRequest,
   Group,
@@ -23,12 +23,12 @@ import {
   SuggestedFrameworkRequest,
   FrameworkService,
 } from 'sunbird';
-
 import { FormAndFrameworkUtilService } from '../../profile/formandframeworkutil.service';
 import { GroupMembersPage } from './../group-members/group-members';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../../service/common-util.service';
+import { FrameworkCategory } from '@app/app';
 
 @IonicPage()
 @Component({
@@ -103,7 +103,8 @@ export class CreateGroupPage {
 
     const suggestedFrameworkRequest: SuggestedFrameworkRequest = {
       isGuestUser: true,
-      selectedLanguage: this.translate.currentLang
+      selectedLanguage: this.translate.currentLang,
+      categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
     };
     this.framework.getSuggestedFrameworkList(suggestedFrameworkRequest)
       .then((result) => {
@@ -237,7 +238,8 @@ export class CreateGroupPage {
       .then((categories) => {
         const request: CategoryRequest = {
           currentCategory: 'gradeLevel',
-          selectedLanguage: this.translate.currentLang
+          selectedLanguage: this.translate.currentLang,
+          categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
         };
         this.isFormValid = true;
 
