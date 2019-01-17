@@ -381,6 +381,18 @@ export class CoursesPage implements OnInit {
         pageAssembleCriteria.filters.subject = this.applyProfileFilter(this.profile.subject,
           pageAssembleCriteria.filters.subject, 'subject');
       }
+      if (this.profile.purpose && this.profile.purpose.length) {
+        pageAssembleCriteria.filters.purpose = this.applyProfileFilter(this.profile.purpose,
+          pageAssembleCriteria.filters.purpose, 'purpose');
+      }
+      if (this.profile.topic && this.profile.topic.length) {
+        pageAssembleCriteria.filters.topic = this.applyProfileFilter(this.profile.topic,
+          pageAssembleCriteria.filters.topic, 'topic');
+      }
+      if (this.profile.organization && this.profile.organization.length) {
+        pageAssembleCriteria.filters.organization = this.applyProfileFilter(this.profile.organization,
+          pageAssembleCriteria.filters.organization, 'organization');
+      }
     }
     this.pageService.getPageAssemble(pageAssembleCriteria).then((res: any) => {
       res = JSON.parse(res);
@@ -406,7 +418,6 @@ export class CoursesPage implements OnInit {
         this.checkEmptySearchResult();
       });
     }).catch((error: string) => {
-      console.log('Page assmble error', error);
       this.ngZone.run(() => {
         this.pageApiLoader = false;
         if (error === 'CONNECTION_ERROR') {
@@ -508,7 +519,6 @@ export class CoursesPage implements OnInit {
         this.getPopularAndLatestCourses();
       })
       .catch(error => {
-        console.log('Error while Fetching Data', error);
         this.getPopularAndLatestCourses();
       });
   }
@@ -548,7 +558,6 @@ export class CoursesPage implements OnInit {
           criteria.filters = filter;
           that.courseFilter = appliedFilter;
           that.appliedFilter = filter;
-
           let filterApplied = false;
 
           that.isFilterApplied = false;
