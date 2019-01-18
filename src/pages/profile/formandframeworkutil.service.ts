@@ -9,7 +9,8 @@ import {
     FormRequest,
     FormService,
     Profile,
-    ProfileService
+    ProfileService,
+    SystemSettingRequest
 } from 'sunbird';
 import { AppGlobalService } from '../../service/app-global.service';
 import { AppVersion } from '@ionic-native/app-version';
@@ -503,4 +504,14 @@ export class FormAndFrameworkUtilService {
             }
 
      }
+
+     /**
+      * 
+      */
+     async getCustodianOrgId() {
+        const systemSettingRequest: SystemSettingRequest = {
+            id: this.framework.SYSTEM_SETING_CUSTODIAN_ORG_ID
+        };
+        return await this.framework.getSystemSettingValue(systemSettingRequest);
+      }
 }

@@ -27,7 +27,7 @@ export class EditContactDetailsPopupComponent {
   constructor(private navParams: NavParams, public viewCtrl: ViewController, public platform: Platform,
     private userProfileService: UserProfileService, private loadingCtrl: LoadingController,
     private commonUtilService: CommonUtilService,
-    private fb: FormBuilder ) {
+    private fb: FormBuilder) {
     // this.phoneNumber = this.navParams.get('phoneNumber');
     this.userId = this.navParams.get('userId');
     this.title = this.navParams.get('title');
@@ -49,44 +49,48 @@ export class EditContactDetailsPopupComponent {
 
 
   validate() {
-    const loader = this.getLoader();
-    const formVal = this.personEditForm.value;
-    loader.present();
-    let req: UserExistRequest;
-    if (this.type === ProfileConstants.CONTACT_TYPE_PHONE) {
-      req = {
-        key: formVal.phone,
-        type: ProfileConstants.CONTACT_TYPE_PHONE
-      };
-    } else {
-      req = {
-        key: formVal.email,
-        type: ProfileConstants.CONTACT_TYPE_EMAIL
-      };
-    }
+    if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+      const loader = this.getLoader();
+      const formVal = this.personEditForm.value;
+      loader.present();
+      let req: UserExistRequest;
+      if (this.type === ProfileConstants.CONTACT_TYPE_PHONE) {
+        req = {
+          key: formVal.phone,
+          type: ProfileConstants.CONTACT_TYPE_PHONE
+        };
+      } else {
+        req = {
+          key: formVal.email,
+          type: ProfileConstants.CONTACT_TYPE_EMAIL
+        };
+      }
 
-    this.userProfileService.isAlreadyInUse(req)
-      .then((res: any) => {
-        res  = JSON.parse(res);
-        loader.dismiss();
-        if (res && res.result) {
-          const data = JSON.parse(res.result.response);
-          if (data.id === this.userId) {
-            this.viewCtrl.dismiss(false);
-          } else {
-            this.err = true;
+      this.userProfileService.isAlreadyInUse(req)
+        .then((res: any) => {
+          res = JSON.parse(res);
+          loader.dismiss();
+          if (res && res.result) {
+            const data = JSON.parse(res.result.response);
+            if (data.id === this.userId) {
+              this.viewCtrl.dismiss(false);
+            } else {
+              this.err = true;
+            }
           }
-        }
-      })
-      .catch(err => {
-        err = JSON.parse(err);
-        loader.dismiss();
-        if (err.error === 'USER_NOT_FOUND') {
-          this.generateOTP();
-        } else if (err.error === 'INVALID_PHONE_NO_FORMAT') {
-          // TODO
-        }
-      });
+        })
+        .catch(err => {
+          err = JSON.parse(err);
+          loader.dismiss();
+          if (err.error === 'USER_NOT_FOUND') {
+            this.generateOTP();
+          } else if (err.error === 'INVALID_PHONE_NO_FORMAT') {
+            // TODO
+          }
+        });
+    } else {
+      this.commonUtilService.showToast('INTERNET_CONNECTIVITY_NEEDED');
+    }
   }
 
   generateOTP() {
@@ -108,7 +112,7 @@ export class EditContactDetailsPopupComponent {
       .then((res: any) => {
         res = JSON.parse(res);
         loader.dismiss();
-        if ( this.type === ProfileConstants.CONTACT_TYPE_PHONE) {
+        if (this.type === ProfileConstants.CONTACT_TYPE_PHONE) {
           this.viewCtrl.dismiss(true, this.phone);
         } else {
           this.viewCtrl.dismiss(true, this.email);
@@ -118,7 +122,7 @@ export class EditContactDetailsPopupComponent {
         err = JSON.parse(err);
         loader.dismiss();
         this.viewCtrl.dismiss(false);
-        if (err.error === 'ERROR_RATE_LIMIT_EXCEEDED' ) {
+        if (err.error === 'ERROR_RATE_LIMIT_EXCEEDED') {
           this.commonUtilService.showToast('You have exceeded the maximum limit for OTP, Please try after some time');
         }
       });
