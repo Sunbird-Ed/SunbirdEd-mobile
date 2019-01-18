@@ -168,6 +168,8 @@
   "ERROR_TECHNICAL_PROBLEM": "We encountred a technical problem and were unable to process the request",
   "ERROR_PHONE_EXISTS": "Phone number already exists, please enter another phone number",
   "ERROR_EMAIL_EXISTS": "Email ID already exists. Please enter another Email ID",
+  "ERROR_EMAIL_INVALID": "Enter a valid Email ID",
+  "ERROR_PHONE_INVALID": " Enter a valid phone number", 
   "ERROR_OTP": "The OTP is invalid. Please enter the correct OTP",
   "ERROR_UPLOADING_IMG": "Error while uploading image",
   "FEEDBACK_HINT": "Feedback (optional)",
