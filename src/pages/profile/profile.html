@@ -51,7 +51,7 @@
             <span *ngIf="orgDetails?.state?.name">{{orgDetails?.state?.name}}</span>
         </div>
     </div>
-   <div class="location text-center">
+   <div class="location text-center" *ngIf="isCustodianOrgId">
         <div>
             <span class="bolder">{{'STATE' | translate}}: </span>
             <span *ngIf="userLocation?.state && userLocation?.state?.name && userLocation?.state?.name?.length">{{userLocation.state.name}}</span>
