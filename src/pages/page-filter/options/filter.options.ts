@@ -64,13 +64,6 @@ export class PageFilterOptions {
   }
 
   changeValue(value, index) {
-    // console.log('SELECETEDFACETS', this.facets.selected, Array(this.facets.selcted));
-    // const selectedFacetsSet = new Set();
-    // selectedFacetsSet.add(Array(this.facets.selected));
-    // console.log('facests selected', selectedFacetsSet);
-    // selectedFacetsSet.add(value);
-    // this.facets.selected = Array.from(selectedFacetsSet);
-    // console.log('selected Values', this.facets.selected);
     if (!this.facets.selected) {
       this.facets.selected = [];
       if (this.facets.code === 'contentType' || this.facets.name === 'Purpose' ) {
@@ -84,17 +77,14 @@ export class PageFilterOptions {
         if (this.facets.code === 'contentType') {
           this.facets.selectedValuesIndices.splice(index, 1);
         }
-        console.log('this.facets+++++', this.facets);
       }
     } else {
       if (!this.appGlobalService.isUserLoggedIn() && this.facets.code === 'board') {
         this.facets.selected = [];
       }
       this.facets.selected.push(value);
-      console.log('this.facets!!!!!!!!!', this.facets);
       if (this.facets.code === 'contentType' && this.facets.name === 'Purpose') {
         this.facets.selectedValuesIndices.push(index);
-        console.log('this.facets=====>', this.facets);
       }
     }
 
