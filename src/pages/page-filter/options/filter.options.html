@@ -52,32 +52,32 @@
   <ion-content *ngIf="facets?.name === 'Topic'">
   <ion-searchbar (ionInput)="getItems($event)" #input debounce="1000"  [spellcheck]="true" [autocomplete]="true" class="subtitle"></ion-searchbar>
   <ion-list  class="scroll-list" *ngIf = "showTopicFilterList">
-    <ion-item *ngFor="let item of filteredTopicArr" [ngClass]="{'text-selected':item.selected,'text-unselected':!item.selected}" (click)="item.selected=!item.selected; changeValue(item.name, index)">
-      {{ item.name }}
-      <ion-icon item-right name='checkmark' *ngIf="item.selected" style="color : success;"></ion-icon>
+    <ion-item *ngFor="let items of filteredTopicArr" (click)="changeValue(items.name, index)">
+      <span [ngClass]="{'text-selected':isSelected(items.name), 'text-unselected':!isSelected(items.name)}" >{{ items.name }}</span>
+      <ion-icon class="icon-margin" item-right name='checkmark' *ngIf="isSelected(items.name)" style="color : green; margin:0 10px;"></ion-icon>
     </ion-item>
   </ion-list>
 
   <div class="scroll-list" *ngIf = "!showTopicFilterList">
-    <ion-item *ngFor="let facetValue of topicsArr; let i=index" no-lines no-padding>
-      <div text-wrap (click)="toggleGroup(i)" [ngClass]="{active: isGroupShown(i)}">
-        <ion-col col-3 style="align-items : center;">
-          <ion-icon item-left [name]="isGroupShown(i) ? 'remove' : 'add'"></ion-icon>
+    <ion-item *ngFor="let facetValue of topicsArr; let i=index" no-lines no-padding class="div-space">
+      <div text-wrap (click)="toggleGroup(i)" [ngClass]="{active: isGroupShown(i)}" style="font-size: 16px;">
+        <ion-col col-1 style="margin-left:15px;padding: 0;">
+          <ion-icon class="icon-margin" item-left [name]="isGroupShown(i) ? 'remove' : 'add'"></ion-icon>
         </ion-col>
-        <ion-col col-9>
+        <ion-col col-11 style="padding:0;margin-left:0;">
           <span>
             {{facetValue}}
           </span>
         </ion-col>
       </div>
-      <span *ngIf="isGroupShown(i)">
-        <span *ngFor="let items of topicsVal[i]; let item = index">
-          <div [ngClass]="{'text-selected':items.selected,'text-unselected':!items.selected}" (click)="items.selected=!items.selected; changeValue(items.name, index)">
+      <div *ngIf="isGroupShown(i)">
+        <div *ngFor="let items of topicsVal[i]; let item = index">
+          <div [ngClass]="{'text-selected':isSelected(items.name),'text-unselected':!isSelected(items.name)}" (click)="changeValue(items.name, index)">
             {{items.name}}
-            <ion-icon item-right name='checkmark' *ngIf="items.selected" style="color : success;"></ion-icon>
+            <span><ion-icon class="icon-margin" item-right name='checkmark' *ngIf="isSelected(items.name)" style="color : green; margin:0 10px;"></ion-icon></span>
           </div>
-        </span>
-      </span>
+        </div>
+      </div>
     </ion-item>
   </div>
 </ion-content>

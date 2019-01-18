@@ -60,15 +60,26 @@ page-filter-options {
   opacity: 0.4 !important;
 }
 .text-unselected{
-  padding-left: 15%;line-height: 1.5 rem;color : black;
+  padding-left: 20%;
+  color : black;
+  margin-bottom: 5px;
+  margin-top: 2px;
 }
 .text-selected{
-  padding-left: 15%;line-height: 1.5 rem;color : blue;
-  margin-left: 2%;
+  padding-left: 20%;
+  color : blue; 
+  margin-bottom: 5px;
+  margin-top: 2px;
 }
 .pull-left{
  float: left;
 }
 .pull-right{
   float: right;
+}
+.icon-margin{
+  margin:0 10px !important;
+}
+.div-space .item-inner .input-wrapper .label-md {
+  @include margin(5px 8px 5px 0 !important);
 }
