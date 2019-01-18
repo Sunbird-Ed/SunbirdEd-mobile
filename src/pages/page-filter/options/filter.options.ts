@@ -55,18 +55,11 @@ export class PageFilterOptions {
 
     return this.facets.selected.includes(value);
   }
-  isSelectedPurpose(value) {
-    if (!this.facets.selected) {
-      return false;
-    }
-
-    return this.facets.selected.includes(value);
-  }
 
   changeValue(value, index) {
     if (!this.facets.selected) {
       this.facets.selected = [];
-      if (this.facets.code === 'contentType' ) {
+      if (this.facets.code === 'contentType') {
         this.facets.selectedValuesIndices = [];
       }
     }
