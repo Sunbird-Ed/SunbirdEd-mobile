@@ -92,7 +92,8 @@ export class ProfileConstants {
         'lastLoginTime',
         'topics',
         'organisations',
-        'roles'
+        'roles',
+        'locations'
     ];
 
     public static readonly CONTACT_TYPE_PHONE = 'phone';

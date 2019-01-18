@@ -13,8 +13,11 @@
         <ion-col col-12 no-padding class="text-center" *ngIf="err">
           <p class="error">{{'ERROR_PHONE_EXISTS' | translate}}</p>
         </ion-col>
-        <ion-col col-12 no-padding class="text-center">
-          <ion-input type="tel" placeholder="{{'PHONE_PLACEHOLDER' | translate }}" class="form-control custom" [(ngModel)]="phone"></ion-input>
+        <ion-col col-12 no-padding class="text-center MT10">
+          <div class="W100 merged-input-container MT10" >
+            <ion-input type="tel" placeholder="+91" class="form-control decorator " value="+91" disabled></ion-input>
+            <ion-input type="tel" placeholder="{{'PHONE_PLACEHOLDER' | translate }}" class="form-control custom" [(ngModel)]="phone"></ion-input>
+          </div>
         </ion-col>
       </section>
       <section *ngIf="type==='email'" class="W100 text-center">
