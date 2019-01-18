@@ -66,7 +66,7 @@ export class PageFilterOptions {
   changeValue(value, index) {
     if (!this.facets.selected) {
       this.facets.selected = [];
-      if (this.facets.code === 'contentType' || this.facets.name === 'Purpose' ) {
+      if (this.facets.code === 'contentType' ) {
         this.facets.selectedValuesIndices = [];
       }
     }
@@ -83,7 +83,7 @@ export class PageFilterOptions {
         this.facets.selected = [];
       }
       this.facets.selected.push(value);
-      if (this.facets.code === 'contentType' && this.facets.name === 'Purpose') {
+      if (this.facets.code === 'contentType') {
         this.facets.selectedValuesIndices.push(index);
       }
     }
