@@ -139,6 +139,8 @@ export const contentServiceMock = createSpyObj<ContentService>([
   'getChildContents',
   'cancelDownload',
   'searchContent',
+  'getChildContents',
+  'sendFeedback',
   'deleteContent'
 ]);
 

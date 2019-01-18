@@ -248,9 +248,12 @@ export class PageFilter {
   }
 
   getRootOrganizations(index) {
+    const loader = this.commonUtilService.getLoader();
+    loader.present();
     this.frameworkUtilService.getRootOrganizations()
          .then(res => {
             this.filters[index].values = res;
+            loader.dismiss();
          })
          .catch(error => {
            console.log(error, 'index', index);
