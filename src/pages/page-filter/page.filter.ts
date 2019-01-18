@@ -177,7 +177,6 @@ export class PageFilter {
         selectedLanguage: this.translate.currentLang,
         categories: this.categories
       };
-
       this.frameworkService.getCategoryData(req)
         .then(res => {
           const category = JSON.parse(res);

@@ -87,11 +87,16 @@ export class PersonalDetailsEditPage {
    */
 
   initializeForm() {
+    let profilename = this.profile.firstName;
+    if (this.profile.lastName) {
+      profilename  = this.profile.firstName + this.profile.lastName;
+    }
     this.profileEditForm = this.fb.group({
       states: [],
       districts: [],
-      name: new FormControl(this.profile.firstName + this.profile.lastName || '')
+      name: new FormControl(profilename)
     });
+    console.log('profileeditform', this.profileEditForm);
     this.enableSubmitButton();
   }
 

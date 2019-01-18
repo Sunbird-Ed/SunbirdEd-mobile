@@ -134,6 +134,6 @@ export class PageFilterOptions {
     this.viewCtrl.dismiss();
   }
   apply() {
-    this.viewCtrl.dismiss();
+    this.confirm();
   }
 }
