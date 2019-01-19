@@ -1,215 +1,248 @@
-// import {
-//   ComponentFixture, TestBed,
-//   fakeAsync
-// } from '@angular/core/testing';
-// import { NO_ERRORS_SCHEMA } from '@angular/core';
-// import { ContentRatingAlertComponent } from './content-rating-alert';
-// import {
-//   ContentService,
-//   TelemetryService,
-//   AuthService,
-//   ProfileService,
-//   BuildParamService
-// } from 'sunbird';
-// import { ServiceProvider, SharedPreferences, FrameworkService } from 'sunbird';
-// import { TranslateModule, TranslateService } from '@ngx-translate/core';
-// import { PopoverController } from 'ionic-angular';
-// import {
-//   NavParamsMock,
-//   PlatformMock,
-//   ToastControllerMockNew,
-//   TelemetryServiceMock,
-//   TranslateServiceStub,
-//   AppGlobalServiceMock,
-//   EventsMock,
-//   AuthServiceMock,
-//   ProfileServiceMock,
-//   SharedPreferencesMock,
-//   PopoverControllerMock,
-//   BuildParamaServiceMock
-// } from '../../../test-config/mocks-ionic';
-// import { } from 'jasmine';
-// import { ViewController } from 'ionic-angular/navigation/view-controller';
-// import {
-//   ToastController,
-//   NavParams, Platform, Events
-// } from 'ionic-angular';
-// import { AppGlobalService } from '../../service/app-global.service';
-// import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-// import { Observable } from 'rxjs/Observable';
-// import 'rxjs/add/observable/of';
+import {
+  ContentRatingAlertComponent
+} from './content-rating-alert';
+import {
+  navParamsMock,
+  contentServiceMock,
+  appGlobalServiceMock,
+  telemetryGeneratorServiceMock
+} from '@app/__tests__/mocks';
+import 'jest';
+import {
+  ContentService,
+  TelemetryService,
+  InteractType,
+  InteractSubtype,
+  Environment,
+  ImpressionType,
+  ImpressionSubtype,
+  Log,
+  LogLevel,
+  ConnectionInfoService
+} from 'sunbird';
+import { TranslateService } from '@ngx-translate/core';
+import {
+  generateImpressionTelemetry,
+  generateInteractTelemetry
+} from '../../app/telemetryutil';
+import { ProfileConstants } from '../../app/app.constant';
+import { AppGlobalService } from '../../service/app-global.service';
+import {
+  translateServiceMock, toastControllerMock, zoneMock,
+  telemetryServiceMock, viewControllerMock, platformMock, commonUtilServiceMock
+} from '../../__tests__/mocks';
+describe('ContentRatingAlertComponent', () => {
+  let contentRatingAlertComponent: ContentRatingAlertComponent;
+  beforeEach(() => {
+    navParamsMock.get.mockImplementation((param: string) => {
+      if (param === 'filter') {
+        return [];
+      } else {
+        return 'pageId';
+      }
+    });
+    appGlobalServiceMock.getSessionData.mockReturnValue('1278273');
+    contentRatingAlertComponent = new ContentRatingAlertComponent(navParamsMock as any, viewControllerMock as any,
+      platformMock as any, translateServiceMock as any, toastControllerMock as any, zoneMock as any,
+      contentServiceMock as any, telemetryServiceMock as any, appGlobalServiceMock as any, commonUtilServiceMock as any);
+    jest.resetAllMocks();
+  });
+  it('should create instance of the ConfirmAlertComponent', () => {
+    expect(contentRatingAlertComponent).toBeTruthy();
+  });
+  it('should call ionViewDidLoad', () => {
+    // arrange
+    navParamsMock.get.mockImplementation((arg: string) => {
+      switch (arg) {
+        case 'content': {
+          return {
+            identifier: 'SOME_IDENTIFIER'
+          };
+        }
+        case 'popupType': {
+          return { popupType: 'POPUP_TYPE' };
+        }
+        case 'comment': {
+          return { comment: 'SOME_COMMENT' };
+        }
+        case 'userRating': {
+          return { userRating: 121 };
+        }
+      }
+    });
+    // act
+    contentRatingAlertComponent.ionViewDidLoad();
+    // assert
+    expect(contentRatingAlertComponent.ionViewDidLoad);
+  });
+  // it('should call ionViewWillEnter', () => {
+  //   // arrange
+  //   navParamsMock.get.mockImplementation((arg: string) => {
+  //     switch (arg) {
+  //       case 'content': {
+  //         return {
+  //           identifier: 'SOME_IDENTIFIER'
+  //         };
+  //       }
+  //       case 'popupType': {
+  //         return { popupType: 'POPUP_TYPE' };
+  //       }
+  //       case 'comment': {
+  //         return { comment: 'SOME_COMMENT' };
+  //       }
+  //       case 'userRating': {
+  //         return { userRating: 121 };
+  //       }
+  //     }
+  //   });
+  //   // act
+  //   contentRatingAlertComponent.ionViewWillEnter();
+  //   // assert
+  //   expect(telemetryGeneratorServiceMock.generateImpressionTelemetry).toHaveBeenCalledWith(
+  //     ImpressionType.VIEW,
+  //     ImpressionSubtype.RATING_POPUP,
+  //     { 'pageId': 'SOME_PAGE_ID' },
+  //     Environment.HOME, '', '', '',
+  //     undefined,
+  //     undefined);
+  // });
+  it('#getUserId should return empty string if  user is not logged in', () => {
+    // arrange
+    appGlobalServiceMock.getSessionData.mockResolvedValue('SOME_VALUE');
+    // act
+    contentRatingAlertComponent.getUserId();
+    // assert
+    expect(contentRatingAlertComponent.userId = 'SOME_VALUE');
+  });
+  it('#getUserId should return User_token string if  user is logged in', () => {
+    // arrange
+    appGlobalServiceMock.getSessionData.mockResolvedValue('');
+    // act
+    contentRatingAlertComponent.getUserId();
+    // assert
+    expect(contentRatingAlertComponent.userId = '');
+  });
+  it('should dismiss the popup on cancel()', () => {
+    // arrange
+    viewControllerMock.dismiss();
+    // act
+    contentRatingAlertComponent.cancel();
+    // assert
+    expect(contentRatingAlertComponent.showCommentBox).toBeFalsy();
+    expect(contentRatingAlertComponent.cancel).toBeTruthy();
+  });
+  it('should call showMessage with a message', () => {
+    // arrange
+    commonUtilServiceMock.showMessage('SOME_MESSAGE');
+    // act
+    contentRatingAlertComponent.showMessage('SOME_MESSGAE');
 
-// describe('ContentRatingAlertComponent', () => {
-//   let comp: ContentRatingAlertComponent;
-//   let fixture: ComponentFixture<ContentRatingAlertComponent>;
+    // assert
+    expect(contentRatingAlertComponent.showMessage).toBeTruthy();
+  });
+  it('#should call backbuttonFunc to dismiss the popup', () => {
+    // // arrange
+    appGlobalServiceMock.getSessionData.mockReturnValue('');
+    platformMock.registerBackButtonAction.mockReturnValue(jest.fn());
+    contentRatingAlertComponent = new ContentRatingAlertComponent(navParamsMock as any, viewControllerMock as any,
+      platformMock as any, translateServiceMock as any, toastControllerMock as any, zoneMock as any,
+      contentServiceMock as any, telemetryServiceMock as any, appGlobalServiceMock as any, commonUtilServiceMock as any);
 
-//   beforeEach(() => {
-//     const viewControllerStub = {
-//       dismiss: () => ({})
-//     };
-//     const FrameworkServiceStub = {};
-//     TestBed.configureTestingModule({
-//       imports: [TranslateModule.forRoot()],
-//       declarations: [ContentRatingAlertComponent],
-//       schemas: [NO_ERRORS_SCHEMA],
-//       providers: [
-//         ServiceProvider,
-//         TelemetryGeneratorService, ContentService,
-//         { provide: NavParams, useClass: NavParamsMock },
-//         { provide: ViewController, useValue: viewControllerStub },
-//         { provide: Platform, useClass: PlatformMock },
-//         {
-//           provide: ToastController,
-//           useFactory: () => ToastControllerMockNew.instance()
-//         },
-//         { provide: TelemetryService, useClass: TelemetryServiceMock },
-//         { provide: TranslateService, useClass: TranslateServiceStub },
-//         { provide: AppGlobalService, useClass: AppGlobalServiceMock },
-//         { provide: Events, useClass: EventsMock },
-//         { provide: AuthService, useClass: AuthServiceMock },
-//         { provide: ProfileService, useClass: ProfileServiceMock },
-//         { provide: SharedPreferences, useClass: SharedPreferencesMock },
-//         {
-//           provide: PopoverController,
-//           useFactory: () => PopoverControllerMock.instance()
-//         },
-//         { provide: BuildParamService, useClass: BuildParamaServiceMock },
-//         { provide: FrameworkService, useValue: FrameworkServiceStub }
-//       ]
-//     });
-//     const ViewControllerMock = TestBed.get(ViewController);
-//     const platformStub = TestBed.get(Platform);
-//     spyOn(ViewControllerMock, 'dismiss');
-//     spyOn(platformStub, 'registerBackButtonAction');
-//     spyOn(ContentRatingAlertComponent.prototype, 'getUserId');
-//     // spyOn(ViewControllerMock,'backButtonfunc');
+    // // act
+    platformMock.registerBackButtonAction.mock.calls[0][0].call(contentRatingAlertComponent);
 
-//     fixture = TestBed.createComponent(ContentRatingAlertComponent);
-//     comp = fixture.componentInstance;
-//   });
-//   it('can load instance', () => {
-//     expect(comp).toBeTruthy();
-//   });
+    // // assert
+    expect(viewControllerMock.dismiss).toHaveBeenCalled();
+    expect(contentRatingAlertComponent.backButtonFunc).toHaveBeenCalled();
+  });
+  it('should call the submit method to make expected calls', () => {
+    // arrange
+    contentRatingAlertComponent.content = { identifier: 'CONTENT_ID', versionKey: 'SAMPLE_VERSION_KEY' };
+    contentRatingAlertComponent.ratingCount = 121;
+    contentRatingAlertComponent.comment = 'SAMPLE_COMMENT';
+    navParamsMock.get.mockImplementation((arg: string) => {
+      switch (arg) {
+        case 'content': {
+          return {
+            identifier: 'SOME_IDENTIFIER'
+          };
+        }
+        case 'popupType': {
+          return { popupType: 'POPUP_TYPE' };
+        }
+        case 'comment': {
+          return { comment: 'SOME_COMMENT' };
+        }
+        case 'userRating': {
+          return { userRating: 121 };
+        }
+      }
+    });
 
-//   it('#ionViewDidLoad should be call', () => {
-//     const navParamsStub: NavParams = fixture.debugElement.injector.get(
-//       NavParams
-//     );
-//     spyOn(navParamsStub, 'get');
-//     comp.ionViewDidLoad();
-//     expect(navParamsStub.get).toHaveBeenCalled();
-//   });
+    // act
+    contentRatingAlertComponent.showMessage('SOME_MESSAGE');
+    (contentServiceMock.sendFeedback as any).mockResolvedValue(Promise.resolve({
+      'contentId': 'CONTENT_ID',
+      'rating': 121,
+      'comments': 'SAMPLE_COMMENT',
+      'contentVersion': 'SAMPLE_VERSION_KEY'
+    }));
+    contentRatingAlertComponent.submit();
 
-//   it('#ionViewWillEnter should be impression', () => {
-//     const telemetryServiceStub: TelemetryService = fixture.debugElement.injector.get(
-//       TelemetryService
-//     );
-//     spyOn(telemetryServiceStub, 'impression');
-//     spyOn(telemetryServiceStub, 'log');
-//     comp.ionViewWillEnter();
-//     expect(telemetryServiceStub.impression).toHaveBeenCalled();
-//     expect(telemetryServiceStub.log).toHaveBeenCalled();
-//   });
+    // assert
+    expect(commonUtilServiceMock.showToast).toBeTruthy();
+    expect(viewControllerMock.dismiss).toHaveBeenCalled();
+    expect(contentServiceMock.sendFeedback).toHaveBeenCalled();
 
-//   it('#getUserId should return empty string if  user is not logged in', () => {
-//     const appGlobalServiceStub = TestBed.get(AppGlobalService);
-//     spyOn(appGlobalServiceStub, 'getSessionData');
-//     (<jasmine.Spy>comp.getUserId).and.callThrough();
-//     comp.getUserId();
-//     expect(appGlobalServiceStub.getSessionData).toHaveBeenCalled();
-//   });
+  });
+  it('should call the submit method not to make expected calls', () => {
+    // arrange
+    contentRatingAlertComponent.content = { identifier: 'CONTENT_ID', versionKey: 'SAMPLE_VERSION_KEY' };
+    contentRatingAlertComponent.ratingCount = 121;
+    contentRatingAlertComponent.comment = 'SAMPLE_COMMENT';
 
-//   it('#submit makes expected calls', () => {
-//     comp.content.identifier = 'sample_content_id';
-//     comp.ratingCount = 121;
-//     comp.comment = 'sample_comment';
-//     comp.content.versionKey = 'sample_version_key';
+    // act
+    contentRatingAlertComponent.showMessage('SOME_MESSAGE');
+    (contentServiceMock.sendFeedback as any).mockResolvedValue(Promise.reject(
+      'SOME_ERROR_DATA'));
+    contentRatingAlertComponent.submit();
 
-//     const viewControllerStub = TestBed.get(ViewController);
-//     const contentServiceStub = TestBed.get(ContentService);
-//     const telemetryServiceStub = TestBed.get(TelemetryService);
-//     spyOn(comp, 'showMessage');
-//     spyOn(comp, 'translateLangConst');
-//     spyOn(contentServiceStub, 'sendFeedback').and.callFake((option, success, error) => {
-//       return success();
-//     });
-//     // spyOn(viewControllerStub, "dismiss").and.callFake(success => {
-//     //   return success("sample");
-//     // });
-//     spyOn(telemetryServiceStub, 'interact');
-//     comp.submit();
+    // assert
+    expect(commonUtilServiceMock.showToast).toBeTruthy();
+    expect(viewControllerMock.dismiss).toHaveBeenCalled();
+    expect(contentServiceMock.sendFeedback).toHaveBeenCalled();
 
-//     expect(comp.showMessage).toHaveBeenCalled();
-//     expect(comp.translateLangConst).toHaveBeenCalled();
-//     expect(viewControllerStub.dismiss).toHaveBeenCalled();
-//     expect(contentServiceStub.sendFeedback).toHaveBeenCalled();
-//     expect(telemetryServiceStub.interact).toHaveBeenCalled();
-//   });
+  });
+  it('should make the expected call after calling the ngZone run', () => {
+    // arrange
+    navParamsMock.get.mockImplementation((arg: string) => {
+      switch (arg) {
+        case 'content': {
+          return {
+            identifier: 'SOME_IDENTIFIER'
+          };
+        }
+        case 'popupType': {
+          return { popupType: 'POPUP_TYPE' };
+        }
+        case 'comment': {
+          return { comment: 'SOME_COMMENT' };
+        }
+        case 'userRating': {
+          return { userRating: 121 };
+        }
+      }
+    });
+    contentRatingAlertComponent = new ContentRatingAlertComponent(navParamsMock as any, viewControllerMock as any,
+      platformMock as any, translateServiceMock as any, toastControllerMock as any, zoneMock as any,
+      contentServiceMock as any, telemetryServiceMock as any, appGlobalServiceMock as any, commonUtilServiceMock as any);
 
-//   it('#submit makes expected calls', () => {
-//     comp.content.identifier = 'sample_content_id';
-//     comp.ratingCount = 121;
-//     comp.comment = 'sample_comment';
-//     comp.content.versionKey = 'sample_version_key';
 
-//     const viewControllerStub = TestBed.get(ViewController);
-//     const contentServiceStub = TestBed.get(ContentService);
-//     const telemetryServiceStub = TestBed.get(TelemetryService);
-//     spyOn(comp, 'showMessage');
-//     spyOn(comp, 'translateLangConst');
-//     spyOn(contentServiceStub, 'sendFeedback').and.callFake((option, success, error) => {
-//       return error();
-//     });
-//     // spyOn(viewControllerStub, "dismiss").and.callFake(success => {
-//     //   return success("sample");
-//     // });
-//     spyOn(telemetryServiceStub, 'interact');
-//     comp.submit();
+    // act
+    zoneMock.run.mock.calls[0][0].call(contentRatingAlertComponent);
+    // assert
+    expect(contentRatingAlertComponent.userRating = 121);
+    expect(contentRatingAlertComponent.showCommentBox = true);
 
-//     expect(viewControllerStub.dismiss).toHaveBeenCalled();
-//   });
-
-//   it('#cancel should hide commentbox', () => {
-//     expect(comp.cancel).toBeDefined();
-//     const viewControllerStub = TestBed.get(ViewController);
-//     spyOn(comp, 'cancel').and.callThrough();
-//     comp.cancel();
-//     expect(comp.cancel).toHaveBeenCalled();
-//     expect(comp.showCommentBox).toBe(false);
-//     expect(viewControllerStub.dismiss).toHaveBeenCalled();
-//   });
-//   it('#rateContent should be rating', () => {
-//     expect(comp.rateContent).toBeDefined();
-//     spyOn(comp, 'rateContent').and.callThrough();
-//     comp.rateContent('rateContent');
-//     expect(comp.rateContent).toHaveBeenCalled();
-//     expect(comp.showCommentBox).toBe(true);
-//     // expect(comp.rateContent).toEqual(this.rateContent);
-//   });
-
-//   it('#showMessage should be text', () => {
-//     expect(comp.showMessage).toBeDefined();
-//     const Toast = TestBed.get(ToastController);
-
-//     //   spyOn(Toast, 'getSessionData').and.callFake((arg) => {
-//     //     return Observable.of(JSON.stringify('msg'));
-//     // });
-//     spyOn(comp, 'showMessage').and.callThrough();
-//     // spyOn(ToastControllerStub, 'present').and.callThrough();
-//     comp.showMessage('sample_msg');
-//     expect(comp.showMessage).toHaveBeenCalled();
-//   });
-
-//   it('#translateLangConst should call translateMessage', fakeAsync(() => {
-//     const msg = TestBed.get(TranslateService);
-
-//     const spy = spyOn(msg, 'get').and.callFake(arg => {
-//       return Observable.of('Cancel');
-//     });
-
-//     const translateLangConst = comp.translateLangConst('CANCEL');
-
-//     expect(translateLangConst).toEqual('Cancel');
-//     expect(spy.calls.any()).toEqual(true);
-//   }));
-// });
+  });
+});

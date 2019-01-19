@@ -93,6 +93,8 @@ export class ProfilePage {
   badgesLimit = 2;
   trainingsLimit = 2;
   startLimit = 0;
+  custodianOrgId: string;
+  isCustodianOrgId: boolean;
 
   contentCreatedByMe: any = [];
   orgDetails: {
@@ -138,6 +140,11 @@ export class ProfilePage {
 
     this.events.subscribe('loggedInProfile:update', (framework) => {
       this.updateLocalProfile(framework);
+    });
+
+    this.formAndFrameworkUtilService.getCustodianOrgId().then((orgId: string) => {
+      this.custodianOrgId = orgId;
+    }, err => {
     });
   }
 
@@ -243,6 +250,7 @@ export class ProfilePage {
                 that.formatRoles();
                 that.formatOrgDetails();
                 that.formatUserLocation();
+                that.isCustodianOrgId = (that.profile.rootOrg.rootOrgId === this.custodianOrgId);
                 resolve();
               });
             },
