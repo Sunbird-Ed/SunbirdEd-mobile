@@ -403,6 +403,7 @@ export class CoursesPage implements OnInit {
 
         this.popularAndLatestCourses = newSections;
         this.pageApiLoader = !this.pageApiLoader;
+        this.generateExtraInfoTelemetry(newSections.length);
         this.checkEmptySearchResult();
       });
     }).catch((error: string) => {
@@ -416,6 +417,16 @@ export class CoursesPage implements OnInit {
         }
       });
     });
+  }
+
+  generateExtraInfoTelemetry(sectionsCount) {
+    const values = new Map();
+    values['pageSectionCount'] = sectionsCount;
+    values['networkAvailable'] = this.commonUtilService.networkInfo.isNetworkAvailable ? 'Y' : 'N';
+    this.telemetryGeneratorService.generateExtraInfoTelemetry(
+      values,
+      PageId.COURSES
+    );
   }
 
   applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>, categoryKey?: string) {
