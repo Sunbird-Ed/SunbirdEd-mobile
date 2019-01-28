@@ -9,18 +9,21 @@ import {
     FormRequest,
     FormService,
     Profile,
-    ProfileService
+    ProfileService,
+    SystemSettingRequest
 } from 'sunbird';
 import { AppGlobalService } from '../../service/app-global.service';
 import { AppVersion } from '@ionic-native/app-version';
 import {
     FrameworkConstant,
     FormConstant,
-    PreferenceKey
+    PreferenceKey,
+    FrameworkCategory
 } from '../../app/app.constant';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
 import { Events } from 'ionic-angular';
+
 @Injectable()
 export class FormAndFrameworkUtilService {
 
@@ -235,7 +238,8 @@ export class FormAndFrameworkUtilService {
     getFrameworkDetails(frameworkId: string): Promise<any> {
         return new Promise((resolve, reject) => {
             const req: FrameworkDetailsRequest = {
-                defaultFrameworkDetails: true
+                defaultFrameworkDetails: true,
+                categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
             };
 
             if (frameworkId !== undefined && frameworkId.length) {
@@ -384,7 +388,8 @@ export class FormAndFrameworkUtilService {
                         const request: CategoryRequest = {
                             selectedLanguage: this.translate.currentLang,
                             currentCategory: categoryKey,
-                            frameworkId: profileRes.framework.id ? profileRes.framework.id[0] : undefined
+                            frameworkId: profileRes.framework.id ? profileRes.framework.id[0] : undefined,
+                            categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
                         };
                         this.getCategoryData(request)
                             .then((categoryList) => {
@@ -405,18 +410,18 @@ export class FormAndFrameworkUtilService {
                                 });
                                 if (categoryKeysLen === keysLength) {
                                     this.updateProfileInfo(profile, profileData)
-                                    .then( (response) => {
-                                        resolve(response);
-                                    });
+                                        .then((response) => {
+                                            resolve(response);
+                                        });
                                 }
                             })
                             .catch(err => {
                                 keysLength++;
                                 if (categoryKeysLen === keysLength) {
                                     this.updateProfileInfo(profile, profileData)
-                                    .then( (response) => {
-                                        resolve(response);
-                                    });
+                                        .then((response) => {
+                                            resolve(response);
+                                        });
                                 }
                             });
                     } else {
@@ -466,7 +471,7 @@ export class FormAndFrameworkUtilService {
                             resolve({ status: false });
                         });
                 });
-            });
+        });
     }
 
     formatDate() {
@@ -477,4 +482,36 @@ export class FormAndFrameworkUtilService {
         const date = new Date().toLocaleString('en-us', options);
         return (date.slice(0, 12) + date.slice(13, date.length));
     }
+
+    async getRootOrganizations() {
+        let rootOrganizations ;
+        try {
+            rootOrganizations = this.appGlobalService.getCachedRootOrganizations();
+                // if data not cached
+                if (rootOrganizations === undefined || rootOrganizations.length === 0) {
+                    rootOrganizations = await this.framework.getRootOrganizations();
+                    const organization = rootOrganizations.toString();
+                    rootOrganizations = JSON.parse(JSON.parse(organization).result.orgSearchResult).content;
+                    // cache the data
+                    this.appGlobalService.setRootOrganizations(rootOrganizations);
+                    return rootOrganizations ;
+                 } else {
+                        // return from cache
+                        return rootOrganizations;
+                    }
+            } catch (error) {
+            console.log(error);
+            }
+
+     }
+
+     /**
+      * 
+      */
+     async getCustodianOrgId() {
+        const systemSettingRequest: SystemSettingRequest = {
+            id: this.framework.SYSTEM_SETING_CUSTODIAN_ORG_ID
+        };
+        return await this.framework.getSystemSettingValue(systemSettingRequest);
+      }
 }

@@ -23,6 +23,7 @@
     <div padding-horizontal text-center>
         <ion-spinner *ngIf="isUploading"></ion-spinner>
         <p class="profile-name">{{ profile?.firstName }} {{ profile?.lastName }}</p>
+        <p class="MT0 MB30"><span>{{'USER_ID' | translate}}:</span><span>{{profile?.userName}}</span></p>
     </div>
 
     <div padding-horizontal text-center class="roles-container">
@@ -32,40 +33,73 @@
             </div>
         </div>
         <div class="" text-center>
-            <button ion-button clear *ngIf="rolesLimit < roles?.length" (click)="showMoreItems()" class="txt-lowercase">
+            <button ion-button clear *ngIf="rolesLimit < roles?.length" (click)="showMoreItems()" class="txt-capitalize">
                 + {{roles?.length - 2}} {{'MORE' | translate}} <ion-icon class="ML10" name="ios-arrow-down"></ion-icon>
             </button>
-            <button ion-button clear *ngIf="rolesLimit > DEFAULT_PAGINATION_LIMIT" (click)="showLessItems()" class="txt-lowercase">
+            <button ion-button clear *ngIf="rolesLimit > DEFAULT_PAGINATION_LIMIT" (click)="showLessItems()" class="txt-capitalize">
                 {{'SHOW_LESS' | translate }} <ion-icon class="ML10" name="ios-arrow-up"></ion-icon>
             </button>
         </div>
     </div>
 
     <div class="school-recent" *ngIf="profile?.organisations?.length > 0 ">
-        <p class="bolder">{{profile?.organisations[0].orgName}}</p>
+        <p class="bolder MB5">{{profile?.organisations[0].orgName}}</p>
         <div *ngIf="orgDetails && orgDetails?.block?.name">Block: {{orgDetails?.block?.name}}</div>
         <div *ngIf="orgDetails">
-            <span *ngIf="orgDetails && orgDetails?.district?.name">District: {{orgDetails?.district?.name}} </span>
+            <span *ngIf="orgDetails && orgDetails?.district?.name">District: {{orgDetails?.district?.name}}</span>
             <span *ngIf="orgDetails?.district?.name"> | </span>
             <span *ngIf="orgDetails?.state?.name">{{orgDetails?.state?.name}}</span>
         </div>
     </div>
+   <div class="location text-center" *ngIf="isCustodianOrgId">
+        <div>
+            <span class="bolder">{{'STATE' | translate}}: </span>
+            <span *ngIf="userLocation?.state && userLocation?.state?.name && userLocation?.state?.name?.length">{{userLocation.state.name}}</span>
+            <span *ngIf="!(userLocation?.state && userLocation?.state?.name && userLocation?.state?.name?.length)"class="lighter">{{'ADD_STATE' | translate}}</span>
+        </div>
+        <div>
+            <span class="bolder">{{'DISTRICT' | translate}}: </span>
+            <span *ngIf="userLocation?.district && userLocation?.district?.name && userLocation?.district?.name?.length">{{userLocation.district.name}}</span>
+            <span *ngIf="!(userLocation?.district && userLocation?.district?.name && userLocation?.district?.name?.length)" class="lighter">{{'ADD_DISTRICT' | translate}}</span>
+        </div>
+        <div class="container MT10 MB10">
+            <button ion-button round (click)="navigateToEditPersonalDetails()" class="short-btn custom-round">
+                {{'EDIT' | translate }}
+            </button>
+        </div>
+   </div>
 
     <div class="contacts" *ngIf="profile?.phone || profile?.email ">
         <div *ngIf="profile?.phone">
-            <div class="phone">
+            <div class="phone" (click)="editMobileNumber();">
                 <span class="icon MR10">
                     <ion-icon name="md-call"></ion-icon>
                 </span>
                 <span class="value">+91 {{ profile?.phone }}</span>
             </div>
         </div>
+        <div *ngIf="!profile?.phone">
+            <div class="phone light" (click)="editMobileNumber();">
+                <span class="icon MR10">
+                    <ion-icon name="md-call"></ion-icon>
+                </span>
+                <span class="value">{{'ADD_PHONE' | translate}}</span>
+            </div>
+        </div>
         <div *ngIf="profile?.email">
-            <div class="email">
+            <div class="email " (click)="editEmail();">
                 <span class="icon MR10">
                     <ion-icon name="md-mail"></ion-icon>
                 </span>
                 <span class="value">{{ profile?.email }}</span>
+            </div>
+        </div>
+        <div *ngIf="!profile?.email">
+            <div class="email light" (click)="editEmail();">
+                <span class="icon MR10">
+                    <ion-icon name="md-mail"></ion-icon>
+                </span>
+                <span class="value">{{'ADD_EMAIL' | translate}}</span>
             </div>
         </div>
     </div>

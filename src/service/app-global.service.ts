@@ -1,5 +1,5 @@
 import { NgZone, OnDestroy } from '@angular/core';
-import { ProfileConstants } from './../app/app.constant';
+import { ProfileConstants, FrameworkCategory } from './../app/app.constant';
 
 import { Injectable } from '@angular/core';
 import {
@@ -68,6 +68,11 @@ export class AppGlobalService implements OnDestroy {
     * This property stores the library filter configuration at the app level for a particular app session
     */
     libraryFilterConfig: Array<any> = [];
+
+    /**
+    * This property stores the organization at the app level for a particular app session
+    */
+     rootOrganizations: Array<any>;
 
     guestUserProfile: Profile;
     isGuestUser = false;
@@ -200,6 +205,22 @@ export class AppGlobalService implements OnDestroy {
     */
     getCachedLibraryFilterConfig(): Array<any> {
         return this.libraryFilterConfig;
+    }
+
+    /**
+    * This method stores the rootOrganizations, for a particular session of the app
+    *
+    */
+   setRootOrganizations(rootOrganizations: Array<any>) {
+        this.rootOrganizations = rootOrganizations;
+    }
+
+    /**
+    * This method returns the rootOrganizations cache, for a particular session of the app
+    *
+    */
+    getCachedRootOrganizations(): Array<any> {
+        return this.rootOrganizations;
     }
 
     /**
@@ -384,7 +405,8 @@ export class AppGlobalService implements OnDestroy {
     private getFrameworkDetails(frameworkId: string): Promise<any> {
         return new Promise((resolve, reject) => {
             const req: FrameworkDetailsRequest = {
-                defaultFrameworkDetails: true
+                defaultFrameworkDetails: true,
+                categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
             };
 
             if (frameworkId !== undefined && frameworkId.length) {
