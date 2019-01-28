@@ -35,7 +35,6 @@ export class ViewMoreCardComponent implements OnInit {
    */
   @Input() cardDisabled = false;
 
-
   /**
    * Contains default image path.
    *
