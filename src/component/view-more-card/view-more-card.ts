@@ -35,10 +35,6 @@ export class ViewMoreCardComponent implements OnInit {
    */
   @Input() cardDisabled = false;
 
-  /**
-   * Contains course details
-   */
-  @Input() course: any;
 
   /**
    * Contains default image path.
@@ -106,7 +102,7 @@ export class ViewMoreCardComponent implements OnInit {
   }
 
   checkBatchExpiry() {
-    if (this.course.batch && this.course.batch.status === 2) {
+    if (this.content.batch && this.content.batch.status === 2) {
       this.batchExp = true;
     } else {
       this.batchExp = false;
