@@ -21,7 +21,7 @@
 
   <div *ngIf="searchList && searchList.length">
     <ng-container *ngIf="!localContentsCard">
-      <view-more-card *ngFor="let item of searchList" [content]="item" [type]="pageType" [cardDisabled]="showDisabled(item)"></view-more-card>
+      <view-more-card *ngFor="let item of searchList" [content]="item" [type]="pageType" [cardDisabled]="showDisabled(item)" [course]="item"></view-more-card>
     </ng-container>
 
     <ng-container *ngIf="localContentsCard">

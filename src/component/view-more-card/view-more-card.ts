@@ -36,11 +36,21 @@ export class ViewMoreCardComponent implements OnInit {
   @Input() cardDisabled = false;
 
   /**
+   * Contains course details
+   */
+  @Input() course: any;
+
+  /**
    * Contains default image path.
    *
    * Get used when content / course does not have appIcon or courseLogo
    */
   defaultImg: string;
+
+  /**
+   * checks wheather batch is expired or not
+   */
+  batchExp: Boolean = false;
 
   /**
    * Default method of cass SearchListComponent
@@ -91,6 +101,15 @@ export class ViewMoreCardComponent implements OnInit {
     if (this.type === 'enrolledCourse') {
       this.content.cProgress = this.courseUtilService.getCourseProgress(this.content.leafNodesCount, this.content.progress);
       this.content.cProgress = parseInt(this.content.cProgress, 10);
+    }
+    this.checkBatchExpiry();
+  }
+
+  checkBatchExpiry() {
+    if (this.course.batch && this.course.batch.status === 2) {
+      this.batchExp = true;
+    } else {
+      this.batchExp = false;
     }
   }
 }
