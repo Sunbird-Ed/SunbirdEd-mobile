@@ -140,6 +140,7 @@ export class ProfilePage {
 
     this.events.subscribe('loggedInProfile:update', (framework) => {
       this.updateLocalProfile(framework);
+      this.doRefresh();
     });
 
     this.formAndFrameworkUtilService.getCustodianOrgId().then((orgId: string) => {
