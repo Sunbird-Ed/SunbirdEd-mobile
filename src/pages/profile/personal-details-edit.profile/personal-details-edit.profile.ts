@@ -79,7 +79,7 @@ export class PersonalDetailsEditPage {
    */
   ionViewWillEnter() {
     this.profile = this.navParams.get('profile');
-    this.getStates();
+      this.getStates();
   }
 
   /**
@@ -88,12 +88,24 @@ export class PersonalDetailsEditPage {
 
   initializeForm() {
     let profilename = this.profile.firstName;
+    const userState = [];
+    const userDistrict = [];
     if (this.profile.lastName) {
       profilename  = this.profile.firstName + this.profile.lastName;
     }
+    if (this.profile && this.profile.userLocations && this.profile.userLocations.length ) {
+      for (let i = 0, len = this.profile.userLocations.length; i < len; i++) {
+        if (this.profile.userLocations[i].type === 'state') {
+          userState.push(this.profile.userLocations[i].id);
+          this.getDistrict(this.profile.userLocations[i].id);
+        } else {
+          userDistrict.push(this.profile.userLocations[i].id);
+        }
+      }
+    }
     this.profileEditForm = this.fb.group({
-      states: [],
-      districts: [],
+      states: userState || [],
+      districts: userDistrict || [],
       name: new FormControl(profilename)
     });
     console.log('profileeditform', this.profileEditForm);
