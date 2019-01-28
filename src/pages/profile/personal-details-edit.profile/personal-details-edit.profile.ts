@@ -12,14 +12,19 @@ import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
 import { Events } from 'ionic-angular';
 
-import {
-  initTabs,
-  LOGIN_TEACHER_TABS,
-  Location
-} from '@app/app';
+// import {
+//   initTabs,
+//   LOGIN_TEACHER_TABS,
+//   Location
+// } from '@app/app';
 import { Select } from 'ionic-angular';
 import { constants } from 'os';
-
+const LOGIN_TEACHER_TABS = [{} as any, {} as any, {} as any];
+const initTabs = [{} as any, {} as any];
+class Location {
+  public static readonly TYPE_STATE = 'state';
+  public static readonly TYPE_DISTRICT = 'district';
+}
 @Component({
   selector: 'personal-details-edit',
   templateUrl: 'personal-details-edit.profile.html',
@@ -96,7 +101,6 @@ export class PersonalDetailsEditPage {
       districts: [],
       name: new FormControl(profilename)
     });
-    console.log('profileeditform', this.profileEditForm);
     this.enableSubmitButton();
   }
 
@@ -107,6 +111,7 @@ export class PersonalDetailsEditPage {
     };
     this.userProfileService.searchLocation(req).then((response: any) => {
       response = JSON.parse(response);
+
       const locations = JSON.parse(response.result.locationList);
       if (locations && locations.length) {
           this.stateList = locations;
@@ -147,7 +152,7 @@ export class PersonalDetailsEditPage {
     if (!formVal.name.length) {
         this.showErrorToastMessage('NAME');
     } else {
-      this.submitForm(formVal);
+      this.submitForm();
     }
   }
 
@@ -176,7 +181,7 @@ export class PersonalDetailsEditPage {
    * @param {object} formVal Object of Form values
    */
 
-  submitForm(formVal) {
+  submitForm() {
     this.loader.present();
     const req = {
       userId: this.profile.userId,
