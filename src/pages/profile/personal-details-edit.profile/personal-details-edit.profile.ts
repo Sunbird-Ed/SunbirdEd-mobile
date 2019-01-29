@@ -12,19 +12,13 @@ import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
 import { Events } from 'ionic-angular';
 
-// import {
-//   initTabs,
-//   LOGIN_TEACHER_TABS,
-//   Location
-// } from '@app/app';
+import {
+  initTabs,
+  LOGIN_TEACHER_TABS,
+  Location
+} from '@app/app';
 import { Select } from 'ionic-angular';
 import { constants } from 'os';
-const LOGIN_TEACHER_TABS = [{} as any, {} as any, {} as any];
-const initTabs = [{} as any, {} as any];
-class Location {
-  public static readonly TYPE_STATE = 'state';
-  public static readonly TYPE_DISTRICT = 'district';
-}
 @Component({
   selector: 'personal-details-edit',
   templateUrl: 'personal-details-edit.profile.html',
@@ -32,12 +26,6 @@ class Location {
 export class PersonalDetailsEditPage {
   @ViewChild('stateSelect') stateSelect: Select;
   @ViewChild('districtSelectg') districtSelectg: Select;
-
-  // syllabusList = [];
-  // boardList = [];
-  // subjectList = [];
-  // gradeList = [];
-  // mediumList = [];
   stateList = [];
   districtList = [];
 
