@@ -49,9 +49,27 @@ edit-contact-details-popup {
         opacity: 0.4 !important;
     }
 
-    custom-input {
+    .P16 {
+        padding: 16px !important;
+    }
+
+    .merged-input-container {
         border: 1px solid #4a90e2;
-        padding: 5px;
+        display: flex;
+        flex: 1 1 auto;
         border-radius: 4px;
+        .decorator {
+            display: inline-block;
+            max-width: 45px;
+        }
+        .custom{
+            display: inline-block
+        }
     }
 }
+
+.MT10 {
+    margin-top: 10px;
+}
+
+

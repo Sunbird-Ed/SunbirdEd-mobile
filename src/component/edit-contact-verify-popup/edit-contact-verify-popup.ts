@@ -4,6 +4,7 @@ import {
   UserProfileService, UpdateUserInfoRequest, UserExistRequest, GenerateOTPRequest, VerifyOTPRequest
 } from 'sunbird';
 import { ProfileConstants } from '@app/app';
+import { CommonUtilService } from '@app/service';
 
 @Component({
   selector: 'edit-contact-verify-popup',
@@ -23,7 +24,8 @@ export class EditContactVerifyPopupComponent {
   enableResend = true;
 
   constructor(private navParams: NavParams, public viewCtrl: ViewController, public platform: Platform,
-    private userProfileService: UserProfileService, private loadingCtrl: LoadingController) {
+    private userProfileService: UserProfileService, private loadingCtrl: LoadingController,
+    private commonUtilService: CommonUtilService) {
     this.key = this.navParams.get('key');
     this.title = this.navParams.get('title');
     this.description = this.navParams.get('description');
@@ -36,61 +38,65 @@ export class EditContactVerifyPopupComponent {
   }
 
 
-  verify(edited: boolean = false) {
-    let req: VerifyOTPRequest;
-    if (this.type === ProfileConstants.CONTACT_TYPE_PHONE) {
-      req = {
-        key: this.key,
-        type: ProfileConstants.CONTACT_TYPE_PHONE,
-        otp: this.otp
-      };
+  verify() {
+    if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+      let req: VerifyOTPRequest;
+      if (this.type === ProfileConstants.CONTACT_TYPE_PHONE) {
+        req = {
+          key: this.key,
+          type: ProfileConstants.CONTACT_TYPE_PHONE,
+          otp: this.otp
+        };
+      } else {
+        req = {
+          key: this.key,
+          type: ProfileConstants.CONTACT_TYPE_EMAIL,
+          otp: this.otp
+        };
+      }
+      this.userProfileService.verifyOTP(req)
+        .then(res => {
+          this.viewCtrl.dismiss(true, this.key);
+        })
+        .catch(err => {
+          err = JSON.parse(err);
+          if (err.error === 'ERROR_INVALID_OTP') {
+            this.invalidOtp = true;
+          }
+        });
     } else {
-      req = {
-        key: this.key,
-        type: ProfileConstants.CONTACT_TYPE_EMAIL,
-        otp: this.otp
-      };
+      this.commonUtilService.showToast('INTERNET_CONNECTIVITY_NEEDED');
     }
-    this.userProfileService.verifyOTP(req)
-      .then(res => {
-        console.log('------success response----------', res);
-        this.viewCtrl.dismiss(edited, this.key);
-      })
-      .catch(err => {
-        err = JSON.parse(err);
-        console.log('------Error response----------', err);
-        if (err.error === 'ERROR_INVALID_OTP') {
-          this.invalidOtp = true;
-        }
-      });
   }
 
-  resendOTP(edited: boolean = false) {
-    this.enableResend = !this.enableResend;
-    let req: GenerateOTPRequest;
-    if (this.type === ProfileConstants.CONTACT_TYPE_PHONE) {
-      req = {
-        key: this.key,
-        type: ProfileConstants.CONTACT_TYPE_PHONE
-      };
+  resendOTP() {
+    if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+      this.enableResend = !this.enableResend;
+      let req: GenerateOTPRequest;
+      if (this.type === ProfileConstants.CONTACT_TYPE_PHONE) {
+        req = {
+          key: this.key,
+          type: ProfileConstants.CONTACT_TYPE_PHONE
+        };
+      } else {
+        req = {
+          key: this.key,
+          type: ProfileConstants.CONTACT_TYPE_EMAIL
+        };
+      }
+      const loader = this.getLoader();
+      loader.present();
+      this.userProfileService.generateOTP(req)
+        .then((res: any) => {
+          res = JSON.parse(res);
+          loader.dismiss();
+        })
+        .catch(err => {
+          loader.dismiss();
+        });
     } else {
-      req = {
-        key: this.key,
-        type: ProfileConstants.CONTACT_TYPE_EMAIL
-      };
+        this.commonUtilService.showToast('INTERNET_CONNECTIVITY_NEEDED');
     }
-    const loader = this.getLoader();
-    loader.present();
-    this.userProfileService.generateOTP(req)
-      .then((res: any) => {
-        res = JSON.parse(res);
-        loader.dismiss();
-        console.log('------re-generateOTP success response----------', res);
-      })
-      .catch(err => {
-        loader.dismiss();
-        console.log('------re-generateOTP Error response----------', err);
-      });
   }
 
   getLoader(): any {

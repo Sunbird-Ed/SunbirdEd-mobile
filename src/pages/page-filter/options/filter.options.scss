@@ -21,7 +21,8 @@ page-filter-options {
   }
   .scroll-list {
     overflow-y: scroll;
-    max-height: 50vh !important; //padding-bottom: 10vh !important;
+    max-height: 60vh !important; 
+    // padding-bottom: 10vh !important;
   }
   .item-md {
     font-size: 1.3rem !important;
@@ -30,8 +31,9 @@ page-filter-options {
 
   ion-footer {
     background: #FFF;
+    position: fixed;
+    bottom: 0;
  }
-
 }
 
 .resource-filter-options .popover-content {
@@ -56,4 +58,28 @@ page-filter-options {
 .resource-filter-options ion-backdrop {
   background-color: map-get($colors, black) !important;
   opacity: 0.4 !important;
+}
+.text-unselected{
+  padding-left: 20%;
+  color : black;
+  margin-bottom: 5px;
+  margin-top: 2px;
+}
+.text-selected{
+  padding-left: 20%;
+  color : blue; 
+  margin-bottom: 5px;
+  margin-top: 2px;
+}
+.pull-left{
+ float: left;
+}
+.pull-right{
+  float: right;
+}
+.icon-margin{
+  margin:0 10px !important;
+}
+.div-space .item-inner .input-wrapper .label-md {
+  @include margin(5px 8px 5px 0 !important);
 }

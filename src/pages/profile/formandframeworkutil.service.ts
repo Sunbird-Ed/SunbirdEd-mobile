@@ -9,7 +9,8 @@ import {
     FormRequest,
     FormService,
     Profile,
-    ProfileService
+    ProfileService,
+    SystemSettingRequest
 } from 'sunbird';
 import { AppGlobalService } from '../../service/app-global.service';
 import { AppVersion } from '@ionic-native/app-version';
@@ -481,4 +482,36 @@ export class FormAndFrameworkUtilService {
         const date = new Date().toLocaleString('en-us', options);
         return (date.slice(0, 12) + date.slice(13, date.length));
     }
+
+    async getRootOrganizations() {
+        let rootOrganizations ;
+        try {
+            rootOrganizations = this.appGlobalService.getCachedRootOrganizations();
+                // if data not cached
+                if (rootOrganizations === undefined || rootOrganizations.length === 0) {
+                    rootOrganizations = await this.framework.getRootOrganizations();
+                    const organization = rootOrganizations.toString();
+                    rootOrganizations = JSON.parse(JSON.parse(organization).result.orgSearchResult).content;
+                    // cache the data
+                    this.appGlobalService.setRootOrganizations(rootOrganizations);
+                    return rootOrganizations ;
+                 } else {
+                        // return from cache
+                        return rootOrganizations;
+                    }
+            } catch (error) {
+            console.log(error);
+            }
+
+     }
+
+     /**
+      * 
+      */
+     async getCustodianOrgId() {
+        const systemSettingRequest: SystemSettingRequest = {
+            id: this.framework.SYSTEM_SETING_CUSTODIAN_ORG_ID
+        };
+        return await this.framework.getSystemSettingValue(systemSettingRequest);
+      }
 }

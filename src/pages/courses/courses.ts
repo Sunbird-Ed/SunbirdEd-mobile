@@ -548,7 +548,6 @@ export class CoursesPage implements OnInit {
           criteria.filters = filter;
           that.courseFilter = appliedFilter;
           that.appliedFilter = filter;
-
           let filterApplied = false;
 
           that.isFilterApplied = false;

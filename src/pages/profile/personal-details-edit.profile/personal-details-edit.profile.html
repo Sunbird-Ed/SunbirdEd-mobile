@@ -7,7 +7,7 @@
 <ion-content padding-vertical>
   <form [formGroup]="profileEditForm">
     <ion-item>
-      <ion-label stacked class="label-font">{{'NAME' | translate}}<span ion-text color="danger">&nbsp;*</span></ion-label>
+      <ion-label stacked class="label-font">{{'NAME' | translate}}<span ion-text>&nbsp;*</span></ion-label>
       <ion-input class="form-control" #name formControlName="name" placeholder="{{ 'NAME_HINT' | translate }}" (ionChange)="enableSubmitButton();"></ion-input>
     </ion-item>
     <ion-item>
@@ -19,8 +19,8 @@
     </ion-item>
     <ion-item>
       <ion-label stacked class="label-font">{{'DISTRICT' | translate}}</ion-label>
-      <ion-select formControlName="districts" #districtSelect multiple="false" [selectOptions]="districtOptions" placeholder="{{'DISTRICT_OPTION_TEXT' | translate}}"
-        okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}" (ionChange)="test(districtSelect.value);">
+      <ion-select formControlName="districts" #districtSelect multiple="false" [disabled]="!profileEditForm.value.states" [selectOptions]="districtOptions" placeholder="{{'DISTRICT_OPTION_TEXT' | translate}}"
+        okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}">
         <ion-option *ngFor="let district of districtList" value="{{district?.id}}">{{district?.name}}</ion-option>
       </ion-select>
     </ion-item>
@@ -29,7 +29,7 @@
 
 <ion-footer>
   <ion-row class="padding-12">
-    <ion-col col-md-10 offset-md-1>
+  <ion-col col-md-10 offset-md-1>
       <button ion-button block [ngStyle]="{'background-color': btnColor}" [disabled]="profileEditForm.invalid" (click)="onSubmit()">{{'SAVE' | translate}}</button>
     </ion-col>
   </ion-row>

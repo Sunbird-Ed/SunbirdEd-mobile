@@ -1,45 +1,57 @@
-<ion-content>
-  <!-- <h5 class="font-weight-700 padding-left-custom">{{'DOWNLOAD_ALL' | translate}}
-    <button class="close-button" ion-button icon-only float-end outline (click)="selectOption(false)"><ion-icon class="icon-size" name="close"></ion-icon></button>
-  </h5> -->
+<ion-content class="P0">
   <ion-spinner *ngIf="loader" padding></ion-spinner>
-  <ion-grid class="P0">
-    <ion-row>
-      <ion-col col-12 no-padding class="text-center">
-        <p class="f18 padding-left-5">{{title}}</p>
-        <p class="font-weight-bold f14">{{description}}</p>
-      </ion-col>
-      <section *ngIf="type== 'phone'" class="W100">
+
+  <ion-grid class="P16">
+    <form [formGroup]="personEditForm">
+      <ion-row>
         <ion-col col-12 no-padding class="text-center">
-          <b>Enter 10 digit mobile number</b>
+          <p>{{title}}</p>
+          <p class="font-weight-bold f14">{{description}}</p>
         </ion-col>
-        <ion-col col-12 no-padding class="text-center" *ngIf="err">
-          <p class="error">Phone number already exists, please enter another phone number</p>
-        </ion-col>
-        <ion-col col-12 no-padding class="text-center">
-          <ion-input type="tel" placeholder="Phone Number" class="form-control" [(ngModel)]="phone"></ion-input>
-        </ion-col>
-      </section>
-      <section *ngIf="type== 'email'" class="W100">
-        <ion-col col-12 no-padding class="text-center">
-          <b>Enter your Email ID</b>
-        </ion-col>
-        <ion-col col-12 no-padding class="text-center" >
-          <p class="danger">Enter a valid Email ID</p>
-        </ion-col>
-        <ion-col col-12 no-padding class="text-center">
-          <ion-input type="text" placeholder="Enter Email ID" class="form-control" [(ngModel)]="email" ></ion-input>
-        </ion-col>
-      </section>
-      
-    </ion-row>
+        <section *ngIf="type==='phone'" class="W100 text-center">
+          <ion-col col-12 no-padding class="text-center">
+            <b>{{'ENTER_PHONE' | translate}}</b>
+          </ion-col>
+          <ion-col col-12 no-padding class="text-center" *ngIf="err">
+            <p class="error">{{'ERROR_PHONE_EXISTS' | translate}}</p>
+          </ion-col>
+          <ion-col col-12 no-padding class="text-center" *ngIf="!personEditForm.controls.phone.valid && personEditForm.controls.phone.dirty">
+              <p class="error">{{'ERROR_PHONE_INVALID' | translate}}</p>
+            </ion-col>
+          <ion-col col-12 no-padding class="text-center">
+            <div class="W100 merged-input-container MT10" >
+              <ion-input type="tel" placeholder="+91" class="form-control decorator " value="+91" disabled></ion-input>
+              <ion-input type="tel" placeholder="{{'PHONE_PLACEHOLDER' | translate }}" maxlength="10" minlength="10" required class="form-control custom"
+              formControlName="phone" [(ngModel)]="phone"></ion-input>
+            </div>
+          </ion-col>
+
+        </section>
+        <section *ngIf="type==='email'" class="W100 text-center">
+          <ion-col col-12 no-padding class="text-center">
+            <b>{{'ENTER_EMAIL' | translate}}</b>
+          </ion-col>
+          <ion-col col-12 no-padding class="text-center" *ngIf="!personEditForm.controls.email.valid && personEditForm.controls.email.dirty">
+            <p class="error">{{'ERROR_EMAIL_INVALID' | translate}}</p>
+          </ion-col>
+          <ion-col col-12 no-padding class="text-center" *ngIf="err">
+              <p class="error">{{'ERROR_EMAIL_EXISTS' | translate}}</p>
+            </ion-col>
+          <ion-col col-12 no-padding class="text-center">
+            <ion-input type="text" placeholder="{{'EMAIL_PLACEHOLDER' | translate}}" class="form-control custom" 
+            formControlName="email" [(ngModel)]="email"></ion-input>
+            </ion-col>
+        </section>
+
+      </ion-row>
+    </form>
   </ion-grid>
   <ion-row>
     <ion-col padding>
-      <button  ion-button block outline (click)="cancel()">{{ 'CANCEL' | translate }} </button>
+      <button ion-button block outline (click)="cancel()">{{ 'CANCEL' | translate }} </button>
     </ion-col>
     <ion-col padding>
-      <button  ion-button block (click)="validate(true)">{{ 'SUBMIT' | translate }} </button>
+      <button ion-button block (click)="validate()">{{ 'SUBMIT' | translate }} </button>
     </ion-col>
   </ion-row>
 </ion-content>
