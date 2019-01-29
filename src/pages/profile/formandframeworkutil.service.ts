@@ -504,9 +504,29 @@ export class FormAndFrameworkUtilService {
             }
 
      }
+     async getCourseFrameworkId() {
+        let courseFrameworkId ;
+        try {
+            courseFrameworkId = this.appGlobalService.getCachedCourseFrameworkId();
+                // if data not cached
+                if (courseFrameworkId === undefined || courseFrameworkId.length === 0) {
+                    courseFrameworkId = await this.framework.getCourseFrameworkId();
+                    console.log('COURSE FrameWork Id', courseFrameworkId);
+                    // cache the data
+                    this.appGlobalService.setCourseFrameworkId(courseFrameworkId);
+                    return courseFrameworkId ;
+                 } else {
+                        // return from cache
+                        return courseFrameworkId;
+                    }
+            } catch (error) {
+            console.log(error);
+            }
+
+     }
 
      /**
-      * 
+      *
       */
      async getCustodianOrgId() {
         const systemSettingRequest: SystemSettingRequest = {
