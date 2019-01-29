@@ -85,6 +85,7 @@ export class UserAndGroupsPage {
   lastCreatedProfileData: any;
 
   selectedUsername: string ;
+  isCurUserSelected: boolean;
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -371,7 +372,8 @@ export class UserAndGroupsPage {
     });
   }
 
-  selectUser(index: number, name?: string) {
+  selectUser(index: number,  uid?: string, name?: string) {
+    this.isCurUserSelected = this.appGlobalService.getCurrentUser().uid === uid;
     this.zone.run(() => {
       this.selectedUserIndex = (this.selectedUserIndex === index) ? -1 : index;
     });
