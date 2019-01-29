@@ -19,7 +19,6 @@ import {
 } from '@app/app';
 import { Select } from 'ionic-angular';
 import { constants } from 'os';
-
 @Component({
   selector: 'personal-details-edit',
   templateUrl: 'personal-details-edit.profile.html',
@@ -27,12 +26,6 @@ import { constants } from 'os';
 export class PersonalDetailsEditPage {
   @ViewChild('stateSelect') stateSelect: Select;
   @ViewChild('districtSelectg') districtSelectg: Select;
-
-  // syllabusList = [];
-  // boardList = [];
-  // subjectList = [];
-  // gradeList = [];
-  // mediumList = [];
   stateList = [];
   districtList = [];
 
@@ -108,7 +101,6 @@ export class PersonalDetailsEditPage {
       districts: userDistrict || [],
       name: new FormControl(profilename)
     });
-    console.log('profileeditform', this.profileEditForm);
     this.enableSubmitButton();
   }
 
@@ -119,6 +111,7 @@ export class PersonalDetailsEditPage {
     };
     this.userProfileService.searchLocation(req).then((response: any) => {
       response = JSON.parse(response);
+
       const locations = JSON.parse(response.result.locationList);
       if (locations && locations.length) {
           this.stateList = locations;
@@ -159,7 +152,7 @@ export class PersonalDetailsEditPage {
     if (!formVal.name.length) {
         this.showErrorToastMessage('NAME');
     } else {
-      this.submitForm(formVal);
+      this.submitForm();
     }
   }
 
@@ -188,7 +181,7 @@ export class PersonalDetailsEditPage {
    * @param {object} formVal Object of Form values
    */
 
-  submitForm(formVal) {
+  submitForm() {
     this.loader.present();
     const req = {
       userId: this.profile.userId,
