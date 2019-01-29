@@ -139,4 +139,13 @@ view-more-card {
     .grid-disabled {
         opacity: 0.5;
     }
+
+    .blurbackground {
+        .progress-inner-primary {
+          background-color: gray !important;
+        }
+      .progress-inner-secondary {
+          background-color: gray !important;
+        }
+      }
 }
