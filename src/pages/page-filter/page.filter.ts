@@ -93,7 +93,8 @@ export class PageFilter {
   async initFilterValues() {
     this.filters = this.navParams.get('filter');
     this.pageId = this.navParams.get('pageId');
-
+    const loader = this.commonUtilService.getLoader();
+    loader.present();
     if (this.pageId === PageId.COURSES) {
       this.pageId = PageId.COURSE_PAGE_FILTER;
       this.categories = FrameworkCategory.COURSE_FRAMEWORK_CATEGORIES;
@@ -140,7 +141,7 @@ export class PageFilter {
     let frameworkId ;
 
     if (this.pageId === PageId.COURSE_PAGE_FILTER) {
-      frameworkId = await this.getCourseFrameworkId();
+      frameworkId = await this.frameworkUtilService.getCourseFrameworkId();
     } else {
       frameworkId = (syllabus && syllabus.length > 0) ? syllabus[0] : undefined;
     }
@@ -159,6 +160,7 @@ export class PageFilter {
       // Framework API doesn't return domain and content Type exclude them
       if (index === this.filters.length - 1) {
         this.facetsFilter = this.filters;
+        loader.dismiss();
       }
       index++;
     }
@@ -248,26 +250,12 @@ export class PageFilter {
   }
 
   getRootOrganizations(index) {
-    const loader = this.commonUtilService.getLoader();
-    loader.present();
     this.frameworkUtilService.getRootOrganizations()
       .then(res => {
         this.filters[index].values = res;
-        loader.dismiss();
       })
       .catch(error => {
         console.log(error, 'index', index);
-      });
-  }
-
-  getCourseFrameworkId() {
-    return this.frameworkUtilService.getCourseFrameworkId()
-      .then(res => {
-        return res;
-      })
-      .catch(error => {
-        console.log(error);
-        return error;
       });
   }
 }
