@@ -147,7 +147,7 @@ export class PageFilter {
     let index = 0;
     for (const element of this.filters) {
       try {
-        if (!element.frameworkCategory && frameworkId === 'TPD') {
+        if (!element.frameworkCategory && this.pageId === PageId.COURSE_PAGE_FILTER) {
           await this.getRootOrganizations(index);
         } else {
           await this.getFrameworkData(frameworkId, element.code, index);
@@ -184,7 +184,7 @@ export class PageFilter {
 
           const responseArray = category.terms;
           if (responseArray && responseArray.length > 0) {
-            if (req.currentCategory === 'topic' && req.frameworkId === 'TPD') {
+            if (req.currentCategory === 'topic' && this.pageId === PageId.COURSE_PAGE_FILTER) {
               // this.filters[index].values = _.map(responseArray, 'name');
               for (let i = 0; i < responseArray.length; i++) {
                 const name = responseArray[i].name;
@@ -243,7 +243,7 @@ export class PageFilter {
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.CANCEL,
       Environment.HOME,
-      PageId.LIBRARY_PAGE_FILTER);
+      this.pageId);
     this.viewCtrl.dismiss();
   }
 
