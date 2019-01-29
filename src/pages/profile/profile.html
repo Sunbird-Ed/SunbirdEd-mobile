@@ -131,9 +131,9 @@
     <div class="badges" padding-horizontal text-center *ngIf="profile?.badgeAssertions?.length > 0">
         <p class="bolder f16">{{'MY_BADGES' | translate }} ({{profile?.badgeAssertions?.length}})&lrm;</p>
         <ion-avatar item-center="" *ngFor="let batch of profile.badgeAssertions | slice : startLimit:badgesLimit;">
-            <!-- <img height="80px" width="auto" src="{{batch.badgeClassImage}}"> -->
-            <img-loader  spinner="true"  width="auto" margin="auto" height="80px" src="{{batch.badgeClassImage}}" fallback="./assets/imgs/ic_launcher.png"
-          fallbackAsPlaceholder="false" style="margin-left : 37%;"></img-loader>
+             <img height="80px" width="auto" src="{{batch.badgeClassImage}}">
+           <!--  <img-loader  spinner="true"  width="auto" margin="auto" height="80px" src="{{batch.badgeClassImage}}" fallback="./assets/imgs/ic_launcher.png"
+          fallbackAsPlaceholder="false" style="margin-left : 37%;"></img-loader> -->
         </ion-avatar>
         <div class="" text-center>
             <button ion-button round *ngIf="badgesLimit < profile?.badgeAssertions?.length" (click)="showMoreBadges()"
