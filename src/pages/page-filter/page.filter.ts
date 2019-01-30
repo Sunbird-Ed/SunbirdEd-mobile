@@ -153,7 +153,6 @@ export class PageFilter {
         } else {
           await this.getFrameworkData(frameworkId, element.code, index);
         }
-        await this.getFrameworkData(frameworkId, element.code, index);
       } catch (error) {
         console.log('error: ' + error);
       }
@@ -264,4 +263,3 @@ export class PageFilter {
 export interface PageFilterCallback {
   applyFilter(filter: PageAssembleFilter, appliedFilter: any);
 }
-
