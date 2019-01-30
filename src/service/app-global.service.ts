@@ -73,6 +73,7 @@ export class AppGlobalService implements OnDestroy {
     * This property stores the organization at the app level for a particular app session
     */
      rootOrganizations: Array<any>;
+     courseFrameworkId: string;
 
     guestUserProfile: Profile;
     isGuestUser = false;
@@ -221,6 +222,22 @@ export class AppGlobalService implements OnDestroy {
     */
     getCachedRootOrganizations(): Array<any> {
         return this.rootOrganizations;
+    }
+
+     /**
+    * This method stores the courseFrameworkId, for a particular session of the app
+    *
+    */
+   setCourseFrameworkId(courseFrameworkId: string) {
+        this.courseFrameworkId = courseFrameworkId;
+    }
+
+    /**
+    * This method returns the courseFrameworkId cache, for a particular session of the app
+    *
+    */
+    getCachedCourseFrameworkId(): string {
+        return this.courseFrameworkId;
     }
 
     /**
