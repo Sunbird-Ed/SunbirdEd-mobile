@@ -29,10 +29,16 @@ page-filter-options {
     @extend .font-weight-600;
   }
 
-  ion-footer {
+  .footer{
     background: #FFF;
-    position: fixed;
+   // position: fixed;
     bottom: 0;
+ }
+ .topicFooter
+ {
+  position:sticky;
+  bottom: 0;
+  color: #fff
  }
 }
 
