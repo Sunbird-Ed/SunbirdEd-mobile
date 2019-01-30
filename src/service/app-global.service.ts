@@ -54,10 +54,6 @@ export class AppGlobalService implements OnDestroy {
     * This property stores the courses enrolled by a user
     */
     courseList: Array<any>;
-    /**
-    * This property stores the form details at the app level for a particular app session
-    */
-    syllabusList: Array<any> = [];
 
     /**
     * This property stores the course filter configuration at the app level for a particular app session
@@ -150,26 +146,6 @@ export class AppGlobalService implements OnDestroy {
     */
     getEnrolledCourseList(): Array<any> {
         return this.courseList;
-    }
-
-    /**
-    * This method stores the form details, for a particular session of the app
-    *
-    * @param syllabusList
-    *
-    */
-    setSyllabusList(syllabusList: Array<any>): any {
-        this.syllabusList = syllabusList;
-    }
-
-    /**
-    * This method returns the form details cached, for a particular session of the app
-    *
-    * @param syllabusList
-    *
-    */
-    getCachedSyllabusList(): Array<any> {
-        return this.syllabusList;
     }
 
     /**
