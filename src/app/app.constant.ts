@@ -124,14 +124,7 @@ export class MenuOverflow {
     public static readonly MENU_LOGIN = ['USERS_AND_GROUPS', 'REPORTS', 'SETTINGS', 'LOGOUT'];
 }
 
-export class FrameworkConstant {
-    public static readonly DEFAULT_FRAMEWORK_ID = 'NCF';
-    public static readonly DEFAULT_FRAMEWORK_NAME = 'Common';
-}
-
 export class FormConstant {
-    public static readonly DEFAULT_SYALLABUS_PATH = 'data/form/syllabus.json';
-    public static readonly DEFAULT_SUPPORTED_BOARDS_PATH = 'data/form/supported_boards.json';
     public static readonly DEFAULT_PAGE_COURSE_FILTER_PATH = 'data/form/pageassemble_course_filter.json';
     public static readonly DEFAULT_PAGE_LIBRARY_FILTER_PATH = 'data/form/pageassemble_library_filter.json';
 }

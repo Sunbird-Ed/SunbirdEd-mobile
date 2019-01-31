@@ -1,12 +1,13 @@
 import 'jest';
 import { PageFilterOptions } from './filter.options';
 import { mockRes } from '../options/filter.spec.data';
-import { navParamsMock, appGlobalServiceMock, platformMock, viewControllerMock, popoverCtrlMock } from '../../../__tests__/mocks';
+import { navParamsMock, viewControllerMock, appGlobalServiceMock, platformMock } from '../../../__tests__/mocks';
 
 describe('PageFilterOptions component', () => {
 
     let pageFilterOptions: PageFilterOptions;
     beforeEach(() => {
+        navParamsMock.get.mockReturnValue({name: 'Class'});
         pageFilterOptions = new PageFilterOptions(navParamsMock as any, viewControllerMock as any,
             appGlobalServiceMock as any, platformMock as any);
         jest.resetAllMocks();
@@ -81,6 +82,12 @@ describe('PageFilterOptions component', () => {
                 expect(pageFilterOptions.facets.selected).toEqual(expect.arrayContaining(['SAMPLE_VALUE']));
                 expect(pageFilterOptions.facets.selectedValuesIndices).toEqual(expect.arrayContaining([2]));
             });
+            it('getSelectedOptionCount should return empty string', () => {
+                // act
+                const facets = { selected: [], selectedValuesIndices: [], code: 'contentType' };
+                // asser
+                expect(pageFilterOptions.getSelectedOptionCount(facets)).toEqual('');
+            });
         });
 
         describe('when facets are selected', () => {
@@ -99,6 +106,46 @@ describe('PageFilterOptions component', () => {
                 // asser
                 expect(pageFilterOptions.facets.selected).not.toEqual(expect.arrayContaining([2]));
             });
+
+            it('getSelectedOptionCount should return actual number of selected facets', () => {
+                // act
+                const facets = { selected: ['SAMPLE_VALUE'], selectedValuesIndices: [1, 2, 3], code: 'contentType' };
+                // asser
+                expect(pageFilterOptions.getSelectedOptionCount(facets)).toEqual('1');
+            });
         });
     });
+
+    describe('when topic is being searched', () => {
+        it(' getItems should populate filteredTopicArr if called with matching string', () => {
+            // arrange
+            pageFilterOptions.topicsVal = mockRes.topicVal;
+
+            const ev = {
+                srcElement : {
+                    value : 'p'
+                }
+            };
+            // act
+            pageFilterOptions.getItems(ev);
+            // assert
+            expect(pageFilterOptions.filteredTopicArr.length).toEqual(1);
+        });
+        it(' getItems should not populate filteredTopicArr if called with unmatching string', () => {
+            // arrange
+            pageFilterOptions.topicsVal = mockRes.topicVal;
+
+            const ev = {
+                srcElement : {
+                    value : ''
+                }
+            };
+            // act
+            pageFilterOptions.getItems(ev);
+            // assert
+            expect(pageFilterOptions.filteredTopicArr.length).toEqual(0);
+        });
+
+    });
+
 });

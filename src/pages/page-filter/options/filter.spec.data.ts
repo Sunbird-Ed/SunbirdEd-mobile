@@ -41,5 +41,49 @@ export const mockRes = {
       'sam5',
       'sam6'
     ]
-  }
+  },
+  topicVal : [
+    [
+      {
+        'identifier': 'tpd_topic_physics',
+        'code': 'Physics',
+        'translations': null,
+        'name': 'Physics',
+        'description': 'Physics',
+        'index': 1,
+        'category': 'topic',
+        'status': 'Live'
+      },
+      {
+        'identifier': 'tpd_topic_chemistry',
+        'code': 'Chemistry',
+        'translations': null,
+        'name': 'Chemistry',
+        'description': 'Chemistry',
+        'index': 2,
+        'category': 'topic',
+        'status': 'Live'
+      },
+      {
+        'identifier': 'tpd_topic_biology',
+        'code': 'Biology',
+        'translations': null,
+        'name': 'Biology',
+        'description': 'Biology',
+        'index': 3,
+        'category': 'topic',
+        'status': 'Live'
+      },
+      {
+        'identifier': 'tpd_topic_general-science',
+        'code': 'General Science',
+        'translations': null,
+        'name': 'General Science',
+        'description': 'General Science',
+        'index': 4,
+        'category': 'topic',
+        'status': 'Live'
+      }
+    ]
+  ]
 };
