@@ -270,7 +270,6 @@ export class QrCodeResultPage {
         this.parents.splice(-1, 1);
       });
     });
-    console.log('results', this.results);
   }
 
   private findContentNode(data: any) {
@@ -293,7 +292,7 @@ export class QrCodeResultPage {
 
     return false;
   }
-  PlayOnline(content) {
+  playOnline(content) {
     if (content.contentData.streamingUrl && !content.isAvailableLocally) {
       this.playContent(content);
     } else {
@@ -339,24 +338,20 @@ export class QrCodeResultPage {
       console.error('Error occurred= ', error);
     });
   }
-  
-/** funtion add elipses to the texts**/
 
-addElipsesInLongText(msg: string) {
-  if (this.commonUtilService.translateMessage(msg).length >= 12) {
-    return this.commonUtilService.translateMessage(msg).slice(0, 8) + '....';
-  } else {
-    return this.commonUtilService.translateMessage(msg);
-  }
-}
-/**
-   * Play content
-   */
-  playContent(content) {
-    if (this.apiLevel < 21 && this.appAvailability === 'false') {
-      //  this.showPopupDialog();
+  /** funtion add elipses to the texts**/
+
+  addElipsesInLongText(msg: string) {
+    if (this.commonUtilService.translateMessage(msg).length >= 12) {
+      return this.commonUtilService.translateMessage(msg).slice(0, 8) + '....';
+    } else {
+      return this.commonUtilService.translateMessage(msg);
     }
-    // console.log(content);
+  }
+  /**
+     * Play content
+     */
+  playContent(content) {
     const extraInfoMap = { hierarchyInfo: [] };
     if (this.cardData && this.cardData.hierarchyInfo) {
       extraInfoMap.hierarchyInfo = this.cardData.hierarchyInfo;
@@ -370,29 +365,14 @@ addElipsesInLongText(msg: string) {
       extraInfoMap: extraInfoMap
     };
     this.contentService.setContentMarker(req)
-          .then((resp) => {
-          }).catch((err) => {
-          });
+      .then((resp) => {
+      }).catch((err) => {
+      });
     const request: any = {};
     request.streaming = true;
     AppGlobalService.isPlayerLaunched = true;
-      (<any>window).geniecanvas.play(content, JSON.stringify(request));
+    (<any>window).geniecanvas.play(content, JSON.stringify(request));
   }
-
-  // showPopupDialog() {
-  //   const popover = this.popOverCtrl.create(DialogPopupComponent, {
-  //     title: this.commonUtilService.translateMessage('ANDROID_NOT_SUPPORTED'),
-  //     body: this.commonUtilService.translateMessage('ANDROID_NOT_SUPPORTED_DESC'),
-  //     buttonText: this.commonUtilService.translateMessage('INSTALL_CROSSWALK')
-  //   }, {
-  //       cssClass: 'popover-alert'
-  //     });
-  //   popover.present();
-  // }
-  /**
-	 * Request with profile data to set current profile
-	 */
-
   editProfile(): void {
     const req: Profile = new Profile();
     req.board = this.profile.board;
