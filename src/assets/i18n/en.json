@@ -460,5 +460,6 @@
   "YOUR_PROGRESS": "Your Progress: {{%s}}%",
   "COURSE_WILL_BE_AVAILABLE": "Course will be available from  {{%s}}",
   "TOPICS": "Topics",
-  "SELECTED_TOPICS": "Selected Topics"
+  "SELECTED_TOPICS": "Selected Topics",
+  "ERROR_WHILE_LOGIN": "Error While Login"
 }
