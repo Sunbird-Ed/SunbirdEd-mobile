@@ -129,6 +129,7 @@ ul.breadcrumbs{
 
 .custom-btn{
     background-color: #0076FE;
+    width: 100%;
 }
 
 .custom-btn.play .arrow-right{
@@ -139,6 +140,23 @@ ul.breadcrumbs{
     border-left: 14px solid #fff;
     margin-right: 8px;
 }
+.custom-btn.play .cloud-download{
+    width: 0; 
+    height: 0; 
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-left: 14px solid #fff;
+    margin-right: 8px;
 }
-
-
+ion-icon.icon.icon-md.ion-md-arrow-round-down {
+    margin-left: -15px;
+    font-size: 21px;
+}
+.nopadding {
+    padding: 0 !important;
+    margin: 0 !important;
+ }
+ .toolbar-md {
+    min-height: 30px;
+}
+}
