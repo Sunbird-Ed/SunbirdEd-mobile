@@ -18,7 +18,8 @@ import {
   ContentFilterCriteria,
   ProfileType,
   PageAssembleFilter,
-  FrameworkService
+  FrameworkService,
+  CategoryRequest
 } from 'sunbird';
 import {
   NavController,
@@ -36,7 +37,9 @@ import {
   PreferenceKey,
   PageName,
   ContentCard,
-  ViewMore
+  ViewMore,
+  FrameworkCategory,
+  CardSectionName
 } from '../../app/app.constant';
 import {
   PageFilterCallback,
@@ -48,6 +51,7 @@ import { AppVersion } from '@ionic-native/app-version';
 import { updateFilterInSearchQuery } from '../../util/filter.util';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../service/common-util.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'page-resources',
@@ -85,8 +89,10 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   layoutPopular = ContentCard.LAYOUT_POPULAR;
   layoutSavedContent = ContentCard.LAYOUT_SAVED_CONTENT;
-  savedResourcesSection = 'Saved Resources';
-  recentViewedSection = 'Recently Viewed';
+  savedResourcesSection = CardSectionName.SECTION_SAVED_RESOURCES;
+  recentViewedSection = CardSectionName.SECTION_RECENT_RESOURCES;
+  categoryGradeLevels: any;
+  categoryMediums: any;
 
   constructor(
     public navCtrl: NavController,
@@ -103,7 +109,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService,
-    private framework: FrameworkService
+    private frameworkService: FrameworkService,
+    private translate: TranslateService,
   ) {
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
       .then(val => {
@@ -528,6 +535,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       this.getPopularContent();
     }
     this.subscribeGenieEvents();
+
+    this.getCategoryData();
   }
 
   subscribeGenieEvents() {
@@ -591,6 +600,49 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.navCtrl.push(SearchPage, { contentType: ContentType.FOR_LIBRARY_TAB, source: PageId.LIBRARY });
   }
 
+  getCategoryData() {
+    const syllabus: Array<string> = this.appGlobalService.getCurrentUser().syllabus;
+    const frameworkId = (syllabus && syllabus.length > 0) ? syllabus[0] : undefined;
+    const categories: Array<string> = FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES;
+    this.getMediumData(frameworkId, categories);
+    this.getGradeLevelData(frameworkId, categories);
+  }
+
+  getMediumData(frameworkId, categories) {
+    const req: CategoryRequest = {
+      currentCategory: FrameworkCategory.MEDIUM,
+      frameworkId: frameworkId,
+      selectedLanguage: this.translate.currentLang,
+      categories: categories
+    };
+    this.frameworkService.getCategoryData(req)
+      .then(res => {
+        console.log('-+-+-+-+-+-+ this.frameworkService.getCategoryData *-*-*--*-*-*-*- : ', res);
+        const category = JSON.parse(res);
+        this.categoryMediums = category.terms;
+      })
+      .catch(err => {
+        console.log('Something went wrong!');
+      });
+  }
+
+  getGradeLevelData(frameworkId, categories) {
+    const req: CategoryRequest = {
+      currentCategory: FrameworkCategory.GRADE_LEVEL,
+      frameworkId: frameworkId,
+      selectedLanguage: this.translate.currentLang,
+      categories: categories
+    };
+    this.frameworkService.getCategoryData(req)
+      .then(res => {
+        console.log('-+-+-+-+-+-+ this.frameworkService.getCategoryData *-*-*--*-*-*-*- : ', res);
+        const category = JSON.parse(res);
+        this.categoryGradeLevels = category.terms;
+      })
+      .catch(err => {
+        console.log('Something went wrong!');
+      });
+  }
 
   showFilter() {
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
