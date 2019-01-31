@@ -1,17 +1,31 @@
 import { ProfilePage } from './profile';
-import { Profile } from 'sunbird';
-import { mockProfileRes } from './profile.data.spec';
+import { mockProfileRes } from './profile.spec.data';
 import {
-    navCtrlMock, popoverCtrlMock, userProfileServiceMock, zoneMock, authServiceMock,
-    telemetryServiceMock, loadingControllerMock, navParamsMock, eventsMock, appGlobalServiceMock,
-    courseServiceMock, telemetryGeneratorServiceMock, profileServiceMock, formAndFrameworkUtilServiceMock,
-    containerServiceMock, commonUtilServiceMock, appMock, contentServiceMock, imageLoaderMock
+    navCtrlMock,
+    popoverCtrlMock,
+    userProfileServiceMock,
+    zoneMock,
+    authServiceMock,
+    telemetryServiceMock,
+    loadingControllerMock,
+    navParamsMock,
+    eventsMock,
+    appGlobalServiceMock,
+    courseServiceMock,
+    telemetryGeneratorServiceMock,
+    profileServiceMock,
+    formAndFrameworkUtilServiceMock,
+    containerServiceMock,
+    commonUtilServiceMock,
+    appMock,
+    contentServiceMock,
+    viewControllerMock
 } from '../../__tests__/mocks';
 const CategoriesEditPage = {} as any;
 const CollectionDetailsPage = {} as any;
 const EnrolledCourseDetailsPage = {} as any;
 const ContentDetailsPage = {} as any;
-const OverflowMenuComponent = {} as any;
+
 describe('ProfilePage', () => {
     let profilePage: ProfilePage;
     beforeEach(() => {
@@ -43,7 +57,7 @@ describe('ProfilePage', () => {
             commonUtilServiceMock as any,
             appMock as any,
             contentServiceMock as any,
-            imageLoaderMock as any
+            viewControllerMock as any
         );
         jest.resetAllMocks();
     });

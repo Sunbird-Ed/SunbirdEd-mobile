@@ -15,7 +15,6 @@ import {
 import { AppGlobalService } from '../../service/app-global.service';
 import { AppVersion } from '@ionic-native/app-version';
 import {
-    FrameworkConstant,
     FormConstant,
     PreferenceKey,
     FrameworkCategory
@@ -51,27 +50,6 @@ export class FormAndFrameworkUtilService {
                     this.selectedLanguage = val;
                 }
             });
-    }
-
-    /**
-     * This method gets the form related details.
-     *
-     */
-    getSupportingBoardList(): Promise<any> {
-        return new Promise((resolve, reject) => {
-            let syllabusList: Array<any> = [];
-
-            // get cached form details
-            syllabusList = this.appGlobalService.getCachedSyllabusList();
-
-            if ((syllabusList === undefined || syllabusList.length === 0)
-                || (syllabusList !== undefined && syllabusList.length === 1)) {
-                syllabusList = [];
-                this.callSyllabusListApi(syllabusList, resolve, reject);
-            } else {
-                resolve(syllabusList);
-            }
-        });
     }
 
     /**
@@ -113,67 +91,6 @@ export class FormAndFrameworkUtilService {
             }
         });
     }
-
-    /**
-     * Network call to form api
-     *
-     * @param syllabusList
-     * @param resolve
-     * @param reject
-     */
-    private callSyllabusListApi(syllabusList: any[], resolve: (value?: any) => void, reject: (reason?: any) => void) {
-        // form api request
-        const req: FormRequest = {
-            type: 'user',
-            subType: 'instructor',
-            action: 'onboarding_v2',
-            filePath: FormConstant.DEFAULT_SUPPORTED_BOARDS_PATH
-        };
-        // form api call
-        this.formService.getForm(req).then((res: any) => {
-            const response: any = JSON.parse(res);
-            console.log('Form Result - ' + response.result);
-            let frameworks: Array<any> = [];
-            const fields: Array<any> = response.result.fields;
-            fields.forEach(field => {
-                // if (field.language === this.selectedLanguage) {
-                frameworks = field.range;
-                // }
-            });
-
-            // this condition will be executed when selected language is not present in the frameworks
-            // then it will be defaulted to English
-            if (frameworks.length === 0) {
-                fields.forEach(field => {
-                    if (field.language === 'en') {
-                        frameworks = field.range;
-                    }
-                });
-            }
-            if (frameworks != null && frameworks.length > 0) {
-                frameworks.forEach(frameworkDetails => {
-                    // const value = { 'name': frameworkDetails.name, 'frameworkId': frameworkDetails.frameworkId };
-                    syllabusList.push(frameworkDetails);
-                });
-
-                // store the framework list in the app component, so that when getFormDetails() gets called again
-                // in the same session of app, then we can get this details, without calling the api
-                this.appGlobalService.setSyllabusList(syllabusList);
-            }
-            resolve(syllabusList);
-        }).catch((error: any) => {
-            console.log('Error - ' + error);
-            // Adding default framework into the list
-            const defaultFramework = {
-                name: FrameworkConstant.DEFAULT_FRAMEWORK_NAME,
-                frameworkId: FrameworkConstant.DEFAULT_FRAMEWORK_ID
-            };
-
-            syllabusList.push(defaultFramework);
-            resolve(syllabusList);
-        });
-    }
-
 
     /**
      * Network call to form api
@@ -504,9 +421,29 @@ export class FormAndFrameworkUtilService {
             }
 
      }
+     async getCourseFrameworkId() {
+        let courseFrameworkId ;
+        try {
+            courseFrameworkId = this.appGlobalService.getCachedCourseFrameworkId();
+                // if data not cached
+                if (courseFrameworkId === undefined || courseFrameworkId.length === 0) {
+                    courseFrameworkId = await this.framework.getCourseFrameworkId();
+                    console.log('COURSE FrameWork Id', courseFrameworkId);
+                    // cache the data
+                    this.appGlobalService.setCourseFrameworkId(courseFrameworkId);
+                    return courseFrameworkId ;
+                 } else {
+                        // return from cache
+                        return courseFrameworkId;
+                    }
+            } catch (error) {
+            console.log(error);
+            }
+
+     }
 
      /**
-      * 
+      *
       */
      async getCustodianOrgId() {
         const systemSettingRequest: SystemSettingRequest = {

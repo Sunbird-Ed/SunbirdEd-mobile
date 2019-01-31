@@ -18,13 +18,20 @@ import {
   telemetryGeneratorServiceMock,
   userProfileServiceMock,
   zoneMock
-} from '@app/__tests__/mocks';
+} from '../../__tests__/mocks';
 import { EnrolledCourseDetailsPage } from './enrolled-course-details';
-import { mockRes } from '@app/pages/enrolled-course-details/enrolled-course-details.spec.data';
-import { Environment, InteractSubtype, InteractType, Mode, PageId, ProfileType } from 'sunbird';
-import { CollectionDetailsPage } from '@app/pages/collection-details/collection-details';
-import { ContentDetailsPage } from '@app/pages/content-details/content-details';
-import { CourseBatchesPage } from '@app/pages/course-batches/course-batches';
+import { mockRes } from './enrolled-course-details.spec.data';
+import {
+  Environment,
+  InteractSubtype,
+  InteractType,
+  Mode,
+  PageId,
+  ProfileType
+} from 'sunbird';
+import { CollectionDetailsPage } from '../collection-details/collection-details';
+import { ContentDetailsPage } from '../content-details/content-details';
+import { CourseBatchesPage } from '../course-batches/course-batches';
 import { datePipeMock } from '../../__tests__/mocks';
 
 describe('EnrolledCourseDetailsPage Component', () => {
@@ -173,7 +180,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     enrolled.guestUser = false;
     enrolled.course = mockRes.sampleCourse;
     popoverCtrlMock.create.mockReturnValue(popUpMock);
-    enrolled.rateContent({});
+    enrolled.rateContent();
     expect(popoverCtrlMock.create).toHaveBeenCalled();
     popUpMock.onDidDismiss.mock.calls[0][0].call(enrolled, mockRes.popOverOnDismissResponse);
     expect(enrolled.userRating).toBe(3.0);
@@ -219,7 +226,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     const loader = {
       present: jest.fn(),
       dismiss: jest.fn()
-    }
+    };
     commonUtilServiceMock.getLoader.mockReturnValue(loader);
     enrolled.course = mockRes.sampleCourse;
     enrolled.courseCardData = mockRes.enrollCourseEvent;
@@ -233,7 +240,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     const loader = {
       present: jest.fn(),
       dismiss: jest.fn()
-    }
+    };
     commonUtilServiceMock.getLoader.mockReturnValue(loader);
     enrolled.course = mockRes.sampleCourse;
     enrolled.courseCardData = mockRes.enrollCourseEvent;
@@ -252,7 +259,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     const loader = {
       present: jest.fn(),
       dismiss: jest.fn()
-    }
+    };
     commonUtilServiceMock.getLoader.mockReturnValue(loader);
     enrolled.course = mockRes.sampleCourse;
     enrolled.courseCardData = mockRes.enrollCourseEvent;

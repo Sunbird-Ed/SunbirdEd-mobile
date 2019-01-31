@@ -50,7 +50,6 @@ import { CollectionDetailsPage } from '@app/pages/collection-details/collection-
 import { ContentDetailsPage } from '@app/pages/content-details/content-details';
 import { AppGlobalService, TelemetryGeneratorService, CommonUtilService } from '@app/service';
 import { FormAndFrameworkUtilService } from './formandframeworkutil.service';
-import { ImageLoader } from 'ionic-image-loader';
 import { EditContactDetailsPopupComponent } from '@app/component/edit-contact-details-popup/edit-contact-details-popup';
 import { EditContactVerifyPopupComponent } from '@app/component';
 
@@ -124,7 +123,6 @@ export class ProfilePage {
     private commonUtilService: CommonUtilService,
     private app: App,
     private contentService: ContentService,
-    private imageLoader: ImageLoader,
     public viewCtrl: ViewController
   ) {
     this.userId = this.navParams.get('userId') || '';
@@ -241,7 +239,7 @@ export class ProfilePage {
                   that.formAndFrameworkUtilService.updateLoggedInUser(r, profile)
                     .then((value) => {
                       if (!value['status']) {
-                        this.app.getRootNav().setRoot(CategoriesEditPage, {showOnlyMandatoryFields: true, profile: value['profile']});
+                        this.app.getRootNav().setRoot(CategoriesEditPage, { showOnlyMandatoryFields: true, profile: value['profile'] });
                       }
                     });
                 });
@@ -296,7 +294,7 @@ export class ProfilePage {
    * 
    */
   formatUserLocation() {
-    if (this.profile && this.profile.userLocations && this.profile.userLocations.length ) {
+    if (this.profile && this.profile.userLocations && this.profile.userLocations.length) {
       for (let i = 0, len = this.profile.userLocations.length; i < len; i++) {
         if (this.profile.userLocations[i].type === 'state') {
           this.userLocation.state = this.profile.userLocations[i];
@@ -558,23 +556,23 @@ export class ProfilePage {
   }
 
   editMobileNumber() {
-      const popover = this.popoverCtrl.create(EditContactDetailsPopupComponent, {
-        phone: this.profile.phone,
-        title: this.commonUtilService.translateMessage('EDIT_PHONE_POPUP_TITLE'),
-        description: '',
-        type: 'phone',
-        userId: this.profile.userId
-      }, {
-          cssClass: 'popover-alert'
-        });
-      popover.present({
-        ev: event
+    const popover = this.popoverCtrl.create(EditContactDetailsPopupComponent, {
+      phone: this.profile.phone,
+      title: this.commonUtilService.translateMessage('EDIT_PHONE_POPUP_TITLE'),
+      description: '',
+      type: 'phone',
+      userId: this.profile.userId
+    }, {
+        cssClass: 'popover-alert'
       });
-      popover.onDidDismiss((edited: boolean = false, key?: any) => {
-        if (edited) {
-          this.callOTPPopover(ProfileConstants.CONTACT_TYPE_PHONE, key);
-        }
-      });
+    popover.present({
+      ev: event
+    });
+    popover.onDidDismiss((edited: boolean = false, key?: any) => {
+      if (edited) {
+        this.callOTPPopover(ProfileConstants.CONTACT_TYPE_PHONE, key);
+      }
+    });
   }
 
   editEmail() {
@@ -585,7 +583,7 @@ export class ProfilePage {
       type: 'email'
     }, {
         cssClass: 'popover-alert'
-    });
+      });
     popover.present({
       ev: event
     });
@@ -649,7 +647,7 @@ export class ProfilePage {
       res = JSON.parse(res);
       loader.dismiss();
       // setTimeout(() => {
-        this.doRefresh();
+      this.doRefresh();
       // }, 1000);
       this.commonUtilService.showToast(this.commonUtilService.translateMessage('PHONE_EDIT_SUCCESS'));
     }, (err) => {
@@ -669,7 +667,7 @@ export class ProfilePage {
       res = JSON.parse(res);
       loader.dismiss();
       // setTimeout(() => {
-        this.doRefresh();
+      this.doRefresh();
       // }, 1000);
       this.commonUtilService.showToast(this.commonUtilService.translateMessage('EMAIL_EDIT_SUCCESS'));
     }, (err) => {

@@ -21,18 +21,22 @@ page-filter-options {
   }
   .scroll-list {
     overflow-y: scroll;
-    max-height: 60vh !important; 
-    // padding-bottom: 10vh !important;
+    max-height: 50vh !important; 
+    padding-bottom: 10vh !important;
   }
   .item-md {
     font-size: 1.3rem !important;
     @extend .font-weight-600;
   }
 
-  ion-footer {
+  .footer{
     background: #FFF;
-    position: fixed;
     bottom: 0;
+ }
+ .topicFooter
+ {
+  bottom: 0;
+  color: #fff
  }
 }
 
@@ -82,4 +86,21 @@ page-filter-options {
 }
 .div-space .item-inner .input-wrapper .label-md {
   @include margin(5px 8px 5px 0 !important);
+}
+
+.filter-item {
+  width: auto;
+  margin: 16px !important;
+  background-color: map-get($colors, white_f0);
+  color: map-get($colors, dark_gray);
+  font-size: 1em;
+  @extend .font-weight-600;
+  height: 2em;
+  ion-icon {
+    color: map-get($colors, dark_gray);
+  }
+ .topic-item {
+    @extend .filter-item ;
+    height: 100%;
+  }
 }

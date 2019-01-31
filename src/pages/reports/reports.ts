@@ -53,10 +53,9 @@ export class ReportsPage {
       const profileRequest: ProfileRequest = {
         local: true
       };
-      this.profileService.getAllUserProfile(profileRequest)
+      that.profileService.getAllUserProfile(profileRequest)
         .then((data) => {
           let users = JSON.parse(data);
-
           that.profileService.getCurrentUser().then((profile: any) => {
             const currentUser = JSON.parse(profile);
             if (this.profileDetails) {
