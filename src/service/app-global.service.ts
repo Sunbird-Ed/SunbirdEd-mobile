@@ -54,10 +54,6 @@ export class AppGlobalService implements OnDestroy {
     * This property stores the courses enrolled by a user
     */
     courseList: Array<any>;
-    /**
-    * This property stores the form details at the app level for a particular app session
-    */
-    syllabusList: Array<any> = [];
 
     /**
     * This property stores the course filter configuration at the app level for a particular app session
@@ -73,6 +69,7 @@ export class AppGlobalService implements OnDestroy {
     * This property stores the organization at the app level for a particular app session
     */
      rootOrganizations: Array<any>;
+     courseFrameworkId: string;
 
     guestUserProfile: Profile;
     isGuestUser = false;
@@ -152,26 +149,6 @@ export class AppGlobalService implements OnDestroy {
     }
 
     /**
-    * This method stores the form details, for a particular session of the app
-    *
-    * @param syllabusList
-    *
-    */
-    setSyllabusList(syllabusList: Array<any>): any {
-        this.syllabusList = syllabusList;
-    }
-
-    /**
-    * This method returns the form details cached, for a particular session of the app
-    *
-    * @param syllabusList
-    *
-    */
-    getCachedSyllabusList(): Array<any> {
-        return this.syllabusList;
-    }
-
-    /**
     * This method stores the course filter config, for a particular session of the app
     *
     * @param courseFilterConfig
@@ -221,6 +198,22 @@ export class AppGlobalService implements OnDestroy {
     */
     getCachedRootOrganizations(): Array<any> {
         return this.rootOrganizations;
+    }
+
+     /**
+    * This method stores the courseFrameworkId, for a particular session of the app
+    *
+    */
+   setCourseFrameworkId(courseFrameworkId: string) {
+        this.courseFrameworkId = courseFrameworkId;
+    }
+
+    /**
+    * This method returns the courseFrameworkId cache, for a particular session of the app
+    *
+    */
+    getCachedCourseFrameworkId(): string {
+        return this.courseFrameworkId;
     }
 
     /**

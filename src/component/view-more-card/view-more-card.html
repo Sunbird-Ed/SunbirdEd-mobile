@@ -4,7 +4,7 @@
       <img class="app-icon" src="{{ content.courseLogoUrl || content?.appIcon || defaultImg }}" />
     </ion-col>
     <ion-col col-8 no-padding>
-      <pb-horizontal *ngIf="content.cProgress" [progress]="content.cProgress" class="course-progress"></pb-horizontal>
+      <pb-horizontal *ngIf="content.cProgress" [progress]="content.cProgress" class="course-progress" [ngClass]="{'blurbackground': batchExp}"></pb-horizontal>
       <ion-row style="padding: 5px;">
         <ion-col col-12>
           <h6 class="meta-name" text-wrap *ngIf="content.name && content.name.length">{{(content.name.length > 20) ? (content.name | slice:0:20) + '...' : (content.name)}}</h6>
