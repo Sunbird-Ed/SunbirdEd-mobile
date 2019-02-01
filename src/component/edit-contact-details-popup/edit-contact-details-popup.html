@@ -12,17 +12,17 @@
           <ion-col col-12 no-padding class="text-center">
             <b>{{'ENTER_PHONE' | translate}}</b>
           </ion-col>
-          <ion-col col-12 no-padding class="text-center" *ngIf="err">
+          <ion-col col-12 no-padding class="text-center" *ngIf="err && personEditForm.controls.phone.valid">
             <p class="error">{{'ERROR_PHONE_EXISTS' | translate}}</p>
           </ion-col>
           <ion-col col-12 no-padding class="text-center" *ngIf="!personEditForm.controls.phone.valid && personEditForm.controls.phone.dirty">
-              <p class="error">{{'ERROR_PHONE_INVALID' | translate}}</p>
-            </ion-col>
+            <p class="error">{{'ERROR_PHONE_INVALID' | translate}}</p>
+          </ion-col>
           <ion-col col-12 no-padding class="text-center">
-            <div class="W100 merged-input-container MT10" >
+            <div class="W100 merged-input-container MT10">
               <ion-input type="tel" placeholder="+91" class="form-control decorator " value="+91" disabled></ion-input>
-              <ion-input type="tel" placeholder="{{'PHONE_PLACEHOLDER' | translate }}" maxlength="10" minlength="10" required class="form-control custom"
-              formControlName="phone" [(ngModel)]="phone"></ion-input>
+              <ion-input type="tel" placeholder="{{'PHONE_PLACEHOLDER' | translate }}" maxlength="10" minlength="10"
+                required class="form-control custom" formControlName="phone" [(ngModel)]="phone"></ion-input>
             </div>
           </ion-col>
 
@@ -35,12 +35,14 @@
             <p class="error">{{'ERROR_EMAIL_INVALID' | translate}}</p>
           </ion-col>
           <ion-col col-12 no-padding class="text-center" *ngIf="err">
-              <p class="error">{{'ERROR_EMAIL_EXISTS' | translate}}</p>
-            </ion-col>
+            <p class="error">{{'ERROR_EMAIL_EXISTS' | translate}}</p>
+          </ion-col>
           <ion-col col-12 no-padding class="text-center">
-            <ion-input type="text" placeholder="{{'EMAIL_PLACEHOLDER' | translate}}" class="form-control custom" 
-            formControlName="email" [(ngModel)]="email"></ion-input>
-            </ion-col>
+            <div class="W100 merged-input-container MT10">
+              <ion-input type="text" placeholder="{{'EMAIL_PLACEHOLDER' | translate}}" class="form-control custom"
+                formControlName="email" [(ngModel)]="email"></ion-input>
+            </div>
+          </ion-col>
         </section>
 
       </ion-row>
