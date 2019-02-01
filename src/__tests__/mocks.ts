@@ -16,8 +16,7 @@ import {
   ShareUtil,
   TelemetryService,
   UserProfileService,
-  GroupService
-} from 'sunbird';
+  GroupService} from 'sunbird';
 
 import {
   App,
@@ -42,11 +41,11 @@ import { SunbirdQRScanner } from '@app/pages/qrscanner';
 import { FormAndFrameworkUtilService } from '@app/pages/profile';
 import { File } from '@ionic-native/file';
 import { DatePipe } from '@angular/common';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { TncUpdateHandlerService } from '@app/service/handlers/tnc-update-handler.service';
 import { LogoutHandlerService } from '@app/service/handlers/logout-handler.service';
 import { DomSanitizer } from '@angular/platform-browser';
-
+// 'import { ImageLoader } from 'ionic-image-loader';
 export type Mockify<T> = {
   [P in keyof T]: jest.Mock<{}>;
 };
@@ -98,7 +97,9 @@ export const containerServiceMock = createSpyObj<ContainerService>([
 
 export const userProfileServiceMock = createSpyObj<UserProfileService>([
   'getUserProfileDetails',
-  'getTenantInfo'
+  'getTenantInfo',
+  'searchLocation',
+  'updateUserInfo'
 ]);
 
 export const profileServiceMock = createSpyObj<ProfileService>([
@@ -123,7 +124,8 @@ export const commonUtilServiceMock = createSpyObj<CommonUtilService>([
   'showToast',
   'getLoader',
   'getTranslatedValue',
-  'showContentComingSoonAlert'
+  'showContentComingSoonAlert',
+  'toLocaleUpperCase'
 ]);
 
 export const eventsMock = createSpyObj<Events>([
@@ -156,7 +158,8 @@ export const fileUtilMock = createSpyObj<FileUtil>([
 
 export const platformMock = createSpyObj<Platform>([
   'registerBackButtonAction',
-  'exitApp'
+  'exitApp',
+  'resume'
 ]);
 
 export const translateServiceMock = createSpyObj<TranslateService>([
@@ -250,7 +253,9 @@ export const formAndFrameworkUtilServiceMock = createSpyObj<FormAndFrameworkUtil
   'getLibraryFilterConfig',
   'getSupportingBoardList',
   'getFrameworkDetails',
-  'getCategoryData'
+  'getCategoryData',
+  'getCourseFrameworkId',
+  'getRootOrganizations'
 ]);
 
 export const loadingControllerMock = createSpyObj<LoadingController>([
@@ -320,6 +325,9 @@ export const formBuilderMock = createSpyObj<FormBuilder>([
   'group',
   'fb'
 ]);
+export const formGroupMock = createSpyObj<FormGroup>([
+  'getRawValue'
+]);
 
 export const ionicAppMock = createSpyObj<IonicApp>([]);
 
@@ -364,3 +372,7 @@ export const alertControllerMock = createSpyObj<AlertController>([
 export const toastControllerMock = createSpyObj<ToastController>([
   'create'
 ]);
+export const imageLoaderMock = createSpyObj<imageLoader>([
+
+]);
+

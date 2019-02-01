@@ -93,7 +93,8 @@ export class PageFilter {
   async initFilterValues() {
     this.filters = this.navParams.get('filter');
     this.pageId = this.navParams.get('pageId');
-
+    const loader = this.commonUtilService.getLoader();
+    loader.present();
     if (this.pageId === PageId.COURSES) {
       this.pageId = PageId.COURSE_PAGE_FILTER;
       this.categories = FrameworkCategory.COURSE_FRAMEWORK_CATEGORIES;
@@ -139,26 +140,26 @@ export class PageFilter {
     const syllabus: Array<string> = this.appGlobalService.getCurrentUser().syllabus;
     let frameworkId ;
 
-    if (this.pageId === PageId.COURSE_PAGE_FILTER ) {
-      frameworkId = 'TPD';
+    if (this.pageId === PageId.COURSE_PAGE_FILTER) {
+      frameworkId = await this.frameworkUtilService.getCourseFrameworkId();
     } else {
       frameworkId = (syllabus && syllabus.length > 0) ? syllabus[0] : undefined;
     }
     let index = 0;
     for (const element of this.filters) {
       try {
-        if ( element.code === 'organization' && frameworkId === 'TPD') {
+        if (!element.frameworkCategory && this.pageId === PageId.COURSE_PAGE_FILTER) {
           await this.getRootOrganizations(index);
-         } else {
+        } else {
           await this.getFrameworkData(frameworkId, element.code, index);
-      }
-        await this.getFrameworkData(frameworkId, element.code, index);
+        }
       } catch (error) {
         console.log('error: ' + error);
       }
       // Framework API doesn't return domain and content Type exclude them
       if (index === this.filters.length - 1) {
         this.facetsFilter = this.filters;
+        loader.dismiss();
       }
       index++;
     }
@@ -184,18 +185,18 @@ export class PageFilter {
 
           const responseArray = category.terms;
           if (responseArray && responseArray.length > 0) {
-            if ( req.currentCategory === 'topic' && req.frameworkId === 'TPD')  {
+            if (req.currentCategory === 'topic' && this.pageId === PageId.COURSE_PAGE_FILTER) {
               // this.filters[index].values = _.map(responseArray, 'name');
-              for ( let i = 0 ; i < responseArray.length; i++) {
-                const name = responseArray[i].name ;
+              for (let i = 0; i < responseArray.length; i++) {
+                const name = responseArray[i].name;
                 this.filters[index].values[i] = {};
                 // this.filters[index].values[i][name] = _.map(responseArray[i].children, 'name');
                 this.filters[index].values[i][name] = responseArray[i].children;
               }
               resolve();
             } else {
-            resolve(this.filters[index].values = _.map(responseArray, 'name'));
-           }
+              resolve(this.filters[index].values = _.map(responseArray, 'name'));
+            }
           }
         })
         .catch(err => {
@@ -243,26 +244,22 @@ export class PageFilter {
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.CANCEL,
       Environment.HOME,
-      PageId.LIBRARY_PAGE_FILTER);
+      this.pageId);
     this.viewCtrl.dismiss();
   }
 
   getRootOrganizations(index) {
-    const loader = this.commonUtilService.getLoader();
-    loader.present();
     this.frameworkUtilService.getRootOrganizations()
-         .then(res => {
-            this.filters[index].values = res;
-            loader.dismiss();
-         })
-         .catch(error => {
-           console.log(error, 'index', index);
-         });
-        }
+      .then(res => {
+        this.filters[index].values = res;
+      })
+      .catch(error => {
+        console.log(error, 'index', index);
+      });
+  }
 }
 
 
 export interface PageFilterCallback {
   applyFilter(filter: PageAssembleFilter, appliedFilter: any);
 }
-
