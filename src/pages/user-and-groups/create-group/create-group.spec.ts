@@ -95,7 +95,7 @@ describe('CreateGroupPage', () => {
         it('should be able to submit a form values to a group to create a group', () => {
             // arrange
             createGroupPage.classList = [{ name: '2nd class', code: '2nd class' }];
-            createGroupPage.isFormValid = false;
+            createGroupPage.isFormValid = true;
             createGroupPage.group = { name: 'Amaravathi' } as any;
             createGroupPage.group = { syllabus: 'State (Andhra Pradesh)' } as any;
             createGroupPage.group = { class: '2nd class' } as any;
