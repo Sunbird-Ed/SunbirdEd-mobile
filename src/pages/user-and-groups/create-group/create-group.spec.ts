@@ -92,16 +92,6 @@ describe('CreateGroupPage', () => {
             expect(navCtrlMock.push).toHaveBeenCalledWith(GuestEditProfilePage);
         });
 
-        it('should naviagate to the userlist that when form is invalid ', () => {
-            // arrange
-            createGroupPage.isFormValid = false;
-            commonUtilServiceMock.translateMessage.mockReturnValue('GROUP_MEMBER_ADD_SUCCESS');
-            // act
-            createGroupPage.navigateToUsersList();
-            // assert
-            expect(commonUtilServiceMock.showToast).toBeCalledWith('GROUP_MEMBER_ADD_SUCCESS');
-        });
-
         it('should be able to submit a form values to a group to create a group', () => {
             // arrange
             createGroupPage.classList = [{ name: '2nd class', code: '2nd class' }];
