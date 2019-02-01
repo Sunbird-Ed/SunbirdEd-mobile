@@ -1,0 +1,312 @@
+<!--
+  Generated template for the CollectionDetailsEtbPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>
+      <!-- <ion-icon md="md-share" float-right></ion-icon> -->
+    </ion-title>
+    <ion-buttons end *ngIf="!isDepthChild">
+      <button ion-button icon-only (click)="share()">
+        <ion-icon md="md-share" float-right></ion-icon>
+      </button>
+      <button *ngIf="contentDetail?.isAvailableLocally" ion-button icon-only (click)="showOverflowMenu($event)" style="font-size: 1.8rem;">
+        <ion-icon md="md-more" float-end></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+  <section class="MT5 P0">
+    <div class="details-card MB5">
+      <div class="content">
+        <div class="left">
+          <div class="item">
+            <div class="flex">
+              <div>
+                <span class="MR5 f14 font-weight-bold">4.7</span>
+                <span class="yellow-gold">
+                  <ion-icon ios="ios-star" md="md-star"></ion-icon>
+                </span>
+              </div>
+              <div>
+                <div class="title"> Social science term 1 Social science term 1 Social science term 1 Social science
+                  term 1</div>
+              </div>
+              <div>
+                <span class="light-black f12">by</span>
+                <span class="info f16">TNSERTC</span>
+              </div>
+              <div>
+                <span class="info">Class6</span>
+                <span class="separator-dot"></span>
+                <span class="info">Social Science</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="right">
+          <div class="img-container">
+            <img src="">
+          </div>
+        </div>
+      </div>
+      <div class="separator-line"></div>
+    </div>
+  </section>
+  <!-- Testing with data from API -->
+  <section class="MT5 P0">
+      <div class="details-card MB5">
+        <div class="content">
+          <div class="left">
+            <div class="item">
+              <div class="flex">
+                <div>
+                  <span class="MR5 f14 font-weight-bold">{{ contentDetail?.me_totalRatings ? contentDetail?.me_totalRatings : 0 }}</span>
+                  <span class="yellow-gold">
+                    <ion-icon ios="ios-star" md="md-star"></ion-icon>
+                  </span>
+                </div>
+                <div>
+                  <div class="title"> {{(contentDetail?.name && contentDetail?.name?.length > 25) ? (contentDetail?.name |
+                      slice:0:25) + '...' : (contentDetail?.name)}}</div>
+                </div>
+                <div *ngIf="contentDetail?.creator || contentDetail?.owner">
+                  <span class="light-black f12">by</span>
+                  <span class="info f16">{{ contentDetail?.creator || contentDetail?.owner }}</span>
+                </div>
+                <div *ngIf="contentDetail?.gradeLevel || contentDetail?.subject">
+                  <span class="info">{{contentDetail?.gradeLevel}}</span>
+                  <span class="separator-dot"></span>
+                  <span class="info">{{contentDetail?.subject}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="right">
+            <div class="img-container">
+              <img src="">
+            </div>
+          </div>
+        </div>
+        <div class="separator-line"></div>
+      </div>
+    </section>
+
+  <section class="MT10">
+    <ion-card class="P5 M0">
+      <ion-grid class="P0">
+        <ion-row (click)="toggleGroup(1)">
+          <ion-col col-11>
+            <div class="font-blue-text"> UNIT 1.2</div>
+          </ion-col>
+          <ion-col col-1>
+            <div>
+              <ion-icon ios="ios-arrow-dropdown" md="md-arrow-dropdown" class="font-blue"></ion-icon>
+            </div>
+          </ion-col>
+        </ion-row>
+        </ion-grid>
+        <div class="hidden-content" *ngIf="isGroupShown(1)">
+            <div class="separator-line"></div>
+            <div>
+              <div class="firstChildren">
+                <div class="P10 MT5">Vedic Culture in North India </div>
+                <ion-row>
+                  <ion-col col-1>
+                    <div>
+                      <ion-icon ios="ios-arrow-dropright-circle" md="md-arrow-dropright-circle" class="play-icon"></ion-icon>
+                    </div>
+                  </ion-col>
+                  <ion-col col-11>
+                    <div class="font-blue-text">Advent of Aryans</div>
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col col-1>
+                    <div>
+                      <ion-icon ios="ios-arrow-dropright-circle" md="md-arrow-dropright-circle" class="play-icon"></ion-icon>
+                    </div>
+                  </ion-col>
+                  <ion-col col-11>
+                    <div [ngClass]="{'text-selected':isSelected,'text-unselected':!isSelected}" (click)="changeValue($event,'vedicperiod')" >Vedic Period
+                      <span><ion-icon class="checkmark-icon" name="checkmark-circle-outline" *ngIf="isSelected"></ion-icon></span>
+                    </div>
+                    <!-- <div class="font-blue-text"> Vedic Period<ion-icon class="checkmark-icon" name="checkmark-circle-outline"></ion-icon>
+                    </div> -->
+                  </ion-col>
+                </ion-row>
+              </div>
+              <div class="secondChildren">
+                <div class="separator-line"></div>
+                <div class="P10 MT5">Aryans and their home in India </div>
+                <ion-row>
+                  <ion-col col-1>
+                    <div>
+                      <ion-icon ios="ios-alert" md="md-alert" class="grey-icon"></ion-icon>
+                    </div>
+                  </ion-col>
+                  <ion-col col-11>
+                    <div class="font-grey-text">Vedic Period</div>
+                  </ion-col>
+                </ion-row>
+              </div>
+              
+              <div class="thirdChildren">
+                <div class="separator-line"></div>
+                <div class="P5 MT5">MEGHALITHIC IRON AGE IN TAMILNADU </div>
+                <div class="P5 MT5">Tamilnadu Excavation </div>
+                <ion-row>
+                  <ion-col col-1>
+                    <div>
+                      <ion-icon ios="ios-arrow-dropright-circle" md="md-arrow-dropright-circle" class="play-icon"></ion-icon>
+                    </div>
+                  </ion-col>
+                  <ion-col col-11>
+                      <div [ngClass]="{'text-selected':isSelected,'text-unselected':!isSelected}" (click)="changeValue($event,'paleo')" >Paleolithic Discoveries
+                          <span><ion-icon class="checkmark-icon" name="checkmark-circle-outline" *ngIf="isSelected"></ion-icon></span>
+                        </div>
+                    <!-- <div class="font-blue-text"> Paleolithic Discoveries<ion-icon class="checkmark-icon" name="checkmark-circle-outline"></ion-icon>
+                    </div> -->
+                  </ion-col>
+                </ion-row>
+              </div>
+              <div class="separator-line"></div>
+              <div class="P10 MT5">Exercises </div>
+              <ion-row>
+                <ion-col col-1>
+                  <div>
+                    <ion-icon ios="ios-arrow-dropright-circle" md="md-arrow-dropright-circle" class="play-icon"></ion-icon>
+                  </div>
+                </ion-col>
+                <ion-col col-11>
+                  <div class="font-blue-text">Vedic Culture in North India and Megalithic Culture in South India</div>
+                </ion-col>
+              </ion-row>
+            </div>
+          </div>
+    </ion-card>
+  </section>
+
+  <section class="MT10">
+    <ion-card class="P5 M0">
+      <ion-grid class="P0">
+        <ion-row (click)="toggleGroup(2)">
+          <ion-col col-11>
+            <div class="font-blue-text"> UNIT 1.3</div>
+          </ion-col>
+          <ion-col col-1>
+            <span>
+              <ion-icon ios="ios-arrow-dropdown" md="md-arrow-dropdown" class="font-blue"></ion-icon>
+            </span>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+      <div class="hidden-content" *ngIf="isGroupShown(2)">
+          <div class="separator-line"></div>
+          <div>
+            <div class="firstChildren">
+              <div class="P10 MT5">Vedic Culture in North India </div>
+              <ion-row>
+                <ion-col col-1>
+                  <div>
+                    <ion-icon ios="ios-arrow-dropright-circle" md="md-arrow-dropright-circle" class="play-icon"></ion-icon>
+                  </div>
+                </ion-col>
+                <ion-col col-11>
+                  <div class="font-blue-text">Advent of Aryans</div>
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col col-1>
+                  <div>
+                    <ion-icon ios="ios-arrow-dropright-circle" md="md-arrow-dropright-circle" class="play-icon"></ion-icon>
+                  </div>
+                </ion-col>
+                <ion-col col-11>
+                  <div [ngClass]="{'text-selected':isSelected,'text-unselected':!isSelected}" (click)="changeValue($event,'vedicperiod')" >Vedic Period
+                    <span><ion-icon class="checkmark-icon" name="checkmark-circle-outline" *ngIf="isSelected"></ion-icon></span>
+                  </div>
+                  <!-- <div class="font-blue-text"> Vedic Period<ion-icon class="checkmark-icon" name="checkmark-circle-outline"></ion-icon>
+                  </div> -->
+                </ion-col>
+              </ion-row>
+            </div>
+            <div class="secondChildren">
+              <div class="separator-line"></div>
+              <div class="P10 MT5">Aryans and their home in India </div>
+              <ion-row>
+                <ion-col col-1>
+                  <div>
+                    <ion-icon ios="ios-alert" md="md-alert" class="grey-icon"></ion-icon>
+                  </div>
+                </ion-col>
+                <ion-col col-11>
+                  <div class="font-grey-text">Vedic Period</div>
+                </ion-col>
+              </ion-row>
+            </div>
+            
+            <div class="thirdChildren">
+              <div class="separator-line"></div>
+              <div class="P5 MT5">MEGHALITHIC IRON AGE IN TAMILNADU </div>
+              <div class="P5 MT5">Tamilnadu Excavation </div>
+              <ion-row>
+                <ion-col col-1>
+                  <div>
+                    <ion-icon ios="ios-arrow-dropright-circle" md="md-arrow-dropright-circle" class="play-icon"></ion-icon>
+                  </div>
+                </ion-col>
+                <ion-col col-11>
+                    <div [ngClass]="{'text-selected':isSelected,'text-unselected':!isSelected}" (click)="changeValue($event,'paleo')" >Paleolithic Discoveries
+                        <span><ion-icon class="checkmark-icon" name="checkmark-circle-outline" *ngIf="isSelected"></ion-icon></span>
+                      </div>
+                  <!-- <div class="font-blue-text"> Paleolithic Discoveries<ion-icon class="checkmark-icon" name="checkmark-circle-outline"></ion-icon>
+                  </div> -->
+                </ion-col>
+              </ion-row>
+            </div>
+            <div class="separator-line"></div>
+            <div class="P10 MT5">Exercises </div>
+            <ion-row>
+              <ion-col col-1>
+                <div>
+                  <ion-icon ios="ios-arrow-dropright-circle" md="md-arrow-dropright-circle" class="play-icon"></ion-icon>
+                </div>
+              </ion-col>
+              <ion-col col-11>
+                <div class="font-blue-text">Vedic Culture in North India and Megalithic Culture in South India</div>
+              </ion-col>
+            </ion-row>
+          </div>
+        </div>
+    </ion-card>
+  </section>
+  <section class="MT10">
+    <ion-card class="P5 M0">
+      <ion-grid class="P0">
+        <ion-row>
+          <ion-col col-11>
+            <div class="font-blue-text"> Social Science Term 1, Social Science Term 2, Social Science Term 3, and all
+              other Assessments for 2001, 2002, 2003,
+              2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018</div>
+          </ion-col>
+          <ion-col col-1>
+            <div>
+              <ion-icon name="arrow-dropdown" class="font-blue"></ion-icon>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card>
+  </section>
+
+</ion-content>
