@@ -1,3 +1,4 @@
+import { mockRes } from './../../../component/view-more-card/view-more-card.spec.data';
 import { CreateGroupPage } from './create-group';
 import { mockCreateorremoveGroupRes } from './create-group.spec.data';
 import {
@@ -14,9 +15,9 @@ import {
     sharedPreferencesMock,
     frameworkServiceMock
 } from '../../../__tests__/mocks';
-import { FormGroup, FormControl } from '@angular/forms';
+import { FormGroup, FormControl, FormArray } from '@angular/forms';
+import { GuestEditProfilePage } from '../../profile';
 
-const GuestEditProfilePage = {} as any;
 
 describe('CreateGroupPage', () => {
     let createGroupPage: CreateGroupPage;
@@ -25,18 +26,35 @@ describe('CreateGroupPage', () => {
         navParamsMock.get.mockImplementation((arg: string) => {
             if (arg === 'groupInfo') {
                 return {
-                    name: 'group_name'
+                    name: 'group_name',
+                    syllabus : ['syllabus_name'],
                 };
             } else {
                 return;
             }
         });
+        frameworkServiceMock.getSuggestedFrameworkList.mockResolvedValue([
+            {
+                code: 'ap_k-12_13',
+                name: 'State (Andhra Pradesh)'
+            }
+        ]);
+        const data = ['Sample Data'];
+        formAndFrameworkUtilServiceMock.getFrameworkDetails.mockResolvedValue(data);
+
         appGlobalServiceMock.isUserLoggedIn.mockResolvedValue(true);
         sharedPreferencesMock.getString.mockResolvedValue('SAMPLE');
         commonUtilServiceMock.translateMessage.mockReturnValue('CLASS_SAMPLE');
         loadingControllerMock.create.mockReturnValue({ present: jest.fn(), dismiss: jest.fn() });
         commonUtilServiceMock.getLoader.mockReturnValue({ present: jest.fn(), dismiss: jest.fn() });
-        formAndFrameworkUtilServiceMock.getSupportingBoardList.mockResolvedValue([]);
+
+        formBuilderMock.group.mockReturnValue(
+            new FormGroup({
+                name: new FormControl('Test'),
+                syllabus: new FormControl('mh_k-12_custodian'),
+                class: new FormControl('grade1')
+            })
+        );
 
         createGroupPage = new CreateGroupPage(
             navCtrlMock as any,
@@ -49,37 +67,27 @@ describe('CreateGroupPage', () => {
             telemetryGeneratorServiceMock as any,
             frameworkServiceMock as any
         );
-
-
-        jest.resetAllMocks();
     });
     it('can load instance', () => {
         expect(createGroupPage).toBeTruthy();
-        spyOn(createGroupPage, 'getSyllabusDetails').and.stub();
+    });
 
-        it('to get syallubusdetails() for create group page ', (done) => {
-            // arrange
+    it('getSyllabusDetails() should call getClassList() ', (done) => {
+        // arrange
+        spyOn(createGroupPage, 'getClassList').and.stub();
 
-            commonUtilServiceMock.getLoader.mockReturnValue({
-                present: () => {
-                },
-                dismiss: () => Promise.resolve()
-            });
-            formAndFrameworkUtilServiceMock.getSupportingBoardList.mockResolvedValue(
-                mockCreateorremoveGroupRes.syllabusListMock);
+        // act
 
-            // act
-            createGroupPage.getSyllabusDetails();
-            // assert
-            setTimeout(() => {
-
-                expect(formAndFrameworkUtilServiceMock.getSupportingBoardList).toHaveBeenCalled();
-                done();
-            }, 0);
-        });
+        createGroupPage.getSyllabusDetails();
+        // assert
+        setTimeout(() => {
+            expect(createGroupPage.getClassList).toHaveBeenCalled();
+            done();
+        }, 20);
+    });
         it('to naviagate to the guest edit page ', () => {
-            // arrange
             // act
+
             createGroupPage.goToGuestEdit();
             // assert
             expect(navCtrlMock.push).toHaveBeenCalledWith(GuestEditProfilePage);
@@ -109,18 +117,12 @@ describe('CreateGroupPage', () => {
         });
 
         it('submitting a form values with GroupEditForm values groupMembers page', () => {
-            // arrange
-            createGroupPage.groupEditForm = new FormGroup({
-                'name': new FormControl('Amarvati'),
-                'syllabus': new FormControl('sda'),
-                'class': new FormControl('asd')
-                // 'gradeValueMap': new FormControl([])
-            });
+
             // act
             createGroupPage.navigateToUsersList();
 
             // assert
-            expect(createGroupPage.group.name).toBe('Amarvati');
+            expect(createGroupPage.group.name).toBe('Test');
         });
 
         it('submitting a form values with empty values should show toast warning', () => {
@@ -148,11 +150,6 @@ describe('CreateGroupPage', () => {
             expect(commonUtilServiceMock.showToast).toBeCalledWith('ENTER_GROUP_NAME');
         });
         it('calls Update group API if form is valid', (done) => {
-            createGroupPage.groupEditForm = new FormGroup({
-                'name': new FormControl('Amarvati'),
-                'syllabus': new FormControl(['sda']),
-                'class': new FormControl(['asd'])
-            });
             groupServiceMock.updateGroup.mockResolvedValue(createGroupPage.groupEditForm);
             commonUtilServiceMock.getLoader.mockReturnValue({
                 present: () => {
@@ -239,6 +236,4 @@ describe('CreateGroupPage', () => {
                 done();
             });
         }, 0);
-
-    });
 });
