@@ -115,7 +115,7 @@ describe('CreateGroupPage', () => {
         });
 
         it('submitting a form values with empty values should show toast warning', () => {
-            createGroupPage.isFormValid = true;
+            createGroupPage.isFormValid = false;
             createGroupPage.groupEditForm = new FormGroup({
                 'syllabus': new FormControl('sda'),
                 'class': new FormControl('asd')
@@ -127,9 +127,11 @@ describe('CreateGroupPage', () => {
             expect(commonUtilServiceMock.showToast).toBeCalledWith('NEED_INTERNET_TO_CHANGE');
         });
 
-        it('its calls form is Invalid show toast message', () => {
-            createGroupPage.isFormValid = false;
-
+        it('should show Invalid toast message when group name is not entered', () => {
+            // jest.resetAllMocks();
+            createGroupPage.isFormValid = true;
+            createGroupPage.groupEditForm = new FormGroup({});
+            groupServiceMock.updateGroup.mockResolvedValue(createGroupPage.groupEditForm);
             commonUtilServiceMock.translateMessage.mockReturnValue('ENTER_GROUP_NAME');
             // act
             createGroupPage.updateGroup();
