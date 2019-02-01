@@ -1,4 +1,3 @@
-import { mockRes } from './../../../component/view-more-card/view-more-card.spec.data';
 import { CreateGroupPage } from './create-group';
 import { mockCreateorremoveGroupRes } from './create-group.spec.data';
 import {
@@ -85,7 +84,7 @@ describe('CreateGroupPage', () => {
             done();
         }, 20);
     });
-        it('to naviagate to the guest edit page ', () => {
+        it('should naviagate to the guest edit page ', () => {
             // act
 
             createGroupPage.goToGuestEdit();
@@ -93,7 +92,7 @@ describe('CreateGroupPage', () => {
             expect(navCtrlMock.push).toHaveBeenCalledWith(GuestEditProfilePage);
         });
 
-        it('to naviagate to the userlist that when form is invalid ', () => {
+        it('should naviagate to the userlist that when form is invalid ', () => {
             // arrange
             createGroupPage.isFormValid = false;
             commonUtilServiceMock.translateMessage.mockReturnValue('GROUP_MEMBER_ADD_SUCCESS');
@@ -103,7 +102,7 @@ describe('CreateGroupPage', () => {
             expect(commonUtilServiceMock.showToast).toBeCalledWith('GROUP_MEMBER_ADD_SUCCESS');
         });
 
-        it('submitting a form values to a group to create a group', () => {
+        it('should be able to submit a form values to a group to create a group', () => {
             // arrange
             createGroupPage.classList = [{ name: '2nd class', code: '2nd class' }];
             createGroupPage.isFormValid = false;
