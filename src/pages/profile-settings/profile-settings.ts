@@ -132,6 +132,7 @@ export class ProfileSettingsPage {
       });
     this.initUserForm();
     this.getGuestUser();
+    this.handleBackButton();
   }
 
   ionViewDidLoad() {
@@ -149,7 +150,7 @@ export class ProfileSettingsPage {
   }
 
   ionViewWillLeave() {
-    // this.unregisterBackButton();
+   this.unregisterBackButton();
   }
   /**
  * It will Dismiss active popup
@@ -546,26 +547,17 @@ export class ProfileSettingsPage {
   }
 
   handleBackButton() {
-    const self = this;
-    this.platform.registerBackButtonAction(() => {
-      this.dismissPopup();
-      const navObj = self.app.getActiveNavs()[0];
-      const currentPage = navObj.getActive().name;
+   this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+      const navObj = this.app.getActiveNavs()[0];
 
-      if (!navObj.canGoBack()) {
-        if (self.counter === 0) {
-          self.counter++;
-          this.commonUtilService.showToast('BACK_TO_EXIT');
-          // this.telemetryGeneratorService.generateBackClickedTelemetry(this.computePageId(currentPage), Environment.HOME, false);
-          setTimeout(() => { self.counter = 0; }, 1500);
-        } else {
-          // this.telemetryGeneratorService.generateBackClickedTelemetry(this.computePageId(currentPage), Environment.HOME, false);
-          self.platform.exitApp();
-          // this.telemetryGeneratorService.generateEndTelemetry('app', '', '', Environment.HOME);
+      if (navObj.canGoBack()) {
+        this.dismissPopup();
+      } else {
+        this.commonUtilService.showExitPopUp(PageId.ONBOARDING_PROFILE_PREFERENCES, Environment.ONBOARDING, false);
 
-        }
       }
-    });
+      this.unregisterBackButton();
+    }, 11);
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH, InteractSubtype.DEVICE_BACK_CLICKED,
       PageId.ONBOARDING_PROFILE_PREFERENCES,
