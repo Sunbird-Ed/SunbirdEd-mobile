@@ -542,16 +542,16 @@ export class QrCodeResultPage {
             this.downloadProgress = res.data.downloadProgress;
           }
 
-          if (this.downloadProgress === 100) {
-            this.showLoading = false;
-            this.getChildContents();
-          }
         }
         // Get child content
         if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
 
               this.showLoading = false;
               this.isDownloadStarted = false;
+              this.results = [];
+              this.parents = [];
+              this.paths = [];
+              this.getChildContents();
         }
         // For content update available
         if (res.data && res.type === 'contentUpdateAvailable' && res.data.identifier === this.identifier) {
