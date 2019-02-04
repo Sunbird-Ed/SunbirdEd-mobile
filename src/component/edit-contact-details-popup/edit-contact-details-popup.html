@@ -31,10 +31,10 @@
           <ion-col col-12 no-padding class="text-center">
             <b>{{'ENTER_EMAIL' | translate}}</b>
           </ion-col>
-          <ion-col col-12 no-padding class="text-center" *ngIf="!personEditForm.controls.email.valid && personEditForm.controls.email.dirty">
+          <ion-col col-12 no-padding class="text-center" *ngIf="(personEditForm.controls.email.dirty && personEditForm.controls.email?.invalid) ">
             <p class="error">{{'ERROR_EMAIL_INVALID' | translate}}</p>
           </ion-col>
-          <ion-col col-12 no-padding class="text-center" *ngIf="err && personEditForm.controls.phone.valid">
+          <ion-col col-12 no-padding class="text-center" *ngIf="err && personEditForm.controls.email.valid">
             <p class="error">{{'ERROR_EMAIL_EXISTS' | translate}}</p>
           </ion-col>
           <ion-col col-12 no-padding class="text-center">
@@ -46,14 +46,20 @@
         </section>
 
       </ion-row>
+      <ion-row>
+        <ion-col padding>
+          <button ion-button block outline (click)="cancel()">{{ 'CANCEL' | translate }} </button>
+        </ion-col>
+        <ion-col padding>
+          <button ion-button block (click)="validate()" [disabled]="!personEditForm.valid">{{ 'SUBMIT' | translate }}
+          </button>
+        </ion-col>
+        <!-- <ion-col padding>
+            <button ion-button block (click)="validate()" [disabled]="!f.form.valid">{{ 'SUBMIT' | translate }}
+            </button>
+          </ion-col> -->
+      </ion-row>
     </form>
   </ion-grid>
-  <ion-row>
-    <ion-col padding>
-      <button ion-button block outline (click)="cancel()">{{ 'CANCEL' | translate }} </button>
-    </ion-col>
-    <ion-col padding>
-      <button ion-button block (click)="validate()">{{ 'SUBMIT' | translate }} </button>
-    </ion-col>
-  </ion-row>
+
 </ion-content>
