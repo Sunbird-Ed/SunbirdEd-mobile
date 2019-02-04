@@ -291,7 +291,7 @@ export class ProfilePage {
   }
 
   /**
-   *
+   * 
    */
   formatUserLocation() {
     if (this.profile && this.profile.userLocations && this.profile.userLocations.length) {
@@ -580,8 +580,7 @@ export class ProfilePage {
       email: this.profile.email,
       title: this.commonUtilService.translateMessage('EDIT_EMAIL_POPUP_TITLE'),
       description: '',
-      type: 'email',
-      userId: this.profile.userId
+      type: 'email'
     }, {
         cssClass: 'popover-alert'
       });
