@@ -50,8 +50,9 @@ import { CollectionDetailsPage } from '@app/pages/collection-details/collection-
 import { ContentDetailsPage } from '@app/pages/content-details/content-details';
 import { AppGlobalService, TelemetryGeneratorService, CommonUtilService } from '@app/service';
 import { FormAndFrameworkUtilService } from './formandframeworkutil.service';
-import { EditContactDetailsPopupComponent } from '@app/component/edit-contact-details-popup/edit-contact-details-popup';
-import { EditContactVerifyPopupComponent } from '@app/component';
+ import { EditContactDetailsPopupComponent } from '@app/component/edit-contact-details-popup/edit-contact-details-popup';
+ import { EditContactVerifyPopupComponent } from '@app/component';
+
 
 /**
  * The Profile page
@@ -94,7 +95,7 @@ export class ProfilePage {
   startLimit = 0;
   custodianOrgId: string;
   isCustodianOrgId: boolean;
-
+  loader: any;
   contentCreatedByMe: any = [];
   orgDetails: {
     'state': '',
@@ -137,8 +138,8 @@ export class ProfilePage {
     });
 
     this.events.subscribe('loggedInProfile:update', (framework) => {
-      this.updateLocalProfile(framework);
-      this.doRefresh();
+      // this.updateLocalProfile(framework);
+      // this.doRefresh();
     });
 
     this.formAndFrameworkUtilService.getCustodianOrgId().then((orgId: string) => {
@@ -163,22 +164,25 @@ export class ProfilePage {
     ));
   }
 
-  doRefresh(refresher?) {
+  public doRefresh(refresher?) {
     const loader = this.getLoader();
     this.isRefreshProfile = true;
     loader.present();
-    this.refreshProfileData()
+    return this.refreshProfileData()
       .then(() => {
-        setTimeout(() => {
-          if (refresher) {
-            refresher.complete();
-          }
-          this.events.publish('refresh:profile');
-          loader.dismiss();
-        }, 500);
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            if (refresher) {
+              refresher.complete();
+            }
+            this.events.publish('refresh:profile');
+            loader.dismiss();
+            resolve();
+          }, 500);
+        });
         // This method is used to handle trainings completed by user
-        this.getEnrolledCourses();
-        this.searchContent();
+        // this.getEnrolledCourses();
+        // this.searchContent();
       })
       .catch(error => {
         console.error('Error while Fetching Data', error);
@@ -291,7 +295,6 @@ export class ProfilePage {
   }
 
   /**
-   * 
    */
   formatUserLocation() {
     if (this.profile && this.profile.userLocations && this.profile.userLocations.length) {
@@ -438,7 +441,7 @@ export class ProfilePage {
         }
       })
       .catch((error: any) => {
-        console.error('error while loading enrolled courses', error);
+       // console.error('error while loading enrolled courses', error);
       });
   }
 
@@ -512,7 +515,7 @@ export class ProfilePage {
     } else {
       this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
     }
-  }
+   }
 
   navigateToEditPersonalDetails() {
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
@@ -551,11 +554,11 @@ export class ProfilePage {
         this.contentCreatedByMe = JSON.parse(result).result.contentDataList;
       })
       .catch((error: any) => {
-        console.error('Error', error);
+      //  console.error('Error', error);
       });
   }
 
-  editMobileNumber() {
+  editMobileNumber(event) {
     const popover = this.popoverCtrl.create(EditContactDetailsPopupComponent, {
       phone: this.profile.phone,
       title: this.commonUtilService.translateMessage('EDIT_PHONE_POPUP_TITLE'),
@@ -575,7 +578,7 @@ export class ProfilePage {
     });
   }
 
-  editEmail() {
+  editEmail(event) {
     const popover = this.popoverCtrl.create(EditContactDetailsPopupComponent, {
       email: this.profile.email,
       title: this.commonUtilService.translateMessage('EDIT_EMAIL_POPUP_TITLE'),
@@ -605,9 +608,7 @@ export class ProfilePage {
       }, {
           cssClass: 'popover-alert'
         });
-      popover.present({
-        ev: event
-      });
+      popover.present();
       popover.onDidDismiss((OTPSuccess: boolean = false, phone: any) => {
         if (OTPSuccess) {
           this.viewCtrl.dismiss();
@@ -624,9 +625,7 @@ export class ProfilePage {
       }, {
           cssClass: 'popover-alert'
         });
-      popover.present({
-        ev: event
-      });
+      popover.present();
       popover.onDidDismiss((OTPSuccess: boolean = false, email: any) => {
         if (OTPSuccess) {
           this.viewCtrl.dismiss();
@@ -651,12 +650,12 @@ export class ProfilePage {
       // }, 1000);
       this.commonUtilService.showToast(this.commonUtilService.translateMessage('PHONE_EDIT_SUCCESS'));
     }, (err) => {
-      loader.dismiss();
-      this.commonUtilService.showToast(this.commonUtilService.translateMessage('SOMETHING_WENT_WRONG'));
-    });
-  }
+        loader.dismiss();
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('SOMETHING_WENT_WRONG'));
+      });
+    }
 
-  updateEmailInfo(email) {
+    updateEmailInfo(email) {
     const loader = this.getLoader();
     const req: UpdateUserInfoRequest = {
       userId: this.profile.userId,
