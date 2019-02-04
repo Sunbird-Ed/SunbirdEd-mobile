@@ -72,7 +72,7 @@ export class PersonalDetailsEditPage {
    */
   ionViewWillEnter() {
     this.profile = this.navParams.get('profile');
-      this.getStates();
+    this.getStates();
   }
 
   /**
@@ -84,9 +84,9 @@ export class PersonalDetailsEditPage {
     const userState = [];
     const userDistrict = [];
     if (this.profile.lastName) {
-      profilename  = this.profile.firstName + this.profile.lastName;
+      profilename = this.profile.firstName + this.profile.lastName;
     }
-    if (this.profile && this.profile.userLocations && this.profile.userLocations.length ) {
+    if (this.profile && this.profile.userLocations && this.profile.userLocations.length) {
       for (let i = 0, len = this.profile.userLocations.length; i < len; i++) {
         if (this.profile.userLocations[i].type === 'state') {
           userState.push(this.profile.userLocations[i].id);
@@ -99,7 +99,7 @@ export class PersonalDetailsEditPage {
     this.profileEditForm = this.fb.group({
       states: userState || [],
       districts: userDistrict || [],
-      name: [profilename, Validators.pattern('^[a-zA-Z ]*$')],
+      name: [profilename.trim(), Validators.pattern('^[a-zA-Z ]*$')],
     });
     this.enableSubmitButton();
   }
@@ -114,7 +114,7 @@ export class PersonalDetailsEditPage {
 
       const locations = JSON.parse(response.result.locationList);
       if (locations && locations.length) {
-          this.stateList = locations;
+        this.stateList = locations;
       } else {
         this.loader.dismiss();
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('NO_DATA_FOUND'));
@@ -132,7 +132,7 @@ export class PersonalDetailsEditPage {
       response = JSON.parse(response);
       const districtsTemp = JSON.parse(response.result.locationList);
       if (districtsTemp && districtsTemp.length) {
-          this.districtList = districtsTemp;
+        this.districtList = districtsTemp;
       } else {
         this.profileEditForm.patchValue({
           districts: []
@@ -149,8 +149,8 @@ export class PersonalDetailsEditPage {
    */
   onSubmit() {
     const formVal = this.profileEditForm.getRawValue();
-    if (!formVal.name.length) {
-        this.showErrorToastMessage('NAME');
+    if (!formVal.name.trim().length) {
+      this.showErrorToastMessage('NAME');
     } else {
       this.submitForm();
     }
@@ -186,7 +186,7 @@ export class PersonalDetailsEditPage {
     const req = {
       userId: this.profile.userId,
       lastName: ' ',
-      firstName: this.profileEditForm.value.name,
+      firstName: this.validateName(),
       locationCodes: []
     };
 
@@ -217,5 +217,13 @@ export class PersonalDetailsEditPage {
       duration: 3000,
       spinner: 'crescent'
     });
+  }
+
+  /**
+   *  It will validate the name field.
+   */
+  validateName() {
+    const name = this.profileEditForm.getRawValue().name;
+    return name.trim();
   }
 }
