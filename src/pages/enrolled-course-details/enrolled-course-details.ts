@@ -280,7 +280,7 @@ export class EnrolledCourseDetailsPage {
   /**
    * Function to rate content
    */
-  rateContent() {
+  rateContent(event) {
     // TODO: check content is played or not
     if (!this.guestUser) {
       if (this.course.isAvailableLocally) {
