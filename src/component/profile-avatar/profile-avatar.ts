@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnChanges } from '@angular/core';
 import { setTimeout } from 'timers';
 
 /**
@@ -11,7 +11,7 @@ import { setTimeout } from 'timers';
   selector: 'profile-avatar',
   templateUrl: 'profile-avatar.html'
 })
-export class ProfileAvatarComponent implements OnInit {
+export class ProfileAvatarComponent implements OnInit, OnChanges {
   @Input() username: string;
   bgColor: string;
   color: string;
@@ -21,17 +21,7 @@ export class ProfileAvatarComponent implements OnInit {
   }
 
   ngOnInit() {
-    // const initials = this.username.match(/\b\w/g) || [];
-    const splitter = new this.GraphemeSplitter();
-    const split: string[] = splitter.splitGraphemes(this.username.trim());
-    console.log('Username Array++', split);
-   const temp = [this.username.trim().substr(0, 1)];
-    const initials = temp || [];
-   // this.initial = ((initials.shift() || '') + (initials.pop() || '')).toUpperCase();
-   this.initial = split[0];
-    if (this.initial) {
-      this.getBgColor(this.username);
-    }
+    this.extractInitial();
   }
 
   getBgColor(pname) {
@@ -62,6 +52,29 @@ export class ProfileAvatarComponent implements OnInit {
     const color = ((r * 299) + (g * 587) + (b * 114)) / 1000;
     return (color >= 128) ? '#000000' : '#ffffff';
   }
+/**
+ * It will detect the changes of username and call the extractInitial() method
+ * @param changes
+ */
+  ngOnChanges(changes: any) {
+    this.username = changes.username.currentValue;
+    this.extractInitial();
+  }
 
+/**
+ * It will extract the first character of the user name and return with different BG color
+ */
+  extractInitial() {
+    const splitter = new this.GraphemeSplitter();
+    const split: string[] = splitter.splitGraphemes(this.username.trim());
+    console.log('Username Array++', split);
+    const temp = [this.username.trim().substr(0, 1)];
+    const initials = temp || [];
+    // this.initial = ((initials.shift() || '') + (initials.pop() || '')).toUpperCase();
+    this.initial = split[0];
+    if (this.initial) {
+      this.getBgColor(this.username);
+    }
+  }
 
 }
