@@ -109,7 +109,8 @@ export const profileServiceMock = createSpyObj<ProfileService>([
   'getProfile',
   'getAllUserProfile',
   'getAllProfile',
-  'exportProfile'
+  'exportProfile',
+  'updateProfile'
 ]);
 
 export const authServiceMock = createSpyObj<AuthService>([
