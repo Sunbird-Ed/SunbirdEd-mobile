@@ -1,6 +1,7 @@
 import { ContentRatingAlertComponent } from './content-rating-alert/content-rating-alert';
 import { TranslateModule } from '@ngx-translate/core';
 import { PipesModule } from './../pipes/pipes.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { CourseCard } from './card/course/course-card';
 import { ResourceCard } from './card/resource/resource-card';
@@ -58,6 +59,7 @@ import { EditContactDetailsPopupComponent } from './edit-contact-details-popup/e
         Ionic2RatingModule,
         IonicImageLoader,
         PipesModule,
+        BrowserAnimationsModule,
         NgxDatatableModule,
         IonicModule,
         IonicPageModule.forChild(ResourceCard)

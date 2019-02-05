@@ -52,10 +52,58 @@ import { updateFilterInSearchQuery } from '../../util/filter.util';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../service/common-util.service';
 import { TranslateService } from '@ngx-translate/core';
+import {
+  trigger,
+  state,
+  style,
+  animate,
+  transition,
+  query,
+  keyframes,
+  stagger,
+  group,
+} from '@angular/animations';
 
 @Component({
   selector: 'page-resources',
-  templateUrl: 'resources.html'
+  templateUrl: 'resources.html',
+  animations: [
+    trigger('appear', [
+      state('true', style({
+        left: '{{left_indent}}',
+      }), { params: { left_indent: 0 } }), // default parameters values required
+
+      transition('* => classAnimate', [
+        style({ width: 5, opacity: 0 }),
+        group([
+          animate('0.3s 0.2s ease', style({
+            transform: 'translateX(0) scale(1.2)', width: '*',
+          })),
+          animate('0.2s ease', style({
+            opacity: 1
+          }))
+        ])
+      ]),
+    ]),
+    trigger('ScrollHorizontal', [
+      state('true', style({
+        left: '{{left_indent}}',
+        transform: 'translateX(-100px)',
+      }), { params: { left_indent: 0 } }), // default parameters values required
+
+      transition('* => classAnimate', [
+        // style({ width: 5, transform: 'translateX(-100px)', opacity: 0 }),
+        group([
+          animate('0.3s 0.5s ease', style({
+            transform: 'translateX(-100px)'
+          })),
+          animate('0.3s ease', style({
+            opacity: 1
+          }))
+        ])
+      ]),
+    ])
+  ]
 })
 export class ResourcesPage implements OnInit, AfterViewInit {
 
@@ -93,6 +141,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   recentViewedSection = CardSectionName.SECTION_RECENT_RESOURCES;
   categoryGradeLevels: any;
   categoryMediums: any;
+  current_index: any;
+  currentGrade: any;
 
   constructor(
     public navCtrl: NavController,
@@ -541,7 +591,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   subscribeGenieEvents() {
     this.events.subscribe('genie.event', (data) => {
-      console.log('subscribeGenieEvents -->', data);
       const res = JSON.parse(data);
       if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
         this.setSavedContent();
@@ -601,6 +650,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   getCategoryData() {
+    console.log('this.appGlobalService.getCurrentUser()', this.appGlobalService.getCurrentUser());
     const syllabus: Array<string> = this.appGlobalService.getCurrentUser().syllabus;
     const frameworkId = (syllabus && syllabus.length > 0) ? syllabus[0] : undefined;
     const categories: Array<string> = FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES;
@@ -608,7 +658,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.getGradeLevelData(frameworkId, categories);
   }
 
-  getMediumData(frameworkId, categories) {
+  getMediumData(frameworkId, categories): any {
     const req: CategoryRequest = {
       currentCategory: FrameworkCategory.MEDIUM,
       frameworkId: frameworkId,
@@ -617,16 +667,46 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     };
     this.frameworkService.getCategoryData(req)
       .then(res => {
-        console.log('-+-+-+-+-+-+ this.frameworkService.getCategoryData *-*-*--*-*-*-*- : ', res);
         const category = JSON.parse(res);
         this.categoryMediums = category.terms;
+        this.arrangeMediumsByUserData(this.categoryMediums.map(a => ({...a})));
       })
       .catch(err => {
         console.log('Something went wrong!');
       });
   }
 
-  getGradeLevelData(frameworkId, categories) {
+
+  findWithAttr(array, attr, value) {
+      for (let i = 0; i < array.length; i += 1) {
+          console.log(array[i][attr]);
+          if (array[i][attr].toLowerCase() === value.toLowerCase()) {
+              return i;
+          }
+      }
+      return -1;
+  }
+
+  arrangeMediumsByUserData(categoryMediumsParam) {
+    console.log('categoryMediums ========', categoryMediumsParam);
+    if (this.appGlobalService.getCurrentUser() &&
+        this.appGlobalService.getCurrentUser().medium &&
+        this.appGlobalService.getCurrentUser().medium.length) {
+          const mediumIndex = this.findWithAttr(categoryMediumsParam, 'name', this.appGlobalService.getCurrentUser().medium[0]);
+
+          for (let i = mediumIndex; i > 0; i--) {
+            categoryMediumsParam[i] = categoryMediumsParam[i - 1];
+            if (i === 1) {
+              categoryMediumsParam[0] = this.categoryMediums[mediumIndex];
+            }
+          }
+        this.categoryMediums = categoryMediumsParam;
+        console.log('this.appGlobalService.getCurrentUser().medium[0]', this.appGlobalService.getCurrentUser().medium[0]);
+        console.log('this.categoryMediums ========', this.categoryMediums);
+    }
+  }
+
+  getGradeLevelData(frameworkId, categories): any {
     const req: CategoryRequest = {
       currentCategory: FrameworkCategory.GRADE_LEVEL,
       frameworkId: frameworkId,
@@ -635,7 +715,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     };
     this.frameworkService.getCategoryData(req)
       .then(res => {
-        console.log('-+-+-+-+-+-+ this.frameworkService.getCategoryData *-*-*--*-*-*-*- : ', res);
         const category = JSON.parse(res);
         this.categoryGradeLevels = category.terms;
       })
@@ -742,5 +821,29 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   showDisabled(resource) {
     return !resource.isAvailableLocally && !this.commonUtilService.networkInfo.isNetworkAvailable;
+  }
+
+  classClick(index) {
+    // document.getElementById('asd').animate( 
+    // document.getElementById('asd').scrollTo({top: 0, left: index*75, behaviour: 'smooth'}), 1000);
+    // let a:HTMLElement = document.getElementById('class' + index) as HTMLElement;
+    // a.animate([
+    //   { transform: 'translateX(0px)' },
+    //   { transform: 'translateX(-300px)' }
+    // ], {
+    //   duration: 1000,
+    //   });
+    //   a.animate
+
+    for (let i = 0, len = this.categoryGradeLevels.length; i < len; i++) {
+      if (i === index ) {
+        this.currentGrade = this.categoryGradeLevels[i];
+        this.current_index = this.categoryGradeLevels[i];
+        this.categoryGradeLevels[i].selected = 'classAnimate';
+      } else {
+        this.categoryGradeLevels[i].selected = '';
+      }
+    }
+    document.getElementById('gradeScroll').scrollTo({top: 0, left: index * 75, behavior: 'smooth'});
   }
 }

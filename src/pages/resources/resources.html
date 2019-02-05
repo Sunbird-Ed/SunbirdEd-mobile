@@ -28,12 +28,15 @@
 	<!-- <div> -->
 	<div class="horizontal-scroll  PLR16px bg-white">
 		<!-- <button ion-button class="medium-pill active">English medium</button> -->
-		<a class="medium-pill" *ngFor="let medium of categoryMediums; let i - index; let first = first" [ngClass]="{'active': first}">{{medium?.name}} Medium</a>
+		<a class="medium-pill" *ngFor="let medium of categoryMediums; let i = index; let first = first" [ngClass]="{'active': first}" [@appear]>{{medium?.name}} Medium</a>
 	</div>
 
-	<div class="horizontal-scroll PTB10 PLR16px class-filter-cotainer">
+	<div class="horizontal-scroll PTB10 PLR16px class-filter-cotainer" id="gradeScroll" [@ScrollHorizontal]="{value: currentGrade?.selected, params: {left_indent: current_index * 72}}">
 		<!-- <button ion-button class="class-pill active">Class 5</button> -->
-		<a class="class-pill" *ngFor="let grade of categoryGradeLevels; let i - index; let first = first" [ngClass]="{'active': first}">{{grade?.name}} </a>
+		<a class="class-pill" *ngFor="let grade of categoryGradeLevels; let i = index; let first = first" 
+		[ngClass]="{'active': grade?.selected, '': !grade?.selected}" attr.id="class{{i}}" (click)="classClick(i);" [@appear]="{value: grade?.selected, params: {left_indent: i * 72}}">
+			{{grade?.name}} 
+		</a>
 	</div>
 
 	<div class="course-scroll-holder" [ngClass]="{'empty-saved-resources' : (localResources && localResources.length === 0 || showLoader)}"

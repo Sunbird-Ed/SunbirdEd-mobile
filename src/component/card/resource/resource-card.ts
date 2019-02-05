@@ -140,7 +140,6 @@ export class ResourceCard implements OnInit {
   }
 
   ngOnInit() {
-    console.log('course --- - - - - - - - - - - - - - - -', this.course);
     if (this.layoutName === this.layoutInProgress) {
       this.course.cProgress = (this.courseUtilService.getCourseProgress(this.course.leafNodesCount, this.course.progress));
       this.course.cProgress = parseInt(this.course.cProgress, 10);
