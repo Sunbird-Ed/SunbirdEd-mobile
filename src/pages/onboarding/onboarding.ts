@@ -154,6 +154,9 @@ export class OnboardingPage {
       })
       .catch(error => {
         loader.dismiss();
+        if (error) {
+          this.commonUtilService.showToast(this.commonUtilService.translateMessage('ERROR_WHILE_LOGIN'));
+        }
         console.log(error);
       });
   }
@@ -208,21 +211,21 @@ export class OnboardingPage {
             that.profileService.setCurrentProfile(false, profile)
               .then((response: any) => {
                 this.formAndFrameworkUtilService.updateLoggedInUser(r, profile)
-                .then( (value) => {
-                  that.orgName = r.rootOrg.orgName;
-                  if (value['status']) {
-                    initTabs(that.container, LOGIN_TEACHER_TABS);
+                  .then((value) => {
+                    that.orgName = r.rootOrg.orgName;
+                    if (value['status']) {
+                      initTabs(that.container, LOGIN_TEACHER_TABS);
+                      resolve(r.rootOrg.slug);
+                    } else {
+                      that.navCtrl.setRoot(CategoriesEditPage, { showOnlyMandatoryFields: true, profile: value['profile'] });
+                      reject();
+                    }
+                    // that.orgName = r.rootOrg.orgName;
+                    // resolve(r.rootOrg.slug);
+                  }).catch(() => {
+                    that.orgName = r.rootOrg.orgName;
                     resolve(r.rootOrg.slug);
-                  } else {
-                    that.navCtrl.setRoot(CategoriesEditPage, {showOnlyMandatoryFields: true, profile: value['profile']});
-                    reject();
-                  }
-                  // that.orgName = r.rootOrg.orgName;
-                  // resolve(r.rootOrg.slug);
-                }).catch( () => {
-                  that.orgName = r.rootOrg.orgName;
-                  resolve(r.rootOrg.slug);
-                });
+                  });
               })
               .catch((err: any) => {
                 reject(err);

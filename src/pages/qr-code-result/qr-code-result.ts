@@ -21,10 +21,15 @@ import {
   PageId,
   Profile,
   ProfileService,
+  ProfileRequest,
   SharedPreferences,
   TabsPage,
   SuggestedFrameworkRequest,
-  FrameworkService
+  FrameworkService,
+  FileUtil,
+  Rollup,
+  ContentMarkerRequest,
+  MarkerType
 } from 'sunbird';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
@@ -43,9 +48,11 @@ import {
 } from 'sunbird';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import * as _ from 'lodash';
-import { PopoverController } from 'ionic-angular';
+import { PopoverController, Content } from 'ionic-angular';
 import { ProfileSettingsPage } from '../profile-settings/profile-settings';
-
+import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
+import { AlertController } from 'ionic-angular';
+import { DialogPopupComponent } from '../../component/dialog-popup/dialog-popup';
 @IonicPage()
 @Component({
   selector: 'page-qr-code-result',
@@ -103,8 +110,23 @@ export class QrCodeResultPage {
   subjectList: Array<any> = [];
   profileCategories: any;
   isSingleContent = false;
+  showLoading: Boolean;
+  isDownloadStarted: Boolean;
 
+  public isPlayerLaunched = false;
+  userCount = 0;
+  apiLevel: number;
+  appAvailability: string;
+  downloadAndPlay: boolean;
+  public objRollup: Rollup;
+  /**
+   * To hold previous state data
+   */
+  cardData: any;
   @ViewChild(Navbar) navBar: Navbar;
+  downloadProgress: any = 0;
+  isDownloadCompleted: boolean;
+  isUpdateAvailable: boolean;
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -113,7 +135,7 @@ export class QrCodeResultPage {
     public translate: TranslateService,
     public platform: Platform,
     private telemetryGeneratorService: TelemetryGeneratorService,
-
+    private alertCtrl: AlertController,
     private appGlobalService: AppGlobalService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private profileService: ProfileService,
@@ -121,7 +143,8 @@ export class QrCodeResultPage {
     private preferences: SharedPreferences,
     private popOverCtrl: PopoverController,
     private commonUtilService: CommonUtilService,
-    private framework: FrameworkService
+    private framework: FrameworkService,
+    private fileUtil: FileUtil
   ) {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
@@ -147,11 +170,12 @@ export class QrCodeResultPage {
       this.isParentContentAvailable = false;
       this.identifier = this.content.identifier;
     }
-
+    this.setContentDetails(this.identifier, true);
     this.getChildContents();
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
       this.handleBackButton(InteractSubtype.DEVICE_BACK_CLICKED);
     }, 10);
+    this.subscribeGenieEvent();
   }
 
   ionViewDidLoad() {
@@ -162,6 +186,9 @@ export class QrCodeResultPage {
     this.navBar.backButtonClick = () => {
       this.handleBackButton(InteractSubtype.NAV_BACK_CLICKED);
     };
+    if (!AppGlobalService.isPlayerLaunched) {
+      this.calculateAvailableUserCount();
+    }
   }
 
   ionViewWillLeave() {
@@ -169,6 +196,8 @@ export class QrCodeResultPage {
     if (this.unregisterBackButton) {
       this.unregisterBackButton();
     }
+    this.downloadProgress = 0;
+    this.events.unsubscribe('genie.event');
   }
 
   handleBackButton(clickSource) {
@@ -274,7 +303,13 @@ export class QrCodeResultPage {
 
     return false;
   }
-
+  playOnline(content) {
+    if (content.contentData.streamingUrl && !content.isAvailableLocally) {
+      this.playContent(content);
+    } else {
+      this.navigateToDetailsPage(content);
+    }
+  }
   navigateToDetailsPage(content) {
     if (content && content.contentData && content.contentData.contentType === ContentType.COURSE) {
       this.navCtrl.push(EnrolledCourseDetailsPage, {
@@ -298,12 +333,57 @@ export class QrCodeResultPage {
       });
     }
   }
+  calculateAvailableUserCount() {
+    const profileRequest: ProfileRequest = {
+      local: true,
+      server: false
+    };
+    this.profileService.getAllUserProfile(profileRequest).then((profiles) => {
+      if (profiles) {
+        this.userCount = JSON.parse(profiles).length;
+      }
+      if (this.appGlobalService.isUserLoggedIn()) {
+        this.userCount += 1;
+      }
+    }).catch((error) => {
+      console.error('Error occurred= ', error);
+    });
+  }
 
+  /** funtion add elipses to the texts**/
 
+  addElipsesInLongText(msg: string) {
+    if (this.commonUtilService.translateMessage(msg).length >= 12) {
+      return this.commonUtilService.translateMessage(msg).slice(0, 8) + '....';
+    } else {
+      return this.commonUtilService.translateMessage(msg);
+    }
+  }
   /**
-	 * Request with profile data to set current profile
-	 */
-
+     * Play content
+     */
+  playContent(content) {
+    const extraInfoMap = { hierarchyInfo: [] };
+    if (this.cardData && this.cardData.hierarchyInfo) {
+      extraInfoMap.hierarchyInfo = this.cardData.hierarchyInfo;
+    }
+    const req: ContentMarkerRequest = {
+      uid: this.appGlobalService.getCurrentUser().uid,
+      contentId: content.identifier,
+      data: JSON.stringify(content.contentData),
+      marker: MarkerType.PREVIEWED,
+      isMarked: true,
+      extraInfoMap: extraInfoMap
+    };
+    this.contentService.setContentMarker(req)
+      .then((resp) => {
+      }).catch((err) => {
+      });
+    const request: any = {};
+    request.streaming = true;
+    AppGlobalService.isPlayerLaunched = true;
+    (<any>window).geniecanvas.play(content, JSON.stringify(request));
+  }
   editProfile(): void {
     const req: Profile = new Profile();
     req.board = this.profile.board;
@@ -516,6 +596,136 @@ export class QrCodeResultPage {
     }
   }
 
+  /**
+   * Subscribe genie event to get content download progress
+   */
+  subscribeGenieEvent() {
+    this.events.subscribe('genie.event', (data) => {
+      this.zone.run(() => {
+        data = JSON.parse(data);
+        const res = data;
+        console.log('Geni Event!');
+        console.log(res);
+
+        if (res.type === 'downloadProgress' && res.data.downloadProgress) {
+          if (res.data.downloadProgress === -1 || res.data.downloadProgress === '-1') {
+            this.downloadProgress = 0;
+          } else if (res.data.identifier === this.content.identifier) {
+            this.downloadProgress = res.data.downloadProgress;
+          }
+
+        }
+        // Get child content
+        if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
+
+              this.showLoading = false;
+              this.isDownloadStarted = false;
+              this.results = [];
+              this.parents = [];
+              this.paths = [];
+              this.getChildContents();
+        }
+        // For content update available
+        if (res.data && res.type === 'contentUpdateAvailable' && res.data.identifier === this.identifier) {
+          this.zone.run(() => {
+            if (this.parentContent) {
+              const parentIdentifier = this.parentContent.contentId || this.parentContent.identifier;
+              this.showLoading = true;
+              this.importContent([parentIdentifier], false);
+            }
+          });
+        }
+      });
+    });
+  }
+
+  /**
+   * To set content details in local variable
+   * @param {string} identifier identifier of content / course
+   */
+  setContentDetails(identifier, refreshContentDetails: boolean | true) {
+    const option = {
+      contentId: identifier,
+      refreshContentDetails: refreshContentDetails,
+      attachFeedback: true,
+      attachContentAccess: true
+    };
+    this.contentService.getContentDetail(option)
+      .then((data: any) => {
+      })
+      .catch((error: any) => {
+      });
+  }
+
+  /**
+   * Function to get import content api request params
+   *
+   * @param {Array<string>} identifiers contains list of content identifier(s)
+   * @param {boolean} isChild
+   */
+  importContent(identifiers: Array<string>, isChild: boolean, isDownloadAllClicked?) {
+    const option = {
+      contentImportMap: _.extend({}, this.getImportContentRequestBody(identifiers, isChild)),
+      contentStatusArray: []
+    };
+
+    // Call content service
+    this.contentService.importContent(option)
+      .then((data: any) => {
+        this.zone.run(() => {
+          data = JSON.parse(data);
+        });
+      })
+      .catch((error: any) => {
+        this.zone.run(() => {
+          console.log('error while loading content details', error);
+          this.isDownloadStarted = false;
+          this.showLoading = false;
+          const errorRes = JSON.parse(error);
+          if (errorRes && (errorRes.error === 'NETWORK_ERROR' || errorRes.error === 'CONNECTION_ERROR')) {
+            this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
+          } else {
+            this.commonUtilService.showToast('UNABLE_TO_FETCH_CONTENT');
+          }
+        });
+      });
+  }
+
+    /**
+   * Function to get import content api request params
+   *
+   * @param {Array<string>} identifiers contains list of content identifier(s)
+   * @param {boolean} isChild
+   */
+  getImportContentRequestBody(identifiers: Array<string>, isChild: boolean) {
+    const requestParams = [];
+    _.forEach(identifiers, (value) => {
+      requestParams.push({
+        isChildContent: isChild,
+        destinationFolder: this.fileUtil.internalStoragePath(),
+        contentId: value,
+        correlationData: this.corRelationList !== undefined ? this.corRelationList : []
+      });
+    });
+
+    return requestParams;
+  }
+
+  cancelDownload() {
+    this.telemetryGeneratorService.generateCancelDownloadTelemetry(this.content);
+    this.contentService.cancelDownload(this.identifier).then(() => {
+      this.zone.run(() => {
+        this.showLoading = false;
+        this.navCtrl.pop();
+      });
+    }).catch(() => {
+      this.zone.run(() => {
+        this.showLoading = false;
+        this.navCtrl.pop();
+      });
+    });
+  }
+
   skipSteps() {
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
@@ -533,4 +743,3 @@ export class QrCodeResultPage {
     }
   }
 }
-
