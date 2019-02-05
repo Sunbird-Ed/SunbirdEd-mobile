@@ -304,7 +304,8 @@ export const viewControllerMock = createSpyObj<ViewController>([
 
 
 export const frameworkServiceMock = createSpyObj<FrameworkService>([
-  'getCategoryData'
+  'getCategoryData',
+  'getSuggestedFrameworkList'
 ]);
 
 
