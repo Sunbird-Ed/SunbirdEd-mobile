@@ -50,8 +50,8 @@ import { CollectionDetailsPage } from '@app/pages/collection-details/collection-
 import { ContentDetailsPage } from '@app/pages/content-details/content-details';
 import { AppGlobalService, TelemetryGeneratorService, CommonUtilService } from '@app/service';
 import { FormAndFrameworkUtilService } from './formandframeworkutil.service';
- import { EditContactDetailsPopupComponent } from '@app/component/edit-contact-details-popup/edit-contact-details-popup';
- import { EditContactVerifyPopupComponent } from '@app/component';
+import { EditContactDetailsPopupComponent } from '@app/component/edit-contact-details-popup/edit-contact-details-popup';
+import { EditContactVerifyPopupComponent } from '@app/component';
 
 
 /**
@@ -138,8 +138,8 @@ export class ProfilePage {
     });
 
     this.events.subscribe('loggedInProfile:update', (framework) => {
-      // this.updateLocalProfile(framework);
-      // this.doRefresh();
+      this.updateLocalProfile(framework);
+      this.doRefresh();
     });
 
     this.formAndFrameworkUtilService.getCustodianOrgId().then((orgId: string) => {
@@ -179,10 +179,11 @@ export class ProfilePage {
             loader.dismiss();
             resolve();
           }, 500);
+          // This method is used to handle trainings completed by user
+
+          this.getEnrolledCourses();
+          this.searchContent();
         });
-        // This method is used to handle trainings completed by user
-        // this.getEnrolledCourses();
-        // this.searchContent();
       })
       .catch(error => {
         console.error('Error while Fetching Data', error);
@@ -441,7 +442,7 @@ export class ProfilePage {
         }
       })
       .catch((error: any) => {
-       // console.error('error while loading enrolled courses', error);
+        console.error('error while loading enrolled courses', error);
       });
   }
 
@@ -515,7 +516,7 @@ export class ProfilePage {
     } else {
       this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
     }
-   }
+  }
 
   navigateToEditPersonalDetails() {
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
@@ -554,7 +555,7 @@ export class ProfilePage {
         this.contentCreatedByMe = JSON.parse(result).result.contentDataList;
       })
       .catch((error: any) => {
-      //  console.error('Error', error);
+        console.error('Error', error);
       });
   }
 
@@ -650,12 +651,12 @@ export class ProfilePage {
       // }, 1000);
       this.commonUtilService.showToast(this.commonUtilService.translateMessage('PHONE_EDIT_SUCCESS'));
     }, (err) => {
-        loader.dismiss();
-        this.commonUtilService.showToast(this.commonUtilService.translateMessage('SOMETHING_WENT_WRONG'));
-      });
-    }
+      loader.dismiss();
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('SOMETHING_WENT_WRONG'));
+    });
+  }
 
-    updateEmailInfo(email) {
+  updateEmailInfo(email) {
     const loader = this.getLoader();
     const req: UpdateUserInfoRequest = {
       userId: this.profile.userId,
