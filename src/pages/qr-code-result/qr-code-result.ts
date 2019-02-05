@@ -24,7 +24,8 @@ import {
   SharedPreferences,
   TabsPage,
   SuggestedFrameworkRequest,
-  FrameworkService
+  FrameworkService,
+  FileUtil
 } from 'sunbird';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
@@ -103,8 +104,13 @@ export class QrCodeResultPage {
   subjectList: Array<any> = [];
   profileCategories: any;
   isSingleContent = false;
+  showLoading: Boolean;
+  isDownloadStarted: Boolean;
 
   @ViewChild(Navbar) navBar: Navbar;
+  downloadProgress: any = 0;
+  isDownloadCompleted: boolean;
+  isUpdateAvailable: boolean;
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -121,7 +127,8 @@ export class QrCodeResultPage {
     private preferences: SharedPreferences,
     private popOverCtrl: PopoverController,
     private commonUtilService: CommonUtilService,
-    private framework: FrameworkService
+    private framework: FrameworkService,
+    private fileUtil: FileUtil
   ) {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
@@ -147,11 +154,12 @@ export class QrCodeResultPage {
       this.isParentContentAvailable = false;
       this.identifier = this.content.identifier;
     }
-
+    this.setContentDetails(this.identifier, true);
     this.getChildContents();
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
       this.handleBackButton(InteractSubtype.DEVICE_BACK_CLICKED);
     }, 10);
+    this.subscribeGenieEvent();
   }
 
   ionViewDidLoad() {
@@ -169,6 +177,8 @@ export class QrCodeResultPage {
     if (this.unregisterBackButton) {
       this.unregisterBackButton();
     }
+    this.downloadProgress = 0;
+    this.events.unsubscribe('genie.event');
   }
 
   handleBackButton(clickSource) {
@@ -516,6 +526,136 @@ export class QrCodeResultPage {
     }
   }
 
+  /**
+   * Subscribe genie event to get content download progress
+   */
+  subscribeGenieEvent() {
+    this.events.subscribe('genie.event', (data) => {
+      this.zone.run(() => {
+        data = JSON.parse(data);
+        const res = data;
+        console.log('Geni Event!');
+        console.log(res);
+
+        if (res.type === 'downloadProgress' && res.data.downloadProgress) {
+          if (res.data.downloadProgress === -1 || res.data.downloadProgress === '-1') {
+            this.downloadProgress = 0;
+          } else if (res.data.identifier === this.content.identifier) {
+            this.downloadProgress = res.data.downloadProgress;
+          }
+
+        }
+        // Get child content
+        if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
+
+              this.showLoading = false;
+              this.isDownloadStarted = false;
+              this.results = [];
+              this.parents = [];
+              this.paths = [];
+              this.getChildContents();
+        }
+        // For content update available
+        if (res.data && res.type === 'contentUpdateAvailable' && res.data.identifier === this.identifier) {
+          this.zone.run(() => {
+            if (this.parentContent) {
+              const parentIdentifier = this.parentContent.contentId || this.parentContent.identifier;
+              this.showLoading = true;
+              this.importContent([parentIdentifier], false);
+            }
+          });
+        }
+      });
+    });
+  }
+
+  /**
+   * To set content details in local variable
+   * @param {string} identifier identifier of content / course
+   */
+  setContentDetails(identifier, refreshContentDetails: boolean | true) {
+    const option = {
+      contentId: identifier,
+      refreshContentDetails: refreshContentDetails,
+      attachFeedback: true,
+      attachContentAccess: true
+    };
+    this.contentService.getContentDetail(option)
+      .then((data: any) => {
+      })
+      .catch((error: any) => {
+      });
+  }
+
+  /**
+   * Function to get import content api request params
+   *
+   * @param {Array<string>} identifiers contains list of content identifier(s)
+   * @param {boolean} isChild
+   */
+  importContent(identifiers: Array<string>, isChild: boolean, isDownloadAllClicked?) {
+    const option = {
+      contentImportMap: _.extend({}, this.getImportContentRequestBody(identifiers, isChild)),
+      contentStatusArray: []
+    };
+
+    // Call content service
+    this.contentService.importContent(option)
+      .then((data: any) => {
+        this.zone.run(() => {
+          data = JSON.parse(data);
+        });
+      })
+      .catch((error: any) => {
+        this.zone.run(() => {
+          console.log('error while loading content details', error);
+          this.isDownloadStarted = false;
+          this.showLoading = false;
+          const errorRes = JSON.parse(error);
+          if (errorRes && (errorRes.error === 'NETWORK_ERROR' || errorRes.error === 'CONNECTION_ERROR')) {
+            this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
+          } else {
+            this.commonUtilService.showToast('UNABLE_TO_FETCH_CONTENT');
+          }
+        });
+      });
+  }
+
+    /**
+   * Function to get import content api request params
+   *
+   * @param {Array<string>} identifiers contains list of content identifier(s)
+   * @param {boolean} isChild
+   */
+  getImportContentRequestBody(identifiers: Array<string>, isChild: boolean) {
+    const requestParams = [];
+    _.forEach(identifiers, (value) => {
+      requestParams.push({
+        isChildContent: isChild,
+        destinationFolder: this.fileUtil.internalStoragePath(),
+        contentId: value,
+        correlationData: this.corRelationList !== undefined ? this.corRelationList : []
+      });
+    });
+
+    return requestParams;
+  }
+
+  cancelDownload() {
+    this.telemetryGeneratorService.generateCancelDownloadTelemetry(this.content);
+    this.contentService.cancelDownload(this.identifier).then(() => {
+      this.zone.run(() => {
+        this.showLoading = false;
+        this.navCtrl.pop();
+      });
+    }).catch(() => {
+      this.zone.run(() => {
+        this.showLoading = false;
+        this.navCtrl.pop();
+      });
+    });
+  }
+
   skipSteps() {
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
@@ -533,4 +673,3 @@ export class QrCodeResultPage {
     }
   }
 }
-
