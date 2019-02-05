@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavParams, PopoverController, NavController, Events } from 'ionic-angular';
+import { NavParams, PopoverController, NavController, Events, Platform } from 'ionic-angular';
 import { CommonUtilService } from '../../../service/common-util.service';
 import * as _ from 'lodash';
 import { FilterOptions } from './options/options';
@@ -14,14 +14,18 @@ export class FilterPage {
 
   facetsFilter: Array<any> = [];
 
+  unregisterBackButton: any;
+
   constructor(
     private navParams: NavParams,
     private popCtrl: PopoverController,
     private navCtrl: NavController,
     private events: Events,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    private platform: Platform
   ) {
     this.init();
+    this.handleBackButton();
   }
 
   openFilterOptions(facet) {
@@ -94,6 +98,16 @@ export class FilterPage {
     } else {
       return false;
     }
+  }
+
+  /**
+   * It will hndle the device back button functionality
+   */
+  handleBackButton() {
+    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+      this.navCtrl.pop();
+    }, 11);
+    this.unregisterBackButton();
   }
 
 }
