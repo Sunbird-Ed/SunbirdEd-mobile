@@ -21,11 +21,15 @@ import {
   PageId,
   Profile,
   ProfileService,
+  ProfileRequest,
   SharedPreferences,
   TabsPage,
   SuggestedFrameworkRequest,
   FrameworkService,
-  FileUtil
+  FileUtil,
+  Rollup,
+  ContentMarkerRequest,
+  MarkerType
 } from 'sunbird';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
@@ -44,9 +48,11 @@ import {
 } from 'sunbird';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import * as _ from 'lodash';
-import { PopoverController } from 'ionic-angular';
+import { PopoverController, Content } from 'ionic-angular';
 import { ProfileSettingsPage } from '../profile-settings/profile-settings';
-
+import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
+import { AlertController } from 'ionic-angular';
+import { DialogPopupComponent } from '../../component/dialog-popup/dialog-popup';
 @IonicPage()
 @Component({
   selector: 'page-qr-code-result',
@@ -107,6 +113,16 @@ export class QrCodeResultPage {
   showLoading: Boolean;
   isDownloadStarted: Boolean;
 
+  public isPlayerLaunched = false;
+  userCount = 0;
+  apiLevel: number;
+  appAvailability: string;
+  downloadAndPlay: boolean;
+  public objRollup: Rollup;
+  /**
+   * To hold previous state data
+   */
+  cardData: any;
   @ViewChild(Navbar) navBar: Navbar;
   downloadProgress: any = 0;
   isDownloadCompleted: boolean;
@@ -119,7 +135,7 @@ export class QrCodeResultPage {
     public translate: TranslateService,
     public platform: Platform,
     private telemetryGeneratorService: TelemetryGeneratorService,
-
+    private alertCtrl: AlertController,
     private appGlobalService: AppGlobalService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private profileService: ProfileService,
@@ -170,6 +186,9 @@ export class QrCodeResultPage {
     this.navBar.backButtonClick = () => {
       this.handleBackButton(InteractSubtype.NAV_BACK_CLICKED);
     };
+    if (!AppGlobalService.isPlayerLaunched) {
+      this.calculateAvailableUserCount();
+    }
   }
 
   ionViewWillLeave() {
@@ -284,7 +303,13 @@ export class QrCodeResultPage {
 
     return false;
   }
-
+  playOnline(content) {
+    if (content.contentData.streamingUrl && !content.isAvailableLocally) {
+      this.playContent(content);
+    } else {
+      this.navigateToDetailsPage(content);
+    }
+  }
   navigateToDetailsPage(content) {
     if (content && content.contentData && content.contentData.contentType === ContentType.COURSE) {
       this.navCtrl.push(EnrolledCourseDetailsPage, {
@@ -308,12 +333,57 @@ export class QrCodeResultPage {
       });
     }
   }
+  calculateAvailableUserCount() {
+    const profileRequest: ProfileRequest = {
+      local: true,
+      server: false
+    };
+    this.profileService.getAllUserProfile(profileRequest).then((profiles) => {
+      if (profiles) {
+        this.userCount = JSON.parse(profiles).length;
+      }
+      if (this.appGlobalService.isUserLoggedIn()) {
+        this.userCount += 1;
+      }
+    }).catch((error) => {
+      console.error('Error occurred= ', error);
+    });
+  }
 
+  /** funtion add elipses to the texts**/
 
+  addElipsesInLongText(msg: string) {
+    if (this.commonUtilService.translateMessage(msg).length >= 12) {
+      return this.commonUtilService.translateMessage(msg).slice(0, 8) + '....';
+    } else {
+      return this.commonUtilService.translateMessage(msg);
+    }
+  }
   /**
-	 * Request with profile data to set current profile
-	 */
-
+     * Play content
+     */
+  playContent(content) {
+    const extraInfoMap = { hierarchyInfo: [] };
+    if (this.cardData && this.cardData.hierarchyInfo) {
+      extraInfoMap.hierarchyInfo = this.cardData.hierarchyInfo;
+    }
+    const req: ContentMarkerRequest = {
+      uid: this.appGlobalService.getCurrentUser().uid,
+      contentId: content.identifier,
+      data: JSON.stringify(content.contentData),
+      marker: MarkerType.PREVIEWED,
+      isMarked: true,
+      extraInfoMap: extraInfoMap
+    };
+    this.contentService.setContentMarker(req)
+      .then((resp) => {
+      }).catch((err) => {
+      });
+    const request: any = {};
+    request.streaming = true;
+    AppGlobalService.isPlayerLaunched = true;
+    (<any>window).geniecanvas.play(content, JSON.stringify(request));
+  }
   editProfile(): void {
     const req: Profile = new Profile();
     req.board = this.profile.board;

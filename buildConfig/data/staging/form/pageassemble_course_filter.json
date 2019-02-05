@@ -57,10 +57,10 @@
                         "index": 5,
                         "values": []
                     },
-                    { 
+                    {
                         "name": "Organization",
                         "translations": "{\"en\":\"Organization\"}",
-                        "code": "organization",
+                        "code": "channel",
                         "frameworkCategory":false,
                         "index": 6,
                         "values": []

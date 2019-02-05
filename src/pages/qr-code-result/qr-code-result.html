@@ -5,7 +5,8 @@
 
     </ion-title>
     <ion-buttons end>
-      <button ion-button clear *ngIf="!appGlobalService?.isUserLoggedIn() && !appGlobalService?.isProfileSettingsCompleted" (click)="skipSteps()">
+      <button ion-button clear *ngIf="!appGlobalService?.isUserLoggedIn() && !appGlobalService?.isProfileSettingsCompleted"
+        (click)="skipSteps()">
         {{'SKIP' | translate}}
       </button>
     </ion-buttons>
@@ -18,16 +19,17 @@
   <div class="card-container" *ngFor="let content of results; let i = index">
     <ion-row class="P010">
       <ul class="breadcrumbs">
-        <li *ngFor="let result of paths[i]" (click)="navigateToDetailsPage(result)">
+        <!-- (click)="showSwitchUserAlert(true)" -->
+        <li *ngFor="let result of paths[i]">
           {{ (result?.contentData?.name?.length>30)? (result?.contentData?.name | slice:0:30)+'...' :
           (result?.contentData?.name) }}
         </li>
       </ul>
     </ion-row>
-    <ion-card (click)="navigateToDetailsPage(content)">
+    <ion-card>
       <ion-row>
         <ion-col col-12>
-          <ion-card-content>
+          <ion-card-content (click)="playOnline(content)">
             <ion-row class="top">
               <ion-col col-3 class="img-container">
                 <img class="app-icon" src="{{ (content.contentData.appIcon && (content.basePath +'/' + content.contentData.appIcon)) || defaultImg }}" />
@@ -39,24 +41,46 @@
                     <p class="author">{{content?.contentData?.creator}}</p>
                   </ion-col>
                   <ion-col col-12 class="bottom-fix">
-                    <span class="badge" *ngIf="content?.contentData?.resourceType"> {{content?.contentData?.resourceType}} </span>
-                    <span class="size" *ngIf="content?.contentData?.size"> {{content?.contentData?.size | fileSize}} </span>
+                    <span class="badge" *ngIf="content?.contentData?.resourceType">
+                      {{content?.contentData?.resourceType}} </span>
+                    <span class="size" *ngIf="content?.contentData?.size"> {{content?.contentData?.size | fileSize}}
+                    </span>
                   </ion-col>
                 </ion-row>
               </ion-col>
-
             </ion-row>
           </ion-card-content>
         </ion-col>
-
       </ion-row>
-      <button class="custom-btn" ion-button block *ngIf="!content?.isAvailableLocally">{{
-        'DOWNLOAD_AND_PLAY' | translate}}</button>
-      <button class="custom-btn play" ion-button block *ngIf="content?.isAvailableLocally">
-        <span class="arrow-right"></span>
-        {{'PLAY' | translate}}
-      </button>
 
+      <ion-toolbar no-padding *ngIf="content.contentData?.streamingUrl  &&  !content.isAvailableLocally">
+        <ion-row no-padding>
+          <ion-col no-padding style="z-index: 100;" (click)="navigateToDetailsPage(content)">
+            <button no-padding ion-button block color="light" style="color:#0D7DFC; z-index: 100;" text-uppercase>
+              <ion-icon name="arrow-round-down"></ion-icon>&nbsp;
+              {{'DOWNLOAD'| translate}}
+            </button>
+          </ion-col>
+          <ion-col no-padding *ngIf="content.contentData?.streamingUrl">
+            <button no-padding class="custom-btn play" ion-button block (click)="playContent(content)">
+              <ion-icon name="play"></ion-icon>&nbsp;{{'PLAY' | translate}}
+            </button>
+          </ion-col>
+        </ion-row>
+      </ion-toolbar>
+
+      <ion-toolbar no-padding *ngIf="content.isAvailableLocally">
+        <button no-padding ion-button block (click)="navigateToDetailsPage(content)" text-uppercase [disabled]="isDownloadStarted">
+          <ion-icon name="play"></ion-icon>&nbsp;{{'PLAY'|translate}}
+        </button>
+      </ion-toolbar>
+
+      <ion-toolbar no-padding *ngIf="!content.contentData?.streamingUrl && !content.isAvailableLocally">
+        <button no-padding ion-button block color="light" style="color:#0D7DFC" (click)="navigateToDetailsPage(content)"
+          text-uppercase>
+          <ion-icon name="arrow-round-down"></ion-icon>&nbsp;{{'DOWNLOAD'| translate}}
+        </button>
+      </ion-toolbar>
     </ion-card>
   </div>
 
