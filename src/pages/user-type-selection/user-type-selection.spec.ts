@@ -1,5 +1,6 @@
+import { ProfileSettingsPage } from './../profile-settings/profile-settings';
 
-import { UserTypeSelectionPage } from "./user-type-selection";
+import { UserTypeSelectionPage } from './user-type-selection';
 import { navCtrlMock,
         navParamsMock,
         translateServiceMock,
@@ -224,6 +225,60 @@ it('backButtonFunc defaults to: undefined', () => {
     expect(navCtrlMock.push).toHaveBeenCalledWith(TabsPage, {
       loginMode: 'guest'
     });
+  });
+
+  it('#goToTabsPage should navigate to profile setting page if isChangeRoleRequest and isUserTypeChanged is true', () => {
+    // arrange
+    userTypeSelectionPage.profile = { handle: 'SAMPLE_NAME', profileType: ProfileType.STUDENT, source: UserSource.LOCAL };
+    userTypeSelectionPage.selectedUserType = ProfileType.TEACHER;
+    userTypeSelectionPage.isChangeRoleRequest = true;
+    appGlobalServiceMock.DISPLAY_ONBOARDING_CATEGORY_PAGE = jest.fn();
+    containerServiceMock.removeAllTabs.mockReturnValue('');
+    // act
+    userTypeSelectionPage.gotoTabsPage(true);
+    // assert
+    expect(containerServiceMock.removeAllTabs).toHaveBeenCalled();
+    expect(navCtrlMock.push).toHaveBeenCalledWith(ProfileSettingsPage, {
+      isChangeRoleRequest: true, selectedUserType: ProfileType.TEACHER
+    });
+  });
+
+  it('#goToTabsPage should navigate to Tabs page if isChangeRoleRequest and isUserTypeChanged is true and Onboarding is false', (done) => {
+    // arrange
+    userTypeSelectionPage.profile = { handle: 'SAMPLE_NAME', profileType: ProfileType.STUDENT, source: UserSource.LOCAL };
+    userTypeSelectionPage.selectedUserType = ProfileType.TEACHER;
+    profileServiceMock.updateProfile.mockResolvedValue('');
+    userTypeSelectionPage.isChangeRoleRequest = true;
+    appGlobalServiceMock.DISPLAY_ONBOARDING_CATEGORY_PAGE = undefined;
+    // act
+    userTypeSelectionPage.gotoTabsPage(true);
+    // assert
+    setTimeout(() => {
+      expect( profileServiceMock.updateProfile).toHaveBeenCalled();
+      expect(navCtrlMock.push).toHaveBeenCalledWith(TabsPage, {
+        loginMode: 'guest'
+      });
+      done();
+    }, 10 );
+  });
+
+  it('#goToTabsPage should not navigate to Tabs page on change role if updateProfile gives error response', (done) => {
+    // arrange
+    userTypeSelectionPage.profile = { handle: 'SAMPLE_NAME', profileType: ProfileType.STUDENT, source: UserSource.LOCAL };
+    userTypeSelectionPage.selectedUserType = ProfileType.TEACHER;
+    profileServiceMock.updateProfile.mockRejectedValue('');
+    userTypeSelectionPage.isChangeRoleRequest = true;
+    appGlobalServiceMock.DISPLAY_ONBOARDING_CATEGORY_PAGE = undefined;
+    // act
+    userTypeSelectionPage.gotoTabsPage(true);
+    // assert
+    setTimeout(() => {
+      expect( profileServiceMock.updateProfile).toHaveBeenCalled();
+      expect(navCtrlMock.push).not.toHaveBeenCalledWith(TabsPage, {
+        loginMode: 'guest'
+      });
+      done();
+    }, 10 );
   });
 
   it('#continue should create a profile if profile is not available', () => {
