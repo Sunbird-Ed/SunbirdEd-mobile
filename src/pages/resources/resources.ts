@@ -824,17 +824,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   classClick(index) {
-    // document.getElementById('asd').animate( 
-    // document.getElementById('asd').scrollTo({top: 0, left: index*75, behaviour: 'smooth'}), 1000);
-    // let a:HTMLElement = document.getElementById('class' + index) as HTMLElement;
-    // a.animate([
-    //   { transform: 'translateX(0px)' },
-    //   { transform: 'translateX(-300px)' }
-    // ], {
-    //   duration: 1000,
-    //   });
-    //   a.animate
-
     for (let i = 0, len = this.categoryGradeLevels.length; i < len; i++) {
       if (i === index ) {
         this.currentGrade = this.categoryGradeLevels[i];
