@@ -62,7 +62,10 @@ export class LanguageSettingsPage {
       this.isFromSettings ? PageId.SETTINGS_LANGUAGE : PageId.ONBOARDING_LANGUAGE_SETTING,
       this.isFromSettings ? Environment.SETTINGS : Environment.ONBOARDING,
     );
+    this.handleBackbutton();
+  }
 
+  handleBackbutton() {
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
       this.telemetryGeneratorService.generateInteractTelemetry(
         InteractType.TOUCH, InteractSubtype.DEVICE_BACK_CLICKED,
@@ -73,12 +76,13 @@ export class LanguageSettingsPage {
       if (this.isFromSettings) {
         this.navCtrl.pop();
       } else {
-        this.platform.exitApp();
-        this.telemetryGeneratorService.generateEndTelemetry('app', '', '', Environment.ONBOARDING);
+        const pId = this.isFromSettings ? PageId.SETTINGS_LANGUAGE : PageId.ONBOARDING_LANGUAGE_SETTING;
+        const env = this.isFromSettings ? Environment.SETTINGS : Environment.ONBOARDING;
+        console.log('from others calling exit popup');
+        this.commonUtilService.showExitPopUp(pId, env, false);
       }
       this.unregisterBackButton();
     }, 10);
-
   }
 
   ionViewWillEnter() {

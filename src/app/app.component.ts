@@ -14,28 +14,28 @@ import {
   TelemetryService,
   UserProfileService
 } from 'sunbird';
-import {ProfileSettingsPage} from './../pages/profile-settings/profile-settings';
-import {Component, NgZone, ViewChild} from '@angular/core';
-import {App, Events, Nav, Platform, PopoverController, ToastController} from 'ionic-angular';
-import {StatusBar} from '@ionic-native/status-bar';
-import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, LOGIN_TEACHER_TABS} from './module.service';
-import {LanguageSettingsPage} from '../pages/language-settings/language-settings';
-import {ImageLoaderConfig} from 'ionic-image-loader';
-import {TranslateService} from '@ngx-translate/core';
-import {SearchPage} from '../pages/search/search';
-import {CollectionDetailsPage} from '../pages/collection-details/collection-details';
-import {ContentDetailsPage} from '../pages/content-details/content-details';
-import {generateInteractTelemetry} from './telemetryutil';
-import {ContentType, EventTopics, GenericAppConfig, MimeType, PreferenceKey, ProfileConstants} from './app.constant';
-import {EnrolledCourseDetailsPage} from '../pages/enrolled-course-details/enrolled-course-details';
-import {FormAndFrameworkUtilService} from '../pages/profile/formandframeworkutil.service';
-import {AppGlobalService} from '../service/app-global.service';
-import {UserTypeSelectionPage} from '../pages/user-type-selection/user-type-selection';
-import {CommonUtilService} from '../service/common-util.service';
-import {TelemetryGeneratorService} from '../service/telemetry-generator.service';
-import {BroadcastComponent} from '../component/broadcast/broadcast';
-import {CategoriesEditPage} from '@app/pages/categories-edit/categories-edit';
-import {TncUpdateHandlerService} from '@app/service/handlers/tnc-update-handler.service';
+import { ProfileSettingsPage } from './../pages/profile-settings/profile-settings';
+import { Component, NgZone, ViewChild } from '@angular/core';
+import { App, Events, Nav, Platform, PopoverController, ToastController, AlertController } from 'ionic-angular';
+import { StatusBar } from '@ionic-native/status-bar';
+import { GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, LOGIN_TEACHER_TABS } from './module.service';
+import { LanguageSettingsPage } from '../pages/language-settings/language-settings';
+import { ImageLoaderConfig } from 'ionic-image-loader';
+import { TranslateService } from '@ngx-translate/core';
+import { SearchPage } from '../pages/search/search';
+import { CollectionDetailsPage } from '../pages/collection-details/collection-details';
+import { ContentDetailsPage } from '../pages/content-details/content-details';
+import { generateInteractTelemetry } from './telemetryutil';
+import { ContentType, EventTopics, GenericAppConfig, MimeType, PreferenceKey, ProfileConstants } from './app.constant';
+import { EnrolledCourseDetailsPage } from '../pages/enrolled-course-details/enrolled-course-details';
+import { FormAndFrameworkUtilService } from '../pages/profile/formandframeworkutil.service';
+import { AppGlobalService } from '../service/app-global.service';
+import { UserTypeSelectionPage } from '../pages/user-type-selection/user-type-selection';
+import { CommonUtilService } from '../service/common-util.service';
+import { TelemetryGeneratorService } from '../service/telemetry-generator.service';
+import { BroadcastComponent } from '../component/broadcast/broadcast';
+import { CategoriesEditPage } from '@app/pages/categories-edit/categories-edit';
+import { TncUpdateHandlerService } from '@app/service/handlers/tnc-update-handler.service';
 
 declare var chcp: any;
 
@@ -214,20 +214,20 @@ export class MyApp {
               that.userProfileService.getUserProfileDetails(req, res => {
                 const r = JSON.parse(res);
                 that.formAndFrameworkUtilService.updateLoggedInUser(r, profile)
-                .then( (value) => {
-                  if (value['status']) {
-                    this.nav.setRoot(TabsPage);
-                    initTabs(that.containerService, LOGIN_TEACHER_TABS);
-                    // that.rootPage = TabsPage;
-                  } else {
-                    that.nav.setRoot(CategoriesEditPage, {showOnlyMandatoryFields: true, profile: value['profile']});
-                  }
-                }).catch( () => {
-                  that.nav.setRoot(CategoriesEditPage, {showOnlyMandatoryFields: true});
-                });
+                  .then((value) => {
+                    if (value['status']) {
+                      this.nav.setRoot(TabsPage);
+                      initTabs(that.containerService, LOGIN_TEACHER_TABS);
+                      // that.rootPage = TabsPage;
+                    } else {
+                      that.nav.setRoot(CategoriesEditPage, { showOnlyMandatoryFields: true, profile: value['profile'] });
+                    }
+                  }).catch(() => {
+                    that.nav.setRoot(CategoriesEditPage, { showOnlyMandatoryFields: true });
+                  });
               }, err => {
                 console.log('err', err);
-                that.nav.setRoot(CategoriesEditPage, {showOnlyMandatoryFields: true});
+                that.nav.setRoot(CategoriesEditPage, { showOnlyMandatoryFields: true });
               });
             }
           });
@@ -305,26 +305,15 @@ export class MyApp {
   }
 
   handleBackButton() {
-    const self = this;
     this.platform.registerBackButtonAction(() => {
 
-      const navObj = self.app.getActiveNavs()[0];
+      const navObj = this.app.getActiveNavs()[0];
       const currentPage = navObj.getActive().name;
 
       if (navObj.canGoBack()) {
-        navObj.pop();
+        return navObj.pop();
       } else {
-        if (self.counter === 0) {
-          self.counter++;
-          this.commonUtilService.showToast('BACK_TO_EXIT');
-          this.telemetryGeneratorService.generateBackClickedTelemetry(this.computePageId(currentPage), Environment.HOME, false);
-          setTimeout(() => { self.counter = 0; }, 1500);
-        } else {
-          this.telemetryGeneratorService.generateBackClickedTelemetry(this.computePageId(currentPage), Environment.HOME, false);
-          self.platform.exitApp();
-          this.telemetryGeneratorService.generateEndTelemetry('app', '', '', Environment.HOME);
-
-        }
+        this.commonUtilService.showExitPopUp(this.computePageId(currentPage), Environment.HOME, false);
       }
     });
   }

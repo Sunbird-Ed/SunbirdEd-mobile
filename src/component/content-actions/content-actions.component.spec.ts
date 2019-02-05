@@ -43,15 +43,11 @@ describe('ContentActionPage Component', () => {
     expect(contentActions).toBeTruthy();
   });
 
-  it('#getUserId should return empty string if user is not logged in', (done) => {
+  it('#getUserId should return empty string if user is not logged in', () => {
     expect(contentActions.getUserId).toBeDefined();
     contentActions.getUserId();
     authServiceMock.getSessionData.mock.calls[0][0].call(contentActions, 'null');
-    setTimeout(() => {
-      expect(contentActions.getUserId).toHaveBeenCalled();
-      expect(contentActions.userId).toEqual('');
-      done();
-    }, 0);
+    expect(contentActions.userId).toEqual('');
   });
 
   it('#getUserId should set userId to empty string', (done) => {
