@@ -22,7 +22,8 @@ export class EditContactDetailsPopupComponent {
   type: string;
   backButtonFunc = undefined;
   err: boolean;
-  personEditForm: any;
+  personEditForm: FormGroup;
+  isRequired: Boolean = false;
 
   constructor(private navParams: NavParams, public viewCtrl: ViewController, public platform: Platform,
     private userProfileService: UserProfileService, private loadingCtrl: LoadingController,
@@ -41,10 +42,15 @@ export class EditContactDetailsPopupComponent {
     this.initEditForm();
   }
   initEditForm() {
-    this.personEditForm = this.fb.group({
-      email: ['', Validators.pattern('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$')],
-      phone: ['']
-    });
+    if (this.type === ProfileConstants.CONTACT_TYPE_EMAIL) {
+      this.personEditForm = this.fb.group({
+        email: ['', Validators.compose([Validators.required, Validators.pattern('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$')])],
+      });
+    } else {
+      this.personEditForm = this.fb.group({
+        phone: ['', Validators.compose([Validators.required])],
+      });
+    }
   }
 
 
