@@ -16,6 +16,9 @@ import {
   ShareUtil,
   TelemetryService,
   UserProfileService,
+  UpdateUserInfoRequest,
+  UserExistRequest,
+  GenerateOTPRequest,
   GroupService} from 'sunbird';
 
 import {
@@ -45,7 +48,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { TncUpdateHandlerService } from '@app/service/handlers/tnc-update-handler.service';
 import { LogoutHandlerService } from '@app/service/handlers/logout-handler.service';
 import { DomSanitizer } from '@angular/platform-browser';
-// 'import { ImageLoader } from 'ionic-image-loader';
+import { ImageLoader } from 'ionic-image-loader';
 export type Mockify<T> = {
   [P in keyof T]: jest.Mock<{}>;
 };
@@ -99,7 +102,9 @@ export const userProfileServiceMock = createSpyObj<UserProfileService>([
   'getUserProfileDetails',
   'getTenantInfo',
   'searchLocation',
-  'updateUserInfo'
+  'updateUserInfo',
+  'isAlreadyInUse',
+  'generateOTP'
 ]);
 
 export const profileServiceMock = createSpyObj<ProfileService>([
@@ -255,7 +260,8 @@ export const formAndFrameworkUtilServiceMock = createSpyObj<FormAndFrameworkUtil
   'getFrameworkDetails',
   'getCategoryData',
   'getCourseFrameworkId',
-  'getRootOrganizations'
+  'getRootOrganizations',
+  'getCustodianOrgId'
 ]);
 
 export const loadingControllerMock = createSpyObj<LoadingController>([
@@ -373,7 +379,17 @@ export const alertControllerMock = createSpyObj<AlertController>([
 export const toastControllerMock = createSpyObj<ToastController>([
   'create'
 ]);
-export const imageLoaderMock = createSpyObj<imageLoader>([
+export const imageLoaderMock = createSpyObj<ImageLoader>([
 
 ]);
 
+export const updateUserInfoRequestMock = createSpyObj<UpdateUserInfoRequest>([
+
+]);
+export const userExistRequestMock = createSpyObj<UserExistRequest>([
+
+]);
+
+export const generateOTPRequestMock = createSpyObj<GenerateOTPRequest>([
+
+]);

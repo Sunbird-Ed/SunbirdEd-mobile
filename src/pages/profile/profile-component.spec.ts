@@ -21,10 +21,12 @@ import {
     contentServiceMock,
     viewControllerMock
 } from '../../__tests__/mocks';
-const CategoriesEditPage = {} as any;
-const CollectionDetailsPage = {} as any;
-const EnrolledCourseDetailsPage = {} as any;
-const ContentDetailsPage = {} as any;
+ import { PersonalDetailsEditPage } from '../profile/personal-details-edit.profile/personal-details-edit.profile';
+ import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
+ import { CollectionDetailsPage } from '../collection-details/collection-details';
+ import { ContentDetailsPage } from '../content-details/content-details';
+import { CategoriesEditPage } from '../categories-edit/categories-edit';
+
 
 describe('ProfilePage', () => {
     let profilePage: ProfilePage;
@@ -36,11 +38,16 @@ describe('ProfilePage', () => {
                 return true;
             }
             spyOn(appGlobalServiceMock, 'openPopover').and.stub();
-            spyOn(profilePage, 'updateLocalProfile').and.stub();
+            // spyOn(profilePage, 'updateLocalProfile').and.stub();
         });
+        formAndFrameworkUtilServiceMock.getCustodianOrgId.mockResolvedValue('0126632859575746566');
+        const loader = {
+            present: jest.fn(),
+            dismiss: jest.fn()
+        };
+
         profilePage = new ProfilePage(
-            navCtrlMock as any,
-            popoverCtrlMock as any,
+            navCtrlMock as any,          popoverCtrlMock as any,
             userProfileServiceMock as any,
             zoneMock as any,
             authServiceMock as any,
@@ -80,16 +87,14 @@ describe('ProfilePage', () => {
             present: jest.fn(),
             dismiss: jest.fn()
         };
-        commonUtilServiceMock.getLoader.mockReturnValue(loader);
+        loadingControllerMock.create.mockReturnValue(loader);
         spyOn(profilePage, 'refreshProfileData').and.returnValue(Promise.resolve(['hfhgf']));
         // act
-        profilePage.doRefresh();
-        // assert
-        setTimeout(() => {
+        profilePage.doRefresh().then(() => {
             expect(eventsMock.publish).toHaveBeenCalledWith('refresh:profile');
             expect(loader.dismiss).toHaveBeenCalled();
             done();
-        }, 1000);
+        });
     });
     it('it should call dofresher() to refresh profile ', (done) => {
         // arrange
@@ -97,10 +102,10 @@ describe('ProfilePage', () => {
             present: jest.fn(),
             dismiss: jest.fn()
         };
+        loadingControllerMock.create.mockReturnValue(loader);
         const refresher = {
             complete: jest.fn()
         };
-        commonUtilServiceMock.getLoader.mockReturnValue(loader);
         refresher.complete();
         // act
         profilePage.doRefresh('profile');
@@ -108,7 +113,7 @@ describe('ProfilePage', () => {
         setTimeout(() => {
             expect(refresher.complete).toHaveBeenCalled();
             done();
-        }, 1000);
+        }, 0);
     });
     it('it should call dofresher() to error scenario ', () => {
         // arrange
@@ -119,13 +124,15 @@ describe('ProfilePage', () => {
         const refresher = {
             complete: jest.fn()
         };
-        commonUtilServiceMock.getLoader.mockReturnValue(loader);
+        profilePage.loader = loader;
+        loadingControllerMock.create.mockReturnValue(loader);
         spyOn(profilePage, 'refreshProfileData').and.returnValue(Promise.reject('error'));
         refresher.complete();
         // act
         profilePage.doRefresh();
         // assert
         expect(profilePage.refreshProfileData).toHaveBeenCalled();
+        expect(profilePage.isRefreshProfile).toBe(true);
     });
     it('it should call resetprofile() to reset profile info', () => {
         // arrange
@@ -138,7 +145,6 @@ describe('ProfilePage', () => {
 
     it('it should call refreshProfileData() to refresh profile data', (done) => {
         // arrang
-
         spyOn(authServiceMock, 'getSessionData').and.returnValue(Promise.resolve(mockProfileRes.sessionMock));
         profileServiceMock.setCurrentProfile.mockResolvedValue(mockProfileRes.profileDetailsMock);
         profileServiceMock.getCurrentUser.mockResolvedValue(mockProfileRes.profileDetailsMock);
@@ -147,22 +153,33 @@ describe('ProfilePage', () => {
             status: 'SOME_STATUS',
             profile: 'SOME_PROFILE'
         });
-        // profilePage.formatRoles.;
-        // profilePage.formatOrgDetails();
         // act
 
         profilePage.refreshProfileData();
         // assert
         setTimeout(() => {
             expect(authServiceMock.getSessionData).toHaveBeenCalled();
-            // expect(contentServiceMock.getContentDetail).toBeCalledWith(expect.objectContaining({
-            //     status: 'SOME_STATUS',
-            //     profile: 'SOME_PROFILE'
-            // }));
             done();
-        }, 10);
+        }, 0);
+    });
+    it('should show check the formatRoles() method ', () => {
+        // arrange
+        profilePage.roles = [''];
+        profilePage.profile = mockProfileRes.profileDetailsMock;
+        // act
+        profilePage.formatRoles();
+        // assert
+        expect(profilePage.profile).toBeTruthy();
     });
 
+    it('should show check the format user locations() ', () => {
+        // arrangw
+        profilePage.profile = mockProfileRes.profileDetailsMock;
+        // act
+        profilePage.formatUserLocation();
+        // assert
+        expect(profilePage.profile).toBeTruthy();
+    });
 
     it('it should call formatOrgDetails()', () => {
         // arrange
@@ -198,6 +215,11 @@ describe('ProfilePage', () => {
         profilePage.showOverflowMenu('event');
         expect(popoverCtrlMock.create).toHaveBeenCalled();
         expect(popUpMock.present).toHaveBeenCalled();
+    });
+
+    it('should show more Items in skills list ', () => {
+        profilePage.rolesLimit = 1;
+        profilePage.showMoreItems();
     });
 
     it('it should call showMoreBadges() to badge assertion', () => {
@@ -247,6 +269,7 @@ describe('ProfilePage', () => {
             'refreshEnrolledCourses': true,
             'returnRefreshedEnrolledCourses': true
         };
+        profilePage.trainingsCompleted = [''];
         courseServiceMock.getEnrolledCourses.mockResolvedValue(JSON.stringify(mockProfileRes.getEnrolledCourses));
 
         // act
@@ -274,6 +297,12 @@ describe('ProfilePage', () => {
         }, 0);
     });
 
+    it('it should call the isResource page', () => {
+        // arrange
+        // act
+        profilePage.isResource('content');
+        // assert
+    });
     it('it should call navigateToDetailPage() to course or content detail page', (done) => {
         // arrange
         const values = new Map();
@@ -286,7 +315,6 @@ describe('ProfilePage', () => {
         // act
         profilePage.navigateToDetailPage('content', 'Layout', 0);
         // assert
-
         setTimeout(() => {
             expect(navCtrlMock.push).toHaveBeenCalled();
             expect(navCtrlMock.push).toHaveBeenCalledWith(EnrolledCourseDetailsPage, { content: 'content' });
@@ -327,21 +355,279 @@ describe('ProfilePage', () => {
         // assert
         expect(commonUtilServiceMock.showToast).toHaveBeenCalledWith('NEED_INTERNET_TO_CHANGE');
     });
-
-    it('it should call searchContent() to search the content  which is created by the user', () => {
+    it('it should call navigateToEditPersonalDetails() for to navigate to Personals edit page ', () => {
         // arrange
-        (contentServiceMock.searchContent as any).mockReturnValue(Promise.resolve(JSON.stringify(mockProfileRes.searchResultResponse)));
+        commonUtilServiceMock.networkInfo = { isNetworkAvailable: true } as any;
+        // act
+        profilePage.navigateToEditPersonalDetails();
+        // assert
+        expect(navCtrlMock.push).toHaveBeenCalledWith(PersonalDetailsEditPage, { 'profile': {} });
+    });
+
+    it('it should call navigateToEditPersonalDetails() show a toast msg if network not available', () => {
+        // arrange
+        commonUtilServiceMock.networkInfo = { isNetworkAvailable: false } as any;
+        // act
+        profilePage.navigateToEditPersonalDetails();
+        // assert
+        expect(commonUtilServiceMock.showToast).toHaveBeenCalledWith('NEED_INTERNET_TO_CHANGE');
+    });
+
+    it('it should call searchContent() to search the content  which is created by the user', (done) => {
+        // arrange
+        const contentSortCriteria = {
+            sortAttribute: 'lastUpdatedOn',
+            sortOrder: 'SortOrder.DESC'
+        };
+        const result = {
+            result: {
+                contentDataList: {
+                    createdBy: ['this.userId' || 'this.loggedInUserId'],
+                    limit: 100,
+                    contentTypes: 'ContentType.FOR_PROFILE_TAB',
+                    sortCriteria: ['contentSortCriteria']
+                }
+            }
+        };
+    contentServiceMock.searchContent.mockResolvedValue(JSON.stringify(result));
         // act
         profilePage.searchContent();
         // assert
-        expect(contentServiceMock.searchContent).toHaveBeenCalled();
+        setTimeout(() => {
+            expect(contentServiceMock.searchContent).toHaveBeenCalled();
+            done();
+        }, 0);
     });
     it('it should call searchContent() to search the content  which is for error scenario', () => {
         // arrange
+        const contentSortCriteria = {
+            sortAttribute: 'lastUpdatedOn',
+            sortOrder: 'SortOrder.DESC'
+        };
+        const contentSearchCriteria = {
+            createdBy: ['this.userId' || 'this.loggedInUserId'],
+            limit: 100,
+            contentTypes: 'ContentType.FOR_PROFILE_TAB',
+            sortCriteria: ['contentSortCriteria']
+        };
         (contentServiceMock.searchContent as any).mockRejectedValue(Promise.resolve(JSON.stringify(mockProfileRes.searchResultResponse)));
         // act
         profilePage.searchContent();
         // assert
         expect(contentServiceMock.searchContent).toHaveBeenCalled();
+    });
+    it('it should call the popup for edit the mobile number', () => {
+        // arrange
+        const popUpMock = {
+            present: jest.fn(),
+            onDidDismiss: jest.fn()
+        };
+        popUpMock.present.mockImplementation(() => { });
+        popoverCtrlMock.create.mockReturnValue(popUpMock);
+        // act
+        profilePage.editMobileNumber({});
+        // assert
+        expect(commonUtilServiceMock.translateMessage).toHaveBeenCalledWith('EDIT_PHONE_POPUP_TITLE');
+        expect(popoverCtrlMock.create).toHaveBeenCalled();
+        expect(popUpMock.present).toHaveBeenCalled();
+    });
+    it('it should call the popup onDidDismiss for editMobileNumber', () => {
+        // arrange
+        const popUpMock = {
+            present: jest.fn(),
+            onDidDismiss: jest.fn()
+        };
+        popUpMock.onDidDismiss.mockImplementation((edited, key) => {
+            edited(true);
+            // spyOn(profilePage, 'callOTPPopover').and.stub();
+        });
+        popUpMock.present.mockImplementation(() => { });
+        popoverCtrlMock.create.mockReturnValue(popUpMock);
+        // act
+        profilePage.editMobileNumber({});
+        // assert
+        expect(commonUtilServiceMock.translateMessage).toHaveBeenCalledWith('EDIT_PHONE_POPUP_TITLE');
+        expect(popUpMock.onDidDismiss).toHaveBeenCalled();
+        expect(popUpMock.present).toHaveBeenCalled();
+    });
+    it('it should call the popup create method ', () => {
+        // arrange
+        const popUpMock = {
+            present: jest.fn(),
+            onDidDismiss: jest.fn()
+        };
+        const ProfileConstants = {
+            CONTACT_TYPE_EMAIL: 'email'
+        };
+        popUpMock.onDidDismiss.mockImplementation((edited, key) => {
+            edited(true);
+            // spyOn(profilePage, 'callOTPPopover').and.stub();
+        });
+        popUpMock.present.mockImplementation(() => { });
+        popoverCtrlMock.create.mockReturnValue(popUpMock);
+        // act
+        profilePage.editEmail({});
+        // assert
+        expect(commonUtilServiceMock.translateMessage).toHaveBeenCalledWith('EDIT_EMAIL_POPUP_TITLE');
+        expect(popUpMock.onDidDismiss).toHaveBeenCalled();
+        expect(popUpMock.present).toHaveBeenCalled();
+    });
+
+    it('it should call the callOTPPopover method to check for validation of phone number ', () => {
+        // arrange
+        const popUpMock = {
+            present: jest.fn(),
+            onDidDismiss: jest.fn()
+        };
+        const ProfileConstants = {
+            CONTACT_TYPE_EMAIL: 'someemail.com',
+            CONTACT_TYPE_PHONE: '9xxxxxxxx9',
+        };
+        commonUtilServiceMock.translateMessage('VERIFY_PHONE_OTP_TITLE');
+        popUpMock.present.mockImplementation(() => { });
+        popoverCtrlMock.create.mockReturnValue(popUpMock);
+        popUpMock.onDidDismiss.mockImplementation((OTPSuccess, phone, errCb) => {
+            OTPSuccess(true);
+            spyOn(profilePage, 'updatePhoneInfo').and.stub();
+        });        // act
+        profilePage.callOTPPopover('9xxxxxxxx9', 'any');
+        // assert
+        expect(popoverCtrlMock.create).toHaveBeenCalled();
+        expect(popUpMock.onDidDismiss).toHaveBeenCalled();
+        expect(popUpMock.present).toHaveBeenCalled();
+    });
+    it('it should call the callOTPPopover method to check for validation for email ', () => {
+        // arrange
+        const popUpMock = {
+            present: jest.fn(),
+            onDidDismiss: jest.fn()
+        };
+        const ProfileConstants = {
+            CONTACT_TYPE_EMAIL: 'someemail.com',
+            CONTACT_TYPE_PHONE: '9xxxxxxxx9',
+        };
+        popUpMock.present.mockImplementation(() => { });
+        popoverCtrlMock.create.mockReturnValue(popUpMock);
+        popUpMock.onDidDismiss.mockImplementation((OTPSuccess, phone, errCb) => {
+            OTPSuccess(true);
+            spyOn(profilePage, 'updatePhoneInfo').and.stub();
+        });
+        // act
+        profilePage.callOTPPopover('someemail.com', 'any');
+        // assert
+        expect(popoverCtrlMock.create).toHaveBeenCalled();
+        expect(popUpMock.onDidDismiss).toHaveBeenCalled();
+        expect(commonUtilServiceMock.translateMessage).toHaveBeenCalledWith('VERIFY_EMAIL_OTP_DESCRIPTION');
+        expect(popUpMock.present).toHaveBeenCalled();
+    });
+
+    it('it should call the updatePhoneInfo for updation ', () => {
+        // arrange
+        const loader = {
+            present: jest.fn(),
+            dismiss: jest.fn()
+        };
+        loadingControllerMock.create.mockReturnValue(loader);
+        const popUpMock = {
+            present: jest.fn(),
+            onDidDismiss: jest.fn()
+        };
+        const ProfileConstants = {
+            CONTACT_TYPE_EMAIL: 'someemail.com',
+            CONTACT_TYPE_PHONE: '9xxxxxxxx9',
+            phoneVerified: true
+        };
+        spyOn(profilePage, 'doRefresh').and.stub();
+
+        userProfileServiceMock.updateUserInfo.mockImplementation((req, resCb, errCb) => {
+            resCb(JSON.stringify(ProfileConstants));
+        });
+        popoverCtrlMock.create.mockReturnValue(popUpMock);
+        // act
+        profilePage.updatePhoneInfo('9xxxxxxxx9');
+        // assert
+        expect(commonUtilServiceMock.translateMessage).toHaveBeenCalledWith('PHONE_EDIT_SUCCESS');
+    });
+    it('it should call the updatePhoneInfo for error scenario ', () => {
+        // arrange
+        const loader = {
+            present: jest.fn(),
+            dismiss: jest.fn()
+        };
+        loadingControllerMock.create.mockReturnValue(loader);
+        const popUpMock = {
+            present: jest.fn(),
+            onDidDismiss: jest.fn()
+        };
+        const ProfileConstants = {
+            CONTACT_TYPE_EMAIL: 'someemail.com',
+            CONTACT_TYPE_PHONE: '9xxxxxxxx9',
+            phoneVerified: true
+        };
+        spyOn(profilePage, 'doRefresh').and.stub();
+
+        userProfileServiceMock.updateUserInfo.mockImplementation((req, resCb, errCb) => {
+            errCb(JSON.stringify({ 'error': 'err' }));
+        });
+        popoverCtrlMock.create.mockReturnValue(popUpMock);
+        // act
+        profilePage.updatePhoneInfo('9xxxxxxxx9');
+        // assert
+        expect(commonUtilServiceMock.translateMessage).toHaveBeenCalledWith('SOMETHING_WENT_WRONG');
+    });
+
+    it('it should call the updateEmailInfo for updation ', () => {
+        // arrange
+        const loader = {
+            present: jest.fn(),
+            dismiss: jest.fn()
+        };
+        loadingControllerMock.create.mockReturnValue(loader);
+        const popUpMock = {
+            present: jest.fn(),
+            onDidDismiss: jest.fn()
+        };
+        const ProfileConstants = {
+            CONTACT_TYPE_EMAIL: 'someemail.com',
+            CONTACT_TYPE_PHONE: '9xxxxxxxx9',
+            phoneVerified: true
+        };
+        spyOn(profilePage, 'doRefresh').and.stub();
+
+        userProfileServiceMock.updateUserInfo.mockImplementation((req, resCb, errCb) => {
+            resCb(JSON.stringify(ProfileConstants));
+        });
+        popoverCtrlMock.create.mockReturnValue(popUpMock);
+        // act
+        profilePage.updateEmailInfo('someemail');
+        // assert
+        expect(commonUtilServiceMock.translateMessage).toHaveBeenCalledWith('EMAIL_EDIT_SUCCESS');
+    });
+    it('it should call the updateEmailInfo for error scenario ', () => {
+        // arrange
+        const loader = {
+            present: jest.fn(),
+            dismiss: jest.fn()
+        };
+        loadingControllerMock.create.mockReturnValue(loader);
+        const popUpMock = {
+            present: jest.fn(),
+            onDidDismiss: jest.fn()
+        };
+        const ProfileConstants = {
+            CONTACT_TYPE_EMAIL: 'someemail.com',
+            CONTACT_TYPE_PHONE: '9xxxxxxxx9',
+            phoneVerified: true
+        };
+        spyOn(profilePage, 'doRefresh').and.stub();
+
+        userProfileServiceMock.updateUserInfo.mockImplementation((req, resCb, errCb) => {
+            errCb(JSON.stringify({ 'error': 'err' }));
+        });
+        popoverCtrlMock.create.mockReturnValue(popUpMock);
+        // act
+        profilePage.updateEmailInfo('someemail.com');
+        // assert
+        expect(commonUtilServiceMock.translateMessage).toHaveBeenCalledWith('SOMETHING_WENT_WRONG');
     });
 });
