@@ -10,7 +10,7 @@ import {
 import { EnrolledCourseDetailsPage } from '../../../pages/enrolled-course-details/enrolled-course-details';
 import { CollectionDetailsPage } from '../../../pages/collection-details/collection-details';
 import { ContentDetailsPage } from '../../../pages/content-details/content-details';
-import { ContentType, MimeType, ContentCard, PreferenceKey } from '../../../app/app.constant';
+import { ContentType, MimeType, ContentCard, PreferenceKey, CardSectionName } from '../../../app/app.constant';
 import { CourseUtilService } from '../../../service/course-util.service';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 import { InteractType, InteractSubtype, TelemetryObject, SharedPreferences } from 'sunbird';
@@ -19,10 +19,10 @@ import { InteractType, InteractSubtype, TelemetryObject, SharedPreferences } fro
  * The course card component
  */
 @Component({
-  selector: 'course-card',
-  templateUrl: 'course-card.html'
+  selector: 'resource-card',
+  templateUrl: 'resource-card.html'
 })
-export class CourseCard implements OnInit {
+export class ResourceCard implements OnInit {
 
   /**
    * Contains course details
@@ -62,6 +62,8 @@ export class CourseCard implements OnInit {
   layoutPopular = ContentCard.LAYOUT_POPULAR;
   layoutSavedContent = ContentCard.LAYOUT_SAVED_CONTENT;
   batchExp: Boolean = false;
+  savedResourcesSection = CardSectionName.SECTION_SAVED_RESOURCES;
+  recentViewedSection = CardSectionName.SECTION_RECENT_RESOURCES;
 
   /**
    * Default method of class CourseCard
@@ -156,9 +158,6 @@ export class CourseCard implements OnInit {
     contentContextMap['userId'] = content.userId;
     contentContextMap['courseId'] = content.courseId;
     contentContextMap['batchId'] = content.batchId;
-    if (content.batch) {
-      contentContextMap['batchStatus'] = content.batch.status;
-    }
 
     // store the contentContextMap in shared preference and access it from SDK
     this.preference.putString(PreferenceKey.CONTENT_CONTEXT, JSON.stringify(contentContextMap));

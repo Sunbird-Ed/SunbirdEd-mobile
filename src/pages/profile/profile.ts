@@ -294,8 +294,6 @@ export class ProfilePage {
     }
   }
 
-  /**
-   */
   formatUserLocation() {
     if (this.profile && this.profile.userLocations && this.profile.userLocations.length) {
       for (let i = 0, len = this.profile.userLocations.length; i < len; i++) {
@@ -583,7 +581,8 @@ export class ProfilePage {
       email: this.profile.email,
       title: this.commonUtilService.translateMessage('EDIT_EMAIL_POPUP_TITLE'),
       description: '',
-      type: 'email'
+      type: 'email',
+      userId: this.profile.userId
     }, {
         cssClass: 'popover-alert'
       });
