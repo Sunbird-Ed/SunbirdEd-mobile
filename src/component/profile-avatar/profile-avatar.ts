@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnChanges } from '@angular/core';
 import { setTimeout } from 'timers';
 
 /**
@@ -11,7 +11,7 @@ import { setTimeout } from 'timers';
   selector: 'profile-avatar',
   templateUrl: 'profile-avatar.html'
 })
-export class ProfileAvatarComponent implements OnInit {
+export class ProfileAvatarComponent implements OnInit, OnChanges {
   @Input() username: string;
   bgColor: string;
   color: string;
@@ -21,17 +21,16 @@ export class ProfileAvatarComponent implements OnInit {
   }
 
   ngOnInit() {
-    // const initials = this.username.match(/\b\w/g) || [];
-    const splitter = new this.GraphemeSplitter();
-    const split: string[] = splitter.splitGraphemes(this.username.trim());
-    console.log('Username Array++', split);
-   const temp = [this.username.trim().substr(0, 1)];
-    const initials = temp || [];
-   // this.initial = ((initials.shift() || '') + (initials.pop() || '')).toUpperCase();
-   this.initial = split[0];
-    if (this.initial) {
-      this.getBgColor(this.username);
-    }
+    this.extractInitial();
+  }
+
+  /**
+   * It will detect the changes of username and call the extractInitial() method
+   * @param changes
+   */
+  ngOnChanges(changes: any) {
+    this.username = changes.username.currentValue;
+    this.extractInitial();
   }
 
   getBgColor(pname) {
@@ -39,6 +38,7 @@ export class ProfileAvatarComponent implements OnInit {
     this.color = this.getContrast(this.bgColor);
     // return { 'background-color': bgColor, 'color': color, 'opacity': 0.9 };
   }
+
   /*Get color Hex code by passing a string*/
   stringToColor(str) {
     let hash = 0;
@@ -54,6 +54,7 @@ export class ProfileAvatarComponent implements OnInit {
     }
     return colour;
   }
+
   /*Get text contrast by passing background hex color*/
   getContrast(hexcolor) {
     const r = parseInt(hexcolor.substr(1, 2), 16);
@@ -63,5 +64,18 @@ export class ProfileAvatarComponent implements OnInit {
     return (color >= 128) ? '#000000' : '#ffffff';
   }
 
-
+  /**
+ * It will extract the first character of the user name and return with different BG color
+ */
+  extractInitial() {
+    const splitter = new this.GraphemeSplitter();
+    const split: string[] = splitter.splitGraphemes(this.username.trim());
+    const temp = [this.username.trim().substr(0, 1)];
+    const initials = temp || [];
+    // this.initial = ((initials.shift() || '') + (initials.pop() || '')).toUpperCase();
+    this.initial = split[0];
+    if (this.initial) {
+      this.getBgColor(this.username);
+    }
+  }
 }
