@@ -152,7 +152,7 @@
   "ERROR_FETCHING_DATA": "Unable to fetch data ",
   "ERROR_FLAG_CONTENT_MIN_REASON": "Select at least one reason to flag the content",
   "ERROR_INVALID_AADHAAR": "Check Aadhaar number format",
-  "ERROR_NAME_INVALID": "Enter a valid name",
+  "ERROR_NAME_INVALID": "Enter a valid name. Only alphabets are allowed.",
   "ERROR_NO_ATTACHMENTS": "No attachment",
   "ERROR_NO_BATCHES_FOUND": "There are no batches for this course",
   "ERROR_NO_COURSES_ENROLLED": "Not enrolled in any course",
