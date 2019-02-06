@@ -1,3 +1,4 @@
+import { Search } from './../../app/app.constant';
 import { FormAndFrameworkUtilService } from './../profile/formandframeworkutil.service';
 import {
   Component,
@@ -19,7 +20,8 @@ import {
   ProfileType,
   PageAssembleFilter,
   FrameworkService,
-  CategoryRequest
+  CategoryRequest,
+  ContentSearchCriteria
 } from 'sunbird';
 import {
   NavController,
@@ -442,24 +444,26 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       }
     }
     console.log('pageAssembleCriteria', pageAssembleCriteria);
-    this.pageService.getPageAssemble(pageAssembleCriteria)
-      .then((res: any) => {
+    const getGroupByPageReq: ContentSearchCriteria = pageAssembleCriteria.filters;
+    getGroupByPageReq.mode = 'hard';
+    getGroupByPageReq.facets = Search.FACETS_ETB;
+    this.contentService.getGroupByPage(getGroupByPageReq, this.guestUser)
+      .then((response: any) => {
         that.ngZone.run(() => {
-          const response = JSON.parse(res);
           // TODO Temporary code - should be fixed at backend
           const sections = JSON.parse(response.sections);
           const newSections = [];
           sections.forEach(element => {
-            element.display = JSON.parse(element.display);
-            if (element.display.name) {
-              if (_.has(element.display.name, this.selectedLanguage)) {
-                const langs = [];
-                _.forEach(element.display.name, (value, key) => {
-                  langs[key] = value;
-                });
-                element.name = langs[this.selectedLanguage];
-              }
-            }
+            // element.display = JSON.parse(element.display);
+            // if (element.display.name) {
+            //   if (_.has(element.display.name, this.selectedLanguage)) {
+            //     const langs = [];
+            //     _.forEach(element.display.name, (value, key) => {
+            //       langs[key] = value;
+            //     });
+            //     element.name = langs[this.selectedLanguage];
+            //   }
+            // }
             newSections.push(element);
           });
           // END OF TEMPORARY CODE
