@@ -1,3 +1,82 @@
+/*
+ Global styles starts
+*/
+$newColors: (
+        primary:#024f9d,
+        primary-light: #90c7ff,
+        secondary: #90c7ff,
+        secondary-light: #979797,
+        light-black: #515151,
+        light-grey: #979797,
+        white: #fff,
+        danger: #e55a28,
+        dark-danger:#db4437,
+        success: #008840,
+        yellow-gold: #f8e71c,
+        light-blue: #7fa3ff
+      );
+
+.horizontal-scroll {
+  display: flex;
+  overflow-x: auto;
+}
+
+.separator-dot{
+  width: 4px;
+  height: 4px;
+  background-color: #d8d8d8;
+  border-radius:50%;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.separator-line {
+  height: 1px;
+  opacity: 0.36;
+  background-color: #979797;
+  width: 100%;
+}      
+
+.white{
+  color: map-get($newColors, white);
+}
+
+.yellow-gold{
+  color: map-get($newColors , yellow-gold)
+}
+
+.light-black {
+  color: map-get($newColors, light-black);
+}
+
+.bg-white{
+  background-color: #fff;
+}
+
+.bg-sucess{
+  background-color: map-get($newColors, success);
+}
+
+.bg-primary{
+  background-color: map-get($newColors, primary);
+}
+
+.bg-danger{
+  background-color: map-get($newColors, danger);
+}
+.bg-dark-danger{
+  background-color: map-get($newColors, dark-danger);
+}
+
+.danger {
+  color: map-get($newColors, danger);
+}
+
+/*
+ Global styles ends
+*/
+
+
 page-resources {
     .inner {
         width: auto;
@@ -6,6 +85,12 @@ page-resources {
         course-card {
           display: table-cell;
         }
+
+        resource-card {
+          display: table-cell;
+        }
+
+
       }
       .inprogress-courses {
         .bottom-container{
@@ -109,4 +194,74 @@ page-resources {
     .middle {
       margin-top: 45%;
     }
+
+    .medium-pill {
+      min-width: 120px;
+      // height: 30px;
+      height: 100%;
+      // border-radius: 2px !important;
+      // box-shadow: 0 0 4px 0 rgba(21, 18, 18, 0.24);
+      background-color: transparent;
+      color: map-get($newColors, primary);
+      font-size: 14px;
+      font-weight: bold;
+      font-style: normal;
+      font-stretch: normal;
+      line-height: 1.57;
+      letter-spacing: -0.5px;
+      text-align: center;
+      line-height: normal;
+      letter-spacing: -0.5px;
+      text-transform: capitalize;
+      opacity: 0.7;
+      padding: 15px 0;
+      @include margin(0, 12, 0, 0);
+  
+      &.active {
+        // color: #ffffff;
+        // background-color: #008840;
+        border-bottom: 2px solid map-get($newColors, primary);
+        opacity: 1;
+      }
+  
+      &:last-child {
+        @include margin(0, 30, 0, 0);
+      }
+    }
+
+    .class-filter-cotainer {
+      box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+      background-color: #f4f4f4;
+    }
+  
+    .class-pill {
+      min-width: 75px;
+      // height: 30px;
+      // border-radius: 15px !important;
+      // box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.12);
+      // background-color: #ffffff;
+      color: map-get($newColors, primary);
+      font-size: 12px;
+      font-weight: bold;
+      font-style: normal;
+      font-stretch: normal;
+      line-height: 1.67;
+      letter-spacing: -0.5px;
+      text-align: center;
+      color: #024f9d;
+      text-transform: capitalize;
+      opacity: 0.7;
+      @include margin(0, 12, 0, 0);
+      &.active {
+        // box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.19);
+        // background-color: #024f9d;
+        // color: #ffffff;
+        opacity: 1;
+      }
+      &:last-child {
+        @include margin(0, 30, 0, 0);
+      }
+    }
 }
+
+
