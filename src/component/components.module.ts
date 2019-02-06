@@ -1,8 +1,10 @@
 import { ContentRatingAlertComponent } from './content-rating-alert/content-rating-alert';
 import { TranslateModule } from '@ngx-translate/core';
 import { PipesModule } from './../pipes/pipes.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { CourseCard } from './card/course/course-card';
+import { ResourceCard } from './card/resource/resource-card';
 import { IncompleteProfileCard } from './card/incomplete-profile/incomplete-profile-card';
 import { HomeAnnouncementCard } from './card/home/home-announcement-card';
 import { IonicPageModule, IonicModule } from 'ionic-angular';
@@ -48,7 +50,8 @@ import { EditContactDetailsPopupComponent } from './edit-contact-details-popup/e
         BookmarkComponent,
         UnenrollAlertComponent,
         EditContactDetailsPopupComponent,
-        EditContactVerifyPopupComponent
+        EditContactVerifyPopupComponent,
+        ResourceCard
     ],
     imports: [
         IonicPageModule.forChild(CourseCard),
@@ -56,8 +59,10 @@ import { EditContactDetailsPopupComponent } from './edit-contact-details-popup/e
         Ionic2RatingModule,
         IonicImageLoader,
         PipesModule,
+        BrowserAnimationsModule,
         NgxDatatableModule,
-        IonicModule
+        IonicModule,
+        IonicPageModule.forChild(ResourceCard)
     ],
     exports: [
         CourseCard,
@@ -78,7 +83,8 @@ import { EditContactDetailsPopupComponent } from './edit-contact-details-popup/e
         BookmarkComponent,
         UnenrollAlertComponent,
         EditContactDetailsPopupComponent,
-        EditContactVerifyPopupComponent
+        EditContactVerifyPopupComponent,
+        ResourceCard
         // ContentActionsComponent
     ],
     entryComponents: [
