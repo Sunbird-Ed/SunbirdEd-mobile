@@ -1,4 +1,5 @@
 import { CollectionDetailsPage } from './../../pages/collection-details/collection-details';
+import { CollectionDetailsEtbPage } from './../../pages/collection-details-etb/collection-details-etb';
 import { ContentDetailsPage } from './../../pages/content-details/content-details';
 import { EnrolledCourseDetailsPage } from './../../pages/enrolled-course-details/enrolled-course-details';
 
@@ -69,7 +70,8 @@ export class ViewMoreCardComponent implements OnInit {
           content: content
         });
       } else if (content.mimeType === MimeType.COLLECTION) {
-        this.navCtrl.push(CollectionDetailsPage, {
+        // this.navCtrl.push(CollectionDetailsPage, {
+          this.navCtrl.push(CollectionDetailsEtbPage, {
           content: content
         });
       } else {

@@ -605,6 +605,8 @@ export class CollectionDetailsEtbPage {
    * Function to set child contents
    */
   setChildContents() {
+    const loader = this.commonUtilService.getLoader();
+    loader.present();
     const hierarchyInfo = this.cardData.hierarchyInfo ? this.cardData.hierarchyInfo : null;
     const option = { contentId: this.identifier, hierarchyInfo: hierarchyInfo }; // TODO: remove level
     this.contentService.getChildContents(option)
@@ -613,6 +615,7 @@ export class CollectionDetailsEtbPage {
         this.zone.run(() => {
           if (data && data.result && data.result.children) {
             this.childrenData = data.result.children;
+            loader.dismiss();
           }
 
           if (!this.isDepthChild) {
@@ -694,7 +697,16 @@ export class CollectionDetailsEtbPage {
       }
     });
   }
-
+  navigateToContentPage(content: any, depth) {
+    const stateData = this.navParams.get('contentState');
+    this.navCtrl.push(ContentDetailsPage, {
+      isChildContent: true,
+      content: content,
+      depth: depth,
+      contentState: stateData,
+      corRelation: this.corRelationList
+    });
+  }
   /**
    * Reset all values
    */

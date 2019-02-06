@@ -72,19 +72,24 @@
             <ion-col col-11>
               <div class="font-blue-text"> {{item?.contentData?.name}}</div>
             </ion-col>
-            <ion-col col-1>
+            <ion-col col-1 *ngIf="!isGroupShown(i)">
               <div>
                 <ion-icon ios="ios-arrow-dropdown" md="md-arrow-dropdown" class="font-blue"></ion-icon>
               </div>
             </ion-col>
+            <ion-col col-1 *ngIf="isGroupShown(i)">
+                <div>
+                  <ion-icon ios="ios-arrow-dropup" md="md-arrow-dropup" class="font-blue"></ion-icon>
+                </div>
+              </ion-col>
           </ion-row>
           </ion-grid>
           <div class="hidden-content" *ngIf="isGroupShown(i) && (item?.children && item?.children?.length)">
               <div class="separator-line"></div>
               <div>
                 <div class="firstChildren" *ngFor="let childrenItem of item?.children; let j = index;">
-                  <div class="P10 MT5" *ngIf="childrenItem?.contentData?.mimeType === 'application/vnd.ekstep.content-collection'">{{childrenItem?.contentData?.name}} </div>
-                  <ion-row *ngIf="childrenItem?.contentData?.mimeType === 'application/vnd.ekstep.ecml-archive'">
+                  <!-- <div class="P10 MT5" *ngIf="childrenItem?.contentData?.mimeType === 'application/vnd.ekstep.content-collection'">{{childrenItem?.contentData?.name}} </div> -->
+                  <ion-row *ngIf="childrenItem?.contentData?.mimeType !== 'application/vnd.ekstep.content-collection'" (click)="navigateToDetailsPage(childrenItem, depth + '.' + (i + 1))">
                     <ion-col col-1>
                       <div>
                         <ion-icon ios="ios-arrow-dropright-circle" md="md-arrow-dropright-circle" class="play-icon"></ion-icon>
@@ -94,6 +99,9 @@
                       <div [ngClass]="{'text-selected':childrenItem?.isAvailableLocally,'text-unselected':!childrenItem?.isAvailableLocally}">{{childrenItem?.contentData?.name}} <span><ion-icon class="checkmark-icon" name="checkmark-circle-outline" *ngIf="childrenItem?.isAvailableLocally"></ion-icon></span></div>
                     </ion-col>
                   </ion-row>
+                  <ion-row *ngIf="childrenItem?.contentData?.mimeType === 'application/vnd.ekstep.content-collection'" class="MT5">
+                        <div class="font-grey-text">{{childrenItem?.contentData?.name}} <span> <ion-icon ios="ios-alert" md="md-alert" class="grey-icon ML5"></ion-icon></span></div> 
+                    </ion-row>
                 </div>
                 <!-- <div class="secondChildren">
                   <div class="separator-line"></div>
