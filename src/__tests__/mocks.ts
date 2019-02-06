@@ -102,7 +102,9 @@ export const userProfileServiceMock = createSpyObj<UserProfileService>([
   'getUserProfileDetails',
   'getTenantInfo',
   'searchLocation',
-  'updateUserInfo'
+  'updateUserInfo',
+  'isAlreadyInUse',
+  'generateOTP'
 ]);
 
 export const profileServiceMock = createSpyObj<ProfileService>([
