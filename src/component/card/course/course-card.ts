@@ -156,6 +156,9 @@ export class CourseCard implements OnInit {
     contentContextMap['userId'] = content.userId;
     contentContextMap['courseId'] = content.courseId;
     contentContextMap['batchId'] = content.batchId;
+    if (content.batch) {
+      contentContextMap['batchStatus'] = content.batch.status;
+    }
 
     // store the contentContextMap in shared preference and access it from SDK
     this.preference.putString(PreferenceKey.CONTENT_CONTEXT, JSON.stringify(contentContextMap));
