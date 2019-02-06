@@ -95,7 +95,6 @@ export class ProfilePage {
   startLimit = 0;
   custodianOrgId: string;
   isCustodianOrgId: boolean;
-  loader: any;
   contentCreatedByMe: any = [];
   orgDetails: {
     'state': '',
