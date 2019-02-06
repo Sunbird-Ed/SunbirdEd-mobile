@@ -1,4 +1,3 @@
-import 'jest';
 import { EditContactDetailsPopupComponent } from './edit-contact-details-popup';
 import { Validators, FormControl, FormGroup, FormBuilder } from '@angular/forms';
 import { Profile, GenerateOTPRequest } from 'sunbird';
