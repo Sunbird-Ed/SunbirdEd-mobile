@@ -106,8 +106,8 @@ export class FilterPage {
   handleBackButton() {
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
       this.navCtrl.pop();
+      this.unregisterBackButton();
     }, 11);
-    this.unregisterBackButton();
   }
 
 }
