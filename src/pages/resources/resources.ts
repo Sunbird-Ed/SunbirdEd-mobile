@@ -444,9 +444,20 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       }
     }
     console.log('pageAssembleCriteria', pageAssembleCriteria);
-    const getGroupByPageReq: ContentSearchCriteria = pageAssembleCriteria.filters;
+    const getGroupByPageReq: ContentSearchCriteria = {};
+    if (pageAssembleCriteria.filters.gradeLevel) {
+    getGroupByPageReq.grade = [pageAssembleCriteria.filters.gradeLevel[0]];
+  }
+    if  (pageAssembleCriteria.filters.medium) {
+    getGroupByPageReq.medium = [pageAssembleCriteria.filters.medium[0]];
+    }
+    if (pageAssembleCriteria.filters.board) {
+    getGroupByPageReq.board = [pageAssembleCriteria.filters.board[0]];
+  }
     getGroupByPageReq.mode = 'hard';
     getGroupByPageReq.facets = Search.FACETS_ETB;
+    getGroupByPageReq.contentTypes = ['TextBook'];
+    getGroupByPageReq.grade = pageAssembleCriteria.filters.gradeLevel;
     this.contentService.getGroupByPage(getGroupByPageReq, this.guestUser)
       .then((response: any) => {
         that.ngZone.run(() => {
@@ -455,15 +466,15 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           const newSections = [];
           sections.forEach(element => {
             // element.display = JSON.parse(element.display);
-            // if (element.display.name) {
-            //   if (_.has(element.display.name, this.selectedLanguage)) {
-            //     const langs = [];
-            //     _.forEach(element.display.name, (value, key) => {
-            //       langs[key] = value;
-            //     });
-            //     element.name = langs[this.selectedLanguage];
-            //   }
-            // }
+            if (element.display.name) {
+              if (_.has(element.display.name, this.selectedLanguage)) {
+                const langs = [];
+                _.forEach(element.display.name, (value, key) => {
+                  langs[key] = value;
+                });
+                element.name = langs[this.selectedLanguage];
+              }
+            }
             newSections.push(element);
           });
           // END OF TEMPORARY CODE
