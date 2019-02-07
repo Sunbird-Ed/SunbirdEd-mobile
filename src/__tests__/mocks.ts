@@ -104,6 +104,8 @@ export const userProfileServiceMock = createSpyObj<UserProfileService>([
   'searchLocation',
   'updateUserInfo',
   'isAlreadyInUse',
+  'generateOTP',
+  'verifyOTP',
   'generateOTP'
 ]);
 
