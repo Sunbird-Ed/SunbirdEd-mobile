@@ -500,7 +500,7 @@ export class MyApp {
       });
     } else if (content.mimeType === MimeType.COLLECTION) {
       console.log('Calling collection details page');
-      this.nav.push(CollectionDetailsPage, {
+       this.nav.push(CollectionDetailsPage, {
         content: content
       });
     } else {
