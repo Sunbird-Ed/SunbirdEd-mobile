@@ -65,6 +65,7 @@ import {
   stagger,
   group,
 } from '@angular/animations';
+import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-details-etb';
 
 @Component({
   selector: 'page-resources',
@@ -145,7 +146,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   categoryMediums: any;
   current_index: any;
   currentGrade: any;
-
+  defaultImg: string;
   constructor(
     public navCtrl: NavController,
     private pageService: PageAssembleService,
@@ -175,6 +176,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       .then((appName: any) => {
         this.appLabel = appName;
       });
+      this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
 
   subscribeUtilityEvents() {
@@ -849,5 +851,11 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       }
     }
     document.getElementById('gradeScroll').scrollTo({top: 0, left: index * 75, behavior: 'smooth'});
+  }
+
+  navigateToDetailPage(item) {
+    this.navCtrl.push(CollectionDetailsEtbPage, {
+      content: item
+    });
   }
 }
