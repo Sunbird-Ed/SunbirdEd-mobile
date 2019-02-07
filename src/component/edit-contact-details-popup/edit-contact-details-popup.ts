@@ -48,7 +48,7 @@ export class EditContactDetailsPopupComponent {
       });
     } else {
       this.personEditForm = this.fb.group({
-        phone: ['', Validators.compose([Validators.required])],
+        phone: ['', Validators.compose([Validators.required,  Validators.pattern('^[0-9]+$')])],
       });
     }
   }

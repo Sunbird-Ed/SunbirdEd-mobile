@@ -196,7 +196,9 @@ export class PersonalDetailsEditPage {
     }
     if (this.profileEditForm.value.districts && this.profileEditForm.value.districts.length) {
       const tempDistrict = this.districtList.find(district => district.id === this.profileEditForm.value.districts);
-      req.locationCodes.push(tempDistrict.code);
+      if (tempDistrict) {
+        req.locationCodes.push(tempDistrict.code);
+      }
     }
 
     this.userProfileService.updateUserInfo(req,
