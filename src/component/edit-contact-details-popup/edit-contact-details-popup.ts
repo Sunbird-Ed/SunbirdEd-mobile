@@ -48,7 +48,7 @@ export class EditContactDetailsPopupComponent {
       });
     } else {
       this.personEditForm = this.fb.group({
-        phone: ['', Validators.compose([Validators.required,  Validators.pattern('^[0-9]+$')])],
+        phone: ['', Validators.compose([Validators.required, Validators.pattern('^[0-9]+$')])],
       });
     }
   }
@@ -96,6 +96,12 @@ export class EditContactDetailsPopupComponent {
         });
     } else {
       this.commonUtilService.showToast('INTERNET_CONNECTIVITY_NEEDED');
+    }
+  }
+
+  phoneNumberErr() {
+    if (this.err) {
+      this.err = false;
     }
   }
 
