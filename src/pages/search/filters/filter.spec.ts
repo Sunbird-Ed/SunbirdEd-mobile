@@ -1,13 +1,10 @@
 import { mockRes } from '../filters/filter.spec.data';
 import {
-    navParamsMock, popoverCtrlMock,
-    navCtrlMock, eventsMock,
-    commonUtilServiceMock,
-    loadingControllerMock
+    navParamsMock, popoverCtrlMock, navCtrlMock, eventsMock,
+    commonUtilServiceMock, loadingControllerMock, platformMock
 } from '../../../__tests__/mocks';
 import { FilterPage } from './filter';
-import { PopoverControllerMock, NavControllerMock } from 'ionic-mocks';
-import { platformMock } from '../../../__tests__/mocks';
+
 
 describe.only('FilterPage', () => {
 
@@ -45,7 +42,7 @@ describe.only('FilterPage', () => {
         // arrange
         navParamsMock.get.mockImplementation((arg: string) => {
             if (arg === 'filterCriteria') {
-                return  mockRes.filterCriteria;
+                return mockRes.filterCriteria;
             }
         });
         spyOn(filterPage, 'getFilterValues').and.returnValue('facets');
@@ -105,7 +102,7 @@ describe.only('FilterPage', () => {
     });
     it('should return selected option count when getSelectedOptionCount()', () => {
         // arrange
-        const facet = {values: [{'apply': true, 'count': 0, 'name': 'Live'}]};
+        const facet = { values: [{ 'apply': true, 'count': 0, 'name': 'Live' }] };
         const count = 2;
         commonUtilServiceMock.translateMessage.mockReturnValue('FILTER_ADDED');
         // act
