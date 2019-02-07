@@ -55,7 +55,7 @@ export class FilterPage {
     return '';
   }
 
-  private init() {
+  init() {
     this.filterCriteria = this.navParams.get('filterCriteria');
     const filters: Array<any> = [];
     this.filterCriteria.facets.forEach(facet => {
