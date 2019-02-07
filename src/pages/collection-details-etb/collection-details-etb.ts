@@ -177,7 +177,8 @@ export class CollectionDetailsEtbPage {
    * Rating comment
    */
   ratingComment = '';
-
+  // defaultIcon
+  defaultAppIcon: string;
   /**
    * Telemetry roll up object
    */
@@ -218,6 +219,7 @@ export class CollectionDetailsEtbPage {
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
     this.getBaseURL();
+    this.defaultAppIcon = 'assets/imgs/ic_launcher.png';
   }
 
   ionViewDidLoad() {
@@ -244,7 +246,6 @@ export class CollectionDetailsEtbPage {
       this.isAlreadyEnrolled = this.navParams.get('isAlreadyEnrolled');
       this.isChildClickable = this.navParams.get('isChildClickable');
       this.facets = this.facets = this.navParams.get('facets');
-
 
       // check for parent content
       this.parentContent = this.navParams.get('parentContent');
@@ -586,6 +587,7 @@ export class CollectionDetailsEtbPage {
           this.isDownloadStarted = false;
           this.showLoading = false;
           if (Boolean(this.isUpdateAvailable)) {
+          //  this.showChildrenLoader = true;
             this.setChildContents();
           } else {
             const errorRes = JSON.parse(error);
@@ -605,8 +607,6 @@ export class CollectionDetailsEtbPage {
    * Function to set child contents
    */
   setChildContents() {
-    const loader = this.commonUtilService.getLoader();
-    loader.present();
     const hierarchyInfo = this.cardData.hierarchyInfo ? this.cardData.hierarchyInfo : null;
     const option = { contentId: this.identifier, hierarchyInfo: hierarchyInfo }; // TODO: remove level
     this.contentService.getChildContents(option)
@@ -615,7 +615,6 @@ export class CollectionDetailsEtbPage {
         this.zone.run(() => {
           if (data && data.result && data.result.children) {
             this.childrenData = data.result.children;
-            loader.dismiss();
           }
 
           if (!this.isDepthChild) {
