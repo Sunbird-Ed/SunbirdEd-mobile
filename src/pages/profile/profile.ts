@@ -295,14 +295,22 @@ export class ProfilePage {
   }
 
   formatUserLocation() {
-    if (this.profile && this.profile.userLocations && this.profile.userLocations.length) {
-      for (let i = 0, len = this.profile.userLocations.length; i < len; i++) {
+    const len = this.profile.userLocations.length;
+    if (len === 2) {
+      for (let i = 0; i < len; i++) {
         if (this.profile.userLocations[i].type === 'state') {
           this.userLocation.state = this.profile.userLocations[i];
         } else {
           this.userLocation.district = this.profile.userLocations[i];
         }
       }
+    } else if (len === 1) {
+      this.userLocation.state = this.profile.userLocations[len - 1];
+      this.userLocation.district = [];
+
+    } else if (len === 0) {
+      this.userLocation.state = [];
+      this.userLocation.district = [];
     }
   }
 
