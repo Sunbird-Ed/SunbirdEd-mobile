@@ -5,7 +5,6 @@
   Ionic pages and navigation.
 -->
 <ion-header>
-
   <ion-navbar>
     <ion-title>
       <!-- <ion-icon md="md-share" float-right></ion-icon> -->
@@ -19,7 +18,6 @@
       </button>
     </ion-buttons>
   </ion-navbar>
-
 </ion-header>
 
 
@@ -58,7 +56,7 @@
         </div>
         <div class="right">
           <div class="img-container">
-            <img src="{{contentDetail?.appIcon || defaultAppIcon}}">
+            <img src="{{ localImage || contentDetail?.appIcon || defaultAppIcon}}">
           </div>
         </div>
       </div>
@@ -78,11 +76,6 @@
         <ion-spinner padding></ion-spinner>
       </ion-col>
     </ion-row>
-  </div>
-  <div text-center *ngIf="childrenData?.length === 0 && !showChildrenLoader">
-    <img src="assets/imgs/ic_coming_soon.png" width="110px" height="80px" />
-    <h4><b>{{ 'UNIT_COMING_SOON' | translate }}</b></h4>
-    <p>{{ 'CONTENT_CREATING' | translate }}</p>
   </div>
   <!-- End import content -->
 
@@ -213,122 +206,21 @@
       </div>
     </ion-card>
   </section>
-  <!-- <section class="MT10">
-    <ion-card class="P5 M0">
-      <ion-grid class="P0">
-        <ion-row (click)="toggleGroup(1)">
-          <ion-col col-11>
-            <div class="font-blue-text"> UNIT 1.2</div>
-          </ion-col>
-          <ion-col col-1>
-            <div>
-              <ion-icon ios="ios-arrow-dropdown" md="md-arrow-dropdown" class="font-blue"></ion-icon>
-            </div>
-          </ion-col>
-        </ion-row>
-        </ion-grid>
-        <div class="hidden-content" *ngIf="isGroupShown(1)">
-            <div class="separator-line"></div>
-            <div>
-              <div class="firstChildren">
-                <div class="P10 MT5">Vedic Culture in North India </div>
-                <ion-row>
-                  <ion-col col-1>
-                    <div>
-                      <ion-icon ios="ios-arrow-dropright-circle" md="md-arrow-dropright-circle" class="play-icon"></ion-icon>
-                    </div>
-                  </ion-col>
-                  <ion-col col-11>
-                    <div class="font-blue-text">Advent of Aryans</div>
-                  </ion-col>
-                </ion-row>
-                <ion-row>
-                  <ion-col col-1>
-                    <div>
-                      <ion-icon ios="ios-arrow-dropright-circle" md="md-arrow-dropright-circle" class="play-icon"></ion-icon>
-                    </div>
-                  </ion-col>
-                  <ion-col col-11>
-                    <div [ngClass]="{'text-selected':isSelected,'text-unselected':!isSelected}" (click)="changeValue($event,'vedicperiod')" >Vedic Period
-                      <span><ion-icon class="checkmark-icon" name="checkmark-circle-outline" *ngIf="isSelected"></ion-icon></span>
-                    </div>
-                    <div class="font-blue-text"> Vedic Period<ion-icon class="checkmark-icon" name="checkmark-circle-outline"></ion-icon>
-                    </div>
-                  </ion-col>
-                </ion-row>
-              </div>
-              <div class="secondChildren">
-                <div class="separator-line"></div>
-                <div class="P10 MT5">Aryans and their home in India </div>
-                <ion-row>
-                  <ion-col col-1>
-                    <div>
-                      <ion-icon ios="ios-alert" md="md-alert" class="grey-icon"></ion-icon>
-                    </div>
-                  </ion-col>
-                  <ion-col col-11>
-                    <div class="font-grey-text">Vedic Period</div>
-                  </ion-col>
-                </ion-row>
-              </div>
-              
-              <div class="thirdChildren">
-                <div class="separator-line"></div>
-                <div class="P5 MT5">MEGHALITHIC IRON AGE IN TAMILNADU </div>
-                <div class="P5 MT5">Tamilnadu Excavation </div>
-                <ion-row>
-                  <ion-col col-1>
-                    <div>
-                      <ion-icon ios="ios-arrow-dropright-circle" md="md-arrow-dropright-circle" class="play-icon"></ion-icon>
-                    </div>
-                  </ion-col>
-                  <ion-col col-11>
-                      <div [ngClass]="{'text-selected':isSelected,'text-unselected':!isSelected}" (click)="changeValue($event,'paleo')" >Paleolithic Discoveries
-                          <span><ion-icon class="checkmark-icon" name="checkmark-circle-outline" *ngIf="isSelected"></ion-icon></span>
-                        </div>
-                    <div class="font-blue-text"> Paleolithic Discoveries<ion-icon class="checkmark-icon" name="checkmark-circle-outline"></ion-icon>
-                    </div>
-                  </ion-col>
-                </ion-row>
-              </div>
-              <div class="separator-line"></div>
-              <div class="P10 MT5">Exercises </div>
-              <ion-row>
-                <ion-col col-1>
-                  <div>
-                    <ion-icon ios="ios-arrow-dropright-circle" md="md-arrow-dropright-circle" class="play-icon"></ion-icon>
-                  </div>
-                </ion-col>
-                <ion-col col-11>
-                  <div class="font-blue-text">Vedic Culture in North India and Megalithic Culture in South India</div>
-                </ion-col>
-              </ion-row>
-            </div>
-          </div>
-    </ion-card>
-  </section> -->
-
-
-  <!-- <section class="MT10">
-    <ion-card class="P5 M0">
-      <ion-grid class="P0">
-        <ion-row>
-          <ion-col col-11>
-            <div class="font-blue-text"> Social Science Term 1, Social Science Term 2, Social Science Term 3, and all
-              other Assessments for 2001, 2002, 2003,
-              2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018</div>
-          </ion-col>
-          <ion-col col-1>
-            <div>
-              <ion-icon name="arrow-dropdown" class="font-blue"></ion-icon>
-            </div>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-    </ion-card>
-  </section> -->
-
 </ion-content>
+
+ <!-- Page footer -->
+ <ion-footer *ngIf="showDownloadBtn && !isDepthChild">
+	<ion-toolbar padding>
+		<button ion-button block *ngIf="showDownloadBtn && !isDownloadStarted" (click)="showDownloadConfirmationAlert()"> {{
+			'DOWNLOAD_ALL_CONTENT' | translate }} ({{(downloadSize | fileSize)
+			}})
+		</button>
+		<button *ngIf="isDownloadStarted" ion-button block outline [ngStyle]="{'background': '-webkit-linear-gradient(left, #DBECFF '  +(currentCount/queuedIdentifiers.length)*100+ '%, white 0%)'}">
+			{{ 'DOWNLOADING_2' | translate }}... {{ currentCount }} / {{ queuedIdentifiers?.length }}
+		</button>
+	</ion-toolbar>
+</ion-footer>
+
 <ion-backdrop class="loading-backdrop" *ngIf="showLoading && !isDownloadStarted" text-center>
   <div class="backdrop-container">
     <ion-label>{{ 'LOADING_CONTENTS' | translate: {'%s': downloadProgress ? downloadProgress : 0} }}</ion-label>
