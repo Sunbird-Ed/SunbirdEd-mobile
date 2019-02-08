@@ -26,7 +26,7 @@
 	<!-- <div> -->
 	<div class="horizontal-scroll  PLR16px bg-white">
 		<!-- <button ion-button class="medium-pill active">English medium</button> -->
-		<a class="medium-pill" *ngFor="let medium of categoryMediums; let i = index; let first = first" [ngClass]="{'active': first}" [@appear]>{{medium?.name}} Medium</a>
+		<a class="medium-pill" *ngFor="let medium of categoryMediums; let i = index;" [ngClass]="{'active': medium?.selected}" [@appear] (click)="mediumClick(i)">{{medium?.name}} Medium</a>
 	</div>
 
 	<div class="horizontal-scroll PTB10 PLR16px class-filter-cotainer" id="gradeScroll" [@ScrollHorizontal]="{value: currentGrade?.selected, params: {left_indent: current_index * 72}}">

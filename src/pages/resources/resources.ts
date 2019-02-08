@@ -137,6 +137,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   mode = 'soft';
   isFilterApplied = false;
   pageFilterCallBack: PageFilterCallback;
+  getGroupByPageReq: ContentSearchCriteria = {};
 
   layoutPopular = ContentCard.LAYOUT_POPULAR;
   layoutSavedContent = ContentCard.LAYOUT_SAVED_CONTENT;
@@ -147,9 +148,12 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   current_index: any;
   currentGrade: any;
   defaultImg: string;
+  firstloadClassData = true;
+  firstloadMediumData = true;
+  currentClassIndex: number;
+  currentMediumIndex: number;
   constructor(
     public navCtrl: NavController,
-    private pageService: PageAssembleService,
     private ngZone: NgZone,
     private contentService: ContentService,
     private qrScanner: SunbirdQRScanner,
@@ -446,23 +450,30 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       }
     }
     console.log('pageAssembleCriteria', pageAssembleCriteria);
-    const getGroupByPageReq: ContentSearchCriteria = {};
     if (pageAssembleCriteria.filters.gradeLevel) {
-    getGroupByPageReq.grade = [pageAssembleCriteria.filters.gradeLevel[0]];
+    this.getGroupByPageReq.grade = [pageAssembleCriteria.filters.gradeLevel[0]];
   }
     if  (pageAssembleCriteria.filters.medium) {
-    getGroupByPageReq.medium = [pageAssembleCriteria.filters.medium[0]];
+    this.getGroupByPageReq.medium = [pageAssembleCriteria.filters.medium[0]];
     }
     if (pageAssembleCriteria.filters.board) {
-    getGroupByPageReq.board = [pageAssembleCriteria.filters.board[0]];
+    this.getGroupByPageReq.board = [pageAssembleCriteria.filters.board[0]];
   }
-    getGroupByPageReq.mode = 'hard';
-    getGroupByPageReq.facets = Search.FACETS_ETB;
-    getGroupByPageReq.contentTypes = ['TextBook'];
-    getGroupByPageReq.grade = pageAssembleCriteria.filters.gradeLevel;
-    this.contentService.getGroupByPage(getGroupByPageReq, this.guestUser)
+    this.getGroupByPageReq.mode = 'hard';
+    this.getGroupByPageReq.facets = Search.FACETS_ETB;
+    this.getGroupByPageReq.contentTypes = ['TextBook'];
+    this.getGroupByPageReq.grade = pageAssembleCriteria.filters.gradeLevel;
+    this.getGroupByPage(isAfterLanguageChange);
+  }
+
+  getGroupByPage(isAfterLanguageChange = false) {
+    this.storyAndWorksheets = [];
+    const loader = this.commonUtilService.getLoader();
+    loader.present();
+    this.contentService.getGroupByPage(this.getGroupByPageReq, this.guestUser)
       .then((response: any) => {
-        that.ngZone.run(() => {
+        loader.dismiss();
+        this.ngZone.run(() => {
           // TODO Temporary code - should be fixed at backend
           const sections = JSON.parse(response.sections);
           const newSections = [];
@@ -480,7 +491,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             newSections.push(element);
           });
           // END OF TEMPORARY CODE
-          that.storyAndWorksheets = newSections;
+          this.storyAndWorksheets = newSections;
           this.pageLoadedSuccess = true;
           this.pageApiLoader = false;
           // this.noInternetConnection = false;
@@ -490,7 +501,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       })
       .catch(error => {
         console.log('error while getting popular resources...', error);
-        that.ngZone.run(() => {
+        loader.dismiss();
+        this.ngZone.run(() => {
           this.pageApiLoader = false;
           if (error === 'CONNECTION_ERROR') {
           } else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
@@ -499,7 +511,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         });
       });
   }
-
   generateExtraInfoTelemetry(sectionsCount) {
     const values = new Map();
     values['savedItemVisible'] = (this.localResources && this.localResources.length) ? 'Y' : 'N';
@@ -718,6 +729,12 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             }
           }
         this.categoryMediums = categoryMediumsParam;
+        if (this.firstloadMediumData) {
+          this.mediumClick(0);
+          this.firstloadMediumData = false;
+        } else {
+          this.mediumClick(this.currentMediumIndex);
+        }
         console.log('this.appGlobalService.getCurrentUser().medium[0]', this.appGlobalService.getCurrentUser().medium[0]);
         console.log('this.categoryMediums ========', this.categoryMediums);
     }
@@ -734,82 +751,17 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       .then(res => {
         const category = JSON.parse(res);
         this.categoryGradeLevels = category.terms;
+        if (this.firstloadClassData) {
+          this.classClick(0);
+          this.firstloadClassData = false;
+        } else {
+          this.classClick(this.currentClassIndex);
+        }
       })
       .catch(err => {
         console.log('Something went wrong!');
       });
   }
-
-  showFilter() {
-    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-      InteractSubtype.FILTER_BUTTON_CLICKED,
-      Environment.HOME,
-      PageId.LIBRARY, undefined);
-
-    const that = this;
-    this.pageFilterCallBack = {
-      applyFilter(filter, appliedFilter) {
-        const criteria = new PageAssembleCriteria();
-        criteria.name = PageName.RESOURCE;
-        criteria.filters = filter;
-        criteria.mode = 'hard';
-        that.resourceFilter = appliedFilter;
-        that.appliedFilter = filter;
-
-        let filterApplied = false;
-        that.isFilterApplied = false;
-
-        const values = new Map();
-        values['filters'] = filter;
-        that.telemetryGeneratorService.generateInteractTelemetry(
-          InteractType.OTHER,
-          InteractSubtype.APPLY_FILTER_CLICKED,
-          Environment.HOME,
-          PageId.LIBRARY_PAGE_FILTER,
-          undefined,
-          values
-        );
-
-        Object.keys(that.appliedFilter).forEach(key => {
-          if (that.appliedFilter[key].length > 0) {
-            filterApplied = true;
-            that.isFilterApplied = true;
-          }
-        });
-
-        if (filterApplied) {
-          criteria.mode = 'hard';
-          that.filterIcon = './assets/imgs/ic_action_filter_applied.png';
-        } else {
-          criteria.mode = 'soft';
-          that.filterIcon = './assets/imgs/ic_action_filter.png';
-        }
-
-        that.getPopularContent(false, criteria);
-      }
-    };
-
-    const filterOptions = {
-      callback: this.pageFilterCallBack,
-      pageId: PageId.LIBRARY
-    };
-
-    // Already apllied filter
-    if (this.resourceFilter) {
-      filterOptions['filter'] = this.resourceFilter;
-      this.showFilterPage(filterOptions);
-    } else {
-      this.formAndFrameworkUtilService.getLibraryFilterConfig().then((data) => {
-        filterOptions['filter'] = data;
-        this.showFilterPage(filterOptions);
-      });
-    }
-  }
-
-  showFilterPage(filterOptions) {
-    this.popCtrl.create(PageFilter, filterOptions, { cssClass: 'resource-filter' }).present();
-  }
-
   checkEmptySearchResult(isAfterLanguageChange = false) {
     const flags = [];
     _.forEach(this.storyAndWorksheets, (value, key) => {
@@ -841,6 +793,12 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   classClick(index) {
+    this.currentClassIndex = index;
+    this.getGroupByPageReq.grade = [this.categoryGradeLevels[index].name];
+    // [grade.name];
+    this.getGroupByPage();
+    console.log('grade ', this.categoryGradeLevels[index].name);
+    console.log('categoryGradeLevels', this.categoryGradeLevels );
     for (let i = 0, len = this.categoryGradeLevels.length; i < len; i++) {
       if (i === index ) {
         this.currentGrade = this.categoryGradeLevels[i];
@@ -851,6 +809,20 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       }
     }
     document.getElementById('gradeScroll').scrollTo({top: 0, left: index * 75, behavior: 'smooth'});
+  }
+  mediumClick(index) {
+    this.currentMediumIndex = index;
+    this.getGroupByPageReq.medium = [this.categoryMediums[index].name];
+    this.getGroupByPage();
+
+    for (let i = 0, len = this.categoryMediums.length; i < len; i++) {
+      if (i === index ) {
+        this.categoryMediums[i].selected = true;
+      } else {
+        this.categoryMediums[i].selected = false;
+      }
+    }
+    console.log('medium', this.categoryMediums[index]);
   }
 
   navigateToDetailPage(item) {
