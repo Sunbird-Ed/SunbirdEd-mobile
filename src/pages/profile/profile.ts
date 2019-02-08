@@ -5,7 +5,8 @@ import {
   NavParams,
   Events,
   PopoverController,
-  App
+  App,
+  ViewController
 } from 'ionic-angular';
 import {
   AuthService,
@@ -24,7 +25,8 @@ import {
   ContentSortCriteria,
   ContentSearchCriteria,
   ContentService,
-  SortOrder
+  SortOrder,
+  UpdateUserInfoRequest
 } from 'sunbird';
 import * as _ from 'lodash';
 import {
@@ -42,12 +44,14 @@ import {
   ContentCard
 } from '@app/app/app.constant';
 import { CategoriesEditPage } from '@app/pages/categories-edit/categories-edit';
+import { PersonalDetailsEditPage } from '@app/pages/profile/personal-details-edit.profile/personal-details-edit.profile';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details/enrolled-course-details';
 import { CollectionDetailsPage } from '@app/pages/collection-details/collection-details';
 import { ContentDetailsPage } from '@app/pages/content-details/content-details';
 import { AppGlobalService, TelemetryGeneratorService, CommonUtilService } from '@app/service';
 import { FormAndFrameworkUtilService } from './formandframeworkutil.service';
-import { ImageLoader } from 'ionic-image-loader';
+import { EditContactDetailsPopupComponent } from '@app/component/edit-contact-details-popup/edit-contact-details-popup';
+import { EditContactVerifyPopupComponent } from '@app/component';
 
 /**
  * The Profile page
@@ -73,6 +77,10 @@ export class ProfilePage {
   onProfile = true;
   trainingsCompleted = [];
   roles = [];
+  userLocation = {
+    state: {},
+    district: {}
+  };
 
   /**
    * Contains paths to icons
@@ -84,6 +92,8 @@ export class ProfilePage {
   badgesLimit = 2;
   trainingsLimit = 2;
   startLimit = 0;
+  custodianOrgId: string;
+  isCustodianOrgId: boolean;
 
   contentCreatedByMe: any = [];
   orgDetails: {
@@ -113,7 +123,7 @@ export class ProfilePage {
     private commonUtilService: CommonUtilService,
     private app: App,
     private contentService: ContentService,
-    private imageLoader: ImageLoader
+    public viewCtrl: ViewController
   ) {
     this.userId = this.navParams.get('userId') || '';
     this.isRefreshProfile = this.navParams.get('returnRefreshedUserProfileDetails');
@@ -128,6 +138,12 @@ export class ProfilePage {
 
     this.events.subscribe('loggedInProfile:update', (framework) => {
       this.updateLocalProfile(framework);
+      this.doRefresh();
+    });
+
+    this.formAndFrameworkUtilService.getCustodianOrgId().then((orgId: string) => {
+      this.custodianOrgId = orgId;
+    }, err => {
     });
   }
 
@@ -211,7 +227,6 @@ export class ProfilePage {
             req.returnRefreshedUserProfileDetails = true;
             that.isRefreshProfile = false;
           }
-
           that.userProfileService.getUserProfileDetails(
             req,
             (res: any) => {
@@ -224,7 +239,7 @@ export class ProfilePage {
                   that.formAndFrameworkUtilService.updateLoggedInUser(r, profile)
                     .then((value) => {
                       if (!value['status']) {
-                        this.app.getRootNav().setRoot(CategoriesEditPage, {showOnlyMandatoryFields: true, profile: value['profile']});
+                        this.app.getRootNav().setRoot(CategoriesEditPage, { showOnlyMandatoryFields: true, profile: value['profile'] });
                       }
                     });
                 });
@@ -233,6 +248,8 @@ export class ProfilePage {
                 }
                 that.formatRoles();
                 that.formatOrgDetails();
+                that.formatUserLocation();
+                that.isCustodianOrgId = (that.profile.rootOrg.rootOrgId === this.custodianOrgId);
                 resolve();
               });
             },
@@ -270,6 +287,29 @@ export class ProfilePage {
           }
         }
       }
+    }
+  }
+
+  /**
+   *
+   */
+  formatUserLocation() {
+    const len = this.profile.userLocations.length;
+    if (len === 2) {
+      for (let i = 0; i < len; i++) {
+        if (this.profile.userLocations[i].type === 'state') {
+          this.userLocation.state = this.profile.userLocations[i];
+        } else {
+          this.userLocation.district = this.profile.userLocations[i];
+        }
+      }
+    } else if (len === 1) {
+      this.userLocation.state = this.profile.userLocations[len - 1];
+      this.userLocation.district = [];
+
+    } else if (len === 0) {
+      this.userLocation.state = [];
+      this.userLocation.district = [];
     }
   }
 
@@ -482,6 +522,23 @@ export class ProfilePage {
     }
   }
 
+  navigateToEditPersonalDetails() {
+    if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+      this.telemetryService.interact(
+        generateInteractTelemetry(InteractType.TOUCH,
+          InteractSubtype.EDIT_CLICKED,
+          Environment.HOME,
+          PageId.PROFILE, null,
+          undefined,
+          undefined));
+      this.navCtrl.push(PersonalDetailsEditPage, {
+        profile: this.profile
+      });
+    } else {
+      this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
+    }
+  }
+
   /**
    * Searches contents created by the user
    */
@@ -504,6 +561,128 @@ export class ProfilePage {
       .catch((error: any) => {
         console.error('Error', error);
       });
+  }
+
+  editMobileNumber() {
+    const popover = this.popoverCtrl.create(EditContactDetailsPopupComponent, {
+      phone: this.profile.phone,
+      title: this.commonUtilService.translateMessage('EDIT_PHONE_POPUP_TITLE'),
+      description: '',
+      type: 'phone',
+      userId: this.profile.userId
+    }, {
+        cssClass: 'popover-alert'
+      });
+    popover.present({
+      ev: event
+    });
+    popover.onDidDismiss((edited: boolean = false, key?: any) => {
+      if (edited) {
+        this.callOTPPopover(ProfileConstants.CONTACT_TYPE_PHONE, key);
+      }
+    });
+  }
+
+  editEmail() {
+    const popover = this.popoverCtrl.create(EditContactDetailsPopupComponent, {
+      email: this.profile.email,
+      title: this.commonUtilService.translateMessage('EDIT_EMAIL_POPUP_TITLE'),
+      description: '',
+      type: 'email',
+      userId: this.profile.userId
+    }, {
+        cssClass: 'popover-alert'
+      });
+    popover.present({
+      ev: event
+    });
+    popover.onDidDismiss((edited: boolean = false, key?: any) => {
+      if (edited) {
+        this.callOTPPopover(ProfileConstants.CONTACT_TYPE_EMAIL, key);
+      }
+    });
+  }
+
+  callOTPPopover(type: string, key?: any) {
+    if (type === ProfileConstants.CONTACT_TYPE_PHONE) {
+      const popover = this.popoverCtrl.create(EditContactVerifyPopupComponent, {
+        key: key,
+        phone: this.profile.phone,
+        title: this.commonUtilService.translateMessage('VERIFY_PHONE_OTP_TITLE'),
+        description: this.commonUtilService.translateMessage('VERIFY_PHONE_OTP_DESCRIPTION'),
+        type: ProfileConstants.CONTACT_TYPE_PHONE
+      }, {
+          cssClass: 'popover-alert'
+        });
+      popover.present({
+        ev: event
+      });
+      popover.onDidDismiss((OTPSuccess: boolean = false, phone: any) => {
+        if (OTPSuccess) {
+          this.viewCtrl.dismiss();
+          this.updatePhoneInfo(phone);
+        }
+      });
+    } else {
+      const popover = this.popoverCtrl.create(EditContactVerifyPopupComponent, {
+        key: key,
+        phone: this.profile.email,
+        title: this.commonUtilService.translateMessage('VERIFY_EMAIL_OTP_TITLE'),
+        description: this.commonUtilService.translateMessage('VERIFY_EMAIL_OTP_DESCRIPTION'),
+        type: ProfileConstants.CONTACT_TYPE_EMAIL
+      }, {
+          cssClass: 'popover-alert'
+        });
+      popover.present({
+        ev: event
+      });
+      popover.onDidDismiss((OTPSuccess: boolean = false, email: any) => {
+        if (OTPSuccess) {
+          this.viewCtrl.dismiss();
+          this.updateEmailInfo(email);
+        }
+      });
+    }
+  }
+
+  updatePhoneInfo(phone) {
+    const loader = this.getLoader();
+    const req: UpdateUserInfoRequest = {
+      userId: this.profile.userId,
+      phone: phone,
+      phoneVerified: true
+    };
+    this.userProfileService.updateUserInfo(req, (res) => {
+      res = JSON.parse(res);
+      loader.dismiss();
+      // setTimeout(() => {
+      this.doRefresh();
+      // }, 1000);
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('PHONE_EDIT_SUCCESS'));
+    }, (err) => {
+      loader.dismiss();
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('SOMETHING_WENT_WRONG'));
+    });
+  }
+
+  updateEmailInfo(email) {
+    const loader = this.getLoader();
+    const req: UpdateUserInfoRequest = {
+      userId: this.profile.userId,
+      email: email,
+      emailVerified: true
+    };
+    this.userProfileService.updateUserInfo(req, (res) => {
+      res = JSON.parse(res);
+      loader.dismiss();
+      // setTimeout(() => {
+      this.doRefresh();
+      // }, 1000);
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('EMAIL_EDIT_SUCCESS'));
+    }, (err) => {
+      loader.dismiss();
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('SOMETHING_WENT_WRONG'));
+    });
   }
 
 }

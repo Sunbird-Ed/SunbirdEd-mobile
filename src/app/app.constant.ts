@@ -57,6 +57,16 @@ export class Search {
         'medium',
         'contentType'
     ];
+
+    public static readonly FACETS_COURSE = [
+        'topic',
+        'purpose',
+        'gradeLevel',
+        'subject',
+        'medium',
+        'contentType',
+        'channel'
+    ];
 }
 
 export class FlagContent {
@@ -82,8 +92,12 @@ export class ProfileConstants {
         'lastLoginTime',
         'topics',
         'organisations',
-        'roles'
+        'roles',
+        'locations'
     ];
+
+    public static readonly CONTACT_TYPE_PHONE = 'phone';
+    public static readonly CONTACT_TYPE_EMAIL = 'email';
 }
 
 export class AudienceFilter {
@@ -110,14 +124,7 @@ export class MenuOverflow {
     public static readonly MENU_LOGIN = ['USERS_AND_GROUPS', 'REPORTS', 'SETTINGS', 'LOGOUT'];
 }
 
-export class FrameworkConstant {
-    public static readonly DEFAULT_FRAMEWORK_ID = 'NCF';
-    public static readonly DEFAULT_FRAMEWORK_NAME = 'Common';
-}
-
 export class FormConstant {
-    public static readonly DEFAULT_SYALLABUS_PATH = 'data/form/syllabus.json';
-    public static readonly DEFAULT_SUPPORTED_BOARDS_PATH = 'data/form/supported_boards.json';
     public static readonly DEFAULT_PAGE_COURSE_FILTER_PATH = 'data/form/pageassemble_course_filter.json';
     public static readonly DEFAULT_PAGE_LIBRARY_FILTER_PATH = 'data/form/pageassemble_library_filter.json';
 }
@@ -216,4 +223,33 @@ export class ViewMore {
     public static readonly PAGE_COURSE_POPULAR = 'course.PopularContent';
     public static readonly PAGE_RESOURCE_SAVED = 'resource.SavedResources';
     public static readonly PAGE_RESOURCE_RECENTLY_VIEWED = 'resource.RecentlyViewed';
+}
+
+export class Location {
+    public static readonly TYPE_STATE = 'state';
+    public static readonly TYPE_DISTRICT = 'district';
+}
+
+export class FrameworkCategory {
+    public static readonly BOARD = 'board';
+    public static readonly MEDIUM = 'medium';
+    public static readonly GRADE_LEVEL = 'gradeLevel';
+    public static readonly SUBJECT = 'subject';
+    public static readonly TOPIC = 'topic';
+    public static readonly PURPOSE = 'purpose';
+
+    public static readonly DEFAULT_FRAMEWORK_CATEGORIES = [
+        FrameworkCategory.BOARD,
+        FrameworkCategory.MEDIUM,
+        FrameworkCategory.GRADE_LEVEL,
+        FrameworkCategory.SUBJECT
+    ];
+
+    public static readonly COURSE_FRAMEWORK_CATEGORIES = [
+        FrameworkCategory.TOPIC,
+        FrameworkCategory.PURPOSE,
+        FrameworkCategory.MEDIUM,
+        FrameworkCategory.GRADE_LEVEL,
+        FrameworkCategory.SUBJECT
+    ];
 }

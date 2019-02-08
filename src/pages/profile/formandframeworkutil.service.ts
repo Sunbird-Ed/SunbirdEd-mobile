@@ -9,18 +9,20 @@ import {
     FormRequest,
     FormService,
     Profile,
-    ProfileService
+    ProfileService,
+    SystemSettingRequest
 } from 'sunbird';
 import { AppGlobalService } from '../../service/app-global.service';
 import { AppVersion } from '@ionic-native/app-version';
 import {
-    FrameworkConstant,
     FormConstant,
-    PreferenceKey
+    PreferenceKey,
+    FrameworkCategory
 } from '../../app/app.constant';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
 import { Events } from 'ionic-angular';
+
 @Injectable()
 export class FormAndFrameworkUtilService {
 
@@ -48,27 +50,6 @@ export class FormAndFrameworkUtilService {
                     this.selectedLanguage = val;
                 }
             });
-    }
-
-    /**
-     * This method gets the form related details.
-     *
-     */
-    getSupportingBoardList(): Promise<any> {
-        return new Promise((resolve, reject) => {
-            let syllabusList: Array<any> = [];
-
-            // get cached form details
-            syllabusList = this.appGlobalService.getCachedSyllabusList();
-
-            if ((syllabusList === undefined || syllabusList.length === 0)
-                || (syllabusList !== undefined && syllabusList.length === 1)) {
-                syllabusList = [];
-                this.callSyllabusListApi(syllabusList, resolve, reject);
-            } else {
-                resolve(syllabusList);
-            }
-        });
     }
 
     /**
@@ -110,67 +91,6 @@ export class FormAndFrameworkUtilService {
             }
         });
     }
-
-    /**
-     * Network call to form api
-     *
-     * @param syllabusList
-     * @param resolve
-     * @param reject
-     */
-    private callSyllabusListApi(syllabusList: any[], resolve: (value?: any) => void, reject: (reason?: any) => void) {
-        // form api request
-        const req: FormRequest = {
-            type: 'user',
-            subType: 'instructor',
-            action: 'onboarding_v2',
-            filePath: FormConstant.DEFAULT_SUPPORTED_BOARDS_PATH
-        };
-        // form api call
-        this.formService.getForm(req).then((res: any) => {
-            const response: any = JSON.parse(res);
-            console.log('Form Result - ' + response.result);
-            let frameworks: Array<any> = [];
-            const fields: Array<any> = response.result.fields;
-            fields.forEach(field => {
-                // if (field.language === this.selectedLanguage) {
-                frameworks = field.range;
-                // }
-            });
-
-            // this condition will be executed when selected language is not present in the frameworks
-            // then it will be defaulted to English
-            if (frameworks.length === 0) {
-                fields.forEach(field => {
-                    if (field.language === 'en') {
-                        frameworks = field.range;
-                    }
-                });
-            }
-            if (frameworks != null && frameworks.length > 0) {
-                frameworks.forEach(frameworkDetails => {
-                    // const value = { 'name': frameworkDetails.name, 'frameworkId': frameworkDetails.frameworkId };
-                    syllabusList.push(frameworkDetails);
-                });
-
-                // store the framework list in the app component, so that when getFormDetails() gets called again
-                // in the same session of app, then we can get this details, without calling the api
-                this.appGlobalService.setSyllabusList(syllabusList);
-            }
-            resolve(syllabusList);
-        }).catch((error: any) => {
-            console.log('Error - ' + error);
-            // Adding default framework into the list
-            const defaultFramework = {
-                name: FrameworkConstant.DEFAULT_FRAMEWORK_NAME,
-                frameworkId: FrameworkConstant.DEFAULT_FRAMEWORK_ID
-            };
-
-            syllabusList.push(defaultFramework);
-            resolve(syllabusList);
-        });
-    }
-
 
     /**
      * Network call to form api
@@ -235,7 +155,8 @@ export class FormAndFrameworkUtilService {
     getFrameworkDetails(frameworkId: string): Promise<any> {
         return new Promise((resolve, reject) => {
             const req: FrameworkDetailsRequest = {
-                defaultFrameworkDetails: true
+                defaultFrameworkDetails: true,
+                categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
             };
 
             if (frameworkId !== undefined && frameworkId.length) {
@@ -384,7 +305,8 @@ export class FormAndFrameworkUtilService {
                         const request: CategoryRequest = {
                             selectedLanguage: this.translate.currentLang,
                             currentCategory: categoryKey,
-                            frameworkId: profileRes.framework.id ? profileRes.framework.id[0] : undefined
+                            frameworkId: profileRes.framework.id ? profileRes.framework.id[0] : undefined,
+                            categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
                         };
                         this.getCategoryData(request)
                             .then((categoryList) => {
@@ -405,18 +327,18 @@ export class FormAndFrameworkUtilService {
                                 });
                                 if (categoryKeysLen === keysLength) {
                                     this.updateProfileInfo(profile, profileData)
-                                    .then( (response) => {
-                                        resolve(response);
-                                    });
+                                        .then((response) => {
+                                            resolve(response);
+                                        });
                                 }
                             })
                             .catch(err => {
                                 keysLength++;
                                 if (categoryKeysLen === keysLength) {
                                     this.updateProfileInfo(profile, profileData)
-                                    .then( (response) => {
-                                        resolve(response);
-                                    });
+                                        .then((response) => {
+                                            resolve(response);
+                                        });
                                 }
                             });
                     } else {
@@ -466,7 +388,7 @@ export class FormAndFrameworkUtilService {
                             resolve({ status: false });
                         });
                 });
-            });
+        });
     }
 
     formatDate() {
@@ -477,4 +399,56 @@ export class FormAndFrameworkUtilService {
         const date = new Date().toLocaleString('en-us', options);
         return (date.slice(0, 12) + date.slice(13, date.length));
     }
+
+    async getRootOrganizations() {
+        let rootOrganizations ;
+        try {
+            rootOrganizations = this.appGlobalService.getCachedRootOrganizations();
+                // if data not cached
+                if (rootOrganizations === undefined || rootOrganizations.length === 0) {
+                    rootOrganizations = await this.framework.getRootOrganizations();
+                    const organization = rootOrganizations.toString();
+                    rootOrganizations = JSON.parse(JSON.parse(organization).result.orgSearchResult).content;
+                    // cache the data
+                    this.appGlobalService.setRootOrganizations(rootOrganizations);
+                    return rootOrganizations ;
+                 } else {
+                        // return from cache
+                        return rootOrganizations;
+                    }
+            } catch (error) {
+            console.log(error);
+            }
+
+     }
+     async getCourseFrameworkId() {
+        let courseFrameworkId ;
+        try {
+            courseFrameworkId = this.appGlobalService.getCachedCourseFrameworkId();
+                // if data not cached
+                if (courseFrameworkId === undefined || courseFrameworkId.length === 0) {
+                    courseFrameworkId = await this.framework.getCourseFrameworkId();
+                    console.log('COURSE FrameWork Id', courseFrameworkId);
+                    // cache the data
+                    this.appGlobalService.setCourseFrameworkId(courseFrameworkId);
+                    return courseFrameworkId ;
+                 } else {
+                        // return from cache
+                        return courseFrameworkId;
+                    }
+            } catch (error) {
+            console.log(error);
+            }
+
+     }
+
+     /**
+      *
+      */
+     async getCustodianOrgId() {
+        const systemSettingRequest: SystemSettingRequest = {
+            id: this.framework.SYSTEM_SETING_CUSTODIAN_ORG_ID
+        };
+        return await this.framework.getSystemSettingValue(systemSettingRequest);
+      }
 }

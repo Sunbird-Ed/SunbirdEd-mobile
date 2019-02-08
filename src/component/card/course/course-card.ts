@@ -61,6 +61,7 @@ export class CourseCard implements OnInit {
   layoutInProgress = ContentCard.LAYOUT_INPROGRESS;
   layoutPopular = ContentCard.LAYOUT_POPULAR;
   layoutSavedContent = ContentCard.LAYOUT_SAVED_CONTENT;
+  batchExp: Boolean = false;
 
   /**
    * Default method of class CourseCard
@@ -140,6 +141,11 @@ export class CourseCard implements OnInit {
     if (this.layoutName === this.layoutInProgress) {
       this.course.cProgress = (this.courseUtilService.getCourseProgress(this.course.leafNodesCount, this.course.progress));
       this.course.cProgress = parseInt(this.course.cProgress, 10);
+      if (this.course.batch && this.course.batch.status === 2) {
+        this.batchExp = true;
+      } else {
+        this.batchExp = false;
+      }
     }
   }
 
@@ -150,6 +156,9 @@ export class CourseCard implements OnInit {
     contentContextMap['userId'] = content.userId;
     contentContextMap['courseId'] = content.courseId;
     contentContextMap['batchId'] = content.batchId;
+    if (content.batch) {
+      contentContextMap['batchStatus'] = content.batch.status;
+    }
 
     // store the contentContextMap in shared preference and access it from SDK
     this.preference.putString(PreferenceKey.CONTENT_CONTEXT, JSON.stringify(contentContextMap));

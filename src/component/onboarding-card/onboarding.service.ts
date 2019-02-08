@@ -12,7 +12,7 @@ import {
 } from 'sunbird';
 import { FormAndFrameworkUtilService } from '../../pages/profile/formandframeworkutil.service';
 import { TranslateService } from '@ngx-translate/core';
-import { PreferenceKey } from '../../app/app.constant';
+import { PreferenceKey, FrameworkCategory } from '../../app/app.constant';
 import { CommonUtilService } from '../../service/common-util.service';
 
 @Injectable()
@@ -309,20 +309,20 @@ export class OnboardingService {
             // clear all the syllbusList
             this.syllabusList = [];
 
-            this.formAndFrameworkUtilService.getSupportingBoardList()
-                .then((result) => {
-                    if (result && result !== undefined && result.length > 0) {
-                        result.forEach(element => {
-                            // renaming the fields to text, value and checked
-                            const value = { 'text': element.name, 'value': element.frameworkId, 'checked': false };
-                            this.syllabusList.push(value);
-                        });
+            // this.formAndFrameworkUtilService.getSupportingBoardList()
+            //     .then((result) => {
+            //         if (result && result !== undefined && result.length > 0) {
+            //             result.forEach(element => {
+            //                 // renaming the fields to text, value and checked
+            //                 const value = { 'text': element.name, 'value': element.frameworkId, 'checked': false };
+            //                 this.syllabusList.push(value);
+            //             });
 
-                        resolve(this.syllabusList);
-                    } else {
-                        reject(this.syllabusList);
-                    }
-                });
+            //             resolve(this.syllabusList);
+            //         } else {
+            //             reject(this.syllabusList);
+            //         }
+            //     });
         });
     }
 
@@ -349,7 +349,8 @@ export class OnboardingService {
 
                     const request: CategoryRequest = {
                         currentCategory: this.categories[0].code,
-                        selectedLanguage: this.translate.currentLang
+                        selectedLanguage: this.translate.currentLang,
+                        categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
                     };
                     this.getCategoryData(request, currentField, index, hasUserClicked);
                 });
@@ -365,7 +366,8 @@ export class OnboardingService {
                 currentCategory: this.categories[index - 1].code,
                 prevCategory: this.categories[index - 2].code,
                 selectedCode: prevSelectedValue,
-                selectedLanguage: this.translate.currentLang
+                selectedLanguage: this.translate.currentLang,
+                categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
             };
             this.getCategoryData(request, currentField, index, hasUserClicked);
         }

@@ -123,6 +123,15 @@ course-card {
       }
     }
 
+    .blurbackground {
+      .progress-inner-primary {
+        background-color: gray !important;
+      }
+    .progress-inner-secondary {
+        background-color: gray !important;
+      }
+    }
+
     .custom-small {
       font-size: 1.2rem;
     }

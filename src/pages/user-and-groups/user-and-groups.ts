@@ -54,6 +54,7 @@ import { TelemetryGeneratorService } from '../../service/telemetry-generator.ser
 import { Map } from '../../app/telemetryutil';
 import { Content } from 'ionic-angular';
 import { PreferenceKey } from '../../app/app.constant';
+import { CreateGroupPage } from './create-group/create-group';
 
 @IonicPage()
 @Component({
@@ -84,6 +85,7 @@ export class UserAndGroupsPage {
   lastCreatedProfileData: any;
 
   selectedUsername: string ;
+  isCurUserSelected: boolean;
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -190,7 +192,7 @@ export class UserAndGroupsPage {
             isCurrentUser: isCurrentUser
           });
         } else {
-          this.navCtrl.push('CreateGroupPage', {
+          this.navCtrl.push(CreateGroupPage, {
             groupInfo: this.groupList[index]
           });
         }
@@ -323,7 +325,7 @@ export class UserAndGroupsPage {
       Environment.USER,
       PageId.USERS_GROUPS
     );
-    this.navCtrl.push('CreateGroupPage');
+    this.navCtrl.push(CreateGroupPage);
   }
 
 
@@ -370,7 +372,8 @@ export class UserAndGroupsPage {
     });
   }
 
-  selectUser(index: number, name?: string) {
+  selectUser(index: number,  uid?: string, name?: string) {
+    this.isCurUserSelected = this.appGlobalService.getCurrentUser().uid === uid;
     this.zone.run(() => {
       this.selectedUserIndex = (this.selectedUserIndex === index) ? -1 : index;
     });

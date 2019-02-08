@@ -1,4 +1,4 @@
-import { mockAllProfiles, userList } from './group-detail.data.spec';
+import { mockAllProfiles, userList } from './group-detail.spec.data';
 import {
     navCtrlMock, navParamsMock, groupServiceMock,
     profileServiceMock, zoneMock, translateServiceMock,
@@ -10,14 +10,8 @@ import {
 
 } from '../../../__tests__/mocks';
 import { GroupDetailsPage } from './group-details';
-import { Content } from 'ionic-angular';
-import { userUids } from './group-detail.data.spec';
-import { doesNotThrow } from 'assert';
-import { JSONP_ERR_NO_CALLBACK } from '@angular/common/http/src/jsonp';
-import { CreateGroupPage } from '../create-group/create-group';
 import { GroupDetailNavPopoverPage } from '../group-detail-nav-popover/group-detail-nav-popover';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
-import { group } from '@angular/core';
 import { PopoverPage } from '../popover/popover';
 
 describe.only('GroupDetailsPage', () => {
@@ -317,18 +311,18 @@ describe.only('GroupDetailsPage', () => {
         expect(alertControllerMock.create).toHaveBeenCalled();
         expect(alert.present).toHaveBeenCalled();
     });
-        it('should delete the group error deleteUsersinGroup()', (done) => {
-            const req = {
-                groupId: '123',
-                uidList: 'id123'
-            };
-            groupServiceMock.addUpdateProfilesToGroup.mockRejectedValue(req);
-            spyOn(groupDetailsPage, 'deleteUsersinGroup').and.callThrough();
-            groupDetailsPage.deleteUsersinGroup(0);
-            setTimeout(() => {
-                expect(groupDetailsPage.deleteUsersinGroup).toHaveBeenCalled();
-                done();
-            }, 0);
+    it('should delete the group error deleteUsersinGroup()', (done) => {
+        const req = {
+            groupId: '123',
+            uidList: 'id123'
+        };
+        groupServiceMock.addUpdateProfilesToGroup.mockRejectedValue(req);
+        spyOn(groupDetailsPage, 'deleteUsersinGroup').and.callThrough();
+        groupDetailsPage.deleteUsersinGroup(0);
+        setTimeout(() => {
+            expect(groupDetailsPage.deleteUsersinGroup).toHaveBeenCalled();
+            done();
+        }, 0);
     });
 
     it('should delete the group deleteUsersinGroup()', (done) => {

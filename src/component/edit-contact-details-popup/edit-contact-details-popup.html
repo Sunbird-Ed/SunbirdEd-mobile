@@ -1,0 +1,65 @@
+<ion-content class="P0">
+  <ion-spinner *ngIf="loader" padding></ion-spinner>
+
+  <ion-grid class="P16">
+    <form [formGroup]="personEditForm">
+      <ion-row>
+        <ion-col col-12 no-padding class="text-center">
+          <p>{{title}}</p>
+          <p class="font-weight-bold f14">{{description}}</p>
+        </ion-col>
+        <section *ngIf="type==='phone'" class="W100 text-center">
+          <ion-col col-12 no-padding class="text-center">
+            <b>{{'ENTER_PHONE' | translate}}</b>
+          </ion-col>
+          <ion-col col-12 no-padding class="text-center" *ngIf="err">
+            <p class="error">{{'ERROR_PHONE_EXISTS' | translate}}</p>
+          </ion-col>
+          <ion-col col-12 no-padding class="text-center" *ngIf="!personEditForm.controls.phone.valid && personEditForm.controls.phone.dirty">
+            <p class="error">{{'ERROR_PHONE_INVALID' | translate}}</p>
+          </ion-col>
+          <ion-col col-12 no-padding class="text-center">
+            <div class="W100 merged-input-container MT10">
+              <ion-input type="tel" placeholder="+91" class="form-control decorator "  value="+91" disabled></ion-input>
+              <ion-input type="tel" placeholder="{{'PHONE_PLACEHOLDER' | translate }}" maxlength="10" minlength="10"
+                required class="form-control custom" (input)="phoneNumberErr()" formControlName="phone" [(ngModel)]="phone"></ion-input>
+            </div>
+          </ion-col>
+
+        </section>
+        <section *ngIf="type==='email'" class="W100 text-center">
+          <ion-col col-12 no-padding class="text-center">
+            <b>{{'ENTER_EMAIL' | translate}}</b>
+          </ion-col>
+          <ion-col col-12 no-padding class="text-center" *ngIf="(personEditForm.controls.email.dirty && personEditForm.controls.email?.invalid) ">
+            <p class="error">{{'ERROR_EMAIL_INVALID' | translate}}</p>
+          </ion-col>
+          <ion-col col-12 no-padding class="text-center" *ngIf="err && personEditForm.controls.email.valid">
+            <p class="error">{{'ERROR_EMAIL_EXISTS' | translate}}</p>
+          </ion-col>
+          <ion-col col-12 no-padding class="text-center">
+            <div class="W100 merged-input-container MT10">
+              <ion-input type="text" placeholder="{{'EMAIL_PLACEHOLDER' | translate}}" class="form-control custom"
+                formControlName="email" [(ngModel)]="email"></ion-input>
+            </div>
+          </ion-col>
+        </section>
+
+      </ion-row>
+      <ion-row>
+        <ion-col padding>
+          <button ion-button block outline (click)="cancel()">{{ 'CANCEL' | translate }} </button>
+        </ion-col>
+        <ion-col padding>
+          <button ion-button block (click)="validate()" [disabled]="!personEditForm.valid">{{ 'SUBMIT' | translate }}
+          </button>
+        </ion-col>
+        <!-- <ion-col padding>
+            <button ion-button block (click)="validate()" [disabled]="!f.form.valid">{{ 'SUBMIT' | translate }}
+            </button>
+          </ion-col> -->
+      </ion-row>
+    </form>
+  </ion-grid>
+
+</ion-content>

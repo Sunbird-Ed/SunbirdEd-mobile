@@ -43,6 +43,11 @@ export class ViewMoreCardComponent implements OnInit {
   defaultImg: string;
 
   /**
+   * checks wheather batch is expired or not
+   */
+  batchExp: Boolean = false;
+
+  /**
    * Default method of cass SearchListComponent
    * @param {NavController} navCtrl To navigate user from one page to another
    * @param {NavParams} navParams ref of navigation params
@@ -91,6 +96,15 @@ export class ViewMoreCardComponent implements OnInit {
     if (this.type === 'enrolledCourse') {
       this.content.cProgress = this.courseUtilService.getCourseProgress(this.content.leafNodesCount, this.content.progress);
       this.content.cProgress = parseInt(this.content.cProgress, 10);
+    }
+    this.checkBatchExpiry();
+  }
+
+  checkBatchExpiry() {
+    if (this.content.batch && this.content.batch.status === 2) {
+      this.batchExp = true;
+    } else {
+      this.batchExp = false;
     }
   }
 }
