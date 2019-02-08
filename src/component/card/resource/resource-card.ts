@@ -14,6 +14,7 @@ import { ContentType, MimeType, ContentCard, PreferenceKey, CardSectionName } fr
 import { CourseUtilService } from '../../../service/course-util.service';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 import { InteractType, InteractSubtype, TelemetryObject, SharedPreferences } from 'sunbird';
+import { CollectionDetailsEtbPage } from '../../../pages/collection-details-etb/collection-details-etb';
 
 /**
  * The course card component
@@ -111,7 +112,7 @@ export class ResourceCard implements OnInit {
         content: content
       });
     } else if (content.mimeType === MimeType.COLLECTION) {
-      this.navCtrl.push(CollectionDetailsPage, {
+      this.navCtrl.push(CollectionDetailsEtbPage, {
         content: content
       });
     } else {
