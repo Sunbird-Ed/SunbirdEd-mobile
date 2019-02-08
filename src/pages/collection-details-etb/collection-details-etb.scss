@@ -1,6 +1,28 @@
 page-collection-details-etb {
 
-  
+  .loading-backdrop {
+    .backdrop-container {
+        width: 100%;
+        padding: 16px;
+        text-align: center;
+        position: absolute;
+        top: 50%;
+        margin-top: -50px;
+    }
+
+    .backdrop-footer {
+        position: absolute;
+        width: 100%;
+        bottom: 0;
+        padding-bottom: 16px;
+    }
+
+    background-color: #ffffff;
+    height: 100%;
+    z-index: 1000;
+    opacity: 1 !important;
+} 
+
   ion-card{
     display: flex;
     flex-direction: column;
@@ -56,7 +78,7 @@ page-collection-details-etb {
         padding: 10px;
     }
     .secondChildren{
-      margin-left: 10px;
+      margin-left: 15px;
     }
     .thirdChildren{
       margin-left: 25px;
@@ -83,12 +105,17 @@ page-collection-details-etb {
     .text-unselected
     {
       padding: 4px;
-      color : #024f9d;
+      color : #0a5cad;
     }
     .play-icon
     {
         color : #00ba75;
         font-size: 30px;
+    }
+    .grey-icon-span
+    {
+      position: relative;
+      top : 4px;
     }
     .checkmark-icon
     {
@@ -103,13 +130,13 @@ page-collection-details-etb {
     }
     .font-grey-text
     {
-       padding: 4px;
+      //  padding: 4px;
         color : #979797;
     }
     .grey-icon
     {
         color : #979797;
-        font-size: 18px;
+        font-size: 25px;
     }
     $newColors: (
        primary:#024f9d,
