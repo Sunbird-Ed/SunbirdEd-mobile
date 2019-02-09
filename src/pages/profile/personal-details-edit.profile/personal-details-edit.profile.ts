@@ -150,7 +150,7 @@ export class PersonalDetailsEditPage {
   onSubmit() {
     const formVal = this.profileEditForm.getRawValue();
     if (!formVal.name.trim().length) {
-      this.commonUtilService.showToast(this.commonUtilService.translateMessage('ENTER_VALID_NAME'), false, 'redErrorToast');
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('ERROR_NAME_INVALID'), false, 'redErrorToast');
     } else {
       this.submitForm();
     }
