@@ -194,6 +194,8 @@ export class CollectionDetailsEtbPage {
   isChildClickable = false;
   shownGroup = null;
 
+  // Local Image
+  localImage = '';
 
   @ViewChild(Navbar) navBar: Navbar;
   constructor(
@@ -415,6 +417,9 @@ export class CollectionDetailsEtbPage {
   extractApiResponse(data) {
     this.contentDetail = data.result.contentData ? data.result.contentData : [];
     this.contentDetail.isAvailableLocally = data.result.isAvailableLocally;
+    if (this.contentDetail.isAvailableLocally) {
+      this.localImage = (data.result.basePath + '/' + this.contentDetail.appIcon);
+    }
     this.objId = this.contentDetail.identifier;
     this.objVer = this.contentDetail.pkgVersion;
     if (this.contentDetail.gradeLevel && this.contentDetail.gradeLevel.length) {
