@@ -20,17 +20,11 @@
 
 <ion-content overflow-scroll="true" class="course-scroll-holder1" style="background: #EBEBEB;">
 	<ion-refresher (ionRefresh)="swipeDownToRefresh($event)"></ion-refresher>
-	<!-- onBoardingSLides starts here -->
-	<!-- <onboarding-card *ngIf="guestUser && !isOnBoardingCardCompleted && appGlobalService?.DISPLAY_ONBOARDING_CARDS"></onboarding-card> -->
-	<!-- onBoardingSLides ends here -->
-	<!-- <div> -->
 	<div class="horizontal-scroll  PLR16px bg-white">
-		<!-- <button ion-button class="medium-pill active">English medium</button> -->
 		<a class="medium-pill" *ngFor="let medium of categoryMediums; let i = index;" [ngClass]="{'active': medium?.selected}" [@appear] (click)="mediumClick(i)">{{medium?.name}} Medium</a>
 	</div>
 
 	<div class="horizontal-scroll PTB10 PLR16px class-filter-cotainer" id="gradeScroll" [@ScrollHorizontal]="{value: currentGrade?.selected, params: {left_indent: current_index * 72}}">
-		<!-- <button ion-button class="class-pill active">Class 5</button> -->
 		<a class="class-pill" *ngFor="let grade of categoryGradeLevels; let i = index; let first = first" 
 		[ngClass]="{'active': grade?.selected, '': !grade?.selected}" attr.id="class{{i}}" (click)="classClick(i);" [@appear]="{value: grade?.selected, params: {left_indent: i * 72}}">
 			{{grade?.name}} 
@@ -39,17 +33,15 @@
 
 	<div class="course-scroll-holder" [ngClass]="{'empty-saved-resources' : (localResources && localResources.length === 0 || showLoader)}"
 	 *ngIf="localResources && localResources.length">
-		<div class="item padding-11">
+		<div class="item PL10 PR10">
 			<span float-start class="scroll-heading">{{ 'SAVED_RESOURCES' | translate }}</span>
 			<span float-end class="view-all-link" *ngIf="localResources && localResources.length > 0 && !showLoader" (click)="navigateToViewMoreContentsPage(savedResourcesSection);">
 				<a>{{ 'VIEW_ALL' | translate }}</a>
 			</span>
 		</div>
-		<ion-scroll *ngIf="localResources && localResources?.length && !showLoader" scrollX="true" style="width: 100%; height: 130px;"
+		<ion-scroll *ngIf="localResources && localResources?.length && !showLoader" scrollX="true" style="width: 100%; height: 90px;"
 		 no-padding>
 			<div class="inner inprogress-courses">
-				<!-- <course-card *ngFor="let item of localResources; let i=index" [env]="'home'" [index]="i" [sectionName]="savedResourcesSection"
-				 [course]="item?.contentData" [layoutName]="layoutSavedContent"></course-card> -->
 				 <resource-card *ngFor="let item of localResources; let i=index" [env]="'home'" [index]="i" [sectionName]="savedResourcesSection"
 				 [course]="item?.contentData" [layoutName]="layoutSavedContent">
 				 </resource-card>
@@ -66,18 +58,16 @@
 	</div>
 	<div class="course-scroll-holder PB10" [ngClass]="{'empty-saved-resources' : (recentlyViewedResources && recentlyViewedResources.length === 0 || showLoader)}"
 	 *ngIf="recentlyViewedResources && recentlyViewedResources.length">
-		<div class="item padding-11">
+		<div class="item PL10 PR10">
 			<span float-start class="scroll-heading">{{ 'RECENTLY_VIEWED' | translate }}</span>
 			<span float-end class="view-all-link" *ngIf="recentlyViewedResources && recentlyViewedResources.length > 0 && !showLoader"
 			 (click)="navigateToViewMoreContentsPage(recentViewedSection);">
 				<a>{{ 'VIEW_ALL' | translate }}</a>
 			</span>
 		</div>
-		<ion-scroll *ngIf="recentlyViewedResources && recentlyViewedResources?.length && !showLoader" scrollX="true" style="width: 100%; height: 130px;"
+		<ion-scroll *ngIf="recentlyViewedResources && recentlyViewedResources?.length && !showLoader" scrollX="true" style="width: 100%; height: 90px;"
 		 no-padding>
 			<div class="inner inprogress-courses">
-				<!-- <course-card *ngFor="let item of recentlyViewedResources; let i=index" [env]="'home'" [index]="i" [sectionName]="recentViewedSection"
-				 [course]="item?.contentData" [layoutName]="layoutSavedContent" [cardDisabled]="showDisabled(item)"></course-card> -->
 				<resource-card *ngFor="let item of recentlyViewedResources; let i=index" [env]="'home'" [index]="i" [sectionName]="recentViewedSection"
 				[course]="item?.contentData" [layoutName]="layoutSavedContent" [cardDisabled]="showDisabled(item)">
 				</resource-card>
@@ -91,10 +81,10 @@
 		<div class="section-solid P15">
 		  <div class="heading">
 			<span>{{items.name}}</span>
-			<!-- <button ion-button class="class-pill float-end">Class 6</button> -->
-		  </div>
-		  <div class="card-container" *ngFor="let item of items?.contents">
-			<div class="card" (click)="navigateToDetailPage(item)">
+			</div>
+		<div *ngFor="let item of items?.contents; let i = index">
+		  <div class="card-container">
+			<div class="card" (click)="navigateToDetailPage(item, i, items.name)">
 			  <div class="left">
 				<div class="img-container">
 				  <img src="{{ item?.courseLogoUrl || item?.appIcon || defaultImg }}">
@@ -112,7 +102,9 @@
   
 			  </div>
 			</div>
-		  </div>
+			</div>
+			<hr style="margin-top: 0px; margin-bottom: 0px;">
+		</div>
 		</div>
   
 	  </section>

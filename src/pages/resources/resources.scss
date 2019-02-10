@@ -264,8 +264,7 @@ page-resources {
     }
     .app-icon{
        width:100%;
-       min-height:70px;
-       max-height:70px;
+       height:50px;
      }
     .section-solid{
       .heading{
@@ -284,6 +283,7 @@ page-resources {
         background-color: #ffffff;
         .card {
           width:100%;
+          height: 80px;
           border-radius: 2px;
           box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.12);
           background-color: #fff;

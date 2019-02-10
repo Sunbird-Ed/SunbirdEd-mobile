@@ -7,8 +7,6 @@ import {
   AfterViewInit
 } from '@angular/core';
 import {
-  PageAssembleService,
-  PageAssembleCriteria,
   ContentService,
   ImpressionType,
   PageId,
@@ -18,10 +16,10 @@ import {
   SharedPreferences,
   ContentFilterCriteria,
   ProfileType,
-  PageAssembleFilter,
   FrameworkService,
   CategoryRequest,
-  ContentSearchCriteria
+  ContentSearchCriteria,
+  TelemetryObject
 } from 'sunbird';
 import {
   NavController,
@@ -393,76 +391,54 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   /**
 	 * Get popular content
 	 */
-  getPopularContent(isAfterLanguageChange = false, pageAssembleCriteria?: PageAssembleCriteria) {
+  getPopularContent(isAfterLanguageChange = false, contentSearchCriteria?: ContentSearchCriteria) {
     // if (this.isOnBoardingCardCompleted || !this.guestUser) {
     this.pageApiLoader = true;
     // this.noInternetConnection = false;
     const that = this;
 
-    if (!pageAssembleCriteria) {
-      const criteria = new PageAssembleCriteria();
-      criteria.name = PageName.RESOURCE;
-      criteria.mode = 'soft';
+    if (!contentSearchCriteria) {
+      const criteria = new ContentSearchCriteria();
+      criteria.mode = 'hard';
 
-      if (that.appliedFilter) {
-        let filterApplied = false;
-
-        Object.keys(this.appliedFilter).forEach(key => {
-          if (this.appliedFilter[key].length > 0) {
-            filterApplied = true;
-          }
-        });
-
-        if (filterApplied) {
-          criteria.mode = 'hard';
-        }
-
-        criteria.filters = this.appliedFilter;
-      }
-
-      pageAssembleCriteria = criteria;
+      contentSearchCriteria = criteria;
     }
 
-    this.mode = pageAssembleCriteria.mode;
+    this.mode = contentSearchCriteria.mode;
 
     if (this.profile && !this.isFilterApplied) {
 
-      if (!pageAssembleCriteria.filters) {
-        pageAssembleCriteria.filters = new PageAssembleFilter();
-      }
-
       if (this.profile.board && this.profile.board.length) {
-        pageAssembleCriteria.filters.board = this.applyProfileFilter(this.profile.board, pageAssembleCriteria.filters.board, 'board');
+        contentSearchCriteria.board = this.applyProfileFilter(this.profile.board, contentSearchCriteria.board, 'board');
       }
 
       if (this.profile.medium && this.profile.medium.length) {
-        pageAssembleCriteria.filters.medium = this.applyProfileFilter(this.profile.medium, pageAssembleCriteria.filters.medium, 'medium');
+        contentSearchCriteria.medium = this.applyProfileFilter(this.profile.medium, contentSearchCriteria.medium, 'medium');
       }
 
       if (this.profile.grade && this.profile.grade.length) {
-        pageAssembleCriteria.filters.gradeLevel = this.applyProfileFilter(this.profile.grade,
-          pageAssembleCriteria.filters.gradeLevel, 'gradeLevel');
+        contentSearchCriteria.grade = this.applyProfileFilter(this.profile.grade,
+          contentSearchCriteria.grade, 'gradeLevel');
       }
 
-      if (this.profile.subject && this.profile.subject.length) {
-        pageAssembleCriteria.filters.subject = this.applyProfileFilter(this.profile.subject,
-          pageAssembleCriteria.filters.subject, 'subject');
-      }
+      // if (this.profile.subject && this.profile.subject.length) {
+      //   contentSearchCriteria.subject = this.applyProfileFilter(this.profile.subject,
+      //     contentSearchCriteria.subject, 'subject');
+      // }
     }
-    console.log('pageAssembleCriteria', pageAssembleCriteria);
-    if (pageAssembleCriteria.filters.gradeLevel) {
-    this.getGroupByPageReq.grade = [pageAssembleCriteria.filters.gradeLevel[0]];
+    console.log('pageAssembleCriteria', contentSearchCriteria);
+    if (contentSearchCriteria.grade) {
+    this.getGroupByPageReq.grade = [contentSearchCriteria.grade[0]];
   }
-    if  (pageAssembleCriteria.filters.medium) {
-    this.getGroupByPageReq.medium = [pageAssembleCriteria.filters.medium[0]];
+    if  (contentSearchCriteria.medium) {
+    this.getGroupByPageReq.medium = [contentSearchCriteria.medium[0]];
     }
-    if (pageAssembleCriteria.filters.board) {
-    this.getGroupByPageReq.board = [pageAssembleCriteria.filters.board[0]];
+    if (contentSearchCriteria.board) {
+    this.getGroupByPageReq.board = [contentSearchCriteria.board[0]];
   }
     this.getGroupByPageReq.mode = 'hard';
     this.getGroupByPageReq.facets = Search.FACETS_ETB;
     this.getGroupByPageReq.contentTypes = ['TextBook'];
-    this.getGroupByPageReq.grade = pageAssembleCriteria.filters.gradeLevel;
     this.getGroupByPage(isAfterLanguageChange);
   }
 
@@ -825,7 +801,24 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     console.log('medium', this.categoryMediums[index]);
   }
 
-  navigateToDetailPage(item) {
+  navigateToDetailPage(item, index, sectionName) {
+    const identifier = item.contentId || item.identifier;
+    const telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.type = item.contentType;
+
+    telemetryObject.id = identifier;
+
+    const values = new Map();
+    values['sectionName'] = sectionName;
+    values['positionClicked'] = index;
+    console.log('telemetryObject ', telemetryObject);
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.CONTENT_CLICKED,
+      'home',
+      'library',
+      telemetryObject,
+      values);
+
     this.navCtrl.push(CollectionDetailsEtbPage, {
       content: item
     });
