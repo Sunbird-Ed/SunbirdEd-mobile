@@ -145,6 +145,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   categoryMediums: any;
   current_index: any;
   currentGrade: any;
+  currentMedium: string;
   defaultImg: string;
   constructor(
     public navCtrl: NavController,
@@ -760,7 +761,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   classClick(index) {
     this.getGroupByPageReq.grade = [this.categoryGradeLevels[index].name];
     // [grade.name];
-    this.getGroupByPage();
+    if ((this.currentGrade) && (this.currentGrade.name !== this.categoryGradeLevels[index].name)) {
+     this.getGroupByPage();
+    }
     console.log('grade ', this.categoryGradeLevels[index].name);
     console.log('categoryGradeLevels', this.categoryGradeLevels );
     for (let i = 0, len = this.categoryGradeLevels.length; i < len; i++) {
@@ -776,10 +779,13 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
   mediumClick(index) {
     this.getGroupByPageReq.medium = [this.categoryMediums[index].name];
-    this.getGroupByPage();
+    if ( this.currentMedium !== this.categoryMediums[index].name) {
+      this.getGroupByPage();
+    }
 
     for (let i = 0, len = this.categoryMediums.length; i < len; i++) {
       if (i === index ) {
+        this.currentMedium = this.categoryMediums[index].name;
         this.categoryMediums[i].selected = true;
       } else {
         this.categoryMediums[i].selected = false;
