@@ -414,18 +414,23 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       }
 
       if (this.profile.grade && this.profile.grade.length) {
-        contentSearchCriteria.grade = this.applyProfileFilter(this.profile.grade,
+        contentSearchCriteria.grade =  this.applyProfileFilter(this.profile.grade,
           contentSearchCriteria.grade, 'gradeLevel');
       }
 
     }
     console.log('pageAssembleCriteria', contentSearchCriteria);
-    if (contentSearchCriteria.grade) {
-    this.getGroupByPageReq.grade = [contentSearchCriteria.grade[0]];
-  }
-    if  (contentSearchCriteria.medium) {
-    this.getGroupByPageReq.medium = [contentSearchCriteria.medium[0]];
-    }
+    // swipe down to refresh should not over write current selected options
+    if (this.currentGrade && this.currentGrade.name) {
+        this.getGroupByPageReq.grade = [this.currentGrade.name];
+      } else if (contentSearchCriteria.grade) {
+        this.getGroupByPageReq.grade = [contentSearchCriteria.grade[0]];
+      }
+    if (this.currentMedium) {
+      this.getGroupByPageReq.medium = [this.currentMedium];
+      } else if  (contentSearchCriteria.medium) {
+         this.getGroupByPageReq.medium = [contentSearchCriteria.medium[0]];
+      }
     if (contentSearchCriteria.board) {
     this.getGroupByPageReq.board = [contentSearchCriteria.board[0]];
   }
