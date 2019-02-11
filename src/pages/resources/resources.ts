@@ -417,10 +417,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           contentSearchCriteria.grade, 'gradeLevel');
       }
 
-      // if (this.profile.subject && this.profile.subject.length) {
-      //   contentSearchCriteria.subject = this.applyProfileFilter(this.profile.subject,
-      //     contentSearchCriteria.subject, 'subject');
-      // }
     }
     console.log('pageAssembleCriteria', contentSearchCriteria);
     if (contentSearchCriteria.grade) {
