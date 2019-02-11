@@ -68,8 +68,8 @@ export class AppGlobalService implements OnDestroy {
     /**
     * This property stores the organization at the app level for a particular app session
     */
-     rootOrganizations: Array<any>;
-     courseFrameworkId: string;
+    rootOrganizations: Array<any>;
+    courseFrameworkId: string;
 
     guestUserProfile: Profile;
     isGuestUser = false;
@@ -94,6 +94,7 @@ export class AppGlobalService implements OnDestroy {
     public DISPLAY_ONBOARDING_CATEGORY_PAGE = false;
     public OPEN_RAPDISCOVERY_ENABLED = false;
     public SUPPORT_EMAIL = 'support@sunbird.com';
+    public APP_NAME: string;
 
     isUserLoggedIn(): boolean {
         return !this.isGuestUser;
@@ -188,7 +189,7 @@ export class AppGlobalService implements OnDestroy {
     * This method stores the rootOrganizations, for a particular session of the app
     *
     */
-   setRootOrganizations(rootOrganizations: Array<any>) {
+    setRootOrganizations(rootOrganizations: Array<any>) {
         this.rootOrganizations = rootOrganizations;
     }
 
@@ -200,11 +201,11 @@ export class AppGlobalService implements OnDestroy {
         return this.rootOrganizations;
     }
 
-     /**
-    * This method stores the courseFrameworkId, for a particular session of the app
-    *
-    */
-   setCourseFrameworkId(courseFrameworkId: string) {
+    /**
+   * This method stores the courseFrameworkId, for a particular session of the app
+   *
+   */
+    setCourseFrameworkId(courseFrameworkId: string) {
         this.courseFrameworkId = courseFrameworkId;
     }
 
@@ -364,6 +365,14 @@ export class AppGlobalService implements OnDestroy {
             .catch(error => {
                 this.SUPPORT_EMAIL = '';
             });
+        this.buildParamService.getBuildConfigParam(GenericAppConfig.APP_NAME)
+            .then(response => {
+                this.APP_NAME = response;
+            })
+            .catch(error => {
+                this.APP_NAME = 'false';
+            });
+
     }
 
     private getCurrentUserProfile() {

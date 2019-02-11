@@ -24,7 +24,7 @@ import { generateInteractTelemetry, generateImpressionTelemetry } from '../../ap
 import { PreferenceKey } from '../../app/app.constant';
 
 const KEY_SUNBIRD_CONFIG_FILE_PATH = 'sunbird_config_file_path';
-const SUBJECT_NAME = 'Details:';
+const SUBJECT_NAME = 'support request';
 
 @Component({
   selector: 'settings',
@@ -120,7 +120,7 @@ export class SettingsPage {
           loader.dismiss();
           if (Boolean(val)) {
             this.fileUrl = 'file://' + val;
-            this.subjectDetails = SUBJECT_NAME + this.deviceId + '_' + Date.now();
+            this.subjectDetails = this.appGlobalService.APP_NAME + ' ' + SUBJECT_NAME + '-' + this.deviceId;
             this.socialSharing.shareViaEmail('', this.subjectDetails, [this.appGlobalService.SUPPORT_EMAIL], null, null, this.fileUrl)
               .catch(error => {
                 console.error(error);
