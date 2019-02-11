@@ -146,10 +146,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   current_index: any;
   currentGrade: any;
   defaultImg: string;
-  firstloadClassData = true;
-  firstloadMediumData = true;
-  currentClassIndex: number;
-  currentMediumIndex: number;
   constructor(
     public navCtrl: NavController,
     private ngZone: NgZone,
@@ -705,14 +701,12 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             }
           }
         this.categoryMediums = categoryMediumsParam;
-        if (this.firstloadMediumData) {
-          this.mediumClick(0);
-          this.firstloadMediumData = false;
-        } else {
-          this.mediumClick(this.currentMediumIndex);
+
+        for (let i = 0, len = this.categoryMediums.length; i < len; i++) {
+          if (this.getGroupByPageReq.medium[0].toLowerCase().trim() === this.categoryMediums[i].name.toLowerCase().trim() ) {
+            this.mediumClick(i);
+          }
         }
-        console.log('this.appGlobalService.getCurrentUser().medium[0]', this.appGlobalService.getCurrentUser().medium[0]);
-        console.log('this.categoryMediums ========', this.categoryMediums);
     }
   }
 
@@ -727,12 +721,11 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       .then(res => {
         const category = JSON.parse(res);
         this.categoryGradeLevels = category.terms;
-        if (this.firstloadClassData) {
-          this.classClick(0);
-          this.firstloadClassData = false;
-        } else {
-          this.classClick(this.currentClassIndex);
-        }
+          for (let i = 0, len = this.categoryGradeLevels.length; i < len; i++) {
+            if (this.getGroupByPageReq.grade[0] === this.categoryGradeLevels[i].name ) {
+              this.classClick(i);
+            }
+          }
       })
       .catch(err => {
         console.log('Something went wrong!');
@@ -769,7 +762,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   classClick(index) {
-    this.currentClassIndex = index;
     this.getGroupByPageReq.grade = [this.categoryGradeLevels[index].name];
     // [grade.name];
     this.getGroupByPage();
@@ -787,7 +779,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     document.getElementById('gradeScroll').scrollTo({top: 0, left: index * 75, behavior: 'smooth'});
   }
   mediumClick(index) {
-    this.currentMediumIndex = index;
     this.getGroupByPageReq.medium = [this.categoryMediums[index].name];
     this.getGroupByPage();
 
