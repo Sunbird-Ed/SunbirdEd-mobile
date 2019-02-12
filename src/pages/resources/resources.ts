@@ -436,7 +436,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
     this.getGroupByPageReq.mode = 'hard';
     this.getGroupByPageReq.facets = Search.FACETS_ETB;
-    this.getGroupByPageReq.contentTypes = [ContentType.FOR_LIBRARY_TAB[5]];
+    this.getGroupByPageReq.contentTypes = [ContentType.TEXTBOOK];
     this.getGroupByPage(isAfterLanguageChange);
   }
 
