@@ -396,6 +396,7 @@ export class CollectionDetailsEtbPage {
       .then((data: any) => {
         this.zone.run(() => {
           data = JSON.parse(data);
+          // console.log('Data', data);
           loader.dismiss().then(() => {
             if (data && data.result) {
               this.extractApiResponse(data);
@@ -419,6 +420,7 @@ export class CollectionDetailsEtbPage {
     this.contentDetail.isAvailableLocally = data.result.isAvailableLocally;
     if (this.contentDetail.isAvailableLocally) {
       this.localImage = (data.result.basePath + '/' + this.contentDetail.appIcon);
+     // console.log('LocalImage', this.localImage);
     }
     this.objId = this.contentDetail.identifier;
     this.objVer = this.contentDetail.pkgVersion;
@@ -619,6 +621,7 @@ export class CollectionDetailsEtbPage {
         data = JSON.parse(data);
         this.zone.run(() => {
           if (data && data.result && data.result.children) {
+          //  console.log('ChildrenData', this.childrenData);
             this.childrenData = data.result.children;
           }
 
@@ -769,6 +772,7 @@ export class CollectionDetailsEtbPage {
               this.contentDetail.isAvailableLocally = true;
               this.downloadPercentage = 0;
               this.updateSavedResources();
+              this.setChildContents();
             }
           } else if (this.parentContent && res.data.identifier === this.contentDetail.identifier) {
             // this condition is for when the child content update is available and we have downloaded parent content
