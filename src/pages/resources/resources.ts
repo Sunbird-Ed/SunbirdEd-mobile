@@ -1,3 +1,4 @@
+import { Search } from './../../app/app.constant';
 import { FormAndFrameworkUtilService } from './../profile/formandframeworkutil.service';
 import {
   Component,
@@ -6,8 +7,6 @@ import {
   AfterViewInit
 } from '@angular/core';
 import {
-  PageAssembleService,
-  PageAssembleCriteria,
   ContentService,
   ImpressionType,
   PageId,
@@ -17,9 +16,10 @@ import {
   SharedPreferences,
   ContentFilterCriteria,
   ProfileType,
-  PageAssembleFilter,
   FrameworkService,
-  CategoryRequest
+  CategoryRequest,
+  ContentSearchCriteria,
+  TelemetryObject
 } from 'sunbird';
 import {
   NavController,
@@ -63,6 +63,7 @@ import {
   stagger,
   group,
 } from '@angular/animations';
+import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-details-etb';
 
 @Component({
   selector: 'page-resources',
@@ -134,6 +135,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   mode = 'soft';
   isFilterApplied = false;
   pageFilterCallBack: PageFilterCallback;
+  getGroupByPageReq: ContentSearchCriteria = {};
 
   layoutPopular = ContentCard.LAYOUT_POPULAR;
   layoutSavedContent = ContentCard.LAYOUT_SAVED_CONTENT;
@@ -143,10 +145,10 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   categoryMediums: any;
   current_index: any;
   currentGrade: any;
-
+  currentMedium: string;
+  defaultImg: string;
   constructor(
     public navCtrl: NavController,
-    private pageService: PageAssembleService,
     private ngZone: NgZone,
     private contentService: ContentService,
     private qrScanner: SunbirdQRScanner,
@@ -173,6 +175,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       .then((appName: any) => {
         this.appLabel = appName;
       });
+      this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
 
   subscribeUtilityEvents() {
@@ -385,72 +388,71 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   /**
 	 * Get popular content
 	 */
-  getPopularContent(isAfterLanguageChange = false, pageAssembleCriteria?: PageAssembleCriteria) {
+  getPopularContent(isAfterLanguageChange = false, contentSearchCriteria?: ContentSearchCriteria) {
     // if (this.isOnBoardingCardCompleted || !this.guestUser) {
     this.pageApiLoader = true;
     // this.noInternetConnection = false;
     const that = this;
 
-    if (!pageAssembleCriteria) {
-      const criteria = new PageAssembleCriteria();
-      criteria.name = PageName.RESOURCE;
-      criteria.mode = 'soft';
+    if (!contentSearchCriteria) {
+      const criteria = new ContentSearchCriteria();
+      criteria.mode = 'hard';
 
-      if (that.appliedFilter) {
-        let filterApplied = false;
-
-        Object.keys(this.appliedFilter).forEach(key => {
-          if (this.appliedFilter[key].length > 0) {
-            filterApplied = true;
-          }
-        });
-
-        if (filterApplied) {
-          criteria.mode = 'hard';
-        }
-
-        criteria.filters = this.appliedFilter;
-      }
-
-      pageAssembleCriteria = criteria;
+      contentSearchCriteria = criteria;
     }
 
-    this.mode = pageAssembleCriteria.mode;
+    this.mode = contentSearchCriteria.mode;
 
     if (this.profile && !this.isFilterApplied) {
 
-      if (!pageAssembleCriteria.filters) {
-        pageAssembleCriteria.filters = new PageAssembleFilter();
-      }
-
       if (this.profile.board && this.profile.board.length) {
-        pageAssembleCriteria.filters.board = this.applyProfileFilter(this.profile.board, pageAssembleCriteria.filters.board, 'board');
+        contentSearchCriteria.board = this.applyProfileFilter(this.profile.board, contentSearchCriteria.board, 'board');
       }
 
       if (this.profile.medium && this.profile.medium.length) {
-        pageAssembleCriteria.filters.medium = this.applyProfileFilter(this.profile.medium, pageAssembleCriteria.filters.medium, 'medium');
+        contentSearchCriteria.medium = this.applyProfileFilter(this.profile.medium, contentSearchCriteria.medium, 'medium');
       }
 
       if (this.profile.grade && this.profile.grade.length) {
-        pageAssembleCriteria.filters.gradeLevel = this.applyProfileFilter(this.profile.grade,
-          pageAssembleCriteria.filters.gradeLevel, 'gradeLevel');
+        contentSearchCriteria.grade =  this.applyProfileFilter(this.profile.grade,
+          contentSearchCriteria.grade, 'gradeLevel');
       }
 
-      if (this.profile.subject && this.profile.subject.length) {
-        pageAssembleCriteria.filters.subject = this.applyProfileFilter(this.profile.subject,
-          pageAssembleCriteria.filters.subject, 'subject');
-      }
     }
-    console.log('pageAssembleCriteria', pageAssembleCriteria);
-    this.pageService.getPageAssemble(pageAssembleCriteria)
-      .then((res: any) => {
-        that.ngZone.run(() => {
-          const response = JSON.parse(res);
+    console.log('pageAssembleCriteria', contentSearchCriteria);
+    // swipe down to refresh should not over write current selected options
+    if (this.currentGrade && this.currentGrade.name) {
+        this.getGroupByPageReq.grade = [this.currentGrade.name];
+      } else if (contentSearchCriteria.grade) {
+        this.getGroupByPageReq.grade = [contentSearchCriteria.grade[0]];
+      }
+    if (this.currentMedium) {
+      this.getGroupByPageReq.medium = [this.currentMedium];
+      } else if  (contentSearchCriteria.medium) {
+         this.getGroupByPageReq.medium = [contentSearchCriteria.medium[0]];
+      }
+    if (contentSearchCriteria.board) {
+    this.getGroupByPageReq.board = [contentSearchCriteria.board[0]];
+  }
+    this.getGroupByPageReq.mode = 'hard';
+    this.getGroupByPageReq.facets = Search.FACETS_ETB;
+    this.getGroupByPageReq.contentTypes = [ContentType.TEXTBOOK];
+    this.getGroupByPage(isAfterLanguageChange);
+  }
+
+  getGroupByPage(isAfterLanguageChange = false) {
+    this.storyAndWorksheets = [];
+    const loader = this.commonUtilService.getLoader();
+    loader.present();
+    this.contentService.getGroupByPage(this.getGroupByPageReq, this.guestUser)
+      .then((response: any) => {
+        loader.dismiss();
+        this.ngZone.run(() => {
           // TODO Temporary code - should be fixed at backend
           const sections = JSON.parse(response.sections);
           const newSections = [];
           sections.forEach(element => {
-            element.display = JSON.parse(element.display);
+            // element.display = JSON.parse(element.display);
             if (element.display.name) {
               if (_.has(element.display.name, this.selectedLanguage)) {
                 const langs = [];
@@ -463,7 +465,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             newSections.push(element);
           });
           // END OF TEMPORARY CODE
-          that.storyAndWorksheets = newSections;
+          this.storyAndWorksheets = newSections;
           this.pageLoadedSuccess = true;
           this.pageApiLoader = false;
           // this.noInternetConnection = false;
@@ -473,7 +475,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       })
       .catch(error => {
         console.log('error while getting popular resources...', error);
-        that.ngZone.run(() => {
+        loader.dismiss();
+        this.ngZone.run(() => {
           this.pageApiLoader = false;
           if (error === 'CONNECTION_ERROR') {
           } else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
@@ -482,7 +485,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         });
       });
   }
-
   generateExtraInfoTelemetry(sectionsCount) {
     const values = new Map();
     values['savedItemVisible'] = (this.localResources && this.localResources.length) ? 'Y' : 'N';
@@ -701,8 +703,12 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             }
           }
         this.categoryMediums = categoryMediumsParam;
-        console.log('this.appGlobalService.getCurrentUser().medium[0]', this.appGlobalService.getCurrentUser().medium[0]);
-        console.log('this.categoryMediums ========', this.categoryMediums);
+
+        for (let i = 0, len = this.categoryMediums.length; i < len; i++) {
+          if (this.getGroupByPageReq.medium[0].toLowerCase().trim() === this.categoryMediums[i].name.toLowerCase().trim() ) {
+            this.mediumClick(i);
+          }
+        }
     }
   }
 
@@ -717,82 +723,16 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       .then(res => {
         const category = JSON.parse(res);
         this.categoryGradeLevels = category.terms;
+          for (let i = 0, len = this.categoryGradeLevels.length; i < len; i++) {
+            if (this.getGroupByPageReq.grade[0] === this.categoryGradeLevels[i].name ) {
+              this.classClick(i);
+            }
+          }
       })
       .catch(err => {
         console.log('Something went wrong!');
       });
   }
-
-  showFilter() {
-    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-      InteractSubtype.FILTER_BUTTON_CLICKED,
-      Environment.HOME,
-      PageId.LIBRARY, undefined);
-
-    const that = this;
-    this.pageFilterCallBack = {
-      applyFilter(filter, appliedFilter) {
-        const criteria = new PageAssembleCriteria();
-        criteria.name = PageName.RESOURCE;
-        criteria.filters = filter;
-        criteria.mode = 'hard';
-        that.resourceFilter = appliedFilter;
-        that.appliedFilter = filter;
-
-        let filterApplied = false;
-        that.isFilterApplied = false;
-
-        const values = new Map();
-        values['filters'] = filter;
-        that.telemetryGeneratorService.generateInteractTelemetry(
-          InteractType.OTHER,
-          InteractSubtype.APPLY_FILTER_CLICKED,
-          Environment.HOME,
-          PageId.LIBRARY_PAGE_FILTER,
-          undefined,
-          values
-        );
-
-        Object.keys(that.appliedFilter).forEach(key => {
-          if (that.appliedFilter[key].length > 0) {
-            filterApplied = true;
-            that.isFilterApplied = true;
-          }
-        });
-
-        if (filterApplied) {
-          criteria.mode = 'hard';
-          that.filterIcon = './assets/imgs/ic_action_filter_applied.png';
-        } else {
-          criteria.mode = 'soft';
-          that.filterIcon = './assets/imgs/ic_action_filter.png';
-        }
-
-        that.getPopularContent(false, criteria);
-      }
-    };
-
-    const filterOptions = {
-      callback: this.pageFilterCallBack,
-      pageId: PageId.LIBRARY
-    };
-
-    // Already apllied filter
-    if (this.resourceFilter) {
-      filterOptions['filter'] = this.resourceFilter;
-      this.showFilterPage(filterOptions);
-    } else {
-      this.formAndFrameworkUtilService.getLibraryFilterConfig().then((data) => {
-        filterOptions['filter'] = data;
-        this.showFilterPage(filterOptions);
-      });
-    }
-  }
-
-  showFilterPage(filterOptions) {
-    this.popCtrl.create(PageFilter, filterOptions, { cssClass: 'resource-filter' }).present();
-  }
-
   checkEmptySearchResult(isAfterLanguageChange = false) {
     const flags = [];
     _.forEach(this.storyAndWorksheets, (value, key) => {
@@ -824,6 +764,11 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   classClick(index) {
+    this.getGroupByPageReq.grade = [this.categoryGradeLevels[index].name];
+    // [grade.name];
+    if ((this.currentGrade) && (this.currentGrade.name !== this.categoryGradeLevels[index].name)) {
+     this.getGroupByPage();
+    }
     for (let i = 0, len = this.categoryGradeLevels.length; i < len; i++) {
       if (i === index ) {
         this.currentGrade = this.categoryGradeLevels[i];
@@ -834,5 +779,44 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       }
     }
     document.getElementById('gradeScroll').scrollTo({top: 0, left: index * 75, behavior: 'smooth'});
+  }
+  mediumClick(index) {
+    this.getGroupByPageReq.medium = [this.categoryMediums[index].name];
+    if ( this.currentMedium !== this.categoryMediums[index].name) {
+      this.getGroupByPage();
+    }
+
+    for (let i = 0, len = this.categoryMediums.length; i < len; i++) {
+      if (i === index ) {
+        this.currentMedium = this.categoryMediums[index].name;
+        this.categoryMediums[i].selected = true;
+      } else {
+        this.categoryMediums[i].selected = false;
+      }
+    }
+    console.log('medium', this.categoryMediums[index]);
+  }
+
+  navigateToDetailPage(item, index, sectionName) {
+    const identifier = item.contentId || item.identifier;
+    const telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.type = item.contentType;
+
+    telemetryObject.id = identifier;
+
+    const values = new Map();
+    values['sectionName'] = sectionName;
+    values['positionClicked'] = index;
+    console.log('telemetryObject ', telemetryObject);
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.CONTENT_CLICKED,
+      'home',
+      'library',
+      telemetryObject,
+      values);
+
+    this.navCtrl.push(CollectionDetailsEtbPage, {
+      content: item
+    });
   }
 }
