@@ -436,7 +436,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
     this.getGroupByPageReq.mode = 'hard';
     this.getGroupByPageReq.facets = Search.FACETS_ETB;
-    this.getGroupByPageReq.contentTypes = ['TextBook'];
+    this.getGroupByPageReq.contentTypes = [ContentType.FOR_LIBRARY_TAB[5]];
     this.getGroupByPage(isAfterLanguageChange);
   }
 
@@ -769,8 +769,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     if ((this.currentGrade) && (this.currentGrade.name !== this.categoryGradeLevels[index].name)) {
      this.getGroupByPage();
     }
-    console.log('grade ', this.categoryGradeLevels[index].name);
-    console.log('categoryGradeLevels', this.categoryGradeLevels );
     for (let i = 0, len = this.categoryGradeLevels.length; i < len; i++) {
       if (i === index ) {
         this.currentGrade = this.categoryGradeLevels[i];
