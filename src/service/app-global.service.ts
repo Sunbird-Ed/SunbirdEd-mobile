@@ -94,7 +94,6 @@ export class AppGlobalService implements OnDestroy {
     public DISPLAY_ONBOARDING_CATEGORY_PAGE = false;
     public OPEN_RAPDISCOVERY_ENABLED = false;
     public SUPPORT_EMAIL = 'support@sunbird.com';
-    public APP_NAME: string;
 
     isUserLoggedIn(): boolean {
         return !this.isGuestUser;
@@ -365,15 +364,7 @@ export class AppGlobalService implements OnDestroy {
             .catch(error => {
                 this.SUPPORT_EMAIL = '';
             });
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.APP_NAME)
-            .then(response => {
-                this.APP_NAME = response;
-            })
-            .catch(error => {
-                this.APP_NAME = 'false';
-            });
-
-    }
+         }
 
     private getCurrentUserProfile() {
         this.profile.getCurrentUser()

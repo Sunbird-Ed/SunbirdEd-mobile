@@ -89,7 +89,6 @@ android {
         buildConfigField "boolean", "DISPLAY_ONBOARDING_CATEGORY_PAGE", "${display_onboarding_category_page}"
         buildConfigField "boolean", "OPEN_RAPDISCOVERY_ENABLED", "${open_rapdiscovery_enabled}"
         buildConfigField "String", "SUPPORT_EMAIL","\"${support_email}\""
-        buildConfigField "String", "APP_NAME", "\"${app_name}\""
     }
 
     signingConfigs {
@@ -320,7 +319,7 @@ android {
         flavor.versionName = versionName;
         variant.outputs.each { output ->
             output.outputFileName = new File(output.outputFile.parent, "${app_name}-".toLowerCase() + versionName + ".apk")
-            // output.outputFileName = "${variant.name}-${variant.versionName}.apk"
+           //  output.outputFileName = "${variant.name}-${variant.versionName}.apk"
         }
     }
 }
