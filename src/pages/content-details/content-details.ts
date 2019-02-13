@@ -132,6 +132,7 @@ export class ContentDetailsPage {
 
   @ViewChild(Navbar) navBar: Navbar;
   showMessage: any;
+  isUsrGrpAlrtOpen: Boolean = false;
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -194,9 +195,13 @@ export class ContentDetailsPage {
     this.downloadAndPlay = this.navParams.get('downloadAndPlay');
 
     if (this.isResumedCourse) {
-      this.navCtrl.insert(this.navCtrl.length() - 1, EnrolledCourseDetailsPage, {
-        content: this.navParams.get('resumedCourseCardData')
-      });
+      if (this.isUsrGrpAlrtOpen) {
+        this.isUsrGrpAlrtOpen = false;
+      } else {
+        this.navCtrl.insert(this.navCtrl.length() - 1, EnrolledCourseDetailsPage, {
+          content: this.navParams.get('resumedCourseCardData')
+        });
+      }
     } else {
       this.generateTelemetry();
     }
@@ -813,6 +818,7 @@ export class ContentDetailsPage {
           }
         ]
       });
+      this.isUsrGrpAlrtOpen = true;
       alert.present();
     } else {
       this.playContent(isStreaming);
