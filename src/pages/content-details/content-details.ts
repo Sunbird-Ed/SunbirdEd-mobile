@@ -62,6 +62,9 @@ import { CommonUtilService } from '../../service/common-util.service';
 import { DialogPopupComponent } from '../../component/dialog-popup/dialog-popup';
 import { Observable } from 'rxjs';
 import { XwalkConstants } from '../../app/app.constant';
+import { Network } from '@ionic-native/network';
+import { ValueTransformer } from '@angular/compiler/src/util';
+
 
 @IonicPage()
 @Component({
@@ -154,7 +157,8 @@ export class ContentDetailsPage {
     private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService,
     private courseUtilService: CourseUtilService,
-    private deviceInfoService: DeviceInfoService
+    private deviceInfoService: DeviceInfoService,
+    private network: Network
   ) {
 
     this.objRollup = new Rollup();
@@ -744,7 +748,17 @@ export class ContentDetailsPage {
       if (this.commonUtilService.networkInfo.isNetworkAvailable) {
         this.downloadProgress = '0';
         this.isDownloadStarted = true;
+        const values = new Map();
+        values['network-type'] = this.network.type;
         this.importContent([this.identifier], this.isChildContent);
+        this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+          InteractSubtype.DOWNLOAD_INITIATE,
+          Environment.HOME,
+          PageId.CONTENT_DETAIL,
+          undefined,
+          values,
+          this.objRollup,
+          this.corRelationList);
       } else {
         this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
       }
@@ -783,6 +797,17 @@ export class ContentDetailsPage {
     if (isStreaming && !this.commonUtilService.networkInfo.isNetworkAvailable) {
       this.commonUtilService.showToast('INTERNET_CONNECTIVITY_NEEDED');
       return false;
+    } else {
+      const values = new Map();
+      values['network-type'] = this.network.type;
+      this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+        InteractSubtype.PLAY_ONLINE,
+        Environment.HOME,
+        PageId.CONTENT_DETAIL,
+        undefined,
+        values,
+        this.objRollup,
+        this.corRelationList);
     }
     if (!AppGlobalService.isPlayerLaunched && this.userCount > 1) {
       const profile = this.appGlobalService.getCurrentUser();
