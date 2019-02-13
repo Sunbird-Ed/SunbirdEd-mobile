@@ -63,6 +63,7 @@ import { DialogPopupComponent } from '../../component/dialog-popup/dialog-popup'
 import { Observable } from 'rxjs';
 import { XwalkConstants } from '../../app/app.constant';
 import { Network } from '@ionic-native/network';
+import { ValueTransformer } from '@angular/compiler/src/util';
 
 
 @IonicPage()
@@ -742,7 +743,17 @@ export class ContentDetailsPage {
       if (this.commonUtilService.networkInfo.isNetworkAvailable) {
         this.downloadProgress = '0';
         this.isDownloadStarted = true;
+        const values = new Map();
+        values['network-type'] = this.network.type;
         this.importContent([this.identifier], this.isChildContent);
+        this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+          InteractSubtype.DOWNLOAD_INITIATE,
+          Environment.HOME,
+          PageId.CONTENT_DETAIL,
+          undefined,
+          values,
+          this.objRollup,
+          this.corRelationList);
       } else {
         this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
       }
@@ -784,10 +795,14 @@ export class ContentDetailsPage {
     } else {
       const values = new Map();
       values['network-type'] = this.network.type;
-      this.telemetryGeneratorService.generateExtraInfoTelemetry(
+      this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+        InteractSubtype.PLAY_ONLINE,
+        Environment.HOME,
+        PageId.CONTENT_DETAIL,
+        undefined,
         values,
-        PageId.LIBRARY
-      );
+        this.objRollup,
+        this.corRelationList);
     }
     if (!AppGlobalService.isPlayerLaunched && this.userCount > 1) {
       const profile = this.appGlobalService.getCurrentUser();
