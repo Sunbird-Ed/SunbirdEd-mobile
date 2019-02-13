@@ -35,6 +35,7 @@ import {
 import { GenieResponse } from '../settings/datasync/genieresponse';
 import { FilterPage } from './filters/filter';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
+import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-details-etb';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { Map } from '../../app/telemetryutil';
 import * as _ from 'lodash';
@@ -285,7 +286,8 @@ export class SearchPage {
         }
         this.navCtrl.push(QrCodeResultPage, params);
       } else {
-        this.navCtrl.push(CollectionDetailsPage, params);
+        // this.navCtrl.push(CollectionDetailsPage, params);
+        this.navCtrl.push(CollectionDetailsEtbPage, params);
       }
     } else {
       this.navCtrl.push(ContentDetailsPage, params);

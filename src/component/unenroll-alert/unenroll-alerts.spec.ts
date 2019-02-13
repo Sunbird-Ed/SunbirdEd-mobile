@@ -6,6 +6,7 @@ describe('', () => {
   let unenrollAlert: any;
 
   beforeEach(() => {
+    platformMock.registerBackButtonAction.mockReturnValue(jest.fn());
     unenrollAlert = new UnenrollAlertComponent(
       viewControllerMock as any,
       platformMock as any
@@ -16,6 +17,6 @@ describe('', () => {
 
   it('#selectOption should call dismiss()', () => {
     unenrollAlert.selectOption(false);
-    expect(viewControllerMock.dismiss).not.toBeCalled();
+    expect(viewControllerMock.dismiss).toBeCalled();
   });
 });
