@@ -250,7 +250,7 @@ export class CommonUtilService implements OnDestroy {
                 buttons: [
                     {
                         text: this.translateMessage('YES'),
-                        cssClass: 'alert-btn-delete',
+                        cssClass: 'alert-btn-cancel',
                         handler: () => {
                             this.telemetryGeneratorService.generateBackClickedTelemetry(pageId, environment, isNavBack);
                             this.platform.exitApp();
@@ -259,7 +259,7 @@ export class CommonUtilService implements OnDestroy {
                     },
                     {
                         text: this.translateMessage('NO'),
-                        cssClass: 'alert-btn-cancel',
+                        cssClass: 'alert-btn-delete',
                         handler: () => {
                             // telemetry
                             if (this.alert) {
