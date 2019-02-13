@@ -13,7 +13,7 @@
                 </div>
                 <div>
                   <span class="info">{{course?.gradeLevel}}</span>
-                  <span class="separator-dot"></span>
+                  <span class="separator-dot" *ngIf = "course?.subject"></span>
                   <span class="info">{{course?.subject}}</span>
                 </div>
   
