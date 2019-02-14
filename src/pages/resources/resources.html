@@ -55,6 +55,7 @@
 				</ion-col>
 			</ion-row>
 		</ion-grid>
+		<div style="padding-bottom: 10px" *ngIf="recentlyViewedResources?.length === 0||!recentlyViewedResources"></div>
 	</div>
 	<div class="course-scroll-holder PB10" [ngClass]="{'empty-saved-resources' : (recentlyViewedResources && recentlyViewedResources.length === 0 || showLoader)}"
 	 *ngIf="recentlyViewedResources && recentlyViewedResources.length">
