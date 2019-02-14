@@ -3,6 +3,7 @@ import { NavParams, PopoverController, NavController, Events, Platform } from 'i
 import { CommonUtilService } from '../../../service/common-util.service';
 import * as _ from 'lodash';
 import { FilterOptions } from './options/options';
+import { IonicApp } from 'ionic-angular';
 
 @Component({
   selector: 'page-filter',
@@ -22,7 +23,8 @@ export class FilterPage {
     private navCtrl: NavController,
     private events: Events,
     private commonUtilService: CommonUtilService,
-    private platform: Platform
+    private platform: Platform,
+    private ionicApp: IonicApp
   ) {
     this.init();
     this.handleBackButton();
@@ -105,7 +107,13 @@ export class FilterPage {
    */
   handleBackButton() {
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
-      this.navCtrl.pop();
+      const activePortal = this.ionicApp._modalPortal.getActive() ||
+        this.ionicApp._toastPortal.getActive() || this.ionicApp._overlayPortal.getActive();
+      if (activePortal) {
+        activePortal.dismiss();
+      } else if (this.navCtrl.canGoBack()) {
+        this.navCtrl.pop();
+      }
       this.unregisterBackButton();
     }, 11);
   }

@@ -555,7 +555,7 @@ export class UserAndGroupsPage {
           }
         },
         {
-          text: this.translateMessage('Yes'),
+          text: this.translateMessage('YES'),
           cssClass: 'alert-btn-delete',
           handler: () => {
             this.deleteGroup(index);
@@ -618,7 +618,7 @@ export class UserAndGroupsPage {
           }
         },
         {
-          text: this.translateMessage('Yes'),
+          text: this.translateMessage('YES'),
           cssClass: 'alert-btn-delete',
           handler: () => {
             this.deleteUser(index);
