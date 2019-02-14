@@ -92,15 +92,17 @@
     @include margin(null, 10px, null, null);
 }
 
+
+.MR12{
+    @include margin(null, 12px, null, null);
+}
+
 .MR15{
     @include margin(null, 15px, null, null);
 }
 
 .MR20{
     @include margin(null, 20px, null, null);
-}
-.MR26{
-    @include margin(null, 26px, null, null);
 }
 
 .MT5{
