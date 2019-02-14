@@ -91,9 +91,11 @@ describe('ProfilePage', () => {
         spyOn(profilePage, 'refreshProfileData').and.returnValue(Promise.resolve(['hfhgf']));
         // act
         profilePage.doRefresh().then(() => {
-            expect(eventsMock.publish).toHaveBeenCalledWith('refresh:profile');
-            expect(loader.dismiss).toHaveBeenCalled();
-            done();
+            setTimeout(() => {
+                expect(eventsMock.publish).toHaveBeenCalledWith('refresh:profile');
+                expect(loader.dismiss).toHaveBeenCalled();
+                done();
+            }, 500);
         });
     });
     it('it should call dofresher() to refresh profile ', (done) => {
@@ -174,7 +176,8 @@ describe('ProfilePage', () => {
 
     it('should show check the format user locations() ', () => {
         // arrangw
-        profilePage.profile = mockProfileRes.profileDetailsMock;
+        profilePage.profile = JSON.parse(mockProfileRes.profileDetailsMock);
+
         // act
         profilePage.formatUserLocation();
         // assert
@@ -317,9 +320,46 @@ describe('ProfilePage', () => {
         // assert
         setTimeout(() => {
             expect(navCtrlMock.push).toHaveBeenCalled();
-            expect(navCtrlMock.push).toHaveBeenCalledWith(EnrolledCourseDetailsPage, { content: 'content' });
-            expect(navCtrlMock.push).toHaveBeenCalledWith(CollectionDetailsPage, { content: 'content' });
             expect(navCtrlMock.push).toHaveBeenCalledWith(ContentDetailsPage, { content: 'content' });
+            done();
+        }, 0);
+    });
+
+    it('it should call navigateToDetailPage() to course or content detail page', (done) => {
+        // arrange
+        const values = new Map();
+        values['sectionName'] = 'Contributions';
+        values['positionClicked'] = 0;
+        spyOn(telemetryGeneratorServiceMock, 'generateInteractTelemetry').and.callThrough();
+        spyOn(profilePage, 'trainingsCompleted').and.stub();
+        courseServiceMock.getEnrolledCourses.mockRejectedValue(JSON.stringify(mockProfileRes.getEnrolledCourses));
+        const content = {contentType: 'Course'};
+        // act
+        profilePage.navigateToDetailPage(content, 'Layout', 0);
+        // assert
+        setTimeout(() => {
+            expect(navCtrlMock.push).toHaveBeenCalled();
+            expect(navCtrlMock.push).toHaveBeenCalledWith(EnrolledCourseDetailsPage, { content:  content});
+            done();
+        }, 0);
+    });
+
+    it('it should call navigateToDetailPage() to course or content detail page', (done) => {
+        // arrange
+        const values = new Map();
+        values['sectionName'] = 'Contributions';
+        values['positionClicked'] = 0;
+        spyOn(telemetryGeneratorServiceMock, 'generateInteractTelemetry').and.callThrough();
+        spyOn(profilePage, 'trainingsCompleted').and.stub();
+        courseServiceMock.getEnrolledCourses.mockRejectedValue(JSON.stringify(mockProfileRes.getEnrolledCourses));
+
+        const content = {mimeType: 'application/vnd.ekstep.content-collection'};
+        // act
+        profilePage.navigateToDetailPage(content, 'Layout', 0);
+        // assert
+        setTimeout(() => {
+            expect(navCtrlMock.push).toHaveBeenCalled();
+            expect(navCtrlMock.push).toHaveBeenCalledWith(CollectionDetailsPage, { content: content });
             done();
         }, 0);
     });
