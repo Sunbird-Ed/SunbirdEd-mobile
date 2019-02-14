@@ -80,6 +80,9 @@
 .MR5{
     margin-right: 5px;
 }
+.MR4{
+    @include margin(null, 4px, null, null);
+}
 
 .MR6{
    @include margin(null, 6px, null, null);
@@ -95,6 +98,9 @@
 
 .MR20{
     @include margin(null, 20px, null, null);
+}
+.MR26{
+    @include margin(null, 26px, null, null);
 }
 
 .MT5{
@@ -217,7 +223,7 @@
 }
 
 .PR10{
-    padding-right: 10px;
+    @include padding(null, 10px, null, null)
 }
 
 .PR15{
