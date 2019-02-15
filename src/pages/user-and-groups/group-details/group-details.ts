@@ -372,7 +372,7 @@ export class GroupDetailsPage {
           }
         },
         {
-          text: this.translateMessage('Yes'),
+          text: this.translateMessage('YES'),
           cssClass: 'alert-btn-delete',
           handler: () => {
             this.deleteGroup();
@@ -424,7 +424,7 @@ export class GroupDetailsPage {
           }
         },
         {
-          text: this.translateMessage('Yes'),
+          text: this.translateMessage('YES'),
           cssClass: 'alert-btn-delete',
           handler: () => {
             this.deleteUsersinGroup(index);

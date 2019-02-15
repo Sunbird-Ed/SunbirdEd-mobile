@@ -433,14 +433,10 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     }
     console.log('pageAssembleCriteria', contentSearchCriteria);
     // swipe down to refresh should not over write current selected options
-    if (this.currentGrade && this.currentGrade.name) {
-        this.getGroupByPageReq.grade = [this.currentGrade.name];
-      } else if (contentSearchCriteria.grade) {
+    if (contentSearchCriteria.grade) {
         this.getGroupByPageReq.grade = [contentSearchCriteria.grade[0]];
       }
-    if (this.currentMedium) {
-      this.getGroupByPageReq.medium = [this.currentMedium];
-      } else if  (contentSearchCriteria.medium) {
+    if  (contentSearchCriteria.medium) {
          this.getGroupByPageReq.medium = [contentSearchCriteria.medium[0]];
       }
     if (contentSearchCriteria.board) {
@@ -636,6 +632,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     }
 
     this.getPopularContent(false);
+    this.getCategoryData();
   }
 
 
@@ -718,7 +715,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
         for (let i = 0, len = this.categoryMediums.length; i < len; i++) {
           if (this.getGroupByPageReq.medium[0].toLowerCase().trim() === this.categoryMediums[i].name.toLowerCase().trim() ) {
-            this.mediumClick(i);
+            this.mediumClick(this.categoryMediums[i].name);
           }
         }
     }
@@ -792,21 +789,20 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     }
     document.getElementById('gradeScroll').scrollTo({top: 0, left: index * 75, behavior: 'smooth'});
   }
-  mediumClick(index) {
-    this.getGroupByPageReq.medium = [this.categoryMediums[index].name];
-    if ( this.currentMedium !== this.categoryMediums[index].name) {
+  mediumClick(mediumName: string) {
+    this.getGroupByPageReq.medium = [mediumName];
+    if ( this.currentMedium !== mediumName) {
       this.getGroupByPage();
     }
 
     for (let i = 0, len = this.categoryMediums.length; i < len; i++) {
-      if (i === index ) {
-        this.currentMedium = this.categoryMediums[index].name;
+      if (this.categoryMediums[i].name === mediumName ) {
+        this.currentMedium = this.categoryMediums[i].name;
         this.categoryMediums[i].selected = true;
       } else {
         this.categoryMediums[i].selected = false;
       }
     }
-    console.log('medium', this.categoryMediums[index]);
   }
 
   navigateToDetailPage(item, index, sectionName) {
