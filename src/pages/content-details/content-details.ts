@@ -56,6 +56,7 @@ import {
   CourseUtilService
 } from '@app/service';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
+import { Network } from '@ionic-native/network';
 import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../service/common-util.service';
@@ -153,7 +154,8 @@ export class ContentDetailsPage {
     private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService,
     private courseUtilService: CourseUtilService,
-    private deviceInfoService: DeviceInfoService
+    private deviceInfoService: DeviceInfoService,
+    private network: Network
   ) {
 
     this.objRollup = new Rollup();
@@ -740,6 +742,18 @@ export class ContentDetailsPage {
         this.downloadProgress = '0';
         this.isDownloadStarted = true;
         this.importContent([this.identifier], this.isChildContent);
+        const values = new Map();
+        values['network-type'] = this.network.type;
+        values['size'] = this.content.size;
+        this.importContent([this.identifier], this.isChildContent);
+        this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+          InteractSubtype.UPDATE_INITIATE ? this.isUpdateAvail : InteractSubtype.DOWNLOAD_INITIATE,
+          Environment.HOME,
+          PageId.CONTENT_DETAIL,
+          undefined,
+          values,
+          this.objRollup,
+          this.corRelationList);
       } else {
         this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
       }

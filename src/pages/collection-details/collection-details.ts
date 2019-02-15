@@ -290,8 +290,19 @@ export class CollectionDetailsPage {
    * Function to rate content
    */
   rateContent() {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.RATING_CLICKED,
+      Environment.HOME,
+      PageId.COLLECTION_DETAIL,
+      undefined,
+      undefined,
+      this.objRollup,
+      this.corRelationList
+    );
     if (!this.guestUser) {
       if (this.contentDetail.isAvailableLocally) {
+        if (this.contentDetail.isAvailableLocally) {
         const popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
           content: this.contentDetail,
           rating: this.userRating,
@@ -316,6 +327,7 @@ export class CollectionDetailsPage {
       }
     }
   }
+}
   /**
  * Get the session to know if the user is logged-in or guest
  *
