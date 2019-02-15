@@ -101,6 +101,10 @@
     @include margin(null, 15px, null, null);
 }
 
+.MR16{
+    @include margin(null, 16px, null, null);
+}
+
 .MR20{
     @include margin(null, 20px, null, null);
 }
@@ -125,6 +129,10 @@
     margin-top: 15px;
 }
 
+.MT16{
+    margin-top: 15px;
+}
+
 .MT20{
     margin-top: 20px;
 }
@@ -145,12 +153,23 @@
     margin-left: 5px;
 }
 
+.ML4{
+    @include margin(null, null, null, 4px);
+}
+
 .ML10{
     margin-left: 10px;
 }
 
 .ML15{
     margin-left: 15px;
+}
+
+.TBL15R11{
+    @include padding(15px, 11px, 15px, 15px);
+}
+.ML16{
+    @include margin(null, null, null, 16px);
 }
 
 .ML20{
