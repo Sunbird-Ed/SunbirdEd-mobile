@@ -302,7 +302,6 @@ export class CollectionDetailsPage {
     );
     if (!this.guestUser) {
       if (this.contentDetail.isAvailableLocally) {
-        if (this.contentDetail.isAvailableLocally) {
         const popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
           content: this.contentDetail,
           rating: this.userRating,
@@ -327,7 +326,7 @@ export class CollectionDetailsPage {
       }
     }
   }
-}
+
   /**
  * Get the session to know if the user is logged-in or guest
  *
