@@ -9,7 +9,9 @@ import {
     Mode,
     CorrelationData,
     ContentDetailRequest,
-    ContentService
+    ContentService,
+    ImpressionType,
+    ImpressionSubtype
 } from 'sunbird';
 import { SearchPage } from '../search/search';
 import {
@@ -76,11 +78,24 @@ export class QRScannerResultHandler {
             const data = JSON.parse(response);
             this.navigateToDetailsPage(data.result,
                 this.getCorRelationList(data.result.identifier, QRScannerResultHandler.CORRELATION_TYPE));
+                this.telemetryGeneratorService.generateImpressionTelemetry(
+                    ImpressionType.SEARCH, '',
+                    ImpressionSubtype.QR_CODE_VALID,
+                    PageId.QRCodeScanner,
+                    Environment.HOME,
+                );
         }) .catch((error) => {
             if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
                 this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
             } else {
                 this.commonUtilService.showToast('UNKNOWN_QR');
+                this.telemetryGeneratorService.generateImpressionTelemetry(
+                    ImpressionType.SEARCH, '',
+                    ImpressionSubtype.INVALID_QR_CODE,
+                    InteractType.OTHER,
+                    PageId.QRCodeScanner,
+                    Environment.HOME,
+                );
             }
         });
     }
