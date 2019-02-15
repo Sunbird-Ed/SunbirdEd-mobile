@@ -145,7 +145,7 @@ describe('OnboardingPage', () => {
   });
 
   describe('signIn', () => {
-    it('should show loader and generateLoginInteractTelemetry', () => {
+    it('should show loader and generateLoginInteractTelemetry', (done) => {
       // arrange
       const loader = {present: jest.fn()};
       loadingControllerMock.create.mockReturnValue(loader);
@@ -155,8 +155,11 @@ describe('OnboardingPage', () => {
       onboardingPage.signIn();
 
       // assert
-      expect(loader.present).toHaveBeenCalled();
-      expect(telemetryGeneratorServiceMock.generateInteractTelemetry).toHaveBeenCalled();
+      setTimeout(() => {
+        expect(loader.present).toHaveBeenCalled();
+        expect(telemetryGeneratorServiceMock.generateInteractTelemetry).toHaveBeenCalled();
+        done();
+      }, 0);
     });
 
     it('should dismiss loader when doOAuthStepOne throws error', (done) => {
@@ -169,8 +172,6 @@ describe('OnboardingPage', () => {
       onboardingPage.signIn();
 
       // assert
-      expect(loader.present).toHaveBeenCalled();
-
       setTimeout(() => {
         expect(loader.dismiss).toHaveBeenCalled();
         done();

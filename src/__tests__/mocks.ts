@@ -49,6 +49,7 @@ import { TncUpdateHandlerService } from '@app/service/handlers/tnc-update-handle
 import { LogoutHandlerService } from '@app/service/handlers/logout-handler.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ImageLoader } from 'ionic-image-loader';
+import { Network } from '@ionic-native/network';
 export type Mockify<T> = {
   [P in keyof T]: jest.Mock<{}>;
 };
@@ -133,7 +134,8 @@ export const commonUtilServiceMock = createSpyObj<CommonUtilService>([
   'getLoader',
   'getTranslatedValue',
   'showContentComingSoonAlert',
-  'toLocaleUpperCase'
+  'toLocaleUpperCase',
+  'showExitPopUp'
 ]);
 
 export const eventsMock = createSpyObj<Events>([
@@ -396,3 +398,5 @@ export const userExistRequestMock = createSpyObj<UserExistRequest>([
 export const generateOTPRequestMock = createSpyObj<GenerateOTPRequest>([
 
 ]);
+
+export const networkMock = createSpyObj<Network>([]);
