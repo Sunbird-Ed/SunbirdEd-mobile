@@ -290,17 +290,17 @@ export class CollectionDetailsPage {
    * Function to rate content
    */
   rateContent() {
-    this.telemetryGeneratorService.generateInteractTelemetry(
-      InteractType.TOUCH,
-      InteractSubtype.RATING_CLICKED,
-      Environment.HOME,
-      PageId.COLLECTION_DETAIL,
-      undefined,
-      undefined,
-      this.objRollup,
-      this.corRelationList
-    );
     if (!this.guestUser) {
+      this.telemetryGeneratorService.generateInteractTelemetry(
+        InteractType.TOUCH,
+        InteractSubtype.RATING_CLICKED,
+        Environment.HOME,
+        PageId.COLLECTION_DETAIL,
+        undefined,
+        undefined,
+        this.objRollup,
+        this.corRelationList
+      );
       if (this.contentDetail.isAvailableLocally) {
         const popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
           content: this.contentDetail,
