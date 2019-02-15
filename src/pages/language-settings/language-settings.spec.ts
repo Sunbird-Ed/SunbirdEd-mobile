@@ -152,10 +152,7 @@ describe('LanguageSettingsPage', () => {
         platformMock.registerBackButtonAction.mock.calls[0][0].call(languageSettingsPage);
 
         // assert
-        expect(platformMock.exitApp).toHaveBeenCalled();
-        expect(telemetryGeneratorServiceMock.generateEndTelemetry).toHaveBeenCalledWith(
-          'app', '', '', Environment.ONBOARDING
-        );
+        expect(commonUtilServiceMock.showExitPopUp).toHaveBeenCalled();
       });
     });
   });

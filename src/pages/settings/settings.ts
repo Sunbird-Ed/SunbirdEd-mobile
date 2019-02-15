@@ -24,7 +24,7 @@ import { generateInteractTelemetry, generateImpressionTelemetry } from '../../ap
 import { PreferenceKey } from '../../app/app.constant';
 
 const KEY_SUNBIRD_CONFIG_FILE_PATH = 'sunbird_config_file_path';
-const SUBJECT_NAME = 'Details:';
+const SUBJECT_NAME = 'support request';
 
 @Component({
   selector: 'settings',
@@ -37,7 +37,7 @@ export class SettingsPage {
   deviceId: string;
   subjectDetails: string;
   shareAppLabel: string;
-
+  appName: any;
   constructor(
     private navCtrl: NavController,
     private appVersion: AppVersion,
@@ -54,9 +54,11 @@ export class SettingsPage {
   ionViewWillEnter() {
     this.appVersion.getAppName()
       .then((appName) => {
+        this.appName = appName;
         this.shareAppLabel = this.commonUtilService.translateMessage('SHARE_APP', appName);
       });
   }
+
 
   ionViewDidLoad() {
     const impression = new Impression();
@@ -104,7 +106,6 @@ export class SettingsPage {
     this.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.ABOUT_APP_CLICKED);
     this.navCtrl.push(AboutUsPage);
   }
-
   sendMessage() {
     this.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.SUPPORT_CLICKED);
     this.deviceInfoService.getDeviceID().then((res: any) => {
@@ -120,7 +121,7 @@ export class SettingsPage {
           loader.dismiss();
           if (Boolean(val)) {
             this.fileUrl = 'file://' + val;
-            this.subjectDetails = SUBJECT_NAME + this.deviceId + '_' + Date.now();
+            this.subjectDetails = this.appName + ' ' + SUBJECT_NAME + '-' + this.deviceId;
             this.socialSharing.shareViaEmail('', this.subjectDetails, [this.appGlobalService.SUPPORT_EMAIL], null, null, this.fileUrl)
               .catch(error => {
                 console.error(error);
@@ -131,7 +132,7 @@ export class SettingsPage {
       console.error('ERROR - ' + error);
     });
   }
-
+  // this.appGlobalService.APP_NAME
   shareApp() {
     const loader = this.commonUtilService.getLoader();
     loader.present();

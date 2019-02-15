@@ -21,6 +21,7 @@ import {
 } from '../../app/app.constant';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
+import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-details-etb';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { doesNotThrow } from 'assert';
 import { empty } from 'rxjs/observable/empty';
@@ -190,7 +191,7 @@ describe.only('SearchPage', () => {
         // act
         searchPage.showContentDetails(content);
         // assert
-        expect(navCtrlMock.push).toHaveBeenCalledWith(CollectionDetailsPage, expect.objectContaining({}));
+        expect(navCtrlMock.push).toHaveBeenCalledWith(CollectionDetailsEtbPage, expect.objectContaining({}));
     });
     it('should navigate to ContentDetails Page for showContentDetails()', () => {
         // arrange
@@ -510,7 +511,7 @@ describe.only('SearchPage', () => {
     it('should show error if nothing is added in queuedIdentifiers  and network is not available downloadParentContent() ', (done) => {
         // arrange
         const data = JSON.stringify(mockRes.enqueuedOthersImportContentResponse);
-        (contentServiceMock.importContent as any).mockReturnValue(Promise.resolve(data));
+        contentServiceMock.importContent.mockResolvedValue(data);
         searchPage.isDownloadStarted = false;
         commonUtilServiceMock.networkInfo = { isNetworkAvailable: false } as any;
         (commonUtilServiceMock.showToast as any).mockReturnValue('ERROR_OFFLINE_MODE');

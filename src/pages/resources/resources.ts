@@ -52,6 +52,7 @@ import { updateFilterInSearchQuery } from '../../util/filter.util';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../service/common-util.service';
 import { TranslateService } from '@ngx-translate/core';
+import { Network } from '@ionic-native/network';
 import {
   trigger,
   state,
@@ -163,6 +164,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     private commonUtilService: CommonUtilService,
     private frameworkService: FrameworkService,
     private translate: TranslateService,
+    private network: Network
   ) {
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
       .then(val => {
@@ -176,6 +178,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         this.appLabel = appName;
       });
       this.defaultImg = 'assets/imgs/ic_launcher.png';
+      this.generateNetworkType();
   }
 
   subscribeUtilityEvents() {
@@ -230,6 +233,15 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   ngOnInit() {
     this.setSavedContent();
     this.loadRecentlyViewedContent();
+  }
+
+  generateNetworkType() {
+    const values = new Map();
+    values['network-type'] = this.network.type;
+    this.telemetryGeneratorService.generateExtraInfoTelemetry(
+      values,
+      PageId.LIBRARY
+    );
   }
 
   ngAfterViewInit() {
