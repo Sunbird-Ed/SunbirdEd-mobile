@@ -426,7 +426,7 @@ export class EnrolledCourseDetailsPage {
       this.didViewLoad = true;
 
       if (this.course.status !== 'Live') {
-        this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
+        this.commonUtilService.showToast('COURSE_NOT_AVAILABLE');
         this.navCtrl.pop();
       }
 
