@@ -1,7 +1,7 @@
-import {CoursesPage} from './courses';
-import {Environment, ImpressionType, PageAssembleCriteria, PageAssembleFilter, PageId, ProfileType} from 'sunbird';
-import {mockRes as CourseBatchesMock} from '@app/pages/course-batches/course-batches.spec.data';
-import {mockRes as CourseMock} from '../courses/courses.spec.data';
+import { CoursesPage } from './courses';
+import { Environment, ImpressionType, PageAssembleCriteria, PageAssembleFilter, PageId, ProfileType } from 'sunbird';
+import { mockRes as CourseBatchesMock } from '@app/pages/course-batches/course-batches.spec.data';
+import { mockRes as CourseMock } from '../courses/courses.spec.data';
 import {
   appGlobalServiceMock,
   appVersionMock,
@@ -19,9 +19,10 @@ import {
   telemetryGeneratorServiceMock,
   zoneMock
 } from '@app/__tests__/mocks';
-import {ContentType} from '@app/app';
-import {SearchPage} from '@app/pages/search';
-import {ViewMoreActivityPage} from '@app/pages/view-more-activity';
+import { ContentType } from '@app/app';
+import { SearchPage } from '@app/pages/search';
+import { ViewMoreActivityPage } from '@app/pages/view-more-activity';
+import { networkMock } from '../../__tests__/mocks';
 
 describe('CoursesPage', () => {
   let coursesPage: CoursesPage;
@@ -30,11 +31,24 @@ describe('CoursesPage', () => {
     sharedPreferencesMock.getString.mockResolvedValue('SAMPLE_LANGUAGE');
     appVersionMock.getAppName.mockResolvedValue('SAMPLE_APP_NAME');
 
-    coursesPage = new CoursesPage(appVersionMock as any, navCtrlMock as any, courseServiceMock as any,
-      pageAssembleServiceMock as any, zoneMock as any, sunbirdQRScannerMock as any, popoverCtrlMock as any,
-      eventsMock as any, contentServiceMock as any, sharedPreferencesMock as any, appGlobalServiceMock as any,
-      courseUtilServiceMock as any, formAndFrameworkUtilServiceMock as any, commonUtilServiceMock as any,
-      telemetryGeneratorServiceMock as any);
+    coursesPage = new CoursesPage(
+      appVersionMock as any,
+      navCtrlMock as any,
+      courseServiceMock as any,
+      pageAssembleServiceMock as any,
+      zoneMock as any,
+      sunbirdQRScannerMock as any,
+      popoverCtrlMock as any,
+      eventsMock as any,
+      contentServiceMock as any,
+      sharedPreferencesMock as any,
+      appGlobalServiceMock as any,
+      courseUtilServiceMock as any,
+      formAndFrameworkUtilServiceMock as any,
+      commonUtilServiceMock as any,
+      telemetryGeneratorServiceMock as any,
+      networkMock as any
+    );
 
     jest.resetAllMocks();
     jest.clearAllTimers();
@@ -111,7 +125,7 @@ describe('CoursesPage', () => {
 
   it('should reinitialize all parameters on ionViewWillLeave()', () => {
     // arrange
-    coursesPage.tabBarElement = {style: {}};
+    coursesPage.tabBarElement = { style: {} };
 
     // act
     coursesPage.ionViewWillLeave();
@@ -127,10 +141,11 @@ describe('CoursesPage', () => {
   it('should invoke getEnrolledCourses when enrollcourse event is fired', () => {
     // arrange
     spyOn(coursesPage, 'getEnrolledCourses').and.stub();
+    const data = { batchId: '213123123'};
 
     // act
     coursesPage.subscribeUtilityEvents();
-    eventsMock.subscribe.mock.calls[3][1].call(coursesPage, JSON.parse(CourseMock.courseUpdate));
+    eventsMock.subscribe.mock.calls[6][1].call(coursesPage, data);
 
     // assert
     expect(coursesPage.getEnrolledCourses).toHaveBeenCalledWith(false, false);
@@ -385,7 +400,7 @@ describe('CoursesPage', () => {
   it('should  show filter page if course filter is available', () => {
     // arrange
     spyOn(coursesPage, 'showFilterPage').and.stub();
-    popoverCtrlMock.create.mockReturnValue({present: jest.fn()});
+    popoverCtrlMock.create.mockReturnValue({ present: jest.fn() });
     pageAssembleServiceMock.getPageAssemble.mockResolvedValue(JSON.stringify(CourseMock.popularCoursesResponse));
     formAndFrameworkUtilServiceMock.getCourseFilterConfig.mockResolvedValue(CourseMock.courseConfigFilter);
     coursesPage.courseFilter = CourseMock.courseConfigFilter;
@@ -416,7 +431,7 @@ describe('CoursesPage', () => {
 
   it('should  not call Page API if network is off ', () => {
     // arrange
-    (commonUtilServiceMock.networkInfo as any) = {isNetworkAvailable: false};
+    (commonUtilServiceMock.networkInfo as any) = { isNetworkAvailable: false };
     spyOn(coursesPage, 'getCourseTabData').and.stub();
 
     // act
@@ -428,7 +443,7 @@ describe('CoursesPage', () => {
 
   it('should  call Page API if network is available on retryShowingPopularCourses()', () => {
     // arrange
-    (commonUtilServiceMock.networkInfo as any) = {isNetworkAvailable: true};
+    (commonUtilServiceMock.networkInfo as any) = { isNetworkAvailable: true };
     spyOn(coursesPage, 'getCourseTabData').and.stub();
 
     // act
@@ -545,7 +560,7 @@ describe('CoursesPage', () => {
   describe('should handle all the scenarios for importContent() method', () => {
     it('should show error message if content is not available to download', (done) => {
       // arrange
-      coursesPage.tabBarElement = {style: {}};
+      coursesPage.tabBarElement = { style: {} };
       contentServiceMock.importContent.mockResolvedValue(CourseMock.failureimportResponse);
 
       // act
@@ -562,7 +577,7 @@ describe('CoursesPage', () => {
 
     it('should show error message  when importContent() throws error', (done) => {
       // arrange
-      coursesPage.tabBarElement = {style: {}};
+      coursesPage.tabBarElement = { style: {} };
       contentServiceMock.importContent.mockRejectedValue(undefined);
 
       // act
