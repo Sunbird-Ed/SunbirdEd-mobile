@@ -1,0 +1,23 @@
+<ion-card class="resource-card" [ngClass]="{'grid-disabled': cardDisabled}" (click)="navigateToDetailPage(course)">
+        <!-- <div class="card-container"> -->
+            <div class="custom card grid" [ngClass]="{'saved': sectionName===savedResourcesSection, 'recent': sectionName===recentViewedSection}">
+              <div class="left">
+                <div class="img-container">
+                    <img src="{{ course?.courseLogoUrl || course?.appIcon || defaultImg }}">
+                </div>
+              </div>
+              <div class="right">
+                <div>
+                  <div class="title"> {{course?.courseName || course?.name}} 
+                  </div>
+                </div>
+                <div>
+                  <span class="info">{{course?.gradeLevel}}</span>
+                  <span class="separator-dot" *ngIf = "course?.subject"></span>
+                  <span class="info">{{course?.subject}}</span>
+                </div>
+  
+              </div>
+            </div>
+          <!-- </div> -->
+</ion-card>

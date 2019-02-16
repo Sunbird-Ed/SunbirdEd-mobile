@@ -18,13 +18,20 @@ import {
   telemetryGeneratorServiceMock,
   userProfileServiceMock,
   zoneMock
-} from '@app/__tests__/mocks';
+} from '../../__tests__/mocks';
 import { EnrolledCourseDetailsPage } from './enrolled-course-details';
-import { mockRes } from '@app/pages/enrolled-course-details/enrolled-course-details.spec.data';
-import { Environment, InteractSubtype, InteractType, Mode, PageId, ProfileType } from 'sunbird';
-import { CollectionDetailsPage } from '@app/pages/collection-details/collection-details';
-import { ContentDetailsPage } from '@app/pages/content-details/content-details';
-import { CourseBatchesPage } from '@app/pages/course-batches/course-batches';
+import { mockRes } from './enrolled-course-details.spec.data';
+import {
+  Environment,
+  InteractSubtype,
+  InteractType,
+  Mode,
+  PageId,
+  ProfileType
+} from 'sunbird';
+import { CollectionDetailsPage } from '../collection-details/collection-details';
+import { ContentDetailsPage } from '../content-details/content-details';
+import { CourseBatchesPage } from '../course-batches/course-batches';
 import { datePipeMock } from '../../__tests__/mocks';
 
 describe('EnrolledCourseDetailsPage Component', () => {
@@ -152,7 +159,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     appGlobalServiceMock.getGuestUserInfo.mockResolvedValue(Promise.resolve(ProfileType.STUDENT));
     enrolled.checkLoggedInOrGuestUser();
     enrolled.profileType = ProfileType.STUDENT;
-    enrolled.rateContent();
+    enrolled.rateContent({});
     expect(commonUtilServiceMock.showToast).not.toHaveBeenCalled();
   });
 
@@ -160,7 +167,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     appGlobalServiceMock.isUserLoggedIn.mockReturnValue(false);
     enrolled.checkLoggedInOrGuestUser();
     enrolled.profileType = ProfileType.TEACHER;
-    enrolled.rateContent();
+    enrolled.rateContent({});
     expect(commonUtilServiceMock.showToast).toHaveBeenCalledWith('SIGNIN_TO_USE_FEATURE');
   });
 
@@ -183,7 +190,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
   it('#rateContent should show warning toast if course is not locally available', () => {
     enrolled.guestUser = false;
     enrolled.course = mockRes.sampleCourseNoLocal;
-    enrolled.rateContent();
+    enrolled.rateContent({});
     expect(commonUtilServiceMock.showToast).toHaveBeenCalledWith('TRY_BEFORE_RATING');
   });
 

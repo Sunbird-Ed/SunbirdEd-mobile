@@ -9,6 +9,7 @@ import {
 } from 'ionic-angular';
 import { EnrolledCourseDetailsPage } from '../../../pages/enrolled-course-details/enrolled-course-details';
 import { CollectionDetailsPage } from '../../../pages/collection-details/collection-details';
+import { CollectionDetailsEtbPage } from '../../../pages/collection-details-etb/collection-details-etb';
 import { ContentDetailsPage } from '../../../pages/content-details/content-details';
 import { ContentType, MimeType, ContentCard, PreferenceKey } from '../../../app/app.constant';
 import { CourseUtilService } from '../../../service/course-util.service';
@@ -109,7 +110,8 @@ export class CourseCard implements OnInit {
         content: content
       });
     } else if (content.mimeType === MimeType.COLLECTION) {
-      this.navCtrl.push(CollectionDetailsPage, {
+      // this.navCtrl.push(CollectionDetailsPage, {
+        this.navCtrl.push(CollectionDetailsEtbPage, {
         content: content
       });
     } else {
@@ -156,6 +158,9 @@ export class CourseCard implements OnInit {
     contentContextMap['userId'] = content.userId;
     contentContextMap['courseId'] = content.courseId;
     contentContextMap['batchId'] = content.batchId;
+    if (content.batch) {
+      contentContextMap['batchStatus'] = content.batch.status;
+    }
 
     // store the contentContextMap in shared preference and access it from SDK
     this.preference.putString(PreferenceKey.CONTENT_CONTEXT, JSON.stringify(contentContextMap));

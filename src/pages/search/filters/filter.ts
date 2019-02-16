@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import { NavParams, PopoverController, NavController, Events } from 'ionic-angular';
+import { NavParams, PopoverController, NavController, Events, Platform } from 'ionic-angular';
 import { CommonUtilService } from '../../../service/common-util.service';
 import * as _ from 'lodash';
 import { FilterOptions } from './options/options';
+import { IonicApp } from 'ionic-angular';
 
 @Component({
   selector: 'page-filter',
@@ -14,14 +15,19 @@ export class FilterPage {
 
   facetsFilter: Array<any> = [];
 
+  unregisterBackButton: any;
+
   constructor(
     private navParams: NavParams,
     private popCtrl: PopoverController,
     private navCtrl: NavController,
     private events: Events,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    private platform: Platform,
+    private ionicApp: IonicApp
   ) {
     this.init();
+    this.handleBackButton();
   }
 
   openFilterOptions(facet) {
@@ -51,7 +57,7 @@ export class FilterPage {
     return '';
   }
 
-  private init() {
+  init() {
     this.filterCriteria = this.navParams.get('filterCriteria');
     const filters: Array<any> = [];
     this.filterCriteria.facets.forEach(facet => {
@@ -94,6 +100,22 @@ export class FilterPage {
     } else {
       return false;
     }
+  }
+
+  /**
+   * It will hndle the device back button functionality
+   */
+  handleBackButton() {
+    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+      const activePortal = this.ionicApp._modalPortal.getActive() ||
+        this.ionicApp._toastPortal.getActive() || this.ionicApp._overlayPortal.getActive();
+      if (activePortal) {
+        activePortal.dismiss();
+      } else if (this.navCtrl.canGoBack()) {
+        this.navCtrl.pop();
+      }
+      this.unregisterBackButton();
+    }, 11);
   }
 
 }

@@ -238,7 +238,7 @@ export class AddOrRemoveGroupUserPage {
           }
         },
         {
-          text: this.commonUtilService.translateMessage('Yes'),
+          text: this.commonUtilService.translateMessage('YES'),
           cssClass: 'alert-btn-delete',
           handler: () => {
             this.deleteUsersFromGroup();

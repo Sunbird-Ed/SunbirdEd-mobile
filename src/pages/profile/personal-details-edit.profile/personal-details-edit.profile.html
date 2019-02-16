@@ -7,8 +7,14 @@
 <ion-content padding-vertical>
   <form [formGroup]="profileEditForm">
     <ion-item>
-      <ion-label stacked class="label-font">{{'NAME' | translate}}<span ion-text>&nbsp;*</span></ion-label>
-      <ion-input class="form-control" #name formControlName="name" placeholder="{{ 'NAME_HINT' | translate }}" (ionChange)="enableSubmitButton();"></ion-input>
+      <ion-label stacked class="label-font">
+        {{'NAME' | translate}}
+        <span ion-text color="danger">&nbsp;*</span>
+        <div class="error" *ngIf="!profileEditForm.controls.name.valid && profileEditForm.controls.name.dirty">
+          {{'ERROR_NAME_INVALID' | translate}}</div>
+      </ion-label>
+      <ion-input class="form-control" #name formControlName="name" placeholder="{{ 'NAME_HINT' | translate }}"
+        (ionChange)="enableSubmitButton();" dir="{{commonUtilService.getAppDirection()}}"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label stacked class="label-font">{{'STATE' | translate}}</ion-label>
@@ -19,8 +25,9 @@
     </ion-item>
     <ion-item>
       <ion-label stacked class="label-font">{{'DISTRICT' | translate}}</ion-label>
-      <ion-select formControlName="districts" #districtSelect multiple="false" [disabled]="!profileEditForm.value.states" [selectOptions]="districtOptions" placeholder="{{'DISTRICT_OPTION_TEXT' | translate}}"
-        okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}">
+      <ion-select formControlName="districts" #districtSelect multiple="false" [disabled]="!profileEditForm.value.states"
+        [selectOptions]="districtOptions" placeholder="{{'DISTRICT_OPTION_TEXT' | translate}}" okText="{{'BTN_SUBMIT' | translate}}"
+        cancelText="{{'CANCEL' | translate}}">
         <ion-option *ngFor="let district of districtList" value="{{district?.id}}">{{district?.name}}</ion-option>
       </ion-select>
     </ion-item>
@@ -29,8 +36,9 @@
 
 <ion-footer>
   <ion-row class="padding-12">
-  <ion-col col-md-10 offset-md-1>
-      <button ion-button block [ngStyle]="{'background-color': btnColor}" [disabled]="profileEditForm.invalid" (click)="onSubmit()">{{'SAVE' | translate}}</button>
+    <ion-col col-md-10 offset-md-1>
+      <button ion-button block [ngStyle]="{'background-color': btnColor}" [disabled]="profileEditForm.invalid" (click)="onSubmit()">{{'SAVE'
+        | translate}}</button>
     </ion-col>
   </ion-row>
 </ion-footer>

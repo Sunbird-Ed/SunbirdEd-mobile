@@ -309,20 +309,20 @@ export class OnboardingService {
             // clear all the syllbusList
             this.syllabusList = [];
 
-            this.formAndFrameworkUtilService.getSupportingBoardList()
-                .then((result) => {
-                    if (result && result !== undefined && result.length > 0) {
-                        result.forEach(element => {
-                            // renaming the fields to text, value and checked
-                            const value = { 'text': element.name, 'value': element.frameworkId, 'checked': false };
-                            this.syllabusList.push(value);
-                        });
+            // this.formAndFrameworkUtilService.getSupportingBoardList()
+            //     .then((result) => {
+            //         if (result && result !== undefined && result.length > 0) {
+            //             result.forEach(element => {
+            //                 // renaming the fields to text, value and checked
+            //                 const value = { 'text': element.name, 'value': element.frameworkId, 'checked': false };
+            //                 this.syllabusList.push(value);
+            //             });
 
-                        resolve(this.syllabusList);
-                    } else {
-                        reject(this.syllabusList);
-                    }
-                });
+            //             resolve(this.syllabusList);
+            //         } else {
+            //             reject(this.syllabusList);
+            //         }
+            //     });
         });
     }
 

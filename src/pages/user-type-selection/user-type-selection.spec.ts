@@ -1,220 +1,333 @@
-// import { async, TestBed, ComponentFixture, inject } from '@angular/core/testing';
-// import { TranslateService, TranslateModule, TranslateLoader } from '@ngx-translate/core';
-// import {
-//   IonicModule, NavController, NavParams
-// } from 'ionic-angular';
-// import {
-//   TranslateLoaderMock, NavMock, NavParamsMockNew, SharedPreferencesMock
-// } from '../../../test-config/mocks-ionic';
-// import { PipesModule } from '../../pipes/pipes.module';
-// import { } from 'jasmine';
-// import { NO_ERRORS_SCHEMA } from '@angular/core';
-// import { UserTypeSelectionPage } from './user-type-selection';
-// import {
-//   SharedPreferences, ProfileService, ServiceProvider,
-//   TelemetryService, ContainerService, ImpressionType, PageId, Environment, ProfileType, UserSource, TabsPage
-// } from 'sunbird';
-// import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-// import { CommonUtilService } from '../../service/common-util.service';
-// describe('UserTypeSelectionPage Component', () => {
-//   let component: UserTypeSelectionPage;
-//   let fixture: ComponentFixture<UserTypeSelectionPage>;
-//   let translateService: TranslateService;
-//   beforeEach(async(() => {
-//     TestBed.configureTestingModule({
-//       declarations: [UserTypeSelectionPage],
-//       schemas: [NO_ERRORS_SCHEMA],
-//       imports: [
-//         IonicModule.forRoot(UserTypeSelectionPage),
-//         TranslateModule.forRoot({
-//           loader: { provide: TranslateLoader, useClass: TranslateLoaderMock },
-//         }),
-//         PipesModule,
-//       ],
-//       providers: [
-//         ProfileService, ServiceProvider, TelemetryGeneratorService, TelemetryService,
-//         ContainerService, CommonUtilService,
-//         { provide: NavController, useClass: NavMock },
-//         { provide: NavParams, useClass: NavParamsMockNew },
-//         { provide: SharedPreferences, useClass: SharedPreferencesMock },
+import { ProfileSettingsPage } from './../profile-settings/profile-settings';
 
-//       ]
-//     });
-//   }));
+import { UserTypeSelectionPage } from './user-type-selection';
+import { navCtrlMock,
+        navParamsMock,
+        translateServiceMock,
+        sharedPreferencesMock,
+        profileServiceMock,
+        telemetryGeneratorServiceMock,
+        containerServiceMock,
+        zoneMock,
+        platformMock,
+        eventsMock,
+        commonUtilServiceMock,
+        appGlobalServiceMock,
+        sunbirdQRScannerMock} from './../../__tests__/mocks';
 
-//   beforeEach(() => {
-//     fixture = TestBed.createComponent(UserTypeSelectionPage);
-//     component = fixture.componentInstance;
-//   });
+import {
+  SharedPreferences, ProfileService, ServiceProvider,
+  TelemetryService, ContainerService, ImpressionType, PageId, Environment, ProfileType, UserSource, TabsPage
+} from 'sunbird';
+describe('UserTypeSelectionPage Component', () => {
+  let userTypeSelectionPage: UserTypeSelectionPage;
 
-//   beforeEach(() => {
-//     inject([TranslateService], (service) => {
-//       translateService = service;
-//       translateService.use('en');
-//     });
-//   });
+  beforeEach(() => {
+    userTypeSelectionPage = new UserTypeSelectionPage(
+        navCtrlMock as any,
+        navParamsMock as any,
+        translateServiceMock as any,
+        sharedPreferencesMock as any,
+        profileServiceMock as any,
+        telemetryGeneratorServiceMock as any,
+        containerServiceMock as any,
+        zoneMock as any,
+        eventsMock as any,
+        commonUtilServiceMock as any,
+        appGlobalServiceMock as any,
+        sunbirdQRScannerMock as any,
+        platformMock as any
+    );
+    jest.resetAllMocks();
+  });
+  it('can load instance', () => {
+    expect(userTypeSelectionPage).toBeTruthy();
+});
+it('backButtonFunc defaults to: undefined', () => {
+  expect(userTypeSelectionPage.backButtonFunc).toEqual(undefined);
+});
 
-//   it('#ionViewDidload should generate impression telemetry event', () => {
-//     const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
-//     spyOn(telemetryGeneratorService, 'generateImpressionTelemetry').and.callThrough().and.callFake(() => { });
-//     component.ionViewDidLoad();
-//     expect(telemetryGeneratorService.generateImpressionTelemetry).toHaveBeenCalledWith(ImpressionType.VIEW, '',
-//       PageId.USER_TYPE_SELECTION,
-//       Environment.HOME, '', '', '');
-//   });
 
-//   it('#selectTeacherCard should select teacher card', () => {
-//     const preference = TestBed.get(SharedPreferences);
-//     spyOn(preference, 'putString');
-//     component.selectTeacherCard();
-//     expect(component.selectedUserType).toBe(ProfileType.TEACHER);
-//     expect(preference.putString).toHaveBeenCalledWith('selected_user_type', ProfileType.TEACHER);
-//   });
+  it('#ionViewDidload should generate impression telemetry event and set navBar back func ', (done) => {
+    // arrange
+    (userTypeSelectionPage.navBar as any) = {};
+    // act
+    userTypeSelectionPage.ionViewDidLoad();
+    userTypeSelectionPage.navBar.backButtonClick({} as any);
 
-//   it('#selectStudentCard should select student card', () => {
-//     const preference = TestBed.get(SharedPreferences);
-//     spyOn(preference, 'putString');
-//     component.selectStudentCard();
-//     expect(component.selectedUserType).toBe(ProfileType.STUDENT);
-//     expect(preference.putString).toHaveBeenCalledWith('selected_user_type', ProfileType.STUDENT);
-//   });
+    setTimeout(() => {
+      // assert
+      expect(userTypeSelectionPage.navBar.backButtonClick).toBeDefined();
+      expect(telemetryGeneratorServiceMock.generateImpressionTelemetry).toHaveBeenCalledWith(ImpressionType.VIEW, '',
+      PageId.USER_TYPE_SELECTION,
+      Environment.HOME, '', '', '');
+      expect(telemetryGeneratorServiceMock.generateBackClickedTelemetry).toHaveBeenCalledWith(PageId.USER_TYPE_SELECTION,
+      Environment.HOME, true);
+      done();
+    }, 10);
 
-//   it('#continue should navigate to Tabs Page if profile type is same as selected profileType as TEACHER', () => {
-//     const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
-//     const navController = TestBed.get(NavController);
-//     spyOn(navController, 'push').and.callThrough();
-//     spyOn(component, 'generateInteractEvent').and.callThrough();
-//     spyOn(telemetryGeneratorService, 'generateInteractTelemetry').and.callThrough().and.callFake(() => { });
-//     component.profile = { handle: 'SAMPLE_NAME', profileType: ProfileType.TEACHER, source: UserSource.LOCAL };
-//     component.selectedUserType = ProfileType.TEACHER;
-//     component.continue();
-//     expect(component.generateInteractEvent).toHaveBeenCalled();
-//     expect(navController.push).toHaveBeenCalledWith(TabsPage, {
-//       loginMode: 'guest'
-//     });
-//   });
+  });
+  describe('ionViewWillEnter', () => {
+    it('makes expected calls', () => {
+      // arrange
+      platformMock.registerBackButtonAction.mockReturnValue(jest.fn());
 
-//   it('#continue should navigate to Tabs Page if profile type is same as selected profileType as STUDENT', () => {
-//     const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
-//     const navController = TestBed.get(NavController);
-//     spyOn(navController, 'push').and.callThrough();
-//     spyOn(component, 'generateInteractEvent').and.callThrough();
-//     spyOn(telemetryGeneratorService, 'generateInteractTelemetry').and.callThrough().and.callFake(() => { });
-//     component.profile = { handle: 'SAMPLE_NAME', profileType: ProfileType.STUDENT, source: UserSource.LOCAL };
-//     component.selectedUserType = ProfileType.STUDENT;
-//     component.continue();
-//     expect(component.generateInteractEvent).toHaveBeenCalled();
-//     expect(navController.push).toHaveBeenCalledWith(TabsPage, {
-//       loginMode: 'guest'
-//     });
-//   });
+      // act
+      userTypeSelectionPage.ionViewWillEnter();
 
-//   it('#continue should navigate to Tabs Page after updating the profile if profile type is not same as selected profileType', () => {
-//     const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
-//     const navController = TestBed.get(NavController);
-//     const profileService = TestBed.get(ProfileService);
-//     spyOn(profileService, 'updateProfile').and.callThrough().and.callFake((arg, success) => {
-//       return success();
-//     });
-//     spyOn(navController, 'push').and.callThrough();
-//     spyOn(component, 'generateInteractEvent').and.callThrough();
-//     spyOn(component, 'updateProfile').and.callThrough();
-//     spyOn(telemetryGeneratorService, 'generateInteractTelemetry').and.callThrough().and.callFake(() => { });
-//     component.profile = { handle: 'SAMPLE_NAME', profileType: ProfileType.STUDENT, source: UserSource.LOCAL };
-//     component.selectedUserType = ProfileType.TEACHER;
-//     component.continue();
-//     expect(component.generateInteractEvent).toHaveBeenCalled();
-//     expect(component.updateProfile).toHaveBeenCalled();
-//     expect(navController.push).toHaveBeenCalledWith(TabsPage, {
-//       loginMode: 'guest'
-//     });
-//   });
+      // assert
+      expect(platformMock.registerBackButtonAction).toHaveBeenCalledWith(expect.anything(), 10);
+    });
+  it('#ionViewWillEnter should set profile and register backButtonFunc', () => {
+     // arrange
+     platformMock.registerBackButtonAction.mockReturnValue(jest.fn());
 
-//   it('#continue should handle if error response comes from updateProfile API', () => {
-//     const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
-//     const navController = TestBed.get(NavController);
-//     const profileService = TestBed.get(ProfileService);
-//     spyOn(profileService, 'updateProfile').and.callThrough().and.callFake((arg, success, error) => {
-//       return error();
-//     });
-//     spyOn(navController, 'push').and.callThrough();
-//     spyOn(component, 'generateInteractEvent').and.callThrough();
-//     spyOn(component, 'updateProfile').and.callThrough();
-//     spyOn(telemetryGeneratorService, 'generateInteractTelemetry').and.callThrough().and.callFake(() => { });
-//     component.profile = { handle: 'SAMPLE_NAME', profileType: ProfileType.STUDENT, source: UserSource.LOCAL };
-//     component.selectedUserType = ProfileType.TEACHER;
-//     component.continue();
-//     expect(component.generateInteractEvent).toHaveBeenCalled();
-//     expect(component.updateProfile).toHaveBeenCalled();
-//     expect(navController.push).not.toHaveBeenCalledWith(TabsPage, {
-//       loginMode: 'guest'
-//     });
-//   });
+    navParamsMock.get.mockReturnValue(true);
+    spyOn(userTypeSelectionPage, 'handleBackButton');
 
-//   it('#continue should create a profile if profile is not available', () => {
-//     const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
-//     const navController = TestBed.get(NavController);
-//     const profileService = TestBed.get(ProfileService);
-//     spyOn(profileService, 'setCurrentProfile').and.callThrough().and.callFake((boolean, arg, success, error) => {
-//       return success();
-//     });
-//     spyOn(profileService, 'getCurrentUser').and.callThrough().and.callFake((success, error) => {
-//       return success(JSON.stringify({ uid: 'SAMPLE_UID' }));
-//     });
-//     spyOn(navController, 'push').and.callThrough();
-//     spyOn(component, 'generateInteractEvent').and.callThrough();
-//     spyOn(component, 'setProfile').and.callThrough();
-//     spyOn(telemetryGeneratorService, 'generateInteractTelemetry').and.callThrough().and.callFake(() => { });
-//     component.profile = undefined;
-//     component.continue();
-//     expect(component.setProfile).toHaveBeenCalled();
-//     expect(navController.push).toHaveBeenCalledWith(TabsPage, {
-//       loginMode: 'guest'
-//     });
+    // act
+    userTypeSelectionPage.ionViewWillEnter();
+    // assert
+    platformMock.registerBackButtonAction.mock.calls[0][0].call(userTypeSelectionPage);
+    expect(telemetryGeneratorServiceMock.generateBackClickedTelemetry).toHaveBeenCalled();
+    expect(userTypeSelectionPage.backButtonFunc).toHaveBeenCalled();
 
-//   });
+  });
+});
 
-//   it('#continue should create a profile if profile is not available and should handle error result from getCurrntUser', () => {
-//     const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
-//     const navController = TestBed.get(NavController);
-//     const profileService = TestBed.get(ProfileService);
-//     spyOn(profileService, 'setCurrentProfile').and.callThrough().and.callFake((boolean, arg, success, error) => {
-//       return success();
-//     });
-//     spyOn(profileService, 'getCurrentUser').and.callThrough().and.callFake((success, error) => {
-//       return error();
-//     });
-//     spyOn(navController, 'push').and.callThrough();
-//     spyOn(component, 'generateInteractEvent').and.callThrough();
-//     spyOn(component, 'setProfile').and.callThrough();
-//     spyOn(telemetryGeneratorService, 'generateInteractTelemetry').and.callThrough().and.callFake(() => { });
-//     component.profile = undefined;
-//     component.continue();
-//     expect(component.setProfile).toHaveBeenCalled();
-//     expect(navController.push).not.toHaveBeenCalledWith(TabsPage, {
-//       loginMode: 'guest'
-//     });
+    describe('ionViewWillLeave', () => {
+      it('should call registered backButton', () => {
+        // arrange
+        userTypeSelectionPage.backButtonFunc = jest.fn();
 
-//   });
+        // act
+        userTypeSelectionPage.ionViewWillLeave();
 
-//   it('#continue should create a profile if profile is not available and should handle error result from getCurrentProfile', () => {
-//     const telemetryGeneratorService = TestBed.get(TelemetryGeneratorService);
-//     const navController = TestBed.get(NavController);
-//     const profileService = TestBed.get(ProfileService);
-//     spyOn(profileService, 'setCurrentProfile').and.callThrough().and.callFake((boolean, arg, success, error) => {
-//       return error();
-//     });
-//     spyOn(navController, 'push').and.callThrough();
-//     spyOn(component, 'generateInteractEvent').and.callThrough();
-//     spyOn(component, 'setProfile').and.callThrough();
-//     spyOn(telemetryGeneratorService, 'generateInteractTelemetry').and.callThrough().and.callFake(() => { });
-//     component.profile = undefined;
-//     component.continue();
-//     expect(component.setProfile).toHaveBeenCalled();
-//     expect(navController.push).not.toHaveBeenCalledWith(TabsPage, {
-//       loginMode: 'guest'
-//     });
+        // assert
+        expect(userTypeSelectionPage.backButtonFunc).toHaveBeenCalled();
+      });
+    });
 
-//   });
 
-// });
+  it('#selectTeacherCard should select teacher card', (done) => {
+    // act
+    userTypeSelectionPage.selectTeacherCard();
+    // assert
+    setTimeout(() => {
+      zoneMock.run.mock.calls[0][0].call();
+      expect(userTypeSelectionPage.selectedUserType).toBe(ProfileType.TEACHER);
+      expect(sharedPreferencesMock.putString).toHaveBeenCalledWith('selected_user_type', ProfileType.TEACHER);
+      done();
+  }, 0);
+  });
+
+  it('#selectStudentCard should select student card', (done) => {
+    // act
+    userTypeSelectionPage.selectStudentCard();
+    // assert
+    setTimeout(() => {
+      zoneMock.run.mock.calls[0][0].call();
+      expect(userTypeSelectionPage.selectedUserType).toBe(ProfileType.STUDENT);
+      expect(sharedPreferencesMock.putString).toHaveBeenCalledWith('selected_user_type', ProfileType.STUDENT);
+      done();
+    }, 0);
+  });
+
+  it('#continue should navigate to Tabs Page if profile type is same as selected profileType as TEACHER', () => {
+    // arrange
+    userTypeSelectionPage.profile = { handle: 'SAMPLE_NAME', profileType: ProfileType.TEACHER, source: UserSource.LOCAL };
+    userTypeSelectionPage.selectedUserType = ProfileType.TEACHER;
+    profileServiceMock.updateProfile.mockResolvedValue('');
+    appGlobalServiceMock.isProfileSettingsCompleted = jest.fn();
+    spyOn(userTypeSelectionPage, 'generateInteractEvent');
+
+    // act
+    userTypeSelectionPage.continue();
+    // assert
+    expect(userTypeSelectionPage.generateInteractEvent).toHaveBeenCalled();
+    expect(navCtrlMock.push).toHaveBeenCalledWith(TabsPage, {
+      loginMode: 'guest'
+    });
+  });
+
+  it('#continue should navigate to Tabs Page if profile type is same as selected profileType as STUDENT', () => {
+    // arrange
+    userTypeSelectionPage.profile = { handle: 'SAMPLE_NAME', profileType: ProfileType.STUDENT, source: UserSource.LOCAL };
+    userTypeSelectionPage.selectedUserType = ProfileType.STUDENT;
+    profileServiceMock.updateProfile.mockResolvedValue('');
+    appGlobalServiceMock.isProfileSettingsCompleted = jest.fn();
+    spyOn(userTypeSelectionPage, 'generateInteractEvent');
+    // act
+    userTypeSelectionPage.continue();
+    // assert
+    expect(userTypeSelectionPage.generateInteractEvent).toHaveBeenCalled();
+    expect(navCtrlMock.push).toHaveBeenCalledWith(TabsPage, {
+      loginMode: 'guest'
+    });
+  });
+
+
+  it('#continue should navigate to Tabs Page after updating the profile if profile type is not same as selected profileType',
+  (done) => {
+    // arrange
+    userTypeSelectionPage.profile = { handle: 'SAMPLE_NAME', profileType: ProfileType.STUDENT, source: UserSource.LOCAL };
+    userTypeSelectionPage.selectedUserType = ProfileType.TEACHER;
+    profileServiceMock.updateProfile.mockResolvedValue('');
+    appGlobalServiceMock.isProfileSettingsCompleted = undefined;
+    spyOn(userTypeSelectionPage, 'generateInteractEvent');
+    // act
+    userTypeSelectionPage.continue();
+
+    // assert
+    setTimeout(() => {
+      expect(userTypeSelectionPage.generateInteractEvent).toHaveBeenCalled();
+      expect(profileServiceMock.updateProfile).toHaveBeenCalled();
+      expect(navCtrlMock.push).toHaveBeenCalledWith(TabsPage, {
+      loginMode: 'guest'
+    });
+    done();
+    }, 0);
+
+  });
+
+  it('#continue should handle if error response comes from updateProfile API', (done) => {
+    // arrange
+    userTypeSelectionPage.profile = { handle: 'SAMPLE_NAME', profileType: ProfileType.STUDENT, source: UserSource.LOCAL };
+    userTypeSelectionPage.selectedUserType = ProfileType.TEACHER;
+    profileServiceMock.updateProfile.mockRejectedValue('');
+    appGlobalServiceMock.isProfileSettingsCompleted = undefined;
+    spyOn(userTypeSelectionPage, 'generateInteractEvent');
+    // act
+    userTypeSelectionPage.continue();
+
+    // assert
+    setTimeout(() => {
+      expect(userTypeSelectionPage.generateInteractEvent).toHaveBeenCalled();
+      expect(profileServiceMock.updateProfile).toHaveBeenCalled();
+      expect(navCtrlMock.push).not.toHaveBeenCalledWith(TabsPage, {
+      loginMode: 'guest'
+    });
+    done();
+    }, 0);
+  });
+  it('#continue should navigate to Tabs Page if  profile type is same, changeRoleRequest ON and profileSetting is OFF', () => {
+    // arrange
+    userTypeSelectionPage.profile = { handle: 'SAMPLE_NAME', profileType: ProfileType.STUDENT, source: UserSource.LOCAL };
+    userTypeSelectionPage.selectedUserType = ProfileType.STUDENT;
+    profileServiceMock.updateProfile.mockResolvedValue('');
+    userTypeSelectionPage.isChangeRoleRequest = true;
+    appGlobalServiceMock.DISPLAY_ONBOARDING_SCAN_PAGE = jest.fn();
+    spyOn(userTypeSelectionPage, 'generateInteractEvent');
+    // act
+    userTypeSelectionPage.continue();
+    // assert
+    expect(userTypeSelectionPage.generateInteractEvent).toHaveBeenCalled();
+    expect(navCtrlMock.push).toHaveBeenCalledWith(TabsPage, {
+      loginMode: 'guest'
+    });
+  });
+
+  it('#goToTabsPage should navigate to profile setting page if isChangeRoleRequest and isUserTypeChanged is true', () => {
+    // arrange
+    userTypeSelectionPage.profile = { handle: 'SAMPLE_NAME', profileType: ProfileType.STUDENT, source: UserSource.LOCAL };
+    userTypeSelectionPage.selectedUserType = ProfileType.TEACHER;
+    userTypeSelectionPage.isChangeRoleRequest = true;
+    appGlobalServiceMock.DISPLAY_ONBOARDING_CATEGORY_PAGE = jest.fn();
+    containerServiceMock.removeAllTabs.mockReturnValue('');
+    // act
+    userTypeSelectionPage.gotoTabsPage(true);
+    // assert
+    expect(containerServiceMock.removeAllTabs).toHaveBeenCalled();
+    expect(navCtrlMock.push).toHaveBeenCalledWith(ProfileSettingsPage, {
+      isChangeRoleRequest: true, selectedUserType: ProfileType.TEACHER
+    });
+  });
+
+  it('#goToTabsPage should navigate to Tabs page if isChangeRoleRequest and isUserTypeChanged is true and Onboarding is false', (done) => {
+    // arrange
+    userTypeSelectionPage.profile = { handle: 'SAMPLE_NAME', profileType: ProfileType.STUDENT, source: UserSource.LOCAL };
+    userTypeSelectionPage.selectedUserType = ProfileType.TEACHER;
+    profileServiceMock.updateProfile.mockResolvedValue('');
+    userTypeSelectionPage.isChangeRoleRequest = true;
+    appGlobalServiceMock.DISPLAY_ONBOARDING_CATEGORY_PAGE = undefined;
+    // act
+    userTypeSelectionPage.gotoTabsPage(true);
+    // assert
+    setTimeout(() => {
+      expect( profileServiceMock.updateProfile).toHaveBeenCalled();
+      expect(navCtrlMock.push).toHaveBeenCalledWith(TabsPage, {
+        loginMode: 'guest'
+      });
+      done();
+    }, 10 );
+  });
+
+  it('#goToTabsPage should not navigate to Tabs page on change role if updateProfile gives error response', (done) => {
+    // arrange
+    userTypeSelectionPage.profile = { handle: 'SAMPLE_NAME', profileType: ProfileType.STUDENT, source: UserSource.LOCAL };
+    userTypeSelectionPage.selectedUserType = ProfileType.TEACHER;
+    profileServiceMock.updateProfile.mockRejectedValue('');
+    userTypeSelectionPage.isChangeRoleRequest = true;
+    appGlobalServiceMock.DISPLAY_ONBOARDING_CATEGORY_PAGE = undefined;
+    // act
+    userTypeSelectionPage.gotoTabsPage(true);
+    // assert
+    setTimeout(() => {
+      expect( profileServiceMock.updateProfile).toHaveBeenCalled();
+      expect(navCtrlMock.push).not.toHaveBeenCalledWith(TabsPage, {
+        loginMode: 'guest'
+      });
+      done();
+    }, 10 );
+  });
+
+  it('#continue should create a profile if profile is not available', () => {
+    // arrange
+    userTypeSelectionPage.selectedUserType = ProfileType.STUDENT;
+    profileServiceMock.setCurrentProfile.mockResolvedValue('');
+    spyOn(userTypeSelectionPage, 'setProfile');
+    // act
+    userTypeSelectionPage.continue();
+    // assert
+    expect(userTypeSelectionPage.setProfile).toHaveBeenCalled();
+
+  });
+
+  it('#continue should create a profile if profile is not available and should handle error result from getCurrntUser', (done) => {
+   // arrange
+    userTypeSelectionPage.selectedUserType = ProfileType.STUDENT;
+    profileServiceMock.setCurrentProfile.mockResolvedValue('');
+    profileServiceMock.getCurrentUser.mockRejectedValue('');
+    spyOn(userTypeSelectionPage, 'setProfile').and.callThrough();
+    // act
+    userTypeSelectionPage.continue();
+    // assert
+    setTimeout(() => {
+      expect(userTypeSelectionPage.setProfile).toHaveBeenCalled();
+      expect(navCtrlMock.push).not.toHaveBeenCalledWith(TabsPage, {
+               loginMode: 'guest'
+            });
+            done();
+    }, 0);
+
+
+    });
+
+  it('#continue should create a profile if profile is not available and should handle error result from getCurrentProfile', (done) => {
+    // arrange
+    userTypeSelectionPage.selectedUserType = ProfileType.STUDENT;
+    profileServiceMock.setCurrentProfile.mockRejectedValue('');
+    spyOn(userTypeSelectionPage, 'setProfile').and.callThrough();
+    // act
+    userTypeSelectionPage.continue();
+    // assert
+    setTimeout(() => {
+      expect(userTypeSelectionPage.setProfile).toHaveBeenCalled();
+      expect(navCtrlMock.push).not.toHaveBeenCalledWith(TabsPage, {
+               loginMode: 'guest'
+            });
+            done();
+    }, 0);
+  });
+
+});

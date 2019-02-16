@@ -1,3 +1,4 @@
+import { formAndFrameworkUtilServiceMock } from './../../__tests__/mocks';
 import { mockRes } from '../../pages/page-filter/page.filter.spec.data';
 import 'jest';
 import { PageFilter } from './page.filter';
@@ -13,27 +14,36 @@ import {
     commonUtilServiceMock,
     viewControllerMock
 } from '../../__tests__/mocks';
-import { Profile } from 'sunbird';
+import { Profile, PageId } from 'sunbird';
 
 describe('PageFilter component', () => {
     let pageFilter: PageFilter;
 
     beforeEach(() => {
-        navParamsMock.get.mockImplementation((param: string) => {
+        commonUtilServiceMock.getLoader.mockReturnValue({
+            present: () => {},
+            dismiss: () => {}
+          });
+          navParamsMock.get.mockImplementation((param: string) => {
             if (param === 'filter') {
-                return [];
+                return [{
+                    'name': 'Organization',
+                    'translations': '{\'en\':\'Organization\'}',
+                    'code': 'channel',
+                    'frameworkCategory': false,
+                    'index': 0,
+                    'values': []
+                }];
             } else {
                 return 'pageId';
             }
         });
-
         appGlobalServiceMock.getCurrentUser.mockReturnValue({ syllabus: 'sample' });
 
         pageFilter = new PageFilter(popoverCtrlMock as any, viewControllerMock as any, navParamsMock as any,
             platformMock as any, frameworkServiceMock as any, translateServiceMock as any,
-            appGlobalServiceMock as any, eventsMock as any, telemetryGeneratorServiceMock as any, commonUtilServiceMock as any);
-
-        jest.resetAllMocks();
+            appGlobalServiceMock as any, eventsMock as any, telemetryGeneratorServiceMock as any, commonUtilServiceMock as any,
+            formAndFrameworkUtilServiceMock as any);
     });
 
     it('should set default language to en', () => {
@@ -145,4 +155,77 @@ describe('PageFilter component', () => {
         pageFilter.onLanguageChange();
 
     });
+    it('getRootOrganizations() should set the values of organization in filter array', (done) => {
+
+        formAndFrameworkUtilServiceMock.getRootOrganizations.mockResolvedValue(['Organization List']);
+         // act
+        pageFilter.getRootOrganizations(0);
+
+            setTimeout(() => {
+
+                // assert
+                expect(pageFilter.filters[0].values.length).toEqual(1);
+                done();
+            }, 10 );
+
+    });
+    it('getRootOrganizations() should set the values of organization in filter array', (done) => {
+
+        formAndFrameworkUtilServiceMock.getRootOrganizations.mockResolvedValue(['Organization List']);
+         // act
+        pageFilter.getRootOrganizations(0);
+
+            setTimeout(() => {
+
+                // assert
+                expect(pageFilter.filters[0].values.length).toEqual(1);
+                done();
+            }, 10 );
+
+    });
+
+    it('initFilterValues() should call getCourseFrameworkId when pageId is PageId.COURSE_PAGE_FILTER', (done) => {
+        // arranage
+        jest.resetAllMocks();
+        navParamsMock.get.mockImplementation((param: string) => {
+            if (param === 'filter') {
+                return [{
+                    'name': 'Organization',
+                    'translations': '{\'en\':\'Organization\'}',
+                    'code': 'channel',
+                    'frameworkCategory': false,
+                    'index': 0,
+                    'values': []
+                }];
+            } else {
+                return PageId.COURSE_PAGE_FILTER;
+            }
+        });
+
+        commonUtilServiceMock.getLoader.mockReturnValue({
+            present: () => {},
+            dismiss: () => {}
+          });
+        appGlobalServiceMock.getCurrentUser.mockReturnValue({ syllabus: 'sample' });
+
+        formAndFrameworkUtilServiceMock.getRootOrganizations.mockResolvedValue(['Organization List']);
+
+        formAndFrameworkUtilServiceMock.getCourseFrameworkId.mockResolvedValue('TPD');
+        pageFilter = new PageFilter(popoverCtrlMock as any, viewControllerMock as any, navParamsMock as any,
+            platformMock as any, frameworkServiceMock as any, translateServiceMock as any,
+            appGlobalServiceMock as any, eventsMock as any, telemetryGeneratorServiceMock as any, commonUtilServiceMock as any,
+            formAndFrameworkUtilServiceMock as any);
+
+        // act
+
+        pageFilter.initFilterValues();
+
+        setTimeout(() => {
+
+            // assert
+        expect(formAndFrameworkUtilServiceMock.getCourseFrameworkId).toHaveBeenCalled();
+            done();
+        }, 10 );
+    });
+
 });

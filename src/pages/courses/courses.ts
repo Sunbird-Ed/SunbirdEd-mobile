@@ -45,6 +45,7 @@ import {
   PageFilterCallback,
   PageFilter
 } from '../page-filter/page.filter';
+import { Network } from '@ionic-native/network';
 import { AppGlobalService } from '../../service/app-global.service';
 import Driver from 'driver.js';
 import { CourseUtilService } from '../../service/course-util.service';
@@ -137,7 +138,8 @@ export class CoursesPage implements OnInit {
     private courseUtilService: CourseUtilService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private commonUtilService: CommonUtilService,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private network: Network
   ) {
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
@@ -154,6 +156,7 @@ export class CoursesPage implements OnInit {
       .then((appName: any) => {
         this.appLabel = appName;
       });
+      this.generateNetworkType();
   }
 
   /**
@@ -165,7 +168,10 @@ export class CoursesPage implements OnInit {
   ionViewDidEnter() {
     this.isVisible = true;
   }
+  ionViewWillEnter() {
+    this.getEnrolledCourses();
 
+  }
   ionViewDidLoad() {
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW, '',
@@ -228,6 +234,14 @@ export class CoursesPage implements OnInit {
     });
   }
 
+  generateNetworkType() {
+    const values = new Map();
+    values['network-type'] = this.network.type;
+    this.telemetryGeneratorService.generateExtraInfoTelemetry(
+      values,
+      PageId.LIBRARY
+    );
+  }
   subscribeUtilityEvents() {
     // Event for optional and forceful upgrade
     this.events.subscribe('force_optional_upgrade', (upgrade) => {

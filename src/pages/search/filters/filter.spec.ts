@@ -1,12 +1,10 @@
 import { mockRes } from '../filters/filter.spec.data';
 import {
-    navParamsMock, popoverCtrlMock,
-    navCtrlMock, eventsMock,
-    commonUtilServiceMock,
-    loadingControllerMock
+    navParamsMock, popoverCtrlMock, navCtrlMock, eventsMock,
+    commonUtilServiceMock, loadingControllerMock, platformMock
 } from '../../../__tests__/mocks';
 import { FilterPage } from './filter';
-import { PopoverControllerMock } from 'ionic-mocks';
+
 
 describe.only('FilterPage', () => {
 
@@ -14,28 +12,44 @@ describe.only('FilterPage', () => {
 
     beforeEach(() => {
         jest.resetAllMocks();
-
-        navParamsMock.get.mockReturnValue({ facets: [], facetFilters: [{'age': 0, 'contentTypes': ['Story', 'Worksheet']}] });
-
+        navParamsMock.get.mockImplementation((arg: string) => {
+            if (arg === 'filterCriteria') {
+                return '';
+            }
+        });
+        platformMock.registerBackButtonAction.mockReturnValue(jest.fn());
+        navParamsMock.get.mockReturnValue({ facets: [], facetFilters: [{ 'age': 0, 'contentTypes': ['Story', 'Worksheet'] }] });
         filterPage = new FilterPage(navParamsMock as any, popoverCtrlMock as any, navCtrlMock as any,
-            eventsMock as any, commonUtilServiceMock as any);
-
+            eventsMock as any, commonUtilServiceMock as any, platformMock as any);
+        filterPage.filterCriteria = mockRes.filterCriteria;
         jest.resetAllMocks();
     });
-
     it('should ..... on instantiation', () => {
         // arrange
+        platformMock.registerBackButtonAction.mockReturnValue(jest.fn());
         navParamsMock.get.mockReturnValue({ facets: [], facetFilters: [], filterCriteria: ['board', 'gradeLevel', 'subject'] });
-        spyOn(filterPage, 'getFilterValues').and.stub();
         const filter = ['board', 'gradeLevel', 'subject'];
         // act
         filterPage = new FilterPage(navParamsMock as any, popoverCtrlMock as any, navCtrlMock as any,
-            eventsMock as any, commonUtilServiceMock as any);
+            eventsMock as any, commonUtilServiceMock as any, platformMock as any);
         // assert
     });
 
     it('can load instance', () => {
         expect(filterPage).toBeTruthy();
+    });
+    it('should be published events for applyFilter()', () => {
+        // arrange
+        navParamsMock.get.mockImplementation((arg: string) => {
+            if (arg === 'filterCriteria') {
+                return mockRes.filterCriteria;
+            }
+        });
+        spyOn(filterPage, 'getFilterValues').and.returnValue('facets');
+        // act
+        filterPage.init();
+        // assert
+        expect(filterPage.getFilterValues).toHaveBeenCalled();
     });
 
     it('should be published events for applyFilter()', () => {
@@ -63,7 +77,7 @@ describe.only('FilterPage', () => {
         const facet = true;
         const filterName = mockRes.filterCriteria.facetFilters[0].values;
         // act
-        filterPage.getFilterValues(mockRes.filterCriteria.facetFilters[0].values);
+        filterPage.getFilterValues(mockRes.filterCriteria.facets[0]);
         // assert;  expect(filterName).toBe(filterName);
         expect(facet).toBeTruthy();
     });
@@ -83,12 +97,12 @@ describe.only('FilterPage', () => {
         const facet = false;
         // act
         filterPage.getFilterValues(mockRes.filterCriteria[0]);
-        // assert;  expect(filterName).toBe(filterName);
+        // assert
         expect(facet).toBe(false);
     });
     it('should return selected option count when getSelectedOptionCount()', () => {
         // arrange
-        const facet = mockRes.filterCriteria.facetFilters[0];
+        const facet = { values: [{ 'apply': true, 'count': 0, 'name': 'Live' }] };
         const count = 2;
         commonUtilServiceMock.translateMessage.mockReturnValue('FILTER_ADDED');
         // act
@@ -96,5 +110,12 @@ describe.only('FilterPage', () => {
         // assert
         expect(count).toBeGreaterThanOrEqual(1);
         expect(options).toBe('1 FILTER_ADDED');
+    });
+    it('should call registerBackButtonAction() when ionViewWillEnter()', () => {
+        platformMock.registerBackButtonAction.mockReturnValue(() => { });
+
+        filterPage.handleBackButton();
+        filterPage.unregisterBackButton = platformMock.registerBackButtonAction.mock.calls[0][0].call();
+        expect(navCtrlMock.pop).toHaveBeenCalled();
     });
 });

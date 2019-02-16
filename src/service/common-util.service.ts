@@ -7,7 +7,9 @@ import {
     LoadingController,
     Events,
     PopoverController,
-    Platform
+    Platform,
+    Alert,
+    AlertController
 } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
@@ -19,6 +21,7 @@ import { QRAlertCallBack } from '../pages/qrscanner/qrscanner_alert';
 import { appLanguages } from './../app/app.constant';
 import { QRScannerAlert } from './../pages/qrscanner/qrscanner_alert';
 
+import { TelemetryGeneratorService } from '../service/telemetry-generator.service';
 export interface NetworkInfo {
     isNetworkAvailable: boolean;
 }
@@ -29,6 +32,7 @@ export class CommonUtilService implements OnDestroy {
     };
     connectSubscription: any;
     disconnectSubscription: any;
+    private alert?: Alert;
     constructor(
         private toastCtrl: ToastController,
         private translate: TranslateService,
@@ -38,7 +42,9 @@ export class CommonUtilService implements OnDestroy {
         private popOverCtrl: PopoverController,
         private network: Network,
         private zone: NgZone,
-        private platform: Platform
+        private platform: Platform,
+        private alertCtrl: AlertController,
+        private telemetryGeneratorService: TelemetryGeneratorService
     ) {
         this.listenForEvents();
     }
@@ -230,5 +236,48 @@ export class CommonUtilService implements OnDestroy {
      */
     isRTL() {
         return this.platform.isRTL;
+    }
+
+    /**
+     * Creates a popup asking whether to exit from app or not
+    */
+    showExitPopUp(pageId: string, environment: string, isNavBack: boolean) {
+        if (!this.alert) {
+            this.alert = this.alertCtrl.create({
+                title: this.translateMessage('BACK_TO_EXIT'),
+                mode: 'wp',
+                cssClass: 'confirm-alert',
+                buttons: [
+                    {
+                        text: this.translateMessage('YES'),
+                        cssClass: 'alert-btn-cancel',
+                        handler: () => {
+                            this.telemetryGeneratorService.generateBackClickedTelemetry(pageId, environment, isNavBack);
+                            this.platform.exitApp();
+                            this.telemetryGeneratorService.generateEndTelemetry('app', '', '', environment);
+                        }
+                    },
+                    {
+                        text: this.translateMessage('NO'),
+                        cssClass: 'alert-btn-delete',
+                        handler: () => {
+                            // telemetry
+                            if (this.alert) {
+                                this.alert.dismiss();
+                                this.alert = undefined;
+                            }
+                        }
+                    }
+                ]
+            });
+            this.alert.present();
+            this.telemetryGeneratorService.generateBackClickedTelemetry(pageId, environment, isNavBack);
+            return;
+        } else {
+            if (this.alert) {
+                this.alert.dismiss();
+                this.alert = undefined;
+            }
+        }
     }
 }
