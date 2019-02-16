@@ -191,7 +191,6 @@
       "src/pages/reports/group-report-alert/group-report-alert.spec.ts",
       "src/pages/reports/group-report-list/group.report.list.spec.ts",
       "src/pages/reports/reports.spec.ts",
-      "src/pages/resources/resources.spec.ts",
       "src/pages/search/filters/filter.spec.ts",
       "src/pages/search/filters/options/option.spec.ts",
       "src/pages/upgrade/upgrade-popover.spec.ts",

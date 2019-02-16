@@ -156,7 +156,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     private popCtrl: PopoverController,
     private events: Events,
     private preference: SharedPreferences,
-    private zone: NgZone,
     private appGlobalService: AppGlobalService,
     private appVersion: AppVersion,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
@@ -212,7 +211,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     });
 
     this.events.subscribe('tab.change', (data) => {
-      this.zone.run(() => {
+      this.ngZone.run(() => {
         if (data === 'LIBRARY') {
           if (this.appliedFilter) {
             this.filterIcon = './assets/imgs/ic_action_filter.png';
@@ -431,7 +430,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       }
 
     }
-    console.log('pageAssembleCriteria', contentSearchCriteria);
     // swipe down to refresh should not over write current selected options
     if (contentSearchCriteria.grade) {
         this.getGroupByPageReq.grade = [contentSearchCriteria.grade[0]];
