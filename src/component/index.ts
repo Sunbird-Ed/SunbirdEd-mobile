@@ -1,6 +1,5 @@
 export * from './assessment-details/assessment-details';
 export * from './card/course/course-card';
-export * from './card/home/home-announcement-card';
 export * from './card/incomplete-profile/incomplete-profile-card';
 export * from './card/incomplete-profile/incomplete-profile-data';
 export * from './confirm-alert/confirm-alert';
