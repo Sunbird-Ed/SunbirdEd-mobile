@@ -19,6 +19,7 @@ $newColors: (
 .horizontal-scroll {
   display: flex;
   overflow-x: auto;
+  height: 50px;
 }
 
 .separator-dot{
@@ -107,13 +108,16 @@ page-resources {
         @extend .NotoSans-bold;
         width: 60%;
         color: #333333;
-        font-size: 16px;
+        font-size: 14px;
+        font-weight: bold !important;
+        line-height: 1.57 !important;
       }
       .view-all-link {
         font-size: 1.2rem;
         padding-top: 11px;
         @extend .NotoSans-bold;
         width: 30%;
+        font-weight: 600 !important;
         @include text-align('end');
       }
       .signin-card-bg {
@@ -127,6 +131,11 @@ page-resources {
       }
       .toolbar-title-md {
         margin-left: -5px !important;
+        font-weight: normal !important;
+        font-style: normal;
+        font-stretch: normal;
+        line-height: 1.5;
+        letter-spacing: -0.1px;
       }
       .course-page-color {
         background: #efeff4;
@@ -197,9 +206,10 @@ page-resources {
     }
 
     .medium-pill {
-      min-width: 106px;
+      min-width: auto;
       // height: 30px;
       height: 100%;
+      @include margin(null, 24px, null, null);
       // border-radius: 2px !important;
       // box-shadow: 0 0 4px 0 rgba(21, 18, 18, 0.24);
       background-color: transparent;
@@ -208,11 +218,10 @@ page-resources {
       font-weight: bold;
       font-style: normal;
       font-stretch: normal;
-      line-height: 1.57;
+      line-height: 1.57 !important;
       letter-spacing: -0.5px;
       text-align: center;
-      line-height: normal;
-      letter-spacing: -0.5px;
+      letter-spacing: -0.5px !important;
       text-transform: capitalize;
       opacity: 0.7;
       padding: 15px 0;
@@ -235,12 +244,21 @@ page-resources {
       background-color: #f4f4f4;
       margin-bottom: 4px;
     }
+    .qrIcon{
+      height: 22px !important;
+      width: 22px !important;
+    }
+    .searchIcon{
+      height: 24px !important;
+      width: 24px !important;
+    }
     .class-pill {
-      min-width: 47px;
+      min-width: 27px;
       // height: 30px;
       // border-radius: 15px !important;
       // box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.12);
       // background-color: #ffffff;
+      white-space:nowrap;
       color: map-get($newColors, primary);
       font-size: 12px;
       font-weight: bold;
@@ -249,9 +267,9 @@ page-resources {
       line-height: 1.67;
       letter-spacing: -0.5px;
       text-align: center;
-      color: #024f9d;
       text-transform: capitalize;
       opacity: 0.7;
+      height: 20px;
       @include margin(0, 12, 0, 0);
       &.active {
         // box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.19);
@@ -266,11 +284,11 @@ page-resources {
     .section-solid{
         background-color: #ffffff;
       .heading{
-        font-size: 16px;
+        font-size: 14px;
         font-weight: bold;
         font-style: normal;
         font-stretch: normal;
-        line-height: normal;
+        line-height: 1.57;
         letter-spacing: -0.5px;
         color: #333333;
         padding-bottom: 4px;
@@ -343,6 +361,9 @@ page-resources {
               line-height: normal;
               letter-spacing: -0.4px;
               color: #333333;
+              &.libtitle{
+                font-weight: normal !important;
+              }
             }
             .info{
               font-size: 12px;
