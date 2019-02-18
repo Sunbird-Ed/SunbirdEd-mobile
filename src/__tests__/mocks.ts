@@ -153,7 +153,8 @@ export const contentServiceMock = createSpyObj<ContentService>([
   'searchContent',
   'getChildContents',
   'sendFeedback',
-  'deleteContent'
+  'deleteContent',
+  'getAllLocalContents'
 ]);
 
 export const popoverCtrlMock = createSpyObj<PopoverController>([
