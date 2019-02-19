@@ -181,7 +181,7 @@
 
 <ion-footer *ngIf="content && appGlobalService?.CONTENT_STREAMING_ENABLED">
 	<ion-toolbar padding *ngIf="!content?.streamingUrl">
-			<button ion-button block *ngIf="!content?.downloadable" (click)="showSwitchUserAlert(true)" 
+			<button ion-button block *ngIf="!content?.downloadable && playOnlineSpinner" (click)="showSwitchUserAlert(true)" 
 			text-uppercase [disabled]= "!content?.streamingUrl"
 			[ngStyle]= "{'opacity':!commonUtilService.networkInfo.isNetworkAvailable  || !content?.streamingUrl ? '0.4': '1' }">{{'PLAY_ONLINE'
 			  | translate}}
