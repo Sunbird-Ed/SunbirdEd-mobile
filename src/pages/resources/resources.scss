@@ -253,11 +253,13 @@ page-resources {
       width: 24px !important;
     }
     .class-pill {
-      min-width: 27px;
+      min-width: auto;
       // height: 30px;
       // border-radius: 15px !important;
       // box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.12);
       // background-color: #ffffff;
+      padding: 15px 0px 15px 0px;
+      @include margin( 0 11px 0 15px);
       white-space:nowrap;
       color: map-get($newColors, primary);
       font-size: 12px;
@@ -270,7 +272,6 @@ page-resources {
       text-transform: capitalize;
       opacity: 0.7;
       height: 20px;
-      @include margin(0, 12, 0, 0);
       &.active {
         // box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.19);
         // background-color: #024f9d;
@@ -278,7 +279,7 @@ page-resources {
         opacity: 1.5;
       }
       &:last-child {
-        @include margin(0, 30, 0, 0);
+        @include padding(15px, 30px, 15px, 0);
       }
     }
     .section-solid{

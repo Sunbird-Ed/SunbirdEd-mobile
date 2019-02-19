@@ -25,7 +25,7 @@
 	</div>
 
 	<div class="horizontal-scroll  class-filter-cotainer class-shadow" id="gradeScroll" [@ScrollHorizontal]="{value: currentGrade?.selected, params: {left_indent: current_index * 72}}">
-		<a class="class-pill TBL15R11" *ngFor="let grade of categoryGradeLevels; let i = index; let first = first" 
+		<a class="class-pill " *ngFor="let grade of categoryGradeLevels; let i = index; let first = first" 
 		[ngClass]="{'active': grade?.selected, '': !grade?.selected}" attr.id="class{{i}}" (click)="classClick(i);" [@appear]="{value: grade?.selected, params: {left_indent: i * 72}}">
 			{{grade?.name}} 
 		</a>
