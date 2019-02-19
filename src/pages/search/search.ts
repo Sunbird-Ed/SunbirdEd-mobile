@@ -509,6 +509,7 @@ export class SearchPage {
     const pageAssembleCriteria = new PageAssembleCriteria();
     pageAssembleCriteria.name = PageName.DIAL_CODE;
     pageAssembleCriteria.filters = pagetAssemblefilter;
+    pageAssembleCriteria.hardRefresh = true;
 
     this.pageService.getPageAssemble(pageAssembleCriteria).then((res: any) => {
       this.zone.run(() => {

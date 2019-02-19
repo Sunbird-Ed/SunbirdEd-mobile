@@ -156,7 +156,7 @@ export class CoursesPage implements OnInit {
       .then((appName: any) => {
         this.appLabel = appName;
       });
-      this.generateNetworkType();
+    this.generateNetworkType();
   }
 
   /**
@@ -350,7 +350,7 @@ export class CoursesPage implements OnInit {
    *
    * It internally calls course handler of genie sdk
    */
-  getPopularAndLatestCourses(pageAssembleCriteria?: PageAssembleCriteria): void {
+  getPopularAndLatestCourses(hardRefresh = false, pageAssembleCriteria?: PageAssembleCriteria): void {
     this.pageApiLoader = true;
     if (pageAssembleCriteria === undefined) {
       const criteria = new PageAssembleCriteria();
@@ -372,7 +372,9 @@ export class CoursesPage implements OnInit {
       }
       pageAssembleCriteria = criteria;
     }
+
     this.mode = pageAssembleCriteria.mode;
+
     if (this.profile && !this.isFilterApplied) {
       if (!pageAssembleCriteria.filters) {
         pageAssembleCriteria.filters = new PageAssembleFilter();
@@ -396,6 +398,9 @@ export class CoursesPage implements OnInit {
           pageAssembleCriteria.filters.subject, 'subject');
       }
     }
+
+    pageAssembleCriteria.hardRefresh = hardRefresh;
+
     this.pageService.getPageAssemble(pageAssembleCriteria).then((res: any) => {
       res = JSON.parse(res);
       this.ngZone.run(() => {
@@ -530,11 +535,11 @@ export class CoursesPage implements OnInit {
 
     this.getUserId()
       .then(() => {
-        this.getPopularAndLatestCourses();
+        this.getPopularAndLatestCourses(true);
       })
       .catch(error => {
         console.log('Error while Fetching Data', error);
-        this.getPopularAndLatestCourses();
+        this.getPopularAndLatestCourses(true);
       });
   }
 
@@ -603,7 +608,7 @@ export class CoursesPage implements OnInit {
             that.filterIcon = './assets/imgs/ic_action_filter.png';
           }
 
-          that.getPopularAndLatestCourses(criteria);
+          that.getPopularAndLatestCourses(false, criteria);
         });
       }
     };

@@ -15,15 +15,15 @@ import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angul
 })
 export class EnrollmentDetailsPage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams , private viewCtrl:ViewController) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, private viewCtrl: ViewController) {
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad EnrollmentDetailsPage');
   }
 
-  close(){
+  close() {
     this.viewCtrl.dismiss();
-   }
+  }
 
 }

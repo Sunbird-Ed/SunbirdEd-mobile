@@ -6,14 +6,10 @@ import { NgModule } from '@angular/core';
 import { CourseCard } from './card/course/course-card';
 import { ResourceCard } from './card/resource/resource-card';
 import { IncompleteProfileCard } from './card/incomplete-profile/incomplete-profile-card';
-import { HomeAnnouncementCard } from './card/home/home-announcement-card';
 import { IonicPageModule, IonicModule } from 'ionic-angular';
 import { Ionic2RatingModule } from 'ionic2-rating';
 import { IonicImageLoader } from 'ionic-image-loader';
 import { SignInCardComponent } from './sign-in-card/sign-in-card';
-import { OnboardingCardComponent } from './onboarding-card/onboarding-card';
-import { OnboardingAlert } from './onboarding-alert/onboarding-alert';
-import { OnboardingService } from './onboarding-card/onboarding.service';
 import { PBHorizontal } from './pbhorizontal/pb-horizontal';
 import { ConfirmAlertComponent } from './confirm-alert/confirm-alert';
 import { ReportIssuesComponent } from './report-issues/report-issues';
@@ -33,11 +29,8 @@ import { EditContactDetailsPopupComponent } from './edit-contact-details-popup/e
     declarations: [
         CourseCard,
         IncompleteProfileCard,
-        HomeAnnouncementCard,
         ViewMoreCardComponent,
         SignInCardComponent,
-        OnboardingCardComponent,
-        OnboardingAlert,
         PBHorizontal,
         ConfirmAlertComponent,
         // ContentActionsComponent,
@@ -67,11 +60,8 @@ import { EditContactDetailsPopupComponent } from './edit-contact-details-popup/e
     exports: [
         CourseCard,
         IncompleteProfileCard,
-        HomeAnnouncementCard,
         ViewMoreCardComponent,
         SignInCardComponent,
-        OnboardingCardComponent,
-        OnboardingAlert,
         PBHorizontal,
         ConfirmAlertComponent,
         ReportIssuesComponent,
@@ -88,7 +78,6 @@ import { EditContactDetailsPopupComponent } from './edit-contact-details-popup/e
         // ContentActionsComponent
     ],
     entryComponents: [
-        OnboardingAlert,
         ConfirmAlertComponent,
         ReportIssuesComponent,
         ContentRatingAlertComponent,
@@ -99,7 +88,6 @@ import { EditContactDetailsPopupComponent } from './edit-contact-details-popup/e
         EditContactVerifyPopupComponent
     ],
     providers: [
-        OnboardingService,
         FormAndFrameworkUtilService
     ]
 })
