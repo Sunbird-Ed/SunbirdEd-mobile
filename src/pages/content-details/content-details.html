@@ -181,6 +181,13 @@
 
 <ion-footer *ngIf="content && appGlobalService?.CONTENT_STREAMING_ENABLED">
 	<ion-toolbar padding *ngIf="!content?.streamingUrl">
+			<button ion-button block *ngIf="!content?.downloadable" (click)="showSwitchUserAlert(true)" 
+			text-uppercase [disabled]= "!content?.streamingUrl"
+			[ngStyle]= "{'opacity':!commonUtilService.networkInfo.isNetworkAvailable  || !content?.streamingUrl ? '0.4': '1' }">{{'PLAY_ONLINE'
+			  | translate}}
+			  <ion-spinner icon="spiral" class ="button-spinner"></ion-spinner>
+			</button>
+
 		<button ion-button block *ngIf="content?.downloadable" (click)="showSwitchUserAlert(false)" [disabled]="isDownloadStarted">{{
 			'PLAY_FROM_DEVICE' | translate }}</button>
 		<ion-icon *ngIf="isDownloadStarted && downloadProgress !== 100" (click)="cancelDownload()" name="ios-close-circle-outline"
