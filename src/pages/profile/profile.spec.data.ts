@@ -36,7 +36,8 @@ export const mockProfileRes = {
         + ' whether the object has the specified property as its own property (as opposed to inheriting it).","topics":[],'
         + '"userName":"vivek","userId":"0b5b8cf8-a1b6-41d9-862d-ebc242f0b962","emailVerified":false,'
         + '"lastLoginTime":1.536669035858E12,"createdDate":"2018-09-11 12:28:49:017+0000",'
-        + '"createdBy":"659b011a-06ec-4107-84ad-955e16b0a48a"}',
+        + '"createdBy":"659b011a-06ec-4107-84ad-955e16b0a48a",'
+        + '"userLocations":[{}, {}]}',
 
     eduDetailsMock: {
         createdBy: '0b5b8cf8-a1b6-41d9-862d-ebc242f0b962',

@@ -145,4 +145,8 @@ export const mockRes = {
   importCompleteEvent:
     '{"data":{"downloadId":18788,"downloadProgress":-1,"identifier":"do_sample","status":"IMPORT_COMPLETED"},"type":"contentImport"}',
 
+  categoryMediumsParam: [ { name: 'english' } ],
+
+  categoryGradeParam: { terms: [ { name: 'class 4' } ] }
+
 };

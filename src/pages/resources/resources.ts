@@ -1,4 +1,4 @@
-import { FormAndFrameworkUtilService } from './../profile/formandframeworkutil.service';
+import { Search } from './../../app/app.constant';
 import {
   Component,
   NgZone,
@@ -6,8 +6,6 @@ import {
   AfterViewInit
 } from '@angular/core';
 import {
-  PageAssembleService,
-  PageAssembleCriteria,
   ContentService,
   ImpressionType,
   PageId,
@@ -17,12 +15,13 @@ import {
   SharedPreferences,
   ContentFilterCriteria,
   ProfileType,
-  PageAssembleFilter,
-  FrameworkService
+  FrameworkService,
+  CategoryRequest,
+  ContentSearchCriteria,
+  TelemetryObject
 } from 'sunbird';
 import {
   NavController,
-  PopoverController,
   Events
 } from 'ionic-angular';
 import * as _ from 'lodash';
@@ -34,13 +33,13 @@ import {
   ContentType,
   AudienceFilter,
   PreferenceKey,
-  PageName,
   ContentCard,
-  ViewMore
+  ViewMore,
+  FrameworkCategory,
+  CardSectionName
 } from '../../app/app.constant';
 import {
-  PageFilterCallback,
-  PageFilter
+  PageFilterCallback
 } from '../page-filter/page.filter';
 import { AppGlobalService } from '../../service/app-global.service';
 import Driver from 'driver.js';
@@ -48,10 +47,58 @@ import { AppVersion } from '@ionic-native/app-version';
 import { updateFilterInSearchQuery } from '../../util/filter.util';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../service/common-util.service';
+import { TranslateService } from '@ngx-translate/core';
+import { Network } from '@ionic-native/network';
+import {
+  trigger,
+  state,
+  style,
+  animate,
+  transition,
+  group,
+} from '@angular/animations';
+import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-details-etb';
 
 @Component({
   selector: 'page-resources',
-  templateUrl: 'resources.html'
+  templateUrl: 'resources.html',
+  animations: [
+    trigger('appear', [
+      state('true', style({
+        left: '{{left_indent}}',
+      }), { params: { left_indent: 0 } }), // default parameters values required
+
+      transition('* => classAnimate', [
+        style({ width: 5, opacity: 0 }),
+        group([
+          animate('0.3s 0.2s ease', style({
+            transform: 'translateX(0) scale(1.2)', width: '*',
+          })),
+          animate('0.2s ease', style({
+            opacity: 1
+          }))
+        ])
+      ]),
+    ]),
+    trigger('ScrollHorizontal', [
+      state('true', style({
+        left: '{{left_indent}}',
+        transform: 'translateX(-100px)',
+      }), { params: { left_indent: 0 } }), // default parameters values required
+
+      transition('* => classAnimate', [
+        // style({ width: 5, transform: 'translateX(-100px)', opacity: 0 }),
+        group([
+          animate('0.3s 0.5s ease', style({
+            transform: 'translateX(-100px)'
+          })),
+          animate('0.3s ease', style({
+            opacity: 1
+          }))
+        ])
+      ]),
+    ])
+  ]
 })
 export class ResourcesPage implements OnInit, AfterViewInit {
 
@@ -82,28 +129,32 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   mode = 'soft';
   isFilterApplied = false;
   pageFilterCallBack: PageFilterCallback;
+  getGroupByPageReq: ContentSearchCriteria = {};
 
   layoutPopular = ContentCard.LAYOUT_POPULAR;
   layoutSavedContent = ContentCard.LAYOUT_SAVED_CONTENT;
-  savedResourcesSection = 'Saved Resources';
-  recentViewedSection = 'Recently Viewed';
-
+  savedResourcesSection = CardSectionName.SECTION_SAVED_RESOURCES;
+  recentViewedSection = CardSectionName.SECTION_RECENT_RESOURCES;
+  categoryGradeLevels: any;
+  categoryMediums: any;
+  current_index: any;
+  currentGrade: any;
+  currentMedium: string;
+  defaultImg: string;
   constructor(
     public navCtrl: NavController,
-    private pageService: PageAssembleService,
     private ngZone: NgZone,
     private contentService: ContentService,
     private qrScanner: SunbirdQRScanner,
-    private popCtrl: PopoverController,
     private events: Events,
     private preference: SharedPreferences,
-    private zone: NgZone,
     private appGlobalService: AppGlobalService,
     private appVersion: AppVersion,
-    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService,
-    private framework: FrameworkService
+    private frameworkService: FrameworkService,
+    private translate: TranslateService,
+    private network: Network
   ) {
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
       .then(val => {
@@ -116,6 +167,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       .then((appName: any) => {
         this.appLabel = appName;
       });
+      this.defaultImg = 'assets/imgs/ic_launcher.png';
+      this.generateNetworkType();
   }
 
   subscribeUtilityEvents() {
@@ -149,7 +202,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     });
 
     this.events.subscribe('tab.change', (data) => {
-      this.zone.run(() => {
+      this.ngZone.run(() => {
         if (data === 'LIBRARY') {
           if (this.appliedFilter) {
             this.filterIcon = './assets/imgs/ic_action_filter.png';
@@ -170,6 +223,15 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   ngOnInit() {
     this.setSavedContent();
     this.loadRecentlyViewedContent();
+  }
+
+  generateNetworkType() {
+    const values = new Map();
+    values['network-type'] = this.network.type;
+    this.telemetryGeneratorService.generateExtraInfoTelemetry(
+      values,
+      PageId.LIBRARY
+    );
   }
 
   ngAfterViewInit() {
@@ -328,72 +390,66 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   /**
 	 * Get popular content
 	 */
-  getPopularContent(isAfterLanguageChange = false, pageAssembleCriteria?: PageAssembleCriteria) {
+  getPopularContent(isAfterLanguageChange = false, contentSearchCriteria?: ContentSearchCriteria) {
     // if (this.isOnBoardingCardCompleted || !this.guestUser) {
     this.pageApiLoader = true;
     // this.noInternetConnection = false;
     const that = this;
 
-    if (!pageAssembleCriteria) {
-      const criteria = new PageAssembleCriteria();
-      criteria.name = PageName.RESOURCE;
-      criteria.mode = 'soft';
+    if (!contentSearchCriteria) {
+      const criteria = new ContentSearchCriteria();
+      criteria.mode = 'hard';
 
-      if (that.appliedFilter) {
-        let filterApplied = false;
-
-        Object.keys(this.appliedFilter).forEach(key => {
-          if (this.appliedFilter[key].length > 0) {
-            filterApplied = true;
-          }
-        });
-
-        if (filterApplied) {
-          criteria.mode = 'hard';
-        }
-
-        criteria.filters = this.appliedFilter;
-      }
-
-      pageAssembleCriteria = criteria;
+      contentSearchCriteria = criteria;
     }
 
-    this.mode = pageAssembleCriteria.mode;
+    this.mode = contentSearchCriteria.mode;
 
     if (this.profile && !this.isFilterApplied) {
 
-      if (!pageAssembleCriteria.filters) {
-        pageAssembleCriteria.filters = new PageAssembleFilter();
-      }
-
       if (this.profile.board && this.profile.board.length) {
-        pageAssembleCriteria.filters.board = this.applyProfileFilter(this.profile.board, pageAssembleCriteria.filters.board, 'board');
+        contentSearchCriteria.board = this.applyProfileFilter(this.profile.board, contentSearchCriteria.board, 'board');
       }
 
       if (this.profile.medium && this.profile.medium.length) {
-        pageAssembleCriteria.filters.medium = this.applyProfileFilter(this.profile.medium, pageAssembleCriteria.filters.medium, 'medium');
+        contentSearchCriteria.medium = this.applyProfileFilter(this.profile.medium, contentSearchCriteria.medium, 'medium');
       }
 
       if (this.profile.grade && this.profile.grade.length) {
-        pageAssembleCriteria.filters.gradeLevel = this.applyProfileFilter(this.profile.grade,
-          pageAssembleCriteria.filters.gradeLevel, 'gradeLevel');
+        contentSearchCriteria.grade =  this.applyProfileFilter(this.profile.grade,
+          contentSearchCriteria.grade, 'gradeLevel');
       }
 
-      if (this.profile.subject && this.profile.subject.length) {
-        pageAssembleCriteria.filters.subject = this.applyProfileFilter(this.profile.subject,
-          pageAssembleCriteria.filters.subject, 'subject');
-      }
     }
-    console.log('pageAssembleCriteria', pageAssembleCriteria);
-    this.pageService.getPageAssemble(pageAssembleCriteria)
-      .then((res: any) => {
-        that.ngZone.run(() => {
-          const response = JSON.parse(res);
+    // swipe down to refresh should not over write current selected options
+    if (contentSearchCriteria.grade) {
+        this.getGroupByPageReq.grade = [contentSearchCriteria.grade[0]];
+      }
+    if  (contentSearchCriteria.medium) {
+         this.getGroupByPageReq.medium = [contentSearchCriteria.medium[0]];
+      }
+    if (contentSearchCriteria.board) {
+    this.getGroupByPageReq.board = [contentSearchCriteria.board[0]];
+  }
+    this.getGroupByPageReq.mode = 'hard';
+    this.getGroupByPageReq.facets = Search.FACETS_ETB;
+    this.getGroupByPageReq.contentTypes = [ContentType.TEXTBOOK];
+    this.getGroupByPage(isAfterLanguageChange);
+  }
+
+  getGroupByPage(isAfterLanguageChange = false) {
+    this.storyAndWorksheets = [];
+    const loader = this.commonUtilService.getLoader();
+    loader.present();
+    this.contentService.getGroupByPage(this.getGroupByPageReq, this.guestUser)
+      .then((response: any) => {
+        loader.dismiss();
+        this.ngZone.run(() => {
           // TODO Temporary code - should be fixed at backend
           const sections = JSON.parse(response.sections);
           const newSections = [];
           sections.forEach(element => {
-            element.display = JSON.parse(element.display);
+            // element.display = JSON.parse(element.display);
             if (element.display.name) {
               if (_.has(element.display.name, this.selectedLanguage)) {
                 const langs = [];
@@ -406,7 +462,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             newSections.push(element);
           });
           // END OF TEMPORARY CODE
-          that.storyAndWorksheets = newSections;
+          this.storyAndWorksheets = newSections;
           this.pageLoadedSuccess = true;
           this.pageApiLoader = false;
           // this.noInternetConnection = false;
@@ -416,7 +472,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       })
       .catch(error => {
         console.log('error while getting popular resources...', error);
-        that.ngZone.run(() => {
+        loader.dismiss();
+        this.ngZone.run(() => {
           this.pageApiLoader = false;
           if (error === 'CONNECTION_ERROR') {
           } else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
@@ -425,7 +482,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         });
       });
   }
-
   generateExtraInfoTelemetry(sectionsCount) {
     const values = new Map();
     values['savedItemVisible'] = (this.localResources && this.localResources.length) ? 'Y' : 'N';
@@ -528,11 +584,12 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       this.getPopularContent();
     }
     this.subscribeGenieEvents();
+
+    this.getCategoryData();
   }
 
   subscribeGenieEvents() {
     this.events.subscribe('genie.event', (data) => {
-      console.log('subscribeGenieEvents -->', data);
       const res = JSON.parse(data);
       if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
         this.setSavedContent();
@@ -564,6 +621,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     }
 
     this.getPopularContent(false);
+    this.getCategoryData();
   }
 
 
@@ -591,77 +649,88 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.navCtrl.push(SearchPage, { contentType: ContentType.FOR_LIBRARY_TAB, source: PageId.LIBRARY });
   }
 
+  getCategoryData() {
+    console.log('this.appGlobalService.getCurrentUser()', this.appGlobalService.getCurrentUser());
+    const syllabus: Array<string> = this.appGlobalService.getCurrentUser().syllabus;
+    const frameworkId = (syllabus && syllabus.length > 0) ? syllabus[0] : undefined;
+    const categories: Array<string> = FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES;
+    this.getMediumData(frameworkId, categories);
+    this.getGradeLevelData(frameworkId, categories);
+  }
 
-  showFilter() {
-    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-      InteractSubtype.FILTER_BUTTON_CLICKED,
-      Environment.HOME,
-      PageId.LIBRARY, undefined);
-
-    const that = this;
-    this.pageFilterCallBack = {
-      applyFilter(filter, appliedFilter) {
-        const criteria = new PageAssembleCriteria();
-        criteria.name = PageName.RESOURCE;
-        criteria.filters = filter;
-        criteria.mode = 'hard';
-        that.resourceFilter = appliedFilter;
-        that.appliedFilter = filter;
-
-        let filterApplied = false;
-        that.isFilterApplied = false;
-
-        const values = new Map();
-        values['filters'] = filter;
-        that.telemetryGeneratorService.generateInteractTelemetry(
-          InteractType.OTHER,
-          InteractSubtype.APPLY_FILTER_CLICKED,
-          Environment.HOME,
-          PageId.LIBRARY_PAGE_FILTER,
-          undefined,
-          values
-        );
-
-        Object.keys(that.appliedFilter).forEach(key => {
-          if (that.appliedFilter[key].length > 0) {
-            filterApplied = true;
-            that.isFilterApplied = true;
-          }
-        });
-
-        if (filterApplied) {
-          criteria.mode = 'hard';
-          that.filterIcon = './assets/imgs/ic_action_filter_applied.png';
-        } else {
-          criteria.mode = 'soft';
-          that.filterIcon = './assets/imgs/ic_action_filter.png';
-        }
-
-        that.getPopularContent(false, criteria);
-      }
+  getMediumData(frameworkId, categories): any {
+    const req: CategoryRequest = {
+      currentCategory: FrameworkCategory.MEDIUM,
+      frameworkId: frameworkId,
+      selectedLanguage: this.translate.currentLang,
+      categories: categories
     };
-
-    const filterOptions = {
-      callback: this.pageFilterCallBack,
-      pageId: PageId.LIBRARY
-    };
-
-    // Already apllied filter
-    if (this.resourceFilter) {
-      filterOptions['filter'] = this.resourceFilter;
-      this.showFilterPage(filterOptions);
-    } else {
-      this.formAndFrameworkUtilService.getLibraryFilterConfig().then((data) => {
-        filterOptions['filter'] = data;
-        this.showFilterPage(filterOptions);
+    this.frameworkService.getCategoryData(req)
+      .then(res => {
+        const category = JSON.parse(res);
+        this.categoryMediums = category.terms;
+        this.arrangeMediumsByUserData(this.categoryMediums.map(a => ({...a})));
+      })
+      .catch(err => {
+        console.log('Something went wrong!');
       });
+  }
+
+
+  findWithAttr(array, attr, value) {
+      for (let i = 0; i < array.length; i += 1) {
+          console.log(array[i][attr]);
+          if (array[i][attr].toLowerCase() === value.toLowerCase()) {
+              return i;
+          }
+      }
+      return -1;
+  }
+
+  arrangeMediumsByUserData(categoryMediumsParam) {
+    console.log('categoryMediums ========', categoryMediumsParam);
+    if (this.appGlobalService.getCurrentUser() &&
+        this.appGlobalService.getCurrentUser().medium &&
+        this.appGlobalService.getCurrentUser().medium.length) {
+          const mediumIndex = this.findWithAttr(categoryMediumsParam, 'name', this.appGlobalService.getCurrentUser().medium[0]);
+
+          for (let i = mediumIndex; i > 0; i--) {
+            categoryMediumsParam[i] = categoryMediumsParam[i - 1];
+            if (i === 1) {
+              categoryMediumsParam[0] = this.categoryMediums[mediumIndex];
+            }
+          }
+        this.categoryMediums = categoryMediumsParam;
+
+        for (let i = 0, len = this.categoryMediums.length; i < len; i++) {
+          if (this.getGroupByPageReq.medium[0].toLowerCase().trim() === this.categoryMediums[i].name.toLowerCase().trim() ) {
+            this.mediumClick(this.categoryMediums[i].name);
+          }
+        }
     }
   }
 
-  showFilterPage(filterOptions) {
-    this.popCtrl.create(PageFilter, filterOptions, { cssClass: 'resource-filter' }).present();
+  getGradeLevelData(frameworkId, categories): any {
+    const req: CategoryRequest = {
+      currentCategory: FrameworkCategory.GRADE_LEVEL,
+      frameworkId: frameworkId,
+      selectedLanguage: this.translate.currentLang,
+      categories: categories
+    };
+    this.frameworkService.getCategoryData(req)
+      .then(res => {
+        const category = JSON.parse(res);
+        this.categoryGradeLevels = category.terms;
+          for (let i = 0, len = this.categoryGradeLevels.length; i < len; i++) {
+            if (this.getGroupByPageReq.grade[0] === this.categoryGradeLevels[i].name ) {
+              this.classClick(i);
+            }
+          }
+      })
+      .catch(err => {
+        console.log('Something went wrong!');
+      });
   }
-
   checkEmptySearchResult(isAfterLanguageChange = false) {
     const flags = [];
     _.forEach(this.storyAndWorksheets, (value, key) => {
@@ -690,5 +759,61 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   showDisabled(resource) {
     return !resource.isAvailableLocally && !this.commonUtilService.networkInfo.isNetworkAvailable;
+  }
+
+  classClick(index) {
+    this.getGroupByPageReq.grade = [this.categoryGradeLevels[index].name];
+    // [grade.name];
+    if ((this.currentGrade) && (this.currentGrade.name !== this.categoryGradeLevels[index].name)) {
+     this.getGroupByPage();
+    }
+    for (let i = 0, len = this.categoryGradeLevels.length; i < len; i++) {
+      if (i === index ) {
+        this.currentGrade = this.categoryGradeLevels[i];
+        this.current_index = this.categoryGradeLevels[i];
+        this.categoryGradeLevels[i].selected = 'classAnimate';
+      } else {
+        this.categoryGradeLevels[i].selected = '';
+      }
+    }
+    document.getElementById('gradeScroll').scrollTo({top: 0, left: index * 60, behavior: 'smooth'});
+  }
+  mediumClick(mediumName: string) {
+    this.getGroupByPageReq.medium = [mediumName];
+    if ( this.currentMedium !== mediumName) {
+      this.getGroupByPage();
+    }
+
+    for (let i = 0, len = this.categoryMediums.length; i < len; i++) {
+      if (this.categoryMediums[i].name === mediumName ) {
+        this.currentMedium = this.categoryMediums[i].name;
+        this.categoryMediums[i].selected = true;
+      } else {
+        this.categoryMediums[i].selected = false;
+      }
+    }
+  }
+
+  navigateToDetailPage(item, index, sectionName) {
+    const identifier = item.contentId || item.identifier;
+    const telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.type = item.contentType;
+
+    telemetryObject.id = identifier;
+
+    const values = new Map();
+    values['sectionName'] = sectionName;
+    values['positionClicked'] = index;
+    console.log('telemetryObject ', telemetryObject);
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.CONTENT_CLICKED,
+      'home',
+      'library',
+      telemetryObject,
+      values);
+
+    this.navCtrl.push(CollectionDetailsEtbPage, {
+      content: item
+    });
   }
 }

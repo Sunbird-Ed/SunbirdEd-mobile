@@ -50,6 +50,10 @@ export class MimeType {
 }
 
 export class Search {
+    public static readonly FACETS_ETB = [
+        'subject'
+    ];
+
     public static readonly FACETS = [
         'board',
         'gradeLevel',
@@ -216,6 +220,11 @@ export class ContentCard {
     public static readonly LAYOUT_INPROGRESS = 'InProgress';
     public static readonly LAYOUT_POPULAR = 'Popular';
     public static readonly LAYOUT_SAVED_CONTENT = 'SavedContent';
+}
+
+export class CardSectionName {
+    public static readonly SECTION_SAVED_RESOURCES = 'Saved Resources';
+    public static readonly SECTION_RECENT_RESOURCES = 'Recently Viewed';
 }
 
 export class ViewMore {

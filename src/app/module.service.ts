@@ -1,6 +1,7 @@
 import {ProfileSettingsPageModule} from '../pages/profile-settings/profile-settings.module';
 import {ContentDetailsPageModule} from './../pages/content-details/content-details.module';
 import {CollectionDetailsPageModule} from './../pages/collection-details/collection-details.module';
+import {CollectionDetailsEtbPageModule} from './../pages/collection-details-etb/collection-details-etb.module';
 import {ViewMoreActivityPageModule} from './../pages/view-more-activity/view-more-activity.module';
 import {EnrolledCourseDetailsPageModule} from './../pages/enrolled-course-details/enrolled-course-details.module';
 import {CourseBatchesPageModule} from './../pages/course-batches/course-batches.module';
@@ -9,7 +10,6 @@ import {GuestProfilePage} from '../pages/profile/guest-profile/guest-profile';
 import {ProfilePage} from '../pages/profile/profile';
 import {ResourcesPage} from '../pages/resources/resources';
 import {CoursesPageModule} from '../pages/courses/courses.module';
-import {HomePageModule} from '../pages/home/home.module';
 import {ProfilePageModule} from '../pages/profile/profile.module';
 import {ResourcesPageModule} from '../pages/resources/resources.module';
 import {OnboardingPageModule} from '../pages/onboarding/onboarding.module';
@@ -108,7 +108,6 @@ export const initTabs = (container: ContainerService, tabs: Array<TabOptions>) =
 
 export const PluginModules = [
     CoursesPageModule,
-    HomePageModule,
     ProfilePageModule,
     ResourcesPageModule,
     OnboardingPageModule,
@@ -119,6 +118,7 @@ export const PluginModules = [
     QRScannerModule,
     SearchModule,
     CollectionDetailsPageModule,
+    CollectionDetailsEtbPageModule,
     ContentDetailsPageModule,
     ViewMoreActivityPageModule,
     PageFilterMoudule,

@@ -190,18 +190,6 @@ describe('PersonalDetailsEditPage', () => {
 
         expect(personalDetailsEditPage.submitForm).toHaveBeenCalled();
     });
-    it('to enable Onsubmit button', () => {
-        // arrange
-        personalDetailsEditPage.profileEditForm.controls['name'].setValue('');
-        spyOn(personalDetailsEditPage, 'showErrorToastMessage').and.stub();
-        // act
-
-        personalDetailsEditPage.onSubmit();
-
-        // assert
-
-        expect(personalDetailsEditPage.showErrorToastMessage).toHaveBeenCalledWith('NAME');
-    });
     it('hows Toast Message with `red` color', () => {
         // arrange
         commonUtilServiceMock.translateMessage.mockReturnValue('NAME_HINT');

@@ -16,6 +16,9 @@ import {
   ShareUtil,
   TelemetryService,
   UserProfileService,
+  UpdateUserInfoRequest,
+  UserExistRequest,
+  GenerateOTPRequest,
   GroupService} from 'sunbird';
 
 import {
@@ -45,7 +48,8 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { TncUpdateHandlerService } from '@app/service/handlers/tnc-update-handler.service';
 import { LogoutHandlerService } from '@app/service/handlers/logout-handler.service';
 import { DomSanitizer } from '@angular/platform-browser';
-// 'import { ImageLoader } from 'ionic-image-loader';
+import { ImageLoader } from 'ionic-image-loader';
+import { Network } from '@ionic-native/network';
 export type Mockify<T> = {
   [P in keyof T]: jest.Mock<{}>;
 };
@@ -99,7 +103,11 @@ export const userProfileServiceMock = createSpyObj<UserProfileService>([
   'getUserProfileDetails',
   'getTenantInfo',
   'searchLocation',
-  'updateUserInfo'
+  'updateUserInfo',
+  'isAlreadyInUse',
+  'generateOTP',
+  'verifyOTP',
+  'generateOTP'
 ]);
 
 export const profileServiceMock = createSpyObj<ProfileService>([
@@ -109,7 +117,8 @@ export const profileServiceMock = createSpyObj<ProfileService>([
   'getProfile',
   'getAllUserProfile',
   'getAllProfile',
-  'exportProfile'
+  'exportProfile',
+  'updateProfile'
 ]);
 
 export const authServiceMock = createSpyObj<AuthService>([
@@ -125,7 +134,8 @@ export const commonUtilServiceMock = createSpyObj<CommonUtilService>([
   'getLoader',
   'getTranslatedValue',
   'showContentComingSoonAlert',
-  'toLocaleUpperCase'
+  'toLocaleUpperCase',
+  'showExitPopUp'
 ]);
 
 export const eventsMock = createSpyObj<Events>([
@@ -143,7 +153,8 @@ export const contentServiceMock = createSpyObj<ContentService>([
   'searchContent',
   'getChildContents',
   'sendFeedback',
-  'deleteContent'
+  'deleteContent',
+  'getAllLocalContents'
 ]);
 
 export const popoverCtrlMock = createSpyObj<PopoverController>([
@@ -214,7 +225,7 @@ export const telemetryGeneratorServiceMock = createSpyObj<TelemetryGeneratorServ
   'generateBackClickedTelemetry',
   'generateLogEvent',
   'generateExtraInfoTelemetry',
-  'generateExtraInfoTelemetry'
+  'readLessorReadMore'
 ]);
 
 export const courseUtilServiceMock = createSpyObj<CourseUtilService>([
@@ -253,7 +264,10 @@ export const formAndFrameworkUtilServiceMock = createSpyObj<FormAndFrameworkUtil
   'getLibraryFilterConfig',
   'getSupportingBoardList',
   'getFrameworkDetails',
-  'getCategoryData'
+  'getCategoryData',
+  'getCourseFrameworkId',
+  'getRootOrganizations',
+  'getCustodianOrgId'
 ]);
 
 export const loadingControllerMock = createSpyObj<LoadingController>([
@@ -302,7 +316,8 @@ export const viewControllerMock = createSpyObj<ViewController>([
 
 
 export const frameworkServiceMock = createSpyObj<FrameworkService>([
-  'getCategoryData'
+  'getCategoryData',
+  'getSuggestedFrameworkList'
 ]);
 
 
@@ -370,7 +385,19 @@ export const alertControllerMock = createSpyObj<AlertController>([
 export const toastControllerMock = createSpyObj<ToastController>([
   'create'
 ]);
-export const imageLoaderMock = createSpyObj<imageLoader>([
+export const imageLoaderMock = createSpyObj<ImageLoader>([
 
 ]);
 
+export const updateUserInfoRequestMock = createSpyObj<UpdateUserInfoRequest>([
+
+]);
+export const userExistRequestMock = createSpyObj<UserExistRequest>([
+
+]);
+
+export const generateOTPRequestMock = createSpyObj<GenerateOTPRequest>([
+
+]);
+
+export const networkMock = createSpyObj<Network>([]);

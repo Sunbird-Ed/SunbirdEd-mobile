@@ -56,7 +56,7 @@
 }
 
 .P20{
-    padding: 20px ;
+    padding: 20px !important;
 }
 .P23{
     padding:23px;
@@ -80,17 +80,33 @@
 .MR5{
     margin-right: 5px;
 }
+.MR4{
+    @include margin(null, 4px, null, null);
+}
+
+.MR6{
+   @include margin(null, 6px, null, null);
+}
 
 .MR10{
-    margin-right: 10px;
+    @include margin(null, 10px, null, null);
+}
+
+
+.MR12{
+    @include margin(null, 12px, null, null);
 }
 
 .MR15{
-    margin-right: 15px;
+    @include margin(null, 15px, null, null);
+}
+
+.MR16{
+    @include margin(null, 16px, null, null);
 }
 
 .MR20{
-    margin-right: 20px;
+    @include margin(null, 20px, null, null);
 }
 
 .MT5{
@@ -110,6 +126,10 @@
 }
 
 .MT15{
+    margin-top: 15px;
+}
+
+.MT16{
     margin-top: 15px;
 }
 
@@ -133,12 +153,23 @@
     margin-left: 5px;
 }
 
+.ML4{
+    @include margin(null, null, null, 4px);
+}
+
 .ML10{
     margin-left: 10px;
 }
 
 .ML15{
     margin-left: 15px;
+}
+
+.TBL15R11{
+    @include padding(15px, 11px, 15px, 15px);
+}
+.ML16{
+    @include margin(null, null, null, 16px);
 }
 
 .ML20{
@@ -213,7 +244,7 @@
 }
 
 .PR10{
-    padding-right: 10px;
+    @include padding(null, 10px, null, null)
 }
 
 .PR15{
@@ -266,15 +297,19 @@
 }
 
 .PL15{
-    padding-left: 15px;
+    @include padding(null, null, null, 15px);
 }
 
 .PL20{
-    padding-left: 20px;
+    @include padding(null, null, null, 20px);
 }
 
 .PL25{
     padding-left: 25px;
+}
+
+.PB0{
+    padding-bottom: 0;
 }
 
 .PB5{
@@ -314,6 +349,23 @@
 
 .PR1{
     padding-right:1px;
+}
+
+.PTB15{
+    @include padding(15px, null);
+}
+
+.PTB20{
+    @include padding(20px, null);
+}
+.PTB10{
+    @include padding(10px ,null);
+}
+.PLR16px{
+    @include padding(null, 16px ,null, 16px);
+}
+.PLR15px{
+    @include padding(null, 15px ,null, 15px);
 }
 
 .bg-transparent{

@@ -280,7 +280,7 @@ export class EnrolledCourseDetailsPage {
   /**
    * Function to rate content
    */
-  rateContent() {
+  rateContent(event) {
     // TODO: check content is played or not
     if (!this.guestUser) {
       if (this.course.isAvailableLocally) {
@@ -426,7 +426,7 @@ export class EnrolledCourseDetailsPage {
       this.didViewLoad = true;
 
       if (this.course.status !== 'Live') {
-        this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
+        this.commonUtilService.showToast('COURSE_NOT_AVAILABLE');
         this.navCtrl.pop();
       }
 

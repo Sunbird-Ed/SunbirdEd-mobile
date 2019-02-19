@@ -159,7 +159,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     appGlobalServiceMock.getGuestUserInfo.mockResolvedValue(Promise.resolve(ProfileType.STUDENT));
     enrolled.checkLoggedInOrGuestUser();
     enrolled.profileType = ProfileType.STUDENT;
-    enrolled.rateContent();
+    enrolled.rateContent({});
     expect(commonUtilServiceMock.showToast).not.toHaveBeenCalled();
   });
 
@@ -167,7 +167,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     appGlobalServiceMock.isUserLoggedIn.mockReturnValue(false);
     enrolled.checkLoggedInOrGuestUser();
     enrolled.profileType = ProfileType.TEACHER;
-    enrolled.rateContent();
+    enrolled.rateContent({});
     expect(commonUtilServiceMock.showToast).toHaveBeenCalledWith('SIGNIN_TO_USE_FEATURE');
   });
 
@@ -180,7 +180,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     enrolled.guestUser = false;
     enrolled.course = mockRes.sampleCourse;
     popoverCtrlMock.create.mockReturnValue(popUpMock);
-    enrolled.rateContent();
+    enrolled.rateContent({});
     expect(popoverCtrlMock.create).toHaveBeenCalled();
     popUpMock.onDidDismiss.mock.calls[0][0].call(enrolled, mockRes.popOverOnDismissResponse);
     expect(enrolled.userRating).toBe(3.0);
@@ -190,7 +190,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
   it('#rateContent should show warning toast if course is not locally available', () => {
     enrolled.guestUser = false;
     enrolled.course = mockRes.sampleCourseNoLocal;
-    enrolled.rateContent();
+    enrolled.rateContent({});
     expect(commonUtilServiceMock.showToast).toHaveBeenCalledWith('TRY_BEFORE_RATING');
   });
 
