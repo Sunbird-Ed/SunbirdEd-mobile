@@ -787,7 +787,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         this.categoryGradeLevels[i].selected = '';
       }
     }
-    document.getElementById('gradeScroll').scrollTo({top: 0, left: index * 75, behavior: 'smooth'});
+    document.getElementById('gradeScroll').scrollTo({top: 0, left: index * 60, behavior: 'smooth'});
   }
   mediumClick(mediumName: string) {
     this.getGroupByPageReq.medium = [mediumName];
