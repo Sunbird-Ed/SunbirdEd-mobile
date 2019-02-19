@@ -751,6 +751,7 @@ export class ContentDetailsPage {
         this.isDownloadStarted = true;
         const values = new Map();
         values['network-type'] = this.network.type;
+        values['size'] = this.content.size;
         this.importContent([this.identifier], this.isChildContent);
         this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
           InteractSubtype.UPDATE_INITIATE ? this.isUpdateAvail : InteractSubtype.DOWNLOAD_INITIATE,
