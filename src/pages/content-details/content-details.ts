@@ -63,7 +63,6 @@ import { CommonUtilService } from '../../service/common-util.service';
 import { DialogPopupComponent } from '../../component/dialog-popup/dialog-popup';
 import { Observable } from 'rxjs';
 import { XwalkConstants } from '../../app/app.constant';
-import { Network } from '@ionic-native/network';
 import { ValueTransformer } from '@angular/compiler/src/util';
 
 
