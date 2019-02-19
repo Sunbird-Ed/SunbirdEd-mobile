@@ -30,7 +30,7 @@ page-qr-code-result{
         }
         .button.button-block.button-block-md {
             margin: 0;
-            border-radius: 0;
+            border-radius: 0px !important;
         }
     
         .badge {
@@ -114,7 +114,8 @@ page-qr-code-result{
             color: #007aff;
             @extend .font-weight-bold;
             font-size: 10px;
-        }    
+        }
+    
     
         li:after{
             content: '\003e';

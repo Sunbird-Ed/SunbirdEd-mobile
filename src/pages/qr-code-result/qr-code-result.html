@@ -19,6 +19,7 @@
   <div class="card-container" *ngFor="let content of results; let i = index">
     <ion-row class="P010">
       <ul class="breadcrumbs">
+        <!-- (click)="showSwitchUserAlert(true)" -->
         <li *ngFor="let result of paths[i]">
           {{ (result?.contentData?.name?.length>30)? (result?.contentData?.name | slice:0:30)+'...' :
           (result?.contentData?.name) }}
@@ -84,13 +85,13 @@
       <!-- Update and play on device  -->
        <ion-toolbar no-padding *ngIf="content.isUpdateAvailable  &&  content.isAvailableLocally">
         <ion-row no-padding>
-          <ion-col *ngIf="content.isUpdateAvailable" (click)="navigateToDetailsPage(content)" no-padding>
+          <ion-col style="z-index: 100;" *ngIf="content.isUpdateAvailable" (click)="navigateToDetailsPage(content)" no-padding>
               <button ion-button  no-margin block color="light" style="color:#0D7DFC; z-index: 100;" text-uppercase>
                 <ion-icon name="arrow-round-down"></ion-icon>&nbsp;{{ 'UPDATE' | translate }}
              </button>
         </ion-col>
           <ion-col no-padding *ngIf="content.contentData?.streamingUrl" no-padding>
-            <button  class="custom-btn play" no-margin  ion-button  block (click)="playContent(content)">
+            <button  class="custom-btn play" no-margin  ion-button  block (click)="navigateToDetailsPage(content)">
               <ion-icon name="play"></ion-icon>&nbsp;{{'PLAY' | translate}}
             </button>
           </ion-col>
