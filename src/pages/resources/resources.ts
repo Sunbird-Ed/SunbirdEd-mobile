@@ -1,5 +1,4 @@
 import { Search } from './../../app/app.constant';
-import { FormAndFrameworkUtilService } from './../profile/formandframeworkutil.service';
 import {
   Component,
   NgZone,
@@ -23,7 +22,6 @@ import {
 } from 'sunbird';
 import {
   NavController,
-  PopoverController,
   Events
 } from 'ionic-angular';
 import * as _ from 'lodash';
@@ -35,15 +33,13 @@ import {
   ContentType,
   AudienceFilter,
   PreferenceKey,
-  PageName,
   ContentCard,
   ViewMore,
   FrameworkCategory,
   CardSectionName
 } from '../../app/app.constant';
 import {
-  PageFilterCallback,
-  PageFilter
+  PageFilterCallback
 } from '../page-filter/page.filter';
 import { AppGlobalService } from '../../service/app-global.service';
 import Driver from 'driver.js';
@@ -59,9 +55,6 @@ import {
   style,
   animate,
   transition,
-  query,
-  keyframes,
-  stagger,
   group,
 } from '@angular/animations';
 import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-details-etb';
@@ -153,12 +146,10 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     private ngZone: NgZone,
     private contentService: ContentService,
     private qrScanner: SunbirdQRScanner,
-    private popCtrl: PopoverController,
     private events: Events,
     private preference: SharedPreferences,
     private appGlobalService: AppGlobalService,
     private appVersion: AppVersion,
-    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService,
     private frameworkService: FrameworkService,
