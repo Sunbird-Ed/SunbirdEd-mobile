@@ -132,7 +132,7 @@ export class ContentDetailsPage {
   unregisterBackButton: any;
   userCount = 0;
   shouldGenerateTelemetry = true;
-
+  playOnlineSpinner: boolean;
   @ViewChild(Navbar) navBar: Navbar;
   showMessage: any;
   isUsrGrpAlrtOpen: Boolean = false;
@@ -197,6 +197,7 @@ export class ContentDetailsPage {
     this.source = this.navParams.get('source');
     this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
     this.downloadAndPlay = this.navParams.get('downloadAndPlay');
+    this.playOnlineSpinner = true;
 
     if (this.isResumedCourse) {
       if (this.isUsrGrpAlrtOpen) {
@@ -434,90 +435,90 @@ export class ContentDetailsPage {
   }
 
   extractApiResponse(data) {
-      this.content = data.result.contentData;
-      this.content.downloadable = data.result.isAvailableLocally;
+    this.content = data.result.contentData;
+    this.content.downloadable = data.result.isAvailableLocally;
 
-      this.content.contentAccess = data.result.contentAccess ? data.result.contentAccess : [];
-      this.content.contentMarker = data.result.contentMarker ? data.result.contentMarker : [];
+    this.content.contentAccess = data.result.contentAccess ? data.result.contentAccess : [];
+    this.content.contentMarker = data.result.contentMarker ? data.result.contentMarker : [];
 
-      if (this.cardData && this.cardData.hierarchyInfo) {
-        data.result.hierarchyInfo = this.cardData.hierarchyInfo;
-        this.isChildContent = true;
-      }
-      if (this.content.streamingUrl) {
-        this.streamingUrl = this.content.streamingUrl;
-      }
+    if (this.cardData && this.cardData.hierarchyInfo) {
+      data.result.hierarchyInfo = this.cardData.hierarchyInfo;
+      this.isChildContent = true;
+    }
+    if (this.content.streamingUrl) {
+      this.streamingUrl = this.content.streamingUrl;
+    }
 
-      if (!this.isChildContent && this.content.contentMarker.length
-        && this.content.contentMarker[0].extraInfoMap
-        && this.content.contentMarker[0].extraInfoMap.hierarchyInfo
-        && this.content.contentMarker[0].extraInfoMap.hierarchyInfo.length) {
-        this.isChildContent = true;
-      }
+    if (!this.isChildContent && this.content.contentMarker.length
+      && this.content.contentMarker[0].extraInfoMap
+      && this.content.contentMarker[0].extraInfoMap.hierarchyInfo
+      && this.content.contentMarker[0].extraInfoMap.hierarchyInfo.length) {
+      this.isChildContent = true;
+    }
 
-      this.content.playContent = JSON.stringify(data.result);
-      if (this.content.gradeLevel && this.content.gradeLevel.length && typeof this.content.gradeLevel !== 'string') {
-        this.content.gradeLevel = this.content.gradeLevel.join(', ');
+    this.content.playContent = JSON.stringify(data.result);
+    if (this.content.gradeLevel && this.content.gradeLevel.length && typeof this.content.gradeLevel !== 'string') {
+      this.content.gradeLevel = this.content.gradeLevel.join(', ');
+    }
+    if (this.content.attributions && this.content.attributions.length) {
+      this.content.attributions = this.content.attributions.join(', ');
+    }
+    if (this.content.me_totalRatings) {
+      const rating = this.content.me_totalRatings.split('.');
+      if (rating && rating[0]) {
+        this.content.me_totalRatings = rating[0];
       }
-      if (this.content.attributions && this.content.attributions.length) {
-        this.content.attributions = this.content.attributions.join(', ');
-      }
-      if (this.content.me_totalRatings) {
-        const rating = this.content.me_totalRatings.split('.');
-        if (rating && rating[0]) {
-          this.content.me_totalRatings = rating[0];
-        }
-      }
-      this.objId = this.content.identifier;
-      this.objVer = this.content.pkgVersion;
+    }
+    this.objId = this.content.identifier;
+    this.objVer = this.content.pkgVersion;
 
-      // User Rating
-      const contentFeedback: any = data.result.contentFeedback;
-      if (contentFeedback !== undefined && contentFeedback.length !== 0) {
-        this.userRating = contentFeedback[0].rating;
-        this.ratingComment = contentFeedback[0].comments;
-      }
+    // User Rating
+    const contentFeedback: any = data.result.contentFeedback;
+    if (contentFeedback !== undefined && contentFeedback.length !== 0) {
+      this.userRating = contentFeedback[0].rating;
+      this.ratingComment = contentFeedback[0].comments;
+    }
 
-      // Check locally available
-      if (Boolean(data.result.isAvailableLocally)) {
-        if (data.result.isUpdateAvailable && !this.isUpdateAvail) {
-          this.isUpdateAvail = true;
-        } else {
-          this.isUpdateAvail = false;
-        }
+    // Check locally available
+    if (Boolean(data.result.isAvailableLocally)) {
+      if (data.result.isUpdateAvailable && !this.isUpdateAvail) {
+        this.isUpdateAvail = true;
       } else {
-        this.content.size = this.content.size;
+        this.isUpdateAvail = false;
       }
+    } else {
+      this.content.size = this.content.size;
+    }
 
-      if (this.content.me_totalDownloads) {
-        this.content.me_totalDownloads = this.content.me_totalDownloads.split('.')[0];
-      }
+    if (this.content.me_totalDownloads) {
+      this.content.me_totalDownloads = this.content.me_totalDownloads.split('.')[0];
+    }
 
-      if (this.navParams.get('isResumedCourse')) {
-        this.cardData.contentData = this.content;
-        this.cardData.pkgVersion = this.content.pkgVersion;
-        this.generateTelemetry();
-      }
+    if (this.navParams.get('isResumedCourse')) {
+      this.cardData.contentData = this.content;
+      this.cardData.pkgVersion = this.content.pkgVersion;
+      this.generateTelemetry();
+    }
 
-      if (this.shouldGenerateTelemetry) {
-        this.generateDetailsInteractEvent();
-        this.shouldGenerateEndTelemetry = false;
-      }
+    if (this.shouldGenerateTelemetry) {
+      this.generateDetailsInteractEvent();
+      this.shouldGenerateEndTelemetry = false;
+    }
 
-      if (this.downloadAndPlay) {
-        if (!this.content.downloadable) {
-          /**
-           * Content is not downloaded then call the following method
-           * It will download the content and play it
-           */
-          this.downloadContent();
-        } else {
-          /**
-           * If the content is already downloaded then just play it
-           */
-          this.showSwitchUserAlert(false);
-        }
+    if (this.downloadAndPlay) {
+      if (!this.content.downloadable) {
+        /**
+         * Content is not downloaded then call the following method
+         * It will download the content and play it
+         */
+        this.downloadContent();
+      } else {
+        /**
+         * If the content is already downloaded then just play it
+         */
+        this.showSwitchUserAlert(false);
       }
+    }
   }
 
   generateTelemetry() {
@@ -729,10 +730,13 @@ export class ContentDetailsPage {
 
         // For streaming url available
         if (res.data && res.type === 'streamingUrlAvailable') {
-          console.log('res.data' , res.data);
           this.zone.run(() => {
             if (res.data.identifier === this.identifier) {
-              this.content.streamingUrl = res.data.streamingUrl;
+              if (res.data.streamingUrl) {
+                this.content.streamingUrl = res.data.streamingUrl;
+              } else {
+                this.playOnlineSpinner = false;
+              }
             }
           });
         }
