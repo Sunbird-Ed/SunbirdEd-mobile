@@ -336,7 +336,7 @@ export class CoursesPage implements OnInit {
    *
    * It internally calls course handler of genie sdk
    */
-  getPopularAndLatestCourses(pageAssembleCriteria?: PageAssembleCriteria): void {
+  getPopularAndLatestCourses(hardRefresh = false, pageAssembleCriteria?: PageAssembleCriteria): void {
     this.pageApiLoader = true;
     if (pageAssembleCriteria === undefined) {
       const criteria = new PageAssembleCriteria();
@@ -351,7 +351,7 @@ export class CoursesPage implements OnInit {
           }
         });
 
-        if (filterApplied) {
+        if (filterApplied && !hardRefresh) {
           criteria.mode = 'hard';
         }
         criteria.filters = this.appliedFilter;
@@ -516,11 +516,11 @@ export class CoursesPage implements OnInit {
 
     this.getUserId()
       .then(() => {
-        this.getPopularAndLatestCourses();
+        this.getPopularAndLatestCourses(true);
       })
       .catch(error => {
         console.log('Error while Fetching Data', error);
-        this.getPopularAndLatestCourses();
+        this.getPopularAndLatestCourses(true);
       });
   }
 
@@ -589,7 +589,7 @@ export class CoursesPage implements OnInit {
             that.filterIcon = './assets/imgs/ic_action_filter.png';
           }
 
-          that.getPopularAndLatestCourses(criteria);
+          that.getPopularAndLatestCourses(false, criteria);
         });
       }
     };
