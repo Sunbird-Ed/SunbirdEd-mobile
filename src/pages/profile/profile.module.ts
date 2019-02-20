@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { SuperTabsModule } from 'ionic2-super-tabs';
 import { TagInputModule } from 'ngx-chips';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ExpansionPanelsModule } from 'ng2-expansion-panels';
@@ -42,7 +41,6 @@ import {PersonalDetailsEditPage} from './personal-details-edit.profile/personal-
 
   imports: [
     IonicPageModule.forChild(ProfilePage),
-    SuperTabsModule.forRoot(),
     SettingsPageModule,
     TranslateModule.forChild(),
     IonicImageLoader,
