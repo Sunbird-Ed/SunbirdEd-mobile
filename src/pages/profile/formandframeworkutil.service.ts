@@ -104,9 +104,9 @@ export class FormAndFrameworkUtilService {
         reject: (reason?: any) => void) {
 
         const req: FormRequest = {
-            type: 'pageAssemble',
+            type: 'pageassemble',
             subType: 'course',
-            action: 'filter',
+            action: 'filter_v2',
             filePath: FormConstant.DEFAULT_PAGE_COURSE_FILTER_PATH
         };
         // form api call
