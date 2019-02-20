@@ -1,4 +1,4 @@
-import {ErrorHandler, NgModule, Provider} from '@angular/core';
+import {APP_INITIALIZER, ErrorHandler, NgModule, Provider} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {Events, IonicApp, IonicErrorHandler, IonicModule, Platform} from 'ionic-angular';
 import {MyApp} from './app.component';
@@ -12,20 +12,18 @@ import {AppVersion} from '@ionic-native/app-version';
 import {SocialSharing} from '@ionic-native/social-sharing';
 import {ImageLoader, ImageLoaderConfig, IonicImageLoader} from 'ionic-image-loader';
 import {FileTransfer, FileTransferObject} from '@ionic-native/file-transfer';
-import {UniqueDeviceID} from '@ionic-native/unique-device-id';
+// import {UniqueDeviceID} from '@ionic-native/unique-device-id';
 import {FileOpener} from '@ionic-native/file-opener';
-import {AppGlobalService} from '../service/app-global.service';
-import {CourseUtilService} from '../service/course-util.service';
-import {UpgradePopover} from '../pages/upgrade/upgrade-popover';
-import {TelemetryGeneratorService} from '../service/telemetry-generator.service';
-import {QRScannerResultHandler} from '../pages/qrscanner/qrscanresulthandler.service';
-import {CommonUtilService} from '../service/common-util.service';
-import {BroadcastComponent} from '../component/broadcast/broadcast';
+import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService} from '@app/service';
+import {UpgradePopover} from '@app/pages/upgrade';
+import {QRScannerResultHandler} from '@app/pages/qrscanner';
+import {BroadcastComponent} from '@app/component/broadcast/broadcast';
 import {LogoutHandlerService} from '@app/service/handlers/logout-handler.service';
 import {TncUpdateHandlerService} from '@app/service/handlers/tnc-update-handler.service';
 import {SunbirdSdk} from 'sunbird-sdk';
+import {UniqueDeviceID} from '@ionic-native/unique-device-id';
 
-export const createTranslateLoader = (httpClient: HttpClient) => {
+export const translateHttpLoaderFactory = (httpClient: HttpClient) => {
   return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
 };
 
@@ -170,7 +168,7 @@ export const sunbirdSdkFactory: (uniqueDeviceID: UniqueDeviceID, platform: Platf
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
-        useFactory: (createTranslateLoader),
+        useFactory: (translateHttpLoaderFactory),
         deps: [HttpClient]
       }
     }),
@@ -206,7 +204,10 @@ export const sunbirdSdkFactory: (uniqueDeviceID: UniqueDeviceID, platform: Platf
     CommonUtilService,
     LogoutHandlerService,
     TncUpdateHandlerService,
-    { provide: ErrorHandler, useClass: IonicErrorHandler }
+    UniqueDeviceID,
+    ...sunbirdSdkServicesProvidersFactory(),
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    {provide: APP_INITIALIZER, useFactory: sunbirdSdkFactory, deps: [UniqueDeviceID], multi: true}
   ],
   exports: [
     BroadcastComponent
@@ -215,19 +216,28 @@ export const sunbirdSdkFactory: (uniqueDeviceID: UniqueDeviceID, platform: Platf
 export class AppModule {
 
   constructor(
-    translate: TranslateService,
+    private translate: TranslateService,
     private eventService: EventService,
     private events: Events,
     private imageConfig: ImageLoaderConfig) {
 
-    translate.setDefaultLang('en');
+    this.setDefaultLanguage();
 
     this.registerForEvent();
+
+    this.configureImageLoader();
+  }
+
+  private configureImageLoader() {
     this.imageConfig.enableDebugMode();
     this.imageConfig.maxCacheSize = 2 * 1024 * 1024;
   }
 
-  registerForEvent() {
+  private setDefaultLanguage() {
+    this.translate.setDefaultLang('en');
+  }
+
+  private registerForEvent() {
     this.eventService.register((response) => {
       const res = JSON.parse(response);
       if (res && res.type === 'genericEvent') {
@@ -235,9 +245,7 @@ export class AppModule {
       } else {
         this.events.publish('genie.event', response);
       }
-
-    }, (error) => {
-      // console.log("Event : " + error);
+    }, () => {
     });
   }
 }
