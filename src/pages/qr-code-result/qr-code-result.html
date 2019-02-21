@@ -20,7 +20,7 @@
     <ion-row class="P010">
       <ul class="breadcrumbs">
         <!-- (click)="showSwitchUserAlert(true)" -->
-        <li *ngFor="let result of paths[i]">
+        <li *ngFor="let result of paths[i]" (click)="navigateToDetailsPage(result)">
           {{ (result?.contentData?.name?.length>30)? (result?.contentData?.name | slice:0:30)+'...' :
           (result?.contentData?.name) }}
         </li>
