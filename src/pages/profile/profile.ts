@@ -37,7 +37,7 @@ import {FormAndFrameworkUtilService} from './formandframeworkutil.service';
 import {ImageLoader} from 'ionic-image-loader';
 import {EditContactDetailsPopupComponent} from '@app/component/edit-contact-details-popup/edit-contact-details-popup';
 import {EditContactVerifyPopupComponent} from '@app/component';
-import {ProfileService, ServerProfileDetailsRequest, UpdateServerProfileInfoRequest} from 'sunbird-sdk/dist';
+import {ProfileService, ServerProfileDetailsRequest, UpdateServerProfileInfoRequest} from 'sunbird-sdk';
 
 /**
  * The Profile page
@@ -234,9 +234,9 @@ export class ProfilePage {
                     that.formatUserLocation();
                     that.isCustodianOrgId = (that.profile.rootOrg.rootOrgId === this.custodianOrgId);
                     resolve();
-                  })
-              })
-            })
+                  });
+              });
+            });
         }
       });
     });
@@ -632,7 +632,7 @@ export class ProfilePage {
       }).catch(() => {
       loader.dismiss();
       this.commonUtilService.showToast(this.commonUtilService.translateMessage('SOMETHING_WENT_WRONG'));
-    })
+    });
   }
 
   updateEmailInfo(email) {
@@ -650,7 +650,7 @@ export class ProfilePage {
       }).catch(() => {
       loader.dismiss();
       this.commonUtilService.showToast(this.commonUtilService.translateMessage('SOMETHING_WENT_WRONG'));
-    })
+    });
   }
 
 }

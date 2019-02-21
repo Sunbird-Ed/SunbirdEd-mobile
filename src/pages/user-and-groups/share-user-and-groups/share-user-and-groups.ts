@@ -1,13 +1,12 @@
 import {
   Component,
-  NgZone
+  NgZone,
+  Inject
 } from '@angular/core';
 import {
   LoadingController
 } from 'ionic-angular';
 import {
-  GroupService,
-  Group,
   Profile,
   ProfileRequest,
   ProfileService,
@@ -19,6 +18,7 @@ import {
   Environment,
   PageId
 } from 'sunbird';
+import {Group, GroupService} from 'sunbird-sdk';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 @Component({
@@ -39,7 +39,7 @@ export class ShareUserAndGroupPage {
    private userGroupMap: Map<string, Array<Profile>> = new Map();
 
   constructor(
-    private groupService: GroupService,
+    @Inject('GROUP_SERVICE') private groupService: GroupService,
     private profileService: ProfileService,
     private zone: NgZone,
     private fileUtil: FileUtil,
@@ -77,13 +77,13 @@ export class ShareUserAndGroupPage {
   getAllGroup() {
     this.zone.run(() => {
 
-      const groupRequest: GroupRequest = {
+      const groupRequest = {
         uid: ''
       };
 
-      this.groupService.getAllGroup(groupRequest).then((groups) => {
-        if (groups.result && groups.result.length) {
-          this.groupList = groups.result;
+      this.groupService.getAllGroups(groupRequest).subscribe((groups) => {
+        if (groups && groups.length) {
+          this.groupList = groups;
         }
 
         this.groupList.forEach(group => {
@@ -105,7 +105,7 @@ export class ShareUserAndGroupPage {
         });
 
         console.log('GroupList', groups);
-      }).catch((error) => {
+      }, (error) => {
         console.log('Something went wrong while fetching data', error);
       });
     });

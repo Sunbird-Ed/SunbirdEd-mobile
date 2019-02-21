@@ -1,6 +1,7 @@
 import {
   Component,
-  NgZone
+  NgZone,
+  Inject
 } from '@angular/core';
 import {
   IonicPage,
@@ -9,8 +10,6 @@ import {
   LoadingController
 } from 'ionic-angular';
 import {
-  GroupService,
-  Group,
   ProfileRequest,
   Profile,
   ProfileService,
@@ -22,6 +21,7 @@ import {
   ImpressionType,
   ObjectType
 } from 'sunbird';
+import {Group, GroupService} from 'sunbird-sdk';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../../service/common-util.service';
@@ -42,7 +42,7 @@ export class GroupMembersPage {
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
-    private groupService: GroupService,
+    @Inject('GROUP_SERVICE') private groupService: GroupService,
     private profileService: ProfileService,
     private zone: NgZone,
     private loadingCtrl: LoadingController,
@@ -157,7 +157,7 @@ export class GroupMembersPage {
       }
     });
     this.groupService.createGroup(this.group)
-      .then(res => {
+      .toPromise().then(res => {
         this.telemetryGeneratorService.generateInteractTelemetry(
           InteractType.OTHER,
           InteractSubtype.CREATE_GROUP_SUCCESS,
@@ -165,13 +165,14 @@ export class GroupMembersPage {
           PageId.CREATE_GROUP
         );
         const req: AddUpdateProfilesRequest = {
-          groupId: res.result.gid,
+          groupId: res.gid,
           uidList: selectedUids
         };
-        return this.groupService.addUpdateProfilesToGroup(req);
+        console.log('group creating successfull');
+        return this.groupService.addProfilesToGroup(req).toPromise();
       })
       .then(success => {
-        console.log(success);
+        console.log('group profile', success);
         loader.dismiss();
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('GROUP_CREATE_SUCCESS'));
         this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 3));

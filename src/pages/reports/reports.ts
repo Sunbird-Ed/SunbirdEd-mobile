@@ -1,6 +1,7 @@
 import {
   Component,
-  NgZone
+  NgZone,
+  Inject
 } from '@angular/core';
 import {
   NavController,
@@ -10,7 +11,6 @@ import {
 import { ReportListPage } from './report-list/report-list';
 import {
   ProfileService,
-  GroupService,
   ProfileRequest,
   GroupRequest,
   InteractSubtype,
@@ -21,6 +21,7 @@ import {
   TelemetryObject,
   ObjectType
 } from 'sunbird';
+import {GroupService} from 'sunbird-sdk';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 
 @Component({
@@ -37,7 +38,7 @@ export class ReportsPage {
 
   constructor(private navCtrl: NavController,
     private profileService: ProfileService,
-    private groupService: GroupService,
+    @Inject('GROUP_SERVICE') private groupService: GroupService,
     private ngZone: NgZone,
     private loading: LoadingController,
     private navParams: NavParams,
@@ -82,14 +83,14 @@ export class ReportsPage {
 
     return new Promise<any>((resolve) => {
 
-      const groupRequest: GroupRequest = {
+      const groupRequest = {
         uid: ''
       };
 
-      that.groupService.getAllGroup(groupRequest)
-        .then((groups) => {
-          if (groups.result) {
-            resolve(groups.result);
+      that.groupService.getAllGroups(groupRequest)
+        .subscribe((groups) => {
+          if (groups) {
+            resolve(groups);
           } else {
             resolve();
           }
