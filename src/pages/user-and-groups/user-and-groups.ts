@@ -3,7 +3,8 @@ import { TranslateService } from '@ngx-translate/core';
 import {
   Component,
   NgZone,
-  ViewChild
+  ViewChild,
+  Inject
 } from '@angular/core';
 import {
   IonicPage,
@@ -18,10 +19,8 @@ import {
 import { PopoverPage } from './popover/popover';
 import {
   ProfileService,
-  GroupService,
   ProfileRequest,
   Profile,
-  Group,
   ContainerService,
   ProfileType,
   TabsPage,
@@ -37,6 +36,7 @@ import {
   ImpressionType,
   AuthService
 } from 'sunbird';
+import {GroupService, Group} from 'sunbird-sdk';
 import { GuestEditProfilePage } from '../profile/guest-edit.profile/guest-edit.profile';
 import { IonicApp } from 'ionic-angular';
 import { ShareUserAndGroupPage } from './share-user-and-groups/share-user-and-groups';
@@ -94,7 +94,7 @@ export class UserAndGroupsPage {
     private popOverCtrl: PopoverController,
     private zone: NgZone,
     private profileService: ProfileService,
-    private groupService: GroupService,
+    @Inject('GROUP_SERVICE') private groupService: GroupService,
     private platform: Platform,
     private ionicApp: IonicApp,
     private event: Events,
@@ -152,16 +152,16 @@ export class UserAndGroupsPage {
   }
 
   getCurrentGroup() {
-    this.groupService.getCurrentGroup().then(val => {
+    this.groupService.getActiveSessionGroup().subscribe(val => {
       console.log('Value : ' + val);
-      const group = val.result;
+      const group = val;
       if (group) {
         this.zone.run(() => {
           console.log('Value : ' + group.gid);
           this.currentGroupId = group.gid;
         });
       }
-    }).catch(error => {
+    }, error => {
       console.log('Error : ' + error);
     });
   }
@@ -268,14 +268,14 @@ export class UserAndGroupsPage {
 
   getAllGroup() {
     this.zone.run(() => {
-      const groupRequest: GroupRequest = {
+      const groupRequest = {
         uid: ''
       };
 
-      this.groupService.getAllGroup(groupRequest).then((groups) => {
-        if (groups.result && groups.result.length) {
+      this.groupService.getAllGroups(groupRequest).subscribe((groups) => {
+        if (groups && groups.length) {
           this.showEmptyGroupsMessage = false;
-          this.groupList = groups.result.sort((prev: Group, next: Group) => {
+          this.groupList = groups.sort((prev: Group, next: Group) => {
             if (prev.gid === this.currentGroupId) {
               return -1;
             }
@@ -296,7 +296,7 @@ export class UserAndGroupsPage {
           this.showEmptyGroupsMessage = true;
         }
         console.log('GroupList', groups);
-      }).catch((error) => {
+      }, (error) => {
         console.log('Something went wrong while fetching data', error);
       });
     });
@@ -591,11 +591,11 @@ export class UserAndGroupsPage {
       PageId.GROUPS,
       telemetryObject
     );
-    this.groupService.deleteGroup(gid).then((success) => {
+    this.groupService.deleteGroup(gid).subscribe((success) => {
       console.log(success);
       this.groupList.splice(index, 1);
       this.getAllGroup();
-    }).catch((error) => {
+    }, (error) => {
       console.log(error);
     });
   }
@@ -693,11 +693,11 @@ export class UserAndGroupsPage {
   }
 
   private setAsCurrentUser(selectedUser, isBeingPlayed: boolean) {
-    this.groupService.setCurrentGroup(null)
-      .then(val => {
+    this.groupService.setActiveSessionForGroup(null)
+      .subscribe(val => {
         console.log('Value : ' + val);
-      })
-      .catch(error => {
+      },
+      (error) => {
         console.log('Error : ' + error);
       });
       this.profileService.setCurrentUser(selectedUser.uid) .then(() => {

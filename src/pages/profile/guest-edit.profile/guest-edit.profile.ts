@@ -1,6 +1,6 @@
 import { AlertController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import {
   App,
   NavController,
@@ -17,8 +17,6 @@ import {
 import * as _ from 'lodash';
 import {
   CategoryRequest,
-  ProfileService,
-  Profile,
   SharedPreferences,
   UserSource,
   InteractType,
@@ -33,6 +31,7 @@ import {
   SuggestedFrameworkRequest,
   FrameworkService
 } from 'sunbird';
+import {Profile, ProfileService, ProfileSource} from 'sunbird-sdk';
 import { FormAndFrameworkUtilService } from '../formandframeworkutil.service';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 import {
@@ -103,7 +102,7 @@ export class GuestEditProfilePage {
     private fb: FormBuilder,
     private navParams: NavParams,
     private loadingCtrl: LoadingController,
-    private profileService: ProfileService,
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     private translate: TranslateService,
     private events: Events,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
@@ -523,7 +522,7 @@ export class GuestEditProfilePage {
    * This will submit edit form.
    */
   submitEditForm(formVal, loader): void {
-    const req: Profile = new Profile();
+    const req =  <Profile>{};
     req.board = formVal.boards;
     req.grade = formVal.grades;
     req.subject = formVal.subjects;
@@ -539,10 +538,10 @@ export class GuestEditProfilePage {
       formVal.grades.forEach(gradeCode => {
         for (let i = 0; i < this.gradeList.length; i++) {
           if (this.gradeList[i].code === gradeCode) {
-            if (!req.gradeValueMap) {
-              req.gradeValueMap = {};
+            if (!req.gradeValue) {
+              req.gradeValue = {};
             }
-            req.gradeValueMap[this.gradeList[i].code] = this.gradeList[i].name;
+            req.gradeValue[this.gradeList[i].code] = this.gradeList[i].name;
             break;
           }
         }
@@ -550,7 +549,7 @@ export class GuestEditProfilePage {
     }
 
     this.profileService.updateProfile(req)
-      .then((res: any) => {
+      .subscribe((res: any) => {
         if (this.isCurrentUser) {
           this.publishProfileEvents(formVal);
         }
@@ -563,8 +562,7 @@ export class GuestEditProfilePage {
           PageId.EDIT_USER
         );
         this.navCtrl.pop();
-      })
-      .catch((err: any) => {
+      }, (err: any) => {
         loader.dismiss();
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_FAILED'));
         console.log('Err', err);
@@ -598,38 +596,37 @@ export class GuestEditProfilePage {
    * It will submit new user form
    */
   submitNewUserForm(formVal, loader): void {
-    const req: Profile = new Profile();
+    const req =  <Profile>{};
     req.board = formVal.boards;
     req.grade = formVal.grades;
     req.subject = formVal.subjects;
     req.medium = formVal.medium;
     req.handle = formVal.name.trim();
     req.profileType = formVal.profileType;
-    req.source = UserSource.LOCAL;
+    req.source = ProfileSource.LOCAL;
     req.syllabus = (!formVal.syllabus.length) ? [] : [formVal.syllabus];
 
     if (formVal.grades && formVal.grades.length > 0) {
       formVal.grades.forEach(gradeCode => {
         for (let i = 0; i < this.gradeList.length; i++) {
           if (this.gradeList[i].code === gradeCode) {
-            if (!req.gradeValueMap) {
-              req.gradeValueMap = {};
+            if (!req.gradeValue) {
+              req.gradeValue = {};
             }
-            req.gradeValueMap[this.gradeList[i].code] = this.gradeList[i].name;
+            req.gradeValue[this.gradeList[i].code] = this.gradeList[i].name;
             break;
           }
         }
       });
     }
 
-    this.profileService.createProfile(req).then((res: any) => {
+    this.profileService.createProfile(req, req.source).subscribe((res: any) => {
       loader.dismiss();
       this.commonUtilService.showToast(this.commonUtilService.translateMessage('USER_CREATED_SUCCESSFULLY'));
       this.telemetryGeneratorService.generateInteractTelemetry(
         InteractType.OTHER, InteractSubtype.CREATE_USER_SUCCESS, Environment.USER, PageId.CREATE_USER);
       this.navCtrl.pop();
-    })
-      .catch((err: any) => {
+    }, (err: any) => {
         loader.dismiss();
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('FILL_THE_MANDATORY_FIELDS'));
       });

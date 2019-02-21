@@ -3,7 +3,8 @@ import { TranslateService } from '@ngx-translate/core';
 import {
   Component,
   NgZone,
-  ViewChild
+  ViewChild,
+  Inject
 } from '@angular/core';
 import {
   IonicPage,
@@ -21,9 +22,7 @@ import { AddOrRemoveGroupUserPage } from '../add-or-remove-group-user/add-or-rem
 import {
   Profile,
   ProfileRequest,
-  GroupService,
   ProfileService,
-  Group,
   OAuthService,
   ProfileType,
   TabsPage,
@@ -38,6 +37,7 @@ import {
   ObjectType,
   AuthService
 } from 'sunbird';
+import {Group, GroupService} from 'sunbird-sdk';
 import { Events } from 'ionic-angular';
 import { AppGlobalService } from '../../../service/app-global.service';
 import {
@@ -75,7 +75,7 @@ export class GroupDetailsPage {
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
-    private groupService: GroupService,
+    @Inject('GROUP_SERVICE') private groupService: GroupService,
     private profileService: ProfileService,
     private zone: NgZone,
     private translate: TranslateService,
@@ -397,11 +397,11 @@ export class GroupDetailsPage {
       PageId.GROUP_DETAIL,
       telemetryObject
     );
-    this.groupService.deleteGroup(this.group.gid).then((sucess) => {
+    this.groupService.deleteGroup(this.group.gid).subscribe((sucess) => {
       console.log(sucess);
       this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
 
-    }).catch((error) => {
+    }, (error) => {
       console.log(error);
     });
   }
@@ -449,13 +449,12 @@ export class GroupDetailsPage {
       uidList: this.userUids
     };
 
-    this.groupService.addUpdateProfilesToGroup(req).then(
+    this.groupService.addProfilesToGroup(req).subscribe(
       (success) => {
         console.log('success', success);
         this.userList.splice(userListIndex, 1);
         this.isNoUsers = (this.userList.length) ? false : true;
-      }
-    ).catch(error => {
+      }, error => {
 
     });
     console.log('request is', req);
@@ -497,8 +496,8 @@ export class GroupDetailsPage {
   }
 
   private setAsCurrentUser(selectedUser, isBeingPlayed: boolean) {
-    this.groupService.setCurrentGroup(this.group.gid)
-      .then(val => {
+    this.groupService.setActiveSessionForGroup(this.group.gid)
+      .subscribe(val => {
         console.log('Value : ' + val);
         this.profileService.setCurrentUser(selectedUser.uid) .then((success) => {
           if (isBeingPlayed) {
@@ -525,10 +524,10 @@ export class GroupDetailsPage {
           });
           toast.present();
 
-        }) .catch((error) => {
+        }, (error) => {
           console.log('Error ' + error);
         });
-      }).catch(error => {
+      }, error => {
         console.log('Error : ' + error);
       });
   }

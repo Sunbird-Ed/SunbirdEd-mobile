@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import {
   IonicPage,
   NavController,
@@ -8,12 +8,10 @@ import { TranslateService } from '@ngx-translate/core';
 import {
   FormBuilder,
   FormGroup,
-  Validators
+  Validators,
 } from '@angular/forms';
 import {
   CategoryRequest,
-  Group,
-  GroupService,
   InteractType,
   InteractSubtype,
   Environment,
@@ -23,6 +21,7 @@ import {
   SuggestedFrameworkRequest,
   FrameworkService,
 } from 'sunbird';
+import {Group, GroupService} from 'sunbird-sdk';
 import { FormAndFrameworkUtilService } from '../../profile/formandframeworkutil.service';
 import { GroupMembersPage } from './../group-members/group-members';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
@@ -63,7 +62,7 @@ export class CreateGroupPage {
     private translate: TranslateService,
     private navParams: NavParams,
     private commonUtilService: CommonUtilService,
-    private groupService: GroupService,
+    @Inject('GROUP_SERVICE') private groupService: GroupService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private framework: FrameworkService
   ) {
@@ -198,7 +197,7 @@ export class CreateGroupPage {
       }
 
       this.groupService.updateGroup(this.group)
-        .then((val) => {
+        .subscribe((val) => {
           loader.dismiss();
           this.telemetryGeneratorService.generateInteractTelemetry(
             InteractType.OTHER,
@@ -207,8 +206,8 @@ export class CreateGroupPage {
             PageId.CREATE_GROUP
           );
           this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
-        })
-        .catch((error) => {
+        },
+        (error) => {
           loader.dismiss();
           console.error('Error : ' + error);
         });

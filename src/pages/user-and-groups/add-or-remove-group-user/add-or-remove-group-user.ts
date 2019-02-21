@@ -1,6 +1,7 @@
 import {
   Component,
-  NgZone
+  NgZone,
+  Inject
 } from '@angular/core';
 import {
   IonicPage,
@@ -11,21 +12,21 @@ import {
 import {
   Profile,
   ProfileRequest,
-  GroupService,
   ProfileService,
-  Group,
   AddUpdateProfilesRequest,
   TelemetryObject,
   InteractType,
   InteractSubtype,
   Environment,
   PageId,
-  ObjectType
+  ObjectType,
 } from 'sunbird';
+import {GroupService, Group} from 'sunbird-sdk';
 import { LoadingController } from 'ionic-angular';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../../service/common-util.service';
+import { group } from '@angular/animations';
 
 @IonicPage()
 @Component({
@@ -50,7 +51,7 @@ export class AddOrRemoveGroupUserPage {
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
-    private groupService: GroupService,
+    @Inject('GROUP_SERVICE') private groupService: GroupService,
     private profileService: ProfileService,
     private zone: NgZone,
     private loadingCtrl: LoadingController,
@@ -207,14 +208,14 @@ export class AddOrRemoveGroupUserPage {
       groupId: this.groupInfo.gid,
       uidList: groupMembersUids.concat(this.getSelectedUids())
     };
-    this.groupService.addUpdateProfilesToGroup(req)
-      .then((success) => {
+    this.groupService.addProfilesToGroup(req)
+      .subscribe((success) => {
         console.log(success);
         loader.dismiss();
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('GROUP_MEMBER_ADD_SUCCESS'));
         this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
-      })
-      .catch((error) => {
+      },
+      (error) => {
         loader.dismiss();
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('SOMETHING_WENT_WRONG'));
         console.log('Error : ' + error);
@@ -272,14 +273,14 @@ export class AddOrRemoveGroupUserPage {
       uidList: this.selectedUids
     };
 
-    this.groupService.addUpdateProfilesToGroup(req)
-      .then((success) => {
+    this.groupService.addProfilesToGroup(req)
+      .subscribe((success) => {
         console.log(success);
         loader.dismiss();
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('GROUP_MEMBER_DELETE_SUCCESS'));
         this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
-      })
-      .catch((error) => {
+      },
+      (error) => {
         loader.dismiss();
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('SOMETHING_WENT_WRONG'));
         console.log('Error : ' + error);

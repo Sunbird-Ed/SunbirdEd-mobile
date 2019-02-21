@@ -31,7 +31,7 @@ import {UserTypeSelectionPage} from '@app/pages/user-type-selection';
 import {BroadcastComponent} from '../component/broadcast/broadcast';
 import {CategoriesEditPage} from '@app/pages/categories-edit/categories-edit';
 import {TncUpdateHandlerService} from '@app/service/handlers/tnc-update-handler.service';
-import {ProfileService, ProfileType, ServerProfileDetailsRequest} from "sunbird-sdk/dist";
+import {ProfileService, ProfileType, ServerProfileDetailsRequest} from "sunbird-sdk";
 
 declare var chcp: any;
 
@@ -227,7 +227,7 @@ export class MyApp {
                     });
                   }).catch(() => {
                   that.nav.setRoot(CategoriesEditPage, {showOnlyMandatoryFields: true});
-                })
+                });
               }
             });
 

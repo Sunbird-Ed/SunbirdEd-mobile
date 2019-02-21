@@ -79,20 +79,20 @@ export const sunbirdSdkServicesProvidersFactory: () => Provider[] = () => {
 export const sunbirdSdkFactory: (uniqueDeviceID: UniqueDeviceID, platform: Platform) => () => Promise<void> =
   (uniqueDeviceID: UniqueDeviceID, platform: Platform) => {
     return async () => {
-      let deviceId = '';
+      // let deviceId = '';
 
-      if (platform.is('core') || platform.is('mobileweb')) {
-        deviceId = '4adce7fad56e02b7';
-      } else {
-        deviceId = await uniqueDeviceID.get();
-      }
+      // if (platform.is('core') || platform.is('mobileweb')) {
+      //   deviceId = '4adce7fad56e02b7';
+      // } else {
+      //   deviceId = await uniqueDeviceID.get();
+
 
       await SunbirdSdk.instance.init({
         fileConfig: {
           debugMode: false
         },
         apiConfig: {
-          debugMode: false,
+          debugMode: true,
           host: 'https://staging.ntp.net.in',
           baseUrl: 'https://staging.ntp.net.in/api',
           user_authentication: {
@@ -105,7 +105,6 @@ export const sunbirdSdkFactory: (uniqueDeviceID: UniqueDeviceID, platform: Platf
             mobileAppConsumer: 'mobile_device',
             channelId: '505c7c48ac6dc1edc9b08f21db5a571d',
             producerId: 'staging.diksha.app',
-            deviceId: deviceId,
             producerUniqueId: 'sunbird.app'
           },
           cached_requests: {
@@ -113,7 +112,7 @@ export const sunbirdSdkFactory: (uniqueDeviceID: UniqueDeviceID, platform: Platf
           }
         },
         dbConfig: {
-          debugMode: false,
+          debugMode: true,
           dbName: 'GenieServices.db'
         },
         contentServiceConfig: {
@@ -149,6 +148,9 @@ export const sunbirdSdkFactory: (uniqueDeviceID: UniqueDeviceID, platform: Platf
         systemSettingsConfig: {
           systemSettingsApiPath: '/api/data/v1',
           systemSettingsDirPath: '/data/system',
+        },
+        telemetryConfig: {
+          deviceRegisterApiPath: ''
         }
       });
     };
