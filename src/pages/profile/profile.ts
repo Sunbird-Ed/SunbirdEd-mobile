@@ -73,7 +73,7 @@ export class ProfilePage {
   isLoggedInUser = false;
   isRefreshProfile = false;
   loggedInUserId = '';
-
+  refresh: boolean;
   profileName: string;
   onProfile = true;
   trainingsCompleted = [];
@@ -166,15 +166,18 @@ export class ProfilePage {
   public doRefresh(refresher?) {
     const loader = this.getLoader();
     this.isRefreshProfile = true;
+    if (!refresher) {
     loader.present();
+    } else {
+       refresher.complete();
+       this.refresh = true;
+    }
     return this.refreshProfileData()
       .then(() => {
         return new Promise((resolve) => {
           setTimeout(() => {
-            if (refresher) {
-              refresher.complete();
-            }
             this.events.publish('refresh:profile');
+            this.refresh = false;
             loader.dismiss();
             resolve();
           }, 500);
@@ -186,6 +189,7 @@ export class ProfilePage {
       })
       .catch(error => {
         console.error('Error while Fetching Data', error);
+        this.refresh = false;
         loader.dismiss();
       });
   }

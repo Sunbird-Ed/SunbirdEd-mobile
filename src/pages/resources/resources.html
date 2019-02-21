@@ -30,7 +30,9 @@
 			{{grade?.name}} 
 		</a>
 	</div>
-
+	<div style="margin: 40px;" *ngIf ="refresh">
+		<ion-spinner icon="spiral"></ion-spinner>
+	</div>
 	<div class="course-scroll-holder" [ngClass]="{'empty-saved-resources' : (localResources && localResources.length === 0 || showLoader)}"
 	 *ngIf="localResources && localResources.length">
 		<div class="item PL10 PR10">
@@ -76,7 +78,6 @@
 		</ion-scroll>
 	</div>
 	<div class="devider-line"></div>
-	
 	<div *ngFor="let items of storyAndWorksheets">
 	<section *ngIf="items?.contents">
 		<div class="section-solid P15">
@@ -111,7 +112,7 @@
 	  </section>
 	</div>
 
-	<div *ngIf="pageApiLoader && storyAndWorksheets && storyAndWorksheets.length === 0">
+	<div *ngIf="searchApiLoader && storyAndWorksheets && storyAndWorksheets.length === 0">
 		<div class="course-scroll-holder" style="height: 500px;">
 			<ion-spinner padding style="padding-top: 110px;"></ion-spinner>
 		</div>

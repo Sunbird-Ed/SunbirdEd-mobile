@@ -116,7 +116,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   /**
 	 * Flag to show latest and popular course loader
 	 */
-  pageApiLoader = true;
+  searchApiLoader = true;
   isOnBoardingCardCompleted = false;
   public source = PageId.LIBRARY;
   resourceFilter: any;
@@ -141,6 +141,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   currentGrade: any;
   currentMedium: string;
   defaultImg: string;
+  refresh: boolean;
   constructor(
     public navCtrl: NavController,
     private ngZone: NgZone,
@@ -392,7 +393,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 	 */
   getPopularContent(isAfterLanguageChange = false, contentSearchCriteria?: ContentSearchCriteria) {
     // if (this.isOnBoardingCardCompleted || !this.guestUser) {
-    this.pageApiLoader = true;
+    this.storyAndWorksheets = [];
+    this.searchApiLoader = true;
     // this.noInternetConnection = false;
     const that = this;
 
@@ -439,11 +441,13 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   getGroupByPage(isAfterLanguageChange = false) {
     this.storyAndWorksheets = [];
-    const loader = this.commonUtilService.getLoader();
-    loader.present();
+    if (!this.refresh) {
+        this.searchApiLoader = true;
+      } else {
+        this.searchApiLoader = false;
+      }
     this.contentService.getGroupByPage(this.getGroupByPageReq, this.guestUser)
       .then((response: any) => {
-        loader.dismiss();
         this.ngZone.run(() => {
           // TODO Temporary code - should be fixed at backend
           const sections = JSON.parse(response.sections);
@@ -464,7 +468,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           // END OF TEMPORARY CODE
           this.storyAndWorksheets = newSections;
           this.pageLoadedSuccess = true;
-          this.pageApiLoader = false;
+          this.refresh = false;
+          this.searchApiLoader = false;
           // this.noInternetConnection = false;
           this.generateExtraInfoTelemetry(newSections.length);
           this.checkEmptySearchResult(isAfterLanguageChange);
@@ -472,9 +477,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       })
       .catch(error => {
         console.log('error while getting popular resources...', error);
-        loader.dismiss();
         this.ngZone.run(() => {
-          this.pageApiLoader = false;
+          this.refresh = false;
+          this.searchApiLoader = false;
           if (error === 'CONNECTION_ERROR') {
           } else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
             if (!isAfterLanguageChange) { this.commonUtilService.showToast('ERROR_FETCHING_DATA'); }
@@ -607,7 +612,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       refresher.complete();
       this.telemetryGeneratorService.generatePullToRefreshTelemetry(PageId.LIBRARY, Environment.HOME);
     }
-
+    this.refresh = true;
     this.storyAndWorksheets = [];
     this.setSavedContent();
     this.loadRecentlyViewedContent();
