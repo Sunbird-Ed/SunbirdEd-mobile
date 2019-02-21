@@ -34,6 +34,7 @@ import { ContentDetailsPage } from '../content-details/content-details';
 import { CourseBatchesPage } from '../course-batches/course-batches';
 import { datePipeMock } from '../../__tests__/mocks';
 
+
 describe('EnrolledCourseDetailsPage Component', () => {
   let enrolled: EnrolledCourseDetailsPage;
   beforeEach((() => {
@@ -453,7 +454,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
   it('#downloadAllContent should invoke importContent API', () => {
     enrolled.courseCardData = mockRes.enrollCourseEvent;
     enrolled.course = {};
-    commonUtilServiceMock.networkInfo = { isNetworkAvailable: true };
+    commonUtilServiceMock.networkInfo = { isNetworkAvailable: true } as any;
     const data = JSON.stringify((mockRes.enqueuedOthersImportContentResponse));
     contentServiceMock.importContent.mockResolvedValue(data);
     enrolled.downloadAllContent();
@@ -463,7 +464,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
   it('#downloadAllContent should show error response if internet is not available', () => {
     enrolled.courseCardData = mockRes.enrollCourseEvent;
     enrolled.course = {};
-    commonUtilServiceMock.networkInfo = { isNetworkAvailable: false };
+    commonUtilServiceMock.networkInfo = { isNetworkAvailable: false } as any;
     const data = JSON.stringify((mockRes.enqueuedOthersImportContentResponse));
     contentServiceMock.importContent.mockResolvedValue(data);
     enrolled.downloadAllContent();
@@ -682,6 +683,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     expect(enrolled.importContent).toHaveBeenCalledWith(['SAMPLE_ID'], false);
   });
 
+
   it('#ionViewWillLeave should unsubscribe event', () => {
     enrolled.ionViewWillLeave();
     expect(eventsMock.unsubscribe).toHaveBeenCalledWith('genie.event');
@@ -702,7 +704,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
       present: jest.fn(),
       dismiss: jest.fn()
     };
-    commonUtilServiceMock.networkInfo = { isNetworkAvailable: true };
+    commonUtilServiceMock.networkInfo = { isNetworkAvailable: true } as any;
     const data = JSON.stringify(mockRes.courseBatchesRequest);
     commonUtilServiceMock.getLoader.mockReturnValue(loader);
     courseServiceMock.getCourseBatches.mockResolvedValue(data);
