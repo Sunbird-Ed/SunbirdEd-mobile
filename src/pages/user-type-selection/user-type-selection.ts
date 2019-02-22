@@ -233,7 +233,13 @@ export class UserTypeSelectionPage {
           loginMode: 'guest'
         });
       } else {
-        this.scannerService.startScanner(PageId.USER_TYPE_SELECTION, true);
+        this.profile.profileType = this.selectedUserType;
+        this.profileService.updateProfile(this.profile)
+          .then((res: any) => {
+            this.scannerService.startScanner(PageId.USER_TYPE_SELECTION, true);
+          }).catch(error => {
+            console.error('Error=');
+          });
       }
     } else if (this.appGlobalService.DISPLAY_ONBOARDING_CATEGORY_PAGE) {
       this.navCtrl.push(ProfileSettingsPage);
