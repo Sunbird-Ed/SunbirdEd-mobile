@@ -10,9 +10,6 @@ import {
   AlertController
 } from 'ionic-angular';
 import {
-  Profile,
-  ProfileRequest,
-  ProfileService,
   AddUpdateProfilesRequest,
   TelemetryObject,
   InteractType,
@@ -21,12 +18,17 @@ import {
   PageId,
   ObjectType,
 } from 'sunbird';
-import {GroupService, Group} from 'sunbird-sdk';
+import {GroupService,
+        Group,
+        Profile,
+        ProfileService,
+        GetAllProfileRequest} from 'sunbird-sdk';
 import { LoadingController } from 'ionic-angular';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../../service/common-util.service';
 import { group } from '@angular/animations';
+import { Observable } from 'rxjs';
 
 @IonicPage()
 @Component({
@@ -52,7 +54,7 @@ export class AddOrRemoveGroupUserPage {
     private navCtrl: NavController,
     private navParams: NavParams,
     @Inject('GROUP_SERVICE') private groupService: GroupService,
-    private profileService: ProfileService,
+    @Inject ('PROFILE_SERVICE')private profileService: ProfileService,
     private zone: NgZone,
     private loadingCtrl: LoadingController,
     private commonUtilService: CommonUtilService,
@@ -70,13 +72,13 @@ export class AddOrRemoveGroupUserPage {
   }
 
   getAllProfile() {
-    const profileRequest: ProfileRequest = {
+    const req: GetAllProfileRequest = {
       local: true
     };
 
-    this.profileService.getAllUserProfile(profileRequest)
-      .then(profiles => {
-        this.allUsers = JSON.parse(profiles);
+    this.profileService.getAllProfiles(req)
+      .subscribe(profiles => {
+       this.allUsers = profiles;
         const uniqueUserList = this.allUsers.filter(e => {
           const found = this.groupMembers.find(m => {
             return m.uid === e.uid;
@@ -92,8 +94,7 @@ export class AddOrRemoveGroupUserPage {
             });
           }
         });
-      })
-      .catch((error) => {
+      }, (error) => {
         console.log('Something went wrong while fetching user list', error);
       });
   }
@@ -302,8 +303,8 @@ export class AddOrRemoveGroupUserPage {
     if (data.grade && data.grade.length > 0) {
       const gradeName = [];
       data.grade.forEach(code => {
-        if (data.gradeValueMap && data.gradeValueMap[code]) {
-          gradeName.push(data.gradeValueMap[code]);
+        if (data.gradeValue && data.gradeValue[code]) {
+          gradeName.push(data.gradeValue[code]);
         }
       });
 

@@ -480,8 +480,8 @@ export class GroupDetailsPage {
     if (data.grade && data.grade.length > 0) {
       const gradeName = [];
       data.grade.forEach(code => {
-        if (data.gradeValueMap && data.gradeValueMap[code]) {
-          gradeName.push(data.gradeValueMap[code]);
+        if (data['gradeValue'] && data['gradeValue'][code]) {
+          gradeName.push(data['gradeValue'][code]);
         }
       });
 
