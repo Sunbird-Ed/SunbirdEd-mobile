@@ -20,7 +20,7 @@
     <ion-row class="P010">
       <ul class="breadcrumbs">
         <!-- (click)="showSwitchUserAlert(true)" -->
-        <li *ngFor="let result of paths[i]">
+        <li *ngFor="let result of paths[i]" (click)="navigateToDetailsPage(result)">
           {{ (result?.contentData?.name?.length>30)? (result?.contentData?.name | slice:0:30)+'...' :
           (result?.contentData?.name) }}
         </li>
@@ -32,7 +32,7 @@
           <ion-card-content (click)="playOnline(content)">
             <ion-row class="top">
               <ion-col col-3 class="img-container">
-                <img class="app-icon" src="{{ (content.contentData.appIcon && (content.basePath +'/' + content.contentData.appIcon)) || defaultImg }}" />
+                <img class="app-icon" src="{{ content?.contentData?.appIcon || defaultImg }}" />
               </ion-col>
               <ion-col col-9>
                 <ion-row>
