@@ -10,9 +10,6 @@ import {
   LoadingController
 } from 'ionic-angular';
 import {
-  ProfileRequest,
-  Profile,
-  ProfileService,
   AddUpdateProfilesRequest,
   InteractType,
   InteractSubtype,
@@ -21,7 +18,12 @@ import {
   ImpressionType,
   ObjectType
 } from 'sunbird';
-import {Group, GroupService} from 'sunbird-sdk';
+import {Group,
+        GroupService,
+        ProfileService,
+        Profile,
+        GetAllProfileRequest
+       } from 'sunbird-sdk';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../../service/common-util.service';
@@ -43,7 +45,7 @@ export class GroupMembersPage {
     private navCtrl: NavController,
     private navParams: NavParams,
     @Inject('GROUP_SERVICE') private groupService: GroupService,
-    private profileService: ProfileService,
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     private zone: NgZone,
     private loadingCtrl: LoadingController,
     private commonUtilService: CommonUtilService,
@@ -72,7 +74,7 @@ export class GroupMembersPage {
         local: true,
         latestCreatedProfile: true
       };
-      this.profileService.getProfile(req).then((lastCreatedProfile: any) => {
+      this.profileService.getAllProfiles(req).toPromise().then((lastCreatedProfile: any) => {
         console.log('lastCreatedProfile: ', lastCreatedProfile);
         this.lastCreatedProfileData = JSON.parse(lastCreatedProfile);
         resolve(JSON.parse(lastCreatedProfile));
@@ -84,17 +86,17 @@ export class GroupMembersPage {
   }
 
   getAllProfile() {
-    const profileRequest: ProfileRequest = {
+    const profileRequest: GetAllProfileRequest = {
       local: true
     };
 
     this.zone.run(() => {
-      this.profileService.getAllUserProfile(profileRequest).then((profiles) => {
+      this.profileService.getAllProfiles(profileRequest).toPromise().then((profiles) => {
         const loader = this.getLoader();
         loader.present();
         this.zone.run(() => {
           if (profiles && profiles.length) {
-            this.userList = JSON.parse(profiles);
+            this.userList = profiles;
             loader.dismiss();
             this.loading = false;
           }
@@ -199,11 +201,11 @@ export class GroupMembersPage {
     if (data.grade && data.grade.length > 0) {
       const gradeName = [];
       data.grade.forEach(code => {
-        if (data.gradeValueMap && data.gradeValueMap[code]) {
-          gradeName.push(data.gradeValueMap[code]);
+        if (data['gradeValue'] && data['gradeValue'][code]) {
+          gradeName.push(data['gradeValue'][code]);
         }
       });
-
+      console.log('gradevalue is ', data['gradeValue']);
       if (gradeName.length === 0) {
         return data.grade.join(',');
       }

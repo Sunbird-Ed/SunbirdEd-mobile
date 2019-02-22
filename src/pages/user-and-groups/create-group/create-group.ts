@@ -145,13 +145,13 @@ export class CreateGroupPage {
       this.group.name = formValue.name;
       this.group.grade = (!formValue.class.length) ? [] : [formValue.class];
       this.group.syllabus = (!formValue.syllabus.length) ? [] : [formValue.syllabus];
-      this.group.gradeValueMap = {};
+      this.group.gradeValue = {};
 
       if (this.group.grade && this.group.grade.length) {
         this.group.grade.forEach(gradeCode => {
           for (let i = 0; i < this.classList.length; i++) {
             if (this.classList[i].code === gradeCode) {
-              this.group.gradeValueMap[this.classList[i].code] = this.classList[i].name;
+              this.group.gradeValue[this.classList[i].code] = this.classList[i].name;
               break;
             }
           }
@@ -183,13 +183,13 @@ export class CreateGroupPage {
       this.group.name = formValue.name;
       this.group.grade = (!formValue.class.length) ? [] : Array.isArray(formValue.class) ? formValue.class : [formValue.class];
       this.group.syllabus = (!formValue.syllabus.length) ? [] : [formValue.syllabus];
-      this.group.gradeValueMap = {};
+      this.group.gradeValue = {};
 
       if (this.group.grade && this.group.grade.length > 0) {
         this.group.grade.forEach(gradeCode => {
           for (let i = 0; i < this.classList.length; i++) {
             if (this.classList[i].code === gradeCode) {
-              this.group.gradeValueMap[this.classList[i].code] = this.classList[i].name;
+              this.group.gradeValue[this.classList[i].code] = this.classList[i].name;
               break;
             }
           }

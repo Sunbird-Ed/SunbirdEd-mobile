@@ -18,11 +18,7 @@ import {
 } from 'ionic-angular';
 import { PopoverPage } from './popover/popover';
 import {
-  ProfileService,
-  ProfileRequest,
-  Profile,
   ContainerService,
-  ProfileType,
   TabsPage,
   SharedPreferences,
   OAuthService,
@@ -36,7 +32,13 @@ import {
   ImpressionType,
   AuthService
 } from 'sunbird';
-import {GroupService, Group} from 'sunbird-sdk';
+import {GroupService,
+        Group,
+        ProfileService,
+        GetAllProfileRequest,
+        Profile,
+        ProfileType
+        } from 'sunbird-sdk';
 import { GuestEditProfilePage } from '../profile/guest-edit.profile/guest-edit.profile';
 import { IonicApp } from 'ionic-angular';
 import { ShareUserAndGroupPage } from './share-user-and-groups/share-user-and-groups';
@@ -93,7 +95,7 @@ export class UserAndGroupsPage {
     private alertCtrl: AlertController,
     private popOverCtrl: PopoverController,
     private zone: NgZone,
-    private profileService: ProfileService,
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     @Inject('GROUP_SERVICE') private groupService: GroupService,
     private platform: Platform,
     private ionicApp: IonicApp,
@@ -221,14 +223,14 @@ export class UserAndGroupsPage {
     const loader = this.getLoader();
     loader.present();
 
-    const profileRequest: ProfileRequest = {
+    const profileRequest: GetAllProfileRequest = {
       local: true
     };
     this.loadingUserList = true;
     setTimeout(() => {
       this.zone.run(() => {
-        this.profileService.getAllUserProfile(profileRequest).then((profiles) => {
-          const profileList: Array<Profile> = JSON.parse(profiles);
+        this.profileService.getAllProfiles(profileRequest).subscribe((profiles) => {
+          const profileList: Array<Profile> = profiles;
           if (profileList && profileList.length) {
             this.userList = profileList.sort((prev: Profile, next: Profile) => {
               if (prev.uid === this.currentUserId) {
@@ -256,7 +258,7 @@ export class UserAndGroupsPage {
 
           loader.dismiss();
 
-        }).catch((error) => {
+        }, (error) => {
           loader.dismiss();
           this.noUsersPresent = true;
           this.loadingUserList = false;
@@ -479,7 +481,7 @@ export class UserAndGroupsPage {
         local: true,
         latestCreatedProfile: true
       };
-      this.profileService.getProfile(req).then((lastCreatedProfile: any) => {
+      this.profileService.getAllProfiles(req).toPromise().then((lastCreatedProfile: any) => {
         console.log('lastCreatedProfile: ', lastCreatedProfile);
         this.lastCreatedProfileData = JSON.parse(lastCreatedProfile);
         resolve(JSON.parse(lastCreatedProfile));
@@ -629,6 +631,10 @@ export class UserAndGroupsPage {
     alert.present();
   }
 
+  public async getGroupUsersCount(groupId: string): Promise<number> {
+    return (await this.profileService.getAllProfiles({ groupId }).toPromise()).length;
+  }
+
   deleteUser(index: number) {
     const uid = this.userList[index].uid;
 
@@ -644,15 +650,15 @@ export class UserAndGroupsPage {
       PageId.USERS_GROUPS,
       telemetryObject
     );
-    this.profileService.deleteUser(uid)
-      .then((result) => {
+    this.profileService.deleteProfile(uid)
+      .subscribe((result) => {
         console.log('User Deleted Successfully', result);
         this.userList.splice(index, 1);
         if (this.userList.length === 0) {
           this.noUsersPresent = true;
         }
 
-      }) .catch((error) => {
+      }, (error) => {
         console.error('Error Occurred=', error);
       });
   }
@@ -677,8 +683,8 @@ export class UserAndGroupsPage {
     if (data.grade && data.grade.length > 0) {
       const gradeName = [];
       data.grade.forEach(code => {
-        if (data.gradeValueMap && data.gradeValueMap[code]) {
-          gradeName.push(data.gradeValueMap[code]);
+        if (data['gradeValue'] && data['gradeValue'][code]) {
+          gradeName.push(data['gradeValue'][code]);
         }
       });
 
@@ -700,7 +706,7 @@ export class UserAndGroupsPage {
       (error) => {
         console.log('Error : ' + error);
       });
-      this.profileService.setCurrentUser(selectedUser.uid) .then(() => {
+      this.profileService.setActiveSessionForProfile(selectedUser.uid) .subscribe(() => {
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('SWITCHING_TO', selectedUser.handle),
         undefined, undefined, 1000);
     setTimeout(() => {
@@ -719,7 +725,7 @@ export class UserAndGroupsPage {
       this.event.publish(AppGlobalService.USER_INFO_UPDATED);
       this.app.getRootNav().setRoot(TabsPage);
     }, 1000);
-  }) .catch((error) => {
+  }, (error) => {
     console.log('Error ' + error);
   });
   }

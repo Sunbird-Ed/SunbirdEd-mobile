@@ -117,11 +117,11 @@
                         }}
                       </span>
                       <span ion-text *ngIf="group?.grade?.length">•</span>
-                      <span ion-text color="text_gray" *ngIf="group?.profilesCount > 1">{{group?.profilesCount}} {{'USERS'
+                      <span ion-text color="text_gray" *ngIf="(getGroupUsersCount(group.gid) | async) > 1">{{getGroupUsersCount(group.gid) | async}} {{'USERS'
                         | translate}}</span>
-                      <span ion-text color="text_gray" *ngIf="group?.profilesCount === 1">{{group?.profilesCount}} {{'USER'
+                      <span ion-text color="text_gray" ng-init="(getGroupUsersCount(group.gid) | async) === 1">{{getGroupUsersCount(group.gid)}} {{'USER'
                         | translate}}</span>
-                      <span ion-text color="text_gray" *ngIf=" !group?.profilesCount || group?.profilesCount === 0">{{'NO_USERS'
+                      <span ion-text color="text_gray" *ngIf=" (getGroupUsersCount(group.gid) | async) === 0">{{'NO_USERS'
                         | translate}}</span>
                     </p>
                   </ion-item>
