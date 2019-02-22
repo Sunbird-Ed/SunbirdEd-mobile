@@ -21,7 +21,7 @@
 <ion-content overflow-scroll="true" class="course-scroll-holder1" style="background: #EBEBEB;">
 	<ion-refresher (ionRefresh)="swipeDownToRefresh($event)"></ion-refresher>
 	<div class="horizontal-scroll  PLR15px bg-white">
-		<a class="medium-pill MR24" *ngFor="let medium of categoryMediums; let i = index;" [ngClass]="{'active': medium?.selected}" [@appear] (click)="mediumClick(medium?.name)">{{medium?.name}}&nbsp;Medium</a>
+		<a class="medium-pill MR24" *ngFor="let medium of categoryMediums; let i = index;" [ngClass]="{'active': medium?.selected}" [@appear] (click)="mediumClick(medium?.name)">{{medium?.name}}&nbsp;{{'MEDIUM' | translate }}</a>
 	</div>
 
 	<div class="horizontal-scroll  class-filter-cotainer class-shadow" id="gradeScroll" [@ScrollHorizontal]="{value: currentGrade?.selected, params: {left_indent: current_index * 72}}">
