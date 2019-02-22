@@ -445,7 +445,7 @@ export class ProfilePage {
         res = JSON.parse(res);
         const enrolledCourses = res.result.courses;
         for (let i = 0, len = enrolledCourses.length; i < len; i++) {
-          if ((enrolledCourses[i].status === 2) || (enrolledCourses[i].leafNodesCount === enrolledCourses[i].progress)) {
+          if (enrolledCourses[i].status === 2) {
             this.trainingsCompleted.push(enrolledCourses[i]);
           }
         }
