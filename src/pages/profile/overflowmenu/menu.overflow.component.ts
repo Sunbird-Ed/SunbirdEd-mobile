@@ -134,11 +134,12 @@ export class OverflowMenuComponent {
                             profile.profileType = ProfileType.TEACHER;
                             profile.source = UserSource.LOCAL;
 
-                            this.events.publish(AppGlobalService.USER_INFO_UPDATED);
                             this.profileService.setCurrentProfile(true, profile).then(() => {
                                 this.navigateToAptPage();
+                                this.events.publish(AppGlobalService.USER_INFO_UPDATED);
                             }) .catch(() => {
                                 this.navigateToAptPage();
+                                this.events.publish(AppGlobalService.USER_INFO_UPDATED);
                             });
                         });
                 }

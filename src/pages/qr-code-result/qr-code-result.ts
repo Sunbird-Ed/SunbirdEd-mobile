@@ -264,6 +264,17 @@ export class QrCodeResultPage {
     this.zone.run(() => {
       if (content.children === undefined) {
         if (content.mimeType !== MimeType.COLLECTION) {
+          if (content.contentData.appIcon) {
+            if (Boolean(content.isAvailableLocally) && content.basePath) {
+              content.contentData.appIcon = content.basePath + '/' + content.contentData.appIcon;
+            } else if (!Boolean(content.isAvailableLocally)) {
+              if (content.contentData.appIcon.includes('http:') || content.contentData.appIcon.includes('https:')) {
+                content.contentData.appIcon = content.contentData.appIcon;
+              } else if (content.basePath) {
+                content.contentData.appIcon = content.basePath + '/' + content.contentData.appIcon;
+              }
+            }
+          }
           this.results.push(content);
 
           const path = [];
@@ -618,12 +629,12 @@ export class QrCodeResultPage {
         // Get child content
         if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
 
-              this.showLoading = false;
-              this.isDownloadStarted = false;
-              this.results = [];
-              this.parents = [];
-              this.paths = [];
-              this.getChildContents();
+          this.showLoading = false;
+          this.isDownloadStarted = false;
+          this.results = [];
+          this.parents = [];
+          this.paths = [];
+          this.getChildContents();
         }
         // For content update available
         if (res.data && res.type === 'contentUpdateAvailable' && res.data.identifier === this.identifier) {
@@ -691,12 +702,12 @@ export class QrCodeResultPage {
       });
   }
 
-    /**
-   * Function to get import content api request params
-   *
-   * @param {Array<string>} identifiers contains list of content identifier(s)
-   * @param {boolean} isChild
-   */
+  /**
+ * Function to get import content api request params
+ *
+ * @param {Array<string>} identifiers contains list of content identifier(s)
+ * @param {boolean} isChild
+ */
   getImportContentRequestBody(identifiers: Array<string>, isChild: boolean) {
     const requestParams = [];
     _.forEach(identifiers, (value) => {
